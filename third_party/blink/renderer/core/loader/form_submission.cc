@@ -391,9 +391,11 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
   AtomicString target_or_base_target = frame_request.CleanNavigationTarget(
       copied_attributes.Target().empty() ? form->GetDocument().BaseTarget()
                                          : copied_attributes.Target());
-  if (RuntimeEnabledFeatures::WindowOpenSplitTabEnabled()) {
+  if (RuntimeEnabledFeatures::WindowOpenSplitTabEnabled(
+          form->GetDocument().domWindow())) {
     WebWindowFeatures window_features = GetWindowFeaturesFromAttribute(
-        form->FastGetAttribute(html_names::kWindowfeaturesAttr));
+        form->FastGetAttribute(html_names::kWindowfeaturesAttr),
+        form->GetDocument().domWindow());
     frame_request.SetFeaturesForWindowOpen(window_features);
     if (target_or_base_target.empty() &&
         (window_features.is_split || window_features.is_popup)) {

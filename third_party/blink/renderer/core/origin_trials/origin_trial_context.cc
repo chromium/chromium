@@ -543,6 +543,13 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
   if (trial_name == "RTCDiagnosticLogging") {
     return base::FeatureList::IsEnabled(blink::features::kRTCDiagnosticLogging);
   }
+
+  // The browser process rejects split tab requests as bad messages when
+  // kWindowOpenSplitTab is disabled, so the trial must not enable the feature
+  // in that case.
+  if (trial_name == "WindowOpenSplitTab") {
+    return base::FeatureList::IsEnabled(blink::features::kWindowOpenSplitTab);
+  }
   return true;
 }
 

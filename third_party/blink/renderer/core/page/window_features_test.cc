@@ -7,8 +7,13 @@
 #include <cstdint>
 #include <optional>
 
+#include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h"
 #include "third_party/blink/public/web/web_window_features.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 #include "third_party/blink/renderer/core/page/create_window.h"
+#include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -293,7 +298,8 @@ TEST_F(WindowFeaturesTest, WindowFeaturesFromAttribute) {
 
   // Empty string gives default features.
   {
-    WebWindowFeatures features = GetWindowFeaturesFromAttribute("");
+    WebWindowFeatures features =
+        GetWindowFeaturesFromAttribute("", /*dom_window=*/nullptr);
     EXPECT_FALSE(features.is_split);
     EXPECT_FALSE(features.is_popup);
     EXPECT_FALSE(features.noopener);
@@ -304,7 +310,7 @@ TEST_F(WindowFeaturesTest, WindowFeaturesFromAttribute) {
   // Split features are parsed.
   {
     WebWindowFeatures features = GetWindowFeaturesFromAttribute(
-        "split, splitposition=left, splitsize=35");
+        "split, splitposition=left, splitsize=35", /*dom_window=*/nullptr);
     EXPECT_TRUE(features.is_split);
     EXPECT_FALSE(features.is_popup);
     EXPECT_EQ(mojom::SplitTabPosition::kLeft, features.split_position);
@@ -314,7 +320,8 @@ TEST_F(WindowFeaturesTest, WindowFeaturesFromAttribute) {
   // Popup and bounds features are parsed.
   {
     WebWindowFeatures features = GetWindowFeaturesFromAttribute(
-        "popup, left=10, top=20, width=300, height=400");
+        "popup, left=10, top=20, width=300, height=400",
+        /*dom_window=*/nullptr);
     EXPECT_FALSE(features.is_split);
     EXPECT_TRUE(features.is_popup);
     EXPECT_TRUE(features.x_set);
@@ -331,7 +338,8 @@ TEST_F(WindowFeaturesTest, WindowFeaturesFromAttribute) {
   // and setting bounds alone does NOT apply the legacy popup heuristic.
   {
     WebWindowFeatures features = GetWindowFeaturesFromAttribute(
-        "screenx=15, screeny=25, innerwidth=350, innerheight=450");
+        "screenx=15, screeny=25, innerwidth=350, innerheight=450",
+        /*dom_window=*/nullptr);
     EXPECT_FALSE(features.is_split);
     EXPECT_FALSE(features.is_popup);
     EXPECT_TRUE(features.x_set);
@@ -358,7 +366,8 @@ TEST_F(WindowFeaturesTest, WindowFeaturesFromAttribute) {
       "persistent=1",  "attributionsrc=https://example.com",
   };
   for (const char* feature_string : kDisallowedOrLegacyPopupCases) {
-    WebWindowFeatures features = GetWindowFeaturesFromAttribute(feature_string);
+    WebWindowFeatures features =
+        GetWindowFeaturesFromAttribute(feature_string, /*dom_window=*/nullptr);
     EXPECT_FALSE(features.is_split) << "Testing '" << feature_string << "'";
     EXPECT_FALSE(features.is_popup) << "Testing '" << feature_string << "'";
     EXPECT_FALSE(features.noopener) << "Testing '" << feature_string << "'";
@@ -376,13 +385,56 @@ TEST_F(WindowFeaturesTest, WindowFeaturesFromAttributeDisabled) {
   ScopedWindowOpenSplitTabForTest split_tab_enabled{false};
 
   WebWindowFeatures features = GetWindowFeaturesFromAttribute(
-      "split, splitposition=left, splitsize=30, popup, width=400, height=300");
+      "split, splitposition=left, splitsize=30, popup, width=400, height=300",
+      /*dom_window=*/nullptr);
   EXPECT_FALSE(features.is_split);
   EXPECT_FALSE(features.is_popup);
   EXPECT_EQ(mojom::SplitTabPosition::kUnspecified, features.split_position);
   EXPECT_EQ(std::nullopt, features.split_size);
   EXPECT_FALSE(features.width_set);
   EXPECT_FALSE(features.height_set);
+}
+
+using WindowFeaturesOriginTrialTest = PageTestBase;
+
+// The split features can be enabled by the WindowOpenSplitTab origin trial,
+// for both window.open() and the "windowfeatures" content attribute.
+TEST_F(WindowFeaturesOriginTrialTest, SplitEnabledByOriginTrial) {
+  ScopedWindowOpenSplitTabForTest split_tab_enabled{false};
+  LocalDOMWindow* window = GetFrame().DomWindow();
+
+  WebWindowFeatures features = GetWindowFeaturesFromString(
+      "split, splitposition=left, splitsize=30", window);
+  EXPECT_FALSE(features.is_split);
+  EXPECT_EQ(mojom::SplitTabPosition::kUnspecified, features.split_position);
+  EXPECT_EQ(std::nullopt, features.split_size);
+
+  features = GetWindowFeaturesFromAttribute(
+      "split, splitposition=left, splitsize=30", window);
+  EXPECT_FALSE(features.is_split);
+  EXPECT_EQ(mojom::SplitTabPosition::kUnspecified, features.split_position);
+  EXPECT_EQ(std::nullopt, features.split_size);
+
+  window->GetOriginTrialContext()->AddFeature(
+      mojom::blink::OriginTrialFeature::kWindowOpenSplitTab);
+
+  features = GetWindowFeaturesFromString(
+      "split, splitposition=left, splitsize=30", window);
+  EXPECT_TRUE(features.is_split);
+  EXPECT_EQ(mojom::SplitTabPosition::kLeft, features.split_position);
+  EXPECT_EQ(30, features.split_size);
+
+  features = GetWindowFeaturesFromAttribute(
+      "split, splitposition=left, splitsize=30", window);
+  EXPECT_TRUE(features.is_split);
+  EXPECT_EQ(mojom::SplitTabPosition::kLeft, features.split_position);
+  EXPECT_EQ(30, features.split_size);
+
+  // Without a window, there is no origin trial context.
+  EXPECT_FALSE(
+      GetWindowFeaturesFromString("split", /*dom_window=*/nullptr).is_split);
+  EXPECT_FALSE(
+      GetWindowFeaturesFromAttribute("split", /*dom_window=*/nullptr).is_split);
 }
 
 }  // namespace blink

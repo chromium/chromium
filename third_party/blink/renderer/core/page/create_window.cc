@@ -91,7 +91,7 @@ WebWindowFeatures ParseWindowFeatures(const String& feature_string,
   const bool always_on_top_enabled =
       RuntimeEnabledFeatures::WindowOpenAlwaysOnTopEnabled();
   const bool split_tab_enabled =
-      RuntimeEnabledFeatures::WindowOpenSplitTabEnabled();
+      RuntimeEnabledFeatures::WindowOpenSplitTabEnabled(dom_window);
   if (source == WindowFeaturesSource::kAttribute && !split_tab_enabled) {
     return window_features;
   }
@@ -312,8 +312,9 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
                              WindowFeaturesSource::kWindowOpen);
 }
 
-WebWindowFeatures GetWindowFeaturesFromAttribute(const String& feature_string) {
-  return ParseWindowFeatures(feature_string, /*dom_window=*/nullptr,
+WebWindowFeatures GetWindowFeaturesFromAttribute(const String& feature_string,
+                                                 LocalDOMWindow* dom_window) {
+  return ParseWindowFeatures(feature_string, dom_window,
                              WindowFeaturesSource::kAttribute);
 }
 

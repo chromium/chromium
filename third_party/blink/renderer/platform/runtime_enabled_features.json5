@@ -8154,8 +8154,11 @@
       // RuntimeEnabledFeature status unless the base::Feature is overridden,
       // in which case both sides follow the override. This keeps the renderer
       // and browser consistent, so that the browser can reject split requests
-      // from a renderer when the base::Feature is disabled.
+      // from a renderer when the base::Feature is disabled. For the same
+      // reason, OriginTrialContext::CanEnableTrialFromName() refuses to enable
+      // the origin trial when the base::Feature is disabled.
       name: "WindowOpenSplitTab",
+      origin_trial_feature_name: "WindowOpenSplitTab",
       status: "experimental",
       base_feature_status: "enabled",
       copied_from_base_feature_if: "overridden",

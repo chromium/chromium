@@ -46,9 +46,11 @@ GetWindowFeaturesFromString(const String& feature_string,
                             LocalDOMWindow* dom_window);
 
 // Parses the restricted set of window features supported by the
-// "windowfeatures" content attribute on <a>, <area>, and <form>.
+// "windowfeatures" content attribute on <a>, <area>, and <form>. `dom_window`
+// is the window of the element's document.
 CORE_EXPORT WebWindowFeatures
-GetWindowFeaturesFromAttribute(const String& feature_string);
+GetWindowFeaturesFromAttribute(const String& feature_string,
+                               LocalDOMWindow* dom_window);
 
 }  // namespace blink
 

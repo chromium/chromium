@@ -418,9 +418,9 @@ void HTMLAnchorElementBase::NavigateToHyperlink(
   frame_request.SetSourceElement(this);
   AtomicString target =
       frame_request.CleanNavigationTarget(GetEffectiveTarget());
-  if (RuntimeEnabledFeatures::WindowOpenSplitTabEnabled()) {
+  if (RuntimeEnabledFeatures::WindowOpenSplitTabEnabled(window)) {
     WebWindowFeatures window_features = GetWindowFeaturesFromAttribute(
-        FastGetAttribute(html_names::kWindowfeaturesAttr));
+        FastGetAttribute(html_names::kWindowfeaturesAttr), window);
     frame_request.SetFeaturesForWindowOpen(window_features);
     if (target.empty() &&
         (window_features.is_split || window_features.is_popup)) {

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel="help" href="https://github.com/mfreed7/split-tabs">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/origin-trials-helper.js"></script>
+
+<!-- Generate token with the command:
+generate_token.py http://127.0.0.1:8000 WindowOpenSplitTab --expire-timestamp=2000000000
+-- -->
+<meta http-equiv="origin-trial" content="A/tSO2EHCYDUVeD+tLAlekoMqoqmU51Wbj6EHVepA+IA6x4suvTe7315cMLwVqXXYU/9r76mMBJ0IcyHxTG+sAEAAABaeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiV2luZG93T3BlblNwbGl0VGFiIiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9">
+
+<body>
+<script>
+'use strict';
+
+const barPropURL = 'resources/window-open-split-tab-barprop.html';
+
+test(t => {
+  OriginTrialsHelper.check_properties_exist(this, {
+    'HTMLAnchorElement': ['windowFeatures'],
+    'HTMLAreaElement': ['windowFeatures'],
+    'HTMLFormElement': ['windowFeatures'],
+  });
+}, 'windowFeatures IDL attributes are exposed in an origin trial enabled document');
+
+function waitForBarProp(t) {
+  return new Promise(resolve => {
+    window.addEventListener('message', t.step_func(e => {
+      e.source.close();
+      resolve(e.data);
+    }), {once: true});
+  });
+}
+
+promise_test(async t => {
+  const barProp = waitForBarProp(t);
+  window.open(barPropURL, '_blank', 'split');
+  const data = await barProp;
+  // Without the feature, "split" is an unrecognized feature, which triggers
+  // the legacy popup heuristic.
+  assert_true(data.locationbar, 'window.locationbar.visible');
+  assert_true(data.toolbar, 'window.toolbar.visible');
+}, 'window.open() recognizes the "split" feature in an origin trial enabled document');
+
+promise_test(async t => {
+  const barProp = waitForBarProp(t);
+  const a = document.createElement('a');
+  a.href = barPropURL;
+  a.rel = 'opener';
+  a.windowFeatures = 'popup';
+  document.body.appendChild(a);
+  t.add_cleanup(() => a.remove());
+  a.click();
+  const data = await barProp;
+  assert_false(data.locationbar, 'window.locationbar.visible');
+  assert_false(data.toolbar, 'window.toolbar.visible');
+}, '<a windowfeatures> is honored in an origin trial enabled document');
+</script>
+</body>

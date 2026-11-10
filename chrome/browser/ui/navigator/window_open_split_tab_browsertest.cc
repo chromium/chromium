@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string>
 
 #include "base/command_line.h"
+#include "base/functional/bind.h"
+#include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -19,6 +22,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
@@ -506,4 +510,178 @@ IN_PROC_BROWSER_TEST_F(WindowOpenSplitTabBrowserTest,
   EXPECT_EQ(1, tab_strip_model()->count());
   ExpectPopup(new_contents);
   EXPECT_EQ(true, content::EvalJs(new_contents, "window.opener === null"));
+}
+
+// Tests for the WindowOpenSplitTab origin trial. The base::Feature is not
+// overridden, so the Blink feature is disabled unless the origin trial enables
+// it.
+class WindowOpenSplitTabOriginTrialBrowserTest : public InProcessBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    // The test public key, see:
+    // https://chromium.googlesource.com/chromium/src/+/main/docs/origin_trials_integration.md
+    command_line->AppendSwitchASCII(
+        "origin-trial-public-key",
+        "dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=");
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    url_loader_interceptor_ =
+        std::make_unique<content::URLLoaderInterceptor>(base::BindRepeating(
+            &WindowOpenSplitTabOriginTrialBrowserTest::InterceptRequest,
+            base::Unretained(this)));
+  }
+
+  void TearDownOnMainThread() override {
+    url_loader_interceptor_.reset();
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
+ protected:
+  TabStripModel* tab_strip_model() { return browser()->GetTabStripModel(); }
+
+  // Navigates to a page that is served with an origin trial token if
+  // `with_token` is true, and returns its WebContents.
+  content::WebContents* NavigateToOpener(bool with_token) {
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL(with_token ? "https://example.com/token.html"
+                                   : "https://example.com/no_token.html")));
+    return tab_strip_model()->GetActiveWebContents();
+  }
+
+  // Runs `script` in `opener`, and returns the new WebContents that it opens.
+  content::WebContents* RunScriptToOpenWindow(content::WebContents* opener,
+                                              const std::string& script) {
+    content::WebContentsAddedObserver observer;
+    EXPECT_TRUE(content::ExecJs(opener, script));
+    content::WebContents* new_contents = observer.GetWebContents();
+    EXPECT_TRUE(content::WaitForLoadStop(new_contents));
+    return new_contents;
+  }
+
+  // Returns true if `opener` and `new_contents` are split together.
+  bool IsSplitTogether(content::WebContents* opener,
+                       content::WebContents* new_contents) {
+    tabs::TabInterface* opener_tab =
+        tabs::TabInterface::MaybeGetFromContents(opener);
+    tabs::TabInterface* new_tab =
+        tabs::TabInterface::MaybeGetFromContents(new_contents);
+    return opener_tab && new_tab && opener_tab->IsSplit() &&
+           opener_tab->GetSplit() == new_tab->GetSplit();
+  }
+
+  // Expects `new_contents` to be in a popup window.
+  void ExpectPopup(content::WebContents* new_contents) {
+    EXPECT_EQ(TabStripModel::kNoTab,
+              tab_strip_model()->GetIndexOfWebContents(new_contents));
+    tabs::TabInterface* tab =
+        tabs::TabInterface::MaybeGetFromContents(new_contents);
+    ASSERT_TRUE(tab);
+    EXPECT_EQ(BrowserWindowInterface::TYPE_POPUP,
+              tab->GetBrowserWindowInterface()->GetType());
+  }
+
+ private:
+  bool InterceptRequest(content::URLLoaderInterceptor::RequestParams* params) {
+    if (params->url_request.url.host() != "example.com") {
+      return false;
+    }
+    std::string headers =
+        "HTTP/1.1 200 OK\n"
+        "Content-Type: text/html; charset=utf-8\n";
+    if (params->url_request.url.path() == "/token.html") {
+      // Generated with:
+      // tools/origin_trials/generate_token.py https://example.com
+      //     WindowOpenSplitTab --expire-timestamp=2000000000
+      base::StrAppend(&headers, {"Origin-Trial: "
+                                 "A4K1v58OLnLxgbDnQk07QMWaQfHE2dlnbHVn8PWaHvaoH"
+                                 "PnjzGGwuSOz8HZYWI5jAOBu"
+                                 "yDPj88f0W215BAHhBgsAAABceyJvcmlnaW4iOiAiaHR0c"
+                                 "HM6Ly9leGFtcGxlLmNvbTo0"
+                                 "NDMiLCAiZmVhdHVyZSI6ICJXaW5kb3dPcGVuU3BsaXRUY"
+                                 "WIiLCAiZXhwaXJ5IjogMjAw"
+                                 "MDAwMDAwMH0=\n"});
+    }
+    headers += '\n';
+    content::URLLoaderInterceptor::WriteResponse(
+        headers, "<!DOCTYPE html><body></body>", params->client.get());
+    return true;
+  }
+
+  std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
+};
+
+// With an origin trial token, window.open() with "split" creates a split tab.
+IN_PROC_BROWSER_TEST_F(WindowOpenSplitTabOriginTrialBrowserTest,
+                       WindowOpenSplitWithToken) {
+  content::WebContents* opener = NavigateToOpener(/*with_token=*/true);
+  content::WebContents* new_contents = RunScriptToOpenWindow(
+      opener, "window.open('/title2.html', '_blank', 'split');");
+  EXPECT_EQ(2, tab_strip_model()->count());
+  EXPECT_TRUE(IsSplitTogether(opener, new_contents));
+}
+
+// With an origin trial token, `<a windowfeatures="split">` creates a split tab.
+IN_PROC_BROWSER_TEST_F(WindowOpenSplitTabOriginTrialBrowserTest,
+                       AnchorWindowFeaturesSplitWithToken) {
+  content::WebContents* opener = NavigateToOpener(/*with_token=*/true);
+  EXPECT_EQ(true, content::EvalJs(opener,
+                                  "'windowFeatures' in "
+                                  "HTMLAnchorElement.prototype"));
+  content::WebContents* new_contents =
+      RunScriptToOpenWindow(opener,
+                            "const a = document.createElement('a');"
+                            "a.href = '/title2.html';"
+                            "a.windowFeatures = 'split';"
+                            "document.body.appendChild(a);"
+                            "a.click();");
+  EXPECT_EQ(2, tab_strip_model()->count());
+  EXPECT_TRUE(IsSplitTogether(opener, new_contents));
+}
+
+// Without an origin trial token, "split" is an unrecognized feature, so the
+// legacy popup behavior applies.
+IN_PROC_BROWSER_TEST_F(WindowOpenSplitTabOriginTrialBrowserTest,
+                       WindowOpenSplitWithoutToken) {
+  content::WebContents* opener = NavigateToOpener(/*with_token=*/false);
+  EXPECT_EQ(false, content::EvalJs(opener,
+                                   "'windowFeatures' in "
+                                   "HTMLAnchorElement.prototype"));
+  content::WebContents* new_contents = RunScriptToOpenWindow(
+      opener, "window.open('/title2.html', '_blank', 'split');");
+  EXPECT_EQ(1, tab_strip_model()->count());
+  EXPECT_FALSE(IsSplitTogether(opener, new_contents));
+  ExpectPopup(new_contents);
+}
+
+// Disabling the base::Feature acts as a kill switch for the origin trial.
+class WindowOpenSplitTabOriginTrialKillSwitchBrowserTest
+    : public WindowOpenSplitTabOriginTrialBrowserTest {
+ public:
+  WindowOpenSplitTabOriginTrialKillSwitchBrowserTest() {
+    feature_list_.InitAndDisableFeature(blink::features::kWindowOpenSplitTab);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// When the base::Feature is disabled, the origin trial token does not enable
+// the feature, so the renderer does not send split requests (which the browser
+// would reject as a bad message), and the legacy popup behavior applies.
+IN_PROC_BROWSER_TEST_F(WindowOpenSplitTabOriginTrialKillSwitchBrowserTest,
+                       WindowOpenSplitWithToken) {
+  content::WebContents* opener = NavigateToOpener(/*with_token=*/true);
+  EXPECT_EQ(false, content::EvalJs(opener,
+                                   "'windowFeatures' in "
+                                   "HTMLAnchorElement.prototype"));
+  content::WebContents* new_contents = RunScriptToOpenWindow(
+      opener, "window.open('/title2.html', '_blank', 'split');");
+  EXPECT_EQ(1, tab_strip_model()->count());
+  EXPECT_FALSE(IsSplitTogether(opener, new_contents));
+  ExpectPopup(new_contents);
+  // The opener's renderer was not killed.
+  EXPECT_EQ(true, content::EvalJs(opener, "true"));
 }
