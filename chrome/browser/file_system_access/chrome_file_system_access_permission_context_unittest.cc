@@ -771,9 +771,8 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveEntryAccess_ExplicitPathBlock) {
-// Linux is the only OS where we have some blocked directories with explicit
-// paths (as opposed to PathService provided paths).
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_MAC)
   // /dev should be blocked.
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
                 permission_context(), PathInfo(FILE_PATH_LITERAL("/dev")),
@@ -1185,6 +1184,84 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 }
 #endif
 
+// Testing that writes to */.git/config and */.git/modules are blocked, while
+// reads stay allowed.
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       ConfirmSensitiveEntryAccess_GitConfigAndModulesWriteBlock) {
+#if defined(FILE_PATH_USES_DRIVE_LETTERS)
+  base::FilePath root(FILE_PATH_LITERAL("c:\\"));
+#else
+  base::FilePath root(FILE_PATH_LITERAL("/"));
+#endif
+  const base::FilePath git_dir =
+      root.Append(FILE_PATH_LITERAL("a")).Append(FILE_PATH_LITERAL(".git"));
+  const base::FilePath git_config = git_dir.Append(FILE_PATH_LITERAL("config"));
+  const base::FilePath git_modules =
+      git_dir.Append(FILE_PATH_LITERAL("modules"));
+  const base::FilePath submodule_dir =
+      git_modules.Append(FILE_PATH_LITERAL("sub"));
+
+  // .git/config is blocked for save.
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathInfo(git_config), HandleType::kFile,
+                UserAction::kSave),
+            SensitiveDirectoryResult::kAbort);
+  // .git/config is not blocked for read.
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathInfo(git_config), HandleType::kFile,
+                UserAction::kOpen),
+            SensitiveDirectoryResult::kAllowed);
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathInfo(git_config), HandleType::kFile,
+                UserAction::kNone),
+            SensitiveDirectoryResult::kAllowed);
+  // Other files under .git, and files named config outside of .git, are
+  // allowed.
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(git_dir.Append(FILE_PATH_LITERAL("config.bak"))),
+                HandleType::kFile, UserAction::kSave),
+            SensitiveDirectoryResult::kAllowed);
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(root.Append(FILE_PATH_LITERAL("a"))
+                             .Append(FILE_PATH_LITERAL("config"))),
+                HandleType::kFile, UserAction::kSave),
+            SensitiveDirectoryResult::kAllowed);
+
+  // .git/modules and everything inside it is blocked for save.
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathInfo(git_modules),
+                HandleType::kDirectory, UserAction::kSave),
+            SensitiveDirectoryResult::kAbort);
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(submodule_dir.Append(FILE_PATH_LITERAL("hooks"))
+                             .Append(FILE_PATH_LITERAL("pre-commit"))),
+                HandleType::kFile, UserAction::kSave),
+            SensitiveDirectoryResult::kAbort);
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(submodule_dir.Append(FILE_PATH_LITERAL("config"))),
+                HandleType::kFile, UserAction::kSave),
+            SensitiveDirectoryResult::kAbort);
+  // .git/modules is not blocked for read.
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathInfo(git_modules),
+                HandleType::kDirectory, UserAction::kOpen),
+            SensitiveDirectoryResult::kAllowed);
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(submodule_dir.Append(FILE_PATH_LITERAL("config"))),
+                HandleType::kFile, UserAction::kNone),
+            SensitiveDirectoryResult::kAllowed);
+  // The .git directory itself is still allowed for save.
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathInfo(git_dir), HandleType::kDirectory,
+                UserAction::kSave),
+            SensitiveDirectoryResult::kAllowed);
+}
+
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveEntryAccess_ContentUri) {
@@ -1389,6 +1466,15 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
       {chrome::DIR_USER_DATA, nullptr, true, false},
       {base::DIR_HOME, FILE_PATH_LITERAL(".ssh"), true, false},
       {base::DIR_HOME, FILE_PATH_LITERAL(".gnupg"), true, false},
+      {base::DIR_HOME, FILE_PATH_LITERAL(".config"), true, false},
+      {base::DIR_HOME, FILE_PATH_LITERAL(".bash_profile"), true, false},
+      {base::DIR_HOME, FILE_PATH_LITERAL(".bash_login"), true, false},
+      {base::DIR_HOME, FILE_PATH_LITERAL(".bashrc"), true, false},
+      {base::DIR_HOME, FILE_PATH_LITERAL(".profile"), true, false},
+      {base::DIR_HOME, FILE_PATH_LITERAL(".zshenv"), true, false},
+      {base::DIR_HOME, FILE_PATH_LITERAL(".zprofile"), true, false},
+      {base::DIR_HOME, FILE_PATH_LITERAL(".zshrc"), true, false},
+      {base::DIR_HOME, FILE_PATH_LITERAL(".zlogin"), true, false},
 
 #if BUILDFLAG(IS_WIN)
       {base::DIR_PROGRAM_FILES, nullptr, true, false},
@@ -1402,6 +1488,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 #endif
 
 #if BUILDFLAG(IS_MAC)
+      {kNoBasePathKey, FILE_PATH_LITERAL("/dev"), true, false},
       {base::DIR_APP_DATA, nullptr, true, false},
       {chrome::DIR_OUTER_BUNDLE, nullptr, true, false},
       {base::DIR_HOME, FILE_PATH_LITERAL("Applications"), true, false},
@@ -1422,8 +1509,11 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
       {kNoBasePathKey, FILE_PATH_LITERAL("/sys"), true, false},
       {kNoBasePathKey, FILE_PATH_LITERAL("/boot"), true, false},
       {kNoBasePathKey, FILE_PATH_LITERAL("/etc"), true, false},
-      {base::DIR_HOME, FILE_PATH_LITERAL(".config"), true, false},
       {base::DIR_HOME, FILE_PATH_LITERAL(".dbus"), true, false},
+      {base::DIR_HOME, FILE_PATH_LITERAL(".local/share"), true, false},
+      {base::DIR_HOME, FILE_PATH_LITERAL(".fonts.conf"), true, false},
+      {base::DIR_HOME, FILE_PATH_LITERAL(".fonts.conf.d"), true, false},
+      {base::DIR_HOME, FILE_PATH_LITERAL(".pki"), true, false},
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
