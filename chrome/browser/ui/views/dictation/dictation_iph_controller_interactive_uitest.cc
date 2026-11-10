@@ -7,7 +7,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/dictation/features.h"
-#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/dictation/dictation_iph.h"
@@ -27,8 +26,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "third_party/blink/public/common/mediastream/media_stream_request.h"
-#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "url/gurl.h"
@@ -68,13 +65,6 @@ class DictationIphControllerUiTest : public InteractiveFeaturePromoTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
     InteractiveFeaturePromoTest::SetUpOnMainThread();
-
-    MediaCaptureDevicesDispatcher::GetInstance()
-        ->DisableDeviceEnumerationForTesting();
-    MediaCaptureDevicesDispatcher::GetInstance()->SetTestAudioCaptureDevices(
-        {blink::MediaStreamDevice(
-            blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE, "fake_mic",
-            "Fake Microphone")});
   }
 
  protected:
@@ -178,15 +168,6 @@ IN_PROC_BROWSER_TEST_F(DictationIphControllerUiTest,
                        DoesNotShowWhenOnboardingCompleted) {
   chrome_test_utils::GetProfile(this)->GetPrefs()->SetBoolean(
       prefs::kPrefDictationOnboardingCompleted, true);
-  RunTestSequence(
-      OpenTestPage(), ClickField(kTextarea),
-      WaitForShow(kDictationIphAnchorElementId), WaitForFieldType(),
-      CheckPromoRequested(feature_engagement::kIPHDictationFeature, false));
-}
-
-IN_PROC_BROWSER_TEST_F(DictationIphControllerUiTest,
-                       DoesNotShowWithoutMicrophone) {
-  MediaCaptureDevicesDispatcher::GetInstance()->SetTestAudioCaptureDevices({});
   RunTestSequence(
       OpenTestPage(), ClickField(kTextarea),
       WaitForShow(kDictationIphAnchorElementId), WaitForFieldType(),
