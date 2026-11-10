@@ -9,7 +9,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -78,11 +77,6 @@ public class SigninButtonRenderTest {
     public void setupNightMode(boolean nightModeEnabled) {
         ChromeNightModeTestUtils.setUpNightModeForChromeActivity(nightModeEnabled);
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
-    }
-
-    @AfterClass
-    public static void tearDownAfterActivityDestroyed() {
-        ChromeNightModeTestUtils.tearDownNightModeAfterChromeActivityDestroyed();
     }
 
     @After

@@ -24,7 +24,6 @@ import android.widget.FrameLayout;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -130,11 +129,6 @@ public class MostVisitedTilesLayoutTest {
     public void setupNightMode(boolean nightModeEnabled) {
         ChromeNightModeTestUtils.setUpNightModeForChromeActivity(nightModeEnabled);
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
-    }
-
-    @AfterClass
-    public static void tearDownAfterActivityDestroyed() {
-        ChromeNightModeTestUtils.tearDownNightModeAfterChromeActivityDestroyed();
     }
 
     @After

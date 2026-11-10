@@ -62,7 +62,6 @@ import androidx.test.runner.lifecycle.Stage;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -115,7 +114,6 @@ import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactoryJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -262,11 +260,6 @@ public class BookmarkTest {
                     AccessibilityStateTestHelper.uninitializeForTesting();
                 });
         BookmarkModel.clearLastUsedParent();
-    }
-
-    @AfterClass
-    public static void tearDownAfterActivityDestroyed() {
-        ChromeNightModeTestUtils.tearDownNightModeAfterChromeActivityDestroyed();
     }
 
     @Test

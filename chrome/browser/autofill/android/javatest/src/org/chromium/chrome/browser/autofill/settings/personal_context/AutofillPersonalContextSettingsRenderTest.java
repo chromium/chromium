@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
-import org.junit.AfterClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -65,11 +64,6 @@ public class AutofillPersonalContextSettingsRenderTest {
     public AutofillPersonalContextSettingsRenderTest(boolean nightModeEnabled) {
         ChromeNightModeTestUtils.setUpNightModeForChromeActivity(nightModeEnabled);
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
-    }
-
-    @AfterClass
-    public static void tearDownClass() {
-        ChromeNightModeTestUtils.tearDownNightModeAfterChromeActivityDestroyed();
     }
 
     @Test

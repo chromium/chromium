@@ -26,7 +26,6 @@ import androidx.test.filters.MediumTest;
 import androidx.test.runner.lifecycle.Stage;
 import androidx.window.layout.WindowMetricsCalculator;
 
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -114,12 +113,6 @@ public class SidePanelContainerCoordinatorIntegrationTest {
                 () ->
                         SidePanelContainerCoordinatorIntegrationTestSupport
                                 .clearPersistedPanelWidths(profile));
-    }
-
-    @AfterClass
-    public static void tearDownAfterClass() {
-        ThreadUtils.runOnUiThreadBlocking(
-                ChromeNightModeTestUtils::tearDownNightModeAfterChromeActivityDestroyed);
     }
 
     @Test

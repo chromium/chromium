@@ -24,7 +24,6 @@ import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -96,11 +95,6 @@ public class UMADialogTest {
     @BeforeClass
     public static void setupSuite() {
         activityTestRule.launchActivity(null);
-    }
-
-    @AfterClass
-    public static void tearDownAfterActivityDestroyed() {
-        ChromeNightModeTestUtils.tearDownNightModeAfterChromeActivityDestroyed();
     }
 
     @After

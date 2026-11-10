@@ -15,7 +15,6 @@ import android.text.TextUtils;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -117,11 +116,6 @@ public class HistoryWebUiRenderTest {
     @Before
     public void setUp() {
         mViewportTestUtils = new ViewportTestUtils(mActivityTestRule);
-    }
-
-    @AfterClass
-    public static void tearDownAfterActivityDestroyed() {
-        ChromeNightModeTestUtils.tearDownNightModeAfterChromeActivityDestroyed();
     }
 
     @Test

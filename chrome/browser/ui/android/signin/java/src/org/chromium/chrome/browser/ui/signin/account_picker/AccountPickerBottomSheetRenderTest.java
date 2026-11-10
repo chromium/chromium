@@ -20,7 +20,6 @@ import android.view.View;
 
 import androidx.test.filters.MediumTest;
 
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -182,11 +181,6 @@ public class AccountPickerBottomSheetRenderTest {
         when(mSigninManagerMock.extractDomainName(any()))
                 .thenReturn(TestAccounts.ACCOUNT1.getEmail());
         when(mAccountPreviewDataServiceMock.getPreferredAccountForSignin()).thenReturn(null);
-    }
-
-    @AfterClass
-    public static void tearDownAfterActivityDestroyed() {
-        ChromeNightModeTestUtils.tearDownNightModeAfterChromeActivityDestroyed();
     }
 
     @Test

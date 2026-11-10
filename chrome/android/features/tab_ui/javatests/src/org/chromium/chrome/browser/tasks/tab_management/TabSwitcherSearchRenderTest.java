@@ -10,7 +10,6 @@ import static org.chromium.ui.base.DeviceFormFactor.PHONE;
 
 import androidx.test.filters.MediumTest;
 
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -91,11 +90,6 @@ public class TabSwitcherSearchRenderTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> ChromeNightModeTestUtils.setUpNightModeForChromeActivity(nightModeEnabled));
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
-    }
-
-    @AfterClass
-    public static void tearDownAfterActivityDestroyed() {
-        ChromeNightModeTestUtils.tearDownNightModeAfterChromeActivityDestroyed();
     }
 
     @Before

@@ -42,7 +42,6 @@ import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -178,11 +177,6 @@ public class ToolbarPhoneTest {
         mToolbar = mActivityTestRule.getActivity().findViewById(R.id.toolbar);
         mToolbarButtonsContainer = mToolbar.findViewById(R.id.toolbar_buttons);
         mOmnibox = new OmniboxTestUtils(mActivityTestRule.getActivity());
-    }
-
-    @AfterClass
-    public static void tearDownAfterActivityDestroyed() {
-        ChromeNightModeTestUtils.tearDownNightModeAfterChromeActivityDestroyed();
     }
 
     @Test

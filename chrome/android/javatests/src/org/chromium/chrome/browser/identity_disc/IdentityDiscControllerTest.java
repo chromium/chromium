@@ -35,7 +35,6 @@ import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -171,12 +170,6 @@ public class IdentityDiscControllerTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> ChromeNightModeTestUtils.setUpNightModeForChromeActivity(nightModeEnabled));
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
-    }
-
-    @AfterClass
-    public static void tearDownAfterActivityDestroyed() {
-        ThreadUtils.runOnUiThreadBlocking(
-                ChromeNightModeTestUtils::tearDownNightModeAfterChromeActivityDestroyed);
     }
 
     @Before

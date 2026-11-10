@@ -18,7 +18,6 @@ import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -114,11 +113,6 @@ public class ScreenshotCaptureTest {
     @BeforeClass
     public static void setUpBeforeActivityLaunched() {
         ChromeNightModeTestUtils.setUpNightModeBeforeChromeActivityLaunched();
-    }
-
-    @AfterClass
-    public static void tearDownAfterActivityDestroyed() {
-        ChromeNightModeTestUtils.tearDownNightModeAfterChromeActivityDestroyed();
     }
 
     @Before
