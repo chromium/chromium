@@ -5590,6 +5590,470 @@ Press an assigned switch or key to remove assignment.
         Smart Lock
       </message>
 
+      <!-- People (OS settings) -->
+      <message name="IDS_OS_SETTINGS_PROFILE_NAME" desc="Label with device account first name, showing which user is currently signed in.">
+        Currently signed in as <ph name="NAME">$1<ex>John</ex></ph>
+      </message>
+      <message name="IDS_OS_SETTINGS_ACCOUNTS_MENU_ITEM_DESCRIPTION" desc="Description text showing number of accounts. This string shows only when there is more than 1 account. Displayed in the menu item for the Accounts page.">
+        <ph name="NUM_ACCOUNTS">$1<ex>2</ex></ph> accounts
+      </message>
+      <message name="IDS_SETTINGS_ACCOUNT_MANAGER_PAGE_TITLE" desc="Title of Account Manager Settings page.">
+        My accounts
+      </message>
+      <message name="IDS_SETTINGS_ACCOUNT_MANAGER_PAGE_TITLE_V2" desc="Title of Account Manager Settings page.">
+        <ph name="NAME">$1<ex>John</ex></ph>'s accounts
+      </message>
+      <message name="IDS_SETTINGS_ACCOUNT_MANAGER_EDUCATION_ACCOUNT" desc="Status label which indicates that specified account is a school/EDU account.">
+        School account
+      </message>
+
+      <!-- Account Manager (OS settings) -->
+      <message name="IDS_SETTINGS_ACCOUNT_MANAGER_CHILD_DESCRIPTION_V2" desc="Description of the Account Manager Settings page for child users. Shown just below the title of the page.">
+        This page allows you to manage your signed-in Google Accounts. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_ACCOUNT_MANAGER_CHILD_FIRST_MESSAGE" desc="Description of the Account Manager Settings page for child users. Shown just below the link to learn more about account management.">
+        Bookmarks, passwords, and other browser data are synced with the primary account.
+      </message>
+      <message name="IDS_SETTINGS_ACCOUNT_MANAGER_CHILD_SECOND_MESSAGE" desc="Description of the Account Manager Settings page for child users. Shown just below the link to learn more about account management.">
+        Adding a school account enables easy sign-in to websites, extensions, and apps as a student while still operating under parental controls.
+      </message>
+      <message name="IDS_SETTINGS_ACCOUNT_MANAGER_LIST_HEADER_V2" desc="List header for additional account List in Account Manager Settings page.">
+        Additional accounts
+      </message>
+      <message name="IDS_SETTINGS_ACCOUNT_MANAGER_LIST_HEADER_CHILD" desc="List header for additional account List in Account Manager Settings page for Child user.">
+        School accounts
+      </message>
+      <message name="IDS_SETTINGS_ACCOUNT_MANAGER_LIST_DESCRIPTION" desc="List description for additional account List in Account Manager Settings page.">
+        You can add your additional accounts to access websites and apps.
+      </message>
+      <message name="IDS_SETTINGS_ACCOUNT_MANAGER_LIST_CHILD_DESCRIPTION" desc="List description for additional account List in Account Manager Settings page for Child users.">
+        <ph name="USER_EMAIL">$1<ex>user@example.com</ex></ph> is supervised by Family Link. You can add school accounts to access school resources with parental supervision.
+      </message>
+      <message name="IDS_SETTINGS_ACCOUNT_MANAGER_NOT_ALLOWED_IN_ARC_LABEL" desc="Per-account label on OS Account Manager page that is shown only if the account is not allowed in ARC / Android apps. Only shown for Enterprise accounts added as secondary accounts.">
+        Can't be used with Android apps
+      </message>
+      <message name="IDS_SETTINGS_ACCOUNT_MANAGER_STOP_USING_IN_ARC_BUTTON_LABEL" desc="Per-account button label on OS Account Manager page. Clicking this button makes account NOT available in ARC / Android apps.">
+        Stop using with Android apps
+      </message>
+      <message name="IDS_SETTINGS_ACCOUNT_MANAGER_REMOVE_ACCOUNT_LABEL" desc="Label of the Remove account button in Account Manager.">
+        Remove this account
+      </message>
+      <message name="IDS_SETTINGS_ACCOUNT_MANAGER_ADD_ACCOUNT_LABEL_V2" desc="Label of the Add account button in Account Manager.">
+        Add Google Account
+      </message>
+      <message name="IDS_SETTINGS_ACCOUNT_MANAGER_ADD_SCHOOL_ACCOUNT_LABEL" desc="Label of the button to add a school/EDU account in Account Manager.">
+        Add school account
+      </message>
+      <message name="IDS_SETTINGS_ACCOUNT_MANAGER_SECONDARY_ACCOUNTS_DISABLED_TEXT_V2" desc="Tooltip text for 'secondary accounts disabled' message in Settings page.">
+        Your administrator doesn’t allow additional Google Accounts.
+      </message>
+      <message name="IDS_SETTINGS_ACCOUNT_MANAGER_SECONDARY_ACCOUNTS_DISABLED_CHILD_TEXT" desc="Text for 'secondary accounts disabled' message for child accounts in Settings page.">
+        Addition of more Google Accounts is disabled
+      </message>
+      <message name="IDS_SETTINGS_ACCOUNT_MANAGER_SIGNED_OUT_ACCOUNT_PLACEHOLDER" desc="Placeholder text for the full name of a signed out account in Account Manager.">
+        Sign in again
+      </message>
+      <message name="IDS_SETTINGS_ACCOUNT_MANAGER_UNMIGRATED_ACCOUNT_PLACEHOLDER" desc="Placeholder text for the unmigrated account in Account Manager.">
+        Not updated yet
+      </message>
+      <message name="IDS_SETTINGS_ACCOUNT_MANAGER_MIGRATION_LABEL" desc="Label of the migration button on Account Manager Settings page.">
+        Update account
+      </message>
+      <message name="IDS_SETTINGS_ACCOUNT_MANAGER_REAUTHENTICATION_LABEL" desc="Label of the re-authentication button on Account Manager Settings page.">
+        Sign in
+      </message>
+      <message name="IDS_SETTINGS_ACCOUNT_MANAGER_MIGRATION_TOOLTIP" desc="Tooltip text (shows on hover or for screenreaders) for the migration button on Account Manager Settings page.">
+        Update account, <ph name="EMAIL">$1<ex>abcd@google.com</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_ACCOUNT_MANAGER_REAUTHENTICATION_TOOLTIP" desc="Tooltip text (shows on hover or for screenreaders) for the re-authentication button on Account Manager Settings page.">
+        Sign in, <ph name="EMAIL">$1<ex>abcd@google.com</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_ACCOUNT_MANAGER_MORE_ACTIONS_TOOLTIP" desc="Tooltip text (shows on hover or for screenreaders) for a button that shows a menu with more actions when clicked or tapped.">
+        More actions, <ph name="EMAIL">$1<ex>abcd@google.com</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_ACCOUNT_MANAGER_MANAGEMENT_STATUS" desc="Management status label for managed accounts.">
+        This account is managed by <ph name="BEGIN_LINK">&lt;a target="_blank"&gt;</ph><ph name="DOMAIN">$1<ex>google.com</ex></ph><ph name="END_LINK">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_ACCOUNT_MANAGER_MANAGEMENT_STATUS_CHILD" desc="Management status label for child accounts.">
+        Managed by Family Link
+      </message>
+
+      <!-- Parental Controls -->
+      <message name="IDS_SETTINGS_PARENTAL_CONTROLS_PAGE_TITLE" desc="Name of the settings page which manages ChromeOS's parental controls.">
+        Parental controls
+      </message>
+      <message name="IDS_SETTINGS_PARENTAL_CONTROLS_PAGE_SET_UP_LABEL" desc="Label/description of the settings page which manages ChromeOS's parental controls.">
+        Set website restrictions &amp; screen time limits with Family Link
+      </message>
+      <message name="IDS_SETTINGS_PARENTAL_CONTROLS_PAGE_CONNECT_TO_INTERNET_LABEL" desc="Label/description shown when the Parental control setup can't be launched because there is no Internet Connection.">
+        Connect to the internet to set up parental controls
+      </message>
+      <message name="IDS_SETTINGS_PARENTAL_CONTROLS_PAGE_VIEW_SETTINGS_LABEL" desc="Label/description of the settings page which manages ChromeOS's parental controls.">
+        Open the Family Link app to see your supervision settings
+      </message>
+      <message name="IDS_SETTINGS_PARENTAL_CONTROLS_SET_UP_BUTTON_LABEL" desc="Label/description of the button which launches page which enables ChromeOS's parental controls.">
+        Set up
+      </message>
+      <message name="IDS_SETTINGS_PARENTAL_CONTROLS_SET_UP_BUTTON_ROLE" desc="Role description of the button which launches page which enables ChromeOS's parental controls. Spoken aloud by screen readers when the Set Up button is focused">
+        Set up button
+      </message>
+
+      <!-- Graduation -->
+      <message name="IDS_SETTINGS_GRADUATION_SECTION_TITLE" desc="Header for the settings section that links the user to the Content transfer app.">
+        Content transfer
+      </message>
+      <message name="IDS_SETTINGS_GRADUATION_ROW_TITLE" desc="Title for the settings row that takes users to the Content transfer app.">
+        Content transfer tool
+      </message>
+      <message name="IDS_SETTINGS_GRADUATION_ROW_SUBTITLE" desc="Description indicating that the Content transfer app allows you to move data between personal and EDU accounts.">
+        Move your school account data to your personal account
+      </message>
+
+      <!-- Users Page (OS Settings) -->
+      <message name="IDS_SETTINGS_USERS_MODIFIED_BY_OWNER_LABEL" desc="Label saying settings may only be modified by the device owner.">
+        These settings may only be modified by the owner:
+      </message>
+      <message name="IDS_SETTINGS_USERS_MANAGED_LABEL" desc="Label saying settings is managed by enterprise and thus can't be modified.">
+        These settings are controlled by enterprise policy. Please contact your administrator for more information.
+      </message>
+      <message name="IDS_OS_SETTINGS_USERS_GUEST_BROWSING_LABEL" desc="Label for the guest browsing setting.">
+        Guest browsing
+      </message>
+      <message name="IDS_SETTINGS_USERS_SHOW_ON_SIGNIN_LABEL" desc="Label for the 'show users on sign-in screen' setting.">
+        Show usernames and photos on the sign-in screen
+      </message>
+      <message name="IDS_OS_SETTINGS_USERS_RESTRICT_SIGNIN_LABEL" desc="Label for the setting for restricting sign in to specific users.">
+        Limit who can sign in
+      </message>
+      <message name="IDS_OS_SETTINGS_USERS_RESTRICT_SIGNIN_DESCRIPTION" desc="Description for the setting for restricting sign in to specific users.">
+        You can limit sign-in to certain users. This removes the "Add person" option on the sign-in screen. You can also remove current users.
+      </message>
+      <message name="IDS_SETTINGS_USERS_DEVICE_OWNER_LABEL" desc="Label for a user who is the device owner.">
+        <ph name="USER_NAME">$1<ex>John Smith</ex></ph> (owner)
+      </message>
+      <message name="IDS_SETTINGS_USERS_REMOVE_USER_TOOLTIP" desc="Tooltip for the button that removes a user from the list of restricted sign in users.">
+        Remove <ph name="USER_NAME">$1<ex>John Smith</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_USERS_USER_REMOVED_MESSAGE" desc="Message announced by screen reader after removal of the user from the list of restricted sign in users.">
+        <ph name="USER_NAME_OR_EMAIL">$1<ex>John Smith</ex></ph> removed
+      </message>
+      <message name="IDS_SETTINGS_USERS_ADD_USERS" desc="Label the dialog for adding users.">
+        Add user
+      </message>
+      <message name="IDS_SETTINGS_USERS_USER_ADDED_MESSAGE" desc="Message announced by screen reader after addition of the user to the list of restricted sign in users.">
+        <ph name="USER_EMAIL">$1<ex>user@gmail.com</ex></ph> added
+      </message>
+      <message name="IDS_SETTINGS_USERS_ADD_USERS_EMAIL" desc="Label for the email input field for adding users.">
+        Email address
+      </message>
+      <message name="IDS_SETTINGS_USER_EXISTS_ERROR" desc="Error message for attempting to add a user that already exists">
+        This user already exists
+      </message>
+
+      <!-- Lock Screen Page (OS settings) -->
+      <message name="IDS_SETTINGS_PEOPLE_ENABLE_SCREENLOCK" desc="The text on the checkbox to enable screenlocker for current user.  Lock will happen in the device goes into sleep mode from being idle, or when laptop lid or detachable cover is closed">
+        Lock when sleeping or lid is closed
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_PIN_OR_PASSWORD" desc="The account password or a custom PIN can be used to unlock the device.">
+        PIN or password
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_PIN_ONLY" desc="The PIN can be used to unlock the device.">
+        PIN only
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_PASSWORD_OR_FINGERPRINT" desc="The account password or a fingerprint can be used to unlock the device.">
+        Password or fingerprint
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_PIN_OR_FINGERPRINT" desc="The PIN or a fingerprint can be used to unlock the device.">
+        PIN or fingerprint
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_PASSWORD_OR_PIN_OR_FINGERPRINT" desc="The account password, PIN or a fingerprint can be used to unlock the device.">
+        Password, PIN or fingerprint
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_NO_AUTH" desc="The account has no authentication factor.">
+        No authentication
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_PIN_AUTOSUBMIT" desc="Option to enable PIN auto-submit">
+        Unlock automatically once PIN is entered
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_PIN_MORE_BUTTON_ARIA_LABEL" desc="ARIA (accessibility) label describing the three-dots button that shows menu with extra actions for PIN authentication factor.">
+        More actions for PIN
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_PIN_AUTOSUBMIT_PROMPT" desc="Text above a PIN input field that tells the user they need to submit their PIN to enable auto submit.">
+        Confirm PIN to turn on automatic unlock
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_PIN_AUTOSUBMIT_ERROR_PIN_TOO_LONG" desc="Error shown to users when trying to enable PIN auto submit telling them that their PIN is too long for this feature.">
+        PIN must be 12 digits or less to use automatic unlock
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_PIN_AUTOSUBMIT_ERROR_PIN_INCORRECT" desc="Error shown to users when trying to enable PIN auto submit telling them that their PIN is incorrect.">
+        Incorrect PIN
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_FINGERPRINT_SETUP_BUTTON" desc="Text on the lock screen button which opens up the fingerprint subpage.">
+        Set up
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_EDIT_FINGERPRINTS" desc="Text on the lock screen which opens up the fingerprint subpage.">
+        Edit Fingerprints
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_EDIT_FINGERPRINTS_DESCRIPTION" desc="Secondary text on the lock screen which opens up the fingerprint subpage.">
+        Set up a faster way to unlock your device
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_PASSWORD_ONLY" desc="Only the account password can be used to unlock the device.">
+        Password only
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_CHANGE_PIN_BUTTON" desc="Button that the user can click to change an existing already-active PIN.">
+        Change PIN
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_NONE" desc="Text on the people page which notifies the user that the device will not show lock screen or prompt for auth after waking from sleep.">
+        Sign in automatically
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_NEW_FINGERPRINT_DEFAULT_NAME" desc="The default name (plus a number for a newly added fingerprint).">
+        Finger <ph name="NEW_FINGER_NUMBER">$1<ex>1</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_DELETE_FINGERPRINT_ARIA_LABEL" desc="Aria label for the button in the fingerprint subpage that deletes a registered fingerprint. Only visible by screen reader software.">
+        delete [<ph name="FINGERPRINT_NAME">$1<ex>Fingerprint 1</ex></ph>]
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_CHANGE_PASSWORD_BUTTON" desc="Button that is used to change a password.">
+        Change password
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_OPTIONS_LOGIN_LOCK" desc="Text on the lock screen which is the subheader for the screen locking options.">
+        Lock screen from sleep mode
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_REMOVE_PIN_BUTTON" desc="Label of the button that removes the user's PIN.">
+        Remove
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_PASSWORD_LABEL" desc="Label for the password authentication factor on the lock screen page.">
+        Password
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_PASSWORD_DESCRIPTION" desc="Description of the password authentication factor on the lock screen page.">
+        Set up a <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> password
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_SWITCH_LOCAL_PASSWORD_DESCRIPTION" desc="Description of the password authentication factor on the lock screen page.">
+        Currently using Google Account password. You can set up a <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> password to make it easier to sign in.
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_PIN_LABEL" desc="Label for PIN authentication factor on the lock screen page.">
+        PIN
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_SETUP_PASSWORD_BUTTON" desc="Button that is used to setup a password when the user does not have a password yet.">
+        Set up
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_SETUP_PIN_BUTTON" desc="Button that is used to setup a new PIN when the user does not have a PIN yet.">
+        Set up
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_SIGN_IN_OPTIONS" desc="Heading for the list of sign-in factor options on the lock screen page.">
+        Sign-in options
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_TITLE_LOCK" desc="Text on the people page which opens up the quick unlock subpage and the title of the quick unlock subpage.">
+        Lock screen
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_PASSWORD_PROMPT_ENTER_PASSWORD_LOCK" desc="Text above a password input field that tells the user they need to submit their password to configure these settings.">
+        Enter your password to configure screen lock
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_PASSWORD_PROMPT_ENTER_PASSWORD_LOGIN_LOCK" desc="Text above a password input field that tells the user they need to submit their password to configure security and sign-in settings.">
+        Enter your password to configure security and sign-in
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_RECOVERY_TOGGLE_LABEL" desc="Label of toggle to enable or disable cryptohome recovery.">
+        Local data recovery
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_RECOVERY_TOGGLE_SUB_LABEL" desc="Sub-label of toggle to enable or disable cryptohome recovery.">
+        Local data can be restored if you forget your PIN or password
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_RECOVERY_DISABLE_DIALOG_TITLE" desc="Title for the disable local data recovery dialog">
+        Disable local data recovery?
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_RECOVERY_DISABLE_DIALOG_MESSAGE" desc="Text for the notification informing the user that local data recovery will be disabled">
+        You will not be able to recover local data if you forget your password or PIN.
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_RECOVERY_NOT_SUPPORTED_MESSAGE" desc="Text for the notification informing the user that local data recovery not supported">
+        Local data recovery is currently not supported.
+      </message>
+
+      <!-- Kerberos section (OS settings) -->
+      <message name="IDS_OS_SETTINGS_KERBEROS" desc="Name of a section in the OS settings page." meaning="Manage Kerberos authetication tickets.">
+        Kerberos
+      </message>
+
+      <!-- Kerberos Add Accounts Dialog Page (OS settings) -->
+      <message name="IDS_SETTINGS_KERBEROS_ACCOUNTS_ADVANCED_CONFIG_LABEL" desc="Label of the button in 'Add a Kerberos ticket' dialog to get to the Advanced configuration dialog.">
+        Advanced
+      </message>
+      <message name="IDS_SETTINGS_KERBEROS_ADVANCED_CONFIG_TITLE" desc="In Kerberos Advanced Configuration dialog, the title of the dialog.">
+        Configure Kerberos
+      </message>
+      <message name="IDS_SETTINGS_KERBEROS_ADVANCED_CONFIG_DESC" desc="In Kerberos Advanced Configuration dialog, the description of the dialog (below the title).">
+        Edit the configuration file
+      </message>
+      <message name="IDS_SETTINGS_ADD_KERBEROS_ACCOUNT_REMEMBER_PASSWORD" desc="Label of the checkbox to remember the password in the 'Add a Kerberos ticket' dialog.">
+        Remember password
+      </message>
+      <message name="IDS_SETTINGS_KERBEROS_PASSWORD" desc="Title for the input that lets users specify their password for a Kerberos ticket.">
+        Password
+      </message>
+      <message name="IDS_SETTINGS_KERBEROS_USERNAME" desc="Title for the input that lets users specify their username for a Kerberos ticket.">
+        Kerberos username
+      </message>
+      <message name="IDS_SETTINGS_ADD_KERBEROS_ACCOUNT_DESCRIPTION" desc="Description of the 'Add a Kerberos ticket' dialog. Shown just below the title of the dialog.">
+        To automatically refresh a ticket, check “Remember password.” Your password will be stored on your device only.
+      </message>
+      <message name="IDS_SETTINGS_KERBEROS_ERROR_NETWORK_PROBLEM" desc="Error message displayed in the 'Add a Kerberos ticket' dialog when the user has no network connection or enters a bad realm.">
+        Network problem or bad realm
+      </message>
+      <message name="IDS_SETTINGS_KERBEROS_ERROR_USERNAME_INVALID" desc="Error message displayed in the 'Add a Kerberos ticket' dialog when the user enters a badly formatted username.">
+        Username invalid
+      </message>
+      <message name="IDS_SETTINGS_KERBEROS_ERROR_USERNAME_UNKNOWN" desc="Error message displayed in the 'Add a Kerberos ticket' dialog when the user enters a username that is not known to the Kerberos realm.">
+        Username not known to server
+      </message>
+      <message name="IDS_SETTINGS_KERBEROS_ERROR_DUPLICATE_PRINCIPAL_NAME" desc="Error message displayed in the 'Add a Kerberos ticket' dialog when the user enters a username for which there is already a ticket.">
+        A ticket with this username already exists
+      </message>
+      <message name="IDS_SETTINGS_KERBEROS_ERROR_CONTACTING_SERVER" desc="Error message displayed in the 'Add a Kerberos ticket' dialog when the OS is not able to contact the server for the given realm.">
+        Contacting server for realm failed
+      </message>
+      <message name="IDS_SETTINGS_KERBEROS_ERROR_PASSWORD_INVALID" desc="Error message displayed in the 'Add a Kerberos ticket' dialog when the user enters the wrong password.">
+        Password invalid
+      </message>
+      <message name="IDS_SETTINGS_KERBEROS_ERROR_PASSWORD_EXPIRED" desc="Error message displayed in the 'Add a Kerberos ticket' dialog when the user's password is expired.">
+        Password expired
+      </message>
+      <message name="IDS_SETTINGS_KERBEROS_ERROR_KDC_ENC_TYPE" desc="Error message displayed in the 'Add a Kerberos ticket' dialog when the KDC does not support the encryption types specified in the Kerberos configuration (KDC = Key Distribution Center, part of Kerberos infrastructure).">
+        KDC does not support encryption type
+      </message>
+      <message name="IDS_SETTINGS_KERBEROS_ERROR_GENERAL" desc="Fallback error message displayed in the 'Add a Kerberos ticket' dialog.">
+        Couldn't get Kerberos ticket. Try again, or contact your organization's device admin. (Error code <ph name="ERROR_CODE">$1<ex>123</ex></ph>).
+      </message>
+      <message name="IDS_SETTINGS_KERBEROS_CONFIG_ERROR_SECTION_NESTED_IN_GROUP" desc="Error message displayed in the Kerberos configuration dialog when the user tries to save a configuration that has a section (some text in angular braces) inside a group (some text in curly braces), e.g. 'someOption = { [someSection] }'. See https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html.">
+        Section nested in group: <ph name="ERROR_LINE">$1<ex>[realms] (inside a block of curly braces '{ ... })</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_KERBEROS_CONFIG_ERROR_SECTION_SYNTAX" desc="Error message displayed in the Kerberos configuration dialog when the user tries to save a configuration that contains a malformed section, e.g. '[someSection'. Sections must have opening and closing angular braces. See https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html.">
+        Section syntax error: <ph name="ERROR_LINE">$1<ex>[realms</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_KERBEROS_CONFIG_ERROR_EXPECTED_OPENING_CURLY_BRACE" desc="Error message displayed in the Kerberos configuration dialog when the user tries to save a configuration that is missing a curly brace somewhere. See https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html.">
+        Expected opening curly brace: <ph name="ERROR_LINE">$1<ex>ticket_lifetime = 1d (in the line after 'EXAMPLE.COM = )'</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_KERBEROS_CONFIG_ERROR_EXTRA_CURLY_BRACE" desc="Error message displayed in the Kerberos configuration dialog when the user tries to save a configuration that has a closing curly brace '}' that cannot be matched with an opening curly brace '{'. See https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html.">
+        Extra curly brace: <ph name="ERROR_LINE">$1<ex>} (without having a corresponding opening curly brace '{')</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_KERBEROS_CONFIG_ERROR_RELATION_SYNTAX_ERROR" desc="Error message displayed in the Kerberos configuration dialog when the user tries to save a configuration that contains a malformed relation. A relation is 'key = value'. A malformed relation would be e.g. 'key : value' instead of 'key = value'. See https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html.">
+        Relation syntax error: <ph name="ERROR_LINE">$1<ex>ticket_lifetime : 1d</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_KERBEROS_CONFIG_ERROR_KEY_NOT_SUPPORTED" desc="Error message displayed in the Kerberos configuration dialog when the user tries to save a configuration that contains a configuration option that we do not support, e.g. '[libdefaults] ccache_type = 1'. See https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html.">
+        Configuration option not supported: <ph name="ERROR_LINE">$1<ex>ccache_type = 1</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_KERBEROS_CONFIG_ERROR_SECTION_NOT_SUPPORTED" desc="Error message displayed in the Kerberos configuration dialog when the user tries to save a configuration that contains a section that we do not support, e.g. '[appdefaults]'. See https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html.">
+        Section not supported: <ph name="ERROR_LINE">$1<ex>[appdefaults]</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_KERBEROS_CONFIG_ERROR_KRB5_FAILED_TO_PARSE" desc="Error message displayed in the Kerberos configuration dialog when the user tries to save a configuration that cannot be parsed by the underlying Kerberos library for unknown reasons. See https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html.">
+        Failed to parse configuration
+      </message>
+      <message name="IDS_SETTINGS_KERBEROS_CONFIG_ERROR_TOO_MANY_NESTED_GROUPS" desc="Error message displayed in the Kerberos configuration dialog when the user tries to save a configuration that contains too many nested groups. See https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html.">
+        Too many nested groups: <ph name="ERROR_LINE">$1<ex>A{ (after many opening curly braces that haven't been closed yet)</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_KERBEROS_CONFIG_ERROR_LINE_TOO_LONG" desc="Error message displayed in the Kerberos configuration dialog when the user tries to save a configuration that contains a line that is too long. See https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html.">
+        Line is too long: <ph name="ERROR_LINE">$1<ex># A very long comment line...</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_ADD_KERBEROS_ACCOUNT_REFRESH_BUTTON_LABEL" desc="Label of the action button on the 'Refresh a Kerberos tickets' dialog.">
+        Refresh
+      </message>
+      <message name="IDS_SETTINGS_ADD_KERBEROS_ACCOUNT" desc="Title of the 'Add a Kerberos ticket' dialog.">
+        Add a Kerberos ticket
+      </message>
+      <message name="IDS_SETTINGS_REFRESH_KERBEROS_ACCOUNT" desc="Title of the 'Refresh a Kerberos ticket' dialog.">
+        Refresh a Kerberos ticket
+      </message>
+
+      <!-- Kerberos Accounts Page (OS settings) -->
+      <message name="IDS_SETTINGS_KERBEROS_ACCOUNTS_ADD_ACCOUNT_LABEL" desc="Label of the 'Add a ticket' button on 'Kerberos tickets' Settings page.">
+        Add a ticket
+      </message>
+      <message name="IDS_SETTINGS_KERBEROS_ACCOUNTS_REFRESH_NOW_LABEL" desc="Label of the 'Refresh now' button on 'Kerberos tickets' Settings page.">
+        Refresh now
+      </message>
+      <message name="IDS_SETTINGS_KERBEROS_ACCOUNTS_SET_AS_ACTIVE_ACCOUNT_LABEL" desc="Label of the 'Set as ticket ticket' button on 'Kerberos tickets' Settings page.">
+        Set as active ticket
+      </message>
+      <message name="IDS_SETTINGS_KERBEROS_ACCOUNTS_SIGNED_OUT" desc="Text displayed if a Kerberos ticket is in signed-out state on 'Kerberos tickets' Settings page.">
+        Expired
+      </message>
+      <message name="IDS_SETTINGS_KERBEROS_ACCOUNTS_LIST_HEADER" desc="List header for the ticket list on 'Kerberos tickets' Settings page.">
+        Tickets
+      </message>
+      <message name="IDS_SETTINGS_KERBEROS_ACCOUNTS_REMOVE_ACCOUNT_LABEL" desc="Label of the 'Remove from this device' button on 'Kerberos tickets' Settings page.">
+        Remove from this device
+      </message>
+      <message name="IDS_SETTINGS_KERBEROS_ACCOUNTS_REAUTHENTICATION_LABEL" desc="Label of the re-authentication button on 'Kerberos tickets' Settings page.">
+        Refresh
+      </message>
+      <message name="IDS_SETTINGS_KERBEROS_ACCOUNTS_TICKET_ACTIVE" desc="Text displayed if a Kerberos ticket is selected to be the currently active ticket on 'Kerberos tickets' Settings page.">
+        Active
+      </message>
+      <message name="IDS_SETTINGS_KERBEROS_ACCOUNTS_ACCOUNT_REMOVED_TIP" desc="Tip shown when a Kerberos ticket was removed on 'Kerberos tickets' Settings page.">
+        Ticket removed
+      </message>
+      <message name="IDS_SETTINGS_KERBEROS_ACCOUNTS_ACCOUNT_REFRESHED_TIP" desc="Tip shown when a Kerberos ticket was refreshed on 'Kerberos tickets' Settings page.">
+        Ticket refreshed
+      </message>
+      <message name="IDS_SETTINGS_KERBEROS_ACCOUNTS_SIGNED_IN" desc="Text displayed if a Kerberos ticket is in signed-in state on 'Kerberos tickets' Settings page.">
+        Valid for <ph name="TICKET_TIME_LEFT">$1<ex>7 hours 12 minutes</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_KERBEROS_ACCOUNTS_DESCRIPTION" desc="Description of the 'Kerberos tickets' Settings page. Shown just below the title of the page.">
+        Choose a ticket to use for authentication. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$1<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_KERBEROS_ACCOUNTS_SUBMENU_LABEL" desc="Label of 'Kerberos tickets' submenu in Settings page.">
+        Kerberos tickets
+      </message>
+      <message name="IDS_SETTINGS_KERBEROS_ACCOUNTS_PAGE_TITLE" desc="Title of 'Kerberos tickets' Settings page.">
+        Kerberos tickets
+      </message>
+
+      <!-- Fingerprint Page (OS settings) -->
+      <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_ADD_FINGERPRINT_BUTTON" desc="Button that is used to add a new fingerprint.">
+        Add Fingerprint
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_REGISTERED_FINGERPRINTS_LABEL" desc="Text above fingerprint list that tells users their registered fingerprints.">
+        Saved fingerprints
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_FINGERPRINT_LESS_SECURE" desc="Text telling users that fingerprints might be less secure than strong PINs or passwords.">
+        Note: Your fingerprint may be less secure than a strong password or PIN.
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_FINGERPRINT_NOTICE" desc="Tooltip text telling users that fingerprint data never leaves their device.">
+        Your fingerprint data is stored securely and never leaves your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+      </message>
+
+      <!-- Setup Pin dialog (OS settings) -->
+      <message name="IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_CHOOSE_PIN_TITLE" desc="Message shown below the title that tells the user to enter the initial PIN.">
+        Enter your PIN
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_CONFIRM_PIN_TITLE" desc="Message shown below the title that tells the user to confirm their initial PIN entry.">
+        Confirm your PIN
+      </message>
+
+      <!-- Set local password dialog -->
+      <message name="IDS_OS_SETTINGS_PEOPLE_SET_LOCAL_PASSWORD_DIALOG_TITLE" desc="Title of the dialog that lets the user change their local password.">
+        Set device password
+      </message>
+      <message name="IDS_OS_SETTINGS_PEOPLE_SET_LOCAL_PASSWORD_DIALOG_INTERNAL_ERROR" desc="Error message when setting a local password doesn't work for undetermined reasons.">
+        Internal error
+      </message>
+
+      <!-- Setup fingerprint dialog (OS settings) -->
+      <message name="IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_TITLE" desc="Title of the add fingerprint dialog popup.">
+        Set up your fingerprint
+      </message>
+      <message name="IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_ADD_ANOTHER_BUTTON" desc="Text on the button in the fingerprint setup dialog which allows users to add another fingerprint once a fingerprint has been setup.">
+        Add another
+      </message>
+      <message name="IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_READY" desc="Text in the add fingerprint dialog that confirms user's fingerprint scan was successful.">
+        Fingerprint added.
+      </message>
+      <message name="IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_LIFT_FINGER" desc="Warning text in the add fingerprint dialog to tell users to lift their finger and touch the sensor again.">
+        Lift then try again.
+      </message>
+      <message name="IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_TRY_AGAIN" desc="Warning text in the add fingerprint dialog to tell users to try again.">
+        Try again.
+      </message>
+      <message name="IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_FINGER_IMMOBILE" desc="Warning text in the add fingerprint dialog to tell users they should move their finger slightly to capture different parts of the fingerprint.">
+        Move slightly to capture a different part of the fingerprint.
+      </message>
+
       <part file="ash_settings_search_tag_strings.grdp" />
     </messages>
   </release>

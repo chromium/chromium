@@ -46,6 +46,7 @@ static_library("test_support") {
     "//chrome/browser/ui/webui/ash/settings",
     "//chrome/browser/ui/webui/ash/settings/constants",
     "//chromeos/ash/components/osauth/impl",
+    "//chromeos/ash/experiences/settings_ui/resources:strings",
     "//content/public/browser",
     "//ui/base",
   ]

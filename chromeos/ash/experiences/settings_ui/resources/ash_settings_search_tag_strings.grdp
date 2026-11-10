@@ -1143,4 +1143,50 @@
   <message name="IDS_OS_SETTINGS_TAG_MULTIDEVICE_WIFI_SYNC" desc="Text for search result item which, when clicked, navigates the user to Wi-Fi Sync settings, with a toggle to enable/disable the feature. Wi-Fi Sync V2 allows user to sync network configurations between ChromeOS devices and a connected Android phone">
     Wi-Fi Sync
   </message>
+
+  <!-- People section. -->
+  <message name="IDS_OS_SETTINGS_TAG_PEOPLE" desc="Text for search result item which, when clicked, navigates the user to people settings.">
+    People
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_PEOPLE_V2" desc="Text for search result item which, when clicked, navigates the user to people settings.">
+    Accounts
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_PEOPLE_ACCOUNTS" desc="Text for search result item which, when clicked, navigates the user to accounts settings.">
+    My accounts
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_PEOPLE_ACCOUNTS_ADD_V2" desc="Text for search result item which, when clicked, navigates the user to accounts settings, with a button to add a new account.">
+    Add Google Account
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_PEOPLE_ACCOUNTS_REMOVE" desc="Text for search result item which, when clicked, navigates the user to accounts settings, with an option to remove an account.">
+    Remove account
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_PARENTAL_CONTROLS" desc="Text for search result item which, when clicked, navigates the user to parental control settings. Alternate phrase for: 'Child accounts', 'Family Link'">
+    Parental controls
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_PARENTAL_CONTROLS_ALT1" desc="Text for search result item which, when clicked, navigates the user to parental control settings. Alternate phrase for: 'Parental controls', 'Family Link'">
+    Child accounts
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_PARENTAL_CONTROLS_ALT2" desc="Text for search result item which, when clicked, navigates the user to parental control settings. Alternate phrase for: 'Parental controls', 'Child accounts'">
+    Family Link
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_GRADUATION" desc="Text for search result item which, when clicked, navigates to the setting that opens the Content transfer app.">
+    Content transfer
+  </message>
+
+  <!-- Kerberos section. -->
+  <message name="IDS_OS_SETTINGS_TAG_KERBEROS_SECTION" desc="Text for search result item which, when clicked, navigates the user to Kerberos (authentication mechanism) settings section.">
+    Kerberos
+  </message>
+   <message name="IDS_OS_SETTINGS_TAG_KERBEROS" desc="Text for search result item which, when clicked, navigates the user to Kerberos (authentication mechanism) account settings.">
+    Kerberos settings
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_KERBEROS_ADD" desc="Text for search result item which, when clicked, navigates the user to Kerberos (authentication mechanism) account settings, with an option to add a new ticket.">
+    Add Kerberos ticket
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_KERBEROS_REMOVE" desc="Text for search result item which, when clicked, navigates the user to Kerberos (authentication mechanism) account settings, with an option to remove an existing ticket.">
+    Remove Kerberos ticket
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_KERBEROS_ACTIVE" desc="Text for search result item which, when clicked, navigates the user to Kerberos (authentication mechanism) account settings, with an option to set the active ticket.">
+    Set active Kerberos ticket
+  </message>
 </grit-part>

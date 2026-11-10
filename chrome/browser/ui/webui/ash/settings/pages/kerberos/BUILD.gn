@@ -22,11 +22,11 @@ static_library("kerberos") {
 
   deps = [
     "//ash/constants",
-    "//chrome/app:generated_resources",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/common",
     "//chrome/common:constants",
+    "//chromeos/ash/experiences/settings_ui/resources:strings",
     "//components/prefs",
     "//content/public/browser",
     "//skia:skia_core_public_headers",
