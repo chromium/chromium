@@ -70,8 +70,13 @@ class VideoSender : public FrameSender::Client {
   virtual double GetLossiness() const;
   virtual int GetFramesInserted() const;
   // Frames dropped by the sender before or after encoding, e.g. due to network
-  // or receiver backpressure.
+  // or receiver backpressure. This is the sum of the two methods below.
   virtual int GetFramesDropped() const;
+  // Frames dropped before encoding, because too many frames or too much media
+  // duration would be in flight.
+  virtual int GetFramesDroppedBeforeEncoding() const;
+  // Encoded frames that the frame sender refused to enqueue.
+  virtual int GetFramesDroppedAfterEncoding() const;
   // Frames dropped by the encoder itself, e.g. due to rate control.
   virtual int GetFramesDroppedByEncoder() const;
 
@@ -156,7 +161,8 @@ class VideoSender : public FrameSender::Client {
   // Used to calculate the percentage of lost frames. We currently report this
   // metric as the number of frames dropped in the entire session.
   int number_of_frames_inserted_ = 0;
-  int number_of_frames_dropped_ = 0;
+  int number_of_frames_dropped_before_encoding_ = 0;
+  int number_of_frames_dropped_after_encoding_ = 0;
 
   // Used to report the session-average encoder utilization and the percentage
   // of encoded frames with utilization above 100%. Hardware and software

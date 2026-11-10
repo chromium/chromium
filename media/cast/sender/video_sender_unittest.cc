@@ -664,6 +664,8 @@ TEST_F(VideoSenderTest, EnqueueFrameDropCountsAsDroppedFrame) {
 
   EXPECT_EQ(video_sender().GetFramesInserted(), 1);
   EXPECT_EQ(video_sender().GetFramesDropped(), 1);
+  EXPECT_EQ(video_sender().GetFramesDroppedBeforeEncoding(), 0);
+  EXPECT_EQ(video_sender().GetFramesDroppedAfterEncoding(), 1);
   histogram_tester.ExpectUniqueSample(
       "CastStreaming.Sender.Video.FrameDropped",
       CastStreamingFrameDropReason::kInvalidReferencedFrameId, 1);

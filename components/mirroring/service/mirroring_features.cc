@@ -4,8 +4,9 @@
 
 #include "components/mirroring/service/mirroring_features.h"
 
-namespace mirroring {
-namespace features {
+#include <array>
+
+namespace mirroring::features {
 // This flag enables HiDPI capture during Cast Streaming mirroring sessions.
 //
 // This feature is enabled by the Chrome command line flag
@@ -25,5 +26,25 @@ BASE_FEATURE(kCastMirroringNativeNV12, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kCastStreamingGradualBandwidthBackoff,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-}  // namespace features
-}  // namespace mirroring
+constexpr auto kCongestionSignalOptions =
+    std::to_array<base::FeatureParam<CongestionSignal>::Option>({
+        {CongestionSignal::kBeforeOrAfterEncoding, "before_or_after_encoding"},
+        {CongestionSignal::kBeforeEncoding, "before_encoding"},
+        {CongestionSignal::kAfterEncoding, "after_encoding"},
+    });
+const base::FeatureParam<CongestionSignal> kCastStreamingCongestionSignal{
+    &kCastStreamingGradualBandwidthBackoff, "congestion_signal",
+    CongestionSignal::kBeforeOrAfterEncoding, kCongestionSignalOptions};
+
+const base::FeatureParam<double> kCastStreamingGoodNetworkCitizenFactor{
+    &kCastStreamingGradualBandwidthBackoff, "good_network_citizen_factor", 0.8};
+const base::FeatureParam<double> kCastStreamingMinBackoffFactor{
+    &kCastStreamingGradualBandwidthBackoff, "min_backoff_factor", 0.5};
+const base::FeatureParam<double> kCastStreamingMaxBackoffFactor{
+    &kCastStreamingGradualBandwidthBackoff, "max_backoff_factor", 0.85};
+const base::FeatureParam<double> kCastStreamingFastRecoveryIncrease{
+    &kCastStreamingGradualBandwidthBackoff, "fast_recovery_increase", 1.5};
+const base::FeatureParam<double> kCastStreamingConservativeIncrease{
+    &kCastStreamingGradualBandwidthBackoff, "conservative_increase", 1.1};
+
+}  // namespace mirroring::features

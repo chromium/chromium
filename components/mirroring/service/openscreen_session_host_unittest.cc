@@ -166,11 +166,24 @@ class FakeVideoSender : public media::cast::VideoSender {
   FakeVideoSender() = default;
   ~FakeVideoSender() override = default;
 
-  int GetFramesDropped() const override { return frames_dropped_; }
-  void set_frames_dropped(int count) { frames_dropped_ = count; }
+  int GetFramesDroppedBeforeEncoding() const override {
+    return frames_dropped_before_encoding_;
+  }
+  int GetFramesDroppedAfterEncoding() const override {
+    return frames_dropped_after_encoding_;
+  }
+
+  // Sets the number of frames dropped before encoding.
+  void set_frames_dropped(int count) {
+    frames_dropped_before_encoding_ = count;
+  }
+  void set_frames_dropped_after_encoding(int count) {
+    frames_dropped_after_encoding_ = count;
+  }
 
  private:
-  int frames_dropped_ = 0;
+  int frames_dropped_before_encoding_ = 0;
+  int frames_dropped_after_encoding_ = 0;
 };
 
 // Returns the expected usable bandwidth before any estimate is available. This
@@ -1163,6 +1176,133 @@ TEST_F(OpenscreenSessionHostTest,
   UpdateBandwidthEstimate(100000000);
   EXPECT_EQ(static_cast<uint32_t>(snapped_bandwidth * 1.1),
             GetVideoNetworkBandwidth());
+
+  StopSession();
+}
+
+TEST_F(OpenscreenSessionHostTest, BacksOffOnFrameDropsAfterEncodingByDefault) {
+  CreateSession(SessionType::VIDEO_ONLY);
+  StartSession();
+
+  auto fake_video_sender = std::make_unique<FakeVideoSender>();
+  FakeVideoSender* fake_sender_ptr = fake_video_sender.get();
+  SetVideoSender(std::move(fake_video_sender));
+
+  const uint32_t initial_bandwidth = GetInitialBandwidth();
+  fake_sender_ptr->set_frames_dropped_after_encoding(1);
+  UpdateBandwidthEstimate(1000);
+  EXPECT_EQ(initial_bandwidth / 2, GetVideoNetworkBandwidth());
+
+  StopSession();
+}
+
+TEST_F(OpenscreenSessionHostTest,
+       OnlyBacksOffOnFrameDropsBeforeEncodingWhenConfigured) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kCastStreamingGradualBandwidthBackoff,
+      {{"congestion_signal", "before_encoding"}});
+  CreateSession(SessionType::VIDEO_ONLY);
+  StartSession();
+
+  auto fake_video_sender = std::make_unique<FakeVideoSender>();
+  FakeVideoSender* fake_sender_ptr = fake_video_sender.get();
+  SetVideoSender(std::move(fake_video_sender));
+
+  const uint32_t initial_bandwidth = GetInitialBandwidth();
+  fake_sender_ptr->set_frames_dropped_after_encoding(1);
+  UpdateBandwidthEstimate(1000);
+  EXPECT_EQ(initial_bandwidth, GetVideoNetworkBandwidth());
+
+  fake_sender_ptr->set_frames_dropped(1);
+  UpdateBandwidthEstimate(1000);
+  EXPECT_EQ(initial_bandwidth / 2, GetVideoNetworkBandwidth());
+
+  StopSession();
+}
+
+TEST_F(OpenscreenSessionHostTest,
+       OnlyBacksOffOnFrameDropsAfterEncodingWhenConfigured) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kCastStreamingGradualBandwidthBackoff,
+      {{"congestion_signal", "after_encoding"}});
+  CreateSession(SessionType::VIDEO_ONLY);
+  StartSession();
+
+  auto fake_video_sender = std::make_unique<FakeVideoSender>();
+  FakeVideoSender* fake_sender_ptr = fake_video_sender.get();
+  SetVideoSender(std::move(fake_video_sender));
+
+  const uint32_t initial_bandwidth = GetInitialBandwidth();
+  fake_sender_ptr->set_frames_dropped(1);
+  UpdateBandwidthEstimate(1000);
+  EXPECT_EQ(initial_bandwidth, GetVideoNetworkBandwidth());
+
+  fake_sender_ptr->set_frames_dropped_after_encoding(1);
+  UpdateBandwidthEstimate(1000);
+  EXPECT_EQ(initial_bandwidth / 2, GetVideoNetworkBandwidth());
+
+  StopSession();
+}
+
+TEST_F(OpenscreenSessionHostTest, UsesBandwidthBackoffParams) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kCastStreamingGradualBandwidthBackoff,
+      {{"min_backoff_factor", "0.7"},
+       {"max_backoff_factor", "0.9"},
+       {"fast_recovery_increase", "1.2"}});
+  CreateSession(SessionType::VIDEO_ONLY);
+  StartSession();
+
+  auto fake_video_sender = std::make_unique<FakeVideoSender>();
+  FakeVideoSender* fake_sender_ptr = fake_video_sender.get();
+  SetVideoSender(std::move(fake_video_sender));
+
+  const uint32_t initial_bandwidth = GetInitialBandwidth();
+
+  // A very low estimate backs off by the largest allowed step, 30%.
+  fake_sender_ptr->set_frames_dropped(1);
+  UpdateBandwidthEstimate(1000);
+  const uint32_t backed_off = static_cast<uint32_t>(initial_bandwidth * 0.7);
+  EXPECT_EQ(backed_off, GetVideoNetworkBandwidth());
+
+  // Recovery uses the configured fast recovery increase.
+  UpdateBandwidthEstimate(100000000);
+  EXPECT_EQ(static_cast<uint32_t>(backed_off * 1.2),
+            GetVideoNetworkBandwidth());
+
+  StopSession();
+}
+
+TEST_F(OpenscreenSessionHostTest, ClampsInvalidBandwidthBackoffParams) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kCastStreamingGradualBandwidthBackoff,
+      {{"min_backoff_factor", "0"},
+       {"max_backoff_factor", "0.05"},
+       {"conservative_increase", "0.5"},
+       {"fast_recovery_increase", "0.5"}});
+  CreateSession(SessionType::VIDEO_ONLY);
+  StartSession();
+
+  auto fake_video_sender = std::make_unique<FakeVideoSender>();
+  FakeVideoSender* fake_sender_ptr = fake_video_sender.get();
+  SetVideoSender(std::move(fake_video_sender));
+
+  const uint32_t initial_bandwidth = GetInitialBandwidth();
+
+  // Both backoff factors are clamped to 0.1, so bandwidth can't drop to zero.
+  fake_sender_ptr->set_frames_dropped(1);
+  UpdateBandwidthEstimate(1000);
+  const uint32_t backed_off = static_cast<uint32_t>(initial_bandwidth * 0.1);
+  EXPECT_EQ(backed_off, GetVideoNetworkBandwidth());
+
+  // Increases are clamped to at least 1.0, so bandwidth never shrinks while
+  // recovering.
+  UpdateBandwidthEstimate(100000000);
+  EXPECT_EQ(backed_off, GetVideoNetworkBandwidth());
 
   StopSession();
 }

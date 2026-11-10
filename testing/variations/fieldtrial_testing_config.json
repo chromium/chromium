@@ -4139,6 +4139,27 @@
             ]
         }
     ],
+    "CastStreamingGradualBandwidthBackoff": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "AfterEncodingOnly",
+                    "params": {
+                        "congestion_signal": "after_encoding"
+                    },
+                    "enable_features": [
+                        "CastStreamingGradualBandwidthBackoff"
+                    ]
+                }
+            ]
+        }
+    ],
     "CastStreamingHardwareHevc": [
         {
             "platforms": [

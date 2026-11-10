@@ -159,9 +159,9 @@ VideoSender::VideoSender(
 
 VideoSender::~VideoSender() {
   // Record the number of frames dropped during this session.
-  base::UmaHistogramPercentage(kHistogramDroppedFrames,
-                               (number_of_frames_dropped_ * 100) /
-                                   std::max(1, number_of_frames_inserted_));
+  base::UmaHistogramPercentage(
+      kHistogramDroppedFrames,
+      (GetFramesDropped() * 100) / std::max(1, number_of_frames_inserted_));
 
   // Record the encoder utilization during this session. Only frames that were
   // actually encoded have a utilization value, so frames dropped before
@@ -283,7 +283,7 @@ void VideoSender::InsertRawVideoFrame(
       playout_delay_change_cb_.Run(new_target_delay);
     }
 
-    number_of_frames_dropped_++;
+    number_of_frames_dropped_before_encoding_++;
     base::UmaHistogramEnumeration(kHistogramFrameDropped, reason);
     TRACE_EVENT_INSTANT("cast.stream", "Video Frame Drop (raw frame)",
                         "duration", duration_added_by_next_frame, "reason",
@@ -376,7 +376,15 @@ int VideoSender::GetFramesInserted() const {
 }
 
 int VideoSender::GetFramesDropped() const {
-  return number_of_frames_dropped_;
+  return GetFramesDroppedBeforeEncoding() + GetFramesDroppedAfterEncoding();
+}
+
+int VideoSender::GetFramesDroppedBeforeEncoding() const {
+  return number_of_frames_dropped_before_encoding_;
+}
+
+int VideoSender::GetFramesDroppedAfterEncoding() const {
+  return number_of_frames_dropped_after_encoding_;
 }
 
 int VideoSender::GetFramesDroppedByEncoder() const {
@@ -450,7 +458,7 @@ void VideoSender::OnEncodedVideoFrame(
   const CastStreamingFrameDropReason reason =
       frame_sender_->EnqueueFrame(std::move(encoded_frame));
   if (reason != CastStreamingFrameDropReason::kNotDropped) {
-    number_of_frames_dropped_++;
+    number_of_frames_dropped_after_encoding_++;
     video_encoder_->GenerateKeyFrame();
 
     base::UmaHistogramEnumeration(kHistogramFrameDropped, reason);
@@ -463,9 +471,9 @@ void VideoSender::OnEncodedVideoFrame(
 void VideoSender::OnFrameDroppedByEncoder(
     const SenderEncodedFrame& encoded_frame) {
   DVLOG(3) << "Frame dropped by encoder";
-  // Counted separately from `number_of_frames_dropped_`, which tracks
-  // sender-side (network or receiver) drops and is used to gate bandwidth
-  // reductions in the session.
+  // Counted separately from GetFramesDropped(), which tracks sender-side
+  // (network or receiver) drops and is used to gate bandwidth reductions in
+  // the session.
   number_of_frames_dropped_by_encoder_++;
   frame_sender_->ReportFrameDroppedByEncoder(encoded_frame.rtp_timestamp);
   base::UmaHistogramEnumeration(
