@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/app_menu/app_menu_search_controller.h"
 
+#include <array>
+#include <cmath>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -11,13 +13,18 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/fuzzy_search/fuzzy_finder.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_search_bar_view.h"
 #include "chrome/browser/ui/views/app_menu/bookmarks_dynamic_menu.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/url_formatter/elide_url.h"
 #include "ui/actions/actions.h"
@@ -28,6 +35,39 @@
 #include "url/gurl.h"
 
 namespace {
+
+// Returns the fuzzy search scoring params, starting from the kChroMenuSearch
+// feature params. If the --chro-menu-search-scoring switch (settable from
+// chrome://flags) is present, each valid "title,secondary,synonym,min_score"
+// entry in it overrides the corresponding feature param value. Empty or invalid
+// entries are ignored.
+FuzzyFinder::ScoringParams GetScoringParams() {
+  FuzzyFinder::ScoringParams params{
+      .title = features::kChroMenuSearchTitleWeight.Get(),
+      .secondary_text = features::kChroMenuSearchSecondaryWeight.Get(),
+      .synonym = features::kChroMenuSearchSynonymWeight.Get(),
+      .min_score = features::kChroMenuSearchMinScore.Get(),
+  };
+
+  const std::string switch_value =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kChroMenuSearchScoring);
+  if (switch_value.empty()) {
+    return params;
+  }
+
+  const std::array<double*, 4> fields = {&params.title, &params.secondary_text,
+                                         &params.synonym, &params.min_score};
+  const std::vector<std::string_view> parts = base::SplitStringPiece(
+      switch_value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  for (size_t i = 0; i < fields.size() && i < parts.size(); ++i) {
+    double value;
+    if (base::StringToDouble(parts[i], &value) && std::isfinite(value)) {
+      *fields[i] = value;
+    }
+  }
+  return params;
+}
 
 // Maximum number of candidates returned by fuzzy finder across all categories.
 constexpr size_t kMaxGlobalCandidates = 50;
@@ -168,7 +208,8 @@ void AppMenuSearchController::InitializeSearchIndex() {
     raw_items.push_back(item.get());
   }
 
-  fuzzy_finder_ = std::make_unique<FuzzyFinder>(std::move(raw_items));
+  fuzzy_finder_ =
+      std::make_unique<FuzzyFinder>(std::move(raw_items), GetScoringParams());
 }
 
 std::unique_ptr<actions::ActionItem> AppMenuSearchController::Search(

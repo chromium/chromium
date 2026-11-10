@@ -150,6 +150,26 @@ BASE_FEATURE_PARAM(std::string,
                    "");
 // Enables the redesigned History page refresh features.
 BASE_FEATURE(kHistoryPageRefresh, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(double,
+                   kChroMenuSearchTitleWeight,
+                   &kChroMenuSearch,
+                   "title_weight",
+                   1.00);
+BASE_FEATURE_PARAM(double,
+                   kChroMenuSearchSecondaryWeight,
+                   &kChroMenuSearch,
+                   "secondary_weight",
+                   0.80);
+BASE_FEATURE_PARAM(double,
+                   kChroMenuSearchSynonymWeight,
+                   &kChroMenuSearch,
+                   "synonym_weight",
+                   0.85);
+BASE_FEATURE_PARAM(double,
+                   kChroMenuSearchMinScore,
+                   &kChroMenuSearch,
+                   "min_score",
+                   0.60);
 
 bool IsTabStripDeclutterEnabled() {
   return base::FeatureList::IsEnabled(kDesktopGlowUp) ||

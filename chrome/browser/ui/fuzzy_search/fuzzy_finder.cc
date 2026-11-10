@@ -22,16 +22,6 @@ namespace {
 // Queries shorter than this return an empty result set.
 constexpr size_t kMinQueryLength = 2;
 
-// Multiplier applied to scores when a match is found in an item's title.
-constexpr double kTitleWeight = 1.00;
-
-// Multiplier applied to scores when a match is found in an item's synonyms.
-constexpr double kSynonymWeight = 0.85;
-
-// Multiplier applied to scores when a match is found in an item's secondary
-// text (e.g. section headers or descriptions).
-constexpr double kSecondaryTextWeight = 0.80;
-
 // Base score awarded for each matching character between query and candidate.
 constexpr int kMatchScore = 16;
 
@@ -68,10 +58,6 @@ constexpr int kGapExtensionPenalty = 2;
 // range ([0.25, 1.0]) above non-matches (0.0).
 constexpr double kScoreBias = 0.25;
 
-// Minimum score cutoff threshold. Results with score below this threshold are
-// dropped to filter out weak or low-confidence matches.
-constexpr double kMinScore = 0.60;
-
 // Returns true if index `i` of `text` is the start of the string or immediately
 // follows a whitespace delimiter.
 bool IsWordBoundary(std::u16string_view text, size_t i) {
@@ -94,6 +80,16 @@ gfx::Range FindExactMatchRange(
 FuzzyFinder::FuzzyFinder(std::vector<raw_ptr<FuzzySearchItem>> searchable_items)
     : searchable_items_(std::move(searchable_items)) {}
 
+FuzzyFinder::FuzzyFinder(std::vector<raw_ptr<FuzzySearchItem>> searchable_items,
+                         ScoringParams params)
+    : searchable_items_(std::move(searchable_items)),
+      params_{
+          .title = std::clamp(params.title, 0.0, 1.0),
+          .secondary_text = std::clamp(params.secondary_text, 0.0, 1.0),
+          .synonym = std::clamp(params.synonym, 0.0, 1.0),
+          .min_score = std::clamp(params.min_score, 0.0, 1.0),
+      } {}
+
 FuzzyFinder::~FuzzyFinder() = default;
 
 bool FuzzyFinder::HasMinQueryLength(std::u16string_view trimmed_query) {
@@ -111,8 +107,8 @@ std::vector<FuzzySearchResult> FuzzyFinder::Find(std::u16string_view query,
   const std::u16string_view trimmed_query =
       base::TrimWhitespace(query, base::TRIM_ALL);
 
-  // Reject queries shorter than the minimum threshold to avoid broad/low-signal
-  // results.
+  // Reject queries shorter than the minimum threshold to avoid
+  // broad/low-signal results.
   if (!HasMinQueryLength(trimmed_query)) {
     return {};
   }
@@ -166,7 +162,8 @@ std::vector<FuzzySearchResult> FuzzyFinder::FuzzyFind(std::u16string_view query,
     CHECK(item);
     std::vector<gfx::Range> match_ranges;
     const double score = ScoreItem(item, normalized_query, match_ranges);
-    if (score >= kMinScore) {
+    // Non-matches (score 0) are always dropped, even if `min_score` is 0.
+    if (score > 0.0 && score >= params_.min_score) {
       results.push_back(
           FuzzySearchResult{item, score, std::move(match_ranges)});
     }
@@ -207,7 +204,7 @@ double FuzzyFinder::ScoreItem(const FuzzySearchItem* item,
   double best_score =
       MatchCandidate(norm_query, base::i18n::ToLower(item->GetTitle()),
                      &match_ranges) *
-      kTitleWeight;
+      params_.title;
 
   // 2. Secondary text and synonym matches. Match ranges are only reported for
   // the title, so they are cleared if any other field scores higher.
@@ -219,9 +216,9 @@ double FuzzyFinder::ScoreItem(const FuzzySearchItem* item,
       match_ranges.clear();
     }
   };
-  score_field(item->GetSecondaryText(), kSecondaryTextWeight);
+  score_field(item->GetSecondaryText(), params_.secondary_text);
   for (const std::u16string& synonym : item->GetSynonyms()) {
-    score_field(synonym, kSynonymWeight);
+    score_field(synonym, params_.synonym);
   }
 
   return best_score;
@@ -271,8 +268,8 @@ double FuzzyFinder::MatchCandidate(std::u16string_view query,
   const size_t m = query.length();
   const size_t n = candidate.length();
 
-  // Row j starts at candidate index i = j, so a query longer than the candidate
-  // can never be fully aligned.
+  // Row j starts at candidate index i = j, so a query longer than the
+  // candidate can never be fully aligned.
   //
   // TODO(crbug.com/549169077): Support queries longer than candidate strings.
   if (m == 0 || m > n) {
@@ -422,7 +419,8 @@ double FuzzyFinder::MatchCandidate(std::u16string_view query,
           break;
         case MatchStep::kSubstitution:
           // Character at candidate index `curr_i` substituted query character
-          // `curr_j`; not an exact character match, so omit from match_ranges.
+          // `curr_j`; not an exact character match, so omit from
+          // match_ranges.
           --curr_j;
           --curr_i;
           break;

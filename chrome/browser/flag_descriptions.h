@@ -129,6 +129,14 @@ inline constexpr char kChroMenuSearchDescription[] =
     "Enables search in the app Chrome menu. Only takes effect when "
     "#app-menu-glow-up is also enabled.";
 
+inline constexpr char kChroMenuSearchScoringName[] = "ChroMenu Search Scoring";
+inline constexpr char kChroMenuSearchScoringDescription[] =
+    "Overrides the fuzzy search scoring used by ChroMenu Search, as a "
+    "comma-separated list of title weight, secondary text weight, synonym "
+    "weight and minimum score, each between 0 and 1 (e.g. "
+    "\"1.0,0.8,0.85,0.6\"). Empty or invalid entries keep their default "
+    "value. Only takes effect when #chro-menu-search is also enabled.";
+
 inline constexpr char kCredentialManagementUnifiedUiName[] =
     "Credential Management Unified UI";
 inline constexpr char kCredentialManagementUnifiedUiDescription[] =

@@ -12,6 +12,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
@@ -19,11 +21,13 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_test_base.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_search_bar_view.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_search_item.h"
 #include "chrome/browser/ui/views/app_menu/bookmarks_dynamic_menu.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process_death_test_mixin.h"
 #include "chrome/test/base/testing_profile.h"
@@ -1176,6 +1180,113 @@ TEST_F(AppMenuSearchControllerTest, BuildSearchResultsTreeHighlightRange) {
                   AppMenuActionItem::kHighlightRangeKey),
               nullptr);
   }
+}
+
+// Fixture for verifying that the fuzzy search scoring params, configured via
+// the kChroMenuSearch feature params or the --chro-menu-search-scoring switch
+// (chrome://flags), change the ranking of search results.
+class AppMenuSearchControllerScoringTest : public AppMenuSearchControllerTest {
+ protected:
+  // Adds two actions that both match "passkey": one via its title and one via
+  // a synonym, so their relative order is decided by the field weights.
+  void AddTitleAndSynonymActions() {
+    menu_root_->AddChild(actions::ActionItem::Builder()
+                             .SetActionId(kActionNewTab)
+                             .SetText(u"Google Password Manager")
+                             .AddSynonyms({u"passkey"})
+                             .Build());
+    menu_root_->AddChild(actions::ActionItem::Builder()
+                             .SetActionId(kActionPrint)
+                             .SetText(u"Passkey Settings")
+                             .Build());
+  }
+
+  // Builds the search index, searches for "passkey" and returns the titles of
+  // the action results in ranked order.
+  std::vector<std::u16string> SearchPasskeyTitles() {
+    controller_->InitializeSearchIndex();
+    const std::unique_ptr<actions::ActionItem> results_root =
+        controller_->Search(u"passkey");
+    std::vector<std::u16string> titles;
+    if (!results_root) {
+      return titles;
+    }
+    for (const auto& child : results_root->GetChildren().children()) {
+      titles.emplace_back(child->GetActionItem()->GetText());
+    }
+    return titles;
+  }
+
+  base::test::ScopedCommandLine scoped_command_line_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(AppMenuSearchControllerScoringTest, DefaultWeightsRankTitleFirst) {
+  AddTitleAndSynonymActions();
+  EXPECT_THAT(
+      SearchPasskeyTitles(),
+      testing::ElementsAre(u"Passkey Settings", u"Google Password Manager"));
+}
+
+TEST_F(AppMenuSearchControllerScoringTest, FeatureParamsChangeRanking) {
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      features::kChroMenuSearch,
+      {{"title_weight", "0.8"}, {"synonym_weight", "1.0"}});
+  AddTitleAndSynonymActions();
+  EXPECT_THAT(
+      SearchPasskeyTitles(),
+      testing::ElementsAre(u"Google Password Manager", u"Passkey Settings"));
+}
+
+TEST_F(AppMenuSearchControllerScoringTest, FlagSwitchChangesRanking) {
+  scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+      switches::kChroMenuSearchScoring, "0.8,0.8,1.0");
+  AddTitleAndSynonymActions();
+  EXPECT_THAT(
+      SearchPasskeyTitles(),
+      testing::ElementsAre(u"Google Password Manager", u"Passkey Settings"));
+}
+
+TEST_F(AppMenuSearchControllerScoringTest, FlagSwitchOverridesFeatureParams) {
+  // Feature params favor synonyms, but the switch restores title priority.
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      features::kChroMenuSearch,
+      {{"title_weight", "0.8"}, {"synonym_weight", "1.0"}});
+  scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+      switches::kChroMenuSearchScoring, "1.0,0.8,0.85");
+  AddTitleAndSynonymActions();
+  EXPECT_THAT(
+      SearchPasskeyTitles(),
+      testing::ElementsAre(u"Passkey Settings", u"Google Password Manager"));
+}
+
+TEST_F(AppMenuSearchControllerScoringTest,
+       FlagSwitchEmptyOrInvalidEntriesKeepDefaults) {
+  // Only the synonym weight is overridden; the empty and invalid title and
+  // secondary entries keep their defaults (title 1.0). Synonym 0.5 drops the
+  // synonym match below the minimum score.
+  scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+      switches::kChroMenuSearchScoring, ",abc,0.5");
+  AddTitleAndSynonymActions();
+  EXPECT_THAT(SearchPasskeyTitles(), testing::ElementsAre(u"Passkey Settings"));
+}
+
+TEST_F(AppMenuSearchControllerScoringTest, MinScoreFeatureParamFiltersResults) {
+  // The synonym match scores ~0.95 * 0.85 = ~0.81, below a 0.9 cutoff, while
+  // the title match (~0.95) stays above it.
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      features::kChroMenuSearch, {{"min_score", "0.9"}});
+  AddTitleAndSynonymActions();
+  EXPECT_THAT(SearchPasskeyTitles(), testing::ElementsAre(u"Passkey Settings"));
+}
+
+TEST_F(AppMenuSearchControllerScoringTest, MinScoreFlagSwitchFiltersResults) {
+  // Only the fourth (min_score) entry is set; the weights keep their
+  // defaults.
+  scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+      switches::kChroMenuSearchScoring, ",,,0.9");
+  AddTitleAndSynonymActions();
+  EXPECT_THAT(SearchPasskeyTitles(), testing::ElementsAre(u"Passkey Settings"));
 }
 
 }  // namespace

@@ -30,7 +30,21 @@ struct FuzzySearchResult {
 // for a user query.
 class FuzzyFinder {
  public:
+  // Tunable scoring parameters. All values are clamped to [0.0, 1.0].
+  struct ScoringParams {
+    // Multipliers applied to a field's match score. A higher weight gives that
+    // field more influence on an item's final score.
+    double title = 1.00;
+    double secondary_text = 0.80;
+    double synonym = 0.85;
+    // Minimum final score required for an item to be returned. Results with a
+    // lower score are dropped to filter out weak or low-confidence matches.
+    double min_score = 0.60;
+  };
+
   explicit FuzzyFinder(std::vector<raw_ptr<FuzzySearchItem>> searchable_items);
+  FuzzyFinder(std::vector<raw_ptr<FuzzySearchItem>> searchable_items,
+              ScoringParams params);
 
   FuzzyFinder(const FuzzyFinder&) = delete;
   FuzzyFinder& operator=(const FuzzyFinder&) = delete;
@@ -119,6 +133,7 @@ class FuzzyFinder {
                         std::vector<gfx::Range>* match_ranges = nullptr);
 
   std::vector<raw_ptr<FuzzySearchItem>> searchable_items_;
+  ScoringParams params_;
 
   // Alignment matrix scratch buffer, reused across MatchCandidate() calls so
   // that it is only reallocated when a larger matrix is needed.

@@ -86,6 +86,10 @@ BASE_DECLARE_FEATURE(kChroMenuSearch);
 BASE_DECLARE_FEATURE_PARAM(std::string, kChroMenuSearchQuery);
 // Enables the redesigned History page refresh features.
 BASE_DECLARE_FEATURE(kHistoryPageRefresh);
+BASE_DECLARE_FEATURE_PARAM(double, kChroMenuSearchTitleWeight);
+BASE_DECLARE_FEATURE_PARAM(double, kChroMenuSearchSecondaryWeight);
+BASE_DECLARE_FEATURE_PARAM(double, kChroMenuSearchSynonymWeight);
+BASE_DECLARE_FEATURE_PARAM(double, kChroMenuSearchMinScore);
 
 bool IsTabStripDeclutterEnabled();
 bool IsToolbarGlowUpEnabled();

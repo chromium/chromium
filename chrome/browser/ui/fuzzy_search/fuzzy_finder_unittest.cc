@@ -691,4 +691,143 @@ TEST_F(FuzzyFinderTest, MatchRangesComputation) {
   EXPECT_EQ(sec_results[0].exact_match_range, gfx::Range::InvalidRange());
 }
 
+TEST_F(FuzzyFinderTest, DefaultWeightsMatchSingleArgConstructor) {
+  auto items = CreateItems({
+      {u"Google Password Manager", u"", {u"passkey"}},
+      {u"Passkey Settings", u"credentials"},
+  });
+  FuzzyFinder default_finder(items);
+  FuzzyFinder weighted_finder(items, FuzzyFinder::ScoringParams());
+
+  auto default_results = default_finder.FuzzyFind(u"passkey", 2);
+  auto weighted_results = weighted_finder.FuzzyFind(u"passkey", 2);
+  EXPECT_EQ(ExtractResultTitles(default_results),
+            ExtractResultTitles(weighted_results));
+  ASSERT_EQ(default_results.size(), weighted_results.size());
+  for (size_t i = 0; i < default_results.size(); ++i) {
+    EXPECT_DOUBLE_EQ(default_results[i].score, weighted_results[i].score);
+  }
+}
+
+TEST_F(FuzzyFinderTest, CustomWeightsReorderTitleAndSynonymMatches) {
+  // Both items match "passkey" equally well (norm = 0.9489), one via its title
+  // and one via a synonym, so the ranking is decided by the field weights.
+  auto items = CreateItems({
+      {u"Google Password Manager", u"", {u"passkey"}},
+      {u"Passkey Settings", u"", {u"credentials"}},
+  });
+
+  // Default weights (title 1.00 > synonym 0.85) rank the title match first.
+  FuzzyFinder default_finder(items);
+  EXPECT_THAT(ExtractResultTitles(default_finder.FuzzyFind(u"passkey", 2)),
+              ElementsAre(u"Passkey Settings", u"Google Password Manager"));
+
+  // Weighting synonyms above titles flips the order:
+  // synonym 0.9489 * 1.00 = 0.9489 > title 0.9489 * 0.80 = 0.7591.
+  FuzzyFinder synonym_heavy_finder(
+      items, {.title = 0.80, .secondary_text = 0.80, .synonym = 1.00});
+  auto results = synonym_heavy_finder.FuzzyFind(u"passkey", 2);
+  EXPECT_THAT(ExtractResultTitles(results),
+              ElementsAre(u"Google Password Manager", u"Passkey Settings"));
+  ASSERT_EQ(results.size(), 2u);
+  EXPECT_GT(results[0].score, results[1].score);
+}
+
+TEST_F(FuzzyFinderTest, CustomWeightsReorderSynonymAndSecondaryTextMatches) {
+  // Both items match "credentials", one via secondary text and one via a
+  // synonym, so the ranking is decided by the field weights.
+  auto items = CreateItems({
+      {u"Passkey Settings", u"credentials"},
+      {u"Password Manager", u"General", {u"credentials"}},
+  });
+
+  // Default weights (synonym 0.85 > secondary 0.80) rank the synonym first.
+  FuzzyFinder default_finder(items);
+  EXPECT_THAT(ExtractResultTitles(default_finder.FuzzyFind(u"credentials", 2)),
+              ElementsAre(u"Password Manager", u"Passkey Settings"));
+
+  // Weighting secondary text above synonyms flips the order.
+  FuzzyFinder secondary_heavy_finder(
+      items, {.title = 1.00, .secondary_text = 0.90, .synonym = 0.75});
+  auto results = secondary_heavy_finder.FuzzyFind(u"credentials", 2);
+  EXPECT_THAT(ExtractResultTitles(results),
+              ElementsAre(u"Passkey Settings", u"Password Manager"));
+  ASSERT_EQ(results.size(), 2u);
+  EXPECT_GT(results[0].score, results[1].score);
+}
+
+TEST_F(FuzzyFinderTest, LowWeightDropsMatchesBelowMinScore) {
+  // A synonym-only match (norm = 0.9489) survives the 0.60 cutoff with the
+  // default synonym weight, but not when the weight pushes it below 0.60.
+  auto items = CreateItems({
+      {u"Google Password Manager", u"", {u"passkey"}},
+      {u"Passkey Settings"},
+  });
+
+  FuzzyFinder default_finder(items);
+  EXPECT_THAT(ExtractResultTitles(default_finder.FuzzyFind(u"passkey", 2)),
+              ElementsAre(u"Passkey Settings", u"Google Password Manager"));
+
+  // 0.9489 * 0.50 = 0.4745 < 0.60.
+  FuzzyFinder low_synonym_finder(
+      items, {.title = 1.00, .secondary_text = 0.80, .synonym = 0.50});
+  EXPECT_THAT(ExtractResultTitles(low_synonym_finder.FuzzyFind(u"passkey", 2)),
+              ElementsAre(u"Passkey Settings"));
+}
+
+TEST_F(FuzzyFinderTest, WeightsAreClampedToUnitRange) {
+  auto items = CreateItems({{u"Passkey Settings"}});
+
+  // Weights above 1 are clamped to 1, so scores never exceed the default
+  // title-weight score.
+  FuzzyFinder default_finder(items);
+  FuzzyFinder high_weight_finder(
+      items, {.title = 5.0, .secondary_text = 5.0, .synonym = 5.0});
+  auto default_results = default_finder.FuzzyFind(u"passkey", 1);
+  auto high_results = high_weight_finder.FuzzyFind(u"passkey", 1);
+  ASSERT_EQ(default_results.size(), 1u);
+  ASSERT_EQ(high_results.size(), 1u);
+  EXPECT_DOUBLE_EQ(high_results[0].score, default_results[0].score);
+  EXPECT_LE(high_results[0].score, 1.0);
+
+  // Negative weights are clamped to 0, which drops the match entirely.
+  FuzzyFinder negative_weight_finder(
+      items, {.title = -1.0, .secondary_text = -1.0, .synonym = -1.0});
+  EXPECT_THAT(negative_weight_finder.FuzzyFind(u"passkey", 1), IsEmpty());
+}
+
+TEST_F(FuzzyFinderTest, MinScoreParamChangesCutoff) {
+  // Same corpus as MinScoreCutoffFiltersWeakMatches, for query "perf":
+  // - "Performance Monitor": ~0.96
+  // - "Page Event Resource Filter": ~0.67
+  // - "Operation": weak match below 0.60
+  // - "History": no match (score 0)
+  auto items = CreateItems({
+      {u"Performance Monitor"},
+      {u"Page Event Resource Filter"},
+      {u"Operation"},
+      {u"History"},
+  });
+
+  // Default cutoff (0.60).
+  FuzzyFinder default_finder(items);
+  EXPECT_THAT(
+      ExtractResultTitles(default_finder.FuzzyFind(u"perf", 5)),
+      ElementsAre(u"Performance Monitor", u"Page Event Resource Filter"));
+
+  // A stricter cutoff drops the scattered match.
+  FuzzyFinder strict_finder(items, {.min_score = 0.80});
+  EXPECT_THAT(ExtractResultTitles(strict_finder.FuzzyFind(u"perf", 5)),
+              ElementsAre(u"Performance Monitor"));
+
+  // A cutoff of 0 keeps every match, but never returns non-matches.
+  FuzzyFinder lenient_finder(items, {.min_score = 0.0});
+  auto lenient_titles =
+      ExtractResultTitles(lenient_finder.FuzzyFind(u"perf", 5));
+  EXPECT_THAT(lenient_titles, ::testing::Contains(u"Performance Monitor"));
+  EXPECT_THAT(lenient_titles,
+              ::testing::Contains(u"Page Event Resource Filter"));
+  EXPECT_THAT(lenient_titles, ::testing::Not(::testing::Contains(u"History")));
+}
+
 }  // namespace

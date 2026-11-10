@@ -11460,6 +11460,7 @@ from previous Chrome versions.
       label="EnableBoundSessionCredentialsSoftwareKeysForManualTesting:enabled"/>
   <int value="-1090001589" label="WebViewRestrictSensitiveContent:enabled"/>
   <int value="-1089665395" label="HTMLParamElementUrlSupport:enabled"/>
+  <int value="-1089334150" label="chro-menu-search-scoring:enabled"/>
   <int value="-1088804127" label="DuetTabStripIntegrationAndroid:disabled"/>
   <int value="-1087409065" label="RoundedDisplay:enabled"/>
   <int value="-1087269659" label="UseAndroidBufferedInputDispatch:enabled"/>
@@ -18697,6 +18698,7 @@ from previous Chrome versions.
   <int value="1079114788"
       label="MobilePromoOnDesktopWithReminderWave2:disabled"/>
   <int value="1079302639" label="ArcEnableWebAppShare:disabled"/>
+  <int value="1081458820" label="chro-menu-search-scoring:disabled"/>
   <int value="1081546525" label="ash-enable-docked-windows"/>
   <int value="1082054180" label="PersistentWindowBounds:disabled"/>
   <int value="1082064896" label="WebAuthenticationAmbientSignin:enabled"/>

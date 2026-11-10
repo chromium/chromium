@@ -178,6 +178,12 @@ inline constexpr char kCaptureAutoReject[] = "auto-reject-capture";
 inline constexpr char kCheckForUpdateIntervalSec[] =
     "check-for-update-interval";
 
+// Overrides the fuzzy search scoring params used by the app menu search, as a
+// comma-separated list of "title,secondary,synonym,min_score" (e.g.
+// "1.0,0.8,0.85,0.6"). Missing or invalid entries fall back to the
+// kChroMenuSearch feature params. Intended for tuning from chrome://flags.
+inline constexpr char kChroMenuSearchScoring[] = "chro-menu-search-scoring";
+
 // Comma-separated list of SSL cipher suites to disable.
 inline constexpr char kCipherSuiteBlacklist[] = "cipher-suite-blacklist";
 

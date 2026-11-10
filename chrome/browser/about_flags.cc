@@ -14330,6 +14330,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"history-page-refresh", flag_descriptions::kHistoryPageRefreshName,
      flag_descriptions::kHistoryPageRefreshDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kHistoryPageRefresh)},
+    {"chro-menu-search-scoring", flag_descriptions::kChroMenuSearchScoringName,
+     flag_descriptions::kChroMenuSearchScoringDescription, kOsDesktop,
+     STRING_VALUE_TYPE(switches::kChroMenuSearchScoring, "")},
 
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
