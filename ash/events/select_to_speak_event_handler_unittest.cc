@@ -38,11 +38,11 @@ class TestDelegate : public SelectToSpeakEventHandlerDelegate {
   virtual ~TestDelegate() = default;
 
   bool CapturedMouseEvent(ui::EventType event_type) {
-    return mouse_events_captured_.contains(event_type);
+    return mouse_events_captured_.Has(event_type);
   }
 
   void Reset() {
-    mouse_events_captured_.clear();
+    mouse_events_captured_.Clear();
     last_mouse_location_.SetPoint(0, 0);
     last_mouse_root_location_.SetPoint(0, 0);
   }
@@ -56,7 +56,7 @@ class TestDelegate : public SelectToSpeakEventHandlerDelegate {
  private:
   // SelectToSpeakEventHandlerDelegate:
   void DispatchMouseEvent(const ui::MouseEvent& event) override {
-    mouse_events_captured_.insert(event.type());
+    mouse_events_captured_.Put(event.type());
     last_mouse_location_ = event.location();
     last_mouse_root_location_ = event.root_location();
   }
@@ -67,7 +67,7 @@ class TestDelegate : public SelectToSpeakEventHandlerDelegate {
 
   gfx::Point last_mouse_location_;
   gfx::Point last_mouse_root_location_;
-  std::set<ui::EventType> mouse_events_captured_;
+  ui::EventTypeSet mouse_events_captured_;
 };
 
 class SelectToSpeakEventHandlerTest : public AshTestBase {

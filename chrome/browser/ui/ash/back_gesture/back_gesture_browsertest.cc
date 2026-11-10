@@ -36,7 +36,7 @@ class BackGestureEventRecorder : public ui::EventHandler {
 
   // ui::EventHandler:
   void OnGestureEvent(ui::GestureEvent* event) override {
-    received_event_types_.insert(event->type());
+    received_event_types_.Put(event->type());
     if (wait_for_event_ == event->type() && run_loop_) {
       run_loop_->Quit();
       wait_for_event_ = ui::EventType::kUnknown;
@@ -46,7 +46,7 @@ class BackGestureEventRecorder : public ui::EventHandler {
   void OnKeyEvent(ui::KeyEvent* event) override {
     // If back gesture can be performed, a ui::VKEY_BROWSR_BACK key pressed and
     // key released will be generated.
-    received_event_types_.insert(event->type());
+    received_event_types_.Put(event->type());
   }
 
   void WaitUntilReceivedGestureEvent(ui::EventType event_type) {
@@ -56,11 +56,11 @@ class BackGestureEventRecorder : public ui::EventHandler {
   }
 
   bool HasReceivedEvent(ui::EventType event_type) {
-    return received_event_types_.contains(event_type);
+    return received_event_types_.Has(event_type);
   }
 
   void Reset() {
-    received_event_types_.clear();
+    received_event_types_.Clear();
     wait_for_event_ = ui::EventType::kUnknown;
     if (run_loop_) {
       run_loop_->Quit();
@@ -69,7 +69,7 @@ class BackGestureEventRecorder : public ui::EventHandler {
 
  private:
   // Stores the event types of the received gesture events.
-  base::flat_set<ui::EventType> received_event_types_;
+  ui::EventTypeSet received_event_types_;
   ui::EventType wait_for_event_ = ui::EventType::kUnknown;
   std::unique_ptr<base::RunLoop> run_loop_;
 };

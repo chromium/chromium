@@ -773,7 +773,7 @@ class HoverDetectionView : public views::View {
 };
 
 class LastHoverEventObserver
-    : public ui::test::StateObserver<std::set<ui::EventType>> {
+    : public ui::test::StateObserver<ui::EventTypeSet> {
  public:
   explicit LastHoverEventObserver(HoverDetectionView* view)
       : subscription_(view->AddOnMouseMoveCallback(
@@ -782,13 +782,13 @@ class LastHoverEventObserver
   ~LastHoverEventObserver() override = default;
 
   void OnHoverEvent(const ui::MouseEvent& event) {
-    observed_events_.insert(event.type());
+    observed_events_.Put(event.type());
     OnStateObserverStateChanged(observed_events_);
   }
 
  private:
   base::CallbackListSubscription subscription_;
-  std::set<ui::EventType> observed_events_;
+  ui::EventTypeSet observed_events_;
 };
 
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(LastHoverEventObserver, kHoverView1State);
