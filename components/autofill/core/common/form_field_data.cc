@@ -298,7 +298,8 @@ bool FormFieldData::IsPasswordInputElement() const {
 }
 
 bool FormFieldData::IsSelectElement() const {
-  return form_control_type() == FormControlType::kSelectOne;
+  return form_control_type() == FormControlType::kSelectOne ||
+         form_control_type() == FormControlType::kSyntheticSelectOne;
 }
 
 // static

@@ -71,12 +71,14 @@ bool ConsecutiveSimilarFieldType(const AutofillType& current_type,
 
 // Sectionable fields are all the fields that are in a non-default section.
 // Generally, only focusable fields are assigned a section. As an exception,
-// unfocusable <select> elements get a section, as hidden <select> elements are
-// common in custom select elements. To confine the impact of hidden <select>
-// elements, this exception only applies if their type is actually autofillable.
+// unfocusable native <select> elements get a section, as hidden <select>
+// elements often back custom JS dropdowns. To confine the impact of hidden
+// <select> elements, this exception only applies if their type is actually
+// autofillable.
 bool IsSectionable(const AutofillField& field) {
   return field.is_focusable() ||
-         (field.IsSelectElement() && field.IsFieldFillable());
+         (field.form_control_type() == FormControlType::kSelectOne &&
+          field.IsFieldFillable());
 }
 
 // Assign all credit card fields without a valid autocomplete attribute section

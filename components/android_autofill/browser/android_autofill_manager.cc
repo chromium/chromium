@@ -345,10 +345,13 @@ void AndroidAutofillManager::FillOrPreviewForm(
   std::vector<FormFieldData> fields = form.ExtractFields();
   std::erase_if(fields, [&](const FormFieldData& field) {
     // The renderer doesn't fill such fields, and therefore they can be removed
-    // from here to reduce IPC traffic and avoid accidental filling.
+    // from here to reduce IPC traffic and avoid accidental filling. Unfocusable
+    // native <select> elements are kept because they often back custom JS
+    // dropdowns.
     return !field.is_autofilled_according_to_renderer() ||
            field.value().empty() ||
-           (!field.is_focusable() && !field.IsSelectElement());
+           (!field.is_focusable() &&
+            field.form_control_type() != FormControlType::kSelectOne);
   });
 
   absl::flat_hash_map<FieldGlobalId, FieldType> field_type_map;

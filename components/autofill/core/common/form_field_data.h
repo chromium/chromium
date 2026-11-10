@@ -188,16 +188,7 @@ class FormFieldData {
 
   bool IsPasswordInputElement() const;
 
-  // <select> gets special handling when it comes to unfocusable fields. The
-  // motivation for this exception is that synthetic select fields often come
-  // with an unfocusable <select> element.
-  //
-  // A synthetic select field is a combination of JavaScript-controlled DOM
-  // elements that provide a list of options. They're frequently associated with
-  // hidden (i.e., unfocusable) <select> element. JavaScript keeps the selected
-  // option in sync with the visible DOM elements of the select field. To
-  // support synthetic select fields, Autofill intentionally fills unfocusable
-  // <select> elements.
+  // Returns true for native <select> elements and synthetic select elements.
   bool IsSelectElement() const;
 
   // The name by which autofill knows this field. This is generally either the

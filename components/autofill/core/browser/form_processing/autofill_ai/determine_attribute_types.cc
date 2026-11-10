@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/dense_set.h"
+#include "components/autofill/core/common/form_field_data.h"
 
 namespace autofill {
 
@@ -34,8 +35,14 @@ namespace {
 // may lead to a dynamic AttributeType assignment of the other.
 constexpr int kMaxPropagationDistance = 5;
 
+// Only fields for which `IsRelevant()` returns true are assigned AutofillAi
+// `AttributeType`s (used for suggestion generation, filling, and import).
+// Unfocusable native <select> elements are considered relevant because they
+// often back custom JS dropdowns (see
+// `FormFiller::GetFillingSkipReasonsForField()`).
 bool IsRelevant(const AutofillField& field) {
-  return field.is_focusable() || field.IsSelectElement();
+  return field.is_focusable() ||
+         field.form_control_type() == FormControlType::kSelectOne;
 }
 
 // The set of all FieldTypes understood but not owned by Autofill AI.

@@ -510,9 +510,13 @@ DenseSet<FieldFillingSkipReason> FormFiller::GetFillingSkipReasonsForField(
                                ac_unrecognized_behavior),
       FieldFillingSkipReason::kUnrecognizedAutocompleteAttribute);
 
-  // Don't fill unfocusable fields, with the exception of <select> fields, for
-  // the sake of filling the synthetic fields.
-  add_if(!field.is_focusable() && !field.IsSelectElement(),
+  // Don't fill unfocusable fields, with the exception of native <select>
+  // elements. Custom JS dropdowns often hide a backing native <select> element
+  // and keep its selected option in sync with the visible DOM elements.
+  // `kSyntheticSelectOne` elements are not exempted because their
+  // `is_focusable()` property reflects whether they are active.
+  add_if(!field.is_focusable() &&
+             field.form_control_type() != FormControlType::kSelectOne,
          FieldFillingSkipReason::kInvisibleField);
 
   // Do not fill fields that have been edited by the user, except if the field
