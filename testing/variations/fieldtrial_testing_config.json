@@ -9666,6 +9666,21 @@
             ]
         }
     ],
+    "GlicNativeFreAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20261102",
+                    "enable_features": [
+                        "GlicNativeFreAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicNoWebview": [
         {
             "platforms": [
