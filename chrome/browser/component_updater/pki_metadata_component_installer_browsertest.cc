@@ -37,7 +37,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -50,7 +49,6 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
-#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/network_service_util.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/storage_partition.h"
@@ -64,9 +62,7 @@
 #include "net/cert/root_store_proto_lite/signer_set.pb.h"
 #include "net/cert/test_root_certs.h"
 #include "net/cert/x509_certificate.h"
-#include "net/dns/dns_test_util.h"
 #include "net/dns/mock_host_resolver.h"
-#include "net/dns/public/util.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/test_net_log.h"
 #include "net/net_buildflags.h"
@@ -75,7 +71,6 @@
 #include "net/test/chrome_root_store_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/test_data_directory.h"
-#include "net/test/test_doh_server.h"
 #include "services/network/public/mojom/ssl_config.mojom.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -130,8 +125,8 @@ class CTLog {
   std::string_view spki_base64() const { return spki_base64_; }
 
   // Even though the id is just a span of bytes, so this should theoretically
-  // return a base::span<const uint8_t> referencing the data we've cached, all the
-  // call sites want it as a string.
+  // return a base::span<const uint8_t> referencing the data we've cached, all
+  // the call sites want it as a string.
   std::string id() const { return std::string(base::as_string_view(id_)); }
   std::string_view id_base64() const { return id_base64_; }
 
@@ -3332,169 +3327,58 @@ INSTANTIATE_TEST_SUITE_P(
                     CTEnforcement::kDisabledByProto,
                     CTEnforcement::kDisabledByFeature));
 
-class TestDnsOverHttpsConfigSource : public DnsOverHttpsConfigSource {
- public:
-  TestDnsOverHttpsConfigSource(std::string dns_over_https_templates,
-                               std::string dns_over_https_mode)
-      : dns_over_https_templates_(std::move(dns_over_https_templates)),
-        dns_over_https_mode_(std::move(dns_over_https_mode)) {}
-
-  TestDnsOverHttpsConfigSource(const TestDnsOverHttpsConfigSource&) = delete;
-  TestDnsOverHttpsConfigSource& operator=(const TestDnsOverHttpsConfigSource&) =
-      delete;
-  ~TestDnsOverHttpsConfigSource() override = default;
-
-  // DnsOverHttpsConfigSource:
-  std::string GetDnsOverHttpsMode() const override {
-    return dns_over_https_mode_;
-  }
-  std::string GetDnsOverHttpsTemplates() const override {
-    return dns_over_https_templates_;
-  }
-  bool AutomaticModeFallbackToDohEnabled() const override { return false; }
-  bool IsConfigManaged() const override {
-    // Return managed=true, otherwise the test config will be ignored if the
-    // test is run on an enterprise enrolled device.
-    return true;
-  }
-  void SetDohChangeCallback(base::RepeatingClosure callback) override {}
-
- private:
-  std::string dns_over_https_templates_;
-  std::string dns_over_https_mode_;
-};
-
-// Test fixture for testing Trust Anchor IDs, including a test DoH server for
-// advertising Trust Anchor IDs in DNS.
-class PKIMetadataComponentChromeRootStoreUpdateWithDoHServerTest
+class PKIMetadataComponentChromeRootStoreUpdateTrustAnchorIDsTest
     : public PKIMetadataComponentChromeRootStoreUpdateTest {
  public:
-  static constexpr std::string_view kDohServerHostname = "doh.test";
-  static constexpr std::string_view kHostname = "a.com";
-
-  PKIMetadataComponentChromeRootStoreUpdateWithDoHServerTest()
-      : PKIMetadataComponentChromeRootStoreUpdateTest() {
-    feature_list_.InitAndEnableFeature(net::features::kNonMtcTrustAnchorIDs);
+  PKIMetadataComponentChromeRootStoreUpdateTrustAnchorIDsTest() {
+    feature_list_.InitWithFeatures({net::features::kTLSTrustAnchorIDs,
+                                    net::features::kNonMtcTrustAnchorIDs},
+                                   {});
   }
-
-  void SetUpOnMainThread() override {
-    // Set up an HTTPS server that has two certificate chains.
-    // The first is directly issued by a unique root with the trust anchor ID
-    // `kIntermediateTrustAnchorId`.
-    // The second chain has a leaf and intermediate issued by the default test
-    // root cert, and has no trust anchor ID.
-    net::SSLServerConfig server_config;
-    server_config.client_hello_callback_for_testing =
-        base::BindRepeating(&LogClientHelloTrustAnchorIDs);
-
-    net::EmbeddedTestServer::ServerCertificateConfig tai_cert_config;
-    tai_cert_config.intermediate =
-        net::EmbeddedTestServer::IntermediateType::kNone;
-    tai_cert_config.root = net::EmbeddedTestServer::RootType::kUniqueRoot;
-    tai_cert_config.trust_anchor_id =
-        base::ToVector(kIntermediateTrustAnchorId);
-    tai_cert_config.dns_names.emplace_back(kHostname);
-
-    net::EmbeddedTestServer::ServerCertificateConfig default_cert_config;
-    default_cert_config.intermediate =
-        net::EmbeddedTestServer::IntermediateType::kInHandshake;
-    default_cert_config.root = net::EmbeddedTestServer::RootType::kUniqueRoot;
-    default_cert_config.dns_names.emplace_back(kHostname);
-
-    trust_anchor_ids_server_.SetSSLConfig(
-        {tai_cert_config, default_cert_config}, server_config);
-    trust_anchor_ids_server_.ServeFilesFromSourceDirectory("chrome/test/data");
-    ASSERT_TRUE(trust_anchor_ids_server_.Start());
-
-    // Start a DoH server, which ensures we use a resolver with HTTPS RR
-    // support. Configure it to serve records for `trust_anchor_ids_server_`.
-    doh_server_.SetHostname(kDohServerHostname);
-    url::SchemeHostPort tai_host(
-        trust_anchor_ids_server_.GetURL(kHostname, "/"));
-    doh_server_.AddAddressRecord(tai_host.host(),
-                                 net::IPAddress::IPv4Localhost());
-    doh_server_.AddRecord(net::BuildTestHttpsServiceRecord(
-        net::dns_util::GetNameForHttpsQuery(tai_host),
-        /*priority=*/1, /*service_name=*/tai_host.host(),
-        {net::BuildTestHttpsServiceTrustAnchorIDsParam(
-            GetTrustAnchorIDsForDns())}));
-    ASSERT_TRUE(doh_server_.Start());
-
-    doh_config_source_ = std::make_unique<TestDnsOverHttpsConfigSource>(
-        doh_server_.GetTemplate(), SecureDnsConfig::kModeSecure);
-    SystemNetworkContextManager::GetStubResolverConfigReader()
-        ->SetOverrideDnsOverHttpsConfigSource(std::move(doh_config_source_));
-    // The net stack doesn't enable DoH when it can't find a system DNS config
-    // (see https://crbug.com/40198483).
-    SetReplaceSystemDnsConfig();
-
-    // Ensure that the DoH configuration is picked up.
-    content::FlushNetworkServiceInstanceForTesting();
-
-    // Add a single bootstrapping rule so we can resolve the DoH server.
-    host_resolver()->AddRule(kDohServerHostname, "127.0.0.1");
-  }
-
- protected:
-  // The Trust Anchor ID configured by `trust_anchor_ids_server_` for the
-  // intermediate that it uses in its certificate chain.
-  static constexpr uint8_t kIntermediateTrustAnchorId[] = {0x01, 0x02, 0x03};
-
-  // A Trust Anchor ID that is advertised for `trust_anchor_ids_server_` in DNS,
-  // but not actually associated with a certificate chain configured on the
-  // server.
-  static constexpr uint8_t kAdvertisedButNotServedTrustAnchorId[] = {0x04, 0x05,
-                                                                     0x06};
-  // A Trust Anchor ID that is neither advertised for `trust_anchor_ids_server_`
-  // in DNS, nor actually associated with a certificate chain configured on the
-  // server.
-  static constexpr uint8_t kNotAdvertisedAndNotServedTrustAnchorId[] = {
-      0x07, 0x08, 0x09};
-
-  static constexpr size_t kTaiCredentialNum = 0;
-  static constexpr size_t kDefaultCredentialNum = 1;
-
-  // By default, `kIntermediateTrustAnchorId` and
-  // `kAdvertisedButNotServedTrustAnchorId` are advertised for `kHostname` in an
-  // HTTPS record served by `doh_server_`. Subclasses can override this method
-  // to change which Trust Anchor IDs are advertised for this host.
-  virtual std::vector<std::vector<uint8_t>> GetTrustAnchorIDsForDns() {
-    return {base::ToVector(kAdvertisedButNotServedTrustAnchorId),
-            base::ToVector(kIntermediateTrustAnchorId)};
-  }
-
-  // Installs a navigation throttle that expects `certificate` to be the served
-  // certificate chain on successful responses. Overwrites previous calls to
-  // this method (i.e., only one certificate-checking throttle is in place at a
-  // time). When the navigation is finished and the inserted throttle is
-  // destroyed, UpdateNumObservedResponses() will be called, which allows tests
-  // to check that the throttle was successfully installed and observed a
-  // navigation.
-  void SetExpectedCertificateOnResponses(
-      scoped_refptr<net::X509Certificate> certificate) {
-    certificate_observer_.InsertThrottleExpectingCertificate(
-        chrome_test_utils::GetActiveWebContents(this), certificate);
-  }
-
-  // Checks that the most recently installed navigation throttle observed at
-  // least one response.
-  void CheckThrottleObservedNavigation() {
-    ASSERT_GT(certificate_observer_.num_observed_responses(), 0u);
-  }
-
-  net::EmbeddedTestServer trust_anchor_ids_server_{
-      net::EmbeddedTestServer::TYPE_HTTPS};
-  net::TestDohServer doh_server_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<TestDnsOverHttpsConfigSource> doh_config_source_;
-  CertificateCheckingThrottleController certificate_observer_;
 };
 
 IN_PROC_BROWSER_TEST_F(
-    PKIMetadataComponentChromeRootStoreUpdateWithDoHServerTest,
+    PKIMetadataComponentChromeRootStoreUpdateTrustAnchorIDsTest,
     TrustAnchorIDs) {
+  static constexpr uint8_t kIntermediateTrustAnchorId[] = {0x01, 0x02, 0x03};
+  static constexpr uint8_t kNotServedTrustAnchorId[] = {0x07, 0x08, 0x09};
+
+  static constexpr size_t kTaiCredentialNum = 0;
+  static constexpr size_t kDefaultCredentialNum = 1;
+  static constexpr std::string_view kHostname = "a.com";
+
+  // Set up an HTTPS server that has two certificate chains.
+  // The first is directly issued by a unique root with the trust anchor ID
+  // `kIntermediateTrustAnchorId`.
+  // The second chain has a leaf and intermediate issued by the default test
+  // root cert, and has no trust anchor ID.
+  net::SSLServerConfig server_config;
+  server_config.client_hello_callback_for_testing =
+      base::BindRepeating(&LogClientHelloTrustAnchorIDs);
+
+  net::EmbeddedTestServer::ServerCertificateConfig tai_cert_config;
+  tai_cert_config.intermediate =
+      net::EmbeddedTestServer::IntermediateType::kNone;
+  tai_cert_config.root = net::EmbeddedTestServer::RootType::kUniqueRoot;
+  tai_cert_config.trust_anchor_id = base::ToVector(kIntermediateTrustAnchorId);
+  tai_cert_config.dns_names.emplace_back(kHostname);
+
+  net::EmbeddedTestServer::ServerCertificateConfig default_cert_config;
+  default_cert_config.intermediate =
+      net::EmbeddedTestServer::IntermediateType::kInHandshake;
+  default_cert_config.root = net::EmbeddedTestServer::RootType::kUniqueRoot;
+  default_cert_config.dns_names.emplace_back(kHostname);
+
+  net::EmbeddedTestServer trust_anchor_ids_server(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  trust_anchor_ids_server.SetSSLConfig({tai_cert_config, default_cert_config},
+                                       server_config);
+  trust_anchor_ids_server.ServeFilesFromSourceDirectory("chrome/test/data");
+  ASSERT_TRUE(trust_anchor_ids_server.Start());
+
   int64_t crs_version = net::CompiledChromeRootStoreVersion();
 
   {
@@ -3505,7 +3389,7 @@ IN_PROC_BROWSER_TEST_F(
     chrome_root_store::TrustAnchor* anchor =
         root_store_proto.add_trust_anchors();
     anchor->set_der(std::string(net::x509_util::CryptoBufferAsStringPiece(
-        trust_anchor_ids_server_.GetRoot(kDefaultCredentialNum)
+        trust_anchor_ids_server.GetRoot(kDefaultCredentialNum)
             ->cert_buffer())));
 
     InstallCRSUpdate(root_store_proto);
@@ -3518,15 +3402,17 @@ IN_PROC_BROWSER_TEST_F(
     // Before updating the root store with trust anchor IDs, the server should
     // serve the default credential which has both a leaf and an intermediate.
     scoped_refptr<net::X509Certificate> server_certificate =
-        trust_anchor_ids_server_.GetCertificate(kDefaultCredentialNum);
+        trust_anchor_ids_server.GetCertificate(kDefaultCredentialNum);
     ASSERT_EQ(server_certificate->intermediate_buffers().size(), 1u);
 
-    SetExpectedCertificateOnResponses(server_certificate);
+    CertificateCheckingThrottleController certificate_observer;
+    certificate_observer.InsertThrottleExpectingCertificate(
+        chrome_test_utils::GetActiveWebContents(this), server_certificate);
 
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), trust_anchor_ids_server_.GetURL(kHostname, "/simple.html")));
+        browser(), trust_anchor_ids_server.GetURL(kHostname, "/simple.html")));
     ASSERT_EQ(chrome_test_utils::GetActiveWebContents(this)->GetTitle(), u"OK");
-    CheckThrottleObservedNavigation();
+    ASSERT_GT(certificate_observer.num_observed_responses(), 0u);
   }
 
   // Install CRS update that contains two trusted Trust Anchor IDs, including
@@ -3538,14 +3424,14 @@ IN_PROC_BROWSER_TEST_F(
     chrome_root_store::TrustAnchor* anchor =
         root_store_proto.add_trust_anchors();
     anchor->set_der(std::string(net::x509_util::CryptoBufferAsStringPiece(
-        trust_anchor_ids_server_.GetRoot(kDefaultCredentialNum)
+        trust_anchor_ids_server.GetRoot(kDefaultCredentialNum)
             ->cert_buffer())));
 
     chrome_root_store::TrustAnchor* additional_cert1 =
         root_store_proto.add_additional_certs();
     additional_cert1->set_der(
         std::string(net::x509_util::CryptoBufferAsStringPiece(
-            trust_anchor_ids_server_.GetRoot(kTaiCredentialNum)
+            trust_anchor_ids_server.GetRoot(kTaiCredentialNum)
                 ->cert_buffer())));
     additional_cert1->set_trust_anchor_id(
         base::as_string_view(kIntermediateTrustAnchorId));
@@ -3560,7 +3446,7 @@ IN_PROC_BROWSER_TEST_F(
         std::string(net::x509_util::CryptoBufferAsStringPiece(
             unused_intermediate->cert_buffer())));
     additional_cert2->set_trust_anchor_id(
-        base::as_string_view(kNotAdvertisedAndNotServedTrustAnchorId));
+        base::as_string_view(kNotServedTrustAnchorId));
     additional_cert2->set_tls_trust_anchor(true);
 
     InstallCRSUpdate(root_store_proto);
@@ -3574,20 +3460,19 @@ IN_PROC_BROWSER_TEST_F(
     // because the client should signal that it trusts the intermediate as a
     // trust anchor.
     scoped_refptr<net::X509Certificate> server_certificate =
-        trust_anchor_ids_server_.GetCertificate(kTaiCredentialNum);
+        trust_anchor_ids_server.GetCertificate(kTaiCredentialNum);
     ASSERT_EQ(server_certificate->intermediate_buffers().size(), 0u);
-    SetExpectedCertificateOnResponses(server_certificate);
 
-    // TODO(crbug.com/431064813): remove after debugging test flake.
-    LOG(ERROR) << "Beginning navigation with Trust Anchor IDs";
+    CertificateCheckingThrottleController certificate_observer;
+    certificate_observer.InsertThrottleExpectingCertificate(
+        chrome_test_utils::GetActiveWebContents(this), server_certificate);
 
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), trust_anchor_ids_server_.GetURL(kHostname, "/simple.html")));
+        browser(), trust_anchor_ids_server.GetURL(kHostname, "/simple.html")));
     ASSERT_EQ(u"OK", chrome_test_utils::GetActiveWebContents(this)->GetTitle());
-    CheckThrottleObservedNavigation();
+    ASSERT_GT(certificate_observer.num_observed_responses(), 0u);
   }
 }
-
 
 // TODO(crbug.com/40816087) additional Chrome Root Store browser tests to
 // add:
