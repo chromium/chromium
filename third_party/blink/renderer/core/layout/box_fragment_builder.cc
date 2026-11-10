@@ -230,10 +230,14 @@ void BoxFragmentBuilder::AddResult(
            child_layout_result.IsSelfCollapsing(), relative_insets,
            inline_container);
   if (margins) {
-    const auto& box_fragment = To<PhysicalBoxFragment>(fragment);
-    if (!margins->IsEmpty() || !box_fragment.Margins().IsZero()) {
-      box_fragment.GetMutableForContainerLayout().SetMargins(
-          margins->ConvertToPhysical(GetWritingDirection()));
+    if (fragment.IsCSSBox()) {
+      const auto& box_fragment = To<PhysicalBoxFragment>(fragment);
+      if (!margins->IsEmpty() || !box_fragment.Margins().IsZero()) {
+        box_fragment.GetMutableForContainerLayout().SetMargins(
+            margins->ConvertToPhysical(GetWritingDirection()));
+      }
+    } else {
+      DCHECK(margins->IsEmpty());
     }
   }
 

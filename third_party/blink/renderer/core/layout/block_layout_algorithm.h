@@ -505,6 +505,7 @@ class CORE_EXPORT BlockLayoutAlgorithm
   LayoutUnit FinishTextControlPlaceholder(
       const LayoutResult* result,
       const LogicalOffset& offset,
+      const BoxStrut& margins,
       bool apply_fixed_size,
       const PreviousInflowPosition& previous_inflow_position);
 

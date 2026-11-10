@@ -2758,12 +2758,8 @@ LayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
                                     logical_offset.block_offset);
   }
 
-  if (IsA<BlockNode>(child)) {
-    container_builder_.AddResult(*layout_result, logical_offset,
-                                 child_data->margins);
-  } else {
-    container_builder_.AddResult(*layout_result, logical_offset);
-  }
+  container_builder_.AddResult(*layout_result, logical_offset,
+                               child_data->margins);
 
   if (!child_break_token || !child_break_token->IsInParallelFlow()) {
     *previous_inflow_position = ComputeInflowPosition(
@@ -4072,14 +4068,16 @@ BlockLayoutAlgorithm::HandleTextControlPlaceholder(
   }
   LogicalOffset offset = BorderScrollbarPadding().StartOffset();
   if (Node().IsTextArea()) {
-    return {FinishTextControlPlaceholder(result, offset, apply_fixed_size,
+    return {FinishTextControlPlaceholder(result, offset, child_data.margins,
+                                         apply_fixed_size,
                                          previous_inflow_position),
             result->Status()};
   }
   // Usually another child provides the baseline. However it doesn't if
   // another child is out-of-flow.
   if (!container_builder_.FirstBaseline()) {
-    return {FinishTextControlPlaceholder(result, offset, apply_fixed_size,
+    return {FinishTextControlPlaceholder(result, offset, child_data.margins,
+                                         apply_fixed_size,
                                          previous_inflow_position),
             result->Status()};
   }
@@ -4111,17 +4109,19 @@ BlockLayoutAlgorithm::HandleTextControlPlaceholder(
       offset.block_offset = border_padding_block_start;
     }
   }
-  return {FinishTextControlPlaceholder(result, offset, apply_fixed_size,
-                                       previous_inflow_position),
-          result->Status()};
+  return {
+      FinishTextControlPlaceholder(result, offset, child_data.margins,
+                                   apply_fixed_size, previous_inflow_position),
+      result->Status()};
 }
 
 LayoutUnit BlockLayoutAlgorithm::FinishTextControlPlaceholder(
     const LayoutResult* result,
     const LogicalOffset& offset,
+    const BoxStrut& margins,
     bool apply_fixed_size,
     const PreviousInflowPosition& previous_inflow_position) {
-  container_builder_.AddResult(*result, offset);
+  container_builder_.AddResult(*result, offset, margins);
   LayoutUnit block_offset = previous_inflow_position.logical_block_offset;
   if (apply_fixed_size) {
     return block_offset;
