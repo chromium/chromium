@@ -1965,5 +1965,41 @@ suite('TabPickerTest', () => {
       assertFalse(
           document.documentElement.classList.contains('focus-outline-visible'));
     });
+
+    test('Hovering item closes the flyout without close delay', async () => {
+      await createSingleTabApp(/*enabled=*/ true);
+      const item =
+          app.shadowRoot.querySelector<HTMLButtonElement>('#singleTabItem');
+      assertTrue(isVisible(item));
+      assert(item);
+
+      app.$.shareTabsTrigger.dispatchEvent(new PointerEvent('pointerenter'));
+      await microtasksFinished();
+      assertTrue(app.$.tabMenu.open);
+      assertEquals(
+          'true', app.$.shareTabsTrigger.getAttribute('aria-expanded'));
+
+      // Moving from the trigger onto the single tab row schedules the delayed
+      // close, then closes the flyout right away so the trigger does not stay
+      // highlighted next to the hovered row while the timer is pending.
+      const closePromise = eventToPromise('close', app.$.tabMenu);
+      app.$.shareTabsTrigger.dispatchEvent(new PointerEvent('pointerleave'));
+      assertTrue(app.$.tabMenu.open);
+      item.dispatchEvent(new PointerEvent('pointerenter'));
+      assertFalse(app.$.tabMenu.open);
+      await closePromise;
+      await microtasksFinished();
+      assertFalse(app.tabMenuOpen);
+      assertEquals(
+          'false', app.$.shareTabsTrigger.getAttribute('aria-expanded'));
+      assertFalse(app.shadowRoot.activeElement === app.$.shareTabsTrigger);
+
+      // The flyout stays closed after the original close delay would have
+      // elapsed, and hovering the row again with the flyout closed is a no-op.
+      await new Promise(resolve => window.setTimeout(resolve, 60));
+      item.dispatchEvent(new PointerEvent('pointerenter'));
+      await microtasksFinished();
+      assertFalse(app.$.tabMenu.open);
+    });
   });
 });
