@@ -268,7 +268,9 @@ bool ChildProcessLauncher::IsStarting() {
 
 const base::Process& ChildProcessLauncher::GetProcess() const {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
-  CHECK(!starting_, base::NotFatalUntil::M160);
+  // TODO(crbug.com/582211833): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!starting_);
   return process_.process;
 }
 
