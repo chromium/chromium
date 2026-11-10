@@ -63,7 +63,6 @@ source_set("browser_tests") {
     "//chrome/browser/ash/extensions",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/test:test_support",
-    "//chrome/test:test_support_ui",
     "//components/account_id",
     "//components/services/app_service",
     "//components/user_manager:test_support",

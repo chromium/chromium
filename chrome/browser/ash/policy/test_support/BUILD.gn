@@ -15,6 +15,8 @@ static_library("test_support") {
     "remote_commands_service_mixin.h",
   ]
 
+  public_deps = [ "//chrome/test/base:mixin_based_in_process_browser_test" ]
+
   deps = [
     "//base",
     "//chrome/browser",
@@ -24,7 +26,7 @@ static_library("test_support") {
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/ash/policy/server_backed_state",
-    "//chrome/test:test_support_ui",
+    "//chrome/test/base:fake_gaia_mixin",
     "//chromeos/ash/components/attestation:test_support",
     "//chromeos/ash/components/system",
     "//components/account_id",

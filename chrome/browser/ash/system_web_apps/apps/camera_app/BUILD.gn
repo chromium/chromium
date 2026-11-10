@@ -89,7 +89,9 @@ source_set("browser_tests") {
 
   deps = [
     "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
-    "//chrome/test:test_support_ui",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/test/base:ui_test_utils",
     "//content/public/browser",
     "//content/test:test_support",
   ]

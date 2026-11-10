@@ -116,7 +116,6 @@ source_set("browser_tests") {
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
     "//chrome/test:test_support",
-    "//chrome/test:test_support_ui",
     "//chromeos/constants",
     "//components/language/core/browser",
     "//components/services/app_service",

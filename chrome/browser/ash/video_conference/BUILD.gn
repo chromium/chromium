@@ -118,7 +118,6 @@ source_set("browser_tests") {
     "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/common",
     "//chrome/test:test_support",
-    "//chrome/test:test_support_ui",
     "//chromeos/ash/components/audio",
     "//components/prefs",
     "//components/user_manager",

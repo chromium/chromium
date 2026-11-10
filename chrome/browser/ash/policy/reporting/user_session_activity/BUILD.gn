@@ -99,7 +99,6 @@ source_set("browser_tests") {
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/policy/messaging_layer/proto:user_session_activity_proto",
     "//chrome/test:test_support",
-    "//chrome/test:test_support_ui",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/login/auth",
     "//chromeos/ash/components/login/auth/public:authpublic",

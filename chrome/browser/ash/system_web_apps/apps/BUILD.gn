@@ -270,7 +270,6 @@ source_set("browser_tests") {
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/common:constants",
     "//chrome/test:test_support",
-    "//chrome/test:test_support_ui",
     "//chromeos/ash/components/boca",
     "//chromeos/ash/components/boca/proto",
     "//chromeos/ash/components/boca/session_api",
