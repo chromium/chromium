@@ -95,6 +95,7 @@ class ContextualTasksWebView
   bool IsErrorPageVisible() const;
 
   // views::View:
+  void AddedToWidget() override;
   void OnThemeChanged() override;
 
   // content::WebContentsDelegate:

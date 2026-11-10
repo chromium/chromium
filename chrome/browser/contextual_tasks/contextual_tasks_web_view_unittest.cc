@@ -43,6 +43,7 @@
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
@@ -1197,6 +1198,30 @@ TEST_F(ContextualTasksWebViewTest,
   EXPECT_EQ(
       web_view_->ghost_loader_view()->GetWebContents()->GetVisibleURL().ref(),
       "ghost-loader");
+}
+
+TEST_F(ContextualTasksWebViewTest,
+       SetWebContentsDefersWasShownUntilAddedToWidget) {
+  web_view_ = std::make_unique<ContextualTasksWebView>(browser_window_.get());
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+
+  // Simulate a cached task WebContents that was previously hidden when the side
+  // panel closed.
+  web_contents->WasHidden();
+  ASSERT_EQ(web_contents->GetVisibility(), content::Visibility::HIDDEN);
+
+  // Attaching the WebContents while `web_view_` is not yet in a Widget must not
+  // mark the WebContents visible before its native view is attached to a
+  // Widget.
+  ASSERT_EQ(web_view_->GetWidget(), nullptr);
+  web_view_->SetWebContents(web_contents.get());
+  EXPECT_EQ(web_contents->GetVisibility(), content::Visibility::HIDDEN);
+
+  // Once `web_view_` is added to a Widget, `AddedToWidget()` marks the hosted
+  // WebContents visible.
+  web_view_->AddedToWidget();
+  EXPECT_EQ(web_contents->GetVisibility(), content::Visibility::VISIBLE);
 }
 
 }  // namespace
