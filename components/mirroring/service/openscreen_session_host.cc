@@ -441,6 +441,7 @@ void OpenscreenSessionHost::OnNegotiated(
                             base::Unretained(this)));
     video_sender_ = std::move(video_sender);
     num_video_frames_dropped_ = 0;
+    usable_bandwidth_before_backoff_ = 0;
     refresh_interval_ = mirror_settings_.refresh_interval();
     expecting_a_refresh_frame_ = false;
     if (refresh_interval_.is_positive()) {
@@ -1065,10 +1066,15 @@ void OpenscreenSessionHost::UpdateBandwidthEstimate() {
 void OpenscreenSessionHost::UpdateBandwidthEstimate(
     const int bandwidth_estimate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const int current_frames_dropped =
-      video_sender_ ? video_sender_->GetFramesDropped() : 0;
-  const bool frames_dropped_since_last_update =
-      video_sender_ && (current_frames_dropped > num_video_frames_dropped_);
+  if (!video_sender_) {
+    return;
+  }
+
+  const int current_frames_dropped = video_sender_->GetFramesDropped();
+  // `current_frames_dropped` is cumulative for the lifetime of `video_sender_`,
+  // so `!is_congested` means zero frames were dropped since the last update.
+  CHECK_GE(current_frames_dropped, num_video_frames_dropped_);
+  const bool is_congested = current_frames_dropped > num_video_frames_dropped_;
   num_video_frames_dropped_ = current_frames_dropped;
 
   // Nothing to do yet.
@@ -1078,25 +1084,118 @@ void OpenscreenSessionHost::UpdateBandwidthEstimate(
 
   // Don't ever try to use *all* of the network bandwidth! However, don't go
   // below the absolute minimum requirement either.
-  constexpr double kGoodNetworkCitizenFactor = 0.8;
+  static constexpr double kGoodNetworkCitizenFactor = 0.8;
   const uint32_t usable_bandwidth = std::max<uint32_t>(
       kGoodNetworkCitizenFactor * bandwidth_estimate, kMinRequiredBitrate);
 
-  if (usable_bandwidth > usable_bandwidth_) {
-    constexpr double kConservativeIncrease = 1.1;
-    usable_bandwidth_ = std::min<uint32_t>(
-        usable_bandwidth_ * kConservativeIncrease, usable_bandwidth);
-  } else if (usable_bandwidth < usable_bandwidth_) {
-    if (!video_sender_ || frames_dropped_since_last_update) {
-      usable_bandwidth_ = usable_bandwidth;
-    }
+  const uint32_t prev_usable_bandwidth = usable_bandwidth_;
+  const bool was_recovering =
+      usable_bandwidth_ < usable_bandwidth_before_backoff_;
+  const bool gradual_backoff_enabled = base::FeatureList::IsEnabled(
+      features::kCastStreamingGradualBandwidthBackoff);
+  if (gradual_backoff_enabled) {
+    UpdateBandwidthGradualBackoff(is_congested, usable_bandwidth);
+  } else {
+    UpdateBandwidthLegacy(is_congested, usable_bandwidth);
   }
 
-  VLOG(2) << ": updated available bandwidth to " << usable_bandwidth_ << "/"
-          << bandwidth_estimate << " ("
-          << static_cast<int>(static_cast<float>(usable_bandwidth_) * 100 /
-                              bandwidth_estimate)
-          << "%).";
+  if (VLOG_IS_ON(2)) {
+    const char* mode = "holding";
+    if (is_congested && usable_bandwidth_ <= prev_usable_bandwidth) {
+      mode = "backing off";
+    } else if (usable_bandwidth_ > prev_usable_bandwidth) {
+      mode = (gradual_backoff_enabled && was_recovering) ? "recovering"
+                                                         : "post-recovery";
+    }
+    const double factor =
+        prev_usable_bandwidth > 0
+            ? static_cast<double>(usable_bandwidth_) / prev_usable_bandwidth
+            : 1.0;
+
+    VLOG(2) << ": updated available bandwidth to " << usable_bandwidth_ << "/"
+            << bandwidth_estimate << " ("
+            << static_cast<int>(static_cast<float>(usable_bandwidth_) * 100 /
+                                bandwidth_estimate)
+            << "%, experiment="
+            << (gradual_backoff_enabled ? "GradualBandwidthBackoff" : "Legacy")
+            << ", mode=" << mode << ", factor=" << factor << ").";
+  }
+}
+
+void OpenscreenSessionHost::UpdateBandwidthLegacy(bool is_congested,
+                                                  uint32_t usable_bandwidth) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  static constexpr double kConservativeIncrease = 1.1;
+
+  // Legacy behavior: increase conservatively, but snap straight down to the
+  // estimate when video frames are being dropped.
+  if (usable_bandwidth > usable_bandwidth_) {
+    usable_bandwidth_ = std::min<uint32_t>(
+        usable_bandwidth_ * kConservativeIncrease, usable_bandwidth);
+  } else if (is_congested) {
+    CHECK_LE(usable_bandwidth, usable_bandwidth_);
+    usable_bandwidth_ = usable_bandwidth;
+  }
+  // Otherwise (`!is_congested && usable_bandwidth <= usable_bandwidth_`), leave
+  // `usable_bandwidth_` unchanged. Open Screen's bandwidth estimate is based on
+  // the current send rate, which drops during idle or static-screen periods
+  // even when the network is not congested. Without frame drops, a lower
+  // estimate does not indicate congestion and must not reduce the usable
+  // bandwidth.
+}
+
+void OpenscreenSessionHost::UpdateBandwidthGradualBackoff(
+    bool is_congested,
+    uint32_t usable_bandwidth) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  static constexpr double kConservativeIncrease = 1.1;
+  static constexpr double kMinBackoffFactor = 0.5;
+  static constexpr double kMaxBackoffFactor = 0.85;
+  static constexpr double kFastRecoveryIncrease = 1.5;
+
+  if (is_congested) {
+    // The bandwidth estimate is based on what is currently being sent, so a
+    // low estimate is not, on its own, evidence of congestion. For example,
+    // while the screen is static very little data is sent. Only reduce the
+    // usable bandwidth when video frames are being dropped.
+    //
+    // Back off multiplicatively, toward the estimate, rather than snapping to
+    // it: a single dropped frame should not discard most of the bandwidth.
+    // Each update reduces the usable bandwidth by between 15% and 50%. Even if
+    // `usable_bandwidth > usable_bandwidth_`, clamping to `kMaxBackoffFactor`
+    // ensures congestion always reduces `usable_bandwidth_`.
+    const uint32_t backed_off_bandwidth = std::clamp<uint32_t>(
+        usable_bandwidth, usable_bandwidth_ * kMinBackoffFactor,
+        usable_bandwidth_ * kMaxBackoffFactor);
+
+    // Remember the level that was in use before backing off, so it can be
+    // quickly recovered once the congestion clears. If congestion happens
+    // again while recovering, the previous level was not sustainable, so only
+    // recover up to the current level.
+    usable_bandwidth_before_backoff_ = usable_bandwidth_;
+    usable_bandwidth_ =
+        std::max<uint32_t>(backed_off_bandwidth, kMinRequiredBitrate);
+    CHECK_LE(usable_bandwidth_, usable_bandwidth_before_backoff_);
+  } else if (usable_bandwidth > usable_bandwidth_) {
+    // Quickly recover to the level that was in use before the last backoff,
+    // and then continue to increase conservatively.
+    const bool is_recovering =
+        usable_bandwidth_ < usable_bandwidth_before_backoff_;
+    uint32_t increased_bandwidth =
+        usable_bandwidth_ *
+        (is_recovering ? kFastRecoveryIncrease : kConservativeIncrease);
+    if (is_recovering) {
+      increased_bandwidth = std::min(
+          increased_bandwidth,
+          std::max<uint32_t>(usable_bandwidth_before_backoff_,
+                             usable_bandwidth_ * kConservativeIncrease));
+    }
+    usable_bandwidth_ = std::min(increased_bandwidth, usable_bandwidth);
+  }
+  // Otherwise (`!is_congested && usable_bandwidth <= usable_bandwidth_`), leave
+  // `usable_bandwidth_` unchanged: without frame drops, a lower estimate (such
+  // as during a static screen when little data is sent) is not evidence of
+  // congestion.
 }
 
 void OpenscreenSessionHost::Negotiate() {

@@ -4805,54 +4805,6 @@ const FeatureEntry::FeatureVariation
          kAnimatedProgressBarJumpToCompletionNoFade, nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 #if !BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam
-    kCastStreamingExponentialVideoBitrateAlgorithmDefault[] = {
-        {"window_size", "30"},
-        {"drop_threshold", "1"},
-        {"increase_factor", "1.05"},
-        {"decrease_factor", "0.9"},
-        {"dynamic_window_multiplier", "0.0"},
-};
-
-const FeatureEntry::FeatureParam
-    kCastStreamingExponentialVideoBitrateAlgorithmAggressive[] = {
-        {"window_size", "30"},
-        {"drop_threshold", "1"},
-        {"increase_factor", "1.1"},
-        {"decrease_factor", "0.9"},
-        {"dynamic_window_multiplier", "0.0"},
-};
-
-const FeatureEntry::FeatureParam
-    kCastStreamingExponentialVideoBitrateAlgorithmConservative[] = {
-        {"window_size", "30"},
-        {"drop_threshold", "1"},
-        {"increase_factor", "1.05"},
-        {"decrease_factor", "0.8"},
-        {"dynamic_window_multiplier", "0.0"},
-};
-
-const FeatureEntry::FeatureParam
-    kCastStreamingExponentialVideoBitrateAlgorithmLargeWindow[] = {
-        {"window_size", "60"},
-        {"drop_threshold", "2"},
-        {"increase_factor", "1.05"},
-        {"decrease_factor", "0.9"},
-        {"dynamic_window_multiplier", "0.0"},
-};
-
-const FeatureEntry::FeatureVariation
-    kCastStreamingExponentialVideoBitrateAlgorithmVariations[] = {
-        {"Default (30, 1, 1.05, 0.9)",
-         kCastStreamingExponentialVideoBitrateAlgorithmDefault, nullptr},
-        {"Aggressive Increase (1.1)",
-         kCastStreamingExponentialVideoBitrateAlgorithmAggressive, nullptr},
-        {"Conservative Decrease (0.8)",
-         kCastStreamingExponentialVideoBitrateAlgorithmConservative, nullptr},
-        {"Large Window (60)",
-         kCastStreamingExponentialVideoBitrateAlgorithmLargeWindow, nullptr},
-};
-
 const FeatureEntry::FeatureParam kCastStreamingMaxVideoBitrate5Mbps[] = {
     {"max_bitrate_mbps", "5"},
 };
@@ -6165,15 +6117,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCaptureHandleForStandalonePwasAndIwasDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(features::kCaptureHandleForStandalonePwasAndIwas)},
-    {"cast-streaming-exponential-video-bitrate-algorithm",
-     flag_descriptions::kCastStreamingExponentialVideoBitrateAlgorithmName,
-     flag_descriptions::
-         kCastStreamingExponentialVideoBitrateAlgorithmDescription,
-     kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         media::kCastStreamingExponentialVideoBitrateAlgorithm,
-         kCastStreamingExponentialVideoBitrateAlgorithmVariations,
-         "CastStreamingExponentialVideoBitrateAlgorithm")},
 
     {"cast-streaming-hardware-av1",
      flag_descriptions::kCastStreamingHardwareAv1Name,

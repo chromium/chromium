@@ -28,6 +28,12 @@ BASE_DECLARE_FEATURE(kCastStreamingOfferHardwareFirst);
 COMPONENT_EXPORT(MIRRORING_SERVICE)
 BASE_DECLARE_FEATURE(kCastMirroringNativeNV12);
 
+// Killswitch for gradual bandwidth backoff and fast recovery on congestion.
+// When disabled, the usable bandwidth snaps down to the estimate whenever
+// video frames are dropped. crbug.com/572902679
+COMPONENT_EXPORT(MIRRORING_SERVICE)
+BASE_DECLARE_FEATURE(kCastStreamingGradualBandwidthBackoff);
+
 }  // namespace features
 }  // namespace mirroring
 

@@ -3060,14 +3060,6 @@ inline constexpr char kCastStreamingMaxVideoBitrateDescription[] =
     "Enables configuring the maximum video bitrate limit for Cast Streaming "
     "to experiment with different network quality ceilings.";
 
-inline constexpr char kCastStreamingExponentialVideoBitrateAlgorithmName[] =
-    "Cast Streaming Exponential Video Bitrate Algorithm";
-inline constexpr char
-    kCastStreamingExponentialVideoBitrateAlgorithmDescription[] =
-        "Enables the exponential video bitrate algorithm for Cast Streaming. "
-        "This algorithm uses an exponential increase and decrease factor to "
-        "adjust the bitrate based on network conditions.";
-
 inline constexpr char kCastStreamingMacHardwareH264Name[] =
     "Enable hardware H264 video encoding on for Cast Streaming on macOS";
 inline constexpr char kCastStreamingMacHardwareH264Description[] =

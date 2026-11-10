@@ -212,9 +212,12 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   // Called by media::cast::VideoSender to help determine the video bitrate.
   uint32_t GetVideoNetworkBandwidth() const;
 
-  // Called periodically to update the `bandwidth_estimate_`.
+  // Called periodically to update `usable_bandwidth_`.
   void UpdateBandwidthEstimate();
   void UpdateBandwidthEstimate(int bandwidth_estimate);
+  void UpdateBandwidthLegacy(bool is_congested, uint32_t usable_bandwidth);
+  void UpdateBandwidthGradualBackoff(bool is_congested,
+                                     uint32_t usable_bandwidth);
 
   // Create and send OFFER message.
   void Negotiate();
@@ -410,6 +413,10 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   // update so downward bandwidth estimates during idle/static screen periods
   // (where no frames are dropped) do not falsely crush the target bitrate.
   int num_video_frames_dropped_ = 0;
+
+  // The usable bandwidth in use before the most recent backoff due to
+  // congestion. Used to quickly recover after congestion clears.
+  uint32_t usable_bandwidth_before_backoff_ = 0;
 
   // Indicate whether we're in the middle of switching tab sources.
   bool switching_tab_source_ = false;

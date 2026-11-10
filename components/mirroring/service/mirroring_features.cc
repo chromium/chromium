@@ -22,5 +22,8 @@ BASE_FEATURE(kCastStreamingOfferHardwareFirst,
 // converted to I420.
 BASE_FEATURE(kCastMirroringNativeNV12, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kCastStreamingGradualBandwidthBackoff,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace mirroring

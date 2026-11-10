@@ -1877,11 +1877,6 @@
     "expiry_milestone": 180
   },
   {
-    "name": "cast-streaming-exponential-video-bitrate-algorithm",
-    "owners": [ "jophba@chromium.org", "openscreen-eng@chromium.org" ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "cast-streaming-hardware-av1",
     "owners": [ "jophba@chromium.org", "openscreen-eng@chromium.org" ],
     "expiry_milestone": 160

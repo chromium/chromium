@@ -24,7 +24,6 @@
 #include "media/cast/encoding/video_encoder.h"
 #include "media/cast/sender/openscreen_frame_sender.h"
 #include "media/cast/sender/performance_metrics_overlay.h"
-#include "media/cast/sender/video_bitrate_suggester.h"
 #include "third_party/openscreen/src/cast/streaming/public/encoded_frame.h"
 #include "third_party/openscreen/src/cast/streaming/public/sender.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
@@ -139,22 +138,23 @@ VideoSender::VideoSender(
     std::unique_ptr<openscreen::cast::Sender> sender,
     VideoSender::PlayoutDelayChangeCB playout_delay_change_cb,
     media::VideoCaptureFeedbackCB feedback_cb,
-    VideoBitrateSuggester::GetVideoNetworkBandwidthCB get_bandwidth_cb)
+    GetVideoNetworkBandwidthCB get_bandwidth_cb)
     : frame_sender_(FrameSender::Create(cast_environment,
                                         video_config,
                                         std::move(sender),
                                         *this)),
       video_encoder_(std::move(video_encoder)),
       cast_environment_(cast_environment),
-      bitrate_suggester_(
-          std::make_unique<VideoBitrateSuggester>(video_config,
-                                                  std::move(get_bandwidth_cb))),
+      get_bandwidth_cb_(std::move(get_bandwidth_cb)),
+      min_bitrate_(video_config.min_bitrate),
+      max_bitrate_(video_config.max_bitrate),
       min_playout_delay_(video_config.min_playout_delay),
       max_playout_delay_(video_config.max_playout_delay),
       playout_delay_change_cb_(std::move(playout_delay_change_cb)),
       feedback_cb_(feedback_cb),
       is_hardware_encoder_(video_config.use_hardware_encoder) {
   CHECK(video_encoder_);
+  CHECK_GE(max_bitrate_, min_bitrate_);
 }
 
 VideoSender::~VideoSender() {
@@ -260,7 +260,6 @@ void VideoSender::InsertRawVideoFrame(
       frame_sender_->ShouldDropNextFrame(duration_added_by_next_frame);
   const bool should_drop_frame =
       reason != CastStreamingFrameDropReason::kNotDropped;
-  bitrate_suggester_->RecordShouldDropNextFrame(should_drop_frame);
   if (should_drop_frame) {
     base::TimeDelta new_target_delay =
         std::min(frame_sender_->CurrentRoundTripTime() * kRoundTripsNeeded +
@@ -297,7 +296,8 @@ void VideoSender::InsertRawVideoFrame(
     return;
   }
 
-  const uint32_t suggested_bitrate = bitrate_suggester_->GetSuggestedBitrate();
+  const uint32_t suggested_bitrate =
+      std::clamp(get_bandwidth_cb_.Run(), min_bitrate_, max_bitrate_);
 
   // To avoid thrashing the encoder, which can cause dropped frames, only update
   // the encoder if the suggested bitrate has changed by a significant amount.
@@ -450,6 +450,7 @@ void VideoSender::OnEncodedVideoFrame(
   const CastStreamingFrameDropReason reason =
       frame_sender_->EnqueueFrame(std::move(encoded_frame));
   if (reason != CastStreamingFrameDropReason::kNotDropped) {
+    number_of_frames_dropped_++;
     video_encoder_->GenerateKeyFrame();
 
     base::UmaHistogramEnumeration(kHistogramFrameDropped, reason);

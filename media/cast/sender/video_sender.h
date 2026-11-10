@@ -17,7 +17,6 @@
 #include "media/cast/cast_config.h"
 #include "media/cast/common/rtp_time.h"
 #include "media/cast/sender/frame_sender.h"
-#include "media/cast/sender/video_bitrate_suggester.h"
 
 namespace openscreen::cast {
 class Sender;
@@ -41,17 +40,17 @@ class VideoEncoder;
 class VideoSender : public FrameSender::Client {
  public:
   using PlayoutDelayChangeCB = base::RepeatingCallback<void(base::TimeDelta)>;
+  using GetVideoNetworkBandwidthCB = base::RepeatingCallback<uint32_t()>;
 
   // NOTE: Since the `Sender` instance is destroyed when renegotiation is
   // complete, `this` is also invalid and should be immediately torn down.
-  VideoSender(
-      std::unique_ptr<VideoEncoder> video_encoder,
-      scoped_refptr<CastEnvironment> cast_environment,
-      const FrameSenderConfig& video_config,
-      std::unique_ptr<openscreen::cast::Sender> sender,
-      VideoSender::PlayoutDelayChangeCB playout_delay_change_cb,
-      media::VideoCaptureFeedbackCB feedback_cb,
-      VideoBitrateSuggester::GetVideoNetworkBandwidthCB get_bandwidth_cb);
+  VideoSender(std::unique_ptr<VideoEncoder> video_encoder,
+              scoped_refptr<CastEnvironment> cast_environment,
+              const FrameSenderConfig& video_config,
+              std::unique_ptr<openscreen::cast::Sender> sender,
+              VideoSender::PlayoutDelayChangeCB playout_delay_change_cb,
+              media::VideoCaptureFeedbackCB feedback_cb,
+              GetVideoNetworkBandwidthCB get_bandwidth_cb);
 
   VideoSender(const VideoSender&) = delete;
   VideoSender& operator=(const VideoSender&) = delete;
@@ -127,8 +126,12 @@ class VideoSender : public FrameSender::Client {
   // we get the same value.
   uint32_t last_bitrate_ = 0;
 
-  // Keeps track of frame drops and uses that to drive the video bitrate.
-  std::unique_ptr<VideoBitrateSuggester> bitrate_suggester_;
+  // Callback that provides the current estimated network bandwidth available
+  // for video.
+  GetVideoNetworkBandwidthCB get_bandwidth_cb_;
+
+  const uint32_t min_bitrate_ = 0;
+  const uint32_t max_bitrate_ = 0;
 
   // The total amount of time between a frame's capture/recording on the sender
   // and its playback on the receiver (i.e., shown to a user).

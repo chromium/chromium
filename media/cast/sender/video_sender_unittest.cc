@@ -81,10 +81,6 @@ void SaveOperationalStatus(std::vector<OperationalStatus>* statuses,
 
 void IgnorePlayoutDelayChanges(base::TimeDelta unused_playout_delay) {}
 
-uint32_t GetVideoNetworkBandwidth() {
-  return openscreen::cast::kDefaultVideoMinBitRate;
-}
-
 }  // namespace
 
 class VideoSenderTest : public ::testing::Test, public WithCastEnvironment {
@@ -169,8 +165,11 @@ class VideoSenderTest : public ::testing::Test, public WithCastEnvironment {
   };
 
   // Create a VideoSender instance using an encoder of type `encoder_type`.
-  void CreateSender(EncoderType encoder_type) {
-    FrameSenderConfig video_config = GetDefaultVideoSenderConfig();
+  void CreateSender(
+      EncoderType encoder_type,
+      std::optional<FrameSenderConfig> custom_config = std::nullopt) {
+    FrameSenderConfig video_config =
+        custom_config.value_or(GetDefaultVideoSenderConfig());
     video_config.use_hardware_encoder = encoder_type == EncoderType::kHardware;
 
     EXPECT_TRUE(status_changes_.empty());
@@ -219,10 +218,14 @@ class VideoSenderTest : public ::testing::Test, public WithCastEnvironment {
         base::BindRepeating(&IgnorePlayoutDelayChanges),
         base::BindRepeating(&VideoSenderTest::HandleVideoCaptureFeedback,
                             base::Unretained(this)),
-        base::BindRepeating(&GetVideoNetworkBandwidth));
+        base::BindRepeating(&VideoSenderTest::GetVideoNetworkBandwidth,
+                            base::Unretained(this)));
 
     RunTasksAndAdvanceClock();
   }
+
+  uint32_t GetVideoNetworkBandwidth() const { return current_bandwidth_; }
+  void set_bandwidth(uint32_t bandwidth) { current_bandwidth_ = bandwidth; }
 
   scoped_refptr<VideoFrame> GetNewVideoFrame(
       VideoPixelFormat format = PIXEL_FORMAT_I420) {
@@ -275,6 +278,7 @@ class VideoSenderTest : public ::testing::Test, public WithCastEnvironment {
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<VideoSender> video_sender_;
   raw_ptr<MockVideoEncoder> mock_encoder_ = nullptr;
+  uint32_t current_bandwidth_ = openscreen::cast::kDefaultVideoMinBitRate;
 };
 
 TEST_F(VideoSenderTest, BuiltInEncoder) {
@@ -623,6 +627,81 @@ TEST_F(VideoSenderTest,
   video_sender().InsertRawVideoFrame(GetNewVideoFrame(), NowTicks());
   EXPECT_EQ(video_sender().GetFramesInserted(), 2);
   EXPECT_EQ(video_sender().GetFramesDropped(), 0);
+}
+
+TEST_F(VideoSenderTest, EnqueueFrameDropCountsAsDroppedFrame) {
+  base::HistogramTester histogram_tester;
+  CreateSender(EncoderType::kMock);
+
+  VideoEncoder::FrameEncodedCallback callback;
+  EXPECT_CALL(mock_encoder(), GenerateKeyFrame()).Times(2);
+  EXPECT_CALL(mock_encoder(), SetBitRate(5000000));
+  EXPECT_CALL(mock_encoder(), EncodeVideoFrame(_, _, _))
+      .WillOnce([&callback](
+                    scoped_refptr<media::VideoFrame> video_frame,
+                    base::TimeTicks reference_time,
+                    VideoEncoder::FrameEncodedCallback frame_encoded_callback) {
+        callback = std::move(frame_encoded_callback);
+        return true;
+      });
+
+  video_sender().InsertRawVideoFrame(GetNewVideoFrame(), NowTicks());
+  SetVideoCaptureFeedbackClosure(task_environment().QuitClosure());
+
+  auto encoded_frame = std::make_unique<SenderEncodedFrame>();
+  encoded_frame->encoder_utilization = 0.3;
+  encoded_frame->lossiness = 0.1f;
+  encoded_frame->encode_completion_time = NowTicks();
+  encoded_frame->is_key_frame = false;
+  encoded_frame->frame_id = FrameId::first();
+  encoded_frame->referenced_frame_id = FrameId::first() - 1;
+  encoded_frame->rtp_timestamp = RtpTimeTicks(12345);
+  encoded_frame->reference_time = NowTicks();
+  encoded_frame->data = base::HeapArray<uint8_t>::WithSize(1024);
+
+  std::move(callback).Run(std::move(encoded_frame));
+  RunUntilQuit();
+
+  EXPECT_EQ(video_sender().GetFramesInserted(), 1);
+  EXPECT_EQ(video_sender().GetFramesDropped(), 1);
+  histogram_tester.ExpectUniqueSample(
+      "CastStreaming.Sender.Video.FrameDropped",
+      CastStreamingFrameDropReason::kInvalidReferencedFrameId, 1);
+}
+
+TEST_F(VideoSenderTest, ClampsBitrateToConfiguredBounds) {
+  FrameSenderConfig config = GetDefaultVideoSenderConfig();
+  config.min_bitrate = 500000;
+  config.max_bitrate = 5000000;
+  set_bandwidth(100000);  // Below min_bitrate.
+
+  CreateSender(EncoderType::kMock, config);
+
+  EXPECT_CALL(mock_encoder(), GenerateKeyFrame()).Times(AtLeast(1));
+  // Below min_bitrate -> clamped to min_bitrate (500000).
+  EXPECT_CALL(mock_encoder(), SetBitRate(500000));
+  EXPECT_CALL(mock_encoder(), EncodeVideoFrame(_, _, _))
+      .WillRepeatedly(testing::Return(true));
+
+  video_sender().InsertRawVideoFrame(GetNewVideoFrame(), NowTicks());
+  RunTasksAndAdvanceClock(base::Milliseconds(33));
+
+  // Within range, changed by more than 5% -> uses bandwidth (2000000).
+  set_bandwidth(2000000);
+  EXPECT_CALL(mock_encoder(), SetBitRate(2000000));
+  video_sender().InsertRawVideoFrame(GetNewVideoFrame(), NowTicks());
+  RunTasksAndAdvanceClock(base::Milliseconds(33));
+
+  // Small change (<= 5%) -> hysteresis prevents update.
+  set_bandwidth(2050000);
+  video_sender().InsertRawVideoFrame(GetNewVideoFrame(), NowTicks());
+  RunTasksAndAdvanceClock(base::Milliseconds(33));
+
+  // Above max_bitrate -> clamped to max_bitrate (5000000).
+  set_bandwidth(10000000);
+  EXPECT_CALL(mock_encoder(), SetBitRate(5000000));
+  video_sender().InsertRawVideoFrame(GetNewVideoFrame(), NowTicks());
+  RunTasksAndAdvanceClock(base::Milliseconds(33));
 }
 
 }  // namespace media::cast
