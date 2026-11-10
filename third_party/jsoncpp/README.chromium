@@ -4,7 +4,7 @@ Version: N/A
 Revision: 93acc7b155048f1a66c43235cc205519f1e7a6ea
 Update Mechanism: Autoroll
 License: JsonCPP
-License File: LICENSE
+License File: src/LICENSE
 Security Critical: yes
 Shipped: yes
 CPEPrefix: cpe:/a:jsoncpp_project:jsoncpp:1.10.0

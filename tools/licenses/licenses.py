@@ -239,7 +239,7 @@ SPECIAL_CASES = {
     "URL": "https://github.com/open-source-parsers/jsoncpp",
     "Shipped": "yes",
     "License": "MIT",
-    "License File": ["//third_party/jsoncpp/LICENSE"],
+    "License File": ["//third_party/jsoncpp/src/LICENSE"],
   },
   os.path.join('third_party', 'pdfium'): {
     "Name": "PDFium",
