@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <set>
 #include <string>
@@ -16,6 +17,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -380,7 +382,6 @@ class MediaStreamDispatcherHostTest : public RenderViewHostTestHarness {
     ash::CrasAudioHandler::InitializeForTesting();
 #endif
 
-
     stub_video_device_ids_.emplace_back(kRegularVideoDeviceId1);
     stub_video_device_ids_.emplace_back(kDepthVideoDeviceId);
     ON_CALL(
@@ -650,7 +651,6 @@ TEST_F(MediaStreamDispatcherHostTest, GenerateStreamWithAudioOnly) {
 
 TEST_F(MediaStreamDispatcherHostTest,
        BadMessageIfAudioNotRequestedAndSuppressLocalAudioPlayback) {
-
   blink::StreamControls controls;
   controls.audio.stream_type = MediaStreamType::NO_SERVICE;
   controls.video.stream_type = MediaStreamType::DISPLAY_VIDEO_CAPTURE;
@@ -1387,64 +1387,65 @@ TEST_P(MediaStreamDispatcherHostActiveRfhTest,
   }
 }
 
+constexpr auto kAllMediaStreamTypes = [] {
+  constexpr size_t kNumTypes =
+      static_cast<size_t>(blink::mojom::MediaStreamType::NUM_MEDIA_TYPES) -
+      static_cast<size_t>(blink::mojom::MediaStreamType::NO_SERVICE);
+  std::array<blink::mojom::MediaStreamType, kNumTypes> types{};
+  for (size_t i = 0; i < kNumTypes; ++i) {
+    types[i] = static_cast<blink::mojom::MediaStreamType>(
+        static_cast<size_t>(blink::mojom::MediaStreamType::NO_SERVICE) + i);
+  }
+  return types;
+}();
+
 class MediaStreamDispatcherHostStreamTypeCombinationTest
     : public MediaStreamDispatcherHostTest,
-      public ::testing::WithParamInterface<std::tuple<int, int>> {};
+      public ::testing::WithParamInterface<
+          std::tuple<blink::mojom::MediaStreamType,
+                     blink::mojom::MediaStreamType>> {};
 
 TEST_P(MediaStreamDispatcherHostStreamTypeCombinationTest,
        GenerateStreamWithStreamTypeCombination) {
-  using blink::mojom::MediaStreamType;
+  using enum blink::mojom::MediaStreamType;
 
-  std::set<std::tuple<MediaStreamType, MediaStreamType>> kValidCombinations = {
-      {MediaStreamType::NO_SERVICE, MediaStreamType::NO_SERVICE},
-      {MediaStreamType::NO_SERVICE, MediaStreamType::DEVICE_VIDEO_CAPTURE},
-      {MediaStreamType::NO_SERVICE, MediaStreamType::GUM_TAB_VIDEO_CAPTURE},
-      {MediaStreamType::NO_SERVICE, MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE},
-      {MediaStreamType::NO_SERVICE, MediaStreamType::DISPLAY_VIDEO_CAPTURE},
-      {MediaStreamType::NO_SERVICE, MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET},
-      {MediaStreamType::NO_SERVICE,
-       MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB},
-      {MediaStreamType::DEVICE_AUDIO_CAPTURE, MediaStreamType::NO_SERVICE},
-      {MediaStreamType::DEVICE_AUDIO_CAPTURE,
-       MediaStreamType::DEVICE_VIDEO_CAPTURE},
-      {MediaStreamType::GUM_TAB_AUDIO_CAPTURE, MediaStreamType::NO_SERVICE},
-      {MediaStreamType::GUM_TAB_AUDIO_CAPTURE,
-       MediaStreamType::GUM_TAB_VIDEO_CAPTURE},
-      {MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE,
-       MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE},
-      {MediaStreamType::DISPLAY_AUDIO_CAPTURE, MediaStreamType::NO_SERVICE},
-      {MediaStreamType::DISPLAY_AUDIO_CAPTURE,
-       MediaStreamType::DISPLAY_VIDEO_CAPTURE},
-      {MediaStreamType::DISPLAY_AUDIO_CAPTURE,
-       MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB}};
+  constexpr auto kValidCombinations = base::MakeFixedFlatSet<ParamType>({
+      {NO_SERVICE, NO_SERVICE},
+      {NO_SERVICE, DEVICE_VIDEO_CAPTURE},
+      {NO_SERVICE, GUM_TAB_VIDEO_CAPTURE},
+      {NO_SERVICE, GUM_DESKTOP_VIDEO_CAPTURE},
+      {NO_SERVICE, DISPLAY_VIDEO_CAPTURE},
+      {NO_SERVICE, DISPLAY_VIDEO_CAPTURE_SET},
+      {NO_SERVICE, DISPLAY_VIDEO_CAPTURE_THIS_TAB},
+      {DEVICE_AUDIO_CAPTURE, NO_SERVICE},
+      {DEVICE_AUDIO_CAPTURE, DEVICE_VIDEO_CAPTURE},
+      {GUM_TAB_AUDIO_CAPTURE, NO_SERVICE},
+      {GUM_TAB_AUDIO_CAPTURE, GUM_TAB_VIDEO_CAPTURE},
+      {GUM_DESKTOP_AUDIO_CAPTURE, GUM_DESKTOP_VIDEO_CAPTURE},
+      {DISPLAY_AUDIO_CAPTURE, NO_SERVICE},
+      {DISPLAY_AUDIO_CAPTURE, DISPLAY_VIDEO_CAPTURE},
+      {DISPLAY_AUDIO_CAPTURE, DISPLAY_VIDEO_CAPTURE_THIS_TAB},
+  });
 
   blink::StreamControls controls;
-
-  controls.audio.stream_type =
-      static_cast<MediaStreamType>(std::get<0>(GetParam()));
-
-  controls.video.stream_type =
-      static_cast<MediaStreamType>(std::get<1>(GetParam()));
+  std::tie(controls.audio.stream_type, controls.video.stream_type) = GetParam();
 
   SetupFakeUI(true);
+
+  const bool is_valid = kValidCombinations.contains(GetParam());
   EXPECT_CALL(*this, MockOnBadMessage(
                          main_rfh()->GetGlobalId().child_id,
                          bad_message::MSDH_INVALID_STREAM_TYPE_COMBINATION))
-      .Times(!kValidCombinations.count(std::make_tuple(
-          controls.audio.stream_type, controls.video.stream_type)));
+      .Times(is_valid ? 0 : 1);
+
   host_->OnGenerateStreams(kPageRequestId, controls);
 }
 
 INSTANTIATE_TEST_SUITE_P(
     ,
     MediaStreamDispatcherHostStreamTypeCombinationTest,
-    ::testing::Combine(
-        ::testing::Range(
-            static_cast<int>(blink::mojom::MediaStreamType::NO_SERVICE),
-            static_cast<int>(blink::mojom::MediaStreamType::NUM_MEDIA_TYPES)),
-        ::testing::Range(
-            static_cast<int>(blink::mojom::MediaStreamType::NO_SERVICE),
-            static_cast<int>(blink::mojom::MediaStreamType::NUM_MEDIA_TYPES))));
+    ::testing::Combine(::testing::ValuesIn(kAllMediaStreamTypes),
+                       ::testing::ValuesIn(kAllMediaStreamTypes)));
 
 class MediaStreamDispatcherHostMultiCaptureTest
     : public RenderViewHostTestHarness {
