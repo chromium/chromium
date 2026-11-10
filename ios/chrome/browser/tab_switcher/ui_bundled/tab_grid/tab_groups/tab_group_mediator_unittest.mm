@@ -6,7 +6,7 @@
 
 #import <memory>
 
-#import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -93,7 +93,7 @@ class TabGroupMediatorTest : public GridMediatorTestClass {
         "| f [ 1 a* b c ] d e ", browser_->GetProfile()));
 
     mode_holder_ = [[TabGridModeHolder alloc] initWithTabGridState:nil];
-    tab_group_ = web_state_list->GetGroupOfWebStateAt(1);
+    tab_group_ = web_state_list->GetGroupOfWebStateAt(1)->GetWeakPtr();
     tab_group_consumer_ = OCMProtocolMock(@protocol(TabGroupConsumer));
     share_kit_service_ = std::make_unique<TestShareKitService>(
         nullptr, nullptr, nullptr, tab_group_service_);
@@ -119,7 +119,7 @@ class TabGroupMediatorTest : public GridMediatorTestClass {
              shareKitService:share_kit_service_.get()
         collaborationService:collaboration_service_.get()
           dataSharingService:data_sharing_service_.get()
-                    tabGroup:tab_group_->GetWeakPtr()
+                    tabGroup:tab_group_
                     consumer:tab_group_consumer_
                 gridConsumer:consumer_
                   modeHolder:mode_holder_
@@ -143,7 +143,7 @@ class TabGroupMediatorTest : public GridMediatorTestClass {
  protected:
   TestTabGroupMediator* mediator_;
   id<TabGroupConsumer> tab_group_consumer_;
-  raw_ptr<const TabGroup, DanglingUntriaged> tab_group_;
+  base::WeakPtr<const TabGroup> tab_group_;
   std::unique_ptr<WebStateListBuilderFromDescription> builder_;
   std::unique_ptr<ShareKitService> share_kit_service_;
   std::unique_ptr<collaboration::MockCollaborationService>
@@ -237,7 +237,7 @@ TEST_F(TabGroupMediatorTest, DropCrossWindowTab) {
   EXPECT_EQ(7, web_state_list->count());
   EXPECT_EQ(0, other_browser->GetWebStateList()->count());
   EXPECT_EQ(url_to_load, web_state_list->GetWebStateAt(4)->GetVisibleURL());
-  EXPECT_EQ(tab_group_, web_state_list->GetGroupOfWebStateAt(4));
+  EXPECT_EQ(tab_group_.get(), web_state_list->GetGroupOfWebStateAt(4));
   ExpectThatDragItemOriginMetricLogged(DragItemOrigin::kOtherBrowser);
 }
 
@@ -260,7 +260,7 @@ TEST_F(TabGroupMediatorTest, DropInternalURL) {
   web::WebState* web_state = web_state_list->GetWebStateAt(2);
   EXPECT_EQ(url_to_load,
             web_state->GetNavigationManager()->GetPendingItem()->GetURL());
-  EXPECT_EQ(tab_group_, web_state_list->GetGroupOfWebStateAt(2));
+  EXPECT_EQ(tab_group_.get(), web_state_list->GetGroupOfWebStateAt(2));
   ExpectThatDragItemOriginMetricLogged(DragItemOrigin::kOther);
 }
 
@@ -284,7 +284,7 @@ TEST_F(TabGroupMediatorTest, DropExternalURL) {
   web::WebState* web_state = web_state_list->GetWebStateAt(1);
   EXPECT_EQ(GURL("https://dragged_url.com"),
             web_state->GetNavigationManager()->GetPendingItem()->GetURL());
-  EXPECT_EQ(tab_group_, web_state_list->GetGroupOfWebStateAt(2));
+  EXPECT_EQ(tab_group_.get(), web_state_list->GetGroupOfWebStateAt(2));
   ExpectThatDragItemOriginMetricLogged(DragItemOrigin::kOther);
 }
 
