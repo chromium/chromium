@@ -36,8 +36,6 @@ class BrowserContext : public content::BrowserContext {
   content::SSLHostStateDelegate* GetSSLHostStateDelegate() override;
   content::PermissionControllerDelegate* GetPermissionControllerDelegate()
       override;
-  content::ReduceAcceptLanguageControllerDelegate*
-  GetReduceAcceptLanguageControllerDelegate() override;
   content::ClientHintsControllerDelegate* GetClientHintsControllerDelegate()
       override;
   content::BackgroundFetchDelegate* GetBackgroundFetchDelegate() override;

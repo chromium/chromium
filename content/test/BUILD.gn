@@ -442,8 +442,6 @@ static_library("test_support") {
     "mock_platform_notification_service.h",
     "mock_process_selection_deferring_condition_tester.cc",
     "mock_process_selection_deferring_condition_tester.h",
-    "mock_reduce_accept_language_controller_delegate.cc",
-    "mock_reduce_accept_language_controller_delegate.h",
     "mock_render_input_router.cc",
     "mock_render_input_router.h",
     "mock_render_widget_host_delegate.cc",

@@ -33,7 +33,6 @@
 #include "content/shell/common/shell_paths.h"
 #include "content/shell/common/shell_switches.h"
 #include "content/test/mock_background_sync_controller.h"
-#include "content/test/mock_reduce_accept_language_controller_delegate.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 
 namespace content {
@@ -165,16 +164,6 @@ ContentIndexProvider* ShellBrowserContext::GetContentIndexProvider() {
   if (!content_index_provider_)
     content_index_provider_ = std::make_unique<ShellContentIndexProvider>();
   return content_index_provider_.get();
-}
-
-ReduceAcceptLanguageControllerDelegate*
-ShellBrowserContext::GetReduceAcceptLanguageControllerDelegate() {
-  if (!reduce_accept_lang_controller_delegate_) {
-    reduce_accept_lang_controller_delegate_ =
-        std::make_unique<MockReduceAcceptLanguageControllerDelegate>(
-            GetShellLanguage());
-  }
-  return reduce_accept_lang_controller_delegate_.get();
 }
 
 OriginTrialsControllerDelegate*

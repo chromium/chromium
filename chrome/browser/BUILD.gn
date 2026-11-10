@@ -2501,8 +2501,6 @@ source_set("browser") {
     "//chrome/browser/reader_mode",
     "//chrome/browser/reader_mode:impl",
     "//chrome/browser/reading_list",
-    "//chrome/browser/reduce_accept_language",
-    "//chrome/browser/reduce_accept_language:impl",
     "//chrome/browser/regional_capabilities:metrics_provider_impl",
     "//chrome/browser/renderer_context_menu",
     "//chrome/browser/renderer_context_menu:impl",

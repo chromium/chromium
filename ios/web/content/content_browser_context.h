@@ -56,8 +56,6 @@ class ContentBrowserContext : public content::BrowserContext {
   content::ContentIndexProvider* GetContentIndexProvider() override;
   content::ClientHintsControllerDelegate* GetClientHintsControllerDelegate()
       override;
-  content::ReduceAcceptLanguageControllerDelegate*
-  GetReduceAcceptLanguageControllerDelegate() override;
   content::OriginTrialsControllerDelegate* GetOriginTrialsControllerDelegate()
       override;
 

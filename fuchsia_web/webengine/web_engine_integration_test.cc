@@ -349,69 +349,6 @@ TEST_F(WebEngineIntegrationTest, ContentDirectoryProvider) {
   navigation_listener()->RunUntilUrlAndTitleEquals(kUrl, kTitle);
 }
 
-class WebEngineIntegrationReduceAcceptLanguageTest
-    : public WebEngineIntegrationTest {
- protected:
-  GURL GetEchoAcceptLanguageUrl() {
-    static std::string echo_accept_language_header_path =
-        std::string("/echoheader?") + net::HttpRequestHeaders::kAcceptLanguage;
-    return embedded_test_server_.GetURL(echo_accept_language_header_path);
-  }
-  std::vector<std::string> GetNavigatorLanguages() {
-    std::optional<base::Value> value =
-        ExecuteJavaScript(frame_.get(), "navigator.languages;");
-    std::vector<std::string> accept_languages;
-    if (!value) {
-      return accept_languages;
-    }
-    for (const auto& language : value->GetList()) {
-      accept_languages.push_back(language.GetString());
-    }
-    return accept_languages;
-  }
-};
-
-TEST_F(WebEngineIntegrationReduceAcceptLanguageTest,
-       DisableReduceAcceptLanguage) {
-  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  command_line.AppendSwitchASCII("disable-features", "ReduceAcceptLanguage");
-  StartWebEngine(std::move(command_line));
-
-  // Create a Context with no values specified.
-  fuchsia::web::CreateContextParams create_params = TestContextParams();
-  CreateContextAndFrameAndLoadUrl(std::move(create_params),
-                                  GetEchoAcceptLanguageUrl());
-
-  // Query & verify that the header echoed into the document body is as
-  // expected.
-  std::string result =
-      ExecuteJavaScriptWithStringResult("document.body.innerText;");
-  EXPECT_EQ(result, "en-US,en;q=0.9");
-
-  // Query & verify that the navigator.languages is as expected.
-  EXPECT_THAT(GetNavigatorLanguages(), testing::ElementsAre("en-US"));
-}
-
-TEST_F(WebEngineIntegrationReduceAcceptLanguageTest, ReduceAcceptLanguage) {
-  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  command_line.AppendSwitchASCII("enable-features", "ReduceAcceptLanguage");
-  StartWebEngine(std::move(command_line));
-
-  // Create a Context with no values specified.
-  fuchsia::web::CreateContextParams create_params = TestContextParams();
-  CreateContextAndFrameAndLoadUrl(std::move(create_params),
-                                  GetEchoAcceptLanguageUrl());
-
-  // Query & verify that the header echoed into the document body is as
-  // expected.
-  std::string result =
-      ExecuteJavaScriptWithStringResult("document.body.innerText;");
-  EXPECT_EQ(result, "en-US,en;q=0.9");
-
-  // Query & verify that the navigator.languages is as expected.
-  EXPECT_THAT(GetNavigatorLanguages(), testing::ElementsAre("en-US"));
-}
-
 class FakeAudioRenderer
     : public fuchsia::media::testing::AudioRenderer_TestBase {
  public:

@@ -136,10 +136,5 @@ CastBrowserContext::GetBrowsingDataRemoverDelegate() {
   return nullptr;
 }
 
-content::ReduceAcceptLanguageControllerDelegate*
-CastBrowserContext::GetReduceAcceptLanguageControllerDelegate() {
-  return nullptr;
-}
-
 }  // namespace shell
 }  // namespace chromecast

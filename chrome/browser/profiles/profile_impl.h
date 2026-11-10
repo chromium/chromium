@@ -98,8 +98,6 @@ class ProfileImpl : public Profile {
       override;
   content::BackgroundFetchDelegate* GetBackgroundFetchDelegate() override;
   content::BackgroundSyncController* GetBackgroundSyncController() override;
-  content::ReduceAcceptLanguageControllerDelegate*
-  GetReduceAcceptLanguageControllerDelegate() override;
   std::unique_ptr<download::InProgressDownloadManager>
   RetrieveInProgressDownloadManager() override;
   content::FileSystemAccessPermissionContext*

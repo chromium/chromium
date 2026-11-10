@@ -21,7 +21,6 @@ class ClientHintsControllerDelegate;
 class DownloadManagerDelegate;
 class OriginTrialsControllerDelegate;
 class PermissionControllerDelegate;
-class ReduceAcceptLanguageControllerDelegate;
 class ShellDownloadManagerDelegate;
 class ZoomLevelDelegate;
 
@@ -60,8 +59,6 @@ class ShellBrowserContext : public BrowserContext {
   BrowsingDataRemoverDelegate* GetBrowsingDataRemoverDelegate() override;
   ContentIndexProvider* GetContentIndexProvider() override;
   ClientHintsControllerDelegate* GetClientHintsControllerDelegate() override;
-  ReduceAcceptLanguageControllerDelegate*
-  GetReduceAcceptLanguageControllerDelegate() override;
   OriginTrialsControllerDelegate* GetOriginTrialsControllerDelegate() override;
 
  protected:
@@ -71,8 +68,6 @@ class ShellBrowserContext : public BrowserContext {
   std::unique_ptr<PermissionControllerDelegate> permission_manager_;
   std::unique_ptr<BackgroundSyncController> background_sync_controller_;
   std::unique_ptr<ContentIndexProvider> content_index_provider_;
-  std::unique_ptr<ReduceAcceptLanguageControllerDelegate>
-      reduce_accept_lang_controller_delegate_;
   std::unique_ptr<OriginTrialsControllerDelegate>
       origin_trials_controller_delegate_;
 

@@ -40,8 +40,6 @@ class WebTestBrowserContext final : public ShellBrowserContext {
   BackgroundFetchDelegate* GetBackgroundFetchDelegate() override;
   BackgroundSyncController* GetBackgroundSyncController() override;
   ClientHintsControllerDelegate* GetClientHintsControllerDelegate() override;
-  ReduceAcceptLanguageControllerDelegate*
-  GetReduceAcceptLanguageControllerDelegate() override;
 
   WebTestPermissionManager* GetWebTestPermissionManager();
   WebTestStorageAccessManager* GetWebTestStorageAccessManager();
@@ -57,8 +55,6 @@ class WebTestBrowserContext final : public ShellBrowserContext {
   std::unique_ptr<ClientHintsControllerDelegate>
       client_hints_controller_delegate_;
   std::unique_ptr<WebTestStorageAccessManager> storage_access_;
-  std::unique_ptr<ReduceAcceptLanguageControllerDelegate>
-      reduce_accept_language_delegate_;
 };
 
 }  // namespace content

@@ -83,8 +83,6 @@ class HEADLESS_EXPORT HeadlessBrowserContextImpl final
   content::BackgroundSyncController* GetBackgroundSyncController() override;
   content::BrowsingDataRemoverDelegate* GetBrowsingDataRemoverDelegate()
       override;
-  content::ReduceAcceptLanguageControllerDelegate*
-  GetReduceAcceptLanguageControllerDelegate() override;
   content::OriginTrialsControllerDelegate* GetOriginTrialsControllerDelegate()
       override;
 

@@ -138,11 +138,6 @@ ContentBrowserContext::GetContentIndexProvider() {
   return nullptr;
 }
 
-content::ReduceAcceptLanguageControllerDelegate*
-ContentBrowserContext::GetReduceAcceptLanguageControllerDelegate() {
-  return nullptr;
-}
-
 content::OriginTrialsControllerDelegate*
 ContentBrowserContext::GetOriginTrialsControllerDelegate() {
   return nullptr;

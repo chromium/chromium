@@ -1044,11 +1044,6 @@ TestingProfile::GetBrowsingDataRemoverDelegate() {
   return ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(this);
 }
 
-content::ReduceAcceptLanguageControllerDelegate*
-TestingProfile::GetReduceAcceptLanguageControllerDelegate() {
-  return nullptr;
-}
-
 content::OriginTrialsControllerDelegate*
 TestingProfile::GetOriginTrialsControllerDelegate() {
   return OriginTrialsFactory::GetForBrowserContext(this);

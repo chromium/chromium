@@ -158,8 +158,6 @@ class AwBrowserContext : public content::BrowserContext,
       override;
   content::FileSystemAccessPermissionContext*
   GetFileSystemAccessPermissionContext() override;
-  content::ReduceAcceptLanguageControllerDelegate*
-  GetReduceAcceptLanguageControllerDelegate() override;
   std::unique_ptr<download::InProgressDownloadManager>
   RetrieveInProgressDownloadManager() override;
   content::OriginTrialsControllerDelegate* GetOriginTrialsControllerDelegate()

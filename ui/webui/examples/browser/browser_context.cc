@@ -66,11 +66,6 @@ BrowserContext::GetPermissionControllerDelegate() {
   return nullptr;
 }
 
-content::ReduceAcceptLanguageControllerDelegate*
-BrowserContext::GetReduceAcceptLanguageControllerDelegate() {
-  return nullptr;
-}
-
 content::ClientHintsControllerDelegate*
 BrowserContext::GetClientHintsControllerDelegate() {
   return nullptr;

@@ -15,7 +15,6 @@
 namespace content {
 
 class MockBackgroundSyncController;
-class MockReduceAcceptLanguageControllerDelegate;
 class MockSSLHostStateDelegate;
 class ZoomLevelDelegate;
 
@@ -39,8 +38,6 @@ class TestBrowserContext : public BrowserContext {
   // which it normally does to ensure that it can delete the temp dir.
   base::FilePath TakePath();
 
-  void SetReduceAcceptLanguageControllerDelegate(
-      std::unique_ptr<MockReduceAcceptLanguageControllerDelegate> delegate);
   void SetSpecialStoragePolicy(storage::SpecialStoragePolicy* policy);
   void SetPermissionControllerDelegate(
       std::unique_ptr<PermissionControllerDelegate> delegate);
@@ -73,8 +70,6 @@ class TestBrowserContext : public BrowserContext {
   BackgroundFetchDelegate* GetBackgroundFetchDelegate() override;
   BackgroundSyncController* GetBackgroundSyncController() override;
   BrowsingDataRemoverDelegate* GetBrowsingDataRemoverDelegate() override;
-  ReduceAcceptLanguageControllerDelegate*
-  GetReduceAcceptLanguageControllerDelegate() override;
   content::OriginTrialsControllerDelegate* GetOriginTrialsControllerDelegate()
       override;
 
@@ -86,8 +81,6 @@ class TestBrowserContext : public BrowserContext {
   std::unique_ptr<PermissionControllerDelegate> permission_controller_delegate_;
   std::unique_ptr<MockBackgroundSyncController> background_sync_controller_;
   std::unique_ptr<PlatformNotificationService> platform_notification_service_;
-  std::unique_ptr<MockReduceAcceptLanguageControllerDelegate>
-      reduce_accept_language_controller_delegate_;
   raw_ptr<OriginTrialsControllerDelegate> origin_trials_controller_delegate_ =
       nullptr;
   raw_ptr<ClientHintsControllerDelegate> client_hints_controller_delegate_ =

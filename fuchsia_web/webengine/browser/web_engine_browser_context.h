@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "components/client_hints/browser/in_memory_client_hints_controller_delegate.h"
 #include "components/keyed_service/core/simple_factory_key.h"
-#include "components/reduce_accept_language/browser/in_memory_reduce_accept_language_service.h"
 #include "content/public/browser/browser_context.h"
 #include "fuchsia_web/webengine/browser/platform_notification_service_impl.h"
 #include "fuchsia_web/webengine/browser/push_messaging_service_impl.h"
@@ -71,8 +70,6 @@ class WebEngineBrowserContext final : public content::BrowserContext {
       override;
   std::unique_ptr<media::VideoDecodePerfHistory> CreateVideoDecodePerfHistory()
       override;
-  content::ReduceAcceptLanguageControllerDelegate*
-  GetReduceAcceptLanguageControllerDelegate() override;
 
  private:
   explicit WebEngineBrowserContext(
@@ -87,8 +84,6 @@ class WebEngineBrowserContext final : public content::BrowserContext {
   SimpleFactoryKey simple_factory_key_;
   WebEnginePermissionDelegate permission_delegate_;
   client_hints::InMemoryClientHintsControllerDelegate client_hints_delegate_;
-  reduce_accept_language::InMemoryReduceAcceptLanguageService
-      reduce_accept_language_delegate_;
   PushMessagingServiceImpl push_messaging_service_;
   PlatformNotificationServiceImpl platform_notification_service_;
 };

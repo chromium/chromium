@@ -15,7 +15,6 @@
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/notimplemented.h"
 #include "base/path_service.h"
-#include "base/strings/string_split.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/client_hints/browser/in_memory_client_hints_controller_delegate.h"
 #include "components/embedder_support/user_agent_utils.h"
@@ -23,7 +22,6 @@
 #include "components/keyed_service/core/simple_key_map.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/site_isolation/site_isolation_policy.h"
-#include "components/strings/grit/components_locale_settings.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "fuchsia_web/webengine/browser/web_engine_net_log_observer.h"
@@ -31,8 +29,6 @@
 #include "media/capabilities/in_memory_video_decode_stats_db_impl.h"
 #include "media/mojo/services/video_decode_perf_history.h"
 #include "net/base/switches.h"
-#include "net/http/http_util.h"
-#include "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -48,13 +44,6 @@ std::unique_ptr<WebEngineNetLogObserver> CreateNetLogObserver() {
   }
 
   return result;
-}
-
-std::vector<std::string> GetAcceptLanguages() {
-  std::string accept_languages_str = net::HttpUtil::ExpandLanguageList(
-      l10n_util::GetStringUTF8(IDS_ACCEPT_LANGUAGES));
-  return base::SplitString(accept_languages_str, ",", base::TRIM_WHITESPACE,
-                           base::SPLIT_WANT_ALL);
 }
 
 }  // namespace
@@ -165,11 +154,6 @@ WebEngineBrowserContext::GetBrowsingDataRemoverDelegate() {
   return nullptr;
 }
 
-content::ReduceAcceptLanguageControllerDelegate*
-WebEngineBrowserContext::GetReduceAcceptLanguageControllerDelegate() {
-  return &reduce_accept_language_delegate_;
-}
-
 std::unique_ptr<media::VideoDecodePerfHistory>
 WebEngineBrowserContext::CreateVideoDecodePerfHistory() {
   if (!IsOffTheRecord()) {
@@ -200,7 +184,6 @@ WebEngineBrowserContext::WebEngineBrowserContext(
       client_hints_delegate_(network_quality_tracker,
                              IsJavaScriptAllowedCallback(),
                              embedder_support::GetUserAgentMetadata()),
-      reduce_accept_language_delegate_(GetAcceptLanguages()),
       push_messaging_service_(*this,
                               *os_crypt_async,
                               *network_connection_tracker)

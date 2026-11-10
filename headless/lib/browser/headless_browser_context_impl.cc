@@ -265,11 +265,6 @@ HeadlessBrowserContextImpl::GetBrowsingDataRemoverDelegate() {
   return nullptr;
 }
 
-content::ReduceAcceptLanguageControllerDelegate*
-HeadlessBrowserContextImpl::GetReduceAcceptLanguageControllerDelegate() {
-  return nullptr;
-}
-
 content::OriginTrialsControllerDelegate*
 HeadlessBrowserContextImpl::GetOriginTrialsControllerDelegate() {
   if (!origin_trials_controller_delegate_) {

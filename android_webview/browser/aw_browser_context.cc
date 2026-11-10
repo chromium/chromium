@@ -528,11 +528,6 @@ AwBrowserContext::GetFileSystemAccessPermissionContext() {
   return &fsa_permission_context_;
 }
 
-content::ReduceAcceptLanguageControllerDelegate*
-AwBrowserContext::GetReduceAcceptLanguageControllerDelegate() {
-  return nullptr;
-}
-
 std::unique_ptr<download::InProgressDownloadManager>
 AwBrowserContext::RetrieveInProgressDownloadManager() {
   return std::make_unique<download::InProgressDownloadManager>(

@@ -302,11 +302,6 @@ TopChromeWebUIProfileImpl::GetBrowsingDataRemoverDelegate() {
   return nullptr;
 }
 
-content::ReduceAcceptLanguageControllerDelegate*
-TopChromeWebUIProfileImpl::GetReduceAcceptLanguageControllerDelegate() {
-  return nullptr;
-}
-
 std::unique_ptr<media::VideoDecodePerfHistory>
 TopChromeWebUIProfileImpl::CreateVideoDecodePerfHistory() {
   return nullptr;

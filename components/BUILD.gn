@@ -556,7 +556,6 @@ test("components_unittests") {
       "//components/push_messaging:unit_tests",
       "//components/record_replay/content/browser:unit_tests",
       "//components/record_replay/core/browser:unit_tests",
-      "//components/reduce_accept_language/browser:unit_tests",
       "//components/reporting/resources:unit_tests",
       "//components/services/paint_preview_compositor:unit_tests",
       "//components/services/storage:tests",

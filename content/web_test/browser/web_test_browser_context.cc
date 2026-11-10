@@ -17,7 +17,6 @@
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "content/test/mock_background_sync_controller.h"
 #include "content/test/mock_platform_notification_service.h"
-#include "content/test/mock_reduce_accept_language_controller_delegate.h"
 #include "content/web_test/browser/web_test_background_fetch_delegate.h"
 #include "content/web_test/browser/web_test_download_manager_delegate.h"
 #include "content/web_test/browser/web_test_permission_manager.h"
@@ -117,16 +116,6 @@ WebTestBrowserContext::GetClientHintsControllerDelegate() {
             content::GetShellUserAgentMetadata());
   }
   return client_hints_controller_delegate_.get();
-}
-
-ReduceAcceptLanguageControllerDelegate*
-WebTestBrowserContext::GetReduceAcceptLanguageControllerDelegate() {
-  if (!reduce_accept_language_delegate_) {
-    reduce_accept_language_delegate_ =
-        std::make_unique<content::MockReduceAcceptLanguageControllerDelegate>(
-            content::GetShellLanguage());
-  }
-  return reduce_accept_language_delegate_.get();
 }
 
 }  // namespace content

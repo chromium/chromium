@@ -2596,7 +2596,6 @@ test("unit_tests") {
     "//chrome/browser/profiles:unit_tests",
     "//chrome/browser/push_messaging:unit_tests",
     "//chrome/browser/pwc:unit_tests",
-    "//chrome/browser/reduce_accept_language:unit_tests",
     "//chrome/browser/regional_capabilities:unit_tests",
     "//chrome/browser/safe_browsing:unit_tests",
     "//chrome/browser/search:unit_tests",
