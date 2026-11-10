@@ -69,7 +69,7 @@ source_set("browser_test_support") {
     ":test_build_ts",
     "//ash/public/cpp",
     "//ash/webui/web_applications/test:test_support",
-    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
   ]
 
   data = [

@@ -278,7 +278,7 @@ static_library("test_support") {
   public_deps = [
     "//base",
     "//chrome/browser/ash/input_method",
-    "//chrome/test:test_support_ui",
+    "//chrome/test/base:in_process_browser_test",
     "//chromeos/ash/services/ime/public/cpp:structs",
     "//ui/base/ime/ash",
   ]
@@ -457,7 +457,6 @@ source_set("browser_tests") {
 
   public_deps = [
     "//base",
-    "//chrome/test:test_support_ui",
     "//ui/base/ime",
     "//ui/base/ime/init",
     "//ui/gfx/geometry",

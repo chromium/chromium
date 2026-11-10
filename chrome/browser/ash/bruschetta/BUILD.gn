@@ -114,7 +114,7 @@ source_set("browser_tests") {
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/net",
     "//chrome/browser/profiles:profile",
-    "//chrome/test:test_support_ui",
+    "//chrome/test/base:in_process_browser_test",
     "//content/test:test_support",
     "//net",
     "//net:test_support",

@@ -330,7 +330,6 @@ source_set("browser_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/common:non_code_constants",
     "//chrome/test:test_support",
-    "//chrome/test:test_support_ui",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus/constants",
     "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",

@@ -55,7 +55,7 @@ source_set("browser_tests") {
     ":eche_app",
     "//base",
     "//chrome/browser/ash/accessibility",
-    "//chrome/test:test_support_ui",
+    "//chrome/test/base:in_process_browser_test",
     "//content/test:test_support",
     "//testing/gtest",
   ]

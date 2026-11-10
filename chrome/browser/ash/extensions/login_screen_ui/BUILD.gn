@@ -69,7 +69,6 @@ source_set("browser_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/login/login_screen_extension_ui",
     "//chrome/test:test_support",
-    "//chrome/test:test_support_ui",
     "//components/version_info",
     "//content/public/browser",
     "//content/test:test_support",

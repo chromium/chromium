@@ -125,5 +125,8 @@ source_set("browser_tests") {
     "//chrome/browser/ash/app_list/search/test:browser_test_support",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/drive:test_support",
+    "//chrome/browser/signin",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 }

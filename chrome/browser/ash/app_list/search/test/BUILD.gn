@@ -59,7 +59,6 @@ static_library("browser_test_support") {
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/app_list/test:test_support",
     "//chrome/browser/ash/file_manager",
-    "//chrome/test:test_support_ui",
     "//content/test:test_support",
   ]
 }

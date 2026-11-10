@@ -50,7 +50,6 @@ source_set("browser_tests") {
     "//chrome/browser/ash/base",
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/test:test_support",
-    "//chrome/test:test_support_ui",
     "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/system",
     "//components/application_locale_storage",

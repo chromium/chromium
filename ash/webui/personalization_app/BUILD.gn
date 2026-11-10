@@ -65,6 +65,8 @@ source_set("test_support") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
+  public_deps = [ "//chrome/test/base:web_ui_test_support" ]
+
   deps = [
     ":personalization_app",
     "//ash/public/cpp",
@@ -72,7 +74,6 @@ source_set("test_support") {
     "//ash/webui/common/mojom:sea_pen",
     "//ash/webui/personalization_app/mojom",
     "//ash/webui/personalization_app/proto",
-    "//chrome/test:test_support_ui",
     "//chrome/test/base:web_ui_mocha_browser_test",
   ]
 
