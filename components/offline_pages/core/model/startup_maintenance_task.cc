@@ -107,7 +107,6 @@ SyncOperationResult ClearLegacyPagesInPrivateDirSync(
       GetPageInfosByNamespaces(GetTemporaryPolicyNamespaces(), db);
   std::vector<PageInfo> persistent_page_infos =
       GetPageInfosByNamespaces(GetPersistentPolicyNamespaces(), db);
-  std::map<base::FilePath, PageInfo> path_to_page_info;
 
   std::set<base::FilePath> archive_paths = GetAllArchives(private_dir);
   std::vector<int64_t> offline_ids_to_delete;

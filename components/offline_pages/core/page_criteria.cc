@@ -102,7 +102,6 @@ std::vector<std::string> PotentiallyMatchingNamespaces(
     std::vector<std::string> allowed_namespaces =
         criteria.client_namespaces ? criteria.client_namespaces.value()
                                    : GetAllPolicyNamespaces();
-    std::vector<std::string> filtered;
     for (const std::string& name_space : allowed_namespaces) {
       const OfflinePageClientPolicy& policy = GetPolicy(name_space);
       if (criteria.supported_by_downloads && !policy.is_supported_by_download) {

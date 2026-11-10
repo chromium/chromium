@@ -105,7 +105,6 @@ std::vector<OfflinePageItem> GetPagesToClear(
     const base::Time& start_time,
     const ArchiveManager::StorageStats& stats,
     sql::Database* db) {
-  std::map<std::string, size_t> namespace_page_count;
   PageClearCriteria additional_criteria(start_time, stats);
 
   PageCriteria criteria;

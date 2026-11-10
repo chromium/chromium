@@ -88,7 +88,6 @@ void ReconcileTaskTest::ReconcileCallback(UpdateRequestsResult result) {
 void ReconcileTaskTest::QueueRequests(const SavePageRequest& request1,
                                       const SavePageRequest& request2) {
   DeviceConditions conditions;
-  std::set<int64_t> disabled_requests;
   // Add test requests on the Queue.
   store_.AddRequest(request1, RequestQueue::AddOptions(),
                     base::BindOnce(&ReconcileTaskTest::AddRequestDone));

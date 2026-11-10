@@ -181,7 +181,6 @@ TEST_F(ClientPolicyTest, CheckLivePageSharingDefined) {
 }
 
 TEST_F(ClientPolicyTest, AllTemporaryNamespaces) {
-  std::vector<std::string> all_namespaces = GetAllPolicyNamespaces();
   const std::vector<std::string>& cache_reset_namespaces_list =
       GetTemporaryPolicyNamespaces();
   std::set<std::string> cache_reset_namespaces(

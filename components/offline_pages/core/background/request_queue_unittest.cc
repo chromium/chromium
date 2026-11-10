@@ -576,7 +576,6 @@ TEST_F(RequestQueueTest, CleanStaleRequests) {
 
   // Do a pick and clean operation, which will remove stale entries.
   DeviceConditions conditions;
-  std::set<int64_t> disabled_list;
   queue()->CleanupRequestQueue();
 
   this->PumpLoop();
