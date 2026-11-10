@@ -109,8 +109,8 @@
       grey_allOf(grey_accessibilityID(cellID), grey_interactable(), nil);
   [[[EarlGrey selectElementWithMatcher:interactableCellMatcher]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 150)
-      onElementWithMatcher:chrome_test_util::
-                               AutofillAndPasswordsTableViewMatcher()]
+      onElementWithMatcher:grey_allOf(grey_kindOfClass([UITableView class]),
+                                      grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
   for (id<GREYMatcher> matcher in matchers) {
     [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:matcher];
@@ -119,11 +119,8 @@
       selectElementWithMatcher:chrome_test_util::SettingsMenuBackButton()]
       performAction:grey_tap()];
 
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      chrome_test_util::AutofillAndPasswordsTableViewMatcher()];
   [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:grey_accessibilityID(
-                                                       cellID)];
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(cellID)];
 }
 
 // Tests that the sign-in promo is visible on the Autofill and Passwords page
@@ -229,7 +226,7 @@
 }
 
 // Tests navigating to each subpage from "Autofill and passwords" and verifies
-// that each correct target page opens with the expected elements.
+// that each correct target page opens with the expected title and elements.
 - (void)testNavigateToAllSubpages {
   [ReauthenticationAppInterface mockReauthenticationModuleCanAttempt:YES];
   [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
@@ -246,37 +243,37 @@
   [self openAndCloseSubpageWithCellID:kSettingsPaymentMethodsCellId
                   subpageViewMatchers:@[
                     grey_accessibilityID(kAutofillCreditCardTableViewId),
+                    grey_text(
+                        l10n_util::GetNSString(IDS_AUTOFILL_PAYMENTS_TITLE)),
                   ]];
 
   // 3. Contact info.
   [self openAndCloseSubpageWithCellID:kSettingsAddressesAndMoreCellId
                   subpageViewMatchers:@[
                     grey_accessibilityID(kAutofillProfileTableViewID),
+                    grey_text(l10n_util::GetNSString(
+                        IDS_AUTOFILL_CONTACT_INFO_TITLE)),
                   ]];
 
   // 4. Identity docs.
   [self openAndCloseSubpageWithCellID:kSettingsIdentityDocsCellId
                   subpageViewMatchers:@[
-                    grey_allOf(
-                        grey_text(l10n_util::GetNSString(
-                            IDS_AUTOFILL_IDENTITY_DOCS_OPT_IN_TOGGLE_LABEL)),
-                        grey_kindOfClass([UILabel class]), nil),
+                    grey_text(l10n_util::GetNSString(
+                        IDS_AUTOFILL_IDENTITY_DOCS_TITLE)),
                   ]];
 
   // 5. Travel.
-  [self openAndCloseSubpageWithCellID:kSettingsTravelInfoCellId
-                  subpageViewMatchers:@[
-                    grey_allOf(grey_text(l10n_util::GetNSString(
-                                   IDS_AUTOFILL_TRAVEL_OPT_IN_TOGGLE_LABEL)),
-                               grey_kindOfClass([UILabel class]), nil),
-                  ]];
+  [self
+      openAndCloseSubpageWithCellID:kSettingsTravelInfoCellId
+                subpageViewMatchers:@[
+                  grey_text(l10n_util::GetNSString(IDS_AUTOFILL_TRAVEL_TITLE)),
+                ]];
 
   // 6. Shopping.
   [self openAndCloseSubpageWithCellID:kSettingsShoppingInfoCellId
                   subpageViewMatchers:@[
-                    grey_allOf(grey_text(l10n_util::GetNSString(
-                                   IDS_AUTOFILL_SHOPPING_OPT_IN_TOGGLE_LABEL)),
-                               grey_kindOfClass([UILabel class]), nil),
+                    grey_text(
+                        l10n_util::GetNSString(IDS_AUTOFILL_SHOPPING_TITLE)),
                   ]];
 
   // 7. Autofill Settings.
@@ -286,6 +283,8 @@
                         kEnhancedAutofillSwitchViewId,
                         /*is_toggled_on=*/NO,
                         /*is_enabled=*/YES),
+                    grey_text(l10n_util::GetNSString(
+                        IDS_IOS_SETTINGS_AUTOFILL_SETTINGS)),
                   ]];
 }
 
@@ -308,22 +307,14 @@
   [self openAutofillAndPasswordsSettings];
 
   // Tap Travel row.
-  id<GREYMatcher> travelCellMatcher =
-      grey_allOf(grey_accessibilityID(kSettingsTravelInfoCellId),
-                 grey_interactable(), nil);
-  [[[EarlGrey selectElementWithMatcher:travelCellMatcher]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 150)
-      onElementWithMatcher:chrome_test_util::
-                               AutofillAndPasswordsTableViewMatcher()]
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kSettingsTravelInfoCellId)]
       performAction:grey_tap()];
 
   // Wait for saved entity item to appear in Travel view.
-  id<GREYMatcher> entityCellMatcher =
-      grey_allOf(grey_accessibilityLabel(ownerName),
-                 grey_ancestor(grey_kindOfClass([UITableView class])),
-                 grey_interactable(), nil);
-  [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:entityCellMatcher];
+  id<GREYMatcher> entityCellMatcher = grey_allOf(
+      grey_accessibilityLabel(ownerName), grey_sufficientlyVisible(), nil);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:entityCellMatcher];
 
   // Tap the saved sensitive entity item.
   [[EarlGrey selectElementWithMatcher:entityCellMatcher]
@@ -332,14 +323,12 @@
   // Wait for entity edit view transition to complete.
   id<GREYMatcher> editTableViewMatcher =
       grey_accessibilityID(kAutofillAIEntityEditTableViewId);
-  [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:editTableViewMatcher];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:editTableViewMatcher];
 
   // Wait for the Edit toolbar button to appear and become interactable.
   id<GREYMatcher> editButtonMatcher =
       chrome_test_util::SettingsToolbarEditButton();
-  [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:editButtonMatcher];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:editButtonMatcher];
   [[EarlGrey selectElementWithMatcher:editButtonMatcher]
       performAction:grey_tap()];
 
@@ -348,8 +337,9 @@
   // Verify that reauthentication succeeded and the Done button is shown.
   id<GREYMatcher> doneButtonMatcher =
       grey_accessibilityID(kSettingsToolbarEditDoneButtonId);
-  [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:doneButtonMatcher];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:doneButtonMatcher];
+  [[EarlGrey selectElementWithMatcher:doneButtonMatcher]
+      assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap Done button to finish editing.
   [[EarlGrey selectElementWithMatcher:doneButtonMatcher]
@@ -361,19 +351,14 @@
       performAction:grey_tap()];
 
   // Wait for Travel screen to finish rendering before tapping back again.
-  id<GREYMatcher> travelToggleMatcher = grey_allOf(
-      grey_text(
-          l10n_util::GetNSString(IDS_AUTOFILL_TRAVEL_OPT_IN_TOGGLE_LABEL)),
-      grey_kindOfClass([UILabel class]), nil);
-  [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:travelToggleMatcher];
+  id<GREYMatcher> travelTitleMatcher =
+      grey_text(l10n_util::GetNSString(IDS_AUTOFILL_TRAVEL_TITLE));
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:travelTitleMatcher];
 
   // Pop back to Autofill and Passwords screen.
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::SettingsMenuBackButton()]
       performAction:grey_tap()];
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      chrome_test_util::AutofillAndPasswordsTableViewMatcher()];
 }
 
 // Tests that failing local authentication when opening Password Manager from

@@ -38,10 +38,6 @@
 // Mutator for this view controller.
 @property(nonatomic, weak) id<AutofillSettingsMutator> mutator;
 
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_AUTOFILL_AUTOFILL_AND_PASSWORDS_UI_AUTOFILL_SETTINGS_TABLE_VIEW_CONTROLLER_H_

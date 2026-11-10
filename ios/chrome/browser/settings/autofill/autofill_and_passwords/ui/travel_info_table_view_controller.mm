@@ -73,7 +73,6 @@ enum class ItemType {
 - (instancetype)init {
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
-    self.title = l10n_util::GetNSString(IDS_AUTOFILL_TRAVEL_TITLE);
     _travelInfoToggleEnabled = YES;
     _travelInfoToggleManaged = NO;
   }
@@ -83,6 +82,7 @@ enum class ItemType {
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.tableView.allowsMultipleSelectionDuringEditing = YES;
+  self.title = l10n_util::GetNSString(IDS_AUTOFILL_TRAVEL_TITLE);
   [self updateUIForEditState];
   [self loadModel];
 }
