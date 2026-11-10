@@ -7181,7 +7181,7 @@
       "lugli@google.com",
       "top-chrome-desktop-ui@google.com"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 165
   },
   {
     "name": "new-tab-page-customization-theme-sync",
@@ -9610,7 +9610,7 @@
       "corising@chromium.org",
       "lugli@google.com"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 165
   },
   {
     "name": "tab-switcher-drag-drop",
