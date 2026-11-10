@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <array>
 #include <ranges>
-#include <set>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -33,13 +32,13 @@
 #include "pdf/pdf_ink_module_client.h"
 #include "pdf/pdf_ink_transform.h"
 #include "pdf/pdfium/pdfium_ink_reader.h"
+#include "pdf/test/fake_pdf_ink_module_client.h"
 #include "pdf/test/input_event_util.h"
 #include "pdf/test/mock_pdf_caret_client.h"
 #include "pdf/test/mouse_event_builder.h"
 #include "pdf/test/pdf_ink_test_helpers.h"
 #include "pdf/test/test_helpers.h"
 #include "pdf/ui/thumbnail.h"
-#include "printing/units.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -59,7 +58,6 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -269,200 +267,6 @@ blink::WebTouchEvent CreateEraserTipEvent(
   return eraser_event;
 }
 
-class FakeClient : public PdfInkModuleClient {
- public:
-  FakeClient() = default;
-  FakeClient(const FakeClient&) = delete;
-  FakeClient& operator=(const FakeClient&) = delete;
-  ~FakeClient() override = default;
-
-  // PdfInkModuleClient:
-  MOCK_METHOD(void,
-              AddFont,
-              (FontId font_id,
-               const std::string&,
-               base::span<const uint8_t> serialized_typeface),
-              (override));
-
-  MOCK_METHOD(void,
-              DiscardStroke,
-              (int page_index, InkStrokeId id),
-              (override));
-
-  MOCK_METHOD(void, DiscardText, (InkTextId id), (override));
-
-  MOCK_METHOD(void,
-              DrawText,
-              (int page_index,
-               InkTextId id,
-               base::span<const InkTextLine> text_lines,
-               float ascent,
-               double pdf_zoom,
-               const InkTextBoxAttributes& attributes),
-              (override));
-
-  MOCK_METHOD(void,
-              ExtendSelectionByPoint,
-              (const gfx::PointF& point),
-              (override));
-
-  MOCK_METHOD(gfx::Transform,
-              GetCanonicalToPdfTransform,
-              (int page_index),
-              (override));
-
-  MOCK_METHOD(ui::Cursor, GetCursor, (), (override));
-
-  PageOrientation GetOrientation() const override { return orientation_; }
-
-  MOCK_METHOD(PdfCaret*, GetPdfCaret, (), (override));
-
-  MOCK_METHOD(SelectionRectMap, GetSelectionRectMap, (), (override));
-
-  gfx::Vector2dF GetViewportOriginOffset() override {
-    return viewport_origin_offset_;
-  }
-
-  gfx::Rect GetPageContentsRect(int page_index) override {
-    CHECK_GE(page_index, 0);
-    CHECK_LT(static_cast<size_t>(page_index), page_layouts_.size());
-    return gfx::ToEnclosedRect(page_layouts_[page_index]);
-  }
-
-  gfx::SizeF GetPageSizeInPoints(int page_index) override {
-    CHECK_GE(page_index, 0);
-    CHECK_LT(static_cast<size_t>(page_index), page_layouts_.size());
-    gfx::SizeF page_size = page_layouts_[page_index].size();
-    page_size.Scale(printing::kUnitConversionFactorPixelsToPoints);
-    return page_size;
-  }
-
-  float GetZoom() const override { return zoom_; }
-
-  void Invalidate(const gfx::Rect& rect) override {
-    invalidations_.push_back(rect);
-  }
-
-  MOCK_METHOD(bool,
-              IsSelectableTextOrLinkArea,
-              (const gfx::PointF& point),
-              (override));
-
-  MOCK_METHOD(DocumentInkTextBoxesMap,
-              LoadTextAnnotationsFromPdf,
-              (),
-              (override));
-
-  MOCK_METHOD(PdfInkModuleClient::DocumentV2InkPathShapesMap,
-              LoadV2InkPathsFromPdf,
-              (),
-              (override));
-
-  MOCK_METHOD(void,
-              OnTextOrLinkAreaClick,
-              (const gfx::PointF& point, int click_count),
-              (override));
-
-  MOCK_METHOD(void, PostMessage, (base::DictValue message), (override));
-
-  MOCK_METHOD(void,
-              RequestThumbnail,
-              (int page_index, SendThumbnailCallback callback),
-              (override));
-
-  MOCK_METHOD(void,
-              StrokeAdded,
-              (int page_index, InkStrokeId id, const ink::Stroke& stroke),
-              (override));
-
-  void StrokeFinished(bool modified) override {
-    if (modified) {
-      ++modified_stroke_finished_count_;
-    } else {
-      ++unmodified_stroke_finished_count_;
-    }
-  }
-
-  void StrokeStarted() override { ++stroke_started_count_; }
-
-  MOCK_METHOD(void, UpdateInkCursor, (const ui::Cursor&), (override));
-
-  MOCK_METHOD(void,
-              UpdateShapeActive,
-              (int page_index, InkModeledShapeId id, bool active),
-              (override));
-
-  MOCK_METHOD(void,
-              UpdateStrokeActive,
-              (int page_index, InkStrokeId id, bool active),
-              (override));
-
-  MOCK_METHOD(void,
-              UpdateTextActiveAndInvalidate,
-              (TextId id, bool active),
-              (override));
-
-  int VisiblePageIndexFromPoint(const gfx::PointF& point) override {
-    for (size_t i = 0; i < page_layouts_.size(); ++i) {
-      if (visible_page_indices_.contains(i) &&
-          page_layouts_[i].Contains(point)) {
-        return i;
-      }
-    }
-
-    // Point is not over a visible page in the viewer plane.
-    return -1;
-  }
-
-  int stroke_started_count() const { return stroke_started_count_; }
-  int modified_stroke_finished_count() const {
-    return modified_stroke_finished_count_;
-  }
-  int unmodified_stroke_finished_count() const {
-    return unmodified_stroke_finished_count_;
-  }
-
-  const std::vector<gfx::Rect>& invalidations() const { return invalidations_; }
-
-  // Provide the sequence of pages and the coordinates and dimensions for how
-  // they are laid out in a viewer plane.  It is upon the caller to ensure the
-  // positioning makes sense (e.g., pages do not overlap).
-  void set_page_layouts(base::span<const gfx::RectF> page_layouts) {
-    page_layouts_ = base::ToVector(page_layouts);
-  }
-
-  // Marks pages as visible or not. The caller is responsible for making sure
-  // the values makes sense.
-  void set_page_visibility(int index, bool visible) {
-    if (visible) {
-      visible_page_indices_.insert(index);
-    } else {
-      visible_page_indices_.erase(index);
-    }
-  }
-
-  void set_orientation(PageOrientation orientation) {
-    orientation_ = orientation;
-  }
-
-  void set_viewport_origin_offset(const gfx::Vector2dF& offset) {
-    viewport_origin_offset_ = offset;
-  }
-
-  void set_zoom(float zoom) { zoom_ = zoom; }
-
- private:
-  int stroke_started_count_ = 0;
-  int modified_stroke_finished_count_ = 0;
-  int unmodified_stroke_finished_count_ = 0;
-  std::vector<gfx::RectF> page_layouts_;
-  std::set<int> visible_page_indices_;
-  PageOrientation orientation_ = PageOrientation::kOriginal;
-  gfx::Vector2dF viewport_origin_offset_;
-  float zoom_ = 1.0f;
-  std::vector<gfx::Rect> invalidations_;
-};
-
 class MockPdfCaret : public PdfCaret {
  public:
   explicit MockPdfCaret(PdfCaretClient* client) : PdfCaret(client) {}
@@ -517,14 +321,14 @@ class PdfInkModuleTest : public testing::TestWithParam<InkTestVariation> {
     testing::Mock::VerifyAndClearExpectations(this);
   }
 
-  FakeClient& client() { return client_; }
+  FakePdfInkModuleClient& client() { return client_; }
   PdfInkModule& ink_module() { return *ink_module_; }
   const PdfInkModule& ink_module() const { return *ink_module_; }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 
-  NiceMock<FakeClient> client_;
+  NiceMock<FakePdfInkModuleClient> client_;
   std::unique_ptr<PdfInkModule> ink_module_;
 };
 
@@ -987,7 +791,7 @@ class PdfInkModuleTextTest : public testing::Test {
   }
 
  protected:
-  FakeClient& client() { return client_; }
+  FakePdfInkModuleClient& client() { return client_; }
   PdfInkModule& ink_module() { return *ink_module_; }
   const PdfInkModule& ink_module() const { return *ink_module_; }
 
@@ -1130,7 +934,7 @@ class PdfInkModuleTextTest : public testing::Test {
  private:
   base::test::ScopedFeatureList feature_list_;
 
-  NiceMock<FakeClient> client_;
+  NiceMock<FakePdfInkModuleClient> client_;
   std::unique_ptr<PdfInkModule> ink_module_;
 };
 

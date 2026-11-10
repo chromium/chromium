@@ -608,6 +608,8 @@ if (enable_pdf) {
         "pdfium/pdfium_ink_reader_unittest.cc",
         "pdfium/pdfium_ink_transform_unittest.cc",
         "pdfium/pdfium_ink_writer_unittest.cc",
+        "test/fake_pdf_ink_module_client.cc",
+        "test/fake_pdf_ink_module_client.h",
         "test/pdf_ink_test_helpers.cc",
         "test/pdf_ink_test_helpers.h",
       ]
