@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+div {
+  width: 100vw;
+  height: 100vh;
+}
+iframe {
+  position: fixed;
+  margin-left: 25vw;
+  width: 50vw;
+  height: 100vh;
+  border: 0px;
+}
+p {
+  position: fixed;
+}
+div.bottom {
+  position: absolute;
+  top: 10000px;
+  left: 0px;
+  width: 1px;
+  height: 1px;
+}
+</style>
+
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../resources/ad-testharness.js"></script>
+</head>
+<body marginwidth="0" marginheight="0">
+
+<!-- To trigger the first contentful paint at the very start -->
+<p>some content</p>
+
+<!-- To contain the overlay popup iframe -->
+<div></div>
+
+<!-- To be positioned further down in the main page to make the page scrollable -->
+<div class="bottom"></div>
+
+<script>
+promise_test(async function(t) {
+  // Give the interstitial detector a chance to see the page's initial content,
+  // so that the overlay created below is observed as newly appearing.
+  await waitForFirstContentfulPaint();
+  await forceLayoutUpdate();
+
+  // Scroll the main frame programmatically before the overlay ad appears. This
+  // moves the scroll position without any user input, like a fragment
+  // navigation or scroll restoration would.
+  window.scrollTo(0, 100);
+  await forceLayoutUpdate();
+
+  // Create the overlay pop-up ad.
+  appendAdFrameTo(document.getElementsByTagName('div')[0]);
+
+  // Force a layout update, so that the interstitial detector is aware of
+  // the overlay candidate.
+  await forceLayoutUpdate();
+
+  // Hide the pop-up without scrolling any further, so that it's still
+  // considered a pop-up at its dismissal.
+  document.getElementsByTagName('iframe')[0].style.display = 'none';
+
+  // Force a layout update, so that the interstitial detector is aware of
+  // the overlay candidate's dismissal.
+  await forceLayoutUpdate();
+
+  // Expect the kOverlayPopupAd UseCounter.
+  assert_true(internals.isUseCounted(document, kOverlayPopupAd));
+
+  // Expect the kOverlayPrestitialAd UseCounter as well: the scroll position
+  // was changed without the user having scrolled.
+  assert_true(internals.isUseCounted(document, kOverlayPrestitialAd));
+}, "Test overlay-prestitial-ad when the main frame was scrolled programmatically before the overlay ad appeared. In this case we expect use counters for both kOverlayPopupAd and kOverlayPrestitialAd.");
+
+</script>
+</body>
+</html>

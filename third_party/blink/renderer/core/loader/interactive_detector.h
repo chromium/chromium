@@ -83,6 +83,10 @@ class CORE_EXPORT InteractiveDetector
   void OnInvalidatingInputEvent(base::TimeTicks invalidation_time);
   void OnPageHiddenChanged(bool is_hidden);
 
+  // Returns true if page was ever backgrounded in the range
+  // [event_time, base::TimeTicks::Now()].
+  bool PageWasBackgroundedSinceEvent(base::TimeTicks event_time);
+
   // The duration between the hardware timestamp and being queued on the main
   // thread for the first click, tap, key press, cancelable touchstart, or
   // pointer down followed by a pointer up.
@@ -195,9 +199,6 @@ class CORE_EXPORT InteractiveDetector
 
   Vector<VisibilityChangeEvent> visibility_change_events_;
   bool initially_hidden_;
-  // Returns true if page was ever backgrounded in the range
-  // [event_time, base::TimeTicks::Now()].
-  bool PageWasBackgroundedSinceEvent(base::TimeTicks event_time);
 
   // Finds a window of length kTimeToInteractiveWindowSeconds after lower_bound
   // such that both main thread and network are quiet. Returns the end of last

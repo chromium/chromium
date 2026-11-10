@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+iframe {
+  position: fixed;
+  margin-left: 25vw;
+  width: 50vw;
+  height: 100vh;
+  border: 0px;
+}
+p {
+  position: fixed;
+}
+div.bottom {
+  position: absolute;
+  top: 10000px;
+  left: 0px;
+  width: 1px;
+  height: 1px;
+}
+</style>
+
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../resources/ad-testharness.js"></script>
+</head>
+<body marginwidth="0" marginheight="0">
+
+<!-- To trigger the first contentful paint at the very start -->
+<p>some content</p>
+
+<!-- To be positioned further down in the main page to make the page scrollable -->
+<div class="bottom"></div>
+
+<script>
+promise_test(async function(t) {
+  // Create the overlay ad before any content has been painted.
+  appendAdFrameTo(document.body);
+
+  // Force a layout update after the first contentful paint, so that the
+  // interstitial detector is aware of the overlay ad. The page is scrollable,
+  // so the overlay is only decided on at its dismissal.
+  await waitForFirstContentfulPaint();
+  await forceLayoutUpdate();
+
+  // Hide the page and show it again while the overlay ad is showing.
+  await setMainWindowHidden(true);
+  await setMainWindowHidden(false);
+
+  // Hide the overlay.
+  document.getElementsByTagName('iframe')[0].style.display = 'none';
+
+  // Force a layout update, so that the interstitial detector is aware of
+  // the overlay ad candidate's dismissal.
+  await forceLayoutUpdate();
+
+  // Expect the kOverlayPopupAd UseCounter.
+  assert_true(internals.isUseCounted(document, kOverlayPopupAd));
+
+  // Expect the kOverlayPrestitialAd UseCounter as well: the prestitial
+  // conditions are evaluated when the overlay ad appears, and the page had not
+  // been hidden by then.
+  assert_true(internals.isUseCounted(document, kOverlayPrestitialAd));
+}, "Test overlay-prestitial-ad when the page was hidden while the overlay ad was showing. In this case we expect use counters for both kOverlayPopupAd and kOverlayPrestitialAd.");
+
+</script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+iframe {
+  position: fixed;
+  margin-left: 25vw;
+  width: 50vw;
+  height: 100vh;
+  border: 0px;
+}
+p {
+  position: fixed;
+}
+</style>
+
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../resources/ad-testharness.js"></script>
+</head>
+<body marginwidth="0" marginheight="0">
+
+<!-- To trigger the first contentful paint at the very start -->
+<p>some content</p>
+
+<script>
+promise_test(async function(t) {
+  // Hide the page before the overlay ad is created, e.g. as if the page were
+  // loading in a background tab.
+  await setMainWindowHidden(true);
+
+  // Create the overlay ad while the page is hidden.
+  appendAdFrameTo(document.body);
+
+  await setMainWindowHidden(false);
+
+  // Force a layout update after the first contentful paint, so that the
+  // interstitial detector is aware of the overlay ad. The page isn't
+  // scrollable, so the overlay is decided on at appearance.
+  await waitForFirstContentfulPaint();
+  await forceLayoutUpdate();
+
+  // Hide the overlay.
+  document.getElementsByTagName('iframe')[0].style.display = 'none';
+
+  // Force a layout update, so that the interstitial detector is aware of
+  // the overlay ad candidate's dismissal.
+  await forceLayoutUpdate();
+
+  // Expect the kOverlayPopupAd UseCounter.
+  assert_true(internals.isUseCounted(document, kOverlayPopupAd));
+
+  // Expect no kOverlayPrestitialAd UseCounter as the page has been hidden.
+  assert_false(internals.isUseCounted(document, kOverlayPrestitialAd));
+}, "Test overlay-prestitial-ad when the page was hidden before the overlay ad appeared. In this case we expect a use counter for kOverlayPopupAd but not for kOverlayPrestitialAd.");
+
+</script>
+</body>
+</html>

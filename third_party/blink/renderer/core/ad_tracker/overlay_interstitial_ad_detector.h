@@ -15,28 +15,38 @@ namespace blink {
 class Element;
 class LocalFrame;
 
-// Detects overlay interstitials and record a use counter when an instance is
-// found. The current scope is to consider only pop-ups, which appear after
-// content on the page begins to load.
+// Detects overlay interstitials and records a use counter when an instance is
+// found. Two kinds are considered: pop-ups, which block the main content of
+// the page, and prestitials, a subset of pop-ups that appear while the page
+// is still loading and before the user has interacted with it.
 //
-// Better Ads Standards definition:
+// Better Ads Standards definitions:
 // https://www.betterads.org/desktop-pop-up-ad/
 // https://www.betterads.org/mobile-pop-up-ad/
+// https://www.betterads.org/desktop-prestitial-ad/
+// https://www.betterads.org/mobile-prestitial-ad/
 //
 // Heuristic:
-// We do hit testing at the center of the browser viewport at regular intervals.
-// The top element is an interstitial pop-up candidate if the following
-// conditions are met:
+// We do hit testing at the center of the browser viewport at regular intervals,
+// starting from the first contentful paint. The top element is an interstitial
+// pop-up candidate if the following conditions are met:
 // 1) It's immobile to scrolling (e.g. position:fixed).
 // 2) The size is large.
 // 3) It's created without user gesture.
-// 4) It's created after the main content has loaded.
 //
 // The candidate will be actually counted as an overlay pop-up instance after we
 // have checked some status at its dismissal time. On dismissal, if the main
 // frame scrolling offset hasn't changed since the candidate's appearance, we
 // count it as an overlay pop-up; otherwise, we skip that candidate because it
 // could be a parallax/scroller ad.
+//
+// A pop-up ad is additionally counted as a prestitial ad if, when it appeared:
+// 1) It was within `kPrestitialWindow` of the first contentful paint.
+// 2) The page hadn't been hidden since navigation. Rendering is throttled
+//    while a page is hidden, so its paint timings would no longer reflect what
+//    the user saw.
+// 3) The user hadn't interacted with the page: the main frame had no sticky
+//    user activation and the user hadn't scrolled.
 //
 // Besides, we explicitly prevent mid-roll ads (during a video play) from being
 // categorized as pop-ups.
@@ -48,6 +58,10 @@ class LocalFrame;
 // lower rate of false positive for an increase in the rate of false negatives.
 class CORE_EXPORT OverlayInterstitialAdDetector {
  public:
+  // A pop-up ad appearing later than this after the first contentful paint is
+  // not considered a prestitial.
+  static constexpr base::TimeDelta kPrestitialWindow = base::Seconds(10);
+
   OverlayInterstitialAdDetector() = default;
   OverlayInterstitialAdDetector(const OverlayInterstitialAdDetector&) = delete;
   OverlayInterstitialAdDetector& operator=(
@@ -60,23 +74,34 @@ class CORE_EXPORT OverlayInterstitialAdDetector {
   // Records the detection of an overlay pop-up. If `is_ad` is true, the
   // pop-up is also counted as an overlay pop-up ad and `ad_element` (if
   // non-null) is tagged as such for the ad highlight label. `ad_element` may be
-  // null if the element is no longer alive at detection time.
+  // null if the element is no longer alive at detection time. If
+  // `is_prestitial_ad` is also true, i.e. the pop-up met the prestitial
+  // conditions when it appeared, it is further counted as a prestitial ad.
   void OnPopupDetected(LocalFrame* outermost_main_frame,
                        bool is_ad,
+                       bool is_prestitial_ad,
                        Element* ad_element);
 
   bool started_detection_ = false;
-  bool content_has_been_stable_ = false;
+
+  // Set when the viewport size has changed since the last detection, so that
+  // the element then found at the viewport center is marked unqualified rather
+  // than considered as a candidate.
+  bool viewport_size_changed_ = false;
 
   // The following members are valid only when |started_detection_| is true.
   base::Time last_detection_time_;
   gfx::Size last_detection_outermost_main_frame_size_;
 
-  DOMNodeId candidate_id_;
+  DOMNodeId candidate_id_ = kInvalidDOMNodeId;
   bool candidate_is_ad_ = false;
 
-  // The following members are valid only when |candidate_| is not nullptr.
+  // The following members are valid only when |candidate_id_| is valid.
   int candidate_start_outermost_main_frame_scroll_position_ = 0;
+
+  // Whether the candidate met the prestitial conditions when it appeared. See
+  // the class comment.
+  bool candidate_is_prestitial_ = false;
 
   // The node id of the last element that was detected as unqualified to be an
   // overlay pop-up. We compare any potential candidate with the last
@@ -90,7 +115,7 @@ class CORE_EXPORT OverlayInterstitialAdDetector {
   // Another advantage is this saves some computation cost. e.g. if an ad was
   // unqualified because it didn't have a viewport constraint position, then we
   // can skip it on its next occurrence without computing the style again.
-  DOMNodeId last_unqualified_element_id_;
+  DOMNodeId last_unqualified_element_id_ = kInvalidDOMNodeId;
 
   bool popup_detected_ = false;
   bool popup_ad_detected_ = false;

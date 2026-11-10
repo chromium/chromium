@@ -25,29 +25,29 @@ p {
 
 <script>
 promise_test(async function(t) {
-  // Create the overlay pop-up ad.
+  // Create the overlay ad before any content has been painted.
   let ad_frame = appendAdFrameTo(document.body);
 
-  // After 1500ms, force a layout update so that the interstitial detector
-  // is aware of the first meaningful paint and the prestitial.
-  await timeout(1500);
+  // Force a layout update after the first contentful paint, so that the
+  // interstitial detector is aware of the overlay ad. The page isn't
+  // scrollable, so the overlay is decided on at appearance.
+  await waitForFirstContentfulPaint();
   await forceLayoutUpdate();
 
-  // Ensure the detection is triggered at least once after the first
-  // meaningful paint is seen.
-  await forceLayoutUpdate();
-
-  // Hide the pop-up.
+  // Hide the overlay.
   document.getElementsByTagName('iframe')[0].style.display = 'none';
 
   // Force a layout update, so that the interstitial detector is aware of
   // the overlay ad candidate's dismissal.
   await forceLayoutUpdate();
 
-  // Expect no kOverlayPopupAd UseCounter as the candidate is considered to
-  // be 'prestitial' instead of 'pop-up'.
-  assert_false(internals.isUseCounted(document, kOverlayPopupAd));
-}, "Test overlay-prestitial-ad when the frame itself has a fixed position. In this case we expect no use counter for kOverlayPopupAd.");
+  // Expect the kOverlayPopupAd UseCounter: a prestitial is a pop-up ad that
+  // appears while the page is loading, before any user interaction.
+  assert_true(internals.isUseCounted(document, kOverlayPopupAd));
+
+  // Expect the kOverlayPrestitialAd UseCounter as well.
+  assert_true(internals.isUseCounted(document, kOverlayPrestitialAd));
+}, "Test overlay-prestitial-ad when the frame itself has a fixed position. In this case we expect use counters for both kOverlayPopupAd and kOverlayPrestitialAd.");
 
 </script>
 </body>

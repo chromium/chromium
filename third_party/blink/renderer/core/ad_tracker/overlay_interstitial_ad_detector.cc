@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/ad_tracker/overlay_interstitial_ad_detector.h"
 
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -17,6 +18,8 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/loader/document_loader.h"
+#include "third_party/blink/renderer/core/loader/interactive_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 
@@ -62,6 +65,38 @@ bool IsOverlayCandidate(Element* element) {
   return false;
 }
 
+// Returns whether an overlay ad appearing now qualifies as a prestitial ad:
+// it's within `kPrestitialWindow` of the first contentful paint, the page
+// hasn't been hidden since navigation, and the user hasn't interacted with the
+// page yet, i.e. there's no sticky user activation and the user hasn't
+// scrolled.
+bool IsPrestitialAd(LocalFrame* outermost_main_frame) {
+  Document* document = outermost_main_frame->GetDocument();
+
+  base::TimeTicks first_contentful_paint =
+      PaintTiming::From(*document).FirstContentfulPaint();
+  DCHECK(!first_contentful_paint.is_null());
+  if (base::TimeTicks::Now() - first_contentful_paint >
+      OverlayInterstitialAdDetector::kPrestitialWindow) {
+    return false;
+  }
+
+  // Rendering is throttled while the page is hidden, so the paint timings of a
+  // page that has been hidden no longer reflect what the user saw.
+  InteractiveDetector* interactive_detector =
+      InteractiveDetector::From(*document);
+  if (interactive_detector->PageWasBackgroundedSinceEvent(
+          document->Loader()->GetTiming().NavigationStart())) {
+    return false;
+  }
+
+  if (outermost_main_frame->HasStickyUserActivation()) {
+    return false;
+  }
+
+  return !interactive_detector->GetFirstScrollTimestamp().has_value();
+}
+
 }  // namespace
 
 void OverlayInterstitialAdDetector::MaybeFireDetection(
@@ -93,6 +128,7 @@ void OverlayInterstitialAdDetector::MaybeFireDetection(
   TRACE_EVENT0("blink,benchmark",
                "OverlayInterstitialAdDetector::MaybeFireDetection");
 
+  bool is_first_detection = !started_detection_;
   started_detection_ = true;
   last_detection_time_ = current_time;
 
@@ -102,7 +138,8 @@ void OverlayInterstitialAdDetector::MaybeFireDetection(
           ->VisibleContentRect(kExcludeScrollbars)
           .size();
 
-  if (outermost_main_frame_size != last_detection_outermost_main_frame_size_) {
+  if (!is_first_detection &&
+      outermost_main_frame_size != last_detection_outermost_main_frame_size_) {
     // Reset the candidate when the the viewport size has changed. Changing
     // the viewport size could influence the layout and may trick the detector
     // into believing that an element appeared and was dismissed, but what
@@ -110,14 +147,12 @@ void OverlayInterstitialAdDetector::MaybeFireDetection(
     // but still exists (e.g. a sticky ad at the top).
     candidate_id_ = kInvalidDOMNodeId;
 
-    // Reset |content_has_been_stable_| to so that the current hit-test element
-    // will be marked unqualified. We don't want to consider an overlay as a
-    // popup if it wasn't counted before and only satisfies the conditions later
-    // due to viewport size change.
-    content_has_been_stable_ = false;
-
-    last_detection_outermost_main_frame_size_ = outermost_main_frame_size;
+    // Also mark the element now at the viewport center unqualified. We don't
+    // want to consider an overlay as a popup if it wasn't counted before and
+    // only satisfies the conditions later due to viewport size change.
+    viewport_size_changed_ = true;
   }
+  last_detection_outermost_main_frame_size_ = outermost_main_frame_size;
 
   // We want to explicitly prevent mid-roll ads from being categorized as
   // pop-ups. Skip the detection if we are in the middle of a video play.
@@ -146,17 +181,8 @@ void OverlayInterstitialAdDetector::MaybeFireDetection(
 
   DOMNodeId element_id = element->GetDomNodeId();
 
-  // Skip considering the overlay for a pop-up candidate if we haven't seen or
-  // have just seen the first meaningful paint, or if the viewport size has just
-  // changed. If we have just seen the first meaningful paint, however, we
-  // would consider future overlays for pop-up candidates.
-  if (!content_has_been_stable_) {
-    if (!PaintTiming::From(*outermost_main_frame->GetDocument())
-             .FirstMeaningfulPaint()
-             .is_null()) {
-      content_has_been_stable_ = true;
-    }
-
+  if (viewport_size_changed_) {
+    viewport_size_changed_ = false;
     last_unqualified_element_id_ = element_id;
     return;
   }
@@ -171,7 +197,7 @@ void OverlayInterstitialAdDetector::MaybeFireDetection(
     if (outermost_main_frame->GetOutermostMainFrameScrollPosition().y() ==
         candidate_start_outermost_main_frame_scroll_position_) {
       OnPopupDetected(
-          outermost_main_frame, candidate_is_ad_,
+          outermost_main_frame, candidate_is_ad_, candidate_is_prestitial_,
           candidate_is_ad_
               ? DynamicTo<Element>(DOMNodeIds::NodeForId(candidate_id_))
               : nullptr);
@@ -184,6 +210,7 @@ void OverlayInterstitialAdDetector::MaybeFireDetection(
     last_unqualified_element_id_ = candidate_id_;
     candidate_id_ = kInvalidDOMNodeId;
     candidate_is_ad_ = false;
+    candidate_is_prestitial_ = false;
   }
 
   if (element_id == last_unqualified_element_id_) {
@@ -218,13 +245,17 @@ void OverlayInterstitialAdDetector::MaybeFireDetection(
 
   if (!has_gesture && is_large && (!popup_detected_ || is_ad) &&
       IsOverlayCandidate(element)) {
+    // The prestitial conditions are about the state of the page when the
+    // overlay appears, so evaluate them now rather than at dismissal time.
+    bool is_prestitial = IsPrestitialAd(outermost_main_frame);
+
     // If main page is not scrollable, immediately determinine the overlay
     // to be a popup. There's is no need to check any state at the dismissal
     // time.
     if (!outermost_main_frame->GetDocument()
              ->GetLayoutView()
              ->HasScrollableOverflowY()) {
-      OnPopupDetected(outermost_main_frame, is_ad, element);
+      OnPopupDetected(outermost_main_frame, is_ad, is_prestitial, element);
     }
 
     if (popup_ad_detected_) {
@@ -233,6 +264,7 @@ void OverlayInterstitialAdDetector::MaybeFireDetection(
 
     candidate_id_ = element_id;
     candidate_is_ad_ = is_ad;
+    candidate_is_prestitial_ = is_prestitial;
     candidate_start_outermost_main_frame_scroll_position_ =
         outermost_main_frame->GetOutermostMainFrameScrollPosition().y();
   } else {
@@ -243,6 +275,7 @@ void OverlayInterstitialAdDetector::MaybeFireDetection(
 void OverlayInterstitialAdDetector::OnPopupDetected(
     LocalFrame* outermost_main_frame,
     bool is_ad,
+    bool is_prestitial_ad,
     Element* ad_element) {
   if (!popup_detected_) {
     UseCounter::Count(outermost_main_frame->GetDocument(),
@@ -256,6 +289,11 @@ void OverlayInterstitialAdDetector::OnPopupDetected(
     UseCounter::Count(outermost_main_frame->GetDocument(),
                       WebFeature::kOverlayPopupAd);
     popup_ad_detected_ = true;
+
+    if (is_prestitial_ad) {
+      UseCounter::Count(outermost_main_frame->GetDocument(),
+                        WebFeature::kOverlayPrestitialAd);
+    }
 
     // Tag the element as popup ad for the ad highlight label.
     if (ad_element) {
