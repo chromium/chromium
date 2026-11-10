@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Vulnerability report and PoC check result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "verdict",
+    "fields",
+    "summary",
+    "files_reviewed",
+    "findings",
+    "routine_reviews"
+  ],
+  "properties": {
+    "verdict": {
+      "description": "Orthogonal two-axis verdict: report quality across all environments plus automated reproduction readiness.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["report_quality", "auto_repro"],
+      "properties": {
+        "report_quality": {
+          "description": "NOT_OK if any report_quality check failed; OK otherwise.",
+          "enum": ["OK", "NOT_OK"]
+        },
+        "auto_repro": {
+          "description": "MANUAL when outside the supported automated-reproduction matrix or when a file could not be analyzed at all (never a failure); NOT_READY if inside the matrix and an auto_repro check failed; NEEDS_JUDGMENT if nothing failed but at least one auto_repro check is still unknown and must be settled by the agent or --smoke; READY otherwise.",
+          "enum": ["READY", "NOT_READY", "NEEDS_JUDGMENT", "MANUAL"]
+        }
+      }
+    },
+    "fields": {
+      "description": "Resolved state map for repro.json fields plus the derived repro_type (poc.py, poc.html, or poc.js).",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["state", "value"],
+        "properties": {
+          "state": {
+            "enum": ["VALUE", "NONE", "MISSING", "INVALID", "CONFLICT"]
+          },
+          "value": {
+            "type": ["string", "array", "null"],
+            "items": {"type": "string"}
+          }
+        }
+      }
+    },
+    "summary": {
+      "description": "Concise human-readable summary of the two-axis verdict and concrete fixes when checks fail.",
+      "type": "string"
+    },
+    "files_reviewed": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "suggested_repro_config": {
+      "description": "Pre-filled repro.json to attach when the config is missing or has problems; <...> marks values the researcher must fill in. Null when the attached config passed.",
+      "type": ["object", "null"]
+    },
+    "checker_version": {
+      "description": "Version of vuln-report-check that produced the mechanical results.",
+      "type": "string"
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "severity", "affects", "problem", "fix"],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "severity": {
+            "enum": ["must_fix", "needs_look", "tip"]
+          },
+          "affects": {
+            "type": "array",
+            "items": {
+              "enum": ["report_quality", "auto_repro"]
+            }
+          },
+          "problem": {
+            "type": "string"
+          },
+          "fix": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "routine_reviews": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "status", "axis", "message", "fix"],
+        "properties": {
+          "id": {
+            "description": "Stable check id, e.g. compiles or py.server_contract.",
+            "type": "string"
+          },
+          "status": {
+            "enum": ["pass", "fail", "unknown", "info"]
+          },
+          "axis": {
+            "enum": ["report_quality", "auto_repro"]
+          },
+          "message": {
+            "description": "Concise explanation citing file and line when available.",
+            "type": "string"
+          },
+          "fix": {
+            "description": "Actionable remediation step when status is fail or info; empty string otherwise.",
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
