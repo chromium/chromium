@@ -576,6 +576,29 @@ TEST_F(IconTableTest, PinnedToolbarActionIconsAreMapped) {
 #endif
 }
 
+// Verifies that the search journey omnibox chip vector icons (rounded and old)
+// are mapped to their WebUI toolbar iconset entries.
+TEST_F(IconTableTest, SearchJourneyCueIconsAreMapped) {
+  std::optional<toolbar_ui_api::IconHandle> rounded_handle =
+      icon_table_.RegisterVectorIcon(kDockToRightIcon);
+  ASSERT_TRUE(rounded_handle.has_value());
+
+  std::optional<toolbar_ui_api::IconHandle> old_handle =
+      icon_table_.RegisterVectorIcon(kDockToLeftOldIcon);
+  ASSERT_TRUE(old_handle.has_value());
+
+  auto expected_rounded = toolbar_ui_api::mojom::IconUpdate::New(
+      /*handle_id=*/1u, "webui-toolbar:dock_to_right", IconType::kIconSet,
+      /*color=*/std::nullopt);
+  auto expected_old = toolbar_ui_api::mojom::IconUpdate::New(
+      /*handle_id=*/2u, "webui-toolbar:dock_to_left_old", IconType::kIconSet,
+      /*color=*/std::nullopt);
+  EXPECT_THAT(icon_table_.GetFullState(),
+              testing::UnorderedElementsAre(
+                  MatchesIconUpdate(std::ref(expected_rounded)),
+                  MatchesIconUpdate(std::ref(expected_old))));
+}
+
 TEST_F(IconTableTest, HasPendingUpdates) {
   EXPECT_FALSE(icon_table_.HasPendingUpdates());
 
