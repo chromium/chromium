@@ -71,10 +71,12 @@ class MEDIA_EXPORT VideoEncoder {
  public:
   // TODO: Move this to a new file if there are more codec specific options.
   struct MEDIA_EXPORT AvcOptions {
+    friend bool operator==(const AvcOptions&, const AvcOptions&) = default;
     bool produce_annexb = false;
   };
 
   struct MEDIA_EXPORT HevcOptions {
+    friend bool operator==(const HevcOptions&, const HevcOptions&) = default;
     bool produce_annexb = false;
   };
 
@@ -85,6 +87,12 @@ class MEDIA_EXPORT VideoEncoder {
     Options();
     Options(const Options&);
     ~Options();
+
+    friend bool operator==(const Options&, const Options&) = default;
+
+    // Returns true if `other` differs from `this` only in `bitrate` and/or
+    // `framerate`.
+    bool OnlyRatesChanged(const Options& other) const;
 
     std::string ToString();
 
@@ -208,7 +216,8 @@ class MEDIA_EXPORT VideoEncoder {
   // Note:
   // 1. Not all options can be changed on the fly.
   // 2. ChangeOptions() should be called after calling Flush() and waiting
-  // for it to finish.
+  // for it to finish, except when only `bitrate` and/or `framerate` are
+  // changed (with a null `output_cb`).
   virtual void ChangeOptions(const Options& options,
                              OutputCB output_cb,
                              EncoderStatusCB done_cb) = 0;

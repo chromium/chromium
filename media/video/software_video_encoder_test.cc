@@ -1263,6 +1263,52 @@ TEST_P(SoftwareVideoEncoderTest, ReconfigureWithResizingNumberOfThreads) {
   EXPECT_EQ(outputs_count, 3);
 }
 
+// Changing only the bitrate and/or framerate via ChangeOptions() doesn't need
+// a Flush(), so it can be called between any two frames without forcing a key
+// frame or interrupting the stream.
+TEST_P(SoftwareVideoEncoderTest, ChangeOptionsRatesWithoutFlush) {
+  VideoEncoder::Options options = CreateDefaultOptions();
+  options.frame_size = gfx::Size(320, 240);
+  options.bitrate = Bitrate::ConstantBitrate(1'000'000u);
+  options.framerate = 30;
+
+  std::vector<bool> key_frames;
+  VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
+      [&](VideoEncoderOutput output,
+          std::optional<VideoEncoder::CodecDescription> desc) {
+        key_frames.push_back(output.key_frame);
+      });
+  encoder_->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
+                       std::move(output_cb), ValidatingStatusCB());
+
+  constexpr int kFrameCount = 6;
+  for (int i = 0; i < kFrameCount; ++i) {
+    if (i == 2) {
+      options.bitrate = Bitrate::ConstantBitrate(2'000'000u);
+      encoder_->ChangeOptions(options, VideoEncoder::OutputCB(),
+                              ValidatingStatusCB());
+    } else if (i == 4) {
+      options.bitrate = Bitrate::ConstantBitrate(500'000u);
+      options.framerate = 15.0;
+      encoder_->ChangeOptions(options, VideoEncoder::OutputCB(),
+                              ValidatingStatusCB());
+    }
+    auto frame = CreateFrame(options.frame_size, pixel_format_,
+                             base::Milliseconds(i * 33));
+    encoder_->Encode(std::move(frame),
+                     VideoEncoder::EncodeOptions(/*key_frame=*/i == 0),
+                     i == kFrameCount - 1 ? ValidateStatusThenQuitCB()
+                                          : ValidatingStatusCB());
+  }
+  RunUntilQuit();
+
+  ASSERT_EQ(key_frames.size(), static_cast<size_t>(kFrameCount));
+  EXPECT_TRUE(key_frames[0]);
+  for (int i = 1; i < kFrameCount; ++i) {
+    EXPECT_FALSE(key_frames[i]) << "frame " << i;
+  }
+}
+
 TEST_P(H264VideoEncoderTest, ReconfigureWithResize) {
   VideoEncoder::Options options = CreateDefaultOptions();
   gfx::Size size1(320, 200), size2(400, 240);

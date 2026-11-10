@@ -921,6 +921,170 @@ TEST_F(VideoEncodeAcceleratorAdapterTest,
   EXPECT_EQ(output_count_after_change, 1);
 }
 
+// Changing only the bitrate and/or framerate via ChangeOptions() must work
+// while encodes are in flight, whereas changing the frame size without a
+// Flush() fails.
+TEST_F(VideoEncodeAcceleratorAdapterTest,
+       ChangeOptions_RatesWhileEncodesInFlight) {
+  VideoEncoder::Options options;
+  options.frame_size = gfx::Size(640, 480);
+  options.bitrate = Bitrate::ConstantBitrate(1'000'000u);
+  constexpr auto pixel_format = PIXEL_FORMAT_I420;
+  int output_count = 0;
+  adapter()->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
+                        base::BindLambdaForTesting(
+                            [&](VideoEncoderOutput,
+                                std::optional<VideoEncoder::CodecDescription>) {
+                              ++output_count;
+                            }),
+                        ValidatingStatusCB());
+  adapter()->Encode(
+      CreateGreenFrame(options.frame_size, pixel_format, base::Milliseconds(1)),
+      VideoEncoder::EncodeOptions(true), ValidatingStatusCB());
+  ASSERT_TRUE(base::test::RunUntil([&]() { return output_count == 1; }));
+  ASSERT_TRUE(vea()->stored_bitrates().empty());
+
+  // Hold `vea_runner_` until Encode() and both ChangeOptions() calls are
+  // queued so `FakeVideoEncodeAccelerator::DoBitstreamBufferReady` cannot
+  // finish the encode before ChangeOptions() runs.
+  base::WaitableEvent encode_gate;
+  vea_runner_->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](base::WaitableEvent* e) {
+                       base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
+                       e->Wait();
+                     },
+                     base::Unretained(&encode_gate)));
+
+  // Change the rates while a frame is still being encoded.
+  adapter()->Encode(
+      CreateGreenFrame(options.frame_size, pixel_format, base::Milliseconds(2)),
+      VideoEncoder::EncodeOptions(false), ValidatingStatusCB());
+  options.bitrate = Bitrate::ConstantBitrate(2'000'000u);
+  options.framerate = 15.0;
+  adapter()->ChangeOptions(options, VideoEncoder::OutputCB(),
+                           ValidatingStatusCB());
+
+  // Changing the frame size at the same point fails, which shows the frame
+  // above was still in flight.
+  VideoEncoder::Options resize_options = options;
+  resize_options.frame_size = gfx::Size(1280, 720);
+  std::optional<EncoderStatus> resize_status;
+  adapter()->ChangeOptions(resize_options, VideoEncoder::OutputCB(),
+                           base::BindLambdaForTesting([&](EncoderStatus s) {
+                             resize_status = std::move(s);
+                           }));
+  encode_gate.Signal();
+
+  adapter()->Encode(
+      CreateGreenFrame(options.frame_size, pixel_format, base::Milliseconds(3)),
+      VideoEncoder::EncodeOptions(false), ValidatingStatusCB());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return output_count == 3 && resize_status.has_value(); }));
+
+  EXPECT_EQ(resize_status->code(), EncoderStatus::Codes::kEncoderIllegalState);
+  ASSERT_EQ(vea()->stored_bitrates().size(), 1u);
+  EXPECT_EQ(vea()->stored_bitrates().back(),
+            Bitrate::ConstantBitrate(2'000'000u));
+}
+
+// Rates changed while the accelerator is still initializing are sent once it
+// is ready.
+TEST_F(VideoEncodeAcceleratorAdapterTest,
+       ChangeOptions_RatesDuringInitialization) {
+  VideoEncoder::Options options;
+  options.frame_size = gfx::Size(640, 480);
+  options.bitrate = Bitrate::ConstantBitrate(1'000'000u);
+  int output_count = 0;
+
+  base::WaitableEvent init_gate;
+  vea_runner_->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](base::WaitableEvent* e) {
+                       base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
+                       e->Wait();
+                     },
+                     base::Unretained(&init_gate)));
+
+  adapter()->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
+                        base::BindLambdaForTesting(
+                            [&](VideoEncoderOutput,
+                                std::optional<VideoEncoder::CodecDescription>) {
+                              ++output_count;
+                            }),
+                        ValidatingStatusCB());
+  options.bitrate = Bitrate::ConstantBitrate(3'000'000u);
+  adapter()->ChangeOptions(options, VideoEncoder::OutputCB(),
+                           ValidatingStatusCB());
+  adapter()->Encode(CreateGreenFrame(options.frame_size, PIXEL_FORMAT_I420,
+                                     base::Milliseconds(1)),
+                    VideoEncoder::EncodeOptions(true), ValidatingStatusCB());
+  init_gate.Signal();
+  ASSERT_TRUE(base::test::RunUntil([&]() { return output_count == 1; }));
+
+  ASSERT_EQ(vea()->stored_bitrates().size(), 1u);
+  EXPECT_EQ(vea()->stored_bitrates().back(),
+            Bitrate::ConstantBitrate(3'000'000u));
+}
+
+TEST_F(VideoEncodeAcceleratorAdapterTest, ChangeOptions_RejectsModeChange) {
+  VideoEncoder::Options options;
+  options.frame_size = gfx::Size(640, 480);
+  options.bitrate = Bitrate::ConstantBitrate(1'000'000u);
+  bool initialized = false;
+  adapter()->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
+                        /*output_cb=*/base::DoNothing(),
+                        base::BindLambdaForTesting([&](EncoderStatus s) {
+                          EXPECT_TRUE(s.is_ok());
+                          initialized = true;
+                        }));
+  ASSERT_TRUE(base::test::RunUntil([&]() { return initialized; }));
+
+  // Both an explicit VBR request and `std::nullopt` (which defaults to VBR
+  // when supported) must be rejected when initialized with CBR.
+  for (const std::optional<Bitrate>& invalid_bitrate :
+       {std::optional<Bitrate>(
+            Bitrate::VariableBitrate(1'000'000u, 2'000'000u)),
+        std::optional<Bitrate>(std::nullopt)}) {
+    options.bitrate = invalid_bitrate;
+    std::optional<EncoderStatus> status;
+    adapter()->ChangeOptions(options, VideoEncoder::OutputCB(),
+                             base::BindLambdaForTesting([&](EncoderStatus s) {
+                               status = std::move(s);
+                             }));
+    ASSERT_TRUE(base::test::RunUntil([&]() { return status.has_value(); }));
+    EXPECT_EQ(status->code(), EncoderStatus::Codes::kEncoderUnsupportedConfig);
+  }
+  EXPECT_TRUE(vea()->stored_bitrates().empty());
+}
+
+// Some accelerators update their rate control on every call, so a rate-only
+// call that changes nothing must not reach the accelerator.
+TEST_F(VideoEncodeAcceleratorAdapterTest, ChangeOptions_SkipsUnchangedRates) {
+  VideoEncoder::Options options;
+  options.frame_size = gfx::Size(640, 480);
+  options.bitrate = Bitrate::ConstantBitrate(1'000'000u);
+  options.framerate = 30.0;
+  bool initialized = false;
+  adapter()->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
+                        /*output_cb=*/base::DoNothing(),
+                        base::BindLambdaForTesting([&](EncoderStatus s) {
+                          EXPECT_TRUE(s.is_ok());
+                          initialized = true;
+                        }));
+  ASSERT_TRUE(base::test::RunUntil([&]() { return initialized; }));
+
+  bool options_changed = false;
+  adapter()->ChangeOptions(options, VideoEncoder::OutputCB(),
+                           base::BindLambdaForTesting([&](EncoderStatus s) {
+                             EXPECT_TRUE(s.is_ok());
+                             options_changed = true;
+                           }));
+  ASSERT_TRUE(base::test::RunUntil([&]() { return options_changed; }));
+
+  EXPECT_TRUE(vea()->stored_bitrates().empty());
+}
+
 TEST_F(VideoEncodeAcceleratorAdapterTest, ChangeOptions_ChangeFrameSize) {
   VideoEncoder::Options options;
   auto first_frame_size = gfx::Size(640, 480);

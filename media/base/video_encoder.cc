@@ -122,6 +122,13 @@ VideoEncoder::Options::Options() = default;
 VideoEncoder::Options::Options(const Options&) = default;
 VideoEncoder::Options::~Options() = default;
 
+bool VideoEncoder::Options::OnlyRatesChanged(const Options& other) const {
+  Options without_rate_changes = other;
+  without_rate_changes.bitrate = bitrate;
+  without_rate_changes.framerate = framerate;
+  return *this == without_rate_changes;
+}
+
 std::string VideoEncoder::Options::ToString() {
   std::vector<std::string> keys;
   if (bitrate) {

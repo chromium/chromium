@@ -69,6 +69,14 @@ uint32_t ComputeCheckedPeakBitrate(uint32_t target_bitrate) {
       std::numeric_limits<uint32_t>::max());
 }
 
+// The framerate to send to the accelerator. It is never 0, since some
+// accelerators CHECK or break their timestamps on a zero framerate.
+uint32_t ToVeaFramerate(std::optional<double> framerate) {
+  return std::max<uint32_t>(
+      1u, base::ClampRound<uint32_t>(
+              framerate.value_or(VideoEncodeAccelerator::kDefaultFramerate)));
+}
+
 Bitrate CreateBitrate(
     const std::optional<Bitrate>& requested_bitrate,
     const gfx::Size& frame_size,
@@ -101,9 +109,7 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
   Bitrate bitrate =
       CreateBitrate(opts.bitrate, opts.frame_size, supported_rc_modes);
   auto config = VideoEncodeAccelerator::Config(
-      format, opts.frame_size, profile, bitrate,
-      std::max<uint32_t>(1u, opts.framerate.value_or(
-                                 VideoEncodeAccelerator::kDefaultFramerate)),
+      format, opts.frame_size, profile, bitrate, ToVeaFramerate(opts.framerate),
       VideoEncodeAccelerator::Config::StorageType::kShmem,
       VideoEncodeAccelerator::Config::ContentType::kCamera);
   config.gop_length = opts.keyframe_interval;
@@ -737,8 +743,12 @@ void VideoEncodeAcceleratorAdapter::ChangeOptionsOnAcceleratorThread(
     OutputCB output_cb,
     EncoderStatusCB done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
-  if (state_ != State::kReadyToEncode || !active_encodes_.empty() ||
-      !pending_encodes_.empty()) {
+  const bool only_rates_changed =
+      options_.OnlyRatesChanged(options) && output_cb.is_null();
+  if (state_ == State::kNotInitialized ||
+      (!only_rates_changed &&
+       (state_ != State::kReadyToEncode || !active_encodes_.empty() ||
+        !pending_encodes_.empty()))) {
     std::move(done_cb).Run(
         EncoderStatus(EncoderStatus::Codes::kEncoderIllegalState,
                       "Encoder can't change options now.")
@@ -746,15 +756,43 @@ void VideoEncodeAcceleratorAdapter::ChangeOptionsOnAcceleratorThread(
     return;
   }
 
-  if (options.bitrate && options_.bitrate &&
-      options.bitrate->mode() != options_.bitrate->mode()) {
+  const Bitrate current_bitrate =
+      CreateBitrate(options_.bitrate, options_.frame_size, supported_rc_modes_);
+  const Bitrate new_bitrate =
+      CreateBitrate(options.bitrate, options.frame_size, supported_rc_modes_);
+  if (new_bitrate.mode() != current_bitrate.mode()) {
     std::move(done_cb).Run(
         EncoderStatus(EncoderStatus::Codes::kEncoderUnsupportedConfig,
                       "Bitrate mode change is not supported.")
             .WithData("current bitrate",
-                      static_cast<int32_t>(options_.bitrate->mode()))
-            .WithData("new bitrate",
-                      static_cast<int32_t>(options.bitrate->mode())));
+                      static_cast<int32_t>(current_bitrate.mode()))
+            .WithData("new bitrate", static_cast<int32_t>(new_bitrate.mode())));
+    return;
+  }
+
+  if (only_rates_changed) {
+    const uint32_t current_framerate = ToVeaFramerate(options_.framerate);
+    options_ = options;
+
+    // The accelerator can't take new rates until it has finished initializing
+    // or reconfiguring, so send them once it is ready.
+    if (state_ == State::kInitializing || state_ == State::kReconfiguring) {
+      pending_rates_change_ = true;
+      std::move(done_cb).Run(EncoderStatus::Codes::kOk);
+      return;
+    }
+
+    // The VEA interface only requires an empty encoder for frame size changes,
+    // not rate changes, so encodes may be in flight here.
+    const uint32_t new_framerate = ToVeaFramerate(options_.framerate);
+
+    // Some accelerators update their rate control even when nothing changed, so
+    // skip calls that wouldn't change anything.
+    if (new_bitrate != current_bitrate || new_framerate != current_framerate) {
+      accelerator_->RequestEncodingParametersChange(new_bitrate, new_framerate,
+                                                    std::nullopt);
+    }
+    std::move(done_cb).Run(EncoderStatus::Codes::kOk);
     return;
   }
 
@@ -773,11 +811,7 @@ void VideoEncodeAcceleratorAdapter::ChangeOptionsOnAcceleratorThread(
     }
   }
 
-  Bitrate bitrate =
-      CreateBitrate(options.bitrate, options.frame_size, supported_rc_modes_);
-  uint32_t framerate = std::max<uint32_t>(
-      1u, base::ClampRound<uint32_t>(options.framerate.value_or(
-              VideoEncodeAccelerator::kDefaultFramerate)));
+  const uint32_t framerate = ToVeaFramerate(options.framerate);
 
   // When frame size is changed, run |done_cb| in |RequireBitstreamBuffers|
   // after bitstream buffer is re-initialized. At that time, reconfigure is done
@@ -785,8 +819,9 @@ void VideoEncodeAcceleratorAdapter::ChangeOptionsOnAcceleratorThread(
   if (new_frame_size.has_value()) {
     reconfigure_cb_ = std::move(done_cb);
   }
+  pending_rates_change_ = false;
   state_ = State::kReconfiguring;
-  accelerator_->RequestEncodingParametersChange(bitrate, framerate,
+  accelerator_->RequestEncodingParametersChange(new_bitrate, framerate,
                                                 new_frame_size);
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
@@ -819,6 +854,17 @@ void VideoEncodeAcceleratorAdapter::ChangeOptionsOnAcceleratorThread(
     state_ = State::kReadyToEncode;
     std::move(done_cb).Run(EncoderStatus::Codes::kOk);
   }
+}
+
+void VideoEncodeAcceleratorAdapter::ApplyPendingRatesChange() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
+  if (!pending_rates_change_) {
+    return;
+  }
+  pending_rates_change_ = false;
+  accelerator_->RequestEncodingParametersChange(
+      CreateBitrate(options_.bitrate, options_.frame_size, supported_rc_modes_),
+      ToVeaFramerate(options_.framerate), std::nullopt);
 }
 
 void VideoEncodeAcceleratorAdapter::Flush(EncoderStatusCB done_cb) {
@@ -898,6 +944,7 @@ void VideoEncodeAcceleratorAdapter::RequireBitstreamBuffers(
     InitCompleted(EncoderStatus::Codes::kOk);
   } else if (state_ == State::kReconfiguring) {
     state_ = State::kReadyToEncode;
+    ApplyPendingRatesChange();
     if (reconfigure_cb_) {
       std::move(reconfigure_cb_).Run(EncoderStatus::Codes::kOk);
     }
@@ -1132,6 +1179,7 @@ void VideoEncodeAcceleratorAdapter::InitCompleted(EncoderStatus status) {
 
     DCHECK(active_encodes_.empty());
     pending_encodes_.clear();
+    pending_rates_change_ = false;
     state_ = State::kNotInitialized;
     return;
   }
@@ -1139,6 +1187,10 @@ void VideoEncodeAcceleratorAdapter::InitCompleted(EncoderStatus status) {
   state_ = State::kReadyToEncode;
   flush_support_ = accelerator_->IsFlushSupported();
   gpu_resize_supported_ = accelerator_->IsGpuFrameResizeSupported();
+
+  // Apply rates that changed during initialization before sending the encodes
+  // that were queued, so those frames use the new rates.
+  ApplyPendingRatesChange();
 
   // Send off the encodes that came in while we were waiting for initialization.
   for (auto& encode : pending_encodes_) {
