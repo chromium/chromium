@@ -1033,7 +1033,6 @@ export class MostVisitedElement extends MostVisitedElementBase {
   protected async onReorderClick_() {
     this.$.actionMenu.close();
     this.inReorderMode_ = true;
-    this.reordering_ = true;
     await this.updateComplete;
     await new Promise(requestAnimationFrame);
     if (this.inReorderMode_) {
