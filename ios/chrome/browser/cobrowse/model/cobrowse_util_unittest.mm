@@ -15,23 +15,14 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
-namespace {
-
-std::unique_ptr<KeyedService> BuildMockIOSChromeAimEligibilityService(
-    ProfileIOS* profile) {
-  return MockIOSChromeAimEligibilityService::CreateTestingProfileService(
-      profile);
-}
-
-}  // namespace
-
 class CobrowseUtilTest : public PlatformTest {
  public:
   CobrowseUtilTest() {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IOSChromeAimEligibilityServiceFactory::GetInstance(),
-        base::BindRepeating(&BuildMockIOSChromeAimEligibilityService));
+        base::BindRepeating(
+            &MockIOSChromeAimEligibilityService::CreateTestingProfileService));
     profile_ = std::move(builder).Build();
   }
 

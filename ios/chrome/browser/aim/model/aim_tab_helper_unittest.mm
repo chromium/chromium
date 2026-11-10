@@ -21,16 +21,6 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
-namespace {
-
-std::unique_ptr<KeyedService> BuildMockIOSChromeAimEligibilityService(
-    ProfileIOS* profile) {
-  return MockIOSChromeAimEligibilityService::CreateTestingProfileService(
-      profile);
-}
-
-}  // namespace
-
 class AimTabHelperTest : public PlatformTest {
  protected:
   AimTabHelperTest() {
@@ -43,7 +33,8 @@ class AimTabHelperTest : public PlatformTest {
         ios::TemplateURLServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         IOSChromeAimEligibilityServiceFactory::GetInstance(),
-        base::BindRepeating(&BuildMockIOSChromeAimEligibilityService));
+        base::BindRepeating(
+            &MockIOSChromeAimEligibilityService::CreateTestingProfileService));
     profile_ = std::move(builder).Build();
 
     web_state_.SetBrowserState(profile_.get());

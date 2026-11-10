@@ -118,16 +118,6 @@
 
 @end
 
-namespace {
-
-std::unique_ptr<KeyedService> BuildMockIOSChromeAimEligibilityService(
-    ProfileIOS* profile) {
-  return MockIOSChromeAimEligibilityService::CreateTestingProfileService(
-      profile);
-}
-
-}  // namespace
-
 class AssistantAIMCoordinatorTest : public PlatformTest {
  public:
   AssistantAIMCoordinatorTest() {
@@ -136,7 +126,8 @@ class AssistantAIMCoordinatorTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IOSChromeAimEligibilityServiceFactory::GetInstance(),
-        base::BindRepeating(&BuildMockIOSChromeAimEligibilityService));
+        base::BindRepeating(
+            &MockIOSChromeAimEligibilityService::CreateTestingProfileService));
     // Services used by the tab helpers attached to the coordinator's WebState.
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),

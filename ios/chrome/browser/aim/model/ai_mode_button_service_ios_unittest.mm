@@ -76,12 +76,6 @@ class MockImageFetcherService : public image_fetcher::ImageFetcherService {
   NiceMock<image_fetcher::MockImageFetcher> mock_image_fetcher_;
 };
 
-std::unique_ptr<KeyedService> CreateMockAimEligibilityService(
-    ProfileIOS* profile) {
-  return MockIOSChromeAimEligibilityService::CreateTestingProfileService(
-      profile);
-}
-
 std::unique_ptr<KeyedService> CreateMockFaviconLoader(ProfileIOS* profile) {
   return std::make_unique<NiceMock<MockFaviconLoader>>();
 }
@@ -104,7 +98,8 @@ class AIModeButtonServiceIOSTest : public PlatformTest {
         ios::TemplateURLServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         IOSChromeAimEligibilityServiceFactory::GetInstance(),
-        base::BindRepeating(&CreateMockAimEligibilityService));
+        base::BindRepeating(
+            &MockIOSChromeAimEligibilityService::CreateTestingProfileService));
     builder.AddTestingFactory(IOSChromeFaviconLoaderFactory::GetInstance(),
                               base::BindRepeating(&CreateMockFaviconLoader));
     builder.AddTestingFactory(ios::FaviconServiceFactory::GetInstance(),

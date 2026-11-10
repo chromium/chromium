@@ -46,6 +46,15 @@ base::DictValue CreateSessionPrefDict(std::string_view server_id,
   return dict;
 }
 
+// Configure `service` for CobrowseBrowserAgentTest.
+std::unique_ptr<MockIOSChromeAimEligibilityService>
+ConfigureIOSChromeAimEligibilityService(
+    std::unique_ptr<MockIOSChromeAimEligibilityService> service) {
+  ON_CALL(*service, IsFuseboxEligible()).WillByDefault(testing::Return(true));
+  ON_CALL(*service, IsCobrowseEligible()).WillByDefault(testing::Return(true));
+  return service;
+}
+
 }  // namespace
 
 class CobrowseBrowserAgentTest : public PlatformTest {
@@ -56,17 +65,9 @@ class CobrowseBrowserAgentTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IOSChromeAimEligibilityServiceFactory::GetInstance(),
-        base::BindOnce([](ProfileIOS* profile)
-                           -> std::unique_ptr<KeyedService> {
-          auto service =
-              MockIOSChromeAimEligibilityService::CreateTestingProfileService(
-                  profile);
-          ON_CALL(*service, IsFuseboxEligible())
-              .WillByDefault(testing::Return(true));
-          ON_CALL(*service, IsCobrowseEligible())
-              .WillByDefault(testing::Return(true));
-          return service;
-        }));
+        base::BindOnce(
+            &MockIOSChromeAimEligibilityService::CreateTestingProfileService)
+            .Then(base::BindOnce(&ConfigureIOSChromeAimEligibilityService)));
     personal_profile_ =
         profile_manager_.AddProfileWithBuilder(std::move(builder));
 

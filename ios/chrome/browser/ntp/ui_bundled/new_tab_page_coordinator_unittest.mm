@@ -98,16 +98,6 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
-namespace {
-
-std::unique_ptr<KeyedService> BuildMockIOSChromeAimEligibilityService(
-    ProfileIOS* profile) {
-  return MockIOSChromeAimEligibilityService::CreateTestingProfileService(
-      profile);
-}
-
-}  // namespace
-
 @interface NewTabPageHeaderView (Testing)
 @property(nonatomic, readonly) UIButton* customizationMenuButton;
 @property(nonatomic, readonly) UIVisualEffectView* blurBackgroundView;
@@ -157,7 +147,8 @@ class NewTabPageCoordinatorTest : public PlatformTest {
         tab_groups::TabGroupSyncServiceFactory::GetDefaultFactory());
     test_profile_builder.AddTestingFactory(
         IOSChromeAimEligibilityServiceFactory::GetInstance(),
-        base::BindRepeating(&BuildMockIOSChromeAimEligibilityService));
+        base::BindRepeating(
+            &MockIOSChromeAimEligibilityService::CreateTestingProfileService));
     test_profile_builder.AddTestingFactory(
         SyncServiceFactory::GetInstance(),
         base::BindRepeating(&CreateTestSyncService));

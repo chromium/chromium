@@ -80,14 +80,6 @@ constexpr char kAimZeroStateURL[] =
     "https://www.google.com/"
     "search?udm=50&sourceid=chrome-mobile&gsas=4&csuir=1&cs=0";
 
-// Builds an AIM eligibility service that makes the profile eligible for AIM
-// Cobrowse, which AimCobrowseJavaScriptFeature requires to message the page.
-std::unique_ptr<KeyedService> BuildMockIOSChromeAimEligibilityService(
-    ProfileIOS* profile) {
-  return MockIOSChromeAimEligibilityService::CreateTestingProfileService(
-      profile);
-}
-
 }  // namespace
 
 class AssistantAIMMediatorTest : public PlatformTest {
@@ -99,7 +91,8 @@ class AssistantAIMMediatorTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IOSChromeAimEligibilityServiceFactory::GetInstance(),
-        base::BindRepeating(&BuildMockIOSChromeAimEligibilityService));
+        base::BindRepeating(
+            &MockIOSChromeAimEligibilityService::CreateTestingProfileService));
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());

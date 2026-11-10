@@ -45,12 +45,6 @@ const char kGoogleSearchTemplate[] = "https://www.google.com/?q={searchTerms}";
 const char kNonGoogleSearchTemplate[] =
     "https://www.example.com/?q={searchTerms}";
 
-std::unique_ptr<KeyedService> BuildMockIOSChromeAimEligibilityService(
-    ProfileIOS* profile) {
-  return MockIOSChromeAimEligibilityService::CreateTestingProfileService(
-      profile);
-}
-
 }  // namespace
 
 class SearchWithMediatorTest : public PlatformTest {
@@ -65,7 +59,8 @@ class SearchWithMediatorTest : public PlatformTest {
         ios::TemplateURLServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         IOSChromeAimEligibilityServiceFactory::GetInstance(),
-        base::BindRepeating(&BuildMockIOSChromeAimEligibilityService));
+        base::BindRepeating(
+            &MockIOSChromeAimEligibilityService::CreateTestingProfileService));
     profile_ = std::move(builder).Build();
     scene_state_ = [[SceneState alloc] init];
     browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
