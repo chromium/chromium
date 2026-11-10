@@ -33,6 +33,12 @@ class IpcPacketSocketFactoryTest : public testing::Test {
     ASSERT_NE(socket_, nullptr);
   }
 
+  void TearDown() override {
+    socket_.reset();
+    socket_factory_.reset();
+    mojo_binding_context_->Dispose();
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_;
 
