@@ -188,10 +188,6 @@ struct MenuItemAvailability {
 
 // Creates the menu component for the model picker section.
 - (UIMenu*)createModelPickerMenu {
-  if (!_inputState.allowModelPicker) {
-    return nil;
-  }
-
   NSMutableArray<UIAction*>* actions = [[NSMutableArray alloc] init];
   for (ComposeboxModelItem* item in _inputState.modelItems) {
     [actions addObject:[self actionForModelItem:item]];

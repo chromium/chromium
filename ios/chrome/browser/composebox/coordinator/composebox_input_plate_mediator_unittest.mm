@@ -363,8 +363,6 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
  protected:
   struct InputPlateFeatures {
     bool aimNudge;
-    bool advancedTools;
-    bool deepSearch;
   };
 
   // `PageContextWrapperFactory` implementation that records weak references to
@@ -598,18 +596,6 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
       disabled_features.push_back(kComposeboxAIMNudge);
     }
 
-    if (features.advancedTools) {
-      enabled_features.push_back(kComposeboxAdditionalAdvancedTools);
-    } else {
-      disabled_features.push_back(kComposeboxAdditionalAdvancedTools);
-    }
-
-    if (features.deepSearch) {
-      enabled_features.push_back(kComposeboxDeepSearch);
-    } else {
-      disabled_features.push_back(kComposeboxDeepSearch);
-    }
-
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
@@ -739,10 +725,6 @@ TEST_F(ComposeboxInputPlateMediatorTest, CreateImageOptionShownWhenEligible) {
 
 // Tests canvas not shown when not eligible.
 TEST_F(ComposeboxInputPlateMediatorTest, CanvasOptionHiddenWhenNotEligible) {
-  EnableInputPlateFeatures({
-      .advancedTools = true,
-  });
-
   SetAIMEligible(true);
   SetDSEGoogle(true);
   SetCanvasEligible(false);
@@ -752,10 +734,6 @@ TEST_F(ComposeboxInputPlateMediatorTest, CanvasOptionHiddenWhenNotEligible) {
 
 // Tests canvas shown when eligible.
 TEST_F(ComposeboxInputPlateMediatorTest, CanvasOptionShownWhenEligible) {
-  EnableInputPlateFeatures({
-      .advancedTools = true,
-  });
-
   SetAIMEligible(true);
   SetDSEGoogle(true);
   SetCanvasEligible(true);
@@ -766,11 +744,6 @@ TEST_F(ComposeboxInputPlateMediatorTest, CanvasOptionShownWhenEligible) {
 // Tests deep search not shown when not eligible.
 TEST_F(ComposeboxInputPlateMediatorTest,
        DeepSearchOptionHiddenWhenNotEligible) {
-  EnableInputPlateFeatures({
-      .advancedTools = true,
-      .deepSearch = true,
-  });
-
   SetAIMEligible(true);
   SetDSEGoogle(true);
   SetDeepSearchEligible(false);
@@ -780,11 +753,6 @@ TEST_F(ComposeboxInputPlateMediatorTest,
 
 // Tests deep search shown when eligible.
 TEST_F(ComposeboxInputPlateMediatorTest, DeepSearchOptionShownWhenEligible) {
-  EnableInputPlateFeatures({
-      .advancedTools = true,
-      .deepSearch = true,
-  });
-
   SetAIMEligible(true);
   SetDSEGoogle(true);
   SetDeepSearchEligible(true);

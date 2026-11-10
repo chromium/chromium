@@ -34,20 +34,8 @@ BASE_DECLARE_FEATURE(kComposeboxCloseButtonTopAlign);
 // Whether to align the close button to the top edge for top composebox.
 bool AlignComposeboxCloseButtonToInputPlateTop();
 
-// Whether to show the extra controls in the composebox.
-bool ShowComposeboxAdditionalAdvancedTools();
-
-// Whether to show the deep search advanced tool.
-bool ShowDeepSearchTool();
-
 // Weather verbatim suggestion is enabled in AIM in composebox.
 bool IsComposeboxVerbatimSuggestionInAIMEnabled();
-
-// Used to enable the extra advanced controls in the composebox.
-BASE_DECLARE_FEATURE(kComposeboxAdditionalAdvancedTools);
-
-// Used to enable deep search in the composebox.
-BASE_DECLARE_FEATURE(kComposeboxDeepSearch);
 
 // Used to enable verbatim suggestions in AIM.
 BASE_DECLARE_FEATURE(kComposeboxVerbatimSuggestionInAIM);

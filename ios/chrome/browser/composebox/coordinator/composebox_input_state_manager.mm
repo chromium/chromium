@@ -518,7 +518,6 @@ omnibox::InputType InputTypeForAttachmentOption(
   state.remainingAttachmentCapacity = [self remainingAttachmentCapacity];
   state.remainingNumberOfImagesAllowed = [self remainingNumberOfImagesAllowed];
   state.maxTabAttachmentCount = [self maxTabAttachmentCount];
-  state.allowModelPicker = ShowComposeboxAdditionalAdvancedTools();
 
   state.activeTool = [self activeMode];
 
@@ -908,15 +907,13 @@ omnibox::InputType InputTypeForAttachmentOption(
       return std::ranges::contains(_inputState->allowed_tools,
                                    omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
     case ComposeboxMode::kCanvas:
-      if (!ShowComposeboxAdditionalAdvancedTools() ||
-          experimental_flags::ShouldForceDisableComposeboxCanvas()) {
+      if (experimental_flags::ShouldForceDisableComposeboxCanvas()) {
         return NO;
       }
       return std::ranges::contains(_inputState->allowed_tools,
                                    omnibox::ToolMode::TOOL_MODE_CANVAS);
     case ComposeboxMode::kDeepSearch:
-      if (!ShowDeepSearchTool() ||
-          experimental_flags::ShouldForceDisableComposeboxDeepSearch()) {
+      if (experimental_flags::ShouldForceDisableComposeboxDeepSearch()) {
         return NO;
       }
       return std::ranges::contains(_inputState->allowed_tools,
@@ -971,11 +968,7 @@ omnibox::InputType InputTypeForAttachmentOption(
   }
 
   // All models are gated by AI omnibox eligibility.
-  if (![self isEligibleToAIM]) {
-    return NO;
-  }
-
-  if (!ShowComposeboxAdditionalAdvancedTools() || !_inputState.has_value()) {
+  if (![self isEligibleToAIM] || !_inputState.has_value()) {
     return NO;
   }
 
@@ -984,7 +977,7 @@ omnibox::InputType InputTypeForAttachmentOption(
 
 // Whether the given `model` is disabled.
 - (BOOL)isModelDisabled:(omnibox::ModelMode)model {
-  if (!ShowComposeboxAdditionalAdvancedTools() || !_inputState.has_value()) {
+  if (!_inputState.has_value()) {
     return NO;
   }
 

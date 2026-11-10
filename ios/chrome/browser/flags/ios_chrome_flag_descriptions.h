@@ -449,12 +449,6 @@ inline constexpr char kComposeboxAIMNudgeDescription[] =
     "Enables the AIM nudge button in the composebox, tapping on the button "
     "enables AIM. This is conditionned by AIM availability.";
 
-inline constexpr char kComposeboxAdditionalAdvancedToolsName[] =
-    "Enable additional advanced tools in composebox";
-inline constexpr char kComposeboxAdditionalAdvancedToolsDescription[] =
-    "When enabled, the additional tools in the input plate are shown, such as "
-    "canvas and the model picker";
-
 inline constexpr char kComposeboxAimRichAPCExtractionName[] =
     "Composebox AIM Rich APC Extraction";
 inline constexpr char kComposeboxAimRichAPCExtractionDescription[] =
@@ -485,11 +479,6 @@ inline constexpr char kComposeboxConnectedAppsSettingDescription[] =
     "load "
     "the web page where the user can the connect their Google apps to the "
     "search services";
-
-inline constexpr char kComposeboxDeepSearchName[] =
-    "Enable Composebox Deep Search";
-inline constexpr char kComposeboxDeepSearchDescription[] =
-    "Enables the deep search advanced tool in Composebox";
 
 inline constexpr char kComposeboxDevToolsName[] = "Enable Composebox Dev Tools";
 inline constexpr char kComposeboxDevToolsDescription[] =

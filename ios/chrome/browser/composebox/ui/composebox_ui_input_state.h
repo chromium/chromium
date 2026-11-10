@@ -55,9 +55,6 @@
 /// The absolute maximum number of tabs allowed to be attached.
 @property(nonatomic, assign) NSUInteger maxTabAttachmentCount;
 
-/// Whether the model picker is allowed to be shown.
-@property(nonatomic, assign) BOOL allowModelPicker;
-
 /// The currently active tool.
 @property(nonatomic, assign) ComposeboxMode activeTool;
 
