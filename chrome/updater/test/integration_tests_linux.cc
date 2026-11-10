@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <optional>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -23,6 +24,8 @@
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
+#include "base/values.h"
+#include "base/version.h"
 #include "build/branding_buildflags.h"
 #include "chrome/updater/activity.h"
 #include "chrome/updater/activity_impl_util_posix.h"

@@ -25,6 +25,7 @@
 #include "base/test/test_suite.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "build/build_config.h"

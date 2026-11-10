@@ -22,6 +22,7 @@
 #include "base/json/values_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/process/launch.h"
+#include "base/process/process.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"

@@ -12,33 +12,33 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/functional/function_ref.h"
 #include "base/process/launch.h"
-#include "base/process/process_iterator.h"
-#include "base/values.h"
+#include "base/process/process.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/registration_data.h"
-#include "chrome/updater/test/server.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_version.h"
+#include "net/http/http_status_code.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include <wrl/client.h>
 
+#include "base/process/process_iterator.h"
 #include "chrome/updater/app/server/win/updater_legacy_idl.h"
 #endif
 
-class GURL;
-
 namespace base {
 class CommandLine;
+class DictValue;
+class ListValue;
+class Time;
 class TimeDelta;
 }  // namespace base
 
@@ -51,6 +51,8 @@ class OmahaSettingsClientProto;
 }  // namespace wireless_android_enterprise_devicemanagement
 
 namespace updater::test {
+
+class ScopedServer;
 
 enum class AppBundleWebCreateMode {
   kCreateApp = 0,

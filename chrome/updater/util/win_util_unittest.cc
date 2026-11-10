@@ -16,6 +16,7 @@
 
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/base_paths.h"
@@ -44,6 +45,7 @@
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "base/uuid.h"
+#include "base/version.h"
 #include "base/win/access_token.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_com_initializer.h"
@@ -52,7 +54,6 @@
 #include "base/win/security_descriptor.h"
 #include "base/win/sid.h"
 #include "base/win/win_util.h"
-#include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/test/test_scope.h"
 #include "chrome/updater/test/unit_test_util.h"
 #include "chrome/updater/test/unit_test_util_win.h"

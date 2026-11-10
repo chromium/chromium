@@ -28,6 +28,8 @@
 #include "base/no_destructor.h"
 #include "base/numerics/checked_math.h"
 #include "base/path_service.h"
+#include "base/process/launch.h"
+#include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
@@ -72,6 +74,7 @@
 #include "chrome/updater/test/unit_test_util.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_branding.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util/util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -103,7 +106,6 @@
 #include <shlobj.h>
 #include <wrl/client.h>
 
-#include "base/strings/utf_string_conversions.h"
 #include "base/win/com_init_util.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_bstr.h"
@@ -112,7 +114,6 @@
 #include "chrome/updater/app/server/win/updater_idl.h"
 #include "chrome/updater/app/server/win/updater_internal_idl.h"
 #include "chrome/updater/app/server/win/updater_legacy_idl.h"
-#include "chrome/updater/test/test_scope.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/setup/setup_util.h"
 #include "chrome/updater/win/ui/l10n_util.h"
