@@ -9,6 +9,13 @@
  * buttons.
  */
 
+// Register every toolbar iconset before any control is defined. Icon names
+// come from icon_table.cc and can be handed to any <icon-from-table>, so a
+// consuming element cannot know in advance which iconset it needs.
+import './icons.js';
+// <if expr="_google_chrome">
+import './internal/icons.js';
+// </if>
 import '/shared/icon_from_table.js';
 import './app_menu_button.js';
 import './avatar_button.js';

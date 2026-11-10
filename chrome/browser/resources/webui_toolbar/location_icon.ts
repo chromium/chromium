@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import '/shared/icon_from_table.js';
+import './icons.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import './toolbar_chip_button.js';
 
