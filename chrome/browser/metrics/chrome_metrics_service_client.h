@@ -61,10 +61,6 @@ namespace network_time {
 class NetworkTimeTracker;
 }  // namespace network_time
 
-namespace metrics::private_metrics {
-class PumaService;
-}
-
 namespace metrics {
 class MetricsService;
 class MetricsStateManager;
@@ -115,7 +111,6 @@ class ChromeMetricsServiceClient
   metrics::MetricsService* GetMetricsService() override;
   ukm::UkmService* GetUkmService() override;
   metrics::dwa::DwaService* GetDwaService() override;
-  metrics::private_metrics::PumaService* GetPumaService() override;
   metrics::structured::StructuredMetricsService* GetStructuredMetricsService()
       override;
   void SetMetricsClientId(const std::string& client_id) override;
@@ -305,18 +300,8 @@ class ChromeMetricsServiceClient
   // The DwaService that |this| is a client of.
   std::unique_ptr<metrics::dwa::DwaService> dwa_service_;
 
-  // IMPORTANT: This member's declaration order is critical for shutdown
-  // stability. It must be declared *before* `puma_service_` to ensure it is
-  // destroyed *after* `puma_service_`. This is because the `PumaService`
-  // destructor triggers a callback that uses this `cached_profile_` object.
-  // Reordering these members will lead to a use-after-free crash during
-  // shutdown. See crbug.com/465698705 for details.
-  //
   // This member variable ensures the profile lookup is cached across calls.
   metrics::CachedMetricsProfile cached_profile_;
-
-  // The PumaService that |this| is a client of.
-  std::unique_ptr<metrics::private_metrics::PumaService> puma_service_;
 
   // Listener for changes in incognito activity.
   std::unique_ptr<IncognitoObserver> incognito_observer_;

@@ -143,10 +143,6 @@ metrics::dwa::DwaService* MetricsServiceClient::GetDwaService() {
   return nullptr;
 }
 
-metrics::private_metrics::PumaService* MetricsServiceClient::GetPumaService() {
-  return nullptr;
-}
-
 structured::StructuredMetricsService*
 MetricsServiceClient::GetStructuredMetricsService() {
   return nullptr;

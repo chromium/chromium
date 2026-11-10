@@ -639,11 +639,6 @@ metrics::dwa::DwaService* ChromeMetricsServiceClient::GetDwaService() {
   return dwa_service_.get();
 }
 
-metrics::private_metrics::PumaService*
-ChromeMetricsServiceClient::GetPumaService() {
-  return puma_service_.get();
-}
-
 std::optional<regional_capabilities::CountryIdHolder>
 ChromeMetricsServiceClient::GetProfileCountryIdForPrivateMetricsReporting() {
   auto* service =
@@ -798,10 +793,6 @@ void ChromeMetricsServiceClient::Initialize() {
   if (metrics::dwa::DwaRecorder::IsDwaOrPrivateMetricsFeatureEnabled()) {
     dwa_service_ = std::make_unique<metrics::dwa::DwaService>(
         this, local_state, g_browser_process->shared_url_loader_factory());
-  }
-  if (metrics::private_metrics::PumaService::IsPumaEnabled()) {
-    puma_service_ = std::make_unique<metrics::private_metrics::PumaService>(
-        this, local_state);
   }
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_CHROMEOS)

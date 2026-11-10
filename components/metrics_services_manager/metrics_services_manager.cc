@@ -19,7 +19,6 @@
 #include "components/metrics/metrics_service_client.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/metrics_switches.h"
-#include "components/metrics/private_metrics/puma_service.h"
 #include "components/metrics/reporting_service.h"
 #include "components/metrics/structured/structured_metrics_service.h"  // nogncheck
 #include "components/metrics_services_manager/metrics_services_manager_client.h"
@@ -80,12 +79,6 @@ metrics::dwa::DwaService* MetricsServicesManager::GetDwaService() {
   return GetMetricsServiceClient()->GetDwaService();
 }
 
-metrics::private_metrics::PumaService*
-MetricsServicesManager::GetPumaService() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  return GetMetricsServiceClient()->GetPumaService();
-}
-
 metrics::ReportingService* MetricsServicesManager::GetReportingService(
     metrics::MetricsLogUploader::MetricServiceType service_type) {
   switch (service_type) {
@@ -101,10 +94,8 @@ metrics::ReportingService* MetricsServicesManager::GetReportingService(
       auto* service = GetDwaService();
       return service ? service->reporting_service() : nullptr;
     }
-    case metrics::MetricsLogUploader::MetricServiceType::PRIVATE_METRICS: {
-      auto* service = GetPumaService();
-      return service ? service->reporting_service() : nullptr;
-    }
+    case metrics::MetricsLogUploader::MetricServiceType::PRIVATE_METRICS:
+      return nullptr;
     case metrics::MetricsLogUploader::MetricServiceType::STRUCTURED_METRICS: {
       auto* service = GetStructuredMetricsService();
       return service ? service->reporting_service() : nullptr;
@@ -292,7 +283,6 @@ void MetricsServicesManager::UpdateRunningServices(
   UpdateUkmService();
   UpdateStructuredMetricsService();
   UpdateDwaService();
-  UpdatePumaService();
 }
 
 void MetricsServicesManager::UpdateUkmService() {
@@ -368,20 +358,6 @@ void MetricsServicesManager::UpdateDwaService() {
     if (is_incognito) {
       metrics::dwa::DwaRecorder::Get()->Purge();
     }
-  }
-}
-
-void MetricsServicesManager::UpdatePumaService() {
-  metrics::private_metrics::PumaService* puma_service = GetPumaService();
-  if (!puma_service) {
-    return;
-  }
-
-  // PUMA is currently affected by the UMA setting.
-  if (may_record_ && may_upload_ && consent_given_) {
-    puma_service->EnableReporting();
-  } else {
-    puma_service->DisableReporting();
   }
 }
 
