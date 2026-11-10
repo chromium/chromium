@@ -9220,6 +9220,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kApiContextualTasksPrivateDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(extensions_features::kApiContextualTasksPrivate)},
 
+    {"api-contextual-tasks-private-aba",
+     flag_descriptions::kApiContextualTasksPrivateAbaName,
+     flag_descriptions::kApiContextualTasksPrivateAbaDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(extensions_features::kApiContextualTasksPrivateAba)},
+
     {"api-mime-handler", flag_descriptions::kApiMimeHandlerName,
      flag_descriptions::kApiMimeHandlerDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(extensions_features::kApiMimeHandler)},

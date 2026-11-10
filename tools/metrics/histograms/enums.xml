@@ -20085,6 +20085,7 @@ from previous Chrome versions.
   <int value="1482245628" label="OmniboxNativeVoiceSuggestProvider:enabled"/>
   <int value="1482277613" label="GlanceablesTimeManagementTasksView:enabled"/>
   <int value="1482839038" label="AutofillCreditCardAuthentication:enabled"/>
+  <int value="1483210104" label="ApiContextualTasksPrivateAba:enabled"/>
   <int value="1483980996" label="MacSyscallSandbox:enabled"/>
   <int value="1484045199" label="AndroidDesktopBookmarkDialog:enabled"/>
   <int value="1486092162"
@@ -22118,6 +22119,7 @@ from previous Chrome versions.
   <int value="2096688830" label="RequestDesktopSitePerSiteIph:disabled"/>
   <int value="2096736155" label="BrowsingDataLifetimeManager:enabled"/>
   <int value="2096825364" label="ApiMimeHandler:disabled"/>
+  <int value="2096975420" label="ApiContextualTasksPrivateAba:disabled"/>
   <int value="2097048479" label="disable-auto-hiding-toolbar-threshold"/>
   <int value="2097313481" label="SystemSounds:disabled"/>
   <int value="2097465503" label="RequestDesktopSiteZoom:disabled"/>

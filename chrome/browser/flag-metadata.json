@@ -771,6 +771,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "api-contextual-tasks-private-aba",
+    "owners": [ "juanmojica@google.com", "chrome-contextual-tasks-eng@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "api-mime-handler",
     "owners": [
       "msisov@igalia.com",

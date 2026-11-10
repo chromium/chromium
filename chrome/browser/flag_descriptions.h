@@ -285,6 +285,14 @@ inline constexpr char kApiContextualTasksPrivateDescription[] =
     "Enables the contextualTasksPrivate API and contextual tasks component "
     "extension.";
 
+inline constexpr char kApiContextualTasksPrivateAbaName[] =
+    "Extensions Contextual Tasks API for ABA search journeys";
+inline constexpr char kApiContextualTasksPrivateAbaDescription[] =
+    "Loads the contextual tasks component extension and enables "
+    "contextualTasksPrivate.registerAimThreadForPromo, which ABA search "
+    "journeys need to restore an AI Overview in the side panel. Use with "
+    "#aba-search-journeys.";
+
 inline constexpr char kApiMimeHandlerName[] =
     "Enable chrome.mimeHandler extension API";
 inline constexpr char kApiMimeHandlerDescription[] =
