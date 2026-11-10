@@ -5,11 +5,14 @@
 #ifndef UI_DISPLAY_DISPLAY_CHANGE_NOTIFIER_H_
 #define UI_DISPLAY_DISPLAY_CHANGE_NOTIFIER_H_
 
+#include <stdint.h>
+
 #include <vector>
 
 #include "base/observer_list.h"
 #include "build/buildflag.h"
 #include "ui/display/display_export.h"
+#include "ui/display/types/display_constants.h"
 
 namespace display {
 class Display;
@@ -30,8 +33,14 @@ class DISPLAY_EXPORT DisplayChangeNotifier {
 
   void RemoveObserver(DisplayObserver* observer);
 
+  // Notifies observers of displays that were added, removed or changed
+  // between `old_displays` and `new_displays`. If `old_primary_id` and
+  // `new_primary_id` differ, the display that became primary is reported
+  // with `DisplayObserver::DISPLAY_METRIC_PRIMARY`, unless it was just added.
   void NotifyDisplaysChanged(const std::vector<Display>& old_displays,
-                             const std::vector<Display>& new_displays);
+                             const std::vector<Display>& new_displays,
+                             int64_t old_primary_id = kInvalidDisplayId,
+                             int64_t new_primary_id = kInvalidDisplayId);
 
   void NotifyCurrentWorkspaceChanged(const std::string& workspace);
 

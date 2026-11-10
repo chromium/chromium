@@ -102,12 +102,15 @@ class X11ScreenOzoneTest : public testing::Test {
     UpdateDisplayListForTest(std::move(new_displays));
   }
 
-  void UpdateDisplayListForTest(std::vector<display::Display> displays) {
+  void UpdateDisplayListForTest(std::vector<display::Display> displays,
+                                size_t primary_display_index = 0) {
     ui::XDisplayManager* manager = screen_->x11_display_manager_.get();
+    const int64_t old_primary_id = manager->GetPrimaryDisplay().id();
     std::vector<display::Display> old_displays = std::move(manager->displays_);
-    manager->SetDisplayList(std::move(displays), 0);
-    manager->change_notifier_.NotifyDisplaysChanged(old_displays,
-                                                    manager->displays_);
+    manager->SetDisplayList(std::move(displays), primary_display_index);
+    manager->change_notifier_.NotifyDisplaysChanged(
+        old_displays, manager->displays_, old_primary_id,
+        manager->GetPrimaryDisplay().id());
   }
 
   std::unique_ptr<X11Window> CreatePlatformWindow(
@@ -328,6 +331,27 @@ TEST_F(X11ScreenOzoneTest, AddMonitorToTheLeft) {
   displays.emplace_back(primary_display().id(), gfx::Rect(0, 0, 1024, 768));
   displays.emplace_back(kFirstDisplay, gfx::Rect(1024, 0, 640, 480));
   UpdateDisplayListForTest(displays);
+}
+
+// Changing only the primary output (e.g. `xrandr --output X --primary`)
+// must notify observers, so that they can follow the new primary display.
+TEST_F(X11ScreenOzoneTest, PrimaryChangeOnly) {
+  std::vector<display::Display> displays;
+  displays.emplace_back(primary_display().id(), kPrimaryDisplayBounds);
+  displays.emplace_back(kSecondDisplay, gfx::Rect(800, 0, 1024, 768));
+  UpdateDisplayListForTest(displays, 0);
+  testing::Mock::VerifyAndClearExpectations(&display_observer_);
+
+  EXPECT_CALL(display_observer_, OnDisplayAdded(_)).Times(0);
+  EXPECT_CALL(display_observer_, OnDisplaysRemoved(_)).Times(0);
+  EXPECT_CALL(display_observer_,
+              OnDisplayMetricsChanged(
+                  testing::Property(&display::Display::id, kSecondDisplay),
+                  display::DisplayObserver::DISPLAY_METRIC_PRIMARY))
+      .Times(1);
+
+  UpdateDisplayListForTest(displays, 1);
+  EXPECT_EQ(kSecondDisplay, screen()->GetPrimaryDisplay().id());
 }
 
 TEST_F(X11ScreenOzoneTest, RemoveMonitorOnRight) {

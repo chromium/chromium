@@ -474,4 +474,58 @@ TEST(DisplayChangeNotifierTest, NotifyDisplaysChanged_Changed_Multi_Metrics) {
   EXPECT_EQ(metrics, observer.latest_metrics_change());
 }
 
+TEST(DisplayChangeNotifierTest, NotifyDisplaysChanged_Changed_Primary) {
+  DisplayChangeNotifier change_notifier;
+
+  // A primary change between existing displays is reported for the display
+  // gaining primary only.
+  {
+    MockDisplayObserver observer;
+    change_notifier.AddObserver(&observer);
+
+    std::vector<Display> displays;
+    displays.emplace_back(1);
+    displays.emplace_back(2);
+
+    change_notifier.NotifyDisplaysChanged(displays, displays, 1, 2);
+    EXPECT_EQ(1, observer.display_changed());
+    EXPECT_EQ(DisplayObserver::DISPLAY_METRIC_PRIMARY,
+              observer.latest_metrics_change());
+
+    change_notifier.RemoveObserver(&observer);
+  }
+
+  // An unchanged primary is not reported.
+  {
+    MockDisplayObserver observer;
+    change_notifier.AddObserver(&observer);
+
+    std::vector<Display> displays;
+    displays.emplace_back(1);
+    displays.emplace_back(2);
+
+    change_notifier.NotifyDisplaysChanged(displays, displays, 1, 1);
+    EXPECT_EQ(0, observer.display_changed());
+
+    change_notifier.RemoveObserver(&observer);
+  }
+
+  // A newly added primary display is only reported as added.
+  {
+    MockDisplayObserver observer;
+    change_notifier.AddObserver(&observer);
+
+    std::vector<Display> old_displays, new_displays;
+    old_displays.emplace_back(1);
+    new_displays.emplace_back(1);
+    new_displays.emplace_back(2);
+
+    change_notifier.NotifyDisplaysChanged(old_displays, new_displays, 1, 2);
+    EXPECT_EQ(1, observer.display_added());
+    EXPECT_EQ(0, observer.display_changed());
+
+    change_notifier.RemoveObserver(&observer);
+  }
+}
+
 }  // namespace display

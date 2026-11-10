@@ -31,7 +31,9 @@ void DisplayChangeNotifier::RemoveObserver(DisplayObserver* obs) {
 
 void DisplayChangeNotifier::NotifyDisplaysChanged(
     const std::vector<Display>& old_displays,
-    const std::vector<Display>& new_displays) {
+    const std::vector<Display>& new_displays,
+    int64_t old_primary_id,
+    int64_t new_primary_id) {
   std::vector<Display> removed_displays;
   // Display present in old_displays but not in new_displays has been removed.
   for (const auto& old_display : old_displays) {
@@ -85,6 +87,13 @@ void DisplayChangeNotifier::NotifyDisplaysChanged(
       metrics |= DisplayObserver::DISPLAY_METRIC_REFRESH_RATE;
     }
 #endif
+
+    // Like `DisplayList`, only notify for the display gaining primary, not the
+    // one losing it.
+    if (old_primary_id != new_primary_id &&
+        new_display.id() == new_primary_id) {
+      metrics |= DisplayObserver::DISPLAY_METRIC_PRIMARY;
+    }
 
     if (metrics != DisplayObserver::DISPLAY_METRIC_NONE) {
       observer_list_.Notify(&DisplayObserver::OnDisplayMetricsChanged,

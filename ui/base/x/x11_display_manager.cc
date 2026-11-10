@@ -123,8 +123,10 @@ void XDisplayManager::OnCurrentWorkspaceChanged(
 
 void XDisplayManager::UpdateDisplayList() {
   std::vector<display::Display> old_displays = displays_;
+  const int64_t old_primary_id = GetPrimaryDisplay().id();
   FetchDisplayList();
-  change_notifier_.NotifyDisplaysChanged(old_displays, displays_);
+  change_notifier_.NotifyDisplaysChanged(
+      old_displays, displays_, old_primary_id, GetPrimaryDisplay().id());
 }
 
 void XDisplayManager::DispatchDelayedDisplayListUpdate() {
