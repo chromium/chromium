@@ -147,8 +147,7 @@ void TabStripInternalsObserver::OnTabChangedAt(tabs::TabInterface* /*tab*/,
 }
 
 void TabStripInternalsObserver::OnTabPinnedStateChanged(
-    tabs::TabInterface* /*tab*/,
-    int /*index*/) {
+    tabs::TabHandle /*tab*/) {
   FireUpdate();
 }
 

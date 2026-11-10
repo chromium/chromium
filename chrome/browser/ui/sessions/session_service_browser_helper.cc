@@ -264,19 +264,19 @@ void SessionServiceBrowserHelper::OnTabGroupChanged(
   }
 }
 
-void SessionServiceBrowserHelper::OnTabPinnedStateChanged(
-    tabs::TabInterface* tab,
-    int index) {
+void SessionServiceBrowserHelper::OnTabPinnedStateChanged(tabs::TabHandle tab) {
   // See comment in `OnTabGroupChanged`.
   // TODO(crbug.com/575984047): CHECK-exclusion: Convert to a CHECK once we are
   // confident it won't be triggered.
   DCHECK(!IsRelevantToAppSessionService(browser_type_));
+  tabs::TabInterface* tab_interface = tab.Get();
   SessionService* session_service =
       SessionServiceFactory::GetForProfileIfExisting(&*profile_);
-  if (session_service) {
+  if (session_service && tab_interface) {
     session_service->SetPinnedState(
-        session_id_, sessions::SessionTabHelper::IdForTab(tab->GetContents()),
-        tab->IsPinned());
+        session_id_,
+        sessions::SessionTabHelper::IdForTab(tab_interface->GetContents()),
+        tab_interface->IsPinned());
   }
 }
 

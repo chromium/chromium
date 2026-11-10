@@ -5663,7 +5663,7 @@ void TabStripModel::MoveTabToIndexImpl(
 
   if (initial_pinned_state != tab->IsPinned()) {
     for (auto& observer : observers_) {
-      observer.OnTabPinnedStateChanged(tab, final_index);
+      observer.OnTabPinnedStateChanged(tab->GetHandle());
     }
   }
 
@@ -6121,7 +6121,7 @@ void TabStripModel::MoveTabsWithNotifications(
 
     if (notification.initial_pinned != tab->IsPinned()) {
       for (auto& observer : observers_) {
-        observer.OnTabPinnedStateChanged(tab, final_index);
+        observer.OnTabPinnedStateChanged(tab->GetHandle());
       }
     }
 

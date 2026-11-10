@@ -187,9 +187,12 @@ class ActiveTabObserver : public TabStripModelObserver,
     }
   }
 
-  void OnTabPinnedStateChanged(tabs::TabInterface* tab, int index) override {
+  void OnTabPinnedStateChanged(tabs::TabHandle tab) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    PageLiveStateDecorator::SetIsPinnedTab(tab->GetContents(), tab->IsPinned());
+    if (tabs::TabInterface* tab_interface = tab.Get()) {
+      PageLiveStateDecorator::SetIsPinnedTab(tab_interface->GetContents(),
+                                             tab_interface->IsPinned());
+    }
   }
 
   // BrowserCollectionObserver:

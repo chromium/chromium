@@ -1738,8 +1738,7 @@ void BrowserCommandController::OnTabBlockedStateChanged(
   UpdateCommandsForMediaRouter();
 }
 
-void BrowserCommandController::OnTabPinnedStateChanged(tabs::TabInterface* tab,
-                                                       int index) {
+void BrowserCommandController::OnTabPinnedStateChanged(tabs::TabHandle tab) {
   UpdateCommandsForTabStripStateChanged();
 }
 

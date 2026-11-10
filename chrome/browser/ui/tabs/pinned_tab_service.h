@@ -41,7 +41,7 @@ class PinnedTabService : public BrowserCollectionObserver,
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
-  void OnTabPinnedStateChanged(tabs::TabInterface* tab, int index) override;
+  void OnTabPinnedStateChanged(tabs::TabHandle tab) override;
   void WillCloseAllTabs(TabStripModel* tab_strip_model) override;
 
   // Writes the pinned tabs for `profile_`, but only if a new tab or browser

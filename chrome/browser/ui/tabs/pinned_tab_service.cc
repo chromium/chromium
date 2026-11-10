@@ -88,8 +88,7 @@ void PinnedTabService::OnTabStripModelChanged(
   }
 }
 
-void PinnedTabService::OnTabPinnedStateChanged(tabs::TabInterface* tab,
-                                               int index) {
+void PinnedTabService::OnTabPinnedStateChanged(tabs::TabHandle tab) {
   need_to_write_pinned_tabs_ = true;
 }
 

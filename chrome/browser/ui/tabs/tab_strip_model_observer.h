@@ -551,7 +551,7 @@ class TabStripModelObserver {
                               TabChangeType change_type);
 
   // Invoked when the pinned state of a tab changes.
-  virtual void OnTabPinnedStateChanged(tabs::TabInterface* tab, int index);
+  virtual void OnTabPinnedStateChanged(tabs::TabHandle tab);
 
   // Invoked when the blocked state of a tab changes.
   virtual void OnTabBlockedStateChanged(tabs::TabInterface* tab);

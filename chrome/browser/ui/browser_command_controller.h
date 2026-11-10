@@ -161,7 +161,7 @@ class BrowserCommandController : public CommandUpdater,
                               tabs::TabInterface* tab,
                               int index) override;
   void OnTabBlockedStateChanged(tabs::TabInterface* tab) override;
-  void OnTabPinnedStateChanged(tabs::TabInterface* tab, int index) override;
+  void OnTabPinnedStateChanged(tabs::TabHandle tab) override;
 
   // Overridden from TabRestoreServiceObserver:
   void TabRestoreServiceChanged(sessions::TabRestoreService* service) override;

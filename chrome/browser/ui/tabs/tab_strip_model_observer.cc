@@ -360,8 +360,7 @@ void TabStripModelObserver::OnTabCloseCancelled(const tabs::TabInterface* tab) {
 void TabStripModelObserver::OnTabChangedAt(tabs::TabInterface* tab,
                                            TabChangeType change_type) {}
 
-void TabStripModelObserver::OnTabPinnedStateChanged(tabs::TabInterface* tab,
-                                                    int index) {}
+void TabStripModelObserver::OnTabPinnedStateChanged(tabs::TabHandle tab) {}
 
 void TabStripModelObserver::OnTabBlockedStateChanged(tabs::TabInterface* tab) {}
 

@@ -712,10 +712,11 @@ void BrowserTabStripController::OnTabGroupChanged(
   }
 }
 
-void BrowserTabStripController::OnTabPinnedStateChanged(tabs::TabInterface* tab,
-                                                        int model_index) {
-  tabstrip_->OnTabPinnedStateChanged(tab->GetHandle(), tab->IsPinned());
-  UpdateTabFocusFreezing(tab->GetHandle());
+void BrowserTabStripController::OnTabPinnedStateChanged(tabs::TabHandle tab) {
+  if (tabs::TabInterface* tab_interface = tab.Get()) {
+    tabstrip_->OnTabPinnedStateChanged(tab, tab_interface->IsPinned());
+  }
+  UpdateTabFocusFreezing(tab);
 }
 
 void BrowserTabStripController::TabGroupedStateChanged(

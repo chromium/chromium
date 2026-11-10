@@ -402,8 +402,8 @@ class MockTabStripModelObserver : public TabStripModelObserver {
     states_.emplace_back(tab->GetContents(), std::nullopt, CHANGE);
   }
 
-  void OnTabPinnedStateChanged(tabs::TabInterface* tab, int index) override {
-    states_.emplace_back(tab->GetContents(), index, PINNED);
+  void OnTabPinnedStateChanged(tabs::TabHandle tab) override {
+    states_.emplace_back(tab.Get()->GetContents(), std::nullopt, PINNED);
   }
 
   void OnTabBlockedStateChanged(tabs::TabInterface* tab) override {
@@ -5662,7 +5662,7 @@ TEST_F(TabStripModelTest, Pinning) {
 
     // As the order didn't change, we should get a pinned notification.
     ASSERT_EQ(1, observer()->GetStateCount());
-    State state(raw_contents1, 0, MockTabStripModelObserver::PINNED);
+    State state(raw_contents1, std::nullopt, MockTabStripModelObserver::PINNED);
     observer()->ExpectStateEquals(0, state);
 
     // And verify the state.
@@ -5677,7 +5677,7 @@ TEST_F(TabStripModelTest, Pinning) {
 
     // As the order didn't change, we should get a pinned notification.
     ASSERT_EQ(1, observer()->GetStateCount());
-    State state(raw_contents1, 0, MockTabStripModelObserver::PINNED);
+    State state(raw_contents1, std::nullopt, MockTabStripModelObserver::PINNED);
     observer()->ExpectStateEquals(0, state);
 
     // And verify the state.
@@ -5696,7 +5696,8 @@ TEST_F(TabStripModelTest, Pinning) {
     state.src_index = 2;
     observer()->ExpectStateEquals(0, state);
 
-    state = State(raw_contents3, 0, MockTabStripModelObserver::PINNED);
+    state =
+        State(raw_contents3, std::nullopt, MockTabStripModelObserver::PINNED);
     observer()->ExpectStateEquals(2, state);
 
     // And verify the state.
@@ -5711,7 +5712,7 @@ TEST_F(TabStripModelTest, Pinning) {
 
     // As the order didn't change, we should get a pinned notification.
     ASSERT_EQ(1, observer()->GetStateCount());
-    State state(raw_contents1, 1, MockTabStripModelObserver::PINNED);
+    State state(raw_contents1, std::nullopt, MockTabStripModelObserver::PINNED);
     observer()->ExpectStateEquals(0, state);
 
     // And verify the state.
@@ -5742,7 +5743,8 @@ TEST_F(TabStripModelTest, Pinning) {
     state.src_index = 0;
     observer()->ExpectStateEquals(0, state);
 
-    state = State(raw_contents3, 1, MockTabStripModelObserver::PINNED);
+    state =
+        State(raw_contents3, std::nullopt, MockTabStripModelObserver::PINNED);
     observer()->ExpectStateEquals(2, state);
 
     // And verify the state.
