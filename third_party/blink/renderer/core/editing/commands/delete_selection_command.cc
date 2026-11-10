@@ -1199,7 +1199,8 @@ void DeleteSelectionCommand::MergeParagraphs(EditingState* editing_state) {
   bool paragraph_to_merge_is_empty =
       start_of_paragraph_to_move.DeepEquivalent() ==
       end_of_paragraph_to_move.DeepEquivalent();
-  MoveParagraph(
+  // Flat-tree paragraph bounds need not delimit a whole DOM paragraph.
+  MoveParagraphs(
       start_of_paragraph_to_move, end_of_paragraph_to_move, merge_destination,
       editing_state, kDoNotPreserveSelection,
       paragraph_to_merge_is_empty ? kDoNotPreserveStyle : kPreserveStyle);

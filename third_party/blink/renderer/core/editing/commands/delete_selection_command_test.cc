@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/editing/commands/delete_selection_command.h"
 
+#include <memory>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
@@ -14,11 +16,10 @@
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/html/html_object_element.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-
-#include <memory>
 
 namespace blink {
 
@@ -63,6 +64,59 @@ TEST_F(DeleteSelectionCommandTest, deleteListFromTable) {
                                   .ComputeVisibleSelectionInDomTree()
                                   .Anchor()
                                   .ToOffsetInAnchor());
+}
+
+TEST_F(DeleteSelectionCommandTest, DeleteIntoObjectFallback) {
+  SetBodyContent("<div contenteditable=true><object>abc</object>def</div>");
+  auto* object = To<HTMLObjectElement>(QuerySelector("object"));
+  object->RenderFallbackContent(
+      HTMLObjectElement::ErrorEventPolicy::kDoNotDispatch);
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
+
+  Selection().SetSelection(SelectionInDomTree::Builder()
+                               .Collapse(Position(object->firstChild(), 2))
+                               .Extend(Position(object->nextSibling(), 0))
+                               .Build(),
+                           SetSelectionOptions());
+
+  auto* command = MakeGarbageCollected<DeleteSelectionCommand>(
+      GetDocument(),
+      DeleteSelectionOptions::Builder()
+          .SetMergeBlocksAfterDelete(true)
+          .SetSanitizeMarkup(true)
+          .Build(),
+      InputEvent::InputType::kDeleteContentBackward);
+  ASSERT_TRUE(command->Apply());
+  EXPECT_EQ("<div contenteditable=\"true\"><object>ab</object>def</div>",
+            GetDocument().body()->GetInnerHTMLString());
+  EXPECT_TRUE(Selection().GetSelectionInDomTree().IsCaret());
+}
+
+TEST_F(DeleteSelectionCommandTest, ForwardRangeKeepsUncheckedBehavior) {
+  SetBodyContent("<div contenteditable=true>abc<object>def</object></div>");
+  auto* object = To<HTMLObjectElement>(QuerySelector("object"));
+  object->RenderFallbackContent(
+      HTMLObjectElement::ErrorEventPolicy::kDoNotDispatch);
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
+
+  Selection().SetSelection(SelectionInDomTree::Builder()
+                               .Collapse(Position(object->previousSibling(), 3))
+                               .Extend(Position(object->firstChild(), 1))
+                               .Build(),
+                           SetSelectionOptions());
+
+  auto* command = MakeGarbageCollected<DeleteSelectionCommand>(
+      GetDocument(),
+      DeleteSelectionOptions::Builder()
+          .SetMergeBlocksAfterDelete(true)
+          .SetSanitizeMarkup(true)
+          .Build(),
+      InputEvent::InputType::kDeleteContentForward);
+  // Correcting the boundary assertions must not change this release outcome.
+  EXPECT_FALSE(command->Apply());
+  EXPECT_EQ("<div contenteditable=\"true\">abc<object>ef</object></div>",
+            GetDocument().body()->GetInnerHTMLString());
+  EXPECT_TRUE(Selection().GetSelectionInDomTree().IsRange());
 }
 
 // http://crbug.com/1273266

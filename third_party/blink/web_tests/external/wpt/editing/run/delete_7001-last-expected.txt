@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 23 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 26 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["delete",""]] "<div style=white-space:nowrap>foo\\nb[]</div>" compare innerHTML
   assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<div style=\\"white-space:nowrap\\">foo&nbsp;</div>" not in array ["<div style=\\"white-space:nowrap\\">foo\\n</div>", "<div style=\\"white-space:nowrap\\">foo<br></div>"]
 [FAIL] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font color=blue>foo</font><p><font color=brown>[]bar</font>" compare innerHTML
@@ -46,5 +46,11 @@ Found 23 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"display:grid\\"><span>abcdef</span></div>" but got "<div style=\\"display:grid\\"><span>abcdef</span><span style=\\"display:contents\\"><br></span></div>"
 [FAIL] [["delete",""]] "<div style=display:grid><span style=display:contents>abc</span><span>[]def</span></div>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"display:grid\\"><span style=\\"display:contents\\">abcdef</span></div>" but got "<div style=\\"display:grid\\"><span style=\\"display:contents\\">abc</span>def</div>"
+[FAIL] [["delete",""]] "abc<audio>def</audio>[]ghi" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "abghi" but got "abcghi"
+[FAIL] [["delete",""]] " <div><span contenteditable=\\"false\\">A</span></div><div><br></div><div>[]&nbsp;; <span contenteditable=\\"false\\">B</span> ; <span contenteditable=\\"false\\">C</span></div> " compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected " <div><span contenteditable=\\"false\\">A</span></div><div>&nbsp;; <span contenteditable=\\"false\\">B</span> ; <span contenteditable=\\"false\\">C</span></div> " but got " <div><span contenteditable=\\"false\\">A</span></div><div><br>&nbsp;; <span contenteditable=\\"false\\">B</span> ; <span contenteditable=\\"false\\">C</span></div> "
+[FAIL] [["delete",""]] " <span contenteditable=\\"false\\">A</span><div><br></div><div>[]&nbsp;; <span contenteditable=\\"false\\">B</span> ; <span contenteditable=\\"false\\">C</span></div> " compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected " <span contenteditable=\\"false\\">A</span><div>&nbsp;; <span contenteditable=\\"false\\">B</span> ; <span contenteditable=\\"false\\">C</span></div> " but got " <span contenteditable=\\"false\\">A</span><div><br>&nbsp;; <span contenteditable=\\"false\\">B</span> ; <span contenteditable=\\"false\\">C</span></div> "
 Harness: the test ran to completion.
 

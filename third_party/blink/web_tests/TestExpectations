@@ -3061,7 +3061,6 @@ crbug.com/471016766 [ Linux ] external/wpt/webaudio/the-audio-api/the-mediastrea
 crbug.com/469481151 external/wpt/css/css-anchor-position/scroll-to-anchored-fixed-000.html [ Failure ]
 crbug.com/469481567 external/wpt/css/css-text-decor/text-decoration-thickness-length-rounding-002.html [ Failure ]
 crbug.com/469467862 [ Win ] external/wpt/css/motion/animation/offset-path-interpolation-002.html [ Pass Timeout ]
-crbug.com/469460898 external/wpt/editing/run/delete.html?7001-last [ Crash Failure Timeout ]
 crbug.com/469467863 [ Win ] external/wpt/resource-timing/idlharness.any.html [ Pass Timeout ]
 crbug.com/467435140 [ Win ] external/wpt/html/browsers/origin/api/origin-from-messageevent.window.html [ Crash Pass ]
 crbug.com/467095511 [ Win ] external/wpt/css/css-text/hyphens/lang-tag-case-insensitive.html [ Failure ]
