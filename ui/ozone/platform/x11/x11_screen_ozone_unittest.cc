@@ -7,9 +7,12 @@
 #include <memory>
 
 #include "base/test/task_environment.h"
+#include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/x/x11_display_manager.h"
+#include "ui/base/x/x11_idle_query.h"
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
 #include "ui/events/platform/x11/x11_event_source.h"
@@ -621,6 +624,80 @@ TEST_F(X11ScreenOzoneTest, GetCursorScreenPoint) {
   ASSERT_FALSE(window->IsMapPending());
   WarpPointer({300, 300});
   EXPECT_EQ(gfx::Point(300, 300), screen()->GetCursorScreenPoint());
+}
+
+TEST_F(X11ScreenOzoneTest,
+       CalculateIdleTimeDoesNotBlockWhenServerUnresponsive) {
+  auto* connection = x11::Connection::Get();
+  auto grabber = connection->Clone();
+  grabber->GrabServer();
+  grabber->Sync();
+
+  // Must return immediately without blocking on a synchronous X11 reply even
+  // while another client holds the server grab.
+  (void)screen()->CalculateIdleTime();
+  IdleQueryX11 uninitialized_query(connection);
+  EXPECT_EQ(base::TimeDelta(), uninitialized_query.IdleTime());
+
+  grabber->UngrabServer();
+  grabber->Sync();
+  connection->Sync();
+  connection->DispatchAll();
+}
+
+TEST_F(X11ScreenOzoneTest, CalculateIdleTimeTracksXSyncIdleAndResetAlarms) {
+  auto* connection = x11::Connection::Get();
+  // Hold the server grab on `connection` so parallel test shards sharing the X
+  // display cannot inject input or reset IDLETIME mid-test.
+  x11::ScopedXGrabServer grab_server(connection);
+
+  // Finish async ListSystemCounters + CreateAlarm setup and reset IDLETIME.
+  connection->Sync();
+  connection->DispatchAll();
+  connection->ForceScreenSaver(x11::ScreenSaverMode::Reset);
+  connection->Sync();
+  connection->DispatchAll();
+
+  EXPECT_EQ(base::TimeDelta(), screen()->CalculateIdleTime());
+
+  // Cross the 1-second XSync IDLETIME alarm threshold.
+  base::PlatformThread::Sleep(base::Milliseconds(1050));
+  connection->Sync();
+  connection->DispatchAll();
+
+  const base::TimeDelta idle_first = screen()->CalculateIdleTime();
+  EXPECT_GE(idle_first, base::Seconds(1));
+
+  // Idle duration advances monotonically from the local clock without X11
+  // round trips.
+  base::PlatformThread::Sleep(base::Milliseconds(50));
+  EXPECT_GE(screen()->CalculateIdleTime(), idle_first + base::Milliseconds(40));
+
+  // Resetting activity fires the NegativeComparison alarm and clears idle time.
+  connection->ForceScreenSaver(x11::ScreenSaverMode::Reset);
+  connection->Sync();
+  connection->DispatchAll();
+  EXPECT_EQ(base::TimeDelta(), screen()->CalculateIdleTime());
+}
+
+TEST_F(X11ScreenOzoneTest, IdleQueryX11AlreadyIdleAtConstruction) {
+  auto* connection = x11::Connection::Get();
+  x11::ScopedXGrabServer grab_server(connection);
+
+  connection->ForceScreenSaver(x11::ScreenSaverMode::Reset);
+  connection->Sync();
+  connection->DispatchAll();
+  base::PlatformThread::Sleep(base::Milliseconds(1050));
+
+  // Constructing IdleQueryX11 while the server is already idle >= 1s must fire
+  // the PositiveComparison alarm immediately upon CreateAlarm.
+  IdleQueryX11 query(connection);
+  connection->Sync();
+  connection->DispatchAll();
+  connection->Sync();
+  connection->DispatchAll();
+
+  EXPECT_GE(query.IdleTime(), base::Seconds(1));
 }
 
 }  // namespace ui

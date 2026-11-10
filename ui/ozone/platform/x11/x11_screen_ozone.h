@@ -23,6 +23,7 @@
 
 namespace ui {
 
+class IdleQueryX11;
 class X11WindowManager;
 
 // A PlatformScreen implementation for X11.
@@ -114,6 +115,7 @@ class X11ScreenOzone : public PlatformScreen,
   const raw_ptr<x11::Connection> connection_;
   const raw_ptr<X11WindowManager> window_manager_;
   std::unique_ptr<ui::XDisplayManager> x11_display_manager_;
+  std::unique_ptr<IdleQueryX11> idle_query_;
 
   // Indicates that |this| is initialized.
   bool initialized_ = false;

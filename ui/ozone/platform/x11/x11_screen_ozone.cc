@@ -75,7 +75,8 @@ gfx::PointF PointDipToPx(const DisplayList& displays, gfx::Point point_dip) {
 X11ScreenOzone::X11ScreenOzone()
     : connection_(x11::Connection::Get()),
       window_manager_(X11WindowManager::GetInstance()),
-      x11_display_manager_(std::make_unique<XDisplayManager>(this)) {
+      x11_display_manager_(std::make_unique<XDisplayManager>(this)),
+      idle_query_(std::make_unique<IdleQueryX11>(connection_)) {
   CHECK(window_manager_, base::NotFatalUntil::M163);
 #if BUILDFLAG(IS_LINUX)
   if (auto* linux_ui = ui::LinuxUi::instance()) {
@@ -220,8 +221,7 @@ bool X11ScreenOzone::IsScreenSaverActive() const {
 }
 
 base::TimeDelta X11ScreenOzone::CalculateIdleTime() const {
-  IdleQueryX11 idle_query;
-  return base::Seconds(idle_query.IdleTime());
+  return idle_query_->IdleTime();
 }
 
 void X11ScreenOzone::AddObserver(display::DisplayObserver* observer) {
