@@ -109,16 +109,14 @@ public class ExclusiveAccessContext implements Destroyable {
                 };
     }
 
-    /**
-     * @return The Activity associated with this window, or null if unavailable.
-     */
+    /** Returns the Activity associated with this window, or null if unavailable. */
     public @Nullable Activity getActivity() {
         return mWindowAndroid.getActivity().get();
     }
 
     /**
-     * @return The SnackbarManager attached to this activity's window, or null if it has not been
-     *     attached yet.
+     * Returns the SnackbarManager attached to this activity's window, or null if it has not been
+     * attached yet.
      */
     public @Nullable SnackbarManager getSnackbarManager() {
         return SnackbarManagerProvider.from(mWindowAndroid);

@@ -185,8 +185,8 @@ public class EdgeToEdgeUtils {
 
     /**
      * Returns whether the configuration of the device should allow Edge To Edge bottom chin. Note
-     * the results are false-negative, if the method is called before the |activity|'s decor view
-     * being attached to the window.
+     * the results are false-negative, if the method is called before the {@code activity}'s decor
+     * view being attached to the window.
      */
     public static boolean isEdgeToEdgeBottomChinSupportedByDevice(Activity activity) {
         // Make sure we test SDK version before checking the Feature so Field Trials only collect
@@ -583,7 +583,8 @@ public class EdgeToEdgeUtils {
     }
 
     /**
-     * @return whether the given window's insets indicate a tappable navigation bar.
+     * Returns whether the given window's insets indicate a tappable navigation bar.
+     *
      * @deprecated Use {@link #hasTappableNavigationBar(Supplier)}.
      */
     @Deprecated

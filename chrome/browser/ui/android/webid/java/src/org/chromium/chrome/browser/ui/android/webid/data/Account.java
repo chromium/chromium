@@ -53,6 +53,8 @@ public class Account {
      *     grants or claimed by IDP if the IDP has third-party cookie access.
      * @param isFilteredOut Whether this account is filtered out or not. If true, the account must
      *     be shown disabled since it cannot be used by the user.
+     * @param fields The {@link IdentityRequestDialogDisclosureField}s to be disclosed to the
+     *     relying party.
      * @param identityProviderData The IdentityProviderData corresponding to the IDP to which this
      *     account belongs to.
      */

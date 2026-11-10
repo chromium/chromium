@@ -83,6 +83,7 @@ public class AppLaunchDrawBlocker {
      *     ignored.
      * @param isTabletSupplier {@link Supplier<Boolean>} for whether the device is a tablet.
      * @param isRecreatingSupplier {@link Supplier<Boolean>} for whether the activity is recreating.
+     * @param profileSupplier {@link MonotonicObservableSupplier} for the current {@link Profile}.
      * @param incognitoRestoreAppLaunchDrawBlockerFactory Factory to create {@link
      *     IncognitoRestoreAppLaunchDrawBlocker}.
      * @param shouldBlockDrawForTabLayoutSupplier {@link Supplier<Boolean>} for whether draw should

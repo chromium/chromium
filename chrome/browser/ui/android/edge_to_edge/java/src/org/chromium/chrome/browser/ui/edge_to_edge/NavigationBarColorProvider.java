@@ -31,10 +31,10 @@ public interface NavigationBarColorProvider {
     }
 
     /**
-     * @return The current color for the navigation bar. Note that this color does not account for
-     *     edge-to-edge mode - when drawing edge-to-edge, the actual (OS) navigation bar will be set
-     *     to transparent, while this color will continue reflect the non-transparent "original"
-     *     navigation bar color.
+     * Returns the current color for the navigation bar. Note that this color does not account for
+     * edge-to-edge mode - when drawing edge-to-edge, the actual (OS) navigation bar will be set to
+     * transparent, while this color will continue reflect the non-transparent "original" navigation
+     * bar color.
      */
     int getNavigationBarColor();
 

@@ -906,9 +906,7 @@ public class RootUiCoordinator
         }
     }
 
-    /**
-     * @return The {@link OneshotSupplier} for the {@link ToolbarManager}.
-     */
+    /** Returns the {@link OneshotSupplier} for the {@link ToolbarManager}. */
     public OneshotSupplier<ToolbarManager> getToolbarManagerSupplier() {
         return mToolbarManagerOneshotSupplier;
     }
@@ -918,9 +916,7 @@ public class RootUiCoordinator
     }
 
     // TODO(jinsukkim): remove this in favor of wiring it directly.
-    /**
-     * @return {@link ThemeColorProvider} for top UI.
-     */
+    /** Returns the {@link ThemeColorProvider} for top UI. */
     public TopUiThemeColorProvider getTopUiThemeColorProvider() {
         return mTopUiThemeColorProvider;
     }
@@ -930,7 +926,7 @@ public class RootUiCoordinator
     }
 
     /**
-     * @return The {@link DesktopWindowStateManager} instance associated with the current activity.
+     * Returns the {@link DesktopWindowStateManager} instance associated with the current activity.
      */
     public @Nullable DesktopWindowStateManager getDesktopWindowStateManager() {
         return mDesktopWindowStateManager;
@@ -1635,9 +1631,7 @@ public class RootUiCoordinator
         }
     }
 
-    /**
-     * @return The resource id that contains how large the browser controls are.
-     */
+    /** Returns the resource id that contains how large the browser controls are. */
     public int getControlContainerHeightResource() {
         return ActivityUtils.NO_RESOURCE_ID;
     }
@@ -1839,9 +1833,7 @@ public class RootUiCoordinator
         mIncognitoReauthControllerOneshotSupplier.set(mIncognitoReauthController);
     }
 
-    /**
-     * @return The primary display size of the device, in inches.
-     */
+    /** Returns the primary display size of the device, in inches. */
     public double getPrimaryDisplaySizeInInches() {
         DisplayAndroid display = DisplayAndroid.getNonMultiDisplay(mActivity);
         return DisplayUtil.getDisplaySizeInInches(display);
@@ -1884,8 +1876,8 @@ public class RootUiCoordinator
     }
 
     /**
-     * @return Whether the {@link MerchantTrustSignalsCoordinator} should be initialized in the
-     *     context of this coordinator's UI.
+     * Returns whether the {@link MerchantTrustSignalsCoordinator} should be initialized in the
+     * context of this coordinator's UI.
      */
     protected boolean shouldInitializeMerchantTrustSignals() {
         return false;
@@ -2549,8 +2541,8 @@ public class RootUiCoordinator
     protected void onFindToolbarHidden() {}
 
     /**
-     * @return Whether the "update available" badge can be displayed on menu button(s) in the
-     *     context of this coordinator's UI.
+     * Returns whether the "update available" badge can be displayed on menu button(s) in the
+     * context of this coordinator's UI.
      */
     protected boolean canShowMenuUpdateBadge() {
         return false;
@@ -2793,16 +2785,12 @@ public class RootUiCoordinator
                 : null;
     }
 
-    /**
-     * @return Supplies the {@link EphemeralTabCoordinator}
-     */
+    /** Returns the supplier for the {@link EphemeralTabCoordinator}. */
     public Supplier<@Nullable EphemeralTabCoordinator> getEphemeralTabCoordinatorSupplier() {
         return mEphemeralTabCoordinatorSupplier;
     }
 
-    /**
-     * @return The {@link FindToolbarManager} controlling find toolbar.
-     */
+    /** Returns the {@link FindToolbarManager} controlling find toolbar. */
     public @Nullable FindToolbarManager getFindToolbarManager() {
         if (mActivity == null) return null;
         return mFindToolbarManagerSupplier.hasValue() ? mFindToolbarManagerSupplier.get() : null;
@@ -2820,9 +2808,7 @@ public class RootUiCoordinator
         return mFindToolbarManagerSupplier.get();
     }
 
-    /**
-     * @return {@link ComposedBrowserControlsVisibilityDelegate} object for tabbed activity.
-     */
+    /** Returns the {@link ComposedBrowserControlsVisibilityDelegate} for tabbed activity. */
     public ComposedBrowserControlsVisibilityDelegate getAppBrowserControlsVisibilityDelegate() {
         if (mAppBrowserControlsVisibilityDelegate == null) {
             mAppBrowserControlsVisibilityDelegate = new ComposedBrowserControlsVisibilityDelegate();
@@ -2846,9 +2832,7 @@ public class RootUiCoordinator
         return mScrimManagerSupplier.asNonNull().get();
     }
 
-    /**
-     * @return The {@link TopControlsStacker} that handles all layers for this instance.
-     */
+    /** Returns the {@link TopControlsStacker} that handles all layers for this instance. */
     public TopControlsStacker getTopControlsStacker() {
         return mTopControlsStacker;
     }

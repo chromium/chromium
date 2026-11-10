@@ -85,6 +85,7 @@ public class MediaCaptureOverlayController {
      * Make this instance of MediaCaptureOverlayController available through the activity's window.
      *
      * @param window A {@link WindowAndroid} to attach to.
+     * @param overlay The {@link MediaCaptureOverlayController} to attach.
      */
     private static void attach(WindowAndroid window, MediaCaptureOverlayController overlay) {
         KEY.attachToHost(window.getUnownedUserDataHost(), overlay);
