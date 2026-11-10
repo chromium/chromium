@@ -4,6 +4,7 @@
 
 #include <optional>
 
+#include "base/command_line.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -38,6 +39,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
+#include "third_party/blink/public/common/switches.h"
 
 namespace autofill {
 
@@ -73,6 +75,13 @@ class EmailVerificationBrowserTest : public InProcessBrowserTest {
  public:
   EmailVerificationBrowserTest() {
     feature_list_.InitAndEnableFeature(::features::kEmailVerificationProtocol);
+  }
+
+  // Avoids dropping simulated key presses that arrive before the first
+  // compositor commit (e.g. on slow bots).
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 
   void SetUpOnMainThread() override {
