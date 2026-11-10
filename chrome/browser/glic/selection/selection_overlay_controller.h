@@ -185,6 +185,7 @@ class SelectionOverlayController
   // with `CaptureRegion()`, which calls `AdoptSession()`.
   void PostHandSessionToPanel();
   void HandSessionToPanel();
+  void OnHandSessionToPanelComplete();
   void AdoptSession(mojo::PendingRemote<mojom::CaptureRegionObserver> observer);
   // What `SelectionOverlayPage::SetSidePanelOpen()` sends: the panel is
   // showing, or backgrounded and comes back with `tab_`.
@@ -268,6 +269,9 @@ class SelectionOverlayController
   void SendRegionsToPanel(CapturedRegions captured_regions,
                           bool should_focus_panel);
 
+  // Whether the selected regions are only the text selection the session
+  // started on.
+  bool HasOnlyTextSelection() const;
   // Whether the regions go in the invoke with the overlay's prompt.
   bool ShouldSendRegionsWithPrompt() const;
   // Whether the page context and the redacted screenshot are both here.
@@ -285,6 +289,10 @@ class SelectionOverlayController
     ~SelectedRegionData();
 
     selection::SelectedRegionPtr region;
+    // Whether this region is still the text selection the session started on.
+    // `GlicSelectionObserver` sends the text to the panel, so this region is
+    // not sent as a captured region.
+    bool is_text_selection = false;
     std::optional<std::u16string> selected_text;
     std::optional<std::u16string> text_surrounding_selection;
     bool waiting_for_surrounding_text = false;
@@ -379,10 +387,8 @@ class SelectionOverlayController
     // Caches the user-selected regions and their associated suggestions. To be
     // rendered on top of `initial_rgb_screenshot`.
     base::flat_map<base::UnguessableToken, SelectedRegionData> selected_regions;
-    // The region is still the text selection the session started on. Such a
-    // session sends no region with its prompt: GlicSelectionObserver sends
-    // the text.
-    bool region_is_text_selection = false;
+    // Whether `PostHandSessionToPanel()` has a hand-off in flight.
+    bool handoff_to_panel_pending = false;
     std::optional<base::UnguessableToken> active_region_id;
     ::selection::FeedbackZipBuilder feedback_zip_builder;
     base::OneShotTimer surrounding_text_timer;

@@ -89,7 +89,7 @@ export class GlicSelectionOverlayElement extends
       enableSelectionOverlayPromptBox: {type: Boolean},
       enableSelectionOverlayDogfoodFeedback: {type: Boolean},
       hideHandles: {type: Boolean},
-      disableMultiSelect: {type: Boolean, reflect: true},
+      hasSelection: {type: Boolean, reflect: true},
       skipIntroAnimation: {type: Boolean, reflect: true},
       hasPromptText: {type: Boolean},
       sidePanelOpen: {type: Boolean, reflect: true},
@@ -113,7 +113,7 @@ export class GlicSelectionOverlayElement extends
   accessor enableSelectionOverlayDogfoodFeedback: boolean =
       loadTimeData.getBoolean('enableSelectionOverlayDogfoodFeedback');
   accessor hideHandles: boolean = false;
-  accessor disableMultiSelect: boolean = false;
+  accessor hasSelection: boolean = false;
   accessor skipIntroAnimation: boolean = false;
   // Whether the prompt input has non-whitespace text, which shows the submit
   // button.
@@ -138,7 +138,6 @@ export class GlicSelectionOverlayElement extends
     this.listenerIds.push(handlerImpl.addSetInteractionOptionsListener(
         (options: InteractionOptions) => {
           this.hideHandles = options.hideHandles;
-          this.disableMultiSelect = options.disableMultiSelect;
           this.skipIntroAnimation = options.skipIntroAnimation;
         }));
     this.listenerIds.push(
@@ -157,6 +156,9 @@ export class GlicSelectionOverlayElement extends
   private onRegionCountChanged_(count: number) {
     const wasMultiple = this.hasMultipleRegions_();
     this.regionCount_ = count;
+    if (count === 0) {
+      this.activeSelection = null;
+    }
     if (this.hasMultipleRegions_()) {
       this.showFloatingPrompt = false;
       this.clearSuggestedActions_();
@@ -170,9 +172,25 @@ export class GlicSelectionOverlayElement extends
     return this.regionCount_ > 1;
   }
 
+  private hasSelection_(): boolean {
+    return Boolean(this.activeRegionId) ||
+        (this.activeSelection !== null &&
+         (this.activeSelection.width > 0 || this.activeSelection.height > 0));
+  }
+
+  // When the side panel is closed, only one region can be selected.
+  private canSelectRegion_(): boolean {
+    return this.sidePanelOpen || !this.hasSelection_();
+  }
+
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.floatingPromptResizeObserver_.disconnect();
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+    this.hasSelection = this.hasSelection_();
   }
 
   override firstUpdated() {
@@ -235,7 +253,7 @@ export class GlicSelectionOverlayElement extends
     // A context menu would interrupt a right drag. Keep it in the prompt
     // input for copy and paste.
     this.eventTracker_.add(this, 'contextmenu', (e: Event) => {
-      if (this.dragsOnRightButton() &&
+      if (this.enableSelectionOverlayPromptBox &&
           !(e.composedPath()[0] instanceof HTMLInputElement)) {
         e.preventDefault();
       }
@@ -656,10 +674,10 @@ export class GlicSelectionOverlayElement extends
     requestAnimationFrame(refinePosition);
   }
 
-  // With the prompt box, a right drag adds an area and a left drag replaces
-  // it.
+  // With the prompt box and the side panel open, a right drag adds an area and
+  // a left drag replaces it.
   protected override dragsOnRightButton(): boolean {
-    return this.enableSelectionOverlayPromptBox && !this.disableMultiSelect;
+    return this.enableSelectionOverlayPromptBox && this.sidePanelOpen;
   }
 
   protected override onPointerDown(event: PointerEvent) {
@@ -669,26 +687,27 @@ export class GlicSelectionOverlayElement extends
 
   override handleGestureStart() {
     super.handleGestureStart();
-    this.showFloatingPrompt = false;
     // A right drag always draws a new area, even over an existing one.
-    if (this.isRightButtonGesture_) {
-      return;
-    }
-    if (this.selectionElements.postSelectionRenderer.handleGestureStart(
+    if (!this.isRightButtonGesture_ &&
+        this.selectionElements.postSelectionRenderer.handleGestureStart(
             this.currentGesture)) {
       this.draggingRespondent = DragFeature.POST_SELECTION;
+    }
+    if (this.draggingRespondent !== DragFeature.NONE ||
+        this.canSelectRegion_()) {
+      this.showFloatingPrompt = false;
     }
   }
 
   protected override handleGestureDrag(event: PointerEvent) {
     assert(this.currentGesture.state === GestureState.DRAGGING);
-    this.showFloatingPrompt = false;
     // Capture pointer events so gestures still work if the users pointer
     // leaves the selection overlay div. Pointer capture is implicitly
     // released after pointerup or pointercancel events.
     this.setPointerCapture(event.pointerId);
 
     if (this.draggingRespondent === DragFeature.POST_SELECTION) {
+      this.showFloatingPrompt = false;
       this.selectionElements.postSelectionRenderer.handleGestureDrag(
           this.currentGesture);
       return;
@@ -697,14 +716,14 @@ export class GlicSelectionOverlayElement extends
     // If no one is responding to the drag yet, then let the region selection
     // layer respond.
     if (this.draggingRespondent === DragFeature.NONE) {
-      // Disable region selection on click.
       // TODO(b/565871325): Allow adding regions while Ctrl or Cmd is held, here
       // and in `handleGestureEnd()`.
-      if (this.disableMultiSelect) {
+      if (!this.canSelectRegion_()) {
         return;
       }
       this.setCursorToCrosshair();
       this.draggingRespondent = DragFeature.MANUAL_REGION;
+      this.hideHandles = false;
 
       // With the prompt box, only a right drag with the side panel open adds
       // an area. Otherwise keep the active id so the drag replaces it.
@@ -723,13 +742,14 @@ export class GlicSelectionOverlayElement extends
     }
 
     if (this.draggingRespondent === DragFeature.MANUAL_REGION) {
+      this.showFloatingPrompt = false;
       this.selectionElements.regionSelectionLayer.handleGestureDrag(
           this.currentGesture);
     }
   }
 
   protected override handleGestureEnd() {
-    if (this.disableMultiSelect &&
+    if (!this.canSelectRegion_() &&
         this.draggingRespondent === DragFeature.NONE) {
       (this.baseHandler as SelectionOverlayBaseHandlerImpl)
           .dismissOverlay(DismissOverlayReason.kBackgroundClick);
@@ -744,14 +764,15 @@ export class GlicSelectionOverlayElement extends
         if (this.draggingRespondent === DragFeature.MANUAL_REGION) {
           this.selectionElements.regionSelectionLayer.handleGestureEnd(
               this.currentGesture);
+          this.fetchSuggestedActions();
         } else if (this.draggingRespondent === DragFeature.POST_SELECTION) {
           this.selectionElements.postSelectionRenderer.handleGestureEnd();
           // Fade out scrim which is currently being managed by region selection
           // TODO(crbug.com/420998632): move scrim out to its own component
           this.selectionElements.regionSelectionLayer
               .handlePostSelectionDragGestureEnd();
+          this.fetchSuggestedActions();
         }
-        this.fetchSuggestedActions();
         break;
       case GestureState.STARTING:
         if (this.draggingRespondent === DragFeature.NONE) {
@@ -759,7 +780,7 @@ export class GlicSelectionOverlayElement extends
           // left click closes the overlay once there is a region; otherwise it
           // does nothing.
           if (this.enableSelectionOverlayPromptBox) {
-            if (this.activeRegionId && !this.isRightButtonGesture_) {
+            if (this.hasSelection_() && !this.isRightButtonGesture_) {
               (this.baseHandler as SelectionOverlayBaseHandlerImpl)
                   .dismissOverlay(DismissOverlayReason.kBackgroundClick);
             }

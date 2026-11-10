@@ -43,7 +43,6 @@ class FakeColorProviderSource : public ui::ColorProviderSource {
 
 selection::InteractionOptionsPtr Options(bool hide_handles) {
   return selection::InteractionOptions::New(hide_handles,
-                                            /*disable_multi_select=*/true,
                                             /*skip_intro_animation=*/true);
 }
 

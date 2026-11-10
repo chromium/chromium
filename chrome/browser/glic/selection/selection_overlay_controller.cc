@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/check_deref.h"
@@ -397,9 +398,10 @@ void SelectionOverlayController::PostHandSessionToPanel() {
   // TODO(b:579078690): Clean this up once text and region selections use one
   // path.
   if (session_->owner != Session::Owner::kDirect ||
-      session_->region_is_text_selection) {
+      session_->handoff_to_panel_pending || HasOnlyTextSelection()) {
     return;
   }
+  session_->handoff_to_panel_pending = true;
   // Not right away: the panel may be opening for this session's own
   // hand-off (`SubmitPrompt()`, a suggested action), which closes the
   // session before this stack unwinds. `Reset()` then drops the task.
@@ -411,10 +413,12 @@ void SelectionOverlayController::PostHandSessionToPanel() {
 void SelectionOverlayController::HandSessionToPanel() {
   if (session_->owner != Session::Owner::kDirect ||
       !GlicSidePanelCoordinator::IsShowing(tab_)) {
+    session_->handoff_to_panel_pending = false;
     return;
   }
   GlicKeyedService* service = GlicKeyedService::Get(tab_->GetProfile());
   if (!service) {
+    session_->handoff_to_panel_pending = false;
     return;
   }
   // The same request the capture hotkey makes while the panel is open, marked
@@ -428,15 +432,25 @@ void SelectionOverlayController::HandSessionToPanel() {
                                 mojom::CaptureRegionPayload::New(
                                     /*capture_region_handoff=*/true)));
   options.wait_for_panel_open = true;
+  options.on_success =
+      base::BindOnce(&SelectionOverlayController::OnHandSessionToPanelComplete,
+                     session_weak_factory_.GetWeakPtr());
+  options.on_error = base::IgnoreArgs<GlicInvokeError>(
+      base::BindOnce(&SelectionOverlayController::OnHandSessionToPanelComplete,
+                     session_weak_factory_.GetWeakPtr()));
   service->Invoke(std::move(options));
+}
+
+void SelectionOverlayController::OnHandSessionToPanelComplete() {
+  session_->handoff_to_panel_pending = false;
 }
 
 void SelectionOverlayController::AdoptSession(
     mojo::PendingRemote<mojom::CaptureRegionObserver> observer) {
   session_->owner = Session::Owner::kPanel;
+  session_->handoff_to_panel_pending = false;
   BindCaptureRegionObserver(std::move(observer));
-  if (!session_->selected_regions.empty() &&
-      !session_->region_is_text_selection) {
+  if (!session_->selected_regions.empty() && !HasOnlyTextSelection()) {
     SyncRegionsToPanel(/*should_focus_panel=*/false);
   }
 }
@@ -703,12 +717,11 @@ void SelectionOverlayController::CaptureRegion(
           // `selected_regions` to the overlay WebUI.
           // TODO(b:579078690): Clean this up once text and region selections
           // use one path.
-          // Same as the other small chip paths: the text selection is fixed,
-          // and a click on the background doesn't start a new region.
+          // Same as the other small chip paths: the text selection is fixed
+          // and opens directly in the post-selection state.
           selection_overlay_controller->session_->interaction_options =
               selection::InteractionOptions::New(
-                  /*hide_handles=*/true, /*disable_multi_select=*/true,
-                  /*skip_intro_animation=*/true);
+                  /*hide_handles=*/true, /*skip_intro_animation=*/true);
         }
         selection_observer->DismissUI(
             GlicSelectionObserver::DismissReason::kActionTaken);
@@ -838,9 +851,9 @@ void SelectionOverlayController::SetRegionFromBounds(
             /*apply_padding=*/is_text_selection)) {
       base::UnguessableToken id = region->id;
       session_->active_region_id = id;
-      session_->region_is_text_selection = is_text_selection;
       auto [it, _] = session_->selected_regions.emplace(
           id, SelectedRegionData(std::move(region)));
+      it->second.is_text_selection = is_text_selection;
       if (is_text_selection && selected_frame &&
           selected_frame->IsRenderFrameLive()) {
         it->second.waiting_for_surrounding_text = true;
@@ -1203,11 +1216,11 @@ void SelectionOverlayController::AdjustRegion(
     selection::SelectedRegionPtr target,
     bool is_using_keyboard) {
   session_->active_region_id = target->id;
-  session_->region_is_text_selection = false;
   session_->feedback_zip_builder = ::selection::FeedbackZipBuilder();
   if (SelectedRegionData* region_data =
           base::FindOrNull(session_->selected_regions, target->id)) {
     region_data->region = std::move(target);
+    region_data->is_text_selection = false;
     region_data->selected_text.reset();
     region_data->text_surrounding_selection.reset();
     region_data->waiting_for_surrounding_text = false;
@@ -1221,13 +1234,17 @@ void SelectionOverlayController::AdjustRegion(
                                        SelectedRegionData(std::move(target)));
   }
 
+  if (GlicSidePanelCoordinator::IsShowing(tab_)) {
+    // A text session with the panel open wasn't handed off at the start. Hand
+    // it off once the user draws a region.
+    PostHandSessionToPanel();
+  }
   SyncRegions(/*should_focus_panel=*/!is_using_keyboard);
 }
 
 void SelectionOverlayController::DeleteRegion(const base::UnguessableToken& id,
                                               bool is_using_keyboard) {
   if (session_->selected_regions.erase(id)) {
-    session_->region_is_text_selection = false;
     if (session_->selected_regions.empty()) {
       session_->active_region_id.reset();
       Close(CloseReason::kCloseButton);
@@ -1275,6 +1292,13 @@ void SelectionOverlayController::SubmitPrompt(const std::string& prompt) {
   }
 }
 
+bool SelectionOverlayController::HasOnlyTextSelection() const {
+  return !session_->selected_regions.empty() &&
+         std::ranges::all_of(session_->selected_regions, [](const auto& entry) {
+           return entry.second.is_text_selection;
+         });
+}
+
 bool SelectionOverlayController::ShouldSendRegionsWithPrompt() const {
   // Panel-owned sessions send their regions through region capture. This
   // includes sessions the panel started and sessions handed off to it.
@@ -1284,7 +1308,7 @@ bool SelectionOverlayController::ShouldSendRegionsWithPrompt() const {
   // the text when the panel opens, and the region would be a second chip.
   // TODO(b:579078690): Remove once text and region selections take one path.
   return session_->owner == Session::Owner::kDirect &&
-         !session_->region_is_text_selection &&
+         !HasOnlyTextSelection() &&
          base::FeatureList::IsEnabled(
              kGlicSelectionOverlaySendRegionWithPrompt);
 }
@@ -1682,6 +1706,13 @@ CapturedRegions SelectionOverlayController::GetCapturedRegions() const {
   // selection and only one region is supported, so it is fine to always loop
   // through all the regions. Revisit once we expand the selections.
   for (const auto& [id, region_data] : session_->selected_regions) {
+    // `GlicSelectionObserver` already sends the text selection to the panel,
+    // so don't also send its bounding box as a captured region.
+    // TODO(b:579078690): Clean this up once text and region selections use
+    // one path.
+    if (region_data.is_text_selection) {
+      continue;
+    }
     const auto& region = region_data.region;
     if (region->shape->is_rect()) {
       gfx::RectF gfx_rect_on_canvas = GetRectForRegion(
@@ -1750,11 +1781,13 @@ void SelectionOverlayController::SyncRegions(bool should_focus_panel) {
 
   if (session_->page) {
     std::vector<selection::SelectedRegionPtr> regions;
-    regions.reserve(captured_regions.size());
-    for (const auto& [id, captured_region] : captured_regions) {
-      regions.push_back(
-          CHECK_DEREF(base::FindOrNull(session_->selected_regions, id))
-              .region.Clone());
+    regions.reserve(session_->selected_regions.size());
+    for (const auto& [id, region_data] : session_->selected_regions) {
+      if (region_data.is_text_selection ||
+          std::ranges::contains(captured_regions, id,
+                                &CapturedRegions::value_type::first)) {
+        regions.push_back(region_data.region.Clone());
+      }
     }
     session_->page->SetPostRegionSelections(std::move(regions));
   }
@@ -1785,9 +1818,14 @@ void SelectionOverlayController::SyncRegionsToPanelIfPending() {
 void SelectionOverlayController::SendRegionsToPanel(
     CapturedRegions captured_regions,
     bool should_focus_panel) {
+  if (session_->owner != Session::Owner::kPanel) {
+    return;
+  }
   session_->panel_sync_pending = false;
   // Without a valid region, glic would show the screenshot with no chips.
-  if (captured_regions.empty()) {
+  // An empty list when only the text selection remains clears the region
+  // chips after the user deletes the last drawn region.
+  if (captured_regions.empty() && !HasOnlyTextSelection()) {
     return;
   }
   GlicKeyedService* service = GlicKeyedService::Get(tab_->GetProfile());

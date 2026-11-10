@@ -1205,7 +1205,7 @@ IN_PROC_BROWSER_TEST_F(GlicSmartSuggestionContextMenuBrowserTest,
         const overlay =
             app?.shadowRoot?.querySelector('glic-selection-overlay');
         return !!app?.screenshot_ && !!overlay &&
-               !overlay.hideHandles && !overlay.disableMultiSelect;
+               !overlay.hideHandles && !overlay.skipIntroAnimation;
       })();
     )")
         .ExtractBool();
@@ -1253,8 +1253,7 @@ IN_PROC_BROWSER_TEST_F(GlicSmartSuggestionContextMenuBrowserTest,
         const overlay =
             app?.shadowRoot?.querySelector('glic-selection-overlay');
         return !!app?.screenshot_ && !!overlay &&
-               overlay.hideHandles && overlay.disableMultiSelect &&
-               overlay.skipIntroAnimation;
+               overlay.hideHandles && overlay.skipIntroAnimation;
       })();
     )")
         .ExtractBool();
@@ -1312,8 +1311,7 @@ IN_PROC_BROWSER_TEST_F(GlicSmartSuggestionContextMenuBrowserTest,
         const expectedTop = 30 / $2;
         const expectedWidth = 100 / $1;
         const expectedHeight = 80 / $2;
-        return !overlay.hideHandles && overlay.disableMultiSelect &&
-               overlay.skipIntroAnimation &&
+        return !overlay.hideHandles && overlay.skipIntroAnimation &&
                Math.abs(sel.left - expectedLeft) < 0.01 &&
                Math.abs(sel.top - expectedTop) < 0.01 &&
                Math.abs(sel.width - expectedWidth) < 0.01 &&
@@ -1562,8 +1560,7 @@ IN_PROC_BROWSER_TEST_F(GlicSmartSuggestionContextMenuBrowserTest,
         const expectedTop = 30 / $2;
         const expectedWidth = 100 / $1;
         const expectedHeight = 80 / $2;
-        return !overlay.hideHandles && overlay.disableMultiSelect &&
-               overlay.skipIntroAnimation &&
+        return !overlay.hideHandles && overlay.skipIntroAnimation &&
                Math.abs(sel.left - expectedLeft) < 0.01 &&
                Math.abs(sel.top - expectedTop) < 0.01 &&
                Math.abs(sel.width - expectedWidth) < 0.01 &&
@@ -1622,8 +1619,7 @@ IN_PROC_BROWSER_TEST_F(GlicSmartSuggestionContextMenuBrowserTest,
         const expectedTop = 30 / $2;
         const expectedWidth = 100 / $1;
         const expectedHeight = 40 / $2;
-        return !overlay.hideHandles && overlay.disableMultiSelect &&
-               overlay.skipIntroAnimation &&
+        return !overlay.hideHandles && overlay.skipIntroAnimation &&
                Math.abs(sel.left - expectedLeft) < 0.01 &&
                Math.abs(sel.top - expectedTop) < 0.01 &&
                Math.abs(sel.width - expectedWidth) < 0.01 &&

@@ -282,6 +282,12 @@ class SelectionOverlayInteractiveTest : public test::InteractiveGlicTest {
                  WaitForWebContentsPainted(tab));
   }
 
+  auto WaitForPageContext(ui::ElementIdentifier overlay_contents) {
+    return WaitForJsResultAt(
+        overlay_contents, {"selection-overlay-app", "glic-selection-overlay"},
+        "el => el.pageContextReceived");
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -375,14 +381,6 @@ class SelectionOverlayInteractiveTestWithPrompt
     }
     fake_tool_.reset();
     SelectionOverlayInteractiveTest::TearDownOnMainThread();
-  }
-
- protected:
-  // The overlay only submits a prompt once the browser has the page context.
-  auto WaitForPageContext(ui::ElementIdentifier overlay_contents) {
-    return WaitForJsResultAt(
-        overlay_contents, {"selection-overlay-app", "glic-selection-overlay"},
-        "el => el.pageContextReceived");
   }
 
  private:
@@ -505,14 +503,13 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
   RunTestSequence(
       LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
         ShowWithSelection(selection::InteractionOptions::New(
-            /*hide_handles=*/false, /*disable_multi_select=*/true,
-            /*skip_intro_animation=*/true));
+            /*hide_handles=*/false, /*skip_intro_animation=*/true));
       }),
       WaitForShow(OverlayBaseController::kOverlayId),
       InstrumentNonTabWebView(kOverlayWebContentsId,
                               OverlayBaseController::kOverlayId),
       WaitForJsResultAt(kOverlayWebContentsId, kOverlay,
-                        "el => !el.hideHandles && el.disableMultiSelect"));
+                        "el => !el.hideHandles && el.skipIntroAnimation"));
 }
 
 // The overlay learns whether the Glic side panel is showing when the session
@@ -529,8 +526,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
 
   RunTestSequence(LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
                     ShowWithSelection(selection::InteractionOptions::New(
-                        /*hide_handles=*/true, /*disable_multi_select=*/true,
-                        /*skip_intro_animation=*/true));
+                        /*hide_handles=*/true, /*skip_intro_animation=*/true));
                   }),
                   WaitForShow(OverlayBaseController::kOverlayId),
                   InstrumentNonTabWebView(kOverlayWebContentsId,
@@ -608,8 +604,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
   RunTestSequence(
       LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
         ShowWithSelection(selection::InteractionOptions::New(
-            /*hide_handles=*/true, /*disable_multi_select=*/true,
-            /*skip_intro_animation=*/true));
+            /*hide_handles=*/true, /*skip_intro_animation=*/true));
       }),
       WaitForShow(OverlayBaseController::kOverlayId),
       InstrumentNonTabWebView(kFirstOverlayWebContentsId,
@@ -617,7 +612,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
       WaitForJsResultAt(kFirstOverlayWebContentsId, kRenderer,
                         "el => el.selectedRegions.length === 1"),
       CheckJsResultAt(kFirstOverlayWebContentsId, kOverlay,
-                      "el => el.hideHandles && el.disableMultiSelect"),
+                      "el => el.hideHandles && el.skipIntroAnimation"),
       Do([this]() { GetController()->Close(); }),
       WaitForHide(OverlayBaseController::kOverlayId),
       // A plain session: default options, no pre-selected region.
@@ -633,7 +628,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
       WaitForJsResultAt(kSecondOverlayWebContentsId, kOverlayApp,
                         "el => el.screenshot_ !== null"),
       CheckJsResultAt(kSecondOverlayWebContentsId, kOverlay,
-                      "el => !el.hideHandles && !el.disableMultiSelect"),
+                      "el => !el.hideHandles && !el.skipIntroAnimation"),
       CheckJsResultAt(kSecondOverlayWebContentsId, kRenderer,
                       "el => el.selectedRegions.length === 0"),
       CheckResult(
@@ -657,8 +652,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
   RunTestSequence(
       LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
         ShowWithImageSelection(selection::InteractionOptions::New(
-            /*hide_handles=*/true, /*disable_multi_select=*/true,
-            /*skip_intro_animation=*/true));
+            /*hide_handles=*/true, /*skip_intro_animation=*/true));
       }),
       WaitForShow(OverlayBaseController::kOverlayId),
       InstrumentNonTabWebView(kOverlayWebContentsId,
@@ -693,21 +687,78 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
   const DeepQuery kCaptureButton = {"#captureRegionBtn"};
   const DeepQuery kContextResult = {"#additionalContextResult"};
 
+  RunTestSequence(LoadPageAndWaitForPaint(kActiveTab), OpenGlic(), Do([this]() {
+                    ShowWithSelection(selection::InteractionOptions::New(
+                        /*hide_handles=*/true, /*skip_intro_animation=*/true));
+                  }),
+                  WaitForShow(OverlayBaseController::kOverlayId),
+                  InstrumentNonTabWebView(kOverlayWebContentsId,
+                                          OverlayBaseController::kOverlayId),
+                  WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
+                                    "el => el.selectedRegions.length === 1"),
+                  CheckJsResultAt(kGlicContentsElementId, kCaptureButton,
+                                  "el => !el.hasAttribute('pressed')"),
+                  CheckJsResultAt(kGlicContentsElementId, kContextResult,
+                                  "el => el.innerText.trim() === ''"),
+                  CheckResult([this]() { return GetController()->state(); },
+                              OverlayBaseController::State::kOverlay));
+}
+
+// Drawing a region in a text session while the panel is open hands the session
+// to the panel and sends only the drawn region, not the initial text region.
+// Deleting the drawn region keeps the overlay open with the text selection and
+// sends the empty region list to the panel to clear its chip.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
+                       TextSessionWithPanelOpenHandedOffAfterDrawingRegion) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  const DeepQuery kRenderer = {"selection-overlay-app",
+                               "glic-selection-overlay",
+                               "post-selection-renderer"};
+  const DeepQuery kCaptureButton = {"#captureRegionBtn"};
+  const DeepQuery kContextResult = {"#additionalContextResult"};
+  const base::UnguessableToken region_id = base::UnguessableToken::Create();
+
   RunTestSequence(
       LoadPageAndWaitForPaint(kActiveTab), OpenGlic(), Do([this]() {
         ShowWithSelection(selection::InteractionOptions::New(
-            /*hide_handles=*/true, /*disable_multi_select=*/true,
-            /*skip_intro_animation=*/true));
+            /*hide_handles=*/true, /*skip_intro_animation=*/true));
       }),
       WaitForShow(OverlayBaseController::kOverlayId),
       InstrumentNonTabWebView(kOverlayWebContentsId,
                               OverlayBaseController::kOverlayId),
       WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
                         "el => el.selectedRegions.length === 1"),
-      CheckJsResultAt(kGlicContentsElementId, kCaptureButton,
-                      "el => !el.hasAttribute('pressed')"),
+      WaitForPageContext(kOverlayWebContentsId), Do([this, region_id]() {
+        static_cast<selection::SelectionOverlayPageHandler*>(GetController())
+            ->AdjustRegion(
+                selection::SelectedRegion::New(
+                    region_id, selection::RegionShape::NewRect(
+                                   gfx::RectF(0.5f, 0.5f, 0.2f, 0.2f))),
+                /*is_using_keyboard=*/true);
+      }),
+      WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
+                        "el => el.selectedRegions.length === 2"),
+      WaitForJsResultAt(kGlicContentsElementId, kCaptureButton,
+                        "el => el.hasAttribute('pressed')"),
+      WaitForJsResultAt(kGlicContentsElementId, kContextResult,
+                        "el => el.innerText.includes('Region: ')"),
       CheckJsResultAt(kGlicContentsElementId, kContextResult,
-                      "el => el.innerText.trim() === ''"),
+                      "el => el.innerText.split('Region: ').length === 2"),
+      CheckJsResultAt(kGlicContentsElementId, kContextResult,
+                      "el => el.innerText.split('Tab Context: present')"
+                      ".length === 2"),
+      Do([this, region_id]() {
+        static_cast<selection::SelectionOverlayPageHandler*>(GetController())
+            ->DeleteRegion(region_id, /*is_using_keyboard=*/true);
+      }),
+      WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
+                        "el => el.selectedRegions.length === 1"),
+      WaitForJsResultAt(kGlicContentsElementId, kContextResult,
+                        "el => el.innerText.split('Tab Context: present')"
+                        ".length === 3"),
+      CheckJsResultAt(kGlicContentsElementId, kContextResult,
+                      "el => el.innerText.split('Region: ').length === 2"),
       CheckResult([this]() { return GetController()->state(); },
                   OverlayBaseController::State::kOverlay));
 }
@@ -727,8 +778,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
 
   RunTestSequence(LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
                     ShowWithSelection(selection::InteractionOptions::New(
-                        /*hide_handles=*/true, /*disable_multi_select=*/true,
-                        /*skip_intro_animation=*/true));
+                        /*hide_handles=*/true, /*skip_intro_animation=*/true));
                   }),
                   WaitForShow(OverlayBaseController::kOverlayId),
                   InstrumentNonTabWebView(kOverlayWebContentsId,
@@ -897,8 +947,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithHeldHandoff,
   RunTestSequence(
       LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
         ShowWithImageSelection(selection::InteractionOptions::New(
-            /*hide_handles=*/true, /*disable_multi_select=*/true,
-            /*skip_intro_animation=*/true));
+            /*hide_handles=*/true, /*skip_intro_animation=*/true));
       }),
       WaitForShow(OverlayBaseController::kOverlayId),
       InstrumentNonTabWebView(kOverlayWebContentsId,
@@ -929,6 +978,70 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithHeldHandoff,
       WaitForShow(OverlayBaseController::kOverlayId));
 }
 
+// If the tab leaves the foreground before the web client answers the hand-off
+// invoke, `CaptureRegion()` rejects the answer (`kNoFocusableTab`) without
+// adopting the session. Completing the invoke must clear
+// `handoff_to_panel_pending` so that bringing the tab (and its side panel) back
+// retries the hand-off.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithHeldHandoff,
+                       FailedHandoffRetriesWhenPanelShownAgain) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  const DeepQuery kRenderer = {"selection-overlay-app",
+                               "glic-selection-overlay",
+                               "post-selection-renderer"};
+  const DeepQuery kCaptureButton = {"#captureRegionBtn"};
+  const DeepQuery kReleaseButton = {"#releaseCaptureRegionHotkey"};
+
+  RunTestSequence(
+      Do([this]() {
+        chrome::AddTabAt(browser(), GetEmptyDocURL(), -1, false);
+      }),
+      LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
+        ShowWithImageSelection(selection::InteractionOptions::New(
+            /*hide_handles=*/true, /*skip_intro_animation=*/true));
+      }),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
+                        "el => el.selectedRegions.length === 1"),
+      OpenGlic(),
+      WaitForJsResultAt(kGlicContentsElementId, kReleaseButton,
+                        "el => !el.disabled"),
+      // Background tab 0 before the client answers: `CaptureRegion()` fails
+      // without adopting the session, and the invoke finishes. While tab 0's
+      // side panel is hidden, `kGlicContentsElementId` is not in the element
+      // tracker, so drive the guest frame directly.
+      Do([this]() { browser()->tab_strip_model()->ActivateTabAt(1); }),
+      Check([this]() -> bool {
+        return content::ExecJs(
+            FindGlicGuestMainFrame(),
+            "document.querySelector('#releaseCaptureRegionHotkey').click()");
+      }),
+      WaitUntil(
+          [this]() {
+            return content::EvalJs(
+                       FindGlicGuestMainFrame(),
+                       "document.querySelector('#captureRegionResultList')"
+                       ".innerText.includes('Error')")
+                           .ExtractBool()
+                       ? "error"
+                       : "waiting";
+          },
+          "error"),
+      // Returning to tab 0 shows its panel again and retries the hand-off.
+      Do([this]() { browser()->tab_strip_model()->ActivateTabAt(0); }),
+      WaitForAndInstrumentGlic(GlicInstrumentMode::kHostAndContents),
+      WaitForJsResultAt(kGlicContentsElementId, kReleaseButton,
+                        "el => !el.disabled"),
+      ClickMockGlicElement(kReleaseButton),
+      WaitForJsResultAt(kGlicContentsElementId, {"#additionalContextResult"},
+                        "el => el.innerText.includes('Region: ')"),
+      CheckJsResultAt(kGlicContentsElementId, kCaptureButton,
+                      "el => el.hasAttribute('pressed')"));
+}
+
 // A session with a pre-selected region opens directly in the post-selection
 // state, without the intro border glow.
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
@@ -941,8 +1054,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
   RunTestSequence(
       LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
         ShowWithSelection(selection::InteractionOptions::New(
-            /*hide_handles=*/true, /*disable_multi_select=*/true,
-            /*skip_intro_animation=*/true));
+            /*hide_handles=*/true, /*skip_intro_animation=*/true));
       }),
       WaitForShow(OverlayBaseController::kOverlayId),
       InstrumentNonTabWebView(kOverlayWebContentsId,
@@ -970,10 +1082,9 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
                                "post-selection-renderer"};
 
   RunTestSequence(
-      LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
+      LoadPageAndWaitForPaint(kActiveTab), OpenGlic(), Do([this]() {
         ShowWithSelection(selection::InteractionOptions::New(
-            /*hide_handles=*/false, /*disable_multi_select=*/false,
-            /*skip_intro_animation=*/true));
+            /*hide_handles=*/false, /*skip_intro_animation=*/true));
       }),
       WaitForShow(OverlayBaseController::kOverlayId),
       InstrumentNonTabWebView(kOverlayWebContentsId,
@@ -996,10 +1107,10 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
                         ".hasAttribute('skip-scrim-transition')"));
 }
 
-// With `disable_multi_select`, the overlay shows the normal cursor and a
-// background click dismisses it instead of drawing a new region.
+// With a selection and the side panel closed, the overlay shows the normal
+// cursor and a background click dismisses it instead of drawing a new region.
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
-                       DisableMultiSelectClickDismissesOverlay) {
+                       SelectionWithSidePanelClosedClickDismissesOverlay) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
   const DeepQuery kOverlay = {"selection-overlay-app",
@@ -1011,8 +1122,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
   RunTestSequence(
       LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
         ShowWithSelection(selection::InteractionOptions::New(
-            /*hide_handles=*/false, /*disable_multi_select=*/true,
-            /*skip_intro_animation=*/true));
+            /*hide_handles=*/false, /*skip_intro_animation=*/true));
       }),
       WaitForShow(OverlayBaseController::kOverlayId),
       InstrumentNonTabWebView(kOverlayWebContentsId,
@@ -1034,10 +1144,10 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
       ClickMouse(), WaitForHide(OverlayBaseController::kOverlayId));
 }
 
-// With `disable_multi_select`, a background drag dismisses the overlay instead
-// of drawing a new region.
+// With a selection and the side panel closed, a background drag dismisses the
+// overlay instead of drawing a new region.
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
-                       DisableMultiSelectDragDismissesOverlay) {
+                       SelectionWithSidePanelClosedDragDismissesOverlay) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
   const DeepQuery kOverlay = {"selection-overlay-app",
@@ -1049,8 +1159,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
   RunTestSequence(
       LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
         ShowWithSelection(selection::InteractionOptions::New(
-            /*hide_handles=*/false, /*disable_multi_select=*/true,
-            /*skip_intro_animation=*/true));
+            /*hide_handles=*/false, /*skip_intro_animation=*/true));
       }),
       WaitForShow(OverlayBaseController::kOverlayId),
       InstrumentNonTabWebView(kOverlayWebContentsId,
@@ -1078,8 +1187,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
 
   RunTestSequence(LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
                     ShowWithSelection(selection::InteractionOptions::New(
-                        /*hide_handles=*/true, /*disable_multi_select=*/false,
-                        /*skip_intro_animation=*/true));
+                        /*hide_handles=*/true, /*skip_intro_animation=*/true));
                   }),
                   WaitForShow(OverlayBaseController::kOverlayId),
                   InstrumentNonTabWebView(kOverlayWebContentsId,
@@ -2337,8 +2445,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
   RunTestSequence(
       LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
         ShowWithSelection(selection::InteractionOptions::New(
-            /*hide_handles=*/true, /*disable_multi_select=*/true,
-            /*skip_intro_animation=*/true));
+            /*hide_handles=*/true, /*skip_intro_animation=*/true));
       }),
       WaitForShow(OverlayBaseController::kOverlayId),
       InstrumentNonTabWebView(kOverlayWebContentsId,
@@ -2359,8 +2466,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
   RunTestSequence(
       LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
         ShowWithSelection(selection::InteractionOptions::New(
-            /*hide_handles=*/false, /*disable_multi_select=*/true,
-            /*skip_intro_animation=*/true));
+            /*hide_handles=*/false, /*skip_intro_animation=*/true));
       }),
       WaitForShow(OverlayBaseController::kOverlayId),
       InstrumentNonTabWebView(kOverlayWebContentsId,
@@ -2408,8 +2514,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
   RunTestSequence(
       LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
         ShowWithImageSelection(selection::InteractionOptions::New(
-            /*hide_handles=*/true, /*disable_multi_select=*/true,
-            /*skip_intro_animation=*/true));
+            /*hide_handles=*/true, /*skip_intro_animation=*/true));
       }),
       WaitForShow(OverlayBaseController::kOverlayId),
       InstrumentNonTabWebView(kOverlayWebContentsId,
@@ -2468,8 +2573,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
                     ->GetActiveWebContents()
                     ->GetPrimaryMainFrame());
         ShowWithImageSelection(selection::InteractionOptions::New(
-            /*hide_handles=*/true, /*disable_multi_select=*/true,
-            /*skip_intro_animation=*/true));
+            /*hide_handles=*/true, /*skip_intro_animation=*/true));
       }),
       WaitForShow(OverlayBaseController::kOverlayId),
       InstrumentNonTabWebView(kOverlayWebContentsId,
@@ -2516,8 +2620,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
   RunTestSequence(
       LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
         ShowWithSelection(selection::InteractionOptions::New(
-            /*hide_handles=*/true, /*disable_multi_select=*/true,
-            /*skip_intro_animation=*/true));
+            /*hide_handles=*/true, /*skip_intro_animation=*/true));
       }),
       WaitForShow(OverlayBaseController::kOverlayId),
       InstrumentNonTabWebView(kOverlayWebContentsId,
@@ -2549,8 +2652,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
   RunTestSequence(
       LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
         ShowWithSelection(selection::InteractionOptions::New(
-            /*hide_handles=*/true, /*disable_multi_select=*/false,
-            /*skip_intro_animation=*/true));
+            /*hide_handles=*/true, /*skip_intro_animation=*/true));
       }),
       WaitForShow(OverlayBaseController::kOverlayId),
       InstrumentNonTabWebView(kOverlayWebContentsId,
@@ -2573,6 +2675,54 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
                         "el => el.textContent.includes('Explain this region')"),
       CheckJsResultAt(kGlicContentsElementId, DeepQuery{"#invocationLog"},
                       "el => el.textContent.includes('pendingRegion')"));
+}
+
+// When the panel is already open, drawing a region in a text session hands the
+// session to the panel, so submitting a prompt afterwards keeps the overlay up
+// and does not re-send the region with the prompt.
+IN_PROC_BROWSER_TEST_F(
+    SelectionOverlayInteractiveTestWithPrompt,
+    SubmitPromptAfterDrawingOnTextSelectionWithPanelOpenKeepsSession) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  const DeepQuery kRenderer = {"selection-overlay-app",
+                               "glic-selection-overlay",
+                               "post-selection-renderer"};
+  const DeepQuery kCaptureButton = {"#captureRegionBtn"};
+  const DeepQuery kContextResult = {"#additionalContextResult"};
+
+  RunTestSequence(
+      LoadPageAndWaitForPaint(kActiveTab), OpenGlic(), Do([this]() {
+        ShowWithSelection(selection::InteractionOptions::New(
+            /*hide_handles=*/true, /*skip_intro_animation=*/true));
+      }),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
+                        "el => el.selectedRegions.length === 1"),
+      WaitForPageContext(kOverlayWebContentsId), Do([this]() {
+        static_cast<selection::SelectionOverlayPageHandler*>(GetController())
+            ->AdjustRegion(selection::SelectedRegion::New(
+                               base::UnguessableToken::Create(),
+                               selection::RegionShape::NewRect(
+                                   gfx::RectF(0.5f, 0.5f, 0.2f, 0.2f))),
+                           /*is_using_keyboard=*/true);
+      }),
+      WaitForJsResultAt(kGlicContentsElementId, kCaptureButton,
+                        "el => el.hasAttribute('pressed')"),
+      WaitForJsResultAt(kGlicContentsElementId, kContextResult,
+                        "el => el.innerText.includes('Region: ')"),
+      Do([this]() {
+        static_cast<selection::SelectionOverlayPageHandler*>(GetController())
+            ->SubmitPrompt("Explain this region");
+      }),
+      WaitForJsResultAt(kGlicContentsElementId, {"#invocationLog"},
+                        "el => el.textContent.includes('Explain this region')"),
+      CheckJsResultAt(kGlicContentsElementId, DeepQuery{"#invocationLog"},
+                      "el => !el.textContent.includes('pendingRegion')"),
+      CheckResult([this]() { return GetController()->state(); },
+                  OverlayBaseController::State::kOverlay));
 }
 
 namespace {
@@ -2605,8 +2755,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPromptNoRegion,
   RunTestSequence(
       LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
         ShowWithImageSelection(selection::InteractionOptions::New(
-            /*hide_handles=*/true, /*disable_multi_select=*/true,
-            /*skip_intro_animation=*/true));
+            /*hide_handles=*/true, /*skip_intro_animation=*/true));
       }),
       WaitForShow(OverlayBaseController::kOverlayId),
       InstrumentNonTabWebView(kOverlayWebContentsId,
@@ -2866,8 +3015,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
 
 // With the side panel open, the small chip starts a capture session through
 // the web client. The session pre-selects the text selection and treats it
-// like the other small chip paths: no handles, no click-to-add-region, and no
-// duplicate screenshot region sent to the panel (b:575500214).
+// like the other small chip paths: no handles, opens in post-selection state,
+// and no duplicate screenshot region sent to the panel (b:575500214).
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
                        SmallChipWithSidePanelOpenKeepsTextSelection) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
@@ -2884,7 +3033,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
       WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
                         "el => el.selectedRegions.length === 1"),
       CheckJsResultAt(kOverlayWebContentsId, kSelectionOverlay,
-                      "el => el.hideHandles && el.disableMultiSelect && "
+                      "el => el.hideHandles && el.skipIntroAnimation && "
                       "el.sidePanelOpen"),
       PollState(kHasPageContext,
                 [this]() {

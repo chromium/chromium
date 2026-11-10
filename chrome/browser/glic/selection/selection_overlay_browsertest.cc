@@ -601,7 +601,6 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayStaticSuggestionsBrowserTest,
   controller->ShowWithSelection(
       tab->GetContents()->GetPrimaryMainFrame(), bounds,
       selection::InteractionOptions::New(/*hide_handles=*/true,
-                                         /*disable_multi_select=*/true,
                                          /*skip_intro_animation=*/true),
       ::selection::EntryPoint::kInlineCue);
 
@@ -2392,8 +2391,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPrewarmBrowserTest,
       SelectionOverlayController::FromTabWebContents(tab->GetContents());
   ASSERT_TRUE(controller);
   auto options = selection::InteractionOptions::New(
-      /*hide_handles=*/true, /*disable_multi_select=*/true,
-      /*skip_intro_animation=*/true);
+      /*hide_handles=*/true, /*skip_intro_animation=*/true);
 
   // Switching tabs while idle drops the unused prewarm.
   controller->MaybePrewarmOverlay(options.Clone());
@@ -2457,8 +2455,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPrewarmBrowserTest,
       SelectionOverlayController::FromTabWebContents(tab->GetContents());
   ASSERT_TRUE(controller);
   auto options = selection::InteractionOptions::New(
-      /*hide_handles=*/true, /*disable_multi_select=*/true,
-      /*skip_intro_animation=*/true);
+      /*hide_handles=*/true, /*skip_intro_animation=*/true);
   base::WeakPtr<content::WebContents> prewarmed =
       PrewarmAndWait(controller, options);
   ASSERT_TRUE(prewarmed);
@@ -2493,8 +2490,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPrewarmBrowserTest,
       SelectionOverlayController::FromTabWebContents(tab->GetContents());
   ASSERT_TRUE(controller);
   auto options = selection::InteractionOptions::New(
-      /*hide_handles=*/true, /*disable_multi_select=*/true,
-      /*skip_intro_animation=*/true);
+      /*hide_handles=*/true, /*skip_intro_animation=*/true);
   base::WeakPtr<content::WebContents> prewarmed =
       PrewarmAndWait(controller, options);
   ASSERT_TRUE(prewarmed);
@@ -2533,8 +2529,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPrewarmBrowserTest, CloseDropsPrewarm) {
       SelectionOverlayController::FromTabWebContents(tab->GetContents());
   ASSERT_TRUE(controller);
   controller->MaybePrewarmOverlay(selection::InteractionOptions::New(
-      /*hide_handles=*/true, /*disable_multi_select=*/true,
-      /*skip_intro_animation=*/true));
+      /*hide_handles=*/true, /*skip_intro_animation=*/true));
   ASSERT_TRUE(controller->GetPrewarmInteractionOptions());
 
   controller->Close();
@@ -2551,8 +2546,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPrewarmBrowserTest,
   ASSERT_TRUE(controller);
   base::WeakPtr<content::WebContents> prewarmed = PrewarmAndWait(
       controller, selection::InteractionOptions::New(
-                      /*hide_handles=*/true, /*disable_multi_select=*/true,
-                      /*skip_intro_animation=*/true));
+                      /*hide_handles=*/true, /*skip_intro_animation=*/true));
   ASSERT_TRUE(prewarmed);
 
   gfx::Rect bounds = tab->GetContents()->GetViewBounds();
@@ -2560,7 +2554,6 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPrewarmBrowserTest,
   controller->ShowWithSelection(
       tab->GetContents()->GetPrimaryMainFrame(), bounds,
       selection::InteractionOptions::New(/*hide_handles=*/false,
-                                         /*disable_multi_select=*/true,
                                          /*skip_intro_animation=*/true),
       ::selection::EntryPoint::kInlineCue);
   EXPECT_FALSE(prewarmed);
@@ -2581,8 +2574,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPrewarmBrowserTest,
       SelectionOverlayController::FromTabWebContents(tab->GetContents());
   ASSERT_TRUE(controller);
   auto options = selection::InteractionOptions::New(
-      /*hide_handles=*/true, /*disable_multi_select=*/true,
-      /*skip_intro_animation=*/true);
+      /*hide_handles=*/true, /*skip_intro_animation=*/true);
   base::WeakPtr<content::WebContents> prewarmed = Prewarm(controller, options);
   ASSERT_TRUE(prewarmed);
 

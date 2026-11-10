@@ -179,8 +179,7 @@ void GlicSelectionWidgetController::OnHovered() {
           SelectionOverlayController::FromTabWebContents(web_contents())) {
     // Same options as `ShowSelectionOverlay()` uses for the session.
     controller->MaybePrewarmOverlay(selection::InteractionOptions::New(
-        /*hide_handles=*/true, /*disable_multi_select=*/true,
-        /*skip_intro_animation=*/true));
+        /*hide_handles=*/true, /*skip_intro_animation=*/true));
   }
 }
 
@@ -378,8 +377,7 @@ void GlicSelectionWidgetController::ShowSelectionOverlay() {
     controller->ShowWithSelection(
         delegate_->GetSelectedFrame(), *bounds,
         selection::InteractionOptions::New(
-            /*hide_handles=*/true, /*disable_multi_select=*/true,
-            /*skip_intro_animation=*/true),
+            /*hide_handles=*/true, /*skip_intro_animation=*/true),
         ::selection::EntryPoint::kInlineCue);
   } else {
     controller->Show(/*options=*/nullptr, ::selection::EntryPoint::kInlineCue);

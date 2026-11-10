@@ -174,13 +174,13 @@
   visibility: hidden;
 }
 
-/* Clicks dismiss the overlay instead of drawing a region, so show the normal
- * cursor. */
-:host([disable-multi-select]) #selectionOverlay {
+/* With a selection and the side panel closed, clicks dismiss the overlay
+ * instead of drawing a region, so show the normal cursor. */
+:host([has-selection]:not([side-panel-open])) #selectionOverlay {
   cursor: default;
 }
 
-:host([disable-multi-select]) #cursor {
+:host([has-selection]:not([side-panel-open])) #cursor {
   visibility: hidden;
 }
 
