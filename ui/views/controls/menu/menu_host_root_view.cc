@@ -5,6 +5,8 @@
 #include "ui/views/controls/menu/menu_host_root_view.h"
 
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
@@ -54,6 +56,15 @@ void MenuHostRootView::ViewHierarchyChanged(
     GetMenuControllerForInputEvents()->ViewHierarchyChanged(submenu_, details);
   }
   RootView::ViewHierarchyChanged(details);
+}
+
+View* MenuHostRootView::TargetForRect(View* root, const gfx::Rect& rect) {
+  // MenuController resolves unhandled gestures using the gesture's center
+  // point. Target the view under that same point, like mouse events, so
+  // rect-based fuzzing cannot hand a tap on a menu button to an adjacent
+  // non-interactive icon or separator.
+  return RootView::TargetForRect(
+      root, gfx::Rect(rect.CenterPoint(), gfx::Size(1, 1)));
 }
 
 bool MenuHostRootView::ProcessMousePressed(const ui::MouseEvent& event) {

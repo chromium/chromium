@@ -80,7 +80,9 @@
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/views/controls/menu/menu_pre_target_handler.h"
+#include "ui/views/rect_based_targeting_utils.h"
 #endif
 
 
@@ -3411,6 +3413,150 @@ TEST_F(MenuControllerTest, RegisterGestureTapWithChildViews) {
                        ui::GestureEventDetails(ui::EventType::kGestureTap)));
   EXPECT_EQ(menu_controller_delegate()->on_menu_closed_called(), 1);
   DestroyMenuControllerDelegate();
+}
+
+namespace {
+
+// A small row decoration, such as an icon: targetable, but ignores gestures.
+class GestureCountingView : public View {
+  METADATA_HEADER(GestureCountingView, View)
+
+ public:
+  int gesture_count() const { return gesture_count_; }
+
+  // View:
+  void OnGestureEvent(ui::GestureEvent* event) override { ++gesture_count_; }
+
+ private:
+  int gesture_count_ = 0;
+};
+
+BEGIN_METADATA(GestureCountingView)
+END_METADATA
+
+struct DecorationAboveButton {
+  raw_ptr<GestureCountingView> decoration;
+  raw_ptr<LabelButton> button;
+};
+
+// Puts a 16x16 decoration at the bottom edge of `upper` and a button that fills
+// `lower`, the item right below it. Each press of the button increments
+// `clicks`.
+DecorationAboveButton AddDecorationAboveButton(MenuItemView* upper,
+                                               MenuItemView* lower,
+                                               int* clicks) {
+  upper->SetTitle(std::u16string());
+  View* upper_row = upper->AddChildView(std::make_unique<View>());
+  upper_row->SetPreferredSize(gfx::Size(200, 30));
+  auto* decoration =
+      upper_row->AddChildView(std::make_unique<GestureCountingView>());
+  decoration->SetBounds(10, 14, 16, 16);
+
+  lower->SetTitle(std::u16string());
+  View* lower_row = lower->AddChildView(std::make_unique<View>());
+  lower_row->SetPreferredSize(gfx::Size(200, 30));
+  auto* button = lower_row->AddChildView(std::make_unique<LabelButton>(
+      base::BindRepeating([](int* clicks) { ++*clicks; }, clicks), u"Button"));
+  button->SetBounds(0, 0, 200, 30);
+  return {decoration, button};
+}
+
+// A point inside `button`, just below its top edge, under `decoration`'s
+// column.
+gfx::Point PointNearTopOfButton(const DecorationAboveButton& views) {
+  return gfx::Point(views.decoration->bounds().CenterPoint().x(), 2);
+}
+
+// A 50x50 finger box centered on `point` in root view coordinates, the size
+// Aura gives a touch without a radius.
+gfx::Rect FingerBoxAt(const gfx::Point& point) {
+  gfx::Rect box(point, gfx::Size());
+  box.Outset(25);
+  return box;
+}
+
+}  // namespace
+
+// A finger tap goes to the view under the tap point, like a mouse click, even
+// when the finger box covers a small view in the row above. Otherwise that
+// view, which ignores the tap, steals it, and the controller only sees the
+// container row of the button.
+TEST_F(MenuControllerTest, GestureTapWithFingerBoxTargetsViewUnderPoint) {
+  CreateMenu();
+  SubmenuView* const submenu = menu_item()->GetSubmenu();
+  int clicks = 0;
+  const DecorationAboveButton views = AddDecorationAboveButton(
+      submenu->GetMenuItemAt(0), submenu->GetMenuItemAt(1), &clicks);
+  ShowSubmenu();
+  Widget* const widget = submenu->GetWidget();
+  widget->LayoutRootViewIfNecessary();
+
+  const gfx::Point point = View::ConvertPointToTarget(
+      views.button, widget->GetRootView(), PointNearTopOfButton(views));
+  const gfx::Rect finger_box = FingerBoxAt(point);
+  // The decoration is mostly inside the finger box, which makes it a
+  // candidate for rect-based targeting.
+  ASSERT_GE(PercentCoveredBy(views.decoration->ConvertRectToWidget(
+                                 views.decoration->GetLocalBounds()),
+                             finger_box),
+            0.6f);
+
+  for (const ui::EventType type :
+       {ui::EventType::kGestureTapDown, ui::EventType::kGestureTap}) {
+    ui::GestureEventDetails details(type);
+    details.set_bounding_box(gfx::RectF(finger_box));
+    ui::GestureEvent event(point.x(), point.y(), ui::EF_NONE,
+                           ui::EventTimeForNow(), details);
+    widget->OnGestureEvent(&event);
+  }
+
+  EXPECT_EQ(clicks, 1);
+  EXPECT_EQ(views.decoration->gesture_count(), 0);
+}
+
+// Same as GestureTapWithFingerBoxTargetsViewUnderPoint, but with real touch
+// events and a touch radius, through the gesture recognizer.
+TEST_F(MenuControllerTest, TouchTapWithRadiusTargetsViewUnderPoint) {
+  CreateMenu();
+  SubmenuView* const submenu = menu_item()->GetSubmenu();
+  int clicks = 0;
+  const DecorationAboveButton views = AddDecorationAboveButton(
+      submenu->GetMenuItemAt(0), submenu->GetMenuItemAt(1), &clicks);
+  ShowSubmenu();
+  submenu->GetWidget()->LayoutRootViewIfNecessary();
+  ui::GestureConfiguration* const gesture_config =
+      ui::GestureConfiguration::GetInstance();
+  const float old_default_radius = gesture_config->default_radius();
+  gesture_config->set_default_radius(25);
+
+  gfx::Point point = PointNearTopOfButton(views);
+  View::ConvertPointToScreen(views.button, &point);
+  event_generator()->SetTouchRadius(25, 25);
+  event_generator()->PressTouch(point);
+  event_generator()->ReleaseTouch();
+  gesture_config->set_default_radius(old_default_radius);
+
+  EXPECT_EQ(clicks, 1);
+  EXPECT_EQ(views.decoration->gesture_count(), 0);
+}
+
+// Mouse twin of the tests above. Mouse targeting is point-based, so this
+// passes with or without rect-based gesture targeting.
+TEST_F(MenuControllerTest, ClickNearTopOfButtonUnderDecorationPressesButton) {
+  CreateMenu();
+  SubmenuView* const submenu = menu_item()->GetSubmenu();
+  int clicks = 0;
+  const DecorationAboveButton views = AddDecorationAboveButton(
+      submenu->GetMenuItemAt(0), submenu->GetMenuItemAt(1), &clicks);
+  ShowSubmenu();
+  submenu->GetWidget()->LayoutRootViewIfNecessary();
+
+  gfx::Point point = PointNearTopOfButton(views);
+  View::ConvertPointToScreen(views.button, &point);
+  event_generator()->MoveMouseTo(point);
+  event_generator()->ClickLeftButton();
+
+  EXPECT_EQ(clicks, 1);
 }
 
 #endif  // defined(USE_AURA)

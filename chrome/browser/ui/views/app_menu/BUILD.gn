@@ -263,6 +263,8 @@ if (toolkit_views) {
       "//ui/actions:actions_headers",
       "//ui/base",
       "//ui/base:test_support",
+      "//ui/events:gesture_detection",
+      "//ui/events:test_support",
       "//ui/gfx",
       "//ui/strings",
       "//ui/views",
