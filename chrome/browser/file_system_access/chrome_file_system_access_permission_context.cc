@@ -294,6 +294,9 @@ bool IsLocalUNCServer(base::FilePath::StringViewType server) {
       FILE_PATH_LITERAL(".host"),
       FILE_PATH_LITERAL("vboxsvr"),
       FILE_PATH_LITERAL("vboxsrv"),
+      // Remote desktop client-drive redirectors (RDP/Horizon, Citrix HDX).
+      FILE_PATH_LITERAL("tsclient"),
+      FILE_PATH_LITERAL("client"),
   };
   for (const auto& candidate : kLocalServers) {
     if (base::FilePath::CompareEqualIgnoreCase(server, candidate)) {
@@ -304,8 +307,8 @@ bool IsLocalUNCServer(base::FilePath::StringViewType server) {
 }
 
 // Returns true if the path is a Universal Naming Convention (UNC) path pointing
-// to a local system path, device namespace, WSL loopback redirector, or
-// hypervisor host-share namespace.
+// to a local system path, device namespace, WSL loopback redirector,
+// hypervisor host-share namespace, or remote-session client drive redirector.
 bool MaybeIsLocalUNCPath(const base::FilePath& path) {
   if (!path.IsNetwork()) {
     return false;

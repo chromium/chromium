@@ -1977,6 +1977,71 @@ TEST_F(ChromeFileSystemAccessPermissionContextNoSymbolicLinkCheckTest,
   }
 }
 
+// Verifies that remote-desktop client-drive UNC paths (RDP/Horizon `\\tsclient`
+// and Citrix HDX `\\Client`) are blocked across handle types and triggers,
+// while multi-label remote FQDNs remain allowed.
+TEST_F(ChromeFileSystemAccessPermissionContextNoSymbolicLinkCheckTest,
+       ConfirmSensitiveEntryAccess_RemoteDesktopClientUNC) {
+  static constexpr const base::FilePath::CharType* kBlockedDirPaths[] = {
+      FILE_PATH_LITERAL("\\\\tsclient"),
+      FILE_PATH_LITERAL("\\\\tsclient\\C\\Users\\user"),
+      FILE_PATH_LITERAL("\\\\TSCLIENT\\C\\Users\\user"),
+      FILE_PATH_LITERAL("\\\\TsClient\\home\\user"),
+      FILE_PATH_LITERAL("\\\\tsclient.\\C\\Users\\user"),
+      FILE_PATH_LITERAL("//tsclient/home/user/.ssh"),
+      FILE_PATH_LITERAL("\\\\Client"),
+      FILE_PATH_LITERAL("\\\\Client\\C\\Users\\user"),
+      FILE_PATH_LITERAL("\\\\client\\home\\user"),
+      FILE_PATH_LITERAL("\\\\CLIENT\\C\\Users\\user"),
+      FILE_PATH_LITERAL("\\\\Client.\\C\\Users\\user"),
+      FILE_PATH_LITERAL("\\\\client.\\home\\user"),
+      FILE_PATH_LITERAL("//Client/C/Users/user/.ssh"),
+  };
+  for (const auto* path : kBlockedDirPaths) {
+    EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                  permission_context(), PathInfo(path), HandleType::kDirectory,
+                  AccessTrigger::kOpen),
+              SensitiveDirectoryResult::kAbort)
+        << "Expected blocked directory path: " << path;
+  }
+
+  static constexpr const base::FilePath::CharType* kBlockedFilePaths[] = {
+      FILE_PATH_LITERAL("\\\\tsclient\\C\\Users\\user\\.ssh\\id_rsa"),
+      FILE_PATH_LITERAL("\\\\tsclient\\home\\user\\.bashrc"),
+      FILE_PATH_LITERAL("\\\\TSCLIENT.\\home\\user\\.bashrc"),
+      FILE_PATH_LITERAL("//tsclient/home/user/.bashrc"),
+      FILE_PATH_LITERAL("\\\\Client\\C\\Users\\user\\.ssh\\id_rsa"),
+      FILE_PATH_LITERAL("\\\\client\\home\\user\\.bashrc"),
+      FILE_PATH_LITERAL("\\\\Client.\\home\\user\\.bashrc"),
+  };
+  for (const auto* path : kBlockedFilePaths) {
+    for (AccessTrigger trigger : {AccessTrigger::kOpen, AccessTrigger::kSave,
+                                  AccessTrigger::kProgrammaticRead,
+                                  AccessTrigger::kProgrammaticWrite}) {
+      EXPECT_EQ(
+          ConfirmSensitiveEntryAccessSync(permission_context(), PathInfo(path),
+                                          HandleType::kFile, trigger),
+          SensitiveDirectoryResult::kAbort)
+          << "Expected blocked file path: " << path;
+    }
+  }
+
+  // Multi-label FQDNs and distinct server names must remain allowed.
+  static constexpr const base::FilePath::CharType* kAllowedPaths[] = {
+      FILE_PATH_LITERAL("\\\\client.corp.domain.com\\share\\foo"),
+      FILE_PATH_LITERAL("\\\\tsclient.corp.domain.com\\share\\foo"),
+      FILE_PATH_LITERAL("\\\\tsclient-prod\\share\\foo"),
+      FILE_PATH_LITERAL("\\\\myclient\\share\\foo"),
+  };
+  for (const auto* path : kAllowedPaths) {
+    EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                  permission_context(), PathInfo(path), HandleType::kDirectory,
+                  AccessTrigger::kOpen),
+              SensitiveDirectoryResult::kAllowed)
+        << "Expected allowed remote UNC path: " << path;
+  }
+}
+
 #endif  // BUILDFLAG(IS_WIN)
 
 // Testing that writes to */.git and non-allowlisted descendants are blocked,
