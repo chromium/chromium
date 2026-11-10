@@ -2844,6 +2844,24 @@
             ]
         }
     ],
+    "AutofillPrivateEventRouterObserveOnDemand": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillPrivateEventRouterObserveOnDemand"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillRequireFocusInFrameForSuggestions": [
         {
             "platforms": [
