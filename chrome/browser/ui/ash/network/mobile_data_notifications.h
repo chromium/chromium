@@ -60,9 +60,13 @@ class MobileDataNotifications
   void OnSessionStateChanged() override;
 
  private:
-  // Requests the active networks and calls
-  // ShowOptionalMobileDataNotificationImpl.
+  // Resolves the active session's user and calls
+  // ShowOptionalMobileDataNotificationForUser.
   void ShowOptionalMobileDataNotification();
+
+  // Requests the active networks and calls
+  // ShowOptionalMobileDataNotificationImpl for `user`.
+  void ShowOptionalMobileDataNotificationForUser(user_manager::User& user);
 
   // Displays a mobile data warning notification if all conditions are met:
   // * Cellular is the default network.
@@ -71,6 +75,7 @@ class MobileDataNotifications
   //   from triggering the notification).
   // * First time notification is shown according to user prefs.
   void ShowOptionalMobileDataNotificationImpl(
+      user_manager::User& user,
       const std::vector<const ash::NetworkState*>& active_networks);
 
   // Adds a delay before calling |ShowOptionalMobileDataNotification|. Delay is

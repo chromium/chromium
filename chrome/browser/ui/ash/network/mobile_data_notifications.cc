@@ -38,16 +38,14 @@ using user_manager::UserManager;
 
 namespace {
 
-// ShowOptionalMobileDataNotification() has checked that the session is not
-// blocked, so there is an active session whose profile has been created.
-// TODO(crbug.com/563546692): Take the AccountId from the callers instead, so
-// that the notification follows the network that triggered it.
-PrefService& GetActiveUserPrefs() {
-  const session_manager::Session& session =
-      CHECK_DEREF(SessionManager::Get()->GetActiveSession());
-  user_manager::User& user =
-      CHECK_DEREF(UserManager::Get()->FindUserAndModify(session.account_id()));
-  return CHECK_DEREF(user.GetProfilePrefs());
+// Returns the user of the active session, or null when there is none. The
+// observers below resolve this once and pass the User down, so that a
+// notification is always read and written against the user it is about.
+user_manager::User* FindActiveUser() {
+  const session_manager::Session* const session =
+      SessionManager::Get()->GetActiveSession();
+  return session ? UserManager::Get()->FindUserAndModify(session->account_id())
+                 : nullptr;
 }
 
 const char kMobileDataNotificationId[] =
@@ -86,7 +84,11 @@ void MobileDataNotifications::ActiveNetworksChanged(
   if (SessionManager::Get()->IsUserSessionBlocked()) {
     return;
   }
-  ShowOptionalMobileDataNotificationImpl(active_networks);
+  user_manager::User* const user = FindActiveUser();
+  if (!user) {
+    return;
+  }
+  ShowOptionalMobileDataNotificationImpl(*user, active_networks);
 }
 
 void MobileDataNotifications::OnShuttingDown() {
@@ -109,7 +111,9 @@ void MobileDataNotifications::ConnectFailed(const std::string& service_path,
 
 void MobileDataNotifications::ActiveUserChanged(
     user_manager::User* active_user) {
-  ShowOptionalMobileDataNotification();
+  // The notification is about the user who is becoming active, and this
+  // callback names them, so there is no need to ask who that is.
+  ShowOptionalMobileDataNotificationForUser(CHECK_DEREF(active_user));
 }
 
 void MobileDataNotifications::OnSessionStateChanged() {
@@ -118,17 +122,28 @@ void MobileDataNotifications::OnSessionStateChanged() {
 }
 
 void MobileDataNotifications::ShowOptionalMobileDataNotification() {
-  if (SessionManager::Get()->IsUserSessionBlocked() || !NetworkHandler::IsInitialized()) {
+  user_manager::User* const user = FindActiveUser();
+  if (!user) {
+    return;
+  }
+  ShowOptionalMobileDataNotificationForUser(*user);
+}
+
+void MobileDataNotifications::ShowOptionalMobileDataNotificationForUser(
+    user_manager::User& user) {
+  if (SessionManager::Get()->IsUserSessionBlocked() ||
+      !NetworkHandler::IsInitialized()) {
     return;
   }
 
   NetworkStateHandler::NetworkStateList active_networks;
   NetworkHandler::Get()->network_state_handler()->GetActiveNetworkListByType(
       ash::NetworkTypePattern::NonVirtual(), &active_networks);
-  ShowOptionalMobileDataNotificationImpl(active_networks);
+  ShowOptionalMobileDataNotificationImpl(user, active_networks);
 }
 
 void MobileDataNotifications::ShowOptionalMobileDataNotificationImpl(
+    user_manager::User& user,
     const std::vector<const NetworkState*>& active_networks) {
   const NetworkState* first_active_network = nullptr;
   for (const auto* network : active_networks) {
@@ -144,8 +159,9 @@ void MobileDataNotifications::ShowOptionalMobileDataNotificationImpl(
     return;
   }
 
-  // Check if we've shown this notification before.
-  PrefService& pref_service = GetActiveUserPrefs();
+  // Check if we've shown this notification before. The session is not
+  // blocked, so the user's profile has been created and carries their prefs.
+  PrefService& pref_service = CHECK_DEREF(user.GetProfilePrefs());
   if (!pref_service.GetBoolean(ash::prefs::kShowMobileDataNotification)) {
     return;
   }

@@ -237,6 +237,32 @@ TEST_F(MobileDataNotificationsTest, SessionUpdateDisplayNotification) {
   EXPECT_TRUE(GetNotification());
 }
 
+// Verify that a session change answers for the user becoming active, not for
+// the one being switched away from.
+TEST_F(MobileDataNotificationsTest, SessionUpdateReadsTheNewUsersPref) {
+  // Connect cellular while the active user is owed nothing, so that the
+  // connection itself shows no notification.
+  GetPrefService(kTestAccountId)
+      .SetBoolean(ash::prefs::kShowMobileDataNotification, false);
+  ash::NetworkConnect::Get()->ConnectToNetworkId(kCellularGuid);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(GetNotification());
+
+  // Put the user being switched away from back in line for a notification.
+  GetPrefService(kTestAccountId)
+      .SetBoolean(ash::prefs::kShowMobileDataNotification, true);
+
+  LogIn(kOtherAccountId);
+
+  // The notification belongs to the user who became active, so it is their
+  // pref that is spent and the other one is left alone.
+  EXPECT_TRUE(GetNotification());
+  EXPECT_FALSE(GetPrefService(kOtherAccountId)
+                   .GetBoolean(ash::prefs::kShowMobileDataNotification));
+  EXPECT_TRUE(GetPrefService(kTestAccountId)
+                  .GetBoolean(ash::prefs::kShowMobileDataNotification));
+}
+
 // Verify that session changes does not dispalay the notification if celluar is
 // not connected.
 TEST_F(MobileDataNotificationsTest, SessionUpdateNoNotification) {
