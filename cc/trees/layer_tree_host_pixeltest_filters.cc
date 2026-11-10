@@ -1458,7 +1458,7 @@ class MixedFilterZoomAndOffsetTest : public LayerTreeHostFiltersPixelTest {
     if (use_skia_graphite()) {
       // Graphite's round rect clipping differs in AA from Ganesh, so increase
       // the allowed differences (vs. a ganesh-rendered image).
-      error_percent = 0.35f;
+      error_percent = 0.28f;
       avg_error = 26.1f;
       max_error = 61.f;
     }
