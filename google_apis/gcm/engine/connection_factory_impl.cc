@@ -129,10 +129,6 @@ void ConnectionFactoryImpl::Connect() {
   ConnectWithBackoff();
 }
 
-ConnectionEventTracker* ConnectionFactoryImpl::GetEventTrackerForTesting() {
-  return &event_tracker_;
-}
-
 void ConnectionFactoryImpl::ConnectWithBackoff() {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
 
@@ -270,7 +266,7 @@ void ConnectionFactoryImpl::SetConnectionListener(
   listener_ = listener;
 }
 
-base::TimeTicks ConnectionFactoryImpl::NextRetryAttempt() const {
+base::TimeTicks ConnectionFactoryImpl::NextRetryAttemptForTesting() const {
   if (!backoff_entry_) {
     return base::TimeTicks();
   }

@@ -55,9 +55,10 @@ class GCM_EXPORT ConnectionFactoryImpl
   void Connect() override;
   bool IsEndpointReachable() const override;
   std::string GetConnectionStateString() const override;
-  base::TimeTicks NextRetryAttempt() const override;
   void SignalConnectionReset(ConnectionResetReason reason) override;
   void SetConnectionListener(ConnectionListener* listener) override;
+
+  base::TimeTicks NextRetryAttemptForTesting() const;
 
   // NetworkConnectionTracker implementation.
   void OnConnectionChanged(
@@ -112,8 +113,6 @@ class GCM_EXPORT ConnectionFactoryImpl
  private:
   friend class ConnectionFactoryImplTest;
 
-  ConnectionEventTracker* GetEventTrackerForTesting();
-
   // Helper method for checking backoff and triggering a connection as
   // necessary.
   void ConnectWithBackoff();
@@ -126,11 +125,6 @@ class GCM_EXPORT ConnectionFactoryImpl
 
   // Closes the local socket if one is present, and resets connection handler.
   void CloseSocket();
-
-  // Updates the GCM Network Session's with current data from HTTP Network
-  // Session's, if available.
-  // Specifically, HttpAuthCache and IsQuicEnabled are updated.
-  void UpdateFromHttpNetworkSession();
 
   // The tracker will maintain a list of all connection attempts with GCM,
   // whether they succeeded, and their duration.

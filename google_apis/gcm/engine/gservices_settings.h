@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "google_apis/gcm/base/gcm_export.h"
 #include "google_apis/gcm/engine/gcm_store.h"
@@ -24,7 +23,7 @@ class GCM_EXPORT GServicesSettings {
   typedef std::map<std::string, std::string> SettingsMap;
 
   // Minimum periodic checkin interval in seconds.
-  static const base::TimeDelta MinimumCheckinInterval();
+  static base::TimeDelta MinimumCheckinIntervalForTesting();
 
   // Calculates digest of provided settings.
   static std::string CalculateDigest(const SettingsMap& settings);
@@ -71,9 +70,6 @@ class GCM_EXPORT GServicesSettings {
 
   // G-services settings as provided by checkin response.
   SettingsMap settings_;
-
-  // Factory for creating references in callbacks.
-  base::WeakPtrFactory<GServicesSettings> weak_ptr_factory_{this};
 };
 
 }  // namespace gcm

@@ -95,8 +95,6 @@ class GCM_EXPORT GCMStore {
   // Unacknowledged incoming message handling.
   virtual void AddIncomingMessage(const std::string& persistent_id,
                                   UpdateCallback callback) = 0;
-  virtual void RemoveIncomingMessage(const std::string& persistent_id,
-                                     UpdateCallback callback) = 0;
   virtual void RemoveIncomingMessages(const PersistentIdList& persistent_ids,
                                       UpdateCallback callback) = 0;
 

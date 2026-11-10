@@ -95,11 +95,6 @@ class GCM_EXPORT ConnectionFactory {
   // Returns a debug string describing the connection state.
   virtual std::string GetConnectionStateString() const = 0;
 
-  // If in backoff, the time at which the next retry will be made. Otherwise,
-  // a null time, indicating either no attempt to connect has been made or no
-  // backoff is in progress.
-  virtual base::TimeTicks NextRetryAttempt() const = 0;
-
   // Manually reset the connection. This can occur if an application specific
   // event forced a reset (e.g. server sends a close connection response).
   // If the last connection was made within kConnectionResetWindowSecs, the old

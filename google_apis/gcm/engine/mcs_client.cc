@@ -37,9 +37,6 @@ const char kGCMFromField[] = "gcm@android.com";
 // MCS status message types.
 // TODO(zea): handle these at the GCMClient layer.
 const char kIdleNotification[] = "IdleNotification";
-// const char kAlwaysShowOnIdle[] = "ShowAwayOnIdle";
-// const char kPowerNotification[] = "PowerNotification";
-// const char kDataActiveNotification[] = "DataActiveNotification";
 
 // The number of unacked messages to allow before sending a stream ack.
 // Applies to both incoming and outgoing messages.
@@ -136,20 +133,6 @@ int MCSClient::GetSendQueueSize() const {
 
 int MCSClient::GetResendQueueSize() const {
   return to_resend_.size();
-}
-
-std::string MCSClient::GetStateString() const {
-  switch (state_) {
-    case UNINITIALIZED:
-      return "UNINITIALIZED";
-    case LOADED:
-      return "LOADED";
-    case CONNECTING:
-      return "CONNECTING";
-    case CONNECTED:
-      return "CONNECTED";
-  }
-  NOTREACHED();
 }
 
 MCSClient::MCSClient(const std::string& version_string,
@@ -731,12 +714,10 @@ void MCSClient::HandlePacketFromWire(
 
 void MCSClient::HandleStreamAck(StreamId last_stream_id_received) {
   PersistentIdList acked_outgoing_persistent_ids;
-  StreamIdList acked_outgoing_stream_ids;
   while (!to_resend_.empty() &&
          to_resend_.front()->stream_id <= last_stream_id_received) {
     const MCSPacketInternal& outgoing_packet = to_resend_.front();
     acked_outgoing_persistent_ids.push_back(outgoing_packet->persistent_id);
-    acked_outgoing_stream_ids.push_back(outgoing_packet->stream_id);
     NotifyMessageSendStatus(*outgoing_packet->protobuf, SENT);
     to_resend_.pop_front();
   }

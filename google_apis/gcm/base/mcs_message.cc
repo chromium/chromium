@@ -11,17 +11,13 @@
 
 namespace gcm {
 
-MCSMessage::Core::Core() {}
-
-MCSMessage::Core::Core(uint8_t tag,
-                       const google::protobuf::MessageLite& protobuf) {
+MCSMessage::Core::Core(const google::protobuf::MessageLite& protobuf) {
   std::unique_ptr<google::protobuf::MessageLite> owned_protobuf(protobuf.New());
   owned_protobuf->CheckTypeAndMergeFrom(protobuf);
   protobuf_ = std::move(owned_protobuf);
 }
 
 MCSMessage::Core::Core(
-    uint8_t tag,
     std::unique_ptr<const google::protobuf::MessageLite> protobuf) {
   protobuf_ = std::move(protobuf);
 }
@@ -37,13 +33,13 @@ MCSMessage::MCSMessage() : tag_(0), size_(0) {}
 MCSMessage::MCSMessage(const google::protobuf::MessageLite& protobuf)
     : tag_(GetMCSProtoTag(protobuf)),
       size_(protobuf.ByteSizeLong()),
-      core_(new Core(tag_, protobuf)) {}
+      core_(new Core(protobuf)) {}
 
 MCSMessage::MCSMessage(uint8_t tag,
                        const google::protobuf::MessageLite& protobuf)
     : tag_(tag),
       size_(protobuf.ByteSizeLong()),
-      core_(new Core(tag_, protobuf)) {
+      core_(new Core(protobuf)) {
   DCHECK_EQ(tag, GetMCSProtoTag(protobuf));
 }
 
@@ -52,7 +48,7 @@ MCSMessage::MCSMessage(
     std::unique_ptr<const google::protobuf::MessageLite> protobuf)
     : tag_(tag),
       size_(protobuf->ByteSizeLong()),
-      core_(new Core(tag_, std::move(protobuf))) {
+      core_(new Core(std::move(protobuf))) {
   DCHECK_EQ(tag, GetMCSProtoTag(core_->Get()));
 }
 

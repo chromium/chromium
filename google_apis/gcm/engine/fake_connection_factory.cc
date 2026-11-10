@@ -52,10 +52,6 @@ std::string FakeConnectionFactory::GetConnectionStateString() const {
   return "";
 }
 
-base::TimeTicks FakeConnectionFactory::NextRetryAttempt() const {
-  return base::TimeTicks();
-}
-
 void FakeConnectionFactory::SignalConnectionReset(
     ConnectionResetReason reason) {
   if (!delay_reconnect_)

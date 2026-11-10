@@ -7,7 +7,6 @@
 #include <stdint.h>
 
 #include "base/command_line.h"
-#include "base/functional/bind.h"
 #include "base/hash/sha1.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -176,7 +175,7 @@ bool VerifySettings(const gcm::GServicesSettings::SettingsMap& settings) {
 namespace gcm {
 
 // static
-const base::TimeDelta GServicesSettings::MinimumCheckinInterval() {
+base::TimeDelta GServicesSettings::MinimumCheckinIntervalForTesting() {
   return base::Seconds(kMinimumCheckinInterval);
 }
 

@@ -158,7 +158,7 @@ TEST_F(GServicesSettingsTest, CheckinResponseMinimumCheckinInterval) {
 
   EXPECT_TRUE(settings().UpdateFromCheckinResponse(checkin_response));
 
-  EXPECT_EQ(GServicesSettings::MinimumCheckinInterval(),
+  EXPECT_EQ(GServicesSettings::MinimumCheckinIntervalForTesting(),
             settings().GetCheckinInterval());
   EXPECT_EQ(GServicesSettings::CalculateDigest(new_settings),
             settings().digest());

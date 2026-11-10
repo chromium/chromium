@@ -11,10 +11,6 @@
 #include "google_apis/gcm/base/gcm_export.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 
-namespace net{
-class StreamSocket;
-}  // namespace net
-
 namespace google {
 namespace protobuf {
 class MessageLite;

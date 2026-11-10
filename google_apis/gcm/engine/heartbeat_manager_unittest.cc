@@ -100,19 +100,19 @@ void HeartbeatManagerTest::TriggerReconnectClosure(
 
 // Basic initialization. No heartbeat should be pending.
 TEST_F(HeartbeatManagerTest, Init) {
-  EXPECT_TRUE(manager()->GetNextHeartbeatTime().is_null());
+  EXPECT_TRUE(manager()->GetNextHeartbeatTimeForTesting().is_null());
 }
 
 // Acknowledging a heartbeat before starting the manager should have no effect.
 TEST_F(HeartbeatManagerTest, AckBeforeStart) {
   manager()->OnHeartbeatAcked();
-  EXPECT_TRUE(manager()->GetNextHeartbeatTime().is_null());
+  EXPECT_TRUE(manager()->GetNextHeartbeatTimeForTesting().is_null());
 }
 
 // Starting the manager should start the heartbeat timer.
 TEST_F(HeartbeatManagerTest, Start) {
   StartManager();
-  EXPECT_GT(manager()->GetNextHeartbeatTime(), base::TimeTicks::Now());
+  EXPECT_GT(manager()->GetNextHeartbeatTimeForTesting(), base::TimeTicks::Now());
   EXPECT_EQ(0, heartbeats_sent());
   EXPECT_EQ(0, reconnects_triggered());
 }
@@ -121,13 +121,13 @@ TEST_F(HeartbeatManagerTest, Start) {
 TEST_F(HeartbeatManagerTest, AckedHeartbeat) {
   StartManager();
   manager()->TriggerHearbeat();
-  base::TimeTicks heartbeat = manager()->GetNextHeartbeatTime();
+  base::TimeTicks heartbeat = manager()->GetNextHeartbeatTimeForTesting();
   EXPECT_GT(heartbeat, base::TimeTicks::Now());
   EXPECT_EQ(1, heartbeats_sent());
   EXPECT_EQ(0, reconnects_triggered());
 
   manager()->OnHeartbeatAcked();
-  EXPECT_LT(heartbeat, manager()->GetNextHeartbeatTime());
+  EXPECT_LT(heartbeat, manager()->GetNextHeartbeatTimeForTesting());
   EXPECT_EQ(1, heartbeats_sent());
   EXPECT_EQ(0, reconnects_triggered());
 
@@ -153,9 +153,9 @@ TEST_F(HeartbeatManagerTest, UnackedHeartbeat) {
 TEST_F(HeartbeatManagerTest, UpdateIntervalThenStart) {
   const int kIntervalMs = 60 * 1000;  // 60 seconds.
   manager()->UpdateHeartbeatConfig(BuildHeartbeatConfig(kIntervalMs));
-  EXPECT_TRUE(manager()->GetNextHeartbeatTime().is_null());
+  EXPECT_TRUE(manager()->GetNextHeartbeatTimeForTesting().is_null());
   StartManager();
-  EXPECT_LE(manager()->GetNextHeartbeatTime() - base::TimeTicks::Now(),
+  EXPECT_LE(manager()->GetNextHeartbeatTimeForTesting() - base::TimeTicks::Now(),
             base::Milliseconds(kIntervalMs));
 }
 
@@ -164,31 +164,31 @@ TEST_F(HeartbeatManagerTest, UpdateIntervalThenStart) {
 TEST_F(HeartbeatManagerTest, StartThenUpdateInterval) {
   const int kIntervalMs = 60 * 1000;  // 60 seconds.
   StartManager();
-  base::TimeTicks heartbeat = manager()->GetNextHeartbeatTime();
+  base::TimeTicks heartbeat = manager()->GetNextHeartbeatTimeForTesting();
   EXPECT_GT(heartbeat - base::TimeTicks::Now(),
             base::Milliseconds(kIntervalMs));
 
   // Updating the interval should not affect an outstanding heartbeat.
   manager()->UpdateHeartbeatConfig(BuildHeartbeatConfig(kIntervalMs));
-  EXPECT_EQ(heartbeat, manager()->GetNextHeartbeatTime());
+  EXPECT_EQ(heartbeat, manager()->GetNextHeartbeatTimeForTesting());
 
   // Triggering and acking the heartbeat should result in a heartbeat being
   // posted with the new interval.
   manager()->TriggerHearbeat();
   manager()->OnHeartbeatAcked();
 
-  EXPECT_LE(manager()->GetNextHeartbeatTime() - base::TimeTicks::Now(),
+  EXPECT_LE(manager()->GetNextHeartbeatTimeForTesting() - base::TimeTicks::Now(),
             base::Milliseconds(kIntervalMs));
-  EXPECT_NE(heartbeat, manager()->GetNextHeartbeatTime());
+  EXPECT_NE(heartbeat, manager()->GetNextHeartbeatTimeForTesting());
 }
 
 // Stopping the manager should reset the heartbeat timer.
 TEST_F(HeartbeatManagerTest, Stop) {
   StartManager();
-  EXPECT_GT(manager()->GetNextHeartbeatTime(), base::TimeTicks::Now());
+  EXPECT_GT(manager()->GetNextHeartbeatTimeForTesting(), base::TimeTicks::Now());
 
   manager()->Stop();
-  EXPECT_TRUE(manager()->GetNextHeartbeatTime().is_null());
+  EXPECT_TRUE(manager()->GetNextHeartbeatTimeForTesting().is_null());
 }
 
 // Simulate missing a heartbeat by manually invoking the check method. The

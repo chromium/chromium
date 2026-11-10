@@ -69,7 +69,7 @@ class GCM_EXPORT HeartbeatManager : public base::PowerSuspendObserver {
   // no heartbeat is pending. If non-null and less than the
   // current time (in ticks), the heartbeat has been triggered and an ack is
   // pending.
-  base::TimeTicks GetNextHeartbeatTime() const;
+  base::TimeTicks GetNextHeartbeatTimeForTesting() const;
 
   // base::PowerSuspendObserver override.
   void OnSuspend() override;

@@ -255,7 +255,6 @@ GCMStoreImpl::Backend::~Backend() {}
 
 LoadStatus GCMStoreImpl::Backend::OpenStoreAndLoadData(StoreOpenMode open_mode,
                                                        LoadResult* result) {
-  LoadStatus load_status;
   if (db_.get()) {
     LOG(ERROR) << "Attempting to reload open database.";
     return RELOADING_OPEN_STORE;
@@ -305,7 +304,7 @@ LoadStatus GCMStoreImpl::Backend::OpenStoreAndLoadData(StoreOpenMode open_mode,
   }
   if (!LoadGServicesSettings(&result->gservices_settings,
                              &result->gservices_digest)) {
-    return load_status = LOADING_GSERVICE_SETTINGS_FAILED;
+    return LOADING_GSERVICE_SETTINGS_FAILED;
   }
   if (!LoadInstanceIDData(&result->instance_id_data))
     return LOADING_INSTANCE_ID_DATA_FAILED;
@@ -1067,14 +1066,6 @@ void GCMStoreImpl::AddIncomingMessage(const std::string& persistent_id,
   blocking_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&GCMStoreImpl::Backend::AddIncomingMessage,
                                 backend_, persistent_id, std::move(callback)));
-}
-
-void GCMStoreImpl::RemoveIncomingMessage(const std::string& persistent_id,
-                                         UpdateCallback callback) {
-  blocking_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&GCMStoreImpl::Backend::RemoveIncomingMessages, backend_,
-                     PersistentIdList(1, persistent_id), std::move(callback)));
 }
 
 void GCMStoreImpl::RemoveIncomingMessages(

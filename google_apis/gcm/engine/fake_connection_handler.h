@@ -38,9 +38,6 @@ class FakeConnectionHandler : public ConnectionHandler {
   // EXPECT's receipt of |message| via SendMessage(..).
   void ExpectOutgoingMessage(const MCSMessage& message);
 
-  // Reset the expected outgoing messages.
-  void ResetOutgoingMessageExpectations();
-
   // Whether all expected outgoing messages have been received;
   bool AllOutgoingMessagesReceived() const;
 

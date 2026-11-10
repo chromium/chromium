@@ -50,8 +50,6 @@ struct ReliablePacketInfo;
 // network requests are performed on.
 class GCM_EXPORT MCSClient {
  public:
-  // Any change made to this enum should have corresponding change in the
-  // GetStateString(...) function.
   enum State {
     UNINITIALIZED,  // Uninitialized.
     LOADED,         // GCM Load finished, waiting to connect.
@@ -138,9 +136,6 @@ class GCM_EXPORT MCSClient {
 
   // Returns the size of the resend messaage queue.
   int GetResendQueueSize() const;
-
-  // Returns text representation of the state enum.
-  std::string GetStateString() const;
 
  private:
   using StreamId = uint32_t;

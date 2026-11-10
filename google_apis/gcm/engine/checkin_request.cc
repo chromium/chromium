@@ -195,7 +195,6 @@ void CheckinRequest::Start() {
   url_loader_->AttachStringForUpload(upload_data, kRequestContentType);
   url_loader_->SetAllowHttpErrorResults(true);
   recorder_->RecordCheckinInitiated(request_info_.android_id);
-  request_start_time_ = base::TimeTicks::Now();
 
   url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),

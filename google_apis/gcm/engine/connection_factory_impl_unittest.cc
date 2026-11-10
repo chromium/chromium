@@ -203,10 +203,10 @@ void TestConnectionFactoryImpl::StartConnection(
                 net::IPEndPoint(), mojo::ScopedDataPipeConsumerHandle(),
                 mojo::ScopedDataPipeProducerHandle());
 
-  if (!NextRetryAttempt().is_null()) {
+  if (!NextRetryAttemptForTesting().is_null()) {
     // Advance the time to the next retry time.
     base::TimeDelta time_till_retry =
-        NextRetryAttempt() - tick_clock_.NowTicks();
+        NextRetryAttemptForTesting() - tick_clock_.NowTicks();
     tick_clock_.Advance(time_till_retry);
   }
   if (num_expected_attempts_ == 0) {
@@ -382,7 +382,7 @@ TEST_F(ConnectionFactoryImplTest, ConnectSuccess) {
   factory()->SetConnectResult(net::OK);
   factory()->Connect();
   ASSERT_TRUE(factory()->GetConnectionHandler());
-  EXPECT_TRUE(factory()->NextRetryAttempt().is_null());
+  EXPECT_TRUE(factory()->NextRetryAttemptForTesting().is_null());
   EXPECT_EQ(factory()->GetCurrentEndpoint(), BuildEndpoints()[0]);
   EXPECT_TRUE(factory()->IsEndpointReachable());
   EXPECT_TRUE(connected_server().is_valid());
@@ -393,7 +393,7 @@ TEST_F(ConnectionFactoryImplTest, ConnectSuccess) {
 TEST_F(ConnectionFactoryImplTest, ConnectFail) {
   factory()->SetConnectResult(net::ERR_CONNECTION_FAILED);
   factory()->Connect();
-  EXPECT_FALSE(factory()->NextRetryAttempt().is_null());
+  EXPECT_FALSE(factory()->NextRetryAttemptForTesting().is_null());
   EXPECT_EQ(factory()->GetCurrentEndpoint(), BuildEndpoints()[1]);
   EXPECT_FALSE(factory()->IsEndpointReachable());
   EXPECT_FALSE(connected_server().is_valid());
@@ -407,12 +407,12 @@ TEST_F(ConnectionFactoryImplTest, FailThenSucceed) {
   WaitForConnections();
   EXPECT_FALSE(factory()->IsEndpointReachable());
   EXPECT_FALSE(connected_server().is_valid());
-  base::TimeTicks retry_time = factory()->NextRetryAttempt();
+  base::TimeTicks retry_time = factory()->NextRetryAttemptForTesting();
   EXPECT_FALSE(retry_time.is_null());
   EXPECT_GE((retry_time - connect_time).InMilliseconds(), CalculateBackoff(1));
   factory()->SetConnectResult(net::OK);
   WaitForConnections();
-  EXPECT_TRUE(factory()->NextRetryAttempt().is_null());
+  EXPECT_TRUE(factory()->NextRetryAttemptForTesting().is_null());
   EXPECT_TRUE(factory()->IsEndpointReachable());
   EXPECT_TRUE(connected_server().is_valid());
 }
@@ -429,7 +429,7 @@ TEST_F(ConnectionFactoryImplTest, MultipleFailuresThenSucceed) {
   WaitForConnections();
   EXPECT_FALSE(factory()->IsEndpointReachable());
   EXPECT_FALSE(connected_server().is_valid());
-  base::TimeTicks retry_time = factory()->NextRetryAttempt();
+  base::TimeTicks retry_time = factory()->NextRetryAttemptForTesting();
   EXPECT_FALSE(retry_time.is_null());
   EXPECT_GE((retry_time - connect_time).InMilliseconds(),
             CalculateBackoff(kNumAttempts));
@@ -445,7 +445,7 @@ TEST_F(ConnectionFactoryImplTest, MultipleFailuresThenSucceed) {
 
   factory()->SetConnectResult(net::OK);
   WaitForConnections();
-  EXPECT_TRUE(factory()->NextRetryAttempt().is_null());
+  EXPECT_TRUE(factory()->NextRetryAttemptForTesting().is_null());
   EXPECT_TRUE(factory()->IsEndpointReachable());
   EXPECT_TRUE(connected_server().is_valid());
 
@@ -459,7 +459,7 @@ TEST_F(ConnectionFactoryImplTest, FailThenNetworkChangeEvent) {
   factory()->SetConnectResult(net::ERR_CONNECTION_FAILED);
   factory()->Connect();
   WaitForConnections();
-  base::TimeTicks initial_backoff = factory()->NextRetryAttempt();
+  base::TimeTicks initial_backoff = factory()->NextRetryAttemptForTesting();
   EXPECT_FALSE(initial_backoff.is_null());
 
   factory()->SetConnectResult(net::ERR_FAILED);
@@ -468,7 +468,7 @@ TEST_F(ConnectionFactoryImplTest, FailThenNetworkChangeEvent) {
   WaitForConnections();
 
   // Backoff should not change because of network change.
-  base::TimeTicks next_backoff = factory()->NextRetryAttempt();
+  base::TimeTicks next_backoff = factory()->NextRetryAttemptForTesting();
   EXPECT_EQ(next_backoff, initial_backoff);
   EXPECT_FALSE(factory()->IsEndpointReachable());
 }
@@ -479,7 +479,7 @@ TEST_F(ConnectionFactoryImplTest, CanarySucceedsThenDisconnects) {
   factory()->SetConnectResult(net::ERR_CONNECTION_FAILED);
   factory()->Connect();
   WaitForConnections();
-  base::TimeTicks initial_backoff = factory()->NextRetryAttempt();
+  base::TimeTicks initial_backoff = factory()->NextRetryAttemptForTesting();
   EXPECT_FALSE(initial_backoff.is_null());
 
   factory()->SetConnectResult(net::OK);
@@ -504,7 +504,7 @@ TEST_F(ConnectionFactoryImplTest, CanarySucceedsRetryDuringLogin) {
   factory()->SetConnectResult(net::ERR_CONNECTION_FAILED);
   factory()->Connect();
   WaitForConnections();
-  base::TimeTicks initial_backoff = factory()->NextRetryAttempt();
+  base::TimeTicks initial_backoff = factory()->NextRetryAttemptForTesting();
   EXPECT_FALSE(initial_backoff.is_null());
 
   factory()->SetDelayLogin(true);
@@ -524,27 +524,27 @@ TEST_F(ConnectionFactoryImplTest, CanarySucceedsRetryDuringLogin) {
 TEST_F(ConnectionFactoryImplTest, FailViaSignalReset) {
   factory()->SetConnectResult(net::OK);
   factory()->Connect();
-  EXPECT_TRUE(factory()->NextRetryAttempt().is_null());
+  EXPECT_TRUE(factory()->NextRetryAttemptForTesting().is_null());
 
   factory()->SignalConnectionReset(ConnectionFactory::SOCKET_FAILURE);
-  EXPECT_FALSE(factory()->NextRetryAttempt().is_null());
+  EXPECT_FALSE(factory()->NextRetryAttemptForTesting().is_null());
   EXPECT_FALSE(factory()->IsEndpointReachable());
 }
 
 TEST_F(ConnectionFactoryImplTest, IgnoreResetWhileConnecting) {
   factory()->SetConnectResult(net::OK);
   factory()->Connect();
-  EXPECT_TRUE(factory()->NextRetryAttempt().is_null());
+  EXPECT_TRUE(factory()->NextRetryAttemptForTesting().is_null());
 
   factory()->SignalConnectionReset(ConnectionFactory::SOCKET_FAILURE);
-  base::TimeTicks retry_time = factory()->NextRetryAttempt();
+  base::TimeTicks retry_time = factory()->NextRetryAttemptForTesting();
   EXPECT_FALSE(retry_time.is_null());
   EXPECT_FALSE(factory()->IsEndpointReachable());
 
   const int kNumAttempts = 5;
   for (int i = 0; i < kNumAttempts; ++i)
     factory()->SignalConnectionReset(ConnectionFactory::SOCKET_FAILURE);
-  EXPECT_EQ(retry_time, factory()->NextRetryAttempt());
+  EXPECT_EQ(retry_time, factory()->NextRetryAttemptForTesting());
   EXPECT_FALSE(factory()->IsEndpointReachable());
 }
 
@@ -556,19 +556,19 @@ TEST_F(ConnectionFactoryImplTest, SignalResetRestoresBackoff) {
   base::TimeTicks connect_time = factory()->tick_clock()->NowTicks();
   factory()->Connect();
   WaitForConnections();
-  base::TimeTicks retry_time = factory()->NextRetryAttempt();
+  base::TimeTicks retry_time = factory()->NextRetryAttemptForTesting();
   EXPECT_FALSE(retry_time.is_null());
 
   factory()->SetConnectResult(net::OK);
   connect_time = factory()->tick_clock()->NowTicks();
   WaitForConnections();
-  EXPECT_TRUE(factory()->NextRetryAttempt().is_null());
+  EXPECT_TRUE(factory()->NextRetryAttemptForTesting().is_null());
 
   factory()->SignalConnectionReset(ConnectionFactory::SOCKET_FAILURE);
   EXPECT_FALSE(factory()->IsEndpointReachable());
   EXPECT_FALSE(connected_server().is_valid());
-  EXPECT_NE(retry_time, factory()->NextRetryAttempt());
-  retry_time = factory()->NextRetryAttempt();
+  EXPECT_NE(retry_time, factory()->NextRetryAttemptForTesting());
+  retry_time = factory()->NextRetryAttemptForTesting();
   EXPECT_FALSE(retry_time.is_null());
   EXPECT_GE((retry_time - connect_time).InMilliseconds(),
             CalculateBackoff(2));
@@ -576,15 +576,15 @@ TEST_F(ConnectionFactoryImplTest, SignalResetRestoresBackoff) {
   factory()->SetConnectResult(net::OK);
   connect_time = factory()->tick_clock()->NowTicks();
   factory()->tick_clock()->Advance(
-      factory()->NextRetryAttempt() - connect_time);
+      factory()->NextRetryAttemptForTesting() - connect_time);
   WaitForConnections();
-  EXPECT_TRUE(factory()->NextRetryAttempt().is_null());
+  EXPECT_TRUE(factory()->NextRetryAttemptForTesting().is_null());
   EXPECT_TRUE(factory()->IsEndpointReachable());
   EXPECT_TRUE(connected_server().is_valid());
 
   factory()->SignalConnectionReset(ConnectionFactory::SOCKET_FAILURE);
-  EXPECT_NE(retry_time, factory()->NextRetryAttempt());
-  retry_time = factory()->NextRetryAttempt();
+  EXPECT_NE(retry_time, factory()->NextRetryAttemptForTesting());
+  retry_time = factory()->NextRetryAttemptForTesting();
   EXPECT_FALSE(retry_time.is_null());
   EXPECT_GE((retry_time - connect_time).InMilliseconds(),
             CalculateBackoff(3));
@@ -597,7 +597,7 @@ TEST_F(ConnectionFactoryImplTest,
   factory()->SetConnectResult(net::ERR_NAME_NOT_RESOLVED);
   factory()->Connect();
   WaitForConnections();
-  base::TimeTicks retry_time = factory()->NextRetryAttempt();
+  base::TimeTicks retry_time = factory()->NextRetryAttemptForTesting();
   ASSERT_FALSE(retry_time.is_null());
 
   // Mimic a network change with `ERR_NAME_NOT_RESOLVED` error.
@@ -608,7 +608,7 @@ TEST_F(ConnectionFactoryImplTest,
   ASSERT_FALSE(factory()->IsEndpointReachable());
 
   // Verify that the next retry time hasn't changed despite error.
-  EXPECT_EQ(retry_time, factory()->NextRetryAttempt());
+  EXPECT_EQ(retry_time, factory()->NextRetryAttemptForTesting());
 }
 
 // Tests that if there are a lot of network changes resulting in net error
@@ -621,7 +621,7 @@ TEST_F(ConnectionFactoryImplTest,
   base::TimeTicks connect_time = factory()->tick_clock()->NowTicks();
   factory()->Connect();
   WaitForConnections();
-  ASSERT_FALSE(factory()->NextRetryAttempt().is_null());
+  ASSERT_FALSE(factory()->NextRetryAttemptForTesting().is_null());
 
   // Mimic several network changes with `ERR_NAME_NOT_RESOLVED` error.
   const size_t kNumAttempts = 10;
@@ -636,7 +636,7 @@ TEST_F(ConnectionFactoryImplTest,
   // There must be at most 1 failed attempt affecting backoff policy (others are
   // ignored due to network changes). Calculate backoff for 2 attempts to avoid
   // flakiness.
-  base::TimeTicks retry_time = factory()->NextRetryAttempt();
+  base::TimeTicks retry_time = factory()->NextRetryAttemptForTesting();
   EXPECT_LE((retry_time - connect_time).InMilliseconds(),
             CalculateBackoff(/*num_attempts=*/2));
 }
@@ -646,7 +646,7 @@ TEST_F(ConnectionFactoryImplTest,
 TEST_F(ConnectionFactoryImplTest, SuppressConnectWhenNoNetwork) {
   factory()->SetConnectResult(net::OK);
   factory()->Connect();
-  EXPECT_TRUE(factory()->NextRetryAttempt().is_null());
+  EXPECT_TRUE(factory()->NextRetryAttemptForTesting().is_null());
   EXPECT_TRUE(factory()->IsEndpointReachable());
 
   // Advance clock so the login window reset isn't encountered.
@@ -656,7 +656,7 @@ TEST_F(ConnectionFactoryImplTest, SuppressConnectWhenNoNetwork) {
   factory()->OnConnectionChanged(
       net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
   EXPECT_FALSE(factory()->IsEndpointReachable());
-  EXPECT_TRUE(factory()->NextRetryAttempt().is_null());
+  EXPECT_TRUE(factory()->NextRetryAttemptForTesting().is_null());
 
   // When the network returns, attempt to connect.
   factory()->SetConnectResult(net::OK);
@@ -665,7 +665,7 @@ TEST_F(ConnectionFactoryImplTest, SuppressConnectWhenNoNetwork) {
   WaitForConnections();
 
   EXPECT_TRUE(factory()->IsEndpointReachable());
-  EXPECT_TRUE(factory()->NextRetryAttempt().is_null());
+  EXPECT_TRUE(factory()->NextRetryAttemptForTesting().is_null());
 }
 
 // Receiving a network change event before the initial connection should have
@@ -675,7 +675,7 @@ TEST_F(ConnectionFactoryImplTest, NetworkChangeBeforeFirstConnection) {
       net::NetworkChangeNotifier::ConnectionType::CONNECTION_4G);
   factory()->SetConnectResult(net::OK);
   factory()->Connect();
-  EXPECT_TRUE(factory()->NextRetryAttempt().is_null());
+  EXPECT_TRUE(factory()->NextRetryAttemptForTesting().is_null());
   EXPECT_TRUE(factory()->IsEndpointReachable());
 }
 
@@ -770,11 +770,11 @@ TEST_F(ConnectionFactoryImplTest,
       net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
   WaitForConnections();
   ASSERT_FALSE(factory()->IsEndpointReachable());
-  ASSERT_FALSE(factory()->NextRetryAttempt().is_null());
+  ASSERT_FALSE(factory()->NextRetryAttemptForTesting().is_null());
 
   // After backoff, connection should be established.
   factory()->SetConnectResult(net::OK);
-  factory()->tick_clock()->Advance(factory()->NextRetryAttempt() -
+  factory()->tick_clock()->Advance(factory()->NextRetryAttemptForTesting() -
                                    factory()->tick_clock()->NowTicks());
   WaitForConnections();
 

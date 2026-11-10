@@ -63,8 +63,6 @@ class GCM_EXPORT GCMStoreImpl : public GCMStore {
   // Unacknowledged incoming message handling.
   void AddIncomingMessage(const std::string& persistent_id,
                           UpdateCallback callback) override;
-  void RemoveIncomingMessage(const std::string& persistent_id,
-                             UpdateCallback callback) override;
   void RemoveIncomingMessages(const PersistentIdList& persistent_ids,
                               UpdateCallback callback) override;
 

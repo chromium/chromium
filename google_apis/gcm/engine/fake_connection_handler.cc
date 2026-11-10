@@ -92,10 +92,6 @@ void FakeConnectionHandler::ExpectOutgoingMessage(const MCSMessage& message) {
   expected_outgoing_messages_.push_back(message);
 }
 
-void FakeConnectionHandler::ResetOutgoingMessageExpectations() {
-  expected_outgoing_messages_.clear();
-}
-
 bool FakeConnectionHandler::AllOutgoingMessagesReceived() const {
   return expected_outgoing_messages_.empty();
 }

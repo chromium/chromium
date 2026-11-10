@@ -114,7 +114,7 @@ void HeartbeatManager::UpdateHeartbeatConfig(
   UpdateHeartbeatInterval();
 }
 
-base::TimeTicks HeartbeatManager::GetNextHeartbeatTime() const {
+base::TimeTicks HeartbeatManager::GetNextHeartbeatTimeForTesting() const {
   if (heartbeat_timer_->IsRunning())
     return heartbeat_timer_->desired_run_time();
   else

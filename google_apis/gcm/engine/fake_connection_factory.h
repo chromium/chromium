@@ -34,7 +34,6 @@ class FakeConnectionFactory : public ConnectionFactory {
   void Connect() override;
   bool IsEndpointReachable() const override;
   std::string GetConnectionStateString() const override;
-  base::TimeTicks NextRetryAttempt() const override;
   void SignalConnectionReset(ConnectionResetReason reason) override;
   void SetConnectionListener(ConnectionListener* listener) override;
 

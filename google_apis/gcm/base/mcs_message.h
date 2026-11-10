@@ -59,10 +59,8 @@ class GCM_EXPORT MCSMessage {
  private:
   class Core : public base::RefCountedThreadSafe<MCSMessage::Core> {
    public:
-    Core();
-    Core(uint8_t tag, const google::protobuf::MessageLite& protobuf);
-    Core(uint8_t tag,
-         std::unique_ptr<const google::protobuf::MessageLite> protobuf);
+    explicit Core(const google::protobuf::MessageLite& protobuf);
+    explicit Core(std::unique_ptr<const google::protobuf::MessageLite> protobuf);
 
     Core(const Core&) = delete;
     Core& operator=(const Core&) = delete;

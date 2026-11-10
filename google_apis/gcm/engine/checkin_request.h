@@ -97,7 +97,6 @@ class GCM_EXPORT CheckinRequest {
   GURL checkin_url_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   const RequestInfo request_info_;
-  base::TimeTicks request_start_time_;
 
   const scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
 
