@@ -41,6 +41,20 @@ base::TimeDelta GetEmergencyTimeout() {
 #endif
 }
 
+// Emergency deadline for UI-initiated teardown. Matches the 30-second
+// kShutdownHangDelay used by WatchHangsInScope so slow-but-healthy teardowns
+// have time to complete critical writes before the process is terminated.
+base::TimeDelta GetTearDownTimeout() {
+#if defined(NDEBUG) && !defined(ADDRESS_SANITIZER) &&           \
+    !defined(MEMORY_SANITIZER) && !defined(THREAD_SANITIZER) && \
+    !defined(LEAK_SANITIZER)
+  return base::Seconds(30);
+#else
+  // Slow build configurations get headroom, mirroring ShutdownWatcherHelper.
+  return base::Seconds(180);
+#endif
+}
+
 bool WatchdogsEnabled() {
   // Tests (including Debug/ASan bots) must not be terminated early, and a
   // developer at a breakpoint mid-shutdown is not a hang.
@@ -66,7 +80,7 @@ class TearDownWatchdog : public base::PlatformThread::Delegate {
  public:
   void ThreadMain() override {
     base::PlatformThread::SetName("MacShutdownWatchdog");
-    if (GetShutdownCompleteEvent().TimedWait(GetEmergencyTimeout())) {
+    if (GetShutdownCompleteEvent().TimedWait(GetTearDownTimeout())) {
       return;  // Shutdown reached its terminal phase; stand down.
     }
     if (base::debug::BeingDebugged()) {
@@ -74,9 +88,10 @@ class TearDownWatchdog : public base::PlatformThread::Delegate {
       // investigation in progress, not a hang to kill.
       return;
     }
-    RAW_LOG(ERROR,
-            "Teardown watchdog expired; recording dump and terminating.");
-    base::debug::DumpWithoutCrashing();
+    RAW_LOG(ERROR, "Teardown watchdog expired; terminating.");
+    // TODO(crbug.com/510716234): DumpWithoutCrashing() is intentionally omitted
+    // here because slow UI-initiated teardowns generated a high volume of
+    // false-positive crash reports.
     _exit(content::RESULT_CODE_HUNG);
   }
 };
@@ -125,12 +140,11 @@ void OnBrowserTearDownStarted() {
     return;
   }
   if (g_sigterm_watchdog_armed.load(std::memory_order_relaxed)) {
-    // The SIGTERM watchdog started earlier with the same duration; it always
-    // expires first. Arming here would only add a redundant thread and a
-    // double-dump race between its dump and its `_exit`. Best-effort: the
-    // flag is set after the exit task is posted, so an extremely fast UI
-    // thread could still arm both, which reduces to the same benign
-    // double-arm.
+    // The SIGTERM watchdog started earlier with a shorter duration; it always
+    // expires first. Arming here would only add a redundant thread and could
+    // `_exit` while SIGTERM's dump is in progress. Best-effort: the flag is
+    // set after the exit task is posted, so an extremely fast UI thread could
+    // still arm both, which reduces to the same benign double-arm.
     return;
   }
   // PlatformThread does not delete its delegate; intentionally leaked.
