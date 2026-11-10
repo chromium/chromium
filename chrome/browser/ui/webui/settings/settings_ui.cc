@@ -486,9 +486,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "safetyHubUnusedSitePermissionsPrimaryLabel",
       IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_PRIMARY_LABEL);
   plural_string_handler->AddLocalizedString(
-      "safetyHubUnusedSitePermissionsSecondaryLabel",
-      IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_SECONDARY_LABEL);
-  plural_string_handler->AddLocalizedString(
       "safetyHubRevokedPermissionsSecondaryLabel",
       IDS_SETTINGS_SAFETY_HUB_REVOKED_PERMISSIONS_SECONDARY_LABEL);
   plural_string_handler->AddLocalizedString(
