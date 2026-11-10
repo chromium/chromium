@@ -86,6 +86,35 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/renderer_context_menu/render_view_context_menu.cc:ContextMenuOptionDesktop) -->
 
+<!-- LINT.IfChange(DefaultBrowserAnnotatedShellIntegrationOutcome) -->
+
+<enum name="DefaultBrowserAnnotatedShellIntegrationOutcome">
+  <int value="0" label="Flow finished, default set">
+    The shell integration flow finished while the guidance was running, and
+    Chrome became the default browser.
+  </int>
+  <int value="1" label="Flow finished, default not set">
+    The shell integration flow finished while the guidance was running, without
+    Chrome becoming the default browser.
+  </int>
+  <int value="2" label="Settings window closed">
+    The Settings window was closed, or hidden without being minimized.
+  </int>
+  <int value="3" label="Settings window not found">
+    The Settings window was not found before the timeout.
+  </int>
+  <int value="4" label="Button not found">
+    The &quot;Set default&quot; button could not be located after several
+    attempts in a row.
+  </int>
+  <int value="5" label="Dismissed">The user closed the bubble.</int>
+  <int value="6" label="Abandoned">
+    The setter was destroyed while the guidance was running.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/default_browser/setters/default_browser_annotated_shell_integration_setter.h:DefaultBrowserAnnotatedShellIntegrationOutcome) -->
+
 <!-- LINT.IfChange(DefaultBrowserInfoBarUserInteraction) -->
 
 <enum name="DefaultBrowserInfoBarUserInteraction">

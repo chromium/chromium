@@ -21,6 +21,29 @@ namespace default_browser {
 class DefaultBrowserAnnotatedShellIntegrationSetter
     : public DefaultBrowserSetter {
  public:
+  // Outcomes for the UMA histogram
+  // "DefaultBrowser.AnnotatedShellIntegration.Outcome", recorded once per
+  // guidance session. The flow's own result is recorded by
+  // DefaultBrowserController.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(DefaultBrowserAnnotatedShellIntegrationOutcome)
+  enum class GuidanceOutcome {
+    // The shell integration flow finished while the guidance was running.
+    kFlowFinishedDefaultSet = 0,
+    kFlowFinishedDefaultNotSet = 1,
+    // The guidance ended on its own; see
+    // AnnotatedSetterBubbleController::Outcome.
+    kSettingsWindowClosed = 2,
+    kSettingsWindowNotFound = 3,
+    kButtonNotFound = 4,
+    kDismissed = 5,
+    // The setter was destroyed while the guidance was running.
+    kAbandoned = 6,
+    kMaxValue = kAbandoned,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/ui/enums.xml:DefaultBrowserAnnotatedShellIntegrationOutcome)
+
   // The bubble only exists on Windows, so a setter created this way must not
   // be executed elsewhere.
   DefaultBrowserAnnotatedShellIntegrationSetter();
@@ -46,6 +69,8 @@ class DefaultBrowserAnnotatedShellIntegrationSetter
   void OnShellIntegrationComplete(
       DefaultBrowserSetterCompletionCallback on_complete,
       DefaultBrowserState state);
+  // Records `outcome` and stops the guidance, if it is running.
+  void EndGuidance(GuidanceOutcome outcome);
 
   const std::unique_ptr<DefaultBrowserSetter> shell_integration_setter_;
   const AnnotatedSetterBubbleController::Factory bubble_controller_factory_;

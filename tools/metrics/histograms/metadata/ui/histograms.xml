@@ -393,6 +393,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DefaultBrowser.AnnotatedShellIntegration.Outcome"
+    enum="DefaultBrowserAnnotatedShellIntegrationOutcome"
+    expires_after="2027-08-06">
+  <owner>alsan@chromium.org</owner>
+  <owner>atharvmaan@chromium.org</owner>
+  <owner>koretadaniel@chromium.org</owner>
+  <summary>
+    How the bubble that the annotated shell integration setter points at the
+    Windows Settings &quot;Set default&quot; button ended: on its own (e.g. the
+    user closed the bubble, or the button could not be located), or because the
+    shell integration flow finished first (and whether Chrome became the default
+    browser). Recorded on Windows 11 only, once per guidance session. The flow's
+    own result is in DefaultBrowser.AnnotatedShellIntegration.Result.
+  </summary>
+</histogram>
+
 <histogram name="DefaultBrowser.InfoBar.TimesShownBeforeAccept" units="count"
     expires_after="2027-04-11">
   <owner>agale@chromium.org</owner>

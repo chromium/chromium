@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -23,7 +24,12 @@ namespace default_browser {
 
 namespace {
 
-using GuidanceOutcome = AnnotatedSetterBubbleController::Outcome;
+using ControllerOutcome = AnnotatedSetterBubbleController::Outcome;
+using RecordedOutcome =
+    DefaultBrowserAnnotatedShellIntegrationSetter::GuidanceOutcome;
+
+constexpr char kOutcomeHistogram[] =
+    "DefaultBrowser.AnnotatedShellIntegration.Outcome";
 
 // Outlives the fakes, which the setter owns.
 struct FakeState {
@@ -91,6 +97,7 @@ class DefaultBrowserAnnotatedShellIntegrationSetterTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
+  base::HistogramTester histograms_;
   FakeState state_;
   base::test::TestFuture<DefaultBrowserState> result_;
   DefaultBrowserAnnotatedShellIntegrationSetter setter_{
@@ -125,19 +132,76 @@ TEST_F(DefaultBrowserAnnotatedShellIntegrationSetterTest,
 
   EXPECT_EQ(result_.Get(), DefaultBrowserState::IS_DEFAULT);
   EXPECT_FALSE(state_.guidance_alive);
+  histograms_.ExpectUniqueSample(kOutcomeHistogram,
+                                 RecordedOutcome::kFlowFinishedDefaultSet, 1);
+}
+
+TEST_F(DefaultBrowserAnnotatedShellIntegrationSetterTest,
+       ReportsFlowFinishedDefaultNotSetWhenDefaultNotSet) {
+  Execute(/*can_pin_to_taskbar=*/false);
+
+  std::move(state_.shell_integration_complete)
+      .Run(DefaultBrowserState::NOT_DEFAULT);
+
+  EXPECT_EQ(result_.Get(), DefaultBrowserState::NOT_DEFAULT);
+  EXPECT_FALSE(state_.guidance_alive);
+  histograms_.ExpectUniqueSample(
+      kOutcomeHistogram, RecordedOutcome::kFlowFinishedDefaultNotSet, 1);
 }
 
 TEST_F(DefaultBrowserAnnotatedShellIntegrationSetterTest,
        GuidanceEndingLeavesTheFlowRunning) {
   Execute(/*can_pin_to_taskbar=*/false);
 
-  std::move(state_.guidance_complete).Run(GuidanceOutcome::kDismissed);
+  std::move(state_.guidance_complete).Run(ControllerOutcome::kDismissed);
   EXPECT_FALSE(state_.guidance_alive);
   EXPECT_FALSE(result_.IsReady());
 
   std::move(state_.shell_integration_complete)
       .Run(DefaultBrowserState::NOT_DEFAULT);
   EXPECT_EQ(result_.Get(), DefaultBrowserState::NOT_DEFAULT);
+  // The flow finishing after the guidance ended does not record again.
+  histograms_.ExpectUniqueSample(kOutcomeHistogram, RecordedOutcome::kDismissed,
+                                 1);
+}
+
+TEST_F(DefaultBrowserAnnotatedShellIntegrationSetterTest,
+       GuidanceOutcomesAreRecorded) {
+  const std::pair<ControllerOutcome, RecordedOutcome> kCases[] = {
+      {ControllerOutcome::kSettingsWindowClosed,
+       RecordedOutcome::kSettingsWindowClosed},
+      {ControllerOutcome::kSettingsWindowNotFound,
+       RecordedOutcome::kSettingsWindowNotFound},
+      {ControllerOutcome::kButtonNotFound, RecordedOutcome::kButtonNotFound},
+      {ControllerOutcome::kDismissed, RecordedOutcome::kDismissed},
+  };
+  for (const auto& [controller_outcome, recorded_outcome] : kCases) {
+    base::HistogramTester histograms;
+    Execute(/*can_pin_to_taskbar=*/false);
+    ASSERT_TRUE(state_.guidance_alive);
+
+    std::move(state_.guidance_complete).Run(controller_outcome);
+
+    histograms.ExpectUniqueSample(kOutcomeHistogram, recorded_outcome, 1);
+  }
+}
+
+TEST_F(DefaultBrowserAnnotatedShellIntegrationSetterTest,
+       DestructionWhileGuidingRecordsAbandoned) {
+  FakeState state;
+  auto setter = std::make_unique<DefaultBrowserAnnotatedShellIntegrationSetter>(
+      std::make_unique<FakeShellIntegrationSetter>(state),
+      base::BindRepeating(&FakeBubbleController::Create,
+                          base::Unretained(&state)));
+  base::test::TestFuture<DefaultBrowserState> result;
+  setter->Execute(result.GetCallback(), DefaultBrowserSetter::ExecuteParams());
+  ASSERT_TRUE(state.guidance_alive);
+
+  setter.reset();
+
+  EXPECT_FALSE(state.guidance_alive);
+  histograms_.ExpectUniqueSample(kOutcomeHistogram, RecordedOutcome::kAbandoned,
+                                 1);
 }
 
 TEST_F(DefaultBrowserAnnotatedShellIntegrationSetterTest,
@@ -158,6 +222,8 @@ TEST_F(DefaultBrowserAnnotatedShellIntegrationSetterTest,
       .Run(DefaultBrowserState::IS_DEFAULT);
   EXPECT_EQ(second_result.Get(), DefaultBrowserState::IS_DEFAULT);
   EXPECT_FALSE(state_.guidance_alive);
+  histograms_.ExpectUniqueSample(kOutcomeHistogram,
+                                 RecordedOutcome::kFlowFinishedDefaultSet, 1);
 }
 
 }  // namespace
