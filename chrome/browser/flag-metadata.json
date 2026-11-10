@@ -5844,7 +5844,7 @@
       "ritikagup@google.com",
       "//chrome/browser/actor/OWNERS"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "glic-background-triggering",
