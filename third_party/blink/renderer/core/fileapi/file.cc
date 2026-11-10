@@ -357,16 +357,7 @@ bool File::HasSameSource(const File& other) const {
     return file_system_url_ == other.file_system_url_;
 
   CHECK(GetBlobDataHandle());
-  if (GetBlobDataHandle().get() == other.GetBlobDataHandle().get()) {
-    return true;
-  }
-
-  String uuid = GetBlobDataHandle()->GetUuidMayBlock();
-  if (uuid.empty()) {
-    return false;
-  }
-
-  return uuid == other.GetBlobDataHandle()->GetUuidMayBlock();
+  return GetBlobDataHandle() == other.GetBlobDataHandle();
 }
 
 bool File::AppendToControlState(FormControlState& state) {
