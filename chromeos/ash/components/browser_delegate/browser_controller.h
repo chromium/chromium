@@ -44,7 +44,7 @@ namespace ash {
 class BrowserDelegate;
 
 // BrowserController is a singleton created by
-// ChromeBrowserMainPartsAsh::PostProfileInit. See also README.md.
+// ChromeBrowserMainPartsAsh::PreProfileInit. See also README.md.
 class BrowserController {
  public:
   // See AddObserver below.
@@ -128,12 +128,12 @@ class BrowserController {
 
   // See CreateWebApp below.
   struct CreateParams {
-    bool allow_resize;
-    bool allow_maximize;
-    bool allow_fullscreen;
+    bool allow_resize = true;
+    bool allow_maximize = true;
+    bool allow_fullscreen = true;
     // TODO(crbug.com/369689187): Figure out if the restore_id field makes
     // sense, and if so, add a description.
-    int32_t restore_id;
+    int32_t restore_id = 0;
   };
 
   // See OpenUrl below.
@@ -204,14 +204,21 @@ class BrowserController {
 
   // Returns (the delegate for) the most recently used browser that still
   // exists. Returns nullptr if there's none.
+  // For convenience only: equivalent to the first browser visited by
+  // ForEachBrowser(kAscendingActivationTime, ...).
   virtual BrowserDelegate* GetLastUsedBrowser() = 0;
 
   // Returns (the delegate for) the most recently used browser that is
   // currently visible. Returns nullptr if there's none.
+  // For convenience only: equivalent to the first browser visited by
+  // ForEachBrowser(kAscendingActivationTime, ...) that IsVisible().
   virtual BrowserDelegate* GetLastUsedVisibleBrowser() = 0;
 
   // Returns (the delegate for) the most recently used browser that is
   // currently visible and on-the-record. Returns nullptr if there's none.
+  // For convenience only: equivalent to the first browser visited by
+  // ForEachBrowser(kAscendingActivationTime, ...) that IsVisible() and not
+  // IsOffTheRecord().
   virtual BrowserDelegate* GetLastUsedVisibleOnTheRecordBrowser() = 0;
 
   // Iterates over (the delegates for) the currently existing browsers in the
@@ -221,8 +228,10 @@ class BrowserController {
       BrowserOrder order,
       base::FunctionRef<IterationDirective(BrowserDelegate&)> callback) = 0;
 
-  // Returns (the delegate for) the browser associated with the given native
-  // window, if any. This can be nullptr when the browser is shutting down.
+  // Returns (the delegate for) the browser whose top-level native window (see
+  // BrowserDelegate::GetNativeWindow) is `window`, if any. Other windows, such
+  // as descendants of a browser window, yield nullptr. The result can also be
+  // nullptr when the browser is shutting down.
   virtual BrowserDelegate* GetBrowserForWindow(aura::Window* window) = 0;
 
   // Returns (the delegate for) the browser associated with the given tab, if
