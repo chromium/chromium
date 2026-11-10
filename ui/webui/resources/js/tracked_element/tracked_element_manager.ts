@@ -268,7 +268,6 @@ export class TrackedElementManager {
   // Mapped from native ID.
   private trackedElements_: Map<string, ElementData> = new Map();
   private fixedElementObserver_: IntersectionObserver;
-  private subframeOcclusionObserver_: IntersectionObserver|null = null;
   private resizeObserver_: ResizeObserver;
   // Observes attribute changes (style/class) on tracked elements.
   private attributeMutationObserver_: MutationObserver;
@@ -311,25 +310,6 @@ export class TrackedElementManager {
             ({target, isIntersecting}) => this.onElementVisibilityChanged_(
                 target as HTMLElement, isIntersecting)),
         {root: null});
-
-    if (window !== window.top && document.documentElement) {
-      // Enable Blink cross-frame occlusion tracking
-      // (`SetNeedsOcclusionTracking`) on the embedding frame so parent-frame
-      // overlays report `FrameOcclusionState::kPossiblyOccluded` to
-      // `TrackedElementHandler`.
-      try {
-        const occlusionInit: IntersectionObserverInit = {
-          root: null,
-          trackVisibility: true,
-          delay: 100,
-        };
-        this.subframeOcclusionObserver_ =
-            new IntersectionObserver(() => {}, occlusionInit);
-        this.subframeOcclusionObserver_.observe(document.documentElement);
-      } catch {
-        this.subframeOcclusionObserver_ = null;
-      }
-    }
 
     // Observer for attribute changes on tracked elements.
     this.attributeMutationObserver_ = new MutationObserver(mutations => {
@@ -460,7 +440,6 @@ export class TrackedElementManager {
   reset() {
     this.resizeObserver_.disconnect();
     this.fixedElementObserver_.disconnect();
-    this.subframeOcclusionObserver_?.disconnect();
     this.attributeMutationObserver_.disconnect();
     this.documentMutationObserver_.disconnect();
     document.removeEventListener(
@@ -469,9 +448,6 @@ export class TrackedElementManager {
 
     // Reconnect global observers after clearing.
     this.resizeObserver_.observe(document.body);
-    if (this.subframeOcclusionObserver_ && document.documentElement) {
-      this.subframeOcclusionObserver_.observe(document.documentElement);
-    }
     this.documentMutationObserver_.observe(
         document, {childList: true, subtree: true});
   }

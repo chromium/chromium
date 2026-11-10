@@ -138,21 +138,6 @@ interface Navigator {
   readonly virtualKeyboard: VirtualKeyboard;
 }
 
-// https://w3c.github.io/IntersectionObserver/v2/
-interface IntersectionObserverInit {
-  delay?: number;
-  trackVisibility?: boolean;
-}
-
-interface IntersectionObserver {
-  readonly delay: number;
-  readonly trackVisibility: boolean;
-}
-
-interface IntersectionObserverEntry {
-  readonly isVisible: boolean;
-}
-
 // See https://github.com/microsoft/TypeScript/issues/46135.
 declare module '*.css' {
   const _default: CSSStyleSheet;
