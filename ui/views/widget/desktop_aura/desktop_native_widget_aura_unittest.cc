@@ -19,6 +19,7 @@
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/aura/client/focus_client.h"
+#include "ui/aura/client/visibility_client.h"
 #include "ui/aura/client/window_parenting_client.h"
 #include "ui/aura/env.h"
 #include "ui/aura/test/test_window_delegate.h"
@@ -45,6 +46,7 @@
 #include "ui/views/widget/native_widget_aura.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
+#include "ui/wm/core/shadow_types.h"
 #include "ui/wm/core/window_util.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -53,6 +55,9 @@
 
 #include "ui/base/view_prop.h"
 #include "ui/base/win/window_event_target.h"
+#include "ui/views/test/desktop_window_tree_host_win_test_api.h"
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_win.h"
+#include "ui/views/win/hwnd_message_handler.h"
 #include "ui/views/win/hwnd_util.h"
 #include "ui/wm/core/window_properties.h"
 #endif
@@ -607,7 +612,10 @@ class DesktopAuraTopLevelWindowTest : public aura::WindowObserver {
     owned_window_ = nullptr;
   }
 
-  void CreateTopLevelWindow(const gfx::Rect& bounds, bool fullscreen) {
+  void CreateTopLevelWindow(const gfx::Rect& bounds,
+                            bool fullscreen,
+                            bool transparent = false,
+                            bool shadowless = false) {
     Widget::InitParams init_params(Widget::InitParams::CLIENT_OWNS_WIDGET,
                                    Widget::InitParams::TYPE_WINDOW);
     init_params.bounds = bounds;
@@ -626,6 +634,12 @@ class DesktopAuraTopLevelWindowTest : public aura::WindowObserver {
       owned_window_->SetType(aura::client::WINDOW_TYPE_MENU);
     }
     owned_window_->Init(ui::LAYER_TEXTURED);
+    if (transparent) {
+      owned_window_->SetTransparent(true);
+    }
+    if (shadowless) {
+      wm::SetShadowElevation(owned_window_, wm::kShadowElevationNone);
+    }
     aura::client::ParentWindowWithContext(
         owned_window_, widget_.GetNativeView()->GetRootWindow(),
         gfx::Rect(0, 0, 1900, 1600), display::kInvalidDisplayId);
@@ -719,6 +733,79 @@ TEST_F(DesktopNativeWidgetAuraTest, TopLevelOwnedPopupTest) {
   DesktopAuraTopLevelWindowTest popup_window;
   ASSERT_NO_FATAL_FAILURE(
       popup_window.CreateTopLevelWindow(gfx::Rect(0, 0, 200, 200), false));
+
+  EXPECT_EQ(
+      nullptr,
+      aura::client::GetVisibilityClient(
+          popup_window.top_level_widget()->GetNativeView()->GetRootWindow()));
+#if BUILDFLAG(IS_WIN)
+  HWNDMessageHandler* handler =
+      DesktopWindowTreeHostWinTestApi(
+          static_cast<DesktopWindowTreeHostWin*>(
+              popup_window.top_level_widget()->GetNativeWindow()->GetHost()))
+          .GetHwndMessageHandler();
+  EXPECT_FALSE(handler->is_translucent());
+  EXPECT_NE(DWORD{0}, handler->window_style() & WS_THICKFRAME);
+#endif
+
+  RunPendingMessages();
+  ASSERT_NO_FATAL_FAILURE(popup_window.DestroyOwnedWindow());
+  RunPendingMessages();
+}
+
+// Verifies that a transparent menu popup that does not opt out of shadows
+// (such as RenderWidgetHostViewAura::InitAsPopup for HTML <select>) initializes
+// a translucent top-level widget while keeping its native shadow frame.
+TEST_F(DesktopNativeWidgetAuraTest,
+       TopLevelOwnedTransparentPopupKeepsNativeShadow) {
+  DesktopAuraTopLevelWindowTest popup_window;
+  ASSERT_NO_FATAL_FAILURE(popup_window.CreateTopLevelWindow(
+      gfx::Rect(0, 0, 200, 200), /*fullscreen=*/false, /*transparent=*/true,
+      /*shadowless=*/false));
+
+  EXPECT_NE(
+      nullptr,
+      aura::client::GetVisibilityClient(
+          popup_window.top_level_widget()->GetNativeView()->GetRootWindow()));
+#if BUILDFLAG(IS_WIN)
+  HWNDMessageHandler* handler =
+      DesktopWindowTreeHostWinTestApi(
+          static_cast<DesktopWindowTreeHostWin*>(
+              popup_window.top_level_widget()->GetNativeWindow()->GetHost()))
+          .GetHwndMessageHandler();
+  EXPECT_TRUE(handler->is_translucent());
+  EXPECT_NE(DWORD{0}, handler->window_style() & WS_THICKFRAME);
+#endif
+
+  RunPendingMessages();
+  ASSERT_NO_FATAL_FAILURE(popup_window.DestroyOwnedWindow());
+  RunPendingMessages();
+}
+
+// Verifies that a transparent menu popup that explicitly opts out of native
+// shadows (such as UnboundedSurfaceWindowAura) initializes a translucent
+// top-level widget without WS_THICKFRAME on Windows.
+TEST_F(DesktopNativeWidgetAuraTest,
+       TopLevelOwnedShadowlessTransparentPopupOmitsNativeFrame) {
+  DesktopAuraTopLevelWindowTest popup_window;
+  ASSERT_NO_FATAL_FAILURE(popup_window.CreateTopLevelWindow(
+      gfx::Rect(0, 0, 200, 200), /*fullscreen=*/false, /*transparent=*/true,
+      /*shadowless=*/true));
+
+  EXPECT_NE(
+      nullptr,
+      aura::client::GetVisibilityClient(
+          popup_window.top_level_widget()->GetNativeView()->GetRootWindow()));
+#if BUILDFLAG(IS_WIN)
+  HWNDMessageHandler* handler =
+      DesktopWindowTreeHostWinTestApi(
+          static_cast<DesktopWindowTreeHostWin*>(
+              popup_window.top_level_widget()->GetNativeWindow()->GetHost()))
+          .GetHwndMessageHandler();
+  EXPECT_TRUE(handler->is_translucent());
+  EXPECT_EQ(DWORD{0}, handler->window_style() & WS_THICKFRAME);
+  EXPECT_EQ(0, ::GetWindowLong(handler->hwnd(), GWL_STYLE) & WS_THICKFRAME);
+#endif
 
   RunPendingMessages();
   ASSERT_NO_FATAL_FAILURE(popup_window.DestroyOwnedWindow());

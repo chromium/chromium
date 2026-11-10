@@ -119,7 +119,11 @@ WindowStyles CalculateWindowStylesFromInitParams(
       break;
     case Widget::InitParams::TYPE_MENU:
       styles.style |= WS_POPUP;
-      if (params.remove_standard_frame) {
+      // Frameless menus use WS_THICKFRAME on Windows to get a native DWM drop
+      // shadow; omit it when the caller opts out of shadows so shadowless
+      // translucent menus do not get a 1px DWM window border.
+      if (params.remove_standard_frame &&
+          params.shadow_type != Widget::InitParams::ShadowType::kNone) {
         styles.style |= WS_THICKFRAME;
       }
       styles.ex_style |= WS_EX_TOOLWINDOW;
@@ -160,15 +164,15 @@ void ConfigureWindowStyles(
   // to be used to allow for transparent borderless windows.
   //
   // 1- To allow the contents of the swapchain to blend with the contents
-  //    behind it, it must must be created with D3DFMT_A8R8G8B8 in D3D9Ex, or
+  //    behind it, it must be created with D3DFMT_A8R8G8B8 in D3D9Ex, or
   //    with DXGI_ALPHA_MODE_PREMULTIPLIED with DirectComposition.
   // 2- When the window is created but before it is presented, call
   //    DwmExtendFrameIntoClientArea passing -1 as the margins so that
   //    it's blended with the content below the window and not just black.
-  // 3- To avoid having a window frame and to avoid blurring the contents
-  //    behind the window, the window must have WS_POPUP in its style and must
-  //    not have not have WM_SIZEBOX, WS_THICKFRAME or WS_CAPTION in its
-  //    style.
+  // 3- To avoid having DWM render a native window frame/border and to avoid
+  //    blurring the contents behind the window, the window must have WS_POPUP
+  //    in its style and must not have WS_SIZEBOX, WS_THICKFRAME, or
+  //    WS_CAPTION in its style.
   //
   // Software composited windows can continue to use WS_EX_LAYERED.
   bool is_translucent =

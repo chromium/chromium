@@ -130,6 +130,10 @@ class DesktopNativeWidgetTopLevelHandler : public aura::WindowObserver {
       init_params.remove_standard_frame = true;
     }
 #endif
+    if (child_window->GetProperty(wm::kShadowElevationKey) ==
+        wm::kShadowElevationNone) {
+      init_params.shadow_type = Widget::InitParams::ShadowType::kNone;
+    }
     // If the window should be transparent, then ensure the top level widget
     // is also not opaque.
     if (child_window->GetTransparent()) {
