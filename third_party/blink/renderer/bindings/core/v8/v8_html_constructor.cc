@@ -142,6 +142,12 @@ void V8HTMLConstructor::HtmlConstructor(
     }
   }
   const WrapperTypeInfo* wrapper_type = element->GetWrapperTypeInfo();
+
+  if (wrapper_type != &wrapper_type_info) {
+    V8ThrowException::ThrowTypeError(isolate,
+                                     "Unexpected type for customized element");
+    return;
+  }
   v8::Local<v8::Object> wrapper = V8DOMWrapper::AssociateObjectWithWrapper(
       isolate, element, wrapper_type, info.This());
   // If the element had a wrapper, we now update and return that
