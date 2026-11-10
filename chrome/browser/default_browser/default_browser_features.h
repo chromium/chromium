@@ -49,7 +49,9 @@ bool IsVisualGuidedSetterDockingEnabled();
 DefaultBrowserPromptSurface GetDefaultBrowserPromptSurface();
 
 // Returns the type of setter to use for the Default Browser interaction. It
-// will default to `kShellIntegration` when the feature is disabled.
+// will default to `kShellIntegration` when the feature is disabled, or when the
+// selected setter is not supported on this platform (the guided setters are
+// Windows 11 only).
 DefaultBrowserSetterType GetDefaultBrowserSetterType();
 
 // Returns the URL for the visual guided setter.
@@ -98,11 +100,11 @@ BASE_DECLARE_FEATURE_PARAM(DefaultBrowserSetterType,
 #if BUILDFLAG(IS_WIN)
 // Parameter for the URL used by the visual guided setter.
 BASE_DECLARE_FEATURE_PARAM(std::string, kDefaultBrowserVisualGuideUrlParam);
+#endif
 
 // Parameter for the maximum amount of time we should wait for the Settings
 // window.
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kFindSettingsTimeout);
-#endif
 
 }  // namespace default_browser
 

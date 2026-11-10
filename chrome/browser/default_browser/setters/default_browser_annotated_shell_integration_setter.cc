@@ -4,21 +4,47 @@
 
 #include "chrome/browser/default_browser/setters/default_browser_annotated_shell_integration_setter.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/notreached.h"
+#include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/default_browser/default_browser_features.h"
 #include "chrome/browser/default_browser/setters/shell_integration_default_browser_setter.h"
+
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/ui/views/default_browser/annotated_setter_bubble_controller_win.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace default_browser {
+
+namespace {
+
+// The bubble annotates the Windows Settings window, so only Windows has a
+// controller for it. GetDefaultBrowserSetterType() never selects this setter
+// elsewhere.
+std::unique_ptr<AnnotatedSetterBubbleController> CreateBubbleController(
+    base::TimeDelta find_timeout,
+    bool can_pin_to_taskbar,
+    AnnotatedSetterBubbleController::CompletionCallback on_complete) {
+#if BUILDFLAG(IS_WIN)
+  return AnnotatedSetterBubbleControllerWin::Create(
+      find_timeout, can_pin_to_taskbar, std::move(on_complete));
+#else
+  NOTREACHED();
+#endif  // BUILDFLAG(IS_WIN)
+}
+
+}  // namespace
 
 DefaultBrowserAnnotatedShellIntegrationSetter::
     DefaultBrowserAnnotatedShellIntegrationSetter()
     : DefaultBrowserAnnotatedShellIntegrationSetter(
           std::make_unique<ShellIntegrationDefaultBrowserSetter>(),
-          base::BindRepeating(&AnnotatedSetterBubbleControllerWin::Create)) {}
+          base::BindRepeating(&CreateBubbleController)) {}
 
 DefaultBrowserAnnotatedShellIntegrationSetter::
     DefaultBrowserAnnotatedShellIntegrationSetter(

@@ -16,10 +16,13 @@ namespace default_browser {
 
 // Runs the shell integration flow and, while it runs, points a bubble at the
 // "Set default" button of the Settings window it opens. Reports the flow's
-// result. Windows 11 only; see GetDefaultBrowserSetterType().
+// result. Only selected on Windows 11, where the bubble exists; see
+// GetDefaultBrowserSetterType().
 class DefaultBrowserAnnotatedShellIntegrationSetter
     : public DefaultBrowserSetter {
  public:
+  // The bubble only exists on Windows, so a setter created this way must not
+  // be executed elsewhere.
   DefaultBrowserAnnotatedShellIntegrationSetter();
   // For testing.
   DefaultBrowserAnnotatedShellIntegrationSetter(

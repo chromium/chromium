@@ -2,48 +2,55 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(is_win)
+assert(!is_android && !is_chromeos,
+       "Default browser is for desktop platforms only except ChromeOS.")
 
 source_set("default_browser") {
-  sources = [
-    "annotated_setter_bubble.cc",
-    "annotated_setter_bubble.h",
-    "annotated_setter_bubble_controller.h",
-    "annotated_setter_bubble_controller_win.cc",
-    "annotated_setter_bubble_controller_win.h",
-  ]
-  public_deps = [
-    "//base",
-    "//chrome/browser/default_browser/win",
-    "//chrome/browser/default_browser/win:settings_row_locator",
-    "//ui/gfx/geometry",
-    "//ui/views",
-  ]
-  deps = [
-    "//build:branding_buildflags",
-    "//chrome/app:branded_strings_grit",
-    "//chrome/app:generated_resources_grit",
-    "//components/vector_icons",
-    "//ui/base",
-    "//ui/display",
-    "//ui/gfx",
-  ]
+  sources = [ "annotated_setter_bubble_controller.h" ]
+  public_deps = [ "//base" ]
+
+  # The bubble annotates the Windows Settings window.
+  if (is_win) {
+    sources += [
+      "annotated_setter_bubble.cc",
+      "annotated_setter_bubble.h",
+      "annotated_setter_bubble_controller_win.cc",
+      "annotated_setter_bubble_controller_win.h",
+    ]
+    public_deps += [
+      "//chrome/browser/default_browser/win",
+      "//chrome/browser/default_browser/win:settings_row_locator",
+      "//ui/gfx/geometry",
+      "//ui/views",
+    ]
+    deps = [
+      "//build:branding_buildflags",
+      "//chrome/app:branded_strings_grit",
+      "//chrome/app:generated_resources_grit",
+      "//components/vector_icons",
+      "//ui/base",
+      "//ui/display",
+      "//ui/gfx",
+    ]
+  }
 }
 
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "annotated_setter_bubble_controller_win_unittest.cc" ]
-  deps = [
-    ":default_browser",
-    "//base",
-    "//base/test:test_support",
-    "//chrome/browser/default_browser/win",
-    "//chrome/browser/default_browser/win:settings_row_locator",
-    "//chrome/test:test_support",
-    "//testing/gtest",
-    "//ui/display",
-    "//ui/gfx/geometry",
-    "//ui/views",
-    "//ui/views:test_support",
-  ]
+if (is_win) {
+  source_set("unit_tests") {
+    testonly = true
+    sources = [ "annotated_setter_bubble_controller_win_unittest.cc" ]
+    deps = [
+      ":default_browser",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/default_browser/win",
+      "//chrome/browser/default_browser/win:settings_row_locator",
+      "//chrome/test:test_support",
+      "//testing/gtest",
+      "//ui/display",
+      "//ui/gfx/geometry",
+      "//ui/views",
+      "//ui/views:test_support",
+    ]
+  }
 }

@@ -493,8 +493,8 @@ const FeatureEntry::FeatureVariation
     kDefaultBrowserSetterSelectionVariations[] = {
         {"with Shell Integration",
          kDefaultBrowserSetterSelection_ShellIntegration, nullptr},
-        {"with Visual Guide", kDefaultBrowserSetterSelection_VisualGuide,
-         nullptr},
+        {"with Visual Guide (Windows 11)",
+         kDefaultBrowserSetterSelection_VisualGuide, nullptr},
         {"with Annotated Shell Integration (Windows 11)",
          kDefaultBrowserSetterSelection_AnnotatedShellIntegration, nullptr}};
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)

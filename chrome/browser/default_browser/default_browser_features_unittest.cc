@@ -5,6 +5,7 @@
 #include "chrome/browser/default_browser/default_browser_features.h"
 
 #include <string>
+#include <utility>
 
 #include "base/metrics/field_trial.h"
 #include "base/test/scoped_feature_list.h"
@@ -56,18 +57,22 @@ TEST(DefaultBrowserFeaturesTest, IsDefaultBrowserPromptSurfacesEnabled) {
 #endif
 }
 
-TEST(DefaultBrowserFeaturesTest,
-     AnnotatedShellIntegrationSetterIsWindows11Only) {
+class DefaultBrowserGuidedSetterGatingTest
+    : public testing::TestWithParam<
+          std::pair<const char*, DefaultBrowserSetterType>> {};
+
+// Both guided setters run only on Windows 11, and fall back to the shell
+// integration setter elsewhere.
+TEST_P(DefaultBrowserGuidedSetterGatingTest, IsWindows11Only) {
+  const auto& [setter_option, setter_type] = GetParam();
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      kDefaultBrowserSetterSelection,
-      {{"setter_option", "annotated_shell_integration"}});
+      kDefaultBrowserSetterSelection, {{"setter_option", setter_option}});
 #if BUILDFLAG(IS_WIN)
   {
     base::test::ScopedOSInfoOverride win11_os(
         base::test::ScopedOSInfoOverride::Type::kWin11Pro);
-    EXPECT_EQ(GetDefaultBrowserSetterType(),
-              DefaultBrowserSetterType::kAnnotatedShellIntegration);
+    EXPECT_EQ(GetDefaultBrowserSetterType(), setter_type);
   }
   {
     base::test::ScopedOSInfoOverride win10_os(
@@ -81,7 +86,32 @@ TEST(DefaultBrowserFeaturesTest,
 #endif
 }
 
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DefaultBrowserGuidedSetterGatingTest,
+    testing::Values(
+        std::make_pair("visual_guide", DefaultBrowserSetterType::kVisualGuide),
+        std::make_pair("annotated_shell_integration",
+                       DefaultBrowserSetterType::kAnnotatedShellIntegration)));
+
+TEST(DefaultBrowserFeaturesTest, ShellIntegrationSetterIsSupportedEverywhere) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kDefaultBrowserSetterSelection, {{"setter_option", "shell_integration"}});
+#if BUILDFLAG(IS_WIN)
+  base::test::ScopedOSInfoOverride win10_os(
+      base::test::ScopedOSInfoOverride::Type::kWin10Pro);
+#endif
+  EXPECT_EQ(GetDefaultBrowserSetterType(),
+            DefaultBrowserSetterType::kShellIntegration);
+}
+
 TEST(DefaultBrowserFeaturesTest, IsDefaultBrowserModalSticky) {
+#if BUILDFLAG(IS_WIN)
+  // The visual guide setter is only selected on Windows 11.
+  base::test::ScopedOSInfoOverride win11_os(
+      base::test::ScopedOSInfoOverride::Type::kWin11Pro);
+#endif
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeaturesAndParameters(

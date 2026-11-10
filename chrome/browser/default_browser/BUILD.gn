@@ -31,6 +31,8 @@ source_set("default_browser") {
     "default_browser_setter.h",
     "default_browser_time_after_setter_failure_tracker.cc",
     "default_browser_time_after_setter_failure_tracker.h",
+    "setters/default_browser_annotated_shell_integration_setter.cc",
+    "setters/default_browser_annotated_shell_integration_setter.h",
     "setters/default_browser_visual_guided_setter.cc",
     "setters/default_browser_visual_guided_setter.h",
     "setters/shell_integration_default_browser_setter.cc",
@@ -51,6 +53,7 @@ source_set("default_browser") {
     "//chrome/browser/ui/navigator",
     "//chrome/browser/ui/toasts",
     "//chrome/browser/ui/toasts/api:toasts",
+    "//chrome/browser/ui/views/default_browser",
     "//components/tabs:public",
     "//components/vector_icons",
     "//ui/base",
@@ -60,14 +63,9 @@ source_set("default_browser") {
   ]
 
   if (is_win) {
-    sources += [
-      "default_browser_monitor_win.cc",
-      "setters/default_browser_annotated_shell_integration_setter.cc",
-      "setters/default_browser_annotated_shell_integration_setter.h",
-    ]
+    sources += [ "default_browser_monitor_win.cc" ]
 
     deps += [
-      "//chrome/browser/ui/views/default_browser",
       "//chrome/browser/win",
       "//chrome/browser/win:registry_watcher",
       "//chrome/install_static:install_static_util",
@@ -113,6 +111,7 @@ source_set("unit_tests") {
     "default_browser_controller_unittest.cc",
     "default_browser_features_unittest.cc",
     "default_browser_manager_unittest.cc",
+    "setters/default_browser_annotated_shell_integration_setter_unittest.cc",
     "setters/shell_integration_default_browser_setter_unittest.cc",
   ]
 
@@ -120,7 +119,6 @@ source_set("unit_tests") {
     sources += [
       "default_browser_notification_observer_unittest.cc",
       "default_browser_startup_metrics_unittest.cc",
-      "setters/default_browser_annotated_shell_integration_setter_unittest.cc",
     ]
   }
 
@@ -130,6 +128,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser:global_features",
     "//chrome/browser:shell_integration",
+    "//chrome/browser/ui/views/default_browser",
     "//chrome/test:test_support",
     "//chrome/test/base:testing_browser_process",
     "//content/test:test_support",
@@ -140,7 +139,6 @@ source_set("unit_tests") {
   if (is_win) {
     deps += [
       ":startup_metrics",
-      "//chrome/browser/ui/views/default_browser",
       "//chrome/install_static:install_static_util",
       "//chrome/install_static/test:test_support",
       "//chrome/installer/util:with_no_strings",

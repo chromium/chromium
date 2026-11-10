@@ -587,9 +587,10 @@ inline constexpr char kDefaultBrowserFrameworkName[] =
     "Default Browser Framework";
 
 inline constexpr char kDefaultBrowserSetterSelectionDescription[] =
-    "Enables selecting a default browser setter (e.g. shell integration, "
-    "visual guide, or on Windows 11 shell integration annotated with a bubble "
-    "pointing at the Settings \"Set default\" button).";
+    "Enables selecting a default browser setter: shell integration, or on "
+    "Windows 11 the visual guide or shell integration annotated with a bubble "
+    "pointing at the Settings \"Set default\" button. Elsewhere, the Windows "
+    "11 setters fall back to shell integration.";
 inline constexpr char kDefaultBrowserSetterSelectionName[] =
     "Default Browser Setter Selection";
 
