@@ -16,10 +16,12 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 
 import static org.chromium.base.test.transit.ViewElement.displayingAtLeastOption;
+import static org.chromium.base.test.transit.ViewElement.initialSettleTimeOption;
 import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.chrome.browser.toolbar.top.ButtonHighlightMatcher.withHighlight;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
+import android.app.NotificationManager;
 import android.view.View;
 
 import androidx.annotation.StringRes;
@@ -27,7 +29,9 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import org.hamcrest.Matcher;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.transit.ViewElement;
+import org.chromium.base.test.transit.ViewPresence;
 import org.chromium.chrome.R;
 
 import java.util.Set;
@@ -47,8 +51,29 @@ public class SettingsSearchTestUtils {
      * @param query The search query string.
      */
     public static void typeSearchQuery(String query) {
-        onViewWaiting(withId(R.id.search_box)).perform(click());
-        onViewWaiting(withId(R.id.search_query)).perform(replaceText(query), closeSoftKeyboard());
+        // Clear any leftover app notifications from earlier tests in the shard so a SystemUI
+        // heads-up banner cannot float over the two-column toolbar search box and eat the tap.
+        NotificationManager notificationManager =
+                ContextUtils.getApplicationContext().getSystemService(NotificationManager.class);
+        if (notificationManager != null) {
+            notificationManager.cancelAll();
+        }
+
+        // Wait for the search box's screen bounds to settle (e.g. after caption bar / window
+        // insets and multi-column toolbar layout updates) before clicking.
+        ViewPresence<View> searchBox =
+                waitForView(withId(R.id.search_box), initialSettleTimeOption(250));
+        ViewPresence<View> searchQuery =
+                searchBox
+                        .clickTo()
+                        .withRetry()
+                        .enterState(
+                                ViewPresence.create(
+                                        View.class,
+                                        withId(R.id.search_query),
+                                        ViewElement.defaultOptions()));
+        searchQuery.performViewAction(replaceText(query));
+        searchQuery.performViewAction(closeSoftKeyboard());
     }
 
     /**
