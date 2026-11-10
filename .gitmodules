@@ -396,8 +396,8 @@
 [submodule "third_party/libsrtp"]
 	path = third_party/libsrtp
 	url = https://chromium.googlesource.com/chromium/deps/libsrtp
-[submodule "third_party/libunwindstack"]
-	path = third_party/libunwindstack
+[submodule "third_party/libunwindstack_tmp"]
+	path = third_party/libunwindstack_tmp
 	url = https://chromium.googlesource.com/chromium/src/third_party/libunwindstack
 	gclient-condition = checkout_android
 [submodule "third_party/libva-fake-driver/src"]

@@ -3575,7 +3575,7 @@ if (is_android) {
 
     public_deps = [
       ":base",
-      "//third_party/libunwindstack",
+      "//third_party/libunwindstack_tmp:libunwindstack",
     ]
   }
 }
@@ -4557,7 +4557,7 @@ test("base_unittests") {
         ":base_profiler_test_support_jni",
         ":base_profiler_test_support_library",
         ":native_unwinder_android",
-        "//third_party/libunwindstack",
+        "//third_party/libunwindstack_tmp:libunwindstack",
       ]
     }
 

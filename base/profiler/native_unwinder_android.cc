@@ -18,17 +18,17 @@
 #include "base/profiler/native_unwinder_android_memory_regions_map_impl.h"
 #include "base/profiler/profile_builder.h"
 #include "build/build_config.h"
-#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Elf.h"
-#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Maps.h"
-#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Memory.h"
-#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Regs.h"
+#include "third_party/libunwindstack_tmp/src/libunwindstack/include/unwindstack/Elf.h"
+#include "third_party/libunwindstack_tmp/src/libunwindstack/include/unwindstack/Maps.h"
+#include "third_party/libunwindstack_tmp/src/libunwindstack/include/unwindstack/Memory.h"
+#include "third_party/libunwindstack_tmp/src/libunwindstack/include/unwindstack/Regs.h"
 
 #if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS)
-#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/MachineArm.h"
-#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/RegsArm.h"
+#include "third_party/libunwindstack_tmp/src/libunwindstack/include/unwindstack/MachineArm.h"
+#include "third_party/libunwindstack_tmp/src/libunwindstack/include/unwindstack/RegsArm.h"
 #elif defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_64_BITS)
-#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/MachineArm64.h"
-#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/RegsArm64.h"
+#include "third_party/libunwindstack_tmp/src/libunwindstack/include/unwindstack/MachineArm64.h"
+#include "third_party/libunwindstack_tmp/src/libunwindstack/include/unwindstack/RegsArm64.h"
 #endif  // #if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS)
 
 namespace base {
