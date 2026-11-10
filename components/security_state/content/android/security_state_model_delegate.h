@@ -18,6 +18,8 @@ class SecurityStateModelDelegate {
   virtual ~SecurityStateModelDelegate() = default;
   virtual security_state::SecurityLevel GetSecurityLevel(
       content::WebContents* web_contents) const = 0;
+  virtual security_state::SecurityLevel GetCommittedSecurityLevel(
+      content::WebContents* web_contents) const = 0;
   virtual security_state::MaliciousContentStatus GetMaliciousContentStatus(
       content::WebContents* web_contents) const = 0;
   virtual std::unique_ptr<security_state::VisibleSecurityState>

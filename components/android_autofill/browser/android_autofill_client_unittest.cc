@@ -4,19 +4,80 @@
 
 #include "components/android_autofill/browser/android_autofill_client.h"
 
+#include <memory>
+#include <utility>
+
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/core/browser/studies/autofill_ablation_study.h"
 #include "components/autofill/core/common/autofill_test_util.h"
 #include "components/credential_management/content_credential_manager.h"
+#include "components/security_state/content/android/security_state_client.h"
+#include "components/security_state/content/android/security_state_model_delegate.h"
+#include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/ssl_status.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/credentialmanagement/credential_manager.mojom.h"
 
 namespace android_autofill {
 namespace {
+
+using ::testing::Return;
+using ::testing::StrictMock;
+
+class MockSecurityStateModelDelegate : public SecurityStateModelDelegate {
+ public:
+  MOCK_METHOD(security_state::SecurityLevel,
+              GetSecurityLevel,
+              (content::WebContents*),
+              (const, override));
+  MOCK_METHOD(security_state::SecurityLevel,
+              GetCommittedSecurityLevel,
+              (content::WebContents*),
+              (const, override));
+  MOCK_METHOD(security_state::MaliciousContentStatus,
+              GetMaliciousContentStatus,
+              (content::WebContents*),
+              (const, override));
+  MOCK_METHOD(std::unique_ptr<security_state::VisibleSecurityState>,
+              GetVisibleSecurityState,
+              (content::WebContents*),
+              (const, override));
+};
+
+class ScopedSecurityStateModelDelegate
+    : public security_state::SecurityStateClient {
+ public:
+  ScopedSecurityStateModelDelegate() {
+    auto delegate =
+        std::make_unique<StrictMock<MockSecurityStateModelDelegate>>();
+    delegate_ = delegate.get();
+    owned_delegate_ = std::move(delegate);
+    security_state::SetSecurityStateClient(this);
+  }
+
+  ~ScopedSecurityStateModelDelegate() override {
+    delegate_ = nullptr;
+    security_state::SetSecurityStateClient(nullptr);
+  }
+
+  MockSecurityStateModelDelegate& delegate() { return *delegate_; }
+
+  std::unique_ptr<SecurityStateModelDelegate>
+  MaybeCreateSecurityStateModelDelegate() override {
+    return std::move(owned_delegate_);
+  }
+
+ private:
+  std::unique_ptr<StrictMock<MockSecurityStateModelDelegate>> owned_delegate_;
+  raw_ptr<StrictMock<MockSecurityStateModelDelegate>> delegate_ = nullptr;
+};
 
 // This test class is needed to make the constructor public.
 class TestAndroidAutofillClient : public AndroidAutofillClient {
@@ -33,8 +94,14 @@ class AndroidAutofillClientTest : public content::RenderViewHostTestHarness {
 
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
+    security_state::SetSecurityStateClient(nullptr);
     // Creates the AutofillDriver and AutofillManager.
     NavigateAndCommit(GURL("about:blank"));
+  }
+
+  void TearDown() override {
+    security_state::SetSecurityStateClient(nullptr);
+    content::RenderViewHostTestHarness::TearDown();
   }
 
  protected:
@@ -95,6 +162,73 @@ TEST_F(AndroidAutofillClientTest,
   credential_manager->BindRequest(main_rfh(),
                                   remote.BindNewPipeAndPassReceiver());
   EXPECT_TRUE(credential_manager->HasBinding());
+}
+
+// Verifies GetSecurityLevelForUmaHistograms uses the committed security level.
+TEST_F(AndroidAutofillClientTest, GetSecurityLevelForUmaHistograms) {
+  EXPECT_EQ(client()->GetSecurityLevelForUmaHistograms(),
+            security_state::SecurityLevel::SECURITY_LEVEL_COUNT);
+
+  ScopedSecurityStateModelDelegate scoped_delegate;
+  EXPECT_CALL(scoped_delegate.delegate(),
+              GetCommittedSecurityLevel(web_contents()))
+      .WillOnce(Return(security_state::SecurityLevel::SECURE));
+  EXPECT_EQ(client()->GetSecurityLevelForUmaHistograms(),
+            security_state::SecurityLevel::SECURE);
+}
+
+// Verifies IsContextSecure uses the committed state with a delegate.
+TEST_F(AndroidAutofillClientTest,
+       IsContextSecureWithSecurityStateModelDelegate) {
+  ScopedSecurityStateModelDelegate scoped_delegate;
+
+  // Committed on HTTP: not secure even if a browser-initiated HTTPS navigation
+  // is pending.
+  NavigateAndCommit(GURL("http://example.test"));
+  std::unique_ptr<content::NavigationSimulator> pending_navigation =
+      content::NavigationSimulator::CreateBrowserInitiated(
+          GURL("https://secure.test"), web_contents());
+  pending_navigation->Start();
+  EXPECT_FALSE(client()->IsContextSecure());
+
+  // Once the HTTPS navigation commits, delegates to GetCommittedSecurityLevel.
+  pending_navigation->Commit();
+  EXPECT_CALL(scoped_delegate.delegate(),
+              GetCommittedSecurityLevel(web_contents()))
+      .WillOnce(Return(security_state::SecurityLevel::SECURE));
+  EXPECT_TRUE(client()->IsContextSecure());
+
+  EXPECT_CALL(scoped_delegate.delegate(),
+              GetCommittedSecurityLevel(web_contents()))
+      .WillOnce(Return(security_state::SecurityLevel::DANGEROUS));
+  EXPECT_FALSE(client()->IsContextSecure());
+
+  // Committed HTTPS error page (PAGE_TYPE_ERROR) is not secure.
+  std::unique_ptr<content::NavigationSimulator> error_navigation =
+      content::NavigationSimulator::CreateBrowserInitiated(
+          GURL("https://error.test"), web_contents());
+  error_navigation->Fail(net::ERR_CERT_DATE_INVALID);
+  error_navigation->CommitErrorPage();
+  EXPECT_FALSE(client()->IsContextSecure());
+}
+
+// Verifies IsContextSecure uses the committed entry's SSLStatus fallback.
+TEST_F(AndroidAutofillClientTest,
+       IsContextSecureWithoutSecurityStateModelDelegate) {
+  NavigateAndCommit(GURL("http://example.test"));
+  std::unique_ptr<content::NavigationSimulator> pending_navigation =
+      content::NavigationSimulator::CreateBrowserInitiated(
+          GURL("https://secure.test"), web_contents());
+  pending_navigation->Start();
+  EXPECT_FALSE(client()->IsContextSecure());
+
+  pending_navigation->Commit();
+  content::NavigationEntry* const entry =
+      web_contents()->GetController().GetLastCommittedEntry();
+  ASSERT_TRUE(entry);
+
+  // Without a certificate on the SSLStatus, the context is not secure.
+  EXPECT_FALSE(client()->IsContextSecure());
 }
 
 }  // namespace

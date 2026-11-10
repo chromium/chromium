@@ -15,6 +15,13 @@ ChromeSecurityStateModelDelegate::GetSecurityLevel(
   return chrome_security_state::GetSecurityLevel(web_contents);
 }
 
+security_state::SecurityLevel
+ChromeSecurityStateModelDelegate::GetCommittedSecurityLevel(
+    content::WebContents* web_contents) const {
+  CHECK(web_contents);
+  return chrome_security_state::GetCommittedSecurityLevel(web_contents);
+}
+
 security_state::MaliciousContentStatus
 ChromeSecurityStateModelDelegate::GetMaliciousContentStatus(
     content::WebContents* web_contents) const {
