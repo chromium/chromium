@@ -7,9 +7,6 @@
 -GlobalBrowserCollectionTest.TestObservationWithSingleProfile
 -GlobalBrowserCollectionTest.TestObservationWithMultipleProfiles
 
-# TODO(crbug.com/373738727): Extremely flaky on the bot, locally only sometimes times out.
--BookmarkBarViewTest4.ContextMenus
-
 # Failing interactive ui tests
 -BookmarkBarViewTest29.DNDToEmptyMenu
 -BookmarkBarViewTest7.DNDToDifferentMenu
@@ -31,9 +28,6 @@
 -WidgetInputMethodInteractiveTest.OneWindow
 -WidgetInputMethodInteractiveTest.TwoWindows
 
-# Extremely flaky.
--BookmarkBarViewTest18.BookmarkBarViewTest18_SiblingMenu
-
 # TODO(crbug.com/40758956): flaky fullscreen notification test
 -NotificationsTest.TestShouldDisplayMultiFullscreen
 
@@ -50,12 +44,6 @@
 -TabDragging/DetachToBrowserTabDragControllerTest.KeyPressShouldEndDragTest/*
 -TabDragging/DetachToBrowserTabDragControllerTest.Revert*
 
-# TODO(crbug.com/40800718): Enable once the xdg desktop portal backed implementation is in place.
--EyeDropperViewAuraInteractiveTest.*
-
-# TODO(crbug.com/414635394): Re-enable once right click for bookmark empty submenu works.
--BookmarkBarViewTest21.ContextMenusForEmptyFolder
-
 # Failing on try bot due to DCHECK
 -TabDragging/DetachToBrowserTabDragControllerTest.DragToSeparateWindow/*
 
@@ -63,6 +51,3 @@
 # being launched when it is an accelerated bubble and so the subsequent click
 # to unselect it can fail.
 -*/DragAndDropBrowserTest.DropUrlIntoOmnibox/*
-
-# TODO(crbug.com/569788689): failing on linux wayland mutter.
--WebUILocationBarInteractiveUiTest.ClickLocationIcon/Full
