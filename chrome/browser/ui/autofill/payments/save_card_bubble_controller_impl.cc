@@ -824,22 +824,6 @@ SaveCardBubbleControllerImpl::IgnoreWindowActivationForTesting() {
   return base::AutoReset<bool>(&g_ignore_window_activation_for_testing, true);
 }
 
-void SaveCardBubbleControllerImpl::OnVisibilityChanged(
-    content::Visibility visibility) {
-  if (IsBubbleManagerEnabled()) {
-    // BubbleManager will handle the effects of tab changes.
-    return;
-  }
-
-  if (visibility == content::Visibility::VISIBLE &&
-      (was_url_opened_ ||
-       current_bubble_type_ == PaymentsBubbleType::kUploadComplete)) {
-    ReshowBubble(/*is_user_gesture=*/false);
-  } else if (visibility == content::Visibility::HIDDEN) {
-    HideBubble(/*initiated_by_bubble_manager=*/false);
-  }
-}
-
 bool SaveCardBubbleControllerImpl::ShouldReshowOnTabVisible() const {
   return was_url_opened_ ||
          current_bubble_type_ == PaymentsBubbleType::kUploadComplete;

@@ -18,7 +18,6 @@
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/actions/action_id.h"
 
@@ -173,7 +172,6 @@ class SaveCardBubbleControllerImpl
   virtual void ShowPaymentsSettingsPage();
 
   // AutofillBubbleControllerBase::
-  void OnVisibilityChanged(content::Visibility visibility) override;
   void DoShowBubble() override;
 #if !BUILDFLAG(IS_ANDROID)
   std::optional<actions::ActionId> GetActionIdForPageAction() override;
