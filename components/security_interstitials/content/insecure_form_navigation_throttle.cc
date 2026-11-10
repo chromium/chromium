@@ -141,18 +141,24 @@ InsecureFormNavigationThrottle::GetThrottleResultForMixedForm(
 
   if (is_redirect) {
     // 307 and 308 redirects for POST forms are special because they can leak
-    // form data if done over HTTP. Redirects with query data (e.g. from GET
-    // forms) can also leak form data if done over HTTP.
+    // form data if done over HTTP. Redirects for GET forms with query data can
+    // also leak form data if done over HTTP. Note that `GetRequestMethod()`
+    // checks the initial request method (unlike `IsPost()`, which becomes false
+    // after a 301/302/303 redirect converts a POST to a GET and drops the
+    // body).
     const bool is_post_with_body_redirect =
         handle->IsPost() && handle->GetResponseHeaders() &&
         (handle->GetResponseHeaders()->response_code() ==
              net::HTTP_TEMPORARY_REDIRECT ||
          handle->GetResponseHeaders()->response_code() ==
              net::HTTP_PERMANENT_REDIRECT);
-    const bool has_query_data = !handle->GetURL().query().empty();
-    if (!is_post_with_body_redirect &&
-        (!has_query_data ||
-         !base::FeatureList::IsEnabled(kBlockMixedFormsGetRedirects))) {
+    const bool is_get_with_query_data_redirect =
+        handle->GetRequestMethod() == "GET" &&
+        !handle->GetRedirectChain().empty() &&
+        !handle->GetRedirectChain().front().query().empty() &&
+        !handle->GetURL().query().empty() &&
+        base::FeatureList::IsEnabled(kBlockMixedFormsGetRedirects);
+    if (!is_post_with_body_redirect && !is_get_with_query_data_redirect) {
       return content::NavigationThrottle::PROCEED;
     }
   }

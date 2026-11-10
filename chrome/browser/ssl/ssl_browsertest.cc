@@ -5973,6 +5973,20 @@ std::unique_ptr<net::test_server::HttpResponse> FormActionHTTPRedirectHandler(
     const net::EmbeddedTestServer* test_server,
     const net::test_server::HttpRequest& request) {
   GURL absolute_url = test_server->GetURL(request.relative_url);
+  if (absolute_url.GetPath() == "/redirect_302_add_query_to_http") {
+    GURL::Replacements replacements;
+    replacements.SetHostStr("example.org");
+    replacements.SetSchemeStr("http");
+    replacements.SetQueryStr("extra_param=server_value");
+    const GURL redirect_url =
+        test_server->base_url().ReplaceComponents(replacements);
+
+    std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
+        new net::test_server::BasicHttpResponse);
+    http_response->set_code(net::HTTP_FOUND);
+    http_response->AddCustomHeader("Location", redirect_url.spec());
+    return std::move(http_response);
+  }
   if (absolute_url.GetPath() != "/redirect_to_http" &&
       absolute_url.GetPath() != "/redirect_302_to_http") {
     return nullptr;
@@ -6127,6 +6141,74 @@ IN_PROC_BROWSER_TEST_F(SSLUITestMixedFormsGetRedirectsDisabled,
             tab);
     EXPECT_FALSE(helper);
   }
+}
+
+// Checks no interstitial is shown for mixed forms caused by a POST form with a
+// 302 redirect that includes query parameters in the redirect URL.
+IN_PROC_BROWSER_TEST_F(
+    SSLUITest,
+    TestDisplaysInsecureFormSubmissionWarningRedirectPost302WithQuery) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(https_server_.Start());
+
+  ScopedAllowHttpForHostnamesForTesting scoped_allow_http(
+      {"does-not-exist.test"}, browser()->GetProfile()->GetPrefs());
+
+  std::string replacement_path = GetFilePathWithHostAndPortReplacement(
+      "/ssl/page_displays_form_redirects_302_insecure.html",
+      embedded_test_server()->host_port_pair());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL(replacement_path)));
+  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  content::TestNavigationObserver nav_observer(tab, 1);
+  ASSERT_TRUE(content::ExecJs(
+      tab,
+      "const form = document.getElementById('insecureForm');"
+      "form.action = "
+      "'/server-redirect-302?http://does-not-exist.test?_requestid=12345';"
+      "submitForm();"));
+  nav_observer.Wait();
+  security_interstitials::SecurityInterstitialTabHelper* helper =
+      security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
+          tab);
+  // There should have been no interstitial triggered.
+  EXPECT_FALSE(helper);
+}
+
+// Checks no interstitial is shown for a form submitted using GET method, that
+// initially had no form data in the query parameters, but then had query
+// parameters added by the server during a redirect.
+IN_PROC_BROWSER_TEST_F(
+    SSLUITest,
+    TestDisplaysInsecureFormSubmissionWarningRedirectGetNoFormDataWithRedirectQuery) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  https_server_.RegisterRequestHandler(
+      base::BindRepeating(&FormActionHTTPRedirectHandler, &https_server_));
+  ASSERT_TRUE(https_server_.Start());
+
+  ScopedAllowHttpForHostnamesForTesting scoped_allow_http(
+      {"example.org"}, browser()->GetProfile()->GetPrefs());
+
+  std::string replacement_path = GetFilePathWithHostAndPortReplacement(
+      "/ssl/page_displays_form_redirects_insecure_get.html",
+      embedded_test_server()->host_port_pair());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL(replacement_path)));
+  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  content::TestNavigationObserver nav_observer(tab, 1);
+  ASSERT_TRUE(
+      content::ExecJs(tab,
+                      "const form = document.getElementById('insecureForm');"
+                      "form.action = '/redirect_302_add_query_to_http';"
+                      "submitForm();"));
+  nav_observer.Wait();
+  security_interstitials::SecurityInterstitialTabHelper* helper =
+      security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
+          tab);
+  // There should have been no interstitial triggered.
+  EXPECT_FALSE(helper);
 }
 
 class MixedFormsPolicyTest : public policy::PolicyTest {};
