@@ -7,6 +7,7 @@
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "services/device/generic_sensor/jni_headers/PlatformSensor_jni.h"
@@ -38,7 +39,7 @@ scoped_refptr<PlatformSensorAndroid> PlatformSensorAndroid::Create(
   JNIEnv* env = AttachCurrentThread();
   sensor->j_object_.Reset(
       Java_PlatformSensor_create(env, java_provider, static_cast<int32_t>(type),
-                                 reinterpret_cast<int64_t>(sensor.get())));
+                                 jni_zero::MakeRaw(sensor.get())));
   if (!sensor->j_object_) {
     return nullptr;
   }

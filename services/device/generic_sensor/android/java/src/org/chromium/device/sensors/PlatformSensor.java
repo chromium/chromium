@@ -14,6 +14,10 @@ import androidx.annotation.GuardedBy;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.CalledByNativeForTesting;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
@@ -40,20 +44,25 @@ public class PlatformSensor implements SensorEventListener {
 
     /**
      * The SENSOR_FREQUENCY_NORMAL is defined as 5Hz which corresponds to a polling delay
+     *
      * @see android.hardware.SensorManager.SENSOR_DELAY_NORMAL value that is defined as 200000
-     * microseconds.
+     *     microseconds.
      */
     private static final double SENSOR_FREQUENCY_NORMAL = 5.0d;
+
+    @JniType("::device::PlatformSensorAndroid")
+    interface NativePlatformSensorAndroid extends JniTypeToken {}
 
     /** Lock protecting access to mNativePlatformSensorAndroid. */
     private final Object mLock = new Object();
 
     /** Identifier of device::PlatformSensorAndroid instance. */
     @GuardedBy("mLock")
-    private long mNativePlatformSensorAndroid;
+    private @Nullable JniRawPtr<NativePlatformSensorAndroid> mNativePlatformSensorAndroid;
 
     /**
      * Used for fetching sensor reading values and obtaining information about the sensor.
+     *
      * @see android.hardware.Sensor
      */
     private final Sensor mSensor;
@@ -81,9 +90,14 @@ public class PlatformSensor implements SensorEventListener {
      */
     @CalledByNative
     public static @Nullable PlatformSensor create(
-            PlatformSensorProvider provider, int type, long nativePlatformSensorAndroid) {
+            PlatformSensorProvider provider,
+            int type,
+            JniRawPtr<NativePlatformSensorAndroid> nativePlatformSensorAndroid) {
         SensorManager sensorManager = provider.getSensorManager();
-        if (sensorManager == null) return null;
+        if (sensorManager == null) {
+            nativePlatformSensorAndroid.release();
+            return null;
+        }
 
         int sensorType;
         int readingCount;
@@ -121,11 +135,15 @@ public class PlatformSensor implements SensorEventListener {
                 readingCount = 4;
                 break;
             default:
+                nativePlatformSensorAndroid.release();
                 return null;
         }
 
         List<Sensor> sensors = sensorManager.getSensorList(sensorType);
-        if (sensors.isEmpty()) return null;
+        if (sensors.isEmpty()) {
+            nativePlatformSensorAndroid.release();
+            return null;
+        }
         return new PlatformSensor(
                 sensors.get(0), readingCount, provider, nativePlatformSensorAndroid);
     }
@@ -135,7 +153,7 @@ public class PlatformSensor implements SensorEventListener {
             Sensor sensor,
             int readingCount,
             PlatformSensorProvider provider,
-            long nativePlatformSensorAndroid) {
+            JniRawPtr<NativePlatformSensorAndroid> nativePlatformSensorAndroid) {
         mReadingCount = readingCount;
         mProvider = provider;
         mSensor = sensor;
@@ -238,13 +256,16 @@ public class PlatformSensor implements SensorEventListener {
     }
 
     /**
-     * Called from device::PlatformSensorAndroid destructor, so that this instance would be
-     * notified not to deliver any updates about new sensor readings or errors.
+     * Called from device::PlatformSensorAndroid destructor, so that this instance would be notified
+     * not to deliver any updates about new sensor readings or errors.
      */
     @CalledByNative
     protected void sensorDestroyed() {
         synchronized (mLock) {
-            mNativePlatformSensorAndroid = 0;
+            if (mNativePlatformSensorAndroid != null) {
+                mNativePlatformSensorAndroid.release();
+                mNativePlatformSensorAndroid = null;
+            }
         }
     }
 
@@ -256,7 +277,7 @@ public class PlatformSensor implements SensorEventListener {
     /** Notifies native device::PlatformSensorAndroid when there is an error. */
     @GuardedBy("mLock")
     protected void sensorError() {
-        if (mNativePlatformSensorAndroid != 0) {
+        if (mNativePlatformSensorAndroid != null) {
             PlatformSensorJni.get().notifyPlatformSensorError(mNativePlatformSensorAndroid);
         }
     }
@@ -265,6 +286,7 @@ public class PlatformSensor implements SensorEventListener {
     @GuardedBy("mLock")
     protected void updateSensorReading(
             double timestamp, double value1, double value2, double value3, double value4) {
+        assert mNativePlatformSensorAndroid != null;
         PlatformSensorJni.get()
                 .updatePlatformSensorReading(
                         mNativePlatformSensorAndroid, timestamp, value1, value2, value3, value4);
@@ -278,7 +300,7 @@ public class PlatformSensor implements SensorEventListener {
         // Acquire mLock to ensure that mNativePlatformSensorAndroid is not reset between this check
         // and when it is used.
         synchronized (mLock) {
-            if (mNativePlatformSensorAndroid == 0) {
+            if (mNativePlatformSensorAndroid == null) {
                 Log.w(
                         TAG,
                         "Should not get sensor events after PlatformSensorAndroid is destroyed.");
@@ -342,10 +364,10 @@ public class PlatformSensor implements SensorEventListener {
 
     @NativeMethods
     interface Natives {
-        void notifyPlatformSensorError(long nativePlatformSensorAndroid);
+        void notifyPlatformSensorError(JniPtr<NativePlatformSensorAndroid> self);
 
         void updatePlatformSensorReading(
-                long nativePlatformSensorAndroid,
+                JniPtr<NativePlatformSensorAndroid> self,
                 double timestamp,
                 double value1,
                 double value2,

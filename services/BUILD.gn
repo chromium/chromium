@@ -231,6 +231,7 @@ if (is_android) {
       "//skia/public/mojom:mojom_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/google-truth:google_truth_java",
+      "//third_party/jni_zero:jni_zero_java",
     ]
 
     # Enable tests for MLKit-based implementations for AICore.
