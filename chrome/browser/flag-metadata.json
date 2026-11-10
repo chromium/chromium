@@ -3270,7 +3270,7 @@
       "rahsin@microsoft.com",
       "//content/browser/dom_storage/OWNERS"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 173
   },
   {
     "name": "domain-level-site-permissions",
