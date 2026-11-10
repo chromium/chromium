@@ -1,6 +1,6 @@
 {
   "gn_args": {
-    "dcheck_always_on": false,
+    "dcheck_always_on": true,
     "ffmpeg_branding": "Chrome",
     "is_component_build": false,
     "is_debug": false,
