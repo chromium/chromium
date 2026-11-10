@@ -198,13 +198,7 @@ void WebUIAppMenuControl::RemoveObserver(AppMenuButtonObserver* observer) {
 }
 
 void WebUIAppMenuControl::Focus(views::AccessiblePaneView* pane) {
-  // Focus the internal WebView directly. The toolbar container returned by
-  // `GetFocusablePaneView()` is not focusable, so `SetPaneFocus()` would
-  // advance focus into the WebView through tab traversal, which makes the
-  // renderer focus the page's first focusable element. That arrives on a
-  // different IPC channel than the focus request below and can override it
-  // after the app menu button got focus.
-  pane->SetPaneFocus(delegate_->GetInternalWebView());
+  pane->SetPaneFocus(GetFocusablePaneView());
   delegate_->OnFocusRequested(
       toolbar_ui_api::mojom::FocusRequestTarget::kAppMenu);
 }
