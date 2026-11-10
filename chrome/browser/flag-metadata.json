@@ -8969,8 +8969,8 @@
   },
   {
     "name": "send-tab-to-self-enhanced-handoff",
-    "owners": ["mastiz@chromium.org", "treib@chromium.org"],
-    "expiry_milestone": 160
+    "owners": ["ankushkush@google.com", "treib@chromium.org"],
+    "expiry_milestone": 165
   },
   {
     "name": "send-tab-to-self-gesture",
