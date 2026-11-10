@@ -478,8 +478,10 @@ SiteInfo::SiteInfo(const AgentClusterKey& agent_cluster_key,
       browser_context_id_(browser_context_id),
       embedder_isolation_info_(embedder_isolation_info),
       shard_(shard) {
-  CHECK(is_sandboxed_ || unique_sandbox_id_ == UrlInfo::kInvalidUniqueSandboxId,
-        base::NotFatalUntil::M160);
+  // TODO(crbug.com/582849944): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(is_sandboxed_ ||
+         unique_sandbox_id_ == UrlInfo::kInvalidUniqueSandboxId);
   CHECK((oac_status() != AgentClusterKey::OACStatus::kOriginKeyedByHeader &&
          oac_status() != AgentClusterKey::OACStatus::kOriginKeyedByDefault) ||
             agent_cluster_key_.IsOriginKeyed(),
