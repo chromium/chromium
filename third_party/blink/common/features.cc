@@ -2053,6 +2053,13 @@ BASE_FEATURE(kSetIntervalWithoutClamp, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSetSelectionForAccessibilityHandlingInputEvent,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Skips redundant RemoteFrameHost::CheckCompleted() IPCs from
+// RemoteFrame::DidStopLoading() when the parent frame in the current renderer
+// process is a RemoteFrame, notifying any in-process LocalFrame ancestor
+// directly instead.
+BASE_FEATURE(kSkipRedundantRemoteFrameCheckCompleted,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const char kSkipTouchEventFilterTypeParamName[] = "type";
 const char kSkipTouchEventFilterTypeParamValueDiscrete[] = "discrete";
 const char kSkipTouchEventFilterTypeParamValueAll[] = "all";

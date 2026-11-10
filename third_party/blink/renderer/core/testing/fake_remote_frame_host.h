@@ -26,6 +26,7 @@ class FakeRemoteFrameHost : public mojom::blink::RemoteFrameHost {
 
   mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
   BindNewAssociatedRemote();
+  void FlushForTesting();
 
   void SetInheritedEffectiveTouchAction(cc::TouchAction touch_action) override;
   void UpdateRenderThrottlingStatus(bool is_throttled,

@@ -13,6 +13,10 @@ FakeRemoteFrameHost::BindNewAssociatedRemote() {
   return receiver_.BindNewEndpointAndPassDedicatedRemote();
 }
 
+void FakeRemoteFrameHost::FlushForTesting() {
+  receiver_.FlushForTesting();
+}
+
 void FakeRemoteFrameHost::SetInheritedEffectiveTouchAction(
     cc::TouchAction touch_action) {}
 

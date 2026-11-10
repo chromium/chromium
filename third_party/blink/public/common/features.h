@@ -1624,6 +1624,13 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSetIntervalWithoutClamp);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kSetSelectionForAccessibilityHandlingInputEvent);
 
+// When enabled, RemoteFrame::DidStopLoading() skips sending a redundant
+// RemoteFrameHost::CheckCompleted() IPC when the parent in the current renderer
+// process is also a RemoteFrame, walking ancestors in-process instead to notify
+// the nearest LocalFrame ancestor if one exists.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kSkipRedundantRemoteFrameCheckCompleted);
+
 // Parameters for blink::features::kSkipTouchEventFilter.
 // Which event types will be always forwarded is controlled by the "type"
 // FeatureParam, which can be either "discrete" (default) or "all".

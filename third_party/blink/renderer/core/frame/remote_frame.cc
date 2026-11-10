@@ -4,11 +4,13 @@
 
 #include "third_party/blink/renderer/core/frame/remote_frame.h"
 
+#include "base/feature_list.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/types/optional_util.h"
 #include "cc/layers/surface_layer.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
@@ -454,13 +456,51 @@ void RemoteFrame::DidStopLoading() {
 
   SetIsLoading(false);
 
-  // When a subframe finishes loading, the parent should check if *all*
-  // subframes have finished loading (which may mean that the parent can declare
-  // that the parent itself has finished loading). This remote-subframe-focused
-  // code has a local-subframe equivalent in FrameLoader::DidFinishNavigation.
+  // When a subframe finishes loading, an ancestor LocalFrame in this process
+  // may be waiting for all descendant frames to finish loading before
+  // completing its own load (see AllDescendantsAreComplete() in document.cc).
+  // This remote-subframe-focused code has a local-subframe equivalent in
+  // FrameLoader::DidFinishNavigation.
   Frame* parent = Tree().Parent();
-  if (parent)
+  if (!parent) {
+    return;
+  }
+
+  // If the immediate parent in this process is a LocalFrame, check completion
+  // on it directly without querying FeatureList. Both the enabled and disabled
+  // paths behave identically here, so avoiding the feature check keeps Field
+  // Trial activation scoped strictly to processes where `parent` is a
+  // RemoteFrame and behavior actually diverges.
+  if (parent->IsLocalFrame() ||
+      !base::FeatureList::IsEnabled(
+          features::kSkipRedundantRemoteFrameCheckCompleted)) {
     parent->CheckCompleted();
+    return;
+  }
+
+  // `parent` is a RemoteFrame. Because the browser process broadcasts
+  // DidStopLoading() for a finishing frame to all renderer processes that hold
+  // a proxy for it, the renderer process hosting `parent`'s actual LocalFrame
+  // already receives DidStopLoading() directly from the browser and runs
+  // LocalFrame::CheckCompleted() there. Sending RemoteFrameHost::CheckCompleted
+  // back through the browser from every non-parent renderer process is
+  // therefore redundant (and simply dropped by RenderFrameProxyHost when the
+  // sender is in a different BrowsingInstance).
+  //
+  // However, this renderer process may still host a LocalFrame higher up the
+  // ancestor chain (for example, LocalFrame A -> RemoteFrame B -> RemoteFrame
+  // C, where B already finished loading earlier and A's Document is waiting on
+  // C in AllDescendantsAreComplete()). Walk upward to notify the nearest
+  // LocalFrame ancestor in this process, if one exists, and return immediately
+  // since CheckCompleted() may synchronously dispatch load events that mutate
+  // the frame tree.
+  for (Frame* ancestor = parent->Tree().Parent(); ancestor;
+       ancestor = ancestor->Tree().Parent()) {
+    if (auto* local_ancestor = DynamicTo<LocalFrame>(ancestor)) {
+      local_ancestor->CheckCompleted();
+      return;
+    }
+  }
 }
 
 void RemoteFrame::DidFocus() {
