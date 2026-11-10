@@ -124,6 +124,10 @@ message Signer {
   // Submission URL prefix. Entries are submitted to the signer by appending
   // the endpoint path to this prefix. Only applicable to mirrors.
   string submission_prefix = 16;
+
+  // Log entries with a serial number strictly less than this value are eligible
+  // for pruning under CQRP policy. Only applicable to issuers.
+  uint64 safe_to_prune_before = 17;
 }
 
 message SignerSet {
