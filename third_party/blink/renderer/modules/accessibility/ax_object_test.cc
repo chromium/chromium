@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <ranges>
+#include <string_view>
 
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
@@ -4035,6 +4036,125 @@ TEST_F(AccessibilityTest, SerializeCachedNativeRoleAndAttributes) {
   EXPECT_EQ(ax::mojom::blink::ListStyle::kDisc, li_data.GetListStyle());
   EXPECT_EQ(ax::mojom::blink::WritingDirection::kRtl,
             li_data.GetTextDirection());
+}
+
+// Text nodes inside display:none content have no LayoutObject and no computed
+// style of their own, so they must inherit the hidden state from their parent
+// (crbug.com/40815634).
+TEST_F(AccessibilityTest, LayoutlessTextInDisplayNoneIsHiddenViaStyle) {
+  // aria-labelledby keeps the display:none subtree in the accessibility tree.
+  SetBodyInnerHTML(R"HTML(
+      <button aria-labelledby="label"></button>
+      <div id="label" style="display: none">Hidden label</div>
+      )HTML");
+
+  Node* text_node = GetElementById("label")->firstChild();
+  ASSERT_NE(nullptr, text_node);
+  ASSERT_TRUE(text_node->IsTextNode());
+  ASSERT_EQ(nullptr, text_node->GetLayoutObject());
+
+  AXObject* label = GetAXObjectByElementId("label");
+  ASSERT_NE(nullptr, label);
+  EXPECT_TRUE(label->IsHiddenViaStyle());
+
+  AXObject* text = GetAXObject(*text_node);
+  ASSERT_NE(nullptr, text);
+  ASSERT_EQ(ax::mojom::blink::Role::kStaticText, text->RoleValue());
+  EXPECT_TRUE(text->IsHiddenViaStyle());
+  EXPECT_FALSE(text->IsVisible());
+}
+
+// <rp> is display:none by default, so its text has no LayoutObject.
+TEST_F(AccessibilityTest, LayoutlessTextInRubyParenthesisIsHiddenViaStyle) {
+  SetBodyInnerHTML(R"HTML(
+      <ruby>漢<rp id="rp">(</rp><rt>kan</rt></ruby>
+      )HTML");
+
+  Node* text_node = GetElementById("rp")->firstChild();
+  ASSERT_NE(nullptr, text_node);
+  ASSERT_EQ(nullptr, text_node->GetLayoutObject());
+
+  AXObject* text = GetAXObject(*text_node);
+  ASSERT_NE(nullptr, text);
+  ASSERT_EQ(ax::mojom::blink::Role::kStaticText, text->RoleValue());
+  EXPECT_TRUE(text->IsHiddenViaStyle());
+  EXPECT_FALSE(text->IsVisible());
+}
+
+// Canvas fallback content has no LayoutObjects. Its text is hidden only when
+// an ancestor inside the fallback is hidden via style, never by default.
+TEST_F(AccessibilityTest, LayoutlessTextInCanvasFallbackHiddenViaStyle) {
+  // Without script, <canvas> renders its fallback content with LayoutObjects.
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  SetBodyInnerHTML(R"HTML(
+      <canvas width="100" height="100">
+        <p id="visible">Visible fallback</p>
+        <h1 id="display-none" style="display: none">Display none</h1>
+        <h2 id="visibility-hidden" style="visibility: hidden">Hidden</h2>
+      </canvas>
+      )HTML");
+
+  for (const char* id : {"visible", "display-none", "visibility-hidden"}) {
+    SCOPED_TRACE(id);
+    Node* text_node = GetElementById(id)->firstChild();
+    ASSERT_NE(nullptr, text_node);
+    ASSERT_TRUE(text_node->IsTextNode());
+    ASSERT_EQ(nullptr, text_node->GetLayoutObject());
+    AXObject* text = GetAXObject(*text_node);
+    ASSERT_NE(nullptr, text);
+    ASSERT_EQ(ax::mojom::blink::Role::kStaticText, text->RoleValue());
+    bool expect_hidden = std::string_view(id) != "visible";
+    EXPECT_EQ(expect_hidden, text->IsHiddenViaStyle());
+    EXPECT_EQ(!expect_hidden, text->IsVisible());
+  }
+}
+
+// Text with a LayoutObject gets visibility from its own (inherited) style.
+TEST_F(AccessibilityTest, TextInVisibilityHiddenIsHiddenViaStyle) {
+  SetBodyInnerHTML(R"HTML(
+      <div id="hidden" style="visibility: hidden">Hidden</div>
+      <div id="shown">Shown</div>
+      )HTML");
+
+  Node* hidden_node = GetElementById("hidden")->firstChild();
+  ASSERT_NE(nullptr, hidden_node->GetLayoutObject());
+  AXObject* hidden_text = GetAXObject(*hidden_node);
+  ASSERT_NE(nullptr, hidden_text);
+  EXPECT_TRUE(hidden_text->IsHiddenViaStyle());
+
+  AXObject* shown_text = GetAXObject(*GetElementById("shown")->firstChild());
+  ASSERT_NE(nullptr, shown_text);
+  EXPECT_FALSE(shown_text->IsHiddenViaStyle());
+  EXPECT_TRUE(shown_text->IsVisible());
+}
+
+// Toggling display:none on the parent must update the text's cached state.
+TEST_F(AccessibilityTest, LayoutlessTextHiddenViaStyleUpdatesDynamically) {
+  SetBodyInnerHTML(R"HTML(
+      <button aria-labelledby="label"></button>
+      <div id="label">Label</div>
+      )HTML");
+
+  Element* label = GetElementById("label");
+  Node* text_node = label->firstChild();
+  AXObject* text = GetAXObject(*text_node);
+  ASSERT_NE(nullptr, text);
+  EXPECT_FALSE(text->IsHiddenViaStyle());
+
+  label->setAttribute(html_names::kStyleAttr, AtomicString("display: none"));
+  GetAXObjectCache().UpdateAXForAllDocuments();
+  ASSERT_EQ(nullptr, text_node->GetLayoutObject());
+  text = GetAXObject(*text_node);
+  ASSERT_NE(nullptr, text);
+  EXPECT_TRUE(text->IsHiddenViaStyle());
+  EXPECT_FALSE(text->IsVisible());
+
+  label->removeAttribute(html_names::kStyleAttr);
+  GetAXObjectCache().UpdateAXForAllDocuments();
+  text = GetAXObject(*text_node);
+  ASSERT_NE(nullptr, text);
+  EXPECT_FALSE(text->IsHiddenViaStyle());
+  EXPECT_TRUE(text->IsVisible());
 }
 
 }  // namespace test

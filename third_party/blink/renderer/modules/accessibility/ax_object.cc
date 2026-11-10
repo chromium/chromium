@@ -5155,7 +5155,7 @@ const ComputedStyle* AXObject::GetComputedStyle() const {
 // * "content-visibility: auto" is "paint when it's scrolled into the viewport,
 //   but its layout information is not updated when it isn't"
 bool AXObject::ComputeIsHiddenViaStyle(const ComputedStyle* style) {
-  // The the parent element of text is hidden, then the text is hidden too.
+  // If the parent element of text is hidden, then the text is hidden too.
   // This helps provide more consistent results in edge cases, e.g. text inside
   // of a <canvas> or display:none content.
   if (RoleValue() == ax::mojom::blink::Role::kStaticText) {
@@ -5183,11 +5183,13 @@ bool AXObject::ComputeIsHiddenViaStyle(const ComputedStyle* style) {
              image_layout_object->Style().Visibility() != EVisibility::kVisible;
     }
 
-    // TODO(crbug.com/1286465): It's not consistent to only check
-    // IsEnsuredInDisplayNone() on layoutless elements.
-    return GetNode() && GetNode()->IsElementNode() &&
-           (style->IsEnsuredInDisplayNone() ||
-            style->Visibility() != EVisibility::kVisible);
+    // A style without a LayoutObject only comes from an element, e.g. one in a
+    // display:none subtree or in canvas fallback content. Layoutless text has
+    // no style and inherits the hidden state from its parent above. Inline
+    // text boxes reuse their parent's style but have no node, and are never
+    // hidden via style.
+    return GetElement() && (style->IsEnsuredInDisplayNone() ||
+                            style->Visibility() != EVisibility::kVisible);
   }
 
   // ---- Rules for AXObjectswith no style ------
