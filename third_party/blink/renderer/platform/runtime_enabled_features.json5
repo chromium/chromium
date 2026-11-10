@@ -2987,10 +2987,6 @@
       status: "experimental",
     },
     {
-      name: "ExposeCSSFontFeatureValuesRule",
-      status: "stable",
-    },
-    {
       name: "ExposeRenderTimeNonTaoDelayedImage",
     },
     {
