@@ -9511,3 +9511,81 @@ TEST_F(TabStripModelTest, SingleTabSelectionHandleOverloads) {
 
   tabstrip()->CloseAllTabs();
 }
+
+TEST_F(TabStripModelTest, CloseAndDetachHandleOverloads) {
+  PrepareTabstripForSelectionTest(tabstrip(), /*tab_count=*/5,
+                                  /*pinned_count=*/0,
+                                  /*selected_tabs=*/{0});
+  tabs::TabHandle tab1 = tabstrip()->GetTabAtIndex(1)->GetHandle();
+  tabs::TabHandle tab2 = tabstrip()->GetTabAtIndex(2)->GetHandle();
+  tabs::TabHandle tab3 = tabstrip()->GetTabAtIndex(3)->GetHandle();
+  tabs::TabHandle tab4 = tabstrip()->GetTabAtIndex(4)->GetHandle();
+
+  // CloseTab(TabHandle)
+  tabstrip()->CloseTab(tab1, TabCloseTypes::CLOSE_NONE);
+  EXPECT_EQ(nullptr, tab1.Get());
+  EXPECT_EQ(4, tabstrip()->count());
+
+  // DetachTabForInsertion(TabHandle)
+  std::unique_ptr<tabs::TabModel> detached_tab =
+      tabstrip()->DetachTabForInsertion(tab2);
+  ASSERT_NE(nullptr, detached_tab);
+  EXPECT_EQ(tab2, detached_tab->GetHandle());
+  EXPECT_EQ(3, tabstrip()->count());
+  tabstrip()->AppendTab(std::move(detached_tab), /*foreground=*/false);
+  EXPECT_EQ(4, tabstrip()->count());
+
+  // DetachWebContentsForInsertion(TabHandle)
+  std::unique_ptr<content::WebContents> detached_contents =
+      tabstrip()->DetachWebContentsForInsertion(tab3);
+  ASSERT_NE(nullptr, detached_contents);
+  EXPECT_EQ(nullptr, tab3.Get());
+  EXPECT_EQ(3, tabstrip()->count());
+
+  // DetachAndDeleteWebContents(TabHandle)
+  tabstrip()->DetachAndDeleteWebContents(tab4);
+  EXPECT_EQ(nullptr, tab4.Get());
+  EXPECT_EQ(2, tabstrip()->count());
+
+  // DetachTabsAndCollectionsForInsertion(vector<TabHandle>)
+  auto detached_items =
+      tabstrip()->DetachTabsAndCollectionsForInsertion({tab2});
+  EXPECT_EQ(1u, detached_items.size());
+  EXPECT_EQ(1, tabstrip()->count());
+
+  tabstrip()->CloseAllTabs();
+}
+
+TEST_F(TabStripModelTest, ContainsTab) {
+  PrepareTabstripForSelectionTest(tabstrip(), /*tab_count=*/4,
+                                  /*pinned_count=*/1,
+                                  /*selected_tabs=*/{0});
+  tabs::TabHandle tab0 = tabstrip()->GetTabAtIndex(0)->GetHandle();
+  tabs::TabHandle tab1 = tabstrip()->GetTabAtIndex(1)->GetHandle();
+  tabs::TabHandle tab2 = tabstrip()->GetTabAtIndex(2)->GetHandle();
+  tabs::TabHandle tab3 = tabstrip()->GetTabAtIndex(3)->GetHandle();
+  tabstrip()->AddToNewGroup({1});
+  tabstrip()->AddToNewSplit({2, 3}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kTabContextMenu);
+
+  EXPECT_FALSE(tabstrip()->ContainsTab(tabs::TabHandle::Null()));
+  EXPECT_FALSE(tabstrip()->ContainsTab(nullptr));
+  EXPECT_TRUE(tabstrip()->ContainsTab(tab0));
+  EXPECT_TRUE(tabstrip()->ContainsTab(tab1));
+  EXPECT_TRUE(tabstrip()->ContainsTab(tab2));
+  EXPECT_TRUE(tabstrip()->ContainsTab(tab3));
+
+  TestTabStripModelDelegate other_delegate;
+  TabStripModel other_strip(&other_delegate, profile());
+  other_strip.AppendWebContents(CreateWebContents(), true);
+  tabs::TabHandle other_tab = other_strip.GetTabAtIndex(0)->GetHandle();
+  EXPECT_FALSE(tabstrip()->ContainsTab(other_tab));
+  EXPECT_TRUE(other_strip.ContainsTab(other_tab));
+
+  std::unique_ptr<tabs::TabModel> detached =
+      tabstrip()->DetachTabAtForInsertion(1);
+  EXPECT_FALSE(tabstrip()->ContainsTab(detached->GetHandle()));
+
+  other_strip.CloseAllTabs();
+  tabstrip()->CloseAllTabs();
+}

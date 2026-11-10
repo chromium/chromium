@@ -269,17 +269,15 @@ void TabListBridge::MoveTab(tabs::TabHandle tab, int index) {
 }
 
 void TabListBridge::CloseTab(tabs::TabHandle tab) {
-  tab_strip_->CloseWebContents(tab.Get()->GetContents(),
-                               TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
+  tab_strip_->CloseTab(tab, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
 }
 
 std::unique_ptr<content::WebContents> TabListBridge::DetachWebContents(
     tabs::TabHandle tab) {
-  const int index = GetIndexOfTab(tab);
-  CHECK_NE(index, tab_list::kNoTabIndex)
+  CHECK(tab_strip_->ContainsTab(tab))
       << "Trying to detach a tab that doesn't exist in this tab list.";
-  return tab_strip_->DetachWebContentsAtForInsertion(
-      index, TabRemovedReason::kInsertedIntoSidePanel);
+  return tab_strip_->DetachWebContentsForInsertion(
+      tab, TabRemovedReason::kInsertedIntoSidePanel);
 }
 
 std::vector<tabs::TabInterface*> TabListBridge::GetAllTabs() {
@@ -505,8 +503,7 @@ void TabListBridge::MoveGroupTo(tab_groups::TabGroupId group_id, int index) {
 void TabListBridge::MoveTabToWindow(tabs::TabHandle tab,
                                     SessionID destination_window_id,
                                     int destination_index) {
-  int source_index = GetIndexOfTab(tab);
-  CHECK_NE(source_index, tab_list::kNoTabIndex);
+  CHECK(tab_strip_->ContainsTab(tab));
 
   BrowserWindowInterface* target_window =
       GetBrowserWithSessionId(destination_window_id, tab_strip_->profile());
@@ -519,7 +516,7 @@ void TabListBridge::MoveTabToWindow(tabs::TabHandle tab,
       static_cast<TabListBridge*>(target_list_interface);
 
   std::unique_ptr<tabs::TabModel> detached_tab =
-      tab_strip_->DetachTabAtForInsertion(source_index);
+      tab_strip_->DetachTabForInsertion(tab);
   if (!detached_tab) {
     return;
   }

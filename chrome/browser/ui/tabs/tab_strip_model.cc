@@ -21,6 +21,7 @@
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/dcheck_is_on.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
@@ -428,6 +429,14 @@ bool TabStripModel::ContainsIndex(int index) const {
   return index >= 0 && index < count();
 }
 
+bool TabStripModel::ContainsTab(const tabs::TabInterface* tab) const {
+  return tab && static_cast<const tabs::TabModel*>(tab)->owning_model() == this;
+}
+
+bool TabStripModel::ContainsTab(tabs::TabHandle handle) const {
+  return ContainsTab(handle.Get());
+}
+
 void TabStripModel::AppendWebContents(std::unique_ptr<WebContents> contents,
                                       bool foreground) {
   InsertWebContentsAt(
@@ -521,6 +530,13 @@ std::unique_ptr<tabs::TabModel> TabStripModel::DetachTabAtForInsertion(
   return std::move(dt->tab);
 }
 
+std::unique_ptr<tabs::TabModel> TabStripModel::DetachTabForInsertion(
+    tabs::TabHandle tab) {
+  const int index = GetIndexOfTab(tab);
+  CHECK_NE(index, kNoTab);
+  return DetachTabAtForInsertion(index);
+}
+
 std::unique_ptr<content::WebContents>
 TabStripModel::DetachWebContentsAtForInsertion(int index,
                                                TabRemovedReason reason) {
@@ -529,18 +545,49 @@ TabStripModel::DetachWebContentsAtForInsertion(int index,
   return tabs::TabModel::DestroyAndTakeWebContents(std::move(dt->tab));
 }
 
+std::unique_ptr<content::WebContents>
+TabStripModel::DetachWebContentsForInsertion(tabs::TabHandle tab,
+                                             TabRemovedReason reason) {
+  const int index = GetIndexOfTab(tab);
+  CHECK_NE(index, kNoTab);
+  return DetachWebContentsAtForInsertion(index, reason);
+}
+
 void TabStripModel::DetachAndDeleteWebContentsAt(int index) {
   // Drops the returned unique pointer.
   DetachTabWithReasonAt(index, TabRemovedReason::kDeleted,
                         tabs::TabInterface::DetachReason::kDelete);
 }
 
+void TabStripModel::DetachAndDeleteWebContents(tabs::TabHandle tab) {
+  const int index = GetIndexOfTab(tab);
+  CHECK_NE(index, kNoTab);
+  DetachAndDeleteWebContentsAt(index);
+}
+
 std::vector<std::variant<std::unique_ptr<DetachedTab>,
                          std::unique_ptr<DetachedTabCollection>>>
 TabStripModel::DetachTabsAndCollectionsForInsertion(
     const std::vector<int>& tab_indices) {
+  std::vector<tabs::TabHandle> tabs = base::ToVector(
+      GetTabsAtIndices(tab_indices), &tabs::TabInterface::GetHandle);
+  return DetachTabsAndCollectionsForInsertion(tabs);
+}
+
+std::vector<std::variant<std::unique_ptr<DetachedTab>,
+                         std::unique_ptr<DetachedTabCollection>>>
+TabStripModel::DetachTabsAndCollectionsForInsertion(
+    const std::vector<tabs::TabHandle>& tabs) {
+  // Resolve `tabs` into deduplicated `TabInterface`s in tab-strip order.
+  std::vector<int> sorted_indices = GetSortedIndicesForTabs(tabs);
+  sorted_indices.erase(
+      std::unique(sorted_indices.begin(), sorted_indices.end()),
+      sorted_indices.end());
+  std::vector<tabs::TabInterface*> tab_interfaces =
+      GetTabsAtIndices(sorted_indices);
+
   std::vector<tab_groups::TabGroupId> groups_to_move =
-      GetGroupsDestroyedFromRemovingIndices(tab_indices);
+      GetGroupsDestroyedFromRemovingTabs(tab_interfaces);
   // A group kept alive by a removal lock may not be detached; its holder must
   // release it first.
   CHECK(!locked_ephemeral_group_.has_value() ||
@@ -555,25 +602,23 @@ TabStripModel::DetachTabsAndCollectionsForInsertion(
     std::erase(groups_to_move, *focused_group);
   }
 
-  std::vector<tabs::TabInterface*> tab_interfaces =
-      GetTabsAtIndices(tab_indices);
+  std::vector<tabs::TabHandle> sorted_handles =
+      base::ToVector(tab_interfaces, &tabs::TabInterface::GetHandle);
 
   std::vector<std::variant<std::unique_ptr<DetachedTab>,
                            std::unique_ptr<DetachedTabCollection>>>
       owned_tabs_and_collections;
 
-  for (const tabs::TabInterface* tab_interface : tab_interfaces) {
-    const int index = GetIndexOfTab(tab_interface);
-    if (index == TabStripModel::kNoTab) {
-      // If this is a tab, we already moved it as part of its group.
-      // If this is a header, we will move it when we get to its first tab.
+  for (tabs::TabHandle handle : sorted_handles) {
+    tabs::TabInterface* tab_interface = handle.Get();
+    if (!ContainsTab(tab_interface)) {
+      // Already moved as part of its group or split.
       continue;
     }
 
     const std::optional<tab_groups::TabGroupId> group =
         tab_interface->GetGroup();
-    if (std::find(groups_to_move.begin(), groups_to_move.end(), group) !=
-        groups_to_move.end()) {
+    if (std::ranges::contains(groups_to_move, group)) {
       owned_tabs_and_collections.emplace_back(
           DetachTabGroupForInsertion(group.value()));
     } else if (tab_interface->IsSplit()) {
@@ -581,7 +626,8 @@ TabStripModel::DetachTabsAndCollectionsForInsertion(
           DetachSplitTabForInsertion(tab_interface->GetSplit().value()));
     } else {
       owned_tabs_and_collections.emplace_back(DetachTabWithReasonAt(
-          index, TabRemovedReason::kInsertedIntoOtherTabStrip,
+          GetIndexOfTab(tab_interface),
+          TabRemovedReason::kInsertedIntoOtherTabStrip,
           tabs::TabInterface::DetachReason::kInsertIntoOtherWindow));
     }
   }
@@ -1437,6 +1483,14 @@ void TabStripModel::CloseAllTabsInGroupImpl(
   std::vector<content::WebContents*> closing_tabs =
       GetWebContentsesByIndices(reversed_group_indices);
   CloseTabs(closing_tabs, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
+}
+
+void TabStripModel::CloseTab(tabs::TabHandle tab, uint32_t close_types) {
+  ReentrancyCheck::ValidateNotReentrant(&reentrancy_guard_);
+
+  tabs::TabInterface* tab_ptr = tab.Get();
+  CHECK(ContainsTab(tab_ptr));
+  CloseTabs({tab_ptr->GetContents()}, close_types);
 }
 
 void TabStripModel::CloseWebContents(content::WebContents* contents,

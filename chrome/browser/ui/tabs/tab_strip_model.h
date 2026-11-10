@@ -263,6 +263,10 @@ class TabStripModel {
   // Determines if the specified index is contained within the TabStripModel.
   bool ContainsIndex(int index) const;
 
+  // Determines if the specified tab is contained within the TabStripModel.
+  bool ContainsTab(const tabs::TabInterface* tab) const;
+  bool ContainsTab(tabs::TabHandle handle) const;
+
   // Adds the specified WebContents in the default location. Tabs opened
   // in the foreground inherit the opener of the previously active tab.
   // Use of the detached tab is preferred over webcontents, so when possible
@@ -326,10 +330,12 @@ class TabStripModel {
       bool pinned,
       std::optional<tab_groups::TabGroupId> group_id = std::nullopt);
 
-  // Closes the specified WebContents. This causes the WebContents to be
+  // Closes the specified tab or WebContents. This causes the WebContents to be
   // destroyed, but it may not happen immediately.
-  // `close_types` is a bitmask of CloseTypes. Prefer this over
-  // CloseWebContentsAt() when a WebContents* is already available.
+  // `close_types` is a bitmask of CloseTypes. Prefer CloseTab() or
+  // CloseWebContents() over CloseWebContentsAt() when a TabHandle or
+  // WebContents* is already available.
+  void CloseTab(tabs::TabHandle tab, uint32_t close_types);
   void CloseWebContents(content::WebContents* contents, uint32_t close_types);
 
   // Closes the WebContents at the specified index. This causes the
@@ -344,11 +350,12 @@ class TabStripModel {
       content::WebContents* contents,
       std::unique_ptr<content::WebContents> new_contents);
 
-  // Detaches the tab at the specified index for reinsertion into another tab
+  // Detaches the tab at `index` or `tab` for reinsertion into another tab
   // strip. Returns the detached tab.
   std::unique_ptr<tabs::TabModel> DetachTabAtForInsertion(int index);
+  std::unique_ptr<tabs::TabModel> DetachTabForInsertion(tabs::TabHandle tab);
 
-  // Detaches the WebContents at the specified index for re-insertion into
+  // Detaches the WebContents at `index` or `tab` for re-insertion into
   // another browser of a different type, destroying the owning TabModel in the
   // process.
   //
@@ -364,13 +371,21 @@ class TabStripModel {
   std::unique_ptr<content::WebContents> DetachWebContentsAtForInsertion(
       int index,
       TabRemovedReason reason = TabRemovedReason::kInsertedIntoOtherTabStrip);
+  std::unique_ptr<content::WebContents> DetachWebContentsForInsertion(
+      tabs::TabHandle tab,
+      TabRemovedReason reason = TabRemovedReason::kInsertedIntoOtherTabStrip);
 
-  // Detaches the WebContents at the specified index and immediately deletes it.
+  // Detaches the WebContents at `index` or `tab` and immediately deletes it.
   void DetachAndDeleteWebContentsAt(int index);
+  void DetachAndDeleteWebContents(tabs::TabHandle tab);
 
   std::vector<std::variant<std::unique_ptr<DetachedTab>,
                            std::unique_ptr<DetachedTabCollection>>>
   DetachTabsAndCollectionsForInsertion(const std::vector<int>& tab_indices);
+  std::vector<std::variant<std::unique_ptr<DetachedTab>,
+                           std::unique_ptr<DetachedTabCollection>>>
+  DetachTabsAndCollectionsForInsertion(
+      const std::vector<tabs::TabHandle>& tabs);
 
   // Activates `tab`, which must be in this tab strip model. Prefer this over
   // ActivateTabAt() when a TabInterface* or TabHandle is already available.
