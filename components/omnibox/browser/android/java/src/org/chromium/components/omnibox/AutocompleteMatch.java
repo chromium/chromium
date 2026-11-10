@@ -807,7 +807,8 @@ public class AutocompleteMatch {
     }
 
     @NativeMethods
-    interface Natives {
+    @VisibleForTesting
+    public interface Natives {
         void updateWithClipboardContent(long nativeAutocompleteMatch, Runnable callback);
 
         @JniType("SkBitmap")
