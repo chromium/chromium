@@ -17,6 +17,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_view_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/simple_test_clock.h"
@@ -551,6 +552,88 @@ TEST_F(CachedImageFetcherTest, FetchImagePopulatesCacheAsJpeg) {
     RunUntilIdle();
     EXPECT_TRUE(cached_data.starts_with(kJpegMagicHeader));
   }
+}
+
+TEST_F(CachedImageFetcherTest, DataCallbackFromCacheCanDestroyFetcher) {
+  const GURL kImageUrl("http://gstatic.img.com/foo.jpg");
+  image_cache()->SaveImage(kImageUrl.spec(), kImageData,
+                           /*needs_transcoding=*/false,
+                           /*expiration_interval=*/std::nullopt);
+
+  base::test::TestFuture<void> destroyed;
+  base::MockCallback<ImageFetcherCallback> image_callback;
+  EXPECT_CALL(image_callback, Run(_, _)).Times(0);
+
+  cached_image_fetcher()->FetchImageAndData(
+      kImageUrl,
+      base::BindLambdaForTesting([&](ImageData data, const RequestMetadata&) {
+        EXPECT_THAT(data, HasImageData(kImageData));
+        DestroyCachedImageFetcher();
+        destroyed.SetValue();
+      }),
+      image_callback.Get(),
+      ImageFetcherParams(TRAFFIC_ANNOTATION_FOR_TESTS, kUmaClientName));
+  db()->LoadCallback(true);
+  ASSERT_TRUE(destroyed.Wait());
+}
+
+TEST_F(CachedImageFetcherTest, ImageCallbackFromCacheCanDestroyFetcher) {
+  const GURL kImageUrl("http://gstatic.img.com/foo.jpg");
+  image_cache()->SaveImage(kImageUrl.spec(), kImageData,
+                           /*needs_transcoding=*/true,
+                           /*expiration_interval=*/std::nullopt);
+
+  base::test::TestFuture<void> destroyed;
+  cached_image_fetcher()->FetchImageAndData(
+      kImageUrl, ImageDataFetcherCallback(),
+      base::BindLambdaForTesting(
+          [&](const gfx::Image& image, const RequestMetadata&) {
+            EXPECT_FALSE(image.IsEmpty());
+            DestroyCachedImageFetcher();
+            destroyed.SetValue();
+          }),
+      ImageFetcherParams(TRAFFIC_ANNOTATION_FOR_TESTS, kUmaClientName));
+  db()->LoadCallback(true);
+  ASSERT_TRUE(destroyed.Wait());
+}
+
+TEST_F(CachedImageFetcherTest,
+       DataCallbackFromNetworkWithoutTranscodingCanDestroyFetcher) {
+  const GURL kImageUrl("http://gstatic.img.com/foo.jpg");
+  test_url_loader_factory()->AddResponse(kImageUrl.spec(), kImageData);
+
+  ImageFetcherParams params(TRAFFIC_ANNOTATION_FOR_TESTS, kUmaClientName);
+  params.set_skip_transcoding_for_testing(true);
+
+  base::test::TestFuture<void> destroyed;
+  cached_image_fetcher()->FetchImageAndData(
+      kImageUrl,
+      base::BindLambdaForTesting([&](ImageData data, const RequestMetadata&) {
+        EXPECT_THAT(data, HasImageData(kImageData));
+        DestroyCachedImageFetcher();
+        destroyed.SetValue();
+      }),
+      ImageFetcherCallback(), params);
+  db()->LoadCallback(true);
+  ASSERT_TRUE(destroyed.Wait());
+}
+
+TEST_F(CachedImageFetcherTest, ImageCallbackFromNetworkCanDestroyFetcher) {
+  const GURL kImageUrl("http://gstatic.img.com/foo.jpg");
+  test_url_loader_factory()->AddResponse(kImageUrl.spec(), kImageData);
+
+  base::test::TestFuture<void> destroyed;
+  cached_image_fetcher()->FetchImageAndData(
+      kImageUrl, ImageDataFetcherCallback(),
+      base::BindLambdaForTesting(
+          [&](const gfx::Image& image, const RequestMetadata&) {
+            EXPECT_FALSE(image.IsEmpty());
+            DestroyCachedImageFetcher();
+            destroyed.SetValue();
+          }),
+      ImageFetcherParams(TRAFFIC_ANNOTATION_FOR_TESTS, kUmaClientName));
+  db()->LoadCallback(true);
+  ASSERT_TRUE(destroyed.Wait());
 }
 
 }  // namespace image_fetcher

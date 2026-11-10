@@ -178,10 +178,14 @@ void CachedImageFetcher::OnImageFetchedFromCache(
   } else {
     auto shared_image_data =
         base::MakeRefCounted<base::RefCountedString>(std::move(image_data));
+    auto weak_this = weak_ptr_factory_.GetWeakPtr();
     DataCallbackIfPresent(std::move(image_data_callback), shared_image_data,
                           RequestMetadata());
     ImageFetcherMetricsReporter::ReportEvent(request.params.uma_client_name(),
                                              ImageFetcherEvent::kCacheHit);
+    if (!weak_this) {
+      return;
+    }
 
     // Only continue with decoding if the user actually asked for an image, or
     // the image hadn't been transcoded yet and NOT loaded in the reduced mode.
@@ -193,7 +197,7 @@ void CachedImageFetcher::OnImageFetchedFromCache(
       GetImageDecoder()->DecodeImage(
           shared_image_data->as_string(), gfx::Size(), data_decoder,
           base::BindOnce(&CachedImageFetcher::OnImageDecodedFromCache,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(request),
+                         weak_this, std::move(request),
                          ImageDataFetcherCallback(), std::move(image_callback),
                          cache_result_needs_transcoding));
     }
@@ -219,9 +223,13 @@ void CachedImageFetcher::OnImageDecodedFromCache(
                                  std::move(image_data_callback),
                                  std::move(image_callback));
   } else {
+    auto weak_this = weak_ptr_factory_.GetWeakPtr();
     ImageCallbackIfPresent(std::move(image_callback), image, RequestMetadata());
     ImageFetcherMetricsReporter::ReportImageLoadFromCacheTime(
         request.params.uma_client_name(), request.start_time);
+    if (!weak_this) {
+      return;
+    }
 
     // If cache_result_needs_transcoding is true, then this should be stored
     // again to replace the image data already on disk with the transcoded data.
@@ -254,7 +262,7 @@ void CachedImageFetcher::FetchImageFromNetwork(
     ImageFetcherCallback image_callback) {
   TRACE_EVENT("ui", "CachedImageFetcher::FetchImageFromNetwork",
               perfetto::Flow::ProcessScoped(request.flow_id));
-  const GURL& url = request.url;
+  GURL url = request.url;
 
   ImageDataFetcherCallback wrapper_data_callback;
   ImageFetcherCallback wrapper_image_callback;
@@ -289,12 +297,16 @@ void CachedImageFetcher::OnImageFetchedWithoutTranscoding(
     ImageDataFetcherCallback image_data_callback,
     ImageData image_data,
     const RequestMetadata& request_metadata) {
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
   DataCallbackIfPresent(std::move(image_data_callback), image_data,
                         request_metadata);
 
   if (image_data->size() == 0) {
     ImageFetcherMetricsReporter::ReportEvent(request.params.uma_client_name(),
                                              ImageFetcherEvent::kTotalFailure);
+  }
+  if (!weak_this) {
+    return;
   }
 
   // TODO(crbug.com/579214229): Pass `ImageData` through `StoreData()` and
@@ -311,6 +323,7 @@ void CachedImageFetcher::OnImageFetchedForTranscoding(
     const RequestMetadata& request_metadata) {
   TRACE_EVENT("ui", "CachedImageFetcher::OnImageFetchedForTranscoding",
               perfetto::Flow::ProcessScoped(request.flow_id));
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
   ImageCallbackIfPresent(std::move(image_callback), image, request_metadata);
 
   // Report to different histograms depending upon if there was a cache hit.
@@ -320,6 +333,9 @@ void CachedImageFetcher::OnImageFetchedForTranscoding(
   } else {
     ImageFetcherMetricsReporter::ReportImageLoadFromNetworkTime(
         request.params.uma_client_name(), request.start_time);
+  }
+  if (!weak_this) {
+    return;
   }
 
   EncodeAndStoreData(/* cache_result_needs_transcoding */ false,
