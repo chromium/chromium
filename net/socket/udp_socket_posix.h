@@ -42,16 +42,6 @@ class NetLog;
 struct NetLogSource;
 class SocketTag;
 
-// These values are persisted to logs, entries should not be renumbered.
-// LINT.IfChange(SetSocketOptionGroResult)
-enum class SetSocketOptionGroResult {
-  kSuccess = 0,
-  kUnsupportedKernel = 1,
-  kOtherError = 2,
-  kMaxValue = kOtherError,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:SetSocketOptionGroResult)
-
 class NET_EXPORT UDPSocketPosix {
  public:
   UDPSocketPosix(DatagramSocket::BindType bind_type,
@@ -107,14 +97,12 @@ class NET_EXPORT UDPSocketPosix {
   int Read(IOBuffer* buf, int buf_len, CompletionOnceCallback callback);
 
   // Reads multiple datagrams from a connected socket.
-  //
-  // NOTE: When UDP GRO (Generic Receive Offload) is enabled on
-  // Linux/Android/ChromeOS, the kernel can coalesce incoming UDP datagrams into
-  // a single superpacket up to 64KB (64 * 1024 bytes). If the caller provides a
-  // buffer (`buf_len`) smaller than 64KB, recvmsg() sets MSG_TRUNC and returns
-  // ERR_MSG_TOO_BIG whenever enough packets happen to be coalesced to exceed
-  // the buffer size. Callers must pass a buffer of at least
-  // `kMinimumReadMultipleBufferSize` (64KB) to prevent packet truncation.
+  // Only usable after the socket has been connected.
+  // The number of packets read is determined by the ratio of |buf_len| to
+  // |maximum_packet_size| (capped at 16 packets per call when using recvmmsg).
+  // On platforms supporting recvmmsg (Linux, ChromeOS, Android), it uses it
+  // to read multiple datagrams. On other POSIX platforms (e.g., macOS,
+  // Fuchsia), it falls back to reading a single datagram using recvmsg.
   base::expected<DatagramsMetadata, Error> ReadMultiple(
       IOBuffer* buffer,
       size_t buf_len,
@@ -334,23 +322,10 @@ class NET_EXPORT UDPSocketPosix {
   bool get_experimental_recv_optimization_enabled_for_testing() const {
     return experimental_recv_optimization_enabled_;
   }
-  void set_gro_enabled_for_testing(bool gro_enabled) {
-    gro_status_ = gro_enabled ? GroStatus::kEnabled : GroStatus::kDisabled;
-  }
-  bool is_gro_enabled_for_testing() const {
-    return gro_status_ == GroStatus::kEnabled;
-  }
-  void ConfigureGroSocketOptionForTesting() { ConfigureGroSocketOption(); }
 
   DscpAndEcn GetLastTos() const { return TosToDscpAndEcn(last_tos_); }
 
  private:
-  enum class GroStatus : uint8_t {
-    kUnconfigured,
-    kEnabled,
-    kDisabled,
-  };
-
   enum SocketOptions {
     SOCKET_OPTION_MULTICAST_LOOP = 1 << 0
   };
@@ -410,7 +385,6 @@ class NET_EXPORT UDPSocketPosix {
                const sockaddr* addr);
   void LogRead(int result, const char* bytes, const IPEndPoint* address);
   void LogWrite(int result, const char* bytes, const IPEndPoint* address);
-  void ConfigureGroSocketOption();
 
   // Same as SendTo(), except that address is passed by pointer
   // instead of by reference. It is called from Write() with |address|
@@ -440,34 +414,27 @@ class NET_EXPORT UDPSocketPosix {
     size_t bytes_read = 0;
     int msg_flags = 0;
     std::optional<uint8_t> tos;
-    std::optional<size_t> gso_size;
     SockaddrStorage storage;
   };
   base::expected<RecvmsgResult, Error> DoRecvmsg(IOBuffer* buf,
                                                  size_t buf_len,
                                                  bool populate_remote_address);
-  void FillResultFromMessageHeader(struct msghdr* msg, RecvmsgResult* result);
+  static void FillResultFromMessageHeader(struct msghdr* msg,
+                                          RecvmsgResult* result);
 
   base::expected<DatagramsMetadata, Error> InternalReadMultiple(
       IOBuffer* buffer,
       size_t buf_len,
       size_t maximum_packet_size);
 
-  // recvmmsg() and GRO are only available on Linux, ChromeOS, and Android.
+  // recvmmsg() is only available on Linux, ChromeOS, and Android.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-  base::expected<DatagramsMetadata, Error> InternalReadMultipleWithGro(
-      IOBuffer* buffer,
-      size_t buf_len,
-      size_t maximum_packet_size);
   base::expected<DatagramsMetadata, Error> InternalRecvMmsg(
       IOBuffer* buffer,
       size_t num_messages,
       size_t maximum_packet_size);
-  base::expected<DatagramsMetadata, Error> ProcessRecvMmsgResults(
+  static base::expected<DatagramsMetadata, Error> ProcessRecvMmsgResults(
       base::span<struct mmsghdr> mmsg,
-      size_t maximum_packet_size);
-  static base::expected<DatagramsMetadata, Error> ProcessGroResult(
-      const RecvmsgResult& res,
       size_t maximum_packet_size);
 #endif
 
@@ -574,9 +541,6 @@ class NET_EXPORT UDPSocketPosix {
   // client of the socket has to opt-in by calling the
   // enable_experimental_recv_optimization() method.
   bool experimental_recv_optimization_enabled_ = false;
-
-  // Tracks the configuration status of UDP Generic Receive Offload (UDP_GRO).
-  GroStatus gro_status_ = GroStatus::kUnconfigured;
 
   // Manages decrementing the global open UDP socket counter when this
   // UDPSocket is destroyed.

@@ -1397,7 +1397,6 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_USE_WVLES_FOR_LAYERED_STUDY,
                 "When enabled, WebView uses the nonembedded low entropy source for layered studies."
                         + " This requires 2 restarts of the WebView-based app to take effect."),
-        Flag.baseFeature("EnableUdpGro", "Utilizes GRO over recvmmsg for readMultiple."),
         Flag.baseFeature(
                 "StructuredHeadersInRust",
                 "Enables the Rust-based structured headers parser instead of C++."),

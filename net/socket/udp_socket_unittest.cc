@@ -11,14 +11,12 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/posix/eintr_wrapper.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/scoped_clear_last_error.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_view_util.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_run_loop_timeout.h"
@@ -39,7 +37,6 @@
 #include "net/log/net_log_source.h"
 #include "net/log/test_net_log.h"
 #include "net/log/test_net_log_util.h"
-#include "net/socket/extra_socket_defines.h"
 #include "net/socket/socket_test_util.h"
 #include "net/socket/udp_client_socket.h"
 #include "net/socket/udp_server_socket.h"
@@ -209,8 +206,7 @@ class UDPSocketTest : public PlatformTest, public WithTaskEnvironment {
       size_t buf_len,
       size_t maximum_packet_size,
       size_t expected_count) {
-    CHECK_GE(buf_len, kMinimumReadMultipleBufferSize +
-                          expected_count * maximum_packet_size);
+    CHECK_GE(buf_len, expected_count * maximum_packet_size);
     DatagramsMetadata accumulated_metadata;
     while (accumulated_metadata.size() < expected_count) {
       base::test::ScopedRunLoopTimeout timeout(FROM_HERE, base::Seconds(5));
@@ -2669,8 +2665,8 @@ TEST_F(UDPSocketTest, ReadMultiple) {
 
   // Prepare receiver buffer.
   constexpr size_t kMaxPacketSize = 1024;
-  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(
-      kMinimumReadMultipleBufferSize + packets.size() * kMaxPacketSize);
+  auto read_buf =
+      base::MakeRefCounted<IOBufferWithSize>(packets.size() * kMaxPacketSize);
 
   // Read datagrams.
   base::expected<DatagramsMetadata, Error> read_result =
@@ -2770,8 +2766,7 @@ TEST_F(UDPSocketTest, ReadMultipleControlTruncated) {
 
   // Prepare receiver buffer.
   constexpr size_t kMaxPacketSize = 1024;
-  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(
-      kMinimumReadMultipleBufferSize + kMaxPacketSize);
+  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kMaxPacketSize);
 
   // Read datagrams. We expect this to fail with ERR_CONTROL_MSG_TOO_BIG because
   // of MSG_CTRUNC.
@@ -2825,8 +2820,7 @@ TEST_F(UDPSocketTest, ReadMultiple_TooBig) {
 
   // Receiver reads with max packet size smaller than send size.
   constexpr size_t kMaxPacketSize = 40;
-  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(
-      kMinimumReadMultipleBufferSize + kMaxPacketSize);
+  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kMaxPacketSize);
 
   base::expected<DatagramsMetadata, Error> read_result =
       ReadMultipleExpectedCount(&receiver, read_buf.get(),
@@ -2868,8 +2862,7 @@ TEST_F(UDPSocketTest, ReadMultiple_Async) {
 
   // Receiver calls ReadMultiple when NO data is available yet.
   constexpr size_t kMaxPacketSize = 100;
-  auto read_buf =
-      base::MakeRefCounted<IOBufferWithSize>(kMinimumReadMultipleBufferSize);
+  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kMaxPacketSize);
 
   base::test::TestFuture<base::expected<DatagramsMetadata, Error>> future;
 
@@ -2914,8 +2907,7 @@ TEST_F(UDPSocketTest, ReadMultiple_ClosedSocket) {
   receiver.Close();
 
   constexpr size_t kMaxPacketSize = 100;
-  auto read_buf =
-      base::MakeRefCounted<IOBufferWithSize>(kMinimumReadMultipleBufferSize);
+  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kMaxPacketSize);
   base::test::TestFuture<base::expected<DatagramsMetadata, Error>> future;
 
   auto rv_read = receiver.ReadMultiple(read_buf.get(), read_buf->span().size(),
@@ -2925,306 +2917,86 @@ TEST_F(UDPSocketTest, ReadMultiple_ClosedSocket) {
   EXPECT_EQ(rv_read.error(), ERR_INVALID_HANDLE);
 }
 
-TEST_F(UDPSocketTest, ReadFailsWhenGroEnabled) {
-  UDPSocket receiver(DatagramSocket::DEFAULT_BIND, nullptr, NetLogSource());
-  receiver.set_gro_enabled_for_testing(true);
-  ASSERT_THAT(receiver.Open(ADDRESS_FAMILY_IPV4), IsOk());
-
-  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(100);
-  TestCompletionCallback callback;
-  EXPECT_CHECK_DEATH(
-      receiver.Read(read_buf.get(), read_buf->size(), callback.callback()));
-}
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-class UDPSocketGroTest : public UDPSocketTest {
- protected:
-  UDPSocketGroTest()
-      : sender_(DatagramSocket::DEFAULT_BIND, nullptr, NetLogSource()),
-        receiver_(DatagramSocket::DEFAULT_BIND, nullptr, NetLogSource()) {}
+TEST_F(UDPSocketTest, ReadMultiple_CapsAt16Packets) {
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting scoped_always_sample;
+  base::HistogramTester histogram_tester;
 
-  void SetUp() override {
-    UDPSocketTest::SetUp();
-    AddScopedFeatureList().InitAndEnableFeature(features::kEnableUdpGro);
+  UDPSocket sender(DatagramSocket::DEFAULT_BIND, nullptr, NetLogSource());
+  UDPSocket receiver(DatagramSocket::DEFAULT_BIND, nullptr, NetLogSource());
+
+  IPEndPoint local_address(IPAddress::IPv4Localhost(), 0);
+  ASSERT_THAT(sender.Open(ADDRESS_FAMILY_IPV4), IsOk());
+  ASSERT_THAT(sender.Bind(local_address), IsOk());
+
+  IPEndPoint sender_addr;
+  ASSERT_THAT(sender.GetLocalAddress(&sender_addr), IsOk());
+
+  ASSERT_THAT(receiver.Open(ADDRESS_FAMILY_IPV4), IsOk());
+  ASSERT_THAT(receiver.SetReceiveBufferSize(256 * 1024), IsOk());
+  ASSERT_THAT(receiver.Connect(sender_addr), IsOk());
+
+  IPEndPoint receiver_addr;
+  ASSERT_THAT(receiver.GetLocalAddress(&receiver_addr), IsOk());
+
+  constexpr size_t kTotalPackets = 20;
+  for (size_t i = 0; i < kTotalPackets; ++i) {
+    std::string payload = "packet_" + base::NumberToString(i);
+    ASSERT_EQ(SendToSocket(&sender, payload, receiver_addr),
+              static_cast<int>(payload.size()));
   }
 
-  // Configures GRO sockets and verifies that the kernel loopback interface
-  // actually performs UDP GRO packet coalescing. On some test devices/emulators
-  // (e.g., android-arm-tests), setting the UDP_GRO and UDP_SEGMENT socket
-  // options succeeds, but the loopback interface driver does not coalesce
-  // packets. In those environments, ReadMultiple() falls back to reading
-  // uncoalesced single datagrams. This method sends a 2-segment payload and
-  // skips the test if packet coalescing is inactive.
-  void SetupAndVerifyGroOrSkip() {
-    IPEndPoint local_address(IPAddress::IPv4Localhost(), 0);
-    ASSERT_THAT(sender_.Open(ADDRESS_FAMILY_IPV4), IsOk());
-    ASSERT_THAT(sender_.Bind(local_address), IsOk());
-
-    IPEndPoint sender_addr;
-    ASSERT_THAT(sender_.GetLocalAddress(&sender_addr), IsOk());
-    ASSERT_THAT(receiver_.Open(ADDRESS_FAMILY_IPV4), IsOk());
-
-    receiver_.ConfigureGroSocketOptionForTesting();
-    if (!receiver_.is_gro_enabled_for_testing()) {
-      GTEST_SKIP()
-          << "UDP GRO is not supported by the kernel on this platform.";
-    }
-
-    ASSERT_THAT(receiver_.Connect(sender_addr), IsOk());
-    ASSERT_THAT(receiver_.GetLocalAddress(&receiver_addr_), IsOk());
-
-    SetGsoSize(100);
-    if (HasFatalFailure() || IsSkipped()) {
-      return;
-    }
-    SendGroPayload(200, 'z');
-
-    // Directly probe OS kernel GRO support using low-level recvmsg() rather
-    // than calling receiver_.ReadMultiple(), so that a bug in ReadMultiple()
-    // cannot cause the test suite to be silently skipped.
-    //
-    // Note: When GRO coalescing is active, the single recvmsg() call below
-    // consumes the entire 200-byte coalesced superpacket from the socket
-    // receive buffer, leaving the queue completely empty for subsequent
-    // ReadMultiple() test calls. If GRO is inactive, has_gro_cmsg evaluates to
-    // false and the test is skipped immediately.
-    char buf[2048];
-    alignas(struct cmsghdr) char control_buf[512];
-    struct iovec iov = {.iov_base = buf, .iov_len = sizeof(buf)};
-    struct msghdr msg = {};
-    msg.msg_iov = &iov;
-    msg.msg_iovlen = 1;
-    msg.msg_control = control_buf;
-    msg.msg_controllen = sizeof(control_buf);
-
-    ssize_t bytes_read =
-        HANDLE_EINTR(recvmsg(receiver_.SocketDescriptorForTesting(), &msg, 0));
-    ASSERT_GT(bytes_read, 0);
-
-    bool has_gro_cmsg = false;
-    for (struct cmsghdr* cmsg = CMSG_FIRSTHDR(&msg); cmsg != nullptr;
-         cmsg = CMSG_NXTHDR(&msg, cmsg)) {
-      if (cmsg->cmsg_level == SOL_UDP && cmsg->cmsg_type == UDP_GRO) {
-        has_gro_cmsg = true;
-        break;
-      }
-    }
-
-    if (!has_gro_cmsg) {
-      GTEST_SKIP() << "UDP GRO packet coalescing is not active on this kernel "
-                      "environment.";
-    }
-  }
-
-  void SetGsoSize(int gso_size) {
-    if (HasFatalFailure() || IsSkipped()) {
-      return;
-    }
-    if (setsockopt(sender_.SocketDescriptorForTesting(), SOL_UDP, UDP_SEGMENT,
-                   &gso_size, sizeof(gso_size)) < 0) {
-      GTEST_SKIP()
-          << "UDP_SEGMENT is not supported by the kernel on this platform.";
-    }
-  }
-
-  void SendGroPayload(size_t len, char fill_char = 'a') {
-    std::string data(len, fill_char);
-    auto write_buf = base::MakeRefCounted<StringIOBuffer>(data);
-    TestCompletionCallback write_callback;
-    int write_rv = sender_.SendTo(write_buf.get(), write_buf->size(),
-                                  receiver_addr_, write_callback.callback());
-    ASSERT_EQ(write_callback.GetResult(write_rv), write_buf->size());
-  }
-
-  UDPSocket sender_;
-  UDPSocket receiver_;
-  IPEndPoint receiver_addr_;
-  base::HistogramTester histogram_tester_;
-
- private:
-  base::MetricsSubSampler::ScopedAlwaysSampleForTesting scoped_always_sample_;
-};
-
-TEST_F(UDPSocketGroTest, ReadMultipleGroSyncSuccess) {
-  SetupAndVerifyGroOrSkip();
-  if (HasFatalFailure() || IsSkipped()) {
-    return;
-  }
-
-  SendGroPayload(200, 'a');
-  constexpr size_t kMaxPacketSize = 1024;
-  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(
-      kMinimumReadMultipleBufferSize + 2 * kMaxPacketSize);
-  base::expected<DatagramsMetadata, Error> read_result =
-      ReadMultipleExpectedCount(&receiver_, read_buf.get(),
-                                read_buf->span().size(), kMaxPacketSize, 2);
-  ASSERT_TRUE(read_result.has_value())
-      << "ReadMultiple failed: " << read_result.error();
-  ASSERT_EQ(read_result.value().size(), 2u);
-  EXPECT_EQ(read_result.value()[0].length, 100u);
-  EXPECT_EQ(read_result.value()[0].offset, 0u);
-  EXPECT_EQ(read_result.value()[1].length, 100u);
-  EXPECT_EQ(read_result.value()[1].offset, 100u);
-  histogram_tester_.ExpectUniqueSample("Net.UDPSocketPosix.GroPacketsRead", 2,
-                                       1);
-  histogram_tester_.ExpectTotalCount("Net.UDPSocketPosix.RecvMmsgPacketsRead",
-                                     0);
-}
-
-TEST_F(UDPSocketGroTest, ReadMultipleGroSingleUncoalescedPacket) {
-  SetupAndVerifyGroOrSkip();
-  if (HasFatalFailure() || IsSkipped()) {
-    return;
-  }
-
-  SendGroPayload(100, 'a');
-
-  constexpr size_t kMaxPacketSize = 1024;
-  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(
-      kMinimumReadMultipleBufferSize + kMaxPacketSize);
-  base::expected<DatagramsMetadata, Error> read_result =
-      ReadMultipleExpectedCount(&receiver_, read_buf.get(),
-                                read_buf->span().size(), kMaxPacketSize, 1);
-  ASSERT_TRUE(read_result.has_value())
-      << "ReadMultiple failed: " << read_result.error();
-  ASSERT_EQ(read_result.value().size(), 1u);
-  EXPECT_EQ(read_result.value()[0].length, 100u);
-  EXPECT_EQ(read_result.value()[0].offset, 0u);
-  histogram_tester_.ExpectUniqueSample("Net.UDPSocketPosix.GroPacketsRead", 1,
-                                       1);
-}
-
-TEST_F(UDPSocketGroTest, ReadMultipleGroSyncFailure) {
-  SetupAndVerifyGroOrSkip();
-  SetGsoSize(200);
-  if (HasFatalFailure() || IsSkipped()) {
-    return;
-  }
-
-  SendGroPayload(400, 'b');
-
-  // maximum_packet_size (100) is smaller than res.gso_size (200), which
-  // triggers ERR_MSG_TOO_BIG synchronously.
   constexpr size_t kMaxPacketSize = 100;
   auto read_buf =
-      base::MakeRefCounted<IOBufferWithSize>(kMinimumReadMultipleBufferSize);
-  base::test::TestFuture<base::expected<DatagramsMetadata, Error>> future;
-  auto rv_read = receiver_.ReadMultiple(read_buf.get(), read_buf->span().size(),
-                                        kMaxPacketSize, future.GetCallback());
-  ASSERT_FALSE(rv_read.has_value());
-  EXPECT_EQ(rv_read.error(), ERR_MSG_TOO_BIG);
-  histogram_tester_.ExpectTotalCount("Net.UDPSocketPosix.GroPacketsRead", 0);
-}
+      base::MakeRefCounted<IOBufferWithSize>(kTotalPackets * kMaxPacketSize);
 
-TEST_F(UDPSocketGroTest, ReadMultipleGroAsyncSuccess) {
-  SetupAndVerifyGroOrSkip();
-  if (HasFatalFailure() || IsSkipped()) {
-    return;
+  // Even though the buffer can hold 20 packets, a single recvmmsg batch must
+  // read at most 16 packets.
+  base::test::TestFuture<base::expected<DatagramsMetadata, Error>> future1;
+  auto first_read =
+      receiver.ReadMultiple(read_buf.get(), read_buf->span().size(),
+                            kMaxPacketSize, future1.GetCallback());
+  if (!first_read.has_value() && first_read.error() == ERR_IO_PENDING) {
+    first_read = future1.Get();
+  }
+  ASSERT_TRUE(first_read.has_value())
+      << "First ReadMultiple failed with error: " << first_read.error();
+  ASSERT_EQ(first_read.value().size(), 16u);
+  for (size_t i = 0; i < 16; ++i) {
+    std::string expected = "packet_" + base::NumberToString(i);
+    const auto& datagram = first_read.value()[i];
+    EXPECT_EQ(datagram.offset, i * kMaxPacketSize);
+    EXPECT_EQ(base::as_string_view(
+                  read_buf->span().subspan(datagram.offset, datagram.length)),
+              expected);
   }
 
-  // Call ReadMultiple before any data is sent to trigger async wait.
-  constexpr size_t kMaxPacketSize = 1024;
-  auto read_buf =
-      base::MakeRefCounted<IOBufferWithSize>(kMinimumReadMultipleBufferSize);
-  base::test::TestFuture<base::expected<DatagramsMetadata, Error>> future;
-  auto rv_read = receiver_.ReadMultiple(read_buf.get(), read_buf->span().size(),
-                                        kMaxPacketSize, future.GetCallback());
-  ASSERT_FALSE(rv_read.has_value());
-  ASSERT_EQ(rv_read.error(), ERR_IO_PENDING);
-
-  SendGroPayload(200, 'c');
-
-  base::expected<DatagramsMetadata, Error> read_result = future.Get();
-  ASSERT_TRUE(read_result.has_value())
-      << "ReadMultiple failed: " << read_result.error();
-  ASSERT_EQ(read_result.value().size(), 2u);
-  EXPECT_EQ(read_result.value()[0].length, 100u);
-  EXPECT_EQ(read_result.value()[0].offset, 0u);
-  EXPECT_EQ(read_result.value()[1].length, 100u);
-  EXPECT_EQ(read_result.value()[1].offset, 100u);
-  histogram_tester_.ExpectUniqueSample("Net.UDPSocketPosix.GroPacketsRead", 2,
-                                       1);
-}
-
-TEST_F(UDPSocketGroTest, ReadMultipleGroAsyncFailure) {
-  SetupAndVerifyGroOrSkip();
-  SetGsoSize(200);
-  if (HasFatalFailure() || IsSkipped()) {
-    return;
+  // A second ReadMultiple call drains the remaining 4 packets.
+  base::test::TestFuture<base::expected<DatagramsMetadata, Error>> future2;
+  auto second_read =
+      receiver.ReadMultiple(read_buf.get(), read_buf->span().size(),
+                            kMaxPacketSize, future2.GetCallback());
+  if (!second_read.has_value() && second_read.error() == ERR_IO_PENDING) {
+    second_read = future2.Get();
+  }
+  ASSERT_TRUE(second_read.has_value())
+      << "Second ReadMultiple failed with error: " << second_read.error();
+  ASSERT_EQ(second_read.value().size(), 4u);
+  for (size_t i = 0; i < 4; ++i) {
+    std::string expected = "packet_" + base::NumberToString(16 + i);
+    const auto& datagram = second_read.value()[i];
+    EXPECT_EQ(datagram.offset, i * kMaxPacketSize);
+    EXPECT_EQ(base::as_string_view(
+                  read_buf->span().subspan(datagram.offset, datagram.length)),
+              expected);
   }
 
-  // maximum_packet_size (100) is smaller than res.gso_size (200), which will
-  // trigger ERR_MSG_TOO_BIG when the superpacket arrives.
-  constexpr size_t kMaxPacketSize = 100;
-  auto read_buf =
-      base::MakeRefCounted<IOBufferWithSize>(kMinimumReadMultipleBufferSize);
-  base::test::TestFuture<base::expected<DatagramsMetadata, Error>> future;
-  auto rv_read = receiver_.ReadMultiple(read_buf.get(), read_buf->span().size(),
-                                        kMaxPacketSize, future.GetCallback());
-  ASSERT_FALSE(rv_read.has_value());
-  ASSERT_EQ(rv_read.error(), ERR_IO_PENDING);
-
-  SendGroPayload(400, 'd');
-
-  base::expected<DatagramsMetadata, Error> read_result = future.Get();
-  ASSERT_FALSE(read_result.has_value());
-  EXPECT_EQ(read_result.error(), ERR_MSG_TOO_BIG);
-  histogram_tester_.ExpectTotalCount("Net.UDPSocketPosix.GroPacketsRead", 0);
-}
-
-TEST_F(UDPSocketGroTest, ReadMultipleGroZeroSize) {
-  SetupAndVerifyGroOrSkip();
-  if (HasFatalFailure() || IsSkipped()) {
-    return;
-  }
-
-  // Send a 0-size datagram.
-  SockaddrStorage storage;
-  ASSERT_TRUE(receiver_addr_.ToSockAddr(storage.addr(), &storage.addr_len));
-  ssize_t sent = HANDLE_EINTR(sendto(sender_.SocketDescriptorForTesting(), "",
-                                     0, 0, storage.addr(), storage.addr_len));
-  ASSERT_EQ(sent, 0);
-
-  constexpr size_t kMaxPacketSize = 1024;
-  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(
-      kMinimumReadMultipleBufferSize + kMaxPacketSize);
-  base::expected<DatagramsMetadata, Error> read_result =
-      ReadMultipleExpectedCount(&receiver_, read_buf.get(),
-                                read_buf->span().size(), kMaxPacketSize, 1);
-  ASSERT_TRUE(read_result.has_value())
-      << "ReadMultiple failed: " << read_result.error();
-  ASSERT_EQ(read_result.value().size(), 1u);
-  EXPECT_EQ(read_result.value()[0].length, 0u);
-  EXPECT_EQ(read_result.value()[0].offset, 0u);
-  histogram_tester_.ExpectTotalCount("Net.UDPSocketPosix.GroPacketsRead", 1);
-}
-
-TEST_F(UDPSocketGroTest, ReadMultipleGroUnequalSegments) {
-  SetupAndVerifyGroOrSkip();
-  if (HasFatalFailure() || IsSkipped()) {
-    return;
-  }
-
-  // Send 201 bytes. With GSO size 100, this should be split into 100, 100, 1.
-  SendGroPayload(201, 'b');
-
-  constexpr size_t kMaxPacketSize = 1024;
-  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(
-      kMinimumReadMultipleBufferSize + 3 * kMaxPacketSize);
-  base::expected<DatagramsMetadata, Error> read_result =
-      ReadMultipleExpectedCount(&receiver_, read_buf.get(),
-                                read_buf->span().size(), kMaxPacketSize, 3);
-  ASSERT_TRUE(read_result.has_value())
-      << "ReadMultiple failed: " << read_result.error();
-  ASSERT_EQ(read_result.value().size(), 3u);
-  EXPECT_EQ(read_result.value()[0].length, 100u);
-  EXPECT_EQ(read_result.value()[0].offset, 0u);
-  EXPECT_EQ(read_result.value()[1].length, 100u);
-  EXPECT_EQ(read_result.value()[1].offset, 100u);
-  EXPECT_EQ(read_result.value()[2].length, 1u);
-  EXPECT_EQ(read_result.value()[2].offset, 200u);
-  histogram_tester_.ExpectUniqueSample("Net.UDPSocketPosix.GroPacketsRead", 3,
-                                       1);
+  histogram_tester.ExpectTotalCount("Net.UDPSocketPosix.RecvMmsgPacketsRead",
+                                    2);
+  histogram_tester.ExpectBucketCount("Net.UDPSocketPosix.RecvMmsgPacketsRead",
+                                     16, 1);
+  histogram_tester.ExpectBucketCount("Net.UDPSocketPosix.RecvMmsgPacketsRead",
+                                     4, 1);
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
