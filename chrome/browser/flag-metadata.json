@@ -7342,7 +7342,7 @@
   {
     "name": "ntp-enable-instant-api-android",
     "owners": [ "giannich@google.com", "yvonneshi@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 164
   },
   {
     "name": "ntp-feature-optimization-module-removal",
@@ -10075,8 +10075,8 @@
   },
   {
     "name": "use-webui-ntp-3p-dse",
-    "owners": [ "giannich@google.com", "yvonneshi@google.com", "ruoxih@google.com" ],
-    "expiry_milestone": 160
+    "owners": [ "giannich@google.com", "yvonneshi@google.com" ],
+    "expiry_milestone": 164
   },
   {
     "name": "use-webui-ntp-android",
