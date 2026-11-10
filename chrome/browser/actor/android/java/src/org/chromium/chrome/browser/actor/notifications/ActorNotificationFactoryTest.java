@@ -344,33 +344,47 @@ public class ActorNotificationFactoryTest {
     @Test
     public void testBuildNotification_Stopped() {
         // Use an unhandled state to trigger the fallback
+        assertStoppedNotification(ActorTaskState.FAILED);
+    }
+
+    @Test
+    public void testBuildNotification_Cancelled() {
+        assertStoppedNotification(ActorTaskState.CANCELLED);
+    }
+
+    private void assertStoppedNotification(@ActorTaskState int state) {
         NotificationWrapper wrapper =
                 ActorNotificationFactory.buildNotification(
-                        mTask,
-                        ActorTaskState.FAILED,
-                        /* isSilent= */ false,
-                        /* isWarning= */ false);
+                        mTask, state, /* isSilent= */ false, /* isWarning= */ false);
 
         assertNotNull("Notification wrapper should not be null", wrapper);
         Notification notification = wrapper.getNotification();
         assertNotNull("Notification should not be null", notification);
         ShadowNotification shadowNotification = shadowOf(notification);
 
+        String expectedBody =
+                mContext.getString(R.string.actor_notification_body_stopped, TASK_TITLE);
         assertEquals(
-                "Content title should match stopped status for fallback",
+                "Content title should match stopped status",
                 mContext.getString(R.string.actor_notification_title_task_stopped),
                 shadowNotification.getContentTitle());
         assertEquals(
                 "Content text should match stopped template",
-                mContext.getString(R.string.actor_notification_body_stopped, TASK_TITLE),
+                expectedBody,
                 shadowNotification.getContentText());
         assertEquals(
                 "Big text should match content text",
-                mContext.getString(R.string.actor_notification_body_stopped, TASK_TITLE),
+                expectedBody,
                 notification.extras.getCharSequence(Notification.EXTRA_BIG_TEXT));
         assertTrue(
                 "Stopped notification should be ongoing when live",
                 (notification.flags & Notification.FLAG_ONGOING_EVENT) != 0);
+        assertTrue(
+                "Stopped notification should have auto-cancel enabled",
+                (notification.flags & Notification.FLAG_AUTO_CANCEL) != 0);
+        assertFalse(
+                "Live stopped notification should be allowed to alert",
+                (notification.flags & Notification.FLAG_ONLY_ALERT_ONCE) != 0);
         assertTrue(
                 "Stopped notification should request promoted ongoing",
                 notification.extras.getBoolean(
@@ -388,15 +402,22 @@ public class ActorNotificationFactoryTest {
         NotificationWrapper nonLiveWrapper =
                 ActorNotificationFactory.buildNotification(
                         mTask,
-                        ActorTaskState.FAILED,
+                        state,
                         /* isSilent= */ true,
                         /* isWarning= */ false,
                         /* isLive= */ false);
         assertNotNull(nonLiveWrapper);
         Notification nonLiveNotification = nonLiveWrapper.getNotification();
+        assertEquals(
+                "Non-live stopped notification title should match stopped status",
+                mContext.getString(R.string.actor_notification_title_task_stopped),
+                shadowOf(nonLiveNotification).getContentTitle());
         assertFalse(
                 "Non-live stopped notification should not be ongoing",
                 (nonLiveNotification.flags & Notification.FLAG_ONGOING_EVENT) != 0);
+        assertTrue(
+                "Non-live stopped notification should only alert once",
+                (nonLiveNotification.flags & Notification.FLAG_ONLY_ALERT_ONCE) != 0);
         assertFalse(
                 "Non-live stopped notification should not request promoted ongoing",
                 nonLiveNotification.extras.getBoolean(
@@ -425,22 +446,39 @@ public class ActorNotificationFactoryTest {
     @Test
     public void testBuildNotification_Warning_LongRunning() {
         // PAUSED_BY_ACTOR indicates the task hit the running budget.
+        assertLongRunningWarningNotification(ActorTaskState.PAUSED_BY_ACTOR);
+    }
+
+    @Test
+    public void testBuildNotification_Warning_Acting() {
+        assertLongRunningWarningNotification(ActorTaskState.ACTING);
+    }
+
+    private void assertLongRunningWarningNotification(@ActorTaskState int state) {
         NotificationWrapper wrapper =
                 ActorNotificationFactory.buildNotification(
-                        mTask,
-                        ActorTaskState.PAUSED_BY_ACTOR,
-                        /* isSilent= */ false,
-                        /* isWarning= */ true);
+                        mTask, state, /* isSilent= */ false, /* isWarning= */ true);
 
         assertNotNull("Notification wrapper should not be null", wrapper);
         Notification notification = wrapper.getNotification();
+        assertNotNull("Notification should not be null", notification);
         ShadowNotification shadowNotification = shadowOf(notification);
 
+        String expectedBody =
+                mContext.getString(
+                        R.string.actor_notification_body_will_stop_task_long_running, TASK_TITLE);
+        assertEquals(
+                "Content title should match warning title",
+                mContext.getString(R.string.actor_notification_title_will_stop_task),
+                shadowNotification.getContentTitle());
         assertEquals(
                 "Content text should match long running warning template",
-                mContext.getString(
-                        R.string.actor_notification_body_will_stop_task_long_running, TASK_TITLE),
+                expectedBody,
                 shadowNotification.getContentText());
+        assertEquals(
+                "Big text should match content text",
+                expectedBody,
+                notification.extras.getCharSequence(Notification.EXTRA_BIG_TEXT));
         assertTrue(
                 "Warning notification should be ongoing",
                 (notification.flags & Notification.FLAG_ONGOING_EVENT) != 0);
@@ -453,6 +491,9 @@ public class ActorNotificationFactoryTest {
                 mContext.getString(R.string.actor_notification_live_status_review),
                 notification.extras.getCharSequence(
                         ActorNotificationFactory.EXTRA_SHORT_CRITICAL_TEXT));
+        assertNotNull("Content intent should be set", notification.contentIntent);
+        assertSmallIcon(notification);
+        assertAction(notification);
     }
 
     @Test
@@ -469,6 +510,10 @@ public class ActorNotificationFactoryTest {
         Notification notification = wrapper.getNotification();
         ShadowNotification shadowNotification = shadowOf(notification);
 
+        assertEquals(
+                "Content title should match warning title",
+                mContext.getString(R.string.actor_notification_title_will_stop_task),
+                shadowNotification.getContentTitle());
         assertEquals(
                 "Content text should match no response warning template",
                 mContext.getString(
