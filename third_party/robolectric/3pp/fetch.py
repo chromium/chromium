@@ -13,14 +13,14 @@ import pathlib
 # See what's available here:
 # https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/
 _ROBO_URL_FILES = {
-    'android-all-17-robolectric-15733970.jar':
-        'https://repo1.maven.org/maven2/org/robolectric/android-all/17-robolectric-15733970/android-all-17-robolectric-15733970.jar',
-    'android-all-instrumented-17-robolectric-15733970-i7.jar':
-        'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/17-robolectric-15733970-i7/android-all-instrumented-17-robolectric-15733970-i7.jar',
-    'android-all-instrumented-16-robolectric-13921718-i7.jar':
-        'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/16-robolectric-13921718-i7/android-all-instrumented-16-robolectric-13921718-i7.jar',
-    'android-all-instrumented-15-robolectric-13954326-i7.jar':
-        'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/15-robolectric-13954326-i7/android-all-instrumented-15-robolectric-13954326-i7.jar',
+    'android-all-17-robolectric-16653203.jar':
+        'https://repo1.maven.org/maven2/org/robolectric/android-all/17-robolectric-16653203/android-all-17-robolectric-16653203.jar',
+    'android-all-instrumented-17-robolectric-16653203-i7.jar':
+        'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/17-robolectric-16653203-i7/android-all-instrumented-17-robolectric-16653203-i7.jar',
+    'android-all-instrumented-16-robolectric-13921718-2-i7.jar':
+        'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/16-robolectric-13921718-2-i7/android-all-instrumented-16-robolectric-13921718-2-i7.jar',
+    'android-all-instrumented-15-robolectric-14663667-2-i7.jar':
+        'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/15-robolectric-14663667-2-i7/android-all-instrumented-15-robolectric-14663667-2-i7.jar',
     'android-all-instrumented-14-robolectric-10818077-i7.jar':
         'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/14-robolectric-10818077-i7/android-all-instrumented-14-robolectric-10818077-i7.jar',
     'android-all-instrumented-13-robolectric-9030017-i7.jar':
@@ -43,8 +43,8 @@ _ROBO_URL_FILES = {
         'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/7.1.0_r7-robolectric-r1-i7/android-all-instrumented-7.1.0_r7-robolectric-r1-i7.jar',
     'android-all-instrumented-7.0.0_r1-robolectric-r1-i7.jar':
         'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/7.0.0_r1-robolectric-r1-i7/android-all-instrumented-7.0.0_r1-robolectric-r1-i7.jar',
-    'nativeruntime-dist-compat-1.0.19.jar':
-        'https://repo1.maven.org/maven2/org/robolectric/nativeruntime-dist-compat/1.0.19/nativeruntime-dist-compat-1.0.19.jar',
+    'nativeruntime-dist-compat-1.0.20.jar':
+        'https://repo1.maven.org/maven2/org/robolectric/nativeruntime-dist-compat/1.0.20/nativeruntime-dist-compat-1.0.20.jar',
 }
 
 
