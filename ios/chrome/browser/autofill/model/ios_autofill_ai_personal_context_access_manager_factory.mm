@@ -7,10 +7,13 @@
 #import <utility>
 
 #import "base/feature_list.h"
+#import "base/functional/callback.h"
+#import "components/autofill/core/browser/logging/log_manager.h"
 #import "components/autofill/core/browser/network/autofill_ai/autofill_ai_personal_context_access_manager_impl.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/personal_context/core/personal_context_eligibility_service.h"
 #import "components/personal_context/core/personal_context_service.h"
+#import "ios/chrome/browser/autofill/model/autofill_log_router_factory.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_personal_context_entity_metadata_manager_factory.h"
 #import "ios/chrome/browser/personal_context/model/ios_personal_context_eligibility_service_factory.h"
 #import "ios/chrome/browser/personal_context/model/ios_personal_context_service_factory.h"
@@ -28,6 +31,7 @@ IOSAutofillAiPersonalContextAccessManagerFactory::
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
   DependsOn(
       IOSAutofillPersonalContextEntityMetadataManagerFactory::GetInstance());
+  DependsOn(autofill::AutofillLogRouterFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService>
@@ -52,5 +56,8 @@ IOSAutofillAiPersonalContextAccessManagerFactory::BuildServiceInstanceFor(
       personal_context_service, personal_context_eligibility_service,
       profile.GetPrefs(), DeviceInfoSyncServiceFactory::GetForProfile(profile),
       IOSAutofillPersonalContextEntityMetadataManagerFactory::GetForProfile(
-          profile));
+          profile),
+      autofill::LogManager::Create(
+          autofill::AutofillLogRouterFactory::GetForProfile(profile),
+          base::RepeatingClosure()));
 }

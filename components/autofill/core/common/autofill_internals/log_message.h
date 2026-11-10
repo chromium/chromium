@@ -63,6 +63,7 @@ class LogBuffer;
     "field: ")                                                                 \
   T(TouchToFill, "Touch To Fill: ")                                            \
   T(AutofillAi, "Autofill with AI: ")                                          \
+  T(PersonalContextPrefetch, "Personal Context Prefetch: ")                    \
   T(AtMemory, "AtMemory: ")                                                    \
   T(TriggeringClientsideModelFor,                                              \
     "Triggered clientside classification model for : ")

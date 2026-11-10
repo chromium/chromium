@@ -7,7 +7,10 @@
 #include <algorithm>
 #include <optional>
 #include <set>
+#include <string>
+#include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/check_deref.h"
@@ -19,6 +22,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -28,11 +32,16 @@
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_import_util.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/personal_context_metrics.h"
+#include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/manual_testing_import.h"
 #include "components/autofill/core/browser/network/autofill_ai/personal_context_conversion_util.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_util.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_internals/log_message.h"
+#include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/dense_set.h"
+#include "components/autofill/core/common/logging/log_buffer.h"
+#include "components/autofill/core/common/logging/log_macros.h"
 #include "components/personal_context/core/context_memory_error.h"
 #include "components/personal_context/core/personal_context_eligibility_service.h"
 #include "components/personal_context/core/personal_context_prefs.h"
@@ -250,6 +259,68 @@ std::string GetLocalDeviceGuid(
   return device_info->guid();
 }
 
+std::string_view TriggerResultToStringView(
+    PersonalContextPrefetchTriggerResult result) {
+  switch (result) {
+    using enum PersonalContextPrefetchTriggerResult;
+    case kInitiated:
+      return "kInitiated";
+    case kSkippedFreshCache:
+      return "kSkippedFreshCache";
+    case kSkippedBackoff:
+      return "kSkippedBackoff";
+    case kSkippedInFlight:
+      return "kSkippedInFlight";
+  }
+  NOTREACHED();
+}
+
+std::string_view ExecutionErrorToStringView(
+    personal_context::ContextMemoryError::ExecutionError error) {
+  switch (error) {
+    using enum personal_context::ContextMemoryError::ExecutionError;
+    case kUnknown:
+      return "kUnknown";
+    case kInvalidRequest:
+      return "kInvalidRequest";
+    case kRequestThrottled:
+      return "kRequestThrottled";
+    case kPermissionDenied:
+      return "kPermissionDenied";
+    case kGenericFailure:
+      return "kGenericFailure";
+    case kRetryableError:
+      return "kRetryableError";
+    case kNonRetryableError:
+      return "kNonRetryableError";
+    case kCancelled:
+      return "kCancelled";
+    case kResponseParseError:
+      return "kResponseParseError";
+  }
+  NOTREACHED();
+}
+
+std::string_view RequestTypeToStringView(
+    AutofillAiPersonalContextAccessManagerImpl::RequestType request_type) {
+  switch (request_type) {
+    using enum AutofillAiPersonalContextAccessManagerImpl::RequestType;
+    case kNonSpiiAndPresence:
+      return "kNonSpiiAndPresence";
+    case kSpiiMasked:
+      return "kSpiiMasked";
+    case kSpiiUnmasking:
+      return "kSpiiUnmasking";
+  }
+  NOTREACHED();
+}
+
+std::string EntityTypesToString(DenseSet<EntityType> types) {
+  std::vector<std::string_view> names =
+      base::ToVector(types, &EntityType::name_as_string);
+  return base::JoinString(names, ", ");
+}
+
 }  // namespace
 
 AutofillAiPersonalContextAccessManagerImpl::
@@ -259,12 +330,14 @@ AutofillAiPersonalContextAccessManagerImpl::
             personal_context_eligibility_service,
         PrefService* pref_service,
         syncer::DeviceInfoSyncService* device_info_sync_service,
-        PersonalContextEntityMetadataManager* entity_metadata_manager)
+        PersonalContextEntityMetadataManager* entity_metadata_manager,
+        std::unique_ptr<LogManager> log_manager)
     : personal_context_service_(CHECK_DEREF(personal_context_service)),
       personal_context_eligibility_service_(
           CHECK_DEREF(personal_context_eligibility_service)),
       pref_service_(pref_service),
-      device_info_sync_service_(device_info_sync_service) {
+      device_info_sync_service_(device_info_sync_service),
+      log_manager_(std::move(log_manager)) {
   eligibility_service_observation_.Observe(
       personal_context_eligibility_service);
   if (entity_metadata_manager) {
@@ -309,10 +382,13 @@ void AutofillAiPersonalContextAccessManagerImpl::PrefetchContext(
   DenseSet<EntityType> spii_to_request;
 
   DenseSet<PersonalContextPrefetchTriggerResult> unique_trigger_results;
+  LogBuffer trigger_buffer(IsLoggingActive(log_manager_.get()));
   for (EntityType type : requested_types) {
     PersonalContextPrefetchTriggerResult trigger_result =
         DeterminePrefetchTriggerResult(type);
     unique_trigger_results.insert(trigger_result);
+    LOG_AF(trigger_buffer) << Br{} << type.name_as_string() << ": "
+                           << TriggerResultToStringView(trigger_result);
 
     if (trigger_result == PersonalContextPrefetchTriggerResult::kInitiated) {
       non_spii_and_presence_to_request.insert(type);
@@ -323,6 +399,10 @@ void AutofillAiPersonalContextAccessManagerImpl::PrefetchContext(
       }
     }
   }
+
+  LOG_AF(log_manager_.get())
+      << LoggingScope::kAutofillAi << LogMessage::kPersonalContextPrefetch
+      << "Trigger Evaluation:" << std::move(trigger_buffer);
 
   LogPersonalContextPrefetchTriggerResults(unique_trigger_results);
 
@@ -382,7 +462,8 @@ void AutofillAiPersonalContextAccessManagerImpl::
   LogRequestLatency(request_type, base::TimeTicks::Now() - request_start_time);
 
   if (!result.response.has_value()) {
-    HandleFailedResponse(requested_types, request_type);
+    HandleFailedResponse(requested_types, request_type, result.response.error(),
+                         result.server_request_id);
     return;
   }
 
@@ -391,7 +472,8 @@ void AutofillAiPersonalContextAccessManagerImpl::
       parsed_entities = ExtractEntitiesFromResponse(result.response->value());
 
   if (!parsed_entities.has_value()) {
-    HandleFailedResponse(requested_types, request_type);
+    HandleFailedResponse(requested_types, request_type, parsed_entities.error(),
+                         result.server_request_id);
     return;
   }
 
@@ -405,8 +487,16 @@ void AutofillAiPersonalContextAccessManagerImpl::
     }
   }
 
-  ProcessPrefetchedEntities(prefetched_types, requested_types,
-                            std::move(*parsed_entities));
+  const size_t parsed_count = parsed_entities->size();
+  const size_t accepted_count = ProcessPrefetchedEntities(
+      prefetched_types, requested_types, std::move(*parsed_entities));
+
+  LOG_AF(log_manager_.get())
+      << LoggingScope::kAutofillAi << LogMessage::kPersonalContextPrefetch
+      << "Response (" << RequestTypeToStringView(request_type) << ") for ["
+      << EntityTypesToString(requested_types) << "]: Success (" << parsed_count
+      << " valid, " << accepted_count
+      << " accepted, server_request_id=" << result.server_request_id << ")";
 }
 
 base::expected<
@@ -629,7 +719,7 @@ void AutofillAiPersonalContextAccessManagerImpl::ResetStateForType(
                     *this, type);
 }
 
-void AutofillAiPersonalContextAccessManagerImpl::ProcessPrefetchedEntities(
+size_t AutofillAiPersonalContextAccessManagerImpl::ProcessPrefetchedEntities(
     DenseSet<EntityType> prefetched_types,
     DenseSet<EntityType> requested_types,
     std::vector<ParsedEntity> parsed_entities) {
@@ -654,11 +744,13 @@ void AutofillAiPersonalContextAccessManagerImpl::ProcessPrefetchedEntities(
   const PersonalContextEntityMetadataManager* entity_metadata_manager =
       entity_metadata_observation_.GetSource();
   size_t suppressed_count = 0;
+  size_t cached_signals_count = 0;
   for (ParsedEntity& entity : parsed_entities) {
     if (const auto* signal =
             std::get_if<SpiiEntityPresenceSignal>(&entity.instance)) {
       if (requested_types.contains(*signal)) {
         CachePresenceSignal(*signal);
+        cached_signals_count++;
       }
       continue;
     }
@@ -691,7 +783,9 @@ void AutofillAiPersonalContextAccessManagerImpl::ProcessPrefetchedEntities(
   LogEntitySuppressionEntitiesFilteredPerPrefetch(suppressed_count);
   // The funnel outcome of the remaining `entities` is logged by the
   // `EntityDataManager` when it deduplicates them.
+  const size_t accepted_count = entities.size() + cached_signals_count;
   NotifyPrefetchStatusObservers(entities);
+  return accepted_count;
 }
 
 void AutofillAiPersonalContextAccessManagerImpl::CacheUnmaskedSpiiEntity(
@@ -866,7 +960,15 @@ void AutofillAiPersonalContextAccessManagerImpl::SetTypeStatus(
 
 void AutofillAiPersonalContextAccessManagerImpl::HandleFailedResponse(
     DenseSet<EntityType> requested_types,
-    RequestType request_type) {
+    RequestType request_type,
+    personal_context::ContextMemoryError error,
+    std::string_view server_request_id) {
+  LOG_AF(log_manager_.get())
+      << LoggingScope::kAutofillAi << LogMessage::kPersonalContextPrefetch
+      << "Response (" << RequestTypeToStringView(request_type) << ") for ["
+      << EntityTypesToString(requested_types) << "]: Error ("
+      << ExecutionErrorToStringView(error.error())
+      << ", server_request_id=" << server_request_id << ")";
   for (EntityType type : requested_types) {
     if (request_type == RequestType::kNonSpiiAndPresence &&
         IsPersonalContextSpiiType(type)) {

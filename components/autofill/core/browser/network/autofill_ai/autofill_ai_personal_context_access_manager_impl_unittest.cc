@@ -26,6 +26,9 @@
 #include "components/autofill/core/browser/data_model/data_model_util.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/personal_context_metrics.h"
+#include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/browser/logging/log_receiver.h"
+#include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/browser/network/autofill_ai/autofill_ai_personal_context_access_manager_impl_test_api.h"
 #include "components/autofill/core/browser/network/autofill_ai/personal_context_conversion_util.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_util.h"
@@ -61,6 +64,7 @@ using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::Eq;
+using ::testing::HasSubstr;
 using ::testing::InSequence;
 using ::testing::IsEmpty;
 using ::testing::MockFunction;
@@ -69,6 +73,7 @@ using ::testing::Optional;
 using ::testing::Property;
 using ::testing::Ref;
 using ::testing::Return;
+using ::testing::StrictMock;
 using ::testing::UnorderedElementsAre;
 using ::testing::UnorderedElementsAreArray;
 using ::testing::WithArg;
@@ -207,7 +212,8 @@ class AutofillAiPersonalContextAccessManagerImplTest : public testing::Test {
         std::make_unique<AutofillAiPersonalContextAccessManagerImpl>(
             &mock_personal_context_service_, &mock_eligibility_service_,
             &pref_service_, &fake_device_info_sync_service_,
-            entity_metadata_manager_.get());
+            entity_metadata_manager_.get(),
+            LogManager::Create(&log_router_, base::NullCallback()));
     ON_CALL(mock_eligibility_service_, GetEligibilityState)
         .WillByDefault(Return(
             personal_context::PersonalContextEligibilityState::kEligible));
@@ -241,6 +247,8 @@ class AutofillAiPersonalContextAccessManagerImplTest : public testing::Test {
   MockAutofillAiPersonalContextAccessManagerObserver& mock_observer() {
     return mock_observer_;
   }
+
+  LogRouter& log_router() { return log_router_; }
 
   void SetClockToDate(const std::string& date_string) {
     base::Time time;
@@ -362,6 +370,7 @@ class AutofillAiPersonalContextAccessManagerImplTest : public testing::Test {
   MockPersonalContextService mock_personal_context_service_;
   MockPersonalContextEligibilityService mock_eligibility_service_;
   syncer::FakeDeviceInfoSyncService fake_device_info_sync_service_;
+  LogRouter log_router_;
   std::unique_ptr<PersonalContextEntityMetadataManager>
       entity_metadata_manager_;
   std::unique_ptr<AutofillAiPersonalContextAccessManagerImpl> access_manager_;
@@ -2668,6 +2677,51 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
 
   histogram_tester().ExpectTotalCount(
       "Autofill.Ai.PersonalContext.Prefetch.EntityFunnel", 0);
+}
+
+class MockLogReceiver : public LogReceiver {
+ public:
+  MockLogReceiver() = default;
+  ~MockLogReceiver() override = default;
+  MOCK_METHOD(void, LogEntry, (const base::DictValue&), (override));
+};
+
+// Tests that prefetching personal context entities emits trigger evaluation and
+// response completion log entries to `chrome://autofill-internals`.
+TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
+       PrefetchContext_LogsToAutofillInternals) {
+  SetClockToDate("2025-06-01 12:00:00");
+  StrictMock<MockLogReceiver> log_receiver;
+  base::ScopedObservation<LogRouter, LogReceiver> log_observation(
+      &log_receiver);
+  log_observation.Observe(&log_router());
+
+  personal_context::proto::ContextMemoryAmbientAutofillResponse response;
+  *response.add_entities() = CreateOrderProto({.date = u"2025-06-01"});
+
+  {
+    InSequence seq;
+    EXPECT_CALL(log_receiver, LogEntry)
+        .WillOnce([](const base::DictValue& entry) {
+          const std::string log_str = entry.DebugString();
+          EXPECT_THAT(log_str, HasSubstr("PersonalContextPrefetch"));
+          EXPECT_THAT(log_str, HasSubstr("Trigger Evaluation"));
+          EXPECT_THAT(log_str, HasSubstr("Order"));
+          EXPECT_THAT(log_str, HasSubstr("kInitiated"));
+        });
+    EXPECT_CALL(log_receiver, LogEntry)
+        .WillOnce([](const base::DictValue& entry) {
+          const std::string log_str = entry.DebugString();
+          EXPECT_THAT(log_str, HasSubstr("PersonalContextPrefetch"));
+          EXPECT_THAT(log_str,
+                      HasSubstr("Response (kNonSpiiAndPresence) for [Order]"));
+          EXPECT_THAT(log_str, HasSubstr("Success (1 valid, 1 accepted"));
+        });
+  }
+
+  EXPECT_CALL(mock_observer(),
+              OnPrefetchContextComplete(_, Optional(Not(IsEmpty()))));
+  PrefetchContextSync({kOrderType}, /*expected_spii_types=*/{}, response);
 }
 
 }  // namespace

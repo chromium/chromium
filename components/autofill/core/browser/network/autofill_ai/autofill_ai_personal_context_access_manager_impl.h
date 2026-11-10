@@ -43,6 +43,8 @@ class DeviceInfoSyncService;
 
 namespace autofill {
 
+class LogManager;
+
 // Manages fetching masked and unmasked pContext entities. In particular:
 // - Prefetches masked entities and broadcasts the result through its observer.
 //   The masked entities are not cached by the access manager itself, but
@@ -72,7 +74,8 @@ class AutofillAiPersonalContextAccessManagerImpl
           personal_context_eligibility_service,
       PrefService* pref_service,
       syncer::DeviceInfoSyncService* device_info_sync_service,
-      PersonalContextEntityMetadataManager* entity_metadata_manager);
+      PersonalContextEntityMetadataManager* entity_metadata_manager,
+      std::unique_ptr<LogManager> log_manager);
 
   AutofillAiPersonalContextAccessManagerImpl(
       const AutofillAiPersonalContextAccessManagerImpl&) = delete;
@@ -159,9 +162,10 @@ class AutofillAiPersonalContextAccessManagerImpl
   // - Scheduling eviction of the prefetched types.
   // - Scheduling eviction of spii presence signals.
   // - Notifying observers.
-  void ProcessPrefetchedEntities(DenseSet<EntityType> prefetched_types,
-                                 DenseSet<EntityType> requested_types,
-                                 std::vector<ParsedEntity> parsed_entities);
+  // Returns the number of accepted entities and cached presence signals.
+  size_t ProcessPrefetchedEntities(DenseSet<EntityType> prefetched_types,
+                                   DenseSet<EntityType> requested_types,
+                                   std::vector<ParsedEntity> parsed_entities);
 
   PersonalContextPrefetchTriggerResult DeterminePrefetchTriggerResult(
       EntityType type) const;
@@ -193,7 +197,9 @@ class AutofillAiPersonalContextAccessManagerImpl
   // failure status, as their outcome is governed by the dedicated SPII data
   // request.
   void HandleFailedResponse(DenseSet<EntityType> requested_types,
-                            RequestType request_type);
+                            RequestType request_type,
+                            personal_context::ContextMemoryError error,
+                            std::string_view server_request_id);
 
   // Logs the total latency for a prefetch request of a specific `type`.
   // Latency is only logged if the previous status was `kPending` and the
@@ -215,6 +221,7 @@ class AutofillAiPersonalContextAccessManagerImpl
       personal_context_eligibility_service_;
   const raw_ptr<PrefService> pref_service_;
   const raw_ptr<syncer::DeviceInfoSyncService> device_info_sync_service_;
+  const std::unique_ptr<LogManager> log_manager_;
 
   // Map from EntityId to the original proto Entity received during prefetch.
   absl::flat_hash_map<EntityInstance::EntityId, personal_context::proto::Entity>
