@@ -218,11 +218,15 @@ void SoftNavigationContext::OnInputOrScroll() {
 }
 
 void SoftNavigationContext::OnFramePresented(
-    LargestContentfulPaintCalculator::LcpCandidates* candidates) {
+    LargestContentfulPaintCalculator::LcpCandidates* candidates,
+    const base::TimeTicks& presentation_timestamp,
+    const DOMPaintTimingInfo& paint_timing_info,
+    uint64_t navigation_id) {
   // TODO(crbug.com/454082773): Input should not invalidate pending presentation
   // feedback, but this can happen due to scheduling races.
   CHECK(IsRecordingLargestContentfulPaint());
-  lcp_calculator_->OnFramePresented(candidates);
+  lcp_calculator_->OnFramePresented(candidates, presentation_timestamp,
+                                    paint_timing_info, navigation_id);
 }
 
 const LargestContentfulPaintDetails&
