@@ -83,28 +83,32 @@ void RecordJavaScriptResultCode(ActorJavaScriptCall call,
                            std::to_underlying(code));
 }
 
-void RecordToolTimings(std::string_view tool_name,
+void RecordToolTimings(ToolType tool_type,
                        base::TimeDelta execution_duration,
                        base::TimeDelta page_stabilization_duration) {
+  std::optional<std::string> tool_name = ToolTypeToToolName(tool_type);
+  if (!tool_name) {
+    return;
+  }
   base::UmaHistogramMediumTimes(
       base::StrCat(
-          {kIOSActorToolsExecutionDurationPrefixMetricName, tool_name}),
+          {kIOSActorToolsExecutionDurationPrefixMetricName, *tool_name}),
       execution_duration);
   base::UmaHistogramMediumTimes(
       base::StrCat(
-          {kIOSActorToolsPageStabilizationPrefixMetricName, tool_name}),
+          {kIOSActorToolsPageStabilizationPrefixMetricName, *tool_name}),
       page_stabilization_duration);
 }
 
-void RecordToolActionResultCode(std::string_view tool_name,
+void RecordToolActionResultCode(ToolType tool_type,
                                 const ToolExecutionResult& result) {
   const int external_code = std::to_underlying(result.code());
   base::UmaHistogramSparse(kIOSActorExecutionEngineActionResultCodeMetricName,
                            external_code);
-  if (!tool_name.empty()) {
+  if (std::optional<std::string> tool_name = ToolTypeToToolName(tool_type)) {
     base::UmaHistogramSparse(
         base::StrCat(
-            {kIOSActorToolsActionResultCodePrefixMetricName, tool_name}),
+            {kIOSActorToolsActionResultCodePrefixMetricName, *tool_name}),
         external_code);
   }
 }

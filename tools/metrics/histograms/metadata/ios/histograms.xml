@@ -99,11 +99,10 @@ chromium-metrics-reviews@google.com.
   <variant name="ScrollToTool" summary="Scroll to tool"/>
   <variant name="SelectTool" summary="Select tool"/>
   <variant name="TypeTool" summary="Type tool"/>
-  <variant name="UnknownTool" summary="Unknown tool"/>
   <variant name="WaitTool" summary="Wait tool"/>
 </variants>
 
-<!-- LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/utils/actor_tool_utils.mm:IOSActorUiToolName) -->
+<!-- LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.mm:IOSActorUiToolName) -->
 
 <variants name="IOSFrameType">
   <variant name="Aggregate"

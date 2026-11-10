@@ -67,9 +67,10 @@ std::unique_ptr<AggregatedJournal::PendingAsyncEntry> StartAsyncJournalEntry(
     AggregatedJournal& journal,
     const GURL& url,
     ActorTaskId task_id,
-    const std::string& tool_name,
+    ToolType tool_type,
     const std::string& event_name,
     std::string_view tool_debug_string) {
+  std::string tool_name = ToolTypeToToolName(tool_type).value_or("UnknownTool");
   return journal.CreatePendingAsyncEntry(
       url, task_id, journal.AllocateDynamicTrackUUID(),
       base::StringPrintf("%s: %s", event_name.c_str(), tool_name.c_str()),

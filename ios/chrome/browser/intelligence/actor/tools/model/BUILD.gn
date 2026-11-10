@@ -567,7 +567,6 @@ source_set("tool_controller") {
     "//components/actor/core:journal",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
     "//ios/chrome/browser/intelligence/actor/tools/public",
-    "//ios/chrome/browser/intelligence/actor/tools/utils:actor_tool_utils",
     "//ios/chrome/browser/intelligence/actor/tools/utils:logging_util",
     "//ios/chrome/browser/intelligence/features",
     "//ios/web/public",

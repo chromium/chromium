@@ -17,10 +17,6 @@ namespace actor {
 // users when showing the execution status.
 std::optional<std::string> ToolTypeToToolDisplayString(ToolType tool);
 
-// Returns the string representation of the given ToolType ("UnknownTool" for
-// ToolType::kUnknown).
-std::string ToolTypeToToolName(ToolType tool);
-
 // Returns the string representation of the given Actor tool if supported.
 // This is used for mapping the enum to the "DisabledTools" feature parameter.
 std::optional<std::string> ActorActionCaseToToolName(

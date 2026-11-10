@@ -146,4 +146,11 @@ TEST_F(ToolExecutionResultTest,
             "Tool resulted in mojom::ActionResultCode[0]");
 }
 
+// Tests that `ToolTypeToToolName` maps `ToolType` to the expected tool name
+// string, returning `std::nullopt` for `ToolType::kUnknown`.
+TEST_F(ToolExecutionResultTest, ToolTypeToToolName) {
+  EXPECT_EQ(ToolTypeToToolName(ToolType::kClick), "ClickTool");
+  EXPECT_EQ(ToolTypeToToolName(ToolType::kUnknown), std::nullopt);
+}
+
 }  // namespace actor

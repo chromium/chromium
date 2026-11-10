@@ -345,10 +345,10 @@ TEST_F(ToolControllerTest, SyncCreationFailure) {
   histograms.ExpectUniqueSample(
       kIOSActorExecutionEngineActionResultCodeMetricName,
       mojom::ActionResultCode::kToolUnknown, 1);
-  histograms.ExpectUniqueSample(
+  histograms.ExpectTotalCount(
       base::StrCat(
           {kIOSActorToolsActionResultCodePrefixMetricName, "UnknownTool"}),
-      mojom::ActionResultCode::kToolUnknown, 1);
+      0);
 
   // The controller accepts the next tool.
   base::test::TestFuture<ToolExecutionResult> validation_future;

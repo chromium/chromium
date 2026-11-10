@@ -47,7 +47,7 @@ std::unique_ptr<AggregatedJournal::PendingAsyncEntry> StartAsyncJournalEntry(
     AggregatedJournal& journal,
     const GURL& url,
     ActorTaskId task_id,
-    const std::string& tool_name,
+    ToolType tool_type,
     const std::string& event_name,
     std::string_view tool_debug_string);
 

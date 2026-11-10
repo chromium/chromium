@@ -52,47 +52,6 @@ std::optional<std::string> ToolTypeToToolDisplayString(ToolType tool) {
   NOTREACHED();
 }
 
-// LINT.IfChange(IOSActorUiToolName)
-std::string ToolTypeToToolName(ToolType tool) {
-  switch (tool) {
-    case ToolType::kClick:
-      return "ClickTool";
-    case ToolType::kType:
-      return "TypeTool";
-    case ToolType::kScroll:
-      return "ScrollTool";
-    case ToolType::kSelect:
-      return "SelectTool";
-    case ToolType::kDragAndRelease:
-      return "DragAndReleaseTool";
-    case ToolType::kNavigate:
-      return "NavigateTool";
-    case ToolType::kBack:
-      return "HistoryBackTool";
-    case ToolType::kForward:
-      return "HistoryForwardTool";
-    case ToolType::kWait:
-    case ToolType::kWaitZeroDuration:
-      return "WaitTool";
-    case ToolType::kScrollTo:
-      return "ScrollToTool";
-    case ToolType::kAttemptLogin:
-      return "AttemptLoginTool";
-    case ToolType::kAttemptFormFilling:
-      return "AttemptFormFillingTool";
-    case ToolType::kCloseTab:
-      return "CloseTabTool";
-    case ToolType::kCreateTab:
-      return "CreateTabTool";
-    case ToolType::kActivateTab:
-      return "ActivateTabTool";
-    case ToolType::kUnknown:
-      return "UnknownTool";
-  }
-  NOTREACHED();
-}
-// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/histograms.xml:IOSActorUiToolName)
-
 std::optional<std::string> ActorActionCaseToToolName(Action::ActionCase tool) {
   switch (tool) {
     case Action::kClick:

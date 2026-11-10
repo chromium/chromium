@@ -138,7 +138,7 @@ TEST_F(MetricsTest, RecordJavaScriptResultCode) {
 TEST_F(MetricsTest, RecordToolTimings) {
   base::HistogramTester histogram_tester;
 
-  RecordToolTimings("ClickTool", base::Milliseconds(120),
+  RecordToolTimings(ToolType::kClick, base::Milliseconds(120),
                     base::Milliseconds(340));
 
   histogram_tester.ExpectUniqueTimeSample(
@@ -151,12 +151,30 @@ TEST_F(MetricsTest, RecordToolTimings) {
       base::Milliseconds(340), 1);
 }
 
+// Tests that `RecordToolTimings` skips recording histograms when `tool_type` is
+// `ToolType::kUnknown`.
+TEST_F(MetricsTest, RecordToolTimingsUnknownTool) {
+  base::HistogramTester histogram_tester;
+
+  RecordToolTimings(ToolType::kUnknown, base::Milliseconds(120),
+                    base::Milliseconds(340));
+
+  histogram_tester.ExpectTotalCount(
+      base::StrCat(
+          {kIOSActorToolsExecutionDurationPrefixMetricName, "UnknownTool"}),
+      0);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat(
+          {kIOSActorToolsPageStabilizationPrefixMetricName, "UnknownTool"}),
+      0);
+}
+
 // Tests that `RecordToolActionResultCode` records both aggregate and per-tool
 // action result codes.
 TEST_F(MetricsTest, RecordToolActionResultCode) {
   base::HistogramTester histogram_tester;
 
-  RecordToolActionResultCode("ClickTool",
+  RecordToolActionResultCode(ToolType::kClick,
                              ToolExecutionResult(mojom::ActionResultCode::kOk));
 
   histogram_tester.ExpectUniqueSample(
@@ -166,6 +184,24 @@ TEST_F(MetricsTest, RecordToolActionResultCode) {
       base::StrCat(
           {kIOSActorToolsActionResultCodePrefixMetricName, "ClickTool"}),
       mojom::ActionResultCode::kOk, 1);
+}
+
+// Tests that `RecordToolActionResultCode` records aggregate action result codes
+// and skips per-tool histograms when `tool_type` is `ToolType::kUnknown`.
+TEST_F(MetricsTest, RecordToolActionResultCodeUnknownTool) {
+  base::HistogramTester histogram_tester;
+
+  RecordToolActionResultCode(
+      ToolType::kUnknown,
+      ToolExecutionResult(mojom::ActionResultCode::kToolUnknown));
+
+  histogram_tester.ExpectUniqueSample(
+      kIOSActorExecutionEngineActionResultCodeMetricName,
+      mojom::ActionResultCode::kToolUnknown, 1);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat(
+          {kIOSActorToolsActionResultCodePrefixMetricName, "UnknownTool"}),
+      0);
 }
 
 // Tests that `RecordActionTargetType` records the target type to the

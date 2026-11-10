@@ -99,14 +99,16 @@ enum class ActionTargetType {
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:IOSActorActionTargetType)
 
 // Records the execution duration and post-execution page stabilization duration
-// for a completed tool invocation.
-void RecordToolTimings(std::string_view tool_name,
+// for a completed tool invocation. Does nothing if `tool_type` is
+// `ToolType::kUnknown`.
+void RecordToolTimings(ToolType tool_type,
                        base::TimeDelta execution_duration,
                        base::TimeDelta page_stabilization_duration);
 
-// Records the external `mojom::ActionResultCode` (both aggregate and per-tool)
-// for a completed tool request.
-void RecordToolActionResultCode(std::string_view tool_name,
+// Records the external `mojom::ActionResultCode` (both aggregate and per-tool,
+// except `ToolType::kUnknown` which only records to aggregate) for a completed
+// tool request.
+void RecordToolActionResultCode(ToolType tool_type,
                                 const ToolExecutionResult& result);
 
 // Records the external `mojom::ActionResultCode` for an action execution

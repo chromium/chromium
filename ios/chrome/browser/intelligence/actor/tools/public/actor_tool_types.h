@@ -195,6 +195,10 @@ using ToolExecutionCallback = base::OnceCallback<void(ToolExecutionResult)>;
 // Returns a message explaining the ToolExecutionResult.
 std::string GetToolExecutionResultMessage(const ToolExecutionResult& result);
 
+// Returns the UMA/config string representation of `tool`, or `std::nullopt`
+// for `ToolType::kUnknown`.
+std::optional<std::string> ToolTypeToToolName(ToolType tool);
+
 }  // namespace actor
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_TOOLS_PUBLIC_ACTOR_TOOL_TYPES_H_
