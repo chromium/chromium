@@ -40,6 +40,11 @@ gfx::Insets BrowserFrameViewLayoutLinux::GetInputInsets() const {
   return gfx::Insets(showing_shadow ? kResizeBorder : 0);
 }
 
+gfx::Insets BrowserFrameViewLayoutLinux::GetRestoredInputInsets() const {
+  return gfx::Insets(delegate_->ShouldDrawRestoredFrameShadow() ? kResizeBorder
+                                                                : 0);
+}
+
 int BrowserFrameViewLayoutLinux::CaptionButtonY(views::FrameButton button_id,
                                                 bool restored) const {
   return FrameEdgeInsets(restored).top();

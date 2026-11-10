@@ -59,7 +59,7 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
   bool IsRegularOrGuestSession() const override { return true; }
   bool CanMaximize() const override { return true; }
   bool CanMinimize() const override { return true; }
-  bool IsMaximized() const override { return false; }
+  bool IsMaximized() const override { return maximized_; }
   bool IsMinimized() const override { return false; }
   bool IsFullscreen() const override { return false; }
   bool IsTabStripVisible() const override { return true; }
@@ -67,13 +67,18 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
   bool IsToolbarVisible() const override { return true; }
   int GetTopAreaHeight() const override { return 0; }
   bool UseCustomFrame() const override { return true; }
-  bool IsFrameCondensed() const override { return false; }
+  bool IsFrameCondensed() const override { return maximized_; }
   void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect) override {}
   bool ShouldDrawRestoredFrameShadow() const override { return true; }
 #if BUILDFLAG(IS_LINUX)
   bool IsTiled() const override { return false; }
 #endif
   int WebAppButtonHeight() const override { return 0; }
+
+  void set_maximized(bool maximized) { maximized_ = maximized; }
+
+ private:
+  bool maximized_ = false;
 };
 
 class TestNavButtonProvider : public ui::NavButtonProvider {
@@ -133,7 +138,7 @@ class TestFrameProvider : public ui::WindowFrameProvider {
   // ui::WindowFrameProvider:
   int GetTopCornerRadiusDip() override { return 0; }
   bool IsTopFrameTranslucent() override { return false; }
-  gfx::Insets GetFrameThicknessDip() override { return {}; }
+  gfx::Insets GetFrameThicknessDip() override { return frame_thickness_; }
   int GetTopAreaMinHeightDip() override { return 24; }
   gfx::Insets GetTopAreaPaddingDip() override { return gfx::Insets::VH(6, 0); }
   gfx::Insets GetTopAreaBorderDip() override { return gfx::Insets(); }
@@ -142,6 +147,13 @@ class TestFrameProvider : public ui::WindowFrameProvider {
                         int top_area_height,
                         bool focused,
                         const gfx::Insets& input_insets) override {}
+
+  void set_frame_thickness(const gfx::Insets& frame_thickness) {
+    frame_thickness_ = frame_thickness;
+  }
+
+ private:
+  gfx::Insets frame_thickness_;
 };
 
 }  // namespace
@@ -163,12 +175,16 @@ class BrowserFrameViewLayoutLinuxNativeTest : public ChromeViewsTestBase {
     delegate_ = std::make_unique<TestLayoutDelegate>();
     nav_button_provider_ = std::make_unique<::TestNavButtonProvider>();
     frame_provider_ = std::make_unique<::TestFrameProvider>();
+    maximized_frame_provider_ = std::make_unique<::TestFrameProvider>();
     auto layout = std::make_unique<BrowserFrameViewLayoutLinuxNative>(
         nav_button_provider_.get(),
         base::BindRepeating(
-            [](ui::WindowFrameProvider* frame_provider, bool tiled,
-               bool maximized) { return frame_provider; },
-            frame_provider_.get()));
+            [](ui::WindowFrameProvider* frame_provider,
+               ui::WindowFrameProvider* maximized_frame_provider, bool tiled,
+               bool maximized) {
+              return maximized ? maximized_frame_provider : frame_provider;
+            },
+            frame_provider_.get(), maximized_frame_provider_.get()));
     layout->set_delegate(delegate_.get());
     layout->set_forced_window_caption_spacing_for_test(0);
     widget_ =
@@ -240,7 +256,8 @@ class BrowserFrameViewLayoutLinuxNativeTest : public ChromeViewsTestBase {
       layout_manager_ = nullptr;
   std::unique_ptr<TestLayoutDelegate> delegate_;
   std::unique_ptr<ui::NavButtonProvider> nav_button_provider_;
-  std::unique_ptr<ui::WindowFrameProvider> frame_provider_;
+  std::unique_ptr<TestFrameProvider> frame_provider_;
+  std::unique_ptr<TestFrameProvider> maximized_frame_provider_;
 
   // Widgets:
   raw_ptr<views::ImageButton, DanglingUntriaged> minimize_button_ = nullptr;
@@ -286,4 +303,23 @@ TEST_F(BrowserFrameViewLayoutLinuxNativeTest, NativeNavButtons) {
   EXPECT_EQ(x, minimize_button_->x());
   EXPECT_EQ(kMinimizeButtonMargin.top() + frame_top_thickness,
             minimize_button_->y());
+}
+
+// The restored frame border insets are used to convert between the window
+// geometry and the window bounds for the restored state, which may happen
+// while the window is still maximized (e.g. when the compositor unmaximizes
+// the window). They must not depend on the current window state.
+TEST_F(BrowserFrameViewLayoutLinuxNativeTest,
+       RestoredFrameBorderInsetsIndependentOfMaximizedState) {
+  // The top thickness is smaller than the resize border, so the top inset
+  // comes from the input insets.
+  frame_provider_->set_frame_thickness(gfx::Insets::TLBR(4, 12, 15, 12));
+  const gfx::Insets kExpectedInsets = gfx::Insets::TLBR(10, 12, 15, 12);
+
+  EXPECT_EQ(kExpectedInsets,
+            layout_manager_->RestoredMirroredFrameBorderInsets());
+
+  delegate_->set_maximized(true);
+  EXPECT_EQ(kExpectedInsets,
+            layout_manager_->RestoredMirroredFrameBorderInsets());
 }

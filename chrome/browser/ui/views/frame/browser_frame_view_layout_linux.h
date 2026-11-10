@@ -26,6 +26,10 @@ class BrowserFrameViewLayoutLinux : public OpaqueBrowserFrameViewLayout {
 
   gfx::Insets GetInputInsets() const;
 
+  // Like GetInputInsets(), but for the restored window state regardless of
+  // the current one.
+  gfx::Insets GetRestoredInputInsets() const;
+
   void set_view(BrowserFrameViewLinux* view) { view_ = view; }
 
  protected:

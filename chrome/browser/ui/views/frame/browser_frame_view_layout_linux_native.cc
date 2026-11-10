@@ -46,8 +46,18 @@ gfx::Insets BrowserFrameViewLayoutLinuxNative::RestoredFrameBorderInsets()
         OpaqueBrowserFrameViewLayout::RestoredFrameBorderInsets());
   }
 
-  gfx::Insets insets = GetFrameProvider()->GetFrameThicknessDip();
-  insets.SetToMax(GetInputInsets());
+  // Always use the restored frame provider. These insets are used to convert
+  // between window geometry and bounds for the restored state, which may be
+  // computed while the window is still maximized (e.g. when the compositor
+  // unmaximizes the window).
+#if BUILDFLAG(IS_LINUX)
+  const bool tiled = delegate_->IsTiled();
+#else
+  const bool tiled = false;
+#endif
+  gfx::Insets insets = frame_provider_getter_.Run(tiled, /*maximized=*/false)
+                           ->GetFrameThicknessDip();
+  insets.SetToMax(GetRestoredInputInsets());
   return insets;
 }
 
