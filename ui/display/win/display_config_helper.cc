@@ -8,11 +8,14 @@
 #include <string_view>
 #include <vector>
 
+#include "base/check_is_test.h"
 #include "base/compiler_specific.h"
 
 namespace display::win {
 
 namespace {
+
+DisplayConfigPathInfoGetter g_path_info_getter_override = nullptr;
 
 std::vector<DISPLAYCONFIG_PATH_INFO> GetDisplayConfigPathInfos() {
   for (LONG result = ERROR_INSUFFICIENT_BUFFER;
@@ -47,6 +50,12 @@ bool GetTargetDeviceName(const DISPLAYCONFIG_PATH_INFO& path,
 
 }  // namespace
 
+base::AutoReset<DisplayConfigPathInfoGetter>
+SetDisplayConfigPathInfoGetterForTesting(DisplayConfigPathInfoGetter getter) {
+  CHECK_IS_TEST();
+  return {&g_path_info_getter_override, getter};
+}
+
 std::optional<DISPLAYCONFIG_PATH_INFO> GetDisplayConfigPathInfo(
     HMONITOR monitor) {
   // Get the monitor name.
@@ -61,6 +70,9 @@ std::optional<DISPLAYCONFIG_PATH_INFO> GetDisplayConfigPathInfo(
 
 DISPLAY_EXPORT std::optional<DISPLAYCONFIG_PATH_INFO> GetDisplayConfigPathInfo(
     MONITORINFOEX monitor_info) {
+  if (g_path_info_getter_override) {
+    return g_path_info_getter_override(monitor_info);
+  }
   // Look for a path info with a matching name.
   for (const auto& info : GetDisplayConfigPathInfos()) {
     DISPLAYCONFIG_SOURCE_DEVICE_NAME device_name = {};

@@ -10,6 +10,7 @@
 #include <optional>
 #include <string_view>
 
+#include "base/auto_reset.h"
 #include "ui/display/display_export.h"
 
 namespace display::win {
@@ -27,6 +28,13 @@ DISPLAY_EXPORT std::optional<DISPLAYCONFIG_PATH_INFO> GetDisplayConfigPathInfo(
 
 DISPLAY_EXPORT std::optional<DISPLAYCONFIG_PATH_INFO> GetDisplayConfigPathInfo(
     MONITORINFOEX monitor_info);
+
+using DisplayConfigPathInfoGetter =
+    std::optional<DISPLAYCONFIG_PATH_INFO> (*)(const MONITORINFOEX&);
+
+// Overrides lookup until the returned object is destroyed.
+DISPLAY_EXPORT base::AutoReset<DisplayConfigPathInfoGetter>
+SetDisplayConfigPathInfoGetterForTesting(DisplayConfigPathInfoGetter getter);
 
 // Returns the manufacturer ID of the monitor identified by `path`. Returns 0 if
 // `path` is nullopt or a failure occurred.

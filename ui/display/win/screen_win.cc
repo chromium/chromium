@@ -518,11 +518,12 @@ std::vector<internal::DisplayInfo> GetDisplayInfosFromSystem() {
     const gfx::Vector2dF pixels_per_inch =
         GetMonitorPixelsPerInch(monitor).value_or(
             GetDefaultMonitorPhysicalPixelsPerInch());
-    const auto path_info = GetDisplayConfigPathInfo(monitor);
+    const auto path_info = GetDisplayConfigPathInfo(*monitor_info);
     display_infos.emplace_back(
-        monitor, *monitor_info, scale_factors.device, scale_factors.text,
-        Display::kDefaultBitsPerPixel, GetSDRWhiteLevel(path_info),
-        display_settings.rotation, display_settings.frequency, pixels_per_inch,
+        monitor, *monitor_info, path_info, scale_factors.device,
+        scale_factors.text, Display::kDefaultBitsPerPixel,
+        GetSDRWhiteLevel(path_info), display_settings.rotation,
+        display_settings.frequency, pixels_per_inch,
         GetOutputTechnology(path_info), GetFriendlyDeviceName(path_info));
 
     // Gauge ids derived from DISPLAY_DEVICE's DeviceID and DeviceKey.
@@ -638,7 +639,8 @@ ScreenWinDisplay CreateFallbackPrimaryScreenDisplay() {
                                   ? Display::GetForcedDeviceScaleFactor()
                                   : 1.0;
   internal::DisplayInfo display_info(
-      std::nullopt, monitor_info, device_scale_factor,
+      std::nullopt, monitor_info, /*config_path=*/std::nullopt,
+      device_scale_factor,
       /*text_scale_multiplier*/ 1.0f, Display::kDefaultBitsPerPixel,
       /*sdr_white_level=*/1.0f, Display::ROTATE_0,
       /*display_frequency=*/60.0f, gfx::Vector2dF(),

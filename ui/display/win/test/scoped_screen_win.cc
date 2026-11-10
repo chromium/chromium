@@ -19,7 +19,8 @@ ScopedScreenWin::ScopedScreenWin() : ScreenWin(false) {
   const MONITORINFOEX monitor_info =
       CreateMonitorInfo(kPixelBounds, kPixelWork, L"primary");
   UpdateFromDisplayInfos(
-      {{std::nullopt, monitor_info, /*device_scale_factor=*/1.0f,
+      {{std::nullopt, monitor_info, /*config_path=*/std::nullopt,
+        /*device_scale_factor=*/1.0f,
         /*text_scale_multiplier=*/1.0f, Display::kDefaultBitsPerPixel, 1.0f,
         Display::ROTATE_0, 60.0f, gfx::Vector2dF(96.0, 96.0),
         DISPLAYCONFIG_OUTPUT_TECHNOLOGY_OTHER, std::string()}});

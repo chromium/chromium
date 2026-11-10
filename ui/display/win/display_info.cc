@@ -12,9 +12,34 @@
 
 namespace display::win::internal {
 
+namespace {
+
+int64_t DisplayIdFromMonitorInfoAndPath(
+    const MONITORINFOEX& monitor,
+    const std::optional<DISPLAYCONFIG_PATH_INFO>& config_path) {
+  // Derive a display ID from the adapter ID and per-adapter monitor ID.
+  // This seems to be broadly available, unique for each monitor of the device,
+  // and stable across display configuration changes, but not device restarts.
+  if (config_path.has_value()) {
+    return static_cast<int64_t>(base::PersistentHash(base::StringPrintf(
+        "%lu/%li/%u", config_path->targetInfo.adapterId.LowPart,
+        config_path->targetInfo.adapterId.HighPart,
+        config_path->targetInfo.id)));
+  }
+  // MONITORINFOEX::szDevice is a plausible backup with some notable drawbacks.
+  // This value (e.g. "\\.\DISPLAY1") may change when adding/removing displays,
+  // and even be reassigned between physical monitors during those changes,
+  // which can cause subtle unexpected behavior.
+  return static_cast<int64_t>(base::PersistentHash(
+      base::WideToUTF8(FixedArrayToStringView(monitor.szDevice))));
+}
+
+}  // namespace
+
 DisplayInfo::DisplayInfo(
     std::optional<HMONITOR> hmonitor,
     const MONITORINFOEX& monitor_info,
+    const std::optional<DISPLAYCONFIG_PATH_INFO>& config_path,
     float device_scale_factor,
     float text_scale_multiplier,
     int color_depth,
@@ -24,7 +49,7 @@ DisplayInfo::DisplayInfo(
     const gfx::Vector2dF& pixels_per_inch,
     DISPLAYCONFIG_VIDEO_OUTPUT_TECHNOLOGY output_technology,
     const std::string& label)
-    : id_(DisplayIdFromMonitorInfo(monitor_info)),
+    : id_(DisplayIdFromMonitorInfoAndPath(monitor_info, config_path)),
       screen_rect_(monitor_info.rcMonitor),
       screen_work_rect_(monitor_info.rcWork),
       device_scale_factor_(device_scale_factor),
@@ -73,24 +98,8 @@ DisplayInfo::~DisplayInfo() = default;
 
 // static
 int64_t DisplayInfo::DisplayIdFromMonitorInfo(const MONITORINFOEX& monitor) {
-  // Derive a display ID from the adapter ID and per-adapter monitor ID.
-  // This seems to be broadly available, unique for each monitor of the device,
-  // and stable across display configuration changes, but not device restarts.
-  std::optional<DISPLAYCONFIG_PATH_INFO> config_path =
-      GetDisplayConfigPathInfo(monitor);
-  // Record if DISPLAYCONFIG_PATH_INFO is available or not.
-  if (config_path.has_value()) {
-    return static_cast<int64_t>(base::PersistentHash(base::StringPrintf(
-        "%lu/%li/%u", config_path->targetInfo.adapterId.LowPart,
-        config_path->targetInfo.adapterId.HighPart,
-        config_path->targetInfo.id)));
-  }
-  // MONITORINFOEX::szDevice is a plausible backup with some notable drawbacks.
-  // This value (e.g. "\\.\DISPLAY1") may change when adding/removing displays,
-  // and even be reassigned between physical monitors during those changes,
-  // which can cause subtle unexpected behavior.
-  return static_cast<int64_t>(base::PersistentHash(
-      base::WideToUTF8(FixedArrayToStringView(monitor.szDevice))));
+  return DisplayIdFromMonitorInfoAndPath(monitor,
+                                         GetDisplayConfigPathInfo(monitor));
 }
 
 bool DisplayInfo::operator==(const DisplayInfo& rhs) const = default;

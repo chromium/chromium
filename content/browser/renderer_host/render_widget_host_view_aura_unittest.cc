@@ -5973,7 +5973,8 @@ class PointerLockTestScreenWin : public display::win::ScreenWin {
       display_infos.emplace_back(
           /*hmonitor=*/std::nullopt,
           display::win::test::CreateMonitorInfo(bounds, bounds, L"primary"),
-          primary_scale, /*text_scale_multiplier=*/1.0f,
+          /*config_path=*/std::nullopt, primary_scale,
+          /*text_scale_multiplier=*/1.0f,
           display::Display::kDefaultBitsPerPixel,
           /*sdr_white_level=*/1.0f, display::Display::ROTATE_0,
           /*display_frequency=*/60.0f, /*pixels_per_inch=*/gfx::Vector2dF(),
@@ -5989,7 +5990,8 @@ class PointerLockTestScreenWin : public display::win::ScreenWin {
       display_infos.emplace_back(
           /*hmonitor=*/std::nullopt,
           display::win::test::CreateMonitorInfo(bounds, bounds, L"secondary"),
-          secondary_scale, /*text_scale_multiplier=*/1.0f,
+          /*config_path=*/std::nullopt, secondary_scale,
+          /*text_scale_multiplier=*/1.0f,
           display::Display::kDefaultBitsPerPixel,
           /*sdr_white_level=*/1.0f, display::Display::ROTATE_0,
           /*display_frequency=*/60.0f, /*pixels_per_inch=*/gfx::Vector2dF(),

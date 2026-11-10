@@ -337,6 +337,7 @@ test("display_unittests") {
 
   if (is_win) {
     sources += [
+      "win/display_info_unittest.cc",
       "win/scaling_util_unittest.cc",
       "win/screen_win_headless_unittest.cc",
       "win/screen_win_unittest.cc",

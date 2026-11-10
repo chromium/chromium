@@ -183,7 +183,8 @@ class TestScreenWinManager final : public TestScreenWinInitializer {
         win::test::CreateMonitorInfo(pixel_bounds, pixel_work, device_name);
     HMONITOR monitor = CreateFakeHMONITOR(monitor_info);
     display_infos_.push_back(internal::DisplayInfo(
-        monitor, monitor_info, device_scale_factor, text_scale_multiplier,
+        monitor, monitor_info, /*config_path=*/std::nullopt,
+        device_scale_factor, text_scale_multiplier,
         Display::kDefaultBitsPerPixel, 1.0f, Display::ROTATE_0, 60.0f,
         gfx::Vector2dF(), tech, std::string()));
   }
@@ -4074,12 +4075,12 @@ TEST_F(ScreenWinTestSingleDisplay1x, ReentrantUpdateAllDisplaysAndNotify) {
       reinterpret_cast<HMONITOR>(intptr_t(1));
 
   internal::DisplayInfo initial_info(
-      cached_hmonitor, initial_monitor_info, 1.0f, 1.0f,
-      Display::kDefaultBitsPerPixel, 1.0f, Display::ROTATE_0, 60.0f,
+      cached_hmonitor, initial_monitor_info, /*config_path=*/std::nullopt, 1.0f,
+      1.0f, Display::kDefaultBitsPerPixel, 1.0f, Display::ROTATE_0, 60.0f,
       gfx::Vector2dF(), DISPLAYCONFIG_OUTPUT_TECHNOLOGY_OTHER, std::string());
   internal::DisplayInfo reentrant_info(
-      cached_hmonitor, reentrant_monitor_info, 1.0f, 1.0f,
-      Display::kDefaultBitsPerPixel, 1.0f, Display::ROTATE_0, 60.0f,
+      cached_hmonitor, reentrant_monitor_info, /*config_path=*/std::nullopt,
+      1.0f, 1.0f, Display::kDefaultBitsPerPixel, 1.0f, Display::ROTATE_0, 60.0f,
       gfx::Vector2dF(), DISPLAYCONFIG_OUTPUT_TECHNOLOGY_OTHER, std::string());
 
   ReentrantScreenWinObserver observer(test_screen_win, {reentrant_info});
@@ -4107,8 +4108,8 @@ TEST_F(ScreenWinTestSingleDisplay1x,
       reinterpret_cast<HMONITOR>(intptr_t(1));
 
   internal::DisplayInfo initial_info(
-      cached_hmonitor, initial_monitor_info, 1.0f, 1.0f,
-      Display::kDefaultBitsPerPixel, 1.0f, Display::ROTATE_0, 60.0f,
+      cached_hmonitor, initial_monitor_info, /*config_path=*/std::nullopt, 1.0f,
+      1.0f, Display::kDefaultBitsPerPixel, 1.0f, Display::ROTATE_0, 60.0f,
       gfx::Vector2dF(), DISPLAYCONFIG_OUTPUT_TECHNOLOGY_OTHER, std::string());
 
   // Reentrant call uses identical display info.

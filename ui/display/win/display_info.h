@@ -19,8 +19,12 @@ namespace display::win::internal {
 // Gathers the parameters necessary to create a win::ScreenWinDisplay.
 class DISPLAY_EXPORT DisplayInfo final {
  public:
+  // Uses `config_path` to set the `id_` member of DisplayInfo to avoid
+  // re-querying the display configuration. Falls back to using `monitor_info`
+  // to set the `id_` when `config_path` is null.
   DisplayInfo(std::optional<HMONITOR> hmonitor,
               const MONITORINFOEX& monitor_info,
+              const std::optional<DISPLAYCONFIG_PATH_INFO>& config_path,
               float device_scale_factor,
               float text_scale_multiplier,
               int color_depth,
