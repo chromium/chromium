@@ -471,6 +471,12 @@ void TtcMesClient::OnToolExecutionComplete(const std::string& call_id,
   auto* tool_response = frame.mutable_tool_response();
   tool_response->set_call_id(call_id);
   tool_response->set_name(tool_name);
+  if (const std::optional<VisualContent>& image = response.visual_content()) {
+    auto* visual_content = tool_response->mutable_visual_content();
+    visual_content->set_image_data(image->image_data.data(),
+                                   image->image_data.size());
+    visual_content->set_mime_type(image->mime_type);
+  }
   std::optional<std::string> json =
       base::WriteJson(ToResponseDict(std::move(response)));
   CHECK(json);
@@ -592,6 +598,9 @@ void TtcMesClient::ReportClientFrameToDebugSink(
       debug_sink_->OnClientFrame(DebugSink::ToolCallResponse{
           .call_id = frame.tool_response().call_id(),
           .response_json = frame.tool_response().response_json(),
+          .image_mime_type = frame.tool_response().visual_content().mime_type(),
+          .image_bytes =
+              frame.tool_response().visual_content().image_data().size(),
       });
       break;
     case Frame::kPlaybackStatus:

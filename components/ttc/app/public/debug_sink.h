@@ -47,6 +47,9 @@ class DebugSink {
   struct ToolCallResponse {
     std::string call_id;
     std::string response_json;
+    // The MIME type and size of the response's image, if it has one.
+    std::string image_mime_type;
+    size_t image_bytes = 0;
   };
   struct PlaybackStatus {
     int64_t last_played_sequence_number = 0;

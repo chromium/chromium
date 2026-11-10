@@ -30,8 +30,9 @@ ToolRequest ToolRequest::Clone() const {
       .name = name, .arguments = arguments.Clone(), .call_id = call_id};
 }
 
-ToolResponse::ToolResponse(std::variant<base::DictValue, ToolError> value)
-    : value_(std::move(value)) {
+ToolResponse::ToolResponse(std::variant<base::DictValue, ToolError> value,
+                           std::optional<VisualContent> visual_content)
+    : value_(std::move(value)), visual_content_(std::move(visual_content)) {
   // The factories cannot produce a failure with nothing to report, but this
   // guards the invariant against future additions.
   if (const ToolError* error = std::get_if<ToolError>(&value_)) {
@@ -46,6 +47,14 @@ ToolResponse::~ToolResponse() = default;
 // static
 ToolResponse ToolResponse::Success(base::DictValue result) {
   return ToolResponse(std::move(result));
+}
+
+// static
+ToolResponse ToolResponse::Success(base::DictValue result,
+                                   VisualContent visual_content) {
+  CHECK(!visual_content.image_data.empty());
+  CHECK(!visual_content.mime_type.empty());
+  return ToolResponse(std::move(result), std::move(visual_content));
 }
 
 // static

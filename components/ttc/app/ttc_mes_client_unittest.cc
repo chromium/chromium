@@ -15,6 +15,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -96,28 +97,27 @@ class FakeObserver : public TtcBackend::Observer {
 };
 
 // Stands in for a live MES session so that Connect() succeeds without any
-// network access.
+// network access. Each frame sent is parsed into `last_sent_frame`, which the
+// caller owns and which must outlive the session.
 class FakeRemoteModelExecutionSession
     : public optimization_guide::RemoteModelExecutionSession {
  public:
+  explicit FakeRemoteModelExecutionSession(
+      std::optional<optimization_guide::proto::TtcClientFrame>& last_sent_frame)
+      : last_sent_frame_(last_sent_frame) {}
+
   void Send(const google::protobuf::MessageLite& message) override {
-    ++sent_frame_count_;
     optimization_guide::proto::TtcClientFrame frame;
     if (frame.ParseFromString(message.SerializeAsString())) {
-      last_sent_frame_ = std::move(frame);
+      *last_sent_frame_ = std::move(frame);
     }
   }
   void AddObserver(Observer* observer) override { observer_ = observer; }
   void RemoveObserver(Observer* observer) override { observer_ = nullptr; }
 
-  const std::optional<optimization_guide::proto::TtcClientFrame>&
-  last_sent_frame() const {
-    return last_sent_frame_;
-  }
-
  private:
-  int sent_frame_count_ = 0;
-  std::optional<optimization_guide::proto::TtcClientFrame> last_sent_frame_;
+  const raw_ref<std::optional<optimization_guide::proto::TtcClientFrame>>
+      last_sent_frame_;
   raw_ptr<Observer> observer_ = nullptr;
 };
 
@@ -152,6 +152,8 @@ class FakeDebugSink : public DebugSink {
               tool_events.push_back(
                   base::StrCat({"response:", response.call_id}));
               last_response_json = response.response_json;
+              last_response_image_mime_type = response.image_mime_type;
+              last_response_image_bytes = response.image_bytes;
             },
             [&](const PlaybackStatus& status) {
               client_frames.push_back(base::StrCat(
@@ -239,6 +241,8 @@ class FakeDebugSink : public DebugSink {
   std::string journal;
   std::vector<std::string> tool_events;
   std::string last_response_json;
+  std::string last_response_image_mime_type;
+  size_t last_response_image_bytes = 0;
 };
 
 // Re-exposes the frame handler so tests can deliver server frames as if they
@@ -292,8 +296,9 @@ optimization_guide::proto::TtcServerFrame MakeUserTurnStateFrame(
 class TtcMesClientTest : public testing::Test {
  public:
   TtcMesClientTest() {
-    ON_CALL(model_executor_, StartStreamingSession).WillByDefault([] {
-      return std::make_unique<FakeRemoteModelExecutionSession>();
+    ON_CALL(model_executor_, StartStreamingSession).WillByDefault([this] {
+      return std::make_unique<FakeRemoteModelExecutionSession>(
+          last_sent_frame_);
     });
 
     client_ =
@@ -304,12 +309,21 @@ class TtcMesClientTest : public testing::Test {
  protected:
   TestTtcMesClient& client() { return *client_; }
 
+  // The last frame `client_` sent to the server.
+  const optimization_guide::proto::TtcClientFrame& last_sent_frame() {
+    CHECK(last_sent_frame_);
+    return *last_sent_frame_;
+  }
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   FakeDebugSink debug_sink_;
   FakeObserver observer_;
   testing::NiceMock<optimization_guide::MockRemoteModelExecutor>
       model_executor_;
+  // Written by the sessions `client_` creates; declared before `client_` so
+  // that it outlives them.
+  std::optional<optimization_guide::proto::TtcClientFrame> last_sent_frame_;
   std::unique_ptr<TestTtcMesClient> client_;
 };
 
@@ -575,6 +589,34 @@ TEST_F(TtcMesClientTest, ToolCallIdIsPropagatedAndReported) {
   EXPECT_FALSE(debug_sink_.last_response_json.empty());
 }
 
+// An image from the tool is sent alongside the JSON result.
+TEST_F(TtcMesClientTest, ToolResponseImageIsSent) {
+  client().HandleServerFrame(MakeToolCallFrame("call-1", "{}"));
+  base::DictValue result;
+  result.Set("width", 2);
+  observer_.TakeToolResponseCallback().Run(ToolResponse::Success(
+      std::move(result), VisualContent{.image_data = {0xff, 0xd8, 0xff},
+                                       .mime_type = "image/jpeg"}));
+
+  const auto& sent = last_sent_frame().tool_response();
+  ASSERT_TRUE(sent.has_visual_content());
+  EXPECT_EQ(sent.visual_content().image_data(), "\xff\xd8\xff");
+  EXPECT_EQ(sent.visual_content().mime_type(), "image/jpeg");
+  EXPECT_EQ(debug_sink_.last_response_image_mime_type, "image/jpeg");
+  EXPECT_EQ(debug_sink_.last_response_image_bytes, 3u);
+  EXPECT_THAT(debug_sink_.last_response_json, testing::HasSubstr("\"width\""));
+  EXPECT_THAT(debug_sink_.last_response_json, testing::HasSubstr("\"ok\""));
+}
+
+TEST_F(TtcMesClientTest, ToolResponseWithoutImageSendsNoImage) {
+  client().HandleServerFrame(MakeToolCallFrame("call-1", "{}"));
+  observer_.TakeToolResponseCallback().Run(ToolResponse::Success());
+  EXPECT_FALSE(last_sent_frame().tool_response().has_visual_content());
+  EXPECT_FALSE(debug_sink_.last_response_json.empty());
+  EXPECT_TRUE(debug_sink_.last_response_image_mime_type.empty());
+  EXPECT_EQ(debug_sink_.last_response_image_bytes, 0u);
+}
+
 // The error response is the only report of the rejection.
 TEST_F(TtcMesClientTest, ToolCallWithInvalidJsonIsAnsweredWithError) {
   client().HandleServerFrame(MakeToolCallFrame("call-2", "{not json"));
@@ -689,20 +731,17 @@ TEST_F(TtcMesClientTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(kTtcLiveRecipe);
 
-  FakeRemoteModelExecutionSession* session = nullptr;
-  EXPECT_CALL(model_executor_, StartStreamingSession).WillOnce([&session] {
-    auto fake_session = std::make_unique<FakeRemoteModelExecutionSession>();
-    session = fake_session.get();
-    return fake_session;
+  std::optional<optimization_guide::proto::TtcClientFrame> sent;
+  EXPECT_CALL(model_executor_, StartStreamingSession).WillOnce([&sent] {
+    return std::make_unique<FakeRemoteModelExecutionSession>(sent);
   });
 
   TestTtcMesClient local_client(&model_executor_);
   local_client.Connect(&observer_);
 
-  ASSERT_TRUE(session);
-  ASSERT_TRUE(session->last_sent_frame().has_value());
-  ASSERT_TRUE(session->last_sent_frame()->has_setup_request());
-  EXPECT_EQ(session->last_sent_frame()->setup_request().model_preference(),
+  ASSERT_TRUE(sent.has_value());
+  ASSERT_TRUE(sent->has_setup_request());
+  EXPECT_EQ(sent->setup_request().model_preference(),
             optimization_guide::proto::MODEL_PREFERENCE_UNSPECIFIED);
 }
 
@@ -712,20 +751,17 @@ TEST_F(TtcMesClientTest,
   feature_list.InitAndEnableFeatureWithParameters(kTtcLiveRecipe,
                                                   {{"LiveRecipe", "fallback"}});
 
-  FakeRemoteModelExecutionSession* session = nullptr;
-  EXPECT_CALL(model_executor_, StartStreamingSession).WillOnce([&session] {
-    auto fake_session = std::make_unique<FakeRemoteModelExecutionSession>();
-    session = fake_session.get();
-    return fake_session;
+  std::optional<optimization_guide::proto::TtcClientFrame> sent;
+  EXPECT_CALL(model_executor_, StartStreamingSession).WillOnce([&sent] {
+    return std::make_unique<FakeRemoteModelExecutionSession>(sent);
   });
 
   TestTtcMesClient local_client(&model_executor_);
   local_client.Connect(&observer_);
 
-  ASSERT_TRUE(session);
-  ASSERT_TRUE(session->last_sent_frame().has_value());
-  ASSERT_TRUE(session->last_sent_frame()->has_setup_request());
-  EXPECT_EQ(session->last_sent_frame()->setup_request().model_preference(),
+  ASSERT_TRUE(sent.has_value());
+  ASSERT_TRUE(sent->has_setup_request());
+  EXPECT_EQ(sent->setup_request().model_preference(),
             optimization_guide::proto::MODEL_PREFERENCE_FALLBACK);
 }
 
@@ -734,20 +770,17 @@ TEST_F(TtcMesClientTest, SetupRequestUsesDefaultModelPreferenceWhenConfigured) {
   feature_list.InitAndEnableFeatureWithParameters(kTtcLiveRecipe,
                                                   {{"LiveRecipe", "default"}});
 
-  FakeRemoteModelExecutionSession* session = nullptr;
-  EXPECT_CALL(model_executor_, StartStreamingSession).WillOnce([&session] {
-    auto fake_session = std::make_unique<FakeRemoteModelExecutionSession>();
-    session = fake_session.get();
-    return fake_session;
+  std::optional<optimization_guide::proto::TtcClientFrame> sent;
+  EXPECT_CALL(model_executor_, StartStreamingSession).WillOnce([&sent] {
+    return std::make_unique<FakeRemoteModelExecutionSession>(sent);
   });
 
   TestTtcMesClient local_client(&model_executor_);
   local_client.Connect(&observer_);
 
-  ASSERT_TRUE(session);
-  ASSERT_TRUE(session->last_sent_frame().has_value());
-  ASSERT_TRUE(session->last_sent_frame()->has_setup_request());
-  EXPECT_EQ(session->last_sent_frame()->setup_request().model_preference(),
+  ASSERT_TRUE(sent.has_value());
+  ASSERT_TRUE(sent->has_setup_request());
+  EXPECT_EQ(sent->setup_request().model_preference(),
             optimization_guide::proto::MODEL_PREFERENCE_DEFAULT);
 }
 
