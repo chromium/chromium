@@ -13,17 +13,16 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/test_timeouts.h"
 #include "base/timer/timer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
-constexpr base::TimeDelta kDefaultTimeout = base::Seconds(30);
-
 base::TimeDelta GetTimeoutFromCommandLineOrDefault() {
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kStatusChangeCheckerTimeoutInSeconds)) {
-    return kDefaultTimeout;
+    return TestTimeouts::action_max_timeout();
   }
   std::string timeout_string(
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
