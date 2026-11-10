@@ -570,9 +570,6 @@ base::WeakPtr<AuthenticationService> AuthenticationService::GetWeakPtr() {
 
 void AuthenticationService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
-  for (auto& observer : observer_list_) {
-    observer.OnPrimaryIdentityChanged();
-  }
   SyncDeviceSignalsConsentWithManagementState();
 }
 

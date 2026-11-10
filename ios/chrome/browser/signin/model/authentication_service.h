@@ -25,7 +25,6 @@ class SyncService;
 }
 
 class AuthenticationServiceObserver;
-class FakeAuthenticationService;
 class PrefService;
 @protocol RefreshAccessTokenError;
 @protocol SystemIdentity;
@@ -150,7 +149,6 @@ class AuthenticationService : public KeyedService,
 
  private:
   friend class AuthenticationServiceTest;
-  friend class FakeAuthenticationService;
 
   // LINT.IfChange(IOSProfileInitializationOutcome)
   enum class ProfileInitializationOutcome {
