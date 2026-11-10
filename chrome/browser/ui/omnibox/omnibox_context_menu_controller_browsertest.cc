@@ -48,6 +48,7 @@
 #include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/omnibox_metrics_utils.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -1736,6 +1737,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerSingleTabItemBrowserTest,
       snap.minor_text = menu->GetMinorTextAt(*snap.single_tab_index);
       EXPECT_EQ(menu->GetElementIdentifierAt(*snap.single_tab_index),
                 OmniboxContextMenuController::kSingleTabMenuItemIdForTesting);
+      EXPECT_EQ(*snap.single_tab_index, 1u);
+      EXPECT_EQ(menu->GetTypeAt(0), ui::MenuModel::TYPE_TITLE);
+      EXPECT_EQ(menu->GetLabelAt(0),
+                l10n_util::GetStringUTF16(IDS_OMNIBOX_NAVATTACH_TABS));
     }
     return snap;
   };

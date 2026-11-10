@@ -2826,12 +2826,18 @@ suite('ContextualActionMenu', () => {
 
     test('Item hidden when the param is disabled', async () => {
       await createMenu(/*enabled=*/ false);
+      assertFalse(!!$$(actionMenu, '#tabHeader'));
       assertFalse(!!$$(actionMenu, '#singleTabItem'));
       assertTrue(!!$$(actionMenu, '#shareTabsTrigger'));
     });
 
     test('Item rendered above the Add tabs trigger', async () => {
       await createMenu(/*enabled=*/ true);
+
+      const header = $$(actionMenu, '#tabHeader') as HTMLElement;
+      assertTrue(!!header);
+      assertTrue(isVisible(header));
+      assertEquals('Tabs', header.textContent.trim());
 
       const item = $$(actionMenu, '#singleTabItem') as HTMLButtonElement;
       assertTrue(!!item);
@@ -2846,7 +2852,10 @@ suite('ContextualActionMenu', () => {
       const favicon = item.querySelector('cr-composebox-tab-favicon');
       assertTrue(!!favicon);
 
-      // DOM order: item, then the "Add tabs" trigger.
+      // DOM order: header, then item, then the "Add tabs" trigger.
+      assertTrue(
+          !!(header.compareDocumentPosition(item) &
+             Node.DOCUMENT_POSITION_FOLLOWING));
       const trigger = $$(actionMenu, '#shareTabsTrigger') as HTMLElement;
       assertTrue(!!trigger);
       assertTrue(
@@ -2861,8 +2870,16 @@ suite('ContextualActionMenu', () => {
       assertEquals(2, flyoutItems.length);
     });
 
+    test('Header hidden when ShowContextMenuHeaders is false', async () => {
+      loadTimeData.overrideValues({ShowContextMenuHeaders: false});
+      await createMenu(/*enabled=*/ true);
+      assertFalse(!!$$(actionMenu, '#tabHeader'));
+      assertTrue(!!$$(actionMenu, '#singleTabItem'));
+    });
+
     test('Item hidden when the recent tab is not a suggestion', async () => {
       await createMenu(/*enabled=*/ true, {recentTabId: 999});
+      assertFalse(!!$$(actionMenu, '#tabHeader'));
       assertFalse(!!$$(actionMenu, '#singleTabItem'));
       assertTrue(!!$$(actionMenu, '#shareTabsTrigger'));
     });
@@ -3004,6 +3021,7 @@ suite('ContextualActionMenu', () => {
         smartTabSharingVisible: true,
         smartTabSharingActive: true,
       });
+      assertFalse(!!$$(actionMenu, '#tabHeader'));
       assertFalse(!!$$(actionMenu, '#singleTabItem'));
       assertTrue(!!$$(actionMenu, '#smartTabSharingItem'));
       assertFalse(!!$$(actionMenu, '#shareTabsTrigger'));

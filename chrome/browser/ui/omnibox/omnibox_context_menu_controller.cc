@@ -491,6 +491,9 @@ void OmniboxContextMenuController::AddRecentTabItems() {
     // "Add tabs" row, so it can be toggled without opening the flyout.
     if (omnibox::IsSingleTabMenuItemInComposeboxEnabled() &&
         single_tab_index.has_value()) {
+      if (omnibox::kShowContextMenuHeaders.Get()) {
+        AddTitleWithStringId(IDS_OMNIBOX_NAVATTACH_TABS);
+      }
       AddSingleTabItem(tabs[*single_tab_index],
                        next_command_id_ + static_cast<int>(*single_tab_index));
     }
