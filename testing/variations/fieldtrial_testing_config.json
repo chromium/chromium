@@ -17078,27 +17078,6 @@
             ]
         }
     ],
-    "RustyJpegFeature": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "RustyJpegExperiment",
-                    "enable_features": [
-                        "RustyJpegFeature"
-                    ]
-                }
-            ]
-        }
-    ],
     "SQLitePersistentCookieStoreEarlyInit": [
         {
             "platforms": [
