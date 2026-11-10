@@ -4,9 +4,7 @@
 
 #include "chrome/browser/obsolete_system/obsolete_system.h"
 
-#include "base/cpu.h"
 #include "base/win/windows_version.h"
-#include "build/build_config.h"
 #include "chrome/common/chrome_version.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -23,7 +21,7 @@ base::win::Version GetRealOSVersion() {
 }
 
 bool IsObsoleteOsVersion() {
-  return GetRealOSVersion() < base::win::Version::WIN10;
+  return GetRealOSVersion() < base::win::Version::WIN10_RS5;
 }
 
 }  // namespace
@@ -45,14 +43,18 @@ std::u16string LocalizedObsoleteString() {
   if (version == base::win::Version::WIN8_1) {
     return l10n_util::GetStringUTF16(IDS_WIN_8_1_OBSOLETE);
   }
+  if (version >= base::win::Version::WIN10 &&
+      version < base::win::Version::WIN10_RS5) {
+    return l10n_util::GetStringUTF16(IDS_WIN_10_PRE_1809_OBSOLETE);
+  }
   return l10n_util::GetStringUTF16(IDS_WIN_XP_VISTA_OBSOLETE);
 }
 
 bool IsEndOfTheLine() {
-  // M109 was the last milestone to support Win 7/8/8.1, the last deprecated
-  // Windows version. Future deprecations should update this to the last
-  // milestone that supports the soon-to-be-deprecated Windows version.
-  return CHROME_VERSION_MAJOR >= 109;
+  // M160 is the last milestone to support Windows 10 < 1809 (RS5), the last
+  // deprecated Windows version. Future deprecations should update this to the
+  // last milestone that supports the soon-to-be-deprecated Windows version.
+  return CHROME_VERSION_MAJOR >= 160;
 }
 
 const char* GetLinkURL() {
@@ -60,7 +62,7 @@ const char* GetLinkURL() {
   if (version < base::win::Version::WIN7) {
     return chrome::kWindowsXPVistaDeprecationURL;
   }
-  return chrome::kWindows78DeprecationURL;
+  return chrome::kWindowsObsoleteURL;
 }
 
 }  // namespace ObsoleteSystem

@@ -691,8 +691,9 @@ inline constexpr char kWindowsXPVistaDeprecationURL[] =
     "https://chrome.blogspot.com/2015/11/"
     "updates-to-chrome-platform-support.html";
 
-// The URL for the Windows 7/8.1 deprecation help center article.
-inline constexpr char kWindows78DeprecationURL[] =
+// The URL for the "learn more" link on the Windows version obsolescence
+// infobar.
+inline constexpr char kWindowsObsoleteURL[] =
     "https://support.google.com/chrome?p=unsupported_windows";
 
 // The URL for the "Learn more" page for process isolation.

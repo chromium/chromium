@@ -579,6 +579,11 @@ New bookmarks can’t be saved in your account until you delete some. If you sig
                     To get future Chromium updates, you'll need Windows 10 or later. This computer is using Windows 8.1.
         </message>
       </if>
+      <if expr="is_win">
+        <message name="IDS_WIN_10_PRE_1809_OBSOLETE" desc="A message displayed on an at-launch infobar and about:help warning the user that the computer they are using will soon be or is already unsupported.">
+          To get future Chromium updates, you'll need Windows 10 version 1809 or later. This computer is using an older version of Windows 10.
+        </message>
+      </if>
       <if expr="is_linux">
         <message name="IDS_LINUX_OBSOLETE" desc="A message displayed on an at-launch infobar and about:help warning the user that the OS version they are using is no longer supported.">
           Chromium may not function correctly because it is no longer supported on this Linux distribution
