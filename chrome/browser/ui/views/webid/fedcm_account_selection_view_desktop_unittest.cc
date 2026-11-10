@@ -15,6 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -152,11 +153,21 @@ class TestAccountSelectionView : public AccountSelectionViewBase,
     }
   }
 
+  void UpdateTitleAndSubtitle(
+      const content::RelyingPartyData& rp_data) override {
+    AccountSelectionViewBase::UpdateTitleAndSubtitle(rp_data);
+    if (on_update_title_and_subtitle_) {
+      std::move(on_update_title_and_subtitle_).Run();
+    }
+  }
+
   std::string GetDialogTitle() const override { return std::string(); }
   std::optional<std::string> GetDialogSubtitle() const override {
     return std::nullopt;
   }
 
+  // Run once while the title and subtitle are being updated.
+  base::OnceClosure on_update_title_and_subtitle_;
   bool show_back_button_{false};
   std::optional<SheetType> sheet_type_{SheetType::kLoading};
   // The sheet that the verifying sheet was shown over.
@@ -532,6 +543,16 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
       accounts.back()->identity_provider = idp_data;
     }
     return accounts;
+  }
+
+  // Runs the tasks that have already been posted to the current sequence, such
+  // as the task that handles an ambient bubble decision, or the task that
+  // closes the dialog after `OnCloseButtonClicked()`.
+  void RunPostedTasks() {
+    base::RunLoop run_loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
   }
 
   std::unique_ptr<TestFedCmAccountSelectionView> CreateAndShow(
@@ -992,6 +1013,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, CloseAutoReauthnSheetMetric) {
   histogram_tester_->ExpectTotalCount("Blink.FedCm.ClosedSheetType.Desktop", 0);
 
   controller->OnCloseButtonClicked(CreateMouseEvent());
+  RunPostedTasks();
   histogram_tester_->ExpectUniqueSample(
       "Blink.FedCm.ClosedSheetType.Desktop",
       static_cast<int>(webid::SheetType::kAutoReauthn), 1);
@@ -1695,6 +1717,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, UseAnotherAccountThenCancel) {
 
   // Emulate the user clicking "cancel" button. This should close the widget.
   controller->OnCloseButtonClicked(CreateMouseEvent());
+  RunPostedTasks();
   EXPECT_FALSE(controller->GetDialogWidget());
 }
 
@@ -1844,6 +1867,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 
   // Simulate the dialog being closed.
   controller->OnCloseButtonClicked(CreateMouseEvent());
+  RunPostedTasks();
 }
 
 // Tests that if a pop-up window is opened in active mode, closing the
@@ -2416,6 +2440,81 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, DismissLoadingModal) {
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShowLoadingDialog();
   controller->OnCloseButtonClicked(CreateMouseEvent());
+  RunPostedTasks();
+}
+
+// Tests that clicking the close button closes the dialog in a separate task,
+// so that the dialog is not destroyed while a dialog view may still be running.
+TEST_F(FedCmAccountSelectionViewDesktopTest, CloseButtonClosesDialogAsync) {
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_, blink::mojom::RpMode::kActive);
+  ASSERT_TRUE(controller->GetDialogWidget());
+
+  controller->OnCloseButtonClicked(CreateMouseEvent());
+  EXPECT_TRUE(controller->GetDialogWidget());
+  EXPECT_FALSE(delegate_->GetDismissReason());
+
+  RunPostedTasks();
+  EXPECT_FALSE(controller->GetDialogWidget());
+  EXPECT_EQ(delegate_->GetDismissReason(), DismissReason::kCloseButton);
+}
+
+// Tests that clicking the close button while a dialog view is still running
+// does not destroy the dialog or `this` until that view returns.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       CloseButtonClickedWhileDialogViewRunning) {
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShowLoadingDialog();
+  TestFedCmAccountSelectionView* controller_ptr = controller.get();
+
+  // Destroy the controller on dismissal, as RequestService does.
+  delegate_->SetOnDismissClosure(
+      base::BindLambdaForTesting([&controller]() { controller.reset(); }));
+
+  // Showing the accounts updates the title of the existing dialog view, which
+  // clicks the close button while it is running.
+  controller->GetTestView()->on_update_title_and_subtitle_ =
+      base::BindLambdaForTesting([this, controller_ptr]() {
+        controller_ptr->OnCloseButtonClicked(CreateMouseEvent());
+      });
+  Show(*controller, accounts_, blink::mojom::RpMode::kActive);
+  ASSERT_TRUE(controller);
+  EXPECT_TRUE(controller->GetDialogWidget());
+  EXPECT_FALSE(delegate_->GetDismissReason());
+
+  RunPostedTasks();
+  EXPECT_FALSE(controller);
+  EXPECT_EQ(delegate_->GetDismissReason(), DismissReason::kCloseButton);
+}
+
+// Tests that clicking the close button does nothing more if the dialog is
+// closed in another way before the posted close runs.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       CloseButtonClickedThenDialogClosedOtherwise) {
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_, blink::mojom::RpMode::kActive);
+
+  controller->OnCloseButtonClicked(CreateMouseEvent());
+  controller->GetDialogWidget()->CloseWithReason(
+      views::Widget::ClosedReason::kEscKeyPressed);
+  EXPECT_FALSE(controller->GetDialogWidget());
+  EXPECT_EQ(delegate_->GetDismissReason(), DismissReason::kOther);
+
+  RunPostedTasks();
+  EXPECT_EQ(delegate_->GetDismissReason(), DismissReason::kOther);
+}
+
+// Tests that the posted close does nothing if the view is destroyed before it
+// runs.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       CloseButtonClickedThenViewDestroyed) {
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_, blink::mojom::RpMode::kActive);
+
+  controller->OnCloseButtonClicked(CreateMouseEvent());
+  controller.reset();
+  RunPostedTasks();
+  EXPECT_FALSE(delegate_->GetDismissReason());
 }
 
 // Tests that the loading modal is not hidden when a pop-up window is displayed.
@@ -2579,6 +2678,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, AccountChooserResultMetric) {
     std::unique_ptr<TestFedCmAccountSelectionView> controller =
         CreateAndShow(accounts_, blink::mojom::RpMode::kActive);
     controller->OnCloseButtonClicked(CreateMouseEvent());
+    RunPostedTasks();
   }
   CheckForSampleAndReset(webid::AccountChooserResult::kCancelButton);
 
@@ -3003,6 +3103,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, LoadingDialogResultMetric) {
     std::unique_ptr<TestFedCmAccountSelectionView> controller =
         CreateAndShowLoadingDialog();
     controller->OnCloseButtonClicked(CreateMouseEvent());
+    RunPostedTasks();
   }
   CheckForSampleAndReset(webid::LoadingDialogResult::kCancel);
 
@@ -3040,6 +3141,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, DisclosureDialogResultMetric) {
     EXPECT_TRUE(
         controller->OnAccountSelected(accounts_[0], CreateMouseEvent()));
     controller->OnCloseButtonClicked(CreateMouseEvent());
+    RunPostedTasks();
   }
   CheckForSampleAndReset(webid::DisclosureDialogResult::kCancel);
 
@@ -3236,15 +3338,6 @@ class FedCmAccountSelectionViewAmbientBubbleTest
     EXPECT_TRUE(base::test::RunUntil(
         [&]() { return GetShownAmbientRequest() != nullptr; }));
     return GetShownAmbientRequest();
-  }
-
-  // Runs the tasks that have already been posted to the current sequence, such
-  // as the task that handles an ambient bubble decision.
-  void RunPostedTasks() {
-    base::RunLoop run_loop;
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, run_loop.QuitClosure());
-    run_loop.Run();
   }
 
  protected:
