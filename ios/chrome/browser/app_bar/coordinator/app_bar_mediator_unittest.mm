@@ -10,6 +10,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/base64.h"
+#import "base/i18n/language_tag.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -475,12 +476,12 @@ class AppBarMediatorTest : public PlatformTest,
       scoped_variations_service_.Get()->OverrideStoredPermanentCountry("us");
       TestingApplicationContext::GetGlobal()
           ->GetApplicationLocaleStorage()
-          ->Set("en-US");
+          ->SetTag(base::i18n::GetKnownLanguageTag("en-US"));
     } else {
       scoped_variations_service_.Get()->OverrideStoredPermanentCountry("fr");
       TestingApplicationContext::GetGlobal()
           ->GetApplicationLocaleStorage()
-          ->Set("fr-FR");
+          ->SetTag(base::i18n::GetKnownLanguageTag("fr-FR"));
     }
   }
 
@@ -1610,8 +1611,8 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonStateEEACountryGated) {
 
   // Set country to France ("fr"), which is in EEA.
   scoped_variations_service_.Get()->OverrideStoredPermanentCountry("fr");
-  TestingApplicationContext::GetGlobal()->GetApplicationLocaleStorage()->Set(
-      "en-US");
+  TestingApplicationContext::GetGlobal()->GetApplicationLocaleStorage()->SetTag(
+      base::i18n::GetKnownLanguageTag("en-US"));
 
   SignInAndSetCapability(true);
   mediator_.overrideLensAvailabilityForTesting = YES;
@@ -1634,8 +1635,8 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonStateJapanCountryGated) {
 
   // Set country to Japan ("jp").
   scoped_variations_service_.Get()->OverrideStoredPermanentCountry("jp");
-  TestingApplicationContext::GetGlobal()->GetApplicationLocaleStorage()->Set(
-      "en-US");
+  TestingApplicationContext::GetGlobal()->GetApplicationLocaleStorage()->SetTag(
+      base::i18n::GetKnownLanguageTag("en-US"));
 
   SignInAndSetCapability(true);
   mediator_.overrideLensAvailabilityForTesting = YES;
@@ -1659,8 +1660,8 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonStateNonEEANonJapanEligible) {
 
   // Set country to Brazil ("br"), which is not in EEA or Japan.
   scoped_variations_service_.Get()->OverrideStoredPermanentCountry("br");
-  TestingApplicationContext::GetGlobal()->GetApplicationLocaleStorage()->Set(
-      "en-US");
+  TestingApplicationContext::GetGlobal()->GetApplicationLocaleStorage()->SetTag(
+      base::i18n::GetKnownLanguageTag("en-US"));
 
   SignInAndSetCapability(true);
 

@@ -6,6 +6,7 @@
 
 #import "base/check_op.h"
 #import "base/feature_list.h"
+#import "base/i18n/language_tag.h"
 #import "base/memory/ptr_util.h"
 #import "base/notreached.h"
 #import "base/time/default_clock.h"
@@ -54,7 +55,7 @@ TestingApplicationContext::TestingApplicationContext()
           std::make_unique<ApplicationLocaleStorage>()) {
   DCHECK(!GetApplicationContext());
   SetApplicationContext(this);
-  application_locale_storage_->Set("en-US");
+  application_locale_storage_->SetTag(base::i18n::GetKnownLanguageTag("en-US"));
 }
 
 TestingApplicationContext::~TestingApplicationContext() {

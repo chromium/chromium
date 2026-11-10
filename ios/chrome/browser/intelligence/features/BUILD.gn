@@ -29,6 +29,7 @@ source_set("unit_tests") {
   sources = [ "features_unittest.mm" ]
   deps = [
     ":features",
+    "//base/i18n:language_tag",
     "//base/test:test_support",
     "//components/application_locale_storage",
     "//ios/chrome/app/background_task:features",

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/intelligence/features/features.h"
 
+#import "base/i18n/language_tag.h"
+#import "base/i18n/tag_converters.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/application_locale_storage/application_locale_storage.h"
@@ -113,13 +115,13 @@ TEST_F(ActorFeaturesTest, IsPageActionMenuEnabled_EnabledLocale) {
 
   ApplicationLocaleStorage* locale_storage =
       TestingApplicationContext::GetGlobal()->GetApplicationLocaleStorage();
-  std::string original_locale(locale_storage->GetTag().tag_string());
-  locale_storage->Set("zh_TW");
+  base::i18n::LanguageTag original_locale = locale_storage->GetTag();
+  locale_storage->SetTag(base::i18n::GetKnownLanguageTag("zh-TW"));
 
   EXPECT_TRUE(IsPageActionMenuEnabled());
 
   // Restore locale.
-  locale_storage->Set(original_locale);
+  locale_storage->SetTag(original_locale);
 }
 
 TEST_F(ActorFeaturesTest, IsPageActionMenuEnabled_DisabledLocale) {
@@ -128,13 +130,13 @@ TEST_F(ActorFeaturesTest, IsPageActionMenuEnabled_DisabledLocale) {
 
   ApplicationLocaleStorage* locale_storage =
       TestingApplicationContext::GetGlobal()->GetApplicationLocaleStorage();
-  std::string original_locale(locale_storage->GetTag().tag_string());
-  locale_storage->Set("xx-XX");
+  base::i18n::LanguageTag original_locale = locale_storage->GetTag();
+  locale_storage->SetTag(base::i18n::GetLanguageTagFromString("xx-XX").value());
 
   EXPECT_FALSE(IsPageActionMenuEnabled());
 
   // Restore locale.
-  locale_storage->Set(original_locale);
+  locale_storage->SetTag(original_locale);
 }
 
 // Test that zero-state suggestions are disabled by default when PageActionMenu

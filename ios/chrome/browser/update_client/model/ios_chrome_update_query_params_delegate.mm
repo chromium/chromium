@@ -28,6 +28,9 @@ std::string IOSChromeUpdateQueryParamsDelegate::GetExtraParams() {
 }
 
 // static
-const std::string& IOSChromeUpdateQueryParamsDelegate::GetLang() {
-  return GetApplicationContext()->GetApplicationLocaleStorage()->Get();
+std::string IOSChromeUpdateQueryParamsDelegate::GetLang() {
+  return std::string(GetApplicationContext()
+                         ->GetApplicationLocaleStorage()
+                         ->GetTag()
+                         .tag_string());
 }

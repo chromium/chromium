@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/toolbar/coordinator/toolbar_mediator.h"
 
+#import "base/i18n/language_tag.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
@@ -219,12 +220,12 @@ class ToolbarMediatorTest : public PlatformTest,
       scoped_variations_service_.Get()->OverrideStoredPermanentCountry("us");
       TestingApplicationContext::GetGlobal()
           ->GetApplicationLocaleStorage()
-          ->Set("en-US");
+          ->SetTag(base::i18n::GetKnownLanguageTag("en-US"));
     } else {
       scoped_variations_service_.Get()->OverrideStoredPermanentCountry("fr");
       TestingApplicationContext::GetGlobal()
           ->GetApplicationLocaleStorage()
-          ->Set("fr-FR");
+          ->SetTag(base::i18n::GetKnownLanguageTag("fr-FR"));
     }
   }
 
@@ -978,8 +979,8 @@ TEST_P(ToolbarMediatorTest, TestAssistantButtonNotVisible_EEACountryGated) {
 
   // France is in EEA.
   scoped_variations_service_.Get()->OverrideStoredPermanentCountry("fr");
-  TestingApplicationContext::GetGlobal()->GetApplicationLocaleStorage()->Set(
-      "en-US");
+  TestingApplicationContext::GetGlobal()->GetApplicationLocaleStorage()->SetTag(
+      base::i18n::GetKnownLanguageTag("en-US"));
 
   browser_->GetWebStateList()->InsertWebState(
       CreateWebState(), WebStateList::InsertionParams::AtIndex(0).Activate());
@@ -998,8 +999,8 @@ TEST_P(ToolbarMediatorTest, TestAssistantButtonNotVisible_JapanCountryGated) {
 
   // Set country to Japan ("jp").
   scoped_variations_service_.Get()->OverrideStoredPermanentCountry("jp");
-  TestingApplicationContext::GetGlobal()->GetApplicationLocaleStorage()->Set(
-      "en-US");
+  TestingApplicationContext::GetGlobal()->GetApplicationLocaleStorage()->SetTag(
+      base::i18n::GetKnownLanguageTag("en-US"));
 
   browser_->GetWebStateList()->InsertWebState(
       CreateWebState(), WebStateList::InsertionParams::AtIndex(0).Activate());

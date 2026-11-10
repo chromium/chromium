@@ -207,7 +207,10 @@ TEST_F(ContextualCueLogEventBuilderTest, SystemProfile) {
   EXPECT_FALSE(system_profile.milestone().empty());
   EXPECT_EQ(version_info::GetChannelString(::GetChannel()),
             system_profile.chrome_channel());
-  EXPECT_EQ(GetApplicationContext()->GetApplicationLocaleStorage()->Get(),
+  EXPECT_EQ(GetApplicationContext()
+                ->GetApplicationLocaleStorage()
+                ->GetTag()
+                .tag_string(),
             system_profile.language());
   EXPECT_FALSE(system_profile.language().empty());
   EXPECT_TRUE(system_profile.country().empty());

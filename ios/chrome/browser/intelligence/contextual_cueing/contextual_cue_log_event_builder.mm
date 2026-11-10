@@ -45,7 +45,9 @@ void PopulateSystemProfile(
     return;
   }
   system_profile->set_language(
-      application_context->GetApplicationLocaleStorage()->Get());
+      application_context->GetApplicationLocaleStorage()
+          ->GetTag()
+          .tag_string());
   if (variations::VariationsService* variations_service =
           application_context->GetVariationsService()) {
     system_profile->set_country(

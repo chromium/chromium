@@ -95,6 +95,7 @@ source_set("unit_tests") {
   deps = [
     ":coordinator",
     "//base",
+    "//base/i18n:language_tag",
     "//base/test:test_support",
     "//components/application_locale_storage",
     "//components/omnibox/browser:pref_names",

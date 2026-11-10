@@ -60,6 +60,7 @@ source_set("test_support") {
 
   deps = [
     "//base",
+    "//base/i18n:language_tag",
     "//base/test:test_support",
     "//components/activity_reporter",
     "//components/application_locale_storage",

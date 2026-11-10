@@ -11,6 +11,7 @@ source_set("model") {
   ]
   deps = [
     "//base",
+    "//base/i18n:language_tag",
     "//build:blink_buildflags",
     "//components/activity_reporter",
     "//components/application_locale_storage",
