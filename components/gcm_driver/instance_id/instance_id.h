@@ -102,7 +102,9 @@ class InstanceID {
   // automatically. Thus you should not store tokens for long periods yourself,
   // instead call this function each time it's needed.
   //
-  // To receive messages, register an |AppIdHandler| on |gcm_driver()|.
+  // To receive messages, register a `gcm::GCMAppHandler` on `gcm_driver()` via
+  // `GCMDriver::AddAppHandler()`. On desktop, an app handler must be registered
+  // before calling `GetToken()`.
   //
   // |authorized_entity|: identifies the entity that is authorized to access
   //                      resources associated with this Instance ID. It can be

@@ -209,6 +209,12 @@ class GCMDriver {
   virtual void Shutdown();
 
   // Adds a handler for a given app.
+  //
+  // May synchronously invoke `handler->OnMessage()` before returning to replay
+  // buffered messages received prior to registration. Callers must finish
+  // initializing `handler` before calling `AddAppHandler()`, and `handler` must
+  // not unregister or destroy itself while buffered messages are being
+  // replayed.
   virtual void AddAppHandler(const std::string& app_id, GCMAppHandler* handler);
 
   // Remove the handler for a given app.
