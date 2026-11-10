@@ -86,8 +86,7 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 }
 
 // Tests that a WebView can be closed via Overscroll Actions.
-// TODO(crbug.com/443702124): Re-enable when fixed.
-- (void)DISABLED_testWebViewClose {
+- (void)testWebViewClose {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Overscroll Actions are only on iPhone.");
   }
@@ -98,8 +97,7 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 }
 
 // Tests that a new tab can be opened via Overscroll Actions on a WebView.
-// TODO(crbug.com/443702124): Re-enable when fixed.
-- (void)DISABLED_testWebViewAddTab {
+- (void)testWebViewAddTab {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Overscroll Actions are only on iPhone.");
   }
@@ -110,8 +108,7 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 }
 
 // Tests that a WebView can be reloaded via the Overscroll Actions.
-// TODO(crbug.com/443702124): Re-enable when fixed.
-- (void)DISABLED_testWebViewReload {
+- (void)testWebViewReload {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Overscroll Actions are only on iPhone.");
   }

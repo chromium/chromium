@@ -129,8 +129,7 @@ id<GREYMatcher> highlightedReviewsButtonMatcher() {
   [ChromeEarlGrey waitForWebStateVisibleURL:_reviewsURI];
 }
 
-// TODO (crbug.com/348177731) re-enable when fixed.
-- (void)DISABLED_testTapCallButton {
+- (void)testTapCallButton {
   // Skip the test if the dial app is not installed.
   if (![self dialAppInstalled]) {
     return;
@@ -308,8 +307,7 @@ id<GREYMatcher> highlightedReviewsButtonMatcher() {
   [ChromeEarlGrey waitForWebStateVisibleURL:_reviewsURI];
 }
 
-// TODO (crbug.com/348177731) re-enable when fixed.
-- (void)DISABLED_testReturnKeyOnCallButton {
+- (void)testReturnKeyOnCallButton {
   // Skip the test if the dial app is not installed.
   if (![self dialAppInstalled]) {
     return;

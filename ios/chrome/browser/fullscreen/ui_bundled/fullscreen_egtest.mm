@@ -276,8 +276,7 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
 
 // Tests that link clicks from a chrome:// to chrome:// link result in the
 // header being shown even if was not previously shown.
-// TODO(crbug.com/461735565): Test flaky on device and simulator.
-- (void)DISABLED_testChromeToChromeURLKeepsHeaderOnScreen {
+- (void)testChromeToChromeURLKeepsHeaderOnScreen {
   const GURL kChromeAboutURL("chrome://chrome-urls");
   [ChromeEarlGrey loadURL:kChromeAboutURL];
   [ChromeEarlGrey waitForWebStateContainingText:"chrome://version"];
@@ -715,13 +714,7 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
 
 // Tests that the header is shown when loading an error page in a native view
 // even if fullscreen was enabled previously.
-// TODO(crbug.com/437072563): Test flaky on device.
-#if !TARGET_IPHONE_SIMULATOR
-#define MAYBE_testShowHeaderOnErrorPage DISABLED_testShowHeaderOnErrorPage
-#else
-#define MAYBE_testShowHeaderOnErrorPage testShowHeaderOnErrorPage
-#endif
-- (void)MAYBE_testShowHeaderOnErrorPage {
+- (void)testShowHeaderOnErrorPage {
   GURL errorURL = self.testServer->GetURL("/mock/bad/");
 
   _responses["/origin"] =

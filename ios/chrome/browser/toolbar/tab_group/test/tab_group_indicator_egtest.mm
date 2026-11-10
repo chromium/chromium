@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/data_sharing/public/features.h"
 #import "components/data_sharing/public/group_data.h"
@@ -389,11 +388,6 @@ void CreateSharedGroupAndOpenMenu(
 
 // Tests that renaming a tab group from the tab group indicator menu works.
 - (void)testTabGroupIndicatorMenuActionsRenameGroup {
-  // TODO(crbug.com/442817314): Re-enable this flaky test on iOS26.
-  if (base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"On iPad, the tab group indicator is not displayed "
                            @"if the tab strip is visible.");

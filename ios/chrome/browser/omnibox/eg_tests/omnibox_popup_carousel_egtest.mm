@@ -91,11 +91,6 @@ id<GREYMatcher> CarouselMatcher() {
 
 // Tests adding most visited tiles by visiting sites multiple times.
 - (void)testAddingMostVisitedTiles {
-  // TODO(crbug.com/40066782): Test consistently failed on ipad simulator.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Failing on iPad Simulator");
-  }
-
   [self addNumberOfMostVisitedTiles:kCarouselCapacity];
   [self focusOmniboxFromWebPageZero];
   [[EarlGrey selectElementWithMatcher:TileWithTitle(PageTitle(1))]
@@ -103,8 +98,7 @@ id<GREYMatcher> CarouselMatcher() {
 }
 
 // Tests tapping the first tile and scroll to tap the last tile.
-// TODO(crbug.com/440575187): This test is flaky.
-- (void)FLAKY_testTappingAndScrollingMostVisitedTiles {
+- (void)testTappingAndScrollingMostVisitedTiles {
   [self addNumberOfMostVisitedTiles:kCarouselCapacity];
 
   // Test tapping the first tile.
@@ -126,8 +120,7 @@ id<GREYMatcher> CarouselMatcher() {
 #pragma mark - Context Menu
 
 // Tests deleting most visited tiles from context menu.
-// TODO(crbug.com/440566014): This test is flaky.
-- (void)FLAKY_testDeleteMostVisitedTiles {
+- (void)testDeleteMostVisitedTiles {
   // Visit page 1 and 2 multiple times.
   [self addNumberOfMostVisitedTiles:2];
   id<GREYMatcher> tile1 = TileWithTitle(PageTitle(Page(1)));

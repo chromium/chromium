@@ -223,7 +223,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
                     "doodle_test/ddljson_android0.json"));
   }
 
-  if ([self isRunningTest:@selector(DISABLED_testCollectionShortcuts)]) {
+  if ([self isRunningTest:@selector(testCollectionShortcuts)]) {
     // This ensures that the test will not fail when What's New is updated.
     config.additional_args.push_back(base::StringPrintf(
         "--disable-features=%s",
@@ -278,8 +278,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 }
 
 // Tests that the collections shortcut are displayed and working.
-// TODO(crbug.com/387934031): Re-enable.
-- (void)DISABLED_testCollectionShortcuts {
+- (void)testCollectionShortcuts {
   AppLaunchConfiguration config = self.appConfigurationForTestCase;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
@@ -658,8 +657,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 
 // Tests that the tap gesture recognizer that dismisses the keyboard and
 // defocuses the omnibox works.
-// TODO(crbug.com/399854107): Deflake this test.
-- (void)FLAKY_testDefocusOmniboxTapWorks {
+- (void)testDefocusOmniboxTapWorks {
   [self focusFakebox];
   // Tap on a space in the collectionView that is not a link.
   id<GREYMatcher> firstMagicStackModuleLabel = grey_allOf(
@@ -698,15 +696,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 
 // Tests that rotating to landscape and scrolling into the feed, opening another
 // NTP, and then swtiching back retains the scroll position.
-// TODO(crbug.com/370968166): Test flaky on iphone-device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testOpenMultipleTabsandChangeOrientation \
-  testOpenMultipleTabsandChangeOrientation
-#else
-#define MAYBE_testOpenMultipleTabsandChangeOrientation \
-  DISABLED_testOpenMultipleTabsandChangeOrientation
-#endif
-- (void)MAYBE_testOpenMultipleTabsandChangeOrientation {
+- (void)testOpenMultipleTabsandChangeOrientation {
   UICollectionView* collectionView = [NewTabPageAppInterface collectionView];
   [self testNTPInitialPositionAndContent:collectionView];
 
@@ -806,11 +796,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 // and moved up, the scroll position restored is the position before the omnibox
 // is selected.
 - (void)testPositionRestoredWithShiftingOffset {
-  // TODO(crbug.com/513858033): Re-enable this flaky test on iPad simulator.
-  if ([ChromeEarlGrey isIPadIdiom] && TARGET_OS_SIMULATOR) {
-    EARL_GREY_TEST_DISABLED(@"Flaky on iPad simulator.");
-  }
-
   // Scroll a bit to have a position to restore.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
       performAction:grey_scrollInDirection(kGREYDirectionDown, 20)];
