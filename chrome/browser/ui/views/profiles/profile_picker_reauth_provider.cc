@@ -127,7 +127,7 @@ void ProfilePickerReauthProvider::OnForceSigninVerifierTimeOut() {
 void ProfilePickerReauthProvider::TryCreateForceSigninVerifier() {
   if (!force_signin_verifier_ && identity_manager_->AreRefreshTokensLoaded()) {
     force_signin_verifier_ = std::make_unique<ForceSigninVerifier>(
-        &*profile_, &*identity_manager_,
+        &*identity_manager_,
         base::BindOnce(&ProfilePickerReauthProvider::OnTokenFetchComplete,
                        base::Unretained(this)));
   }

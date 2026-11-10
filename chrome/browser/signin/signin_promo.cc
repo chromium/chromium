@@ -27,7 +27,6 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
-#include "components/sync/base/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -110,11 +109,9 @@ GURL GetChromeSyncURLForDice(ChromeSyncUrlArgs args) {
   switch (args.flow) {
     // Default behavior.
     case Flow::NONE:
-      if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-        // If History Sync Opt-in is enabled, use a customized sign-in screen
-        // that does NOT mention history sync benefits.
-        url = net::AppendQueryParameter(url, "flow", "history_opt_in");
-      }
+      // Use a customized sign-in screen that does NOT mention history sync
+      // benefits.
+      url = net::AppendQueryParameter(url, "flow", "history_opt_in");
       break;
     case Flow::PROMO:
       url = net::AppendQueryParameter(url, "flow", "promo");

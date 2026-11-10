@@ -11,8 +11,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/util/managed_browser_utils.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -24,7 +22,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
-#include "components/sync/base/features.h"
 #include "content/public/browser/network_service_instance.h"
 #include "google_apis/gaia/gaia_constants.h"
 
@@ -40,26 +37,14 @@ const net::BackoffEntry::Policy kForceSigninVerifierBackoffPolicy = {
     false           // Do not always use initial delay.
 };
 
-signin::ConsentLevel GetProfileConsentLevelToVerify(Profile* profile) {
-  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    return signin::ConsentLevel::kSignin;
-  }
-
-  return enterprise_util::UserAcceptedAccountManagement(profile)
-             ? signin::ConsentLevel::kSignin
-             : signin::ConsentLevel::kSync;
-}
-
 }  // namespace
 
 ForceSigninVerifier::ForceSigninVerifier(
-    Profile* profile,
     signin::IdentityManager* identity_manager,
     base::OnceCallback<void(bool)> on_token_fetch_complete)
     : has_token_verified_(false),
       backoff_entry_(&kForceSigninVerifierBackoffPolicy),
       creation_time_(base::TimeTicks::Now()),
-      profile_(profile),
       identity_manager_(identity_manager),
       on_token_fetch_complete_(std::move(on_token_fetch_complete)) {
   content::GetNetworkConnectionTracker()->AddNetworkConnectionObserver(this);
@@ -156,14 +141,13 @@ void ForceSigninVerifier::SendRequestIfNetworkAvailable(
           base::BindOnce(&ForceSigninVerifier::OnAccessTokenFetchComplete,
                          weak_factory_.GetWeakPtr()),
           signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
-          GetProfileConsentLevelToVerify(profile_));
+          signin::ConsentLevel::kSignin);
 }
 
 bool ForceSigninVerifier::ShouldSendRequest() {
   return !has_token_verified_ && access_token_fetcher_.get() == nullptr &&
          identity_manager_ &&
-         identity_manager_->HasPrimaryAccount(
-             GetProfileConsentLevelToVerify(profile_));
+         identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
 }
 
 signin::PrimaryAccountAccessTokenFetcher*

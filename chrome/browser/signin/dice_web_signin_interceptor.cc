@@ -97,7 +97,6 @@
 #include "components/signin/public/identity_manager/identity_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/signin/public/identity_manager/tribool.h"
-#include "components/sync/base/features.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -258,9 +257,8 @@ bool IsProfileSeparationSuggested(
 // Returns whether we can offer sign-in for the given account. Returns false
 // error if the account does not match the signin pattern policy.
 bool IsUsernameAllowedForInterceptionByPattern(std::string_view email) {
-  return !syncer::IsReplaceSyncPromosWithSignInPromosEnabled() ||
-         signin::IsUsernameAllowedByPatternFromPrefs(
-             g_browser_process->local_state(), email);
+  return signin::IsUsernameAllowedByPatternFromPrefs(
+      g_browser_process->local_state(), email);
 }
 
 // Returns true if we have the minimum extended account information needed to

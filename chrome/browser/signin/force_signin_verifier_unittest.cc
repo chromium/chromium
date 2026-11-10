@@ -8,9 +8,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/sync/base/features.h"
 #include "content/public/browser/network_service_instance.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -24,7 +22,6 @@ class ForceSigninVerifierWithAccessToInternalsForTesting
   explicit ForceSigninVerifierWithAccessToInternalsForTesting(
       signin::IdentityManager* identity_manager)
       : ForceSigninVerifier(
-            nullptr,
             identity_manager,
             base::BindOnce(&ForceSigninVerifierWithAccessToInternalsForTesting::
                                OnTokenFetchComplete,
@@ -170,20 +167,14 @@ void SpinCurrentSequenceTaskRunner() {
       FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
 }
-
-signin::ConsentLevel GetConsentLevel() {
-  return syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-             ? signin::ConsentLevel::kSignin
-             : signin::ConsentLevel::kSync;
-}
 }  // namespace
 
 TEST(ForceSigninVerifierTest, OnGetTokenSuccess) {
   base::test::TaskEnvironment scoped_task_env;
   signin::IdentityTestEnvironment identity_test_env;
   const AccountInfo account_info =
-      identity_test_env.MakePrimaryAccountAvailable("email@test.com",
-                                                    GetConsentLevel());
+      identity_test_env.MakePrimaryAccountAvailable(
+          "email@test.com", signin::ConsentLevel::kSignin);
 
   ForceSigninVerifierWithAccessToInternalsForTesting verifier(
       identity_test_env.identity_manager());
@@ -207,8 +198,8 @@ TEST(ForceSigninVerifierTest, OnGetTokenWaitForRefreshTokenThenSuccess) {
   base::test::TaskEnvironment scoped_task_env;
   signin::IdentityTestEnvironment identity_test_env;
   const AccountInfo account_info =
-      identity_test_env.MakePrimaryAccountAvailable("email@test.com",
-                                                    GetConsentLevel());
+      identity_test_env.MakePrimaryAccountAvailable(
+          "email@test.com", signin::ConsentLevel::kSignin);
 
   // Simulate a reset to make the refresh tokens unavailable at first.
   identity_test_env.ResetToAccountsNotYetLoadedFromDiskState();
@@ -241,8 +232,8 @@ TEST(ForceSigninVerifierTest, OnGetTokenPersistentFailure) {
   base::test::TaskEnvironment scoped_task_env;
   signin::IdentityTestEnvironment identity_test_env;
   const AccountInfo account_info =
-      identity_test_env.MakePrimaryAccountAvailable("email@test.com",
-                                                    GetConsentLevel());
+      identity_test_env.MakePrimaryAccountAvailable(
+          "email@test.com", signin::ConsentLevel::kSignin);
 
   ForceSigninVerifierWithAccessToInternalsForTesting verifier(
       identity_test_env.identity_manager());
@@ -268,8 +259,8 @@ TEST(ForceSigninVerifierTest, OnGetTokenTransientFailure) {
   base::test::TaskEnvironment scoped_task_env;
   signin::IdentityTestEnvironment identity_test_env;
   const AccountInfo account_info =
-      identity_test_env.MakePrimaryAccountAvailable("email@test.com",
-                                                    GetConsentLevel());
+      identity_test_env.MakePrimaryAccountAvailable(
+          "email@test.com", signin::ConsentLevel::kSignin);
 
   ForceSigninVerifierWithAccessToInternalsForTesting verifier(
       identity_test_env.identity_manager());
@@ -291,8 +282,8 @@ TEST(ForceSigninVerifierTest, OnLostConnection) {
   base::test::TaskEnvironment scoped_task_env;
   signin::IdentityTestEnvironment identity_test_env;
   const AccountInfo account_info =
-      identity_test_env.MakePrimaryAccountAvailable("email@test.com",
-                                                    GetConsentLevel());
+      identity_test_env.MakePrimaryAccountAvailable(
+          "email@test.com", signin::ConsentLevel::kSignin);
 
   ForceSigninVerifierWithAccessToInternalsForTesting verifier(
       identity_test_env.identity_manager());
@@ -316,8 +307,8 @@ TEST(ForceSigninVerifierTest, OnReconnected) {
   base::test::TaskEnvironment scoped_task_env;
   signin::IdentityTestEnvironment identity_test_env;
   const AccountInfo account_info =
-      identity_test_env.MakePrimaryAccountAvailable("email@test.com",
-                                                    GetConsentLevel());
+      identity_test_env.MakePrimaryAccountAvailable(
+          "email@test.com", signin::ConsentLevel::kSignin);
 
   ForceSigninVerifierWithAccessToInternalsForTesting verifier(
       identity_test_env.identity_manager());
@@ -341,8 +332,8 @@ TEST(ForceSigninVerifierTest, GetNetworkStatusAsync) {
   base::test::TaskEnvironment scoped_task_env;
   signin::IdentityTestEnvironment identity_test_env;
   const AccountInfo account_info =
-      identity_test_env.MakePrimaryAccountAvailable("email@test.com",
-                                                    GetConsentLevel());
+      identity_test_env.MakePrimaryAccountAvailable(
+          "email@test.com", signin::ConsentLevel::kSignin);
 
   ConfigureNetworkConnectionTracker(NetworkConnectionType::Undecided,
                                     NetworkResponseType::Asynchronous);
@@ -364,8 +355,8 @@ TEST(ForceSigninVerifierTest, LaunchVerifierWithoutNetwork) {
   base::test::TaskEnvironment scoped_task_env;
   signin::IdentityTestEnvironment identity_test_env;
   const AccountInfo account_info =
-      identity_test_env.MakePrimaryAccountAvailable("email@test.com",
-                                                    GetConsentLevel());
+      identity_test_env.MakePrimaryAccountAvailable(
+          "email@test.com", signin::ConsentLevel::kSignin);
 
   ConfigureNetworkConnectionTracker(NetworkConnectionType::ConnectionNone,
                                     NetworkResponseType::Asynchronous);
@@ -394,8 +385,8 @@ TEST(ForceSigninVerifierTest, ChangeNetworkFromWIFITo4GWithOnGoingRequest) {
   base::test::TaskEnvironment scoped_task_env;
   signin::IdentityTestEnvironment identity_test_env;
   const AccountInfo account_info =
-      identity_test_env.MakePrimaryAccountAvailable("email@test.com",
-                                                    GetConsentLevel());
+      identity_test_env.MakePrimaryAccountAvailable(
+          "email@test.com", signin::ConsentLevel::kSignin);
 
   ConfigureNetworkConnectionTracker(NetworkConnectionType::ConnectionWifi,
                                     NetworkResponseType::Asynchronous);
@@ -426,8 +417,8 @@ TEST(ForceSigninVerifierTest, ChangeNetworkFromWIFITo4GWithFinishedRequest) {
   base::test::TaskEnvironment scoped_task_env;
   signin::IdentityTestEnvironment identity_test_env;
   const AccountInfo account_info =
-      identity_test_env.MakePrimaryAccountAvailable("email@test.com",
-                                                    GetConsentLevel());
+      identity_test_env.MakePrimaryAccountAvailable(
+          "email@test.com", signin::ConsentLevel::kSignin);
 
   ConfigureNetworkConnectionTracker(NetworkConnectionType::ConnectionWifi,
                                     NetworkResponseType::Asynchronous);
@@ -461,8 +452,8 @@ TEST(ForceSigninVerifierTest, DeleteWithPendingRequestShouldNotCrash) {
   base::test::TaskEnvironment scoped_task_env;
   signin::IdentityTestEnvironment identity_test_env;
   const AccountInfo account_info =
-      identity_test_env.MakePrimaryAccountAvailable("email@test.com",
-                                                    GetConsentLevel());
+      identity_test_env.MakePrimaryAccountAvailable(
+          "email@test.com", signin::ConsentLevel::kSignin);
 
   ConfigureNetworkConnectionTracker(NetworkConnectionType::Undecided,
                                     NetworkResponseType::Asynchronous);

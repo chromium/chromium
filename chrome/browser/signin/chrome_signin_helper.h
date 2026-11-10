@@ -11,7 +11,6 @@
 #include "base/supports_user_data.h"
 #include "build/build_config.h"
 #include "components/signin/core/browser/signin_header_helper.h"
-#include "components/signin/public/base/consent_level.h"
 #include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
@@ -142,13 +141,12 @@ void FixAccountConsistencyRequestHeader(
     int incognito_availability,
     AccountConsistencyMethod account_consistency,
     const GaiaId& primary_account_gaia_id,
-    ConsentLevel primary_account_consent_level,
     signin::Tribool is_child_account,
 #if BUILDFLAG(ENABLE_MIRROR)
     bool is_secondary_account_addition_allowed,
 #endif
-    bool is_sync_feature_enabled,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    bool is_sync_feature_enabled,
     const std::string& signin_scoped_device_id,
 #endif
     content_settings::CookieSettings* cookie_settings);

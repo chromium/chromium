@@ -61,7 +61,8 @@ GURL GetEmbeddedReauthURLWithEmail(signin_metrics::AccessPoint access_point,
 // Controls the information displayed around the Gaia Sign In page via the
 // "flow" url parameter.
 enum class Flow {
-  // No value set for the "flow" parameter.
+  // Default value ("history_opt_in") for the "flow" parameter: uses a
+  // customized sign-in screen that does not mention history sync benefits.
   NONE,
   // The "promo" flow indicates to the user that they are signing in to Chrome
   // but unlike the default dice sign-in page, they don't mention sync

@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/webui/signin/history_sync_optin_service.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin_service_factory.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/base/features.h"
 
 namespace signin_ui_util {
 
@@ -18,7 +17,6 @@ void SigninUiDelegate::ShowHistorySyncOptinUI(
     Profile* profile,
     const CoreAccountId& account_id,
     signin_metrics::AccessPoint access_point) {
-  CHECK(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
   HistorySyncOptinService* history_sync_optin_service =
       HistorySyncOptinServiceFactory::GetForProfile(profile);
   CHECK(history_sync_optin_service);

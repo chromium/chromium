@@ -28,7 +28,6 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/base/features.h"
 #include "content/public/browser/navigation_handle.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -57,7 +56,6 @@ DiceTabHelper::GetHistorySyncOptinCallbackForBrowser() {
                                 content::WebContents* web_contents,
                                 const CoreAccountInfo& account_info,
                                 signin_metrics::AccessPoint access_point) {
-    CHECK(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
     CHECK(profile);
 
     BrowserWindowInterface* browser =

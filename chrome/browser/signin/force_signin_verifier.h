@@ -17,8 +17,6 @@
 #include "net/base/backoff_entry.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 
-class Profile;
-
 namespace signin {
 class IdentityManager;
 class PrimaryAccountAccessTokenFetcher;
@@ -33,7 +31,6 @@ class ForceSigninVerifier
       public signin::IdentityManager::Observer {
  public:
   explicit ForceSigninVerifier(
-      Profile* profile,
       signin::IdentityManager* identity_manager,
       base::OnceCallback<void(bool)> on_token_fetch_complete);
 
@@ -92,7 +89,6 @@ class ForceSigninVerifier
   // call. If not, on next `OnRefreshTokensLoaded()` the request will be sent.
   bool request_waiting_for_refresh_tokens_ = false;
 
-  raw_ptr<Profile> profile_ = nullptr;
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
   base::OnceCallback<void(bool)> on_token_fetch_complete_;
 

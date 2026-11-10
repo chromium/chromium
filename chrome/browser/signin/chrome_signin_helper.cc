@@ -684,13 +684,12 @@ void FixAccountConsistencyRequestHeader(
     int incognito_availability,
     AccountConsistencyMethod account_consistency,
     const GaiaId& primary_account_gaia_id,
-    ConsentLevel primary_account_consent_level,
     signin::Tribool is_child_account,
 #if BUILDFLAG(ENABLE_MIRROR)
     bool is_secondary_account_addition_allowed,
 #endif
-    bool is_sync_feature_enabled,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    bool is_sync_feature_enabled,
     const std::string& signin_scoped_device_id,
 #endif
     content_settings::CookieSettings* cookie_settings) {
@@ -716,14 +715,8 @@ void FixAccountConsistencyRequestHeader(
   }
 #endif
 
-  GaiaId primary_account_gaia_id_to_use =
-      (primary_account_consent_level == ConsentLevel::kSignin ||
-       is_sync_feature_enabled)
-          ? primary_account_gaia_id
-          : GaiaId();
-
   AppendOrRemoveMirrorRequestHeader(
-      request, redirect_url, primary_account_gaia_id_to_use, is_child_account,
+      request, redirect_url, primary_account_gaia_id, is_child_account,
       account_consistency, cookie_settings, profile_mode_mask,
       kChromeMirrorHeaderSource,
       /*force_account_consistency=*/false);

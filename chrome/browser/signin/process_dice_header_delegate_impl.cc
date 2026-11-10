@@ -25,7 +25,6 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
-#include "components/sync/base/features.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -149,7 +148,7 @@ bool ProcessDiceHeaderDelegateImpl::AttemptSettingPrimaryAccount(
   const SigninUIError error = CanOfferSignin(
       &profile_.get(), account_info.gaia, account_info.email,
       /*allow_account_from_other_profile=*/allow_account_from_other_profile);
-  if (error.IsOk() || !syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
+  if (error.IsOk()) {
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(&profile_.get());
     identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
