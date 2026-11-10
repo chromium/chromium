@@ -16,7 +16,7 @@
 #include <thread>
 #include <vector>
 
-#include "third_party/jsoncpp/source/include/json/json.h"
+#include "third_party/jsoncpp/src/include/json/json.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "tools/binary_size/libsupersize/viewer/caspian/diff.h"
 #include "tools/binary_size/libsupersize/viewer/caspian/file_format.h"

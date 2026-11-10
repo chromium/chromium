@@ -285,8 +285,8 @@
 [submodule "third_party/nlohmann_json/src"]
 	path = third_party/nlohmann_json/src
 	url = https://chromium.googlesource.com/external/github.com/nlohmann/json
-[submodule "third_party/jsoncpp/source"]
-	path = third_party/jsoncpp/source
+[submodule "third_party/jsoncpp/src"]
+	path = third_party/jsoncpp/src
 	url = https://chromium.googlesource.com/external/github.com/open-source-parsers/jsoncpp
 [submodule "third_party/junit/src"]
 	path = third_party/junit/src

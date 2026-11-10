@@ -18,7 +18,7 @@
 #include <vector>
 
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
-#include "third_party/jsoncpp/source/include/json/json.h"
+#include "third_party/jsoncpp/src/include/json/json.h"
 #include "tools/binary_size/libsupersize/viewer/caspian/grouped_path.h"
 
 // Copied from representation in tools/binary_size/libsupersize/models.py

@@ -14,5 +14,5 @@ vars = {
 }
 
 deps = {
-  'source': '{chromium_git}/external/github.com/open-source-parsers/jsoncpp.git@{jsoncpp_revision}'
+  'src': '{chromium_git}/external/github.com/open-source-parsers/jsoncpp.git@{jsoncpp_revision}'
 }

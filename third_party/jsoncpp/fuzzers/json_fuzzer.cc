@@ -10,7 +10,7 @@
 #include <cstdio>
 #include <iostream>
 #include <memory>
-#include "third_party/jsoncpp/source/include/json/json.h"
+#include "third_party/jsoncpp/src/include/json/json.h"
 
 namespace {
 // JsonCpp has a few different parsing options. The code below makes sure that

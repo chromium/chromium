@@ -11,7 +11,7 @@ pkg_config("jsoncpp_config") {
 }
 
 shim_headers("jsoncpp_shim") {
-  root_path = "source/include"
+  root_path = "src/include"
   headers = [
     "json/allocator.h",
     "json/assertions.h",

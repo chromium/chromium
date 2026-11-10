@@ -11,7 +11,7 @@ include_rules = [
   "+gpu/ipc/client",
   "+gpu/ipc/common",
   # Required by Open Screen API.
-  "+third_party/jsoncpp/source/include/json",
+  "+third_party/jsoncpp/src/include/json",
   "+net",
   "+services/network/public",
   "+services/network/test",
