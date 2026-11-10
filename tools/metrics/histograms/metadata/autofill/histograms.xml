@@ -2448,7 +2448,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.Ai.PrivateInferenceNoticeInteractions"
-    enum="PopupNoticeInteractions" expires_after="2027-03-09">
+    enum="PopupNoticeInteractions" expires_after="2027-05-09">
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -4217,7 +4217,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram
     name="Autofill.CreditCard.Seamless{AutofillSeamlessnessFillability}.{AutofillSeamlessnessMeasurementTime}{AutofillSeamlessnessVisibility}.Bitmask"
-    enum="AutofillCreditCardSeamlessnessBitmask" expires_after="2027-03-07">
+    enum="AutofillCreditCardSeamlessnessBitmask" expires_after="2027-05-09">
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>

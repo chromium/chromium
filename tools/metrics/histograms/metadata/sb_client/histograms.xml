@@ -1634,7 +1634,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.ServerSideModelHitQuotaAtInquiryTime"
-    enum="BooleanHit" expires_after="2027-03-07">
+    enum="BooleanHit" expires_after="2027-05-09">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

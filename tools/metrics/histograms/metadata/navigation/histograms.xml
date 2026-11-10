@@ -297,7 +297,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="BackForwardCache.AllSites.HistoryNavigationOutcome.NotRestoredReason"
-    enum="BackForwardCacheNotRestoredReason" expires_after="2027-03-07">
+    enum="BackForwardCacheNotRestoredReason" expires_after="2027-05-09">
   <owner>fergal@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -473,7 +473,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackForwardCache.HistoryNavigationOutcome.BlocklistedFeature"
-    enum="WebSchedulerTrackedFeature" expires_after="2027-03-07">
+    enum="WebSchedulerTrackedFeature" expires_after="2027-05-09">
   <owner>fergal@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -2664,7 +2664,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Navigation.StartToCommit{NavigationProcessType}{NavigationFrameType}{NavigationTypeTiming}"
-    units="ms" expires_after="2027-03-07">
+    units="ms" expires_after="2027-05-09">
   <owner>nasko@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -3753,7 +3753,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Navigation{Initiator}.DuplicateNavStartTimeDiff2{DuplicateNavTargetScope}"
-    units="ms" expires_after="2027-03-07">
+    units="ms" expires_after="2027-05-09">
   <owner>rakina@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>

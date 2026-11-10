@@ -634,7 +634,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HttpCache.NoVarySearch.EntriesAddedDuringLoading"
-    units="entries" expires_after="2027-03-07">
+    units="entries" expires_after="2027-05-09">
   <owner>ricea@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
@@ -791,7 +791,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HttpCache.NoVarySearch.LoadResult"
-    enum="NoVarySearchCacheStorageLoadResult" expires_after="2027-03-07">
+    enum="NoVarySearchCacheStorageLoadResult" expires_after="2027-05-09">
   <owner>ricea@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
@@ -817,7 +817,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HttpCache.NoVarySearch.LoadTime.Success" units="ms"
-    expires_after="2027-03-07">
+    expires_after="2027-05-09">
   <owner>ricea@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
@@ -2251,7 +2251,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DeviceBoundSessions.RefreshResult{RefreshType}"
-    enum="DeviceBoundSessionError" expires_after="2027-03-07">
+    enum="DeviceBoundSessionError" expires_after="2027-05-09">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2504,7 +2504,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.AddressSorterPosix.SortDuration" units="microseconds"
-    expires_after="2027-03-07">
+    expires_after="2027-05-09">
   <owner>ricea@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -2781,7 +2781,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.DNS.DnsTransaction.SecureValidated.{DohProviderId}FailureTime"
-    units="ms" expires_after="2027-03-07">
+    units="ms" expires_after="2027-05-09">
   <owner>awillia@chromium.org</owner>
   <owner>src/net/dns/OWNERS</owner>
   <summary>
@@ -3467,7 +3467,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.SystemTask.FailureTime" units="ms"
-    expires_after="2027-03-07">
+    expires_after="2027-05-09">
   <owner>horo@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -3478,7 +3478,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.SystemTask.SuccessTime" units="ms"
-    expires_after="2027-03-07">
+    expires_after="2027-05-09">
   <owner>horo@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -3896,7 +3896,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.HttpJob.BytesReceived2" units="bytes"
-    expires_after="2027-03-07">
+    expires_after="2027-05-09">
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -3914,7 +3914,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.HttpJob.BytesSent2" units="bytes"
-    expires_after="2027-03-07">
+    expires_after="2027-05-09">
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -4891,7 +4891,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.NetworkTransaction.NegotiatedProtocol3{HostType}"
-    enum="SSLNegotiatedAlpnProtocol" expires_after="2027-03-07">
+    enum="SSLNegotiatedAlpnProtocol" expires_after="2027-05-09">
   <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -4915,7 +4915,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.NetworkTransaction.RetryAttemptsOnConnectionErrors{Protocol}"
-    units="count" expires_after="2027-03-07">
+    units="count" expires_after="2027-05-09">
   <owner>horo@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -8780,7 +8780,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.SharedDictionaryTransaction.DictionaryReadLatency.{RequestType}.{SuccessOrFailure}"
-    units="ms" expires_after="2027-03-07">
+    units="ms" expires_after="2027-05-09">
   <owner>pmeenan@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>

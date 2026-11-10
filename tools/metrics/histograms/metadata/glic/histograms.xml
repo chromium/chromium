@@ -1354,7 +1354,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram name="Glic.Onboarding.WebUiLoadTime.{Visibility}" units="ms"
-    expires_after="2027-03-07">
+    expires_after="2027-05-09">
   <owner>sanaakbani@google.com</owner>
   <owner>basiaz@google.com</owner>
   <summary>
@@ -3134,7 +3134,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram name="Glic{GlicProvider}.Instance.WebUiLoadTime.{Visibility}"
-    units="ms" expires_after="2027-03-07">
+    units="ms" expires_after="2027-05-09">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>

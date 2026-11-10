@@ -4617,7 +4617,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.Omnibox.SuggestionsDropdown.ContainerInflationThreadTime"
-    units="ms" expires_after="2027-03-07">
+    units="ms" expires_after="2027-05-09">
   <owner>peterkang@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
@@ -4672,7 +4672,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.SuggestionsDropdown.InflationTime2" units="ms"
-    expires_after="2027-03-07">
+    expires_after="2027-05-09">
   <owner>peterkang@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
@@ -4720,7 +4720,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.SuggestionsDropdown.PreWarmingViewsThreadTime"
-    units="ms" expires_after="2027-03-07">
+    units="ms" expires_after="2027-05-09">
   <owner>peterkang@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
@@ -4732,7 +4732,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.SuggestionsDropdown.PreWarmingViewsWallTime"
-    units="ms" expires_after="2027-03-07">
+    units="ms" expires_after="2027-05-09">
   <owner>peterkang@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
@@ -4980,7 +4980,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.Omnibox.{AndroidSearchPrefetch}.TouchDownDelay.{AndroidNavigationPrefetchOnly}"
-    units="ms" expires_after="2027-03-07">
+    units="ms" expires_after="2027-05-09">
   <owner>thesalsa@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
@@ -8982,7 +8982,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.Profile.Prefetch.ApiCallResult"
-    enum="AwPrefetchApiCallResult" expires_after="2027-03-07">
+    enum="AwPrefetchApiCallResult" expires_after="2027-05-09">
   <owner>taiyo@chromium.org</owner>
   <owner>wbjacksonjr@chromium.org</owner>
   <owner>webview-team@google.com</owner>

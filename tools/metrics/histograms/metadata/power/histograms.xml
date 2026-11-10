@@ -678,7 +678,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.AvgCpuLoad.{ProcessType}" units="%"
-    expires_after="2027-03-07">
+    expires_after="2027-05-09">
   <owner>eseckler@chromium.org</owner>
   <owner>khokhlov@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
@@ -1473,7 +1473,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 
 <histogram
     name="Power.ForegroundEnergyConsumedPerScenario.30Seconds{Exclusive}{LoadingScenario}{InputScenario}{Subsystem}"
-    units="uWh" expires_after="2027-03-07">
+    units="uWh" expires_after="2027-05-09">
   <owner>kraskevich@google.com</owner>
   <owner>woa-performance@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -1958,7 +1958,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="PowerML.ModelNoDim.Result" enum="PowerMLFinalResult"
-    expires_after="2027-03-07">
+    expires_after="2027-05-09">
   <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
@@ -1970,7 +1970,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="PowerML.NonModelDim.Result" enum="PowerMLFinalResult"
-    expires_after="2027-03-07">
+    expires_after="2027-05-09">
   <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>

@@ -2187,7 +2187,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.HPRT.OperationOutcome{ProfileMode}"
-    enum="SafeBrowsingHPRTOperationOutcome" expires_after="2027-04-11">
+    enum="SafeBrowsingHPRTOperationOutcome" expires_after="2027-05-09">
 <!-- Note to owner: This histogram can be renewed 1 full year if it is still
 useful for Chirp alerts (go/crca-alerts). -->
 
@@ -3000,7 +3000,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.RT.IsLookupSuccessful{UserCategory}"
-    enum="BooleanSuccess" expires_after="2027-03-07">
+    enum="BooleanSuccess" expires_after="2027-05-09">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

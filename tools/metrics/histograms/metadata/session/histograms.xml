@@ -98,7 +98,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Session.CommandStorageBackend.{SessionType}.{EncryptedStatus}.AppendCommands.{Slice}.Duration"
-    units="ms" expires_after="2027-07-01">
+    units="ms" expires_after="2027-05-09">
   <owner>arichiv@google.com</owner>
   <owner>sammon@google.com</owner>
   <owner>dljames@chromium.org</owner>
@@ -170,7 +170,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Session.CommandStorageBackend.{SessionType}.{EncryptedStatus}.ReadLastSessionCommands.Duration"
-    units="ms" expires_after="2027-07-01">
+    units="ms" expires_after="2027-05-09">
   <owner>arichiv@google.com</owner>
   <owner>sammon@google.com</owner>
   <owner>dljames@chromium.org</owner>
@@ -185,7 +185,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Session.CommandStorageBackend.{SessionType}.{EncryptedStatus}.ReadLastSessionCommands.Status"
-    enum="CommandStorageReadStatus" expires_after="2027-07-01">
+    enum="CommandStorageReadStatus" expires_after="2027-05-09">
   <owner>arichiv@google.com</owner>
   <owner>sammon@google.com</owner>
   <owner>dljames@chromium.org</owner>

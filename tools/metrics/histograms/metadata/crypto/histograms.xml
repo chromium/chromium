@@ -453,7 +453,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Crypto.UnexportableKeys.GarbageCollection.{KeyDeletionClient}.{MetricName}"
-    units="keys" expires_after="2027-03-07">
+    units="keys" expires_after="2027-05-09">
   <owner>alexilin@chromium.org</owner>
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -526,7 +526,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crypto.UnexportableKeys.SparePool.{KeyType}.RequestLatency"
-    units="ms" expires_after="2027-03-07">
+    units="ms" expires_after="2027-05-09">
   <owner>amraboelkher@chromium.org</owner>
   <owner>jdoerrie@chromium.org</owner>
   <summary>
