@@ -262,7 +262,6 @@ browser_exposed_mojom_targets = [
   "//services/network/public/mojom:mojom_proxy_config",
   "//services/network/public/mojom:mojom_schemeful_site",
   "//services/network/public/mojom:mojom_shared_dictionary",
-  "//services/network/public/mojom:mojom_structured_headers",
   "//services/network/public/mojom:mojom",
   "//services/network/public/mojom:url_loader_base",
   "//services/network/public/mojom:websocket_mojom",

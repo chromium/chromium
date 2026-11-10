@@ -33,7 +33,6 @@ source_set("cpp") {
     ":service_provider",
     ":xml_dom",
     "//base",
-    "//net",
     "//services/data_decoder/public/mojom",
   ]
   deps = [ "//build:blink_buildflags" ]

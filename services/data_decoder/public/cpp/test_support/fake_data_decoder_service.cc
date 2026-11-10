@@ -17,12 +17,6 @@ void FakeDataDecoderService::BindImageDecoder(
   FAIL();
 }
 
-void FakeDataDecoderService::BindStructuredHeadersParser(
-    mojo::PendingReceiver<data_decoder::mojom::StructuredHeadersParser>
-        receiver) {
-  FAIL();
-}
-
 void FakeDataDecoderService::BindXmlParser(
     mojo::PendingReceiver<data_decoder::mojom::XmlParser> receiver) {
   FAIL();

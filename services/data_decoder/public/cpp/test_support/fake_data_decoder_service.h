@@ -9,7 +9,6 @@
 #include "services/data_decoder/public/mojom/data_decoder_service.mojom.h"
 #include "services/data_decoder/public/mojom/gzipper.mojom.h"
 #include "services/data_decoder/public/mojom/image_decoder.mojom.h"
-#include "services/data_decoder/public/mojom/structured_headers_parser.mojom.h"
 #include "services/data_decoder/public/mojom/xml_parser.mojom.h"
 
 namespace data_decoder {
@@ -26,9 +25,6 @@ class FakeDataDecoderService : public mojom::DataDecoderService {
   // data_decoder::mojom::DataDecoderService:
   void BindImageDecoder(mojo::PendingReceiver<data_decoder::mojom::ImageDecoder>
                             receiver) override;
-  void BindStructuredHeadersParser(
-      mojo::PendingReceiver<data_decoder::mojom::StructuredHeadersParser>
-          receiver) override;
   void BindXmlParser(
       mojo::PendingReceiver<data_decoder::mojom::XmlParser> receiver) override;
   void BindGzipper(

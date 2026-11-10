@@ -1,7 +1,6 @@
 include_rules = [
   "+device/bluetooth/public",
   "+gin",
-  "+net",
   "+skia",
   "+third_party/fuzztest",
   "+third_party/libxml/chromium",

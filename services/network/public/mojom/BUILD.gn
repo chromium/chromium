@@ -1537,68 +1537,6 @@ mojom("mojom_storage_access_api") {
   blink_cpp_typemaps = shared_typemaps
 }
 
-mojom("mojom_structured_headers") {
-  generate_blink = true
-  generate_java = true
-  sources = [ "structured_headers.mojom" ]
-
-  public_deps = [ "//mojo/public/mojom/base" ]
-
-  if (!is_ios) {
-    export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
-    export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
-    export_header_blink = "third_party/blink/public/platform/web_common.h"
-  }
-
-  cpp_typemaps = [
-    {
-      types = [
-        {
-          mojom = "network.mojom.StructuredHeadersItem"
-          cpp = "::net::structured_headers::Item"
-          move_only = true
-        },
-        {
-          mojom = "network.mojom.StructuredHeadersParameter"
-          cpp = "std::pair<std::string, ::net::structured_headers::Item>"
-          move_only = true
-        },
-        {
-          mojom = "network.mojom.StructuredHeadersParameterizedItem"
-          cpp = "::net::structured_headers::ParameterizedItem"
-          move_only = true
-        },
-        {
-          mojom = "network.mojom.StructuredHeadersParameterizedMember"
-          cpp = "::net::structured_headers::ParameterizedMember"
-          move_only = true
-        },
-        {
-          mojom = "network.mojom.StructuredHeadersDictionaryMember"
-          cpp = "::net::structured_headers::DictionaryMember"
-          move_only = true
-        },
-        {
-          mojom = "network.mojom.StructuredHeadersDictionary"
-          cpp = "::net::structured_headers::Dictionary"
-          move_only = true
-        },
-        {
-          mojom = "network.mojom.StructuredHeadersInnerList"
-          cpp = "::net::structured_headers::InnerList"
-          move_only = true
-        },
-      ]
-      traits_headers =
-          [ "//services/network/public/cpp/structured_headers_mojom_traits.h" ]
-      traits_public_deps = [
-        "//net",
-        "//services/network/public/cpp:structured_headers_mojom_support",
-      ]
-    },
-  ]
-}
-
 mojom("cookies_mojom") {
   generate_blink = true
   generate_java = true
@@ -1995,7 +1933,6 @@ mojom("mojom") {
     ":mojom_schemeful_site",
     ":mojom_shared_dictionary",
     ":mojom_storage_access_api",
-    ":mojom_structured_headers",
     ":mojom_unencoded_digest",
     ":url_loader_base",
     ":websocket_mojom",

@@ -21,8 +21,6 @@ source_set("lib") {
     "data_decoder_service.h",
     "gzipper.cc",
     "gzipper.h",
-    "structured_headers_parser_impl.cc",
-    "structured_headers_parser_impl.h",
     "xml_parser.cc",
     "xml_parser.h",
   ]
@@ -31,7 +29,6 @@ source_set("lib") {
     "//base",
     "//build:blink_buildflags",
     "//mojo/public/cpp/bindings",
-    "//net",
     "//skia",
     "//third_party/libxml:libxml_utils",
     "//third_party/libxml:xml_reader",

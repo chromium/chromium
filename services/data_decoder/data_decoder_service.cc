@@ -14,11 +14,12 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/data_decoder/gzipper.h"
 #include "services/data_decoder/public/mojom/image_decoder.mojom.h"
-#include "services/data_decoder/structured_headers_parser_impl.h"
 #include "services/data_decoder/xml_parser.h"
 
 #if BUILDFLAG(USE_BLINK)
 #include "services/data_decoder/image_decoder_impl.h"
+#else
+#include "base/logging.h"
 #endif
 
 namespace data_decoder {
@@ -45,12 +46,6 @@ void DataDecoderService::BindImageDecoder(
   mojo::MakeSelfOwnedReceiver(std::make_unique<ImageDecoderImpl>(),
                               std::move(receiver));
 #endif
-}
-
-void DataDecoderService::BindStructuredHeadersParser(
-    mojo::PendingReceiver<mojom::StructuredHeadersParser> receiver) {
-  mojo::MakeSelfOwnedReceiver(std::make_unique<StructuredHeadersParserImpl>(),
-                              std::move(receiver));
 }
 
 void DataDecoderService::BindXmlParser(

@@ -407,20 +407,6 @@ component("proxy_config_mojom_support") {
   defines = [ "IS_NETWORK_CPP_PROXY_CONFIG_IMPL" ]
 }
 
-component("structured_headers_mojom_support") {
-  sources = [
-    "structured_headers_mojom_traits.cc",
-    "structured_headers_mojom_traits.h",
-  ]
-  deps = [
-    "//base",
-    "//mojo/public/mojom/base",
-    "//net",
-    "//services/network/public/mojom:mojom_structured_headers_shared",
-  ]
-  defines = [ "IS_NETWORK_CPP_STRUCTURED_HEADERS_IMPL" ]
-}
-
 component("flags_and_switches") {
   sources = [
     "features.cc",
@@ -695,7 +681,6 @@ component("cpp_base") {
     ":proxy_config_mojom_support",
     ":schemeful_site_mojom_support",
     ":storage_access_api_mojom_support",
-    ":structured_headers_mojom_support",
     ":web_platform",
     "//services/network/public/mojom:url_loader_base",
     "//url/ipc:url_ipc",
@@ -870,7 +855,6 @@ source_set("tests") {
     "sri_message_signatures_unittest.cc",
     "ssl_info_mojom_traits_unittest.cc",
     "storage_access_api_mojom_traits_unittest.cc",
-    "structured_headers_mojom_traits_unittest.cc",
     "supports_loading_mode/supports_loading_mode_parser_unittest.cc",
     "synthetic_response_util_unittest.cc",
     "timing_allow_origin_parser_unittest.cc",

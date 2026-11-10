@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
@@ -16,9 +17,7 @@
 #include "base/time/time.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
-#include "net/http/structured_headers.h"
 #include "services/data_decoder/public/mojom/gzipper.mojom.h"
-#include "services/data_decoder/public/mojom/structured_headers_parser.mojom.h"
 #include "services/data_decoder/public/mojom/xml_parser.mojom.h"
 
 #if !BUILDFLAG(USE_BLINK)
@@ -164,112 +163,6 @@ mojom::DataDecoderService* DataDecoder::GetService() {
   }
 
   return service_.get();
-}
-
-void DataDecoder::ParseStructuredHeaderItem(
-    const std::string& header,
-    StructuredHeaderParseItemCallback callback) {
-  auto request = base::MakeRefCounted<
-      ValueParseRequest<mojom::StructuredHeadersParser,
-                        net::structured_headers::ParameterizedItem>>(
-      std::move(callback), cancel_requests_);
-  GetService()->BindStructuredHeadersParser(request->BindRemote());
-  request->remote()->ParseItem(
-      header,
-      base::BindOnce(
-          &ValueParseRequest<
-              mojom::StructuredHeadersParser,
-              net::structured_headers::ParameterizedItem>::OnServiceValue,
-          request));
-}
-
-// static
-void DataDecoder::ParseStructuredHeaderItemIsolated(
-    const std::string& header,
-    StructuredHeaderParseItemCallback callback) {
-  auto decoder = std::make_unique<DataDecoder>();
-  auto* raw_decoder = decoder.get();
-
-  // We bind the DataDecoder's ownership into the result callback to ensure that
-  // it stays alive until the operation is complete.
-  raw_decoder->ParseStructuredHeaderItem(
-      header, base::BindOnce(
-                  [](std::unique_ptr<DataDecoder>,
-                     StructuredHeaderParseItemCallback callback,
-                     base::expected<net::structured_headers::ParameterizedItem,
-                                    std::string> result) {
-                    std::move(callback).Run(std::move(result));
-                  },
-                  std::move(decoder), std::move(callback)));
-}
-
-void DataDecoder::ParseStructuredHeaderList(
-    const std::string& header,
-    StructuredHeaderParseListCallback callback) {
-  auto request =
-      base::MakeRefCounted<ValueParseRequest<mojom::StructuredHeadersParser,
-                                             net::structured_headers::List>>(
-          std::move(callback), cancel_requests_);
-  GetService()->BindStructuredHeadersParser(request->BindRemote());
-  request->remote()->ParseList(
-      header,
-      base::BindOnce(
-          &ValueParseRequest<mojom::StructuredHeadersParser,
-                             net::structured_headers::List>::OnServiceValue,
-          request));
-}
-
-// static
-void DataDecoder::ParseStructuredHeaderListIsolated(
-    const std::string& header,
-    StructuredHeaderParseListCallback callback) {
-  auto decoder = std::make_unique<DataDecoder>();
-  auto* raw_decoder = decoder.get();
-
-  // We bind the DataDecoder's ownership into the result callback to ensure that
-  // it stays alive until the operation is complete.
-  raw_decoder->ParseStructuredHeaderList(
-      header,
-      base::BindOnce(
-          [](std::unique_ptr<DataDecoder>,
-             StructuredHeaderParseListCallback callback,
-             base::expected<net::structured_headers::List, std::string>
-                 result) { std::move(callback).Run(std::move(result)); },
-          std::move(decoder), std::move(callback)));
-}
-
-void DataDecoder::ParseStructuredHeaderDictionary(
-    const std::string& header,
-    StructuredHeaderParseDictionaryCallback callback) {
-  auto request = base::MakeRefCounted<ValueParseRequest<
-      mojom::StructuredHeadersParser, net::structured_headers::Dictionary>>(
-      std::move(callback), cancel_requests_);
-  GetService()->BindStructuredHeadersParser(request->BindRemote());
-  request->remote()->ParseDictionary(
-      header,
-      base::BindOnce(&ValueParseRequest<
-                         mojom::StructuredHeadersParser,
-                         net::structured_headers::Dictionary>::OnServiceValue,
-                     request));
-}
-
-// static
-void DataDecoder::ParseStructuredHeaderDictionaryIsolated(
-    const std::string& header,
-    StructuredHeaderParseDictionaryCallback callback) {
-  auto decoder = std::make_unique<DataDecoder>();
-  auto* raw_decoder = decoder.get();
-
-  // We bind the DataDecoder's ownership into the result callback to ensure that
-  // it stays alive until the operation is complete.
-  raw_decoder->ParseStructuredHeaderDictionary(
-      header,
-      base::BindOnce(
-          [](std::unique_ptr<DataDecoder>,
-             StructuredHeaderParseDictionaryCallback callback,
-             base::expected<net::structured_headers::Dictionary, std::string>
-                 result) { std::move(callback).Run(std::move(result)); },
-          std::move(decoder), std::move(callback)));
 }
 
 void DataDecoder::ParseXml(

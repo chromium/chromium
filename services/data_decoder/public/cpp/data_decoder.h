@@ -14,7 +14,6 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "net/http/structured_headers.h"
 #include "services/data_decoder/public/cpp/service_provider.h"
 #include "services/data_decoder/public/mojom/data_decoder_service.mojom.h"
 #include "services/data_decoder/public/mojom/xml_parser.mojom.h"
@@ -64,12 +63,6 @@ class DataDecoder {
   template <typename T>
   using ResultCallback =
       base::OnceCallback<void(base::expected<T, std::string>)>;
-  using StructuredHeaderParseItemCallback =
-      ResultCallback<net::structured_headers::ParameterizedItem>;
-  using StructuredHeaderParseListCallback =
-      ResultCallback<net::structured_headers::List>;
-  using StructuredHeaderParseDictionaryCallback =
-      ResultCallback<net::structured_headers::Dictionary>;
   using ValueParseCallback = ResultCallback<base::Value>;
   using GzipperCallback = ResultCallback<mojo_base::BigBuffer>;
   using CancellationFlag = base::RefCountedData<bool>;
@@ -79,75 +72,6 @@ class DataDecoder {
   // connection to the in-process instance of in a test environment using
   // InProcessDataDecoderService.
   mojom::DataDecoderService* GetService();
-
-  // Deprecated: It is safe to call `net::structured_headers::ParseItemStrict`
-  // and `net::structured_headers::ParseItem` synchronously.
-  //
-  // Parses the potentially unsafe string in |header| as a structured header
-  // item using this DataDecoder's service instance or some other
-  // platform-specific decoding facility.
-  //
-  // Note that |callback| will only be called if the parsing operation succeeds
-  // or fails before this DataDecoder is destroyed.
-  void ParseStructuredHeaderItem(const std::string& header,
-                                 StructuredHeaderParseItemCallback callback);
-
-  // Deprecated: It is safe to call `net::structured_headers::ParseItemStrict`
-  // and `net::structured_headers::ParseItem` synchronously.
-  //
-  // Parses the potentially unsafe string in |header| as a structured header
-  // item. This static helper uses a dedicated instance of the Data Decoder
-  // service on applicable platforms.
-  static void ParseStructuredHeaderItemIsolated(
-      const std::string& header,
-      StructuredHeaderParseItemCallback callback);
-
-  // Deprecated: It is safe to call `net::structured_headers::ParseListStrict`
-  // and `net::structured_headers::ParseList` synchronously.
-  //
-  // Parses the potentially unsafe string in |header| as a structured header
-  // list using this DataDecoder's service instance or some other
-  // platform-specific decoding facility.
-  //
-  // Note that |callback| will only be called if the parsing operation succeeds
-  // or fails before this DataDecoder is destroyed.
-  void ParseStructuredHeaderList(const std::string& header,
-                                 StructuredHeaderParseListCallback callback);
-
-  // Deprecated: It is safe to call `net::structured_headers::ParseListStrict`
-  // and `net::structured_headers::ParseList` synchronously.
-  //
-  // Parses the potentially unsafe string in |header| as a structured header
-  // list. This static helper uses a dedicated instance of the Data Decoder
-  // service on applicable platforms.
-  static void ParseStructuredHeaderListIsolated(
-      const std::string& header,
-      StructuredHeaderParseListCallback callback);
-
-  // Deprecated: It is safe to call
-  // `net::structured_headers::ParseDictionaryStrict` and
-  // `net::structured_headers::ParseDictionary` synchronously.
-  //
-  // Parses the potentially unsafe string in `header` as a structured header
-  // dictionary using this DataDecoder's service instance or some other
-  // platform-specific decoding facility.
-  //
-  // Note that `callback` will only be called if the parsing operation succeeds
-  // or fails before this DataDecoder is destroyed.
-  void ParseStructuredHeaderDictionary(
-      const std::string& header,
-      StructuredHeaderParseDictionaryCallback callback);
-
-  // Deprecated: It is safe to call
-  // `net::structured_headers::ParseDictionaryStrict` and
-  // `net::structured_headers::ParseDictionary` synchronously.
-  //
-  // Parses the potentially unsafe string in `header` as a structured header
-  // dictionary. This static helper uses a dedicated instance of the Data
-  // Decoder service on applicable platforms.
-  static void ParseStructuredHeaderDictionaryIsolated(
-      const std::string& header,
-      StructuredHeaderParseDictionaryCallback callback);
 
   // Parses the potentially unsafe XML string in |xml| using this
   // DataDecoder's service instance. The Value provided to the callback
