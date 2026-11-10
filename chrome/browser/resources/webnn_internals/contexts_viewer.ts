@@ -10,6 +10,13 @@ import {browserProxyFactory} from './webnn_internals.mojom-webui.js';
 import type {BrowserProxy} from './webnn_internals.mojom-webui.js';
 import type {WebNNContextIntrospectionDetails, WebNNExecutionProviderDetails} from './webnn_service_introspection.mojom-webui.js';
 
+interface ContextItem {
+  contextId: string;
+  contextBackend: string;
+  requestedDeviceType: string;
+  executionProviders: WebNNExecutionProviderDetails[];
+}
+
 export class WebnnInternalsContextsViewerElement extends CrLitElement {
   static get is() {
     return 'webnn-internals-contexts-viewer';
@@ -30,11 +37,7 @@ export class WebnnInternalsContextsViewerElement extends CrLitElement {
   }
 
   private listenerIds_: number[] = [];
-  protected accessor contexts_: Array<{
-    contextId: string,
-    contextBackend: string,
-    executionProviders: WebNNExecutionProviderDetails[],
-  }> = [];
+  protected accessor contexts_: ContextItem[] = [];
 
   private proxy_: BrowserProxy = browserProxyFactory.getInstance();
 
@@ -56,6 +59,7 @@ export class WebnnInternalsContextsViewerElement extends CrLitElement {
         contexts.map(context => ({
                        contextId: context.contextId.toString(),
                        contextBackend: context.contextBackend,
+                       requestedDeviceType: context.requestedDeviceType,
                        executionProviders: context.executionProviders,
                      }));
   }

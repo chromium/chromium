@@ -34,6 +34,21 @@
   color: var(--cr-primary-text-color);
 }
 
+.context-detail {
+  font-weight: normal;
+}
+
+.label {
+  font-weight: bold;
+}
+
+.ep-heading {
+  font-size: 1.15em;
+  margin-bottom: 6px;
+  padding-bottom: 4px;
+  border-bottom: solid 1px var(--cr-secondary-text-color);
+}
+
 .ep-title {
   text-decoration: underline;
   margin-top: 10px;
@@ -52,4 +67,8 @@
 
 .first-selected {
   border-color: var(--cr-fallback-color-primary);
+}
+
+.library-path {
+  word-break: break-all;
 }

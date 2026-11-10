@@ -56,6 +56,10 @@
   font-weight: bold;
 }
 
+.library-path {
+  word-break: break-all;
+}
+
 .noep {
   margin-bottom: 10px;
 }

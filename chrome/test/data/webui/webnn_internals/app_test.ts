@@ -26,6 +26,8 @@ suite('WebnnInternalsUITest', function() {
       deviceId: '0x1234',
       hardwareType: 'GPU',
       version: '1.0',
+      driverVersion: '32.0.100.4404',
+      libraryPath: 'C:\\eps\\test_ep_1.dll',
       firstSelected: true,
     },
     {
@@ -34,7 +36,9 @@ suite('WebnnInternalsUITest', function() {
       vendorId: '0x1234',
       deviceId: '0x5678',
       version: '',
+      driverVersion: '',
       hardwareType: 'CPU',
+      libraryPath: '',
       firstSelected: false,
     },
   ];
@@ -90,9 +94,15 @@ suite('WebnnInternalsUITest', function() {
       {
         contextId: 1,
         contextBackend: 'Test Backend',
+        requestedDeviceType: 'GPU',
         executionProviders: testExecutionProviders,
       },
-      {contextId: 2, contextBackend: 'Test Backend 2', executionProviders: []},
+      {
+        contextId: 2,
+        contextBackend: 'Test Backend 2',
+        requestedDeviceType: 'NPU',
+        executionProviders: [],
+      },
     ]);
     await microtasksFinished();
     const gridContainer =
@@ -101,14 +111,20 @@ suite('WebnnInternalsUITest', function() {
     // There should be two entries in the list.
     assertEquals(2, gridContainer.children.length);
     const contexts = contextsTab.shadowRoot.querySelectorAll('.context-detail');
-    // 2 contexts, 4 labels
-    assertEquals(4, contexts.length);
+    // 2 contexts, 6 labels
+    assertEquals(6, contexts.length);
     assertEquals('Context ID: 1', contexts[0]!.textContent.trim());
     assertEquals(
         'Runtime Backend: Test Backend', contexts[1]!.textContent.trim());
-    assertEquals('Context ID: 2', contexts[2]!.textContent.trim());
     assertEquals(
-        'Runtime Backend: Test Backend 2', contexts[3]!.textContent.trim());
+        'Requested Device: GPU',
+        contexts[2]!.textContent.trim().replace(/\s+/g, ' '));
+    assertEquals('Context ID: 2', contexts[3]!.textContent.trim());
+    assertEquals(
+        'Runtime Backend: Test Backend 2', contexts[4]!.textContent.trim());
+    assertEquals(
+        'Requested Device: NPU',
+        contexts[5]!.textContent.trim().replace(/\s+/g, ' '));
     const epTitles = contextsTab.shadowRoot.querySelectorAll('.ep-title');
     // Only the first context has EPs, and it has 2 EPs. If the context has no
     // EPs, the EP title should not be rendered.
@@ -116,10 +132,10 @@ suite('WebnnInternalsUITest', function() {
     const epDetailsList = contextsTab.shadowRoot.querySelectorAll('.ep');
     // The first context has 2 EPs, the second context has no EP, total 2 EPs.
     assertEquals(2, epDetailsList.length);
-    // First EP has 6 details (name, vendor, hardware vendor ID, hardware device
-    // ID, hardware type, version).
+    // First EP has 8 details (name, vendor, hardware vendor ID, hardware device
+    // ID, hardware type, EP version, driver version, library path).
     let epDetails = epDetailsList[0]!.querySelectorAll('.ep-detail');
-    assertEquals(6, epDetails.length);
+    assertEquals(8, epDetails.length);
     assertEquals('Name: Test EP 1', epDetails[0]!.textContent.trim());
     assertEquals('EP Vendor: Vendor 1', epDetails[1]!.textContent.trim());
     assertEquals(
@@ -127,12 +143,18 @@ suite('WebnnInternalsUITest', function() {
     assertEquals(
         'Hardware Device ID: 0x1234', epDetails[3]!.textContent.trim());
     assertEquals('Hardware Type: GPU', epDetails[4]!.textContent.trim());
-    assertEquals('Version: 1.0', epDetails[5]!.textContent.trim());
+    assertEquals('EP Version: 1.0', epDetails[5]!.textContent.trim());
+    assertEquals(
+        'Driver Version: 32.0.100.4404',
+        epDetails[6]!.textContent.trim().replace(/\s+/g, ' '));
+    assertEquals(
+        'Library Path: C:\\eps\\test_ep_1.dll',
+        epDetails[7]!.textContent.trim());
     // The first EP is marked as first selected, it should have the
     // 'first-selected' class.
     assertTrue(epDetailsList[0]!.classList.contains('first-selected'));
-    // Second EP has 5 details, version may be empty so let's make sure
-    // we don't render the label.
+    // Second EP has 5 details, EP version, driver version and library path may
+    // be empty so let's make sure we don't render the labels.
     epDetails = epDetailsList[1]!.querySelectorAll('.ep-detail');
     assertEquals(5, epDetails.length);
     assertEquals('Name: Test EP 2', epDetails[0]!.textContent.trim());
@@ -189,8 +211,12 @@ suite('WebnnInternalsUITest', function() {
       '0x1234',
       'Hardware Type:',
       'GPU',
-      'Version:',
+      'EP Version:',
       '1.0',
+      'Driver Version:',
+      '32.0.100.4404',
+      'Library Path:',
+      'C:\\eps\\test_ep_1.dll',
     ]);
     // Test EP 2 has no version so it should not be rendered.
     assertEpItemContent(epItems[1]!, [
@@ -214,9 +240,11 @@ suite('WebnnInternalsUITest', function() {
         name: 'Test EP 3',
         vendor: 'Vendor 3',
         version: '1.3',
+        driverVersion: '1004404',
         vendorId: '0x1234',
         deviceId: '0x9abc',
         hardwareType: 'NPU',
+        libraryPath: 'C:\\eps\\test_ep_3.dll',
         firstSelected: false,
       },
     ]);
@@ -239,8 +267,12 @@ suite('WebnnInternalsUITest', function() {
       '0x9abc',
       'Hardware Type:',
       'NPU',
-      'Version:',
+      'EP Version:',
       '1.3',
+      'Driver Version:',
+      '1004404',
+      'Library Path:',
+      'C:\\eps\\test_ep_3.dll',
     ]);
   });
 

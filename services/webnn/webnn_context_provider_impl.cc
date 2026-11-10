@@ -5,6 +5,7 @@
 #include "services/webnn/webnn_context_provider_impl.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/byte_size.h"
@@ -28,6 +29,7 @@
 #include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/mojom/features.mojom.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
+#include "services/webnn/public/mojom/webnn_device.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/public/mojom/webnn_service_introspection.mojom-forward.h"
 #include "services/webnn/webnn_context_impl.h"
@@ -74,6 +76,18 @@
 namespace webnn {
 
 namespace {
+
+// Uses the same strings as `WebNNExecutionProviderDetails::hardware_type`.
+std::string_view DeviceToIntrospectionString(mojom::Device device) {
+  switch (device) {
+    case mojom::Device::kCpu:
+      return "CPU";
+    case mojom::Device::kGpu:
+      return "GPU";
+    case mojom::Device::kNpu:
+      return "NPU";
+  }
+}
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(WEBNN_USE_LITERT)
 // Whether to use mojo data pipe for transferring tensor data between processes.
@@ -283,6 +297,8 @@ WebNNContextProviderImpl::PopulateContextsDetailsForIntrospection() {
     auto details = mojom::WebNNContextIntrospectionDetails::New();
     details->context_id = context_impl->tracing_id();
     details->context_backend = context_impl->GetBackendName();
+    details->requested_device_type =
+        DeviceToIntrospectionString(context_impl->options().device);
     details->execution_providers = context_impl->GetExecutionProvidersInfo();
     contexts_details.push_back(std::move(details));
   }

@@ -41,8 +41,16 @@ export function getHtml(this: WebnnInternalsInfoPageElement) {
             <div class="description">Hardware Type:</div>
             <div>${ep.hardwareType}</div>
             ${ep.version ? html`
-              <div class="description">Version:</div>
+              <div class="description">EP Version:</div>
               <div>${ep.version}</div>
+            ` : ''}
+            ${ep.driverVersion ? html`
+              <div class="description">Driver Version:</div>
+              <div>${ep.driverVersion}</div>
+            ` : ''}
+            ${ep.libraryPath ? html`
+              <div class="description">Library Path:</div>
+              <div class="library-path">${ep.libraryPath}</div>
             ` : ''}
           </div>
         `)}

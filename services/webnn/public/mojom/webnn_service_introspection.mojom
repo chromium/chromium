@@ -17,6 +17,11 @@ struct WebNNExecutionProviderDetails {
   string device_id;
   // Version of the execution provider if provided otherwise empty.
   string version;
+  // OS driver version of the hardware device used by the execution provider if
+  // provided otherwise empty.
+  string driver_version;
+  // Library path of the execution provider if provided otherwise empty.
+  string library_path;
   // Indicates if this execution provider is the first selected one, otherwise
   // the EP is a fallback option.
   bool first_selected;
@@ -26,6 +31,9 @@ struct WebNNContextIntrospectionDetails {
   int32 context_id;
   // The backend used by the context, e.g. "CoreML", "LiteRT", etc.
   string context_backend;
+  // The device type requested when creating the context, using the same
+  // strings as `WebNNExecutionProviderDetails.hardware_type`.
+  string requested_device_type;
   // The list of execution providers supported by the context.
   // This is backend-specific information and may be empty if the backend does
   // not provide this information.

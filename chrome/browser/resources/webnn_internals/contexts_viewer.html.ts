@@ -15,23 +15,50 @@ export function getHtml(this: WebnnInternalsContextsViewerElement) {
       ${this.contexts_.map(item => html`
         <div class="grid-item">
           <div class="context-detail">
-            Context ID: ${item.contextId}
+            <span class="label">Context ID:</span> ${item.contextId}
           </div>
           <div class="context-detail">
-            Runtime Backend: ${item.contextBackend}
+            <span class="label">Runtime Backend:</span> ${item.contextBackend}
+          </div>
+          <div class="context-detail">
+            <span class="label">Requested Device:</span>
+            ${item.requestedDeviceType}
           </div>
           ${item.executionProviders.length > 0 ? html`
             <div class="ep-title">Execution Providers:</div>
             ${item.executionProviders.map((ep, index) => html`
               <div class="ep ${ep.firstSelected ? 'first-selected' : ''}">
-                Execution Provider ${index}
-                <div class="ep-detail">Name: ${ep.name}</div>
-                <div class="ep-detail">EP Vendor: ${ep.vendor}</div>
-                <div class="ep-detail">Hardware Vendor ID: ${ep.vendorId}</div>
-                <div class="ep-detail">Hardware Device ID: ${ep.deviceId}</div>
-                <div class="ep-detail">Hardware Type: ${ep.hardwareType}</div>
+                <div class="ep-heading">Execution Provider ${index}</div>
+                <div class="ep-detail">
+                  <span class="label">Name:</span> ${ep.name}
+                </div>
+                <div class="ep-detail">
+                  <span class="label">EP Vendor:</span> ${ep.vendor}
+                </div>
+                <div class="ep-detail">
+                  <span class="label">Hardware Vendor ID:</span> ${ep.vendorId}
+                </div>
+                <div class="ep-detail">
+                  <span class="label">Hardware Device ID:</span> ${ep.deviceId}
+                </div>
+                <div class="ep-detail">
+                  <span class="label">Hardware Type:</span> ${ep.hardwareType}
+                </div>
                 ${ep.version ? html`
-                  <div class="ep-detail">Version: ${ep.version}</div>
+                  <div class="ep-detail">
+                    <span class="label">EP Version:</span> ${ep.version}
+                  </div>
+                ` : ''}
+                ${ep.driverVersion ? html`
+                  <div class="ep-detail">
+                    <span class="label">Driver Version:</span>
+                    ${ep.driverVersion}
+                  </div>
+                ` : ''}
+                ${ep.libraryPath ? html`
+                  <div class="ep-detail library-path">
+                    <span class="label">Library Path:</span> ${ep.libraryPath}
+                  </div>
                 ` : ''}
               </div>
             `)}
