@@ -1,0 +1,46 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package contextual_tasks;
+
+option optimize_for = LITE_RUNTIME;
+
+// The state of a Gaia account returned by Gaia's /ListAccounts endpoint.
+//
+// TODO(crbug.com/578566401): Converge with the standard
+// `google_apis/gaia/list_accounts_response.proto` once `display_name` and
+// `photo_url` are unreserved there.
+message Account {
+  // The full display name for the account.
+  optional string display_name = 2;
+
+  // The display email for the account.
+  optional string display_email = 3;
+
+  // The profile photo URL for the account.
+  optional string photo_url = 4;
+
+  // If the session for this account is still 'valid' (not expired,
+  // the account is not disabled, etc.). Only present for person accounts when
+  // called with cookies as credentials.
+  optional bool valid_session = 9;
+
+  // Obfuscated Gaia ID.
+  optional string obfuscated_id = 10;
+
+  // Whether this account is only in the cookie and is actually signed out.
+  optional bool signed_out = 14;
+
+  // Whether this account is verified.
+  optional bool is_verified = 15;
+
+  // Internal Fields.
+  reserved 1, 5, 6, 7, 8, 11, 12, 13;
+}
+
+message ListAccountsResponse {
+  repeated Account account = 1;
+}

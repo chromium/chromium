@@ -429,6 +429,10 @@ source_set("tab_restore") {
   ]
 }
 
+proto_library("list_accounts_proto") {
+  sources = [ "list_accounts_response.proto" ]
+}
+
 source_set("ui_impl") {
   sources = [
     "contextual_search_session_finder.cc",
@@ -458,6 +462,7 @@ source_set("ui_impl") {
   ]
   deps = [
     ":impl",
+    ":list_accounts_proto",
     ":tab_restore",
     ":ui",
     ":user_data",
@@ -827,6 +832,7 @@ source_set("unit_tests") {
   deps = [
     ":contextual_tasks",
     ":impl",
+    ":list_accounts_proto",
     ":tab_restore",
     ":test_support",
     ":ui",
