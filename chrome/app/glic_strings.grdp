@@ -589,6 +589,9 @@
   <message name="IDS_GLIC_CONTEXT_MENU_ASK_GEMINI_ABOUT" desc="Text for context menu item to ask Gemini about the selected text.">
       Ask Gemini about “<ph name="SELECTION">$1<ex>selected text</ex></ph>”
     </message>
+  <message name="IDS_GLIC_CONTEXT_MENU_ASK_GEMINI_ABOUT_PAGE_AND_SELECTION" desc="Text for the context menu item, shown when text is selected on a page, that sends the current page and the selected text to Gemini and automatically submits a question about them.">
+      Ask Gemini about this page and “<ph name="SELECTION">$1<ex>selected text</ex></ph>”
+    </message>
 
   <!-- IPH -->
   <if expr="use_titlecase">

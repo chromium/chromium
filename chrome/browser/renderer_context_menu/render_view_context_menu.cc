@@ -5934,8 +5934,13 @@ void RenderViewContextMenu::MaybeAppendOpenGlicItem(bool add_separator) {
     if (show_text_selection_menu_item) {
       std::u16string printable_selection_text = PrintableSelectionText();
       EscapeAmpersands(&printable_selection_text);
-      label = l10n_util::GetStringFUTF16(IDS_GLIC_CONTEXT_MENU_ASK_GEMINI_ABOUT,
-                                         printable_selection_text);
+      // The auto-submit arm sends the page along with the selection, so the
+      // label mentions both.
+      const int label_id =
+          features::kGlicTextSelectionContextMenuAutoSubmit.Get()
+              ? IDS_GLIC_CONTEXT_MENU_ASK_GEMINI_ABOUT_PAGE_AND_SELECTION
+              : IDS_GLIC_CONTEXT_MENU_ASK_GEMINI_ABOUT;
+      label = l10n_util::GetStringFUTF16(label_id, printable_selection_text);
     } else if (show_summarize_page) {
       label = l10n_util::GetStringUTF16(
           IDS_GLIC_CONTEXT_MENU_SUMMARIZE_PAGE_WITH_GEMINI);
