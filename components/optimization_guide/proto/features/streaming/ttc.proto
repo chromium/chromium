@@ -50,6 +50,7 @@ message TtcServerFrame {
     SessionStatusResponse session_status = 1;
     ServerContent server_content = 2;
 
+    // TODO(crbug.com/576271717): Deprecate in favor of ToolCallBatch below.
     ToolCall tool_call = 3;
     GoAway go_away = 4;
     ServerErrorNotification server_error = 5;
@@ -62,6 +63,10 @@ message TtcServerFrame {
     JournalEvent journal_event = 9;
     ModelTurnStateUpdate model_turn_state_update = 10;
     UserTurnStateUpdate user_turn_state_update = 11;
+
+    // One or more tool calls dispatched together in a single frame (can be more
+    // than one if the model emits several function calls in one response).
+    ToolCallBatch tool_call_batch = 12;
   }
 
   // Server timestamp in milliseconds since the Unix epoch (Jan 1, 1970 UTC).
@@ -144,12 +149,19 @@ message TextInput {
   string text_query = 1;
 }
 
-// Sent by the client immediately upon user interruption to report the last
-// audio sequence number played to the user for history truncation.
+// Sent by the client to report the current playback state of generated audio
+// for history truncation and turn completion.
 message PlaybackStatus {
-  // Sequence number of the last audio frame actually played out on client
-  // speaker when playback was stopped/interrupted.
-  int64 last_played_sequence_number = 1;
+  // The duration played back to the user since the last generation started, in
+  // terms of the content's duration.
+  Duration playback_progress = 1;
+
+  // If true, indicates that playback is complete for the current generation
+  // (either naturally finished or stopped/discarded on interruption).
+  bool playback_complete = 2;
+
+  // Identifier of the model generation this playback status applies to.
+  int64 generation_id = 3;
 }
 
 // Model response content and speech transcriptions.
@@ -304,6 +316,13 @@ message ToolCall {
 
   // JSON-encoded arguments matching the tool's parameter schema.
   string arguments_json = 3;
+}
+
+// A batch of tool calls dispatched from server to client in a single frame.
+// Each call has its own call_id and is answered with its own ToolResponse.
+message ToolCallBatch {
+  // Tool calls in the order the model emitted them.
+  repeated ToolCall tool_calls = 1;
 }
 
 // Visual content returned by tools.
