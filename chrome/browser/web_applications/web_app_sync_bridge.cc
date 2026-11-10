@@ -679,6 +679,25 @@ ManifestIdParseResult WebAppSyncBridge::PrepareLocalUpdateFromSyncChange(
   specifics.set_relative_manifest_id(
       RelativeManifestIdPath(manifest_id.value()));
 
+  // Modern clients always populate `WebAppSpecifics::name`, but older clients
+  // committed entities with an empty `name` that still live on the server
+  // (crbug.com/579501200). The sync system and downstream install path require
+  // a non-empty name, so if the incoming specifics name is empty, prefer the
+  // existing local app's name; otherwise fall back to the canonicalized
+  // `start_url` (guaranteed non-empty by `IsEntityDataValid()`).
+  // `EntityData::name` is not consulted because Sync encryption replaces it
+  // with the literal "encrypted".
+  if (specifics.name().empty()) {
+    if (existing_web_app && !existing_web_app->sync_proto().name().empty()) {
+      specifics.set_name(existing_web_app->sync_proto().name());
+    } else if (existing_web_app &&
+               !existing_web_app->untranslated_name().empty()) {
+      specifics.set_name(existing_web_app->untranslated_name());
+    } else {
+      specifics.set_name(GURL(specifics.start_url()).spec());
+    }
+  }
+
   if (!existing_web_app) {
     // Any remote entities that don’t exist locally must be written to local
     // storage.
@@ -697,13 +716,7 @@ ManifestIdParseResult WebAppSyncBridge::PrepareLocalUpdateFromSyncChange(
     // Request a followup sync-initiated install for this stub app to fetch
     // full local data and all the icons.
     web_app->SetIsFromSyncAndPendingInstallation(true);
-    // The sync system requires non-empty name, populate temp name from
-    // the fallback sync data name.
-    if (specifics.name().empty()) {
-      web_app->SetName(change.data().name);
-    } else {
-      web_app->SetName(specifics.name());
-    }
+    web_app->SetName(specifics.name());
     // For a new app, automatically choose if we want to install it locally.
     web_app->SetInstallState(
         AreAppsLocallyInstalledBySync()

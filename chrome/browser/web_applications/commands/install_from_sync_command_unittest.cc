@@ -873,5 +873,40 @@ TEST_F(InstallFromSyncTest, TrustedIconInstallsFromFallback) {
   }
 }
 
+TEST_F(InstallFromSyncTest, FallbackWithEmptyParamsTitleUsesStartUrl) {
+  const webapps::AppId app_id = GenerateAppIdFromManifestId(kWebAppManifestId);
+
+  // Page redirects so fallback install path is always used.
+  auto& fake_page_state =
+      web_contents_manager().GetOrCreatePageState(kWebAppStartUrl);
+  fake_page_state.url_load_result =
+      webapps::WebAppUrlLoaderResult::kRedirectedUrlLoaded;
+
+  web_contents_manager().GetOrCreateIconState(kFallbackIconUrl).bitmaps = {
+      gfx::test::CreateBitmap(kIconSize, kFallbackIconColor)};
+  if (UseFallbackModeForTrustedInstalls()) {
+    web_contents_manager().GetOrCreateIconState(kTrustedIconUrl).bitmaps = {
+        gfx::test::CreateBitmap(kTrustedIconSize, kTrustedIconColor)};
+  }
+
+  InstallFromSyncCommand::Params params(
+      app_id, kWebAppManifestId, kWebAppStartUrl, /*title=*/"",
+      kWebAppStartUrl.GetWithoutFilename(), /*theme_color=*/std::nullopt,
+      mojom::UserDisplayMode::kStandalone,
+      /*manifest_icons=*/{apps::IconInfo(kFallbackIconUrl, kIconSize)},
+      /*trusted_icons=*/{apps::IconInfo(kTrustedIconUrl, kTrustedIconSize)},
+      /*migrated_from_manifest_id=*/std::nullopt);
+
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+      future;
+  command_manager().ScheduleCommand(std::make_unique<InstallFromSyncCommand>(
+      profile(), params, future.GetCallback()));
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(future.Get<webapps::InstallResultCode>(),
+            webapps::InstallResultCode::kSuccessNewInstall);
+  EXPECT_EQ(future.Get<webapps::AppId>(), app_id);
+  EXPECT_EQ(registrar().GetAppShortName(app_id), kWebAppStartUrl.spec());
+}
+
 }  // namespace
 }  // namespace web_app
