@@ -1872,6 +1872,10 @@ bool IsOrderedListStartConfirmed(
       (marker_kind.form == ListMarkerForm::kStandalone ? 2 : 1);
   size_t lines_count = 0;
   for (size_t i = first_run_index; i < layout.text_runs.size(); ++i) {
+    // A table ends the candidate list.
+    if (layout.table_text_run_indices->contains(i)) {
+      return false;
+    }
     const chrome_pdf::AccessibilityTextRunInfo& prev_run =
         layout.text_runs[i - 1];
     const chrome_pdf::AccessibilityTextRunInfo& run = layout.text_runs[i];

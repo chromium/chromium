@@ -8888,6 +8888,35 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicGridTableListTableList) {
       "Accessibility.PdfHeuristics.ListEndReason", ListEndReason::kPageEnd, 1);
 }
 
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicGridTableDoesNotConfirmOrderedListBeforeIt) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  constexpr float kColumnBoundaries[] = {45.0f, 100.0f, 150.0f};
+  constexpr float kRowBoundaries[] = {55.0f, 80.0f, 105.0f};
+  page_objects_.line_segments =
+      CreateGridLineSegments(kColumnBoundaries, kRowBoundaries);
+
+  // The first cell's "2." aligns with "1." but must not confirm a list.
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"1. First", "2. A", "B1", "A2", "B2"},
+      {
+          gfx::RectF(50.0f, 40.0f, 40.0f, 12.0f),   // "1. First"
+          gfx::RectF(50.0f, 57.0f, 40.0f, 12.0f),   // "2. A"
+          gfx::RectF(105.0f, 57.0f, 40.0f, 12.0f),  // "B1"
+          gfx::RectF(50.0f, 82.0f, 40.0f, 12.0f),   // "A2"
+          gfx::RectF(105.0f, 82.0f, 40.0f, 12.0f),  // "B2"
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(2u, page->GetChildCount());
+
+  CheckParagraph(page->GetChildAtIndex(0u), "1. First");
+  EXPECT_EQ(ax::mojom::Role::kTable, page->GetChildAtIndex(1u)->GetRole());
+}
+
 TEST_F(PdfAccessibilityTreeTest, HeuristicGridTableFeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
