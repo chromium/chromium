@@ -31,7 +31,6 @@ import org.chromium.ui.modaldialog.ModalDialogProperties.Controller;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.RunnableTimer;
 import org.chromium.url.GURL;
-import org.chromium.url.Origin;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -358,13 +357,7 @@ public class WebSigninRedirectCoordinator {
 
         recordWaitOutcomeCompleted();
         destroy();
-        LoadUrlParams params = new LoadUrlParams(mContinueUrl);
-        // Mark the navigation as renderer-initiated rather than browser-initiated as the continue
-        // URL originates from the web page.
-        params.setIsRendererInitiated(true);
-        // Use an opaque origin because the source cannot be trusted and should not have same-origin
-        // privileges.
-        params.setInitiatorOrigin(Origin.createOpaqueOrigin());
+        LoadUrlParams params = LoadUrlParams.createOpaqueRendererInitiatedParams(mContinueUrl);
         mTab.loadUrl(params);
     }
 

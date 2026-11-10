@@ -33,7 +33,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabOrchestratorType;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.url.GURL;
-import org.chromium.url.Origin;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -581,23 +580,18 @@ class TabRestorer {
 
         tabState.contentsState =
                 WebContentsState.createSingleNavigationWebContentsState(
-                        profile, /* title= */ "", createRestoredLoadUrlParams(url));
+                        profile,
+                        /* title= */ "",
+                        LoadUrlParams.createOpaqueRendererInitiatedParams(url));
         if (tabState.contentsState != null && tabState.contentsState.buffer().limit() == 0) {
             tabState.contentsState = null;
         }
     }
 
-    private static LoadUrlParams createRestoredLoadUrlParams(GURL url) {
-        LoadUrlParams params = new LoadUrlParams(url);
-        params.setIsRendererInitiated(true);
-        params.setInitiatorOrigin(Origin.createOpaqueOrigin());
-        return params;
-    }
-
     /** Creates a Tab from the given URL when tabState.contentsState is null. */
     private @Nullable Tab createTabWithoutContentsState(GURL url, int index) {
         return mTabCreator.createNewTab(
-                createRestoredLoadUrlParams(url),
+                LoadUrlParams.createOpaqueRendererInitiatedParams(url),
                 TabLaunchType.FROM_RESTORE,
                 /* parent= */ null,
                 index);

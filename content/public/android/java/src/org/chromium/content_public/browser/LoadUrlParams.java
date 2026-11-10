@@ -259,6 +259,21 @@ public class LoadUrlParams {
         return params;
     }
 
+    /**
+     * Creates a {@link LoadUrlParams} marked as renderer-initiated with an opaque initiator origin.
+     * Use this for navigations triggered from untrusted, captured, synced, or restored web content
+     * where the source origin cannot be trusted and should not be granted browser-initiated
+     * privileges or same-origin/SameSite cookie access.
+     *
+     * @param url The URL to be loaded.
+     */
+    public static LoadUrlParams createOpaqueRendererInitiatedParams(GURL url) {
+        LoadUrlParams params = new LoadUrlParams(url);
+        params.setIsRendererInitiated(true);
+        params.setInitiatorOrigin(Origin.createOpaqueOrigin());
+        return params;
+    }
+
     /** Sets the url. */
     public void setUrl(String url) {
         mUrl = url;

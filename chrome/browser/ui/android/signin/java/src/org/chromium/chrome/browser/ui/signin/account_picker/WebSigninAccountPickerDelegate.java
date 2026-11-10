@@ -21,7 +21,6 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.url.GURL;
-import org.chromium.url.Origin;
 
 import java.util.function.Function;
 
@@ -120,7 +119,9 @@ public class WebSigninAccountPickerDelegate
                             if (!tab.isDestroyed()) {
                                 // This code path may be called asynchronously, so check that the
                                 // tab is still alive.
-                                tab.loadUrl(createLoadUrlParamsForContinueUrl(continueUrl));
+                                tab.loadUrl(
+                                        LoadUrlParams.createOpaqueRendererInitiatedParams(
+                                                continueUrl));
                             }
                             break;
                         case PostSigninOperationResult.AUTH_ERROR:
@@ -157,7 +158,8 @@ public class WebSigninAccountPickerDelegate
                     if (resolvedTab != null && !resolvedTab.isDestroyed()) {
                         // This code path may be called asynchronously, so check that the tab is
                         // still alive.
-                        resolvedTab.loadUrl(createLoadUrlParamsForContinueUrl(continueUrl));
+                        resolvedTab.loadUrl(
+                                LoadUrlParams.createOpaqueRendererInitiatedParams(continueUrl));
                     }
                     SigninSurveyController.registerTrigger(
                             mProfile, SigninSurveyController.SigninSurveyType.WEB);
@@ -177,16 +179,5 @@ public class WebSigninAccountPickerDelegate
     @Override
     public @Nullable Function<Bundle, DelegateContext> getDelegateContextFactory() {
         return SigninDelegateContext::fromBundle;
-    }
-
-    private static LoadUrlParams createLoadUrlParamsForContinueUrl(GURL continueUrl) {
-        LoadUrlParams params = new LoadUrlParams(continueUrl);
-        // Mark the navigation as renderer-initiated rather than browser-initiated as the continue
-        // URL originates from the web page.
-        params.setIsRendererInitiated(true);
-        // Use an opaque origin because the source cannot be trusted and should not have same-origin
-        // privileges.
-        params.setInitiatorOrigin(Origin.createOpaqueOrigin());
-        return params;
     }
 }
