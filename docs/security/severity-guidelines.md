@@ -8,18 +8,29 @@ for how to rate these issues. Check out our
 [security release management page](https://www.chromium.org/Home/chromium-security/security-release-management)
 for guidance on how to release fixes based on severity.
 
-Any significant mitigating factors will generally reduce an issue's severity by
-one or more levels:
+This guide provides project-wide rules for Chromium. Before rating an issue,
+also check any `SECURITY.md` file in the affected component's directory (or
+ancestor directories) for component-specific threat models, mitigations, and
+non-bugs.
 
-* Not web accessible, reliant solely on direct UI interaction to trigger.
+Mitigating factors will generally reduce an issue's severity by one level:
+
 * Unusual or unlikely user interaction will normally reduce severity by one
   level. This means interaction which may sometimes occur, but would not be
   typical of an average user engaging with Chrome or a particular feature in
   Chrome, nor could a user be easily convinced to perform by a persuasive web
-  page.
+  page (e.g., clicking "Request Desktop Site", dragging and dropping a file to
+  a victim origin, or surviving a session restore).
+
+Substantial mitigating factors will generally reduce an issue's severity by
+two levels:
+
+* Not web accessible, reliant solely on direct UI interaction to trigger.
 * Requiring profile destruction or browser shutdown will normally reduce
-  severity by one level.
-* [MiraclePtr protection](#TOC-MiraclePtr)
+  severity by two levels.
+* Renderer contexts (sandboxed frames, PDF processes, MHTML
+  subframes, or error page processes), which already lack access to sensitive
+  site data.
 
 Bugs that require implausible interaction, interactions a user would not
 realistically be convinced to perform, will generally be downgraded to a
@@ -44,18 +55,18 @@ Example bugs:
 
 * Memory corruption in the browser process
   ([319125](https://crbug.com/319125#c10)) which is directly or indirectly
-  reachable from web content.
+  reachable from web content without compromising the renderer.
 * Memory corruption in an unsandboxed GPU process when it is reachable directly
   from web content without compromising the renderer
   ([1420130](https://crbug.com/1420130), [1427865](https://crbug.com/1427865)).
-  ([On some platforms we consider the GPU process 'sandboxed'](../../docs/security/process-sandboxes-by-platform.md).)
-* Exploit chains made up of multiple bugs that can lead to code execution
-  outside of the sandbox ([416449](https://crbug.com/416449)).
+  ([On some platforms we consider the GPU process 'sandboxed'](../../docs/security/process-sandboxes-by-platform.md);
+  web-reachable Android GPU bugs are always S0.)
 * A bug that enables web content to read arbitrary local files
   ([962500](https://crbug.com/962500)).
-
-Note that the individual bugs that make up the chain will have lower severity
-ratings.
+* Exploit chains made up of multiple bugs that can lead from web contents to
+  code execution outside of the sandbox ([416449](https://crbug.com/416449)).
+  Note that the individual bugs that make up the chain can have lower severity
+  ratings.
 
 ## High severity (S1) {#TOC-High-severity}
 
@@ -67,29 +78,35 @@ may be rated as high severity. For example, renderer sandbox escapes fall into
 this category as their impact is that of a critical severity bug, but they
 require the precondition of a compromised renderer. (Bugs which involve using
 [MojoJS](../../mojo/public/js/README.md) to trigger an exploitable browser
-process crash usually fall into this category). Another example are bugs that
-result in memory corruption in the browser process, which would normally be
-critical severity, but require browser shutdown or profile destruction, which
-would lower these issues to high severity. A bug with the precondition of
-browser shutdown or profile destruction should be considered to have a maximum
-severity of high and could potentially be reduced by other mitigating factors.
+process crash usually fall into this category). Only processes into which an
+attacker can legitimately load their own content (e.g. a web renderer or
+`chrome-untrusted://` renderer) may be assumed compromised as a precondition;
+do not assume compromise of spare renderers, error pages, `chrome://` WebUI,
+DevTools, special origins (e.g. Chrome Web Store), component extensions, or 3P
+default search engine processes.
 
 ### Memory Safety
 
 * A bug that allows arbitrary code execution within the confines of the sandbox.
   * memory corruption in the renderer process ([570427](https://crbug.com/570427)).
   * memory corruption in v8.
-  * DCHECK correctness failures in v8.
+  * DCHECK correctness failures in v8 that reproduce with `--run-as-security-poc`.
   * memory corruption in the gpu process where it is sandboxed ([468936](https://crbug.com/468936)).
+* Memory corruption in the browser process, DevTools renderer, or V8
+  Inspector/heap via Chrome DevTools Protocol (CDP) with minimal user
+  interaction (e.g., opening DevTools).
 * Memory corruption in the browser or another high privileged process (e.g. a
   GPU or network process on a [platform where they're not sandboxed](../../docs/security/process-sandboxes-by-platform.md)),
   that can only be triggered from a compromised renderer,
   leading to a sandbox escape ([1393177](https://crbug.com/1393177),
   [1421268](https://crbug.com/1421268)).
+* Compromising (from web content) a sandboxed service process shared across sites
+  that handles cross-site or sensitive data (e.g., On-Device Model Service or Tracing
+  Service).
 * Controlled read of 16 or more bytes of data from the browser, gpu or network
   process by a compromised renderer.
-* Memory corruption in the browser or another high privileged process (e.g.
-  GPU or network process on a [platform where they're not sandboxed](../../docs/security/process-sandboxes-by-platform.md))
+* Memory corruption from web contents in the browser or another high privileged
+  process (e.g. GPU or network process on a [platform where they're not sandboxed](../../docs/security/process-sandboxes-by-platform.md))
   that requires specific, but common, user interaction, such as granting a
   permission ([455735](https://crbug.com/455735)).
 * Kernel memory corruption that could be used as a sandbox escape from a
@@ -99,7 +116,8 @@ severity of high and could potentially be reduced by other mitigating factors.
 
 * A bug that allows full circumvention of the same origin policy. Universal XSS
 bugs fall into this category, as they allow script execution in the context of
-an arbitrary origin ([534923](https://crbug.com/534923)).
+an arbitrary origin ([534923](https://crbug.com/534923)). (Site isolation bypasses
+protected by the renderer process lock are not included.)
   * A universal XSS bypass is either a universal CSP bypass, a universal Strict
     CSP bypass or a universal TrustedTypes bypass.
   * A universal XSS bypass means that it allows arbitrary script execution: i.e.
@@ -107,12 +125,22 @@ an arbitrary origin ([534923](https://crbug.com/534923)).
     any inline script.
   * A universal bypass does not require pre-conditions beyond the attacker have
     the ability to parser-insert elements or iframes (threat model for CSP).
-* Site Isolation bypasses:
-  * Cross-site execution contexts unexpectedly sharing a renderer process
-      ([863069](https://crbug.com/863069), [886976](https://crbug.com/886976)).
-  * Cross-site data disclosure
-      ([917668](https://crbug.com/917668), [927849](https://crbug.com/927849)).
-* Complete control over the apparent origin in the omnibox ([76666](https://crbug.com/76666)).
+* Site Isolation and privilege boundary bypasses:
+  * Cross-site execution contexts unexpectedly sharing a renderer process or
+    committing in an insufficiently isolated process
+    ([863069](https://crbug.com/863069), [886976](https://crbug.com/886976)).
+  * Cross-site, cross-`StoragePartition`, or cross-`Profile` data disclosure
+    ([917668](https://crbug.com/917668), [927849](https://crbug.com/927849)),
+    including leaking cross-origin Blob UUIDs or partitioned `:visited` link
+    salts.
+  * Injecting or intercepting input events across cross-origin or cross-process
+    frames from a compromised renderer.
+  * A compromised web renderer gaining access to extension APIs, or a
+    compromised `chrome-untrusted://` / `<webview>` guest renderer gaining
+    unauthorized `chrome://` WebUI capabilities.
+  * Exposing Gaia OAuth2 tokens to unauthorized processes or web content.
+* Complete control over the apparent origin in the omnibox where the misleading
+  site can be interacted with ([76666](https://crbug.com/76666)).
 
 ### Other
 
@@ -129,12 +157,21 @@ information that an attacker can exfiltrate. Bugs that would normally be rated
 at a higher severity level with unusual mitigating factors may be rated as
 medium severity.
 
+A bug with the precondition of browser shutdown or profile destruction should
+be considered to have a maximum severity of Medium (S2) and could potentially be
+reduced by other mitigating factors.
+
 Certain vulnerabilities in [sandboxed GPU shader compilers](#TOC-Sandboxed-shader-compilers)
 should be marked as medium severity.
 
 ### Memory Safety
 
 * V8 correctness issues where different compiler tiers return different results.
+* V8 Heap Sandbox bypasses demonstrating out-of-sandbox write access
+  (reproducible with `--run-as-sandbox-security-poc`). Out-of-sandbox read-only
+  access is not considered a security bug.
+* Vulnerabilities confined to the sandboxed WebNN Compiler process on Windows
+  (`kWebNNModelCompilation`).
 * Memory corruption that requires a specific extension to be installed
 ([313743](https://crbug.com/313743)).
 * Memory corruption in the browser process, requiring a non-standard flag and
@@ -145,6 +182,11 @@ should be marked as medium severity.
 * An HSTS bypass ([461481](https://crbug.com/461481)).
 * A bypass of the same origin policy for pages that meet several preconditions
   ([419383](https://crbug.com/419383)).
+* Exploiting an IPC or browser feature to navigate to disallowed privileged URLs
+  (e.g., `chrome://` or `file://`).
+* Bypassing `SameSite` cookie protections enforced via Site Isolation.
+* Web-exposed `:visited` link leaks across partitions (excluding self-links)
+  without a compromised renderer.
 * A bug that allows arbitrary pages to bypass security interstitials, excluding
   HTTPS-first mode interstitials, for which a bypass is considered a functional,
   non-security bug.
@@ -185,6 +227,8 @@ scope.
   requires browser shutdown to trigger.
 * Memory corruption in the browser process which requires an extension with the
   debugger permission.
+* Vulnerabilities in the V8 Inspector / DevTools requiring complex manual steps
+  in the DevTools UI or assuming an already-established CDP connection.
 * An uncontrolled uninitialized memory read in the browser, network or gpu
   process where the values are passed to a compromised renderer via IPC
   ([469151](https://crbug.com/469151)). Note that evidence of an
@@ -197,7 +241,10 @@ scope.
   ([550047](https://crbug.com/550047)).
 * A bug that reduces the effectiveness of the sandbox
   ([338538](https://crbug.com/338538)).
-* Bypass requirement for a user gesture ([256057](https://crbug.com/256057)).
+* Bypass requirement for a user gesture without a compromised renderer
+  ([256057](https://crbug.com/256057)). (Missing browser-process user activation
+  checks are not currently considered security bugs; see
+  [40091540](https://crbug.com/40091540).)
 * Partial CSP bypass. This is either:
   * The bypass of an extremely lax CSP ([534570](https://crbug.com/534570)).
   * or a CSP bypass that is very limited in scope (requires pre-conditions and
@@ -206,9 +253,14 @@ scope.
 * An omnibox spoof where only certain URLs can be displayed, or with other
   mitigating factors ([265221](https://crbug.com/265221)).
 * A UI spoof on a surface other than the omnibox or the site information panel
-  ([421690383](https://issues.chromium.org/issues/421690383))
+  ([421690383](https://issues.chromium.org/issues/421690383)), including a
+  compromised renderer supplying unvalidated strings via IPC to secondary native
+  UI surfaces (e.g., file picker dialog titles).
 * A bug that allows an attacker to reliably read or infer limited browsing
   history.
+* Cross-origin side channels or token leaks without direct data reads (e.g.,
+  layout or cache sniffing, or leaking a `RemoteFrameToken` / `LocalFrameToken`
+  to an unauthorized process).
 * A bug that allows local network access without the LNA permission.
 * Spoofs that hide important warnings under other obvious UI elements.
 * Split-view dialog confusion.
