@@ -118,10 +118,10 @@ class URLLoadingBrowserAgentTest : public BlockCleanupTest {
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   raw_ptr<ProfileIOS> otr_profile_;
+  std::unique_ptr<Browser> otr_browser_;
   FakeURLLoadingDelegate* url_loading_delegate_;
   std::unique_ptr<TestSceneUrlLoadingService> scene_loader_;
   raw_ptr<UrlLoadingBrowserAgent> loader_;
-  std::unique_ptr<Browser> otr_browser_;
   raw_ptr<UrlLoadingBrowserAgent> otr_loader_;
 };
 
@@ -334,9 +334,7 @@ TEST_F(URLLoadingBrowserAgentTest, TestOpenInCurrentIncognitoTab) {
   ASSERT_EQ(0, otr_web_state_list->count());
 
   // Make app level to be otr.
-  std::unique_ptr<TestBrowser> otr_browser =
-      std::make_unique<TestBrowser>(profile_->GetOffTheRecordProfile());
-  scene_loader_->current_browser_ = otr_browser.get();
+  scene_loader_->current_browser_ = otr_browser_.get();
 
   // Set a new tab.
   GURL newtab("chrome://newtab");
@@ -376,9 +374,7 @@ TEST_F(URLLoadingBrowserAgentTest, TestOpenInNewIncognitoTab) {
   WebStateList* otr_web_state_list = otr_browser_->GetWebStateList();
   ASSERT_EQ(0, otr_web_state_list->count());
 
-  std::unique_ptr<TestBrowser> otr_browser =
-      std::make_unique<TestBrowser>(profile_->GetOffTheRecordProfile());
-  scene_loader_->current_browser_ = otr_browser.get();
+  scene_loader_->current_browser_ = otr_browser_.get();
 
   GURL url1("http://test/1");
   UrlLoadParams params1 =
@@ -407,9 +403,7 @@ TEST_F(URLLoadingBrowserAgentTest, TestOpenNormalInNewTabWithIncognitoService) {
   WebStateList* otr_web_state_list = otr_browser_->GetWebStateList();
   ASSERT_EQ(0, otr_web_state_list->count());
 
-  std::unique_ptr<TestBrowser> otr_browser =
-      std::make_unique<TestBrowser>(profile_->GetOffTheRecordProfile());
-  scene_loader_->current_browser_ = otr_browser.get();
+  scene_loader_->current_browser_ = otr_browser_.get();
 
   // Send to right service.
   GURL url1("http://test/1");
