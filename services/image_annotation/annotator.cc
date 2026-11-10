@@ -501,26 +501,20 @@ std::map<std::string, mojom::AnnotateImageResultPtr> UnpackJsonResponse(
 
 mojom::AnnotationPtr CreateAnnotationFromMantaResponse(
     const base::DictValue& result_data) {
-  auto* text = result_data.FindString("text");
+  // The caller validates that `text`, `type` (in `kAnnotationTypes`), and a
+  // non-negative `score` are present before calling this helper.
+  // Uncalibrated model scores > 1.0 are clamped to [0.0, 1.0].
+  const auto* text = result_data.FindString("text");
   CHECK(text);
-
-  auto* type = result_data.FindString("type");
+  const auto* type = result_data.FindString("type");
   CHECK(type);
-  auto score = result_data.FindDouble("score");
+  const auto score = result_data.FindDouble("score");
   CHECK(score.has_value());
 
-  std::optional<mojom::AnnotationType> annotation_type;
+  auto itr = kAnnotationTypes.find(*type);
+  CHECK(itr != kAnnotationTypes.end());
 
-  if (auto itr = kAnnotationTypes.find(*type); itr != kAnnotationTypes.end()) {
-    annotation_type = itr->second;
-  }
-
-  CHECK(annotation_type.has_value());
-
-  auto annotation =
-      mojom::Annotation::New(annotation_type.value(), score.value(), *text);
-
-  return annotation;
+  return mojom::Annotation::New(itr->second, std::min(*score, 1.0), *text);
 }
 
 }  // namespace
@@ -601,7 +595,11 @@ Annotator::Annotator(
       FROM_HERE, throttle,
       base::BindRepeating(&Annotator::SendRequestBatchToServer,
                           weak_factory_.GetWeakPtr()));
-  FetchServerLanguages();
+  // Do not query the legacy languages endpoint when alternate routing is
+  // enabled.
+  if (!features::IsImageDescriptionsAlternateRoutingEnabled()) {
+    FetchServerLanguages();
+  }
 }
 
 Annotator::~Annotator() {
@@ -820,10 +818,23 @@ void Annotator::OnJpgImageDataReceived(
   // Local processing is no longer ongoing.
   local_processors_.erase(request_key);
 
+  const bool desc_requested = IsWithinDescPolicy(width, height);
+  if (features::IsImageDescriptionsAlternateRoutingEnabled() &&
+      !desc_requested) {
+    // Under alternate routing, the server requires images to meet
+    // IsWithinDescPolicy() (which covers captions, labels, and in-policy OCR)
+    // and does not support icon classification or OCR-only requests for
+    // smaller/wider images. Fail out-of-policy images immediately without
+    // buffering image_bytes or occupying a batch throttle slot.
+    ReportImageRequestIncludesDesc(false);
+    ProcessResult(request_key, {});
+    return;
+  }
+
   // Schedule a server request for this image.
-  server_request_queue_.emplace_front(
-      request_key, IsWithinDescPolicy(width, height),
-      IsWithinIconPolicy(width, height), image_bytes);
+  server_request_queue_.emplace_front(request_key, desc_requested,
+                                      IsWithinIconPolicy(width, height),
+                                      image_bytes);
   pending_requests_.insert(request_key);
 
   // Start sending batches to the server.
@@ -848,10 +859,9 @@ void Annotator::SendRequestBatchToServer() {
 
   if (features::IsImageDescriptionsAlternateRoutingEnabled()) {
     CHECK(anchovy_provider_);
-    // The set of request keys relevant for this request.
-    std::set<RequestKey> request_keys;
     for (std::deque<ServerRequestInfo>::iterator it = begin; it != end; it++) {
-      request_keys.insert(it->request_key);
+      CHECK(it->desc_requested);
+      ReportImageRequestIncludesDesc(it->desc_requested);
       manta::anchovy::ImageDescriptionRequest request = {
           it->request_key.source_id, it->request_key.desc_lang_tag,
           it->image_bytes};
@@ -893,75 +903,89 @@ void Annotator::OnMantaResponseReceived(const RequestKey& request_key,
   const auto delta = now - request_time;
   ReportServerLatency(delta);
 
+  // Check for a non-OK Manta status first so failed requests are logged and
+  // always resolved in ProcessResult.
+  if (status.status_code != manta::MantaStatusCode::kOk) {
+    DVLOG(1) << "Manta image annotation request failed with status: "
+             << base::ToString(status.status_code);
+    ProcessResult(request_key, {});
+    return;
+  }
+
   if (dict.empty()) {
     ProcessResult(request_key, {});
     return;
   }
 
   auto* results_list = dict.FindList("results");
-
-  if (!results_list || results_list->size() == 0) {
+  if (!results_list || results_list->empty()) {
     ProcessResult(request_key, {});
     return;
   }
 
-  if (status.status_code == manta::MantaStatusCode::kOk) {
-    // Find the result with the best score.
-    base::DictValue* best = nullptr;
-    std::optional<double> best_score;
+  // Select at most one description annotation (CAPTION or LABEL) and at most
+  // one OCR annotation from the response, picking the candidate with the
+  // highest non-negative score for each category (clamping scores > 1.0 to 1.0
+  // for histograms and Mojo output, and requiring OCR candidates to meet
+  // `min_ocr_confidence_`).
+  const base::DictValue* best = nullptr;
+  std::optional<double> best_score;
+  const base::DictValue* best_ocr = nullptr;
+  std::optional<double> best_ocr_score;
 
-    // Store OCR values separately.
-    base::DictValue* best_ocr = nullptr;
-    std::optional<double> best_ocr_score;
+  for (const auto& result : *results_list) {
+    const auto* result_dict = result.GetIfDict();
+    if (!result_dict) {
+      continue;
+    }
+    const auto* text = result_dict->FindString("text");
+    const auto* type = result_dict->FindString("type");
+    const auto score = result_dict->FindDouble("score");
+    if (!text || text->empty() || !type || !score.has_value() || *score < 0.0) {
+      continue;
+    }
+    const double clamped_score = std::min(*score, 1.0);
 
-    for (auto& result : *results_list) {
-      auto* result_dict = result.GetIfDict();
-      CHECK(result_dict);
-      auto score = result_dict->FindDouble("score");
-      CHECK(score.has_value());
-      auto* type = result_dict->FindString("type");
-      CHECK(type);
-
-      // The better score in image descriptions is the larger number.
-      if (*type == manta::anchovy::kTypeOcr) {
-        ReportOcrAnnotation(*score, false);
-        if (!best_ocr_score.has_value() || *score > *best_ocr_score) {
-          best_ocr_score = score;
-          best_ocr = result_dict;
-        }
-      } else if (auto itr = kAnnotationTypes.find(*type);
-                 itr != kAnnotationTypes.end()) {
-        // Ignore unrecognized or standalone secondary caption types rather than
-        // failing CHECK(annotation_type.has_value()) downstream.
-        ReportDescAnnotation(itr->second, *score, false);
-        if (!best_score.has_value() || *score > *best_score) {
-          best_score = score;
-          best = result_dict;
-        }
+    if (*type == manta::anchovy::kTypeOcr) {
+      // Enforce the minimum OCR confidence threshold before accepting OCR text
+      // (comparing as float because `OutputData::score` is a wire float).
+      if (static_cast<float>(*score) <
+          static_cast<float>(min_ocr_confidence_)) {
+        continue;
+      }
+      ReportOcrAnnotation(clamped_score, false);
+      if (!best_ocr_score.has_value() || *score > *best_ocr_score) {
+        best_ocr_score = score;
+        best_ocr = result_dict;
+      }
+    } else if (auto itr = kAnnotationTypes.find(*type);
+               itr != kAnnotationTypes.end()) {
+      ReportDescAnnotation(itr->second, clamped_score, false);
+      if (!best_score.has_value() || *score > *best_score) {
+        best_score = score;
+        best = result_dict;
       }
     }
+  }
 
-    std::vector<mojom::AnnotationPtr> annotations;
+  std::vector<mojom::AnnotationPtr> annotations;
+  if (best) {
+    annotations.push_back(CreateAnnotationFromMantaResponse(*best));
+  }
 
-    if (best) {
-      annotations.push_back(CreateAnnotationFromMantaResponse(*best));
-    }
+  if (best_ocr) {
+    annotations.push_back(CreateAnnotationFromMantaResponse(*best_ocr));
+  }
 
-    if (best_ocr) {
-      annotations.push_back(CreateAnnotationFromMantaResponse(*best_ocr));
-    }
-
-    // Add all annotations for the image.
+  // Only populate and cache results when at least one valid annotation was
+  // extracted, matching UnpackJsonResponse().
+  std::map<std::string, mojom::AnnotateImageResultPtr> results;
+  if (!annotations.empty()) {
     std::string image_id = request_key.MakeImageId();
-    std::map<std::string, mojom::AnnotateImageResultPtr> results;
     results[image_id] =
         mojom::AnnotateImageResult::NewAnnotations(std::move(annotations));
-    // Process the result from manta.
-    ProcessResult(request_key, std::move(results));
-  } else {
-    LOG(ERROR) << "\nRequest for: " << request_key.source_id << " Failed: \n"
-               << base::ToString(status.status_code);
   }
+  ProcessResult(request_key, std::move(results));
 }
 
 void Annotator::OnServerResponseReceived(
