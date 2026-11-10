@@ -2580,6 +2580,17 @@ const char* ToString(ax::mojom::TextAffinity text_affinity) {
   return "";
 }
 
+const char* ToString(ax::mojom::OffsetType offset_type) {
+  switch (offset_type) {
+    case ax::mojom::OffsetType::kChild:
+      return "child";
+    case ax::mojom::OffsetType::kText:
+      return "text";
+  }
+
+  return "";
+}
+
 const char* ToString(ax::mojom::TreeOrder tree_order) {
   switch (tree_order) {
     case ax::mojom::TreeOrder::kNone:

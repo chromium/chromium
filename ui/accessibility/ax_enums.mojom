@@ -1511,6 +1511,14 @@ enum TextAffinity {
   kUpstream = 2,
 };
 
+// Describes how the offset of a selection endpoint is interpreted: as a child
+// index within the endpoint node (a tree position), or as a character offset
+// within the endpoint node's text (a text position).
+enum OffsetType {
+  kChild = 0,
+  kText = 1,
+};
+
 // Compares two nodes in an accessibility tree in pre-order traversal.
 enum TreeOrder {
   kNone,

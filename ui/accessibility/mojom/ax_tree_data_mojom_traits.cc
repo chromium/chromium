@@ -31,9 +31,15 @@ bool StructTraits<ax::mojom::AXTreeDataDataView, ui::AXTreeData>::Read(
   out->sel_anchor_object_id = data.sel_anchor_object_id();
   out->sel_anchor_offset = data.sel_anchor_offset();
   out->sel_anchor_affinity = data.sel_anchor_affinity();
+  if (!data.ReadSelAnchorOffsetType(&out->sel_anchor_offset_type)) {
+    return false;
+  }
   out->sel_focus_object_id = data.sel_focus_object_id();
   out->sel_focus_offset = data.sel_focus_offset();
   out->sel_focus_affinity = data.sel_focus_affinity();
+  if (!data.ReadSelFocusOffsetType(&out->sel_focus_offset_type)) {
+    return false;
+  }
   out->root_scroller_id = data.root_scroller_id();
   if (!data.ReadMetadata(&out->metadata))
     return false;

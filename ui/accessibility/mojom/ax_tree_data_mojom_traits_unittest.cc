@@ -30,9 +30,11 @@ TEST(AXTreeDataMojomTraitsTest, TestSerializeAndDeserializeAXTreeData) {
   input.sel_anchor_object_id = 10;
   input.sel_anchor_offset = 11;
   input.sel_anchor_affinity = ax::mojom::TextAffinity::kUpstream;
+  input.sel_anchor_offset_type = ax::mojom::OffsetType::kChild;
   input.sel_focus_object_id = 12;
   input.sel_focus_offset = 13;
   input.sel_focus_affinity = ax::mojom::TextAffinity::kDownstream;
+  input.sel_focus_offset_type = ax::mojom::OffsetType::kText;
   input.root_scroller_id = 14;
   input.metadata.emplace();
   input.metadata->push_back("<meta charset='utf-8'>");
@@ -54,11 +56,29 @@ TEST(AXTreeDataMojomTraitsTest, TestSerializeAndDeserializeAXTreeData) {
   EXPECT_EQ(10, output.sel_anchor_object_id);
   EXPECT_EQ(11, output.sel_anchor_offset);
   EXPECT_EQ(ax::mojom::TextAffinity::kUpstream, output.sel_anchor_affinity);
+  EXPECT_EQ(ax::mojom::OffsetType::kChild, output.sel_anchor_offset_type);
   EXPECT_EQ(12, output.sel_focus_object_id);
   EXPECT_EQ(13, output.sel_focus_offset);
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, output.sel_focus_affinity);
+  EXPECT_EQ(ax::mojom::OffsetType::kText, output.sel_focus_offset_type);
   EXPECT_EQ(14, output.root_scroller_id);
   ASSERT_EQ(2U, output.metadata->size());
   EXPECT_EQ("<meta charset='utf-8'>", (*output.metadata)[0]);
   EXPECT_EQ("<meta http-equiv='refresh'>", (*output.metadata)[1]);
+}
+
+TEST(AXTreeDataMojomTraitsTest, TestSerializeAndDeserializeUnsetOffsetTypes) {
+  ui::AXTreeData input, output;
+  input.sel_anchor_object_id = 1;
+  input.sel_anchor_offset = 2;
+  input.sel_focus_object_id = 3;
+  input.sel_focus_offset = 4;
+  // Give the output stale values to check that unset fields overwrite them.
+  output.sel_anchor_offset_type = ax::mojom::OffsetType::kText;
+  output.sel_focus_offset_type = ax::mojom::OffsetType::kChild;
+
+  EXPECT_TRUE(SerializeAndDeserialize<ax::mojom::AXTreeData>(input, output));
+
+  EXPECT_EQ(std::nullopt, output.sel_anchor_offset_type);
+  EXPECT_EQ(std::nullopt, output.sel_focus_offset_type);
 }

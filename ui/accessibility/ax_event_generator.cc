@@ -943,9 +943,13 @@ void AXEventGenerator::OnTreeDataChanged(AXTree* tree,
           old_tree_data.sel_anchor_object_id ||
       new_tree_data.sel_anchor_offset != old_tree_data.sel_anchor_offset ||
       new_tree_data.sel_anchor_affinity != old_tree_data.sel_anchor_affinity ||
+      new_tree_data.sel_anchor_offset_type !=
+          old_tree_data.sel_anchor_offset_type ||
       new_tree_data.sel_focus_object_id != old_tree_data.sel_focus_object_id ||
       new_tree_data.sel_focus_offset != old_tree_data.sel_focus_offset ||
-      new_tree_data.sel_focus_affinity != old_tree_data.sel_focus_affinity) {
+      new_tree_data.sel_focus_affinity != old_tree_data.sel_focus_affinity ||
+      new_tree_data.sel_focus_offset_type !=
+          old_tree_data.sel_focus_offset_type) {
     AddEvent(tree->root(), Event::DOCUMENT_SELECTION_CHANGED);
 
     // A special event is also fired internally for selection changes in text

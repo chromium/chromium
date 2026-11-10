@@ -161,6 +161,12 @@ TEST(CombineAXTreesTest, FocusedTree) {
   parent_tree.tree_data.tree_id = tree_id_1;
   parent_tree.tree_data.focused_tree_id = tree_id_2;
   parent_tree.tree_data.focus_id = 2;
+  parent_tree.tree_data.sel_anchor_object_id = 2;
+  parent_tree.tree_data.sel_anchor_offset = 0;
+  parent_tree.tree_data.sel_anchor_offset_type = ax::mojom::OffsetType::kText;
+  parent_tree.tree_data.sel_focus_object_id = 2;
+  parent_tree.tree_data.sel_focus_offset = 1;
+  parent_tree.tree_data.sel_focus_offset_type = ax::mojom::OffsetType::kChild;
   parent_tree.root_id = 1;
   parent_tree.nodes.resize(3);
   parent_tree.nodes[0].id = 1;
@@ -177,6 +183,12 @@ TEST(CombineAXTreesTest, FocusedTree) {
   child_tree.tree_data.parent_tree_id = tree_id_1;
   child_tree.tree_data.tree_id = tree_id_2;
   child_tree.tree_data.focus_id = 3;
+  child_tree.tree_data.sel_anchor_object_id = 2;
+  child_tree.tree_data.sel_anchor_offset = 1;
+  child_tree.tree_data.sel_anchor_offset_type = ax::mojom::OffsetType::kChild;
+  child_tree.tree_data.sel_focus_object_id = 3;
+  child_tree.tree_data.sel_focus_offset = 2;
+  child_tree.tree_data.sel_focus_offset_type = ax::mojom::OffsetType::kText;
   child_tree.root_id = 1;
   child_tree.nodes.resize(3);
   child_tree.nodes[0].id = 1;
@@ -187,6 +199,11 @@ TEST(CombineAXTreesTest, FocusedTree) {
   child_tree.nodes[2].id = 3;
   child_tree.nodes[2].role = ax::mojom::Role::kRadioButton;
 
+  // Save copies before `AddTree` moves `parent_tree` and `child_tree` so we
+  // can also verify the unset (`std::nullopt`) offset-type case below.
+  AXTreeUpdate parent_tree_for_unset = parent_tree;
+  AXTreeUpdate child_tree_for_unset = child_tree;
+
   AXTreeCombiner combiner;
   combiner.AddTree(parent_tree, true);
   combiner.AddTree(child_tree, false);
@@ -196,6 +213,36 @@ TEST(CombineAXTreesTest, FocusedTree) {
 
   ASSERT_EQ(6U, combined.nodes.size());
   EXPECT_EQ(6, combined.tree_data.focus_id);
+  EXPECT_EQ(5, combined.tree_data.sel_anchor_object_id);
+  EXPECT_EQ(1, combined.tree_data.sel_anchor_offset);
+  EXPECT_EQ(ax::mojom::OffsetType::kChild,
+            combined.tree_data.sel_anchor_offset_type);
+  EXPECT_EQ(6, combined.tree_data.sel_focus_object_id);
+  EXPECT_EQ(2, combined.tree_data.sel_focus_offset);
+  EXPECT_EQ(ax::mojom::OffsetType::kText,
+            combined.tree_data.sel_focus_offset_type);
+
+  // When the focused child tree omits selection offset types (`std::nullopt`),
+  // combining should still preserve selection endpoints and clear offset types
+  // rather than retaining `parent_tree`'s values.
+  child_tree_for_unset.tree_data.sel_anchor_offset_type = std::nullopt;
+  child_tree_for_unset.tree_data.sel_focus_offset_type = std::nullopt;
+
+  AXTreeCombiner combiner_unset_offset_types;
+  combiner_unset_offset_types.AddTree(parent_tree_for_unset, true);
+  combiner_unset_offset_types.AddTree(child_tree_for_unset, false);
+  combiner_unset_offset_types.Combine();
+
+  AXTreeUpdate combined_unset =
+      std::move(combiner_unset_offset_types.combined().value());
+  ASSERT_EQ(6U, combined_unset.nodes.size());
+  EXPECT_EQ(6, combined_unset.tree_data.focus_id);
+  EXPECT_EQ(5, combined_unset.tree_data.sel_anchor_object_id);
+  EXPECT_EQ(1, combined_unset.tree_data.sel_anchor_offset);
+  EXPECT_EQ(std::nullopt, combined_unset.tree_data.sel_anchor_offset_type);
+  EXPECT_EQ(6, combined_unset.tree_data.sel_focus_object_id);
+  EXPECT_EQ(2, combined_unset.tree_data.sel_focus_offset);
+  EXPECT_EQ(std::nullopt, combined_unset.tree_data.sel_focus_offset_type);
 }
 
 TEST(CombineAXTreesTest, EmptyTree) {

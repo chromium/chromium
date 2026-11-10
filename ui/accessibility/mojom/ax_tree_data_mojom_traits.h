@@ -47,6 +47,10 @@ struct StructTraits<ax::mojom::AXTreeDataDataView, ui::AXTreeData> {
   static ax::mojom::TextAffinity sel_anchor_affinity(const ui::AXTreeData& p) {
     return p.sel_anchor_affinity;
   }
+  static std::optional<ax::mojom::OffsetType> sel_anchor_offset_type(
+      const ui::AXTreeData& p) {
+    return p.sel_anchor_offset_type;
+  }
   static int32_t sel_focus_object_id(const ui::AXTreeData& p) {
     return p.sel_focus_object_id;
   }
@@ -55,6 +59,10 @@ struct StructTraits<ax::mojom::AXTreeDataDataView, ui::AXTreeData> {
   }
   static ax::mojom::TextAffinity sel_focus_affinity(const ui::AXTreeData& p) {
     return p.sel_focus_affinity;
+  }
+  static std::optional<ax::mojom::OffsetType> sel_focus_offset_type(
+      const ui::AXTreeData& p) {
+    return p.sel_focus_offset_type;
   }
   static int32_t root_scroller_id(const ui::AXTreeData& p) {
     return p.root_scroller_id;

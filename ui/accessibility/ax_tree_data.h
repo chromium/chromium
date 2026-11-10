@@ -58,20 +58,26 @@ struct AX_BASE_EXPORT AXTreeData final {
   // kInvalidAXNodeID if no node in this tree has focus.
   AXNodeID focus_id = kInvalidAXNodeID;
 
-  // The current text selection within this tree, if any, expressed as the
-  // node ID and character offset of the anchor (selection start) and focus
-  // (selection end). If the offset could correspond to a position on two
-  // different lines, sel_upstream_affinity means the cursor is on the first
-  // line, otherwise it's on the second line.
+  // The current selection within this tree, if any, expressed as the node ID
+  // and child index or character offset of the anchor (selection start) and
+  // focus (selection end). `sel_anchor_offset_type` and `sel_focus_offset_type`
+  // specify whether each offset is a child index (a tree position) or a
+  // character offset (a text position); when unset, the producer didn't specify
+  // them and consumers infer them from the anchor and focus nodes respectively.
+  // If the offset could correspond to a position on two different lines,
+  // sel_upstream_affinity means the cursor is on the first line, otherwise it's
+  // on the second line.
   // Most use cases will want to use OwnerTree::GetUnignoredSelection.
   bool sel_is_backward = false;
   AXNodeID sel_anchor_object_id = kInvalidAXNodeID;
   // kNoSelectionOffset indicates there is no selection.
   int32_t sel_anchor_offset = ax::mojom::kNoSelectionOffset;
   ax::mojom::TextAffinity sel_anchor_affinity;
+  std::optional<ax::mojom::OffsetType> sel_anchor_offset_type;
   AXNodeID sel_focus_object_id = kInvalidAXNodeID;
   int32_t sel_focus_offset = ax::mojom::kNoSelectionOffset;
   ax::mojom::TextAffinity sel_focus_affinity;
+  std::optional<ax::mojom::OffsetType> sel_focus_offset_type;
 
   // The node that's used as the root scroller. On some platforms
   // like Android we need to ignore accessibility scroll offsets for

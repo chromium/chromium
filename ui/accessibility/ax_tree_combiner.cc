@@ -88,6 +88,10 @@ bool AXTreeCombiner::Combine() {
       focused_tree->tree_data.sel_anchor_offset;
   combined_->tree_data.sel_focus_offset =
       focused_tree->tree_data.sel_focus_offset;
+  combined_->tree_data.sel_anchor_offset_type =
+      focused_tree->tree_data.sel_anchor_offset_type;
+  combined_->tree_data.sel_focus_offset_type =
+      focused_tree->tree_data.sel_focus_offset_type;
 
   // Debug-mode check that the resulting combined tree is valid.
   AXTree tree;

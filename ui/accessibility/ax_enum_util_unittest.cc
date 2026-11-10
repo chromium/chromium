@@ -238,6 +238,17 @@ TEST(AXEnumUtilTest, TextAffinity) {
   TestEnumStringConversion<ax::mojom::TextAffinity>();
 }
 
+// `OffsetType` has no `kNone` value, so it can't use
+// `TestEnumStringConversion()`, which relies on `ParseAXEnum()`.
+TEST(AXEnumUtilTest, OffsetType) {
+  EXPECT_STREQ("child", ToString(ax::mojom::OffsetType::kChild));
+  EXPECT_STREQ("text", ToString(ax::mojom::OffsetType::kText));
+  int out_of_range_value =
+      static_cast<int>(ax::mojom::OffsetType::kMaxValue) + 1;
+  EXPECT_STREQ(
+      "", ToString(static_cast<ax::mojom::OffsetType>(out_of_range_value)));
+}
+
 TEST(AXEnumUtilTest, TreeOrder) {
   TestEnumStringConversion<ax::mojom::TreeOrder>();
 }

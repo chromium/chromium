@@ -146,6 +146,9 @@ AX_BASE_EXPORT const char* ToString(ax::mojom::Gesture gesture);
 // ax::mojom::TextAffinity
 AX_BASE_EXPORT const char* ToString(ax::mojom::TextAffinity text_affinity);
 
+// ax::mojom::OffsetType
+AX_BASE_EXPORT const char* ToString(ax::mojom::OffsetType offset_type);
+
 // ax::mojom::TreeOrder
 AX_BASE_EXPORT const char* ToString(ax::mojom::TreeOrder tree_order);
 

@@ -518,6 +518,44 @@ TEST(AXEventGeneratorTest, SelectionInTextFieldChanged) {
             HasEventAtNode(AXEventGenerator::Event::TEXT_SELECTION_CHANGED,
                            text_field.id)));
   }
+
+  event_generator.ClearEvents();
+  {
+    // Changing only `sel_anchor_offset_type` should fire selection changed
+    // events.
+    tree_data.sel_anchor_offset_type = ax::mojom::OffsetType::kChild;
+    AXTreeUpdate update;
+    update.tree_data = tree_data;
+    update.has_tree_data = true;
+
+    ASSERT_TRUE(tree.Unserialize(update));
+    EXPECT_THAT(
+        event_generator,
+        UnorderedElementsAre(
+            HasEventAtNode(AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED,
+                           root.id),
+            HasEventAtNode(AXEventGenerator::Event::TEXT_SELECTION_CHANGED,
+                           text_field.id)));
+  }
+
+  event_generator.ClearEvents();
+  {
+    // Changing only `sel_focus_offset_type` should also fire selection changed
+    // events.
+    tree_data.sel_focus_offset_type = ax::mojom::OffsetType::kText;
+    AXTreeUpdate update;
+    update.tree_data = tree_data;
+    update.has_tree_data = true;
+
+    ASSERT_TRUE(tree.Unserialize(update));
+    EXPECT_THAT(
+        event_generator,
+        UnorderedElementsAre(
+            HasEventAtNode(AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED,
+                           root.id),
+            HasEventAtNode(AXEventGenerator::Event::TEXT_SELECTION_CHANGED,
+                           text_field.id)));
+  }
 }
 
 TEST(AXEventGeneratorTest, ValueInTextFieldChanged) {

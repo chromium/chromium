@@ -63,6 +63,12 @@ std::string AXTreeData::ToString() const {
     result += " sel_anchor_offset=" + base::NumberToString(sel_anchor_offset);
     result += " sel_anchor_affinity=";
     result += ui::ToString(sel_anchor_affinity);
+    // Omit `sel_anchor_offset_type` when unset (`std::nullopt`) so unaffected
+    // tree dumps do not change; any explicitly set value is logged.
+    if (sel_anchor_offset_type.has_value()) {
+      result += " sel_anchor_offset_type=";
+      result += ui::ToString(*sel_anchor_offset_type);
+    }
   }
   if (sel_focus_object_id != kInvalidAXNodeID) {
     result +=
@@ -70,6 +76,10 @@ std::string AXTreeData::ToString() const {
     result += " sel_focus_offset=" + base::NumberToString(sel_focus_offset);
     result += " sel_focus_affinity=";
     result += ui::ToString(sel_focus_affinity);
+    if (sel_focus_offset_type.has_value()) {
+      result += " sel_focus_offset_type=";
+      result += ui::ToString(*sel_focus_offset_type);
+    }
   }
   if (metadata.has_value() && !metadata->empty()) {
     result += "\n<head>\n";
@@ -93,9 +103,11 @@ bool operator==(const AXTreeData& lhs, const AXTreeData& rhs) {
           lhs.sel_anchor_object_id == rhs.sel_anchor_object_id &&
           lhs.sel_anchor_offset == rhs.sel_anchor_offset &&
           lhs.sel_anchor_affinity == rhs.sel_anchor_affinity &&
+          lhs.sel_anchor_offset_type == rhs.sel_anchor_offset_type &&
           lhs.sel_focus_object_id == rhs.sel_focus_object_id &&
           lhs.sel_focus_offset == rhs.sel_focus_offset &&
-          lhs.sel_focus_affinity == rhs.sel_focus_affinity);
+          lhs.sel_focus_affinity == rhs.sel_focus_affinity &&
+          lhs.sel_focus_offset_type == rhs.sel_focus_offset_type);
 }
 
 const AXTreeData& AXTreeDataUnknown() {
