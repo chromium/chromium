@@ -2084,6 +2084,7 @@ source_set("unit_tests") {
     "//chrome/browser/tab_list:test_support",
     "//chrome/browser/themes",
     "//chrome/browser/ui/extensions",
+    "//chrome/browser/ui/navigator",
     "//chrome/browser/ui/supervised_user",
     "//chrome/browser/update_client",
     "//chrome/test:test_support",

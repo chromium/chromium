@@ -26,6 +26,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/url_constants.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_features.h"
@@ -34,6 +35,7 @@
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/unload_controller.h"
@@ -250,6 +252,7 @@ base::expected<content::WebContents*, std::string> OpenTabHelper::OpenTab(
   navigate_params.web_app_navigation_data->SetNavigationCapturingForceOff(true);
 
   MaybeSetPdfNavigateParams(function, navigate_params);
+  MaybeSetInitiatorOrigin(function, navigate_params);
 
   base::WeakPtr<content::NavigationHandle> handle = Navigate(&navigate_params);
   if (handle && params.bookmark_id) {
@@ -301,6 +304,33 @@ bool OpenTabHelper::MaybeSetPdfNavigateParams(const ExtensionFunction& function,
   navigate_params.source_site_instance = content::SiteInstance::CreateForURL(
       function.browser_context(), navigate_params.initiator_origin->GetURL());
   return true;
+}
+
+// static
+void OpenTabHelper::MaybeSetInitiatorOrigin(const ExtensionFunction& function,
+                                            NavigateParams& navigate_params) {
+  const Extension* extension = function.extension();
+  // PDF Viewer navigations are configured separately by
+  // `MaybeSetPdfNavigateParams()`, which marks them as renderer-initiated with
+  // a matching `source_site_instance` and `initiator_origin` (including for
+  // `chrome://` and `about:blank` URLs), so do not overwrite them here.
+  if (!extension || extension->id() == extension_misc::kPdfExtensionId) {
+    return;
+  }
+
+  // Leave `initiator_origin` unset for `chrome://` URLs (such as
+  // `chrome://newtab`) so URL overrides (e.g. a third-party NTP extension whose
+  // page is not listed in `web_accessible_resources`) continue to load when
+  // another extension opens a new tab. `chrome://` URLs cannot server-redirect
+  // to network schemes.
+  if (navigate_params.url.SchemeIs(content::kChromeUIScheme)) {
+    return;
+  }
+
+  // Without an opener relationship, `about:blank` tabs should commit with an
+  // opaque origin rather than inheriting the extension's origin.
+  navigate_params.initiator_origin =
+      navigate_params.url.IsAboutBlank() ? url::Origin() : extension->origin();
 }
 
 }  // namespace extensions

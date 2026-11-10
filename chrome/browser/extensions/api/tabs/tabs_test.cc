@@ -20,6 +20,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/pattern.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -114,6 +115,8 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/test/views_test_utils.h"
 #include "url/gurl.h"
+#include "url/origin.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
@@ -5552,6 +5555,185 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
   std::string error =
       utils::RunFunctionAndReturnError(function.get(), args, profile());
   EXPECT_EQ("Tab opener must be in the same window as the updated tab.", error);
+}
+
+// Regression test for crbug.com/415848455: verifies that
+// `chrome.tabs.create()` sets `initiator_origin` to the calling extension's
+// origin so `SameSite=Strict` cookies are excluded across a 301 cross-site
+// redirect.
+IN_PROC_BROWSER_TEST_F(
+    ExtensionTabsTest,
+    TabsCreate_ExcludesSameSiteStrictCookiesOnCrossSiteRedirect) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const GURL set_cookies_url = embedded_test_server()->GetURL(
+      "a.com",
+      "/set-cookie?strict_cookie=1;SameSite=Strict&lax_cookie=1;SameSite=Lax");
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), set_cookies_url));
+
+  const GURL target_url =
+      embedded_test_server()->GetURL("a.com", "/echoheader?Cookie");
+  const GURL redirect_url = embedded_test_server()->GetURL(
+      "b.com", "/server-redirect-301?" + target_url.spec());
+
+  content::TestNavigationObserver nav_observer(target_url);
+  nav_observer.StartWatchingNewWebContents();
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("TabsCreateInitiatorTest").Build();
+  auto function = base::MakeRefCounted<TabsCreateFunction>();
+  function->set_extension(extension.get());
+
+  const std::string args =
+      base::StringPrintf(R"([{"url": "%s"}])", redirect_url.spec().c_str());
+  base::DictValue result = utils::ToDict(
+      utils::RunFunctionAndReturnSingleResult(function.get(), args, profile()));
+
+  nav_observer.Wait();
+  EXPECT_EQ(nav_observer.last_initiator_origin(), extension->origin());
+
+  std::optional<int> tab_id = result.FindInt(extension_misc::kId);
+  ASSERT_TRUE(tab_id.has_value());
+  content::WebContents* created_tab = nullptr;
+  ASSERT_TRUE(ExtensionTabUtil::GetTabById(
+      *tab_id, profile(), /*include_incognito=*/false, &created_tab));
+  ASSERT_TRUE(created_tab);
+  content::WaitForLoadStop(created_tab);
+
+  EXPECT_EQ("lax_cookie=1",
+            content::EvalJs(created_tab, "document.body.textContent"));
+}
+
+// Regression test for crbug.com/415848455: verifies that
+// `chrome.windows.create()` (without `setSelfAsOpener`) sets `initiator_origin`
+// to the calling extension's origin so `SameSite=Strict` cookies are excluded
+// across a 301 cross-site redirect.
+IN_PROC_BROWSER_TEST_F(
+    ExtensionTabsTest,
+    WindowsCreate_ExcludesSameSiteStrictCookiesOnCrossSiteRedirect) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const GURL set_cookies_url = embedded_test_server()->GetURL(
+      "a.com",
+      "/set-cookie?strict_cookie=1;SameSite=Strict&lax_cookie=1;SameSite=Lax");
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), set_cookies_url));
+
+  const GURL target_url =
+      embedded_test_server()->GetURL("a.com", "/echoheader?Cookie");
+  const GURL redirect_url = embedded_test_server()->GetURL(
+      "b.com", "/server-redirect-301?" + target_url.spec());
+
+  content::TestNavigationObserver nav_observer(target_url);
+  nav_observer.StartWatchingNewWebContents();
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("WindowsCreateInitiatorTest").Build();
+  auto function = base::MakeRefCounted<WindowsCreateFunction>();
+  function->set_extension(extension.get());
+
+  const std::string args =
+      base::StringPrintf(R"([{"url": "%s"}])", redirect_url.spec().c_str());
+  base::DictValue result = utils::ToDict(
+      utils::RunFunctionAndReturnSingleResult(function.get(), args, profile()));
+
+  nav_observer.Wait();
+  EXPECT_EQ(nav_observer.last_initiator_origin(), extension->origin());
+
+  const base::ListValue* tabs = result.FindList(ExtensionTabUtil::kTabsKey);
+  ASSERT_TRUE(tabs);
+  ASSERT_EQ(1u, tabs->size());
+  ASSERT_TRUE((*tabs)[0].is_dict());
+  std::optional<int> tab_id = (*tabs)[0].GetDict().FindInt(extension_misc::kId);
+  ASSERT_TRUE(tab_id.has_value());
+
+  content::WebContents* created_tab = nullptr;
+  ASSERT_TRUE(ExtensionTabUtil::GetTabById(
+      *tab_id, profile(), /*include_incognito=*/false, &created_tab));
+  ASSERT_TRUE(created_tab);
+  content::WaitForLoadStop(created_tab);
+
+  EXPECT_EQ("lax_cookie=1",
+            content::EvalJs(created_tab, "document.body.textContent"));
+}
+
+// Verifies that when one extension overrides `chrome://newtab` without listing
+// its page in `web_accessible_resources`, another extension calling
+// `chrome.tabs.create({})` can still open the overridden new tab page.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
+                       TabsCreate_NewTabOverrideFromAnotherExtension) {
+  TestExtensionDir ntp_dir;
+  ntp_dir.WriteManifest(R"({
+    "name": "Custom NTP",
+    "version": "1.0",
+    "manifest_version": 3,
+    "chrome_url_overrides": {
+      "newtab": "newtab.html"
+    }
+  })");
+  ntp_dir.WriteFile(FILE_PATH_LITERAL("newtab.html"),
+                    "<html><body>Custom NTP</body></html>");
+  const Extension* ntp_extension = LoadExtension(ntp_dir.UnpackedPath());
+  ASSERT_TRUE(ntp_extension);
+
+  scoped_refptr<const Extension> caller_extension =
+      ExtensionBuilder("CallerExtension").Build();
+  auto function = base::MakeRefCounted<TabsCreateFunction>();
+  function->set_extension(caller_extension.get());
+
+  base::DictValue result =
+      utils::ToDict(utils::RunFunctionAndReturnSingleResult(function.get(),
+                                                            "[{}]", profile()));
+  std::optional<int> tab_id = result.FindInt(extension_misc::kId);
+  ASSERT_TRUE(tab_id.has_value());
+
+  content::WebContents* created_tab = nullptr;
+  ASSERT_TRUE(ExtensionTabUtil::GetTabById(
+      *tab_id, profile(), /*include_incognito=*/false, &created_tab));
+  ASSERT_TRUE(created_tab);
+  content::WaitForLoadStop(created_tab);
+
+  ASSERT_TRUE(created_tab->GetController().GetLastCommittedEntry());
+  EXPECT_EQ(ntp_extension->GetResourceURL("newtab.html"),
+            created_tab->GetController().GetLastCommittedEntry()->GetURL());
+  EXPECT_EQ("Custom NTP",
+            content::EvalJs(created_tab, "document.body.textContent.trim()"));
+}
+
+// Verifies that `chrome.tabs.create({url: 'about:blank'})` commits an opaque
+// origin rather than inheriting the calling extension's origin.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
+                       TabsCreate_AboutBlankCommitsOpaqueOrigin) {
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(R"({
+    "name": "About Blank Origin Test",
+    "version": "1.0",
+    "manifest_version": 3,
+    "background": {
+      "service_worker": "background.js"
+    }
+  })");
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), R"(
+    chrome.tabs.create({url: 'about:blank'}, (tab) => {
+      chrome.test.sendMessage(String(tab.id));
+    });
+  )");
+
+  ExtensionTestMessageListener tab_id_listener;
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(tab_id_listener.WaitUntilSatisfied());
+
+  int tab_id = -1;
+  ASSERT_TRUE(base::StringToInt(tab_id_listener.message(), &tab_id));
+  content::WebContents* created_tab = nullptr;
+  ASSERT_TRUE(ExtensionTabUtil::GetTabById(
+      tab_id, profile(), /*include_incognito=*/false, &created_tab));
+  ASSERT_TRUE(created_tab);
+  ASSERT_TRUE(content::WaitForLoadStop(created_tab));
+
+  EXPECT_EQ(GURL(url::kAboutBlankURL), created_tab->GetLastCommittedURL());
+  EXPECT_TRUE(
+      created_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin().opaque());
 }
 
 }  // namespace extensions

@@ -16,17 +16,21 @@
 #include "chrome/browser/extensions/test_standalone_window_controller.h"
 #include "chrome/browser/tab_list/mock_tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/web_contents_tester.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace extensions {
 
@@ -69,6 +73,74 @@ TEST_F(OpenTabHelperUnitTest, OpenTab_StandaloneSplitWithTabIdRejected) {
                                        mock_browser, *function, params);
   EXPECT_THAT(result, base::test::ErrorIs(
                           tabs_constants::kSplitViewCreationFailedError));
+}
+
+TEST_F(OpenTabHelperUnitTest,
+       MaybeSetInitiatorOrigin_WebUrlSetsExtensionOrigin) {
+  auto extension = ExtensionBuilder("test_ext").Build();
+  auto function = base::MakeRefCounted<TabsCreateFunction>();
+  function->set_extension(extension);
+
+  NavigateParams params(profile(), GURL("https://example.com/"),
+                        ui::PAGE_TRANSITION_LINK);
+  OpenTabHelper::MaybeSetInitiatorOrigin(*function, params);
+
+  EXPECT_EQ(params.initiator_origin, extension->origin());
+}
+
+TEST_F(OpenTabHelperUnitTest,
+       MaybeSetInitiatorOrigin_AboutBlankSetsOpaqueOrigin) {
+  auto extension = ExtensionBuilder("test_ext").Build();
+  auto function = base::MakeRefCounted<TabsCreateFunction>();
+  function->set_extension(extension);
+
+  NavigateParams params(profile(), GURL("about:blank"),
+                        ui::PAGE_TRANSITION_LINK);
+  OpenTabHelper::MaybeSetInitiatorOrigin(*function, params);
+
+  ASSERT_TRUE(params.initiator_origin.has_value());
+  EXPECT_TRUE(params.initiator_origin->opaque());
+}
+
+TEST_F(OpenTabHelperUnitTest, MaybeSetInitiatorOrigin_ChromeUrlLeavesNullopt) {
+  auto extension = ExtensionBuilder("test_ext").Build();
+  auto function = base::MakeRefCounted<TabsCreateFunction>();
+  function->set_extension(extension);
+
+  NavigateParams params(profile(), GURL("chrome://newtab/"),
+                        ui::PAGE_TRANSITION_LINK);
+  OpenTabHelper::MaybeSetInitiatorOrigin(*function, params);
+
+  EXPECT_FALSE(params.initiator_origin.has_value());
+}
+
+TEST_F(OpenTabHelperUnitTest,
+       MaybeSetInitiatorOrigin_PdfExtensionLeavesUnchanged) {
+  auto pdf_extension = ExtensionBuilder("pdf_ext")
+                           .SetID(extension_misc::kPdfExtensionId)
+                           .Build();
+  auto function = base::MakeRefCounted<TabsCreateFunction>();
+  function->set_extension(pdf_extension);
+  function->SetBrowserContextForTesting(profile());
+
+  NavigateParams params(profile(), GURL("about:blank"),
+                        ui::PAGE_TRANSITION_LINK);
+  EXPECT_TRUE(OpenTabHelper::MaybeSetPdfNavigateParams(*function, params));
+  OpenTabHelper::MaybeSetInitiatorOrigin(*function, params);
+
+  EXPECT_EQ(params.initiator_origin, pdf_extension->origin());
+}
+
+TEST_F(OpenTabHelperUnitTest,
+       MaybeSetInitiatorOrigin_NoExtensionLeavesNullopt) {
+  auto function = base::MakeRefCounted<TabsCreateFunction>();
+  function->set_extension(nullptr);
+
+  NavigateParams params(profile(), GURL("https://example.com/"),
+                        ui::PAGE_TRANSITION_LINK);
+  OpenTabHelper::MaybeSetInitiatorOrigin(*function, params);
+
+  EXPECT_FALSE(params.initiator_origin.has_value());
 }
 
 }  // namespace extensions

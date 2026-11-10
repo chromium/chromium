@@ -782,6 +782,8 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
       navigate_params.opener = render_frame_host();
       navigate_params.source_site_instance =
           render_frame_host()->GetSiteInstance();
+    } else {
+      OpenTabHelper::MaybeSetInitiatorOrigin(*this, navigate_params);
     }
 
     return navigate_params;

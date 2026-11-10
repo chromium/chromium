@@ -63,6 +63,11 @@ class OpenTabHelper {
   // return false and `navigate_params` remains the same.
   static bool MaybeSetPdfNavigateParams(const ExtensionFunction& function,
                                         NavigateParams& navigate_params);
+
+  // Populates `navigate_params.initiator_origin` for extension-initiated new
+  // tab/window navigations when an opener is not being set.
+  static void MaybeSetInitiatorOrigin(const ExtensionFunction& function,
+                                      NavigateParams& navigate_params);
 };
 
 }  // namespace extensions
