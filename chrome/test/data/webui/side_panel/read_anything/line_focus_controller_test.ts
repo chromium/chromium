@@ -76,6 +76,9 @@ suite('LineFocusController', () => {
   setup(() => {
     const result = setupTestEnvironment();
     visualBrowserProxy = result.visualBrowserProxy;
+    // Initialize font size so that moving one line exceeds the movement
+    // threshold.
+    visualBrowserProxy.fontSize = 1.5;
     metrics = result.metrics;
     readAloudModel = result.readAloudModel;
     speechController = result.speechController;

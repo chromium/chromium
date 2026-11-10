@@ -112,7 +112,11 @@ export class LineFocusLineStyleMode extends LineFocusStyleMode {
   }
 
   clampLineIndex(index: number): number {
-    return index;
+    const bounds = this.model_.getTextBounds();
+    if (bounds.length === 0) {
+      return 0;
+    }
+    return Math.max(0, Math.min(bounds.length - 1, index));
   }
 
   shouldAdaptToTextBounds(): boolean {

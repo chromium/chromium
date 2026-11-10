@@ -48,8 +48,16 @@ suite('LineFocusStyleMode', () => {
       assertEquals(30, mode.getFocalPointForRect(rect));
     });
 
-    test('clampLineIndex returns index unchanged', () => {
-      assertEquals(5, mode.clampLineIndex(5));
+    test('clampLineIndex clamps index to text bounds', () => {
+      // Empty bounds.
+      assertEquals(0, mode.clampLineIndex(5));
+
+      const rect1 = new DOMRect(0, 10, 100, 20);
+      const rect2 = new DOMRect(0, 30, 100, 20);
+      model.setTextBounds([rect1, rect2]);
+      assertEquals(0, mode.clampLineIndex(-1));
+      assertEquals(1, mode.clampLineIndex(1));
+      assertEquals(1, mode.clampLineIndex(5));
     });
 
     test('getOffScreenDiff returns diff if line is below screen', () => {

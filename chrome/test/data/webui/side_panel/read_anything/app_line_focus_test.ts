@@ -536,4 +536,42 @@ suite('AppLineFocus', () => {
       assertEquals(0, caretCalls);
     });
   });
+
+  test(
+      'switching from static to cursor on single line title focuses title',
+      async () => {
+        document.body.style.height = '400px';
+        app.style.height = '400px';
+        const heading = document.createElement('h1');
+        heading.style.whiteSpace = 'pre';
+        heading.textContent = 'Single line title';
+        app.$.container.replaceChildren(heading);
+        contentController.setState(ContentType.HAS_CONTENT);
+        await microtasksFinished();
+
+        emitEvent(
+            app, ToolbarEvent.LINE_FOCUS_STYLE,
+            {detail: {data: LineFocusStyle.UNDERLINE}});
+        emitEvent(
+            app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
+            {detail: {data: LineFocusMovement.STATIC}});
+        emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
+        await microtasksFinished();
+        app.$.containerScroller.scrollTop =
+            app.$.containerScroller.scrollHeight;
+
+        emitEvent(
+            app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
+            {detail: {data: LineFocusMovement.CURSOR}});
+        await microtasksFinished();
+
+        assertEquals(0, getLineFocusPadding());
+        const cursorY =
+            Number.parseFloat(app.style.getPropertyValue('--line-focus-y'));
+        const titleBottom =
+            calculateTextBounds(
+                app.$.container, app.$.appFlexParent.clientHeight)
+                .bounds[0]!.bottom;
+        assertLT(Math.abs(titleBottom - cursorY), 1);
+      });
 });

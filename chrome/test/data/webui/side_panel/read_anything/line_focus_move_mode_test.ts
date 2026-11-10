@@ -769,6 +769,62 @@ suite('LineFocusMoveMode', () => {
       assertEquals(45, model.getLastScrollTop());
     });
 
+    test(
+        'onActivated from static clamps focal point to single line title',
+        () => {
+          const container = document.createElement('p');
+          container.innerText = 'Single line title';
+          applyContainerStyles(container);
+          container.style.paddingTop = '200px';
+          document.body.appendChild(container);
+          model.setSessionActive(true);
+          model.setCurrentLineIndex(null);
+          model.setFocalPoint(500);
+          delegate.notifyScrollBuffer = (buffer) => {
+            container.style.paddingTop = buffer ? '200px' : '0px';
+          };
+
+          mode.onActivated(container, defaultHeight);
+
+          assertEquals(
+              styleMode.getFocalPointForRect(model.getTextBounds()[0]!),
+              model.getFocalPoint());
+        });
+
+    test('onActivated clamps window focal point to last full window', () => {
+      const container = createShortContainer();
+      model.setSessionActive(true);
+      model.setCurrentLineIndex(null);
+      model.setFocalPoint(500);
+
+      createWindowMode().onActivated(container, defaultHeight);
+
+      // The 3-line window covers all 3 lines, so it centers on them.
+      const bounds = model.getTextBounds();
+      assertEquals(3, bounds.length);
+      assertEquals(
+          (bounds[0]!.top + bounds[2]!.bottom) / 2, model.getFocalPoint());
+    });
+
+    test(
+        'onActivated clamps snapped index when switching to underline on ' +
+            'single line',
+        () => {
+          const container = document.createElement('p');
+          container.innerText = 'Single line title';
+          applyContainerStyles(container);
+          document.body.appendChild(container);
+          model.setSessionActive(true);
+          model.setCurrentLineIndex(1);
+
+          mode.onActivated(container, defaultHeight);
+
+          assertEquals(0, model.getCurrentLineIndex());
+          assertEquals(
+              styleMode.getFocalPointForRect(model.getTextBounds()[0]!),
+              model.getFocalPoint());
+        });
+
     test('onActivated notifies delegate of no scroll buffer', () => {
       const container = createShortContainer();
       mode.onActivated(container, defaultHeight);

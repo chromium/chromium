@@ -464,6 +464,10 @@ export class LineFocusCursorMoveMode extends LineFocusMoveMode {
         }
       }
     }
+    // Keep focus on rendered text, e.g. not below a single line title.
+    const minFocalPoint = this.getFirstVisibleFocalPoint_();
+    const maxFocalPoint =
+        Math.max(minFocalPoint, this.getLastLineFocalPoint_());
     // When switching Line Focus styles while active (wasEnabled === true), set
     // the focal point quietly without calling
     // notifyMoveWithContentPositionChange(). This prevents DOM hit-testing and
@@ -471,7 +475,7 @@ export class LineFocusCursorMoveMode extends LineFocusMoveMode {
     // highlight styling is updated via notifyMoveWithVisualPositionChange()
     // below.
     this.setFocalPoint(
-        Math.max(this.getFirstVisibleFocalPoint_(), focalPoint),
+        Math.min(maxFocalPoint, Math.max(minFocalPoint, focalPoint)),
         notificationType);
     if (!wasEnabled && this.model_.getTextBounds().length > 0) {
       this.initializeSnapIndex(/*isForward=*/ true);
@@ -601,6 +605,16 @@ export class LineFocusCursorMoveMode extends LineFocusMoveMode {
 
   protected getScrollDiffForRecentering(currentIndex: number): number {
     return this.styleMode_.getOffScreenDiff(currentIndex);
+  }
+
+  private getLastLineFocalPoint_(): number {
+    const bounds = this.model_.getTextBounds();
+    if (bounds.length === 0) {
+      return this.model_.getMaxY();
+    }
+    const lastIndex = this.styleMode_.clampLineIndex(bounds.length - 1);
+    return Math.min(
+        this.model_.getMaxY(), this.styleMode_.getDesiredCenter(lastIndex));
   }
 
   private getFirstVisibleFocalPoint_() {
