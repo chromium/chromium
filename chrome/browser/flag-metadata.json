@@ -7219,7 +7219,7 @@
   {
     "name": "new-tab-page-ui-cleanup",
     "owners": ["bmcclure@google.com", "bling-pandamonium@google.com"],
-    "expiry_milestone": 160
+    "expiry_milestone": 166
   },
   {
     "name": "next-old-design",
