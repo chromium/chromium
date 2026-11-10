@@ -37,7 +37,9 @@ class PaintChunkSubset {
   // used in production code.
   explicit PaintChunkSubset(const PaintArtifact& paint_artifact)
       : paint_artifact_(&paint_artifact) {
-    for (wtf_size_t i = 0; i < paint_artifact_->GetPaintChunks().size(); ++i) {
+    wtf_size_t size = paint_artifact_->GetPaintChunks().size();
+    subset_indices_.reserve(size);
+    for (wtf_size_t i = 0; i < size; ++i) {
       subset_indices_.push_back(i);
     }
   }
