@@ -138,6 +138,12 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostViewInput
   virtual gfx::PointF TransformRootPointToViewCoordSpace(
       const gfx::PointF& point);
 
+  // Converts a point in the root view's coordinate space to the coordinate
+  // space of whichever view is used to call this method, returning
+  // `std::nullopt` if the transformation fails.
+  virtual std::optional<gfx::PointF> TryTransformRootPointToViewCoordSpace(
+      const gfx::PointF& point);
+
   // Transform a point that is in the coordinate space of a Surface that is
   // embedded within the RenderWidgetHostViewInput's Surface to the
   // coordinate space of an embedding, or embedded, Surface. Typically this

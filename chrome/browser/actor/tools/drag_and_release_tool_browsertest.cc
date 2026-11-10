@@ -2,17 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "base/strings/strcat.h"
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/actor/tools/drag_and_release_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
 #include "chrome/common/actor.mojom.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/hit_test_region_observer.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -272,6 +279,124 @@ IN_PROC_BROWSER_TEST_F(ActorDragAndReleaseToolBrowserTest,
 #else
   EXPECT_EQ(50, GetRangeValue(*subframe, "#range"));
 #endif
+}
+
+IN_PROC_BROWSER_TEST_F(ActorDragAndReleaseToolBrowserTest,
+                       DragAndReleaseTool_CrossOriginSubframeTransformFailure) {
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/positioned_iframe_no_scroll.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  const GURL cross_origin_iframe_url =
+      embedded_https_test_server().GetURL("foo.com", "/actor/drag.html");
+  ASSERT_TRUE(
+      NavigateIframeToURL(web_contents(), "iframe", cross_origin_iframe_url));
+
+  content::RenderFrameHost* subframe = ChildFrameAt(main_frame(), 0);
+  ASSERT_TRUE(subframe);
+  ASSERT_TRUE(subframe->IsCrossProcessSubframe());
+
+  // Position the iframe at a known non-zero offset and place #dragLogger at
+  // the top-left of the subframe so both transformed and untransformed points
+  // would fall inside #dragLogger if dispatched.
+  ASSERT_TRUE(content::ExecJs(web_contents(), R"(
+    const iframe = document.getElementById('iframe');
+    iframe.style.left = '50px';
+    iframe.style.top = '50px';
+    iframe.style.right = 'auto';
+    iframe.style.bottom = 'auto';
+    iframe.style.width = '400px';
+    iframe.style.height = '400px';
+    iframe.style.border = 'none';
+  )"));
+  ASSERT_TRUE(content::ExecJs(subframe, R"(
+    const logger = document.getElementById('dragLogger');
+    logger.style.left = '10px';
+    logger.style.top = '10px';
+  )"));
+  content::WaitForHitTestData(subframe);
+
+  std::optional<DomNode> drag_logger_node =
+      GetDomNodeOnPage(*subframe, "#dragLogger");
+  ASSERT_TRUE(drag_logger_node.has_value());
+
+  gfx::RectF subframe_rect = GetBoundingClientRect(*main_frame(), "#iframe");
+  const gfx::Point end_in_subframe(100, 100);
+  const gfx::Point end_in_viewport(subframe_rect.x() + end_in_subframe.x(),
+                                   subframe_rect.y() + end_in_subframe.y());
+  ASSERT_NE(end_in_subframe, end_in_viewport);
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    std::optional<gfx::PointF> transformed =
+        subframe->GetView()->TryTransformRootPointToViewCoordSpace(
+            gfx::PointF(end_in_viewport));
+    return transformed.has_value() &&
+           gfx::ToRoundedPoint(*transformed) == end_in_subframe;
+  }));
+
+  const PageTarget from_target(*drag_logger_node);
+  const PageTarget to_target(end_in_viewport);
+  const ActorSurfaceHandle surface_handle =
+      ActorSurfaceHandle::From(active_tab()->GetHandle());
+
+  // 1. When hit-test data for the subframe is valid, ToMojoToolAction
+  // transforms the root coordinate into the subframe's local coordinate space,
+  // and the drag release lands at the transformed point.
+  {
+    DragAndReleaseToolRequest request(surface_handle, from_target, to_target);
+    mojom::ToolActionPtr mojo_action = request.ToMojoToolAction(*subframe);
+    ASSERT_TRUE(mojo_action);
+    ASSERT_TRUE(mojo_action->is_drag_and_release());
+    ASSERT_TRUE(mojo_action->get_drag_and_release()->to_target);
+    ASSERT_TRUE(
+        mojo_action->get_drag_and_release()->to_target->is_coordinate_dip());
+    EXPECT_EQ(
+        end_in_subframe,
+        mojo_action->get_drag_and_release()->to_target->get_coordinate_dip());
+
+    std::unique_ptr<ToolRequest> action =
+        std::make_unique<DragAndReleaseToolRequest>(surface_handle, from_target,
+                                                    to_target);
+    ActResultFuture result_success;
+    actor_task().Act(ToRequestList(action), result_success.GetCallback());
+    ExpectOkResult(result_success);
+
+    EXPECT_THAT(EvalJs(subframe, "event_log.join(',')").ExtractString(),
+                testing::EndsWith(base::StrCat(
+                    {"mousemove[", end_in_subframe.ToString(), "],", "mouseup[",
+                     end_in_subframe.ToString(), "]"})));
+  }
+
+  // 2. When the subframe's hit-test transform is unavailable (e.g. hidden in
+  // the embedding document), ToMojoToolAction returns nullptr rather than
+  // falling back to untransformed root coordinates, and the action fails
+  // without dispatching displaced events to the subframe.
+  ASSERT_TRUE(content::ExecJs(subframe, "event_log = [];"));
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      "document.getElementById('iframe').style.visibility = 'hidden';"));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !subframe->GetView()
+                ->TryTransformRootPointToViewCoordSpace(
+                    gfx::PointF(end_in_viewport))
+                .has_value();
+  }));
+
+  {
+    DragAndReleaseToolRequest request(surface_handle, from_target, to_target);
+    EXPECT_FALSE(request.ToMojoToolAction(*subframe));
+
+    std::unique_ptr<ToolRequest> action =
+        std::make_unique<DragAndReleaseToolRequest>(surface_handle, from_target,
+                                                    to_target);
+    ActResultFuture result_error;
+    actor_task().Act(ToRequestList(action), result_error.GetCallback());
+    ExpectErrorResult(
+        result_error,
+        mojom::ActionResultCode::kFrameLocationChangedSinceObservation);
+
+    EXPECT_EQ("", EvalJs(subframe, "event_log.join(',')"));
+  }
 }
 
 }  // namespace

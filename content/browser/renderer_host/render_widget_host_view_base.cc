@@ -885,6 +885,13 @@ gfx::PointF RenderWidgetHostViewBase::TransformRootPointToViewCoordSpace(
   return RenderWidgetHostViewInput::TransformRootPointToViewCoordSpace(point);
 }
 
+std::optional<gfx::PointF>
+RenderWidgetHostViewBase::TryTransformRootPointToViewCoordSpace(
+    const gfx::PointF& point) {
+  return RenderWidgetHostViewInput::TryTransformRootPointToViewCoordSpace(
+      point);
+}
+
 bool RenderWidgetHostViewBase::IsRenderWidgetHostViewChildFrame() const {
   return false;
 }

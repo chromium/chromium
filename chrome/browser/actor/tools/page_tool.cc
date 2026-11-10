@@ -4,6 +4,7 @@
 
 #include "chrome/browser/actor/tools/page_tool.h"
 
+#include <optional>
 #include <variant>
 
 #include "base/functional/bind.h"
@@ -152,8 +153,10 @@ mojom::ActionResultPtr ValidateTargetInLastApc(
 }
 
 // Helper function to create ObservedToolTarget mojom struct from
-// TargetNodeInfo struct.
-mojom::ObservedToolTargetPtr ToMojoObservedToolTarget(
+// TargetNodeInfo struct. Returns nullptr if `observed_target_node_info` is not
+// present, or std::nullopt if observed geometry cannot be transformed into
+// `target_frame`'s view coordinate space.
+std::optional<mojom::ObservedToolTargetPtr> ToMojoObservedToolTarget(
     base::optional_ref<const optimization_guide::TargetNodeInfo>
         observed_target_node_info,
     RenderFrameHost& target_frame) {
@@ -171,25 +174,34 @@ mojom::ObservedToolTargetPtr ToMojoObservedToolTarget(
         content_attributes.common_ancestor_dom_node_id();
   }
   if (content_attributes.has_geometry()) {
+    content::RenderWidgetHostView* view = target_frame.GetView();
+    if (!view) {
+      return std::nullopt;
+    }
+    // Transform to frame's widget coordinate space.
+    auto transform_box = [view](const auto& box) -> std::optional<gfx::Rect> {
+      std::optional<gfx::PointF> origin =
+          view->TryTransformRootPointToViewCoordSpace(
+              gfx::PointF(box.x(), box.y()));
+      if (!origin.has_value()) {
+        return std::nullopt;
+      }
+      return gfx::Rect(gfx::ToRoundedPoint(*origin),
+                       {box.width(), box.height()});
+    };
+    const auto& geometry = content_attributes.geometry();
+    std::optional<gfx::Rect> outer_box =
+        transform_box(geometry.outer_bounding_box());
+    std::optional<gfx::Rect> visible_box =
+        transform_box(geometry.visible_bounding_box());
+    if (!outer_box.has_value() || !visible_box.has_value()) {
+      return std::nullopt;
+    }
     observed_target->node_attribute->geometry =
         blink::mojom::AIPageContentGeometry::New();
-    // Transform to frame's widget coordinate space.
-    const gfx::Point outer_box_origin_point = gfx::ToRoundedPoint(
-        target_frame.GetView()->TransformRootPointToViewCoordSpace(gfx::PointF(
-            content_attributes.geometry().outer_bounding_box().x(),
-            content_attributes.geometry().outer_bounding_box().y())));
-    observed_target->node_attribute->geometry->outer_bounding_box = gfx::Rect(
-        outer_box_origin_point,
-        {content_attributes.geometry().outer_bounding_box().width(),
-         content_attributes.geometry().outer_bounding_box().height()});
-    const gfx::Point visible_box_origin_point = gfx::ToRoundedPoint(
-        target_frame.GetView()->TransformRootPointToViewCoordSpace(gfx::PointF(
-            content_attributes.geometry().visible_bounding_box().x(),
-            content_attributes.geometry().visible_bounding_box().y())));
-    observed_target->node_attribute->geometry->visible_bounding_box = gfx::Rect(
-        visible_box_origin_point,
-        {content_attributes.geometry().visible_bounding_box().width(),
-         content_attributes.geometry().visible_bounding_box().height()});
+    observed_target->node_attribute->geometry->outer_bounding_box = *outer_box;
+    observed_target->node_attribute->geometry->visible_bounding_box =
+        *visible_box;
   }
   return observed_target;
 }
@@ -304,6 +316,7 @@ void PageTool::Validate(ToolCallback callback) {
     last_observation = tab_data->GetLastObservedPageContent();
   }
 
+  mojom::ToolInvocationPtr invocation;
   if (validation_supported) {
     base::expected<RenderFrameHost*, mojom::ActionResultPtr> target_frame =
         ComputeObservedTargetAndValidateFrame(last_observation, frame);
@@ -314,16 +327,20 @@ void PageTool::Validate(ToolCallback callback) {
           base::BindOnce(std::move(callback), std::move(target_frame).error()));
       return;
     }
-  }
 
-  target_document_ = frame->GetWeakDocumentPtr();
-  if (validation_supported) {
+    invocation = CreateToolInvocation(*frame);
+    if (!invocation) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              std::move(callback),
+              MakeResult(mojom::ActionResultCode::
+                             kFrameLocationChangedSinceObservation)));
+      return;
+    }
     frame->GetRemoteAssociatedInterfaces()->GetInterface(&chrome_render_frame_);
   }
-  mojom::ToolInvocationPtr invocation;
-  if (validation_supported) {
-    invocation = CreateToolInvocation(*frame);
-  }
+  target_document_ = frame->GetWeakDocumentPtr();
 
   // Skip content scanning if no text is being sent to the renderer.
   std::string text = request_->GetTextContentSentToRenderer();
@@ -525,6 +542,12 @@ PageTool::ComputeObservedTargetAndValidateFrame(
     }
   }
 
+  if (!ToMojo(request_->GetTarget(), *frame) ||
+      !request_->ToMojoToolAction(*frame)) {
+    return base::unexpected(MakeResult(
+        mojom::ActionResultCode::kFrameLocationChangedSinceObservation));
+  }
+
   std::optional<TargetNodeInfo> observed_target_node_info =
       FindLastObservedNodeForActionTarget(
           last_observation, request_->GetTarget(), actor_surface_handle_);
@@ -569,8 +592,13 @@ PageTool::ComputeObservedTargetAndValidateFrame(
     }
   }
 
-  observed_target_ =
+  std::optional<mojom::ObservedToolTargetPtr> observed_target =
       ToMojoObservedToolTarget(observed_target_node_info, *frame);
+  if (!observed_target.has_value()) {
+    return base::unexpected(MakeResult(
+        mojom::ActionResultCode::kFrameLocationChangedSinceObservation));
+  }
+  observed_target_ = std::move(*observed_target);
   return &GetMostSpecificTargetFrame(request_->GetTarget(), *frame,
                                      *web_contents, observed_target_node_info);
 }
@@ -579,6 +607,9 @@ mojom::ToolInvocationPtr PageTool::CreateToolInvocation(
     content::RenderFrameHost& frame) {
   auto invocation = actor::mojom::ToolInvocation::New();
   invocation->action = request_->ToMojoToolAction(frame);
+  if (!invocation->action) {
+    return nullptr;
+  }
 
   // For coordinate targets, the model supplies `coordinate_dip` in the local
   // root's DIP coordinate space (see actor.mojom.ToolTarget.coordinate_dip).
@@ -588,21 +619,15 @@ mojom::ToolInvocationPtr PageTool::CreateToolInvocation(
   // into that frame's view coordinate space. The transformed coordinate is
   // still in DIPs; the renderer will later convert DIPs to device pixels
   // (BlinkSpace) for hit testing via WebFrameWidget::DIPsToBlinkSpace().
-  if (std::holds_alternative<gfx::Point>(request_->GetTarget())) {
-    PageTarget transformed_target =
-        gfx::ToRoundedPoint(frame.GetView()->TransformRootPointToViewCoordSpace(
-            gfx::PointF(std::get<gfx::Point>(request_->GetTarget()))));
-    invocation->target = ToMojo(transformed_target);
-  } else {
-    invocation->target = ToMojo(request_->GetTarget());
+  invocation->target = ToMojo(request_->GetTarget(), frame);
+  if (!invocation->target) {
+    return nullptr;
   }
 
   invocation->observed_target = std::move(observed_target_);
 
   invocation->task_id = task_id();
 
-  // ToolRequest params are checked for validity at creation.
-  CHECK(invocation->action);
   return invocation;
 }
 
@@ -665,6 +690,11 @@ void PageTool::Invoke(ToolCallback callback) {
                                   weak_ptr_factory_.GetWeakPtr()));
   } else {
     auto invocation = CreateToolInvocation(frame);
+    if (!invocation) {
+      FinishInvoke(MakeResult(
+          mojom::ActionResultCode::kFrameLocationChangedSinceObservation));
+      return;
+    }
     chrome_render_frame_->InvokeTool(
         std::move(invocation), base::BindOnce(&PageTool::FinishInvoke,
                                               weak_ptr_factory_.GetWeakPtr()));

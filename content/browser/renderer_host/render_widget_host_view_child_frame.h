@@ -190,6 +190,8 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   void DidNavigate() override;
   gfx::PointF TransformRootPointToViewCoordSpace(
       const gfx::PointF& point) override;
+  std::optional<gfx::PointF> TryTransformRootPointToViewCoordSpace(
+      const gfx::PointF& point) override;
   TouchSelectionControllerClientManager*
   GetTouchSelectionControllerClientManager() override;
   void UpdateIntrinsicSizingInfo(

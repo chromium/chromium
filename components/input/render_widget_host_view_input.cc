@@ -4,6 +4,8 @@
 
 #include "components/input/render_widget_host_view_input.h"
 
+#include <optional>
+
 #include "base/notreached.h"
 #include "components/input/render_widget_host_input_event_router.h"
 #include "ui/gfx/geometry/dip_util.h"
@@ -53,6 +55,12 @@ gfx::PointF RenderWidgetHostViewInput::TransformPointToRootCoordSpaceF(
 }
 
 gfx::PointF RenderWidgetHostViewInput::TransformRootPointToViewCoordSpace(
+    const gfx::PointF& point) {
+  return point;
+}
+
+std::optional<gfx::PointF>
+RenderWidgetHostViewInput::TryTransformRootPointToViewCoordSpace(
     const gfx::PointF& point) {
   return point;
 }

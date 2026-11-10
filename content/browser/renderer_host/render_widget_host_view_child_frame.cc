@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 
 #include <algorithm>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -1017,6 +1018,12 @@ bool RenderWidgetHostViewChildFrame::TransformPointToCoordSpaceForView(
 gfx::PointF RenderWidgetHostViewChildFrame::TransformRootPointToViewCoordSpace(
     const gfx::PointF& point) {
   return input_helper_->TransformRootPointToViewCoordSpace(point);
+}
+
+std::optional<gfx::PointF>
+RenderWidgetHostViewChildFrame::TryTransformRootPointToViewCoordSpace(
+    const gfx::PointF& point) {
+  return input_helper_->TryTransformRootPointToViewCoordSpace(point);
 }
 
 bool RenderWidgetHostViewChildFrame::IsRenderWidgetHostViewChildFrame() const {

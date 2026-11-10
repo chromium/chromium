@@ -23,7 +23,11 @@ class RenderFrameHost;
 
 namespace actor {
 
-mojom::ToolTargetPtr ToMojo(const PageTarget& target);
+// Converts `target` into a Mojo `ToolTarget` in `frame`'s view coordinate
+// space. Returns `nullptr` if coordinate transformation into `frame`'s view
+// coordinate space fails.
+mojom::ToolTargetPtr ToMojo(const PageTarget& target,
+                            content::RenderFrameHost& frame);
 // Tool requests targeting a specific, existing document should inherit from
 // this subclass. Being page-scoped implies also being tab-scoped since a page
 // exists inside a tab.
@@ -41,7 +45,9 @@ class PageToolRequest : public TabToolRequest {
   PageToolRequest(const PageToolRequest& other);
 
   // Converts this request into the ToolAction mojo message which can be
-  // executed in the renderer.
+  // executed in the renderer. Returns nullptr if the request parameters cannot
+  // be converted for `frame` (e.g. when coordinate transformation into
+  // `frame`'s view space fails).
   virtual mojom::ToolActionPtr ToMojoToolAction(
       content::RenderFrameHost& frame) const = 0;
 

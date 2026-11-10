@@ -125,8 +125,18 @@ class CONTENT_EXPORT RenderWidgetHostView {
   // Coordinate points received from root frame need to be transformed
   // to the renderer frame's coordinate space. For same site renderer frame this
   // is a no-op; however, coordinate in an out-of-process iframe renderer
-  // process require transformation.
+  // process require transformation. Falls back to returning `point` if the
+  // transformation fails; prefer `TryTransformRootPointToViewCoordSpace()` when
+  // failure must be handled.
   virtual gfx::PointF TransformRootPointToViewCoordSpace(
+      const gfx::PointF& point) = 0;
+
+  // Attempts to transform `point` from the root view's coordinate space to
+  // this view's coordinate space. For top-level views this returns `point`.
+  // For out-of-process child frame views, returns `std::nullopt` if the
+  // transformation cannot be computed (e.g. when the child frame has no active
+  // hit-test region in the root view).
+  virtual std::optional<gfx::PointF> TryTransformRootPointToViewCoordSpace(
       const gfx::PointF& point) = 0;
 
   // Retrieves the native view used to contain plugins and identify the

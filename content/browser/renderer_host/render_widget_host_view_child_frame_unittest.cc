@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <tuple>
 #include <utility>
 
@@ -217,8 +218,18 @@ class MockRenderWidgetHostView : public TestRenderWidgetHostView {
       const gfx::PointF& point,
       input::RenderWidgetHostViewInput* target_view,
       gfx::PointF* transformed_point) override {
-    *transformed_point = point;
+    if (!can_transform_point_) {
+      return false;
+    }
+    *transformed_point = point + transform_offset_;
     return true;
+  }
+
+  void set_can_transform_point(bool can_transform_point) {
+    can_transform_point_ = can_transform_point;
+  }
+  void set_transform_offset(const gfx::Vector2dF& transform_offset) {
+    transform_offset_ = transform_offset;
   }
 
   bool TransformPointToLocalCoordSpace(
@@ -277,6 +288,8 @@ class MockRenderWidgetHostView : public TestRenderWidgetHostView {
   std::u16string last_tooltip_text_;
   gfx::Rect last_tooltip_bounds_;
   bool tooltip_cleared_ = false;
+  bool can_transform_point_ = true;
+  gfx::Vector2dF transform_offset_;
 };
 
 class RenderWidgetHostViewChildFrameTest
@@ -1141,5 +1154,47 @@ TEST_F(RenderWidgetHostViewChildFrameTest, ReportScrollJankStats) {
   connector->SetRootRenderWidgetHostView(nullptr);
 }
 #endif
+
+TEST_F(RenderWidgetHostViewChildFrameTest,
+       TryTransformRootPointToViewCoordSpace) {
+  auto root_view =
+      std::make_unique<testing::NiceMock<MockRenderWidgetHostView>>(
+          widget_host_.get());
+  root_view->set_transform_offset(gfx::Vector2dF(-20.0f, -30.0f));
+
+  RenderWidgetHostViewChildFrame* child_view =
+      RenderWidgetHostViewChildFrame::Create(widget_host_.get(),
+                                             display::ScreenInfos());
+  auto connector = std::make_unique<MockFrameConnector>();
+  connector->SetView(child_view, false);
+  connector->SetRootRenderWidgetHostView(root_view.get());
+  child_view->SetFrameConnector(connector.get());
+
+  constexpr gfx::PointF kRootPoint(100.0f, 150.0f);
+  EXPECT_EQ(gfx::PointF(80.0f, 120.0f),
+            child_view->TryTransformRootPointToViewCoordSpace(kRootPoint));
+
+  // When coordinate transformation fails in the root view,
+  // TryTransformRootPointToViewCoordSpace returns std::nullopt instead of
+  // falling back to the untransformed root point.
+  root_view->set_can_transform_point(false);
+  EXPECT_EQ(std::nullopt,
+            child_view->TryTransformRootPointToViewCoordSpace(kRootPoint));
+  EXPECT_EQ(kRootPoint,
+            child_view->TransformRootPointToViewCoordSpace(kRootPoint));
+
+  // When detached from the root view or frame connector,
+  // TryTransformRootPointToViewCoordSpace returns std::nullopt.
+  root_view->set_can_transform_point(true);
+  connector->SetRootRenderWidgetHostView(nullptr);
+  EXPECT_EQ(std::nullopt,
+            child_view->TryTransformRootPointToViewCoordSpace(kRootPoint));
+
+  connector->SetView(nullptr, false);
+  EXPECT_EQ(std::nullopt,
+            child_view->TryTransformRootPointToViewCoordSpace(kRootPoint));
+
+  child_view->DestroyOrDefer();
+}
 
 }  // namespace content

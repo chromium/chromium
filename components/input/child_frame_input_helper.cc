@@ -4,6 +4,8 @@
 
 #include "components/input/child_frame_input_helper.h"
 
+#include <optional>
+
 #include "base/trace_event/trace_event.h"
 #include "components/input/features.h"
 #include "components/input/render_input_router.h"
@@ -124,19 +126,25 @@ gfx::PointF ChildFrameInputHelper::TransformPointToRootCoordSpace(
 
 gfx::PointF ChildFrameInputHelper::TransformRootPointToViewCoordSpace(
     const gfx::PointF& point) {
+  return TryTransformRootPointToViewCoordSpace(point).value_or(point);
+}
+
+std::optional<gfx::PointF>
+ChildFrameInputHelper::TryTransformRootPointToViewCoordSpace(
+    const gfx::PointF& point) {
   if (!delegate_) {
-    return point;
+    return std::nullopt;
   }
 
   auto* root_rwhv = delegate_->GetRootViewInput();
   if (!root_rwhv) {
-    return point;
+    return std::nullopt;
   }
 
   gfx::PointF transformed_point;
   if (!root_rwhv->TransformPointToCoordSpaceForView(point, view_,
                                                     &transformed_point)) {
-    return point;
+    return std::nullopt;
   }
   return transformed_point;
 }

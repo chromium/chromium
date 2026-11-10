@@ -17,8 +17,10 @@
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
+#include "ui/gfx/geometry/point_conversions.h"
 
 namespace actor {
 
@@ -26,19 +28,27 @@ using content::RenderFrameHost;
 using content::WebContents;
 using optimization_guide::DocumentIdentifierUserData;
 
-namespace {
-constexpr absl::Overload ToMojoFn{
-    [](const gfx::Point& pt) -> mojom::ToolTargetPtr {
-      return actor::mojom::ToolTarget::NewCoordinateDip(pt);
-    },
-    [](const DomNode& node) -> mojom::ToolTargetPtr {
-      return actor::mojom::ToolTarget::NewDomNodeId(node.node_id);
-    },
-};
-}  // namespace
-
-mojom::ToolTargetPtr ToMojo(const PageTarget& target) {
-  return std::visit(ToMojoFn, target);
+mojom::ToolTargetPtr ToMojo(const PageTarget& target, RenderFrameHost& frame) {
+  return std::visit(
+      absl::Overload{
+          [&frame](const gfx::Point& pt) -> mojom::ToolTargetPtr {
+            content::RenderWidgetHostView* view = frame.GetView();
+            if (!view) {
+              return nullptr;
+            }
+            std::optional<gfx::PointF> transformed_pt =
+                view->TryTransformRootPointToViewCoordSpace(gfx::PointF(pt));
+            if (!transformed_pt.has_value()) {
+              return nullptr;
+            }
+            return actor::mojom::ToolTarget::NewCoordinateDip(
+                gfx::ToRoundedPoint(*transformed_pt));
+          },
+          [](const DomNode& node) -> mojom::ToolTargetPtr {
+            return actor::mojom::ToolTarget::NewDomNodeId(node.node_id);
+          },
+      },
+      target);
 }
 
 PageToolRequest::PageToolRequest(ActorSurfaceHandle actor_surface_handle,

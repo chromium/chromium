@@ -76,15 +76,9 @@ std::string_view DragAndReleaseToolRequest::Name() const {
 mojom::ToolActionPtr DragAndReleaseToolRequest::ToMojoToolAction(
     content::RenderFrameHost& frame) const {
   auto drag = mojom::DragAndReleaseAction::New();
-
-  if (std::holds_alternative<gfx::Point>(to_target_)) {
-    const gfx::Point& to_point = std::get<gfx::Point>(to_target_);
-    PageTarget transformed_to_target =
-        gfx::ToRoundedPoint(frame.GetView()->TransformRootPointToViewCoordSpace(
-            gfx::PointF(to_point)));
-    drag->to_target = ToMojo(transformed_to_target);
-  } else {
-    drag->to_target = ToMojo(to_target_);
+  drag->to_target = ToMojo(to_target_, frame);
+  if (!drag->to_target) {
+    return nullptr;
   }
 
   return mojom::ToolAction::NewDragAndRelease(std::move(drag));

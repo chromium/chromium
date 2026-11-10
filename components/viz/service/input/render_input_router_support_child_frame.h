@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_SERVICE_INPUT_RENDER_INPUT_ROUTER_SUPPORT_CHILD_FRAME_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "components/input/child_frame_input_helper.h"
@@ -49,6 +50,8 @@ class VIZ_SERVICE_EXPORT RenderInputRouterSupportChildFrame
   void PreProcessTouchEvent(const blink::WebTouchEvent& event) override {}
   void PreProcessMouseEvent(const blink::WebMouseEvent& event) override;
   gfx::PointF TransformRootPointToViewCoordSpace(
+      const gfx::PointF& point) override;
+  std::optional<gfx::PointF> TryTransformRootPointToViewCoordSpace(
       const gfx::PointF& point) override;
   gfx::PointF TransformPointToRootCoordSpaceF(
       const gfx::PointF& point) const override;

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_INPUT_CHILD_FRAME_INPUT_HELPER_H_
 #define COMPONENTS_INPUT_CHILD_FRAME_INPUT_HELPER_H_
 
+#include <optional>
+
 #include "components/input/render_widget_host_view_input.h"
 
 namespace input {
@@ -42,6 +44,8 @@ class COMPONENT_EXPORT(INPUT) ChildFrameInputHelper {
   gfx::PointF TransformPointToRootCoordSpace(const gfx::PointF& point);
 
   gfx::PointF TransformRootPointToViewCoordSpace(const gfx::PointF& point);
+  std::optional<gfx::PointF> TryTransformRootPointToViewCoordSpace(
+      const gfx::PointF& point);
 
   bool TransformPointToCoordSpaceForView(
       const gfx::PointF& point,

@@ -4,6 +4,8 @@
 
 #include "components/viz/service/input/render_input_router_support_child_frame.h"
 
+#include <optional>
+
 #include "base/trace_event/trace_event.h"
 #include "components/input/features.h"
 #include "components/input/render_widget_host_input_event_router.h"
@@ -79,6 +81,12 @@ gfx::PointF
 RenderInputRouterSupportChildFrame::TransformRootPointToViewCoordSpace(
     const gfx::PointF& point) {
   return input_helper_->TransformRootPointToViewCoordSpace(point);
+}
+
+std::optional<gfx::PointF>
+RenderInputRouterSupportChildFrame::TryTransformRootPointToViewCoordSpace(
+    const gfx::PointF& point) {
+  return input_helper_->TryTransformRootPointToViewCoordSpace(point);
 }
 
 gfx::PointF RenderInputRouterSupportChildFrame::TransformPointToRootCoordSpaceF(
