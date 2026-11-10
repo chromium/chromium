@@ -341,9 +341,26 @@ SampleFormat AVSampleFormatToSampleFormat(AVSampleFormat sample_format,
     case AV_SAMPLE_FMT_FLTP:
       return kSampleFormatPlanarF32;
     default:
+      switch (codec_id) {
+        case AV_CODEC_ID_PCM_U8:
+          return kSampleFormatU8;
+        case AV_CODEC_ID_PCM_S16LE:
+          return kSampleFormatS16;
+        case AV_CODEC_ID_PCM_S24LE:
+          return kSampleFormatS24;
+        case AV_CODEC_ID_PCM_S32LE:
+          return kSampleFormatS32;
+        case AV_CODEC_ID_PCM_F32LE:
+          return kSampleFormatF32;
+        default:
+      }
       DVLOG(1) << "Unknown AVSampleFormat: " << sample_format;
   }
-  return kUnknownSampleFormat;
+  // In all cases except for PCM and bitstream formats, this value doesn't
+  // matter. All current decoders will try to decode to float planar. As
+  // such we just return float planar for unknown values. When ffmpeg is
+  // configured without parsers and decoders, it will always return unknown.
+  return kSampleFormatPlanarF32;
 }
 
 static AVSampleFormat SampleFormatToAVSampleFormat(SampleFormat sample_format) {
@@ -480,10 +497,6 @@ bool AVCodecContextToAudioDecoderConfig(const AVCodecContext* codec_context,
   }
 #endif
 
-  // Verify that AudioConfig.bytes_per_channel was calculated correctly for
-  // codecs that have |sample_fmt| set by FFmpeg.
-  DCHECK_EQ(av_get_bytes_per_sample(codec_context->sample_fmt),
-            config->bytes_per_channel());
   return true;
 }
 

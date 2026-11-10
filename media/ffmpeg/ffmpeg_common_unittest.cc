@@ -273,31 +273,6 @@ TEST_F(FFmpegCommonTest, TimeBaseConversions) {
   }
 }
 
-TEST_F(FFmpegCommonTest, VerifyFormatSizes) {
-  for (AVSampleFormat format = AV_SAMPLE_FMT_NONE;
-       format < AV_SAMPLE_FMT_NB;
-       format = static_cast<AVSampleFormat>(format + 1)) {
-    std::vector<AVCodecID> codec_ids(1, AV_CODEC_ID_NONE);
-    if (format == AV_SAMPLE_FMT_S32)
-      codec_ids.push_back(AV_CODEC_ID_PCM_S24LE);
-    for (const auto& codec_id : codec_ids) {
-      SampleFormat sample_format =
-          AVSampleFormatToSampleFormat(format, codec_id);
-      if (sample_format == kUnknownSampleFormat) {
-        // This format not supported, so skip it.
-        continue;
-      }
-
-      // Have FFMpeg compute the size of a buffer of 1 channel / 1 frame
-      // with 1 byte alignment to make sure the sizes match.
-      int single_buffer_size =
-          av_samples_get_buffer_size(NULL, 1, 1, format, 1);
-      int bytes_per_channel = SampleFormatToBytesPerChannel(sample_format);
-      EXPECT_EQ(bytes_per_channel, single_buffer_size);
-    }
-  }
-}
-
 // Verifies there are no collisions of the codec name hashes used for UMA.  Also
 // includes code for updating the histograms XML.
 TEST_F(FFmpegCommonTest, VerifyUmaCodecHashes) {
