@@ -91,13 +91,12 @@ TEST_F(LevelUpServiceTest, TestMilestoneProgression) {
   // Complete 8th task -> Should reach Level 3!
   service_->MarkTaskCompleted(TaskType::kPasswordCheckup);
   EXPECT_EQ(service_->GetCurrentLevel(), 3);
-  // Reaching Level 4 requires all 11 tasks. 11 - 8 = 3 remaining.
-  EXPECT_EQ(service_->GetTasksRemainingForNextLevel(), std::make_pair(3, 3));
+  // Reaching Level 4 requires all 10 tasks. 10 - 8 = 2 remaining.
+  EXPECT_EQ(service_->GetTasksRemainingForNextLevel(), std::make_pair(2, 2));
 
-  // Complete remaining 3 tasks (total 11).
+  // Complete remaining 2 tasks (total 10).
   service_->MarkTaskCompleted(TaskType::kLensWebsiteSearch);
   service_->MarkTaskCompleted(TaskType::kAISearch);
-  service_->MarkTaskCompleted(TaskType::kLensCameraSearch);
   EXPECT_EQ(service_->GetCurrentLevel(), 4);
   EXPECT_EQ(service_->GetTasksRemainingForNextLevel(), std::make_pair(0, 0));
 }
@@ -347,7 +346,7 @@ TEST_F(LevelUpServiceTest, TestGetRecommendedTasksCategoryRecency) {
 // Tests that GetRecommendedTasks backfills with completed tasks when almost all
 // tasks are completed.
 TEST_F(LevelUpServiceTest, TestGetRecommendedTasksBackfillCompleted) {
-  // Complete all 11 tasks.
+  // Complete all 10 tasks.
   const auto& tasks = service_->GetTasks();
   for (const auto& [type, info] : tasks) {
     service_->MarkTaskCompleted(type);
