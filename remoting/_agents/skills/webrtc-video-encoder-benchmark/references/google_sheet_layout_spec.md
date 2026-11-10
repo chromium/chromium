@@ -67,9 +67,14 @@ appear in this exact order:
 ### Top Metadata Block (`Rows 3–7`, `Col A`)
 - **`A3`**: `CPU: <CPU model string>`
 - **`A4`**: `Host OS / Machine: <OS and architecture>`
-- **`A5`**: `Harness: webrtc_video_encoder_benchmark (Release static, is_debug=false)`
-- **`A6`**: `Scenario <N>: <scenario_name> — <Description> (<Updated Area>% Updated Area)`
-- **`A7`**: Clickable `=HYPERLINK("https://source.chromium.org/chromium/chromium/src/+/main:remoting/test/frame_generator/scenarios/<scenario>.html", "Scenario HTML: //remoting/test/frame_generator/scenarios/<scenario>.html")`
+- **`A5`**:
+  `Harness: webrtc_video_encoder_benchmark (Release static, is_debug=false)`
+- **`A6`**:
+  `Scenario <N>: <scenario_name> — <Description> (<Updated Area>% Updated Area)`
+- **`A7`**: Clickable `=HYPERLINK(<url>, <label>)` pointing to
+  `https://source.chromium.org/chromium/chromium/src/+/main:remoting/test/frame_generator/scenarios/<scenario>.html`
+  with label
+  `"Scenario HTML: //remoting/test/frame_generator/scenarios/<scenario>.html"`.
   - **Embedded Source Note**: Attach a **Cell Note** (`repeatCell` `note` field)
     on `A7` containing the HTML/CSS/JS source of
     `//remoting/test/frame_generator/scenarios/<scenario>.html` so hovering
@@ -77,48 +82,66 @@ appear in this exact order:
 
 ### Block 1: Landscape Resolutions (`1920x1080`, `2560x1440`, `3840x2160`)
 - **Stacked 6-Row Header (`Rows 8–13`, 0-based `7..13`)**:
-  - **`Row 8`**: `CRD Host version` — **MUST** use the Chrome `MAJOR.MINOR.BUILD.PATCH`
-    version read from `//chrome/VERSION` (e.g., `159.0.8130.0`), **not** a git
-    commit hash.
+  - **`Row 8`**: `CRD Host version` — **MUST** use the Chrome
+    `MAJOR.MINOR.BUILD.PATCH` version read from `//chrome/VERSION` (e.g.,
+    `159.0.8130.0`), **not** a git commit hash.
   - **`Row 9`**: `Encoder type/profile` (`VP8`, `VP9`, `AV1`)
-  - **`Row 10`**: `Profile` (`Profile-0`, `Profile-1`, `Profile-0 (AM)`, `Profile-1 (AM)`)
+  - **`Row 10`**: `Profile` (`Profile-0`, `Profile-1`, `Profile-0 (AM)`,
+    `Profile-1 (AM)`)
   - **`Row 11`**: `Encoder speed` (`16`, `9`, `11`)
   - **`Row 12`**: `FPS target` (`30.0`)
-  - **`Row 13`**: `Resolution` (`1920x1080` in `B..H`, `2560x1440` in `J..P`, `3840x2160` in `R..X`)
+  - **`Row 13`**: `Resolution` (`1920x1080` in `B..H`, `2560x1440` in `J..P`,
+    `3840x2160` in `R..X`)
 - **Dark Gray Separator Bar (`Row 14`, 0-based `13..14`, height `12px`)**:
   - Fill `B14:H14`, `J14:P14`, `R14:X14` with Dark Gray (`#595959`,
     `{red: 0.35, green: 0.35, blue: 0.35}`).
-- **Headline Latency Rows (`Rows 15–16`, 0-based `14..16`, bold, `0.00` format)**:
+- **Headline Latency Rows (`Rows 15–16`, 0-based `14..16`, bold, `0.00`
+  format)**:
   - **`Row 15`**: `Average Encode Time (ms)` (`latency_delta.mean_ms`)
   - **`Row 16`**: `Median encode time (ms)` (`latency_delta.p50_ms`)
 - **Medium Blue Separator Bar (`Row 17`, 0-based `16..17`, height `12px`)**:
   - Fill `B17:H17`, `J17:P17`, `R17:X17` with Medium Blue (`#4A86E8`,
     `{red: 0.290, green: 0.525, blue: 0.910}`).
-- **Detailed Telemetry Rows (`Rows 18–26`, 0-based `17..26`)**:
+- **Detailed Telemetry Rows (`Rows 18–29`, 0-based `17..29`)**:
   - **`Row 18`**: `P90 encode time (ms)` (`latency_delta.p90_ms`, `0.00`)
   - **`Row 19`**: `P99 encode time (ms)` (`latency_delta.p99_ms`, `0.00`)
-  - **`Row 20`**: `Keyframe encode time (ms)` (`latency_keyframe.max_ms`, `0.00`)
-  - **`Row 21`**: `All frames avg encode time (ms)` (`latency_all.mean_ms`, `0.00`)
+  - **`Row 20`**: `Keyframe encode time (ms)` (`latency_keyframe.max_ms`,
+    `0.00`)
+  - **`Row 21`**: `All frames avg encode time (ms)` (`latency_all.mean_ms`,
+    `0.00`)
   - **`Row 22`**: `Encoder throughput (FPS)` (`encoder_fps`, `0.0`)
   - **`Row 23`**: `Target bitrate (kbps)` (`target_bitrate_kbps`, `#,##0`)
   - **`Row 24`**: `Achieved bitrate (kbps)` (`achieved_bitrate_kbps`, `0.0`)
-  - **`Row 25`**: `Delta QP (Avg / Max)` (`"<avg_qp> / <max_qp>"` from `quantizer_delta`)
+  - **`Row 25`**: `Delta QP (Avg / Max)` (`"<avg_qp> / <max_qp>"` from
+    `quantizer_delta`)
   - **`Row 26`**: `Updated screen area (%)` (`updated_area_percent`, `0.00`)
+  - **`Row 27`** *(Optional / Quality-Enabled Runs)*:
+    `Decoded PSNR Mean / Final (dB)`
+    (`"<mean_psnr_db> / <final_frame_psnr_db>"` from `quality`)
+  - **`Row 28`** *(Optional / Quality-Enabled Runs)*:
+    `Dirty-Region Min PSNR (dB)` (`quality.dirty_region_min_psnr_db`, `0.00`)
+  - **`Row 29`** *(Optional / Quality-Enabled Runs)*:
+    `Decoded SSIM (Mean / Final)` (`"<mean_ssim> / <final_frame_ssim>"` from
+    `quality`)
 
 ### Block 2: Portrait Resolutions (`1080x1920`, `1440x2560`, `2160x3840`)
-- **`Rows 27–28`**: Blank separator rows.
-- **`Rows 29–34` (0-based `28..34`)**: Stacked 6-row header (`Resolution` =
+- **`Rows 30–31`**: Blank separator rows.
+- **`Rows 32–37` (0-based `31..37`)**: Stacked 6-row header (`Resolution` =
   `1080x1920` in `B..H`, `1440x2560` in `J..P`, `2160x3840` in `R..X`).
-- **`Row 35` (0-based `34..35`, height `12px`)**: Dark Gray separator bar (`#595959`).
-- **`Rows 36–37` (0-based `35..37`)**: `Average Encode Time (ms)` and
+- **`Row 38` (0-based `37..38`, height `12px`)**: Dark Gray separator bar
+  (`#595959`).
+- **`Rows 39–40` (0-based `38..40`)**: `Average Encode Time (ms)` and
   `Median encode time (ms)` (bold, `0.00`).
-- **`Row 38` (0-based `37..38`, height `12px`)**: Medium Blue separator bar (`#4A86E8`).
-- **`Rows 39–47` (0-based `38..47`)**: Detailed telemetry rows matching `Rows 18–26`.
+- **`Row 41` (0-based `40..41`, height `12px`)**: Medium Blue separator bar
+  (`#4A86E8`).
+- **`Rows 42–53` (0-based `41..53`)**: Detailed telemetry rows matching
+  `Rows 18–29`.
 
-> **Formatting Tip**: Format Block 1 on `sheetId: 1` first, then use `copyPaste`
-> with `pasteType: "PASTE_FORMAT"` to copy Block 1's formatting onto Block 2 of
-> `sheetId: 1` (`startRowIndex: 7..26 -> 28..47`), and then copy the entire
-> sheet formatting (`startRowIndex: 0..48`) from `sheetId: 1` to `sheetId: 2..8`.
+> **Formatting Tip**: Format Block 1 on `sheetId: 1` first, then use
+> `copyPaste` with `pasteType: "PASTE_FORMAT"` to copy Block 1's formatting
+> onto Block 2 of `sheetId: 1` (`startRowIndex: 7..29 -> 31..53`), and then
+> copy the entire sheet formatting (`startRowIndex: 0..54`) from `sheetId: 1`
+> to `sheetId: 2..8`.
 
 ## 5. Row Layout for `Summary & Overview` Tab (`sheetId: 10`)
 
@@ -141,6 +164,11 @@ appear in this exact order:
   - `Rows 36–43`: Per-scenario Portrait `Average Encode Time (ms)` rows.
 - **`Test Scenario Info` Table (`Rows 46–54`, `Cols A..F`, 0-based `45..54`)**:
   - `Row 46` Header (Light Green `#D9EAD3`, bold):
-    `["Test Scenario Info", "Frames", "FPS Target", "Updated Area (%)", "Workload Description", "Scenario HTML File"]`
+    ```json
+    [
+      "Test Scenario Info", "Frames", "FPS Target",
+      "Updated Area (%)", "Workload Description", "Scenario HTML File"
+    ]
+    ```
   - `Rows 47–54`: Scenario metadata rows with clickable `=HYPERLINK(...)` in
     `Col F` pointing to each scenario's `.html` file in Chromium Code Search.
