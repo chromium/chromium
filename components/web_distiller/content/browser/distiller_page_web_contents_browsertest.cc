@@ -4,6 +4,8 @@
 
 #include "components/web_distiller/content/browser/distiller_page_web_contents.h"
 
+#include <memory>
+#include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -11,9 +13,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/strings/grit/components_strings.h"
@@ -38,8 +42,11 @@
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/gurl.h"
 
 using content::ContentBrowserTest;
 using testing::ContainsRegex;
@@ -47,6 +54,113 @@ using testing::HasSubstr;
 using testing::Not;
 
 namespace {
+
+std::unique_ptr<net::test_server::HttpResponse> HandleTestRequests(
+    const net::test_server::HttpRequest& request) {
+  if (request.GetURL().path() == "/hung") {
+    return std::make_unique<net::test_server::HungResponse>();
+  }
+  if (request.GetURL().path() == "/client-redirect-js") {
+    std::string dest =
+        base::UnescapeBinaryURLComponent(request.GetURL().query());
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_code(net::HTTP_OK);
+    http_response->set_content_type("text/html");
+    http_response->set_content(
+        "<!doctype html><script>window.location.href = \"" + dest +
+        "\";</script><script src=\"/hung\"></script>");
+    return http_response;
+  }
+  if (request.GetURL().path() == "/post-dcl-redirect") {
+    std::string dest =
+        base::UnescapeBinaryURLComponent(request.GetURL().query());
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_code(net::HTTP_OK);
+    http_response->set_content_type("text/html");
+    http_response->set_content(
+        "<!doctype html><html><head><title>Original Article Title</title>"
+        "<script>document.addEventListener('DOMContentLoaded', () => {"
+        " window.location.href = \"" +
+        dest +
+        "\"; });</script></head><body><div>"
+        "<p>Original article paragraph text. Lorem ipsum dolor sit amet, at "
+        "alia aliquip vel. Quas inani labore an vel. Sed an nemore minimum "
+        "accusata. Sint inermis tacimates est ex, ad movet iracundia mei, "
+        "delicata iracundia laboramus ei eos. Illud principes complectitur te "
+        "nec, ius alienum insolens ea, cu quo oratio omnesque.</p>"
+        "<p>Lorem ipsum dolor sit amet, at alia aliquip vel. Quas inani "
+        "labore an vel. Sed an nemore minimum accusata. Sint inermis "
+        "tacimates est ex, ad movet iracundia mei, delicata iracundia "
+        "laboramus ei eos. Illud principes complectitur te nec, ius alienum "
+        "insolens ea, cu quo oratio omnesque.</p>"
+        "</div></body></html>");
+    return http_response;
+  }
+  if (request.GetURL().path() == "/hung-dom") {
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_code(net::HTTP_OK);
+    http_response->set_content_type("text/html");
+    http_response->set_content(
+        "<!doctype html><script src=\"/hung\"></script>");
+    return http_response;
+  }
+  if (request.GetURL().path() == "/same-document-nav") {
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_code(net::HTTP_OK);
+    http_response->set_content_type("text/html");
+    http_response->set_content(
+        "<!doctype html><html><head><title>Test Page Title</title>"
+        "<script>"
+        "history.replaceState(null, '', '/same-document-nav?cleaned=1');"
+        "window.location.hash = '#section';"
+        "</script></head><body><div>"
+        "<p>Lorem ipsum dolor sit amet, at alia aliquip vel. Quas inani "
+        "labore an vel. Sed an nemore minimum accusata. Sint inermis "
+        "tacimates est ex, ad movet iracundia mei, delicata iracundia "
+        "laboramus ei eos. Illud principes complectitur te nec, ius alienum "
+        "insolens ea, cu quo oratio omnesque.</p>"
+        "<p>Lorem ipsum dolor sit amet, at alia aliquip vel. Quas inani "
+        "labore an vel. Sed an nemore minimum accusata. Sint inermis "
+        "tacimates est ex, ad movet iracundia mei, delicata iracundia "
+        "laboramus ei eos. Illud principes complectitur te nec, ius alienum "
+        "insolens ea, cu quo oratio omnesque.</p>"
+        "</div></body></html>");
+    return http_response;
+  }
+  if (request.GetURL().path() == "/csp-sandbox-article") {
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_code(net::HTTP_OK);
+    http_response->set_content_type("text/html");
+    // `sandbox` without `allow-same-origin` commits the document with a unique
+    // opaque origin even though its URL matches `distill_url_`. `allow-scripts`
+    // models real sandboxed article pages whose main-world scripts still run
+    // while opaque (isolated-world distillation scripts also run regardless via
+    // `kExecuteScriptWhenScriptsDisabled`).
+    http_response->AddCustomHeader("Content-Security-Policy",
+                                   "sandbox allow-scripts");
+    http_response->set_content(
+        "<!doctype html><html><head><title>Test Page Title</title></head>"
+        "<body><div>"
+        "<p>Lorem ipsum dolor sit amet, at alia aliquip vel. Quas inani "
+        "labore an vel. Sed an nemore minimum accusata. Sint inermis "
+        "tacimates est ex, ad movet iracundia mei, delicata iracundia "
+        "laboramus ei eos. Illud principes complectitur te nec, ius alienum "
+        "insolens ea, cu quo oratio omnesque.</p>"
+        "<p>Lorem ipsum dolor sit amet, at alia aliquip vel. Quas inani "
+        "labore an vel. Sed an nemore minimum accusata. Sint inermis "
+        "tacimates est ex, ad movet iracundia mei, delicata iracundia "
+        "laboramus ei eos. Illud principes complectitur te nec, ius alienum "
+        "insolens ea, cu quo oratio omnesque.</p>"
+        "</div></body></html>");
+    return http_response;
+  }
+  return nullptr;
+}
 
 // Helper class to know how far in the loading process the current WebContents
 // has come. It will call the callback either after
@@ -107,6 +221,8 @@ class DistillerPageWebContentsTest : public ContentBrowserTest {
             base::BindRepeating(&web_distiller::DistillerPageWebContents::
                                     MaybeCreateAndAddNavigationThrottle));
     AddComponentsResources();
+    embedded_test_server()->RegisterRequestHandler(
+        base::BindRepeating(&HandleTestRequests));
     SetUpTestServer(embedded_test_server());
     ContentBrowserTest::SetUpOnMainThread();
   }
@@ -158,11 +274,64 @@ class TestDistillerPageWebContents : public DistillerPageWebContents {
     EXPECT_TRUE(GetUserDataForTesting());
   }
 
+  void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override {
+    DistillerPageWebContents::DOMContentLoaded(render_frame_host);
+    MaybeInterceptJavaScriptExecution();
+  }
+
+  void SetNavigateDuringJavaScriptUrl(const GURL& url) {
+    navigate_during_js_url_ = url;
+  }
+
   bool new_web_contents_created() { return new_web_contents_created_; }
 
+ protected:
+  void DistillPageImpl(const GURL& url, const std::string& script) override {
+    DistillerPageWebContents::DistillPageImpl(url, script);
+    MaybeInterceptJavaScriptExecution();
+  }
+
  private:
+  void MaybeInterceptJavaScriptExecution() {
+    if (!navigate_during_js_url_.is_valid() || state_ != EXECUTING_JAVASCRIPT) {
+      return;
+    }
+    GURL nav_url = std::exchange(navigate_during_js_url_, GURL());
+    // Replace the in-flight isolated-world callback so a cross-document
+    // navigation deterministically commits after ExecuteJavaScript() has
+    // started (and stopped observing) but before OnWebContentsDistillationDone
+    // consumes the result.
+    weak_factory_.InvalidateWeakPtrs();
+    const GURL page_url = TargetRenderFrameHost().GetLastCommittedURL();
+    const base::TimeTicks javascript_start = base::TimeTicks::Now();
+    RunIsolatedJavaScript(
+        &TargetRenderFrameHost(), script_,
+        base::BindOnce(
+            &TestDistillerPageWebContents::NavigateBeforeDeliveringResult,
+            test_weak_factory_.GetWeakPtr(), nav_url, page_url,
+            javascript_start));
+  }
+
+  void NavigateBeforeDeliveringResult(const GURL& nav_url,
+                                      const GURL& page_url,
+                                      base::TimeTicks javascript_start,
+                                      base::Value value) {
+    content::WebContents* web_contents = source_page_handle_->web_contents();
+    post_js_nav_helper_ = std::make_unique<WebContentsMainFrameHelper>(
+        web_contents,
+        base::BindOnce(&DistillerPageWebContents::OnWebContentsDistillationDone,
+                       weak_factory_.GetWeakPtr(), page_url, javascript_start,
+                       std::move(value)),
+        /*wait_for_document_loaded=*/false);
+    web_contents->GetController().LoadURL(
+        nav_url, content::Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());
+  }
+
   bool expect_new_web_contents_;
   bool new_web_contents_created_;
+  GURL navigate_during_js_url_;
+  std::unique_ptr<WebContentsMainFrameHelper> post_js_nav_helper_;
+  base::WeakPtrFactory<TestDistillerPageWebContents> test_weak_factory_{this};
 };
 
 #if BUILDFLAG(IS_WIN)
@@ -377,6 +546,78 @@ IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
   EXPECT_EQ("", distiller_result_->title());
 }
 
+IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
+                       DistillerContentsIgnoreClientRedirects) {
+  GURL article_url(embedded_test_server()->GetURL(kSimpleArticlePath));
+  std::string redirect_path = "/client-redirect-js?" + article_url.spec();
+
+  DistillerPageWebContents distiller_page(
+      shell()->web_contents()->GetBrowserContext(),
+      shell()->web_contents()->GetContainerBounds().size(),
+      std::unique_ptr<SourcePageHandleWebContents>());
+  distiller_page_ = &distiller_page;
+
+  base::RunLoop run_loop;
+  DistillPage(run_loop.QuitClosure(), redirect_path);
+  run_loop.Run();
+
+  // Client-side redirects in the hidden distillation WebContents must be
+  // blocked so cross-site pages cannot be loaded and distilled.
+  EXPECT_EQ("", distiller_result_->title());
+}
+
+IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
+                       DistillerContentsKeepOriginalPageOnPostDclRedirect) {
+  GURL dest_url(embedded_test_server()->GetURL(kSimpleArticlePath));
+  std::string redirect_path = "/post-dcl-redirect?" + dest_url.spec();
+
+  DistillerPageWebContents distiller_page(
+      shell()->web_contents()->GetBrowserContext(),
+      shell()->web_contents()->GetContainerBounds().size(),
+      std::unique_ptr<SourcePageHandleWebContents>());
+  distiller_page_ = &distiller_page;
+
+  base::RunLoop run_loop;
+  DistillPage(run_loop.QuitClosure(), redirect_path);
+  run_loop.Run();
+
+  EXPECT_EQ("Original Article Title", distiller_result_->title());
+  EXPECT_THAT(distiller_result_->html(),
+              HasSubstr("Original article paragraph text"));
+}
+
+IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
+                       DistillerContentsAllowSameDocumentNavigation) {
+  DistillerPageWebContents distiller_page(
+      shell()->web_contents()->GetBrowserContext(),
+      shell()->web_contents()->GetContainerBounds().size(),
+      std::unique_ptr<SourcePageHandleWebContents>());
+  distiller_page_ = &distiller_page;
+
+  base::RunLoop run_loop;
+  DistillPage(run_loop.QuitClosure(), "/same-document-nav?utm_source=test");
+  run_loop.Run();
+
+  EXPECT_EQ("Test Page Title", distiller_result_->title());
+  EXPECT_THAT(distiller_result_->html(), HasSubstr("Lorem ipsum"));
+}
+
+IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
+                       DistillerContentsAllowSandboxedPage) {
+  DistillerPageWebContents distiller_page(
+      shell()->web_contents()->GetBrowserContext(),
+      shell()->web_contents()->GetContainerBounds().size(),
+      std::unique_ptr<SourcePageHandleWebContents>());
+  distiller_page_ = &distiller_page;
+
+  base::RunLoop run_loop;
+  DistillPage(run_loop.QuitClosure(), "/csp-sandbox-article");
+  run_loop.Run();
+
+  EXPECT_EQ("Test Page Title", distiller_result_->title());
+  EXPECT_THAT(distiller_result_->html(), HasSubstr("Lorem ipsum"));
+}
+
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_UsingCurrentWebContentsWrongUrl \
   DISABLED_UsingCurrentWebContentsWrongUrl
@@ -456,6 +697,106 @@ void DistillerPageWebContentsTest::RunUseCurrentWebContentsTest(
 
   // Sanity check of distillation process.
   EXPECT_EQ(expect_new_web_contents, distiller_page.new_web_contents_created());
+}
+
+IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
+                       UsingCurrentWebContentsNavigatesBeforeReady) {
+  content::WebContents* current_web_contents = shell()->web_contents();
+  base::RunLoop url_loaded_runner;
+  WebContentsMainFrameHelper main_frame_loaded(
+      current_web_contents, url_loaded_runner.QuitClosure(),
+      /*wait_for_document_loaded=*/false);
+  current_web_contents->GetController().LoadURL(
+      embedded_test_server()->GetURL("/hung-dom"), content::Referrer(),
+      ui::PAGE_TRANSITION_TYPED, std::string());
+  url_loaded_runner.Run();
+
+  auto source_page_handle = std::make_unique<SourcePageHandleWebContents>(
+      current_web_contents, /*owned=*/false);
+  TestDistillerPageWebContents distiller_page(
+      current_web_contents->GetBrowserContext(),
+      current_web_contents->GetContainerBounds().size(),
+      std::move(source_page_handle), /*expect_new_web_contents=*/false);
+  distiller_page_ = &distiller_page;
+
+  base::RunLoop run_loop;
+  DistillPage(run_loop.QuitClosure(), "/hung-dom");
+
+  // Navigate the observed WebContents to another URL before DOMContentLoaded
+  // fires for the original page. Distillation must fail rather than distilling
+  // the new URL.
+  current_web_contents->GetController().LoadURL(
+      embedded_test_server()->GetURL(kSimpleArticlePath), content::Referrer(),
+      ui::PAGE_TRANSITION_TYPED, std::string());
+  run_loop.Run();
+
+  EXPECT_FALSE(distiller_page.new_web_contents_created());
+  EXPECT_EQ("", distiller_result_->title());
+}
+
+IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
+                       UsingCurrentWebContentsNavigatesDuringJavaScript) {
+  content::WebContents* current_web_contents = shell()->web_contents();
+  auto source_page_handle = std::make_unique<SourcePageHandleWebContents>(
+      current_web_contents, /*owned=*/false);
+  TestDistillerPageWebContents distiller_page(
+      current_web_contents->GetBrowserContext(),
+      current_web_contents->GetContainerBounds().size(),
+      std::move(source_page_handle), /*expect_new_web_contents=*/false);
+  distiller_page.SetNavigateDuringJavaScriptUrl(
+      embedded_test_server()->GetURL(kVideoArticlePath));
+  distiller_page_ = &distiller_page;
+
+  base::RunLoop url_loaded_runner;
+  WebContentsMainFrameHelper main_frame_loaded(
+      current_web_contents, url_loaded_runner.QuitClosure(),
+      /*wait_for_document_loaded=*/false);
+  current_web_contents->GetController().LoadURL(
+      embedded_test_server()->GetURL(kSimpleArticlePath), content::Referrer(),
+      ui::PAGE_TRANSITION_TYPED, std::string());
+  url_loaded_runner.Run();
+
+  base::RunLoop run_loop;
+  DistillPage(run_loop.QuitClosure(), kSimpleArticlePath);
+  run_loop.Run();
+
+  EXPECT_FALSE(distiller_page.new_web_contents_created());
+  EXPECT_EQ("", distiller_result_->title());
+}
+
+IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
+                       UsingCurrentWebContentsDestroyedDuringJavaScript) {
+  content::WebContents::CreateParams create_params(
+      shell()->web_contents()->GetBrowserContext());
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(create_params);
+
+  base::RunLoop url_loaded_runner;
+  WebContentsMainFrameHelper main_frame_loaded(
+      web_contents.get(), url_loaded_runner.QuitClosure(),
+      /*wait_for_document_loaded=*/true);
+  web_contents->GetController().LoadURL(
+      embedded_test_server()->GetURL(kSimpleArticlePath), content::Referrer(),
+      ui::PAGE_TRANSITION_TYPED, std::string());
+  url_loaded_runner.Run();
+
+  auto source_page_handle = std::make_unique<SourcePageHandleWebContents>(
+      web_contents.get(), /*owned=*/false);
+  TestDistillerPageWebContents distiller_page(
+      web_contents->GetBrowserContext(),
+      shell()->web_contents()->GetContainerBounds().size(),
+      std::move(source_page_handle), /*expect_new_web_contents=*/false);
+  distiller_page_ = &distiller_page;
+
+  base::RunLoop run_loop;
+  DistillPage(run_loop.QuitClosure(), kSimpleArticlePath);
+  // Destroy the unowned WebContents while the isolated-world distillation
+  // script is in flight so the Mojo reply callback is dropped without running.
+  web_contents.reset();
+  run_loop.Run();
+
+  EXPECT_FALSE(distiller_page.new_web_contents_created());
+  EXPECT_EQ("", distiller_result_->title());
 }
 
 #if BUILDFLAG(IS_WIN)

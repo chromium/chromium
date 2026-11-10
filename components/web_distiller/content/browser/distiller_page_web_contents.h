@@ -13,6 +13,7 @@
 #include "components/web_distiller/core/distiller_page.h"
 #include "components/web_distiller/core/web_distiller_constants.h"
 #include "content/public/browser/navigation_throttle_registry.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -73,6 +74,7 @@ class DistillerPageWebContents : public DistillerPage,
 
   // content::WebContentsObserver implementation.
   void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override;
+  void DidStopLoading() override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
@@ -110,6 +112,10 @@ class DistillerPageWebContents : public DistillerPage,
                                      const base::TimeTicks& javascript_start,
                                      base::Value value);
 
+  // Returns true if `distill_document_` is still alive and is the primary main
+  // document of the source WebContents.
+  bool IsDistillDocumentCurrent();
+
   content::RenderFrameHost& TargetRenderFrameHost();
 
   // Returns the UserData associated with the underlying WebContents.
@@ -120,6 +126,12 @@ class DistillerPageWebContents : public DistillerPage,
 
   // The JavaScript to inject to extract content.
   std::string script_;
+
+  // The URL currently being distilled.
+  GURL distill_url_;
+
+  // The main document committed for `distill_url_`.
+  content::WeakDocumentPtr distill_document_;
 
   std::unique_ptr<SourcePageHandleWebContents> source_page_handle_;
 

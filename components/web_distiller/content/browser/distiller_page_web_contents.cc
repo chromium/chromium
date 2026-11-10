@@ -27,6 +27,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "url/gurl.h"
@@ -45,7 +46,8 @@ class DistillerPageWebContentsUserData : public base::SupportsUserData::Data {
   explicit DistillerPageWebContentsUserData() = default;
 };
 
-// Blocks redirects for the web contents created for distillation viewing.
+// Blocks redirects and renderer-initiated main-frame navigations for the web
+// contents created for distillation viewing.
 class RedirectBlockingNavigationThrottle : public content::NavigationThrottle {
  public:
   explicit RedirectBlockingNavigationThrottle(
@@ -54,6 +56,13 @@ class RedirectBlockingNavigationThrottle : public content::NavigationThrottle {
   ~RedirectBlockingNavigationThrottle() override = default;
 
   // content::NavigationThrottle:
+  ThrottleCheckResult WillStartRequest() override {
+    if (navigation_handle()->IsInPrimaryMainFrame() &&
+        navigation_handle()->IsRendererInitiated()) {
+      return content::NavigationThrottle::CANCEL;
+    }
+    return content::NavigationThrottle::PROCEED;
+  }
   ThrottleCheckResult WillRedirectRequest() override {
     return content::NavigationThrottle::CANCEL;
   }
@@ -134,6 +143,8 @@ void DistillerPageWebContents::DistillPageImpl(const GURL& url,
   DCHECK(state_ == IDLE);
   state_ = LOADING_PAGE;
   script_ = script;
+  distill_url_ = url;
+  distill_document_ = content::WeakDocumentPtr();
 
   // Caller-supplied handles are unowned and must match `url` or fail
   // immediately without spawning a hidden WebContents. Owned handles come from
@@ -143,6 +154,7 @@ void DistillerPageWebContents::DistillPageImpl(const GURL& url,
   if (source_page_handle_ && !source_page_handle_->owned()) {
     if (source_page_handle_->web_contents() &&
         TargetRenderFrameHost().GetLastCommittedURL() == url) {
+      distill_document_ = TargetRenderFrameHost().GetWeakDocumentPtr();
       if (TargetRenderFrameHost().IsDOMContentLoaded()) {
         // Main frame has already loaded for the current WebContents, so execute
         // JavaScript immediately.
@@ -210,25 +222,64 @@ void DistillerPageWebContents::DOMContentLoaded(
   }
 }
 
-void DistillerPageWebContents::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  // If the navigation was not for the main frame, we should not fail the
-  // distillation. This is because non-essential subframes (e.g. analytics,
-  // social widgets) can fail to load or be cancelled without affecting the main
-  // content.
-  if (navigation_handle->IsInPrimaryMainFrame() &&
-      !navigation_handle->HasCommitted()) {
+void DistillerPageWebContents::DidStopLoading() {
+  // A client redirect started before `DOMContentLoaded` aborts Blink's HTML
+  // parser (`Document::Abort()`), so `DOMContentLoaded()` never fires after
+  // `RedirectBlockingNavigationThrottle` cancels the redirect. Fail
+  // distillation once loading stops without `DOMContentLoaded` instead of
+  // hanging.
+  if (IsDistillDocumentCurrent() &&
+      !TargetRenderFrameHost().IsDOMContentLoaded()) {
     content::WebContentsObserver::Observe(nullptr);
-    DCHECK(state_ == LOADING_PAGE || state_ == EXECUTING_JAVASCRIPT);
+    DCHECK_EQ(LOADING_PAGE, state_);
     state_ = PAGELOAD_FAILED;
     OnWebContentsDistillationDone(GURL(), base::TimeTicks(), base::Value());
   }
 }
 
+void DistillerPageWebContents::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  // If the navigation was not for the main frame, we should not fail the
+  // distillation. This is because non-essential subframes (e.g. analytics,
+  // social widgets) can fail to load or be cancelled without affecting the main
+  // content. Same-document navigations (e.g. history.replaceState or fragment
+  // updates) also should not abort distillation.
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      navigation_handle->IsSameDocument()) {
+    return;
+  }
+  // Ignore uncommitted navigations (e.g. a client redirect cancelled by
+  // `RedirectBlockingNavigationThrottle`) once `distill_document_` has
+  // committed. If a pre-`DOMContentLoaded` redirect aborted parsing,
+  // `DidStopLoading()` will fail distillation; if `DOMContentLoaded` already
+  // fired in the renderer, `DOMContentLoaded()` will still distill the
+  // original page even if `DidFinishNavigation` arrives first.
+  if (!navigation_handle->HasCommitted() && IsDistillDocumentCurrent()) {
+    return;
+  }
+  if (!navigation_handle->HasCommitted() ||
+      navigation_handle->GetURL() != distill_url_) {
+    content::WebContentsObserver::Observe(nullptr);
+    DCHECK(state_ == LOADING_PAGE || state_ == EXECUTING_JAVASCRIPT);
+    state_ = PAGELOAD_FAILED;
+    OnWebContentsDistillationDone(GURL(), base::TimeTicks(), base::Value());
+    return;
+  }
+  if (!source_page_handle_ || source_page_handle_->owned()) {
+    distill_document_ =
+        navigation_handle->GetRenderFrameHost()->GetWeakDocumentPtr();
+  }
+}
+
 void DistillerPageWebContents::ExecuteJavaScript() {
   DCHECK_EQ(LOADING_PAGE, state_);
-  state_ = EXECUTING_JAVASCRIPT;
   content::WebContentsObserver::Observe(nullptr);
+  if (!IsDistillDocumentCurrent()) {
+    state_ = PAGELOAD_FAILED;
+    OnWebContentsDistillationDone(GURL(), base::TimeTicks(), base::Value());
+    return;
+  }
+  state_ = EXECUTING_JAVASCRIPT;
   // Stop any pending navigation since the intent is to distill the current
   // page.
   // Don't stop the navigation of the WebContents we don't own, to prevent any
@@ -239,10 +290,13 @@ void DistillerPageWebContents::ExecuteJavaScript() {
   }
   RunIsolatedJavaScript(
       &TargetRenderFrameHost(), script_,
-      base::BindOnce(&DistillerPageWebContents::OnWebContentsDistillationDone,
-                     weak_factory_.GetWeakPtr(),
-                     source_page_handle_->web_contents()->GetLastCommittedURL(),
-                     base::TimeTicks::Now()));
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindOnce(
+              &DistillerPageWebContents::OnWebContentsDistillationDone,
+              weak_factory_.GetWeakPtr(),
+              TargetRenderFrameHost().GetLastCommittedURL(),
+              base::TimeTicks::Now()),
+          base::Value()));
 }
 
 void DistillerPageWebContents::OnWebContentsDistillationDone(
@@ -259,7 +313,20 @@ void DistillerPageWebContents::OnWebContentsDistillationDone(
                             javascript_time);
   }
 
+  if (!page_url.is_empty() && !IsDistillDocumentCurrent()) {
+    value = base::Value();
+  }
+
   OnDistillationDone(page_url, &value);
+}
+
+bool DistillerPageWebContents::IsDistillDocumentCurrent() {
+  // Check `distill_document_` before calling TargetRenderFrameHost(): a live
+  // document implies its WebContents is still alive, whereas an unowned
+  // `web_contents()` pointer isn't cleared on destruction.
+  content::RenderFrameHost* distill_rfh =
+      distill_document_.AsRenderFrameHostIfValid();
+  return distill_rfh && distill_rfh == &TargetRenderFrameHost();
 }
 
 content::RenderFrameHost& DistillerPageWebContents::TargetRenderFrameHost() {
