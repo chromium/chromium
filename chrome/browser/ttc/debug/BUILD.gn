@@ -2,33 +2,47 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# Browser-side support for the TTC debug tools.
+# Browser-side support for the TTC debug tools: the per-session debug record
+# (pipeline health, timeline, turns and audio). See TtcDebugToolsService.
 source_set("debug") {
   sources = [
     "ttc_debug_session.cc",
     "ttc_debug_session.h",
+    "ttc_debug_tools_service.cc",
+    "ttc_debug_tools_service.h",
+    "ttc_debug_tools_service_factory.cc",
+    "ttc_debug_tools_service_factory.h",
     "ttc_session_audio_recorder.cc",
     "ttc_session_audio_recorder.h",
   ]
   public_deps = [
     "//base",
+    "//components/keyed_service/core",
     "//components/ttc/app/public",
   ]
-  deps = [ "//components/actor/core" ]
+  deps = [
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ttc/core:features",
+    "//components/actor/core",
+  ]
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = [
     "ttc_debug_session_unittest.cc",
+    "ttc_debug_tools_service_unittest.cc",
     "ttc_session_audio_recorder_unittest.cc",
   ]
   deps = [
     ":debug",
     "//base/test:test_support",
+    "//chrome/browser/ttc/core:features",
+    "//chrome/test:test_support",
     "//components/actor/core:journal",
     "//components/actor/public/mojom:mojo_bindings_shared",
     "//components/ttc/app/public",
+    "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
