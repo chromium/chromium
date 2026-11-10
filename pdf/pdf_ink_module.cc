@@ -1222,10 +1222,12 @@ bool PdfInkModule::FinishTextHighlight(const gfx::PointF& position,
   if (!state.finished_multi_click) {
     auto& highlight_strokes = state.highlight_strokes;
     highlight_strokes = GetTextSelectionAsStrokes();
-    for (const auto& [page_index, strokes] : highlight_strokes) {
-      for (const auto& stroke : strokes) {
+    for (auto& [page_index, strokes] : highlight_strokes) {
+      for (auto& stroke : strokes) {
         InkStrokeId id = id_generator_.GetStrokeIdAndAdvance();
         client_->StrokeAdded(page_index, id, stroke);
+        // Safe to move `stroke` since `highlight_strokes` elements are not read
+        // again before `state.highlight_strokes` is cleared or destroyed below.
         strokes_[page_index].push_back(
             FinishedStrokeState(std::move(stroke), id));
         bool undo_redo_success = undo_redo_model_.Add(id);
@@ -1368,7 +1370,7 @@ PdfInkModule::GetTextSelectionAsStrokes() {
       std::optional<ink::Stroke> stroke = GetHighlightStrokeFromSelectionRect(
           transform.MapRect(selection_rect.AsGfxRectF()));
       if (stroke.has_value()) {
-        page_result.push_back(stroke.value());
+        page_result.push_back(std::move(stroke.value()));
       }
     }
     if (!page_result.empty()) {
@@ -1617,7 +1619,7 @@ void PdfInkModule::HandleSetAnnotationModeMessage(
       PageV2InkPathShapes& page_shapes = loaded_v2_shapes_[page_index];
       page_shapes.reserve(page_shape_map.size());
       for (auto& [shape_id, shape] : page_shape_map) {
-        page_shapes.emplace_back(shape, shape_id);
+        page_shapes.emplace_back(std::move(shape), shape_id);
       }
     }
   }
