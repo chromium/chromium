@@ -65,10 +65,6 @@
 #include <windows.h>
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "pdf/flatten_pdf_result.h"
-#endif
-
 #if BUILDFLAG(ENABLE_PDF_INK2)
 #include "pdf/pdf_ink_ids.h"
 #include "pdf/pdf_ink_metrics_handler.h"
@@ -104,8 +100,6 @@ class Thumbnail;
 enum class AccessibilityScrollAlignment;
 struct AccessibilityActionData;
 struct AccessibilityFocusInfo;
-struct DocumentAttachmentInfo;
-struct DocumentMetadata;
 struct PageCharacterIndex;
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -479,7 +473,7 @@ class PDFiumEngine : public DocumentLoader::Client,
   virtual void UpdateTextActiveAndInvalidate(TextId id, bool active);
 
   // Writes the supplied stroke for the page at `page_index`.  The same `id`
-  // gets used with `UpdateStrokeUsage()`.  Must provide a valid `page_index`.
+  // gets used with `UpdateStrokeActive()`.  Must provide a valid `page_index`.
   // Virtual to support testing.
   virtual void ApplyStroke(int page_index,
                            InkStrokeId id,
@@ -799,7 +793,6 @@ class PDFiumEngine : public DocumentLoader::Client,
   friend class PDFiumEngineTest;
   friend class PDFiumFormFiller;
   friend class PDFiumTestBase;
-  friend class SelectionChangeInvalidator;
 
   gfx::Size plugin_size() const;
 

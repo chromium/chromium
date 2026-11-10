@@ -448,8 +448,6 @@ constexpr bool kViewerImplementedPanning = false;
 constexpr bool kViewerImplementedPanning = true;
 #endif
 
-constexpr int32_t kLoadingTextVerticalOffset = 50;
-
 // The maximum amount of time we'll spend doing a paint before we give back
 // control of the thread.
 constexpr base::TimeDelta kMaxProgressivePaintTime = base::Milliseconds(300);
@@ -1315,8 +1313,7 @@ void PDFiumEngine::AppendPage(PDFiumEngine* engine, int index) {
   pages_[index]->set_calculated_links(false);
   gfx::Size curr_page_size = GetPageSize(index);
   FPDFPage_Delete(doc(), index);
-  FPDF_ImportPages(doc(), static_cast<PDFiumEngine*>(engine)->doc(), "1",
-                   index);
+  FPDF_ImportPages(doc(), engine->doc(), "1", index);
   gfx::Size new_page_size = GetPageSize(index);
   if (curr_page_size != new_page_size) {
     DCHECK(document_loaded_);
@@ -1975,10 +1972,8 @@ PDFiumEngine::PointData PDFiumEngine::GetPointData(const gfx::PointF& point) {
 
   // If the page hasn't finished rendering, calling into the page sometimes
   // leads to hangs.
-  for (const auto& paint : progressive_paints_) {
-    if (paint.page_index() == page.value()) {
-      return point_data;
-    }
+  if (GetProgressiveIndex(page.value()).has_value()) {
+    return point_data;
   }
 
   point_data.page_index = page.value();
@@ -4332,11 +4327,6 @@ void PDFiumEngine::PaintUnavailablePage(int page_index,
   FPDFBitmap_FillRect(bitmap.get(), pdfium_rect.x(), pdfium_rect.y(),
                       pdfium_rect.width(), pdfium_rect.height(),
                       kPendingPageColor);
-
-  gfx::Rect loading_text_in_screen(
-      pages_[page_index]->rect().width() / 2,
-      pages_[page_index]->rect().y() + kLoadingTextVerticalOffset, 0, 0);
-  loading_text_in_screen = GetScreenRect(loading_text_in_screen);
 }
 
 std::optional<size_t> PDFiumEngine::GetProgressiveIndex(
@@ -5450,12 +5440,7 @@ void PDFiumEngine::OnHasSearchifyText() {
 }
 
 bool PDFiumEngine::IsPageScheduledForPaint(uint32_t page_index) const {
-  for (const auto& progressive_paint : progressive_paints_) {
-    if (progressive_paint.page_index() == page_index) {
-      return true;
-    }
-  }
-  return false;
+  return GetProgressiveIndex(page_index).has_value();
 }
 
 void PDFiumEngine::MaybeUnloadPage(int page_index) {
@@ -5778,7 +5763,7 @@ void PDFiumEngine::DrawText(int page_index,
   }
 
   ink_edited_pages_needing_regeneration_.insert(page_index);
-  GetPage(page_index)->ReloadTextPage();
+  pdfium_page->ReloadTextPage();
   client_->Invalidate(GetPageScreenRect(page_index));
 
   bool inserted =
@@ -6137,7 +6122,7 @@ void PDFiumEngine::UpdateTextActiveAndInvalidateHelper(InkTextData& data,
   }
 
   ink_edited_pages_needing_regeneration_.insert(page_index);
-  GetPage(page_index)->ReloadTextPage();
+  pdfium_page->ReloadTextPage();
 }
 
 PDFiumEngine::InkStrokeData::InkStrokeData(int page_index,
