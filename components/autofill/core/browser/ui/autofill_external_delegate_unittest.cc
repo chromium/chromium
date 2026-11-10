@@ -4697,6 +4697,30 @@ class AutofillExternalDelegateAttributionVerificationTest
                                             {.multi_index = {0}});
   }
 
+  // Accepts `entity` and returns the captured verification decision callback.
+  AutofillClient::AutofillAiVerificationDecisionCallback
+  AcceptAndCaptureDecisionCallback(const EntityInstance& entity) {
+    AutofillClient::AutofillAiVerificationDecisionCallback decision_cb;
+    EXPECT_CALL(autofill_client(), ShowAutofillAiAttributionVerification)
+        .WillOnce(MoveArg<3>(&decision_cb));
+    AcceptFillSuggestion(entity);
+    return decision_cb;
+  }
+
+  // Makes `masked_entity` available, accepts it, and returns the captured
+  // async unmask callback.
+  AutofillAiPersonalContextAccessManager::GetUnmaskedSpiiEntityCallback
+  AcceptMaskedAndCaptureFetch(const EntityInstance& masked_entity) {
+    AddPassportAndIssueQuery(masked_entity);
+    AutofillAiPersonalContextAccessManager::GetUnmaskedSpiiEntityCallback
+        fetched;
+    EXPECT_CALL(personal_context_manager(),
+                GetUnmaskedSpiiEntity(masked_entity.guid(), _))
+        .WillOnce(MoveArg<1>(&fetched));
+    AcceptFillSuggestion(masked_entity);
+    return fetched;
+  }
+
   MockAutofillAiPersonalContextAccessManager& personal_context_manager() {
     return *personal_context_manager_;
   }
@@ -4807,6 +4831,118 @@ TEST_F(AutofillExternalDelegateAttributionVerificationTest,
   EXPECT_CALL(autofill_client(),
               ShowAutofillAiAttributionVerification(_, first_url, _, _));
   AcceptFillSuggestion(passport);
+}
+
+// Tests that choosing Confirm keeps the fill.
+TEST_F(AutofillExternalDelegateAttributionVerificationTest,
+       DecisionConfirmKeepsFill) {
+  EntityInstance passport =
+      AddPassportWithSources({GURL("https://mail.google.com/")});
+  AutofillClient::AutofillAiVerificationDecisionCallback decision_cb =
+      AcceptAndCaptureDecisionCallback(passport);
+  ASSERT_FALSE(decision_cb.is_null());
+
+  EXPECT_CALL(autofill_manager(), UndoAutofill).Times(0);
+  std::move(decision_cb)
+      .Run(AutofillClient::AutofillAiVerificationDecision::kConfirm);
+}
+
+// Tests that dismissing the verification keeps the fill.
+TEST_F(AutofillExternalDelegateAttributionVerificationTest,
+       DecisionDismissKeepsFill) {
+  EntityInstance passport =
+      AddPassportWithSources({GURL("https://mail.google.com/")});
+  AutofillClient::AutofillAiVerificationDecisionCallback decision_cb =
+      AcceptAndCaptureDecisionCallback(passport);
+  ASSERT_FALSE(decision_cb.is_null());
+
+  EXPECT_CALL(autofill_manager(), UndoAutofill).Times(0);
+  std::move(decision_cb)
+      .Run(AutofillClient::AutofillAiVerificationDecision::kDismiss);
+}
+
+// Tests that choosing Undo undoes the fill without suppressing the entity.
+TEST_F(AutofillExternalDelegateAttributionVerificationTest,
+       DecisionUndoClearsFilledFormWithoutSuppressing) {
+  EntityInstance passport =
+      AddPassportWithSources({GURL("https://mail.google.com/")});
+  AutofillClient::AutofillAiVerificationDecisionCallback decision_cb =
+      AcceptAndCaptureDecisionCallback(passport);
+  ASSERT_FALSE(decision_cb.is_null());
+
+  EXPECT_CALL(autofill_manager(),
+              UndoAutofill(mojom::ActionPersistence::kFill, HasQueriedFormId(),
+                           IsQueriedFieldId()));
+  EXPECT_CALL(autofill_client(), ShowAutofillAiSuggestionRemovedNotification)
+      .Times(0);
+  std::move(decision_cb)
+      .Run(AutofillClient::AutofillAiVerificationDecision::kUndo);
+}
+
+// Tests that for an entity fetched asynchronously, the entity is filled,
+// suggestions are hidden, and verification is requested.
+TEST_F(AutofillExternalDelegateAttributionVerificationTest,
+       AsyncFillShowsVerificationAfterFillingForm) {
+  const GURL source_url("https://mail.google.com/mail/mu/0/#cv/Inbox/abc");
+  EntityInstance full_passport = MakePassportWithSources({source_url});
+  EntityInstance masked_passport = MaskEntityInstance(full_passport);
+  AutofillAiPersonalContextAccessManager::GetUnmaskedSpiiEntityCallback
+      fetched = AcceptMaskedAndCaptureFetch(masked_passport);
+  ASSERT_FALSE(fetched.is_null());
+
+  InSequence s;
+  EXPECT_CALL(autofill_manager(),
+              FillOrPreviewForm(mojom::ActionPersistence::kFill, _, _,
+                                FillingProduct::kAutofillAi,
+                                HasFillingPayload(full_passport), _, _, _));
+  EXPECT_CALL(autofill_client(),
+              HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
+                              Eq(FillingProduct::kAutofillAi)));
+  EXPECT_CALL(autofill_client(), ShowAutofillAiAttributionVerification(
+                                     Eq(full_passport), source_url, _, _));
+  std::move(fetched).Run(full_passport);
+}
+
+// Tests that when fetching an entity fails asynchronously, a failure
+// notification is shown and no verification is requested.
+TEST_F(AutofillExternalDelegateAttributionVerificationTest,
+       AsyncFetchFailureShowsFailureNotificationAndNoVerification) {
+  EntityInstance full_passport =
+      MakePassportWithSources({GURL("https://mail.google.com/")});
+  EntityInstance masked_passport = MaskEntityInstance(full_passport);
+  AutofillAiPersonalContextAccessManager::GetUnmaskedSpiiEntityCallback
+      fetched = AcceptMaskedAndCaptureFetch(masked_passport);
+  ASSERT_FALSE(fetched.is_null());
+
+  EXPECT_CALL(autofill_manager(), FillOrPreviewForm).Times(0);
+  EXPECT_CALL(autofill_client(), ShowAutofillAiFetchEntityFailureNotification);
+  EXPECT_CALL(autofill_client(), ShowAutofillAiAttributionVerification)
+      .Times(0);
+  std::move(fetched).Run(std::nullopt);
+}
+
+// Tests that the verification URL is captured from the accepted entity at
+// accept time, the entity is filled, suggestions are hidden, and
+// `ShowAutofillAiAttributionVerification()` is called with that URL even if
+// the fetched entity returned asynchronously has no sources.
+TEST_F(AutofillExternalDelegateAttributionVerificationTest,
+       AsyncFillUsesAcceptedEntityUrlWhenFetchedEntityHasNoSources) {
+  const GURL source_url("https://mail.google.com/mail/mu/0/#cv/Inbox/abc");
+  EntityInstance accepted_passport = MakePassportWithSources({source_url});
+  EntityInstance masked_passport = MaskEntityInstance(accepted_passport);
+  AutofillAiPersonalContextAccessManager::GetUnmaskedSpiiEntityCallback
+      fetched = AcceptMaskedAndCaptureFetch(masked_passport);
+  ASSERT_FALSE(fetched.is_null());
+
+  EntityInstance fetched_passport =
+      MakePassportWithSources({}).CopyWithNewEntityId(masked_passport.guid());
+  EXPECT_CALL(autofill_manager(),
+              FillOrPreviewForm(mojom::ActionPersistence::kFill, _, _,
+                                FillingProduct::kAutofillAi,
+                                HasFillingPayload(fetched_passport), _, _, _));
+  EXPECT_CALL(autofill_client(), ShowAutofillAiAttributionVerification(
+                                     Eq(fetched_passport), source_url, _, _));
+  std::move(fetched).Run(fetched_passport);
 }
 
 TEST_F(AutofillExternalDelegateTest,
