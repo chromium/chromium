@@ -1413,14 +1413,6 @@ void RenderFrameHostManager::UnloadOldFrame(
       bool is_same_process =
           (old_render_frame_host->GetProcess() ==
            frame_tree_node_->current_frame_host()->GetProcess());
-      if (old_render_frame_host->GetSiteInstance()->IsSameSiteWithURL(
-              frame_tree_node_->current_url())) {
-        base::UmaHistogramBoolean("BackForwardCache.ProcessReuse.SameSite",
-                                  is_same_process);
-      } else {
-        base::UmaHistogramBoolean("BackForwardCache.ProcessReuse.CrossSite",
-                                  is_same_process);
-      }
       if (old_render_frame_host->GetSiteInstance()
               ->GetRelatedActiveContentsCount() > 0) {
         SCOPED_CRASH_KEY_NUMBER("rvh-double", "related_active_contents",
