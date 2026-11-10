@@ -109,8 +109,6 @@ constexpr PrefsForManagedContentSettingsMapEntry
          ContentSettingsType::FILE_SYSTEM_WRITE_GUARD, CONTENT_SETTING_BLOCK},
         {prefs::kManagedLegacyCookieAccessAllowedForDomains,
          ContentSettingsType::LEGACY_COOKIE_ACCESS, CONTENT_SETTING_ALLOW},
-        {prefs::kManagedDefaultLegacyCookieScope,
-         ContentSettingsType::LEGACY_COOKIE_SCOPE, CONTENT_SETTING_ALLOW},
         {prefs::kManagedLegacyCookieScopeForDomains,
          ContentSettingsType::LEGACY_COOKIE_SCOPE, CONTENT_SETTING_ALLOW},
         {prefs::kManagedSerialAskForUrls, ContentSettingsType::SERIAL_GUARD,

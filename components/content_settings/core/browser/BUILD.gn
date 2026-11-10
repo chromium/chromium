@@ -122,6 +122,7 @@ source_set("cookie_settings") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "content_settings_policy_provider_unittest.cc",
     "content_settings_pref_provider_unittest.cc",
     "content_settings_pref_unittest.cc",
     "content_settings_registry_unittest.cc",
