@@ -136,20 +136,9 @@ bool PageStubDispatch::Accept(
   switch (static_cast<messages::Page>(message->header()->name)) {
     case messages::Page::kOnSomethingHappened: {
       DCHECK(message->is_serialized());
-      internal::Page_OnSomethingHappened_Params_Data* params =
-          reinterpret_cast<internal::Page_OnSomethingHappened_Params_Data*>(
-              message->mutable_payload());
       
 
       // Validation for Page.0
-      bool success = true;
-      Page_OnSomethingHappened_ParamsDataView input_data_view(params, message);
-      
-      if (!success) {
-        mojo::internal::ReportDeserializationErrorForMessage(
-            message, Page::Name_, 0, false);
-        return false;
-      }
       // A null |impl| means no implementation was bound.
       DCHECK(impl);
       impl->OnSomethingHappened(        );
@@ -284,20 +273,9 @@ bool PageHandlerStubDispatch::Accept(
   switch (static_cast<messages::PageHandler>(message->header()->name)) {
     case messages::PageHandler::kDoSomething: {
       DCHECK(message->is_serialized());
-      internal::PageHandler_DoSomething_Params_Data* params =
-          reinterpret_cast<internal::PageHandler_DoSomething_Params_Data*>(
-              message->mutable_payload());
       
 
       // Validation for PageHandler.0
-      bool success = true;
-      PageHandler_DoSomething_ParamsDataView input_data_view(params, message);
-      
-      if (!success) {
-        mojo::internal::ReportDeserializationErrorForMessage(
-            message, PageHandler::Name_, 0, false);
-        return false;
-      }
       // A null |impl| means no implementation was bound.
       DCHECK(impl);
       impl->DoSomething(        );
@@ -468,26 +446,18 @@ bool WebUiPageHandlerFactoryStubDispatch::Accept(
   switch (static_cast<messages::WebUiPageHandlerFactory>(message->header()->name)) {
     case messages::WebUiPageHandlerFactory::kCreatePageHandler: {
       DCHECK(message->is_serialized());
-      internal::WebUiPageHandlerFactory_CreatePageHandler_Params_Data* params =
-          reinterpret_cast<internal::WebUiPageHandlerFactory_CreatePageHandler_Params_Data*>(
-              message->mutable_payload());
       
 
       // Validation for WebUiPageHandlerFactory.0
-      bool success = true;
       ::mojo::PendingRemote<Page> p_page{};
       ::mojo::PendingReceiver<PageHandler> p_handler{};
-      WebUiPageHandlerFactory_CreatePageHandler_ParamsDataView input_data_view(params, message);
-      
-      if (success)
-        input_data_view.TakePage(&p_page);
-      if (success)
-        input_data_view.TakeHandler(&p_handler);
-      if (!success) {
-        mojo::internal::ReportDeserializationErrorForMessage(
-            message, WebUiPageHandlerFactory::Name_, 0, false);
-        return false;
-      }
+      WebUiPageHandlerFactory_CreatePageHandler_ParamsDataView input_data_view(
+          reinterpret_cast<internal::WebUiPageHandlerFactory_CreatePageHandler_Params_Data*>(
+              message->mutable_payload()),
+          message);
+
+      input_data_view.TakePage(&p_page);
+      input_data_view.TakeHandler(&p_handler);
       // A null |impl| means no implementation was bound.
       DCHECK(impl);
       impl->CreatePageHandler(        

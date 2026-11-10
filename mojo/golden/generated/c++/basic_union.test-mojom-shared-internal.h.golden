@@ -28,6 +28,7 @@ namespace golden {
 namespace internal {
 class StructInUnion_Data;
 class BasicUnion_Data;
+class TrivialUnion_Data;
 
 struct EnumInUnion_Data {
  public:
@@ -136,6 +137,58 @@ class  BasicUnion_Data {
 };
 static_assert(sizeof(BasicUnion_Data) == mojo::internal::kUnionDataSize,
               "Bad sizeof(BasicUnion_Data)");
+
+
+class  TrivialUnion_Data {
+ public:
+  // Used to identify Mojom Union Data Classes.
+  typedef void MojomUnionDataType;
+
+  TrivialUnion_Data() = default;
+  // Do nothing in the destructor since it won't be called when it is a
+  // non-inlined union.
+  ~TrivialUnion_Data() = default;
+
+  static bool Validate(const void* data,
+                       mojo::internal::ValidationContext* validation_context,
+                       bool inlined);
+
+  bool is_null() const { return size == 0; }
+
+  void set_null() {
+    size = 0U;
+    tag = static_cast<TrivialUnion_Tag>(0);
+    data.unknown = 0U;
+  }
+
+  // TODO(crbug.com/40731316): SHOUTY_CASE values are being deprecated per C++ code style
+  // guidelines (https://google.github.io/styleguide/cppguide.html#Enumerator_Names),
+  // please use kCamelCase values instead.  Cleanup NULL_VALUE, BOOL_VALUE, INT_VALUE, etc.
+  // generation once codebase is transitioned to kNullValue, kBoolValue, kIntValue, etc.
+  enum class TrivialUnion_Tag : uint32_t {
+
+    
+    kNumericValue,
+    
+    kEnumValue,
+  };
+
+  // A note on layout:
+  // "Each non-static data member is allocated as if it were the sole member of
+  // a struct." - Section 9.5.2 ISO/IEC 14882:2011 (The C++ Spec)
+  union MOJO_ALIGNAS(8) Union_ {
+    Union_() = default;
+    int32_t f_numeric_value;
+    int32_t f_enum_value;
+    uint64_t unknown;
+  };
+
+  uint32_t size;
+  TrivialUnion_Tag tag;
+  Union_ data;
+};
+static_assert(sizeof(TrivialUnion_Data) == mojo::internal::kUnionDataSize,
+              "Bad sizeof(TrivialUnion_Data)");
 class  StructInUnion_Data {
  public:
   static bool Validate(const void* data,

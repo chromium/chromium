@@ -26,3 +26,8 @@ union BasicUnion {
   ExtensibleEnumInUnion extensible_enum_value;
   StructInUnion struct_value;
 };
+
+union TrivialUnion {
+  int32 numeric_value;
+  EnumInUnion enum_value;
+};

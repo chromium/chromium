@@ -51,7 +51,7 @@ class {{export_attribute}} {{struct.name}} {
 {{struct.name}}& operator=(const {{struct.name}}&) = delete;
 {%- endif %}
 
-  ~{{struct.name}}();
+  ~{{struct.name}}(){% if struct|is_trivially_destructible %} = default{% endif %};
 
   // Clone() is a template so it is only instantiated if it is used. Thus, the
   // bindings generator does not need to know whether Clone() or copy

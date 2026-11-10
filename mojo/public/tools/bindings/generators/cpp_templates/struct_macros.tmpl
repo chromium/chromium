@@ -175,44 +175,58 @@
     |output_field_pattern| should be a pattern that contains one string
     placeholder, for example, "result->%s", "p_%s". The placeholder will be
     substituted with struct field names to refer to the output fields.
-    |message| is the name of the Message object we're deserializing.
-    |success| is the name of a bool variable to track success of the operation.
+    |failure_action| is the statement(s) executed when reading a field fails
+    (must exit the current scope, e.g. `return false;`).
     This macro is expanded to do deserialization for both:
     - user-defined structs: the output is an instance of the corresponding
       struct wrapper class.
     - method parameters/response parameters: the output is a list of
       arguments. #}
-{%- macro deserialize(struct, input, output_field_pattern, success) -%}
+{%- macro deserialize(struct, input, output_field_pattern, failure_action) -%}
+{#-   Deserialization is split into two phases to avoid emitting a separate
+      `if (success)` branch on every field:
+      1. Fallible fields (objects and enums, whose `Read*()` methods return
+         `bool`) are combined into a single short-circuiting `if (!ReadA() ||
+         !ReadB())` check that runs `failure_action` on failure. If there are
+         no fallible fields, the `if` statement and `failure_action` are
+         omitted entirely.
+      2. Infallible fields (primitives, non-enum nullable primitives, and
+         handles/interfaces via `Take*()`) are assigned unconditionally after
+         all fallible reads succeed.
+
+      Note: Nullable value types (enums/primitives) unpack into two packed
+      fields (a primary `has_foo` bool bit and a secondary `foo_value` slot,
+      both pointing to `pf.original_field`). Only the primary packed field is
+      processed, since the DataView accessor reads both together. -#}
+{%-   set ns = namespace(fallible_fields=[], infallible_fields=[]) %}
 {%-   for pf in struct.packed.packed_fields_in_ordinal_order %}
-{%-     if pf|is_nullable_value_kind_packed_field %}
-{%-       if pf|is_primary_nullable_value_kind_packed_field %}
-{%-         set original_field = pf.original_field %}
-{%-         set output_field = output_field_pattern|format(original_field.name) %}
-{%-         set name = original_field.name %}
-{%-         set kind = original_field.kind %}
-{%-         if kind|is_enum_kind %}
-  if ({{success}} && !{{input}}.Read{{name|under_to_camel}}(&{{output_field}})) {
-    {{success}} = false;
-{%-         else %}
-  if ({{success}}) {
-    {{output_field}} = {{input}}.{{name}}();
-{%-         endif %}
-  }
-{%-       endif %}
-{%-     else %}
-{%-       set output_field = output_field_pattern|format(pf.field.name) %}
-{%-       set name = pf.field.name %}
-{%-       set kind = pf.field.kind %}
-{%-       if kind|is_object_kind or kind|is_enum_kind %}
-  if ({{success}} && !{{input}}.Read{{name|under_to_camel}}(&{{output_field}}))
-    {{success}} = false;
-{%-       elif kind|is_any_handle_kind or kind|is_any_interface_kind %}
-  if ({{success}})
-    {{input}}.Take{{name|under_to_camel}}(&{{output_field}});
+{%-     if not (pf|is_nullable_value_kind_packed_field) or pf|is_primary_nullable_value_kind_packed_field %}
+{%-       set field = pf.original_field or pf.field %}
+{%-       if field.kind|is_object_kind or field.kind|is_enum_kind %}
+{%-         set ns.fallible_fields = ns.fallible_fields + [field] %}
 {%-       else %}
-  if ({{success}})
-    {{output_field}} = {{input}}.{{name}}();
+{%-         set ns.infallible_fields = ns.infallible_fields + [field] %}
 {%-       endif %}
+{%-     endif %}
+{%-   endfor %}
+{#-   Phase 1: Read all fallible fields (objects and enums). -#}
+{%-   if ns.fallible_fields %}
+  if (
+{%-     for field in ns.fallible_fields -%}
+{%-       set output_field = output_field_pattern|format(field.name) -%}
+{%-       if not loop.first %} ||
+      {% endif -%}!{{input}}.Read{{field.name|under_to_camel}}(&{{output_field}})
+{%-     endfor %}) {
+    {{failure_action|indent(4)}}
+  }
+{%-   endif %}
+{#-   Phase 2: Read all infallible fields (primitives and handles/interfaces). -#}
+{%-   for field in ns.infallible_fields %}
+{%-     set output_field = output_field_pattern|format(field.name) %}
+{%-     if field.kind|is_any_handle_or_interface_kind %}
+  {{input}}.Take{{field.name|under_to_camel}}(&{{output_field}});
+{%-     else %}
+  {{output_field}} = {{input}}.{{field.name}}();
 {%-     endif %}
 {%-   endfor %}
 {%- endmacro %}

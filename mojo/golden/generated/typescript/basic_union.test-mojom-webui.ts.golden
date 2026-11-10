@@ -38,6 +38,9 @@ export const StructInUnionSpec: { $: mojo.internal.MojomType } =
 export const BasicUnionSpec: { $: mojo.internal.MojomType } =
     { $: {} as unknown as mojo.internal.MojomType };
 
+export const TrivialUnionSpec: { $: mojo.internal.MojomType } =
+    { $: {} as unknown as mojo.internal.MojomType };
+
 
 
 
@@ -124,6 +127,38 @@ export function whichBasicUnion(u: BasicUnion): BasicUnionFieldTags {
   }
   if (u.structValue !== null && u.structValue !== undefined) {
     return BasicUnionFieldTags.STRUCT_VALUE;
+  }
+  throw new Error("no union field has been set, this is an illegal state");
+}
+mojo.internal.Union(
+    TrivialUnionSpec.$, 'TrivialUnion',
+    {
+      'numericValue': {
+        'ordinal': 0,
+        'type': mojo.internal.Int32,
+      },
+      'enumValue': {
+        'ordinal': 1,
+        'type': EnumInUnionSpec.$,
+      },
+    });
+
+export declare interface TrivialUnion {
+  numericValue?: number,
+  enumValue?: EnumInUnion,
+}
+
+export enum TrivialUnionFieldTags {
+  NUMERIC_VALUE,
+  ENUM_VALUE,
+}
+
+export function whichTrivialUnion(u: TrivialUnion): TrivialUnionFieldTags {
+  if (u.numericValue !== null && u.numericValue !== undefined) {
+    return TrivialUnionFieldTags.NUMERIC_VALUE;
+  }
+  if (u.enumValue !== null && u.enumValue !== undefined) {
+    return TrivialUnionFieldTags.ENUM_VALUE;
   }
   throw new Error("no union field has been set, this is an illegal state");
 }

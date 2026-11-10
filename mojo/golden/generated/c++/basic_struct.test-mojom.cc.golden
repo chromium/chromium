@@ -34,7 +34,6 @@ BasicStruct::BasicStruct(
     bool my_bool_in)
     : my_bool(std::move(my_bool_in)) {}
 
-BasicStruct::~BasicStruct() = default;
 size_t BasicStruct::Hash(size_t seed) const {
   seed = mojo::internal::Hash(seed, this->my_bool);
   return seed;
@@ -71,13 +70,11 @@ namespace mojo {
 bool StructTraits<::golden::BasicStruct::DataView, ::golden::BasicStructPtr>::Read(
     ::golden::BasicStruct::DataView input,
     ::golden::BasicStructPtr* output) {
-  bool success = true;
   ::golden::BasicStructPtr result(::golden::BasicStruct::New());
-  
-      if (success)
-        result->my_bool = input.my_bool();
+
+  result->my_bool = input.my_bool();
   *output = std::move(result);
-  return success;
+  return true;
 }
 
 }  // namespace mojo

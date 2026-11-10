@@ -71,7 +71,7 @@ class  ArrayElement {
       int32_t value);
 
 
-  ~ArrayElement();
+  ~ArrayElement() = default;
 
   // Clone() is a template so it is only instantiated if it is used. Thus, the
   // bindings generator does not need to know whether Clone() or copy

@@ -55,6 +55,7 @@ OptionalPrimitives::OptionalPrimitives(
       long_with_default(std::move(long_with_default_in)),
       bool_with_default(std::move(bool_with_default_in)) {}
 
+
 OptionalPrimitives::~OptionalPrimitives() = default;
 
 void OptionalPrimitives::WriteIntoTrace(
@@ -151,32 +152,20 @@ namespace mojo {
 NOINLINE bool StructTraits<::golden::OptionalPrimitives::DataView, ::golden::OptionalPrimitivesPtr>::Read(
     ::golden::OptionalPrimitives::DataView input,
     ::golden::OptionalPrimitivesPtr* output) {
-  bool success = true;
   ::golden::OptionalPrimitivesPtr result(::golden::OptionalPrimitives::New());
-  
-      if (success) {
-        result->int = input.int();
-      }
-      if (success) {
-        result->long = input.long();
-      }
-      if (success && !input.ReadUints(&result->uints))
-        success = false;
-      if (success && !input.ReadBoolarray(&result->boolarray))
-        success = false;
-      if (success && !input.ReadBitmap(&result->bitmap))
-        success = false;
-      if (success) {
-        result->int_with_default = input.int_with_default();
-      }
-      if (success) {
-        result->long_with_default = input.long_with_default();
-      }
-      if (success) {
-        result->bool_with_default = input.bool_with_default();
-      }
+
+  if (!input.ReadUints(&result->uints) ||
+      !input.ReadBoolarray(&result->boolarray) ||
+      !input.ReadBitmap(&result->bitmap)) {
+    return false;
+  }
+  result->int = input.int();
+  result->long = input.long();
+  result->int_with_default = input.int_with_default();
+  result->long_with_default = input.long_with_default();
+  result->bool_with_default = input.bool_with_default();
   *output = std::move(result);
-  return success;
+  return true;
 }
 
 }  // namespace mojo

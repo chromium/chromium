@@ -186,20 +186,16 @@ class IFace_Method_ProxyToResponder {
 bool IFace_Method_ForwardToCallback::Accept(
     mojo::Message* message) {
   DCHECK(message->is_serialized());
-  internal::IFace_Method_ResponseParams_Data* params =
-      reinterpret_cast<
-          internal::IFace_Method_ResponseParams_Data*>(
-              message->mutable_payload());
   
 
   // Validation for IFace.0
-  bool success = true;
   std::string p_result{};
-  IFace_Method_ResponseParamsDataView input_data_view(params, message);
-  
-  if (success && !input_data_view.ReadResult(&p_result))
-    success = false;
-  if (!success) {
+  IFace_Method_ResponseParamsDataView input_data_view(
+      reinterpret_cast<internal::IFace_Method_ResponseParams_Data*>(
+          message->mutable_payload()),
+      message);
+
+  if (!input_data_view.ReadResult(&p_result)) {
     mojo::internal::ReportDeserializationErrorForMessage(
         message, IFace::Name_, 0, true);
     return false;
@@ -278,24 +274,16 @@ bool IFaceStubDispatch::AcceptWithResponder(
   [[maybe_unused]] const uint64_t request_id = message->request_id();
   switch (static_cast<messages::IFace>(message->header()->name)) {
     case messages::IFace::kMethod: {
-      internal::IFace_Method_Params_Data* params =
-          reinterpret_cast<
-              internal::IFace_Method_Params_Data*>(
-                  message->mutable_payload());
       
 
       // Validation for IFace.0
-      bool success = true;
       bool p_param{};
-      IFace_Method_ParamsDataView input_data_view(params, message);
-      
-      if (success)
-        p_param = input_data_view.param();
-      if (!success) {
-        mojo::internal::ReportDeserializationErrorForMessage(
-            message, IFace::Name_, 0, false);
-        return false;
-      }
+      IFace_Method_ParamsDataView input_data_view(
+          reinterpret_cast<internal::IFace_Method_Params_Data*>(
+              message->mutable_payload()),
+          message);
+
+      p_param = input_data_view.param();
       auto callback =
           IFace_Method_ProxyToResponder::CreateCallback(
               *message, std::move(responder));

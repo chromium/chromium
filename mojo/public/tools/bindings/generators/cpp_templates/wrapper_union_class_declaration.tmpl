@@ -32,7 +32,7 @@ class {{export_attribute}} {{union.name}} {
   U To() const {
     return mojo::TypeConverter<U, {{union.name}}>::Convert(*this);
   }
-  ~{{union.name}}();
+  ~{{union.name}}(){% if union|is_trivially_destructible %} = default{% endif %};
 {%  if not union|should_inline_union %}
   // Delete the copy constructor and copy assignment operators because `data_`
   // contains raw pointers that must not be copied.
@@ -115,8 +115,12 @@ class {{export_attribute}} {{union.name}} {
         std::in_place_index_t<static_cast<size_t>(Tag::k{{field.name|under_to_camel}})>,
         {{field.kind|cpp_wrapper_param_type_new}} value);
 {%- endfor %}
+{%- if union|is_trivially_destructible %}
+    ~Union_() = default;
+{%- else %}
     // The contents of the union are explicitly destroyed by `DestroyActive()`.
     ~Union_() {}
+{%- endif %}
 {%  for field in union.fields %}
     {{field.kind|cpp_wrapper_type}} {{field.name}};
 {%- endfor %}
@@ -130,7 +134,9 @@ class {{export_attribute}} {{union.name}} {
   static bool Validate(const void* data,
                        mojo::internal::ValidationContext* validation_context);
 
+{%- if not union|is_trivially_destructible %}
   void DestroyActive();
+{%- endif %}
   Tag tag_;
   Union_ data_;
 };

@@ -5,10 +5,8 @@
 {% if struct.fields|length > 1 %}NOINLINE {% endif %}bool StructTraits<{{mojom_type}}::DataView, {{mojom_type}}Ptr>::Read(
     {{mojom_type}}::DataView input,
     {{mojom_type}}Ptr* output) {
-  bool success = true;
   {{mojom_type}}Ptr result({{mojom_type}}::New());
-  {{struct_macros.deserialize(struct, "input", "result->%s",
-                              "success")|indent(4)}}
+{{struct_macros.deserialize(struct, "input", "result->%s", "return false;")}}
   *output = std::move(result);
-  return success;
+  return true;
 }

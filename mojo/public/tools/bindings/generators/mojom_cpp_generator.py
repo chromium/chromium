@@ -615,6 +615,7 @@ class Generator(generator.Generator):
       "is_reference_kind": mojom.IsReferenceKind,
       "is_string_kind": mojom.IsStringKind,
       "is_struct_kind": mojom.IsStructKind,
+      "is_trivially_destructible": self._IsTriviallyDestructibleKind,
       "is_typemapped_kind": self._IsTypemappedKind,
       "is_union_kind": mojom.IsUnionKind,
       "passes_associated_kinds": mojom.PassesAssociatedKinds,
@@ -1037,6 +1038,12 @@ class Generator(generator.Generator):
         "default_constructible"
       ]
     return True
+
+  def _IsTriviallyDestructibleKind(self, kind):
+    return not any(
+      mojom.IsReferenceKind(field.kind) or self._IsTypemappedKind(field.kind)
+      for field in kind.fields
+    )
 
   def _IsFeatureOnByDefault(self, kind):
     # Chromium expects features to have a 'default_state' bool field.

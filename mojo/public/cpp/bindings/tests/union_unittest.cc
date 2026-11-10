@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -33,6 +34,10 @@
 namespace mojo {
 namespace test {
 namespace union_unittest {
+
+static_assert(std::is_trivially_destructible_v<PodUnion>);
+static_assert(std::is_trivially_destructible_v<PodUnionPtr>);
+static_assert(!std::is_trivially_destructible_v<ObjectUnion>);
 
 template <typename InputType, typename DataType>
 size_t SerializeStruct(InputType& input,

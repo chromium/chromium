@@ -31,6 +31,7 @@ namespace golden {
 class StructInUnionDataView;
 
 class BasicUnionDataView;
+class TrivialUnionDataView;
 
 
 }  // golden
@@ -49,6 +50,13 @@ struct MojomTypeTraits<::golden::StructInUnionDataView> {
 template <>
 struct MojomTypeTraits<::golden::BasicUnionDataView> {
   using Data = ::golden::internal::BasicUnion_Data;
+  using DataAsArrayElement = Data;
+  static constexpr MojomTypeCategory category = MojomTypeCategory::kUnion;
+};
+
+template <>
+struct MojomTypeTraits<::golden::TrivialUnionDataView> {
+  using Data = ::golden::internal::TrivialUnion_Data;
   using DataAsArrayElement = Data;
   static constexpr MojomTypeCategory category = MojomTypeCategory::kUnion;
 };
@@ -202,6 +210,49 @@ class BasicUnionDataView {
  private:
   internal::BasicUnion_Data* data_ = nullptr;
   mojo::Message* message_ = nullptr;
+};
+
+
+
+class TrivialUnionDataView {
+ public:
+  using Tag = internal::TrivialUnion_Data::TrivialUnion_Tag;
+
+  TrivialUnionDataView() = default;
+
+  TrivialUnionDataView(
+      internal::TrivialUnion_Data* data,
+      mojo::Message* message)
+      : data_(data) {}
+
+  bool is_null() const {
+    // For inlined unions, |data_| is always non-null. In that case we need to
+    // check |data_->is_null()|.
+    return !data_ || data_->is_null();
+  }
+
+  Tag tag() const { return data_->tag; }
+  bool is_numeric_value() const { return data_->tag == Tag::kNumericValue; }
+  int32_t numeric_value() const {
+    CHECK(is_numeric_value());
+    return data_->data.f_numeric_value;
+  }
+  bool is_enum_value() const { return data_->tag == Tag::kEnumValue; }
+  template <typename UserType>
+  [[nodiscard]] bool ReadEnumValue(UserType* output) const {
+    CHECK(is_enum_value());
+    return mojo::internal::Deserialize<::golden::EnumInUnion>(
+        data_->data.f_enum_value, output);
+  }
+  EnumInUnion enum_value() const {
+    CHECK(is_enum_value());
+    // TODO(dcheng): This seems incorrect, as it bypasses enum traits.
+    return ::mojo::internal::ToKnownEnumValueHelper(
+        static_cast<::golden::EnumInUnion>(data_->data.f_enum_value));
+  }
+
+ private:
+  internal::TrivialUnion_Data* data_ = nullptr;
 };
 
 

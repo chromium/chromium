@@ -38,6 +38,7 @@ StructInUnion::StructInUnion(
     : flag(std::move(flag_in)),
       value(std::move(value_in)) {}
 
+
 StructInUnion::~StructInUnion() = default;
 size_t StructInUnion::Hash(size_t seed) const {
   seed = mojo::internal::Hash(seed, this->flag);
@@ -136,6 +137,7 @@ BasicUnion::BasicUnion(
     : tag_(Tag::kStructValue),
       data_(std::in_place_index<static_cast<size_t>(Tag::kStructValue)>,
             std::move(value)) {}
+
 BasicUnion::~BasicUnion() {
   DestroyActive();
 }
@@ -235,6 +237,78 @@ bool BasicUnion::Validate(
     mojo::internal::ValidationContext* validation_context) {
   return Data_::Validate(data, validation_context, false);
 }
+TrivialUnionPtr
+TrivialUnion::NewNumericValue(
+    int32_t value) {
+  return TrivialUnionPtr(
+      std::in_place,
+      std::in_place_index<static_cast<size_t>(Tag::kNumericValue)>,
+      std::move(value));
+}
+
+TrivialUnionPtr
+TrivialUnion::NewEnumValue(
+    EnumInUnion value) {
+  return TrivialUnionPtr(
+      std::in_place,
+      std::in_place_index<static_cast<size_t>(Tag::kEnumValue)>,
+      std::move(value));
+}
+
+TrivialUnion::TrivialUnion(
+    std::in_place_index_t<static_cast<size_t>(Tag::kNumericValue)>,
+    int32_t value)
+    : tag_(Tag::kNumericValue),
+      data_(std::in_place_index<static_cast<size_t>(Tag::kNumericValue)>,
+            std::move(value)) {}
+
+TrivialUnion::TrivialUnion(
+    std::in_place_index_t<static_cast<size_t>(Tag::kEnumValue)>,
+    EnumInUnion value)
+    : tag_(Tag::kEnumValue),
+      data_(std::in_place_index<static_cast<size_t>(Tag::kEnumValue)>,
+            std::move(value)) {}
+
+
+void TrivialUnion::set_numeric_value(int32_t numeric_value) {
+  tag_ = Tag::kNumericValue;
+  data_.numeric_value = numeric_value;
+}
+
+void TrivialUnion::set_enum_value(EnumInUnion enum_value) {
+  tag_ = Tag::kEnumValue;
+  data_.enum_value = enum_value;
+}
+
+
+TrivialUnion::Union_::Union_(
+    std::in_place_index_t<static_cast<size_t>(Tag::kNumericValue)>,
+    int32_t value)
+    : numeric_value(std::move(value)) {}
+
+TrivialUnion::Union_::Union_(
+    std::in_place_index_t<static_cast<size_t>(Tag::kEnumValue)>,
+    EnumInUnion value)
+    : enum_value(std::move(value)) {}
+
+size_t TrivialUnion::Hash(size_t seed) const {
+  seed = mojo::internal::HashCombine(seed, static_cast<uint32_t>(tag_));
+  switch (tag_) {
+
+    case Tag::kNumericValue:
+      return mojo::internal::Hash(seed, data_.numeric_value);
+    case Tag::kEnumValue:
+      return mojo::internal::Hash(seed, data_.enum_value);
+    default:
+      NOTREACHED();
+  }
+}
+
+bool TrivialUnion::Validate(
+    const void* data,
+    mojo::internal::ValidationContext* validation_context) {
+  return Data_::Validate(data, validation_context, false);
+}
 
 
 }  // golden
@@ -247,15 +321,14 @@ namespace mojo {
 NOINLINE bool StructTraits<::golden::StructInUnion::DataView, ::golden::StructInUnionPtr>::Read(
     ::golden::StructInUnion::DataView input,
     ::golden::StructInUnionPtr* output) {
-  bool success = true;
   ::golden::StructInUnionPtr result(::golden::StructInUnion::New());
-  
-      if (success)
-        result->flag = input.flag();
-      if (success && !input.ReadValue(&result->value))
-        success = false;
+
+  if (!input.ReadValue(&result->value)) {
+    return false;
+  }
+  result->flag = input.flag();
   *output = std::move(result);
-  return success;
+  return true;
 }
 
 // static
@@ -294,6 +367,35 @@ NOINLINE bool UnionTraits<::golden::BasicUnion::DataView, ::golden::BasicUnionPt
 
       result = UnionType::NewStructValue(
           std::move(result_struct_value));
+      break;
+    }
+    default:
+
+      return false;
+  }
+  *output = std::move(result);
+  return true;
+}
+
+// static
+NOINLINE bool UnionTraits<::golden::TrivialUnion::DataView, ::golden::TrivialUnionPtr>::Read(
+    ::golden::TrivialUnion::DataView input,
+    ::golden::TrivialUnionPtr* output) {
+  using UnionType = ::golden::TrivialUnion;
+  using Tag = UnionType::Tag;
+
+  ::golden::TrivialUnionPtr result;
+  switch (input.tag()) {
+    case Tag::kNumericValue: {
+      result = UnionType::NewNumericValue(input.numeric_value());
+      break;
+    }
+    case Tag::kEnumValue: {
+      ::golden::EnumInUnion result_enum_value;
+      if (!input.ReadEnumValue(&result_enum_value))
+        return false;
+
+      result = UnionType::NewEnumValue(result_enum_value);
       break;
     }
     default:

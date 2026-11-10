@@ -135,7 +135,7 @@ class StructPtr {
 // `valid-but-moved-from` state explicitly and deferring destruction of the
 // contained value to the destructor, but it adds quite a bit of complexity.
 template <typename S>
-class InlinedStructPtr {
+class [[maybe_unused]] InlinedStructPtr {
  public:
   using Struct = S;
 
@@ -149,6 +149,7 @@ class InlinedStructPtr {
   InlinedStructPtr(const InlinedStructPtr&) = delete;
   InlinedStructPtr& operator=(const InlinedStructPtr&) = delete;
 
+  ~InlinedStructPtr() = default;
   ~InlinedStructPtr()
     requires(!std::is_trivially_destructible_v<Struct>)
   {
@@ -258,7 +259,10 @@ class InlinedStructPtr {
 
   union Storage {
     Storage() {}
-    ~Storage() {}
+    ~Storage() = default;
+    ~Storage()
+      requires(!std::is_trivially_destructible_v<Struct>)
+    {}
 
     template <typename... Args>
     explicit Storage(std::in_place_t, Args&&... args)

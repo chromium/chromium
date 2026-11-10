@@ -128,6 +128,55 @@ bool BasicUnion_Data::Validate(
     }
   }
 }
+// static
+bool TrivialUnion_Data::Validate(
+    const void* data,
+    mojo::internal::ValidationContext* validation_context,
+    bool inlined) {
+  if (!data) {
+    DCHECK(!inlined);
+    return true;
+  }
+
+  // If it is inlined, the alignment is already enforced by its enclosing
+  // object. We don't have to validate that.
+  DCHECK(!inlined || mojo::internal::IsAligned(data));
+
+  if (!inlined &&
+      !mojo::internal::ValidateNonInlinedUnionHeaderAndClaimMemory(
+          data, validation_context)) {
+    return false;
+  }
+
+  const TrivialUnion_Data* object = static_cast<const TrivialUnion_Data*>(data);
+
+  if (inlined && object->is_null())
+    return true;
+
+  switch (object->tag) {
+
+    case TrivialUnion_Tag::kNumericValue: {
+
+      return true;
+    }
+    case TrivialUnion_Tag::kEnumValue: {
+
+
+      if (!::golden::internal::EnumInUnion_Data
+            ::Validate(object->data.f_enum_value, validation_context))
+        return false;
+      return true;
+    }
+    default: {
+
+      ReportValidationError(
+          validation_context,
+          mojo::internal::VALIDATION_ERROR_UNKNOWN_UNION_TAG,
+          "unknown tag in TrivialUnion");
+      return false;
+    }
+  }
+}
 
 
 // static

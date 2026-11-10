@@ -251,7 +251,7 @@ class  ResultTestError {
   ResultTestError();
 
 
-  ~ResultTestError();
+  ~ResultTestError() = default;
 
   // Clone() is a template so it is only instantiated if it is used. Thus, the
   // bindings generator does not need to know whether Clone() or copy
@@ -491,7 +491,6 @@ class  ResultInterface_Method_ResponseParam_Result {
 
   static bool Validate(const void* data,
                        mojo::internal::ValidationContext* validation_context);
-
   void DestroyActive();
   Tag tag_;
   Union_ data_;
@@ -623,7 +622,6 @@ class  ResultInterface_SyncMethod_ResponseParam_Result {
 
   static bool Validate(const void* data,
                        mojo::internal::ValidationContext* validation_context);
-
   void DestroyActive();
   Tag tag_;
   Union_ data_;

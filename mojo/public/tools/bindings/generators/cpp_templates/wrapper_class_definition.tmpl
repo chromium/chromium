@@ -16,8 +16,11 @@ std::move({{name}}_in)
 {%-    endif -%}
 ){%  if not loop.last %},{% endif %}
 {%-  endfor %} {}
-{% endfor %}
+{% endfor -%}
+{%- if not struct|is_trivially_destructible %}
+
 {{struct.name}}::~{{struct.name}}() = default;
+{%- endif %}
 
 {%- if struct|is_hashable %}
 size_t {{struct.name}}::Hash(size_t seed) const {

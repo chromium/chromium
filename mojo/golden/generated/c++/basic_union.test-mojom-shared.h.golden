@@ -266,6 +266,64 @@ MOJO_INTERNAL_CHECK_SERIALIZATION(
 
 }  // namespace internal
 
+
+namespace internal {
+
+template <typename MaybeConstUserType>
+struct Serializer<::golden::TrivialUnionDataView, MaybeConstUserType> {
+  using UserType = typename std::remove_const<MaybeConstUserType>::type;
+  using Traits = UnionTraits<::golden::TrivialUnionDataView, UserType>;
+
+  NOINLINE static void Serialize(MaybeConstUserType& input,
+                                 MessageFragment<::golden::internal::TrivialUnion_Data>& fragment,
+                                 bool inlined) {
+    
+    if (CallIsNullIfExists<Traits>(input)) {
+       if (inlined)
+        fragment->set_null();
+      return;
+    }
+
+if (!inlined)
+  fragment.Allocate();
+
+    // TODO(azani): Handle unknown and objects.
+    // Set the not-null flag.
+auto tag = Traits::GetTag(input);
+fragment->size = kUnionDataSize;
+fragment->tag = tag;
+switch (tag) {
+  case ::golden::TrivialUnionDataView::Tag::kNumericValue: {
+    decltype(Traits::numeric_value(input))
+    in_numeric_value = Traits::numeric_value(input);
+    fragment->data.f_numeric_value = in_numeric_value;
+    break;
+  }
+  case ::golden::TrivialUnionDataView::Tag::kEnumValue: {
+    decltype(Traits::enum_value(input))
+    in_enum_value = Traits::enum_value(input);
+        
+mojo::internal::Serialize<::golden::EnumInUnion>(
+  in_enum_value,
+  &fragment->data.f_enum_value);
+    break;
+  }
+}
+  }
+
+  static bool Deserialize(::golden::internal::TrivialUnion_Data* input,
+                          UserType* output,
+                          Message* message) {
+    if (!input || input->is_null())
+      return CallSetToNullIfExists<Traits>(output);
+
+    ::golden::TrivialUnionDataView data_view(input, message);
+    return CallTraitsRead<Traits>(data_view, output);
+  }
+};
+
+}  // namespace internal
+
 }  // namespace mojo
 
 
@@ -283,6 +341,7 @@ inline void BasicUnionDataView::GetStructValueDataView(
   CHECK(is_struct_value());
   *output = StructInUnionDataView(data_->data.f_struct_value.Get(), message_);
 }
+
 
 
 }  // golden

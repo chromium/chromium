@@ -34,7 +34,6 @@ ArrayElement::ArrayElement(
     int32_t value_in)
     : value(std::move(value_in)) {}
 
-ArrayElement::~ArrayElement() = default;
 size_t ArrayElement::Hash(size_t seed) const {
   seed = mojo::internal::Hash(seed, this->value);
   return seed;
@@ -92,6 +91,7 @@ StructWithArrays::StructWithArrays(
       nullable_struct_map(std::move(nullable_struct_map_in)),
       strings(std::move(strings_in)),
       nullable_strings(std::move(nullable_strings_in)) {}
+
 
 StructWithArrays::~StructWithArrays() = default;
 
@@ -207,13 +207,11 @@ namespace mojo {
 bool StructTraits<::golden::ArrayElement::DataView, ::golden::ArrayElementPtr>::Read(
     ::golden::ArrayElement::DataView input,
     ::golden::ArrayElementPtr* output) {
-  bool success = true;
   ::golden::ArrayElementPtr result(::golden::ArrayElement::New());
-  
-      if (success)
-        result->value = input.value();
+
+  result->value = input.value();
   *output = std::move(result);
-  return success;
+  return true;
 }
 
 
@@ -221,31 +219,22 @@ bool StructTraits<::golden::ArrayElement::DataView, ::golden::ArrayElementPtr>::
 NOINLINE bool StructTraits<::golden::StructWithArrays::DataView, ::golden::StructWithArraysPtr>::Read(
     ::golden::StructWithArrays::DataView input,
     ::golden::StructWithArraysPtr* output) {
-  bool success = true;
   ::golden::StructWithArraysPtr result(::golden::StructWithArrays::New());
-  
-      if (success && !input.ReadStructs(&result->structs))
-        success = false;
-      if (success && !input.ReadNullableStructs(&result->nullable_structs))
-        success = false;
-      if (success && !input.ReadNullableElements(&result->nullable_elements))
-        success = false;
-      if (success && !input.ReadFixedSizeStructs(&result->fixed_size_structs))
-        success = false;
-      if (success && !input.ReadNestedStructs(&result->nested_structs))
-        success = false;
-      if (success && !input.ReadNullableNestedStructs(&result->nullable_nested_structs))
-        success = false;
-      if (success && !input.ReadStructMap(&result->struct_map))
-        success = false;
-      if (success && !input.ReadNullableStructMap(&result->nullable_struct_map))
-        success = false;
-      if (success && !input.ReadStrings(&result->strings))
-        success = false;
-      if (success && !input.ReadNullableStrings(&result->nullable_strings))
-        success = false;
+
+  if (!input.ReadStructs(&result->structs) ||
+      !input.ReadNullableStructs(&result->nullable_structs) ||
+      !input.ReadNullableElements(&result->nullable_elements) ||
+      !input.ReadFixedSizeStructs(&result->fixed_size_structs) ||
+      !input.ReadNestedStructs(&result->nested_structs) ||
+      !input.ReadNullableNestedStructs(&result->nullable_nested_structs) ||
+      !input.ReadStructMap(&result->struct_map) ||
+      !input.ReadNullableStructMap(&result->nullable_struct_map) ||
+      !input.ReadStrings(&result->strings) ||
+      !input.ReadNullableStrings(&result->nullable_strings)) {
+    return false;
+  }
   *output = std::move(result);
-  return success;
+  return true;
 }
 
 }  // namespace mojo

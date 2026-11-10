@@ -42,7 +42,6 @@
 namespace golden {
 ResultTestError::ResultTestError() {}
 
-ResultTestError::~ResultTestError() = default;
 size_t ResultTestError::Hash(size_t seed) const {
   return seed;
 }
@@ -88,6 +87,7 @@ ResultInterface_Method_ResponseParam_Result::ResultInterface_Method_ResponsePara
     : tag_(Tag::kFailure),
       data_(std::in_place_index<static_cast<size_t>(Tag::kFailure)>,
             std::move(value)) {}
+
 ResultInterface_Method_ResponseParam_Result::~ResultInterface_Method_ResponseParam_Result() {
   DestroyActive();
 }
@@ -182,6 +182,7 @@ ResultInterface_SyncMethod_ResponseParam_Result::ResultInterface_SyncMethod_Resp
     : tag_(Tag::kFailure),
       data_(std::in_place_index<static_cast<size_t>(Tag::kFailure)>,
             std::move(value)) {}
+
 ResultInterface_SyncMethod_ResponseParam_Result::~ResultInterface_SyncMethod_ResponseParam_Result() {
   DestroyActive();
 }
@@ -559,20 +560,16 @@ class ResultInterface_Method_ProxyToResponder {
 bool ResultInterface_Method_ForwardToCallback::Accept(
     mojo::Message* message) {
   DCHECK(message->is_serialized());
-  internal::ResultInterface_Method_ResponseParams_Data* params =
-      reinterpret_cast<
-          internal::ResultInterface_Method_ResponseParams_Data*>(
-              message->mutable_payload());
   
 
   // Validation for ResultInterface.0
-  bool success = true;
   ResultInterface_Method_ResponseParam_ResultPtr p_result{};
-  ResultInterface_Method_ResponseParamsDataView input_data_view(params, message);
-  
-  if (success && !input_data_view.ReadResult(&p_result))
-    success = false;
-  if (!success) {
+  ResultInterface_Method_ResponseParamsDataView input_data_view(
+      reinterpret_cast<internal::ResultInterface_Method_ResponseParams_Data*>(
+          message->mutable_payload()),
+      message);
+
+  if (!input_data_view.ReadResult(&p_result)) {
     mojo::internal::ReportDeserializationErrorForMessage(
         message, ResultInterface::Name_, 0, true);
     return false;
@@ -671,20 +668,16 @@ class ResultInterface_SyncMethod_ProxyToResponder {
 bool ResultInterface_SyncMethod_ForwardToCallback::Accept(
     mojo::Message* message) {
   DCHECK(message->is_serialized());
-  internal::ResultInterface_SyncMethod_ResponseParams_Data* params =
-      reinterpret_cast<
-          internal::ResultInterface_SyncMethod_ResponseParams_Data*>(
-              message->mutable_payload());
   
 
   // Validation for ResultInterface.1
-  bool success = true;
   ResultInterface_SyncMethod_ResponseParam_ResultPtr p_result{};
-  ResultInterface_SyncMethod_ResponseParamsDataView input_data_view(params, message);
-  
-  if (success && !input_data_view.ReadResult(&p_result))
-    success = false;
-  if (!success) {
+  ResultInterface_SyncMethod_ResponseParamsDataView input_data_view(
+      reinterpret_cast<internal::ResultInterface_SyncMethod_ResponseParams_Data*>(
+          message->mutable_payload()),
+      message);
+
+  if (!input_data_view.ReadResult(&p_result)) {
     mojo::internal::ReportDeserializationErrorForMessage(
         message, ResultInterface::Name_, 1, true);
     return false;
@@ -752,19 +745,16 @@ void ResultInterface_SyncMethod_ProxyToResponder::Run(
 bool ResultInterface_SyncMethod_HandleSyncResponse::Accept(
     mojo::Message* message) {
   DCHECK(message->is_serialized());
-  internal::ResultInterface_SyncMethod_ResponseParams_Data* params =
-      reinterpret_cast<internal::ResultInterface_SyncMethod_ResponseParams_Data*>(
-          message->mutable_payload());
   
 
   // Validation for ResultInterface.1
-  bool success = true;
   ResultInterface_SyncMethod_ResponseParam_ResultPtr p_result{};
-  ResultInterface_SyncMethod_ResponseParamsDataView input_data_view(params, message);
-  
-  if (success && !input_data_view.ReadResult(&p_result))
-    success = false;
-  if (!success) {
+  ResultInterface_SyncMethod_ResponseParamsDataView input_data_view(
+      reinterpret_cast<internal::ResultInterface_SyncMethod_ResponseParams_Data*>(
+          message->mutable_payload()),
+      message);
+
+  if (!input_data_view.ReadResult(&p_result)) {
     mojo::internal::ReportDeserializationErrorForMessage(
         message, ResultInterface::Name_, 1, true);
     return false;
@@ -802,24 +792,16 @@ bool ResultInterfaceStubDispatch::AcceptWithResponder(
   [[maybe_unused]] const uint64_t request_id = message->request_id();
   switch (static_cast<messages::ResultInterface>(message->header()->name)) {
     case messages::ResultInterface::kMethod: {
-      internal::ResultInterface_Method_Params_Data* params =
-          reinterpret_cast<
-              internal::ResultInterface_Method_Params_Data*>(
-                  message->mutable_payload());
       
 
       // Validation for ResultInterface.0
-      bool success = true;
       bool p_a{};
-      ResultInterface_Method_ParamsDataView input_data_view(params, message);
-      
-      if (success)
-        p_a = input_data_view.a();
-      if (!success) {
-        mojo::internal::ReportDeserializationErrorForMessage(
-            message, ResultInterface::Name_, 0, false);
-        return false;
-      }
+      ResultInterface_Method_ParamsDataView input_data_view(
+          reinterpret_cast<internal::ResultInterface_Method_Params_Data*>(
+              message->mutable_payload()),
+          message);
+
+      p_a = input_data_view.a();
       auto callback =
           ResultInterface_Method_ProxyToResponder::CreateCallback(
               *message, std::move(responder));
@@ -830,24 +812,16 @@ bool ResultInterfaceStubDispatch::AcceptWithResponder(
       return true;
     }
     case messages::ResultInterface::kSyncMethod: {
-      internal::ResultInterface_SyncMethod_Params_Data* params =
-          reinterpret_cast<
-              internal::ResultInterface_SyncMethod_Params_Data*>(
-                  message->mutable_payload());
       
 
       // Validation for ResultInterface.1
-      bool success = true;
       bool p_a{};
-      ResultInterface_SyncMethod_ParamsDataView input_data_view(params, message);
-      
-      if (success)
-        p_a = input_data_view.a();
-      if (!success) {
-        mojo::internal::ReportDeserializationErrorForMessage(
-            message, ResultInterface::Name_, 1, false);
-        return false;
-      }
+      ResultInterface_SyncMethod_ParamsDataView input_data_view(
+          reinterpret_cast<internal::ResultInterface_SyncMethod_Params_Data*>(
+              message->mutable_payload()),
+          message);
+
+      p_a = input_data_view.a();
       auto callback =
           ResultInterface_SyncMethod_ProxyToResponder::CreateCallback(
               *message, std::move(responder));
@@ -919,11 +893,10 @@ namespace mojo {
 bool StructTraits<::golden::ResultTestError::DataView, ::golden::ResultTestErrorPtr>::Read(
     ::golden::ResultTestError::DataView input,
     ::golden::ResultTestErrorPtr* output) {
-  bool success = true;
   ::golden::ResultTestErrorPtr result(::golden::ResultTestError::New());
-  
+
   *output = std::move(result);
-  return success;
+  return true;
 }
 
 // static
