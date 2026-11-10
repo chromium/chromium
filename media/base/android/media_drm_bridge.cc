@@ -40,7 +40,6 @@
 #include "media/base/media_switches.h"
 #include "media/base/provision_fetcher.h"
 #include "media/cdm/clear_key_cdm_common.h"
-#include "third_party/jni_zero/jni_zero.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -1029,7 +1028,7 @@ MediaDrmBridge::MediaDrmBridge(
   j_media_drm_.Reset(Java_MediaDrmBridge_create(
       env, j_scheme_uuid, j_security_origin, static_cast<jint>(security_level),
       j_message, requires_media_crypto, reinterpret_cast<intptr_t>(this),
-      jni_zero::MakeRaw(storage_.get())));
+      reinterpret_cast<intptr_t>(storage_.get())));
 }
 
 MediaDrmBridge::~MediaDrmBridge() {
