@@ -110,6 +110,11 @@ void SimNetwork::AddRequest(SimRequestBase& request) {
   for (const auto& http_header : request.response_http_headers_)
     response.AddHttpHeaderField(http_header.key, http_header.value);
 
+  if (!request.dns_aliases_.empty()) {
+    response.SetDnsAliases(
+        {request.dns_aliases_.begin(), request.dns_aliases_.end()});
+  }
+
   // TODO(crbug.com/751425): We should use the mock functionality
   // via |SimTest::web_frame_client_| and/or |SimTest::web_view_helper_|.
   url_test_helpers::RegisterMockedURLLoadWithCustomResponse(request.url_, "",
@@ -132,6 +137,10 @@ bool SimNetwork::FillNavigationParamsResponse(WebNavigationParams* params) {
   params->response.SetHttpStatusCode(request->response_http_status_);
   for (const auto& http_header : request->response_http_headers_)
     params->response.AddHttpHeaderField(http_header.key, http_header.value);
+  if (!request->dns_aliases_.empty()) {
+    params->response.SetDnsAliases(
+        {request->dns_aliases_.begin(), request->dns_aliases_.end()});
+  }
 
   // SimTest mock navigations default to being origin-keyed unless the
   // "Origin-Agent-Cluster: ?0" HTTP header is explicitly provided.

@@ -45,6 +45,9 @@ class SimRequestBase {
 
     HashMap<String, String> response_http_headers;
 
+    // DNS CNAME aliases to attach to the simulated response.
+    Vector<String> dns_aliases;
+
     // The HTTP status code of the response. |response_http_status| is ignored
     // if |redirect_url| is non-empty, since a redirect implies a 302 status
     // code.
@@ -101,6 +104,7 @@ class SimRequestBase {
       nullptr;
   unsigned total_encoded_data_length_ = 0;
   HashMap<String, String> response_http_headers_;
+  Vector<String> dns_aliases_;
   int response_http_status_;
   raw_ptr<StaticDataNavigationBodyLoader,
           UnprotectedInRelease | DanglingUntriaged>

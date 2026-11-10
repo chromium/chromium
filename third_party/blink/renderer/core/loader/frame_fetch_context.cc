@@ -1368,11 +1368,12 @@ ResourceAnnotations FrameFetchContext::CalculateResourceAnnotations(
     return annotations;
   }
 
-  const KURL& url =
-      alias_url.has_value() ? alias_url.value() : resource_request.Url();
+  // Always pass `resource_request.Url()` (rather than `alias_url`) so that
+  // `AdTracker` records known ad scripts under the actual request URL that V8
+  // compiles and executes, rather than a DNS CNAME alias.
   annotations.ad_provenance =
       GetFrame()->GetAdTracker()->CalculateIfAdSubresource(
-          document_->domWindow(), url, type, initiator_info,
+          document_->domWindow(), resource_request.Url(), type, initiator_info,
           std::move(annotations.ad_provenance), scan_javascript_stack);
   return annotations;
 }

@@ -23,6 +23,7 @@ SimRequestBase::SimRequestBase(KURL url,
       requestor_origin_(params.requestor_origin),
       start_immediately_(start_immediately),
       response_http_headers_(params.response_http_headers),
+      dns_aliases_(std::move(params.dns_aliases)),
       response_http_status_(params.response_http_status) {
   SimNetwork::Current().AddRequest(*this);
 }

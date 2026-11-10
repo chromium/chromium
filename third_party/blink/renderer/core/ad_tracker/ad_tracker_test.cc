@@ -225,7 +225,12 @@ class TestAdTracker : public AdTracker {
             std::move(known_ad_provenance), scan_javascript_stack);
 
     String resource_url = request_url.GetString();
-    is_ad_.insert(resource_url, observed_ad_provenance.has_value());
+    auto result =
+        is_ad_.insert(resource_url, observed_ad_provenance.has_value());
+    // `HashMap::insert` does not overwrite existing entries, so OR the value to
+    // record `true` if a subsequent response-time CNAME alias check (or earlier
+    // load) tags this URL as an ad.
+    result.stored_value->value |= observed_ad_provenance.has_value();
 
     if (quit_closure_ && url_to_wait_for_ == resource_url) {
       std::move(quit_closure_).Run();
@@ -267,12 +272,14 @@ void SetIsAdFrame(LocalFrame* frame, bool created_by_ad_script = true) {
 class AdTrackerSimTest : public SimTest {
  protected:
   AdTrackerSimTest() {
-    // Build a subresource filter ruleset that will consider *ad_script.js and
-    // *ad=true urls as ads.
+    // Build a subresource filter ruleset that will consider *ad_script.js,
+    // *ad=true, and ||ad.com/* urls as ads.
     std::vector<url_pattern_index::proto::UrlRule> rules;
     rules.push_back(
         subresource_filter::testing::CreateSuffixRule("ad_script.js"));
     rules.push_back(subresource_filter::testing::CreateSuffixRule("ad=true"));
+    rules.push_back(
+        subresource_filter::testing::CreateSubdomainRule("ad.com/"));
 
     subresource_filter::testing::TestRulesetPair test_ruleset_pair;
     subresource_filter::testing::TestRulesetCreator ruleset_creator;
@@ -5285,6 +5292,144 @@ TEST_F(AdTrackerSimTest, ShutdownClearsAdScripts) {
 
   EXPECT_FALSE(IsKnownAdScript(GetDocument().GetExecutionContext(), kAdUrl));
   EXPECT_TRUE(ad_tracker_->GetAdScripts().empty());
+}
+
+TEST_F(AdTrackerSimTest,
+       CnameAliasedClassicScript_TracksAncestryAndSubresource) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kSendCnameAliasesToSubresourceFilterFromRenderer);
+
+  const String kCnameScriptUrl = "https://foo.example.com/cname_script.js";
+  const String kAliasScriptUrl = "https://ad.com/cname_script.js";
+  const String kImageUrl = "https://example.com/pixel.gif";
+
+  SimRequest::Params cname_params;
+  cname_params.dns_aliases = {"ad.com", "foo.example.com"};
+
+  SimSubresourceRequest cname_script(kCnameScriptUrl, "text/javascript",
+                                     cname_params);
+  SimSubresourceRequest image(kImageUrl, "image/gif");
+
+  main_resource_->Complete(
+      "<body><script "
+      "src=\"https://foo.example.com/cname_script.js\"></script></body>");
+
+  cname_script.Complete("(new Image()).src = 'pixel.gif';");
+  ad_tracker_->WaitForSubresource(kImageUrl);
+
+  EXPECT_TRUE(
+      IsKnownAdScript(GetDocument().GetExecutionContext(), kCnameScriptUrl));
+  EXPECT_FALSE(
+      IsKnownAdScript(GetDocument().GetExecutionContext(), kAliasScriptUrl));
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(kCnameScriptUrl));
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(kImageUrl));
+
+  ASSERT_EQ(ad_tracker_->GetAdScripts().size(), 1u);
+  V8ScriptId script_id = ad_tracker_->GetAdScripts().begin()->key;
+  EXPECT_EQ(String(ad_tracker_->GetAncestry(script_id)
+                       .root_script_filterlist_rule.ToString()),
+            "||ad.com/");
+
+  image.Complete();
+}
+
+TEST_F(AdTrackerSimTest,
+       CnameAliasedModuleScript_TracksAncestryAndSubresource) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kSendCnameAliasesToSubresourceFilterFromRenderer);
+
+  const String kCnameModuleUrl = "https://foo.example.com/cname_module.js";
+  const String kAliasModuleUrl = "https://sub.ad.com/cname_module.js";
+  const String kImageUrl = "https://example.com/pixel.gif";
+
+  SimRequest::Params cname_params;
+  cname_params.dns_aliases = {"sub.ad.com", "foo.example.com"};
+  cname_params.response_http_headers.insert("Access-Control-Allow-Origin", "*");
+
+  SimSubresourceRequest cname_module(kCnameModuleUrl, "text/javascript",
+                                     cname_params);
+  SimSubresourceRequest image(kImageUrl, "image/gif");
+
+  main_resource_->Complete(
+      "<head><script type=\"module\" "
+      "src=\"https://foo.example.com/cname_module.js\"></script></head>");
+
+  cname_module.Complete("(new Image()).src = 'pixel.gif';");
+  ad_tracker_->WaitForSubresource(kImageUrl);
+
+  EXPECT_TRUE(
+      IsKnownAdScript(GetDocument().GetExecutionContext(), kCnameModuleUrl));
+  EXPECT_FALSE(
+      IsKnownAdScript(GetDocument().GetExecutionContext(), kAliasModuleUrl));
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(kCnameModuleUrl));
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(kImageUrl));
+
+  ASSERT_EQ(ad_tracker_->GetAdScripts().size(), 1u);
+  V8ScriptId script_id = ad_tracker_->GetAdScripts().begin()->key;
+  EXPECT_EQ(String(ad_tracker_->GetAncestry(script_id)
+                       .root_script_filterlist_rule.ToString()),
+            "||ad.com/");
+
+  image.Complete();
+}
+
+TEST_F(AdTrackerSimTest, CnameAliasedScript_FeatureDisabled_NotTracked) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kSendCnameAliasesToSubresourceFilterFromRenderer);
+
+  const String kCnameScriptUrl = "https://foo.example.com/cname_script.js";
+  const String kImageUrl = "https://example.com/pixel.gif";
+
+  SimRequest::Params cname_params;
+  cname_params.dns_aliases = {"ad.com", "foo.example.com"};
+
+  SimSubresourceRequest cname_script(kCnameScriptUrl, "text/javascript",
+                                     cname_params);
+  SimSubresourceRequest image(kImageUrl, "image/gif");
+
+  main_resource_->Complete(
+      "<body><script "
+      "src=\"https://foo.example.com/cname_script.js\"></script></body>");
+
+  cname_script.Complete("(new Image()).src = 'pixel.gif';");
+  ad_tracker_->WaitForSubresource(kImageUrl);
+
+  EXPECT_FALSE(
+      IsKnownAdScript(GetDocument().GetExecutionContext(), kCnameScriptUrl));
+  EXPECT_FALSE(ad_tracker_->RequestWithUrlTaggedAsAd(kCnameScriptUrl));
+  EXPECT_FALSE(ad_tracker_->RequestWithUrlTaggedAsAd(kImageUrl));
+
+  image.Complete();
+}
+
+TEST_F(AdTrackerSimTest, CnameAliasedScript_NonMatchingAlias_NotTracked) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kSendCnameAliasesToSubresourceFilterFromRenderer);
+
+  const String kCnameScriptUrl = "https://foo.example.com/cname_script.js";
+  const String kImageUrl = "https://example.com/pixel.gif";
+
+  SimRequest::Params cname_params;
+  cname_params.dns_aliases = {"benign-cdn.com", "foo.example.com"};
+
+  SimSubresourceRequest cname_script(kCnameScriptUrl, "text/javascript",
+                                     cname_params);
+  SimSubresourceRequest image(kImageUrl, "image/gif");
+
+  main_resource_->Complete(
+      "<body><script "
+      "src=\"https://foo.example.com/cname_script.js\"></script></body>");
+
+  cname_script.Complete("(new Image()).src = 'pixel.gif';");
+  ad_tracker_->WaitForSubresource(kImageUrl);
+
+  EXPECT_FALSE(
+      IsKnownAdScript(GetDocument().GetExecutionContext(), kCnameScriptUrl));
+  EXPECT_FALSE(ad_tracker_->RequestWithUrlTaggedAsAd(kCnameScriptUrl));
+  EXPECT_FALSE(ad_tracker_->RequestWithUrlTaggedAsAd(kImageUrl));
+
+  image.Complete();
 }
 
 }  // namespace blink
