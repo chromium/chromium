@@ -1,0 +1,7 @@
+include_rules = [
+  # keep-sorted start
+  "+components/actor/core",
+  "+ios/chrome/browser/intelligence",
+  "+ios/chrome/browser/shared",
+  # keep-sorted end
+]
