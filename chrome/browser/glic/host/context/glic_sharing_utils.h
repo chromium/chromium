@@ -41,6 +41,10 @@ bool IsTabValidForPinningInProfile(tabs::TabInterface* tab, Profile* profile);
 bool IsTabValidForSharing(content::WebContents* web_contents);
 bool IsTabValidForSharing(tabs::TabInterface* tab);
 
+// Returns true if screenshot capture for `web_contents` is blocked by
+// enterprise screenshot protection or Data Controls policies.
+bool IsScreenshotBlockedByEnterprisePolicy(content::WebContents* web_contents);
+
 // Returns the most recently active tab from the given list of tabs.
 // The list of tabs must not be empty.
 tabs::TabInterface* GetMostRecentlyActiveTab(

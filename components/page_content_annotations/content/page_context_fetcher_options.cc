@@ -12,6 +12,13 @@
 
 namespace page_content_annotations {
 
+ScreenshotOptions::ScreenshotOptions(const ScreenshotOptions&) = default;
+ScreenshotOptions& ScreenshotOptions::operator=(const ScreenshotOptions&) =
+    default;
+ScreenshotOptions::ScreenshotOptions(ScreenshotOptions&&) = default;
+ScreenshotOptions& ScreenshotOptions::operator=(ScreenshotOptions&&) = default;
+ScreenshotOptions::~ScreenshotOptions() = default;
+
 // static
 ScreenshotOptions ScreenshotOptions::FullPage(
     PaintPreviewOptions paint_preview_options,

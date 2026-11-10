@@ -74,6 +74,9 @@ namespace page_content_annotations {
 
 namespace {
 
+constexpr char kScreenshotBlockedByEnterprisePolicyMessage[] =
+    "Screenshot blocked by enterprise policy";
+
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kPageContextFetcherAndroidViewportCrop,
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -382,8 +385,9 @@ void PageContextFetcher::FetchStart(content::WebContents& aweb_contents,
   // checking and signaling.
   callback_ = std::move(callback);
 
-  if (options.screenshot_options) {
-    GetTabScreenshot(*web_contents(), options.screenshot_options.value());
+  screenshot_options_ = options.screenshot_options;
+  if (screenshot_options_) {
+    GetTabScreenshot(*web_contents());
   } else {
     screenshot_done_ = true;
   }
@@ -502,9 +506,18 @@ void PageContextFetcher::ReceivedPdfResult(
   RunCallbackIfComplete();
 }
 
-void PageContextFetcher::GetTabScreenshot(
-    content::WebContents& web_contents,
-    const ScreenshotOptions& screenshot_options) {
+void PageContextFetcher::GetTabScreenshot(content::WebContents& web_contents) {
+  CHECK(screenshot_options_);
+  const ScreenshotOptions& screenshot_options = *screenshot_options_;
+  if (!IsScreenshotAllowed()) {
+    pending_result_->screenshot_result = base::unexpected(
+        ScreenshotError{ScreenshotCaptureStatus::kBlockedByEnterprisePolicy,
+                        kScreenshotBlockedByEnterprisePolicyMessage});
+    screenshot_done_ = true;
+    RunCallbackIfComplete();
+    return;
+  }
+
   auto* view = web_contents.GetRenderWidgetHostView();
   if (progress_listener_) {
     progress_listener_->BeginScreenshot();
@@ -517,10 +530,6 @@ void PageContextFetcher::GetTabScreenshot(
             "Could not retrieve RenderWidgetHostView."}));
     return;
   }
-
-  screenshot_redaction_color_ = screenshot_options.redaction_color();
-  screenshot_collection_options_ =
-      screenshot_options.screenshot_collection_options();
 
   gfx::Size view_size = view->GetViewBounds().size();
   float dsf = view->GetDeviceScaleFactor();
@@ -567,8 +576,9 @@ void PageContextFetcher::GetTabScreenshot(
         .clip_rect = clip_rect,
         .scale_factor = GetScreenshotScaleFactor(
             original_view_size_pixels_,
-            GetScreenshotSize(original_view_size_pixels_,
-                              screenshot_collection_options_)),
+            GetScreenshotSize(
+                original_view_size_pixels_,
+                screenshot_options.screenshot_collection_options())),
         .clip_x_coord_override = clip_coord_override,
         .clip_y_coord_override = clip_coord_override,
         .redaction_params = std::move(redaction_params),
@@ -607,7 +617,7 @@ void PageContextFetcher::GetTabScreenshot(
     view->CopyFromSurface(
         src_rect,
         GetScreenshotSize(original_view_size_pixels_,
-                          screenshot_collection_options_),
+                          screenshot_options.screenshot_collection_options()),
         kScreenshotTimeout.Get(),
         base::BindOnce(&PageContextFetcher::ReceivedViewportBitmap,
                        GetWeakPtr()));
@@ -656,6 +666,13 @@ void PageContextFetcher::ReceivedViewportBitmapOrError(
     return;
   }
   if (bitmap_result.has_value()) {
+    // Policy may have changed during capture; do not hand off the pixels.
+    if (!IsScreenshotAllowed()) {
+      ReceivedEncodedScreenshot(base::unexpected(
+          ScreenshotError{ScreenshotCaptureStatus::kBlockedByEnterprisePolicy,
+                          kScreenshotBlockedByEnterprisePolicyMessage}));
+      return;
+    }
     const SkBitmap* bitmap = bitmap_result.value();
     pending_result_->screenshot_result.emplace(
         gfx::SkISizeToSize(bitmap->dimensions()));
@@ -667,7 +684,6 @@ void PageContextFetcher::ReceivedViewportBitmapOrError(
       progress_listener_->ScreenshotCaptured(*bitmap);
     }
     ProcessTrackedElementRects(tracked_element_rects);
-    MaybeAddIframeInfo();
     RedactAndEncodeScreenshotIfNeeded();
   } else {
     ReceivedEncodedScreenshot(base::unexpected(ScreenshotError{
@@ -711,7 +727,8 @@ void PageContextFetcher::RedactAndEncodeScreenshot(
                                   std::move(*redacted_bitmap));
           },
           *screenshot_bitmap_, std::move(visible_bounding_boxes_for_redaction),
-          screenshot_redaction_color_, screenshot_collection_options_),
+          screenshot_options_->redaction_color(),
+          screenshot_options_->screenshot_collection_options()),
       base::BindOnce(&PageContextFetcher::ReceivedEncodedScreenshot,
                      GetWeakPtr()));
   screenshot_bitmap_.reset();
@@ -799,11 +816,20 @@ void PageContextFetcher::ReceivedEncodedScreenshot(
   auto elapsed = elapsed_timer_.Elapsed();
   screenshot_done_ = true;
   capture_count_lock_ = {};
+  // Policy may have changed while redacting and encoding on the worker thread;
+  // do not hand off the redacted pixels or the encoded screenshot.
+  if (screenshot_data.has_value() && !IsScreenshotAllowed()) {
+    DiscardScreenshotBitmap();
+    screenshot_data = base::unexpected(
+        ScreenshotError{ScreenshotCaptureStatus::kBlockedByEnterprisePolicy,
+                        kScreenshotBlockedByEnterprisePolicyMessage});
+  }
   if (screenshot_data.has_value()) {
     RecordScreenshotCaptureStatus(ScreenshotCaptureStatus::kSuccess);
     pending_result_->screenshot_result.value().screenshot_data =
         std::move(screenshot_data.value().first);
-    switch (GetScreenshotImageType(screenshot_collection_options_)) {
+    switch (GetScreenshotImageType(
+        screenshot_options_->screenshot_collection_options())) {
       case ScreenshotImageType::kJpeg:
         pending_result_->screenshot_result.value().mime_type = "image/jpeg";
         break;
@@ -881,7 +907,6 @@ void PageContextFetcher::ReceivedAnnotatedPageContent(
     }
   }
 
-  MaybeAddIframeInfo();
   RedactAndEncodeScreenshotIfNeeded();
 
   RunCallbackIfComplete();
@@ -917,6 +942,23 @@ void PageContextFetcher::RunCallbackIfComplete() {
     std::move(callback_).Run(base::unexpected(FetchPageContextErrorDetails{
         FetchPageContextError::kWebContentsChanged, "web contents changed"}));
     return;
+  }
+
+  // Policy may have changed while other tasks finished after the screenshot
+  // was encoded; do not hand off the result with the screenshot.
+  if (pending_result_->screenshot_result.has_value() &&
+      !IsScreenshotAllowed()) {
+    DiscardScreenshotBitmap();
+    pending_result_->screenshot_result = base::unexpected(
+        ScreenshotError{ScreenshotCaptureStatus::kBlockedByEnterprisePolicy,
+                        kScreenshotBlockedByEnterprisePolicyMessage});
+  }
+
+  // Build the screenshot metadata only now, after the final policy check and
+  // only if there is a screenshot to describe, so nothing is populated for a
+  // blocked or failed screenshot.
+  if (pending_result_->screenshot_result.has_value()) {
+    MaybeAddIframeInfo();
   }
 
   std::move(callback_).Run(base::ok(std::move(pending_result_)));
@@ -1065,6 +1107,20 @@ void PageContextFetcher::CollectTrackedElementRectsForPassword(
     tracked_element_bounds_for_screenshot_redaction_.push_back(
         rect.visible_bounds);
   }
+}
+
+bool PageContextFetcher::IsScreenshotAllowed() const {
+  if (!web_contents()) {
+    return false;
+  }
+  const auto& callback = screenshot_options_->is_screenshot_allowed_callback();
+  return !callback || callback.Run(web_contents());
+}
+
+void PageContextFetcher::DiscardScreenshotBitmap() {
+  screenshot_capture_done_ = false;
+  screenshot_bitmap_.reset();
+  iframe_info_.clear();
 }
 
 base::WeakPtr<PageContextFetcher> PageContextFetcher::GetWeakPtr() {

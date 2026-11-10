@@ -108,7 +108,9 @@ enum class ScreenshotCaptureStatus {
   kRedactionError = 6,
   // Image codec failed to encode the screenshot bitmap.
   kEncodingError = 7,
-  kMaxValue = kEncodingError,
+  // Screenshot capture was blocked by enterprise policy.
+  kBlockedByEnterprisePolicy = 8,
+  kMaxValue = kBlockedByEnterprisePolicy,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:ScreenshotCaptureStatus)
 

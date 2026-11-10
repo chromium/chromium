@@ -1600,6 +1600,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Timeout"/>
   <int value="6" label="Redaction error"/>
   <int value="7" label="Encoding error"/>
+  <int value="8" label="Blocked by enterprise policy"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/page_content_annotations/content/page_context_fetcher_metrics.h:ScreenshotCaptureStatus) -->

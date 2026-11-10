@@ -1628,6 +1628,7 @@ apc::TabObservation::ScreenshotResult ToScreenshotResult(
     case ScreenshotCaptureStatus::kPaintPreviewError:
     case ScreenshotCaptureStatus::kRedactionError:
     case ScreenshotCaptureStatus::kEncodingError:
+    case ScreenshotCaptureStatus::kBlockedByEnterprisePolicy:
       return apc::TabObservation::SCREENSHOT_ERROR;
   }
 }

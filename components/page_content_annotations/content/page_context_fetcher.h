@@ -251,6 +251,7 @@ class PageContextFetcher : public content::WebContentsObserver {
   friend class PageContextFetcherPdfTextExtractionTest;
   friend class PageContextFetcherHangingPdfTest;
   friend class PageContextFetcherScreenshotMetricsTest;
+  friend class PageContextFetcherScreenshotPolicyTest;
 
   // Redacts a screenshot by painting over sensitive regions with
   // `redaction_color`.
@@ -273,8 +274,8 @@ class PageContextFetcher : public content::WebContentsObserver {
 
   void ReceivedPdfResult(std::optional<PdfResult> pdf_result);
 
-  void GetTabScreenshot(content::WebContents& web_contents,
-                        const ScreenshotOptions& screenshot_options);
+  // Starts the screenshot capture configured by `screenshot_options_`.
+  void GetTabScreenshot(content::WebContents& web_contents);
 
   void SetCaptureCountLock(content::WebContents& web_contents);
 
@@ -319,6 +320,13 @@ class PageContextFetcher : public content::WebContentsObserver {
   void CollectTrackedElementRectsForPassword(
       const viz::TrackedElementRects& tracked_element_rects);
 
+  // Returns false if `screenshot_options_` carries an enterprise policy
+  // callback that now blocks screenshots of `web_contents()`.
+  bool IsScreenshotAllowed() const;
+  // Drops the captured bitmap and iframe metadata so no screenshot data is
+  // handed off once enterprise policy blocks it.
+  void DiscardScreenshotBitmap();
+
   base::WeakPtr<PageContextFetcher> GetWeakPtr();
 
   const GetScreenshotServiceCallback get_screenshot_service_callback_;
@@ -344,9 +352,8 @@ class PageContextFetcher : public content::WebContentsObserver {
   bool inner_text_done_ = false;
   bool pdf_done_ = false;
   bool annotated_page_content_done_ = false;
-  SkColor4f screenshot_redaction_color_ = SkColors::kBlack;
-  std::optional<ScreenshotOptions::ScreenshotCollectionOptions>
-      screenshot_collection_options_;
+  // The screenshot options passed to `FetchStart()`, if any.
+  std::optional<ScreenshotOptions> screenshot_options_;
   // Whether the primary page has changed since context fetching began.
   bool primary_page_changed_ = false;
   std::unique_ptr<FetchPageContextResult> pending_result_;

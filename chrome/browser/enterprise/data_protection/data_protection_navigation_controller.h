@@ -84,6 +84,10 @@ class DataProtectionNavigationController
   base::CallbackListSubscription RegisterScreenshotAllowedUpdatedCallback(
       ScreenshotAllowedUpdatedCallback callback);
 
+  // Overrides the cached screenshot allowance as if a navigation verdict with
+  // `allow_screenshots == allowed` had been applied.
+  void SetScreenshotAllowedForTesting(bool allowed);
+
 #if BUILDFLAG(IS_ANDROID)
   // Avoid storing the CallbackListSubscription in the java screenshot
   // protection controller.

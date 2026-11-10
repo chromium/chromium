@@ -16,13 +16,27 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+#include "chrome/browser/enterprise/data_controls/chrome_rules_service.h"
+#endif
+
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+#include "chrome/browser/enterprise/data_protection/data_protection_navigation_controller.h"
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/tab_android.h"
+#endif
+
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS) && BUILDFLAG(IS_ANDROID)
+#include "base/files/file_path.h"
+#include "net/base/filename_util.h"
 #endif
 
 namespace glic {
@@ -62,6 +76,29 @@ const std::vector<GURL>& GetUrlAllowList() {
       }};
   return *kUrlAllowList;
 }
+
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+// Returns the URL that enterprise Data Controls rules are matched against for
+// `web_contents`. On Android, a tab showing a local PDF commits an opaque
+// `chrome-native://pdf` URL, so match the backing file's `file://` URL
+// instead; inline web PDFs keep their `https://` download URL as the committed
+// (virtual) URL and are matched as-is.
+GURL GetUrlForDataControls(content::WebContents* web_contents) {
+  GURL url = web_contents->GetLastCommittedURL();
+#if BUILDFLAG(IS_ANDROID)
+  if (!url.SchemeIsHTTPOrHTTPS() && !url.SchemeIsFile()) {
+    if (TabAndroid* tab_android = TabAndroid::FromWebContents(web_contents);
+        tab_android && tab_android->IsPdf()) {
+      std::string filepath = tab_android->GetCanonicalFilepath();
+      if (!filepath.empty()) {
+        return net::FilePathToFileURL(base::FilePath(filepath));
+      }
+    }
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+  return url;
+}
+#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 
 }  // namespace
 
@@ -116,6 +153,33 @@ bool IsTabValidForSharing(tabs::TabInterface* tab) {
   return url.SchemeIsHTTPOrHTTPS() || url.SchemeIsFile() ||
          IsContextHubTopicUrl(url) ||
          std::ranges::contains(GetUrlAllowList(), url);
+}
+
+bool IsScreenshotBlockedByEnterprisePolicy(content::WebContents* web_contents) {
+  if (!web_contents) {
+    return false;
+  }
+  // Check both `DataProtectionNavigationController` (which caches navigation-
+  // time RTLookupResponse + DataControls state on the page) and live
+  // `ChromeRulesService::BlockScreenshots()` (which immediately reflects
+  // dynamic `DataControlsRules` pref updates without requiring a new
+  // navigation). The controller only exists on Windows, Mac and Android
+  // (`ENTERPRISE_SCREENSHOT_PROTECTION`), and on Android only for managed
+  // profiles with `kEnableAndroidEnterpriseScreenshotProtection` enabled, so
+  // Linux and ChromeOS rely on the live check alone.
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+  if (enterprise_data_protection::IsScreenShareBlocked(web_contents)) {
+    return true;
+  }
+#endif  // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+  if (auto* rules_service =
+          data_controls::ChromeRulesServiceFactory::GetInstance()
+              ->GetForBrowserContext(web_contents->GetBrowserContext())) {
+    return rules_service->BlockScreenshots(GetUrlForDataControls(web_contents));
+  }
+#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+  return false;
 }
 
 tabs::TabInterface* GetMostRecentlyActiveTab(

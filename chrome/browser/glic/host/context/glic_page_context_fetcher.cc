@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/actor/actor_proto_conversion.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/actor_util.h"
+#include "chrome/browser/glic/host/context/glic_sharing_utils.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_mojom_traits.h"
@@ -31,6 +33,7 @@
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/base/proto_wrapper_passkeys.h"
 #include "url/origin.h"
@@ -207,7 +210,7 @@ void HandleFetchPageResult(
 
   // If the screenshot is going to be annotated, mark the standalone
   // screenshot_info as such.
-  if (is_screenshot_annotated) {
+  if (is_screenshot_annotated && tab_context->viewport_screenshot) {
     if (!page_context.screenshot_info.has_value()) {
       page_context.screenshot_info.emplace();
     }
@@ -232,7 +235,7 @@ void HandleFetchPageResult(
     }
 
     // If the screenshot is going to be annotated mark the APC as such.
-    if (is_screenshot_annotated) {
+    if (is_screenshot_annotated && tab_context->viewport_screenshot) {
       page_context.annotated_page_content_result->proto
           .mutable_gemini_in_chrome_page_metadata()
           ->mutable_screenshot_info()
@@ -310,12 +313,17 @@ void FetchPageContext(
         tab_context_options.pdf_size_limit);
   }
 
-  if (tab_context_options.viewport_screenshot) {
+  if (tab_context_options.viewport_screenshot &&
+      !IsScreenshotBlockedByEnterprisePolicy(web_contents)) {
     // Disable paint preview backend for glic, and capture the viewport only.
     options.screenshot_options =
         page_content_annotations::ScreenshotOptions::ViewportOnly(
             /*paint_preview_options=*/std::nullopt,
             tab_context_options.screenshot_collection_options);
+    options.screenshot_options->set_is_screenshot_allowed_callback(
+        base::BindRepeating([](content::WebContents* contents) {
+          return !IsScreenshotBlockedByEnterprisePolicy(contents);
+        }));
   }
 
   const bool on_critical_path = true;

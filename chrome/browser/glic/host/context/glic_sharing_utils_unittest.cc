@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
@@ -14,6 +15,16 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
+
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+#include "components/enterprise/data_controls/core/browser/test_utils.h"
+#endif
+
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+#include "chrome/browser/enterprise/data_protection/data_protection_navigation_controller.h"
+#include "components/tabs/public/tab_interface.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#endif
 
 namespace glic {
 
@@ -117,5 +128,71 @@ TEST_F(GlicSharingUtilsTest, IsTabValidForSharing_ContextHubTopicUrls) {
       CreateWebContents(GURL("chrome://context-hub/save_to_memory_bank"));
   EXPECT_FALSE(IsTabValidForSharing(invalid_hub_contents));
 }
+
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+TEST_F(GlicSharingUtilsTest,
+       IsScreenshotBlockedByEnterprisePolicy_DataControls) {
+  content::WebContents* blocked_contents =
+      CreateWebContents(GURL("https://blocked.example.com/page"));
+  content::WebContents* allowed_contents =
+      CreateWebContents(GURL("https://allowed.example.com/page"));
+
+  EXPECT_FALSE(IsScreenshotBlockedByEnterprisePolicy(blocked_contents));
+  EXPECT_FALSE(IsScreenshotBlockedByEnterprisePolicy(allowed_contents));
+
+  data_controls::SetDataControls(profile_.GetPrefs(), {R"({
+    "sources": {
+      "urls": ["blocked.example.com"]
+    },
+    "restrictions": [
+      {"class": "SCREENSHOT", "level": "BLOCK"}
+    ]
+  })"});
+
+  EXPECT_TRUE(IsScreenshotBlockedByEnterprisePolicy(blocked_contents));
+  EXPECT_FALSE(IsScreenshotBlockedByEnterprisePolicy(allowed_contents));
+  EXPECT_FALSE(IsScreenshotBlockedByEnterprisePolicy(nullptr));
+
+  // Non-SCREENSHOT restrictions or non-BLOCK levels do not block screenshots.
+  data_controls::SetDataControls(profile_.GetPrefs(), {R"({
+    "sources": {
+      "urls": ["blocked.example.com"]
+    },
+    "restrictions": [
+      {"class": "CLIPBOARD", "level": "BLOCK"},
+      {"class": "SCREENSHOT", "level": "WARN"}
+    ]
+  })"});
+  EXPECT_FALSE(IsScreenshotBlockedByEnterprisePolicy(blocked_contents));
+}
+#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+TEST_F(GlicSharingUtilsTest,
+       IsScreenshotBlockedByEnterprisePolicy_NavigationController) {
+  content::WebContents* web_contents =
+      CreateWebContents(GURL("https://example.com/page"));
+  tabs::MockTabInterface tab;
+  ON_CALL(tab, GetContents()).WillByDefault(testing::Return(web_contents));
+  // Let `DataProtectionNavigationController::FromWebContents()` resolve the
+  // tab, as `TabModel` / `TabAndroid` do for real tabs.
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents, &tab);
+  enterprise_data_protection::DataProtectionNavigationController controller(
+      &tab);
+  ASSERT_EQ(&controller,
+            enterprise_data_protection::DataProtectionNavigationController::
+                FromWebContents(web_contents));
+
+  EXPECT_FALSE(IsScreenshotBlockedByEnterprisePolicy(web_contents));
+
+  // The cached navigation-time verdict blocks screenshots even when no
+  // DataControlsRules SCREENSHOT rule matches the URL.
+  controller.SetScreenshotAllowedForTesting(false);
+  EXPECT_TRUE(IsScreenshotBlockedByEnterprisePolicy(web_contents));
+
+  controller.SetScreenshotAllowedForTesting(true);
+  EXPECT_FALSE(IsScreenshotBlockedByEnterprisePolicy(web_contents));
+}
+#endif  // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
 
 }  // namespace glic

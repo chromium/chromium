@@ -1013,6 +1013,9 @@ TEST_F(ActorProtoConversionTest, ToScreenshotResult) {
             TabObservation::SCREENSHOT_ERROR);
   EXPECT_EQ(ToScreenshotResult(ScreenshotCaptureStatus::kEncodingError),
             TabObservation::SCREENSHOT_ERROR);
+  EXPECT_EQ(
+      ToScreenshotResult(ScreenshotCaptureStatus::kBlockedByEnterprisePolicy),
+      TabObservation::SCREENSHOT_ERROR);
 }
 
 TEST_F(ActorProtoConversionTest, BuildToolRequest_Navigate_WithTabId) {

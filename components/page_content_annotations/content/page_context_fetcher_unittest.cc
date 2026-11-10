@@ -15,10 +15,12 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/protobuf_matchers.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -1160,6 +1162,9 @@ class PageContextFetcherScreenshotMetricsTest
     fetcher_->inner_text_done_ = true;
     fetcher_->pdf_done_ = true;
     fetcher_->annotated_page_content_done_ = true;
+    fetcher_->screenshot_options_ = ScreenshotOptions::ViewportOnly(
+        /*paint_preview_options=*/std::nullopt,
+        /*screenshot_collection_options=*/std::nullopt);
   }
 
   void TearDown() override {
@@ -1168,7 +1173,8 @@ class PageContextFetcherScreenshotMetricsTest
   }
 
   void CallGetTabScreenshot(const ScreenshotOptions& options) {
-    fetcher_->GetTabScreenshot(*web_contents(), options);
+    fetcher_->screenshot_options_ = options;
+    fetcher_->GetTabScreenshot(*web_contents());
   }
 
   void CallReceivedViewportBitmap(
@@ -1329,6 +1335,329 @@ TEST_F(PageContextFetcherScreenshotMetricsTest, EncodingError) {
 
   histograms.ExpectUniqueSample(kScreenshotCaptureStatusHistogram,
                                 ScreenshotCaptureStatus::kEncodingError, 1);
+}
+
+class PageContextFetcherScreenshotPolicyTest
+    : public content::RenderViewHostTestHarness {
+ public:
+  struct ListenerState {
+    bool begin_screenshot_called = false;
+    bool screenshot_captured_called = false;
+    bool screenshot_redacted_called = false;
+    bool end_screenshot_called = false;
+    std::optional<std::string> end_screenshot_error;
+  };
+
+  class RecordingProgressListener : public FetchPageProgressListener {
+   public:
+    explicit RecordingProgressListener(ListenerState* state) : state_(state) {}
+    ~RecordingProgressListener() override = default;
+
+    void BeginScreenshot() override { state_->begin_screenshot_called = true; }
+    void ScreenshotCaptured(const SkBitmap& bitmap) override {
+      state_->screenshot_captured_called = true;
+    }
+    void ScreenshotRedacted(const SkBitmap& bitmap) override {
+      state_->screenshot_redacted_called = true;
+    }
+    void EndScreenshot(std::optional<std::string> error) override {
+      state_->end_screenshot_called = true;
+      state_->end_screenshot_error = std::move(error);
+    }
+    void BeginAPC() override {}
+    void EndAPC(std::optional<std::string> error) override {}
+
+   private:
+    raw_ptr<ListenerState> state_;
+  };
+
+  PageContextFetcherScreenshotPolicyTest() = default;
+  ~PageContextFetcherScreenshotPolicyTest() override = default;
+
+ protected:
+  void SetUp() override {
+    content::RenderViewHostTestHarness::SetUp();
+    feature_list_.InitAndEnableFeature(
+        blink::features::kAIPageContentTrackedElementsIframe);
+    content::NavigationSimulator::NavigateAndCommitFromBrowser(
+        web_contents(), GURL("https://example.com"));
+    subframe_ = content::NavigationSimulator::NavigateAndCommitFromDocument(
+        GURL("https://example.com/subframe"),
+        content::RenderFrameHostTester::For(main_rfh())
+            ->AppendChild("subframe"));
+
+    fetcher_ = std::make_unique<PageContextFetcher>(
+        base::NullCallback(),
+        std::make_unique<RecordingProgressListener>(&listener_state_),
+        /*fetch_pdf_content_callback=*/base::NullCallback());
+    fetcher_->Observe(web_contents());
+    fetcher_->pending_result_ = std::make_unique<FetchPageContextResult>();
+    optimization_guide::AIPageContentResult apc_result;
+    fetcher_->pending_result_->annotated_page_content_result =
+        base::ok(PageContentResultWithEndTime(std::move(apc_result)));
+    fetcher_->callback_ = future_.GetCallback();
+    fetcher_->initialization_done_ = true;
+    fetcher_->inner_text_done_ = true;
+    fetcher_->pdf_done_ = true;
+    fetcher_->annotated_page_content_done_ = true;
+    fetcher_->screenshot_options_ = CreateScreenshotOptions();
+  }
+
+  void TearDown() override {
+    subframe_ = nullptr;
+    fetcher_.reset();
+    content::RenderViewHostTestHarness::TearDown();
+  }
+
+  viz::TrackedElementRects CreateIframeTrackedRects() {
+    viz::TrackedElementRect iframe_rect(
+        base::Token(1, 2), gfx::Rect(10, 20, 50, 60),
+        /*should_add_to_compositor_frame_metadata=*/true,
+        /*should_exclude_fixed_and_sticky_occlusions=*/false,
+        subframe_->GetFrameToken(), main_rfh()->GetFrameToken());
+    return {{viz::TrackedElementFeature::kIframeTracking, {iframe_rect}}};
+  }
+
+  static SkBitmap CreateTestBitmap() {
+    SkBitmap bitmap;
+    bitmap.allocN32Pixels(10, 10);
+    bitmap.eraseColor(SK_ColorBLUE);
+    return bitmap;
+  }
+
+  // Returns viewport screenshot options whose policy callback reports
+  // `screenshot_allowed_`.
+  ScreenshotOptions CreateScreenshotOptions() {
+    ScreenshotOptions options = ScreenshotOptions::ViewportOnly(
+        /*paint_preview_options=*/std::nullopt,
+        /*screenshot_collection_options=*/std::nullopt);
+    options.set_is_screenshot_allowed_callback(
+        base::BindLambdaForTesting([this](content::WebContents* contents) {
+          return screenshot_allowed_;
+        }));
+    return options;
+  }
+
+  void CallGetTabScreenshot() { fetcher_->GetTabScreenshot(*web_contents()); }
+
+  void CallReceivedViewportBitmapOrError(
+      base::expected<const SkBitmap*, std::string> bitmap_result,
+      const viz::TrackedElementRects& tracked_element_rects) {
+    fetcher_->ReceivedViewportBitmapOrError(tracked_element_rects,
+                                            std::move(bitmap_result));
+  }
+
+  void CallReceivedEncodedScreenshot(ScreenshotError error) {
+    fetcher_->ReceivedEncodedScreenshot(base::unexpected(std::move(error)));
+  }
+
+  // Makes the screenshot wait for APC-provided redaction boxes before it is
+  // redacted and encoded, as if APC extraction were still in flight.
+  void SetApcPendingWithRedaction() {
+    fetcher_->annotated_page_content_done_ = false;
+    fetcher_->screenshot_needs_redaction_using_apc_ = true;
+  }
+
+  void CompleteApcWithRedactionBox() {
+    optimization_guide::AIPageContentResult apc_result;
+    apc_result.visible_bounding_boxes_for_redaction.push_back(
+        gfx::Rect(1, 1, 2, 2));
+    fetcher_->ReceivedAnnotatedPageContent(std::move(apc_result));
+  }
+
+  void SetPdfPending(bool pending) { fetcher_->pdf_done_ = !pending; }
+
+  void CompletePdf() { fetcher_->ReceivedPdfResult(std::nullopt); }
+
+  base::test::ScopedFeatureList feature_list_;
+  raw_ptr<content::RenderFrameHost> subframe_ = nullptr;
+  bool screenshot_allowed_ = true;
+  ListenerState listener_state_;
+  std::unique_ptr<PageContextFetcher> fetcher_;
+  base::test::TestFuture<FetchPageContextResultCallbackArg> future_;
+};
+
+TEST_F(PageContextFetcherScreenshotPolicyTest, BlockedBeforeCaptureStarts) {
+  base::HistogramTester histograms;
+  screenshot_allowed_ = false;
+
+  CallGetTabScreenshot();
+
+  ASSERT_TRUE(future_.IsReady());
+  FetchPageContextResultCallbackArg result = future_.Take();
+  ASSERT_TRUE(result.has_value());
+  ASSERT_FALSE(result.value()->screenshot_result.has_value());
+  EXPECT_EQ(result.value()->screenshot_result.error().status,
+            ScreenshotCaptureStatus::kBlockedByEnterprisePolicy);
+  EXPECT_FALSE(listener_state_.begin_screenshot_called);
+  EXPECT_FALSE(listener_state_.screenshot_captured_called);
+  EXPECT_FALSE(listener_state_.screenshot_redacted_called);
+  EXPECT_FALSE(listener_state_.end_screenshot_called);
+  histograms.ExpectTotalCount(kScreenshotCaptureStatusHistogram, 0);
+}
+
+TEST_F(PageContextFetcherScreenshotPolicyTest, BlockedBeforeBitmapReceived) {
+  base::HistogramTester histograms;
+  screenshot_allowed_ = false;
+
+  SkBitmap bitmap = CreateTestBitmap();
+  CallReceivedViewportBitmapOrError(base::ok(&bitmap),
+                                    CreateIframeTrackedRects());
+
+  ASSERT_TRUE(future_.IsReady());
+  FetchPageContextResultCallbackArg result = future_.Take();
+  ASSERT_TRUE(result.has_value());
+  ASSERT_FALSE(result.value()->screenshot_result.has_value());
+  EXPECT_EQ(result.value()->screenshot_result.error().status,
+            ScreenshotCaptureStatus::kBlockedByEnterprisePolicy);
+  EXPECT_FALSE(result.value()->screenshot_info.has_value());
+  EXPECT_FALSE(result.value()
+                   ->annotated_page_content_result->proto
+                   .gemini_in_chrome_page_metadata()
+                   .has_screenshot_info());
+  EXPECT_FALSE(listener_state_.screenshot_captured_called);
+  EXPECT_FALSE(listener_state_.screenshot_redacted_called);
+  EXPECT_TRUE(listener_state_.end_screenshot_called);
+  EXPECT_TRUE(listener_state_.end_screenshot_error.has_value());
+  histograms.ExpectUniqueSample(
+      kScreenshotCaptureStatusHistogram,
+      ScreenshotCaptureStatus::kBlockedByEnterprisePolicy, 1);
+}
+
+TEST_F(PageContextFetcherScreenshotPolicyTest,
+       BlockedBeforeEncodedScreenshotReceived) {
+  base::HistogramTester histograms;
+  screenshot_allowed_ = true;
+
+  SkBitmap bitmap = CreateTestBitmap();
+  CallReceivedViewportBitmapOrError(base::ok(&bitmap),
+                                    CreateIframeTrackedRects());
+  EXPECT_TRUE(listener_state_.screenshot_captured_called);
+
+  // Flip policy to blocked while encoding runs on the worker thread.
+  screenshot_allowed_ = false;
+
+  ASSERT_TRUE(future_.Wait());
+  FetchPageContextResultCallbackArg result = future_.Take();
+  ASSERT_TRUE(result.has_value());
+  ASSERT_FALSE(result.value()->screenshot_result.has_value());
+  EXPECT_EQ(result.value()->screenshot_result.error().status,
+            ScreenshotCaptureStatus::kBlockedByEnterprisePolicy);
+  EXPECT_FALSE(result.value()->screenshot_info.has_value());
+  EXPECT_FALSE(result.value()
+                   ->annotated_page_content_result->proto
+                   .gemini_in_chrome_page_metadata()
+                   .has_screenshot_info());
+  EXPECT_FALSE(listener_state_.screenshot_redacted_called);
+  EXPECT_TRUE(listener_state_.end_screenshot_called);
+  EXPECT_TRUE(listener_state_.end_screenshot_error.has_value());
+  histograms.ExpectUniqueSample(
+      kScreenshotCaptureStatusHistogram,
+      ScreenshotCaptureStatus::kBlockedByEnterprisePolicy, 1);
+}
+
+TEST_F(PageContextFetcherScreenshotPolicyTest,
+       BlockedWhileRedactionWaitsForApc) {
+  base::HistogramTester histograms;
+  screenshot_allowed_ = true;
+  SetApcPendingWithRedaction();
+
+  SkBitmap bitmap = CreateTestBitmap();
+  CallReceivedViewportBitmapOrError(base::ok(&bitmap),
+                                    CreateIframeTrackedRects());
+  EXPECT_TRUE(listener_state_.screenshot_captured_called);
+  // Redaction and encoding wait for APC, so nothing has completed yet.
+  EXPECT_FALSE(listener_state_.end_screenshot_called);
+  EXPECT_FALSE(future_.IsReady());
+
+  // Flip policy to blocked while the screenshot waits for APC-provided
+  // redaction boxes, then let APC complete.
+  screenshot_allowed_ = false;
+  CompleteApcWithRedactionBox();
+
+  ASSERT_TRUE(future_.Wait());
+  FetchPageContextResultCallbackArg result = future_.Take();
+  ASSERT_TRUE(result.has_value());
+  ASSERT_FALSE(result.value()->screenshot_result.has_value());
+  EXPECT_EQ(result.value()->screenshot_result.error().status,
+            ScreenshotCaptureStatus::kBlockedByEnterprisePolicy);
+  EXPECT_FALSE(result.value()->screenshot_info.has_value());
+  EXPECT_FALSE(result.value()
+                   ->annotated_page_content_result->proto
+                   .gemini_in_chrome_page_metadata()
+                   .has_screenshot_info());
+  EXPECT_FALSE(listener_state_.screenshot_redacted_called);
+  EXPECT_TRUE(listener_state_.end_screenshot_called);
+  EXPECT_TRUE(listener_state_.end_screenshot_error.has_value());
+  histograms.ExpectUniqueSample(
+      kScreenshotCaptureStatusHistogram,
+      ScreenshotCaptureStatus::kBlockedByEnterprisePolicy, 1);
+}
+
+TEST_F(PageContextFetcherScreenshotPolicyTest,
+       EncodingErrorDoesNotAddScreenshotInfo) {
+  base::HistogramTester histograms;
+  screenshot_allowed_ = true;
+
+  SkBitmap bitmap = CreateTestBitmap();
+  CallReceivedViewportBitmapOrError(base::ok(&bitmap),
+                                    CreateIframeTrackedRects());
+  EXPECT_TRUE(listener_state_.screenshot_captured_called);
+
+  // Fail encoding before the worker replies; the later worker reply is
+  // ignored because the screenshot is already done.
+  CallReceivedEncodedScreenshot(ScreenshotError{
+      ScreenshotCaptureStatus::kEncodingError, "JPEGCodec failed to encode"});
+
+  ASSERT_TRUE(future_.IsReady());
+  FetchPageContextResultCallbackArg result = future_.Take();
+  ASSERT_TRUE(result.has_value());
+  ASSERT_FALSE(result.value()->screenshot_result.has_value());
+  EXPECT_EQ(result.value()->screenshot_result.error().status,
+            ScreenshotCaptureStatus::kEncodingError);
+  // Iframe metadata is only meaningful alongside a screenshot.
+  EXPECT_FALSE(result.value()->screenshot_info.has_value());
+  EXPECT_FALSE(result.value()
+                   ->annotated_page_content_result->proto
+                   .gemini_in_chrome_page_metadata()
+                   .has_screenshot_info());
+  EXPECT_FALSE(listener_state_.screenshot_redacted_called);
+  histograms.ExpectUniqueSample(kScreenshotCaptureStatusHistogram,
+                                ScreenshotCaptureStatus::kEncodingError, 1);
+}
+
+TEST_F(PageContextFetcherScreenshotPolicyTest,
+       BlockedAfterEncodedScreenshotWhileWaitingForOtherTasks) {
+  base::HistogramTester histograms;
+  screenshot_allowed_ = true;
+  SetPdfPending(true);
+
+  SkBitmap bitmap = CreateTestBitmap();
+  CallReceivedViewportBitmapOrError(base::ok(&bitmap),
+                                    CreateIframeTrackedRects());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return listener_state_.end_screenshot_called; }));
+  EXPECT_FALSE(future_.IsReady());
+  EXPECT_TRUE(listener_state_.screenshot_redacted_called);
+
+  // Flip policy to blocked after encoding finished, while PDF extraction is
+  // still pending.
+  screenshot_allowed_ = false;
+  CompletePdf();
+
+  ASSERT_TRUE(future_.IsReady());
+  FetchPageContextResultCallbackArg result = future_.Take();
+  ASSERT_TRUE(result.has_value());
+  ASSERT_FALSE(result.value()->screenshot_result.has_value());
+  EXPECT_EQ(result.value()->screenshot_result.error().status,
+            ScreenshotCaptureStatus::kBlockedByEnterprisePolicy);
+  EXPECT_FALSE(result.value()->screenshot_info.has_value());
+  EXPECT_FALSE(result.value()
+                   ->annotated_page_content_result->proto
+                   .gemini_in_chrome_page_metadata()
+                   .has_screenshot_info());
+  histograms.ExpectUniqueSample(kScreenshotCaptureStatusHistogram,
+                                ScreenshotCaptureStatus::kSuccess, 1);
 }
 
 }  // namespace page_content_annotations

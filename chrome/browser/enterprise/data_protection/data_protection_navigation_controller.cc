@@ -106,6 +106,12 @@ DataProtectionNavigationController::RegisterScreenshotAllowedUpdatedCallback(
     ScreenshotAllowedUpdatedCallback callback) {
   return screenshot_allowed_updated_callbacks_.Add(std::move(callback));
 }
+
+void DataProtectionNavigationController::SetScreenshotAllowedForTesting(
+    bool allowed) {
+  screenshot_allowed_ = allowed;
+  screenshot_allowed_updated_callbacks_.Notify(screenshot_allowed_);
+}
 #endif  // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
 
 void DataProtectionNavigationController::ApplyDataProtectionSettings(

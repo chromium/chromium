@@ -87,6 +87,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/favicon/core/favicon_driver.h"
 #include "components/favicon/core/favicon_driver_observer.h"
@@ -164,6 +165,10 @@
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
+#endif
+
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+#include "components/enterprise/data_controls/core/browser/test_utils.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -4324,6 +4329,87 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithPixelOutput,
   histogram_tester.ExpectTotalCount(
       "Glic.Api.GetContextFromFocusedTab.Error.Text", 0);
 }
+
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+IN_PROC_BROWSER_TEST_P(
+    GlicApiTestWithPixelOutput,
+    testGetContextFromTabOmitsScreenshotWhenBlockedByDataControls) {
+  tabs::TabInterface* tab0 = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(tab0);
+  const GURL url =
+      embedded_test_server()->GetURL("/glic/browser_tests/test.html");
+  NavigateTab(*tab0, url);
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+  instance->GetSharingManagerInternal().PinTabs({tab0->GetHandle()});
+
+  data_controls::SetDataControls(GetProfile()->GetPrefs(), {R"({
+    "sources": {
+      "urls": ["127.0.0.1"]
+    },
+    "restrictions": [
+      {"class": "SCREENSHOT", "level": "BLOCK"}
+    ]
+  })"});
+
+  auto options = mojom::TabContextOptions::New();
+  options->inner_text = true;
+  options->inner_text_bytes_limit = 1000;
+  options->viewport_screenshot = true;
+  options->annotated_page_content = true;
+
+  base::test::TestFuture<GlicGetContextResult> future;
+  instance->GetSharingManagerInternal().GetContextFromTab(
+      tab0->GetHandle(), *options, future.GetCallback());
+  GlicGetContextResult result = future.Take();
+  ASSERT_TRUE(result.has_value());
+  ASSERT_TRUE(result.value()->is_tab_context());
+  const auto& tab_context = result.value()->get_tab_context();
+  ASSERT_TRUE(tab_context->web_page_data);
+  ASSERT_TRUE(tab_context->web_page_data->main_document);
+  EXPECT_FALSE(tab_context->web_page_data->main_document->inner_text.empty());
+  ASSERT_TRUE(tab_context->annotated_page_data);
+  ASSERT_TRUE(
+      tab_context->annotated_page_data->annotated_page_content.has_value());
+  auto apc = tab_context->annotated_page_data->annotated_page_content
+                 ->As<optimization_guide::proto::AnnotatedPageContent>();
+  ASSERT_TRUE(apc.has_value());
+  EXPECT_FALSE(apc->gemini_in_chrome_page_metadata().has_screenshot_info());
+  EXPECT_FALSE(tab_context->viewport_screenshot);
+  EXPECT_FALSE(tab_context->screenshot_info.has_value());
+
+  // Also verify that if a screenshot policy block takes effect while
+  // `GetContextFromTab` is already in flight, `PageContextFetcher` strips
+  // both `viewport_screenshot` and `screenshot_info` metadata.
+  data_controls::SetDataControls(GetProfile()->GetPrefs(), {});
+  base::test::TestFuture<GlicGetContextResult> mid_fetch_future;
+  instance->GetSharingManagerInternal().GetContextFromTab(
+      tab0->GetHandle(), *options, mid_fetch_future.GetCallback());
+  data_controls::SetDataControls(GetProfile()->GetPrefs(), {R"({
+    "sources": {
+      "urls": ["127.0.0.1"]
+    },
+    "restrictions": [
+      {"class": "SCREENSHOT", "level": "BLOCK"}
+    ]
+  })"});
+  GlicGetContextResult mid_fetch_result = mid_fetch_future.Take();
+  ASSERT_TRUE(mid_fetch_result.has_value());
+  ASSERT_TRUE(mid_fetch_result.value()->is_tab_context());
+  const auto& mid_fetch_context = mid_fetch_result.value()->get_tab_context();
+  EXPECT_TRUE(mid_fetch_context->web_page_data);
+  ASSERT_TRUE(mid_fetch_context->annotated_page_data);
+  ASSERT_TRUE(mid_fetch_context->annotated_page_data->annotated_page_content
+                  .has_value());
+  auto mid_fetch_apc =
+      mid_fetch_context->annotated_page_data->annotated_page_content
+          ->As<optimization_guide::proto::AnnotatedPageContent>();
+  ASSERT_TRUE(mid_fetch_apc.has_value());
+  EXPECT_FALSE(
+      mid_fetch_apc->gemini_in_chrome_page_metadata().has_screenshot_info());
+  EXPECT_FALSE(mid_fetch_context->viewport_screenshot);
+  EXPECT_FALSE(mid_fetch_context->screenshot_info.has_value());
+}
+#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithPixelOutput,
                        testFaviconLoadsWithGetTabFaviconById) {

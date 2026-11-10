@@ -625,6 +625,7 @@ source_set("impl") {
     "//chrome/browser/background/glic",
     "//chrome/browser/browser_actuator/transport",
     "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/enterprise",
     "//chrome/browser/feedback",
     "//chrome/browser/glic/actor",
     "//chrome/browser/glic/browser_ui",
@@ -682,6 +683,7 @@ source_set("impl") {
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
     "//components/enterprise",
+    "//components/enterprise/buildflags",
     "//components/favicon/content",
     "//components/feature_engagement/public:feature_constants",
     "//components/feedback",
@@ -1008,6 +1010,7 @@ source_set("unit_tests") {
     "//components/browser_actuator/public/transport:service",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
+    "//components/enterprise/buildflags",
     "//components/keyed_service/content",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
@@ -1108,6 +1111,10 @@ source_set("unit_tests") {
       "//components/user_manager",
       "//components/user_manager:test_support",
     ]
+  }
+  if (enterprise_data_controls) {
+    deps +=
+        [ "//components/enterprise/data_controls/core/browser:test_support" ]
   }
 }
 
@@ -1370,6 +1377,10 @@ source_set("browser_tests") {
   }
   if (enable_pdf) {
     deps += [ "//chrome/browser/pdf:pdf_extension_test_utils" ]
+  }
+  if (enterprise_data_controls) {
+    deps +=
+        [ "//components/enterprise/data_controls/core/browser:test_support" ]
   }
 
   data_deps = [ "//chrome/test/data/webui/glic:generate_test_files" ]
