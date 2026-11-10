@@ -232,7 +232,7 @@ export class IwaDevAppElement extends CrLitElement {
 
   protected async onRequestInstallFromLocalBundle_() {
     await this.processInstallRequest_(
-        this.browserProxy_.handler.selectAndInstallAppFromLocalWebBundle());
+        this.browserProxy_.handler.installStagedLocalWebBundle());
   }
 
   protected onRequestParseUpdateManifestFromUrl_(e: CustomEvent<{

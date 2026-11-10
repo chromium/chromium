@@ -18,6 +18,7 @@ cr-input {
 .error-message {
   color: var(--google-red-700);
   font-size: 0.85rem;
+  margin-top: 16px;
 }
 
 @media (prefers-color-scheme: dark) {

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_IWA_DEV_IWA_DEV_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_IWA_DEV_IWA_DEV_PAGE_HANDLER_H_
 
+#include "base/files/file_path.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -65,8 +66,14 @@ class IwaDevPageHandler
       const GURL& update_manifest_url,
       ParseUpdateManifestFromUrlCallback callback) override;
   void RestartBrowser() override;
-  void SelectAndInstallAppFromLocalWebBundle(
-      SelectAndInstallAppFromLocalWebBundleCallback callback) override;
+  void SelectLocalWebBundle(SelectLocalWebBundleCallback callback) override;
+  void StageDroppedLocalWebBundle(
+      StageDroppedLocalWebBundleCallback callback) override;
+  void InstallStagedLocalWebBundle(
+      InstallStagedLocalWebBundleCallback callback) override;
+  void ClearStagedLocalWebBundle() override;
+  void NotifyDragBundleEnter() override;
+  void NotifyDragBundleLeave() override;
   void SelectAndUpdateAppFromLocalWebBundle(
       const std::string& app_id,
       SelectAndUpdateAppFromLocalWebBundleCallback callback) override;
@@ -105,12 +112,15 @@ class IwaDevPageHandler
   using SelectLocalBundleResult =
       base::expected<base::FilePath, mojo_base::mojom::ErrorPtr>;
 
-  void SelectLocalWebBundle(
+  void PromptUserForLocalWebBundle(
       base::OnceCallback<void(SelectLocalBundleResult)> callback);
 
-  void OnLocalBundleSelectedForInstall(
-      SelectAndInstallAppFromLocalWebBundleCallback callback,
-      SelectLocalBundleResult path);
+  void OnLocalBundleSelectedForStaging(SelectLocalWebBundleCallback callback,
+                                       SelectLocalBundleResult path);
+  void OnInstallStagedLocalWebBundleCompleted(
+      InstallStagedLocalWebBundleCallback callback,
+      base::expected<web_app::InstallIsolatedWebAppCommandSuccess, std::string>
+          result);
   void OnLocalBundleSelectedForUpdate(
       const std::string& app_id,
       SelectAndUpdateAppFromLocalWebBundleCallback callback,
@@ -156,6 +166,15 @@ class IwaDevPageHandler
   // app are rejected.
   base::flat_map<webapps::AppId, UpdateManifestInstalledAppCallback>
       manifest_update_requests_;
+
+  // The path of a selected or dropped bundle that is currently staged and ready
+  // to be installed via `InstallStagedLocalWebBundle()`.
+  std::optional<base::FilePath> staged_bundle_path_;
+
+  // Ephemeral path captured from `content::DropData` while a dragged bundle
+  // hovers over the drop target, before the drop event commits it to
+  // `staged_bundle_path_`.
+  std::optional<base::FilePath> dragged_bundle_path_;
 
   base::WeakPtrFactory<IwaDevPageHandler> weak_ptr_factory_{this};
 };

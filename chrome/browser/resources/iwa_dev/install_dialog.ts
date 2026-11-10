@@ -95,6 +95,21 @@ export class IwaDevInstallDialogElement extends CrLitElement {
     this.$.dialog.cancel();
   }
 
+  protected onDialogCancel_() {
+    this.isOpened_ = false;
+  }
+
+  protected onDragover_(e: DragEvent) {
+    e.preventDefault();
+    if (e.dataTransfer) {
+      e.dataTransfer.dropEffect = 'none';
+    }
+  }
+
+  protected onDrop_(e: DragEvent) {
+    e.preventDefault();
+  }
+
   protected isInstallButtonEnabled_(): boolean {
     if (this.isInstalling_) {
       return false;

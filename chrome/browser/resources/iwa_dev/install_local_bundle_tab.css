@@ -1,0 +1,107 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: block;
+}
+
+.dropzone {
+  align-items: center;
+  border: 2px dashed var(--cr-separator-color);
+  border-radius: 8px;
+  box-sizing: border-box;
+  color: var(--cr-secondary-text-color);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  justify-content: center;
+  min-height: 120px;
+  padding: 16px;
+  text-align: center;
+  transition: border-color 150ms ease, background-color 150ms ease;
+  width: 100%;
+}
+
+.dropzone:hover {
+  border-color: var(--cr-link-color, var(--google-blue-600));
+}
+
+.dropzone:focus-visible {
+  border-color: var(--cr-focus-outline-color, var(--cr-link-color, var(--google-blue-600)));
+  box-shadow: 0 0 0 2px var(--cr-focus-outline-color, var(--cr-link-color, var(--google-blue-600)));
+}
+
+.dropzone.drag-over {
+  background-color: var(--cr-hover-background-color);
+  border-color: var(--cr-link-color, var(--google-blue-600));
+}
+
+.dropzone.has-file {
+  border-style: solid;
+  border-color: var(--cr-separator-color);
+}
+
+.dropzone.has-file:hover,
+.dropzone.has-file.drag-over {
+  border-color: var(--cr-link-color, var(--google-blue-600));
+}
+
+.dropzone.has-file cr-icon {
+  --iron-icon-fill-color: var(--cr-link-color, var(--google-blue-600));
+}
+
+.dropzone cr-icon {
+  --iron-icon-fill-color: var(--cr-secondary-text-color);
+  --iron-icon-height: 32px;
+  --iron-icon-width: 32px;
+  display: block;
+  flex-shrink: 0;
+  height: 32px;
+  margin: 0;
+  width: 32px;
+}
+
+.dropzone > * {
+  pointer-events: none;
+}
+
+.dropzone-prompt {
+  color: var(--cr-primary-text-color);
+  font-size: 0.85rem;
+  font-weight: 500;
+  line-height: 1.5;
+  margin: 0;
+  text-align: center;
+  width: 100%;
+}
+
+.dropzone-filename {
+  color: var(--cr-primary-text-color);
+  font-size: 0.85rem;
+  font-weight: 500;
+  line-height: 1.5;
+  margin: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.dropzone-subtext {
+  color: var(--cr-secondary-text-color);
+  font-size: 0.75rem;
+  line-height: 1.5;
+  margin: 0;
+  opacity: 0.8;
+  text-align: center;
+  width: 100%;
+}

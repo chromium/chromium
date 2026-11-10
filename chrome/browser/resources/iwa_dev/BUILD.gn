@@ -15,6 +15,7 @@ build_webui("build") {
     "app.css",
     "combobox.css",
     "install_dialog.css",
+    "install_local_bundle_tab.css",
     "shared_style.css",
     "install_update_manifest_tab.css",
     "installed_app_list_item.css",

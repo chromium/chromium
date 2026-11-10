@@ -29,6 +29,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/test/base/drag_and_drop_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
@@ -40,6 +41,7 @@
 #include "mojo/public/mojom/base/error.mojom.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/clipboard/file_info.h"
 #include "ui/shell_dialogs/fake_select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
@@ -339,9 +341,8 @@ class IwaDevHandlerLocalBundleBrowserTest : public IwaDevHandlerBrowserTest {
   }
 
  protected:
-  base::expected<std::monostate, mojo_base::mojom::ErrorPtr>
-  CallSelectAndInstallAppFromLocalWebBundle(
-      std::optional<base::FilePath> path) {
+  base::expected<std::string, mojo_base::mojom::ErrorPtr>
+  CallSelectLocalWebBundle(std::optional<base::FilePath> path) {
     ui::FakeSelectFileDialog::Factory* factory =
         ui::FakeSelectFileDialog::RegisterFactory();
 
@@ -349,14 +350,14 @@ class IwaDevHandlerLocalBundleBrowserTest : public IwaDevHandlerBrowserTest {
     factory->SetOpenCallback(dialog_opened_future.GetRepeatingCallback());
 
     base::test::TestFuture<
-        base::expected<std::monostate, mojo_base::mojom::ErrorPtr>>
+        base::expected<std::string, mojo_base::mojom::ErrorPtr>>
         future;
-    GetHandler()->SelectAndInstallAppFromLocalWebBundle(future.GetCallback());
+    GetHandler()->SelectLocalWebBundle(future.GetCallback());
 
     if (!dialog_opened_future.Wait()) {
       ADD_FAILURE() << "Timed out waiting for file dialog to open.";
       return base::unexpected(mojo_base::mojom::Error::New(
-          mojo_base::mojom::Code::kInvalidArgument,
+          mojo_base::mojom::Code::kDeadlineExceeded,
           "Timed out waiting for file dialog to open."));
     }
 
@@ -364,7 +365,7 @@ class IwaDevHandlerLocalBundleBrowserTest : public IwaDevHandlerBrowserTest {
     if (!fake_dialog) {
       ADD_FAILURE() << "fake_dialog is nullptr.";
       return base::unexpected(mojo_base::mojom::Error::New(
-          mojo_base::mojom::Code::kInvalidArgument, "fake_dialog is nullptr."));
+          mojo_base::mojom::Code::kInternal, "fake_dialog is nullptr."));
     }
     if (path.has_value()) {
       EXPECT_TRUE(fake_dialog->CallFileSelected(*path, "swbn"));
@@ -372,6 +373,15 @@ class IwaDevHandlerLocalBundleBrowserTest : public IwaDevHandlerBrowserTest {
       fake_dialog->CallFileSelectionCanceled();
     }
 
+    return future.Take();
+  }
+
+  base::expected<std::string, mojo_base::mojom::ErrorPtr>
+  CallStageDroppedLocalWebBundle() {
+    base::test::TestFuture<
+        base::expected<std::string, mojo_base::mojom::ErrorPtr>>
+        future;
+    GetHandler()->StageDroppedLocalWebBundle(future.GetCallback());
     return future.Take();
   }
 
@@ -412,16 +422,75 @@ class IwaDevHandlerLocalBundleBrowserTest : public IwaDevHandlerBrowserTest {
     return future.Take();
   }
 
+  base::expected<std::monostate, mojo_base::mojom::ErrorPtr>
+  CallInstallStagedLocalWebBundle() {
+    base::test::TestFuture<
+        base::expected<std::monostate, mojo_base::mojom::ErrorPtr>>
+        future;
+    GetHandler()->InstallStagedLocalWebBundle(future.GetCallback());
+    return future.Take();
+  }
+
  private:
   base::ScopedTempDir temp_dir_;
 };
 
 IN_PROC_BROWSER_TEST_F(IwaDevHandlerLocalBundleBrowserTest,
-                       SelectAndInstallAppFromLocalWebBundle_Success) {
+                       SelectLocalWebBundle_Success) {
   auto app = BuildBundle();
 
-  auto result = CallSelectAndInstallAppFromLocalWebBundle(app->path());
-  EXPECT_TRUE(result.has_value());
+  auto result = CallSelectLocalWebBundle(app->path());
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(*result, app->path().BaseName().AsUTF8Unsafe());
+}
+
+IN_PROC_BROWSER_TEST_F(IwaDevHandlerLocalBundleBrowserTest,
+                       SelectLocalWebBundle_Cancel) {
+  auto result = CallSelectLocalWebBundle(std::nullopt);
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error()->code, mojo_base::mojom::Code::kCancelled);
+  EXPECT_EQ(result.error()->message, "No file selected");
+
+  auto install_result = CallInstallStagedLocalWebBundle();
+  ASSERT_FALSE(install_result.has_value());
+  EXPECT_EQ(install_result.error()->code,
+            mojo_base::mojom::Code::kFailedPrecondition);
+  EXPECT_EQ(install_result.error()->message, "No bundle staged.");
+}
+
+IN_PROC_BROWSER_TEST_F(IwaDevHandlerLocalBundleBrowserTest,
+                       SelectLocalWebBundle_InvalidFileType) {
+  auto result =
+      CallSelectLocalWebBundle(base::FilePath(FILE_PATH_LITERAL("app.json")));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error()->code, mojo_base::mojom::Code::kInvalidArgument);
+  EXPECT_EQ(
+      result.error()->message,
+      "Invalid file type. Please select a Signed Web Bundle (.swbn) file.");
+
+  auto install_result = CallInstallStagedLocalWebBundle();
+  ASSERT_FALSE(install_result.has_value());
+  EXPECT_EQ(install_result.error()->code,
+            mojo_base::mojom::Code::kFailedPrecondition);
+  EXPECT_EQ(install_result.error()->message, "No bundle staged.");
+}
+
+IN_PROC_BROWSER_TEST_F(IwaDevHandlerLocalBundleBrowserTest,
+                       DragAndDrop_Success) {
+  auto app = BuildBundle();
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  drag_and_drop_test_utils::DragAndDropSimulator simulator(web_contents);
+  EXPECT_TRUE(simulator.SimulateDragEnter(gfx::Point(100, 100), app->path()));
+
+  GetHandler()->NotifyDragBundleEnter();
+  auto stage_result = CallStageDroppedLocalWebBundle();
+  ASSERT_TRUE(stage_result.has_value());
+  EXPECT_EQ(*stage_result, app->path().BaseName().AsUTF8Unsafe());
+
+  auto install_result = CallInstallStagedLocalWebBundle();
+  EXPECT_TRUE(install_result.has_value());
 
   auto apps = GetInstalledAppsInfo();
   ASSERT_EQ(apps.size(), 1u);
@@ -430,23 +499,157 @@ IN_PROC_BROWSER_TEST_F(IwaDevHandlerLocalBundleBrowserTest,
   ExpectBundleInstalledAtTruncatedPath(apps[0]->source->get_bundle_path());
 }
 
-IN_PROC_BROWSER_TEST_F(
-    IwaDevHandlerLocalBundleBrowserTest,
-    SelectAndInstallAppFromLocalWebBundle_Error_NoFileSelected) {
-  auto result = CallSelectAndInstallAppFromLocalWebBundle(std::nullopt);
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error()->message, "No file selected");
+IN_PROC_BROWSER_TEST_F(IwaDevHandlerLocalBundleBrowserTest,
+                       DragAndDrop_LeaveClearsDragState) {
+  auto app = BuildBundle();
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  drag_and_drop_test_utils::DragAndDropSimulator simulator(web_contents);
+  EXPECT_TRUE(simulator.SimulateDragEnter(gfx::Point(100, 100), app->path()));
+
+  GetHandler()->NotifyDragBundleEnter();
+  GetHandler()->NotifyDragBundleLeave();
+
+  auto stage_result = CallStageDroppedLocalWebBundle();
+  ASSERT_FALSE(stage_result.has_value());
+  EXPECT_EQ(stage_result.error()->code,
+            mojo_base::mojom::Code::kInvalidArgument);
+}
+
+IN_PROC_BROWSER_TEST_F(IwaDevHandlerLocalBundleBrowserTest,
+                       DragAndDrop_NonBundleFileRejected) {
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  drag_and_drop_test_utils::DragAndDropSimulator simulator(web_contents);
+  EXPECT_TRUE(simulator.SimulateDragEnter(
+      gfx::Point(100, 100), base::FilePath(FILE_PATH_LITERAL("app.txt"))));
+
+  GetHandler()->NotifyDragBundleEnter();
+  auto stage_result = CallStageDroppedLocalWebBundle();
+  ASSERT_FALSE(stage_result.has_value());
+  EXPECT_EQ(stage_result.error()->code,
+            mojo_base::mojom::Code::kInvalidArgument);
+}
+
+IN_PROC_BROWSER_TEST_F(IwaDevHandlerLocalBundleBrowserTest,
+                       DragAndDrop_MultipleFilesRejected) {
+  auto app1 = BuildBundle("App1", "1.0.0");
+  auto app2 = BuildBundle("App2", "1.0.0");
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  drag_and_drop_test_utils::DragAndDropSimulator simulator(web_contents);
+  EXPECT_TRUE(simulator.SimulateDragEnter(
+      gfx::Point(100, 100), {ui::FileInfo(app1->path(), base::FilePath()),
+                             ui::FileInfo(app2->path(), base::FilePath())}));
+
+  GetHandler()->NotifyDragBundleEnter();
+  auto stage_result = CallStageDroppedLocalWebBundle();
+  ASSERT_FALSE(stage_result.has_value());
+  EXPECT_EQ(stage_result.error()->code,
+            mojo_base::mojom::Code::kInvalidArgument);
+
+  auto install_result = CallInstallStagedLocalWebBundle();
+  ASSERT_FALSE(install_result.has_value());
+  EXPECT_EQ(install_result.error()->code,
+            mojo_base::mojom::Code::kFailedPrecondition);
 }
 
 IN_PROC_BROWSER_TEST_F(
     IwaDevHandlerLocalBundleBrowserTest,
-    SelectAndInstallAppFromLocalWebBundle_Error_InvalidFileType) {
-  auto result = CallSelectAndInstallAppFromLocalWebBundle(
-      base::FilePath(FILE_PATH_LITERAL("app.json")));
+    DragAndDrop_ReplacesStagedBundleWithInvalidClearsStaged) {
+  auto app = BuildBundle();
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  // First, stage a valid bundle.
+  auto select_result = CallSelectLocalWebBundle(app->path());
+  ASSERT_TRUE(select_result.has_value());
+
+  // Drag in an invalid non-bundle file.
+  drag_and_drop_test_utils::DragAndDropSimulator simulator(web_contents);
+  EXPECT_TRUE(simulator.SimulateDragEnter(
+      gfx::Point(100, 100), base::FilePath(FILE_PATH_LITERAL("invalid.txt"))));
+
+  GetHandler()->NotifyDragBundleEnter();
+  auto stage_result = CallStageDroppedLocalWebBundle();
+  ASSERT_FALSE(stage_result.has_value());
+  EXPECT_EQ(stage_result.error()->code,
+            mojo_base::mojom::Code::kInvalidArgument);
+
+  // Staged bundle should have been cleared.
+  auto install_result = CallInstallStagedLocalWebBundle();
+  ASSERT_FALSE(install_result.has_value());
+  EXPECT_EQ(install_result.error()->code,
+            mojo_base::mojom::Code::kFailedPrecondition);
+  EXPECT_EQ(install_result.error()->message, "No bundle staged.");
+}
+
+IN_PROC_BROWSER_TEST_F(IwaDevHandlerLocalBundleBrowserTest,
+                       InstallStagedLocalWebBundle_Success) {
+  auto app = BuildBundle();
+
+  auto select_result = CallSelectLocalWebBundle(app->path());
+  ASSERT_TRUE(select_result.has_value());
+
+  auto install_result = CallInstallStagedLocalWebBundle();
+  EXPECT_TRUE(install_result.has_value());
+
+  auto apps = GetInstalledAppsInfo();
+  ASSERT_EQ(apps.size(), 1u);
+  EXPECT_EQ(apps[0]->name, kLocalBundleName);
+  ASSERT_TRUE(apps[0]->source->is_bundle_path());
+  ExpectBundleInstalledAtTruncatedPath(apps[0]->source->get_bundle_path());
+
+  // Staged bundle should be cleared after install.
+  auto second_install_result = CallInstallStagedLocalWebBundle();
+  ASSERT_FALSE(second_install_result.has_value());
+  EXPECT_EQ(second_install_result.error()->code,
+            mojo_base::mojom::Code::kFailedPrecondition);
+  EXPECT_EQ(second_install_result.error()->message, "No bundle staged.");
+}
+
+IN_PROC_BROWSER_TEST_F(IwaDevHandlerLocalBundleBrowserTest,
+                       InstallStagedLocalWebBundle_NoFileStaged) {
+  auto result = CallInstallStagedLocalWebBundle();
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(
-      result.error()->message,
-      "Invalid file type. Please select a Signed Web Bundle (.swbn) file.");
+  EXPECT_EQ(result.error()->code, mojo_base::mojom::Code::kFailedPrecondition);
+  EXPECT_EQ(result.error()->message, "No bundle staged.");
+}
+
+IN_PROC_BROWSER_TEST_F(IwaDevHandlerLocalBundleBrowserTest,
+                       InstallStagedLocalWebBundle_RetainsPathOnFailure) {
+  auto app = BuildBundle();
+
+  // First installation succeeds.
+  auto select_result = CallSelectLocalWebBundle(app->path());
+  ASSERT_TRUE(select_result.has_value());
+  auto install_result = CallInstallStagedLocalWebBundle();
+  EXPECT_TRUE(install_result.has_value());
+
+  // Selecting the same bundle again.
+  auto second_select = CallSelectLocalWebBundle(app->path());
+  ASSERT_TRUE(second_select.has_value());
+
+  // First attempt to re-install fails because app is already installed.
+  auto failed_install = CallInstallStagedLocalWebBundle();
+  ASSERT_FALSE(failed_install.has_value());
+  EXPECT_NE(failed_install.error()->message, "No bundle staged.");
+
+  // Second attempt still finds the staged bundle (retained on failure).
+  auto retry_install = CallInstallStagedLocalWebBundle();
+  ASSERT_FALSE(retry_install.has_value());
+  EXPECT_NE(retry_install.error()->message, "No bundle staged.");
+
+  // Clearing the staged bundle removes it.
+  GetHandler()->ClearStagedLocalWebBundle();
+  auto after_clear = CallInstallStagedLocalWebBundle();
+  ASSERT_FALSE(after_clear.has_value());
+  EXPECT_EQ(after_clear.error()->code,
+            mojo_base::mojom::Code::kFailedPrecondition);
+  EXPECT_EQ(after_clear.error()->message, "No bundle staged.");
 }
 
 IN_PROC_BROWSER_TEST_F(IwaDevHandlerLocalBundleBrowserTest,

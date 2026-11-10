@@ -58,6 +58,7 @@ source_set("browser_tests") {
     "//chrome/browser:flags",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/test:test_support",
+    "//chrome/test/base:drag_and_drop_test_utils",
     "//content/test:test_support",
     "//net:test_support",
     "//testing/gtest",

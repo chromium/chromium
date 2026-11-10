@@ -690,13 +690,12 @@ suite('<iwa-dev-app>', () => {
       });
 
   test(
-      'calls selectAndInstallAppFromLocalWebBundle when dialog requests ' +
+      'calls installStagedLocalWebBundle when dialog requests ' +
           'install from local bundle',
       async () => {
         handler.setResultFor(
             'getInstalledAppsInfo', Promise.resolve({apps: []}));
-        handler.setResultFor(
-            'selectAndInstallAppFromLocalWebBundle', Promise.resolve());
+        handler.setResultFor('installStagedLocalWebBundle', Promise.resolve());
 
         createApp(/*devModeEnabled=*/ true);
         await handler.whenCalled('getInstalledAppsInfo');
@@ -706,7 +705,7 @@ suite('<iwa-dev-app>', () => {
 
         dialog.dispatchEvent(
             new CustomEvent('request-install-from-local-bundle'));
-        await handler.whenCalled('selectAndInstallAppFromLocalWebBundle');
+        await handler.whenCalled('installStagedLocalWebBundle');
         await microtasksFinished();
 
         const crDialog = dialog.$.dialog;
@@ -717,31 +716,27 @@ suite('<iwa-dev-app>', () => {
             'Installation successful!', getToast().textContent?.trim());
       });
 
-  test(
-      'displays error when local bundle installation is cancelled',
-      async () => {
-        handler.setResultFor(
-            'getInstalledAppsInfo', Promise.resolve({apps: []}));
-        handler.setResultFor(
-            'selectAndInstallAppFromLocalWebBundle',
-            Promise.reject({message: 'No file selected'}));
+  test('displays error when local bundle installation fails', async () => {
+    handler.setResultFor('getInstalledAppsInfo', Promise.resolve({apps: []}));
+    const errorMessage = 'Installation failed';
+    handler.setResultFor(
+        'installStagedLocalWebBundle', Promise.reject({message: errorMessage}));
 
-        createApp(/*devModeEnabled=*/ true);
-        await handler.whenCalled('getInstalledAppsInfo');
-        await microtasksFinished();
+    createApp(/*devModeEnabled=*/ true);
+    await handler.whenCalled('getInstalledAppsInfo');
+    await microtasksFinished();
 
-        const dialog = getInstallDialog();
+    const dialog = getInstallDialog();
 
-        dialog.dispatchEvent(
-            new CustomEvent('request-install-from-local-bundle'));
-        await handler.whenCalled('selectAndInstallAppFromLocalWebBundle');
-        await microtasksFinished();
+    dialog.dispatchEvent(new CustomEvent('request-install-from-local-bundle'));
+    await handler.whenCalled('installStagedLocalWebBundle');
+    await microtasksFinished();
 
-        const errorDiv =
-            dialog.shadowRoot.querySelector<HTMLElement>('.error-message');
-        assertTrue(!!errorDiv);
-        assertEquals('No file selected', errorDiv.textContent?.trim());
-      });
+    const errorDiv =
+        dialog.shadowRoot.querySelector<HTMLElement>('.error-message');
+    assertTrue(!!errorDiv);
+    assertEquals(errorMessage, errorDiv.textContent?.trim());
+  });
 
   async function testParseUpdateManifestFromUrl(
       mojoResult: Promise<UpdateManifest>):

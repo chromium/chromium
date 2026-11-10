@@ -19,8 +19,8 @@ This directory contains the C++ WebUI controller and Mojo page handler for the
 - `IwaDevPageHandler` (`iwa_dev_page_handler.{h,cc}`): Implements
   `iwa_dev::mojom::PageHandler`, bridging WebUI actions to `WebAppProvider`:
   - Installing dev-mode IWAs from proxy URLs (`InstallAppFromDevProxy`), local
-    `.swbn` bundles (`SelectAndInstallAppFromLocalWebBundle`), or Update
-    Manifests (`ParseUpdateManifestFromUrl` and `InstallAppFromUpdateManifest`).
+    `.swbn` bundles (`SelectLocalWebBundle`, `StageDroppedLocalWebBundle`, and
+    `InstallStagedLocalWebBundle`), or Update Manifests (`ParseUpdateManifestFromUrl` and `InstallAppFromUpdateManifest`).
   - Inspecting (`GetInstalledAppsInfo`), launching (`LaunchApp`), updating
     (`UpdateDevProxyInstalledApp`, `SelectAndUpdateAppFromLocalWebBundle`,
     `UpdateManifestInstalledApp`, `SetUpdateChannel`), and uninstalling

@@ -87,10 +87,6 @@ interface PageHandler {
   // Restarts the browser to apply updated feature flag.
   RestartBrowser();
 
-  // Opens a file picker for the user to select a Web Bundle and installs it.
-  SelectAndInstallAppFromLocalWebBundle()
-      => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
-
   // Opens a file picker for the user to select a Web Bundle and
   // updates the app.
   SelectAndUpdateAppFromLocalWebBundle(string app_id)
@@ -114,6 +110,34 @@ interface PageHandler {
   // Triggers an update for a manifest-installed dev mode app.
   UpdateManifestInstalledApp(string app_id, UpdateManifestOptions options)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
+
+  // Opens a file picker for the user to select a Web Bundle and stages it in
+  // the browser process. Returns the display filename if a valid bundle was
+  // selected, or an error if invalid or canceled.
+  SelectLocalWebBundle()
+      => result<string, mojo_base.mojom.Error>;
+
+  // Stages a Web Bundle dropped onto the page/dropzone. Returns the display
+  // filename if a valid bundle was dropped, or an error if invalid.
+  StageDroppedLocalWebBundle()
+      => result<string, mojo_base.mojom.Error>;
+
+  // Installs the currently staged local Web Bundle. Fails with
+  // kFailedPrecondition if no bundle is currently staged.
+  InstallStagedLocalWebBundle()
+      => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
+
+  // Clears any currently staged local Web Bundle.
+  ClearStagedLocalWebBundle();
+
+  // Notifies the browser that a dragged file has entered the bundle drop
+  // target, allowing the browser to capture the file path from active drop
+  // data.
+  NotifyDragBundleEnter();
+
+  // Notifies the browser that a drag operation has left the bundle drop target
+  // or was canceled, clearing temporary drag state.
+  NotifyDragBundleLeave();
 };
 
 // Interface for the browser to push events to the WebUI page.

@@ -51,6 +51,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "content/public/common/drop_data.h"
 #include "mojo/public/mojom/base/empty.mojom.h"
 #include "mojo/public/mojom/base/error.mojom.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -218,7 +219,7 @@ class IwaDevPageHandler::LocalBundleSelectListener
   void FileSelectionCanceled() override {
     CHECK(callback_);
     std::move(callback_).Run(base::unexpected(mojo_base::mojom::Error::New(
-        mojo_base::mojom::Code::kInvalidArgument, "No file selected")));
+        mojo_base::mojom::Code::kCancelled, "No file selected")));
   }
 
  private:
@@ -384,7 +385,7 @@ void IwaDevPageHandler::RestartBrowser() {
 #endif
 }
 
-void IwaDevPageHandler::SelectLocalWebBundle(
+void IwaDevPageHandler::PromptUserForLocalWebBundle(
     base::OnceCallback<void(SelectLocalBundleResult)> callback) {
   content::RenderFrameHost* render_frame_host =
       web_contents_->GetPrimaryMainFrame();
@@ -393,34 +394,102 @@ void IwaDevPageHandler::SelectLocalWebBundle(
       ->Show(render_frame_host);
 }
 
-void IwaDevPageHandler::SelectAndInstallAppFromLocalWebBundle(
-    SelectAndInstallAppFromLocalWebBundleCallback callback) {
-  SelectLocalWebBundle(
-      base::BindOnce(&IwaDevPageHandler::OnLocalBundleSelectedForInstall,
+void IwaDevPageHandler::SelectLocalWebBundle(
+    SelectLocalWebBundleCallback callback) {
+  PromptUserForLocalWebBundle(
+      base::BindOnce(&IwaDevPageHandler::OnLocalBundleSelectedForStaging,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void IwaDevPageHandler::OnLocalBundleSelectedForInstall(
-    SelectAndInstallAppFromLocalWebBundleCallback callback,
+void IwaDevPageHandler::OnLocalBundleSelectedForStaging(
+    SelectLocalWebBundleCallback callback,
     SelectLocalBundleResult path) {
-  if (!path.has_value()) {
-    std::move(callback).Run(base::unexpected(std::move(path.error())));
+  ASSIGN_OR_RETURN(
+      base::FilePath file_path, std::move(path),
+      [&](mojo_base::mojom::ErrorPtr error) {
+        if (error->code != mojo_base::mojom::Code::kCancelled) {
+          staged_bundle_path_.reset();
+        }
+        std::move(callback).Run(base::unexpected(std::move(error)));
+      });
+
+  staged_bundle_path_ = std::move(file_path);
+  std::move(callback).Run(staged_bundle_path_->BaseName().AsUTF8Unsafe());
+}
+
+void IwaDevPageHandler::StageDroppedLocalWebBundle(
+    StageDroppedLocalWebBundleCallback callback) {
+  if (!dragged_bundle_path_.has_value()) {
+    staged_bundle_path_.reset();
+    std::move(callback).Run(base::unexpected(mojo_base::mojom::Error::New(
+        mojo_base::mojom::Code::kInvalidArgument,
+        "Invalid file type. Please select a Signed Web Bundle (.swbn) file.")));
+    return;
+  }
+
+  staged_bundle_path_ = *std::exchange(dragged_bundle_path_, std::nullopt);
+  std::move(callback).Run(staged_bundle_path_->BaseName().AsUTF8Unsafe());
+}
+
+void IwaDevPageHandler::InstallStagedLocalWebBundle(
+    InstallStagedLocalWebBundleCallback callback) {
+  if (!staged_bundle_path_.has_value()) {
+    std::move(callback).Run(base::unexpected(mojo_base::mojom::Error::New(
+        mojo_base::mojom::Code::kFailedPrecondition, "No bundle staged.")));
     return;
   }
 
   provider_->isolated_web_app_dev_install_manager()
       .InstallIsolatedWebAppFromDevModeBundle(
-          *path,
+          *staged_bundle_path_,
           web_app::IsolatedWebAppDevInstallManager::InstallSurface::kDevUi,
-          base::BindOnce(&MapToMojomEmptyResult<
-                             web_app::InstallIsolatedWebAppCommandSuccess>)
-              .Then(std::move(callback)));
+          base::BindOnce(
+              &IwaDevPageHandler::OnInstallStagedLocalWebBundleCompleted,
+              weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void IwaDevPageHandler::OnInstallStagedLocalWebBundleCompleted(
+    InstallStagedLocalWebBundleCallback callback,
+    base::expected<web_app::InstallIsolatedWebAppCommandSuccess, std::string>
+        result) {
+  // Retain staged_bundle_path_ on failure so retry or UI correction is
+  // possible.
+  RETURN_IF_ERROR(result, [&](std::string error) {
+    std::move(callback).Run(base::unexpected(mojo_base::mojom::Error::New(
+        mojo_base::mojom::Code::kInvalidArgument, std::move(error))));
+  });
+
+  staged_bundle_path_.reset();
+  std::move(callback).Run(std::monostate());
+}
+
+void IwaDevPageHandler::ClearStagedLocalWebBundle() {
+  staged_bundle_path_.reset();
+}
+
+void IwaDevPageHandler::NotifyDragBundleEnter() {
+  dragged_bundle_path_.reset();
+  content::DropData* drop_data = web_contents_->GetDropData();
+  if (!drop_data || drop_data->filenames.size() != 1) {
+    return;
+  }
+
+  const ui::FileInfo& file_info = drop_data->filenames.front();
+  if (!file_info.path.MatchesExtension(FILE_PATH_LITERAL(".swbn"))) {
+    return;
+  }
+
+  dragged_bundle_path_ = file_info.path;
+}
+
+void IwaDevPageHandler::NotifyDragBundleLeave() {
+  dragged_bundle_path_.reset();
 }
 
 void IwaDevPageHandler::SelectAndUpdateAppFromLocalWebBundle(
     const std::string& app_id,
     SelectAndUpdateAppFromLocalWebBundleCallback callback) {
-  SelectLocalWebBundle(base::BindOnce(
+  PromptUserForLocalWebBundle(base::BindOnce(
       &IwaDevPageHandler::OnLocalBundleSelectedForUpdate,
       weak_ptr_factory_.GetWeakPtr(), app_id, std::move(callback)));
 }
