@@ -15,6 +15,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/uuid.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service_android.h"
+#include "third_party/jni_zero/jni_zero.h"
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "device/bluetooth/jni_headers/ChromeBluetoothRemoteGattDescriptor_jni.h"
 
@@ -37,7 +38,7 @@ BluetoothRemoteGattDescriptorAndroid::Create(
 
   descriptor->j_descriptor_.Reset(
       Java_ChromeBluetoothRemoteGattDescriptor_create(
-          AttachCurrentThread(), reinterpret_cast<intptr_t>(descriptor.get()),
+          AttachCurrentThread(), jni_zero::MakeRaw(descriptor.get()),
           bluetooth_gatt_descriptor_wrapper, chrome_bluetooth_device));
 
   return descriptor;
