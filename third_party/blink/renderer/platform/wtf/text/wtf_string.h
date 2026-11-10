@@ -753,9 +753,9 @@ void String::AppendTo(BufferType& result,
 }
 
 // Shared global empty string.
-WTF_EXPORT extern const String& g_empty_string;
-WTF_EXPORT extern const String& g_empty_string16_bit;
-WTF_EXPORT extern const String& g_xmlns_with_colon;
+WTF_EXPORT extern const String g_empty_string;
+WTF_EXPORT extern const String g_empty_string16_bit;
+WTF_EXPORT extern const String g_xmlns_with_colon;
 
 // Table representing common HTML strings of type '\n<space>*'.
 class WTF_EXPORT NewlineThenWhitespaceStringsTable {
@@ -774,7 +774,7 @@ class WTF_EXPORT NewlineThenWhitespaceStringsTable {
   static bool IsNewlineThenWhitespaces(const StringView& view);
 
  private:
-  static const TableType& g_table_;
+  static const TableType g_table_;
 };
 
 // Pretty printer for gtest and base/logging.*.  It prepends and appends

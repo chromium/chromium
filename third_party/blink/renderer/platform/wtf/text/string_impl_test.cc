@@ -387,16 +387,20 @@ TEST(StringImplTest, StaticAsciiStringImpl) {
           ->GetHash());
 
   // `String::FromLiteral` should reference the same .rodata
-  // StringImpl without heap allocation or refcount changes.
-  const String lit1 = String::FromLiteral<"compile-time-literal">();
-  const String lit2 = String::FromLiteral<"compile-time-literal">();
+  // StringImpl without heap allocation or refcount changes, and work in
+  // constinit contexts.
+  [[clang::no_destroy]] static constinit const String lit1 =
+      String::FromLiteral<"compile-time-literal">();
+  [[clang::no_destroy]] static constinit const String lit2 =
+      String::FromLiteral<"compile-time-literal">();
   EXPECT_EQ(lit1.Impl(), lit2.Impl());
   EXPECT_TRUE(lit1.Impl()->IsStatic());
   EXPECT_EQ(lit1, "compile-time-literal");
   EXPECT_EQ(String::Boolean(true), "true");
   EXPECT_EQ(String::Boolean(false), "false");
 
-  const String empty_lit = String::FromLiteral<"">();
+  [[clang::no_destroy]] static const String empty_lit =
+      String::FromLiteral<"">();
   EXPECT_EQ(empty_lit.Impl(), StringImpl::empty_);
 
   // Converting an unregistered static String to AtomicString must safely

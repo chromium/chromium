@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_statics.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -41,43 +42,76 @@
 
 namespace blink {
 
-DEFINE_GLOBAL(WTF_EXPORT, AtomicString, g_null_atom);
-DEFINE_GLOBAL(WTF_EXPORT, AtomicString, g_empty_atom);
-DEFINE_GLOBAL(WTF_EXPORT, AtomicString, g_star_atom);
-DEFINE_GLOBAL(WTF_EXPORT, AtomicString, g_xml_atom);
-DEFINE_GLOBAL(WTF_EXPORT, AtomicString, g_xmlns_atom);
-DEFINE_GLOBAL(WTF_EXPORT, AtomicString, g_xlink_atom);
-DEFINE_GLOBAL(WTF_EXPORT, AtomicString, g_http_atom);
-DEFINE_GLOBAL(WTF_EXPORT, AtomicString, g_https_atom);
+namespace {
+
+constexpr auto kStar = MakeStaticAtomicStringImpl("*");
+constexpr auto kXml = MakeStaticAtomicStringImpl("xml");
+constexpr auto kXmlns = MakeStaticAtomicStringImpl("xmlns");
+constexpr auto kXlink = MakeStaticAtomicStringImpl("xlink");
+constexpr auto kHttp = MakeStaticAtomicStringImpl("http");
+constexpr auto kHttps = MakeStaticAtomicStringImpl("https");
+
+template <size_t N>
+struct NewlineThenWhitespaceEntry {
+  static constexpr StaticAsciiStringImpl<N> kImpl{
+      typename StaticAsciiStringImpl<N>::NewlineThenWhitespaceTag{}};
+};
+
+template <size_t... Is>
+consteval NewlineThenWhitespaceStringsTable::TableType
+MakeNewlineThenWhitespaceTable(std::index_sequence<Is...>) {
+  return {String(),
+          String(NewlineThenWhitespaceEntry<Is + 1>::kImpl.AsStringImpl(),
+                 String::StaticImplTag{})...};
+}
+
+}  // namespace
+
+[[clang::no_destroy]] WTF_EXPORT constinit const AtomicString g_null_atom;
+[[clang::no_destroy]] WTF_EXPORT constinit const AtomicString g_empty_atom(
+    &StringImpl::g_global_empty,
+    AtomicString::StaticAtomTag{});
+[[clang::no_destroy]] WTF_EXPORT constinit const AtomicString g_star_atom(
+    kStar.AsStringImpl(),
+    AtomicString::StaticAtomTag{});
+[[clang::no_destroy]] WTF_EXPORT constinit const AtomicString g_xml_atom(
+    kXml.AsStringImpl(),
+    AtomicString::StaticAtomTag{});
+[[clang::no_destroy]] WTF_EXPORT constinit const AtomicString g_xmlns_atom(
+    kXmlns.AsStringImpl(),
+    AtomicString::StaticAtomTag{});
+[[clang::no_destroy]] WTF_EXPORT constinit const AtomicString g_xlink_atom(
+    kXlink.AsStringImpl(),
+    AtomicString::StaticAtomTag{});
+[[clang::no_destroy]] WTF_EXPORT constinit const AtomicString g_http_atom(
+    kHttp.AsStringImpl(),
+    AtomicString::StaticAtomTag{});
+[[clang::no_destroy]] WTF_EXPORT constinit const AtomicString g_https_atom(
+    kHttps.AsStringImpl(),
+    AtomicString::StaticAtomTag{});
 
 // This is not an AtomicString because it is unlikely to be used as an
 // event/element/attribute name, so it shouldn't pollute the AtomicString hash
 // table.
-DEFINE_GLOBAL(WTF_EXPORT, String, g_xmlns_with_colon);
+[[clang::no_destroy]] WTF_EXPORT constinit const String g_xmlns_with_colon =
+    String::FromLiteral<"xmlns:">();
 
-DEFINE_GLOBAL(WTF_EXPORT, String, g_empty_string);
-DEFINE_GLOBAL(WTF_EXPORT, String, g_empty_string16_bit);
+[[clang::no_destroy]] WTF_EXPORT constinit const String g_empty_string(
+    &StringImpl::g_global_empty,
+    String::StaticImplTag{});
+[[clang::no_destroy]] WTF_EXPORT constinit const String g_empty_string16_bit(
+    &StringImpl::g_global_empty16_bit,
+    String::StaticImplTag{});
 
-namespace {
-alignas(String) char g_canonical_whitespace_table_storage[sizeof(
-    NewlineThenWhitespaceStringsTable::TableType)];
-}
-
-WTF_EXPORT const NewlineThenWhitespaceStringsTable::TableType&
-    NewlineThenWhitespaceStringsTable::g_table_ =
-        *reinterpret_cast<NewlineThenWhitespaceStringsTable::TableType*>(
-            g_canonical_whitespace_table_storage);
+[[clang::
+      no_destroy]] WTF_EXPORT constinit const NewlineThenWhitespaceStringsTable::
+    TableType NewlineThenWhitespaceStringsTable::g_table_ =
+        MakeNewlineThenWhitespaceTable(
+            std::make_index_sequence<kTableSize - 1>());
 
 void NewlineThenWhitespaceStringsTable::Init() {
-  char whitespace_buffer[kTableSize + 1] = {'\n'};
-  std::ranges::fill(base::span(whitespace_buffer).subspan<1u>(), ' ');
-
-  // Keep g_table_[0] uninitialized.
-  for (size_t length = 1; length < kTableSize; ++length) {
-    auto* string_impl =
-        StringImpl::CreateStatic(base::span(whitespace_buffer).first(length));
-    new (base::NotNullTag::kNotNull, (void*)(&g_table_[length]))
-        String(blink::AtomicString(string_impl).GetString());
+  for (size_t i = 1; i < kTableSize; ++i) {
+    StringImpl::CreateStatic(g_table_[i].Impl());
   }
 }
 
@@ -120,40 +154,22 @@ NOINLINE uint32_t StringImpl::HashSlowCase() const {
 
 void AtomicString::Init() {
   DCHECK(IsMainThread());
-
-  new (base::NotNullTag::kNotNull, (void*)&g_null_atom) AtomicString;
-  new (base::NotNullTag::kNotNull, (void*)&g_empty_atom) AtomicString("");
-}
-
-scoped_refptr<StringImpl> AddStaticAsciiLiteral(
-    base::span<const char> literal) {
-  return base::AdoptRef(StringImpl::CreateStatic(literal));
 }
 
 void InitStringStatics() {
   DCHECK(IsMainThread());
 
   StringImpl::InitStatics();
+  constexpr wtf_size_t kStringStaticsCount =
+      6 + (NewlineThenWhitespaceStringsTable::kTableSize - 1);
+  StringImpl::ReserveStaticStringsCapacityForSize(kStringStaticsCount);
 
-  new (base::NotNullTag::kNotNull, const_cast<String*>(&g_empty_string))
-      String(StringImpl::empty_);
-  new (base::NotNullTag::kNotNull, const_cast<String*>(&g_empty_string16_bit))
-      String(StringImpl::empty16_bit_);
-  new (base::NotNullTag::kNotNull, const_cast<String*>(&g_xmlns_with_colon))
-      String("xmlns:");
-
-  // FIXME: These should be allocated at compile time.
-  new (base::NotNullTag::kNotNull, (void*)&g_star_atom) AtomicString("*");
-  new (base::NotNullTag::kNotNull, (void*)&g_xml_atom)
-      AtomicString(AddStaticAsciiLiteral(base::span_from_cstring("xml")));
-  new (base::NotNullTag::kNotNull, (void*)&g_xmlns_atom)
-      AtomicString(AddStaticAsciiLiteral(base::span_from_cstring("xmlns")));
-  new (base::NotNullTag::kNotNull, (void*)&g_xlink_atom)
-      AtomicString(AddStaticAsciiLiteral(base::span_from_cstring("xlink")));
-  new (base::NotNullTag::kNotNull, (void*)&g_http_atom)
-      AtomicString(AddStaticAsciiLiteral(base::span_from_cstring("http")));
-  new (base::NotNullTag::kNotNull, (void*)&g_https_atom)
-      AtomicString(AddStaticAsciiLiteral(base::span_from_cstring("https")));
+  StringImpl::CreateStatic(kStar.AsStringImpl());
+  StringImpl::CreateStatic(kXml.AsStringImpl());
+  StringImpl::CreateStatic(kXmlns.AsStringImpl());
+  StringImpl::CreateStatic(kXlink.AsStringImpl());
+  StringImpl::CreateStatic(kHttp.AsStringImpl());
+  StringImpl::CreateStatic(kHttps.AsStringImpl());
 
   NewlineThenWhitespaceStringsTable::Init();
 }

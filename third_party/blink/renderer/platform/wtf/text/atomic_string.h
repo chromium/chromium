@@ -363,14 +363,14 @@ inline bool operator==(const char* a, const AtomicString& b) {
 
 // Define external global variables for the commonly used atomic strings.
 // These are only usable from the main thread.
-WTF_EXPORT extern const AtomicString& g_null_atom;
-WTF_EXPORT extern const AtomicString& g_empty_atom;
-WTF_EXPORT extern const AtomicString& g_star_atom;
-WTF_EXPORT extern const AtomicString& g_xml_atom;
-WTF_EXPORT extern const AtomicString& g_xmlns_atom;
-WTF_EXPORT extern const AtomicString& g_xlink_atom;
-WTF_EXPORT extern const AtomicString& g_http_atom;
-WTF_EXPORT extern const AtomicString& g_https_atom;
+WTF_EXPORT extern const AtomicString g_null_atom;
+WTF_EXPORT extern const AtomicString g_empty_atom;
+WTF_EXPORT extern const AtomicString g_star_atom;
+WTF_EXPORT extern const AtomicString g_xml_atom;
+WTF_EXPORT extern const AtomicString g_xmlns_atom;
+WTF_EXPORT extern const AtomicString g_xlink_atom;
+WTF_EXPORT extern const AtomicString g_http_atom;
+WTF_EXPORT extern const AtomicString g_https_atom;
 
 // Pretty printer for gtest and base/logging.*.  It prepends and appends
 // double-quotes, and escapes characters other than ASCII printables.

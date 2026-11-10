@@ -791,6 +791,20 @@ struct alignas(StringImpl) StaticAsciiStringImpl {
     }
   }
 
+  static consteval uint32_t ComputeNewlineThenWhitespaceHashAndFlags() {
+    static_assert(N > 0);
+    std::array<LChar, N> chars{};
+    chars[0] = '\n';
+    for (size_t i = 1; i < N; ++i) {
+      chars[i] = ' ';
+    }
+    const uint32_t hash = HashString24(base::span<const LChar>(chars));
+    return (hash << StringImpl::kHashShift) |
+           StringImpl::kAsciiPropertyCheckDone |
+           StringImpl::kContainsOnlyAscii | StringImpl::kIsLowerAscii |
+           StringImpl::kIs8Bit | StringImpl::kIsStatic | StringImpl::kIsAtomic;
+  }
+
   consteval explicit StaticAsciiStringImpl(base::span<const char, N + 1> str,
                                            Mode mode = Mode::kStaticString)
       : impl_(static_cast<wtf_size_t>(N),
@@ -810,6 +824,18 @@ struct alignas(StringImpl) StaticAsciiStringImpl {
   consteval explicit StaticAsciiStringImpl(const char (&str)[N + 1],
                                            Mode mode = Mode::kStaticString)
       : StaticAsciiStringImpl(base::span(str), mode) {}
+
+  struct NewlineThenWhitespaceTag {};
+  consteval explicit StaticAsciiStringImpl(NewlineThenWhitespaceTag)
+      : impl_(static_cast<wtf_size_t>(N),
+              ComputeNewlineThenWhitespaceHashAndFlags(),
+              StringImpl::StaticStringInRodataTag{}) {
+    static_assert(N > 0);
+    data_[0] = '\n';
+    for (size_t i = 1; i < N; ++i) {
+      data_[i] = ' ';
+    }
+  }
 
   constexpr const StringImpl* AsStringImpl() const { return &impl_; }
 };
