@@ -10,8 +10,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/no_destructor.h"
+#include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/thread_annotations.h"
 #include "build/build_config.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/prefs/json_pref_store.h"
@@ -32,6 +36,41 @@
 #endif
 
 namespace {
+
+// Protected pref store paths whose profile had Preferences overwritten from
+// initial_preferences earlier in this process. Each entry is consumed by the
+// next CreateTrackedPersistentPrefStore() call for that store, which is the
+// only time first-run migration into the protected store is allowed.
+//
+// This is process-global state because the only common caller of first-run
+// seeding (ProcessInitialPreferences() during browser startup) and profile pref
+// store creation (ProfileManager -> ProfileImpl -> CreateProfilePrefs) is
+// ChromeBrowserMainParts. Passing this explicitly would require changing the
+// profile creation APIs. Unlike on-disk state (an empty Secure Preferences or
+// the First Run sentinel), this cannot be faked by someone who can only modify
+// files in the profile directory.
+class SeededInitPrefsPaths {
+ public:
+  static SeededInitPrefsPaths& Get() {
+    static base::NoDestructor<SeededInitPrefsPaths> instance;
+    return *instance;
+  }
+
+  void Add(const base::FilePath& protected_pref_filename) {
+    base::AutoLock lock(lock_);
+    paths_.insert(protected_pref_filename);
+  }
+
+  // Returns true and removes |protected_pref_filename| if it was added.
+  bool Take(const base::FilePath& protected_pref_filename) {
+    base::AutoLock lock(lock_);
+    return paths_.erase(protected_pref_filename) > 0;
+  }
+
+ private:
+  base::Lock lock_;
+  std::set<base::FilePath> paths_ GUARDED_BY(lock_);
+};
 
 void RemoveValueSilently(const base::WeakPtr<JsonPrefStore> pref_store,
                          const std::string& key) {
@@ -146,6 +185,9 @@ PersistentPrefStore* CreateTrackedPersistentPrefStore(
       config->protected_pref_filename, std::move(protected_pref_hash_filter),
       io_task_runner.get()));
 
+  const bool has_init_prefs =
+      SeededInitPrefsPaths::Get().Take(config->protected_pref_filename);
+
   SetupTrackedPreferencesMigration(
       unprotected_pref_names, protected_pref_names,
       base::BindRepeating(&RemoveValueSilently,
@@ -160,7 +202,8 @@ PersistentPrefStore* CreateTrackedPersistentPrefStore(
                           /*use_super_encrypted_hash=*/false),
       CreatePrefHashStore(*config, /*use_super_hmac=*/true,
                           /*use_super_encrypted_hash=*/true),
-      raw_unprotected_pref_hash_filter, raw_protected_pref_hash_filter);
+      raw_unprotected_pref_hash_filter, raw_protected_pref_hash_filter,
+      has_init_prefs);
 
   return new SegregatedPrefStore(std::move(unprotected_pref_store),
                                  std::move(protected_pref_store),
@@ -177,4 +220,9 @@ void InitializeMasterPrefsTracking(
       configuration->tracking_configuration, mojo::NullRemote(), nullptr,
       configuration->reporting_ids_count, os_crypt)
       .Initialize(master_prefs);
+}
+
+void MarkPrefsSeededFromInitialPrefs(
+    const base::FilePath& protected_pref_filename) {
+  SeededInitPrefsPaths::Get().Add(protected_pref_filename);
 }

@@ -27,7 +27,8 @@ class PrefHashStore;
 // authenticators along with their protected preferences. Migrated
 // authenticators will only be cleared from their old location in a subsequent
 // run. The migration framework is resilient to a failed cleanup (it will simply
-// try again in the next Chrome run).
+// try again in the next Chrome run). |has_init_prefs| indicates whether
+// InitializeMasterPrefsTracking() seeded initial preferences in this process.
 void SetupTrackedPreferencesMigration(
     const PrefNameSet& unprotected_pref_names,
     const PrefNameSet& protected_pref_names,
@@ -42,6 +43,7 @@ void SetupTrackedPreferencesMigration(
     std::unique_ptr<PrefHashStore> unprotected_pref_hash_store,
     std::unique_ptr<PrefHashStore> protected_pref_hash_store,
     InterceptablePrefFilter* unprotected_pref_filter,
-    InterceptablePrefFilter* protected_pref_filter);
+    InterceptablePrefFilter* protected_pref_filter,
+    bool has_init_prefs = false);
 
 #endif  // SERVICES_PREFERENCES_TRACKED_TRACKED_PREFERENCES_MIGRATION_H_

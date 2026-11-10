@@ -115,6 +115,14 @@ bool g_disable_domain_check_for_testing = false;
 // histogram enum. Each tracked preference must be given a unique reporting ID.
 // See CleanupDeprecatedTrackedPreferences() in pref_hash_filter.cc to remove a
 // deprecated tracked preference.
+//
+// WARNING: Adding an existing (untracked or NO_ENFORCEMENT) preference here as
+// ENFORCE_ON_LOAD, or switching an existing entry to ENFORCE_ON_LOAD, will
+// RESET its value for existing users on their next startup. Values are not
+// migrated from Preferences to Secure Preferences outside of first run (see
+// https://crbug.com/574078135 for context). To protect an existing pref without
+// losing data, register a new protected pref and migrate the value through the
+// PrefService. See services/preferences/tracked/README.md.
 const auto kTrackedPrefs = std::to_array<prefs::TrackedPreferenceMetadata>({
     {0, prefs::kShowHomeButton, EnforcementLevel::ENFORCE_ON_LOAD,
      PrefTrackingStrategy::ATOMIC, ValueType::IMPERSONAL},

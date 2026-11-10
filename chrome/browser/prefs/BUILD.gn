@@ -587,6 +587,8 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/language/core/browser",
+    "//components/os_crypt/async/browser",
+    "//components/os_crypt/async/browser:test_support",
     "//components/performance_manager",
     "//components/policy:generated",
     "//components/policy:policy_code_generate",

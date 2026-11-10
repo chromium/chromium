@@ -5,12 +5,14 @@
 #include "services/preferences/tracked/tracked_preferences_migration.h"
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -60,6 +62,16 @@ class SimpleInterceptablePrefFilter final : public InterceptablePrefFilter {
 
   void SetPrefService(PrefService* pref_service) override {}
 
+  void SetMigratedPaths(base::span<const std::string> migrated_paths) override {
+    migrated_paths_.assign(migrated_paths.begin(), migrated_paths.end());
+  }
+
+  const std::vector<std::string>& migrated_paths() const {
+    return migrated_paths_;
+  }
+
+  void ClearMigratedPaths() { migrated_paths_.clear(); }
+
  private:
   // InterceptablePrefFilter implementation.
   void FinalizeFilterOnLoad(
@@ -77,6 +89,7 @@ class SimpleInterceptablePrefFilter final : public InterceptablePrefFilter {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  std::vector<std::string> migrated_paths_;
   base::WeakPtrFactory<InterceptablePrefFilter> weak_ptr_factory_{this};
 };
 
@@ -112,7 +125,7 @@ class TrackedPreferencesMigrationTest : public testing::Test {
 
   void SetUp() override { Reset(); }
 
-  void Reset() {
+  void Reset(bool has_init_prefs = false) {
     PrefNameSet unprotected_pref_names;
     PrefNameSet protected_pref_names;
     unprotected_pref_names.insert(kUnprotectedPref);
@@ -127,6 +140,11 @@ class TrackedPreferencesMigrationTest : public testing::Test {
 
     unprotected_store_successful_write_callback_.Reset();
     protected_store_successful_write_callback_.Reset();
+
+    mock_unprotected_pref_filter_ =
+        std::make_unique<SimpleInterceptablePrefFilter>();
+    mock_protected_pref_filter_ =
+        std::make_unique<SimpleInterceptablePrefFilter>();
 
     SetupTrackedPreferencesMigration(
         unprotected_pref_names, protected_pref_names,
@@ -146,7 +164,8 @@ class TrackedPreferencesMigrationTest : public testing::Test {
             new PrefHashStoreImpl(kSeed, false, false)),
         std::unique_ptr<PrefHashStore>(
             new PrefHashStoreImpl(kSeed, true, true)),
-        &mock_unprotected_pref_filter_, &mock_protected_pref_filter_);
+        mock_unprotected_pref_filter_.get(), mock_protected_pref_filter_.get(),
+        has_init_prefs);
 
     // Verify initial expectations are met.
     EXPECT_TRUE(HasPrefs(MOCK_UNPROTECTED_PREF_STORE));
@@ -165,6 +184,43 @@ class TrackedPreferencesMigrationTest : public testing::Test {
                         const std::string value) {
     PresetStoreValueOnly(store_id, key, value);
     PresetStoreValueHmac(store_id, key, value);
+  }
+
+  // Sets |key| to |value| in the test store identified by |store_id| before
+  // migration begins. Does not store a preference hash.
+  void PresetStoreValueOnly(MockPrefStoreID store_id,
+                            const std::string& key,
+                            const std::string value) {
+    base::DictValue* store = nullptr;
+    switch (store_id) {
+      case MOCK_UNPROTECTED_PREF_STORE:
+        store = unprotected_prefs_.get();
+        break;
+      case MOCK_PROTECTED_PREF_STORE:
+        store = protected_prefs_.get();
+        break;
+    }
+    DCHECK(store);
+
+    store->SetByDottedPath(key, value);
+  }
+
+  bool ContainsValue(MockPrefStoreID store_id, const std::string& key) {
+    base::DictValue* store = nullptr;
+    switch (store_id) {
+      case MOCK_UNPROTECTED_PREF_STORE:
+        store = unprotected_prefs_.get();
+        break;
+      case MOCK_PROTECTED_PREF_STORE:
+        store = protected_prefs_.get();
+        break;
+    }
+    DCHECK(store);
+    return store->FindByDottedPath(key) != nullptr;
+  }
+
+  const std::vector<std::string>& GetMigratedProtectedPaths() const {
+    return mock_protected_pref_filter_->migrated_paths();
   }
 
   // Stores an HMAC for |key| and |value| in the hash store identified by
@@ -255,7 +311,7 @@ class TrackedPreferencesMigrationTest : public testing::Test {
       case MOCK_UNPROTECTED_PREF_STORE: {
         std::unique_ptr<base::DictValue> unprotected_prefs =
             std::move(unprotected_prefs_);
-        mock_unprotected_pref_filter_.FilterOnLoad(
+        mock_unprotected_pref_filter_->FilterOnLoad(
             base::BindOnce(&TrackedPreferencesMigrationTest::GetPrefsBack,
                            base::Unretained(this), MOCK_UNPROTECTED_PREF_STORE),
             std::move(*unprotected_prefs));
@@ -264,7 +320,7 @@ class TrackedPreferencesMigrationTest : public testing::Test {
       case MOCK_PROTECTED_PREF_STORE: {
         std::unique_ptr<base::DictValue> protected_prefs =
             std::move(protected_prefs_);
-        mock_protected_pref_filter_.FilterOnLoad(
+        mock_protected_pref_filter_->FilterOnLoad(
             base::BindOnce(&TrackedPreferencesMigrationTest::GetPrefsBack,
                            base::Unretained(this), MOCK_PROTECTED_PREF_STORE),
             std::move(*protected_prefs));
@@ -365,32 +421,13 @@ class TrackedPreferencesMigrationTest : public testing::Test {
     }
   }
 
-  // Sets |key| to |value| in the test store identified by |store_id| before
-  // migration begins. Does not store a preference hash.
-  void PresetStoreValueOnly(MockPrefStoreID store_id,
-                            const std::string& key,
-                            const std::string value) {
-    base::DictValue* store = nullptr;
-    switch (store_id) {
-      case MOCK_UNPROTECTED_PREF_STORE:
-        store = unprotected_prefs_.get();
-        break;
-      case MOCK_PROTECTED_PREF_STORE:
-        store = protected_prefs_.get();
-        break;
-    }
-    DCHECK(store);
-
-    store->SetByDottedPath(key, value);
-  }
-
   static const char kSeed[];
 
   std::unique_ptr<base::DictValue> unprotected_prefs_;
   std::unique_ptr<base::DictValue> protected_prefs_;
 
-  SimpleInterceptablePrefFilter mock_unprotected_pref_filter_;
-  SimpleInterceptablePrefFilter mock_protected_pref_filter_;
+  std::unique_ptr<SimpleInterceptablePrefFilter> mock_unprotected_pref_filter_;
+  std::unique_ptr<SimpleInterceptablePrefFilter> mock_protected_pref_filter_;
 
   base::OnceClosure unprotected_store_successful_write_callback_;
   base::OnceClosure protected_store_successful_write_callback_;
@@ -494,34 +531,37 @@ TEST_F(TrackedPreferencesMigrationTest, FullMigration) {
 
   EXPECT_TRUE(HasPrefs(MOCK_UNPROTECTED_PREF_STORE));
   EXPECT_TRUE(HasPrefs(MOCK_PROTECTED_PREF_STORE));
-  EXPECT_TRUE(
+  EXPECT_FALSE(
       WasOnSuccessfulWriteCallbackRegistered(MOCK_UNPROTECTED_PREF_STORE));
   EXPECT_TRUE(
       WasOnSuccessfulWriteCallbackRegistered(MOCK_PROTECTED_PREF_STORE));
   EXPECT_TRUE(StoreModifiedByMigration(MOCK_UNPROTECTED_PREF_STORE));
-  EXPECT_TRUE(StoreModifiedByMigration(MOCK_PROTECTED_PREF_STORE));
+  EXPECT_FALSE(StoreModifiedByMigration(MOCK_PROTECTED_PREF_STORE));
 
-  // Values should have been migrated to their store, but migrated values should
-  // still remain in the source store until cleanup tasks are later invoked.
+  // Unprotected prefs in the protected store are migrated to the unprotected
+  // store (and remain in the protected store until the unprotected store is
+  // written). Protected prefs in the unprotected store are not migrated because
+  // initial preferences were not seeded in this process (has_init_prefs is
+  // false), and are cleaned up immediately.
   {
     base::StringPairs expected_unprotected_values;
     expected_unprotected_values.push_back(
         std::make_pair(kUnprotectedPref, kUnprotectedPrefValue));
     expected_unprotected_values.push_back(std::make_pair(
         kPreviouslyProtectedPref, kPreviouslyProtectedPrefValue));
-    expected_unprotected_values.push_back(std::make_pair(
-        kPreviouslyUnprotectedPref, kPreviouslyUnprotectedPrefValue));
     VerifyValuesStored(MOCK_UNPROTECTED_PREF_STORE,
                        expected_unprotected_values);
+    EXPECT_FALSE(
+        ContainsValue(MOCK_UNPROTECTED_PREF_STORE, kPreviouslyUnprotectedPref));
 
     base::StringPairs expected_protected_values;
     expected_protected_values.push_back(
         std::make_pair(kProtectedPref, kProtectedPrefValue));
     expected_protected_values.push_back(std::make_pair(
-        kPreviouslyUnprotectedPref, kPreviouslyUnprotectedPrefValue));
-    expected_unprotected_values.push_back(std::make_pair(
         kPreviouslyProtectedPref, kPreviouslyProtectedPrefValue));
     VerifyValuesStored(MOCK_PROTECTED_PREF_STORE, expected_protected_values);
+    EXPECT_FALSE(
+        ContainsValue(MOCK_PROTECTED_PREF_STORE, kPreviouslyUnprotectedPref));
 
     EXPECT_TRUE(ContainsHash(MOCK_UNPROTECTED_PREF_STORE, kUnprotectedPref));
     EXPECT_TRUE(
@@ -531,34 +571,11 @@ TEST_F(TrackedPreferencesMigrationTest, FullMigration) {
         ContainsHash(MOCK_UNPROTECTED_PREF_STORE, kPreviouslyProtectedPref));
 
     EXPECT_FALSE(ContainsHash(MOCK_PROTECTED_PREF_STORE, kUnprotectedPref));
-    EXPECT_TRUE(
+    EXPECT_FALSE(
         ContainsHash(MOCK_PROTECTED_PREF_STORE, kPreviouslyUnprotectedPref));
     EXPECT_TRUE(ContainsHash(MOCK_PROTECTED_PREF_STORE, kProtectedPref));
     EXPECT_TRUE(
         ContainsHash(MOCK_PROTECTED_PREF_STORE, kPreviouslyProtectedPref));
-  }
-
-  // A successful write of the protected pref store should result in a clean up
-  // of the unprotected store.
-  SimulateSuccessfulWrite(MOCK_PROTECTED_PREF_STORE);
-
-  {
-    base::StringPairs expected_unprotected_values;
-    expected_unprotected_values.push_back(
-        std::make_pair(kUnprotectedPref, kUnprotectedPrefValue));
-    expected_unprotected_values.push_back(std::make_pair(
-        kPreviouslyProtectedPref, kPreviouslyProtectedPrefValue));
-    VerifyValuesStored(MOCK_UNPROTECTED_PREF_STORE,
-                       expected_unprotected_values);
-
-    base::StringPairs expected_protected_values;
-    expected_protected_values.push_back(
-        std::make_pair(kProtectedPref, kProtectedPrefValue));
-    expected_protected_values.push_back(std::make_pair(
-        kPreviouslyUnprotectedPref, kPreviouslyUnprotectedPrefValue));
-    expected_unprotected_values.push_back(std::make_pair(
-        kPreviouslyProtectedPref, kPreviouslyProtectedPrefValue));
-    VerifyValuesStored(MOCK_PROTECTED_PREF_STORE, expected_protected_values);
   }
 
   SimulateSuccessfulWrite(MOCK_UNPROTECTED_PREF_STORE);
@@ -575,9 +592,9 @@ TEST_F(TrackedPreferencesMigrationTest, FullMigration) {
     base::StringPairs expected_protected_values;
     expected_protected_values.push_back(
         std::make_pair(kProtectedPref, kProtectedPrefValue));
-    expected_protected_values.push_back(std::make_pair(
-        kPreviouslyUnprotectedPref, kPreviouslyUnprotectedPrefValue));
     VerifyValuesStored(MOCK_PROTECTED_PREF_STORE, expected_protected_values);
+    EXPECT_FALSE(
+        ContainsValue(MOCK_PROTECTED_PREF_STORE, kPreviouslyProtectedPref));
   }
 
   // Hashes are not cleaned up yet.
@@ -589,7 +606,7 @@ TEST_F(TrackedPreferencesMigrationTest, FullMigration) {
       ContainsHash(MOCK_UNPROTECTED_PREF_STORE, kPreviouslyProtectedPref));
 
   EXPECT_FALSE(ContainsHash(MOCK_PROTECTED_PREF_STORE, kUnprotectedPref));
-  EXPECT_TRUE(
+  EXPECT_FALSE(
       ContainsHash(MOCK_PROTECTED_PREF_STORE, kPreviouslyUnprotectedPref));
   EXPECT_TRUE(ContainsHash(MOCK_PROTECTED_PREF_STORE, kProtectedPref));
   EXPECT_TRUE(
@@ -610,7 +627,7 @@ TEST_F(TrackedPreferencesMigrationTest, FullMigration) {
       ContainsHash(MOCK_UNPROTECTED_PREF_STORE, kPreviouslyProtectedPref));
 
   EXPECT_FALSE(ContainsHash(MOCK_PROTECTED_PREF_STORE, kUnprotectedPref));
-  EXPECT_TRUE(
+  EXPECT_FALSE(
       ContainsHash(MOCK_PROTECTED_PREF_STORE, kPreviouslyUnprotectedPref));
   EXPECT_TRUE(ContainsHash(MOCK_PROTECTED_PREF_STORE, kProtectedPref));
   EXPECT_FALSE(
@@ -667,4 +684,91 @@ TEST_F(TrackedPreferencesMigrationTest, CleanupOnly) {
         kPreviouslyUnprotectedPref, kPreviouslyUnprotectedPrefValue));
     VerifyValuesStored(MOCK_PROTECTED_PREF_STORE, expected_protected_values);
   }
+}
+
+// Verifies that an unauthenticated preference in the unprotected store is not
+// migrated to the protected store even when migration is allowed and the
+// protected store lacks an authenticator for that preference. See
+// https://crbug.com/574078135 for context.
+TEST_F(TrackedPreferencesMigrationTest,
+       UnauthenticatedValueNotMigratedWhenDestinationMissingAuth) {
+  Reset(/*has_init_prefs=*/true);
+
+  PresetStoreValueOnly(MOCK_UNPROTECTED_PREF_STORE, kPreviouslyUnprotectedPref,
+                       kPreviouslyUnprotectedPrefValue);
+
+  EXPECT_FALSE(
+      ContainsHash(MOCK_UNPROTECTED_PREF_STORE, kPreviouslyUnprotectedPref));
+  EXPECT_FALSE(
+      ContainsHash(MOCK_PROTECTED_PREF_STORE, kPreviouslyUnprotectedPref));
+
+  HandPrefsToMigrator(MOCK_UNPROTECTED_PREF_STORE);
+  HandPrefsToMigrator(MOCK_PROTECTED_PREF_STORE);
+  EXPECT_TRUE(MigrationCompleted());
+
+  EXPECT_FALSE(
+      ContainsValue(MOCK_PROTECTED_PREF_STORE, kPreviouslyUnprotectedPref));
+  EXPECT_FALSE(
+      ContainsHash(MOCK_PROTECTED_PREF_STORE, kPreviouslyUnprotectedPref));
+  EXPECT_TRUE(GetMigratedProtectedPaths().empty());
+}
+
+// Verifies that SetMigratedPaths is invoked on the protected pref filter when
+// the protected pref store was initially empty AND
+// InitializeMasterPrefsTracking seeded initial_preferences in this process.
+// See https://crbug.com/574078135 for context.
+TEST_F(TrackedPreferencesMigrationTest,
+       SetMigratedPathsWhenProtectedStoreInitiallyEmpty) {
+  Reset(/*has_init_prefs=*/true);
+
+  PresetStoreValue(MOCK_UNPROTECTED_PREF_STORE, kPreviouslyUnprotectedPref,
+                   kPreviouslyUnprotectedPrefValue);
+
+  HandPrefsToMigrator(MOCK_UNPROTECTED_PREF_STORE);
+  HandPrefsToMigrator(MOCK_PROTECTED_PREF_STORE);
+  EXPECT_TRUE(MigrationCompleted());
+
+  EXPECT_TRUE(
+      ContainsValue(MOCK_PROTECTED_PREF_STORE, kPreviouslyUnprotectedPref));
+  ASSERT_EQ(1u, GetMigratedProtectedPaths().size());
+  EXPECT_EQ(kPreviouslyUnprotectedPref, GetMigratedProtectedPaths()[0]);
+}
+
+// Verifies that SetMigratedPaths is NOT invoked and protected preferences are
+// not migrated when the protected pref store is empty on disk (e.g. truncated
+// or deleted by an offline attacker) without InitializeMasterPrefsTracking
+// having run in this process. See https://crbug.com/574078135 for context.
+TEST_F(TrackedPreferencesMigrationTest,
+       BlockMigrationWhenProtectedStoreTruncatedWithoutInitPrefs) {
+  PresetStoreValue(MOCK_UNPROTECTED_PREF_STORE, kPreviouslyUnprotectedPref,
+                   kPreviouslyUnprotectedPrefValue);
+
+  HandPrefsToMigrator(MOCK_UNPROTECTED_PREF_STORE);
+  HandPrefsToMigrator(MOCK_PROTECTED_PREF_STORE);
+  EXPECT_TRUE(MigrationCompleted());
+
+  EXPECT_FALSE(
+      ContainsValue(MOCK_PROTECTED_PREF_STORE, kPreviouslyUnprotectedPref));
+  EXPECT_TRUE(GetMigratedProtectedPaths().empty());
+}
+
+// Verifies that SetMigratedPaths is not invoked and protected preferences are
+// not migrated when the protected pref store already contains data
+// (subsequent browser startups). See https://crbug.com/574078135 for context.
+TEST_F(TrackedPreferencesMigrationTest,
+       DoNotSetMigratedPathsWhenProtectedStoreInitiallyNonEmpty) {
+  Reset(/*has_init_prefs=*/true);
+
+  PresetStoreValue(MOCK_PROTECTED_PREF_STORE, kProtectedPref,
+                   kProtectedPrefValue);
+  PresetStoreValue(MOCK_UNPROTECTED_PREF_STORE, kPreviouslyUnprotectedPref,
+                   kPreviouslyUnprotectedPrefValue);
+
+  HandPrefsToMigrator(MOCK_UNPROTECTED_PREF_STORE);
+  HandPrefsToMigrator(MOCK_PROTECTED_PREF_STORE);
+  EXPECT_TRUE(MigrationCompleted());
+
+  EXPECT_FALSE(
+      ContainsValue(MOCK_PROTECTED_PREF_STORE, kPreviouslyUnprotectedPref));
+  EXPECT_TRUE(GetMigratedProtectedPaths().empty());
 }

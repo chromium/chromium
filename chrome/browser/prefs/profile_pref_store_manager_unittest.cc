@@ -24,9 +24,13 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "chrome/common/chrome_constants.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/persistent_pref_store.h"
+#include "components/prefs/pref_filter.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_service_factory.h"
 #include "components/prefs/pref_store.h"
@@ -236,6 +240,11 @@ class ProfilePrefStoreManagerTest : public testing::Test,
       pref_store_->CommitPendingWrite(run_loop.QuitClosure());
       run_loop.Run();
 
+      if (pref_service_) {
+        SetPrefServiceOnFilters(nullptr);
+        pref_service_.reset();
+      }
+
       pref_store_->RemoveObserver(&registry_verifier_);
       pref_store_.reset();
       // Nothing should have to happen on the background threads, but just in
@@ -278,6 +287,48 @@ class ProfilePrefStoreManagerTest : public testing::Test,
     pref_store_->AddObserver(&registry_verifier_);
     PrefStoreReadObserver read_observer(pref_store_);
     read_observer.Read();
+  }
+
+  // Like LoadExistingPrefs(), but gives the pref filters an asynchronous test
+  // encryptor (as in production, it arrives after the synchronous load
+  // validation) and a PrefService. Then runs all pending tasks so the deferred
+  // encrypted hash revalidation (PrefHashFilter::DeferredEncryptorRevalidation)
+  // has finished before returning.
+  void LoadExistingPrefsWithEncryptor() {
+    DestroyPrefStore();
+    mojo::PendingRemote<prefs::mojom::ResetOnLoadObserver> observer;
+    reset_on_load_observer_receivers_.Add(
+        this, observer.InitWithNewPipeAndPassReceiver());
+    mojo::PendingRemote<prefs::mojom::TrackedPreferenceValidationDelegate>
+        validation_delegate;
+    mock_validation_delegate_receivers_.Add(
+        mock_validation_delegate_.get(),
+        validation_delegate.InitWithNewPipeAndPassReceiver());
+    pref_store_ = manager_->CreateProfilePrefStore(
+        prefs::CloneTrackedConfiguration(configuration_), kReportingIdCount,
+        base::SingleThreadTaskRunner::GetCurrentDefault(), std::move(observer),
+        std::move(validation_delegate), os_crypt_async_.get());
+    pref_store_->AddObserver(&registry_verifier_);
+
+    // Creating the PrefService starts the asynchronous read. No tasks run
+    // before SetPrefServiceOnFilters(), so the deferred revalidation always
+    // sees a PrefService.
+    PrefServiceFactory factory;
+    factory.set_user_prefs(pref_store_);
+    factory.set_async(true);
+    pref_service_ = factory.Create(profile_pref_registry_);
+    SetPrefServiceOnFilters(pref_service_.get());
+
+    task_environment_.RunUntilIdle();
+  }
+
+  void SetPrefServiceOnFilters(PrefService* pref_service) {
+    if (PrefFilter* filter = pref_store_->GetDefaultStoreFilter()) {
+      filter->SetPrefService(pref_service);
+    }
+    if (PrefFilter* filter = pref_store_->GetSelectedStoreFilter()) {
+      filter->SetPrefService(pref_service);
+    }
   }
 
   void ReplaceStringInPrefs(const std::string& find,
@@ -337,6 +388,9 @@ class ProfilePrefStoreManagerTest : public testing::Test,
       mock_validation_delegate_receivers_;
   std::unique_ptr<ProfilePrefStoreManager> manager_;
   scoped_refptr<PersistentPrefStore> pref_store_;
+  // Only set by tests that use LoadExistingPrefsWithEncryptor().
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
+  std::unique_ptr<PrefService> pref_service_;
 
   std::string seed_;
 
@@ -407,6 +461,84 @@ TEST_F(ProfilePrefStoreManagerTest, InitializePrefsFromMasterPrefs) {
   VerifyResetRecorded(false);
 }
 
+// Tests that protected prefs seeded from initial preferences on first run
+// survive the deferred encrypted hash revalidation when legacy MAC fallback is
+// disallowed. The seeded values only have legacy MACs, so this relies on the
+// first-run migration registering them to get encrypted hashes.
+TEST_F(ProfilePrefStoreManagerTest,
+       FirstRunSeededProtectedPrefKeptWithEncryptor) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitFromCommandLine(
+      "EncryptedPrefHashing,DisallowLegacyPrefMacFallback", "");
+  os_crypt_async_ = os_crypt_async::GetTestOSCryptAsyncForTesting(
+      /*is_sync_for_unittests=*/false);
+
+  base::DictValue init_prefs;
+  init_prefs.Set(kTrackedAtomic, kFoobar);
+  init_prefs.Set(kProtectedAtomic, kHelloWorld);
+  EXPECT_TRUE(manager_->InitializePrefsFromMasterPrefs(
+      prefs::CloneTrackedConfiguration(configuration_), kReportingIdCount,
+      std::move(init_prefs), os_crypt_async_.get()));
+
+  LoadExistingPrefsWithEncryptor();
+
+  ExpectStringValueEquals(kTrackedAtomic, kFoobar);
+  ExpectStringValueEquals(kProtectedAtomic, kHelloWorld);
+  VerifyResetRecorded(false);
+  EXPECT_TRUE(
+      pref_service_->GetList(user_prefs::kTrackedPreferencesReset).empty());
+}
+
+// Tests that if Secure Preferences is emptied after first run and Preferences
+// is restored to its first-run contents (which include a valid legacy MAC for
+// the protected pref), the protected pref is not migrated into Secure
+// Preferences, because initial preferences were not seeded in this process.
+TEST_F(ProfilePrefStoreManagerTest,
+       ProtectedPrefNotMigratedAfterSecurePreferencesTruncated) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitFromCommandLine(
+      "EncryptedPrefHashing,DisallowLegacyPrefMacFallback", "");
+  os_crypt_async_ = os_crypt_async::GetTestOSCryptAsyncForTesting(
+      /*is_sync_for_unittests=*/false);
+
+  // Legitimate first run: Preferences is written with kProtectedAtomic and its
+  // legacy MAC.
+  base::DictValue init_prefs;
+  init_prefs.Set(kTrackedAtomic, kFoobar);
+  init_prefs.Set(kProtectedAtomic, kHelloWorld);
+  EXPECT_TRUE(manager_->InitializePrefsFromMasterPrefs(
+      prefs::CloneTrackedConfiguration(configuration_), kReportingIdCount,
+      std::move(init_prefs), os_crypt_async_.get()));
+
+  const base::FilePath unprotected_pref_file =
+      profile_dir_.GetPath().Append(chrome::kPreferencesFilename);
+  const base::FilePath protected_pref_file =
+      profile_dir_.GetPath().Append(chrome::kSecurePreferencesFilename);
+
+  std::string seeded_unprotected_contents;
+  ASSERT_TRUE(base::ReadFileToString(unprotected_pref_file,
+                                     &seeded_unprotected_contents));
+
+  // Finish the first-run load and flush everything to disk.
+  LoadExistingPrefsWithEncryptor();
+  ExpectStringValueEquals(kProtectedAtomic, kHelloWorld);
+  DestroyPrefStore();
+
+  // Restore Preferences to its first-run contents and empty Secure
+  // Preferences, without InitializePrefsFromMasterPrefs() running again.
+  ASSERT_TRUE(
+      base::WriteFile(unprotected_pref_file, seeded_unprotected_contents));
+  if (ProfilePrefStoreManager::kPlatformSupportsPreferenceTracking) {
+    ASSERT_TRUE(base::WriteFile(protected_pref_file, "{}"));
+  }
+
+  LoadExistingPrefsWithEncryptor();
+
+  ExpectStringValueEquals(kTrackedAtomic, kFoobar);
+  EXPECT_NE(ProfilePrefStoreManager::kPlatformSupportsPreferenceTracking,
+            pref_store_->GetValue(kProtectedAtomic, nullptr));
+}
+
 TEST_F(ProfilePrefStoreManagerTest, UnprotectedToProtected) {
   InitializePrefs();
 
@@ -435,12 +567,16 @@ TEST_F(ProfilePrefStoreManagerTest, UnprotectedToProtected) {
   // And try loading with the new configuration.
   LoadExistingPrefs();
 
-  // Since there was a valid super MAC we were able to extend the existing trust
-  // to the newly protected preference.
-  ExpectStringValueEquals(kUnprotectedPref, kBarfoo);
+  // Since kUnprotectedPref did not have an authenticator in the unprotected
+  // store, it is not migrated to the protected store. See
+  // https://crbug.com/574078135 for context.
+  EXPECT_NE(ProfilePrefStoreManager::kPlatformSupportsPreferenceTracking,
+            pref_store_->GetValue(kUnprotectedPref, nullptr));
   VerifyResetRecorded(false);
 
-  // Ensure everything is written out to disk.
+  // Set a value now that it is protected and ensure it is written out to disk.
+  pref_store_->SetValue(kUnprotectedPref, base::Value(kBarfoo),
+                        WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   DestroyPrefStore();
 
   // It's protected now, so (if the platform supports it) any tampering should
@@ -483,9 +619,13 @@ TEST_F(ProfilePrefStoreManagerTest, NewPrefWhenFirstProtecting) {
   // And try loading with the new configuration.
   LoadExistingPrefs();
 
-  // Since there was a valid super MAC we were able to extend the existing trust
-  // to the newly tracked & protected preference.
-  ExpectStringValueEquals(kUnprotectedPref, kFoobar);
+  // Protected preferences in the unprotected store are only migrated to the
+  // protected store during first-run init prefs initialization. See
+  // https://crbug.com/574078135 for context.
+  EXPECT_NE(ProfilePrefStoreManager::kPlatformSupportsPreferenceTracking,
+            pref_store_->GetValue(kProtectedAtomic, nullptr));
+  EXPECT_NE(ProfilePrefStoreManager::kPlatformSupportsPreferenceTracking,
+            pref_store_->GetValue(kUnprotectedPref, nullptr));
   VerifyResetRecorded(false);
 }
 

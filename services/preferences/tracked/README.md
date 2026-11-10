@@ -152,22 +152,42 @@ To migrate a preference from **untracked** to…
   authenticator for the pref, but also no super authenticator, so the pref value
   is loaded as normal and an authenticator is calculated when the load is
   finalized.)
-- **…protected:** The pref value is copied from the unprotected store into the
-  protected store in memory. Because the existing protected preferences have a
-  valid super authenticator, the new preference is trusted and not reset. An
-  authenticator is calculated for it, the super authenticator is updated to
-  cover the new set, and the duplicate value in the unprotected store is deleted
-  once the protected store is written to disk.
+- **…protected:** **Not supported; the existing value is lost.** The value has
+  no authenticator, so it is not copied into the protected store, and the stray
+  value in the unprotected store is deleted. See
+  [Migrating into the protected tier](#migrating-into-the-protected-tier).
 
 To migrate a preference from **unprotected** to…
 
 - **…untracked:** No immediate changes are made. The pref's authenticators are
   left in `Preferences`, but they are no longer validated or updated.
-- **…protected:** The pref value and its existing authenticators are copied from
-  the unprotected store into the protected store in memory. The super
-  authenticator is updated to include the preference in the protected set, and
-  the old value in the unprotected store is deleted once the protected store is
-  written to disk.
+- **…protected:** **Not supported; the existing value is lost.** The value is
+  not copied into the protected store, and the stray value in the unprotected
+  store is deleted. See
+  [Migrating into the protected tier](#migrating-into-the-protected-tier).
+
+### Migrating into the protected tier
+
+Values are copied from `Preferences` into `Secure Preferences` only on first
+run, when `InitializeMasterPrefsTracking()` seeded `initial_preferences` in the
+current process and `Secure Preferences` started out empty. At any other time,
+protected prefs found in `Preferences` are deleted and not migrated, because an
+attacker who can write `Preferences` could otherwise get forged values trusted
+by the protected store (https://crbug.com/574078135).
+
+So marking an existing pref as `ENFORCE_ON_LOAD` **resets it to its default
+value** the first time a user starts a build that includes the change. To keep
+the user's data, do this instead:
+
+1. Register a new pref and add it to the tracked prefs list as
+   `ENFORCE_ON_LOAD`.
+2. Add code that copies the old pref's value into the new pref through the
+   `PrefService`, so the protected store computes a fresh authenticator. Only
+   copy when the new pref has no user value yet (for example,
+   `!prefs->HasPrefPath(kNewPref)`), so that a value set after the migration
+   ran is not overwritten. Then clear the old pref.
+3. Once the migration has been live for long enough, remove the migration code
+   and deprecate the old pref.
 
 To migrate a preference from **protected** to…
 

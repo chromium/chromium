@@ -5,6 +5,9 @@
 #ifndef SERVICES_PREFERENCES_TRACKED_INTERCEPTABLE_PREF_FILTER_H_
 #define SERVICES_PREFERENCES_TRACKED_INTERCEPTABLE_PREF_FILTER_H_
 
+#include <string>
+
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -50,6 +53,12 @@ class InterceptablePrefFilter : public PrefFilter {
 
   virtual void OnEncryptorReceived(
       scoped_refptr<os_crypt_async::Encryptor> encryptor) = 0;
+
+  // Sets the preference paths that were migrated from another store during
+  // FilterOnLoad interception. Only called on a first run where Preferences
+  // was seeded from initial preferences in this process; their encrypted
+  // hashes are then initialized once the encryptor is available.
+  virtual void SetMigratedPaths(base::span<const std::string> migrated_paths) {}
 
  private:
   // Does any extra filtering required by the implementation of this

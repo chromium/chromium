@@ -130,6 +130,14 @@ bool ProfilePrefStoreManager::InitializePrefsFromMasterPrefs(
   // won't have kicked in yet on the main thread.
   bool success = serializer.Serialize(master_prefs);
 
+  // Only allow first-run migration into Secure Preferences once Preferences
+  // actually contains the seeded values. If the write failed, Preferences may
+  // still hold whatever was on disk before.
+  if (success && kPlatformSupportsPreferenceTracking) {
+    MarkPrefsSeededFromInitialPrefs(
+        profile_path_.Append(chrome::kSecurePreferencesFilename));
+  }
+
   return success;
 }
 

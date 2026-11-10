@@ -5,6 +5,7 @@
 #ifndef SERVICES_PREFERENCES_TRACKED_TRACKED_PERSISTENT_PREF_STORE_FACTORY_H_
 #define SERVICES_PREFERENCES_TRACKED_TRACKED_PERSISTENT_PREF_STORE_FACTORY_H_
 
+#include "base/files/file_path.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "services/preferences/public/mojom/preferences.mojom.h"
@@ -24,5 +25,14 @@ void InitializeMasterPrefsTracking(
     prefs::mojom::TrackedPersistentPrefStoreConfigurationPtr configuration,
     base::DictValue& master_prefs,
     os_crypt_async::OSCryptAsync* os_crypt);
+
+// Records that the profile owning |protected_pref_filename| had its
+// Preferences file overwritten with values seeded by
+// InitializeMasterPrefsTracking() in this process. Must only be called after
+// that write succeeded. The next CreateTrackedPersistentPrefStore() call for
+// this store is then allowed to migrate protected preferences from the
+// unprotected store into the (empty) protected store.
+void MarkPrefsSeededFromInitialPrefs(
+    const base::FilePath& protected_pref_filename);
 
 #endif  // SERVICES_PREFERENCES_TRACKED_TRACKED_PERSISTENT_PREF_STORE_FACTORY_H_
