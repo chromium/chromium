@@ -6678,19 +6678,24 @@
             ]
         }
     ],
-    "DefaultBrowserRound3Phase2_0": [
+    "DefaultBrowserRound3Phase2V2": [
         {
             "platforms": [
                 "windows"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "StickyModal",
                     "params": {
-                        "setter_option": "shell_integration"
+                        "IsSticky": "true",
+                        "WithSettingsIllustration": "true"
                     },
                     "enable_features": [
-                        "DefaultBrowserSetterSelection"
+                        "DefaultBrowserStickyModal"
+                    ],
+                    "disable_features": [
+                        "DefaultBrowserSetterSelection",
+                        "VisualGuidedSetterDocking"
                     ]
                 }
             ]
