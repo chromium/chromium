@@ -86,14 +86,6 @@ NSString* const kAsyncStartupOverrideResponse = @"AsyncStartupOverrideResponse";
 NSString* const kLensResultPanelGwsURL = @"LensResultPanelGwsURL";
 NSString* const kCobrowseGwsURL = @"CobrowseGwsURL";
 NSString* const kForceDisableAIMEligibility = @"ForceDisableAIMEligibility";
-NSString* const kForceDisableCreateImagesEligibility =
-    @"ForceDisableCreateImagesEligibility";
-NSString* const kForceDisableCanvasEligibility =
-    @"ForceDisableCanvasEligibility";
-NSString* const kForceDisableDeepSearchEligibility =
-    @"ForceDisableDeepSearchEligibility";
-NSString* const kForceDisablePdfUploadEligibility =
-    @"ForceDisablePdfUploadEligibility";
 NSString* const kShowCatalogItems = @"ShowCatalogItems";
 NSString* const kForceMultiProfileForcedMigrationDone =
     @"ForceMultiProfileForcedMigrationDone";
@@ -419,26 +411,6 @@ NSString* GetCobrowseGwsURL() {
 bool ShouldForceDisableComposeboxAIM() {
   return [[NSUserDefaults standardUserDefaults]
       boolForKey:kForceDisableAIMEligibility];
-}
-
-bool ShouldForceDisableComposeboxCreateImages() {
-  return [[NSUserDefaults standardUserDefaults]
-      boolForKey:kForceDisableCreateImagesEligibility];
-}
-
-bool ShouldForceDisableComposeboxCanvas() {
-  return [[NSUserDefaults standardUserDefaults]
-      boolForKey:kForceDisableCanvasEligibility];
-}
-
-bool ShouldForceDisableComposeboxDeepSearch() {
-  return [[NSUserDefaults standardUserDefaults]
-      boolForKey:kForceDisableDeepSearchEligibility];
-}
-
-bool ShouldForceDisableComposeboxPdfUpload() {
-  return [[NSUserDefaults standardUserDefaults]
-      boolForKey:kForceDisablePdfUploadEligibility];
 }
 
 bool ShouldShowCatalogItems() {

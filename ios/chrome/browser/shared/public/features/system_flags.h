@@ -192,18 +192,6 @@ NSString* GetCobrowseGwsURL();
 // Returns true if Composebox AIM eligibility should be disabled.
 bool ShouldForceDisableComposeboxAIM();
 
-// Returns true if Composebox Create Images eligibility should be disabled.
-bool ShouldForceDisableComposeboxCreateImages();
-
-// Returns true if Canvas eligibility should be disabled.
-bool ShouldForceDisableComposeboxCanvas();
-
-// Returns true if Deep Search eligibility should be disabled.
-bool ShouldForceDisableComposeboxDeepSearch();
-
-// Returns true if Composebox Pdf Upload eligibility should be disabled.
-bool ShouldForceDisableComposeboxPdfUpload();
-
 // Returns true if the Catalog items should be shown in Settings. Always true
 // in debug builds.
 bool ShouldShowCatalogItems();

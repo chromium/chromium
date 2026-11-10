@@ -676,46 +676,6 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
-			<string>Disable Composebox Create Images eligibility</string>
-			<key>Key</key>
-			<string>ForceDisableCreateImagesEligibility</string>
-			<key>DefaultValue</key>
-			<false/>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Disable Composebox Canvas eligibility</string>
-			<key>Key</key>
-			<string>ForceDisableCanvasEligibility</string>
-			<key>DefaultValue</key>
-			<false/>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Disable Composebox Deep Search eligibility</string>
-			<key>Key</key>
-			<string>ForceDisableDeepSearchEligibility</string>
-			<key>DefaultValue</key>
-			<false/>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Disable Composebox Pdf Upload eligibility</string>
-			<key>Key</key>
-			<string>ForceDisablePdfUploadEligibility</string>
-			<key>DefaultValue</key>
-			<false/>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
 			<string>Show Backend Promo Debug Tools</string>
 			<key>Key</key>
 			<string>ShowBackendPromoDebugTools</string>

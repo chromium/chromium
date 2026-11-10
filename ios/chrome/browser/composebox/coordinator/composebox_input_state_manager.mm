@@ -901,21 +901,12 @@ omnibox::InputType InputTypeForAttachmentOption(
 
   switch (mode) {
     case ComposeboxMode::kImageGeneration:
-      if (experimental_flags::ShouldForceDisableComposeboxCreateImages()) {
-        return NO;
-      }
       return std::ranges::contains(_inputState->allowed_tools,
                                    omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
     case ComposeboxMode::kCanvas:
-      if (experimental_flags::ShouldForceDisableComposeboxCanvas()) {
-        return NO;
-      }
       return std::ranges::contains(_inputState->allowed_tools,
                                    omnibox::ToolMode::TOOL_MODE_CANVAS);
     case ComposeboxMode::kDeepSearch:
-      if (experimental_flags::ShouldForceDisableComposeboxDeepSearch()) {
-        return NO;
-      }
       return std::ranges::contains(_inputState->allowed_tools,
                                    omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
     case ComposeboxMode::kPTM:
@@ -1110,9 +1101,6 @@ omnibox::InputType InputTypeForAttachmentOption(
 
 /// Whether the user is eligible to upload PDFs.
 - (BOOL)isEligibleToUploadPdf {
-  if (experimental_flags::ShouldForceDisableComposeboxPdfUpload()) {
-    return NO;
-  }
   if (!_aimEligibilityService || ![self isContentSharingEnabled]) {
     return NO;
   }
