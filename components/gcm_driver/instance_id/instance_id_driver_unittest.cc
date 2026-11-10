@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "components/gcm_driver/gcm_buildflags.h"
 #include "components/gcm_driver/instance_id/fake_gcm_driver_for_instance_id.h"
@@ -321,6 +322,58 @@ TEST_F(InstanceIDDriverTest, DeleteID) {
   EXPECT_FALSE(id2.empty());
   EXPECT_NE(id1, id2);
   EXPECT_FALSE(GetCreationTime(instance_id).is_null());
+}
+
+TEST_F(InstanceIDDriverTest,
+       DeleteIDRemovesEmptyAuthorizedEntityEncryptionInfo) {
+  InstanceID* instance_id = driver()->GetInstanceID(kTestAppID1);
+  // No InstanceID is created. DeleteID() must still remove the keys.
+  EXPECT_TRUE(GetCreationTime(instance_id).is_null());
+
+  // Create encryption info with an empty authorized entity, as a legacy
+  // non-InstanceID GCM registration does. This does not generate an
+  // InstanceID.
+  base::test::TestFuture<std::string, std::string> future;
+  instance_id->GetEncryptionInfo(/*authorized_entity=*/"",
+                                 future.GetCallback());
+  auto [p256dh_1, auth_secret_1] = future.Take();
+  ASSERT_FALSE(p256dh_1.empty());
+  ASSERT_FALSE(auth_secret_1.empty());
+
+  EXPECT_EQ(InstanceID::SUCCESS, DeleteID(instance_id));
+
+  // DeleteID() removed the keys, so new keys are created.
+  instance_id->GetEncryptionInfo(/*authorized_entity=*/"",
+                                 future.GetCallback());
+  auto [p256dh_2, auth_secret_2] = future.Take();
+  EXPECT_FALSE(p256dh_2.empty());
+  EXPECT_FALSE(auth_secret_2.empty());
+  EXPECT_NE(p256dh_1, p256dh_2);
+  EXPECT_NE(auth_secret_1, auth_secret_2);
+}
+
+TEST_F(InstanceIDDriverTest,
+       DeleteIDWithIDRemovesEmptyAuthorizedEntityEncryptionInfo) {
+  InstanceID* instance_id = driver()->GetInstanceID(kTestAppID1);
+  // Generate an InstanceID first, as for a legacy app_id that also has an
+  // InstanceID.
+  EXPECT_FALSE(GetID(instance_id).empty());
+
+  base::test::TestFuture<std::string, std::string> future;
+  instance_id->GetEncryptionInfo(/*authorized_entity=*/"",
+                                 future.GetCallback());
+  auto [p256dh_1, auth_secret_1] = future.Take();
+  ASSERT_FALSE(p256dh_1.empty());
+  ASSERT_FALSE(auth_secret_1.empty());
+
+  EXPECT_EQ(InstanceID::SUCCESS, DeleteID(instance_id));
+
+  // DeleteID() removed the keys, so new keys are created.
+  instance_id->GetEncryptionInfo(/*authorized_entity=*/"",
+                                 future.GetCallback());
+  auto [p256dh_2, auth_secret_2] = future.Take();
+  EXPECT_NE(p256dh_1, p256dh_2);
+  EXPECT_NE(auth_secret_1, auth_secret_2);
 }
 
 TEST_F(InstanceIDDriverTest, GetToken) {

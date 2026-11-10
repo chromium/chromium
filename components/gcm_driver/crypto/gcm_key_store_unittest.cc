@@ -16,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/gcm_driver/crypto/p256_key_util.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "crypto/random.h"
@@ -28,6 +29,9 @@ namespace {
 using EncryptDataVectorUniquePtr = std::unique_ptr<std::vector<EncryptionData>>;
 using EntryVectorType =
     leveldb_proto::ProtoDatabase<EncryptionData>::KeyEntryVector;
+using KeysFuture =
+    base::test::TestFuture<std::optional<crypto::keypair::PrivateKey>,
+                           const std::string&>;
 
 const char kFakeAppId[] = "my_app_id";
 const char kSecondFakeAppId[] = "my_other_app_id";
@@ -88,6 +92,25 @@ class GCMKeyStoreTest : public ::testing::Test {
     *auth_secret_out = auth_secret;
     if (quit_closure)
       std::move(quit_closure).Run();
+  }
+
+  // Synchronous wrappers of GCMKeyStore::{CreateKeys, GetKeys}. They return
+  // the key and the authentication secret given to the KeysCallback.
+  KeysFuture::TupleType CreateKeysSync(const std::string& app_id,
+                                       const std::string& authorized_entity) {
+    KeysFuture future;
+    gcm_key_store()->CreateKeys(app_id, authorized_entity,
+                                future.GetCallback());
+    return future.Take();
+  }
+
+  KeysFuture::TupleType GetKeysSync(const std::string& app_id,
+                                    const std::string& authorized_entity) {
+    KeysFuture future;
+    gcm_key_store()->GetKeys(app_id, authorized_entity,
+                             /*fallback_to_empty_authorized_entity=*/false,
+                             future.GetCallback());
+    return future.Take();
   }
 
   void AddOldFormatEncryptionDataToKeyStoreDatabase(
@@ -478,6 +501,43 @@ TEST_F(GCMKeyStoreTest, RemoveKeysWildcardAuthorizedEntity) {
   EXPECT_FALSE(read_key1);
   EXPECT_FALSE(read_key2);
   ASSERT_TRUE(read_key3);
+}
+
+TEST_F(GCMKeyStoreTest, RemoveKeysWildcardRemovesEmptyAuthorizedEntity) {
+  // Keys of a non-InstanceID GCM registration use an empty authorized entity.
+  // The "*" wildcard, used by InstanceID::DeleteID(), must remove them too.
+  auto [key1, auth_secret1] =
+      CreateKeysSync(kFakeAppId, /*authorized_entity=*/"");
+  ASSERT_TRUE(key1);
+  auto [key2, auth_secret2] =
+      CreateKeysSync(kSecondFakeAppId, /*authorized_entity=*/"");
+  ASSERT_TRUE(key2);
+
+  base::test::TestFuture<void> remove_future;
+  gcm_key_store()->RemoveKeys(kFakeAppId, /*authorized_entity=*/"*",
+                              remove_future.GetCallback());
+  ASSERT_TRUE(remove_future.Wait());
+
+  auto [read_key1, read_auth_secret1] =
+      GetKeysSync(kFakeAppId, /*authorized_entity=*/"");
+  ASSERT_FALSE(read_key1);
+  EXPECT_EQ("", read_auth_secret1);
+  auto [read_key2, read_auth_secret2] =
+      GetKeysSync(kSecondFakeAppId, /*authorized_entity=*/"");
+  ASSERT_TRUE(read_key2);
+  EXPECT_EQ(auth_secret2, read_auth_secret2);
+
+  // The keys must also be removed from the database.
+  CreateKeyStore();
+
+  auto [reloaded_key1, reloaded_auth_secret1] =
+      GetKeysSync(kFakeAppId, /*authorized_entity=*/"");
+  EXPECT_FALSE(reloaded_key1);
+  EXPECT_EQ("", reloaded_auth_secret1);
+  auto [reloaded_key2, reloaded_auth_secret2] =
+      GetKeysSync(kSecondFakeAppId, /*authorized_entity=*/"");
+  EXPECT_TRUE(reloaded_key2);
+  EXPECT_EQ(auth_secret2, reloaded_auth_secret2);
 }
 
 TEST_F(GCMKeyStoreTest, GetKeysMultipleAppIds) {

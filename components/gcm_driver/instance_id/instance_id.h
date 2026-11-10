@@ -137,7 +137,8 @@ class InstanceID {
   virtual void GetEncryptionInfo(const std::string& authorized_entity,
                                  GetEncryptionInfoCallback callback);
 
-  // Revokes a granted token.
+  // Revokes a granted token. For the GCM scope, also removes the encryption
+  // info of the authorized entity.
   // |authorized_entity|: the authorized entity passed when obtaining the token.
   // |scope|: the scope that was passed when obtaining the token.
   // |callback|: to be called once the asynchronous operation is done.
@@ -146,8 +147,10 @@ class InstanceID {
                            DeleteTokenCallback callback);
 
   // Resets the app instance identifier and revokes all tokens associated with
-  // it.
-  // |callback|: to be called once the asynchronous operation is done.
+  // it. Also removes all encryption info of the `app_id`, including the
+  // encryption info of a legacy non-InstanceID GCM registration, which is
+  // stored with an empty authorized entity.
+  // `callback`: to be called once the asynchronous operation is done.
   void DeleteID(DeleteIDCallback callback);
 
   std::string app_id() const { return app_id_; }

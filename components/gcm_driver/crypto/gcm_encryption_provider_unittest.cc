@@ -23,6 +23,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/fcm/crypto/fcm_decryption_result.h"
 #include "components/gcm_driver/common/gcm_message.h"
 #include "components/gcm_driver/crypto/gcm_encryption_result.h"
@@ -336,7 +337,9 @@ TEST_F(GCMEncryptionProviderTest, VerifiesExistingKeys) {
 
 TEST_F(GCMEncryptionProviderTest, VerifiesKeyRemovalGCMRegistration) {
   // Removing encryption info for an InstanceID token shouldn't affect a
-  // non-InstanceID GCM registration.
+  // non-InstanceID GCM registration. Removing encryption info for the empty
+  // authorized entity, or with the "*" wildcard (as InstanceID::DeleteID()
+  // does), removes the encryption info of the non-InstanceID GCM registration.
 
   // Non-InstanceID callers pass an empty string for authorized_entity.
   std::string authorized_entity_gcm;
@@ -375,17 +378,32 @@ TEST_F(GCMEncryptionProviderTest, VerifiesKeyRemovalGCMRegistration) {
 
   ASSERT_NO_FATAL_FAILURE(CheckHasKey(authorized_entity_gcm, true));
 
-  encryption_provider()->RemoveEncryptionInfo(kExampleAppId, "*",
-                                              base::DoNothing());
+  base::test::TestFuture<void> remove_gcm_future;
+  encryption_provider()->RemoveEncryptionInfo(
+      kExampleAppId, authorized_entity_gcm, remove_gcm_future.GetCallback());
+  ASSERT_TRUE(remove_gcm_future.Wait());
 
-  base::RunLoop().RunUntilIdle();
+  ASSERT_NO_FATAL_FAILURE(CheckHasKey(authorized_entity_gcm, false));
+
+  // Should create new encryption info.
+  base::test::TestFuture<std::string, std::string> encryption_info_future;
+  encryption_provider()->GetEncryptionInfo(
+      kExampleAppId, authorized_entity_gcm,
+      encryption_info_future.GetCallback());
+  auto [public_key_2, auth_secret_2] = encryption_info_future.Take();
+
+  EXPECT_GT(public_key_2.size(), 0u);
+  EXPECT_GT(auth_secret_2.size(), 0u);
+  EXPECT_NE(public_key, public_key_2);
+  EXPECT_NE(auth_secret, auth_secret_2);
 
   ASSERT_NO_FATAL_FAILURE(CheckHasKey(authorized_entity_gcm, true));
 
+  base::test::TestFuture<void> remove_wildcard_future;
   encryption_provider()->RemoveEncryptionInfo(
-      kExampleAppId, authorized_entity_gcm, base::DoNothing());
-
-  base::RunLoop().RunUntilIdle();
+      kExampleAppId, /*authorized_entity=*/"*",
+      remove_wildcard_future.GetCallback());
+  ASSERT_TRUE(remove_wildcard_future.Wait());
 
   ASSERT_NO_FATAL_FAILURE(CheckHasKey(authorized_entity_gcm, false));
 }

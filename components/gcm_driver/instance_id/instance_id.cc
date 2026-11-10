@@ -42,7 +42,9 @@ void InstanceID::DeleteToken(const std::string& authorized_entity,
 }
 
 void InstanceID::DeleteID(DeleteIDCallback callback) {
-  // Use "*" as authorized_entity to remove any encryption info for all tokens.
+  // Use "*" as authorized_entity to remove the encryption info for all tokens,
+  // and also the encryption info of a legacy non-InstanceID GCM registration
+  // (stored with an empty authorized entity) for the same `app_id_`.
   DeleteIDImpl(
       base::BindOnce(&InstanceID::DidDelete, weak_ptr_factory_.GetWeakPtr(),
                      "*" /* authorized_entity */, std::move(callback)));

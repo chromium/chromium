@@ -70,10 +70,11 @@ class GCMKeyStore {
                   const std::string& authorized_entity,
                   KeysCallback callback);
 
-  // Removes the keys associated with the |app_id| + |authorized_entity| pair,
-  // and invokes |callback| when the operation has finished. |authorized_entity|
-  // should be the InstanceID token's authorized entity, or "*" to remove for
-  // all InstanceID tokens, or "" for non-InstanceID GCM registrations.
+  // Removes the keys associated with the `app_id` + `authorized_entity` pair,
+  // and invokes `callback` when the operation has finished.
+  // `authorized_entity` should be the InstanceID token's authorized entity, or
+  // "" for non-InstanceID GCM registrations, or "*" to remove the keys for all
+  // authorized entities of the `app_id`, including "".
   void RemoveKeys(const std::string& app_id,
                   const std::string& authorized_entity,
                   base::OnceClosure callback);

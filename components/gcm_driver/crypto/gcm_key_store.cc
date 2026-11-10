@@ -215,9 +215,9 @@ void GCMKeyStore::RemoveKeysAfterInitialize(
   bool had_keys = false;
   auto& inner_map = outer_iter->second;
   for (auto it = inner_map.begin(); it != inner_map.end();) {
-    // Wildcard "*" matches all non-empty authorized entities (InstanceID only).
-    if (authorized_entity == "*" ? !it->first.empty()
-                                 : it->first == authorized_entity) {
+    // Wildcard "*" matches all authorized entities of the `app_id`, including
+    // the empty authorized entity of a non-InstanceID GCM registration.
+    if (authorized_entity == "*" || it->first == authorized_entity) {
       had_keys = true;
 
       keys_to_remove->push_back(DatabaseKey(app_id, it->first));
