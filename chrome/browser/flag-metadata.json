@@ -5533,7 +5533,7 @@
       "sugandhagoyal@google.com",
       "//chrome/browser/geic/OWNERS"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 162
   },
   {
     "name": "geic-fre",
@@ -5550,7 +5550,7 @@
       "sugandhagoyal@google.com",
       "//chrome/browser/geic/OWNERS"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 162
   },
   {
     "name": "gemini-actor",
