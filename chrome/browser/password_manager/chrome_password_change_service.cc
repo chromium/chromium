@@ -88,6 +88,15 @@ bool IsPasswordFieldVisible(const password_manager::PasswordForm& form) {
   }
   return true;
 }
+
+// Returns the ManagePasswordsUIController of `web_contents`, or nullptr if the
+// tab is gone.
+ManagePasswordsUIController* GetPasswordsUIController(
+    const base::WeakPtr<content::WebContents>& web_contents) {
+  return web_contents
+             ? ManagePasswordsUIController::FromWebContents(web_contents.get())
+             : nullptr;
+}
 #endif
 
 }  // namespace
@@ -257,9 +266,7 @@ void ChromePasswordChangeService::OnPasswordChangeStopped(
     PasswordChangeDelegate* delegate) {
   delegate->RemoveObserver(this);
 
-  auto iter = std::ranges::find(
-      password_change_data_, delegate,
-      [](const PasswordChangeData& data) { return data.delegate.get(); });
+  auto iter = FindPasswordChangeData(delegate);
   CHECK(iter != password_change_data_.end());
 
   std::unique_ptr<PasswordChangeDelegate> deleted_delegate =
@@ -269,22 +276,31 @@ void ChromePasswordChangeService::OnPasswordChangeStopped(
       FROM_HERE, std::move(deleted_delegate));
 }
 
-void ChromePasswordChangeService::OnLoginCheckFailedWithServerError(
+void ChromePasswordChangeService::OnPasswordChangeFinishedSuccessfully(
     PasswordChangeDelegate* delegate) {
 #if !BUILDFLAG(IS_ANDROID)
-  auto iter = std::ranges::find(
-      password_change_data_, delegate,
-      [](const PasswordChangeData& data) { return data.delegate.get(); });
+  auto iter = FindPasswordChangeData(delegate);
   if (iter == password_change_data_.end()) {
     return;
   }
 
-  if (!iter->originator) {
+  if (auto* controller = GetPasswordsUIController(iter->originator)) {
+    controller->OnPasswordChangeFinishedSuccessfully();
+  }
+#else
+  NOTREACHED();
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
+void ChromePasswordChangeService::OnLoginCheckFailedWithServerError(
+    PasswordChangeDelegate* delegate) {
+#if !BUILDFLAG(IS_ANDROID)
+  auto iter = FindPasswordChangeData(delegate);
+  if (iter == password_change_data_.end()) {
     return;
   }
 
-  auto* controller =
-      ManagePasswordsUIController::FromWebContents(iter->originator.get());
+  auto* controller = GetPasswordsUIController(iter->originator);
   if (!controller) {
     return;
   }
@@ -296,6 +312,14 @@ void ChromePasswordChangeService::OnLoginCheckFailedWithServerError(
 #else
   NOTREACHED();
 #endif  // BUILDFLAG(IS_ANDROID)
+}
+
+std::vector<ChromePasswordChangeService::PasswordChangeData>::iterator
+ChromePasswordChangeService::FindPasswordChangeData(
+    PasswordChangeDelegate* delegate) {
+  return std::ranges::find(
+      password_change_data_, delegate,
+      [](const PasswordChangeData& data) { return data.delegate.get(); });
 }
 
 void ChromePasswordChangeService::Shutdown() {

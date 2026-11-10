@@ -23,6 +23,10 @@ class PasswordChangeDelegate {
     // Invoked before `delegate` is destroyed. Should be used to stop observing.
     virtual void OnPasswordChangeStopped(PasswordChangeDelegate* delegate) {}
 
+    // Invoked when password change finishes successfully.
+    virtual void OnPasswordChangeFinishedSuccessfully(
+        PasswordChangeDelegate* delegate) {}
+
     // Invoked when login check fails with a server error.
     virtual void OnLoginCheckFailedWithServerError(
         PasswordChangeDelegate* delegate) {}

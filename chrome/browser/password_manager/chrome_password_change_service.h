@@ -133,8 +133,16 @@ class ChromePasswordChangeService
   bool UserIsActivePasswordChangeUser() const;
 
  private:
+  struct PasswordChangeData {
+    std::unique_ptr<PasswordChangeDelegate> delegate;
+    base::WeakPtr<content::WebContents> originator;
+    password_manager::LeakedPasswordDetails details;
+  };
+
   // PasswordChangeDelegate::Observer impl.
   void OnPasswordChangeStopped(PasswordChangeDelegate* delegate) override;
+  void OnPasswordChangeFinishedSuccessfully(
+      PasswordChangeDelegate* delegate) override;
   void OnLoginCheckFailedWithServerError(
       PasswordChangeDelegate* delegate) override;
 
@@ -151,18 +159,17 @@ class ChromePasswordChangeService
       bool is_non_password_login_detected = false) const;
 #endif
 
+  // Returns the entry in `password_change_data_` that owns `delegate`, or
+  // `password_change_data_.end()` if there is none.
+  std::vector<PasswordChangeData>::iterator FindPasswordChangeData(
+      PasswordChangeDelegate* delegate);
+
   const raw_ptr<PrefService> pref_service_;
   const raw_ptr<affiliations::AffiliationService> affiliation_service_;
   const raw_ptr<OptimizationGuideKeyedService> optimization_keyed_service_;
   const raw_ptr<password_manager::PasswordManagerSettingsService>
       settings_service_;
   std::unique_ptr<password_manager::PasswordFeatureManager> feature_manager_;
-
-  struct PasswordChangeData {
-    std::unique_ptr<PasswordChangeDelegate> delegate;
-    base::WeakPtr<content::WebContents> originator;
-    password_manager::LeakedPasswordDetails details;
-  };
 
   std::vector<PasswordChangeData> password_change_data_;
 

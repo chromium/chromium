@@ -60,16 +60,6 @@ using ::password_manager::BrowserSavePasswordProgressLogger;
 
 constexpr base::TimeDelta kToastDisplayTime = base::Seconds(8);
 
-void NotifyPasswordChangeFinishedSuccessfully(
-    content::WebContents* web_contents) {
-  if (web_contents) {
-    if (PasswordsLeakDialogDelegate* delegate =
-            ManagePasswordsUIController::FromWebContents(web_contents)) {
-      delegate->OnPasswordChangeFinishedSuccessfully();
-    }
-  }
-}
-
 std::unique_ptr<BrowserSavePasswordProgressLogger> GetLoggerIfAvailable(
     content::WebContents* web_contents) {
   if (!web_contents) {
@@ -433,7 +423,9 @@ void PasswordChangeDelegateImpl::OnActuationStateChanged(
     PasswordChangeActuator::State new_state) {
   if (new_state ==
       PasswordChangeActuator::State::kPasswordSuccessfullyChanged) {
-    NotifyPasswordChangeFinishedSuccessfully(originator_);
+    observers_.Notify(
+        &PasswordChangeDelegate::Observer::OnPasswordChangeFinishedSuccessfully,
+        this);
   }
   UpdateState(ToDelegateState(new_state));
 }

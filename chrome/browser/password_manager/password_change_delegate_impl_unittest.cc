@@ -94,7 +94,6 @@ class MockManagePasswordsUIController : public ManagePasswordsUIController {
               GetModelDelegateProxy,
               (),
               (override));
-  MOCK_METHOD(void, OnPasswordChangeFinishedSuccessfully, (), (override));
   MOCK_METHOD(void,
               ShowChangePasswordBubble,
               (const std::u16string&, const std::u16string&),
@@ -107,6 +106,10 @@ class MockPasswordChangeDelegateObserver
  public:
   MOCK_METHOD(void,
               OnPasswordChangeStopped,
+              (PasswordChangeDelegate*),
+              (override));
+  MOCK_METHOD(void,
+              OnPasswordChangeFinishedSuccessfully,
               (PasswordChangeDelegate*),
               (override));
   MOCK_METHOD(void,
@@ -562,34 +565,21 @@ TEST_F(PasswordChangeDelegateImplTest,
            PasswordChangeUIDelegate::State::kChangePasswordFormNotFound},
           {PasswordChangeActuator::State::kPasswordChangeFailed,
            PasswordChangeUIDelegate::State::kPasswordChangeFailed},
+          {PasswordChangeActuator::State::kPasswordSuccessfullyChanged,
+           PasswordChangeUIDelegate::State::kPasswordSuccessfullyChanged},
       };
 
   for (const auto& [actuator_state, delegate_state] : kTestStates) {
+    if (actuator_state ==
+        PasswordChangeActuator::State::kPasswordSuccessfullyChanged) {
+      EXPECT_CALL(observer, OnPasswordChangeFinishedSuccessfully(delegate()));
+    } else {
+      EXPECT_CALL(observer, OnPasswordChangeFinishedSuccessfully).Times(0);
+    }
     EXPECT_CALL(*mock_ui_controller(), UpdateState(delegate_state));
     delegate()->OnActuationStateChanged(actuator_state);
     EXPECT_EQ(delegate()->GetCurrentState(), delegate_state);
   }
-
-  delegate()->RemoveObserver(&observer);
-}
-
-TEST_F(PasswordChangeDelegateImplTest,
-       PasswordSuccessfullyChangedUpdatesUIAndNotifiesController) {
-  CreateDelegate();
-  MockPasswordChangeDelegateObserver observer;
-  delegate()->AddObserver(&observer);
-
-  EXPECT_CALL(
-      *mock_ui_controller(),
-      UpdateState(
-          PasswordChangeUIDelegate::State::kPasswordSuccessfullyChanged));
-  EXPECT_CALL(*manage_passwords_ui_controller(),
-              OnPasswordChangeFinishedSuccessfully());
-
-  delegate()->OnActuationStateChanged(
-      PasswordChangeActuator::State::kPasswordSuccessfullyChanged);
-  EXPECT_EQ(delegate()->GetCurrentState(),
-            PasswordChangeUIDelegate::State::kPasswordSuccessfullyChanged);
 
   delegate()->RemoveObserver(&observer);
 }
