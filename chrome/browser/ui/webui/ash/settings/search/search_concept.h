@@ -26,7 +26,7 @@ struct SearchConcept {
   static constexpr size_t kMaxAltTagsPerConcept = 5;
   static constexpr int kAltTagEnd = 0;
 
-  // Message ID (from os_settings_search_tag_strings.grdp) corresponding to the
+  // Message ID (from ash_settings_search_tag_strings.grdp) corresponding to the
   // canonical search tag for this concept.
   int canonical_message_id;
 
@@ -51,7 +51,7 @@ struct SearchConcept {
   mojom::SearchResultType type;
   OsSettingsIdentifier id;
 
-  // Alternate message IDs (from os_settings_search_tag_strings.grdp)
+  // Alternate message IDs (from ash_settings_search_tag_strings.grdp)
   // corresponding to this concept. These IDs refer to messages which represent
   // an alternate way of describing the same concept (e.g., "Monitor settings"
   // is an alternate phrase for "Display settings").

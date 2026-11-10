@@ -26,6 +26,7 @@ source_set("interactive_ui_tests") {
     "//chromeos/ash/components/dbus/shill:test_support",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/network:test_support",
+    "//chromeos/ash/experiences/settings_ui/resources:strings",
     "//chromeos/ash/services/connectivity/public/cpp",
     "//chromeos/services/network_config/public/mojom",
     "//chromeos/strings:strings_grit",

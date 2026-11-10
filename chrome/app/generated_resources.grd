@@ -317,7 +317,6 @@ are declared in tools/grit/grit_args.gni.
         <part file="chromeos_shared_strings.grdp" />
         <part file="chromeos_strings.grdp" />
         <part file="os_settings_strings.grdp" />
-        <part file="os_settings_search_tag_strings.grdp" />
         <part file="sharesheet_strings.grdp" />
       </if>
 

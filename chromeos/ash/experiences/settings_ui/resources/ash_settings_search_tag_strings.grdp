@@ -1449,4 +1449,89 @@
   <message name="IDS_OS_SETTINGS_TAG_ABOUT_FIRMWARE_UPDATES" desc="Text for search result item which, when clicked, navigates the user to 'Firmware updates' settings, with a link which opens the 'Firmware updates' app.">
     Firmware updates
   </message>
+
+  <!-- Search and Assistant section. -->
+  <message name="IDS_OS_SETTINGS_TAG_PREFERRED_SEARCH_ENGINE" desc="Text for search result item which, when clicked, navigates the user to search settings, with an option to set the user's preferred search engine.">
+    Preferred search engine
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_QUICK_ANSWERS" desc="Text for search result item which, when clicked, navigates the user to Quick Answers settings, with a toggle to enable/disable the functionality. Alternate phrase for: 'Look up', 'Quick search', 'Right click card'">
+    Quick Answers
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_QUICK_ANSWERS_ALT1" desc="Text for search result item which, when clicked, navigates the user to Quick Answers settings, with a toggle to enable/disable the functionality. Alternate phrase for: 'Quick Answers', 'Quick search', 'Right click card'">
+    Look up
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_QUICK_ANSWERS_ALT2" desc="Text for search result item which, when clicked, navigates the user to Quick Answers settings, with a toggle to enable/disable the functionality. Alternate phrase for: 'Quick Answers', 'Look up', 'Right click card'">
+    Quick search
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_QUICK_ANSWERS_ALT3" desc="Text for search result item which, when clicked, navigates the user to Quick Answers settings, with a toggle to enable/disable the functionality. Alternate phrase for: 'Quick Answers', 'Look up', 'Quick search'">
+    Right click card
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_QUICK_ANSWERS_DEFINITION" desc="Text for search result item which, when clicked, navigates the user to Quick Answers settings, with a toggle to enable/disable the Quick Answers definition functionality.">
+    Quick Answers definition
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_QUICK_ANSWERS_TRANSLATION" desc="Text for search result item which, when clicked, navigates the user to Quick Answers settings, with a toggle to enable/disable the Quick Answers translation functionality.">
+    Quick Answers translation
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_QUICK_ANSWERS_UNIT_CONVERSION" desc="Text for search result item which, when clicked, navigates the user to Quick Answers settings, with a toggle to enable/disable the Quick Answers unit conversion functionality.">
+    Quick Answers unit conversion
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_MAGIC_BOOST" desc="Text for search result item which, when clicked, navigates the user to Google AI settings, with an option to turn functionality on.">
+    Google AI
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_MAGIC_BOOST_HMR" desc="Text for search result item which, when clicked, navigates the user to Help Me Read settings, with an option to turn functionality on.">
+    Help Me Read
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_MAGIC_BOOST_HMW" desc="Text for search result item which, when clicked, navigates the user to Help Me Write settings, with an option to turn functionality on.">
+    Help Me Write
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_MAGIC_BOOST_LOBSTER" desc="Text for search result item which, when clicked, navigates the user to Create Image settings, with an option to turn functionality on.">
+    Create Image
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_SUGGESTED_ACTIONS" desc="Text for search result item which, when clicked, navigates the user to Suggested actions when searching your screen settings, with an option to turn functionality on.">
+    Suggested actions when searching your screen
+  </message>
+
+  <!-- Languages and Input section. -->
+  <message name="IDS_OS_SETTINGS_TAG_LANGUAGES" desc="Text for search result item which, when clicked, navigates the user to languages settings.">
+    Languages
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_LANGUAGES_CHANGE_DEVICE_LANGUAGE" desc="Text for search result item which, when clicked, navigates the user to languages and input settings, with allows users to change device language.">
+    Change device language
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_LANGUAGES_OFFER_TRANSLATION" desc="Text for search result item which, when clicked, navigates the user to languages and input settings, with a toggle to enable/disable translation prompts.">
+    Translation suggestion
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_LANGUAGES_INPUT_ADD_LANGUAGE" desc="Text for search result item which, when clicked, navigates the user to languages and input settings, with an option to add a new language.">
+    Add languages
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_LANGUAGES_APP_LANGUAGES" desc="Text for search result item which, when clicked, navigates the user to app language settings, with a list of apps which language can be customized.">
+    App languages
+  </message>
+
+  <!-- Accessibility section. -->
+  <message name="IDS_OS_SETTINGS_TAG_A11y_CHROMEVOX" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable ChromeVox (spoken feedback).">
+    ChromeVox (spoken feedback)
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11y_CHROMEVOX_ALT1" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable ChromeVox (spoken feedback). Alternate phrase for: 'ChromeVox (spoken feedback)'">
+    Screen reader
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11y_CHROMEVOX_ALT2" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable ChromeVox (spoken feedback). Alternate phrase for: 'ChromeVox (spoken feedback)'">
+    Braille
+  </message>
+
+  <!-- On Startup section. -->
+  <message name="IDS_OS_SETTINGS_TAG_ON_STARTUP" desc="Text for search result item which, when clicked, navigates the user to On Startup settings, with a drop down to configure the restore apps and pages options">
+    Startup
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_RESTORE_APPS_AND_PAGES" desc="Text for search result item which, when clicked, navigates the user to On Startup settings, with a drop down to configure the restore apps and pages options">
+    Restore apps and pages
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_WELCOME_RECAP" desc="Text for search result item which, when clicked, navigates the user to On Startup settings, with a drop down to configure the restore apps and pages options">
+    Welcome recap
+  </message>
+
+  <!-- System preferences section. -->
+  <message name="IDS_OS_SETTINGS_TAG_SYSTEM_PREFERENCES" desc="Text for search result item which, when clicked, navigates the user to the System preferences section.">
+    System preferences
+  </message>
 </grit-part>

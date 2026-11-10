@@ -2,51 +2,6 @@
 <!-- Settings-specific strings (included from generated_resources.grd). -->
 <grit-part>
 <if expr="is_chromeos">
-  <!-- Shared across multiple pages -->
-  <message name="IDS_SETTINGS_DEVICE_OFF" desc="In Settings pages, the label when a bluetooth, wifi, or mobile device is off (disabled)." meaning="Device is disabled.">
-    Off
-  </message>
-  <message name="IDS_SETTINGS_DEVICE_ON" desc="In Settings pages, the label when a bluetooth, wifi, or mobile device is on (enabled)." meaning="Device is enabled.">
-    On
-  </message>
-  <message name="IDS_SETTINGS_DISMISS" desc="Label to dismiss a shortcut reminder.">
-    Dismiss
-  </message>
-  <message name="IDS_SETTINGS_SHORTCUT_BANNER_DISMISSED" desc="The message spoken aloud by screen readers when the user dismisses a banner showing keyboard shortcuts.">
-    Keyboard shortcut notice dismissed
-  </message>
-  <message name="IDS_OS_SETTINGS_OPENS_IN_NEW_TAB_A11Y_LABEL" desc="ARIA (accessibility) label describing an external link which opens in a new tab.">
-    Opens in new tab
-  </message>
-  <!-- IDS_OS_SETTINGS_LIST_SEPARATOR should include a space after the comma. This is achieved by adding ''' after the space. -->
-  <message name="IDS_OS_SETTINGS_LIST_SEPARATOR" desc="Text/punctuation that separates items in a list. For example, this is used in a list of words, e.g. 'Keyboard, mouse, print'.">
-    , '''
-  </message>
-
-  <!--Main Page-->
-  <message name="IDS_SETTINGS_SECONDARY_USER_BANNER" desc="Banner displayed in settings page when the user is secondary in a multi-profile session.">
-    Some settings belonging to <ph name="PRIMARY_EMAIL">$1<ex>john@google.com</ex></ph> are being shared with you. These settings only affect your account when using multiple sign-in.
-  </message>
-  <message name="IDS_SETTINGS_UPDATE_REQUIRED_EOL_BANNER_DAYS" desc="Banner displayed in OS settings page in case update is required by policy, but the device has reached end-of-life and the number of days remaining to return the device back to the manager is less than seven. MANAGER can be a domain or an email address.">
-    {NUM_DAYS, plural,
-      =1 {<ph name="MANAGER">{1}<ex>example.com</ex></ph> requires you to back up your data and return this <ph name="DEVICE_TYPE">{2}<ex>Chromebook</ex></ph> today. <ph name="LINK_BEGIN">&lt;a target="_blank" href="{3}<ex>https://google.com/</ex>"&gt;</ph>See details<ph name="LINK_END">&lt;/a&gt;</ph>}
-      other {<ph name="MANAGER">{1}<ex>example.com</ex></ph> requires you to back up your data and return this <ph name="DEVICE_TYPE">{2}<ex>Chromebook</ex></ph> within {NUM_DAYS} days. <ph name="LINK_BEGIN">&lt;a target="_blank" href="{3}<ex>https://google.com/</ex>"&gt;</ph>See details<ph name="LINK_END">&lt;/a&gt;</ph>}}
-  </message>
-  <message name="IDS_SETTINGS_UPDATE_REQUIRED_EOL_BANNER_ONE_WEEK" desc="Banner displayed in OS settings page in case update is required by policy, but the device has reached end-of-life and the number of days remaining to return the device back to the manager is equal to seven. MANAGER can be a domain or an email address.">
-    <ph name="MANAGER">$1<ex>example.com</ex></ph> requires you to back up your data and return this <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph> within 1 week. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$3<ex>https://google.com/</ex>"&gt;</ph>See details<ph name="LINK_END">&lt;/a&gt;</ph>
-  </message>
-
-  <!-- Settings Search Box -->
-  <message name="IDS_OS_SEARCH_RESULT_ROW_A11Y_RESULT_SELECTED" desc="ChromeVox alert to indicate the position number of a selected result in a list of search results and the selected result text itself, and that the user can press enter to navigate to section described by the search result.">
-    Search result <ph name="LIST_POSITION">$1<ex>1</ex></ph> of <ph name="LIST_SIZE">$2<ex>2</ex></ph>: <ph name="SEARCH_RESULT_TEXT">$3<ex>Network Settings</ex></ph>. Press Enter to navigate to section.
-  </message>
-  <message name="IDS_OS_SETTINGS_SEARCH_FEEDBACK_BUTTON" desc="Text description of feedback button in search.">
-    Report this search result
-  </message>
-  <message name="IDS_OS_SETTINGS_SEARCH_FEEDBACK_DESCRIPTION_TEMPLATE" desc="Template description of pre-populated search feedback description.">
-    <ph name="HASHTAG_SETTINGS">#Settings</ph> No search results returned for <ph name="SEARCH_QUERY">'$1'<ex>query</ex></ph>
-  </message>
-
   <!-- About (OS Settings) -->
   <message name="IDS_SETTINGS_ABOUT_PAGE_RELAUNCH" desc="The label for the relaunch button that relaunches the browser once update is complete">
     Restart
@@ -71,175 +26,8 @@
   </message>
 
   <!-- People (OS settings) -->
-  <message name="IDS_OS_SETTINGS_PROFILE_LABEL_V2" desc="Label underneath the profile's real name, listing the number of accounts">
-    {COUNT, plural,
-     =1 {1 Google Account}
-     other {<ph name="EXTRA_ACCOUNTS">$2<ex>2</ex></ph> Google Accounts}}
-  </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_SUBMENU_LABEL" desc="Label of Account Manager submenu in Settings page.">
     Google Accounts
-  </message>
-
-  <!-- Languages and Inputs (OS settings) -->
-  <message name="IDS_OS_SETTINGS_LANGUAGES_AND_INPUT_PAGE_TITLE" desc="Name of the OS settings page which displays language and input method preferences.">
-    Languages and inputs
-  </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_LANGUAGES_PAGE_TITLE" desc="A page under “Languages and inputs” section in the OS settings page that users can set system display language, web content language fallback and translation preference.">
-    Languages
-  </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_DEVICE_LANGUAGE_TITLE" desc="The label for the section where users can see their device language. This language will be used for system surfaces (launcher, shelf, and notifications etc.).">
-    Device language
-  </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_CHANGE_DEVICE_LANGUAGE_BUTTON_LABEL" desc="The label for the button where users can change their device language. This language will be used for system surfaces (launcher, shelf, and notifications etc.).">
-    Change
-  </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_CHANGE_DEVICE_LANGUAGE_BUTTON_DESCRIPTION" desc="The description read by screenreader for the button where users can change their device language. This language will be used for system surfaces (launcher, shelf, and notifications etc.).">
-    Change device language. Current language is <ph name="LANGUAGE">$1<ex>English</ex></ph>.
-  </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_CHANGE_DEVICE_LANGUAGE_DIALOG_TITLE" desc="Title for the dialog to change device language.">
-    Change device language
-  </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_CHANGE_DEVICE_LANGUAGE_DIALOG_DESCRIPTION" desc="Description for the dialog to change device language.">
-    You need to restart your Chromebook to change the device language. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
-  </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_SELECTED_DEVICE_LANGUAGE_INSTRUCTION" desc="Instruction read by screen reader when users can unselect a language.">
-    <ph name="LANGUAGE">$1<ex>English</ex></ph> selected. Press Search plus Space to unselect.
-  </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_NOT_SELECTED_DEVICE_LANGUAGE_INSTRUCTION" desc="Instruction read by screen reader when users can select a language.">
-    <ph name="LANGUAGE">$1<ex>English</ex></ph> not selected. Press Search plus Space to select.
-  </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_CHANGE_DEVICE_LANGUAGE_CONFIRM_BUTTON_LABEL" desc="Label for the button where users can confirm the selected language and restart the device.">
-    Confirm and restart
-  </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_LANGUAGES_PREFERENCE_TITLE" desc="Title of section that lets users choose the language for web content. The web content languages will be served in the order of the list.">
-    Web content languages
-  </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_LANGUAGES_PREFERENCE_DESCRIPTION" desc="Description for section that lets users choose the language for web content. The web content languages will be served in the order of the list.">
-    Web content available in multiple languages will use the first supported language from this list. These preferences are synced with your browser settings. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
-  </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_WEBSITE_LANGUAGES_TITLE" desc="Title of section that lets users choose a list of languages for websites. The website languages will be given to websites in the order given by the list.">
-    Website languages
-  </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_WEBSITE_LANGUAGES_DESCRIPTION" desc="Description for section that lets users choose a list of languages for websites. The website languages will be given to websites in the order given by the list.">
-    Add and rank your preferred languages. Websites will show in your preferred languages, when possible. These preferences are synced with your browser settings. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
-  </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_TRANSLATE_TARGET_LABEL" desc="The label of the toggle that enables the prompt to translate a page to users.">
-    Language used when translating pages
-  </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_TRANSLATE_TARGET_LABEL_WITH_QUICK_ANSWERS" desc="The label of the section that indicates the target language used for translation and quick answers.">
-    Language used for translating pages and Quick answers
-  </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_OFFER_TO_TRANSLATE_THIS_LANGUAGE" desc="The label of the checkbox that enables the prompt to translate a page in the given language to users.">
-    Offer to translate pages in this language
-  </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_GOOGLE_ACCOUNT_LANGUAGE_TITLE" desc="Title for the section that informs users about the languages associated with their Google Account and what they affect.">
-   Google Account language
-  </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_GOOGLE_ACCOUNT_LANGUAGE_DESCRIPTION" desc="Description for the section that informs users about the languages associated with their Google Account and what they affect.">
-   Google sites like Gmail, Drive, and YouTube use your Google Account language unless you’ve changed the individual product language
-  </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_MANAGE_GOOGLE_ACCOUNT_LANGUAGE_LABEL" desc="Label for the button which links to the Google Account language page, allowing users to modify their Google Account languages.">
-   Manage Google Account language
-  </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_OFFER_TRANSLATION_LABEL" desc="Title for setting that allows the system to offer to translate websites that appear in other languages.">
-   Translation suggestion
-  </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_OFFER_TRANSLATION_SUBLABEL" desc="Description for setting that allows the system to offer to translate websites that appear in other languages.">
-    Offer to translate websites in other languages
-  </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_OFFER_GOOGLE_TRANSLATE_LABEL" desc="Title for setting that allows the system to offer to translate websites that appear in other languages using Google Translate.">
-    Offer Google Translate for websites in other languages
-  </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_OFFER_GOOGLE_TRANSLATE_LABEL_WITH_PDF" desc="Title for setting that allows the system to offer to translate websites and PDFs that appear in other languages using Google Translate.">
-    Offer Google Translate for websites and PDFs in other languages
-  </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_APP_LANGUAGES_TITLE" desc="The label for the section where users can customize display language for supported apps.">
-    App languages
-  </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_APP_LANGUAGES_DESCRIPTION" desc="The description for section under app languages title, where clicking this will bring user to app languages settings subpage.">
-    Customize display language for supported apps
-  </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_APP_LANGUAGES_SUPPORTED_APPS_DESCRIPTION" desc="The description inside app languages subpage informing that only apps supporting per-app language selection are shown in this subpage.">
-    Only apps that support language selection are shown here
-  </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_APP_LANGUAGES_NO_APPS_SUPPORTED_DESCRIPTION" desc="The description for section under app languages title, when there's no apps supporting app language selection.">
-    No apps support app language selection
-  </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_APP_LANGUAGES_EDIT_SELECTION_LABEL" desc="The label inside app languages subpage when clicking 'three-dots more info' (kebab) button to edit app language.">
-    Edit language selection
-  </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_APP_LANGUAGES_RESET_SELECTION_LABEL" desc="The label inside app languages subpage when clicking 'three-dots more info' (kebab) button to reset app language back to device language.">
-    Reset to device language
-  </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_APP_LANGUAGES_CHANGE_LANGUAGE_BUTTON_DESCRIPTION" desc="The description read by screenreader for the button where users can change the app language, either to another one, or reset to device language.">
-    Change <ph name="APP">$1<ex>Google TV</ex></ph> language. Current language is <ph name="LANGUAGE">$2<ex>English (United States)</ex></ph>.
-  </message>
-
-  <!-- Search and Assistant section. -->
-  <message name="IDS_OS_SETTINGS_SEARCH_AND_SUGGESTIONS_TITLE" desc="Name of the settings page which displays search engine and suggestion preferences on ChromeOS.">
-    Search and suggestions
-  </message>
-  <message name="IDS_OS_SETTINGS_SEARCH_ENGINE_LABEL" desc="Label in OS settings describing search engine behavior.">
-    Set search engine in Chrome browser settings
-  </message>
-  <message name="IDS_OS_SETTINGS_SEARCH_ENGINE_DESCRIPTION" desc="Description in the search engine dialog in OS settings explaining that search engine is used in both the Chrome browser and the ChromeOS app launcher.">
-    Set your default search engine for Chrome browser and <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> Launcher
-  </message>
-  <message name="IDS_OS_SETTINGS_ENABLE_MAGIC_BOOST" desc="The label of the toggle to enable/disable Magic Boost in ChromeOS settings.">
-    Use Google AI to get help reading, writing, and creating
-  </message>
-  <message name="IDS_OS_SETTINGS_ENABLE_MAGIC_BOOST_DESCRIPTION" desc="The description of the toggle to enable/disable Magic Boost in ChromeOS settings.">
-    Right-click to summarize content, get definitions, write with more confidence, create images, and more. Currently has limited availability.
-  </message>
-  <message name="IDS_OS_SETTINGS_MAGIC_BOOST_REVIEW_TERMS_BANNER_DESCRIPTION" desc="The description for Magic Boost review notice banner">
-    You need to review and accept terms to use these features
-  </message>
-  <message name="IDS_OS_SETTINGS_MAGIC_BOOST_REVIEW_TERMS_BUTTON_LABEL" desc="The label for Magic Boost review notice button">
-    Review
-  </message>
-  <message name="IDS_OS_SETTINGS_ENABLE_HELP_ME_READ" desc="The label of the toggle to enable/disable Help Me Read in ChromeOS settings.">
-    Help me read
-  </message>
-  <message name="IDS_OS_SETTINGS_ENABLE_HELP_ME_READ_DESCRIPTION" desc="The description of the toggle to enable/disable Help Me Read in ChromeOS settings.">
-    Summarize content, simplify complex language, or ask questions.
-  </message>
-  <message name="IDS_OS_SETTINGS_ENABLE_HELP_ME_WRITE" desc="The label of the toggle to enable/disable Help Me Write in ChromeOS settings.">
-    Help me write
-  </message>
-  <message name="IDS_OS_SETTINGS_ENABLE_HELP_ME_WRITE_DESCRIPTION" desc="The description of the toggle to enable/disable Help Me Write in ChromeOS settings.">
-    Create a draft or refine existing work.
-  </message>
-  <message name="IDS_OS_SETTINGS_ENABLE_SCANNER" desc="The label of the toggle to enable/disable suggested actions when searching your screen in ChromeOS settings.">
-    Suggested actions when searching your screen
-  </message>
-  <message name="IDS_OS_SETTINGS_ENABLE_SCANNER_DESCRIPTION" desc="The description of the toggle to enable/disable suggested actions when searching your screen in ChromeOS settings. A &quot;Learn more&quot; link will be added after this string.">
-    After taking a screenshot or searching your screen, show more actions such as add to Calendar, create Google Docs, and more.
-  </message>
-
-  <!-- Search subpage (OS settings) -->
-  <message name="IDS_SETTINGS_SEARCH_SUBPAGE_TITLE" desc="Name of the settings subpage for Search.">
-    Search
-  </message>
-  <message name="IDS_SETTINGS_QUICK_ANSWERS_ENABLE" desc="Title for a toggle that controls the Quick Answers feature.">
-    Quick answers
-  </message>
-  <message name="IDS_SETTINGS_QUICK_ANSWERS_ENABLE_DESCRIPTION" desc="Sub label for the Quick Answers toggle.">
-    With a right-click or long press, show related info for your text selection
-  </message>
-  <message name="IDS_SETTINGS_QUICK_ANSWERS_ENABLE_DESCRIPTION_WITH_LINK" desc="Sub label for the Quick Answers toggle with link to the website languages.">
-    Get definitions, translations, or unit conversions when you right-click or touch &amp; hold text. Customize translation languages in <ph name="LINK_BEGIN">&lt;a target="_blank" href="#"&gt;</ph>Website languages<ph name="LINK_END">&lt;/a&gt;</ph>.
-  </message>
-  <message name="IDS_SETTINGS_QUICK_ANSWERS_DEFINITION_ENABLE" desc="Title for a toggle that controls the Quick Answers definiton feature.">
-    Definition
-  </message>
-  <message name="IDS_SETTINGS_QUICK_ANSWERS_TRANSLATION_ENABLE" desc="Title for a toggle that controls the Quick Answers translation feature.">
-    Translation
-  </message>
-  <message name="IDS_SETTINGS_QUICK_ANSWERS_TRANSLATION_ENABLE_DESCRIPTION" desc="Sub label for the Quick Answers translation toggle.">
-    Add your preferred <ph name="LINK_BEGIN">&lt;a target="_blank" href="#"&gt;</ph>website languages<ph name="LINK_END">&lt;/a&gt;</ph>. The top language from the list will be used for translations.
-  </message>
-  <message name="IDS_SETTINGS_QUICK_ANSWERS_UNIT_CONVERSION_ENABLE" desc="Title for a toggle that controls the Quick Answers unit conversion feature.">
-    Unit Conversion
   </message>
 
   <!-- Files Page (OS settings) -->
@@ -309,17 +97,6 @@
     Remove
   </message>
 
-  <!-- Bluetooth page (OS settings) -->
-  <message name="IDS_BLUETOOTH_NO_SAVED_DEVICES_LABEL" desc="Label in Saved Devices sub-page when account has no saved devices.">
-    No devices saved to <ph name="PRIMARY_EMAIL">$1<ex>example@google.com</ex></ph>
-  </message>
-  <message name="IDS_BLUETOOTH_SAVED_DEVICES_ERROR_LABEL" desc="Label in Saved Devices sub-page when device list returns an error.">
-    Can’t load devices saved to <ph name="PRIMARY_EMAIL">$1<ex>example@google.com</ex></ph>. Check your internet connection and try again.
-  </message>
-  <message name="IDS_BLUETOOTH_SAVED_DEVICES_LOADING_LABEL" desc="Label in Saved Devices sub-page while loading the devices list.">
-    Looking for Fast Pair devices saved to <ph name="PRIMARY_EMAIL">$1<ex>example@google.com</ex></ph>
-  </message>
-
   <!-- Internet page (OS settings) -->
   <message name="IDS_SETTINGS_INTERNET_DETAIL" desc="Name of the settings page which displays network details.">
     Network Details
@@ -352,13 +129,6 @@
     Proxy
   </message>
 
-  <!-- Lock Screen Page (OS settings) -->
-  <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_NUM_FINGERPRINTS" desc="Text on the lock screen which tells users how many fingerprints they have enrolled.">
-    {COUNT, plural,
-      =1 {1 fingerprint set up}
-      other {{COUNT} fingerprints set up}}
-  </message>
-
   <!-- Kerberos In-Browser dialog -->
   <message name="IDS_SETTINGS_KERBEROS_IN_BROWSER_DIALOG_TITLE" desc="The title of the Kerberos In-Browser dialog">
   Kerberos authentication failed
@@ -384,51 +154,12 @@
     This doesn't affect apps or content on other devices.
   </message>
 
-  <!-- Startup (OS settings) -->
-  <message name="IDS_OS_SETTINGS_ON_STARTUP_SETTINGS_CARD_TITLE" desc="The title of the settings card that allows the user to configure the restore apps and pages options on startup.">
-    Startup
-  </message>
-  <message name="IDS_OS_SETTINGS_ON_STARTUP_TITLE" desc="The title of the dropdown menu that allows the user to configure the restore apps and pages options on startup.">
-    Welcome Recap
-  </message>
-  <message name="IDS_OS_SETTINGS_ON_STARTUP_DESCRIPTION" desc="The description of the dropdown menu that allows the user to configure the restore apps and pages options on startup.">
-    Open your previous windows and tabs to easily continue where you left off
-  </message>
-  <message name="IDS_OS_SETTINGS_ON_STARTUP_ALWAYS" desc="Label for the dropdown menu which enables the always restore apps and pages option on startup.">
-    Always open
-  </message>
-  <message name="IDS_OS_SETTINGS_ON_STARTUP_ASK_EVERY_TIME" desc="Label for the dropdown menu which enables the ask every time option to show a notification on startup to give the user a choice for the restoration.">
-    Ask every time
-  </message>
-  <message name="IDS_OS_SETTINGS_ON_STARTUP_DO_NOT_RESTORE" desc="Label for the dropdown menu which enables the do not restore option, which means not restore apps or pages on startup.">
-    Off
-  </message>
-
-  <!-- System Preferences Page -->
-  <message name="IDS_OS_SETTINGS_SYSTEM_PREFERENCES_TITLE" desc="The title of the System Preferences page and respective menu item.">
-    System preferences
-  </message>
-  <message name="IDS_OS_SETTINGS_SYSTEM_PREFERENCES_MENU_ITEM_DESCRIPTION" desc="Description for the System Preferences menu item in the left menu. This static list describes device storage, battery/energy saver, and language settings.">
-    Storage, power, language
-  </message>
-  <message name="IDS_OS_SETTINGS_SYSTEM_PREFERENCES_STORAGE_AND_POWER_TITLE" desc="The title of the Storage and Power settings card in the System Preferences page.">
-    Storage and power
-  </message>
-
   <!-- Safety Hub -->
   <message name="IDS_SETTINGS_SAFETY_HUB_VERSION_CARD_HEADER_RESTART" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. The version card, which this text is a part of, informs the user whether their Chrome is up to date. This title of the card is shown when Chrome is not up to date but there is an update available and the user needs to restart their browser to finish the update. Shown above the subtitle 'Relaunch to finish update. Your tabs will reopen'.">
     ChromeOS is out of date
   </message>
   <message name="IDS_SETTINGS_SAFETY_HUB_VERSION_CARD_HEADER_UPDATED" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. The version card, which this text is a part of, informs the user whether their Chrome is up to date. This title of the card is shown when Chrome is up to date and the user does not need to take any action. Shown above the subtitle that is the Chrome version.">
     ChromeOS is up to date
-  </message>
-
-  <!-- Lobster -->
-  <message name="IDS_LOBSTER_OS_SETTINGS_ENABLE" desc="The label of the toggle to enable/disable Image Generation in ChromeOS settings.">
-    Create image
-  </message>
-  <message name="IDS_LOBSTER_OS_SETTINGS_ENABLE_DESCRIPTION" desc="The description of the toggle to enable/disable Image Generation in ChromeOS settings.">
-   Enter a custom prompt or highlight text to create an image
   </message>
 </if>
 </grit-part>

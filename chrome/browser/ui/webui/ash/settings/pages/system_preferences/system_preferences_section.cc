@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/storage/storage_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/system_preferences/startup_section.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
-#include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/experiences/settings_ui/resources/grit/ash_settings_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/webui/web_ui_util.h"
 

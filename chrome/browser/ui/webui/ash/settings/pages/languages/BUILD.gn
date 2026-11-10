@@ -23,6 +23,7 @@ static_library("languages") {
     "//chrome/browser/ui/ash/keyboard",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/common",
+    "//chromeos/ash/experiences/settings_ui/resources:strings",
     "//chromeos/components/quick_answers/public/cpp",
     "//chromeos/constants",
     "//components/prefs",

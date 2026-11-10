@@ -28,7 +28,6 @@ static_library("search") {
 
   deps = [
     "//ash/constants",
-    "//chrome/app:generated_resources",
     "//chrome/browser/ash/input_method",
     "//chrome/browser/ash/lobster",
     "//chrome/browser/ash/magic_boost",
@@ -36,6 +35,7 @@ static_library("search") {
     "//chrome/common",
     "//chromeos/ash/experiences/arc",
     "//chromeos/ash/experiences/arc/session",
+    "//chromeos/ash/experiences/settings_ui/resources:strings",
     "//chromeos/components/mahi/public/cpp",
     "//chromeos/constants",
     "//components/language/core/browser",
@@ -77,6 +77,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support_unit",
     "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/experiences/settings_ui/resources:strings",
     "//chromeos/components/magic_boost/test:fake_magic_boost_state",
     "//chromeos/components/quick_answers:test_support",
     "//components/metrics",

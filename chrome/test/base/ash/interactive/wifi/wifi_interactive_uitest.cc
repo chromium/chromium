@@ -19,6 +19,7 @@
 #include "chromeos/ash/components/dbus/shill/fake_shill_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_service_client.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
+#include "chromeos/ash/experiences/settings_ui/resources/grit/ash_settings_strings.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/base/interaction/element_identifier.h"
