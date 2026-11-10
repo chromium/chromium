@@ -219,6 +219,16 @@ build_webui("build") {
     ]
   }
 
+  if (enable_webui_bookmarks && is_android && !is_desktop_android) {
+    ts_files += [
+      "cr_toolbar/cr_toolbar_selection_overlay.html.ts",
+      "cr_toolbar/cr_toolbar_selection_overlay.ts",
+      "find_shortcut_manager.ts",
+      "find_shortcut_mixin_lit.ts",
+    ]
+    css_files += [ "cr_toolbar/cr_toolbar_selection_overlay.css" ]
+  }
+
   html_to_wrapper_template = "detect"
 
   # Manually setting to Lit instead of "mixed" config, even though this folder

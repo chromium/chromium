@@ -240,7 +240,6 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/actor_overlay_resources.pak",
         "$root_gen_dir/chrome/app_service_internals_resources.pak",
         "$root_gen_dir/chrome/autofill_ml_internals_resources.pak",
-        "$root_gen_dir/chrome/bookmarks_resources.pak",
         "$root_gen_dir/chrome/browser/actor/resources/actor_browser_resources.pak",
         "$root_gen_dir/chrome/browser/actor/resources/actor_common_resources.pak",
         "$root_gen_dir/chrome/browser/indigo/resources/indigo_browser_resources.pak",
@@ -584,6 +583,11 @@ template("chrome_extra_paks") {
     if (enable_webui_certificate_viewer) {
       sources += [ "$root_gen_dir/chrome/certificate_viewer_resources.pak" ]
       deps += [ "//chrome/browser/resources/certificate_viewer:resources" ]
+    }
+
+    if (enable_webui_bookmarks) {
+      sources += [ "$root_gen_dir/chrome/bookmarks_resources.pak" ]
+      deps += [ "//chrome/browser/resources/bookmarks:resources" ]
     }
 
     if (enable_webui_history) {

@@ -95,6 +95,12 @@ generate_grd("build_grd") {
     ]
   }
 
+  if (enable_webui_bookmarks && is_android && !is_desktop_android) {
+    public_deps += [ "cr_components/managed_footnote:build_grdp" ]
+    grdp_files +=
+        [ "$target_gen_dir/cr_components/managed_footnote/resources.grdp" ]
+  }
+
   if (!is_ios) {
     public_deps += [ "cr_components/color_change_listener:build_grdp" ]
 

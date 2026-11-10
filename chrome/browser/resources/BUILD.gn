@@ -66,7 +66,6 @@ group("resources") {
       "actor_overlay:resources",
       "app_service_internals:resources",
       "autofill_ml_internals:resources",
-      "bookmarks:resources",
       "certificate_manager:resources",
       "content_settings:resources",
       "contextual_cueing/internals:resources",
@@ -214,6 +213,10 @@ group("resources") {
 
   if (enable_webui_certificate_viewer) {
     public_deps += [ "certificate_viewer:resources" ]
+  }
+
+  if (enable_webui_bookmarks) {
+    public_deps += [ "bookmarks:resources" ]
   }
 
   if (enable_webui_history) {
