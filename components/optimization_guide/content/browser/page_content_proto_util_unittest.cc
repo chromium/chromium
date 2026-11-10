@@ -1601,6 +1601,30 @@ TEST_F(PageContentProtoUtilTest, ConvertFormControlData) {
       optimization_guide::proto::REDACTION_DECISION_NO_REDACTION_NECESSARY);
 }
 
+TEST_F(PageContentProtoUtilTest, ConvertRangeGroupFormControlData) {
+  auto root_content = CreatePageContent();
+  auto form_control_node =
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kFormControl);
+  form_control_node->content_attributes->form_control_data =
+      blink::mojom::AIPageContentFormControlData::New();
+  form_control_node->content_attributes->form_control_data->form_control_type =
+      blink::mojom::FormControlType::kRangeGroup;
+  root_content->root_node->children_nodes.emplace_back(
+      std::move(form_control_node));
+
+  AIPageContentResult page_content;
+  EXPECT_TRUE(
+      ConvertAIPageContentToProto(root_content, page_content).has_value());
+
+  ASSERT_EQ(page_content.proto.root_node().children_nodes_size(), 1);
+  EXPECT_EQ(page_content.proto.root_node()
+                .children_nodes(0)
+                .content_attributes()
+                .form_control_data()
+                .form_control_type(),
+            optimization_guide::proto::FORM_CONTROL_TYPE_UNSPECIFIED);
+}
+
 TEST_F(PageContentProtoUtilTest, ConvertInteractionDisabledReasons) {
   auto root_content = CreatePageContent();
   auto container_node =

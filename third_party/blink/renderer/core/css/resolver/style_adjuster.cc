@@ -1929,6 +1929,7 @@ StyleAdjuster::ElementTypeForCache StyleAdjuster::GetElementTypeCacheKey(
     case ElementType::kHTMLPictureElement:
     case ElementType::kHTMLPreElement:
     case ElementType::kHTMLQuoteElement:
+    case ElementType::kHTMLRangeGroupElement:
     case ElementType::kHTMLScriptElement:
     case ElementType::kHTMLSearchElement:
     case ElementType::kHTMLSelectedContentElement:

@@ -2393,6 +2393,7 @@ std::optional<FormControlType> GetAutofillFormControlType(
     case blink::mojom::FormControlType::kButtonReset:
     case blink::mojom::FormControlType::kButtonPopover:
     case blink::mojom::FormControlType::kFieldset:
+    case blink::mojom::FormControlType::kRangeGroup:
     case blink::mojom::FormControlType::kInputButton:
     case blink::mojom::FormControlType::kInputCheckbox:
     case blink::mojom::FormControlType::kInputColor:

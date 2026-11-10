@@ -53,6 +53,7 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_autofill_state.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -110,6 +111,19 @@ using ::testing::TestParamInfo;
 using ::testing::Values;
 using ::testing::ValuesIn;
 using ::testing::WithParamInterface;
+
+class ScopedRangeGroupFeature {
+ public:
+  ScopedRangeGroupFeature() {
+    blink::WebRuntimeFeatures::EnableFeatureFromString("RangeGroup", true);
+  }
+  ScopedRangeGroupFeature(const ScopedRangeGroupFeature&) = delete;
+  ScopedRangeGroupFeature& operator=(const ScopedRangeGroupFeature&) = delete;
+
+  ~ScopedRangeGroupFeature() {
+    blink::WebRuntimeFeatures::EnableFeatureFromString("RangeGroup", false);
+  }
+};
 
 struct AutofillFieldUtilCase {
   std::string_view description;
@@ -333,6 +347,7 @@ class FormAutofillUtilsTest : public content::RenderViewTest {
 // Tests that some form control types are extracted by ExtractFormData() and
 // others are not.
 TEST_F(FormAutofillUtilsTest, ExtractFormData_FormControlTypes) {
+  ScopedRangeGroupFeature scoped_range_group;
   LoadHTML(R"(
     <form id=form-id>
       <!-- These form controls are not extracted. -->
@@ -342,6 +357,7 @@ TEST_F(FormAutofillUtilsTest, ExtractFormData_FormControlTypes) {
       <button type=kButtonReset>Foo</button>
       <button type=kButtonPopover>Foo</button>
       <fieldset></fieldset>
+      <rangegroup></rangegroup>
       <input type=button>
       <input type=checkbox>
       <input type=color>

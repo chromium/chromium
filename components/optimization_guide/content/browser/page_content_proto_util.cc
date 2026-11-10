@@ -652,6 +652,10 @@ optimization_guide::proto::FormControlType ConvertFormControlType(
       return optimization_guide::proto::FORM_CONTROL_TYPE_BUTTON_POPOVER;
     case blink::mojom::FormControlType::kFieldset:
       return optimization_guide::proto::FORM_CONTROL_TYPE_FIELDSET;
+    case blink::mojom::FormControlType::kRangeGroup:
+      // The dedicated proto value will be added with rangegroup APC
+      // integration.
+      return optimization_guide::proto::FORM_CONTROL_TYPE_UNSPECIFIED;
     case blink::mojom::FormControlType::kInputButton:
       return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_BUTTON;
     case blink::mojom::FormControlType::kInputCheckbox:

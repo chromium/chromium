@@ -1,0 +1,20 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://open-ui.org/components/enhanced-range-input.explainer/
+[
+    Exposed=Window,
+    RuntimeEnabled=RangeGroup
+] interface HTMLRangeGroupElement : HTMLElement {
+    [HTMLConstructor] constructor();
+    [CEReactions, Reflect] attribute boolean disabled;
+    [ImplementedAs=formForBinding] readonly attribute HTMLElement? form;
+    [CEReactions, Reflect] attribute DOMString name;
+    [CEReactions, Reflect] attribute DOMString min;
+    [CEReactions, Reflect] attribute DOMString max;
+    [CEReactions, Reflect] attribute DOMString stepBetween;
+
+    readonly attribute DOMString type;
+    readonly attribute boolean willValidate;
+};

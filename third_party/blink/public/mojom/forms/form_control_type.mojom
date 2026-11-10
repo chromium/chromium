@@ -44,4 +44,5 @@ enum FormControlType {
   kSelectMultiple,
   // https://html.spec.whatwg.org/multipage/form-elements.html#dom-textarea-type
   kTextArea,
+  kRangeGroup,
 };
