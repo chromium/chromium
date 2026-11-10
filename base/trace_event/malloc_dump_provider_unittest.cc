@@ -332,6 +332,26 @@ TEST(MallocDumpProviderTest, PartitionsObjectsCarryTheReportedTotal) {
   EXPECT_EQ(
       GetBytesEntry(*partitions_objects_dump, MemoryAllocatorDump::kNameSize),
       GetBytesEntry(*partitions_dump, "allocated_objects_size"));
+
+  // Like the other backends' objects dumps, it also counts the objects: the
+  // sum of the partitions' counts.
+  const std::string partition_prefix =
+      std::string(MallocDumpProvider::kPartitions) + "/";
+  uint64_t partitions_objects_count = 0;
+  for (const auto& [name, dump] : pmd.allocator_dumps()) {
+    if (!name.starts_with(partition_prefix) ||
+        name.find('/', partition_prefix.size()) != std::string::npos) {
+      continue;
+    }
+    std::optional<uint64_t> partition_objects_count =
+        GetScalarEntry(*dump, "allocated_objects_count", "count");
+    ASSERT_TRUE(partition_objects_count.has_value()) << name;
+    partitions_objects_count += *partition_objects_count;
+  }
+  EXPECT_EQ(GetScalarEntry(*partitions_objects_dump,
+                           MemoryAllocatorDump::kNameObjectCount,
+                           MemoryAllocatorDump::kUnitsObjects),
+            partitions_objects_count);
 }
 
 // Otherwise the objects would be counted twice under malloc.
