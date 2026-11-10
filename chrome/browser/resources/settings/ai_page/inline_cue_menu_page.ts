@@ -79,7 +79,7 @@ export class SettingsInlineCueMenuPageElement extends
 
   // <if expr="_google_chrome">
   protected readonly previewChipIcon_: string =
-      loadTimeData.getBoolean('inlineCueMenuUsePromptBoxIcon') ?
+      loadTimeData.getBoolean('enableGlicSelectionOverlayPromptBox') ?
       'settings20:text-analysis' :
       (loadTimeData.getBoolean('glicAssetsV2Enabled') ?
            'settings-internal:sparkv2' :

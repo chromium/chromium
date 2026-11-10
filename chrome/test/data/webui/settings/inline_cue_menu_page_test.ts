@@ -27,7 +27,7 @@ suite('InlineCueMenuPage', function() {
     loadTimeData.overrideValues({
       enableQuickAnswersSelectionSuggestions: true,
       glicAssetsV2Enabled: false,
-      inlineCueMenuUsePromptBoxIcon: false,
+      enableGlicSelectionOverlayPromptBox: false,
     });
     const prefsBrowserProxy = new TestPrefsBrowserProxy([{
       key: EXPLAIN_PREF_KEY,
@@ -210,7 +210,7 @@ suite('InlineCueMenuPage', function() {
 
     page.remove();
     browserProxy.reset();
-    loadTimeData.overrideValues({inlineCueMenuUsePromptBoxIcon: true});
+    loadTimeData.overrideValues({enableGlicSelectionOverlayPromptBox: true});
     await initPage();
     assertTrue(isVisible(page.$.previewChipIcon));
     // </if>

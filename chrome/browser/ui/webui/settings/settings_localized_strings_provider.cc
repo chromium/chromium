@@ -1041,9 +1041,6 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddString("glicActivityButtonUrl", chrome::kGlicActivityUrl);
-  html_source->AddBoolean(
-      "inlineCueMenuUsePromptBoxIcon",
-      base::FeatureList::IsEnabled(features::kGlicSelectionOverlayPromptBox));
 
   html_source->AddLocalizedString(
       "glicOsWidgetToggle",

@@ -593,6 +593,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean("enableQuickAnswersSelectionSuggestions",
                           base::FeatureList::IsEnabled(
                               features::kQuickAnswersSelectionSuggestions));
+  html_source->AddBoolean(
+      "enableGlicSelectionOverlayPromptBox",
+      base::FeatureList::IsEnabled(features::kGlicSelectionOverlayPromptBox));
 
   // AI
   auto glic_enablement = glic::GlicEnabling::EnablementForProfile(profile);
