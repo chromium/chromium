@@ -500,6 +500,19 @@ TEST_F(ActorKeyedServiceTest, PendingTasksLifecycle) {
   EXPECT_EQ(4, notification_call_count);
   EXPECT_EQ(0u, actor_service->GetPendingTasksCount());
   EXPECT_EQ(0u, last_notified_count);
+
+  // Adding without background setup updates the count but skips the added
+  // callback.
+  actor_service->AddPendingTaskWithoutBackgroundSetup("msg-no-notify");
+  EXPECT_EQ(5, notification_call_count);
+  EXPECT_EQ(1u, actor_service->GetPendingTasksCount());
+  EXPECT_TRUE(actor_service->HasPendingTask("msg-no-notify"));
+  EXPECT_EQ(1u, last_notified_count);
+  EXPECT_THAT(added_tasks, testing::ElementsAre("msg-1", "msg-2"));
+
+  actor_service->RemovePendingTask("msg-no-notify");
+  EXPECT_EQ(6, notification_call_count);
+  EXPECT_EQ(0u, actor_service->GetPendingTasksCount());
 }
 
 TEST_F(ActorKeyedServiceTest, PendingTaskRemovedOnFailureAndCancellation) {

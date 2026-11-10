@@ -339,6 +339,13 @@ class ActorKeyedService : public KeyedService,
   // `glic_trigger_message_id` and `message_id` on neighboring methods.
   void AddPendingTask(const std::string& triggering_context_id);
 
+  // Like AddPendingTask(), but doesn't notify pending task added observers,
+  // so no background tab is prepared. Used when the pending entry only needs
+  // to keep the task alive until an ActorTask starts (e.g. a background
+  // continuation turn that reuses an existing surface).
+  void AddPendingTaskWithoutBackgroundSetup(
+      const std::string& triggering_context_id);
+
   // Removes a pending task (e.g. on cancellation, failure, or handoff).
   void RemovePendingTask(const std::string& triggering_context_id);
 
@@ -379,6 +386,9 @@ class ActorKeyedService : public KeyedService,
 
   // Returns the `pending_tasks_` key for the external trigger pending task.
   static PendingTaskKey ExternalTriggerKey();
+
+  void AddPendingTaskInternal(const std::string& triggering_context_id,
+                              bool notify_task_added);
 
   TaskId CreateTaskImpl(
       std::unique_ptr<actor::ui::UiEventDispatcher> ui_event_dispatcher,

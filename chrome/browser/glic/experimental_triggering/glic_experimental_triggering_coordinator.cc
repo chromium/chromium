@@ -637,6 +637,9 @@ class ExperimentalTriggeringUpdatesHandler
                                   std::move(update->data), std::move(metadata));
             break;
           case mojom::ExperimentalTriggeringUpdateType::kPaused:
+            // The turn handed control back without a pending setup to wait
+            // for. A live actor task keeps the foreground service on its own.
+            RemovePendingTask();
             SendTaskUpdateMessage(TaskUpdate::State::kPaused, std::nullopt,
                                   std::move(update->data), std::move(metadata));
             break;
@@ -660,6 +663,9 @@ class ExperimentalTriggeringUpdatesHandler
                 std::move(update->data), std::move(metadata));
             break;
           case mojom::ExperimentalTriggeringUpdateType::kYieldToUser:
+            // Same as kPaused: the turn may yield (e.g. a clarifying question)
+            // before any actor task starts, and pending entries never expire.
+            RemovePendingTask();
             SendTaskUpdateMessage(TaskUpdate::State::kYield, std::nullopt,
                                   std::move(update->data), std::move(metadata));
             break;
@@ -1025,11 +1031,28 @@ class ExperimentalTriggeringUpdatesHandler
     auto instance = glic_service->InvokeWithAutoSubmit(
         passkey_, std::move(options), std::move(auto_submit_options));
     if (weak_this) {
+#if BUILDFLAG(IS_ANDROID)
+      const bool has_invoked_instance = static_cast<bool>(instance);
+#endif
       if (instance || !weak_this->instance_) {
         weak_this->instance_ = std::move(instance);
       }
       weak_this->BindInstanceSessionState();
-      if (!is_continuation && !is_reconnect) {
+      bool should_observe_task_creation = !is_continuation && !is_reconnect;
+#if BUILDFLAG(IS_ANDROID)
+      if (!is_reconnect && is_continuation && is_chrome_in_background &&
+          !weak_this->terminal_update_sent_ && weak_this->coordinator_ &&
+          has_invoked_instance && weak_this->instance_ &&
+          !weak_this->instance_->IsActuating()) {
+        if (actor::ActorKeyedService* actor_service =
+                actor::ActorKeyedService::Get(
+                    weak_this->coordinator_->profile_)) {
+          actor_service->AddPendingTaskWithoutBackgroundSetup(context_id_);
+          should_observe_task_creation = true;
+        }
+      }
+#endif
+      if (should_observe_task_creation) {
         weak_this->ObserveActorTaskCreation();
       }
     }

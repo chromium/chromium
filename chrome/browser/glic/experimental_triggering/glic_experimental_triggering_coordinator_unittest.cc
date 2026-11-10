@@ -2096,6 +2096,182 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
   EXPECT_EQ(actor_service->GetPendingTasksCount(), 1u);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
+       BackgroundContinuationRegistersAndClearsPendingTaskOnActuation) {
+  auto* actor_service =
+      actor::ActorKeyedServiceFactory::GetActorKeyedService(profile_);
+  ASSERT_TRUE(actor_service);
+  EXPECT_EQ(actor_service->GetPendingTasksCount(), 0u);
+
+  int added_callback_count = 0;
+  auto added_sub = actor_service->AddPendingTaskAddedCallback(
+      base::BindRepeating([](int* count, const std::string&) { (*count)++; },
+                          base::Unretained(&added_callback_count)));
+
+  coordinator_->set_is_chrome_in_background(true);
+  EXPECT_CALL(mock_glic_instance_, IsActuating())
+      .WillRepeatedly(testing::Return(false));
+
+  ExperimentalTriggeringRequest continue_request;
+  continue_request.version = 1;
+  continue_request.context_id = kTestContextId;
+  continue_request.task_metadata = TaskMetadata{.conversation_id = "conv_123"};
+  continue_request.payload =
+      ContinueActuationRequest{.continuation_prompt = "keep going"};
+
+  auto response = SendRequest(continue_request);
+  ASSERT_TRUE(response.has_value());
+  ASSERT_TRUE(response->task_update.has_value());
+  EXPECT_EQ(response->task_update->state, TaskUpdate::State::kStarting);
+
+  EXPECT_TRUE(actor_service->HasPendingTask(kTestContextId));
+  EXPECT_EQ(actor_service->GetPendingTasksCount(), 1u);
+  EXPECT_EQ(added_callback_count, 0);
+
+  // Actuation starting clears the continuation pending entry.
+  actor_task_manager_->NotifyActuatingChangedForTesting(true);
+  EXPECT_FALSE(actor_service->HasPendingTask(kTestContextId));
+  EXPECT_EQ(actor_service->GetPendingTasksCount(), 0u);
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
+       BackgroundContinuationClearsPendingTaskOnTerminalUpdate) {
+  auto* actor_service =
+      actor::ActorKeyedServiceFactory::GetActorKeyedService(profile_);
+  ASSERT_TRUE(actor_service);
+
+  coordinator_->set_is_chrome_in_background(true);
+  EXPECT_CALL(mock_glic_instance_, IsActuating())
+      .WillRepeatedly(testing::Return(false));
+
+  ExperimentalTriggeringRequest continue_request;
+  continue_request.version = 1;
+  continue_request.context_id = kTestContextId;
+  continue_request.task_metadata = TaskMetadata{.conversation_id = "conv_123"};
+  continue_request.payload =
+      ContinueActuationRequest{.continuation_prompt = "text reply only"};
+
+  auto response = SendRequest(continue_request);
+  ASSERT_TRUE(response.has_value());
+  EXPECT_TRUE(actor_service->HasPendingTask(kTestContextId));
+
+  // A terminal completion without creating a new actor task must clear the
+  // pending entry so the foreground service does not linger.
+  auto complete_update = mojom::ExperimentalTriggeringUpdate::New();
+  complete_update->type =
+      mojom::ExperimentalTriggeringUpdateType::kTerminalCompletion;
+  complete_update->data = "done";
+  test_triggering_manager_.SendUpdate(
+      std::move(complete_update), mojom::SubscriberObservationType::kUpdate);
+  test_triggering_manager_.FlushForTesting();
+
+  EXPECT_FALSE(actor_service->HasPendingTask(kTestContextId));
+  EXPECT_EQ(actor_service->GetPendingTasksCount(), 0u);
+}
+
+class GlicExperimentalTriggeringCoordinatorBackgroundContinuationYieldTest
+    : public GlicExperimentalTriggeringCoordinatorWithTabTest,
+      public testing::WithParamInterface<
+          mojom::ExperimentalTriggeringUpdateType> {};
+
+// A continuation turn can hand control back to the user (e.g. a clarifying
+// question) before any actor task starts. The pending entry must be cleared,
+// since pending entries never expire.
+TEST_P(GlicExperimentalTriggeringCoordinatorBackgroundContinuationYieldTest,
+       ClearsPendingTask) {
+  auto* actor_service =
+      actor::ActorKeyedServiceFactory::GetActorKeyedService(profile_);
+  ASSERT_TRUE(actor_service);
+
+  coordinator_->set_is_chrome_in_background(true);
+  EXPECT_CALL(mock_glic_instance_, IsActuating())
+      .WillRepeatedly(testing::Return(false));
+
+  ExperimentalTriggeringRequest continue_request;
+  continue_request.version = 1;
+  continue_request.context_id = kTestContextId;
+  continue_request.task_metadata = TaskMetadata{.conversation_id = "conv_123"};
+  continue_request.payload =
+      ContinueActuationRequest{.continuation_prompt = "ask me first"};
+
+  auto response = SendRequest(continue_request);
+  ASSERT_TRUE(response.has_value());
+  EXPECT_TRUE(actor_service->HasPendingTask(kTestContextId));
+
+  auto update = mojom::ExperimentalTriggeringUpdate::New();
+  update->type = GetParam();
+  update->data = "which size?";
+  test_triggering_manager_.SendUpdate(
+      std::move(update), mojom::SubscriberObservationType::kUpdate);
+  test_triggering_manager_.FlushForTesting();
+
+  EXPECT_FALSE(actor_service->HasPendingTask(kTestContextId));
+  EXPECT_EQ(actor_service->GetPendingTasksCount(), 0u);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    GlicExperimentalTriggeringCoordinatorBackgroundContinuationYieldTest,
+    testing::Values(mojom::ExperimentalTriggeringUpdateType::kYieldToUser,
+                    mojom::ExperimentalTriggeringUpdateType::kPaused));
+
+// If the invocation fails synchronously (no instance is returned), no pending
+// entry is added for a request that is about to fail.
+TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
+       BackgroundContinuationWithoutInstanceDoesNotAddPendingTask) {
+  auto* actor_service =
+      actor::ActorKeyedServiceFactory::GetActorKeyedService(profile_);
+  ASSERT_TRUE(actor_service);
+
+  coordinator_->set_is_chrome_in_background(true);
+  auto* service = static_cast<MockGlicKeyedService*>(
+      GlicKeyedServiceFactory::GetGlicKeyedService(profile_, false));
+  EXPECT_CALL(*service,
+              InvokeWithAutoSubmit(testing::_, testing::_, testing::_))
+      .WillOnce([](InvokeWithAutoSubmitPasskey passkey,
+                   GlicInvokeOptions options,
+                   GlicInvokeWithAutoSubmitOptions auto_submit_options) {
+        return base::WeakPtr<GlicInstance>();
+      });
+
+  ExperimentalTriggeringRequest continue_request;
+  continue_request.version = 1;
+  continue_request.context_id = kTestContextId;
+  continue_request.task_metadata = TaskMetadata{.conversation_id = "conv_123"};
+  continue_request.payload =
+      ContinueActuationRequest{.continuation_prompt = "keep going"};
+
+  auto response = SendRequest(continue_request);
+  ASSERT_TRUE(response.has_value());
+  EXPECT_FALSE(actor_service->HasPendingTask(kTestContextId));
+  EXPECT_EQ(actor_service->GetPendingTasksCount(), 0u);
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
+       BackgroundContinuationWhileAlreadyActuatingDoesNotAddPendingTask) {
+  auto* actor_service =
+      actor::ActorKeyedServiceFactory::GetActorKeyedService(profile_);
+  ASSERT_TRUE(actor_service);
+
+  coordinator_->set_is_chrome_in_background(true);
+  EXPECT_CALL(mock_glic_instance_, IsActuating())
+      .WillRepeatedly(testing::Return(true));
+
+  ExperimentalTriggeringRequest continue_request;
+  continue_request.version = 1;
+  continue_request.context_id = kTestContextId;
+  continue_request.task_metadata = TaskMetadata{.conversation_id = "conv_123"};
+  continue_request.payload =
+      ContinueActuationRequest{.continuation_prompt = "mid-task yield resume"};
+
+  auto response = SendRequest(continue_request);
+  ASSERT_TRUE(response.has_value());
+  EXPECT_FALSE(actor_service->HasPendingTask(kTestContextId));
+  EXPECT_EQ(actor_service->GetPendingTasksCount(), 0u);
+}
+#endif
+
 TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
        RemovesPendingTaskOnInvokeError) {
   auto* actor_service =

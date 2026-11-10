@@ -1137,6 +1137,17 @@ bool ActorKeyedService::HasExternalTriggerPendingTaskForTesting() const {
 
 void ActorKeyedService::AddPendingTask(
     const std::string& triggering_context_id) {
+  AddPendingTaskInternal(triggering_context_id, /*notify_task_added=*/true);
+}
+
+void ActorKeyedService::AddPendingTaskWithoutBackgroundSetup(
+    const std::string& triggering_context_id) {
+  AddPendingTaskInternal(triggering_context_id, /*notify_task_added=*/false);
+}
+
+void ActorKeyedService::AddPendingTaskInternal(
+    const std::string& triggering_context_id,
+    bool notify_task_added) {
   CHECK(!triggering_context_id.empty());
   auto [_, inserted] =
       pending_tasks_.insert(PendingTaskKey(triggering_context_id));
@@ -1147,7 +1158,9 @@ void ActorKeyedService::AddPendingTask(
     if (pending_tasks_.erase(ExternalTriggerKey()) == 0) {
       NotifyPendingTaskCountChanged();
     }
-    pending_task_added_callback_list_.Notify(triggering_context_id);
+    if (notify_task_added) {
+      pending_task_added_callback_list_.Notify(triggering_context_id);
+    }
   }
 }
 
