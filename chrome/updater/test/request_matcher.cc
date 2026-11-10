@@ -114,6 +114,16 @@ void CheckValidRegex(const std::string& regex,
   CHECK(re.ok()) << "Invalid regex [" << regex << "]: " << re.error();
 }
 
+// Returns true if `haystack` covers `needle`, comparing strings
+// case-insensitively. See `IsJSONSubset`.
+bool IsJSONSubsetCaseInsensitive(const base::Value& needle,
+                                 const base::Value& haystack) {
+  return IsJSONSubset(needle, haystack,
+                      [](const std::string& a, const std::string& b) {
+                        return base::EqualsCaseInsensitiveASCII(a, b);
+                      });
+}
+
 }  // namespace
 
 FormExpectations::FormExpectations(const std::string& name,
@@ -424,21 +434,66 @@ Matcher GetJSONContentMatcher(const base::DictValue& expected_target) {
             request.decoded_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
         if (!doc) {
           return testing::AssertionFailure()
-                 << "Could not parse decoded content as a JSON dict: "
-                 << GetPrintableContent(request);
+                 << "Could not parse decoded content as a JSON dict, expected "
+                    "JSON subset: ["
+                 << target.DebugString()
+                 << "], request content: " << GetPrintableContent(request);
         }
 
         base::Value doc_value(std::move(*doc));
-        if (!IsJSONSubset(target, doc_value,
-                          [](const std::string& a, const std::string& b) {
-                            return base::EqualsCaseInsensitiveASCII(a, b);
-                          })) {
+        if (!IsJSONSubsetCaseInsensitive(target, doc_value)) {
           return testing::AssertionFailure()
                  << "Expected JSON subset: [" << target.DebugString()
                  << "] not found in (parsed) request content: ["
                  << doc_value.DebugString() << "]";
         }
 
+        return testing::AssertionSuccess();
+      });
+}
+
+Matcher GetAppJSONContentMatcher(const base::DictValue& expected_app) {
+  CHECK(!expected_app.contains("event"))
+      << "Use `events`; the matcher maps it to `event` for protocol V3.";
+  // Protocol V3 names the event list `event`.
+  base::DictValue v3_app = expected_app.Clone();
+  if (std::optional<base::Value> events = v3_app.Extract("events")) {
+    v3_app.Set("event", std::move(*events));
+  }
+  return base::BindLambdaForTesting(
+      [v4_needle = base::Value(expected_app.Clone()),
+       v3_needle = base::Value(std::move(v3_app))](
+          const HttpRequest& request) -> testing::AssertionResult {
+        const std::optional<base::DictValue> doc = base::JSONReader::ReadDict(
+            request.decoded_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+        if (!doc) {
+          return testing::AssertionFailure()
+                 << "Could not parse decoded content as a JSON dict, expected "
+                    "app JSON subset: ["
+                 << v4_needle.DebugString()
+                 << "], request content: " << GetPrintableContent(request);
+        }
+        // Only protocol V4 names the app list `apps`.
+        const base::ListValue* v4_apps =
+            doc->FindListByDottedPath("request.apps");
+        const base::ListValue* app_list =
+            v4_apps ? v4_apps : doc->FindListByDottedPath("request.app");
+        if (!app_list) {
+          return testing::AssertionFailure()
+                 << "No `request.apps` or `request.app` list, expected app "
+                    "JSON subset: ["
+                 << v4_needle.DebugString()
+                 << "], request content: " << GetPrintableContent(request);
+        }
+        const base::Value& needle = v4_apps ? v4_needle : v3_needle;
+        if (std::ranges::none_of(*app_list, [&needle](const base::Value& app) {
+              return IsJSONSubsetCaseInsensitive(needle, app);
+            })) {
+          return testing::AssertionFailure()
+                 << "Expected app JSON subset: [" << needle.DebugString()
+                 << "] not found in (parsed) request app list: ["
+                 << app_list->DebugString() << "]";
+        }
         return testing::AssertionSuccess();
       });
 }

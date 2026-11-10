@@ -79,6 +79,14 @@ using MatcherGroup = std::list<Matcher>;
 [[nodiscard]] Matcher GetJSONContentMatcher(
     const base::DictValue& expected_target);
 
+// Returns a matcher that succeeds if any entry of the JSON body's app list
+// (`request.apps`, else `request.app`) covers `expected_app` (comparing string
+// values case-insensitively; see `IsJSONSubset`). For a `request.app` (protocol
+// V3) list, a top-level `events` key matches the entry's `event` key. CHECKs
+// that `expected_app` does not set `event`.
+[[nodiscard]] Matcher GetAppJSONContentMatcher(
+    const base::DictValue& expected_app);
+
 // Returns a matcher that succeeds if `request.ismachine` in the JSON body
 // matches `scope`.
 [[nodiscard]] Matcher GetScopeMatcher(UpdaterScope scope);

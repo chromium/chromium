@@ -346,6 +346,37 @@ base::ListValue SetToList(const base::flat_set<std::string>& set) {
   return list;
 }
 
+// Expects one update check that reports app `test1` as active and app `test2`
+// as inactive, and replies with no update for both apps.
+void ExpectReportsActiveUpdateCheck(ScopedServer& test_server) {
+  test_server.ExpectOnce(
+      {request::GetPathMatcher(test_server.update_path()),
+       request::GetUpdaterUserAgentMatcher(),
+       request::GetScopeMatcher(GetUpdaterScopeForTesting()),
+       request::GetUpdaterEnableUpdatesMatcher(),
+       request::GetAppJSONContentMatcher(
+           base::DictValue()
+               .Set("appid", "test1")
+               .Set("enabled", true)
+               .Set("installdate", -1)
+               .Set("ping", base::DictValue().Set("ad", -1))),
+       // The null values require `test2` to send neither `ad` nor `a`.
+       request::GetAppJSONContentMatcher(
+           base::DictValue()
+               .Set("appid", "test2")
+               .Set("enabled", true)
+               .Set("installdate", -1)
+               .Set("ping", base::DictValue()
+                                .Set("ad", base::Value())
+                                .Set("a", base::Value())))},
+      R"()]}')"
+      "\n"
+      R"({"response":{"protocol":"4.0","daystart":{"elapsed_)"
+      R"(days":5098}},"apps":[{"appid":"test1","status":"ok",)"
+      R"("updatecheck":{"status":"noupdate"}},{"appid":"test2",)"
+      R"("status":"ok","updatecheck":{"status":"noupdate"}}]})");
+}
+
 }  // namespace
 
 class IntegrationTest : public ::testing::Test {
@@ -1515,17 +1546,7 @@ TEST_F(IntegrationTest, ReportsActive) {
   ASSERT_NO_FATAL_FAILURE(SetActive("test1"));
   ASSERT_NO_FATAL_FAILURE(ExpectActive("test1"));
   ASSERT_NO_FATAL_FAILURE(ExpectNotActive("test2"));
-  test_server.ExpectOnce(
-      {request::GetUpdaterUserAgentMatcher(),
-       request::GetContentMatcher(
-           {R"(.*"appid":"test1","enabled":true,"installdate":-1,)",
-            R"("ping":{"ad":-1,.*)"})},
-      R"()]}')"
-      "\n"
-      R"({"response":{"protocol":"4.0","daystart":{"elapsed_)"
-      R"(days":5098}},"apps":[{"appid":"test1","status":"ok",)"
-      R"("updatecheck":{"status":"noupdate"}},{"appid":"test2",)"
-      R"("status":"ok","updatecheck":{"status":"noupdate"}}]})");
+  ExpectReportsActiveUpdateCheck(test_server);
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
 
   // The updater has cleared the active bits.
@@ -4329,17 +4350,7 @@ TEST_F(IntegrationTest, CRURegistrationReportsActive) {
   ASSERT_NO_FATAL_FAILURE(ExpectActive("test1"));
   ASSERT_NO_FATAL_FAILURE(ExpectNotActive("test2"));
   ScopedServer test_server(test_commands_);
-  test_server.ExpectOnce(
-      {request::GetUpdaterUserAgentMatcher(),
-       request::GetContentMatcher(
-           {R"(.*"appid":"test1","enabled":true,"installdate":-1,)",
-            R"("ping":{"ad":-1,.*)"})},
-      R"()]}')"
-      "\n"
-      R"({"response":{"protocol":"4.0","daystart":{"elapsed_)"
-      R"(days":5098}},"apps":[{"appid":"test1","status":"ok",)"
-      R"("updatecheck":{"status":"noupdate"}},{"appid":"test2",)"
-      R"("status":"ok","updatecheck":{"status":"noupdate"}}]})");
+  ExpectReportsActiveUpdateCheck(test_server);
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
 
   // The updater has cleared the active bits.
