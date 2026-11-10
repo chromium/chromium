@@ -19,7 +19,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "extensions/common/extension.h"
+#include "extensions/common/constants.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/input_method.h"
 
@@ -95,19 +95,18 @@ DefaultKeyboardExtensionBrowserTest::GetKeyboardWebContents(
   client->SetEnableFlag(keyboard::KeyboardEnableFlag::kExtensionEnabled);
   client->ShowKeyboard();
 
-  GURL url = extensions::Extension::GetBaseURLFromExtensionId(id);
   for (content::WebContents* wc : content::GetAllWebContents()) {
-    if (url == wc->GetPrimaryMainFrame()
-                   ->GetSiteInstance()
-                   ->GetSecurityPrincipal()
-                   .GetDeprecatedSiteURL()) {
+    const content::SecurityPrincipal& security_principal =
+        wc->GetPrimaryMainFrame()->GetSiteInstance()->GetSecurityPrincipal();
+    if (security_principal.SchemeIs(extensions::kExtensionScheme) &&
+        security_principal.GetHost() == id) {
       // Waits for virtual keyboard to load.
       EXPECT_TRUE(content::WaitForLoadStop(wc));
       return wc;
     }
   }
 
-  LOG(ERROR) << "Extension not found:" << url;
+  LOG(ERROR) << "Extension not found:" << id;
   return nullptr;
 }
 

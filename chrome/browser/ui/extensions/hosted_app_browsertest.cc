@@ -1114,11 +1114,10 @@ class HostedAppProcessModelTest : public HostedOrWebAppTest {
     return subframe;
   }
 
-  GURL GetSiteForURL(content::BrowserContext* browser_context,
-                     const GURL& url) {
-    return content::SiteInstance::CreateForURL(browser_context, url)
-        ->GetSecurityPrincipal()
-        .GetDeprecatedSiteURL();
+  std::unique_ptr<content::SecurityPrincipal> GetSecurityPrincipalForURL(
+      content::BrowserContext* browser_context,
+      const GURL& url) {
+    return content::SecurityPrincipal::CreateForTesting(browser_context, url);
   }
 
  protected:
@@ -1166,25 +1165,29 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest, IframesInsideHostedApp) {
   RenderFrameHost* cross_site = find_frame("CrossSite");
 
   // Sanity-check sites of all relevant frames to verify test setup.
-  GURL app_site =
-      GetSiteForURL(app_browser_->GetProfile(), app->GetLastCommittedURL());
-  EXPECT_EQ(extensions::kExtensionScheme, app_site.GetScheme());
+  std::unique_ptr<content::SecurityPrincipal> app_site =
+      GetSecurityPrincipalForURL(app_browser_->GetProfile(),
+                                 app->GetLastCommittedURL());
+  EXPECT_TRUE(app_site->SchemeIs(extensions::kExtensionScheme));
 
-  GURL same_dir_site = GetSiteForURL(app_browser_->GetProfile(),
-                                     same_dir->GetLastCommittedURL());
-  EXPECT_EQ(extensions::kExtensionScheme, same_dir_site.GetScheme());
-  EXPECT_EQ(same_dir_site, app_site);
+  std::unique_ptr<content::SecurityPrincipal> same_dir_site =
+      GetSecurityPrincipalForURL(app_browser_->GetProfile(),
+                                 same_dir->GetLastCommittedURL());
+  EXPECT_TRUE(same_dir_site->SchemeIs(extensions::kExtensionScheme));
+  EXPECT_EQ(same_dir_site->GetHost(), app_site->GetHost());
 
-  GURL diff_dir_site = GetSiteForURL(app_browser_->GetProfile(),
-                                     diff_dir->GetLastCommittedURL());
-  EXPECT_NE(extensions::kExtensionScheme, diff_dir_site.GetScheme());
-  EXPECT_NE(diff_dir_site, app_site);
+  std::unique_ptr<content::SecurityPrincipal> diff_dir_site =
+      GetSecurityPrincipalForURL(app_browser_->GetProfile(),
+                                 diff_dir->GetLastCommittedURL());
+  EXPECT_FALSE(diff_dir_site->SchemeIs(extensions::kExtensionScheme));
+  EXPECT_NE(diff_dir_site->GetHost(), app_site->GetHost());
 
-  GURL same_site_site = GetSiteForURL(app_browser_->GetProfile(),
-                                      same_site->GetLastCommittedURL());
-  EXPECT_NE(extensions::kExtensionScheme, same_site_site.GetScheme());
-  EXPECT_NE(same_site_site, app_site);
-  EXPECT_EQ(same_site_site, diff_dir_site);
+  std::unique_ptr<content::SecurityPrincipal> same_site_site =
+      GetSecurityPrincipalForURL(app_browser_->GetProfile(),
+                                 same_site->GetLastCommittedURL());
+  EXPECT_FALSE(same_site_site->SchemeIs(extensions::kExtensionScheme));
+  EXPECT_NE(same_site_site->GetHost(), app_site->GetHost());
+  EXPECT_EQ(same_site_site->GetHost(), diff_dir_site->GetHost());
 
   // The isolated.site.test iframe is covered by the hosted app's extent, so it
   // uses a chrome-extension site URL, just like the main app's site URL. Note,
@@ -1197,17 +1200,19 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest, IframesInsideHostedApp) {
   // content/public via SiteInfo.  For now, this verification will be done
   // implicitly by comparing SiteInstances and then actual processes further
   // below.
-  GURL isolated_site = GetSiteForURL(app_browser_->GetProfile(),
-                                     isolated->GetLastCommittedURL());
-  EXPECT_EQ(extensions::kExtensionScheme, isolated_site.GetScheme());
-  EXPECT_EQ(isolated_site, app_site);
+  std::unique_ptr<content::SecurityPrincipal> isolated_site =
+      GetSecurityPrincipalForURL(app_browser_->GetProfile(),
+                                 isolated->GetLastCommittedURL());
+  EXPECT_TRUE(isolated_site->SchemeIs(extensions::kExtensionScheme));
+  EXPECT_EQ(isolated_site->GetHost(), app_site->GetHost());
   EXPECT_NE(isolated->GetSiteInstance(), app->GetSiteInstance());
-  EXPECT_NE(isolated_site, diff_dir_site);
+  EXPECT_NE(isolated_site->GetHost(), diff_dir_site->GetHost());
 
-  GURL cross_site_site = GetSiteForURL(app_browser_->GetProfile(),
-                                       cross_site->GetLastCommittedURL());
-  EXPECT_NE(cross_site_site, app_site);
-  EXPECT_NE(cross_site_site, same_site_site);
+  std::unique_ptr<content::SecurityPrincipal> cross_site_site =
+      GetSecurityPrincipalForURL(app_browser_->GetProfile(),
+                                 cross_site->GetLastCommittedURL());
+  EXPECT_NE(cross_site_site->GetHost(), app_site->GetHost());
+  EXPECT_NE(cross_site_site->GetHost(), same_site_site->GetHost());
 
   // Verify that |same_dir| and |diff_dir| have the same origin according to
   // |window.origin| (even though they have different |same_dir_site| and
@@ -1538,13 +1543,9 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest,
   EXPECT_EQ(double_slash_path_app_url, main_frame->GetLastCommittedURL());
 
   // The resulting page should load in an app process, and the corresponding
-  // SiteInstance's site URL should be a valid, non-empty chrome-extension://
-  // URL with a valid host that corresponds to the app's ID.
+  // SiteInstance's security principal should have a chrome-extension://
+  // scheme with a valid host that corresponds to the app's ID.
   EXPECT_TRUE(process_map_->Contains(main_frame->GetProcess()->GetID()));
-  EXPECT_FALSE(main_frame->GetSiteInstance()
-                   ->GetSecurityPrincipal()
-                   .GetDeprecatedSiteURL()
-                   .is_empty());
   EXPECT_TRUE(main_frame->GetSiteInstance()->GetSecurityPrincipal().SchemeIs(
       extensions::kExtensionScheme));
   EXPECT_EQ(main_frame->GetSiteInstance()
@@ -1612,13 +1613,12 @@ IN_PROC_BROWSER_TEST_P(HostedAppIsolatedOriginTest,
   // Check that the app loaded properly. Even though its URL is from an
   // isolated origin (isolated.com), it should go into an app process.
   RenderFrameHost* app = web_contents->GetPrimaryMainFrame();
-  EXPECT_EQ(extensions::kExtensionScheme, app->GetSiteInstance()
-                                              ->GetSecurityPrincipal()
-                                              .GetDeprecatedSiteURL()
-                                              .GetScheme());
-  GURL app_site =
-      GetSiteForURL(app_browser_->GetProfile(), app->GetLastCommittedURL());
-  EXPECT_EQ(extensions::kExtensionScheme, app_site.GetScheme());
+  EXPECT_TRUE(app->GetSiteInstance()->GetSecurityPrincipal().SchemeIs(
+      extensions::kExtensionScheme));
+  std::unique_ptr<content::SecurityPrincipal> app_site =
+      GetSecurityPrincipalForURL(app_browser_->GetProfile(),
+                                 app->GetLastCommittedURL());
+  EXPECT_TRUE(app_site->SchemeIs(extensions::kExtensionScheme));
   EXPECT_TRUE(process_map_->Contains(app->GetProcess()->GetID()));
 
   // Add a same-site subframe on isolated.com outside the app's extent.  This
@@ -1696,10 +1696,8 @@ IN_PROC_BROWSER_TEST_P(HostedAppIsolatedOriginTest,
   // The app URL should have loaded in an app process.
   RenderFrameHost* app = web_contents->GetPrimaryMainFrame();
   EXPECT_TRUE(process_map_->Contains(app->GetProcess()->GetID()));
-  EXPECT_EQ(extensions::kExtensionScheme, app->GetSiteInstance()
-                                              ->GetSecurityPrincipal()
-                                              .GetDeprecatedSiteURL()
-                                              .GetScheme());
+  EXPECT_TRUE(app->GetSiteInstance()->GetSecurityPrincipal().SchemeIs(
+      extensions::kExtensionScheme));
   content::ChildProcessId first_app_process_id = app->GetProcess()->GetID();
 
   // Creating a subframe on unisolated.com should not be allowed to share the

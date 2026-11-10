@@ -2325,16 +2325,15 @@ bool ChromeContentBrowserClient::ShouldAllowMojoJsBindingsForFrame(
     return true;
   }
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  const GURL& site_url = render_frame_host.GetSiteInstance()
-                             ->GetSecurityPrincipal()
-                             .GetDeprecatedSiteURL();
-  if (site_url.SchemeIs(extensions::kExtensionScheme)) {
+  const content::SecurityPrincipal& security_principal =
+      render_frame_host.GetSiteInstance()->GetSecurityPrincipal();
+  if (security_principal.SchemeIs(extensions::kExtensionScheme)) {
     content::BrowserContext* browser_context =
         render_frame_host.GetBrowserContext();
     const extensions::Extension* extension =
         extensions::ExtensionRegistry::Get(browser_context)
             ->enabled_extensions()
-            .GetByID(site_url.GetHost());
+            .GetByID(extensions::ExtensionId(security_principal.GetHost()));
     if (!extension) {
       return false;
     }
