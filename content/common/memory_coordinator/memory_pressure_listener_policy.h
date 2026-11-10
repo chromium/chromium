@@ -5,7 +5,8 @@
 #ifndef CONTENT_COMMON_MEMORY_COORDINATOR_MEMORY_PRESSURE_LISTENER_POLICY_H_
 #define CONTENT_COMMON_MEMORY_COORDINATOR_MEMORY_PRESSURE_LISTENER_POLICY_H_
 
-#include "base/memory/memory_pressure_listener.h"
+#include "base/callback_list.h"
+#include "base/memory/memory_pressure_level.h"
 #include "content/common/content_export.h"
 #include "content/public/common/memory_coordinator/predicate_memory_coordinator_policy.h"
 
@@ -21,18 +22,19 @@ namespace content {
 // memory (see
 // base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kReadsAndWritesToDisk).
 class CONTENT_EXPORT MemoryPressureListenerPolicy
-    : public PredicateMemoryCoordinatorPolicy,
-      public base::MemoryPressureListener {
+    : public PredicateMemoryCoordinatorPolicy {
  public:
   explicit MemoryPressureListenerPolicy(
       MemoryCoordinatorPolicyManager& manager);
   ~MemoryPressureListenerPolicy() override;
 
-  // base::MemoryPressureListener:
-  void OnMemoryPressure(base::MemoryPressureLevel level) override;
-
  private:
-  base::MemoryPressureListenerRegistration registration_;
+  // Updates the memory limit of the consumers based on `level`.
+  void OnMemoryPressureLevelUpdated(base::MemoryPressureLevel level);
+
+  // Subscription to the memory pressure notifications of the
+  // MemoryPressureSource.
+  base::CallbackListSubscription memory_pressure_subscription_;
 };
 }  // namespace content
 

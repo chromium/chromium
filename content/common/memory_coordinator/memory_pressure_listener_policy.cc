@@ -8,8 +8,8 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/memory/memory_pressure_listener.h"
 #include "base/memory_coordinator/memory_limit.h"
+#include "base/memory_coordinator/memory_pressure_source.h"
 #include "base/memory_coordinator/traits.h"
 #include "base/notreached.h"
 #include "content/common/memory_coordinator/memory_coordinator_policy_manager.h"
@@ -69,21 +69,38 @@ bool IsDiskWritingTargetConsumer(uint32_t consumer_id,
          WritesToDiskOnRelease(traits);
 }
 
+// Returns the memory limit corresponding to the memory pressure `level`.
+base::MemoryLimit GetMemoryLimitForLevel(base::MemoryPressureLevel level) {
+  switch (level) {
+    case base::MEMORY_PRESSURE_LEVEL_NONE:
+      return base::MemoryLimit::NoPressureThreshold();
+    case base::MEMORY_PRESSURE_LEVEL_MODERATE:
+      return base::MemoryLimit::ModeratePressureThreshold();
+    case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
+      return base::MemoryLimit::CriticalPressureThreshold();
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 MemoryPressureListenerPolicy::MemoryPressureListenerPolicy(
     MemoryCoordinatorPolicyManager& manager)
     : PredicateMemoryCoordinatorPolicy(manager,
-                                       base::BindRepeating(&IsTargetConsumer)),
-      registration_(
-          base::MemoryPressureListenerTag::kMemoryPressureListenerPolicy,
-          this) {}
+                                       base::BindRepeating(&IsTargetConsumer)) {
+  if (auto* memory_pressure_source = base::MemoryPressureSource::MaybeGet()) {
+    memory_pressure_subscription_ =
+        memory_pressure_source->AddCallback(base::BindRepeating(
+            &MemoryPressureListenerPolicy::OnMemoryPressureLevelUpdated,
+            base::Unretained(this)));
+  }
+}
 
 MemoryPressureListenerPolicy::~MemoryPressureListenerPolicy() = default;
 
-void MemoryPressureListenerPolicy::OnMemoryPressure(
+void MemoryPressureListenerPolicy::OnMemoryPressureLevelUpdated(
     base::MemoryPressureLevel level) {
-  base::MemoryLimit limit = GetMemoryLimit();
+  base::MemoryLimit limit = GetMemoryLimitForLevel(level);
 
   // Request to release memory whenever under pressure. The signal was
   // originally designed for the MemoryPressureListener, which never made a
