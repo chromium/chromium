@@ -88,6 +88,7 @@ import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.content_public.common.ContentUrlConstants;
+import org.chromium.ui.edge_to_edge.EdgeToEdgeManager;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.url.GURL;
@@ -95,6 +96,7 @@ import org.chromium.url.GURL;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+import java.util.function.IntSupplier;
 
 /**
  * Tests the {@link SearchActivity}.
@@ -412,7 +414,7 @@ public class SearchActivityTest {
                 () -> ChromeNightModeTestUtils.setUpNightModeForChromeActivity(false));
         SearchActivity searchActivity = startSearchActivity();
         assertStatusAndNavigationBarColors(
-                searchActivity, getExpectedOmniboxBackgroundColor(searchActivity));
+                searchActivity, () -> getExpectedOmniboxBackgroundColor(searchActivity));
     }
 
     @Test
@@ -422,7 +424,7 @@ public class SearchActivityTest {
                 () -> ChromeNightModeTestUtils.setUpNightModeForChromeActivity(true));
         SearchActivity searchActivity = startSearchActivity();
         assertStatusAndNavigationBarColors(
-                searchActivity, getExpectedOmniboxBackgroundColor(searchActivity));
+                searchActivity, () -> getExpectedOmniboxBackgroundColor(searchActivity));
     }
 
     @Test
@@ -445,23 +447,30 @@ public class SearchActivityTest {
                                             .build());
                         });
         assertStatusAndNavigationBarColors(
-                searchActivity, searchActivity.getColor(R.color.omnibox_dropdown_bg_incognito));
+                searchActivity,
+                () -> searchActivity.getColor(R.color.omnibox_dropdown_bg_incognito));
     }
 
     private void assertStatusAndNavigationBarColors(
-            SearchActivity searchActivity, int expectedColor) {
-        EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper =
-                searchActivity.getEdgeToEdgeManager().getEdgeToEdgeSystemBarColorHelper();
+            SearchActivity searchActivity, IntSupplier expectedColorSupplier) {
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    EdgeToEdgeManager edgeToEdgeManager = searchActivity.getEdgeToEdgeManager();
+                    Criteria.checkThat(edgeToEdgeManager, Matchers.notNullValue());
+                    EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper =
+                            edgeToEdgeManager.getEdgeToEdgeSystemBarColorHelper();
+                    Criteria.checkThat(edgeToEdgeSystemBarColorHelper, Matchers.notNullValue());
 
-        // Assert status bar color.
-        if (EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()) {
-            assertColorsEqual(expectedColor, edgeToEdgeSystemBarColorHelper.getStatusBarColor());
-        } else {
-            assertColorsEqual(expectedColor, searchActivity.getWindow().getStatusBarColor());
-        }
-
-        // Assert navigation bar color.
-        assertColorsEqual(expectedColor, edgeToEdgeSystemBarColorHelper.getNavigationBarColor());
+                    int expectedColor = expectedColorSupplier.getAsInt();
+                    int statusBarColor =
+                            EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()
+                                    ? edgeToEdgeSystemBarColorHelper.getStatusBarColor()
+                                    : searchActivity.getWindow().getStatusBarColor();
+                    Criteria.checkThat(statusBarColor, Matchers.is(expectedColor));
+                    Criteria.checkThat(
+                            edgeToEdgeSystemBarColorHelper.getNavigationBarColor(),
+                            Matchers.is(expectedColor));
+                });
     }
 
     /**
@@ -472,16 +481,6 @@ public class SearchActivityTest {
      */
     private int getExpectedOmniboxBackgroundColor(SearchActivity searchActivity) {
         return ContextCompat.getColor(searchActivity, R.color.omnibox_suggestion_dropdown_bg);
-    }
-
-    private void assertColorsEqual(int expected, int actual) {
-        String message =
-                String.format("Expected %s but got %s", intToHex(expected), intToHex(actual));
-        assertEquals(message, expected, actual);
-    }
-
-    private String intToHex(int color) {
-        return String.format("#%06X", (0xFFFFFF & color));
     }
 
     private SearchActivity startSearchActivity() {
