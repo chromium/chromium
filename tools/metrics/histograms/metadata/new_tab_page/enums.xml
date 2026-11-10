@@ -402,6 +402,8 @@ chromium-metrics-reviews@google.com.
   <int value="1967788069" label="solidcolors_for_NTP">Colors for NTP</int>
 </enum>
 
+<!-- LINT.IfChange(NtpCustomizationBottomSheetType) -->
+
 <enum name="NtpCustomizationBottomSheetType">
   <summary/>
   <int value="0" label="Main Bottom Sheet"/>
@@ -418,6 +420,10 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Theme History Scrollable List"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/browser/ntp_customization/java/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationCoordinator.java:BottomSheetType) -->
+
+<!-- LINT.IfChange(NtpCustomizationEntryPoint) -->
+
 <enum name="NtpCustomizationEntryPoint">
   <summary/>
   <int value="0" label="App Menu"/>
@@ -425,11 +431,19 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Customization button on NTP for tablet"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/browser/ntp_customization/java/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationCoordinator.java:EntryPointType) -->
+
+<!-- LINT.IfChange(NtpCustomizationThemeTipButtonType) -->
+
 <enum name="NtpCustomizationThemeTipButtonType">
   <summary>Click actions on the NTP theme tip bottom sheet.</summary>
   <int value="0" label="Customize"/>
   <int value="1" label="Cancel"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ntp_customization/java/src/org/chromium/chrome/browser/ntp_customization/theme/tip/NtpThemeTipCoordinator.java:ThemeTipButtonType) -->
+
+<!-- LINT.IfChange(NtpCustomizationThemeUploadImagePreviewInteractions) -->
 
 <enum name="NtpCustomizationThemeUploadImagePreviewInteractions">
   <summary/>
@@ -439,6 +453,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Rotate screen"/>
   <int value="4" label="Rotate screen and pinch to resize"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ntp_customization/java/src/org/chromium/chrome/browser/ntp_customization/theme/upload_image/UploadImagePreviewCoordinator.java:PreviewInteractionType) -->
 
 <enum name="NTPCustomizeChromeBackgroundAction">
   <int value="0"

@@ -79,8 +79,9 @@ public class NtpCustomizationCoordinator {
      * New Tab Page Customization bottom sheet type.
      *
      * <p>These values are persisted to logs. Entries should not be renumbered and numeric values
-     * should never be reused. See tools/metrics/histograms/enums.xml.
+     * should never be reused.
      */
+    // LINT.IfChange(BottomSheetType)
     @IntDef({
         BottomSheetType.MAIN,
         BottomSheetType.NTP_CARDS,
@@ -112,12 +113,15 @@ public class NtpCustomizationCoordinator {
         int NUM_ENTRIES = 12;
     }
 
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:NtpCustomizationBottomSheetType)
+
     /**
      * New Tab Page Customization bottom sheet entry point.
      *
      * <p>These values are persisted to logs. Entries should not be renumbered and numeric values
-     * should never be reused. See tools/metrics/histograms/enums.xml.
+     * should never be reused.
      */
+    // LINT.IfChange(EntryPointType)
     @IntDef({EntryPointType.MAIN_MENU, EntryPointType.TOOL_BAR, EntryPointType.NEW_TAB_PAGE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface EntryPointType {
@@ -126,6 +130,8 @@ public class NtpCustomizationCoordinator {
         int NEW_TAB_PAGE = 2;
         int NUM_ENTRIES = 3;
     }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:NtpCustomizationEntryPoint)
 
     /**
      * @param context The Context used for displaying the bottom sheet.

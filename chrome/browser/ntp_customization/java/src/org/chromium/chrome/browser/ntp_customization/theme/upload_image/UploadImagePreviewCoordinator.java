@@ -88,8 +88,9 @@ public class UploadImagePreviewCoordinator implements InsetObserver.WindowInsets
      * The type of user interactions with the Upload Image Preview dialog.
      *
      * <p>These values are persisted to logs. Entries should not be renumbered and numeric values
-     * should never be reused. See tools/metrics/histograms/enums.xml.
+     * should never be reused.
      */
+    // LINT.IfChange(PreviewInteractionType)
     @IntDef({
         PreviewInteractionType.CANCEL,
         PreviewInteractionType.SAVE,
@@ -106,6 +107,8 @@ public class UploadImagePreviewCoordinator implements InsetObserver.WindowInsets
         int ROTATE_SCREEN_AND_PINCH_TO_RESIZE = 4;
         int NUM_ENTRIES = 5;
     }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:NtpCustomizationThemeUploadImagePreviewInteractions)
 
     /**
      * @param activity The activity context.

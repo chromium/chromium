@@ -32,8 +32,9 @@ public class NtpThemeTipCoordinator {
      * New Tab Page Customization Theme Tip bottom sheet button type.
      *
      * <p>These values are persisted to logs. Entries should not be renumbered and numeric values
-     * should never be reused. See tools/metrics/histograms/metadata/new_tab_page/histograms.xml.
+     * should never be reused.
      */
+    // LINT.IfChange(ThemeTipButtonType)
     @IntDef({
         ThemeTipButtonType.CUSTOMIZE,
         ThemeTipButtonType.CANCEL,
@@ -45,6 +46,8 @@ public class NtpThemeTipCoordinator {
         int CANCEL = 1;
         int NUM_ENTRIES = 2;
     }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:NtpCustomizationThemeTipButtonType)
 
     /**
      * @param context The {@link Context} used to inflate the view.
