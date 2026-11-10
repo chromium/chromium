@@ -45,7 +45,7 @@
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 class SkPixmap;
-class SkYUVAInfo;
+class SkYUVAPixmaps;
 
 namespace gfx {
 struct GpuMemoryBufferHandle;
@@ -598,16 +598,19 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   base::span<const uint8_t> GetVisiblePlaneData(size_t plane) const;
   base::span<uint8_t> GetWritableVisiblePlaneData(size_t plane);
 
-  // Return the SkYUVAInfo that can be used to create an SkYUVAPixmaps from
-  // the SkPixmaps returned by GetSkPixmapsForPlanes. On failure, or when
-  // this is a single-plane RGBA-like frame, the returned object's isValid
-  // method will return false.
-  SkYUVAInfo GetVisibleSkYUVAInfo() const;
+  // Return SkYUVAPixmaps that reference the visible data of this. The
+  // SkColorSpace of the planes is the full-range RGB part of ColorSpace(). The
+  // result is invalid if this is not a YUV frame, or if its data is not
+  // CPU-accessible.
+  SkYUVAPixmaps GetVisibleSkYUVAPixmaps() const;
+  SkYUVAPixmaps GetWritableVisibleSkYUVAPixmaps();
 
-  // Return SkPixmaps that reference the visible data for this. On failure,
-  // the result will be empty. The SkColorSpace for all SkPixmaps will be
-  // set to ColorSpace().GetAsFullRangeRGB().ToSkColorSpace().
-  std::vector<SkPixmap> GetVisiblePlanesSkPixmaps() const;
+  // Return an SkPixmap that references the visible data of this. The
+  // SkColorSpace is the full-range RGB part of ColorSpace(). Returns
+  // std::nullopt if this is not a single-plane RGB(A) frame, or if its data is
+  // not CPU-accessible.
+  std::optional<SkPixmap> GetVisibleRGBPlanePixmap() const;
+  std::optional<SkPixmap> GetWritableVisibleRGBPlanePixmap();
 
   // Returns the `acquire_sync_token_`
   gpu::SyncToken acquire_sync_token() const;

@@ -37,6 +37,7 @@
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkPixmap.h"
+#include "third_party/skia/include/core/SkYUVAPixmaps.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -482,9 +483,16 @@ class VideoCaptureOverlayRenderTest
         png_color_space.ToSkColorSpace());
     SkBitmap canonical_bitmap;
     CHECK(canonical_bitmap.tryAllocPixels(canonical_format, 0));
-    skia::ConvertYUVAToRGBA(frame.GetVisibleSkYUVAInfo(), frame.BitDepth(),
-                            frame.GetVisiblePlanesSkPixmaps(),
-                            canonical_bitmap.pixmap());
+    if (const SkYUVAPixmaps yuva_pixmaps = frame.GetVisibleSkYUVAPixmaps();
+        yuva_pixmaps.isValid()) {
+      skia::ConvertYUVAToRGBA(yuva_pixmaps, frame.BitDepth(),
+                              canonical_bitmap.pixmap());
+    } else {
+      const std::optional<SkPixmap> rgb_pixmap =
+          frame.GetVisibleRGBPlanePixmap();
+      CHECK(rgb_pixmap);
+      CHECK(rgb_pixmap->readPixels(canonical_bitmap.pixmap()));
+    }
 
     // Determine the full path to the golden file to compare the results.
     base::FilePath golden_file_path;

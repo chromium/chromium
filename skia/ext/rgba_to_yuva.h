@@ -13,6 +13,7 @@
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
+#include "third_party/skia/include/core/SkYUVAPixmaps.h"
 
 namespace skia {
 
@@ -40,15 +41,12 @@ SK_API void ConvertRGBAToYUVA(SkPixmap src_pm,
                               const SkYUVAInfo& dst_yuva_info,
                               const std::vector<SkPixmap>& dst_pixmaps);
 
-// Convert the planes in `src_pixmaps` to the RGBA `dst`. If `src_yuva_info`
-// is valid, then YUV to RGB conversion will be performed, and `src_bit_depth`
-// will be used as the bit depth. Otherwise, an RGBA to RGBA conversion using
-// `src_pixmaps[0]` will be performed. The SkColorSpace of all of `src_pixmaps`
-// must be equal, and will be used as the source color space.
+// Convert `src` to the RGBA `dst`, using `src_bit_depth` as the bit depth. The
+// `src` must be valid. The SkColorSpace of all of the planes of `src` must be
+// equal, and will be used as the source color space.
 // WARNING: This is not optimized and is not suitable for use outside of tests.
-SK_API void ConvertYUVAToRGBA(const SkYUVAInfo& src_yuva_info,
+SK_API void ConvertYUVAToRGBA(const SkYUVAPixmaps& src,
                               size_t src_bit_depth,
-                              const std::vector<SkPixmap>& src_pixmaps,
                               const SkPixmap& dst);
 
 }  // namespace skia

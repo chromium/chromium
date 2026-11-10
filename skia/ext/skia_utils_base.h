@@ -5,6 +5,8 @@
 #ifndef SKIA_EXT_SKIA_UTILS_BASE_H_
 #define SKIA_EXT_SKIA_UTILS_BASE_H_
 
+#include <optional>
+
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -19,6 +21,8 @@ class PickleIterator;
 class SkBitmap;
 class SkFlattenable;
 class SkColorSpace;
+class SkPixmap;
+struct SkImageInfo;
 struct skcms_Matrix3x3;
 struct skcms_TransferFunction;
 
@@ -81,6 +85,23 @@ SK_API base::span<const uint8_t> as_byte_span(
 // Helper for getting a writable (byte) span from a `SkData`. Requires that the
 // SkData only has a single reference.
 SK_API base::span<uint8_t> as_writable_byte_span(SkData& data LIFETIME_BOUND);
+
+// Helpers for getting a byte span of the pixel memory referenced by an
+// `SkPixmap`. The `SkPixmap` does not own this memory, so the returned span is
+// not bound to the lifetime of `pixmap`. Returns an empty span if `pixmap` has
+// no pixels, or if its size overflows.
+SK_API base::span<const uint8_t> as_byte_span(const SkPixmap& pixmap);
+SK_API base::span<uint8_t> as_writable_byte_span(const SkPixmap& pixmap);
+
+// Returns an SkPixmap that references `pixels` using `info` and `row_bytes`
+// (which defaults to `info.minRowBytes()`). Returns std::nullopt if `row_bytes`
+// is not valid for `info`, or if `pixels` is too small. Note that, as with
+// SkPixmap's constructor, `pixels` may be written to via the result's
+// writable_addr(), even though `pixels` is const.
+SK_API std::optional<SkPixmap> MakeSkPixmap(
+    const SkImageInfo& info,
+    base::span<const uint8_t> pixels,
+    std::optional<size_t> row_bytes = std::nullopt);
 
 }  // namespace skia
 

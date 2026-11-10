@@ -686,6 +686,21 @@ TEST(VideoFrame, WrapSharedImageUnsetReleaseSyncToken) {
   EXPECT_FALSE(called_sync_token.HasData());
 }
 
+// Verify that frames without CPU-accessible data have no SkPixmaps.
+TEST(VideoFrame, SharedImageSkPixmaps) {
+  gpu::SharedImageMetadata metadata;
+  metadata.format = viz::SinglePlaneFormat::kBGRA_8888;
+  metadata.size = gfx::Size(10, 10);
+  metadata.usage = gpu::SharedImageUsageSet();
+  auto frame = VideoFrame::WrapSharedImage(
+      PIXEL_FORMAT_ARGB, gpu::ClientSharedImage::CreateForTesting(metadata),
+      gpu::SyncToken(), base::DoNothing(), gfx::Rect(metadata.size),
+      metadata.size, base::TimeDelta());
+  ASSERT_TRUE(frame);
+  EXPECT_FALSE(frame->GetVisibleSkYUVAPixmaps().isValid());
+  EXPECT_FALSE(frame->GetVisibleRGBPlanePixmap());
+}
+
 // Verify the `called_sync_token` is set for when VideoFrame is
 // created with WrapSharedImage, and which is updated through
 // UpdateReleaseSyncToken by clients. (i.e. the compositor, webgl).
@@ -1180,15 +1195,17 @@ TEST(VideoFrame, GetVisibleSkYUVAPixmaps) {
                                 kNaturalSize, base::TimeDelta());
     ASSERT_TRUE(frame);
 
-    SkYUVAInfo yuva_info = frame->GetVisibleSkYUVAInfo();
-    EXPECT_TRUE(yuva_info.isValid());
+    SkYUVAPixmaps yuva_pixmaps = frame->GetVisibleSkYUVAPixmaps();
+    ASSERT_TRUE(yuva_pixmaps.isValid());
+    const SkYUVAInfo& yuva_info = yuva_pixmaps.yuvaInfo();
+    EXPECT_FALSE(frame->GetVisibleRGBPlanePixmap());
     EXPECT_EQ(yuva_info.dimensions().width(), kVisibleRect.width());
     EXPECT_EQ(yuva_info.dimensions().height(), kVisibleRect.height());
     EXPECT_EQ(yuva_info.planeConfig(), SkYUVAInfo::PlaneConfig::kY_U_V);
     EXPECT_EQ(yuva_info.subsampling(), SkYUVAInfo::Subsampling::k420);
 
-    auto pixmaps = frame->GetVisiblePlanesSkPixmaps();
-    EXPECT_EQ(pixmaps.size(), 3u);
+    const auto& pixmaps = yuva_pixmaps.planes();
+    EXPECT_EQ(yuva_pixmaps.numPlanes(), 3);
     auto pm_y = pixmaps[VideoFrame::Plane::kY];
     auto pm_u = pixmaps[VideoFrame::Plane::kU];
     auto pm_v = pixmaps[VideoFrame::Plane::kV];
@@ -1213,6 +1230,15 @@ TEST(VideoFrame, GetVisibleSkYUVAPixmaps) {
     EXPECT_EQ(pm_v.rowBytes(),
               static_cast<size_t>(frame->stride(VideoFrame::Plane::kV)));
     EXPECT_EQ(pm_v.colorType(), kR8_unorm_SkColorType);
+
+    SkYUVAPixmaps writable_pixmaps = frame->GetWritableVisibleSkYUVAPixmaps();
+    ASSERT_TRUE(writable_pixmaps.isValid());
+    EXPECT_EQ(writable_pixmaps.yuvaInfo(), yuva_info);
+    for (int p = 0; p < 3; ++p) {
+      EXPECT_EQ(writable_pixmaps.plane(p).writable_addr(),
+                frame->GetWritableVisibleData(p));
+      EXPECT_EQ(writable_pixmaps.plane(p).info(), pixmaps[p].info());
+    }
   }
 
   {
@@ -1221,13 +1247,15 @@ TEST(VideoFrame, GetVisibleSkYUVAPixmaps) {
                                 kNaturalSize, base::TimeDelta());
     ASSERT_TRUE(frame);
 
-    SkYUVAInfo yuva_info = frame->GetVisibleSkYUVAInfo();
-    EXPECT_TRUE(yuva_info.isValid());
+    SkYUVAPixmaps yuva_pixmaps = frame->GetVisibleSkYUVAPixmaps();
+    ASSERT_TRUE(yuva_pixmaps.isValid());
+    const SkYUVAInfo& yuva_info = yuva_pixmaps.yuvaInfo();
+    EXPECT_FALSE(frame->GetVisibleRGBPlanePixmap());
     EXPECT_EQ(yuva_info.planeConfig(), SkYUVAInfo::PlaneConfig::kY_UV);
     EXPECT_EQ(yuva_info.subsampling(), SkYUVAInfo::Subsampling::k420);
 
-    auto pixmaps = frame->GetVisiblePlanesSkPixmaps();
-    EXPECT_EQ(pixmaps.size(), 2u);
+    const auto& pixmaps = yuva_pixmaps.planes();
+    EXPECT_EQ(yuva_pixmaps.numPlanes(), 2);
     auto pm_y = pixmaps[VideoFrame::Plane::kY];
     auto pm_uv = pixmaps[VideoFrame::Plane::kUV];
 
@@ -1248,13 +1276,15 @@ TEST(VideoFrame, GetVisibleSkYUVAPixmaps) {
                                 kNaturalSize, base::TimeDelta());
     ASSERT_TRUE(frame);
 
-    SkYUVAInfo yuva_info = frame->GetVisibleSkYUVAInfo();
-    EXPECT_TRUE(yuva_info.isValid());
+    SkYUVAPixmaps yuva_pixmaps = frame->GetVisibleSkYUVAPixmaps();
+    ASSERT_TRUE(yuva_pixmaps.isValid());
+    const SkYUVAInfo& yuva_info = yuva_pixmaps.yuvaInfo();
+    EXPECT_FALSE(frame->GetVisibleRGBPlanePixmap());
     EXPECT_EQ(yuva_info.planeConfig(), SkYUVAInfo::PlaneConfig::kY_U_V_A);
     EXPECT_EQ(yuva_info.subsampling(), SkYUVAInfo::Subsampling::k420);
 
-    auto pixmaps = frame->GetVisiblePlanesSkPixmaps();
-    EXPECT_EQ(pixmaps.size(), 4u);
+    const auto& pixmaps = yuva_pixmaps.planes();
+    EXPECT_EQ(yuva_pixmaps.numPlanes(), 4);
     auto pm_y = pixmaps[VideoFrame::Plane::kY];
     auto pm_u = pixmaps[VideoFrame::Plane::kU];
     auto pm_v = pixmaps[VideoFrame::Plane::kV];
@@ -1287,17 +1317,23 @@ TEST(VideoFrame, GetVisibleSkYUVAPixmaps) {
                                 kNaturalSize, base::TimeDelta());
     ASSERT_TRUE(frame);
 
-    SkYUVAInfo yuva_info = frame->GetVisibleSkYUVAInfo();
-    EXPECT_FALSE(yuva_info.isValid());
+    EXPECT_FALSE(frame->GetVisibleSkYUVAPixmaps().isValid());
 
-    auto pixmaps = frame->GetVisiblePlanesSkPixmaps();
-    EXPECT_EQ(pixmaps.size(), 1u);
-    auto pm = pixmaps[VideoFrame::Plane::kARGB];
+    const std::optional<SkPixmap> pm = frame->GetVisibleRGBPlanePixmap();
+    ASSERT_TRUE(pm);
+    EXPECT_EQ(pm->width(), kVisibleRect.width());
+    EXPECT_EQ(pm->height(), kVisibleRect.height());
+    EXPECT_EQ(pm->addr(), frame->visible_data(VideoFrame::Plane::kARGB));
+    EXPECT_EQ(pm->rowBytes(),
+              static_cast<size_t>(frame->stride(VideoFrame::Plane::kARGB)));
+    EXPECT_EQ(pm->colorType(), kRGBA_8888_SkColorType);
 
-    EXPECT_EQ(pm.width(), kVisibleRect.width());
-    EXPECT_EQ(pm.height(), kVisibleRect.height());
-    EXPECT_EQ(pm.addr(), frame->visible_data(VideoFrame::Plane::kARGB));
-    EXPECT_EQ(pm.colorType(), kRGBA_8888_SkColorType);
+    const std::optional<SkPixmap> writable_pm =
+        frame->GetWritableVisibleRGBPlanePixmap();
+    ASSERT_TRUE(writable_pm);
+    EXPECT_EQ(writable_pm->writable_addr(),
+              frame->GetWritableVisibleData(VideoFrame::Plane::kARGB));
+    EXPECT_EQ(writable_pm->info(), pm->info());
   }
 
   for (const gfx::Rect& visible_rect : {kVisibleRect, gfx::Rect(kCodedSize)}) {
@@ -1307,15 +1343,17 @@ TEST(VideoFrame, GetVisibleSkYUVAPixmaps) {
                                 visible_rect.size(), base::TimeDelta());
     ASSERT_TRUE(frame);
 
-    SkYUVAInfo yuva_info = frame->GetVisibleSkYUVAInfo();
-    EXPECT_TRUE(yuva_info.isValid());
+    SkYUVAPixmaps yuva_pixmaps = frame->GetVisibleSkYUVAPixmaps();
+    ASSERT_TRUE(yuva_pixmaps.isValid());
+    const SkYUVAInfo& yuva_info = yuva_pixmaps.yuvaInfo();
+    EXPECT_FALSE(frame->GetVisibleRGBPlanePixmap());
     EXPECT_EQ(yuva_info.dimensions().width(), visible_rect.width());
     EXPECT_EQ(yuva_info.dimensions().height(), visible_rect.height());
     EXPECT_EQ(yuva_info.planeConfig(), SkYUVAInfo::PlaneConfig::kUYVA);
     EXPECT_EQ(yuva_info.subsampling(), SkYUVAInfo::Subsampling::k444);
 
-    auto pixmaps = frame->GetVisiblePlanesSkPixmaps();
-    ASSERT_EQ(pixmaps.size(), 1u);
+    const auto& pixmaps = yuva_pixmaps.planes();
+    ASSERT_EQ(yuva_pixmaps.numPlanes(), 1);
     auto pm = pixmaps[VideoFrame::Plane::kARGB];
 
     EXPECT_EQ(pm.width(), visible_rect.width());
@@ -1334,11 +1372,8 @@ TEST(VideoFrame, GetVisibleSkYUVAPixmaps) {
                                 kNaturalSize, base::TimeDelta());
     ASSERT_TRUE(frame);
 
-    SkYUVAInfo yuva_info = frame->GetVisibleSkYUVAInfo();
-    EXPECT_FALSE(yuva_info.isValid());
-
-    auto pixmaps = frame->GetVisiblePlanesSkPixmaps();
-    EXPECT_TRUE(pixmaps.empty());
+    EXPECT_FALSE(frame->GetVisibleSkYUVAPixmaps().isValid());
+    EXPECT_FALSE(frame->GetVisibleRGBPlanePixmap());
   }
 }
 

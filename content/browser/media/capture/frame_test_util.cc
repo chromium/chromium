@@ -19,6 +19,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkTypes.h"
+#include "third_party/skia/include/core/SkYUVAPixmaps.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -36,9 +37,9 @@ SkBitmap FrameTestUtil::ConvertToBitmap(const media::VideoFrame& frame) {
   bitmap.allocPixels(SkImageInfo::MakeN32Premul(frame.visible_rect().width(),
                                                 frame.visible_rect().height(),
                                                 SkColorSpace::MakeSRGB()));
-  SkPixmap pm = bitmap.pixmap();
-  skia::ConvertYUVAToRGBA(frame.GetVisibleSkYUVAInfo(), frame.BitDepth(),
-                          frame.GetVisiblePlanesSkPixmaps(), pm);
+  const SkYUVAPixmaps yuva_pixmaps = frame.GetVisibleSkYUVAPixmaps();
+  CHECK(yuva_pixmaps.isValid());
+  skia::ConvertYUVAToRGBA(yuva_pixmaps, frame.BitDepth(), bitmap.pixmap());
   return bitmap;
 }
 

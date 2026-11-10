@@ -16,6 +16,7 @@
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/core/SkSerialProcs.h"
 #include "third_party/skia/modules/skcms/skcms.h"
 
@@ -175,6 +176,35 @@ base::span<uint8_t> as_writable_byte_span(SkData& data LIFETIME_BOUND) {
   // container.
   return UNSAFE_BUFFERS(
       base::span(static_cast<uint8_t*>(data.writable_data()), data.size()));
+}
+
+base::span<const uint8_t> as_byte_span(const SkPixmap& pixmap) {
+  return as_writable_byte_span(pixmap);
+}
+
+std::optional<SkPixmap> MakeSkPixmap(const SkImageInfo& info,
+                                     base::span<const uint8_t> pixels,
+                                     std::optional<size_t> row_bytes) {
+  const size_t actual_row_bytes = row_bytes.value_or(info.minRowBytes());
+  if (!info.validRowBytes(actual_row_bytes)) {
+    return std::nullopt;
+  }
+  const size_t size = info.computeByteSize(actual_row_bytes);
+  if (SkImageInfo::ByteSizeOverflowed(size) || size > pixels.size()) {
+    return std::nullopt;
+  }
+  return SkPixmap(info, pixels.data(), actual_row_bytes);
+}
+
+base::span<uint8_t> as_writable_byte_span(const SkPixmap& pixmap) {
+  const size_t size = pixmap.computeByteSize();
+  if (!pixmap.addr() || SkImageInfo::ByteSizeOverflowed(size)) {
+    return {};
+  }
+  // SAFETY: `SkPixmap` guarantees that `writable_addr()` points to at least
+  // `computeByteSize()` bytes.
+  return UNSAFE_BUFFERS(
+      base::span(static_cast<uint8_t*>(pixmap.writable_addr()), size));
 }
 
 }  // namespace skia

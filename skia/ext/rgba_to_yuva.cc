@@ -49,7 +49,7 @@ void ApplyColorMatrix(SkPixmap& pm, const std::array<float, 20>& m) {
 
 // Read the specified row `y` to `dst_pixmap`. This is slow and should only be
 // used in tests or in extreme edge cases.
-void ReadYUVRow(const std::vector<SkPixmap>& src_pixmaps,
+void ReadYUVRow(base::span<const SkPixmap> src_pixmaps,
                 const SkYUVAInfo& src_yuva_info,
                 const size_t src_bit_depth,
                 size_t y,
@@ -369,31 +369,25 @@ void ConvertRGBAToYUVA(SkPixmap src_pm,
                  base::span<SkSurface* const>(dst_surface_ptrs), dst_yuva_info);
 }
 
-void ConvertYUVAToRGBA(const SkYUVAInfo& src_yuva_info,
+void ConvertYUVAToRGBA(const SkYUVAPixmaps& src,
                        size_t src_bit_depth,
-                       const std::vector<SkPixmap>& src_pixmaps,
                        const SkPixmap& dst_pixmap) {
-  DCHECK(src_pixmaps[0].dimensions() == dst_pixmap.dimensions());
-  const auto src_color_space = src_pixmaps[0].refColorSpace();
+  CHECK(src.isValid());
+  const SkYUVAInfo& src_yuva_info = src.yuvaInfo();
+  DCHECK(src.plane(0).dimensions() == dst_pixmap.dimensions());
+  const auto src_color_space = src.plane(0).refColorSpace();
   const size_t w = static_cast<size_t>(dst_pixmap.width());
   const size_t h = static_cast<size_t>(dst_pixmap.height());
 
-  // Just use ReadPixels for RGBA inputs.
-  if (!src_yuva_info.isValid()) {
-    CHECK_EQ(src_pixmaps.size(), 1u);
-    CHECK(src_pixmaps[0].readPixels(dst_pixmap));
-    return;
-  }
-
-  // Make sure we have the expected number of planes and dimensions of planes,
-  // and that all planes have the same color space.
-  CHECK_EQ(src_pixmaps.size(), static_cast<size_t>(src_yuva_info.numPlanes()));
+  // Make sure we have the expected dimensions of planes, and that all planes
+  // have the same color space.
+  const auto planes =
+      base::span(src.planes()).first(static_cast<size_t>(src.numPlanes()));
   std::array<SkISize, SkYUVAInfo::kMaxPlanes> plane_dimensions;
   src_yuva_info.planeDimensions(plane_dimensions.data());
-  for (size_t p = 0; p < src_pixmaps.size(); ++p) {
-    CHECK(src_pixmaps[p].dimensions() == plane_dimensions[p]);
-    CHECK(SkColorSpace::Equals(src_pixmaps[p].colorSpace(),
-                               src_color_space.get()));
+  for (size_t p = 0; p < planes.size(); ++p) {
+    CHECK(planes[p].dimensions() == plane_dimensions[p]);
+    CHECK(SkColorSpace::Equals(planes[p].colorSpace(), src_color_space.get()));
   }
 
   // Compute the YUV to RGB matrix, if needed.
@@ -417,7 +411,7 @@ void ConvertYUVAToRGBA(const SkYUVAInfo& src_yuva_info,
     CHECK(dst_pixmap.extractSubset(&dst_row, dst_row_rect));
 
     // Read and resample `src_pixmaps` into `src_row`.
-    ReadYUVRow(src_pixmaps, src_yuva_info, src_bit_depth, y, src_row);
+    ReadYUVRow(planes, src_yuva_info, src_bit_depth, y, src_row);
 
     // Perform YUV to RGB conversion.
     if (use_src_yuv_to_rgb_matrix) {

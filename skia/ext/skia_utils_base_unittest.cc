@@ -4,6 +4,8 @@
 
 #include "skia/ext/skia_utils_base.h"
 
+#include <array>
+
 #include "base/containers/span.h"
 #include "base/strings/string_view_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -11,6 +13,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkPixmap.h"
 
 namespace skia {
 namespace {
@@ -112,6 +115,70 @@ TEST(SkiaUtilsBase, ConvertSkDataToWritableByteSpan) {
   span[3] = 't';
   span[4] = 'e';
   EXPECT_EQ("footer", base::as_string_view(as_byte_span(*sk_data).first(6u)));
+}
+
+TEST(SkiaUtilsBase, ConvertSkPixmapToByteSpan) {
+  // A 3x2 kRGBA_8888 image with 16 bytes per row. The span ends after the last
+  // pixel of the last row, excluding that row's padding.
+  constexpr size_t kRowBytes = 16;
+  std::array<uint8_t, 2 * kRowBytes> pixels = {};
+  const SkPixmap pixmap(
+      SkImageInfo::Make(3, 2, kRGBA_8888_SkColorType, kPremul_SkAlphaType),
+      pixels.data(), kRowBytes);
+
+  base::span<const uint8_t> span = as_byte_span(pixmap);
+  EXPECT_EQ(span.data(), pixels.data());
+  EXPECT_EQ(span.size(), kRowBytes + 3 * 4);
+
+  base::span<uint8_t> writable_span = as_writable_byte_span(pixmap);
+  EXPECT_EQ(writable_span.data(), pixels.data());
+  EXPECT_EQ(writable_span.size(), kRowBytes + 3 * 4);
+  writable_span[kRowBytes] = 42;
+  EXPECT_EQ(pixels[kRowBytes], 42);
+}
+
+TEST(SkiaUtilsBase, ConvertEmptySkPixmapToByteSpan) {
+  EXPECT_TRUE(as_byte_span(SkPixmap()).empty());
+  EXPECT_TRUE(as_writable_byte_span(SkPixmap()).empty());
+
+  // A pixmap with dimensions but no pixels.
+  const SkPixmap no_pixels(SkImageInfo::MakeN32Premul(3, 2), nullptr, 12);
+  EXPECT_TRUE(as_byte_span(no_pixels).empty());
+  EXPECT_TRUE(as_writable_byte_span(no_pixels).empty());
+}
+
+TEST(SkiaUtilsBase, MakeSkPixmap) {
+  const SkImageInfo info =
+      SkImageInfo::Make(3, 2, kRGBA_8888_SkColorType, kPremul_SkAlphaType);
+  constexpr size_t kRowBytes = 16;
+  std::array<uint8_t, 2 * kRowBytes> pixels = {};
+
+  // Default row bytes.
+  std::optional<SkPixmap> pixmap = MakeSkPixmap(info, pixels);
+  ASSERT_TRUE(pixmap);
+  EXPECT_EQ(pixmap->info(), info);
+  EXPECT_EQ(pixmap->addr(), pixels.data());
+  EXPECT_EQ(pixmap->rowBytes(), info.minRowBytes());
+
+  // Explicit row bytes. The last row's padding need not be present.
+  pixmap = MakeSkPixmap(info, base::span(pixels).first(kRowBytes + 3 * 4),
+                        kRowBytes);
+  ASSERT_TRUE(pixmap);
+  EXPECT_EQ(pixmap->addr(), pixels.data());
+  EXPECT_EQ(pixmap->rowBytes(), kRowBytes);
+
+  // The span is too small.
+  EXPECT_FALSE(MakeSkPixmap(
+      info, base::span(pixels).first(kRowBytes + 3 * 4 - 1), kRowBytes));
+
+  // Row bytes smaller than the width.
+  EXPECT_FALSE(MakeSkPixmap(info, pixels, 3 * 4 - 4));
+
+  // Row bytes that are not a multiple of the pixel size.
+  EXPECT_FALSE(MakeSkPixmap(info, pixels, 13));
+
+  // Row bytes so large that the size overflows.
+  EXPECT_FALSE(MakeSkPixmap(info, pixels, SIZE_MAX / 4 * 4));
 }
 
 }  // namespace

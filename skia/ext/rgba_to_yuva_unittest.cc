@@ -293,21 +293,6 @@ TEST(RGBAToYUVATest, Basic) {
   };
   std::vector<TestConfig> tests;
 
-  // RGBA (not a valid YUVA space).
-  {
-    TestConfig config = {
-        .srgb_color = SkColors::kRed,
-    };
-    config.bitmaps.resize(1);
-    config.bitmaps[0].allocPixels(SkImageInfo::Make(
-        kWidth, kHeight, kN32_SkColorType, kPremul_SkAlphaType));
-    config.bitmaps[0].erase({1.f, 0.f, 0.f, 1.f}, config.bitmaps[0].bounds());
-    for (auto& bm : config.bitmaps) {
-      bm.setColorSpace(SkColorSpace::MakeSRGB());
-    }
-    tests.push_back(config);
-  }
-
   // I420
   {
     TestConfig config = {
@@ -466,10 +451,13 @@ TEST(RGBAToYUVATest, Basic) {
   // For all of the configs, call ConvertYUVAToRGBA, and ensure that the
   // resulting color matches the expected color.
   for (const auto& test : tests) {
-    std::vector<SkPixmap> pms;
-    for (const auto& bm : test.bitmaps) {
-      pms.push_back(bm.pixmap());
+    std::array<SkPixmap, SkYUVAInfo::kMaxPlanes> pms;
+    for (size_t i = 0; i < test.bitmaps.size(); ++i) {
+      pms[i] = test.bitmaps[i].pixmap();
     }
+    const auto src =
+        SkYUVAPixmaps::FromExternalPixmaps(test.yuva_info, pms.data());
+    ASSERT_TRUE(src.isValid());
 
     // Read back into P3 to force a color space conversion.
     const auto dst_cs = SkColorSpace::MakeRGB(SkNamedTransferFn::kSRGB,
@@ -478,7 +466,7 @@ TEST(RGBAToYUVATest, Basic) {
     dst.allocPixels(SkImageInfo::Make(kWidth, kHeight, kRGBA_F16_SkColorType,
                                       kPremul_SkAlphaType, dst_cs));
 
-    ConvertYUVAToRGBA(test.yuva_info, test.bit_depth, pms, dst.pixmap());
+    ConvertYUVAToRGBA(src, test.bit_depth, dst.pixmap());
 
     // Convert to sRGB for comparison.
     SkColor4f result;
