@@ -121,6 +121,12 @@ content::ScopedWebUIConfigRegistration RegisterComposeboxTestConfig() {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+content::ScopedWebUIConfigRegistration RegisterMojoTestConfig() {
+  return content::ScopedWebUIConfigRegistration(
+      std::make_unique<content::DefaultWebUIConfig<TestMojoWebUIController>>(
+          content::kChromeUIScheme, chrome::kChromeUIWebUITestHost));
+}
+
 class TestSearchboxWebUIController : public TestMojoWebUIController {
  public:
   explicit TestSearchboxWebUIController(content::WebUI* web_ui)
@@ -164,12 +170,11 @@ IN_PROC_BROWSER_TEST_F(CrComponentsTest, CustomizeColorSchemeMode) {
 }
 
 IN_PROC_BROWSER_TEST_F(CrComponentsTest, HelpBubbleMixin) {
-  set_test_loader_host(chrome::kChromeUINewTabPageHost);
+  auto config = RegisterMojoTestConfig();
   RunTest("cr_components/help_bubble/help_bubble_mixin_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(CrComponentsTest, HelpBubble) {
-  set_test_loader_host(chrome::kChromeUINewTabPageHost);
   RunTest("cr_components/help_bubble/help_bubble_test.js", "mocha.run()");
 }
 
