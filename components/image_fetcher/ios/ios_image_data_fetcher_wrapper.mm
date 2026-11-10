@@ -4,6 +4,7 @@
 
 #import "components/image_fetcher/ios/ios_image_data_fetcher_wrapper.h"
 
+#import "base/containers/span.h"
 #include "base/functional/bind.h"
 #import "base/ios/ios_util.h"
 #include "base/task/thread_pool.h"
@@ -46,13 +47,13 @@ void IOSImageDataFetcherWrapper::FetchImageDataWebpDecoded(
 ImageDataFetcherCallback
 IOSImageDataFetcherWrapper::CallbackForImageDataFetcher(
     ImageDataFetcherBlock callback) {
-  return base::BindOnce(^(const std::string& image_data,
-                          const RequestMetadata& metadata) {
-    // Create a NSData from the returned data and notify the callback.
-    NSData* data = [NSData dataWithBytes:image_data.data()
-                                  length:image_data.size()];
-    callback(data, metadata);
-  });
+  return base::BindOnce(
+      ^(ImageData image_data, const RequestMetadata& metadata) {
+        // Create a NSData from the returned data and notify the callback.
+        const auto bytes = base::span(*image_data);
+        NSData* data = [NSData dataWithBytes:bytes.data() length:bytes.size()];
+        callback(data, metadata);
+      });
 }
 
 }  // namespace image_fetcher

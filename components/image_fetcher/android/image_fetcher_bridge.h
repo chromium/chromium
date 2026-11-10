@@ -7,10 +7,9 @@
 
 #include <jni.h>
 
-#include <string>
-
 #include "base/android/scoped_java_ref.h"
 #include "base/files/file_path.h"
+#include "components/image_fetcher/core/image_fetcher_types.h"
 #include "components/image_fetcher/core/request_metadata.h"
 #include "ui/gfx/image/image.h"
 
@@ -84,7 +83,7 @@ class ImageFetcherBridge {
       const JavaRef<jobject>& j_request_metadata);
 
   static void OnImageDataFetched(ScopedJavaGlobalRef<jobject> callback,
-                                 const std::string& image_data,
+                                 ImageData image_data,
                                  const RequestMetadata& request_metadata);
 
   static void OnImageFetched(ScopedJavaGlobalRef<jobject> callback,

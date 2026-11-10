@@ -12,6 +12,7 @@
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
+#import "components/image_fetcher/core/image_fetcher_types.h"
 #import "components/image_fetcher/core/request_metadata.h"
 
 namespace image_fetcher {
@@ -54,7 +55,7 @@ class DriveFilePickerImageFetcher {
   // Called when the image data has been fetched.
   void OnImageFetched(DriveItem item,
                       DriveFilePickerImageFetcherCallback callback,
-                      const std::string& image_data,
+                      image_fetcher::ImageData shared_image_data,
                       const image_fetcher::RequestMetadata& metadata);
 
   // Called when the image has been transcoded.

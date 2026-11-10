@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/omnibox/model/omnibox_image_fetcher.h"
 
+#import "base/containers/span.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
@@ -58,8 +59,9 @@ const CGFloat kFaviconIconSize = 16;
   }
   __weak NSCache<NSString*, UIImage*>* weakCachedImages = _cachedImages;
   auto callback =
-      base::BindOnce(^(const std::string& image_data,
+      base::BindOnce(^(image_fetcher::ImageData shared_image_data,
                        const image_fetcher::RequestMetadata& metadata) {
+        const auto image_data = base::span(*shared_image_data);
         NSData* data = [NSData dataWithBytes:image_data.data()
                                       length:image_data.size()];
 

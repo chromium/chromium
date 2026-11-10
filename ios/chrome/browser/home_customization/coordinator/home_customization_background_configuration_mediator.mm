@@ -7,6 +7,7 @@
 #import <Foundation/Foundation.h>
 
 #import <optional>
+#import <string_view>
 
 #import "base/debug/dump_without_crashing.h"
 #import "base/files/file_path.h"

@@ -73,7 +73,7 @@ class CachedImageFetcher : public ImageFetcher {
   void OnImageFetchedWithoutTranscoding(
       CachedImageFetcherRequest request,
       ImageDataFetcherCallback image_data_callback,
-      const std::string& image_data,
+      ImageData image_data,
       const RequestMetadata& request_metadata);
   void OnImageFetchedForTranscoding(CachedImageFetcherRequest request,
                                     ImageFetcherCallback image_data_callback,

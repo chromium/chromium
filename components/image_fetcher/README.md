@@ -10,9 +10,10 @@ In C++, [`ImageFetcher`](core/image_fetcher.h) can return a decoded image with
 `FetchImage()`, encoded data without decoding with `FetchImageData()`, or both
 with `FetchImageAndData()`. Supply
 [`ImageFetcherParams`](core/image_fetcher.h) with a network traffic annotation
-and a UMA client name. The callbacks return an empty image or string on
-failure; request metadata includes the HTTP response code or network error
-when available.
+and a UMA client name. Encoded data is returned in a shared, read-only buffer
+that callers can retain after the callback. The callbacks return an empty
+image or a non-null empty buffer on failure; request metadata includes the
+HTTP response code or network error when available.
 
 [`ImageFetcherService`](core/image_fetcher_service.h) provides network-only and
 disk-cached fetchers through `ImageFetcherConfig`. The disk-cached fetcher

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -73,8 +74,9 @@ class ImageFetcherImplBrowserTest : public InProcessBrowserTest {
     loop->Quit();
   }
 
-  void OnImageDataAvailable(const std::string& image_data,
+  void OnImageDataAvailable(image_fetcher::ImageData shared_image_data,
                             const image_fetcher::RequestMetadata& metadata) {
+    const auto image_data = base::span(*shared_image_data);
     if (!image_data.empty()) {
       num_data_callback_valid_called_++;
     } else {
@@ -152,9 +154,9 @@ IN_PROC_BROWSER_TEST_F(ImageFetcherImplBrowserTest, DestroyInCallback) {
   image_fetcher->FetchImageAndData(
       image_url,
       base::BindLambdaForTesting(
-          [&](const std::string& image_data,
+          [&](image_fetcher::ImageData image_data,
               const image_fetcher::RequestMetadata& metadata) {
-            if (!image_data.empty()) {
+            if (image_data->size() != 0) {
               num_data_callback_valid_called_++;
             }
           }),

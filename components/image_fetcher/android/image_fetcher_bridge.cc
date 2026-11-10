@@ -11,6 +11,7 @@
 #include "base/android/callback_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
@@ -123,7 +124,8 @@ void ImageFetcherBridge::FetchImageData(
   SimpleFactoryKey* key =
       simple_factory_key::SimpleFactoryKeyFromJavaHandle(j_simple_factory_key);
   if (!key) {
-    OnImageDataFetched(callback, std::string(), RequestMetadata());
+    OnImageDataFetched(callback, base::MakeRefCounted<base::RefCountedString>(),
+                       RequestMetadata());
     return;
   }
 
@@ -320,11 +322,11 @@ ScopedJavaLocalRef<jobject> ImageFetcherBridge::CreateJavaImageFetchResult(
 // static
 void ImageFetcherBridge::OnImageDataFetched(
     base::android::ScopedJavaGlobalRef<jobject> callback,
-    const std::string& image_data,
+    ImageData image_data,
     const RequestMetadata& request_metadata) {
   JNIEnv* env = jni_zero::AttachCurrentThread();
   ScopedJavaLocalRef<jbyteArray> j_bytes =
-      base::android::ToJavaByteArray(env, image_data);
+      base::android::ToJavaByteArray(env, base::span(*image_data));
 
   ScopedJavaLocalRef<jobject> j_request_metadata =
       ConvertRequestMetadataToJava(env, request_metadata);

@@ -7,6 +7,7 @@
 #import <vector>
 
 #import "base/check.h"
+#import "base/containers/span.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/time/time.h"
@@ -359,8 +360,9 @@ using segmentation_platform::TipIdentifier;
 
   _imageFetcher->FetchImageData(
       mostRecentSubscriptionProductURL,
-      base::BindOnce(^(const std::string& imageData,
+      base::BindOnce(^(image_fetcher::ImageData sharedImageData,
                        const image_fetcher::RequestMetadata& metadata) {
+        const auto imageData = base::span(*sharedImageData);
         [weakSelf onImageFetchedResult:imageData];
       }),
       NO_TRAFFIC_ANNOTATION_YET);
@@ -399,7 +401,7 @@ using segmentation_platform::TipIdentifier;
 // Called when the image data has been fetched. Updates the
 // `_config.productImageData` with the fetched `imageData` and notifies the
 // delegate of the state change.
-- (void)onImageFetchedResult:(const std::string&)imageData {
+- (void)onImageFetchedResult:(base::span<const uint8_t>)imageData {
   NSData* data = [NSData dataWithBytes:imageData.data()
                                 length:imageData.size()];
 
@@ -440,8 +442,9 @@ using segmentation_platform::TipIdentifier;
         GetThumbnailImageOptions());
     _imageFetcher->FetchImageData(
         thumbnailURL,
-        base::BindOnce(^(const std::string& imageData,
+        base::BindOnce(^(image_fetcher::ImageData sharedImageData,
                          const image_fetcher::RequestMetadata& metadata) {
+          const auto imageData = base::span(*sharedImageData);
           [weakSelf onPresetBackgroundImageFetched:imageData atIndex:i];
         }),
         NO_TRAFFIC_ANNOTATION_YET);
@@ -459,7 +462,7 @@ using segmentation_platform::TipIdentifier;
 
 // Updates `_actionableConfig.backgroundImages` when a preset thumbnail image
 // finishes downloading.
-- (void)onPresetBackgroundImageFetched:(const std::string&)imageData
+- (void)onPresetBackgroundImageFetched:(base::span<const uint8_t>)imageData
                                atIndex:(size_t)index {
   UIImage* image =
       [UIImage imageWithData:[NSData dataWithBytes:imageData.data()

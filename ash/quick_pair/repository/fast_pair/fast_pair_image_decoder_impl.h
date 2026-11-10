@@ -10,6 +10,7 @@
 #include "ash/quick_pair/repository/fast_pair/fast_pair_image_decoder.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "components/image_fetcher/core/image_fetcher_types.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
@@ -47,7 +48,7 @@ class FastPairImageDecoderImpl : public FastPairImageDecoder {
   void OnImageDataFetched(
       DecodeImageCallback on_image_decoded_callback,
       bool resize_to_notification_size,
-      const std::string& image_data,
+      image_fetcher::ImageData shared_image_data,
       const image_fetcher::RequestMetadata& request_metadata);
 
   bool LoadImageFetcher();

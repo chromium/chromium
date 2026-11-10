@@ -216,8 +216,7 @@ TEST_F(IOSImageDataFetcherWrapperTest, DeleteDuringWebPDecoding) {
   metadata.mime_type = "image/webp";
   metadata.http_response_code = 200;
   image_fetcher_->AccessImageDataFetcherForTesting()->InjectResultForTesting(
-      metadata, std::string(reinterpret_cast<const char*>(kWEBPImage),
-                            sizeof(kWEBPImage)));
+      metadata, base::MakeRefCounted<base::RefCountedBytes>(kWEBPImage));
 
   // Delete the image fetcher, and check that the callback is called.
   image_fetcher_.reset();

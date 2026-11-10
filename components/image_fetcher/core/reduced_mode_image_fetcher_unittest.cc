@@ -9,10 +9,12 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -42,8 +44,13 @@ using leveldb_proto::test::FakeDB;
 using testing::_;
 
 namespace image_fetcher {
-
 namespace {
+
+MATCHER_P(HasImageData, expected, "") {
+  return arg &&
+         testing::ExplainMatchResult(
+             expected, base::as_string_view(base::span(*arg)), result_listener);
+}
 
 constexpr char kUmaClientName[] = "TestUma";
 constexpr char kImageData[] = "data";
@@ -127,7 +134,7 @@ class ReducedModeImageFetcherTest : public testing::Test {
 
     base::MockCallback<ImageDataFetcherCallback> data_callback;
 
-    EXPECT_CALL(data_callback, Run(kImageData, _));
+    EXPECT_CALL(data_callback, Run(HasImageData(kImageData), _));
     reduced_mode_image_fetcher()->FetchImageAndData(
         kImageUrl, data_callback.Get(), ImageFetcherCallback(),
         ImageFetcherParams(TRAFFIC_ANNOTATION_FOR_TESTS, kUmaClientName));
@@ -203,7 +210,7 @@ TEST_F(ReducedModeImageFetcherTest, FetchImageFromNetworkAndCacheReadBack) {
   // Fetch image (should go to network because cache is empty).
   base::MockCallback<ImageDataFetcherCallback> data_callback1;
   // Verify that the fetched data matches the raw image data exactly.
-  EXPECT_CALL(data_callback1, Run(test_data, _));
+  EXPECT_CALL(data_callback1, Run(HasImageData(test_data), _));
   PerformFetch(data_callback1.Get());
 
   // Confirm there is 1 element in the cache after fetch.
@@ -215,7 +222,7 @@ TEST_F(ReducedModeImageFetcherTest, FetchImageFromNetworkAndCacheReadBack) {
   // Fetch image again (should hit cache).
   base::MockCallback<ImageDataFetcherCallback> data_callback2;
   // Verify that the cached data returned is identical to the original raw data.
-  EXPECT_CALL(data_callback2, Run(test_data, _));
+  EXPECT_CALL(data_callback2, Run(HasImageData(test_data), _));
   PerformFetch(data_callback2.Get());
 
   // Verify that the cache was hit.

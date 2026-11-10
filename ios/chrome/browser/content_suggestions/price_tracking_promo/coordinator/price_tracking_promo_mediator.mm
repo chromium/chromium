@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/content_suggestions/price_tracking_promo/coordinator/price_tracking_promo_mediator.h"
 
 #import "base/cancelable_callback.h"
+#import "base/containers/span.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
@@ -322,12 +323,13 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
     // with that image.
     _imageFetcher->FetchImageData(
         most_recent_subscription_product_image_url,
-        base::BindOnce(^(const std::string& imageData,
+        base::BindOnce(^(image_fetcher::ImageData sharedImageData,
                          const image_fetcher::RequestMetadata& metadata) {
           PriceTrackingPromoMediator* strongSelf = weakSelf;
           if (!strongSelf || !strongSelf.delegate) {
             return;
           }
+          const auto imageData = base::span(*sharedImageData);
           [strongSelf onImageFetchedResult:imageData
                                 productUrl:most_recent_product_page_url];
         }),
@@ -361,7 +363,7 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
           most_recent_subscription_product_page_url};
 }
 
-- (void)onImageFetchedResult:(const std::string&)imageData
+- (void)onImageFetchedResult:(base::span<const uint8_t>)imageData
                   productUrl:(const GURL&)productUrl {
   self->_priceTrackingPromoConfig = [[PriceTrackingPromoConfig alloc] init];
   self->_priceTrackingPromoConfig.priceTrackingPromoHandler = self;

@@ -8,10 +8,12 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -36,8 +38,13 @@ using testing::Eq;
 using testing::Property;
 
 namespace image_fetcher {
-
 namespace {
+
+MATCHER_P(HasImageData, expected, "") {
+  return arg &&
+         testing::ExplainMatchResult(
+             expected, base::as_string_view(base::span(*arg)), result_listener);
+}
 
 constexpr char kImageData[] = "data";
 constexpr char kImageURL[] = "http://image.test/test.png";
@@ -66,7 +73,6 @@ class ImageFetcherImplTest : public testing::Test {
     return &test_url_loader_factory_;
   }
   ImageFetcherImpl* image_fetcher() { return image_fetcher_.get(); }
-
   void RecreateFetcherWithDecoder(std::unique_ptr<ImageDecoder> decoder) {
     // Clear the non-owning pointer before destroying its decoder owner.
     fake_image_decoder_ = nullptr;
@@ -97,7 +103,7 @@ TEST_F(ImageFetcherImplTest, FetchImageAndDataSuccess) {
   test_url_loader_factory()->AddResponse(kImageURL, kImageData);
   base::MockCallback<ImageDataFetcherCallback> data_callback;
   base::MockCallback<ImageFetcherCallback> image_callback;
-  EXPECT_CALL(data_callback, Run(kImageData, _));
+  EXPECT_CALL(data_callback, Run(HasImageData(kImageData), _));
   EXPECT_CALL(image_callback, Run(ValidImage(), _));
 
   image_fetcher()->FetchImageAndData(
@@ -106,12 +112,58 @@ TEST_F(ImageFetcherImplTest, FetchImageAndDataSuccess) {
   RunUntilIdle();
 }
 
+TEST_F(ImageFetcherImplTest, SharesDataWithConcurrentAndLateSubscribers) {
+  test_url_loader_factory()->AddResponse(kImageURL, kImageData);
+  base::test::TestFuture<ImageData, RequestMetadata> first;
+  base::test::TestFuture<ImageData, RequestMetadata> second;
+  base::test::TestFuture<ImageData, RequestMetadata> late;
+  base::test::TestFuture<gfx::Image, RequestMetadata> decoded;
+  ImageFetcherParams params(TRAFFIC_ANNOTATION_FOR_TESTS, kImageUmaName);
+
+  image_decoder()->SetBeforeImageDecoded(base::BindLambdaForTesting([&] {
+    image_fetcher()->FetchImageAndData(
+        GURL(kImageURL), late.GetCallback<ImageData, const RequestMetadata&>(),
+        ImageFetcherCallback(), params);
+  }));
+  image_fetcher()->FetchImageAndData(
+      GURL(kImageURL), first.GetCallback<ImageData, const RequestMetadata&>(),
+      decoded.GetCallback<const gfx::Image&, const RequestMetadata&>(), params);
+  image_fetcher()->FetchImageAndData(
+      GURL(kImageURL), second.GetCallback<ImageData, const RequestMetadata&>(),
+      ImageFetcherCallback(), params);
+
+  ASSERT_TRUE(decoded.Wait());
+  ASSERT_TRUE(late.Wait());
+  ASSERT_TRUE(first.IsReady());
+  ASSERT_TRUE(second.IsReady());
+  EXPECT_EQ(first.Get<0>().get(), second.Get<0>().get());
+  EXPECT_EQ(first.Get<0>().get(), late.Get<0>().get());
+  EXPECT_EQ(first.Get<1>(), late.Get<1>());
+  EXPECT_EQ(1u, test_url_loader_factory()->total_requests());
+
+  DestroyImageFetcher();
+  EXPECT_EQ(kImageData, base::as_string_view(base::span(*late.Get<0>())));
+}
+
+TEST_F(ImageFetcherImplTest, RetainsBinaryDataAfterFetcherDestruction) {
+  const std::string binary_data("a\0b\xff", 4);
+  test_url_loader_factory()->AddResponse(kImageURL, binary_data);
+  base::test::TestFuture<ImageData, RequestMetadata> result;
+  image_fetcher()->FetchImageData(
+      GURL(kImageURL), result.GetCallback<ImageData, const RequestMetadata&>(),
+      ImageFetcherParams(TRAFFIC_ANNOTATION_FOR_TESTS, kImageUmaName));
+  ASSERT_TRUE(result.Wait());
+  DestroyImageFetcher();
+  ASSERT_TRUE(result.Get<0>());
+  EXPECT_EQ(binary_data, base::as_string_view(base::span(*result.Get<0>())));
+}
+
 TEST_F(ImageFetcherImplTest, FetchImageAndData3xSuccess) {
   // Fetch an image three times.
   test_url_loader_factory()->AddResponse(kImageURL, kImageData);
   base::MockCallback<ImageDataFetcherCallback> data_callback1;
   base::MockCallback<ImageFetcherCallback> image_callback1;
-  EXPECT_CALL(data_callback1, Run(kImageData, _));
+  EXPECT_CALL(data_callback1, Run(HasImageData(kImageData), _));
   EXPECT_CALL(image_callback1, Run(ValidImage(), _));
 
   image_fetcher()->FetchImageAndData(
@@ -120,7 +172,7 @@ TEST_F(ImageFetcherImplTest, FetchImageAndData3xSuccess) {
 
   base::MockCallback<ImageDataFetcherCallback> data_callback2;
   base::MockCallback<ImageFetcherCallback> image_callback2;
-  EXPECT_CALL(data_callback2, Run(kImageData, _));
+  EXPECT_CALL(data_callback2, Run(HasImageData(kImageData), _));
   EXPECT_CALL(image_callback2, Run(ValidImage(), _));
 
   // This call happens before the network request completes.
@@ -130,7 +182,7 @@ TEST_F(ImageFetcherImplTest, FetchImageAndData3xSuccess) {
 
   base::MockCallback<ImageDataFetcherCallback> data_callback3;
   base::MockCallback<ImageFetcherCallback> image_callback3;
-  EXPECT_CALL(data_callback3, Run(kImageData, _));
+  EXPECT_CALL(data_callback3, Run(HasImageData(kImageData), _));
   EXPECT_CALL(image_callback3, Run(ValidImage(), _));
 
   image_decoder()->SetBeforeImageDecoded(base::BindLambdaForTesting([&]() {
@@ -151,7 +203,7 @@ TEST_F(ImageFetcherImplTest, FetchImageAndData2xFail) {
   test_url_loader_factory()->AddResponse(kImageURL, "", net::HTTP_NOT_FOUND);
   base::MockCallback<ImageDataFetcherCallback> data_callback1;
   base::MockCallback<ImageFetcherCallback> image_callback1;
-  EXPECT_CALL(data_callback1, Run("", _));
+  EXPECT_CALL(data_callback1, Run(HasImageData(""), _));
   EXPECT_CALL(image_callback1, Run(EmptyImage(), _));
 
   image_fetcher()->FetchImageAndData(
@@ -160,7 +212,7 @@ TEST_F(ImageFetcherImplTest, FetchImageAndData2xFail) {
 
   base::MockCallback<ImageDataFetcherCallback> data_callback2;
   base::MockCallback<ImageFetcherCallback> image_callback2;
-  EXPECT_CALL(data_callback2, Run("", _));
+  EXPECT_CALL(data_callback2, Run(HasImageData(""), _));
   EXPECT_CALL(image_callback2, Run(EmptyImage(), _));
 
   image_fetcher()->FetchImageAndData(
@@ -174,7 +226,7 @@ TEST_F(ImageFetcherImplTest, FetchOnlyData) {
   image_decoder()->SetEnabled(false);
   test_url_loader_factory()->AddResponse(kImageURL, kImageData);
   base::MockCallback<ImageDataFetcherCallback> data_callback;
-  EXPECT_CALL(data_callback, Run(kImageData, _));
+  EXPECT_CALL(data_callback, Run(HasImageData(kImageData), _));
 
   image_fetcher()->FetchImageAndData(
       GURL(kImageURL), data_callback.Get(), ImageFetcherCallback(),
@@ -186,7 +238,7 @@ TEST_F(ImageFetcherImplTest, FetchOnlyData) {
 TEST_F(ImageFetcherImplTest, FetchDataThenImage) {
   test_url_loader_factory()->AddResponse(kImageURL, kImageData);
   base::MockCallback<ImageDataFetcherCallback> data_callback;
-  EXPECT_CALL(data_callback, Run(kImageData, _));
+  EXPECT_CALL(data_callback, Run(HasImageData(kImageData), _));
 
   image_fetcher()->FetchImageAndData(
       GURL(kImageURL), data_callback.Get(), ImageFetcherCallback(),
@@ -213,7 +265,7 @@ TEST_F(ImageFetcherImplTest, FetchImageThenData) {
       ImageFetcherParams(TRAFFIC_ANNOTATION_FOR_TESTS, kImageUmaName));
 
   base::MockCallback<ImageDataFetcherCallback> data_callback;
-  EXPECT_CALL(data_callback, Run(kImageData, _));
+  EXPECT_CALL(data_callback, Run(HasImageData(kImageData), _));
 
   image_decoder()->SetBeforeImageDecoded(base::BindLambdaForTesting([&]() {
     // This happens after the network request completes.
@@ -281,24 +333,24 @@ TEST_P(ImageFetcherRequestOptionsTest, ConcurrentRequestsHonorDownloadLimits) {
   first_params.set_max_download_size(first_limit);
   ImageFetcherParams second_params(TRAFFIC_ANNOTATION_FOR_TESTS, kImageUmaName);
   second_params.set_max_download_size(second_limit);
-  base::test::TestFuture<std::string, RequestMetadata> first;
-  base::test::TestFuture<std::string, RequestMetadata> second;
+  base::test::TestFuture<ImageData, RequestMetadata> first;
+  base::test::TestFuture<ImageData, RequestMetadata> second;
   image_fetcher()->FetchImageAndData(
-      GURL(kImageURL),
-      first.GetCallback<const std::string&, const RequestMetadata&>(),
+      GURL(kImageURL), first.GetCallback<ImageData, const RequestMetadata&>(),
       ImageFetcherCallback(), first_params);
   image_fetcher()->FetchImageAndData(
-      GURL(kImageURL),
-      second.GetCallback<const std::string&, const RequestMetadata&>(),
+      GURL(kImageURL), second.GetCallback<ImageData, const RequestMetadata&>(),
       ImageFetcherCallback(), second_params);
   test_url_loader_factory()->AddResponse(kImageURL, response);
 
   ASSERT_TRUE(first.Wait());
   ASSERT_TRUE(second.Wait());
-  EXPECT_EQ(first_limit < 128 ? std::string() : response, first.Get<0>());
+  EXPECT_THAT(first.Get<0>(),
+              HasImageData(first_limit < 128 ? std::string() : response));
   EXPECT_EQ(first_limit < 128 ? net::ERR_INSUFFICIENT_RESOURCES : net::OK,
             first.Get<1>().net_error);
-  EXPECT_EQ(second_limit < 128 ? std::string() : response, second.Get<0>());
+  EXPECT_THAT(second.Get<0>(),
+              HasImageData(second_limit < 128 ? std::string() : response));
   EXPECT_EQ(second_limit < 128 ? net::ERR_INSUFFICIENT_RESOURCES : net::OK,
             second.Get<1>().net_error);
 }
@@ -310,18 +362,18 @@ TEST_P(ImageFetcherRequestOptionsTest, UnboundedAndLimitedRequestsAreSeparate) {
   limited_params.set_max_download_size(64);
   ImageFetcherParams unbounded_params(TRAFFIC_ANNOTATION_FOR_TESTS,
                                       kImageUmaName);
-  base::test::TestFuture<std::string, RequestMetadata> limited;
-  base::test::TestFuture<std::string, RequestMetadata> unbounded;
+  base::test::TestFuture<ImageData, RequestMetadata> limited;
+  base::test::TestFuture<ImageData, RequestMetadata> unbounded;
   auto fetch_limited = [&] {
     image_fetcher()->FetchImageAndData(
         GURL(kImageURL),
-        limited.GetCallback<const std::string&, const RequestMetadata&>(),
+        limited.GetCallback<ImageData, const RequestMetadata&>(),
         ImageFetcherCallback(), limited_params);
   };
   auto fetch_unbounded = [&] {
     image_fetcher()->FetchImageAndData(
         GURL(kImageURL),
-        unbounded.GetCallback<const std::string&, const RequestMetadata&>(),
+        unbounded.GetCallback<ImageData, const RequestMetadata&>(),
         ImageFetcherCallback(), unbounded_params);
   };
   if (GetParam()) {
@@ -335,10 +387,10 @@ TEST_P(ImageFetcherRequestOptionsTest, UnboundedAndLimitedRequestsAreSeparate) {
   test_url_loader_factory()->AddResponse(kImageURL, response);
 
   ASSERT_TRUE(limited.Wait());
-  EXPECT_TRUE(limited.Get<0>().empty());
+  EXPECT_THAT(limited.Get<0>(), HasImageData(""));
   EXPECT_EQ(net::ERR_INSUFFICIENT_RESOURCES, limited.Get<1>().net_error);
   ASSERT_TRUE(unbounded.Wait());
-  EXPECT_EQ(response, unbounded.Get<0>());
+  EXPECT_THAT(unbounded.Get<0>(), HasImageData(response));
   EXPECT_EQ(net::OK, unbounded.Get<1>().net_error);
 }
 
@@ -363,23 +415,21 @@ TEST_F(ImageFetcherImplTest, CompatibleRequestsShareDownload) {
   ImageFetcherParams params(TRAFFIC_ANNOTATION_FOR_TESTS, kImageUmaName);
   params.set_max_download_size(256);
   params.set_frame_size(gfx::Size(16, 16));
-  base::test::TestFuture<std::string, RequestMetadata> first;
-  base::test::TestFuture<std::string, RequestMetadata> second;
+  base::test::TestFuture<ImageData, RequestMetadata> first;
+  base::test::TestFuture<ImageData, RequestMetadata> second;
   image_fetcher()->FetchImageAndData(
-      GURL(kImageURL),
-      first.GetCallback<const std::string&, const RequestMetadata&>(),
+      GURL(kImageURL), first.GetCallback<ImageData, const RequestMetadata&>(),
       ImageFetcherCallback(), params);
   image_fetcher()->FetchImageAndData(
-      GURL(kImageURL),
-      second.GetCallback<const std::string&, const RequestMetadata&>(),
+      GURL(kImageURL), second.GetCallback<ImageData, const RequestMetadata&>(),
       ImageFetcherCallback(), params);
   EXPECT_EQ(1, test_url_loader_factory()->NumPending());
   test_url_loader_factory()->AddResponse(kImageURL, kImageData);
 
   ASSERT_TRUE(first.Wait());
   ASSERT_TRUE(second.Wait());
-  EXPECT_EQ(kImageData, first.Get<0>());
-  EXPECT_EQ(kImageData, second.Get<0>());
+  EXPECT_THAT(first.Get<0>(), HasImageData(kImageData));
+  EXPECT_THAT(second.Get<0>(), HasImageData(kImageData));
 }
 
 TEST_F(ImageFetcherImplTest, DifferentFrameSizeWhileDecodingStartsNewRequest) {
@@ -425,48 +475,48 @@ TEST_F(ImageFetcherImplTest, DifferentFrameSizeWhileDecodingStartsNewRequest) {
 
 TEST_F(ImageFetcherImplTest, DataCallbackCanRequestSameImageAgain) {
   ImageFetcherParams params(TRAFFIC_ANNOTATION_FOR_TESTS, kImageUmaName);
-  base::test::TestFuture<std::string, RequestMetadata> first;
-  base::test::TestFuture<std::string, RequestMetadata> reentrant;
+  base::test::TestFuture<ImageData, RequestMetadata> first;
+  base::test::TestFuture<ImageData, RequestMetadata> reentrant;
   image_fetcher()->FetchImageAndData(
       GURL(kImageURL),
-      base::BindLambdaForTesting([&](const std::string& data,
-                                     const RequestMetadata& metadata) {
-        first.SetValue(data, metadata);
-        image_fetcher()->FetchImageAndData(
-            GURL(kImageURL),
-            reentrant.GetCallback<const std::string&, const RequestMetadata&>(),
-            ImageFetcherCallback(), params);
-      }),
+      base::BindLambdaForTesting(
+          [&](ImageData data, const RequestMetadata& metadata) {
+            first.SetValue(data, metadata);
+            image_fetcher()->FetchImageAndData(
+                GURL(kImageURL),
+                reentrant.GetCallback<ImageData, const RequestMetadata&>(),
+                ImageFetcherCallback(), params);
+          }),
       ImageFetcherCallback(), params);
   test_url_loader_factory()->AddResponse(kImageURL, kImageData);
 
   ASSERT_TRUE(first.Wait());
   ASSERT_TRUE(reentrant.Wait());
-  EXPECT_EQ(kImageData, first.Get<0>());
-  EXPECT_EQ(kImageData, reentrant.Get<0>());
+  EXPECT_THAT(first.Get<0>(), HasImageData(kImageData));
+  EXPECT_THAT(reentrant.Get<0>(), HasImageData(kImageData));
 }
 
 TEST_F(ImageFetcherImplTest, DataCallbackCanRequestSameFailedImageAgain) {
   ImageFetcherParams params(TRAFFIC_ANNOTATION_FOR_TESTS, kImageUmaName);
-  base::test::TestFuture<std::string, RequestMetadata> first;
-  base::test::TestFuture<std::string, RequestMetadata> reentrant;
+  base::test::TestFuture<ImageData, RequestMetadata> first;
+  base::test::TestFuture<ImageData, RequestMetadata> reentrant;
   image_fetcher()->FetchImageAndData(
       GURL(kImageURL),
-      base::BindLambdaForTesting([&](const std::string& data,
-                                     const RequestMetadata& metadata) {
-        first.SetValue(data, metadata);
-        image_fetcher()->FetchImageAndData(
-            GURL(kImageURL),
-            reentrant.GetCallback<const std::string&, const RequestMetadata&>(),
-            ImageFetcherCallback(), params);
-      }),
+      base::BindLambdaForTesting(
+          [&](ImageData data, const RequestMetadata& metadata) {
+            first.SetValue(data, metadata);
+            image_fetcher()->FetchImageAndData(
+                GURL(kImageURL),
+                reentrant.GetCallback<ImageData, const RequestMetadata&>(),
+                ImageFetcherCallback(), params);
+          }),
       ImageFetcherCallback(), params);
   test_url_loader_factory()->AddResponse(kImageURL, "", net::HTTP_NOT_FOUND);
 
   ASSERT_TRUE(first.Wait());
   ASSERT_TRUE(reentrant.Wait());
-  EXPECT_TRUE(first.Get<0>().empty());
-  EXPECT_TRUE(reentrant.Get<0>().empty());
+  EXPECT_THAT(first.Get<0>(), HasImageData(""));
+  EXPECT_THAT(reentrant.Get<0>(), HasImageData(""));
   EXPECT_EQ(net::HTTP_NOT_FOUND, reentrant.Get<1>().http_response_code);
 }
 
@@ -500,11 +550,10 @@ TEST_F(ImageFetcherImplTest, DataCallbackCanDestroyFetcher) {
   EXPECT_CALL(cancelled, Run(_, _)).Times(0);
   image_fetcher()->FetchImageAndData(
       GURL(kImageURL),
-      base::BindLambdaForTesting(
-          [&](const std::string&, const RequestMetadata&) {
-            DestroyImageFetcher();
-            destroyed.SetValue();
-          }),
+      base::BindLambdaForTesting([&](ImageData, const RequestMetadata&) {
+        DestroyImageFetcher();
+        destroyed.SetValue();
+      }),
       ImageFetcherCallback(), params);
   image_fetcher()->FetchImageAndData(GURL(kImageURL), cancelled.Get(),
                                      ImageFetcherCallback(), params);

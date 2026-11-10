@@ -125,7 +125,9 @@ void ImageDataFetcher::FetchImageData(const GURL& image_url,
       metadata.net_error = net::ERR_INVALID_URL;
     }
 
-    std::move(callback).Run(std::move(data), metadata);
+    std::move(callback).Run(
+        base::MakeRefCounted<base::RefCountedString>(std::move(data)),
+        metadata);
     return;
   }
 
@@ -207,7 +209,9 @@ void ImageDataFetcher::OnURLLoaderComplete(
   if (success && response_body) {
     image_data = std::move(response_body).value();
   }
-  FinishRequest(source, metadata, image_data);
+  FinishRequest(
+      source, metadata,
+      base::MakeRefCounted<base::RefCountedString>(std::move(image_data)));
 
   ImageFetcherMetricsReporter::ReportRequestStatusCode(params.uma_client_name(),
                                                        status_code);
@@ -215,20 +219,22 @@ void ImageDataFetcher::OnURLLoaderComplete(
 
 void ImageDataFetcher::FinishRequest(const network::SimpleURLLoader* source,
                                      const RequestMetadata& metadata,
-                                     const std::string& image_data) {
+                                     ImageData image_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto request_iter = pending_requests_.find(source);
   CHECK(request_iter != pending_requests_.end());
   auto callback = std::move(request_iter->second->callback);
   pending_requests_.erase(request_iter);
-  std::move(callback).Run(image_data, metadata);
+  std::move(callback).Run(std::move(image_data), metadata);
   // `this` might be destroyed now.
 }
 
 void ImageDataFetcher::InjectResultForTesting(const RequestMetadata& metadata,
-                                              const std::string& image_data) {
+                                              ImageData image_data) {
   DCHECK_EQ(pending_requests_.size(), 1u);
-  FinishRequest(pending_requests_.begin()->first, metadata, image_data);
+  CHECK(image_data);
+  FinishRequest(pending_requests_.begin()->first, metadata,
+                std::move(image_data));
 }
 
 }  // namespace image_fetcher

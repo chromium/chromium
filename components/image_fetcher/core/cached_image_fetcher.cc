@@ -51,7 +51,7 @@ namespace {
 constexpr int kJpegEncodingQuality = 90;
 
 void DataCallbackIfPresent(ImageDataFetcherCallback data_callback,
-                           const std::string& image_data,
+                           ImageData image_data,
                            const image_fetcher::RequestMetadata& metadata) {
   if (data_callback.is_null()) {
     return;
@@ -176,7 +176,9 @@ void CachedImageFetcher::OnImageFetchedFromCache(
                                  std::move(image_data_callback),
                                  std::move(image_callback));
   } else {
-    DataCallbackIfPresent(std::move(image_data_callback), image_data,
+    auto shared_image_data =
+        base::MakeRefCounted<base::RefCountedString>(std::move(image_data));
+    DataCallbackIfPresent(std::move(image_data_callback), shared_image_data,
                           RequestMetadata());
     ImageFetcherMetricsReporter::ReportEvent(request.params.uma_client_name(),
                                              ImageFetcherEvent::kCacheHit);
@@ -189,7 +191,7 @@ void CachedImageFetcher::OnImageFetchedFromCache(
       TRACE_EVENT("ui", "CachedImageFetcher::OnImageFetchedFromCache Decode");
       auto* data_decoder = request.params.data_decoder();
       GetImageDecoder()->DecodeImage(
-          image_data, gfx::Size(), data_decoder,
+          shared_image_data->as_string(), gfx::Size(), data_decoder,
           base::BindOnce(&CachedImageFetcher::OnImageDecodedFromCache,
                          weak_ptr_factory_.GetWeakPtr(), std::move(request),
                          ImageDataFetcherCallback(), std::move(image_callback),
@@ -285,19 +287,21 @@ void CachedImageFetcher::FetchImageFromNetwork(
 void CachedImageFetcher::OnImageFetchedWithoutTranscoding(
     CachedImageFetcherRequest request,
     ImageDataFetcherCallback image_data_callback,
-    const std::string& image_data,
+    ImageData image_data,
     const RequestMetadata& request_metadata) {
   DataCallbackIfPresent(std::move(image_data_callback), image_data,
                         request_metadata);
 
-  if (image_data.empty()) {
+  if (image_data->size() == 0) {
     ImageFetcherMetricsReporter::ReportEvent(request.params.uma_client_name(),
                                              ImageFetcherEvent::kTotalFailure);
   }
 
+  // TODO(crbug.com/579214229): Pass `ImageData` through `StoreData()` and
+  // `ImageCache` to avoid copying the downloaded data here.
   StoreData(/* cache_result_needs_transcoding */ false,
             /* is_image_data_transcoded */ false, std::move(request),
-            image_data);
+            std::string(base::as_string_view(base::span(*image_data))));
 }
 
 void CachedImageFetcher::OnImageFetchedForTranscoding(

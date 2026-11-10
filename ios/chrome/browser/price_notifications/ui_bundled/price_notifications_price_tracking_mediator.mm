@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/price_notifications/ui_bundled/price_notifications_price_tracking_mediator.h"
 
+#import "base/containers/span.h"
 #import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
@@ -202,8 +203,9 @@ using PriceNotificationItems =
   // Fetches the current item's trackable image.
   _imageFetcher->FetchImageData(
       productInfo->image_url,
-      base::BindOnce(^(const std::string& imageData,
+      base::BindOnce(^(image_fetcher::ImageData sharedImageData,
                        const image_fetcher::RequestMetadata& metadata) {
+        const auto imageData = base::span(*sharedImageData);
         [weakSelf updateItem:item withImage:imageData];
       }),
       NO_TRAFFIC_ANNOTATION_YET);
@@ -212,7 +214,7 @@ using PriceNotificationItems =
 // Adds the downloaded product image to the `PriceNotificationsTableViewItem`
 // and sends the amended item to the Price Notifications UI.
 - (void)updateItem:(PriceNotificationsTableViewItem*)item
-         withImage:(const std::string&)imageData {
+         withImage:(base::span<const uint8_t>)imageData {
   NSData* data = [NSData dataWithBytes:imageData.data()
                                 length:imageData.size()];
   if (data) {
@@ -378,8 +380,9 @@ using PriceNotificationItems =
   // Fetches the current item's trackable image.
   _imageFetcher->FetchImageData(
       productInfo->image_url,
-      base::BindOnce(^(const std::string& imageData,
+      base::BindOnce(^(image_fetcher::ImageData sharedImageData,
                        const image_fetcher::RequestMetadata& metadata) {
+        const auto imageData = base::span(*sharedImageData);
         [weakSelf updateItem:item withImage:imageData];
       }),
       NO_TRAFFIC_ANNOTATION_YET);

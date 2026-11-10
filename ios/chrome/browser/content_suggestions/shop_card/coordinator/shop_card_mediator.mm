@@ -6,6 +6,7 @@
 
 #import <optional>
 
+#import "base/containers/span.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/field_trial_params.h"
 #import "base/metrics/histogram_macros.h"
@@ -187,13 +188,14 @@
     __weak ShopCardMediator* weakSelf = self;
     _imageFetcher->FetchImageData(
         productImageUrl,
-        base::BindOnce(^(const std::string& imageData,
+        base::BindOnce(^(image_fetcher::ImageData sharedImageData,
                          const image_fetcher::RequestMetadata& metadata) {
           ShopCardMediator* strongSelf = weakSelf;
           if (!strongSelf || !strongSelf.delegate) {
             return;
           }
           [strongSelf populateShopCardConfig:specifics url:bookmarkUrl];
+          const auto imageData = base::span(*sharedImageData);
           [strongSelf onProductImageFetchedResult:imageData
                                        productUrl:bookmarkUrl];
         }),
@@ -260,7 +262,7 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
       formatter->Format(base::NumberToString(price)));
 }
 
-- (void)onProductImageFetchedResult:(const std::string&)imageData
+- (void)onProductImageFetchedResult:(base::span<const uint8_t>)imageData
                          productUrl:(const GURL&)productUrl {
   if (!_shopCardConfig) {
     _shopCardConfig = [[ShopCardConfig alloc] init];

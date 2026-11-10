@@ -5,6 +5,7 @@
 #include "ash/quick_pair/repository/fast_pair/fast_pair_image_decoder_impl.h"
 
 #include "ash/quick_pair/common/quick_pair_browser_delegate.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "components/cross_device/logging/logging.h"
@@ -129,8 +130,9 @@ void FastPairImageDecoderImpl::DecodeImage(
 void FastPairImageDecoderImpl::OnImageDataFetched(
     DecodeImageCallback on_image_decoded_callback,
     bool resize_to_notification_size,
-    const std::string& image_data,
+    image_fetcher::ImageData shared_image_data,
     const image_fetcher::RequestMetadata& request_metadata) {
+  const auto image_data = base::span(*shared_image_data);
   DecodeImage(std::vector<uint8_t>(image_data.begin(), image_data.end()),
               resize_to_notification_size,
               std::move(on_image_decoded_callback));

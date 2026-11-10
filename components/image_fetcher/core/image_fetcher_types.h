@@ -5,9 +5,9 @@
 #ifndef COMPONENTS_IMAGE_FETCHER_CORE_IMAGE_FETCHER_TYPES_H_
 #define COMPONENTS_IMAGE_FETCHER_CORE_IMAGE_FETCHER_TYPES_H_
 
-#include <string>
-
 #include "base/functional/callback.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 
 namespace gfx {
 class Image;
@@ -25,9 +25,13 @@ using ImageFetcherCallback =
     base::OnceCallback<void(const gfx::Image& image,
                             const RequestMetadata& request_metadata)>;
 
-// TODO(wylieb): Use RefCountedBytes to avoid copying.
+// Shared, read-only encoded image data, independent of its backing storage.
+using ImageData = scoped_refptr<base::RefCountedMemory>;
+
+// Callbacks receive a non-null buffer, which is empty when no image data is
+// available. Retaining the buffer keeps its contents alive after the callback.
 using ImageDataFetcherCallback =
-    base::OnceCallback<void(const std::string& image_data,
+    base::OnceCallback<void(ImageData image_data,
                             const RequestMetadata& request_metadata)>;
 
 #if defined(__OBJC__)

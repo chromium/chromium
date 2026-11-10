@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/web/model/image_fetch/image_fetch_tab_helper.h"
 
 #import "base/base64.h"
+#import "base/containers/span.h"
 #import "base/functional/bind.h"
 #import "base/json/string_escape.h"
 #import "base/metrics/histogram_macros.h"
@@ -135,8 +136,9 @@ void ImageFetchTabHelper::FetchImageDataWithFetcher(
   ImageFetcher::FromWebState(web_state_)
       ->FetchImageData(
           url,
-          base::BindOnce(^(const std::string& image_data,
+          base::BindOnce(^(image_fetcher::ImageData shared_image_data,
                            const image_fetcher::RequestMetadata& metadata) {
+            const auto image_data = base::span(*shared_image_data);
             NSData* nsdata = [NSData dataWithBytes:image_data.data()
                                             length:image_data.size()];
             callback(nsdata);

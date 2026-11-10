@@ -189,8 +189,9 @@ class ImageFetcher {
   // when the image fetch completes, but `image_data_callback` may be empty.
   // `image_callback` is called when the image is finished decoding.
   // `image_callback` may be empty if image decoding is not required. If a
-  // callback is provided, it will be called exactly once. On failure, an empty
-  // string/gfx::Image is returned.
+  // callback is provided, it will be called exactly once. On failure, data
+  // callbacks receive a non-null empty buffer, and image callbacks receive an
+  // empty gfx::Image.
   virtual void FetchImageAndData(const GURL& image_url,
                                  ImageDataFetcherCallback image_data_callback,
                                  ImageFetcherCallback image_callback,

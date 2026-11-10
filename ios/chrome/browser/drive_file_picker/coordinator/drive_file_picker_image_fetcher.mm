@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_image_fetcher.h"
 
+#import "base/containers/span.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "ios/chrome/browser/drive/model/drive_list.h"
@@ -88,10 +89,11 @@ UIImage* DriveFilePickerImageFetcher::GetFetchedImage(
 void DriveFilePickerImageFetcher::OnImageFetched(
     DriveItem item,
     DriveFilePickerImageFetcherCallback callback,
-    const std::string& image_data,
+    image_fetcher::ImageData shared_image_data,
     const image_fetcher::RequestMetadata& metadata) {
+  const auto image_data = base::span(*shared_image_data);
   NSData* image_ns_data = [NSData dataWithBytes:image_data.data()
-                                         length:image_data.length()];
+                                         length:image_data.size()];
   ProcessUnsafeImageData(std::move(item), std::move(callback), image_ns_data);
 }
 

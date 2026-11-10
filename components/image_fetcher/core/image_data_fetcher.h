@@ -47,7 +47,7 @@ class ImageDataFetcher {
 
   // Fetches the raw image bytes from the given `image_url` and calls the given
   // `callback`. The callback is run even if fetching the URL fails. In case
-  // of an error an empty string is passed to the callback; its metadata
+  // of an error a non-null empty buffer is passed to the callback; its metadata
   // contains the HTTP response code or network error when available. May
   // return synchronously. If `initiator` is provided, sets `request_initiator`
   // and sends same-origin credentials relative to `initiator`.
@@ -84,7 +84,7 @@ class ImageDataFetcher {
   // underlying loading is doing. This requires there to be a single pending
   // fetch only.
   void InjectResultForTesting(const RequestMetadata& metadata,
-                              const std::string& image_data);
+                              ImageData image_data);
 
  private:
   struct ImageDataFetcherRequest;
@@ -96,7 +96,7 @@ class ImageDataFetcher {
 
   void FinishRequest(const network::SimpleURLLoader* source,
                      const RequestMetadata& metadata,
-                     const std::string& image_data);
+                     ImageData image_data);
 
   // All active image url requests.
   std::map<const network::SimpleURLLoader*,

@@ -6,7 +6,9 @@
 
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -70,7 +72,7 @@ void ImageFetcherImpl::FetchImageAndData(
     // Call callback if data is already fetched, otherwise register it for
     // later.
     if (image_data_callback) {
-      if (request->image_data_fetched) {
+      if (request->image_data) {
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE,
             base::BindOnce(&ImageFetcherImpl::RunImageDataCallback,
@@ -86,16 +88,15 @@ void ImageFetcherImpl::FetchImageAndData(
 
 void ImageFetcherImpl::OnImageURLFetched(const ImageRequestKey& request_key,
                                          ImageFetcherParams params,
-                                         const std::string& image_data,
+                                         ImageData image_data,
                                          const RequestMetadata& metadata) {
   auto it = pending_net_requests_.find(request_key);
   CHECK(it != pending_net_requests_.end());
   ImageRequest* request = &it->second;
-  DCHECK(!request->image_data_fetched);
+  DCHECK(!request->image_data);
   DCHECK_EQ(RequestMetadata::RESPONSE_CODE_INVALID,
             request->request_metadata.http_response_code);
   request->image_data = image_data;
-  request->image_data_fetched = true;
   request->request_metadata = metadata;
 
   // Callbacks may enqueue more requests or destroy this fetcher. Publish the
@@ -109,7 +110,7 @@ void ImageFetcherImpl::OnImageURLFetched(const ImageRequestKey& request_key,
     }
   }
 
-  if (image_data.empty() || request->image_callbacks.empty()) {
+  if (image_data->size() == 0 || request->image_callbacks.empty()) {
     auto image_callbacks = std::move(request->image_callbacks);
     pending_net_requests_.erase(it);
     for (auto& callback : image_callbacks) {
@@ -120,10 +121,13 @@ void ImageFetcherImpl::OnImageURLFetched(const ImageRequestKey& request_key,
     }
     return;
   }
-  image_decoder_->DecodeImage(image_data, params.frame_size(),
-                              params.data_decoder(),
-                              base::BindOnce(&ImageFetcherImpl::OnImageDecoded,
-                                             weak_this, request_key, metadata));
+  // TODO(crbug.com/579214229): Let the decoder accept `ImageData` to avoid
+  // copying the downloaded data into an owning string.
+  image_decoder_->DecodeImage(
+      std::string(base::as_string_view(base::span(*image_data))),
+      params.frame_size(), params.data_decoder(),
+      base::BindOnce(&ImageFetcherImpl::OnImageDecoded, weak_this, request_key,
+                     metadata));
 }
 
 void ImageFetcherImpl::OnImageDecoded(const ImageRequestKey& request_key,
@@ -148,7 +152,7 @@ void ImageFetcherImpl::OnImageDecoded(const ImageRequestKey& request_key,
 
 void ImageFetcherImpl::RunImageDataCallback(
     ImageDataFetcherCallback image_data_callback,
-    std::string image_data,
+    ImageData image_data,
     RequestMetadata request_metadata) {
   std::move(image_data_callback)
       .Run(std::move(image_data), std::move(request_metadata));

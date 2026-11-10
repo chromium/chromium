@@ -84,8 +84,7 @@ class ImageFetcherImpl : public ImageFetcher {
     std::string id;
     // These have the default value if the image data has not yet been fetched.
     RequestMetadata request_metadata;
-    std::string image_data;
-    bool image_data_fetched = false;
+    ImageData image_data;
     // Queue for pending callbacks, which may accumulate while the request is in
     // flight.
     std::vector<ImageFetcherCallback> image_callbacks;
@@ -98,7 +97,7 @@ class ImageFetcherImpl : public ImageFetcher {
   // for creating callbacks that are passed to the ImageDataFetcher.
   void OnImageURLFetched(const ImageRequestKey& request_key,
                          ImageFetcherParams params,
-                         const std::string& image_data,
+                         ImageData image_data,
                          const RequestMetadata& metadata);
 
   // Processes image decoded events. This is the continuation method used for
@@ -109,7 +108,7 @@ class ImageFetcherImpl : public ImageFetcher {
 
   // Used to run `image_data_callback` only if `this` is still valid.
   void RunImageDataCallback(ImageDataFetcherCallback image_data_callback,
-                            std::string image_data,
+                            ImageData image_data,
                             RequestMetadata request_metadata);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
