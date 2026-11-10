@@ -2,7 +2,7 @@ Name: Google Test: Google's C++ Testing Framework
 Short Name: googletest
 URL: https://github.com/google/googletest.git
 Version: N/A
-Revision: 6450691fd7d07ef932582206fbafb1a513927e08
+Revision: adaffb94a924d9011cf9f19f9d4d5ee23e207a7c
 Update Mechanism: Autoroll
 License: BSD-3-Clause
 License File: src/LICENSE
