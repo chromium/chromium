@@ -18,6 +18,7 @@
 #include "device/bluetooth/bluetooth_adapter_android.h"
 #include "device/bluetooth/bluetooth_remote_gatt_descriptor_android.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service_android.h"
+#include "third_party/jni_zero/jni_zero.h"
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "device/bluetooth/jni_headers/ChromeBluetoothRemoteGattCharacteristic_jni.h"
 
@@ -44,7 +45,7 @@ BluetoothRemoteGattCharacteristicAndroid::Create(
   JNIEnv* env = AttachCurrentThread();
   characteristic->j_characteristic_.Reset(
       Java_ChromeBluetoothRemoteGattCharacteristic_create(
-          env, reinterpret_cast<intptr_t>(characteristic.get()),
+          env, jni_zero::MakeRaw(characteristic.get()),
           bluetooth_gatt_characteristic_wrapper,
           base::android::ConvertUTF8ToJavaString(env, instance_id),
           chrome_bluetooth_device));
