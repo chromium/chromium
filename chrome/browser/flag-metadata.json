@@ -10262,12 +10262,12 @@
       "liahiscock@microsoft.com",
       "pwa-team@google.com"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 165
   },
   {
     "name": "web-app-installation-api",
     "owners": [ "liahiscock@microsoft.com", "pwa-team@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 165
   },
   {
     "name": "web-app-migrate-preinstalled-chat",
