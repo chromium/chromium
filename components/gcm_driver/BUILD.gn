@@ -170,6 +170,7 @@ source_set("unit_tests") {
     "//google_apis:test_support",
     "//google_apis/gcm:test_support",
     "//net:test_support",
+    "//testing/gmock",
     "//testing/gtest",
     "//third_party/leveldatabase",
     "//third_party/protobuf:protobuf_lite",

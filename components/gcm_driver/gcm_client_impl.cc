@@ -150,7 +150,6 @@ GCMClientImpl::GCMClientImpl(
     std::unique_ptr<fcm::FcmInternalsBuilder> internals_builder)
     : internals_builder_(std::move(internals_builder)),
       state_(UNINITIALIZED),
-      delegate_(nullptr),
       start_mode_(DELAYED_START),
       clock_(internals_builder_->GetClock()),
       gcm_store_reset_(false),
@@ -168,10 +167,8 @@ void GCMClientImpl::Initialize(
         get_socket_factory_callback,
     const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
     network::NetworkConnectionTracker* network_connection_tracker,
-    std::unique_ptr<Encryptor> encryptor,
-    GCMClient::Delegate* delegate) {
+    std::unique_ptr<Encryptor> encryptor) {
   DCHECK_EQ(UNINITIALIZED, state_);
-  DCHECK(delegate);
   DCHECK(io_task_runner);
   DCHECK(io_task_runner->RunsTasksInCurrentSequence());
 
@@ -181,10 +178,17 @@ void GCMClientImpl::Initialize(
   chrome_build_info_ = chrome_build_info;
   gcm_store_ = std::make_unique<GCMStoreImpl>(path, blocking_task_runner,
                                               std::move(encryptor));
-  delegate_ = delegate;
   io_task_runner_ = std::move(io_task_runner);
   recorder_.SetDelegate(this);
   state_ = INITIALIZED;
+}
+
+void GCMClientImpl::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void GCMClientImpl::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void GCMClientImpl::Start(StartMode start_mode) {
@@ -375,7 +379,7 @@ void GCMClientImpl::OnReady() {
   state_ = READY;
   StartMCSLogin();
 
-  delegate_->OnGCMReady();
+  observers_.Notify(&Observer::OnGCMReady);
 }
 
 void GCMClientImpl::StartMCSLogin() {
@@ -587,11 +591,11 @@ void GCMClientImpl::DestroyStoreCallback(bool success) {
 
 void GCMClientImpl::ResetStoreCallback(bool success) {
   // Even an incomplete reset may invalidate registrations, and this might be
-  // the only opportunity to notify the delegate. For example a partial reset
+  // the only opportunity to notify observers. For example a partial reset
   // that deletes the "CURRENT" file will cause GCMStoreImpl to consider the DB
   // to no longer exist, in which case the next load will simply create a new
   // store rather than resetting it.
-  delegate_->OnStoreReset();
+  observers_.Notify(&Observer::OnStoreReset);
 
   if (!success) {
     LOG(ERROR) << "Failed to reset GCM store";
@@ -667,8 +671,8 @@ void GCMClientImpl::Register(
           clock_->Now() - registrations_iter->first->last_validated;
       if (time_since_last_validation < kTokenInvalidationInterval) {
         // Token is fresh. Use cached registration.
-        delegate_->OnRegisterFinished(registration_info,
-                                      registrations_iter->second, SUCCESS);
+        observers_.Notify(&Observer::OnRegisterFinished, registration_info,
+                          registrations_iter->second, SUCCESS);
         return;
       }
     }
@@ -734,8 +738,6 @@ void GCMClientImpl::OnRegisterCompleted(
     scoped_refptr<RegistrationInfo> registration_info,
     RegistrationRequest::Status status,
     const std::string& registration_id) {
-  DCHECK(delegate_);
-
   Result result;
   PendingRegistrationRequests::const_iterator iter =
       pending_registration_requests_.find(registration_info);
@@ -769,9 +771,9 @@ void GCMClientImpl::OnRegisterCompleted(
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
-  delegate_->OnRegisterFinished(
-      registration_info, result == SUCCESS ? registration_id : std::string(),
-      result);
+  observers_.Notify(&Observer::OnRegisterFinished, registration_info,
+                    result == SUCCESS ? registration_id : std::string(),
+                    result);
 
   if (iter != pending_registration_requests_.end()) {
     pending_registration_requests_.erase(iter);
@@ -882,7 +884,8 @@ void GCMClientImpl::Unregister(
   } else {
     auto iter = registrations_.find(registration_info);
     if (iter == registrations_.end()) {
-      delegate_->OnUnregisterFinished(registration_info, INVALID_PARAMETER);
+      observers_.Notify(&Observer::OnUnregisterFinished, registration_info,
+                        INVALID_PARAMETER);
       return;
     }
     registrations_.erase(iter);
@@ -936,7 +939,7 @@ void GCMClientImpl::OnUnregisterCompleted(
       result = SERVER_ERROR;
       break;
   }
-  delegate_->OnUnregisterFinished(registration_info, result);
+  observers_.Notify(&Observer::OnUnregisterFinished, registration_info, result);
 
   pending_unregistration_requests_.erase(registration_info);
 }
@@ -1037,17 +1040,17 @@ GCMClient::GCMStatistics GCMClientImpl::GetStatistics() const {
 }
 
 void GCMClientImpl::OnActivityRecorded() {
-  delegate_->OnActivityRecorded();
+  observers_.Notify(&Observer::OnActivityRecorded);
 }
 
 void GCMClientImpl::OnConnected(const GURL& current_server,
                                 const net::IPEndPoint& ip_endpoint) {
   // TODO(gcm): expose current server in debug page.
-  delegate_->OnActivityRecorded();
+  observers_.Notify(&Observer::OnActivityRecorded);
 }
 
 void GCMClientImpl::OnDisconnected() {
-  delegate_->OnActivityRecorded();
+  observers_.Notify(&Observer::OnActivityRecorded);
 }
 
 void GCMClientImpl::OnMessageReceivedFromMCS(const gcm::MCSMessage& message) {
@@ -1067,8 +1070,6 @@ void GCMClientImpl::OnMessageReceivedFromMCS(const gcm::MCSMessage& message) {
 void GCMClientImpl::OnMessageSentToMCS(const std::string& app_id,
                                        const std::string& message_id,
                                        MCSClient::MessageSendStatus status) {
-  DCHECK(delegate_);
-
   if (status == MCSClient::SENT) {
     // Send acknowledgments are intentionally ignored.
     return;
@@ -1085,15 +1086,15 @@ void GCMClientImpl::OnMessageSentToMCS(const std::string& app_id,
     SendErrorDetails send_error_details;
     send_error_details.message_id = message_id;
     send_error_details.result = GCMClient::TTL_EXCEEDED;
-    delegate_->OnMessageSendError(app_id, send_error_details);
+    observers_.Notify(&Observer::OnMessageSendError, app_id,
+                      send_error_details);
   } else {
-    delegate_->OnSendFinished(app_id, message_id, ToGCMClientResult(status));
+    observers_.Notify(&Observer::OnSendFinished, app_id, message_id,
+                      ToGCMClientResult(status));
   }
 }
 
 void GCMClientImpl::HandleIncomingMessage(const gcm::MCSMessage& message) {
-  DCHECK(delegate_);
-
   const mcs_proto::DataMessageStanza& data_message_stanza =
       reinterpret_cast<const mcs_proto::DataMessageStanza&>(
           message.GetProtobuf());
@@ -1178,7 +1179,7 @@ void GCMClientImpl::HandleIncomingDataMessage(
   incoming_message.data = message_data;
   incoming_message.raw_data = data_message_stanza.raw_data();
 
-  delegate_->OnMessageReceived(app_id, incoming_message);
+  observers_.Notify(&Observer::OnMessageReceived, app_id, incoming_message);
 }
 
 void GCMClientImpl::HandleIncomingDeletedMessages(
@@ -1196,7 +1197,7 @@ void GCMClientImpl::HandleIncomingDeletedMessages(
   recorder_.RecordDataMessageReceived(app_id, data_message_stanza.from(),
                                       data_message_stanza.ByteSizeLong(),
                                       GCMStatsRecorder::DELETED_MESSAGES);
-  delegate_->OnMessagesDeleted(app_id);
+  observers_.Notify(&Observer::OnMessagesDeleted, app_id);
 }
 
 void GCMClientImpl::HandleIncomingSendError(
@@ -1210,7 +1211,7 @@ void GCMClientImpl::HandleIncomingSendError(
 
   recorder_.RecordIncomingSendError(app_id, data_message_stanza.to(),
                                     data_message_stanza.id());
-  delegate_->OnMessageSendError(app_id, send_error_details);
+  observers_.Notify(&Observer::OnMessageSendError, app_id, send_error_details);
 }
 
 bool GCMClientImpl::HasStandaloneRegisteredApp() const {

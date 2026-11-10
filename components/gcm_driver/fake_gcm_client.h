@@ -8,8 +8,8 @@
 #include <map>
 
 #include "base/compiler_specific.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "components/fcm/engine/fcm_stats_recorder_impl.h"
 #include "components/gcm_driver/gcm_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -62,8 +62,9 @@ class FakeGCMClient : public GCMClient {
           get_socket_factory_callback,
       const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
       network::NetworkConnectionTracker* network_connection_tracker,
-      std::unique_ptr<Encryptor> encryptor,
-      Delegate* delegate) override;
+      std::unique_ptr<Encryptor> encryptor) override;
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
   void Start(StartMode start_mode) override;
   void Stop() override;
   void Register(scoped_refptr<RegistrationInfo> registration_info) override;
@@ -114,7 +115,7 @@ class FakeGCMClient : public GCMClient {
   void MessageSendError(const std::string& app_id,
                         const SendErrorDetails& send_error_details);
 
-  raw_ptr<Delegate> delegate_;
+  base::ObserverList<Observer, /*check_empty=*/true> observers_;
   std::string product_category_for_subtypes_;
   bool started_;
   StartMode start_mode_;

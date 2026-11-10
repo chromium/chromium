@@ -61,8 +61,7 @@ std::string FakeGCMClient::GenerateInstanceIDToken(
 FakeGCMClient::FakeGCMClient(
     const scoped_refptr<base::SequencedTaskRunner>& ui_thread,
     const scoped_refptr<base::SequencedTaskRunner>& io_thread)
-    : delegate_(nullptr),
-      started_(false),
+    : started_(false),
       start_mode_(DELAYED_START),
       start_mode_overridding_(RESPECT_START_MODE),
       ui_thread_(ui_thread),
@@ -80,11 +79,17 @@ void FakeGCMClient::Initialize(
         get_socket_factory_callback,
     const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
     network::NetworkConnectionTracker* network_connection_tracker,
-    std::unique_ptr<Encryptor> encryptor,
-    Delegate* delegate) {
+    std::unique_ptr<Encryptor> encryptor) {
   product_category_for_subtypes_ =
       chrome_build_info.product_category_for_subtypes;
-  delegate_ = delegate;
+}
+
+void FakeGCMClient::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void FakeGCMClient::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void FakeGCMClient::Start(StartMode start_mode) {
@@ -243,25 +248,26 @@ void FakeGCMClient::DeleteMessages(const std::string& app_id) {
 }
 
 void FakeGCMClient::Started() {
-  delegate_->OnGCMReady();
+  observers_.Notify(&Observer::OnGCMReady);
 }
 
 void FakeGCMClient::RegisterFinished(
     scoped_refptr<RegistrationInfo> registration_info,
     const std::string& registrion_id) {
-  delegate_->OnRegisterFinished(std::move(registration_info), registrion_id,
-                                registrion_id.empty() ? SERVER_ERROR : SUCCESS);
+  observers_.Notify(&Observer::OnRegisterFinished, registration_info,
+                    registrion_id,
+                    registrion_id.empty() ? SERVER_ERROR : SUCCESS);
 }
 
 void FakeGCMClient::UnregisterFinished(
     scoped_refptr<RegistrationInfo> registration_info) {
-  delegate_->OnUnregisterFinished(std::move(registration_info),
-                                  GCMClient::SUCCESS);
+  observers_.Notify(&Observer::OnUnregisterFinished, registration_info,
+                    GCMClient::SUCCESS);
 }
 
 void FakeGCMClient::SendFinished(const std::string& app_id,
                                  const OutgoingMessage& message) {
-  delegate_->OnSendFinished(app_id, message.id, SUCCESS);
+  observers_.Notify(&Observer::OnSendFinished, app_id, message.id, SUCCESS);
 
   // Simulate send error if message id contains a hint.
   if (message.id.find("error") != std::string::npos) {
@@ -280,23 +286,17 @@ void FakeGCMClient::SendFinished(const std::string& app_id,
 
 void FakeGCMClient::MessageReceived(const std::string& app_id,
                                     const IncomingMessage& message) {
-  if (delegate_) {
-    delegate_->OnMessageReceived(app_id, message);
-  }
+  observers_.Notify(&Observer::OnMessageReceived, app_id, message);
 }
 
 void FakeGCMClient::MessagesDeleted(const std::string& app_id) {
-  if (delegate_) {
-    delegate_->OnMessagesDeleted(app_id);
-  }
+  observers_.Notify(&Observer::OnMessagesDeleted, app_id);
 }
 
 void FakeGCMClient::MessageSendError(
     const std::string& app_id,
     const GCMClient::SendErrorDetails& send_error_details) {
-  if (delegate_) {
-    delegate_->OnMessageSendError(app_id, send_error_details);
-  }
+  observers_.Notify(&Observer::OnMessageSendError, app_id, send_error_details);
 }
 
 }  // namespace gcm

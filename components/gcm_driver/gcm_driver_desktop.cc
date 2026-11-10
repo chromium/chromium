@@ -33,7 +33,7 @@
 
 namespace gcm {
 
-class GCMDriverDesktop::IOWorker : public GCMClient::Delegate {
+class GCMDriverDesktop::IOWorker : public GCMClient::Observer {
  public:
   // Called on UI thread.
   IOWorker(const scoped_refptr<base::SequencedTaskRunner>& ui_thread,
@@ -42,9 +42,9 @@ class GCMDriverDesktop::IOWorker : public GCMClient::Delegate {
   IOWorker(const IOWorker&) = delete;
   IOWorker& operator=(const IOWorker&) = delete;
 
-  virtual ~IOWorker();
+  ~IOWorker() override;
 
-  // Overridden from GCMClient::Delegate:
+  // Overridden from GCMClient::Observer:
   // Called on IO thread.
   void OnRegisterFinished(scoped_refptr<RegistrationInfo> registration_info,
                           const std::string& registration_id,
@@ -131,6 +131,11 @@ GCMDriverDesktop::IOWorker::IOWorker(
 
 GCMDriverDesktop::IOWorker::~IOWorker() {
   DCHECK(io_thread_->RunsTasksInCurrentSequence());
+  // `gcm_client_` may be null if `Shutdown()` ran before `Initialize()` was
+  // scheduled.
+  if (gcm_client_) {
+    gcm_client_->RemoveObserver(this);
+  }
 }
 
 void GCMDriverDesktop::IOWorker::Initialize(
@@ -157,7 +162,8 @@ void GCMDriverDesktop::IOWorker::Initialize(
       chrome_build_info, store_path, blocking_task_runner, io_thread_,
       std::move(get_socket_factory_callback), url_loader_factory_for_io,
       network_connection_tracker,
-      std::make_unique<fcm::SystemEncryptor>(std::move(encryptor)), this);
+      std::make_unique<fcm::SystemEncryptor>(std::move(encryptor)));
+  gcm_client->AddObserver(this);
   gcm_client_ = std::move(gcm_client);
 
   if (start_mode_) {

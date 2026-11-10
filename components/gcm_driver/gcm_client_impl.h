@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -105,8 +106,9 @@ class GCMClientImpl : public GCMClient,
           get_socket_factory_callback,
       const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
       network::NetworkConnectionTracker* network_connection_tracker,
-      std::unique_ptr<Encryptor> encryptor,
-      GCMClient::Delegate* delegate) override;
+      std::unique_ptr<Encryptor> encryptor) override;
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
   void Start(StartMode start_mode) override;
   void Stop() override;
   void Register(scoped_refptr<RegistrationInfo> registration_info) override;
@@ -246,10 +248,10 @@ class GCMClientImpl : public GCMClient,
   // Completes the GCM store destroy request.
   void OnGCMStoreDestroyed(bool success);
 
-  // Handles incoming data message and dispatches it the delegate of this class.
+  // Handles incoming data message and dispatches it to observers of this class.
   void HandleIncomingMessage(const gcm::MCSMessage& message);
 
-  // Fires OnMessageReceived event on the delegate of this class, based on the
+  // Fires OnMessageReceived event on observers of this class, based on the
   // details in |data_message_stanza| and |message_data|.
   void HandleIncomingDataMessage(
       const std::string& app_id,
@@ -257,14 +259,14 @@ class GCMClientImpl : public GCMClient,
       const mcs_proto::DataMessageStanza& data_message_stanza,
       MessageData& message_data);
 
-  // Fires OnMessagesDeleted event on the delegate of this class, based on the
+  // Fires OnMessagesDeleted event on observers of this class, based on the
   // details in |data_message_stanza| and |message_data|.
   void HandleIncomingDeletedMessages(
       const std::string& app_id,
       const mcs_proto::DataMessageStanza& data_message_stanza,
       MessageData& message_data);
 
-  // Fires OnMessageSendError event on the delegate of this class, based on the
+  // Fires OnMessageSendError event on observers of this class, based on the
   // details in |data_message_stanza| and |message_data|.
   void HandleIncomingSendError(
       const std::string& app_id,
@@ -289,7 +291,7 @@ class GCMClientImpl : public GCMClient,
   // State of the GCM Client Implementation.
   State state_;
 
-  raw_ptr<GCMClient::Delegate> delegate_;
+  base::ObserverList<Observer, /*check_empty=*/true> observers_;
 
   // Flag to indicate if the GCM should be delay started until it is actually
   // used in either of the following cases:

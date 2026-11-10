@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "components/fcm/fcm_activity.h"
 #include "components/gcm_driver/common/gcm_message.h"
@@ -111,9 +112,9 @@ class GCMClient {
     fcm::RecordedActivities recorded_activities;
   };
 
-  // A delegate interface that allows the GCMClient instance to interact with
-  // its caller, i.e. notifying asynchronous event.
-  class Delegate {
+  // An observer interface that allows consumers to be notified of asynchronous
+  // GCMClient events and messages.
+  class Observer : public base::CheckedObserver {
    public:
     // Called when the registration completed successfully or an error occurs.
     // |registration_info|: the specific information required for the
@@ -123,7 +124,7 @@ class GCMClient {
     virtual void OnRegisterFinished(
         scoped_refptr<RegistrationInfo> registration_info,
         const std::string& registration_id,
-        Result result) = 0;
+        Result result) {}
 
     // Called when the unregistration completed.
     // |registration_info|: the specific information required for the
@@ -131,7 +132,7 @@ class GCMClient {
     // |result|: result of the unregistration.
     virtual void OnUnregisterFinished(
         scoped_refptr<RegistrationInfo> registration_info,
-        GCMClient::Result result) = 0;
+        GCMClient::Result result) {}
 
     // Called when the message is scheduled to send successfully or an error
     // occurs.
@@ -140,37 +141,37 @@ class GCMClient {
     // |result|: the type of the error if an error occured, success otherwise.
     virtual void OnSendFinished(const std::string& app_id,
                                 const std::string& message_id,
-                                Result result) = 0;
+                                Result result) {}
 
     // Called when a message has been received.
     // |app_id|: application ID.
     // |message|: message received.
     virtual void OnMessageReceived(const std::string& app_id,
-                                   const IncomingMessage& message) = 0;
+                                   const IncomingMessage& message) {}
 
     // Called when some messages have been deleted from the server.
     // |app_id|: application ID.
-    virtual void OnMessagesDeleted(const std::string& app_id) = 0;
+    virtual void OnMessagesDeleted(const std::string& app_id) {}
 
     // Called when a message failed to send to the server.
     // |app_id|: application ID.
     // |send_error_detials|: Details of the send error event, like mesasge ID.
     virtual void OnMessageSendError(
         const std::string& app_id,
-        const SendErrorDetails& send_error_details) = 0;
+        const SendErrorDetails& send_error_details) {}
 
     // Called when the GCM becomes ready. To get to this state, GCMClient
     // finished loading from the GCM store and retrieved the device check-in
     // from the server if it hadn't yet.
-    virtual void OnGCMReady() = 0;
+    virtual void OnGCMReady() {}
 
     // Called when activities are being recorded and a new activity has just
     // been recorded.
-    virtual void OnActivityRecorded() = 0;
+    virtual void OnActivityRecorded() {}
 
     // Called when the GCM store is reset (e.g. due to corruption), which
     // changes the device ID, invalidating all prior registrations.
-    virtual void OnStoreReset() = 0;
+    virtual void OnStoreReset() {}
   };
 
   GCMClient();
@@ -188,8 +189,6 @@ class GCMClient {
   // |get_socket_factory_callback|: a callback that can accept a receiver for a
   //     network::mojom::ProxyResolvingSocketFactory. It needs to be safe to
   //     run on any thread.
-  // |delegate|: the delegate whose methods will be called asynchronously in
-  //     response to events and messages.
   virtual void Initialize(
       const fcm::ChromeBuildInfo& chrome_build_info,
       const base::FilePath& store_path,
@@ -200,8 +199,11 @@ class GCMClient {
           get_socket_factory_callback,
       const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
       network::NetworkConnectionTracker* network_connection_tracker_,
-      std::unique_ptr<Encryptor> encryptor,
-      Delegate* delegate) = 0;
+      std::unique_ptr<Encryptor> encryptor) = 0;
+
+  // Adds or removes an observer notified of asynchronous events and messages.
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
 
   // This will initiate the GCM connection only if |start_mode| means to start
   // the GCM immediately or the GCM registration records are found in the store.
@@ -213,7 +215,7 @@ class GCMClient {
   virtual void Stop() = 0;
 
   // Registers with the server to access the provided service.
-  // Delegate::OnRegisterFinished will be called asynchronously upon completion.
+  // Observer::OnRegisterFinished will be called asynchronously upon completion.
   // |registration_info|: the specific information required for the
   //                      registration. For GCM, it will contain app id and
   //                      sender IDs. For InstanceID, it will contain app_id,
@@ -228,7 +230,7 @@ class GCMClient {
       const std::string& registration_id) = 0;
 
   // Unregisters from the server to stop accessing the provided service.
-  // Delegate::OnUnregisterFinished will be called asynchronously upon
+  // Observer::OnUnregisterFinished will be called asynchronously upon
   // completion.
   // |registration_info|: the specific information required for the
   //                      registration. For GCM, it will contain app id (sender
@@ -237,7 +239,7 @@ class GCMClient {
   virtual void Unregister(
       scoped_refptr<RegistrationInfo> registration_info) = 0;
 
-  // Sends a message to a given receiver. Delegate::OnSendFinished will be
+  // Sends a message to a given receiver. Observer::OnSendFinished will be
   // called asynchronously upon completion.
   // |app_id|: application ID.
   // |receiver_id|: registration ID of the receiver party.
