@@ -75,9 +75,6 @@ tast.bruschetta.Toolkit.qt6_x11@betty
 # https://crbug.com/432304431
 tast.featured.FieldTrialEarlyBoot.active_trial
 
-# https://crbug.com/460052469
-tast.apps.LaunchHelpAppFromShortcut.stable_guest
-
 # https://crbug.com/460054243
 tast.inputs.VirtualKeyboardTypingUserMode.guest
 
