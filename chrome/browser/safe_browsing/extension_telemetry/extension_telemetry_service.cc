@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
@@ -54,6 +55,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/pref_names.h"
 #include "components/enterprise/buildflags/buildflags.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_service.h"
@@ -457,6 +459,25 @@ ExtensionTelemetryService::~ExtensionTelemetryService() = default;
 ExtensionTelemetryService* ExtensionTelemetryService::Get(Profile* profile) {
   return ExtensionTelemetryServiceFactory::GetInstance()->GetForProfile(
       profile);
+}
+
+// static
+ExtensionTelemetryService* ExtensionTelemetryService::GetForSignal(
+    content::BrowserContext* caller,
+    content::BrowserContext* target) {
+  CHECK(caller);
+  // Signals acting on an Isolated Mode target go only to that profile's
+  // service. Never fall back to the caller's service.
+  if (target &&
+      enterprise_isolated_mode::IsExtensionTelemetryEnabledInIsolatedMode()) {
+    Profile* target_profile = Profile::FromBrowserContext(target);
+    if (target_profile->IsEnterpriseIsolatedModeProfile()) {
+      return Get(target_profile);
+    }
+  }
+  // Everything else is attributed to the caller, as before. This includes
+  // Isolated Mode callers without a target (e.g. split mode extensions).
+  return Get(Profile::FromBrowserContext(caller));
 }
 
 ExtensionTelemetryService::ExtensionTelemetryService(

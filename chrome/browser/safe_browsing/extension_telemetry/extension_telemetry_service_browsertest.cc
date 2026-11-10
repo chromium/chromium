@@ -25,6 +25,8 @@
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
+#include "components/enterprise/isolated_mode/scoped_isolated_mode_override_for_testing.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -1193,5 +1195,90 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
   }
   EXPECT_TRUE(found_script_injection_signal);
 }
+
+// Enables Milestone 2 so that `GetForSignal()` checks the target's profile
+// type, but without Isolated Mode replacing Incognito.
+class ExtensionTelemetryServiceIncognitoBrowserTest
+    : public ExtensionTelemetryServiceBrowserTest {
+ public:
+  ExtensionTelemetryServiceIncognitoBrowserTest() {
+    milestone2_feature_list_.InitAndEnableFeature(
+        enterprise_isolated_mode::kEnterpriseIsolatedModeMilestone2);
+  }
+
+ private:
+  base::test::ScopedFeatureList milestone2_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceIncognitoBrowserTest,
+                       GetForSignalKeepsIncognitoSignalsInCaller) {
+  Profile* incognito_profile = CreateIncognitoBrowser()->GetProfile();
+  ASSERT_TRUE(incognito_profile->IsIncognitoProfile());
+  EXPECT_EQ(ExtensionTelemetryService::GetForSignal(browser()->GetProfile(),
+                                                    incognito_profile),
+            telemetry_service());
+}
+
+class ExtensionTelemetryServiceIsolatedModeBrowserTest
+    : public ExtensionTelemetryServiceBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ExtensionTelemetryServiceIsolatedModeBrowserTest() {
+    isolated_mode_feature_list_.InitWithFeatureState(
+        enterprise_isolated_mode::kEnterpriseIsolatedModeMilestone2,
+        IsMilestone2Enabled());
+  }
+
+  bool IsMilestone2Enabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList isolated_mode_feature_list_;
+  enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
+      scoped_isolated_mode_;
+};
+
+IN_PROC_BROWSER_TEST_P(ExtensionTelemetryServiceIsolatedModeBrowserTest,
+                       GetForSignal) {
+  Profile* regular_profile = browser()->GetProfile();
+  Profile* isolated_profile = CreateIncognitoBrowser()->GetProfile();
+  ASSERT_TRUE(isolated_profile->IsEnterpriseIsolatedModeProfile());
+  ExtensionTelemetryService* regular_service = telemetry_service();
+
+  // Signals not involving the Isolated Mode profile are unchanged.
+  EXPECT_EQ(
+      ExtensionTelemetryService::GetForSignal(regular_profile, regular_profile),
+      regular_service);
+  EXPECT_EQ(ExtensionTelemetryService::GetForSignal(regular_profile,
+                                                    /*target=*/nullptr),
+            regular_service);
+
+  if (!IsMilestone2Enabled()) {
+    // Signals resolve from the caller, as before.
+    EXPECT_EQ(ExtensionTelemetryService::GetForSignal(regular_profile,
+                                                      isolated_profile),
+              regular_service);
+    EXPECT_EQ(ExtensionTelemetryService::GetForSignal(isolated_profile,
+                                                      /*target=*/nullptr),
+              nullptr);
+    return;
+  }
+
+  // The Isolated Mode profile has no service yet, so its signals are dropped
+  // rather than reported by the caller's service.
+  EXPECT_EQ(ExtensionTelemetryService::GetForSignal(regular_profile,
+                                                    isolated_profile),
+            nullptr);
+  EXPECT_EQ(ExtensionTelemetryService::GetForSignal(isolated_profile,
+                                                    /*target=*/nullptr),
+            nullptr);
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         ExtensionTelemetryServiceIsolatedModeBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Milestone2Enabled"
+                                             : "Milestone2Disabled";
+                         });
 
 }  // namespace safe_browsing
