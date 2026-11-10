@@ -8,8 +8,6 @@ import static androidx.browser.customtabs.CustomTabsIntent.CLOSE_BUTTON_POSITION
 import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_DARK;
 import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_CLOSE_BUTTON_POSITION;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withAlpha;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
@@ -18,7 +16,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.customtabs.CustomTabsTestUtils.createTestBitmap;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.ui.test.util.ViewUtils.waitForVisibleView;
 
 import android.app.PendingIntent;
 import android.content.Context;
@@ -186,8 +184,7 @@ public class CustomTabActivityRenderTest {
             throws IOException {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(mIntent);
         if (expectTitle) {
-            onViewWaiting(allOf(withId(R.id.title_bar), withAlpha(1.f)))
-                    .check(matches(isDisplayed()));
+            waitForVisibleView(allOf(withId(R.id.title_bar), withAlpha(1.f)));
         }
         View toolbarView = mCustomTabActivityTestRule.getActivity().findViewById(R.id.toolbar);
         String httpStr = mRunWithHttps ? "https" : "http";
