@@ -83,8 +83,7 @@ class RootBeginFrameSourceWebView : public BeginFrameSourceWebView {
  public:
   static RootBeginFrameSourceWebView* GetInstance();
 
-  void OnUpdateRefreshRate(JNIEnv* env,
-                           float refresh_rate);
+  void OnUpdateRefreshRate(float refresh_rate);
 
   // As this is implementation of root BeginFrameSourceWebView this is actual
   // implementation of scheduling callbacks.

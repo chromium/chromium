@@ -19,26 +19,26 @@ import org.chromium.ui.display.DisplayAndroid.DisplayAndroidObserver;
 @Lifetime.Singleton
 @NullMarked
 public class RootBeginFrameSourceWebView implements DisplayAndroidObserver {
-    private final long mNativeRootBeginFrameSourceWebView;
     private final DisplayAndroid mDisplayAndroid;
 
     @CalledByNative
-    private RootBeginFrameSourceWebView(long nativeRootBeginFrameSourceWebView) {
-        mNativeRootBeginFrameSourceWebView = nativeRootBeginFrameSourceWebView;
-
+    private RootBeginFrameSourceWebView() {
         mDisplayAndroid = DisplayAndroid.getNonMultiDisplay(ContextUtils.getApplicationContext());
         mDisplayAndroid.addObserver(this);
-        onRefreshRateChanged(mDisplayAndroid.getRefreshRate());
+    }
+
+    @CalledByNative
+    private float getRefreshRate() {
+        return mDisplayAndroid.getRefreshRate();
     }
 
     @Override
     public void onRefreshRateChanged(float refreshRate) {
-        RootBeginFrameSourceWebViewJni.get()
-                .onUpdateRefreshRate(mNativeRootBeginFrameSourceWebView, refreshRate);
+        RootBeginFrameSourceWebViewJni.get().onUpdateRefreshRate(refreshRate);
     }
 
     @NativeMethods
     interface Natives {
-        void onUpdateRefreshRate(long nativeRootBeginFrameSourceWebView, float refreshRate);
+        void onUpdateRefreshRate(float refreshRate);
     }
 }

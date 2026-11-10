@@ -129,17 +129,23 @@ RootBeginFrameSourceWebView::RootBeginFrameSourceWebView()
                           60.0f,
                           /*requires_align_with_java=*/true),
       j_object_(Java_RootBeginFrameSourceWebView_Constructor(
-          jni_zero::AttachCurrentThread(),
-          reinterpret_cast<int64_t>(this))) {
+          jni_zero::AttachCurrentThread())) {
+  begin_frame_source_.UpdateRefreshRate(
+      Java_RootBeginFrameSourceWebView_getRefreshRate(
+          jni_zero::AttachCurrentThread(), j_object_));
   ObserveBeginFrameSource(&begin_frame_source_);
 }
 
 RootBeginFrameSourceWebView::~RootBeginFrameSourceWebView() = default;
 
-void RootBeginFrameSourceWebView::OnUpdateRefreshRate(
+void RootBeginFrameSourceWebView::OnUpdateRefreshRate(float refresh_rate) {
+  begin_frame_source_.UpdateRefreshRate(refresh_rate);
+}
+
+static void JNI_RootBeginFrameSourceWebView_OnUpdateRefreshRate(
     JNIEnv* env,
     float refresh_rate) {
-  begin_frame_source_.UpdateRefreshRate(refresh_rate);
+  RootBeginFrameSourceWebView::GetInstance()->OnUpdateRefreshRate(refresh_rate);
 }
 
 void RootBeginFrameSourceWebView::AfterBeginFrame() {
