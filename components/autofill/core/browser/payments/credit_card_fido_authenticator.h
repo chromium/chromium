@@ -70,6 +70,24 @@ class CreditCardFidoAuthenticator
   // The response of FIDO authentication, including necessary information needed
   // by the subclasses.
   struct FidoAuthenticationResponse {
+    // The type of failure when FIDO authentication fails.
+    enum class FailureType {
+      // Default value. Used when authentication succeeded, or when FIDO user
+      // verification failed or was cancelled before unmasking the card.
+      kUnknown = 0,
+      // The card could not be looked up due to card auth declined or failed.
+      kVerificationDeclined = 1,
+      // The request failed due to transient failures when retrieving virtual
+      // card information.
+      kVirtualCardRetrievalTransientFailure = 2,
+      // The request failed due to permanent failures when retrieving virtual
+      // card information.
+      kVirtualCardRetrievalPermanentFailure = 3,
+      // The request failed for technical reasons, such as a closing page or
+      // lack of network connection.
+      kGenericFailure = 4,
+    };
+
     // Whether the authentication was successful.
     bool did_succeed = false;
     // The fetched credit card if the authentication was successful. Can be
@@ -77,9 +95,8 @@ class CreditCardFidoAuthenticator
     raw_ptr<const CreditCard> card = nullptr;
     // The CVC of the fetched credit card. Can be empty string.
     std::u16string cvc;
-    // The type of the failure of the full card request.
-    payments::FullCardRequest::FailureType failure_type =
-        payments::FullCardRequest::UNKNOWN;
+    // The type of failure when FIDO authentication fails.
+    FailureType failure_type = FailureType::kUnknown;
   };
   class Requester {
    public:

@@ -424,9 +424,9 @@ TEST_F(CreditCardFidoAuthenticatorTest,
              "", /*is_virtual_card=*/true);
 
   EXPECT_FALSE((*requester().did_succeed()));
-  EXPECT_EQ(
-      requester().failure_type(),
-      payments::FullCardRequest::VIRTUAL_CARD_RETRIEVAL_PERMANENT_FAILURE);
+  EXPECT_EQ(requester().failure_type(),
+            CreditCardFidoAuthenticator::FidoAuthenticationResponse::
+                FailureType::kVirtualCardRetrievalPermanentFailure);
 }
 
 TEST_F(CreditCardFidoAuthenticatorTest, AuthenticateCard_Success) {

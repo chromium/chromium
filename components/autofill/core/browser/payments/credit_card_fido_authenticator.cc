@@ -532,8 +532,29 @@ void CreditCardFidoAuthenticator::OnFullCardRequestFailed(
   if (!requester_)
     return;
 
+  const FidoAuthenticationResponse::FailureType response_failure_type =
+      [failure_type] {
+        switch (failure_type) {
+          case payments::FullCardRequest::VERIFICATION_DECLINED:
+            return FidoAuthenticationResponse::FailureType::
+                kVerificationDeclined;
+          case payments::FullCardRequest::
+              VIRTUAL_CARD_RETRIEVAL_TRANSIENT_FAILURE:
+            return FidoAuthenticationResponse::FailureType::
+                kVirtualCardRetrievalTransientFailure;
+          case payments::FullCardRequest::
+              VIRTUAL_CARD_RETRIEVAL_PERMANENT_FAILURE:
+            return FidoAuthenticationResponse::FailureType::
+                kVirtualCardRetrievalPermanentFailure;
+          case payments::FullCardRequest::GENERIC_FAILURE:
+            return FidoAuthenticationResponse::FailureType::kGenericFailure;
+          case payments::FullCardRequest::PROMPT_CLOSED:
+          case payments::FullCardRequest::UNKNOWN:
+            NOTREACHED();
+        }
+      }();
   requester_->OnFIDOAuthenticationComplete(FidoAuthenticationResponse{
-      .did_succeed = false, .failure_type = failure_type});
+      .did_succeed = false, .failure_type = response_failure_type});
 }
 
 blink::mojom::PublicKeyCredentialRequestOptionsPtr

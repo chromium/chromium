@@ -48,7 +48,6 @@
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
-#include "components/autofill/core/browser/payments/full_card_request.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/multiple_request_payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -952,6 +951,8 @@ void CreditCardAccessManager::OnFIDOAuthenticationComplete(
   payments_autofill_client().CloseWebauthnDialog();
 #endif
 
+  using FailureType =
+      CreditCardFidoAuthenticator::FidoAuthenticationResponse::FailureType;
   if (response.did_succeed) {
     // Save credit card for caching purpose.
     if (response.card) {
@@ -959,19 +960,17 @@ void CreditCardAccessManager::OnFIDOAuthenticationComplete(
     }
     LogMetricsAndFillFormForServerUnmaskFlows(unmask_auth_flow_type_);
     Reset();
-  } else if (
-      response.failure_type ==
-          payments::FullCardRequest::VIRTUAL_CARD_RETRIEVAL_TRANSIENT_FAILURE ||
-      response.failure_type ==
-          payments::FullCardRequest::VIRTUAL_CARD_RETRIEVAL_PERMANENT_FAILURE) {
+  } else if (response.failure_type ==
+                 FailureType::kVirtualCardRetrievalTransientFailure ||
+             response.failure_type ==
+                 FailureType::kVirtualCardRetrievalPermanentFailure) {
     // If it is an virtual card retrieval error, we don't want to invoke the CVC
     // authentication afterwards. Instead reset all states and invoke the error
     // dialog.
     payments_autofill_client().ShowAutofillErrorDialog(
         AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
             /*is_permanent_error=*/response.failure_type ==
-            payments::FullCardRequest::
-                VIRTUAL_CARD_RETRIEVAL_PERMANENT_FAILURE));
+            FailureType::kVirtualCardRetrievalPermanentFailure));
 
     if (card_->record_type() == CreditCard::RecordType::kVirtualCard) {
       autofill_metrics::LogServerCardUnmaskResult(

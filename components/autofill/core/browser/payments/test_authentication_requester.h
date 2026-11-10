@@ -11,7 +11,6 @@
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
-#include "components/autofill/core/browser/payments/full_card_request.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
 
@@ -83,9 +82,12 @@ class TestAuthenticationRequester
     return risk_based_authentication_response_;
   }
 
-  payments::FullCardRequest::FailureType failure_type() {
+#if !BUILDFLAG(IS_IOS)
+  CreditCardFidoAuthenticator::FidoAuthenticationResponse::FailureType
+  failure_type() const {
     return failure_type_;
   }
+#endif
 
  private:
   // Set when CreditCardFidoAuthenticator invokes IsUserVerifiableCallback().
@@ -94,10 +96,13 @@ class TestAuthenticationRequester
   // Is set to true if authentication was successful.
   std::optional<bool> did_succeed_;
 
-  // The failure type of the full card request. Set when the request is
+#if !BUILDFLAG(IS_IOS)
+  // The failure type of the FIDO authentication. Set when the request is
   // finished.
-  payments::FullCardRequest::FailureType failure_type_ =
-      payments::FullCardRequest::UNKNOWN;
+  CreditCardFidoAuthenticator::FidoAuthenticationResponse::FailureType
+      failure_type_ = CreditCardFidoAuthenticator::FidoAuthenticationResponse::
+          FailureType::kUnknown;
+#endif
 
   // The card number returned from On*AuthenticationComplete().
   std::u16string number_;
