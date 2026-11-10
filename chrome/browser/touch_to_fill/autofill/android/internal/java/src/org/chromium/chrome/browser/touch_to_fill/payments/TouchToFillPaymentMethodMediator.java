@@ -1150,16 +1150,21 @@ class TouchToFillPaymentMethodMediator implements AutofillImageFetcher.Observer 
     }
 
     void hideSheet() {
-        onDismissed(BottomSheetController.StateChangeReason.NONE);
+        dismiss(BottomSheetController.StateChangeReason.NONE);
     }
 
     void setVisible(boolean visible) {
         mModel.set(VISIBLE, visible);
     }
 
+    public void onDismissed(@StateChangeReason int reason) {
+        if (!mModel.get(VISIBLE)) return; // Dismiss only if not hidden via setVisible(false).
+        dismiss(reason);
+    }
+
     // TODO(crbug.com/461545861): Split logic by screen (e.g. BNPL_ISSUER_SELECTION_SCREEN) instead
     // of the type of payment method set (e.g. mIbans).
-    public void onDismissed(@StateChangeReason int reason) {
+    private void dismiss(@StateChangeReason int reason) {
         if (isDestroyed()) return;
         // Tear down first so that re-entrant calls (e.g. via native callbacks or VISIBLE
         // observers) return early.

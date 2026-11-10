@@ -1155,9 +1155,25 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
         mCoordinator.setVisible(false);
         assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(false));
+        // Simulate BottomSheetObserver firing DISMISS_HANDLER when hideContent() finishes hiding
+        // the sheet in the real browser; it must not dismiss the mediator or notify the delegate.
+        mTouchToFillPaymentMethodModel.get(DISMISS_HANDLER).onResult(StateChangeReason.NONE);
+        verify(mDelegateMock, times(0)).onDismissed(anyBoolean(), anyBoolean());
 
         mCoordinator.setVisible(true);
         assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
+    }
+
+    @Test
+    public void testHideSheetAfterSetVisibleFalseCallsOnDismissed() {
+        mCoordinator.getMediatorForTesting().showProgressScreen();
+        assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
+
+        mCoordinator.setVisible(false);
+        assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(false));
+
+        mCoordinator.hideSheet();
+        verify(mDelegateMock).onDismissed(/* dismissedByUser= */ false, /* shouldReshow= */ false);
     }
 
     @Test
