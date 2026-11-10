@@ -1551,21 +1551,7 @@ void DesktopNativeWidgetAura::OnScrollEvent(ui::ScrollEvent* event) {
     return;
   }
 
-  if (event->type() == ui::EventType::kScroll) {
-    native_widget_delegate_->OnScrollEvent(event);
-    if (event->handled()) {
-      return;
-    }
-
-    // Convert unprocessed scroll events into wheel events.
-    ui::MouseWheelEvent mwe(*event->AsScrollEvent());
-    native_widget_delegate_->OnMouseEvent(&mwe);
-    if (mwe.handled()) {
-      event->SetHandled();
-    }
-  } else {
-    native_widget_delegate_->OnScrollEvent(event);
-  }
+  native_widget_delegate_->OnScrollEvent(event);
 }
 
 void DesktopNativeWidgetAura::OnGestureEvent(ui::GestureEvent* event) {

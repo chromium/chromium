@@ -2448,11 +2448,24 @@ void Widget::OnScrollEvent(ui::ScrollEvent* event) {
   ui::ScrollEvent event_copy(*event);
   SendEventToSink(&event_copy);
 
+  // `ui::ScrollEvent` also represents fling events (`kScrollFlingStart` and
+  // `kScrollFlingCancel`), which should not be converted into mouse wheel
+  // events.
+  if (event_copy.type() != ui::EventType::kScroll) {
+    return;
+  }
+
   // Convert unhandled ui::EventType::kScroll events into
-  // ui::EventType::kMousewheel events.
-  if (!event_copy.handled() && event_copy.type() == ui::EventType::kScroll) {
-    ui::MouseWheelEvent wheel(*event);
-    OnMouseEvent(&wheel);
+  // ui::EventType::kMousewheel events, and report whether either one was
+  // handled so that callers do not convert the event again.
+  if (event_copy.handled()) {
+    event->SetHandled();
+    return;
+  }
+  ui::MouseWheelEvent wheel(*event);
+  OnMouseEvent(&wheel);
+  if (wheel.handled()) {
+    event->SetHandled();
   }
 }
 

@@ -422,6 +422,55 @@ TEST_F(DesktopNativeWidgetAuraTest, WidgetCanBeDestroyedFromNestedLoop) {
 // DesktopNativeWidgetAura::CloseNow is protected.
 // Create a new object to override CloseNow so we can test deleting
 // the native widget.
+// Verifies that an unhandled scroll event dispatched to a desktop widget is
+// converted into exactly one mouse wheel event. Converting it more than once
+// multiplies the scroll distance, which, e.g., makes tiny touchpad scrolls over
+// the tab strip switch tabs on Linux. See crbug.com/40650182.
+TEST_F(DesktopNativeWidgetAuraTest, UnhandledScrollConvertedToOneWheelEvent) {
+  // Counts wheel events and, optionally, consumes them. Scroll events are
+  // never consumed, so they get converted into wheel events.
+  class WheelCountView : public View {
+   public:
+    void OnMouseEvent(ui::MouseEvent* event) override {
+      if (event->type() == ui::EventType::kMousewheel) {
+        ++wheel_count;
+        if (consume_wheel) {
+          event->SetHandled();
+        }
+      }
+    }
+
+    int wheel_count = 0;
+    bool consume_wheel = false;
+  };
+
+  std::unique_ptr<Widget> widget =
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                       Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  widget->SetBounds(gfx::Rect(0, 0, 100, 100));
+  auto* view = widget->SetContentsView(std::make_unique<WheelCountView>());
+  widget->Show();
+
+  auto dispatch_scroll = [&widget]() {
+    ui::ScrollEvent scroll(ui::EventType::kScroll, gfx::Point(50, 50),
+                           ui::EventTimeForNow(), 0, 0, 20, 0, 20, 2);
+    ui::EventDispatchDetails details =
+        widget->GetNativeWindow()->GetHost()->GetEventSink()->OnEventFromSource(
+            &scroll);
+    EXPECT_FALSE(details.dispatcher_destroyed);
+    return scroll.handled();
+  };
+
+  EXPECT_FALSE(dispatch_scroll());
+  EXPECT_EQ(1, view->wheel_count);
+
+  // A handled wheel event marks the original scroll event as handled.
+  view->wheel_count = 0;
+  view->consume_wheel = true;
+  EXPECT_TRUE(dispatch_scroll());
+  EXPECT_EQ(1, view->wheel_count);
+}
+
 class TestDesktopNativeWidgetAura : public DesktopNativeWidgetAura {
  public:
   explicit TestDesktopNativeWidgetAura(internal::NativeWidgetDelegate* delegate)
