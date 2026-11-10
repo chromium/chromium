@@ -1715,6 +1715,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/settings/SettingsFragmentRegistryTest.java",
       "src/org/chromium/chrome/browser/settings/SettingsHostFragmentTest.java",
       "src/org/chromium/chrome/browser/settings/SettingsHostUtilTest.java",
+      "src/org/chromium/chrome/browser/settings/SettingsIaArmHelperTest.java",
       "src/org/chromium/chrome/browser/settings/SettingsIconFactoryTest.java",
       "src/org/chromium/chrome/browser/settings/SettingsInTabNavigationDelegateTest.java",
       "src/org/chromium/chrome/browser/settings/SettingsInTabTest.java",

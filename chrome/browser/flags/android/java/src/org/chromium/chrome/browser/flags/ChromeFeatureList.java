@@ -2470,6 +2470,13 @@ public abstract class ChromeFeatureList {
                     "read_aloud_audio_overviews_supported_languages",
                     "en");
 
+    /**
+     * Experiment arm selector for {@link #SETTINGS_IA_REORGANIZATION}: "direction_1" (default),
+     * "direction_2" or "direction_3".
+     */
+    public static final StringCachedFeatureParam sSettingsIaReorganizationArm =
+            newStringCachedFeatureParam(SETTINGS_IA_REORGANIZATION, "arm", "direction_1");
+
     public static final BooleanCachedFeatureParam sShouldConsiderLanguageInOverviewReadability =
             newBooleanCachedFeatureParam(
                     READALOUD_AUDIO_OVERVIEWS,
@@ -2625,6 +2632,7 @@ public abstract class ChromeFeatureList {
                     sReadAloudAudioOverviewsSpeedAdditionPercentage,
                     sReadAloudAudioOverviewsSupportedLanguages,
                     sSafetyFrePromoArm,
+                    sSettingsIaReorganizationArm,
                     sShouldConsiderLanguageInOverviewReadability,
                     sStartSurfaceReturnTimeTabletSecs,
                     sTabStorageSqlitePrototypePhase,

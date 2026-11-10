@@ -3371,6 +3371,18 @@ const FeatureEntry::FeatureVariation kClankOmniboxMinimizationVariations[] = {
      nullptr},
 };
 
+const FeatureEntry::FeatureParam kSettingsIaReorganizationDirection1Params[] = {
+    {"arm", "direction_1"}};
+const FeatureEntry::FeatureParam kSettingsIaReorganizationDirection2Params[] = {
+    {"arm", "direction_2"}};
+const FeatureEntry::FeatureParam kSettingsIaReorganizationDirection3Params[] = {
+    {"arm", "direction_3"}};
+const FeatureEntry::FeatureVariation kSettingsIaReorganizationVariations[] = {
+    {"Direction 1", kSettingsIaReorganizationDirection1Params, nullptr},
+    {"Direction 2", kSettingsIaReorganizationDirection2Params, nullptr},
+    {"Direction 3", kSettingsIaReorganizationDirection3Params, nullptr},
+};
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
@@ -7904,7 +7916,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"settings-ia-reorganization",
      flag_descriptions::kSettingsIaReorganizationName,
      flag_descriptions::kSettingsIaReorganizationDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kSettingsIaReorganization)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kSettingsIaReorganization,
+                                    kSettingsIaReorganizationVariations,
+                                    "SettingsIaReorganization")},
 
     {"settings-in-tab", flag_descriptions::kSettingsInTabName,
      flag_descriptions::kSettingsInTabDescription, kOsAndroid,
