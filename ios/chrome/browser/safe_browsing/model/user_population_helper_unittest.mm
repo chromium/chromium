@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
+#import "ios/chrome/browser/signin/model/signin_test_util.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -139,8 +140,7 @@ TEST_F(UserPopulationHelperTest,
   // Loading the reserved managed profile keeps the total profile count at 2 and
   // increments the loaded profile count to 2.
   TestProfileIOS* managed_profile =
-      profile_manager.AddManagedProfileForGaiaIDWithBuilder(
-          managed_identity.gaiaId, TestProfileIOS::Builder());
+      AddManagedProfileWithBuilder(profile_manager, managed_identity);
   ASSERT_TRUE(managed_profile);
 
   population = GetUserPopulationForProfile(profile);
