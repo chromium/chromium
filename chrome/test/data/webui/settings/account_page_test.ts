@@ -276,4 +276,52 @@ suite('AccountPage', function() {
     });
     assertFalse(manageGoogleAccount.hidden);
   });
+
+  // Verifies that the Device tab visibility link row is only shown when the
+  // feature is enabled and navigates to the Device tab visibility subpage.
+  test('DeviceTabVisibilityLinkRow', async function() {
+    const linkRowSelector = '#deviceTabVisibilityLinkRow';
+    // Explicitly disable the feature flag and verify the link row is hidden.
+    loadTimeData.overrideValues({
+      enableDeviceTabVisibilitySettings: false,
+    });
+    resetRouterForTesting();
+    accountSettingsPage = createSettingsAccountPageElement();
+    await microtasksFinished();
+    assertFalse(isChildVisible(accountSettingsPage, linkRowSelector));
+
+    // Enable the feature flag and recreate the Account settings page.
+    loadTimeData.overrideValues({
+      enableDeviceTabVisibilitySettings: true,
+    });
+    resetRouterForTesting();
+    accountSettingsPage = createSettingsAccountPageElement();
+    Router.getInstance().navigateTo(routes.ACCOUNT);
+    await microtasksFinished();
+
+    const row = accountSettingsPage.shadowRoot.querySelector<HTMLElement>(
+        linkRowSelector);
+    assertTrue(!!row);
+    assertTrue(isChildVisible(accountSettingsPage, linkRowSelector));
+
+    // Clicking the row navigates the Settings router to the subpage route.
+    row.click();
+    await microtasksFinished();
+    assertEquals(
+        routes.DEVICE_TAB_VISIBILITY, Router.getInstance().getCurrentRoute());
+
+    // Navigate back to the Account page and verify the link row is visible
+    // before signing out.
+    Router.getInstance().navigateTo(routes.ACCOUNT);
+    await microtasksFinished();
+    assertTrue(isChildVisible(accountSettingsPage, linkRowSelector));
+
+    // The link row is hidden when the user is signed out.
+    await simulateSyncStatus({
+      signedInState: SignedInState.SIGNED_OUT,
+      hasError: false,
+      statusAction: StatusAction.NO_ACTION,
+    });
+    assertFalse(isChildVisible(accountSettingsPage, linkRowSelector));
+  });
 });

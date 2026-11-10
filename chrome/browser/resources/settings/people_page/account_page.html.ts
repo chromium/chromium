@@ -109,6 +109,15 @@ export function getHtml(this: SettingsAccountPageElement) {
           </settings-sync-encryption-options>
         </cr-collapse>
 
+        ${this.enableDeviceTabVisibilitySettings_ ? html`
+          <cr-link-row id="deviceTabVisibilityLinkRow" class="hr"
+              label="$i18n{deviceTabVisibilityTitle}"
+              sub-label="$i18n{deviceTabVisibilitySublabel}"
+              @click="${this.onDeviceTabVisibilityClick_}"
+              role-description="$i18n{subpageArrowRoleDescription}">
+          </cr-link-row>
+        ` : ''}
+
       </div>
     </div>
   ` : ''}

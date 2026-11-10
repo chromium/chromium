@@ -468,6 +468,9 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
       'manageProfile',
       // </if>
     ];
+    if (loadTimeData.getBoolean('enableDeviceTabVisibilitySettings')) {
+      ids.push('deviceTabVisibility');
+    }
     assert(ids.includes(childViewId));
 
     let triggerId: string|null = null;
@@ -478,6 +481,11 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
         break;
       case 'account':
         assert(loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos'));
+        triggerId = 'account-subpage-row';
+        break;
+      case 'deviceTabVisibility':
+        assert(loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos'));
+        assert(loadTimeData.getBoolean('enableDeviceTabVisibilitySettings'));
         triggerId = 'account-subpage-row';
         break;
       case 'googleServices':

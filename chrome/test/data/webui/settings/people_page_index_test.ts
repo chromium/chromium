@@ -5,11 +5,13 @@
 import 'chrome://settings/settings.js';
 import 'chrome://settings/lazy_load.js';
 
+import {DeviceTabVisibilityBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import type {SettingsPeoplePageIndexElement} from 'chrome://settings/settings.js';
 import {loadTimeData, PrefsBrowserProxy, PrefService, resetRouterForTesting, Router, routes, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
+import {TestDeviceTabVisibilityBrowserProxy} from './test_device_tab_visibility_browser_proxy.js';
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
@@ -247,4 +249,31 @@ suite('PeoplePageIndex', function() {
         assertFalse(result.canceled);
         assertFalse(result.wasClearSearch);
       });
+
+  // Verifies that navigating to DEVICE_TAB_VISIBILITY activates the
+  // deviceTabVisibility view in people-page-index when the feature is enabled.
+  test('RoutingWithDeviceTabVisibilitySettings', async function() {
+    const viewId = 'deviceTabVisibility';
+    // Use the test browser proxy and enable the feature before initializing
+    // the router and view manager.
+    DeviceTabVisibilityBrowserProxyImpl.setInstance(
+        new TestDeviceTabVisibilityBrowserProxy());
+    loadTimeData.overrideValues({
+      replaceSyncPromosWithSignInPromos: true,
+      enableDeviceTabVisibilitySettings: true,
+    });
+    resetRouterForTesting();
+    await createPeoplePageIndex();
+
+    // The `deviceTabVisibility` subpage view is registered in the view manager
+    // under the `parent` view.
+    assertTrue(!!index.$.viewManager.querySelector(
+        `#${viewId}[slot=view][data-parent-view-id=parent]`));
+
+    // Navigating to `routes.DEVICE_TAB_VISIBILITY` switches the active view.
+    const whenEntered = eventToPromise('view-enter-finish', index);
+    Router.getInstance().navigateTo(routes.DEVICE_TAB_VISIBILITY);
+    await whenEntered;
+    assertActiveView(viewId);
+  });
 });

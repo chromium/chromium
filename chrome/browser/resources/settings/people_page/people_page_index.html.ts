@@ -38,6 +38,12 @@ export function getHtml(this: SettingsPeoplePageIndexElement) {
         data-parent-view-id="parent"
         route-path="${this.routes_.GOOGLE_SERVICES.path}">
     </settings-google-services-page>
+    ${this.enableDeviceTabVisibilitySettings_ ? html`
+      <settings-device-tab-visibility-page slot="view" id="deviceTabVisibility"
+          data-parent-view-id="parent"
+          route-path="${this.routes_.DEVICE_TAB_VISIBILITY.path}">
+      </settings-device-tab-visibility-page>
+    ` : ''}
   ` : ''}
 </cr-view-manager>
 <!--_html_template_end_-->`;

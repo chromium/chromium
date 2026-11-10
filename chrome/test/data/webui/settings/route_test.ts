@@ -427,6 +427,26 @@ suite('Basic', function() {
     assertFalse(!!routes.DOWNLOADS);
     assertFalse(!!routes.RESET);
   });
+
+  // Verifies that the Device tab visibility route exists only when the
+  // corresponding feature flag is enabled.
+  test('device tab visibility route existence', function() {
+    resetPageVisibilityForTesting({people: true});
+
+    loadTimeData.overrideValues({
+      replaceSyncPromosWithSignInPromos: true,
+      enableDeviceTabVisibilitySettings: false,
+    });
+    resetRouterForTesting();
+    assertFalse(!!routes.DEVICE_TAB_VISIBILITY);
+
+    loadTimeData.overrideValues({
+      replaceSyncPromosWithSignInPromos: true,
+      enableDeviceTabVisibilitySettings: true,
+    });
+    resetRouterForTesting();
+    assertTrue(!!routes.DEVICE_TAB_VISIBILITY);
+  });
 });
 
 suite('DynamicParameters', function() {

@@ -30,6 +30,7 @@ export interface SettingsRoutes {
   CONTACT_INFO: Route;
   COOKIES: Route;
   DEFAULT_BROWSER: Route;
+  DEVICE_TAB_VISIBILITY: Route;
   DICTATION: Route;
   DOWNLOADS: Route;
   EDIT_DICTIONARY: Route;
