@@ -11,6 +11,7 @@ import './organizer_list_section_item_title.js';
 
 import type {CrUrlListItemElement, CrUrlListItemSize} from '//resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import {MouseHoverableMixinLit} from '//resources/cr_elements/mouse_hoverable_mixin_lit.js';
+import {isRTL} from '//resources/js/util.js';
 import type {PropertyValues, TemplateResult} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {Range} from '/tab_group_shared/search.js';
@@ -182,12 +183,13 @@ export class OrganizerListSectionItemElement extends
   }
 
   protected onItemKeydown_(e: KeyboardEvent) {
+    const actionButton =
+        this.shadowRoot.querySelector<HTMLElement>('#actionButton');
+    if (actionButton && e.composedPath().includes(actionButton)) {
+      return;
+    }
+
     if (e.key === 'Tab') {
-      const actionButton =
-          this.shadowRoot.querySelector<HTMLElement>('#actionButton');
-      if (actionButton && e.composedPath().includes(actionButton)) {
-        return;
-      }
       if (!e.shiftKey) {
         if (actionButton) {
           actionButton.focus();
@@ -199,18 +201,28 @@ export class OrganizerListSectionItemElement extends
       } else if (!this.tabbable) {
         this.fire('focus-current-section', {sourceEvent: e});
       }
+      return;
+    }
+
+    const forwardKey = isRTL() ? 'ArrowLeft' : 'ArrowRight';
+    if (e.key === forwardKey && actionButton) {
+      actionButton.focus();
+      e.preventDefault();
+      e.stopPropagation();
     }
   }
 
   protected onActionButtonKeydown_(e: KeyboardEvent) {
-    if (e.key === 'Tab') {
-      if (!e.shiftKey) {
-        this.fire('focus-next-section', {sourceEvent: e});
-      } else {
-        this.focus();
-        e.preventDefault();
-        e.stopPropagation();
-      }
+    const backwardKey = isRTL() ? 'ArrowRight' : 'ArrowLeft';
+    if ((e.key === 'Tab' && e.shiftKey) || e.key === backwardKey) {
+      this.focus();
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+
+    if (e.key === 'Tab' && !e.shiftKey) {
+      this.fire('focus-next-section', {sourceEvent: e});
     }
   }
 

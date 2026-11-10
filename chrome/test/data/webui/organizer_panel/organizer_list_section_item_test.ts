@@ -619,4 +619,88 @@ suite('OrganizerListSectionItemTest', () => {
     }));
     assertFalse(currentSectionFired);
   });
+
+  function dispatchKeydown(element: HTMLElement, key: string): KeyboardEvent {
+    const event = new KeyboardEvent('keydown', {
+      key,
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+    });
+    element.dispatchEvent(event);
+    return event;
+  }
+
+  async function setupItemWithActionButton(): Promise<{
+    itemFocusable: HTMLElement,
+    actionButton: HTMLElement,
+  }> {
+    listItem.item = {
+      title: ['Tab with close action'],
+      hoveredActionButton: {
+        icon: 'cr:close',
+        ariaLabel: 'Close tab',
+      },
+    };
+    await microtasksFinished();
+
+    const itemFocusable = listItem.$.crUrlListItem.getFocusableElement();
+    const actionButton =
+        listItem.shadowRoot.querySelector<HTMLElement>('#actionButton')!;
+    assertTrue(!!actionButton);
+
+    listItem.focus();
+    assertEquals(itemFocusable, getDeepActiveElement());
+    return {itemFocusable, actionButton};
+  }
+
+  test('arrow key navigation on item with action button', async () => {
+    const {itemFocusable, actionButton} = await setupItemWithActionButton();
+
+    // ArrowLeft at start does not wrap around.
+    assertFalse(dispatchKeydown(listItem.$.crUrlListItem, 'ArrowLeft')
+                    .defaultPrevented);
+    assertEquals(itemFocusable, getDeepActiveElement());
+
+    // ArrowRight moves focus to action button.
+    assertTrue(dispatchKeydown(listItem.$.crUrlListItem, 'ArrowRight')
+                   .defaultPrevented);
+    assertEquals(actionButton, getDeepActiveElement());
+
+    // ArrowRight at end does not wrap around.
+    assertFalse(dispatchKeydown(actionButton, 'ArrowRight').defaultPrevented);
+    assertEquals(actionButton, getDeepActiveElement());
+
+    // ArrowLeft returns focus to item.
+    assertTrue(dispatchKeydown(actionButton, 'ArrowLeft').defaultPrevented);
+    assertEquals(itemFocusable, getDeepActiveElement());
+  });
+
+  test('arrow key navigation on item with action button in RTL', async () => {
+    const previousDir = document.documentElement.dir;
+    document.documentElement.dir = 'rtl';
+    try {
+      const {itemFocusable, actionButton} = await setupItemWithActionButton();
+
+      // ArrowRight at start does not wrap around in RTL.
+      assertFalse(dispatchKeydown(listItem.$.crUrlListItem, 'ArrowRight')
+                      .defaultPrevented);
+      assertEquals(itemFocusable, getDeepActiveElement());
+
+      // ArrowLeft moves focus to action button in RTL.
+      assertTrue(dispatchKeydown(listItem.$.crUrlListItem, 'ArrowLeft')
+                     .defaultPrevented);
+      assertEquals(actionButton, getDeepActiveElement());
+
+      // ArrowLeft at end does not wrap around in RTL.
+      assertFalse(dispatchKeydown(actionButton, 'ArrowLeft').defaultPrevented);
+      assertEquals(actionButton, getDeepActiveElement());
+
+      // ArrowRight returns focus to item in RTL.
+      assertTrue(dispatchKeydown(actionButton, 'ArrowRight').defaultPrevented);
+      assertEquals(itemFocusable, getDeepActiveElement());
+    } finally {
+      document.documentElement.dir = previousDir;
+    }
+  });
 });
