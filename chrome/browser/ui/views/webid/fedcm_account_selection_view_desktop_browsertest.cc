@@ -9,6 +9,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
@@ -37,6 +38,10 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/views/test/views_test_utils.h"
+
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
 
 namespace webid {
 
@@ -317,6 +322,14 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest,
 // Test that the dialog is disabled when occluded by a PiP window.
 IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest,
                        DisabledWhenOccluded) {
+#if BUILDFLAG(IS_OZONE)
+  if (!ui::OzonePlatform::GetInstance()
+           ->GetPlatformProperties()
+           .supports_global_screen_coordinates) {
+    GTEST_SKIP() << "Occlusion between top-level windows requires global "
+                    "screen coordinates.";
+  }
+#endif
   Show();
   ASSERT_TRUE(GetDialog());
   EXPECT_TRUE(GetDialog()->IsVisible());

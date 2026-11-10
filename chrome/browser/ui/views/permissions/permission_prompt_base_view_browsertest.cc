@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -23,9 +24,15 @@
 #include "content/public/test/browser_test.h"
 #include "media/base/media_switches.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/events/test/test_event.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
+
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
 
 namespace {
 
@@ -52,6 +59,16 @@ class TestPermissionPromptBaseView : public PermissionPromptBaseView {
 
 BEGIN_METADATA(TestPermissionPromptBaseView)
 END_METADATA
+
+bool PlatformSupportsGlobalScreenCoordinates() {
+#if BUILDFLAG(IS_OZONE)
+  return ui::OzonePlatform::GetInstance()
+      ->GetPlatformProperties()
+      .supports_global_screen_coordinates;
+#else
+  return true;
+#endif
+}
 
 class PermissionPromptBaseViewBrowserTest : public InProcessBrowserTest {
  public:
@@ -112,6 +129,64 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptBaseViewBrowserTest,
   // Button presses should no longer be ignored.
   EXPECT_FALSE(prompt->ShouldIgnoreButtonPressedEventHandling(
       /*button=*/nullptr, ui::test::TestEvent()));
+  bubble->CloseNow();
+}
+
+// Regression test for https://crbug.com/525322795: on platforms without global
+// screen coordinates (e.g. Wayland), the position of top-level windows is
+// unknown, so every top-level window reports a position relative to its own
+// origin and the bounds of separate windows can't be compared. A
+// picture-in-picture window in another top-level window must not disable the
+// prompt's buttons.
+IN_PROC_BROWSER_TEST_F(PermissionPromptBaseViewBrowserTest,
+                       NotOccludedByPictureInPictureWindowElsewhere) {
+  if (PlatformSupportsGlobalScreenCoordinates()) {
+    GTEST_SKIP() << "Only relevant without global screen coordinates.";
+  }
+
+  // Set up a permission delegate with a request.
+  TestPermissionBubbleViewDelegate delegate;
+  std::vector<std::unique_ptr<permissions::PermissionRequest>> raw_requests;
+  raw_requests.push_back(std::make_unique<permissions::MockPermissionRequest>(
+      permissions::RequestType::kGeolocation));
+  delegate.set_requests(std::move(raw_requests));
+
+  // Get the browser's widget to parent the bubble.
+  views::Widget* parent =
+      BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
+
+  // Create the bubble.
+  auto prompt_unique = std::make_unique<TestPermissionPromptBaseView>(
+      parent, browser()->GetTabStripModel()->GetActiveWebContents(),
+      delegate.GetWeakPtr());
+  PermissionPromptBaseView* prompt = prompt_unique.get();
+  views::Widget* bubble =
+      views::BubbleDialogDelegateView::CreateBubble(std::move(prompt_unique));
+  bubble->Show();
+
+  // Create a separate top-level window that acts as a picture-in-picture
+  // window. Its position can't be set, so the reported bounds start at the
+  // origin, like the bounds of document picture-in-picture windows (see
+  // `PictureInPictureWindowManager::
+  // CalculateInitialPictureInPictureWindowBounds()`). Those overlap the
+  // bubble's bounds, which are relative to the browser window.
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
+  params.bounds = gfx::Rect(100, 100);
+  params.z_order = ui::ZOrderLevel::kFloatingWindow;
+  auto pip_widget = std::make_unique<views::Widget>(std::move(params));
+  pip_widget->Show();
+  PictureInPictureWindowManager::GetInstance()
+      ->GetOcclusionTracker()
+      ->OnPictureInPictureWidgetOpened(pip_widget.get());
+
+  // Button presses should not be ignored as the prompt can't be known to be
+  // occluded.
+  EXPECT_FALSE(prompt->ShouldIgnoreButtonPressedEventHandling(
+      /*button=*/nullptr, ui::test::TestEvent()));
+
+  pip_widget->CloseNow();
   bubble->CloseNow();
 }
 

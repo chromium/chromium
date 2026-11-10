@@ -6,7 +6,15 @@
 
 #include "base/auto_reset.h"
 #include "base/task/sequenced_task_runner.h"
+#include "build/build_config.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_observer.h"
+
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#if defined(USE_AURA)
+#include "ui/aura/window.h"
+#endif
+#endif
 
 namespace {
 
@@ -22,6 +30,43 @@ bool IsChildOfWidgetOrWidget(const views::Widget* widget,
     current = current->parent();
   }
   return false;
+}
+
+#if BUILDFLAG(IS_OZONE)
+const views::Widget* GetRootWidget(const views::Widget* widget) {
+  while (widget->parent()) {
+    widget = widget->parent();
+  }
+  return widget;
+}
+#endif
+
+// Returns true if the window bounds of `widget` and `other` are in the same
+// coordinate space, so that comparing them is meaningful.
+bool HaveComparableBounds(const views::Widget* widget,
+                          const views::Widget* other) {
+#if BUILDFLAG(IS_OZONE)
+  // Without global screen coordinates (e.g. Wayland), only widgets sharing a
+  // root widget or Aura root window have bounds relative to the same origin.
+  if (!ui::OzonePlatform::GetInstance()
+           ->GetPlatformProperties()
+           .supports_global_screen_coordinates) {
+    const views::Widget* root = GetRootWidget(widget);
+    const views::Widget* other_root = GetRootWidget(other);
+    if (root == other_root) {
+      return true;
+    }
+#if defined(USE_AURA)
+    const aura::Window* window = root->GetNativeWindow();
+    const aura::Window* other_window = other_root->GetNativeWindow();
+    return window && other_window && window->GetRootWindow() &&
+           window->GetRootWindow() == other_window->GetRootWindow();
+#else
+    return false;
+#endif
+  }
+#endif
+  return true;
 }
 
 }  // namespace
@@ -345,6 +390,13 @@ void PictureInPictureOcclusionTracker::UpdateObserverStateForWidget(
     // If the observer widget is a child of this picture-in-picture widget (or
     // the same widget), then it can't be occluded by it.
     if (IsChildOfWidgetOrWidget(widget, picture_in_picture_widget)) {
+      continue;
+    }
+
+    // If the relative position of the widgets is unknown, then occlusion can't
+    // be determined. Treat the widget as unoccluded since otherwise it would be
+    // unusable while any picture-in-picture window is open.
+    if (!HaveComparableBounds(widget, picture_in_picture_widget)) {
       continue;
     }
 
