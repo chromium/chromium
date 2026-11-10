@@ -426,7 +426,6 @@ public class TabsTest {
      */
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/572964289
     public void testNewTabSetsContentViewSize() throws TimeoutException {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
@@ -445,10 +444,12 @@ public class TabsTest {
                         .replace("\"", "");
 
         DisplayMetrics metrics = mActivityTestRule.getActivity().getResources().getDisplayMetrics();
+        float dipScale =
+                mActivityTestRule.getActivity().getWindowAndroid().getDisplay().getDipScale();
 
         // For non-integer pixel ratios like the N7v1 (1.333...), the layout system will actually
         // ceil the width.
-        int expectedWidth = (int) Math.ceil(metrics.widthPixels / metrics.density);
+        int expectedWidth = (int) Math.ceil(metrics.widthPixels / dipScale);
 
         String[] nums = innerText.split(",");
         assertTrue(nums.length == 2);
