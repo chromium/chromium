@@ -38,6 +38,7 @@ interface SearchBoxProperties {
     WritableObjectPropertyKey<OnClickListener> PLUS_BUTTON_CLICK_CALLBACK =
             new WritableObjectPropertyKey<>();
     WritableFloatPropertyKey PLUS_BUTTON_ROTATION = new WritableFloatPropertyKey();
+    WritableFloatPropertyKey PLUS_BUTTON_SCALE = new WritableFloatPropertyKey();
     WritableObjectPropertyKey<ColorStateList> PLUS_BUTTON_TINT = new WritableObjectPropertyKey<>();
     WritableBooleanPropertyKey PLUS_BUTTON_VISIBILITY = new WritableBooleanPropertyKey();
     WritableObjectPropertyKey<OnClickListener> SEARCH_BOX_CLICK_CALLBACK =
@@ -77,6 +78,7 @@ interface SearchBoxProperties {
                 PLUS_BUTTON_ALPHA,
                 PLUS_BUTTON_CLICK_CALLBACK,
                 PLUS_BUTTON_ROTATION,
+                PLUS_BUTTON_SCALE,
                 PLUS_BUTTON_TINT,
                 PLUS_BUTTON_VISIBILITY,
                 SEARCH_BOX_CLICK_CALLBACK,

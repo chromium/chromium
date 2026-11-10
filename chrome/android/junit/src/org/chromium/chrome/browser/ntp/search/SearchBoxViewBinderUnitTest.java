@@ -244,6 +244,17 @@ public class SearchBoxViewBinderUnitTest {
     }
 
     @Test
+    public void testSetPlusButtonScale() {
+        mPropertyModel.set(SearchBoxProperties.PLUS_BUTTON_SCALE, 1.2f);
+        assertEquals(1.2f, mSearchBoxLayout.mPlusButton.getScaleX(), 0.001f);
+        assertEquals(1.2f, mSearchBoxLayout.mPlusButton.getScaleY(), 0.001f);
+
+        mPropertyModel.set(SearchBoxProperties.PLUS_BUTTON_SCALE, 1.0f);
+        assertEquals(1.0f, mSearchBoxLayout.mPlusButton.getScaleX(), 0.001f);
+        assertEquals(1.0f, mSearchBoxLayout.mPlusButton.getScaleY(), 0.001f);
+    }
+
+    @Test
     public void testSetPlusButtonTint() {
         ColorStateList tint = ColorStateList.valueOf(Color.RED);
         mPropertyModel.set(SearchBoxProperties.PLUS_BUTTON_TINT, tint);

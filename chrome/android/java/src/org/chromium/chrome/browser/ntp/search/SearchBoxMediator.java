@@ -71,7 +71,10 @@ class SearchBoxMediator implements DestroyObserver {
     private static final long TINT_OUT_DURATION_MS = 100;
     private static final long ALPHA_DIP_DURATION_MS = 40;
     private static final long ALPHA_RECOVER_DURATION_MS = 440;
+    private static final long SCALE_UP_DURATION_MS = 160;
+    private static final long SCALE_DOWN_DURATION_MS = 520;
     private static final float PLUS_MIN_ALPHA = 0.5f;
+    private static final float PLUS_PEAK_SCALE = 1.2f;
 
     private final Context mContext;
     private final PropertyModel mModel;
@@ -128,6 +131,7 @@ class SearchBoxMediator implements DestroyObserver {
         mModel.set(SearchBoxProperties.APPLY_ELEVATION, OmniboxCapabilities.isDesktopPlatform());
         mModel.set(SearchBoxProperties.PLUS_BUTTON_ALPHA, 1f);
         mModel.set(SearchBoxProperties.PLUS_BUTTON_ROTATION, 0f);
+        mModel.set(SearchBoxProperties.PLUS_BUTTON_SCALE, 1f);
         mModel.set(SearchBoxProperties.HINT_TEXT_ALPHA, 1f);
         mModel.set(
                 SearchBoxProperties.PLUS_BUTTON_TINT,
@@ -491,6 +495,7 @@ class SearchBoxMediator implements DestroyObserver {
                         .setDuration(PLUS_ROTATION_DURATION_MS);
         spin.setInterpolator(plusSpinInterpolator);
 
+        Animator scalePulse = createScalePulseAnimator();
         Animator alphaPulse = createAlphaPulseAnimator();
         Animator tintIn =
                 createTintAnimator(
@@ -516,6 +521,7 @@ class SearchBoxMediator implements DestroyObserver {
         animator.playSequentially(sequence);
         animator.play(spin).with(alphaPulse);
         animator.play(spin).with(tintIn);
+        animator.play(spin).with(scalePulse);
         animator.addListener(
                 new AnimatorListenerAdapter() {
                     @Override
@@ -523,12 +529,32 @@ class SearchBoxMediator implements DestroyObserver {
                         mHintAnimator = null;
                         mModel.set(SearchBoxProperties.PLUS_BUTTON_ALPHA, 1f);
                         mModel.set(SearchBoxProperties.PLUS_BUTTON_ROTATION, 0f);
+                        mModel.set(SearchBoxProperties.PLUS_BUTTON_SCALE, 1f);
                         mModel.set(SearchBoxProperties.PLUS_BUTTON_TINT, initialTint);
                         mModel.set(SearchBoxProperties.HINT_TEXT_ALPHA, 1f);
                         mModel.set(SearchBoxProperties.SEARCH_BOX_HINT_TEXT, initialHint);
                     }
                 });
         return animator;
+    }
+
+    private Animator createScalePulseAnimator() {
+        ObjectAnimator scaleUp =
+                PropertyModelAnimatorFactory.ofFloat(
+                                mModel, SearchBoxProperties.PLUS_BUTTON_SCALE, PLUS_PEAK_SCALE)
+                        .setDuration(SCALE_UP_DURATION_MS);
+        scaleUp.setInterpolator(Interpolators.DECELERATE_INTERPOLATOR);
+
+        Interpolator scaleDownInterpolator = PathInterpolatorCompat.create(0.3f, 0f, 0.7f, 1f);
+        ObjectAnimator scaleDown =
+                PropertyModelAnimatorFactory.ofFloat(
+                                mModel, SearchBoxProperties.PLUS_BUTTON_SCALE, 1f)
+                        .setDuration(SCALE_DOWN_DURATION_MS);
+        scaleDown.setInterpolator(scaleDownInterpolator);
+
+        AnimatorSet scalePulse = new AnimatorSet();
+        scalePulse.playSequentially(scaleUp, scaleDown);
+        return scalePulse;
     }
 
     private Animator createAlphaPulseAnimator() {
