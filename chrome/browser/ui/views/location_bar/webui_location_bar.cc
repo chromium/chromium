@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
@@ -92,6 +93,10 @@
 #endif
 
 namespace {
+
+// How long `in_popup_state_transition_` stays set after a popup state change.
+constinit base::TimeDelta g_popup_state_transition_duration =
+    base::Milliseconds(100);
 
 toolbar_ui_api::mojom::SecurityLevel GetMojoSecurityLevel(
     security_state::SecurityLevel security_level) {
@@ -260,10 +265,24 @@ void WebUILocationBar::PropagateFocusRequest(
 }
 
 void WebUILocationBar::OpenOmniboxIfFullPopup(bool query_zps) {
-  if (using_full_popup_ && !in_popup_state_transition_) {
-    omnibox_popup_view_->OnFocus(query_zps, /*select_all=*/false,
-                                 /*show_full_url=*/false);
+  if (!using_full_popup_) {
+    return;
   }
+  // `in_popup_state_transition_` debounces popup show/hide races for a short
+  // time after the popup state changes. Handing focus back to a popup that is
+  // already open for a focused omnibox doesn't change the popup state, so it
+  // is not such a race. Dropping it would leave the omnibox focused but the
+  // popup inactive, e.g. when the browser window takes activation (restoring
+  // focus to the toolbar) right after the popup opened.
+  const bool popup_open_for_focused_omnibox =
+      omnibox_controller_ && omnibox_controller_->edit_model()->has_focus() &&
+      omnibox_controller_->popup_state_manager()->popup_state() ==
+          OmniboxPopupState::kFull;
+  if (in_popup_state_transition_ && !popup_open_for_focused_omnibox) {
+    return;
+  }
+  omnibox_popup_view_->OnFocus(query_zps, /*select_all=*/false,
+                               /*show_full_url=*/false);
 }
 
 void WebUILocationBar::OnThemeChanged() {
@@ -1001,6 +1020,14 @@ void WebUILocationBar::HandleFocusRequestForFullPopup(
                                               /*show_full_url=*/false);
 }
 
+// static
+base::AutoReset<base::TimeDelta>
+WebUILocationBar::SetPopupStateTransitionDurationForTesting(
+    base::TimeDelta duration) {
+  return base::AutoReset<base::TimeDelta>(&g_popup_state_transition_duration,
+                                          duration);
+}
+
 void WebUILocationBar::SetSuppressionThresholdForTesting(
     base::TimeDelta threshold) {
   page_info_reopen_suppressor_.SetSuppressionThresholdForTesting(  // IN-TEST
@@ -1187,7 +1214,7 @@ void WebUILocationBar::OnPopupStateChanged(OmniboxPopupState old_state,
       FROM_HERE,
       base::BindOnce(&WebUILocationBar::ClearInPopupStateTransition,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::Milliseconds(100));
+      g_popup_state_transition_duration);
 
   if (browser_ && base::FeatureList::IsEnabled(
                       features::kGlicHandoffButtonHideWhenOmniboxPopupOpened)) {

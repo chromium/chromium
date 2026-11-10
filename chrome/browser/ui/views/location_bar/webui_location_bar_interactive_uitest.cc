@@ -67,6 +67,7 @@
 #include "ui/views/interaction/mouse/interaction_test_util_mouse.h"
 #include "ui/views/mouse_constants.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/widget/widget_observer.h"
 #include "ui/webui/tracked_element/interaction_test_util_web_ui.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -160,6 +161,36 @@ class ViewWidthObserver
 };
 
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ViewWidthObserver, kViewWidth);
+
+// Counts how many times a widget has become active.
+class WidgetActivationCountObserver
+    : public ui::test::
+          ObservationStateObserver<int, views::Widget, views::WidgetObserver> {
+ public:
+  explicit WidgetActivationCountObserver(views::Widget* widget)
+      : ObservationStateObserver<int, views::Widget, views::WidgetObserver>(
+            widget) {}
+  ~WidgetActivationCountObserver() override = default;
+
+  // ObservationStateObserver:
+  int GetStateObserverInitialState() const override { return 0; }
+
+  // views::WidgetObserver:
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override {
+    if (active) {
+      OnStateObserverStateChanged(++activation_count_);
+    }
+  }
+  void OnWidgetDestroying(views::Widget* widget) override {
+    OnObservationStateObserverSourceDestroyed();
+  }
+
+ private:
+  int activation_count_ = 0;
+};
+
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(WidgetActivationCountObserver,
+                                    kPopupWidgetActivationCount);
 
 class ClipboardTextObserver
     : public ui::test::ObservationStateObserver<std::u16string,
@@ -994,6 +1025,17 @@ class WebUILocationBarEagerPopupInteractiveUiTest
       omnibox::SetCreatePopupWebUIOnDemandForTesting(false);
 };
 
+// Keeps every popup state change in its transition period for the whole test,
+// so that focus requests made during that period can be tested
+// deterministically.
+class WebUILocationBarPopupTransitionInteractiveUiTest
+    : public WebUILocationBarInteractiveUiTest {
+ private:
+  base::AutoReset<base::TimeDelta> popup_state_transition_duration_ =
+      WebUILocationBar::SetPopupStateTransitionDurationForTesting(
+          base::Hours(1));
+};
+
 class WebUILocationBarIMEInteractiveUiTest
     : public WebUILocationBarInteractiveUiTest {
  public:
@@ -1631,6 +1673,39 @@ IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest, SearchKeyword) {
       InAnyContext(SendKeyPress(InputWebContents(), ui::VKEY_BACK)),
       WaitTillOmniboxViewText("google.com "),
       EnsureNotPresent(InputWebContents(), SearchKeyword()));
+}
+
+// Tests that focus goes back to the open full popup when the browser window
+// takes activation right after the popup opened, e.g. when a click lands on the
+// browser window while the popup is still being shown.
+IN_PROC_BROWSER_TEST_P(WebUILocationBarPopupTransitionInteractiveUiTest,
+                       BrowserActivationRefocusesOpenPopup) {
+  if (mode() != Mode::kFull) {
+    GTEST_SKIP() << "Only the full popup takes activation from the browser.";
+  }
+  RunTestSequence(
+      InstrumentTab(kTabId), WaitForWebContentsReady(kTabId),
+      InstrumentNonTabWebView(kWebUIToolbarId, GetToolbarWebView()),
+      // The browser focuses the omnibox on about:blank, which opens the popup
+      // and focuses it. The browser window activating at startup restores
+      // focus to the toolbar during the transition period too, so this already
+      // needs focus to be handed back to the popup.
+      WaitForClassicPopupReady(), WaitTillOmniboxViewFocus(),
+      ObserveState(kPopupWidgetActivationCount,
+                   [this]() {
+                     return GetActiveClassicPopupWebView().Run()->GetWidget();
+                   }),
+      // Activating the browser window restores focus to the toolbar, while the
+      // popup is still in its transition period. The popup should take
+      // activation back.
+      Do([this]() {
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->GetWidget()
+            ->Activate();
+      }),
+      WaitForState(kPopupWidgetActivationCount, 1),
+      StopObservingState(kPopupWidgetActivationCount),
+      WaitTillOmniboxViewFocus());
 }
 
 // Tests that click-focusing the omnibox selects all (and accidentally
@@ -2336,6 +2411,14 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     WebUILocationBarEagerPopupInteractiveUiTest,
+    ::testing::Values(MODES_TO_TEST),
+    [](const testing::TestParamInfo<Mode>& info) {
+      return ModeToString(info.param);
+    });
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    WebUILocationBarPopupTransitionInteractiveUiTest,
     ::testing::Values(MODES_TO_TEST),
     [](const testing::TestParamInfo<Mode>& info) {
       return ModeToString(info.param);

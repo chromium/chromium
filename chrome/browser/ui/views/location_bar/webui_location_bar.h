@@ -7,6 +7,7 @@
 
 #include <variant>
 
+#include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -178,6 +179,11 @@ class WebUILocationBar : public LocationBar,
   void SetRestoreFocusOnWindowReactivation(bool restore) override;
 
   void SetSuppressionThresholdForTesting(base::TimeDelta threshold);
+
+  // Overrides how long popup focus requests are debounced after a popup state
+  // change (see `OpenOmniboxIfFullPopup()`).
+  [[nodiscard]] static base::AutoReset<base::TimeDelta>
+  SetPopupStateTransitionDurationForTesting(base::TimeDelta duration);
 
  private:
   void OnMiddleClickPaste(base::TimeTicks event_timestamp, std::u16string text);
