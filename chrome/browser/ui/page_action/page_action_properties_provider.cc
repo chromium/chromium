@@ -244,12 +244,10 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
         kActionShowPaymentsBubbleOrPage,
         {
             .histogram_name = "SavePayments",
-            // This action id corresponds to both `kSaveCard` and
-            // `kSaveIban` page action icon types. Since the framework only
-            // supports 1:1 mapping of `ActionId`<->`PageActionIconType`,
-            // and since `PageActionIconType` will be removed as an
-            // identifier for page actions post migration, we choose to only
-            // represent `kSaveCard` as the corresponding
+            // This action id is shared by both Save Card and Save IBAN flows.
+            // Since the framework only supports a 1:1 mapping of
+            // `ActionId`<->`PageActionIconType` (and `kSaveIban` is
+            // deprecated), we represent `kSaveCard` as the corresponding
             // `PageActionIconType` for `kActionShowPaymentsBubbleOrPage`.
             //
             // This peculiarity is handled well in all flows that rely on

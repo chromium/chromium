@@ -266,7 +266,7 @@ chromium-metrics-reviews@google.com.
   <int value="21" label="Virtual Card Enroll"/>
   <int value="22" label="Filled card information"/>
   <int value="23" label="Zoom"/>
-  <int value="24" label="Save IBAN"/>
+  <int value="24" label="(Deprecated) Save IBAN"/>
   <int value="25" label="Mandatory Reauth"/>
   <int value="26" label="Price Insights"/>
   <int value="27" label="(Deprecated) Read Anything"/>

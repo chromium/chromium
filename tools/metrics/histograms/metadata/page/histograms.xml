@@ -458,7 +458,8 @@ chromium-metrics-reviews@google.com.
   <variant name="ReadingMode"/>
   <variant name="SaveAutofillAddress"/>
   <variant name="SaveCard"/>
-  <variant name="SaveIban"/>
+  <variant name="SaveIban"
+      summary="SaveIban (Obsolete, Deprecated Nov 06, 2026)"/>
   <variant name="SendTabToSelf"/>
   <variant name="SharingHub"/>
   <variant name="SideSearch"/>

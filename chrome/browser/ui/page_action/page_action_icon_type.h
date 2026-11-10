@@ -36,7 +36,7 @@ enum class PageActionIconType {
   kVirtualCardEnroll = 21,
   kFilledCardInformation = 22,
   kZoom = 23,
-  kSaveIban = 24,
+  // DEPRECATED: kSaveIban = 24,
   kMandatoryReauth = 25,
   kPriceInsights = 26,
   // DEPRECATED: kReadAnything = 27,
