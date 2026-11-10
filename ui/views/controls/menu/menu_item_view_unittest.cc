@@ -26,6 +26,8 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/range/range.h"
+#include "ui/gfx/skia_util.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/actions/action_view_controller.h"
@@ -969,6 +971,53 @@ TEST_F(MenuItemViewPaintUnitTest, DontSchedulePaintFromOnPaint) {
   gfx::Canvas canvas(submenu_item->size(), 1.f, false /* opaque */);
   submenu_item->OnPaint(&canvas);
   EXPECT_FALSE(ViewTestApi(submenu_arrow_image_view).needs_paint());
+}
+
+TEST_F(MenuItemViewPaintUnitTest, HighlightRangePaintCoverage) {
+  MenuItemView* item = menu_item_view()->AppendMenuItem(1, u"New Tab");
+  EXPECT_FALSE(item->highlight_range().IsValid());
+
+  menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),
+                           MenuAnchorPosition::kTopLeft,
+                           ui::mojom::MenuSourceType::kKeyboard);
+
+  auto paint = [item]() {
+    gfx::Canvas canvas(item->size(), 1.f, /*is_opaque=*/false);
+    item->OnPaint(&canvas);
+    return canvas.GetBitmap();
+  };
+
+  const SkBitmap unhighlighted = paint();
+
+  ViewTestApi(item).ClearNeedsPaint();
+  item->SetHighlightRange(gfx::Range(0, 3));
+  EXPECT_EQ(item->highlight_range(), gfx::Range(0, 3));
+  EXPECT_TRUE(ViewTestApi(item).needs_paint());
+  const SkBitmap highlighted = paint();
+  EXPECT_FALSE(gfx::BitmapsAreEqual(unhighlighted, highlighted));
+
+  ViewTestApi(item).ClearNeedsPaint();
+  item->SetHighlightRange(gfx::Range(0, 3));
+  EXPECT_FALSE(ViewTestApi(item).needs_paint());
+
+  item->SetHighlightRange(gfx::Range());
+  EXPECT_FALSE(item->highlight_range().IsValid());
+  EXPECT_TRUE(gfx::BitmapsAreEqual(unhighlighted, paint()));
+
+  item->SetHighlightRange(gfx::Range(3, 0));
+  EXPECT_FALSE(item->highlight_range().IsValid());
+  EXPECT_TRUE(gfx::BitmapsAreEqual(unhighlighted, paint()));
+
+  item->SetHighlightRange(gfx::Range(0, 100));
+  EXPECT_TRUE(gfx::BitmapsAreEqual(unhighlighted, paint()));
+
+  // Calling SetTitle with the same title preserves highlight_range, while a
+  // different title resets it.
+  item->SetHighlightRange(gfx::Range(0, 3));
+  item->SetTitle(u"New Tab");
+  EXPECT_EQ(item->highlight_range(), gfx::Range(0, 3));
+  item->SetTitle(u"Close Tab");
+  EXPECT_FALSE(item->highlight_range().IsValid());
 }
 
 // Tests that the selection highlight doesn't cover the background's padding,

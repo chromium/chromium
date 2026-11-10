@@ -45,6 +45,8 @@
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/range/range.h"
+#include "ui/gfx/render_text.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/native_theme/native_theme.h"
@@ -666,9 +668,25 @@ void MenuItemView::SetSubmenuId(ui::ElementIdentifier id) {
 }
 
 void MenuItemView::SetTitle(const std::u16string& title) {
-  title_ = title;
+  if (title_ != title) {
+    title_ = title;
+    highlight_range_ = gfx::Range::InvalidRange();
+  }
   invalidate_dimensions();  // Triggers preferred size recalculation.
   UpdateAccessibleKeyShortcuts();
+}
+
+void MenuItemView::SetHighlightRange(const gfx::Range& highlight_range) {
+  const gfx::Range valid_range =
+      (highlight_range.IsValid() && !highlight_range.is_empty() &&
+       !highlight_range.is_reversed())
+          ? highlight_range
+          : gfx::Range::InvalidRange();
+  if (highlight_range_ == valid_range) {
+    return;
+  }
+  highlight_range_ = valid_range;
+  SchedulePaint();
 }
 
 void MenuItemView::SetSecondaryTitle(const std::u16string& secondary_title) {
@@ -1365,8 +1383,7 @@ void MenuItemView::OnPaintImpl(gfx::Canvas* canvas, PaintMode mode) {
   if (mode == PaintMode::kForDrag) {
     flags |= gfx::Canvas::NO_SUBPIXEL_RENDERING;
   }
-  canvas->DrawStringRectWithFlags(title(), font_list, colors.fg_color,
-                                  text_bounds, flags);
+  PaintTitle(canvas, font_list, colors.fg_color, text_bounds, flags);
 
   // The rest should be drawn with the minor foreground color.
   if (!secondary_title().empty()) {
@@ -1502,6 +1519,32 @@ void MenuItemView::PaintBackground(gfx::Canvas* canvas,
         ui::NativeTheme::kMenuItemBackground, ui::NativeTheme::kHovered,
         item_bounds, ui::NativeTheme::ExtraParams(menu_item_extra_params));
   }
+}
+
+void MenuItemView::PaintTitle(gfx::Canvas* canvas,
+                              const gfx::FontList& font_list,
+                              SkColor color,
+                              const gfx::Rect& bounds,
+                              int flags) {
+  if (highlight_range_.IsValid() &&
+      highlight_range_.end() <= title().length()) {
+    std::unique_ptr<gfx::RenderText> render_text =
+        gfx::RenderText::CreateRenderText();
+    render_text->SetText(title());
+    render_text->SetFontList(font_list);
+    render_text->SetColor(color);
+    render_text->SetDisplayRect(bounds);
+    render_text->SetHorizontalAlignment((flags & gfx::Canvas::TEXT_ALIGN_RIGHT)
+                                            ? gfx::ALIGN_RIGHT
+                                            : gfx::ALIGN_LEFT);
+    render_text->SetElideBehavior(gfx::ELIDE_TAIL);
+    render_text->set_subpixel_rendering_suppressed(
+        (flags & gfx::Canvas::NO_SUBPIXEL_RENDERING) != 0);
+    render_text->ApplyWeight(gfx::Font::Weight::BOLD, highlight_range_);
+    render_text->Draw(canvas);
+    return;
+  }
+  canvas->DrawStringRectWithFlags(title(), font_list, color, bounds, flags);
 }
 
 void MenuItemView::PaintMinorIconAndText(gfx::Canvas* canvas, SkColor color) {

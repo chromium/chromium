@@ -26,6 +26,7 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/range/range.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/menu/menu_config.h"
@@ -336,6 +337,10 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   void SetTitle(const std::u16string& title);
   const std::u16string& title() const { return title_; }
 
+  // Sets/Gets the character range in `title_` to render in bold.
+  void SetHighlightRange(const gfx::Range& highlight_range);
+  const gfx::Range& highlight_range() const { return highlight_range_; }
+
   // Sets/Gets the secondary title. When not empty, they are shown in the line
   // below the title.
   void SetSecondaryTitle(const std::u16string& secondary_title);
@@ -618,6 +623,13 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
                        PaintMode mode,
                        bool paint_as_selected);
 
+  // Paints the title text, bolding `highlight_range_` if valid.
+  void PaintTitle(gfx::Canvas* canvas,
+                  const gfx::FontList& font_list,
+                  SkColor color,
+                  const gfx::Rect& bounds,
+                  int flags);
+
   // Paints the right-side icon and text.
   void PaintMinorIconAndText(gfx::Canvas* canvas, SkColor color);
 
@@ -778,6 +790,7 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   ui::ElementIdentifier submenu_id_;
 
   std::u16string title_;
+  gfx::Range highlight_range_ = gfx::Range::InvalidRange();
   std::u16string secondary_title_;
   std::u16string minor_text_;
   bool minor_text_is_url_ = false;
