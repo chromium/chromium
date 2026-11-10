@@ -650,10 +650,10 @@ xorg-xdpyinfo
 
 ### Crostini (Debian based)
 
-First install the `file` and `lsb-release` commands for the script to run properly:
+First install the `file` command for the script to run properly:
 
 ```shell
-$ sudo apt-get install file lsb-release
+$ sudo apt-get install file
 ```
 
 Then invoke install-build-deps.sh with the `--no-arm` argument,
@@ -834,7 +834,6 @@ reason, you will need to make sure that the following tools are available:
 
 * `curl`
 * `git`
-* `lsb_release`
 * `python3`
 * `sudo`
 * `file`
@@ -857,7 +856,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Install Mantatory tools (curl git python3) and optional tools (vim sudo)
 RUN apt-get update && \
-    apt-get install -y curl git lsb-release python3 git file vim sudo && \
+    apt-get install -y curl git python3 git file vim sudo && \
     rm -rf /var/lib/apt/lists/*
 
 # Export depot_tools path

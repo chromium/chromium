@@ -13,7 +13,7 @@ import functools
 import logging
 import os
 import re
-import shutil
+import shlex
 import subprocess
 import sys
 
@@ -165,20 +165,48 @@ def parse_args(argv):
     return options
 
 
-def check_lsb_release():
-    if not shutil.which("lsb_release"):
-        logger.error("lsb_release not found in $PATH")
-        logger.error("try: sudo apt-get install lsb-release")
-        sys.exit(1)
+OS_RELEASE_PATHS = ("/etc/os-release", "/usr/lib/os-release")
+
+
+def parse_os_release(contents):
+    # See os-release(5). platform.freedesktop_os_release() is not used
+    # because it requires Python 3.10, and Ubuntu 20.04 ships Python 3.8.
+    info = {}
+    for line in contents.splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        key, sep, value = line.partition("=")
+        if not sep:
+            continue
+        try:
+            info[key.strip()] = "".join(shlex.split(value))
+        except ValueError:
+            continue
+    return info
 
 
 @functools.lru_cache(maxsize=1)
-def distro_codename():
-    return (
-        subprocess.check_output(["lsb_release", "--codename", "--short"])
-        .decode()
-        .strip()
+def os_release():
+    for path in OS_RELEASE_PATHS:
+        try:
+            with open(path) as f:
+                return parse_os_release(f.read())
+        except FileNotFoundError:
+            continue
+    logger.error(
+        "Unable to determine the distribution: none of %s exist",
+        ", ".join(OS_RELEASE_PATHS),
     )
+    sys.exit(1)
+
+
+def distro_id():
+    return os_release().get("ID", "")
+
+
+def distro_codename():
+    return os_release().get("VERSION_CODENAME", "")
 
 
 @functools.lru_cache(maxsize=1)
@@ -199,18 +227,12 @@ def check_distro(options):
     if options.unsupported or options.quick_check:
         return
 
-    distro_id = (
-        subprocess.check_output(["lsb_release", "--id", "--short"])
-        .decode()
-        .strip()
-    )
-
     supported_codenames = ["focal", "jammy", "noble", "resolute"]
-    supported_ids = ["Debian"]
+    supported_ids = ["debian"]
 
     if (
         distro_codename() not in supported_codenames
-        and distro_id not in supported_ids
+        and distro_id() not in supported_ids
     ):
         logger.warning(
             (
@@ -1028,7 +1050,6 @@ def install_locales():
 
 def main():
     options = parse_args(sys.argv[1:])
-    check_lsb_release()
     check_distro(options)
     check_architecture()
     quick_check(options)
