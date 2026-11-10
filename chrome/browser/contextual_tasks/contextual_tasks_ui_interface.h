@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_UI_INTERFACE_H_
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_UI_INTERFACE_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/contextual_tasks/aim_message_poster.h"
 #include "chrome/browser/contextual_tasks/task_info_delegate.h"
@@ -186,6 +187,10 @@ class ContextualTasksUIInterface : public TaskInfoDelegate,
   // restored tabs are only populated once.
   virtual bool is_history_thread_loading() const = 0;
   virtual void set_is_history_thread_loading(bool loading) = 0;
+
+  // Returns a weak pointer for callers that need to reference this UI from
+  // asynchronous tasks, since the UI can be destroyed before they run.
+  virtual base::WeakPtr<ContextualTasksUIInterface> GetWeakPtr() = 0;
 };
 
 }  // namespace contextual_tasks

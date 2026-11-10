@@ -3087,11 +3087,43 @@ TEST_F(ContextualTasksUiTest,
 
   service_for_nav_
       ->ContextualTasksUiService::OnSearchResultsNavigationInSidePanel(
-          renderer_params, legacy_ui.get());
+          renderer_params, legacy_ui->GetWeakPtr());
 
   ASSERT_TRUE(delegate.last_open_url_params().has_value());
   EXPECT_EQ(delegate.last_open_url_params()->url, exact_matches_url);
   EXPECT_FALSE(delegate.last_open_url_params()->is_renderer_initiated);
+
+  embedded_web_contents_->SetDelegate(nullptr);
+}
+
+TEST_F(ContextualTasksUiTest,
+       OnSearchResultsNavigationInSidePanel_WebUIDestroyedBeforeTaskRuns) {
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  auto legacy_ui = std::make_unique<ContextualTasksUI>(&web_ui);
+  TriggerOnInnerWebContentsCreated(legacy_ui.get(),
+                                   embedded_web_contents_.get());
+
+  OpenURLCapturingDelegate delegate;
+  embedded_web_contents_->SetDelegate(&delegate);
+
+  GURL exact_matches_url("https://www.google.com/search?q=test&udm=48");
+  content::OpenURLParams renderer_params(
+      exact_matches_url, content::Referrer(),
+      ui::mojom::WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_LINK,
+      /*is_renderer_initiated=*/true);
+  renderer_params.initiator_origin =
+      url::Origin::Create(GURL("https://www.google.com"));
+
+  base::WeakPtr<contextual_tasks::ContextualTasksUIInterface> ui_weak_ptr =
+      legacy_ui->GetWeakPtr();
+  legacy_ui.reset();
+
+  service_for_nav_
+      ->ContextualTasksUiService::OnSearchResultsNavigationInSidePanel(
+          renderer_params, ui_weak_ptr);
+
+  EXPECT_FALSE(delegate.last_open_url_params().has_value());
 
   embedded_web_contents_->SetDelegate(nullptr);
 }

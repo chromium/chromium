@@ -180,7 +180,7 @@ class ContextualTasksUiService : public KeyedService {
   // which will be cleaned up (see comment there).
   virtual void OnSearchResultsNavigationInSidePanel(
       content::OpenURLParams url_params,
-      ContextualTasksUIInterface* web_ui_interface);
+      base::WeakPtr<ContextualTasksUIInterface> web_ui_interface);
 
   // A notification that a navigation is occurring. This method gives the
   // service the opportunity to prevent the navigation from happening in
@@ -485,8 +485,8 @@ class ContextualTasksUiService : public KeyedService {
   // removed when OpenUrl() and legacy HandleNavigationImpl are cleaned up.
   void OpenUrlForTesting(const content::OpenURLParams& url_params,
                          const blink::mojom::WindowFeatures& window_features,
-                         BrowserWindowInterface* browser) {
-    OpenUrl(url_params, window_features, browser);
+                         base::WeakPtr<BrowserWindowInterface> browser) {
+    OpenUrl(url_params, window_features, std::move(browser));
   }
 
   bool ShouldShowOauthErrorDialogForTesting(
@@ -518,7 +518,7 @@ class ContextualTasksUiService : public KeyedService {
   // which will be cleaned up (see comment there).
   virtual void OpenUrl(const content::OpenURLParams& url_params,
                        const blink::mojom::WindowFeatures& window_features,
-                       BrowserWindowInterface* browser);
+                       base::WeakPtr<BrowserWindowInterface> browser);
   // The actual implementation of `HandleNavigation` that extracts more of the
   // components needed to decide if the navigation should be handled by this
   // service.

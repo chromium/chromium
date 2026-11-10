@@ -16,6 +16,7 @@
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_move_support.h"
@@ -249,11 +250,16 @@ class FakeContextualTasksUIInterface
   void RemoveObserver(Observer* observer) override {}
   bool is_history_thread_loading() const override { return false; }
   void set_is_history_thread_loading(bool loading) override {}
+  base::WeakPtr<contextual_tasks::ContextualTasksUIInterface> GetWeakPtr()
+      override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
  private:
   std::vector<int32_t> restored_tab_ids_;
   mojo::Remote<contextual_tasks::mojom::Page> page_remote_;
   mojo::PendingReceiver<contextual_tasks::mojom::Page> page_receiver_;
+  base::WeakPtrFactory<FakeContextualTasksUIInterface> weak_ptr_factory_{this};
 };
 
 class FakeContextualSearchboxHandler : public ContextualSearchboxHandler {
