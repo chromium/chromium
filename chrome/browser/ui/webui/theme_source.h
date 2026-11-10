@@ -30,16 +30,13 @@ class ThemeSource : public content::URLDataSource {
   //
   // This function parses the `sets` query parameter from `url` to determine
   // which color ID sets to include. It uses `color_provider` to resolve the
-  // actual color values. `is_grayscale` and `is_baseline` are used to inject
-  // metadata variables into the CSS header.
+  // actual color values.
   //
   // Returns the generated CSS string on success, or std::nullopt if the URL is
   // invalid, e.g., missing or invalid `sets` parameter.
   static std::optional<std::string> GenerateColorsCss(
       const ui::ColorProvider& color_provider,
-      const GURL& url,
-      bool is_grayscale,
-      bool is_baseline);
+      const GURL& url);
 
   // content::URLDataSource implementation.
   std::string GetSource() override;

@@ -20,11 +20,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resources_util.h"
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/themes/theme_properties.h"       // nogncheck
-#include "chrome/browser/themes/theme_service.h"          // nogncheck
-#include "chrome/browser/themes/theme_service_factory.h"  // nogncheck
-#endif
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/color/chrome_color_provider_utils.h"
 #include "chrome/browser/ui/webui/current_channel_logo.h"
@@ -54,8 +49,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/search/instant_service.h"
-#include "chrome/browser/themes/theme_service.h"          // nogncheck
-#include "chrome/browser/themes/theme_service_factory.h"  // nogncheck
+#include "chrome/browser/themes/theme_service.h"  // nogncheck
 #include "chrome/browser/ui/webui/ntp/ntp_resource_cache.h"
 #include "chrome/browser/ui/webui/ntp/ntp_resource_cache_factory.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
@@ -298,9 +292,7 @@ void ThemeSource::SendThemeImage(
 // static
 std::optional<std::string> ThemeSource::GenerateColorsCss(
     const ui::ColorProvider& color_provider,
-    const GURL& url,
-    bool is_grayscale,
-    bool is_baseline) {
+    const GURL& url) {
   auto get_bool_param = [&](std::string_view key) {
     std::string value;
     return net::GetValueForKeyInQuery(url, key, &value) &&
@@ -365,7 +357,7 @@ std::optional<std::string> ThemeSource::GenerateColorsCss(
       }
     }
 
-    // Generate the CSS. Pre-calculate selector and theme info.
+    // Generate the CSS.
     std::string css_string;
     css_string.reserve(75000);
 
@@ -373,12 +365,6 @@ std::optional<std::string> ThemeSource::GenerateColorsCss(
       css_string.append(":host{");
     } else {
       css_string.append("html:not(#z){");
-    }
-
-    if (is_grayscale) {
-      css_string.append("--user-color-source:baseline-grayscale;");
-    } else if (is_baseline) {
-      css_string.append("--user-color-source:baseline-default;");
     }
 
     for (const auto& def : definitions) {
@@ -464,18 +450,12 @@ std::optional<std::string> ThemeSource::GenerateColorsCss(
     }
   }
 
-  // Generate the CSS. Pre-calculate selector and theme info.
+  // Generate the CSS. Pre-calculate selector.
   std::string css_header;
   if (shadow_host) {
     css_header = ":host{";
   } else {
     css_header = "html:not(#z){";
-  }
-
-  if (is_grayscale) {
-    base::StrAppend(&css_header, {"--user-color-source:baseline-grayscale;"});
-  } else if (is_baseline) {
-    base::StrAppend(&css_header, {"--user-color-source:baseline-default;"});
   }
 
   // Reserve memory to reduce reallocations. 75KB is a reasonable heuristic for
@@ -521,19 +501,8 @@ void ThemeSource::SendColorsCss(
   }
   const ui::ColorProvider& color_provider = web_contents->GetColorProvider();
 
-  bool is_grayscale = false;
-  bool is_baseline = true;
-#if !BUILDFLAG(IS_ANDROID)
-  if (Profile* profile = GetProfileForRequest(wc_getter)) {
-    const auto* theme_service =
-        ThemeServiceFactory::GetForProfile(profile->GetOriginalProfile());
-    is_grayscale = theme_service->GetIsGrayscale();
-    is_baseline = theme_service->GetIsBaseline();
-  }
-#endif
-
   std::optional<std::string> css_content =
-      GenerateColorsCss(color_provider, url, is_grayscale, is_baseline);
+      GenerateColorsCss(color_provider, url);
 
   if (!css_content) {
     std::move(callback).Run(nullptr);

@@ -83,14 +83,10 @@ void ThemeColorsSourceManager::PopulateLocalResourceLoaderConfig(
     blink::mojom::LocalResourceLoaderConfig* config,
     const url::Origin& requesting_origin,
     const ui::ColorProvider& color_provider) {
-  const auto* theme_service =
-      ThemeServiceFactory::GetForProfile(profile_->GetOriginalProfile());
-  CHECK(theme_service);
   GURL theme_url(kThemeColorsCssUrl);
 
-  std::optional<std::string> css_content = ThemeSource::GenerateColorsCss(
-      color_provider, theme_url, theme_service->GetIsGrayscale(),
-      theme_service->GetIsBaseline());
+  std::optional<std::string> css_content =
+      ThemeSource::GenerateColorsCss(color_provider, theme_url);
 
   if (!css_content) {
     return;

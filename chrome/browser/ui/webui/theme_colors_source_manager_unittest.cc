@@ -4,16 +4,23 @@
 
 #include "chrome/browser/ui/webui/theme_colors_source_manager.h"
 
+#include <memory>
+#include <string>
+
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/webui/theme_colors_source_manager_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "content/public/common/content_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/loader/local_resource_loader_config.mojom.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/ui_base_features.h"
+#include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -21,12 +28,11 @@
 namespace {
 
 using ::testing::AllOf;
-using ::testing::Eq;
 using ::testing::ExplainMatchResult;
+using ::testing::HasSubstr;
 using ::testing::IsEmpty;
 using ::testing::Not;
 using ::testing::Pointee;
-using ::testing::Property;
 
 // Matcher for `blink::mojom::LocalResourceSource::headers`.
 MATCHER_P(HasHeader, header_matcher, "") {
@@ -93,18 +99,27 @@ TEST_F(ThemeColorsSourceManagerTest,
       url::Origin::Create(GURL("chrome://webui-toolbar.top-chrome/"));
 
   ui::ColorProvider color_provider;
+  color_provider.SetColorForTesting(ui::kColorAccent,
+                                    SkColorSetRGB(0x12, 0x34, 0x56));
   manager->SetColorProviderForTesting(&color_provider);
 
   manager->PopulateLocalResourceLoaderConfig(&config, requesting_origin,
                                              web_contents());
 
-  EXPECT_THAT(config,
-              ContainsThemeSource(Pointee(AllOf(
-                  HasResource("colors.css?sets=ui,chrome", Not(IsEmpty())),
-                  // Implementation adds headers if requesting origin != theme
-                  // origin, and chrome://webui-toolbar != chrome://theme.
-                  HasHeader("Access-Control-Allow-Origin: "
-                            "chrome://webui-toolbar.top-chrome")))));
+  EXPECT_THAT(
+      config,
+      ContainsThemeSource(Pointee(
+          AllOf(HasResource(
+                    "colors.css?sets=ui,chrome",
+                    AllOf(HasSubstr("--color-accent:#123456ff;"),
+                          HasSubstr("--color-app-menu-highlight-severity-low:"),
+                          Not(HasSubstr("--user-color-source")),
+                          Not(HasSubstr("baseline-grayscale")),
+                          Not(HasSubstr("baseline-default")))),
+                // Implementation adds headers if requesting origin != theme
+                // origin, and chrome://webui-toolbar != chrome://theme.
+                HasHeader("Access-Control-Allow-Origin: "
+                          "chrome://webui-toolbar.top-chrome")))));
 }
 
 // Verifies cross-origin resource access. Checks that the
@@ -125,8 +140,95 @@ TEST_F(ThemeColorsSourceManagerTest,
   manager->PopulateLocalResourceLoaderConfig(&config, requesting_origin,
                                              web_contents());
 
+  EXPECT_THAT(
+      config,
+      ContainsThemeSource(Pointee(
+          AllOf(HasHeader("Access-Control-Allow-Origin: chrome://foo-bar"),
+                HasResource("colors.css?sets=ui,chrome",
+                            AllOf(Not(IsEmpty()), HasSubstr("--color-accent:"),
+                                  Not(HasSubstr("--user-color-source"))))))));
+}
+
+// Verifies that generated CSS never contains `--user-color-source` across both
+// default baseline and grayscale themes and under both optimization flag
+// states.
+TEST_F(
+    ThemeColorsSourceManagerTest,
+    PopulateLocalResourceLoaderConfig_BaselineAndGrayscaleOmitUserColorSource) {
+  ThemeColorsSourceManager* manager =
+      ThemeColorsSourceManagerFactory::GetForProfile(profile());
+  ASSERT_TRUE(manager);
+  ThemeService* theme_service = ThemeServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(theme_service);
+
+  ui::ColorProvider color_provider;
+  manager->SetColorProviderForTesting(&color_provider);
+  url::Origin requesting_origin =
+      url::Origin::Create(GURL("chrome://webui-toolbar.top-chrome/"));
+
+  auto expect_css_without_user_color_source = [&]() {
+    for (bool feature_enabled : {false, true}) {
+      SCOPED_TRACE(feature_enabled);
+      base::test::ScopedFeatureList optimization_feature;
+      optimization_feature.InitWithFeatureState(
+          features::kColorIdCssStyleSheetOptimization, feature_enabled);
+
+      blink::mojom::LocalResourceLoaderConfig config;
+      manager->PopulateLocalResourceLoaderConfig(&config, requesting_origin,
+                                                 web_contents());
+      EXPECT_THAT(
+          config,
+          ContainsThemeSource(Pointee(HasResource(
+              "colors.css?sets=ui,chrome",
+              AllOf(HasSubstr("--color-accent:"),
+                    HasSubstr("--color-app-menu-highlight-severity-low:"),
+                    Not(HasSubstr("--user-color-source")),
+                    Not(HasSubstr("baseline-grayscale")),
+                    Not(HasSubstr("baseline-default")))))));
+    }
+  };
+
+  ASSERT_TRUE(theme_service->GetIsBaseline());
+  ASSERT_FALSE(theme_service->GetIsGrayscale());
+  expect_css_without_user_color_source();
+
+  theme_service->SetIsGrayscale(true);
+  ASSERT_TRUE(theme_service->GetIsGrayscale());
+  expect_css_without_user_color_source();
+}
+
+// Verifies that PopulateLocalResourceLoaderConfig succeeds without requiring a
+// ThemeService instance on the profile when a ColorProvider is available.
+TEST_F(ThemeColorsSourceManagerTest,
+       PopulateLocalResourceLoaderConfig_WithoutThemeService) {
+  TestingProfile::Builder builder;
+  builder.AddTestingFactory(
+      ThemeServiceFactory::GetInstance(),
+      BrowserContextKeyedServiceFactory::TestingFactory());
+  std::unique_ptr<TestingProfile> profile_without_theme_service =
+      builder.Build();
+  ASSERT_EQ(
+      ThemeServiceFactory::GetForProfile(profile_without_theme_service.get()),
+      nullptr);
+
+  ThemeColorsSourceManager manager(profile_without_theme_service.get());
+  ui::ColorProvider color_provider;
+  color_provider.SetColorForTesting(ui::kColorAccent,
+                                    SkColorSetRGB(0x12, 0x34, 0x56));
+  manager.SetColorProviderForTesting(&color_provider);
+
+  blink::mojom::LocalResourceLoaderConfig config;
+  url::Origin requesting_origin =
+      url::Origin::Create(GURL("chrome://webui-toolbar.top-chrome/"));
+  manager.PopulateLocalResourceLoaderConfig(&config, requesting_origin,
+                                            web_contents());
+
   EXPECT_THAT(config,
-              ContainsThemeSource(Pointee(AllOf(
-                  HasHeader("Access-Control-Allow-Origin: chrome://foo-bar"),
-                  HasResource("colors.css?sets=ui,chrome", Not(IsEmpty()))))));
+              ContainsThemeSource(Pointee(HasResource(
+                  "colors.css?sets=ui,chrome",
+                  AllOf(HasSubstr("--color-accent:#123456ff;"),
+                        HasSubstr("--color-app-menu-highlight-severity-low:"),
+                        Not(HasSubstr("--user-color-source")),
+                        Not(HasSubstr("baseline-grayscale")),
+                        Not(HasSubstr("baseline-default")))))));
 }
