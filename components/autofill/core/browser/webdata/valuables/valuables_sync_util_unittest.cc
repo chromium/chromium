@@ -187,6 +187,7 @@ TEST(OfferSyncUtilTest, CreateOfferDataFromValuableSpecifics) {
   EXPECT_EQ("50% off your next purchase",
             offer.GetDisplayStrings().value_prop_text);
   EXPECT_EQ("50% off", offer.GetOfferShortTitle());
+  EXPECT_EQ("Safeway", offer.issuer_name());
   EXPECT_EQ(GURL("https://safeway.com/offer-details"),
             offer.GetOfferDetailsUrl());
   EXPECT_THAT(offer.GetMerchantOrigins(),
@@ -228,6 +229,7 @@ TEST(OfferSyncUtilTest, CreateSpecificsFromOfferData) {
   EXPECT_EQ("https://safeway.com/offer-details", specifics.pass_view_url());
   EXPECT_EQ("SAFEWAY50", specifics.offer().offer_code());
   EXPECT_EQ("50% off", specifics.offer().offer_short_title());
+  EXPECT_EQ("Safeway", specifics.offer().issuer_name());
   EXPECT_EQ("50% off your next purchase", specifics.offer().description());
   EXPECT_EQ(123456789, specifics.offer().expiration_time_unix_epoch_micros());
   EXPECT_EQ(12345678, specifics.offer().issue_time_unix_epoch_micros());

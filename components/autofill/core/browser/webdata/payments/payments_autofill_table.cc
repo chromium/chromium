@@ -155,6 +155,7 @@ constexpr std::string_view kValuePropText = "value_prop_text";
 constexpr std::string_view kSeeDetailsText = "see_details_text";
 constexpr std::string_view kUsageInstructionsText = "usage_instructions_text";
 constexpr std::string_view kIssueTime = "issue_time";
+constexpr std::string_view kIssuerName = "issuer_name";
 
 // Removed in version 158. Only referenced by migration code.
 constexpr std::string_view kOfferEligibleInstrumentTable =
@@ -472,7 +473,8 @@ bool InsertOffer(sql::Database& db, const AutofillOfferData& offer) {
   sql::CachedInsertBuilder(
       SQL_FROM_HERE, db, insert_offer, kOfferDataTable,
       {kOfferId, kOfferRewardAmount, kExpiry, kOfferDetailsUrl, kPromoCode,
-       kValuePropText, kSeeDetailsText, kUsageInstructionsText, kIssueTime});
+       kValuePropText, kSeeDetailsText, kUsageInstructionsText, kIssueTime,
+       kIssuerName});
   insert_offer.BindString(0, offer.GetOfferId());
   insert_offer.BindString(1, offer.GetOfferShortTitle());
   insert_offer.BindTime(2, offer.GetExpiry());
@@ -482,6 +484,7 @@ bool InsertOffer(sql::Database& db, const AutofillOfferData& offer) {
   insert_offer.BindString(6, offer.GetDisplayStrings().see_details_text);
   insert_offer.BindString(7, offer.GetDisplayStrings().usage_instructions_text);
   insert_offer.BindTime(8, offer.GetIssueTime());
+  insert_offer.BindString(9, offer.issuer_name());
   if (!insert_offer.Run()) {
     return false;
   }
@@ -639,6 +642,9 @@ bool PaymentsAutofillTable::MigrateToVersion(int version,
     case 160:
       *update_compatible_version = true;
       return MigrateToVersion160AddOfferIssueTime();
+    case 162:
+      *update_compatible_version = true;
+      return MigrateToVersion162AddOfferIssuerName();
   }
   return true;
 }
@@ -1467,7 +1473,8 @@ bool PaymentsAutofillTable::GetAutofillOffers(
   sql::CachedSelectBuilder(
       SQL_FROM_HERE, *db(), s, kOfferDataTable,
       {kOfferId, kOfferRewardAmount, kExpiry, kOfferDetailsUrl, kPromoCode,
-       kValuePropText, kSeeDetailsText, kUsageInstructionsText, kIssueTime},
+       kValuePropText, kSeeDetailsText, kUsageInstructionsText, kIssueTime,
+       kIssuerName},
       /*modifiers=*/
       base::StrCat({"ORDER BY ", kIssueTime, " DESC, ", kOfferId}));
 
@@ -1488,6 +1495,7 @@ bool PaymentsAutofillTable::GetAutofillOffers(
     std::string see_details_text = s.ColumnString(index++);
     std::string usage_instructions_text = s.ColumnString(index++);
     base::Time issue_time = s.ColumnTime(index++);
+    std::string issuer_name = s.ColumnString(index++);
     DisplayStrings display_strings = {value_prop_text, see_details_text,
                                       usage_instructions_text};
     std::vector<GURL> merchant_origins;
@@ -1505,7 +1513,8 @@ bool PaymentsAutofillTable::GetAutofillOffers(
     autofill_offer_data->emplace_back(std::make_unique<AutofillOfferData>(
         std::move(offer_id), expiry, std::move(merchant_origins),
         std::move(offer_details_url), std::move(display_strings),
-        std::move(promo_code), std::move(offer_short_title), issue_time));
+        std::move(promo_code), std::move(offer_short_title), issue_time,
+        std::move(issuer_name)));
   }
 
   return s.Succeeded();
@@ -2326,6 +2335,38 @@ bool PaymentsAutofillTable::MigrateToVersion160AddOfferIssueTime() {
          transaction.Commit();
 }
 
+bool PaymentsAutofillTable::MigrateToVersion162AddOfferIssuerName() {
+  // SQLite cannot add a `NOT NULL` column without a `DEFAULT` to an existing
+  // table, so the offer tables are dropped and recreated with the new schema
+  // instead.
+  //
+  // Offers are server-provided data that is fully repopulated by the next
+  // sync, so dropping the rows does not lose any user data.
+  //
+  // The schema is spelled out here rather than reusing the `Init*Table()`
+  // functions, so that later changes to those functions cannot retroactively
+  // alter what this migration does.
+  sql::Transaction transaction(db());
+  return transaction.Begin() && DropTableIfExists(db(), kOfferDataTable) &&
+         DropTableIfExists(db(), kOfferMerchantDomainTable) &&
+         sql::CreateTable(*db(), kOfferDataTable,
+                          {{kOfferId, "VARCHAR"},
+                           {kOfferRewardAmount, "VARCHAR"},
+                           {kExpiry, "INTEGER NOT NULL"},
+                           {kOfferDetailsUrl, "VARCHAR"},
+                           {kMerchantDomain, "VARCHAR"},
+                           {kPromoCode, "VARCHAR"},
+                           {kValuePropText, "VARCHAR"},
+                           {kSeeDetailsText, "VARCHAR"},
+                           {kUsageInstructionsText, "VARCHAR"},
+                           {kIssueTime, "INTEGER NOT NULL"},
+                           {kIssuerName, "VARCHAR NOT NULL"}}) &&
+         sql::CreateTable(
+             *db(), kOfferMerchantDomainTable,
+             {{kOfferId, "VARCHAR"}, {kMerchantDomain, "VARCHAR"}}) &&
+         transaction.Commit();
+}
+
 void PaymentsAutofillTable::AddMaskedCreditCards(
     const std::vector<CreditCard>& credit_cards) {
   DCHECK(db()->HasActiveTransactions());
@@ -2510,7 +2551,8 @@ bool PaymentsAutofillTable::InitOfferDataTable() {
                                  {kValuePropText, "VARCHAR"},
                                  {kSeeDetailsText, "VARCHAR"},
                                  {kUsageInstructionsText, "VARCHAR"},
-                                 {kIssueTime, "INTEGER NOT NULL"}});
+                                 {kIssueTime, "INTEGER NOT NULL"},
+                                 {kIssuerName, "VARCHAR NOT NULL"}});
 }
 
 bool PaymentsAutofillTable::InitOfferMerchantDomainTable() {

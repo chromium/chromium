@@ -585,6 +585,15 @@ TEST_F(ValuableSyncBridgeTest, IsOfferEntityDataValid_OptionalIssueTime) {
       *CreateEntityDataFromSpecifics(negative_issue_time_specifics)));
 }
 
+TEST_F(ValuableSyncBridgeTest, IsOfferEntityDataInvalid_MissingIssuerName) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableWalletDirectOffers};
+  sync_pb::AutofillValuableSpecifics specifics = TestOfferSpecifics(kId1);
+  specifics.mutable_offer()->clear_issuer_name();
+  EXPECT_FALSE(
+      bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(specifics)));
+}
+
 TEST_F(ValuableSyncBridgeTest, IsOfferEntityDataInvalid_FeatureDisabled) {
   EXPECT_FALSE(bridge().IsEntityDataValid(
       *CreateEntityDataFromSpecifics(TestOfferSpecifics(kId1))));

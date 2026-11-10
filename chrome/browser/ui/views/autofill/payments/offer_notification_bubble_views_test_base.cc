@@ -114,7 +114,7 @@ OfferNotificationBubbleViewsTestBase::CreateWalletDirectOfferDataWithDomains(
       offer_id, expiry, merchant_origins,
       GURL(GetDefaultTestDetailsUrlString()), DisplayStrings(),
       GetDefaultTestPromoCode(), GetDefaultTestOfferShortTitle(),
-      /*issue_time=*/base::Time());
+      /*issue_time=*/base::Time(), /*issuer_name=*/"Merchant");
 }
 
 void OfferNotificationBubbleViewsTestBase::

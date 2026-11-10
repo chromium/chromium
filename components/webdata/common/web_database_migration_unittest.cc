@@ -2459,4 +2459,52 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion160ToCurrent) {
         "autofill_ai_entities_metadata_wallet", "legal_message_token"));
   }
 }
+
+// Version 162 adds the `issuer_name` column to `offer_data`.
+TEST_F(WebDatabaseMigrationTest, MigrateVersion161ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_161.sql")));
+
+  // Verify pre-conditions.
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(161, VersionFromConnection(&connection));
+    EXPECT_FALSE(connection.DoesColumnExist("offer_data", "issuer_name"));
+
+    ASSERT_TRUE(connection.Execute(
+        "INSERT INTO offer_data (offer_id, offer_reward_amount, expiry, "
+        "offer_details_url, promo_code, issue_time) VALUES ('123', '5%', 100, "
+        "'https://example.com', 'PROMO', 50);"));
+    ASSERT_TRUE(connection.Execute(
+        "INSERT INTO offer_merchant_domain (offer_id, merchant_domain) VALUES "
+        "('123', 'https://example.com');"));
+  }
+
+  DoMigration();
+
+  // Verify post-conditions.
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(WebDatabase::kCurrentVersionNumber,
+              VersionFromConnection(&connection));
+    EXPECT_TRUE(connection.DoesColumnExist("offer_data", "issuer_name"));
+
+    // Old versions cannot insert offers without an `issuer_name`, so the
+    // compatible version number is updated.
+    sql::MetaTable meta_table;
+    ASSERT_TRUE(meta_table.Init(&connection, WebDatabase::kCurrentVersionNumber,
+                                WebDatabase::kCurrentVersionNumber));
+    EXPECT_EQ(162, meta_table.GetCompatibleVersionNumber());
+
+    // The tables are recreated, so existing offers are dropped. They are
+    // repopulated by the next sync.
+    for (const char* table : {"offer_data", "offer_merchant_domain"}) {
+      sql::Statement s(connection.GetUniqueStatement(
+          base::StrCat({"SELECT COUNT(*) FROM ", table})));
+      ASSERT_TRUE(s.Step());
+      EXPECT_EQ(0, s.ColumnInt(0)) << table;
+    }
+  }
+}
 }  // anonymous namespace

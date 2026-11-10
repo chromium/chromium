@@ -46,7 +46,8 @@ class AutofillOfferData {
                     DisplayStrings display_strings,
                     std::string promo_code,
                     std::string offer_short_title,
-                    base::Time issue_time);
+                    base::Time issue_time,
+                    std::string issuer_name);
 
   AutofillOfferData();
   ~AutofillOfferData();
@@ -71,6 +72,8 @@ class AutofillOfferData {
   // https://notexample.com/. This is the same matching as for loyalty cards.
   bool IsEligibleForOrigin(const GURL& origin) const;
 
+  // TODO(crbug.com/546252995): Rename the other inline accessors to
+  // snake_case.
   OfferType GetOfferType() const { return offer_type_; }
   const std::string& GetOfferId() const { return offer_id_; }
   base::Time GetExpiry() const { return expiry_; }
@@ -82,6 +85,7 @@ class AutofillOfferData {
   const DisplayStrings& GetDisplayStrings() const { return display_strings_; }
   const std::string& GetOfferShortTitle() const { return offer_short_title_; }
   const std::string& GetPromoCode() const { return promo_code_; }
+  const std::string& issuer_name() const { return issuer_name_; }
 
 #ifdef UNIT_TEST
   void SetOfferIdForTesting(std::string offer_id) {
@@ -133,6 +137,9 @@ class AutofillOfferData {
 
   // A promo/gift/coupon code that can be applied at checkout with the merchant.
   std::string promo_code_;
+
+  // The name of the merchant that issued the offer, like "Safeway".
+  std::string issuer_name_;
 };
 
 }  // namespace autofill

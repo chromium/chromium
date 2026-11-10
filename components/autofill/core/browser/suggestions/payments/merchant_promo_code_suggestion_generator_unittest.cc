@@ -102,7 +102,8 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
       {GURL("https://www.example.com")},
       /*offer_details_url=*/GURL("https://offer-details-url.com/"),
       display_strings, "test_promo_code_1",
-      /*offer_short_title=*/"5% off", /*issue_time=*/base::Time());
+      /*offer_short_title=*/"5% off", /*issue_time=*/base::Time(),
+      /*issuer_name=*/"Merchant");
   test_api(payments_data_manager())
       .AddOfferData(std::make_unique<AutofillOfferData>(wallet_direct_offer));
 
@@ -145,7 +146,8 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
       {GURL("https://www.example.com")},
       /*offer_details_url=*/GURL("https://offer-details-url.com/"),
       display_strings, "test_promo_code_1",
-      /*offer_short_title=*/"5% off", /*issue_time=*/base::Time());
+      /*offer_short_title=*/"5% off", /*issue_time=*/base::Time(),
+      /*issuer_name=*/"Merchant");
   test_api(payments_data_manager())
       .AddOfferData(std::make_unique<AutofillOfferData>(wallet_direct_offer));
 
@@ -180,7 +182,7 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
       /*offer_details_url=*/GURL("https://offer-details-url.com/"),
       display_strings, promo_code,
       /*offer_short_title=*/"test_offer_short_title_1",
-      /*issue_time=*/base::Time());
+      /*issue_time=*/base::Time(), /*issuer_name=*/"Merchant");
 
   DisplayStrings display_strings2;
   display_strings2.value_prop_text = "test_value_prop_text_2";
@@ -190,7 +192,7 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
       /*offer_details_url=*/GURL("https://offer-details-url.com/"),
       display_strings2, promo_code2,
       /*offer_short_title=*/"test_offer_short_title_2",
-      /*issue_time=*/base::Time());
+      /*issue_time=*/base::Time(), /*issuer_name=*/"Merchant");
 
   test_api(payments_data_manager())
       .AddOfferData(std::make_unique<AutofillOfferData>(offer1));
@@ -271,7 +273,7 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
             /*promo_code=*/base::StrCat({"test_promo_code_", offer_id}),
             /*offer_short_title=*/
             base::StrCat({"test_offer_short_title_", offer_id}),
-            /*issue_time=*/base::Time()));
+            /*issue_time=*/base::Time(), /*issuer_name=*/"Merchant"));
   }
 
   std::vector<Suggestion> promo_code_suggestions = GetPromoCodeSuggestions();

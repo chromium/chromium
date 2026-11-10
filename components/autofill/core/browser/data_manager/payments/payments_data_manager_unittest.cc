@@ -1217,7 +1217,7 @@ TEST_P(PaymentsDataManagerServerTest,
       /*offer_id=*/"111", AutofillClock::Now() - base::Days(1),
       {GURL("http://www.example.com")}, GURL("https://pay.google.com"),
       display_strings, "CODE111", /*offer_short_title=*/"",
-      /*issue_time=*/base::Time()));
+      /*issue_time=*/base::Time(), /*issuer_name=*/"Merchant"));
 
   // Active wallet direct offers for a different site should not be returned.
   AddOfferDataForTest(AutofillOfferData(
@@ -1225,7 +1225,7 @@ TEST_P(PaymentsDataManagerServerTest,
       {GURL("http://www.some-other-merchant.com")},
       GURL("https://pay.google.com"), display_strings, "CODE222",
       /*offer_short_title=*/"",
-      /*issue_time=*/base::Time()));
+      /*issue_time=*/base::Time(), /*issuer_name=*/"Merchant"));
 
   // Active wallet direct offers with empty value prop should still be returned.
   DisplayStrings empty_display_strings;
@@ -1233,21 +1233,21 @@ TEST_P(PaymentsDataManagerServerTest,
       /*offer_id=*/"333", AutofillClock::Now() + base::Days(35),
       {GURL("http://www.example.com")}, GURL("https://pay.google.com"),
       empty_display_strings, "CODE333", /*offer_short_title=*/"",
-      /*issue_time=*/base::Time()));
+      /*issue_time=*/base::Time(), /*issuer_name=*/"Merchant"));
 
   // Invalid wallet direct offers (empty promo code) should not be returned.
   AddOfferDataForTest(AutofillOfferData(
       /*offer_id=*/"444", AutofillClock::Now() + base::Days(35),
       {GURL("http://www.example.com")}, GURL("https://pay.google.com"),
       display_strings, "", /*offer_short_title=*/"",
-      /*issue_time=*/base::Time()));
+      /*issue_time=*/base::Time(), /*issuer_name=*/"Merchant"));
 
   // Active wallet direct offers for example.com should be returned.
   AddOfferDataForTest(AutofillOfferData(
       /*offer_id=*/"555", AutofillClock::Now() + base::Days(35),
       {GURL("http://www.example.com")}, GURL("https://pay.google.com"),
       display_strings, "CODE555", /*offer_short_title=*/"",
-      /*issue_time=*/base::Time()));
+      /*issue_time=*/base::Time(), /*issuer_name=*/"Merchant"));
 
   // Active matching offers for example.com should be returned.
   auto offers =

@@ -45,7 +45,8 @@ AutofillOfferData CreateTestOffer(const std::vector<GURL>& merchant_origins,
                            /*offer_details_url=*/GURL("https://pay.google.com"),
                            display_strings, promo_code,
                            /*offer_short_title=*/"5% off",
-                           /*issue_time=*/base::Time());
+                           /*issue_time=*/base::Time(),
+                           /*issuer_name=*/"Merchant");
 }
 
 class OfferNotificationIconViewBrowserTest

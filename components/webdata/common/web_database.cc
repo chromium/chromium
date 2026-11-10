@@ -38,10 +38,10 @@ void LogInitResult(WebDatabase::InitResult result) {
   base::UmaHistogramEnumeration("WebDatabase.InitResult", result);
 }
 
-// Version 160 recreates the `offer_data` table with a `NOT NULL` `issue_time`
-// column that has no default. Clients with version 159 and below do not write
-// that column, so they cannot insert offers into a version 160 database.
-constexpr int kCompatibleVersionNumber = 160;
+// Version 162 recreates the `offer_data` table with a `NOT NULL` `issuer_name`
+// column that has no default. Clients with version 161 and below do not write
+// that column, so they cannot insert offers into a version 162 database.
+constexpr int kCompatibleVersionNumber = 162;
 
 // Change the version number and possibly the compatibility version of
 // |meta_table_|.
