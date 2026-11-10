@@ -8,9 +8,9 @@
 #include <string>
 
 #include "base/atomic_sequence_num.h"
+#include "base/containers/to_vector.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_math.h"
-#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
@@ -18,6 +18,7 @@
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/trace_util.h"
 
@@ -80,8 +81,8 @@ bool DisplayResourceProvider::OnMemoryDump(
     // ResourceIds are not process-unique, so log with the ResourceProvider's
     // unique id.
     std::string dump_name =
-        base::StringPrintf("cc/resource_memory/provider_%d/resource_%u",
-                           tracing_id_, resource_entry.first.GetUnsafeValue());
+        absl::StrFormat("cc/resource_memory/provider_%d/resource_%u",
+                        tracing_id_, resource_entry.first.GetUnsafeValue());
     base::trace_event::MemoryAllocatorDump* dump =
         pmd->CreateAllocatorDump(dump_name);
 
@@ -438,10 +439,9 @@ void DisplayResourceProvider::DestroyChildInternal(ChildMap::iterator it,
   Child& child = it->second;
   DCHECK(style == FOR_SHUTDOWN || !child.marked_for_deletion);
 
-  std::vector<ResourceId> resources_for_child;
-  for (auto& entry : child.child_to_parent_map) {
-    resources_for_child.push_back(entry.second);
-  }
+  std::vector<ResourceId> resources_for_child =
+      base::ToVector(child.child_to_parent_map,
+                     [](const auto& entry) { return entry.second; });
 
   child.marked_for_deletion = true;
 
