@@ -14,7 +14,7 @@ use symphonia::core::io::{MediaSourceStream, MediaSourceStreamOptions};
 use symphonia::core::meta::MetadataOptions;
 use symphonia::core::units::{Duration, Time, TimeBase};
 use symphonia_demuxer_bridge::{
-    convert_track_info, ffi, map_codec_params, to_demuxer_init_status, SourceHandle,
+    convert_track_info, ffi, map_codec_params, to_demuxer_init_status, to_seek_status, SourceHandle,
 };
 
 fn create_test_wav(
@@ -301,6 +301,28 @@ fn test_error_mapping() {
     let err = Error::SeekError(symphonia::core::errors::SeekErrorKind::OutOfRange);
     let (status, _) = to_demuxer_init_status(&err);
     expect_eq!(status, ffi::SymphoniaDemuxerInitStatus::GenericError);
+}
+
+#[gtest(SymphoniaDemuxerBridgeTest, SeekErrorMapping)]
+fn test_seek_error_mapping() {
+    use symphonia::core::errors::{Error, SeekErrorKind};
+
+    // Only a target past the end is out of range.
+    let (status, _) = to_seek_status(&Error::SeekError(SeekErrorKind::OutOfRange));
+    expect_eq!(status, ffi::SymphoniaSeekStatus::OutOfRange);
+
+    // A source that can't seek, or can only seek forward, is an error, so the
+    // demuxer does not treat it as end of stream.
+    for kind in [SeekErrorKind::Unseekable, SeekErrorKind::ForwardOnly, SeekErrorKind::InvalidTrack]
+    {
+        let kind_name = format!("{kind:?}");
+        let (status, msg) = to_seek_status(&Error::SeekError(kind));
+        expect_eq!(status, ffi::SymphoniaSeekStatus::Error);
+        expect_true!(msg.contains(&kind_name));
+    }
+
+    let (status, _) = to_seek_status(&Error::DecodeError("corrupt"));
+    expect_eq!(status, ffi::SymphoniaSeekStatus::Error);
 }
 
 #[gtest(SymphoniaDemuxerBridgeTest, ProbeWavMultiPacketAndSeek)]

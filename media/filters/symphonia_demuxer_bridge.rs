@@ -38,7 +38,7 @@ use std::sync::atomic::{AtomicPtr, Ordering};
 use std::sync::Arc;
 
 use symphonia::core::audio::Channels;
-use symphonia::core::errors::Error;
+use symphonia::core::errors::{Error, SeekErrorKind};
 use symphonia::core::formats::probe::Hint;
 use symphonia::core::formats::{FormatOptions, FormatReader, SeekMode, SeekTo, Track};
 use symphonia::core::io::{MediaSource, MediaSourceStream, MediaSourceStreamOptions};
@@ -570,6 +570,19 @@ pub fn to_demuxer_init_status(err: &Error) -> (ffi::SymphoniaDemuxerInitStatus, 
     }
 }
 
+/// Maps a Symphonia seek error to a `SymphoniaSeekStatus` and message.
+///
+/// Only a target past the end is `OutOfRange`. A source that can't seek, or
+/// can only seek forward, and an invalid track are errors.
+pub fn to_seek_status(err: &Error) -> (ffi::SymphoniaSeekStatus, String) {
+    match err {
+        Error::SeekError(SeekErrorKind::OutOfRange) => {
+            (ffi::SymphoniaSeekStatus::OutOfRange, "Seek out of range".to_string())
+        }
+        err => (ffi::SymphoniaSeekStatus::Error, format!("Seek failed: {err:?}")),
+    }
+}
+
 impl ffi::SymphoniaDemuxerInitResult {
     fn ok(
         container_name: String,
@@ -735,14 +748,10 @@ impl SymphoniaDemuxerBridge {
 
                 ffi::SymphoniaSeekResult::ok(actual_time_us)
             }
-            Err(Error::SeekError(seek_err)) => ffi::SymphoniaSeekResult::err(
-                ffi::SymphoniaSeekStatus::OutOfRange,
-                format!("Seek out of range: {seek_err:?}"),
-            ),
-            Err(err) => ffi::SymphoniaSeekResult::err(
-                ffi::SymphoniaSeekStatus::Error,
-                format!("Seek failed: {err:?}"),
-            ),
+            Err(err) => {
+                let (status, message) = to_seek_status(&err);
+                ffi::SymphoniaSeekResult::err(status, message)
+            }
         }
     }
 }
