@@ -198,6 +198,15 @@ public class HistoryFilterChipUnitTest {
     }
 
     @Test
+    public void testSetItems_RetainsSelectedItem() {
+        mChip.setItems(List.of(ITEM_1, ITEM_2));
+        mChip.onItemSelected(ITEM_2);
+
+        mChip.setItems(List.of(ITEM_1));
+        assertEquals(List.of(ITEM_2, ITEM_1), mChip.getItemsForTesting());
+    }
+
+    @Test
     public void testClickChip_OpensSheetAndHidesKeyboard() {
         mChip.setFilterSheetForTesting(mFilterSheet);
         mChip.setItems(List.of(ITEM_1, ITEM_2));

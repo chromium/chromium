@@ -90,6 +90,13 @@ class HistoryFilterChip<T> {
     void setItems(List<FilterItem<T>> items) {
         assert mCanShow;
         mItems.clear();
+        // If all history entries for `mSelectedItem` are deleted, the history view remains
+        // filtered to `mSelectedItem` (showing the empty state) until the user changes the
+        // filter. Keep `mSelectedItem` in `mItems` so it is still shown in the filter sheet
+        // and can be deselected by the user.
+        if (mSelectedItem != null && !items.contains(mSelectedItem)) {
+            mItems.add(mSelectedItem);
+        }
         mItems.addAll(items);
         if (mFilterSheet != null) {
             mFilterSheet.updateItems(mItems);
