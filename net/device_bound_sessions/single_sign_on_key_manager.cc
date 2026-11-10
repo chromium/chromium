@@ -4,16 +4,15 @@
 
 #include "net/device_bound_sessions/single_sign_on_key_manager.h"
 
-#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
-#include <vector>
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/map_util.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -35,6 +34,7 @@
 #include "net/device_bound_sessions/session.h"
 #include "net/device_bound_sessions/session_binding_utils.h"
 #include "net/device_bound_sessions/session_error.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "url/origin.h"
 
 namespace net::device_bound_sessions {
@@ -266,17 +266,12 @@ bool SingleSignOnKeyManager::AddPreProvisionedKey(
 
   // `FindPreProvisionedKey()` looks keys up by RP origin and digest only, so
   // these must be unique across IdPs.
-  if (std::ranges::any_of(pre_provisioned_keys_, [&](const auto& pk) {
-        return pk.rp_origin == rp_origin && pk.provider_key == provider_key;
-      })) {
+  auto [_, inserted] = pre_provisioned_keys_.try_emplace(
+      RpAndProviderKeyView(rp_origin, provider_key), provider_origin, key_id);
+  if (!inserted) {
     return false;
   }
 
-  pre_provisioned_keys_.push_back(
-      {.provider_origin{provider_origin},
-       .rp_origin{rp_origin},
-       .provider_key{std::string(provider_key)},
-       .key_id{key_id}});
   base::UmaHistogramCounts1000("Net.DeviceBoundSessions.PreProvisionedKeyCount",
                                pre_provisioned_keys_.size());
   return true;
@@ -294,26 +289,24 @@ SingleSignOnKeyManager::FindPreProvisionedKey(
   // Keys are looked up by (initiator, digest), as in WICG/dbsc-sso#18. The IdP
   // that generated the key is only used for the cookie access check below,
   // which goes beyond the explainer.
-  auto key_it =
-      std::ranges::find_if(pre_provisioned_keys_, [&](const auto& pk) {
-        return pk.rp_origin == *initiator && pk.provider_key == provider_key;
-      });
-  if (key_it == pre_provisioned_keys_.end()) {
+  const KeyMetadata* metadata = base::FindOrNull(
+      pre_provisioned_keys_, RpAndProviderKeyView(*initiator, provider_key));
+  if (!metadata) {
     return base::unexpected(SessionError::kPreProvisionedKeyNotFound);
   }
 
   if (!CanAccessPreProvisionedKey(has_cookie_access_cb_,
-                                  key_it->provider_origin, *initiator)) {
+                                  metadata->provider_origin, *initiator)) {
     return base::unexpected(SessionError::kPreProvisionedKeyAccessNotGranted);
   }
 
-  return key_it->key_id;
+  return metadata->key_id;
 }
 
 void SingleSignOnKeyManager::ConsumeKeyForSession(const Session& session) {
   if (session.unexportable_key_id().has_value()) {
-    std::erase_if(pre_provisioned_keys_, [&](const PreProvisionedKeyEntry& pk) {
-      return pk.key_id == session.unexportable_key_id();
+    absl::erase_if(pre_provisioned_keys_, [&](const auto& entry) {
+      return entry.second.key_id == session.unexportable_key_id();
     });
   }
 }
@@ -328,8 +321,8 @@ void SingleSignOnKeyManager::ClearPreProvisionedKeys(
   };
 
   // TODO(crbug.com/573951667): Also delete the erased keys from `key_service_`.
-  std::erase_if(pre_provisioned_keys_, [&](const PreProvisionedKeyEntry& key) {
-    return matches_rp(key.rp_origin);
+  absl::erase_if(pre_provisioned_keys_, [&](const auto& entry) {
+    return matches_rp(entry.first.first);
   });
 
   // In-flight requests would otherwise store their key after the clear. They

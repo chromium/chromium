@@ -29,20 +29,20 @@ from the store, ties a key's lifetime to unrelated session operations.
 Bad:
 
 ```cpp
-// Stores the key without checking that the IdP has cookie access.
-pre_provisioned_keys_.push_back(
-    {provider_origin, rp_origin, std::string(provider_key), key_id});
-return true;
+bool SingleSignOnKeyManager::AddPreProvisionedKey(...) {
+  // Stores the key without checking that the IdP has cookie access.
+  ...  // Insert into `pre_provisioned_keys_`; false for a duplicate.
+}
 ```
 
 Good:
 
 ```cpp
-if (!CanAccessPreProvisionedKey(has_cookie_access_cb_, provider_origin,
-                                rp_origin)) {
-  return false;
+bool SingleSignOnKeyManager::AddPreProvisionedKey(...) {
+  if (!CanAccessPreProvisionedKey(has_cookie_access_cb_, provider_origin,
+                                  rp_origin)) {
+    return false;
+  }
+  ...  // Insert into `pre_provisioned_keys_`; false for a duplicate.
 }
-pre_provisioned_keys_.push_back(
-    {provider_origin, rp_origin, std::string(provider_key), key_id});
-return true;
 ```

@@ -8,8 +8,9 @@
 #include <memory>
 #include <string>
 #include <string_view>
-#include <vector>
+#include <utility>
 
+#include "base/containers/transparent_hash.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/types/expected.h"
@@ -19,6 +20,7 @@
 #include "net/device_bound_sessions/generate_key_param.h"
 #include "net/device_bound_sessions/session_error.h"
 #include "net/device_bound_sessions/session_service.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/origin.h"
 
@@ -88,8 +90,9 @@ class NET_EXPORT SingleSignOnKeyManager {
   // registration completes, before the new session is added.
   void ConsumeKeyForSession(const Session& session);
 
-  // Clears pre-provisioned keys matching `matcher`. If `matcher` is null,
-  // clears all keys.
+  // Clears pre-provisioned keys whose RP origin matches `matcher`, whichever
+  // IdP generated them: keys are the RP's data. If `matcher` is null, clears
+  // all keys.
   void ClearPreProvisionedKeys(
       const SessionService::OriginAndSiteMatcher& matcher);
 
@@ -97,12 +100,16 @@ class NET_EXPORT SingleSignOnKeyManager {
   class GenerateKeyRequest;
   struct GeneratedKey;
 
-  struct PreProvisionedKeyEntry {
+  struct KeyMetadata {
     url::Origin provider_origin;
-    url::Origin rp_origin;
-    std::string provider_key;
     unexportable_keys::UnexportableSigningKeyId key_id;
   };
+  // An RP origin and the JWK thumbprint of a provider key.
+  using RpAndProviderKey = std::pair<url::Origin, std::string>;
+  // Non-owning `RpAndProviderKey` for lookups and `try_emplace()`, so the
+  // origin and thumbprint are only copied when a key is added. Holds a
+  // reference, so only build it from an origin that outlives the expression.
+  using RpAndProviderKeyView = std::pair<const url::Origin&, std::string_view>;
 
   // Called once `request` has finished. Stores the generated key unless
   // `request`'s site data was cleared or `AddPreProvisionedKey()` rejects it.
@@ -114,7 +121,12 @@ class NET_EXPORT SingleSignOnKeyManager {
 
   const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;
   SessionService::CookieAccessCallback has_cookie_access_cb_;
-  std::vector<PreProvisionedKeyEntry> pre_provisioned_keys_;
+  // Pre-provisioned keys by RP origin and the provider key's JWK thumbprint.
+  absl::flat_hash_map<RpAndProviderKey,
+                      KeyMetadata,
+                      base::TransparentHashAs<RpAndProviderKeyView>,
+                      base::TransparentEqualAs<RpAndProviderKeyView>>
+      pre_provisioned_keys_;
   // In-flight `GenerateKey()` requests. Destroying `this` cancels them.
   absl::flat_hash_set<std::unique_ptr<GenerateKeyRequest>>
       generate_key_requests_;
