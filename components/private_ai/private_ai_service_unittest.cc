@@ -301,4 +301,18 @@ TEST_F(PrivateAiServiceTest,
   }
 }
 
+TEST_F(PrivateAiServiceTest, OnPrimaryAccountChangedToNoneReflectsActualState) {
+  signin::PrimaryAccountChangeEvent event;
+  static_cast<signin::IdentityManager::Observer*>(private_ai_service_.get())->OnPrimaryAccountChanged(event);
+
+  base::test::TestFuture<base::expected<phosphor::BlindSignedAuthToken,
+                                        phosphor::TokenManager::Error>>
+      future;
+  private_ai_service_->GetTokenManager()->GetAuthToken(future.GetCallback());
+
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_FALSE(future.Get().has_value());
+  EXPECT_EQ(future.Get().error(), phosphor::TokenManager::Error::kAccountNotAvailable);
+}
+
 }  // namespace private_ai

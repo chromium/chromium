@@ -173,8 +173,7 @@ void PrivateAiService::OnPrimaryAccountChanged(
 
   if (token_fetcher_) {
     bool account_available =
-        event.GetEventTypeFor(signin::ConsentLevel::kSignin) !=
-        signin::PrimaryAccountChangeEvent::Type::kCleared;
+        identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
     token_fetcher_->OnAccountStatusChanged(account_available);
     token_manager_->OnAccountStatusChanged(account_available);
   }
