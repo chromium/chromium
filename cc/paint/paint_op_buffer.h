@@ -103,6 +103,8 @@ class CC_PAINT_EXPORT SharedImageProvider {
   };
 
   virtual ~SharedImageProvider() = default;
+  // The returned SkImage may borrow the SharedImage's texture, and must not be
+  // used after this provider is destroyed.
   virtual sk_sp<SkImage> OpenSharedImageForRead(const gpu::Mailbox& mailbox,
                                                 Error& error) = 0;
 };

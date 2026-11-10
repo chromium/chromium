@@ -1347,6 +1347,7 @@ class TestMailboxBacking : public TextureBacking {
 
   const SkImageInfo& GetSkImageInfo() override { return info_; }
   gpu::Mailbox GetMailbox() const override { return mailbox_; }
+  void set_mailbox(const gpu::Mailbox& mailbox) { mailbox_ = mailbox; }
   void Bind(scoped_refptr<TextureBackingContext>) override {}
   void Unbind() override {}
   sk_sp<SkImage> GetSkImageViaReadback() override { return nullptr; }
@@ -1402,6 +1403,79 @@ TEST_F(GpuRasterPixelTest, DrawMailboxBackedImage) {
 
   auto actual_bitmap = Raster(display_item_list, options);
   ExpectEquals(actual_bitmap, expected_bitmap);
+}
+
+// A record shader that draws a SharedImage must not be reused from the GPU
+// process's transfer cache by a later raster, since the client can destroy the
+// SharedImage once the raster that used it ends.
+TEST_F(GpuRasterPixelTest, RecordShaderDoesNotReuseDestroyedSharedImage) {
+  RasterOptions options(gfx::Size(16, 16));
+  options.image_provider_raster_mode = PlaybackImageProvider::RasterMode::kGpu;
+  SkImageInfo info = SkImageInfo::MakeN32Premul(options.resource_size.width(),
+                                                options.resource_size.height());
+
+  auto* ri = raster_context_provider_->RasterInterface();
+  auto* sii = raster_context_provider_->SharedImageInterface();
+  auto create_image = [&](const SkColor4f& color) {
+    SkBitmap bitmap;
+    bitmap.allocPixels(info);
+    bitmap.eraseColor(color);
+    scoped_refptr<gpu::ClientSharedImage> shared_image =
+        CreateClientSharedImage(ri, sii, options,
+                                viz::SinglePlaneFormat::kRGBA_8888);
+    shared_image->UpdateDestructionSyncToken(
+        UploadPixels(ri, shared_image, info, bitmap));
+    return shared_image;
+  };
+  scoped_refptr<gpu::ClientSharedImage> red_image =
+      create_image(SkColors::kRed);
+  scoped_refptr<gpu::ClientSharedImage> green_image =
+      create_image(SkColors::kGreen);
+
+  // The record shader draws a texture-backed image, which is serialized as its
+  // SharedImage mailbox. Both rasters use the same shader, so they send the
+  // same shader id and tile, and only the mailbox changes.
+  auto backing = sk_make_sp<TestMailboxBacking>(red_image->mailbox(), info);
+  auto paint_image =
+      PaintImageBuilder::WithDefault()
+          .set_id(PaintImage::GetNextId())
+          .set_texture_backing(backing, PaintImage::GetNextContentId())
+          .TakePaintImage();
+  PaintOpBuffer shader_buffer;
+  shader_buffer.push<DrawImageOp>(paint_image, 0.f, 0.f);
+  auto shader = PaintShader::MakePaintRecord(
+      shader_buffer.ReleaseAsRecord(), gfx::RectToSkRect(gfx::Rect(16, 16)),
+      SkTileMode::kClamp, SkTileMode::kClamp, nullptr,
+      PaintShader::ScalingBehavior::kFixedScale);
+
+  auto display_item_list = base::MakeRefCounted<DisplayItemList>();
+  display_item_list->StartPaint();
+  PaintFlags flags;
+  flags.setShader(shader);
+  display_item_list->push<DrawRectOp>(gfx::RectToSkRect(gfx::Rect(16, 16)),
+                                      flags);
+  display_item_list->EndPaintOfUnpaired(gfx::Rect(options.resource_size));
+  display_item_list->Finalize();
+
+  SkBitmap first_result = Raster(display_item_list, options);
+  EXPECT_EQ(SK_ColorRED, first_result.getColor(8, 8));
+
+  // The client destroys the red image after the first raster. New images may
+  // reuse its texture. Finishing lets backends that defer texture deletion
+  // until the GPU is done (e.g. Vulkan) actually delete it.
+  gpu::SyncToken post_raster_token;
+  ri->GenUnverifiedSyncTokenCHROMIUM(post_raster_token.GetData());
+  red_image->UpdateDestructionSyncToken(post_raster_token);
+  red_image.reset();
+  std::vector<scoped_refptr<gpu::ClientSharedImage>> other_images;
+  for (int i = 0; i < 4; ++i) {
+    other_images.push_back(create_image(SkColors::kBlue));
+    ri->Finish();
+  }
+
+  backing->set_mailbox(green_image->mailbox());
+  SkBitmap second_result = Raster(display_item_list, options);
+  EXPECT_EQ(SK_ColorGREEN, second_result.getColor(8, 8));
 }
 
 TEST_F(GpuRasterPixelTest, Preclear) {
