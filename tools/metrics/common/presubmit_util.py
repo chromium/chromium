@@ -14,7 +14,7 @@ import pathlib
 import pickle
 import shutil
 import sys
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, Iterable, List, Optional
 
 import setup_modules  # pylint: disable=unused-import
 
@@ -323,7 +323,7 @@ PresubmitCheckMethod = Callable[..., List[Any]]
 
 def RunCheckWithCache(
   check_method: PresubmitCheckMethod,
-  check_id: int,
+  check_id: Any,
   input_api: Any,
   output_api: Any,
   cache_file_path: str,

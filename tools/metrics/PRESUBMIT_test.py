@@ -4,14 +4,46 @@
 # found in the LICENSE file.
 
 import os
+import pathlib
 import sys
 import unittest
+from typing import List
 
 import setup_modules  # pylint: disable=unused-import
 
 
 import chromium_src.tools.metrics.PRESUBMIT as PRESUBMIT
 import chromium_src.PRESUBMIT_test_mocks as PRESUBMIT_test_mocks
+
+# Windows runs vpython3 through cmd.exe, which rejects longer command lines.
+_CMD_EXE_COMMAND_LINE_LIMIT = 8191
+
+
+def _AffectedFiles(count: int) -> List[str]:
+  return [f'tools/metrics/dir{i}/file{i}.py' for i in range(count)]
+
+
+class PresubmitChecksAsTestableScriptsTest(unittest.TestCase):
+  def testCommandLinesDoNotDependOnAffectedFiles(self):
+    few = PRESUBMIT._PresubmitChecksAsTestableScripts(_AffectedFiles(10))
+    many = PRESUBMIT._PresubmitChecksAsTestableScripts(_AffectedFiles(10000))
+    self.assertEqual([s.cmd for s in few], [s.cmd for s in many])
+    self.assertLess(
+      max(len(' '.join(s.cmd)) for s in many), _CMD_EXE_COMMAND_LINE_LIMIT
+    )
+
+  def testAffectedFilesArePassedOnStdin(self):
+    affected_files = _AffectedFiles(10000)
+    scripts = PRESUBMIT._PresubmitChecksAsTestableScripts(affected_files)
+    self.assertEqual(
+      {s.file_path: s.stdin.splitlines() for s in scripts if s.stdin},
+      {
+        pathlib.Path(
+          'tools/metrics/python_support/validate_affected_scripts.py'
+        ): affected_files,
+        pathlib.Path('tools/metrics/metrics_python_tests.py'): affected_files,
+      },
+    )
 
 
 class CheckQuoteConsistencyTest(unittest.TestCase):

@@ -57,15 +57,20 @@ class TestableScript:
   # Full cmd to run with args included
   cmd: List[str]
 
+  # Text to pass to the script on stdin, for inputs that may be too long for
+  # a command line
+  stdin: str = ''
+
   @classmethod
   def CreatePythonScript(
-    cls, file_path: pathlib.Path, flags: List[str] = []
+    cls, file_path: pathlib.Path, flags: List[str] = [], stdin: str = ''
   ) -> 'TestableScript':
     """Creates TestableScript object for python script
 
     Args:
       file_path - a path to python script relative to src/
       flags - a list of flags to pass to the script
+      stdin - text to pass to the script on stdin
 
     Returns:
       TestableScript object set up to run using vpython3
@@ -74,6 +79,7 @@ class TestableScript:
       identifiable_name=str(file_path),
       file_path=file_path,
       cmd=['vpython3', str(file_path), *flags],
+      stdin=stdin,
     )
 
 

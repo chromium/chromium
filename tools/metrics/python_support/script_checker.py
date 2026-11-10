@@ -49,7 +49,8 @@ def check_scripts(
   """Checks if the provided python scripts finish successfully.
 
   Args:
-    commands_to_check - a list of TestableScript to be executed.
+    commands_to_check - a list of TestableScript to be executed. Each script
+      gets its stdin text on stdin, which it can read with read_stdin_lines().
     cwd - working directory to run the script in.
     display_progressbar - if True, the progressbar will be printed to stdout.
 
@@ -73,13 +74,20 @@ def check_scripts(
       mode='w+', encoding='utf-8', errors='replace'
     )
 
-    proc = subprocess.Popen(
-      testable_script.cmd,
-      stdout=out_f,
-      stderr=err_f,
-      shell=sys.platform == 'win32',
-      cwd=cwd,
-    )
+    # The input goes through a file rather than a pipe, so writing it never
+    # waits for the script to read it. The script gets its own handle to the
+    # file, so this one can be closed right away.
+    with tempfile.TemporaryFile() as in_f:
+      in_f.write(testable_script.stdin.encode('utf-8'))
+      in_f.seek(0)
+      proc = subprocess.Popen(
+        testable_script.cmd,
+        stdin=in_f,
+        stdout=out_f,
+        stderr=err_f,
+        shell=sys.platform == 'win32',
+        cwd=cwd,
+      )
     running_processes.append((testable_script, proc, out_f, err_f))
 
   while running_processes:
@@ -117,6 +125,11 @@ def check_scripts(
       time.sleep(0.5)
 
   return failed_commands
+
+
+def read_stdin_lines() -> List[str]:
+  """Returns the lines that check_scripts() passed to this script on stdin."""
+  return sys.stdin.buffer.read().decode('utf-8').splitlines()
 
 
 def _print_progress_bar(iteration, total, length=40):

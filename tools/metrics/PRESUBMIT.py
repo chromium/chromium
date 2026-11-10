@@ -7,164 +7,82 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details on the presubmit API built into gcl.
 """
 
+import enum
 import os
 import sys
-from pathlib import Path
-import enum
+import pathlib
 import tempfile
-from typing import Iterable, Any, Type, List, Dict
+from typing import Any, Iterable, List, Type
 
 # PRESUBMIT infrastructure doesn't guarantee that the cwd() will be on
 # path requiring manual path manipulation to call setup_modules.
-# TODO(crbug.com/488351821): Consider using subprocesses to run actual
-#                            test as recommended by presubmit docs:
-# https://www.chromium.org/developers/how-tos/depottools/presubmit-scripts/
 sys.path.append('.')
 import setup_modules  # pylint: disable=unused-import
 
 sys.path.remove('.')
 
-import chromium_src.tools.metrics.common.presubmit_util as presubmit_caching_support
 import chromium_src.tools.metrics.common.path_util as path_util
+import chromium_src.tools.metrics.common.presubmit_util as presubmit_util
+import chromium_src.tools.metrics.python_support.quote_checker as quote_checker
+import chromium_src.tools.metrics.python_support.script_checker as script_checker
+from chromium_src.tools.metrics.python_support.tests_helpers import (
+  TestableScript,
+)
 
 
 class MetricsPresubmitCheckType(enum.Enum):
-  PYTHON_ISSUES = 1
+  # Check extracted to external scripts, treated as one unit from the
+  # perspective of the cache.
+  ISOLATED_CHECKS = 1
   XML_ISSUES = 2
 
 
 _CACHE_DIR_PATH = os.path.join(tempfile.gettempdir(), 'metrics_presubmit_cache')
 
-import chromium_src.tools.metrics.python_support.tests_helpers as tests_helpers
-import chromium_src.tools.metrics.python_support.mypy_helpers as mypy_helpers
-import chromium_src.tools.metrics.python_support.script_checker as script_checker
-import chromium_src.tools.metrics.python_support.dependency_solver as dependency_solver
-import chromium_src.tools.metrics.python_support.quote_checker as quote_checker
-
 UKM_XML = 'ukm.xml'
 ENUMS_XML = 'enums.xml'
 
-_FILES_MISSING_IN_BUILD_GN_ERROR_TEMPLATE = """
-There are test files that are not listed in tools/metrics/BUILD.gn
-metrics_python_tests rule. Those test will not be run by CI.
-Please add the missing files to BUILD.gn:
-{missing_files_list}
-"""
 
-
-def _RunSelectedTests(
-  input_api: Type,
-  output_api: Type,
-  test_scripts: Iterable[tests_helpers.TestableScript],
-) -> Iterable[Any]:
-  """Executes the tests_scripts using typ"""
-  test_to_run_list = '\n * '.join(
-    [''] + [str(t.file_path) for t in test_scripts]
-  )
-  print(f'Executing following tests in tools/metrics: {test_to_run_list}')
-  return input_api.RunTests(
-    [
-      input_api.Command(
-        name=t.file_path,
-        cmd=t.cmd,
-        kwargs={'cwd': path_util.CHROMIUM_SRC_PATH},
-        message=output_api.PresubmitError,
-      )
-      for t in test_scripts
-    ]
-  )
-
-
-def _ReportMissingBuildFileReferences(output_api: Type) -> Iterable[Any]:
-  """Reports issues with files missing in BUILD.gn tests list"""
-  missing_files = tests_helpers.validate_gn_sources('metrics_python_tests')
-  if not missing_files:
-    return []
-  files_formatted_for_build_gn = [f'   "//{f}",' for f in sorted(missing_files)]
-  missing_files_list = '\n'.join(files_formatted_for_build_gn)
-  return [
-    output_api.PresubmitError(
-      _FILES_MISSING_IN_BUILD_GN_ERROR_TEMPLATE.format(
-        missing_files_list=missing_files_list
-      )
-    )
-  ]
-
-
-def _ReportMyPyErrors(input_api: Type, output_api: Type) -> Iterable[Any]:
-  my_py_issues = mypy_helpers.run_mypy_and_filter_irrelevant(
-    str(path_util.METRICS_TOOLS_PATH)
-  )
-  return [output_api.PresubmitError(i) for i in my_py_issues]
-
-
-def _ReportIssuesWithScripts(
-  input_api: Type,
-  output_api: Type,
+def _PresubmitChecksAsTestableScripts(
   affected_files: Iterable[str],
-  deps_graph: Dict[Path, List[Path]],
-) -> Iterable[Any]:
-  scripts_to_test = tests_helpers.get_affected_testable_scripts(
-    set(Path(p) for p in affected_files), deps_graph
-  )
-
-  if not scripts_to_test:
-    return []
-
-  print(f'Running {len(scripts_to_test)} affected scripts to check them.')
-  commands_failed = script_checker.check_scripts(
-    scripts_to_test, cwd=str(path_util.CHROMIUM_SRC_PATH)
-  )
+) -> List[TestableScript]:
+  # The affected files go through stdin: on CI every file under tools/metrics
+  # is affected, which is too long for a Windows command line.
+  affected_files_lines = '\n'.join(affected_files)
   return [
-    output_api.PresubmitError(res.error_message()) for res in commands_failed
+    TestableScript.CreatePythonScript(
+      pathlib.Path('tools/metrics/python_support/validate_gn.py')
+    ),
+    TestableScript.CreatePythonScript(
+      pathlib.Path('tools/metrics/python_support/validate_mypy.py')
+    ),
+    TestableScript.CreatePythonScript(
+      pathlib.Path('tools/metrics/python_support/validate_affected_scripts.py'),
+      stdin=affected_files_lines,
+    ),
+    TestableScript.CreatePythonScript(
+      pathlib.Path('tools/metrics/metrics_python_tests.py'),
+      # Otherwise typ uploads each test result to the presubmit's ResultDB,
+      # which rejects typ's test IDs.
+      flags=['--affected_only', '--disable-resultsink'],
+      stdin=affected_files_lines,
+    ),
   ]
 
 
-def _ReportIssuesWithTests(
-  input_api: Type,
-  output_api: Type,
-  affected_files: List[str],
-  deps_graph: Dict[Path, List[Path]],
+def _ReportIsolatedChecksIssues(
+  input_api: Type, output_api: Type
 ) -> Iterable[Any]:
-  tests_to_run = tests_helpers.get_affected_tests(
-    set(Path(p) for p in affected_files), deps_graph
-  )
-
-  if not tests_to_run:
-    return []
-
-  return _RunSelectedTests(input_api, output_api, tests_to_run)
-
-
-def _ReportPythonIssues(input_api: Type, output_api: Type) -> Iterable[Any]:
   """Detects and reports issue with python scripts within tools/metrics."""
   if not input_api.HasAffectedFiles(extensions=('.py', '.gn')):
     return
-
-  absolute_paths_of_affected_files = [
-    f.AbsoluteLocalPath() for f in input_api.AffectedFiles()
-  ]
-
-  deps_graph = dependency_solver.scan_directory_dependencies(
-    path_util.METRICS_TOOLS_PATH, report_relative_to=path_util.CHROMIUM_SRC_PATH
-  )
-
-  yield from _ReportMissingBuildFileReferences(output_api)
-  yield from _ReportMyPyErrors(input_api, output_api)
-  yield from _ReportIssuesWithScripts(
-    input_api, output_api, absolute_paths_of_affected_files, deps_graph
-  )
-  yield from _ReportIssuesWithTests(
-    input_api, output_api, absolute_paths_of_affected_files, deps_graph
-  )
-
-
-def _ReportPythonIssuesList(input_api, output_api):
-  return list(_ReportPythonIssues(input_api, output_api))
-
-
-def _ReportXmlIssuesList(input_api, output_api):
-  return list(_ReportXmlIssues(input_api, output_api))
+  affected_files = [f.LocalPath() for f in input_api.AffectedFiles()]
+  for res in script_checker.check_scripts(
+    _PresubmitChecksAsTestableScripts(affected_files),
+    cwd=str(path_util.CHROMIUM_SRC_PATH),
+    display_progressbar=False,
+  ):
+    yield output_api.PresubmitError(res.error_message())
 
 
 def _ReportEnumXmlIssues(
@@ -177,33 +95,45 @@ def _ReportEnumXmlIssues(
   if not enums_changed:
     return
 
-  testable_script = tests_helpers.TestableScript.CreatePythonScript(
-    Path('tools/metrics/ukm/validate_format.py'), ['--presubmit']
+  script = TestableScript(
+    identifiable_name=UKM_XML,
+    file_path=pathlib.Path('tools/metrics/ukm/validate_format.py'),
+    cmd=[
+      input_api.python3_executable,
+      'tools/metrics/ukm/validate_format.py',
+      '--presubmit',
+    ],
   )
-  commands_failed = script_checker.check_scripts(
-    [testable_script], cwd=str(path_util.CHROMIUM_SRC_PATH)
+  failed_scripts = script_checker.check_scripts(
+    [script],
+    cwd=str(path_util.CHROMIUM_SRC_PATH),
+    display_progressbar=False,
   )
-
-  if not commands_failed:
-    return
-
-  for res in commands_failed:
+  for res in failed_scripts:
     yield output_api.PresubmitError(
       f'{UKM_XML} does not pass format validation; run '
-      f'{input_api.PresubmitLocalPath()}/ukm/validate_format.py and fix the '
-      f'reported error(s) or warning(s).\n\n{res.error_message()}'
+      f'tools/metrics/ukm/validate_format.py and fix the '
+      f'reported error(s) or warning(s).\n\n{res.stdout}\n{res.stderr}'
     )
+
+
+def _ReportIsolatedChecksIssuesList(
+  input_api: Type, output_api: Type
+) -> List[Any]:
+  return list(_ReportIsolatedChecksIssues(input_api, output_api))
+
+
+def _ReportXmlIssuesList(input_api: Type, output_api: Type) -> List[Any]:
+  return list(_ReportXmlIssues(input_api, output_api))
 
 
 def _ReportXmlIssues(input_api: Type, output_api: Type) -> Iterable[Any]:
   """Checks that ukm/ukm.xml is validated on changes to histograms/enums.xml."""
   if not input_api.HasAffectedFiles(extensions='.xml'):
     return
-  absolute_paths_of_affected_files = [
-    f.AbsoluteLocalPath() for f in input_api.AffectedFiles()
-  ]
+  affected_files = [f.LocalPath() for f in input_api.AffectedFiles()]
   ukm_xml_modified = any(
-    [input_api.basename(p) == UKM_XML for p in absolute_paths_of_affected_files]
+    [input_api.basename(p) == UKM_XML for p in affected_files]
   )
 
   # Early return if the ukm file is changed, then the presubmit script in the
@@ -211,9 +141,7 @@ def _ReportXmlIssues(input_api: Type, output_api: Type) -> Iterable[Any]:
   if ukm_xml_modified:
     return
 
-  yield from _ReportEnumXmlIssues(
-    input_api, output_api, absolute_paths_of_affected_files
-  )
+  yield from _ReportEnumXmlIssues(input_api, output_api, affected_files)
 
 
 def _CheckNoManualSysPathManipulation(
@@ -268,7 +196,7 @@ def _CheckQuoteConsistency(input_api: Any, output_api: Any) -> List[Any]:
     file_text = '\n'.join(affected_file.NewContents())
     try:
       modified_strings = quote_checker.GetModifiedStrings(
-        Path(filepath), file_text
+        pathlib.Path(filepath), file_text
       )
     except Exception as e:
       results.append(
@@ -303,9 +231,9 @@ def CheckChange(input_api: Type, output_api: Type):
   )
   if input_api.HasAffectedFiles(extensions=('.py', '.gn')):
     problems.extend(
-      presubmit_caching_support.RunCheckWithCache(
-        _ReportPythonIssuesList,
-        MetricsPresubmitCheckType.PYTHON_ISSUES.value,
+      presubmit_util.RunCheckWithCache(
+        _ReportIsolatedChecksIssuesList,
+        MetricsPresubmitCheckType.ISOLATED_CHECKS,
         input_api,
         output_api,
         _CACHE_DIR_PATH,
@@ -313,9 +241,9 @@ def CheckChange(input_api: Type, output_api: Type):
     )
   if input_api.HasAffectedFiles(extensions='.xml'):
     problems.extend(
-      presubmit_caching_support.RunCheckWithCache(
+      presubmit_util.RunCheckWithCache(
         _ReportXmlIssuesList,
-        MetricsPresubmitCheckType.XML_ISSUES.value,
+        MetricsPresubmitCheckType.XML_ISSUES,
         input_api,
         output_api,
         _CACHE_DIR_PATH,
