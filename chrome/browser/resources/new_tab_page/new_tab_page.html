@@ -9,14 +9,20 @@
         margin: 0;
       }
 
-      #backgroundImage {
+      /* Keep full-viewport sizing on the preloaded OOP iframe before ntp-app
+       * upgrades; once defined, app.css ::slotted(#backgroundImage) owns layout
+       * inside #backgroundImageContainer without outer-document cascade
+       * overrides. */
+      ntp-app:not(:defined) #backgroundImage {
         border: none;
         height: 100%;
-        pointer-events: none;
         position: fixed;
         top: 0;
-        visibility: hidden;
         width: 100%;
+      }
+
+      #backgroundImage {
+        visibility: hidden;
       }
 
       [show-background-image] #backgroundImage {
@@ -25,8 +31,10 @@
     </style>
   </head>
   <body>
-    <iframe id="backgroundImage" src="$i18nRaw{backgroundImageUrl}"></iframe>
-    <ntp-app></ntp-app>
+    <ntp-app>
+      <iframe id="backgroundImage" slot="backgroundImage"
+          src="$i18nRaw{backgroundImageUrl}"></iframe>
+    </ntp-app>
     <script type="module" src="new_tab_page.js"></script>
     <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
     <link rel="stylesheet" href="chrome://theme/colors.css?sets=ui,chrome">
