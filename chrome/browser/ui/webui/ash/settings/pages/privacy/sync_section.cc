@@ -24,7 +24,6 @@
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/google/core/common/google_util.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/base/features.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -79,8 +78,7 @@ void AddSyncControlsStrings(content::WebUIDataSource* html_source,
   html_source->AddLocalizedString(
       "osSyncFeatureLabel",
       (identity_manager &&
-       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
-       syncer::IsReplaceSyncPromosWithSignInPromosEnabled())
+       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin))
           ? IDS_OS_SETTINGS_SYNC_FEATURE_LABEL_2
           : IDS_OS_SETTINGS_SYNC_FEATURE_LABEL);
 }
@@ -122,9 +120,6 @@ SyncSection::SyncSection(
 SyncSection::~SyncSection() = default;
 
 void SyncSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
-  html_source->AddBoolean("replaceSyncPromosWithSignInPromos",
-                          syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
-
   html_source->AddLocalizedString(
       "syncAndNonPersonalizedServices",
       IDS_SETTINGS_SYNC_SYNC_AND_NON_PERSONALIZED_SERVICES);

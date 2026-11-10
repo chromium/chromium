@@ -68,7 +68,6 @@ static_library("privacy") {
     "//chromeos/ash/experiences/settings_ui/resources:strings",
     "//components/application_locale_storage",
     "//components/google/core/common",
-    "//components/sync/base:features",
     "//ui/base",
     "//ui/chromeos",
     "//ui/webui",

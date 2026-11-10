@@ -19,7 +19,6 @@
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
@@ -89,8 +88,7 @@ void OSSyncHandler::OnSyncShutdown(syncer::SyncService* service) {
 
 void OSSyncHandler::HandleDidNavigateToOsSyncPage(const base::ListValue& args) {
   syncer::SyncService* service = GetSyncService();
-  if (service && !service->HasSyncConsent() &&
-      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
+  if (service && !service->HasSyncConsent()) {
     // For signed-in non-syncing users, clearing this flag acts solely to
     // dismiss the system/sync error notification without other side effects.
     // Since the dashboard reset previously disabled all individual OS types,
@@ -117,8 +115,7 @@ void OSSyncHandler::HandleOpenBrowserSyncSettings(const base::ListValue& args) {
       ash::IdentityManagerProvider::Get().Find(CHECK_DEREF(GetAccountId()));
   ash::NewWindowDelegate::GetInstance()->OpenUrl(
       (identity_manager &&
-       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) ||
-              !syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
+       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync))
           ? settings_url.Resolve(ash::chrome_urls::kSyncSetupSubPage)
           : settings_url.Resolve(ash::chrome_urls::kAccountSubPage),
       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,

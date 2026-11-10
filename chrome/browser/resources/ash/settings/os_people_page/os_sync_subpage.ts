@@ -301,8 +301,7 @@ export class OsSettingsSyncSubpageElement extends
   private computeSyncSectionDisabled_(): boolean {
     return this.syncStatus !== undefined &&
         (this.syncStatus.signedInState !== SignedInState.SYNCING &&
-             (this.syncStatus.signedInState !== SignedInState.SIGNED_IN ||
-              !loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos')) ||
+             this.syncStatus.signedInState !== SignedInState.SIGNED_IN ||
          !!this.syncStatus.disabled ||
          (!!this.syncStatus.hasError &&
           this.syncStatus.statusAction !== StatusAction.ENTER_PASSPHRASE &&
@@ -539,8 +538,7 @@ export class OsSettingsSyncSubpageElement extends
     return this.syncStatus !== undefined && this.syncPrefs !== undefined &&
         this.syncPrefs.passphraseRequired &&
         (this.syncStatus.signedInState === SignedInState.SYNCING ||
-         (this.syncStatus.signedInState === SignedInState.SIGNED_IN &&
-          loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos')));
+         this.syncStatus.signedInState === SignedInState.SIGNED_IN);
   }
 
   private onSyncAdvancedClick_(): void {
