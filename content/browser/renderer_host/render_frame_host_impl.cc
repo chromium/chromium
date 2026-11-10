@@ -16338,37 +16338,52 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     // Guest views currently don't appear to set the origin correctly for
     // synchronous new window commits under MPArch.
     //
-    // TODO(https://crbug.com/511083727): Re-enable this check for file origins
-    // once issues around Origin dropping UNC hosts are resolved.
-    if (is_synchronous_about_blank_commit &&
-        params->origin.scheme() != url::kFileScheme &&
+    // TODO(crbug.com/582733579): Re-enable this check for file origins once
+    // issues around Origin dropping UNC hosts are resolved. Until then, only
+    // skip it when the browser also expects a file origin, so that other
+    // frames can't claim one (see https://crbug.com/580853808).
+    const bool is_file_origin_commit =
+        params->origin.scheme() == url::kFileScheme &&
+        last_committed_origin_.scheme() == url::kFileScheme;
+    if (is_synchronous_about_blank_commit && !is_file_origin_commit &&
         (!frame_tree_->is_guest() ||
          !base::FeatureList::IsEnabled(features::kGuestViewMPArch))) {
-      bool origin_matches = false;
-      if (last_committed_origin_.opaque()) {
-        // When the browser-derived origin is opaque, the renderer-reported
-        // origin must also be opaque with a matching precursor.
-        // TODO(crbug.com/486082219): Compare origin nonces as well once nonces
-        // are synchronized for popups opened from CSP-sandboxed documents with
-        // allow-popups-to-escape-sandbox.
+      // The renderer-reported origin should match the browser-derived one
+      // exactly, including the nonce: it's either inherited from the creator,
+      // or derived from a sandbox origin token that the browser also sends to
+      // the renderer.
+      bool origin_matches = params->origin == last_committed_origin_;
+      if (!origin_matches &&
+          !base::FeatureList::IsEnabled(
+              blink::features::kUseSandboxTokenForOriginDerivation)) {
+        // Without sandbox origin tokens, the browser and the renderer derive
+        // opaque origins with different nonces, so only compare precursors.
+        // TODO(crbug.com/402272788): Remove along with the feature.
         origin_matches =
-            params->origin.opaque() &&
+            params->origin.opaque() && last_committed_origin_.opaque() &&
             params->origin.GetTupleOrPrecursorTupleIfOpaque() ==
                 last_committed_origin_.GetTupleOrPrecursorTupleIfOpaque();
-      } else if (params->origin.opaque()) {
-        // The browser-derived origin is not opaque but the renderer-reported
-        // one is. This can legitimately (but incorrectly) happen for popups
-        // opened from CSP-sandboxed documents with
-        // allow-popups-to-escape-sandbox, where the browser sees no sandbox
-        // flags on the frame but the renderer still inherits CSP sandbox flags
-        // for the document.
-        // TODO(crbug.com/486082219): Remove this handling once the incorrect
-        // case above can no longer happen and browser & renderer origins are
-        // always consistent.
-        origin_matches = true;
-      } else {
+      }
+      if (!origin_matches && params->origin.opaque() &&
+          !params->origin.GetTupleOrPrecursorTupleIfOpaque().IsValid()) {
+        // Temporarily allow nonces to differ for opaque origins without a
+        // precursor. The renderer creates these itself for the initial empty
+        // document of a main frame that has no creator or was reused after a
+        // crash, and for frames created under it.
+        //
+        // In the crash case, the difference can be more than the nonce, since
+        // the browser may still have the previous document's non-opaque
+        // origin.
+        //
+        // In all of these cases, `params->origin` becomes the new committed
+        // origin, which is opaque, has no precursor, and isn't tied to any
+        // site.
+        // TODO(crbug.com/582296961): Remove once the browser picks these
+        // origins.
         origin_matches =
-            params->origin.CanBeDerivedFrom(last_committed_origin_.GetURL());
+            !last_committed_origin_.opaque() ||
+            !last_committed_origin_.GetTupleOrPrecursorTupleIfOpaque()
+                 .IsValid();
       }
       if (!origin_matches) {
         bad_message::ReceivedBadMessage(
