@@ -326,7 +326,9 @@ void AudioControllerImpl::OnInputDeviceParametersReceived(
     audio_capturer_source_->SetAutomaticGainControl(
         processing_settings->automatic_gain_control);
   }
+  captured_audio_since_start_ = false;
   audio_capturer_source_->Start();
+  observers_.Notify(&Observer::OnCaptureStarted);
 
   if (debug_sink_) {
     DebugSink::CaptureFormat format{.sample_rate = device_params->sample_rate(),
@@ -452,6 +454,8 @@ void AudioControllerImpl::CreateAudioOutputDevice(
   output_device_->Play();
 }
 
+// Runs on the realtime capture thread, so observers are told about the start
+// in `OnInputDeviceParametersReceived()` instead.
 void AudioControllerImpl::OnCaptureStarted() {}
 
 void AudioControllerImpl::Capture(const media::AudioBus* audio_source,
@@ -517,12 +521,17 @@ void AudioControllerImpl::OnCaptureMuted(bool is_muted) {
   if (debug_sink_) {
     debug_sink_->OnCaptureMuted(is_muted);
   }
+  // A stream that opens muted reports it before delivering any audio; a mute
+  // while capturing comes after audio has flowed.
+  observers_.Notify(&Observer::OnCaptureMuted, is_muted,
+                    /*at_stream_start=*/!captured_audio_since_start_);
 }
 
 void AudioControllerImpl::OnCapturedAudioOnMainThread(
     std::vector<int16_t> pcm_data,
     media::AudioParameters params,
     float energy) {
+  captured_audio_since_start_ = true;
   if (debug_sink_) {
     debug_sink_->OnMicLevel(energy);
   }

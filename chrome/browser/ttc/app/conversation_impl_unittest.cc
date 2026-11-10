@@ -85,6 +85,12 @@ class FakeSessionController : public SessionController {
   void UserAudioLevelUpdate(float audio_level) override {
     last_audio_level_ = audio_level;
   }
+  void OnMicCaptureChanged(bool capturing) override {
+    mic_capturing_ = capturing;
+  }
+  void OnSystemMicMuteChanged(bool muted, bool at_stream_start) override {
+    system_mic_mute_ = SystemMicMute{muted, at_stream_start};
+  }
   void AddObserver(Observer* observer) override {}
   void RemoveObserver(Observer* observer) override {}
   void SendTextInput(const std::string& text) override {}
@@ -105,7 +111,16 @@ class FakeSessionController : public SessionController {
   }
   void EndSessionAsync() override { ++end_session_count_; }
 
+  struct SystemMicMute {
+    bool muted;
+    bool at_stream_start;
+  };
+
   const ToolRequest& last_request() const { return last_request_; }
+  std::optional<bool> mic_capturing() const { return mic_capturing_; }
+  std::optional<SystemMicMute> system_mic_mute() const {
+    return system_mic_mute_;
+  }
   std::optional<float> last_audio_level() const { return last_audio_level_; }
   std::optional<ErrorCode> last_error() const { return last_error_; }
   int error_count() const { return error_count_; }
@@ -136,6 +151,8 @@ class FakeSessionController : public SessionController {
   raw_ptr<Profile> profile_;
   ToolRequest last_request_;
   std::optional<float> last_audio_level_;
+  std::optional<bool> mic_capturing_;
+  std::optional<SystemMicMute> system_mic_mute_;
   std::optional<ErrorCode> last_error_;
   int error_count_ = 0;
   int end_session_count_ = 0;
@@ -311,6 +328,44 @@ TEST_F(ConversationImplTest, StartAndStopWiring) {
   EXPECT_CALL(backend(), Close()).Times(1);
   conversation.Stop();
   EXPECT_FALSE(audio_controller().is_capturing());
+}
+
+TEST_F(ConversationImplTest, CaptureStartAndStopReportedToSession) {
+  ConversationImpl& conversation = CreateConversation();
+  conversation.Start();
+  conversation.OnBackendInitialized();
+
+  // Capture is requested once the device parameters arrive.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return session_controller_.mic_capturing().value_or(false); }));
+
+  audio_controller().StopCapture();
+  EXPECT_EQ(session_controller_.mic_capturing(), false);
+}
+
+TEST_F(ConversationImplTest, SystemMicMuteReportedToSession) {
+  ConversationImpl& conversation = CreateConversation();
+  conversation.Start();
+
+  // A stream that opens muted reports it before any audio is captured.
+  audio_controller().OnCaptureMuted(true);
+  ASSERT_TRUE(session_controller_.system_mic_mute().has_value());
+  EXPECT_TRUE(session_controller_.system_mic_mute()->muted);
+  EXPECT_TRUE(session_controller_.system_mic_mute()->at_stream_start);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(backend(), SendAudioChunk(testing::_)).WillOnce([&run_loop] {
+    run_loop.Quit();
+  });
+  auto bus = media::AudioBus::Create(1, 1600);
+  bus->Zero();
+  audio_controller().Capture(bus.get(), base::TimeTicks::Now(), {}, 1.0);
+  run_loop.Run();
+
+  // Once audio has flowed, a change comes from the system while capturing.
+  audio_controller().OnCaptureMuted(false);
+  EXPECT_FALSE(session_controller_.system_mic_mute()->muted);
+  EXPECT_FALSE(session_controller_.system_mic_mute()->at_stream_start);
 }
 
 TEST_F(ConversationImplTest, CapturedAudioRoutedToBackend) {

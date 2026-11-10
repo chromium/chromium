@@ -70,7 +70,9 @@ class ConversationImpl : public Conversation,
   void OnCapturedAudio(base::span<const int16_t> pcm_data,
                        const media::AudioParameters& params,
                        float energy) override;
+  void OnCaptureStarted() override;
   void OnCaptureStopped() override;
+  void OnCaptureMuted(bool muted, bool at_stream_start) override;
   void OnModelAudioEnvelopeReady(const AudioEnvelope& envelope) override;
   void OnPlaybackCompleted(int64_t sequence_number) override;
   void OnAudioError(ErrorCode error) override;

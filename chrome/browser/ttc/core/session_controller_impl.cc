@@ -181,6 +181,30 @@ void SessionControllerImpl::UserAudioLevelUpdate(float audio_level) {
   }
 }
 
+void SessionControllerImpl::OnMicCaptureChanged(bool capturing) {
+  if (session_lifecycle_ == SessionLifecycle::kFinished) {
+    return;
+  }
+  for (SessionController::Observer& observer : observers_) {
+    observer.OnMicCaptureChanged(capturing);
+  }
+}
+
+void SessionControllerImpl::OnSystemMicMuteChanged(bool muted,
+                                                   bool at_stream_start) {
+  GetJournal().Log("TtcSystemMicMuted",
+                   actor::JournalDetailsBuilder()
+                       .Add("muted", muted)
+                       .Add("at_stream_start", at_stream_start)
+                       .Build());
+  if (session_lifecycle_ == SessionLifecycle::kFinished) {
+    return;
+  }
+  for (SessionController::Observer& observer : observers_) {
+    observer.OnSystemMicMuteChanged(muted, at_stream_start);
+  }
+}
+
 BrowserWindowInterface* SessionControllerImpl::GetBrowserWindowInterface() {
   return voice_focused_contents_tracker_->GetActiveBrowserWindow();
 }

@@ -163,6 +163,8 @@ class AudioControllerImpl : public AudioController,
   // True from StartCapture() until StopCapture(), including while the device
   // parameters query is in flight.
   bool capture_requested_ = false;
+  // Whether the current capture stream has delivered any audio yet.
+  bool captured_audio_since_start_ = false;
   std::string capture_device_id_;
   scoped_refptr<media::AudioCapturerSource> audio_capturer_source_;
   // Created before the capture stream is started and destroyed after it is

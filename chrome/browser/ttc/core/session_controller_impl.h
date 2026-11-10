@@ -67,6 +67,8 @@ class SessionControllerImpl : public SessionController,
                        ToolResponseCallback tool_response_callback) override;
   std::vector<ToolDefinition> GetToolDefinitions() override;
   void UserAudioLevelUpdate(float audio_level) override;
+  void OnMicCaptureChanged(bool capturing) override;
+  void OnSystemMicMuteChanged(bool muted, bool at_stream_start) override;
   void OnModelTurnStarted() override;
   void OnModelTurnComplete() override;
   void OnModelInterrupted() override;

@@ -93,11 +93,20 @@ void ConversationImpl::OnCapturedAudio(base::span<const int16_t> pcm_data,
   session_controller_->UserAudioLevelUpdate(energy);
 }
 
+void ConversationImpl::OnCaptureStarted() {
+  session_controller_->OnMicCaptureChanged(/*capturing=*/true);
+}
+
 void ConversationImpl::OnCaptureStopped() {
   audio_logger_.OnCaptureStopped();
 
   // No more audio levels arrive, so settle the UI at silence.
   session_controller_->UserAudioLevelUpdate(0.0f);
+  session_controller_->OnMicCaptureChanged(/*capturing=*/false);
+}
+
+void ConversationImpl::OnCaptureMuted(bool muted, bool at_stream_start) {
+  session_controller_->OnSystemMicMuteChanged(muted, at_stream_start);
 }
 
 void ConversationImpl::OnModelAudioEnvelopeReady(

@@ -42,10 +42,17 @@ class SessionController {
                                          const std::string& model_transcript) {}
     virtual void OnModelAudioEnvelopeReady(const AudioEnvelope& envelope) {}
     virtual void OnUserAudioLevelUpdate(float audio_level) {}
-    // The user's microphone was muted or unmuted.
+    // TTC's own microphone control (`SessionControllerImpl::SetMicMuted()`)
+    // muted or unmuted the session: TTC stops or resumes capturing audio.
     virtual void OnMicMutedChanged(bool muted) {}
     // The party currently speaking changed.
     virtual void OnSpeakerChanged(Speaker speaker) {}
+    // Microphone capture started or stopped.
+    virtual void OnMicCaptureChanged(bool capturing) {}
+    // The OS or hardware muted or unmuted the microphone. Capture keeps
+    // running, so audio levels continue at zero while muted. See
+    // `SessionController::OnSystemMicMuteChanged()`.
+    virtual void OnSystemMicMuteChanged(bool muted, bool at_stream_start) {}
   };
 
   virtual ~SessionController() = default;
@@ -91,6 +98,18 @@ class SessionController {
   // Called when the level (loudness) of the user's captured microphone audio
   // changes. `audio_level` is normalized to the [0, 1] range.
   virtual void UserAudioLevelUpdate(float audio_level) = 0;
+
+  // Called by `Conversation` when microphone capture starts or stops.
+  virtual void OnMicCaptureChanged(bool capturing) = 0;
+
+  // Called by `Conversation` when the system mutes or unmutes the microphone,
+  // e.g. with a hardware switch. Capture keeps running while muted, so audio
+  // capture callbacks and audio level updates continue, at zero. TTC's own mute
+  // (`SessionControllerImpl::SetMicMuted()`, reported as
+  // `Observer::OnMicMutedChanged()`) stops capture instead and doesn't call
+  // this. `at_stream_start` is true when the microphone was already muted as
+  // capture started.
+  virtual void OnSystemMicMuteChanged(bool muted, bool at_stream_start) = 0;
 
   // Called by `Conversation` to notify about model turn lifecycle and
   // transcripts.

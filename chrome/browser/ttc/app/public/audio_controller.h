@@ -29,14 +29,27 @@ class AudioController {
     // Called with each chunk of captured microphone audio. Audio is always
     // delivered in AudioControllerImpl::GetBackendInputAudioParameters()
     // format (16kHz mono PCM16), and energy is its RMS energy (0.0 to 1.0)
-    // for visualizer UI.
+    // for visualizer UI. Only called between `OnCaptureStarted()` and
+    // `OnCaptureStopped()`, including while the device is muted, when the
+    // audio is silence.
     virtual void OnCapturedAudio(base::span<const int16_t> pcm_data,
                                  const media::AudioParameters& params,
                                  float energy) {}
 
+    // Called once `StartCapture()` has requested the capture stream from the
+    // audio service. The stream itself opens asynchronously after this.
+    virtual void OnCaptureStarted() {}
+
     // Called when capture stops (see StopCapture()). No more captured audio is
     // delivered after this, so the microphone's level is silence.
     virtual void OnCaptureStopped() {}
+
+    // Called when the system mutes or unmutes the capture device, e.g. with a
+    // hardware switch or an OS setting. A muted device keeps delivering audio
+    // through `OnCapturedAudio()`, as silence.
+    // `at_stream_start` is true when the device was already muted as the
+    // stream opened, rather than muted while capturing.
+    virtual void OnCaptureMuted(bool muted, bool at_stream_start) {}
 
     // Called when acoustic envelope and lookahead segments are extracted for a
     // queued playback chunk.

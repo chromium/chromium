@@ -51,7 +51,12 @@ class MockAudioControllerObserver : public AudioController::Observer {
                const media::AudioParameters& params,
                float energy),
               (override));
+  MOCK_METHOD(void, OnCaptureStarted, (), (override));
   MOCK_METHOD(void, OnCaptureStopped, (), (override));
+  MOCK_METHOD(void,
+              OnCaptureMuted,
+              (bool muted, bool at_stream_start),
+              (override));
   MOCK_METHOD(void,
               OnModelAudioEnvelopeReady,
               (const AudioEnvelope& envelope),
@@ -363,6 +368,38 @@ TEST_F(AudioControllerImplTest, StartAndStopCaptureWithFakeBinder) {
 
   controller.StopCapture();
   EXPECT_FALSE(controller.is_capturing());
+}
+
+TEST_F(AudioControllerImplTest,
+       StartCaptureNotifiesObserversOnceDeviceParametersArrive) {
+  bool started = false;
+  AudioControllerImpl controller(base::DoNothing(), GetAudioSystemFactory());
+  controller.AddObserver(&observer_);
+  EXPECT_CALL(observer_, OnCaptureStarted).WillOnce([&] { started = true; });
+
+  controller.StartCapture(/*device_id=*/"");
+  // The stream is requested once the device parameters have been received.
+  EXPECT_FALSE(started);
+  EXPECT_TRUE(base::test::RunUntil([&]() { return started; }));
+  controller.StopCapture();
+}
+
+TEST_F(AudioControllerImplTest, CaptureMutedReportsWhetherAtStreamStart) {
+  AudioControllerImpl controller;
+  controller.AddObserver(&observer_);
+
+  EXPECT_CALL(observer_, OnCaptureMuted(true, /*at_stream_start=*/true));
+  controller.OnCaptureMuted(true);
+
+  bool delivered = false;
+  EXPECT_CALL(observer_, OnCapturedAudio).WillOnce([&] { delivered = true; });
+  auto bus = media::AudioBus::Create(1, 1600);
+  bus->Zero();
+  controller.Capture(bus.get(), base::TimeTicks::Now(), {}, 1.0);
+  ASSERT_TRUE(base::test::RunUntil([&]() { return delivered; }));
+
+  EXPECT_CALL(observer_, OnCaptureMuted(false, /*at_stream_start=*/false));
+  controller.OnCaptureMuted(false);
 }
 
 TEST_F(AudioControllerImplTest, StopCaptureNotifiesObservers) {

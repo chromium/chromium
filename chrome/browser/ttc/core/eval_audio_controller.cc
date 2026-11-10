@@ -14,7 +14,11 @@ EvalAudioController::EvalAudioController() = default;
 EvalAudioController::~EvalAudioController() = default;
 
 void EvalAudioController::StartCapture(std::string_view device_id) {
+  if (is_capturing_) {
+    return;
+  }
   is_capturing_ = true;
+  observers_.Notify(&Observer::OnCaptureStarted);
 }
 
 void EvalAudioController::StopCapture() {

@@ -67,6 +67,8 @@ class MockSessionControllerObserver : public SessionController::Observer {
               (override));
   MOCK_METHOD(void, OnMicMutedChanged, (bool), (override));
   MOCK_METHOD(void, OnSpeakerChanged, (Speaker), (override));
+  MOCK_METHOD(void, OnMicCaptureChanged, (bool), (override));
+  MOCK_METHOD(void, OnSystemMicMuteChanged, (bool, bool), (override));
 };
 
 class TtcSessionControllerImplTest : public testing::Test {
@@ -534,6 +536,30 @@ TEST_F(TtcSessionControllerImplTest, FinishedSessionStopsUpdatingTranscripts) {
 
   EXPECT_CALL(observer, OnTranscriptionsUpdated).Times(0);
   controller.OnOutputTranscription("Hi");
+
+  controller.RemoveObserver(&observer);
+}
+
+TEST_F(TtcSessionControllerImplTest, MicSignalsReachObserversUntilFinished) {
+  SessionControllerImpl controller(*service_);
+  testing::NiceMock<MockSessionControllerObserver> observer;
+  controller.AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnMicCaptureChanged(true));
+  controller.OnMicCaptureChanged(true);
+  EXPECT_CALL(observer,
+              OnSystemMicMuteChanged(true, /*at_stream_start=*/false));
+  controller.OnSystemMicMuteChanged(true, /*at_stream_start=*/false);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // A fatal error ends the session.
+  controller.OnError(ErrorCode::kInternalBackendError);
+  ASSERT_EQ(controller.GetSessionLifecycle(), SessionLifecycle::kFinished);
+
+  EXPECT_CALL(observer, OnMicCaptureChanged).Times(0);
+  EXPECT_CALL(observer, OnSystemMicMuteChanged).Times(0);
+  controller.OnMicCaptureChanged(false);
+  controller.OnSystemMicMuteChanged(false, /*at_stream_start=*/false);
 
   controller.RemoveObserver(&observer);
 }
