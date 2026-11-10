@@ -106,6 +106,8 @@ source_set("impl") {
     "page_context.cc",
     "page_context_util.cc",
     "page_context_util.h",
+    "pointer_tracker.cc",
+    "pointer_tracker.h",
     "session_controller_impl.cc",
     "session_controller_impl.h",
     "session_inactivity_detector.cc",
@@ -160,6 +162,7 @@ source_set("impl") {
     "//content/public/browser",
     "//content/public/common",
     "//ui/actions:actions_headers",
+    "//ui/gfx/geometry",
     "//url",
   ]
   if (is_android) {
@@ -219,6 +222,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "page_context_util_unittest.cc",
+    "pointer_tracker_unittest.cc",
     "session_controller_impl_unittest.cc",
     "session_journal_impl_unittest.cc",
     "session_view_unittest.cc",
@@ -248,6 +252,8 @@ source_set("unit_tests") {
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/gfx:test_support",
+    "//ui/gfx/geometry",
     "//url",
   ]
   if (is_android) {
