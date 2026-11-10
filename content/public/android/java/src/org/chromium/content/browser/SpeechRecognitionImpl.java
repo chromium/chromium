@@ -151,11 +151,13 @@ public class SpeechRecognitionImpl {
                     break;
                 case SpeechRecognizer.ERROR_RECOGNIZER_BUSY:
                 case SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS:
+                case SpeechRecognizer.ERROR_TOO_MANY_REQUESTS:
                     code = SpeechRecognitionErrorCode.NOT_ALLOWED;
                     break;
                 case SpeechRecognizer.ERROR_NETWORK_TIMEOUT:
                 case SpeechRecognizer.ERROR_NETWORK:
                 case SpeechRecognizer.ERROR_SERVER:
+                case SpeechRecognizer.ERROR_SERVER_DISCONNECTED:
                     code = SpeechRecognitionErrorCode.NETWORK;
                     break;
                 case SpeechRecognizer.ERROR_NO_MATCH:
@@ -163,6 +165,14 @@ public class SpeechRecognitionImpl {
                     break;
                 case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
                     code = SpeechRecognitionErrorCode.NO_SPEECH;
+                    break;
+                case SpeechRecognizer.ERROR_LANGUAGE_NOT_SUPPORTED:
+                case SpeechRecognizer.ERROR_LANGUAGE_UNAVAILABLE:
+                    code = SpeechRecognitionErrorCode.LANGUAGE_NOT_SUPPORTED;
+                    break;
+                case SpeechRecognizer.ERROR_CANNOT_CHECK_SUPPORT:
+                case SpeechRecognizer.ERROR_CANNOT_LISTEN_TO_DOWNLOAD_EVENTS:
+                    code = SpeechRecognitionErrorCode.SERVICE_NOT_ALLOWED;
                     break;
                 default:
                     assert false;
