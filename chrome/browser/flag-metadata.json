@@ -9515,8 +9515,8 @@
   },
   {
     "name": "tab-closure-committed-method-refactor",
-    "owners": [ "hitarthkothari@google.org", "ckitagawa@chromium.org" ],
-    "expiry_milestone": 160
+    "owners": [ "hitarthkothari@google.com", "ckitagawa@chromium.org" ],
+    "expiry_milestone": 170
   },
   {
     "name": "tab-closure-method-refactor",
