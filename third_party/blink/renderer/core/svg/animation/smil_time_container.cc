@@ -112,7 +112,7 @@ class SMILTimeContainer::TimingUpdate {
   const SMILTime& TargetTime() const { return target_time_; }
   bool IsSeek() const { return policy_ == kSeek; }
   void AddActiveElement(SVGSMILElement*, const SMILInterval&);
-  void HandleEvents(SVGSMILElement*, SVGSMILElement::EventDispatchMask);
+  void HandleEvents(SVGSMILElement*, SVGSMILElement::EventDispatchSet);
   bool ShouldDispatchEvents() const {
     return time_container_->should_dispatch_events_;
   }
@@ -136,8 +136,10 @@ SMILTimeContainer::TimingUpdate::~TimingUpdate() {
   DCHECK(IsSeek() || updated_elements_.empty());
   for (const auto& entry : updated_elements_) {
     SVGSMILElement* element = entry.key;
-    if (auto events_to_dispatch = element->ComputeSeekEvents(entry.value))
+    auto events_to_dispatch = element->ComputeSeekEvents(entry.value);
+    if (!events_to_dispatch.empty()) {
       element->DispatchEvents(events_to_dispatch);
+    }
   }
 }
 
@@ -151,10 +153,11 @@ void SMILTimeContainer::TimingUpdate::AddActiveElement(
 
 void SMILTimeContainer::TimingUpdate::HandleEvents(
     SVGSMILElement* element,
-    SVGSMILElement::EventDispatchMask events_to_dispatch) {
+    SVGSMILElement::EventDispatchSet events_to_dispatch) {
   if (!IsSeek()) {
-    if (ShouldDispatchEvents() && events_to_dispatch)
+    if (ShouldDispatchEvents() && !events_to_dispatch.empty()) {
       element->DispatchEvents(events_to_dispatch);
+    }
     return;
   }
   // Even if no events will be dispatched, we still need to track the elements

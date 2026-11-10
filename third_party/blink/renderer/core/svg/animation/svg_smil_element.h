@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_ANIMATION_SVG_SMIL_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_ANIMATION_SVG_SMIL_ELEMENT_H_
 
+#include "base/containers/enum_set.h"
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/svg/animation/smil_repeat_count.h"
@@ -106,17 +107,21 @@ class CORE_EXPORT SVGSMILElement : public SVGElement {
   SMILTime SimpleDuration() const;
 
   void UpdateInterval(SMILTime presentation_time);
-  enum EventDispatchMask {
-    kDispatchNoEvent = 0,
-    kDispatchBeginEvent = 1u << 0,
-    kDispatchRepeatEvent = 1u << 1,
-    kDispatchEndEvent = 1u << 2,
+
+  enum class EventDispatch {
+    kBeginEvent,
+    kRepeatEvent,
+    kEndEvent,
   };
-  EventDispatchMask UpdateActiveState(SMILTime presentation_time,
-                                      bool skip_repeat);
-  EventDispatchMask ComputeSeekEvents(
+  using EventDispatchSet = base::EnumSet<EventDispatch,
+                                         EventDispatch::kBeginEvent,
+                                         EventDispatch::kEndEvent>;
+
+  EventDispatchSet UpdateActiveState(SMILTime presentation_time,
+                                     bool skip_repeat);
+  EventDispatchSet ComputeSeekEvents(
       const SMILInterval& starting_interval) const;
-  void DispatchEvents(EventDispatchMask);
+  void DispatchEvents(EventDispatchSet);
   void UpdateProgressState(SMILTime presentation_time);
   bool IsHigherPriorityThan(const SVGSMILElement* other,
                             SMILTime presentation_time) const;

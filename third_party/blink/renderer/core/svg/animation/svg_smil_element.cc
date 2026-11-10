@@ -1309,7 +1309,7 @@ void SVGSMILElement::AddedToTimeContainer() {
     // Dispatch a 'beginEvent' if the timeline has started and the interval is
     // active.
     if (GetActiveState() == kActive && time_container_->IsStarted()) {
-      DispatchEvents(kDispatchBeginEvent);
+      DispatchEvents({EventDispatch::kBeginEvent});
     }
   }
 }
@@ -1320,7 +1320,7 @@ void SVGSMILElement::RemovedFromTimeContainer() {
     // Dispatch a 'endEvent' if the timeline has started and the interval is
     // (was) active.
     if (GetActiveState() == kActive && time_container_->IsStarted()) {
-      DispatchEvents(kDispatchEndEvent);
+      DispatchEvents({EventDispatch::kEndEvent});
     }
   }
 }
@@ -1424,7 +1424,7 @@ bool SVGSMILElement::IsContributing(SMILTime elapsed) const {
          GetActiveState() == kFrozen;
 }
 
-SVGSMILElement::EventDispatchMask SVGSMILElement::UpdateActiveState(
+SVGSMILElement::EventDispatchSet SVGSMILElement::UpdateActiveState(
     SMILTime presentation_time,
     bool skip_repeat) {
   const bool was_active = GetActiveState() == kActive;
@@ -1434,14 +1434,14 @@ SVGSMILElement::EventDispatchMask SVGSMILElement::UpdateActiveState(
       interval_has_changed_ && previous_interval_.end == interval_.begin;
   interval_has_changed_ = false;
 
-  unsigned events_to_dispatch = kDispatchNoEvent;
+  EventDispatchSet events_to_dispatch;
   if ((was_active && !is_active) || interval_restart) {
-    events_to_dispatch |= kDispatchEndEvent;
+    events_to_dispatch.Put(EventDispatch::kEndEvent);
   }
 
   if (IsContributing(presentation_time)) {
     if ((!was_active && is_active) || interval_restart) {
-      events_to_dispatch |= kDispatchBeginEvent;
+      events_to_dispatch.Put(EventDispatch::kBeginEvent);
       StartedActiveInterval();
     }
 
@@ -1452,52 +1452,53 @@ SVGSMILElement::EventDispatchMask SVGSMILElement::UpdateActiveState(
       if (progress_state.repeat &&
           progress_state.repeat != last_progress_.repeat) {
         NotifyDependentsOnRepeat(progress_state.repeat, presentation_time);
-        events_to_dispatch |= kDispatchRepeatEvent;
+        events_to_dispatch.Put(EventDispatch::kRepeatEvent);
       }
       last_progress_ = progress_state;
     }
   }
-  return static_cast<EventDispatchMask>(events_to_dispatch);
+  return events_to_dispatch;
 }
 
-SVGSMILElement::EventDispatchMask SVGSMILElement::ComputeSeekEvents(
+SVGSMILElement::EventDispatchSet SVGSMILElement::ComputeSeekEvents(
     const SMILInterval& starting_interval) const {
   // Is the element active at the seeked-to time?
   if (GetActiveState() != SVGSMILElement::kActive) {
     // Was the element active at the previous time?
-    if (!starting_interval.IsResolved())
-      return kDispatchNoEvent;
+    if (!starting_interval.IsResolved()) {
+      return {};
+    }
     // Dispatch an 'endEvent' for ending |starting_interval|.
-    return kDispatchEndEvent;
+    return {EventDispatch::kEndEvent};
   }
   // Was the element active at the previous time?
   if (starting_interval.IsResolved()) {
     // The same interval?
-    if (interval_ == starting_interval)
-      return kDispatchNoEvent;
+    if (interval_ == starting_interval) {
+      return {};
+    }
     // Dispatch an 'endEvent' for ending |starting_interval| and a 'beginEvent'
     // for beginning the current interval.
-    unsigned to_dispatch = kDispatchBeginEvent | kDispatchEndEvent;
-    return static_cast<EventDispatchMask>(to_dispatch);
+    return {EventDispatch::kBeginEvent, EventDispatch::kEndEvent};
   }
   // Was not active at the previous time. Dispatch a 'beginEvent' for beginning
   // the current interval.
-  return kDispatchBeginEvent;
+  return {EventDispatch::kBeginEvent};
 }
 
-void SVGSMILElement::DispatchEvents(EventDispatchMask events_to_dispatch) {
+void SVGSMILElement::DispatchEvents(EventDispatchSet events_to_dispatch) {
   // The ordering is based on the usual order in which these events should be
   // dispatched (and should match the order the flags are set in
   // UpdateActiveState().
-  if (events_to_dispatch & kDispatchEndEvent) {
+  if (events_to_dispatch.Has(EventDispatch::kEndEvent)) {
     EnqueueEvent(*Event::Create(event_type_names::kEndEvent),
                  TaskType::kDOMManipulation);
   }
-  if (events_to_dispatch & kDispatchBeginEvent) {
+  if (events_to_dispatch.Has(EventDispatch::kBeginEvent)) {
     EnqueueEvent(*Event::Create(event_type_names::kBeginEvent),
                  TaskType::kDOMManipulation);
   }
-  if (events_to_dispatch & kDispatchRepeatEvent) {
+  if (events_to_dispatch.Has(EventDispatch::kRepeatEvent)) {
     EnqueueEvent(*Event::Create(event_type_names::kRepeatEvent),
                  TaskType::kDOMManipulation);
     EnqueueEvent(*Event::Create(AtomicString("repeatn")),
