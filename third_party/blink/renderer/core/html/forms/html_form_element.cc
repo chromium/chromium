@@ -324,7 +324,21 @@ void HTMLFormElement::HandleWebMcpToolResponse(HTMLFormMcpTool* tool,
     }
 
     if (result.IsNull()) {
-      value.ToString(result);
+      // Objects were handled above, so `value` is a primitive here. Symbol is
+      // the only primitive whose string conversion throws.
+      v8::TryCatch try_catch(script_state->GetIsolate());
+      v8::Local<v8::String> string;
+      if (!value.V8Value()
+               ->ToString(script_state->GetContext())
+               .ToLocal(&string)) {
+        tool->CallDoneCallback(base::unexpected(
+            ScriptToolError(ScriptToolErrorCode::kToolInvocationFailed,
+                            "respondWith promise resolved with a value that "
+                            "could not be converted to a string")));
+        return;
+      }
+      result = ToBlinkString<String>(script_state->GetIsolate(), string,
+                                     kDoNotExternalize);
     }
     tool->CallDoneCallback(result);
   } else {

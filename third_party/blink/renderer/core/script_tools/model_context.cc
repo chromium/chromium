@@ -246,33 +246,39 @@ class ModelContext::ToolFunctionFinishedCallback
 
   void React(ScriptState* script_state, ScriptValue value) {
     if (success_) {
-      std::optional<String> result;
-      if (value.IsObject()) {
+      String result;
+      {
         v8::TryCatch try_catch(script_state->GetIsolate());
-        v8::Local<v8::String> json_string;
-        if (v8::JSON::Stringify(script_state->GetContext(), value.V8Value())
-                .ToLocal(&json_string)) {
-          result = ToBlinkString<String>(script_state->GetIsolate(),
-                                         json_string, kDoNotExternalize);
+        v8::Local<v8::Context> context = script_state->GetContext();
+        v8::Local<v8::String> v8_result;
+        if (value.IsObject()) {
+          // Serializing to JSON runs script and can throw, e.g. for a cyclic
+          // object, a BigInt property, or a throwing getter or toJSON().
+          if (!v8::JSON::Stringify(context, value.V8Value())
+                   .ToLocal(&v8_result)) {
+            CHECK(try_catch.HasCaught());
+            HandleFailure(script_state, ScriptValue(script_state->GetIsolate(),
+                                                    try_catch.Exception()));
+            return;
+          }
         } else {
-          CHECK(try_catch.HasCaught());
-          HandleFailure(script_state, ScriptValue(script_state->GetIsolate(),
-                                                  try_catch.Exception()));
-          return;
+          // `value` is a primitive, and Symbol is the only primitive whose
+          // string conversion throws.
+          if (!value.V8Value()->ToString(context).ToLocal(&v8_result)) {
+            CHECK(try_catch.HasCaught());
+            HandleFailure(script_state, ScriptValue(script_state->GetIsolate(),
+                                                    try_catch.Exception()));
+            return;
+          }
         }
+        result = ToBlinkString<String>(script_state->GetIsolate(), v8_result,
+                                       kDoNotExternalize);
       }
 
-      if (!result) {
-        String temp;
-        if (value.ToString(temp)) {
-          result.emplace(std::move(temp));
-        }
-      }
-
-      if (!result || result->empty()) {
+      if (result.empty()) {
         result = "Operation succeeded";
       }
-      model_context_->OnToolExecuted(invocation_id_, *result);
+      model_context_->OnToolExecuted(invocation_id_, result);
     } else {
       HandleFailure(script_state, value);
     }
