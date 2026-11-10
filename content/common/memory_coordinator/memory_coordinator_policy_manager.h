@@ -251,7 +251,8 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
 
     // The policies currently suppressing memory release requests for this
     // group.
-    base::flat_set<MemoryCoordinatorPolicy*> memory_release_suppressors_;
+    base::flat_set<raw_ptr<MemoryCoordinatorPolicy>>
+        memory_release_suppressors_;
 
     // True if a memory release request was dropped while suppressed.
     bool has_pending_release_ = false;

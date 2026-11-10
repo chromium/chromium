@@ -96,8 +96,8 @@ class FakePageDiscarder : public mechanism::PageDiscarder {
 
  private:
   std::vector<raw_ptr<const PageNode>> discarded_pages_;
-  base::flat_set<const PageNode*> failing_pages_;
-  base::flat_set<const PageNode*> failing_or_destroyed_pages_;
+  base::flat_set<raw_ptr<const PageNode>> failing_pages_;
+  base::flat_set<raw_ptr<const PageNode>> failing_or_destroyed_pages_;
   base::RepeatingCallback<void(const PageNode*)> on_discard_callback_;
   ::mojom::LifecycleUnitDiscardReason last_reason_ =
       ::mojom::LifecycleUnitDiscardReason::PROACTIVE;
