@@ -5508,14 +5508,6 @@
     "expiry_milestone": 162
   },
   {
-    "name": "geic-fre",
-    "owners": [
-      "alexwchen@chromium.org",
-      "//chrome/browser/glic/gemini_enterprise/OWNERS"
-    ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "geic-guest-url",
     "owners": [
       "austinzzr@google.com",
