@@ -13,18 +13,14 @@ import android.os.Build;
 import android.view.DragEvent;
 import android.view.View;
 
-import androidx.test.platform.app.InstrumentationRegistry;
-
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.util.ApplicationTestUtils;
-import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
@@ -37,12 +33,15 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabDragHandlerBase;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
-import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.TabStripUtils;
+import org.chromium.chrome.test.transit.Journeys;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
+import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.transit.tab_strip.TabStripFacility;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /** Base class for Tab Strip drag-and-drop integration tests. */
@@ -54,6 +53,7 @@ public abstract class TabStripDragDropTestBase {
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
+    protected CtaPageStation mCurrentStation;
     protected StripLayoutHelper mStripLayoutHelper;
     protected final List<ChromeTabbedActivity> mDestActivities = new ArrayList<>();
 
@@ -65,14 +65,6 @@ public abstract class TabStripDragDropTestBase {
     @AfterClass
     public static void tearDownAfterClass() {
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(false);
-    }
-
-    @Before
-    public void setUp() throws Exception {
-        mActivityTestRule.startOnBlankPage();
-        mStripLayoutHelper =
-                TabStripTestUtils.getActiveStripLayoutHelper(mActivityTestRule.getActivity());
-        TabStripUtils.settleDownCompositor(mStripLayoutHelper);
     }
 
     @After
@@ -105,32 +97,44 @@ public abstract class TabStripDragDropTestBase {
     }
 
     protected ChromeTabbedActivity setupSourceWindow(int additionalTabs) {
-        ChromeTabbedActivity sourceActivity = mActivityTestRule.getActivity();
+        mCurrentStation = mActivityTestRule.startOnBlankPage();
+        ChromeTabbedActivity sourceActivity = mCurrentStation.getActivity();
         if (additionalTabs > 0) {
-            for (int i = 0; i < additionalTabs; i++) {
-                ChromeTabUtils.newTabFromMenu(
-                        InstrumentationRegistry.getInstrumentation(), sourceActivity);
-            }
+            mCurrentStation =
+                    Journeys.createTabsFast(
+                            mCurrentStation,
+                            Collections.nCopies(additionalTabs, "about:blank"),
+                            /* isIncognito= */ false,
+                            WebPageStation::newBuilder);
         }
-        TabStripUtils.settleDownCompositor(mStripLayoutHelper);
+        TabStripFacility<CtaPageStation> sourceTabStrip = mCurrentStation.expectTabStrip();
+        mStripLayoutHelper =
+                sourceTabStrip.stripLayoutHelperManagerElement.value().getActiveStripLayoutHelper();
         return sourceActivity;
     }
 
     protected ChromeTabbedActivity setupDestinationWindow(
             ChromeTabbedActivity sourceActivity, int additionalTabs) {
-        ChromeTabbedActivity destActivity =
-                MultiWindowTestHelper.createNewChromeTabbedActivity(sourceActivity);
-        mDestActivities.add(destActivity);
-        CriteriaHelper.pollUiThread(() -> destActivity.getLayoutManager() != null);
-        StripLayoutHelper destHelper = TabStripTestUtils.getActiveStripLayoutHelper(destActivity);
-        TabStripUtils.settleDownCompositor(destHelper);
+        CtaPageStation destStation =
+                mCurrentStation
+                        .runTo(
+                                () ->
+                                        MultiWindowTestHelper.createNewChromeTabbedActivity(
+                                                sourceActivity))
+                        .inNewTask()
+                        .arriveAt(CtaPageStation.newGenericBuilder().withEntryPoint().build());
         if (additionalTabs > 0) {
-            for (int i = 0; i < additionalTabs; i++) {
-                ChromeTabUtils.newTabFromMenu(
-                        InstrumentationRegistry.getInstrumentation(), destActivity);
-            }
-            TabStripUtils.settleDownCompositor(destHelper);
+            destStation =
+                    Journeys.createTabsFast(
+                            destStation,
+                            Collections.nCopies(additionalTabs, "about:blank"),
+                            /* isIncognito= */ false,
+                            WebPageStation::newBuilder);
         }
+        mCurrentStation = destStation;
+        ChromeTabbedActivity destActivity = destStation.getActivity();
+        mDestActivities.add(destActivity);
+        destStation.expectTabStrip();
         return destActivity;
     }
 
