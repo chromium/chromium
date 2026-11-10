@@ -99,6 +99,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_manager.h"
+#include "components/translate/core/common/translate_features.h"
 #include "components/user_education/common/user_education_features.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/preconnect_manager.h"
@@ -2894,6 +2895,73 @@ TEST_F(RenderViewContextMenuMenuSimplificationTest,
   menu->Init();
 
   EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE));
+}
+
+TEST_F(RenderViewContextMenuMenuSimplificationTest,
+       PartialTranslateShownOnPdfWhenFullPagePdfTranslateDisabled) {
+  base::test::ScopedFeatureList pdf_feature_list;
+  pdf_feature_list.InitAndDisableFeature(translate::kEnableTranslatePdf);
+
+  auto reset_ignore_missing_key = SetUpTranslateClient();
+  content::WebContentsTester::For(web_contents())
+      ->SetMainFrameMimeType("application/pdf");
+
+  // Selection menu on a PDF should show Partial Translate, not Full Page
+  // Translate.
+  content::ContextMenuParams selection_params;
+  selection_params.selection_text = u"hello world";
+  selection_params.is_editable = false;
+
+  auto selection_menu = std::make_unique<TestRenderViewContextMenu>(
+      *web_contents()->GetPrimaryMainFrame(), selection_params);
+  selection_menu->SetBrowser(GetBrowser());
+  selection_menu->Init();
+
+  EXPECT_TRUE(
+      selection_menu->IsItemPresent(IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE));
+  EXPECT_FALSE(selection_menu->IsItemPresent(IDC_CONTENT_CONTEXT_TRANSLATE));
+
+  // Page menu on a PDF should not show Full Page Translate when
+  // kEnableTranslatePdf is disabled.
+  content::ContextMenuParams page_params = CreateParams(MenuItem::PAGE);
+  auto page_menu = std::make_unique<TestRenderViewContextMenu>(
+      *web_contents()->GetPrimaryMainFrame(), page_params);
+  page_menu->SetBrowser(GetBrowser());
+  page_menu->Init();
+
+  EXPECT_FALSE(page_menu->IsItemPresent(IDC_CONTENT_CONTEXT_TRANSLATE));
+
+  // Verify the non-simplified menu path (InitMenu) as well.
+  base::test::ScopedFeatureList disable_menu_simplification;
+  disable_menu_simplification.InitAndDisableFeature(
+      features::kMenuSimplification);
+
+  auto legacy_selection_menu = std::make_unique<TestRenderViewContextMenu>(
+      *web_contents()->GetPrimaryMainFrame(), selection_params);
+  legacy_selection_menu->SetBrowser(GetBrowser());
+  legacy_selection_menu->Init();
+
+  EXPECT_TRUE(legacy_selection_menu->IsItemPresent(
+      IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE));
+  EXPECT_FALSE(
+      legacy_selection_menu->IsItemPresent(IDC_CONTENT_CONTEXT_TRANSLATE));
+
+  // If the target language is unsupported by Partial Translate (e.g. "ilo"),
+  // the selection menu on a PDF must NOT fall back to showing Full Page
+  // Translate when kEnableTranslatePdf is disabled (crbug.com/565171599).
+  ChromeTranslateClient::FromWebContents(web_contents())
+      ->GetTranslatePrefs()
+      ->SetRecentTargetLanguage("ilo");
+
+  auto unsupported_target_menu = std::make_unique<TestRenderViewContextMenu>(
+      *web_contents()->GetPrimaryMainFrame(), selection_params);
+  unsupported_target_menu->SetBrowser(GetBrowser());
+  unsupported_target_menu->Init();
+
+  EXPECT_FALSE(unsupported_target_menu->IsItemPresent(
+      IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE));
+  EXPECT_FALSE(
+      unsupported_target_menu->IsItemPresent(IDC_CONTENT_CONTEXT_TRANSLATE));
 }
 #else
 TEST_F(RenderViewContextMenuMenuSimplificationTest,
