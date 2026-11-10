@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/assistant/ui/assistant_container_constants.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
 #import "ios/chrome/browser/composebox/eg_tests/composebox_app_interface.h"
+#import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/shared/metrics/composebox_metrics_constants.h"
 #import "ios/chrome/browser/composebox/shared/ui/composebox_ui_constants.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
@@ -191,6 +192,14 @@ id<GREYMatcher> ComposeboxInputItemCellCloseButtonMatcher() {
       grey_sufficientlyVisible(), nil);
 }
 
+// Matcher for the "More options" menu item in the plus menu.
+id<GREYMatcher> PlusMenuMoreOptionsButtonMatcher() {
+  return grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
+                        IDS_IOS_COMPOSEBOX_MORE_OPTIONS_MENU_TITLE)),
+                    grey_accessibilityTrait(UIAccessibilityTraitButton),
+                    grey_sufficientlyVisible(), nil);
+}
+
 // Removes an attachment with the given `title` from the composebox carousel.
 void RemoveAttachmentWithTitle(NSString* title) {
   id<GREYMatcher> cellMatcher = TabCellAttachmentMatcherWithTitle(title);
@@ -215,6 +224,58 @@ void RemoveAttachmentWithTitle(NSString* title) {
   // Only rely on local conditions for AIM eligibility, so disable the
   // server-side checks.
   config.features_disabled.push_back(omnibox::kAimServerEligibilityEnabled);
+
+  if ([self isRunningTest:@selector(testPlusMenuFakeboxDirectContextualMenu)]) {
+    config.features_enabled.push_back(kPlusButtonInFakebox);
+    config.features_enabled.push_back(kPlusButtonMenuInFakebox);
+
+    config.features_disabled.push_back(kComposeboxPlusButtonBottomSheet);
+    config.features_disabled.push_back(kComposeboxPlusButtonLargeCarousel);
+    config.features_disabled.push_back(kPlusButtonMenuMoreOptionsSubmenu);
+    config.features_disabled.push_back(kPlusButtonMenuStringUpdates);
+    config.features_disabled.push_back(kPlusButtonMenuVerticalListView);
+  } else if ([self
+                 isRunningTest:@selector(
+                                   testPlusMenuRefreshedContextualMenuArm1)]) {
+    config.features_enabled.push_back(kPlusButtonMenuInFakebox);
+    config.features_enabled.push_back(kPlusButtonMenuMoreOptionsSubmenu);
+    config.features_enabled.push_back(kPlusButtonMenuStringUpdates);
+
+    config.features_disabled.push_back(kComposeboxPlusButtonBottomSheet);
+    config.features_disabled.push_back(kComposeboxPlusButtonLargeCarousel);
+    config.features_disabled.push_back(kPlusButtonMenuInFakebox);
+    config.features_disabled.push_back(kPlusButtonMenuVerticalListView);
+  } else if ([self isRunningTest:
+                       @selector(
+                           testPlusMenuBottomSheetHorizontalCarouselArm2)]) {
+    config.features_enabled.push_back(kComposeboxPlusButtonBottomSheet);
+    config.features_enabled.push_back(kPlusButtonMenuInFakebox);
+    config.features_enabled.push_back(kPlusButtonMenuMoreOptionsSubmenu);
+    config.features_enabled.push_back(kPlusButtonMenuStringUpdates);
+    config.features_disabled.push_back(kPlusButtonMenuVerticalListView);
+
+    config.features_disabled.push_back(kComposeboxPlusButtonLargeCarousel);
+    config.features_disabled.push_back(kPlusButtonMenuVerticalListView);
+  } else if ([self
+                 isRunningTest:@selector(
+                                   testPlusMenuBottomSheetVerticalListArm3)]) {
+    config.features_enabled.push_back(kComposeboxPlusButtonBottomSheet);
+    config.features_enabled.push_back(kPlusButtonMenuMoreOptionsSubmenu);
+    config.features_enabled.push_back(kPlusButtonMenuStringUpdates);
+    config.features_enabled.push_back(kPlusButtonMenuVerticalListView);
+
+    config.features_disabled.push_back(kComposeboxPlusButtonLargeCarousel);
+  } else if ([self
+                 isRunningTest:@selector(
+                                   testPlusMenuBottomSheetLargeCarouselArm4)]) {
+    config.features_enabled.push_back(kPlusButtonMenuInFakebox);
+    config.features_enabled.push_back(kComposeboxPlusButtonBottomSheet);
+    config.features_enabled.push_back(kComposeboxPlusButtonLargeCarousel);
+    config.features_disabled.push_back(kPlusButtonMenuMoreOptionsSubmenu);
+    config.features_disabled.push_back(kPlusButtonMenuStringUpdates);
+    config.features_disabled.push_back(kPlusButtonMenuVerticalListView);
+  }
+
   return config;
 }
 
@@ -474,6 +535,351 @@ void RemoveAttachmentWithTitle(NSString* title) {
                  grey_accessibilityID(
                      kComposeboxAttachCurrentTabActionAccessibilityIdentifier)]
       assertWithMatcher:grey_enabled()];
+}
+
+// Tests that tapping the plus button in the NTP Fakebox directly opens the
+// contextual UIMenu without first focusing the Composebox, and selecting an
+// action transitions to the focused Composebox with the selection applied.
+- (void)testPlusMenuFakeboxDirectContextualMenu {
+  [ComposeboxAppInterface setFuseboxEligible:YES];
+  [ChromeEarlGrey openNewTab];
+
+  // Tap the plus button inside the NTP Fakebox.
+  id<GREYMatcher> fakeboxPlusButtonMatcher = grey_allOf(
+      grey_accessibilityLabel(l10n_util::GetNSString(
+          IDS_IOS_COMPOSEBOX_ADD_ATTACHMENT_BUTTON_ACCESSIBILITY_LABEL)),
+      grey_ancestor(chrome_test_util::FakeOmnibox()),
+      grey_sufficientlyVisible(), nil);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:fakeboxPlusButtonMatcher];
+  [[EarlGrey selectElementWithMatcher:fakeboxPlusButtonMatcher]
+      performAction:grey_tap()];
+
+  // Verify that the contextual menu is presented directly on the NTP without
+  // transitioning to the focused Composebox.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          grey_accessibilityID(kComposeboxAIMActionAccessibilityIdentifier)];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kComposeboxGalleryActionAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:ComposeboxMatcher()]
+      assertWithMatcher:grey_notVisible()];
+
+  // Select AI Mode from the contextual menu and verify it transitions into the
+  // focused Composebox with the AI Mode tool active.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kComposeboxAIMActionAccessibilityIdentifier)]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:ComposeboxMatcher()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          grey_accessibilityID(kComposeboxAIMButtonAccessibilityIdentifier)];
+}
+
+// Tests the Arm 1 refreshed contextual UIMenu structure, updated strings, and
+// expanding the "More options" submenu to select a secondary tool.
+- (void)testPlusMenuRefreshedContextualMenuArm1 {
+  [ComposeboxAppInterface setFuseboxEligible:YES];
+  [ChromeEarlGrey
+      loadURL:self.testServer->GetURL(base::StringPrintf(kPageURL, 1))];
+  [ChromeEarlGreyUI focusOmnibox];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:ComposeboxMatcher()];
+
+  // Tap the plus button to open the contextual menu.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kComposeboxPlusButtonAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // Verify the primary attachments ("Ask about this page", Gallery, Camera,
+  // Tabs), AI Mode, and "More options" submenu are visible.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          grey_allOf(
+              grey_accessibilityID(
+                  kComposeboxAttachCurrentTabActionAccessibilityIdentifier),
+              grey_accessibilityLabel(l10n_util::GetNSString(
+                  IDS_IOS_COMPOSEBOX_ASK_ABOUT_THIS_PAGE_ACTION)),
+              nil)];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kComposeboxGalleryActionAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kComposeboxCameraActionAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kComposeboxSelectTabsActionAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kComposeboxAIMActionAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:PlusMenuMoreOptionsButtonMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Secondary items should be grouped inside "More options" and not visible
+  // yet.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kComposeboxAttachFileActionAccessibilityIdentifier)]
+      assertWithMatcher:grey_notVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kComposeboxImageGenerationActionAccessibilityIdentifier)]
+      assertWithMatcher:grey_notVisible()];
+
+  // Tap "More options" to expand the nested submenu.
+  [[EarlGrey selectElementWithMatcher:PlusMenuMoreOptionsButtonMatcher()]
+      performAction:grey_tap()];
+
+  // Verify secondary attachments and tools appear in the submenu, and select
+  // "Create images".
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      grey_accessibilityID(
+                          kComposeboxAttachFileActionAccessibilityIdentifier)];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          grey_accessibilityID(
+              kComposeboxImageGenerationActionAccessibilityIdentifier)];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kComposeboxImageGenerationActionAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // Verify that the image generation tool chip is active in the Composebox.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          grey_accessibilityID(
+              kComposeboxImageGenerationButtonAccessibilityIdentifier)];
+}
+
+// Tests the Arm 2 bottom sheet main page with horizontal attachment carousel
+// and navigating to the "More options" secondary page.
+- (void)testPlusMenuBottomSheetHorizontalCarouselArm2 {
+  [ComposeboxAppInterface setFuseboxEligible:YES];
+  [ChromeEarlGrey
+      loadURL:self.testServer->GetURL(base::StringPrintf(kPageURL, 1))];
+  [ChromeEarlGreyUI focusOmnibox];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:ComposeboxMatcher()];
+
+  // Tap the plus button to open the bottom sheet menu.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kComposeboxPlusButtonAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // Verify the "Add to your search" section header and horizontal carousel
+  // attachment cells (Gallery, Camera, Tabs).
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      grey_text(l10n_util::GetNSString(
+                          IDS_IOS_COMPOSEBOX_MENU_ATTACHMENTS_SECTION_TITLE))];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(grey_accessibilityID(
+                         kComposeboxGalleryActionAccessibilityIdentifier),
+                     grey_kindOfClassName(@"ComposeboxMenuAttachmentCell"),
+                     nil)] assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(grey_accessibilityID(
+                         kComposeboxCameraActionAccessibilityIdentifier),
+                     grey_kindOfClassName(@"ComposeboxMenuAttachmentCell"),
+                     nil)] assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(grey_accessibilityID(
+                         kComposeboxSelectTabsActionAccessibilityIdentifier),
+                     grey_kindOfClassName(@"ComposeboxMenuAttachmentCell"),
+                     nil)] assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify the bottom grouped list section ("Ask about this page", AI Mode, and
+  // "More options").
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(
+              grey_accessibilityID(
+                  kComposeboxAttachCurrentTabActionAccessibilityIdentifier),
+              grey_accessibilityLabel(l10n_util::GetNSString(
+                  IDS_IOS_COMPOSEBOX_ASK_ABOUT_THIS_PAGE_ACTION)),
+              grey_kindOfClassName(@"ComposeboxMenuListCell"), nil)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(grey_accessibilityID(
+                                kComposeboxAIMActionAccessibilityIdentifier),
+                            grey_kindOfClassName(@"ComposeboxMenuListCell"),
+                            nil)] assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:PlusMenuMoreOptionsButtonMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap "More options" to push the secondary menu page.
+  [[EarlGrey selectElementWithMatcher:PlusMenuMoreOptionsButtonMatcher()]
+      performAction:grey_tap()];
+
+  // Verify the secondary page displays Files and Create images as vertical list
+  // cells, and select "Create images".
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          grey_allOf(grey_accessibilityID(
+                         kComposeboxAttachFileActionAccessibilityIdentifier),
+                     grey_kindOfClassName(@"ComposeboxMenuListCell"), nil)];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          grey_allOf(
+              grey_accessibilityID(
+                  kComposeboxImageGenerationActionAccessibilityIdentifier),
+              grey_kindOfClassName(@"ComposeboxMenuListCell"), nil)];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kComposeboxImageGenerationActionAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // Verify that the bottom sheet dismisses and the image generation tool chip
+  // is active in the Composebox.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          grey_accessibilityID(
+              kComposeboxImageGenerationButtonAccessibilityIdentifier)];
+}
+
+// Tests the Arm 3 bottom sheet with vertical list view for primary attachments
+// and navigating to the "More options" secondary page.
+- (void)testPlusMenuBottomSheetVerticalListArm3 {
+  [ComposeboxAppInterface setFuseboxEligible:YES];
+  [ChromeEarlGrey
+      loadURL:self.testServer->GetURL(base::StringPrintf(kPageURL, 1))];
+  [ChromeEarlGreyUI focusOmnibox];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:ComposeboxMatcher()];
+
+  // Tap the plus button to open the bottom sheet menu.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kComposeboxPlusButtonAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // Verify the standalone top "Ask about this page" row, the "Add to your
+  // search" section header, and that Gallery, Camera, and Tabs are rendered as
+  // vertical list cells rather than carousel cells.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          grey_allOf(
+              grey_accessibilityID(
+                  kComposeboxAttachCurrentTabActionAccessibilityIdentifier),
+              grey_accessibilityLabel(l10n_util::GetNSString(
+                  IDS_IOS_COMPOSEBOX_ASK_ABOUT_THIS_PAGE_ACTION)),
+              grey_kindOfClassName(@"ComposeboxMenuListCell"), nil)];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_text(l10n_util::GetNSString(
+                     IDS_IOS_COMPOSEBOX_MENU_ATTACHMENTS_SECTION_TITLE))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(grey_accessibilityID(
+                         kComposeboxGalleryActionAccessibilityIdentifier),
+                     grey_kindOfClassName(@"ComposeboxMenuListCell"), nil)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(grey_accessibilityID(
+                                kComposeboxCameraActionAccessibilityIdentifier),
+                            grey_kindOfClassName(@"ComposeboxMenuListCell"),
+                            nil)] assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(grey_accessibilityID(
+                         kComposeboxSelectTabsActionAccessibilityIdentifier),
+                     grey_kindOfClassName(@"ComposeboxMenuListCell"), nil)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kComposeboxAIMActionAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap "More options" to navigate to the secondary page and select "Create
+  // images".
+  [[EarlGrey selectElementWithMatcher:PlusMenuMoreOptionsButtonMatcher()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          grey_accessibilityID(
+              kComposeboxImageGenerationActionAccessibilityIdentifier)];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kComposeboxImageGenerationActionAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // Verify that the image generation tool chip is active in the Composebox.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          grey_accessibilityID(
+              kComposeboxImageGenerationButtonAccessibilityIdentifier)];
+}
+
+// Tests the Arm 4 bottom sheet with the large horizontal attachment carousel.
+- (void)testPlusMenuBottomSheetLargeCarouselArm4 {
+  [ComposeboxAppInterface setFuseboxEligible:YES];
+  [ChromeEarlGrey
+      loadURL:self.testServer->GetURL(base::StringPrintf(kPageURL, 1))];
+  [ChromeEarlGreyUI focusOmnibox];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:ComposeboxMatcher()];
+
+  // Tap the plus button to open the bottom sheet menu.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kComposeboxPlusButtonAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // Verify that the attachment items are rendered as carousel cells on the
+  // full-menu bottom sheet.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          grey_allOf(
+              grey_accessibilityID(
+                  kComposeboxAttachCurrentTabActionAccessibilityIdentifier),
+              grey_kindOfClassName(@"ComposeboxMenuAttachmentCell"), nil)];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(grey_accessibilityID(
+                         kComposeboxSelectTabsActionAccessibilityIdentifier),
+                     grey_kindOfClassName(@"ComposeboxMenuAttachmentCell"),
+                     nil)] assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(grey_accessibilityID(
+                         kComposeboxGalleryActionAccessibilityIdentifier),
+                     grey_kindOfClassName(@"ComposeboxMenuAttachmentCell"),
+                     nil)] assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Scroll the large horizontal carousel if the trailing Files item is not yet
+  // visible on narrower screens.
+  id<GREYMatcher> filesCarouselCellMatcher = grey_allOf(
+      grey_accessibilityID(kComposeboxAttachFileActionAccessibilityIdentifier),
+      grey_kindOfClassName(@"ComposeboxMenuAttachmentCell"), nil);
+  NSError* error = nil;
+  [[EarlGrey selectElementWithMatcher:filesCarouselCellMatcher]
+      assertWithMatcher:grey_sufficientlyVisible()
+                  error:&error];
+  if (error) {
+    [[EarlGrey selectElementWithMatcher:
+                   grey_accessibilityID(
+                       kComposeboxGalleryActionAccessibilityIdentifier)]
+        performAction:grey_swipeFastInDirection(kGREYDirectionLeft)];
+    [[EarlGrey selectElementWithMatcher:filesCarouselCellMatcher]
+        assertWithMatcher:grey_sufficientlyVisible()];
+  }
+
+  // Select AI Mode from the tools section and verify it activates in the
+  // Composebox.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kComposeboxAIMActionAccessibilityIdentifier)]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          grey_accessibilityID(kComposeboxAIMButtonAccessibilityIdentifier)];
 }
 
 // Tests that tapping the attach tabs button opens the tab picker. Ensures that
