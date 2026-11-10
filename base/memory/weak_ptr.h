@@ -143,6 +143,14 @@ class BASE_EXPORT TRIVIAL_ABI WeakReference {
   // Returns whether the WeakReference is valid, meaning the WeakPtrFactory has
   // not invalidated the pointer. Unlike, RefIsMaybeValid(), this may only be
   // called from the same sequence as where the WeakPtr was created.
+#if !DCHECK_IS_ON()
+  // Safe to mark PURE_FUNCTION when DCHECKs are off: it only reads `flag_` and
+  // `flag_->invalidated_` with no side effects or virtual/templated calls, and
+  // invalidation must run on the same sequence so validity cannot change
+  // concurrently without an intervening call. Guarded by `!DCHECK_IS_ON()`
+  // because `Flag::IsValid()` binds and checks `sequence_checker_`.
+  PURE_FUNCTION
+#endif
   bool IsValid() const;
   // Returns false if the WeakReference is confirmed to be invalid. This call is
   // safe to make from any thread, e.g. to optimize away unnecessary work, but
@@ -258,7 +266,7 @@ class TRIVIAL_ABI WeakPtr {
 
   // Provide access to the underlying T as a reference. Will CHECK() if the T
   // pointee is no longer alive.
-  T& operator*() const {
+  ALWAYS_INLINE T& operator*() const {
     CHECK(ref_.IsValid());
     return *ptr_;
   }
@@ -271,7 +279,7 @@ class TRIVIAL_ABI WeakPtr {
   }
 
   // Allow conditionals to test validity, e.g. if (weak_ptr) {...};
-  explicit operator bool() const { return get() != nullptr; }
+  ALWAYS_INLINE explicit operator bool() const { return ref_.IsValid(); }
 
   // Resets the WeakPtr to hold nothing.
   //
