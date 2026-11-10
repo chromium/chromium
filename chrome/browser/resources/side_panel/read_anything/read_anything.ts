@@ -54,6 +54,8 @@ export {KEYBOARD_NAV_CLASS, MENU_SHOW_DELAY_MS, SUBMENU_SHOW_DELAY_MS} from './m
 export type {SimpleActionMenuElement} from './menus/simple_action_menu.js';
 export type {TextMenuElement} from './menus/text_menu.js';
 export type {AccentMenuElement} from './read_aloud/accent_menu.js';
+export type {AiFeedbackSubmittedDetail} from './read_aloud/ai_feedback_dialog.js';
+export {AiFeedbackDialogElement, AiNegativeFeedbackReason} from './read_aloud/ai_feedback_dialog.js';
 export type {AudioBrowserProxy} from './read_aloud/audio_browser_proxy.js';
 export {AudioBrowserProxyImpl} from './read_aloud/audio_browser_proxy.js';
 export {ReadAloudHighlighter} from './read_aloud/highlighter.js';

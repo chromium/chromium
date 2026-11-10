@@ -1,0 +1,73 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//read-anything-side-panel.top-chrome/shared/sp_shared_style.css.js
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #include=sp-shared-style
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: block;
+  /* Match the Reading Mode toolbar and its menus rather than the WebUI
+     default (Roboto). */
+  font-family: var(--immersive-menu-font,
+      'Google Sans Text', 'Google Sans', system-ui, sans-serif);
+}
+
+#aiFeedbackDialog {
+  --cr-dialog-background-color: var(--color-side-panel-content-background);
+  --cr-dialog-button-container-padding-bottom: 20px;
+  --cr-dialog-button-container-padding-top: 12px;
+  --cr-dialog-width: min(320px, calc(100vw - 32px));
+}
+
+#aiFeedbackDialog::part(dialog) {
+  overflow-x: hidden;
+}
+
+.dialog-title-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dialog-title {
+  color: var(--color-sys-on-surface, var(--cr-primary-text-color));
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+}
+
+.dialog-subtitle {
+  color: var(--color-sys-on-surface-variant, var(--cr-secondary-text-color));
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+}
+
+.feedback-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-block-end: 8px;
+}
+
+.reason-checkbox {
+  --cr-checkbox-label-padding-start: 12px;
+  align-items: center;
+  border-radius: 8px;
+  box-sizing: border-box;
+  display: flex;
+  min-height: 40px;
+  transition: background-color 150ms ease;
+  width: 100%;
+  padding: 4px 8px;
+}
+
+.reason-checkbox:hover {
+  background-color: var(--cr-hover-background-color);
+}

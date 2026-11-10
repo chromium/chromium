@@ -292,8 +292,13 @@ declare namespace chrome {
     function onIsAudioCurrentlyPlayingChanged(isAudioCurrentlyPlaying: boolean):
         void;
 
-    // Called when AI playback is toggled via the webui toolbar.
+    // Called when AI playback is toggled via the toolbar.
     function onAiPlaybackStateChanged(enabled: boolean): void;
+
+    // Called when the user submits AI playback feedback from the AI Playback
+    // header buttons or the negative feedback dialog.
+    function sendAiPlaybackFeedback(
+        isPositive: boolean, reasons: string[], otherText: string): void;
 
     // Called when the Read Anything panel is scrolled.
     function onScroll(onSelection: boolean): void;

@@ -54,6 +54,8 @@ export interface AudioBrowserProxy {
   onIsSpeechActiveChanged(isSpeechActive: boolean): void;
   onIsAudioCurrentlyPlayingChanged(isAudioCurrentlyPlaying: boolean): void;
   onAiPlaybackStateChanged(enabled: boolean): void;
+  sendAiPlaybackFeedback(
+      isPositive: boolean, reasons: string[], otherText: string): void;
   onSpeechEngineFirstStall(): void;
   onSpeechEngineStalled(): void;
   getKeyboardShortcutStopSource(): number;
@@ -211,6 +213,11 @@ export class AudioBrowserProxyImpl implements AudioBrowserProxy {
 
   onAiPlaybackStateChanged(enabled: boolean): void {
     chrome.readingMode.onAiPlaybackStateChanged(enabled);
+  }
+
+  sendAiPlaybackFeedback(
+      isPositive: boolean, reasons: string[], otherText: string): void {
+    chrome.readingMode.sendAiPlaybackFeedback?.(isPositive, reasons, otherText);
   }
 
   onSpeechEngineFirstStall(): void {

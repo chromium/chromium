@@ -9441,6 +9441,30 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_AI_PLAYBACK_TURN_OFF" desc="Tooltip label for button that turns off AI Playback in Read Aloud.">
         Turn off AI Playback
       </message>
+      <message name="IDS_READING_MODE_AI_PLAYBACK_FEEDBACK_DIALOG_TITLE" desc="Title for the negative feedback checklist dialog in AI Playback.">
+        What went wrong?
+      </message>
+      <message name="IDS_READING_MODE_AI_PLAYBACK_FEEDBACK_DIALOG_SUBTITLE" desc="Subtitle for the negative feedback checklist dialog in AI Playback.">
+        Select the options below
+      </message>
+      <message name="IDS_READING_MODE_AI_PLAYBACK_FEEDBACK_SUBMIT" desc="Label for the button that submits negative feedback in AI Playback.">
+        Submit
+      </message>
+      <message name="IDS_READING_MODE_AI_PLAYBACK_FEEDBACK_REASON_NOT_FACTUALLY_CORRECT" desc="Label for the Not factually correct negative feedback checkbox in AI Playback.">
+        Not factually correct
+      </message>
+      <message name="IDS_READING_MODE_AI_PLAYBACK_FEEDBACK_REASON_BAD_VOICE" desc="Label for the Didn't like the voice negative feedback checkbox in AI Playback.">
+        Didn't like the voice
+      </message>
+      <message name="IDS_READING_MODE_AI_PLAYBACK_FEEDBACK_REASON_NOT_ENGAGING" desc="Label for the Not engaging enough negative feedback checkbox in AI Playback.">
+        Not engaging enough
+      </message>
+      <message name="IDS_READING_MODE_AI_PLAYBACK_FEEDBACK_REASON_OFFENSIVE" desc="Label for the Offensive content negative feedback checkbox in AI Playback.">
+        Offensive content
+      </message>
+      <message name="IDS_READING_MODE_AI_PLAYBACK_FEEDBACK_REASON_TECHNICAL_ISSUE" desc="Label for the Technical issue negative feedback checkbox in AI Playback.">
+        Technical issue
+      </message>
       <message name="IDS_READING_MODE_AI_PLAYBACK_IPH_BODY" desc="Text for the help bubble introducing AI playback in Reading Mode.">
         Listen to this page like it's a podcast with AI playback
       </message>
