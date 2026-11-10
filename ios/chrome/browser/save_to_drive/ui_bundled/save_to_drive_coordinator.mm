@@ -6,6 +6,8 @@
 
 #import <utility>
 
+#import "base/check.h"
+#import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
@@ -53,7 +55,7 @@
 @end
 
 @implementation SaveToDriveCoordinator {
-  raw_ptr<web::DownloadTask, DanglingUntriaged> _downloadTask;
+  base::WeakPtr<web::DownloadTask> _downloadTask;
   SaveToDriveMediator* _mediator;
   AccountPickerCoordinator* _accountPickerCoordinator;
   FileDestinationPickerViewController* _destinationPicker;
@@ -67,7 +69,8 @@
                               downloadTask:(web::DownloadTask*)downloadTask {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    _downloadTask = downloadTask;
+    CHECK(downloadTask);
+    _downloadTask = downloadTask->GetWeakPtr();
   }
   return self;
 }
@@ -75,6 +78,7 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  CHECK(_downloadTask);
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   [dispatcher startDispatchingToTarget:self
                            forProtocol:@protocol(ManageStorageAlertCommands)];
@@ -89,7 +93,7 @@
   id<SaveToDriveCommands> saveToDriveHandler =
       HandlerForProtocol(dispatcher, SaveToDriveCommands);
   _mediator = [[SaveToDriveMediator alloc]
-           initWithDownloadTask:_downloadTask
+           initWithDownloadTask:_downloadTask.get()
              saveToDriveHandler:saveToDriveHandler
       manageStorageAlertHandler:self
                     prefService:prefService
@@ -100,7 +104,7 @@
                    driveService:driveService];
 
   AccountPickerConfiguration* accountPickerConfiguration =
-      drive::GetAccountPickerConfiguration(_downloadTask);
+      drive::GetAccountPickerConfiguration(_downloadTask.get());
 
   accountPickerConfiguration.dismissOnBackgroundTap =
       self.baseViewController.traitCollection.horizontalSizeClass ==
@@ -128,6 +132,7 @@
 
 - (void)stopAnimated:(BOOL)animated {
   [super stopAnimated:animated];
+  _downloadTask = nullptr;
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   [dispatcher stopDispatchingToTarget:self];
   [_mediator disconnect];
