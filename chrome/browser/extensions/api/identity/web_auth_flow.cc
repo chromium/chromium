@@ -129,7 +129,9 @@ void WebAuthFlow::SetClockForTesting(
 void WebAuthFlow::Start() {
   CHECK(profile_, base::NotFatalUntil::M161);
   CHECK(!profile_->IsOffTheRecord(), base::NotFatalUntil::M161);
-  CHECK(!profile_->ShutdownStarted(), base::NotFatalUntil::M161);
+  // TODO(crbug.com/582023429): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!profile_->ShutdownStarted());
 
   content::WebContents::CreateParams params(profile_);
   web_contents_ = content::WebContents::Create(params);
