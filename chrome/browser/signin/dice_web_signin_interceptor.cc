@@ -1114,7 +1114,9 @@ void DiceWebSigninInterceptor::EnsureObservingExtendedAccountInfo() {
 void DiceWebSigninInterceptor::ProcessInterceptionOrWait(
     const AccountInfo& info,
     bool timed_out) {
-  CHECK_EQ(info.GetAccountId(), state_->account_id_, base::NotFatalUntil::M162);
+  // TODO(crbug.com/580836376): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_EQ(info.GetAccountId(), state_->account_id_);
 
   if (!IsRequiredExtendedAccountInfoAvailable(info)) {
     // We can't process the interception with the information currently
