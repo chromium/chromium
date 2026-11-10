@@ -161,8 +161,6 @@ class DeskBarScrollViewLayout : public views::LayoutManager {
       new_bounds.Offset(current_bounds.width() - preferred_bounds.width(), 0);
     }
     bar_view_->background_view_->SetBoundsRect(new_bounds);
-    bar_view_->decoration_->SetContentBounds(
-        bar_view_->background_view_->GetLocalBounds());
   }
 
   // Layout the label which is shown below the desk icon button when the button
@@ -799,11 +797,11 @@ void DeskBarViewBase::MaybeSetupBackgroundView() {
 
   // Parent the decoration directly under `background_layer` so it inherits
   // scale transform animations applied during desk creation and removal.
-  decoration_ = SystemDecoration::Create(
-      SystemDecoration::ShadowType::kNone,
-      SystemDecoration::HighlightBorderMode::kHighlightBorder);
+  decoration_ = SystemDecoration::CreateForView(
+      background_view_, SystemDecoration::ShadowType::kNone,
+      SystemDecoration::HighlightBorderMode::kHighlightBorder,
+      SystemDecoration::LayerParent::kViewLayer);
   decoration_->SetRoundedCorners(rounded_corners);
-  background_layer->Add(decoration_->GetLayer());
 }
 
 // static
@@ -901,18 +899,6 @@ std::unique_ptr<views::Widget> DeskBarViewBase::CreateDeskWidget(
   wm::SetWindowVisibilityAnimationTransition(widget->GetNativeWindow(),
                                              wm::ANIMATE_NONE);
   return widget;
-}
-
-void DeskBarViewBase::AddedToWidget() {
-  if (decoration_) {
-    decoration_->ObserveColorProviderSource(GetWidget());
-  }
-}
-
-void DeskBarViewBase::RemovedFromWidget() {
-  if (decoration_) {
-    decoration_->ObserveColorProviderSource(nullptr);
-  }
 }
 
 void DeskBarViewBase::Layout(PassKey) {

@@ -121,11 +121,11 @@ class TabletModeMultitaskMenuView : public views::View {
     layout->set_cross_axis_alignment(
         views::BoxLayout::CrossAxisAlignment::kCenter);
 
-    decoration_ = SystemDecoration::Create(
-        SystemDecoration::ShadowType::kElevation12,
-        SystemDecoration::HighlightBorderMode::kHighlightBorder);
+    decoration_ = SystemDecoration::CreateForView(
+        this, SystemDecoration::ShadowType::kElevation12,
+        SystemDecoration::HighlightBorderMode::kHighlightBorder,
+        SystemDecoration::LayerParent::kViewLayer);
     decoration_->SetRoundedCorners(gfx::RoundedCornersF(kCornerRadius));
-    layer()->Add(decoration_->GetLayer());
   }
 
   TabletModeMultitaskMenuView(const TabletModeMultitaskMenuView&) = delete;
@@ -134,8 +134,6 @@ class TabletModeMultitaskMenuView : public views::View {
   ~TabletModeMultitaskMenuView() override = default;
 
   chromeos::MultitaskMenuView* menu_view_base() { return menu_view_base_; }
-
-  SystemDecoration* decoration() { return decoration_.get(); }
 
  private:
   raw_ptr<chromeos::MultitaskMenuView> menu_view_base_ = nullptr;
@@ -214,8 +212,6 @@ TabletModeMultitaskMenu::TabletModeMultitaskMenu(
   const gfx::Transform initial_transform = gfx::Transform::MakeTranslation(
       0, -menu_size.height() - kVerticalPosition);
   menu_view_->layer()->SetTransform(initial_transform);
-  menu_view_->decoration()->SetContentBounds(gfx::Rect(menu_size));
-  menu_view_->decoration()->ObserveColorProviderSource(widget_.get());
 
   // Showing the widget can change native focus (which would result in an
   // immediate closing of the menu). Only start observing after shown.
