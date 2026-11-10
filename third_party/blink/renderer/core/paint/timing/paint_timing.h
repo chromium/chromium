@@ -390,12 +390,12 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   void MaybeRecordBeforeInputOrScrollHistogram();
   void MaybeRecordHistogramsOnPageHiddenOrContextDestroyed();
 
-  // Propagates the paint timing info and presentation time to the
-  // `PaintTimingRecord`s owned by the `PresentationCallbackData`.
-  void SetPaintTimingInfoForPaintTimingRecords(
-      PresentationCallbackData&,
-      const DOMPaintTimingInfo&,
-      base::TimeTicks raw_presentation_timestamp);
+  // Resolves the presentation time for `pending_timestamps` and runs the
+  // `client_callbacks` owned by the `PresentationCallbackData`.
+  void FlushPresentationCallbackData(PresentationCallbackData&,
+                                     const DOMPaintTimingInfo&,
+                                     base::TimeTicks raw_presentation_timestamp,
+                                     uint64_t navigation_id);
 
   Vector<base::TimeTicks>
       first_paints_after_back_forward_cache_restore_presentation_;

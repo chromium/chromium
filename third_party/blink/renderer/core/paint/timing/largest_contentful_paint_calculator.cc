@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_utils.h"
 #include "third_party/blink/renderer/core/paint/timing/text_paint_timing_detector.h"
 #include "third_party/blink/renderer/core/timing/largest_contentful_paint.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -33,13 +34,6 @@ namespace blink {
 BASE_FEATURE(kLcpEntropyGatedOnCors, base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
-
-constexpr const char kTraceCategories[] = "loading,rail,devtools.timeline";
-
-constexpr const char kLCPCandidate[] = "largestContentfulPaint::Candidate";
-
-constexpr const char kLCPCandidateForSoftNavs[] =
-    "largestContentfulPaint::CandidateForSoftNavigation";
 
 void PopulateFrameTraceData(TracedValue& value, const LocalFrame& frame) {
   value.SetBoolean("isMainFrame", frame.IsMainFrame());
@@ -143,79 +137,8 @@ LargestContentfulPaintCalculator::LargestContentfulPaintCalculator(
   CHECK(delegate_);
 }
 
-template <IsDerivedFromPaintTimingRecord T>
-void LargestContentfulPaintCalculator::ProcessLcpCandidates(
-    const HeapVector<Member<T>>& records,
-    LcpCandidates* candidates) {
-  // ICP processes its own candidates so it can group by context.
-  CHECK(delegate_->IsHardNavigation());
-
-  for (const auto& record : records) {
-    // Filter out anything that wasn't a valid candidate for LCP but might have
-    // been valid for other PaintTiming clients.
-    if (!record->IsNeededForLargestContentfulPaint()) {
-      continue;
-    }
-    // Hard navigation LCP does not consider records whose node has been removed
-    // from the DOM.
-    //
-    // TODO(crbug.com/454082773): we should consider allowing these to be LCP
-    // candidates since they would have been shown to the user, and since it
-    // better matches the LCP spec.
-    if (record->WasNodeRemoved()) {
-      continue;
-    }
-    candidates->MaybeUpdateCandidate(record.Get());
-  }
-}
-
-void LargestContentfulPaintCalculator::OnFramePresented(
-    const HeapVector<Member<ImageRecord>>& image_records,
-    const HeapVector<Member<TextRecord>>& text_records,
-    const base::TimeTicks& presentation_timestamp,
-    const DOMPaintTimingInfo& paint_timing_info,
-    uint64_t navigation_id) {
-  auto* per_frame_candidates = MakeGarbageCollected<LcpCandidates>();
-  ProcessLcpCandidates(image_records, per_frame_candidates);
-  ProcessLcpCandidates(text_records, per_frame_candidates);
-  OnFramePresented(per_frame_candidates, presentation_timestamp,
-                   paint_timing_info, navigation_id);
-}
-
-void LargestContentfulPaintCalculator::OnFramePresented(
-    LcpCandidates* candidates,
-    const base::TimeTicks& presentation_timestamp,
-    const DOMPaintTimingInfo& paint_timing_info,
-    uint64_t navigation_id) {
-  PendingCandidateData candidate_data =
-      UpdateLargestContentfulPaint(candidates);
-  if (!candidate_data.metrics_callback) {
-    CHECK(!candidate_data.lcp_entry);
-    return;
-  }
-
-  std::move(*candidate_data.metrics_callback)
-      .Run(presentation_timestamp, paint_timing_info, navigation_id);
-
-  if (candidate_data.lcp_entry) {
-    delegate_->EmitLcpPerformanceEntry(paint_timing_info,
-                                       candidate_data.lcp_entry);
-    if (LocalDOMWindow* window = window_performance_->DomWindow()) {
-      if (candidate_data.lcp_trace_data) {
-        TRACE_EVENT_MARK_WITH_TIMESTAMP2(
-            kTraceCategories,
-            delegate_->IsHardNavigation() ? kLCPCandidate
-                                          : kLCPCandidateForSoftNavs,
-            presentation_timestamp, "data",
-            std::move(candidate_data.lcp_trace_data), "frame",
-            GetFrameIdForTracing(window->GetFrame()));
-      }
-    }
-  }
-}
-
 LargestContentfulPaintCalculator::PendingCandidateData
-LargestContentfulPaintCalculator::UpdateLargestContentfulPaint(
+LargestContentfulPaintCalculator::MaybeUpdateLargestContentfulPaint(
     LcpCandidates* candidates) {
   // Compute the current web-exposed candidate size before these values get
   // updated in the call below.
@@ -518,7 +441,8 @@ std::unique_ptr<TracedValue>
 LargestContentfulPaintCalculator::CreateWebExposedLcpCandidateTraceData(
     const PaintTimingRecord& record) {
   LocalDOMWindow* window = window_performance_->DomWindow();
-  if (!window || !TRACE_EVENT_CATEGORY_ENABLED(kTraceCategories)) {
+  if (!window || !TRACE_EVENT_CATEGORY_ENABLED(
+                     paint_timing::kWebExposedLcpTraceCategories)) {
     return nullptr;
   }
 
@@ -579,6 +503,9 @@ void LargestContentfulPaintCalculator::ReportMetricsCandidateToTrace(
 }
 
 void LargestContentfulPaintCalculator::OnImageFirstPaint(ImageRecord* record) {
+  if (!IsEligibleForLcp(*record)) {
+    return;
+  }
   if (record->EffectiveVisualSize() >
           largest_presented_image_details_.paint_size &&
       record->IsEffectiveSizeLargerThan(largest_pending_image_)) {

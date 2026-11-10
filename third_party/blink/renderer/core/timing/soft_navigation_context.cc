@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/timing/soft_navigation_context.h"
 
+#include <utility>
+
 #include "base/check_deref.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/layers/heads_up_display_layer.h"
@@ -14,6 +16,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_calculator.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_utils.h"
 #include "third_party/blink/renderer/core/paint/timing/web_vitals_hud_helper.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/interaction_contentful_paint.h"
@@ -21,6 +24,10 @@
 #include "third_party/blink/renderer/core/timing/largest_contentful_paint.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace blink {
@@ -114,13 +121,6 @@ void SoftNavigationContext::AddPaintedArea(
       rect.width(), "rect_height", rect.height(),
       "paintedAreaThisAnimationFrame",
       painted_area_ - painted_area_last_animation_frame);
-
-  // TODO(crbug.com/434159332): This doesn't currently match hard-FCP semantics
-  // because we aren't notified about images paints until they are "sufficiently
-  // loaded", which is needed for LCP/ICP.
-  if (!first_image_or_text_) {
-    first_image_or_text_ = record;
-  }
 }
 
 bool SoftNavigationContext::SatisfiesSoftNavNonPaintCriteria() const {
@@ -150,6 +150,31 @@ void SoftNavigationContext::OnPaintFinished(
   CHECK(IsRecordingLargestContentfulPaint());
   CHECK(!image_records.empty() || !text_records.empty());
 
+  uint64_t new_painted_area =
+      UpdatePaintedAreaOnPaintFinished(image_records, text_records);
+  if (new_painted_area == 0) {
+    return;
+  }
+
+  TraceOnPaintFinished(new_painted_area);
+
+  // Notify `InteractionEffectsMonitor`s about the contentful paint.
+  SoftNavigationHeuristics* heuristics = GetSoftNavigationHeuristics();
+  CHECK(heuristics);
+  heuristics->ForEachInteractionEffectsMonitor(
+      [&](InteractionEffectsMonitor& monitor) {
+        monitor.OnContentfulPaint(this, new_painted_area);
+      });
+
+  // Notify `heuristics` about the change in painted area before creating an ICP
+  // entry since this might cause the navigation ID to change, if the paint
+  // causes the soft navigation criteria to be met.
+  heuristics->OnPaintedAreaChanged(this);
+}
+
+uint64_t SoftNavigationContext::UpdatePaintedAreaOnPaintFinished(
+    const HeapVector<Member<ImageRecord>>& image_records,
+    const HeapVector<Member<TextRecord>>& text_records) {
   uint64_t previous_painted_area = painted_area_;
 
   WebVitalsHudHelper hud_helper(
@@ -170,22 +195,7 @@ void SoftNavigationContext::OnPaintFinished(
     process_record(record.Get());
   }
 
-  uint64_t new_painted_area = painted_area_ - previous_painted_area;
-  if (new_painted_area == 0) {
-    return;
-  }
-
-  TraceOnPaintFinished(new_painted_area);
-
-  // Notify `InteractionEffectsMonitor`s about the contentful paint.
-  SoftNavigationHeuristics* heuristics = GetSoftNavigationHeuristics();
-  CHECK(heuristics);
-  heuristics->ForEachInteractionEffectsMonitor(
-      [&](InteractionEffectsMonitor& monitor) {
-        monitor.OnContentfulPaint(this, new_painted_area);
-      });
-
-  heuristics->OnPaintedAreaChanged(this);
+  return painted_area_ - previous_painted_area;
 }
 
 void SoftNavigationContext::TraceOnPaintFinished(uint64_t new_painted_area) {
@@ -199,6 +209,102 @@ void SoftNavigationContext::TraceOnPaintFinished(uint64_t new_painted_area) {
                       track_, "context", this,
                       "numModdedNodesSinceLastContextPaint", modification_count,
                       "newPaintedArea", new_painted_area);
+}
+
+void SoftNavigationContext::OnFramePresented(
+    LargestContentfulPaintCalculator::LcpCandidates* candidates,
+    const base::TimeTicks& presentation_timestamp,
+    const DOMPaintTimingInfo& paint_timing_info,
+    uint64_t navigation_id) {
+  // This should not be called after we've been shut down.
+  CHECK(!HasBeenShutdown());
+  // TODO(crbug.com/454082773): Input should not invalidate pending presentation
+  // feedback, but this can happen due to scheduling races.
+  CHECK(IsRecordingLargestContentfulPaint());
+
+  if (OptionalPaintTimingCallback callback =
+          MaybeUpdateInteractionContentfulPaint(candidates)) {
+    std::move(*callback).Run(presentation_timestamp, paint_timing_info,
+                             navigation_id);
+  }
+}
+
+OptionalPaintTimingCallback
+SoftNavigationContext::MaybeUpdateInteractionContentfulPaint(
+    LargestContentfulPaintCalculator::LcpCandidates* candidates) {
+  // Compute new LCP candidate state and determine if we need to do anything at
+  // presentation time, which we do if an ICP entry needs to be emitted or
+  // metrics need to be updated. Note that the first ICP entry triggers FCP, so
+  // we don't need to explicitly check for that.
+  LargestContentfulPaintCalculator::PendingCandidateData candidate_data =
+      lcp_calculator_->MaybeUpdateLargestContentfulPaint(candidates);
+  InteractionContentfulPaint* icp_entry = nullptr;
+  if (candidate_data.lcp_entry) {
+    WindowPerformance* performance =
+        DOMWindowPerformance::performance(*window_);
+    icp_entry = MakeGarbageCollected<InteractionContentfulPaint>(
+        /*start_time=*/performance->MonotonicTimeToDOMHighResTimeStamp(
+            TimeOrigin()),
+        candidate_data.lcp_entry, window_,
+        initial_event_timing_->interactionId());
+  }
+
+  if (!candidate_data.metrics_callback && !icp_entry) {
+    return std::nullopt;
+  }
+  return blink::BindOnce(
+      &SoftNavigationContext::FlushCandidateAndMetricsOnFramePresented,
+      WrapWeakPersistent(this), std::move(candidate_data.metrics_callback),
+      WrapPersistent(icp_entry), std::move(candidate_data.lcp_trace_data));
+}
+
+void SoftNavigationContext::FlushCandidateAndMetricsOnFramePresented(
+    OptionalPaintTimingCallback metrics_callback,
+    InteractionContentfulPaint* icp_entry,
+    std::unique_ptr<TracedValue> trace_data,
+    const base::TimeTicks& presentation_timestamp,
+    const DOMPaintTimingInfo& paint_timing_info,
+    uint64_t navigation_id) {
+  if (HasBeenShutdown()) {
+    return;
+  }
+
+  if (metrics_callback) {
+    std::move(*metrics_callback)
+        .Run(presentation_timestamp, paint_timing_info, navigation_id);
+  }
+
+  // `icp_entry` can only be null here if `metrics_callback` is non-null, which
+  // happens when the largest text or image was updated, but that element was
+  // not larger than the current global candidate of the other type. Since that
+  // requires a previous global candidate to have already been painted and
+  // presented (in FIFO frame order), FCP must already be set.
+  if (!icp_entry) {
+    CHECK(HasFirstContentfulPaint());
+    return;
+  }
+
+  icp_entry->FinalizeEntry(paint_timing_info, navigation_id);
+  WindowPerformance* performance = DOMWindowPerformance::performance(*window_);
+  performance->OnInteractionContentfulPaintUpdated(icp_entry);
+  largest_icp_entry_ = icp_entry;
+
+  if (trace_data) {
+    TRACE_EVENT_MARK_WITH_TIMESTAMP2(
+        paint_timing::kWebExposedLcpTraceCategories,
+        "largestContentfulPaint::CandidateForSoftNavigation",
+        presentation_timestamp, "data", std::move(trace_data), "frame",
+        GetFrameIdForTracing(window_->GetFrame()));
+  }
+
+  // TODO(crbug.com/434159332): This doesn't currently match hard-FCP semantics
+  // because we aren't notified about images paints until they are "sufficiently
+  // loaded", which is needed for LCP/ICP.
+  if (!HasFirstContentfulPaint()) {
+    first_contentful_paint_ = presentation_timestamp;
+    first_contentful_paint_timing_info_ = paint_timing_info;
+    GetSoftNavigationHeuristics()->OnFirstContentfulPaint(this);
+  }
 }
 
 void SoftNavigationContext::OnInputOrScroll() {
@@ -215,18 +321,6 @@ void SoftNavigationContext::OnInputOrScroll() {
     return;
   }
   first_input_or_scroll_time_ = base::TimeTicks::Now();
-}
-
-void SoftNavigationContext::OnFramePresented(
-    LargestContentfulPaintCalculator::LcpCandidates* candidates,
-    const base::TimeTicks& presentation_timestamp,
-    const DOMPaintTimingInfo& paint_timing_info,
-    uint64_t navigation_id) {
-  // TODO(crbug.com/454082773): Input should not invalidate pending presentation
-  // feedback, but this can happen due to scheduling races.
-  CHECK(IsRecordingLargestContentfulPaint());
-  lcp_calculator_->OnFramePresented(candidates, presentation_timestamp,
-                                    paint_timing_info, navigation_id);
 }
 
 const LargestContentfulPaintDetails&
@@ -257,7 +351,6 @@ void SoftNavigationContext::WriteIntoTrace(
 
 void SoftNavigationContext::Trace(Visitor* visitor) const {
   visitor->Trace(lcp_calculator_);
-  visitor->Trace(first_image_or_text_);
   visitor->Trace(window_);
   visitor->Trace(largest_icp_entry_);
   visitor->Trace(initial_event_timing_);
@@ -267,7 +360,6 @@ void SoftNavigationContext::Shutdown() {
   TRACE_EVENT_END("loading", track_);
 
   lcp_calculator_ = nullptr;
-  first_image_or_text_ = nullptr;
   window_ = nullptr;
   largest_icp_entry_ = nullptr;
   initial_event_timing_ = nullptr;
@@ -299,8 +391,8 @@ void SoftNavigationContext::EmitSoftNavigation() {
 
   WindowPerformance* performance = DOMWindowPerformance::performance(*window_);
   CHECK(performance);
-  performance->AddSoftNavigation(TimeOrigin(), FirstContentfulPaintTimingInfo(),
-                                 this);
+  performance->AddSoftNavigation(TimeOrigin(),
+                                 first_contentful_paint_timing_info_, this);
 }
 
 void SoftNavigationContext::Dispose() {
@@ -315,25 +407,6 @@ void SoftNavigationContext::Dispose() {
     return;
   }
   heuristics->OnContextDisposed(this);
-}
-
-void SoftNavigationContext::EmitLcpPerformanceEntry(
-    const DOMPaintTimingInfo& paint_timing_info,
-    LargestContentfulPaint* lcp_entry) {
-  // This should not be called after we've been shut down.
-  CHECK(!HasBeenShutdown());
-
-  WindowPerformance* performance = DOMWindowPerformance::performance(*window_);
-
-  auto* entry = MakeGarbageCollected<InteractionContentfulPaint>(
-      /*start_time=*/performance->MonotonicTimeToDOMHighResTimeStamp(
-          TimeOrigin()),
-      lcp_entry, window_, initial_event_timing_->interactionId());
-  entry->FinalizeEntry(paint_timing_info,
-                       performance->NavigationId().web_exposed_id);
-  performance->OnInteractionContentfulPaintUpdated(entry);
-
-  largest_icp_entry_ = entry;
 }
 
 void SoftNavigationContext::OnLcpMetricsForReportingChanged() {
