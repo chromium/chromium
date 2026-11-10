@@ -174,6 +174,7 @@ class TablePrinter {
 // "\x00" to "\xf4\x8f\xbf\xbf".
 PairVector InitializeCharacters() {
   PairVector vector;
+  vector.reserve(0x110000 - (0xE000 - 0xD800));
   for (int i = 0; i <= 0x10FFFF; ++i) {
     if (i >= 0xD800 && i < 0xE000) {
       // Surrogate codepoints are not permitted. Non-character code points are
