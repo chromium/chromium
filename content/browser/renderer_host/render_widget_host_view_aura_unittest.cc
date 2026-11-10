@@ -60,6 +60,7 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_event_handler.h"
 #include "content/browser/renderer_host/text_input_manager.h"
+#include "content/browser/renderer_host/unbounded_surface_window.h"
 #include "content/browser/site_instance_group.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view_aura.h"
@@ -78,6 +79,7 @@
 #include "content/test/mock_render_widget_host_delegate.h"
 #include "content/test/mock_widget.h"
 #include "content/test/mock_widget_input_handler.h"
+#include "content/test/recording_cursor_client.h"
 #include "content/test/test_overscroll_delegate.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
@@ -86,6 +88,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/mojom/input/touch_event.mojom.h"
 #include "ui/aura/client/aura_constants.h"
@@ -98,6 +101,7 @@
 #include "ui/aura/test/test_cursor_client.h"
 #include "ui/aura/test/test_screen.h"
 #include "ui/aura/test/test_window_delegate.h"
+#include "ui/aura/test/test_window_parenting_client.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_observer.h"
@@ -138,6 +142,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/selection_bound.h"
 #include "ui/wm/core/coordinate_conversion.h"
+#include "ui/wm/core/default_screen_position_client.h"
 #include "ui/wm/core/window_util.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -340,13 +345,22 @@ class FakeRenderWidgetHostViewAura : public RenderWidgetHostViewAura {
         metadata);
   }
 
-  bool ShouldSkipCursorUpdate() const override { return false; }
+  void set_use_real_should_skip_cursor_update(bool use_real) {
+    use_real_should_skip_cursor_update_ = use_real;
+  }
+
+  bool ShouldSkipCursorUpdate() const override {
+    return use_real_should_skip_cursor_update_
+               ? RenderWidgetHostViewAura::ShouldSkipCursorUpdate()
+               : false;
+  }
 
   bool CanSynchronizeVisualProperties() override {
     ++can_synchronize_visual_properties_count_;
     return RenderWidgetHostViewAura::CanSynchronizeVisualProperties();
   }
 
+  bool use_real_should_skip_cursor_update_ = false;
   size_t can_synchronize_visual_properties_count_ = 0;
   gfx::Size last_frame_size_;
   raw_ptr<FakeWindowEventDispatcher> dispatcher_;
@@ -3144,6 +3158,393 @@ TEST_F(RenderWidgetHostViewAuraTest, UpdateCursorIfOverSelf) {
   aura::Env::GetInstance()->SetLastMouseLocation(gfx::Point(161, 161));
   view_->UpdateCursorIfOverSelf();
   EXPECT_EQ(0, cursor_client.calls_to_set_cursor());
+}
+
+// A cursor update from the renderer is displayed while the pointer is over the
+// unbounded surface spawned by the view, even though the surface lies outside
+// the view's bounds, and the surface window hands out the view's cursor.
+TEST_F(RenderWidgetHostViewAuraTest, UpdateCursorOverUnboundedSurface) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(blink::features::kUnboundedElement);
+
+  InitViewForFrame(nullptr);
+  ParentHostView(view_, parent_view_);
+  // Note that all coordinates in this test are screen coordinates.
+  view_->SetBounds(gfx::Rect(60, 60, 100, 100));
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
+
+  aura::Window* root_window = parent_view_->GetNativeView()->GetRootWindow();
+  RecordingCursorClient cursor_client(root_window);
+
+  // Place the surface entirely outside the view.
+  constexpr gfx::Rect kSurfaceBounds(200, 200, 50, 50);
+  constexpr gfx::Point kPointOverSurface(220, 220);
+  view_->CreateUnboundedSurface(kSurfaceBounds, nullptr);
+  UnboundedSurfaceWindow* surface = view_->GetUnboundedSurfaceWindow();
+  ASSERT_TRUE(surface);
+  aura::Window* surface_window = surface->GetNativeWindow();
+  ASSERT_TRUE(surface_window);
+  ASSERT_EQ(root_window, surface_window->GetRootWindow());
+  ASSERT_EQ(kSurfaceBounds, surface_window->GetBoundsInScreen());
+
+  // Pointer over the view itself still works while the surface is open.
+  aura::Env::GetInstance()->SetLastMouseLocation(gfx::Point(110, 110));
+  cursor_client.reset_calls_to_set_cursor();
+  view_->DisplayCursor(ui::Cursor(ui::mojom::CursorType::kIBeam));
+  EXPECT_EQ(1, cursor_client.calls_to_set_cursor());
+  EXPECT_EQ(ui::mojom::CursorType::kIBeam, cursor_client.GetCursor().type());
+
+  // Pointer over the surface: the cursor is displayed.
+  aura::Env::GetInstance()->SetLastMouseLocation(kPointOverSurface);
+  cursor_client.reset_calls_to_set_cursor();
+  view_->DisplayCursor(ui::Cursor(ui::mojom::CursorType::kHand));
+  EXPECT_EQ(1, cursor_client.calls_to_set_cursor());
+  EXPECT_EQ(ui::mojom::CursorType::kHand, cursor_client.GetCursor().type());
+
+  // The surface window reports the view's cursor, which is what
+  // wm::CompoundEventFilter shows when the pointer enters or moves over it.
+  EXPECT_EQ(ui::mojom::CursorType::kHand,
+            surface_window->delegate()->GetCursor(gfx::Point()).type());
+
+  // A loading page shows the pointer instead, as over the view itself, and
+  // restores the renderer cursor once loading completes.
+  cursor_client.reset_calls_to_set_cursor();
+  view_->SetIsLoading(true);
+  EXPECT_EQ(1, cursor_client.calls_to_set_cursor());
+  EXPECT_EQ(ui::mojom::CursorType::kPointer, cursor_client.GetCursor().type());
+  cursor_client.reset_calls_to_set_cursor();
+  view_->SetIsLoading(false);
+  EXPECT_EQ(1, cursor_client.calls_to_set_cursor());
+  EXPECT_EQ(ui::mojom::CursorType::kHand, cursor_client.GetCursor().type());
+
+  // When the cursor is hidden (kNone), loading does not replace it with the
+  // pointer cursor over the surface.
+  view_->DisplayCursor(ui::Cursor(ui::mojom::CursorType::kNone));
+  EXPECT_EQ(ui::mojom::CursorType::kNone, cursor_client.GetCursor().type());
+  view_->SetIsLoading(true);
+  EXPECT_EQ(ui::mojom::CursorType::kNone, cursor_client.GetCursor().type());
+  view_->SetIsLoading(false);
+
+  // Pointer outside both the view and the surface: no update.
+  aura::Env::GetInstance()->SetLastMouseLocation(gfx::Point(300, 300));
+  cursor_client.reset_calls_to_set_cursor();
+  view_->DisplayCursor(ui::Cursor(ui::mojom::CursorType::kIBeam));
+  EXPECT_EQ(0, cursor_client.calls_to_set_cursor());
+
+  // The surface hides the cursor while the pointer is locked.
+  ASSERT_EQ(blink::mojom::PointerLockResult::kSuccess,
+            view_->LockPointer(/*request_unadjusted_movement=*/false));
+  ASSERT_TRUE(view_->IsPointerLocked());
+  EXPECT_EQ(ui::mojom::CursorType::kNone,
+            surface_window->delegate()->GetCursor(gfx::Point()).type());
+  view_->UnlockPointer();
+  EXPECT_EQ(ui::mojom::CursorType::kIBeam,
+            surface_window->delegate()->GetCursor(gfx::Point()).type());
+
+  // Dismissing the surface stops cursor updates over its former bounds.
+  // Destruction of the surface is deferred to a posted task, and the surface
+  // keeps showing the cursor until then.
+  surface->Dismiss();
+  aura::Env::GetInstance()->SetLastMouseLocation(kPointOverSurface);
+  cursor_client.reset_calls_to_set_cursor();
+  view_->DisplayCursor(ui::Cursor(ui::mojom::CursorType::kHand));
+  EXPECT_EQ(1, cursor_client.calls_to_set_cursor());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return !view_->HasActiveUnboundedSurface(); }));
+  ASSERT_FALSE(view_->GetUnboundedSurfaceWindow());
+  cursor_client.reset_calls_to_set_cursor();
+  view_->DisplayCursor(ui::Cursor(ui::mojom::CursorType::kHand));
+  EXPECT_EQ(0, cursor_client.calls_to_set_cursor());
+}
+
+namespace {
+
+// `wm::DefaultScreenPositionClient` derives the root window's screen origin
+// from `WindowTreeHost::GetBoundsInPixels()`, which on Windows
+// (`ui::WinWindow`) queries `GetClientRect()` and always returns (0, 0).
+// Override `GetRootWindowOriginInScreen()` to place the test root at a known
+// non-zero screen origin across all platforms.
+class OffsetScreenPositionClient : public wm::DefaultScreenPositionClient {
+ public:
+  OffsetScreenPositionClient(aura::Window* root_window,
+                             const gfx::Point& origin_in_screen)
+      : wm::DefaultScreenPositionClient(root_window),
+        origin_in_screen_(origin_in_screen) {}
+
+ protected:
+  gfx::Point GetRootWindowOriginInScreen(
+      const aura::Window* root_window) override {
+    return origin_in_screen_;
+  }
+
+ private:
+  const gfx::Point origin_in_screen_;
+};
+
+}  // namespace
+
+// Same as above with the surface in its own root window, as on desktop Aura
+// where the surface is a top-level window: the pointer is hit-tested in the
+// surface's root, and the view's root cursor client still shows the cursor.
+TEST_F(RenderWidgetHostViewAuraTest,
+       UpdateCursorOverUnboundedSurfaceInSeparateRoot) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(blink::features::kUnboundedElement);
+
+  InitViewForFrame(nullptr);
+  ParentHostView(view_, parent_view_);
+  // Note that all coordinates in this test are screen coordinates.
+  view_->SetBounds(gfx::Rect(60, 60, 100, 100));
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
+
+  aura::Window* root_window = parent_view_->GetNativeView()->GetRootWindow();
+  RecordingCursorClient cursor_client(root_window);
+
+  // A second host, standing in for the top-level window that desktop Aura
+  // creates for the surface, placed at a non-zero screen origin so screen-to-
+  // root coordinate conversion is exercised.
+  constexpr gfx::Point kSurfaceRootOrigin(400, 20);
+  std::unique_ptr<aura::TestScreen> surface_screen =
+      base::WrapUnique(aura::TestScreen::Create(gfx::Size(800, 600)));
+  aura::WindowTreeHost* surface_host =
+      surface_screen->CreateHostForPrimaryDisplay();
+  surface_host->SetBoundsInPixels(gfx::Rect(kSurfaceRootOrigin, {200, 200}));
+  aura::Window* surface_root = surface_host->window();
+  OffsetScreenPositionClient surface_screen_position_client(surface_root,
+                                                            kSurfaceRootOrigin);
+
+  // Parent the surface into the second host. The surface is created with the
+  // view's root as context, so swap that root's parenting client temporarily.
+  aura::client::WindowParentingClient* original_parenting_client =
+      aura::client::GetWindowParentingClient(root_window);
+  constexpr gfx::Rect kSurfaceBounds(450, 50, 50, 50);
+  {
+    aura::test::TestWindowParentingClient parenting_client(root_window);
+    parenting_client.set_default_parent(surface_root);
+    view_->CreateUnboundedSurface(kSurfaceBounds, nullptr);
+  }
+  aura::client::SetWindowParentingClient(root_window,
+                                         original_parenting_client);
+
+  UnboundedSurfaceWindow* surface = view_->GetUnboundedSurfaceWindow();
+  ASSERT_TRUE(surface);
+  aura::Window* surface_window = surface->GetNativeWindow();
+  ASSERT_TRUE(surface_window);
+  ASSERT_EQ(surface_root, surface_window->GetRootWindow());
+  ASSERT_NE(root_window, surface_root);
+  const gfx::Rect surface_bounds = surface_window->GetBoundsInScreen();
+  const gfx::Rect surface_root_bounds = surface_root->GetBoundsInScreen();
+  ASSERT_EQ(kSurfaceRootOrigin, surface_root_bounds.origin());
+  ASSERT_EQ(kSurfaceBounds, surface_bounds);
+  ASSERT_TRUE(surface_root_bounds.Contains(surface_bounds));
+  const gfx::Point point_over_surface = surface_bounds.CenterPoint();
+  const gfx::Point point_beside_surface =
+      surface_root_bounds.origin() + gfx::Vector2d(10, 10);
+  ASSERT_FALSE(surface_bounds.Contains(point_beside_surface));
+
+  // Pointer over the surface in the other root: the cursor is displayed
+  // through the view's root cursor client.
+  aura::Env::GetInstance()->SetLastMouseLocation(point_over_surface);
+  cursor_client.reset_calls_to_set_cursor();
+  view_->DisplayCursor(ui::Cursor(ui::mojom::CursorType::kHand));
+  EXPECT_EQ(1, cursor_client.calls_to_set_cursor());
+  EXPECT_EQ(ui::mojom::CursorType::kHand, cursor_client.GetCursor().type());
+
+  // Pointer in the other root but outside the surface: no update.
+  aura::Env::GetInstance()->SetLastMouseLocation(point_beside_surface);
+  cursor_client.reset_calls_to_set_cursor();
+  view_->DisplayCursor(ui::Cursor(ui::mojom::CursorType::kIBeam));
+  EXPECT_EQ(0, cursor_client.calls_to_set_cursor());
+
+  // Pointer over the view itself still works.
+  aura::Env::GetInstance()->SetLastMouseLocation(gfx::Point(110, 110));
+  cursor_client.reset_calls_to_set_cursor();
+  view_->DisplayCursor(ui::Cursor(ui::mojom::CursorType::kIBeam));
+  EXPECT_EQ(1, cursor_client.calls_to_set_cursor());
+
+  // The host tearing down the surface's window, before the surface has been
+  // removed from the view, leaves a surface without a native window. Cursor
+  // updates over its former bounds are dropped rather than crashing.
+  aura::Env::GetInstance()->SetLastMouseLocation(point_over_surface);
+  delete surface_window;
+  ASSERT_TRUE(view_->HasActiveUnboundedSurface());
+  ASSERT_FALSE(surface->GetNativeWindow());
+  cursor_client.reset_calls_to_set_cursor();
+  view_->DisplayCursor(ui::Cursor(ui::mojom::CursorType::kHand));
+  EXPECT_EQ(0, cursor_client.calls_to_set_cursor());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return !view_->HasActiveUnboundedSurface(); }));
+}
+
+namespace {
+
+// Delegating display::Screen that lets tests control which Aura window the OS
+// reports as being under the cursor for ShouldSkipCursorUpdate().
+class ScopedCursorTestScreen : public display::Screen {
+ public:
+  ScopedCursorTestScreen() : original_screen_(display::Screen::Get()) {
+    set_shutdown(true);
+    display::Screen::SetScreenInstance(this);
+  }
+  ScopedCursorTestScreen(const ScopedCursorTestScreen&) = delete;
+  ScopedCursorTestScreen& operator=(const ScopedCursorTestScreen&) = delete;
+  ~ScopedCursorTestScreen() override {
+    display::Screen::SetScreenInstance(nullptr);
+    display::Screen::SetScreenInstance(original_screen_);
+  }
+
+  void set_window_under_cursor(aura::Window* window) {
+    window_under_cursor_ = window;
+  }
+
+  // display::Screen:
+  gfx::Point GetCursorScreenPoint() override {
+    return original_screen_->GetCursorScreenPoint();
+  }
+  bool IsWindowUnderCursor(gfx::NativeWindow window) override {
+    return window_under_cursor_ && window &&
+           window_under_cursor_->GetRootWindow() == window->GetRootWindow();
+  }
+  gfx::NativeWindow GetWindowAtScreenPoint(const gfx::Point&) override {
+    return window_under_cursor_;
+  }
+  gfx::NativeWindow GetLocalProcessWindowAtPoint(
+      const gfx::Point& point,
+      const std::set<gfx::NativeWindow>& ignore) override {
+    return original_screen_->GetLocalProcessWindowAtPoint(point, ignore);
+  }
+  int GetNumDisplays() const override {
+    return original_screen_->GetNumDisplays();
+  }
+  const std::vector<display::Display>& GetAllDisplays() const override {
+    return original_screen_->GetAllDisplays();
+  }
+  display::Display GetDisplayNearestWindow(
+      gfx::NativeWindow window) const override {
+    return original_screen_->GetDisplayNearestWindow(window);
+  }
+  display::Display GetDisplayNearestPoint(
+      const gfx::Point& point) const override {
+    return original_screen_->GetDisplayNearestPoint(point);
+  }
+  display::Display GetDisplayMatching(
+      const gfx::Rect& match_rect) const override {
+    return original_screen_->GetDisplayMatching(match_rect);
+  }
+  display::Display GetPrimaryDisplay() const override {
+    return original_screen_->GetPrimaryDisplay();
+  }
+  void AddObserver(display::DisplayObserver* observer) override {
+    original_screen_->AddObserver(observer);
+  }
+  void RemoveObserver(display::DisplayObserver* observer) override {
+    original_screen_->RemoveObserver(observer);
+  }
+
+ private:
+  raw_ptr<display::Screen> original_screen_;
+  raw_ptr<aura::Window> window_under_cursor_ = nullptr;
+};
+
+}  // namespace
+
+// RenderWidgetHostViewAura::ShouldSkipCursorUpdate() permits cursor updates
+// when the OS window under the cursor is either the view's root window or its
+// unbounded surface's root window, and skips updates when the cursor is over
+// no window or an unrelated root window.
+TEST_F(RenderWidgetHostViewAuraTest,
+       ShouldSkipCursorUpdateWithUnboundedSurface) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(blink::features::kUnboundedElement);
+
+  InitViewForFrame(nullptr);
+  ParentHostView(view_, parent_view_);
+  view_->SetBounds(gfx::Rect(60, 60, 100, 100));
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
+  view_->set_use_real_should_skip_cursor_update(true);
+
+  aura::Window* root_window = parent_view_->GetNativeView()->GetRootWindow();
+  RecordingCursorClient cursor_client(root_window);
+
+  std::unique_ptr<aura::TestScreen> surface_screen =
+      base::WrapUnique(aura::TestScreen::Create(gfx::Size(800, 600)));
+  aura::WindowTreeHost* surface_host =
+      surface_screen->CreateHostForPrimaryDisplay();
+  aura::Window* surface_root = surface_host->window();
+  wm::DefaultScreenPositionClient surface_screen_position_client(surface_root);
+
+  std::unique_ptr<aura::TestScreen> unrelated_screen =
+      base::WrapUnique(aura::TestScreen::Create(gfx::Size(800, 600)));
+  aura::WindowTreeHost* unrelated_host =
+      unrelated_screen->CreateHostForPrimaryDisplay();
+  aura::Window* unrelated_root = unrelated_host->window();
+
+  aura::client::WindowParentingClient* original_parenting_client =
+      aura::client::GetWindowParentingClient(root_window);
+  constexpr gfx::Rect kSurfaceBounds(200, 200, 50, 50);
+  {
+    aura::test::TestWindowParentingClient parenting_client(root_window);
+    parenting_client.set_default_parent(surface_root);
+    view_->CreateUnboundedSurface(kSurfaceBounds, nullptr);
+  }
+  aura::client::SetWindowParentingClient(root_window,
+                                         original_parenting_client);
+
+  UnboundedSurfaceWindow* surface = view_->GetUnboundedSurfaceWindow();
+  ASSERT_TRUE(surface);
+  aura::Window* surface_window = surface->GetNativeWindow();
+  ASSERT_TRUE(surface_window);
+  const gfx::Point point_over_surface =
+      surface_window->GetBoundsInScreen().CenterPoint();
+
+  ScopedCursorTestScreen test_screen;
+
+  // When no window or an unrelated root window is under the OS cursor, cursor
+  // updates are skipped on desktop Aura.
+  aura::Env::GetInstance()->SetLastMouseLocation(point_over_surface);
+  test_screen.set_window_under_cursor(nullptr);
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_FALSE(view_->ShouldSkipCursorUpdate());
+#else
+  EXPECT_TRUE(view_->ShouldSkipCursorUpdate());
+  cursor_client.reset_calls_to_set_cursor();
+  view_->DisplayCursor(ui::Cursor(ui::mojom::CursorType::kHand));
+  EXPECT_EQ(0, cursor_client.calls_to_set_cursor());
+#endif
+
+  test_screen.set_window_under_cursor(unrelated_root);
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_FALSE(view_->ShouldSkipCursorUpdate());
+#else
+  EXPECT_TRUE(view_->ShouldSkipCursorUpdate());
+  cursor_client.reset_calls_to_set_cursor();
+  view_->DisplayCursor(ui::Cursor(ui::mojom::CursorType::kHand));
+  EXPECT_EQ(0, cursor_client.calls_to_set_cursor());
+#endif
+
+  // When the view's own root window is under the OS cursor, updates proceed.
+  test_screen.set_window_under_cursor(view_->GetNativeView());
+  EXPECT_FALSE(view_->ShouldSkipCursorUpdate());
+
+  // When the surface's root window is under the OS cursor, updates proceed and
+  // reach the cursor client.
+  test_screen.set_window_under_cursor(surface_window);
+  EXPECT_FALSE(view_->ShouldSkipCursorUpdate());
+  cursor_client.reset_calls_to_set_cursor();
+  view_->DisplayCursor(ui::Cursor(ui::mojom::CursorType::kHand));
+  EXPECT_EQ(1, cursor_client.calls_to_set_cursor());
+  EXPECT_EQ(ui::mojom::CursorType::kHand, cursor_client.GetCursor().type());
+
+  // Once the surface window is destroyed, `surface_root` is no longer accepted.
+  test_screen.set_window_under_cursor(surface_root);
+  delete surface_window;
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_FALSE(view_->ShouldSkipCursorUpdate());
+#else
+  EXPECT_TRUE(view_->ShouldSkipCursorUpdate());
+#endif
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return !view_->HasActiveUnboundedSurface(); }));
 }
 
 TEST_F(RenderWidgetHostViewAuraTest, ZeroSizeStillGetsLocalSurfaceId) {

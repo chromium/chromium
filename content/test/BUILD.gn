@@ -739,6 +739,8 @@ static_library("test_support") {
     sources += [
       "mock_overscroll_controller_delegate_aura.cc",
       "mock_overscroll_controller_delegate_aura.h",
+      "recording_cursor_client.cc",
+      "recording_cursor_client.h",
     ]
 
     deps += [

@@ -50,8 +50,11 @@
 #include "url/gurl.h"
 
 #if defined(USE_AURA)
+#include "content/test/recording_cursor_client.h"
+#include "ui/aura/client/cursor_client.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_delegate.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tracker.h"
 #include "ui/aura/window_tree_host.h"
@@ -3887,6 +3890,61 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementCursorBrowserTest,
   ASSERT_NO_FATAL_FAILURE(MoveOverSurface());
   EXPECT_TRUE(cursor_manager()->IsViewUnderCursor(child_view_));
 }
+
+#if defined(USE_AURA) && !BUILDFLAG(IS_CASTOS)
+// Moving the pointer over the surface through the Aura event pipeline shows
+// the cursor the renderer requested for that spot, as the surface window hands
+// out the owner view's cursor to the root window's event filter. This does not
+// depend on where the OS pointer really is, unlike the push path through
+// RenderWidgetHostViewAura::DisplayCursor().
+IN_PROC_BROWSER_TEST_P(UnboundedElementCursorBrowserTest,
+                       AuraCursorClientShowsRendererCursorOverSurface) {
+  ASSERT_NO_FATAL_FAILURE(OpenSurfaceFromCrossSiteIframe());
+  ASSERT_TRUE(ExecJs(
+      iframe_, "document.getElementById('flyout_btn').style.cursor = 'text'"));
+
+  aura::Window* surface_window = window_->GetNativeWindow();
+  ASSERT_TRUE(surface_window);
+  // On desktop Aura the surface is a top-level window with its own root.
+  aura::Window* surface_root = surface_window->GetRootWindow();
+  ASSERT_TRUE(surface_root);
+  // content_shell installs a cursor client on desktop Aura (through
+  // DesktopNativeWidgetAura) but not on ChromeOS; provide one there so the
+  // event filter has something to drive.
+  std::unique_ptr<RecordingCursorClient> owned_cursor_client;
+  aura::client::CursorClient* cursor_client =
+      aura::client::GetCursorClient(surface_root);
+#if BUILDFLAG(IS_CHROMEOS)
+  ASSERT_FALSE(cursor_client);
+  owned_cursor_client = std::make_unique<RecordingCursorClient>(surface_root);
+  cursor_client = owned_cursor_client.get();
+#else
+  ASSERT_TRUE(cursor_client);
+#endif
+
+  const gfx::Point point_over_surface = FlyoutButtonScreenPoint();
+  ui::test::EventGenerator generator(surface_root);
+  generator.MoveMouseTo(point_over_surface);
+  RunUntilInputProcessed(iframe_->GetRenderWidgetHost());
+  EXPECT_TRUE(cursor_manager()->IsViewUnderCursor(child_view_));
+
+  // The renderer answers the move with the I-beam, which the owner view caches
+  // and the surface window reports from then on.
+  EXPECT_TRUE(base::test::RunUntil([&] {
+    return last_displayed_cursor() == ui::mojom::CursorType::kIBeam;
+  }));
+  EXPECT_EQ(ui::mojom::CursorType::kIBeam,
+            surface_window->delegate()->GetCursor(gfx::Point()).type());
+
+  // The next move over the surface makes the event filter show it. Plant a
+  // different cursor first so the check cannot pass on a stale value.
+  cursor_client->SetCursor(ui::Cursor(ui::mojom::CursorType::kPointer));
+  ASSERT_EQ(ui::mojom::CursorType::kPointer, cursor_client->GetCursor().type());
+  generator.MoveMouseTo(point_over_surface + gfx::Vector2d(1, 1));
+  RunUntilInputProcessed(iframe_->GetRenderWidgetHost());
+  EXPECT_EQ(ui::mojom::CursorType::kIBeam, cursor_client->GetCursor().type());
+}
+#endif  // defined(USE_AURA) && !BUILDFLAG(IS_CASTOS)
 
 INSTANTIATE_TEST_SUITE_P(All,
                          UnboundedElementCursorBrowserTest,
