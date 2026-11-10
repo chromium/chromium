@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_ASH_MULTI_USER_MULTI_USER_UTIL_H_
 #define CHROME_BROWSER_UI_ASH_MULTI_USER_MULTI_USER_UTIL_H_
 
-#include <string>
-
 class AccountId;
 class Profile;
 
@@ -19,14 +17,8 @@ namespace multi_user_util {
 // Get the user id from a given profile.
 AccountId GetAccountIdFromProfile(const Profile* profile);
 
-// Get the user id from an email address.
-AccountId GetAccountIdFromEmail(std::string_view email);
-
 // Get a profile for a given user id.
 Profile* GetProfileFromAccountId(const AccountId& account_id);
-
-// Get a profile for a |window|. Returns NULL if window belongs to no profile.
-Profile* GetProfileFromWindow(aura::Window* window);
 
 // Check if the given profile is from the currently active user. Note that since
 // only Chrome OS has the concept of an active user, only Chrome OS can ever

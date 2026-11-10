@@ -23,7 +23,6 @@ static_library("multi_user") {
     "//chrome/browser/ash/app_restore",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc/auth",
-    "//chrome/browser/ash/arc/boot_phase_monitor",
     "//chrome/browser/ash/arc/notification",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/floating_workspace:utils",
@@ -44,7 +43,6 @@ static_library("multi_user") {
   allow_circular_includes_from = [
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/arc",
-    "//chrome/browser/ash/arc/boot_phase_monitor",
     "//chrome/browser/ash/arc/notification",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/system_web_apps/apps",
@@ -56,7 +54,6 @@ source_set("unit_tests") {
 
   sources = [
     "multi_user_context_menu_chromeos_unittest.cc",
-    "multi_user_util_chromeos_unittest.cc",
     "multi_user_window_manager_browser_adaptor_unittest.cc",
   ]
 
@@ -70,7 +67,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/settings",
-    "//chrome/browser/signin",
     "//chrome/browser/ui/ash/new_window",
     "//chrome/browser/ui/ash/session",
     "//chrome/test:test_support",

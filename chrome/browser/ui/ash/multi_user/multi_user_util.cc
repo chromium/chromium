@@ -10,7 +10,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_manager.h"
-#include "google_apis/gaia/gaia_auth_util.h"
 
 namespace multi_user_util {
 
@@ -22,30 +21,10 @@ AccountId GetAccountIdFromProfile(const Profile* profile) {
   return user ? user->GetAccountId() : EmptyAccountId();
 }
 
-AccountId GetAccountIdFromEmail(std::string_view email) {
-  // |email| and profile name could be empty if not yet logged in or guest mode.
-  return email.empty() ? EmptyAccountId()
-                       : AccountId::FromUserEmail(gaia::CanonicalizeEmail(
-                             gaia::SanitizeEmail(email)));
-}
-
 Profile* GetProfileFromAccountId(const AccountId& account_id) {
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(account_id);
   return user ? ash::ProfileHelper::Get()->GetProfileByUser(user) : nullptr;
-}
-
-Profile* GetProfileFromWindow(aura::Window* window) {
-  auto* multi_user_window_manager =
-      ash::Shell::Get()->multi_user_window_manager();
-  // We might come here before the helper got created - or in a unit test.
-  if (!multi_user_window_manager) {
-    // TODO(crbug.com/444572622): this should be unittest only now.
-    return nullptr;
-  }
-  const AccountId account_id =
-      multi_user_window_manager->GetUserPresentingWindow(window);
-  return account_id.is_valid() ? GetProfileFromAccountId(account_id) : nullptr;
 }
 
 bool IsProfileFromActiveUser(Profile* profile) {
