@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -55,6 +56,7 @@
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/test/sk_gmock_support.h"
 
@@ -627,6 +629,74 @@ TEST_F(ManifestSilentUpdateCommandTest, ShortcutsMenuItemInfosUpdatedSilently) {
               BucketsAre(base::Bucket(
                   ManifestSilentUpdateCheckResult::kAppSilentlyUpdated,
                   /*count=*/1)));
+}
+
+TEST_F(ManifestSilentUpdateCommandTest,
+       LegacyNonSquareShortcutIconOnDiskNormalizedOnSilentUpdate) {
+  SetupBasicInstallablePageState();
+  const GURL kShortcutIconUrl("https://example.com/path/shortcut_icon.png");
+  {
+    blink::Manifest::ImageResource shortcut_icon;
+    shortcut_icon.src = kShortcutIconUrl;
+    shortcut_icon.sizes = {{192, 192}};
+    shortcut_icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
+    web_contents_manager().GetOrCreateIconState(kShortcutIconUrl).bitmaps = {
+        gfx::test::CreateBitmap(192, 192, SK_ColorBLUE)};
+
+    blink::Manifest::ShortcutItem shortcut;
+    shortcut.name = u"Shortcut 1";
+    shortcut.url = GURL("https://www.foo.bar/web_apps/shortcut1");
+    shortcut.icons = {shortcut_icon};
+    UpdatePageManifest([&](blink::Manifest::Builder& builder) {
+      builder.SetShortcuts({std::move(shortcut)});
+    });
+  }
+
+  webapps::AppId app_id = test::InstallForWebContents(
+      profile(), web_contents(),
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
+
+  // Simulate a legacy profile state (prior to crrev.com/c/8545991) by
+  // overwriting the installed shortcut icon with a non-square PNG.
+  base::FilePath shortcut_icon_file =
+      GetManifestResourcesDirectoryForApp(GetWebAppsRootDirectory(profile()),
+                                          app_id)
+          .AppendASCII("Shortcuts Menu Icons")
+          .AppendASCII("0")
+          .AppendASCII("192.png");
+  ASSERT_TRUE(file_utils().PathExists(shortcut_icon_file));
+  std::optional<std::vector<uint8_t>> non_square_png =
+      gfx::PNGCodec::EncodeBGRASkBitmap(
+          gfx::test::CreateBitmap(192, 193, SK_ColorRED),
+          /*discard_transparency=*/false);
+  ASSERT_TRUE(non_square_png.has_value());
+  ASSERT_TRUE(file_utils().WriteFile(shortcut_icon_file, *non_square_png));
+
+  const GURL new_note_url("https://www.foo.bar/web_apps/new_note_new");
+  blink::Manifest::NoteTaking note_taking;
+  note_taking.new_note_url = new_note_url;
+  UpdatePageManifest([&](blink::Manifest::Builder& builder) {
+    builder.SetNoteTaking(std::move(note_taking));
+  });
+
+  EXPECT_EQ(RunManifestUpdateAndGetResult(),
+            ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
+  EXPECT_EQ(provider()
+                .registrar_unsafe()
+                .GetAppById(app_id)
+                ->note_taking_new_note_url(),
+            new_note_url);
+
+  // Reads through WebAppIconManager normalize icons, so only the raw file
+  // shows what the silent update wrote.
+  std::string updated_icon_data;
+  ASSERT_TRUE(
+      file_utils().ReadFileToString(shortcut_icon_file, &updated_icon_data));
+  SkBitmap updated_icon =
+      gfx::PNGCodec::Decode(base::as_byte_span(updated_icon_data));
+  ASSERT_FALSE(updated_icon.drawsNothing());
+  EXPECT_EQ(updated_icon.width(), 192);
+  EXPECT_EQ(updated_icon.height(), 192);
 }
 
 TEST_F(ManifestSilentUpdateCommandTest, ShareTargetUpdatedSilently) {

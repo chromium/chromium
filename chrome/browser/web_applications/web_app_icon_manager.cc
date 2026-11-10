@@ -32,7 +32,6 @@
 #include "base/hash/hash.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
@@ -57,6 +56,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/manifest_icon_downloader.h"
 #include "content/public/common/content_features.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
@@ -472,7 +472,7 @@ base::FilePath GetManifestResourcesShortcutsMenuIconFileName(
     const webapps::AppId& app_id,
     IconPurpose purpose,
     int index,
-    int icon_size_px) {
+    SquareSizePx icon_size_px) {
   const base::FilePath manifest_shortcuts_menu_icons_dir =
       GetManifestResourcesDirectoryForApp(web_apps_directory, app_id)
           .Append(GetAppShortcutsMenuIconsRelativeDirectory(purpose));
@@ -501,6 +501,32 @@ base::FilePath GetIconFilePathFromReadConfiguration(
   }
 }
 
+// Decodes `icon_data` and returns a bitmap whose dimensions are
+// `expected_size_px x expected_size_px`. Legacy on-disk icons written before
+// https://crrev.com/c/8545991 may be non-square; those are padded to the
+// expected square size so downstream callers that rewrite icons via
+// WriteIconsJob::EncodeAndWriteIcon preserve the
+// `size == width() == height()` invariant.
+TypedResult<SkBitmap> DecodeAndEnsureSquareIcon(
+    base::span<const uint8_t> icon_data,
+    SquareSizePx expected_size_px,
+    const base::FilePath& icon_file) {
+  CHECK_GT(expected_size_px, 0);
+
+  TypedResult<SkBitmap> result;
+  result.value = gfx::PNGCodec::Decode(icon_data);
+  if (result.value.drawsNothing()) {
+    return {.error_log = {CreateError({"Could not decode icon data for file: ",
+                                       icon_file.AsUTF8Unsafe()})}};
+  }
+  if (result.value.width() != expected_size_px ||
+      result.value.height() != expected_size_px) {
+    result.value = content::ManifestIconDownloader::PadIconToSquare(
+        result.value, expected_size_px);
+  }
+  return result;
+}
+
 // Performs blocking I/O. May be called on another thread.
 // Returns empty SkBitmap if any errors occurred.
 TypedResult<SkBitmap> ReadIconBlocking(scoped_refptr<FileUtilsWrapper> utils,
@@ -510,21 +536,15 @@ TypedResult<SkBitmap> ReadIconBlocking(scoped_refptr<FileUtilsWrapper> utils,
   TRACE_EVENT0("ui", "web_app_icon_manager::ReadIconBlocking");
   base::FilePath icon_file = GetIconFilePathFromReadConfiguration(
       web_apps_directory, icon_id, read_configuration);
-  auto icon_data = base::MakeRefCounted<base::RefCountedString>();
-  if (!utils->ReadFileToString(icon_file, &icon_data->as_string())) {
+  std::string icon_data;
+  if (!utils->ReadFileToString(icon_file, &icon_data)) {
     return {.error_log = {CreateError(
                 {"Could not read icon file: ", icon_file.AsUTF8Unsafe()},
                 read_configuration == ReadConfiguration::kTrustedIcons)}};
   }
 
-  TypedResult<SkBitmap> result;
-  result.value = gfx::PNGCodec::Decode(*icon_data);
-  if (result.value.isNull()) {
-    return {.error_log = {CreateError({"Could not decode icon data for file: ",
-                                       icon_file.AsUTF8Unsafe()})}};
-  }
-
-  return result;
+  return DecodeAndEnsureSquareIcon(base::as_byte_span(icon_data), icon_id.size,
+                                   icon_file);
 }
 
 // Performs blocking I/O. May be called on another thread.
@@ -557,7 +577,7 @@ TypedResult<SkBitmap> ReadShortcutsMenuIconBlocking(
     const webapps::AppId& app_id,
     IconPurpose purpose,
     int index,
-    int icon_size_px) {
+    SquareSizePx icon_size_px) {
   TRACE_EVENT0("ui", "web_app_icon_manager::ReadShortcutsMenuIconBlocking");
   base::FilePath icon_file = GetManifestResourcesShortcutsMenuIconFileName(
       web_apps_directory, app_id, purpose, index, icon_size_px);
@@ -569,14 +589,8 @@ TypedResult<SkBitmap> ReadShortcutsMenuIconBlocking(
                 {"Could not read icon file: ", icon_file.AsUTF8Unsafe()})}};
   }
 
-  TypedResult<SkBitmap> result;
-  result.value = gfx::PNGCodec::Decode(base::as_byte_span(icon_data));
-  if (result.value.isNull()) {
-    return {.error_log = {CreateError({"Could not decode icon data for file: ",
-                                       icon_file.AsUTF8Unsafe()})}};
-  }
-
-  return result;
+  return DecodeAndEnsureSquareIcon(base::as_byte_span(icon_data), icon_size_px,
+                                   icon_file);
 }
 
 // Performs blocking I/O. May be called on another thread.

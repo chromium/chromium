@@ -40,6 +40,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/resource/resource_scale_factor.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/test/sk_gmock_support.h"
@@ -814,6 +815,75 @@ TEST_F(WebAppIconManagerTest, WriteAndReadAllShortcutsMenuIcons) {
       }
     }
   }
+}
+
+TEST_F(WebAppIconManagerTest,
+       ReadAllShortcutsMenuIconsPadsLegacyNonSquareIconOnDisk) {
+  auto web_app = test::CreateWebApp();
+  const webapps::AppId app_id = web_app->app_id();
+
+  IconSizes icon_sizes;
+  icon_sizes.any = {icon_size::k128};
+  web_app->SetShortcutsMenuInfo(
+      CreateShortcutsMenuItemInfos(/*num_menu_items=*/1, icon_sizes));
+  AddAppToRegistry(std::move(web_app));
+
+  const base::FilePath shortcut_icon_dir =
+      GetManifestResourcesDirectoryForApp(GetWebAppsRootDirectory(profile()),
+                                          app_id)
+          .AppendASCII("Shortcuts Menu Icons")
+          .AppendASCII("0");
+  ASSERT_TRUE(file_utils().CreateDirectory(shortcut_icon_dir));
+
+  SkBitmap non_square_bitmap = gfx::test::CreateBitmap(
+      icon_size::k128, icon_size::k128 + 1, SK_ColorRED);
+  std::optional<std::vector<uint8_t>> encoded_png =
+      gfx::PNGCodec::EncodeBGRASkBitmap(non_square_bitmap,
+                                        /*discard_transparency=*/false);
+  ASSERT_TRUE(encoded_png.has_value());
+  ASSERT_TRUE(file_utils().WriteFile(shortcut_icon_dir.AppendASCII("128.png"),
+                                     *encoded_png));
+
+  ShortcutsMenuIconBitmaps shortcuts_menu_icons =
+      ReadAllShortcutsMenuIcons(app_id);
+  ASSERT_EQ(1u, shortcuts_menu_icons.size());
+  auto it = shortcuts_menu_icons[0].any.find(icon_size::k128);
+  ASSERT_NE(it, shortcuts_menu_icons[0].any.end());
+  EXPECT_EQ(icon_size::k128, it->second.width());
+  EXPECT_EQ(icon_size::k128, it->second.height());
+
+  base::test::TestFuture<bool> write_future;
+  icon_manager().WriteData(app_id, {}, {}, std::move(shortcuts_menu_icons), {},
+                           write_future.GetCallback());
+  EXPECT_TRUE(write_future.Get());
+}
+
+TEST_F(WebAppIconManagerTest, ReadIconsPadsLegacyNonSquareIconOnDisk) {
+  auto web_app = test::CreateWebApp();
+  const webapps::AppId app_id = web_app->app_id();
+  web_app->SetDownloadedIconSizes(IconPurpose::ANY, {icon_size::k128});
+  AddAppToRegistry(std::move(web_app));
+
+  const base::FilePath icons_dir = GetAppIconsAnyDir(profile(), app_id);
+  ASSERT_TRUE(file_utils().CreateDirectory(icons_dir));
+
+  std::optional<std::vector<uint8_t>> encoded_png =
+      gfx::PNGCodec::EncodeBGRASkBitmap(
+          gfx::test::CreateBitmap(icon_size::k128, icon_size::k64, SK_ColorRED),
+          /*discard_transparency=*/false);
+  ASSERT_TRUE(encoded_png.has_value());
+  ASSERT_TRUE(
+      file_utils().WriteFile(icons_dir.AppendASCII("128.png"), *encoded_png));
+
+  const PurposeAndBitmap result =
+      ReadSmallestIcon(app_id, {IconPurpose::ANY}, icon_size::k128);
+  EXPECT_EQ(IconPurpose::ANY, result.purpose);
+  EXPECT_EQ(icon_size::k128, result.bitmap.width());
+  EXPECT_EQ(icon_size::k128, result.bitmap.height());
+  // The source is centered rather than stretched, leaving transparent bands.
+  EXPECT_EQ(SK_ColorRED,
+            result.bitmap.getColor(icon_size::k64, icon_size::k64));
+  EXPECT_EQ(SK_ColorTRANSPARENT, result.bitmap.getColor(0, 0));
 }
 
 TEST_F(WebAppIconManagerTest, WriteNonProductIconsEmptyMaps) {
