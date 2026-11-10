@@ -361,6 +361,9 @@ class CC_PAINT_EXPORT PaintOpReader {
 
   // Returns the size of the read record, 0 if error.
   size_t Read(std::optional<PaintRecord>* record);
+  // Same, but deserializes the record with `options` instead of `options_`.
+  size_t Read(std::optional<PaintRecord>* record,
+              const PaintOp::DeserializeOptions& options);
 
   void Read(SkRegion* region);
   base::span<uint8_t> CopyScratchSpace(size_t bytes);
