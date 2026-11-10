@@ -9115,11 +9115,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "side-ui-allow-pause",
-    "owners": ["nemco@google.com"],
-    "expiry_milestone": 160
-  },
-  {
     "name": "signin-button-profile-menu",
     "owners": [
       "crowleso@google.com",

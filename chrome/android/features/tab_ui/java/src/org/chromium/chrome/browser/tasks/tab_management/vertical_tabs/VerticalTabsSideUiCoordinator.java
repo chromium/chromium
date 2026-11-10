@@ -26,7 +26,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListCoordinator.ExternalDragObserver;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
@@ -220,7 +219,6 @@ public class VerticalTabsSideUiCoordinator
      * pause. Only the originating window is frozen: it is the one holding the drag state.
      */
     private void onExternalDragStarted() {
-        if (!ChromeFeatureList.sSideUiAllowPause.isEnabled()) return;
         // Pause first so any in-flight transition settles at its end state before the rail's
         // contents are frozen.
         mSideUiCoordinator.pauseSideUiUpdates(getSideUiId());
@@ -238,7 +236,6 @@ public class VerticalTabsSideUiCoordinator
      * update is deferred until that dispatch has unwound.
      */
     private void onExternalDragEnded() {
-        if (!ChromeFeatureList.sSideUiAllowPause.isEnabled()) return;
         PostTask.postTask(TaskTraits.UI_DEFAULT, this::unfreezeIfNoExternalDrag);
     }
 
