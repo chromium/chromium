@@ -176,6 +176,12 @@
       { start: "2022-03-09", domain: "microsoft.com" },
     ]
   },
+  "tvignatti@igalia.com": {
+    affiliations: [
+      { start: "2021-08-09", domain: "igalia.com" },
+      { start: "2011-05-23", domain: "intel.com" },
+    ]
+  },
   "yoavweiss@chromium.org": {
     affiliations: [
       { start: "2024-01-07", domain: "shopify.com"},
