@@ -79,6 +79,7 @@ void GrantReadAccessOnUIThread(
         security_policy_handle,
     const base::FilePath& platform_path) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  CHECK(!platform_path.empty());
 
   // It is only possible to grant new permissions if the RenderProcessHost still
   // exists by the time this task runs. If it does exist and doesn't yet have
@@ -104,13 +105,18 @@ void GetPlatformPathOnFileThread(
   CHECK(context->default_file_task_runner()->RunsTasksInCurrentSequence(),
         base::NotFatalUntil::M159);
 
-  if (!can_read_filesystem_file) {
+  if (!can_read_filesystem_file || context->is_incognito()) {
     std::move(callback).Run(base::FilePath());
     return;
   }
 
   base::FilePath platform_path;
-  context->operation_runner()->SyncGetPlatformPath(url, &platform_path);
+  if (context->operation_runner()->SyncGetPlatformPath(url, &platform_path) !=
+          base::File::FILE_OK ||
+      platform_path.empty()) {
+    std::move(callback).Run(base::FilePath());
+    return;
+  }
 
   GetUIThreadTaskRunner({})->PostTaskAndReply(
       FROM_HERE,

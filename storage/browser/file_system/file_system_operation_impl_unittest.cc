@@ -48,6 +48,7 @@
 #include "storage/browser/test/mock_quota_manager_proxy.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "storage/browser/test/sandbox_file_system_test_helper.h"
+#include "storage/browser/test/test_file_system_context.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -1351,6 +1352,59 @@ TEST_F(FileSystemOperationImplTest,
       base::File::FILE_OK,
       Copy(src_file, dest_file, FileSystemOperation::CopyOrMoveOptionSet()));
   EXPECT_EQ(0, GetFileSize("dest"));
+}
+
+TEST_F(FileSystemOperationImplTest, TestSyncGetPlatformPath) {
+  FileSystemURL dir(CreateDirectory("dir"));
+  FileSystemURL file(CreateFile("dir/file"));
+  FileSystemURL nonexistent = URLForPath("dir/nonexistent");
+
+  base::FilePath platform_path;
+  EXPECT_EQ(base::File::FILE_OK,
+            operation_runner()->SyncGetPlatformPath(file, &platform_path));
+  EXPECT_EQ(PlatformPath("dir/file"), platform_path);
+
+  base::FilePath dir_platform_path(FILE_PATH_LITERAL("stale"));
+  EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND,
+            operation_runner()->SyncGetPlatformPath(dir, &dir_platform_path));
+  EXPECT_TRUE(dir_platform_path.empty());
+
+  base::FilePath nonexistent_platform_path(FILE_PATH_LITERAL("stale"));
+  EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND,
+            operation_runner()->SyncGetPlatformPath(
+                nonexistent, &nonexistent_platform_path));
+  EXPECT_TRUE(nonexistent_platform_path.empty());
+}
+
+TEST_F(FileSystemOperationImplTest, TestSyncGetPlatformPathIncognito) {
+  // Share the same base directory as the regular test fixture so an on-disk
+  // file exists at the matching numbered slot.
+  FileSystemURL regular_file(CreateFile("file"));
+  ASSERT_TRUE(base::PathExists(PlatformPath("file")));
+
+  scoped_refptr<FileSystemContext> incognito_context =
+      CreateIncognitoFileSystemContextForTesting(
+          base::SingleThreadTaskRunner::GetCurrentDefault(),
+          base::SingleThreadTaskRunner::GetCurrentDefault(),
+          quota_manager_proxy(), base_.GetPath().AppendASCII("filesystem"));
+  SandboxFileSystemTestHelper incognito_file_system;
+  incognito_file_system.SetUp(incognito_context);
+
+  FileSystemURL incognito_file =
+      incognito_file_system.CreateURLFromUTF8("file");
+  EXPECT_EQ(base::File::FILE_OK, AsyncFileTestHelper::CreateFile(
+                                     incognito_context.get(), incognito_file));
+  EXPECT_TRUE(
+      AsyncFileTestHelper::FileExists(incognito_context.get(), incognito_file,
+                                      AsyncFileTestHelper::kDontCheckSize));
+
+  base::FilePath platform_path(FILE_PATH_LITERAL("stale"));
+  EXPECT_EQ(base::File::FILE_ERROR_INVALID_OPERATION,
+            incognito_file_system.operation_runner()->SyncGetPlatformPath(
+                incognito_file, &platform_path));
+  EXPECT_TRUE(platform_path.empty());
+
+  incognito_file_system.TearDown();
 }
 
 }  // namespace storage
