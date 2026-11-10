@@ -143,6 +143,11 @@ UnboundedSurfaceWindowMac::~UnboundedSurfaceWindowMac() {
   display_ca_layer_tree_.reset();
   root_layer_.reset();
 
+  if (click_event_tap_) {
+    [NSEvent removeMonitor:click_event_tap_];
+    click_event_tap_ = nil;
+  }
+
   if (window_) {
     UnboundedNSView* view =
         base::apple::ObjCCast<UnboundedNSView>([window_ contentView]);
@@ -268,6 +273,51 @@ void UnboundedSurfaceWindowMac::InitWindow(const gfx::Rect& bounds_in_screen) {
     }
   }
   [window_ orderFront:nil];
+  // Dismiss when clicking anywhere in the application outside `window_` (such
+  // as the browser tab strip, toolbar, or another web contents) that does not
+  // route through the owning `RenderWidgetHostImpl`. If a click lands on the
+  // owning `RenderWidgetHostViewCocoa` outside `window_`, both this monitor and
+  // `RenderWidgetHostImpl::ForwardMouseEventWithLatencyInfo()` call
+  // `Dismiss()`; that is safe because
+  // `UnboundedSurfaceHostImpl::OnDismissRequested()` is idempotent while
+  // `dismiss_pending_` is true, and if `beforetoggle` is canceled,
+  // `click_event_tap_` remains installed for subsequent clicks.
+  base::WeakPtr<UnboundedSurfaceWindow> weak_this = GetWeakPtr();
+  base::WeakPtr<RenderWidgetHostViewBase> weak_parent_view = parent_view_;
+  click_event_tap_ = [NSEvent
+      addLocalMonitorForEventsMatchingMask:(NSEventMaskLeftMouseDown |
+                                            NSEventMaskRightMouseDown |
+                                            NSEventMaskOtherMouseDown)
+                                   handler:^NSEvent*(NSEvent* event) {
+                                     if (!weak_this) {
+                                       return event;
+                                     }
+                                     if (event.window ==
+                                         weak_this->GetNativeWindow()
+                                             .GetNativeNSWindow()) {
+                                       return event;
+                                     }
+                                     // Avoid dismissing when clicking inside
+                                     // a child popup window (such as an
+                                     // <input type=date> picker) opened from
+                                     // the owning RenderWidgetHostView.
+                                     auto* parent_mac =
+                                         static_cast<RenderWidgetHostViewMac*>(
+                                             weak_parent_view.get());
+                                     if (parent_mac &&
+                                         parent_mac->PopupChildHostView()) {
+                                       NSView* popup_view =
+                                           parent_mac->PopupChildHostView()
+                                               ->GetInProcessNSView();
+                                       if (popup_view &&
+                                           event.window ==
+                                               [popup_view window]) {
+                                         return event;
+                                       }
+                                     }
+                                     weak_this->Dismiss();
+                                     return event;
+                                   }];
 }
 
 void UnboundedSurfaceWindowMac::SetBounds(const gfx::Rect& bounds_in_screen) {
