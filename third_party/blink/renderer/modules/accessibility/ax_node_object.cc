@@ -3568,9 +3568,7 @@ AccessibilityExpanded AXNodeObject::IsExpanded() const {
             DynamicTo<HTMLElement>(html_element->commandForElement())) {
       CommandEventType command = command_for_element->GetCommandEventType(
           html_element->command(), html_element->GetExecutionContext());
-      bool is_popover_command =
-          command_for_element->IsValidBuiltinPopoverCommand(command);
-      if (command_for_element && is_popover_command &&
+      if (command_for_element->IsValidBuiltinPopoverCommand(command) &&
           !element->IsDescendantOrShadowDescendantOf(command_for_element)) {
         return command_for_element->popoverOpen() ? kExpandedExpanded
                                                   : kExpandedCollapsed;
@@ -3599,12 +3597,17 @@ AccessibilityExpanded AXNodeObject::IsExpanded() const {
 
   // An interest invoker is expanded while its rich hint is open. As with
   // popovertarget, this is not exposed when the invoker is inside the popover.
-  // See
+  // It is also not exposed on popover invokers, even when inside their popover,
+  // since they only expose the state of the popover they invoke. Nor is it
+  // exposed on links, whose activation navigates rather than expanding
+  // anything. See
   // https://open-ui.org/components/interest-invokers.explainer/#rich-hints-aka-hovercards-or-other
-  if (AXObject* rich_hint = GetRichHintTargetPopover()) {
-    auto* popover = To<HTMLElement>(rich_hint->GetElement());
-    if (!element->IsDescendantOrShadowDescendantOf(popover)) {
-      return popover->popoverOpen() ? kExpandedExpanded : kExpandedCollapsed;
+  if (!IsPopoverInvoker() && !element->IsLink() && !IsLink()) {
+    if (AXObject* rich_hint = GetRichHintTargetPopover()) {
+      auto* popover = To<HTMLElement>(rich_hint->GetElement());
+      if (!element->IsDescendantOrShadowDescendantOf(popover)) {
+        return popover->popoverOpen() ? kExpandedExpanded : kExpandedCollapsed;
+      }
     }
   }
 

@@ -1,0 +1,34 @@
+[document web]
+++[tool tip] details-for=[link,link,link,link,link,push button,push button,push button,push button]
+++++[push button] name='Rich open'
+++[panel] details-for=[push button,push button,push button]
+++++[static] name='Pop open'
+++[section]
+++++[static] name='Not a popover'
+++[push button] name='Interest expanded' expandable expanded details=[tool tip] details-from:interest-for has-interest-for:true
+++[push button] name='Interest collapsed' expandable has-interest-for:true
+++[push button] name='Popovertarget collapsed' expandable has-interest-for:true
+++[push button] name='Popovertarget expanded' expandable expanded details=[panel] details-from:popover-target has-interest-for:true
+++[push button] name='Commandfor toggle collapsed' expandable has-interest-for:true
+++[push button] name='Commandfor show expanded' expandable expanded details=[panel] details-from:command-for has-interest-for:true
+++[push button] name='Commandfor hide expanded' expandable expanded details=[panel] details-from:command-for has-interest-for:true
+++[panel]
+++++[push button] name='Popovertarget inside popover' has-interest-for:true
+++++[push button] name='Commandfor inside popover' has-interest-for:true
+++[push button] name='Commandfor dialog interest expanded' expandable expanded details=[tool tip] details-from:interest-for has-interest-for:true
+++[push button] name='Non-popover target interest expanded' expandable expanded details=[tool tip] details-from:interest-for has-interest-for:true
+++[link] name='Link open' details=[tool tip] details-from:interest-for has-interest-for:true
+++++[static] name='Link open'
+++[static] name=' '
+++[link] name='Link closed' has-interest-for:true
+++++[static] name='Link closed'
+++[static] name=' '
+++[push button] name='Link with button role' details=[tool tip] details-from:interest-for has-interest-for:true
+++[link] name='Button with link role' details=[tool tip] details-from:interest-for has-interest-for:true
+++++[static] name='Button with link role'
+++[document frame]
+++++[link] name='SVG link' details=[tool tip] details-from:interest-for has-interest-for:true
+++[image map] name='pipe'
+++++[link] name='Area link' details=[tool tip] details-from:interest-for has-interest-for:true
+++[link] name='Link with aria-expanded' expandable details=[tool tip] details-from:interest-for has-interest-for:true
+++++[static] name='Link with aria-expanded'

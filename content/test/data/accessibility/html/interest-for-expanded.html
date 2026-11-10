@@ -1,0 +1,75 @@
+<!--
+@MAC-ALLOW:AXExpanded
+@WIN-ALLOW:details-from*
+@WIN-ALLOW:EXPANDED*
+@WIN-ALLOW:COLLAPSED*
+@WIN-ALLOW:has-interest-for*
+@BLINK-ALLOW:hasInterestFor*
+@BLINK-ALLOW:expanded*
+@BLINK-ALLOW:collapsed*
+@AURALINUX-ALLOW:expandable*
+@AURALINUX-ALLOW:expanded*
+@AURALINUX-ALLOW:has-interest-for*
+-->
+<!DOCTYPE html>
+
+<!-- Rich hints, one open and one closed. -->
+<div popover="manual" id="rich-open"><button>Rich open</button></div>
+<div popover="manual" id="rich-closed"><button>Rich closed</button></div>
+
+<!-- Popovers invoked via popovertarget or commandfor. -->
+<div popover="manual" id="pop-open">Pop open</div>
+<div popover="manual" id="pop-closed">Pop closed</div>
+<dialog id="dialog">Dialog</dialog>
+<div id="not-popover">Not a popover</div>
+
+<!-- Interest invokers alone: expanded state and details relation come from the
+     rich hint. -->
+<button interestfor="rich-open">Interest expanded</button>
+<button interestfor="rich-closed">Interest collapsed</button>
+
+<!-- popovertarget takes precedence over interestfor, for both the expanded
+     state and the details relation. -->
+<button popovertarget="pop-closed" interestfor="rich-open">Popovertarget collapsed</button>
+<button popovertarget="pop-open" interestfor="rich-closed">Popovertarget expanded</button>
+
+<!-- commandfor with a popover command takes precedence over interestfor, for
+     both the expanded state and the details relation. -->
+<button commandfor="pop-closed" command="toggle-popover" interestfor="rich-open">Commandfor toggle collapsed</button>
+<button commandfor="pop-open" command="show-popover" interestfor="rich-closed">Commandfor show expanded</button>
+<button commandfor="pop-open" command="hide-popover" interestfor="rich-closed">Commandfor hide expanded</button>
+
+<!-- A popover invoker inside its own popover exposes neither an expanded state
+     nor a details relation, including from its interestfor. -->
+<div popover="manual" id="container-pop">
+  <button popovertarget="container-pop" interestfor="rich-open">Popovertarget inside popover</button>
+  <button commandfor="container-pop" command="hide-popover" interestfor="rich-open">Commandfor inside popover</button>
+</div>
+
+<!-- Non-popover commands and non-popover targets do not override
+     interestfor. -->
+<button commandfor="dialog" command="show-modal" interestfor="rich-open">Commandfor dialog interest expanded</button>
+<button popovertarget="not-popover" interestfor="rich-open">Non-popover target interest expanded</button>
+
+<!-- Links never expose expanded state from interestfor, but still get the
+     details relation to an open rich hint. -->
+<a href="#" interestfor="rich-open">Link open</a>
+<a href="#" interestfor="rich-closed">Link closed</a>
+<a href="#" role="button" interestfor="rich-open">Link with button role</a>
+<button role="link" interestfor="rich-open">Button with link role</button>
+<svg width="20" height="20">
+  <a href="#" interestfor="rich-open" aria-label="SVG link"><rect width="20" height="20"/></a>
+</svg>
+<img src="pipe.jpg" width="20" height="20" alt="pipe" usemap="#pipe">
+<map name="pipe">
+  <area shape="rect" coords="0,0,20,20" alt="Area link" href="#" interestfor="rich-open">
+</map>
+
+<!-- Authored aria-expanded on a link is still exposed. -->
+<a href="#" interestfor="rich-open" aria-expanded="false">Link with aria-expanded</a>
+
+<script>
+  for (const id of ['rich-open', 'pop-open', 'container-pop']) {
+    document.getElementById(id).showPopover();
+  }
+</script>

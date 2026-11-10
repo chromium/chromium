@@ -1,0 +1,74 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++tooltip ispopup=manual
+++++++++button name='Rich open'
+++++++++++staticText name='Rich open'
+++++++++++++inlineTextBox name='Rich open'
+++++++genericContainer ignored invisible
+++++++++button ignored invisible
+++++++++++staticText ignored invisible
+++++++group ispopup=manual
+++++++++staticText name='Pop open'
+++++++++++inlineTextBox name='Pop open'
+++++++genericContainer
+++++++++staticText name='Not a popover'
+++++++++++inlineTextBox name='Not a popover'
+++++++button expanded hasInterestFor name='Interest expanded' detailsIds=tooltip
+++++++++staticText name='Interest expanded'
+++++++++++inlineTextBox name='Interest expanded'
+++++++button collapsed hasInterestFor name='Interest collapsed'
+++++++++staticText name='Interest collapsed'
+++++++++++inlineTextBox name='Interest collapsed'
+++++++button collapsed hasInterestFor name='Popovertarget collapsed'
+++++++++staticText name='Popovertarget collapsed'
+++++++++++inlineTextBox name='Popovertarget collapsed'
+++++++button expanded hasInterestFor name='Popovertarget expanded' detailsIds=group
+++++++++staticText name='Popovertarget expanded'
+++++++++++inlineTextBox name='Popovertarget expanded'
+++++++button collapsed hasInterestFor name='Commandfor toggle collapsed'
+++++++++staticText name='Commandfor toggle collapsed'
+++++++++++inlineTextBox name='Commandfor toggle collapsed'
+++++++button expanded hasInterestFor name='Commandfor show expanded' detailsIds=group
+++++++++staticText name='Commandfor show expanded'
+++++++++++inlineTextBox name='Commandfor show expanded'
+++++++button expanded hasInterestFor name='Commandfor hide expanded' detailsIds=group
+++++++++staticText name='Commandfor hide expanded'
+++++++++++inlineTextBox name='Commandfor hide expanded'
+++++++group ispopup=manual
+++++++++button hasInterestFor name='Popovertarget inside popover'
+++++++++++staticText name='Popovertarget inside popover'
+++++++++++++inlineTextBox name='Popovertarget inside popover'
+++++++++button hasInterestFor name='Commandfor inside popover'
+++++++++++staticText name='Commandfor inside popover'
+++++++++++++inlineTextBox name='Commandfor inside popover'
+++++++button expanded hasInterestFor name='Commandfor dialog interest expanded' detailsIds=tooltip
+++++++++staticText name='Commandfor dialog interest expanded'
+++++++++++inlineTextBox name='Commandfor dialog interest expanded'
+++++++button expanded hasInterestFor name='Non-popover target interest expanded' detailsIds=tooltip
+++++++++staticText name='Non-popover target interest expanded'
+++++++++++inlineTextBox name='Non-popover target interest expanded'
+++++++link hasInterestFor name='Link open' detailsIds=tooltip
+++++++++staticText name='Link open'
+++++++++++inlineTextBox name='Link open'
+++++++staticText name=' '
+++++++++inlineTextBox name=' '
+++++++link hasInterestFor name='Link closed'
+++++++++staticText name='Link closed'
+++++++++++inlineTextBox name='Link closed'
+++++++staticText name=' '
+++++++++inlineTextBox name=' '
+++++++button hasInterestFor name='Link with button role' detailsIds=tooltip
+++++++++staticText name='Link with button role'
+++++++++++inlineTextBox name='Link with button role'
+++++++link hasInterestFor name='Button with link role' detailsIds=tooltip
+++++++++staticText name='Button with link role'
+++++++++++inlineTextBox name='Button with link role'
+++++++svgRoot
+++++++++link hasInterestFor name='SVG link' detailsIds=tooltip
+++++++image name='pipe'
+++++++++link hasInterestFor name='Area link' detailsIds=tooltip
+++++++link collapsed hasInterestFor name='Link with aria-expanded' detailsIds=tooltip
+++++++++staticText name='Link with aria-expanded'
+++++++++++inlineTextBox name='Link with '
+++++++++++inlineTextBox name='aria-expanded'

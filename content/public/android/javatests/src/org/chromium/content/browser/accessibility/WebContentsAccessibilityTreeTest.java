@@ -2837,6 +2837,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_interestForExpanded() {
+        performHtmlTest("interest-for-expanded.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_isInteresting() {
         performHtmlTest("isInteresting.html");
     }

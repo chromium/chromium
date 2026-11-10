@@ -1,0 +1,32 @@
+android.webkit.WebView focusable focused
+++android.view.View role_description='tooltip'
+++++android.widget.Button clickable focusable interesting name='Rich open'
+++android.view.View interesting name='Pop open'
+++android.widget.TextView interesting name='Not a popover'
+++android.widget.Button clickable expanded focusable interesting name='Interest expanded' expanded_state=3
+++android.widget.Button clickable collapsed focusable interesting name='Interest collapsed' expanded_state=1
+++android.widget.Button clickable collapsed focusable interesting name='Popovertarget collapsed' expanded_state=1
+++android.widget.Button clickable expanded focusable interesting name='Popovertarget expanded' expanded_state=3
+++android.widget.Button clickable collapsed focusable interesting name='Commandfor toggle collapsed' expanded_state=1
+++android.widget.Button clickable expanded focusable interesting name='Commandfor show expanded' expanded_state=3
+++android.widget.Button clickable expanded focusable interesting name='Commandfor hide expanded' expanded_state=3
+++android.view.View
+++++android.widget.Button clickable focusable interesting name='Popovertarget inside popover'
+++++android.widget.Button clickable focusable interesting name='Commandfor inside popover'
+++android.widget.Button clickable expanded focusable interesting name='Commandfor dialog interest expanded' expanded_state=3
+++android.widget.Button clickable expanded focusable interesting name='Non-popover target interest expanded' expanded_state=3
+++android.view.View role_description='link' clickable focusable link interesting name='Link open'
+++++android.widget.TextView name='Link open'
+++android.widget.TextView name=' '
+++android.view.View role_description='link' clickable focusable link interesting name='Link closed'
+++++android.widget.TextView name='Link closed'
+++android.widget.TextView name=' '
+++android.widget.Button clickable focusable interesting name='Link with button role'
+++android.view.View role_description='link' clickable focusable link interesting name='Button with link role'
+++++android.widget.TextView name='Button with link role'
+++android.widget.Image
+++++android.view.View role_description='link' clickable focusable link interesting content_description='SVG link'
+++android.widget.Image content_description='pipe'
+++++android.view.View role_description='link' clickable focusable link interesting content_description='Area link'
+++android.view.View role_description='link' clickable collapsed focusable link interesting name='Link with aria-expanded' expanded_state=1
+++++android.widget.TextView name='Link with aria-expanded'

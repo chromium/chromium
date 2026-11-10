@@ -2684,21 +2684,6 @@ void AXObject::SerializeComputedDetailsRelation(
     return;
   }
 
-  // Add aria-details for an interest invoker while its rich hint is open.
-  if (rich_hint) {
-    auto* popover = To<HTMLElement>(rich_hint->GetElement());
-    if (popover->popoverOpen()) {
-      if (AXObject* details = GetPopoverForDetailsRelation(
-              *popover, /*exclude_plain_content=*/false)) {
-        node_data->AddIntListAttribute(
-            ax::mojom::blink::IntListAttribute::kDetailsIds,
-            {static_cast<int32_t>(details->AXObjectID())});
-        node_data->SetDetailsFrom(ax::mojom::blink::DetailsFrom::kInterestFor);
-        return;
-      }
-    }
-  }
-
   // Add aria-details for a command invoker.
   if (AXObject* command_for = GetCommandForElementForDetailsRelation()) {
     node_data->AddIntListAttribute(
@@ -2715,6 +2700,23 @@ void AXObject::SerializeComputedDetailsRelation(
         {static_cast<int32_t>(popover->AXObjectID())});
     node_data->SetDetailsFrom(ax::mojom::blink::DetailsFrom::kPopoverTarget);
     return;
+  }
+
+  // Add aria-details for an interest invoker while its rich hint is open. As
+  // with the expanded state (see AXNodeObject::IsExpanded()), this is never
+  // done for a popover invoker, which only relates to the popover it invokes.
+  if (rich_hint && !IsPopoverInvoker()) {
+    auto* popover = To<HTMLElement>(rich_hint->GetElement());
+    if (popover->popoverOpen()) {
+      if (AXObject* details = GetPopoverForDetailsRelation(
+              *popover, /*exclude_plain_content=*/false)) {
+        node_data->AddIntListAttribute(
+            ax::mojom::blink::IntListAttribute::kDetailsIds,
+            {static_cast<int32_t>(details->AXObjectID())});
+        node_data->SetDetailsFrom(ax::mojom::blink::DetailsFrom::kInterestFor);
+        return;
+      }
+    }
   }
 
   // Add aria-details for a scroll marker pseudo-element.
@@ -2823,6 +2825,23 @@ AXObject* AXObject::GetCommandForElementForDetailsRelation() const {
   const bool exclude_plain_content =
       command_for->PopoverType() == PopoverValueType::kHint;
   return GetPopoverForDetailsRelation(*command_for, exclude_plain_content);
+}
+
+bool AXObject::IsPopoverInvoker() const {
+  auto* html_element = DynamicTo<HTMLElement>(GetElement());
+  if (!html_element) {
+    return false;
+  }
+  if (auto* command_for =
+          DynamicTo<HTMLElement>(html_element->commandForElement())) {
+    CommandEventType command = command_for->GetCommandEventType(
+        html_element->command(), html_element->GetExecutionContext());
+    if (command_for->IsValidBuiltinPopoverCommand(command)) {
+      return true;
+    }
+  }
+  auto* form_control = DynamicTo<HTMLFormControlElement>(html_element);
+  return form_control && form_control->popoverTargetElement().popover;
 }
 
 // The target of an interest invoker is a rich hint if it is a popover whose

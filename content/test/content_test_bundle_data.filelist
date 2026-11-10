@@ -5788,6 +5788,13 @@ data/accessibility/html/interactive-controls-with-labels-expected-mac.txt
 data/accessibility/html/interactive-controls-with-labels-expected-uia-win.txt
 data/accessibility/html/interactive-controls-with-labels-expected-win.txt
 data/accessibility/html/interactive-controls-with-labels.html
+data/accessibility/html/interest-for-expanded-expected-android-external.txt
+data/accessibility/html/interest-for-expanded-expected-android.txt
+data/accessibility/html/interest-for-expanded-expected-auralinux.txt
+data/accessibility/html/interest-for-expanded-expected-blink.txt
+data/accessibility/html/interest-for-expanded-expected-mac.txt
+data/accessibility/html/interest-for-expanded-expected-win.txt
+data/accessibility/html/interest-for-expanded.html
 data/accessibility/html/interest-for-expected-auralinux.txt
 data/accessibility/html/interest-for-expected-blink.txt
 data/accessibility/html/interest-for-expected-win.txt

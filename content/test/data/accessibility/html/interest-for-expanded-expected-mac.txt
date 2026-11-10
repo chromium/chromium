@@ -1,0 +1,34 @@
+AXWebArea
+++AXGroup AXSubrole=AXUserInterfaceTooltip
+++++AXButton AXTitle='Rich open'
+++AXGroup AXSubrole=AXApplicationGroup
+++++AXStaticText AXValue='Pop open'
+++AXGroup
+++++AXStaticText AXValue='Not a popover'
+++AXButton AXExpanded=1 AXTitle='Interest expanded'
+++AXButton AXExpanded=0 AXTitle='Interest collapsed'
+++AXButton AXExpanded=0 AXTitle='Popovertarget collapsed'
+++AXButton AXExpanded=1 AXTitle='Popovertarget expanded'
+++AXButton AXExpanded=0 AXTitle='Commandfor toggle collapsed'
+++AXButton AXExpanded=1 AXTitle='Commandfor show expanded'
+++AXButton AXExpanded=1 AXTitle='Commandfor hide expanded'
+++AXGroup AXSubrole=AXApplicationGroup
+++++AXButton AXTitle='Popovertarget inside popover'
+++++AXButton AXTitle='Commandfor inside popover'
+++AXButton AXExpanded=1 AXTitle='Commandfor dialog interest expanded'
+++AXButton AXExpanded=1 AXTitle='Non-popover target interest expanded'
+++AXLink AXDescription='Link open' AXTitle='Link open'
+++++AXStaticText AXValue='Link open'
+++AXStaticText AXValue=' '
+++AXLink AXDescription='Link closed' AXTitle='Link closed'
+++++AXStaticText AXValue='Link closed'
+++AXStaticText AXValue=' '
+++AXButton AXTitle='Link with button role'
+++AXLink AXDescription='Button with link role' AXTitle='Button with link role'
+++++AXStaticText AXValue='Button with link role'
+++AXGroup
+++++AXLink AXDescription='SVG link' AXTitle='SVG link'
+++AXGroup AXDescription='pipe' AXTitle='pipe'
+++++AXLink AXDescription='Area link' AXTitle='Area link'
+++AXLink AXDescription='Link with aria-expanded' AXExpanded=0 AXTitle='Link with aria-expanded'
+++++AXStaticText AXValue='Link with aria-expanded'

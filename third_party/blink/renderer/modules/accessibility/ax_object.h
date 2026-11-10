@@ -988,6 +988,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // on an invoking element, if a details relationship should be set up.
   AXObject* GetCommandForElementForDetailsRelation() const;
 
+  // True if this element invokes a popover, either via `commandfor` with a
+  // popover command, or via `popovertarget`.
+  bool IsPopoverInvoker() const;
+
   // Returns the target of this element's `interestfor`, if that target is a
   // rich hint: a popover whose contents are not plain (see IsPlainContent()).
   // Returns null otherwise, including when the target is a plain hint, which

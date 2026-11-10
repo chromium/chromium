@@ -1,0 +1,34 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++ROLE_SYSTEM_TOOLTIP READONLY ispopup:manual
+++++ROLE_SYSTEM_PUSHBUTTON name='Rich open' FOCUSABLE
+++ROLE_SYSTEM_GROUPING ispopup:manual
+++++ROLE_SYSTEM_STATICTEXT name='Pop open'
+++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_STATICTEXT name='Not a popover'
+++ROLE_SYSTEM_PUSHBUTTON name='Interest expanded' EXPANDED FOCUSABLE has-interest-for:true details-from:interest-for
+++ROLE_SYSTEM_PUSHBUTTON name='Interest collapsed' COLLAPSED FOCUSABLE has-interest-for:true
+++ROLE_SYSTEM_PUSHBUTTON name='Popovertarget collapsed' COLLAPSED FOCUSABLE has-interest-for:true
+++ROLE_SYSTEM_PUSHBUTTON name='Popovertarget expanded' EXPANDED FOCUSABLE has-interest-for:true details-from:popover-target
+++ROLE_SYSTEM_PUSHBUTTON name='Commandfor toggle collapsed' COLLAPSED FOCUSABLE has-interest-for:true
+++ROLE_SYSTEM_PUSHBUTTON name='Commandfor show expanded' EXPANDED FOCUSABLE has-interest-for:true details-from:command-for
+++ROLE_SYSTEM_PUSHBUTTON name='Commandfor hide expanded' EXPANDED FOCUSABLE has-interest-for:true details-from:command-for
+++ROLE_SYSTEM_GROUPING ispopup:manual
+++++ROLE_SYSTEM_PUSHBUTTON name='Popovertarget inside popover' FOCUSABLE has-interest-for:true
+++++ROLE_SYSTEM_PUSHBUTTON name='Commandfor inside popover' FOCUSABLE has-interest-for:true
+++ROLE_SYSTEM_PUSHBUTTON name='Commandfor dialog interest expanded' EXPANDED FOCUSABLE has-interest-for:true details-from:interest-for
+++ROLE_SYSTEM_PUSHBUTTON name='Non-popover target interest expanded' EXPANDED FOCUSABLE has-interest-for:true details-from:interest-for
+++ROLE_SYSTEM_LINK name='Link open' FOCUSABLE has-interest-for:true details-from:interest-for
+++++ROLE_SYSTEM_STATICTEXT name='Link open'
+++ROLE_SYSTEM_STATICTEXT name=' '
+++ROLE_SYSTEM_LINK name='Link closed' FOCUSABLE has-interest-for:true
+++++ROLE_SYSTEM_STATICTEXT name='Link closed'
+++ROLE_SYSTEM_STATICTEXT name=' '
+++ROLE_SYSTEM_PUSHBUTTON name='Link with button role' FOCUSABLE has-interest-for:true details-from:interest-for
+++ROLE_SYSTEM_LINK name='Button with link role' FOCUSABLE has-interest-for:true details-from:interest-for
+++++ROLE_SYSTEM_STATICTEXT name='Button with link role'
+++ROLE_SYSTEM_GRAPHIC
+++++ROLE_SYSTEM_LINK name='SVG link' FOCUSABLE has-interest-for:true details-from:interest-for
+++IA2_ROLE_IMAGE_MAP name='pipe' READONLY
+++++ROLE_SYSTEM_LINK name='Area link' FOCUSABLE has-interest-for:true details-from:interest-for
+++ROLE_SYSTEM_LINK name='Link with aria-expanded' COLLAPSED FOCUSABLE has-interest-for:true details-from:interest-for
+++++ROLE_SYSTEM_STATICTEXT name='Link with aria-expanded'
