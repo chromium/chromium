@@ -5467,12 +5467,12 @@
   {
     "name": "fullscreen-eased-transitions",
     "owners": [ "scottyoder@google.com", "bling-pandamonium@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 163
   },
   {
     "name": "fullscreen-refactoring",
     "owners": [ "scottyoder@google.com", "meridian@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 163
   },
   {
     "name": "fullscreen-scroll-threshold",
@@ -10037,7 +10037,7 @@
   {
     "name": "use-scene-view-controller",
     "owners": [ "scottyoder@google.com", "bling-pandamonium@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 163
   },
   {
     "name": "use-stork-smds-server-address",
