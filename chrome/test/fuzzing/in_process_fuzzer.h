@@ -5,10 +5,25 @@
 #ifndef CHROME_TEST_FUZZING_IN_PROCESS_FUZZER_H_
 #define CHROME_TEST_FUZZING_IN_PROCESS_FUZZER_H_
 
+#include <cstdint>
+#include <memory>
 #include <optional>
+#include <string>
+#include <string_view>
 
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/test/base/in_process_browser_test.h"
+
+namespace content {
+class RenderFrameHost;
+}  // namespace content
+
+namespace net::test_server {
+struct HttpRequest;
+class HttpResponse;
+}  // namespace net::test_server
 
 enum class RunLoopTimeoutBehavior {
   // Default behavior that doesn't alter the current way run loop internal
@@ -122,6 +137,25 @@ class InProcessFuzzer : virtual public InProcessBrowserTest {
   // in this mode for efficiency reasons.
   bool InMergeMode() const;
 
+  // Navigates the active tab to a page whose content is `html`, and waits for
+  // the load to stop. Returns the result of `ui_test_utils::NavigateToURL()`.
+  //
+  // The page is served by `embedded_https_test_server()` from a fresh origin
+  // (https://fuzz<N>.a.com:<port>/in_process_fuzzer.html) for every call, so
+  // origin-scoped state (storage, service workers, permissions...) doesn't
+  // carry over between fuzz cases, and the page is a secure context.
+  //
+  // Prefer this over navigating to a data: URL containing the HTML. The
+  // browser UI formats and lays out the URL of the current page several times
+  // per navigation (omnibox, tab title, accessibility), which makes navigating
+  // to large data: URLs several times slower.
+  //
+  // Like in other browser tests, fuzzers that use this must start the server,
+  // e.g. `CHECK(embedded_https_test_server().Start())` in their
+  // `SetUpOnMainThread()`, after calling
+  // `InProcessFuzzer::SetUpOnMainThread()`.
+  content::RenderFrameHost* NavigateToHtml(std::string_view html);
+
  private:
   int DoFuzz(const uint8_t* data, size_t size);
 
@@ -133,12 +167,22 @@ class InProcessFuzzer : virtual public InProcessBrowserTest {
   // Changes run loop timeouts behaviour to call `DeclareInfiniteLoop()`.
   void DeclareInfiniteLoopOnTimeout();
 
+  // Request handler for the pages served by `NavigateToHtml()`. Runs on the
+  // embedded test server's thread.
+  std::unique_ptr<net::test_server::HttpResponse> HandleHtmlRequest(
+      const net::test_server::HttpRequest& request);
+
  private:
   std::vector<std::string> libfuzzer_command_line_;
   bool exit_after_fuzz_case_ = false;
   InProcessFuzzerOptions options_;
   test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
       test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
+
+  // State for `NavigateToHtml()`.
+  uint64_t html_navigation_count_ = 0;
+  base::Lock html_lock_;
+  std::string html_ GUARDED_BY(html_lock_);
 };
 
 class InProcessFuzzerFactoryBase {

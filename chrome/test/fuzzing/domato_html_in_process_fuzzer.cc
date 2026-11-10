@@ -4,13 +4,12 @@
 
 #include <string_view>
 
-#include "base/strings/escape.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/fuzzing/domato_html_fuzzer_grammar.h"
 #include "chrome/test/fuzzing/domato_html_fuzzer_grammar.pb.h"
 #include "chrome/test/fuzzing/in_process_proto_fuzzer.h"
 #include "content/public/test/render_frame_host_test_support.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/libfuzzer/research/domatolpm/domatolpm.h"
 
 // This fuzzer uses DomatoLPM to generate HTML based on an existing Domato
@@ -22,6 +21,11 @@ class DomatoHtmlInProcessFuzzer
   using FuzzCase = domatolpm::generated::domato_html_fuzzer_grammar::fuzzcase;
   DomatoHtmlInProcessFuzzer() = default;
 
+  void SetUpOnMainThread() override {
+    InProcessBinaryProtoFuzzer::SetUpOnMainThread();
+    CHECK(embedded_https_test_server().Start());
+  }
+
   int Fuzz(const FuzzCase& fuzz_case) override;
 };
 
@@ -31,17 +35,8 @@ int DomatoHtmlInProcessFuzzer::Fuzz(const FuzzCase& fuzz_case) {
   domatolpm::Context ctx;
   CHECK(domatolpm::domato_html_fuzzer_grammar::handle_fuzzer(&ctx, fuzz_case));
   std::string_view html_string(ctx.GetBuilder()->view());
-  // See
-  // docs/security/url_display_guidelines/url_display_guidelines.md#url-length
-  const size_t kMaxUrlLength = 2 * 1024 * 1024;
-  std::string url_string = "data:text/html;charset=utf-8,";
-  const bool kUsePlus = false;
-  url_string.append(base::EscapeQueryParamValue(html_string, kUsePlus));
-  if (url_string.length() > kMaxUrlLength) {
-    return -1;
-  }
 
-  // We nee to call `DisableUnloadTimerForTesting` because on a low resource
+  // We need to call `DisableUnloadTimerForTesting` because on a low resource
   // device environment, the generated HTML pages can take more than 500ms to
   // load, and we want to make sure we catch bugs that could potentially happen
   // after this time frame. We need to call into `DisableUnloadTimerForTesting`
@@ -53,6 +48,6 @@ int DomatoHtmlInProcessFuzzer::Fuzz(const FuzzCase& fuzz_case) {
                   ->GetActiveWebContents()
                   ->GetPrimaryMainFrame();
   DisableUnloadTimerForTesting(rfh);
-  std::ignore = ui_test_utils::NavigateToURL(browser(), GURL(url_string));
+  std::ignore = NavigateToHtml(html_string);
   return 0;
 }

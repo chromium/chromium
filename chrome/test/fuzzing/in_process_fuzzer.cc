@@ -9,19 +9,27 @@
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/test_timeouts.h"
 #include "chrome/renderer/chrome_content_renderer_client.h"
 #include "chrome/test/base/chrome_test_launcher.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/fuzzing/in_process_fuzzer_buildflags.h"
 #include "content/public/app/content_main.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/test/test_launcher.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "partition_alloc/buildflags.h"
 #include "third_party/blink/public/web/web_testing_support.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/sys_string_conversions.h"
@@ -34,6 +42,9 @@ extern "C" int LLVMFuzzerRunDriver(int* argc,
                                                  size_t Size));
 
 namespace {
+
+// Path of the page served by `InProcessFuzzer::NavigateToHtml()`.
+constexpr char kHtmlPath[] = "/in_process_fuzzer.html";
 
 std::string_view RunLoopTimeoutBehaviorToString(
     RunLoopTimeoutBehavior behavior) {
@@ -128,6 +139,10 @@ void InProcessFuzzer::Run(
 void InProcessFuzzer::SetUpOnMainThread() {
   InProcessBrowserTest::SetUpOnMainThread();
 
+  host_resolver()->AddRule("*.a.com", "127.0.0.1");
+  embedded_https_test_server().RegisterRequestHandler(base::BindRepeating(
+      &InProcessFuzzer::HandleHtmlRequest, base::Unretained(this)));
+
   // All of the engines that are being used to run those fuzzers are handling
   // process interruption. In case we let Chrome handle those signals itself,
   // we end up exiting the fuzzing process, and the engine records the last
@@ -155,6 +170,34 @@ bool InProcessFuzzer::InMergeMode() const {
     }
   }
   return false;
+}
+
+content::RenderFrameHost* InProcessFuzzer::NavigateToHtml(
+    std::string_view html) {
+  {
+    base::AutoLock lock(html_lock_);
+    html_ = std::string(html);
+  }
+
+  // Use a fresh origin for every fuzz case.
+  GURL url = embedded_https_test_server().GetURL(
+      base::StrCat(
+          {"fuzz", base::NumberToString(html_navigation_count_++), ".a.com"}),
+      kHtmlPath);
+  return ui_test_utils::NavigateToURL(browser(), url);
+}
+
+std::unique_ptr<net::test_server::HttpResponse>
+InProcessFuzzer::HandleHtmlRequest(
+    const net::test_server::HttpRequest& request) {
+  if (request.GetURL().path() != kHtmlPath) {
+    return nullptr;
+  }
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  response->set_content_type("text/html; charset=utf-8");
+  base::AutoLock lock(html_lock_);
+  response->set_content(html_);
+  return response;
 }
 
 InProcessFuzzer* g_test;
