@@ -8,17 +8,15 @@ import type {ContextualTasksToolbarAppElement} from './toolbar_app.js';
 
 export function getHtml(this: ContextualTasksToolbarAppElement) {
   return html`<!--_html_template_start_-->
-    <if expr="not is_android">
-      <link rel="stylesheet" href="layout_constants.css">
-    </if>
-    <top-toolbar id="toolbar"
-        .title="${this.threadTitle_}"
-        .isAiPage="${this.isAiPage_}"
-        .isAimEligible="${this.isAimEligible_}"
-        .isUserSignedIn="${this.isUserSignedIn_}"
-        .enableOpenInNewTabButton="${this.isAiPage_}"
-        .onboardingTooltipShowing="${this.onboardingTooltipShowing_}"
-        @new-thread-click="${this.onNewThreadClick_}">
-    </top-toolbar>
-  <!--_html_template_end_-->`;
+<if expr="not is_android">
+<link rel="stylesheet" href="layout_constants.css">
+</if>
+<top-toolbar id="toolbar" .title="${this.threadTitle_}"
+    .isAiPage="${this.isAiPage_}" .isAimEligible="${this.isAimEligible_}"
+    .isUserSignedIn="${this.isUserSignedIn_}"
+    .enableOpenInNewTabButton="${this.isAiPage_}"
+    .onboardingTooltipShowing="${this.onboardingTooltipShowing_}"
+    @new-thread-click="${this.onNewThreadClick_}">
+</top-toolbar>
+<!--_html_template_end_-->`;
 }

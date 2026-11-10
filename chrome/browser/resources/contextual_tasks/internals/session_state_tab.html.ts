@@ -10,12 +10,11 @@ export function getHtml(this: ContextualTasksSessionStateTabElement) {
   // Note: `url.mojom.Url` and `mojo_base.mojom.UnguessableToken` fields are
   // typemapped to plain `string`s in WebUI Mojo bindings (via `UrlConverter`
   // and `UnguessableTokenConverter`), so they are interpolated directly below.
-  // clang-format off
   return html`
 <div class="card">
   <div class="session-state-header">
     <div>
-      <h2>Tracked WebContents &amp; Session Handles</h2>
+      <h2>Tracked WebContents & Session Handles</h2>
       <p class="section-subtitle">
         Inspects open tabs and cached side panels with an attached
         ContextualTasksWebContentsUserData or ContextualSearchSessionHandle.
@@ -39,8 +38,8 @@ ${this.webContentsDebugStates_.map(wc => html`
   <div class="card wc-debug-card">
     <div class="wc-card-header">
       <div class="wc-title-row">
-        <span class="badge ${
-            wc.isSidePanel ? 'badge-side-panel' : 'badge-tab'}">
+        <span
+            class="badge ${wc.isSidePanel ? 'badge-side-panel' : 'badge-tab'}">
           ${wc.isSidePanel ? 'Side Panel' : 'Browser Tab'}
         </span>
         ${wc.isActiveTabInWindow ? html`
@@ -66,27 +65,25 @@ ${this.webContentsDebugStates_.map(wc => html`
       ` : html`
         <div class="kv-grid">
           <div class="kv-group">
-            <h4>Task &amp; Tab Identity</h4>
+            <h4>Task & Tab Identity</h4>
             <div class="kv-item">
               <span class="kv-label">ContextualTasksUserData</span>
-              <span class="badge ${
-                  wc.userDataState.hasContextualTasksUserData ?
+              <span
+                  class="badge ${wc.userDataState.hasContextualTasksUserData ?
                       'badge-ok' :
                       'badge-neutral'}">
-                ${wc.userDataState.hasContextualTasksUserData ?
-                    'Attached' :
-                    'None'}
+                ${wc.userDataState.hasContextualTasksUserData ? 'Attached' :
+                                                              'None'}
               </span>
             </div>
             <div class="kv-item">
               <span class="kv-label">ContextualSearchHelper</span>
-              <span class="badge ${
-                  wc.userDataState.hasContextualSearchHelper ?
+              <span
+                  class="badge ${wc.userDataState.hasContextualSearchHelper ?
                       'badge-ok' :
                       'badge-neutral'}">
-                ${wc.userDataState.hasContextualSearchHelper ?
-                    'Attached' :
-                    'None'}
+                ${wc.userDataState.hasContextualSearchHelper ? 'Attached' :
+                                                             'None'}
               </span>
             </div>
             <div class="kv-item">
@@ -136,7 +133,7 @@ ${this.webContentsDebugStates_.map(wc => html`
               </span>
             </div>
             <div class="kv-item">
-              <span class="kv-label">TabHandle &harr; SessionID</span>
+              <span class="kv-label">TabHandle ↔ SessionID</span>
               <span class="mono-value">
                 ${wc.userDataState.tabIdMappings.length > 0 ?
                     wc.userDataState.tabIdMappings
@@ -148,7 +145,7 @@ ${this.webContentsDebugStates_.map(wc => html`
           </div>
 
           <div class="kv-group">
-            <h4>PageSearchState &amp; IPC</h4>
+            <h4>PageSearchState & IPC</h4>
             <div class="kv-item">
               <span class="kv-label">connected_document_id</span>
               <span class="mono-value">
@@ -157,24 +154,20 @@ ${this.webContentsDebugStates_.map(wc => html`
             </div>
             <div class="kv-item">
               <span class="kv-label">SW Port Connected</span>
-              <span class="badge ${
-                  wc.userDataState.isServiceWorkerPortConnected ?
+              <span
+                  class="badge ${wc.userDataState.isServiceWorkerPortConnected ?
                       'badge-ok' :
                       'badge-warn'}">
-                ${wc.userDataState.isServiceWorkerPortConnected ?
-                    'Yes' :
-                    'No'}
+                ${wc.userDataState.isServiceWorkerPortConnected ? 'Yes' : 'No'}
               </span>
             </div>
             <div class="kv-item">
               <span class="kv-label">is_handshake_complete</span>
-              <span class="badge ${
-                  wc.userDataState.isHandshakeComplete ?
+              <span
+                  class="badge ${wc.userDataState.isHandshakeComplete ?
                       'badge-ok' :
                       'badge-warn'}">
-                ${wc.userDataState.isHandshakeComplete ?
-                    'Complete' :
-                    'Pending'}
+                ${wc.userDataState.isHandshakeComplete ? 'Complete' : 'Pending'}
               </span>
             </div>
             <div class="kv-item">
@@ -185,19 +178,18 @@ ${this.webContentsDebugStates_.map(wc => html`
             </div>
             <div class="kv-item">
               <span class="kv-label">context_library_is_active</span>
-              <span class="badge ${
-                  wc.userDataState.contextLibraryIsActive ?
+              <span
+                  class="badge ${wc.userDataState.contextLibraryIsActive ?
                       'badge-ok' :
                       'badge-neutral'}">
-                ${wc.userDataState.contextLibraryIsActive ?
-                    'Active' :
-                    'Inactive'}
+                ${wc.userDataState.contextLibraryIsActive ? 'Active' :
+                                                          'Inactive'}
               </span>
             </div>
             <div class="kv-item">
               <span class="kv-label">is_lens_crop_mounted</span>
-              <span class="badge ${
-                  wc.userDataState.isLensCropMounted ?
+              <span
+                  class="badge ${wc.userDataState.isLensCropMounted ?
                       'badge-ok' :
                       'badge-neutral'}">
                 ${wc.userDataState.isLensCropMounted ? 'Mounted' : 'No'}
@@ -211,8 +203,8 @@ ${this.webContentsDebugStates_.map(wc => html`
             </div>
             <div class="kv-item">
               <span class="kv-label">has_bound_extension_frame</span>
-              <span class="badge ${
-                  wc.userDataState.hasBoundExtensionFrame ?
+              <span
+                  class="badge ${wc.userDataState.hasBoundExtensionFrame ?
                       'badge-ok' :
                       'badge-neutral'}">
                 ${wc.userDataState.hasBoundExtensionFrame ? 'Yes' : 'No'}
@@ -237,13 +229,12 @@ ${this.webContentsDebugStates_.map(wc => html`
           </div>
 
           <div class="kv-group">
-            <h4>Upload &amp; Submit Tracking</h4>
+            <h4>Upload & Submit Tracking</h4>
             <div class="kv-item">
               <span class="kv-label">submit_pending_</span>
-              <span class="badge ${
-                  wc.userDataState.submitPending ?
-                      'badge-warn' :
-                      'badge-neutral'}">
+              <span
+                  class="badge ${wc.userDataState.submitPending ? 'badge-warn' :
+                                                            'badge-neutral'}">
                 ${wc.userDataState.submitPending ? 'Pending' : 'False'}
               </span>
             </div>
@@ -275,9 +266,8 @@ ${this.webContentsDebugStates_.map(wc => html`
               <div class="kv-item">
                 <span class="kv-label">has_valid_config</span>
                 <span class="mono-value">
-                  ${wc.userDataState.inputState.hasValidConfig ?
-                      'true' :
-                      'false'}
+                  ${wc.userDataState.inputState.hasValidConfig ? 'true' :
+                                                               'false'}
                 </span>
               </div>
               <div class="kv-item">
@@ -286,9 +276,7 @@ ${this.webContentsDebugStates_.map(wc => html`
                   ${wc.userDataState.inputState.isSmartTabSharingActive ?
                       'true' :
                       'false'} /
-                  ${wc.userDataState.inputState.hasLensCrop ?
-                      'true' :
-                      'false'}
+                  ${wc.userDataState.inputState.hasLensCrop ? 'true' : 'false'}
                 </span>
               </div>
               <div class="kv-item">
@@ -316,18 +304,17 @@ ${this.webContentsDebugStates_.map(wc => html`
               <div class="kv-item">
                 <span class="kv-label">Allowed / Disabled Input Types</span>
                 <span class="mono-value">
-                  [${wc.userDataState.inputState.allowedInputTypes
-                        .join(', ')}]
+                  [${wc.userDataState.inputState.allowedInputTypes.join(', ')}]
                   /
-                  [${wc.userDataState.inputState.disabledInputTypes
-                        .join(', ')}]
+                  [${wc.userDataState.inputState.disabledInputTypes.join(', ')}]
                 </span>
               </div>
               <div class="kv-item">
                 <span class="kv-label">Effective Input Types</span>
                 <span class="mono-value">
-                  [${wc.userDataState.inputState.effectiveInputTypes
-                        .join(', ')}]
+                  [${
+                      wc.userDataState.inputState.effectiveInputTypes.join(', ')
+                  }]
                 </span>
               </div>
             `}
@@ -356,12 +343,13 @@ ${this.webContentsDebugStates_.map(wc => html`
                   <td>${tab.contextToken ?? 'None'}</td>
                   <td>${tab.requestId || 'None'}</td>
                   <td>
-                    ${[
-                      tab.uploaded && 'Uploaded',
-                      tab.submitted && 'Submitted',
-                      tab.pendingDelayedUpload && 'Delayed',
-                      tab.restoredFromAim && 'Restored',
-                    ].filter(Boolean).join(' ') || 'None'}
+                    ${[tab.uploaded && 'Uploaded',
+                     tab.submitted && 'Submitted',
+                     tab.pendingDelayedUpload && 'Delayed',
+                     tab.restoredFromAim && 'Restored',
+                    ].filter(Boolean)
+                            .join(' ') ||
+                        'None'}
                   </td>
                 </tr>
               `)}
@@ -407,13 +395,11 @@ ${this.webContentsDebugStates_.map(wc => html`
             </div>
             <div class="kv-item">
               <span class="kv-label">is_contextual_lens_session</span>
-              <span class="badge ${
-                  wc.sessionHandleState.isContextualLensSession ?
+              <span
+                  class="badge ${wc.sessionHandleState.isContextualLensSession ?
                       'badge-ok' :
                       'badge-neutral'}">
-                ${wc.sessionHandleState.isContextualLensSession ?
-                    'Yes' :
-                    'No'}
+                ${wc.sessionHandleState.isContextualLensSession ? 'Yes' : 'No'}
               </span>
             </div>
             <div class="kv-item">
@@ -424,8 +410,8 @@ ${this.webContentsDebugStates_.map(wc => html`
             </div>
             <div class="kv-item">
               <span class="kv-label">has_submitted_context</span>
-              <span class="badge ${
-                  wc.sessionHandleState.hasSubmittedContext ?
+              <span
+                  class="badge ${wc.sessionHandleState.hasSubmittedContext ?
                       'badge-ok' :
                       'badge-neutral'}">
                 ${wc.sessionHandleState.hasSubmittedContext ? 'Yes' : 'No'}
@@ -434,11 +420,9 @@ ${this.webContentsDebugStates_.map(wc => html`
             <div class="kv-item">
               <span class="kv-label">Smart Tab Sharing / Toggled</span>
               <span class="mono-value">
-                ${wc.sessionHandleState.smartTabSharingActive ?
-                    'true' :
-                    'false'} /
-                ${wc.sessionHandleState
-                      .smartTabSharingToggledSinceLastTurn ?
+                ${wc.sessionHandleState.smartTabSharingActive ? 'true' :
+                                                              'false'} /
+                ${wc.sessionHandleState.smartTabSharingToggledSinceLastTurn ?
                     'true' :
                     'false'}
               </span>
@@ -448,15 +432,15 @@ ${this.webContentsDebugStates_.map(wc => html`
               <span class="mono-value">
                 ${wc.sessionHandleState.stsToggledRemovedContextIds.length >
                         0 ?
-                    wc.sessionHandleState.stsToggledRemovedContextIds
-                        .join(', ') :
+                    wc.sessionHandleState.stsToggledRemovedContextIds.join(
+                        ', ') :
                     '[]'}
               </span>
             </div>
           </div>
 
           <div class="kv-group">
-            <h4>Context Tokens &amp; Persisted State</h4>
+            <h4>Context Tokens & Persisted State</h4>
             <div class="kv-item">
               <span class="kv-label">Uploaded Context Tokens</span>
               <span class="mono-value">
@@ -469,18 +453,17 @@ ${this.webContentsDebugStates_.map(wc => html`
               <span class="kv-label">Submitted Context Tokens</span>
               <span class="mono-value">
                 ${wc.sessionHandleState.submittedContextTokens.length > 0 ?
-                    wc.sessionHandleState.submittedContextTokens
-                        .join(', ') :
+                    wc.sessionHandleState.submittedContextTokens.join(', ') :
                     '[]'}
               </span>
             </div>
             <div class="kv-item">
               <span class="kv-label">Active Submitted Tokens</span>
               <span class="mono-value">
-                ${wc.sessionHandleState.activeSubmittedContextTokens
-                            .length > 0 ?
-                    wc.sessionHandleState.activeSubmittedContextTokens
-                        .join(', ') :
+                ${wc.sessionHandleState.activeSubmittedContextTokens.length >
+                        0 ?
+                    wc.sessionHandleState.activeSubmittedContextTokens.join(
+                        ', ') :
                     '[]'}
               </span>
             </div>
@@ -513,7 +496,7 @@ ${this.webContentsDebugStates_.map(wc => html`
           </div>
 
           <div class="kv-group">
-            <h4>Task Thread &amp; Turn History</h4>
+            <h4>Task Thread & Turn History</h4>
             <div class="kv-item">
               <span class="kv-label">Thread Type / Server ID</span>
               <span class="mono-value">
@@ -564,7 +547,8 @@ ${this.webContentsDebugStates_.map(wc => html`
         </div>
 
         ${wc.sessionHandleState.attachedTabs.length > 0 ||
-          wc.sessionHandleState.restoredTabs.length > 0 ? html`
+                wc.sessionHandleState.restoredTabs.length > 0 ?
+            html`
           <h4 class="table-heading">
             TabContextState (Attached:
             ${wc.sessionHandleState.attachedTabs.length},
@@ -590,12 +574,13 @@ ${this.webContentsDebugStates_.map(wc => html`
                   <td>${tab.contextToken ?? 'None'}</td>
                   <td>${tab.requestId || 'None'}</td>
                   <td>
-                    ${[
-                      tab.uploaded && 'Uploaded',
-                      tab.submitted && 'Submitted',
-                      tab.pendingDelayedUpload && 'Delayed',
-                      tab.restoredFromAim && 'Restored',
-                    ].filter(Boolean).join(' ') || 'None'}
+                    ${[tab.uploaded && 'Uploaded',
+                     tab.submitted && 'Submitted',
+                     tab.pendingDelayedUpload && 'Delayed',
+                     tab.restoredFromAim && 'Restored',
+                    ].filter(Boolean)
+                            .join(' ') ||
+                        'None'}
                   </td>
                 </tr>
               `)}
@@ -607,12 +592,13 @@ ${this.webContentsDebugStates_.map(wc => html`
                   <td>${tab.contextToken ?? 'None'}</td>
                   <td>${tab.requestId || 'None'}</td>
                   <td>
-                    ${[
-                      tab.uploaded && 'Uploaded',
-                      tab.submitted && 'Submitted',
-                      tab.pendingDelayedUpload && 'Delayed',
-                      tab.restoredFromAim && 'Restored',
-                    ].filter(Boolean).join(' ') || 'None'}
+                    ${[tab.uploaded && 'Uploaded',
+                     tab.submitted && 'Submitted',
+                     tab.pendingDelayedUpload && 'Delayed',
+                     tab.restoredFromAim && 'Restored',
+                    ].filter(Boolean)
+                            .join(' ') ||
+                        'None'}
                   </td>
                 </tr>
               `)}
@@ -621,7 +607,8 @@ ${this.webContentsDebugStates_.map(wc => html`
         ` : ''}
 
         ${wc.sessionHandleState.uploadedFiles.length > 0 ||
-          wc.sessionHandleState.submittedFiles.length > 0 ? html`
+                wc.sessionHandleState.submittedFiles.length > 0 ?
+            html`
           <h4 class="table-heading">
             Context FileInfos (Uploaded:
             ${wc.sessionHandleState.uploadedFiles.length},
@@ -679,7 +666,5 @@ ${this.webContentsDebugStates_.map(wc => html`
       `}
     </div>
   </div>
-`)}
-`;
-  // clang-format on
+`)}`;
 }

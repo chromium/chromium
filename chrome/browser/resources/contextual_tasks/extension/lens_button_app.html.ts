@@ -8,16 +8,11 @@ import type {LensButtonAppElement} from './lens_button_app.js';
 
 export function getHtml(this: LensButtonAppElement) {
   return html`<!--_html_template_start_-->
-    <cr-icon-button id="lensButton"
-        class="action-icon"
-        noink
-        aria-label="${this.label_}"
-        title="${this.label_}"
-        aria-pressed="${this.active ? 'true' : 'false'}"
-        ?active="${this.active}"
-        ?disabled="${this.disabled}"
-        @click="${this.onClick_}"
-        @mousedown="${this.onMousedown_}">
-    </cr-icon-button>
-  <!--_html_template_end_-->`;
+<cr-icon-button id="lensButton" class="action-icon" noink
+    aria-label="${this.label_}" title="${this.label_}"
+    aria-pressed="${this.active ? 'true' : 'false'}" ?active="${this.active}"
+    ?disabled="${this.disabled}" @click="${this.onClick_}"
+    @mousedown="${this.onMousedown_}">
+</cr-icon-button>
+<!--_html_template_end_-->`;
 }

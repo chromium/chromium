@@ -10,16 +10,15 @@ export function getHtml(this: ContextLibraryElement) {
   // Frontend context library renders either the Smart Tab Sharing active coin
   // or the manual/restored tab favicon group.
   return html`<!--_html_template_start_-->
-    ${this.smartTabSharingActive ? html`
-      <cr-icon id="stsCoin" class="sts-active-coin"
-          icon="composebox:screensaverAuto">
-      </cr-icon>
-    ` : ''}
-    <composebox-favicon-group id="faviconGroup"
-        ?hidden="${this.smartTabSharingActive}"
-        .tabs="${this.tabs}"
-        .submittedTabIds="${this.submittedTabIds}"
-        @wait-for-tab-load="${this.onWaitForTabLoad_}">
-    </composebox-favicon-group>
-  <!--_html_template_end_-->`;
+${this.smartTabSharingActive ? html`
+  <cr-icon id="stsCoin" class="sts-active-coin"
+      icon="composebox:screensaverAuto">
+  </cr-icon>
+` : ''}
+<composebox-favicon-group id="faviconGroup"
+    ?hidden="${this.smartTabSharingActive}" .tabs="${this.tabs}"
+    .submittedTabIds="${this.submittedTabIds}"
+    @wait-for-tab-load="${this.onWaitForTabLoad_}">
+</composebox-favicon-group>
+<!--_html_template_end_-->`;
 }
