@@ -429,13 +429,17 @@ virtual/produce-compile-hints/external/wpt/html/semantics/scripting-1/the-script
 virtual/produce-compile-hints/external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/ordering/*
 virtual/produce-compile-hints/external/wpt/fetch/fetch-later/new-window.https.window.html
 virtual/produce-compile-hints/external/wpt/fetch/stale-while-revalidate/stale-*
-virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filter*
+virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filter-3d-transform-perspective.html
+virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filter-blur-large-value.html
+virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filter-nested-3d-transform-perspective.html
+virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filter-nested-border-radius-clip-3.html
+virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filter-nested-border-radius-clip-4.html
+virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filter-nested-border-radius-clip.html
+virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filter-on-transformed-layer.html
+virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filter-over-earlier-backdrop-filter.html
+virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filter-svg-blur.html
 virtual/scalefactor200/external/wpt/css/filter-effects/css-filters-animation-opacity.html
 virtual/scalefactor200/external/wpt/css/filter-effects/drop-shadow-currentcolor-dynamic-003.html
-virtual/scalefactor200/external/wpt/css/filter-effects/filtered-html-is-not-container.html
-virtual/scalefactor200/external/wpt/css/filter-effects/clip-under-filter-*
-virtual/scalefactor200/external/wpt/css/filter-effects/effect-reference-on-span.html
-virtual/scalefactor200/external/wpt/css/filter-effects/repaint-added-backdrop-filter.html
 virtual/scalefactor200/external/wpt/css/printing/*
 
 external/wpt/speculation-rules/prerender/restriction-background-sync.https.html?target_hint=_blank
