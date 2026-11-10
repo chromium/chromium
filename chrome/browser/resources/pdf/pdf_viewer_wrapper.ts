@@ -27,7 +27,7 @@ export {PluginController} from './controller.js';
 export type {SaveMessage} from './controller.js';
 // <if expr="enable_pdf_ink2">
 export {PluginControllerEventType} from './controller.js';
-export type {AnnotationBrushMessage} from './controller.js';
+export type {AnnotationBrushMessage, ContinueSignatureStrokeMessage, FinishSignatureStrokeMessage, StartSignatureStrokeMessage} from './controller.js';
 export {HIGHLIGHTER_COLORS, InkAnnotationBrushMixin, PEN_COLORS} from './elements/ink_annotation_brush_mixin.js';
 export {InkAnnotationTextMixin, TEXT_COLORS, TEXT_SIZES} from './elements/ink_annotation_text_mixin.js';
 export {InkBrushSelectorElement} from './elements/ink_brush_selector.js';

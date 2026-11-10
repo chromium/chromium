@@ -17,7 +17,11 @@ export function getHtml(this: ViewerSignatureDialogElement) {
       <div id="guide" aria-hidden="true">
         <cr-icon icon="cr:close"></cr-icon>
       </div>
-      <canvas id="canvas"></canvas>
+      <canvas id="canvas" @pointerdown="${this.onPointerdown_}"
+          @pointermove="${this.onPointermove_}"
+          @pointerup="${this.onPointerup_}"
+          @pointercancel="${this.onPointercancel_}">
+      </canvas>
     </div>
   </div>
   <div slot="button-container">

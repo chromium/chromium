@@ -65,8 +65,12 @@ cr-dialog::part(close-button) {
 }
 
 #canvas {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="6" height="6" viewBox="0 0 6 6"><circle cx="3" cy="3" r="2" stroke="rgb(144, 144, 144)" stroke-width="1" fill="rgb(227, 227, 227)"/></svg>')
+      3 3,
+    auto;
   height: 100%;
   position: absolute;
+  touch-action: none;
   width: 100%;
 }
 

@@ -240,13 +240,40 @@ export interface GetAllTextAnnotationsRequestMessage {
 export interface AnnotationUndoMessage {
   type: 'annotationUndo';
 }
+
+export interface SignatureStrokePoint {
+  x: number;
+  y: number;
+  elapsedTime: number;
+}
+
+export interface StartSignatureStrokeMessage {
+  type: 'startSignatureStroke';
+  point: SignatureStrokePoint;
+}
+
+export interface ContinueSignatureStrokeMessage {
+  type: 'continueSignatureStroke';
+  points: SignatureStrokePoint[];
+}
+
+export interface FinishSignatureStrokeMessage {
+  type: 'finishSignatureStroke';
+  point?: SignatureStrokePoint;
+}
+
+export interface SignatureStrokeReplyMessage {
+  outlines: number[][];
+}
 // </if>
 
 export type PluginMessageWithReply =
     GetSelectedTextMessage|GetThumbnailMessage|GetPageBoundingBoxMessage|
     GetNamedDestinationMessage|GetSuggestedFileNameMessage|SaveAttachmentMessage
     // <if expr="enable_pdf_ink2">
-    |GetAnnotationBrushMessage|GetAllTextAnnotationsRequestMessage
+    |ContinueSignatureStrokeMessage|FinishSignatureStrokeMessage|
+    GetAllTextAnnotationsRequestMessage|GetAnnotationBrushMessage|
+    StartSignatureStrokeMessage
     // </if>
     ;
 
@@ -275,8 +302,11 @@ export interface MessageResponseMap {
       {fileName: string, bypassSaveFileForTesting?: boolean};
   'saveAttachment': SaveAttachmentMessageData;
   // <if expr="enable_pdf_ink2">
-  'getAnnotationBrush': AnnotationBrushMessage;
+  'continueSignatureStroke': SignatureStrokeReplyMessage;
+  'finishSignatureStroke': SignatureStrokeReplyMessage;
   'getAllTextAnnotations': AllTextAnnotationsMessage;
+  'getAnnotationBrush': AnnotationBrushMessage;
+  'startSignatureStroke': SignatureStrokeReplyMessage;
   // </if>
 }
 
@@ -480,6 +510,33 @@ export class PluginController implements ContentController {
     };
 
     this.postMessage_(message);
+  }
+
+  startSignatureStroke(point: SignatureStrokePoint):
+      Promise<SignatureStrokeReplyMessage> {
+    return this.postMessageWithReply_({
+      type: 'startSignatureStroke',
+      point,
+    });
+  }
+
+  continueSignatureStroke(points: SignatureStrokePoint[]):
+      Promise<SignatureStrokeReplyMessage> {
+    return this.postMessageWithReply_({
+      type: 'continueSignatureStroke',
+      points,
+    });
+  }
+
+  finishSignatureStroke(point?: SignatureStrokePoint):
+      Promise<SignatureStrokeReplyMessage> {
+    const message: FinishSignatureStrokeMessage = {
+      type: 'finishSignatureStroke',
+    };
+    if (point !== undefined) {
+      message.point = point;
+    }
+    return this.postMessageWithReply_(message);
   }
   // </if>
 
