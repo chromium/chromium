@@ -37,11 +37,12 @@ namespace password_manager {
 // Android applications and web realms playing the role of facet Y.
 class AffiliatedMatchHelper {
  public:
-  // Callback to returns the list of affiliated signon_realms (as per defined in
-  // PasswordForm) to the caller.
+  // Callback to return the list of affiliated and grouped signon_realms (as per
+  // defined in PasswordForm) and any group change-password URL to the caller.
   using AffiliatedRealmsCallback =
       base::OnceCallback<void(std::vector<affiliations::Facet> affiliations,
-                              std::vector<affiliations::Facet> groups)>;
+                              std::vector<affiliations::Facet> groups,
+                              GURL change_password_url)>;
 
   using PSLExtensionCallback =
       base::OnceCallback<void(const base::flat_set<std::string>&)>;

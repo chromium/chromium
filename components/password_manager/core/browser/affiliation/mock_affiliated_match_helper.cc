@@ -58,7 +58,7 @@ void MockAffiliatedMatchHelper::GetAffiliatedAndGroupedRealms(
   }
 
   std::move(result_callback)
-      .Run(std::move(affiliated_realms), std::move(grouped_realms));
+      .Run(std::move(affiliated_realms), std::move(grouped_realms), GURL());
 }
 
 void MockAffiliatedMatchHelper::

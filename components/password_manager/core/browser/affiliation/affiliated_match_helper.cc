@@ -25,8 +25,11 @@ using affiliations::Facet;
 using affiliations::FacetURI;
 using AffiliatedRealms =
     base::StrongAlias<class AffiliatedRealmsTag, std::vector<Facet>>;
-using GroupedRealms =
-    base::StrongAlias<class GroupedRealmsTag, std::vector<Facet>>;
+
+struct GroupedRealms {
+  std::vector<Facet> facets;
+  GURL change_password_url;
+};
 
 bool IsValidAndroidCredential(const StoredCredential& form) {
   return form.scheme == PasswordForm::Scheme::kHtml &&
@@ -74,7 +77,21 @@ GroupedRealms ProcessGroupedFacets(
   // includes requested realm itself). Therefore, resulting number of groups
   // not bigger than 1 and not smaller than 1.
   CHECK_EQ(1U, results.size());
-  return GroupedRealms(GetFacets(original_facet_uri, results[0].facets));
+  // In merged multi-domain groups this may pick another domain's URL rather
+  // than `original_facet_uri`'s. This is intentional: callers only check
+  // `.is_valid()` (e.g., to hold back page-load autofill) and never navigate
+  // to this cached URL directly, as actual password change flows re-fetch the
+  // URL live for the submitted page.
+  GURL change_password_url;
+  for (const Facet& facet : results[0].facets) {
+    if (facet.change_password_url.is_valid()) {
+      change_password_url = facet.change_password_url;
+      break;
+    }
+  }
+  return GroupedRealms{
+      .facets = GetFacets(original_facet_uri, results[0].facets),
+      .change_password_url = std::move(change_password_url)};
 }
 
 void ProcessAffiliationAndGroupResponse(
@@ -95,7 +112,8 @@ void ProcessAffiliationAndGroupResponse(
 
   std::move(result_callback)
       .Run(std::move(affiliated_realms).value(),
-           std::move(grouped_realms).value());
+           std::move(grouped_realms.facets),
+           std::move(grouped_realms.change_password_url));
 }
 
 }  // namespace
@@ -112,7 +130,7 @@ void AffiliatedMatchHelper::GetAffiliatedAndGroupedRealms(
     const PasswordFormDigest& observed_form,
     AffiliatedRealmsCallback result_callback) {
   if (!IsValidWebCredential(observed_form)) {
-    std::move(result_callback).Run({}, {});
+    std::move(result_callback).Run({}, {}, GURL());
     return;
   }
 

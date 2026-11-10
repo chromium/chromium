@@ -14,6 +14,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/affiliations/core/browser/match_type.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
@@ -512,6 +513,46 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, ChangePasswordURLIsSet) {
                                                MatchesForm(affiliated_form),
                                                MatchesForm(grouped_form)))));
   RunUntilIdle();
+}
+
+TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
+       ChangePasswordURLIsSetFromRequestedRealmFacet) {
+  PasswordForm exact_form = CreateForm(kTestWebURL, u"username1", u"password");
+  base::test::TestFuture<base::expected<std::optional<PasswordStoreChangeList>,
+                                        PasswordStoreBackendError>>
+      add_future;
+  backend()->AddLoginAsync(FromPasswordForm(exact_form),
+                           add_future.GetCallback());
+  ASSERT_TRUE(add_future.Wait());
+
+  EXPECT_CALL(affiliation_service(), GetPSLExtensions)
+      .WillOnce(RunOnceCallback<0>(std::vector<std::string>()));
+
+  std::vector<Facet> facets;
+  facets.emplace_back(FacetURI::FromPotentiallyInvalidSpec(kTestWebURL));
+  EXPECT_CALL(affiliation_service(), GetAffiliationsAndBranding)
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<1>(facets, true));
+
+  GURL change_password_url("https://example.com/settings/password");
+  GroupedFacets group;
+  group.facets.emplace_back(FacetURI::FromPotentiallyInvalidSpec(kTestWebURL),
+                            affiliations::FacetBrandingInfo(),
+                            change_password_url);
+  EXPECT_CALL(affiliation_service(), GetGroupingInfo)
+      .WillOnce(RunOnceCallback<1>(std::vector<GroupedFacets>{group}));
+
+  PasswordFormDigest observed_form = CreateFormDigest(kTestWebURL);
+  base::test::TestFuture<
+      base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>>
+      result_future;
+  GetLoginsWithAffiliationsRequestHandler(
+      observed_form, backend(), &match_helper(), result_future.GetCallback());
+
+  exact_form.match_type = affiliations::MatchType::kExact;
+  exact_form.change_password_url = change_password_url;
+
+  EXPECT_THAT(result_future.Get(),
+              ValueIs(ElementsAre(MatchesForm(exact_form))));
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
