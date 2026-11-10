@@ -5,6 +5,7 @@ include_rules = [
   "+components/device_reauth",
   "+components/favicon/core",
   "+components/favicon_base",
+  "+components/google/core/common",
   "+components/keyed_service/core",
   "+components/metrics",
   "+components/profile_metrics",

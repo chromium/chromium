@@ -176,18 +176,25 @@ LikelyFormFilling SendFillInformationToRenderer(
               identity_manager->GetPrimaryAccountId(
                   signin::ConsentLevel::kSignin));
     }
-
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
     if (!should_show_popup_without_passwords) {
-      url::Origin origin =
-          base::FeatureList::IsEnabled(
-              password_manager::features::kPasswordBlockOpaqueOrigins)
-              ? driver->GetLastCommittedOrigin()
-              : url::Origin::Create(observed_form.url);
-      client->MaybeShowSavePasswordPrimingPromo(origin);
+      const bool is_sign_in_form = observed_form.HasPasswordElement() ||
+                                   observed_form.IsSingleUsername();
+      if (is_sign_in_form &&
+          password_manager_util::ShouldShowTrustedVaultErrorInAutofill(
+              client)) {
+        should_show_popup_without_passwords = true;
+      } else {
+        const url::Origin origin =
+            base::FeatureList::IsEnabled(
+                password_manager::features::kPasswordBlockOpaqueOrigins)
+                ? driver->GetLastCommittedOrigin()
+                : url::Origin::Create(observed_form.url);
+        client->MaybeShowSavePasswordPrimingPromo(origin);
+      }
     }
 #endif
 

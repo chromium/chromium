@@ -194,6 +194,7 @@ static_library("browser") {
     "//components/device_reauth",
     "//components/favicon/core",
     "//components/favicon_base",
+    "//components/google/core/common",
     "//components/metrics",
     "//components/os_crypt/browser",
     "//components/password_manager/core/browser:password_switches",

@@ -11,6 +11,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -28,6 +29,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/device_reauth/device_auth_availability_checker.h"
+#include "components/google/core/common/google_util.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
@@ -48,7 +50,9 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/service/sync_service.h"
 #include "crypto/process_bound_string.h"
+#include "url/gurl.h"
 #include "url/url_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -282,6 +286,63 @@ bool IsSavingBlockedByRecoverableError(
 #else  // !BUILDFLAG(IS_IOS)
   return false;
 #endif
+}
+
+bool ShouldShowTrustedVaultErrorInAutofill(
+    const password_manager::PasswordManagerClient* client) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::
+              kPasswordSignInInContextErrorResolution)) {
+    return false;
+  }
+
+  if (!client || client->IsOffTheRecord()) {
+    return false;
+  }
+
+  if (!password_manager::sync_util::HasChosenToSyncPasswords(
+          client->GetSyncService())) {
+    return false;
+  }
+
+  const GURL& url = client->GetLastCommittedURL();
+  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
+    return false;
+  }
+  if (google_util::IsGoogleDomainUrl(url, google_util::ALLOW_SUBDOMAIN,
+                                     google_util::ALLOW_NON_STANDARD_PORTS)) {
+    return false;
+  }
+
+  const password_manager::PasswordStoreInterface* account_store =
+      client->GetAccountPasswordStore();
+  if (account_store &&
+      account_store->GetError() ==
+          password_manager::ActionableError::kTrustedVaultKeyNeeded) {
+    return true;
+  }
+  const password_manager::PasswordStoreInterface* profile_store =
+      client->GetProfilePasswordStore();
+  if (profile_store &&
+      profile_store->GetError() ==
+          password_manager::ActionableError::kTrustedVaultKeyNeeded) {
+    return true;
+  }
+  const syncer::SyncService* sync_service = client->GetSyncService();
+  if (sync_service) {
+    const syncer::SyncService::UserActionableError sync_error =
+        sync_service->GetUserActionableError();
+    if (sync_error == syncer::SyncService::UserActionableError::
+                          kNeedsTrustedVaultKeyForPasswords ||
+        sync_error == syncer::SyncService::UserActionableError::
+                          kNeedsTrustedVaultKeyForEverything) {
+      return true;
+    }
+  }
+#endif
+  return false;
 }
 
 std::string_view GetSignonRealmWithProtocolExcluded(const PasswordForm& form) {

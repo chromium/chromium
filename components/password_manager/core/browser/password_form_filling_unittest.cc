@@ -25,11 +25,13 @@
 #include "components/password_manager/core/browser/password_change_service_interface.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
+#include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -99,6 +101,16 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
 #if !BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(bool, IsActorTaskActive, (), (override));
 #endif
+  MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (const, override));
+  MOCK_METHOD(PasswordStoreInterface*,
+              GetProfilePasswordStore,
+              (),
+              (const, override));
+  MOCK_METHOD(PasswordStoreInterface*,
+              GetAccountPasswordStore,
+              (),
+              (const, override));
+  MOCK_METHOD(syncer::SyncService*, GetSyncService, (), (const, override));
 };
 
 class MockPasswordChangeService : public PasswordChangeServiceInterface {
@@ -193,9 +205,11 @@ class PasswordFormFillingTest : public testing::Test {
         .WillByDefault(Return(&feature_manager_));
     ON_CALL(client_, GetPasswordChangeService)
         .WillByDefault(Return(&password_change_service_));
+    ON_CALL(client_, GetSyncService()).WillByDefault(Return(&sync_service_));
   }
 
  protected:
+  syncer::TestSyncService sync_service_;
   MockPasswordManagerDriver driver_;
   MockPasswordManagerClient client_;
   MockPasswordChangeService password_change_service_;
@@ -641,6 +655,113 @@ TEST_F(PasswordFormFillingTest,
       1);
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+TEST_F(PasswordFormFillingTest,
+       SendFillInformationToRenderer_ZeroMatches_TrustedVaultKeyNeeded) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kPasswordSignInInContextErrorResolution);
+
+  const GURL test_url("https://example.com/login");
+  observed_form_.url = test_url;
+  observed_form_.action = GURL("https://example.com/login_action");
+  observed_form_.signon_realm = "https://example.com/";
+  EXPECT_CALL(client_, GetLastCommittedURL).WillRepeatedly(ReturnRef(test_url));
+
+  auto mock_account_store = base::MakeRefCounted<MockPasswordStoreInterface>();
+  EXPECT_CALL(client_, GetAccountPasswordStore)
+      .WillRepeatedly(Return(mock_account_store.get()));
+  EXPECT_CALL(*mock_account_store, GetError)
+      .WillRepeatedly(Return(ActionableError::kTrustedVaultKeyNeeded));
+
+  EXPECT_CALL(driver_, InformNoSavedCredentials(
+                           /*should_show_popup_without_passwords=*/true));
+  EXPECT_CALL(driver_, PropagateFillDataOnParsingCompletion).Times(0);
+  EXPECT_CALL(client_, PasswordWasAutofilled).Times(0);
+
+  std::vector<PasswordForm> best_matches;
+  LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
+      &client_, &driver_, observed_form_, best_matches, federated_matches_,
+      nullptr, metrics_recorder_.get(),
+      /*webauthn_suggestions_available=*/false,
+      /*suggestion_banned_fields=*/{});
+
+  EXPECT_EQ(LikelyFormFilling::kNoFilling, likely_form_filling);
+}
+
+TEST_F(PasswordFormFillingTest,
+       SendFillInformationToRenderer_ZeroMatches_SingleUsernameForm) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kPasswordSignInInContextErrorResolution);
+
+  const GURL test_url("https://example.com/login");
+  PasswordForm single_username_form = observed_form_;
+  single_username_form.url = test_url;
+  single_username_form.action = GURL("https://example.com/login_action");
+  single_username_form.signon_realm = "https://example.com/";
+  single_username_form.password_element_renderer_id = FieldRendererId();
+  EXPECT_CALL(client_, GetLastCommittedURL).WillRepeatedly(ReturnRef(test_url));
+
+  auto mock_account_store = base::MakeRefCounted<MockPasswordStoreInterface>();
+  EXPECT_CALL(client_, GetAccountPasswordStore)
+      .WillRepeatedly(Return(mock_account_store.get()));
+  EXPECT_CALL(*mock_account_store, GetError)
+      .WillRepeatedly(Return(ActionableError::kTrustedVaultKeyNeeded));
+
+  EXPECT_CALL(driver_, InformNoSavedCredentials(
+                           /*should_show_popup_without_passwords=*/true));
+  EXPECT_CALL(driver_, PropagateFillDataOnParsingCompletion).Times(0);
+
+  std::vector<PasswordForm> best_matches;
+  LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
+      &client_, &driver_, single_username_form, best_matches,
+      federated_matches_, nullptr, metrics_recorder_.get(),
+      /*webauthn_suggestions_available=*/false,
+      /*suggestion_banned_fields=*/{});
+
+  EXPECT_EQ(LikelyFormFilling::kNoFilling, likely_form_filling);
+}
+
+TEST_F(PasswordFormFillingTest,
+       SendFillInformationToRenderer_ZeroMatches_SignUpForm_Suppressed) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kPasswordSignInInContextErrorResolution);
+
+  const GURL test_url("https://example.com/signup");
+  PasswordForm signup_form = observed_form_;
+  signup_form.url = test_url;
+  signup_form.action = GURL("https://example.com/signup_action");
+  signup_form.signon_realm = "https://example.com/";
+  signup_form.password_element_renderer_id = FieldRendererId();
+  signup_form.new_password_element_renderer_id = FieldRendererId(102);
+  signup_form.confirmation_password_element_renderer_id = FieldRendererId(103);
+  EXPECT_CALL(client_, GetLastCommittedURL).WillRepeatedly(ReturnRef(test_url));
+
+  auto mock_account_store = base::MakeRefCounted<MockPasswordStoreInterface>();
+  EXPECT_CALL(client_, GetAccountPasswordStore)
+      .WillRepeatedly(Return(mock_account_store.get()));
+  EXPECT_CALL(*mock_account_store, GetError)
+      .WillRepeatedly(Return(ActionableError::kTrustedVaultKeyNeeded));
+
+  EXPECT_CALL(driver_, InformNoSavedCredentials(
+                           /*should_show_popup_without_passwords=*/false));
+  EXPECT_CALL(driver_, PropagateFillDataOnParsingCompletion).Times(0);
+
+  std::vector<PasswordForm> best_matches;
+  LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
+      &client_, &driver_, signup_form, best_matches, federated_matches_,
+      nullptr, metrics_recorder_.get(),
+      /*webauthn_suggestions_available=*/false,
+      /*suggestion_banned_fields=*/{});
+
+  EXPECT_EQ(LikelyFormFilling::kNoFilling, likely_form_filling);
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 // Tests that the when there is a single preferred match, and no extra
 // matches, the PasswordFormFillData is filled in correctly.
