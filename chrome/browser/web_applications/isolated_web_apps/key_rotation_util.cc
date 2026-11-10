@@ -52,4 +52,27 @@ std::optional<KeyRotationData> GetKeyRotationData(
            .pending_update_has_rk = pending_update_has_rk}};
 }
 
+bool IsInstallationSigningKeyRevoked(
+    const web_package::SignedWebBundleId& web_bundle_id,
+    const IsolationData& isolation_data) {
+  const auto* kr_info =
+      IwaRuntimeDataProvider::GetInstance().GetKeyRotationInfo(
+          web_bundle_id.id());
+  if (!kr_info) {
+    return false;
+  }
+  const auto& integrity_block_data = isolation_data.integrity_block_data();
+  if (!integrity_block_data) {
+    return true;
+  }
+  const bool has_rotated_key =
+      integrity_block_data->HasPublicKey(kr_info->public_key);
+  // A soft key rotation keeps the previous key trusted for existing
+  // installations.
+  const bool has_previous_key =
+      kr_info->previous_key &&
+      integrity_block_data->HasPublicKey(*kr_info->previous_key);
+  return !has_rotated_key && !has_previous_key;
+}
+
 }  // namespace web_app

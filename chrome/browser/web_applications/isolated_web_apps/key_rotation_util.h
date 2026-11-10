@@ -33,6 +33,16 @@ std::optional<KeyRotationData> GetKeyRotationData(
     const web_package::SignedWebBundleId& web_bundle_id,
     const IsolationData& isolation_data);
 
+// Returns true if a key rotation for `web_bundle_id` revokes the key(s) that
+// signed the current installation, i.e. `isolation_data.integrity_block_data`
+// contains neither the rotated key nor the previous key that is still trusted
+// for existing installations. Returns false if there's no key rotation entry
+// for this `web_bundle_id`. An installation without integrity block data is
+// treated as revoked if a key rotation entry exists.
+bool IsInstallationSigningKeyRevoked(
+    const web_package::SignedWebBundleId& web_bundle_id,
+    const IsolationData& isolation_data);
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_KEY_ROTATION_UTIL_H_
