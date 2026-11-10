@@ -1,6 +1,6 @@
 monorail: {
-  component: "Platform>DevTools"
+  component: "Internals>Views>UIDevtools"
 }
 buganizer_public: {
-  component_id: 1457055
+  component_id: 1456704
 }
