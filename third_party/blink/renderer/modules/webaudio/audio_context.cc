@@ -427,7 +427,7 @@ AudioContext* AudioContext::Create(ExecutionContext* context,
   DCHECK(IsMainThread());
 
   LocalDOMWindow& window = *To<LocalDOMWindow>(context);
-  if (!window.GetFrame() || window.IsContextDestroyed()) {
+  if (!window.GetFrame()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "Cannot create AudioContext on a detached document.");
@@ -1308,6 +1308,9 @@ void AudioContext::StartRendering() {
   SendLogMessage(__func__, "");
   TRACE_EVENT1("webaudio", __func__, "UUID", Uuid());
 
+  if (!keep_alive_) {
+    keep_alive_ = this;
+  }
   was_audible_.store(false, std::memory_order_relaxed);
   accumulated_silence_time_.store(0.0, std::memory_order_relaxed);
   BaseAudioContext::StartRendering();
@@ -1327,6 +1330,7 @@ void AudioContext::StopRendering() {
     ClearAudibilityState();
     SetContextState(V8AudioContextState::Enum::kClosed);
     GetDeferredTaskHandler().ClearHandlersToBeDeleted();
+    keep_alive_.Clear();
   }
 }
 
