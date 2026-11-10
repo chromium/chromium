@@ -22,7 +22,7 @@ class UI_DEVTOOLS_EXPORT PageAgent
   ~PageAgent() override;
 
  protected:
-  const raw_ptr<DOMAgent, DanglingUntriaged> dom_agent_;
+  const raw_ptr<DOMAgent> dom_agent_;
 };
 
 }  // namespace ui_devtools

@@ -150,7 +150,10 @@ void PersonalContextManager::FetchContext(
   if (fetchers_for_feature.size() == GetMaxParallelFeatureFetchers(feature)) {
     // Cancel the fetcher with the smallest ID. Since IDs are assigned in
     // increasing order, this cancels the oldest one.
-    fetchers_for_feature.erase(fetchers_for_feature.begin());
+    auto it = fetchers_for_feature.begin();
+    std::unique_ptr<PersonalContextFetcher> cancelled_fetcher =
+        std::move(it->second);
+    fetchers_for_feature.erase(it);
   }
 
   FetcherId fetcher_id = next_fetcher_id_++;
@@ -213,7 +216,10 @@ void PersonalContextManager::FetchPiiEntities(
       GetMaxParallelPiiFeatureFetchers(feature)) {
     // Cancel the fetcher with the smallest ID. Since IDs are assigned in
     // increasing order, this cancels the oldest one.
-    fetchers_for_feature.erase(fetchers_for_feature.begin());
+    auto it = fetchers_for_feature.begin();
+    std::unique_ptr<PersonalContextFetcher> cancelled_fetcher =
+        std::move(it->second);
+    fetchers_for_feature.erase(it);
   }
 
   FetcherId fetcher_id = next_fetcher_id_++;

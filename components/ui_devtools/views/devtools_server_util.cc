@@ -34,8 +34,8 @@ std::unique_ptr<UiDevToolsServer> CreateUiDevToolsServerForViews(
       std::make_unique<UiDevToolsClient>("UiDevToolsClient", server.get());
   auto dom_agent_views = DOMAgentViews::Create();
   auto* dom_agent_views_ptr = dom_agent_views.get();
-  client->AddAgent(std::make_unique<PageAgentViews>(dom_agent_views_ptr));
   client->AddAgent(std::move(dom_agent_views));
+  client->AddAgent(std::make_unique<PageAgentViews>(dom_agent_views_ptr));
   client->AddAgent(std::make_unique<CSSAgent>(dom_agent_views_ptr));
   client->AddAgent(OverlayAgentViews::Create(dom_agent_views_ptr));
   auto tracing_agent = std::make_unique<TracingAgent>(std::move(connector));

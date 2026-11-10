@@ -211,7 +211,20 @@ constexpr char V8MemoryPerformanceManagerTestHarness::kChildFrameUrl[];
 
 WebMemoryTestHarness::WebMemoryTestHarness() = default;
 
-WebMemoryTestHarness::~WebMemoryTestHarness() = default;
+WebMemoryTestHarness::~WebMemoryTestHarness() {
+  // Destroy nodes in LIFO order so child frames/workers (and opener pages)
+  // appended after their parents are removed from the graph before their
+  // parent nodes.
+  while (!workers_.empty()) {
+    workers_.pop_back();
+  }
+  while (!frames_.empty()) {
+    frames_.pop_back();
+  }
+  while (!pages_.empty()) {
+    pages_.pop_back();
+  }
+}
 
 void WebMemoryTestHarness::SetUp() {
   GetGraphFeatures().EnableV8ContextTracker();

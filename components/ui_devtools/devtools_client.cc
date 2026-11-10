@@ -22,7 +22,16 @@ UiDevToolsClient::UiDevToolsClient(const std::string& name,
   DCHECK(server_);
 }
 
-UiDevToolsClient::~UiDevToolsClient() = default;
+UiDevToolsClient::~UiDevToolsClient() {
+  // Explicitly disable all agents before destroying any of them, and destroy in
+  // LIFO order because agents (PageAgent, CSSAgent, OverlayAgent) hold raw_ptrs
+  // to DOMAgent, which is added first, and unregister observers in their
+  // destructors.
+  DisableAllAgents();
+  while (!agents_.empty()) {
+    agents_.pop_back();
+  }
+}
 
 void UiDevToolsClient::AddAgent(std::unique_ptr<UiDevToolsAgent> agent) {
   agent->Init(&dispatcher_);

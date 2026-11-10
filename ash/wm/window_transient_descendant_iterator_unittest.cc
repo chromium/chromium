@@ -8,6 +8,7 @@
 #include "ash/wm/window_state.h"
 #include "base/functional/bind.h"
 #include "ui/aura/window.h"
+#include "ui/wm/core/transient_window_manager.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -31,8 +32,11 @@ class WindowTransientDescendantIteratorTest : public AshTestBase {
     for (char c : {'A', 'B', 'C', 'D'}) {
       auto window = CreateWindowWithAppType();
       window->SetName(std::string(1, c));
-      if (!out_result->empty())
+      if (!out_result->empty()) {
         ::wm::AddTransientChild(out_result->back().get(), window.get());
+        ::wm::TransientWindowManager::GetOrCreate(window.get())
+            ->set_parent_controls_lifetime(false);
+      }
       out_result->push_back(std::move(window));
     }
   }
@@ -69,6 +73,11 @@ class WindowTransientDescendantIteratorTest : public AshTestBase {
     ::wm::AddTransientChild(window_b.get(), window_c.get());
     ::wm::AddTransientChild(window_b.get(), window_e.get());
     ::wm::AddTransientChild(window_c.get(), window_d.get());
+    for (auto* child : {window_b.get(), window_c.get(), window_d.get(),
+                        window_e.get(), window_f.get()}) {
+      ::wm::TransientWindowManager::GetOrCreate(child)
+          ->set_parent_controls_lifetime(false);
+    }
 
     // Insert windows in preorder traversal: ABCDEF.
     out_result->push_back(std::move(window_a));

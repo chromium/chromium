@@ -36,9 +36,9 @@ std::unique_ptr<ui_devtools::UiDevToolsServer> CastUIDevTools::CreateServer(
   auto dom_agent_views = ui_devtools::DOMAgentViews::Create();
   DCHECK(dom_agent_views);
   auto* dom_agent_views_ptr = dom_agent_views.get();
+  client->AddAgent(std::move(dom_agent_views));
   client->AddAgent(
       std::make_unique<ui_devtools::PageAgentViews>(dom_agent_views_ptr));
-  client->AddAgent(std::move(dom_agent_views));
   client->AddAgent(
       std::make_unique<ui_devtools::CSSAgent>(dom_agent_views_ptr));
   client->AddAgent(ui_devtools::OverlayAgentViews::Create(dom_agent_views_ptr));
