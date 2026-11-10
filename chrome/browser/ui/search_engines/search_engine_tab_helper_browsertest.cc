@@ -33,7 +33,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
-#include "third_party/blink/public/common/features.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 
 using net::test_server::BasicHttpResponse;
@@ -330,23 +329,10 @@ IN_PROC_BROWSER_TEST_P(SearchEngineTabHelperPrerenderingBrowserTest,
   prerender_helper()->WaitForRequest(osdd_url, 1);
 }
 
-class SearchEngineTabHelperPrerenderingFormSubmissionBrowserTest
-    : public SearchEngineTabHelperPrerenderingBrowserTest {
- public:
-  SearchEngineTabHelperPrerenderingFormSubmissionBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        blink::features::kPrerenderActivationByFormSubmission);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Verifies that a prerender activation won't affect the keyword generation
 // logic.
-IN_PROC_BROWSER_TEST_F(
-    SearchEngineTabHelperPrerenderingFormSubmissionBrowserTest,
-    GenerateKeywordAfterPrerenderActivation) {
+IN_PROC_BROWSER_TEST_F(SearchEngineTabHelperPrerenderingBrowserTest,
+                       GenerateKeywordAfterPrerenderActivation) {
   GetNewTabWithTestSearchEngineTabHelper();
   TemplateURLService* url_service =
       TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());

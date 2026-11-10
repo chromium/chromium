@@ -34,7 +34,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
@@ -82,40 +81,20 @@ std::string GetFilePathWithHostAndPortReplacement(
 
 }  // namespace
 
-// The first bool flag denotes the state of
-// `kPrerenderActivationByFormSubmission`, and the second bool flag denotes the
-// state of `kInsecureFormNavigationThrottleForPrerender`, the combinations are
-// used to denote whether a non mixed prerender form submission is supported and
-// whether it should be dropped by the killswitch.
-class SSLPrerenderTest
-    : public InProcessBrowserTest,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+// The bool flag denotes the state of
+// `kInsecureFormNavigationThrottleForPrerender`, which is used to denote
+// whether a non mixed prerender form submission should be dropped by the
+// killswitch.
+class SSLPrerenderTest : public InProcessBrowserTest,
+                         public testing::WithParamInterface<bool> {
  public:
   SSLPrerenderTest()
       : prerender_helper_(base::BindRepeating(&SSLPrerenderTest::web_contents,
                                               base::Unretained(this))) {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    if (std::get<0>(GetParam())) {
-      enabled_features.push_back(
-          blink::features::kPrerenderActivationByFormSubmission);
-    } else {
-      disabled_features.push_back(
-          blink::features::kPrerenderActivationByFormSubmission);
-    }
-
-    if (std::get<1>(GetParam())) {
-      enabled_features.push_back(
-          security_interstitials::features::
-              kInsecureFormNavigationThrottleForPrerender);
-    } else {
-      disabled_features.push_back(
-          security_interstitials::features::
-              kInsecureFormNavigationThrottleForPrerender);
-    }
-
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    feature_list_.InitWithFeatureState(
+        security_interstitials::features::
+            kInsecureFormNavigationThrottleForPrerender,
+        GetParam());
   }
   ~SSLPrerenderTest() override = default;
 
@@ -147,9 +126,7 @@ class SecurityVisibleStateObserver : public content::WebContentsObserver {
   bool is_visible_state_changed_ = false;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         SSLPrerenderTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(All, SSLPrerenderTest, testing::Bool());
 
 // Verifies that a certificate error in a prerendered page causes cancelation
 // of prerendering without showing an interstitial.
@@ -470,25 +447,7 @@ IN_PROC_BROWSER_TEST_P(SSLPrerenderTest, HTTPSFormSubmissionIsAllowed) {
   content::test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
       *web_contents(), prerender_url);
 
-  // `kPrerenderActivationByFormSubmission` is false, so form submission is not
-  // set, the prerendered page will be non form submission. And the prerender
-  // shouldn't be activated by a form submission.
-  if (!std::get<0>(GetParam())) {
-    content::PrerenderHostId host_id =
-        prerender_helper_.GetHostForUrl(prerender_url);
-    ASSERT_TRUE(host_id);
-    content::test::PrerenderHostObserver prerender_observer(*web_contents(),
-                                                            host_id);
-    ASSERT_TRUE(content::ExecJs(web_contents()->GetPrimaryMainFrame(),
-                                content::JsReplace(R"(
-                                    const form = document.createElement('form');
-                                    form.action = $1;
-                                    document.body.appendChild(form);
-                                    form.submit(); )",
-                                                   prerender_url)));
-    prerender_observer.WaitForDestroyed();
-    EXPECT_FALSE(activation_manager.was_activated());
-  } else if (!std::get<1>(GetParam())) {
+  if (!GetParam()) {
     // Verifies that kill switch works.
     EXPECT_FALSE(prerender_helper_.GetHostForUrl(prerender_url));
   } else {

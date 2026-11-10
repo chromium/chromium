@@ -458,19 +458,15 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
 
   // If input["form_submission"] exists:
   SpeculationRule::FormSubmission form_submission(false);
-  if (RuntimeEnabledFeatures::PrerenderActivationByFormSubmissionEnabled(
-          context)) {
-    JSONValue* form_submission_value = input->Get("form_submission");
-    if (form_submission_value) {
-      bool form_submission_bool_value = false;
-      if (!form_submission_value->AsBoolean(&form_submission_bool_value)) {
-        SetParseErrorMessage(out_error,
-                             "form_submission's value must be a boolean.");
-        return nullptr;
-      }
-      form_submission =
-          SpeculationRule::FormSubmission(form_submission_bool_value);
+  if (JSONValue* form_submission_value = input->Get("form_submission")) {
+    bool form_submission_bool_value = false;
+    if (!form_submission_value->AsBoolean(&form_submission_bool_value)) {
+      SetParseErrorMessage(out_error,
+                           "form_submission's value must be a boolean.");
+      return nullptr;
     }
+    form_submission =
+        SpeculationRule::FormSubmission(form_submission_bool_value);
   }
 
   auto injection_type = mojom::blink::SpeculationInjectionType::kNone;

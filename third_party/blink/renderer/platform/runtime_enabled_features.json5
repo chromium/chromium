@@ -5314,13 +5314,6 @@
       status: "stable",
     },
     {
-      // Used to allow prerender activation by form submission.
-      // See https://crbug.com/346555939.
-      name: "PrerenderActivationByFormSubmission",
-      origin_trial_feature_name: "PrerenderActivationByFormSubmission",
-      status: "stable",
-    },
-    {
       name: "PrerenderUntilScript",
       public: true,
       origin_trial_feature_name: "PrerenderUntilScript",

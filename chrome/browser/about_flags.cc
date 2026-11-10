@@ -9096,11 +9096,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPrerenderUntilScriptDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kPrerenderUntilScript)},
 
-    {"prerender-activation-by-form-submission",
-     flag_descriptions::kPrerenderActivationByFormSubmissionName,
-     flag_descriptions::kPrerenderActivationByFormSubmissionDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kPrerenderActivationByFormSubmission)},
-
 #if BUILDFLAG(IS_CHROMEOS)
     {"enable-phone-hub-call-notification",
      flag_descriptions::kPhoneHubCallNotificationName,
