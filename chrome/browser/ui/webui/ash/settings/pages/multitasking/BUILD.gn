@@ -14,8 +14,8 @@ static_library("multitasking") {
 
   deps = [
     "//ash/constants",
-    "//chrome/app:generated_resources",
     "//chrome/browser/ui/webui/ash/settings/search",
+    "//chromeos/ash/experiences/settings_ui/resources:strings",
     "//content/public/browser",
     "//ui/base",
   ]

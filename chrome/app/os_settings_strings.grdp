@@ -3,9 +3,6 @@
 <grit-part>
 <if expr="is_chromeos">
   <!-- Shared across multiple pages -->
-  <message name="IDS_SETTINGS_TURN_ON" desc="Label for turn on buttons.">
-    Turn on
-  </message>
   <message name="IDS_SETTINGS_DEVICE_OFF" desc="In Settings pages, the label when a bluetooth, wifi, or mobile device is off (disabled)." meaning="Device is disabled.">
     Off
   </message>
@@ -179,9 +176,6 @@
   </message>
   <message name="IDS_SETTINGS_ABOUT_PAGE_CURRENT_CHANNEL_LTS" desc="The LTS (long-term support) label in the message about current channel.">
     long-term support
-  </message>
-  <message name="IDS_SETTINGS_ABOUT_PAGE_CHECK_FOR_UPDATES" desc="The button label to check for updates and apply (download and install) if found">
-    Check for updates
   </message>
   <message name="IDS_SETTINGS_ABOUT_PAGE_CURRENT_CHANNEL_INFO" desc="The message about current channel.">
     Currently on <ph name="CHANNEL_NAME">$1<ex>stable</ex></ph> channel
@@ -458,26 +452,6 @@
   </message>
   <message name="IDS_OS_SETTINGS_LANGUAGES_APP_LANGUAGES_CHANGE_LANGUAGE_BUTTON_DESCRIPTION" desc="The description read by screenreader for the button where users can change the app language, either to another one, or reset to device language.">
     Change <ph name="APP">$1<ex>Google TV</ex></ph> language. Current language is <ph name="LANGUAGE">$2<ex>English (United States)</ex></ph>.
-  </message>
-
-  <!-- Personalization Page (OS settings) -->
-  <message name="IDS_OS_SETTINGS_PERSONALIZATION" desc="Name of the OS settings page which displays personalization preferences.">
-    Wallpaper and style
-  </message>
-  <message name="IDS_OS_SETTINGS_PERSONALIZATION_MENU_ITEM_DESCRIPTION" desc="Description for the Personalization menu item in the left menu.">
-    Dark theme, screen saver
-  </message>
-  <message name="IDS_OS_SETTINGS_PERSONALIZATION_MENU_ITEM_DESCRIPTION_GUEST_MODE" desc="Description for the Personalization menu item in the left menu, for guest mode.">
-    Dark theme
-  </message>
-  <message name="IDS_OS_SETTINGS_OPEN_PERSONALIZATION_HUB" desc="Title for the link to open personalization hub.">
-    Set your wallpaper &amp; style
-  </message>
-  <message name="IDS_OS_SETTINGS_OPEN_PERSONALIZATION_HUB_SUBTITLE" desc="Description for the link to open personalization hub.">
-    Personalize wallpaper, screen saver, dark theme, and more
-  </message>
-  <message name="IDS_OS_SETTINGS_OPEN_PERSONALIZATION_HUB_SUBTITLE_GUEST_MODE" desc="Description for the link to open personalization hub in guest mode.">
-    Personalize wallpaper, dark theme, and more
   </message>
 
   <!-- Search and Assistant section. -->
@@ -830,77 +804,6 @@
     Managed by Family Link
   </message>
 
-  <!-- Used by guest OS settings pages. -->
-  <message name="IDS_SETTINGS_GUEST_OS_SHARED_PATHS" desc="Label for managing folders shared with a guest OS.">
-    Manage shared folders
-  </message>
-  <message name="IDS_SETTINGS_GUEST_OS_SHARED_PATHS_LIST_HEADING" desc="Label for list of shared folders.">
-    Shared folders
-  </message>
-  <message name="IDS_SETTINGS_GUEST_OS_SHARED_PATHS_INSTRUCTIONS_REMOVE" desc="Instructions for removing folders shared with a guest OS.">
-    Removing folders will stop sharing but will not delete files.
-  </message>
-  <message name="IDS_SETTINGS_GUEST_OS_SHARED_PATHS_STOP_SHARING" desc="Tooltip to show when hovering on the remove icon for a folder shared with a guest OS.">
-    Stop sharing
-  </message>
-  <message name="IDS_SETTINGS_GUEST_OS_SHARED_PATHS_REMOVE_FAILURE_DIALOG_TITLE" desc="Title of the error dialog shown when unsharing a folder from a guest OS fails.">
-    Unshare failed
-  </message>
-  <message name="IDS_SETTINGS_GUEST_OS_SHARED_PATHS_REMOVE_FAILURE_TRY_AGAIN" desc="Button text in the dialog shown when unsharing a folder from a guest OS fails. Pressing this button will try to unshare the folder again.">
-    Try again
-  </message>
-  <message name="IDS_SETTINGS_GUEST_OS_SHARED_PATHS_LIST_EMPTY_MESSAGE" desc="Message shown when the user has not shared any folders with a guest OS.">
-    Shared folders will appear here
-  </message>
-  <message name="IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_LABEL" desc="Label for managing shared USB devices.">
-    Manage USB devices
-  </message>
-  <message name="IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_DESCRIPTION" desc="Description for managing shared USB devices.">
-    Give Android apps control over USB devices on this Chromebook
-  </message>
-  <message name="IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_EXTRA_DESCRIPTION" desc="Extra description for managing shared USB devices.">
-    Only supported devices are shown. USB devices will no longer be available to native apps until disconnected.
-  </message>
-  <message name="IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_LIST_EMPTY_MESSAGE" desc="Message shown when there are no available USB devices.">
-    Available USB devices will appear here.
-  </message>
-  <message name="IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_IN_USE" desc="Dialog title describing that a USB device is currently in use.">
-    Device in use
-  </message>
-  <message name="IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_REASSIGN" desc="Confirmation explaining to users that reassigning a USB device from being attached from one VM to another could cause errors.">
-     "<ph name="USB_DEVICE_NAME">$1<ex>Nexus 5</ex></ph>" is in use. Reassigning the device while it's in use could cause errors. Are you sure you want to continue?
-  </message>
-  <message name="IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_TABLE_TITLE" desc="Title of the table containing shared USB devices.">
-    USB devices
-  </message>
-  <message name="IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_ADD_TITLE" desc="Dialog title for adding shared USB devices.">
-    Add USB device
-  </message>
-  <message name="IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_NONE_ATTACHED" desc="Indicates there are no USB devices currently shared.">
-    No USB devices are attached.
-  </message>
-  <message name="IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_NOTIFICATION_DIALOG_TITLE_ENABLE" desc="Dialog title for enabling USB device notifications">
-    This will enable notifications for all new USB peripherals across the system. Are you sure you want to continue?
-  </message>
-  <message name="IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_NOTIFICATION_DIALOG_TITLE_DISABLE" desc="Dialog title for disabling USB device notifications">
-    This will disable notifications for all new USB peripherals across the system. Are you sure you want to continue?
-  </message>
-  <message name="IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_NOTIFICATION_DIALOG_ACCEPT" desc="Accept notification change dialog button">
-    Accept
-  </message>
-  <message name="IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_NOTIFICATION_LABEL" desc="Menu label for enabling/disabling USB device notifications">
-    Show popup notification for new USB devices.
-  </message>
-  <message name="IDS_SETTINGS_GUEST_OS_SHARED_USB_PERSISTENT_PASSTHROUGH_LABEL" desc="Menu label for enabling/disabling persistent USB device passthrough">
-    Enable persistent USB device sharing with guests.
-  </message>
-  <message name="IDS_SETTINGS_GUEST_OS_SHARED_USB_PERSISTENT_PASSTHROUGH_DIALOG_TITLE_ENABLE" desc="Dialog title for enabling USB persistent passthrough">
-    This will enable persistent sharing of USB devices with guests. Once a device is shared to a guest, it will automatically attempt to connect to that same guest. Manually disconnecting the device will disable this persistence, and disabling the feature entirely will reset all persistence. Are you sure?
-  </message>
-  <message name="IDS_SETTINGS_GUEST_OS_SHARED_USB_PERSISTENT_PASSTHROUGH_DIALOG_TITLE_DISABLE" desc="Dialog title for disabling USB persistent passthrough">
-    This will disable persistent sharing of USB devices with guests, which also will reset all persistence. Are you sure?
-  </message>
-
   <!-- Crostini -->
   <message name="IDS_SETTINGS_CROSTINI_TITLE" desc="The title of Crostini section. It is meant to be used by software developers.">
     Developers
@@ -1162,29 +1065,8 @@
   </message>
 
   <!-- Android apps page (OS settings) -->
-  <message name="IDS_OS_SETTINGS_ANDROID_APPS_LABEL" desc="The text associated with the primary section setting.">
-    Manage Google Play preferences
-  </message>
-  <message name="IDS_SETTINGS_ANDROID_APPS_ENABLE_BUTTON_ROLE" desc="Role description of the button which starts the Google Play Store Terms of Service screen. Spoken aloud by screen readers when the Turn On button is focused">
-    Turn on Google Play Store
-  </message>
-  <message name="IDS_OS_SETTINGS_ANDROID_APPS_MANAGE_APPS" desc="Label for launching Android apps settings.">
-    Android Settings
-  </message>
-  <message name="IDS_OS_SETTINGS_ANDROID_APPS_REMOVE" desc="Label for the control to open a dialog confirming removal of the Google Play Store.">
-    Remove Google Play and Android apps
-  </message>
   <message name="IDS_SETTINGS_ANDROID_APPS_REMOVE_BUTTON" desc="Label for the button for the removal of the Google Play Store">
     Remove
-  </message>
-  <message name="IDS_OS_SETTINGS_ANDROID_APPS_DISABLE_DIALOG_TITLE" desc="Title of the confirmation dialog for disabling android apps.">
-    Remove Google Play and Android apps?
-  </message>
-  <message name="IDS_SETTINGS_APPS_ARC_VM_SHARED_USB_DEVICES_DESCRIPTION" desc="Description for managing shared USB devices. Do not translate 'ARCVM'.">
-    Give Android apps control over USB devices on this Chromebook. Permission will be requested each time you plug in a USB device. Individual Android apps will ask for additional permissions.
-  </message>
-  <message name="IDS_OS_SETTINGS_OPEN_GOOGLE_PLAY" desc="Label for launching Google Play Store.">
-    Open Google Play
   </message>
 
   <!-- Bluetooth page (OS settings) -->
@@ -2727,142 +2609,6 @@
   </message>
 
   <!-- Apps Section Page -->
-  <message name="IDS_SETTINGS_APPS_TITLE" desc="The title of Apps section.">
-    Apps
-  </message>
-  <message name="IDS_OS_SETTINGS_APPS_MENU_ITEM_DESCRIPTION" desc="Description for the Apps menu item in the left menu.">
-    Notifications, Google Play
-  </message>
-  <message name="IDS_OS_SETTINGS_APPS_MENU_ITEM_DESCRIPTION_ARC_UNAVAILABLE" desc="Description for the Apps menu item in the left menu, when ARC is unavailable.">
-    Notifications
-  </message>
-  <message name="IDS_SETTINGS_APPS_LINK_TEXT" desc="The label for the button which links to the App Management page.">
-    Manage your apps
-  </message>
-  <message name="IDS_OS_SETTINGS_APP_NOTIFICATIONS_TITLE" desc="The label for the settings row button in the App section of OS Settings which links to the App Notifications page.">
-    Allow notifications
-  </message>
-  <message name="IDS_OS_SETTINGS_APP_PERMISSIONS_TITLE_ANDROID" desc="Label for a link to more settings and permissions for an app with type Android.">
-    More Android settings and permissions
-  </message>
-  <message name="IDS_OS_SETTINGS_APP_PERMISSIONS_TITLE_WEB_APP" desc="Label for a link to more settings and permissions for an app with type web app.">
-    More web app settings and permissions
-  </message>
-  <message name="IDS_OS_SETTINGS_APP_PERMISSIONS_TITLE_CHROME_APP" desc="Label for a link to more settings and permissions for an app with type Chrome app.">
-    More Chrome app settings and permissions
-  </message>
-  <message name="IDS_OS_SETTINGS_OPEN_IN_APP_TITLE" desc="Label for the intent sharing option to open in a specified app.">
-    Open in <ph name="APP_NAME">$1<ex>Calculator</ex></ph> app
-  </message>
-  <message name="IDS_SETTINGS_APP_NOTIFICATIONS_LINK_TEXT" desc="The label for the settings row button in the App section of OS Settings which links to the App Notifications page.">
-    Notifications
-  </message>
-  <message name="IDS_SETTINGS_MANAGE_ISOLATED_WEB_APPS_LINK_TEXT" desc="The label for the settings row button in the App section of OS Settings which links to the Manage Isolated Web Apps page.">
-    Manage isolated web apps (beta)
-  </message>
-  <message name="IDS_SETTINGS_MANAGE_ISOLATED_WEB_APPS_SUBPAGE_TITLE" desc="The title of the Manage Isolated Web Apps subpage.">
-    Isolated web apps (beta)
-  </message>
-  <message name="IDS_SETTINGS_ISOLATED_WEB_APPS_DESCRIPTION" desc="A short description for Isolated Web Apps and a link for additional information.">
-    Access packaged web applications with enhanced capabilities. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
-  </message>
-  <message name="IDS_OS_SETTINGS_APP_NOTIFICATIONS_LINK_DESCRIPTION" desc="The description for the settings row button in the App section of OS Settings which links to the App Notifications page.">
-    Manage app notifications, Do Not Disturb, and app badging
-  </message>
-  <message name="IDS_SETTINGS_APP_NOTIFICATIONS_SUBLABEL_TEXT" desc="The sublabel for the settings row button in the App section of OS Settings which links to the App Notifications page indicating the number of ChromeOS apps installed.">
-    <ph name="APP_COUNT">$1<ex>3</ex></ph> apps
-  </message>
-  <message name="IDS_SETTINGS_APP_NOTIFICATIONS_DND_ENABLED_SUBLABEL_TEXT" desc="The sublabel for the settings row button in the App section of OS Settings which links to the App Notifications page indicating that Do Not Disturb is on.">
-    Do Not Disturb enabled
-  </message>
-  <message name="IDS_SETTINGS_APP_NOTIFICATIONS_DO_NOT_DISTURB_TOGGLE_TITLE" desc="The label for the notfications Do Not Disturb toggle that lets the user silence all app notifications.">
-    Do Not Disturb
-  </message>
-  <message name="IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_LABEL" desc="The label for the settings row that takes the user to a page for setting up on-device parental controls for apps.">
-    Parental controls for apps
-  </message>
-  <message name="IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_SUBLABEL" desc="The sublabel that describes the feature where users can set up on-device parental controls to block or enable apps.">
-    Block apps installed on this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. To restrict downloading apps or content, go to Google Play Settings. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$2"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
-  </message>
-  <message name="IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_SUBLABEL_DESCRIPTION" desc="Accessibility aria description for the parental controls subpage button">
-    Block apps installed on this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. To restrict downloading apps or content, go to Google Play Settings.
-  </message>
-  <message name="IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_SET_UP_BUTTON" desc="Text for the button that allows users to set up a PIN for on-device parental controls.">
-    Set up
-  </message>
-  <message name="IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_SEARCH_PROMPT" desc="Text for the prompt in the search bar of the app parental controls page.">
-    Search apps
-  </message>
-  <message name="IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_NO_APPS_FOUND_TEXT" desc="Text shown when the app parental controls page has no apps to show.">
-    No apps found
-  </message>
-  <message name="IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_ACCESS_DIALOG_TITLE" desc="The title of the Parental Controls PIN verification dialog which lets the user access the App Parental Controls subpage.">
-    Enter your PIN for parental controls
-  </message>
-  <message name="IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_CHOOSE_PIN_SUBTITLE" desc="The subtitle of the dialog which lets the user set up a PIN for App Parental Controls.">
-    Use this PIN to change parental controls settings.
-    If you forget the PIN, powerwash this device and set up again.
-  </message>
-  <message name="IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_CHOOSE_PIN_TITLE" desc="The title of the dialog which lets the user set up a PIN for App Parental Controls.">
-    Set up your PIN
-  </message>
-  <message name="IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_CONFIRM_PIN_TITLE" desc="The title of the dialog which lets the user confirm a PIN for App Parental Controls.">
-    Confirm your PIN
-  </message>
-  <message name="IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_FORGOT_PIN_LINK_NAME" desc="The name of the link which sends the user to an article with instructions to follow in the case of a forgotten App Parental Controls PIN.">
-    Forgot PIN?
-  </message>
-  <message name="IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_PIN_INCORRECT_ERROR_TEXT" desc="The text displayed under the PIN input section that notifies the user that the PIN they entered is incorrect.">
-    Incorrect PIN. Try again
-  </message>
-  <message name="IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_PIN_MISMATCH_ERROR_TEXT" desc="The text displayed under the PIN input section that notifies the user that the re-entered PIN does not match the first PIN entered.">
-    PINs do not match
-    </message>
-  <message name="IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_APPS_TITLE_TEXT" desc="The title text for the apps parental controls page listing the user's blockable apps.">
-    Apps
-  </message>
-  <message name="IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_BLOCKED_APPS_COUNT_TEXT" desc="Text showing the number of blocked applications on the apps parental controls page.">
-    <ph name="BLOCKED_APPS_SIZE">$1<ex>5</ex></ph> of <ph name="APPS_LIST_SIZE">$2<ex>30</ex></ph> apps blocked
-  </message>
-  <message name="IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_PIN_WRONG_LENGTH_ERROR_TEXT" desc="The text displayed under the PIN input section that notifies the user that the PIN should not be shorter than 6 digits">
-    PIN must be 6 digits
-  </message>
-  <message name="IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_PIN_NUMERIC_ERROR_TEXT" desc="The text displayed under the PIN input section that notifies the user that the PIN should only consist of digits">
-    PIN must use numbers only
-  </message>
-   <message name="IDS_OS_SETTINGS_APP_NOTIFICATIONS_DO_NOT_DISTURB_TOGGLE_DESCRIPTION" desc="The text description of the Do Not Disturb toggle within help icon tooltip.">
-    Notifications won't pop up on the screen. You can still see notifications by clicking the Do Not Disturb icon on the bottom right of your screen.
-  </message>
-  <message name="IDS_SETTINGS_APP_NOTIFICATIONS_LINK_TO_BROWSER_SETTINGS_DESCRIPTION" desc="In notifications OS Settings subpage, explanatory text for website notifications link.">
-    For browser notifications, go to <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>Chrome browser Settings<ph name="LINK_END">&lt;/a&gt;</ph>
-  </message>
-  <message name="IDS_SETTINGS_APP_BADGING_TOGGLE_LABEL" desc="The label for the app badging toggle in the App Notifications page of OS Settings.">
-    App badging
-  </message>
-  <message name="IDS_SETTINGS_APP_BADGING_TOGGLE_SUBLABEL" desc="The sublabel for the app badging toggle in the App Notifications page of OS Settings.">
-    Show dot on app icon for app alerts
-  </message>
-  <message name="IDS_OS_SETTINGS_NOTIFICATIONS_MANAGER_LABEL" desc="The label for the settings row button in the App Notifications section of OS Settings which links to the Manage App Notifications page.">
-    Manage app notifications
-  </message>
-  <message name="IDS_OS_SETTINGS_NOTIFICATIONS_MANAGER_LINK_DESCRIPTION" desc="The sublabel for the settings row button in the App Notifications section of OS Settings which links to the Manage App Notifications page.">
-    <ph name="NUM_ALLOWED_APPS">$1<ex>1</ex></ph> of <ph name="TOTAL_NUM_APPS">$2<ex>2</ex></ph> apps can send notifications
-  </message>
-  <message name="IDS_SETTINGS_ENABLE_ISOLATED_WEB_APPS_LABEL" desc="The label for the enable Isolated Web Apps toggle in the Manage Isolated Web Apps page of OS Settings.">
-    Turn on isolated web apps
-  </message>
-  <message name="IDS_SETTINGS_ANDROID_APPS_TITLE" desc="The title of Google Play Store (Arc++ / Android Apps) section.">
-    Google Play Store
-  </message>
-  <message name="IDS_SETTINGS_ANDROID_SETTINGS_TITLE" desc="The title of Android settings section in case Play Store app is not available.">
-    Android settings
-  </message>
-  <message name="IDS_OS_SETTINGS_ANDROID_APPS_SUBTEXT" desc="Description for the section for enabling and managing Google Play Store (Android) apps.">
-    You can download Android apps and games through the Play Store. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$1<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
-  </message>
-  <message name="IDS_OS_SETTINGS_ANDROID_APPS_SUBTEXT_DESCRIPTION" desc="Accessibility description for the section for enabling and managing Google Play Store (Android) apps." is_accessibility_with_no_ui="true">
-    You can download Android apps and games through the Play Store.
-  </message>
   <!-- TODO(jamescook): Use device type instead of "Chromebook", which may
         require changing ArcPlayTermsOfServiceConsent resource id handling. -->
   <message name="IDS_OS_SETTINGS_ANDROID_APPS_DISABLE_DIALOG_MESSAGE" desc="Describes what will happen if the user opts out of android apps.">
@@ -2871,35 +2617,6 @@
     Content you've purchased through Google Play such as movies, TV shows, music, books, as well as purchases from other apps may also be deleted.
     <ph name="LINE_BREAKS2">&lt;br&gt;&lt;br&gt;</ph>
     This doesn't affect apps or content on other devices.
-  </message>
-  <message name="IDS_SETTINGS_APP_DETAILS_TITLE" desc="The title of app details subpage, which displays details about a specific app.">
-    App details
-  </message>
-  <message name="IDS_OS_SETTINGS_APP_LANGUAGE_DEVICE_LANGUAGE_LABEL" desc="The label to select or display app language as system default in app language selection of OS Settings.">
-    Device language
-  </message>
-  <message name="IDS_OS_SETTINGS_APP_LANGUAGE_DIALOG_TITLE" desc="The dialog title to display list of selected and selectable app language.">
-    Change app language
-  </message>
-  <message name="IDS_OS_SETTINGS_APP_LANGUAGE_DIALOG_SEARCH_PLACEHOLDER_TEXT" desc="The dialog search box placeholder indicating acceptable search query for app language.">
-    Search by countries, language, or input names
-  </message>
-  <message name="IDS_OS_SETTINGS_APP_LANGUAGE_DIALOG_SUGGESTED_LABEL" desc="The dialog label to indicate suggested languages for app language selection.">
-    Suggested
-  </message>
-  <message name="IDS_OS_SETTINGS_APP_LANGUAGE_DIALOG_ALL_LANGUAGES_LABEL" desc="The dialog label to indicate all available languages for app language selection.">
-    All languages
-  </message>
-  <message name="IDS_OS_SETTINGS_APP_LANGUAGE_DIALOG_UPDATE_BUTTON_TEXT" desc="The dialog confirm button to update app language with selected locale.">
-    Update
-  </message>
-
-   <!-- Apps > Manage your apps > Borealis -->
-  <message name="IDS_SETTINGS_APPS_BOREALIS_MAIN_PERMISSION_TEXT" desc="Description in Steam (name of app, manages other apps) settings page.">
-    Permissions allowed for Steam apply to all Steam games and apps.
-  </message>
-  <message name="IDS_SETTINGS_APPS_BOREALIS_APP_PERMISSION_TEXT" desc="Description on settings page for apps that are managed by Steam (name of app). Link to Steam app settings page where permissions can be changed.">
-    Permissions for games and apps installed via Steam can be managed in the <ph name="LINK_BEGIN">&lt;a&gt;</ph>Steam app settings<ph name="LINK_END">&lt;/a&gt;</ph>.
   </message>
 
   <!-- Storage -->
@@ -3317,187 +3034,8 @@
   <message name="IDS_OS_SETTINGS_SYSTEM_PREFERENCES_MENU_ITEM_DESCRIPTION" desc="Description for the System Preferences menu item in the left menu. This static list describes device storage, battery/energy saver, and language settings.">
     Storage, power, language
   </message>
-  <message name="IDS_OS_SETTINGS_SYSTEM_PREFERENCES_MULTITASKING_TITLE" desc="The title of the Multitasking settings card in the System Preferences page.">
-    Windows and desks
-  </message>
-  <message name="IDS_OS_SETTINGS_SYSTEM_PREFERENCES_MULTITASKING_SNAP_WINDOW_LABEL" desc="The title of the Multitasking settings card in the System Preferences page.">
-    Show window suggestions when starting split-screen
-  </message>
-  <message name="IDS_OS_SETTINGS_SYSTEM_PREFERENCES_MULTITASKING_SNAP_WINDOW_DESCRIPTION" desc="The title of the Multitasking settings card in the System Preferences page.">
-    If you snap a window to one side to use split-screen, you'll see window suggestions for the other side
-  </message>
   <message name="IDS_OS_SETTINGS_SYSTEM_PREFERENCES_STORAGE_AND_POWER_TITLE" desc="The title of the Storage and Power settings card in the System Preferences page.">
     Storage and power
-  </message>
-
-  <!-- App Management -->
-  <message name="IDS_APP_MANAGEMENT_NO_APPS_FOUND" desc="Text shown when a search of apps yeilds no results.">
-    No apps found
-  </message>
-  <message name="IDS_APP_MANAGEMENT_PIN_TO_SHELF" desc="Label for the pin to shelf button in the app settings page.">
-    Pin to shelf
-  </message>
-  <message name="IDS_APP_MANAGEMENT_PRESET_WINDOW_SIZES" desc="Label for the preset window sizes toggle in the app settings page.">
-    Preset window sizes
-  </message>
-  <message name="IDS_APP_MANAGEMENT_PRESET_WINDOW_SIZES_TEXT" desc="Label for the description of the window preset toggle in the app settings page.">
-    Use presets for phone, tablet, or resizable windows to prevent app from misbehaving
-  </message>
-  <message name="IDS_APP_MANAGEMENT_PRINTING" desc="Label for the printing permission toggle.">
-    Printers
-  </message>
-  <message name="IDS_APP_MANAGEMENT_SEARCH_PROMPT" desc="Prompt in search bar of main app management page.">
-    Search apps
-  </message>
-  <message name="IDS_APP_MANAGEMENT_CONTACTS" desc="Label for the Android contacts (address book) permission toggle.">
-    Contacts
-  </message>
-  <message name="IDS_APP_MANAGEMENT_STORAGE" desc="Label for the Android storage permission toggle.">
-    Storage
-  </message>
-  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TITLE" desc="Title for App Details Section">
-    App details
-  </message>
-  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TOOLTIP_WEB_A11Y" desc="Text to be read out by ChromeVox, when highlighting an info icon for Web Apps downloaded from the Chrome browser, stating the source URL of the app">
-    From <ph name="APP_URL">$1<ex>https://google.com</ex></ph>
-  </message>
-  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_INSTALL_SOURCE_WEB_STORE" desc="Text for Chrome Web Store installation source">
-    Chrome Web Store
-  </message>
-  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_INSTALL_SOURCE_PLAY_STORE" desc="Text for Google Play Store installation source">
-    Google Play Store
-  </message>
-  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_INSTALL_SOURCE_BROWSER" desc="Text for Chrome browser installation source for Web App">
-    Web App installed from Chrome browser
-  </message>
-  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_SUBAPP_DATA_SHARING_EXPLANATION" desc="Explanation of data sharing between parent app and sub apps in App Management settings.">
-    This app data is shared between "<ph name="PARENT_APP_NAME">$1<ex>Office Suite</ex></ph>" and its installed apps
-  </message>
-  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_AND_SOURCE_COMBINED" desc="Full text for installation source and app type line">
-    <ph name="APP_TYPE">$1<ex>Web App</ex></ph> installed from <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph><ph name="INSTALL_SOURCE">$2<ex>Google Play Store</ex></ph><ph name="END_LINK">&lt;/a&gt;</ph>
-  </message>
-  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_AND_SOURCE_PREINSTALLED_APP" desc="Explanation text for the installation source of an app, describing the type of the app, and that it came automatically installed with the device (preinstalled).">
-    <ph name="APP_TYPE">$1<ex>ChromeOS System App</ex></ph> preinstalled on your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph>
-  </message>
-  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_VERSION" desc="Text for application version">
-    Version: <ph name="APP_VERSION">$1<ex>17.2</ex></ph>
-  </message>
-  <message name="IDS_APP_MANAGEMENT_APPLY_UPDATE" desc="Button label to apply a downloaded update for an app">
-    Apply update
-  </message>
-  <message name="IDS_APP_MANAGEMENT_CHECKING" desc="Button label while checking for updates">
-    Checking...
-  </message>
-  <message name="IDS_APP_MANAGEMENT_APP_IS_UP_TO_DATE" desc="Status text indicating the app is running the latest version">
-    App is up to date.
-  </message>
-  <message name="IDS_APP_MANAGEMENT_UPDATE_FOUND_DIALOG_TITLE" desc="Title for the dialog indicating that an update has been found for an isolated web app.">
-    Update found
-  </message>
-  <message name="IDS_APP_MANAGEMENT_UPDATE_FOUND_DIALOG_DESCRIPTION" desc="Description for the dialog warning that an update has been found and asking if they want to apply it.">
-    A new version (<ph name="VERSION">$1<ex>1.2.0</ex></ph>) of <ph name="APP_NAME">$2<ex>Kitchen Sink IWA</ex></ph> is available. Would you like to apply it now?
-  </message>
-  <message name="IDS_APP_MANAGEMENT_UPDATE_FOUND_WARNING_DIALOG_DESCRIPTION" desc="Description for the dialog warning that an update has been found, app windows will close, and asking if they want to apply it.">
-    A new version (<ph name="VERSION">$1<ex>1.2.0</ex></ph>) of <ph name="APP_NAME">$2<ex>Kitchen Sink IWA</ex></ph> is available. All open windows will be closed to apply the update. Unsaved data may be lost.
-  </message>
-  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_STORAGE_TITLE" desc="Text for title of storage section for storage related to the app and its associated files">
-    Storage
-  </message>
-  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_APP_SIZE" desc="Text for app size label for the amount of storage the app itself is using">
-    App size: <ph name="APP_SIZE">$1<ex>100 MB</ex></ph>
-  </message>
-  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_DATA_SIZE" desc="Text for data size label for the amount of storage the app's associated files is using">
-    Data stored in app: <ph name="APP_SIZE">$1<ex>100 MB</ex></ph>
-  </message>
-  <message name="IDS_APP_MANAGEMENT_APP_LANGUAGE_LABEL" desc="The label for the settings row button to manage app language selection section of OS Settings which opens a dialog.">
-    App language
-  </message>
-  <message name="IDS_APP_MANAGEMENT_ARC_MANAGE_PERMISSIONS" desc="Label for a link to manage permissions for an app.">
-    Manage permissions
-  </message>
-  <message name="IDS_APP_MANAGEMENT_PERMISSION_ASK" desc="Label explaining that the user will be asked whether an app can access a permission (e.g. camera access) every time it is used.">
-    Ask every time
-  </message>
-  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED" desc="Label explaining that access to a permission (e.g. camera access) is allowed for an app.">
-    Allowed
-  </message>
-  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_WITH_DETAILS" desc="Label explaining that access to a permission (e.g. camera access) is allowed for an app. The placeholder after the dash provides additional details about what access is allowed.">
-    Allowed – <ph name="PERMISSION_DETAILS">$1<ex>While in use</ex></ph>
-  </message>
-  <message name="IDS_APP_MANAGEMENT_PERMISSION_DENIED" desc="Label explaining that access to a permission (e.g. camera access) is denied for an app.">
-    Denied
-  </message>
-  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_TEXT_WITH_TURN_ON_SYSTEM_CAMERA_ACCESS_BUTTON" desc="Label explaining that access to camera is allowed for an app followed by a button to turn on system camera access.">
-    Allowed. Turn on <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>system camera access<ph name="LINK_END">&lt;/a&gt;</ph>.
-  </message>
-  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_TEXT_WITH_TURN_ON_SYSTEM_MICROPHONE_ACCESS_BUTTON" desc="Label explaining that access to microphone is allowed for an app followed by a button to turn on system microphone access.">
-    Allowed. Turn on <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>system microphone access<ph name="LINK_END">&lt;/a&gt;</ph>.
-  </message>
-  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_TEXT_WITH_TURN_ON_SYSTEM_LOCATION_ACCESS_BUTTON" desc="Label explaining that access to location is allowed for an app followed by a button to turn on system location access.">
-    Allowed. Turn on <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>system location access<ph name="LINK_END">&lt;/a&gt;</ph>.
-  </message>
-  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_TEXT_WITH_DETAILS_AND_TURN_ON_SYSTEM_CAMERA_ACCESS_BUTTON" desc="Label explaining that access to camera is allowed for an app followed by a button to turn on system camera access.">
-    Allowed – <ph name="PERMISSION_DETAILS">$1<ex>While in use</ex></ph>. Turn on <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>system camera access<ph name="LINK_END">&lt;/a&gt;</ph>.
-  </message>
-  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_TEXT_WITH_DETAILS_AND_TURN_ON_SYSTEM_MICROPHONE_ACCESS_BUTTON" desc="Label explaining that access to microphone is allowed for an app followed by a button to turn on system microphone access.">
-    Allowed – <ph name="PERMISSION_DETAILS">$1<ex>While in use</ex></ph>. Turn on <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>system microphone access<ph name="LINK_END">&lt;/a&gt;</ph>.
-  </message>
-  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_TEXT_WITH_DETAILS_AND_TURN_ON_SYSTEM_LOCATION_ACCESS_BUTTON" desc="Label explaining that access to location is allowed for an app followed by a button to turn on system location access.">
-    Allowed – <ph name="PERMISSION_DETAILS">$1<ex>While in use</ex></ph>. Turn on <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>system location access<ph name="LINK_END">&lt;/a&gt;</ph>.
-  </message>
-  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_BUT_NO_CAMERA_CONNECTED_TEXT" desc="Label explaining that access to camera is allowed for an app but no camera is connected to the device.">
-    Allowed. Connect a camera to your device.
-  </message>
-  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_BUT_NO_MICROPHONE_CONNECTED_TEXT" desc="Label explaining that access to microphone is allowed for an app but no microphone is connected to the device.">
-    Allowed. Connect a microphone to your device.
-  </message>
-  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_BUT_NO_CAMERA_CONNECTED_TEXT_WITH_DETAILS" desc="Label explaining that access to camera is allowed for an app but no camera is connected to the device with details.">
-    Allowed – <ph name="PERMISSION_DETAILS">$1<ex>While in use</ex></ph>. Connect a camera to your device.
-  </message>
-  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_BUT_NO_MICROPHONE_CONNECTED_TEXT_WITH_DETAILS" desc="Label explaining that access to microphone is allowed for an app but no microphone is connected to the device with details.">
-    Allowed – <ph name="PERMISSION_DETAILS">$1<ex>While in use</ex></ph>. Connect a microphone to your device.
-  </message>
-  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_BUT_MICROPHONE_HW_SWITCH_ACTIVE_TEXT" desc="Label explaining that access to microphone is allowed for an app but microphone is blocked by hardware switch.">
-    Allowed. Turn on microphone using physical switch.
-  </message>
-  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_BUT_MICROPHONE_HW_SWITCH_ACTIVE_TEXT_WITH_DETAILS" desc="Label explaining that access to microphone is allowed for an app but microphone is blocked by hardware switch with details.">
-    Allowed – <ph name="PERMISSION_DETAILS">$1<ex>While in use</ex></ph>. Turn on microphone using physical switch.
-  </message>
-
-  <message name="IDS_OS_SETTINGS_PERMISSION_ITEM_CLICK_TOGGLE_PERMISSION" desc="Text to be spoken by a screen reader to describe the toggle button to enable or disable a specific permission for an app.">
-    Click to toggle permission.
-  </message>
-  <message name="IDS_OS_SETTINGS_APP_DETAILS_TYPE_ANDROID" desc="Text to explain that the type of an app is Android app">
-    Android App
-  </message>
-  <message name="IDS_OS_SETTINGS_APP_DETAILS_TYPE_CHROME" desc="Text to explain that the type of an app is Chrome app">
-    Chrome App
-  </message>
-  <message name="IDS_OS_SETTINGS_APP_DETAILS_TYPE_WEB" desc="Text to explain that the type of an app is Web app">
-    Web App
-  </message>
-  <message name="IDS_OS_SETTINGS_APP_DETAILS_TYPE_CROS_SYSTEM" desc="Text to explain that the type of an app is ChromeOS System app">
-    ChromeOS System App
-  </message>
-  <message name="IDS_OS_SETTINGS_APP_DETAILS_TYPE_ANDROID_INSTALL_REASON_POLICY" desc="Explanation text for the android app installation reason, describing the type of the app, and that it is installed by the administrator.">
-    Android app installed by your device administrator.
-  </message>
-  <message name="IDS_OS_SETTINGS_APP_DETAILS_TYPE_CHROME_INSTALL_REASON_POLICY" desc="Explanation text for the chrome app installation reason, describing the type of the app, and that it is installed by the administrator.">
-    Chrome app installed by your device administrator.
-  </message>
-  <message name="IDS_OS_SETTINGS_APP_DETAILS_TYPE_WEB_INSTALL_REASON_POLICY" desc="Explanation text for the web app installation reason, describing the type of the app, and that it is installed by the administrator.">
-    Web app installed by your device administrator.
-  </message>
-
-  <!-- Sub-Apps API -->
-  <message name="IDS_APP_MANAGEMENT_SUB_APPS_LIST_HEADING" desc="Label for the sub-app section in an app's settings page. The section lists all sub-applications that got installed by the current app. These sub-applications might be installed locally, or streamed from a remote location via the parent app.">
-    Installed applications from <ph name="APP_NAME">$1<ex>Parent app</ex></ph>
-  </message>
-  <message name="IDS_APP_MANAGEMENT_PARENT_APP_PERMISSION_EXPLANATION" desc="Explanation text that appears underneath the Permission header on an app's settings page. Any changes the user makes to this app's permissions also apply to any installed ('sub') apps.">
-    Permissions you allow for <ph name="APP_NAME">$1<ex>Parent app</ex></ph> will also be allowed for its installed apps.
-  </message>
-  <message name="IDS_APP_MANAGEMENT_SUB_APP_PERMISSION_EXPLANATION" desc="Explanation text that appears underneath the Permission header on an app's settings page. Any changes the user makes to the app's parent app's permissions also apply to this app. The 'Manage' link takes the user to the parent app's settings page where they can change the permissions.">
-    Permissions you allow for <ph name="APP_NAME">$1<ex>Parent app</ex></ph> will also be allowed for this app. <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>Manage permissions for parent app<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
 
   <!-- Safety Hub -->

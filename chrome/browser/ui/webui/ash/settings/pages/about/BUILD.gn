@@ -36,6 +36,7 @@ static_library("about") {
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/signin:identity_manager_provider",
+    "//chromeos/ash/experiences/settings_ui/resources:strings",
     "//chromeos/dbus/constants",
     "//components/signin/public/identity_manager",
     "//components/strings:components_branded_strings",

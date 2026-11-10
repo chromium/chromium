@@ -44,6 +44,7 @@ static_library("crostini") {
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/login/session",
     "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/settings_ui/resources:strings",
     "//components/user_manager",
     "//content/public/browser",
     "//ui/base",

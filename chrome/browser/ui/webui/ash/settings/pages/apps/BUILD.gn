@@ -44,6 +44,7 @@ static_library("apps") {
     "//chrome/common",
     "//chromeos/ash/experiences/arc",
     "//chromeos/ash/experiences/arc:arc_app_constants",
+    "//chromeos/ash/experiences/settings_ui/resources:strings",
     "//components/strings:components_strings",
     "//content/public/browser",
     "//content/public/common",

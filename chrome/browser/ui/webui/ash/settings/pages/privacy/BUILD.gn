@@ -65,6 +65,7 @@ static_library("privacy") {
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/signin:identity_manager_provider",
     "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/settings_ui/resources:strings",
     "//components/application_locale_storage",
     "//components/google/core/common",
     "//components/sync/base:features",
