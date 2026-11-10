@@ -4030,6 +4030,21 @@ ci.builder(
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15_16.base_unittests.filter",
                 ],
             ),
+            "chrome_public_test_apk": targets.mixin(
+                args = [
+                    # dbg builds don't convert PNG resources to WebP, so render
+                    # tests produce different Skia Gold images than on rel
+                    # builders. Gold failures are only reported on rel.
+                    # TODO(crbug.com/583923418): Find a long-term fix.
+                    "--skia-gold-consider-unsupported",
+                ],
+            ),
+            "chrome_public_unit_test_apk": targets.mixin(
+                args = [
+                    # See chrome_public_test_apk.
+                    "--skia-gold-consider-unsupported",
+                ],
+            ),
             "content_browsertests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_16.content_browsertests.filter",
@@ -4041,6 +4056,8 @@ ci.builder(
             "content_shell_test_apk": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15_16.content_shell_test_apk.filter",
+                    # See chrome_public_test_apk.
+                    "--skia-gold-consider-unsupported",
                 ],
             ),
             "content_unittests": targets.mixin(
@@ -4075,6 +4092,10 @@ ci.builder(
                 ],
             ),
             "webview_instrumentation_test_apk_multiple_process_mode": targets.mixin(
+                args = [
+                    # See chrome_public_test_apk.
+                    "--skia-gold-consider-unsupported",
+                ],
                 swarming = targets.swarming(
                     shards = 12,
                 ),

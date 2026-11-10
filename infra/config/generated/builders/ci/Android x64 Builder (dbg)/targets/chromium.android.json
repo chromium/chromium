@@ -4450,6 +4450,7 @@
         "args": [
           "--git-revision=${got_revision}",
           "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
+          "--skia-gold-consider-unsupported",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -4505,6 +4506,7 @@
         "args": [
           "--git-revision=${got_revision}",
           "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
+          "--skia-gold-consider-unsupported",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -4707,6 +4709,7 @@
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15_16.content_shell_test_apk.filter",
+          "--skia-gold-consider-unsupported",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -6938,6 +6941,7 @@
         "args": [
           "--webview-process-mode=multiple",
           "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
+          "--skia-gold-consider-unsupported",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
