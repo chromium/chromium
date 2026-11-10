@@ -129,7 +129,7 @@ void AutofillAiImportDataControllerImpl::OnSaveButtonClicked() {
   if (!GetSaveUpdateState().prompt_result_callback.is_null()) {
     std::move(GetSaveUpdateState().prompt_result_callback)
         .Run(AutofillClient::AutofillAiBubbleResult::kAccepted, std::nullopt,
-             {GetNoticeStringId(), GetPrimaryButtonTextId(IsSavePrompt())});
+             {{GetNoticeStringId()}, GetPrimaryButtonTextId(IsSavePrompt())});
   }
 }
 

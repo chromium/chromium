@@ -683,10 +683,10 @@ void AutofillAiManager::HandlePromptResult(
         // doesn't require a valid `session_id`.
         if (base::FeatureList::IsEnabled(
                 wallet::features::kWalletApiPrivatePassesConsent)) {
-          CHECK(ui_context.accepted_consent_string_id.has_value());
+          CHECK(!ui_context.accepted_consent_string_ids.empty());
           CHECK(ui_context.accept_button_string_id.has_value());
           session_id = RecordWalletPrivatePassConsent(
-              ui_context.accepted_consent_string_id.value(),
+              ui_context.accepted_consent_string_ids,
               ui_context.accept_button_string_id.value(),
               *client_->GetConsentAuditor(), *client_->GetIdentityManager());
         }

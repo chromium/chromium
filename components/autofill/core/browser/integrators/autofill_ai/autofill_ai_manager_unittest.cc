@@ -109,16 +109,16 @@ constexpr auto kAcceptBubble =
 constexpr auto kAcceptEdits =
     AutofillClient::AutofillAiBubbleResult::kEditAccepted;
 const AutofillClient::EntityImportUIContext kAcceptUIContext(
-    /*accepted_consent_string_id=*/123,
+    /*accepted_consent_string_ids=*/std::vector<int>{123, 456},
     /*accept_button_string_id=*/234);
 constexpr auto kDeclineBubble = AutofillClient::AutofillAiBubbleResult::kClosed;
 const AutofillClient::EntityImportUIContext kDeclineUIContext(
-    /*accepted_consent_string_id=*/123,
+    /*accepted_consent_string_ids=*/std::vector<int>{123},
     /*accept_button_string_id=*/345);
 constexpr auto kIgnoreBubble =
     AutofillClient::AutofillAiBubbleResult::kNotInteracted;
 const AutofillClient::EntityImportUIContext kIgnoreUIContext(
-    /*accepted_consent_string_id=*/123,
+    /*accepted_consent_string_ids=*/std::vector<int>{123},
     /*accept_button_string_id=*/std::nullopt);
 
 auto HasType(SuggestionType expected_type) {
@@ -1575,7 +1575,8 @@ TEST_F(AutofillAiManagerImportFormTest, PassportSaveToWalletConsent) {
   EXPECT_EQ(session_id_consent_auditor, session_id_api_call);
   sync_pb::UserConsentTypes::WalletPrivatePassConsent expected_consent;
   expected_consent.mutable_description_grd_ids()->Add(
-      *kAcceptUIContext.accepted_consent_string_id);
+      kAcceptUIContext.accepted_consent_string_ids.begin(),
+      kAcceptUIContext.accepted_consent_string_ids.end());
   expected_consent.set_confirmation_grd_id(
       *kAcceptUIContext.accept_button_string_id);
   EXPECT_THAT(consent, base::test::EqualsProto(expected_consent));

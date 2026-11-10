@@ -184,8 +184,8 @@ static constexpr base::TimeDelta kConfirmationDismissDelayIfVoiceOverRunning =
     std::move(_params->callback)
         .Run(autofill::AutofillClient::AutofillAiBubbleResult::kAccepted,
              std::nullopt,
-             {autofill::GetSaveToWalletSubtitleStringId(
-                  [self isPrivateWalletPass]),
+             {{autofill::GetSaveToWalletSubtitleStringId(
+                  [self isPrivateWalletPass])},
               autofill::GetSaveEntityAcceptButtonStringId()});
   } else {
     std::move(_params->callback)

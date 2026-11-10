@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
@@ -42,12 +43,12 @@ void HandleWalletUpsertResponse(
 bool IsValidWalletManagementUrl(const GURL& url);
 
 // Logs a `sync_pb::UserConsentTypes::WalletPrivatePassConsent` with
-// `accepted_consent_string_id` and `accept_button_string_id` as its consent
+// `accepted_consent_string_ids` and `accept_button_string_id` as its consent
 // details to the `consent_auditor` . This is required when saving a new Wallet
 // private pass, either through settings or on import. Returns the session ID
 // identifying the consent logged.
 consent_auditor::ConsentAuditor::SessionId RecordWalletPrivatePassConsent(
-    int accepted_consent_string_id,
+    base::span<const int> accepted_consent_string_ids,
     int accept_button_string_id,
     consent_auditor::ConsentAuditor& consent_auditor,
     signin::IdentityManager& identity_manager);

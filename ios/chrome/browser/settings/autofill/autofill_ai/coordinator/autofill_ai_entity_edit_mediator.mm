@@ -331,8 +331,9 @@ void LogEntitySaveOrUpdate(AutofillAIEntityEditMode mode,
   if (base::FeatureList::IsEnabled(
           wallet::features::kWalletApiPrivatePassesConsent)) {
     sessionId = autofill::RecordWalletPrivatePassConsent(
-        /*consent_string_id=*/autofill::GetSaveToWalletSubtitleStringId(
-            [self isPrivateWalletPass]),
+        /*accepted_consent_string_ids=*/{autofill::
+                                             GetSaveToWalletSubtitleStringId(
+                                                 [self isPrivateWalletPass])},
         /*clicked_button_string_id=*/
         autofill::GetSaveEntityAcceptButtonStringId(), *_consentAuditor,
         *_identityManager);

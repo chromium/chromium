@@ -117,7 +117,7 @@ bool IsValidWalletManagementUrl(const GURL& url) {
 }
 
 consent_auditor::ConsentAuditor::SessionId RecordWalletPrivatePassConsent(
-    int accepted_consent_string_id,
+    base::span<const int> accepted_consent_string_ids,
     int accept_button_string_id,
     consent_auditor::ConsentAuditor& consent_auditor,
     signin::IdentityManager& identity_manager) {
@@ -133,7 +133,8 @@ consent_auditor::ConsentAuditor::SessionId RecordWalletPrivatePassConsent(
   consent_auditor::ConsentAuditor::SessionId session_id =
       consent_auditor.GenerateSessionId();
   sync_pb::UserConsentTypes::WalletPrivatePassConsent consent;
-  consent.mutable_description_grd_ids()->Add(accepted_consent_string_id);
+  consent.mutable_description_grd_ids()->Add(
+      accepted_consent_string_ids.begin(), accepted_consent_string_ids.end());
   consent.set_confirmation_grd_id(accept_button_string_id);
   consent_auditor.RecordWalletPrivatePassConsent(gaia_id, session_id, consent);
   return session_id;

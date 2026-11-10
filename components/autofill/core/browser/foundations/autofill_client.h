@@ -349,9 +349,10 @@ class AutofillClient {
 
   // Details about the UI that was shown to the user in an entity import bubble.
   struct EntityImportUIContext {
-    // String ID of the consent displayed in the import bubble, if any.
-    // Populated only when the user accepts the prompt.
-    std::optional<int> accepted_consent_string_id;
+    // String IDs of all text of the consent displayed in the import bubble
+    // (e.g., the notice and the strings inserted into or displayed next to it),
+    // if any. Populated only when the user accepts the prompt.
+    std::vector<int> accepted_consent_string_ids;
     // The string ID of the button that the user clicked, in case the user
     // accepted the bubble.
     std::optional<int> accept_button_string_id;

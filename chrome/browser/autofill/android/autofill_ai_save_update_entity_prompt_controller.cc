@@ -60,12 +60,12 @@ AutofillAiSaveUpdateEntityPromptController::
           base::android::AttachCurrentThread(),
           reinterpret_cast<intptr_t>(this))) {
   CHECK(prompt_view_);
-  ui_context_.accepted_consent_string_id =
+  ui_context_.accepted_consent_string_ids = {
       IsWalletableEntity()
           ? (IsUpdatePrompt()
                  ? IDS_AUTOFILL_AI_UPDATE_ENTITY_TO_WALLET_DIALOG_SUBTITLE
                  : IDS_AUTOFILL_AI_SAVE_ENTITY_IN_WALLET_SOURCE_NOTICE)
-          : IDS_AUTOFILL_AI_SAVE_OR_UPDATE_LOCAL_ENTITY_SOURCE_NOTICE;
+          : IDS_AUTOFILL_AI_SAVE_OR_UPDATE_LOCAL_ENTITY_SOURCE_NOTICE};
   ui_context_.accept_button_string_id =
       IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_SAVE_BUTTON;
 }

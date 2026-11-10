@@ -31,8 +31,10 @@ namespace autofill {
 
 namespace {
 
+using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::FieldsAre;
+using ::testing::IsEmpty;
 
 // Helper method used to simulate an update entity dialog for a private pass
 // (passport). Returns two entities where the first is the new one and second is
@@ -368,7 +370,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAiImportDataControllerImplTest,
       FieldsAre(
           AutofillClient::AutofillAiBubbleResult::kAccepted, Eq(std::nullopt),
           FieldsAre(
-              IDS_AUTOFILL_AI_SAVE_ENTITY_DIALOG_SUBTITLE,
+              ElementsAre(IDS_AUTOFILL_AI_SAVE_ENTITY_DIALOG_SUBTITLE),
               IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_SAVE_BUTTON)));
   // The widget is closing asynchronously (`CloseNow()` is posted), so the
   // controller still considers the bubble visible until `WindowClosing()` runs.
@@ -385,10 +387,10 @@ IN_PROC_BROWSER_TEST_F(AutofillAiImportDataControllerImplTest,
                            /*legal_message_lines=*/{},
                            concurrent_prompt_future.GetCallback());
   ASSERT_TRUE(concurrent_prompt_future.IsReady());
-  EXPECT_THAT(concurrent_prompt_future.Get(),
-              FieldsAre(AutofillClient::AutofillAiBubbleResult::kUnknown,
-                        Eq(std::nullopt),
-                        FieldsAre(Eq(std::nullopt), Eq(std::nullopt))));
+  EXPECT_THAT(
+      concurrent_prompt_future.Get(),
+      FieldsAre(AutofillClient::AutofillAiBubbleResult::kUnknown,
+                Eq(std::nullopt), FieldsAre(IsEmpty(), Eq(std::nullopt))));
 
   // Once the first widget finishes closing, the controller is ready to show a
   // new prompt.

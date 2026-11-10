@@ -331,7 +331,7 @@ void EntityDataManagerAndroid::AddOrUpdateEntityInstance(
       if (base::FeatureList::IsEnabled(
               wallet::features::kWalletApiPrivatePassesConsent)) {
         session_id = RecordWalletPrivatePassConsent(
-            description_string_id, accept_button_string_id, *consent_auditor_,
+            {description_string_id}, accept_button_string_id, *consent_auditor_,
             *identity_manager_);
       }
       wallet_pass_access_manager_->SaveWalletEntityInstance(

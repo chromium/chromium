@@ -1259,8 +1259,8 @@ bool AutofillPrivateAddOrUpdateEntityInstanceFunction::
       // Sadly, the string IDs are hardcoded here, because the TypeScript code
       // only has access to the strings themselves, not their IDs.
       session_id = autofill::RecordWalletPrivatePassConsent(
-          /*accepted_consent_string_id=*/
-          IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW,
+          /*accepted_consent_string_ids=*/
+          {IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW},
           /*accept_button_string_id=*/IDS_SAVE,
           *autofill_client()->GetConsentAuditor(),
           *autofill_client()->GetIdentityManager());
