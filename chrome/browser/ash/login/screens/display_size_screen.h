@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 
-class Profile;
+class PrefService;
 
 class PrefService;
 
@@ -31,7 +31,7 @@ class DisplaySizeScreen : public BaseScreen {
   static std::string GetResultString(Result result);
 
   // Updates zoom factor if `kOobeDisplaySizeFactorDeferred` pref is set.
-  static void MaybeUpdateZoomFactor(Profile* profile);
+  static void MaybeUpdateZoomFactor(PrefService& pref_service);
 
   DisplaySizeScreen(base::WeakPtr<DisplaySizeScreenView> view,
                     const ScreenExitCallback& exit_callback);

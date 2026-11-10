@@ -2220,7 +2220,7 @@ void UserSessionManager::ShowNotificationsIfNeeded(Profile* profile) {
 void UserSessionManager::PerformPostBrowserLaunchOOBEActions(Profile* profile) {
   SyncConsentScreen::MaybeLaunchSyncConsentSettings(profile);
   if (features::IsOobeDisplaySizeEnabled()) {
-    DisplaySizeScreen::MaybeUpdateZoomFactor(profile);
+    DisplaySizeScreen::MaybeUpdateZoomFactor(CHECK_DEREF(profile->GetPrefs()));
   }
   if (drive::util::IsOobeDrivePinningAvailable(profile)) {
     DrivePinningScreen::ApplyDrivePinningPref(profile);

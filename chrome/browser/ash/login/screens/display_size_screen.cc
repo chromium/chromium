@@ -15,13 +15,12 @@
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/display_size_screen_handler.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/util/display_manager_util.h"
@@ -74,13 +73,12 @@ void PersistSelectedFactor(PrefService* prefs, double factor) {
   prefs->SetDouble(prefs::kOobeDisplaySizeFactorDeferred, factor);
 }
 
-void ReportScreenCompletedToChoobe(ChoobeFlowController* controller) {
+void ReportScreenCompletedToChoobe(ChoobeFlowController* controller,
+                                   PrefService& pref_service) {
   if (!features::IsOobeChoobeEnabled() || !controller) {
     return;
   }
-  controller->OnScreenCompleted(
-      *ProfileManager::GetActiveUserProfile()->GetPrefs(),
-      DisplaySizeScreenView::kScreenId);
+  controller->OnScreenCompleted(pref_service, DisplaySizeScreenView::kScreenId);
 }
 
 }  // namespace
@@ -97,9 +95,8 @@ std::string DisplaySizeScreen::GetResultString(Result result) {
   // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
-void DisplaySizeScreen::MaybeUpdateZoomFactor(Profile* profile) {
-  auto* prefs = profile->GetPrefs();
-  if (!prefs->HasPrefPath(prefs::kOobeDisplaySizeFactorDeferred)) {
+void DisplaySizeScreen::MaybeUpdateZoomFactor(PrefService& pref_service) {
+  if (!pref_service.HasPrefPath(prefs::kOobeDisplaySizeFactorDeferred)) {
     return;
   }
 
@@ -110,8 +107,8 @@ void DisplaySizeScreen::MaybeUpdateZoomFactor(Profile* profile) {
   }
 
   double stored_zoom_factor =
-      prefs->GetDouble(prefs::kOobeDisplaySizeFactorDeferred);
-  prefs->ClearPref(prefs::kOobeDisplaySizeFactorDeferred);
+      pref_service.GetDouble(prefs::kOobeDisplaySizeFactorDeferred);
+  pref_service.ClearPref(prefs::kOobeDisplaySizeFactorDeferred);
 
   // Find the nearest available zoom factor to the stored zoom factor. This is
   // done to account for any changes in the available zoom factors since the
@@ -172,8 +169,8 @@ bool DisplaySizeScreen::ShouldBeSkipped(const WizardContext& context) const {
   // Skip the screen if `ShowDisplaySizeScreenEnabled` preference is set by
   // admin to false.
   const PrefService::Preference* pref =
-      ProfileManager::GetActiveUserProfile()->GetPrefs()->FindPreference(
-          prefs::kShowDisplaySizeScreenEnabled);
+      CHECK_DEREF(CHECK_DEREF(context.onboarding_user.get()).GetProfilePrefs())
+          .FindPreference(prefs::kShowDisplaySizeScreenEnabled);
   if (pref->IsManaged() && !pref->GetValue()->GetBool()) {
     return true;
   }
@@ -201,11 +198,13 @@ void DisplaySizeScreen::ShowImpl() {
     factors_list.Append(base::Value(factor));
   }
 
+  // The context is only set while the screen is shown, which it is here.
+  PrefService& pref_service = CHECK_DEREF(
+      CHECK_DEREF(context()->onboarding_user.get()).GetProfilePrefs());
+
   base::DictValue data;
   data.Set("availableSizes", std::move(factors_list));
-  data.Set(
-      "currentSize",
-      GetCurrentZoomFactor(ProfileManager::GetActiveUserProfile()->GetPrefs()));
+  data.Set("currentSize", GetCurrentZoomFactor(&pref_service));
   data.Set(
       "shouldShowReturn",
       ShouldShowChoobeReturnButton(
@@ -217,22 +216,27 @@ void DisplaySizeScreen::HideImpl() {}
 
 void DisplaySizeScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
+
+  // The screen is up whenever a user action arrives, so the context is set.
+  PrefService& pref_service = CHECK_DEREF(
+      CHECK_DEREF(context()->onboarding_user.get()).GetProfilePrefs());
+
   if (action_id == kUserActionNext) {
     CHECK_EQ(args.size(), 2u);
-    PersistSelectedFactor(ProfileManager::GetActiveUserProfile()->GetPrefs(),
-                          args[1].GetDouble());
+    PersistSelectedFactor(&pref_service, args[1].GetDouble());
     ReportScreenCompletedToChoobe(
-        WizardController::default_controller()->choobe_flow_controller());
+        WizardController::default_controller()->choobe_flow_controller(),
+        pref_service);
     exit_callback_.Run(Result::kNext);
     return;
   }
 
   if (action_id == kUserActionReturn) {
     CHECK_EQ(args.size(), 2u);
-    PersistSelectedFactor(ProfileManager::GetActiveUserProfile()->GetPrefs(),
-                          args[1].GetDouble());
+    PersistSelectedFactor(&pref_service, args[1].GetDouble());
     ReportScreenCompletedToChoobe(
-        WizardController::default_controller()->choobe_flow_controller());
+        WizardController::default_controller()->choobe_flow_controller(),
+        pref_service);
     context()->return_to_choobe_screen = true;
     exit_callback_.Run(Result::kNext);
     return;

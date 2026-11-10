@@ -13,7 +13,6 @@
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/theme_selection_screen_handler.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
@@ -67,13 +66,13 @@ bool ShouldShowChoobeReturnButton(ChoobeFlowController* controller) {
       ThemeSelectionScreenView::kScreenId);
 }
 
-void ReportScreenCompletedToChoobe(ChoobeFlowController* controller) {
+void ReportScreenCompletedToChoobe(ChoobeFlowController* controller,
+                                   PrefService& pref_service) {
   if (!features::IsOobeChoobeEnabled() || !controller) {
     return;
   }
-  controller->OnScreenCompleted(
-      *ProfileManager::GetActiveUserProfile()->GetPrefs(),
-      ThemeSelectionScreenView::kScreenId);
+  controller->OnScreenCompleted(pref_service,
+                                ThemeSelectionScreenView::kScreenId);
 }
 
 }  // namespace
@@ -118,8 +117,8 @@ bool ThemeSelectionScreen::ShouldBeSkipped(const WizardContext& context) const {
     return true;
 
   const PrefService::Preference* pref =
-      ProfileManager::GetActiveUserProfile()->GetPrefs()->FindPreference(
-          prefs::kDarkModeScheduleType);
+      CHECK_DEREF(CHECK_DEREF(context.onboarding_user.get()).GetProfilePrefs())
+          .FindPreference(prefs::kDarkModeScheduleType);
   if (pref->IsManaged() || pref->IsRecommended()) {
     return true;
   }
@@ -185,13 +184,15 @@ void ThemeSelectionScreen::OnUserAction(const base::ListValue& args) {
   } else if (action_id == kUserActionNext) {
     RecordSelectedTheme(GetSelectedTheme(pref_service), initial_theme_);
     ReportScreenCompletedToChoobe(
-        WizardController::default_controller()->choobe_flow_controller());
+        WizardController::default_controller()->choobe_flow_controller(),
+        pref_service);
     exit_callback_.Run(Result::kProceed);
   } else if (action_id == kUserActionReturn) {
     context()->return_to_choobe_screen = true;
     RecordSelectedTheme(GetSelectedTheme(pref_service), initial_theme_);
     ReportScreenCompletedToChoobe(
-        WizardController::default_controller()->choobe_flow_controller());
+        WizardController::default_controller()->choobe_flow_controller(),
+        pref_service);
     exit_callback_.Run(Result::kProceed);
     return;
   } else {
