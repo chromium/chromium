@@ -1,0 +1,30 @@
+[document frame] name='PDF document containing 1 page'
+++[landmark] name='Page 1'
+++++[paragraph]
+++++++[static] name='Collapsed 1px borders: '
+++++[table] cols=3 headers=(NONE); rows=3 headers=(NONE); caption=false; spans=(all: 1x1)
+++++++[table row]
+++++++++[table cell] (row=0, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++++[static] name='Year '
+++++++++[table cell] (row=0, col=1, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++++[static] name='Place '
+++++++++[table cell] (row=0, col=2, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++++[static] name='Error '
+++++++[table row]
+++++++++[table cell] (row=1, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++++[static] name='2014 '
+++++++++[table cell] (row=1, col=1, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++++[static] name='1st '
+++++++++[table cell] (row=1, col=2, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++++[static] name='6.7% '
+++++++[table row]
+++++++++[table cell] (row=2, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++++[static] name='2015 '
+++++++++[table cell] (row=2, col=1, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++++[static] name='2nd '
+++++++++[table cell] (row=2, col=2, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++++[static] name='3.6% '
+++++[paragraph]
+++++++[static] name='Separate borders: '
+++++[paragraph]
+++++++[static] name='A B C D Row rules only: Name Value x 1'

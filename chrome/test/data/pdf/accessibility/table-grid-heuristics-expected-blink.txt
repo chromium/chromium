@@ -1,0 +1,23 @@
+pdfRoot name='PDF document containing 1 page' restriction=readOnly
+++region name='Page 1' restriction=readOnly isPageBreakingObject=true
+++++paragraph restriction=readOnly
+++++++staticText name='Introductory paragraph. ' restriction=readOnly
+++++++++inlineTextBox name='Introductory paragraph. ' restriction=readOnly
+++++table restriction=readOnly
+++++++row restriction=readOnly
+++++++++cell restriction=readOnly
+++++++++++staticText name='Alpha ' restriction=readOnly
+++++++++++++inlineTextBox name='Alpha ' restriction=readOnly
+++++++++cell restriction=readOnly
+++++++++++staticText name='Beta ' restriction=readOnly
+++++++++++++inlineTextBox name='Beta ' restriction=readOnly
+++++++row restriction=readOnly
+++++++++cell restriction=readOnly
+++++++++++staticText name='Gamma ' restriction=readOnly
+++++++++++++inlineTextBox name='Gamma ' restriction=readOnly
+++++++++cell restriction=readOnly
+++++++++++staticText name='Delta ' restriction=readOnly
+++++++++++++inlineTextBox name='Delta ' restriction=readOnly
+++++paragraph restriction=readOnly
+++++++staticText name='Trailing text.' restriction=readOnly
+++++++++inlineTextBox name='Trailing text.' restriction=readOnly

@@ -1,0 +1,103 @@
+%PDF-1.7
+% ò¤ô
+1 0 obj <<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+2 0 obj <<
+  /Type /Pages
+  /MediaBox [0 0 300 300]
+  /Count 1
+  /Kids [3 0 R]
+>>
+endobj
+3 0 obj <<
+  /Type /Page
+  /Parent 2 0 R
+  /Resources <<
+    /Font <<
+      /F1 4 0 R
+    >>
+  >>
+  /Contents 5 0 R
+  /Annots [6 0 R]
+>>
+endobj
+4 0 obj <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Times-Roman
+>>
+endobj
+5 0 obj <<
+  /Length 590
+>>
+stream
+0 0 0 RG
+1 w
+40 260 m 240 260 l S
+40 230 m 240 230 l S
+40 200 m 240 200 l S
+40 200 m 40 260 l S
+140 200 m 140 260 l S
+240 200 m 240 260 l S
+40 160 m 240 160 l S
+40 130 m 240 130 l S
+40 100 m 240 100 l S
+40 100 m 40 160 l S
+140 100 m 140 160 l S
+240 100 m 240 160 l S
+BT
+/F1 12 Tf
+1 0 0 1 20 275 Tm
+(Link in a cell:) Tj
+1 0 0 1 60 240 Tm
+(Alpha) Tj
+1 0 0 1 160 240 Tm
+(Beta) Tj
+1 0 0 1 60 210 Tm
+(Gamma) Tj
+1 0 0 1 160 210 Tm
+(Delta) Tj
+1 0 0 1 20 175 Tm
+(No annotations:) Tj
+1 0 0 1 60 140 Tm
+(One) Tj
+1 0 0 1 160 140 Tm
+(Two) Tj
+1 0 0 1 60 110 Tm
+(Three) Tj
+1 0 0 1 160 110 Tm
+(Four) Tj
+ET
+endstream
+endobj
+6 0 obj <<
+  /Type /Annot
+  /Subtype /Link
+  /Rect [155 236 190 252]
+  /A <<
+    /Type /Action
+    /S /URI
+    /URI (https://www.example.com)
+  >>
+  /F 4
+>>
+endobj
+xref
+0 7
+0000000000 65535 f 
+0000000015 00000 n 
+0000000068 00000 n 
+0000000157 00000 n 
+0000000301 00000 n 
+0000000379 00000 n 
+0000001022 00000 n 
+trailer <<
+  /Root 1 0 R
+  /Size 7
+>>
+startxref
+1186
+%%EOF

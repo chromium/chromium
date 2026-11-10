@@ -1,0 +1,90 @@
+{{header}}
+{{object 1 0}} <<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+{{object 2 0}} <<
+  /Type /Pages
+  /MediaBox [0 0 300 300]
+  /Count 1
+  /Kids [3 0 R]
+>>
+endobj
+{{object 3 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Resources <<
+    /Font <<
+      /F1 4 0 R
+    >>
+  >>
+  /Contents 5 0 R
+  /Annots [6 0 R]
+>>
+endobj
+{{object 4 0}} <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Times-Roman
+>>
+endobj
+{{object 5 0}} <<
+  {{streamlen}}
+>>
+stream
+0 0 0 RG
+1 w
+40 260 m 240 260 l S
+40 230 m 240 230 l S
+40 200 m 240 200 l S
+40 200 m 40 260 l S
+140 200 m 140 260 l S
+240 200 m 240 260 l S
+40 160 m 240 160 l S
+40 130 m 240 130 l S
+40 100 m 240 100 l S
+40 100 m 40 160 l S
+140 100 m 140 160 l S
+240 100 m 240 160 l S
+BT
+/F1 12 Tf
+1 0 0 1 20 275 Tm
+(Link in a cell:) Tj
+1 0 0 1 60 240 Tm
+(Alpha) Tj
+1 0 0 1 160 240 Tm
+(Beta) Tj
+1 0 0 1 60 210 Tm
+(Gamma) Tj
+1 0 0 1 160 210 Tm
+(Delta) Tj
+1 0 0 1 20 175 Tm
+(No annotations:) Tj
+1 0 0 1 60 140 Tm
+(One) Tj
+1 0 0 1 160 140 Tm
+(Two) Tj
+1 0 0 1 60 110 Tm
+(Three) Tj
+1 0 0 1 160 110 Tm
+(Four) Tj
+ET
+endstream
+endobj
+{{object 6 0}} <<
+  /Type /Annot
+  /Subtype /Link
+  /Rect [155 236 190 252]
+  /A <<
+    /Type /Action
+    /S /URI
+    /URI (https://www.example.com)
+  >>
+  /F 4
+>>
+endobj
+{{xref}}
+{{trailer}}
+{{startxref}}
+%%EOF

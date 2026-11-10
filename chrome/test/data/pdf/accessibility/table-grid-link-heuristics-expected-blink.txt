@@ -1,0 +1,28 @@
+pdfRoot name='PDF document containing 1 page' restriction=readOnly
+++region name='Page 1' restriction=readOnly isPageBreakingObject=true
+++++paragraph restriction=readOnly
+++++++staticText name='Link in a cell: Alpha ' restriction=readOnly
+++++++++inlineTextBox name='Link in a cell: ' restriction=readOnly
+++++++++inlineTextBox name='Alpha ' restriction=readOnly
+++++++link name='Beta ' restriction=readOnly
+++++++++staticText name='Beta ' restriction=readOnly
+++++++++++inlineTextBox name='Beta ' restriction=readOnly
+++++++staticText name='Gamma Delta No annotations: ' restriction=readOnly
+++++++++inlineTextBox name='Gamma ' restriction=readOnly
+++++++++inlineTextBox name='Delta ' restriction=readOnly
+++++++++inlineTextBox name='No annotations: ' restriction=readOnly
+++++table restriction=readOnly
+++++++row restriction=readOnly
+++++++++cell restriction=readOnly
+++++++++++staticText name='One ' restriction=readOnly
+++++++++++++inlineTextBox name='One ' restriction=readOnly
+++++++++cell restriction=readOnly
+++++++++++staticText name='Two ' restriction=readOnly
+++++++++++++inlineTextBox name='Two ' restriction=readOnly
+++++++row restriction=readOnly
+++++++++cell restriction=readOnly
+++++++++++staticText name='Three ' restriction=readOnly
+++++++++++++inlineTextBox name='Three ' restriction=readOnly
+++++++++cell restriction=readOnly
+++++++++++staticText name='Four' restriction=readOnly
+++++++++++++inlineTextBox name='Four' restriction=readOnly

@@ -1428,6 +1428,24 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityHeuristicsTreeDumpTest,
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityHeuristicsTreeDumpTest,
+                       TableGridHeuristics) {
+  RunPDFTest(FILE_PATH_LITERAL("table-grid-heuristics.pdf"),
+             /*expected_subtext=*/"Page 1");
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityHeuristicsTreeDumpTest,
+                       TableThinRectsHeuristics) {
+  RunPDFTest(FILE_PATH_LITERAL("table-thin-rects.pdf"),
+             /*expected_subtext=*/"Page 1");
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityHeuristicsTreeDumpTest,
+                       TableGridLinkHeuristics) {
+  RunPDFTest(FILE_PATH_LITERAL("table-grid-link-heuristics.pdf"),
+             /*expected_subtext=*/"Page 1");
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityHeuristicsTreeDumpTest,
                        ParagraphsAndHeadingUntagged) {
   RunHeuristicsPDFTest(FILE_PATH_LITERAL("paragraphs-and-heading-untagged.pdf"),
                        /*expected_subtext=*/"Page 1");

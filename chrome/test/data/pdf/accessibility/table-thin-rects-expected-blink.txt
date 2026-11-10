@@ -1,0 +1,50 @@
+pdfRoot name='PDF document containing 1 page' restriction=readOnly
+++region name='Page 1' restriction=readOnly isPageBreakingObject=true
+++++paragraph restriction=readOnly
+++++++staticText name='Collapsed 1px borders: ' restriction=readOnly
+++++++++inlineTextBox name='Collapsed 1px borders: ' restriction=readOnly
+++++table restriction=readOnly
+++++++row restriction=readOnly
+++++++++cell restriction=readOnly
+++++++++++staticText name='Year ' restriction=readOnly
+++++++++++++inlineTextBox name='Year ' restriction=readOnly
+++++++++cell restriction=readOnly
+++++++++++staticText name='Place ' restriction=readOnly
+++++++++++++inlineTextBox name='Place ' restriction=readOnly
+++++++++cell restriction=readOnly
+++++++++++staticText name='Error ' restriction=readOnly
+++++++++++++inlineTextBox name='Error ' restriction=readOnly
+++++++row restriction=readOnly
+++++++++cell restriction=readOnly
+++++++++++staticText name='2014 ' restriction=readOnly
+++++++++++++inlineTextBox name='2014 ' restriction=readOnly
+++++++++cell restriction=readOnly
+++++++++++staticText name='1st ' restriction=readOnly
+++++++++++++inlineTextBox name='1st ' restriction=readOnly
+++++++++cell restriction=readOnly
+++++++++++staticText name='6.7% ' restriction=readOnly
+++++++++++++inlineTextBox name='6.7% ' restriction=readOnly
+++++++row restriction=readOnly
+++++++++cell restriction=readOnly
+++++++++++staticText name='2015 ' restriction=readOnly
+++++++++++++inlineTextBox name='2015 ' restriction=readOnly
+++++++++cell restriction=readOnly
+++++++++++staticText name='2nd ' restriction=readOnly
+++++++++++++inlineTextBox name='2nd ' restriction=readOnly
+++++++++cell restriction=readOnly
+++++++++++staticText name='3.6% ' restriction=readOnly
+++++++++++++inlineTextBox name='3.6% ' restriction=readOnly
+++++paragraph restriction=readOnly
+++++++staticText name='Separate borders: ' restriction=readOnly
+++++++++inlineTextBox name='Separate borders: ' restriction=readOnly
+++++paragraph restriction=readOnly
+++++++staticText name='A B C D Row rules only: Name Value x 1' restriction=readOnly
+++++++++inlineTextBox name='A ' restriction=readOnly
+++++++++inlineTextBox name='B ' restriction=readOnly
+++++++++inlineTextBox name='C ' restriction=readOnly
+++++++++inlineTextBox name='D ' restriction=readOnly
+++++++++inlineTextBox name='Row rules only: ' restriction=readOnly
+++++++++inlineTextBox name='Name ' restriction=readOnly
+++++++++inlineTextBox name='Value ' restriction=readOnly
+++++++++inlineTextBox name='x ' restriction=readOnly
+++++++++inlineTextBox name='1' restriction=readOnly

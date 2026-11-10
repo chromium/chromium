@@ -1,0 +1,17 @@
+[document frame] name='PDF document containing 1 page'
+++[landmark] name='Page 1'
+++++[paragraph]
+++++++[static] name='Introductory paragraph. '
+++++[table] cols=2 headers=(NONE); rows=2 headers=(NONE); caption=false; spans=(all: 1x1)
+++++++[table row]
+++++++++[table cell] (row=0, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++++[static] name='Alpha '
+++++++++[table cell] (row=0, col=1, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++++[static] name='Beta '
+++++++[table row]
+++++++++[table cell] (row=1, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++++[static] name='Gamma '
+++++++++[table cell] (row=1, col=1, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++++[static] name='Delta '
+++++[paragraph]
+++++++[static] name='Trailing text.'
