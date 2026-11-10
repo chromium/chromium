@@ -538,15 +538,18 @@ class OidcAuthenticationSigninInterceptorTest
         expect_profile_created ? num_profiles_before + 1 : num_profiles_before;
 
     if (expect_profile_created) {
+      added_profile_ = nullptr;
       number_of_windows_ = expected_number_of_windows;
     } else {
       CHECK_EQ(expected_number_of_windows, 0);
     }
 
-    if (std::holds_alternative<OidcProfileCreationResult>(
+    const bool expect_profile_switch =
+        std::holds_alternative<OidcProfileCreationResult>(
             expected_enrollment_result) &&
         std::get<OidcProfileCreationResult>(expected_enrollment_result) ==
-            OidcProfileCreationResult::kSwitchedToExistingProfile) {
+            OidcProfileCreationResult::kSwitchedToExistingProfile;
+    if (expect_profile_switch) {
       ExpectProfileSwitchBubble(SigninInterceptionResult::kAccepted);
     } else if (expect_dialog_to_show) {
       EXPECT_CALL(*delegate_, ShowOidcInterceptionDialog(_, _, _, _, _))
@@ -585,16 +588,16 @@ class OidcAuthenticationSigninInterceptorTest
         RegistrationResult::kNoRegistrationExpected) {
       register_run_loop.Run();
     }
-    if (expect_profile_created ||
-        (std::holds_alternative<OidcProfileCreationResult>(
-             expected_enrollment_result) &&
-         std::get<OidcProfileCreationResult>(expected_enrollment_result) ==
-             OidcProfileCreationResult::kSwitchedToExistingProfile)) {
+    if (expect_profile_created) {
       ASSERT_TRUE(base::test::RunUntil([&]() { return !!added_profile_; }));
-    } else if (intercepted &&
+    } else if (intercepted && !expect_profile_switch &&
                expect_registration_attempt != RegistrationResult::kTimeout) {
       run_loop.Run();
     }
+
+    CheckFunnelAndResultHistogram(expected_last_funnel_step,
+                                  expected_enrollment_result,
+                                  expect_registration_attempt);
 
     int num_profiles_after =
         g_browser_process->profile_manager()->GetNumberOfProfiles();
@@ -639,10 +642,6 @@ class OidcAuthenticationSigninInterceptorTest
         }
       }
     }
-
-    CheckFunnelAndResultHistogram(expected_last_funnel_step,
-                                  expected_enrollment_result,
-                                  expect_registration_attempt);
   }
 
   std::string GetIdentitySuffix() {
@@ -751,7 +750,7 @@ class OidcAuthenticationSigninInterceptorTest
   std::unique_ptr<policy::FakeDeviceManagementService>
       device_management_service_;
 
-  raw_ptr<Profile> added_profile_;
+  raw_ptr<Profile> added_profile_ = nullptr;
   int number_of_windows_ = 0;
 
   policy::FakeBrowserDMTokenStorage storage_;
