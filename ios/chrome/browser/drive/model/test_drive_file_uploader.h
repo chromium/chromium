@@ -55,6 +55,8 @@ class TestDriveFileUploader final : public DriveFileUploader {
   // Returns `folder_identifier` passed to `UploadFile()`.
   NSString* GetUploadedFileFolderIdentifier() const;
 
+  base::WeakPtr<TestDriveFileUploader> GetWeakPtr();
+
   // `DriveFileUploader` overrides.
   id<SystemIdentity> GetIdentity() const final;
   bool IsExecutingQuery() const final;
@@ -149,6 +151,8 @@ class TestDriveFileUploader final : public DriveFileUploader {
   // Weak pointer factory, for callbacks. Can be used to cancel any pending
   // tasks by invalidating all weak pointers.
   base::WeakPtrFactory<TestDriveFileUploader> callbacks_weak_ptr_factory_{this};
+
+  base::WeakPtrFactory<TestDriveFileUploader> weak_ptr_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_DRIVE_MODEL_TEST_DRIVE_FILE_UPLOADER_H_

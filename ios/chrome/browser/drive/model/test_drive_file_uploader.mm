@@ -166,6 +166,10 @@ NSString* TestDriveFileUploader::GetUploadedFileFolderIdentifier() const {
   return uploaded_file_folder_identifier_;
 }
 
+base::WeakPtr<TestDriveFileUploader> TestDriveFileUploader::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 #pragma mark - DriveFileUploader
 
 id<SystemIdentity> TestDriveFileUploader::GetIdentity() const {

@@ -31,7 +31,7 @@ class DriveUploadTaskTest : public PlatformTest {
     uploading_identity_ = [FakeSystemIdentity fakeIdentity1];
     auto uploader =
         std::make_unique<TestDriveFileUploader>(uploading_identity_);
-    uploader_ = uploader.get();
+    uploader_ = uploader->GetWeakPtr();
     task_ = std::make_unique<DriveUploadTask>(std::move(uploader));
     observer_ = std::make_unique<TestUploadTaskObserver>();
     task_->AddObserver(observer_.get());
@@ -40,7 +40,7 @@ class DriveUploadTaskTest : public PlatformTest {
   using TaskEnvironment = base::test::TaskEnvironment;
   TaskEnvironment task_environment_{TaskEnvironment::TimeSource::MOCK_TIME};
   id<SystemIdentity> uploading_identity_;
-  raw_ptr<TestDriveFileUploader, DanglingUntriaged> uploader_;
+  base::WeakPtr<TestDriveFileUploader> uploader_;
   std::unique_ptr<TestUploadTaskObserver> observer_;
   std::unique_ptr<DriveUploadTask> task_;
 };
