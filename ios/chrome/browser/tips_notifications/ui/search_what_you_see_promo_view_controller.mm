@@ -47,6 +47,8 @@ NSDictionary<NSString*, UIColor*>* colorProvider() {
   animationConfiguration.lightModeColorProvider = colorProvider();
   animationConfiguration.darkModeColorProvider = colorProvider();
   animationConfiguration.useLegacyDarkMode = NO;
+  animationConfiguration.animationBackgroundColor =
+      [UIColor colorNamed:kBackgroundColor];
 
   TitleBrickConfiguration* titleConfiguration =
       [[TitleBrickConfiguration alloc] init];
