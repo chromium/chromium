@@ -556,4 +556,5 @@ Refer to README.md for content description and update process.
  <item id="private_ai_tls_client" added_in_milestone="158" content_hash_code="06ded3c7" os_list="linux,windows,chromeos,android" file_path="components/private_ai/tls_websocket_client.cc" />
  <item id="actor_file_upload_tool" added_in_milestone="159" content_hash_code="07969238" os_list="linux,windows,android,chromeos" file_path="chrome/browser/actor/tools/file_upload_tool.cc" />
  <item id="context_hub_memory_bank_image_fetch" added_in_milestone="157" content_hash_code="00b233f1" os_list="linux,windows,android,chromeos" file_path="chrome/browser/context_hub/context_hub_service.cc" />
+ <item id="android_connectivity_detector" added_in_milestone="159" content_hash_code="03cb7560" os_list="android" file_path="chrome/android/java/src/org/chromium/chrome/browser/net/connectivitydetector/ConnectivityDetector.java" />
 </annotations>

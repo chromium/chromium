@@ -33,9 +33,6 @@ missing,components/manta/walrus_provider.cc
 
 # Android-specific annotations.
 # TODO(crbug.com/40641204): Complete these.
-missing,chrome/android/java/src/org/chromium/chrome/browser/feedback/ConnectivityChecker.java
-missing,chrome/android/java/src/org/chromium/chrome/browser/net/connectivitydetector/ConnectivityDetector.java
-missing,chrome/android/java/src/org/chromium/chrome/browser/offlinepages/measurements/OfflineMeasurementsBackgroundTask.java
 missing,chrome/browser/android/compositor/scene_layer/contextual_search_scene_layer.cc
 missing,chrome/browser/android/feedback/connectivity_checker.cc
 missing,net/proxy_resolution/proxy_config_service_android.cc

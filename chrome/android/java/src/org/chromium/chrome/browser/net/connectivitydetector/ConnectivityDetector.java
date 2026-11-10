@@ -37,8 +37,8 @@ import java.net.URL;
 /**
  * Class that detects the network connectivity. We will get the connectivity info from Android
  * connection manager if available, as in Marshmallow and above. Otherwise, we will do http probes
- * to verify that a well-known URL returns an expected result. If the result can't be validated,
- * we will retry with exponential backoff.
+ * to verify that a well-known URL returns an expected result. If the result can't be validated, we
+ * will retry with exponential backoff.
  */
 @NullMarked
 public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTypeObserver {
@@ -124,6 +124,7 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
     public interface Observer {
         /**
          * Called when the network connection state changes.
+         *
          * @param connectionState Current connection state.
          */
         void onConnectionStateChanged(@ConnectionState int connectionState);
@@ -193,6 +194,44 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
     private static final int SOCKET_TIMEOUT_MS = 5000;
     private static final int CONNECTIVITY_CHECK_INITIAL_DELAY_MS = 5000;
     private static final int CONNECTIVITY_CHECK_MAX_DELAY_MS = 2 * 60 * 1000;
+
+    private static final NetworkTrafficAnnotationTag TRAFFIC_ANNOTATION =
+            NetworkTrafficAnnotationTag.createComplete(
+                    "android_connectivity_detector",
+                    """
+                    semantics {
+                      sender: "Android Connectivity Detector"
+                      description:
+                        "Checks whether the device has validated Internet connectivity or is "
+                        "behind a captive portal when Android's ConnectivityManager cannot "
+                        "provide the connection state. Sends an HTTP GET probe to a well-known "
+                        "Google URL that returns HTTP 204 (No Content) to update Chrome's "
+                        "offline status indicator."
+                      trigger:
+                        "Triggered on browser startup or when the network connection type "
+                        "changes while a network connection is active, if the Android system "
+                        "cannot report the connectivity state."
+                      data: "None."
+                      destination: GOOGLE_OWNED_SERVICE
+                      internal {
+                        contacts {
+                          email: "offline-dev@chromium.org"
+                        }
+                      }
+                      user_data {
+                        type: NONE
+                      }
+                      last_reviewed: "2026-11-05"
+                    }
+                    policy {
+                      cookies_allowed: NO
+                      setting: "This feature cannot be disabled in settings."
+                      policy_exception_justification:
+                        "Not implemented. This is a lightweight connectivity check with no "
+                        "user-identifiable data, used only to determine whether the browser "
+                        "should display an offline status indicator when the OS cannot."
+                    }\
+                    """);
 
     private static @Nullable Delegate sDelegateForTesting;
     private static String sDefaultProbeUrl = DEFAULT_PROBE_URL;
@@ -373,10 +412,10 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
     }
 
     /**
-     * Fetch a URL from a well-known server using Android system network stack.
-     * Check asynchronously whether the device is currently connected to the Internet using the
-     * Android system network stack. |callback| will be invoked with the boolean result to
-     * denote if the connectivity is validated.
+     * Fetch a URL from a well-known server using Android system network stack. Check asynchronously
+     * whether the device is currently connected to the Internet using the Android system network
+     * stack. |callback| will be invoked with the boolean result to denote if the connectivity is
+     * validated.
      */
     private void sendHttpProbe(
             final boolean useDefaultUrl, final int timeoutMs, final Callback<Integer> callback) {
@@ -390,9 +429,7 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
                     URL url = new URL(urlString);
                     urlConnection =
                             (HttpURLConnection)
-                                    ChromiumNetworkAdapter.openConnection(
-                                            url,
-                                            NetworkTrafficAnnotationTag.MISSING_TRAFFIC_ANNOTATION);
+                                    ChromiumNetworkAdapter.openConnection(url, TRAFFIC_ANNOTATION);
                     urlConnection.setInstanceFollowRedirects(false);
                     urlConnection.setRequestMethod(sProbeMethod);
                     urlConnection.setConnectTimeout(timeoutMs);

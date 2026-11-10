@@ -438,6 +438,7 @@ after discussions on the right group.
       <annotation id="private_ai_tls_client"/>
       <annotation id="actor_file_upload_tool"/>
       <annotation id="context_hub_memory_bank_image_fetch"/>
+      <annotation id="android_connectivity_detector"/>
     </sender>
   </group>
   <group name="Admin Features">
