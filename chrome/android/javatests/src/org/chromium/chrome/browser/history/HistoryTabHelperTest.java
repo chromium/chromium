@@ -28,18 +28,19 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.GURL;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 /** Tests for history tab helper. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -58,14 +59,16 @@ public class HistoryTabHelperTest {
     @DisableIf.Build(
             sdk_is_less_than = VERSION_CODES.UPSIDE_DOWN_CAKE,
             message = "This test is using an API introduced in Android U.")
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288253
-    @DisabledTest(message = "https://crbug.com/562983347")
     public void testAppHistory() throws Exception {
         Context context = ContextUtils.getApplicationContext();
-        Intent viewIntent =
-                new Intent(
-                        Intent.ACTION_VIEW,
-                        Uri.parse(mActivityTestRule.getTestServer().getURL(FILE_PATH)));
+        String url1 = mActivityTestRule.getTestServer().getURL(FILE_PATH);
+        String url2 = mActivityTestRule.getTestServer().getURL(FILE_PATH2);
+
+        AtomicReference<String> initialAppId = new AtomicReference<>();
+        CallbackHelper initialPageLoadHelper = new CallbackHelper();
+        registerTabModelAppIdObserver(initialAppId, initialPageLoadHelper, url1);
+
+        Intent viewIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url1));
         viewIntent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
         viewIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         viewIntent.setClass(context, ChromeLauncherActivity.class);
@@ -79,13 +82,18 @@ public class HistoryTabHelperTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     Tab tab = getCurrentTab(resultActivity);
-                    return tab != null && HistoryTabHelper.get(tab) != null;
+                    return tab != null
+                            && HistoryTabHelper.get(tab) != null
+                            && initialAppId.get() != null;
                 },
                 "Timed out while waiting for the current Tab.");
-        Assert.assertEquals(
-                "App ID should be set",
-                resultActivity.getApplicationContext().getPackageName(),
-                getAppId(resultActivity));
+        String expectedAppId = resultActivity.getApplicationContext().getPackageName();
+        Assert.assertEquals("App ID should be set", expectedAppId, initialAppId.get());
+
+        initialPageLoadHelper.waitForCallback(0);
+        CriteriaHelper.pollUiThread(
+                () -> getAppId(resultActivity) == null,
+                "Timed out waiting for App ID to be cleared after first commit.");
 
         // Navigation after the initial loading.
         CallbackHelper callbackHelper = new CallbackHelper();
@@ -96,11 +104,13 @@ public class HistoryTabHelperTest {
                             new TabObserver() {
                                 @Override
                                 public void onPageLoadFinished(Tab tab, GURL url) {
-                                    callbackHelper.notifyCalled();
+                                    if (url2.equals(url.getSpec())) {
+                                        tab.removeObserver(this);
+                                        callbackHelper.notifyCalled();
+                                    }
                                 }
                             });
-                    var gurl = mActivityTestRule.getTestServer().getURL(FILE_PATH2);
-                    tab.loadUrl(new LoadUrlParams(gurl));
+                    tab.loadUrl(new LoadUrlParams(url2));
                 });
         callbackHelper.waitForCallback(0);
         Assert.assertNull("App ID should be reset from the second visit", getAppId(resultActivity));
@@ -115,5 +125,51 @@ public class HistoryTabHelperTest {
                 () ->
                         HistoryTabHelper.getAppIdForTesting(
                                 getCurrentTab(activity).getWebContents()));
+    }
+
+    private void registerTabModelAppIdObserver(
+            AtomicReference<String> initialAppId,
+            CallbackHelper initialPageLoadHelper,
+            String targetUrl) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule
+                            .getActivity()
+                            .getTabModelSelector()
+                            .getModel(/* incognito= */ false)
+                            .addObserver(
+                                    new TabModelObserver() {
+                                        @Override
+                                        public void didAddTab(
+                                                Tab tab,
+                                                int type,
+                                                int creationState,
+                                                boolean markedForSelection) {
+                                            mActivityTestRule
+                                                    .getActivity()
+                                                    .getTabModelSelector()
+                                                    .getModel(/* incognito= */ false)
+                                                    .removeObserver(this);
+                                            ThreadUtils.postOnUiThread(
+                                                    () -> {
+                                                        initialAppId.set(
+                                                                HistoryTabHelper.getAppIdForTesting(
+                                                                        tab.getWebContents()));
+                                                    });
+                                            tab.addObserver(
+                                                    new TabObserver() {
+                                                        @Override
+                                                        public void onPageLoadFinished(
+                                                                Tab tab, GURL url) {
+                                                            if (targetUrl.equals(url.getSpec())) {
+                                                                tab.removeObserver(this);
+                                                                initialPageLoadHelper
+                                                                        .notifyCalled();
+                                                            }
+                                                        }
+                                                    });
+                                        }
+                                    });
+                });
     }
 }
