@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "ash/constants/ash_constants.h"
 #include "ash/display/display_util.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -50,8 +51,8 @@ TEST_F(NativeCursorManagerAshTest, LockCursor) {
   EXPECT_EQ(std::nullopt, cursor_manager->GetCustomCursorSize());
   cursor_manager->SetCustomCursorSize(std::nullopt);
   EXPECT_EQ(std::nullopt, cursor_manager->GetCustomCursorSize());
-  cursor_manager->SetCustomCursorSize(ui::kDefaultLargeCursorSize);
-  EXPECT_EQ(ui::kDefaultLargeCursorSize, cursor_manager->GetCustomCursorSize());
+  cursor_manager->SetCustomCursorSize(kDefaultLargeCursorSize);
+  EXPECT_EQ(kDefaultLargeCursorSize, cursor_manager->GetCustomCursorSize());
   cursor_manager->SetCustomCursorSize(std::nullopt);
   EXPECT_EQ(std::nullopt, cursor_manager->GetCustomCursorSize());
 
@@ -97,11 +98,11 @@ TEST_F(NativeCursorManagerAshTest, SetCustomCursorSize) {
   cursor_manager->SetCustomCursorSize(std::nullopt);
   EXPECT_EQ(std::nullopt, cursor_manager->GetCustomCursorSize());
 
-  cursor_manager->SetCustomCursorSize(ui::kMaxLargeCursorSize);
-  EXPECT_EQ(ui::kMaxLargeCursorSize, cursor_manager->GetCustomCursorSize());
+  cursor_manager->SetCustomCursorSize(kMaxLargeCursorSize);
+  EXPECT_EQ(kMaxLargeCursorSize, cursor_manager->GetCustomCursorSize());
 
-  cursor_manager->SetCustomCursorSize(ui::kMinLargeCursorSize);
-  EXPECT_EQ(ui::kMinLargeCursorSize, cursor_manager->GetCustomCursorSize());
+  cursor_manager->SetCustomCursorSize(kMinLargeCursorSize);
+  EXPECT_EQ(kMinLargeCursorSize, cursor_manager->GetCustomCursorSize());
 
   cursor_manager->SetCustomCursorSize(std::nullopt);
   EXPECT_EQ(std::nullopt, cursor_manager->GetCustomCursorSize());

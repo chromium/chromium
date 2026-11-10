@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_constants.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -820,11 +821,11 @@ TEST_F(WindowManagerTest, TestCursorClientObserver) {
   EXPECT_FALSE(observer_b.is_cursor_visible());
 
   // Set cursor set.
-  cursor_manager->SetCustomCursorSize(ui::kDefaultLargeCursorSize);
+  cursor_manager->SetCustomCursorSize(kDefaultLargeCursorSize);
   EXPECT_TRUE(observer_a.did_custom_cursor_size_change());
-  EXPECT_EQ(ui::kDefaultLargeCursorSize, observer_a.custom_cursor_size());
+  EXPECT_EQ(kDefaultLargeCursorSize, observer_a.custom_cursor_size());
   EXPECT_TRUE(observer_b.did_custom_cursor_size_change());
-  EXPECT_EQ(ui::kDefaultLargeCursorSize, observer_b.custom_cursor_size());
+  EXPECT_EQ(kDefaultLargeCursorSize, observer_b.custom_cursor_size());
 
   // Mouse move should show the cursor.
   observer_a.reset();

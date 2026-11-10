@@ -40,6 +40,8 @@ TEST(CursorLoaderTest, GetCursorDataForDefaultCursors) {
   // in all platforms.
   CursorLoader cursor_loader(/*use_platform_cursors=*/false);
 
+  // Default size of the ChromeOS large cursor feature.
+  static constexpr int kLargeCursorSize = 64;
   display::Display display = display::Display::GetDefaultDisplay();
 
   for (const float scale : {0.8f, 1.0f, 1.25f, 1.5f, 2.0f, 3.0f}) {
@@ -47,8 +49,7 @@ TEST(CursorLoaderTest, GetCursorDataForDefaultCursors) {
     display.set_device_scale_factor(scale);
     cursor_loader.SetDisplay(display);
     for (const std::optional<int> custom_cursor_size :
-         {std::optional<int>(),
-          std::make_optional(ui::kDefaultLargeCursorSize)}) {
+         {std::optional<int>(), std::make_optional(kLargeCursorSize)}) {
       SCOPED_TRACE(testing::Message()
                    << "size " << custom_cursor_size.value_or(0));
       cursor_loader.SetCustomCursorSize(custom_cursor_size);

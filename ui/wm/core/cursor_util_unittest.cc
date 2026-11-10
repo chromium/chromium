@@ -4,19 +4,15 @@
 
 #include "ui/wm/core/cursor_util.h"
 
-#include <array>
 #include <optional>
 
 #include "base/compiler_specific.h"
-#include "base/numerics/safe_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/cursor/cursor.h"
-#include "ui/base/cursor/cursor_size.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
@@ -26,6 +22,11 @@ namespace wm {
 namespace {
 
 using ::ui::mojom::CursorType;
+
+// Cursor sizes in dip, taken from the ChromeOS large cursor feature.
+constexpr int kDefaultLargeCursorSize = 64;
+constexpr int kMinLargeCursorSize = 25;
+constexpr int kMaxLargeCursorSize = 128;
 
 // Parameterized test for cursor bitmaps with premultiplied and unpremultiplied
 // alpha.
@@ -82,54 +83,45 @@ TEST_P(CursorUtilTest, ScaleAndRotate) {
 
 INSTANTIATE_TEST_SUITE_P(All, CursorUtilTest, testing::Bool());
 
-TEST(CursorUtil, GetCursorData) {
-  struct TestCase {
-    CursorType cursor;
-    std::array<gfx::Size, 2> size;  // indexed by cursor size.
-    std::array<std::array<gfx::Point, 2>, 2>
-        hotspot;  // indexed by cursor size and scale.
-  };
-  constexpr std::array kCursorTestCases = {
-      TestCase{
-          CursorType::kPointer,
-          {gfx::Size(25, 25), gfx::Size(25, 25)},
-          {{
-              {gfx::Point(6, 4), gfx::Point(12, 8)},
-              {gfx::Point(6, 4), gfx::Point(12, 8)},
-          }},
-      },
-      TestCase{
-          CursorType::kWait,
-          {gfx::Size(25, 25), gfx::Size(25, 25)},
-          {{
-              {gfx::Point(12, 12), gfx::Point(24, 24)},
-              {gfx::Point(12, 12), gfx::Point(24, 24)},
-          }},
-      },
-  };
+// The default size and hotspots (in dip) of the cursor assets.
+constexpr gfx::Size kCursorAssetSize(25, 25);
+constexpr struct {
+  CursorType cursor;
+  gfx::Point hotspot;
+} kCursorTestCases[] = {
+    {CursorType::kPointer, gfx::Point(6, 4)},
+    {CursorType::kWait, gfx::Point(12, 12)},
+};
 
+TEST(CursorUtil, GetCursorData) {
   for (const float scale : {0.8f, 1.0f, 1.3f, 1.5f, 2.0f, 2.5f}) {
     SCOPED_TRACE(testing::Message() << "scale " << scale);
-    for (const auto size : {ui::CursorSize::kNormal, ui::CursorSize::kLarge}) {
+    // Normal size (the default size of the cursor assets) and large size.
+    for (const std::optional<int> cursor_size_in_dip :
+         {std::optional<int>(), std::make_optional(kDefaultLargeCursorSize)}) {
       SCOPED_TRACE(testing::Message()
-                   << "size " << base::checked_cast<int>(scale));
+                   << "size " << cursor_size_in_dip.value_or(0));
+      const std::optional<int> target_cursor_size_in_px =
+          cursor_size_in_dip ? std::make_optional(static_cast<int>(
+                                   *cursor_size_in_dip * scale))
+                             : std::nullopt;
+      // The custom cursor size overrides the display scale.
+      const float effective_scale =
+          target_cursor_size_in_px
+              ? static_cast<float>(*target_cursor_size_in_px) /
+                    static_cast<float>(kCursorAssetSize.height())
+              : scale;
       for (const auto& test : kCursorTestCases) {
         SCOPED_TRACE(test.cursor);
-        static constexpr auto kDefaultRotation = display::Display::ROTATE_0;
-        const auto pointer_data = GetCursorData(
-            test.cursor, scale, std::nullopt, kDefaultRotation, SK_ColorBLACK);
+        const auto pointer_data =
+            GetCursorData(test.cursor, scale, target_cursor_size_in_px,
+                          display::Display::ROTATE_0, SK_ColorBLACK);
         ASSERT_TRUE(pointer_data);
         ASSERT_GT(pointer_data->bitmaps.size(), 0u);
         EXPECT_EQ(gfx::SkISizeToSize(pointer_data->bitmaps[0].dimensions()),
-                  gfx::ScaleToRoundedSize(
-                      test.size[base::checked_cast<int>(size)], scale));
-        const float resource_scale = ui::GetScaleForResourceScaleFactor(
-            ui::GetSupportedResourceScaleFactorForRescale(scale));
+                  gfx::ScaleToRoundedSize(kCursorAssetSize, effective_scale));
         EXPECT_EQ(pointer_data->hotspot,
-                  gfx::ScaleToFlooredPoint(
-                      test.hotspot[base::checked_cast<int>(size)]
-                                  [base::checked_cast<int>(resource_scale) - 1],
-                      scale / resource_scale));
+                  gfx::ScaleToFlooredPoint(test.hotspot, effective_scale));
       }
     }
   }
@@ -137,30 +129,20 @@ TEST(CursorUtil, GetCursorData) {
 
 // Tests cursor bitmap is correct after size rescaling.
 TEST(CursorUtil, GetCursorDataWithTargetCursorSize) {
-  // Data from `kLargeCursorResourceData`.
-  constexpr struct {
-    CursorType cursor;
-    gfx::Size size;         // large cursor size in dip
-    std::array<gfx::Point, 2> hotspot;  // hotspot in px, indexed by scale.
-  } kCursorTestCases[] = {{CursorType::kPointer,
-                           gfx::Size(25, 25),
-                           {gfx::Point(6, 4), gfx::Point(12, 8)}},
-                          {CursorType::kWait,
-                           gfx::Size(25, 25),
-                           {gfx::Point(12, 12), gfx::Point(24, 24)}}};
-
   for (const float scale : {0.8f, 1.0f, 1.3f, 1.5f, 2.0f, 2.5f}) {
     SCOPED_TRACE(testing::Message() << "scale " << scale);
-    for (const auto& test : kCursorTestCases) {
-      SCOPED_TRACE(test.cursor);
-      static constexpr auto kDefaultRotation = display::Display::ROTATE_0;
-      for (const auto& target_cursor_size_in_px :
-           {ui::kMinLargeCursorSize, ui::kMaxLargeCursorSize}) {
-        const float resource_scale = ui::GetScaleForResourceScaleFactor(
-            ui::GetSupportedResourceScaleFactorForRescale(scale));
-        const auto pointer_data = GetCursorData(
-            test.cursor, scale, std::make_optional(target_cursor_size_in_px),
-            kDefaultRotation, SK_ColorBLACK);
+    for (const int target_cursor_size_in_px :
+         {kMinLargeCursorSize, kMaxLargeCursorSize}) {
+      SCOPED_TRACE(testing::Message()
+                   << "target size " << target_cursor_size_in_px);
+      // The target size overrides the display scale.
+      const float rescale = static_cast<float>(target_cursor_size_in_px) /
+                            static_cast<float>(kCursorAssetSize.height());
+      for (const auto& test : kCursorTestCases) {
+        SCOPED_TRACE(test.cursor);
+        const auto pointer_data =
+            GetCursorData(test.cursor, scale, target_cursor_size_in_px,
+                          display::Display::ROTATE_0, SK_ColorBLACK);
         ASSERT_TRUE(pointer_data);
         ASSERT_GT(pointer_data->bitmaps.size(), 0u);
 
@@ -169,16 +151,10 @@ TEST(CursorUtil, GetCursorDataWithTargetCursorSize) {
         const gfx::Size actual_cursor_size_in_px =
             gfx::SkISizeToSize(pointer_data->bitmaps[0].dimensions());
         EXPECT_EQ(actual_cursor_size_in_px.height(), target_cursor_size_in_px);
-
-        const gfx::Point actual_hotspot_in_px = pointer_data->hotspot;
-        const float rescale = static_cast<float>(target_cursor_size_in_px) /
-                              static_cast<float>(test.size.height());
-        const gfx::Point expected_hotspot_in_dip = gfx::ScaleToFlooredPoint(
-            test.hotspot[base::checked_cast<int>(resource_scale) - 1],
-            1 / resource_scale);
-        const gfx::Point expected_hotspot_in_px =
-            gfx::ScaleToFlooredPoint(expected_hotspot_in_dip, rescale);
-        EXPECT_EQ(actual_hotspot_in_px, expected_hotspot_in_px);
+        EXPECT_EQ(actual_cursor_size_in_px,
+                  gfx::ScaleToRoundedSize(kCursorAssetSize, rescale));
+        EXPECT_EQ(pointer_data->hotspot,
+                  gfx::ScaleToFlooredPoint(test.hotspot, rescale));
       }
     }
   }

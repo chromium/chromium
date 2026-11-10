@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/accessibility/accessibility_event_handler_manager.h"
+#include "ash/constants/ash_constants.h"
 #include "ash/shell.h"
 #include "ash/utility/cursor_setter.h"
 #include "base/check.h"
@@ -91,11 +92,11 @@ class MouseShakeToLocateController::ScopedEnlargedCursor
 
     shrink_start_size_ = *current_custom_cursor_size;
     shrink_target_size_ = WasEnlargedCursor() ? *original_custom_cursor_size_
-                                              : ui::kMinLargeCursorSize;
-    CHECK_GE(shrink_start_size_, ui::kMinLargeCursorSize);
-    CHECK_LE(shrink_start_size_, ui::kMaxLargeCursorSize);
-    CHECK_GE(shrink_target_size_, ui::kMinLargeCursorSize);
-    CHECK_LE(shrink_target_size_, ui::kMaxLargeCursorSize);
+                                              : kMinLargeCursorSize;
+    CHECK_GE(shrink_start_size_, kMinLargeCursorSize);
+    CHECK_LE(shrink_start_size_, kMaxLargeCursorSize);
+    CHECK_GE(shrink_target_size_, kMinLargeCursorSize);
+    CHECK_LE(shrink_target_size_, kMaxLargeCursorSize);
 
     if (shrink_start_size_ <= shrink_target_size_) {
       std::move(on_shrink_ended_).Run();
@@ -127,8 +128,7 @@ class MouseShakeToLocateController::ScopedEnlargedCursor
   // Immediately sets the cursor to its enlarged shake size.
   void EnlargeCursor() {
     Shell::Get()->cursor_manager()->SetCustomCursorSize(
-        WasEnlargedCursor() ? ui::kMaxLargeCursorSize
-                            : ui::kDefaultLargeCursorSize);
+        WasEnlargedCursor() ? kMaxLargeCursorSize : kDefaultLargeCursorSize);
   }
 
   gfx::LinearAnimation shrink_animation_;

@@ -68,7 +68,7 @@ std::vector<AccessibilityPrefBatchEntry> GetSyncableAccessibilityPrefsBatch1() {
   v.emplace_back(prefs::kAccessibilityLargeCursorEnabled, base::Value(false),
                  ConflictResolutionPolicy::kDialogNeeded, registration_flags);
   v.emplace_back(prefs::kAccessibilityLargeCursorDipSize,
-                 base::Value(ui::kDefaultLargeCursorSize),
+                 base::Value(kDefaultLargeCursorSize),
                  ConflictResolutionPolicy::kNone, registration_flags);
 
   // High contrast.
