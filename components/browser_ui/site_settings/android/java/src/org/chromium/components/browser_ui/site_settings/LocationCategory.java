@@ -41,15 +41,13 @@ public class LocationCategory extends SiteSettingsCategory {
         return LocationUtils.getInstance().hasAndroidLocationPermission();
     }
 
-    /**
-     * @return Whether precise location OS permission is blocked.
-     */
+    /** Returns whether precise location OS permission is blocked. */
     public boolean isPreciseLocationBlockedInOs() {
         return !LocationUtils.getInstance().hasAndroidFineLocationPermission();
     }
 
     /**
-     * @return Whether this category should show a warning about a mismatch between the location
+     * Returns whether this category should show a warning about a mismatch between the location
      * accuracy granted for the site and the accuracy granted at the OS level to Chrome.
      */
     public boolean hasPreciseOnlyBlockedWarning(Context context) {

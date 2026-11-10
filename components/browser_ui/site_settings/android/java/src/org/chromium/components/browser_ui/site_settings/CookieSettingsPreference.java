@@ -82,9 +82,7 @@ public class CookieSettingsPreference extends ContainedRadioButtonGroupPreferenc
         notifyChanged();
     }
 
-    /**
-     * @return The state that is currently selected.
-     */
+    /** Returns the state that is currently selected. */
     public @CookieControlsMode @Nullable Integer getState() {
         if (mRadioGroup == null && mParams == null) {
             return null;
@@ -219,8 +217,8 @@ public class CookieSettingsPreference extends ContainedRadioButtonGroupPreferenc
     }
 
     /**
-     * @return An array of radio buttons that have to be disabled as they can't be selected due to
-     *     policy restrictions.
+     * Returns an array of radio buttons that have to be disabled as they can't be selected due to
+     * policy restrictions.
      */
     private RadioButtonWithDescription[] getEnforcedButtons(Params params) {
         if (params.cookieControlsModeEnforced) {

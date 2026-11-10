@@ -28,14 +28,12 @@ import java.util.Set;
  */
 @NullMarked
 public interface SiteSettingsDelegate {
-    /**
-     * @return The BrowserContextHandle that should be used to read and update settings.
-     */
+    /** Returns the BrowserContextHandle that should be used to read and update settings. */
     BrowserContextHandle getBrowserContextHandle();
 
     /**
-     * @return the ManagedPreferenceDelegate instance that should be used when rendering
-     *     Preferences.
+     * Returns the ManagedPreferenceDelegate instance that should be used when rendering
+     * Preferences.
      */
     ManagedPreferenceDelegate getManagedPreferenceDelegate();
 
@@ -50,67 +48,52 @@ public interface SiteSettingsDelegate {
      */
     void getFaviconImageForURL(GURL faviconUrl, Callback<Drawable> callback);
 
-    /**
-     * @return true if the BrowsingDataModel Feature is enabled.
-     */
+    /** Returns true if the BrowsingDataModel Feature is enabled. */
     boolean isBrowsingDataModelFeatureEnabled();
 
-    /**
-     * @return true if the given category type should be shown in the SiteSettings Fragment.
-     */
+    /** Returns true if the given category type should be shown in the SiteSettings Fragment. */
     boolean isCategoryVisible(@SiteSettingsCategory.Type int type);
 
-    /**
-     * @return true if Incognito mode is enabled.
-     */
+    /** Returns true if Incognito mode is enabled. */
     boolean isIncognitoModeEnabled();
 
-    /**
-     * @return true if the delegate is for an incognito-branded profile.
-     */
+    /** Returns true if the delegate is for an incognito-branded profile. */
     boolean isIncognito();
 
-    /**
-     * @return true if the QuietNotificationPrompts Feature is enabled.
-     */
+    /** Returns true if the QuietNotificationPrompts Feature is enabled. */
     boolean isQuietNotificationPromptsFeatureEnabled();
 
     boolean isPermissionDedicatedCpssSettingAndroidFeatureEnabled();
 
     /**
-     * Get the id of the notification channel associated with the given origin.
+     * Returns the notification channel Id for the given origin.
      *
+     * @param origin The origin to get the notification channel ID for.
      * @param callback Callback to be invoked with the Id of the channel.
      */
     void getChannelIdForOrigin(String origin, Callback<String> callback);
 
-    /**
-     * @return The name of the app the settings are associated with.
-     */
+    /** Returns the name of the app the settings are associated with. */
     String getAppName();
 
     /**
-     * @return The user visible name of the app that will handle permission delegation for the
-     *     origin and content setting type.
+     * Returns the user visible name of the app that will handle permission delegation for the
+     * origin and content setting type.
      */
     @Nullable String getDelegateAppNameForOrigin(
             Origin origin, @ContentSettingsType.EnumType int type);
 
     /**
-     * @return The package name of the app that should handle permission delegation for the origin
-     *     and content setting type.
+     * Returns the package name of the app that should handle permission delegation for the origin
+     * and content setting type.
      */
     @Nullable String getDelegatePackageNameForOrigin(
             Origin origin, @ContentSettingsType.EnumType int type);
 
-    /**
-     * @return true if Help and Feedback links and menu items should be shown to the user.
-     */
+    /** Returns true if Help and Feedback links and menu items should be shown to the user. */
     boolean isHelpAndFeedbackEnabled();
 
-    /**
-     * @return The resource ID of the help string that is valid for the current policy.
-     */
+    /** Returns the resource ID of the help string that is valid for the current policy. */
     default @StringRes int getHelpMenuStringRes() {
         return R.string.menu_help;
     }
@@ -139,38 +122,30 @@ public interface SiteSettingsDelegate {
     /** Launches a Help Center URL in a custom tab. */
     void launchUrlInCustomTab(Activity currentActivity, String url);
 
-    /**
-     * @return The set of all origins that have a WebAPK or TWA installed.
-     */
+    /** Returns the set of all origins that have a WebAPK or TWA installed. */
     Set<String> getOriginsWithInstalledApp();
 
     /**
-     * @return The set of all origins whose notification permissions are delegated to another app.
+     * Returns the set of all origins whose notification permissions are delegated to another app.
      */
     Set<String> getAllDelegatedNotificationOrigins();
 
-    /**
-     * @return The set of all origins that have File System Access grants.
-     */
+    /** Returns the set of all origins that have File System Access grants. */
     List<String> getOriginsWithFileSystemAccessGrants();
 
     /**
-     * @return The list of file editing grants. result[0] contains paths, result[1] contains display
-     *     names.
+     * Returns the list of file editing grants. result[0] contains paths, result[1] contains display
+     * names.
      */
     String[][] getFileSystemAccessGrants(String origin);
 
     /** Revoke the specified file system access grant. */
     void revokeFileSystemAccessGrant(String origin, String file);
 
-    /**
-     * @return true if Related Website Sets data access is enabled.
-     */
+    /** Returns true if Related Website Sets data access is enabled. */
     boolean isRelatedWebsiteSetsDataAccessEnabled();
 
-    /**
-     * @return true if Related Website Sets data access is managed.
-     */
+    /** Returns true if Related Website Sets data access is managed. */
     boolean isRelatedWebsiteSetsDataAccessManaged();
 
     /**
@@ -212,14 +187,10 @@ public interface SiteSettingsDelegate {
      */
     void getBrowsingDataModel(Callback<BrowsingDataModel> callback);
 
-    /**
-     * @return whether the unused site permission autorevocation is enabled.
-     */
+    /** Returns whether the unused site permission autorevocation is enabled. */
     boolean isPermissionAutorevocationEnabled();
 
-    /**
-     * @return whether the related website sets UI is enabled.
-     */
+    /** Returns whether the related website sets UI is enabled. */
     boolean isRelatedWebsiteSetsUiEnabled();
 
     /** Enable/Disable unused site permission autorevocation. */

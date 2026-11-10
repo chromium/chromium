@@ -190,7 +190,7 @@ public class WebsiteGroup implements WebsiteEntry {
         return mWebsites;
     }
 
-    /** @return whether one of the underlying origins has an associated installed app. */
+    /** Returns whether one of the underlying origins has an associated installed app. */
     public boolean hasInstalledApp(Set<String> originsWithApps) {
         for (Website site : mWebsites) {
             if (originsWithApps.contains(site.getAddress().getOrigin())) {

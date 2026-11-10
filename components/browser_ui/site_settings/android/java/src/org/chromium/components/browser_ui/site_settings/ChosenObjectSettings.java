@@ -107,11 +107,11 @@ public class ChosenObjectSettings extends BaseSiteSettingsFragment
     }
 
     /**
-     * Checks the consistency of |mObjectInfos|.
+     * Checks the consistency of {@code mObjectInfos}.
      *
-     * This method asserts that for all the entries in |mObjectInfos| the getObject() method
-     * returns the same value. This must be true because this activity is displaying permissions
-     * for a single object. Each instance varies only in which site it represents.
+     * <p>This method asserts that for all the entries in {@code mObjectInfos} the getObject()
+     * method returns the same value. This must be true because this activity is displaying
+     * permissions for a single object. Each instance varies only in which site it represents.
      */
     private void checkObjectConsistency() {
         if (BuildConfig.ENABLE_ASSERTS) {
@@ -185,9 +185,9 @@ public class ChosenObjectSettings extends BaseSiteSettingsFragment
     }
 
     /**
-     * Iterates through |mObjectInfos| to revoke the object permissions. If the list of objects
-     * contains one that is managed, a toast will display to explain that the managed objects cannot
-     * be reset, otherwise all of the objects are reset so the activity is finished.
+     * Iterates through {@code mObjectInfos} to revoke the object permissions. If the list of
+     * objects contains one that is managed, a toast will display to explain that the managed
+     * objects cannot be reset, otherwise all of the objects are reset so the activity is finished.
      */
     public void revokeObjectPermissions() {
         boolean hasManagedObject = false;

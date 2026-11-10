@@ -102,7 +102,7 @@ class WebsitePreference extends ChromeImageViewPreference {
         return UrlUtilities.clearPort(uri);
     }
 
-    /** @return if a |mCategory| has a sub page to show the |mSite| permissions. */
+    /** Returns whether {@code mCategory} has a sub page to show the {@code mSite} permissions. */
     private boolean hasSubPage() {
         int type = mCategory.getContentSettingsType();
 

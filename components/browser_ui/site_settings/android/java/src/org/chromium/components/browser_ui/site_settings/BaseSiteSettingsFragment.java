@@ -38,13 +38,13 @@ public abstract class BaseSiteSettingsFragment extends PreferenceFragmentCompat
         mSiteSettingsDelegate = client;
     }
 
-    /** @return the SiteSettingsDelegate instance to use when rendering the Site Settings UI. */
+    /** Returns the SiteSettingsDelegate instance to use when rendering the Site Settings UI. */
     public SiteSettingsDelegate getSiteSettingsDelegate() {
         assert mSiteSettingsDelegate != null : "SiteSettingsDelegate not set";
         return mSiteSettingsDelegate;
     }
 
-    /** @return Whether a SiteSettingsDelegate instance has been assigned to this Fragment. */
+    /** Returns whether a SiteSettingsDelegate instance has been assigned to this Fragment. */
     public boolean hasSiteSettingsDelegate() {
         return mSiteSettingsDelegate != null;
     }

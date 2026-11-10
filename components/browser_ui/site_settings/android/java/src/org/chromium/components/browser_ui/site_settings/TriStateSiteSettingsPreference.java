@@ -47,6 +47,9 @@ public class TriStateSiteSettingsPreference extends Preference
      * @param setting The initial setting for this Preference
      * @param descriptionIds An array of 3 resource IDs for descriptions for Allowed, Ask and
      *     Blocked states, in that order.
+     * @param iconIds An array of 3 resource IDs for icons for Allowed, Ask and Blocked states, in
+     *     that order.
+     * @param iconMarginEnd The end margin to apply to the icons.
      */
     public void initialize(
             @ContentSetting int setting,
@@ -59,9 +62,7 @@ public class TriStateSiteSettingsPreference extends Preference
         mIconMarginEnd = iconMarginEnd;
     }
 
-    /**
-     * @return The current checked setting.
-     */
+    /** Returns the current checked setting. */
     public @ContentSetting int getCheckedSetting() {
         return mSetting;
     }

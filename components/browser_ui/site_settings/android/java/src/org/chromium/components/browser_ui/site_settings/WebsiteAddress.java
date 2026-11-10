@@ -38,9 +38,9 @@ public class WebsiteAddress implements Comparable<WebsiteAddress>, Serializable 
     static final String ANY_SUBDOMAIN_PATTERN = "[*.]";
 
     /**
-     * Creates a new WebsiteAddress from |originOrHostOrPattern|.
+     * Creates a new WebsiteAddress from {@code originOrHostOrPattern}.
      *
-     * @return A new WebsiteAddress, or null if |originOrHostOrPattern| was null or empty.
+     * @return A new WebsiteAddress, or null if {@code originOrHostOrPattern} was null or empty.
      */
     @Contract("null -> null")
     public static @Nullable WebsiteAddress create(@Nullable String originOrHostOrPattern) {
@@ -136,8 +136,8 @@ public class WebsiteAddress implements Comparable<WebsiteAddress>, Serializable 
     }
 
     /**
-     * @return Domain and registry if those are defined; origin/host otherwise (for things like IP
-     *.        addresses and "localhost") with the scheme omitted.
+     * Returns domain and registry if those are defined; origin/host otherwise (for things like IP
+     * addresses and "localhost") with the scheme omitted.
      */
     public @Nullable String getDomainAndRegistry() {
         if (mDomainAndRegistry == null) {

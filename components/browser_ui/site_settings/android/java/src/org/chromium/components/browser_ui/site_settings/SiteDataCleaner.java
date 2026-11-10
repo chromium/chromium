@@ -21,6 +21,8 @@ public class SiteDataCleaner {
     /**
      * Clears the data of the specified site.
      *
+     * @param siteSettingsDelegate The delegate used to access the browser context and settings.
+     * @param site The site whose data should be cleared.
      * @param finishCallback is called when finished.
      */
     public static void clearData(
@@ -40,6 +42,8 @@ public class SiteDataCleaner {
     /**
      * Clears the data for each of the sites in a given group.
      *
+     * @param siteSettingsDelegate The delegate used to access the browser context and settings.
+     * @param group The group of sites whose data should be cleared.
      * @param finishCallback is called when the entire operation is finished.
      */
     public static void clearData(
