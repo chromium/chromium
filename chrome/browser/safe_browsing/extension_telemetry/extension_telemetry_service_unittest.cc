@@ -10,6 +10,8 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -2062,6 +2064,31 @@ TEST_F(ExtensionTelemetryServiceIsolatedModeTest,
   ASSERT_EQ(extension_info.file_infos_size(), 1);
   EXPECT_EQ(extension_info.file_infos(0).name(), kJavaScriptFile);
   EXPECT_EQ(extension_info.file_infos(0).hash(), kFileHash);
+}
+
+TEST_F(ExtensionTelemetryServiceIsolatedModeTest,
+       RecordsIsolatedEnterpriseHistograms) {
+  constexpr char kSignalTypeHistogram[] =
+      "SafeBrowsing.ExtensionTelemetry.Enterprise.Signals.SignalType";
+  constexpr char kReportSizeHistogram[] =
+      "SafeBrowsing.ExtensionTelemetry.Enterprise.ReportSize";
+  base::HistogramTester histogram_tester;
+  SetEnterpriseReportingConfig(
+      /*enabled=*/true, {enterprise_connectors::kExtensionTelemetryEvent});
+
+  // Add a signal, then trigger an enterprise report.
+  PrimeTelemetryServiceWithSignal();
+  task_environment_.FastForwardBy(
+      telemetry_service_->GetEnterpriseTimerDelayForTesting());
+
+  // Both histograms are recorded only in their Isolated Mode variants.
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({kSignalTypeHistogram, ".Isolated"}),
+      ExtensionSignalType::kCookiesGet, 1);
+  histogram_tester.ExpectTotalCount(kSignalTypeHistogram, 0);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({kReportSizeHistogram, ".Isolated"}), 1);
+  histogram_tester.ExpectTotalCount(kReportSizeHistogram, 0);
 }
 
 }  // namespace safe_browsing

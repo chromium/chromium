@@ -231,15 +231,29 @@ void RecordCollectionDuration(base::TimeDelta duration) {
       "SafeBrowsing.ExtensionTelemetry.FileData.CollectionDuration", duration);
 }
 
-void RecordSignalTypeForEnterprise(ExtensionSignalType signal_type) {
-  base::UmaHistogramEnumeration(
-      "SafeBrowsing.ExtensionTelemetry.Enterprise.Signals.SignalType",
-      signal_type);
+// Enterprise Isolated Mode is recorded separately from regular profiles.
+constexpr char kEnterpriseSignalTypeHistogram[] =
+    "SafeBrowsing.ExtensionTelemetry.Enterprise.Signals.SignalType";
+constexpr char kEnterpriseSignalTypeIsolatedHistogram[] =
+    "SafeBrowsing.ExtensionTelemetry.Enterprise.Signals.SignalType.Isolated";
+constexpr char kEnterpriseReportSizeHistogram[] =
+    "SafeBrowsing.ExtensionTelemetry.Enterprise.ReportSize";
+constexpr char kEnterpriseReportSizeIsolatedHistogram[] =
+    "SafeBrowsing.ExtensionTelemetry.Enterprise.ReportSize.Isolated";
+
+void RecordSignalTypeForEnterprise(ExtensionSignalType signal_type,
+                                   const Profile& profile) {
+  base::UmaHistogramEnumeration(profile.IsEnterpriseIsolatedModeProfile()
+                                    ? kEnterpriseSignalTypeIsolatedHistogram
+                                    : kEnterpriseSignalTypeHistogram,
+                                signal_type);
 }
 
-void RecordEnterpriseReportSize(size_t size) {
-  base::UmaHistogramCounts1M(
-      "SafeBrowsing.ExtensionTelemetry.Enterprise.ReportSize", size);
+void RecordEnterpriseReportSize(size_t size, const Profile& profile) {
+  base::UmaHistogramCounts1M(profile.IsEnterpriseIsolatedModeProfile()
+                                 ? kEnterpriseReportSizeIsolatedHistogram
+                                 : kEnterpriseReportSizeHistogram,
+                             size);
 }
 
 static_assert(std::to_underlying(extensions::Manifest::Type::kNumLoadTypes) ==
@@ -744,7 +758,7 @@ void ExtensionTelemetryService::AddSignal(
 
   if (enterprise_enabled_ &&
       enterprise_signal_subscribers_.contains(signal_type)) {
-    RecordSignalTypeForEnterprise(signal_type);
+    RecordSignalTypeForEnterprise(signal_type, *profile_);
     AddSignalHelper(*signal, enterprise_extension_store_,
                     enterprise_signal_subscribers_);
   }
@@ -858,7 +872,7 @@ void ExtensionTelemetryService::CreateAndSendEnterpriseReport() {
   std::unique_ptr<ExtensionTelemetryReportRequest> enterprise_report =
       CreateReportForEnterprise();
   if (enterprise_report) {
-    RecordEnterpriseReportSize(enterprise_report->ByteSizeLong());
+    RecordEnterpriseReportSize(enterprise_report->ByteSizeLong(), *profile_);
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
     GetExtensionTelemetryEventRouter(profile_)->UploadTelemetryReport(
         std::move(enterprise_report));

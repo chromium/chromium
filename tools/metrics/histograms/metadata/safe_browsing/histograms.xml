@@ -43,6 +43,11 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/enterprise/connectors/core/common.cc:EnterpriseConnector) -->
 
+<variants name="ExtensionTelemetryEnterpriseProfileType">
+  <variant name="" summary="for a regular profile"/>
+  <variant name=".Isolated" summary="for an Enterprise Isolated Mode profile"/>
+</variants>
+
 <!-- LINT.IfChange(GeminiAntiscamProtectionContentCategory) -->
 
 <variants name="GeminiAntiscamProtectionContentCategory">
@@ -1155,27 +1160,33 @@ useful for Chirp alerts (go/crca-alerts). -->
   </token>
 </histogram>
 
-<histogram name="SafeBrowsing.ExtensionTelemetry.Enterprise.ReportSize"
+<histogram
+    name="SafeBrowsing.ExtensionTelemetry.Enterprise.ReportSize{ProfileType}"
     units="bytes" expires_after="2027-05-11">
   <owner>richche@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <owner>przybytniowska@google.com</owner>
   <summary>
-    The size of an enterprise telemetry report. This is recorded once for each
-    send to Chrome Enterprise Reporting server, regardless of whether it was
-    successful. Sending attempts occur periodically (default period is 5
-    minutes).
+    The size of an enterprise telemetry report {ProfileType}. This is recorded
+    once for each send to Chrome Enterprise Reporting server, regardless of
+    whether it was successful. Sending attempts occur periodically (default
+    period is 5 minutes).
   </summary>
+  <token key="ProfileType" variants="ExtensionTelemetryEnterpriseProfileType"/>
 </histogram>
 
-<histogram name="SafeBrowsing.ExtensionTelemetry.Enterprise.Signals.SignalType"
+<histogram
+    name="SafeBrowsing.ExtensionTelemetry.Enterprise.Signals.SignalType{ProfileType}"
     enum="SBExtensionTelemetrySignalsSignalType" expires_after="2027-05-11">
   <owner>richche@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <owner>przybytniowska@google.com</owner>
   <summary>
-    Records the extension telemetry signal type. Logged each time a signal is
-    triggered (eg. a cookies.get API call is invoked). Applicable only to
-    enterprise.
+    Records the extension telemetry signal type {ProfileType}. Logged each time
+    a signal is triggered (eg. a cookies.get API call is invoked). Applicable
+    only to enterprise.
   </summary>
+  <token key="ProfileType" variants="ExtensionTelemetryEnterpriseProfileType"/>
 </histogram>
 
 <histogram name="SafeBrowsing.ExtensionTelemetry.FileData.CollectionDuration"
