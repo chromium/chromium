@@ -48,6 +48,10 @@ class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase {
     // if no other registered managers are animating.
     void StopAnimation(TabCollectionAnimatingLayoutManager* manager);
 
+    // Stops all running animations across all registered managers and resets
+    // animation progress to the end state.
+    void StopAllAnimationsForTesting();
+
     double current_offset() const { return current_offset_; }
     double starting_offset() const { return starting_offset_; }
     double GetCurrentProgress() const;

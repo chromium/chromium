@@ -229,6 +229,12 @@ void TabCollectionAnimatingLayoutManager::AnimationCoordinator::StopAnimation(
   manager->OnAnimationEnded();
 }
 
+void TabCollectionAnimatingLayoutManager::AnimationCoordinator::
+    StopAllAnimationsForTesting() {
+  animation_.Reset(1.0);
+  AnimationEnded(nullptr);
+}
+
 double
 TabCollectionAnimatingLayoutManager::AnimationCoordinator::GetCurrentProgress()
     const {
