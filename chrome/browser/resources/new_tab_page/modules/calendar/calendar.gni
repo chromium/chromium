@@ -21,3 +21,8 @@ calendar_css_files = [
   "modules/calendar/calendar.css",
   "modules/calendar/calendar_event.css",
 ]
+
+calendar_icons_files = [
+  "attachment.svg",
+  "location.svg",
+]

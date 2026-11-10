@@ -3,14 +3,12 @@
 # found in the LICENSE file.
 
 import("//ui/webui/resources/tools/generate_grd.gni")
+import("../calendar.gni")
 
 generate_grd("build_grdp") {
   grd_prefix = "feed"
   out_grd = "$target_gen_dir/resources.grdp"
-  input_files = [
-    "attachment.svg",
-    "location.svg",
-  ]
+  input_files = calendar_icons_files
   input_files_base_dir = rebase_path(".", "//")
   resource_path_prefix = "modules/calendar/icons"
 }

@@ -160,7 +160,7 @@
 }
 
 #attachment-icon {
-  --cr-icon-image: url(modules/v2/calendar/icons/attachment.svg);
+  --cr-icon-image: url(modules/calendar/icons/attachment.svg);
   margin: 6px -4px 6px 0;
 }
 

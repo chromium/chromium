@@ -8,3 +8,8 @@ authentication_web_component_files =
 
 authentication_css_files =
     [ "modules/authentication/microsoft_auth_module.css" ]
+
+authentication_icons_files = [
+  "microsoft_auth_light.svg",
+  "microsoft_auth_dark.svg",
+]
