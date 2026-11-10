@@ -13,7 +13,6 @@
 #include "base/values.h"
 #include "components/metrics/demographics/user_demographics.h"
 #include "components/metrics/metrics_log_uploader.h"
-#include "components/sync/base/features.h"
 #include "components/sync/service/sync_prefs.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -104,11 +103,7 @@ class TestProfileClient : public DemographicMetricsProvider::ProfileClient {
         sync_service_->GetUserSettings()->SetSelectedTypes(
             /*sync_everything=*/false,
             /*types=*/{});
-        if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-          CHECK(!sync_service_->IsSyncFeatureEnabled());
-        } else {
-          CHECK(sync_service_->IsSyncFeatureEnabled());
-        }
+        CHECK(!sync_service_->IsSyncFeatureEnabled());
         CHECK(sync_service_->GetDisableReasons().empty());
         CHECK_EQ(syncer::SyncService::TransportState::ACTIVE,
                  sync_service_->GetTransportState());
@@ -127,13 +122,8 @@ class TestProfileClient : public DemographicMetricsProvider::ProfileClient {
         // However TestSyncService::SetSignedIn forces
         // TestSyncUserSettings::IsInitialSyncFeatureSetupComplete() to return
         // false when sync is in transport mode.
-        if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-          CHECK(!sync_service_->GetUserSettings()
-                     ->IsInitialSyncFeatureSetupComplete());
-        } else {
-          CHECK(sync_service_->GetUserSettings()
-                    ->IsInitialSyncFeatureSetupComplete());
-        }
+        CHECK(!sync_service_->GetUserSettings()
+                   ->IsInitialSyncFeatureSetupComplete());
 
         CHECK(!sync_service_->IsSyncFeatureEnabled());
         break;

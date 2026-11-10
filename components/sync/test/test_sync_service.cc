@@ -12,7 +12,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/progress_marker_map.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/engine/cycle/model_neutral_state.h"
@@ -51,9 +50,7 @@ CoreAccountInfo GetDefaultAccountInfo() {
 
 TestSyncService::TestSyncService()
     : user_settings_(this), last_cycle_snapshot_(MakeDefaultCycleSnapshot()) {
-  SetSignedIn(IsReplaceSyncPromosWithSignInPromosEnabled()
-                  ? signin::ConsentLevel::kSignin
-                  : signin::ConsentLevel::kSync);
+  SetSignedIn(signin::ConsentLevel::kSignin);
 }
 
 TestSyncService::~TestSyncService() = default;
@@ -127,9 +124,7 @@ void TestSyncService::SetLocalSyncEnabled(bool local_sync_enabled) {
     disable_reasons_.Remove(DISABLE_REASON_NOT_SIGNED_IN);
     disable_reasons_.Remove(DISABLE_REASON_ENTERPRISE_POLICY);
   } else {
-    SetSignedIn(IsReplaceSyncPromosWithSignInPromosEnabled()
-                    ? signin::ConsentLevel::kSignin
-                    : signin::ConsentLevel::kSync);
+    SetSignedIn(signin::ConsentLevel::kSignin);
   }
 }
 
