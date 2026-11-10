@@ -2747,13 +2747,48 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, DeleteProfile) {
   WaitForLoadStop(GURL("chrome://profile-picker"));
   ProfilePickerHandler* handler = profile_picker_handler();
 
-  // Simulate profile deletion from the picker.
+  // Simulate opening and canceling the profile deletion dialog first, then
+  // deleting the profile after `HandleCloseProfileStatistics()` has reset
+  // `profile_statistics_keep_alive_`.
   ProfileDestructionWaiter waiter(profile);
   base::ListValue args;
   args.Append(base::FilePathToValue(other_path));
   handler->HandleGetProfileStatistics(args);
+  handler->HandleCloseProfileStatistics(base::ListValue());
   handler->HandleRemoveProfile(args);
   waiter.Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
+                       DeleteUnloadedProfile) {
+  base::FilePath other_path = CreateNewProfileAndUnload();
+  ASSERT_FALSE(
+      g_browser_process->profile_manager()->GetProfileByPath(other_path));
+
+  // Open the picker.
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileMenuManageProfiles));
+  WaitForLoadStop(GURL("chrome://profile-picker"));
+  ProfilePickerHandler* handler = profile_picker_handler();
+
+  // `other_path` is unloaded, so `HandleGetProfileStatistics()` starts an
+  // asynchronous `LoadProfileByPath()` and `profile_statistics_keep_alive_` is
+  // not yet populated. Simulate opening the remove confirmation dialog,
+  // canceling it (`HandleCloseProfileStatistics()` cancels the first pending
+  // load), reopening the dialog (`HandleGetProfileStatistics()` starts a new
+  // load), and confirming deletion while the profile is still loading.
+  ProfileDeletionObserver observer;
+  base::ListValue args;
+  args.Append(base::FilePathToValue(other_path));
+  handler->HandleGetProfileStatistics(args);
+  handler->HandleCloseProfileStatistics(base::ListValue());
+  handler->HandleGetProfileStatistics(args);
+  handler->HandleRemoveProfile(args);
+  observer.Wait();
+
+  EXPECT_EQ(nullptr, g_browser_process->profile_manager()
+                         ->GetProfileAttributesStorage()
+                         .GetProfileAttributesWithPath(other_path));
 }
 
 // Regression test for https://crbug.com/40934491

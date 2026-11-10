@@ -99,6 +99,8 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
                            CloseBrowserBeforeCreatingNewProfile);
   FRIEND_TEST_ALL_PREFIXES(ProfilePickerCreationFlowBrowserTest, DeleteProfile);
   FRIEND_TEST_ALL_PREFIXES(ProfilePickerCreationFlowBrowserTest,
+                           DeleteUnloadedProfile);
+  FRIEND_TEST_ALL_PREFIXES(ProfilePickerCreationFlowBrowserTest,
                            DeleteProfileFromOwnTab);
   FRIEND_TEST_ALL_PREFIXES(ProfilePickerWithGlicParamBrowserTest,
                            GlicLearnMoreClicked);
@@ -222,6 +224,13 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   // to freeze the order of profiles on the picker. Newly added profiles, will
   // be added to the end of the list.
   std::unordered_map<base::FilePath, size_t> profiles_order_;
+
+  // Used to cancel in-flight profile loading and statistics gathering when the
+  // profile deletion confirmation dialog is closed or confirmed. Since the
+  // confirmation dialog is modal and can only be shown for one profile at a
+  // time, a single factory is sufficient for the Profile Picker.
+  base::WeakPtrFactory<ProfilePickerHandler>
+      gather_profile_statistics_weak_factory_{this};
   base::WeakPtrFactory<ProfilePickerHandler> weak_factory_{this};
 };
 

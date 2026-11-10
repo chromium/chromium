@@ -377,6 +377,8 @@ void ProfilePickerHandler::OnJavascriptAllowed() {
 }
 void ProfilePickerHandler::OnJavascriptDisallowed() {
   profile_attributes_storage_observation_.Reset();
+  gather_profile_statistics_weak_factory_.InvalidateWeakPtrs();
+  profile_statistics_keep_alive_.reset();
   weak_factory_.InvalidateWeakPtrs();
 }
 
@@ -715,9 +717,13 @@ void ProfilePickerHandler::HandleRemoveProfile(const base::ListValue& args) {
   }
 
   RecordProfilePickerAction(ProfilePickerAction::kDeleteProfile);
-  // TODO(crbug.com/576442273): CHECK-exclusion: Convert to a CHECK once we are
-  // confident it won't be triggered.
-  DCHECK(profile_statistics_keep_alive_);
+
+  // Cancel any in-flight `LoadProfileByPath()` or `GatherStatistics()`
+  // callbacks so `GatherProfileStatistics()` cannot create a new keep-alive
+  // after profile removal has started. `profile_statistics_keep_alive_` may be
+  // null if the user confirmed deletion before an unloaded profile finished
+  // loading from disk (or if loading failed).
+  gather_profile_statistics_weak_factory_.InvalidateWeakPtrs();
 
   // Deleting the profile may delete `this` (see See
   // https://crbug.com/40934491), if the profile picker was shown in a tab. Keep
@@ -783,7 +789,11 @@ void ProfilePickerHandler::HandleOnLearnMoreClicked(
 void ProfilePickerHandler::HandleCloseProfileStatistics(
     const base::ListValue& args) {
   CHECK_EQ(0U, args.size());
-  CHECK(profile_statistics_keep_alive_, base::NotFatalUntil::M162);
+  // Cancel any in-flight `LoadProfileByPath()` or `GatherStatistics()`
+  // callbacks so `GatherProfileStatistics()` cannot create a keep-alive after
+  // the dialog was closed. `profile_statistics_keep_alive_` may be null if the
+  // dialog was closed before an unloaded profile finished loading from disk.
+  gather_profile_statistics_weak_factory_.InvalidateWeakPtrs();
   profile_statistics_keep_alive_.reset();
 }
 
@@ -798,6 +808,9 @@ void ProfilePickerHandler::HandleGetProfileStatistics(
     return;
   }
 
+  gather_profile_statistics_weak_factory_.InvalidateWeakPtrs();
+  profile_statistics_keep_alive_.reset();
+
   Profile* profile =
       g_browser_process->profile_manager()->GetProfileByPath(*profile_path);
 
@@ -807,7 +820,7 @@ void ProfilePickerHandler::HandleGetProfileStatistics(
     g_browser_process->profile_manager()->LoadProfileByPath(
         *profile_path, false,
         base::BindOnce(&ProfilePickerHandler::GatherProfileStatistics,
-                       weak_factory_.GetWeakPtr()));
+                       gather_profile_statistics_weak_factory_.GetWeakPtr()));
   }
 }
 
@@ -821,7 +834,8 @@ void ProfilePickerHandler::GatherProfileStatistics(Profile* profile) {
 
   ProfileStatisticsFactory::GetForProfile(profile)->GatherStatistics(
       base::BindRepeating(&ProfilePickerHandler::OnProfileStatisticsReceived,
-                          weak_factory_.GetWeakPtr(), profile->GetPath()));
+                          gather_profile_statistics_weak_factory_.GetWeakPtr(),
+                          profile->GetPath()));
 }
 
 void ProfilePickerHandler::OnProfileStatisticsReceived(

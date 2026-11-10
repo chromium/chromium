@@ -274,6 +274,21 @@ TEST_F(ProfilePickerHandlerTest, RemoveProfile) {
   web_ui()->ClearTrackedCalls();
 }
 
+TEST_F(ProfilePickerHandlerTest, CloseProfileStatisticsBeforeLoadCompletes) {
+  ProfileAttributesEntry* profile_a = CreateTestingProfile("A");
+  InitializeMainViewAndVerifyProfileList({profile_a});
+  web_ui()->ClearTrackedCalls();
+
+  // Closing statistics when statistics have not finished loading (e.g. for an
+  // unloaded profile path) should not crash.
+  base::ListValue args;
+  args.Append(base::FilePathToValue(
+      profile_manager()->profiles_dir().AppendASCII("UnloadedProfile")));
+  web_ui()->HandleReceivedMessage("getProfileStatistics", args);
+  base::ListValue empty_args;
+  web_ui()->HandleReceivedMessage("closeProfileStatistics", empty_args);
+}
+
 TEST_F(ProfilePickerHandlerTest, RemoveOmittedProfile) {
   ProfileAttributesEntry* profile_a = CreateTestingProfile("A");
   ProfileAttributesEntry* profile_d = CreateTestingProfile("D");
