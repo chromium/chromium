@@ -19,6 +19,7 @@ import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
@@ -1069,6 +1070,116 @@ public class ReadAloudControllerUnitTest {
 
         assertTrue(mController.isReadable(mTab));
         assertEquals(PlaybackMode.CLASSIC, mController.getModeToPlay(mTab));
+    }
+
+    @Test
+    public void testReadabilityInfo_withOverviewUnsupported_keepsClassicResult() {
+        ReadAloudController.ReadabilityInfo info =
+                new ReadAloudController.ReadabilityInfo(
+                        ImmutableMap.of(
+                                PlaybackMode.CLASSIC,
+                                new ReadAloudReadabilityHooks.ReadabilityResult(
+                                        /* readable= */ true, /* supportsHighlighting= */ false),
+                                PlaybackMode.OVERVIEW,
+                                new ReadAloudReadabilityHooks.ReadabilityResult(
+                                        /* readable= */ true, /* supportsHighlighting= */ true)),
+                        /* responseTimestamp= */ 1234L);
+
+        ReadAloudController.ReadabilityInfo result = info.withOverviewUnsupported();
+
+        assertTrue(result.isReadable(PlaybackMode.CLASSIC));
+        assertFalse(result.getTimepointsSupported(PlaybackMode.CLASSIC));
+        assertFalse(result.isReadable(PlaybackMode.OVERVIEW));
+        assertEquals(1234L, result.getResponseTime());
+    }
+
+    @Test
+    @EnableFeatures({
+        ReadAloudFeatures.READ_ALOUD_NATIVE,
+        ChromeFeatureList.READALOUD_AUDIO_OVERVIEWS
+    })
+    public void testOnPlaybackError_nativeOverview_fallsBackToClassic() {
+        when(mNativeBridgeNatives.init(any(), any()))
+                .thenAnswer(invocation -> JniRawPtr.createForTesting(12345L));
+        mController.onProfileAvailable(mMockProfile);
+        mFakeTranslateBridge.setIsPageTranslated(false);
+        mFakeTranslateBridge.setCurrentLanguage("en");
+        when(mPrefService.getInteger("readaloud.playback_mode"))
+                .thenReturn(PlaybackMode.OVERVIEW.getValue());
+        mController.onReadabilityResult(sTestGURL, true);
+
+        mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
+        resolvePromises();
+        verify(mNativeBridgeNatives).setPlaybackMode(any(), eq(PlaybackMode.OVERVIEW.getValue()));
+        Runnable readabilityListener = Mockito.mock(Runnable.class);
+        mController.addReadabilityUpdateListener(readabilityListener);
+
+        // AI Playback fails on this page (e.g. overview generation failed). Native reports STOPPED
+        // before the error (ReadAloudService::HandlePlaybackError).
+        mController.onPlaybackStateChanged(PlaybackListener.State.STOPPED);
+        mController.onPlaybackError("Overview generation failed");
+        resolvePromises();
+
+        // Overview is marked unsupported for this page in the readability cache, Classic is not,
+        // and readability listeners are notified.
+        ReadAloudController.ReadabilityInfo cachedInfo = mController.getReadabilityInfoForTab(mTab);
+        assertNotNull(cachedInfo);
+        assertFalse(cachedInfo.isReadable(PlaybackMode.OVERVIEW));
+        assertTrue(cachedInfo.isReadable(PlaybackMode.CLASSIC));
+        verify(readabilityListener, atLeastOnce()).run();
+
+        // Falls back to Standard Playback and starts playing instead of showing an error.
+        verify(mNativeBridgeNatives).setPlaybackMode(any(), eq(PlaybackMode.CLASSIC.getValue()));
+        verify(mPlayerCoordinator, times(2))
+                .playbackReady(
+                        any(NativePlayback.class), eq(PlaybackListener.State.PLAYBACK_CREATION));
+        verify(mPlayerCoordinator, never()).playbackFailed();
+        // The user's preferred playback mode is left unchanged.
+        verify(mPrefService, never()).setInteger(eq("readaloud.playback_mode"), anyInt());
+    }
+
+    @Test
+    @EnableFeatures({
+        ReadAloudFeatures.READ_ALOUD_NATIVE,
+        ChromeFeatureList.READALOUD_AUDIO_OVERVIEWS
+    })
+    public void testOnPlaybackError_classicFallbackFails_showsError() {
+        when(mNativeBridgeNatives.init(any(), any()))
+                .thenAnswer(invocation -> JniRawPtr.createForTesting(12345L));
+        mController.onProfileAvailable(mMockProfile);
+        mFakeTranslateBridge.setIsPageTranslated(false);
+        mFakeTranslateBridge.setCurrentLanguage("en");
+        when(mPrefService.getInteger("readaloud.playback_mode"))
+                .thenReturn(PlaybackMode.OVERVIEW.getValue());
+        mController.onReadabilityResult(sTestGURL, true);
+
+        mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
+        resolvePromises();
+        mController.onPlaybackError("Overview generation failed");
+        resolvePromises();
+
+        // The Classic fallback also fails: show the error, no further retries.
+        mController.onPlaybackError("Distillation failed");
+        resolvePromises();
+
+        verify(mPlayerCoordinator, times(1)).playbackFailed();
+    }
+
+    @Test
+    @EnableFeatures(ReadAloudFeatures.READ_ALOUD_NATIVE)
+    public void testOnPlaybackError_nativeClassic_doesNotFallBack_showsError() {
+        when(mNativeBridgeNatives.init(any(), any()))
+                .thenAnswer(invocation -> JniRawPtr.createForTesting(12345L));
+        mController.onProfileAvailable(mMockProfile);
+        mController.onReadabilityResult(sTestGURL, true);
+
+        mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
+        resolvePromises();
+
+        mController.onPlaybackError("Distillation failed");
+        resolvePromises();
+
+        verify(mPlayerCoordinator).playbackFailed();
     }
 
     @Test

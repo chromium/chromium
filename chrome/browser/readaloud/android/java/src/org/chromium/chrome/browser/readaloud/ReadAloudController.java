@@ -289,6 +289,18 @@ public class ReadAloudController
                     responseTimestamp);
       }
 
+        /** Returns a copy of this info with Overview marked unsupported; Classic is unchanged. */
+        ReadabilityInfo withOverviewUnsupported() {
+            return new ReadabilityInfo(
+                    ImmutableMap.of(
+                            PlaybackArgs.PlaybackMode.CLASSIC,
+                            getReadabilityResultForMode(PlaybackArgs.PlaybackMode.CLASSIC),
+                            PlaybackArgs.PlaybackMode.OVERVIEW,
+                            new ReadAloudReadabilityHooks.ReadabilityResult(
+                                    /* readable= */ false, /* supportsHighlighting= */ false)),
+                    mResponseTimestamp);
+        }
+
       boolean isReadable() {
             // For audio overviews, we don't account for the language in the
             // readability phase (we will check it during playback).
@@ -1017,7 +1029,8 @@ public class ReadAloudController
     }
 
     @Nullable
-    private ReadabilityInfo getReadabilityInfoForTab(@Nullable Tab tab) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    ReadabilityInfo getReadabilityInfoForTab(@Nullable Tab tab) {
         if (isTabUnavailableForReadAloud(tab) || !isAvailable()) {
             return null;
         }
@@ -2543,11 +2556,55 @@ public class ReadAloudController
 
     // Called when an unrecoverable playback error occurs.
     void onPlaybackError(String errorMessage) {
-        Log.e(TAG, "onPlaybackError: errorMessage = %s", errorMessage);
+        if (maybeFallBackToClassicPlayback()) {
+            return;
+        }
         resetCurrentPlayback(ReasonForStoppingPlayback.UNKNOWN_REASON);
         if (mPlayerCoordinator != null) {
             mPlayerCoordinator.playbackFailed();
         }
+    }
+
+    /** Returns true if the current playback is a native playback in Overview (AI) mode. */
+    private boolean isNativeOverviewPlayback() {
+        return mPlayback instanceof NativePlayback nativePlayback
+                && nativePlayback.getMetadata().playbackMode() == PlaybackMode.OVERVIEW;
+    }
+
+    /**
+     * If the failed playback was a native Overview playback and Classic is readable, marks Overview
+     * as unsupported for the page and restarts playback in Classic, matching legacy Read Aloud.
+     *
+     * @return True if a Classic playback was started.
+     */
+    private boolean maybeFallBackToClassicPlayback() {
+        // Only a failed native Overview playback falls back; other errors are shown as-is.
+        if (!isNativeOverviewPlayback()) {
+            return false;
+        }
+
+        Tab tab = mActivePlaybackTabSupplier.get();
+        if (tab == null) {
+            return false;
+        }
+
+        ReadabilityInfo info = getReadabilityInfoForTab(tab);
+        if (info == null || !info.isReadable(PlaybackMode.CLASSIC)) {
+            return false;
+        }
+
+        // Mark Overview as unsupported for this page so the restarted playback uses Classic.
+        sReadabilityInfoMap.put(
+                urlToHash(stripUserData(tab.getUrl()).getSpec()), info.withOverviewUnsupported());
+        notifyReadabilityMayHaveChanged();
+
+        // Restart with the same page dateModified as the failed request, so the Classic request
+        // matches it without re-running extractDateModified() (an async page script).
+        // resetCurrentPlayback() clears mDateModified, so read it first.
+        long dateModified = mDateModified;
+        resetCurrentPlayback(ReasonForStoppingPlayback.PLAYBACK_MODE_CHANGE);
+        playTabWithDateModified(tab, dateModified, Entrypoint.RESTORED_PLAYBACK);
+        return true;
     }
 
     // Called when the playback state of a voice preview changes in settings.
