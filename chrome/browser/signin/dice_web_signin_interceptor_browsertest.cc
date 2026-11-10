@@ -304,6 +304,11 @@ class DiceWebSigninInterceptorBrowserTest : public SigninBrowserTestBase {
     return test_account_preview_data_services_[profile];
   }
 
+  void ForgetProfileForTesting(Profile* profile) {
+    interceptor_delegates_.erase(profile);
+    test_account_preview_data_services_.erase(profile);
+  }
+
   void SetupGaiaResponses() {
     // Instantly return from Gaia calls, to avoid timing out when injecting the
     // account in the new profile.
@@ -904,6 +909,80 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, CloseSourceTab) {
                 ->GetActiveWebContents()
                 ->GetVisibleURL(),
             GURL("chrome://newtab/"));
+}
+
+// Remove the intercepted account from the source profile while profile creation
+// is in progress and check that the interception is aborted and the new profile
+// is deleted (regression test for https://crbug.com/580839325).
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
+                       AccountRemovedDuringProfileCreation) {
+  base::HistogramTester histogram_tester;
+
+  // Setup profile for interception.
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "alice@gmail.com", signin::ConsentLevel::kSignin);
+
+  AccountInfo account_info = MakeAccountInfoAvailableAndUpdate(
+      "bob@example.com", /*hosted_domain=*/std::string());
+
+  // Add a tab.
+  GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
+  content::WebContents* contents = AddTab(intercepted_url);
+  int original_tab_count = browser()->GetTabStripModel()->count();
+
+  ProfileAttributesStorage& storage =
+      g_browser_process->profile_manager()->GetProfileAttributesStorage();
+  ASSERT_EQ(storage.GetNumberOfProfiles(), 1u);
+
+  // Start the signin interception and wait for the posted bubble acceptance
+  // task to run.
+  DiceWebSigninInterceptor* interceptor =
+      DiceWebSigninInterceptorFactory::GetForProfile(GetProfile());
+  interceptor->MaybeInterceptWebSignin(
+      contents, account_info.GetAccountId(),
+      signin_metrics::AccessPoint::kWebSignin,
+      /*is_new_account=*/true,
+      /*is_chrome_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
+  base::test::TestFuture<void> bubble_accepted;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, bubble_accepted.GetCallback());
+  ASSERT_TRUE(bubble_accepted.Wait());
+
+  // Completing the session synchronously starts `DiceSignedInProfileCreator`.
+  // Remove the account before the asynchronous profile creation finishes.
+  interceptor->OnDiceSigninSessionComplete(account_info.GetAccountId(), {});
+  ASSERT_TRUE(interceptor->has_dice_signed_in_profile_creator_for_testing());
+  identity_test_env()->RemoveRefreshTokenForAccount(
+      account_info.GetAccountId());
+
+  // Wait for the new profile to be created and for the interception to abort.
+  base::FilePath new_profile_path;
+  {
+    ProfileWaiter profile_waiter;
+    Profile* new_profile = profile_waiter.WaitForProfileAdded();
+    ASSERT_TRUE(new_profile);
+    new_profile_path = new_profile->GetPath();
+    ForgetProfileForTesting(new_profile);
+  }
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !interceptor->is_interception_in_progress(); }));
+
+  // No new browser was created, the tab remained in the source browser, and the
+  // newly created profile was deleted.
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
+  EXPECT_EQ(browser()->GetTabStripModel()->count(), original_tab_count);
+  EXPECT_TRUE(
+      GetInterceptorDelegate(GetProfile())->intercept_bubble_destroyed());
+  EXPECT_EQ(GetInterceptorDelegate(GetProfile())->fre_browser(), nullptr);
+  EXPECT_FALSE(storage.GetProfileAttributesWithPath(new_profile_path));
+  EXPECT_EQ(storage.GetNumberOfProfiles(), 1u);
+  histogram_tester.ExpectUniqueSample(
+      "Profile.DeleteProfileAction",
+      ProfileMetrics::DELETE_PROFILE_ACCOUNT_REMOVED_WHILE_CREATING, 1);
+  histogram_tester.ExpectBucketCount(
+      "Profile.AddNewUser", ProfileMetrics::ADD_NEW_USER_SIGNIN_INTERCEPTION,
+      0);
 }
 
 class DiceWebSigninInterceptorWithChromeSigninHelpersBrowserTest

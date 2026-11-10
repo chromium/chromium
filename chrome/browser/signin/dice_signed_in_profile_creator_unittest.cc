@@ -15,12 +15,14 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_file_util.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
+#include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/fake_profile_manager.h"
@@ -401,4 +403,122 @@ TEST_F(DiceSignedInProfileCreatorTest, CreateWithMissingTokens) {
       secondary_info_with_token.GetAccountId()));
   EXPECT_FALSE(new_identity_manager->HasAccountWithRefreshToken(
       secondary_info_no_token.GetAccountId()));
+}
+
+TEST_F(DiceSignedInProfileCreatorTest, CreateWithInitiatorTokenRemoved) {
+  base::HistogramTester histogram_tester;
+  AccountInfo initiator_info =
+      identity_test_env()->MakeAccountAvailable("initiator@example.com");
+  AccountInfo secondary_info =
+      identity_test_env()->MakeAccountAvailable("secondary@example.com");
+
+  // Ensure the last-used profile exists in `profile_manager()` so deleting the
+  // newly created profile does not trigger fallback profile creation.
+  profile_manager()->RemoveObserver(this);
+  profile_manager()->GetProfile(profile_manager()->GetLastUsedProfileDir());
+  profile_manager()->AddObserver(this);
+
+  profile_manager()->set_tokens_loaded_at_creation(false);
+
+  base::RunLoop creator_loop;
+  base::RunLoop profile_added_loop;
+  set_profile_added_closure(profile_added_loop.QuitClosure());
+  std::unique_ptr<DiceSignedInProfileCreator> creator =
+      std::make_unique<DiceSignedInProfileCreator>(
+          profile(), initiator_info.GetAccountId(),
+          std::vector<CoreAccountId>{secondary_info.GetAccountId()},
+          std::u16string(), std::nullopt,
+          base::BindOnce(&DiceSignedInProfileCreatorTest::OnProfileCreated,
+                         base::Unretained(this), creator_loop.QuitClosure()));
+  profile_added_loop.Run();
+
+  // The profile was created, but tokens not loaded. The callback has not been
+  // called yet.
+  EXPECT_FALSE(creator_callback_called());
+  ASSERT_TRUE(added_profile());
+  EXPECT_NE(profile(), added_profile());
+  const base::FilePath added_profile_path = added_profile()->GetPath();
+  ProfileAttributesStorage& storage =
+      profile_manager()->GetProfileAttributesStorage();
+  EXPECT_TRUE(storage.GetProfileAttributesWithPath(added_profile_path));
+
+  // Remove the initiator's refresh token while profile creation is in progress.
+  identity_test_env()->RemoveRefreshTokenForAccount(
+      initiator_info.GetAccountId());
+
+  // Load the tokens.
+  {
+    IdentityTestEnvironmentProfileAdaptor adaptor(added_profile());
+    adaptor.identity_test_env()->ReloadAccountsFromDisk();
+  }
+  creator_loop.Run();
+
+  // The callback is called with nullptr profile, the newly created profile is
+  // deleted, and secondary accounts remain in the source profile.
+  EXPECT_TRUE(creator_callback_called());
+  EXPECT_FALSE(signed_in_profile());
+  EXPECT_FALSE(storage.GetProfileAttributesWithPath(added_profile_path));
+  histogram_tester.ExpectUniqueSample(
+      "Profile.DeleteProfileAction",
+      ProfileMetrics::DELETE_PROFILE_ACCOUNT_REMOVED_WHILE_CREATING, 1);
+  EXPECT_TRUE(IdentityManagerFactory::GetForProfile(profile())
+                  ->HasAccountWithRefreshToken(secondary_info.GetAccountId()));
+}
+
+TEST_F(DiceSignedInProfileCreatorTest,
+       LoadExistingProfileWithInitiatorTokenRemoved) {
+  base::HistogramTester histogram_tester;
+  AccountInfo initiator_info =
+      identity_test_env()->MakeAccountAvailable("initiator@example.com");
+  AccountInfo secondary_info =
+      identity_test_env()->MakeAccountAvailable("secondary@example.com");
+
+  ProfileAttributesStorage& storage =
+      profile_manager()->GetProfileAttributesStorage();
+  const base::FilePath existing_profile_path =
+      profile_manager()->GenerateNextProfileDirectoryPath();
+  ProfileAttributesInitParams params;
+  params.profile_path = existing_profile_path;
+  params.profile_name = kProfileTestName;
+  storage.AddProfile(std::move(params));
+  ASSERT_TRUE(storage.GetProfileAttributesWithPath(existing_profile_path));
+
+  profile_manager()->set_tokens_loaded_at_creation(false);
+
+  base::RunLoop creator_loop;
+  base::RunLoop profile_added_loop;
+  set_profile_added_closure(profile_added_loop.QuitClosure());
+  std::unique_ptr<DiceSignedInProfileCreator> creator =
+      std::make_unique<DiceSignedInProfileCreator>(
+          profile(), initiator_info.GetAccountId(),
+          std::vector<CoreAccountId>{secondary_info.GetAccountId()},
+          existing_profile_path,
+          base::BindOnce(&DiceSignedInProfileCreatorTest::OnProfileCreated,
+                         base::Unretained(this), creator_loop.QuitClosure()));
+  profile_added_loop.Run();
+
+  // The existing profile was loaded, but tokens are not loaded yet.
+  EXPECT_FALSE(creator_callback_called());
+  ASSERT_TRUE(added_profile());
+  EXPECT_EQ(existing_profile_path, added_profile()->GetPath());
+
+  // Remove the initiator's refresh token while profile loading is in progress.
+  identity_test_env()->RemoveRefreshTokenForAccount(
+      initiator_info.GetAccountId());
+
+  // Load the tokens.
+  {
+    IdentityTestEnvironmentProfileAdaptor adaptor(added_profile());
+    adaptor.identity_test_env()->ReloadAccountsFromDisk();
+  }
+  creator_loop.Run();
+
+  // The callback is called with nullptr profile, the existing profile is not
+  // deleted, and secondary accounts remain in the source profile.
+  EXPECT_TRUE(creator_callback_called());
+  EXPECT_FALSE(signed_in_profile());
+  EXPECT_TRUE(storage.GetProfileAttributesWithPath(existing_profile_path));
+  histogram_tester.ExpectTotalCount("Profile.DeleteProfileAction", 0);
+  EXPECT_TRUE(IdentityManagerFactory::GetForProfile(profile())
+                  ->HasAccountWithRefreshToken(secondary_info.GetAccountId()));
 }

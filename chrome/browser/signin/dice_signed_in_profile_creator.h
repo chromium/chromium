@@ -71,6 +71,7 @@ class DiceSignedInProfileCreator {
   const base::WeakPtr<Profile> source_profile_;
   const CoreAccountId initiator_account_id_;
   const std::vector<CoreAccountId> secondary_account_ids_;
+  const bool is_new_profile_ = false;
 
   base::OnceCallback<void(Profile*)> callback_;
   std::unique_ptr<TokensLoadedCallbackRunner> tokens_loaded_callback_runner_;

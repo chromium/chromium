@@ -82,6 +82,8 @@ class ProfileMetrics {
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
+  //
+  // LINT.IfChange(ProfileDeleteAction)
   enum ProfileDelete {
     // Delete profile from settings page.
     DELETE_PROFILE_SETTINGS = 0,
@@ -99,8 +101,12 @@ class ProfileMetrics {
     DELETE_PROFILE_PRIMARY_ACCOUNT_NOT_ALLOWED = 6,
     // DELETE_PROFILE_PRIMARY_ACCOUNT_REMOVED_LACROS = 7,  // No longer used.
     // DELETE_PROFILE_SIGNIN_REQUIRED_MIRROR_LACROS = 8,   // No longer used.
+    // Delete a newly created profile when the initiator account is removed from
+    // the source profile while profile creation is in progress.
+    DELETE_PROFILE_ACCOUNT_REMOVED_WHILE_CREATING = 9,
     NUM_DELETE_PROFILE_METRICS
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/profile/enums.xml:ProfileDeleteAction)
 
   enum ProfileAuth {
     AUTH_UNNECESSARY,     // Profile was not locked

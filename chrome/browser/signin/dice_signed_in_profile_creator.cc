@@ -7,15 +7,18 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -98,6 +101,7 @@ DiceSignedInProfileCreator::DiceSignedInProfileCreator(
     : source_profile_(source_profile->GetWeakPtr()),
       initiator_account_id_(initiator_account_id),
       secondary_account_ids_(std::move(secondary_account_ids)),
+      is_new_profile_(true),
       callback_(std::move(callback)) {
   CHECK(!initiator_account_id_.empty());
   ProfileAttributesStorage& storage =
@@ -173,9 +177,33 @@ void DiceSignedInProfileCreator::OnNewProfileTokensLoaded(
 
   signin::IdentityManager* source_identity_manager =
       IdentityManagerFactory::GetForProfile(source_profile_.get());
-  auto* accounts_mutator = source_identity_manager->GetAccountsMutator();
+  // The initiator account may have been removed from the source profile while
+  // the target profile and its tokens were loading asynchronously. Abort and
+  // delete the target profile if it was newly created, or release its
+  // initial browser-window keep-alive if an existing profile was loaded.
+  if (!source_identity_manager->HasAccountWithRefreshToken(
+          initiator_account_id_)) {
+    if (is_new_profile_) {
+      g_browser_process->profile_manager()
+          ->GetDeleteProfileHelper()
+          .MaybeScheduleProfileForDeletion(
+              new_profile->GetPath(), base::DoNothing(),
+              ProfileMetrics::DELETE_PROFILE_ACCOUNT_REMOVED_WHILE_CREATING);
+    } else {
+      // Unloads `new_profile` if it was loaded from disk for this flow and has
+      // no open browser windows; no-op if it already had a browser window open.
+      g_browser_process->profile_manager()->ClearFirstBrowserWindowKeepAlive(
+          new_profile);
+    }
+    if (callback_) {
+      std::move(callback_).Run(nullptr);
+    }
+    return;
+  }
+
   auto* new_profile_identity_manager =
       IdentityManagerFactory::GetForProfile(new_profile);
+  auto* accounts_mutator = source_identity_manager->GetAccountsMutator();
   auto* new_profile_accounts_mutator =
       new_profile_identity_manager->GetAccountsMutator();
 

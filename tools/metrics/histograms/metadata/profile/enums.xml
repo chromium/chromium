@@ -303,6 +303,8 @@ chromium-metrics-reviews@google.com.
   <int value="57" label="Abstract Sandwich"/>
 </enum>
 
+<!-- LINT.IfChange(ProfileDeleteAction) -->
+
 <enum name="ProfileDeleteAction">
   <int value="0" label="Settings Page">
     The user confirmed deletion of a profile from the settings page. This metric
@@ -340,7 +342,13 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Signin is required with Mirror (Lacros only)">
     The profile is not signed in, which is unsupported on Lacros.
   </int>
+  <int value="9" label="Account was removed while creating profile">
+    The newly created profile was deleted because the initiator account was
+    removed from the source profile while profile creation was in progress.
+  </int>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/profiles/profile_metrics.h:ProfileDeleteAction) -->
 
 <enum name="ProfileDeleteContext">
   <int value="0" label="Without browser window: the last profile">
