@@ -40,6 +40,7 @@
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
 #include "third_party/jni_zero/default_conversions.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -118,8 +119,7 @@ AwSettings::~AwSettings() {
   ScopedJavaLocalRef<jobject> scoped_obj = aw_settings_.get(env);
   if (!scoped_obj)
     return;
-  Java_AwSettings_nativeAwSettingsGone(env, scoped_obj,
-                                       reinterpret_cast<intptr_t>(this));
+  Java_AwSettings_nativeAwSettingsGone(env, scoped_obj);
 }
 
 bool AwSettings::GetJavaScriptCanOpenWindowsAutomatically() {
@@ -831,13 +831,14 @@ bool AwSettings::GetAllowFileAccessFromFileURLs() {
   return allow_file_access_from_file_urls_;
 }
 
-static int64_t JNI_AwSettings_Init(JNIEnv* env,
-                                   const JavaRef<jobject>& obj,
-                                   const JavaRef<jobject>& web_contents) {
+static jni_zero::JniRawPtr<AwSettings> JNI_AwSettings_Init(
+    JNIEnv* env,
+    const JavaRef<jobject>& obj,
+    const JavaRef<jobject>& web_contents) {
   content::WebContents* contents =
       content::WebContents::FromJavaWebContents(web_contents);
   AwSettings* settings = new AwSettings(env, obj, contents);
-  return reinterpret_cast<intptr_t>(settings);
+  return jni_zero::MakeRaw(settings);
 }
 
 static ScopedJavaLocalRef<jobject> JNI_AwSettings_FromWebContents(

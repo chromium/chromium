@@ -655,6 +655,12 @@ public class AwContents implements SmartClipProvider {
         }
     }
 
+    void unregisterSafePointer(@Nullable JniRawPtr<?> ptr) {
+        if (ptr != null && mSafePointers != null) {
+            mSafePointers.remove(ptr);
+        }
+    }
+
     private class FullScreenState {
         private final FullScreenView mFullScreenView;
         private final boolean mWasContainerViewFocused;
