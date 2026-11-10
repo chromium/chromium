@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_ANDROID_CONTEXT_MENU_HELPER_H_
 #define CHROME_BROWSER_UI_ANDROID_CONTEXT_MENU_HELPER_H_
 
+#include <cstdint>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
@@ -38,7 +40,7 @@ class ContextMenuHelper
 
   void DismissContextMenu();
 
-  void OnContextMenuClosed(JNIEnv* env);
+  void OnContextMenuClosed();
 
   void SetPopulatorFactory(
       const base::android::JavaRef<jobject>& jpopulator_factory);
@@ -53,6 +55,7 @@ class ContextMenuHelper
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject(JNIEnv* env) const;
 
   content::ContextMenuParams context_menu_params_;
+  int64_t java_peer_id_ = 0;
 
 #if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
   std::unique_ptr<extensions::ExtensionMenuModel> extension_menu_model_;

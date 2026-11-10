@@ -1080,7 +1080,7 @@ public class ContextMenuTest {
         when(mItemDelegate.getPageTitle()).thenReturn("");
         when(mItemDelegate.getWebContents()).thenReturn(tab.getWebContents());
         ContextMenuHelper contextMenuHelper =
-                ContextMenuHelper.createForTesting(0, tab.getWebContents());
+                ContextMenuHelper.createForTesting(tab.getWebContents());
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,

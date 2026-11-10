@@ -12,6 +12,7 @@ import android.util.LongSparseArray;
 import android.view.View;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -47,9 +48,11 @@ public class ContextMenuHelper {
     // WebContents. As a workaround, use this map to keep track of the ContextMenuHelper instances.
     private static final LongSparseArray<ContextMenuHelper> sContextMenuHelperMap =
             new LongSparseArray<>();
+    private static long sNextPeerId = 1;
 
     private final WebContents mWebContents;
-    private long mNativeContextMenuHelper;
+    private final long mPeerId;
+    private boolean mHasNativePeer;
 
     private @Nullable ContextMenuNativeDelegate mCurrentNativeDelegate;
     private @Nullable ContextMenuPopulator mCurrentPopulator;
@@ -68,29 +71,30 @@ public class ContextMenuHelper {
                 mCurrentPopulator.onItemSelected(result);
             };
 
-    private ContextMenuHelper(long nativeContextMenuHelper, WebContents webContents) {
-        mNativeContextMenuHelper = nativeContextMenuHelper;
+    private ContextMenuHelper(boolean hasNativePeer, WebContents webContents) {
+        mPeerId = sNextPeerId++;
+        mHasNativePeer = hasNativePeer;
         mWebContents = webContents;
-        assert sContextMenuHelperMap.get(nativeContextMenuHelper) == null;
-        sContextMenuHelperMap.put(nativeContextMenuHelper, this);
+        assert sContextMenuHelperMap.get(mPeerId) == null;
+        sContextMenuHelperMap.put(mPeerId, this);
     }
 
     @CalledByNative
-    private static ContextMenuHelper create(long nativeContextMenuHelper, WebContents webContents) {
-        return new ContextMenuHelper(nativeContextMenuHelper, webContents);
+    private static long createAndGetPeerId(WebContents webContents) {
+        return new ContextMenuHelper(/* hasNativePeer= */ true, webContents).mPeerId;
     }
 
     @CalledByNative
     private void destroy() {
+        mHasNativePeer = false;
         dismissContextMenu();
         if (mCurrentNativeDelegate != null) mCurrentNativeDelegate.destroy();
         if (mPopulatorFactory != null) mPopulatorFactory.onDestroy();
         destroyContextMenuParams(mCurrentContextMenuParams);
         mCurrentContextMenuParams = null;
-        var removedValue = sContextMenuHelperMap.get(mNativeContextMenuHelper);
-        sContextMenuHelperMap.remove(mNativeContextMenuHelper);
+        var removedValue = sContextMenuHelperMap.get(mPeerId);
+        sContextMenuHelperMap.remove(mPeerId);
         assert removedValue == this;
-        mNativeContextMenuHelper = 0;
     }
 
     @CalledByNative
@@ -174,8 +178,8 @@ public class ContextMenuHelper {
                     }
                     destroyContextMenuParams(mCurrentContextMenuParams);
                     mCurrentContextMenuParams = null;
-                    if (mNativeContextMenuHelper == 0) return;
-                    ContextMenuHelperJni.get().onContextMenuClosed(mNativeContextMenuHelper);
+                    if (!mHasNativePeer || mWebContents.isDestroyed()) return;
+                    ContextMenuHelperJni.get().onContextMenuClosed(mWebContents);
                 };
 
         displayContextMenu(activity, topContentOffsetPx);
@@ -253,9 +257,8 @@ public class ContextMenuHelper {
         ResettersForTesting.register(() -> sMenuShownCallbackForTesting = null);
     }
 
-    public static ContextMenuHelper createForTesting(
-            long nativeContextMenuHelper, WebContents webContents) {
-        ContextMenuHelper helper = create(nativeContextMenuHelper, webContents);
+    public static ContextMenuHelper createForTesting(WebContents webContents) {
+        ContextMenuHelper helper = new ContextMenuHelper(/* hasNativePeer= */ false, webContents);
         ResettersForTesting.register(helper::destroy);
         return helper;
     }
@@ -271,8 +274,8 @@ public class ContextMenuHelper {
     }
 
     @CalledByNative
-    private static ContextMenuHelper getJavaObject(long nativeContextMenuHelper) {
-        return assertNonNull(sContextMenuHelperMap.get(nativeContextMenuHelper));
+    private static ContextMenuHelper getJavaObject(long peerId) {
+        return assertNonNull(sContextMenuHelperMap.get(peerId));
     }
 
     private static void destroyContextMenuParams(@Nullable ContextMenuParams params) {
@@ -283,6 +286,6 @@ public class ContextMenuHelper {
 
     @NativeMethods
     interface Natives {
-        void onContextMenuClosed(long nativeContextMenuHelper);
+        void onContextMenuClosed(@JniType("content::WebContents*") WebContents webContents);
     }
 }
