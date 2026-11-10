@@ -1432,7 +1432,7 @@ are declared in tools/grit/grit_args.gni.
       <!-- Page menu. Android has separate strings for its menu -->
       <if expr="not is_android">
         <message name="IDS_APP_MENU_SEARCH_PLACEHOLDER" desc="Placeholder text for the search bar in the app menu.">
-          Search menu, or type an action
+          Search Chrome features and actions
         </message>
         <message name="IDS_APP_MENU_SEARCH_BOOKMARKS_HEADER" desc="Section header for bookmark matches in the App Menu search results.">
           Bookmarks

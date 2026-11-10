@@ -2692,7 +2692,7 @@ TEST_F(ActionAppMenuWithSearchTest, SearchBarEnabledWithFeatureFlag) {
   EXPECT_EQ(search_field->GetPlaceholderText(),
             l10n_util::GetStringUTF16(IDS_APP_MENU_SEARCH_PLACEHOLDER));
   EXPECT_EQ(search_field->GetPlaceholderText(),
-            u"Search menu, or type an action");
+            u"Search Chrome features and actions");
   EXPECT_EQ(search_field->placeholder_text_color_id(),
             ui::kColorTextfieldForegroundPlaceholder);
   EXPECT_TRUE(icon->GetVisible());
