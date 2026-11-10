@@ -14,11 +14,9 @@
  *
  *  class PageHandlerWrapper {
  *    constructor() {
- *      this.pageHandler_ = new PageHandlerRemote();
- *      const factoryRemote = PageHandlerFactory.getRemote();
- *      factoryRemote.createPageHandler(
- *         this.pageHandler_.$.bindNewPipeAndPassReceiver(),
- *       this.callbackRouter.$.bindNewPipeAndPassRemote());
+ *      const {handler, callbackRouter} = browserProxyFactory.getInstance();
+ *      this.pageHandler_ = handler;
+ *      this.callbackRouter = callbackRouter;
  *    }
  *
  *    send(message) {
@@ -37,20 +35,9 @@
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 
-import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './sample_system_web_app_ui.mojom-webui.js';
+import {browserProxyFactory} from './sample_system_web_app_ui.mojom-webui.js';
 
-// Used to make calls on the remote PageHandler interface. Singleton that client
-// modules can use directly.
-export const pageHandler = new PageHandlerRemote();
-
-// Use this subscribe to events e.g.
-// `callbackRouter.onEventOccurred.addListener(handleEvent)`.
-export const callbackRouter = new PageCallbackRouter();
-
-// Use PageHandlerFactory to create a connection to PageHandler.
-const factoryRemote = PageHandlerFactory.getRemote();
-factoryRemote.createPageHandler(
-    pageHandler.$.bindNewPipeAndPassReceiver(),
-    callbackRouter.$.bindNewPipeAndPassRemote());
+export const {handler: pageHandler, callbackRouter} =
+    browserProxyFactory.getInstance();
 
 ColorChangeUpdater.forDocument().start();

@@ -8,10 +8,7 @@ assert(is_chromeos, "Annotator is ChromeOS only")
 
 build_webui("build") {
   static_files = [ "annotator.html" ]
-  ts_files = [
-    "annotator_browser_proxy.ts",
-    "untrusted_annotator_comm_factory.ts",
-  ]
+  ts_files = [ "untrusted_annotator_comm_factory.ts" ]
   mojo_files = [
     "$root_gen_dir/ash/webui/annotator/mojom/untrusted_annotator.mojom-webui.ts",
     "$root_gen_dir/ash/webui/annotator/public/mojom/annotator_structs.mojom-webui.ts",

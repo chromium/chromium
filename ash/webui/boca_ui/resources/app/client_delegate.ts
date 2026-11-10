@@ -4,7 +4,7 @@
 
 import type {Value} from '//resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
 
-import type {Assignment as AssignmentMojom, Config, ControlledTab as ControlledTabMojom, Course, IdentifiedActivity as Activity, Identity as IdentityMojom, Material as MaterialMojom, NetworkInfo as NetworkInfoMojom, PageHandlerRemote, TabInfo, Window} from '../mojom/boca.mojom-webui.js';
+import type {Assignment as AssignmentMojom, Config, ControlledTab as ControlledTabMojom, Course, IdentifiedActivity as Activity, Identity as IdentityMojom, Material as MaterialMojom, NetworkInfo as NetworkInfoMojom, PageHandlerInterface, TabInfo, Window} from '../mojom/boca.mojom-webui.js';
 import {CrdConnectionState as CrdConnectionStateMojom, CreateSessionError, SpeechRecognitionInstallState as SpeechRecognitionInstallStateMojom, SubmitAccessCodeError} from '../mojom/boca.mojom-webui.js';
 
 import {BocaValidPref, CaptionConfig, ClientApiDelegate, ControlledTab, CrdConnectionState, CreateSessionResult, IdentifiedActivity, Identity, NetworkInfo, OnTaskConfig, Permission, PermissionSetting, SessionConfig, SpeechRecognitionInstallState, SubmitAccessCodeResult} from './boca_app.js';
@@ -139,7 +139,7 @@ export function getNetworkInfoMojomToUI(networks: NetworkInfoMojom[]):
  */
 export class ClientDelegateFactory {
   private clientDelegateImpl: ClientApiDelegate;
-  constructor(pageHandler: PageHandlerRemote) {
+  constructor(pageHandler: PageHandlerInterface) {
     this.clientDelegateImpl = {
       getWindowsTabsList: async () => {
         const result = await pageHandler.getWindowsTabsList();

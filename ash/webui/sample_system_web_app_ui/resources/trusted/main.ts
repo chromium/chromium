@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {callbackRouter, pageHandler} from './page_handler.js';
-import type {PageCallbackRouter, PageHandlerRemote} from './sample_system_web_app_ui.mojom-webui.js';
+import type {PageCallbackRouter, PageHandlerInterface} from './sample_system_web_app_ui.mojom-webui.js';
 
 const first = document.querySelector<HTMLInputElement>('#number1')!;
 const second = document.querySelector<HTMLInputElement>('#number2')!;
@@ -13,7 +13,7 @@ const result = document.querySelector('#result')!;
 
 declare global {
   interface Window {
-    pageHandler: PageHandlerRemote;
+    pageHandler: PageHandlerInterface;
     callbackRouter: PageCallbackRouter;
     eventCount: Map<string, number>;
   }

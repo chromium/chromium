@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {browserProxy} from './annotator_browser_proxy.js';
-import {UntrustedAnnotatorPageCallbackRouter} from './untrusted_annotator.mojom-webui.js';
+import type {UntrustedAnnotatorPageCallbackRouter} from './untrusted_annotator.mojom-webui.js';
+import {browserProxyFactory} from './untrusted_annotator.mojom-webui.js';
 
 interface AnnotatorToolParams {
   tool: string;
@@ -41,7 +41,8 @@ const observer = new MutationObserver(() => {
       return;
     }
 
-    annotatorPageRouter = browserProxy.getAnnotatorCallbackRouter();
+    const {handler, callbackRouter} = browserProxyFactory.getInstance();
+    annotatorPageRouter = callbackRouter;
 
     // Register for callbacks from the browser process.
     annotatorPageRouter.undo.addListener(() => {
@@ -75,10 +76,10 @@ const observer = new MutationObserver(() => {
         });
 
     annotatorElement.addUndoRedoListener((undoAvailable, redoAvailable) => {
-      browserProxy.onUndoRedoAvailabilityChanged(undoAvailable, redoAvailable);
+      handler.onUndoRedoAvailabilityChanged(undoAvailable, redoAvailable);
     });
     annotatorElement.addCanvasInitializationCallback((success) => {
-      browserProxy.onCanvasInitialized(success);
+      handler.onCanvasInitialized(success);
     });
   }
 });

@@ -4,7 +4,8 @@
 
 import type {XhrResponseResult} from './app_api.js';
 import {Account, JsNetErrorCode, NewScreencastPrecondition, PendingScreencast, PrefsThatProjectorCanAskFor, RequestType, VideoInfo, XhrResponseCode} from './mojom/projector_types.mojom-webui.js';
-import {UntrustedProjectorPageCallbackRouter, UntrustedProjectorPageHandlerFactory, UntrustedProjectorPageHandlerRemote} from './mojom/untrusted_projector.mojom-webui.js';
+import type {UntrustedProjectorPageCallbackRouter, UntrustedProjectorPageHandlerInterface} from './mojom/untrusted_projector.mojom-webui.js';
+import {browserProxyFactory} from './mojom/untrusted_projector.mojom-webui.js';
 
 const booleanUserPrefs = new Map<string, PrefsThatProjectorCanAskFor>([
   [
@@ -71,16 +72,13 @@ const errorCodeMap = new Map<XhrResponseCode, string>([
 ]);
 
 export class UntrustedProjectorBrowserProxyImpl {
-  private pageHandlerRemote: UntrustedProjectorPageHandlerRemote;
+  private pageHandlerRemote: UntrustedProjectorPageHandlerInterface;
   private projectorCallbackRouter: UntrustedProjectorPageCallbackRouter;
 
   constructor() {
-    const pageHandlerFactory = UntrustedProjectorPageHandlerFactory.getRemote();
-    this.pageHandlerRemote = new UntrustedProjectorPageHandlerRemote();
-    this.projectorCallbackRouter = new UntrustedProjectorPageCallbackRouter();
-    pageHandlerFactory.create(
-        this.pageHandlerRemote.$.bindNewPipeAndPassReceiver(),
-        this.projectorCallbackRouter.$.bindNewPipeAndPassRemote());
+    const {handler, callbackRouter} = browserProxyFactory.getInstance();
+    this.pageHandlerRemote = handler;
+    this.projectorCallbackRouter = callbackRouter;
   }
 
   getProjectorCallbackRouter(): UntrustedProjectorPageCallbackRouter {
