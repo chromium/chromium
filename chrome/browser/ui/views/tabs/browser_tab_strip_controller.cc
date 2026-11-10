@@ -640,7 +640,7 @@ void BrowserTabStripController::OnTabWillBeAdded() {
 
 void BrowserTabStripController::OnTabWillBeRemoved(tabs::TabInterface* tab,
                                                    int index) {
-  tabstrip_->OnTabWillBeRemoved(tab->GetContents(), index);
+  tabstrip_->OnTabWillBeRemoved(tab->GetContents());
 }
 
 void BrowserTabStripController::OnTabGroupChanged(
@@ -713,7 +713,7 @@ void BrowserTabStripController::OnTabGroupChanged(
 
 void BrowserTabStripController::OnTabPinnedStateChanged(tabs::TabInterface* tab,
                                                         int model_index) {
-  tabstrip_->OnTabPinnedStateChanged(model_index, tab->IsPinned());
+  tabstrip_->OnTabPinnedStateChanged(tab->GetHandle(), tab->IsPinned());
   UpdateTabFocusFreezing(tab->GetHandle());
 }
 
@@ -723,7 +723,7 @@ void BrowserTabStripController::TabGroupedStateChanged(
     std::optional<tab_groups::TabGroupId> new_group,
     tabs::TabInterface* tab,
     int index) {
-  tabstrip_->AddTabToGroup(new_group, index);
+  tabstrip_->AddTabToGroup(new_group, tab->GetHandle());
 
   if (old_group.has_value()) {
     tabstrip_->OnGroupContentsChanged(old_group.value());
@@ -738,15 +738,19 @@ void BrowserTabStripController::TabGroupedStateChanged(
 
 void BrowserTabStripController::OnSplitTabChanged(
     const SplitTabChange& change) {
-  if (change.type == SplitTabChange::Type::kAdded) {
-    std::vector<int> split_indices;
-    std::transform(
-        change.GetAddedChange()->tabs().begin(),
-        change.GetAddedChange()->tabs().end(),
-        std::back_inserter(split_indices),
-        [](const std::pair<tabs::TabInterface*, int>& p) { return p.second; });
+  auto to_handles =
+      [](const std::vector<std::pair<tabs::TabInterface*, int>>& tabs) {
+        std::vector<tabs::TabHandle> handles;
+        handles.reserve(tabs.size());
+        for (const auto& [tab, index] : tabs) {
+          handles.push_back(tab->GetHandle());
+        }
+        return handles;
+      };
 
-    tabstrip_->OnSplitCreated(split_indices, change.split_id);
+  if (change.type == SplitTabChange::Type::kAdded) {
+    tabstrip_->OnSplitCreated(to_handles(change.GetAddedChange()->tabs()),
+                              change.split_id);
 
     // Stop animating if we are updating an active split.
     if (change.GetAddedChange()->reason() ==
@@ -754,14 +758,7 @@ void BrowserTabStripController::OnSplitTabChanged(
       tabstrip_->StopAnimating();
     }
   } else if (change.type == SplitTabChange::Type::kRemoved) {
-    std::vector<int> split_indices;
-    std::transform(
-        change.GetRemovedChange()->tabs().begin(),
-        change.GetRemovedChange()->tabs().end(),
-        std::back_inserter(split_indices),
-        [](const std::pair<tabs::TabInterface*, int>& p) { return p.second; });
-
-    tabstrip_->OnSplitRemoved(split_indices);
+    tabstrip_->OnSplitRemoved(to_handles(change.GetRemovedChange()->tabs()));
 
     // Stop animating if we are updating an active split.
     if (change.GetRemovedChange()->reason() ==
@@ -769,13 +766,8 @@ void BrowserTabStripController::OnSplitTabChanged(
       tabstrip_->StopAnimating();
     }
   } else if (change.type == SplitTabChange::Type::kContentsChanged) {
-    std::vector<int> split_indices;
-    std::transform(
-        change.GetContentsChange()->new_tabs().begin(),
-        change.GetContentsChange()->new_tabs().end(),
-        std::back_inserter(split_indices),
-        [](const std::pair<tabs::TabInterface*, int>& p) { return p.second; });
-    tabstrip_->OnSplitContentsChanged(split_indices);
+    tabstrip_->OnSplitContentsChanged(
+        to_handles(change.GetContentsChange()->new_tabs()));
     tabstrip_->StopAnimating();
   }
 }

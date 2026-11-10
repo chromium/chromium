@@ -1426,14 +1426,19 @@ void TabStrip::RemoveTabAt(content::WebContents* contents,
   }
 }
 
-void TabStrip::OnTabWillBeRemoved(content::WebContents* contents,
-                                  int model_index) {
+void TabStrip::OnTabWillBeRemoved(content::WebContents* contents) {
   drag_context_->OnTabWillBeRemoved(contents);
 }
 
 void TabStrip::OnTabPinnedStateChanged(int model_index, bool is_pinned) {
   tab_container_->SetTabPinned(
       model_index, is_pinned ? TabPinned::kPinned : TabPinned::kUnpinned);
+}
+
+void TabStrip::OnTabPinnedStateChanged(tabs::TabHandle tab, bool is_pinned) {
+  const std::optional<int> index = GetTabViewModelIndex(tab);
+  CHECK(index.has_value());
+  OnTabPinnedStateChanged(index.value(), is_pinned);
 }
 
 void TabStrip::AddTabToGroup(std::optional<tab_groups::TabGroupId> group,
@@ -1452,6 +1457,13 @@ void TabStrip::AddTabToGroup(std::optional<tab_groups::TabGroupId> group,
   if (group.has_value()) {
     tab_container_->ExitTabClosingMode();
   }
+}
+
+void TabStrip::AddTabToGroup(std::optional<tab_groups::TabGroupId> group,
+                             tabs::TabHandle tab) {
+  const std::optional<int> index = GetTabViewModelIndex(tab);
+  CHECK(index.has_value());
+  AddTabToGroup(group, index.value());
 }
 
 void TabStrip::OnGroupCreated(const tab_groups::TabGroupId& group) {
@@ -1517,6 +1529,11 @@ void TabStrip::OnSplitCreated(const std::vector<int>& split_indices,
   tab_container_->OnSplitCreated(split_indices);
 }
 
+void TabStrip::OnSplitCreated(const std::vector<tabs::TabHandle>& split_tabs,
+                              split_tabs::SplitTabId split_id) {
+  OnSplitCreated(GetTabViewModelIndices(split_tabs), split_id);
+}
+
 void TabStrip::OnSplitRemoved(const std::vector<int>& split_indices) {
   for (const int split_index : split_indices) {
     tab_at(split_index)->SetSplit(std::nullopt);
@@ -1525,12 +1542,21 @@ void TabStrip::OnSplitRemoved(const std::vector<int>& split_indices) {
   tab_container_->OnSplitRemoved(split_indices);
 }
 
+void TabStrip::OnSplitRemoved(const std::vector<tabs::TabHandle>& split_tabs) {
+  OnSplitRemoved(GetTabViewModelIndices(split_tabs));
+}
+
 void TabStrip::OnSplitContentsChanged(const std::vector<int>& split_indices) {
   for (const int split_index : split_indices) {
     tab_at(split_index)->UpdateAccessibleName();
   }
 
   tab_container_->OnSplitContentsChanged(split_indices);
+}
+
+void TabStrip::OnSplitContentsChanged(
+    const std::vector<tabs::TabHandle>& split_tabs) {
+  OnSplitContentsChanged(GetTabViewModelIndices(split_tabs));
 }
 
 void TabStrip::SetSelection(const ui::ListSelectionModel& new_selection) {
@@ -1646,15 +1672,34 @@ Tab* TabStrip::GetTabForHandle(tabs::TabHandle handle) const {
 }
 
 std::optional<int> TabStrip::GetModelIndexOf(tabs::TabHandle handle) const {
+  const std::optional<int> index = GetTabViewModelIndex(handle);
+  return (index.has_value() && IsValidModelIndex(index.value())) ? index
+                                                                 : std::nullopt;
+}
+
+std::optional<int> TabStrip::GetTabViewModelIndex(
+    tabs::TabHandle handle) const {
   if (handle == tabs::TabHandle::Null()) {
     return std::nullopt;
   }
   for (int i = 0; i < GetTabCount(); ++i) {
     if (tab_at(i)->tab_handle() == handle) {
-      return IsValidModelIndex(i) ? std::optional<int>(i) : std::nullopt;
+      return i;
     }
   }
   return std::nullopt;
+}
+
+std::vector<int> TabStrip::GetTabViewModelIndices(
+    const std::vector<tabs::TabHandle>& handles) const {
+  std::vector<int> indices;
+  indices.reserve(handles.size());
+  for (tabs::TabHandle handle : handles) {
+    const std::optional<int> index = GetTabViewModelIndex(handle);
+    CHECK(index.has_value());
+    indices.push_back(index.value());
+  }
+  return indices;
 }
 
 int TabStrip::GetModelCount() const {
