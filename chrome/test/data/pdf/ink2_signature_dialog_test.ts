@@ -64,6 +64,8 @@ suite('Ink2SignatureDialogTest', function() {
     assertTrue(isVisible(dialog.$.canvas));
     assertTrue(isVisible(dialog.$.clear));
     assertTrue(isVisible(dialog.$.create));
+    assertTrue(dialog.$.clear.disabled);
+    assertTrue(dialog.$.create.disabled);
 
     // Clicking the close button closes the dialog while staying in signature
     // mode.
@@ -148,6 +150,8 @@ suite('Ink2SignatureDialogTest', function() {
     assertTrue(!!finishMessage);
     assertTrue(!!finishMessage.point);
     assertEquals(25, finishMessage.point.elapsedTime);
+    assertFalse(dialog.$.clear.disabled);
+    assertFalse(dialog.$.create.disabled);
     assertDeepEquals([227, 227, 227, 255], getPixelColor(context, 20, 20));
     assertDeepEquals([0, 0, 0, 0], getPixelColor(context, 50, 20));
 
@@ -184,6 +188,62 @@ suite('Ink2SignatureDialogTest', function() {
         'finishSignatureStroke');
     assertTrue(!!finishMessage);
     assertEquals(undefined, finishMessage.point);
+    assertFalse(dialog.$.clear.disabled);
+    assertFalse(dialog.$.create.disabled);
     assertDeepEquals([227, 227, 227, 255], getPixelColor(context, 20, 20));
+  });
+
+  test('ClearSignature', async function() {
+    const dialog = await openSignatureDialog();
+    const canvas = dialog.$.canvas;
+    const context = canvas.getContext('2d', {willReadFrequently: true})!;
+
+    const sampleOutline = [[10, 10, 30, 10, 30, 30, 10, 30]];
+    mockPlugin.setMessageReply(
+        'startSignatureStroke', {outlines: sampleOutline});
+    mockPlugin.setMessageReply(
+        'finishSignatureStroke', {outlines: sampleOutline});
+
+    canvas.dispatchEvent(createPointerEvent(
+        'pointerdown', {pointerId: 1, clientX: 50, clientY: 50}));
+    canvas.dispatchEvent(
+        createPointerEvent('pointerup', {clientX: 90, clientY: 70}));
+    await microtasksFinished();
+    assertFalse(dialog.$.clear.disabled);
+    assertFalse(dialog.$.create.disabled);
+    assertDeepEquals([227, 227, 227, 255], getPixelColor(context, 20, 20));
+
+    // Clicking Clear clears the canvas and disables Clear and Create.
+    dialog.$.clear.click();
+    await microtasksFinished();
+    assertTrue(dialog.$.clear.disabled);
+    assertTrue(dialog.$.create.disabled);
+    assertDeepEquals([0, 0, 0, 0], getPixelColor(context, 20, 20));
+  });
+
+  test('CreateSignature', async function() {
+    const dialog = await openSignatureDialog();
+    const canvas = dialog.$.canvas;
+
+    const sampleOutline = [[10, 10, 30, 10, 30, 30, 10, 30]];
+    mockPlugin.setMessageReply(
+        'startSignatureStroke', {outlines: sampleOutline});
+    mockPlugin.setMessageReply(
+        'finishSignatureStroke', {outlines: sampleOutline});
+
+    canvas.dispatchEvent(createPointerEvent(
+        'pointerdown', {pointerId: 1, clientX: 50, clientY: 50}));
+    canvas.dispatchEvent(
+        createPointerEvent('pointerup', {clientX: 90, clientY: 70}));
+    await microtasksFinished();
+    assertFalse(dialog.$.create.disabled);
+
+    // Clicking Create closes the dialog while staying in signature mode.
+    const whenClosed = eventToPromise('close', dialog);
+    dialog.$.create.click();
+    await whenClosed;
+    await microtasksFinished();
+    assertFalse(!!getSignatureDialog());
+    assertEquals(AnnotationMode.SIGNATURE, viewer.$.toolbar.annotationMode);
   });
 });

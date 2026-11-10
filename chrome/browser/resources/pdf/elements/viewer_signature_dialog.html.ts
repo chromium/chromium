@@ -26,10 +26,12 @@ export function getHtml(this: ViewerSignatureDialogElement) {
     </div>
   </div>
   <div slot="button-container">
-    <cr-button id="clear" class="tonal-button" aria-label="Clear signature">
-      Clear
+    <cr-button id="clear" class="tonal-button" aria-label="Clear signature"
+        ?disabled="${!this.hasStrokes_}" @click="${this.onClearClick_}">
+      $i18n{ink2SignatureDialogClear}
     </cr-button>
-    <cr-button id="create" class="action-button" aria-label="Create signature">
+    <cr-button id="create" class="action-button" aria-label="Create signature"
+        ?disabled="${!this.hasStrokes_}" @click="${this.onCreateClick_}">
       Create
     </cr-button>
   </div>

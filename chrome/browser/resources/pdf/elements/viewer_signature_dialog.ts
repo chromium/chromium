@@ -61,6 +61,14 @@ export class ViewerSignatureDialogElement extends CrLitElement {
     return getHtml.bind(this)();
   }
 
+  static override get properties() {
+    return {
+      hasStrokes_: {type: Boolean},
+    };
+  }
+
+  protected accessor hasStrokes_: boolean = false;
+
   // Top-left client coordinates of `#canvas` while a stroke is in progress, or
   // `null` when not drawing.
   private canvasOffset_: Point|null = null;
@@ -125,6 +133,18 @@ export class ViewerSignatureDialogElement extends CrLitElement {
     this.finishStroke_(reply.outlines);
   }
 
+  protected onClearClick_() {
+    this.hasStrokes_ = false;
+    this.finishedStrokes_ = [];
+    this.inProgressStroke_ = null;
+    this.renderCanvas_();
+  }
+
+  protected onCreateClick_() {
+    // TODO(crbug.com/573237639): Save the signature.
+    this.$.dialog.close();
+  }
+
   private getPointFromEvent_(e: PointerEvent): SignatureStrokePoint {
     assert(this.canvasOffset_);
     return {
@@ -140,6 +160,7 @@ export class ViewerSignatureDialogElement extends CrLitElement {
   }
 
   private finishStroke_(outlines: number[][]) {
+    this.hasStrokes_ = true;
     this.finishedStrokes_.push(buildPath2D(outlines));
     this.inProgressStroke_ = null;
     this.renderCanvas_();
