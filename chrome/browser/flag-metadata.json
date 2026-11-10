@@ -9491,7 +9491,7 @@
   {
     "name": "tab-bottom-sheet",
     "owners": [ "hitarthkothari@google.com", "ckitagawa@google.com", "clank-tab-dev@google.com"],
-    "expiry_milestone": 160
+    "expiry_milestone": 175
   },
   {
     "name": "tab-bottom-sheet-edge-to-edge",
