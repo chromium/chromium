@@ -82,12 +82,20 @@ FloatingWorkspaceService::FloatingWorkspaceService(Profile* profile)
     : profile_(profile), initialization_timeticks_(base::TimeTicks::Now()) {}
 
 FloatingWorkspaceService::~FloatingWorkspaceService() {
+  shell_observation_.Reset();
   session_observation_.Reset();
   StopCaptureAndUploadActiveDesk();
   ShutDownServicesAndObservers();
 }
 
 void FloatingWorkspaceService::Shutdown() {
+  shell_observation_.Reset();
+  session_observation_.Reset();
+  ShutDownServicesAndObservers();
+}
+
+void FloatingWorkspaceService::OnShellDestroying() {
+  shell_observation_.Reset();
   session_observation_.Reset();
   ShutDownServicesAndObservers();
 }
@@ -945,19 +953,24 @@ void FloatingWorkspaceService::SetUpServiceAndObservers(
     should_run_restore_ = false;
   }
 
-  if (!session_observation_.IsObserving()) {
+  if (ash::SessionController::Get() && !session_observation_.IsObserving()) {
     session_observation_.Observe(ash::SessionController::Get());
   }
   if (!network_state_observation_.IsObserving()) {
     network_state_observation_.Observe(
         NetworkHandler::Get()->network_state_handler());
   }
-  if (!system_tray_observation_.IsObserving()) {
-    system_tray_observation_.Observe(Shell::Get()->system_tray_notifier());
-  }
-  if (!logout_confirmation_observation_.IsObserving()) {
-    logout_confirmation_observation_.Observe(
-        Shell::Get()->logout_confirmation_controller());
+  if (Shell::HasInstance()) {
+    if (!shell_observation_.IsObserving()) {
+      shell_observation_.Observe(Shell::Get());
+    }
+    if (!system_tray_observation_.IsObserving()) {
+      system_tray_observation_.Observe(Shell::Get()->system_tray_notifier());
+    }
+    if (!logout_confirmation_observation_.IsObserving()) {
+      logout_confirmation_observation_.Observe(
+          Shell::Get()->logout_confirmation_controller());
+    }
   }
   if (!sync_service_observation_.IsObserving()) {
     sync_service_observation_.Observe(sync_service_);

@@ -1910,6 +1910,31 @@ TEST_F(FloatingWorkspaceServiceMultiUserTest,
   EXPECT_FALSE(floating_workspace_service->IsObservingSessionForTesting());
 }
 
+TEST_F(FloatingWorkspaceServiceMultiUserTest,
+       ShellDestroyingResetsObservations) {
+  PopulateAppsCache();
+  PopulateAppsCache2();
+  fake_user_manager()->SwitchActiveUser(account_id());
+  CreateFloatingWorkspaceServiceForTesting(profile());
+  CreateFloatingWorkspaceServiceForTesting(profile2());
+  FloatingWorkspaceService* floating_workspace_service =
+      InitFloatingWorkspaceServiceAndStartSession();
+
+  EXPECT_TRUE(floating_workspace_service->IsObservingForTesting());
+  EXPECT_TRUE(floating_workspace_service->IsObservingSessionForTesting());
+
+  // Simulating `ash::Shell` destruction resets both observations so they do not
+  // outlive Ash singletons (crbug.com/582817061).
+  floating_workspace_service->OnShellDestroying();
+  EXPECT_FALSE(floating_workspace_service->IsObservingForTesting());
+  EXPECT_FALSE(floating_workspace_service->IsObservingSessionForTesting());
+
+  // Subsequent service `Shutdown()` during Profile destruction is a safe no-op.
+  floating_workspace_service->Shutdown();
+  EXPECT_FALSE(floating_workspace_service->IsObservingForTesting());
+  EXPECT_FALSE(floating_workspace_service->IsObservingSessionForTesting());
+}
+
 class FloatingWorkspaceServiceV2WithCookiesTest
     : public FloatingWorkspaceServiceTest {
  protected:
