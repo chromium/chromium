@@ -5,8 +5,7 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_CHANGE_DELEGATE_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_CHANGE_DELEGATE_H_
 
-#include <string>
-
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 
 namespace content {
@@ -16,59 +15,9 @@ class WebContents;
 // This class is responsible for controlling password change process.
 class PasswordChangeDelegate {
  public:
-  // Internal state of a password change flow. Corresponds to
-  // `PasswordChangeFlowState` in enums.xml. These values are persisted to logs.
-  // Entries should not be renumbered and numeric values should never be reused.
-  // TODO(b/537619236): Remove the state management from the delegate to UI.
-  // LINT.IfChange(State)
-  enum class State {
-    // Password change is being offered to the user, waiting from the to accept
-    // or reject it.
-    kOfferingPasswordChange = 0,
-
-    // Waiting for the user to accept privacy notice.
-    kWaitingForAgreement = 1,
-
-    // Delegate is waiting for change password form to appear.
-    kWaitingForChangePasswordForm = 2,
-
-    // Change password form wasn't found.
-    kChangePasswordFormNotFound = 3,
-
-    // Change password form is detected. Generating and filling password fields.
-    // Delegate waits for submission confirmation.
-    kChangingPassword = 4,
-
-    // Password is successfully updated.
-    kPasswordSuccessfullyChanged = 5,
-
-    // Password change failed.
-    kPasswordChangeFailed = 6,
-
-    // One time password (OTP) was detected on a page. The flow is stopped, user
-    // input is required.
-    kOtpDetected = 7,
-
-    // Password change was canceled by the user.
-    kCanceled = 8,
-
-    // The initial state before any UI is displayed. Transitions automatically
-    // into kOfferingPasswordChange or kWaitingForAgreement after no OTP is
-    // present on a main page.
-    kNoState = 9,
-
-    // Login form was detected on a page during an ongoing password change flow.
-    // The flow is not stopped, but the user action is required.
-    kLoginFormDetected = 10,
-
-    // Deprecated: kLoginFormDetectedUserCanContinue = 11,
-
-    kMaxValue = kLoginFormDetected,
-  };
-  // LINT.ThenChange(/tools/metrics/histograms/metadata/password/enums.xml:PasswordChangeFlowState)
-
-  // An interface used to notify clients (observers) of delegate state. Register
-  // the observer via `PasswordChangeDelegate::AddObserver`.
+  // An interface used to notify clients (observers) of delegate lifecycle and
+  // fallback events. Register the observer via
+  // `PasswordChangeDelegate::AddObserver`.
   class Observer : public base::CheckedObserver {
    public:
     // Invoked before `delegate` is destroyed. Should be used to stop observing.
@@ -81,45 +30,14 @@ class PasswordChangeDelegate {
 
   virtual ~PasswordChangeDelegate() = default;
 
-  // Starts performing password change by looking for a change password form in
-  // a hidden tab.
-  virtual void StartPasswordChangeFlow() = 0;
-
-  // Cancels any password change operation.
-  virtual void CancelPasswordChangeFlow() = 0;
-
   // Responds whether password change is ongoing for a given `web_contents`.
   // This is true both for originator and a tab where password change is
   // performed.
   virtual bool IsPasswordChangeOngoing(content::WebContents* web_contents) = 0;
 
-  // Returns current state.
-  virtual State GetCurrentState() const = 0;
-
   // Terminates password change operation immediately. Delegate shouldn't be
   // invoked after this function is called as the object will soon be destroyed.
   virtual void Stop() = 0;
-
-  // Brings a tab where password change is ongoing. Does nothing if the tab
-  // doesn't exist anymore.
-  virtual void OpenPasswordChangeTab() = 0;
-
-  // Displays password change confirmation bubble. If the user navigated away
-  // from the page, then navigates to password details in password settings.
-  virtual void OpenPasswordDetails() = 0;
-
-
-  virtual void OnPrivacyNoticeAccepted() = 0;
-
-  // Called when the user declines the initial dialog offering password change.
-  virtual void OnPasswordChangeDeclined() = 0;
-
-  // Called when the user chooses to retry the login check (by clicking
-  // 'Retry' on the toast).
-  virtual void RetryLoginCheck() = 0;
-
-  // Returns origin string that is displayed in the UI.
-  virtual std::u16string GetDisplayOrigin() const = 0;
 
   // Adds/removes an observer.
   virtual void AddObserver(Observer* observer) = 0;

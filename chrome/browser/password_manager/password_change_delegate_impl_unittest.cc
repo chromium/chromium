@@ -65,12 +65,11 @@ class MockPageNavigator : public content::PageNavigator {
 
 class MockPasswordChangeUIController : public PasswordChangeUIController {
  public:
-  MockPasswordChangeUIController(
-      PasswordChangeDelegate* password_change_delegate)
-      : PasswordChangeUIController(password_change_delegate, nullptr) {}
+  explicit MockPasswordChangeUIController(PasswordChangeUIDelegate* ui_delegate)
+      : PasswordChangeUIController(ui_delegate, nullptr) {}
   ~MockPasswordChangeUIController() override = default;
 
-  MOCK_METHOD(void, UpdateState, (PasswordChangeDelegate::State), (override));
+  MOCK_METHOD(void, UpdateState, (PasswordChangeUIDelegate::State), (override));
 };
 
 class FakePasswordManagerClient
@@ -342,7 +341,7 @@ TEST_F(PasswordChangeDelegateImplTest, WaitingForAgreement) {
           optimization_guide::prefs::FeatureOptInState::kNotInitialized));
 
   EXPECT_EQ(delegate()->GetCurrentState(),
-            PasswordChangeDelegate::State::kWaitingForAgreement);
+            PasswordChangeUIDelegate::State::kWaitingForAgreement);
 
   delegate()->OnPrivacyNoticeAccepted();
   SetOptimizationFeatureEnabled(true);
@@ -353,7 +352,7 @@ TEST_F(PasswordChangeDelegateImplTest, WaitingForAgreement) {
               kPasswordChangeSubmission)),
       static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
   EXPECT_EQ(delegate()->GetCurrentState(),
-            PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
+            PasswordChangeUIDelegate::State::kWaitingForChangePasswordForm);
   ResetDelegate();
 
   histogram_tester.ExpectTotalCount(
@@ -373,18 +372,18 @@ TEST_F(PasswordChangeDelegateImplTest, PasswordChangeFormNotFound) {
       LoginCheckResult::Status::kLoggedIn);
 
   EXPECT_EQ(delegate()->GetCurrentState(),
-            PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
+            PasswordChangeUIDelegate::State::kWaitingForChangePasswordForm);
 
   FastForwardBy(base::Milliseconds(1234));
   delegate()->OnActuationStateChanged(
       PasswordChangeActuator::State::kChangePasswordFormNotFound);
 
   EXPECT_EQ(delegate()->GetCurrentState(),
-            PasswordChangeDelegate::State::kChangePasswordFormNotFound);
+            PasswordChangeUIDelegate::State::kChangePasswordFormNotFound);
   ResetDelegate();
   histogram_tester.ExpectUniqueSample(
       PasswordChangeDelegateImpl::kFinalPasswordChangeStatusHistogram,
-      PasswordChangeDelegate::State::kChangePasswordFormNotFound,
+      PasswordChangeUIDelegate::State::kChangePasswordFormNotFound,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       PasswordChangeDelegateImpl::kCoarseFinalPasswordChangeStatusHistogram,
@@ -409,7 +408,7 @@ TEST_F(PasswordChangeDelegateImplTest, MetricsReportedFlowOffered) {
   ResetDelegate();
   histogram_tester.ExpectUniqueSample(
       PasswordChangeDelegateImpl::kFinalPasswordChangeStatusHistogram,
-      PasswordChangeDelegate::State::kOfferingPasswordChange,
+      PasswordChangeUIDelegate::State::kOfferingPasswordChange,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       PasswordChangeDelegateImpl::kCoarseFinalPasswordChangeStatusHistogram,
@@ -432,7 +431,7 @@ TEST_F(PasswordChangeDelegateImplTest,
   ResetDelegate();
   histogram_tester.ExpectUniqueSample(
       PasswordChangeDelegateImpl::kFinalPasswordChangeStatusHistogram,
-      PasswordChangeDelegate::State::kWaitingForAgreement,
+      PasswordChangeUIDelegate::State::kWaitingForAgreement,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       PasswordChangeDelegateImpl::kCoarseFinalPasswordChangeStatusHistogram,
@@ -456,7 +455,7 @@ TEST_F(PasswordChangeDelegateImplTest,
   ResetDelegate();
   histogram_tester.ExpectUniqueSample(
       PasswordChangeDelegateImpl::kFinalPasswordChangeStatusHistogram,
-      PasswordChangeDelegate::State::kWaitingForChangePasswordForm,
+      PasswordChangeUIDelegate::State::kWaitingForChangePasswordForm,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       PasswordChangeDelegateImpl::kCoarseFinalPasswordChangeStatusHistogram,
@@ -502,17 +501,17 @@ TEST_F(PasswordChangeDelegateImplTest, PasswordChangeFlowCanceled) {
   delegate()->login_checker()->RespondWithLoginStatus(
       LoginCheckResult::Status::kLoggedIn);
   EXPECT_EQ(delegate()->GetCurrentState(),
-            PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
+            PasswordChangeUIDelegate::State::kWaitingForChangePasswordForm);
 
   EXPECT_CALL(*actuator(), Cancel());
   delegate()->CancelPasswordChangeFlow();
   EXPECT_EQ(delegate()->GetCurrentState(),
-            PasswordChangeDelegate::State::kCanceled);
+            PasswordChangeUIDelegate::State::kCanceled);
 
   ResetDelegate();
   histogram_tester.ExpectUniqueSample(
       PasswordChangeDelegateImpl::kFinalPasswordChangeStatusHistogram,
-      PasswordChangeDelegate::State::kCanceled, /*expected_bucket_count=*/1);
+      PasswordChangeUIDelegate::State::kCanceled, /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       PasswordChangeDelegateImpl::kCoarseFinalPasswordChangeStatusHistogram,
       PasswordChangeDelegateImpl::CoarseFinalPasswordChangeState::kCanceled,
@@ -526,13 +525,17 @@ TEST_F(PasswordChangeDelegateImplTest, PasswordChangeFlowCanceled) {
 
 TEST_F(PasswordChangeDelegateImplTest, OnPasswordChangeDeclined) {
   CreateDelegate();
+  MockPasswordChangeDelegateObserver observer;
+  delegate()->AddObserver(&observer);
   EXPECT_EQ(delegate()->GetCurrentState(),
-            PasswordChangeDelegate::State::kWaitingForAgreement);
+            PasswordChangeUIDelegate::State::kWaitingForAgreement);
 
   PasswordsModelDelegateMock mock_model_delegate;
   EXPECT_CALL(*manage_passwords_ui_controller(), GetModelDelegateProxy)
       .WillOnce(Return(mock_model_delegate.AsWeakPtr()));
+  EXPECT_CALL(observer, OnPasswordChangeStopped(delegate()));
   delegate()->OnPasswordChangeDeclined();
+  delegate()->RemoveObserver(&observer);
 
   PasswordsLeakDialogDelegateMock mock_leak_delegate;
   EXPECT_CALL(mock_model_delegate, GetPasswordsLeakDialogDelegate)
@@ -549,16 +552,16 @@ TEST_F(PasswordChangeDelegateImplTest,
   delegate()->AddObserver(&observer);
 
   const std::vector<
-      std::pair<PasswordChangeActuator::State, PasswordChangeDelegate::State>>
+      std::pair<PasswordChangeActuator::State, PasswordChangeUIDelegate::State>>
       kTestStates = {
           {PasswordChangeActuator::State::kChangingPassword,
-           PasswordChangeDelegate::State::kChangingPassword},
+           PasswordChangeUIDelegate::State::kChangingPassword},
           {PasswordChangeActuator::State::kOtpDetected,
-           PasswordChangeDelegate::State::kOtpDetected},
+           PasswordChangeUIDelegate::State::kOtpDetected},
           {PasswordChangeActuator::State::kChangePasswordFormNotFound,
-           PasswordChangeDelegate::State::kChangePasswordFormNotFound},
+           PasswordChangeUIDelegate::State::kChangePasswordFormNotFound},
           {PasswordChangeActuator::State::kPasswordChangeFailed,
-           PasswordChangeDelegate::State::kPasswordChangeFailed},
+           PasswordChangeUIDelegate::State::kPasswordChangeFailed},
       };
 
   for (const auto& [actuator_state, delegate_state] : kTestStates) {
@@ -578,14 +581,15 @@ TEST_F(PasswordChangeDelegateImplTest,
 
   EXPECT_CALL(
       *mock_ui_controller(),
-      UpdateState(PasswordChangeDelegate::State::kPasswordSuccessfullyChanged));
+      UpdateState(
+          PasswordChangeUIDelegate::State::kPasswordSuccessfullyChanged));
   EXPECT_CALL(*manage_passwords_ui_controller(),
               OnPasswordChangeFinishedSuccessfully());
 
   delegate()->OnActuationStateChanged(
       PasswordChangeActuator::State::kPasswordSuccessfullyChanged);
   EXPECT_EQ(delegate()->GetCurrentState(),
-            PasswordChangeDelegate::State::kPasswordSuccessfullyChanged);
+            PasswordChangeUIDelegate::State::kPasswordSuccessfullyChanged);
 
   delegate()->RemoveObserver(&observer);
 }
@@ -614,16 +618,16 @@ TEST_F(PasswordChangeDelegateImplTest,
   CreateDelegate();
   delegate()->StartPasswordChangeFlow();
   EXPECT_EQ(delegate()->GetCurrentState(),
-            PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
+            PasswordChangeUIDelegate::State::kWaitingForChangePasswordForm);
 
   delegate()->login_checker()->RespondWithLoginStatus(
       LoginCheckResult::Status::kLoggedOut);
   EXPECT_EQ(delegate()->GetCurrentState(),
-            PasswordChangeDelegate::State::kLoginFormDetected);
+            PasswordChangeUIDelegate::State::kLoginFormDetected);
 
   delegate()->RetryLoginCheck();
   EXPECT_EQ(delegate()->GetCurrentState(),
-            PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
+            PasswordChangeUIDelegate::State::kWaitingForChangePasswordForm);
 }
 
 TEST_F(PasswordChangeDelegateImplTest,
@@ -635,7 +639,7 @@ TEST_F(PasswordChangeDelegateImplTest,
   delegate()->login_checker()->RespondWithLoginStatus(
       LoginCheckResult::Status::kError);
   EXPECT_EQ(delegate()->GetCurrentState(),
-            PasswordChangeDelegate::State::kChangePasswordFormNotFound);
+            PasswordChangeUIDelegate::State::kChangePasswordFormNotFound);
   EXPECT_FALSE(delegate()->login_checker());
 }
 
@@ -658,7 +662,7 @@ TEST_F(PasswordChangeDelegateImplTest,
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PasswordChange.UserClosedTab",
-      PasswordChangeDelegate::State::kWaitingForChangePasswordForm, 1);
+      PasswordChangeUIDelegate::State::kWaitingForChangePasswordForm, 1);
   delegate()->RemoveObserver(&observer);
 }
 
@@ -711,7 +715,7 @@ TEST_F(PasswordChangeDelegateImplTest, PrivateInferenceLoginCheck_Success) {
   CreateDelegate();
 
   EXPECT_EQ(delegate()->GetCurrentState(),
-            PasswordChangeDelegate::State::kNoState);
+            PasswordChangeUIDelegate::State::kNoState);
   ASSERT_TRUE(delegate()->login_checker());
 
   auto logging_data = std::make_unique<
@@ -729,7 +733,7 @@ TEST_F(PasswordChangeDelegateImplTest, PrivateInferenceLoginCheck_Success) {
   delegate()->login_checker()->RespondWithLoginStatus(
       LoginCheckResult::Status::kLoggedIn, std::move(logging_data));
   EXPECT_EQ(delegate()->GetCurrentState(),
-            PasswordChangeDelegate::State::kWaitingForAgreement);
+            PasswordChangeUIDelegate::State::kWaitingForAgreement);
   EXPECT_FALSE(delegate()->login_checker());
   EXPECT_FALSE(delegate()->logs_uploader());
 
@@ -769,7 +773,7 @@ TEST_F(PasswordChangeDelegateImplTest, PrivateInferenceLoginCheck_Success) {
   delegate()->login_checker()->RespondWithLoginStatus(
       LoginCheckResult::Status::kLoggedIn, std::move(subsequent_logging_data));
   EXPECT_EQ(delegate()->GetCurrentState(),
-            PasswordChangeDelegate::State::kOfferingPasswordChange);
+            PasswordChangeUIDelegate::State::kOfferingPasswordChange);
 }
 
 TEST_F(PasswordChangeDelegateImplTest, PrivateInferenceLoginCheck_Failure) {
@@ -779,7 +783,7 @@ TEST_F(PasswordChangeDelegateImplTest, PrivateInferenceLoginCheck_Failure) {
 
   CreateDelegate();
   EXPECT_EQ(delegate()->GetCurrentState(),
-            PasswordChangeDelegate::State::kNoState);
+            PasswordChangeUIDelegate::State::kNoState);
   ASSERT_TRUE(delegate()->login_checker());
 
   MockPasswordChangeDelegateObserver observer;
@@ -803,7 +807,7 @@ TEST_F(PasswordChangeDelegateImplTest,
 
   CreateDelegate();
   EXPECT_EQ(delegate()->GetCurrentState(),
-            PasswordChangeDelegate::State::kNoState);
+            PasswordChangeUIDelegate::State::kNoState);
   ASSERT_TRUE(delegate()->login_checker());
 
   MockPasswordChangeDelegateObserver observer;
@@ -860,9 +864,13 @@ TEST_F(PasswordChangeDelegateImplTest, IsPasswordChangeOngoing) {
 
 TEST_F(PasswordChangeDelegateImplTest, OpenPasswordChangeTab) {
   CreateDelegate();
+  MockPasswordChangeDelegateObserver observer;
+  delegate()->AddObserver(&observer);
 
   EXPECT_CALL(*actuator(), OpenPasswordChangeTab(web_contents()));
+  EXPECT_CALL(observer, OnPasswordChangeStopped(delegate()));
   delegate()->OpenPasswordChangeTab();
+  delegate()->RemoveObserver(&observer);
 }
 
 TEST_F(PasswordChangeDelegateImplTest, OpenPasswordDetails) {
@@ -932,10 +940,10 @@ TEST_F(PasswordChangeDelegateImplTest,
   histogram_tester.ExpectUniqueSample(
       PasswordChangeDelegateImpl::kOtpPresentInMainTabHistogram, true, 1);
   EXPECT_EQ(delegate()->GetCurrentState(),
-            PasswordChangeDelegate::State::kNoState);
+            PasswordChangeUIDelegate::State::kNoState);
 
   autofill_client()->GetOtpFieldDetector()->RemoveFormAndNotifyIfNecessary(
       form_id);
   EXPECT_EQ(delegate()->GetCurrentState(),
-            PasswordChangeDelegate::State::kWaitingForAgreement);
+            PasswordChangeUIDelegate::State::kWaitingForAgreement);
 }

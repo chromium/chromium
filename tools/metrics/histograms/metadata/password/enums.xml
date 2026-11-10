@@ -874,7 +874,7 @@ chromium-metrics-reviews@google.com.
              (Deprecated)"/>
 </enum>
 
-<!-- LINT.ThenChange(/chrome/browser/password_manager/password_change_delegate.h) -->
+<!-- LINT.ThenChange(/chrome/browser/ui/passwords/password_change_ui_delegate.h:State) -->
 
 <!-- LINT.IfChange(PasswordChangeFlowStep) -->
 

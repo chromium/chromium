@@ -30,6 +30,8 @@ source_set("passwords") {
       "manage_passwords_auto_signin_toast_delegate.h",
       "manage_passwords_ui_controller.h",
       "password_base_dialog_controller.h",
+      "password_change_ui_controller.h",
+      "password_change_ui_delegate.h",
       "password_combined_selector_controller.h",
       "password_dialog_prompts.h",
       "password_generation_popup_view.h",
@@ -42,6 +44,7 @@ source_set("passwords") {
       "//build:branding_buildflags",
       "//chrome/browser:primitives",
       "//chrome/browser/ui/autofill:bubble_controller_base",
+      "//chrome/browser/ui/views/passwords/password_change:password_change_toast",
       "//chrome/common:buildflags",
       "//components/password_manager/core/browser/ui",
       "//components/password_manager/core/common",
@@ -122,7 +125,6 @@ source_set("impl") {
       "manage_passwords_auto_signin_toast_delegate.cc",
       "manage_passwords_ui_controller.cc",
       "password_change_ui_controller.cc",
-      "password_change_ui_controller.h",
       "password_generation_popup_controller.h",
       "password_generation_popup_controller_impl.cc",
       "password_generation_popup_controller_impl.h",
@@ -239,6 +241,8 @@ source_set("test_support_ui") {
     sources += [
       "credential_manager_dialog_controller_mock.cc",
       "credential_manager_dialog_controller_mock.h",
+      "password_change_ui_delegate_mock.cc",
+      "password_change_ui_delegate_mock.h",
       "passwords_leak_dialog_delegate_mock.cc",
       "passwords_leak_dialog_delegate_mock.h",
       "passwords_model_delegate_mock.cc",
@@ -353,11 +357,9 @@ if (!is_android) {
       "well_known_change_password_navigation_throttle_browsertest.cc",
     ]
     deps = [
-      # TODO(crbug.com/437811373): Remove this dependency when
-      # `//c/b/ui/passwords:passwords`.
-      # c/b/ui/passwords/password_change_ui_controller.h gets built from
       ":impl",
       ":passwords",
+      ":test_support_ui",
       "//base",
       "//base/test:test_support",
       "//chrome/app:generated_resources",

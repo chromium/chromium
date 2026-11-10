@@ -7,7 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/password_manager/password_change_delegate.h"
+#include "chrome/browser/ui/passwords/password_change_ui_delegate.h"
 #include "chrome/browser/ui/views/passwords/password_change/password_change_toast.h"
 #include "ui/views/widget/widget.h"
 
@@ -49,12 +49,12 @@ enum class PasswordChangeToastEvent {
 // current state of the password change flow.
 class PasswordChangeUIController {
  public:
-  PasswordChangeUIController(PasswordChangeDelegate* password_change_delegate,
+  PasswordChangeUIController(PasswordChangeUIDelegate* ui_delegate,
                              tabs::TabInterface* tab_interface);
   virtual ~PasswordChangeUIController();
 
   // Updates the `state_` and the UI.
-  virtual void UpdateState(PasswordChangeDelegate::State state);
+  virtual void UpdateState(PasswordChangeUIDelegate::State state);
 
 #if defined(UNIT_TEST)
   const views::Widget* dialog_widget() const { return dialog_widget_.get(); }
@@ -65,7 +65,7 @@ class PasswordChangeUIController {
  private:
   std::variant<PasswordChangeToast::ToastOptions,
                std::unique_ptr<views::BubbleDialogModelHost>>
-  GetDialogOrToastConfiguration(PasswordChangeDelegate::State state);
+  GetDialogOrToastConfiguration(PasswordChangeUIDelegate::State state);
 
   void ShowToast(PasswordChangeToast::ToastOptions options);
   void ShowDialog(std::unique_ptr<views::BubbleDialogModelHost> model_host);
@@ -86,8 +86,8 @@ class PasswordChangeUIController {
   void CloseDialogWidget(views::Widget::ClosedReason reason);
   void CloseToastWidget(views::Widget::ClosedReason reason);
 
-  // Controls password change process. Owns this class.
-  const raw_ptr<PasswordChangeDelegate> password_change_delegate_;
+  // Delegate handling user actions from password change UI. Owns this class.
+  const raw_ptr<PasswordChangeUIDelegate> ui_delegate_;
 
   // A tab where a toast and a modal dialog is displayed.
   const raw_ptr<tabs::TabInterface> tab_interface_;
@@ -105,8 +105,8 @@ class PasswordChangeUIController {
   std::unique_ptr<views::Widget> dialog_widget_;
 
   // Current state of the password change flow.
-  PasswordChangeDelegate::State state_ =
-      static_cast<PasswordChangeDelegate::State>(-1);
+  PasswordChangeUIDelegate::State state_ =
+      static_cast<PasswordChangeUIDelegate::State>(-1);
 
   base::WeakPtrFactory<PasswordChangeUIController> weak_ptr_factory_{this};
 };

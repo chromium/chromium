@@ -12,11 +12,11 @@
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/password_manager/password_change/features.h"
-#include "chrome/browser/password_manager/password_change_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/passwords/password_change_ui_delegate.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
@@ -70,13 +70,13 @@ const gfx::VectorIcon& kGoogleGLogoIcon =
 #endif
 
 // Logs `action` taken for the dialog displayed for `state`.
-void LogDialogAction(PasswordChangeDelegate::State state,
+void LogDialogAction(PasswordChangeUIDelegate::State state,
                      PasswordChangeDialogAction action) {
   switch (state) {
-    case PasswordChangeDelegate::State::kOfferingPasswordChange:
-    case PasswordChangeDelegate::State::kWaitingForAgreement: {
+    case PasswordChangeUIDelegate::State::kOfferingPasswordChange:
+    case PasswordChangeUIDelegate::State::kWaitingForAgreement: {
       std::string suffix =
-          state == PasswordChangeDelegate::State::kOfferingPasswordChange
+          state == PasswordChangeUIDelegate::State::kOfferingPasswordChange
               ? ".WithoutPrivacyNotice"
               : ".WithPrivacyNotice";
       base::UmaHistogramEnumeration(kLeakDetectionDialogHistogram, action);
@@ -84,57 +84,57 @@ void LogDialogAction(PasswordChangeDelegate::State state,
           base::StrCat({kLeakDetectionDialogHistogram, suffix}), action);
       return;
     }
-    case PasswordChangeDelegate::State::kChangePasswordFormNotFound:
+    case PasswordChangeUIDelegate::State::kChangePasswordFormNotFound:
       base::UmaHistogramEnumeration(
           "PasswordManager.PasswordChange.NoPasswordForm", action);
       return;
-    case PasswordChangeDelegate::State::kPasswordChangeFailed:
+    case PasswordChangeUIDelegate::State::kPasswordChangeFailed:
       base::UmaHistogramEnumeration(
           "PasswordManager.PasswordChange.FailedInteraction", action);
       return;
-    case PasswordChangeDelegate::State::kOtpDetected:
+    case PasswordChangeUIDelegate::State::kOtpDetected:
       base::UmaHistogramEnumeration(
           "PasswordManager.PasswordChange.OTPRequested", action);
       return;
-    case PasswordChangeDelegate::State::kWaitingForChangePasswordForm:
-    case PasswordChangeDelegate::State::kChangingPassword:
-    case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
-    case PasswordChangeDelegate::State::kCanceled:
-    case PasswordChangeDelegate::State::kNoState:
-    case PasswordChangeDelegate::State::kLoginFormDetected:
+    case PasswordChangeUIDelegate::State::kWaitingForChangePasswordForm:
+    case PasswordChangeUIDelegate::State::kChangingPassword:
+    case PasswordChangeUIDelegate::State::kPasswordSuccessfullyChanged:
+    case PasswordChangeUIDelegate::State::kCanceled:
+    case PasswordChangeUIDelegate::State::kNoState:
+    case PasswordChangeUIDelegate::State::kLoginFormDetected:
       NOTREACHED();
   }
 }
 
 // Logs `event` that happened for the toast displayed for `state`.
-void LogToastEvent(PasswordChangeDelegate::State state,
+void LogToastEvent(PasswordChangeUIDelegate::State state,
                    PasswordChangeToastEvent event) {
   switch (state) {
-    case PasswordChangeDelegate::State::kWaitingForChangePasswordForm:
+    case PasswordChangeUIDelegate::State::kWaitingForChangePasswordForm:
       base::UmaHistogramEnumeration(
           "PasswordManager.PasswordChange.CheckingSignInToast", event);
       return;
-    case PasswordChangeDelegate::State::kChangingPassword:
+    case PasswordChangeUIDelegate::State::kChangingPassword:
       base::UmaHistogramEnumeration(
           "PasswordManager.PasswordChange.ChangingPasswordToast", event);
       return;
-    case PasswordChangeDelegate::State::kLoginFormDetected:
+    case PasswordChangeUIDelegate::State::kLoginFormDetected:
       base::UmaHistogramEnumeration(
           "PasswordManager.PasswordChange.WaitingForUserSignInToast", event);
       return;
-    case PasswordChangeDelegate::State::kCanceled:
+    case PasswordChangeUIDelegate::State::kCanceled:
       base::UmaHistogramEnumeration(
           "PasswordManager.PasswordChange.CanceledToast", event);
       return;
-    case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
+    case PasswordChangeUIDelegate::State::kPasswordSuccessfullyChanged:
       // Events for this toast are already implicitly logged.
       return;
-    case PasswordChangeDelegate::State::kOfferingPasswordChange:
-    case PasswordChangeDelegate::State::kWaitingForAgreement:
-    case PasswordChangeDelegate::State::kChangePasswordFormNotFound:
-    case PasswordChangeDelegate::State::kPasswordChangeFailed:
-    case PasswordChangeDelegate::State::kOtpDetected:
-    case PasswordChangeDelegate::State::kNoState:
+    case PasswordChangeUIDelegate::State::kOfferingPasswordChange:
+    case PasswordChangeUIDelegate::State::kWaitingForAgreement:
+    case PasswordChangeUIDelegate::State::kChangePasswordFormNotFound:
+    case PasswordChangeUIDelegate::State::kPasswordChangeFailed:
+    case PasswordChangeUIDelegate::State::kOtpDetected:
+    case PasswordChangeUIDelegate::State::kNoState:
       NOTREACHED();
   }
 }
@@ -398,7 +398,7 @@ std::unique_ptr<views::FrameView> CreateToastFrameView(views::Widget* widget) {
   return frame_view;
 }
 
-// Creates dialog for `PasswordChangeDelegate::State::kOtpDetected`.
+// Creates dialog for `PasswordChangeUIDelegate::State::kOtpDetected`.
 std::unique_ptr<ui::DialogModel> CreateOtpDetectedDialog(
     base::OnceClosure accept_callback,
     base::OnceClosure cancel_callback) {
@@ -433,10 +433,9 @@ std::unique_ptr<views::BubbleDialogModelHost> CreateDialogModelHost(
 }  // namespace
 
 PasswordChangeUIController::PasswordChangeUIController(
-    PasswordChangeDelegate* password_change_delegate,
+    PasswordChangeUIDelegate* ui_delegate,
     tabs::TabInterface* tab_interface)
-    : password_change_delegate_(password_change_delegate),
-      tab_interface_(tab_interface) {}
+    : ui_delegate_(ui_delegate), tab_interface_(tab_interface) {}
 
 PasswordChangeUIController::~PasswordChangeUIController() {
   CloseDialogWidget(views::Widget::ClosedReason::kUnspecified);
@@ -444,7 +443,7 @@ PasswordChangeUIController::~PasswordChangeUIController() {
 }
 
 void PasswordChangeUIController::UpdateState(
-    PasswordChangeDelegate::State state) {
+    PasswordChangeUIDelegate::State state) {
   if (state_ == state) {
     return;
   }
@@ -479,7 +478,7 @@ void PasswordChangeUIController::UpdateState(
 
 std::variant<ToastOptions, std::unique_ptr<views::BubbleDialogModelHost>>
 PasswordChangeUIController::GetDialogOrToastConfiguration(
-    PasswordChangeDelegate::State state) {
+    PasswordChangeUIDelegate::State state) {
   auto open_password_change_tab_from_dialog_callback = base::BindOnce(
       &PasswordChangeUIController::OpenPasswordChangeTabFromDialog,
       weak_ptr_factory_.GetWeakPtr());
@@ -503,7 +502,7 @@ PasswordChangeUIController::GetDialogOrToastConfiguration(
 
   switch (state) {
     /* Dialogs */
-    case PasswordChangeDelegate::State::kWaitingForAgreement:
+    case PasswordChangeUIDelegate::State::kWaitingForAgreement:
       if (base::FeatureList::IsEnabled(
               password_change::features::
                   kPasswordChangeWithPrivateInferenceLoginCheck)) {
@@ -513,9 +512,7 @@ PasswordChangeUIController::GetDialogOrToastConfiguration(
             std::move(cancel_dialog_callback),
             std::move(navigate_to_settings_callback),
             /*with_privacy_notice=*/true, std::move(email),
-            password_change_delegate_
-                ? password_change_delegate_->GetDisplayOrigin()
-                : std::u16string());
+            ui_delegate_ ? ui_delegate_->GetDisplayOrigin() : std::u16string());
       }
       return CreateDialogModelHost(CreateOfferChangePasswordDialog(
           base::BindOnce(&PasswordChangeUIController::OnPrivacyNoticeAccepted,
@@ -523,7 +520,7 @@ PasswordChangeUIController::GetDialogOrToastConfiguration(
           std::move(cancel_dialog_callback),
           std::move(navigate_to_settings_callback),
           /*with_privacy_notice=*/true, std::move(email)));
-    case PasswordChangeDelegate::State::kOfferingPasswordChange:
+    case PasswordChangeUIDelegate::State::kOfferingPasswordChange:
       if (base::FeatureList::IsEnabled(
               password_change::features::
                   kPasswordChangeWithPrivateInferenceLoginCheck)) {
@@ -533,9 +530,7 @@ PasswordChangeUIController::GetDialogOrToastConfiguration(
             std::move(cancel_dialog_callback),
             std::move(navigate_to_settings_callback),
             /*with_privacy_notice=*/false, std::move(email),
-            password_change_delegate_
-                ? password_change_delegate_->GetDisplayOrigin()
-                : std::u16string());
+            ui_delegate_ ? ui_delegate_->GetDisplayOrigin() : std::u16string());
       }
       return CreateDialogModelHost(CreateOfferChangePasswordDialog(
           base::BindOnce(&PasswordChangeUIController::StartPasswordChangeFlow,
@@ -543,33 +538,33 @@ PasswordChangeUIController::GetDialogOrToastConfiguration(
           std::move(cancel_dialog_callback),
           std::move(navigate_to_settings_callback),
           /*with_privacy_notice=*/false, std::move(email)));
-    case PasswordChangeDelegate::State::kChangePasswordFormNotFound:
+    case PasswordChangeUIDelegate::State::kChangePasswordFormNotFound:
       return CreateDialogModelHost(CreatePasswordChangeFailedDialog(
           std::move(open_password_change_tab_from_dialog_callback),
           std::move(cancel_dialog_callback),
           /*use_error_image=*/false));
-    case PasswordChangeDelegate::State::kPasswordChangeFailed:
+    case PasswordChangeUIDelegate::State::kPasswordChangeFailed:
       return CreateDialogModelHost(CreatePasswordChangeFailedDialog(
           std::move(open_password_change_tab_from_dialog_callback),
           std::move(cancel_dialog_callback),
           /*use_error_image=*/true));
-    case PasswordChangeDelegate::State::kOtpDetected:
+    case PasswordChangeUIDelegate::State::kOtpDetected:
       return CreateDialogModelHost(CreateOtpDetectedDialog(
           std::move(open_password_change_tab_from_dialog_callback),
           std::move(cancel_dialog_callback)));
 
     /* Toasts */
-    case PasswordChangeDelegate::State::kWaitingForChangePasswordForm:
+    case PasswordChangeUIDelegate::State::kWaitingForChangePasswordForm:
       return ToastOptions(
           l10n_util::GetStringUTF16(
               IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_OMNIBOX_SIGN_IN_CHECK),
           std::move(cancel_toast_callback));
-    case PasswordChangeDelegate::State::kChangingPassword:
+    case PasswordChangeUIDelegate::State::kChangingPassword:
       return ToastOptions(
           l10n_util::GetStringUTF16(
               IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_OMNIBOX_CHANGING_PASSWORD),
           std::move(cancel_toast_callback));
-    case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
+    case PasswordChangeUIDelegate::State::kPasswordSuccessfullyChanged:
       return ToastOptions(
           l10n_util::GetStringUTF16(
               IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGED_TITLE),
@@ -580,7 +575,7 @@ PasswordChangeUIController::GetDialogOrToastConfiguration(
               IDS_PASSWORD_MANAGER_UI_VIEW_DETAILS_BUTTON),
           base::BindOnce(&PasswordChangeUIController::ShowPasswordDetails,
                          weak_ptr_factory_.GetWeakPtr()));
-    case PasswordChangeDelegate::State::kCanceled:
+    case PasswordChangeUIDelegate::State::kCanceled:
       return ToastOptions(
           l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UI_PASSWORD_UNCHANGED),
           features::IsRoundedIconsEnabled()
@@ -590,7 +585,7 @@ PasswordChangeUIController::GetDialogOrToastConfiguration(
           l10n_util::GetStringUTF16(
               IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_FAILED_ACCEPT_BUTTON),
           std::move(open_password_change_tab_from_toast_callback));
-    case PasswordChangeDelegate::State::kLoginFormDetected:
+    case PasswordChangeUIDelegate::State::kLoginFormDetected:
       return ToastOptions(
           l10n_util::GetStringUTF16(
               IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_TOAST_SIGN_IN_TO_CONTINUE),
@@ -601,7 +596,7 @@ PasswordChangeUIController::GetDialogOrToastConfiguration(
               IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_TOAST_RETRY_BUTTON),
           base::BindOnce(&PasswordChangeUIController::RetryLoginCheck,
                          weak_ptr_factory_.GetWeakPtr()));
-    case PasswordChangeDelegate::State::kNoState:
+    case PasswordChangeUIDelegate::State::kNoState:
       NOTREACHED();
   }
 }
@@ -681,32 +676,31 @@ void PasswordChangeUIController::ShowDialog(
 }
 
 void PasswordChangeUIController::OnToastCanceled() {
-  CHECK(password_change_delegate_);
+  CHECK(ui_delegate_);
   LogToastEvent(state_, PasswordChangeToastEvent::kCanceled);
-  if (state_ == PasswordChangeDelegate::State::kPasswordSuccessfullyChanged ||
-      state_ == PasswordChangeDelegate::State::kCanceled) {
+  if (state_ == PasswordChangeUIDelegate::State::kPasswordSuccessfullyChanged ||
+      state_ == PasswordChangeUIDelegate::State::kCanceled) {
     // Successful and canceled states are terminal, there is no more UI to show.
-    password_change_delegate_->Stop();
+    ui_delegate_->OnUiDismissed();
     return;
   }
-  password_change_delegate_->CancelPasswordChangeFlow();
+  ui_delegate_->CancelPasswordChangeFlow();
 }
 
 void PasswordChangeUIController::OnDialogCanceled() {
-  CHECK(password_change_delegate_);
+  CHECK(ui_delegate_);
   LogDialogAction(state_, PasswordChangeDialogAction::kCancelButtonClicked);
-  if (state_ == PasswordChangeDelegate::State::kWaitingForAgreement ||
-      state_ == PasswordChangeDelegate::State::kOfferingPasswordChange ||
-      state_ == PasswordChangeDelegate::State::kLoginFormDetected) {
-    password_change_delegate_->OnPasswordChangeDeclined();
+  if (state_ == PasswordChangeUIDelegate::State::kWaitingForAgreement ||
+      state_ == PasswordChangeUIDelegate::State::kOfferingPasswordChange) {
+    ui_delegate_->OnPasswordChangeDeclined();
+    return;
   }
-  password_change_delegate_->Stop();
+  ui_delegate_->OnUiDismissed();
 }
 
 void PasswordChangeUIController::OpenPasswordChangeTab() {
-  CHECK(password_change_delegate_);
-  password_change_delegate_->OpenPasswordChangeTab();
-  password_change_delegate_->Stop();
+  CHECK(ui_delegate_);
+  ui_delegate_->OpenPasswordChangeTab();
 }
 
 void PasswordChangeUIController::OpenPasswordChangeTabFromDialog() {
@@ -720,20 +714,20 @@ void PasswordChangeUIController::OpenPasswordChangeTabFromToast() {
 }
 
 void PasswordChangeUIController::StartPasswordChangeFlow() {
-  CHECK(password_change_delegate_);
+  CHECK(ui_delegate_);
   LogDialogAction(state_, PasswordChangeDialogAction::kAcceptButtonClicked);
-  password_change_delegate_->StartPasswordChangeFlow();
+  ui_delegate_->StartPasswordChangeFlow();
 }
 
 void PasswordChangeUIController::OnPrivacyNoticeAccepted() {
-  CHECK(password_change_delegate_);
+  CHECK(ui_delegate_);
   LogDialogAction(state_, PasswordChangeDialogAction::kAcceptButtonClicked);
-  password_change_delegate_->OnPrivacyNoticeAccepted();
+  ui_delegate_->OnPrivacyNoticeAccepted();
 }
 
 void PasswordChangeUIController::ShowPasswordDetails() {
-  CHECK(password_change_delegate_);
-  password_change_delegate_->OpenPasswordDetails();
+  CHECK(ui_delegate_);
+  ui_delegate_->OpenPasswordDetails();
 }
 
 void PasswordChangeUIController::NavigateToPasswordChangeSettings() {
@@ -746,10 +740,10 @@ void PasswordChangeUIController::NavigateToPasswordChangeSettings() {
 }
 
 void PasswordChangeUIController::RetryLoginCheck() {
-  CHECK(password_change_delegate_);
-  LogToastEvent(PasswordChangeDelegate::State::kLoginFormDetected,
+  CHECK(ui_delegate_);
+  LogToastEvent(PasswordChangeUIDelegate::State::kLoginFormDetected,
                 PasswordChangeToastEvent::kRetry);
-  password_change_delegate_->RetryLoginCheck();
+  ui_delegate_->RetryLoginCheck();
 }
 
 void PasswordChangeUIController::CloseDialogWidget(

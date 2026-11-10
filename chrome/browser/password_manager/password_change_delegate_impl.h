@@ -19,6 +19,7 @@
 #include "chrome/browser/password_manager/password_change/password_change_submission_verifier.h"
 #include "chrome/browser/password_manager/password_change_delegate.h"
 #include "chrome/browser/ui/passwords/password_change_ui_controller.h"
+#include "chrome/browser/ui/passwords/password_change_ui_delegate.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_string.h"
 #include "components/tabs/public/tab_interface.h"
@@ -41,6 +42,7 @@ class Profile;
 // notice, opening of a new tab, navigation to the change password url, password
 // generation and form submission.
 class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
+                                   public PasswordChangeUIDelegate,
                                    public PasswordChangeActuator::Observer {
  public:
   static constexpr char kFinalPasswordChangeStatusHistogram[] =
@@ -123,20 +125,23 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
   void OnActuationStateChanged(
       PasswordChangeActuator::State new_state) override;
 
-  // PasswordChangeDelegate Impl
-  void StartPasswordChangeFlow() override;
-  void CancelPasswordChangeFlow() override;
+  // PasswordChangeDelegate:
   bool IsPasswordChangeOngoing(content::WebContents* web_contents) override;
-  State GetCurrentState() const override;
   void Stop() override;
-  void OpenPasswordChangeTab() override;
-  void OpenPasswordDetails() override;
-  void OnPrivacyNoticeAccepted() override;
-  void OnPasswordChangeDeclined() override;
-  void RetryLoginCheck() override;
-  std::u16string GetDisplayOrigin() const override;
   void AddObserver(PasswordChangeDelegate::Observer* observer) override;
   void RemoveObserver(PasswordChangeDelegate::Observer* observer) override;
+
+  // PasswordChangeUIDelegate:
+  State GetCurrentState() const override;
+  std::u16string GetDisplayOrigin() const override;
+  void OnPrivacyNoticeAccepted() override;
+  void StartPasswordChangeFlow() override;
+  void OnPasswordChangeDeclined() override;
+  void CancelPasswordChangeFlow() override;
+  void RetryLoginCheck() override;
+  void OpenPasswordChangeTab() override;
+  void OpenPasswordDetails() override;
+  void OnUiDismissed() override;
 
  private:
   void OnOtpNotFound();

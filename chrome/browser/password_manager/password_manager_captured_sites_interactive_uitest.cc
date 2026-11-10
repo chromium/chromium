@@ -18,12 +18,14 @@
 #include "chrome/browser/password_manager/factories/account_password_store_factory.h"
 #include "chrome/browser/password_manager/factories/profile_password_store_factory.h"
 #include "chrome/browser/password_manager/password_change_delegate.h"
+#include "chrome/browser/password_manager/password_change_delegate_impl.h"
 #include "chrome/browser/password_manager/password_change_service_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_base.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/password_manager/password_manager_uitest_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
+#include "chrome/browser/ui/passwords/password_change_ui_delegate.h"
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/autofill/core/common/autofill_debug_features.h"
@@ -377,8 +379,8 @@ class CapturedSitesAutomatedPasswordChangeBrowserTest
                                u"pa$$word"),
             /*in_account_store=*/false),
         WebContents());
-    PasswordChangeDelegate* delegate =
-        password_change_service->GetPasswordChangeDelegate(WebContents());
+    auto* delegate = static_cast<PasswordChangeDelegateImpl*>(
+        password_change_service->GetPasswordChangeDelegate(WebContents()));
 
     delegate->StartPasswordChangeFlow();
     return true;
@@ -387,18 +389,18 @@ class CapturedSitesAutomatedPasswordChangeBrowserTest
   bool WaitForPasswordChangeState(int state) override {
     ChromePasswordChangeService* password_change_service =
         PasswordChangeServiceFactory::GetForProfile(browser()->GetProfile());
-    PasswordChangeDelegate* delegate =
-        password_change_service->GetPasswordChangeDelegate(WebContents());
+    auto* delegate = static_cast<PasswordChangeDelegateImpl*>(
+        password_change_service->GetPasswordChangeDelegate(WebContents()));
 
-    std::vector<PasswordChangeDelegate::State> terminal_states = {
-        PasswordChangeDelegate::State::kPasswordSuccessfullyChanged,
-        PasswordChangeDelegate::State::kPasswordChangeFailed,
-        PasswordChangeDelegate::State::kChangePasswordFormNotFound,
-        PasswordChangeDelegate::State::kOtpDetected,
-        PasswordChangeDelegate::State::kLoginFormDetected,
+    std::vector<PasswordChangeUIDelegate::State> terminal_states = {
+        PasswordChangeUIDelegate::State::kPasswordSuccessfullyChanged,
+        PasswordChangeUIDelegate::State::kPasswordChangeFailed,
+        PasswordChangeUIDelegate::State::kChangePasswordFormNotFound,
+        PasswordChangeUIDelegate::State::kOtpDetected,
+        PasswordChangeUIDelegate::State::kLoginFormDetected,
     };
-    PasswordChangeDelegate::State expected_state =
-        static_cast<PasswordChangeDelegate::State>(state);
+    PasswordChangeUIDelegate::State expected_state =
+        static_cast<PasswordChangeUIDelegate::State>(state);
 
     EXPECT_TRUE(std::ranges::contains(terminal_states, expected_state))
         << "Unexpected password change state. It's possible to wait only for "

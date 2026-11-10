@@ -10,6 +10,7 @@
 #include "chrome/browser/password_manager/password_change_delegate_impl.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/passwords/password_change_ui_controller.h"
+#include "chrome/browser/ui/passwords/password_change_ui_delegate.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/password_manager/core/browser/password_string.h"
@@ -51,7 +52,7 @@ class PasswordChangeToastBrowserTest : public UiBrowserTest {
 
     // Trigger the toast for the "Password Changed" state.
     ui_controller_->UpdateState(
-        PasswordChangeDelegate::State::kPasswordSuccessfullyChanged);
+        PasswordChangeUIDelegate::State::kPasswordSuccessfullyChanged);
   }
 
   bool VerifyUi() override {

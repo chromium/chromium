@@ -20,24 +20,11 @@ class PasswordChangeDelegateMock final : public PasswordChangeDelegate {
       delete;
   ~PasswordChangeDelegateMock() override;
 
-  MOCK_METHOD(void, StartPasswordChangeFlow, (), (override));
-  MOCK_METHOD(void, CancelPasswordChangeFlow, (), (override));
   MOCK_METHOD(bool,
               IsPasswordChangeOngoing,
               (content::WebContents*),
               (override));
-  MOCK_METHOD(PasswordChangeDelegate::State,
-              GetCurrentState,
-              (),
-              (const, override));
   MOCK_METHOD(void, Stop, (), (override));
-  MOCK_METHOD(void, OpenPasswordChangeTab, (), (override));
-  MOCK_METHOD(void, OpenPasswordDetails, (), (override));
-
-  MOCK_METHOD(void, OnPrivacyNoticeAccepted, (), (override));
-  MOCK_METHOD(void, OnPasswordChangeDeclined, (), (override));
-  MOCK_METHOD(void, RetryLoginCheck, (), (override));
-  MOCK_METHOD(std::u16string, GetDisplayOrigin, (), (const, override));
   MOCK_METHOD(void, AddObserver, (Observer*), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
 
