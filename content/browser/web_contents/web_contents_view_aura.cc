@@ -139,59 +139,6 @@ RenderWidgetHostViewAura* ToRenderWidgetHostViewAura(
   return static_cast<RenderWidgetHostViewAura*>(view);
 }
 
-// Listens to all mouse drag events during a drag and drop and sends them to
-// the renderer.
-class WebDragSourceAura : public content::WebContentsObserver,
-                          public aura::WindowObserver {
- public:
-  WebDragSourceAura(aura::Window* window, WebContentsImpl* contents)
-      : WebContentsObserver(contents), window_(window) {
-    window_->AddObserver(this);
-  }
-
-  ~WebDragSourceAura() override {
-    if (window_)
-      window_->RemoveObserver(this);
-  }
-
-  WebDragSourceAura(const WebDragSourceAura&) = delete;
-  WebDragSourceAura& operator=(const WebDragSourceAura&) = delete;
-
-  // content::WebContentsObserver
-  void PrimaryMainFrameRenderProcessGone(
-      base::TerminationStatus status) override {
-    CancelDrag();
-  }
-
-  void WebContentsDestroyed() override { CancelDrag(); }
-
-  // aura::WindowObserver:
-  void OnWindowDestroying(aura::Window* window) override {
-    window_->RemoveObserver(this);
-    window_ = nullptr;
-  }
-
-  aura::Window* window() const { return window_; }
-
- private:
-  void CancelDrag() {
-    if (!window_)
-      return;
-
-    // Cancel the drag if it is still in progress.
-    aura::client::DragDropClient* dnd_client =
-        aura::client::GetDragDropClient(window_->GetRootWindow());
-
-    window_->RemoveObserver(this);
-    window_ = nullptr;
-
-    if (dnd_client && dnd_client->IsDragDropInProgress())
-      dnd_client->DragCancel();
-  }
-
-  raw_ptr<aura::Window> window_;
-};
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 // Fill out the OSExchangeData with a file contents, synthesizing a name if
 // necessary.
@@ -698,12 +645,7 @@ void WebContentsViewAura::InstallCreateHookForTests(
 WebContentsViewAura::WebContentsViewAura(
     WebContentsImpl* web_contents,
     std::unique_ptr<WebContentsViewDelegate> delegate)
-    : web_contents_(web_contents),
-      delegate_(std::move(delegate)),
-      drag_dest_delegate_(nullptr),
-      current_rvh_for_drag_(ChildProcessId(), IPC::mojom::kRoutingIdNone),
-      drag_in_progress_(false),
-      init_rwhv_with_null_parent_for_testing_(false) {}
+    : web_contents_(web_contents), delegate_(std::move(delegate)) {}
 
 WebContentsViewAura::~WebContentsViewAura() {
   if (!window_)
@@ -842,6 +784,7 @@ void WebContentsViewAura::EndDrag(
     base::WeakPtr<RenderWidgetHostImpl> source_rwh_weak_ptr,
     DragOperation op) {
   drag_security_info_.OnDragEnded();
+  drag_drop_client_owner_.reset();
 
   if (!web_contents_)
     return;
@@ -1166,6 +1109,19 @@ WebContentsViewAura::GetBackForwardTransitionAnimationManager() {
 
 void WebContentsViewAura::DestroyBackForwardTransitionAnimationManager() {}
 
+void WebContentsViewAura::CancelDrag() {
+  // If there is no ongoing drag initiated by this view, early exit.
+  if (!drag_security_info_.did_initiate() || !drag_drop_client_owner_) {
+    return;
+  }
+
+  aura::client::DragDropClient* dnd_client =
+      aura::client::GetDragDropClient(drag_drop_client_owner_.get());
+  if (dnd_client && dnd_client->IsDragDropInProgress()) {
+    dnd_client->DragCancel();
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // WebContentsViewAura, RenderViewHostDelegateView implementation:
 
@@ -1259,7 +1215,8 @@ void WebContentsViewAura::StartDragging(
   aura::Window* root_window = GetNativeView()->GetRootWindow();
   RenderWidgetHostImpl* const source_rwh =
       static_cast<RenderWidgetHostImpl*>(source_rfh.GetRenderWidgetHost());
-  // Disallow reentrant drag which could be an attempt to exploit drag state.
+  // Disallow reentrant drag initiation which could be an attempt to exploit
+  // drag state.
   if (drag_security_info_.did_initiate()) {
     return;
   }
@@ -1287,6 +1244,7 @@ void WebContentsViewAura::StartDragging(
   }
 
   drag_security_info_.OnDragInitiated(source_rwh, drop_data);
+  drag_drop_client_owner_ = root_window->GetWeakPtrAsWindow();
 
   ui::TouchSelectionController* selection_controller = GetSelectionController();
   if (selection_controller)
@@ -1309,8 +1267,8 @@ void WebContentsViewAura::StartDragging(
 
   // TODO(crbug.com/40825138): The param `drag_obj_rect` is unused.
 
-  std::unique_ptr<WebDragSourceAura> drag_source(
-      new WebDragSourceAura(GetNativeView(), web_contents_));
+  base::WeakPtr<aura::Window> weak_window =
+      GetNativeView()->GetWeakPtrAsWindow();
 
   // We need to enable recursive tasks on the message loop so we can get
   // updates while in the system DoDragDrop loop.
@@ -1367,9 +1325,9 @@ void WebContentsViewAura::StartDragging(
 
   // Bail out immediately if the contents view window is gone. Note that it is
   // not safe to access any class members in this case since |this| may already
-  // be destroyed. The local variable |drag_source| will still be valid though,
+  // be destroyed. The local variable `weak_window` will still be valid though,
   // so we can use it to determine if the window is gone.
-  if (!drag_source->window()) {
+  if (!weak_window) {
     // Note that in this case, we don't need to call SystemDragEnded() since the
     // renderer is going away.
     return;

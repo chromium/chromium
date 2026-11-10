@@ -75,6 +75,7 @@ class WebContentsViewIOS : public WebContentsView,
   BackForwardTransitionAnimationManager*
   GetBackForwardTransitionAnimationManager() override;
   void DestroyBackForwardTransitionAnimationManager() override;
+  void CancelDrag() override;
 
   // RenderViewHostDelegateView:
   void GotFocus(RenderWidgetHostImpl* render_widget_host) override;

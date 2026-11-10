@@ -13,6 +13,7 @@
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -139,6 +140,14 @@ void UpdateLeftMouseState(aura::Window* target,
 
 class TestDragDropClient : public aura::client::DragDropClient {
  public:
+  explicit TestDragDropClient(aura::Window* root_window)
+      : root_window_(root_window) {
+    aura::client::SetDragDropClient(root_window, this);
+  }
+  ~TestDragDropClient() override {
+    aura::client::SetDragDropClient(root_window_, nullptr);
+  }
+
   // aura::client::DragDropClient:
   DragOperation StartDragAndDrop(std::unique_ptr<ui::OSExchangeData> data,
                                  aura::Window* root_window,
@@ -171,6 +180,7 @@ class TestDragDropClient : public aura::client::DragDropClient {
   }
 
  private:
+  raw_ptr<aura::Window> root_window_ = nullptr;
   bool drag_in_progress_ = false;
   std::unique_ptr<ui::OSExchangeData> drag_drop_data_;
   gfx::Point last_screen_location_;
@@ -1123,8 +1133,7 @@ TEST_F(WebContentsViewAuraTest, StartDragging) {
   NavigateAndCommit(GURL(kGmailUrl));
   FocusWebContentsOnMainFrame();
 
-  TestDragDropClient drag_drop_client;
-  aura::client::SetDragDropClient(root_window(), &drag_drop_client);
+  TestDragDropClient drag_drop_client(root_window());
 
   WebContentsViewAura* view = GetView();
   // This condition is needed to avoid calling WebContentsViewAura::EndDrag
@@ -1232,8 +1241,7 @@ TEST_F(WebContentsViewAuraTest, StartDraggingBlockedByPolicy) {
   BlockDragContentBrowserClient block_drag_client;
   ContentBrowserClient* old_client = SetBrowserClientForTesting(&block_drag_client);
 
-  TestDragDropClient drag_drop_client;
-  aura::client::SetDragDropClient(root_window(), &drag_drop_client);
+  TestDragDropClient drag_drop_client(root_window());
 
   WebContentsViewAura* view = GetView();
   view->drag_in_progress_ = true;
@@ -1292,8 +1300,7 @@ TEST_F(WebContentsViewAuraTest, StartDraggingUsesUserBrowserContext) {
   OffTheRecordUserContentBrowserClient browser_client;
   ScopedContentBrowserClientSetting browser_client_setting(&browser_client);
 
-  TestDragDropClient drag_drop_client;
-  aura::client::SetDragDropClient(root_window(), &drag_drop_client);
+  TestDragDropClient drag_drop_client(root_window());
 
   WebContentsViewAura* view = GetView();
   view->drag_in_progress_ = true;
@@ -1377,8 +1384,7 @@ TEST_F(WebContentsViewAuraTest, StartDragFromPrivilegedWebContents) {
   const char kGoogleUrl[] = "https://google.com/";
   NavigateAndCommit(GURL(kGoogleUrl));
 
-  TestDragDropClient drag_drop_client;
-  aura::client::SetDragDropClient(root_window(), &drag_drop_client);
+  TestDragDropClient drag_drop_client(root_window());
 
   // Mark the Web Contents as native UI.
   WebContentsViewAura* view = GetView();
@@ -1410,8 +1416,7 @@ TEST_F(WebContentsViewAuraTest, RejectDragFromHiddenWebContents) {
 
   NavigateAndCommit(GURL(kGoogleUrl));
 
-  TestDragDropClient drag_drop_client;
-  aura::client::SetDragDropClient(root_window(), &drag_drop_client);
+  TestDragDropClient drag_drop_client(root_window());
 
   // Mark the Web Contents as native UI.
   WebContentsViewAura* view = GetView();
@@ -1439,8 +1444,7 @@ TEST_F(WebContentsViewAuraTest, ClampMouseLocationToBrowserObservedPoint) {
 
   NavigateAndCommit(GURL(kGoogleUrl));
 
-  TestDragDropClient drag_drop_client;
-  aura::client::SetDragDropClient(root_window(), &drag_drop_client);
+  TestDragDropClient drag_drop_client(root_window());
 
   // Mark the Web Contents as native UI.
   WebContentsViewAura* view = GetView();
@@ -1484,8 +1488,7 @@ TEST_F(WebContentsViewAuraTest, ClampMouseLocationToBrowserObservedPoint) {
 TEST_F(WebContentsViewAuraTest, ClampTouchLocationToBrowserObservedPoint) {
   NavigateAndCommit(GURL("https://example.com/"));
 
-  TestDragDropClient drag_drop_client;
-  aura::client::SetDragDropClient(root_window(), &drag_drop_client);
+  TestDragDropClient drag_drop_client(root_window());
 
   WebContentsViewAura* view = GetView();
   view->drag_in_progress_ = true;
@@ -1523,8 +1526,7 @@ TEST_F(WebContentsViewAuraTest, ClampTouchLocationToBrowserObservedPoint) {
 TEST_F(WebContentsViewAuraTest, TouchDragRequiresTouchOnWebContents) {
   NavigateAndCommit(GURL("https://example.com/"));
 
-  TestDragDropClient drag_drop_client;
-  aura::client::SetDragDropClient(root_window(), &drag_drop_client);
+  TestDragDropClient drag_drop_client(root_window());
 
   WebContentsViewAura* view = GetView();
   // Needed to avoid calling WebContentsViewAura::EndDrag, which results in
@@ -1565,8 +1567,7 @@ TEST_F(WebContentsViewAuraTest, TouchDragRequiresTouchOnWebContents) {
 TEST_F(WebContentsViewAuraTest, StartDraggingMouseRequiresLeftButton) {
   NavigateAndCommit(GURL("https://google.com/"));
 
-  TestDragDropClient drag_drop_client;
-  aura::client::SetDragDropClient(root_window(), &drag_drop_client);
+  TestDragDropClient drag_drop_client(root_window());
 
   WebContentsViewAura* view = GetView();
   aura::Env* const env = aura::Env::GetInstance();
@@ -1616,8 +1617,7 @@ TEST_F(WebContentsViewAuraTest, StartDraggingMouseRequiresLeftButton) {
 TEST_F(WebContentsViewAuraTest, MouseDragRequiresPressOnWebContents) {
   NavigateAndCommit(GURL("https://example.com/"));
 
-  TestDragDropClient drag_drop_client;
-  aura::client::SetDragDropClient(root_window(), &drag_drop_client);
+  TestDragDropClient drag_drop_client(root_window());
 
   WebContentsViewAura* view = GetView();
   // Needed to avoid calling WebContentsViewAura::EndDrag, which results in
@@ -1670,8 +1670,7 @@ TEST_F(WebContentsViewAuraTest, MouseDragRequiresPressOnWebContents) {
 TEST_F(WebContentsViewAuraTest, RefusedDragDoesNotBlockSubsequentDrags) {
   NavigateAndCommit(GURL("https://google.com/"));
 
-  TestDragDropClient drag_drop_client;
-  aura::client::SetDragDropClient(root_window(), &drag_drop_client);
+  TestDragDropClient drag_drop_client(root_window());
 
   WebContentsViewAura* view = GetView();
   aura::Env* const env = aura::Env::GetInstance();
@@ -1733,8 +1732,7 @@ TEST_F(WebContentsViewAuraTest, EmptyTextInDropDataIsNonNullInOSExchangeData) {
   std::u16string empty_string;
   NavigateAndCommit(GURL(kGoogleUrl));
 
-  TestDragDropClient drag_drop_client;
-  aura::client::SetDragDropClient(root_window(), &drag_drop_client);
+  TestDragDropClient drag_drop_client(root_window());
 
   // Mark the Web Contents as native UI.
   WebContentsViewAura* view = GetView();
@@ -1768,8 +1766,7 @@ TEST_F(WebContentsViewAuraTest,
   std::u16string empty_string;
   NavigateAndCommit(GURL(kGoogleUrl));
 
-  TestDragDropClient drag_drop_client;
-  aura::client::SetDragDropClient(root_window(), &drag_drop_client);
+  TestDragDropClient drag_drop_client(root_window());
 
   // Mark the Web Contents as native UI.
   WebContentsViewAura* view = GetView();
@@ -1805,8 +1802,7 @@ TEST_F(WebContentsViewAuraTest,
 
   NavigateAndCommit(GURL(kGoogleUrl));
 
-  TestDragDropClient drag_drop_client;
-  aura::client::SetDragDropClient(root_window(), &drag_drop_client);
+  TestDragDropClient drag_drop_client(root_window());
 
   // Mark the Web Contents as native UI.
   WebContentsViewAura* view = GetView();
@@ -1843,8 +1839,7 @@ TEST_F(WebContentsViewAuraTest, EndDragIsCalledAfterAsyncDrop) {
   drop_data.text = empty_string;
   drop_data.url_infos = {ui::ClipboardUrlInfo{GURL(kGoogleUrl), u""}};
 
-  TestDragDropClient drag_drop_client;
-  aura::client::SetDragDropClient(root_window(), &drag_drop_client);
+  TestDragDropClient drag_drop_client(root_window());
 
   // Mark the Web Contents as native UI.
   WebContentsViewAura* view = GetView();
@@ -1918,8 +1913,7 @@ TEST_F(WebContentsViewAuraTest, StartDragBlockedByPolicy) {
   const char kGoogleUrl[] = "https://google.com/";
   NavigateAndCommit(GURL(kGoogleUrl));
 
-  TestDragDropClient drag_drop_client;
-  aura::client::SetDragDropClient(root_window(), &drag_drop_client);
+  TestDragDropClient drag_drop_client(root_window());
 
   MockWebContentsViewAura mock_view(
       static_cast<WebContentsImpl*>(web_contents()), nullptr);
@@ -1946,8 +1940,7 @@ TEST_F(WebContentsViewAuraTest, StartDragAllowedByPolicy) {
   const char kGoogleUrl[] = "https://google.com/";
   NavigateAndCommit(GURL(kGoogleUrl));
 
-  TestDragDropClient drag_drop_client;
-  aura::client::SetDragDropClient(root_window(), &drag_drop_client);
+  TestDragDropClient drag_drop_client(root_window());
 
   MockWebContentsViewAura mock_view(
       static_cast<WebContentsImpl*>(web_contents()), nullptr);
@@ -2112,8 +2105,7 @@ TEST_F(WebContentsViewAuraTest, StartDraggingMouseReleasedEndsDrag) {
   const char kGoogleUrl[] = "https://google.com/";
   NavigateAndCommit(GURL(kGoogleUrl));
 
-  TestDragDropClient drag_drop_client;
-  aura::client::SetDragDropClient(root_window(), &drag_drop_client);
+  TestDragDropClient drag_drop_client(root_window());
 
   TestDragEndedWebContentsDelegate delegate;
   web_contents()->SetDelegate(&delegate);

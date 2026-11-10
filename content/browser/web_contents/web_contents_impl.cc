@@ -1580,8 +1580,11 @@ WebContentsImpl::~WebContentsImpl() {
 #endif
   find_request_manager_.reset();
 
-  // crbug.com/373898450: The `FrameTree` should outlive the animation manager.
   if (view_) {
+    view_->CancelDrag();
+
+    // https://crbug.com/373898450: The `FrameTree` should outlive the animation
+    // manager.
     view_->DestroyBackForwardTransitionAnimationManager();
   }
 
@@ -8232,6 +8235,8 @@ void WebContentsImpl::ReadyToCommitNavigation(
   CHECK(!navigation_handle->IsSameDocument());
 
   const bool is_in_main_frame = navigation_handle->IsInMainFrame();
+  const bool is_in_primary_main_frame =
+      navigation_handle->IsInPrimaryMainFrame();
   const bool is_renderer_initiated = navigation_handle->IsRendererInitiated();
   const GURL url = navigation_handle->GetURL();
   const net::Error net_error_code = navigation_handle->GetNetErrorCode();
@@ -8294,6 +8299,12 @@ void WebContentsImpl::ReadyToCommitNavigation(
         url::SchemeHostPort(url),
         ssl_info.has_value() ? net::IsCertStatusError(ssl_info->cert_status)
                              : false);
+  }
+
+  // At this point, the commit will happen, so if the navigation is happening in
+  // the primary page, cancel any ongoing drags from the previous page.
+  if (is_in_primary_main_frame) {
+    view_->CancelDrag();
   }
 }
 
@@ -10433,6 +10444,10 @@ void WebContentsImpl::RenderViewTerminated(RenderViewHost* rvh,
 
   // Cancel any visible dialogs so they are not left dangling over the sad tab.
   CancelActiveAndPendingDialogs();
+
+  if (view_) {
+    view_->CancelDrag();
+  }
 
   audio_stream_monitor_.RenderProcessGone(rvh_impl->GetProcess()->GetID());
 

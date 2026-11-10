@@ -20,7 +20,7 @@
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_util_mac.h"
 #include "ui/base/clipboard/custom_data_helper.h"
-#include "ui/base/cocoa/drag_permission.h"
+#include "ui/base/cocoa/drag_coordinator.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/platform_event.h"
@@ -337,14 +337,14 @@ gfx::PointF GetSanitizedFlippedPoint(NSPoint point, CGFloat height) {
 
 - (void)draggingSession:(NSDraggingSession*)session
        willBeginAtPoint:(NSPoint)screenPoint {
-  ui::SetDragSessionInProgress(true);
+  ui::SetDragSessionInProgress(self);
 }
 
 // Called when a drag initiated in our view ends.
 - (void)draggingSession:(NSDraggingSession*)session
            endedAtPoint:(NSPoint)screenPoint
               operation:(NSDragOperation)operation {
-  ui::SetDragSessionInProgress(false);
+  ui::SetDragSessionInProgress(nil);
   if (!_host) {
     return;
   }

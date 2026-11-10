@@ -247,7 +247,21 @@ class DragStartWaiter : public aura::client::DragDropClient {
   }
 
   void DragCancel() override {
-    ADD_FAILURE() << "Unexpected call to DragCancel";
+    // Intentionally ignore requests to cancel.
+    //
+    // Some of the tests below validate that no bypassing of cross-origin
+    // restrictions happens in the situation where a drag is initiated and then
+    // the page navigates.
+    //
+    // Starting in 2026, an additional safeguard was added: when a page
+    // navigates, all its ongoing drags are canceled. This makes the earlier
+    // protection (that it being tested for here) moot. However, it's worth
+    // keeping the earlier protection. Therefore, ignore requests to cancel the
+    // drag, and ensure that even if the drag isn't canceled, all cross-origin
+    // restrictions are correctly obeyed.
+    //
+    // Belt and suspenders and all that.
+    drag_was_canceled_ = true;
   }
 
 #if BUILDFLAG(IS_LINUX)
@@ -261,6 +275,8 @@ class DragStartWaiter : public aura::client::DragDropClient {
   void RemoveObserver(aura::client::DragDropClientObserver* observer) override {
   }
 
+  bool WasDragCanceled() { return drag_was_canceled_; }
+
  private:
   raw_ptr<content::WebContents> web_contents_;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
@@ -273,7 +289,8 @@ class DragStartWaiter : public aura::client::DragDropClient {
   std::optional<url::Origin> source_origin_;
   std::string text_;
   std::string html_;
-  int operation_;
+  int operation_ = 0;
+  bool drag_was_canceled_ = false;
   gfx::Point location_inside_web_contents_;
 };
 
@@ -1919,6 +1936,10 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_CrossNavCrossSiteDrag) {
   // nested drag-and-drop message loop - the call below won't return until the
   // drag-and-drop has already ended.
   drag_start_waiter.WaitUntilDragStart();
+
+  // By now the drag-cancelation-on-navigation should have kicked in, so verify
+  // that.
+  EXPECT_TRUE(drag_start_waiter.WasDragCanceled());
 
   CrossNavCrossSiteDrag_Step3(&state);
 }

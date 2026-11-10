@@ -66,6 +66,7 @@ class CONTENT_EXPORT WebContentsNSViewBridge : public mojom::WebContentsNSView {
                  const gfx::ImageSkia& image,
                  const gfx::Vector2d& image_offset,
                  bool is_privileged) override;
+  void CancelDrag() override;
   void Destroy() override;
 
  private:

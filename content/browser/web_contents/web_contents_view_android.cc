@@ -468,6 +468,8 @@ void WebContentsViewAndroid::DestroyBackForwardTransitionAnimationManager() {
   back_forward_animation_manager_.reset();
 }
 
+void WebContentsViewAndroid::CancelDrag() {}
+
 void WebContentsViewAndroid::ReadyToCommitNavigation(
     NavigationHandle* navigation_handle) {
   // Do nothing if the BlurTransitionAnimationManager is already instantiated.

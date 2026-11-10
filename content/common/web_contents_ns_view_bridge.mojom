@@ -63,6 +63,9 @@ interface WebContentsNSView {
             gfx.mojom.Vector2d image_offset,
             bool is_privileged);
 
+  // Cancel an ongoing drag if it was initiated by the view.
+  CancelDrag();
+
   // TODO(crbug.com/40226213): This is a work around for a bug in mojo
   // where close notifications for associated messages pipes can sometimes be
   // delivered later than they should. This method is called before closing the

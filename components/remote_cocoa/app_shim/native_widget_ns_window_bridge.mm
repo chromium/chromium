@@ -51,7 +51,7 @@
 #import "ui/base/cocoa/appkit_utils.h"
 #import "ui/base/cocoa/constrained_window/constrained_window_animation.h"
 #include "ui/base/cocoa/cursor_utils.h"
-#include "ui/base/cocoa/drag_permission.h"
+#include "ui/base/cocoa/drag_coordinator.h"
 #include "ui/base/cocoa/remote_accessibility_api.h"
 #import "ui/base/cocoa/window_size_constants.h"
 #include "ui/base/emoji/emoji_panel_helper.h"

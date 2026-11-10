@@ -97,6 +97,7 @@ class CONTENT_EXPORT WebContentsViewMac
   BackForwardTransitionAnimationManager*
   GetBackForwardTransitionAnimationManager() override;
   void DestroyBackForwardTransitionAnimationManager() override;
+  void CancelDrag() override;
 
   // RenderViewHostDelegateView:
   void StartDragging(

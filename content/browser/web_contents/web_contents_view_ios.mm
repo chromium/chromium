@@ -314,4 +314,6 @@ WebContentsViewIOS::GetBackForwardTransitionAnimationManager() {
 
 void WebContentsViewIOS::DestroyBackForwardTransitionAnimationManager() {}
 
+void WebContentsViewIOS::CancelDrag() {}
+
 }  // namespace content

@@ -14,6 +14,7 @@
 #import "content/app_shim_remote_cocoa/web_contents_view_cocoa.h"
 #include "content/browser/web_contents/web_contents_view_mac.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
+#include "ui/base/cocoa/drag_coordinator.h"
 #include "ui/gfx/image/image_skia_util_mac.h"
 
 namespace remote_cocoa {
@@ -155,6 +156,10 @@ void WebContentsNSViewBridge::StartDrag(
                             image:gfx::NSImageFromImageSkia(image)
                            offset:offset
                      isPrivileged:is_privileged];
+}
+
+void WebContentsNSViewBridge::CancelDrag() {
+  ui::CancelDragSessionInProgressForView(ns_view_);
 }
 
 }  // namespace remote_cocoa

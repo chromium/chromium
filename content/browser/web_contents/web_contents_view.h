@@ -132,6 +132,9 @@ class WebContentsView {
 
   // Reset the above animation manager.
   virtual void DestroyBackForwardTransitionAnimationManager() = 0;
+
+  // Cancel any ongoing drag.
+  virtual void CancelDrag() = 0;
 };
 
 // Factory function to create `WebContentsView`s. Implemented in the platform

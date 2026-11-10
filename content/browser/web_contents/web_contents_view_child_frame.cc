@@ -206,6 +206,8 @@ WebContentsViewChildFrame::GetBackForwardTransitionAnimationManager() {
 void WebContentsViewChildFrame::DestroyBackForwardTransitionAnimationManager() {
 }
 
+void WebContentsViewChildFrame::CancelDrag() {}
+
 void WebContentsViewChildFrame::RestoreFocus() {
   NOTIMPLEMENTED();
 }

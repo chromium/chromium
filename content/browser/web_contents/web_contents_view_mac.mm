@@ -214,6 +214,14 @@ WebContentsViewMac::GetBackForwardTransitionAnimationManager() {
 
 void WebContentsViewMac::DestroyBackForwardTransitionAnimationManager() {}
 
+void WebContentsViewMac::CancelDrag() {
+  if (remote_ns_view_) {
+    remote_ns_view_->CancelDrag();
+  } else {
+    in_process_ns_view_bridge_->CancelDrag();
+  }
+}
+
 void WebContentsViewMac::StartDragging(
     RenderFrameHost& source_rfh,
     const DropData& drop_data,

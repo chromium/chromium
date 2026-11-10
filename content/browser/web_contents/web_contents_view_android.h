@@ -109,6 +109,7 @@ class CONTENT_EXPORT WebContentsViewAndroid : public WebContentsView,
   BackForwardTransitionAnimationManager*
   GetBackForwardTransitionAnimationManager() override;
   void DestroyBackForwardTransitionAnimationManager() override;
+  void CancelDrag() override;
 
   // WebContentsObserver implementation.
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override;

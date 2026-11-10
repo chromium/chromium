@@ -295,6 +295,7 @@ class CONTENT_EXPORT WebContentsViewAura
   BackForwardTransitionAnimationManager*
   GetBackForwardTransitionAnimationManager() override;
   void DestroyBackForwardTransitionAnimationManager() override;
+  void CancelDrag() override;
 
   // Overridden from RenderViewHostDelegateView:
   void ShowContextMenu(RenderFrameHost& render_frame_host,
@@ -469,7 +470,7 @@ class CONTENT_EXPORT WebContentsViewAura
   // like a change in the RWH.  This member is null when no drop is happening.
   std::unique_ptr<DropData> current_drag_data_;
 
-  raw_ptr<WebDragDestDelegate> drag_dest_delegate_;
+  raw_ptr<WebDragDestDelegate> drag_dest_delegate_ = nullptr;
 
   // We keep track of the RenderWidgetHost we're dragging over. If it changes
   // during a drag, we need to re-send the DragEnter message.
@@ -479,16 +480,19 @@ class CONTENT_EXPORT WebContentsViewAura
   // avoid sending the drag exited message after leaving the current view.
   GlobalRoutingID current_rvh_for_drag_;
 
-  // Holds the security info for the current drag.
+  // For drags INITIATED by this view: The security info for the drag, and if
+  // the drag is ongoing, a weak pointer to the aura::Window whose
+  // DragDropClient is being used to effect the drag.
   WebContentsViewDragSecurityInfo drag_security_info_;
+  base::WeakPtr<aura::Window> drag_drop_client_owner_;
 
   // Responsible for handling gesture-nav UI.
   std::unique_ptr<GestureNavSimple> gesture_nav_simple_;
 
-  // This is true when the drag is in process from the perspective of this
-  // class. It means it gets true when drag enters and gets reset when either
-  // drop happens or drag exits.
-  bool drag_in_progress_;
+  // For INCOMING drags: Set iff the drag is in process from the perspective of
+  // this class (i.e. set when drag enters, reset when either a drop happens or
+  // the drag exits).
+  bool drag_in_progress_ = false;
 
   // Identifies the current drag lifecycle. Asynchronous callbacks capture this
   // value and ignore results from an earlier drag.
@@ -498,7 +502,7 @@ class CONTENT_EXPORT WebContentsViewAura
   // histogram.
   bool dropped_in_this_web_contents_ = false;
 
-  bool init_rwhv_with_null_parent_for_testing_;
+  bool init_rwhv_with_null_parent_for_testing_ = false;
 
   // Non-null when the WebContents is being captured for video.
   std::unique_ptr<aura::WindowTreeHost::VideoCaptureLock> video_capture_lock_;

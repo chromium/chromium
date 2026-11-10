@@ -10,7 +10,7 @@
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "components/remote_cocoa/app_shim/window_move_loop.h"
-#include "ui/base/cocoa/drag_permission.h"
+#include "ui/base/cocoa/drag_coordinator.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #import "ui/base/dragdrop/os_exchange_data_provider_mac.h"

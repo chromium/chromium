@@ -22,7 +22,7 @@
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_host_helper.h"
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
 #import "ui/base/cocoa/appkit_utils.h"
-#include "ui/base/cocoa/drag_permission.h"
+#include "ui/base/cocoa/drag_coordinator.h"
 #include "ui/base/cocoa/find_pasteboard.h"
 #include "ui/base/cocoa/tracking_area.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -1907,13 +1907,13 @@ SEL EditingActionForKeyEquivalent(NSEvent* event) {
 
 - (void)draggingSession:(NSDraggingSession*)session
        willBeginAtPoint:(NSPoint)screenPoint {
-  ui::SetDragSessionInProgress(true);
+  ui::SetDragSessionInProgress(self);
 }
 
 - (void)draggingSession:(NSDraggingSession*)session
            endedAtPoint:(NSPoint)screenPoint
               operation:(NSDragOperation)operation {
-  ui::SetDragSessionInProgress(false);
+  ui::SetDragSessionInProgress(nil);
   remote_cocoa::DragDropClient* client = [self dragDropClient];
   if (client) {
     client->EndDrag();
