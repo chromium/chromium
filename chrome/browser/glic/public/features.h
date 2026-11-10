@@ -271,6 +271,8 @@ BASE_DECLARE_FEATURE(kGlicExperimentalTriggeringOsNotificationUpdatedStrings);
 BASE_DECLARE_FEATURE(kGlicRecordPeriodicInstanceCountMetrics);
 
 BASE_DECLARE_FEATURE(kGlicWhatsNewLuminous);
+BASE_DECLARE_FEATURE(kGlicBrowserCommandFallback);
+BASE_DECLARE_FEATURE_PARAM(std::string, kGlicBrowserCommandFallbackUrl);
 
 // Test only. When enabled, Android drops incoming Glic experimental triggering
 // TriggerActuationRequest messages without replying or acking, as if the FCM

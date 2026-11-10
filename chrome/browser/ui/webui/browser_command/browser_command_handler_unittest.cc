@@ -10,7 +10,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/command_updater_impl.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/user_education/tutorial_identifiers.h"
 #include "chrome/common/webui_url_constants.h"
@@ -93,11 +95,6 @@ class TestCommandHandler : public BrowserCommandHandler {
 
   void OpenAISettings() override {
     // The functionality of opening the AI settings is removed, as it
-    // cannot be executed in a unittest.
-  }
-
-  void OpenGlic() override {
-    // The functionality of opening Glic is removed, as it
     // cannot be executed in a unittest.
   }
 
@@ -235,6 +232,17 @@ class MockCommandHandler : public TestCommandHandler {
   MOCK_METHOD(void, OpenSplitView, ());
 
   MOCK_METHOD(void, EnableVerticalTabs, ());
+};
+
+class MockNavigationCommandHandler : public TestCommandHandler {
+ public:
+  using TestCommandHandler::TestCommandHandler;
+  ~MockNavigationCommandHandler() override = default;
+
+  MOCK_METHOD(void,
+              NavigateToURL,
+              (const GURL&, ui::mojom::WindowOpenDisposition),
+              (override));
 };
 
 class MockCommandUpdater : public CommandUpdaterImpl {
@@ -686,6 +694,45 @@ TEST_F(BrowserCommandHandlerTest, OpenGlicCommand) {
   // The OpenGlic command opens glic.
   EXPECT_CALL(*command_handler_, OpenGlic());
   EXPECT_TRUE(ExecuteCommand(Command::kOpenGlic, std::move(info)));
+}
+
+TEST_F(BrowserCommandHandlerTest, OpenGlicFallbackDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kGlicBrowserCommandFallback);
+
+  MockNavigationCommandHandler handler(&profile_);
+  EXPECT_CALL(handler, NavigateToURL).Times(0);
+  handler.ExecuteCommand(Command::kOpenGlic, ClickInfo::New(),
+                         base::DoNothing());
+}
+
+TEST_F(BrowserCommandHandlerTest, OpenGlicFallbackEnabledDefaultUrl) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlicBrowserCommandFallback);
+
+  MockNavigationCommandHandler handler(&profile_);
+  EXPECT_CALL(
+      handler,
+      NavigateToURL(GURL("https://support.google.com/chrome/answer/17140089"),
+                    ui::mojom::WindowOpenDisposition::kNewForegroundTab));
+  handler.ExecuteCommand(Command::kOpenGlic, ClickInfo::New(),
+                         base::DoNothing());
+}
+
+TEST_F(BrowserCommandHandlerTest, OpenGlicFallbackEnabledCustomUrl) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kGlicBrowserCommandFallback,
+      {{features::kGlicBrowserCommandFallbackUrl.name,
+        "https://example.com/fallback"}});
+
+  MockNavigationCommandHandler handler(&profile_);
+  EXPECT_CALL(
+      handler,
+      NavigateToURL(GURL("https://example.com/fallback"),
+                    ui::mojom::WindowOpenDisposition::kNewForegroundTab));
+  handler.ExecuteCommand(Command::kOpenGlic, ClickInfo::New(),
+                         base::DoNothing());
 }
 
 TEST_F(BrowserCommandHandlerTest, OpenGlicSettingsCommand) {
