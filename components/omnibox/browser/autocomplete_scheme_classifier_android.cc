@@ -4,16 +4,21 @@
 
 #include "components/omnibox/browser/autocomplete_scheme_classifier_android.h"
 
-#include "base/android/jni_android.h"
-#include "base/android/scoped_java_ref.h"
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/omnibox/browser/scheme_classifier_jni/AutocompleteSchemeClassifier_jni.h"
 
-// static
-AutocompleteSchemeClassifier* AutocompleteSchemeClassifierAndroid::FromJavaObj(
-    const base::android::JavaRef<jobject>& jautocomplete_scheme_classifier) {
-  return Java_AutocompleteSchemeClassifier_getNativePtr(
-      base::android::AttachCurrentThread(), jautocomplete_scheme_classifier);
+namespace jni_zero {
+template <>
+AutocompleteSchemeClassifier* FromJniType<AutocompleteSchemeClassifier*>(
+    JNIEnv* env,
+    const JavaRef<jobject>& obj) {
+  if (!obj) {
+    return nullptr;
+  }
+  return Java_AutocompleteSchemeClassifier_getNativePtr(env, obj);
 }
+}  // namespace jni_zero
 
 DEFINE_JNI(AutocompleteSchemeClassifier)

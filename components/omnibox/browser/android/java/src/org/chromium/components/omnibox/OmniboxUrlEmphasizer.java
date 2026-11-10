@@ -364,6 +364,7 @@ public class OmniboxUrlEmphasizer {
         @JniType("std::vector<int32_t>")
         int[] parseForEmphasizeComponents(
                 @JniType("std::u16string") String text,
-                AutocompleteSchemeClassifier autocompleteSchemeClassifier);
+                @JniType("AutocompleteSchemeClassifier*")
+                        AutocompleteSchemeClassifier autocompleteSchemeClassifier);
     }
 }

@@ -4,18 +4,17 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_SCHEME_CLASSIFIER_ANDROID_H_
 #define COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_SCHEME_CLASSIFIER_ANDROID_H_
 
-#include "base/android/scoped_java_ref.h"
+#include <jni.h>
+
+#include "third_party/jni_zero/jni_zero.h"
 
 class AutocompleteSchemeClassifier;
 
-class AutocompleteSchemeClassifierAndroid {
- public:
-  static AutocompleteSchemeClassifier* FromJavaObj(
-      const base::android::JavaRef<jobject>& jautocomplete_scheme_classifier);
-
- private:
-  AutocompleteSchemeClassifierAndroid() = default;
-  ~AutocompleteSchemeClassifierAndroid() = default;
-};
+namespace jni_zero {
+template <>
+AutocompleteSchemeClassifier* FromJniType<AutocompleteSchemeClassifier*>(
+    JNIEnv* env,
+    const JavaRef<jobject>& obj);
+}  // namespace jni_zero
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_SCHEME_CLASSIFIER_ANDROID_H_

@@ -22,9 +22,8 @@ base::android::ScopedJavaGlobalRef<jobject> BuildCrossDeviceTabAction(
     const std::u16string& hint,
     const std::u16string& accessibility_hint) {
   return base::android::ScopedJavaGlobalRef<jobject>(
-      Java_OmniboxActionFactory_buildCrossDeviceTabAction(
-          env, instance, base::android::ConvertUTF16ToJavaString(env, hint),
-          base::android::ConvertUTF16ToJavaString(env, accessibility_hint)));
+      Java_OmniboxActionFactory_buildCrossDeviceTabAction(env, instance, hint,
+                                                          accessibility_hint));
 }
 
 base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxPedal(
@@ -35,8 +34,7 @@ base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxPedal(
     OmniboxPedalId pedal_id) {
   return base::android::ScopedJavaGlobalRef<jobject>(
       Java_OmniboxActionFactory_buildOmniboxPedal(
-          env, instance, base::android::ConvertUTF16ToJavaString(env, hint),
-          base::android::ConvertUTF16ToJavaString(env, accessibility_hint),
+          env, instance, hint, accessibility_hint,
           static_cast<int32_t>(pedal_id)));
 }
 
@@ -63,9 +61,7 @@ base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxActionInSuggest(
     ActionPresentationMode presentation_mode) {
   return base::android::ScopedJavaGlobalRef<jobject>(
       Java_OmniboxActionFactory_buildActionInSuggest(
-          env, instance, base::android::ConvertUTF16ToJavaString(env, hint),
-          base::android::ConvertUTF16ToJavaString(env, accessibility_hint),
-          action_type, base::android::ConvertUTF8ToJavaString(env, action_uri),
+          env, instance, hint, accessibility_hint, action_type, action_uri,
           tab_id, static_cast<int>(presentation_mode)));
 }
 
@@ -76,8 +72,7 @@ base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxLensOverlayAction(
     const std::u16string& accessibility_hint) {
   return base::android::ScopedJavaGlobalRef<jobject>(
       Java_OmniboxActionFactory_buildOmniboxLensOverlayAction(
-          env, instance, base::android::ConvertUTF16ToJavaString(env, hint),
-          base::android::ConvertUTF16ToJavaString(env, accessibility_hint)));
+          env, instance, hint, accessibility_hint));
 }
 
 // Convert a vector of OmniboxActions to Java counterpart.

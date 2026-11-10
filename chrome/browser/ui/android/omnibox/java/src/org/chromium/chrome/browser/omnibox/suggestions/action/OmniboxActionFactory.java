@@ -30,21 +30,25 @@ public class OmniboxActionFactory {
 
     @CalledByNative
     public static @Nullable OmniboxAction buildCrossDeviceTabAction(
-            long nativeInstance, String hint, String accessibilityHint) {
+            long nativeInstance,
+            @JniType("std::u16string") String hint,
+            @JniType("std::u16string") String accessibilityHint) {
         return new CrossDeviceTabAction(nativeInstance, hint, accessibilityHint);
     }
 
     @CalledByNative
     public static @Nullable OmniboxAction buildOmniboxLensOverlayAction(
-            long nativeInstance, String hint, String accessibilityHint) {
+            long nativeInstance,
+            @JniType("std::u16string") String hint,
+            @JniType("std::u16string") String accessibilityHint) {
         return new OmniboxLensOverlayAction(nativeInstance, hint, accessibilityHint);
     }
 
     @CalledByNative
     public static @Nullable OmniboxAction buildOmniboxPedal(
             long nativeInstance,
-            String hint,
-            String accessibilityHint,
+            @JniType("std::u16string") String hint,
+            @JniType("std::u16string") String accessibilityHint,
             @OmniboxPedalId int pedalId) {
         return new OmniboxPedal(nativeInstance, hint, accessibilityHint, pedalId);
     }
@@ -63,10 +67,10 @@ public class OmniboxActionFactory {
     @CalledByNative
     public static @Nullable OmniboxAction buildActionInSuggest(
             long nativeInstance,
-            String hint,
-            String accessibilityHint,
+            @JniType("std::u16string") String hint,
+            @JniType("std::u16string") String accessibilityHint,
             @ActionType int actionType,
-            String actionUri,
+            @JniType("std::string") String actionUri,
             int tabId,
             @ActionPresentationMode int presentationMode) {
         if (actionType == ActionType.CALL && !sDialerAvailable) {
