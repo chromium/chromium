@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_frame_adapter.h"
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <span>
 #include <vector>
@@ -35,6 +36,7 @@
 #include "third_party/blink/renderer/platform/webrtc/convert_to_webrtc_video_frame_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
+#include "third_party/skia/include/core/SkYUVAPixmaps.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -259,22 +261,27 @@ void WebRtcVideoFrameAdapter::SharedResources::ScaleAndMapFrameAsync(
           shared_image->BeginRasterAccess(ri, src_sync_token,
                                           /*readonly=*/true);
 
+      // ReadbackYUVPixelsAsync() requires even dimensions, so read back into
+      // the even-sized top-left region of `output_frame`.
+      const SkYUVAPixmaps visible_pixmaps =
+          output_frame->GetWritableVisibleSkYUVAPixmaps();
+      const SkYUVAInfo even_info = visible_pixmaps.yuvaInfo().makeDimensions(
+          SkISize::Make(out_rect_even.width(), out_rect_even.height()));
+      std::array<SkISize, SkYUVAInfo::kMaxPlanes> even_plane_sizes;
+      even_info.planeDimensions(even_plane_sizes.data());
+      std::array<SkPixmap, SkYUVAInfo::kMaxPlanes> even_planes;
+      for (int i = 0; i < even_info.numPlanes(); ++i) {
+        // The even-sized planes are always contained in the visible planes.
+        CHECK(visible_pixmaps.plane(i).extractSubset(
+            &even_planes[i], SkIRect::MakeSize(even_plane_sizes[i])));
+      }
+
       ri->ReadbackYUVPixelsAsync(
           shared_image->mailbox(), shared_image->GetTextureTarget(),
-          source_rect, out_rect_even,
+          source_rect,
           shared_image->surface_origin() != kTopLeft_GrSurfaceOrigin,
-          base::checked_cast<int>(
-              output_frame->stride(media::VideoFrame::Plane::kY)),
-          output_frame->GetWritableVisiblePlaneData(
-              media::VideoFrame::Plane::kY),
-          base::checked_cast<int>(
-              output_frame->stride(media::VideoFrame::Plane::kU)),
-          output_frame->GetWritableVisiblePlaneData(
-              media::VideoFrame::Plane::kU),
-          base::checked_cast<int>(
-              output_frame->stride(media::VideoFrame::Plane::kV)),
-          output_frame->GetWritableVisiblePlaneData(
-              media::VideoFrame::Plane::kV),
+          SkYUVAPixmaps::FromExternalPixmaps(even_info, even_planes.data()),
+          output_frame->ColorSpace().GetAsFullRangeRGB().ToSkColorSpace(),
           std::move(keepalive_callback), std::move(finish_callback));
 
       gpu::RasterScopedAccess::EndAccess(std::move(ri_access));

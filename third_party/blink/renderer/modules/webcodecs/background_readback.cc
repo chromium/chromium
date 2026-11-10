@@ -481,20 +481,10 @@ void BackgroundReadback::ReadbackYUVTextureBackedFrame(
 
   ri->ReadbackYUVPixelsAsync(
       shared_image->mailbox(), shared_image->GetTextureTarget(),
-      txt_frame->visible_rect(), gfx::Rect(txt_frame->visible_rect().size()),
+      txt_frame->visible_rect(),
       shared_image->surface_origin() != kTopLeft_GrSurfaceOrigin,
-      base::checked_cast<int>(
-          triplanar_frame->stride(media::VideoFrame::Plane::kY)),
-      triplanar_frame->GetWritableVisiblePlaneData(
-          media::VideoFrame::Plane::kY),
-      base::checked_cast<int>(
-          triplanar_frame->stride(media::VideoFrame::Plane::kU)),
-      triplanar_frame->GetWritableVisiblePlaneData(
-          media::VideoFrame::Plane::kU),
-      base::checked_cast<int>(
-          triplanar_frame->stride(media::VideoFrame::Plane::kV)),
-      triplanar_frame->GetWritableVisiblePlaneData(
-          media::VideoFrame::Plane::kV),
+      triplanar_frame->GetWritableVisibleSkYUVAPixmaps(),
+      triplanar_frame->ColorSpace().GetAsFullRangeRGB().ToSkColorSpace(),
       base::DoNothing(), std::move(completion_cb));
 
   media::WaitAndReplaceSyncTokenClient client(ri, std::move(ri_access));

@@ -2,6 +2,7 @@ include_rules = [
   "+ui/latency",
   "+cc/paint",
   "+mojo/public",
+  "+skia/ext/skia_utils_base.h",
   "+third_party/skia",
   "+components/viz/common/resources/shared_image_format.h",
   "+components/viz/common/resources/shared_image_format_utils.h",

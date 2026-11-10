@@ -27,6 +27,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "cc/paint/raw_memory_transfer_cache_entry.h"
 #include "cc/paint/transfer_cache_serialize_helper.h"
@@ -41,6 +42,9 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkPixmap.h"
+#include "third_party/skia/include/core/SkYUVAInfo.h"
+#include "third_party/skia/include/core/SkYUVAPixmaps.h"
 
 using gpu::gles2::QueryTracker;
 using testing::_;
@@ -1174,19 +1178,22 @@ TEST_F(RasterImplementationTest, ReadbackYUVPixelsAsyncPadding) {
   int u_plane_stride = 4;
   int v_plane_stride = 4;
 
+  // The planes are tightly packed in shared memory, each 8-byte aligned.
+  const int y_src_stride = output_rect.width();
+  const int uv_src_stride = output_rect.width() / 2;
   auto y_offset = static_cast<GLuint>(base::bits::AlignUp(
       sizeof(cmds::ReadbackYUVImagePixelsINTERNALImmediate::Result),
       sizeof(uint64_t)));
-  GLuint y_padded_size = output_rect.height() * y_plane_stride;
+  GLuint y_padded_size = output_rect.height() * y_src_stride;
 
   constexpr auto kSizeofUint64 = static_cast<GLuint>(sizeof(uint64_t));
   GLuint u_offset =
       base::bits::AlignUp(y_offset + y_padded_size, kSizeofUint64);
-  GLuint u_padded_size = (output_rect.height() / 2) * u_plane_stride;
+  GLuint u_padded_size = (output_rect.height() / 2) * uv_src_stride;
 
   GLuint v_offset =
       base::bits::AlignUp(u_offset + u_padded_size, kSizeofUint64);
-  GLuint v_padded_size = (output_rect.height() / 2) * v_plane_stride;
+  GLuint v_padded_size = (output_rect.height() / 2) * uv_src_stride;
 
   size_t total_size =
       base::bits::AlignUp(v_offset + v_padded_size, kSizeofUint64);
@@ -1220,11 +1227,27 @@ TEST_F(RasterImplementationTest, ReadbackYUVPixelsAsyncPadding) {
       },
       &callback_run, &callback_success);
 
+  const SkYUVAInfo yuva_info(
+      SkISize::Make(output_rect.width(), output_rect.height()),
+      SkYUVAInfo::PlaneConfig::kY_U_V, SkYUVAInfo::Subsampling::k420,
+      kRec601_Limited_SkYUVColorSpace);
+  const std::array<SkPixmap, SkYUVAInfo::kMaxPlanes> pixmaps = {
+      SkPixmap(SkImageInfo::Make(output_rect.width(), output_rect.height(),
+                                 kR8_unorm_SkColorType, kOpaque_SkAlphaType),
+               y_plane_data.data(), y_plane_stride),
+      SkPixmap(
+          SkImageInfo::Make(output_rect.width() / 2, output_rect.height() / 2,
+                            kR8_unorm_SkColorType, kOpaque_SkAlphaType),
+          u_plane_data.data(), u_plane_stride),
+      SkPixmap(
+          SkImageInfo::Make(output_rect.width() / 2, output_rect.height() / 2,
+                            kR8_unorm_SkColorType, kOpaque_SkAlphaType),
+          v_plane_data.data(), v_plane_stride),
+  };
   gl_->ReadbackYUVPixelsAsync(
-      mailbox, GL_TEXTURE_2D, source_rect, output_rect,
-      /*vertically_flip_texture=*/false, y_plane_stride,
-      base::span(y_plane_data), u_plane_stride, base::span(u_plane_data),
-      v_plane_stride, base::span(v_plane_data), std::move(release_mailbox),
+      mailbox, GL_TEXTURE_2D, source_rect, /*vertically_flip_texture=*/false,
+      SkYUVAPixmaps::FromExternalPixmaps(yuva_info, pixmaps.data()),
+      /*dst_color_space=*/nullptr, std::move(release_mailbox),
       std::move(readback_done));
 
   EXPECT_FALSE(callback_run);
@@ -1266,7 +1289,7 @@ TEST_F(RasterImplementationTest, ReadbackYUVPixelsAsyncPadding) {
   for (int y = 0; y < output_rect.height(); ++y) {
     for (int x = 0; x < output_rect.width(); ++x) {
       size_t dst_idx = y * y_plane_stride + x;
-      size_t src_idx = y * y_plane_stride + x;
+      size_t src_idx = y * y_src_stride + x;
       expected_y[dst_idx] = static_cast<uint8_t>(src_idx + 1);
     }
   }
@@ -1278,7 +1301,7 @@ TEST_F(RasterImplementationTest, ReadbackYUVPixelsAsyncPadding) {
   for (int y = 0; y < output_rect.height() / 2; ++y) {
     for (int x = 0; x < output_rect.width() / 2; ++x) {
       size_t dst_idx = y * u_plane_stride + x;
-      size_t src_idx = y * u_plane_stride + x;
+      size_t src_idx = y * uv_src_stride + x;
       expected_u[dst_idx] = static_cast<uint8_t>(src_idx + 41);
     }
   }
@@ -1290,7 +1313,7 @@ TEST_F(RasterImplementationTest, ReadbackYUVPixelsAsyncPadding) {
   for (int y = 0; y < output_rect.height() / 2; ++y) {
     for (int x = 0; x < output_rect.width() / 2; ++x) {
       size_t dst_idx = y * v_plane_stride + x;
-      size_t src_idx = y * v_plane_stride + x;
+      size_t src_idx = y * uv_src_stride + x;
       expected_v[dst_idx] = static_cast<uint8_t>(src_idx + 51);
     }
   }
@@ -1549,6 +1572,47 @@ TEST_F(RasterImplementationTest, WritePixelsTransferBufferContractDuringAlloc) {
   EXPECT_CALL(gpu_control, SetGpuControlClient(nullptr)).Times(1);
   EXPECT_CALL(gpu_control, CancelAllQueries()).Times(1);
   ri.reset();
+}
+
+// ReadbackYUVPixelsAsync only supports 8-bit Y_U_V 4:2:0 destinations.
+TEST_F(RasterImplementationTest, ReadbackYUVPixelsAsyncUnsupportedLayout) {
+  constexpr int kWidth = 4;
+  constexpr int kHeight = 4;
+  std::vector<uint8_t> y_plane_data(kWidth * kHeight);
+  std::vector<uint8_t> uv_plane_data(kWidth * kHeight / 2);
+  const SkYUVAInfo yuva_info(
+      SkISize::Make(kWidth, kHeight), SkYUVAInfo::PlaneConfig::kY_UV,
+      SkYUVAInfo::Subsampling::k420, kRec601_Limited_SkYUVColorSpace);
+  const std::array<SkPixmap, SkYUVAInfo::kMaxPlanes> pixmaps = {
+      SkPixmap(SkImageInfo::Make(kWidth, kHeight, kR8_unorm_SkColorType,
+                                 kOpaque_SkAlphaType),
+               y_plane_data.data(), kWidth),
+      SkPixmap(SkImageInfo::Make(kWidth / 2, kHeight / 2,
+                                 kR8G8_unorm_SkColorType, kPremul_SkAlphaType),
+               uv_plane_data.data(), kWidth),
+  };
+  const SkYUVAPixmaps yuva_pixmaps =
+      SkYUVAPixmaps::FromExternalPixmaps(yuva_info, pixmaps.data());
+  ASSERT_TRUE(yuva_pixmaps.isValid());
+
+  // The callbacks are posted (with failure) even though no readback is issued.
+  base::test::SingleThreadTaskEnvironment task_environment;
+  base::test::TestFuture<void> release_mailbox_future;
+  base::test::TestFuture<bool> readback_done_future;
+  const void* commands_start = GetPut();
+  gl_->ReadbackYUVPixelsAsync(
+      gpu::Mailbox::Generate(), GL_TEXTURE_2D, gfx::Rect(kWidth, kHeight),
+      /*vertically_flip_texture=*/false, yuva_pixmaps,
+      /*dst_color_space=*/nullptr, release_mailbox_future.GetCallback(),
+      readback_done_future.GetCallback());
+  EXPECT_EQ(commands_start, GetPut());
+  EXPECT_FALSE(release_mailbox_future.IsReady());
+  EXPECT_FALSE(readback_done_future.IsReady());
+  EXPECT_TRUE(release_mailbox_future.Wait());
+  EXPECT_FALSE(readback_done_future.Get());
+  // GetError() waits for the command buffer.
+  EXPECT_CALL(*command_buffer(), OnFlush()).Times(AnyNumber());
+  EXPECT_EQ(static_cast<GLenum>(GL_INVALID_VALUE), gl_->GetError());
 }
 
 #include "gpu/command_buffer/client/raster_implementation_unittest_autogen.h"

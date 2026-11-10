@@ -15,6 +15,7 @@
 #include "gpu/command_buffer/common/raster_cmd_enums.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
@@ -182,25 +183,20 @@ class RasterInterface : public InterfaceBase {
       base::OnceCallback<void(bool)> readback_done) = 0;
 
   // Starts an asynchronous readback and translation of RGBA `source_mailbox`
-  // into caller-owned memory represented by `[yuv]_plane_data`. The memory
-  // backing these spans must remain valid until `readback_done` is called with
-  // a bool indicating if readback was successful. On success, the provided
-  // spans will contain pixel data in I420 format copied from `source_mailbox`
-  // in the GPU process. `release_mailbox` is called when all operations
+  // into caller-owned memory referenced by `dst_pixmaps`. The memory must
+  // remain valid until `readback_done` is called with a bool indicating if
+  // readback was successful. `release_mailbox` is called when all operations
   // requiring a valid mailbox have completed, indicating that the caller can
-  // perform any necessary cleanup.
+  // perform any necessary cleanup. The callbacks are never run before this
+  // returns. Fails unless `dst_pixmaps` is 8-bit I420 with even dimensions.
+  // The color spaces are currently ignored.
   virtual void ReadbackYUVPixelsAsync(
       const gpu::Mailbox& source_mailbox,
       GLenum source_target,
       const gfx::Rect& source_rect,
-      const gfx::Rect& output_rect,
       bool vertically_flip_texture,
-      int y_plane_row_stride_bytes,
-      base::span<uint8_t> y_plane_data,
-      int u_plane_row_stride_bytes,
-      base::span<uint8_t> u_plane_data,
-      int v_plane_row_stride_bytes,
-      base::span<uint8_t> v_plane_data,
+      const SkYUVAPixmaps& dst_pixmaps,
+      sk_sp<SkColorSpace> dst_color_space,
       base::OnceCallback<void()> release_mailbox,
       base::OnceCallback<void(bool)> readback_done) = 0;
 

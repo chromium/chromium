@@ -234,6 +234,11 @@ void StaticBitmapImageToVideoFrameCopier::ReadYUVPixelsAsync(
     DLOG(ERROR) << "Couldn't allocate video frame";
     return;
   }
+  // TODO(crbug.com/40261346): This is not accurate. The GPU process uses the
+  // Rec. 601 matrix and limited range, but does not change the primaries or
+  // transfer function of the source, so the actual color space is
+  // `shared_image->color_space().GetWithMatrixAndRange(SMPTE170M, LIMITED)`.
+  output_frame->set_color_space(gfx::ColorSpace::CreateREC601());
 
   auto shared_image = image->GetSharedImage();
   std::unique_ptr<gpu::RasterScopedAccess> ri_access =
@@ -241,17 +246,10 @@ void StaticBitmapImageToVideoFrameCopier::ReadYUVPixelsAsync(
                                       image->GetSyncToken(), /*readonly=*/true);
   context_provider->RasterInterface()->ReadbackYUVPixelsAsync(
       shared_image->mailbox(), shared_image->GetTextureTarget(),
-      gfx::Rect(image_size), gfx::Rect(image_size),
+      gfx::Rect(image_size),
       shared_image->surface_origin() != kTopLeft_GrSurfaceOrigin,
-      base::checked_cast<int>(
-          output_frame->stride(media::VideoFrame::Plane::kY)),
-      output_frame->GetWritableVisiblePlaneData(media::VideoFrame::Plane::kY),
-      base::checked_cast<int>(
-          output_frame->stride(media::VideoFrame::Plane::kU)),
-      output_frame->GetWritableVisiblePlaneData(media::VideoFrame::Plane::kU),
-      base::checked_cast<int>(
-          output_frame->stride(media::VideoFrame::Plane::kV)),
-      output_frame->GetWritableVisiblePlaneData(media::VideoFrame::Plane::kV),
+      output_frame->GetWritableVisibleSkYUVAPixmaps(),
+      output_frame->ColorSpace().GetAsFullRangeRGB().ToSkColorSpace(),
       blink::BindOnce(&StaticBitmapImageToVideoFrameCopier::OnReleaseMailbox,
                       weak_ptr_factory_.GetWeakPtr(), image),
       blink::BindOnce(
@@ -287,7 +285,6 @@ void StaticBitmapImageToVideoFrameCopier::OnYUVPixelsReadAsync(
     DLOG(ERROR) << "Couldn't read SkImage using async callback";
     return;
   }
-  yuv_frame->set_color_space(gfx::ColorSpace::CreateREC601());
   std::move(callback).Run(yuv_frame);
 }
 
