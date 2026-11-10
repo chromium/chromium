@@ -41,7 +41,8 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/task_card_background"
-            android:clipToOutline="true" />
+            android:clipToOutline="true"
+            android:scrollbars="vertical" />
 
         <org.chromium.ui.widget.TextViewWithLeading
             android:id="@+id/empty_view"
