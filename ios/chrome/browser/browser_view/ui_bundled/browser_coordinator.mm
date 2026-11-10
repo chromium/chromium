@@ -283,7 +283,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/fullscreen/fullscreen_api.h"
 #import "ios/public/provider/chrome/browser/signin/choice_api.h"
-#import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_controller.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_coordinator_delegate.h"
@@ -2377,7 +2376,7 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
 - (void)closeTextZoom {
   web::WebState* activeWebState = self.activeWebState;
   if (activeWebState) {
-    if (ios::provider::IsTextZoomEnabled()) {
+    if (FontSizeTabHelper::IsTextZoomEnabled()) {
       FontSizeTabHelper* fontSizeTabHelper =
           FontSizeTabHelper::FromWebState(activeWebState);
       fontSizeTabHelper->SetTextZoomUIActive(false);

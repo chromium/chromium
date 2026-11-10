@@ -10,8 +10,8 @@
 #import "components/supervised_user/core/common/features.h"
 #import "ios/chrome/browser/supervised_user/coordinator/parent_access_mediator_delegate.h"
 #import "ios/chrome/browser/supervised_user/ui/parent_access_consumer.h"
+#import "ios/chrome/browser/web/model/font_size/font_size_tab_helper.h"
 #import "ios/components/ui_util/dynamic_type_util.h"
-#import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "url/gurl.h"
@@ -87,7 +87,7 @@
   // preference. The multiplier is converted to a percentage (e.g., 1.5x becomes
   // 150%).
   CHECK(webState->ContentIsHTML());
-  ios::provider::SetTextZoomForWebState(
+  FontSizeTabHelper::SetTextZoomForWebState(
       webState, 100. * ui_util::SystemSuggestedFontSizeMultiplier());
 
   // Unhide the WebView as it should be loaded with correct styling.

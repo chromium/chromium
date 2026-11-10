@@ -6,6 +6,7 @@ group("web") {
   deps = [
     ":cobalt",
     ":navigation",
+    ":zoom",
   ]
 }
 
@@ -16,4 +17,9 @@ source_set("navigation") {
 
 source_set("cobalt") {
   sources = [ "cobalt_api.h" ]
+}
+
+source_set("zoom") {
+  sources = [ "zoom_api.h" ]
+  frameworks = [ "WebKit.framework" ]
 }

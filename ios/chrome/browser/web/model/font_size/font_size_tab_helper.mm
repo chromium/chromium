@@ -12,6 +12,7 @@
 #import <utility>
 
 #import "base/check.h"
+#import "base/feature_list.h"
 #import "base/functional/callback_helpers.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -26,10 +27,11 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/web/model/features.h"
 #import "ios/chrome/browser/web/model/font_size/font_size_java_script_feature.h"
 #import "ios/components/ui_util/dynamic_type_util.h"
-#import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
+#import "ui/base/device_form_factor.h"
 
 namespace {
 
@@ -59,7 +61,6 @@ void CollectZoomHosts(const base::DictValue& zoom_levels,
 
 FontSizeTabHelper::FontSizeTabHelper(web::WebState* web_state)
     : web_state_(web_state), weak_factory_(this) {
-  DCHECK(ios::provider::IsTextZoomEnabled());
   CHECK(web_state_->IsRealized());
   web_state_->AddObserver(this);
   FontSizeJavaScriptFeature* feature = FontSizeJavaScriptFeature::GetInstance();
@@ -85,6 +86,18 @@ void FontSizeTabHelper::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(prefs::kIosUserZoomMultipliers);
 }
 
+// static
+bool FontSizeTabHelper::IsTextZoomEnabled() {
+  return ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET ||
+         base::FeatureList::IsEnabled(web::kWebPageTextZoomIPad);
+}
+
+// static
+void FontSizeTabHelper::SetTextZoomForWebState(web::WebState* web_state,
+                                               int size) {
+  FontSizeJavaScriptFeature::GetInstance()->AdjustFontSize(web_state, size);
+}
+
 void FontSizeTabHelper::ClearUserZoomPrefs(PrefService* pref_service) {
   pref_service->ClearPref(prefs::kIosUserZoomMultipliers);
 }
@@ -108,7 +121,7 @@ void FontSizeTabHelper::SetPageFontSize(int size) {
   }
   tab_helper_has_zoomed_ = true;
 
-  ios::provider::SetTextZoomForWebState(web_state_, size);
+  SetTextZoomForWebState(web_state_, size);
 }
 
 void FontSizeTabHelper::UserZoom(Zoom zoom) {

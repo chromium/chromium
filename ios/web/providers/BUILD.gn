@@ -6,6 +6,7 @@ group("providers") {
   deps = [
     ":cobalt",
     ":navigation",
+    ":zoom",
   ]
 }
 
@@ -18,4 +19,10 @@ source_set("navigation") {
 source_set("cobalt") {
   sources = [ "web_cobalt.mm" ]
   deps = [ "//ios/public/provider/web:cobalt" ]
+}
+
+source_set("zoom") {
+  sources = [ "web_zoom.mm" ]
+  deps = [ "//ios/public/provider/web:zoom" ]
+  frameworks = [ "WebKit.framework" ]
 }

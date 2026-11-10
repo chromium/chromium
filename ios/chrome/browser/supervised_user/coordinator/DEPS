@@ -2,5 +2,6 @@ include_rules = [
   # keep-sorted start
   "+ios/chrome/browser/authentication",
   "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/web/model/font_size",
   # keep-sorted end
 ]

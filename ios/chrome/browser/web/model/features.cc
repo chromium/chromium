@@ -6,8 +6,6 @@
 
 namespace web {
 
-BASE_FEATURE(kWebPageAlternativeTextZoom, base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kWebPageTextZoomIPad, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace web

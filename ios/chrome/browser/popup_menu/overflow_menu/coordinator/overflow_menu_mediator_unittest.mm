@@ -116,7 +116,6 @@
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_api.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
@@ -588,11 +587,7 @@ TEST_F(OverflowMenuMediatorTest, TestMenuItemsCount) {
   CreateMediator(/*incognito=*/NO);
   mediator_.model = model_;
 
-  NSUInteger number_of_action_items = 7;
-
-  if (ios::provider::IsTextZoomEnabled()) {
-    number_of_action_items++;
-  }
+  NSUInteger number_of_action_items = 8;
 
   if (send_tab_to_self::AreIOSTabRemindersEnabled() && !mediator_.incognito) {
     number_of_action_items++;

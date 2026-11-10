@@ -9,9 +9,6 @@
 
 namespace web {
 
-// Used to enable a different method of zooming web pages.
-BASE_DECLARE_FEATURE(kWebPageAlternativeTextZoom);
-
 // Re-enables text zoom on iPad.
 BASE_DECLARE_FEATURE(kWebPageTextZoomIPad);
 

@@ -78,6 +78,13 @@ class FontSizeTabHelper : public web::WebFramesManager::Observer,
   // Register the Profile's preferences.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
+  // Returns whether text zoom is enabled currently.
+  static bool IsTextZoomEnabled();
+
+  // Zooms the given `web_state` to the provided `size` as a percentage (i.e., a
+  // size of 100 corresponds to a zoom of 100%).
+  static void SetTextZoomForWebState(web::WebState* web_state, int size);
+
  private:
   friend class web::WebStateUserData<FontSizeTabHelper>;
 

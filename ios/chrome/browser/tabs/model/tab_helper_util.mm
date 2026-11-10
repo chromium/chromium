@@ -155,7 +155,6 @@
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_unsafe_resource_container.h"
 #import "ios/public/provider/chrome/browser/cobalt/cobalt_api.h"
 #import "ios/public/provider/chrome/browser/intelligence/classification_metrics_tab_helper_api.h"
-#import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
 #import "ios/web/common/annotations_utils.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/web_state.h"
@@ -236,7 +235,8 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   attacher.CreateWhen<TranslateOverlayTabHelper>(
       attacher.IsForStandardNavigation());
 
-  attacher.CreateWhen<FontSizeTabHelper>(ios::provider::IsTextZoomEnabled());
+  attacher.CreateWhen<FontSizeTabHelper>(
+      FontSizeTabHelper::IsTextZoomEnabled());
   attacher.CreateWhen<BreadcrumbManagerTabHelper>(
       breadcrumbs::IsEnabled(GetApplicationContext()->GetLocalState()));
 
