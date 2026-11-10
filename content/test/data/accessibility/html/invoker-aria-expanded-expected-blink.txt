@@ -1,0 +1,98 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++group ispopup=manual
+++++++++textField
+++++++++++genericContainer
+++++++button expanded name='popovertarget open' detailsIds=group
+++++++++staticText name='popovertarget open'
+++++++++++inlineTextBox name='popovertarget open'
+++++++group ispopup=manual
+++++++++textField
+++++++++++genericContainer
+++++++button collapsed name='popovertarget open, aria-expanded=false' detailsIds=group
+++++++++staticText name='popovertarget open, aria-expanded=false'
+++++++++++inlineTextBox name='popovertarget open, aria-expanded=false'
+++++++genericContainer ignored invisible
+++++++button collapsed name='popovertarget closed'
+++++++++staticText name='popovertarget closed'
+++++++++++inlineTextBox name='popovertarget closed'
+++++++genericContainer ignored invisible
+++++++button expanded name='popovertarget closed, aria-expanded=true'
+++++++++staticText name='popovertarget closed, aria-expanded=true'
+++++++++++inlineTextBox name='popovertarget closed, aria-expanded=true'
+++++++group ispopup=manual
+++++++++textField
+++++++++++genericContainer
+++++++button expanded name='commandfor open' detailsIds=group
+++++++++staticText name='commandfor open'
+++++++++++inlineTextBox name='commandfor open'
+++++++group ispopup=manual
+++++++++textField
+++++++++++genericContainer
+++++++button collapsed name='commandfor open, aria-expanded=false' detailsIds=group
+++++++++staticText name='commandfor open, aria-expanded=false'
+++++++++++inlineTextBox name='commandfor open, aria-expanded=false'
+++++++genericContainer ignored invisible
+++++++button collapsed name='commandfor closed'
+++++++++staticText name='commandfor closed'
+++++++++++inlineTextBox name='commandfor closed'
+++++++genericContainer ignored invisible
+++++++button expanded name='commandfor closed, aria-expanded=true'
+++++++++staticText name='commandfor closed, aria-expanded=true'
+++++++++++inlineTextBox name='commandfor closed, aria-expanded=true'
+++++++tooltip ispopup=manual
+++++++++textField
+++++++++++genericContainer
+++++++button expanded name='interestfor open' detailsIds=tooltip
+++++++++staticText name='interestfor open'
+++++++++++inlineTextBox name='interestfor open'
+++++++tooltip ispopup=manual
+++++++++textField
+++++++++++genericContainer
+++++++button collapsed name='interestfor open, aria-expanded=false' detailsIds=tooltip
+++++++++staticText name='interestfor open, aria-expanded=false'
+++++++++++inlineTextBox name='interestfor open, aria-expanded=false'
+++++++genericContainer ignored invisible
+++++++++textField ignored invisible
+++++++++++genericContainer ignored invisible
+++++++button collapsed name='interestfor closed'
+++++++++staticText name='interestfor closed'
+++++++++++inlineTextBox name='interestfor closed'
+++++++genericContainer ignored invisible
+++++++++textField ignored invisible
+++++++++++genericContainer ignored invisible
+++++++button expanded name='interestfor closed, aria-expanded=true'
+++++++++staticText name='interestfor closed, aria-expanded=true'
+++++++++++inlineTextBox name='interestfor closed, aria-expanded=true'
+++++++tooltip ispopup=manual
+++++++++textField
+++++++++++genericContainer
+++++++button expanded name='interestfor open, aria-expanded=undefined' detailsIds=tooltip
+++++++++staticText name='interestfor open, aria-expanded=undefined'
+++++++++++inlineTextBox name='interestfor open, aria-expanded=undefined'
+++++++genericContainer ignored invisible
+++++++++textField ignored invisible
+++++++++++genericContainer ignored invisible
+++++++button collapsed name='interestfor closed, aria-expanded=undefined'
+++++++++staticText name='interestfor closed, aria-expanded=undefined'
+++++++++++inlineTextBox name='interestfor closed, aria-expanded=undefined'
+++++++popUpButton expanded name='Main menu'
+++++++++staticText name='Main menu'
+++++++++++inlineTextBox name='Main menu'
+++++++menu name='Main menu' ispopup=auto
+++++++++menuItem collapsed name='submenu open, aria-expanded=false'
+++++++++++staticText name='submenu open, aria-expanded=false'
+++++++++++++inlineTextBox name='submenu open, aria-expanded=false'
+++++++++menu name='submenu open, aria-expanded=false' ispopup=auto
+++++++++++menuItem name='Item 1'
+++++++++++++staticText name='Item 1'
+++++++++++++++inlineTextBox name='Item 1'
+++++++++menuItem expanded name='submenu closed, aria-expanded=true'
+++++++++++staticText name='submenu closed, aria-expanded=true'
+++++++++++++inlineTextBox name='submenu closed, aria-expanded=true'
+++++++++menu ignored invisible
+++++++++menuItem collapsed name='submenu closed'
+++++++++++staticText name='submenu closed'
+++++++++++++inlineTextBox name='submenu closed'
+++++++++menu ignored invisible

@@ -1,0 +1,74 @@
+<!--
+@MAC-ALLOW:AXExpanded
+@WIN-ALLOW:EXPANDED*
+@WIN-ALLOW:COLLAPSED*
+@BLINK-ALLOW:expanded*
+@BLINK-ALLOW:collapsed*
+@AURALINUX-ALLOW:expandable*
+@AURALINUX-ALLOW:expanded*
+-->
+<!DOCTYPE html>
+
+<!-- Author-provided aria-expanded on an invoker takes precedence over the
+     implicit expanded state computed from its target. -->
+
+<!-- popovertarget -->
+<div popover="manual" id="pt1"><input></div>
+<button popovertarget="pt1">popovertarget open</button>
+<div popover="manual" id="pt2"><input></div>
+<button popovertarget="pt2" aria-expanded="false">popovertarget open, aria-expanded=false</button>
+<div popover="manual" id="pt3"><input></div>
+<button popovertarget="pt3">popovertarget closed</button>
+<div popover="manual" id="pt4"><input></div>
+<button popovertarget="pt4" aria-expanded="true">popovertarget closed, aria-expanded=true</button>
+
+<!-- commandfor -->
+<div popover="manual" id="cf1"><input></div>
+<button commandfor="cf1" command="toggle-popover">commandfor open</button>
+<div popover="manual" id="cf2"><input></div>
+<button commandfor="cf2" command="toggle-popover" aria-expanded="false">commandfor open, aria-expanded=false</button>
+<div popover="manual" id="cf3"><input></div>
+<button commandfor="cf3" command="toggle-popover">commandfor closed</button>
+<div popover="manual" id="cf4"><input></div>
+<button commandfor="cf4" command="toggle-popover" aria-expanded="true">commandfor closed, aria-expanded=true</button>
+
+<!-- interestfor -->
+<div popover="manual" id="if1"><input></div>
+<button interestfor="if1">interestfor open</button>
+<div popover="manual" id="if2"><input></div>
+<button interestfor="if2" aria-expanded="false">interestfor open, aria-expanded=false</button>
+<div popover="manual" id="if3"><input></div>
+<button interestfor="if3">interestfor closed</button>
+<div popover="manual" id="if4"><input></div>
+<button interestfor="if4" aria-expanded="true">interestfor closed, aria-expanded=true</button>
+<div popover="manual" id="if5"><input></div>
+<button interestfor="if5" aria-expanded="undefined">interestfor open, aria-expanded=undefined</button>
+<div popover="manual" id="if6"><input></div>
+<button interestfor="if6" aria-expanded="undefined">interestfor closed, aria-expanded=undefined</button>
+
+<!-- menuitem submenu invoker -->
+<button id="menubtn" commandfor="main-menu" command="toggle-popover">Main menu</button>
+<menulist id="main-menu">
+  <submenu>
+    <menuitem id="sub1" aria-expanded="false">submenu open, aria-expanded=false</menuitem>
+    <menulist><menuitem>Item 1</menuitem></menulist>
+  </submenu>
+  <submenu>
+    <menuitem aria-expanded="true">submenu closed, aria-expanded=true</menuitem>
+    <menulist><menuitem>Item 2</menuitem></menulist>
+  </submenu>
+  <submenu>
+    <menuitem>submenu closed</menuitem>
+    <menulist><menuitem>Item 3</menuitem></menulist>
+  </submenu>
+</menulist>
+
+<script>
+  for (const id of ['pt1', 'pt2', 'cf1', 'cf2', 'if1', 'if2', 'if5']) {
+    document.getElementById(id).showPopover();
+  }
+  window.addEventListener('load', () => {
+    document.getElementById('menubtn').click();
+    document.getElementById('sub1').click();
+  });
+</script>

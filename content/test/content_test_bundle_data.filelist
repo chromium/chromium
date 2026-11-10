@@ -5792,6 +5792,8 @@ data/accessibility/html/interest-for-expected-auralinux.txt
 data/accessibility/html/interest-for-expected-blink.txt
 data/accessibility/html/interest-for-expected-win.txt
 data/accessibility/html/interest-for.html
+data/accessibility/html/invoker-aria-expanded-expected-blink.txt
+data/accessibility/html/invoker-aria-expanded.html
 data/accessibility/html/isInteresting-expected-android-assist-data.txt
 data/accessibility/html/isInteresting-expected-android-external.txt
 data/accessibility/html/isInteresting-expected-android.txt

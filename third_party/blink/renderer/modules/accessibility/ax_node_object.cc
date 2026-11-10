@@ -3543,6 +3543,23 @@ AccessibilityExpanded AXNodeObject::IsExpanded() const {
     return is_expanded ? kExpandedExpanded : kExpandedCollapsed;
   }
 
+  if (IsA<HTMLSummaryElement>(*element)) {
+    if (element->parentNode() &&
+        IsA<HTMLDetailsElement>(element->parentNode())) {
+      return To<Element>(element->parentNode())
+                     ->FastHasAttribute(html_names::kOpenAttr)
+                 ? kExpandedExpanded
+                 : kExpandedCollapsed;
+    }
+  }
+
+  // An author-provided aria-expanded value takes precedence over the implicit
+  // expanded state of popover, command, submenu, and interest invokers below.
+  bool expanded = false;
+  if (AriaBooleanAttribute(html_names::kAriaExpandedAttr, &expanded)) {
+    return expanded ? kExpandedExpanded : kExpandedCollapsed;
+  }
+
   // For commandFor triggers, aria-expanded may be set depending on the command
   // type. This results in the same mapping as popovertarget, but takes
   // precedence over popovertarget.
@@ -3589,21 +3606,6 @@ AccessibilityExpanded AXNodeObject::IsExpanded() const {
     if (!element->IsDescendantOrShadowDescendantOf(popover)) {
       return popover->popoverOpen() ? kExpandedExpanded : kExpandedCollapsed;
     }
-  }
-
-  if (IsA<HTMLSummaryElement>(*element)) {
-    if (element->parentNode() &&
-        IsA<HTMLDetailsElement>(element->parentNode())) {
-      return To<Element>(element->parentNode())
-                     ->FastHasAttribute(html_names::kOpenAttr)
-                 ? kExpandedExpanded
-                 : kExpandedCollapsed;
-    }
-  }
-
-  bool expanded = false;
-  if (AriaBooleanAttribute(html_names::kAriaExpandedAttr, &expanded)) {
-    return expanded ? kExpandedExpanded : kExpandedCollapsed;
   }
 
   return kExpandedUndefined;

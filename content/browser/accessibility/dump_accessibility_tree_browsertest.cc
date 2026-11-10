@@ -3052,6 +3052,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInterestFor) {
   RunHtmlTest(FILE_PATH_LITERAL("interest-for.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityInvokerAriaExpanded) {
+  RunHtmlTest(FILE_PATH_LITERAL("invoker-aria-expanded.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInPageLinks) {
   RunHtmlTest(FILE_PATH_LITERAL("in-page-links.html"));
 }
