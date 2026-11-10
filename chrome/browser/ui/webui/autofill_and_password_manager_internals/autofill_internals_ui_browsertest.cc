@@ -99,10 +99,12 @@ IN_PROC_BROWSER_TEST_F(AutofillInternalsWebUIBrowserTest, ResetCache) {
     SpinRunLoop();
   }
 
-  // Check result text.
+  // Check result text and that the Copy button is not shown by default.
   constexpr char kDialogText[] =
       "document.getElementsByClassName('modal-dialog-text')[0].innerText";
   EXPECT_EQ(autofill::kCacheResetDone, EvalJs(kDialogText));
+  EXPECT_EQ(0, EvalJs("document.getElementsByClassName("
+                      "'modal-dialog-copy-button').length"));
 
   // Close dialog.
   constexpr char kClickCloseButton[] =
@@ -334,6 +336,55 @@ IN_PROC_BROWSER_TEST_F(AutofillInternalsWebUIBrowserTest,
   }
 
   EXPECT_NE("", EvalJs(kGetResultText));
+}
+
+// Tests the "Check AutofillAI permissions" button and the dialog's Copy button.
+IN_PROC_BROWSER_TEST_F(AutofillInternalsWebUIBrowserTest,
+                       CheckAutofillAiPermissions) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("chrome://autofill-internals")));
+
+  // Wait for check-autofill-ai-permissions button to become visible.
+  constexpr char kGetButtonDisplayStyle[] =
+      "document.getElementById('check-autofill-ai-permissions').style.display";
+  while ("inline" != EvalJs(kGetButtonDisplayStyle)) {
+    SpinRunLoop();
+  }
+
+  // Trigger check button to open dialog.
+  constexpr char kClickButton[] =
+      "document.getElementById('check-autofill-ai-permissions').click();";
+  EXPECT_TRUE(ExecJs(kClickButton));
+
+  // Wait for dialog to appear.
+  constexpr char kDialogTextVisible[] =
+      "document.getElementsByClassName('modal-dialog-text').length > 0";
+  while (!EvalJs(kDialogTextVisible).ExtractBool()) {
+    SpinRunLoop();
+  }
+
+  const std::string dialog_text =
+      EvalJs(
+          "document.getElementsByClassName('modal-dialog-text')[0].innerText")
+          .ExtractString();
+  EXPECT_THAT(dialog_text, testing::HasSubstr("[Global Checks]"));
+  EXPECT_THAT(dialog_text, testing::HasSubstr("kAmbientAutofill:"));
+
+  // Verify the Copy button copies the dialog text and updates its label.
+  content::WebContents* contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  ASSERT_TRUE(content::ExecJs(contents, R"(
+    window.copiedTextForTest = '';
+    navigator.clipboard.writeText = async (text) => {
+      window.copiedTextForTest = text;
+    };
+    document.getElementsByClassName('modal-dialog-copy-button')[0].click();
+  )"));
+  EXPECT_EQ(dialog_text, content::EvalJs(contents, "window.copiedTextForTest"));
+  EXPECT_EQ(
+      "Copied!",
+      EvalJs("document.getElementsByClassName('modal-dialog-copy-button')[0]"
+             ".innerText"));
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillInternalsWebUIBrowserTest,

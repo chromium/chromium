@@ -19,13 +19,29 @@ const kDefaultLoggingPeriodInSeconds: number = 300;
 // Indicates whether logs should be recorded at the moment.
 let recordLogs: boolean = true;
 
-// Renders a simple dialog with |text| as a message and a close button.
-function showModalDialog(text: string) {
+interface ModalDialogOptions {
+  showCopyButton?: boolean;
+}
+
+// Renders a simple dialog with |text| as a message, an optional copy button,
+// and a close button.
+function showModalDialog(text: string, options: ModalDialogOptions = {}) {
   const dialog = document.createElement('div');
   dialog.className = 'modal-dialog';
 
   const content = document.createElement('div');
   content.className = 'modal-dialog-content';
+
+  if (options.showCopyButton) {
+    const copyButton = document.createElement('span');
+    copyButton.className = 'modal-dialog-copy-button fake-button';
+    copyButton.innerText = 'Copy';
+    copyButton.addEventListener('click', () => {
+      navigator.clipboard.writeText(text);
+      copyButton.innerText = 'Copied!';
+    });
+    content.appendChild(copyButton);
+  }
 
   const closeButton = document.createElement('span');
   closeButton.className = 'modal-dialog-close-button fake-button';
@@ -1065,7 +1081,7 @@ document.addEventListener('DOMContentLoaded', () => {
       'notify-reset-done', (message: string) => showModalDialog(message));
   addWebUiListener(
       'on-autofill-ai-permission-check-done',
-      (message: string) => showModalDialog(message));
+      (message: string) => showModalDialog(message, {showCopyButton: true}));
   addWebUiListener('on-at-memory-permission-check-done', (message: string) => {
     const resultEl = document.getElementById('at-memory-permission-result');
     if (resultEl) {

@@ -582,9 +582,13 @@ TEST_F(AutofillAiPermissionUtilsTest, kTypeSupportsAmbientAutofillData) {
         EntityType(type)));
   }
   for (const EntityTypeName type : {kRedressNumber, kKnownTravelerNumber}) {
+    std::string debug_message;
     EXPECT_FALSE(MayPerformAutofillAiAction(
         client(), AutofillAiAction::kTypeSupportsAmbientAutofillData,
-        EntityType(type)));
+        EntityType(type), &debug_message));
+    EXPECT_EQ(
+        debug_message,
+        "Entity type is not supported by Ambient Autofill feature param.");
   }
 
   // Without device re-auth, SPII types (Passport, Driver's license, National ID
@@ -597,11 +601,13 @@ TEST_F(AutofillAiPermissionUtilsTest, kTypeSupportsAmbientAutofillData) {
         client(), AutofillAiAction::kTypeSupportsAmbientAutofillData,
         EntityType(type)));
   }
-  for (const EntityTypeName type : {kPassport, kDriversLicense, kNationalIdCard,
-                                    kRedressNumber, kKnownTravelerNumber}) {
+  for (const EntityTypeName type :
+       {kPassport, kDriversLicense, kNationalIdCard}) {
+    std::string debug_message;
     EXPECT_FALSE(MayPerformAutofillAiAction(
         client(), AutofillAiAction::kTypeSupportsAmbientAutofillData,
-        EntityType(type)));
+        EntityType(type), &debug_message));
+    EXPECT_EQ(debug_message, "Reauth is not available for SPII entity type.");
   }
 }
 
@@ -722,8 +728,12 @@ TEST_F(AutofillAiPermissionUtilsTest, kAmbientAutofill) {
 
   client().set_personal_context_eligibility_state(
       personal_context::PersonalContextEligibilityState::kDisabledNotEligible);
-  EXPECT_FALSE(
-      MayPerformAutofillAiAction(client(), AutofillAiAction::kAmbientAutofill));
+  std::string debug_message;
+  EXPECT_FALSE(MayPerformAutofillAiAction(client(),
+                                          AutofillAiAction::kAmbientAutofill,
+                                          std::nullopt, &debug_message));
+  EXPECT_EQ(debug_message,
+            "PersonalContextEligibilityService state is not eligible.");
 }
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -764,11 +774,18 @@ TEST_F(AutofillAiPermissionUtilsTest,
   client().GetPrefs()->SetBoolean(
       personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
       false);
-  EXPECT_FALSE(
-      MayPerformAutofillAiAction(client(), AutofillAiAction::kAmbientAutofill));
+  std::string debug_message;
+  EXPECT_FALSE(MayPerformAutofillAiAction(client(),
+                                          AutofillAiAction::kAmbientAutofill,
+                                          std::nullopt, &debug_message));
+  EXPECT_EQ(debug_message,
+            "Personal Context toggle in Autofill settings is disabled.");
+  debug_message.clear();
   EXPECT_FALSE(MayPerformAutofillAiAction(
       client(), AutofillAiAction::kTypeSupportsAmbientAutofillData,
-      EntityType(kPassport)));
+      EntityType(kPassport), &debug_message));
+  EXPECT_EQ(debug_message,
+            "Personal Context toggle in Autofill settings is disabled.");
   EXPECT_TRUE(MayPerformAutofillAiAction(
       client(), AutofillAiAction::kShowAmbientAutofillInSettings));
 }

@@ -272,7 +272,12 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     case AutofillAiAction::kAmbientAutofill:
     case AutofillAiAction::kShowAmbientAutofillInSettings:
     case AutofillAiAction::kTypeSupportsAmbientAutofillData:
-      return is_enabled(features::kAutofillAmbientAutofill);
+      if (!is_enabled(features::kAutofillAmbientAutofill)) {
+        MaybeOutputReason(debug_message,
+                          "AutofillAmbientAutofill is not enabled.");
+        return false;
+      }
+      return true;
   }
   NOTREACHED();
 }
@@ -370,20 +375,49 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     case AutofillAiAction::kShowAmbientAutofillInSettings:
       return is_allowed_by_opt_in_or_default;
     case AutofillAiAction::kAmbientAutofill:
-      return personal_context_pref_enabled && is_allowed_by_opt_in_or_default;
+      if (!personal_context_pref_enabled) {
+        MaybeOutputReason(
+            debug_message,
+            "Personal Context toggle in Autofill settings is disabled.");
+        return false;
+      }
+      if (!is_allowed_by_opt_in_or_default) {
+        MaybeOutputReason(
+            debug_message,
+            "User has not opted in or enterprise policy disallows action.");
+        return false;
+      }
+      return true;
     case AutofillAiAction::kTypeSupportsAmbientAutofillData: {
       if (!entity_type) {
+        MaybeOutputReason(debug_message, "Entity type is not specified.");
         return false;
       }
       if (!GetAutofillAmbientAutofillSupportedEntityTypes().contains(
               *entity_type)) {
+        MaybeOutputReason(
+            debug_message,
+            "Entity type is not supported by Ambient Autofill feature param.");
         return false;
       }
       if (!personal_context_pref_enabled) {
+        MaybeOutputReason(
+            debug_message,
+            "Personal Context toggle in Autofill settings is disabled.");
         return false;
       }
-      return EntityTypeIsEnabledInSettings(*prefs, *entity_type) &&
-             is_allowed_by_opt_in_or_default;
+      if (!EntityTypeIsEnabledInSettings(*prefs, *entity_type)) {
+        MaybeOutputReason(debug_message,
+                          "Entity type category is disabled in settings.");
+        return false;
+      }
+      if (!is_allowed_by_opt_in_or_default) {
+        MaybeOutputReason(
+            debug_message,
+            "User has not opted in or enterprise policy disallows action.");
+        return false;
+      }
+      return true;
     }
     case AutofillAiAction::kImportToWallet:
       if (!EntityTypeIsEnabledInSettings(*prefs, *entity_type)) {
@@ -588,6 +622,9 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     case AutofillAiAction::kAmbientAutofill:
     case AutofillAiAction::kTypeSupportsAmbientAutofillData: {
       if (!IsPersonalContextEligible(personal_context_eligibility_state)) {
+        MaybeOutputReason(
+            debug_message,
+            "PersonalContextEligibilityService state is not eligible.");
         return false;
       }
       break;
@@ -619,6 +656,8 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
               EntityInstance::PersonalContextSpiiType::kSpii &&
           !base::FeatureList::IsEnabled(
               features::debug::kAutofillAiDisableReauthRequirement)) {
+        MaybeOutputReason(debug_message,
+                          "Reauth is not available for SPII entity type.");
         return false;
       }
       break;

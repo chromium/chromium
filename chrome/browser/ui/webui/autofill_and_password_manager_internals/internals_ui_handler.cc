@@ -8,12 +8,14 @@
 
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/autofill/autofill_ai_model_cache_factory.h"
@@ -22,6 +24,7 @@
 #include "chrome/browser/autofill/personal_context_entity_metadata_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/personal_context/personal_context_eligibility_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
@@ -31,11 +34,13 @@
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_cache.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_util.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/embedder_support/user_agent_utils.h"
@@ -45,6 +50,8 @@
 #include "components/password_manager/core/browser/password_change_service_interface.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/personal_context/core/personal_context_eligibility_service.h"
+#include "components/personal_context/core/personal_context_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 #include "components/webui/version/version_handler_helper.h"
@@ -560,17 +567,47 @@ void InternalsUIHandler::CheckAtMemoryPermissions(const base::ListValue& args) {
 #if !BUILDFLAG(IS_ANDROID)
 void InternalsUIHandler::CheckAutofillAiPermissions(
     const base::ListValue& args) {
-  std::string debug_message;
-  const bool may_opt_in = MayPerformAutofillAiAction(
-      CHECK_DEREF(
-          ContentAutofillClient::FromWebContents(web_ui()->GetWebContents())),
-      AutofillAiAction::kOptIn, /*entity_type=*/std::nullopt, &debug_message);
-  FireWebUIListener(
-      "on-autofill-ai-permission-check-done",
-      base::Value(
-          may_opt_in ? "Autofill with AI opt-in is allowed"
-                     : base::StrCat({"Autofill with AI opt-in is not allowed: ",
-                                     debug_message})));
+  ContentAutofillClient& client = CHECK_DEREF(
+      ContentAutofillClient::FromWebContents(web_ui()->GetWebContents()));
+  auto get_permission = [&](AutofillAiAction action,
+                            std::optional<EntityType> type = std::nullopt) {
+    std::string debug_message;
+    const bool allowed =
+        MayPerformAutofillAiAction(client, action, type, &debug_message);
+    return allowed ? std::string("Allowed")
+                   : base::StrCat({"Blocked (", debug_message, ")"});
+  };
+
+  std::vector<std::string> lines;
+  lines.push_back("[Global Checks]");
+  if (auto* eligibility_service =
+          PersonalContextEligibilityServiceFactory::GetForProfile(
+              Profile::FromWebUI(web_ui()))) {
+    std::optional<personal_context::PersonalContextNonEligibilityReason>
+        reason = eligibility_service->GetNonEligibilityReason();
+    lines.push_back(base::StrCat(
+        {"• PersonalContextEligibilityService: ",
+         reason ? personal_context::PersonalContextNonEligibilityReasonToString(
+                      *reason)
+                : "Not initialized"}));
+  }
+  lines.push_back(
+      base::StrCat({"• kOptIn: ", get_permission(AutofillAiAction::kOptIn)}));
+  lines.push_back(
+      base::StrCat({"• kAmbientAutofill: ",
+                    get_permission(AutofillAiAction::kAmbientAutofill)}));
+  lines.push_back(
+      "\n[Per-EntityType Checks (kTypeSupportsAmbientAutofillData / "
+      "kFilling)]");
+  for (EntityType type : DenseSet<EntityType>::all()) {
+    lines.push_back(base::StrCat(
+        {"• ", type.name_as_string(), ": ",
+         get_permission(AutofillAiAction::kTypeSupportsAmbientAutofillData,
+                        type),
+         " / ", get_permission(AutofillAiAction::kFilling, type)}));
+  }
+  FireWebUIListener("on-autofill-ai-permission-check-done",
+                    base::Value(base::JoinString(lines, "\n")));
 }
 
 void InternalsUIHandler::SetDomNodeId(const base::ListValue& args) {
