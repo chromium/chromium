@@ -11,7 +11,9 @@
 #include "base/compiler_specific.h"
 #include "base/environment.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/nix/xdg_util.h"
+#include "base/time/default_tick_clock.h"
 #include "build/build_config.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/pulse/pulse_input.h"
@@ -35,6 +37,15 @@ constexpr int kDefaultInputBufferSize = 1024;
 constexpr int kDefaultSampleRate = 48000;
 constexpr int kDefaultChannelCount = 2;
 
+// A running server answers a new connection within milliseconds. A reconnect
+// attempt only waits this long when the server accepts the connection but does
+// not answer, and the wait blocks the audio thread.
+constexpr base::TimeDelta kReconnectTimeout = base::Seconds(1);
+constexpr base::TimeDelta kInitialReconnectBackoff = base::Seconds(1);
+constexpr base::TimeDelta kMaxReconnectBackoff = base::Seconds(30);
+
+BASE_FEATURE(kPulseReconnectOnServerRestart, base::FEATURE_ENABLED_BY_DEFAULT);
+
 AudioManagerPulse::AudioManagerPulse(std::unique_ptr<AudioThread> audio_thread,
                                      AudioLogFactory* audio_log_factory,
                                      pa_threaded_mainloop* pa_mainloop,
@@ -45,7 +56,9 @@ AudioManagerPulse::AudioManagerPulse(std::unique_ptr<AudioThread> audio_thread,
       devices_(nullptr),
       native_input_sample_rate_(kDefaultSampleRate),
       native_channel_count_(kDefaultChannelCount),
-      default_source_is_monitor_(false) {
+      default_source_is_monitor_(false),
+      tick_clock_(base::DefaultTickClock::GetInstance()),
+      reconnect_backoff_(kInitialReconnectBackoff) {
   DCHECK(input_mainloop_);
   DCHECK(input_context_);
   SetMaxOutputStreamsAllowed(kMaxOutputStreams);
@@ -77,6 +90,7 @@ bool AudioManagerPulse::GetAudioDeviceNames(
     bool input,
     media::AudioDeviceNames* device_names) {
   DCHECK(device_names->empty());
+  ReconnectIfDisconnected();
   DCHECK(input_mainloop_);
   DCHECK(input_context_);
   AutoPulseLock auto_lock(input_mainloop_);
@@ -214,6 +228,11 @@ std::string AudioManagerPulse::GetAssociatedOutputDeviceID(
 #endif
 }
 
+void AudioManagerPulse::ReleaseInputStream(AudioInputStream* stream) {
+  pulse_input_streams_.erase(stream);
+  AudioManagerBase::ReleaseInputStream(stream);
+}
+
 AudioParameters AudioManagerPulse::GetPreferredOutputStreamParameters(
     const std::string& output_device_id,
     const AudioParameters& input_params) {
@@ -262,28 +281,33 @@ AudioInputStream* AudioManagerPulse::MakeInputStream(
     const AudioParameters& params,
     const std::string& device_id,
     LogCallback log_callback) {
+  ReconnectIfDisconnected();
+  AudioInputStream* stream = nullptr;
   if (AudioDeviceDescription::IsLoopbackDevice(device_id)) {
     // We need a loopback manager if we are opening a loopback device.
     if (!loopback_manager_) {
       // Unretained is safe as `this` outlives `loopback_manager_` and all
       // streams. See ~AudioManagerBase.
       loopback_manager_ = PulseLoopbackManager::Create(
-          base::BindRepeating(&AudioManagerBase::ReleaseInputStream,
+          base::BindRepeating(&AudioManagerPulse::ReleaseInputStream,
                               base::Unretained(this)),
           input_context_, input_mainloop_);
     }
     bool should_mute_system_audio =
         (device_id == AudioDeviceDescription::kLoopbackWithMuteDeviceId);
     if (loopback_manager_) {
-      return loopback_manager_->MakeLoopbackStream(
+      stream = loopback_manager_->MakeLoopbackStream(
           params, std::move(log_callback), should_mute_system_audio);
     }
-
-    return nullptr;
+  } else {
+    stream = new PulseAudioInputStream(this, device_id, params, input_mainloop_,
+                                       input_context_, std::move(log_callback));
   }
 
-  return new PulseAudioInputStream(this, device_id, params, input_mainloop_,
-                                   input_context_, std::move(log_callback));
+  if (stream) {
+    pulse_input_streams_.insert(stream);
+  }
+  return stream;
 }
 
 void AudioManagerPulse::UpdateNativeAudioHardwareInfo() {
@@ -297,6 +321,64 @@ void AudioManagerPulse::UpdateNativeAudioHardwareInfo() {
   // Be careful about adding OS calls to this method.
   // GetPreferredOutputStreamParameters() calls this method on a critical path.
   // If the OS calls hang they will hang all device authorizations.
+}
+
+void AudioManagerPulse::DisconnectForTesting() {
+  CHECK(GetTaskRunner()->BelongsToCurrentThread());
+  AutoPulseLock auto_lock(input_mainloop_);
+  pa_context_disconnect(input_context_);
+}
+
+void AudioManagerPulse::SetTickClockForTesting(
+    const base::TickClock* tick_clock) {
+  tick_clock_ = tick_clock;
+}
+
+void AudioManagerPulse::ReconnectIfDisconnected() {
+  CHECK(GetTaskRunner()->BelongsToCurrentThread());
+  if (!base::FeatureList::IsEnabled(kPulseReconnectOnServerRestart)) {
+    return;
+  }
+  {
+    AutoPulseLock auto_lock(input_mainloop_);
+    if (PA_CONTEXT_IS_GOOD(pa_context_get_state(input_context_))) {
+      return;
+    }
+  }
+
+  // Pulse input streams keep raw pointers to the mainloop and the context, so
+  // those can only be replaced once all of them are closed. Streams on a failed
+  // context deliver no more data and are closed by their owners.
+  if (!pulse_input_streams_.empty()) {
+    return;
+  }
+
+  const base::TimeTicks start = tick_clock_->NowTicks();
+  if (start < next_reconnect_time_) {
+    return;
+  }
+
+  pa_threaded_mainloop* mainloop = nullptr;
+  pa_context* context = nullptr;
+  const bool connected =
+      pulse::InitPulse(&mainloop, &context, kReconnectTimeout);
+  const base::TimeTicks end = tick_clock_->NowTicks();
+  base::UmaHistogramBoolean("Media.Audio.Pulse.ReconnectResult", connected);
+  base::UmaHistogramTimes("Media.Audio.Pulse.ReconnectDuration", end - start);
+  if (!connected) {
+    next_reconnect_time_ = end + reconnect_backoff_;
+    reconnect_backoff_ = std::min(reconnect_backoff_ * 2, kMaxReconnectBackoff);
+    return;
+  }
+  next_reconnect_time_ = base::TimeTicks();
+  reconnect_backoff_ = kInitialReconnectBackoff;
+
+  // The loopback manager is bound to the old context.
+  loopback_manager_.reset();
+  pulse::DestroyPulse(input_mainloop_.ExtractAsDangling(),
+                      input_context_.ExtractAsDangling());
+  input_mainloop_ = mainloop;
+  input_context_ = context;
 }
 
 void AudioManagerPulse::InputDevicesInfoCallback(pa_context* context,

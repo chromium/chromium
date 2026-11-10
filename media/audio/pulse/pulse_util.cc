@@ -225,13 +225,20 @@ void SignalReadyOrErrorStateCallback(pa_context* context, void* context_data) {
 
 }  // namespace
 
-bool InitPulse(pa_threaded_mainloop** mainloop, pa_context** context) {
+bool InitPulse(pa_threaded_mainloop** mainloop,
+               pa_context** context,
+               base::TimeDelta timeout) {
 #if defined(DLOPEN_PULSEAUDIO)
-  StubPathMap paths;
-
-  // Check if the pulse library is available.
-  paths[kModulePulse].push_back(kPulseLib);
-  if (!InitializeStubs(paths)) {
+  // InitializeStubs() is meant to be called only once: it rewrites every stub
+  // pointer, and InitPulse() is also called to reconnect while other threads
+  // may be calling into the library through the stubs.
+  static const bool kStubsInitialized = [] {
+    StubPathMap paths;
+    // Check if the pulse library is available.
+    paths[kModulePulse].push_back(kPulseLib);
+    return InitializeStubs(paths);
+  }();
+  if (!kStubsInitialized) {
     VLOG(1) << "Failed on loading the Pulse library and symbols";
     return false;
   }
@@ -290,15 +297,9 @@ bool InitPulse(pa_threaded_mainloop** mainloop, pa_context** context) {
   // or we'll never complete since PulseAudio can't continue working.
   mainloop_lock.reset();
 
-  // Wait for up to 5 seconds for pa_context to become ready. We'll be signaled
+  // Wait for up to `timeout` for pa_context to become ready. We'll be signaled
   // by the SignalReadyOrErrorStateCallback that we setup above.
-  //
-  // We've chosen a timeout value of 5 seconds because this can be executed at
-  // browser startup (other times it's during audio process startup). In the
-  // normal case, this should only take ~50ms, but we've seen some test bots
-  // hang indefinitely when the pulse daemon can't be started.
-  constexpr base::TimeDelta kStartupTimeout = base::Seconds(5);
-  const bool was_signaled = context_wait.TimedWait(kStartupTimeout);
+  const bool was_signaled = context_wait.TimedWait(timeout);
 
   // Require the mainloop lock before checking the context state.
   mainloop_lock = std::make_unique<AutoPulseLock>(pa_mainloop);

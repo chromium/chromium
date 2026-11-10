@@ -38,8 +38,15 @@ class AutoPulseLock {
   raw_ptr<pa_threaded_mainloop> pa_mainloop_;
 };
 
+// How long InitPulse() waits for the context to become ready by default. This
+// can be executed at browser startup (other times it's during audio process
+// startup). In the normal case, this should only take ~50ms, but we've seen
+// some test bots hang indefinitely when the pulse daemon can't be started.
+inline constexpr base::TimeDelta kInitPulseTimeout = base::Seconds(5);
+
 bool MEDIA_EXPORT InitPulse(pa_threaded_mainloop** mainloop,
-                            pa_context** context);
+                            pa_context** context,
+                            base::TimeDelta timeout = kInitPulseTimeout);
 void DestroyPulse(pa_threaded_mainloop* mainloop, pa_context* context);
 
 // Triggers pa_threaded_mainloop_signal() to avoid deadlocks.

@@ -2333,6 +2333,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.Pulse.ReconnectDuration" units="ms"
+    expires_after="2027-04-30">
+  <owner>olka@chromium.org</owner>
+  <owner>mikhail.v.gavrilov@gmail.com</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    How long one attempt to reconnect to the PulseAudio server blocked the audio
+    thread. Recorded on Linux for every attempt AudioManagerPulse makes after
+    the connection to the server has been lost, e.g. because the server was
+    restarted. Attempts time out after 1 second.
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.Pulse.ReconnectResult" enum="BooleanSuccess"
+    expires_after="2027-04-30">
+  <owner>olka@chromium.org</owner>
+  <owner>mikhail.v.gavrilov@gmail.com</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Whether one attempt to reconnect to the PulseAudio server succeeded.
+    Recorded on Linux for every attempt AudioManagerPulse makes after the
+    connection to the server has been lost, e.g. because the server was
+    restarted.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.RawProcessingSupportedWin" enum="BooleanSupported"
     expires_after="2027-01-04">
   <owner>henrika@chromium.org</owner>

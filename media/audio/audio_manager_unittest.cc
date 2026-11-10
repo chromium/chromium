@@ -5,6 +5,7 @@
 #include "media/audio/audio_manager.h"
 
 #include <algorithm>
+#include <array>
 #include <map>
 #include <memory>
 #include <utility>
@@ -13,13 +14,18 @@
 #include "base/command_line.h"
 #include "base/environment.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/scoped_environment_variable_override.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_message_loop.h"
 #include "build/build_config.h"
 #include "media/audio/audio_device_description.h"
@@ -252,6 +258,8 @@ class AudioManagerTest : public ::testing::Test {
 
   base::TestMessageLoop message_loop_;
   FakeAudioLogFactory fake_audio_log_factory_;
+  // Declared before `audio_manager_`, which may keep a pointer to it.
+  base::SimpleTestTickClock tick_clock_;
   std::unique_ptr<AudioManager> audio_manager_;
   std::unique_ptr<AudioDeviceInfoAccessorForTests> device_info_accessor_;
 };
@@ -337,6 +345,146 @@ TEST_F(AudioManagerTest, EnumerateOutputDevicesPulseaudio) {
   } else {
     LOG(WARNING) << "No pulseaudio on this system.";
   }
+}
+
+// Losing the connection to the sound server, e.g. because it restarts, must
+// not leave the device list empty.
+TEST_F(AudioManagerTest, EnumerateInputDevicesPulseaudioAfterDisconnect) {
+  ABORT_AUDIO_TEST_IF_NOT(InputDevicesAvailable());
+
+  CreateAudioManagerForTesting<AudioManagerPulse>();
+  if (!audio_manager_) {
+    LOG(WARNING) << "No pulseaudio on this system.";
+    return;
+  }
+  AudioDeviceDescriptions before;
+  device_info_accessor_->GetAudioInputDeviceDescriptions(&before);
+  ASSERT_FALSE(before.empty());
+
+  base::HistogramTester histogram_tester;
+  static_cast<AudioManagerPulse*>(audio_manager_.get())->DisconnectForTesting();
+  AudioDeviceDescriptions after;
+  device_info_accessor_->GetAudioInputDeviceDescriptions(&after);
+  EXPECT_EQ(before.size(), after.size());
+  histogram_tester.ExpectUniqueSample("Media.Audio.Pulse.ReconnectResult", true,
+                                      1);
+  histogram_tester.ExpectTotalCount("Media.Audio.Pulse.ReconnectDuration", 1);
+}
+
+TEST_F(AudioManagerTest, PulseaudioDoesNotReconnectWhenDisabled) {
+  ABORT_AUDIO_TEST_IF_NOT(InputDevicesAvailable());
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kPulseReconnectOnServerRestart);
+
+  CreateAudioManagerForTesting<AudioManagerPulse>();
+  if (!audio_manager_) {
+    LOG(WARNING) << "No pulseaudio on this system.";
+    return;
+  }
+  base::HistogramTester histogram_tester;
+  static_cast<AudioManagerPulse*>(audio_manager_.get())->DisconnectForTesting();
+  AudioDeviceDescriptions after;
+  device_info_accessor_->GetAudioInputDeviceDescriptions(&after);
+  EXPECT_TRUE(after.empty());
+  histogram_tester.ExpectTotalCount("Media.Audio.Pulse.ReconnectResult", 0);
+  histogram_tester.ExpectTotalCount("Media.Audio.Pulse.ReconnectDuration", 0);
+}
+
+// Input streams made by AudioManagerPulse use its connection to the sound
+// server, so the connection is only replaced once they are closed. Fake input
+// streams do not use it and must not delay the reconnect.
+TEST_F(AudioManagerTest, PulseaudioReconnectWaitsForPulseInputStreams) {
+  ABORT_AUDIO_TEST_IF_NOT(InputDevicesAvailable());
+
+  CreateAudioManagerForTesting<AudioManagerPulse>();
+  if (!audio_manager_) {
+    LOG(WARNING) << "No pulseaudio on this system.";
+    return;
+  }
+  AudioInputStream* pulse_stream = audio_manager_->MakeAudioInputStream(
+      AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                      ChannelLayoutConfig::Stereo(), 48000, 480),
+      AudioDeviceDescription::kDefaultDeviceId, base::DoNothing());
+  ASSERT_TRUE(pulse_stream);
+  AudioInputStream* fake_stream = audio_manager_->MakeAudioInputStream(
+      AudioParameters(AudioParameters::AUDIO_FAKE,
+                      ChannelLayoutConfig::Stereo(), 48000, 480),
+      AudioDeviceDescription::kDefaultDeviceId, base::DoNothing());
+  ASSERT_TRUE(fake_stream);
+
+  base::HistogramTester histogram_tester;
+  static_cast<AudioManagerPulse*>(audio_manager_.get())->DisconnectForTesting();
+  AudioDeviceDescriptions while_open;
+  device_info_accessor_->GetAudioInputDeviceDescriptions(&while_open);
+  EXPECT_TRUE(while_open.empty());
+  histogram_tester.ExpectTotalCount("Media.Audio.Pulse.ReconnectResult", 0);
+
+  pulse_stream->Close();
+  AudioDeviceDescriptions after_close;
+  device_info_accessor_->GetAudioInputDeviceDescriptions(&after_close);
+  EXPECT_FALSE(after_close.empty());
+  histogram_tester.ExpectUniqueSample("Media.Audio.Pulse.ReconnectResult", true,
+                                      1);
+
+  fake_stream->Close();
+}
+
+// After a failed attempt the next one waits 1 s, the delay doubles after each
+// further failure up to 30 s, and a successful attempt resets it.
+TEST_F(AudioManagerTest, PulseaudioReconnectBackoff) {
+  ABORT_AUDIO_TEST_IF_NOT(InputDevicesAvailable());
+
+  CreateAudioManagerForTesting<AudioManagerPulse>();
+  if (!audio_manager_) {
+    LOG(WARNING) << "No pulseaudio on this system.";
+    return;
+  }
+  auto* manager = static_cast<AudioManagerPulse*>(audio_manager_.get());
+  manager->SetTickClockForTesting(&tick_clock_);
+  auto has_input_devices = [this] {
+    AudioDeviceDescriptions descriptions;
+    device_info_accessor_->GetAudioInputDeviceDescriptions(&descriptions);
+    return !descriptions.empty();
+  };
+  ASSERT_TRUE(has_input_devices());
+
+  // kDelays[n] is the delay after n + 1 failed attempts in a row.
+  constexpr auto kDelays = std::to_array<base::TimeDelta>(
+      {base::Seconds(1), base::Seconds(2), base::Seconds(4), base::Seconds(8),
+       base::Seconds(16), base::Seconds(30), base::Seconds(30)});
+  base::HistogramTester histogram_tester;
+  int attempts = 0;
+  int successes = 0;
+  for (size_t failures = 1; failures <= std::size(kDelays); ++failures) {
+    manager->DisconnectForTesting();
+    {
+      // Every attempt fails while PULSE_SERVER names a socket that does not
+      // exist.
+      base::ScopedEnvironmentVariableOverride no_server(
+          "PULSE_SERVER", "unix:/nonexistent/pulse/native");
+      for (size_t i = 0; i < failures; ++i) {
+        if (i > 0) {
+          tick_clock_.Advance(kDelays[i - 1]);
+        }
+        EXPECT_FALSE(has_input_devices());
+        ++attempts;
+      }
+    }
+    // The server can be reached again, but the next attempt is not due yet.
+    tick_clock_.Advance(kDelays[failures - 1] - base::Milliseconds(1));
+    EXPECT_FALSE(has_input_devices());
+    tick_clock_.Advance(base::Milliseconds(1));
+    EXPECT_TRUE(has_input_devices());
+    ++attempts;
+    ++successes;
+  }
+  // Calls made while an attempt is not due record nothing.
+  histogram_tester.ExpectTotalCount("Media.Audio.Pulse.ReconnectResult",
+                                    attempts);
+  histogram_tester.ExpectBucketCount("Media.Audio.Pulse.ReconnectResult", true,
+                                     successes);
+  histogram_tester.ExpectTotalCount("Media.Audio.Pulse.ReconnectDuration",
+                                    attempts);
 }
 #endif  // defined(USE_PULSEAUDIO)
 
