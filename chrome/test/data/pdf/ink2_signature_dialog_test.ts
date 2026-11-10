@@ -4,7 +4,7 @@
 
 import {AnnotationMode} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import type {ContinueSignatureStrokeMessage, FinishSignatureStrokeMessage, StartSignatureStrokeMessage, ViewerSignatureDialogElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {setupTestMockPluginForInk} from './test_util.js';
@@ -25,6 +25,15 @@ async function openSignatureDialog(): Promise<ViewerSignatureDialogElement> {
   const dialog = getSignatureDialog();
   assertTrue(!!dialog);
   return dialog;
+}
+
+// Returns the RGBA color components [r, g, b, a] of the canvas pixel at the
+// specified CSS coordinates (x, y), scaled by devicePixelRatio.
+function getPixelColor(
+    context: CanvasRenderingContext2D, x: number, y: number): number[] {
+  const px = Math.round(x * window.devicePixelRatio);
+  const py = Math.round(y * window.devicePixelRatio);
+  return Array.from(context.getImageData(px, py, 1, 1).data);
 }
 
 // Creates a PointerEvent with a mocked `timeStamp`, since `Event.timeStamp` is
@@ -96,10 +105,23 @@ suite('Ink2SignatureDialogTest', function() {
   test('DrawSignature', async function() {
     const dialog = await openSignatureDialog();
     const canvas = dialog.$.canvas;
+    assertTrue(canvas.width > 0);
+    assertTrue(canvas.height > 0);
+    const context = canvas.getContext('2d', {willReadFrequently: true})!;
 
-    // Drawing a stroke sends start/continue/finish messages.
+    const firstOutline = [[10, 10, 30, 10, 30, 30, 10, 30]];
+    mockPlugin.setMessageReply(
+        'startSignatureStroke', {outlines: firstOutline});
+    mockPlugin.setMessageReply(
+        'continueSignatureStroke', {outlines: firstOutline});
+    mockPlugin.setMessageReply(
+        'finishSignatureStroke', {outlines: firstOutline});
+
+    // Drawing a stroke sends start/continue/finish messages and renders the
+    // returned outlines.
     canvas.dispatchEvent(createPointerEvent(
         'pointerdown', {pointerId: 1, clientX: 50, clientY: 50}, 100));
+    await microtasksFinished();
     const startMessage = mockPlugin.findMessage<StartSignatureStrokeMessage>(
         'startSignatureStroke');
     assertTrue(!!startMessage);
@@ -107,6 +129,7 @@ suite('Ink2SignatureDialogTest', function() {
 
     canvas.dispatchEvent(
         createPointerEvent('pointermove', {clientX: 70, clientY: 60}, 110));
+    await microtasksFinished();
     const continueMessage =
         mockPlugin.findMessage<ContinueSignatureStrokeMessage>(
             'continueSignatureStroke');
@@ -114,28 +137,53 @@ suite('Ink2SignatureDialogTest', function() {
     assertEquals(1, continueMessage.points.length);
     assertTrue(!!continueMessage.points[0]);
     assertEquals(10, continueMessage.points[0].elapsedTime);
+    assertDeepEquals([227, 227, 227, 255], getPixelColor(context, 20, 20));
+    assertDeepEquals([0, 0, 0, 0], getPixelColor(context, 50, 20));
 
     canvas.dispatchEvent(
         createPointerEvent('pointerup', {clientX: 90, clientY: 70}, 125));
+    await microtasksFinished();
     const finishMessage = mockPlugin.findMessage<FinishSignatureStrokeMessage>(
         'finishSignatureStroke');
     assertTrue(!!finishMessage);
     assertTrue(!!finishMessage.point);
     assertEquals(25, finishMessage.point.elapsedTime);
+    assertDeepEquals([227, 227, 227, 255], getPixelColor(context, 20, 20));
+    assertDeepEquals([0, 0, 0, 0], getPixelColor(context, 50, 20));
+
+    // Starting a second stroke renders both the finished and in-progress
+    // strokes.
+    const secondOutline = [[40, 10, 60, 10, 60, 30, 40, 30]];
+    mockPlugin.setMessageReply(
+        'startSignatureStroke', {outlines: secondOutline});
+    canvas.dispatchEvent(createPointerEvent(
+        'pointerdown', {pointerId: 1, clientX: 50, clientY: 50}, 200));
+    await microtasksFinished();
+    assertDeepEquals([227, 227, 227, 255], getPixelColor(context, 20, 20));
+    assertDeepEquals([227, 227, 227, 255], getPixelColor(context, 50, 20));
   });
 
   test('DrawSignaturePointerCancel', async function() {
     const dialog = await openSignatureDialog();
     const canvas = dialog.$.canvas;
+    const context = canvas.getContext('2d', {willReadFrequently: true})!;
+
+    const sampleOutline = [[10, 10, 30, 10, 30, 30, 10, 30]];
+    mockPlugin.setMessageReply(
+        'startSignatureStroke', {outlines: sampleOutline});
+    mockPlugin.setMessageReply(
+        'finishSignatureStroke', {outlines: sampleOutline});
 
     // Finishing a stroke via pointercancel sends finishSignatureStroke without
-    // a point.
+    // a point and renders the returned outlines.
     canvas.dispatchEvent(createPointerEvent(
         'pointerdown', {pointerId: 1, clientX: 50, clientY: 50}));
     canvas.dispatchEvent(createPointerEvent('pointercancel'));
+    await microtasksFinished();
     const finishMessage = mockPlugin.findMessage<FinishSignatureStrokeMessage>(
         'finishSignatureStroke');
     assertTrue(!!finishMessage);
     assertEquals(undefined, finishMessage.point);
+    assertDeepEquals([227, 227, 227, 255], getPixelColor(context, 20, 20));
   });
 });
