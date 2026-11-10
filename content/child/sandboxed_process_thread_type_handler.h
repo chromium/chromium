@@ -12,6 +12,7 @@
 #include "base/threading/thread_type_delegate.h"
 #include "content/common/content_export.h"
 #include "content/common/thread_type_switcher.mojom-forward.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 
 namespace content {
@@ -52,9 +53,10 @@ class CONTENT_EXPORT SandboxedProcessThreadTypeHandler
   // Use the ChildThread (which must be valid) to bind `thread_type_switcher_`.
   void ConnectThreadTypeSwitcher();
 
-  // Records the task runner used to flush batched changes and flushes any
-  // changes that accumulated before the switcher was connected. Called once the
-  // remote is bound, from the sequence `task_runner` belongs to.
+  // Binds `thread_type_switcher_` to `task_runner`, records it as the task
+  // runner used to flush batched changes and flushes any changes that
+  // accumulated before the switcher was connected. Called from the sequence
+  // `task_runner` belongs to.
   void OnSwitcherConnected(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
@@ -73,7 +75,11 @@ class CONTENT_EXPORT SandboxedProcessThreadTypeHandler
   // to a fake implementation in place of the browser.
   mojo::PendingReceiver<mojom::ThreadTypeSwitcher> PassReceiverForTesting();
 
+  // Bound by OnSwitcherConnected(). Until then, the remote end of the pipe is
+  // held by `pending_thread_type_switcher_`, as binding it here needs a task
+  // runner that may not exist yet when the handler is created.
   mojo::SharedRemote<mojom::ThreadTypeSwitcher> thread_type_switcher_;
+  mojo::PendingRemote<mojom::ThreadTypeSwitcher> pending_thread_type_switcher_;
   // Holds the ThreadTypeSwitcher receiver until it can be bound by the browser
   // process via ChildThreadImpl.
   mojo::PendingReceiver<mojom::ThreadTypeSwitcher>

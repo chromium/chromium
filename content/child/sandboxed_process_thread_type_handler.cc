@@ -21,10 +21,12 @@ SandboxedProcessThreadTypeHandler* g_sandboxed_process_thread_type_handler =
 }  // namespace
 
 SandboxedProcessThreadTypeHandler::SandboxedProcessThreadTypeHandler() {
-  // `thread_type_switcher_receiver_` will be bound when ChildThreadImpl is
-  // available.
+  // Neither end of the pipe is bound until ChildThreadImpl is available, so the
+  // handler can be created before the creating thread has a task runner. The
+  // renderer relies on this to register the delegate before its main thread
+  // scheduler raises the main thread's thread type.
   thread_type_switcher_receiver_ =
-      thread_type_switcher_.BindNewPipeAndPassReceiver();
+      pending_thread_type_switcher_.InitWithNewPipeAndPassReceiver();
   base::PlatformThread::SetThreadTypeDelegate(this);
 }
 
@@ -62,8 +64,7 @@ bool SandboxedProcessThreadTypeHandler::HandleThreadTypeChange(
     pending_changes_[thread_id.raw()] = thread_type;
   }
   // If `task_runner_` isn't set yet, the changes accumulate and are flushed by
-  // OnSwitcherConnected() once the pipe is bound (until then a plain
-  // SharedRemote would only buffer the calls anyway).
+  // OnSwitcherConnected() once `thread_type_switcher_` is bound.
   PostFlushIfNeeded();
   return true;
 }
@@ -80,6 +81,10 @@ void SandboxedProcessThreadTypeHandler::ConnectThreadTypeSwitcher() {
 
 void SandboxedProcessThreadTypeHandler::OnSwitcherConnected(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  // Bind before publishing `task_runner_`, as a flush can only be posted once
+  // `task_runner_` is set.
+  thread_type_switcher_.Bind(std::move(pending_thread_type_switcher_),
+                             task_runner);
   {
     base::AutoLock lock(lock_);
     task_runner_ = std::move(task_runner);
