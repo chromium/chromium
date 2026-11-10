@@ -5272,7 +5272,7 @@
   {
     "name": "fetch-device-authorization-keys",
     "owners": [ "rgod@google.com", "thomasth@google.com", "anki-team@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "field-classification-model-caching",
