@@ -13,6 +13,7 @@
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/test/ash_test_helper.h"
 #include "ash/wallpaper/test_wallpaper_controller_client.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/files/scoped_temp_dir.h"
@@ -25,15 +26,17 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_window_closer.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "components/account_id/account_id_literal.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -61,26 +64,37 @@ class DemoModeIdleHandlerTestBase : public ChromeAshTestBase {
  protected:
   DemoModeIdleHandlerTestBase()
       : ChromeAshTestBase(std::make_unique<content::BrowserTaskEnvironment>(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME)),
-        profile_manager_(TestingBrowserProcess::GetGlobal()) {
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME)) {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kDemoSessionToSNotification},
         /*disabled_features=*/{});
   }
   ~DemoModeIdleHandlerTestBase() override = default;
 
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    ChromeAshTestBase::SetUpInitParams(init_params);
+    init_params.users.clear();
+    init_params.user_session_test_environment_delegate =
+        std::make_unique<test::ChromeUserSessionTestEnvironmentDelegate>(
+            TestingBrowserProcess::GetGlobal());
+  }
+
   void SetUp() override {
     ChromeAshTestBase::SetUp();
-    ASSERT_TRUE(profile_manager_.SetUp());
-    profile_ = profile_manager_.CreateTestingProfile(kUser);
-    fake_user_manager_->AddUser(kAccountId);
 
     wallpaper_controller_ = Shell::Get()->wallpaper_controller();
     wallpaper_controller_->SetClient(&client_);
     client_.set_fake_files_id_for_account_id(kAccountId, "wallpaper_files_id");
     wallpaper_controller_->set_bypass_decode_for_testing();
 
-    fake_user_manager_->LoginUser(kAccountId);
+    ASSERT_TRUE(
+        ash_test_helper()->user_session_test_environment().AddRegularUser(
+            kAccountId));
+    ash_test_helper()->user_session_test_environment().LogIn(kAccountId);
+    SimulateUserLogin({.account_id = kAccountId});
+    profile_ = Profile::FromBrowserContext(
+        BrowserContextHelper::Get()->GetBrowserContextByAccountId(kAccountId));
+    ASSERT_TRUE(profile_);
 
     // We need to create `metrics_recorder_` in idle handler unit test here
     // because `DemoModeIdleHandler::OnIdle()` will
@@ -102,15 +116,13 @@ class DemoModeIdleHandlerTestBase : public ChromeAshTestBase {
   }
 
   void TearDown() override {
-    // metrics_recorder_ needs to be destroyed first because it still needs some
-    // services to report some metrics.
-    metrics_recorder_.reset();
-    ChromeAshTestBase::TearDown();
-    profile_ = nullptr;
-    profile_manager_.DeleteAllTestingProfiles();
     demo_mode_idle_handler_.reset();
     window_closer_.reset();
     browser_controller_.reset();
+    metrics_recorder_.reset();
+    wallpaper_controller_ = nullptr;
+    profile_ = nullptr;
+    ChromeAshTestBase::TearDown();
   }
 
   void SimulateUserActivity() {
@@ -135,22 +147,16 @@ class DemoModeIdleHandlerTestBase : public ChromeAshTestBase {
   }
 
  private:
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_{std::make_unique<FakeChromeUserManager>()};
+  base::test::ScopedFeatureList scoped_feature_list_;
   int launch_demo_app_count_ = 0;
-  TestingProfileManager profile_manager_;
 
+  raw_ptr<Profile> profile_ = nullptr;
+  TestWallpaperControllerClient client_;
+  raw_ptr<WallpaperControllerImpl> wallpaper_controller_ = nullptr;
+  std::unique_ptr<DemoSessionMetricsRecorder> metrics_recorder_;
   std::unique_ptr<BrowserControllerImpl> browser_controller_;
   std::unique_ptr<DemoModeWindowCloser> window_closer_;
   std::unique_ptr<DemoModeIdleHandler> demo_mode_idle_handler_;
-  raw_ptr<Profile> profile_ = nullptr;
-
-  TestWallpaperControllerClient client_;
-  // Disable the dangling detection since we don't own `wallpaper_controller_`.
-  raw_ptr<WallpaperControllerImpl, DisableDanglingPtrDetection>
-      wallpaper_controller_ = nullptr;
-  std::unique_ptr<DemoSessionMetricsRecorder> metrics_recorder_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // DemoIdleHandler test for shopper session.
