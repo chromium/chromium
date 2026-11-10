@@ -11,4 +11,290 @@
 <!-- TODO(b/573316647): Remove translateable="false" once search synonyms are
      finalized. -->
 <grit-part>
+  <!-- Appearance section. -->
+  <message name="IDS_SETTINGS_TAG_APPEARANCE" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Appearance') that users might type in the Settings search bar to find the Appearance settings page (browser themes, dark mode, toolbar customization, bookmarks bar, tab position, and page zoom). Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    palette, design, customizations, page zoom, show, home, button, layout, visual, style, nicer, prettier
+  </message>
+  <message name="IDS_SETTINGS_TAG_THEME" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Theme') that users might type in the Settings search bar to find the setting for choosing a browser theme. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    backgrounds, wallpaper, colors, dark, mode, style, aesthetic
+  </message>
+  <message name="IDS_SETTINGS_TAG_COLOR_SCHEME_MODE" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Mode') that users might type in the Settings search bar to find the setting for choosing a light, dark or system color scheme. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    dark, light, night, black, white, dim, system
+  </message>
+  <message name="IDS_SETTINGS_TAG_CUSTOMIZE_TOOLBAR" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Customize your toolbar') that users might type in the Settings search bar to find the setting for choosing which buttons are pinned to the toolbar. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    buttons, icons, pin, unpin, actions, navigation, shortcuts
+  </message>
+  <message name="IDS_SETTINGS_TAG_SHOW_HOME_BUTTON" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Show home button') that users might type in the Settings search bar to find the toggle for showing the home button on the toolbar. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    house, icon, toolbar, homepage, start, url, shortcut
+  </message>
+  <message name="IDS_SETTINGS_TAG_SHOW_BOOKMARKS_BAR" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Show bookmarks bar') that users might type in the Settings search bar to find the setting for showing the bookmarks bar. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    toolbar, favorites, top, display, shortcuts
+  </message>
+  <message name="IDS_SETTINGS_TAG_TAB_STRIP_POSITION" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Tab position') that users might type in the Settings search bar to find the setting for showing tabs at the top or on the side of the window. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    layout, side, vertical, screen, space, monitors, organization
+  </message>
+  <message name="IDS_SETTINGS_TAG_SIDE_PANEL_POSITION" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Side panel position') that users might type in the Settings search bar to find the setting for showing the side panel on the left or right of the window. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    left, right, sidebar, drawer, alignment, dock
+  </message>
+  <message name="IDS_SETTINGS_TAG_PAGE_ZOOM" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Page zoom') that users might type in the Settings search bar to find the setting for the default zoom level of web pages. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    magnification, scale, size, bigger, smaller, percentage, screen
+  </message>
+
+  <!-- Security section. -->
+  <message name="IDS_SETTINGS_TAG_SECURITY" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Security') that users might type in the Settings search bar to find the Security settings subpage (Safe Browsing, HTTPS upgrades, secure DNS, security keys, and certificates). Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    advanced, browsing, certificates, dangerous, safe, sites, ssl
+  </message>
+  <message name="IDS_SETTINGS_TAG_SAFE_BROWSING" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Safe Browsing') that users might type in the Settings search bar to find the setting for choosing the level of Safe Browsing protection against dangerous websites, downloads, and extensions. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    phishing, malware, dangerous, scam, virus, protection, shield
+  </message>
+  <message name="IDS_SETTINGS_TAG_PASSWORDS_LEAK_DETECTION" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Warn you if a password was compromised in a data breach') that users might type in the Settings search bar to find the toggle that warns the user if a saved password was compromised in a data breach. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    breach, leak, exposed, compromised, credentials, sign-in, alert, warning, check, passkey
+  </message>
+  <message name="IDS_SETTINGS_TAG_SECURE_CONNECTIONS" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Secure connections') that users might type in the Settings search bar to find the Secure connections section in Security settings (HTTPS connection upgrades, secure DNS, security keys, and certificates). Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    https, ssl, tls, dns, doh, certificates, keys, network, encrypted, advanced, padlock
+  </message>
+  <message name="IDS_SETTINGS_TAG_HTTPS_ONLY_MODE" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Always use secure connections') that users might type in the Settings search bar to find the setting that upgrades navigations to HTTPS and warns before loading sites that do not support secure connections. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    https, ssl, tls, encryption, insecure, padlock
+  </message>
+  <message name="IDS_SETTINGS_TAG_SECURE_DNS" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Use secure DNS') that users might type in the Settings search bar to find the setting for encrypting domain name lookups using DNS-over-HTTPS (DoH). Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    doh, domain, lookup, resolver, cloudflare, network
+  </message>
+  <message name="IDS_SETTINGS_TAG_SECURITY_KEYS" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Manage security keys') that users might type in the Settings search bar to find the subpage for managing PINs, fingerprints, and resetting physical FIDO2 security keys. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    yubikey, titan, fido, pin, hardware, 2fa, mfa
+  </message>
+  <message name="IDS_SETTINGS_TAG_MANAGE_CERTIFICATES" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Manage certificates') that users might type in the Settings search bar to find the setting for viewing and managing SSL/TLS client certificates and trusted certificate authorities. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    ssl, tls, ca, root, authority, trust, x509
+  </message>
+
+  <!-- Privacy and Privacy Guide section. -->
+  <message name="IDS_SETTINGS_TAG_PRIVACY" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Privacy and security') that users might type in the Settings search bar to find the Privacy and security settings page (cookies, tracking protection, site permissions, and browsing safety). Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    cookies, block, track, safety, check, clear, history, site, settings, permissions, lock
+  </message>
+  <message name="IDS_SETTINGS_TAG_PRIVACY_GUIDE" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Privacy Guide') that users might type in the Settings search bar to find the step-by-step guided tour of key Chrome privacy and security controls. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    wizard, tour, checkup, walkthrough
+  </message>
+  <message name="IDS_SETTINGS_TAG_THIRD_PARTY_COOKIES" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Third-party cookies') that users might type in the Settings search bar to find the setting that controls how websites use third-party cookies to track browsing across sites. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    block, data, site, tracking
+  </message>
+
+  <!-- Safety Hub and Clear browsing data section. -->
+  <message name="IDS_SETTINGS_TAG_CLEAR_BROWSING_DATA" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Delete browsing data') that users might type in the Settings search bar to find the setting to delete browsing history, cookies, cached images, and temporary files. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    cache, clear, cookies, history
+  </message>
+  <message name="IDS_SETTINGS_TAG_SAFETY_HUB_PAGE_CARD_SECTION_HEADER" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Safety at a glance') that users might type in the Settings search bar to find the Safety Check overview section showing proactive safety alerts, compromised password warnings, and security status. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    check, checkup, status, recommendations, alerts, audit, breach, scan, passwords, permissions, update
+  </message>
+  <message name="IDS_SETTINGS_TAG_SAFETY_HUB" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Safety Check') that users might type in the Settings search bar to find the Safety Check page that checks for compromised passwords, dangerous extensions, unused site permissions, and Chrome updates. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    passwords, permissions, recommendations, update
+  </message>
+
+  <!-- Site settings section. -->
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Site settings') that users might type in the Settings search bar to find the Site settings page that controls what information websites can use and what content they can show. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    camera, data, location, microphone, notifications, permissions, pop-ups
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_ALL_SITES" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'View permissions and data stored across sites') that users might type in the Settings search bar to find the subpage to inspect and clear cookies, storage, and permissions for individual websites. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    storage, quota, cache, localstorage, domain, cookies
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_LOCATION" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Location') that users might type in the Settings search bar to find the site setting that controls whether websites can ask to see your physical geographic location. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    gps, geolocation, map, coordinates
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_CAMERA" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Camera') that users might type in the Settings search bar to find the site setting to select your default webcam and control which websites are allowed to use your camera. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    webcam, video, call, meet, recording, stream
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_MIC" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Microphone') that users might type in the Settings search bar to find the site setting to select your default audio input device and control which sites can record from your microphone. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    mic, audio, voice, input, headset, call, recording, mute
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_NOTIFICATIONS" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Notifications') that users might type in the Settings search bar to find the site setting that controls which websites can send desktop notifications and configures quieter notification prompts. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    alerts, push, banners, prompts, spam, quiet
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_POPUPS_REDIRECTS" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Pop-ups and redirects') that users might type in the Settings search bar to find the site setting to block websites from automatically opening pop-up windows or redirecting tabs. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    popup, blocker, adblock, spam, windows, allow, block
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_ADS" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Intrusive ads') that users might type in the Settings search bar to find the site setting to block ads on websites known to show intrusive, misleading, or disruptive advertisements. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    adblock, banners, popups, spam, misleading, block
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_JAVASCRIPT" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'JavaScript') that users might type in the Settings search bar to find the site setting to allow or block websites from running JavaScript code in the browser. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    js, scripts, code, execution, noscript, developer
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_IMAGES" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Images') that users might type in the Settings search bar to find the site setting that controls whether websites are allowed to load and display images. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    pictures, photos, graphics, media, load, display
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_SOUND" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Sound') that users might type in the Settings search bar to find the site setting to allow or mute audio playback across websites and manage per-site sound exceptions. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    audio, mute, volume, speaker, music, noise, silence
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_AUTOMATIC_DOWNLOADS" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Automatic downloads') that users might type in the Settings search bar to find the site setting that controls whether websites can automatically download multiple files in sequence. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    files, batch, multiple, bulk, save, prompt
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_PDF_DOCUMENTS" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'PDF documents') that users might type in the Settings search bar to find the site setting that chooses whether Chrome opens PDF files directly in a tab or downloads them. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    acrobat, reader, viewer, download, preview, adobe
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_CLIPBOARD" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Clipboard') that users might type in the Settings search bar to find the site setting that controls whether websites can ask to read text and images saved to your system clipboard. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    copy, paste, text, images, buffer, access
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_HANDLERS" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Protocol handlers') that users might type in the Settings search bar to find the site setting to allow web apps to open special link types such as mailto:. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    mailto, webcal, gmail, links, scheme
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_ZOOM_LEVELS" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Zoom levels') that users might type in the Settings search bar to find the site setting to view and remove custom page zoom levels saved for specific websites. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    magnification, scale, size, percentage, enlarge, shrink
+  </message>
+
+  <!-- People section. -->
+  <message name="IDS_SETTINGS_TAG_HOME" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Home') that users might type in the Settings search bar to find the central Settings Home page for managing Google Account, Chrome profile, quick actions, data import, and default browser. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    you, google, people, services, account, profile, user, sync, sign-in, avatar, identity, personalize, default, browser, import
+  </message>
+  <message name="IDS_SETTINGS_TAG_PEOPLE" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'You and Google') that users might type in the Settings search bar to find the settings page to manage your signed-in Google Account, Chrome profile, and sync preferences. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    home, people, services, account, profile, user, sync, sign-in, avatar, identity, personalize, default, browser
+  </message>
+  <message name="IDS_SETTINGS_TAG_YOUR_ACCOUNT" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Your account in Chrome') that users might type in the Settings search bar to find the subpage to manage how your Google Account data, sync settings, and encryption passphrase work in Chrome. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    sync, services, people, profile, google, backup, passphrase, encryption, data, manage
+  </message>
+  <message name="IDS_SETTINGS_TAG_SYNC_AND_GOOGLE_SERVICES" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Sync and Google services') that users might type in the Settings search bar to find the subpage that controls what browsing data syncs across signed-in devices and configures Google service integrations. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    data, encryption, manage, personalization
+  </message>
+  <message name="IDS_SETTINGS_TAG_MANAGE_GOOGLE_ACCOUNT" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Manage Your Google Account') that users might type in the Settings search bar to find the link row that opens the Google Account dashboard for security, privacy, and personal info. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    security, privacy, personal info, data, password, subscription, profile
+  </message>
+  <message name="IDS_SETTINGS_TAG_CUSTOMIZE_PROFILE" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Customize your Chrome profile') that users might type in the Settings search bar to find the subpage to personalize your profile name, theme color, and avatar image. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    theme, color, avatar, name, background, account
+  </message>
+  <message name="IDS_SETTINGS_TAG_SIGN_OUT" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Sign out') that users might type in the Settings search bar to find the action to sign out of your Google Account and stop sync on this profile. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    logout, quit, exit, clear, session, switch, user, stop
+  </message>
+  <message name="IDS_SETTINGS_TAG_IMPORT_DATA" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Import bookmarks and settings') that users might type in the Settings search bar to find the dialog to import bookmarks, saved passwords, and browsing history from other browsers. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    safari, edge, firefox, restore, backup, transfer, setup, old
+  </message>
+
+  <!-- Autofill and passwords section. -->
+  <message name="IDS_SETTINGS_TAG_PASSWORD_MANAGER" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Google Password Manager') that users might type in the Settings search bar to find the setting to manage and autofill saved passwords, passkeys, and sign-in credentials. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    credentials, sign-in, passkey, lock, vault, keys
+  </message>
+  <message name="IDS_SETTINGS_TAG_PASSWORDS" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Passwords') that users might type in the Settings search bar to find the setting to manage saved website usernames and passwords stored in Google Password Manager. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    credentials, passkey, sign-in
+  </message>
+  <message name="IDS_SETTINGS_TAG_PASSKEYS" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Passkeys') that users might type in the Settings search bar to find the setting to manage cryptographic passkeys saved on this device for passwordless sign-in. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    face, fingerprint, sign-in, unlock
+  </message>
+  <message name="IDS_SETTINGS_TAG_PAYMENT_METHODS" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Payment methods') that users might type in the Settings search bar to find the subpage to save and manage payment cards and billing info for secure checkout. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    credit cards, debit, purchase, billing, money, visa, mastercard, wallet, security, pay
+  </message>
+  <message name="IDS_SETTINGS_TAG_PAYMENTS" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Payments') that users might type in the Settings search bar to find the setting to configure payment methods, credit cards, IBANs, and loyalty cards for checkout. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    cards, credit, ibans, methods, wallet
+  </message>
+  <message name="IDS_SETTINGS_TAG_CREDIT_AND_DEBIT_CARDS" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Credit &amp; debit cards') that users might type in the Settings search bar to find the setting to add, edit, or remove saved credit and debit cards used for checkout autofill. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    mastercard, methods, payment, visa, debit, credit
+  </message>
+  <message name="IDS_SETTINGS_TAG_IBANS" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'IBANs') that users might type in the Settings search bar to find the setting to save and autofill International Bank Account Numbers (IBANs) for bank payments. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    account, bank, payment, transfer
+  </message>
+  <message name="IDS_SETTINGS_TAG_LOYALTY_CARDS" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Loyalty cards') that users might type in the Settings search bar to find the setting to manage loyalty and rewards cards linked from Google Wallet for online shopping. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    membership, rewards, store
+  </message>
+  <message name="IDS_SETTINGS_TAG_CONTACT_INFO" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Contact info') that users might type in the Settings search bar to find the subpage to manage saved contact details including names, phone numbers, email addresses, and street addresses. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    addresses, email, phone, profile, street, zip
+  </message>
+  <message name="IDS_SETTINGS_TAG_ADDRESSES_AND_MORE" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Addresses and more') that users might type in the Settings search bar to find the subpage to autofill street addresses, phone numbers, and email addresses on forms. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    autofill, shipping, home, address, work, checkout, post, code, zip, phone, number
+  </message>
+  <message name="IDS_SETTINGS_TAG_ADDRESSES" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Addresses') that users might type in the Settings search bar to find the setting to save and edit street addresses, zip codes, and locations for automatic form filling. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    address, billing, home, location, shipping, work, zip
+  </message>
+  <message name="IDS_SETTINGS_TAG_IDENTITY_DOCS" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Identity docs') that users might type in the Settings search bar to find the subpage to store and autofill official identity documents such as passports and driver's licenses. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    document, drivers, id, license, passport
+  </message>
+  <message name="IDS_SETTINGS_TAG_DRIVERS_LICENSES" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Driver's licenses') that users might type in the Settings search bar to find the setting to save driver's license details for autofill on verification and travel forms. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    document, driving, permit, id
+  </message>
+  <message name="IDS_SETTINGS_TAG_IDENTITY_CARDS" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Identity cards') that users might type in the Settings search bar to find the setting to manage national and state identity card numbers for form autofill. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    document, id
+  </message>
+  <message name="IDS_SETTINGS_TAG_PASSPORTS" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Passports') that users might type in the Settings search bar to find the setting to save passport numbers and expiration dates for airline check-in and travel bookings. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    document, identity, travel
+  </message>
+  <message name="IDS_SETTINGS_TAG_TRAVEL" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Travel') that users might type in the Settings search bar to find the subpage to manage saved travel preferences, flight details, and vehicle information for autofill. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    boarding, flights, hotel, info, pass, vehicles
+  </message>
+  <message name="IDS_SETTINGS_TAG_TRAVEL_INFO" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Travel info') that users might type in the Settings search bar to find the setting to manage saved flight, hotel, and reservation details for travel autofill. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    booking, documents, flights, hotel
+  </message>
+  <message name="IDS_SETTINGS_TAG_VEHICLES" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Vehicles') that users might type in the Settings search bar to find the setting to save vehicle make, model, license plate, and registration details for forms. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    car, license, plate, registration, vin
+  </message>
+  <message name="IDS_SETTINGS_TAG_AUTOFILL_SETTINGS" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Autofill settings') that users might type in the Settings search bar to find the section to configure general autofill behavior and enhanced form-filling suggestions. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    behavior, fill, forms, toggle, suggestions
+  </message>
+  <message name="IDS_SETTINGS_TAG_SHOPPING" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Shopping') that users might type in the Settings search bar to find the subpage to manage shopping autofill preferences, price tracking, discounts, and order details. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    deals, discounts, coupons, price, tracking, cart, orders, checkout, buy, store
+  </message>
+  <message name="IDS_SETTINGS_TAG_SUGGESTIONS_FROM_GEMINI" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Suggestions from Gemini') that users might type in the Settings search bar to find the setting that controls AI-powered form filling and autofill predictions provided by Gemini in Chrome. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    ai, autofill, smart, predictions, forms, assistant, help, fill, spark
+  </message>
+  <message name="IDS_SETTINGS_TAG_GOOGLE_WALLET" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Google Wallet') that users might type in the Settings search bar to find the link row to open Google Wallet to manage payment methods, loyalty cards, passes, and tickets. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    loyalty, passes, payment, tickets
+  </message>
+
+  <!-- Performance section. -->
+  <message name="IDS_SETTINGS_TAG_PERFORMANCE" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Performance') that users might type in the Settings search bar to find the Performance settings page to manage memory usage, battery saving, tab alerts, and page preloading. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    speed, ram, lag, freeze, crash, resource, usage, battery, optimizer, slow
+  </message>
+  <message name="IDS_SETTINGS_TAG_MEMORY_SAVER" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Memory Saver') that users might type in the Settings search bar to find the setting that frees up memory from inactive tabs to keep active tabs running smoothly. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    performance, ram, speed up, active, tabs, slow, browser, optimize, battery
+  </message>
+  <message name="IDS_SETTINGS_TAG_ENERGY_SAVER" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Energy Saver') that users might type in the Settings search bar to find the setting that conserves battery power by limiting background activity and visual effects. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    activity, performance, battery, frame, rate, save, power, background, energy
+  </message>
+
+  <!-- AI controls section. -->
+  <message name="IDS_SETTINGS_TAG_AI_CONTROLS" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'AI controls') that users might type in the Settings search bar to find the AI controls settings page to manage AI-powered features in Chrome. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    gemini, spark, assistant, artificial, intelligence, smart, models, innovations, experimental, labs, features
+  </message>
+  <message name="IDS_SETTINGS_TAG_HELP_ME_WRITE" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Help me write') that users might type in the Settings search bar to find the setting that enables AI writing assistance for drafting and refining text on the web. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    compose, draft, rewrite, grammar, tone, text, ai
+  </message>
+  <message name="IDS_SETTINGS_TAG_HISTORY_SEARCH" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'History search, powered by AI') that users might type in the Settings search bar to find the setting that enables conversational AI search across browsing history. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    semantic, recall, past, memory, visited, journeys
+  </message>
+
+  <!-- Search engine, Default browser, and On startup sections. -->
+  <message name="IDS_SETTINGS_TAG_SEARCH_ENGINE" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Search engine') that users might type in the Settings search bar to find the Search engine settings page to choose the default search provider and site search shortcuts. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    address, bar, browser, default, manage, query, shortcuts
+  </message>
+  <message name="IDS_SETTINGS_TAG_DEFAULT_BROWSER" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Default browser') that users might type in the Settings search bar to find the Default browser settings page to make Chrome the default application for web links. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    web, links, browser, primary, protocols, default, startup
+  </message>
+  <message name="IDS_SETTINGS_TAG_ON_STARTUP" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'On startup') that users might type in the Settings search bar to find the On startup settings page to configure which pages or tabs open when Chrome launches. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    home, launch, open, page, settings, start
+  </message>
+
+  <!-- Languages section. -->
+  <message name="IDS_SETTINGS_TAG_LANGUAGES" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Languages') that users might type in the Settings search bar to find the Languages settings page to manage preferred languages, spell check, and translation options. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    spellcheck, preferred, bilingual, translation, grammar, spelling
+  </message>
+  <message name="IDS_SETTINGS_TAG_PREFERRED_LANGUAGES" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Preferred languages') that users might type in the Settings search bar to find the setting to add, remove, and reorder preferred languages for web content and Chrome UI. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    locale, foreign, bilingual, order, priority, display
+  </message>
+  <message name="IDS_SETTINGS_TAG_SPELL_CHECK" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Spell check') that users might type in the Settings search bar to find the setting to check spelling and grammar when typing text in web pages. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    errors, grammar, spelling, typo, writing
+  </message>
+
+  <!-- Downloads, System, and Reset sections. -->
+  <message name="IDS_SETTINGS_TAG_DOWNLOADS" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Downloads') that users might type in the Settings search bar to find the Downloads settings page to configure the default download folder and download prompts. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    folder, location, save, settings
+  </message>
+  <message name="IDS_SETTINGS_TAG_SYSTEM" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'System') that users might type in the Settings search bar to find the System settings page to configure background apps, hardware acceleration, and proxy settings. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    acceleration, apps, background, graphics, hardware, proxy, settings, general, startup, downloads, reset, restore, launch
+  </message>
+  <message name="IDS_SETTINGS_TAG_RESET_SETTINGS" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Reset settings') that users might type in the Settings search bar to find the Reset settings page to restore Chrome settings to their original defaults. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    clean, defaults, factory, restore, slate
+  </message>
+
+  <!-- Accessibility and About sections. -->
+  <message name="IDS_SETTINGS_TAG_ACCESSIBILITY" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Accessibility') that users might type in the Settings search bar to find the Accessibility settings page to configure captions, screen readers, text cursor navigation, and display aids. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    subtitles, caret, browsing, swipe, gesture, accessibility, extensions, larger, text, zoom, vision, blind, deaf
+  </message>
+  <message name="IDS_SETTINGS_TAG_LIVE_CAPTION" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Live Caption') that users might type in the Settings search bar to find the setting that automatically generates captions for English and other supported audio and video media. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    audio, speech, subtitles, text, transcription
+  </message>
+  <message name="IDS_SETTINGS_TAG_ABOUT_CHROME" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'About Chrome') that users might type in the Settings search bar to find the About Chrome page to check the browser version, install updates, and view help and legal info. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas." translateable="false">
+    build, google, info, settings, update, version
+  </message>
 </grit-part>
