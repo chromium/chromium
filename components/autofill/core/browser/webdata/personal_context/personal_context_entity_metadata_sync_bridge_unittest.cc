@@ -81,16 +81,37 @@ EntitySuppressionEntry CreateDriversLicenseEntry() {
   };
 }
 
-// Returns the key under which `Suppress()` stores `entry`.
-EntitySuppressionKey ToKey(const EntitySuppressionEntry& entry) {
+// Returns the hash under which `Suppress()` stores `entry`.
+EntitySuppressionHash ToKey(const EntitySuppressionEntry& entry) {
   return GetEntitySuppressionHash(entry);
+}
+
+// TODO(crbug.com/501036619): Remove once legacy entries are no longer
+// supported.
+sync_pb::AutofillEntitySuppressionSpecifics CreateLegacyKeySpecifics(
+    const std::string& guid,
+    const EntitySuppressionEntry& entry,
+    base::Time creation_time = base::Time::Now()) {
+  sync_pb::AutofillEntitySuppressionSpecifics specifics;
+  specifics.set_guid(guid);
+  specifics.set_creation_time_windows_epoch_micros(
+      creation_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  sync_pb::EntitySuppressionKey* key =
+      specifics.mutable_entity_suppression_key();
+  key->set_entity_type_name(std::string(entry.type.name_as_string()));
+  for (const auto& [attr_type, hash] : entry.attribute_hashes) {
+    sync_pb::EntitySuppressionKey::Attribute* attr = key->add_attributes();
+    attr->set_name(std::string(attr_type.name_as_string()));
+    attr->set_value_hash(hash.value().data(), hash.value().size());
+  }
+  return specifics;
 }
 
 std::unique_ptr<syncer::EntityChange> CreateAddChange(
     const std::string& guid,
     const EntitySuppressionEntry& entry) {
   return syncer::EntityChange::CreateAdd(
-      guid, std::move(*CreateEntityDataFromEntitySuppressionKey(
+      guid, std::move(*CreateEntityDataFromEntitySuppressionHash(
                 guid, ToKey(entry), base::Time::Now(), /*base_specifics=*/{})));
 }
 
@@ -98,7 +119,7 @@ std::unique_ptr<syncer::EntityChange> CreateUpdateChange(
     const std::string& guid,
     const EntitySuppressionEntry& entry) {
   return syncer::EntityChange::CreateUpdate(
-      guid, std::move(*CreateEntityDataFromEntitySuppressionKey(
+      guid, std::move(*CreateEntityDataFromEntitySuppressionHash(
                 guid, ToKey(entry), base::Time::Now(), /*base_specifics=*/{})));
 }
 
@@ -144,7 +165,7 @@ class PersonalContextEntityMetadataSyncBridgeTest : public testing::Test {
   void WriteToStore(const std::string& guid,
                     const EntitySuppressionEntry& entry,
                     base::Time creation_time = base::Time::Now()) {
-    WriteEncryptedToStore(guid, CreateSpecificsFromEntitySuppressionKey(
+    WriteEncryptedToStore(guid, CreateSpecificsFromEntitySuppressionHash(
                                     guid, ToKey(entry), creation_time,
                                     /*base_specifics=*/{})
                                     .SerializeAsString());
@@ -163,8 +184,8 @@ class PersonalContextEntityMetadataSyncBridgeTest : public testing::Test {
       const EntitySuppressionHash hash(static_cast<uint32_t>(i));
       std::string encrypted_blob;
       ASSERT_TRUE(encryptor().EncryptString(
-          CreateSpecificsFromEntitySuppressionKey(guid, hash, creation_time,
-                                                  /*base_specifics=*/{})
+          CreateSpecificsFromEntitySuppressionHash(guid, hash, creation_time,
+                                                   /*base_specifics=*/{})
               .SerializeAsString(),
           &encrypted_blob));
       batch->WriteData(guid, encrypted_blob);
@@ -331,7 +352,7 @@ TEST_F(PersonalContextEntityMetadataSyncBridgeTest, DataIsEncryptedInStore) {
   EXPECT_NE(records[0].value, decrypted_plaintext);
   sync_pb::AutofillEntitySuppressionSpecifics specifics;
   ASSERT_TRUE(specifics.ParseFromString(decrypted_plaintext));
-  EXPECT_EQ(CreateEntitySuppressionKeyFromSpecifics(specifics), ToKey(entry));
+  EXPECT_EQ(CreateEntitySuppressionHashFromSpecifics(specifics), ToKey(entry));
 }
 
 // Tests that locally suppressing an entry adds it to local suppressions,
@@ -906,7 +927,7 @@ TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
       sync_pb::AutofillEntitySuppressionSpecifics().SerializeAsString());
   // Specifics whose `guid` does not match the storage record ID are invalid.
   WriteEncryptedToStore("guid5",
-                        CreateSpecificsFromEntitySuppressionKey(
+                        CreateSpecificsFromEntitySuppressionHash(
                             "other_guid", ToKey(CreateDriversLicenseEntry()),
                             base::Time::Now(), /*base_specifics=*/{})
                             .SerializeAsString());
@@ -932,7 +953,7 @@ TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
   CreateBridge();
   sync_pb::EntitySpecifics entity_specifics;
   *entity_specifics.mutable_autofill_entity_suppression() =
-      CreateSpecificsFromEntitySuppressionKey(
+      CreateSpecificsFromEntitySuppressionHash(
           "guid1", ToKey(CreatePassportEntry()), base::Time::Now(),
           /*base_specifics=*/{});
 
@@ -1023,23 +1044,37 @@ TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
   EXPECT_TRUE(bridge().Suppress(CreatePassportEntry()));
 }
 
-// Tests that a legacy record with full hashes from the store suppresses its
-// entry and is committed unchanged.
+// Tests that a legacy record with full hashes (`entity_suppression_key`) in the
+// store suppresses its entry, is migrated in-place to also populate
+// `suppression.hash` and `entity_suppression_hash`, and preserves
+// `entity_suppression_key` across `GetDataForCommit()`.
 // TODO(crbug.com/501036619): Remove once legacy entries are no longer
 // supported.
 TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
-       LegacyEntryFromStore_IsSuppressedAndCommittedUnchanged) {
+       LegacyKeyFromStore_IsMigratedOnLoad) {
   EntitySuppressionEntry entry = CreatePassportEntry();
-  const sync_pb::AutofillEntitySuppressionSpecifics specifics =
-      CreateSpecificsFromEntitySuppressionKey(
-          "guid1", LegacyEntitySuppressionEntry(entry), base::Time::Now(),
-          /*base_specifics=*/{});
-  WriteEncryptedToStore("guid1", specifics.SerializeAsString());
+  const uint32_t hash = GetEntitySuppressionHash(entry).value();
+  const sync_pb::AutofillEntitySuppressionSpecifics legacy_specifics =
+      CreateLegacyKeySpecifics("guid1", entry);
+  WriteEncryptedToStore("guid1", legacy_specifics.SerializeAsString());
+
+  sync_pb::AutofillEntitySuppressionSpecifics expected_specifics =
+      legacy_specifics;
+  expected_specifics.mutable_suppression()->set_hash(hash);
+  expected_specifics.set_entity_suppression_hash(hash);
+
+  EXPECT_CALL(mock_processor(), Put("guid1", _, _));
+  EXPECT_CALL(observer(), OnSuppressionsChanged());
   CreateBridge();
 
   EXPECT_TRUE(bridge().IsSuppressed(entry));
+  EXPECT_THAT(bridge().GetSuppressions(), ElementsAre(ToKey(entry)));
   EXPECT_CALL(mock_processor(), Put).Times(0);
   EXPECT_FALSE(bridge().Suppress(entry));
+
+  syncer::DataTypeStore::RecordList records = ReadAllRecordsFromStore();
+  ASSERT_EQ(records.size(), 1u);
+  EXPECT_THAT(DecryptRecord(records[0]), EqualsProto(expected_specifics));
 
   std::unique_ptr<syncer::DataBatch> batch =
       bridge().GetDataForCommit({"guid1"});
@@ -1047,7 +1082,7 @@ TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
   syncer::KeyAndData data = batch->Next();
   EXPECT_EQ(data.first, "guid1");
   EXPECT_THAT(data.second->specifics.autofill_entity_suppression(),
-              EqualsProto(specifics));
+              EqualsProto(expected_specifics));
 }
 
 // Tests that unsuppressing an entry also deletes its legacy record.
@@ -1056,11 +1091,8 @@ TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
 TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
        LegacyEntryFromStore_IsUnsuppressed) {
   EntitySuppressionEntry entry = CreatePassportEntry();
-  WriteEncryptedToStore("guid1",
-                        CreateSpecificsFromEntitySuppressionKey(
-                            "guid1", LegacyEntitySuppressionEntry(entry),
-                            base::Time::Now(), /*base_specifics=*/{})
-                            .SerializeAsString());
+  WriteEncryptedToStore(
+      "guid1", CreateLegacyKeySpecifics("guid1", entry).SerializeAsString());
   CreateBridge();
   ASSERT_TRUE(bridge().IsSuppressed(entry));
 
@@ -1073,27 +1105,125 @@ TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
   EXPECT_TRUE(ReadAllRecordsFromStore().empty());
 }
 
-// Tests that a legacy record with full hashes from Sync suppresses its entry.
+// Tests that a legacy record with full hashes (`entity_suppression_key`)
+// received during `MergeFullSyncData` suppresses its entry and is persisted
+// without triggering a sync re-upload.
 // TODO(crbug.com/501036619): Remove once legacy entries are no longer
 // supported.
 TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
-       LegacyEntryFromSync_IsSuppressed) {
+       LegacyKeyFromMergeFullSyncData_IsSuppressedWithoutResync) {
   CreateBridge();
   EntitySuppressionEntry entry = CreatePassportEntry();
+  const sync_pb::AutofillEntitySuppressionSpecifics legacy_specifics =
+      CreateLegacyKeySpecifics("guid1", entry);
+
+  syncer::EntityChangeList remote_changes;
+  remote_changes.push_back(syncer::EntityChange::CreateAdd(
+      "guid1", std::move(*CreateEntityDataFromEntitySuppressionSpecifics(
+                   legacy_specifics))));
+
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+  EXPECT_CALL(observer(), OnSuppressionsChanged());
+  bridge().MergeFullSyncData(bridge().CreateMetadataChangeList(),
+                             std::move(remote_changes));
+
+  EXPECT_TRUE(bridge().IsSuppressed(entry));
+  EXPECT_THAT(bridge().GetSuppressions(), ElementsAre(ToKey(entry)));
+  syncer::DataTypeStore::RecordList records = ReadAllRecordsFromStore();
+  ASSERT_EQ(records.size(), 1u);
+  EXPECT_THAT(DecryptRecord(records[0]), EqualsProto(legacy_specifics));
+}
+
+// Tests that a legacy record with full hashes (`entity_suppression_key`)
+// received during `ApplyIncrementalSyncChanges` suppresses its entry and is
+// persisted without triggering a sync re-upload.
+// TODO(crbug.com/501036619): Remove once legacy entries are no longer
+// supported.
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
+       LegacyKeyFromApplyIncrementalSyncChanges_IsSuppressedWithoutResync) {
+  CreateBridge();
+  EntitySuppressionEntry entry = CreatePassportEntry();
+  const sync_pb::AutofillEntitySuppressionSpecifics legacy_specifics =
+      CreateLegacyKeySpecifics("guid1", entry);
+
   syncer::EntityChangeList add_changes;
   add_changes.push_back(syncer::EntityChange::CreateAdd(
-      "guid1", std::move(*CreateEntityDataFromEntitySuppressionKey(
-                   "guid1", LegacyEntitySuppressionEntry(entry),
-                   base::Time::Now(), /*base_specifics=*/{}))));
+      "guid1", std::move(*CreateEntityDataFromEntitySuppressionSpecifics(
+                   legacy_specifics))));
 
+  EXPECT_CALL(mock_processor(), Put).Times(0);
   EXPECT_CALL(observer(), OnSuppressionsChanged());
   bridge().ApplyIncrementalSyncChanges(bridge().CreateMetadataChangeList(),
                                        std::move(add_changes));
 
   EXPECT_TRUE(bridge().IsSuppressed(entry));
-  EXPECT_THAT(
-      bridge().GetSuppressions(),
-      ElementsAre(EntitySuppressionKey(LegacyEntitySuppressionEntry(entry))));
+  EXPECT_THAT(bridge().GetSuppressions(), ElementsAre(ToKey(entry)));
+  syncer::DataTypeStore::RecordList records = ReadAllRecordsFromStore();
+  ASSERT_EQ(records.size(), 1u);
+  EXPECT_THAT(DecryptRecord(records[0]), EqualsProto(legacy_specifics));
+}
+
+// Tests that when the store contains both a hash-only record ("guid_a") and a
+// legacy `entity_suppression_key` record ("guid_b") for the same entry, loading
+// deduplicates them by smaller GUID ("guid_a") and deletes "guid_b".
+// TODO(crbug.com/501036619): Remove once legacy entries are no longer
+// supported.
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
+       LegacyKeyAndHashDuplicateInStore_DeduplicatesBySmallerGuid) {
+  EntitySuppressionEntry entry = CreatePassportEntry();
+  WriteToStore("guid_a", entry);
+  WriteEncryptedToStore(
+      "guid_b", CreateLegacyKeySpecifics("guid_b", entry).SerializeAsString());
+
+  EXPECT_CALL(mock_processor(), Delete("guid_b", _, _));
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+  CreateBridge();
+
+  EXPECT_TRUE(bridge().IsSuppressed(entry));
+  EXPECT_EQ(GetFirstGuid(), "guid_a");
+  syncer::DataTypeStore::RecordList records = ReadAllRecordsFromStore();
+  ASSERT_EQ(records.size(), 1u);
+  EXPECT_EQ(records[0].id, "guid_a");
+}
+
+// Tests that in `MergeFullSyncData`, a local record with
+// `entity_suppression_key` and a smaller GUID beats a remote hash-only
+// duplicate and is uploaded to Sync with `entity_suppression_key`,
+// `entity_suppression_hash`, and `suppression.hash` populated.
+// TODO(crbug.com/501036619): Remove once legacy entries are no longer
+// supported.
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
+       MergeFullSyncData_LocalLegacyKeyUploadedWithSmallerGuid) {
+  EntitySuppressionEntry entry = CreatePassportEntry();
+  const uint32_t hash = GetEntitySuppressionHash(entry).value();
+  const sync_pb::AutofillEntitySuppressionSpecifics legacy_specifics =
+      CreateLegacyKeySpecifics("guid_a", entry);
+  WriteEncryptedToStore("guid_a", legacy_specifics.SerializeAsString());
+  CreateBridge();
+
+  sync_pb::AutofillEntitySuppressionSpecifics expected_specifics =
+      legacy_specifics;
+  expected_specifics.mutable_suppression()->set_hash(hash);
+  expected_specifics.set_entity_suppression_hash(hash);
+
+  EXPECT_CALL(mock_processor(), Delete("guid_b", _, _));
+  EXPECT_CALL(mock_processor(), Put("guid_a", _, _))
+      .WillOnce([&](const std::string& storage_key,
+                    std::unique_ptr<syncer::EntityData> entity_data,
+                    syncer::MetadataChangeList* metadata_change_list) {
+        EXPECT_THAT(entity_data->specifics.autofill_entity_suppression(),
+                    EqualsProto(expected_specifics));
+      });
+  syncer::EntityChangeList remote_changes;
+  remote_changes.push_back(CreateAddChange("guid_b", entry));
+  bridge().MergeFullSyncData(bridge().CreateMetadataChangeList(),
+                             std::move(remote_changes));
+
+  EXPECT_EQ(GetFirstGuid(), "guid_a");
+  syncer::DataTypeStore::RecordList records = ReadAllRecordsFromStore();
+  ASSERT_EQ(records.size(), 1u);
+  EXPECT_EQ(records[0].id, "guid_a");
+  EXPECT_THAT(DecryptRecord(records[0]), EqualsProto(expected_specifics));
 }
 
 // Tests that a legacy record with only `entity_suppression_hash` in the store

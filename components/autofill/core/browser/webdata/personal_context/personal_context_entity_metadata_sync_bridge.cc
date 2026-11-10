@@ -136,16 +136,16 @@ bool PersonalContextEntityMetadataSyncBridge::Suppress(
     return false;
   }
 
-  const EntitySuppressionKey key = GetEntitySuppressionHash(entry);
+  const EntitySuppressionHash hash = GetEntitySuppressionHash(entry);
   std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   base::Time creation_time = base::Time::Now();
   sync_pb::AutofillEntitySuppressionSpecifics specifics =
-      CreateSpecificsFromEntitySuppressionKey(
-          guid, key, creation_time,
+      CreateSpecificsFromEntitySuppressionHash(
+          guid, hash, creation_time,
           GetPossiblyTrimmedEntitySuppressionSpecifics(guid));
 
   suppression_metadata_by_entry_.insert_or_assign(
-      key, EntryMetadata{.guid = guid, .creation_time = creation_time});
+      hash, EntryMetadata{.guid = guid, .creation_time = creation_time});
 
   std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
@@ -171,29 +171,16 @@ bool PersonalContextEntityMetadataSyncBridge::Unsuppress(
     return false;
   }
 
-  std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
-      store_->CreateWriteBatch();
-  auto delete_record = [&](const EntitySuppressionKey& key) {
-    auto it = suppression_metadata_by_entry_.find(key);
-    if (it == suppression_metadata_by_entry_.end()) {
-      return false;
-    }
-    batch->DeleteData(it->second.guid);
-    change_processor()->Delete(it->second.guid,
-                               syncer::DeletionOrigin::Unspecified(),
-                               batch->GetMetadataChangeList());
-    suppression_metadata_by_entry_.erase(it);
-    return true;
-  };
-  bool deleted =
-      delete_record(EntitySuppressionKey(GetEntitySuppressionHash(entry)));
-  // TODO(crbug.com/501036619): Remove once legacy entries are no longer
-  // supported.
-  deleted |=
-      delete_record(EntitySuppressionKey(LegacyEntitySuppressionEntry(entry)));
-  if (!deleted) {
+  auto it =
+      suppression_metadata_by_entry_.find(GetEntitySuppressionHash(entry));
+  if (it == suppression_metadata_by_entry_.end()) {
     return false;
   }
+
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
+      store_->CreateWriteBatch();
+  DeleteEntryFromStoreAndSync(it->second.guid, *batch);
+  suppression_metadata_by_entry_.erase(it);
 
   store_->CommitWriteBatch(
       std::move(batch),
@@ -221,7 +208,7 @@ bool PersonalContextEntityMetadataSyncBridge::ClearSuppressions(
       store_->CreateWriteBatch();
   const size_t removed_count = base::EraseIf(
       suppression_metadata_by_entry_,
-      [&](const std::pair<EntitySuppressionKey, EntryMetadata>& pair) {
+      [&](const std::pair<EntitySuppressionHash, EntryMetadata>& pair) {
         const EntryMetadata& metadata = pair.second;
         if (metadata.creation_time < delete_begin ||
             metadata.creation_time > delete_end) {
@@ -247,7 +234,7 @@ bool PersonalContextEntityMetadataSyncBridge::ClearSuppressions(
   return true;
 }
 
-base::flat_set<EntitySuppressionKey>
+base::flat_set<EntitySuppressionHash>
 PersonalContextEntityMetadataSyncBridge::GetSuppressions() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return {base::sorted_unique,
@@ -258,14 +245,8 @@ PersonalContextEntityMetadataSyncBridge::GetSuppressions() const {
 bool PersonalContextEntityMetadataSyncBridge::IsSuppressed(
     const EntitySuppressionEntry& entry) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (suppression_metadata_by_entry_.contains(
-          EntitySuppressionKey(GetEntitySuppressionHash(entry)))) {
-    return true;
-  }
-  // TODO(crbug.com/501036619): Remove once legacy entries are no longer
-  // supported.
   return suppression_metadata_by_entry_.contains(
-      EntitySuppressionKey(LegacyEntitySuppressionEntry(entry)));
+      GetEntitySuppressionHash(entry));
 }
 
 size_t PersonalContextEntityMetadataSyncBridge::CountSuppressionsCreatedBetween(
@@ -280,7 +261,7 @@ size_t PersonalContextEntityMetadataSyncBridge::CountSuppressionsCreatedBetween(
   }
   return std::ranges::count_if(
       suppression_metadata_by_entry_,
-      [&](const std::pair<EntitySuppressionKey, EntryMetadata>& pair) {
+      [&](const std::pair<EntitySuppressionHash, EntryMetadata>& pair) {
         const base::Time creation_time = pair.second.creation_time;
         return creation_time >= begin && creation_time <= end;
       });
@@ -307,11 +288,15 @@ PersonalContextEntityMetadataSyncBridge::CreateMetadataChangeList() {
 PersonalContextEntityMetadataSyncBridge::EntryMetadata
 PersonalContextEntityMetadataSyncBridge::CreateEntryMetadata(
     const sync_pb::AutofillEntitySuppressionSpecifics& specifics) {
-  return EntryMetadata{
+  EntryMetadata metadata{
       .guid = specifics.guid(),
       .creation_time = base::Time::FromDeltaSinceWindowsEpoch(
           base::Microseconds(specifics.creation_time_windows_epoch_micros())),
   };
+  if (specifics.has_entity_suppression_key()) {
+    metadata.legacy_key = specifics.entity_suppression_key();
+  }
+  return metadata;
 }
 
 // static
@@ -336,8 +321,8 @@ PersonalContextEntityMetadataSyncBridge::InsertOrResolveConflict(
   }
 
   // Two distinct records with different GUIDs map to the same `key` (e.g. two
-  // clients independently suppressed the same entity). Keep the smaller GUID so
-  // all clients converge on the same record, and evict the other.
+  // clients independently suppressed the same entity). Smaller GUID wins so all
+  // clients converge on the same record.
   if (new_metadata.guid < existing_metadata->guid) {
     std::string guid_to_evict = std::move(existing_metadata->guid);
     *existing_metadata = std::move(new_metadata);
@@ -450,12 +435,12 @@ PersonalContextEntityMetadataSyncBridge::MergeFullSyncData(
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_data) {
     const sync_pb::AutofillEntitySuppressionSpecifics& specifics =
         change->data().specifics.autofill_entity_suppression();
-    std::optional<EntitySuppressionKey> key =
-        CreateEntitySuppressionKeyFromSpecifics(specifics);
-    CHECK(key);
+    std::optional<EntitySuppressionHash> hash =
+        CreateEntitySuppressionHashFromSpecifics(specifics);
+    CHECK(hash);
 
     synced_remote_guids.insert(change->storage_key());
-    if (ApplyRemoteEntry(change->storage_key(), specifics, std::move(*key),
+    if (ApplyRemoteEntry(change->storage_key(), specifics, *hash,
                          suppression_metadata_by_entry_, *batch)) {
       added_remote_suppressions = true;
     }
@@ -468,14 +453,11 @@ PersonalContextEntityMetadataSyncBridge::MergeFullSyncData(
 
   // Upload local-only entries to Sync (including any local entries that won
   // conflict resolution against remote duplicates).
-  for (const auto& [key, metadata] : suppression_metadata_by_entry_) {
+  for (const auto& [hash, metadata] : suppression_metadata_by_entry_) {
     if (!synced_remote_guids.contains(metadata.guid)) {
-      change_processor()->Put(
-          metadata.guid,
-          CreateEntityDataFromEntitySuppressionKey(
-              metadata.guid, key, metadata.creation_time,
-              GetPossiblyTrimmedEntitySuppressionSpecifics(metadata.guid)),
-          batch->GetMetadataChangeList());
+      change_processor()->Put(metadata.guid,
+                              CreateSuppressionEntityData(hash, metadata),
+                              batch->GetMetadataChangeList());
     }
   }
 
@@ -507,11 +489,11 @@ PersonalContextEntityMetadataSyncBridge::ApplyIncrementalSyncChanges(
       case syncer::EntityChange::ACTION_ADD: {
         const sync_pb::AutofillEntitySuppressionSpecifics& specifics =
             change->data().specifics.autofill_entity_suppression();
-        std::optional<EntitySuppressionKey> key =
-            CreateEntitySuppressionKeyFromSpecifics(specifics);
-        CHECK(key);
+        std::optional<EntitySuppressionHash> hash =
+            CreateEntitySuppressionHashFromSpecifics(specifics);
+        CHECK(hash);
 
-        if (ApplyRemoteEntry(change->storage_key(), specifics, std::move(*key),
+        if (ApplyRemoteEntry(change->storage_key(), specifics, *hash,
                              suppression_metadata_by_entry_, *batch)) {
           suppressions_changed = true;
         }
@@ -572,17 +554,27 @@ void PersonalContextEntityMetadataSyncBridge::ApplyDisableSyncChanges(
   }
 }
 
+std::unique_ptr<syncer::EntityData>
+PersonalContextEntityMetadataSyncBridge::CreateSuppressionEntityData(
+    EntitySuppressionHash hash,
+    const EntryMetadata& metadata) const {
+  sync_pb::AutofillEntitySuppressionSpecifics specifics =
+      CreateSpecificsFromEntitySuppressionHash(
+          metadata.guid, hash, metadata.creation_time,
+          GetPossiblyTrimmedEntitySuppressionSpecifics(metadata.guid));
+  if (metadata.legacy_key) {
+    *specifics.mutable_entity_suppression_key() = *metadata.legacy_key;
+  }
+  return CreateEntityDataFromEntitySuppressionSpecifics(specifics);
+}
+
 std::unique_ptr<syncer::MutableDataBatch>
 PersonalContextEntityMetadataSyncBridge::GetAllData() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(IsLoaded());
   auto batch = std::make_unique<syncer::MutableDataBatch>();
-  for (const auto& [key, metadata] : suppression_metadata_by_entry_) {
-    batch->Put(
-        metadata.guid,
-        CreateEntityDataFromEntitySuppressionKey(
-            metadata.guid, key, metadata.creation_time,
-            GetPossiblyTrimmedEntitySuppressionSpecifics(metadata.guid)));
+  for (const auto& [hash, metadata] : suppression_metadata_by_entry_) {
+    batch->Put(metadata.guid, CreateSuppressionEntityData(hash, metadata));
   }
   return batch;
 }
@@ -720,20 +712,19 @@ void PersonalContextEntityMetadataSyncBridge::OnReadAllDataAndMetadata(
       ++dropped_record_count;
       continue;
     }
-    std::optional<EntitySuppressionKey> key =
-        CreateEntitySuppressionKeyFromSpecifics(*specifics);
+    std::optional<EntitySuppressionHash> hash =
+        CreateEntitySuppressionHashFromSpecifics(*specifics);
     // In practice, all data should be valid, but it could happen that some
     // local disk data gets corrupted, which is why these conditions are handled
     // gracefully here.
-    if (!key || record.id != specifics->guid()) {
+    if (!hash || record.id != specifics->guid()) {
       LogEntitySuppressionLoadDropReason(
           EntitySuppressionLoadDropReason::kInvalidEntry);
       ++dropped_record_count;
       continue;
     }
     InsertOrResolveConflictResult result = InsertOrResolveConflict(
-        std::move(*key), CreateEntryMetadata(*specifics),
-        suppression_metadata_by_entry_);
+        *hash, CreateEntryMetadata(*specifics), suppression_metadata_by_entry_);
     if (result.guid_to_evict) {
       guids_to_evict.push_back(std::move(*result.guid_to_evict));
     }

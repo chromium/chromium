@@ -10,8 +10,6 @@
 #include <optional>
 #include <string>
 #include <utility>
-#include <variant>
-#include <vector>
 
 #include "base/check.h"
 #include "base/containers/flat_map.h"
@@ -39,9 +37,9 @@ void TrimEntitySuppressionKey(sync_pb::EntitySuppressionKey& key) {
 }  // namespace
 
 sync_pb::AutofillEntitySuppressionSpecifics
-CreateSpecificsFromEntitySuppressionKey(
+CreateSpecificsFromEntitySuppressionHash(
     const std::string& guid,
-    const EntitySuppressionKey& suppression_key,
+    EntitySuppressionHash suppression_hash,
     base::Time creation_time,
     const sync_pb::AutofillEntitySuppressionSpecifics& base_specifics) {
   sync_pb::AutofillEntitySuppressionSpecifics specifics = base_specifics;
@@ -49,37 +47,19 @@ CreateSpecificsFromEntitySuppressionKey(
   specifics.set_creation_time_windows_epoch_micros(
       creation_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
 
-  if (const EntitySuppressionHash* hash =
-          std::get_if<EntitySuppressionHash>(&suppression_key)) {
-    specifics.mutable_suppression()->set_hash(hash->value());
-    specifics.set_entity_suppression_hash(hash->value());
-    return specifics;
-  }
-
-  // TODO(crbug.com/501036619): Remove once legacy entries are no longer
-  // supported.
-  const EntitySuppressionEntry& entry =
-      std::get<LegacyEntitySuppressionEntry>(suppression_key).value();
-  sync_pb::EntitySuppressionKey* key =
-      specifics.mutable_entity_suppression_key();
-  key->set_entity_type_name(std::string(entry.type.name_as_string()));
-  key->clear_attributes();
-  for (const auto& [attr_type, hash] : entry.attribute_hashes) {
-    sync_pb::EntitySuppressionKey::Attribute* attr = key->add_attributes();
-    attr->set_name(std::string(attr_type.name_as_string()));
-    attr->set_value_hash(hash.value().data(), hash.value().size());
-  }
+  specifics.mutable_suppression()->set_hash(suppression_hash.value());
+  specifics.set_entity_suppression_hash(suppression_hash.value());
   return specifics;
 }
 
-std::unique_ptr<syncer::EntityData> CreateEntityDataFromEntitySuppressionKey(
+std::unique_ptr<syncer::EntityData> CreateEntityDataFromEntitySuppressionHash(
     const std::string& guid,
-    const EntitySuppressionKey& suppression_key,
+    EntitySuppressionHash suppression_hash,
     base::Time creation_time,
     const sync_pb::AutofillEntitySuppressionSpecifics& base_specifics) {
   return CreateEntityDataFromEntitySuppressionSpecifics(
-      CreateSpecificsFromEntitySuppressionKey(guid, suppression_key,
-                                              creation_time, base_specifics));
+      CreateSpecificsFromEntitySuppressionHash(guid, suppression_hash,
+                                               creation_time, base_specifics));
 }
 
 std::unique_ptr<syncer::EntityData>
@@ -144,16 +124,21 @@ bool AreEntitySuppressionSpecificsValid(
 std::optional<sync_pb::AutofillEntitySuppressionSpecifics>
 MigrateLegacySuppressionSpecificsIfNeeded(
     const sync_pb::AutofillEntitySuppressionSpecifics& specifics) {
-  if (specifics.has_suppression() || !specifics.has_entity_suppression_hash() ||
-      !AreEntitySuppressionSpecificsValid(specifics)) {
+  if (specifics.has_suppression()) {
+    return std::nullopt;
+  }
+  std::optional<EntitySuppressionHash> hash =
+      CreateEntitySuppressionHashFromSpecifics(specifics);
+  if (!hash) {
     return std::nullopt;
   }
   sync_pb::AutofillEntitySuppressionSpecifics migrated = specifics;
-  migrated.mutable_suppression()->set_hash(specifics.entity_suppression_hash());
+  migrated.mutable_suppression()->set_hash(hash->value());
+  migrated.set_entity_suppression_hash(hash->value());
   return migrated;
 }
 
-std::optional<EntitySuppressionKey> CreateEntitySuppressionKeyFromSpecifics(
+std::optional<EntitySuppressionHash> CreateEntitySuppressionHashFromSpecifics(
     const sync_pb::AutofillEntitySuppressionSpecifics& specifics) {
   if (!AreEntitySuppressionSpecificsValid(specifics)) {
     return std::nullopt;
@@ -191,7 +176,7 @@ std::optional<EntitySuppressionKey> CreateEntitySuppressionKeyFromSpecifics(
         return std::make_pair(*attr_type, AttributeValueHash(hash_array));
       });
 
-  return LegacyEntitySuppressionEntry(EntitySuppressionEntry{
+  return GetEntitySuppressionHash(EntitySuppressionEntry{
       .type = *entity_type,
       .attribute_hashes = base::flat_map<AttributeType, AttributeValueHash>(
           std::move(attribute_hashes)),

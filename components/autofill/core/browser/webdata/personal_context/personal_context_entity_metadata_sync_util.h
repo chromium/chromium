@@ -19,21 +19,21 @@ struct EntityData;
 
 namespace autofill {
 
-// For a given `guid`, `suppression_key`, and `creation_time`, returns the
+// For a given `guid`, `suppression_hash`, and `creation_time`, returns the
 // corresponding `sync_pb::AutofillEntitySuppressionSpecifics` merged with
 // `base_specifics`.
 sync_pb::AutofillEntitySuppressionSpecifics
-CreateSpecificsFromEntitySuppressionKey(
+CreateSpecificsFromEntitySuppressionHash(
     const std::string& guid,
-    const EntitySuppressionKey& suppression_key,
+    EntitySuppressionHash suppression_hash,
     base::Time creation_time,
     const sync_pb::AutofillEntitySuppressionSpecifics& base_specifics);
 
-// Converts the given `guid`, `suppression_key`, and `creation_time` into a
+// Converts the given `guid`, `suppression_hash`, and `creation_time` into a
 // `syncer::EntityData` merged with `base_specifics`.
-std::unique_ptr<syncer::EntityData> CreateEntityDataFromEntitySuppressionKey(
+std::unique_ptr<syncer::EntityData> CreateEntityDataFromEntitySuppressionHash(
     const std::string& guid,
-    const EntitySuppressionKey& suppression_key,
+    EntitySuppressionHash suppression_hash,
     base::Time creation_time,
     const sync_pb::AutofillEntitySuppressionSpecifics& base_specifics);
 
@@ -42,18 +42,19 @@ std::unique_ptr<syncer::EntityData>
 CreateEntityDataFromEntitySuppressionSpecifics(
     const sync_pb::AutofillEntitySuppressionSpecifics& specifics);
 
-// Converts the given `specifics` into an equivalent `EntitySuppressionKey`.
+// Converts the given `specifics` into an equivalent `EntitySuppressionHash`.
 // Returns `std::nullopt` if the specifics are invalid or contain unknown types.
-std::optional<EntitySuppressionKey> CreateEntitySuppressionKeyFromSpecifics(
+std::optional<EntitySuppressionHash> CreateEntitySuppressionHashFromSpecifics(
     const sync_pb::AutofillEntitySuppressionSpecifics& specifics);
 
 // Tests if the entity suppression `specifics` are valid.
 bool AreEntitySuppressionSpecificsValid(
     const sync_pb::AutofillEntitySuppressionSpecifics& specifics);
 
-// Returns a copy of `specifics` with `suppression.hash` populated from
-// `entity_suppression_hash` if `suppression` is not yet set, or `std::nullopt`
-// if no migration is needed.
+// Returns a copy of `specifics` with `suppression.hash` and
+// `entity_suppression_hash` populated (preserving `entity_suppression_key` if
+// present) if `suppression` is not yet set, or `std::nullopt` if no migration
+// is needed.
 // TODO(crbug.com/501036619): Remove once legacy entries are no longer
 // supported.
 std::optional<sync_pb::AutofillEntitySuppressionSpecifics>
