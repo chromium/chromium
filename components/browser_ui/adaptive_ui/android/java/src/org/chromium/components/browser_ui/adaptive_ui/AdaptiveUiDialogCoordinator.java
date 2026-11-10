@@ -45,8 +45,10 @@ final class AdaptiveUiDialogCoordinator implements ModalDialogProperties.Control
     private final PropertyModel mDialogModel;
     private final PropertyModelChangeProcessor<PropertyModel, PropertyModel, PropertyKey>
             mChangeProcessor;
+    private final @AdaptiveUiScope int mScope;
     private boolean mDismissRequested;
     private boolean mDestroyed;
+    private @Nullable @DismissReason Integer mRequestedDismissReason;
 
     /**
      * @param context The {@link Context} used to inflate the dialog body layout that wraps a custom
@@ -56,8 +58,10 @@ final class AdaptiveUiDialogCoordinator implements ModalDialogProperties.Control
      *     forwarded to the dialog for {@link AdaptiveUiScope#WINDOW}.
      * @param dismissRequestHandler Receives the {@link DismissReason} when an interaction inside
      *     the dialog (primary button, secondary button, or close button) should close the entry.
-     * @param onDialogDismissed Receives the {@link DialogDismissalCause} once the dialog has been
-     *     dismissed for any reason, unless {@link #destroy()} was called first.
+     * @param onDialogDismissed Receives the normalized {@link DismissReason} once the dialog has
+     *     been dismissed for any reason, unless {@link #destroy()} was called first. Prefers any
+     *     latched reason from {@link #requestDismiss} or {@link #setDismissReason}, otherwise
+     *     translates the {@link DialogDismissalCause} via {@link #fromDialogDismissalCause}.
      */
     AdaptiveUiDialogCoordinator(
             Context context,
@@ -68,6 +72,7 @@ final class AdaptiveUiDialogCoordinator implements ModalDialogProperties.Control
         mModel = model;
         mDismissRequestHandler = dismissRequestHandler;
         mOnDialogDismissed = onDialogDismissed;
+        mScope = scope;
         mDialogModel = createDialogModel(context, model, scope);
         mChangeProcessor =
                 PropertyModelChangeProcessor.create(
@@ -83,9 +88,25 @@ final class AdaptiveUiDialogCoordinator implements ModalDialogProperties.Control
     }
 
     /**
+     * Latches the {@link DismissReason} to report when the dialog is subsequently dismissed. First
+     * call wins: ignored if a reason was already latched (by an earlier call or an in-dialog
+     * action) or after {@link #destroy()}.
+     */
+    void setDismissReason(@DismissReason int reason) {
+        if (!mDestroyed && mRequestedDismissReason == null) {
+            mRequestedDismissReason = reason;
+        }
+    }
+
+    /**
      * Detaches the {@link PropertyModelChangeProcessor} and releases {@link
      * AdaptiveUiProperties#CUSTOM_VIEW} from any wrapper view so it can be reused in a subsequent
      * presentation. Safe to call more than once.
+     *
+     * <p>Unlike {@link AdaptiveUiSheetCoordinator#destroy()} (which implements {@code
+     * BottomSheetContent#destroy()}), {@link ModalDialogProperties.Controller#onDismiss} is the
+     * terminal container callback for dialogs, so calling {@code destroy()} directly before {@code
+     * onDismiss} suppresses {@code mOnDialogDismissed}.
      */
     void destroy() {
         if (mDestroyed) return;
@@ -115,8 +136,13 @@ final class AdaptiveUiDialogCoordinator implements ModalDialogProperties.Control
     @Override
     public void onDismiss(PropertyModel model, @DialogDismissalCause int dismissalCause) {
         if (mDestroyed) return;
+        @DismissReason
+        int reason =
+                mRequestedDismissReason != null
+                        ? mRequestedDismissReason
+                        : fromDialogDismissalCause(dismissalCause);
         destroy();
-        mOnDialogDismissed.onResult(dismissalCause);
+        mOnDialogDismissed.onResult(reason);
     }
 
     private PropertyModel createDialogModel(
@@ -218,7 +244,71 @@ final class AdaptiveUiDialogCoordinator implements ModalDialogProperties.Control
 
     private void requestDismiss(@DismissReason int reason) {
         if (mDestroyed || mDismissRequested) return;
+        mRequestedDismissReason = reason;
         mDismissRequested = true;
         mDismissRequestHandler.onResult(reason);
     }
+
+    // LINT.IfChange(DialogDismissReasonMapping)
+    @DialogDismissalCause
+    int toDialogDismissalCause(@DismissReason int reason) {
+        switch (reason) {
+            case DismissReason.BACK_PRESS:
+                return mScope == AdaptiveUiScope.WINDOW
+                        ? DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE
+                        : DialogDismissalCause.NAVIGATE_BACK;
+            case DismissReason.TOUCH_OUTSIDE:
+            case DismissReason.SWIPE_DOWN:
+                return mScope == AdaptiveUiScope.WINDOW
+                        ? DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE
+                        : DialogDismissalCause.TOUCH_OUTSIDE;
+            case DismissReason.CLOSE_BUTTON:
+            case DismissReason.SECONDARY_ACTION:
+                return DialogDismissalCause.NEGATIVE_BUTTON_CLICKED;
+            case DismissReason.PRIMARY_ACTION:
+                return DialogDismissalCause.POSITIVE_BUTTON_CLICKED;
+            case DismissReason.NAVIGATION:
+                return DialogDismissalCause.NAVIGATE;
+            case DismissReason.TAB_SWITCHED:
+                return DialogDismissalCause.TAB_SWITCHED;
+            case DismissReason.TAB_CLOSED:
+                return DialogDismissalCause.TAB_DESTROYED;
+            default:
+                return DialogDismissalCause.UNKNOWN;
+        }
+    }
+
+    private static @DismissReason int fromDialogDismissalCause(
+            @DialogDismissalCause int dismissalCause) {
+        switch (dismissalCause) {
+            case DialogDismissalCause.NAVIGATE_BACK:
+                return DismissReason.BACK_PRESS;
+            case DialogDismissalCause.TOUCH_OUTSIDE:
+            case DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE:
+                return DismissReason.TOUCH_OUTSIDE;
+            case DialogDismissalCause.POSITIVE_BUTTON_CLICKED:
+            case DialogDismissalCause.ACTION_ON_CONTENT:
+            case DialogDismissalCause.ACTION_ON_DIALOG_COMPLETED:
+                return DismissReason.PRIMARY_ACTION;
+            case DialogDismissalCause.NEGATIVE_BUTTON_CLICKED:
+            case DialogDismissalCause.ACTION_ON_DIALOG_NOT_POSSIBLE:
+                return DismissReason.SECONDARY_ACTION;
+            case DialogDismissalCause.NAVIGATE:
+                return DismissReason.NAVIGATION;
+            case DialogDismissalCause.TAB_SWITCHED:
+                return DismissReason.TAB_SWITCHED;
+            case DialogDismissalCause.TAB_DESTROYED:
+            case DialogDismissalCause.ACTIVITY_DESTROYED:
+            case DialogDismissalCause.NOT_ATTACHED_TO_WINDOW:
+            case DialogDismissalCause.WEB_CONTENTS_DESTROYED:
+                return DismissReason.TAB_CLOSED;
+            case DialogDismissalCause.UNKNOWN:
+            case DialogDismissalCause.DISMISSED_BY_NATIVE:
+            case DialogDismissalCause.DIALOG_INTERACTION_DEFERRED:
+            case DialogDismissalCause.CLIENT_TIMEOUT:
+            default:
+                return DismissReason.NAVIGATION;
+        }
+    }
+    // LINT.ThenChange(//components/browser_ui/adaptive_ui/android/java/src/org/chromium/components/browser_ui/adaptive_ui/DismissReason.java:DismissReason)
 }

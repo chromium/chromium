@@ -31,6 +31,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -44,6 +45,7 @@ import java.util.Set;
 public class AdaptiveUiSheetCoordinatorTest {
     private Activity mActivity;
     private final List<Integer> mDismissRequests = new ArrayList<>();
+    private final List<Integer> mSheetDismissals = new ArrayList<>();
 
     @Before
     public void setUp() {
@@ -56,7 +58,8 @@ public class AdaptiveUiSheetCoordinatorTest {
 
     private AdaptiveUiSheetCoordinator createContent(
             PropertyModel model, @AdaptiveUiScope int scope) {
-        return new AdaptiveUiSheetCoordinator(mActivity, model, scope, mDismissRequests::add);
+        return new AdaptiveUiSheetCoordinator(
+                mActivity, model, scope, mDismissRequests::add, mSheetDismissals::add);
     }
 
     private static PropertyModel.Builder newModelBuilder() {
@@ -538,6 +541,218 @@ public class AdaptiveUiSheetCoordinatorTest {
         assertTrue(content.handleBackPress());
 
         assertEquals(List.of(DismissReason.BACK_PRESS), mDismissRequests);
+    }
+
+    // ---------------------------------------------------------------------------------------
+    // Latched and custom dismiss reasons.
+    // ---------------------------------------------------------------------------------------
+
+    @Test
+    public void testDestroy_LatchedPrimaryAction() {
+        PropertyModel model =
+                newModelBuilder().with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "P").build();
+        AdaptiveUiSheetCoordinator content = createContent(model);
+
+        find(content, R.id.adaptive_ui_sheet_primary_button).performClick();
+        assertEquals(List.of(DismissReason.PRIMARY_ACTION), mDismissRequests);
+
+        content.onSheetHidden(StateChangeReason.INTERACTION_COMPLETE);
+        assertTrue(mSheetDismissals.isEmpty());
+        content.destroy();
+        assertEquals(List.of(DismissReason.PRIMARY_ACTION), mSheetDismissals);
+    }
+
+    @Test
+    public void testDestroy_LatchedSecondaryAction() {
+        PropertyModel model =
+                newModelBuilder().with(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, "S").build();
+        AdaptiveUiSheetCoordinator content = createContent(model);
+
+        find(content, R.id.adaptive_ui_sheet_secondary_button).performClick();
+        assertEquals(List.of(DismissReason.SECONDARY_ACTION), mDismissRequests);
+
+        content.onSheetHidden(StateChangeReason.INTERACTION_COMPLETE);
+        content.destroy();
+        assertEquals(List.of(DismissReason.SECONDARY_ACTION), mSheetDismissals);
+    }
+
+    @Test
+    public void testDestroy_LatchedCloseButton() {
+        AdaptiveUiSheetCoordinator content = createContent(newModelBuilder().build());
+
+        find(content, R.id.adaptive_ui_sheet_close_button).performClick();
+        assertEquals(List.of(DismissReason.CLOSE_BUTTON), mDismissRequests);
+
+        content.onSheetHidden(StateChangeReason.CLOSE_BUTTON);
+        content.destroy();
+        assertEquals(List.of(DismissReason.CLOSE_BUTTON), mSheetDismissals);
+    }
+
+    @Test
+    public void testDestroy_LatchedBackPress() {
+        AdaptiveUiSheetCoordinator content = createContent(newModelBuilder().build());
+
+        content.onBackPressed();
+        assertEquals(List.of(DismissReason.BACK_PRESS), mDismissRequests);
+
+        content.onSheetHidden(StateChangeReason.BACK_PRESS);
+        content.destroy();
+        assertEquals(List.of(DismissReason.BACK_PRESS), mSheetDismissals);
+    }
+
+    @Test
+    public void testDestroy_UnlatchedExternalSwipeDown() {
+        AdaptiveUiSheetCoordinator content = createContent(newModelBuilder().build());
+
+        content.onSheetHidden(StateChangeReason.SWIPE);
+        content.destroy();
+        assertEquals(List.of(DismissReason.SWIPE_DOWN), mSheetDismissals);
+    }
+
+    @Test
+    public void testDestroy_UnlatchedExternalTapScrim() {
+        AdaptiveUiSheetCoordinator content = createContent(newModelBuilder().build());
+
+        content.onSheetHidden(StateChangeReason.TAP_SCRIM);
+        content.destroy();
+        assertEquals(List.of(DismissReason.TOUCH_OUTSIDE), mSheetDismissals);
+    }
+
+    @Test
+    public void testDestroy_UnlatchedNavigation() {
+        AdaptiveUiSheetCoordinator content = createContent(newModelBuilder().build());
+
+        content.onSheetHidden(StateChangeReason.NAVIGATION);
+        content.destroy();
+        assertEquals(List.of(DismissReason.NAVIGATION), mSheetDismissals);
+    }
+
+    @Test
+    public void testDestroy_UnlatchedCloseButton() {
+        AdaptiveUiSheetCoordinator content = createContent(newModelBuilder().build());
+
+        content.onSheetHidden(StateChangeReason.CLOSE_BUTTON);
+        content.destroy();
+        assertEquals(List.of(DismissReason.CLOSE_BUTTON), mSheetDismissals);
+    }
+
+    @Test
+    public void testOnSheetHidden_SuppressionDoesNotDismissUntilDestroy() {
+        AdaptiveUiSheetCoordinator content = createContent(newModelBuilder().build());
+
+        // Temporary suppression hides the sheet without destroying it; later swipe-down overwrites
+        // the hidden reason before destroy().
+        content.onSheetHidden(StateChangeReason.OMNIBOX_FOCUS);
+        assertTrue(mSheetDismissals.isEmpty());
+
+        content.onSheetHidden(StateChangeReason.SWIPE);
+        content.destroy();
+        assertEquals(List.of(DismissReason.SWIPE_DOWN), mSheetDismissals);
+    }
+
+    @Test
+    public void testDestroy_WithoutOnSheetHidden_DefaultsToNavigation() {
+        AdaptiveUiSheetCoordinator content = createContent(newModelBuilder().build());
+
+        // Queued sheet evicted via clearRequestsAndHide() without any HIDDEN state transition.
+        content.destroy();
+        assertEquals(List.of(DismissReason.NAVIGATION), mSheetDismissals);
+    }
+
+    @Test
+    public void testSetDismissReason_OverridesContainerCause() {
+        AdaptiveUiSheetCoordinator content = createContent(newModelBuilder().build());
+
+        content.setDismissReason(DismissReason.TAB_SWITCHED);
+        content.onSheetHidden(StateChangeReason.NONE);
+        content.destroy();
+
+        assertEquals(List.of(DismissReason.TAB_SWITCHED), mSheetDismissals);
+    }
+
+    @Test
+    public void testSetDismissReason_IgnoredIfAlreadyLatched() {
+        AdaptiveUiSheetCoordinator content = createContent(newModelBuilder().build());
+
+        content.onBackPressed();
+        content.setDismissReason(DismissReason.TAB_SWITCHED);
+        content.onSheetHidden(StateChangeReason.NONE);
+        content.destroy();
+
+        assertEquals(List.of(DismissReason.BACK_PRESS), mSheetDismissals);
+    }
+
+    @Test
+    public void testDestroy_ReportsDismissalOnlyOnce() {
+        AdaptiveUiSheetCoordinator content = createContent(newModelBuilder().build());
+
+        content.onSheetHidden(StateChangeReason.SWIPE);
+        content.destroy();
+        content.onSheetHidden(StateChangeReason.BACK_PRESS);
+        content.destroy();
+
+        assertEquals(List.of(DismissReason.SWIPE_DOWN), mSheetDismissals);
+    }
+
+    private @DismissReason int closeSheetWithReason(@StateChangeReason int reason) {
+        mSheetDismissals.clear();
+        AdaptiveUiSheetCoordinator content = createContent(newModelBuilder().build());
+        content.onSheetHidden(reason);
+        content.destroy();
+        assertEquals(1, mSheetDismissals.size());
+        return mSheetDismissals.get(0);
+    }
+
+    @Test
+    public void testToStateChangeReason() {
+        assertEquals(
+                StateChangeReason.BACK_PRESS,
+                AdaptiveUiSheetCoordinator.toStateChangeReason(DismissReason.BACK_PRESS));
+        assertEquals(
+                StateChangeReason.TAP_SCRIM,
+                AdaptiveUiSheetCoordinator.toStateChangeReason(DismissReason.TOUCH_OUTSIDE));
+        assertEquals(
+                StateChangeReason.SWIPE,
+                AdaptiveUiSheetCoordinator.toStateChangeReason(DismissReason.SWIPE_DOWN));
+        assertEquals(
+                StateChangeReason.CLOSE_BUTTON,
+                AdaptiveUiSheetCoordinator.toStateChangeReason(DismissReason.CLOSE_BUTTON));
+        assertEquals(
+                StateChangeReason.INTERACTION_COMPLETE,
+                AdaptiveUiSheetCoordinator.toStateChangeReason(DismissReason.PRIMARY_ACTION));
+        assertEquals(
+                StateChangeReason.INTERACTION_COMPLETE,
+                AdaptiveUiSheetCoordinator.toStateChangeReason(DismissReason.SECONDARY_ACTION));
+        assertEquals(
+                StateChangeReason.NONE,
+                AdaptiveUiSheetCoordinator.toStateChangeReason(DismissReason.NAVIGATION));
+        assertEquals(
+                StateChangeReason.NONE,
+                AdaptiveUiSheetCoordinator.toStateChangeReason(DismissReason.TAB_SWITCHED));
+        assertEquals(
+                StateChangeReason.NONE,
+                AdaptiveUiSheetCoordinator.toStateChangeReason(DismissReason.TAB_CLOSED));
+    }
+
+    @Test
+    public void testOnSheetClosed_TranslatesUnlatchedStateChangeReasons() {
+        assertEquals(DismissReason.BACK_PRESS, closeSheetWithReason(StateChangeReason.BACK_PRESS));
+        assertEquals(
+                DismissReason.TOUCH_OUTSIDE, closeSheetWithReason(StateChangeReason.TAP_SCRIM));
+        assertEquals(DismissReason.SWIPE_DOWN, closeSheetWithReason(StateChangeReason.SWIPE));
+        assertEquals(
+                DismissReason.CLOSE_BUTTON, closeSheetWithReason(StateChangeReason.CLOSE_BUTTON));
+        assertEquals(
+                DismissReason.PRIMARY_ACTION,
+                closeSheetWithReason(StateChangeReason.INTERACTION_COMPLETE));
+        assertEquals(DismissReason.NAVIGATION, closeSheetWithReason(StateChangeReason.NAVIGATION));
+        assertEquals(DismissReason.NAVIGATION, closeSheetWithReason(StateChangeReason.NONE));
+        assertEquals(
+                DismissReason.NAVIGATION, closeSheetWithReason(StateChangeReason.COMPOSITED_UI));
+        assertEquals(DismissReason.NAVIGATION, closeSheetWithReason(StateChangeReason.VR));
+        assertEquals(DismissReason.NAVIGATION, closeSheetWithReason(StateChangeReason.PROMOTE_TAB));
+        assertEquals(
+                DismissReason.NAVIGATION, closeSheetWithReason(StateChangeReason.OMNIBOX_FOCUS));
     }
 
     // ---------------------------------------------------------------------------------------

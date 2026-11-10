@@ -19,6 +19,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -39,12 +40,15 @@ final class AdaptiveUiSheetCoordinator implements BottomSheetContent {
     private final PropertyModel mModel;
     private final @AdaptiveUiScope int mScope;
     private final Callback<Integer> mDismissRequestHandler;
+    private final Callback<Integer> mOnSheetDismissed;
     private final View mContentView;
     private final ScrollView mScrollView;
     private final ViewGroup mCustomViewContainer;
     private final PropertyModelChangeProcessor<PropertyModel, View, PropertyKey> mChangeProcessor;
     private boolean mDismissRequested;
     private boolean mDestroyed;
+    private @Nullable @DismissReason Integer mRequestedDismissReason;
+    private @StateChangeReason int mLastHiddenReason = StateChangeReason.NONE;
 
     /**
      * @param context The {@link Context} used to inflate the sheet layout.
@@ -54,12 +58,18 @@ final class AdaptiveUiSheetCoordinator implements BottomSheetContent {
      *     AdaptiveUiScope#TRANSIENT}).
      * @param dismissRequestHandler Receives the {@link DismissReason} when an interaction inside
      *     the sheet should close the entry.
+     * @param onSheetDismissed Receives the {@link DismissReason} exactly once, from {@link
+     *     #destroy()}, when the sheet is permanently gone. Prefers any latched reason from {@link
+     *     #requestDismiss} or {@link #setDismissReason}, otherwise translates the last {@link
+     *     StateChangeReason} recorded by {@link #onSheetHidden} via {@link #fromStateChangeReason}.
      */
     AdaptiveUiSheetCoordinator(
             Context context,
             PropertyModel model,
             @AdaptiveUiScope int scope,
-            Callback<Integer> dismissRequestHandler) {
+            Callback<Integer> dismissRequestHandler,
+            Callback<Integer> onSheetDismissed) {
+        mOnSheetDismissed = onSheetDismissed;
         mModel = model;
         mScope = scope;
         mDismissRequestHandler = dismissRequestHandler;
@@ -95,6 +105,28 @@ final class AdaptiveUiSheetCoordinator implements BottomSheetContent {
                         model, mContentView, AdaptiveUiSheetViewBinder::bind);
     }
 
+    /**
+     * Latches the {@link DismissReason} to report when the sheet is subsequently destroyed. First
+     * call wins: ignored if a reason was already latched (by an earlier call or an in-sheet action)
+     * or after {@link #destroy()}.
+     */
+    void setDismissReason(@DismissReason int reason) {
+        if (!mDestroyed && mRequestedDismissReason == null) {
+            mRequestedDismissReason = reason;
+        }
+    }
+
+    /**
+     * Records why the sheet was hidden. Does not dismiss the entry: the sheet may be suppressed or
+     * put back in the queue and shown again. A later call overwrites the earlier reason.
+     *
+     * @param stateChangeReason The {@link StateChangeReason} of the latest HIDDEN state change.
+     */
+    void onSheetHidden(@StateChangeReason int stateChangeReason) {
+        if (mDestroyed) return;
+        mLastHiddenReason = stateChangeReason;
+    }
+
     @Override
     public View getContentView() {
         return mContentView;
@@ -110,12 +142,20 @@ final class AdaptiveUiSheetCoordinator implements BottomSheetContent {
         return mScrollView.getScrollY();
     }
 
+    /**
+     * Called by the {@code BottomSheetController} once the content is gone for good (hidden and not
+     * put back in the queue, or dropped from the queue). Reports the dismissal exactly once.
+     */
     @Override
     public void destroy() {
         if (mDestroyed) return;
         mDestroyed = true;
         mChangeProcessor.destroy();
         mCustomViewContainer.removeAllViews();
+        mOnSheetDismissed.onResult(
+                mRequestedDismissReason != null
+                        ? mRequestedDismissReason
+                        : fromStateChangeReason(mLastHiddenReason));
     }
 
     @Override
@@ -196,7 +236,57 @@ final class AdaptiveUiSheetCoordinator implements BottomSheetContent {
 
     private void requestDismiss(@DismissReason int reason) {
         if (mDestroyed || mDismissRequested) return;
+        mRequestedDismissReason = reason;
         mDismissRequested = true;
         mDismissRequestHandler.onResult(reason);
     }
+
+    // LINT.IfChange(SheetDismissReasonMapping)
+    static @StateChangeReason int toStateChangeReason(@DismissReason int reason) {
+        switch (reason) {
+            case DismissReason.BACK_PRESS:
+                return StateChangeReason.BACK_PRESS;
+            case DismissReason.TOUCH_OUTSIDE:
+                return StateChangeReason.TAP_SCRIM;
+            case DismissReason.SWIPE_DOWN:
+                return StateChangeReason.SWIPE;
+            case DismissReason.CLOSE_BUTTON:
+                return StateChangeReason.CLOSE_BUTTON;
+            case DismissReason.PRIMARY_ACTION:
+            case DismissReason.SECONDARY_ACTION:
+                return StateChangeReason.INTERACTION_COMPLETE;
+            case DismissReason.NAVIGATION:
+            case DismissReason.TAB_SWITCHED:
+            case DismissReason.TAB_CLOSED:
+            default:
+                return StateChangeReason.NONE;
+        }
+    }
+
+    private static @DismissReason int fromStateChangeReason(@StateChangeReason int reason) {
+        switch (reason) {
+            case StateChangeReason.BACK_PRESS:
+                return DismissReason.BACK_PRESS;
+            case StateChangeReason.TAP_SCRIM:
+                return DismissReason.TOUCH_OUTSIDE;
+            case StateChangeReason.SWIPE:
+                return DismissReason.SWIPE_DOWN;
+            case StateChangeReason.CLOSE_BUTTON:
+                return DismissReason.CLOSE_BUTTON;
+            case StateChangeReason.INTERACTION_COMPLETE:
+                return DismissReason.PRIMARY_ACTION;
+            // BottomSheetManager.clearRequestsAndHide() hides with StateChangeReason.NONE for tab
+            // switch, page load, and tab destroy, so a sheet closed by a tab switch reports
+            // NAVIGATION while a dialog reports TAB_SWITCHED.
+            case StateChangeReason.NAVIGATION:
+            case StateChangeReason.NONE:
+            case StateChangeReason.COMPOSITED_UI:
+            case StateChangeReason.VR:
+            case StateChangeReason.PROMOTE_TAB:
+            case StateChangeReason.OMNIBOX_FOCUS:
+            default:
+                return DismissReason.NAVIGATION;
+        }
+    }
+    // LINT.ThenChange(//components/browser_ui/adaptive_ui/android/java/src/org/chromium/components/browser_ui/adaptive_ui/DismissReason.java:DismissReason)
 }

@@ -508,7 +508,7 @@ public class AdaptiveUiDialogCoordinatorTest {
 
         coordinator.onDismiss(dialogModel, DialogDismissalCause.UNKNOWN);
 
-        assertEquals(List.of(DialogDismissalCause.UNKNOWN), mDialogDismissals);
+        assertEquals(List.of(DismissReason.NAVIGATION), mDialogDismissals);
         assertNull(customView.getParent());
 
         model.set(AdaptiveUiProperties.TITLE, "Changed after dismiss");
@@ -717,6 +717,204 @@ public class AdaptiveUiDialogCoordinatorTest {
                 dialogModel
                         .getAllSetProperties()
                         .contains(ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER));
+    }
+
+    // ---------------------------------------------------------------------------------------
+    // Latched and custom dismiss reasons.
+    // ---------------------------------------------------------------------------------------
+
+    @Test
+    public void testOnDismiss_LatchedCloseButton_OverridesContainerCause() {
+        PropertyModel model = newModelBuilder().build();
+        AdaptiveUiDialogCoordinator coordinator = createCoordinator(model);
+
+        coordinator
+                .getDialogModel()
+                .get(ModalDialogProperties.TITLE_CLOSE_BUTTON_CLICK_LISTENER)
+                .onClick(null);
+        assertEquals(List.of(DismissReason.CLOSE_BUTTON), mDismissRequests);
+
+        // Container dismisses dialog using NEGATIVE_BUTTON_CLICKED, but latched CLOSE_BUTTON takes
+        // precedence.
+        coordinator.onDismiss(
+                coordinator.getDialogModel(), DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+        assertEquals(List.of(DismissReason.CLOSE_BUTTON), mDialogDismissals);
+    }
+
+    @Test
+    public void testOnDismiss_LatchedSecondaryAction_OverridesContainerCause() {
+        PropertyModel model =
+                newModelBuilder().with(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, "S").build();
+        AdaptiveUiDialogCoordinator coordinator = createCoordinator(model);
+
+        coordinator.onClick(coordinator.getDialogModel(), ButtonType.NEGATIVE);
+        assertEquals(List.of(DismissReason.SECONDARY_ACTION), mDismissRequests);
+
+        // Container dismisses dialog using NEGATIVE_BUTTON_CLICKED, but latched SECONDARY_ACTION
+        // takes precedence.
+        coordinator.onDismiss(
+                coordinator.getDialogModel(), DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+        assertEquals(List.of(DismissReason.SECONDARY_ACTION), mDialogDismissals);
+    }
+
+    @Test
+    public void testOnDismiss_LatchedBackPress_OverridesContainerCause() {
+        PropertyModel model = newModelBuilder().build();
+        AdaptiveUiDialogCoordinator coordinator = createCoordinator(model, AdaptiveUiScope.WINDOW);
+
+        coordinator
+                .getDialogModel()
+                .get(ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER)
+                .handleOnBackPressed();
+        assertEquals(List.of(DismissReason.BACK_PRESS), mDismissRequests);
+
+        // Container dismisses dialog using NAVIGATE_BACK_OR_TOUCH_OUTSIDE, but latched BACK_PRESS
+        // takes precedence.
+        coordinator.onDismiss(
+                coordinator.getDialogModel(), DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
+        assertEquals(List.of(DismissReason.BACK_PRESS), mDialogDismissals);
+    }
+
+    @Test
+    public void testOnDismiss_UnlatchedTouchOutside() {
+        PropertyModel model = newModelBuilder().build();
+        AdaptiveUiDialogCoordinator coordinator = createCoordinator(model, AdaptiveUiScope.WINDOW);
+
+        // Unlatched external tap on scrim.
+        coordinator.onDismiss(
+                coordinator.getDialogModel(), DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
+        assertEquals(List.of(DismissReason.TOUCH_OUTSIDE), mDialogDismissals);
+    }
+
+    @Test
+    public void testSetDismissReason_OverridesContainerCause() {
+        PropertyModel model = newModelBuilder().build();
+        AdaptiveUiDialogCoordinator coordinator = createCoordinator(model);
+
+        coordinator.setDismissReason(DismissReason.PRIMARY_ACTION);
+        coordinator.onDismiss(coordinator.getDialogModel(), DialogDismissalCause.UNKNOWN);
+
+        assertEquals(List.of(DismissReason.PRIMARY_ACTION), mDialogDismissals);
+    }
+
+    @Test
+    public void testSetDismissReason_IgnoredIfAlreadyLatched() {
+        PropertyModel model = newModelBuilder().build();
+        AdaptiveUiDialogCoordinator coordinator = createCoordinator(model);
+
+        coordinator
+                .getDialogModel()
+                .get(ModalDialogProperties.TITLE_CLOSE_BUTTON_CLICK_LISTENER)
+                .onClick(null);
+        coordinator.setDismissReason(DismissReason.TAB_SWITCHED);
+        coordinator.onDismiss(coordinator.getDialogModel(), DialogDismissalCause.UNKNOWN);
+
+        assertEquals(List.of(DismissReason.CLOSE_BUTTON), mDialogDismissals);
+    }
+
+    @Test
+    public void testToDialogDismissalCause_TransientScope() {
+        AdaptiveUiDialogCoordinator coordinator =
+                createCoordinator(newModelBuilder().build(), AdaptiveUiScope.TRANSIENT);
+        assertEquals(
+                DialogDismissalCause.NAVIGATE_BACK,
+                coordinator.toDialogDismissalCause(DismissReason.BACK_PRESS));
+        assertEquals(
+                DialogDismissalCause.TOUCH_OUTSIDE,
+                coordinator.toDialogDismissalCause(DismissReason.TOUCH_OUTSIDE));
+        assertEquals(
+                DialogDismissalCause.TOUCH_OUTSIDE,
+                coordinator.toDialogDismissalCause(DismissReason.SWIPE_DOWN));
+        assertEquals(
+                DialogDismissalCause.NEGATIVE_BUTTON_CLICKED,
+                coordinator.toDialogDismissalCause(DismissReason.CLOSE_BUTTON));
+        assertEquals(
+                DialogDismissalCause.POSITIVE_BUTTON_CLICKED,
+                coordinator.toDialogDismissalCause(DismissReason.PRIMARY_ACTION));
+        assertEquals(
+                DialogDismissalCause.NEGATIVE_BUTTON_CLICKED,
+                coordinator.toDialogDismissalCause(DismissReason.SECONDARY_ACTION));
+        assertEquals(
+                DialogDismissalCause.NAVIGATE,
+                coordinator.toDialogDismissalCause(DismissReason.NAVIGATION));
+        assertEquals(
+                DialogDismissalCause.TAB_SWITCHED,
+                coordinator.toDialogDismissalCause(DismissReason.TAB_SWITCHED));
+        assertEquals(
+                DialogDismissalCause.TAB_DESTROYED,
+                coordinator.toDialogDismissalCause(DismissReason.TAB_CLOSED));
+    }
+
+    @Test
+    public void testToDialogDismissalCause_WindowScope() {
+        AdaptiveUiDialogCoordinator coordinator =
+                createCoordinator(newModelBuilder().build(), AdaptiveUiScope.WINDOW);
+        assertEquals(
+                DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE,
+                coordinator.toDialogDismissalCause(DismissReason.BACK_PRESS));
+        assertEquals(
+                DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE,
+                coordinator.toDialogDismissalCause(DismissReason.TOUCH_OUTSIDE));
+        assertEquals(
+                DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE,
+                coordinator.toDialogDismissalCause(DismissReason.SWIPE_DOWN));
+    }
+
+    private @DismissReason int dismissWithCause(@DialogDismissalCause int cause) {
+        mDialogDismissals.clear();
+        AdaptiveUiDialogCoordinator coordinator = createCoordinator(newModelBuilder().build());
+        coordinator.onDismiss(coordinator.getDialogModel(), cause);
+        assertEquals(1, mDialogDismissals.size());
+        return mDialogDismissals.get(0);
+    }
+
+    @Test
+    public void testOnDismiss_TranslatesUnlatchedDialogDismissalCauses() {
+        assertEquals(
+                DismissReason.BACK_PRESS, dismissWithCause(DialogDismissalCause.NAVIGATE_BACK));
+        assertEquals(
+                DismissReason.TOUCH_OUTSIDE, dismissWithCause(DialogDismissalCause.TOUCH_OUTSIDE));
+        assertEquals(
+                DismissReason.TOUCH_OUTSIDE,
+                dismissWithCause(DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE));
+        assertEquals(
+                DismissReason.PRIMARY_ACTION,
+                dismissWithCause(DialogDismissalCause.POSITIVE_BUTTON_CLICKED));
+        assertEquals(
+                DismissReason.PRIMARY_ACTION,
+                dismissWithCause(DialogDismissalCause.ACTION_ON_CONTENT));
+        assertEquals(
+                DismissReason.PRIMARY_ACTION,
+                dismissWithCause(DialogDismissalCause.ACTION_ON_DIALOG_COMPLETED));
+        assertEquals(
+                DismissReason.SECONDARY_ACTION,
+                dismissWithCause(DialogDismissalCause.NEGATIVE_BUTTON_CLICKED));
+        assertEquals(
+                DismissReason.SECONDARY_ACTION,
+                dismissWithCause(DialogDismissalCause.ACTION_ON_DIALOG_NOT_POSSIBLE));
+        assertEquals(DismissReason.NAVIGATION, dismissWithCause(DialogDismissalCause.NAVIGATE));
+        assertEquals(
+                DismissReason.TAB_SWITCHED, dismissWithCause(DialogDismissalCause.TAB_SWITCHED));
+        assertEquals(
+                DismissReason.TAB_CLOSED, dismissWithCause(DialogDismissalCause.TAB_DESTROYED));
+        assertEquals(
+                DismissReason.TAB_CLOSED,
+                dismissWithCause(DialogDismissalCause.ACTIVITY_DESTROYED));
+        assertEquals(
+                DismissReason.TAB_CLOSED,
+                dismissWithCause(DialogDismissalCause.NOT_ATTACHED_TO_WINDOW));
+        assertEquals(
+                DismissReason.TAB_CLOSED,
+                dismissWithCause(DialogDismissalCause.WEB_CONTENTS_DESTROYED));
+        assertEquals(DismissReason.NAVIGATION, dismissWithCause(DialogDismissalCause.UNKNOWN));
+        assertEquals(
+                DismissReason.NAVIGATION,
+                dismissWithCause(DialogDismissalCause.DISMISSED_BY_NATIVE));
+        assertEquals(
+                DismissReason.NAVIGATION,
+                dismissWithCause(DialogDismissalCause.DIALOG_INTERACTION_DEFERRED));
+        assertEquals(
+                DismissReason.NAVIGATION, dismissWithCause(DialogDismissalCause.CLIENT_TIMEOUT));
     }
 
     // ---------------------------------------------------------------------------------------
