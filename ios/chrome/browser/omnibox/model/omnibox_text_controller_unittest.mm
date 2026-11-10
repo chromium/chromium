@@ -155,8 +155,8 @@ class OmniboxTextControllerTest : public PlatformTest {
   OmniboxAutocompleteController* omnibox_autocomplete_controller_;
   TestOmniboxTextController* omnibox_text_controller_;
   std::unique_ptr<OmniboxTextModel> omnibox_text_model_;
-  std::unique_ptr<FakeOmniboxClient> omnibox_client_;
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
+  std::unique_ptr<FakeOmniboxClient> omnibox_client_;
   // Application pref service.
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
 };

@@ -171,7 +171,7 @@ class FakeOmniboxClient : public OmniboxClientIOS {
   }
 
  private:
-  raw_ptr<ProfileIOS, DanglingUntriaged> profile_;
+  raw_ptr<ProfileIOS> profile_;
   AutocompleteSchemeClassifierImpl scheme_classifier_;
 
   // For overriding return values
@@ -184,11 +184,10 @@ class FakeOmniboxClient : public OmniboxClientIOS {
   bool is_paste_and_go_enabled_ = false;
   bool is_default_search_provider_enabled_ = true;
   SessionID session_id_ = SessionID::InvalidValue();
-  raw_ptr<PrefService, DanglingUntriaged> prefs_ = nullptr;
-  raw_ptr<AutocompleteControllerEmitter, DanglingUntriaged>
-      autocomplete_controller_emitter_ = nullptr;
-  raw_ptr<AutocompleteClassifier, DanglingUntriaged> autocomplete_classifier_ =
+  raw_ptr<PrefService> prefs_ = nullptr;
+  raw_ptr<AutocompleteControllerEmitter> autocomplete_controller_emitter_ =
       nullptr;
+  raw_ptr<AutocompleteClassifier> autocomplete_classifier_ = nullptr;
   bool should_default_typed_navigations_to_https_ = false;
   std::u16string formatted_full_url_ = u"";
   std::u16string url_for_display_ = u"";
