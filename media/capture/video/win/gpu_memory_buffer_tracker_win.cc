@@ -156,7 +156,7 @@ GpuMemoryBufferTrackerWin::DuplicateAsUnsafeRegion() {
 
   if (!gpu::CopyDXGIBufferToShMem(dxgi_handle_.buffer_handle(),
                                   mapping_.GetMemoryAsSpan<uint8_t>(),
-                                  d3d_device_.Get(), &staging_texture_)) {
+                                  d3d_device_.Get(), staging_texture_)) {
     DLOG(ERROR) << "Couldn't copy DXGI buffer to shmem";
     return base::UnsafeSharedMemoryRegion();
   }

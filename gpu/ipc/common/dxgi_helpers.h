@@ -63,7 +63,7 @@ GPU_IPC_COMMON_EXPORT bool CopyDXGIBufferToShMem(
     HANDLE dxgi_handle,
     base::span<uint8_t> shared_memory,
     ID3D11Device* d3d11_device,
-    Microsoft::WRL::ComPtr<ID3D11Texture2D>* staging_texture);
+    Microsoft::WRL::ComPtr<ID3D11Texture2D>& staging_texture);
 
 // Copies from |input_texture| to |dst_buffer| using provided D3D11 device, and
 // a staging texture. The staging texture may be recreated if it does not match
@@ -72,7 +72,7 @@ GPU_IPC_COMMON_EXPORT bool CopyD3D11TexToMem(
     ID3D11Texture2D* input_texture,
     base::span<uint8_t> dst_buffer,
     ID3D11Device* d3d11_device,
-    Microsoft::WRL::ComPtr<ID3D11Texture2D>* staging_texture);
+    Microsoft::WRL::ComPtr<ID3D11Texture2D>& staging_texture);
 
 GPU_IPC_COMMON_EXPORT bool CopyShMemToDXGIBuffer(
     base::span<uint8_t> shared_memory,

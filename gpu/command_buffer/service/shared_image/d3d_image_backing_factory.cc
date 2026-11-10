@@ -54,8 +54,9 @@ class GpuMemoryBufferHandleSharedState {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
     if (!d3d11_device_ || FAILED(d3d11_device_->GetDeviceRemovedReason())) {
-      // Reset device if it was removed.
+      // Reset device and cached staging texture if device was removed.
       d3d11_device_ = nullptr;
+      staging_texture_ = nullptr;
       // Use same adapter as ANGLE device.
       auto angle_d3d11_device = gl::QueryD3D11DeviceObjectFromANGLE();
       if (!angle_d3d11_device) {
@@ -109,14 +110,16 @@ class GpuMemoryBufferHandleSharedState {
     return d3d11_device_;
   }
 
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> staging_texture() {
+  Microsoft::WRL::ComPtr<ID3D11Texture2D>& staging_texture() {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     return staging_texture_;
   }
 
  private:
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_
       GUARDED_BY_CONTEXT(thread_checker_);
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> staging_texture_;
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> staging_texture_
+      GUARDED_BY_CONTEXT(thread_checker_);
   THREAD_CHECKER(thread_checker_);
 };
 
@@ -129,7 +132,7 @@ Microsoft::WRL::ComPtr<ID3D11Device> GetD3D11DeviceForGMBHandles() {
   return GetGpuMemoryBufferHandleSharedState()->GetOrCreateD3D11Device();
 }
 
-Microsoft::WRL::ComPtr<ID3D11Texture2D> GetStagingTextureForGMBHandleCopies() {
+Microsoft::WRL::ComPtr<ID3D11Texture2D>& GetStagingTextureForGMBHandleCopies() {
   return GetGpuMemoryBufferHandleSharedState()->staging_texture();
 }
 
@@ -437,7 +440,7 @@ bool D3DImageBackingFactory::CopyNativeBufferToSharedMemoryAsync(
   return CopyDXGIBufferToShMem(buffer_handle.dxgi_handle().buffer_handle(),
                                mapping.GetMemoryAsSpan<uint8_t>(),
                                d3d11_device.Get(),
-                               &GetStagingTextureForGMBHandleCopies());
+                               GetStagingTextureForGMBHandleCopies());
 }
 
 // static

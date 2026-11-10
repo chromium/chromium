@@ -2392,7 +2392,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::CopyInputSampleBufferFromGpu(
   MediaBufferScopedPointer scoped_buffer(input_buffer.Get());
   bool copy_succeeded =
       gpu::CopyD3D11TexToMem(sample_texture.Get(), scoped_buffer.as_span(),
-                             d3d_device.Get(), &staging_texture_);
+                             d3d_device.Get(), staging_texture_);
   if (!copy_succeeded) {
     LOG(ERROR) << "Failed to copy sample to memory.";
     return E_FAIL;

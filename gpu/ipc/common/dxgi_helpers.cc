@@ -75,7 +75,7 @@ bool CopyDXGIBufferToShMem(
     HANDLE dxgi_handle,
     base::span<uint8_t> shared_memory,
     ID3D11Device* d3d11_device,
-    Microsoft::WRL::ComPtr<ID3D11Texture2D>* staging_texture) {
+    Microsoft::WRL::ComPtr<ID3D11Texture2D>& staging_texture) {
   DCHECK(d3d11_device);
 
   Microsoft::WRL::ComPtr<ID3D11Device1> device1;
@@ -99,9 +99,8 @@ bool CopyD3D11TexToMem(
     ID3D11Texture2D* src_texture,
     base::span<uint8_t> dst_buffer,
     ID3D11Device* d3d11_device,
-    Microsoft::WRL::ComPtr<ID3D11Texture2D>* staging_texture) {
+    Microsoft::WRL::ComPtr<ID3D11Texture2D>& staging_texture) {
   DCHECK(d3d11_device);
-  DCHECK(staging_texture);
   DCHECK(!dst_buffer.empty());
   DCHECK(src_texture);
 
@@ -120,19 +119,20 @@ bool CopyD3D11TexToMem(
   }
 
   // The texture isn't accessible for CPU reads, thus a staging texture is used.
-  bool create_staging_texture = !*staging_texture;
-  if (*staging_texture) {
+  bool create_staging_texture = !staging_texture;
+  if (staging_texture) {
     D3D11_TEXTURE2D_DESC staging_texture_desc;
-    (*staging_texture)->GetDesc(&staging_texture_desc);
+    staging_texture->GetDesc(&staging_texture_desc);
     create_staging_texture =
         (staging_texture_desc.Width != texture_desc.Width ||
          staging_texture_desc.Height != texture_desc.Height ||
          staging_texture_desc.Format != texture_desc.Format);
   }
   if (create_staging_texture) {
-    *staging_texture = CreateStagingTexture(d3d11_device, texture_desc);
-    if (!*staging_texture)
+    staging_texture = CreateStagingTexture(d3d11_device, texture_desc);
+    if (!staging_texture) {
       return false;
+    }
   }
 
   Microsoft::WRL::ComPtr<ID3D11DeviceContext> device_context;
@@ -173,22 +173,22 @@ bool CopyD3D11TexToMem(
     }
     DXGIScopedReleaseKeyedMutex release_keyed_mutex(keyed_mutex, 0);
 
-    device_context->CopySubresourceRegion(staging_texture->Get(), 0, 0, 0, 0,
+    device_context->CopySubresourceRegion(staging_texture.Get(), 0, 0, 0, 0,
                                           src_texture, 0, nullptr);
   } else {
-    device_context->CopySubresourceRegion(staging_texture->Get(), 0, 0, 0, 0,
+    device_context->CopySubresourceRegion(staging_texture.Get(), 0, 0, 0, 0,
                                           src_texture, 0, nullptr);
   }
 
   D3D11_MAPPED_SUBRESOURCE mapped_resource = {};
-  hr = device_context->Map(staging_texture->Get(), 0, D3D11_MAP_READ, 0,
+  hr = device_context->Map(staging_texture.Get(), 0, D3D11_MAP_READ, 0,
                            &mapped_resource);
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to map texture for read. Error msg: "
                 << logging::SystemErrorCodeToString(hr);
     return false;
   }
-  D3D11ScopedTextureUnmap scoped_unmap(device_context, *staging_texture);
+  D3D11ScopedTextureUnmap scoped_unmap(device_context, staging_texture);
 
   const uint8_t* source_buffer = static_cast<uint8_t*>(mapped_resource.pData);
   const uint32_t source_stride = mapped_resource.RowPitch;
