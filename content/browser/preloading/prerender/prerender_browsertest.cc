@@ -16,9 +16,10 @@
 #include "base/feature_list.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/memory_pressure_listener_registry.h"
+#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/memory_coordinator/scoped_memory_pressure_level_override.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -13528,8 +13529,8 @@ IN_PROC_BROWSER_TEST_F(MultiplePrerendersBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), initial_url));
 
   // Emulate moderate-level memory pressure state.
-  base::MemoryPressureListenerRegistry::SimulatePressureNotification(
-      base::MEMORY_PRESSURE_LEVEL_MODERATE);
+  base::ScopedMemoryPressureLevelOverride memory_pressure_level_override;
+  memory_pressure_level_override.SetLevel(base::MEMORY_PRESSURE_LEVEL_MODERATE);
 
   // Triggering prerendering should not be canceled due to the moderate level
   // memory pressure.
@@ -13550,8 +13551,8 @@ IN_PROC_BROWSER_TEST_F(MultiplePrerendersBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), initial_url));
 
   // Emulate critical-level memory pressure state.
-  base::MemoryPressureListenerRegistry::SimulatePressureNotification(
-      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  base::ScopedMemoryPressureLevelOverride memory_pressure_level_override;
+  memory_pressure_level_override.SetLevel(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
 
   // Triggering prerendering should be canceled due to the critical level memory
   // pressure.

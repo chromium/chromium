@@ -1606,7 +1606,7 @@ class SoftwareTextureLayerPurgeMemoryTest : public SoftwareTextureLayerTest {
     // Call OnPurgeMemory() to ensure that the same layer doesn't get
     // registered again on the next draw.
     if (step_ == 1)
-      base::MemoryPressureListener::SimulatePressureNotification(
+      memory_pressure_source_.SetMemoryPressureLevel(
           base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   }
 

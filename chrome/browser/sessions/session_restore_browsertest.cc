@@ -22,8 +22,8 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory_coordinator/scoped_memory_pressure_level_override.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
@@ -429,7 +429,7 @@ class SessionRestoreTest : public InProcessBrowserTest {
 
     // Stop loading anything more if we are running out of space.
     if (!no_memory_pressure) {
-      base::MemoryPressureListenerRegistry::SimulatePressureNotification(
+      memory_pressure_level_override_.SetLevel(
           base::MEMORY_PRESSURE_LEVEL_CRITICAL);
     }
     restore_observer.Wait();
@@ -504,6 +504,10 @@ class SessionRestoreTest : public InProcessBrowserTest {
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   base::CallbackListSubscription dependency_manager_subscription_;
+
+  // Used by QuitBrowserAndRestore() to simulate memory pressure. Outlives the
+  // restore so that the pressure isn't lifted while tabs are still loading.
+  base::ScopedMemoryPressureLevelOverride memory_pressure_level_override_;
 };
 
 // Activates the smart restore behaviour.

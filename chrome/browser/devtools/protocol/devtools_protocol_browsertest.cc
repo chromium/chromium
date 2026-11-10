@@ -11,8 +11,8 @@
 #include "base/check_deref.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
-#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory_coordinator/scoped_memory_pressure_level_override.h"
 #include "base/path_service.h"
 #include "base/process/process.h"
 #include "base/strings/string_split.h"
@@ -603,8 +603,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, MAYBE_AutoAttachToUnloadedTab) {
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
           tab_waiter.Wait());
 
-  base::MemoryPressureListenerRegistry::SimulatePressureNotification(
-      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  base::ScopedMemoryPressureLevelOverride memory_pressure_level_override;
+  memory_pressure_level_override.SetLevel(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
 
   keep_alive.reset();
   profile_keep_alive.reset();

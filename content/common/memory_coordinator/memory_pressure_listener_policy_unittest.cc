@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/hash/hash.h"
-#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/memory_coordinator/memory_pressure_source.h"
@@ -68,13 +67,10 @@ class MockMemoryConsumerGroupHost : public MemoryConsumerGroupHost {
 
 class MemoryPressureListenerPolicyTest : public testing::Test {
  protected:
-  MemoryCoordinatorPolicyManager& policy_manager() { return policy_manager_; }
-
   const uint32_t consumer_id_ = base::PersistentHash(kConsumerName);
   const uint32_t disk_writing_consumer_id_ =
       base::PersistentHash(kDiskWritingConsumerName);
 
- private:
   base::test::TaskEnvironment task_environment_;
   base::MemoryPressureSource memory_pressure_source_;
   base::MemoryPressureListenerRegistry registry_;
@@ -85,21 +81,21 @@ TEST_F(MemoryPressureListenerPolicyTest, ResponseToPressure) {
   MockMemoryConsumerGroupHost host;
   const ChildProcessId kChildId;  // Current process
 
-  policy_manager().AddMemoryConsumerGroupHost(PROCESS_TYPE_BROWSER, kChildId,
-                                              &host);
+  policy_manager_.AddMemoryConsumerGroupHost(PROCESS_TYPE_BROWSER, kChildId,
+                                             &host);
 
   const std::string kConsumerName1 = "consumer1";
   const uint32_t kConsumerId1 = base::PersistentHash(kConsumerName1);
   const std::string kConsumerName2 = "consumer2";
   const uint32_t kConsumerId2 = base::PersistentHash(kConsumerName2);
 
-  policy_manager().OnConsumerGroupAdded(kConsumerId1, kConsumerName1,
-                                        kTestTraits, kChildId);
-  policy_manager().OnConsumerGroupAdded(kConsumerId2, kConsumerName2,
-                                        kTestTraits, kChildId);
+  policy_manager_.OnConsumerGroupAdded(kConsumerId1, kConsumerName1,
+                                       kTestTraits, kChildId);
+  policy_manager_.OnConsumerGroupAdded(kConsumerId2, kConsumerName2,
+                                       kTestTraits, kChildId);
 
-  MemoryPressureListenerPolicy policy(policy_manager());
-  MemoryCoordinatorPolicyRegistration registration(policy_manager(), policy);
+  MemoryPressureListenerPolicy policy(policy_manager_);
+  MemoryCoordinatorPolicyRegistration registration(policy_manager_, policy);
 
   // Moderate pressure: 50% limit and release memory.
   EXPECT_CALL(
@@ -108,7 +104,7 @@ TEST_F(MemoryPressureListenerPolicyTest, ResponseToPressure) {
                                      base::MemoryLimit::FromPercent(50), true},
                 MemoryConsumerUpdate{
                     kConsumerId2, base::MemoryLimit::FromPercent(50), true})));
-  base::MemoryPressureListener::SimulatePressureNotification(
+  memory_pressure_source_.SetMemoryPressureLevel(
       base::MEMORY_PRESSURE_LEVEL_MODERATE);
   Mock::VerifyAndClearExpectations(&host);
 
@@ -119,7 +115,7 @@ TEST_F(MemoryPressureListenerPolicyTest, ResponseToPressure) {
                                        base::MemoryLimit::FromPercent(0), true},
                   MemoryConsumerUpdate{
                       kConsumerId2, base::MemoryLimit::FromPercent(0), true})));
-  base::MemoryPressureListener::SimulatePressureNotification(
+  memory_pressure_source_.SetMemoryPressureLevel(
       base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   Mock::VerifyAndClearExpectations(&host);
 
@@ -130,13 +126,13 @@ TEST_F(MemoryPressureListenerPolicyTest, ResponseToPressure) {
                                      false},
                 MemoryConsumerUpdate{kConsumerId2, base::MemoryLimit::Default(),
                                      false})));
-  base::MemoryPressureListener::SimulatePressureNotification(
+  memory_pressure_source_.SetMemoryPressureLevel(
       base::MEMORY_PRESSURE_LEVEL_NONE);
   Mock::VerifyAndClearExpectations(&host);
 
-  policy_manager().OnConsumerGroupRemoved(kConsumerId1, kChildId);
-  policy_manager().OnConsumerGroupRemoved(kConsumerId2, kChildId);
-  policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
+  policy_manager_.OnConsumerGroupRemoved(kConsumerId1, kChildId);
+  policy_manager_.OnConsumerGroupRemoved(kConsumerId2, kChildId);
+  policy_manager_.RemoveMemoryConsumerGroupHost(kChildId);
 }
 
 TEST_F(MemoryPressureListenerPolicyTest, IgnoreOtherProcesses) {
@@ -145,37 +141,37 @@ TEST_F(MemoryPressureListenerPolicyTest, IgnoreOtherProcesses) {
   const std::string kRemoteName = "consumer1";
   const uint32_t kRemoteId = base::PersistentHash(kRemoteName);
 
-  policy_manager().AddMemoryConsumerGroupHost(PROCESS_TYPE_RENDERER,
-                                              kRemoteChildId, &host);
-  policy_manager().OnConsumerGroupAdded(kRemoteId, kRemoteName, kTestTraits,
-                                        kRemoteChildId);
+  policy_manager_.AddMemoryConsumerGroupHost(PROCESS_TYPE_RENDERER,
+                                             kRemoteChildId, &host);
+  policy_manager_.OnConsumerGroupAdded(kRemoteId, kRemoteName, kTestTraits,
+                                       kRemoteChildId);
 
-  MemoryPressureListenerPolicy policy(policy_manager());
-  MemoryCoordinatorPolicyRegistration registration(policy_manager(), policy);
+  MemoryPressureListenerPolicy policy(policy_manager_);
+  MemoryCoordinatorPolicyRegistration registration(policy_manager_, policy);
 
   // Local pressure should NOT affect remote process consumers.
   EXPECT_CALL(host, UpdateConsumers(_)).Times(0);
-  base::MemoryPressureListener::SimulatePressureNotification(
+  memory_pressure_source_.SetMemoryPressureLevel(
       base::MEMORY_PRESSURE_LEVEL_MODERATE);
   Mock::VerifyAndClearExpectations(&host);
 
-  policy_manager().OnConsumerGroupRemoved(kRemoteId, kRemoteChildId);
-  policy_manager().RemoveMemoryConsumerGroupHost(kRemoteChildId);
+  policy_manager_.OnConsumerGroupRemoved(kRemoteId, kRemoteChildId);
+  policy_manager_.RemoveMemoryConsumerGroupHost(kRemoteChildId);
 }
 
 TEST_F(MemoryPressureListenerPolicyTest, Persistence) {
   MockMemoryConsumerGroupHost host;
   const ChildProcessId kChildId;  // Current process
 
-  policy_manager().AddMemoryConsumerGroupHost(PROCESS_TYPE_BROWSER, kChildId,
-                                              &host);
+  policy_manager_.AddMemoryConsumerGroupHost(PROCESS_TYPE_BROWSER, kChildId,
+                                             &host);
 
   {
-    MemoryPressureListenerPolicy policy(policy_manager());
-    MemoryCoordinatorPolicyRegistration registration(policy_manager(), policy);
+    MemoryPressureListenerPolicy policy(policy_manager_);
+    MemoryCoordinatorPolicyRegistration registration(policy_manager_, policy);
 
     // Moderate pressure: 50% limit and release memory.
-    base::MemoryPressureListener::SimulatePressureNotification(
+    memory_pressure_source_.SetMemoryPressureLevel(
         base::MEMORY_PRESSURE_LEVEL_MODERATE);
 
     // Consumers added AFTER the pressure event should immediately receive the
@@ -183,16 +179,16 @@ TEST_F(MemoryPressureListenerPolicyTest, Persistence) {
     EXPECT_CALL(host,
                 UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
                     consumer_id_, base::MemoryLimit::FromPercent(50), true})));
-    policy_manager().OnConsumerGroupAdded(consumer_id_, kConsumerName,
-                                          kTestTraits, kChildId);
+    policy_manager_.OnConsumerGroupAdded(consumer_id_, kConsumerName,
+                                         kTestTraits, kChildId);
     Mock::VerifyAndClearExpectations(&host);
 
     EXPECT_CALL(host, UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
                           disk_writing_consumer_id_,
                           base::MemoryLimit::FromPercent(50), true})));
-    policy_manager().OnConsumerGroupAdded(disk_writing_consumer_id_,
-                                          kDiskWritingConsumerName,
-                                          kDiskWritingTraits, kChildId);
+    policy_manager_.OnConsumerGroupAdded(disk_writing_consumer_id_,
+                                         kDiskWritingConsumerName,
+                                         kDiskWritingTraits, kChildId);
     Mock::VerifyAndClearExpectations(&host);
 
     // Removing the policy should reset the limits to default (100%).
@@ -205,9 +201,9 @@ TEST_F(MemoryPressureListenerPolicyTest, Persistence) {
   }
   Mock::VerifyAndClearExpectations(&host);
 
-  policy_manager().OnConsumerGroupRemoved(consumer_id_, kChildId);
-  policy_manager().OnConsumerGroupRemoved(disk_writing_consumer_id_, kChildId);
-  policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
+  policy_manager_.OnConsumerGroupRemoved(consumer_id_, kChildId);
+  policy_manager_.OnConsumerGroupRemoved(disk_writing_consumer_id_, kChildId);
+  policy_manager_.RemoveMemoryConsumerGroupHost(kChildId);
 }
 
 TEST_F(MemoryPressureListenerPolicyTest,
@@ -219,34 +215,34 @@ TEST_F(MemoryPressureListenerPolicyTest,
   MockMemoryConsumerGroupHost host;
   const ChildProcessId kChildId;
 
-  policy_manager().AddMemoryConsumerGroupHost(PROCESS_TYPE_BROWSER, kChildId,
-                                              &host);
+  policy_manager_.AddMemoryConsumerGroupHost(PROCESS_TYPE_BROWSER, kChildId,
+                                             &host);
 
   const std::string kMemoryCacheName = "MemoryCache";
   const uint32_t kMemoryCacheId = base::PersistentHash(kMemoryCacheName);
   const std::string kOtherConsumerName = "other_consumer";
   const uint32_t kOtherConsumerId = base::PersistentHash(kOtherConsumerName);
 
-  policy_manager().OnConsumerGroupAdded(kMemoryCacheId, kMemoryCacheName,
-                                        kTestTraits, kChildId);
-  policy_manager().OnConsumerGroupAdded(kOtherConsumerId, kOtherConsumerName,
-                                        kTestTraits, kChildId);
+  policy_manager_.OnConsumerGroupAdded(kMemoryCacheId, kMemoryCacheName,
+                                       kTestTraits, kChildId);
+  policy_manager_.OnConsumerGroupAdded(kOtherConsumerId, kOtherConsumerName,
+                                       kTestTraits, kChildId);
 
-  MemoryPressureListenerPolicy policy(policy_manager());
-  MemoryCoordinatorPolicyRegistration registration(policy_manager(), policy);
+  MemoryPressureListenerPolicy policy(policy_manager_);
+  MemoryCoordinatorPolicyRegistration registration(policy_manager_, policy);
 
   // When feature is disabled, MemoryCache is skipped, but other consumer is
   // updated.
   EXPECT_CALL(
       host, UpdateConsumers(UnorderedElementsAre(MemoryConsumerUpdate{
                 kOtherConsumerId, base::MemoryLimit::FromPercent(50), true})));
-  base::MemoryPressureListener::SimulatePressureNotification(
+  memory_pressure_source_.SetMemoryPressureLevel(
       base::MEMORY_PRESSURE_LEVEL_MODERATE);
   Mock::VerifyAndClearExpectations(&host);
 
-  policy_manager().OnConsumerGroupRemoved(kMemoryCacheId, kChildId);
-  policy_manager().OnConsumerGroupRemoved(kOtherConsumerId, kChildId);
-  policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
+  policy_manager_.OnConsumerGroupRemoved(kMemoryCacheId, kChildId);
+  policy_manager_.OnConsumerGroupRemoved(kOtherConsumerId, kChildId);
+  policy_manager_.RemoveMemoryConsumerGroupHost(kChildId);
 }
 
 TEST_F(MemoryPressureListenerPolicyTest,
@@ -258,21 +254,21 @@ TEST_F(MemoryPressureListenerPolicyTest,
   MockMemoryConsumerGroupHost host;
   const ChildProcessId kChildId;
 
-  policy_manager().AddMemoryConsumerGroupHost(PROCESS_TYPE_BROWSER, kChildId,
-                                              &host);
+  policy_manager_.AddMemoryConsumerGroupHost(PROCESS_TYPE_BROWSER, kChildId,
+                                             &host);
 
   const std::string kMemoryCacheName = "MemoryCache";
   const uint32_t kMemoryCacheId = base::PersistentHash(kMemoryCacheName);
   const std::string kOtherConsumerName = "other_consumer";
   const uint32_t kOtherConsumerId = base::PersistentHash(kOtherConsumerName);
 
-  policy_manager().OnConsumerGroupAdded(kMemoryCacheId, kMemoryCacheName,
-                                        kTestTraits, kChildId);
-  policy_manager().OnConsumerGroupAdded(kOtherConsumerId, kOtherConsumerName,
-                                        kTestTraits, kChildId);
+  policy_manager_.OnConsumerGroupAdded(kMemoryCacheId, kMemoryCacheName,
+                                       kTestTraits, kChildId);
+  policy_manager_.OnConsumerGroupAdded(kOtherConsumerId, kOtherConsumerName,
+                                       kTestTraits, kChildId);
 
-  MemoryPressureListenerPolicy policy(policy_manager());
-  MemoryCoordinatorPolicyRegistration registration(policy_manager(), policy);
+  MemoryPressureListenerPolicy policy(policy_manager_);
+  MemoryCoordinatorPolicyRegistration registration(policy_manager_, policy);
 
   // When feature is enabled, MemoryCache is included along with other
   // consumers.
@@ -283,13 +279,13 @@ TEST_F(MemoryPressureListenerPolicyTest,
                                base::MemoryLimit::FromPercent(50), true},
           MemoryConsumerUpdate{kOtherConsumerId,
                                base::MemoryLimit::FromPercent(50), true})));
-  base::MemoryPressureListener::SimulatePressureNotification(
+  memory_pressure_source_.SetMemoryPressureLevel(
       base::MEMORY_PRESSURE_LEVEL_MODERATE);
   Mock::VerifyAndClearExpectations(&host);
 
-  policy_manager().OnConsumerGroupRemoved(kMemoryCacheId, kChildId);
-  policy_manager().OnConsumerGroupRemoved(kOtherConsumerId, kChildId);
-  policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
+  policy_manager_.OnConsumerGroupRemoved(kMemoryCacheId, kChildId);
+  policy_manager_.OnConsumerGroupRemoved(kOtherConsumerId, kChildId);
+  policy_manager_.RemoveMemoryConsumerGroupHost(kChildId);
 }
 
 // Consumers that release memory by writing it to disk get the critical pressure
@@ -301,17 +297,17 @@ TEST_F(MemoryPressureListenerPolicyTest,
   MockMemoryConsumerGroupHost host;
   const ChildProcessId kChildId;  // Current process
 
-  policy_manager().AddMemoryConsumerGroupHost(PROCESS_TYPE_BROWSER, kChildId,
-                                              &host);
+  policy_manager_.AddMemoryConsumerGroupHost(PROCESS_TYPE_BROWSER, kChildId,
+                                             &host);
 
-  policy_manager().OnConsumerGroupAdded(consumer_id_, kConsumerName,
-                                        kTestTraits, kChildId);
-  policy_manager().OnConsumerGroupAdded(disk_writing_consumer_id_,
-                                        kDiskWritingConsumerName,
-                                        kDiskWritingTraits, kChildId);
+  policy_manager_.OnConsumerGroupAdded(consumer_id_, kConsumerName, kTestTraits,
+                                       kChildId);
+  policy_manager_.OnConsumerGroupAdded(disk_writing_consumer_id_,
+                                       kDiskWritingConsumerName,
+                                       kDiskWritingTraits, kChildId);
 
-  MemoryPressureListenerPolicy policy(policy_manager());
-  MemoryCoordinatorPolicyRegistration registration(policy_manager(), policy);
+  MemoryPressureListenerPolicy policy(policy_manager_);
+  MemoryCoordinatorPolicyRegistration registration(policy_manager_, policy);
 
   // Moderate pressure: both consumers get a 50% limit and release memory.
   EXPECT_CALL(
@@ -321,7 +317,7 @@ TEST_F(MemoryPressureListenerPolicyTest,
                                true},
           MemoryConsumerUpdate{disk_writing_consumer_id_,
                                base::MemoryLimit::FromPercent(50), true})));
-  base::MemoryPressureListener::SimulatePressureNotification(
+  memory_pressure_source_.SetMemoryPressureLevel(
       base::MEMORY_PRESSURE_LEVEL_MODERATE);
   Mock::VerifyAndClearExpectations(&host);
 
@@ -334,7 +330,7 @@ TEST_F(MemoryPressureListenerPolicyTest,
                                true},
           MemoryConsumerUpdate{disk_writing_consumer_id_,
                                base::MemoryLimit::FromPercent(0), false})));
-  base::MemoryPressureListener::SimulatePressureNotification(
+  memory_pressure_source_.SetMemoryPressureLevel(
       base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   Mock::VerifyAndClearExpectations(&host);
 
@@ -346,13 +342,13 @@ TEST_F(MemoryPressureListenerPolicyTest,
                                      false},
                 MemoryConsumerUpdate{disk_writing_consumer_id_,
                                      base::MemoryLimit::Default(), false})));
-  base::MemoryPressureListener::SimulatePressureNotification(
+  memory_pressure_source_.SetMemoryPressureLevel(
       base::MEMORY_PRESSURE_LEVEL_NONE);
   Mock::VerifyAndClearExpectations(&host);
 
-  policy_manager().OnConsumerGroupRemoved(consumer_id_, kChildId);
-  policy_manager().OnConsumerGroupRemoved(disk_writing_consumer_id_, kChildId);
-  policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
+  policy_manager_.OnConsumerGroupRemoved(consumer_id_, kChildId);
+  policy_manager_.OnConsumerGroupRemoved(disk_writing_consumer_id_, kChildId);
+  policy_manager_.RemoveMemoryConsumerGroupHost(kChildId);
 }
 
 // Consumers that release memory by writing it to disk are not asked to release
@@ -363,17 +359,17 @@ TEST_F(MemoryPressureListenerPolicyTest,
   MockMemoryConsumerGroupHost host;
   const ChildProcessId kChildId;  // Current process
 
-  policy_manager().AddMemoryConsumerGroupHost(PROCESS_TYPE_BROWSER, kChildId,
-                                              &host);
+  policy_manager_.AddMemoryConsumerGroupHost(PROCESS_TYPE_BROWSER, kChildId,
+                                             &host);
 
-  policy_manager().OnConsumerGroupAdded(consumer_id_, kConsumerName,
-                                        kTestTraits, kChildId);
-  policy_manager().OnConsumerGroupAdded(disk_writing_consumer_id_,
-                                        kDiskWritingConsumerName,
-                                        kDiskWritingTraits, kChildId);
+  policy_manager_.OnConsumerGroupAdded(consumer_id_, kConsumerName, kTestTraits,
+                                       kChildId);
+  policy_manager_.OnConsumerGroupAdded(disk_writing_consumer_id_,
+                                       kDiskWritingConsumerName,
+                                       kDiskWritingTraits, kChildId);
 
-  MemoryPressureListenerPolicy policy(policy_manager());
-  MemoryCoordinatorPolicyRegistration registration(policy_manager(), policy);
+  MemoryPressureListenerPolicy policy(policy_manager_);
+  MemoryCoordinatorPolicyRegistration registration(policy_manager_, policy);
 
   // Critical pressure: both consumers get a 0% limit, but only the other
   // consumer is asked to release memory.
@@ -384,7 +380,7 @@ TEST_F(MemoryPressureListenerPolicyTest,
                                true},
           MemoryConsumerUpdate{disk_writing_consumer_id_,
                                base::MemoryLimit::FromPercent(0), false})));
-  base::MemoryPressureListener::SimulatePressureNotification(
+  memory_pressure_source_.SetMemoryPressureLevel(
       base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   Mock::VerifyAndClearExpectations(&host);
 
@@ -400,7 +396,7 @@ TEST_F(MemoryPressureListenerPolicyTest,
                                base::MemoryLimit::FromPercent(50), false})));
   EXPECT_CALL(host, UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
                         disk_writing_consumer_id_, std::nullopt, true})));
-  base::MemoryPressureListener::SimulatePressureNotification(
+  memory_pressure_source_.SetMemoryPressureLevel(
       base::MEMORY_PRESSURE_LEVEL_MODERATE);
   Mock::VerifyAndClearExpectations(&host);
 
@@ -411,13 +407,13 @@ TEST_F(MemoryPressureListenerPolicyTest,
                                      false},
                 MemoryConsumerUpdate{disk_writing_consumer_id_,
                                      base::MemoryLimit::Default(), false})));
-  base::MemoryPressureListener::SimulatePressureNotification(
+  memory_pressure_source_.SetMemoryPressureLevel(
       base::MEMORY_PRESSURE_LEVEL_NONE);
   Mock::VerifyAndClearExpectations(&host);
 
-  policy_manager().OnConsumerGroupRemoved(consumer_id_, kChildId);
-  policy_manager().OnConsumerGroupRemoved(disk_writing_consumer_id_, kChildId);
-  policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
+  policy_manager_.OnConsumerGroupRemoved(consumer_id_, kChildId);
+  policy_manager_.OnConsumerGroupRemoved(disk_writing_consumer_id_, kChildId);
+  policy_manager_.RemoveMemoryConsumerGroupHost(kChildId);
 }
 
 // Consumers that release memory by writing it to disk and are added while under
@@ -428,15 +424,15 @@ TEST_F(MemoryPressureListenerPolicyTest,
   MockMemoryConsumerGroupHost host;
   const ChildProcessId kChildId;  // Current process
 
-  policy_manager().AddMemoryConsumerGroupHost(PROCESS_TYPE_BROWSER, kChildId,
-                                              &host);
+  policy_manager_.AddMemoryConsumerGroupHost(PROCESS_TYPE_BROWSER, kChildId,
+                                             &host);
 
-  MemoryPressureListenerPolicy policy(policy_manager());
-  MemoryCoordinatorPolicyRegistration registration(policy_manager(), policy);
+  MemoryPressureListenerPolicy policy(policy_manager_);
+  MemoryCoordinatorPolicyRegistration registration(policy_manager_, policy);
 
   // No consumers yet, so no updates.
   EXPECT_CALL(host, UpdateConsumers(_)).Times(0);
-  base::MemoryPressureListener::SimulatePressureNotification(
+  memory_pressure_source_.SetMemoryPressureLevel(
       base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   Mock::VerifyAndClearExpectations(&host);
 
@@ -445,13 +441,13 @@ TEST_F(MemoryPressureListenerPolicyTest,
   EXPECT_CALL(host, UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
                         disk_writing_consumer_id_,
                         base::MemoryLimit::FromPercent(0), false})));
-  policy_manager().OnConsumerGroupAdded(disk_writing_consumer_id_,
-                                        kDiskWritingConsumerName,
-                                        kDiskWritingTraits, kChildId);
+  policy_manager_.OnConsumerGroupAdded(disk_writing_consumer_id_,
+                                       kDiskWritingConsumerName,
+                                       kDiskWritingTraits, kChildId);
   Mock::VerifyAndClearExpectations(&host);
 
-  policy_manager().OnConsumerGroupRemoved(disk_writing_consumer_id_, kChildId);
-  policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
+  policy_manager_.OnConsumerGroupRemoved(disk_writing_consumer_id_, kChildId);
+  policy_manager_.RemoveMemoryConsumerGroupHost(kChildId);
 }
 
 // Repeated critical pressure notifications re-trigger the release for stateless
@@ -466,17 +462,17 @@ TEST_F(MemoryPressureListenerPolicyTest,
   MockMemoryConsumerGroupHost host;
   const ChildProcessId kChildId;  // Current process
 
-  policy_manager().AddMemoryConsumerGroupHost(PROCESS_TYPE_BROWSER, kChildId,
-                                              &host);
+  policy_manager_.AddMemoryConsumerGroupHost(PROCESS_TYPE_BROWSER, kChildId,
+                                             &host);
 
-  policy_manager().OnConsumerGroupAdded(consumer_id_, kConsumerName,
-                                        kTestTraits, kChildId);
-  policy_manager().OnConsumerGroupAdded(disk_writing_consumer_id_,
-                                        kDiskWritingConsumerName,
-                                        kDiskWritingTraits, kChildId);
+  policy_manager_.OnConsumerGroupAdded(consumer_id_, kConsumerName, kTestTraits,
+                                       kChildId);
+  policy_manager_.OnConsumerGroupAdded(disk_writing_consumer_id_,
+                                       kDiskWritingConsumerName,
+                                       kDiskWritingTraits, kChildId);
 
-  MemoryPressureListenerPolicy policy(policy_manager());
-  MemoryCoordinatorPolicyRegistration registration(policy_manager(), policy);
+  MemoryPressureListenerPolicy policy(policy_manager_);
+  MemoryCoordinatorPolicyRegistration registration(policy_manager_, policy);
 
   // Critical pressure: both consumers get a 0% limit, but only the other
   // consumer is asked to release memory.
@@ -487,7 +483,7 @@ TEST_F(MemoryPressureListenerPolicyTest,
                                true},
           MemoryConsumerUpdate{disk_writing_consumer_id_,
                                base::MemoryLimit::FromPercent(0), false})));
-  base::MemoryPressureListener::SimulatePressureNotification(
+  memory_pressure_source_.SetMemoryPressureLevel(
       base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   Mock::VerifyAndClearExpectations(&host);
 
@@ -495,13 +491,13 @@ TEST_F(MemoryPressureListenerPolicyTest,
   // memory again.
   EXPECT_CALL(host, UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
                         consumer_id_, std::nullopt, true})));
-  base::MemoryPressureListener::SimulatePressureNotification(
+  memory_pressure_source_.SetMemoryPressureLevel(
       base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   Mock::VerifyAndClearExpectations(&host);
 
-  policy_manager().OnConsumerGroupRemoved(consumer_id_, kChildId);
-  policy_manager().OnConsumerGroupRemoved(disk_writing_consumer_id_, kChildId);
-  policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
+  policy_manager_.OnConsumerGroupRemoved(consumer_id_, kChildId);
+  policy_manager_.OnConsumerGroupRemoved(disk_writing_consumer_id_, kChildId);
+  policy_manager_.RemoveMemoryConsumerGroupHost(kChildId);
 }
 
 }  // namespace content
