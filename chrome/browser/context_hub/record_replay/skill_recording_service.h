@@ -9,16 +9,16 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <vector>
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "chrome/browser/context_hub/record_replay/recording_artifacts.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "chrome/browser/ui/webui/context_hub/context_hub.mojom-forward.h"
+#include "chrome/browser/ui/webui/context_hub/context_hub.mojom-shared.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"
 
@@ -48,12 +48,16 @@ class SkillRecordingService : public KeyedService,
   SkillRecordingService& operator=(const SkillRecordingService&) = delete;
   ~SkillRecordingService() override;
 
-  // Starts a new recording session if one is not already active.
+  // Starts a new recording session if one is not already active, clearing any
+  // artifacts from a previous session.
   void StartRecording();
 
-  // Stops the current recording session and returns the captured session data.
-  // Returns empty session data if no recording session is active.
-  browser::context_hub::mojom::SkillRecordingSessionDataPtr StopRecording();
+  // Stops the current recording session if one is active. Captured artifacts
+  // remain accessible via `artifacts()` until the next recording session
+  // starts or the service shuts down.
+  void StopRecording();
+
+  const RecordingArtifacts& artifacts() const { return artifacts_; }
 
   bool is_recording() const { return start_time_.has_value(); }
 
@@ -98,7 +102,7 @@ class SkillRecordingService : public KeyedService,
 
   const raw_ref<Profile> profile_;
   std::optional<base::TimeTicks> start_time_;
-  std::vector<browser::context_hub::mojom::SkillRecordingActionPtr> actions_;
+  RecordingArtifacts artifacts_;
 
   std::unique_ptr<TabActiveObserver> tab_observer_;
   std::unique_ptr<BrowserTabStripTracker> browser_tab_strip_tracker_;

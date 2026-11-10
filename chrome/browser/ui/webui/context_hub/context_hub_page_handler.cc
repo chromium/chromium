@@ -72,6 +72,7 @@
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "base/base64.h"
 #include "base/base_paths.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/file_util_icu.h"
@@ -79,6 +80,7 @@
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/context_hub/memory_banks_shortcut.h"
+#include "chrome/browser/context_hub/record_replay/recording_artifacts.h"
 #include "chrome/browser/context_hub/record_replay/skill_recording_service.h"
 #include "chrome/browser/context_hub/record_replay/skill_recording_service_factory.h"
 #include "chrome/browser/glic/host/context/glic_sharing_utils.h"  // nogncheck
@@ -100,6 +102,7 @@
 #include "net/base/url_util.h"  // nogncheck
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/command.h"
+#include "url/url_constants.h"
 #endif
 #include "components/sessions/content/session_tab_helper.h"  // nogncheck
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
@@ -347,6 +350,29 @@ std::string ToDisplayText(const ui::Accelerator& accelerator) {
   return accelerator.IsEmpty()
              ? std::string()
              : base::UTF16ToUTF8(accelerator.GetShortcutText());
+}
+
+browser::context_hub::mojom::SkillRecordingSessionDataPtr ToMojoSessionData(
+    const context_hub::RecordingArtifacts& artifacts) {
+  auto session_data =
+      browser::context_hub::mojom::SkillRecordingSessionData::New();
+  session_data->actions.reserve(artifacts.actions.size());
+  for (const context_hub::RecordedAction& action : artifacts.actions) {
+    auto mojo_action = browser::context_hub::mojom::SkillRecordingAction::New();
+    mojo_action->type = action.type;
+    mojo_action->description = action.description;
+    mojo_action->timestamp = action.timestamp;
+    if (!action.screenshot_jpeg_bytes.empty()) {
+      GURL data_url(
+          base::StrCat({"data:image/jpeg;base64,",
+                        base::Base64Encode(action.screenshot_jpeg_bytes)}));
+      if (data_url.is_valid() && data_url.spec().size() <= url::kMaxURLChars) {
+        mojo_action->screenshot_data_url = std::move(data_url);
+      }
+    }
+    session_data->actions.push_back(std::move(mojo_action));
+  }
+  return session_data;
 }
 
 }  // namespace
@@ -1912,7 +1938,8 @@ void ContextHubPageHandler::StopSkillRecording(
 #else
   if (context_hub::SkillRecordingService* service =
           SkillRecordingServiceFactory::GetForProfile(profile_)) {
-    std::move(callback).Run(service->StopRecording());
+    service->StopRecording();
+    std::move(callback).Run(ToMojoSessionData(service->artifacts()));
     return;
   }
   std::move(callback).Run(

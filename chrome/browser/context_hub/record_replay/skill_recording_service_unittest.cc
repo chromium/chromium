@@ -4,8 +4,10 @@
 
 #include "chrome/browser/context_hub/record_replay/skill_recording_service.h"
 
+#include <cstddef>
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 
 #include "base/callback_list.h"
@@ -15,6 +17,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "chrome/browser/context_hub/record_replay/recording_artifacts.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_manager_service.h"
 #include "chrome/browser/ui/browser_manager_service_factory.h"
@@ -24,7 +27,7 @@
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
-#include "chrome/browser/ui/webui/context_hub/context_hub.mojom.h"
+#include "chrome/browser/ui/webui/context_hub/context_hub.mojom-shared.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"
@@ -43,13 +46,11 @@
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "ui/base/test/mock_base_window.h"
 #include "url/gurl.h"
-#include "url/url_constants.h"
 
 namespace context_hub {
 namespace {
 
 using browser::context_hub::mojom::SkillRecordingActionType;
-using browser::context_hub::mojom::SkillRecordingSessionDataPtr;
 
 page_content_annotations::FetchPageContextResultCallbackArg
 CreateSuccessfulScreenshotResult() {
@@ -166,9 +167,8 @@ class SkillRecordingServiceTest : public testing::Test {
 TEST_F(SkillRecordingServiceTest, InitialState) {
   EXPECT_FALSE(service_.is_recording());
   EXPECT_FALSE(service_.start_time().has_value());
-  SkillRecordingSessionDataPtr result = service_.StopRecording();
-  ASSERT_TRUE(result);
-  EXPECT_TRUE(result->actions.empty());
+  service_.StopRecording();
+  EXPECT_TRUE(service_.artifacts().actions.empty());
   EXPECT_FALSE(service_.is_recording());
 }
 
@@ -177,11 +177,10 @@ TEST_F(SkillRecordingServiceTest, StartAndStopRecording) {
   EXPECT_TRUE(service_.is_recording());
   EXPECT_EQ(service_.start_time(), base::TimeTicks::Now());
 
-  SkillRecordingSessionDataPtr result = service_.StopRecording();
+  service_.StopRecording();
   EXPECT_FALSE(service_.is_recording());
   EXPECT_FALSE(service_.start_time().has_value());
-  ASSERT_TRUE(result);
-  EXPECT_TRUE(result->actions.empty());
+  EXPECT_TRUE(service_.artifacts().actions.empty());
 }
 
 TEST_F(SkillRecordingServiceTest, OnScreenshotCapturedWithValidResult) {
@@ -193,19 +192,20 @@ TEST_F(SkillRecordingServiceTest, OnScreenshotCapturedWithValidResult) {
   service_.BindScreenshotCapturedCallbackForTesting(0).Run(
       CreateSuccessfulScreenshotResult());
 
-  SkillRecordingSessionDataPtr result = service_.StopRecording();
-  ASSERT_TRUE(result);
-  ASSERT_EQ(result->actions.size(), 1u);
-  EXPECT_EQ(result->actions[0]->type, SkillRecordingActionType::kLeftClick);
-  EXPECT_EQ(result->actions[0]->description, "Mouse Clicked at X:10, Y:20");
-  EXPECT_EQ(result->actions[0]->timestamp, base::Milliseconds(150));
-  EXPECT_EQ(result->actions[0]->screenshot_data_url,
-            GURL("data:image/jpeg;base64,AQIDBA=="));
+  service_.StopRecording();
+  const RecordingArtifacts& result = service_.artifacts();
+  ASSERT_EQ(result.actions.size(), 1u);
+  EXPECT_EQ(result.actions[0].type, SkillRecordingActionType::kLeftClick);
+  EXPECT_EQ(result.actions[0].description, "Mouse Clicked at X:10, Y:20");
+  EXPECT_EQ(result.actions[0].timestamp, base::Milliseconds(150));
+  EXPECT_EQ(result.actions[0].screenshot_jpeg_bytes,
+            std::string("\x01\x02\x03\x04", 4));
 
-  // Calling `StopRecording()` again should return empty.
-  SkillRecordingSessionDataPtr second_result = service_.StopRecording();
-  ASSERT_TRUE(second_result);
-  EXPECT_TRUE(second_result->actions.empty());
+  // Starting a new recording session clears artifacts from the previous
+  // session.
+  service_.StartRecording();
+  EXPECT_TRUE(service_.artifacts().actions.empty());
+  service_.StopRecording();
 }
 
 TEST_F(SkillRecordingServiceTest,
@@ -245,27 +245,15 @@ TEST_F(SkillRecordingServiceTest,
   service_.BindScreenshotCapturedCallbackForTesting(1).Run(
       base::ok(std::move(empty_mime_result)));
 
-  // An oversized screenshot whose Base64 data URL exceeds `url::kMaxURLChars`
-  // must also be rejected rather than silently truncated by Mojo serialization.
-  auto oversized_result =
-      std::make_unique<page_content_annotations::FetchPageContextResult>();
-  oversized_result->screenshot_result =
-      page_content_annotations::ScreenshotResult(/*dimensions=*/{});
-  oversized_result->screenshot_result->screenshot_data.assign(url::kMaxURLChars,
-                                                              1);
-  oversized_result->screenshot_result->mime_type = "image/jpeg";
-  service_.BindScreenshotCapturedCallbackForTesting(1).Run(
-      base::ok(std::move(oversized_result)));
-
-  SkillRecordingSessionDataPtr result = service_.StopRecording();
-  ASSERT_TRUE(result);
-  ASSERT_EQ(result->actions.size(), 2u);
-  EXPECT_EQ(result->actions[0]->description, "Mouse Clicked at X:10, Y:20");
-  EXPECT_EQ(result->actions[0]->timestamp, base::Milliseconds(100));
-  EXPECT_EQ(result->actions[0]->screenshot_data_url, std::nullopt);
-  EXPECT_EQ(result->actions[1]->description, "Mouse Clicked at X:30, Y:40");
-  EXPECT_EQ(result->actions[1]->timestamp, base::Milliseconds(350));
-  EXPECT_EQ(result->actions[1]->screenshot_data_url, std::nullopt);
+  service_.StopRecording();
+  const RecordingArtifacts& result = service_.artifacts();
+  ASSERT_EQ(result.actions.size(), 2u);
+  EXPECT_EQ(result.actions[0].description, "Mouse Clicked at X:10, Y:20");
+  EXPECT_EQ(result.actions[0].timestamp, base::Milliseconds(100));
+  EXPECT_TRUE(result.actions[0].screenshot_jpeg_bytes.empty());
+  EXPECT_EQ(result.actions[1].description, "Mouse Clicked at X:30, Y:40");
+  EXPECT_EQ(result.actions[1].timestamp, base::Milliseconds(350));
+  EXPECT_TRUE(result.actions[1].screenshot_jpeg_bytes.empty());
 }
 
 TEST_F(SkillRecordingServiceTest,
@@ -276,10 +264,9 @@ TEST_F(SkillRecordingServiceTest,
   page_content_annotations::FetchPageContextResultCallback stale_callback =
       service_.BindScreenshotCapturedCallbackForTesting(/*action_index=*/0);
 
-  SkillRecordingSessionDataPtr first_result = service_.StopRecording();
-  ASSERT_TRUE(first_result);
-  ASSERT_EQ(first_result->actions.size(), 1u);
-  EXPECT_EQ(first_result->actions[0]->screenshot_data_url, std::nullopt);
+  service_.StopRecording();
+  ASSERT_EQ(service_.artifacts().actions.size(), 1u);
+  EXPECT_TRUE(service_.artifacts().actions[0].screenshot_jpeg_bytes.empty());
 
   // Start a new recording session and capture a new action at index 0.
   service_.StartRecording();
@@ -290,11 +277,11 @@ TEST_F(SkillRecordingServiceTest,
   // screenshot to action 0 of the second session.
   std::move(stale_callback).Run(CreateSuccessfulScreenshotResult());
 
-  SkillRecordingSessionDataPtr second_result = service_.StopRecording();
-  ASSERT_TRUE(second_result);
-  ASSERT_EQ(second_result->actions.size(), 1u);
-  EXPECT_EQ(second_result->actions[0]->description, "Second session action");
-  EXPECT_EQ(second_result->actions[0]->screenshot_data_url, std::nullopt);
+  service_.StopRecording();
+  const RecordingArtifacts& second_result = service_.artifacts();
+  ASSERT_EQ(second_result.actions.size(), 1u);
+  EXPECT_EQ(second_result.actions[0].description, "Second session action");
+  EXPECT_TRUE(second_result.actions[0].screenshot_jpeg_bytes.empty());
 }
 
 TEST_F(SkillRecordingServiceTest, IgnoresActionsWhenNotRecording) {
@@ -304,9 +291,22 @@ TEST_F(SkillRecordingServiceTest, IgnoresActionsWhenNotRecording) {
       CreateSuccessfulScreenshotResult());
 
   service_.StartRecording();
-  SkillRecordingSessionDataPtr result = service_.StopRecording();
-  ASSERT_TRUE(result);
-  EXPECT_TRUE(result->actions.empty());
+  service_.StopRecording();
+  EXPECT_TRUE(service_.artifacts().actions.empty());
+}
+
+TEST_F(SkillRecordingServiceTest, CapsRecordedActionsAtMaxLimit) {
+  service_.StartRecording();
+  for (size_t i = 0; i < RecordingArtifacts::kMaxRecordedActions; ++i) {
+    service_.CaptureAction(SkillRecordingActionType::kLeftClick, "Click");
+  }
+  service_.CaptureAction(SkillRecordingActionType::kLeftClick,
+                         "Overflow click");
+
+  service_.StopRecording();
+  const RecordingArtifacts& result = service_.artifacts();
+  ASSERT_EQ(result.actions.size(), RecordingArtifacts::kMaxRecordedActions);
+  EXPECT_EQ(result.actions.back().description, "Click");
 }
 
 TEST_F(SkillRecordingServiceTest, IgnoresMultipleStartRecording) {
@@ -328,11 +328,10 @@ TEST_F(SkillRecordingServiceTest, IgnoresMultipleStartRecording) {
   service_.CaptureAction(SkillRecordingActionType::kLeftClick,
                          "Mouse Clicked at X:30, Y:40");
 
-  SkillRecordingSessionDataPtr result = service_.StopRecording();
+  service_.StopRecording();
   EXPECT_FALSE(service_.is_recording());
   EXPECT_FALSE(service_.start_time().has_value());
-  ASSERT_TRUE(result);
-  ASSERT_EQ(result->actions.size(), 2u);
+  ASSERT_EQ(service_.artifacts().actions.size(), 2u);
 }
 
 TEST_F(SkillRecordingServiceTest, ShouldTrackBrowser_MatchesSameProfileOnly) {
@@ -366,12 +365,12 @@ TEST_F(SkillRecordingServiceTest, RecordsLeftMouseClicksOnHttpOrHttpsTab) {
       page_content_annotations::PageContextFetcherManager::FromWebContents(tab),
       nullptr);
 
-  SkillRecordingSessionDataPtr result = service_.StopRecording();
-  ASSERT_TRUE(result);
-  ASSERT_EQ(result->actions.size(), 1u);
-  EXPECT_EQ(result->actions[0]->type, SkillRecordingActionType::kLeftClick);
-  EXPECT_EQ(result->actions[0]->description, "Mouse Clicked at X:42, Y:84");
-  EXPECT_EQ(result->actions[0]->timestamp, base::Milliseconds(150));
+  service_.StopRecording();
+  const RecordingArtifacts& result = service_.artifacts();
+  ASSERT_EQ(result.actions.size(), 1u);
+  EXPECT_EQ(result.actions[0].type, SkillRecordingActionType::kLeftClick);
+  EXPECT_EQ(result.actions[0].description, "Mouse Clicked at X:42, Y:84");
+  EXPECT_EQ(result.actions[0].timestamp, base::Milliseconds(150));
 }
 
 TEST_F(SkillRecordingServiceTest, IgnoresNonLeftMouseButtonClicks) {
@@ -392,9 +391,8 @@ TEST_F(SkillRecordingServiceTest, IgnoresNonLeftMouseButtonClicks) {
       page_content_annotations::PageContextFetcherManager::FromWebContents(tab),
       nullptr);
 
-  SkillRecordingSessionDataPtr result = service_.StopRecording();
-  ASSERT_TRUE(result);
-  EXPECT_TRUE(result->actions.empty());
+  service_.StopRecording();
+  EXPECT_TRUE(service_.artifacts().actions.empty());
 }
 
 TEST_F(SkillRecordingServiceTest, IgnoresClicksOnContextHubAndNonHttpUrls) {
@@ -419,10 +417,10 @@ TEST_F(SkillRecordingServiceTest, IgnoresClicksOnContextHubAndNonHttpUrls) {
   browser.tab_strip_model()->ActivateTabAt(1);
   SimulateMouseDown(context_hub_tab, 100.0f, 200.0f);
 
-  SkillRecordingSessionDataPtr result = service_.StopRecording();
-  ASSERT_TRUE(result);
-  ASSERT_EQ(result->actions.size(), 1u);
-  EXPECT_EQ(result->actions[0]->description, "Mouse Clicked at X:55, Y:65");
+  service_.StopRecording();
+  const RecordingArtifacts& result = service_.artifacts();
+  ASSERT_EQ(result.actions.size(), 1u);
+  EXPECT_EQ(result.actions[0].description, "Mouse Clicked at X:55, Y:65");
 }
 
 TEST_F(SkillRecordingServiceTest,
@@ -451,11 +449,11 @@ TEST_F(SkillRecordingServiceTest,
   SimulateMouseDown(tab2, 55.0f, 66.0f);
   SimulateMouseDown(tab1, 77.0f, 88.0f);
 
-  SkillRecordingSessionDataPtr result = service_.StopRecording();
-  ASSERT_TRUE(result);
-  ASSERT_EQ(result->actions.size(), 2u);
-  EXPECT_EQ(result->actions[0]->description, "Mouse Clicked at X:33, Y:44");
-  EXPECT_EQ(result->actions[1]->description, "Mouse Clicked at X:77, Y:88");
+  service_.StopRecording();
+  const RecordingArtifacts& result = service_.artifacts();
+  ASSERT_EQ(result.actions.size(), 2u);
+  EXPECT_EQ(result.actions[0].description, "Mouse Clicked at X:33, Y:44");
+  EXPECT_EQ(result.actions[1].description, "Mouse Clicked at X:77, Y:88");
 }
 
 TEST_F(SkillRecordingServiceTest, IgnoresClicksFromOtherProfiles) {
@@ -475,10 +473,10 @@ TEST_F(SkillRecordingServiceTest, IgnoresClicksFromOtherProfiles) {
   SimulateMouseDown(other_tab, 10.0f, 20.0f);
   SimulateMouseDown(main_tab, 30.0f, 40.0f);
 
-  SkillRecordingSessionDataPtr result = service_.StopRecording();
-  ASSERT_TRUE(result);
-  ASSERT_EQ(result->actions.size(), 1u);
-  EXPECT_EQ(result->actions[0]->description, "Mouse Clicked at X:30, Y:40");
+  service_.StopRecording();
+  const RecordingArtifacts& result = service_.artifacts();
+  ASSERT_EQ(result.actions.size(), 1u);
+  EXPECT_EQ(result.actions[0].description, "Mouse Clicked at X:30, Y:40");
 }
 
 TEST_F(SkillRecordingServiceTest,
@@ -503,10 +501,10 @@ TEST_F(SkillRecordingServiceTest,
   SimulateMouseDown(old_contents.get(), 10.0f, 20.0f);
   SimulateMouseDown(raw_replacement, 50.0f, 60.0f);
 
-  SkillRecordingSessionDataPtr result = service_.StopRecording();
-  ASSERT_TRUE(result);
-  ASSERT_EQ(result->actions.size(), 1u);
-  EXPECT_EQ(result->actions[0]->description, "Mouse Clicked at X:50, Y:60");
+  service_.StopRecording();
+  const RecordingArtifacts& result = service_.artifacts();
+  ASSERT_EQ(result.actions.size(), 1u);
+  EXPECT_EQ(result.actions[0].description, "Mouse Clicked at X:50, Y:60");
 }
 
 }  // namespace

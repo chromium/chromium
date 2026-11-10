@@ -101,6 +101,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"  // nogncheck
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/page_content_annotations/content/page_context_fetcher.h"  // nogncheck
 #include "components/tabs/public/mock_tab_interface.h"  // nogncheck
 #include "components/tabs/public/tab_interface.h"       // nogncheck
 #include "ui/base/accelerators/accelerator.h"
@@ -108,6 +109,7 @@
 #include "ui/base/clipboard/test/test_clipboard.h"      // nogncheck
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "url/url_constants.h"
 #endif
 
 namespace context_hub {
@@ -4888,13 +4890,54 @@ TEST_F(ContextHubPageHandlerTest, StartAndStopSkillRecording) {
   handler_->StartSkillRecording();
   EXPECT_TRUE(service->is_recording());
 
+  service->CaptureAction(
+      browser::context_hub::mojom::SkillRecordingActionType::kLeftClick,
+      "Mouse Clicked at X:10, Y:20");
+  auto valid_screenshot =
+      std::make_unique<page_content_annotations::FetchPageContextResult>();
+  valid_screenshot->screenshot_result =
+      page_content_annotations::ScreenshotResult(/*dimensions=*/{});
+  valid_screenshot->screenshot_result->screenshot_data = {1, 2, 3, 4};
+  valid_screenshot->screenshot_result->mime_type = "image/jpeg";
+  service->BindScreenshotCapturedCallbackForTesting(0).Run(
+      base::ok(std::move(valid_screenshot)));
+
+  service->CaptureAction(
+      browser::context_hub::mojom::SkillRecordingActionType::kLeftClick,
+      "Mouse Clicked at X:30, Y:40");
+
+  service->CaptureAction(
+      browser::context_hub::mojom::SkillRecordingActionType::kLeftClick,
+      "Mouse Clicked at X:50, Y:60");
+  auto oversized_screenshot =
+      std::make_unique<page_content_annotations::FetchPageContextResult>();
+  oversized_screenshot->screenshot_result =
+      page_content_annotations::ScreenshotResult(/*dimensions=*/{});
+  oversized_screenshot->screenshot_result->screenshot_data.assign(
+      url::kMaxURLChars, 1);
+  oversized_screenshot->screenshot_result->mime_type = "image/jpeg";
+  service->BindScreenshotCapturedCallbackForTesting(2).Run(
+      base::ok(std::move(oversized_screenshot)));
+
   base::test::TestFuture<
       browser::context_hub::mojom::SkillRecordingSessionDataPtr>
       future;
   handler_->StopSkillRecording(future.GetCallback());
   auto session_data = future.Take();
   ASSERT_TRUE(session_data);
-  EXPECT_TRUE(session_data->actions.empty());
+  ASSERT_EQ(session_data->actions.size(), 3u);
+  EXPECT_EQ(session_data->actions[0]->type,
+            browser::context_hub::mojom::SkillRecordingActionType::kLeftClick);
+  EXPECT_EQ(session_data->actions[0]->description,
+            "Mouse Clicked at X:10, Y:20");
+  EXPECT_EQ(session_data->actions[0]->screenshot_data_url,
+            GURL("data:image/jpeg;base64,AQIDBA=="));
+  EXPECT_EQ(session_data->actions[1]->description,
+            "Mouse Clicked at X:30, Y:40");
+  EXPECT_EQ(session_data->actions[1]->screenshot_data_url, std::nullopt);
+  EXPECT_EQ(session_data->actions[2]->description,
+            "Mouse Clicked at X:50, Y:60");
+  EXPECT_EQ(session_data->actions[2]->screenshot_data_url, std::nullopt);
   EXPECT_FALSE(service->is_recording());
 }
 

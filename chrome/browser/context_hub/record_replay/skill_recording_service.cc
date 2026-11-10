@@ -11,23 +11,21 @@
 #include <string>
 #include <utility>
 
-#include "base/base64.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/strings/strcat.h"
+#include "base/strings/string_view_util.h"
 #include "base/time/time.h"
+#include "chrome/browser/context_hub/record_replay/recording_artifacts.h"
 #include "chrome/browser/context_hub/record_replay/tab_active_observer.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/webui/context_hub/context_hub.mojom.h"
+#include "chrome/browser/ui/webui/context_hub/context_hub.mojom-shared.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "components/page_content_annotations/content/page_context_fetcher_options.h"
-#include "url/gurl.h"
-#include "url/url_constants.h"
 
 namespace context_hub {
 namespace {
@@ -54,7 +52,7 @@ void SkillRecordingService::StartRecording() {
   if (is_recording()) {
     return;
   }
-  actions_.clear();
+  artifacts_.actions.clear();
   start_time_ = base::TimeTicks::Now();
 
   if (ProfileBrowserCollection* collection =
@@ -69,35 +67,27 @@ void SkillRecordingService::StartRecording() {
   ObserveActiveTabInBrowser(GetLastActiveBrowser(*profile_));
 }
 
-browser::context_hub::mojom::SkillRecordingSessionDataPtr
-SkillRecordingService::StopRecording() {
+void SkillRecordingService::StopRecording() {
   if (!is_recording()) {
-    return browser::context_hub::mojom::SkillRecordingSessionData::New();
+    return;
   }
   start_time_.reset();
   browser_collection_observation_.Reset();
   weak_ptr_factory_.InvalidateWeakPtrs();
   tab_observer_.reset();
   browser_tab_strip_tracker_.reset();
-
-  auto session_data =
-      browser::context_hub::mojom::SkillRecordingSessionData::New();
-  session_data->actions = std::exchange(actions_, {});
-  return session_data;
 }
 
 void SkillRecordingService::CaptureAction(
     browser::context_hub::mojom::SkillRecordingActionType type,
     std::string description) {
-  if (!is_recording()) {
+  if (!is_recording() ||
+      artifacts_.actions.size() >= RecordingArtifacts::kMaxRecordedActions) {
     return;
   }
-  auto action = browser::context_hub::mojom::SkillRecordingAction::New();
-  action->type = type;
-  action->description = std::move(description);
-  action->timestamp = base::TimeTicks::Now() - start_time_.value();
-  const size_t action_index = actions_.size();
-  actions_.push_back(std::move(action));
+  const size_t action_index = artifacts_.actions.size();
+  artifacts_.actions.emplace_back(type, std::move(description),
+                                  base::TimeTicks::Now() - start_time_.value());
 
   if (!tab_observer_ || !tab_observer_->web_contents()) {
     return;
@@ -131,6 +121,7 @@ SkillRecordingService::BindScreenshotCapturedCallbackForTesting(
 
 void SkillRecordingService::Shutdown() {
   StopRecording();
+  artifacts_.actions.clear();
 }
 
 void SkillRecordingService::OnTabStripModelChanged(
@@ -201,7 +192,7 @@ SkillRecordingService::BindScreenshotCapturedCallback(size_t action_index) {
 void SkillRecordingService::OnScreenshotCaptured(
     size_t action_index,
     page_content_annotations::FetchPageContextResultCallbackArg result) {
-  if (!is_recording() || action_index >= actions_.size()) {
+  if (!is_recording() || action_index >= artifacts_.actions.size()) {
     return;
   }
   if (!result.has_value() || !result.value() ||
@@ -213,11 +204,8 @@ void SkillRecordingService::OnScreenshotCaptured(
   if (screenshot.screenshot_data.empty() || screenshot.mime_type.empty()) {
     return;
   }
-  GURL data_url(base::StrCat({"data:", screenshot.mime_type, ";base64,",
-                              base::Base64Encode(screenshot.screenshot_data)}));
-  if (data_url.is_valid() && data_url.spec().size() <= url::kMaxURLChars) {
-    actions_[action_index]->screenshot_data_url = std::move(data_url);
-  }
+  artifacts_.actions[action_index].screenshot_jpeg_bytes =
+      std::string(base::as_string_view(screenshot.screenshot_data));
 }
 
 void SkillRecordingService::ObserveActiveTabInBrowser(
