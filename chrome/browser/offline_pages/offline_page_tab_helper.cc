@@ -48,8 +48,9 @@ using blink::mojom::MHTMLLoadResult;
 namespace {
 bool SchemeIsForUntrustedOfflinePages(const GURL& url) {
 #if BUILDFLAG(IS_ANDROID)
-  if (url.SchemeIs(url::kContentScheme))
+  if (url.SchemeIs(url::kContentScheme)) {
     return true;
+  }
 #endif
   return url.SchemeIsFile();
 }
@@ -74,11 +75,13 @@ void OfflinePageTabHelper::BindHtmlPageNotifier(
         receiver,
     content::RenderFrameHost* rfh) {
   auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
-  if (!web_contents)
+  if (!web_contents) {
     return;
+  }
   auto* tab_helper = OfflinePageTabHelper::FromWebContents(web_contents);
-  if (!tab_helper)
+  if (!tab_helper) {
     return;
+  }
   tab_helper->mhtml_page_notifier_receivers_.Bind(rfh, std::move(receiver));
 }
 
@@ -171,22 +174,26 @@ void OfflinePageTabHelper::NotifyMhtmlPageLoadAttempted(
   }
 
   // Sanity checking the input URL.
-  if (!main_frame_url.is_valid() || !main_frame_url.SchemeIsHTTPOrHTTPS())
+  if (!main_frame_url.is_valid() || !main_frame_url.SchemeIsHTTPOrHTTPS()) {
     return;
+  }
 
-  if (!provisional_offline_info_.IsValid())
+  if (!provisional_offline_info_.IsValid()) {
     provisional_offline_info_ = LoadedOfflinePageInfo::MakeUntrusted();
+  }
   provisional_offline_info_.offline_page->url = main_frame_url;
 
-  if (!date.is_null())
+  if (!date.is_null()) {
     provisional_offline_info_.offline_page->creation_time = date;
+  }
 }
 
 void OfflinePageTabHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   // Skips non-main frame.
-  if (!navigation_handle->IsInPrimaryMainFrame())
+  if (!navigation_handle->IsInPrimaryMainFrame()) {
     return;
+  }
 
   // The provisional offline info can be cleared no matter how.
   provisional_offline_info_.Clear();
@@ -195,14 +202,17 @@ void OfflinePageTabHelper::DidStartNavigation(
 void OfflinePageTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   // Skips non-main frame.
-  if (!navigation_handle->IsInPrimaryMainFrame())
+  if (!navigation_handle->IsInPrimaryMainFrame()) {
     return;
+  }
 
-  if (!navigation_handle->HasCommitted())
+  if (!navigation_handle->HasCommitted()) {
     return;
+  }
 
-  if (navigation_handle->IsSameDocument())
+  if (navigation_handle->IsSameDocument()) {
     return;
+  }
 
   if (offline_info_.IsValid()) {
     // Do not store the offline page we are navigating away from in bfcache.
@@ -230,8 +240,9 @@ void OfflinePageTabHelper::FinalizeOfflineInfo(
     content::NavigationHandle* navigation_handle) {
   offline_info_.Clear();
 
-  if (navigation_handle->IsErrorPage())
+  if (navigation_handle->IsErrorPage()) {
     return;
+  }
 
   GURL navigated_url = navigation_handle->GetURL();
 
@@ -251,16 +262,18 @@ void OfflinePageTabHelper::FinalizeOfflineInfo(
     } else {
       // Otherwise, just use an empty untrusted page.
       offline_info_ = LoadedOfflinePageInfo::MakeUntrusted();
+    }
+    if (offline_info_.trusted_state == OfflinePageTrustedState::UNTRUSTED) {
       offline_info_.offline_page->url = navigated_url;
     }
   } else if (navigated_url.SchemeIsHTTPOrHTTPS()) {
     // For http/https URL, commit the provisional offline info if any.
     if (provisional_offline_info_.IsValid()) {
-      // TODO(crbug.com/576010224): CHECK-exclusion: Convert to a CHECK once we
-      // are confident it won't be triggered.
-      DCHECK(EqualsIgnoringFragment(
-          navigated_url, provisional_offline_info_.offline_page->url));
-      offline_info_ = std::move(provisional_offline_info_);
+      if (EqualsIgnoringFragment(navigated_url,
+                                 provisional_offline_info_.offline_page->url)) {
+        offline_info_ = std::move(provisional_offline_info_);
+        offline_info_.offline_page->url = navigated_url;
+      }
       provisional_offline_info_.Clear();
     }
   }
@@ -270,14 +283,16 @@ void OfflinePageTabHelper::TryLoadingOfflinePageOnNetError(
     content::NavigationHandle* navigation_handle) {
   // If the offline page has been loaded successfully, nothing more to do.
   net::Error error_code = navigation_handle->GetNetErrorCode();
-  if (error_code == net::OK)
+  if (error_code == net::OK) {
     return;
+  }
 
   // We might be reloading the URL in order to fetch the offline page.
   // * If successful, nothing to do.
   // * Otherwise, we're hitting error again. Bail out to avoid loop.
-  if (reloading_url_on_net_error_)
+  if (reloading_url_on_net_error_) {
     return;
+  }
 
   // When the navigation starts, the request might be intercepted to serve the
   // offline content if the network is detected to be in disconnected or poor
@@ -376,10 +391,12 @@ void OfflinePageTabHelper::SetCurrentTargetFrameForTest(
 }
 
 const OfflinePageItem* OfflinePageTabHelper::GetOfflinePreviewItem() const {
-  if (provisional_offline_info_.is_showing_offline_preview)
+  if (provisional_offline_info_.is_showing_offline_preview) {
     return provisional_offline_info_.offline_page.get();
-  if (offline_info_.is_showing_offline_preview)
+  }
+  if (offline_info_.is_showing_offline_preview) {
     return offline_info_.offline_page.get();
+  }
   return nullptr;
 }
 
@@ -432,8 +449,9 @@ void OfflinePageTabHelper::DoDownloadPageLater(
   offline_pages::RequestCoordinator* request_coordinator =
       offline_pages::RequestCoordinatorFactory::GetForBrowserContext(
           web_contents->GetBrowserContext());
-  if (!request_coordinator)
+  if (!request_coordinator) {
     return;
+  }
 
   offline_pages::RequestCoordinator::SavePageLaterParams params;
   params.url = url;

@@ -396,7 +396,7 @@ public class OfflinePageUtilsTest {
                                             .getWebContents()));
                 });
 
-        Assert.assertEquals("http://www.example.com/", offlinePageItem.get().getUrl());
+        Assert.assertEquals(testUrl, offlinePageItem.get().getUrl());
         Assert.assertEquals(1321901946000L, offlinePageItem.get().getCreationTimeMs());
     }
 
