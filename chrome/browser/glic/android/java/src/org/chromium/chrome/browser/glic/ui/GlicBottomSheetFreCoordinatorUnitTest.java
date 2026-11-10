@@ -19,6 +19,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.text.Spanned;
 import android.text.style.StyleSpan;
 import android.view.View;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -93,6 +94,11 @@ public class GlicBottomSheetFreCoordinatorUnitTest {
     private static <T> T[] getSpans(TextView textView, Class<T> spanClass) {
         Spanned spanned = (Spanned) textView.getText();
         return spanned.getSpans(0, spanned.length(), spanClass);
+    }
+
+    private static int getBottomMargin(GlicBottomSheetFreCoordinator c) {
+        View content = c.getView().findViewById(R.id.glic_fre_content_container);
+        return ((MarginLayoutParams) content.getLayoutParams()).bottomMargin;
     }
 
     private GlicBottomSheetFreCoordinator createCoordinator(boolean isEnterpriseAccount) {
@@ -271,5 +277,28 @@ public class GlicBottomSheetFreCoordinatorUnitTest {
 
         verifyNoInteractions(onDone);
         assertNull(coordinator.getView().getParent());
+    }
+
+    @Test
+    public void testSetBottomInsetSetsContentBottomMargin() {
+        GlicBottomSheetFreCoordinator coordinator =
+                createCoordinator(/* isEnterpriseAccount= */ false);
+
+        coordinator.setBottomInset(48);
+        assertEquals(48, getBottomMargin(coordinator));
+
+        coordinator.setBottomInset(0);
+        assertEquals(0, getBottomMargin(coordinator));
+    }
+
+    @Test
+    public void testSetBottomInsetAfterDestroyIsIgnored() {
+        GlicBottomSheetFreCoordinator coordinator =
+                createCoordinator(/* isEnterpriseAccount= */ false);
+        coordinator.setBottomInset(48);
+        coordinator.destroy();
+
+        coordinator.setBottomInset(0);
+        assertEquals(48, getBottomMargin(coordinator));
     }
 }

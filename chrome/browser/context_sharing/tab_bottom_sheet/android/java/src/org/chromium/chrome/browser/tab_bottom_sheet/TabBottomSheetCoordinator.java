@@ -252,14 +252,18 @@ public class TabBottomSheetCoordinator {
                                 .getDimensionPixelSize(R.dimen.tab_bottom_sheet_peek_height_total),
                         R.id.peek_view_container,
                         mOnBackPressed);
-        if (mSheetContent != null) {
-            mSheetContent.setCanCoverBottomControlsSupplier(mCanCoverBottomControlsSupplier);
+        WebViewResizingHelper helper = mCoBrowseViews.getWebViewResizingHelper();
+        TabBottomSheetContent content = mSheetContent;
+        if (content != null) {
+            content.setCanCoverBottomControlsSupplier(mCanCoverBottomControlsSupplier);
+            if (helper != null) {
+                helper.setBottomSafeAreaInsetObserver(content::onBottomSafeAreaInsetChanged);
+            }
         }
         mViewBinder =
                 PropertyModelChangeProcessor.create(
                         mModel, mContentView, TabBottomSheetViewBinder::bind);
         if (canResizeWebView()) {
-            WebViewResizingHelper helper = mCoBrowseViews.getWebViewResizingHelper();
             assert helper != null : "WebViewResizingHelper must not be null when resizing WebView";
             mResizingStrategy = ResizingStrategyFactory.create(helper);
         }
@@ -356,6 +360,8 @@ public class TabBottomSheetCoordinator {
         mModalDialogManagerObserver = null;
 
         if (mSheetContent != null) {
+            WebViewResizingHelper helper = mCoBrowseViews.getWebViewResizingHelper();
+            if (helper != null) helper.setBottomSafeAreaInsetObserver(null);
             mSheetContent.destroy();
             mSheetContent = null;
         }

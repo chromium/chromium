@@ -266,8 +266,7 @@ public class GlicBottomSheetContentUnitTest {
         mProvider.destroy();
     }
 
-    private GlicBottomSheetContent createContentWithNativeFre(
-            ViewGroup expandedGroup, Runnable onAccepted, Runnable onBackPressed) {
+    private GlicBottomSheetContent createContent(ViewGroup expandedGroup, Runnable onBackPressed) {
         FrameLayout container = new FrameLayout(mContext);
         View peekContainer = new View(mContext);
         peekContainer.setId(12345);
@@ -278,17 +277,20 @@ public class GlicBottomSheetContentUnitTest {
         webUiContainer.setId(web_ui_container);
         expandedGroup.addView(webUiContainer);
 
-        GlicBottomSheetContent content =
-                new GlicBottomSheetContent(
-                        container,
-                        0.7f,
-                        1.0f,
-                        0xFFFFFFFF,
-                        /* peekViewHeight= */ 100,
-                        /* peekViewContainerId= */ 12345,
-                        onBackPressed,
-                        mProfile);
+        return new GlicBottomSheetContent(
+                container,
+                0.7f,
+                1.0f,
+                0xFFFFFFFF,
+                /* peekViewHeight= */ 100,
+                /* peekViewContainerId= */ 12345,
+                onBackPressed,
+                mProfile);
+    }
 
+    private GlicBottomSheetContent createContentWithNativeFre(
+            ViewGroup expandedGroup, Runnable onAccepted, Runnable onBackPressed) {
+        GlicBottomSheetContent content = createContent(expandedGroup, onBackPressed);
         content.mountNativeFre(mCustomTabLauncher, onAccepted);
         return content;
     }
@@ -463,5 +465,24 @@ public class GlicBottomSheetContentUnitTest {
         assertEquals(0, content.getVerticalScrollOffset());
 
         content.destroy();
+    }
+
+    @Test
+    public void testNativeFre_AppliesBottomSafeAreaInset() {
+        FrameLayout expandedGroup = new FrameLayout(mContext);
+        GlicBottomSheetContent content = createContent(expandedGroup, () -> {});
+        content.onBottomSafeAreaInsetChanged(48);
+        content.mountNativeFre(mCustomTabLauncher, () -> {});
+        View contentContainer = expandedGroup.findViewById(R.id.glic_fre_content_container);
+        assertEquals(48, getBottomMargin(contentContainer));
+
+        content.onBottomSafeAreaInsetChanged(0);
+        assertEquals(0, getBottomMargin(contentContainer));
+
+        content.destroy();
+    }
+
+    private static int getBottomMargin(View view) {
+        return ((ViewGroup.MarginLayoutParams) view.getLayoutParams()).bottomMargin;
     }
 }

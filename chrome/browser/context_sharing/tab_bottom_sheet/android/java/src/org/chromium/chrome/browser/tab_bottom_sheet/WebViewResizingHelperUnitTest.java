@@ -47,6 +47,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ActivityState;
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -1608,5 +1609,198 @@ public class WebViewResizingHelperUnitTest {
                 View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY));
         container.layout(0, 0, width, height);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    @EnableFeatures({
+        ChromeFeatureList.TAB_BOTTOM_SHEET,
+        ChromeFeatureList.TAB_BOTTOM_SHEET_EDGE_TO_EDGE,
+        ChromeFeatureList.GLIC_NO_WEBVIEW
+    })
+    public void testSetBottomSafeAreaInsetObserver_NotifiedOnSet() {
+        when(mMockBottomSheetController.getEdgeToEdgeBottomInset()).thenReturn(48);
+        Callback<Integer> observer = mock(Callback.class);
+
+        mHelper.setBottomSafeAreaInsetObserver(observer);
+        verify(observer).onResult(48);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    @EnableFeatures({
+        ChromeFeatureList.TAB_BOTTOM_SHEET,
+        ChromeFeatureList.TAB_BOTTOM_SHEET_EDGE_TO_EDGE,
+        ChromeFeatureList.GLIC_NO_WEBVIEW
+    })
+    public void testSetBottomSafeAreaInsetObserver_NotifiedOnInsetChange() {
+        mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
+        ResizeLock lock = mHelper.requestResize();
+        assertNotNull(lock);
+
+        ArgumentCaptor<WindowInsetObserver> insetObserverCaptor =
+                ArgumentCaptor.forClass(WindowInsetObserver.class);
+        verify(mMockInsetObserver).addObserver(insetObserverCaptor.capture());
+
+        ArgumentCaptor<BottomSheetObserver> sheetObserverCaptor =
+                ArgumentCaptor.forClass(BottomSheetObserver.class);
+        verify(mMockBottomSheetController).addObserver(sheetObserverCaptor.capture());
+
+        when(mMockBottomSheetController.getEdgeToEdgeBottomInset()).thenReturn(48);
+        Callback<Integer> observer = mock(Callback.class);
+        mHelper.setBottomSafeAreaInsetObserver(observer);
+        verify(observer).onResult(48);
+
+        // Same value -> no extra call.
+        clearInvocations(observer);
+        insetObserverCaptor.getValue().onInsetChanged();
+        verify(observer, never()).onResult(anyInt());
+
+        // New value -> call via inset-change path.
+        when(mMockBottomSheetController.getEdgeToEdgeBottomInset()).thenReturn(72);
+        insetObserverCaptor.getValue().onInsetChanged();
+        verify(observer).onResult(72);
+
+        // Same value on margin change -> no extra call.
+        clearInvocations(observer);
+        sheetObserverCaptor.getValue().onContainerBottomMarginChanged(100);
+        verify(observer, never()).onResult(anyInt());
+
+        // New value -> call via onContainerBottomMarginChanged.
+        when(mMockBottomSheetController.getEdgeToEdgeBottomInset()).thenReturn(0);
+        sheetObserverCaptor.getValue().onContainerBottomMarginChanged(100);
+        verify(observer).onResult(0);
+
+        lock.unlock();
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    @EnableFeatures({
+        ChromeFeatureList.TAB_BOTTOM_SHEET,
+        ChromeFeatureList.TAB_BOTTOM_SHEET_EDGE_TO_EDGE,
+        ChromeFeatureList.GLIC_NO_WEBVIEW
+    })
+    public void testSetBottomSafeAreaInsetObserver_NullStopsCalls() {
+        mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
+        ResizeLock lock = mHelper.requestResize();
+        assertNotNull(lock);
+
+        ArgumentCaptor<WindowInsetObserver> insetObserverCaptor =
+                ArgumentCaptor.forClass(WindowInsetObserver.class);
+        verify(mMockInsetObserver).addObserver(insetObserverCaptor.capture());
+
+        when(mMockBottomSheetController.getEdgeToEdgeBottomInset()).thenReturn(48);
+        Callback<Integer> observer = mock(Callback.class);
+        mHelper.setBottomSafeAreaInsetObserver(observer);
+        verify(observer).onResult(48);
+
+        mHelper.setBottomSafeAreaInsetObserver(null);
+        clearInvocations(observer);
+
+        when(mMockBottomSheetController.getEdgeToEdgeBottomInset()).thenReturn(72);
+        insetObserverCaptor.getValue().onInsetChanged();
+        verify(observer, never()).onResult(anyInt());
+
+        lock.unlock();
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    @EnableFeatures({
+        ChromeFeatureList.TAB_BOTTOM_SHEET,
+        ChromeFeatureList.TAB_BOTTOM_SHEET_EDGE_TO_EDGE,
+        ChromeFeatureList.GLIC_NO_WEBVIEW
+    })
+    public void testSetBottomSafeAreaInsetObserver_DestroyClearsObserver() {
+        mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
+        ResizeLock lock = mHelper.requestResize();
+        assertNotNull(lock);
+
+        ArgumentCaptor<WindowInsetObserver> insetObserverCaptor =
+                ArgumentCaptor.forClass(WindowInsetObserver.class);
+        verify(mMockInsetObserver).addObserver(insetObserverCaptor.capture());
+
+        when(mMockBottomSheetController.getEdgeToEdgeBottomInset()).thenReturn(48);
+        Callback<Integer> observer = mock(Callback.class);
+        mHelper.setBottomSafeAreaInsetObserver(observer);
+        verify(observer).onResult(48);
+
+        clearInvocations(observer);
+        mHelper.destroy();
+
+        when(mMockBottomSheetController.getEdgeToEdgeBottomInset()).thenReturn(72);
+        insetObserverCaptor.getValue().onInsetChanged();
+        verify(observer, never()).onResult(anyInt());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    @EnableFeatures({
+        ChromeFeatureList.TAB_BOTTOM_SHEET,
+        ChromeFeatureList.TAB_BOTTOM_SHEET_EDGE_TO_EDGE,
+        ChromeFeatureList.GLIC_NO_WEBVIEW
+    })
+    public void testSetBottomSafeAreaInsetObserver_DoesNotCallSetDisplayCutoutSafeArea() {
+        mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
+        clearInvocations(mMockWebContents);
+        when(mMockBottomSheetController.getEdgeToEdgeBottomInset()).thenReturn(48);
+        Callback<Integer> observer = mock(Callback.class);
+
+        mHelper.setBottomSafeAreaInsetObserver(observer);
+
+        verify(observer).onResult(48);
+        verify(mMockWebContents, never()).setDisplayCutoutSafeArea(any());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    @EnableFeatures({
+        ChromeFeatureList.TAB_BOTTOM_SHEET,
+        ChromeFeatureList.TAB_BOTTOM_SHEET_EDGE_TO_EDGE,
+        ChromeFeatureList.GLIC_NO_WEBVIEW
+    })
+    public void
+            testSetBottomSafeAreaInsetObserver_AfterDestroy_SettingNullDoesNotQueryBottomInset() {
+        mHelper.destroy();
+        clearInvocations(mMockBottomSheetController);
+
+        mHelper.setBottomSafeAreaInsetObserver(null);
+        verify(mMockBottomSheetController, never()).getEdgeToEdgeBottomInset();
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    @EnableFeatures({
+        ChromeFeatureList.TAB_BOTTOM_SHEET,
+        ChromeFeatureList.TAB_BOTTOM_SHEET_EDGE_TO_EDGE,
+        ChromeFeatureList.GLIC_NO_WEBVIEW
+    })
+    public void testSetBottomSafeAreaInsetObserver_SidePanel_NeverCalled() {
+        when(mMockBottomSheetController.getEdgeToEdgeBottomInset()).thenReturn(48);
+        WebViewResizingHelper sidePanelHelper =
+                new WebViewResizingHelper(
+                        mContainerView,
+                        mMockWindowAndroid,
+                        mMockBottomSheetController,
+                        Color.WHITE,
+                        Color.LTGRAY,
+                        /* isSidePanel= */ true,
+                        mMockComponentProvider);
+        Callback<Integer> observer = mock(Callback.class);
+        sidePanelHelper.setBottomSafeAreaInsetObserver(observer);
+        verify(observer, never()).onResult(anyInt());
+        sidePanelHelper.destroy();
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    @DisableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET_EDGE_TO_EDGE)
+    public void testSetBottomSafeAreaInsetObserver_NonEdgeToEdge_NeverCalled() {
+        when(mMockBottomSheetController.getEdgeToEdgeBottomInset()).thenReturn(48);
+        Callback<Integer> observer = mock(Callback.class);
+        mHelper.setBottomSafeAreaInsetObserver(observer);
+        verify(observer, never()).onResult(anyInt());
+        mHelper.destroy();
     }
 }
