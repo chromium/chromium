@@ -54,6 +54,12 @@ char kLSanDefaultSuppressions[] =
     // Leak in glibc's gconv caused by fopen(..., "r,ccs=UNICODE")
     "leak:__gconv_lookup_cache\n"
 
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(ARCH_CPU_X86)
+    // False positive on 32-bit x86 component builds where i386 GetTls()
+    // misses libc.so's tls_dtor_list. crbug.com/583020802
+    "leak:__cxa_thread_atexit_impl\n"
+#endif
+
     // Leak in libnssutil. crbug.com/1290634
     "leak:libnssutil3\n"
 
