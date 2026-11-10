@@ -34,6 +34,7 @@ interface SearchBoxProperties {
     WritableObjectPropertyKey<OnClickListener> LENS_CLICK_CALLBACK =
             new WritableObjectPropertyKey<>();
     WritableBooleanPropertyKey LENS_VISIBILITY = new WritableBooleanPropertyKey();
+    WritableFloatPropertyKey PLUS_BUTTON_ALPHA = new WritableFloatPropertyKey();
     WritableObjectPropertyKey<OnClickListener> PLUS_BUTTON_CLICK_CALLBACK =
             new WritableObjectPropertyKey<>();
     WritableFloatPropertyKey PLUS_BUTTON_ROTATION = new WritableFloatPropertyKey();
@@ -73,6 +74,7 @@ interface SearchBoxProperties {
                 HINT_TEXT_ALPHA,
                 LENS_CLICK_CALLBACK,
                 LENS_VISIBILITY,
+                PLUS_BUTTON_ALPHA,
                 PLUS_BUTTON_CLICK_CALLBACK,
                 PLUS_BUTTON_ROTATION,
                 PLUS_BUTTON_TINT,

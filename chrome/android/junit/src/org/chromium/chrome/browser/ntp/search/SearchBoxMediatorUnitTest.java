@@ -148,6 +148,7 @@ public class SearchBoxMediatorUnitTest {
 
     private void assertRestingUIState(String expectedHint) {
         assertFalse(mMediator.isHintAnimatorActiveForTesting());
+        assertEquals(1f, mPropertyModel.get(SearchBoxProperties.PLUS_BUTTON_ALPHA), 0.001f);
         assertEquals(0f, mPropertyModel.get(SearchBoxProperties.PLUS_BUTTON_ROTATION), 0.001f);
         assertEquals(1f, mPropertyModel.get(SearchBoxProperties.HINT_TEXT_ALPHA), 0.001f);
         assertEquals(expectedHint, mPropertyModel.get(SearchBoxProperties.SEARCH_BOX_HINT_TEXT));

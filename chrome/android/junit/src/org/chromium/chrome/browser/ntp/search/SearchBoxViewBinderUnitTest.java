@@ -226,6 +226,15 @@ public class SearchBoxViewBinderUnitTest {
     }
 
     @Test
+    public void testSetPlusButtonAlpha() {
+        mPropertyModel.set(SearchBoxProperties.PLUS_BUTTON_ALPHA, 0.5f);
+        assertEquals(0.5f, mSearchBoxLayout.mPlusButton.getAlpha(), 0.001f);
+
+        mPropertyModel.set(SearchBoxProperties.PLUS_BUTTON_ALPHA, 1.0f);
+        assertEquals(1.0f, mSearchBoxLayout.mPlusButton.getAlpha(), 0.001f);
+    }
+
+    @Test
     public void testSetPlusButtonRotation() {
         mPropertyModel.set(SearchBoxProperties.PLUS_BUTTON_ROTATION, 180f);
         assertEquals(180f, mSearchBoxLayout.mPlusButton.getRotation(), 0.001f);

@@ -17,6 +17,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.view.View;
 import android.view.View.OnDragListener;
+import android.view.animation.Interpolator;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.StyleRes;
@@ -42,7 +43,6 @@ import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconRes
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFocusReason;
@@ -66,6 +66,11 @@ class SearchBoxMediator implements DestroyObserver {
     private static final long INITIAL_HINT_DELAY_MS = 300;
     private static final long HINT_HOLD_DURATION_MS = 2500;
     private static final long FADE_DURATION_MS = 150;
+    private static final long TINT_IN_DURATION_MS = 150;
+    private static final long TINT_OUT_DURATION_MS = 100;
+    private static final long ALPHA_DIP_DURATION_MS = 40;
+    private static final long ALPHA_RECOVER_DURATION_MS = 440;
+    private static final float PLUS_MIN_ALPHA = 0.5f;
 
     private final Context mContext;
     private final PropertyModel mModel;
@@ -120,6 +125,7 @@ class SearchBoxMediator implements DestroyObserver {
         mModel.set(SearchBoxProperties.LENS_CLICK_CALLBACK, this::onLensClick);
         mModel.set(SearchBoxProperties.AI_CHIP_CLICK_CALLBACK, this::onAiChipClick);
         mModel.set(SearchBoxProperties.APPLY_ELEVATION, OmniboxCapabilities.isDesktopPlatform());
+        mModel.set(SearchBoxProperties.PLUS_BUTTON_ALPHA, 1f);
         mModel.set(SearchBoxProperties.PLUS_BUTTON_ROTATION, 0f);
         mModel.set(SearchBoxProperties.HINT_TEXT_ALPHA, 1f);
         mModel.set(
@@ -468,7 +474,12 @@ class SearchBoxMediator implements DestroyObserver {
         ColorStateList initialTint =
                 assumeNonNull(mModel.get(SearchBoxProperties.PLUS_BUTTON_TINT));
         @ColorInt int initialColor = initialTint.getDefaultColor();
-        @ColorInt int accentColor = SemanticColorUtils.getDefaultIconColorAccent1(mContext);
+        @ColorInt
+        int accentColor =
+                mContext.getColor(
+                        mModel.get(SearchBoxProperties.APPLY_WHITE_BACKGROUND_AND_SHADOW)
+                                ? R.color.default_icon_color_blue_dark
+                                : R.color.default_icon_color_accent1_baseline);
         String makeAPlanHint = mContext.getString(R.string.ntp_search_box_hint_make_a_plan);
         String askAboutTabHint = mContext.getString(R.string.ntp_search_box_hint_ask_about_tab);
 
@@ -478,8 +489,19 @@ class SearchBoxMediator implements DestroyObserver {
                         .setDuration(PLUS_ROTATION_DURATION_MS);
         spin.setInterpolator(Interpolators.EMPHASIZED);
 
-        Animator tintIn = createTintAnimator(initialColor, accentColor);
-        Animator tintOut = createTintAnimator(accentColor, initialColor);
+        Animator alphaPulse = createAlphaPulseAnimator();
+        Animator tintIn =
+                createTintAnimator(
+                        initialColor,
+                        accentColor,
+                        TINT_IN_DURATION_MS,
+                        Interpolators.EMPHASIZED_DECELERATE);
+        Animator tintOut =
+                createTintAnimator(
+                        accentColor,
+                        initialColor,
+                        TINT_OUT_DURATION_MS,
+                        Interpolators.LINEAR_INTERPOLATOR);
 
         List<Animator> sequence = new ArrayList<>();
         sequence.add(spin);
@@ -490,12 +512,14 @@ class SearchBoxMediator implements DestroyObserver {
 
         AnimatorSet animator = new AnimatorSet();
         animator.playSequentially(sequence);
+        animator.play(spin).with(alphaPulse);
         animator.play(spin).with(tintIn);
         animator.addListener(
                 new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         mHintAnimator = null;
+                        mModel.set(SearchBoxProperties.PLUS_BUTTON_ALPHA, 1f);
                         mModel.set(SearchBoxProperties.PLUS_BUTTON_ROTATION, 0f);
                         mModel.set(SearchBoxProperties.PLUS_BUTTON_TINT, initialTint);
                         mModel.set(SearchBoxProperties.HINT_TEXT_ALPHA, 1f);
@@ -505,9 +529,31 @@ class SearchBoxMediator implements DestroyObserver {
         return animator;
     }
 
-    private Animator createTintAnimator(@ColorInt int fromColor, @ColorInt int toColor) {
-        ValueAnimator animator =
-                ValueAnimator.ofArgb(fromColor, toColor).setDuration(FADE_DURATION_MS);
+    private Animator createAlphaPulseAnimator() {
+        ObjectAnimator alphaDip =
+                PropertyModelAnimatorFactory.ofFloat(
+                                mModel, SearchBoxProperties.PLUS_BUTTON_ALPHA, PLUS_MIN_ALPHA)
+                        .setDuration(ALPHA_DIP_DURATION_MS);
+        alphaDip.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
+
+        ObjectAnimator alphaRecover =
+                PropertyModelAnimatorFactory.ofFloat(
+                                mModel, SearchBoxProperties.PLUS_BUTTON_ALPHA, 1f)
+                        .setDuration(ALPHA_RECOVER_DURATION_MS);
+        alphaRecover.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
+
+        AnimatorSet alphaPulse = new AnimatorSet();
+        alphaPulse.playSequentially(alphaDip, alphaRecover);
+        return alphaPulse;
+    }
+
+    private Animator createTintAnimator(
+            @ColorInt int fromColor,
+            @ColorInt int toColor,
+            long durationMs,
+            Interpolator interpolator) {
+        ValueAnimator animator = ValueAnimator.ofArgb(fromColor, toColor).setDuration(durationMs);
+        animator.setInterpolator(interpolator);
         animator.addUpdateListener(
                 a ->
                         mModel.set(
