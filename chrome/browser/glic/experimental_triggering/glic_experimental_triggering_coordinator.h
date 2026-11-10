@@ -111,6 +111,19 @@ class GlicExperimentalTriggeringCoordinator
       const std::string& error_message);
   void CancelAllPendingMessages();
   void OnUpdatesHandlerCleanup(const std::string& context_id);
+  // Rejects a request that OnProtoMessage() refuses before it reaches a
+  // handler, and sends the FAILED reply through `response_callback`. If a
+  // handler is live for `context_id`, the reply takes that handler's next
+  // sender sequence number, so that the server does not drop it as stale, and
+  // the handler's session ends too.
+  void RejectBeforeHandler(
+      const std::string& context_id,
+      const components_sharing_message::GlicExperimentalTriggering& proto,
+      ScopedIncomingMessageResultLogger& result_logger,
+      GlicExperimentalTriggeringIncomingMessageResult result,
+      const std::string& error_message,
+      GlicExperimentalTriggeringResponseCallback response_callback,
+      std::map<std::string, std::string> task_update_metadata = {});
 
   // Returns true if an active updates handler exists for `context_id`.
   bool HasUpdatesHandler(std::string_view context_id) const {

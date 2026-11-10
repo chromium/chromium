@@ -562,6 +562,93 @@ TEST_F(GlicExperimentalTriggeringTransportHandlerTest,
                     triggering.SerializeAsString());
 }
 
+// The coordinator drops a duplicate start during a running task with an empty
+// reply. On this transport an empty reply sends nothing, and the session stays
+// open for the running task.
+TEST_F(GlicExperimentalTriggeringTransportHandlerTest,
+       DuplicateStartMidTaskSendsNothingAndKeepsSession) {
+  OptIn();
+  testing::NiceMock<MockGlicExperimentalTriggeringCoordinator> mock_coordinator(
+      profile_);
+  EXPECT_CALL(mock_coordinator, OnRequest)
+      .WillOnce([](const std::string& context_id,
+                   const ExperimentalTriggeringRequest& request,
+                   ScopedIncomingMessageResultLogger result_logger,
+                   GlicExperimentalTriggeringUpdateCallback update_callback,
+                   tabs::TabInterface* prepared_tab)
+                    -> std::optional<ExperimentalTriggeringResponse> {
+        result_logger.set_result(
+            GlicExperimentalTriggeringIncomingMessageResult::
+                kTaskAlreadyRunning);
+        return std::nullopt;
+      });
+  EXPECT_CALL(*session_, SendUpstreamMessage).Times(0);
+  EXPECT_CALL(*session_, Close()).Times(0);
+  GlicExperimentalTriggeringTransportHandler handler(
+      profile_, session_.get(), mock_coordinator.GetWeakPtr());
+
+  components_sharing_message::GlicExperimentalTriggering triggering;
+  triggering.set_context_id("test_session_id");
+  triggering.mutable_task_metadata()->set_conversation_id("conv_123");
+  triggering.mutable_request()->mutable_trigger_actuation_request();
+  base::HistogramTester histogram_tester;
+  handler.OnMessage(PayloadType::kExperimentalTriggering,
+                    triggering.SerializeAsString());
+
+  histogram_tester.ExpectUniqueSample(
+      "Glic.ExperimentalTriggering.IncomingMessageResult."
+      "BrowserActuatorTransport",
+      GlicExperimentalTriggeringIncomingMessageResult::kTaskAlreadyRunning, 1);
+}
+
+// The coordinator replies FAILED to a request that it refuses during a running
+// task, for example a Continue after the user opted out, which ends the task.
+// On this transport the terminal reply also closes the session.
+TEST_F(GlicExperimentalTriggeringTransportHandlerTest,
+       RefusedRequestMidTaskSendsFailedAndClosesSession) {
+  OptIn();
+  testing::NiceMock<MockGlicExperimentalTriggeringCoordinator> mock_coordinator(
+      profile_);
+  EXPECT_CALL(mock_coordinator, OnRequest)
+      .WillOnce([](const std::string& context_id,
+                   const ExperimentalTriggeringRequest& request,
+                   ScopedIncomingMessageResultLogger result_logger,
+                   GlicExperimentalTriggeringUpdateCallback update_callback,
+                   tabs::TabInterface* prepared_tab)
+                    -> std::optional<ExperimentalTriggeringResponse> {
+        result_logger.set_result(
+            GlicExperimentalTriggeringIncomingMessageResult::kUserNotOptedIn);
+        ExperimentalTriggeringResponse response;
+        response.context_id = context_id;
+        response.task_update = TaskUpdate{
+            .state = TaskUpdate::State::kFailed,
+            .data_type = TaskUpdate::DataType::kErrorMessage,
+            .data = "User is not opted in to experimental triggering."};
+        return response;
+      });
+  EXPECT_CALL(*session_, SendUpstreamMessage(
+                             PayloadType::kExperimentalTriggering, testing::_))
+      .WillOnce([](PayloadType type, const google::protobuf::MessageLite& msg)
+                    -> base::expected<void, SendUpstreamMessageError> {
+        const auto& response = static_cast<
+            const components_sharing_message::GlicExperimentalTriggering&>(msg);
+        EXPECT_EQ(components_sharing_message::GlicExperimentalTriggering::
+                      ExperimentalTriggeringResponse::TaskUpdate::FAILED,
+                  response.response().task_update().state());
+        return {};
+      });
+  EXPECT_CALL(*session_, Close()).Times(1);
+  GlicExperimentalTriggeringTransportHandler handler(
+      profile_, session_.get(), mock_coordinator.GetWeakPtr());
+
+  components_sharing_message::GlicExperimentalTriggering triggering;
+  triggering.set_context_id("test_session_id");
+  triggering.mutable_task_metadata()->set_conversation_id("conv_123");
+  triggering.mutable_request()->mutable_continue_actuation_request();
+  handler.OnMessage(PayloadType::kExperimentalTriggering,
+                    triggering.SerializeAsString());
+}
+
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(GlicExperimentalTriggeringTransportHandlerTest,
        QueuesTriggerActuationUntilBackgroundTabPreparedOnAndroid) {
@@ -759,6 +846,69 @@ TEST_F(GlicExperimentalTriggeringTransportHandlerTest,
       "Glic.ExperimentalTriggering.IncomingMessageResult."
       "BrowserActuatorTransport",
       GlicExperimentalTriggeringIncomingMessageResult::kSuccess, 1);
+}
+
+// A request that is rejected before any handler (here a version mismatch)
+// replies FAILED, which ends the task for the server. A Trigger that waits for
+// a background tab on the same context must not start the task later.
+TEST_F(GlicExperimentalTriggeringTransportHandlerTest,
+       VersionMismatchCancelsQueuedPendingMessageOnAndroid) {
+  base::test::ScopedFeatureList bg_feature;
+  bg_feature.InitAndEnableFeature(features::kGlicBackgroundTriggering);
+  OptIn();
+
+  testing::NiceMock<MockGlicExperimentalTriggeringCoordinator> mock_coordinator(
+      profile_);
+  GlicExperimentalTriggeringTransportHandler handler(
+      profile_, session_.get(), mock_coordinator.GetWeakPtr());
+
+  base::HistogramTester histogram_tester;
+  components_sharing_message::GlicExperimentalTriggering start_msg;
+  start_msg.set_context_id("bg_reject_context_id");
+  start_msg.mutable_task_metadata()->set_sender_sequence_number(5);
+  start_msg.mutable_request()->mutable_trigger_actuation_request();
+  handler.OnMessage(PayloadType::kExperimentalTriggering,
+                    start_msg.SerializeAsString());
+
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(profile_);
+  ASSERT_TRUE(actor_service);
+  EXPECT_TRUE(actor_service->HasPendingTask("bg_reject_context_id"));
+
+  components_sharing_message::GlicExperimentalTriggering bad_msg;
+  bad_msg.set_context_id("bg_reject_context_id");
+  bad_msg.set_glic_experimental_triggering_version(9999);
+  bad_msg.mutable_request()->mutable_device_opt_in_request();
+
+  EXPECT_CALL(*session_, SendUpstreamMessage(
+                             PayloadType::kExperimentalTriggering, testing::_))
+      .WillRepeatedly([](PayloadType type,
+                         const google::protobuf::MessageLite& msg)
+                          -> base::expected<void, SendUpstreamMessageError> {
+        const auto& response = static_cast<
+            const components_sharing_message::GlicExperimentalTriggering&>(msg);
+        EXPECT_EQ("bg_reject_context_id", response.context_id());
+        EXPECT_EQ(components_sharing_message::GlicExperimentalTriggering::
+                      ExperimentalTriggeringResponse::TaskUpdate::FAILED,
+                  response.response().task_update().state());
+        return {};
+      });
+  EXPECT_CALL(*session_, Close()).Times(testing::AtLeast(1));
+  // The queued Trigger is dropped, so it never reaches OnRequest().
+  EXPECT_CALL(mock_coordinator, OnRequest).Times(0);
+
+  handler.OnMessage(PayloadType::kExperimentalTriggering,
+                    bad_msg.SerializeAsString());
+  EXPECT_FALSE(actor_service->HasPendingTask("bg_reject_context_id"));
+  histogram_tester.ExpectTotalCount(
+      "Glic.ExperimentalTriggering.Android.BackgroundSetupLatency.Cancelled",
+      1);
+  histogram_tester.ExpectBucketCount(
+      "Glic.ExperimentalTriggering.IncomingMessageResult."
+      "BrowserActuatorTransport",
+      GlicExperimentalTriggeringIncomingMessageResult::
+          kVersionMismatchOrUnavailable,
+      2);
 }
 
 TEST_F(GlicExperimentalTriggeringTransportHandlerTest,

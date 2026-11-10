@@ -522,34 +522,27 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
             kDefaultSequenceNumber);
 }
 
+// A second Trigger on the same context while the first invocation is still in
+// progress is a duplicate start. It gets an empty reply, and it doesn't start a
+// second invocation or end the running task for the server.
 IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
-                       testDuplicateTriggerMessageReturnsErrorWithoutUaf) {
+                       testDuplicateTriggerMessageIsDropped) {
   OptIn();
   const std::string context_id = "test_duplicate_trigger_context";
   const std::string conversation_id = "test_conv_id";
+  auto create_trigger_message = [&](int sequence_number) {
+    auto message = CreateTriggeringMessage(sequence_number);
+    message.mutable_glic_experimental_triggering()->set_context_id(context_id);
+    message.mutable_glic_experimental_triggering()
+        ->mutable_task_metadata()
+        ->set_conversation_id(conversation_id);
+    message.mutable_glic_experimental_triggering()
+        ->mutable_request()
+        ->mutable_trigger_actuation_request();
+    return message;
+  };
 
-  auto message1 = CreateTriggeringMessage(101);
-  message1.mutable_glic_experimental_triggering()->set_context_id(context_id);
-  message1.mutable_glic_experimental_triggering()
-      ->mutable_task_metadata()
-      ->set_conversation_id(conversation_id);
-  message1.mutable_glic_experimental_triggering()
-      ->mutable_request()
-      ->mutable_trigger_actuation_request();
-
-  base::test::TestFuture<components_sharing_message::SharingMessage> future;
-  EXPECT_CALL(mock_sharing_message_sender_,
-              SendMessageToServerTarget(_, _, _, _))
-      .WillOnce(
-          [&](const components_sharing_message::ServerChannelConfiguration&,
-              base::TimeDelta,
-              components_sharing_message::SharingMessage message,
-              SharingMessageSender::ResponseCallback) {
-            future.SetValue(std::move(message));
-            return base::OnceClosure();
-          });
-
-  auto response1 = SendMessageAndWait(std::move(message1));
+  auto response1 = SendMessageAndWait(create_trigger_message(101));
   ASSERT_TRUE(response1);
   EXPECT_TRUE(response1->has_glic_experimental_triggering());
   EXPECT_EQ(response1->glic_experimental_triggering()
@@ -559,38 +552,16 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
             components_sharing_message::GlicExperimentalTriggering::
                 ExperimentalTriggeringResponse::TaskUpdate::STARTING);
 
-  // Send a second trigger message with the same context_id and conversation_id
-  // while the first invocation is still in progress. This targets the existing
-  // active invocation and drives the synchronous kInvokeInProgress error path
-  // in InvokeWithAutoSubmit.
-  auto message2 = CreateTriggeringMessage(102);
-  message2.mutable_glic_experimental_triggering()->set_context_id(context_id);
-  message2.mutable_glic_experimental_triggering()
-      ->mutable_task_metadata()
-      ->set_conversation_id(conversation_id);
-  message2.mutable_glic_experimental_triggering()
-      ->mutable_request()
-      ->mutable_trigger_actuation_request();
-
-  auto response2 = SendMessageAndWait(std::move(message2));
-  ASSERT_TRUE(response2);
-  EXPECT_TRUE(response2->has_glic_experimental_triggering());
-  EXPECT_EQ(response2->glic_experimental_triggering()
-                .response()
-                .task_update()
-                .state(),
-            components_sharing_message::GlicExperimentalTriggering::
-                ExperimentalTriggeringResponse::TaskUpdate::STARTING);
-
-  // Verify that an outgoing message with state FAILED was emitted synchronously
-  // by options.on_error due to kInvokeInProgress without UAF.
-  auto update_message = future.Take();
-  EXPECT_EQ(update_message.glic_experimental_triggering()
-                .response()
-                .task_update()
-                .state(),
-            components_sharing_message::GlicExperimentalTriggering::
-                ExperimentalTriggeringResponse::TaskUpdate::FAILED);
+  // No update, in particular no FAILED, goes to the server for the duplicate.
+  EXPECT_CALL(mock_sharing_message_sender_,
+              SendMessageToServerTarget(_, _, _, _))
+      .Times(0);
+  base::HistogramTester histogram_tester;
+  auto response2 = SendMessageAndWait(create_trigger_message(102));
+  EXPECT_FALSE(response2);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.ExperimentalTriggering.IncomingMessageResult.SharingMessage",
+      GlicExperimentalTriggeringIncomingMessageResult::kTaskAlreadyRunning, 1);
 }
 
 #if !BUILDFLAG(IS_ANDROID)
