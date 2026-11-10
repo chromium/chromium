@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {cache, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {SettingsMainElement} from './settings_main.js';
 
@@ -22,101 +22,105 @@ ${this.showResetProfileBanner_ ? html`
 ` : ''}
 
 <cr-view-manager id="switcher" ?show-all="${this.shouldShowAll_()}">
-  ${cache(this.settingsRefresh2026Enabled_ &&
-  this.showPage_(this.pageVisibility_?.home) ? html`
+  ${this.settingsRefresh2026Enabled_ &&
+          this.showPage_(this.pageVisibility_?.home) ?
+      html`
     <div slot="view" id="home">
-      ${cache(this.renderPlugin_(this.routes_.BASIC) ? html`
+      ${this.renderPlugin_(this.routes_.BASIC) ? html`
         <div>Home page placeholder</div>
-      ` : '')}
+      ` : ''}
     </div>
-  ` : '')}
+  ` : ''}
 
-  ${cache(!this.settingsRefresh2026Enabled_ &&
-  this.showPage_(this.pageVisibility_?.people) ? html`
+  ${!this.settingsRefresh2026Enabled_ &&
+          this.showPage_(this.pageVisibility_?.people) ?
+      html`
     <div slot="view" id="people">
-      ${cache(this.renderPlugin_(this.routes_.PEOPLE) ? html`
+      ${this.renderPlugin_(this.routes_.PEOPLE) ? html`
         <settings-people-page-index ?in-search-mode="${this.inSearchMode_}">
         </settings-people-page-index>
-      ` : '')}
+      ` : ''}
     </div>
-  ` : '')}
+  ` : ''}
 
-  ${cache(this.showPage_(this.pageVisibility_?.privacy) ? html`
+  ${this.showPage_(this.pageVisibility_?.privacy) ? html`
     <div slot="view" id="privacy">
-      ${cache(this.renderPlugin_(this.routes_.PRIVACY) ? html`
+      ${this.renderPlugin_(this.routes_.PRIVACY) ? html`
         <settings-privacy-page-index ?in-search-mode="${this.inSearchMode_}">
         </settings-privacy-page-index>
-      ` : '')}
+      ` : ''}
     </div>
-  ` : '')}
+  ` : ''}
 
-  ${cache(this.showPage_(this.pageVisibility_?.yourSavedInfo) ? html`
+  ${this.showPage_(this.pageVisibility_?.yourSavedInfo) ? html`
     <div slot="view" id="yourSavedInfo">
-      ${cache(this.renderPlugin_(this.routes_.AUTOFILL) ? html`
+      ${this.renderPlugin_(this.routes_.AUTOFILL) ? html`
         <settings-autofill-page-index ?in-search-mode="${this.inSearchMode_}">
         </settings-autofill-page-index>
-      ` : '')}
+      ` : ''}
     </div>
-  ` : '')}
+  ` : ''}
 
-  ${cache(this.showPage_(this.pageVisibility_?.performance) ? html`
+  ${this.showPage_(this.pageVisibility_?.performance) ? html`
     <div slot="view" id="performance">
-      ${cache(this.renderPlugin_(this.routes_.PERFORMANCE) ? html`
+      ${this.renderPlugin_(this.routes_.PERFORMANCE) ? html`
         <settings-performance-page-index
             ?in-search-mode="${this.inSearchMode_}">
         </settings-performance-page-index>
-      ` : '')}
+      ` : ''}
     </div>
-  ` : '')}
+  ` : ''}
 
-  ${cache(this.showAiPage_(this.pageVisibility_?.ai) ? html`
+  ${this.showAiPage_(this.pageVisibility_?.ai) ? html`
     <div slot="view" id="ai">
-      ${cache(this.renderPlugin_(this.routes_.AI) ? html`
+      ${this.renderPlugin_(this.routes_.AI) ? html`
         <settings-ai-page-index ?in-search-mode="${this.inSearchMode_}">
         </settings-ai-page-index>
-      ` : '')}
+      ` : ''}
     </div>
-  ` : '')}
+  ` : ''}
 
-  ${cache(this.showPage_(this.pageVisibility_?.appearance) ? html`
+  ${this.showPage_(this.pageVisibility_?.appearance) ? html`
     <div slot="view" id="appearance">
-      ${cache(this.renderPlugin_(this.routes_.APPEARANCE) ? html`
+      ${this.renderPlugin_(this.routes_.APPEARANCE) ? html`
         <settings-appearance-page-index ?in-search-mode="${this.inSearchMode_}">
         </settings-appearance-page-index>
-      ` : '')}
+      ` : ''}
     </div>
-  ` : '')}
+  ` : ''}
 
   <div slot="view" id="search">
-    ${cache(this.renderPlugin_(this.routes_.SEARCH) ? html`
+    ${this.renderPlugin_(this.routes_.SEARCH) ? html`
       <settings-search-page-index ?in-search-mode="${this.inSearchMode_}">
       </settings-search-page-index>
-    ` : '')}
+    ` : ''}
   </div>
 
 <if expr="not is_chromeos">
-  ${cache(!this.settingsRefresh2026Enabled_ &&
-  this.showPage_(this.pageVisibility_?.defaultBrowser) ? html`
+  ${!this.settingsRefresh2026Enabled_ &&
+          this.showPage_(this.pageVisibility_?.defaultBrowser) ?
+      html`
     <div slot="view" id="defaultBrowser">
-      ${cache(this.renderPlugin_(this.routes_.DEFAULT_BROWSER) ? html`
+      ${this.renderPlugin_(this.routes_.DEFAULT_BROWSER) ? html`
         <settings-default-browser-page></settings-default-browser-page>
-      ` : '')}
+      ` : ''}
     </div>
-  ` : '')}
+  ` : ''}
 </if>
 
-  ${cache(!this.settingsRefresh2026Enabled_ &&
-  this.showPage_(this.pageVisibility_?.onStartup) ? html`
+  ${!this.settingsRefresh2026Enabled_ &&
+          this.showPage_(this.pageVisibility_?.onStartup) ?
+      html`
     <div slot="view" id="onStartup">
-      ${cache(this.renderPlugin_(this.routes_.ON_STARTUP) ? html`
+      ${this.renderPlugin_(this.routes_.ON_STARTUP) ? html`
         <settings-on-startup-page></settings-on-startup-page>
-      ` : '')}
+      ` : ''}
     </div>
-  ` : '')}
+  ` : ''}
 
-  ${cache(this.showPage_(this.pageVisibility_?.languages) ? html`
+  ${this.showPage_(this.pageVisibility_?.languages) ? html`
     <div slot="view" id="languages">
-      ${cache(this.renderPlugin_(this.routes_.LANGUAGES) ? html`
+      ${this.renderPlugin_(this.routes_.LANGUAGES) ? html`
 <if expr="is_chromeos">
         <settings-languages-page-index-cros>
         </settings-languages-page-index-cros>
@@ -125,63 +129,67 @@ ${this.showResetProfileBanner_ ? html`
         <settings-languages-page-index ?in-search-mode="${this.inSearchMode_}">
         </settings-languages-page-index>
 </if>
-      ` : '')}
+      ` : ''}
     </div>
-  ` : '')}
+  ` : ''}
 
-  ${cache(!this.settingsRefresh2026Enabled_ &&
-  this.showPage_(this.pageVisibility_?.downloads) ? html`
+  ${!this.settingsRefresh2026Enabled_ &&
+          this.showPage_(this.pageVisibility_?.downloads) ?
+      html`
     <div slot="view" id="downloads">
-      ${cache(this.renderPlugin_(this.routes_.DOWNLOADS) ? html`
+      ${this.renderPlugin_(this.routes_.DOWNLOADS) ? html`
         <settings-downloads-page></settings-downloads-page>
-      ` : '')}
+      ` : ''}
     </div>
-  ` : '')}
+  ` : ''}
 
-  ${cache(this.showPage_(this.pageVisibility_?.a11y) ? html`
+  ${this.showPage_(this.pageVisibility_?.a11y) ? html`
     <div slot="view" id="a11y">
-      ${cache(this.renderPlugin_(this.routes_.ACCESSIBILITY) ? html`
+      ${this.renderPlugin_(this.routes_.ACCESSIBILITY) ? html`
         <settings-a11y-page-index ?in-search-mode="${this.inSearchMode_}">
         </settings-a11y-page-index>
-      ` : '')}
+      ` : ''}
     </div>
-  ` : '')}
+  ` : ''}
 
-  ${cache(this.settingsRefresh2026Enabled_ &&
-  this.showPage_(this.pageVisibility_?.general) ? html`
+  ${this.settingsRefresh2026Enabled_ &&
+          this.showPage_(this.pageVisibility_?.general) ?
+      html`
     <div slot="view" id="general">
-      ${cache(this.renderPlugin_(this.routes_.GENERAL) ? html`
+      ${this.renderPlugin_(this.routes_.GENERAL) ? html`
         <settings-general-page-index ?in-search-mode="${this.inSearchMode_}">
         </settings-general-page-index>
-      ` : '')}
+      ` : ''}
     </div>
-  ` : '')}
+  ` : ''}
 
 <if expr="not is_chromeos">
-  ${cache(!this.settingsRefresh2026Enabled_ &&
-  this.showPage_(this.pageVisibility_?.system) ? html`
+  ${!this.settingsRefresh2026Enabled_ &&
+          this.showPage_(this.pageVisibility_?.system) ?
+      html`
     <div slot="view" id="system">
-      ${cache(this.renderPlugin_(this.routes_.SYSTEM) ? html`
+      ${this.renderPlugin_(this.routes_.SYSTEM) ? html`
         <settings-system-page></settings-system-page>
-      ` : '')}
+      ` : ''}
     </div>
-  ` : '')}
+  ` : ''}
 </if>
 
-  ${cache(!this.settingsRefresh2026Enabled_ &&
-  this.showPage_(this.pageVisibility_?.reset) ? html`
+  ${!this.settingsRefresh2026Enabled_ &&
+          this.showPage_(this.pageVisibility_?.reset) ?
+      html`
     <div slot="view" id="reset">
-      ${cache(this.renderPlugin_(this.routes_.RESET) ? html`
+      ${this.renderPlugin_(this.routes_.RESET) ? html`
         <settings-reset-page></settings-reset-page>
-      ` : '')}
+      ` : ''}
     </div>
-  ` : '')}
+  ` : ''}
 
   <div slot="view" id="about">
-    ${cache(this.renderPlugin_(this.routes_.ABOUT) ? html`
+    ${this.renderPlugin_(this.routes_.ABOUT) ? html`
       <settings-about-page role="main" class="cr-centered-card-container">
       </settings-about-page>
-    ` : '')}
+    ` : ''}
   </div>
 </cr-view-manager>
 <!--_html_template_end_-->`;
