@@ -154,6 +154,11 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // global screen coordinates. Wayland, for example, disallow it by design.
     bool supports_global_screen_coordinates = true;
 
+    // Indicates that windows shown inactive (e.g. via
+    // `PlatformWindow::Show(/*inactive=*/true)`) stay inactive. Wayland, for
+    // example, lets the compositor focus newly mapped toplevels regardless.
+    bool supports_inactive_window_show = true;
+
     // Indicates that the platform exposes webgpu via interop gl interop with
     // vulkan.
     // TODO(https://crbug.com/500609035): Remove when active gpu device info is

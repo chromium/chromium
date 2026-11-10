@@ -366,6 +366,10 @@ class OzonePlatformWayland : public OzonePlatform,
       // arbitrary position.
       properties->supports_global_screen_coordinates = false;
 
+      // Wayland has no way to map a toplevel without giving it focus, so
+      // compositors may activate windows shown with `inactive` set.
+      properties->supports_inactive_window_show = false;
+
       // Sever communicates a preferred drm device for chrome to both composite
       // and decode video. This is a workaround to prevent decoding and
       // compositing on different GPUs.

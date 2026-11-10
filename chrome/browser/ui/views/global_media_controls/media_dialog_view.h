@@ -130,6 +130,10 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
 
   ~MediaDialogView() override;
 
+  // Keeps the dialog open when a Picture-in-Picture window takes focus on
+  // platforms that can't show windows inactive. Defined in the .cc file.
+  class PictureInPictureFocusHandler;
+
   static MediaDialogView* instance_;
 
   // True if the dialog has been opened this session.
@@ -210,6 +214,8 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
   const global_media_controls::GlobalMediaControlsEntryPoint entry_point_;
 
   media_message_center::MediaColorTheme media_color_theme_;
+
+  std::unique_ptr<PictureInPictureFocusHandler> pip_focus_handler_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_DIALOG_VIEW_H_
