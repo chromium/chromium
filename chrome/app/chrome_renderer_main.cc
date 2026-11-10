@@ -41,6 +41,7 @@
 #include "chrome/install_static/get_primary_module_path.h"
 #include "chrome/install_static/initialize_from_primary_module.h"
 #include "chrome/install_static/install_details.h"
+#include "components/startup_metric_utils/common/preread_experiment_group.h"
 #include "content/public/common/content_switches.h"
 #define DLLEXPORT __declspec(dllexport)
 #endif
@@ -59,7 +60,8 @@ DLLEXPORT int __cdecl ChromeRendererMain(
     sandbox::SandboxInterfaceInfo* sandbox_info,
     int64_t exe_entry_point_ticks,
     int64_t preread_begin_ticks,
-    int64_t preread_end_ticks) {
+    int64_t preread_end_ticks,
+    startup_metric_utils::PrereadExperimentGroup preread_group) {
   SetLLVMProfileProcessType(ProfileProcessType::kRenderer);
   install_static::InitializeFromPrimaryModule();
   static crash_reporter::CrashKeyString<32> child_module_version(
@@ -79,7 +81,7 @@ DLLEXPORT int __cdecl ChromeRendererMain(
   StartupTimestamps timestamps{
       base::TimeTicks() + base::Microseconds(exe_entry_point_ticks),
       base::TimeTicks() + base::Microseconds(preread_begin_ticks),
-      base::TimeTicks() + base::Microseconds(preread_end_ticks)};
+      base::TimeTicks() + base::Microseconds(preread_end_ticks), preread_group};
   ChromeMainDelegate chrome_main_delegate(timestamps);
   content::ContentMainParams params(&chrome_main_delegate);
 

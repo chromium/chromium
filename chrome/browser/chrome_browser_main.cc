@@ -974,14 +974,20 @@ void ChromeBrowserMainParts::StartMetricsRecording() {
   // schedule to get the bast possible accuracy for the assessment.
   g_browser_process->metrics_service()->StartUpdatingLastLiveTimestamp();
 
-  // This code runs in the browser process only and the only reason to skip the
-  // preread there is to be part of the ParallelPreReadFileMainDllWin synthetic
-  // trial. Enroll the client accordingly.
-  const bool synchronous_preread_was_skipped =
-      !startup_metric_utils::GetCommon().DidRecordPreRead();
-  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      "ParallelPreReadFileMainDllWin",
-      synchronous_preread_was_skipped ? "Enabled" : "Control");
+  // Enroll the client in the ParallelPreReadFileMainDllWin synthetic trial
+  // if eligible.
+  switch (startup_metric_utils::GetCommon().preread_group()) {
+    case startup_metric_utils::PrereadExperimentGroup::kParallel:
+      ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+          "ParallelPreReadFileMainDllWin", "Enabled");
+      break;
+    case startup_metric_utils::PrereadExperimentGroup::kSynchronous:
+      ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+          "ParallelPreReadFileMainDllWin", "Control");
+      break;
+    case startup_metric_utils::PrereadExperimentGroup::kUnknown:
+      break;
+  }
 
   if (const std::string_view pin_user32_and_gdi32_group =
           base::win::GetPinUser32AndGdi32TrialGroup();
@@ -993,7 +999,7 @@ void ChromeBrowserMainParts::StartMetricsRecording() {
         variations::SyntheticTrialAnnotationMode::kCurrentLog);
   }
 
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
   g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions();
 }

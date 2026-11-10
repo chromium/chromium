@@ -8,6 +8,10 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "components/startup_metric_utils/common/preread_experiment_group.h"
+#endif
+
 struct StartupTimestamps {
   // Time at which chrome_exe was entered (recorded as early as possible in
   // main()).
@@ -16,6 +20,8 @@ struct StartupTimestamps {
   // Time at which base::PreReadFile(chrome.dll) was called/returned.
   base::TimeTicks preread_begin_ticks;
   base::TimeTicks preread_end_ticks;
+  startup_metric_utils::PrereadExperimentGroup preread_group =
+      startup_metric_utils::PrereadExperimentGroup::kUnknown;
 #endif
 };
 

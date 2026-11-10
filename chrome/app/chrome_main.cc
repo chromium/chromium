@@ -56,6 +56,7 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/install_static/initialize_from_primary_module.h"
 #include "chrome/install_static/install_details.h"
+#include "components/startup_metric_utils/common/preread_experiment_group.h"
 
 #define DLLEXPORT __declspec(dllexport)
 #endif  // BUILDFLAG(IS_WIN)
@@ -80,11 +81,13 @@ const base::CommandLine& GetInitialBrowserCommandLine() {
 #if BUILDFLAG(IS_WIN)
 // We use extern C for the prototype DLLEXPORT to avoid C++ name mangling.
 extern "C" {
-DLLEXPORT int __cdecl ChromeMain(HINSTANCE instance,
-                                 sandbox::SandboxInterfaceInfo* sandbox_info,
-                                 int64_t exe_main_entry_point_ticks,
-                                 int64_t preread_begin_ticks,
-                                 int64_t preread_end_ticks);
+DLLEXPORT int __cdecl ChromeMain(
+    HINSTANCE instance,
+    sandbox::SandboxInterfaceInfo* sandbox_info,
+    int64_t exe_main_entry_point_ticks,
+    int64_t preread_begin_ticks,
+    int64_t preread_end_ticks,
+    startup_metric_utils::PrereadExperimentGroup preread_group);
 }
 #elif BUILDFLAG(IS_POSIX)
 extern "C" {
@@ -99,11 +102,13 @@ NO_STACK_PROTECTOR __attribute__((visibility("default"))) int ChromeMain(
 #endif
 
 #if BUILDFLAG(IS_WIN)
-DLLEXPORT int __cdecl ChromeMain(HINSTANCE instance,
-                                 sandbox::SandboxInterfaceInfo* sandbox_info,
-                                 int64_t exe_entry_point_ticks,
-                                 int64_t preread_begin_ticks,
-                                 int64_t preread_end_ticks) {
+DLLEXPORT int __cdecl ChromeMain(
+    HINSTANCE instance,
+    sandbox::SandboxInterfaceInfo* sandbox_info,
+    int64_t exe_entry_point_ticks,
+    int64_t preread_begin_ticks,
+    int64_t preread_end_ticks,
+    startup_metric_utils::PrereadExperimentGroup preread_group) {
 #elif BUILDFLAG(IS_POSIX)
 int ChromeMain(int argc, const char** argv) {
 #else
@@ -128,7 +133,7 @@ int ChromeMain(int argc, const char** argv) {
   StartupTimestamps timestamps{
       base::TimeTicks::FromInternalValue(exe_entry_point_ticks),
       base::TimeTicks::FromInternalValue(preread_begin_ticks),
-      base::TimeTicks::FromInternalValue(preread_end_ticks)};
+      base::TimeTicks::FromInternalValue(preread_end_ticks), preread_group};
   ChromeMainDelegate chrome_main_delegate(timestamps);
 #else  // BUILDFLAG(IS_WIN)
   ChromeMainDelegate chrome_main_delegate(

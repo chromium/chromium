@@ -15,6 +15,7 @@
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "components/startup_metric_utils/common/preread_experiment_group.h"
 
 // Utility functions to support metric collection for startup common across
 // processes. Timings should use TimeTicks whenever possible. OS-provided
@@ -47,7 +48,8 @@ class COMPONENT_EXPORT(STARTUP_METRIC_UTILS) CommonStartupMetricRecorder final {
   // Call this with the time immediately before/after base::PreReadFile() is
   // called on the main DLL on startup.
   void RecordPreReadTime(base::TimeTicks start_ticks,
-                         base::TimeTicks end_ticks);
+                         base::TimeTicks end_ticks,
+                         PrereadExperimentGroup group);
 
   // Returns the TimeTicks corresponding to main entry as recorded by
   // |RecordMainEntryPointTime|. Returns a null TimeTicks if a value has not
@@ -55,8 +57,7 @@ class COMPONENT_EXPORT(STARTUP_METRIC_UTILS) CommonStartupMetricRecorder final {
   // thread.
   base::TimeTicks MainEntryPointTicks() const;
 
-  // Returns whether preread timings were recorded.
-  bool DidRecordPreRead() const;
+  PrereadExperimentGroup preread_group() const { return preread_group_; }
 
  private:
   friend class BrowserStartupMetricRecorder;
@@ -120,6 +121,7 @@ class COMPONENT_EXPORT(STARTUP_METRIC_UTILS) CommonStartupMetricRecorder final {
 
   base::TimeTicks preread_begin_ticks_;
   base::TimeTicks preread_end_ticks_;
+  PrereadExperimentGroup preread_group_ = PrereadExperimentGroup::kUnknown;
 };
 
 COMPONENT_EXPORT(STARTUP_METRIC_UTILS)

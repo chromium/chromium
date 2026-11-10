@@ -15,7 +15,13 @@ source_set("common") {
     "//components/version_info",
   ]
 
+  public_deps = [ ":constants" ]
+
   # Do not add to this list. Depend on //components/startup_metric_utils rather
   # than this.
   visibility = [ "//components/startup_metric_utils/*" ]
+}
+
+source_set("constants") {
+  sources = [ "preread_experiment_group.h" ]
 }

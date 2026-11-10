@@ -53,12 +53,15 @@
 #include "chrome/installer/util/update_did_run_state.h"
 #include "chrome/installer/util/util_constants.h"
 #include "components/activity_reporter/buildflags.h"
+#include "components/startup_metric_utils/common/preread_experiment_group.h"
 #include "components/version_info/channel.h"
 #include "content/public/app/sandbox_helper_win.h"
 #include "content/public/common/content_switches.h"
 #include "sandbox/win/src/sandbox.h"
 
 namespace {
+
+using startup_metric_utils::PrereadExperimentGroup;
 
 class DllPreReader : public base::PlatformThread::Delegate,
                      public base::SelfDeleting {
@@ -88,7 +91,8 @@ typedef int (*DLL_MAIN)(HINSTANCE,
                         sandbox::SandboxInterfaceInfo*,
                         int64_t exe_main_entry_point_ticks,
                         int64_t preread_begin_ticks,
-                        int64_t preread_end_ticks);
+                        int64_t preread_end_ticks,
+                        PrereadExperimentGroup preread_group);
 
 // Properties for the main module to be loaded.
 struct ModuleProperties {
@@ -157,24 +161,30 @@ std::wstring GetMachineGuid() {
 // The GUID is used to be stable across sessions. This is important when
 // affecting pre-reading because there is a learning effect for preloading
 // interventions at the OS level.
-bool ShouldPreReadFileAsynchronously() {
-  // The trial only runs on lower channels for now.
-  const version_info::Channel channel = install_static::GetChromeChannel();
-  if (channel != version_info::Channel::CANARY &&
-      channel != version_info::Channel::DEV &&
-      channel != version_info::Channel::BETA) {
-    return false;
-  }
-
-  // Get the machine GUID, in case that fails return false to default to
-  // pre-reading.
+PrereadExperimentGroup GetPreReadExperimentGroup() {
+  // Get the machine GUID, in case that fails return kUnknown to default to
+  // pre-reading outside trial.
   const std::wstring machine_guid = GetMachineGuid();
   if (machine_guid.empty()) {
-    return false;
+    return PrereadExperimentGroup::kUnknown;
   }
 
-  // Returns true for 50% of clients.
-  return base::PersistentHash(base::as_byte_span(machine_guid)) % 2 == 0;
+  const uint32_t hash = base::PersistentHash(base::as_byte_span(machine_guid));
+  // 1% experiment on stable.
+  const version_info::Channel channel = install_static::GetChromeChannel();
+  if (channel == version_info::Channel::STABLE) {
+    if (hash % 100 == 0) {
+      return PrereadExperimentGroup::kParallel;
+    }
+    if (hash % 100 == 1) {
+      return PrereadExperimentGroup::kSynchronous;
+    }
+    return PrereadExperimentGroup::kUnknown;
+  }
+
+  // 50% Parallel, 50% Synchronous on lower channels.
+  return (hash % 2 == 0) ? PrereadExperimentGroup::kParallel
+                         : PrereadExperimentGroup::kSynchronous;
 }
 
 void RecordDidRun(const base::FilePath& dll_path) {
@@ -226,23 +236,27 @@ HMODULE LoadModuleWithDirectory(const base::FilePath& module,
                                 const base::CommandLine& cmd_line,
                                 bool is_browser,
                                 base::TimeTicks& preread_begin_ticks,
-                                base::TimeTicks& preread_end_ticks) {
+                                base::TimeTicks& preread_end_ticks,
+                                PrereadExperimentGroup& preread_group) {
   ::SetCurrentDirectoryW(module.DirName().value().c_str());
-  const bool preread_asynchronously = ShouldPreReadFileAsynchronously();
-  const bool synchronous_preread =
-      is_browser ? !preread_asynchronously
-                 : !cmd_line.HasSwitch(switches::kNoPreReadMainDll);
-  const bool asynchronous_preread = is_browser && preread_asynchronously;
-  CHECK(!(synchronous_preread && asynchronous_preread));
+  // Perform group selection for the ParallelPreReadFileMainDllWin field trial
+  // in the browser process. Other processes do not participate in the study.
+  preread_group = is_browser ? GetPreReadExperimentGroup()
+                             : PrereadExperimentGroup::kUnknown;
 
-  if (synchronous_preread) {
-    preread_begin_ticks = base::TimeTicks::Now();
-    base::PreReadFile(module, /*is_executable=*/true, /*sequential=*/false);
-    preread_end_ticks = base::TimeTicks::Now();
-  } else if (asynchronous_preread) {
+  if (is_browser && preread_group == PrereadExperimentGroup::kParallel) {
+    // Preread the main DLL asynchronously in the browser process if this client
+    // is assigned to the parallel group of the study.
     base::PlatformThread::CreateNonJoinableWithType(
         0, base::MakeSelfDeleting<DllPreReader>(module),
         base::ThreadType::kDefault);
+  } else if (is_browser || !cmd_line.HasSwitch(switches::kNoPreReadMainDll)) {
+    // Otherwise, preread synchronously for all other browser processes and for
+    // child processes for which the PerformanceManager did not suppress
+    // pre-read.
+    preread_begin_ticks = base::TimeTicks::Now();
+    base::PreReadFile(module, /*is_executable=*/true, /*sequential=*/false);
+    preread_end_ticks = base::TimeTicks::Now();
   }
 
   HMODULE handle = ::LoadLibraryExW(module.value().c_str(), nullptr,
@@ -257,14 +271,16 @@ HMODULE Load(base::FilePath* module,
              const base::CommandLine& cmd_line,
              bool is_browser,
              base::TimeTicks& preread_begin_ticks,
-             base::TimeTicks& preread_end_ticks) {
+             base::TimeTicks& preread_end_ticks,
+             PrereadExperimentGroup& preread_group) {
   *module = GetModulePath(module_name);
   if (module->empty()) {
     PLOG(ERROR) << "Cannot find module " << module_name;
     return nullptr;
   }
   HMODULE dll = LoadModuleWithDirectory(*module, cmd_line, is_browser,
-                                        preread_begin_ticks, preread_end_ticks);
+                                        preread_begin_ticks, preread_end_ticks,
+                                        preread_group);
   if (!dll) {
     PLOG(ERROR) << "Failed to load Chrome DLL from " << module->value();
   }
@@ -295,6 +311,7 @@ int MainDllLoader::Launch(HINSTANCE instance,
 
   base::TimeTicks preread_begin_ticks;
   base::TimeTicks preread_end_ticks;
+  PrereadExperimentGroup preread_group = PrereadExperimentGroup::kUnknown;
 
   // Determine the names of the module to load and its main entrypoint.
   const auto& module_properties =
@@ -307,7 +324,7 @@ int MainDllLoader::Launch(HINSTANCE instance,
   const bool is_browser = process_type_.empty();
   base::FilePath file;
   dll_ = Load(&file, module_properties.module_name, cmd_line, is_browser,
-              preread_begin_ticks, preread_end_ticks);
+              preread_begin_ticks, preread_end_ticks, preread_group);
   if (!dll_)
     return CHROME_RESULT_CODE_MISSING_DATA;
 
@@ -317,7 +334,7 @@ int MainDllLoader::Launch(HINSTANCE instance,
   int rc = chrome_main(instance, &sandbox_info,
                        exe_entry_point_ticks.ToInternalValue(),
                        preread_begin_ticks.ToInternalValue(),
-                       preread_end_ticks.ToInternalValue());
+                       preread_end_ticks.ToInternalValue(), preread_group);
   return rc;
 }
 

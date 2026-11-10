@@ -778,7 +778,8 @@ void RecordMainStartupMetrics(const StartupTimestamps& timestamps) {
 
 #if BUILDFLAG(IS_WIN)
   startup_metric_utils::GetCommon().RecordPreReadTime(
-      timestamps.preread_begin_ticks, timestamps.preread_end_ticks);
+      timestamps.preread_begin_ticks, timestamps.preread_end_ticks,
+      timestamps.preread_group);
 #endif
 
   // On Android the main entry point time is the time when the Java code starts.
