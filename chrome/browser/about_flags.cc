@@ -7324,10 +7324,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabGroupsFocusingDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kTabGroupsFocusing)},
 
-    {"tab-group-ribbon", flag_descriptions::kTabGroupRibbonName,
-     flag_descriptions::kTabGroupRibbonDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kTabGroupRibbon)},
-
     {"focus-selection", flag_descriptions::kFocusSelectionName,
      flag_descriptions::kFocusSelectionDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kNonGroupFocus)},

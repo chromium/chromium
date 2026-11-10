@@ -613,13 +613,6 @@ bool IsTabGroupsFocusFreezingEnabled() {
          kTabGroupsFocusFreezing.Get();
 }
 
-BASE_FEATURE(kTabGroupRibbon, base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsTabGroupRibbonEnabled() {
-  return base::FeatureList::IsEnabled(kTabGroupsFocusing) &&
-         base::FeatureList::IsEnabled(kTabGroupRibbon);
-}
-
 BASE_FEATURE(kNonGroupFocus, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(int, kNonGroupFocusIphMinTabs, &kNonGroupFocus, 3);
