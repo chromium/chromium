@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, getNotification, getNotificationFor, mojoVoicePackStatusToVoicePackStatusEnum, NotificationType, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, getNotification, getNotificationFor, isLanguageLocallyAvailable, mojoVoicePackStatusToVoicePackStatusEnum, NotificationType, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createSpeechSynthesisVoice, setupTestEnvironment} from './common.js';
@@ -327,5 +327,25 @@ suite('voice and language conversions', () => {
         'allocationErrorHighQuality', getNotificationFor('en-us', {
                                         'en-us': NotificationType.NO_SPACE_HQ,
                                       }).text);
+  });
+
+  test('isLanguageLocallyAvailable', () => {
+    assertFalse(isLanguageLocallyAvailable('es-es', []));
+    assertFalse(isLanguageLocallyAvailable('yue-hk', []));
+
+    // Languages with Natural voices require a Natural voice to be considered
+    // locally available.
+    assertFalse(isLanguageLocallyAvailable('es-es', [
+      createSpeechSynthesisVoice({lang: 'es-es', name: 'System Voice ES'}),
+    ]));
+    assertTrue(isLanguageLocallyAvailable('es-es', [
+      createSpeechSynthesisVoice(
+          {lang: 'es-es', name: 'Google Spanish (Natural)'}),
+    ]));
+
+    // Languages without Natural voices are locally available with any voice.
+    assertTrue(isLanguageLocallyAvailable('yue-hk', [
+      createSpeechSynthesisVoice({lang: 'yue-hk', name: 'Voice Cantonese'}),
+    ]));
   });
 });

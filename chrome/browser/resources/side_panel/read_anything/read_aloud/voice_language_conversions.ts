@@ -454,6 +454,15 @@ export function doesLanguageHaveNaturalVoices(language: string): boolean {
   return NATURAL_VOICES_SUPPORTED_LANGS_AND_LOCALES.has(voicePackLanguage);
 }
 
+export function isLanguageLocallyAvailable(
+    lang: string, voices: SpeechSynthesisVoice[]): boolean {
+  // Some languages may require a download from the tts engine
+  // but may not have associated natural voices.
+  const languageHasNaturalVoices = doesLanguageHaveNaturalVoices(lang);
+  return voices.some(
+      voice => hasNaturalIdentifier(voice) || !languageHasNaturalVoices);
+}
+
 export function getVoicePackConvertedLangIfExists(lang: string): string {
   const voicePackLanguage = convertLangOrLocaleForVoicePackManager(lang);
 
