@@ -1,0 +1,3 @@
+Tests that appending a slot into a shadow root does not crash with DevTools open.
+PASS
+
