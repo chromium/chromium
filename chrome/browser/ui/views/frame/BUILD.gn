@@ -2150,7 +2150,6 @@ source_set("system_menu_model_builder_impl") {
       "//ash",
       "//chrome/browser/ash/boca/on_task",
       "//chrome/browser/ui:settings_window_manager_chromeos",
-      "//chrome/browser/ui/ash/multi_user",
       "//chrome/browser/ui/chromeos/locked_state",
       "//chromeos/strings",
       "//chromeos/ui/frame",

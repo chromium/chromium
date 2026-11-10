@@ -38,7 +38,6 @@
 #include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/shell.h"
 #include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chromeos/locked_state/locked_state_controller.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
@@ -426,14 +425,12 @@ void SystemMenuModelBuilder::AppendTeleportMenu(ui::SimpleMenuModel* model) {
     return;
   }
 
-  // If this does not belong to a profile or there is no window, or the window
-  // is not owned by anyone, we don't show the menu addition.
+  // If there is no window, or the window is not owned by anyone, we don't show
+  // the menu addition. Note that the window owner is set only for browsers
+  // whose AccountId is valid.
   auto* window_manager = ash::Shell::Get()->multi_user_window_manager();
-  const AccountId account_id =
-      multi_user_util::GetAccountIdFromProfile(browser()->GetProfile());
   aura::Window* window = browser()->GetWindow()->GetNativeWindow();
-  if (!account_id.is_valid() || !window ||
-      !window_manager->GetWindowOwner(window).is_valid()) {
+  if (!window || !window_manager->GetWindowOwner(window).is_valid()) {
     return;
   }
 
