@@ -6,6 +6,7 @@ import 'chrome://password-manager/password_manager.js';
 
 import type {DeletePasskeyDialogElement, EditPasskeyDialogElement, PasskeyDetailsCardElement} from 'chrome://password-manager/password_manager.js';
 import {Page, PasswordManagerImpl, PasswordViewPageInteractions, Router} from 'chrome://password-manager/password_manager.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -56,6 +57,37 @@ suite('PasskeyDetailsCardTest', function() {
     assertEquals(
         passkey.affiliatedDomains[0]!.name, domains[0]!.textContent.trim());
     assertEquals(passkey.affiliatedDomains[0]!.url, domains[0]!.href);
+  });
+
+  test('Empty username shows placeholder without value', async function() {
+    card.passkey = createPasswordEntry({
+      url: 'test.com',
+      username: '',
+      isPasskey: true,
+      displayName: 'Reimu Hakurei',
+      affiliatedDomains: [createAffiliatedDomain('test.com')],
+    });
+    await microtasksFinished();
+
+    assertEquals('', card.$.usernameValue.value);
+    assertEquals(
+        loadTimeData.getString('usernamePlaceholder'),
+        card.$.usernameValue.placeholder);
+  });
+
+  test('Empty display name shows placeholder without value', async function() {
+    card.passkey = createPasswordEntry({
+      url: 'test.com',
+      username: 'reimu',
+      isPasskey: true,
+      affiliatedDomains: [createAffiliatedDomain('test.com')],
+    });
+    await microtasksFinished();
+
+    assertEquals('', card.$.displayNameValue.value);
+    assertEquals(
+        loadTimeData.getString('displayNamePlaceholder'),
+        card.$.displayNameValue.placeholder);
   });
 
   test('Hidden passkeys display properly', async function() {

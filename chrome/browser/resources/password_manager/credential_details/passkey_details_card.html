@@ -6,7 +6,8 @@ import {PasswordViewPageInteractions} from '../password_manager_proxy.js';
   <div class="credential-container">
     <div class="row-container">
       <div class="column-container">
-        <credential-field value="${this.getDisplayNameValue_()}"
+        <credential-field value="${this.passkey.displayName || ''}"
+            placeholder="$i18n{displayNamePlaceholder}"
             id="displayNameValue" label="$i18n{displayNameLabel}"
             copy-button-label="$i18n{copyDisplayName}"
             value-copied-toast-label="$i18n{displayNameCopiedToClipboard}"
@@ -29,7 +30,8 @@ import {PasswordViewPageInteractions} from '../password_manager_proxy.js';
     </div>
     <div class="row-container">
       <div class="column-container">
-        <credential-field value="${this.getUsernameValue_()}"
+        <credential-field value="${this.passkey.username}"
+            placeholder="$i18n{usernamePlaceholder}"
             id="usernameValue" label="$i18n{usernameLabel}"
             copy-button-label="$i18n{copyUsername}"
             value-copied-toast-label="$i18n{usernameCopiedToClipboard}"

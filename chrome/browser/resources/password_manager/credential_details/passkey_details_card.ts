@@ -59,18 +59,6 @@ export class PasskeyDetailsCardElement extends PasskeyDetailsCardElementBase {
   protected accessor showEditPasskeyDialog_: boolean = false;
   protected accessor showDeletePasskeyDialog_: boolean = false;
 
-  protected getUsernameValue_(): string {
-    return !this.passkey.username || this.passkey.username === '' ?
-        this.i18n('usernamePlaceholder') :
-        this.passkey.username;
-  }
-
-  protected getDisplayNameValue_(): string {
-    return !this.passkey.displayName || this.passkey.displayName === '' ?
-        this.i18n('displayNamePlaceholder') :
-        this.passkey.displayName;
-  }
-
   protected onDeleteClick_() {
     this.showDeletePasskeyDialog_ = true;
     PasswordManagerImpl.getInstance().extendAuthValidity();
