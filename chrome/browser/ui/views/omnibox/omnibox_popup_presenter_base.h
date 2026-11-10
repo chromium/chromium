@@ -275,6 +275,11 @@ class OmniboxPopupPresenterBase
   virtual std::unique_ptr<OmniboxPopupWebUIBaseContent> CreateWebUIContent(
       std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>> contents);
 
+  // Called at the end of `AdoptWebUIContents()` and `ReleaseWebUIContents()`,
+  // for presenters whose window state depends on having a loaded page.
+  virtual void OnWebUIContentsAdopted() {}
+  virtual void OnWebUIContentsReleased() {}
+
   // Returns the strategy for a presenter whose deferred creation is controlled
   // by `defer_creation_feature`, taking
   // `omnibox::ShouldCreatePopupWebUIOnDemand()` into account.

@@ -32,7 +32,7 @@ class OmniboxPopupViewFullWebUI : public OmniboxPopupViewWebUI,
       OmniboxController* controller,
       LocationBar* location_bar,
       OmniboxPopupPresenterDelegate& presenter_delegate,
-      base::OnceClosure on_ready_callback = base::OnceClosure());
+      base::RepeatingClosure on_ready_callback = base::RepeatingClosure());
   OmniboxPopupViewFullWebUI(const OmniboxPopupViewFullWebUI&) = delete;
   OmniboxPopupViewFullWebUI& operator=(const OmniboxPopupViewFullWebUI&) =
       delete;
@@ -115,9 +115,10 @@ class OmniboxPopupViewFullWebUI : public OmniboxPopupViewWebUI,
   bool has_completed_first_tab_changed_ = false;
   bool is_reverting_ = false;
   bool focused_ = false;
-  // Invoked when the WebUI Mojo handler connects to trigger one-time focus
-  // handoff from `OmniboxViewViews` to `OmniboxPopupViewFullWebUI`.
-  base::OnceClosure on_ready_callback_;
+  // Invoked when the WebUI Mojo handler connects, or when this window adopts a
+  // page whose handler is connected, to hand focus off from `OmniboxViewViews`
+  // to `OmniboxPopupViewFullWebUI`.
+  base::RepeatingClosure on_ready_callback_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_VIEW_FULL_WEBUI_H_
