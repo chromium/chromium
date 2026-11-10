@@ -306,7 +306,7 @@ class AdTrackerSimTest : public SimTest {
   }
 
   bool IsKnownAdScript(ExecutionContext* execution_context, const String& url) {
-    return ad_tracker_->IsKnownAdScript(execution_context, url);
+    return ad_tracker_->IsKnownAdScriptForTesting(execution_context, url);
   }
 
   std::unique_ptr<SimRequest> main_resource_;
@@ -5260,6 +5260,31 @@ TEST_F(AdTrackerSimTest, AdFrameReportsFullTaskTimeAsAdTaskTime) {
   child_frame->GetFrameScheduler()->AddTaskTime(base::Milliseconds(100));
   EXPECT_EQ(child_client->total_ad_cpu_time(), child_client->total_cpu_time());
   EXPECT_GE(child_client->total_ad_cpu_time(), base::Milliseconds(100));
+}
+
+TEST_F(AdTrackerSimTest, GetAncestryEmptyScriptId) {
+  main_resource_->Complete("<body></body>");
+  EXPECT_TRUE(ad_tracker_->GetAncestry(V8ScriptId()).ancestry_chain.empty());
+  EXPECT_TRUE(ad_tracker_->GetAncestry(V8ScriptId(-1)).ancestry_chain.empty());
+}
+
+TEST_F(AdTrackerSimTest, ShutdownClearsAdScripts) {
+  const char kAdUrl[] = "https://example.com/ad_script.js";
+  SimSubresourceRequest ad_script(kAdUrl, "text/javascript");
+  main_resource_->Complete(
+      "<body><script src=\"ad_script.js\"></script></body>");
+  test::RunPendingTasks();
+
+  ad_script.Complete("console.log('ad');");
+  test::RunPendingTasks();
+
+  EXPECT_TRUE(IsKnownAdScript(GetDocument().GetExecutionContext(), kAdUrl));
+  EXPECT_FALSE(ad_tracker_->GetAdScripts().empty());
+
+  ad_tracker_->Shutdown();
+
+  EXPECT_FALSE(IsKnownAdScript(GetDocument().GetExecutionContext(), kAdUrl));
+  EXPECT_TRUE(ad_tracker_->GetAdScripts().empty());
 }
 
 }  // namespace blink

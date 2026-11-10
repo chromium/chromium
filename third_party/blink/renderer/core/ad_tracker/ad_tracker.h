@@ -17,13 +17,11 @@
 #include "third_party/blink/renderer/core/ad_tracker/script_ancestry_tracker.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/ad_tagging_utils.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_info.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
-#include "v8/include/v8.h"
 
 namespace blink {
 
@@ -73,7 +71,7 @@ class CORE_EXPORT AdTracker : public ScriptAncestryTracker {
 
   // Returns true if the script represented by `url` or the current execution
   // context is known to be an ad script.
-  bool IsKnownAdScript(ExecutionContext*, const String& url);
+  bool IsKnownAdScriptForTesting(ExecutionContext*, const String& url);
 
   const HashMap<V8ScriptId, AdProvenance>& GetAdScripts() const {
     return ad_scripts_;
