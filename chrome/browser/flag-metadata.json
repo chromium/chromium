@@ -2871,7 +2871,7 @@
   {
     "name": "decisions-api",
     "owners": [ "//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "declarative-performance-observer",
@@ -5630,7 +5630,7 @@
   {
     "name": "gemma4-for-built-in-ai",
     "owners": [ "//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "generalized-gemini-entry-flow",
@@ -8495,17 +8495,17 @@
   {
     "name": "prompt-api-sampling-mode",
     "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com"],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "prompt-api-tool-use",
     "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com"],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "proofreader-api",
     "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com", "queeniezhang@google.com"],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "pulseaudio-loopback-for-cast",
@@ -8750,7 +8750,7 @@
   {
     "name": "rewriter-api",
     "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com"],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "root-scrollbar-follows-browser-theme",
@@ -9316,7 +9316,7 @@
     "name": "summarizer-api-performance-preference",
     "owners": [
       "//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com", "jaeone@google.com" ],
-    "expiry_milestone": 159
+    "expiry_milestone": 170
   },
   {
     "name": "support-google-one-deep-link",
@@ -10558,7 +10558,7 @@
   {
     "name": "writer-api",
     "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com"],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "xplat-synced-setup-themes",
