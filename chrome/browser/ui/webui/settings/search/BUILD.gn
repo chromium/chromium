@@ -19,7 +19,10 @@ source_set("search") {
     "settings_sections.h",
   ]
 
-  deps = [ "//chrome/browser/ui:ui_features" ]
+  deps = [
+    "//chrome/browser/ui:ui_features",
+    "//ui/base",
+  ]
 
   public_deps = [
     "//base",
@@ -34,12 +37,14 @@ source_set("unit_tests") {
   sources = [
     "settings_search_handler_unittest.cc",
     "settings_search_registry_unittest.cc",
+    "settings_section_unittest.cc",
   ]
 
   deps = [
     ":search",
     "//base",
     "//base/test:test_support",
+    "//chrome/app:generated_resources",
     "//chrome/browser/ui:ui_features",
     "//mojo/public/cpp/bindings",
     "//testing/gmock",

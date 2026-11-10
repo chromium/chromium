@@ -5,11 +5,24 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_SEARCH_SETTINGS_SECTION_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_SEARCH_SETTINGS_SECTION_H_
 
+#include <string>
+#include <string_view>
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 
 namespace settings_search {
 
 class SettingsSearchRegistry;
+
+// Splits a comma-separated synonym list into individual search terms.
+// Translators may delimit the list with the Arabic ('،'), ideographic ('、')
+// or fullwidth ('，') comma instead of ',', so splits on all of them.
+std::vector<std::u16string> SplitSynonyms(std::u16string_view synonyms);
+
+// Splits the comma-separated synonym list stored in the string resource
+// `message_id` into individual search terms.
+std::vector<std::u16string> GetSynonyms(int message_id);
 
 // Base class for one settings page. Subclasses register their initial
 // searchable settings in their constructors, and add or remove items as
