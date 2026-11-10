@@ -31,6 +31,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -42,9 +43,14 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetContent;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 
+import java.util.concurrent.TimeUnit;
+
 /** Unit tests for {@link GlicBottomSheetComponentProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class GlicBottomSheetComponentProviderUnitTest {
+    private static final long CROSSFADE_ADVANCE_MS =
+            GlicBottomSheetFreTransitionController.CROSSFADE_DURATION_MS + 50;
+
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Profile mProfile;
@@ -173,7 +179,7 @@ public class GlicBottomSheetComponentProviderUnitTest {
         assertNotNull(acceptButton);
         doAnswer(
                         invocation -> {
-                            assertFalse(glicContent.isNativeFreShowingForTesting());
+                            assertTrue(glicContent.isNativeFreShowingForTesting());
                             return null;
                         })
                 .when(mNativesMock)
@@ -182,6 +188,9 @@ public class GlicBottomSheetComponentProviderUnitTest {
 
         verify(mNativesMock).onNativeFreAccepted(mNativeCoordinator);
         assertFalse(provider.mShowNativeFre);
+        assertTrue(glicContent.isNativeFreShowingForTesting());
+
+        ShadowLooper.idleMainLooper(CROSSFADE_ADVANCE_MS, TimeUnit.MILLISECONDS);
         assertFalse(glicContent.isNativeFreShowingForTesting());
     }
 

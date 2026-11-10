@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -31,6 +32,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
@@ -64,10 +66,14 @@ import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawab
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link GlicBottomSheetContent}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class GlicBottomSheetContentUnitTest {
+    private static final long CROSSFADE_ADVANCE_MS =
+            GlicBottomSheetFreTransitionController.CROSSFADE_DURATION_MS + 50;
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Profile mProfile;
@@ -286,7 +292,37 @@ public class GlicBottomSheetContentUnitTest {
     }
 
     @Test
-    public void testNativeFre_AcceptTearsDownAndNotifies() {
+    public void testNativeFre_AcceptCrossfadesOutBeforeTeardown() {
+        FrameLayout expandedGroup = new FrameLayout(mContext);
+        Runnable onAccepted = mock(Runnable.class);
+        Runnable onBackPressed = mock(Runnable.class);
+        GlicBottomSheetContent content =
+                createContentWithNativeFre(expandedGroup, onAccepted, onBackPressed);
+        View freRoot = expandedGroup.findViewById(R.id.glic_fre_root);
+        assertNotNull(freRoot);
+        doAnswer(
+                        invocation -> {
+                            assertTrue(content.isNativeFreShowingForTesting());
+                            assertFalse(freRoot.isClickable());
+                            return null;
+                        })
+                .when(onAccepted)
+                .run();
+
+        expandedGroup.findViewById(R.id.glic_fre_accept_button).performClick();
+        verify(onAccepted).run();
+        assertTrue(content.isNativeFreShowingForTesting());
+        verifyNoInteractions(onBackPressed);
+
+        ShadowLooper.idleMainLooper(CROSSFADE_ADVANCE_MS, TimeUnit.MILLISECONDS);
+        assertFalse(content.isNativeFreShowingForTesting());
+        assertNull(expandedGroup.findViewById(R.id.glic_fre_root));
+
+        content.destroy();
+    }
+
+    @Test
+    public void testNativeFre_DestroyDuringCrossfadeRemovesImmediately() {
         FrameLayout expandedGroup = new FrameLayout(mContext);
         Runnable onAccepted = mock(Runnable.class);
         Runnable onBackPressed = mock(Runnable.class);
@@ -294,17 +330,31 @@ public class GlicBottomSheetContentUnitTest {
         GlicBottomSheetContent content =
                 createContentWithNativeFre(expandedGroup, onAccepted, onBackPressed);
 
-        assertTrue(content.isNativeFreShowingForTesting());
-
         View acceptButton = expandedGroup.findViewById(R.id.glic_fre_accept_button);
         assertNotNull(acceptButton);
         acceptButton.performClick();
         verify(onAccepted).run();
-        verifyNoInteractions(onBackPressed);
+        assertTrue(content.isNativeFreShowingForTesting());
 
+        content.destroy();
         assertFalse(content.isNativeFreShowingForTesting());
         assertNull(expandedGroup.findViewById(R.id.glic_fre_accept_button));
+        verifyNoInteractions(onBackPressed);
+    }
 
+    @Test
+    public void testNativeFre_TeardownDuringCrossfadeDoesNotTearDownRemountedFre() {
+        FrameLayout expandedGroup = new FrameLayout(mContext);
+        GlicBottomSheetContent content =
+                createContentWithNativeFre(expandedGroup, () -> {}, () -> {});
+        expandedGroup.findViewById(R.id.glic_fre_accept_button).performClick();
+
+        content.teardownNativeFre();
+        content.mountNativeFre(mCustomTabLauncher, () -> {});
+        ShadowLooper.idleMainLooper(CROSSFADE_ADVANCE_MS, TimeUnit.MILLISECONDS);
+
+        assertTrue(content.isNativeFreShowingForTesting());
+        assertNotNull(expandedGroup.findViewById(R.id.glic_fre_accept_button));
         content.destroy();
     }
 

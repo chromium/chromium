@@ -99,8 +99,12 @@ public class GlicBottomSheetContent extends TabBottomSheetContent {
     }
 
     private void onFreAccepted() {
+        GlicBottomSheetFreCoordinator fre = mFreCoordinator;
+        if (fre == null) return;
         Runnable onAccepted = mOnNativeFreAccepted;
-        teardownNativeFre();
+        mOnNativeFreAccepted = null;
+        mFreScrollView = null;
+        fre.fadeOut(this::teardownNativeFre);
         if (onAccepted != null) onAccepted.run();
     }
 

@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
@@ -36,6 +37,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.glic.R;
@@ -46,9 +48,14 @@ import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.ChromeImageButton;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
+import java.util.concurrent.TimeUnit;
+
 /** Unit tests for {@link GlicBottomSheetFreCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class GlicBottomSheetFreCoordinatorUnitTest {
+    private static final long FADE_ADVANCE_MS =
+            GlicBottomSheetFreTransitionController.CROSSFADE_DURATION_MS + 50;
+
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Runnable mOnAccept;
@@ -233,5 +240,36 @@ public class GlicBottomSheetFreCoordinatorUnitTest {
         clickableSpans[0].onClick(bodyView);
 
         verifyNoInteractions(mOnAccept, mOnDecline, mCustomTabLauncher);
+    }
+
+    @Test
+    public void testFadeOutRunsCallbackAfterFade() {
+        GlicBottomSheetFreCoordinator coordinator =
+                createCoordinator(/* isEnterpriseAccount= */ false);
+        View rootView = coordinator.getView();
+        Runnable onDone = mock(Runnable.class);
+
+        coordinator.fadeOut(onDone);
+        coordinator.fadeOut(onDone);
+
+        assertFalse(rootView.isClickable());
+        verifyNoInteractions(onDone);
+        ShadowLooper.idleMainLooper(FADE_ADVANCE_MS, TimeUnit.MILLISECONDS);
+        verify(onDone).run();
+        assertEquals(View.GONE, rootView.getVisibility());
+    }
+
+    @Test
+    public void testDestroyCancelsFadeOut() {
+        GlicBottomSheetFreCoordinator coordinator =
+                createCoordinator(/* isEnterpriseAccount= */ false);
+        Runnable onDone = mock(Runnable.class);
+
+        coordinator.fadeOut(onDone);
+        coordinator.destroy();
+        ShadowLooper.idleMainLooper(FADE_ADVANCE_MS, TimeUnit.MILLISECONDS);
+
+        verifyNoInteractions(onDone);
+        assertNull(coordinator.getView().getParent());
     }
 }
