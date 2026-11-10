@@ -1526,13 +1526,6 @@ void X11Window::DispatchUiEvent(ui::Event* event, const x11::Event& xev) {
 }
 
 void X11Window::UpdateDecorationInsets() {
-  // Never set or remove _GTK_FRAME_EXTENTS on window managers that don't
-  // support it or handle it incorrectly (e.g. Xfwm4 4.16 and older, which make
-  // maximized windows larger than the screen).
-  if (!CanSetDecorationInsets()) {
-    return;
-  }
-
   auto atom = connection_->GetAtom("_GTK_FRAME_EXTENTS");
   auto insets_dip =
       platform_window_delegate_->CalculateInsetsInDIP(GetPlatformWindowState());
@@ -1608,7 +1601,9 @@ void X11Window::OnXWindowStateChanged() {
     auto old_state = state_;
     state_ = new_state;
     platform_window_delegate_->OnWindowStateChanged(old_state, state_);
-    UpdateDecorationInsets();
+    if (CanSetDecorationInsets()) {
+      UpdateDecorationInsets();
+    }
   }
 
   WindowTiledEdges tiled_state = GetTiledState();
