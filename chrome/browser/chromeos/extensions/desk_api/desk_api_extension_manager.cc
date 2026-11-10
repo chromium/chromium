@@ -11,11 +11,12 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
-#include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/grit/browser_resources.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/url_pattern.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -49,7 +50,18 @@ bool DeskApiExtensionManager::Delegate::IsProfileAffiliated(
   if (profile->IsOffTheRecord())
     return false;
 
-  return ::enterprise_util::IsProfileAffiliated(profile);
+  // The manager is created while the profile is still being set up, before
+  // the user manager reports it as added. The user's policy status is set
+  // earlier than that: UserCloudPolicyManagerAsh records it when the user's
+  // policy store loads, before the profile's prefs finish loading. Users
+  // without cloud policy are not affiliated.
+  //
+  // Device-local accounts are always affiliated in the user manager. They
+  // are excluded here to keep the extension out of managed guest and kiosk
+  // sessions.
+  const user_manager::User* user =
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
+  return user && !user->IsDeviceLocalAccount() && user->IsAffiliated();
 }
 
 bool DeskApiExtensionManager::Delegate::IsExtensionInstalled(

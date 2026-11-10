@@ -9,12 +9,22 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
+#include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/test/user_session_test_environment.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -28,6 +38,10 @@ inline constexpr char kUnaffiliatedUserId[] = "unaffiliated_user";
 inline constexpr char kDummyManifest[] = "";
 inline constexpr char kExternallyConnectableKey[] = "externally_connectable";
 inline constexpr char kMatchesKey[] = "matches";
+
+constexpr auto kAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("user@example.com",
+                                            GaiaId::Literal("1234567890"));
 
 std::unique_ptr<base::Value> ParseManifest(std::string manifest) {
   std::string error_message;
@@ -339,6 +353,107 @@ TEST_F(DeskApiExtensionManagerTest, GenerateManifestIgnoresInvalidURLPattern) {
   ASSERT_TRUE(installed_matches_list);
   EXPECT_EQ(1ul, installed_matches_list->size());
   EXPECT_EQ(test_domain1, (*installed_matches_list)[0].GetString());
+}
+
+// Exercises the production delegate's affiliation check against users that
+// are logged in through the user manager, as in production.
+class DeskApiExtensionManagerDelegateTest : public ::testing::Test {
+ protected:
+  void SetUp() override {
+    auto* browser_process = TestingBrowserProcess::GetGlobal();
+    auto environment_delegate =
+        std::make_unique<ash::test::ChromeUserSessionTestEnvironmentDelegate>(
+            browser_process);
+    environment_delegate_ = environment_delegate.get();
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(
+            browser_process->local_state(), std::move(environment_delegate));
+  }
+
+  void TearDown() override {
+    environment_delegate_ = nullptr;
+    user_session_test_environment_.reset();
+  }
+
+  // Logs `user` in and returns the profile created for it.
+  Profile* LogIn(const user_manager::User& user) {
+    user_session_test_environment_->LogIn(user.GetAccountId());
+    return Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            user.GetAccountId()));
+  }
+
+  // Logs a regular user in and returns its profile.
+  Profile* LogInRegularUser() {
+    user_manager::User* user =
+        user_session_test_environment_->AddRegularUser(kAccountId);
+    return user ? LogIn(*user) : nullptr;
+  }
+
+  TestingProfileManager& testing_profile_manager() {
+    return environment_delegate_->testing_profile_manager();
+  }
+
+  ash::test::UserSessionTestEnvironment& user_session_test_environment() {
+    return *user_session_test_environment_;
+  }
+
+  const DeskApiExtensionManager::Delegate& delegate() const {
+    return delegate_;
+  }
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
+  raw_ptr<ash::test::ChromeUserSessionTestEnvironmentDelegate>
+      environment_delegate_ = nullptr;
+  DeskApiExtensionManager::Delegate delegate_;
+};
+
+TEST_F(DeskApiExtensionManagerDelegateTest, UnaffiliatedUser) {
+  Profile* profile = LogInRegularUser();
+  ASSERT_TRUE(profile);
+  EXPECT_FALSE(delegate().IsProfileAffiliated(profile));
+}
+
+TEST_F(DeskApiExtensionManagerDelegateTest, AffiliatedUser) {
+  Profile* profile = LogInRegularUser();
+  ASSERT_TRUE(profile);
+  user_manager::UserManager::Get()->SetUserPolicyStatus(
+      kAccountId, /*is_managed=*/true, /*is_affiliated=*/true);
+  EXPECT_TRUE(delegate().IsProfileAffiliated(profile));
+}
+
+TEST_F(DeskApiExtensionManagerDelegateTest, OffTheRecordProfile) {
+  Profile* profile = LogInRegularUser();
+  ASSERT_TRUE(profile);
+  user_manager::UserManager::Get()->SetUserPolicyStatus(
+      kAccountId, /*is_managed=*/true, /*is_affiliated=*/true);
+  EXPECT_FALSE(delegate().IsProfileAffiliated(
+      profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
+}
+
+TEST_F(DeskApiExtensionManagerDelegateTest, ProfileWithoutUser) {
+  // The sign-in profile belongs to no user.
+  Profile* profile = testing_profile_manager().CreateTestingProfile(
+      ash::kSigninBrowserContextBaseName);
+  ASSERT_TRUE(profile);
+  EXPECT_FALSE(delegate().IsProfileAffiliated(profile));
+}
+
+TEST_F(DeskApiExtensionManagerDelegateTest, DeviceLocalAccount) {
+  user_manager::User* user =
+      user_session_test_environment().AddPublicAccountUser(
+          policy::GenerateDeviceLocalAccountUserId(
+              "public-account",
+              policy::DeviceLocalAccountType::kPublicSession));
+  ASSERT_TRUE(user);
+  // The user manager reports device-local accounts as affiliated.
+  ASSERT_TRUE(user->IsAffiliated());
+  Profile* profile = LogIn(*user);
+  ASSERT_TRUE(profile);
+  EXPECT_FALSE(delegate().IsProfileAffiliated(profile));
 }
 
 }  // namespace chromeos
