@@ -6,9 +6,11 @@
 
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "net/base/request_priority.h"
 #include "net/base/scheduler/net_task_priority.h"
@@ -63,6 +65,9 @@ TEST_F(NetTaskQueuesTest, SimplePosting) {
 // Tests that tasks posted to different priority queues are executed according
 // to their priority (highest priority first, then default).
 TEST_F(NetTaskQueuesTest, PostingToMultipleQueues) {
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
+  base::HistogramTester histogram_tester;
+
   scoped_refptr<base::SingleThreadTaskRunner> tq1 =
       queues_.GetDefaultTaskRunner();
   scoped_refptr<base::SingleThreadTaskRunner> tq2 =
@@ -83,6 +88,12 @@ TEST_F(NetTaskQueuesTest, PostingToMultipleQueues) {
   tq1->PostTask(FROM_HERE, run_loop.QuitClosure());
 
   run_loop.Run();
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "NetworkService.Scheduler.IOThread.NumberOfPendingTasks.Total"),
+      testing::ElementsAre(base::Bucket(0, 1), base::Bucket(1, 1),
+                           base::Bucket(2, 1)));
 }
 
 }  // namespace

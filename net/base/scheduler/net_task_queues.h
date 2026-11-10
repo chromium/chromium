@@ -12,12 +12,16 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/pass_key.h"
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"
 
-namespace base::sequence_manager {
+namespace base {
+struct PendingTask;
+namespace sequence_manager {
 class SequenceManager;
-}  // namespace base::sequence_manager
+}  // namespace sequence_manager
+}  // namespace base
 
 namespace net {
 
@@ -65,6 +69,13 @@ class NET_EXPORT NetTaskQueues {
   // managed task queues.
   void SetOnTaskCompletedHandler(
       base::sequence_manager::TaskQueue::OnTaskCompletedHandler handler);
+
+  // Records trace counters and subsampled queue/queuing-time histograms
+  // when `NetworkTaskObserver` observes `pending_task` about to run on the
+  // queue for `priority`.
+  void OnWillProcessTask(base::PassKey<NetworkTaskObserver>,
+                         RequestPriority priority,
+                         const base::PendingTask& pending_task);
 
  private:
   // Helper to get the underlying `TaskQueue` for a given priority.

@@ -4,14 +4,16 @@
 
 #include "net/base/scheduler/net_task_queues.h"
 
-#include "base/feature_list.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/pending_task.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequence_manager/sequence_manager.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/pass_key.h"
 #include "net/base/request_priority.h"
 #include "net/base/scheduler/net_task_priority.h"
 
@@ -61,72 +63,24 @@ const char* PriorityToString(RequestPriority priority) {
 
 }  // namespace
 
-// Observes task execution on a specific net task queue and records
-// metrics.
+// Observes task execution on a specific net task queue and notifies
+// NetTaskQueues.
 class NetworkTaskObserver : public base::TaskObserver {
  public:
-  explicit NetworkTaskObserver(RequestPriority priority,
-                               base::sequence_manager::TaskQueue::Handle* queue)
-      : priority_(priority),
-        queue_name_(PriorityToString(priority)),
-        queue_(queue) {}
+  NetworkTaskObserver(RequestPriority priority, NetTaskQueues& net_task_queues)
+      : priority_(priority), net_task_queues_(net_task_queues) {}
 
   void WillProcessTask(const base::PendingTask& pending_task,
                        bool was_blocked_or_low_priority) override {
-    size_t pending_tasks = (*queue_)->GetNumberOfPendingTasks();
-
-    // The track name for TRACE_COUNTER must be a const expression.
-    switch (priority_) {
-      case RequestPriority::THROTTLED:
-        TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("network"),
-                      "NumberOfPendingTasksThrottledQueue", pending_tasks);
-        break;
-      case RequestPriority::IDLE:
-        TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("network"),
-                      "NumberOfPendingTasksIdleQueue", pending_tasks);
-        break;
-      case RequestPriority::LOWEST:
-        TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("network"),
-                      "NumberOfPendingTasksLowestQueue", pending_tasks);
-        break;
-      case RequestPriority::LOW:
-        TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("network"),
-                      "NumberOfPendingTasksLowQueue", pending_tasks);
-        break;
-      case RequestPriority::MEDIUM:
-        TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("network"),
-                      "NumberOfPendingTasksMediumQueue", pending_tasks);
-        break;
-      case RequestPriority::HIGHEST:
-        TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("network"),
-                      "NumberOfPendingTasksHighestQueue", pending_tasks);
-        break;
-    }
-
-    // Sample with a 0.001 probability to reduce metrics overhead.
-    //
-    // TODO(crbug.com/463794414): Rename these histogram prefixes to
-    // "Net.Scheduler" once the current "NetworkService.Scheduler" transition is
-    // coordinated with metrics users to preserve telemetry durability.
-    if (base::ShouldRecordSubsampledMetric(0.001)) {
-      base::UmaHistogramCounts1000(
-          base::StrCat(
-              {"NetworkService.Scheduler.IOThread.NumberOfPendingTasks.",
-               queue_name_, "Queue"}),
-          pending_tasks);
-      base::UmaHistogramTimes(
-          base::StrCat({"NetworkService.Scheduler.IOThread.QueuingTime.",
-                        queue_name_, "Queue"}),
-          base::TimeTicks::Now() - pending_task.queue_time);
-    }
+    net_task_queues_->OnWillProcessTask(base::PassKey<NetworkTaskObserver>(),
+                                        priority_, pending_task);
   }
   void DidProcessTask(const base::PendingTask& pending_task) override {}
 
  private:
   const RequestPriority priority_;
-  const std::string queue_name_;
-  // `queue_` outlives this task observer.
-  raw_ptr<base::sequence_manager::TaskQueue::Handle> queue_;
+  // `net_task_queues_` outlives this task observer.
+  const raw_ref<NetTaskQueues> net_task_queues_;
 };
 
 NetTaskQueues::NetTaskQueues(
@@ -156,7 +110,7 @@ void NetTaskQueues::CreateTaskQueues(
 
     // Create and attach a task observer for each queue.
     task_observers_[i] = std::make_unique<NetworkTaskObserver>(
-        static_cast<RequestPriority>(i), &task_queues_[i]);
+        static_cast<RequestPriority>(i), *this);
     task_queues_[i]->AddTaskObserver(task_observers_[i].get());
   }
 }
@@ -171,6 +125,73 @@ void NetTaskQueues::SetOnTaskCompletedHandler(
     base::sequence_manager::TaskQueue::OnTaskCompletedHandler handler) {
   for (auto& queue : task_queues_) {
     queue->SetOnTaskCompletedHandler(handler);
+  }
+}
+
+void NetTaskQueues::OnWillProcessTask(base::PassKey<NetworkTaskObserver>,
+                                      RequestPriority priority,
+                                      const base::PendingTask& pending_task) {
+  // The track name for TRACE_COUNTER must be a const expression.
+  switch (priority) {
+    case RequestPriority::THROTTLED:
+      TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("network"),
+                    "NumberOfPendingTasksThrottledQueue",
+                    GetTaskQueue(priority)->GetNumberOfPendingTasks());
+      break;
+    case RequestPriority::IDLE:
+      TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("network"),
+                    "NumberOfPendingTasksIdleQueue",
+                    GetTaskQueue(priority)->GetNumberOfPendingTasks());
+      break;
+    case RequestPriority::LOWEST:
+      TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("network"),
+                    "NumberOfPendingTasksLowestQueue",
+                    GetTaskQueue(priority)->GetNumberOfPendingTasks());
+      break;
+    case RequestPriority::LOW:
+      TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("network"),
+                    "NumberOfPendingTasksLowQueue",
+                    GetTaskQueue(priority)->GetNumberOfPendingTasks());
+      break;
+    case RequestPriority::MEDIUM:
+      TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("network"),
+                    "NumberOfPendingTasksMediumQueue",
+                    GetTaskQueue(priority)->GetNumberOfPendingTasks());
+      break;
+    case RequestPriority::HIGHEST:
+      TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("network"),
+                    "NumberOfPendingTasksHighestQueue",
+                    GetTaskQueue(priority)->GetNumberOfPendingTasks());
+      break;
+  }
+
+  // Sample with a 0.001 probability to reduce metrics overhead.
+  //
+  // TODO(crbug.com/463794414): Rename these histogram prefixes to
+  // "Net.Scheduler" once the current "NetworkService.Scheduler" transition is
+  // coordinated with metrics users to preserve telemetry durability.
+  if (base::ShouldRecordSubsampledMetric(0.001)) {
+    size_t total_pending_tasks = 0;
+    size_t pending_tasks = 0;
+    for (size_t i = 0; i < task_queues_.size(); ++i) {
+      const size_t count = task_queues_[i]->GetNumberOfPendingTasks();
+      total_pending_tasks += count;
+      if (static_cast<RequestPriority>(i) == priority) {
+        pending_tasks = count;
+      }
+    }
+    base::UmaHistogramCounts1000(
+        "NetworkService.Scheduler.IOThread.NumberOfPendingTasks.Total",
+        total_pending_tasks);
+    const char* queue_name = PriorityToString(priority);
+    base::UmaHistogramCounts1000(
+        base::StrCat({"NetworkService.Scheduler.IOThread.NumberOfPendingTasks.",
+                      queue_name, "Queue"}),
+        pending_tasks);
+    base::UmaHistogramTimes(
+        base::StrCat({"NetworkService.Scheduler.IOThread.QueuingTime.",
+                      queue_name, "Queue"}),
+        base::TimeTicks::Now() - pending_task.queue_time);
   }
 }
 
