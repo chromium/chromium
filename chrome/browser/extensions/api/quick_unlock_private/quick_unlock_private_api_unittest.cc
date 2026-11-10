@@ -32,7 +32,8 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/login/smart_lock/smart_lock_service.h"
 #include "chrome/browser/ash/login/smart_lock/smart_lock_service_factory.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/login/users/profile_user_manager_controller.h"
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/extensions/extension_api_unittest.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -203,19 +204,12 @@ class QuickUnlockPrivateUnitTest
     // Manually call InitializeExtensionService() instead of calling
     // ExtensionApiUnittest::SetUp().
     ExtensionServiceTestBase::SetUp();
-    ExtensionServiceInitParams params;
-    params.testing_factories = GetTestingFactories();
-    InitializeExtensionService(std::move(params));
-    set_extension(ExtensionBuilder("Test").Build());
 
-    // Retrieve the TestingPrefServiceSyncable that was automatically created.
-    test_pref_service_ = testing_pref_service();
-
-    // Migrate logic from the old CreateProfile method.
     AccountId auth_account_id =
         AccountId::FromUserEmailGaiaId(kTestUserEmail, GaiaId("gaia"));
 
-    // Ensure the primary user exists by explicitly logging them in.
+    // Ensure the primary user exists and annotate the profile created by
+    // `InitializeExtensionService()` so `BrowserContextHelper` resolves it.
     auto* user_manager = user_manager::UserManager::Get();
     ASSERT_TRUE(
         user_manager::TestHelper(user_manager).AddRegularUser(auth_account_id));
@@ -223,11 +217,20 @@ class QuickUnlockPrivateUnitTest
         auth_account_id,
         user_manager::TestHelper::GetFakeUsernameHash(auth_account_id),
         /*new_user=*/false, /*has_active_session=*/false);
+    profile_user_manager_controller_ =
+        std::make_unique<ash::ProfileUserManagerController>(
+            testing_profile_manager()->profile_manager(), user_manager);
+    {
+      ash::ScopedAccountIdAnnotator annotator(
+          testing_profile_manager()->profile_manager(), auth_account_id);
+      ExtensionServiceInitParams params;
+      params.testing_factories = GetTestingFactories();
+      InitializeExtensionService(std::move(params));
+    }
+    set_extension(ExtensionBuilder("Test").Build());
 
-    // Setup the primary user mapping.
-    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
-        user_manager->FindUser(auth_account_id), profile());
-    ash::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(true);
+    // Retrieve the TestingPrefServiceSyncable that was automatically created.
+    test_pref_service_ = testing_pref_service();
 
     // Generate an auth token.
     auth_token_user_context_.SetAccountId(auth_account_id);
@@ -279,6 +282,7 @@ class QuickUnlockPrivateUnitTest
     test_pref_service_ = nullptr;
 
     ExtensionApiUnittest::TearDown();
+    profile_user_manager_controller_.reset();
 
     ash::SystemSaltGetter::Shutdown();
     ash::UserDataAuthClient::Shutdown();
@@ -666,6 +670,8 @@ class QuickUnlockPrivateUnitTest
   }
 
   std::unique_ptr<session_manager::SessionManager> session_manager_;
+  std::unique_ptr<ash::ProfileUserManagerController>
+      profile_user_manager_controller_;
   std::unique_ptr<ash::AuthPartsImpl> auth_parts_;
   QuickUnlockPrivateSetModesFunction::ModesChangedEventHandler
       modes_changed_handler_;

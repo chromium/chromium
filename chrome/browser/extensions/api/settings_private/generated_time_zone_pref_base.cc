@@ -9,10 +9,11 @@
 #include "chrome/browser/ash/system/timezone_resolver_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/extensions/profile_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/settings_private.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/account_id/account_id.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
@@ -60,17 +61,31 @@ void GeneratedTimeZonePrefBase::UpdateTimeZonePrefControlledBy(
               CHECK_DEREF(g_browser_process->local_state()))) {
     out_pref->controlled_by = settings_api::ControlledBy::kDevicePolicy;
     out_pref->enforcement = settings_api::Enforcement::kEnforced;
-  } else if (profile_->IsChild()) {
+    return;
+  }
+  if (profile_->IsChild()) {
     out_pref->controlled_by = settings_api::ControlledBy::kParent;
     out_pref->enforcement = settings_api::Enforcement::kParentSupervised;
-  } else if (!profile_->IsSameOrParent(profile_util::GetPrimaryUserProfile())) {
+    return;
+  }
+
+  // `GeneratedPrefsFactory` builds for Ash-internal profiles (such as the
+  // sign-in profile when ChromeVox loads on the login screen), which have no
+  // `AccountId`.
+  const AccountId* account_id =
+      ash::AnnotatedAccountId::Get(profile_->GetOriginalProfile());
+  if (!account_id) {
+    return;
+  }
+
+  const AccountId& primary_account_id =
+      CHECK_DEREF(session_manager::SessionManager::Get()->GetPrimarySession())
+          .account_id();
+  if (*account_id != primary_account_id) {
     out_pref->controlled_by = settings_api::ControlledBy::kPrimaryUser;
     out_pref->controlled_by_name =
         CHECK_DEREF(
-            user_manager::UserManager::Get()->FindUser(
-                CHECK_DEREF(
-                    session_manager::SessionManager::Get()->GetPrimarySession())
-                    .account_id()))
+            user_manager::UserManager::Get()->FindUser(primary_account_id))
             .GetDisplayEmail();
     out_pref->enforcement = settings_api::Enforcement::kEnforced;
   }
@@ -82,8 +97,16 @@ void GeneratedTimeZonePrefBase::UpdateTimeZonePrefControlledBy(
 bool GeneratedTimeZonePrefBase::IsTimeZonePrefModifiable() const {
   if (ash::system::TimeZoneResolverManager::
           IsTimeZoneResolutionPolicyControlled(
-              CHECK_DEREF(g_browser_process->local_state())) ||
-      !profile_->IsSameOrParent(profile_util::GetPrimaryUserProfile())) {
+              CHECK_DEREF(g_browser_process->local_state()))) {
+    return false;
+  }
+  const AccountId* account_id =
+      ash::AnnotatedAccountId::Get(profile_->GetOriginalProfile());
+  if (!account_id ||
+      *account_id !=
+          CHECK_DEREF(
+              session_manager::SessionManager::Get()->GetPrimarySession())
+              .account_id()) {
     return false;
   }
   return IsTimezoneChangeAllowed(profile_);

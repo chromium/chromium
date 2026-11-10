@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include "build/build_config.h"
 #include "extensions/buildflags/buildflags.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -24,12 +23,6 @@ Profile* GetLastUsedProfile();
 size_t GetNumberOfProfiles();
 
 ProfileManager* GetProfileManager();
-
-#if BUILDFLAG(IS_CHROMEOS)
-Profile* GetPrimaryUserProfile();
-
-Profile* GetActiveUserProfile();
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions::profile_util
 

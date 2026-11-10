@@ -12,9 +12,8 @@
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
-#include "chrome/browser/extensions/profile_util.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/api/automation.h"
 #include "extensions/common/api/automation_internal.h"
@@ -25,11 +24,17 @@
 
 #if defined(USE_AURA)
 #include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
-#endif
+#endif  // defined(USE_AURA)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_helper_bridge.h"
-#endif
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#else
+#include "chrome/browser/extensions/profile_util.h"
+#include "chrome/browser/profiles/profile.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace extensions {
 
@@ -100,10 +105,15 @@ ChromeAutomationInternalApiDelegate::GetActiveUserContext() {
   // Use the main profile on ChromeOS. Desktop platforms don't have the concept
   // of a "main" profile, so pick the "last used" profile instead.
 #if BUILDFLAG(IS_CHROMEOS)
-  return profile_util::GetActiveUserProfile();
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  return active_session
+             ? ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+                   active_session->account_id())
+             : ash::BrowserContextHelper::Get()->GetSigninBrowserContext();
 #else
   return profile_util::GetLastUsedProfile();
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace extensions

@@ -15,6 +15,7 @@
 #include "ash/public/cpp/keyboard/keyboard_types.h"
 #include "ash/webui/settings/public/constants/routes.mojom-forward.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
@@ -22,11 +23,10 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/login/lock/screen_locker_controller.h"
-#include "chrome/browser/extensions/profile_util.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/login/user_adding_screen.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/machine_learning/public/cpp/ml_switches.h"
 #include "chromeos/ui/clipboard_history/clipboard_history_types.h"
@@ -298,9 +298,10 @@ bool ChromeVirtualKeyboardDelegate::ShowLanguageSettings() {
 
   base::RecordAction(
       base::UserMetricsAction("VirtualKeyboard.OpenLanguageSettings"));
-  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-      profile_util::GetActiveUserProfile(),
-      chromeos::settings::mojom::kInputSubpagePath);
+  ash::SettingsAppManager::Get()->Open(
+      CHECK_DEREF(ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+          browser_context_)),
+      {.sub_page = chromeos::settings::mojom::kInputSubpagePath});
   return true;
 }
 
@@ -313,9 +314,10 @@ bool ChromeVirtualKeyboardDelegate::ShowSuggestionSettings() {
 
   base::RecordAction(
       base::UserMetricsAction("VirtualKeyboard.OpenSuggestionSettings"));
-  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-      profile_util::GetActiveUserProfile(),
-      chromeos::settings::mojom::kInputSubpagePath);
+  ash::SettingsAppManager::Get()->Open(
+      CHECK_DEREF(ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+          browser_context_)),
+      {.sub_page = chromeos::settings::mojom::kInputSubpagePath});
   return true;
 }
 

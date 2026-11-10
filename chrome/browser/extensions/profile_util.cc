@@ -69,14 +69,4 @@ ProfileManager* GetProfileManager() {
   return g_browser_process->profile_manager();
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-Profile* GetPrimaryUserProfile() {
-  return ProfileManager::GetPrimaryUserProfile();
-}
-
-Profile* GetActiveUserProfile() {
-  return ProfileManager::GetActiveUserProfile();
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 }  // namespace extensions::profile_util

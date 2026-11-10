@@ -11,6 +11,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
@@ -20,8 +21,9 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/api/quick_unlock_private/quick_unlock_private_ash_utils.h"
-#include "chrome/browser/extensions/profile_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
@@ -30,6 +32,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/event_router.h"
@@ -201,14 +204,40 @@ bool IsPinDifficultEnough(const std::string& pin) {
 }
 
 Profile* GetActiveProfile(content::BrowserContext* browser_context) {
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  // When OOBE continues in-session as Furst Run UI, it is still executed
-  // under Sign-In profile.
-  if (ash::ProfileHelper::IsSigninProfile(profile)) {
-    return profile_util::GetPrimaryUserProfile();
+  // When OOBE continues in-session as First Run UI, it is still executed
+  // under the sign-in profile.
+  if (ash::IsSigninBrowserContext(browser_context)) {
+    const session_manager::Session* primary_session =
+        session_manager::SessionManager::Get()->GetPrimarySession();
+    CHECK(primary_session);
+    content::BrowserContext* primary_context =
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            primary_session->account_id());
+    CHECK(primary_context);
+    return Profile::FromBrowserContext(primary_context);
   }
 
-  return profile;
+  return Profile::FromBrowserContext(browser_context);
+}
+
+const PrefService* GetPinPolicyPrefs(content::BrowserContext* browser_context) {
+  // CheckCredential and GetCredentialRequirements can be called before user
+  // sign-in (e.g. OOBE cryptohome PIN recovery) or before the user profile is
+  // finished loading during UI initialization in
+  // SetupPinKeyboardElement.connectedCallback. Use the sign-in profile from
+  // `browser_context` in such cases.
+  // TODO(b/288150711): Revert to `GetActiveProfile` after fix.
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  const PrefService* prefs =
+      active_session ? CHECK_DEREF(user_manager::UserManager::Get()->FindUser(
+                                       active_session->account_id()))
+                           .GetProfilePrefs()
+                     : nullptr;
+  if (!prefs) {
+    prefs = Profile::FromBrowserContext(browser_context)->GetPrefs();
+  }
+  return prefs;
 }
 
 std::optional<std::string> CheckTokenValidity(
@@ -424,8 +453,7 @@ QuickUnlockPrivateCheckCredentialFunction::Run() {
 
   const std::string& credential = params_->credential;
 
-  Profile* profile = GetActiveProfile(browser_context());
-  PrefService* pref_service = profile->GetPrefs();
+  const PrefService* pref_service = GetPinPolicyPrefs(browser_context());
   bool allow_weak =
       pref_service->GetBoolean(ash::prefs::kPinUnlockWeakPinsAllowed);
   bool is_allow_weak_pin_pref_set =
@@ -465,21 +493,7 @@ QuickUnlockPrivateGetCredentialRequirementsFunction::Run() {
       GetCredentialRequirements::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params_);
 
-  // GetCredentialRequirements could be called before user sign-in, or before
-  // the user profile is finished loading during UI initialization in
-  // SetupPinKeyboardElement.connectedCallback,
-  // Use the sign-in profile from browser_context() in such case.
-  // TODO(b/288150711): Revert to `GetActiveProfile` after fix.
-  const session_manager::Session* active_session =
-      session_manager::SessionManager::Get()->GetActiveSession();
-  const PrefService* prefs =
-      active_session ? CHECK_DEREF(user_manager::UserManager::Get()->FindUser(
-                                       active_session->account_id()))
-                           .GetProfilePrefs()
-                     : nullptr;
-  if (!prefs) {
-    prefs = Profile::FromBrowserContext(browser_context())->GetPrefs();
-  }
+  const PrefService* prefs = GetPinPolicyPrefs(browser_context());
 
   auto result = std::make_unique<CredentialRequirements>();
   std::tie(result->min_length, result->max_length) =
