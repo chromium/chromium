@@ -913,11 +913,8 @@ BrowserView::BrowserView(BrowserWindowInterface* browser)
   // Layout deferral during startup is only intended for normal browser windows
   // (which experience redundant layout passes while loading the WebUI toolbar).
   // Non-normal windows (popups, app windows, etc.) do not use the WebUI toolbar
-  // and must not defer layout while invisible. A window created for a tab drag
-  // must not defer either, because TabDragController places it from its tab
-  // strip bounds before showing it.
-  if (!GetIsNormalType() ||
-      BrowserInitState::From(&*browser_)->create_params().in_tab_dragging) {
+  // and must not defer layout while invisible.
+  if (!GetIsNormalType()) {
     startup_layout_state_ = StartupLayoutState::kDisabled;
   }
 
