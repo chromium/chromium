@@ -11,7 +11,6 @@ import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.ActorTaskHelper;
@@ -21,9 +20,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityMan
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
-import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
@@ -32,8 +29,7 @@ import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Coordinator for Glic UI. It owns and manages Glic-related UI components, currently including
- * ActorControlCoordinator, ActorOverlayCoordinator, ActorTaskHelper, and
- * ActorExternalTriggerSnackbarController.
+ * ActorOverlayCoordinator, ActorTaskHelper, and ActorExternalTriggerSnackbarController.
  */
 @NullMarked
 public class GlicUiCoordinator implements Destroyable {
@@ -51,9 +47,7 @@ public class GlicUiCoordinator implements Destroyable {
      *
      * @param activity The {@link Activity} hosting the UI.
      * @param windowAndroid The {@link WindowAndroid} for the current window.
-     * @param tabBottomSheetManager The {@link TabBottomSheetManager} for managing bottom sheets.
      * @param profileSupplier Supplier for the current {@link Profile}.
-     * @param activityTabProvider Supplier for the active {@link Tab}.
      * @param tabModelSelectorSupplier Supplier for the {@link TabModelSelector}.
      * @param browserControlsVisibilityManager Manager for browser controls visibility.
      * @param tabObscuringHandler Handler for obscuring tabs.
@@ -68,9 +62,7 @@ public class GlicUiCoordinator implements Destroyable {
     public GlicUiCoordinator(
             Activity activity,
             WindowAndroid windowAndroid,
-            @Nullable TabBottomSheetManager tabBottomSheetManager,
             MonotonicObservableSupplier<Profile> profileSupplier,
-            NullableObservableSupplier<Tab> activityTabProvider,
             MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             BrowserControlsVisibilityManager browserControlsVisibilityManager,
             TabObscuringHandler tabObscuringHandler,

@@ -457,8 +457,6 @@ public class GlicExperimentalOptInUiCoordinatorUnitTest {
         return new GlicUiCoordinator(
                 mActivity,
                 mWindowAndroid,
-                /* tabBottomSheetManager= */ null,
-                ObservableSuppliers.alwaysNull(),
                 ObservableSuppliers.alwaysNull(),
                 ObservableSuppliers.createNonNull(tabModelSelector),
                 mock(BrowserControlsVisibilityManager.class),

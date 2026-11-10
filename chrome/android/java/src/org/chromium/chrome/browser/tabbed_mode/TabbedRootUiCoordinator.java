@@ -1512,9 +1512,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     new GlicUiCoordinator(
                             mActivity,
                             mWindowAndroid,
-                            mTabBottomSheetManager,
                             mProfileSupplier,
-                            mActivityTabProvider.asObservable(),
                             mTabModelSelectorSupplier,
                             mBrowserControlsManager,
                             mTabObscuringHandlerSupplier.get(),
