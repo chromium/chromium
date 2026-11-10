@@ -10,6 +10,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <type_traits>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -155,6 +156,39 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ReceiverSetState {
   base::WeakPtrFactory<ReceiverSetState> weak_ptr_factory_{this};
 };
 
+namespace internal {
+
+// Non-forgeable token returned by `GetReceiverEnabledToken<Interface>()`.
+// Unguarded interfaces receive `ReceiverEnabledToken` directly at compile time,
+// whereas `[RuntimeFeature]`-guarded interfaces receive
+// `std::optional<ReceiverEnabledToken>`. Overloading `AddImpl` on these two
+// types keeps the runtime feature check unified while avoiding
+// `std::optional<ReceiverId>` for unguarded `Add()`.
+class ReceiverEnabledToken {
+ private:
+  template <typename Interface>
+  friend constexpr std::conditional_t<kIsRuntimeFeatureGuarded<Interface>,
+                                      std::optional<ReceiverEnabledToken>,
+                                      ReceiverEnabledToken>
+  GetReceiverEnabledToken();
+  constexpr ReceiverEnabledToken() = default;
+};
+
+template <typename Interface>
+constexpr std::conditional_t<kIsRuntimeFeatureGuarded<Interface>,
+                             std::optional<ReceiverEnabledToken>,
+                             ReceiverEnabledToken>
+GetReceiverEnabledToken() {
+  if constexpr (kIsRuntimeFeatureGuarded<Interface>) {
+    if (!GetRuntimeFeature_ExpectEnabled<Interface>()) {
+      return std::nullopt;
+    }
+  }
+  return ReceiverEnabledToken();
+}
+
+}  // namespace internal
+
 // Generic helper used to own a collection of Receiver endpoints. For
 // convenience this type automatically manages cleanup of receivers that have
 // been disconnected from their remote caller.
@@ -233,8 +267,8 @@ class ReceiverSetBase {
     requires(!internal::kIsRuntimeFeatureGuarded<Interface>)
   {
     return AddImpl(std::move(impl), std::move(receiver), {},
-                   std::move(task_runner), /*filter=*/nullptr)
-        .value();
+                   std::move(task_runner), /*filter=*/nullptr,
+                   internal::GetReceiverEnabledToken<Interface>());
   }
 
   // Like Add() but allows an interface with a runtime enabled feature to be
@@ -249,7 +283,8 @@ class ReceiverSetBase {
     requires(internal::kIsRuntimeFeatureGuarded<Interface>)
   {
     return AddImpl(std::move(impl), std::move(receiver), {},
-                   std::move(task_runner), /*filter=*/nullptr);
+                   std::move(task_runner), /*filter=*/nullptr,
+                   internal::GetReceiverEnabledToken<Interface>());
   }
 
   // Adds a new receiver associated with |context|. See above method for all
@@ -263,8 +298,8 @@ class ReceiverSetBase {
     static_assert(ContextTraits::SupportsContext(),
                   "Context value unsupported for void context type.");
     return AddImpl(std::move(impl), std::move(receiver), std::move(context),
-                   std::move(task_runner), /*filter=*/nullptr)
-        .value();
+                   std::move(task_runner), /*filter=*/nullptr,
+                   internal::GetReceiverEnabledToken<Interface>());
   }
 
   // See above.
@@ -278,7 +313,8 @@ class ReceiverSetBase {
     static_assert(ContextTraits::SupportsContext(),
                   "Context value unsupported for void context type.");
     return AddImpl(std::move(impl), std::move(receiver), std::move(context),
-                   std::move(task_runner), /*filter=*/nullptr);
+                   std::move(task_runner), /*filter=*/nullptr,
+                   internal::GetReceiverEnabledToken<Interface>());
   }
 
   // Adds a new receiver associated with |context| and which uses the
@@ -293,8 +329,8 @@ class ReceiverSetBase {
     static_assert(ContextTraits::SupportsContext(),
                   "Context value unsupported for void context type.");
     return AddImpl(std::move(impl), std::move(receiver), std::move(context),
-                   std::move(task_runner), std::move(filter))
-        .value();
+                   std::move(task_runner), std::move(filter),
+                   internal::GetReceiverEnabledToken<Interface>());
   }
 
   // See above.
@@ -309,7 +345,8 @@ class ReceiverSetBase {
     static_assert(ContextTraits::SupportsContext(),
                   "Context value unsupported for void context type.");
     return AddImpl(std::move(impl), std::move(receiver), std::move(context),
-                   std::move(task_runner), std::move(filter));
+                   std::move(task_runner), std::move(filter),
+                   internal::GetReceiverEnabledToken<Interface>());
   }
 
   // Removes a receiver from the set. Note that this is safe to call even if the
@@ -541,11 +578,24 @@ class ReceiverSetBase {
       PendingType receiver,
       Context context,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
-      std::unique_ptr<MessageFilter> filter) {
-    DCHECK(receiver.is_valid());
-    if (!internal::GetRuntimeFeature_ExpectEnabled<Interface>()) {
+      std::unique_ptr<MessageFilter> filter,
+      std::optional<internal::ReceiverEnabledToken> enabled_token)
+    requires(internal::kIsRuntimeFeatureGuarded<Interface>)
+  {
+    if (!enabled_token) {
       return std::nullopt;
     }
+    return AddImpl(std::move(impl), std::move(receiver), std::move(context),
+                   std::move(task_runner), std::move(filter), *enabled_token);
+  }
+
+  ReceiverId AddImpl(ImplPointerType impl,
+                     PendingType receiver,
+                     Context context,
+                     scoped_refptr<base::SequencedTaskRunner> task_runner,
+                     std::unique_ptr<MessageFilter> filter,
+                     internal::ReceiverEnabledToken) {
+    DCHECK(receiver.is_valid());
     return state_.Add(std::make_unique<ReceiverEntry>(
                           std::move(impl), std::move(receiver),
                           std::move(context), std::move(task_runner)),
