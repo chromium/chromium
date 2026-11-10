@@ -105,8 +105,10 @@
 }
 
 #icon {
-  background-image: url(text_layer_entry_icon.png);
-  background-size: contain;
+  background-image: url(text_layer_entry_icon.svg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 83%;
   height: var(--indigo-entry-icon-base-size);
   width: var(--indigo-entry-icon-base-size);
   opacity: 0;
