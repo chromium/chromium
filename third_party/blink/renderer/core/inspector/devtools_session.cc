@@ -14,6 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "third_party/blink/public/common/devtools/devtools_interrupt_methods.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/devtools_agent.h"
@@ -41,12 +42,6 @@ namespace blink {
 namespace {
 const char kV8StateKey[] = "v8";
 const char kSessionId[] = "sessionId";
-
-bool ShouldInterruptForMethod(const String& method) {
-  return method != "Debugger.evaluateOnCallFrame" &&
-         method != "Runtime.evaluate" && method != "Runtime.callFunctionOn" &&
-         method != "Runtime.getProperties" && method != "Runtime.runScript";
-}
 
 std::vector<uint8_t> Get8BitStringFrom(v8_inspector::StringBuffer* msg) {
   const v8_inspector::StringView& s = msg->string();
@@ -147,7 +142,8 @@ class DevToolsSession::IOSession : public mojom::blink::DevToolsSession {
     // and be run immediately. Only methods that do not run JS code are safe.
     Vector<uint8_t> message_copy;
     message_copy.append_range(message);
-    if (ShouldInterruptForMethod(method)) {
+    if (blink::ShouldInterruptForMethod(
+            StringUtf8Adaptor(method).AsStringView())) {
       inspector_task_runner_->AppendTask(CrossThreadBindOnce(
           &::blink::DevToolsSession::DispatchProtocolCommandImpl,
           MakeUnwrappingCrossThreadWeakHandle(session_), call_id, method,
@@ -165,8 +161,6 @@ class DevToolsSession::IOSession : public mojom::blink::DevToolsSession {
         CrossThreadBindOnce(&::blink::DevToolsSession::UnpauseAndTerminate,
                             MakeUnwrappingCrossThreadWeakHandle(session_)));
   }
-
-
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;

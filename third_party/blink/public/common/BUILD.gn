@@ -142,6 +142,7 @@ source_set("headers") {
     "css/scripting.h",
     "custom_handlers/protocol_handler_utils.h",
     "device_memory/approximated_device_memory.h",
+    "devtools/devtools_interrupt_methods.h",
     "dom/dom_node_id.h",
     "dom_storage/session_storage_namespace_id.h",
     "features.h",

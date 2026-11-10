@@ -1,0 +1,17 @@
+Tests that Runtime.enable and Runtime.getExceptionDetails do not interrupt a running worker loop, while Debugger.pause and Runtime.terminateExecution do.
+Debugger.enable error: none
+Worker status: loop-started
+Debugger.setBreakpointsActive during loop 1 error: none
+Runtime.enable resolved during loop: false
+Console error 1: Error: logged-error
+    at prepared:in-loop
+Console error 2: EnableTransferError:in-loop: logged-transfer
+Worker status: ta-loop-started
+Debugger.setBreakpointsActive during loop 2 error: none
+Runtime.getExceptionDetails resolved during loop: false
+Exception details description: TransferError:in-ta-loop: boom
+Worker status: infinite-started
+Debugger.pause error: none
+Debugger.resume error: none
+Runtime.terminateExecution error: none
+
