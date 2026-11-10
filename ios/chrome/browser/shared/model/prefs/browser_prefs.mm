@@ -258,6 +258,9 @@ inline constexpr char kHistorySearchSettingState[] =
 inline constexpr char kBundledSettingsCheckedMigrateUserToEnhancedBundle[] =
     "safebrowsing.bundled_settings.checked_migrate_user_to_enhanced_bundle";
 
+// Deprecated 11/2026.
+inline constexpr char kPumaRcClientId[] = "private_metrics.puma.client_id.rc";
+
 }  // namespace
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -502,6 +505,9 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
   // Deprecated 10/2026.
   registry->RegisterListPref(kWelcomeBackEligibleItems);
+
+  // Deprecated 11/2026.
+  registry->RegisterUint64Pref(kPumaRcClientId, 0u);
 }
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -975,6 +981,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
 
   // Added 10/2026.
   prefs->ClearPref(kWelcomeBackEligibleItems);
+
+  // Added 11/2026.
+  prefs->ClearPref(kPumaRcClientId);
 }
 
 // This method should be periodically pruned of year+ old migrations.
