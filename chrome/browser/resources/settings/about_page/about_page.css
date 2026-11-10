@@ -21,6 +21,21 @@
   margin-bottom: 12px;
 }
 
+:host-context([settings-refresh-2026]) {
+  .info-section {
+    margin-bottom: 8px;
+  }
+
+  #footerProductTitle {
+    color: var(--cr-primary-text-color);
+    font-family: 'Google Sans', Roboto, sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+    margin-bottom: 16px;
+  }
+}
+
 .product-title {
   font-size: 153.85%;  /* 20px / 13px */
   font-weight: 400;

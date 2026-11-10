@@ -94,6 +94,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase
 
       // <if expr="_google_chrome">
       feedbackAllowedPref_: {type: Object},
+      settingsRefresh2026Enabled_: {type: Boolean},
       // </if>
     };
   }
@@ -130,6 +131,8 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase
   // <if expr="_google_chrome">
   protected accessor feedbackAllowedPref_:
       chrome.settingsPrivate.PrefObject<boolean>|undefined;
+  protected accessor settingsRefresh2026Enabled_: boolean =
+      loadTimeData.getString('settingsRefresh2026') !== '';
   // </if>
 
   private aboutBrowserProxy_: AboutPageBrowserProxy =

@@ -322,6 +322,7 @@ suite('AllBuilds', function() {
   // </if>
 
   // </if>
+
   test('GetHelp', function() {
     assertTrue(!!page.shadowRoot.querySelector('#help'));
     page.shadowRoot.querySelector<HTMLElement>('#help')!.click();
@@ -347,16 +348,23 @@ suite('OfficialBuild', function() {
   let browserProxy: TestAboutPageBrowserProxy;
   let openWindowProxy: TestOpenWindowProxy;
 
-  setup(async function() {
-    browserProxy = new TestAboutPageBrowserProxy();
-    AboutPageBrowserProxyImpl.setInstance(browserProxy);
-    openWindowProxy = new TestOpenWindowProxy();
-    OpenWindowProxyImpl.setInstance(openWindowProxy);
+  async function initOfficialBuildPage(): Promise<void> {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-about-page');
     Router.getInstance().navigateTo(routes.ABOUT);
     document.body.appendChild(page);
     await microtasksFinished();
+  }
+
+  setup(async function() {
+    loadTimeData.overrideValues({
+      settingsRefresh2026: '',
+    });
+    browserProxy = new TestAboutPageBrowserProxy();
+    AboutPageBrowserProxyImpl.setInstance(browserProxy);
+    openWindowProxy = new TestOpenWindowProxy();
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
+    await initOfficialBuildPage();
   });
 
   test('ReportAnIssue', async function() {
@@ -367,11 +375,43 @@ suite('OfficialBuild', function() {
 
   test('PrivacyPolicy', async function() {
     const privacyPolicyLink =
-        page.shadowRoot.querySelector<HTMLElement>('#privacyPolicy');
+        page.shadowRoot.querySelector<HTMLElement>('cr-link-row#privacyPolicy');
     assertTrue(!!privacyPolicyLink);
     privacyPolicyLink.click();
     const url = await openWindowProxy.whenCalled('openUrl');
     assertEquals(ABOUT_PAGE_PRIVACY_POLICY_URL, url);
+  });
+
+  test('FooterLinks_SettingsRefresh2026', async function() {
+    assertTrue(!!page.shadowRoot.querySelector('cr-link-row#privacyPolicy'));
+    assertFalse(!!page.shadowRoot.querySelector('a#privacyPolicy'));
+
+    loadTimeData.overrideValues({
+      settingsRefresh2026: 'settings-refresh-2026',
+    });
+    await initOfficialBuildPage();
+
+    assertFalse(!!page.shadowRoot.querySelector('cr-link-row#privacyPolicy'));
+    const privacyPolicyEl =
+        page.shadowRoot.querySelector<HTMLAnchorElement>('a#privacyPolicy');
+    assertTrue(!!privacyPolicyEl);
+    assertEquals(page.i18n('aboutPrivacyPolicy'), privacyPolicyEl.textContent);
+    assertEquals(ABOUT_PAGE_PRIVACY_POLICY_URL, privacyPolicyEl.href);
+    assertEquals('_blank', privacyPolicyEl.target);
+    assertEquals(
+        page.i18n('opensInNewTab'),
+        privacyPolicyEl.getAttribute('aria-description'));
+
+    const termsOfServiceEl =
+        page.shadowRoot.querySelector<HTMLAnchorElement>('a#tos');
+    assertTrue(!!termsOfServiceEl);
+    assertEquals(page.i18n('aboutProductTos'), termsOfServiceEl.textContent);
+    assertEquals(page.i18n('aboutTermsURL'), termsOfServiceEl.href);
+
+    assertEquals(privacyPolicyEl.parentElement, termsOfServiceEl.parentElement);
+    assertEquals(
+        `${page.i18n('aboutPrivacyPolicy')} | ${page.i18n('aboutProductTos')}`,
+        termsOfServiceEl.parentElement!.innerText);
   });
 
   // <if expr="is_macosx">

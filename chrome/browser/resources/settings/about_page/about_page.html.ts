@@ -6,6 +6,11 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {RestartType} from '../relaunch_mixin_lit.js';
 
+// clang-format off
+// <if expr="_google_chrome">
+import {ABOUT_PAGE_PRIVACY_POLICY_URL} from './about_page.js';
+// </if>
+// clang-format on
 import type {SettingsAboutPageElement} from './about_page.js';
 
 export function getHtml(this: SettingsAboutPageElement) {
@@ -92,10 +97,12 @@ export function getHtml(this: SettingsAboutPageElement) {
       ?hidden="${!this.feedbackAllowedPref_?.value}"
       label="$i18n{aboutReportAnIssue}" external>
   </cr-link-row>
-  <cr-link-row class="hr" id="privacyPolicy"
-      @click="${this.onPrivacyPolicyClick_}" label="$i18n{aboutPrivacyPolicy}"
-      external>
-  </cr-link-row>
+  ${!this.settingsRefresh2026Enabled_ ? html`
+    <cr-link-row class="hr" id="privacyPolicy"
+        @click="${this.onPrivacyPolicyClick_}" label="$i18n{aboutPrivacyPolicy}"
+        external>
+    </cr-link-row>
+  ` : ''}
 </if>
   <cr-link-row class="hr" @click="${this.onManagementPageClick_}"
       start-icon="${this.managedByIcon_}" label="$i18n{managementPage}"
@@ -107,7 +114,9 @@ export function getHtml(this: SettingsAboutPageElement) {
 <settings-section>
   <div class="info-sections">
     <div class="info-section">
-      <div class="secondary">$i18n{aboutProductTitle}</div>
+      <div id="footerProductTitle" class="secondary">
+        $i18n{aboutProductTitle}
+      </div>
       <div class="secondary">$i18n{aboutProductCopyright}</div>
     </div>
 
@@ -116,6 +125,15 @@ export function getHtml(this: SettingsAboutPageElement) {
     </div>
 <if expr="_google_chrome or _is_chrome_for_testing_branded">
     <div class="secondary">
+<if expr="_google_chrome">
+      ${this.settingsRefresh2026Enabled_ ? html`
+        <a id="privacyPolicy" href="${ABOUT_PAGE_PRIVACY_POLICY_URL}"
+            target="_blank" aria-description="$i18n{opensInNewTab}"><!--
+          -->$i18n{aboutPrivacyPolicy}<!--
+        --></a>
+        <span aria-hidden="true">|</span>
+      ` : ''}
+</if>
       <a id="tos" href="$i18n{aboutTermsURL}">$i18n{aboutProductTos}</a>
     </div>
 </if>
