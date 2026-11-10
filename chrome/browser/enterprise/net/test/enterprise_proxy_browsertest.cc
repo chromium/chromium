@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/base64.h"
-#include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -54,10 +53,10 @@ IN_PROC_BROWSER_TEST_F(EnterpriseProxyBrowserTest,
                        AppliesDynamicRoutingAndAuthenticates) {
   base::ListValue domains;
   domains.Append(CreateDomainPolicyEntry(kTestPvdDomain, /*use_oauth=*/false));
+  domains.Append(CreateDomainPolicyEntry(kUnauthenticatedPvdDomain,
+                                         /*use_oauth=*/false));
   domains.Append(
-      CreateDomainPolicyEntry("domain1.example.com", /*use_oauth=*/false));
-  domains.Append(
-      CreateDomainPolicyEntry("domain2.example.com", /*use_oauth=*/false));
+      CreateDomainPolicyEntry(kSecondaryPvdDomain, /*use_oauth=*/false));
   SetUserProxyProvisioningDomains(std::move(domains));
 
   WaitForDynamicRoutesReady();
@@ -66,17 +65,18 @@ IN_PROC_BROWSER_TEST_F(EnterpriseProxyBrowserTest,
   ASSERT_TRUE(service);
   EXPECT_EQ(3u, service->GetProvisioningDomainConfigs().size());
 
-  GURL destination_url = https_server_.GetURL(kDestinationHost, "/simple.html");
+  GURL destination_url = GetOriginURL(kDestinationHost, "/simple.html");
   EXPECT_TRUE(chrome_test_utils::NavigateToURL(
       chrome_test_utils::GetActiveWebContents(this), destination_url));
 
   EXPECT_TRUE(was_proxy_accessed());
-  // Because the first matching config requires auth, an auth header is sent.
-  // (If it had matched domain1 instead, no auth header would have been sent).
+  // Because the first matching config (`kTestPvdDomain`) requires auth, an auth
+  // header is sent (whereas `kUnauthenticatedPvdDomain` would not send one).
   EXPECT_TRUE(was_auth_header_received());
+  EXPECT_GE(origin_request_count(), 1u);
 
   // Verify the credentials format in Proxy-Authorization: Basic <base64>
-  const std::string& auth_header = last_received_auth_header();
+  const std::string auth_header = last_received_auth_header();
   ASSERT_TRUE(auth_header.starts_with("Basic "));
   std::string encoded_creds = auth_header.substr(6);
   std::string decoded_creds;
@@ -194,7 +194,8 @@ IN_PROC_BROWSER_TEST_F(EnterpriseProxyBrowserTest,
           }
         ]
       })",
-      kTestPvdDomain, https_server_.host_port_pair().ToString().c_str(),
+      kTestPvdDomain,
+      default_proxy_server().host_port_pair().ToString().c_str(),
       kDestinationHost);
   SetPvdResponseOverride(net::HttpStatusCode::HTTP_OK, pvd_json);
 
@@ -222,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseProxyBrowserTest,
   WaitForDynamicRoutesReady();
 
   // 1. Verify policy extra_headers were expanded on the /.well-known/pvd fetch.
-  const auto& pvd_headers = last_pvd_request_headers();
+  const auto pvd_headers = last_pvd_request_headers();
   auto auth_it = pvd_headers.find("Authorization");
   ASSERT_NE(auth_it, pvd_headers.end());
   EXPECT_EQ(auth_it->second,
@@ -244,14 +245,14 @@ IN_PROC_BROWSER_TEST_F(EnterpriseProxyBrowserTest,
 
   // 2. Navigate through the proxy and verify PvD response extra-headers are
   //    expanded in the Proxy-Authorization Basic auth challenge response.
-  GURL destination_url = https_server_.GetURL(kDestinationHost, "/simple.html");
+  GURL destination_url = GetOriginURL(kDestinationHost, "/simple.html");
   EXPECT_TRUE(chrome_test_utils::NavigateToURL(
       chrome_test_utils::GetActiveWebContents(this), destination_url));
 
   EXPECT_TRUE(was_proxy_accessed());
   EXPECT_TRUE(was_auth_header_received());
 
-  const std::string& auth_header = last_received_auth_header();
+  const std::string auth_header = last_received_auth_header();
   ASSERT_TRUE(auth_header.starts_with("Basic "));
   std::string decoded_creds;
   ASSERT_TRUE(base::Base64Decode(auth_header.substr(6), &decoded_creds));
@@ -284,9 +285,12 @@ IN_PROC_BROWSER_TEST_F(EnterpriseProxyBrowserTest,
 
   WaitForDynamicRoutesReady();
 
-  GURL direct_url = https_server_.GetURL(kUnmatchedHost, "/direct.html");
+  GURL direct_url = GetOriginURL(kUnmatchedHost, "/direct.html");
   EXPECT_TRUE(chrome_test_utils::NavigateToURL(
       chrome_test_utils::GetActiveWebContents(this), direct_url));
+
+  EXPECT_FALSE(was_proxy_accessed());
+  EXPECT_EQ(1u, origin_request_count());
 
   // Verify that no proxy auth challenge was received for unmatched destination.
   auto received_entries = net_log_observer().GetEntriesWithType(
@@ -298,8 +302,8 @@ IN_PROC_BROWSER_TEST_F(EnterpriseProxyBrowserTest,
 // their routing rules are merged into the dynamic routing configuration.
 IN_PROC_BROWSER_TEST_F(EnterpriseProxyBrowserTest, MultiDomainPolicyMerging) {
   base::ListValue domains;
-  domains.Append(CreateDomainPolicyEntry("domain1.example.com"));
-  domains.Append(CreateDomainPolicyEntry("domain2.example.com"));
+  domains.Append(CreateDomainPolicyEntry(kUnauthenticatedPvdDomain));
+  domains.Append(CreateDomainPolicyEntry(kSecondaryPvdDomain));
   SetUserProxyProvisioningDomains(std::move(domains));
 
   WaitForDynamicRoutesReady();
@@ -325,7 +329,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseProxyBrowserTest,
 
   WaitForDynamicRoutesReady();
 
-  GURL destination_url = https_server_.GetURL(kDestinationHost, "/simple.html");
+  GURL destination_url = GetOriginURL(kDestinationHost, "/simple.html");
   EXPECT_TRUE(chrome_test_utils::NavigateToURL(
       chrome_test_utils::GetActiveWebContents(this), destination_url));
 
@@ -341,13 +345,13 @@ IN_PROC_BROWSER_TEST_F(EnterpriseProxyBrowserTest,
   base::ListValue domains;
   domains.Append(CreateDomainPolicyEntry(kTestPvdDomain, /*use_oauth=*/false));
   domains.Append(
-      CreateDomainPolicyEntry("domain.example2.com", /*use_oauth=*/false));
+      CreateDomainPolicyEntry(kSeparateSiteHost, /*use_oauth=*/false));
   SetUserProxyProvisioningDomains(std::move(domains));
 
   WaitForDynamicRoutesReady();
 
   // Confirm dynamic routes are active for kDestinationHost.
-  GURL first_url = https_server_.GetURL(kDestinationHost, "/simple.html");
+  GURL first_url = GetOriginURL(kDestinationHost, "/simple.html");
   EXPECT_TRUE(chrome_test_utils::NavigateToURL(
       chrome_test_utils::GetActiveWebContents(this), first_url));
   EXPECT_TRUE(was_proxy_accessed());
@@ -368,13 +372,17 @@ IN_PROC_BROWSER_TEST_F(EnterpriseProxyBrowserTest,
   ASSERT_TRUE(service);
   EXPECT_TRUE(service->GetDynamicRoutingConfig().routing_rules.empty());
 
-  // Navigate to a fresh previously-proxied destination ("domain.example2.com")
-  // with a distinct NetworkAnonymizationKey so socket pooling and cached proxy
-  // credentials for kDestinationHost cannot mask stale proxy routing.
-  // Navigation must succeed directly without touching the proxy or challenging.
-  GURL second_url = https_server_.GetURL("domain.example2.com", "/simple.html");
+  default_proxy_server().ResetStats();
+
+  // Navigate to a fresh previously-proxied destination (`kSeparateSiteHost`)
+  // under a distinct registrable domain (`NetworkAnonymizationKey`) so socket
+  // pooling and cached proxy credentials for `kDestinationHost` cannot mask
+  // stale proxy routing. Navigation must succeed directly without touching the
+  // proxy or challenging.
+  GURL second_url = GetOriginURL(kSeparateSiteHost, "/simple.html");
   EXPECT_TRUE(chrome_test_utils::NavigateToURL(
       chrome_test_utils::GetActiveWebContents(this), second_url));
+  EXPECT_FALSE(was_proxy_accessed());
   EXPECT_EQ(
       challenges_before_clear,
       net_log_observer()
@@ -406,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(service);
   EXPECT_EQ(1u, service->GetProvisioningDomainConfigs().size());
 
-  GURL destination_url = https_server_.GetURL(kDestinationHost, "/simple.html");
+  GURL destination_url = GetOriginURL(kDestinationHost, "/simple.html");
   EXPECT_TRUE(chrome_test_utils::NavigateToURL(
       chrome_test_utils::GetActiveWebContents(this), destination_url));
   EXPECT_TRUE(was_proxy_accessed());
@@ -433,7 +441,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(service);
   EXPECT_EQ(1u, service->GetProvisioningDomainConfigs().size());
 
-  GURL destination_url = https_server_.GetURL(kDestinationHost, "/simple.html");
+  GURL destination_url = GetOriginURL(kDestinationHost, "/simple.html");
   EXPECT_TRUE(chrome_test_utils::NavigateToURL(
       chrome_test_utils::GetActiveWebContents(this), destination_url));
   EXPECT_TRUE(was_proxy_accessed());
@@ -471,7 +479,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseProxyUnaffiliatedBrowserTest,
   EXPECT_TRUE(service->GetProvisioningDomainConfigs().empty());
   EXPECT_TRUE(service->GetDynamicRoutingConfig().routing_rules.empty());
 
-  GURL destination_url = https_server_.GetURL(kDestinationHost, "/simple.html");
+  GURL destination_url = GetOriginURL(kDestinationHost, "/simple.html");
   EXPECT_TRUE(chrome_test_utils::NavigateToURL(
       chrome_test_utils::GetActiveWebContents(this), destination_url));
   EXPECT_FALSE(was_proxy_accessed());
@@ -501,7 +509,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(service->GetProvisioningDomainConfigs().empty());
   EXPECT_TRUE(service->GetDynamicRoutingConfig().routing_rules.empty());
 
-  GURL destination_url = https_server_.GetURL(kDestinationHost, "/simple.html");
+  GURL destination_url = GetOriginURL(kDestinationHost, "/simple.html");
   EXPECT_TRUE(chrome_test_utils::NavigateToURL(
       chrome_test_utils::GetActiveWebContents(this), destination_url));
   EXPECT_FALSE(was_proxy_accessed());
@@ -528,7 +536,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(service);
   EXPECT_EQ(1u, service->GetProvisioningDomainConfigs().size());
 
-  GURL destination_url = https_server_.GetURL(kDestinationHost, "/simple.html");
+  GURL destination_url = GetOriginURL(kDestinationHost, "/simple.html");
   EXPECT_TRUE(chrome_test_utils::NavigateToURL(
       chrome_test_utils::GetActiveWebContents(this), destination_url));
   EXPECT_TRUE(was_proxy_accessed());
@@ -562,7 +570,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseProxyUnmanagedDeviceBrowserTest,
   ASSERT_TRUE(service);
   EXPECT_EQ(1u, service->GetProvisioningDomainConfigs().size());
 
-  GURL destination_url = https_server_.GetURL(kDestinationHost, "/simple.html");
+  GURL destination_url = GetOriginURL(kDestinationHost, "/simple.html");
   EXPECT_TRUE(chrome_test_utils::NavigateToURL(
       chrome_test_utils::GetActiveWebContents(this), destination_url));
   EXPECT_TRUE(was_proxy_accessed());
@@ -608,7 +616,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseProxyPlatformManagedDeviceBrowserTest,
   EXPECT_TRUE(service->GetProvisioningDomainConfigs().empty());
   EXPECT_TRUE(service->GetDynamicRoutingConfig().routing_rules.empty());
 
-  GURL destination_url = https_server_.GetURL(kDestinationHost, "/simple.html");
+  GURL destination_url = GetOriginURL(kDestinationHost, "/simple.html");
   EXPECT_TRUE(chrome_test_utils::NavigateToURL(
       chrome_test_utils::GetActiveWebContents(this), destination_url));
   EXPECT_FALSE(was_proxy_accessed());

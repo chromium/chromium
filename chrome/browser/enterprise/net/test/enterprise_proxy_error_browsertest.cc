@@ -104,6 +104,9 @@ class EnterpriseProxyErrorBrowserTest : public EnterpriseProxyBrowserTestBase {
 
     EXPECT_EQ("0", content::EvalJs(web_contents,
                                    "window.loadTimeDataRaw['error_category']"));
+    EXPECT_EQ(
+        default_proxy_server().GetURL().spec(),
+        content::EvalJs(web_contents, "window.loadTimeDataRaw['proxy_url']"));
 
     const std::string expected_heading =
         l10n_util::GetStringUTF8(IDS_ENTERPRISE_PROXY_AUTHN_ERROR_HEADING);
@@ -335,10 +338,11 @@ class EnterpriseProxyErrorBrowserTest : public EnterpriseProxyBrowserTestBase {
     WaitForDynamicRoutesReady();
 
     base::HistogramTester histogram_tester;
-    GURL destination_url =
-        https_server_.GetURL(kDestinationHost, "/simple.html");
-    EXPECT_FALSE(chrome_test_utils::NavigateToURL(
-        chrome_test_utils::GetActiveWebContents(this), destination_url));
+    GURL destination_url = GetOriginURL(kDestinationHost, "/simple.html");
+    content::WebContents* web_contents =
+        chrome_test_utils::GetActiveWebContents(this);
+    EXPECT_FALSE(
+        chrome_test_utils::NavigateToURL(web_contents, destination_url));
 
     VerifyErrorPageShownHistograms(histogram_tester, expected_category);
 
@@ -369,14 +373,19 @@ class EnterpriseProxyErrorBrowserTest : public EnterpriseProxyBrowserTestBase {
     auto* error_service = GetEnterpriseProxyErrorService();
     ASSERT_TRUE(error_service);
     enterprise_net::EnterpriseProxyErrorData error_data(
-        destination_url, https_server_.GetURL(kTestPvdDomain, "/"),
-        expected_error_code, expected_category);
+        destination_url, default_proxy_server().GetURL(), expected_error_code,
+        expected_category);
     base::DictValue params = error_service->GetErrorPageParams(error_data);
     EXPECT_TRUE(*params.FindBool("is_enterprise_proxy_error"));
+    EXPECT_EQ(default_proxy_server().GetURL().spec(),
+              *params.FindString("proxy_url"));
     EXPECT_EQ(base::NumberToString(expected_error_code),
               *params.FindString("error_code"));
     EXPECT_EQ(base::NumberToString(static_cast<int>(expected_category)),
               *params.FindString("error_category"));
+    EXPECT_EQ(
+        default_proxy_server().GetURL().spec(),
+        content::EvalJs(web_contents, "window.loadTimeDataRaw['proxy_url']"));
   }
 };
 
@@ -426,10 +435,11 @@ IN_PROC_BROWSER_TEST_F(EnterpriseProxyErrorBrowserTest,
   WaitForDynamicRoutesReady();
 
   base::HistogramTester histogram_tester;
-  GURL destination_url = https_server_.GetURL(kDestinationHost, "/simple.html");
+  GURL destination_url = GetOriginURL(kDestinationHost, "/simple.html");
   content::WebContents* web_contents =
       chrome_test_utils::GetActiveWebContents(this);
   EXPECT_FALSE(chrome_test_utils::NavigateToURL(web_contents, destination_url));
+  EXPECT_EQ(0u, origin_request_count());
 
   VerifyErrorPageShownHistograms(
       histogram_tester,
@@ -459,11 +469,13 @@ IN_PROC_BROWSER_TEST_F(EnterpriseProxyErrorBrowserTest,
   auto* error_service = GetEnterpriseProxyErrorService();
   ASSERT_TRUE(error_service);
   enterprise_net::EnterpriseProxyErrorData error_data(
-      destination_url, https_server_.GetURL(kTestPvdDomain, "/"),
+      destination_url, default_proxy_server().GetURL(),
       /*error_code=*/407,
       enterprise_net::EnterpriseProxyErrorData::ErrorCategory::kAuthentication);
   base::DictValue params = error_service->GetErrorPageParams(error_data);
   EXPECT_TRUE(*params.FindBool("is_enterprise_proxy_error"));
+  EXPECT_EQ(default_proxy_server().GetURL().spec(),
+            *params.FindString("proxy_url"));
   EXPECT_EQ("0", *params.FindString("error_category"));
 
   VerifyAuthenticationErrorPage(web_contents);
@@ -477,9 +489,8 @@ IN_PROC_BROWSER_TEST_F(EnterpriseProxyErrorBrowserTest,
   VerifyDisguisedProxyError(
       "403", 403,
       enterprise_net::EnterpriseProxyErrorData::ErrorCategory::kAuthorization);
-  VerifyAuthorizationErrorPage(
-      chrome_test_utils::GetActiveWebContents(this),
-      https_server_.GetURL(kDestinationHost, "/simple.html"));
+  VerifyAuthorizationErrorPage(chrome_test_utils::GetActiveWebContents(this),
+                               GetOriginURL(kDestinationHost, "/simple.html"));
 }
 
 // Verifies that receiving a disguised error HTTP 407 challenge with a 502
@@ -506,7 +517,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseProxyErrorBrowserTest,
   WaitForDynamicRoutesReady();
 
   base::HistogramTester histogram_tester;
-  GURL destination_url = https_server_.GetURL(kDestinationHost, "/simple.html");
+  GURL destination_url = GetOriginURL(kDestinationHost, "/simple.html");
   EXPECT_TRUE(chrome_test_utils::NavigateToURL(
       chrome_test_utils::GetActiveWebContents(this), destination_url));
   VerifyErrorPageShownHistograms(histogram_tester, std::nullopt);

@@ -31,6 +31,8 @@ source_set("platform_browser_tests") {
       "test/enterprise_proxy_browsertest_base.cc",
       "test/enterprise_proxy_browsertest_base.h",
       "test/enterprise_proxy_error_browsertest.cc",
+      "test/test_connect_proxy.cc",
+      "test/test_connect_proxy.h",
     ]
 
     deps += [
