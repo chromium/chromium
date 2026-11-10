@@ -14,7 +14,6 @@
 
 /* Different styling for margin vs the ink side panel. */
 h2 {
-  margin-inline-start: 0;
   margin-bottom: 8px;
 }
 
