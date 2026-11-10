@@ -20,15 +20,19 @@
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/host_access_request_helper.h"
+#include "extensions/browser/permissions/scripting_permissions_modifier.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/test/permissions_manager_waiter.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -561,4 +565,73 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarViewModelBrowserTest,
                                          new_contents.get());
 
   toolbar_model()->RemoveObserver(&observer);
+}
+
+// Tests that the extensions toolbar button state changes after site permissions
+// updates.
+IN_PROC_BROWSER_TEST_F(ExtensionsToolbarViewModelBrowserTest,
+                       GetButtonState_SitePermissionsUpdates) {
+  // Install an extension that requests host permissions.
+  auto extension = AddExtension("Extension", {}, {"<all_urls>"});
+
+  NavigateTo("example.com");
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  url::Origin url_origin =
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+
+  auto* manager = extensions::PermissionsManager::Get(profile());
+  {
+    // Extensions button has "all extensions blocked" state when it's a user
+    // restricted site.
+    extensions::PermissionsManagerWaiter manager_waiter(manager);
+    manager->AddUserRestrictedSite(url_origin);
+    manager_waiter.WaitForUserPermissionsSettingsChange();
+    EXPECT_EQ(toolbar_model()->GetButtonState(*web_contents),
+              ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
+                  kAllExtensionsBlocked);
+  }
+
+  {
+    // Extensions button has "any extension has access" state when it's not a
+    // user restricted site and 1+ extensions have site access granted. Note
+    // that by default extensions have granted access.
+    extensions::PermissionsManagerWaiter manager_waiter(manager);
+    manager->RemoveUserRestrictedSite(url_origin);
+    manager_waiter.WaitForUserPermissionsSettingsChange();
+    EXPECT_EQ(toolbar_model()->GetButtonState(*web_contents),
+              ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
+                  kAnyExtensionHasAccess);
+  }
+
+  {
+    // Extensions button has "default" state when it's not a user restricted
+    // site and no extensions have site access granted. To achieve this, we
+    // withhold host permissions in the only extension installed.
+    extensions::PermissionsManagerWaiter manager_waiter(manager);
+    extensions::ScriptingPermissionsModifier(profile(), extension)
+        .SetWithholdHostPermissions(true);
+    manager_waiter.WaitForExtensionPermissionsUpdate();
+    EXPECT_EQ(
+        toolbar_model()->GetButtonState(*web_contents),
+        ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::kDefault);
+  }
+}
+
+// Tests that the extensions toolbar button state takes into account chrome
+// restricted sites.
+IN_PROC_BROWSER_TEST_F(ExtensionsToolbarViewModelBrowserTest,
+                       GetButtonState_ChromeRestrictedSite) {
+  AddExtension("Extension", {}, {"<all_urls>"});
+
+  const GURL restricted_url("chrome://extensions");
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  ASSERT_TRUE(content::NavigateToURL(web_contents, restricted_url));
+
+  // Extensions button has "all extensions blocked" state for chrome
+  // restricted sites.
+  EXPECT_EQ(toolbar_model()->GetButtonState(*web_contents),
+            ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
+                kAllExtensionsBlocked);
 }
