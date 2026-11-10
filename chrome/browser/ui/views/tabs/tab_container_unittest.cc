@@ -266,6 +266,19 @@ class TabContainerTest : public ChromeViewsTestBase {
     return tab;
   }
 
+  // Like AddTab(), but leaves whatever AddTabs() started in place instead of
+  // completing it, for tests that look at the insert animation itself.
+  Tab* AddTabWithoutCompletingAnimation(int model_index) {
+    std::vector<TabContainer::TabInsertionParams> tabs_params;
+    tabs_params.emplace_back(std::make_unique<Tab>(tabs::TabHandle(model_index),
+                                                   tab_slot_controller_.get()),
+                             model_index, TabPinned::kUnpinned);
+    Tab* tab = tab_container_->AddTabs(std::move(tabs_params))[0];
+    tab_strip_controller_->AddTab(model_index, TabActive::kInactive,
+                                  TabPinned::kUnpinned);
+    return tab;
+  }
+
   void MoveTab(int from_model_index, int to_model_index) {
     tab_strip_controller_->MoveTab(from_model_index, to_model_index);
     tab_container_->MoveTab(from_model_index, to_model_index);
@@ -815,6 +828,102 @@ TEST_F(TabContainerTest, UngroupedTabBeforeGroupClosingTargetBounds) {
           closing_tab);
   EXPECT_EQ(target_bounds.x(), 0);
   EXPECT_EQ(target_bounds.width(), tab_overlap);
+}
+
+// Tabs inserted into a visible strip within one task share a single animation
+// to the ideal bounds, started from a posted task. Until it runs, the container
+// reports that it is animating although no view is being animated yet.
+TEST_F(TabContainerTest, InsertAnimationsStartOncePerTask) {
+  widget_->Show();
+  AddTab(0, std::nullopt, TabActive::kActive);
+  const views::BoundsAnimator& bounds_animator =
+      tab_container_->GetBoundsAnimatorForTesting();
+  ASSERT_FALSE(tab_container_->IsAnimating());
+
+  for (int model_index = 1; model_index <= 2; ++model_index) {
+    Tab* const tab = AddTabWithoutCompletingAnimation(model_index);
+    EXPECT_TRUE(tab_container_->IsAnimating());
+    EXPECT_FALSE(bounds_animator.IsAnimating());
+    // The tab waits at its starting bounds for the posted pass.
+    EXPECT_NE(tab->bounds(), tab_container_->GetIdealBounds(model_index));
+  }
+
+  // The posted pass starts every tab's animation to its ideal bounds. The
+  // animation may already have ended, in which case GetTargetBounds() returns
+  // the tab's bounds, so the check below holds either way.
+  task_environment()->RunUntilIdle();
+  for (int model_index = 0; model_index < 3; ++model_index) {
+    EXPECT_EQ(bounds_animator.GetTargetBounds(
+                  tab_container_->GetTabAtModelIndex(model_index)),
+              tab_container_->GetIdealBounds(model_index));
+  }
+}
+
+// Completing the animation before the posted pass runs drops the pass, so the
+// strip stays in the laid-out steady state.
+TEST_F(TabContainerTest, CompletingAnimationDropsPendingInsertAnimation) {
+  widget_->Show();
+  AddTab(0, std::nullopt, TabActive::kActive);
+  const views::BoundsAnimator& bounds_animator =
+      tab_container_->GetBoundsAnimatorForTesting();
+
+  Tab* const tab = AddTabWithoutCompletingAnimation(1);
+  ASSERT_TRUE(tab_container_->IsAnimating());
+
+  tab_container_->CompleteAnimationAndLayout();
+  EXPECT_FALSE(tab_container_->IsAnimating());
+
+  task_environment()->RunUntilIdle();
+  EXPECT_FALSE(tab_container_->IsAnimating());
+  EXPECT_FALSE(bounds_animator.IsAnimating());
+  EXPECT_EQ(tab->bounds(), tab_container_->GetIdealBounds(1));
+}
+
+// Without rich animations a pass finishes as soon as it starts, so it is not
+// deferred: the strip is at rest again when AddTabs() returns, as it was
+// before passes were coalesced.
+TEST_F(TabContainerTest, InsertAnimationIsNotDeferredWithoutRichAnimations) {
+  // The fixture forces rich animations on, and the test API ignores a second
+  // forced mode, so release the fixture's first.
+  animation_mode_reset_.reset();
+  animation_mode_reset_ = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+      gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
+  widget_->Show();
+  AddTab(0, std::nullopt, TabActive::kActive);
+
+  Tab* const tab = AddTabWithoutCompletingAnimation(1);
+  EXPECT_FALSE(tab_container_->IsAnimating());
+  EXPECT_EQ(tab->bounds(), tab_container_->GetIdealBounds(1));
+}
+
+// A layout that runs before the posted pass (the parent laying the strip out
+// in the same task, or a frame whose task was queued first) runs the pass
+// first, so that it decides about snapping and slot visibility from the same
+// state it saw when the pass ran at insertion time.
+TEST_F(TabContainerTest, LayoutRunsPendingInsertAnimationFirst) {
+  widget_->Show();
+  AddTab(0, std::nullopt, TabActive::kActive);
+  const views::BoundsAnimator& bounds_animator =
+      tab_container_->GetBoundsAnimatorForTesting();
+
+  Tab* const tab = AddTabWithoutCompletingAnimation(1);
+  ASSERT_TRUE(tab_container_->IsAnimating());
+  ASSERT_FALSE(bounds_animator.IsAnimating());
+
+  views::test::RunScheduledLayout(tab_container_.get());
+  EXPECT_TRUE(bounds_animator.IsAnimating());
+  EXPECT_EQ(bounds_animator.GetTargetBounds(tab),
+            tab_container_->GetIdealBounds(1));
+  // The layout left the tab where its animation starts, as it does during a
+  // running animation, and kept it visible.
+  EXPECT_NE(tab->bounds(), tab_container_->GetIdealBounds(1));
+  EXPECT_TRUE(tab->GetVisible());
+
+  // The posted task was cancelled, so nothing changes when it comes up.
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(bounds_animator.GetTargetBounds(tab),
+            tab_container_->GetIdealBounds(1));
+  EXPECT_TRUE(tab->GetVisible());
 }
 
 // Verifies child view order matches model order.

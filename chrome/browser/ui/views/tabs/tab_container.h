@@ -10,6 +10,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/cancelable_callback.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -278,8 +279,21 @@ class TabContainer : public views::View,
   // mode.
   int CalculateAvailableWidthForTabs() const;
 
-  // Invoked from `AddTab` after the newly created tab has been inserted.
+  // Invoked from `AddTabs` after the newly created tab has been inserted. Sets
+  // the bounds the tab animates in from; the animation itself is started by
+  // AnimateToIdealBounds().
   void StartInsertTabAnimation(int model_index);
+
+  // Starts AnimateToIdealBounds() from a posted task, unless one is already
+  // pending, so that tabs inserted by separate model changes within one task
+  // (session restore inserts them one at a time) share a single pass over the
+  // strip. The animator moves no view before its first tick, so this gives the
+  // same animation as a pass after every insert. IsAnimating() reports the
+  // pending pass; Layout() runs the pass first, and a call to
+  // AnimateToIdealBounds() or CancelAnimation() before it runs cancels it.
+  // With rich animations off the pass runs at once instead, see the
+  // definition.
+  void ScheduleAnimateToIdealBounds();
 
   void StartRemoveTabAnimation(Tab* tab, int former_model_index);
 
@@ -461,6 +475,11 @@ class TabContainer : public views::View,
   // Whether the AX indexes and count of the tabs need to be refreshed by the
   // next layout.
   bool accessible_tab_indices_dirty_ = false;
+
+  // Holds the posted AnimateToIdealBounds() call while one is pending, i.e.
+  // while !IsCancelled(); see ScheduleAnimateToIdealBounds(). Running the call
+  // consumes it, and AnimateToIdealBounds() and CancelAnimation() cancel it.
+  base::CancelableOnceClosure animate_to_ideal_bounds_task_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_CONTAINER_H_
