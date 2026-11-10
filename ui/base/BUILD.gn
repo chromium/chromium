@@ -1088,6 +1088,7 @@ test("ui_base_unittests") {
     "//ui/base/data_transfer_policy:unittests",
     "//ui/base/identifier:unit_tests",
     "//ui/base/interaction:unit_tests",
+    "//ui/base/l10n/test:test_support",
     "//ui/base/metadata:metadata_tests",
     "//ui/base/prediction",
     "//ui/color",

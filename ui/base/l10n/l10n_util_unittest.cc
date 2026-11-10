@@ -10,6 +10,7 @@
 #include <array>
 #include <cstring>
 #include <memory>
+#include <string>
 #include <string_view>
 #include <thread>
 
@@ -18,9 +19,11 @@
 #include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/i18n/case_conversion.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/i18n/icubridge/supported_locales.h"
 #include "base/i18n/language_tag.h"
 #include "base/i18n/language_tag_list_helper.h"
+#include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
 #include "base/i18n/tag_converters.h"
 #include "base/i18n/test/scoped_icu_locale.h"
@@ -37,8 +40,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "third_party/icu/source/common/unicode/locid.h"
+#include "third_party/icu/source/common/unicode/unistr.h"
+#include "third_party/icu/source/common/unicode/utypes.h"
+#include "third_party/icu/source/i18n/unicode/listformatter.h"
 #include "ui/base/grit/ui_base_test_resources.h"
 #include "ui/base/l10n/l10n_util_collator.h"
+#include "ui/base/l10n/test/scoped_application_locale.h"
 #include "ui/base/ui_base_paths.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -894,6 +901,93 @@ TEST_F(L10nUtilTest, AllLegacyAcceptLanguagesWork) {
       "zh-HK",    "zh-TW", "zu"};
   for (std::string_view locale : kLegacyAcceptLanguages) {
     EXPECT_TRUE(l10n_util::IsPossibleAcceptLanguage(locale)) << locale;
+  }
+}
+
+// Tests that `ui::test::ScopedApplicationLocale` temporarily modifies the
+// default ICU locale (observed via `base::i18n::GetDefaultIcuLocale()`) and
+// restores the previous locale upon destruction.
+TEST_F(L10nUtilTest, ScopedApplicationLocale) {
+  const base::i18n::LanguageTag original_tag =
+      base::i18n::GetDefaultIcuLocale();
+
+  {
+    ui::test::ScopedApplicationLocale scoped_locale(
+        base::i18n::GetKnownLanguageTag("zh-CN"));
+    EXPECT_EQ(base::i18n::GetDefaultIcuLocale(),
+              base::i18n::GetKnownLanguageTag("zh-CN"));
+
+    {
+      ui::test::ScopedApplicationLocale inner_locale(
+          base::i18n::GetKnownLanguageTag("ar"));
+      EXPECT_EQ(base::i18n::GetDefaultIcuLocale(),
+                base::i18n::GetKnownLanguageTag("ar"));
+    }
+
+    EXPECT_EQ(base::i18n::GetDefaultIcuLocale(),
+              base::i18n::GetKnownLanguageTag("zh-CN"));
+  }
+
+  EXPECT_EQ(base::i18n::GetDefaultIcuLocale(), original_tag);
+}
+
+// Tests that `ui::test::ScopedApplicationLocale` updates how ICU formats
+// numbers across locales.
+TEST_F(L10nUtilTest, ScopedApplicationLocaleFormatsNumbers) {
+  {
+    ui::test::ScopedApplicationLocale scoped_locale(
+        base::i18n::GetKnownLanguageTag("en-US"));
+    EXPECT_EQ(base::FormatNumber(1234567), u"1,234,567");
+    EXPECT_EQ(base::FormatDouble(1234.5, 1), u"1,234.5");
+  }
+
+  {
+    ui::test::ScopedApplicationLocale scoped_locale(
+        base::i18n::GetKnownLanguageTag("de"));
+    EXPECT_EQ(base::FormatNumber(1234567), u"1.234.567");
+    EXPECT_EQ(base::FormatDouble(1234.5, 1), u"1.234,5");
+  }
+}
+
+// Tests that `ui::test::ScopedApplicationLocale` updates how ICU formats lists
+// across locales.
+TEST_F(L10nUtilTest, ScopedApplicationLocaleFormatsLists) {
+  const icu::UnicodeString items[] = {
+      icu::UnicodeString::fromUTF8("A"),
+      icu::UnicodeString::fromUTF8("B"),
+      icu::UnicodeString::fromUTF8("C"),
+  };
+
+  // Japanese, Thai and Arabic do not separate items with ", ", which shows
+  // that the whole list pattern is localized, and not only the word "and".
+  const struct {
+    base::i18n::LanguageTag locale;
+    const char* expected;
+  } kTestCases[] = {
+      {base::i18n::GetKnownLanguageTag("en-US"), "A, B, and C"},
+      {base::i18n::GetKnownLanguageTag("fr"), "A, B et C"},
+      {base::i18n::GetKnownLanguageTag("es"), "A, B y C"},
+      // Ideographic comma and no conjunction.
+      {base::i18n::GetKnownLanguageTag("ja"), "A、B、C"},
+      // No separating symbol at all, only spaces and the conjunction "และ".
+      {base::i18n::GetKnownLanguageTag("th"), "A B และC"},
+      // No separating symbol at all, only the conjunction "و".
+      {base::i18n::GetKnownLanguageTag("ar"), "A وB وC"},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.locale.tag_string());
+    ui::test::ScopedApplicationLocale scoped_locale(test_case.locale);
+    UErrorCode status = U_ZERO_ERROR;
+    std::unique_ptr<icu::ListFormatter> formatter(
+        icu::ListFormatter::createInstance(status));
+    ASSERT_TRUE(U_SUCCESS(status) && formatter);
+    icu::UnicodeString result;
+    formatter->format(items, 3, result, status);
+    ASSERT_TRUE(U_SUCCESS(status));
+    std::string result_utf8;
+    result.toUTF8String(result_utf8);
+    EXPECT_EQ(result_utf8, test_case.expected);
   }
 }
 

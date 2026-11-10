@@ -1,0 +1,22 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "scoped_application_locale.cc",
+    "scoped_application_locale.h",
+    "scoped_resource_bundle_locale.cc",
+    "scoped_resource_bundle_locale.h",
+  ]
+  public_deps = [
+    "//base",
+    "//base/i18n:language_tag",
+    "//base/i18n:test_support",
+  ]
+  deps = [
+    "//base:i18n",
+    "//ui/base",
+  ]
+}

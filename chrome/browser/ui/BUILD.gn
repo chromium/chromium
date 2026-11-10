@@ -2100,18 +2100,22 @@ source_set("unit_tests") {
       "browser_window_state_unittest.cc",
       "intent_picker_tab_helper_unittest.cc",
       "managed_ui_for_supervised_user_unittest.cc",
+      "scoped_application_locale_unittest.cc",
     ]
     deps += [
       ":browser_manager_service",
       ":browser_window_state",
       ":intent_picker_tab_helper",
       ":managed_ui",
+      "//base:i18n",
       "//chrome/browser/apps/intent_helper:intent_chip_display_prefs",
       "//chrome/browser/apps/link_capturing:test_support",
       "//chrome/browser/supervised_user",
       "//chrome/browser/ui/actions:actions_headers",
       "//components/apps/link_capturing",
       "//components/supervised_user/core/browser:test_support",
+      "//ui/base/l10n/test:test_support",
+      "//ui/strings:ui_strings",
     ]
     if (is_chromeos) {
       deps += [ "//ui/chromeos" ]
