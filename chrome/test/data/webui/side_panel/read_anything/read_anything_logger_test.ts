@@ -291,15 +291,14 @@ suite('Logger', () => {
       });
 
   test('logSpeechPlaySession records time since start', async () => {
-    const startTime = Date.now();
     const expectedTime = 100;
+    const startTime = Date.now() - expectedTime;
 
-    await new Promise(resolve => setTimeout(resolve, expectedTime));
     logger.logSpeechPlaySession(startTime, null);
 
-    // The playback length should be at least the amount of time we waited above
-    // and less than the starting time (i.e. we should be recording length of
-    // time, not timestamp).
+    // The playback length should be at least the time since the start and less
+    // than the starting time (i.e. we should be recording length of time, not
+    // timestamp).
     const recordedTime =
         await metrics.whenCalled('recordSpeechPlaybackLengthLegacy');
     assertLE(expectedTime, recordedTime);

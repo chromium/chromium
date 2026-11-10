@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 import {ReadAloudModelImpl, ReadAloudNode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
-import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {setupTestEnvironment} from './common.js';
 import type {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
@@ -81,7 +80,7 @@ suite('ReadAloudModel', () => {
     model = new ReadAloudModelImpl();
   });
 
-  test('getCurrentText opening punctuation ignored', async () => {
+  test('getCurrentText opening punctuation ignored', () => {
     const paragraph = document.createElement('p');
 
     const sentence = document.createTextNode('Run, take cover.');
@@ -91,8 +90,6 @@ suite('ReadAloudModel', () => {
     paragraph.appendChild(sentence);
     paragraph.appendChild(parenthetical);
     document.body.appendChild(paragraph);
-
-    await microtasksFinished();
 
     model.init(ReadAloudNode.create(document.body));
 
@@ -107,7 +104,7 @@ suite('ReadAloudModel', () => {
     assertTextEmpty();
   });
 
-  test('getCurrentText separates superscripts with no spaces', async () => {
+  test('getCurrentText separates superscripts with no spaces', () => {
     const paragraph = document.createElement('p');
 
     const sentence = document.createTextNode('film');
@@ -118,8 +115,6 @@ suite('ReadAloudModel', () => {
     paragraph.appendChild(superscript);
     document.body.appendChild(paragraph);
 
-    await microtasksFinished();
-
     model.init(ReadAloudNode.create(document.body));
 
     assertEquals('film a', model.getCurrentTextContent().trim());
@@ -128,7 +123,7 @@ suite('ReadAloudModel', () => {
     assertTextEmpty();
   });
 
-  test('getCurrentText separates table cells', async () => {
+  test('getCurrentText separates table cells', () => {
     const table = document.createElement('table');
     const row = document.createElement('tr');
     const cell1 = document.createElement('td');
@@ -141,8 +136,6 @@ suite('ReadAloudModel', () => {
     table.appendChild(row);
     document.body.appendChild(table);
 
-    await microtasksFinished();
-
     model.init(ReadAloudNode.create(document.body));
 
     assertEquals('Siblings', model.getCurrentTextContent().trim());
@@ -154,35 +147,31 @@ suite('ReadAloudModel', () => {
     assertTextEmpty();
   });
 
-  test(
-      'getCurrentText separates nested superscripts with no spaces',
-      async () => {
-        const paragraph = document.createElement('p');
-        const sentence = document.createTextNode('film');
-        const superscript = document.createElement('sup');
+  test('getCurrentText separates nested superscripts with no spaces', () => {
+    const paragraph = document.createElement('p');
+    const sentence = document.createTextNode('film');
+    const superscript = document.createElement('sup');
 
-        const link = document.createElement('a');
-        link.href = 'google.com';
-        link.textContent = 'a';
+    const link = document.createElement('a');
+    link.href = 'google.com';
+    link.textContent = 'a';
 
-        superscript.appendChild(link);
-        paragraph.appendChild(sentence);
-        paragraph.appendChild(superscript);
-        document.body.appendChild(paragraph);
+    superscript.appendChild(link);
+    paragraph.appendChild(sentence);
+    paragraph.appendChild(superscript);
+    document.body.appendChild(paragraph);
 
-        await microtasksFinished();
+    model.init(ReadAloudNode.create(document.body));
 
-        model.init(ReadAloudNode.create(document.body));
+    assertEquals('film a', model.getCurrentTextContent().trim());
 
-        assertEquals('film a', model.getCurrentTextContent().trim());
-
-        model.moveSpeechForward();
-        assertTextEmpty();
-      });
+    model.moveSpeechForward();
+    assertTextEmpty();
+  });
 
   test(
       'getHighlightForCurrentSegmentIndex with space added before superscript',
-      async () => {
+      () => {
         const paragraph = document.createElement('p');
         const sentence = document.createTextNode('film');
         const superscript = document.createElement('sup');
@@ -196,7 +185,6 @@ suite('ReadAloudModel', () => {
         paragraph.appendChild(superscript);
         document.body.appendChild(paragraph);
 
-        await microtasksFinished();
         model.init(ReadAloudNode.create(document.body));
 
         // The model should add a space, making the text "some text 1"
@@ -215,7 +203,7 @@ suite('ReadAloudModel', () => {
       });
 
 
-  test('getCurrentText multiple opening punctuation ignored', async () => {
+  test('getCurrentText multiple opening punctuation ignored', () => {
     const paragraph = document.createElement('p');
 
     const sentence = document.createTextNode('Run, take cover.');
@@ -225,8 +213,6 @@ suite('ReadAloudModel', () => {
     paragraph.appendChild(sentence);
     paragraph.appendChild(parenthetical);
     document.body.appendChild(paragraph);
-
-    await microtasksFinished();
 
     model.init(ReadAloudNode.create(document.body));
 
@@ -242,8 +228,7 @@ suite('ReadAloudModel', () => {
   });
 
   test(
-      'getCurrentText opening punctuation included when entire node',
-      async () => {
+      'getCurrentText opening punctuation included when entire node', () => {
         const paragraph = document.createElement('p');
 
         const sentence = document.createTextNode('And I am almost there.');
@@ -255,8 +240,6 @@ suite('ReadAloudModel', () => {
         paragraph.appendChild(sentence);
         paragraph.appendChild(parenthetical);
         document.body.appendChild(paragraph);
-
-        await microtasksFinished();
 
         model.init(ReadAloudNode.create(document.body));
 
@@ -276,8 +259,7 @@ suite('ReadAloudModel', () => {
       });
 
   test(
-      'getCurrentText with multiple opening punctuation characters',
-      async () => {
+      'getCurrentText with multiple opening punctuation characters', () => {
         const paragraph = document.createElement('p');
 
         const sentence = document.createTextNode('And I am almost there.');
@@ -294,8 +276,6 @@ suite('ReadAloudModel', () => {
         paragraph.appendChild(parenthetical);
         document.body.appendChild(paragraph);
 
-        await microtasksFinished();
-
         model.init(ReadAloudNode.create(document.body));
 
         assertEquals(
@@ -313,46 +293,40 @@ suite('ReadAloudModel', () => {
         assertTextEmpty();
       });
 
-  test(
-      'getCurrentTextContent when called many times returns same text',
-      async () => {
-        const header = document.createElement('h1');
-        header.textContent =
-            'Run, run brother- you gotta get out while you can.';
+  test('getCurrentTextContent when called many times returns same text', () => {
+    const header = document.createElement('h1');
+    header.textContent = 'Run, run brother- you gotta get out while you can.';
 
-        const paragraph = document.createElement('div');
-        const bold = document.createElement('strong');
-        bold.textContent = 'Run, take cover. I\'m gonna come up with a plan';
+    const paragraph = document.createElement('div');
+    const bold = document.createElement('strong');
+    bold.textContent = 'Run, take cover. I\'m gonna come up with a plan';
 
-        const textAfterBold = document.createTextNode('I hate to make you go.');
-        paragraph.appendChild(bold);
-        paragraph.appendChild(textAfterBold);
+    const textAfterBold = document.createTextNode('I hate to make you go.');
+    paragraph.appendChild(bold);
+    paragraph.appendChild(textAfterBold);
 
-        document.body.appendChild(header);
-        document.body.appendChild(paragraph);
+    document.body.appendChild(header);
+    document.body.appendChild(paragraph);
 
-        await microtasksFinished();
+    model.init(ReadAloudNode.create(document.body));
 
-        model.init(ReadAloudNode.create(document.body));
+    // Returned text is the same no matter how many times
+    // getCurrentTextContent is called.
+    for (let i = 0; i < 10; i++) {
+      assertEquals(
+          header.textContent.trim(), model.getCurrentTextContent().trim());
+    }
 
-        // Returned text is the same no matter how many times
-        // getCurrentTextContent is called.
-        for (let i = 0; i < 10; i++) {
-          assertEquals(
-              header.textContent.trim(), model.getCurrentTextContent().trim());
-        }
+    // After moving speech forward, text is the same  no matter how many
+    // times getCurrentTextContent is called, when the sentence does not
+    // span the entire node.
+    model.moveSpeechForward();
+    for (let i = 0; i < 10; i++) {
+      assertEquals('Run, take cover.', model.getCurrentTextContent().trim());
+    }
+  });
 
-        // After moving speech forward, text is the same  no matter how many
-        // times getCurrentTextContent is called, when the sentence does not
-        // span the entire node.
-        model.moveSpeechForward();
-        for (let i = 0; i < 10; i++) {
-          assertEquals(
-              'Run, take cover.', model.getCurrentTextContent().trim());
-        }
-      });
-
-  test('getCurrentTextContent returns expected text', async () => {
+  test('getCurrentTextContent returns expected text', () => {
     const header = document.createElement('a');
     header.textContent = 'But there ain\'t no other way.';
 
@@ -366,8 +340,6 @@ suite('ReadAloudModel', () => {
 
     document.body.appendChild(header);
     document.body.appendChild(paragraph);
-
-    await microtasksFinished();
 
     model.init(ReadAloudNode.create(document.body));
     assertEquals(
@@ -386,34 +358,30 @@ suite('ReadAloudModel', () => {
     assertTextEmpty();
   });
 
-  test(
-      'getTextContent splits sentences across line-breaking items',
-      async () => {
-        const header = document.createElement('h3');
-        header.textContent = 'Vuelo';
+  test('getTextContent splits sentences across line-breaking items', () => {
+    const header = document.createElement('h3');
+    header.textContent = 'Vuelo';
 
-        const paragraph = document.createElement('div');
-        const bold = document.createElement('strong');
-        bold.textContent = 'cada vez';
+    const paragraph = document.createElement('div');
+    const bold = document.createElement('strong');
+    bold.textContent = 'cada vez';
 
-        const textBeforeBold = document.createTextNode('rodar entre nubez ');
-        const textAfterBold = document.createTextNode(' más lejos.');
-        paragraph.appendChild(textBeforeBold);
-        paragraph.appendChild(bold);
-        paragraph.appendChild(textAfterBold);
+    const textBeforeBold = document.createTextNode('rodar entre nubez ');
+    const textAfterBold = document.createTextNode(' más lejos.');
+    paragraph.appendChild(textBeforeBold);
+    paragraph.appendChild(bold);
+    paragraph.appendChild(textAfterBold);
 
-        document.body.appendChild(header);
-        document.body.appendChild(paragraph);
+    document.body.appendChild(header);
+    document.body.appendChild(paragraph);
 
-        await microtasksFinished();
+    model.init(ReadAloudNode.create(document.body));
 
-        model.init(ReadAloudNode.create(document.body));
-
-        assertEquals('Vuelo\n', model.getCurrentTextContent());
-      });
+    assertEquals('Vuelo\n', model.getCurrentTextContent());
+  });
 
 
-  test('onNodeWillBeDeleted deletes node', async () => {
+  test('onNodeWillBeDeleted deletes node', () => {
     const paragraph1 = document.createElement('div');
     paragraph1.textContent = 'You need help ';
 
@@ -427,8 +395,6 @@ suite('ReadAloudModel', () => {
 
     document.body.appendChild(paragraph1);
     document.body.appendChild(paragraph2);
-
-    await microtasksFinished();
 
     model.init(ReadAloudNode.create(document.body));
 
@@ -449,7 +415,7 @@ suite('ReadAloudModel', () => {
   });
 
 
-  test('init called multiple times does nothing', async () => {
+  test('init called multiple times does nothing', () => {
     const paragraph1 = document.createElement('div');
     paragraph1.textContent = 'Keep a grip and take a deep breath. ';
 
@@ -464,8 +430,6 @@ suite('ReadAloudModel', () => {
 
     document.body.appendChild(paragraph1);
     document.body.appendChild(paragraph2);
-
-    await microtasksFinished();
 
     model.init(ReadAloudNode.create(document.body));
     model.init(ReadAloudNode.create(document.body));
@@ -486,7 +450,7 @@ suite('ReadAloudModel', () => {
     assertEquals(textAfterBold.textContent, model.getCurrentTextContent());
   });
 
-  test('moveSpeechBackwards returns expected text', async () => {
+  test('moveSpeechBackwards returns expected text', () => {
     const paragraph1 = document.createElement('div');
     paragraph1.textContent = 'See the line where the sky meets the sea? ';
 
@@ -499,8 +463,6 @@ suite('ReadAloudModel', () => {
     document.body.appendChild(paragraph1);
     document.body.appendChild(paragraph2);
     document.body.appendChild(paragraph3);
-
-    await microtasksFinished();
 
     model.init(ReadAloudNode.create(document.body));
 
@@ -537,7 +499,7 @@ suite('ReadAloudModel', () => {
     assertTextEmpty();
   });
 
-  test('getCurrentText after re-initialization', async () => {
+  test('getCurrentText after re-initialization', () => {
     const paragraph1 = document.createElement('div');
     paragraph1.textContent = 'Breaking my heart one piece at a time. ';
 
@@ -551,7 +513,6 @@ suite('ReadAloudModel', () => {
     document.body.appendChild(paragraph2);
     document.body.appendChild(paragraph3);
 
-    await microtasksFinished();
     model.init(ReadAloudNode.create(document.body));
     assertSentenceMatchesEntireSegment(paragraph1.textContent);
 
@@ -573,7 +534,6 @@ suite('ReadAloudModel', () => {
     document.body.appendChild(newParagraph2);
     document.body.appendChild(newParagraph3);
 
-    await microtasksFinished();
     model.resetModel();
     model.init(ReadAloudNode.create(document.body));
 
@@ -590,7 +550,7 @@ suite('ReadAloudModel', () => {
     assertTextEmpty();
   });
 
-  test('moveSpeechBackwards after re-initialization', async () => {
+  test('moveSpeechBackwards after re-initialization', () => {
     const paragraph1 = document.createElement('div');
     paragraph1.textContent = 'This is a sentence. ';
 
@@ -604,7 +564,6 @@ suite('ReadAloudModel', () => {
     document.body.appendChild(paragraph2);
     document.body.appendChild(paragraph3);
 
-    await microtasksFinished();
     model.init(ReadAloudNode.create(document.body));
     assertSentenceMatchesEntireSegment(paragraph1.textContent);
 
@@ -627,7 +586,6 @@ suite('ReadAloudModel', () => {
     document.body.appendChild(newParagraph2);
     document.body.appendChild(newParagraph3);
 
-    await microtasksFinished();
     model.resetModel();
     model.init(ReadAloudNode.create(document.body));
 
@@ -665,7 +623,7 @@ suite('ReadAloudModel', () => {
     assertTextEmpty();
   });
 
-  test('moveSpeechBackwards when text split across two nodes', async () => {
+  test('moveSpeechBackwards when text split across two nodes', () => {
     const div = document.createElement('div');
     const sentence1 = document.createElement('b');
     sentence1.textContent = 'And I am almost ';
@@ -681,7 +639,6 @@ suite('ReadAloudModel', () => {
     div.appendChild(sentence3);
     document.body.appendChild(div);
 
-    await microtasksFinished();
     model.init(ReadAloudNode.create(document.body));
     assertEquals('And I am almost there. ', model.getCurrentTextContent());
 
@@ -701,7 +658,7 @@ suite('ReadAloudModel', () => {
   });
 
   test(
-      'moveSpeechBackwards when text split across multiple nodes', async () => {
+      'moveSpeechBackwards when text split across multiple nodes', () => {
         const div = document.createElement('div');
         const sentence1 = document.createElement('b');
         sentence1.textContent = 'The wind is howling like this ';
@@ -716,7 +673,6 @@ suite('ReadAloudModel', () => {
         div.appendChild(sentence2);
         div.appendChild(sentence3);
         document.body.appendChild(div);
-        await microtasksFinished();
         model.init(ReadAloudNode.create(document.body));
         assertEquals(
             'The wind is howling like this swirling storm inside.',
@@ -734,7 +690,7 @@ suite('ReadAloudModel', () => {
 
   test(
       'getCurrentText when sentence initially skipped returns expected text',
-      async () => {
+      () => {
         const div = document.createElement('div');
         const sentence1 = document.createElement('b');
         sentence1.textContent = 'See the line where the sky meets the sea? ';
@@ -750,7 +706,6 @@ suite('ReadAloudModel', () => {
         div.appendChild(sentence3);
         document.body.appendChild(div);
 
-        await microtasksFinished();
         model.init(ReadAloudNode.create(document.body));
 
         // Move to third sentence
@@ -763,7 +718,7 @@ suite('ReadAloudModel', () => {
         assertSentenceMatchesEntireSegment(sentence2.textContent);
       });
 
-  test('getCurrentText after reset starts speech over', async () => {
+  test('getCurrentText after reset starts speech over', () => {
     const div = document.createElement('div');
     const sentence1 = document.createElement('b');
     sentence1.textContent = 'I\'ve got the wind in my hair. ';
@@ -779,7 +734,6 @@ suite('ReadAloudModel', () => {
     div.appendChild(sentence3);
     document.body.appendChild(div);
 
-    await microtasksFinished();
     model.init(ReadAloudNode.create(document.body));
     assertEquals(
         sentence1.textContent.trim(), model.getCurrentTextContent().trim());
@@ -812,7 +766,7 @@ suite('ReadAloudModel', () => {
     assertTextEmpty();
   });
 
-  test('getCurrentText after restart starts speech over', async () => {
+  test('getCurrentText after restart starts speech over', () => {
     const div = document.createElement('div');
     const sentence1 = document.createElement('b');
     sentence1.textContent = 'I\'ve got the wind in my hair. ';
@@ -828,7 +782,6 @@ suite('ReadAloudModel', () => {
     div.appendChild(sentence3);
     document.body.appendChild(div);
 
-    await microtasksFinished();
     model.init(ReadAloudNode.create(document.body));
     assertEquals(
         sentence1.textContent.trim(), model.getCurrentTextContent().trim());
@@ -866,7 +819,7 @@ suite('ReadAloudModel', () => {
   });
 
 
-  test('getCurrentText with multiple sentences in same node', async () => {
+  test('getCurrentText with multiple sentences in same node', () => {
     const div = document.createElement('div');
     const sentence1 = document.createElement('b');
     sentence1.textContent = 'But from up here. The ';
@@ -884,7 +837,6 @@ suite('ReadAloudModel', () => {
     div.appendChild(sentence3);
     document.body.appendChild(div);
 
-    await microtasksFinished();
     model.init(ReadAloudNode.create(document.body));
 
     // The first segment was returned correctly.
@@ -919,7 +871,7 @@ suite('ReadAloudModel', () => {
     assertTextEmpty();
   });
 
-  test('getCurrentText when sentence split across multiple nodes', async () => {
+  test('getCurrentText when sentence split across multiple nodes', () => {
     const div = document.createElement('div');
     const sentence1 = document.createElement('b');
     sentence1.textContent = 'The wind is howling like this ';
@@ -935,7 +887,6 @@ suite('ReadAloudModel', () => {
     div.appendChild(sentence3);
     document.body.appendChild(div);
 
-    await microtasksFinished();
     model.init(ReadAloudNode.create(document.body));
     assertEquals(
         'The wind is howling like this swirling storm inside.',
@@ -945,7 +896,7 @@ suite('ReadAloudModel', () => {
     assertTextEmpty();
   });
 
-  test('getCurrentText when sentence split across two nodes', async () => {
+  test('getCurrentText when sentence split across two nodes', () => {
     const div = document.createElement('div');
     const sentence1 = document.createElement('b');
     sentence1.textContent = 'And I am almost ';
@@ -961,7 +912,6 @@ suite('ReadAloudModel', () => {
     div.appendChild(sentence3);
     document.body.appendChild(div);
 
-    await microtasksFinished();
     model.init(ReadAloudNode.create(document.body));
     assertEquals(
         'And I am almost there.', model.getCurrentTextContent().trim());
@@ -975,7 +925,7 @@ suite('ReadAloudModel', () => {
 
   test(
       'getCurrentTextContent called multiple times returns the same content if moveSpeechForward or moveSpeechBackwards is not called',
-      async () => {
+      () => {
         const div = document.createElement('div');
         const sentence1 = document.createElement('strong');
         sentence1.textContent = 'Can\'t we be seventeen? ';
@@ -986,7 +936,6 @@ suite('ReadAloudModel', () => {
         div.appendChild(sentence1);
         div.appendChild(sentence2);
         document.body.appendChild(div);
-        await microtasksFinished();
         model.init(ReadAloudNode.create(document.body));
         for (let i = 0; i < 10; i++) {
           assertSentenceMatchesEntireSegment(sentence1.textContent);
@@ -998,7 +947,7 @@ suite('ReadAloudModel', () => {
         }
       });
 
-  test('getCurrentText returns expected text', async () => {
+  test('getCurrentText returns expected text', () => {
     const div = document.createElement('div');
     const sentence1 = document.createElement('b');
     sentence1.textContent = 'Love showed up at my door yesterday. ';
@@ -1014,7 +963,6 @@ suite('ReadAloudModel', () => {
     div.appendChild(sentence3);
     document.body.appendChild(div);
 
-    await microtasksFinished();
     model.init(ReadAloudNode.create(document.body));
     assertEquals(
         sentence1.textContent.trim(), model.getCurrentTextContent().trim());
@@ -1031,7 +979,7 @@ suite('ReadAloudModel', () => {
     assertTextEmpty();
   });
 
-  test('getCurrentTextSegments returns expected text', async () => {
+  test('getCurrentTextSegments returns expected text', () => {
     const div = document.createElement('div');
     const sentence1 = document.createElement('h1');
     sentence1.textContent = 'You need space. ';
@@ -1047,7 +995,6 @@ suite('ReadAloudModel', () => {
     div.appendChild(sentence3);
     document.body.appendChild(div);
 
-    await microtasksFinished();
     model.init(ReadAloudNode.create(document.body));
     assertSentenceMatchesEntireSegment(sentence1.textContent);
 
@@ -1063,7 +1010,7 @@ suite('ReadAloudModel', () => {
 
   test(
       'moveSpeechBackwards when first initialized returns first sentence',
-      async () => {
+      () => {
         const div = document.createElement('div');
         const sentence1 = document.createElement('h1');
         sentence1.textContent = 'This is critical.';
@@ -1075,7 +1022,6 @@ suite('ReadAloudModel', () => {
         div.appendChild(sentence2);
         document.body.appendChild(div);
 
-        await microtasksFinished();
         model.init(ReadAloudNode.create(document.body));
         // If moveSpeechBackwards is called before moveSpeechForwards, the first
         // sentence should still be returned.
@@ -1089,7 +1035,7 @@ suite('ReadAloudModel', () => {
         assertTextEmpty();
       });
 
-  test('getCurrentText when sentence split across paragraph', async () => {
+  test('getCurrentText when sentence split across paragraph', () => {
     const paragraph1 = document.createElement('p');
     paragraph1.textContent =
         'Mic check, can you hear me? Gotta know if I\'m coming in ';
@@ -1109,7 +1055,6 @@ suite('ReadAloudModel', () => {
     document.body.appendChild(paragraph3);
     document.body.appendChild(paragraph4);
 
-    await microtasksFinished();
     model.init(ReadAloudNode.create(document.body));
     assertEquals(
         'Mic check, can you hear me?', model.getCurrentTextContent().trim());
@@ -1147,7 +1092,7 @@ suite('ReadAloudModel', () => {
     assertTextEmpty();
   });
 
-  test('getCurrentText includes ordered list items', async () => {
+  test('getCurrentText includes ordered list items', () => {
     const ol = document.createElement('ol');
     const li1 = document.createElement('li');
     li1.textContent = 'Realize numbers are ignored in read aloud.';
@@ -1160,7 +1105,6 @@ suite('ReadAloudModel', () => {
     ol.appendChild(li3);
     document.body.appendChild(ol);
 
-    await microtasksFinished();
     model.init(ReadAloudNode.create(document.body));
     // The beginning of the list item should start with a newline to ensure
     // the list item isn't incorrectly grouped with the previous text. This
@@ -1188,7 +1132,7 @@ suite('ReadAloudModel', () => {
     assertEquals(li3.textContent, model.getCurrentTextContent().trim());
   });
 
-  test('getCurrentText for ordered list with custom start', async () => {
+  test('getCurrentText for ordered list with custom start', () => {
     const ol = document.createElement('ol');
     ol.start = 100;
     const li1 = document.createElement('li');
@@ -1199,7 +1143,6 @@ suite('ReadAloudModel', () => {
     ol.appendChild(li2);
     document.body.appendChild(ol);
 
-    await microtasksFinished();
     model.init(ReadAloudNode.create(document.body));
     assertEquals('\n', model.getCurrentTextContent());
     model.moveSpeechForward();
@@ -1209,7 +1152,7 @@ suite('ReadAloudModel', () => {
     assertEquals('101. cls to submit', model.getCurrentTextContent().trim());
   });
 
-  test('getCurrentText for ordered list with custom values', async () => {
+  test('getCurrentText for ordered list with custom values', () => {
     const ol = document.createElement('ol');
     const li1 = document.createElement('li');
     li1.textContent = 'golden rings';
@@ -1229,7 +1172,6 @@ suite('ReadAloudModel', () => {
     ol.appendChild(li4);
     document.body.appendChild(ol);
 
-    await microtasksFinished();
     model.init(ReadAloudNode.create(document.body));
     assertEquals('\n', model.getCurrentTextContent());
 
@@ -1246,7 +1188,7 @@ suite('ReadAloudModel', () => {
     assertEquals('2. turtle doves', model.getCurrentTextContent().trim());
   });
 
-  test('getCurrentText for ordered list with some custom values', async () => {
+  test('getCurrentText for ordered list with some custom values', () => {
     const ol = document.createElement('ol');
     const items = ['first', 'third', 'fourth', 'tenth'].map(text => {
       const li = document.createElement('li');
@@ -1258,7 +1200,6 @@ suite('ReadAloudModel', () => {
     ol.append(...items);
     document.body.appendChild(ol);
 
-    await microtasksFinished();
     model.init(ReadAloudNode.create(document.body));
     assertEquals('\n', model.getCurrentTextContent());
 
@@ -1269,7 +1210,7 @@ suite('ReadAloudModel', () => {
     }
   });
 
-  test('getCurrentText for ordered list uses copied marker', async () => {
+  test('getCurrentText for ordered list uses copied marker', () => {
     const ol = document.createElement('ol');
     const items = ['first', 'second'].map(text => {
       const li = document.createElement('li');
@@ -1281,7 +1222,6 @@ suite('ReadAloudModel', () => {
     ol.append(...items);
     document.body.appendChild(ol);
 
-    await microtasksFinished();
     model.init(ReadAloudNode.create(document.body));
     assertEquals('\n', model.getCurrentTextContent());
 
@@ -1291,7 +1231,7 @@ suite('ReadAloudModel', () => {
     }
   });
 
-  test('getCurrentText numbers nested ordered lists separately', async () => {
+  test('getCurrentText numbers nested ordered lists separately', () => {
     const outer = document.createElement('ol');
     const outer1 = document.createElement('li');
     outer1.textContent = 'Outer one.';
@@ -1307,7 +1247,6 @@ suite('ReadAloudModel', () => {
     outer.append(outer1, outer2);
     document.body.appendChild(outer);
 
-    await microtasksFinished();
     model.init(ReadAloudNode.create(document.body));
     let text = '';
     while (model.getCurrentTextContent()) {
@@ -1322,7 +1261,7 @@ suite('ReadAloudModel', () => {
 
   test(
       'getCurrentText when sentence split across paragraph without paragraph tags',
-      async () => {
+      () => {
         const paragraph1 = document.createElement('b');
         paragraph1.textContent = 'You\'d never get away\n';
 
@@ -1336,7 +1275,6 @@ suite('ReadAloudModel', () => {
         document.body.appendChild(paragraph2);
         document.body.appendChild(paragraph3);
 
-        await microtasksFinished();
         model.init(ReadAloudNode.create(document.body));
         assertEquals(
             paragraph1.textContent.trim(),
@@ -1356,46 +1294,43 @@ suite('ReadAloudModel', () => {
         assertTextEmpty();
       });
 
-  test(
-      'getCurrentText does not filter out whitespace between nodes',
-      async () => {
-        const teenLink = document.createElement('a');
-        const p = document.createElement('p');
-        teenLink.textContent = 'teen';
-        p.appendChild(teenLink);
+  test('getCurrentText does not filter out whitespace between nodes', () => {
+    const teenLink = document.createElement('a');
+    const p = document.createElement('p');
+    teenLink.textContent = 'teen';
+    p.appendChild(teenLink);
 
-        const whitespaceSpan = document.createElement('span');
-        whitespaceSpan.textContent = ' ';
-        p.appendChild(whitespaceSpan);
+    const whitespaceSpan = document.createElement('span');
+    whitespaceSpan.textContent = ' ';
+    p.appendChild(whitespaceSpan);
 
-        const satiricalLink = document.createElement('a');
-        satiricalLink.textContent = 'satirical';
-        p.appendChild(satiricalLink);
+    const satiricalLink = document.createElement('a');
+    satiricalLink.textContent = 'satirical';
+    p.appendChild(satiricalLink);
 
-        const whitespaceSpan2 = document.createElement('span');
-        whitespaceSpan2.textContent = ' ';
-        p.appendChild(whitespaceSpan2);
+    const whitespaceSpan2 = document.createElement('span');
+    whitespaceSpan2.textContent = ' ';
+    p.appendChild(whitespaceSpan2);
 
-        const crimeFilmLink = document.createElement('a');
-        crimeFilmLink.textContent = 'crime film';
-        p.appendChild(crimeFilmLink);
+    const crimeFilmLink = document.createElement('a');
+    crimeFilmLink.textContent = 'crime film';
+    p.appendChild(crimeFilmLink);
 
-        document.body.appendChild(p);
+    document.body.appendChild(p);
 
-        await microtasksFinished();
-        model.init(ReadAloudNode.create(document.body));
-        // If whitespace were filtered out, this would be
-        // "teensatiricalcrime film"
-        assertEquals(
-            'teen satirical crime film', model.getCurrentTextContent().trim());
+    model.init(ReadAloudNode.create(document.body));
+    // If whitespace were filtered out, this would be
+    // "teensatiricalcrime film"
+    assertEquals(
+        'teen satirical crime film', model.getCurrentTextContent().trim());
 
-        model.moveSpeechForward();
-        assertTextEmpty();
-      });
+    model.moveSpeechForward();
+    assertTextEmpty();
+  });
 
   test(
       'getCurrentTextSegments superscript combined with current segment',
-      async () => {
+      () => {
         const div = document.createElement('div');
         const sentence1 = document.createElement('b');
         sentence1.textContent = 'And I am almost there.';
@@ -1407,7 +1342,6 @@ suite('ReadAloudModel', () => {
         div.appendChild(sentence2);
         document.body.appendChild(div);
 
-        await microtasksFinished();
         model.init(ReadAloudNode.create(document.body));
         assertEquals(
             sentence1.textContent + ' ' + sentence2.textContent,
@@ -1417,7 +1351,7 @@ suite('ReadAloudModel', () => {
         assertTextEmpty();
       });
 
-  test('getCurrentTextSegments superscript with only whitespace', async () => {
+  test('getCurrentTextSegments superscript with only whitespace', () => {
     // Create HTML:
     // <p>Backed the losing side.</p>
     // <p><sup>1</sup><sup> </sup>Florence Vassy.</p>
@@ -1438,7 +1372,6 @@ suite('ReadAloudModel', () => {
     document.body.appendChild(p1);
     document.body.appendChild(p2);
 
-    await microtasksFinished();
     model.init(ReadAloudNode.create(document.body));
     assertEquals(
         'Backed the losing side.\n1', model.getCurrentTextContent().trim());
@@ -1451,7 +1384,7 @@ suite('ReadAloudModel', () => {
 
   test(
       'getCurrentTextSegments superscript combined with preceding sentence instead of succeeding sentence',
-      async () => {
+      () => {
         // Create a container element to hold the simplified structure
         const simplifiedContainer = document.createElement('p');
 
@@ -1469,7 +1402,6 @@ suite('ReadAloudModel', () => {
 
         document.body.appendChild(simplifiedContainer);
 
-        await microtasksFinished();
         model.init(ReadAloudNode.create(document.body));
         assertEquals('I\'m coming! [b]', model.getCurrentTextContent().trim());
         model.moveSpeechForward();
@@ -1481,7 +1413,7 @@ suite('ReadAloudModel', () => {
 
   test(
       'getCurrentTextSegments superscript combined with preceding sentence with multiple superscripts',
-      async () => {
+      () => {
         // Create a container element to hold the simplified structure
         const simplifiedContainer = document.createElement('p');
 
@@ -1503,7 +1435,6 @@ suite('ReadAloudModel', () => {
 
         document.body.appendChild(simplifiedContainer);
 
-        await microtasksFinished();
         model.init(ReadAloudNode.create(document.body));
         assertEquals(
             'Wait for me, I\'m coming. [7][8]',
@@ -1519,7 +1450,7 @@ suite('ReadAloudModel', () => {
 
   test(
       'getCurrentTextSegments mid-sentence superscript after earlier sentences',
-      async () => {
+      () => {
         // The first text node spans several sentences, so the node search for
         // the last sentence must still start at that node and not mistake the
         // superscript for the start of the sentence.
@@ -1529,7 +1460,6 @@ suite('ReadAloudModel', () => {
         paragraph.appendChild(document.createTextNode(' Fourth.'));
         document.body.appendChild(paragraph);
 
-        await microtasksFinished();
         model.init(ReadAloudNode.create(document.body));
 
         assertEquals('First.', model.getCurrentTextContent().trim());
@@ -1544,7 +1474,7 @@ suite('ReadAloudModel', () => {
 
   test(
       'getCurrentTextSegments all superscript nodes included in current sentence',
-      async () => {
+      () => {
         // Create a container element to hold the simplified structure
         const paragraph = document.createElement('p');
 
@@ -1558,7 +1488,6 @@ suite('ReadAloudModel', () => {
         paragraph.appendChild(superscript);
 
         document.body.appendChild(paragraph);
-        await microtasksFinished();
         model.init(ReadAloudNode.create(document.body));
 
         // The first sentence and its superscript are returned as one segment.
@@ -1572,7 +1501,7 @@ suite('ReadAloudModel', () => {
 
   test(
       'getCurrentTextSegments superscript with brackets included in current sentence',
-      async () => {
+      () => {
         // Create a container element to hold the simplified structure
         const paragraph = document.createElement('p');
 
@@ -1584,7 +1513,6 @@ suite('ReadAloudModel', () => {
         paragraph.appendChild(superscript);
 
         document.body.appendChild(paragraph);
-        await microtasksFinished();
         model.init(ReadAloudNode.create(document.body));
 
         // The first sentence and its superscript are returned as one segment.
@@ -1597,7 +1525,7 @@ suite('ReadAloudModel', () => {
 
   test(
       'getCurrentTextSegments superscript included when entire node and more text is after superscript',
-      async () => {
+      () => {
         // Create a container element to hold the simplified structure
         const paragraph = document.createElement('p');
 
@@ -1616,7 +1544,6 @@ suite('ReadAloudModel', () => {
             document.createTextNode('People gon\' come here from everywhere.'));
 
         document.body.appendChild(paragraph);
-        await microtasksFinished();
         model.init(ReadAloudNode.create(document.body));
 
         // The first sentence and its superscript are returned as one segment.
@@ -1636,7 +1563,7 @@ suite('ReadAloudModel', () => {
 
   test(
       'getCurrentTextSegments PDF-style wrapped superscript text node combined with preceding sentence',
-      async () => {
+      () => {
         const paragraph = document.createElement('p');
         paragraph.appendChild(
             document.createTextNode('And I am almost there.'));
@@ -1650,7 +1577,6 @@ suite('ReadAloudModel', () => {
             ' People gon\' come here from everywhere.'));
 
         document.body.appendChild(paragraph);
-        await microtasksFinished();
         model.init(ReadAloudNode.create(document.body));
 
         assertEquals(
@@ -1666,33 +1592,29 @@ suite('ReadAloudModel', () => {
       });
 
 
-  test(
-      'getHighlightForCurrentSegmentIndex returns correct nodess', async () => {
-        const paragraph = document.createElement('p');
-        const child = document.createTextNode('I\'m crossing the line!');
-        paragraph.appendChild(child);
-        document.body.appendChild(paragraph);
-        await microtasksFinished();
+  test('getHighlightForCurrentSegmentIndex returns correct nodess', () => {
+    const paragraph = document.createElement('p');
+    const child = document.createTextNode('I\'m crossing the line!');
+    paragraph.appendChild(child);
+    document.body.appendChild(paragraph);
 
-        // Before there are any processed granularities,
-        // getHighlightForCurrentSegmentIndex should be empty.
-        assertEquals(
-            0, model.getHighlightForCurrentSegmentIndex(0, false).length);
-        model.init(ReadAloudNode.create(document.body));
+    // Before there are any processed granularities,
+    // getHighlightForCurrentSegmentIndex should be empty.
+    assertEquals(0, model.getHighlightForCurrentSegmentIndex(0, false).length);
+    model.init(ReadAloudNode.create(document.body));
 
-        expectHighlightAtIndexMatches(0, [{node: child, start: 0, length: 3}]);
-        expectHighlightAtIndexMatches(3, [{node: child, start: 3, length: 9}]);
-        expectHighlightAtIndexMatches(7, [{node: child, start: 7, length: 5}]);
-        expectHighlightAtIndexMatches(
-            child.textContent.length - 2,
-            [{node: child, start: 20, length: 1}]);
-        expectHighlightAtIndexMatchesEmpty(child.textContent.length);
-      });
+    expectHighlightAtIndexMatches(0, [{node: child, start: 0, length: 3}]);
+    expectHighlightAtIndexMatches(3, [{node: child, start: 3, length: 9}]);
+    expectHighlightAtIndexMatches(7, [{node: child, start: 7, length: 5}]);
+    expectHighlightAtIndexMatches(
+        child.textContent.length - 2, [{node: child, start: 20, length: 1}]);
+    expectHighlightAtIndexMatchesEmpty(child.textContent.length);
+  });
 
 
   test(
       ' getHighlightForCurrentSegmentIndex sentence spans multiple nodes returns correct node',
-      async () => {
+      () => {
         const paragraph = document.createElement('p');
         // Text indices:                      0123456789012345678901234567890
         const child1 = document.createTextNode('Never feel heavy ');
@@ -1703,7 +1625,6 @@ suite('ReadAloudModel', () => {
         paragraph.appendChild(child2);
         paragraph.appendChild(child3);
         document.body.appendChild(paragraph);
-        await microtasksFinished();
 
         // Before there are any processed granularities,
         // getHighlightForCurrentSegmentIndex should be empty.
@@ -1751,11 +1672,10 @@ suite('ReadAloudModel', () => {
         expectHighlightAtIndexMatchesEmpty(-10);
       });
 
-  test('getCurrentTextSegments returns correct segments', async () => {
+  test('getCurrentTextSegments returns correct segments', () => {
     const p = document.createElement('p');
     p.textContent = 'I broke into a million pieces';
     document.body.appendChild(p);
-    await microtasksFinished();
     model.init(ReadAloudNode.create(document.body));
 
     const segments = model.getCurrentTextSegments();
@@ -1767,7 +1687,7 @@ suite('ReadAloudModel', () => {
 
   test(
       'getCurrentTextSegments sentence spans multiple nodes returns correct segments',
-      async () => {
+      () => {
         const div = document.createElement('div');
         const sentence1 = document.createTextNode('and I can\'t go back, ');
         const sentence2 =
@@ -1777,7 +1697,6 @@ suite('ReadAloudModel', () => {
         div.appendChild(sentence2);
         div.appendChild(sentence3);
         document.body.appendChild(div);
-        await microtasksFinished();
         model.init(ReadAloudNode.create(document.body));
 
         const segments = model.getCurrentTextSegments();
@@ -1795,7 +1714,7 @@ suite('ReadAloudModel', () => {
 
   test(
       'getCurrentTextSegments node spans multiple sentences returns correct segments',
-      async () => {
+      () => {
         const segment1 = 'The scars are part of me! ';
         const segment2 = 'Darkness and harmony. ';
         const segment3 = 'My voice without the lies. ';
@@ -1808,7 +1727,6 @@ suite('ReadAloudModel', () => {
         const node2 = document.createTextNode(node2Text);
         div.appendChild(node2);
         document.body.appendChild(div);
-        await microtasksFinished();
         model.init(ReadAloudNode.create(document.body));
 
         // Sentence 1
@@ -1854,41 +1772,37 @@ suite('ReadAloudModel', () => {
         assertEquals(node2Text.length, segments[1]!.length);
       });
 
-  test(
-      'getCurrentTextSegments after previous returns correct nodes',
-      async () => {
-        const sentence1 =
-            'Why did I cover up the colors stuck inside my head? ';
-        const sentence2 = 'I should\'ve let the jagged edges.';
-        const sentence3 = 'meet the light instead.';
-        const p1 = document.createElement('p');
-        p1.textContent = sentence1;
-        const p2 = document.createElement('p');
-        p2.textContent = sentence2;
-        const p3 = document.createElement('p');
-        p3.textContent = sentence3;
-        document.body.appendChild(p1);
-        document.body.appendChild(p2);
-        document.body.appendChild(p3);
-        await microtasksFinished();
-        model.init(ReadAloudNode.create(document.body));
+  test('getCurrentTextSegments after previous returns correct nodes', () => {
+    const sentence1 = 'Why did I cover up the colors stuck inside my head? ';
+    const sentence2 = 'I should\'ve let the jagged edges.';
+    const sentence3 = 'meet the light instead.';
+    const p1 = document.createElement('p');
+    p1.textContent = sentence1;
+    const p2 = document.createElement('p');
+    p2.textContent = sentence2;
+    const p3 = document.createElement('p');
+    p3.textContent = sentence3;
+    document.body.appendChild(p1);
+    document.body.appendChild(p2);
+    document.body.appendChild(p3);
+    model.init(ReadAloudNode.create(document.body));
 
-        model.moveSpeechForward();
-        model.moveSpeechForward();
-        assertEquals(sentence3, model.getCurrentTextContent().trim());
+    model.moveSpeechForward();
+    model.moveSpeechForward();
+    assertEquals(sentence3, model.getCurrentTextContent().trim());
 
-        model.moveSpeechBackwards();
-        assertEquals(sentence2, model.getCurrentTextContent().trim());
-        const segments = model.getCurrentTextSegments();
-        assertEquals(1, segments.length);
-        assertEquals(p2.firstChild, segments[0]!.node.domNode());
-        assertEquals(0, segments[0]!.start);
-        assertEquals(sentence2.length, segments[0]!.length);
-      });
+    model.moveSpeechBackwards();
+    assertEquals(sentence2, model.getCurrentTextContent().trim());
+    const segments = model.getCurrentTextSegments();
+    assertEquals(1, segments.length);
+    assertEquals(p2.firstChild, segments[0]!.node.domNode());
+    assertEquals(0, segments[0]!.start);
+    assertEquals(sentence2.length, segments[0]!.length);
+  });
 
   test(
       'getHighlightForCurrentSegmentIndex after moving forward returns correct nodes',
-      async () => {
+      () => {
         const sentence1 = 'Never feel heavy or earthbound. ';
         const sentence2 = 'No worries or doubts ';
         const sentence3 = 'interfere.';
@@ -1900,7 +1814,6 @@ suite('ReadAloudModel', () => {
         paragraph.appendChild(child2);
         paragraph.appendChild(child3);
         document.body.appendChild(paragraph);
-        await microtasksFinished();
         model.init(ReadAloudNode.create(document.body));
 
         // Spot check that indices 0->sentence1.length() map to the first node
@@ -1937,7 +1850,7 @@ suite('ReadAloudModel', () => {
 
   test(
       'getHighlightForCurrentSegmentIndex after backwards returns correct highlight',
-      async () => {
+      () => {
         const sentence1 = 'There\'s nothing but you ';
         const sentence2 = 'looking down on the view from up here. ';
         const sentence3 = 'Stretch out with the wind behind you.';
@@ -1950,7 +1863,6 @@ suite('ReadAloudModel', () => {
         paragraph.appendChild(child3);
 
         document.body.appendChild(paragraph);
-        await microtasksFinished();
 
         // Before there are any processed granularities, there should be no
         // highlights.
@@ -1992,7 +1904,7 @@ suite('ReadAloudModel', () => {
 
   test(
       'getHighlightForCurrentSegmentIndex multinode words returns correct length',
-      async () => {
+      () => {
         const word1 = 'Stretch ';
         const word2 = 'out ';
         const word3 = 'with ';
@@ -2009,7 +1921,6 @@ suite('ReadAloudModel', () => {
         p.appendChild(node1);
         p.appendChild(node2);
         document.body.appendChild(p);
-        await microtasksFinished();
 
         model.init(ReadAloudNode.create(document.body));
         assertEquals(
@@ -2061,7 +1972,7 @@ suite('ReadAloudModel', () => {
 
   test(
       'getHighlightForCurrentSegmentIndex node spans multiple sentences returns correct nodes',
-      async () => {
+      () => {
         const segment1 = 'I\'m taking what\'s mine! ';
         const segment2 = 'Every drop, every smidge. ';
         const segment3 = 'If I\'m burning a bridge, let it burn. ';
@@ -2075,7 +1986,6 @@ suite('ReadAloudModel', () => {
         const node2 = document.createTextNode(node2Text);
         div.appendChild(node2);
         document.body.appendChild(div);
-        await microtasksFinished();
         model.init(ReadAloudNode.create(document.body));
 
         // First sentence
@@ -2158,8 +2068,7 @@ suite('ReadAloudModel', () => {
       });
 
   test(
-      'getCurrentText does not return hidden text from image captions',
-      async () => {
+      'getCurrentText does not return hidden text from image captions', () => {
         const visibleTextBefore = document.createElement('p');
         visibleTextBefore.textContent = 'Look at this photograph';
 
@@ -2182,8 +2091,6 @@ suite('ReadAloudModel', () => {
         document.body.appendChild(hiddenFigure);
         document.body.appendChild(visibleTextAfter);
 
-        await microtasksFinished();
-
         model.init(ReadAloudNode.create(document.body));
 
         assertEquals(
@@ -2198,11 +2105,10 @@ suite('ReadAloudModel', () => {
         assertTextEmpty();
       });
 
-  test('resetModel resets initialized and current text content', async () => {
+  test('resetModel resets initialized and current text content', () => {
     const paragraph = document.createElement('p');
     paragraph.textContent = 'Hello world.';
     document.body.appendChild(paragraph);
-    await microtasksFinished();
 
     model.init(ReadAloudNode.create(document.body));
     assertTrue(model.isInitialized());
@@ -2257,12 +2163,11 @@ suite('ReadAloudModel', () => {
       model = new ReadAloudModelImpl();
     });
 
-    test('falls back to word highlighting without boundaries', async () => {
+    test('falls back to word highlighting without boundaries', () => {
       const paragraph = document.createElement('p');
       const text = document.createTextNode('Never feel heavy or earthbound.');
       paragraph.appendChild(text);
       document.body.appendChild(paragraph);
-      await microtasksFinished();
 
       model.init(ReadAloudNode.create(document.body));
 
@@ -2270,9 +2175,8 @@ suite('ReadAloudModel', () => {
           0, [{node: text, start: 0, length: 5}], /*phrases=*/ true);
     });
 
-    test('prefetched boundaries are used for phrases', async () => {
+    test('prefetched boundaries are used for phrases', () => {
       const {node1, node2, node3} = createPhraseSentence();
-      await microtasksFinished();
       model.init(ReadAloudNode.create(document.body));
 
       model.prefetchPhraseBoundaries();
@@ -2300,11 +2204,10 @@ suite('ReadAloudModel', () => {
           24, [{node: node3, start: 0, length: 20}], /*phrases=*/ true);
     });
 
-    test('responses to requests made before a reset are ignored', async () => {
+    test('responses to requests made before a reset are ignored', () => {
       const paragraph = document.createElement('p');
       paragraph.textContent = 'Hello world.';
       document.body.appendChild(paragraph);
-      await microtasksFinished();
       model.init(ReadAloudNode.create(document.body));
       model.prefetchPhraseBoundaries();
       const oldRequestId = lastPhraseRequestId();
@@ -2313,7 +2216,6 @@ suite('ReadAloudModel', () => {
       model.resetModel();
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
       const {node1, node2} = createPhraseSentence();
-      await microtasksFinished();
       model.init(ReadAloudNode.create(document.body));
       model.prefetchPhraseBoundaries();
       assertEquals(

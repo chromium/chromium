@@ -342,7 +342,7 @@ suite('VoiceSelectionMenu', () => {
     });
 
     test('spinner shows before speech starts and is hidden after', async () => {
-      openVoiceMenu();
+      await openVoiceMenu();
       const previewButton =
           getDropdownItemForVoice(voice1).querySelector<CrIconButtonElement>(
               '#preview-icon')!;

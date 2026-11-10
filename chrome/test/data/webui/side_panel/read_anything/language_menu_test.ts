@@ -53,9 +53,9 @@ suite('LanguageMenu', () => {
         '#noResultsMessage');
   }
 
-  async function drawLanguageMenu(): Promise<void> {
+  function drawLanguageMenu(): Promise<void> {
     assertTrue(!!languageMenu);
-    await document.body.appendChild(languageMenu);
+    document.body.appendChild(languageMenu);
     return microtasksFinished();
   }
 
