@@ -203,11 +203,17 @@ void WidgetInputHandlerImpl::DispatchEvent(
         original_event_for_gesture,
     DispatchEventCallback callback) {
   TRACE_EVENT("input,input.scrolling", "WidgetInputHandlerImpl::DispatchEvent");
+  scoped_refptr<WidgetInputHandlerManager> manager = input_handler_manager_;
   if (original_event_for_gesture.has_value()) {
-    input_handler_manager_->DispatchEvent(
-        std::move(original_event_for_gesture.value()), DispatchEventCallback());
+    base::WeakPtr<WidgetInputHandlerImpl> weak_this =
+        weak_ptr_factory_.GetWeakPtr();
+    manager->DispatchEvent(std::move(original_event_for_gesture.value()),
+                           DispatchEventCallback());
+    if (!weak_this) {
+      return;
+    }
   }
-  input_handler_manager_->DispatchEvent(std::move(event), std::move(callback));
+  manager->DispatchEvent(std::move(event), std::move(callback));
 }
 
 void WidgetInputHandlerImpl::DispatchNonBlockingEvent(
