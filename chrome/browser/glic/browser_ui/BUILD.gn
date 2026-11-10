@@ -7,6 +7,38 @@ import("//chrome/common/features.gni")
 
 # No absolute !is_android wrapper for the whole file.
 
+source_set("modal") {
+  sources = [
+    "glic_modal.cc",
+    "glic_modal.h",
+  ]
+  public_deps = [
+    "//base",
+    "//ui/base",
+    "//ui/base/interaction",
+    "//ui/gfx/geometry",
+    "//url",
+  ]
+  deps = [
+    "//chrome/browser/profiles:profile",
+    "//components/tabs:public",
+    "//content/public/browser",
+  ]
+  if (!is_android) {
+    sources += [ "glic_modal_desktop.cc" ]
+    deps += [
+      "//chrome/browser/ui/tabs:tabs_public",
+      "//chrome/browser/ui/webui:chrome_web_contents_handler",
+      "//skia",
+      "//ui/base/mojom:ui_base_types",
+      "//ui/gfx",
+      "//ui/views",
+      "//ui/views/controls/webview",
+      "//ui/web_dialogs",
+    ]
+  }
+}
+
 source_set("browser_ui") {
   sources = [
     "glic_actor_nudge_controller.h",
@@ -80,6 +112,7 @@ source_set("impl") {
 
   deps = [
     ":browser_ui",
+    ":modal",
     "//chrome/browser/contextual_tasks",
     "//chrome/browser/glic:selection_context",
     "//chrome/browser/glic/browser_ui/activity_list_bubble:controller",
@@ -336,6 +369,7 @@ if (!is_android) {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [
+      "glic_modal_browsertest.cc",
       "glic_toast_browsertest.cc",
       "tab_underline_view_browsertest.cc",
     ]
@@ -343,6 +377,7 @@ if (!is_android) {
       ":browser_ui",
       ":glow",
       ":impl",
+      ":modal",
       "//base",
       "//chrome/app:generated_resources",
       "//chrome/browser/glic/test_support",
@@ -358,6 +393,7 @@ if (!is_android) {
       "//chrome/common:non_code_constants",
       "//chrome/test:test_support",
       "//components/tabs:public",
+      "//components/zoom",
       "//content/test:test_support",
       "//testing/gmock",
       "//testing/gtest",
@@ -366,6 +402,7 @@ if (!is_android) {
       "//ui/gfx:gfx_switches",
       "//ui/gfx/animation",
       "//ui/views",
+      "//ui/views/controls/webview",
       "//url",
     ]
   }
