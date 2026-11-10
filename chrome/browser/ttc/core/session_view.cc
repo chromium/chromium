@@ -20,11 +20,15 @@ void SessionView::OnSessionLifecycleChanged(SessionLifecycle lifecycle) {
   UpdateUiState();
 }
 
+void SessionView::OnMicMutedChanged(bool muted) {
+  UpdateUiState();
+}
+
 UiState SessionView::ComputeUiState() const {
   if (delegate_->GetSessionLifecycle() == SessionLifecycle::kInitializing) {
     return UiState::kInitializing;
   }
-  return UiState::kLive;
+  return delegate_->IsMicMuted() ? UiState::kMicMuted : UiState::kLive;
 }
 
 void SessionView::UpdateUiState() {

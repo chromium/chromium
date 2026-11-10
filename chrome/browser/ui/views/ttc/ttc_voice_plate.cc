@@ -42,6 +42,8 @@ WaveformMode ToWaveformMode(UiState state) {
   switch (state) {
     case UiState::kInitializing:
       return WaveformMode::kProcessing;
+    case UiState::kMicMuted:
+      return WaveformMode::kIdle;
     case UiState::kLive:
     default:
       return WaveformMode::kLive;

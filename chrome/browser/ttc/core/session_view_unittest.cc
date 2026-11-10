@@ -20,6 +20,7 @@ class FakeSessionViewDelegate : public SessionViewDelegate {
   void set_session_lifecycle(SessionLifecycle lifecycle) {
     session_lifecycle_ = lifecycle;
   }
+  void set_mic_muted(bool muted) { mic_muted_ = muted; }
 
   // SessionViewDelegate:
   Profile* GetProfile() override { return nullptr; }
@@ -30,9 +31,12 @@ class FakeSessionViewDelegate : public SessionViewDelegate {
   SessionLifecycle GetSessionLifecycle() const override {
     return session_lifecycle_;
   }
+  bool IsMicMuted() const override { return mic_muted_; }
+  Speaker GetSpeaker() const override { return Speaker::kIdle; }
 
  private:
   SessionLifecycle session_lifecycle_ = SessionLifecycle::kInitializing;
+  bool mic_muted_ = false;
 };
 
 class FakeSessionView : public SessionView {
@@ -54,6 +58,11 @@ class TtcSessionViewTest : public testing::Test {
   void SetSessionLifecycle(SessionLifecycle lifecycle) {
     delegate_.set_session_lifecycle(lifecycle);
     view_.OnSessionLifecycleChanged(lifecycle);
+  }
+
+  void SetMicMuted(bool muted) {
+    delegate_.set_mic_muted(muted);
+    view_.OnMicMutedChanged(muted);
   }
 
   FakeSessionViewDelegate delegate_;
@@ -78,6 +87,27 @@ TEST_F(TtcSessionViewTest, KeepsLastStateOnceFinished) {
   SetSessionLifecycle(SessionLifecycle::kFinished);
   EXPECT_EQ(view_.GetUiState(), UiState::kInitializing);
   EXPECT_THAT(view_.ui_states(), testing::IsEmpty());
+}
+
+TEST_F(TtcSessionViewTest, FollowsMicMute) {
+  SetSessionLifecycle(SessionLifecycle::kLive);
+
+  SetMicMuted(true);
+  EXPECT_EQ(view_.GetUiState(), UiState::kMicMuted);
+  SetMicMuted(false);
+  EXPECT_THAT(
+      view_.ui_states(),
+      testing::ElementsAre(UiState::kLive, UiState::kMicMuted, UiState::kLive));
+}
+
+TEST_F(TtcSessionViewTest, KeepsShowingMutedOnceFinished) {
+  SetSessionLifecycle(SessionLifecycle::kLive);
+  SetMicMuted(true);
+
+  // A finished session isn't muted anymore, but keeps showing its last state.
+  delegate_.set_mic_muted(false);
+  SetSessionLifecycle(SessionLifecycle::kFinished);
+  EXPECT_EQ(view_.GetUiState(), UiState::kMicMuted);
 }
 
 }  // namespace

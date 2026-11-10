@@ -258,7 +258,21 @@ void SessionControllerImpl::NotifyTranscriptsUpdated() {
   }
 }
 
-void SessionControllerImpl::OnSpeakerChanged(Speaker speaker) {}
+void SessionControllerImpl::OnSpeakerChanged(Speaker speaker) {
+  // A finished session no longer reports who's speaking.
+  if (speaker_ == speaker ||
+      session_lifecycle_ == SessionLifecycle::kFinished) {
+    return;
+  }
+  speaker_ = speaker;
+  for (SessionController::Observer& observer : observers_) {
+    observer.OnSpeakerChanged(speaker_);
+  }
+}
+
+Speaker SessionControllerImpl::GetSpeaker() const {
+  return speaker_;
+}
 
 bool SessionControllerImpl::SetMicMuted(bool muted) {
   // Capture only starts once the session is live.
@@ -269,6 +283,9 @@ bool SessionControllerImpl::SetMicMuted(bool muted) {
   GetJournal().Log("TtcMicMuted",
                    actor::JournalDetailsBuilder().Add("muted", muted).Build());
   conversation_->SetMicMuted(muted);
+  for (SessionController::Observer& observer : observers_) {
+    observer.OnMicMutedChanged(muted);
+  }
   return true;
 }
 

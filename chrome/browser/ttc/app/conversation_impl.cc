@@ -119,8 +119,9 @@ void ConversationImpl::OnBackendInitialized() {
     return;
   }
   backend_->SendToolSetUpdate(session_controller_->GetToolDefinitions());
-  session_controller_->SetSessionLifecycle(SessionLifecycle::kLive);
+  // Capture starts first, so that the session goes live unmuted.
   audio_controller_->StartCapture(/*device_id=*/"");
+  session_controller_->SetSessionLifecycle(SessionLifecycle::kLive);
 }
 
 void ConversationImpl::OnBackendClosed() {

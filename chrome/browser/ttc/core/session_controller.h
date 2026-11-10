@@ -42,6 +42,10 @@ class SessionController {
                                          const std::string& model_transcript) {}
     virtual void OnModelAudioEnvelopeReady(const AudioEnvelope& envelope) {}
     virtual void OnUserAudioLevelUpdate(float audio_level) {}
+    // The user's microphone was muted or unmuted.
+    virtual void OnMicMutedChanged(bool muted) {}
+    // The party currently speaking changed.
+    virtual void OnSpeakerChanged(Speaker speaker) {}
   };
 
   virtual ~SessionController() = default;

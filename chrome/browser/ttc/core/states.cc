@@ -28,6 +28,8 @@ std::ostream& operator<<(std::ostream& os, UiState state) {
       return os << "Initializing";
     case UiState::kLive:
       return os << "Live";
+    case UiState::kMicMuted:
+      return os << "MicMuted";
   }
   NOTREACHED();
 }

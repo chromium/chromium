@@ -38,6 +38,8 @@ enum class UiState {
   kInitializing,
   // The session is active and the user can interact.
   kLive,
+  // The session is active but the user's microphone is muted.
+  kMicMuted,
 };
 
 std::ostream& operator<<(std::ostream& os, UiState state);

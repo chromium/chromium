@@ -30,6 +30,13 @@ class SessionViewDelegate {
 
   // Returns the session's current lifecycle state.
   virtual SessionLifecycle GetSessionLifecycle() const = 0;
+
+  // Returns whether the user's microphone is muted. False unless the session
+  // is live.
+  virtual bool IsMicMuted() const = 0;
+
+  // Returns the party currently speaking.
+  virtual Speaker GetSpeaker() const = 0;
 };
 
 }  // namespace ttc

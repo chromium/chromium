@@ -65,6 +65,9 @@ class FakeSessionController : public SessionController {
   }
   void SetSessionLifecycle(SessionLifecycle lifecycle) override {
     session_lifecycle_ = lifecycle;
+    if (on_lifecycle_set_) {
+      on_lifecycle_set_.Run(lifecycle);
+    }
   }
   void ProcessToolCall(const ToolRequest& tool_request,
                        ToolResponseCallback tool_response) override {
@@ -117,6 +120,12 @@ class FakeSessionController : public SessionController {
     return last_output_transcription_;
   }
 
+  // Called whenever the lifecycle is set, once it's set.
+  void set_on_lifecycle_set(
+      base::RepeatingCallback<void(SessionLifecycle)> callback) {
+    on_lifecycle_set_ = std::move(callback);
+  }
+
   void AddToolDefinition(const std::string& name) {
     ToolDefinition tool;
     tool.name = name;
@@ -137,6 +146,7 @@ class FakeSessionController : public SessionController {
   std::string last_output_transcription_;
   std::vector<ToolDefinition> tools_;
   SessionLifecycle session_lifecycle_ = SessionLifecycle::kInitializing;
+  base::RepeatingCallback<void(SessionLifecycle)> on_lifecycle_set_;
   FakeSessionJournal session_journal_;
   // Null, as in production while the debug tools are off.
   raw_ptr<DebugSink> debug_sink_ = nullptr;
@@ -474,6 +484,24 @@ TEST_F(ConversationImplTest, SessionGoesLiveOnlyOnceBackendInitialized) {
 
   conversation.OnBackendInitialized();
   EXPECT_EQ(session_controller_.GetSessionLifecycle(), SessionLifecycle::kLive);
+}
+
+TEST_F(ConversationImplTest, CaptureStartsBeforeSessionGoesLive) {
+  ConversationImpl& conversation = CreateConversation();
+  std::optional<bool> capturing_when_live;
+  session_controller_.set_on_lifecycle_set(
+      base::BindLambdaForTesting([&](SessionLifecycle lifecycle) {
+        if (lifecycle == SessionLifecycle::kLive) {
+          capturing_when_live = audio_controller().is_capturing();
+        }
+      }));
+
+  conversation.OnBackendInitialized();
+  // So the session isn't seen as muted when it goes live.
+  EXPECT_EQ(capturing_when_live, true);
+
+  // The callback refers to locals of this test.
+  session_controller_.set_on_lifecycle_set({});
 }
 
 TEST_F(ConversationImplTest, MuteStopsAndResumesCapture) {

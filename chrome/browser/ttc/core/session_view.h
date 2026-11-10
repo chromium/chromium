@@ -25,6 +25,7 @@ class SessionView : public SessionController::Observer {
 
   // SessionController::Observer:
   void OnSessionLifecycleChanged(SessionLifecycle lifecycle) override;
+  void OnMicMutedChanged(bool muted) override;
 
  protected:
   explicit SessionView(SessionViewDelegate& delegate);
