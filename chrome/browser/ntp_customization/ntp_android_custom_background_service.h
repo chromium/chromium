@@ -39,6 +39,15 @@ class NtpAndroidThemeSyncBridge;
 // Key for storing the Chrome color ID in kNtpAndroidChromeColorDict.
 inline constexpr char kNtpAndroidThemeColorIdKey[] = "theme_color_id";
 
+// Key for storing the daily refresh setting of the Chrome color in
+// kNtpAndroidChromeColorDict. Present iff daily refresh is enabled for the
+// color, like a theme collection's refresh timestamp. Its value is the time at
+// which daily refresh was enabled on this device, as written by
+// base::TimeToValue(); it is pushed out to sync as the daily update timestamp,
+// and receivers only test its presence.
+inline constexpr char kNtpAndroidThemeColorDailyRefreshTimestampKey[] =
+    "daily_refresh_timestamp";
+
 // Android-specific service for managing custom backgrounds on the NTP.
 class NtpAndroidCustomBackgroundService
     : public NtpCustomBackgroundServiceBase {
@@ -111,9 +120,9 @@ class NtpAndroidCustomBackgroundService
   // Callback invoked when incoming theme changes are received from Chrome Sync.
   void OnThemeChangedFromSync(const sync_pb::ThemeAndroidSpecifics& specifics);
 
-  // Sets the Chrome color ID, clears any custom background image, and notifies
-  // the sync bridge.
-  void SetChromeColor(int color_id);
+  // Sets the Chrome color ID and whether it is refreshed daily, clears any
+  // custom background image, and notifies the sync bridge.
+  void SetChromeColor(int color_id, bool daily_refresh_enabled);
 
  protected:
   void NotifyAboutBackgrounds() override;
@@ -140,13 +149,16 @@ class NtpAndroidCustomBackgroundService
   // `new_info`: The incoming CustomBackground info.
   bool IsNextThemeCollectionImage(const CustomBackground& new_info);
 
+  // Replaces the custom background preferences with the Chrome color, be it
+  // chosen locally or applied from sync, without notifying anybody.
+  void SetChromeColorPrefs(int color_id, bool daily_refresh_enabled);
+
   // Pushes the current local custom background state out to Chrome Sync.
   void NotifySyncBridge();
 
-  // Clears custom background image preference, resets the active background
-  // state, sets the Chrome color ID, and notifies observers that a Chrome
-  // color theme has been applied from sync.
-  void ApplyChromeColorFromSync(int color_id);
+  // Stores the Chrome color via SetChromeColorPrefs() and reports it to the
+  // synced theme bridge as a sync update.
+  void ApplyChromeColorFromSync(int color_id, bool daily_refresh_enabled);
 
   // Clears Chrome color preference, resets the active background state,
   // sets the background dictionary preference, and notifies observers that a

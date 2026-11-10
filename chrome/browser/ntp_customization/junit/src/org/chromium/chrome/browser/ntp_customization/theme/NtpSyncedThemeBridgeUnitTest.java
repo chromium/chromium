@@ -15,6 +15,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import androidx.test.core.app.ApplicationProvider;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -27,6 +29,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpSyncedThemeBridge.SyncedBackgroundInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataColor;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.PlatformType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -97,13 +101,14 @@ public class NtpSyncedThemeBridgeUnitTest {
         mNtpSyncedThemeBridge.resetObserver();
 
         mNtpSyncedThemeBridge.onThemeCollectionUpdated(/* isImageFromSync= */ true);
-        mNtpSyncedThemeBridge.onChromeColorSynced(THEME_COLOR_ID);
+        mNtpSyncedThemeBridge.onChromeColorSynced(
+                THEME_COLOR_ID, /* isDailyRefreshEnabled= */ false);
         mNtpSyncedThemeBridge.onDefaultThemeSynced();
         mNtpSyncedThemeBridge.onThemeSyncReady();
 
         verify(mNatives, never()).getCustomBackgroundInfo(any());
         verify(mObserver, never()).onThemeCollectionImageAvailable(any(), any(), anyBoolean());
-        verify(mObserver, never()).onChromeColorSynced(anyInt());
+        verify(mObserver, never()).onChromeColorSynced(anyInt(), anyBoolean());
         verify(mObserver, never()).onDefaultThemeSynced();
         verify(mObserver, never()).onThemeSyncReady();
     }
@@ -145,8 +150,9 @@ public class NtpSyncedThemeBridgeUnitTest {
                 .onThemeCollectionImageAvailable(
                         info, /* primaryColor= */ null, /* isImageFromSync= */ true);
 
-        mNtpSyncedThemeBridge.onChromeColorSynced(THEME_COLOR_ID);
-        verify(mObserver).onChromeColorSynced(THEME_COLOR_ID);
+        mNtpSyncedThemeBridge.onChromeColorSynced(
+                THEME_COLOR_ID, /* isDailyRefreshEnabled= */ true);
+        verify(mObserver).onChromeColorSynced(THEME_COLOR_ID, /* isDailyRefreshEnabled= */ true);
 
         mNtpSyncedThemeBridge.onDefaultThemeSynced();
         verify(mObserver).onDefaultThemeSynced();
@@ -157,8 +163,14 @@ public class NtpSyncedThemeBridgeUnitTest {
 
     @Test
     public void testOutboundSyncMethods() {
-        mNtpSyncedThemeBridge.setChromeColor(THEME_COLOR_ID);
-        verify(mNatives).setChromeColor(mProfile, THEME_COLOR_ID);
+        mNtpSyncedThemeBridge.setChromeColor(
+                new NtpBackgroundDataColor(
+                        ApplicationProvider.getApplicationContext(),
+                        PlatformType.ANDROID,
+                        THEME_COLOR_ID,
+                        /* isChromeColorDailyRefreshEnabled= */ true));
+        verify(mNatives)
+                .setChromeColor(mProfile, THEME_COLOR_ID, /* isDailyRefreshEnabled= */ true);
 
         mNtpSyncedThemeBridge.resetCustomBackgroundInfo();
         verify(mNatives).resetCustomBackgroundInfo(mProfile);

@@ -48,9 +48,11 @@ NtpSyncedThemeBridge::NtpSyncedThemeBridge() = default;
 
 NtpSyncedThemeBridge::~NtpSyncedThemeBridge() = default;
 
-void NtpSyncedThemeBridge::OnChromeColorSynced(int color_id) {
+void NtpSyncedThemeBridge::OnChromeColorSynced(int color_id,
+                                               bool daily_refresh_enabled) {
   JNIEnv* env = jni_zero::AttachCurrentThread();
-  Java_NtpSyncedThemeBridge_onChromeColorSynced(env, j_java_obj_, color_id);
+  Java_NtpSyncedThemeBridge_onChromeColorSynced(env, j_java_obj_, color_id,
+                                                daily_refresh_enabled);
 }
 
 void NtpSyncedThemeBridge::OnDefaultThemeSynced() {
@@ -121,11 +123,14 @@ static bool JNI_NtpSyncedThemeBridge_IsThemeSyncReady(JNIEnv* env,
   return GetService(profile)->IsThemeSyncReady();
 }
 
-// Sets the Chrome color ID on NtpAndroidCustomBackgroundService.
-static void JNI_NtpSyncedThemeBridge_SetChromeColor(JNIEnv* env,
-                                                    Profile* profile,
-                                                    int color_id) {
-  GetService(profile)->SetChromeColor(color_id);
+// Sets the Chrome color ID and whether it is refreshed daily on
+// NtpAndroidCustomBackgroundService.
+static void JNI_NtpSyncedThemeBridge_SetChromeColor(
+    JNIEnv* env,
+    Profile* profile,
+    int color_id,
+    bool daily_refresh_enabled) {
+  GetService(profile)->SetChromeColor(color_id, daily_refresh_enabled);
 }
 
 // Resets the custom background on NtpAndroidCustomBackgroundService.

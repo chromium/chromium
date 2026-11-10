@@ -16,6 +16,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataColor;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.url.GURL;
 
@@ -48,8 +49,13 @@ public class NtpSyncedThemeBridge {
                 @Nullable @ColorInt Integer primaryColor,
                 boolean isImageFromSync);
 
-        /** Dispatched when a Chrome color arrives from sync. */
-        void onChromeColorSynced(@NtpThemeColorId int colorId);
+        /**
+         * Dispatched when a Chrome color arrives from sync, or is replayed from native preferences.
+         *
+         * @param colorId The synced Chrome color ID.
+         * @param isDailyRefreshEnabled Whether daily refresh is enabled for the color.
+         */
+        void onChromeColorSynced(@NtpThemeColorId int colorId, boolean isDailyRefreshEnabled);
 
         /** Dispatched when the theme is reset to default from sync. */
         void onDefaultThemeSynced();
@@ -130,10 +136,14 @@ public class NtpSyncedThemeBridge {
     /**
      * Sets the New Tab Page theme to a specific Chrome color and notifies the sync bridge.
      *
-     * @param colorId The ID of the Chrome color.
+     * @param colorData The Chrome color and its daily refresh setting.
      */
-    public void setChromeColor(@NtpThemeColorId int colorId) {
-        NtpSyncedThemeBridgeJni.get().setChromeColor(mProfile, colorId);
+    public void setChromeColor(NtpBackgroundDataColor colorData) {
+        NtpSyncedThemeBridgeJni.get()
+                .setChromeColor(
+                        mProfile,
+                        colorData.getThemeColorId(),
+                        colorData.isChromeColorDailyRefreshEnabled());
     }
 
     /** Resets the New Tab Page theme to default and notifies the sync bridge. */
@@ -205,17 +215,18 @@ public class NtpSyncedThemeBridge {
     }
 
     /**
-     * Called by native code when a Chrome color theme has been received from Chrome Sync.
-     * Dispatches the event to the registered observer.
+     * Called by native code when a Chrome color theme has been received from Chrome Sync, or is
+     * replayed from native preferences. Dispatches the event to the registered observer.
      *
      * @param colorId The synced Chrome color ID.
+     * @param isDailyRefreshEnabled Whether daily refresh is enabled for the color.
      */
     @CalledByNative
     @VisibleForTesting
-    void onChromeColorSynced(@NtpThemeColorId int colorId) {
+    void onChromeColorSynced(@NtpThemeColorId int colorId, boolean isDailyRefreshEnabled) {
         if (mObserver == null) return;
 
-        mObserver.onChromeColorSynced(colorId);
+        mObserver.onChromeColorSynced(colorId, isDailyRefreshEnabled);
     }
 
     /**
@@ -294,7 +305,10 @@ public class NtpSyncedThemeBridge {
 
         boolean isThemeSyncReady(@JniType("Profile*") Profile profile);
 
-        void setChromeColor(@JniType("Profile*") Profile profile, @NtpThemeColorId int colorId);
+        void setChromeColor(
+                @JniType("Profile*") Profile profile,
+                @NtpThemeColorId int colorId,
+                boolean isDailyRefreshEnabled);
 
         void resetCustomBackgroundInfo(@JniType("Profile*") Profile profile);
 

@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
@@ -20,6 +21,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.CHROME_COLOR;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.THEME_COLLECTION;
 
 import android.content.Context;
@@ -391,23 +393,69 @@ public class NtpSyncedThemeManagerUnitTest {
 
     @Test
     public void testOnChromeColorSynced_validColor() {
+        testOnChromeColorSyncedImpl(/* isDailyRefreshEnabled= */ false);
+    }
+
+    @Test
+    public void testOnChromeColorSynced_dailyRefresh() {
+        testOnChromeColorSyncedImpl(/* isDailyRefreshEnabled= */ true);
+    }
+
+    @Test
+    public void testOnChromeColorSynced_startupReplayOfDailyColor_keepsLocalRotation() {
+        // The daily rotation has moved on from the blue color chosen on this device to aqua.
+        persistChromeColor(NtpThemeColorId.NTP_COLORS_AQUA, /* isDailyRefreshEnabled= */ true);
         NtpSyncedThemeBridge bridge = initSyncedThemeManagerAndGetBridge();
 
-        bridge.onChromeColorSynced(NtpThemeColorId.NTP_COLORS_BLUE);
+        // Native replays the stored blue daily color on startup, as it would a blue daily color
+        // chosen on another device. Neither changes the theme of this device.
+        bridge.onChromeColorSynced(
+                NtpThemeColorId.NTP_COLORS_BLUE, /* isDailyRefreshEnabled= */ true);
 
+        assertChromeColorPersisted(
+                NtpThemeColorId.NTP_COLORS_AQUA, /* isDailyRefreshEnabled= */ true);
+        assertNull(mConfigManagerSpy.getSyncedNtpBackgroundData());
+    }
+
+    /**
+     * Delivers a blue Chrome color from sync and checks that it is applied through the config
+     * manager, not stored back into native, and persisted along with its daily refresh setting.
+     */
+    private void testOnChromeColorSyncedImpl(boolean isDailyRefreshEnabled) {
+        NtpSyncedThemeBridge bridge = initSyncedThemeManagerAndGetBridge();
+
+        bridge.onChromeColorSynced(NtpThemeColorId.NTP_COLORS_BLUE, isDailyRefreshEnabled);
+
+        verify(mConfigManagerSpy).onSyncedChromeColorChanged(eq(mContext), any());
+        verify(mNatives, never()).setChromeColor(any(), anyInt(), anyBoolean());
+        assertChromeColorPersisted(NtpThemeColorId.NTP_COLORS_BLUE, isDailyRefreshEnabled);
+    }
+
+    /** Persists the given Chrome color and its daily refresh setting as the background. */
+    private static void persistChromeColor(
+            @NtpThemeColorId int colorId, boolean isDailyRefreshEnabled) {
+        NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(CHROME_COLOR);
+        NtpCustomizationUtils.setNtpThemeColorIdToSharedPreference(colorId);
+        NtpCustomizationUtils.setIsChromeColorDailyRefreshEnabledToSharedPreference(
+                isDailyRefreshEnabled);
+    }
+
+    /** Asserts that the given Chrome color and its daily refresh setting are persisted. */
+    private static void assertChromeColorPersisted(
+            @NtpThemeColorId int colorId, boolean isDailyRefreshEnabled) {
         assertEquals(
-                NtpCustomizationUtils.NtpBackgroundType.CHROME_COLOR,
-                NtpCustomizationUtils.getNtpBackgroundTypeFromSharedPreference());
+                CHROME_COLOR, NtpCustomizationUtils.getNtpBackgroundTypeFromSharedPreference());
+        assertEquals(colorId, NtpCustomizationUtils.getNtpThemeColorIdFromSharedPreference());
         assertEquals(
-                NtpThemeColorId.NTP_COLORS_BLUE,
-                NtpCustomizationUtils.getNtpThemeColorIdFromSharedPreference());
+                isDailyRefreshEnabled,
+                NtpCustomizationUtils.getIsChromeColorDailyRefreshEnabledFromSharedPreference());
     }
 
     @Test
     public void testOnChromeColorSynced_defaultOrLess() {
         NtpSyncedThemeBridge bridge = initSyncedThemeManagerAndGetBridge();
 
-        bridge.onChromeColorSynced(NtpThemeColorId.DEFAULT);
+        bridge.onChromeColorSynced(NtpThemeColorId.DEFAULT, /* isDailyRefreshEnabled= */ false);
 
         assertEquals(
                 NtpCustomizationUtils.NtpBackgroundType.DEFAULT,
@@ -419,7 +467,7 @@ public class NtpSyncedThemeManagerUnitTest {
         NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(THEME_COLLECTION);
         NtpSyncedThemeBridge bridge = initSyncedThemeManagerAndGetBridge();
 
-        bridge.onChromeColorSynced(NtpThemeColorId.NUM_ENTRIES);
+        bridge.onChromeColorSynced(NtpThemeColorId.NUM_ENTRIES, /* isDailyRefreshEnabled= */ false);
 
         // Out of bounds color should reset to default.
         assertEquals(
@@ -429,8 +477,7 @@ public class NtpSyncedThemeManagerUnitTest {
 
     @Test
     public void testOnDefaultThemeSynced() {
-        NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(
-                NtpCustomizationUtils.NtpBackgroundType.CHROME_COLOR);
+        NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(CHROME_COLOR);
         NtpSyncedThemeBridge bridge = initSyncedThemeManagerAndGetBridge();
 
         bridge.onDefaultThemeSynced();
@@ -501,7 +548,7 @@ public class NtpSyncedThemeManagerUnitTest {
                         /* isChromeColorDailyRefreshEnabled= */ false);
         mNtpSyncedThemeManager.onThemeCommitted(colorData);
         verify(mNatives).resetCustomBackgroundInfo(any());
-        verify(mNatives, never()).setChromeColor(any(), anyInt());
+        verify(mNatives, never()).setChromeColor(any(), anyInt(), anyBoolean());
     }
 
     @Test
@@ -513,15 +560,27 @@ public class NtpSyncedThemeManagerUnitTest {
 
     @Test
     public void testOnThemeCommitted_colorData_setsChromeColor() {
+        verifyCommittedChromeColorSetsChromeColor(/* isDailyRefreshEnabled= */ false);
+    }
+
+    @Test
+    public void testOnThemeCommitted_dailyRefreshColorData_setsChromeColor() {
+        verifyCommittedChromeColorSetsChromeColor(/* isDailyRefreshEnabled= */ true);
+    }
+
+    /** Commits a green Chrome color and checks that native receives its daily refresh setting. */
+    private void verifyCommittedChromeColorSetsChromeColor(boolean isDailyRefreshEnabled) {
         mNtpSyncedThemeManager = createInitializedManager();
         NtpBackgroundDataColor colorData =
                 new NtpBackgroundDataColor(
                         mContext,
                         PlatformType.ANDROID,
                         NtpThemeColorId.NTP_COLORS_GREEN,
-                        /* isChromeColorDailyRefreshEnabled= */ false);
+                        isDailyRefreshEnabled);
         mNtpSyncedThemeManager.onThemeCommitted(colorData);
-        verify(mNatives).setChromeColor(any(), eq(NtpThemeColorId.NTP_COLORS_GREEN));
+        verify(mNatives)
+                .setChromeColor(
+                        any(), eq(NtpThemeColorId.NTP_COLORS_GREEN), eq(isDailyRefreshEnabled));
     }
 
     @Test
@@ -639,7 +698,10 @@ public class NtpSyncedThemeManagerUnitTest {
     @Test
     public void testSyncDownload_supersededBySyncedChromeColor() {
         verifySyncDownloadSuperseded(
-                bridge -> bridge.onChromeColorSynced(NtpThemeColorId.NTP_COLORS_BLUE));
+                bridge ->
+                        bridge.onChromeColorSynced(
+                                NtpThemeColorId.NTP_COLORS_BLUE,
+                                /* isDailyRefreshEnabled= */ false));
 
         verify(mConfigManagerSpy).onSyncedChromeColorChanged(eq(mContext), any());
     }

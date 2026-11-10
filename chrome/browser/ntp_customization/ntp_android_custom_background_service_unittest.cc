@@ -7,9 +7,11 @@
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chrome/browser/ntp_customization/ntp_android_background_service_factory.h"
 #include "chrome/browser/ntp_customization/ntp_synced_theme_bridge.h"
 #include "chrome/browser/ntp_customization/ntp_theme_collection_bridge.h"
@@ -53,6 +55,8 @@ constexpr char kTestImageFileName[] = "test.png";
 // Valid theme color IDs (NtpThemeColorId.NTP_COLORS_BLUE and _AQUA).
 constexpr int kTestColorId = 1;
 constexpr int kOtherColorId = 2;
+// Any non-zero value marks a synced Chrome color as refreshed daily.
+constexpr int64_t kTestDailyRefreshTimestampMillis = 1234;
 
 class MockThemeCollectionBridge : public NtpThemeCollectionBridge {
  public:
@@ -66,7 +70,7 @@ class MockSyncedThemeBridge : public NtpSyncedThemeBridge {
   MockSyncedThemeBridge() = default;
   ~MockSyncedThemeBridge() override = default;
   MOCK_METHOD(void, OnThemeCollectionUpdated, (bool), (override));
-  MOCK_METHOD(void, OnChromeColorSynced, (int), (override));
+  MOCK_METHOD(void, OnChromeColorSynced, (int, bool), (override));
   MOCK_METHOD(void, OnDefaultThemeSynced, (), (override));
   MOCK_METHOD(void, OnThemeSyncReady, (), (override));
 };
@@ -149,9 +153,16 @@ class NtpAndroidCustomBackgroundServiceTest : public testing::Test {
     return specifics;
   }
 
-  sync_pb::ThemeAndroidSpecifics CreateChromeColorSpecifics(int color_id) {
+  sync_pb::ThemeAndroidSpecifics CreateChromeColorSpecifics(
+      int color_id,
+      bool daily_refresh_enabled = false) {
     sync_pb::ThemeAndroidSpecifics specifics;
     specifics.mutable_chrome_color_info()->set_theme_color_id(color_id);
+    if (daily_refresh_enabled) {
+      specifics.mutable_chrome_color_info()
+          ->set_last_daily_update_timestamp_unix_epoch_millis(
+              kTestDailyRefreshTimestampMillis);
+    }
     return specifics;
   }
 
@@ -205,9 +216,14 @@ class NtpAndroidCustomBackgroundServiceTest : public testing::Test {
         prefs::kNtpAndroidCustomBackgroundDict);
   }
 
+  // Returns the preference dictionary describing the current Chrome color.
+  const base::DictValue& GetChromeColorDict() {
+    return profile_->GetPrefs()->GetDict(prefs::kNtpAndroidChromeColorDict);
+  }
+
   void AssertSyncResetsToDefault(
       const sync_pb::ThemeAndroidSpecifics& specifics) {
-    service_->SetChromeColor(kTestColorId);
+    service_->SetChromeColor(kTestColorId, /*daily_refresh_enabled=*/false);
 
     MockSyncedThemeBridge* mock_synced_bridge =
         InstallMockSyncedBridge(service_.get());
@@ -223,6 +239,24 @@ class NtpAndroidCustomBackgroundServiceTest : public testing::Test {
     EXPECT_FALSE(service_->GetCustomBackground().has_value());
 
     service_->SetSyncedThemeBridgeForTesting(nullptr);
+  }
+
+  // Stores `kTestColorId` with the given daily refresh setting and checks that
+  // GetStoredContinuousThemeAndNotify() replays it to the synced theme bridge.
+  void ExpectStoredChromeColorReplayed(bool daily_refresh_enabled) {
+    std::unique_ptr<NtpAndroidCustomBackgroundService> service =
+        CreateServiceWithThemeSyncEnabled();
+    service->SetChromeColor(kTestColorId, daily_refresh_enabled);
+
+    testing::StrictMock<MockSyncedThemeBridge>* mock_synced_bridge =
+        InstallStrictMockSyncedBridge(service.get());
+    // Java tells a daily replay apart from a new static color by the daily
+    // bit: the local daily refresh may have rotated away from the stored color
+    // since.
+    EXPECT_CALL(*mock_synced_bridge,
+                OnChromeColorSynced(kTestColorId, daily_refresh_enabled));
+
+    service->GetStoredContinuousThemeAndNotify();
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -666,7 +700,7 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
 
 TEST_F(NtpAndroidCustomBackgroundServiceTest,
        OnThemeChangedFromSync_SameChromeColor_DoesNotNotifyBridge) {
-  service_->SetChromeColor(kTestColorId);
+  service_->SetChromeColor(kTestColorId, /*daily_refresh_enabled=*/false);
 
   InstallStrictMockSyncedBridge(service_.get());
 
@@ -680,8 +714,52 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
 }
 
 TEST_F(NtpAndroidCustomBackgroundServiceTest,
+       OnThemeChangedFromSync_DailyChromeColorOtherColor_DoesNotNotifyBridge) {
+  service_->SetChromeColor(kTestColorId, /*daily_refresh_enabled=*/true);
+
+  InstallStrictMockSyncedBridge(service_.get());
+
+  // Daily refresh rotates the color on each device, so a daily color replayed
+  // by sync, or chosen on another device, is the same theme whichever color it
+  // currently shows.
+  service_->OnThemeChangedFromSync(CreateChromeColorSpecifics(
+      kOtherColorId, /*daily_refresh_enabled=*/true));
+
+  EXPECT_EQ(GetChromeColorDict().FindInt(kNtpAndroidThemeColorIdKey),
+            kTestColorId);
+  service_->SetSyncedThemeBridgeForTesting(nullptr);
+}
+
+TEST_F(
+    NtpAndroidCustomBackgroundServiceTest,
+    OnThemeChangedFromSync_SameChromeColorDailyRefreshChanged_NotifiesBridge) {
+  service_->SetChromeColor(kTestColorId, /*daily_refresh_enabled=*/false);
+
+  testing::StrictMock<MockSyncedThemeBridge>* mock_synced_bridge =
+      InstallStrictMockSyncedBridge(service_.get());
+
+  // Turning daily refresh on for the current color on another device.
+  EXPECT_CALL(
+      *mock_synced_bridge,
+      OnChromeColorSynced(kTestColorId, /*daily_refresh_enabled=*/true));
+  service_->OnThemeChangedFromSync(
+      CreateChromeColorSpecifics(kTestColorId, /*daily_refresh_enabled=*/true));
+  EXPECT_TRUE(GetChromeColorDict().contains(
+      kNtpAndroidThemeColorDailyRefreshTimestampKey));
+
+  // Turning it off again.
+  EXPECT_CALL(
+      *mock_synced_bridge,
+      OnChromeColorSynced(kTestColorId, /*daily_refresh_enabled=*/false));
+  service_->OnThemeChangedFromSync(CreateChromeColorSpecifics(kTestColorId));
+  EXPECT_FALSE(GetChromeColorDict().contains(
+      kNtpAndroidThemeColorDailyRefreshTimestampKey));
+  service_->SetSyncedThemeBridgeForTesting(nullptr);
+}
+
+TEST_F(NtpAndroidCustomBackgroundServiceTest,
        OnThemeChangedFromSync_SameChromeColorAfterLocalImage_KeepsLocalImage) {
-  service_->SetChromeColor(kTestColorId);
+  service_->SetChromeColor(kTestColorId, /*daily_refresh_enabled=*/false);
   service_->SelectLocalBackgroundImage(base::FilePath());
 
   testing::StrictMock<MockSyncedThemeBridge>* mock_synced_bridge =
@@ -694,7 +772,9 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
       prefs::kNtpAndroidCustomBackgroundLocalToDevice));
 
   // A color newly chosen on another device does.
-  EXPECT_CALL(*mock_synced_bridge, OnChromeColorSynced(kOtherColorId));
+  EXPECT_CALL(
+      *mock_synced_bridge,
+      OnChromeColorSynced(kOtherColorId, /*daily_refresh_enabled=*/false));
   service_->OnThemeChangedFromSync(CreateChromeColorSpecifics(kOtherColorId));
   EXPECT_FALSE(profile_->GetPrefs()->GetBoolean(
       prefs::kNtpAndroidCustomBackgroundLocalToDevice));
@@ -703,7 +783,7 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
 
 TEST_F(NtpAndroidCustomBackgroundServiceTest,
        OnThemeChangedFromSync_DefaultThemeAfterLocalImage_KeepsLocalImage) {
-  service_->SetChromeColor(kTestColorId);
+  service_->SetChromeColor(kTestColorId, /*daily_refresh_enabled=*/false);
   service_->SelectLocalBackgroundImage(base::FilePath());
 
   InstallStrictMockSyncedBridge(service_.get());
@@ -767,16 +847,12 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
 
 TEST_F(NtpAndroidCustomBackgroundServiceTest,
        GetStoredContinuousThemeAndNotify_ChromeColor) {
-  std::unique_ptr<NtpAndroidCustomBackgroundService> service =
-      CreateServiceWithThemeSyncEnabled();
+  ExpectStoredChromeColorReplayed(/*daily_refresh_enabled=*/false);
+}
 
-  service->OnThemeChangedFromSync(CreateChromeColorSpecifics(kTestColorId));
-
-  testing::StrictMock<MockSyncedThemeBridge>* mock_synced_bridge =
-      InstallStrictMockSyncedBridge(service.get());
-  EXPECT_CALL(*mock_synced_bridge, OnChromeColorSynced(kTestColorId));
-
-  service->GetStoredContinuousThemeAndNotify();
+TEST_F(NtpAndroidCustomBackgroundServiceTest,
+       GetStoredContinuousThemeAndNotify_DailyChromeColor) {
+  ExpectStoredChromeColorReplayed(/*daily_refresh_enabled=*/true);
 }
 
 TEST_F(NtpAndroidCustomBackgroundServiceTest,
@@ -1080,7 +1156,7 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
                                     kTestCollectionId);
   EXPECT_TRUE(service_->GetCustomBackground().has_value());
 
-  service_->SetChromeColor(kTestColorId);
+  service_->SetChromeColor(kTestColorId, /*daily_refresh_enabled=*/false);
 
   const base::DictValue& color_dict =
       profile_->GetPrefs()->GetDict(prefs::kNtpAndroidChromeColorDict);
@@ -1095,7 +1171,7 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
 
 TEST_F(NtpAndroidCustomBackgroundServiceTest,
        SetCustomBackgroundInfo_ClearsChromeColorPref) {
-  service_->SetChromeColor(42);
+  service_->SetChromeColor(42, /*daily_refresh_enabled=*/false);
   EXPECT_FALSE(
       profile_->GetPrefs()->GetDict(prefs::kNtpAndroidChromeColorDict).empty());
 
@@ -1109,7 +1185,7 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
 
 TEST_F(NtpAndroidCustomBackgroundServiceTest,
        SelectLocalBackgroundImage_KeepsChromeColorPref) {
-  service_->SetChromeColor(kTestColorId);
+  service_->SetChromeColor(kTestColorId, /*daily_refresh_enabled=*/false);
   EXPECT_FALSE(
       profile_->GetPrefs()->GetDict(prefs::kNtpAndroidChromeColorDict).empty());
 
@@ -1130,7 +1206,7 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
 
 TEST_F(NtpAndroidCustomBackgroundServiceTest,
        ResetCustomBackgroundInfo_ClearsBothPrefs) {
-  service_->SetChromeColor(kTestColorId);
+  service_->SetChromeColor(kTestColorId, /*daily_refresh_enabled=*/false);
   EXPECT_FALSE(
       profile_->GetPrefs()->GetDict(prefs::kNtpAndroidChromeColorDict).empty());
 
@@ -1156,7 +1232,7 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
        NotifySyncBridge_SerializesChromeColorInfo) {
   auto service = CreateServiceWithThemeSyncEnabled();
 
-  service->SetChromeColor(kTestColorId);
+  service->SetChromeColor(kTestColorId, /*daily_refresh_enabled=*/false);
 
   std::map<std::string, sync_pb::ThemeAndroidSpecifics> specifics_map =
       ReadAllSyncData();
@@ -1165,14 +1241,43 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
       specifics_map[kAndroidThemeStorageKey];
   EXPECT_TRUE(specifics.has_chrome_color_info());
   EXPECT_EQ(specifics.chrome_color_info().theme_color_id(), kTestColorId);
+  EXPECT_FALSE(specifics.chrome_color_info()
+                   .has_last_daily_update_timestamp_unix_epoch_millis());
   EXPECT_FALSE(specifics.has_ntp_background());
+}
+
+TEST_F(NtpAndroidCustomBackgroundServiceTest,
+       NotifySyncBridge_SerializesDailyChromeColorInfo) {
+  std::unique_ptr<NtpAndroidCustomBackgroundService> service =
+      CreateServiceWithThemeSyncEnabled();
+
+  service->SetChromeColor(kTestColorId, /*daily_refresh_enabled=*/true);
+
+  // The time daily refresh was enabled is stored with the color and synced as
+  // the daily update timestamp, whose presence marks the color as daily.
+  std::optional<base::Time> daily_refresh_time = base::ValueToTime(
+      GetChromeColorDict().Find(kNtpAndroidThemeColorDailyRefreshTimestampKey));
+  ASSERT_TRUE(daily_refresh_time.has_value());
+  sync_pb::ThemeAndroidSpecifics specifics = ReadSyncedTheme();
+  EXPECT_EQ(specifics.chrome_color_info().theme_color_id(), kTestColorId);
+  EXPECT_EQ(specifics.chrome_color_info()
+                .last_daily_update_timestamp_unix_epoch_millis(),
+            daily_refresh_time->InMillisecondsSinceUnixEpoch());
+
+  // Turning daily refresh off drops the timestamp again.
+  service->SetChromeColor(kTestColorId, /*daily_refresh_enabled=*/false);
+  EXPECT_FALSE(GetChromeColorDict().contains(
+      kNtpAndroidThemeColorDailyRefreshTimestampKey));
+  EXPECT_FALSE(ReadSyncedTheme()
+                   .chrome_color_info()
+                   .has_last_daily_update_timestamp_unix_epoch_millis());
 }
 
 TEST_F(NtpAndroidCustomBackgroundServiceTest,
        NotifySyncBridge_SerializesDefaultTheme) {
   auto service = CreateServiceWithThemeSyncEnabled();
 
-  service->SetChromeColor(15);
+  service->SetChromeColor(15, /*daily_refresh_enabled=*/false);
   service->ResetCustomBackgroundInfo();
 
   std::map<std::string, sync_pb::ThemeAndroidSpecifics> specifics_map =
@@ -1205,7 +1310,9 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
   MockSyncedThemeBridge* mock_synced_bridge =
       InstallMockSyncedBridge(service_.get());
 
-  EXPECT_CALL(*mock_synced_bridge, OnChromeColorSynced(kTestColorId)).Times(1);
+  EXPECT_CALL(
+      *mock_synced_bridge,
+      OnChromeColorSynced(kTestColorId, /*daily_refresh_enabled=*/false));
   EXPECT_CALL(*mock_synced_bridge, OnDefaultThemeSynced()).Times(0);
 
   service_->OnThemeChangedFromSync(CreateChromeColorSpecifics(kTestColorId));
@@ -1223,7 +1330,7 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
 
 TEST_F(NtpAndroidCustomBackgroundServiceTest,
        OnThemeChangedFromSync_WithNtpBackground_ClearsChromeColor) {
-  service_->SetChromeColor(kTestColorId);
+  service_->SetChromeColor(kTestColorId, /*daily_refresh_enabled=*/false);
   EXPECT_FALSE(
       profile_->GetPrefs()->GetDict(prefs::kNtpAndroidChromeColorDict).empty());
 
@@ -1267,7 +1374,7 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
   auto service = CreateServiceWithThemeSyncEnabled();
 
   // Start with a Chrome color selected.
-  service->SetChromeColor(5);
+  service->SetChromeColor(5, /*daily_refresh_enabled=*/false);
   EXPECT_FALSE(
       profile_->GetPrefs()->GetDict(prefs::kNtpAndroidChromeColorDict).empty());
 
@@ -1409,7 +1516,7 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
 
   // A Chrome color is active, so any of the unconditional writes at the top of
   // UpdateThemeCollectionPrefsWithColor() would be observable.
-  service->SetChromeColor(5);
+  service->SetChromeColor(5, /*daily_refresh_enabled=*/false);
   ASSERT_FALSE(
       profile_->GetPrefs()->GetDict(prefs::kNtpAndroidChromeColorDict).empty());
   ASSERT_EQ(1u, ReadAllSyncData().size());

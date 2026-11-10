@@ -14,6 +14,8 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/json/values_util.h"
+#include "base/time/time.h"
 #include "build/android_buildflags.h"
 #include "chrome/browser/ntp_customization/ntp_android_background_service_factory.h"
 #include "chrome/browser/ntp_customization/ntp_android_theme_sync_bridge.h"
@@ -51,7 +53,19 @@ sync_pb::ThemeAndroidSpecifics GetThemeSpecificsFromPrefs(
       pref_service.GetDict(prefs::kNtpAndroidChromeColorDict);
   std::optional<int> color_id = color_dict.FindInt(kNtpAndroidThemeColorIdKey);
   if (color_id.has_value() && *color_id > 0) {
-    specifics.mutable_chrome_color_info()->set_theme_color_id(*color_id);
+    sync_pb::ChromeColorInfo* color_info =
+        specifics.mutable_chrome_color_info();
+    color_info->set_theme_color_id(*color_id);
+    // Daily refresh rotates the color on each device on its own schedule, see
+    // NtpThemeDailyRefreshManager, so neither the rotations nor the color they
+    // land on are synced: this is the time daily refresh was enabled for the
+    // color, and receivers only check whether it is set.
+    std::optional<base::Time> daily_refresh_time = base::ValueToTime(
+        color_dict.Find(kNtpAndroidThemeColorDailyRefreshTimestampKey));
+    if (daily_refresh_time.has_value()) {
+      color_info->set_last_daily_update_timestamp_unix_epoch_millis(
+          daily_refresh_time->InMillisecondsSinceUnixEpoch());
+    }
     return specifics;
   }
 
@@ -78,6 +92,26 @@ sync_pb::ThemeAndroidSpecifics GetThemeSpecificsFromPrefs(
   return specifics;
 }
 
+// Whether `a` and `b` describe the same Chrome color theme. Whether daily
+// refresh is enabled must match; two colors with daily refresh then match
+// whichever color each device has rotated to, since the rotation isn't synced.
+// Mirrors NtpBackgroundDataColor#equals on the Java side.
+bool AreChromeColorsEquivalent(const sync_pb::ChromeColorInfo& a,
+                               const sync_pb::ChromeColorInfo& b) {
+  const bool a_daily = a.has_last_daily_update_timestamp_unix_epoch_millis();
+  const bool b_daily = b.has_last_daily_update_timestamp_unix_epoch_millis();
+  if (a_daily != b_daily) {
+    return false;
+  }
+
+  // A daily color without a valid ID is the default theme (IsDefaultTheme()).
+  if (a_daily && a.theme_color_id() > 0 && b.theme_color_id() > 0) {
+    return true;
+  }
+
+  return a.theme_color_id() == b.theme_color_id();
+}
+
 // Whether `a` and `b` describe the same theme, be it a Chrome color, a custom
 // background or the default theme. Compares only the fields
 // OnThemeChangedFromSync() acts on: attributions and resume token don't affect
@@ -85,8 +119,8 @@ sync_pb::ThemeAndroidSpecifics GetThemeSpecificsFromPrefs(
 // `daily_refresh_enabled`, whereas its exact non-zero value doesn't.
 bool AreThemeSpecificsEquivalent(const sync_pb::ThemeAndroidSpecifics& a,
                                  const sync_pb::ThemeAndroidSpecifics& b) {
-  return a.chrome_color_info().theme_color_id() ==
-             b.chrome_color_info().theme_color_id() &&
+  return AreChromeColorsEquivalent(a.chrome_color_info(),
+                                   b.chrome_color_info()) &&
          a.ntp_background().url() == b.ntp_background().url() &&
          a.ntp_background().collection_id() ==
              b.ntp_background().collection_id() &&
@@ -240,11 +274,15 @@ void NtpAndroidCustomBackgroundService::GetStoredContinuousThemeAndNotify() {
   // (already initialized from preferences in the constructor) and the
   // NtpCustomBackgroundServiceObservers must not be touched. Java decides
   // whether the delivered theme is already active.
-  std::optional<int> color_id =
-      pref_service_->GetDict(prefs::kNtpAndroidChromeColorDict)
-          .FindInt(kNtpAndroidThemeColorIdKey);
+  const base::DictValue& color_dict =
+      pref_service_->GetDict(prefs::kNtpAndroidChromeColorDict);
+  std::optional<int> color_id = color_dict.FindInt(kNtpAndroidThemeColorIdKey);
   if (color_id.value_or(0) > 0) {
-    synced_theme_bridge_->OnChromeColorSynced(*color_id);
+    const bool daily_refresh_enabled =
+        base::ValueToTime(
+            color_dict.Find(kNtpAndroidThemeColorDailyRefreshTimestampKey))
+            .has_value();
+    synced_theme_bridge_->OnChromeColorSynced(*color_id, daily_refresh_enabled);
     return;
   }
 
@@ -460,11 +498,13 @@ void NtpAndroidCustomBackgroundService::OnThemeChangedFromSync(
   }
 
   if (specifics.has_chrome_color_info()) {
-    int color_id = specifics.chrome_color_info().has_theme_color_id()
-                       ? specifics.chrome_color_info().theme_color_id()
-                       : -1;
+    const sync_pb::ChromeColorInfo& color_info = specifics.chrome_color_info();
+    int color_id =
+        color_info.has_theme_color_id() ? color_info.theme_color_id() : -1;
     if (color_id > 0) {
-      ApplyChromeColorFromSync(color_id);
+      ApplyChromeColorFromSync(
+          color_id,
+          color_info.has_last_daily_update_timestamp_unix_epoch_millis());
       return;
     }
   } else if (specifics.has_ntp_background()) {
@@ -482,18 +522,30 @@ void NtpAndroidCustomBackgroundService::OnThemeChangedFromSync(
 #endif
 }
 
-void NtpAndroidCustomBackgroundService::SetChromeColor(int color_id) {
+void NtpAndroidCustomBackgroundService::SetChromeColor(
+    int color_id,
+    bool daily_refresh_enabled) {
   CHECK_GT(color_id, 0) << "Invalid ids must be routed to "
                            "ResetCustomBackgroundInfo() by the caller.";
 
+  SetChromeColorPrefs(color_id, daily_refresh_enabled);
+  NotifySyncBridge();
+}
+
+void NtpAndroidCustomBackgroundService::SetChromeColorPrefs(
+    int color_id,
+    bool daily_refresh_enabled) {
   active_custom_background_ = std::nullopt;
   pref_service_->ClearPref(prefs::kNtpAndroidCustomBackgroundDict);
   pref_service_->SetBoolean(prefs::kNtpAndroidCustomBackgroundLocalToDevice,
                             false);
   base::DictValue dict;
   dict.Set(kNtpAndroidThemeColorIdKey, color_id);
+  if (daily_refresh_enabled) {
+    dict.Set(kNtpAndroidThemeColorDailyRefreshTimestampKey,
+             base::TimeToValue(base::Time::Now()));
+  }
   pref_service_->SetDict(prefs::kNtpAndroidChromeColorDict, std::move(dict));
-  NotifySyncBridge();
 }
 
 void NtpAndroidCustomBackgroundService::NotifySyncBridge() {
@@ -516,16 +568,12 @@ void NtpAndroidCustomBackgroundService::NotifySyncBridge() {
 #endif
 }
 
-void NtpAndroidCustomBackgroundService::ApplyChromeColorFromSync(int color_id) {
-  active_custom_background_ = std::nullopt;
-  pref_service_->ClearPref(prefs::kNtpAndroidCustomBackgroundDict);
-  pref_service_->SetBoolean(prefs::kNtpAndroidCustomBackgroundLocalToDevice,
-                            false);
-  base::DictValue dict;
-  dict.Set(kNtpAndroidThemeColorIdKey, color_id);
-  pref_service_->SetDict(prefs::kNtpAndroidChromeColorDict, std::move(dict));
+void NtpAndroidCustomBackgroundService::ApplyChromeColorFromSync(
+    int color_id,
+    bool daily_refresh_enabled) {
+  SetChromeColorPrefs(color_id, daily_refresh_enabled);
   if (synced_theme_bridge_) {
-    synced_theme_bridge_->OnChromeColorSynced(color_id);
+    synced_theme_bridge_->OnChromeColorSynced(color_id, daily_refresh_enabled);
   }
 }
 

@@ -34,8 +34,9 @@ class NtpSyncedThemeBridge {
     return j_java_obj_;
   }
 
-  // Called when a Chrome color is synced from Chrome Sync.
-  virtual void OnChromeColorSynced(int color_id);
+  // Called when a Chrome color is synced from Chrome Sync, or replayed from
+  // preferences.
+  virtual void OnChromeColorSynced(int color_id, bool daily_refresh_enabled);
 
   // Called when the default theme is restored from Chrome Sync.
   virtual void OnDefaultThemeSynced();

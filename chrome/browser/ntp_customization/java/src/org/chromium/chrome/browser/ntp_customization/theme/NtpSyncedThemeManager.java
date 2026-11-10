@@ -293,12 +293,13 @@ public class NtpSyncedThemeManager
     }
 
     /**
-     * Called when a Chrome color has arrived from sync.
+     * Called when a Chrome color has arrived from sync, or was replayed from native preferences.
      *
      * @param colorId The synced color ID.
+     * @param isDailyRefreshEnabled Whether daily refresh is enabled for the color.
      */
     @Override
-    public void onChromeColorSynced(@NtpThemeColorId int colorId) {
+    public void onChromeColorSynced(@NtpThemeColorId int colorId, boolean isDailyRefreshEnabled) {
         if (colorId <= NtpThemeColorId.DEFAULT || colorId >= NtpThemeColorId.NUM_ENTRIES) {
             onDefaultThemeSynced();
             return;
@@ -308,10 +309,7 @@ public class NtpSyncedThemeManager
 
         NtpBackgroundDataColor colorData =
                 new NtpBackgroundDataColor(
-                        mContext,
-                        PlatformType.ANDROID,
-                        colorId,
-                        /* isChromeColorDailyRefreshEnabled= */ false);
+                        mContext, PlatformType.ANDROID, colorId, isDailyRefreshEnabled);
         mNtpCustomizationConfigManager.onSyncedChromeColorChanged(mContext, colorData);
         maybeNotifyReadinessCallbacks();
     }
@@ -361,7 +359,7 @@ public class NtpSyncedThemeManager
                 mNtpSyncedThemeBridge.resetCustomBackgroundInfo();
                 return;
             }
-            mNtpSyncedThemeBridge.setChromeColor(colorId);
+            mNtpSyncedThemeBridge.setChromeColor(colorData);
             return;
         }
 
