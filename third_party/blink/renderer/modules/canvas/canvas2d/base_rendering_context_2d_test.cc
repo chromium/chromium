@@ -58,7 +58,6 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/draw_looper_builder.h"
 #include "third_party/blink/renderer/platform/graphics/flush_reason.h"
@@ -687,8 +686,7 @@ TEST_P(BaseRenderingContext2DSharedImageSyncTokenTest, UnusedResources) {
 
   // There is a ready-to-reuse resource.
   EXPECT_TRUE(context->HasUnusedResourcesForTesting());
-  task_environment_.FastForwardBy(
-      Canvas2DResourceProvider::kUnusedResourceExpirationTime);
+  task_environment_.FastForwardBy(kUnusedResourceExpirationTime);
   // The resource is freed, don't repost the task.
   EXPECT_FALSE(context->HasUnusedResourcesForTesting());
   EXPECT_FALSE(context->UnusedResourcesReclaimTimerIsRunningForTesting());
@@ -747,9 +745,8 @@ TEST_P(BaseRenderingContext2DSharedImageSyncTokenTest,
 
   // There is a ready-to-reuse resource.
   EXPECT_TRUE(context->HasUnusedResourcesForTesting());
-  task_environment_.FastForwardBy(
-      Canvas2DResourceProvider::kUnusedResourceExpirationTime -
-      base::Seconds(1));
+  task_environment_.FastForwardBy(kUnusedResourceExpirationTime -
+                                  base::Seconds(1));
   // The reclaim task hasn't run yet.
   EXPECT_TRUE(context->UnusedResourcesReclaimTimerIsRunningForTesting());
 
@@ -778,8 +775,7 @@ TEST_P(BaseRenderingContext2DSharedImageSyncTokenTest,
   // But re-post the task to free it.
   EXPECT_TRUE(context->UnusedResourcesReclaimTimerIsRunningForTesting());
 
-  task_environment_.FastForwardBy(
-      Canvas2DResourceProvider::kUnusedResourceExpirationTime);
+  task_environment_.FastForwardBy(kUnusedResourceExpirationTime);
   // Now it's collected.
   EXPECT_FALSE(context->HasUnusedResourcesForTesting());
   // And no new task is posted.

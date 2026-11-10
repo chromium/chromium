@@ -32,10 +32,6 @@
 
 namespace blink {
 
-PLATFORM_EXPORT BASE_DECLARE_FEATURE(kCanvas2DReclaimUnusedResources);
-PLATFORM_EXPORT BASE_DECLARE_FEATURE(kAppendCpuUsages);
-PLATFORM_EXPORT BASE_DECLARE_FEATURE(kCanvasResourceIsWebGPUCompatible);
-
 class BaseRenderingContext2D;
 class CanvasResourceSharedImage;
 class Canvas2DResourceProvider;
@@ -47,9 +43,6 @@ class WebGraphicsSharedImageInterfaceProvider;
 class PLATFORM_EXPORT Canvas2DResourceProvider
     : public CanvasResourceSharedImage::Client {
  public:
-  constexpr static base::TimeDelta kUnusedResourceExpirationTime =
-      base::Seconds(5);
-
   Canvas2DResourceProvider(gfx::Size size,
                            viz::SharedImageFormat format,
                            SkAlphaType alpha_type,

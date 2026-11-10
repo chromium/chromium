@@ -58,25 +58,6 @@
 
 namespace blink {
 
-BASE_FEATURE(kAppendCpuUsages, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// When enabled, unused resources (ready to be recycled) are reclaimed after a
-// delay.
-BASE_FEATURE(kCanvas2DReclaimUnusedResources,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Controls whether we add SHARED_IMAGE_USAGE_WEBGPU_READ by default to shared
-// image backed CanvasResources so that they can be imported into WebGPU without
-// an intermediate copy. This could cause a different shared image backing type
-// to be used in the GPU process based on the OS platform.
-BASE_FEATURE(kCanvasResourceIsWebGPUCompatible,
-#if BUILDFLAG(IS_APPLE)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-
 base::WeakPtr<Canvas2DResourceProvider>
 Canvas2DResourceProvider::CreateWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
@@ -180,8 +161,7 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
 
   std::optional<base::TimeDelta> expiration_time =
       (base::FeatureList::IsEnabled(kCanvas2DReclaimUnusedResources))
-          ? std::make_optional(
-                Canvas2DResourceProvider::kUnusedResourceExpirationTime)
+          ? std::make_optional(kUnusedResourceExpirationTime)
           : std::nullopt;
   bool is_single_buffered = shared_image_usage_flags.Has(
       gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);

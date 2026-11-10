@@ -7,10 +7,12 @@
 #include "base/byte_size.h"
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
+#include "base/feature_list.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/transferable_resource.h"
@@ -43,6 +45,13 @@ class RasterInterface;
 }  // namespace gpu::raster
 
 namespace blink {
+
+PLATFORM_EXPORT BASE_DECLARE_FEATURE(kCanvas2DReclaimUnusedResources);
+PLATFORM_EXPORT BASE_DECLARE_FEATURE(kAppendCpuUsages);
+PLATFORM_EXPORT BASE_DECLARE_FEATURE(kCanvasResourceIsWebGPUCompatible);
+
+inline constexpr base::TimeDelta kUnusedResourceExpirationTime =
+    base::Seconds(5);
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
