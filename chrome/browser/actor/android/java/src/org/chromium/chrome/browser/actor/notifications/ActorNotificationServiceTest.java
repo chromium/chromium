@@ -50,6 +50,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.actor.ActorForegroundServiceControllerImpl;
 import org.chromium.chrome.browser.actor.ActorKeyedService;
 import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
 import org.chromium.chrome.browser.actor.ActorMetrics;
@@ -88,6 +89,7 @@ public class ActorNotificationServiceTest {
     @Mock private ActorTask mTask;
     @Mock private ActorTask.Natives mActorTaskJni;
     @Mock private ActorForegroundServiceController mServiceController;
+    @Mock private Profile mProfile;
 
     private ActorNotificationService mNotificationService;
     private MockNotificationManagerProxy mMockNotificationManager;
@@ -1883,6 +1885,96 @@ public class ActorNotificationServiceTest {
                 ActorTaskState.FINISHED,
                 demotedIntent.getIntExtra(
                         NotificationConstants.EXTRA_ACTOR_TASK_STATE, ActorTaskState.CREATED));
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ACTOR_LIVE_NOTIFICATION,
+        ChromeFeatureList.ACTOR_NOTIFICATION_INTENT_ROUTING
+    })
+    public void testTapDemotedFailedNotification_AfterNativeTaskRemoval_RoutesAndDismisses() {
+        int taskId = 53;
+        long nativeTaskPtr = 5678L;
+        ActorTaskJni.setInstanceForTesting(mActorTaskJni);
+        when(mActorTaskJni.getState(nativeTaskPtr)).thenReturn(ActorTaskState.FAILED);
+        when(mActorTaskJni.getLastActuatedTabId(nativeTaskPtr)).thenReturn(88);
+        // The conversation ID is only known natively, so it must be latched while the native task
+        // is still alive.
+        when(mActorTaskJni.getGlicConversationId(nativeTaskPtr)).thenReturn("conv-id-53");
+        ActorTask realTask =
+                new ActorTask(
+                        nativeTaskPtr,
+                        /* id= */ taskId,
+                        "Failed Task",
+                        mProfile,
+                        /* glicConversationId= */ null,
+                        /* isExperimentalTriggering= */ false);
+
+        ActorForegroundServiceControllerImpl controller =
+                spy(new ActorForegroundServiceControllerImpl());
+        List<Intent> createdIntents = new ArrayList<>();
+        doAnswer(
+                        invocation -> {
+                            Intent intent = (Intent) invocation.callRealMethod();
+                            createdIntents.add(intent);
+                            return intent;
+                        })
+                .when(controller)
+                .createTrustedBringTabToFrontIntent(any());
+        ActorForegroundServiceController.setInstanceForTesting(controller);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+        ActorKeyedServiceFactory.setForTesting(mKeyedService);
+        when(mKeyedService.getTask(taskId)).thenReturn(realTask);
+
+        mNotificationService.updateNotificationForTask(
+                taskId, ActorTaskState.FAILED, /* isSilent= */ false, /* isWarning= */ false);
+        assertTrue(mNotificationService.hasPendingDemotionForTesting(taskId));
+
+        realTask.clearNativePtr();
+        // The service keeps its cached task, but the tap path looks the task up in
+        // ActorKeyedService and must fall back to the intent's state.
+        when(mKeyedService.getTask(taskId)).thenReturn(null);
+        createdIntents.clear();
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertFalse(mNotificationService.hasPendingDemotionForTesting(taskId));
+        Notification demoted =
+                mNotificationService.getCachedNotification(
+                        taskId, /* isSilent= */ false, /* isWarning= */ false);
+        assertNotNull(demoted);
+        assertFalse(
+                "Demoted notification should not be ongoing",
+                (demoted.flags & Notification.FLAG_ONGOING_EVENT) != 0);
+        assertNotNull(demoted.contentIntent);
+
+        // The demoted notification reuses the live notification's PendingIntent request code, and
+        // the shadow PendingIntent keeps the live intent's extras, so inspect the routing intent
+        // built during demotion instead.
+        assertFalse(createdIntents.isEmpty());
+        Intent demotedIntent = createdIntents.get(createdIntents.size() - 1);
+        assertTrue(IntentHandler.isActorNotificationIntent(demotedIntent));
+        assertEquals(88, IntentHandler.getBringTabToFrontId(demotedIntent));
+        assertEquals("conv-id-53", IntentHandler.getGlicConversationId(demotedIntent));
+        assertEquals(
+                taskId, demotedIntent.getIntExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, -1));
+        assertEquals(
+                ActorTaskState.FAILED,
+                demotedIntent.getIntExtra(
+                        NotificationConstants.EXTRA_ACTOR_TASK_STATE, ActorTaskState.CREATED));
+
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Actor.Notification.ClickTaskState", ActorTaskState.FAILED);
+        ActorMetrics.maybeRecordMetricsFromIntent(demotedIntent, mProfile);
+        ActorNotificationService.maybeDismissNotificationFromIntent(demotedIntent, mProfile);
+
+        watcher.assertExpected();
+        assertTrue(
+                "Demoted terminal notification should be dismissed on tap",
+                mMockNotificationManager.getNotifications().isEmpty());
+        assertNull(
+                mNotificationService.getCachedNotification(
+                        taskId, /* isSilent= */ false, /* isWarning= */ false));
     }
 
     @Test

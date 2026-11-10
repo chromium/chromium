@@ -5,7 +5,15 @@
 package org.chromium.chrome.browser.actor.notifications;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Notification;
@@ -34,20 +42,28 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.actor.ActorForegroundServiceControllerImpl;
 import org.chromium.chrome.browser.actor.ActorKeyedService;
 import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
 import org.chromium.chrome.browser.actor.ActorTask;
+import org.chromium.chrome.browser.actor.ActorTaskJni;
 import org.chromium.chrome.browser.actor.ActorTaskState;
 import org.chromium.chrome.browser.actor.foreground_service.ActorForegroundServiceController;
 import org.chromium.chrome.browser.actor.foreground_service.ActorForegroundServiceManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.glic.GlicKeyedService;
+import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 /** Integration tests for actor notification clicks. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -60,6 +76,8 @@ public class ActorNotificationClickIntegrationTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private ActorKeyedService mActorKeyedService;
+    @Mock private ActorTask.Natives mActorTaskJni;
+    @Mock private GlicKeyedService mGlicKeyedService;
 
     private Context mContext;
 
@@ -73,6 +91,8 @@ public class ActorNotificationClickIntegrationTest {
         ActorForegroundServiceController.setInstanceForTesting(null);
         ActorForegroundServiceManager.resetInstanceForTesting();
         ActorKeyedServiceFactory.setForTesting(null);
+        ActorTaskJni.setInstanceForTesting(null);
+        GlicKeyedServiceFactory.setForTesting(null);
         BaseNotificationManagerProxyFactory.setInstanceForTesting(null);
     }
 
@@ -336,5 +356,110 @@ public class ActorNotificationClickIntegrationTest {
                             && (notification.flags & Notification.FLAG_ONGOING_EVENT) == 0;
                 },
                 "Live notification for a completed task was never demoted");
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(VERSION_CODES.BAKLAVA)
+    @EnableFeatures({
+        ChromeFeatureList.ACTOR_LIVE_NOTIFICATION,
+        ChromeFeatureList.ACTOR_NOTIFICATION_INTENT_ROUTING
+    })
+    public void
+            testTapDemotedCompletedNotification_AfterNativeTaskRemoval_FocusesTabInvokesGlicAndDismisses()
+                    throws Exception {
+        long nativeTaskPtr = 1234L;
+        int taskId = 203;
+        String expectedConversationId = "conv-demoted-203";
+
+        mActivityTestRule.startMainActivityOnBlankPage();
+        Tab targetTab = mActivityTestRule.getActivityTab();
+        int targetTabId = targetTab.getId();
+
+        // Open a second tab so targetTab is not the active tab before the notification tap.
+        mActivityTestRule.loadUrlInNewTab("about:blank");
+
+        MockNotificationManagerProxy notificationManager = new MockNotificationManagerProxy();
+        BaseNotificationManagerProxyFactory.setInstanceForTesting(notificationManager);
+        ActorNotificationService.setDemotionDelayMsForTesting(100);
+        ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
+        GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
+        ActorTaskJni.setInstanceForTesting(mActorTaskJni);
+
+        when(mActorTaskJni.getState(nativeTaskPtr)).thenReturn(ActorTaskState.FINISHED);
+        when(mActorTaskJni.getLastActuatedTabId(nativeTaskPtr)).thenReturn(targetTabId);
+
+        ActorForegroundServiceControllerImpl controller =
+                spy(new ActorForegroundServiceControllerImpl());
+        AtomicReference<Intent> lastCreatedIntent = new AtomicReference<>();
+        doAnswer(
+                        invocation -> {
+                            Intent intent = (Intent) invocation.callRealMethod();
+                            lastCreatedIntent.set(intent);
+                            return intent;
+                        })
+                .when(controller)
+                .createTrustedBringTabToFrontIntent(any());
+        ActorForegroundServiceController.setInstanceForTesting(controller);
+
+        Profile profile =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mActivityTestRule.getProfile(/* incognito= */ false));
+        ActorTask realTask =
+                new ActorTask(
+                        nativeTaskPtr,
+                        taskId,
+                        "Integration Task",
+                        profile,
+                        expectedConversationId,
+                        /* isExperimentalTriggering= */ false);
+        when(mActorKeyedService.getTask(taskId)).thenReturn(realTask);
+
+        ActorNotificationService service =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> new ActorNotificationService(mActorKeyedService));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    service.updateNotificationForTask(
+                            taskId,
+                            ActorTaskState.FINISHED,
+                            /* isSilent= */ false,
+                            /* isWarning= */ false);
+                    // The native task is destroyed and removed from ActorKeyedService before the
+                    // demotion timer fires, so the tap path must fall back to the intent's state.
+                    realTask.clearNativePtr();
+                    when(mActorKeyedService.getTask(taskId)).thenReturn(null);
+                    lastCreatedIntent.set(null);
+                });
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Notification notification =
+                            service.getCachedNotification(
+                                    taskId, /* isSilent= */ false, /* isWarning= */ false);
+                    return notification != null
+                            && (notification.flags & Notification.FLAG_ONGOING_EVENT) == 0;
+                },
+                "Live notification for a completed task was never demoted");
+
+        Intent demotedIntent = lastCreatedIntent.get();
+        assertNotNull(demotedIntent);
+        assertEquals(targetTabId, IntentHandler.getBringTabToFrontId(demotedIntent));
+        assertEquals(expectedConversationId, IntentHandler.getGlicConversationId(demotedIntent));
+
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Actor.Notification.ClickTaskState", ActorTaskState.FINISHED);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mActivityTestRule.getActivity().onNewIntent(demotedIntent));
+
+        watcher.assertExpected();
+        CriteriaHelper.pollUiThread(
+                () -> mActivityTestRule.getActivityTab().getId() == targetTabId);
+        verify(mGlicKeyedService, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+                .invokeWithConversation(eq(targetTab), eq(expectedConversationId), anyInt());
+        CriteriaHelper.pollUiThread(() -> notificationManager.getNotifications().isEmpty());
     }
 }
