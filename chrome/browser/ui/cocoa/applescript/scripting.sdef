@@ -105,8 +105,8 @@
     </command>
 
     <command name="close" code="coreclos" description="Close a window.">
-      <access-group identifier="*"/>
       <cocoa class="NSCloseCommand"/>
+      <access-group identifier="*"/>
       <direct-parameter description="the document(s) or window(s) to close." type="specifier"/>
     </command>
 
