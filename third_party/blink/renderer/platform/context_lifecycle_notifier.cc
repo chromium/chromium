@@ -4,8 +4,12 @@
 
 #include "third_party/blink/renderer/platform/context_lifecycle_notifier.h"
 
+#include "base/check.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/heap_allocator_impl.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
@@ -30,13 +34,32 @@ void ContextLifecycleNotifier::RemoveContextLifecycleObserver(
 }
 
 void ContextLifecycleNotifier::NotifyContextDestroyed() {
-  context_destroyed_ = true;
-
+  // `NotifyContextDestroyed()` must always be executed from a context that can
+  // allocate (e.g. never from a pre-finalizer or
+  // `DisallowGarbageCollectionScope`).
+  CHECK(HeapAllocator::IsAllocationAllowed());
   ScriptForbiddenScope forbid_script;
+
+  // Keep live observers strongly rooted across `NotifyContextDestroyed()`. Once
+  // `context_destroyed_` becomes true, mechanisms such as
+  // `ActiveScriptWrappableManager` stop keeping active objects alive, so a GC
+  // triggered during one observer's `ContextDestroyed()` could otherwise
+  // collect remaining observers and clear their entries in `observers_` before
+  // they are notified.
+  HeapVector<Member<ContextLifecycleObserver>> keep_alive;
+  observers_.ForEachObserver([&](ContextLifecycleObserver* observer) {
+    keep_alive.push_back(observer);
+  });
+
+  context_destroyed_ = true;
   observers_.ForEachObserver([](ContextLifecycleObserver* observer) {
     observer->NotifyContextDestroyed();
   });
   observers_.Clear();
+  // Explicitly clear `keep_alive` after notification finishes so the compiler
+  // cannot dead-store-eliminate its trivially-destructible stack slot before
+  // `ForEachObserver` completes.
+  keep_alive.clear();
 }
 
 void ContextLifecycleNotifier::Trace(Visitor* visitor) const {

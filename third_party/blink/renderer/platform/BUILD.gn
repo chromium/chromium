@@ -2267,6 +2267,7 @@ source_set("blink_platform_unittests_sources") {
     "bindings/parkable_string_test.cc",
     "bindings/runtime_call_stats_test.cc",
     "bindings/transform_view_test.cc",
+    "context_lifecycle_notifier_test.cc",
     "disk_data_allocator_test.cc",
     "disk_data_allocator_test_utils.h",
     "exported/file_path_conversion_test.cc",
