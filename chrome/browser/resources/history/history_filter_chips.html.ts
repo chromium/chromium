@@ -77,6 +77,12 @@ export function getHtml(this: HistoryFilterChipsElement) {
         </select>
       </div>
     ` : ''}
+    ${this.showDomainFilter ? html`
+      <cr-chip id="domainFilterChip" selected>
+        <cr-icon icon="cr:check" aria-hidden="true"></cr-icon>
+        ${this.domain}
+      </cr-chip>
+    ` : ''}
     ${this.hasActiveFilter_() ? html`
       <cr-button id="clearAllButton" @click="${this.onClearAllClick_}">
         $i18n{resetFilters}

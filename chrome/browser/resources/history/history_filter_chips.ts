@@ -37,6 +37,8 @@ export class HistoryFilterChipsElement extends CrLitElement {
     return {
       showDeviceFilter: {type: Boolean},
       devices: {type: Array},
+      showDomainFilter: {type: Boolean},
+      domain: {type: String},
       timePeriodOptions: {type: Array},
       showTimePeriodFilter: {type: Boolean},
       showActorFilter: {type: Boolean},
@@ -49,6 +51,8 @@ export class HistoryFilterChipsElement extends CrLitElement {
 
   accessor showDeviceFilter: boolean = false;
   accessor devices: Device[] = [];
+  accessor showDomainFilter: boolean = false;
+  accessor domain: string = '';
   accessor timePeriodOptions: TimePeriodOption[] = [];
   accessor showTimePeriodFilter: boolean = false;
   accessor showActorFilter: boolean = false;

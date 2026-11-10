@@ -682,6 +682,29 @@ suite('HistoryFilterChipsTest', function() {
     });
   });
 
+  suite('DomainFilter', function() {
+    test('VisibilityAndSelectedState', async () => {
+      // Hidden unless the parent passes `showDomainFilter`.
+      assertFalse(!!element.shadowRoot.querySelector('#domainFilterChip'));
+
+      element.domain = 'example.com';
+      element.showDomainFilter = true;
+      await microtasksFinished();
+      const domainChip =
+          element.shadowRoot.querySelector<HTMLElement>('#domainFilterChip');
+      assertTrue(!!domainChip);
+      assertTrue(domainChip.hasAttribute('selected'));
+      assertEquals('example.com', domainChip.textContent.trim());
+      const icon = domainChip.querySelector('cr-icon');
+      assertTrue(!!icon);
+      assertEquals('cr:check', icon.getAttribute('icon'));
+
+      element.showDomainFilter = false;
+      await microtasksFinished();
+      assertFalse(!!element.shadowRoot.querySelector('#domainFilterChip'));
+    });
+  });
+
   test('ClearAllButton', async () => {
     loadTimeData.overrideValues({
       isBrowsingHistoryFilterByActorEnabled: true,
