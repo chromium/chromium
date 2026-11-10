@@ -8529,6 +8529,19 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void testDataProvider_OnItemUpdated_NotTracking_Ignored() {
+        setUpProviderMediator(TabListLayoutType.GROUPED, /* supportsModifierMultiSelect= */ false);
+        ListItem item = createTabListItem(TAB1_ID);
+        item.model.set(TabProperties.IS_SELECTED, false);
+        mModelList.add(item);
+
+        mDataObserver.onItemUpdated(
+                createTabItem(TAB1_ID).withSelected(/* isSelected= */ true), PayloadType.SELECTION);
+
+        assertFalse(item.model.get(TabProperties.IS_SELECTED));
+    }
+
+    @Test
     public void testDataProvider_OnItemsRemoved_TabItem_RemovesCardAndDetachesObserver() {
         setUpProviderMediator(TabListLayoutType.GROUPED, /* supportsModifierMultiSelect= */ false);
         mMediator.resetWithListOfTabs(
@@ -8925,6 +8938,64 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void testDataProvider_OnItemUpdated_PinState_UpdatesPinState() {
+        setUpProviderMediator(TabListLayoutType.GROUPED, /* supportsModifierMultiSelect= */ false);
+        when(mTab1.getIsPinned()).thenReturn(false);
+        mMediator.resetWithListOfTabs(
+                List.of(mTab1), /* tabGroupSyncIds= */ null, /* quickMode= */ false);
+        mDataObserver.onDataReset(List.of(createTabItem(TAB1_ID)));
+        PropertyModel model = mModelList.get(0).model;
+        assertFalse(model.get(TabProperties.IS_PINNED));
+
+        when(mTab1.getIsPinned()).thenReturn(true);
+        mDataObserver.onItemUpdated(
+                createTabItem(TAB1_ID).withPinned(/* isPinned= */ true), PayloadType.PIN_STATE);
+
+        assertTrue(model.get(TabProperties.IS_PINNED));
+        assertEquals(TabActionButtonType.PIN, model.get(TabProperties.TAB_ACTION_BUTTON_DATA).type);
+
+        when(mTab1.getIsPinned()).thenReturn(false);
+        mDataObserver.onItemUpdated(
+                createTabItem(TAB1_ID).withPinned(/* isPinned= */ false), PayloadType.PIN_STATE);
+
+        assertFalse(model.get(TabProperties.IS_PINNED));
+        assertEquals(
+                TabActionButtonType.CLOSE, model.get(TabProperties.TAB_ACTION_BUTTON_DATA).type);
+
+        mDataObserver.onItemUpdated(
+                createTabItem(TAB2_ID).withPinned(/* isPinned= */ true), PayloadType.PIN_STATE);
+
+        assertEquals(1, mModelList.size());
+        assertFalse(model.get(TabProperties.IS_PINNED));
+        assertEquals(
+                TabActionButtonType.CLOSE, model.get(TabProperties.TAB_ACTION_BUTTON_DATA).type);
+    }
+
+    @Test
+    public void testDataProvider_OnItemUpdated_PinState_Nested_ReinsertsCardAtSameIndex() {
+        setUpProviderMediator(TabListLayoutType.NESTED, /* supportsModifierMultiSelect= */ false);
+        mMediator.resetWithListOfTabs(
+                List.of(mTab1, mTab2), /* tabGroupSyncIds= */ null, /* quickMode= */ false);
+        mDataObserver.onDataReset(List.of(createTabItem(TAB1_ID), createTabItem(TAB2_ID)));
+        ListItem before = mModelList.get(1);
+        assertFalse(before.model.get(TabProperties.IS_PINNED));
+        mModelList.addObserver(mListObserver);
+
+        when(mTab2.getIsPinned()).thenReturn(true);
+        mDataObserver.onItemUpdated(
+                createTabItem(TAB2_ID).withPinned(/* isPinned= */ true), PayloadType.PIN_STATE);
+
+        // The card is re-inserted so the adapter re-resolves its view type from IS_PINNED.
+        InOrder inOrder = Mockito.inOrder(mListObserver);
+        inOrder.verify(mListObserver).onItemRangeRemoved(eq(mModelList), eq(1), eq(1));
+        inOrder.verify(mListObserver).onItemRangeInserted(eq(mModelList), eq(1), eq(1));
+        assertEquals(2, mModelList.size());
+        assertSame(before, mModelList.get(1));
+        assertTrue(before.model.get(TabProperties.IS_PINNED));
+        assertTabIds(TAB1_ID, TAB2_ID);
+    }
+
+    @Test
     public void testDataProvider_OnItemUpdated_MultiSelection_UpdatesIsMultiSelected() {
         setUpProviderMediator(TabListLayoutType.GROUPED, /* supportsModifierMultiSelect= */ true);
         mMediator.resetWithListOfTabs(
@@ -8976,6 +9047,28 @@ public class TabListMediatorUnitTest {
                 PayloadType.MULTI_SELECTION);
 
         assertFalse(model.get(TabProperties.IS_MULTI_SELECTED));
+    }
+
+    @Test
+    public void testOnTabPinnedStateChanged_ProviderMode_Ignored() {
+        setUpProviderMediator(TabListLayoutType.GROUPED, /* supportsModifierMultiSelect= */ false);
+        mMediator.resetWithListOfTabs(
+                List.of(mTab1, mTab2), /* tabGroupSyncIds= */ null, /* quickMode= */ false);
+        mDataObserver.onDataReset(List.of(createTabItem(TAB1_ID), createTabItem(TAB2_ID)));
+        ListItem first = mModelList.get(0);
+        ListItem second = mModelList.get(1);
+        mModelList.addObserver(mListObserver);
+
+        // The provider owns pin updates, so the legacy tab observer must not touch the list.
+        when(mTab1.getIsPinned()).thenReturn(true);
+        mTabObserverCaptor.getValue().onTabPinnedStateChanged(mTab1, /* isPinned= */ true);
+
+        assertFalse(first.model.get(TabProperties.IS_PINNED));
+        assertSame(first, mModelList.get(0));
+        assertSame(second, mModelList.get(1));
+        assertTabIds(TAB1_ID, TAB2_ID);
+        verify(mListObserver, never()).onItemRangeRemoved(any(), anyInt(), anyInt());
+        verify(mListObserver, never()).onItemRangeInserted(any(), anyInt(), anyInt());
     }
 
     @Test

@@ -948,6 +948,11 @@ public class TabListMediator implements TabListNotificationHandler {
         return mTabListConfig.supportsTabGroups;
     }
 
+    /** Returns whether the list is driven by a {@link TabListDataProvider}. */
+    boolean hasDataProvider() {
+        return mTabListConfig.dataProvider != null;
+    }
+
     /** Returns whether the tab list supports displaying tab loading state. */
     boolean supportsTabLoadingState() {
         return mTabListConfig.supportsTabLoadingState;
@@ -2937,6 +2942,7 @@ public class TabListMediator implements TabListNotificationHandler {
             switch (payload) {
                 case PayloadType.GROUP_MEMBERSHIP -> updateTabItemGroupMembership(tabItem);
                 case PayloadType.SELECTION -> updateSelection(tabItem);
+                case PayloadType.PIN_STATE -> updatePinState(tabItem);
                 case PayloadType.MULTI_SELECTION -> updateMultiSelection(tabItem);
                 default -> {}
             }
@@ -3688,6 +3694,34 @@ public class TabListMediator implements TabListNotificationHandler {
         } else {
             setLastSelectedTabListModelIndex(index);
             selectTab(/* oldIndex= */ index, /* newIndex= */ TabModel.INVALID_TAB_INDEX);
+        }
+    }
+
+    /**
+     * Updates a tab card's pin state and action button. Re-inserts the card when groups are
+     * supported so view types that depend on pin state are rebound, matching {@link
+     * TabListLayoutDelegate#onTabPinnedStateChanged}. The provider's move event has already put the
+     * card at its final index, so the re-insert uses the same index.
+     */
+    private void updatePinState(TabItem tabItem) {
+        int index = mModelList.indexFromItem(tabItem);
+        if (index == TabModel.INVALID_TAB_INDEX) return;
+        Tab tab = getCurrentTabModelChecked().getTabById(tabItem.getTabId());
+        if (tab == null) return;
+        ListItem listItem = mModelList.get(index);
+        // Detach while updating so the adapter doesn't see a view type change (vertical tabs pick
+        // PINNED_TAB from IS_PINNED) or get a change and a remove for the same item. Matches
+        // TabListLayoutDelegate#onTabPinnedStateChanged.
+        boolean reinsert = supportsTabGroups();
+        if (reinsert) {
+            beginProviderUpdate();
+            mModelList.removeAt(index);
+        }
+        listItem.model.set(TabProperties.IS_PINNED, tabItem.isPinned());
+        bindTabActionStateProperties(mTabActionState, tab, listItem.model);
+        if (reinsert) {
+            mModelList.add(index, listItem);
+            endProviderUpdate();
         }
     }
 

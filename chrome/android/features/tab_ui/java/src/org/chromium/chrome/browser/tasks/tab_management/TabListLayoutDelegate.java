@@ -414,6 +414,8 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
     @Override
     public void onTabPinnedStateChanged(Tab tab, boolean isPinned) {
         if (!mMediator.isTrackingTabs()) return;
+        // The data provider sends PIN_STATE for this; see TabListMediator.updatePinState.
+        if (mMediator.hasDataProvider()) return;
 
         int index = getIndexFromTabId(tab.getId());
         if (index == TabModel.INVALID_TAB_INDEX) return;
