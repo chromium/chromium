@@ -34,21 +34,45 @@ class UserData : public base::SupportsUserData::Data {
   UserData(const UserData&) = delete;
   UserData& operator=(const UserData&) = delete;
 
+  SmartSelectionClient* client() const { return client_.get(); }
+
  private:
   std::unique_ptr<SmartSelectionClient> client_;
 };
-}
 
-static int64_t JNI_SmartSelectionClient_Init(JNIEnv* env,
-                                             WebContents* web_contents) {
+SmartSelectionClient* FromWebContents(WebContents* web_contents) {
+  if (!web_contents) {
+    return nullptr;
+  }
+  auto* user_data = static_cast<UserData*>(
+      web_contents->GetUserData(kSmartSelectionClientUDKey));
+  return user_data ? user_data->client() : nullptr;
+}
+}  // namespace
+
+static void JNI_SmartSelectionClient_Init(WebContents* web_contents) {
   CHECK(web_contents)
       << "A SmartSelectionClient should be created with a valid WebContents.";
 
-  if (auto* user_data = web_contents->GetUserData(kSmartSelectionClientUDKey)) {
-    return reinterpret_cast<intptr_t>(user_data);
+  if (!FromWebContents(web_contents)) {
+    new SmartSelectionClient(web_contents);
   }
+}
 
-  return reinterpret_cast<intptr_t>(new SmartSelectionClient(web_contents));
+static void JNI_SmartSelectionClient_RequestSurroundingText(
+    WebContents* web_contents,
+    int32_t num_extra_characters,
+    int32_t callback_data) {
+  if (auto* client = FromWebContents(web_contents)) {
+    client->RequestSurroundingText(num_extra_characters, callback_data);
+  }
+}
+
+static void JNI_SmartSelectionClient_CancelAllRequests(
+    WebContents* web_contents) {
+  if (auto* client = FromWebContents(web_contents)) {
+    client->CancelAllRequests();
+  }
 }
 
 SmartSelectionClient::SmartSelectionClient(WebContents* web_contents)
@@ -70,15 +94,12 @@ void SmartSelectionClient::WebContentsDestroyed() {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> j_obj = GetJavaObject(env);
   if (!j_obj.is_null()) {
-    Java_SmartSelectionClient_onNativeSideDestroyed(
-        env, j_obj, reinterpret_cast<intptr_t>(this));
+    Java_SmartSelectionClient_onNativeSideDestroyed(env, j_obj);
   }
 }
 
-void SmartSelectionClient::RequestSurroundingText(
-    JNIEnv* env,
-    int num_extra_characters,
-    int callback_data) {
+void SmartSelectionClient::RequestSurroundingText(int num_extra_characters,
+                                                  int callback_data) {
   RenderFrameHost* focused_frame =
       web_contents() ? web_contents()->GetFocusedFrame() : nullptr;
   if (!focused_frame) {
@@ -92,7 +113,7 @@ void SmartSelectionClient::RequestSurroundingText(
       num_extra_characters);
 }
 
-void SmartSelectionClient::CancelAllRequests(JNIEnv* env) {
+void SmartSelectionClient::CancelAllRequests() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 

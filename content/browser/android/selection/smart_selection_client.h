@@ -31,12 +31,10 @@ class SmartSelectionClient : public WebContentsObserver {
   ~SmartSelectionClient() override;
 
   // Sends asynchronius request to retrieve the text.
-  void RequestSurroundingText(JNIEnv* env,
-                              int num_extra_characters,
-                              int callback_data);
+  void RequestSurroundingText(int num_extra_characters, int callback_data);
 
   // Cancels all pending requests.
-  void CancelAllRequests(JNIEnv* env);
+  void CancelAllRequests();
 
  private:
   // WebContentsObserver:

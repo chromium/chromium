@@ -59,7 +59,7 @@ public class SmartSelectionClient implements SelectionClient, UserData {
     // Used for surrounding text request.
     private static final int NUM_EXTRA_CHARS = 240;
 
-    private long mNativeSmartSelectionClient;
+    private @Nullable WebContents mWebContents;
 
     private SmartSelectionProvider mProvider;
 
@@ -90,10 +90,11 @@ public class SmartSelectionClient implements SelectionClient, UserData {
     }
 
     private SmartSelectionClient(WebContents webContents) {
+        mWebContents = webContents;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             mSmartSelectionEventProcessor = SmartSelectionEventProcessor.create(webContents);
         }
-        mNativeSmartSelectionClient = SmartSelectionClientJni.get().init(webContents);
+        SmartSelectionClientJni.get().init(webContents);
     }
 
     @Initializer
@@ -109,9 +110,8 @@ public class SmartSelectionClient implements SelectionClient, UserData {
     }
 
     @CalledByNative
-    private void onNativeSideDestroyed(long nativeSmartSelectionClient) {
-        assert nativeSmartSelectionClient == mNativeSmartSelectionClient;
-        mNativeSmartSelectionClient = 0;
+    private void onNativeSideDestroyed() {
+        mWebContents = null;
         mProvider.destroy();
     }
 
@@ -134,8 +134,8 @@ public class SmartSelectionClient implements SelectionClient, UserData {
 
     @Override
     public void cancelAllRequests() {
-        if (mNativeSmartSelectionClient != 0) {
-            SmartSelectionClientJni.get().cancelAllRequests(mNativeSmartSelectionClient);
+        if (mWebContents != null && !mWebContents.isDestroyed()) {
+            SmartSelectionClientJni.get().cancelAllRequests(mWebContents);
         }
 
         mProvider.cancelAllRequests();
@@ -162,13 +162,13 @@ public class SmartSelectionClient implements SelectionClient, UserData {
     }
 
     private void requestSurroundingText(@RequestType int callbackData) {
-        if (mNativeSmartSelectionClient == 0) {
+        if (mWebContents == null || mWebContents.isDestroyed()) {
             onSurroundingTextReceived(callbackData, "", 0, 0);
             return;
         }
 
         SmartSelectionClientJni.get()
-                .requestSurroundingText(mNativeSmartSelectionClient, NUM_EXTRA_CHARS, callbackData);
+                .requestSurroundingText(mWebContents, NUM_EXTRA_CHARS, callbackData);
     }
 
     @Override
@@ -244,11 +244,13 @@ public class SmartSelectionClient implements SelectionClient, UserData {
 
     @NativeMethods
     interface Natives {
-        long init(@JniType("content::WebContents*") WebContents webContents);
+        void init(@JniType("content::WebContents*") WebContents webContents);
 
         void requestSurroundingText(
-                long nativeSmartSelectionClient, int numExtraCharacters, int callbackData);
+                @JniType("content::WebContents*") WebContents webContents,
+                int numExtraCharacters,
+                int callbackData);
 
-        void cancelAllRequests(long nativeSmartSelectionClient);
+        void cancelAllRequests(@JniType("content::WebContents*") WebContents webContents);
     }
 }
