@@ -142,14 +142,6 @@ class MediaVideoEncoderWrapper final : public media::cast::VideoEncoder {
                           base::TimeDelta frame_duration,
                           double complexity) const;
 
-  // Posts a task to update the encoder options, such as whether a key frame
-  // is requested.
-  void UpdateEncoderOptions();
-  void OnFlushDoneForOptionsUpdate(int encoder_version,
-                                   media::VideoEncoder::Options options,
-                                   EncoderStatus status);
-  void OnOptionsUpdated(int encoder_version, EncoderStatus status);
-
   // We currently manage the threads used for interacting with the encoder
   // manually. Hardware encoding demands posting to the "accelerator thread"
   // which is the same as the dedicated VIDEO thread. Software encoding makes no
@@ -209,11 +201,6 @@ class MediaVideoEncoderWrapper final : public media::cast::VideoEncoder {
   // These options are for the entire encoder.
   media::VideoEncoder::Options options_;
 
-  // The number of options updates currently in flight. While > 0, frames that
-  // finish complexity estimation are queued in `pending_encodes_` and encoded
-  // once all pending updates complete.
-  int num_pending_updates_ = 0;
-
   // These options are intended to be per frame.
   media::VideoEncoder::EncodeOptions encode_options_;
 
@@ -244,9 +231,6 @@ class MediaVideoEncoderWrapper final : public media::cast::VideoEncoder {
   // `frame_complexity_estimator_`), new frames skip
   // `frame_complexity_estimator_` and use the encoder's real QP.
   bool encoder_reports_qp_ = false;
-
-  // Pending encodes to be run when options are updated.
-  std::vector<base::OnceClosure> pending_encodes_;
 
   // Timer to debounce encoder reconstruction during active resizing.
   base::OneShotTimer resize_debounce_timer_;

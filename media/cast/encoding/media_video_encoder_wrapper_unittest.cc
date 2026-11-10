@@ -348,17 +348,17 @@ TEST_F(MediaVideoEncoderWrapperTest, CanSetBitRate) {
   const FrameInfo second_frame_info = CreateFrameInfo(FrameType::kIntermediate);
   ExpectVideoFrameEncoded(second_frame_info);
 
-  EXPECT_CALL(*mock_encoder_, Flush(_))
-      .WillOnce([](media::VideoEncoder::EncoderStatusCB done) {
-        std::move(done).Run(EncoderStatus::Codes::kOk);
-      });
+  EXPECT_CALL(*mock_encoder_, Flush(_)).Times(0);
 
+  media::VideoEncoder::Options expected_options = GetOptions();
+  expected_options.bitrate = Bitrate::ConstantBitrate(kNewBitRate);
   base::OnceClosure quit_closure;
-  EXPECT_CALL(*mock_encoder_, ChangeOptions(_, _, _))
+  EXPECT_CALL(*mock_encoder_,
+              ChangeOptions(OptionsAreEqual(expected_options), _, _))
       .WillOnce([&](const media::VideoEncoder::Options& options,
-                    media::VideoEncoder::OutputCB output,
+                    media::VideoEncoder::OutputCB output_cb,
                     media::VideoEncoder::EncoderStatusCB done_cb) {
-        EXPECT_EQ(options.bitrate, Bitrate::ConstantBitrate(kNewBitRate));
+        EXPECT_TRUE(output_cb.is_null());
         std::move(done_cb).Run(EncoderStatus::Codes::kOk);
         std::move(quit_closure).Run();
       });
@@ -367,16 +367,13 @@ TEST_F(MediaVideoEncoderWrapperTest, CanSetBitRate) {
 
   quit_closure = QuitClosure();
   encoder_->SetBitRate(kNewBitRate);
+  // Setting the same bitrate again is a no-op.
+  encoder_->SetBitRate(kNewBitRate);
   RunUntilQuit();
 
-  // At this point, we should have posted the task to run
-  // MediaVideoEncoderWrapper::OnOptionsUpdated, but it is waiting in the task
-  // queue. Make sure we run the task before encoding a video frame.
   GetMainThreadTaskRunner()->PostTask(FROM_HERE, QuitClosure());
   RunUntilQuit();
 
-  // Don't encode the second frame until we have completely updated
-  // options.
   EXPECT_NE(EncodeVideoFrame(second_frame_info), nullptr);
 }
 
@@ -461,19 +458,16 @@ TEST_F(MediaVideoEncoderWrapperTest, CanHandleMultiplePendingUpdates) {
   const FrameInfo second_frame_info = CreateFrameInfo(FrameType::kIntermediate);
   ExpectVideoFrameEncoded(second_frame_info);
 
-  EXPECT_CALL(*mock_encoder_, Flush(_))
-      .Times(3)
-      .WillRepeatedly([](media::VideoEncoder::EncoderStatusCB done) {
-        std::move(done).Run(EncoderStatus::Codes::kOk);
-      });
+  EXPECT_CALL(*mock_encoder_, Flush(_)).Times(0);
 
   base::RunLoop run_loop;
   auto quit_closure = run_loop.QuitClosure();
   EXPECT_CALL(*mock_encoder_, ChangeOptions(_, _, _))
       .Times(3)
       .WillRepeatedly([&](const media::VideoEncoder::Options& options,
-                          media::VideoEncoder::OutputCB output,
+                          media::VideoEncoder::OutputCB output_cb,
                           media::VideoEncoder::EncoderStatusCB done_cb) {
+        EXPECT_TRUE(output_cb.is_null());
         if (options.bitrate == Bitrate::ConstantBitrate(kNewBitRate3)) {
           std::move(quit_closure).Run();
         }
@@ -487,9 +481,6 @@ TEST_F(MediaVideoEncoderWrapperTest, CanHandleMultiplePendingUpdates) {
   encoder_->SetBitRate(kNewBitRate3);
   run_loop.Run();
 
-  // At this point, we should have posted the tasks to run
-  // MediaVideoEncoderWrapper::OnOptionsUpdated, but they are waiting in the
-  // task queue. Make sure we run the tasks before encoding a video frame.
   GetMainThreadTaskRunner()->PostTask(FROM_HERE, QuitClosure());
   RunUntilQuit();
   GetMainThreadTaskRunner()->PostTask(FROM_HERE, QuitClosure());
@@ -497,8 +488,6 @@ TEST_F(MediaVideoEncoderWrapperTest, CanHandleMultiplePendingUpdates) {
   GetMainThreadTaskRunner()->PostTask(FROM_HERE, QuitClosure());
   RunUntilQuit();
 
-  // Don't encode the second frame until we have completely updated
-  // options.
   EXPECT_NE(EncodeVideoFrame(second_frame_info), nullptr);
 }
 
@@ -949,7 +938,8 @@ TEST_F(MediaVideoEncoderWrapperTest, EncodesNv12VideoFrame) {
   EXPECT_TRUE(encoded_frame->is_key_frame);
 }
 
-TEST_F(MediaVideoEncoderWrapperTest, QueuesFramesWhileBitRateUpdateIsPending) {
+TEST_F(MediaVideoEncoderWrapperTest,
+       EncodesFramesWithoutFlushingOnBitRateChange) {
   ExpectEncoderInitialized();
 
   const FrameInfo frame_info_1 = CreateFrameInfo(FrameType::kKey);
@@ -962,88 +952,32 @@ TEST_F(MediaVideoEncoderWrapperTest, QueuesFramesWhileBitRateUpdateIsPending) {
   const FrameInfo frame_info_3 = CreateFrameInfo(FrameType::kIntermediate);
 
   constexpr uint32_t kNewBitRate = 25000000;
+  media::VideoEncoder::Options expected_options = GetOptions();
+  expected_options.bitrate = Bitrate::ConstantBitrate(kNewBitRate);
   media::VideoEncoder::EncoderStatusCB change_options_done_cb;
-  base::RunLoop change_options_called_loop;
 
-  EXPECT_CALL(*mock_encoder_, Flush(_))
-      .WillOnce([](media::VideoEncoder::EncoderStatusCB done) {
-        std::move(done).Run(EncoderStatus::Codes::kOk);
-      });
-
-  EXPECT_CALL(*mock_encoder_, ChangeOptions(_, _, _))
+  EXPECT_CALL(*mock_encoder_, Flush(_)).Times(0);
+  EXPECT_CALL(*mock_encoder_,
+              ChangeOptions(OptionsAreEqual(expected_options), _, _))
       .WillOnce([&](const media::VideoEncoder::Options& options,
-                    media::VideoEncoder::OutputCB output,
+                    media::VideoEncoder::OutputCB output_cb,
                     media::VideoEncoder::EncoderStatusCB done_cb) {
-        EXPECT_EQ(options.bitrate, Bitrate::ConstantBitrate(kNewBitRate));
+        EXPECT_TRUE(output_cb.is_null());
         change_options_done_cb = std::move(done_cb);
-        change_options_called_loop.Quit();
       });
 
-  bool options_updated = false;
-  EXPECT_CALL(*mock_encoder_, Encode(FrameInfosAreEqual(frame_info_2), _, _))
-      .WillOnce([&, frame_info_2](
-                    scoped_refptr<VideoFrame> frame,
-                    const media::VideoEncoder::EncodeOptions& options,
-                    media::VideoEncoder::EncoderStatusCB done) {
-        EXPECT_TRUE(options_updated);
-        std::move(done).Run(EncoderStatus::Codes::kOk);
-        if (output_cb_) {
-          VideoEncoderOutput output;
-          output.key_frame = false;
-          output.timestamp = frame_info_2.reference_time - base::TimeTicks();
-          output.data = base::HeapArray<uint8_t>::WithSize(100);
-          output_cb_.Run(std::move(output), std::nullopt);
-        }
-      });
-
-  EXPECT_CALL(*mock_encoder_, Encode(FrameInfosAreEqual(frame_info_3), _, _))
-      .WillOnce([&, frame_info_3](
-                    scoped_refptr<VideoFrame> frame,
-                    const media::VideoEncoder::EncodeOptions& options,
-                    media::VideoEncoder::EncoderStatusCB done) {
-        EXPECT_TRUE(options_updated);
-        std::move(done).Run(EncoderStatus::Codes::kOk);
-        if (output_cb_) {
-          VideoEncoderOutput output;
-          output.key_frame = false;
-          output.timestamp = frame_info_3.reference_time - base::TimeTicks();
-          output.data = base::HeapArray<uint8_t>::WithSize(100);
-          output_cb_.Run(std::move(output), std::nullopt);
-        }
-      });
+  ExpectVideoFrameEncoded(frame_info_2);
+  ExpectVideoFrameEncoded(frame_info_3);
 
   encoder_->SetBitRate(kNewBitRate);
 
-  std::unique_ptr<SenderEncodedFrame> encoded_frame_2;
-  std::unique_ptr<SenderEncodedFrame> encoded_frame_3;
-  base::RunLoop encode_2_loop;
-  base::RunLoop encode_3_loop;
+  // Frames submitted after SetBitRate() are encoded immediately without waiting
+  // for a flush or for ChangeOptions() to finish.
+  const auto encoded_frame_2 = EncodeVideoFrame(frame_info_2);
+  const auto encoded_frame_3 = EncodeVideoFrame(frame_info_3);
 
-  auto video_frame_2 = CreateVideoFrame(frame_info_2);
-  EXPECT_TRUE(encoder_->EncodeVideoFrame(
-      video_frame_2, frame_info_2.reference_time,
-      base::BindLambdaForTesting(
-          [&](std::unique_ptr<SenderEncodedFrame> frame) {
-            encoded_frame_2 = std::move(frame);
-            encode_2_loop.Quit();
-          })));
-
-  auto video_frame_3 = CreateVideoFrame(frame_info_3);
-  EXPECT_TRUE(encoder_->EncodeVideoFrame(
-      video_frame_3, frame_info_3.reference_time,
-      base::BindLambdaForTesting(
-          [&](std::unique_ptr<SenderEncodedFrame> frame) {
-            encoded_frame_3 = std::move(frame);
-            encode_3_loop.Quit();
-          })));
-
-  change_options_called_loop.Run();
-
-  options_updated = true;
+  ASSERT_TRUE(change_options_done_cb);
   std::move(change_options_done_cb).Run(EncoderStatus::Codes::kOk);
-
-  encode_2_loop.Run();
-  encode_3_loop.Run();
 
   ASSERT_NE(encoded_frame_2, nullptr);
   EXPECT_EQ(encoded_frame_2->frame_id, FrameId::first() + 1);

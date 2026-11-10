@@ -149,22 +149,11 @@ void CallEncodeVideoFrame(
 
 // Must be called on the ENCODER thread, which resolves to VIDEO for hardware
 // encoding, and MAIN for software encoding.
-//
-// NOTE: since this call depends on a successful flush, `flush_result` is
-// checked before the encoder is accessed.
 void CallChangeOptions(media::VideoEncoder& encoder,
-                       media::VideoEncoder::Options options,
-                       media::VideoEncoder::OutputCB output_cb,
+                       const media::VideoEncoder::Options& options,
                        media::VideoEncoder::EncoderStatusCB done_cb) {
-  encoder.ChangeOptions(std::move(options), std::move(output_cb),
+  encoder.ChangeOptions(options, media::VideoEncoder::OutputCB(),
                         std::move(done_cb));
-}
-
-// Must be called on the ENCODER thread, which resolves to VIDEO for hardware
-// encoding, and MAIN for software encoding.
-void CallFlush(media::VideoEncoder& encoder,
-               media::VideoEncoder::EncoderStatusCB done_cb) {
-  encoder.Flush(std::move(done_cb));
 }
 
 // TODO(crbug.com/282984511): just use EncoderStatus directly once we remove
@@ -354,29 +343,29 @@ void MediaVideoEncoderWrapper::EnqueueFrameForEncode(
   }
   last_frame_timestamp_ = video_frame->timestamp();
 
-  auto encode_task = base::BindOnce(
+  CallEncoderOnCorrectThread(base::BindOnce(
       &CallEncodeVideoFrame, std::ref(*encoder_), std::move(video_frame),
       encode_options,
       CreateCallback(&MediaVideoEncoderWrapper::OnFrameEncodeDone,
-                     encoder_version, reference_time));
-
-  if (num_pending_updates_ > 0) {
-    pending_encodes_.push_back(std::move(encode_task));
-  } else {
-    CallEncoderOnCorrectThread(std::move(encode_task));
-  }
+                     encoder_version, reference_time)));
 }
 
 // Inform the encoder about the new target bit rate.
 void MediaVideoEncoderWrapper::SetBitRate(uint32_t new_bit_rate) {
   CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
-  options_.bitrate = Bitrate::ConstantBitrate(new_bit_rate);
+  const Bitrate bitrate = Bitrate::ConstantBitrate(new_bit_rate);
+  if (options_.bitrate == bitrate) {
+    return;
+  }
+  options_.bitrate = bitrate;
 
   // If this method is called before the encoder_ is constructed, the bitrate
   // will be set as part of construction.
   if (encoder_) {
-    // If we have an encoder, we need to update its options.
-    UpdateEncoderOptions();
+    CallEncoderOnCorrectThread(base::BindOnce(
+        &CallChangeOptions, std::ref(*encoder_), options_,
+        CreateCallback(&MediaVideoEncoderWrapper::OnEncoderStatus,
+                       encoder_version_)));
   }
 }
 
@@ -576,10 +565,6 @@ void MediaVideoEncoderWrapper::ConstructEncoder() {
   encoder_version_++;
   encoder_reports_qp_ = false;
 
-  // Clear any pending encodes and options updates meant for the old encoder.
-  pending_encodes_.clear();
-  num_pending_updates_ = 0;
-
   // Clear metadata and run callbacks with nullptr for any frames that were
   // in-flight to the old encoder, as the old encoder will be deleted and will
   // not emit them.
@@ -640,41 +625,6 @@ base::TimeDelta MediaVideoEncoderWrapper::GetFrameDuration(
   return std::clamp(duration, min_duration, max_duration);
 }
 
-// The VideoEncoder API requires you to Flush() and wait before calling
-// ChangeOptions(). This results in this annoying set of nested callbacks.
-void MediaVideoEncoderWrapper::UpdateEncoderOptions() {
-  CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
-  num_pending_updates_++;
-
-  auto flush_done_callback =
-      CreateCallback(&MediaVideoEncoderWrapper::OnFlushDoneForOptionsUpdate,
-                     encoder_version_, options_);
-  CallEncoderOnCorrectThread(base::BindOnce(&CallFlush, std::ref(*encoder_),
-                                            std::move(flush_done_callback)));
-}
-
-void MediaVideoEncoderWrapper::OnFlushDoneForOptionsUpdate(
-    int encoder_version,
-    media::VideoEncoder::Options options,
-    EncoderStatus status) {
-  CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
-  if (encoder_version != encoder_version_) {
-    return;
-  }
-
-  if (!status.is_ok()) {
-    OnOptionsUpdated(encoder_version, status);
-    return;
-  }
-
-  CallEncoderOnCorrectThread(base::BindOnce(
-      &CallChangeOptions, std::ref(*encoder_), std::move(options),
-      CreateCallback(&MediaVideoEncoderWrapper::OnEncodedFrame,
-                     encoder_version),
-      CreateCallback(&MediaVideoEncoderWrapper::OnOptionsUpdated,
-                     encoder_version)));
-}
-
 void MediaVideoEncoderWrapper::CallEncoderOnCorrectThread(
     base::OnceClosure closure) {
   CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
@@ -711,26 +661,6 @@ void MediaVideoEncoderWrapper::OnFrameEncodeDone(int encoder_version,
   recent_metadata_.pop();
 
   std::move(callback).Run(nullptr);
-
-  OnEncoderStatus(encoder_version, status);
-}
-
-void MediaVideoEncoderWrapper::OnOptionsUpdated(int encoder_version,
-                                                EncoderStatus status) {
-  CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
-  if (encoder_version != encoder_version_) {
-    return;
-  }
-  --num_pending_updates_;
-
-  if (num_pending_updates_ == 0) {
-    std::vector<base::OnceClosure> pending_encodes =
-        std::move(pending_encodes_);
-    pending_encodes_.clear();
-    for (auto& task : pending_encodes) {
-      CallEncoderOnCorrectThread(std::move(task));
-    }
-  }
 
   OnEncoderStatus(encoder_version, status);
 }
