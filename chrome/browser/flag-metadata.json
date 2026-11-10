@@ -8567,7 +8567,7 @@
       "chrome-reading-mode-eng@google.com",
       "//ui/accessibility/OWNERS"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 180
   },
   {
     "name": "read-anything-omnibox-chip",
@@ -8581,7 +8581,7 @@
       "alfredohiguera@google.com",
       "//ui/accessibility/OWNERS"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 180
   },
   {
     "name": "read-anything-read-aloud-phrase-highlighting-v2",
