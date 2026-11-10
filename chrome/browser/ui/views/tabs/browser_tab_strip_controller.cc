@@ -638,9 +638,10 @@ void BrowserTabStripController::OnTabWillBeAdded() {
   tabstrip_->EndDrag(EndDragReason::kModelAddedTab);
 }
 
-void BrowserTabStripController::OnTabWillBeRemoved(tabs::TabInterface* tab,
-                                                   int index) {
-  tabstrip_->OnTabWillBeRemoved(tab->GetContents());
+void BrowserTabStripController::OnTabWillBeRemoved(tabs::TabHandle tab) {
+  if (tabs::TabInterface* tab_interface = tab.Get()) {
+    tabstrip_->OnTabWillBeRemoved(tab_interface->GetContents());
+  }
 }
 
 void BrowserTabStripController::OnTabGroupChanged(

@@ -44,7 +44,7 @@ class BreadcrumbManagerBrowserAgent
   void PlatformLogEvent(const std::string& event) override;
 
   // TabStripModelObserver:
-  void OnTabWillBeRemoved(tabs::TabInterface* tab, int index) override;
+  void OnTabWillBeRemoved(tabs::TabHandle tab) override;
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,

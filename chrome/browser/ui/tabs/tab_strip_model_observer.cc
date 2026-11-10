@@ -352,8 +352,7 @@ void TabStripModelObserver::OnTabStripModelChanged(
 
 void TabStripModelObserver::OnTabWillBeAdded() {}
 
-void TabStripModelObserver::OnTabWillBeRemoved(tabs::TabInterface* tab,
-                                               int index) {}
+void TabStripModelObserver::OnTabWillBeRemoved(tabs::TabHandle tab) {}
 
 void TabStripModelObserver::OnTabCloseCancelled(const tabs::TabInterface* tab) {
 }

@@ -876,7 +876,7 @@ TabStripModelChange::Remove TabStripModel::ProcessTabsForDetach(
 
     // Notify observers that the tab will be removed.
     for (auto& observer : observers_) {
-      observer.OnTabWillBeRemoved(tab, index);
+      observer.OnTabWillBeRemoved(tab->GetHandle());
     }
 
     // Fix opener relationships before removing the tab.
@@ -1074,7 +1074,7 @@ std::unique_ptr<DetachedTab> TabStripModel::DetachTabImpl(
   const bool was_pinned_at_time_of_removal = tab->IsPinned();
 
   for (auto& observer : observers_) {
-    observer.OnTabWillBeRemoved(tab, index_at_time_of_removal);
+    observer.OnTabWillBeRemoved(tab->GetHandle());
   }
 
   FixOpeners(index_at_time_of_removal);

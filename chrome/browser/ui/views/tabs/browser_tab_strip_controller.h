@@ -124,7 +124,7 @@ class BrowserTabStripController : public TabStripController,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
   void OnTabWillBeAdded() override;
-  void OnTabWillBeRemoved(tabs::TabInterface* tab, int index) override;
+  void OnTabWillBeRemoved(tabs::TabHandle tab) override;
   void OnTabPinnedStateChanged(tabs::TabInterface* tab, int index) override;
   void OnTabGroupChanged(const TabGroupChange& change) override;
   void TabGroupedStateChanged(TabStripModel* tab_strip_model,

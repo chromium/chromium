@@ -228,9 +228,11 @@ void RootTabCollectionNode::OnTabWillBeAdded() {
   GetController()->GetDragHandler().OnTabWillBeAdded();
 }
 
-void RootTabCollectionNode::OnTabWillBeRemoved(tabs::TabInterface* tab,
-                                               int index) {
-  GetController()->GetDragHandler().OnTabWillBeRemoved(tab->GetContents());
+void RootTabCollectionNode::OnTabWillBeRemoved(tabs::TabHandle tab) {
+  if (tabs::TabInterface* tab_interface = tab.Get()) {
+    GetController()->GetDragHandler().OnTabWillBeRemoved(
+        tab_interface->GetContents());
+  }
 }
 
 void RootTabCollectionNode::OnTabGroupChanged(const TabGroupChange& change) {

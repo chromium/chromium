@@ -40,12 +40,12 @@ void BreadcrumbManagerBrowserAgent::PlatformLogEvent(const std::string& event) {
   breadcrumb_manager_->AddEvent(event);
 }
 
-void BreadcrumbManagerBrowserAgent::OnTabWillBeRemoved(tabs::TabInterface* tab,
-                                                       int index) {
-  CHECK(tab);
+void BreadcrumbManagerBrowserAgent::OnTabWillBeRemoved(tabs::TabHandle tab) {
+  tabs::TabInterface* tab_interface = tab.Get();
+  CHECK(tab_interface);
   if (const BreadcrumbManagerTabHelper* const tab_helper =
-          BreadcrumbManagerTabHelper::From(tab)) {
-    removed_tab_ids_[tab->GetHandle().raw_value()] = tab_helper->GetUniqueId();
+          BreadcrumbManagerTabHelper::From(tab_interface)) {
+    removed_tab_ids_[tab.raw_value()] = tab_helper->GetUniqueId();
   }
 }
 
