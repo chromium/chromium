@@ -2214,13 +2214,27 @@ void GetPresetNTPBackgroundPreview(
     self.identityAction.image = self.identityAvatarProvider->GetIdentityAvatar(
         primaryIdentity, IdentityAvatarSize::Regular);
   }
-  self.identityAction.showsAITierRing =
+  BOOL showsAITierRing =
       ![self shouldIndicateIdentityError] &&
       self.subscriptionEligibilityService &&
       IsAiSubscriptionAvatarRingFollowupIOSEnabled() &&
       subscription_eligibility::GetAiSubscriptionTierDisplayInfo(
           self.subscriptionEligibilityService->GetAiSubscriptionTier())
           .show_decoration;
+  self.identityAction.showsAITierRing = showsAITierRing;
+  if (showsAITierRing) {
+    self.identityAction.customAccessibilityLabel =
+        primaryIdentity.userFullName.length
+            ? l10n_util::GetNSStringF(
+                  IDS_IOS_ACCOUNT_TABLE_VIEW_ITEM_WITH_NAME_AND_EMAIL_GOOGLE_MEMBERSHIP,
+                  base::SysNSStringToUTF16(primaryIdentity.userFullName),
+                  base::SysNSStringToUTF16(primaryIdentity.userEmail))
+            : l10n_util::GetNSStringF(
+                  IDS_IOS_ACCOUNT_TABLE_VIEW_ITEM_WITH_EMAIL_GOOGLE_MEMBERSHIP,
+                  base::SysNSStringToUTF16(primaryIdentity.userEmail));
+  } else {
+    self.identityAction.customAccessibilityLabel = nil;
+  }
 }
 
 // Returns whether the page can be manually translated. If `forceMenuLogging` is

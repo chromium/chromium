@@ -133,6 +133,7 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/gfx/image/image.h"
 
 using sync_preferences::PrefServiceMockFactory;
@@ -1832,9 +1833,10 @@ TEST_F(OverflowMenuMediatorTest,
   [mockGeminiHandler verify];
 }
 
-// Test that the identity action displays the AI tier ring when the user is
-// signed in, eligible for AI subscription, and has no account error, and
-// updates when the tier or sync error state changes.
+// Test that the identity action displays the AI tier ring and Google
+// membership accessibility label when the user is signed in, eligible for AI
+// subscription, and has no account error, and updates when the tier or sync
+// error state changes.
 TEST_F(OverflowMenuMediatorTest,
        TestIdentityActionShowsAITierRingWhenEligibleAndNoError) {
   base::test::ScopedFeatureList scoped_feature_list(
@@ -1859,24 +1861,38 @@ TEST_F(OverflowMenuMediatorTest,
   OverflowMenuAction* identity_action = GetAction(kToolsMenuIdentityId);
   ASSERT_NE(nil, identity_action);
   EXPECT_TRUE(identity_action.showsAITierRing);
+  const FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
+  NSString* expected_label = l10n_util::GetNSStringF(
+      IDS_IOS_ACCOUNT_TABLE_VIEW_ITEM_WITH_NAME_AND_EMAIL_GOOGLE_MEMBERSHIP,
+      base::SysNSStringToUTF16(identity.userFullName),
+      base::SysNSStringToUTF16(identity.userEmail));
+  EXPECT_NSEQ(expected_label, identity_action.customAccessibilityLabel);
 
-  // Updating the AI subscription tier to 0 should remove the ring.
+  // Updating the AI subscription tier to 0 should remove the ring and custom
+  // accessibility label.
   personal_profile_->GetPrefs()->SetInteger(
       subscription_eligibility::prefs::kAiSubscriptionTier, 0);
   EXPECT_FALSE(identity_action.showsAITierRing);
+  EXPECT_NSEQ(nil, identity_action.customAccessibilityLabel);
 
-  // Updating the AI subscription tier back to 1 should restore the ring.
+  // Updating the AI subscription tier back to 1 should restore the ring and
+  // custom accessibility label.
   personal_profile_->GetPrefs()->SetInteger(
       subscription_eligibility::prefs::kAiSubscriptionTier, 1);
   EXPECT_TRUE(identity_action.showsAITierRing);
+  EXPECT_NSEQ(expected_label, identity_action.customAccessibilityLabel);
 
-  // Introducing a sync error should remove the ring.
+  // Introducing a sync error should remove the ring and custom accessibility
+  // label.
   sync_service->SetPersistentAuthError();
   sync_service->FireStateChanged();
   EXPECT_FALSE(identity_action.showsAITierRing);
+  EXPECT_NSEQ(nil, identity_action.customAccessibilityLabel);
 
-  // Resolving the sync error should restore the ring.
+  // Resolving the sync error should restore the ring and custom accessibility
+  // label.
   sync_service->ClearAuthError();
   sync_service->FireStateChanged();
   EXPECT_TRUE(identity_action.showsAITierRing);
+  EXPECT_NSEQ(expected_label, identity_action.customAccessibilityLabel);
 }
