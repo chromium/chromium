@@ -15,6 +15,18 @@
 
 namespace {
 
+// The horizontal distance in points required for touchless (Magic Mouse/
+// touchscreen) gestures to complete history navigation. Unlike the thresholds
+// below, which use normalized [0, 1] touch surface coordinates, scroll wheel
+// events report delta in points (device-independent units). 200 points
+// corresponds to roughly 1.5–2 inches on screen, which is far enough to avoid
+// accidental navigations from smaller scrolls while remaining comfortable to
+// swipe.
+// Note on naming: We use "touchless" because AppKit's compatibility layer
+// translates touchscreen swipes into mouse scroll wheel events without
+// delivering -touches*WithEvent: callbacks.
+constexpr CGFloat kTouchlessHistorySwipeThreshold = 200.0;
+
 // The horizontal distance required to cause the browser to perform a history
 // navigation.
 constexpr CGFloat kHistorySwipeThreshold = 0.08;
@@ -70,19 +82,19 @@ constexpr CGFloat kCancelEventVerticalLowerThreshold = 0.01;
 //    `momentumPhase` both return NSEventPhaseNone. For these events, this
 //    method returns NO and does not process them further.
 //
-//  • Trackpad scroll wheel events derived from touch events. Touch events
-//    contain a lot of data that allows for a deep history swiping experience,
-//    so this class is predominantly designed to handle this use case. When
-//    processing these events, this method attempts to transition the state
-//    machine from kPending -> kPotential. If it performs the transition, it
-//    also shows the history overlay. In order for a history swipe gesture to be
-//    recognized, the transition must occur.
+//  • Trackpad scroll wheel events derived from touches. Touches contain a lot
+//    of data that allows for a deep history swiping experience, so this class
+//    is predominantly designed to handle this use case. When processing these
+//    events, this method attempts to transition the state machine from
+//    kPending -> kPotential. If it performs the transition, it also shows the
+//    history overlay. In order for a history swipe gesture to be recognized,
+//    the transition must occur.
 //
-//  • Magic Mouse scroll wheel events. These events have no touch events backing
-//    them, and they are tracked by a bespoke swipe tracking API (-[NSEvent
-//    trackSwipeEventWithOptions:...]) that precludes using touch events once
-//    triggered. Therefore, if a scroll wheel event is determined to be from a
-//    Magic Mouse, processing is shunted to `-handleMagicMouseWheelEvent:`.
+//  • Touchless scroll events (Magic Mouse and touchscreen swiping). These
+//    events have no backing -touches*WithEvent: callbacks, and they are
+//    tracked by accumulating scroll wheel deltas directly. Therefore, if a
+//    scroll wheel event is determined to have no accompanying touch events,
+//    processing is shunted to `-handleTouchlessHistorySwipe:`.
 //
 //  • Residual momentum events. If a user scrolls with velocity, then even after
 //    the user completes their swipe, momentum scroll events will come in. Those
@@ -90,9 +102,17 @@ constexpr CGFloat kCancelEventVerticalLowerThreshold = 0.01;
 //    swipe is begun, momentum events qualify to continue it.
 - (BOOL)handleScrollWheelEvent:(NSEvent*)event;
 
-// Attempts to initiate history swiping for Magic Mouse events. Returns YES if
-// the event was consumed or NO if it should be passed on to the renderer.
-- (BOOL)handleMagicMouseWheelEvent:(NSEvent*)theEvent;
+// Attempts to initiate history swiping for touchless scroll events (Magic Mouse
+// and touchscreen swiping). Returns YES if the event was consumed or NO if it
+// should be passed on to the renderer.
+- (BOOL)handleTouchlessHistorySwipe:(NSEvent*)theEvent;
+
+// Initiates tracking for touchless swipe gestures.
+- (void)initiateTouchlessHistorySwipe:(BOOL)isRightScroll event:(NSEvent*)event;
+
+// Updates the progress bar for touchless gestures. Returns YES if the threshold
+// has been reached.
+- (BOOL)updateTouchlessProgressBar;
 
 @end
 
@@ -153,11 +173,11 @@ constexpr CGFloat kCancelEventVerticalLowerThreshold = 0.01;
   // What state the gesture recognition is in.
   history_swiper::RecognitionState _recognitionState;
 
-  // --- Magic Mouse processing ---
+  // --- Touchless (Magic Mouse/touchscreen) gesture processing ---
 
   // Cumulative scroll delta since scroll gesture start. Only valid during
-  // scroll gesture handling. Only used to trigger Magic Mouse history swiping.
-  NSSize _mouseScrollDelta;
+  // scroll gesture handling. Used for history swiping without touch callbacks.
+  NSSize _touchlessScrollDelta;
 }
 
 @synthesize delegate = _delegate;
@@ -419,17 +439,17 @@ constexpr CGFloat kCancelEventVerticalLowerThreshold = 0.01;
   return [_delegate canNavigateInDirection:direction onWindow:[event window]];
 }
 
-- (BOOL)handleMagicMouseWheelEvent:(NSEvent*)theEvent {
-  // The `-trackSwipeEventWithOptions:` API doesn't handle momentum events.
+- (BOOL)handleTouchlessHistorySwipe:(NSEvent*)theEvent {
+  // Momentum events should not initiate history swiping.
   if (theEvent.phase == NSEventPhaseNone) {
     return NO;
   }
 
-  _mouseScrollDelta.width += theEvent.scrollingDeltaX;
-  _mouseScrollDelta.height += theEvent.scrollingDeltaY;
+  _touchlessScrollDelta.width += theEvent.scrollingDeltaX;
+  _touchlessScrollDelta.height += theEvent.scrollingDeltaY;
 
-  BOOL isHorizontalGesture =
-      std::abs(_mouseScrollDelta.width) > std::abs(_mouseScrollDelta.height);
+  BOOL isHorizontalGesture = std::abs(_touchlessScrollDelta.width) >
+                             std::abs(_touchlessScrollDelta.height);
   if (!isHorizontalGesture) {
     return NO;
   }
@@ -443,91 +463,73 @@ constexpr CGFloat kCancelEventVerticalLowerThreshold = 0.01;
     return NO;
   }
 
-  [self initiateMagicMouseHistorySwipe:isRightScroll event:theEvent];
+  [self initiateTouchlessHistorySwipe:isRightScroll event:theEvent];
   return YES;
 }
 
-- (void)initiateMagicMouseHistorySwipe:(BOOL)isRightScroll
-                                 event:(NSEvent*)event {
-  // Released by the tracking handler once the gesture is complete.
-  __block HistoryOverlayController* historyOverlay =
-      [[HistoryOverlayController alloc]
-          initForMode:isRightScroll ? kHistoryOverlayModeForward
-                                    : kHistoryOverlayModeBack];
+- (void)initiateTouchlessHistorySwipe:(BOOL)isRightScroll
+                                event:(NSEvent*)event {
+  _historySwipeDirection =
+      isRightScroll ? history_swiper::kForwards : history_swiper::kBackwards;
+  _historySwipeDirectionInverted = event.directionInvertedFromDevice;
+  _recognitionState = history_swiper::kTracking;
 
-  // The way this API works: gestureAmount is between -1 and 1 (float).  If
-  // the user does the gesture for more than about 30% (i.e. < -0.3 or >
-  // 0.3) and then lets go, it is accepted, we get a NSEventPhaseEnded,
-  // and after that the block is called with amounts animating towards 1
-  // (or -1, depending on the direction).  If the user lets go below that
-  // threshold, we get NSEventPhaseCancelled, and the amount animates
-  // toward 0.  When gestureAmount has reaches its final value, i.e. the
-  // track animation is done, the handler is called with `isComplete` set
-  // to `YES`.
-  //
-  // When starting a backwards navigation gesture (swipe from left to right,
-  // gestureAmount will go from 0 to 1), if the user swipes from left to
-  // right and then quickly back to the left, this call can send
-  // NSEventPhaseEnded and then animate to gestureAmount of -1. For a
-  // picture viewer, that makes sense, but for back/forward navigation users
-  // find it confusing. There are two ways to prevent this:
-  //
-  // 1. Set Options to NSEventSwipeTrackingLockDirection. This way,
-  //    gestureAmount will always stay > 0.
-  // 2. Pass min:0 max:1 (instead of min:-1 max:1). This way, gestureAmount
-  //    will become less than 0, but on the quick swipe back to the left,
-  //    NSEventPhaseCancelled is sent instead.
-  //
-  // The current UI looks nicer with (1) so that swiping the opposite
-  // direction after the initial swipe doesn't cause the shield to move
-  // in the wrong direction.
-  [event
-      trackSwipeEventWithOptions:NSEventSwipeTrackingLockDirection
-        dampenAmountThresholdMin:-1
-                             max:1
-                    usingHandler:^(CGFloat gestureAmount, NSEventPhase phase,
-                                   BOOL isComplete, BOOL* stop) {
-                      if (phase == NSEventPhaseBegan) {
-                        [historyOverlay
-                            showPanelForView:
-                                [self.delegate viewThatWantsHistoryOverlay]];
-                        return;
-                      }
+  [self showHistoryOverlay:_historySwipeDirection];
+  [self updateTouchlessProgressBar];
 
-                      BOOL ended = phase == NSEventPhaseEnded;
+  if (_historySwipeDirection == history_swiper::kBackwards) {
+    [_delegate backwardsSwipeNavigationLikely];
+  }
+}
 
-                      // Dismiss the panel before navigation for immediate
-                      // visual feedback.
-                      CGFloat progress = std::abs(gestureAmount) / 0.3;
-                      BOOL finished = progress >= 1.0;
-                      progress = std::clamp(progress, 0.0, 1.0);
-                      [historyOverlay setProgress:progress finished:finished];
+- (BOOL)updateTouchlessProgressBar {
+  CGFloat deltaX = _touchlessScrollDelta.width;
+  CGFloat progress = 0;
+  if (_historySwipeDirection == history_swiper::kForwards) {
+    progress = -deltaX / kTouchlessHistorySwipeThreshold;
+  } else {
+    progress = deltaX / kTouchlessHistorySwipeThreshold;
+  }
 
-                      // `gestureAmount` obeys -[NSEvent
-                      // isDirectionInvertedFromDevice] automatically.
-                      if (ended) {
-                        [self.delegate
-                            navigateInDirection:isRightScroll
-                                                    ? history_swiper::kForwards
-                                                    : history_swiper::kBackwards
-                                       onWindow:historyOverlay.view.window];
-                      }
+  BOOL finished = (progress >= 1.0);
+  progress = std::clamp(progress, 0.0, 1.0);
 
-                      if (ended || isComplete) {
-                        [historyOverlay dismiss];
-                        historyOverlay = nil;
-                      }
-                    }];
+  [_historyOverlay setProgress:progress finished:finished];
+  return finished;
 }
 
 - (BOOL)handleScrollWheelEvent:(NSEvent*)theEvent {
   // If the swipe began, then reset state.
   if (theEvent.phase == NSEventPhaseBegan) {
     _recognitionState = history_swiper::kPending;
-    _mouseScrollDelta = NSZeroSize;
+    _touchlessScrollDelta = NSZeroSize;
 
     // Since this might or might not be a history swipe, allow propagation by
     // falling through to the eventual `return NO`.
+  }
+
+  // Handle gesture completion/cancellation for touchless gestures when not
+  // receiving touch events.
+  if (!_receivingTouchEvents &&
+      _recognitionState == history_swiper::kTracking) {
+    NSEventPhase phase = theEvent.phase != NSEventPhaseNone
+                             ? theEvent.phase
+                             : theEvent.momentumPhase;
+    if (phase == NSEventPhaseEnded) {
+      BOOL finished = [self updateTouchlessProgressBar];
+      if (finished) {
+        [self navigateBrowserInDirection:_historySwipeDirection];
+      }
+
+      [self removeHistoryOverlay];
+      _recognitionState = history_swiper::kCompleted;
+      return YES;
+    }
+
+    if (phase == NSEventPhaseCancelled) {
+      [self cancelHistorySwipe];
+      return YES;
+    }
   }
 
   // The only events that this class consumes have type NSEventPhaseChanged.
@@ -540,6 +542,23 @@ constexpr CGFloat kCancelEventVerticalLowerThreshold = 0.01;
 
   // We've already processed this gesture.
   if (_recognitionState != history_swiper::kPending) {
+    if (!_receivingTouchEvents &&
+        _recognitionState == history_swiper::kTracking) {
+      _touchlessScrollDelta.width += theEvent.scrollingDeltaX;
+      _touchlessScrollDelta.height += theEvent.scrollingDeltaY;
+
+      // Check if vertical motion dominates and cancel if so.
+      if (std::abs(_touchlessScrollDelta.height) >
+              std::abs(_touchlessScrollDelta.width) * 1.5 &&
+          std::abs(_touchlessScrollDelta.height) > 30.0) {
+        [self cancelHistorySwipe];
+        return NO;
+      }
+
+      [self updateTouchlessProgressBar];
+      return YES;
+    }
+
     return [self shouldConsumeWheelEvent:theEvent];
   }
 
@@ -567,14 +586,14 @@ constexpr CGFloat kCancelEventVerticalLowerThreshold = 0.01;
     return NO;
   }
 
-  // Magic Mouse and touchpad scroll events are identical except Magic Mouse
-  // events do not generate NSTouch callbacks.
+  // Trackpad scroll events generate -touches*WithEvent: callbacks, whereas
+  // Magic Mouse and touchscreen scroll events do not.
   //
   // At this point, if there is a gesture phase but no touches, then this scroll
-  // event is coming from a Magic Mouse, and usage of an alternative swipe
-  // tracking API is required.
+  // event is coming from a Magic Mouse or touchscreen, and usage of the
+  // touchless delta tracking mechanism is required.
   if (!_receivingTouchEvents) {
-    return [self handleMagicMouseWheelEvent:theEvent];
+    return [self handleTouchlessHistorySwipe:theEvent];
   }
 
   // TODO(erikchen): Ideally, the direction of history swiping should not be

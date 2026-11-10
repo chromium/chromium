@@ -22,8 +22,7 @@
 - (void)removeHistoryOverlay;
 - (void)showHistoryOverlay:(history_swiper::NavigationDirection)direction;
 - (void)navigateBrowserInDirection:(history_swiper::NavigationDirection)forward;
-- (void)initiateMagicMouseHistorySwipe:(BOOL)isRightScroll
-                                 event:(NSEvent*)event;
+- (void)initiateTouchlessHistorySwipe:(BOOL)isRightScroll event:(NSEvent*)event;
 @end
 
 class MacHistorySwiperTest : public CocoaTest {
@@ -71,10 +70,10 @@ class MacHistorySwiperTest : public CocoaTest {
 
     [[[mockHistorySwiper stub] andDo:^(NSInvocation* invocation) {
       magic_mouse_history_swipe_ = true;
-    }] initiateMagicMouseHistorySwipe:YES event:[OCMArg any]];
+    }] initiateTouchlessHistorySwipe:YES event:[OCMArg any]];
     [[[mockHistorySwiper stub] andDo:^(NSInvocation* invocation) {
       magic_mouse_history_swipe_ = true;
-    }] initiateMagicMouseHistorySwipe:NO event:[OCMArg any]];
+    }] initiateTouchlessHistorySwipe:NO event:[OCMArg any]];
 
     historySwiper_ = mockHistorySwiper;
 
@@ -439,14 +438,15 @@ TEST_F(MacHistorySwiperTest, SubstantialVerticalThenHorizontal) {
   EXPECT_FALSE(navigated_left_);
 }
 
-// Magic Mouse gestures don't send -touches*WithEvent: callbacks. The history
-// swiper should still handle this gracefully. It should not turn vertical
-// motion into history swipes.
+// Touchless gestures (Magic Mouse and touchscreen Macs) don't send
+// -touches*WithEvent: callbacks. The history swiper should still handle this
+// gracefully. It should not turn vertical motion into history swipes.
 TEST_F(MacHistorySwiperTest, MagicMouseStateResetsCorrectly) {
   // Magic mouse events don't generate '-touches*WithEvent:' callbacks.
   // Send the following events:
   //  - scrollWheel: (phase=Began)
-  //  - scrollWheel: (phase=Changed), significant horizontal motion.
+  //  - scrollWheel: (phase=Changed), significant horizontal motion (greater
+  //    than or equal to kTouchlessHistorySwipeThreshold in HistorySwiper).
   //  - scrollWheel: (phase=Ended)
   [historySwiper_ handleEvent:scrollWheelEventWithPhase(NSEventPhaseBegan)];
   onOverscrolled(cc::OverscrollBehavior::Type::kAuto);

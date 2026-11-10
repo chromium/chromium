@@ -129,13 +129,14 @@ enum RecognitionState {
 //   being passed to the renderer. This API is used to transition from kPending
 //   -> kPotential.
 //
-//  This class is also responsible for handling gestures from a Magic Mouse.
-//  Magic Mouse gestures do not generate -touches*WithEvent: callbacks, so this
-//  class must use the API -[NSEvent trackSwipeEventWithOptions:...] to track
-//  the Magic Mouse gesture. Due to an AppKit bug, once this API is invoked,
-//  views no longer reliable receive -touches*WithEvent: callbacks. As such,
-//  once this class invokes the -[NSEvent trackSwipeEventWithOptions:...] API,
-//  it must continue to use that API, since it no longer receives touch events.
+//  This class is also responsible for handling "touchless" gestures (gestures
+//  where HistorySwiper does not receive direct -touches*WithEvent: callbacks).
+//  Counterintuitively, this includes touchscreen interactions. To support
+//  touchscreens, AppKit introduced a compatibility layer (in the form of the
+//  private _NS3PKitMouseEmulator) to translate touchscreen interactions to
+//  mouse/wheel events that arrive without touch data in the same way that Magic
+//  Mouse events do. This class accumulates scroll wheel deltas directly to
+//  drive history swiping for these touchless gestures.
 @interface HistorySwiper : NSObject
 
 // Many event types are passed in, but the only one we care about is
@@ -161,9 +162,6 @@ enum RecognitionState {
 
 // The event passed in is a gesture event, and has touch data associated with
 // the trackpad.
-// Once the method -[NSEvent trackSwipeEventWithOptions:...] is invoked, the
-// methods -touches*WithEvent: are no longer guaranteed to be called for
-// subsequent gestures. https://crbug.com/41072404
 - (void)touchesBeganWithEvent:(NSEvent*)event;
 - (void)touchesMovedWithEvent:(NSEvent*)event;
 - (void)touchesCancelledWithEvent:(NSEvent*)event;
