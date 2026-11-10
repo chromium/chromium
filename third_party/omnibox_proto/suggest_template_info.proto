@@ -22,7 +22,7 @@ import "suggest_inventory.proto";
 import "tool_mode.proto";
 
 // Suggest Template rendering data.
-// Next ID: 14
+// Next ID: 15
 message SuggestTemplateInfo {
 // LINT.IfChange(StandardSuggestStyle)
   enum StandardSuggestStyle {
@@ -248,4 +248,19 @@ message SuggestTemplateInfo {
   // Whether to wrap the primary text to the next line. Currently only
   // supports wrapping to 2 total lines. Only used for mobile currently.
   optional bool wrap_primary_text = 13;
+
+  // Next ID: 4
+  enum ActionIconType {
+    ACTION_ICON_TYPE_UNSPECIFIED = 0;
+    // Query building icon (e.g. refine arrow).
+    QUERY_BUILDING = 1;
+    // Navigation arrow icon (e.g. forward chevron), used for AI Mode
+    // suggestions.
+    NAVIGATION_ARROW = 2;
+    // Blue dot icon, used for agentic suggestions that have a new update.
+    BLUE_DOT = 3;
+  }
+
+  // The icon on the right hand side of the suggestion.
+  optional ActionIconType action_icon = 14;
 }

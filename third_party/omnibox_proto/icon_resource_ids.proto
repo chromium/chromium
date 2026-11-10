@@ -361,6 +361,11 @@ enum IconResourceIds {
   // Icon: Google Symbols:close
   // Trailing delete '×' icon (mWeb).
   CLOSE = 111;
+
+  // Icon: Google
+  // Symbols:prompt_suggestion:FILL@0;ROND@50;wght@400;GRAD@0;opsz@24 Prompt
+  // Suggest suggestions.
+  PROMPT_SUGGESTION = 112;
 }
 
 enum IconPositions {
