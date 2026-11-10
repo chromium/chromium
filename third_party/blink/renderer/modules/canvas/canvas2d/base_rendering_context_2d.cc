@@ -241,15 +241,16 @@ int BaseRenderingContext2D::NumInflightResourcesForTesting() const {
 }
 
 bool BaseRenderingContext2D::HasUnusedResourcesForTesting() const {
-  return shared_image_provider_ &&
-         shared_image_provider_->HasUnusedResourcesForTesting();
+  return shared_image_provider_ && shared_image_provider_->image_pool_ &&
+         shared_image_provider_->image_pool_->GetPoolSizeForTesting() > 0;
 }
 
 bool BaseRenderingContext2D::UnusedResourcesReclaimTimerIsRunningForTesting()
     const {
-  return shared_image_provider_ &&
-         shared_image_provider_
-             ->unused_resources_reclaim_timer_is_running_for_testing();
+  return shared_image_provider_ && shared_image_provider_->image_pool_
+             ? shared_image_provider_->image_pool_
+                   ->IsReclaimTimerRunningForTesting()
+             : false;
 }
 
 bool BaseRenderingContext2D::HasBacking() const {
@@ -258,7 +259,7 @@ bool BaseRenderingContext2D::HasBacking() const {
 
 bool BaseRenderingContext2D::IsBackingValid() const {
   if (shared_image_provider_) {
-    if (shared_image_provider_->IsSoftware()) {
+    if (shared_image_provider_->image_pool_->GetImageInfo().is_software) {
       // Software compositing (which always uses software raster).
       return shared_image_interface_provider_ &&
              shared_image_interface_provider_->SharedImageInterface();
@@ -677,8 +678,9 @@ CanvasImageProvider* BaseRenderingContext2D::GetOrCreateCanvasImageProvider() {
   const bool is_accelerated =
       shared_image_provider_ && shared_image_provider_->IsAccelerated();
   const viz::SharedImageFormat format =
-      is_accelerated ? shared_image_provider_->GetSharedImageFormat()
-                     : color_params_.GetSharedImageFormat();
+      is_accelerated
+          ? shared_image_provider_->image_pool_->GetImageInfo().format
+          : color_params_.GetSharedImageFormat();
 
   cc::ImageDecodeCache* cache_f16 = nullptr;
   cc::ImageDecodeCache* cache_rgba8 = nullptr;
@@ -883,7 +885,8 @@ void BaseRenderingContext2D::RasterRecordToSharedImage(
 
 void BaseRenderingContext2D::RasterRecordToSoftwareSurface(
     cc::PaintRecord last_recording) {
-  if (shared_image_provider_ && !shared_image_provider_->IsSoftware()) {
+  if (shared_image_provider_ &&
+      !shared_image_provider_->image_pool_->GetImageInfo().is_software) {
     EnsureWriteAccess();
   }
   cc::SkiaPaintCanvas skia_canvas(surface_->getCanvas(),
@@ -1041,7 +1044,8 @@ bool BaseRenderingContext2D::WritePixelsToBacking(const SkImageInfo& orig_info,
     return true;
   }
   if (surface_) {
-    if (shared_image_provider_ && !shared_image_provider_->IsSoftware()) {
+    if (shared_image_provider_ &&
+        !shared_image_provider_->image_pool_->GetImageInfo().is_software) {
       EnsureWriteAccess();
     }
     return surface_->getCanvas()->writePixels(orig_info, pixels, row_bytes, x,
@@ -1080,7 +1084,7 @@ BaseRenderingContext2D::PaintRenderingResultsToResource(
     return nullptr;
   }
   FlushCanvas(reason);
-  if (shared_image_provider_->IsSoftware()) {
+  if (shared_image_provider_->image_pool_->GetImageInfo().is_software) {
     DCHECK(surface_);
     scoped_refptr<CanvasResourceSharedImage> output_resource =
         shared_image_provider_->NewOrRecycledResource();
@@ -1739,7 +1743,8 @@ void BaseRenderingContext2D::RecordingCleared() {
 
 void BaseRenderingContext2D::OnFlushForImage(
     cc::PaintImage::ContentId content_id) {
-  if (shared_image_provider_ && !shared_image_provider_->IsSoftware()) {
+  if (shared_image_provider_ &&
+      !shared_image_provider_->image_pool_->GetImageInfo().is_software) {
     if (Recorder()->getRecordingCanvas().IsCachingImage(content_id)) {
       FlushCanvas(FlushReason::kOther);
     }

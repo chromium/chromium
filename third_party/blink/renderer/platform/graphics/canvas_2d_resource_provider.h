@@ -61,16 +61,9 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
 
   ~Canvas2DResourceProvider() override;
 
-  bool unused_resources_reclaim_timer_is_running_for_testing() const;
-  bool HasUnusedResourcesForTesting() const;
   bool IsSingleBuffered() const;
 
   bool IsAccelerated() const { return is_accelerated_; }
-  bool IsSoftware() const { return image_pool_->GetImageInfo().is_software; }
-
-  viz::SharedImageFormat GetSharedImageFormat() const {
-    return image_pool_->GetImageInfo().format;
-  }
 
   int NumInflightResourcesForTesting() const { return num_inflight_resources_; }
 

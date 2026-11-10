@@ -77,7 +77,7 @@ Canvas2DResourceProvider::NewOrRecycledResource() {
   CHECK(!IsSingleBuffered() || !resource->IsInitialized());
 
   if (!resource->IsInitialized()) {
-    if (IsSoftware()) {
+    if (image_pool_->GetImageInfo().is_software) {
       resource->InitializeSoftware(
           CreateWeakPtr(), shared_image_interface_provider_, hdr_metadata_);
     } else {
@@ -211,18 +211,9 @@ void Canvas2DResourceProvider::ClearUnusedResources() {
   }
 }
 
-bool Canvas2DResourceProvider::
-    unused_resources_reclaim_timer_is_running_for_testing() const {
-  return image_pool_ ? image_pool_->IsReclaimTimerRunningForTesting() : false;
-}
-
 bool Canvas2DResourceProvider::IsSingleBuffered() const {
   return image_pool_ && image_pool_->GetImageInfo().usage.Has(
                             gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
-}
-
-bool Canvas2DResourceProvider::HasUnusedResourcesForTesting() const {
-  return image_pool_ && image_pool_->GetPoolSizeForTesting() > 0;
 }
 
 }  // namespace blink
