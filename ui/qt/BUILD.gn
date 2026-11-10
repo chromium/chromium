@@ -161,6 +161,7 @@ component("qt") {
     "//ui/color",
     "//ui/color:mixers",
     "//ui/gfx",
+    "//ui/linux:linux_key_bindings_handler",
     "//ui/linux:linux_ui",
     "//ui/native_theme",
     "//ui/shell_dialogs",

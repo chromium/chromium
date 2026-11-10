@@ -21,6 +21,9 @@ specific_include_rules = {
   "fallback_linux_ui.cc": [
     "+ui/events/keycodes",
   ],
+  "linux_key_bindings_handler.*": [
+    "+ui/events",
+  ],
   "display_server_utils.cc": [
     "+ui/ozone",
   ],

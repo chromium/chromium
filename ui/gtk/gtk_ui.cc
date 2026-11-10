@@ -41,7 +41,6 @@
 #include "ui/base/ime/linux/fake_input_method_context.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
 #include "ui/base/ime/text_edit_commands.h"
-#include "ui/base/ime/text_input_flags.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/color/color_id.h"
@@ -65,7 +64,6 @@
 #include "ui/gfx/skbitmap_operations.h"
 #include "ui/gtk/gtk_color_mixers.h"
 #include "ui/gtk/gtk_compat.h"
-#include "ui/gtk/gtk_key_bindings_handler.h"
 #include "ui/gtk/gtk_ui_platform.h"
 #include "ui/gtk/gtk_ui_platform_stub.h"
 #include "ui/gtk/gtk_util.h"
@@ -80,6 +78,7 @@
 #include "ui/gtk/window_frame_provider_gtk.h"
 #include "ui/linux/cursor_theme_manager_observer.h"
 #include "ui/linux/device_scale_factor_observer.h"
+#include "ui/linux/linux_key_bindings_handler.h"
 #include "ui/linux/linux_ui.h"
 #include "ui/linux/linux_ui_delegate.h"
 #include "ui/linux/nav_button_provider.h"
@@ -776,21 +775,9 @@ int GtkUi::GetCursorThemeSize() {
 
 ui::TextEditCommand GtkUi::GetTextEditCommandForEvent(const ui::Event& event,
                                                       int text_flags) {
-  // Skip mapping arrow keys to edit commands for vertical text fields in a
-  // renderer.  Blink handles them.  See crbug.com/484651.
-  if (text_flags & ui::TEXT_INPUT_FLAG_VERTICAL) {
-    ui::KeyboardCode code = event.AsKeyEvent()->key_code();
-    if (code == ui::VKEY_LEFT || code == ui::VKEY_RIGHT ||
-        code == ui::VKEY_UP || code == ui::VKEY_DOWN) {
-      return ui::TextEditCommand::INVALID_COMMAND;
-    }
-  }
-
-  // Ensure that we have a keyboard handler.
   if (!key_bindings_handler_) {
-    key_bindings_handler_ = std::make_unique<GtkKeyBindingsHandler>();
+    key_bindings_handler_ = std::make_unique<ui::LinuxKeyBindingsHandler>();
   }
-
   return key_bindings_handler_->MatchEvent(event);
 }
 

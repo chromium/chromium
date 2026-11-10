@@ -13,6 +13,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/platform_font.h"
+#include "ui/linux/linux_key_bindings_handler.h"
 #include "ui/linux/nav_button_provider.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/shell_dialogs/select_file_policy.h"
@@ -184,7 +185,10 @@ ui::NativeTheme* FallbackLinuxUi::GetNativeTheme() const {
 ui::TextEditCommand FallbackLinuxUi::GetTextEditCommandForEvent(
     const ui::Event& event,
     int text_flags) {
-  return ui::TextEditCommand::INVALID_COMMAND;
+  if (!key_bindings_handler_) {
+    key_bindings_handler_ = std::make_unique<LinuxKeyBindingsHandler>();
+  }
+  return key_bindings_handler_->MatchEvent(event);
 }
 
 #if BUILDFLAG(ENABLE_PRINTING)

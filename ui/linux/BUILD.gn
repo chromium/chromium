@@ -4,9 +4,45 @@
 
 import("//build/config/features.gni")
 import("//build/config/linux/gtk/gtk.gni")
+import("//build/config/ui.gni")
 import("//ui/qt/qt.gni")
 
 assert(is_linux)
+
+config("linux_key_bindings_handler_config") {
+  if (use_glib && use_gio) {
+    defines = [ "USE_GSETTINGS" ]
+  }
+}
+
+source_set("linux_key_bindings_handler") {
+  public = [ "linux_key_bindings_handler.h" ]
+  sources = [ "linux_key_bindings_handler.cc" ]
+  public_configs = [ ":linux_key_bindings_handler_config" ]
+  public_deps = [ "//base" ]
+  deps = [
+    "//ui/base/ime:ime_types",
+    "//ui/events",
+  ]
+  if (use_glib && use_gio) {
+    public_deps += [ "//ui/base/glib" ]
+  }
+}
+
+source_set("linux_key_bindings_handler_unittests") {
+  testonly = true
+  sources = [ "linux_key_bindings_handler_unittest.cc" ]
+  deps = [
+    ":linux_key_bindings_handler",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//ui/base/ime:ime_types",
+    "//ui/events",
+    "//ui/events:dom_keycode_converter",
+    "//ui/gfx/geometry",
+  ]
+}
 
 component("linux_ui") {
   defines = [ "IS_LINUX_UI_IMPL" ]
@@ -54,6 +90,7 @@ component("linux_ui_factory") {
   ]
 
   deps = [
+    ":linux_key_bindings_handler",
     "//base",
     "//ui/base",
     "//ui/base/ime/linux",
