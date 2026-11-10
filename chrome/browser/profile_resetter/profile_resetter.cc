@@ -150,7 +150,9 @@ void ProfileResetter::ResetSettings(
       master_settings = config_fetcher_->GetSettings();
       config_fetcher_.reset();
     } else {
-      CHECK(brandcode_.empty(), base::NotFatalUntil::M163);
+      // TODO(crbug.com/580636758): CHECK-exclusion: Convert to a
+      // CHECK once we are confident it won't be triggered.
+      DCHECK(brandcode_.empty());
     }
 
     // If failed to fetch BrandcodedDefaultSettings or this is an organic
