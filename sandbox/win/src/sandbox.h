@@ -64,6 +64,8 @@ class [[clang::lto_visibility_public]] BrokerServices {
   // returns ALL_OK if successful. All other return values imply failure. If the
   // return is ERROR_GENERIC, you can call ::GetLastError() to get more
   // information.
+  // Initialization must finish before launch-sequence use, but need not run on
+  // that sequence.
   virtual ResultCode Init(std::unique_ptr<BrokerServicesDelegate> delegate) = 0;
 
   // May be called in place of Init in test code to add a tracker that validates
@@ -89,12 +91,14 @@ class [[clang::lto_visibility_public]] BrokerServices {
 
   // Returns the interface pointer to a new, empty policy object. Use this
   // interface to specify the sandbox policy for new processes created by
-  // SpawnTargetAsync().
+  // SpawnTargetAsync(). Does not use the shared configuration cache and may
+  // run off the launch sequence.
   virtual std::unique_ptr<TargetPolicy> CreatePolicy() = 0;
 
   // Returns the interface pointer to a new, empty policy object. Use this
   // interface to specify the sandbox policy for new processes created by
   // SpawnTargetAsync().
+  // Nonempty tags must be created on the SpawnTargetAsync() calling sequence.
   //
   // The first time a specific value of `tag` is provided an empty policy will
   // be returned, and both TargetConfig and TargetPolicy methods should be
@@ -131,6 +135,8 @@ class [[clang::lto_visibility_public]] BrokerServices {
   // Target creation happens on the thread pool. Callbacks run on the calling
   // sequence. Multiple launches may be in flight, and callbacks are not
   // guaranteed to run in submission order.
+  // All calls must use the same sequence as tagged policy creation and
+  // Shutdown().
   // Calls after Shutdown() fail with SBOX_ERROR_UNEXPECTED_CALL and
   // ERROR_SHUTDOWN_IN_PROGRESS.
   virtual void SpawnTargetAsync(const base::CommandLine& command_line,

@@ -19,6 +19,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "base/types/expected.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_process_information.h"
@@ -41,6 +43,12 @@ class StartupInformationHelper;
 // of the associated TargetProcess interface. In this implementation
 // TargetProcess is a friend of BrokerServices where the later manages a
 // collection of the former.
+//
+// Launching, tagged policy creation, and shutdown share a sequence. Startup
+// initialization and desktop creation may run on another thread before
+// launching. Diagnostics and IPC metrics can be requested off the launch
+// sequence. After Shutdown(), CRT teardown may destroy the broker on another
+// thread.
 class BrokerServicesBase final : public BrokerServices,
                                  public SingletonBase<BrokerServicesBase> {
  public:
@@ -72,10 +80,11 @@ class BrokerServicesBase final : public BrokerServices,
       MitigationFlags additional_flags) override;
   std::wstring GetDesktopName(Desktop desktop) override;
 
+  // No launches or IPC callbacks may be using the delegate when it is replaced.
   void SetBrokerServicesDelegateForTesting(
       std::unique_ptr<BrokerServicesDelegate> delegate);
 
-  // Gets helper to log histograms from within the exe.
+  // Gets helper to log histograms from sandbox IPC workers within the exe.
   BrokerServicesDelegate* GetMetricsDelegate();
 
   static void FreezeTargetConfigForTesting(TargetConfig* config);
@@ -87,7 +96,8 @@ class BrokerServicesBase final : public BrokerServices,
       std::unique_ptr<BrokerServicesTargetTracker> target_tracker);
 
   // Ensures the desktop integrity suits any process we are launching.
-  ResultCode UpdateDesktopIntegrity(Desktop desktop, IntegrityLevel integrity);
+  ResultCode UpdateDesktopIntegrity(Desktop desktop, IntegrityLevel integrity)
+      VALID_CONTEXT_REQUIRED(launch_sequence_checker_);
 
   using CreateTargetInfo =
       std::pair<std::unique_ptr<StartupInformationHelper>, TargetTokens>;
@@ -100,13 +110,14 @@ class BrokerServicesBase final : public BrokerServices,
 
   // Helper for initializing the CreateTargetInfo for CreateTarget.
   base::expected<CreateTargetInfo, ResultCode> PreSpawnTarget(
-      PolicyBase* policy_base);
+      PolicyBase* policy_base) VALID_CONTEXT_REQUIRED(launch_sequence_checker_);
 
   // Implementation for SpawnTarget and SpawnTargetAsync. The target creation
   // result is returned to `result_callback`.
   void SpawnTargetAsyncImpl(const base::CommandLine& command_line,
                             std::unique_ptr<PolicyBase> policy_base,
-                            SpawnTargetCallback result_callback);
+                            SpawnTargetCallback result_callback)
+      VALID_CONTEXT_REQUIRED(launch_sequence_checker_);
 
   // Finishes target setup and invokes the result callback.
   void FinishSpawnTarget(std::unique_ptr<PolicyBase> policy_base,
@@ -118,37 +129,53 @@ class BrokerServicesBase final : public BrokerServices,
       ResultCode initial_result,
       std::unique_ptr<PolicyBase> policy_base,
       const base::win::ScopedProcessInformation& process_info,
-      DWORD& last_error);
+      DWORD& last_error) VALID_CONTEXT_REQUIRED(launch_sequence_checker_);
 
+  // Startup does not bind this checker. Launch-sequence work must finish before
+  // destruction, which may run off sequence.
+  SEQUENCE_CHECKER(launch_sequence_checker_);
+
+  // Both job handles are assigned in InitInternal(), not the constructor, so
+  // Init()/InitForTesting() can report creation failures. They cannot be const
+  // with this two-phase initialization.
+  //
   // The completion port used by the job objects to communicate events to
-  // the worker thread.
+  // the worker thread. Initialized before launching and diagnostics, then
+  // unchanged until destruction.
   base::win::ScopedHandle job_port_;
 
-  // Handle to the worker thread that reacts to job notifications.
+  // Handle to the worker thread that reacts to job notifications. Initialized
+  // before launching and diagnostics, then unchanged until destruction.
   base::win::ScopedHandle job_thread_;
 
   // Provides a pool of threads that are used to wait on the IPC calls.
-  // Owned by TargetEventsThread which is alive until our destructor.
+  // Published by InitInternal() before launching and owned by
+  // TargetEventsThread, which is alive until our destructor.
   raw_ptr<ThreadPool, DanglingUntriaged> thread_pool_ = nullptr;
 
-  // Handles for the alternate winstation (desktop==kAlternateWinstation).
+  // Desktops are created before launching and their integrity is updated on the
+  // launch sequence. Tests may destroy/recreate them while launches are
+  // quiescent. Handles for the alternate winstation
+  // (desktop==kAlternateWinstation).
   std::unique_ptr<AlternateDesktop> alt_winstation_;
   // Handles for the same winstation as the parent (desktop==kAlternateDesktop).
   std::unique_ptr<AlternateDesktop> alt_desktop_;
 
   // Configurations shared by policies created with the same tag. Each policy
   // retains its configuration independently so it can outlive the broker.
-  base::flat_map<std::string, scoped_refptr<ConfigBase>> config_cache_;
+  base::flat_map<std::string, scoped_refptr<ConfigBase>> config_cache_
+      GUARDED_BY_CONTEXT(launch_sequence_checker_);
 
-  // Provides configuration for using parallel or synchronous process launching.
+  // Published during initialization, then used by the launcher and IPC workers.
+  // Test-only replacement requires quiescing users of the delegate.
   std::unique_ptr<BrokerServicesDelegate> broker_services_delegate_;
 
-  // Accessed only on the SpawnTargetAsync() calling sequence.
-  bool is_shutdown_ = false;
+  bool is_shutdown_ GUARDED_BY_CONTEXT(launch_sequence_checker_) = false;
 
   // Shutdown() dooms the factory on the launch sequence before CRT teardown
   // destroys the broker, potentially on a different thread.
-  base::WeakPtrFactory<BrokerServicesBase> weak_factory_{this};
+  base::WeakPtrFactory<BrokerServicesBase> weak_factory_
+      GUARDED_BY_CONTEXT(launch_sequence_checker_){this};
 };
 
 }  // namespace sandbox

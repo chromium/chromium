@@ -351,7 +351,11 @@ void BrokerServicesDelegate::ParallelLaunchPostTaskAndReplyWithResult(
       std::move(task), std::move(reply));
 }
 
-BrokerServicesBase::BrokerServicesBase() {}
+BrokerServicesBase::BrokerServicesBase() {
+  // Construction can run on the startup sequence rather than the launch
+  // sequence. Let the first checked launch-sequence operation bind the checker.
+  DETACH_FROM_SEQUENCE(launch_sequence_checker_);
+}
 
 // The broker uses a dedicated worker thread that services the job completion
 // port to perform policy notifications and associated cleanup tasks.
@@ -414,6 +418,7 @@ ResultCode BrokerServicesBase::InitForTesting(
 }
 
 void BrokerServicesBase::Shutdown() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(launch_sequence_checker_);
   CHECK(!is_shutdown_);
   is_shutdown_ = true;
   weak_factory_.InvalidateWeakPtrsAndDoom();
@@ -459,6 +464,7 @@ std::unique_ptr<TargetPolicy> BrokerServicesBase::CreatePolicy(
   // Empty key implies we will not use the store. The policy will need
   // to look after its config.
   if (!tag.empty()) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(launch_sequence_checker_);
     auto found = config_cache_.find(tag);
     if (found == config_cache_.end()) {
       auto new_config = base::MakeRefCounted<ConfigBase>();
@@ -474,6 +480,7 @@ std::unique_ptr<TargetPolicy> BrokerServicesBase::CreatePolicy(
 void BrokerServicesBase::SpawnTargetAsync(const base::CommandLine& command_line,
                                           std::unique_ptr<TargetPolicy> policy,
                                           SpawnTargetCallback result_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(launch_sequence_checker_);
   if (is_shutdown_) {
     std::move(result_callback)
         .Run(base::win::ScopedProcessInformation(), ERROR_SHUTDOWN_IN_PROGRESS,
@@ -631,6 +638,7 @@ void BrokerServicesBase::FinishSpawnTarget(
     std::unique_ptr<PolicyBase> policy_base,
     SpawnTargetCallback result_callback,
     CreateTargetResult target_result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(launch_sequence_checker_);
   ResultCode result = FinishSpawnTargetImpl(
       target_result.result_code, std::move(policy_base),
       target_result.process_info, target_result.last_error);

@@ -505,6 +505,81 @@ TEST(ParallelLaunchDeathTest, ShutdownCalledTwice) {
   EXPECT_CHECK_DEATH_WITH(broker.Shutdown(), "!is_shutdown_");
 }
 
+TEST(ParallelLaunchDeathTest, ShutdownOnWrongSequence) {
+  BrokerServicesBase broker;
+  ASSERT_TRUE(broker.CreatePolicy("sequence-test"));
+
+  EXPECT_DCHECK_DEATH({
+    base::Thread thread("SandboxBrokerWrongSequence");
+    CHECK(thread.Start());
+    CHECK(thread.task_runner()->PostTask(
+        FROM_HERE, base::BindOnce(&BrokerServicesBase::Shutdown,
+                                  base::Unretained(&broker))));
+    thread.FlushForTesting();
+  });
+}
+
+TEST(ParallelLaunchDeathTest, TaggedPolicyOnWrongSequence) {
+  BrokerServicesBase broker;
+  ASSERT_TRUE(broker.CreatePolicy("sequence-test"));
+
+  EXPECT_DCHECK_DEATH({
+    base::Thread thread("SandboxBrokerWrongSequence");
+    CHECK(thread.Start());
+    CHECK(thread.task_runner()->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](BrokerServicesBase* broker) {
+                         broker->CreatePolicy("sequence-test");
+                       },
+                       base::Unretained(&broker))));
+    thread.FlushForTesting();
+  });
+}
+
+TEST(ParallelLaunchDeathTest, SpawnTargetOnWrongSequence) {
+  BrokerServicesBase broker;
+  broker.Shutdown();
+
+  EXPECT_DCHECK_DEATH({
+    base::Thread thread("SandboxBrokerWrongSequence");
+    CHECK(thread.Start());
+    CHECK(thread.task_runner()->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](BrokerServicesBase* broker) {
+                         broker->SpawnTargetAsync(
+                             base::CommandLine(base::CommandLine::NO_PROGRAM),
+                             broker->CreatePolicy(), base::DoNothing());
+                       },
+                       base::Unretained(&broker))));
+    thread.FlushForTesting();
+  });
+}
+
+TEST_F(ParallelLaunchTest, InitializationAndUntaggedPoliciesDoNotBindSequence) {
+  BrokerServicesBase broker;
+  ASSERT_EQ(SBOX_ALL_OK,
+            broker.Init(std::make_unique<TestBrokerServicesDelegateBase>()));
+  EXPECT_TRUE(broker.CreatePolicy());
+  EXPECT_TRUE(broker.CreatePolicy(""));
+
+  base::Thread launcher_thread("SandboxBrokerLauncher");
+  ASSERT_TRUE(launcher_thread.Start());
+  base::test::TestFuture<void> finished;
+  ASSERT_TRUE(launcher_thread.task_runner()->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(
+          [](BrokerServicesBase* broker) {
+            EXPECT_TRUE(broker->CreatePolicy("sequence-test"));
+            broker->Shutdown();
+          },
+          base::Unretained(&broker)),
+      finished.GetCallback()));
+  ASSERT_TRUE(finished.Wait());
+
+  EXPECT_TRUE(broker.CreatePolicy());
+  EXPECT_TRUE(broker.CreatePolicy(""));
+}
+
 TEST_F(ParallelLaunchTest, ShutdownRejectsNewLaunches) {
   BrokerServicesBase broker;
   ASSERT_EQ(SBOX_ALL_OK,
