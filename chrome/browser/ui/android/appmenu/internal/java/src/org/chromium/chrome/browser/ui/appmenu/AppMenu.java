@@ -53,7 +53,6 @@ import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.ui.UiUtils;
-import org.chromium.ui.base.UiAndroidFeatureList;
 import org.chromium.ui.hierarchicalmenu.FlyoutController;
 import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutHandler;
 import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
@@ -63,7 +62,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.FlyoutPopupSpecCalculator;
 import org.chromium.ui.widget.RectProvider;
-import org.chromium.ui.widget.UiWidgetFactory;
 
 import java.util.List;
 
@@ -370,10 +368,7 @@ class AppMenu implements OnKeyListener {
             boolean isFromPointer,
             FlyoutHandler<AppMenuPopup> flyoutHandler) {
         mContext = context;
-        PopupWindow popup =
-                UiAndroidFeatureList.sAndroidUnifiedKeyboardShortcuts.isEnabled()
-                        ? UiWidgetFactory.getInstance().createPopupWindow(context)
-                        : new PopupWindow(context);
+        PopupWindow popup = new PopupWindow(context);
         popup.setFocusable(true);
         popup.setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
 
