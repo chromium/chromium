@@ -88,8 +88,6 @@ export class HistoryItemElement extends HistoryItemElementBase {
         reflect: true,
       },
 
-      selectionNotAllowed_: {type: Boolean},
-
       hasTimeGap: {type: Boolean},
 
       index: {type: Number},
@@ -112,8 +110,6 @@ export class HistoryItemElement extends HistoryItemElementBase {
   }
 
   private isShiftKeyDown_: boolean = false;
-  protected accessor selectionNotAllowed_: boolean =
-      !loadTimeData.getBoolean('allowDeletingHistory');
   protected accessor isCollapsibleDayCardsEnabled_: boolean =
       loadTimeData.valueExists('isBrowsingHistoryCollapsibleDayCardsEnabled') &&
       loadTimeData.getBoolean('isBrowsingHistoryCollapsibleDayCardsEnabled');
@@ -130,6 +126,9 @@ export class HistoryItemElement extends HistoryItemElementBase {
   accessor numberOfItems: number = 0;
   accessor selected: boolean = false;
   accessor isExpanded_: boolean = false;
+
+  protected readonly selectionNotAllowed_: boolean =
+      !loadTimeData.getBoolean('allowDeletingHistory');
 
   override connectedCallback() {
     super.connectedCallback();

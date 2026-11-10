@@ -93,8 +93,6 @@ export class HistoryListElement extends HistoryListElementBase {
        */
       selectedItems: {type: Object},
 
-      canDeleteHistory_: {type: Boolean},
-
       // An array of history entries in reverse chronological order.
       historyData_: {type: Array},
 
@@ -128,8 +126,6 @@ export class HistoryListElement extends HistoryListElementBase {
 
   protected accessor historyData_: HistoryEntry[] = [];
   private callbackRouter_: PageCallbackRouter;
-  protected accessor canDeleteHistory_: boolean =
-      loadTimeData.getBoolean('allowDeletingHistory');
   protected accessor actionMenuModel_: ActionMenuModel|null = null;
   private lastOffsetHeight_: number = 0;
   private resizeObserver_: ResizeObserver = new ResizeObserver(() => {
@@ -166,6 +162,10 @@ export class HistoryListElement extends HistoryListElementBase {
   };
   accessor scrollTarget: HTMLElement = document.documentElement;
   accessor scrollOffset: number = 0;
+
+  protected readonly canDeleteHistory_: boolean =
+      loadTimeData.getBoolean('allowDeletingHistory');
+
   private onHistoryDeletedListenerId_: number|null = null;
   private collapsedDays_: Set<string> = new Set();
 

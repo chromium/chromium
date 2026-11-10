@@ -90,8 +90,6 @@ export class HistorySyncedDeviceManagerElement extends
        */
       actionMenuModel_: {type: String},
 
-      replaceSyncPromosWithSignInPromos_: {type: Boolean},
-
       // <if expr="not is_chromeos">
       accountInfo_: {type: Object},
       // </if>
@@ -108,8 +106,6 @@ export class HistorySyncedDeviceManagerElement extends
       loadTimeData.getBoolean('isGuestSession');
   private accessor signInAllowed_: boolean =
       loadTimeData.getBoolean('isSignInAllowed');
-  protected accessor replaceSyncPromosWithSignInPromos_: boolean =
-      loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos');
   private signinPausedImpressionRecorded_: boolean = false;
   // <if expr="not is_chromeos">
   protected accessor accountInfo_: AccountInfo|null = null;
@@ -123,6 +119,9 @@ export class HistorySyncedDeviceManagerElement extends
   };
   accessor searchTerm: string = '';
   accessor sessionList: ForeignSession[]|null = null;
+
+  protected readonly replaceSyncPromosWithSignInPromos_: boolean =
+      loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos');
 
   override connectedCallback() {
     super.connectedCallback();
