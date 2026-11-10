@@ -1323,21 +1323,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Navigation.GestureTransition.ScreenshotCacheSize" units="MB"
-    expires_after="2026-12-20">
-  <owner>acondor@google.com</owner>
-  <owner>liuwilliam@google.com</owner>
-  <owner>baranerf@google.com</owner>
-  <owner>chrome-seamless-core@google.com</owner>
-  <improvement direction="LOWER_IS_BETTER"/>
-  <summary>
-    The amount of memory usage by the screenshots captured for predictive back.
-    Recorded at Poisson sampled time intervals continuously, regardless of user
-    gesture, with a mean of 5 minutes on Android and 30 minutes on other
-    platforms.
-  </summary>
-</histogram>
-
 <histogram name="Navigation.GestureTransition.{Scenario}"
     enum="NavigationRequestSchemeType" expires_after="M140">
   <owner>lazzzis@google.com</owner>
