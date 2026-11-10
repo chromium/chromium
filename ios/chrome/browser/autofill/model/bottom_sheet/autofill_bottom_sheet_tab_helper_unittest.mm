@@ -26,7 +26,7 @@
 #import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_manager.h"
 #import "components/password_manager/core/browser/features/password_features.h"
-#import "components/personal_context/first_run/personal_context_first_run_service.h"
+#import "components/personal_context/first_run/test_personal_context_first_run_service.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
@@ -65,35 +65,6 @@ using ::testing::NiceMock;
 using ::testing::Return;
 
 constexpr char kTestGuid[] = "00000000-0000-4000-8000-000000000000";
-
-// Fake implementation of PersonalContextFirstRunService to control the notice
-// state.
-class FakePersonalContextFirstRunService
-    : public personal_context::PersonalContextFirstRunService {
- public:
-  FakePersonalContextFirstRunService() = default;
-  ~FakePersonalContextFirstRunService() override = default;
-
-  void MarkPersonalContextAmbientAutofillNoticeAsAcknowledged() override {
-    acknowledged_ = true;
-  }
-  bool ShouldShowPersonalContextAmbientAutofillNotice() const override {
-    return should_show_;
-  }
-  void RecordAmbientAutofillNoticeImpression(uint32_t session_id) override {}
-  void MarkPersonalContextInAtMemoryNoticeAsAcknowledged() override {}
-  bool ShouldShowPersonalContextAtMemoryNotice() const override {
-    return false;
-  }
-  void RecordAtMemoryNoticeImpression(uint32_t session_id) override {}
-
-  void set_should_show(bool should_show) { should_show_ = should_show; }
-  bool acknowledged() const { return acknowledged_; }
-
- private:
-  bool should_show_ = false;
-  bool acknowledged_ = false;
-};
 
 class TestChromeAutofillClientIOS : public autofill::ChromeAutofillClientIOS {
  public:
@@ -320,12 +291,13 @@ class AutofillBottomSheetTabHelperTest : public PlatformTest {
     ON_CALL(*mock_ai_manager_, GetSuggestions)
         .WillByDefault(Return(suggestions));
 
-    FakePersonalContextFirstRunService* first_run_service =
-        static_cast<FakePersonalContextFirstRunService*>(
+    personal_context::TestPersonalContextFirstRunService* first_run_service =
+        static_cast<personal_context::TestPersonalContextFirstRunService*>(
             IOSPersonalContextFirstRunServiceFactory::GetForProfile(
                 profile_.get()));
     ASSERT_NE(first_run_service, nullptr);
-    first_run_service->set_should_show(should_show_ambient_notice);
+    first_run_service->set_should_show_ambient_autofill_notice(
+        should_show_ambient_notice);
   }
 
  protected:
@@ -345,7 +317,8 @@ class AutofillBottomSheetTabHelperTest : public PlatformTest {
         IOSPersonalContextFirstRunServiceFactory::GetInstance(),
         base::BindOnce(
             [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-              return std::make_unique<FakePersonalContextFirstRunService>();
+              return std::make_unique<
+                  personal_context::TestPersonalContextFirstRunService>();
             }));
     builder.AddTestingFactory(ios::HistoryServiceFactory::GetInstance(),
                               ios::HistoryServiceFactory::GetDefaultFactory());

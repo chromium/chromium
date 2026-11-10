@@ -60,7 +60,7 @@ source_set("unit_tests") {
     "//components/autofill/ios/form_util",
     "//components/infobars/core",
     "//components/password_manager/core/browser/features:password_features",
-    "//components/personal_context/first_run",
+    "//components/personal_context/first_run:test_support",
     "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/autofill/model:features",
     "//ios/chrome/browser/autofill/model/bottom_sheet:save_card_bottom_sheet_model",
