@@ -7,13 +7,14 @@ import argparse
 import colorsys
 import difflib
 import html
+import http.server
 import random
 import os
 import re
 import subprocess
 import sys
-import tempfile
 import textwrap
+import threading
 import webbrowser
 
 
@@ -710,31 +711,65 @@ def create_visualization(data, blame):
 
 
 def show_visualization(page):
-  """Display |html| in a web browser.
+  """Display |page| in a web browser.
+
+  The page is served from a short-lived HTTP server on the loopback
+  interface, which exits once the browser has loaded the page, without
+  the need for a temporary file.
 
   Args:
-    html: The contents of the file to display, as a string.
+    page: The HTML contents to display, as a string.
   """
-  # Keep the temporary file around so the browser has time to open it.
-  # TODO(thomasanderson): spin up a temporary web server to serve this
-  # file so we don't have to leak it.
-  html_file = tempfile.NamedTemporaryFile(delete=False, suffix='.html')
-  html_file.write(page.encode())
-  html_file.flush()
-  if sys.platform.startswith('linux'):
-    # Don't show any messages when starting the browser.
-    saved_stdout = os.dup(1)
-    saved_stderr = os.dup(2)
-    os.close(1)
-    os.close(2)
-    os.open(os.devnull, os.O_RDWR)
-    os.open(os.devnull, os.O_RDWR)
-  webbrowser.open('file://' + html_file.name)
-  if sys.platform.startswith('linux'):
-    os.dup2(saved_stdout, 1)
-    os.dup2(saved_stderr, 2)
-    os.close(saved_stdout)
-    os.close(saved_stderr)
+  body = page.encode()
+  served = threading.Event()
+
+  class Handler(http.server.BaseHTTPRequestHandler):
+    def do_GET(self):
+      if self.path != '/':
+        self.send_error(404)
+        return
+      self.send_response(200)
+      self.send_header('Content-Type', 'text/html; charset=utf-8')
+      self.send_header('Content-Length', str(len(body)))
+      self.send_header('Cache-Control', 'no-store')
+      self.end_headers()
+      self.wfile.write(body)
+      served.set()
+
+    def log_message(self, format, *args):
+      pass
+
+  server = http.server.ThreadingHTTPServer(('127.0.0.1', 0), Handler)
+  server.daemon_threads = True
+  thread = threading.Thread(target=server.serve_forever, daemon=True)
+  thread.start()
+  url = 'http://127.0.0.1:%d/' % server.server_address[1]
+  print(
+    'Serving blame visualization at %s (Ctrl-C to stop)' % url, file=sys.stderr
+  )
+  try:
+    if sys.platform.startswith('linux'):
+      # Don't show any messages when starting the browser.
+      saved_stdout = os.dup(1)
+      saved_stderr = os.dup(2)
+      os.close(1)
+      os.close(2)
+      os.open(os.devnull, os.O_RDWR)
+      os.open(os.devnull, os.O_RDWR)
+    webbrowser.open(url)
+    if sys.platform.startswith('linux'):
+      os.dup2(saved_stdout, 1)
+      os.dup2(saved_stderr, 2)
+      os.close(saved_stdout)
+      os.close(saved_stderr)
+    # Wait in short intervals so that Ctrl-C is handled promptly.
+    while not served.wait(0.5):
+      pass
+  except KeyboardInterrupt:
+    pass
+  finally:
+    server.shutdown()
+    server.server_close()
 
 
 def main(argv):
