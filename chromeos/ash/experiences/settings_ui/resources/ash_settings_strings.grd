@@ -6543,6 +6543,433 @@ Press an assigned switch or key to remove assignment.
         AES-256
       </message>
 
+      <!-- About (OS Settings) -->
+      <message name="IDS_OS_SETTINGS_ABOUT_CHROMEOS_MENU_ITEM_DESCRIPTION" desc="Description for the About ChromeOS menu item in the left menu.">
+        Updates, help, developer options
+      </message>
+      <message name="IDS_OS_SETTINGS_ABOUT_PAGE_BUILD_DETAILS" desc="Label of the row button that clicks into Build details">
+        Build details
+      </message>
+      <message name="IDS_OS_SETTINGS_ABOUT_PAGE_BUILD_DETAILS_COPY_TOOLTIP_LABEL" desc="Tooltip label that describes the build details copy button.">
+        Copy build details to clipboard
+      </message>
+      <message name="IDS_OS_SETTINGS_ABOUT_PAGE_BUILD_DETAILS_COPIED_TO_CLIPBOARD_A11Y_LABEL" desc="A11y label that describes the ChromeOS build details were copied to the clipboard.">
+        Copied build details
+      </message>
+      <message name="IDS_OS_SETTINGS_ABOUT_PAGE_ENTERPRISE_ENNROLLED_TITLE" desc="The title label for whether a device is enterprise enrolled.">
+        Enterprise Enrolled
+      </message>
+      <message name="IDS_OS_SETTINGS_ABOUT_ARC_STATUS_TITLE" desc="The title label for Arc status (if enabled).">
+        ARC Enabled
+      </message>
+      <message name="IDS_OS_SETTINGS_ABOUT_DEVELOPER_MODE" desc="The title label for developer mode.">
+        Developer Mode
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_PAGE_RELAUNCH_AND_POWERWASH" desc="The label for the button that relaunches and powerwashes the browser once update is complete">
+        Restart and reset
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_PAGE_RELAUNCH_AND_AUTO_UPDATE" desc="The label for the button that relaunches and enables automatic updates">
+        Restart and get automatic updates
+      </message>
+      <message name="IDS_SETTINGS_UPGRADE_UPDATING_CHANNEL_SWITCH" desc="Status label: Updating ChromiumOS/ChromeOS to a specified channel">
+        Updating your device to <ph name="CHANNEL_NAME">$1<ex>stable</ex></ph> channel (<ph name="PROGRESS_PERCENT">$2<ex>90%</ex></ph>)
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_PAGE_END_OF_LIFE_TITLE" desc="Title used for End of Life section on the About Page.">
+        Update schedule
+      </message>
+      <message name="IDS_SETTINGS_UPGRADE_ROLLBACK_IN_PROGRESS" desc="Status label: Rolling back ChromiumOS or ChromeOS.">
+        <ph name="MANAGER">$1<ex>google.com</ex></ph> is putting this device on a previous version (<ph name="PROGRESS_PERCENT">$2<ex>90%</ex></ph>)
+      </message>
+      <message name="IDS_SETTINGS_UPGRADE_ROLLBACK_SUCCESS" desc="Status label: Successfully rolled back ChromeOS. All data on the device will be deleted during the next reboot.">
+        <ph name="MANAGER">$1<ex>google.com</ex></ph> has put this device on a previous version. Please save important files, then restart. All data on the device will be deleted.
+      </message>
+      <message name="IDS_SETTINGS_UPGRADE_SUCCESSFUL_CHANNEL_SWITCH" desc="Status label: Channel was successfully switched on ChromiumOS/ChromeOS">
+        Channel changed. Restart your device to apply changes.
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_TPM_FIRMWARE_UPDATE_TITLE" desc="Title for the line item on the about page that allows the user to trigger a device hardware reset and request installation of a TPM firmware update.">
+        Powerwash for added security
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_TPM_FIRMWARE_UPDATE_DESCRIPTION" desc="Descriptive text shown alongside the line item on the about page that allows the user to trigger a device hardware reset and request installation of a TPM firmware update.">
+        This upgrade resets your Chromebook and removes current user data.
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_PAGE_CHANGE_CHANNEL" desc="Button label for channel switch.">
+        Change channel
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_PAGE_CHANGE_CHANNEL_AND_POWERWASH" desc="Button label for channel switch and powerwash.">
+        Change channel and Powerwash
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_PAGE_DELAYED_WARNING_MESSAGE" desc="Message that notifies user that channel change will be applied later.">
+        You are changing to a channel with an older version of <ph name="PRODUCT_NAME">$1<ex>ChromeOS</ex></ph>. The channel change will be applied when the channel version matches the version currently installed on your device.
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_PAGE_DELAYED_WARNING_TITLE" desc="Title for the message that the channel change will be applied later.">
+        Channel change will be applied later
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_PAGE_POWERWASH_WARNING_MESSAGE" desc="Message that warns user about powerwash.">
+        This will remove all local users, files, data, and other settings after your next restart. All users will need to sign in again.
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_PAGE_POWERWASH_WARNING_TITLE" desc="The title for the message that warns user about powerwash.">
+        Powerwash required on next reboot
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_PAGE_UNSTABLE_WARNING_MESSAGE" desc="Warning about switching to developer (unstable) channel.">
+        You are updating to an unstable version of <ph name="PRODUCT_NAME">$1<ex>ChromeOS</ex></ph> which contains features that are in progress. Crashes and unexpected bugs will occur. Please proceed with caution.
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_PAGE_UNSTABLE_WARNING_TITLE" desc="The title of the warning about switching to developer (unstable) channel.">
+        Warning: you are switching to developer channel
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_PAGE_DIALOG_CHANNEL_BETA" desc="The beta option in the channel select.">
+        Beta
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_PAGE_DIALOG_CHANNEL_DEV" desc="The development option in the channel select.">
+        Developer - unstable
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_PAGE_DIALOG_CHANNEL_STABLE" desc="The stable option in the channel select.">
+        Stable
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_PAGE_UPDATE_WARNING_MESSAGE" desc="Warning about update over mobile data, specifying the size in megabytes.">
+        Update will be downloaded using <ph name="UPDATE_SIZE_MB">$1<ex>0</ex></ph> MB of mobile data. Would you like to continue?
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_PAGE_UPDATE_WARNING_TITLE" desc="The title of the warning about update over mobile data.">
+        Download update using mobile data
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_PAGE_CURRENT_CHANNEL_BETA" desc="The beta label in the message about current channel.">
+        beta
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_PAGE_CURRENT_CHANNEL_CANARY" desc="The canary label in the message about current channel.">
+        canary
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_PAGE_CURRENT_CHANNEL_DEV" desc="The dev label in the message about current channel.">
+        dev
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_PAGE_CHANNEL" desc="The channel label under Detailed build info.">
+        Channel
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_PAGE_CURRENT_CHANNEL_STABLE" desc="The stable label in the message about current channel.">
+        stable
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_PAGE_CURRENT_CHANNEL_LTC" desc="The LTC (long-term support candidate) label in the message about current channel.">
+        long-term support candidate
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_PAGE_CURRENT_CHANNEL_LTS" desc="The LTS (long-term support) label in the message about current channel.">
+        long-term support
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_PAGE_CURRENT_CHANNEL_INFO" desc="The message about current channel.">
+        Currently on <ph name="CHANNEL_NAME">$1<ex>stable</ex></ph> channel
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_PAGE_DETAILED_BUILD_INFO" desc="Label describing the section that shows detailed information about the current Chrome build.">
+        Additional details
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_PAGE_RELEASE_NOTES" desc="Warning that internet connection is required to display ChromeOS release notes.">
+        Internet connection required
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_PAGE_SHOW_RELEASE_NOTES" desc="Text of the button which shows user the release notes.">
+        See what's new
+      </message>
+      <message name="IDS_OS_SETTINGS_ABOUT_PAGE_SHOW_RELEASE_NOTES_DESCRIPTION" desc="Sublabel description shown for See What's New button.">
+        Automatic updates provide you with the latest features. Explore highlights from recent updates.
+      </message>
+      <message name="IDS_SETTINGS_UPGRADE_TRY_AGAIN" desc="Status label: Update check error (ChromiumOS/ChromeOS)">
+        Couldn't update your Chromebook. Please try again later.
+      </message>
+      <message name="IDS_SETTINGS_UPGRADE_DOWNLOAD_ERROR" desc="Status label: Update check download error(ChromiumOS/ChromeOS)">
+        Couldn't download the update. Please try again later.
+      </message>
+      <message name="IDS_SETTINGS_UPGRADE_ADMINISTRATOR_ERROR" desc="Status label: Update blocked by policy (ChromiumOS/ChromeOS)">
+        Updates are blocked by your administrator
+      </message>
+      <message name="IDS_SETTINGS_UPGRADE_NOT_UP_TO_DATE" desc="Status label: Not up to date (ChromiumOS/ChromeOS)">
+        Your device is not up to date
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_PAGE_DEFERRED_UPDATE_DESCRIPTION" desc="Text of the deferred update description.">
+        Your device may no longer work properly and may experience security and performance issues.
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_PAGE_MANAGED_END_OF_LIFE_SUBTITLE" desc="Subtitle used for End of Life section on the Additional details subpage of the ABout page for managed users.">
+        Updates are managed by your administrator
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_PAGE_LAST_UPDATE_MESSAGE" desc="Message shown on the top level about page to inform the user that this device will no longer receive latest software updates.">
+        This is the last automatic software and security update for this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. To get future updates, upgrade to a newer model. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$2<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_PAGE_DIAGNOSTICS" desc="Text of the button which allows the user to diagnose their device.">
+        Diagnostics
+      </message>
+      <message name="IDS_OS_SETTINGS_DIAGNOSTICS_DESCRIPTION" desc="Sublabel description shown for Diagnostics button.">
+        Test your battery, CPU, memory, connectivity, and more
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_PAGE_FIRMWARE_UPDATES" desc="Text of the button for the surface which allows users to update all their peripheral firmwares in one place.">
+        Firmware updates
+      </message>
+      <message name="IDS_OS_SETTINGS_FIRMWARE_UP_TO_DATE_DESCRIPTION" desc="Sublabel shown when no firmware updates are available.">
+        Firmware is up to date
+      </message>
+      <message name="IDS_OS_SETTINGS_FIRMWARE_DISABLED_DESCRIPTION" desc="Sublabel shown when firmware updates are disabled.">
+        Firmware updates are disabled by your administrator.
+      </message>
+      <message name="IDS_OS_SETTINGS_FIRMWARE_UPDATE_AVAILABLE_DESCRIPTION" desc="Sublabel shown when firmware updates are available.">
+        Update available
+      </message>
+      <message name="IDS_OS_SETTINGS_SEND_FEEDBACK_DESCRIPTION" desc="Sublabel description shown for Send Feedback button.">
+        Share feedback or report an issue
+      </message>
+      <message name="IDS_OS_SETTINGS_GET_HELP_USING_CHROME_OS" desc="Text of the button which takes the user to the Chrome help page.">
+        Get help
+      </message>
+      <message name="IDS_OS_SETTINGS_GET_HELP_USING_CHROME_OS_DESCRIPTION" desc="Sublabel description shown for Get Help button.">
+        View help articles or find device support
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_PAGE_CONSUMER_AUTO_UPDATE_TOGGLE_TITLE" desc="Text of the auto update toggle feature.">
+        Updates
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_PAGE_CONSUMER_AUTO_UPDATE_TOGGLE_DESCRIPTION" desc="Text of the auto update toggle feature description.">
+        Get the latest features and security improvements.
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_PAGE_CONSUMER_AUTO_UPDATE_TOGGLE_DIALOG_TITLE" desc="Text of the auto update toggle feature dialog.">
+        Turn off automatic updates?
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_PAGE_CONSUMER_AUTO_UPDATE_TOGGLE_DIALOG_DESCRIPTION" desc="Text of the auto update toggle feature dialog description.">
+        Your device may no longer work properly, and you may experience security and performance issues. Turning off updates may also impact your right to make legal claims if you experience any issues.
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_PAGE_CONSUMER_AUTO_UPDATE_TOGGLE_TURN_OFF_BUTTON" desc="Text of the auto update toggle feature dialog turn off button.">
+        Turn off
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_PAGE_CONSUMER_AUTO_UPDATE_TOGGLE_KEEP_UPDATES_BUTTON" desc="Text of the auto update toggle feature dialog keep update button.">
+        Keep updates
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_PAGE_EXTENDED_UPDATES_BUTTON" desc="Text of the extended updates button.">
+        Set up
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_PAGE_EXTENDED_UPDATES_MAIN_MESSAGE" desc="Text of the main extended updates message.">
+        Extended security updates available
+      </message>
+      <message name="IDS_SETTINGS_ABOUT_PAGE_EXTENDED_UPDATES_SECONDARY_MESSAGE" desc="Text of the supplemental explanation about extended updates.">
+        This device is no longer receiving automatic software updates. Turn on extended security updates for continued security, stability, and performance. Some functionality will be limited. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$1<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+      </message>
+
+      <!-- ChromeOS End Of Life Incentive -->
+      <message name="IDS_SETTINGS_END_OF_LIFE_INCENTIVE_OFFER_TITLE" desc="The title of the end of life incentive which informs the user of an offer with a dollar amount they can get save when upgrading to a new Chromebook.">
+        Save &#36;50 or more on a new Chromebook, when you upgrade today
+      </message>
+      <message name="IDS_SETTINGS_END_OF_LIFE_INCENTIVE_NO_OFFER_TITLE" desc="The title of the end of life incentive which informs the user that they should upgrade their device to continue getting software updates.">
+        Upgrade to a new Chromebook for the latest security and software
+      </message>
+      <message name="IDS_SETTINGS_END_OF_LIFE_INCENTIVE_OFFER_MESSAGE" desc="The message of the end of life incentive which informs the user that their device will no longer get updates, and to upgrade the device for the latest features, using an offer.">
+        Your Chromebook is no longer receiving security and software updates. Upgrade your device for the latest security and new features. Offer terms apply.
+      </message>
+      <message name="IDS_SETTINGS_END_OF_LIFE_INCENTIVE_NO_OFFER_MESSAGE" desc="The message of the end of life incentive which informs the user that their device will no longer get updates, and they should get a new Chromebook.">
+        Your Chromebook is no longer receiving security and software updates. Get a new Chromebook for the best experience.
+      </message>
+      <message name="IDS_SETTINGS_END_OF_LIFE_INCENTIVE_OFFER_BUTTON" desc="The button label for the end of life incentive offer which will take the user to a URL to shop for a new device.">
+        Shop Now
+      </message>
+
+      <!-- Power -->
+      <message name="IDS_SETTINGS_POWER_TITLE" desc="In Device Settings, the title for power management.">
+        Power
+      </message>
+      <message name="IDS_SETTINGS_POWER_SOURCE_LABEL" desc="In Device Settings > Power, the label for the power source dropdown.">
+        Power source
+      </message>
+      <message name="IDS_SETTINGS_POWER_SOURCE_BATTERY" desc="In Device Settings > Power, the text referring to the battery as the power source.">
+        Battery
+      </message>
+      <message name="IDS_SETTINGS_POWER_SOURCE_AC_ADAPTER" desc="In Device Settings > Power, the text referring to a dedicated charger like an AC adapter as the power source.">
+        AC adapter
+      </message>
+      <message name="IDS_SETTINGS_POWER_SOURCE_LOW_POWER_CHARGER" desc="In Device Settings > Power, the text referring to a low-power charger like a USB charger as the power source.">
+        Low-power charger
+      </message>
+      <message name="IDS_SETTINGS_POWER_SOURCE_CALCULATING" desc="In Device Settings > Power, the power source description when the power status is being determined.">
+        Checking power sources...
+      </message>
+      <message name="IDS_SETTINGS_POWER_IDLE_LABEL" desc="In Device Settings > Power, label for behavior when device is idle.">
+        When idle
+      </message>
+      <message name="IDS_OS_SETTINGS_POWER_INACTIVE_WHILE_PLUGGED_IN_LABEL" desc="In Device Settings > Power, label for behavior when device is inactive and plugged in.">
+        While inactive and plugged in
+      </message>
+      <message name="IDS_SETTINGS_POWER_IDLE_WHILE_CHARGING_ARIA_LABEL" desc="In Device Settings > Power, aria label for behavior when device is idle.">
+        Idle action while charging
+      </message>
+      <message name="IDS_OS_SETTINGS_POWER_INACTIVE_WHILE_ON_BATTERY_LABEL" desc="In Device Settings > Power, label for behavior when device is inactive and on battery.">
+        While inactive and on battery
+      </message>
+      <message name="IDS_SETTINGS_POWER_IDLE_WHILE_ON_BATTERY_ARIA_LABEL" desc="In Device Settings > Power, aria label for behavior when device is idle.">
+        Idle action while on battery
+      </message>
+      <message name="IDS_SETTINGS_POWER_ADAPTIVE_CHARGING_LABEL" desc="In Device Settings > Power, the title of the settings row of the adaptive charging feature, which saves battery life by deferring battery charging.">
+        Adaptive charging
+      </message>
+      <message name="IDS_SETTINGS_POWER_ADAPTIVE_CHARGING_SUBTEXT" desc="In Device Settings > Power, description of the behavior of the adaptive charging feature.">
+        Extends battery life by keeping your battery around 80%. Battery will fully charge before you typically disconnect from power.
+      </message>
+      <message name="IDS_SETTINGS_POWER_ADAPTIVE_CHARGING_LEARN_MORE_ARIA_LABEL" desc="In Device Settings > Power > Optimized Charging > Change, aria label for the learn more link for adaptive charging.">
+        Learn more about Adaptive charging.
+      </message>
+      <message name="IDS_SETTINGS_POWER_OPTIMIZED_CHARGING_LABEL" desc="In Device Settings > Power, the title of the settings row of the optimized charging feature.">
+        Optimized charging
+      </message>
+      <message name="IDS_SETTINGS_POWER_OPTIMIZED_CHARGING_MODE_CHANGE_LABEL" desc="In Device Settings > Power, the text of the optimized charging change mode button, which creates a dialog that allows the user to pick between adaptive charging and a charge limit.">
+        Change
+      </message>
+      <message name="IDS_SETTINGS_POWER_OPTIMIZED_CHARGING_MODE_CHANGE_ARIA_LABEL" desc="In Device Settings > Power, aria label for the button which changes the optimized charging strategy.">
+        Change the optimized charging strategy.
+      </message>
+      <message name="IDS_SETTINGS_POWER_BATTERY_CHARGE_LIMIT_LABEL" desc="In Device Settings > Power > Optimized Charging > Change, the title of the battery charge limit feature, which explicitly limits the battery charging to 80%.">
+        Charge limit
+      </message>
+      <message name="IDS_SETTINGS_POWER_BATTERY_CHARGE_LIMIT_SUBTEXT" desc="In Device Settings > Power > Optimized Charging > Change, description of the behavior of the battery charge limit feature.">
+        Stops charging at 80% to help your battery last longer.
+      </message>
+      <message name="IDS_SETTINGS_POWER_IDLE_DISPLAY_OFF_SLEEP" desc="In Device Settings > Power, menu item for idle behavior that turns the screen off and later puts the device to sleep. String must be short enough to fit in a drop-down menu.">
+        Sleep
+      </message>
+      <message name="IDS_SETTINGS_POWER_IDLE_DISPLAY_OFF" desc="In Device Settings > Power, menu item for idle behavior that turns the screen off but prevents the device from sleeping. String must be short enough to fit in a drop-down menu.">
+        Turn off display
+      </message>
+      <message name="IDS_SETTINGS_POWER_IDLE_DISPLAY_ON" desc="In Device Settings > Power, menu item for idle behavior that prevents the screen from turning off and prevents the device from sleeping. String must be short enough to fit in a drop-down menu.">
+        Keep display on
+      </message>
+      <message name="IDS_SETTINGS_POWER_IDLE_SHUT_DOWN" desc="In Device Settings > Power, menu item for idle behavior that shuts the device down when idle.">
+        Shut down
+      </message>
+      <message name="IDS_SETTINGS_POWER_IDLE_STOP_SESSION" desc="In Device Settings > Power, menu item for idle behavior that stops the session when idle.">
+        Sign out
+      </message>
+      <message name="IDS_SETTINGS_POWER_LID_CLOSED_SLEEP_LABEL" desc="In Device Settings > Power, label for suspending when laptop lid, or detachable cover is closed.">
+        Sleep when lid is closed
+      </message>
+      <message name="IDS_SETTINGS_POWER_LID_CLOSED_SIGN_OUT_LABEL" desc="In Device Settings > Power, label for signing out when laptop lid, or detachable cover is closed.">
+        Sign out when lid is closed
+      </message>
+      <message name="IDS_SETTINGS_POWER_LID_CLOSED_SHUT_DOWN_LABEL" desc="In Device Settings > Power, label for shutting down when laptop lid, or detachable cover is closed.">
+        Shut down when lid is closed
+      </message>
+      <message name="IDS_SETTINGS_BATTERY_STATUS" desc="In Device Settings > Power, the battery status while the battery is discharging, showing the battery power as a percentage and the time left until the battery is empty.">
+        <ph name="percentage">$1<ex>56</ex></ph>% - <ph name="time">$2<ex>2 hours and 20 minutes</ex></ph> left
+      </message>
+      <message name="IDS_SETTINGS_BATTERY_STATUS_CHARGING" desc="In Device Settings > Power, the battery status while the battery is charging, showing the battery power as a percentage and the time left until the battery is full.">
+        <ph name="percentage">$1<ex>56</ex></ph>% - <ph name="time">$2<ex>2 hours and 20 minutes</ex></ph> until full
+      </message>
+      <message name="IDS_SETTINGS_BATTERY_STATUS_SHORT" desc="In Device Settings > Power, the battery status when the time left cannot be shown.">
+        <ph name="percentage">$1<ex>56</ex></ph>%
+      </message>
+      <message name="IDS_SETTINGS_BATTERY_STATUS_CHARGING_ON_HOLD" desc="In Device Settings > Power, the battery status while a charger is plugged in, showing the battery power as a percentage and that charging has stopped.">
+        <ph name="percentage">$1<ex>80</ex></ph>% - Charging on hold
+      </message>
+      <message name="IDS_SETTINGS_POWER_BATTERY_SAVER_LABEL" desc="In Device Settings > Power, label for toggling battery saver mode">
+        Battery saver
+      </message>
+      <message name="IDS_SETTINGS_POWER_BATTERY_SAVER_SUBTEXT" desc="In Device Settings > Power, description of the behavior of battery saver mode">
+        Extends battery life by reducing brightness, limiting background activity and visual effects, delaying notifications, and turning on Chrome Energy Saver.
+      </message>
+
+      <!-- Reset Page (OS settings)-->
+      <message name="IDS_OS_SETTINGS_RESET_TITLE" desc="Title of a section of settings. This section describes settings for resetting the device.">
+        Reset
+      </message>
+      <message name="IDS_SETTINGS_FACTORY_RESET" desc="Name of the factory reset option on the Chrome settings page">
+        Powerwash
+      </message>
+      <message name="IDS_SETTINGS_FACTORY_RESET_HEADING" desc="Name of the 'Factory reset' window">
+        Restart your device
+      </message>
+      <message name="IDS_OS_SETTINGS_FACTORY_RESET_DESCRIPTION" desc="Description of the factory reset option on the ChromeOS settings page">
+        Remove all user accounts and reset your Chromebook to be just like new.
+      </message>
+      <message name="IDS_SETTINGS_FACTORY_RESET_WARNING" desc="Warning text in the 'Factory Reset' window">
+        A restart is required before your device can be reset with Powerwash. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_FACTORY_RESET_ESIM_WARNING_TITLE" desc="Name of the 'Factory reset' window">
+        Remove eSIM profiles before Powerwash
+      </message>
+      <message name="IDS_SETTINGS_FACTORY_RESET_ESIM_WARNING" desc="Warning text in the 'Factory Reset' window informing the user that the eSIM profiles they have installed won't be removed by a factory reset. Contains a url to the mobile data subpage.">
+        Powerwashing your device won't remove your eSIM profiles. Go to <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>Mobile Settings<ph name="LINK_END">&lt;/a&gt;</ph> to manually remove these profiles.
+      </message>
+      <message name="IDS_SETTINGS_FACTORY_RESET_ESIM_LIST_TITLE" desc="Title for the list showing installed eSIM profiles in the 'Factory Reset' window.">
+        Active profiles
+      </message>
+      <message name="IDS_SETTINGS_FACTORY_RESET_ESIM_LIST_ITEM_TITLE" desc="Label for an eSIM profile shown in the 'Factory Reset' window displaying its name and provider.">
+        <ph name="NETWORK_NAME">$1<ex>My Verizon eSIM</ex></ph> - <ph name="SPAN_START">&lt;span id="providerName"&gt;</ph><ph name="CARRIER_NAME">$2<ex>Verizon Wireless</ex></ph><ph name="SPAN_END">&lt;/span&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_FACTORY_RESET_ESIM_WARNING_CHECKBOX_LABEL" desc="Label for checkbox in the 'Factory Reset' window that confirms that the user is aware that the eSIM profiles they have installed won't be removed by a factory reset.">
+        I understand that installed eSIM profiles will not be removed by Powerwash
+      </message>
+      <message name="IDS_SETTINGS_FACTORY_RESET_BUTTON_LABEL" desc="Label for the factory reset button.">
+        Reset
+      </message>
+      <message name="IDS_SETTINGS_FACTORY_RESET_BUTTON_ROLE" desc="A label to be read aloud by screen readers when the Reset button is focused. This button initiates the device factory reset flow.">
+        Reset Button
+      </message>
+      <message name="IDS_SETTINGS_FACTORY_CONTINUE_BUTTON_LABEL" desc="Label for the button that navigates from the eSIM warning to the 'Factory Reset' UI.">
+        Continue
+      </message>
+      <message name="IDS_OS_SETTINGS_SANITIZE" desc="The heading and the button string of the safety reset feature.">
+        Safety reset
+      </message>
+      <message name="IDS_OS_SETTINGS_SANITIZE_HEADING" desc="Name of the sanitize dialog describes the feature to the user before they proceed.">
+        Sanitize your device
+      </message>
+      <message name="IDS_OS_SETTINGS_SANITIZE_SHORT_DESCRIPTION" desc="Short description of the safety reset feature on the ChromeOS settings page.">
+        Remove unwanted pop-ups, fix network issues, and more by restoring your settings to safe defaults.
+      </message>
+      <message name="IDS_OS_SETTINGS_SANITIZE_DESCRIPTION" desc="Description of the sanitize feature on the sanitize window.">
+        Getting unwanted pop-ups, or other unexpected behavior? Sometimes, apps and extensions that you install can change your ChromeOS settings without you knowing.
+      </message>
+      <message name="IDS_OS_SETTINGS_SANITIZE_WARNING" desc="Warning text in the sanitize window.">
+        This will disable extensions and reset your settings to safe defaults. Tabs, files, and cookies will be preserved. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_OS_SETTINGS_SANITIZE_FEEDBACK" desc="Feedback label in the Reset Profile Settings dialog.">
+        Help make ChromeOS better by reporting the <ph name="BEGIN_LINK">&lt;a is="action-link" target="_blank"&gt;</ph>current settings<ph name="END_LINK">&lt;/a&gt;</ph>
+      </message>
+
+      <!-- Date/Time (OS settings) -->
+      <message name="IDS_SETTINGS_DATE_TIME" desc="Name of the settings page which displays date and time preferences.">
+        Date and time
+      </message>
+      <message name="IDS_SETTINGS_TIME_ZONE_BUTTON" desc="Label for the button that opens time zone settings page.">
+        Time zone
+      </message>
+      <message name="IDS_SETTINGS_TIME_ZONE_SUBPAGE_TITLE" desc="The title of the dialog that allows user to control different time zone settings.">
+        Time zone
+      </message>
+      <message name="IDS_SETTINGS_TIME_ZONE_DETECTION_SET_AUTOMATICALLY" desc="The name for the radio button that turns automatic time zone detection on.">
+        Set automatically
+      </message>
+      <message name="IDS_SETTINGS_TIME_ZONE_DETECTION_CHOOSE_FROM_LIST" desc="The name for the radio button that turns automatic time zone detection off, and allows user to select time zone from the list of all supported time zones.">
+        Choose from list
+      </message>
+      <message name="IDS_SETTINGS_TIME_ZONE_DETECTION_MODE_DISABLED" desc="Display name for the automatic time zone detection mode which disables automatic detection.">
+        Automatic time zone detection is disabled
+      </message>
+      <message name="IDS_SETTINGS_TIME_ZONE_DETECTION_GEOLOCATION_WARNING_TEXT" desc="Displays the text notifying users that the system geolocation permission is required for the Automatic Time Zone Detection. Displaying the current status of Automatic Time Zone Detection with inline link to resolve the breakage.">
+        Time zone is currently set to <ph name="TIME_ZONE_ENTRY">$1<ex>(UTC+4:00) Georgia Standard Time (Tbilisi)</ex></ph>. To automatically update the time zone, <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>turn on system location access<ph name="END_LINK">&lt;/a&gt;</ph>.
+      </message>
+      <message name="IDS_SETTINGS_TIME_ZONE_DETECTION_GEOLOCATION_MANAGED_WARNING_TEXT" desc="Displays the text notifying users that the system geolocation permission is required for the Automatic Time Zone Detection. Displaying the current status of Automatic Time Zone Detection with inline link to resolve the breakage.">
+        Time zone is currently set to <ph name="TIME_ZONE_ENTRY">$1<ex>(UTC+4:00) Georgia Standard Time (Tbilisi)</ex></ph>. This setting is managed by your administrator.
+      </message>
+      <message name="IDS_OS_SETTINGS_TIME_ZONE_DETECTION_MODE_IP_ONLY_DEFAULT" desc="Display name for the automatic time zone detection mode which enables time zone detection sending unprecise location to Google servers.">
+        Use your IP address to determine location
+      </message>
+      <message name="IDS_SETTINGS_TIME_ZONE_DETECTION_MODE_SEND_WIFI_AP" desc="Display name for the automatic time zone detection mode which enables time zone detection sending list of visible WiFi Access Point names to Google servers.">
+        Use only Wi-Fi to determine location
+      </message>
+      <message name="IDS_SETTINGS_TIME_ZONE_DETECTION_MODE_SEND_ALL_INFO" desc="Display name for the automatic time zone detection mode which enables time zone detection sending list of visible WiFi and Cellular Access Point names to Google servers.">
+        Use Wi-Fi or mobile networks to determine location
+      </message>
+      <message name="IDS_SETTINGS_TIME_ZONE" desc="Label for the picker which allows users to choose their time zone.">
+        Time zone
+      </message>
+      <message name="IDS_SETTINGS_TIME_ZONE_GEOLOCATION" desc="Label for the checkbox which enables setting the time zone automatically with the detected location of the device.">
+        Set time zone automatically using your location
+      </message>
+      <message name="IDS_SETTINGS_SELECT_TIME_ZONE_RESOLVE_METHOD" desc="Label for the drop-down menu that allows user to select specific method to automatically resolve device time zone.">
+        Time zone detection method
+      </message>
+      <message name="IDS_SETTINGS_USE_24_HOUR_CLOCK" desc="Label for the checkbox which enables a 24-hour clock (as opposed to a 12-hour clock).">
+        Use 24-hour clock
+      </message>
+      <message name="IDS_SETTINGS_SET_DATE_TIME" desc="Label for the button that shows the dialog for setting the system date and time.">
+        Set date and time
+      </message>
+
       <part file="ash_settings_search_tag_strings.grdp" />
     </messages>
   </release>

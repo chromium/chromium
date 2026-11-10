@@ -20,6 +20,7 @@ static_library("reset") {
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/browser/ui/webui/settings",
     "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/experiences/settings_ui/resources:strings",
     "//components/user_manager",
     "//content/public/browser",
     "//ui/base",

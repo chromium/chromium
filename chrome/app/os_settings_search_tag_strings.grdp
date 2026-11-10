@@ -1,53 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Search tags used for CrOS settings search (go/cros-settings-search). -->
 <grit-part>
-  <!-- Device section. -->
-  <message name="IDS_OS_SETTINGS_TAG_POWER" desc="Text for search result item which, when clicked, navigates the user to power settings.">
-    Power
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_POWER_IDLE_WHILE_CHARGING" desc="Text for search result item which, when clicked, navigates the user to power settings, with an option to set the idle (i.e., sleep) behavior while charging. Alternate phrase for: 'Sleep while charging'">
-    Idle power while charging
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_POWER_IDLE_WHILE_CHARGING_ALT1" desc="Text for search result item which, when clicked, navigates the user to power settings, with an option to set the idle (i.e., sleep) behavior while charging. Alternate phrase for: 'Idle power while charging'">
-    Sleep while charging
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_POWER_IDLE_WHILE_ON_BATTERY" desc="Text for search result item which, when clicked, navigates the user to power settings, with an option to set the idle (i.e., sleep) behavior while on the device is being powered by its battery. Alternate phrase for: 'Sleep while on battery'">
-    Idle power on battery
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_POWER_IDLE_WHILE_ON_BATTERY_ALT1" desc="Text for search result item which, when clicked, navigates the user to power settings, with an option to set the idle (i.e., sleep) behavior while on the device is being powered by its battery. Alternate phrase for: 'Idle power on battery'">
-    Sleep while on battery
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_POWER_ADAPTIVE_CHARGING" desc="Text for search result item which, when clicked, navigates the user to power settings, with an option to enable adaptive charging.">
-    Adaptive charging
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_POWER_OPTIMIZED_CHARGING" desc="Text for search result item which, when clicked, navigates the user to power settings, with an option to enable optimized charging.">
-    Optimized charging
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_POWER_CHARGE_LIMIT" desc="Text for search result item which, when clicked, navigates the user to power settings, with an option to enable a charge limit.">
-    Charge limit
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_POWER_SOURCE" desc="Text for search result item which, when clicked, navigates the user to power settings, with an option to view/set the power source. Alternate phrase for: 'Energy source', 'Charging source'">
-    Power source
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_POWER_SOURCE_ALT1" desc="Text for search result item which, when clicked, navigates the user to power settings, with an option to view/set the power source. Alternate phrase for: 'Power source', 'Charging source'">
-    Energy source
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_POWER_SOURCE_ALT2" desc="Text for search result item which, when clicked, navigates the user to power settings, with an option to view/set the power source. Alternate phrase for: 'Power source', 'Energy source'">
-    Charging source
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_POWER_SLEEP_COVER_CLOSED" desc="Text for search result item which, when clicked, navigates the user to power settings, with an option to set whether the device sleeps when the lid is closed. Alternate phrase for: 'Sleep when laptop is closed', 'Sleep when lid is closed'">
-    Sleep when cover is closed
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_POWER_SLEEP_COVER_CLOSED_ALT1" desc="Text for search result item which, when clicked, navigates the user to power settings, with an option to set whether the device sleeps when the lid is closed. Alternate phrase for: 'Sleep when cover is closed', 'Sleep when lid is closed'">
-    Sleep when laptop is closed
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_POWER_SLEEP_COVER_CLOSED_ALT2" desc="Text for search result item which, when clicked, navigates the user to power settings, with an option to set whether the device sleeps when the lid is closed. Alternate phrase for: 'Sleep when cover is closed', 'Sleep when laptop is closed'">
-    Sleep when lid is closed
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_POWER_BATTERY_SAVER" desc="Text for search result item which, when clicked, navigates the user to power settings, with an option to enable battery saver.">
-    Battery Saver
-  </message>
-
   <!-- Search and Assistant section. -->
   <message name="IDS_OS_SETTINGS_TAG_PREFERRED_SEARCH_ENGINE" desc="Text for search result item which, when clicked, navigates the user to search settings, with an option to set the user's preferred search engine.">
     Preferred search engine
@@ -90,20 +43,6 @@
     Suggested actions when searching your screen
   </message>
 
-  <!-- Date and Time section. -->
-  <message name="IDS_OS_SETTINGS_TAG_DATE_TIME" desc="Text for search result item which, when clicked, navigates the user to date and time settings.">
-    Date and time settings
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_DATE_TIME_MILITARY_CLOCK" desc="Text for search result item which, when clicked, navigates the user to date and time settings, with a toggle to enable/disable using a 24-hour clock. Alternate phrase for: 'Military time'">
-    Use 24-hour clock
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_DATE_TIME_MILITARY_CLOCK_ALT1" desc="Text for search result item which, when clicked, navigates the user to date and time settings, with a toggle to enable/disable using a 24-hour clock. Alternate phrase for: 'Use 24-hour clock'">
-    Military time
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_DATE_TIME_ZONE" desc="Text for search result item which, when clicked, navigates the user to time zone settings.">
-    Time zone
-  </message>
-
   <!-- Languages and Input section. -->
   <message name="IDS_OS_SETTINGS_TAG_LANGUAGES" desc="Text for search result item which, when clicked, navigates the user to languages settings.">
     Languages
@@ -131,67 +70,6 @@
   </message>
   <message name="IDS_OS_SETTINGS_TAG_A11y_CHROMEVOX_ALT2" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable ChromeVox (spoken feedback). Alternate phrase for: 'ChromeVox (spoken feedback)'">
     Braille
-  </message>
-
-  <!-- Reset section. -->
-  <message name="IDS_OS_SETTINGS_TAG_RESET" desc="Text for search result item which, when clicked, navigates the user to reset settings.">
-    Reset
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_RESET_POWERWASH" desc="Text for search result item which, when clicked, navigates the user to reset settings, with a button to begin powerashing the device. Alternate phrase for: 'Factory reset'">
-    Powerwash
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_RESET_POWERWASH_ALT1" desc="Text for search result item which, when clicked, navigates the user to reset settings, with a button to begin powerashing the device. Alternate phrase for: 'Powerwash'">
-    Factory reset
-  </message>
-
-  <!-- About ChromeOS section. -->
-  <message name="IDS_OS_SETTINGS_TAG_ABOUT_CHROME_OS_DETAILED_BUILD" desc="Text for search result item which, when clicked, navigates the user to detailed build information settings.">
-    Detailed build information
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_ABOUT_CHROME_OS_CHANNEL" desc="Text for search result item which, when clicked, navigates the user to detailed build information settings, with a button to change to another channel (stable vs. beta vs. dev).">
-    Change channel
-  </message>
-    <message name="IDS_OS_SETTINGS_TAG_ABOUT_CHROME_OS_COPY_DETAILED_BUILD" desc="Text for search result item which, when clicked, navigates the user to detailed build information settings, with a button to copy the build details (e.g., OS version number) to the clipboard.">
-    Copy build details
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_ABOUT_OS_UPDATE" desc="Text for search result item which, when clicked, navigates the user to 'About ChromeOS' settings, with a section to check for the latest OS update.">
-    Check for update
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_ABOUT_RELEASE_NOTES" desc="Text for search result item which, when clicked, navigates the user to 'About ChromeOS' settings, with a link which takes users to a page showing what is new in the latest version of the OS. Alternate phrase for: 'Release notes'">
-    See what's new
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_ABOUT_RELEASE_NOTES_ALT1" desc="Text for search result item which, when clicked, navigates the user to 'About ChromeOS' settings, with a link which takes users to a page showing what is new in the latest version of the OS. Alternate phrase for: 'See what's new'">
-    Release notes
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_ABOUT_HELP" desc="Text for search result item which, when clicked, navigates the user to 'About ChromeOS' settings, with a link which opens the 'Help' app.">
-    Help
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_ABOUT_REPORT_ISSUE" desc="Text for search result item which, when clicked, navigates the user to 'About ChromeOS' settings, with a link which opens the 'Send feedback to Google' app. Alternate phrase for: 'Report a bug'">
-    Report an issue
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_ABOUT_REPORT_ISSUE_ALT1" desc="Text for search result item which, when clicked, navigates the user to 'About ChromeOS' settings, with a link which opens the 'Send feedback to Google' app. Alternate phrase for: 'Report an issue'">
-    Report a bug
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_ABOUT_TERMS_OF_SERVICE" desc="Text for search result item which, when clicked, navigates the user to 'About ChromeOS' settings, with a link to the Terms of Service.">
-    Terms of Service
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_ABOUT_DIAGNOSTICS" desc="Text for search result item which, when clicked, navigates the user to 'Diagnostics' settings, with a link which opens the Diagnostics App. Alternate phrase for 'Troubleshooting', 'Battery Health', 'CPU Usage', 'Memory Usage'">
-    Diagnostics
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_ABOUT_DIAGNOSTICS_ALT1" desc="Text for search result item which, when clicked, navigates the user to 'Diagnostics' settings, with a link which opens the Diagnostics App. Alternate phrase for 'Diagnostics', 'Battery Health', 'CPU Usage', 'Memory Usage'">
-    Troubleshooting
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_ABOUT_DIAGNOSTICS_ALT2" desc="Text for search result item which, when clicked, navigates the user to 'Diagnostics' settings, with a link which opens the Diagnostics App. Alternate phrase for 'Diagnostics', 'Troubleshooting', 'CPU Usage', 'Memory Usage'">
-    Battery Health
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_ABOUT_DIAGNOSTICS_ALT3" desc="Text for search result item which, when clicked, navigates the user to 'Diagnostics' settings, with a link which opens the Diagnostics App. Alternate phrase for 'Diagnostics', 'Troubleshooting', 'Battery Health', 'Memory Usage'">
-    CPU Usage
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_ABOUT_DIAGNOSTICS_ALT4" desc="Text for search result item which, when clicked, navigates the user to 'Diagnostics' settings, with a link which opens the Diagnostics App. Alternate phrase for 'Diagnostics', 'Troubleshooting', 'Battery Health', 'CPU Usage'">
-    Memory Usage
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_ABOUT_FIRMWARE_UPDATES" desc="Text for search result item which, when clicked, navigates the user to 'Firmware updates' settings, with a link which opens the 'Firmware updates' app.">
-    Firmware updates
   </message>
 
   <!-- On Startup section. -->

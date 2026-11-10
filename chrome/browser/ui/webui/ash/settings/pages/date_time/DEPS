@@ -14,11 +14,10 @@ include_rules = [
   # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/profiles/profile.h",
-  "+chrome/grit",
 ]
 
 specific_include_rules = {
-  "date_time_handler.cc": [
+  "date_time_handler\\.cc": [
     "+chrome/browser/browser_process.h",
     "+chrome/browser/browser_process_platform_part.h",
   ],
