@@ -38,6 +38,10 @@ class ModelError;
 // server soon afterward. If an error occurs during startup, the processor's
 // ReportError() method should be called instead of ModelReadyToSync().
 // Lives on the model sequence.
+//
+// Refer to the following documentation when implementing a bridge:
+// https://www.chromium.org/developers/design-documents/sync/model-api/
+// https://www.chromium.org/developers/design-documents/sync/sync-data-best-practices/
 class DataTypeSyncBridge {
  public:
   using DataCallback = base::OnceCallback<void(std::unique_ptr<DataBatch>)>;
@@ -105,6 +109,12 @@ class DataTypeSyncBridge {
   // `metadata_change_list` in case when some of the data changes are filtered
   // out, or even be empty in case when a commit confirmation is processed and
   // only the metadata needs to persisted.
+  //
+  // Implementations must not call `change_processor()->Put()` or `Delete()` in
+  // response to incoming incremental updates, as doing so risks multi-client
+  // ping-pong and uncontrolled server traffic. Any data migration or cleanup
+  // should instead be applied locally without committing, or rate-limited
+  // (e.g., at most once on startup) if re-uploading is necessary.
   virtual std::optional<ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<MetadataChangeList> metadata_change_list,
       EntityChangeList entity_changes) = 0;
@@ -253,6 +263,20 @@ class DataTypeSyncBridge {
   // `GetDataForCommit()`. Commit-only data types do not receive remote updates
   // and typically implement this method as `NOTREACHED()`, so the processor
   // skips calling it for `CommitOnlyTypes()`.
+  //
+  // Incoming `entity_data` may originate from older or newer client versions
+  // (or clients with bugs that produced unexpected data), so validation and
+  // specifics-parsing helpers must never `CHECK` or `NOTREACHED()` on missing
+  // fields or unrecognized enum/`oneof` values.
+  //
+  // Returning false causes `ClientTagBasedDataTypeProcessor` to drop the remote
+  // update before tracking `EntityMetadata` or caching
+  // `possibly_trimmed_base_specifics`.
+  //
+  // Bridges should validate required identity invariants (e.g., fields needed
+  // by `GetClientTag()` and `GetStorageKey()`), rather than rejecting an entity
+  // solely due to an unrecognized `oneof` subtype (`NOT_SET`), so that its sync
+  // metadata and unknown fields are still tracked.
   virtual bool IsEntityDataValid(const EntityData& entity_data) const = 0;
 
   // Needs to be informed about any model change occurring via Delete() and
