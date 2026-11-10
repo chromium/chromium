@@ -202,22 +202,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Blink.AnchorElementInteractionTracker.ClickLocationY{orientation}"
-    units="%" expires_after="2025-05-11">
-  <owner>adithyas@chromium.org</owner>
-  <owner>chrome-instant-ecosystem@google.com</owner>
-  <summary>
-    Records the vertical distance from the top of the screen (y-coordinate) of a
-    clicked anchor. The value is normalized and recorded as a percentage of the
-    screen size.
-
-    This is only recorded when the screen is in the &quot;{orientation}&quot;
-    orientation, and is recorded after every anchor element click.
-  </summary>
-  <token key="orientation" variants="ScreenOrientation"/>
-</histogram>
-
-<histogram
     name="Blink.AnchorElementMetricsIntersectionObserver.UpdateTime{BlinkUpdateTimeSuffixes}"
     units="microseconds" expires_after="2026-09-12">
   <owner>pdr@chromium.org</owner>

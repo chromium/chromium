@@ -517,26 +517,6 @@ void AnchorElementInteractionTracker::OnClickEvent(
           AnchorElementMetricsSender::GetForFrame(GetDocument()->GetFrame())) {
     sender->MaybeReportClickedMetricsOnClick(anchor);
   }
-
-  LocalFrame* frame = anchor.GetDocument().GetFrame();
-  if (!frame->IsMainFrame() || !frame->View()) {
-    return;
-  }
-
-  Screen* screen = frame->DomWindow()->screen();
-  const int screen_height = screen->height();
-  if (screen_height == 0) {
-    return;
-  }
-
-  const char* orientation_pattern =
-      screen->width() <= screen_height ? ".Portrait" : ".Landscape";
-  double click_y = click_event.screenY();
-  int normalized_click_y = base::ClampRound(100.0f * (click_y / screen_height));
-  base::UmaHistogramPercentage(
-      base::StrCat({"Blink.AnchorElementInteractionTracker.ClickLocationY",
-                    orientation_pattern}),
-      normalized_click_y);
 }
 
 void AnchorElementInteractionTracker::HoverTimerFired(TimerBase*) {
