@@ -578,7 +578,7 @@ suite('<history-synced-device-manager>', function() {
 });
 
 // <if expr="not is_chromeos">
-import {AccessPoint} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
+import {AccessPoint} from 'chrome://history/history.js';
 
 // history-sync-optin elements is not shown for ChromeOS.
 suite('<history-sync-optin>', function() {

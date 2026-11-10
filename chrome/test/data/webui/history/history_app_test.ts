@@ -6,16 +6,14 @@
 import 'chrome://history/history.js';
 
 import type {HistoryAppElement, HistoryFilterChipsElement} from 'chrome://history/history.js';
-import {BrowserProxyImpl, CrRouter} from 'chrome://history/history.js';
+import {BrowserProxyImpl, CrRouter, TimePeriodOptionId} from 'chrome://history/history.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {COLORS_CSS_SELECTOR} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import {TimePeriodOptionId} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 // <if expr="not is_chromeos">
-import {AccessPoint} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {HistorySignInState, SyncState} from 'chrome://history/history.js';
+import {AccessPoint, HistorySignInState, SyncState} from 'chrome://history/history.js';
 
 // </if>
 
