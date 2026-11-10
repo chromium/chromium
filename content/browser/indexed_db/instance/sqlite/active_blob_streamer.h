@@ -72,7 +72,6 @@ class CONTENT_EXPORT ActiveBlobStreamer : public BlobEndpoint {
       const std::string& method,
       const net::HttpRequestHeaders& headers,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client) override;
-  void ReadSideData(blink::mojom::Blob::ReadSideDataCallback callback) override;
   void CaptureSnapshot(CaptureSnapshotCallback callback) override;
   void GetInternalUUID(GetInternalUUIDCallback callback) override;
 
@@ -87,8 +86,6 @@ class CONTENT_EXPORT ActiveBlobStreamer : public BlobEndpoint {
             uint64_t length,
             mojo::ScopedDataPipeProducerHandle pipe,
             storage::mojom::BlobDataItemReader::ReadCallback callback) override;
-  void ReadSideData(storage::mojom::BlobDataItemReader::ReadSideDataCallback
-                        callback) override;
 
  private:
   class SqliteBlobToDataPipe;

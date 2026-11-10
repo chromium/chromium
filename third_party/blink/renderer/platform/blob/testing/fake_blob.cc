@@ -94,10 +94,6 @@ void FakeBlob::Load(
   NOTREACHED();
 }
 
-void FakeBlob::ReadSideData(ReadSideDataCallback callback) {
-  NOTREACHED();
-}
-
 void FakeBlob::CaptureSnapshot(CaptureSnapshotCallback callback) {
   std::move(callback).Run(body_.size(), std::nullopt);
 }

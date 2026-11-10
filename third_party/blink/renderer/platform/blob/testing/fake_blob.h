@@ -12,7 +12,7 @@
 namespace blink {
 
 // Mocked Blob implementation for testing. Implements all methods except for
-// ReadRange and ReadSideData.
+// ReadRange.
 class FakeBlob : public mojom::blink::Blob {
  public:
   struct State {
@@ -40,7 +40,6 @@ class FakeBlob : public mojom::blink::Blob {
       const String& method,
       const net::HttpRequestHeaders&,
       mojo::PendingRemote<network::mojom::blink::URLLoaderClient>) override;
-  void ReadSideData(ReadSideDataCallback) override;
   void CaptureSnapshot(CaptureSnapshotCallback) override;
   void GetInternalUUID(GetInternalUUIDCallback) override;
 

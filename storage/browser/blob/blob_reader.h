@@ -10,7 +10,6 @@
 
 #include <map>
 #include <memory>
-#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
@@ -19,7 +18,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/expected.h"
-#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
@@ -73,7 +71,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobReader {
         const base::Time& expected_modification_time) = 0;
   };
   enum class Status { NET_ERROR, IO_PENDING, DONE };
-  using StatusCallback = base::OnceCallback<void(Status)>;
 
   BlobReader(const BlobReader&) = delete;
   BlobReader& operator=(const BlobReader&) = delete;
@@ -89,27 +86,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobReader {
   //    The callback value contains the error code or net::OK. Please use the
   //    total_size() value to query the blob size, as it's uint64_t.
   Status CalculateSize(net::CompletionOnceCallback done);
-
-  // Returns true when the blob has side data. CalculateSize must be called
-  // beforehand. Currently side data is supported only for single readable
-  // DataHandle entry blob. So it returns false when the blob has more than
-  // single data item. This side data is used to pass the V8 code cache which is
-  // stored as a side stream in the CacheStorage to the renderer.
-  // (crbug.com/581613).  This will still return true even after TakeSideData
-  // has been called.
-  bool has_side_data() const;
-
-  // Reads the side data of the blob. CalculateSize must be called beforehand.
-  // * Always calls the StatusCallback when the side data has been read.
-  // * This may be done synchronously or asynchronously.
-  // * The done callback will be called with Status::DONE or Status::NET_ERROR.
-  // * If the callback returns NET_ERROR, net_error() will have the value.
-  // Currently side data is supported only for single readable DataHandle entry
-  // blob.
-  void ReadSideData(StatusCallback done);
-
-  // Passes the side data (if any) from ReadSideData() to the caller.
-  std::optional<mojo_base::BigBuffer> TakeSideData();
 
   // Used to set the read position.
   // * This should be called after CalculateSize and before Read.
@@ -226,10 +202,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobReader {
   Status ReadReadableDataHandle(const BlobDataItem& item, int bytes_to_read);
   void DidReadReadableDataHandle(int result);
   void DidReadItem(int result);
-  void DidReadSideData(StatusCallback done,
-                       int expected_size,
-                       int result,
-                       mojo_base::BigBuffer data);
   int ComputeBytesToRead() const;
   int BytesReadCompleted();
 
@@ -260,7 +232,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobReader {
   std::unique_ptr<BlobDataSnapshot> blob_data_;
   std::unique_ptr<FileStreamReaderProvider> file_stream_provider_for_testing_;
   scoped_refptr<base::TaskRunner> file_task_runner_;
-  std::optional<mojo_base::BigBuffer> side_data_;
 
   int net_error_;
   bool item_list_populated_ = false;

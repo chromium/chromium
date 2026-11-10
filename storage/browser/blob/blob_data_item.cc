@@ -44,13 +44,6 @@ class MojoDataItem : public BlobDataItem::DataHandle {
                   std::move(callback));
   }
 
-  uint64_t GetSideDataSize() const override { return item_->side_data_size; }
-
-  void ReadSideData(
-      base::OnceCallback<void(int, mojo_base::BigBuffer)> callback) override {
-    reader_->ReadSideData(std::move(callback));
-  }
-
   void PrintTo(::std::ostream* os) const override {
     // TODO(enne): this is tricky to implement, as it's synchronous.
     // PrintTo should ideally be asynchronous.  See: http://crbug.com/809821

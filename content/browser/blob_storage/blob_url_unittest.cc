@@ -260,8 +260,8 @@ class BlobURLTest : public testing::Test {
     expected_result += kTestFileData1.substr(2, 3);
 
     blob_data_->AppendReadableDataHandle(
-        base::MakeRefCounted<storage::FakeBlobDataHandle>(kTestDataHandleData1,
-                                                          ""));
+        base::MakeRefCounted<storage::FakeBlobDataHandle>(
+            kTestDataHandleData1));
     expected_result += kTestDataHandleData1;
 
     blob_data_->AppendFileSystemFile(
@@ -456,8 +456,7 @@ TEST_F(BlobURLTest, TestGetSlicedFileSystemFileRequest) {
 
 TEST_F(BlobURLTest, TestGetSimpleDataHandleRequest) {
   blob_data_->AppendReadableDataHandle(
-      base::MakeRefCounted<storage::FakeBlobDataHandle>(kTestDataHandleData1,
-                                                        ""));
+      base::MakeRefCounted<storage::FakeBlobDataHandle>(kTestDataHandleData1));
   TestSuccessNonrangeRequest(kTestDataHandleData1);
 }
 

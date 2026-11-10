@@ -489,8 +489,7 @@ TEST_F(BlobStorageContextTest, AddFinishedBlob_LargeOffset) {
 
 TEST_F(BlobStorageContextTest, BuildReadableDataHandleBlob) {
   const std::string kTestBlobData = "Test Blob Data";
-  auto data_handle =
-      base::MakeRefCounted<FakeBlobDataHandle>(kTestBlobData, "");
+  auto data_handle = base::MakeRefCounted<FakeBlobDataHandle>(kTestBlobData);
 
   {
     BlobStorageContext context;
@@ -606,7 +605,7 @@ TEST_F(BlobStorageContextTest, CompoundBlobs) {
 
   auto blob_data3_builder = std::make_unique<BlobDataBuilder>(kId3);
   blob_data3_builder->AppendData("Data4");
-  auto data_handle = base::MakeRefCounted<FakeBlobDataHandle>("Data5", "");
+  auto data_handle = base::MakeRefCounted<FakeBlobDataHandle>("Data5");
   blob_data3_builder->AppendReadableDataHandle(std::move(data_handle));
   std::unique_ptr<BlobDataSnapshot> blob_data3 =
       blob_data3_builder->CreateSnapshot();
@@ -760,7 +759,7 @@ TEST_F(BlobStorageContextTest, BuildBlobCombinations) {
 
   SetTestMemoryLimits();
   auto data_handle =
-      base::MakeRefCounted<FakeBlobDataHandle>(kTestDataHandleData, "");
+      base::MakeRefCounted<FakeBlobDataHandle>(kTestDataHandleData);
 
   // This tests mixed blob content with both synchronous and asynchronous
   // construction. Blobs should also be paged to disk during execution.

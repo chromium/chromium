@@ -135,8 +135,6 @@ class EntryReaderImpl : public storage::mojom::BlobDataItemReader {
         std::move(callback), std::move(adapter)));
   }
 
-  void ReadSideData(ReadSideDataCallback callback) override { NOTREACHED(); }
-
  private:
   const scoped_refptr<CacheStorageCacheEntryHandler::DiskCacheBlobEntry>
       blob_entry_;
@@ -418,7 +416,6 @@ blink::mojom::SerializedBlobPtr CacheStorageCacheEntryHandler::CreateBlob(
 
   auto element = storage::mojom::BlobDataItem::New();
   element->size = blob_entry->GetSize(disk_cache_index);
-  element->side_data_size = 0;
   element->type = storage::mojom::BlobDataItemType::kCacheStorage;
 
   auto handle = std::make_unique<EntryReaderImpl>(std::move(blob_entry),

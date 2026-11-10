@@ -4,7 +4,6 @@
 
 module blink.mojom;
 
-import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/data_pipe_getter.mojom";
 import "services/network/public/mojom/http_request_headers.mojom";
@@ -58,11 +57,6 @@ interface Blob {
        string request_method,
        network.mojom.HttpRequestHeaders headers,
        pending_remote<network.mojom.URLLoaderClient> client);
-
-  // Reads the side-data (if any) associated with this blob. This is the same
-  // data that would be passed to OnReceivedCachedMetadata if you were reading
-  // this blob through a blob URL.
-  ReadSideData() => (mojo_base.mojom.BigBuffer? data);
 
   // If this blob represents a single file on disk, this will capture the
   // current snapshot state of that file.

@@ -76,11 +76,6 @@ void BlobReader::Load(
   registry_blob_->Load(std::move(loader), method, headers, std::move(client));
 }
 
-void BlobReader::ReadSideData(
-    blink::mojom::Blob::ReadSideDataCallback callback) {
-  std::move(callback).Run(std::nullopt);
-}
-
 void BlobReader::CaptureSnapshot(CaptureSnapshotCallback callback) {
   // This method is used for the File API. Technically IDB can store Files, but
   // when it does so, the size and last modification date should always be known
@@ -147,12 +142,6 @@ void BlobReader::ReadFile(
       weak_factory_.GetWeakPtr(), reader, std::move(callback)));
 }
 
-void BlobReader::ReadSideData(
-    storage::mojom::BlobDataItemReader::ReadSideDataCallback callback) {
-  // This type should never have side data.
-  std::move(callback).Run(net::ERR_NOT_IMPLEMENTED, mojo_base::BigBuffer());
-}
-
 BlobReader::BlobReader(
     const IndexedDBExternalObject& blob_info,
     base::OnceClosure on_last_receiver_disconnected,
@@ -178,7 +167,6 @@ void BlobReader::BindRegistryBlob(
   CHECK(!registry_blob_.is_bound());
   auto element = storage::mojom::BlobDataItem::New();
   element->size = blob_length_;
-  element->side_data_size = 0;
   element->content_type = content_type_;
   element->type = storage::mojom::BlobDataItemType::kIndexedDB;
   readers_.Add(this, element->reader.InitWithNewPipeAndPassReceiver());

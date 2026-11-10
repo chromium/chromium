@@ -15,7 +15,6 @@
 #include "base/run_loop.h"
 #include "base/strings/string_view_util.h"
 #include "base/threading/thread_restrictions.h"
-#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
@@ -59,8 +58,6 @@ class MemoryBlobDataItemReader : public mojom::BlobDataItemReader {
         pipe);
     std::move(callback).Run(success ? net::OK : net::ERR_FAILED);
   }
-
-  void ReadSideData(ReadSideDataCallback callback) override { NOTREACHED(); }
 
  private:
   ~MemoryBlobDataItemReader() override = default;
@@ -113,7 +110,6 @@ void RegisterBlobWithContents(mojom::BlobStorageContext& blob_storage_context,
   mojom::BlobDataItemPtr item = mojom::BlobDataItem::New();
   item->type = mojom::BlobDataItemType::kUnknown;
   item->size = data.size();
-  item->side_data_size = 0;
   mojo::PendingReceiver<mojom::BlobDataItemReader> reader =
       item->reader.InitWithNewPipeAndPassReceiver();
   new MemoryBlobDataItemReader(data, std::move(reader));

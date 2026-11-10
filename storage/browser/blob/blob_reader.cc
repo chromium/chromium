@@ -115,54 +115,6 @@ BlobReader::Status BlobReader::CalculateSize(net::CompletionOnceCallback done) {
   return CalculateSizeImpl(&done);
 }
 
-bool BlobReader::has_side_data() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!blob_data_.get())
-    return false;
-  const auto& items = blob_data_->items();
-  if (items.size() != 1)
-    return false;
-  const BlobDataItem& item = *items.at(0);
-  if (item.type() != BlobDataItem::Type::kReadableDataHandle)
-    return false;
-  return item.data_handle()->GetSideDataSize() > 0;
-}
-
-void BlobReader::ReadSideData(StatusCallback done) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  side_data_.reset();
-  if (!has_side_data()) {
-    std::move(done).Run(ReportError(net::ERR_FILE_NOT_FOUND));
-    return;
-  }
-  BlobDataItem* item = blob_data_->items()[0].get();
-  const int side_data_size = item->data_handle()->GetSideDataSize();
-  item->data_handle()->ReadSideData(
-      base::BindOnce(&BlobReader::DidReadSideData, weak_factory_.GetWeakPtr(),
-                     std::move(done), side_data_size));
-}
-
-std::optional<mojo_base::BigBuffer> BlobReader::TakeSideData() {
-  return std::move(side_data_);
-}
-
-void BlobReader::DidReadSideData(StatusCallback done,
-                                 int expected_size,
-                                 int result,
-                                 mojo_base::BigBuffer data) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (result == expected_size) {
-    DCHECK_EQ(static_cast<size_t>(expected_size), data.size());
-    RecordBytesReadFromDataHandle(/* item_index= */ 0, result);
-    side_data_ = std::move(data);
-    std::move(done).Run(Status::DONE);
-    return;
-  }
-  std::move(done).Run(ReportError(result < 0 ? result : net::ERR_FAILED));
-}
-
 BlobReader::Status BlobReader::SetReadRange(uint64_t offset, uint64_t length) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

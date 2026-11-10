@@ -50,7 +50,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobImpl
       const std::string& method,
       const net::HttpRequestHeaders& headers,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client) override;
-  void ReadSideData(ReadSideDataCallback callback) override;
   void CaptureSnapshot(CaptureSnapshotCallback callback) override;
   void GetInternalUUID(GetInternalUUIDCallback callback) override;
 

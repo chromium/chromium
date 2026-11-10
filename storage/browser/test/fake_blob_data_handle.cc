@@ -12,9 +12,8 @@
 
 namespace storage {
 
-FakeBlobDataHandle::FakeBlobDataHandle(std::string body_data,
-                                       std::string side_data)
-    : body_data_(std::move(body_data)), side_data_(std::move(side_data)) {}
+FakeBlobDataHandle::FakeBlobDataHandle(std::string body_data)
+    : body_data_(std::move(body_data)) {}
 
 uint64_t FakeBlobDataHandle::GetSize() const {
   return body_data_.size();
@@ -39,23 +38,6 @@ void FakeBlobDataHandle::Read(mojo::ScopedDataPipeProducerHandle producer,
 
   // The callback expects a `net::Error` only and not the number of bytes read.
   std::move(callback).Run(net::OK);
-}
-
-uint64_t FakeBlobDataHandle::GetSideDataSize() const {
-  return side_data_.size();
-}
-
-void FakeBlobDataHandle::ReadSideData(
-    base::OnceCallback<void(int, mojo_base::BigBuffer)> callback) {
-  if (side_data_.size() == 0) {
-    std::move(callback).Run(side_data_.size(), mojo_base::BigBuffer());
-    return;
-  }
-
-  mojo_base::BigBuffer buffer(side_data_.size());
-  base::span(buffer).copy_from(base::as_byte_span(side_data_));
-
-  std::move(callback).Run(side_data_.size(), std::move(buffer));
 }
 
 FakeBlobDataHandle::~FakeBlobDataHandle() = default;

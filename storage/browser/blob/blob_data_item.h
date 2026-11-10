@@ -63,15 +63,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataItem
                       uint64_t bytes_to_read,
                       base::OnceCallback<void(int)> callback) = 0;
 
-    // Returns the side data size.  If there is no side data, then 0 should
-    // be returned.
-    virtual uint64_t GetSideDataSize() const = 0;
-
-    // Returns the entire side data as a BigBuffer and the net::Error from
-    // reading.  The number of bytes read is the size of the BigBuffer.
-    virtual void ReadSideData(
-        base::OnceCallback<void(int, mojo_base::BigBuffer)> callback) = 0;
-
     // Print a description of the readable DataHandle for debugging.
     virtual void PrintTo(::std::ostream* os) const = 0;
 

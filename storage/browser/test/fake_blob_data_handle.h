@@ -15,7 +15,7 @@ namespace storage {
 // All callbacks in the FakeBlobDataHandle are called synchronously.
 class FakeBlobDataHandle : public BlobDataItem::DataHandle {
  public:
-  FakeBlobDataHandle(std::string body_data, std::string side_data);
+  explicit FakeBlobDataHandle(std::string body_data);
 
   // BlobDataItem::DataHandle implementation.
   uint64_t GetSize() const override;
@@ -24,16 +24,12 @@ class FakeBlobDataHandle : public BlobDataItem::DataHandle {
             uint64_t bytes_to_read,
             base::OnceCallback<void(int)> callback) override;
 
-  uint64_t GetSideDataSize() const override;
-  void ReadSideData(
-      base::OnceCallback<void(int, mojo_base::BigBuffer)> callback) override;
   void PrintTo(::std::ostream* os) const override {}
 
  private:
   ~FakeBlobDataHandle() override;
 
   const std::string body_data_;
-  const std::string side_data_;
 };
 
 }  // namespace storage

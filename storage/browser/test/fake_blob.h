@@ -38,7 +38,6 @@ class FakeBlob : public blink::mojom::Blob {
             const std::string& method,
             const net::HttpRequestHeaders&,
             mojo::PendingRemote<network::mojom::URLLoaderClient>) override;
-  void ReadSideData(ReadSideDataCallback) override;
   void CaptureSnapshot(CaptureSnapshotCallback) override;
   void GetInternalUUID(GetInternalUUIDCallback callback) override;
 

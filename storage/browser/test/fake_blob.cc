@@ -66,10 +66,6 @@ void FakeBlob::Load(mojo::PendingReceiver<network::mojom::URLLoader>,
   NOTREACHED();
 }
 
-void FakeBlob::ReadSideData(ReadSideDataCallback) {
-  NOTREACHED();
-}
-
 void FakeBlob::CaptureSnapshot(CaptureSnapshotCallback) {
   NOTREACHED();
 }

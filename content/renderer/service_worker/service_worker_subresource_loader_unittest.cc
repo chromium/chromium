@@ -97,7 +97,6 @@ class FakeBlob final : public blink::mojom::Blob {
             mojo::PendingRemote<network::mojom::URLLoaderClient>) override {
     NOTREACHED();
   }
-  void ReadSideData(ReadSideDataCallback callback) override { NOTREACHED(); }
   void CaptureSnapshot(CaptureSnapshotCallback callback) override {
     std::move(callback).Run(body_.size(), std::nullopt);
   }

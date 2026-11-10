@@ -142,49 +142,6 @@ void BlobImpl::Load(
                                 std::make_unique<BlobDataHandle>(*handle_));
 }
 
-void BlobImpl::ReadSideData(ReadSideDataCallback callback) {
-  handle_->RunOnConstructionComplete(base::BindOnce(
-      [](BlobDataHandle handle, ReadSideDataCallback callback,
-         BlobStatus status) {
-        if (status != BlobStatus::DONE) {
-          DCHECK(BlobStatusIsError(status));
-          std::move(callback).Run(std::nullopt);
-          return;
-        }
-
-        auto snapshot = handle.CreateSnapshot();
-        // Currently side data is supported only for blobs with a single entry.
-        const auto& items = snapshot->items();
-        if (items.size() != 1) {
-          std::move(callback).Run(std::nullopt);
-          return;
-        }
-
-        const auto& item = items[0];
-        if (item->type() != BlobDataItem::Type::kReadableDataHandle) {
-          std::move(callback).Run(std::nullopt);
-          return;
-        }
-
-        int32_t body_size = item->data_handle()->GetSideDataSize();
-        if (body_size == 0) {
-          std::move(callback).Run(std::nullopt);
-          return;
-        }
-        item->data_handle()->ReadSideData(base::BindOnce(
-            [](int32_t expected_size, ReadSideDataCallback callback, int result,
-               mojo_base::BigBuffer buffer) {
-              if (result < 0 || result != expected_size) {
-                std::move(callback).Run(std::nullopt);
-                return;
-              }
-              std::move(callback).Run(std::move(buffer));
-            },
-            body_size, std::move(callback)));
-      },
-      *handle_, std::move(callback)));
-}
-
 void BlobImpl::CaptureSnapshot(CaptureSnapshotCallback callback) {
   handle_->RunOnConstructionComplete(base::BindOnce(
       [](base::WeakPtr<BlobImpl> blob_impl, CaptureSnapshotCallback callback,

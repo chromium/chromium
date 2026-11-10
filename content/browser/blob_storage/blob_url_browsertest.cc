@@ -295,7 +295,6 @@ class RedirectingBlob : public blink::mojom::Blob {
     head->encoded_data_length = 0;
     client_->OnReceiveRedirect(redirect_info, std::move(head));
   }
-  void ReadSideData(ReadSideDataCallback) override { NOTREACHED(); }
   void CaptureSnapshot(CaptureSnapshotCallback callback) override {
     std::move(callback).Run(0, std::nullopt);
   }
@@ -381,7 +380,6 @@ class EarlyHintsBlob : public blink::mojom::Blob {
                                std::nullopt);
     client_->OnComplete(network::URLLoaderCompletionStatus(net::OK));
   }
-  void ReadSideData(ReadSideDataCallback) override { NOTREACHED(); }
   void CaptureSnapshot(CaptureSnapshotCallback callback) override {
     std::move(callback).Run(0, std::nullopt);
   }
