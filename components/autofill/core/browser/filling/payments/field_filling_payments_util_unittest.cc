@@ -911,7 +911,7 @@ TEST_F(FieldFillingPaymentsUtilTest,
                                          /*is_cvc_filling_supported=*/true),
             u"08 - AOÛT");
   credit_card.SetExpirationMonth(12);
-  EXPECT_EQ(GetFillingValueForCreditCard(credit_card, kAppLocale,
+  EXPECT_EQ(GetFillingValueForCreditCard(credit_card, /*app_locale=*/"fr-FR",
                                          mojom::ActionPersistence::kFill, field,
                                          /*is_cvc_filling_supported=*/true),
             u"12 - DECEMBRE");

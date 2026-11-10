@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/data_model/data_model_util.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -404,6 +406,58 @@ TEST(AutofillDataModelUtilsTest, IsValidFlightNumberFormat) {
   EXPECT_FALSE(IsValidFlightNumberFormat(u"a"));
   EXPECT_FALSE(IsValidFlightNumberFormat(u"Aa"));
   EXPECT_FALSE(IsValidFlightNumberFormat(u"F", /*exclude_full_value=*/true));
+}
+
+TEST(AutofillDataModelUtils, ParseMonthFromString) {
+  // Numeric months.
+  EXPECT_EQ(ParseMonthFromString(u"1", ""), 1);
+  EXPECT_EQ(ParseMonthFromString(u"01", "en-US"), 1);
+  EXPECT_EQ(ParseMonthFromString(u"5", "en-US"), 5);
+  EXPECT_EQ(ParseMonthFromString(u"05", "en-US"), 5);
+  EXPECT_EQ(ParseMonthFromString(u"12", "en-US"), 12);
+  EXPECT_EQ(ParseMonthFromString(u" 05 ", "en-US"), 5);
+
+  // Exact and word-bounded full and abbreviated month names
+  // (case/accent/period insensitive).
+  EXPECT_EQ(ParseMonthFromString(u"January", "en-US"), 1);
+  EXPECT_EQ(ParseMonthFromString(u"jan", "en-US"), 1);
+  EXPECT_EQ(ParseMonthFromString(u"Jan.", "en-US"), 1);
+  EXPECT_EQ(ParseMonthFromString(u"May", "en-US"), 5);
+  EXPECT_EQ(ParseMonthFromString(u"may", "en-US"), 5);
+  EXPECT_EQ(ParseMonthFromString(u"  May  ", "en-US"), 5);
+  EXPECT_EQ(ParseMonthFromString(u"05 - May", "en-US"), 5);
+  EXPECT_EQ(ParseMonthFromString(u"May (05)", "en-US"), 5);
+  EXPECT_EQ(ParseMonthFromString(u"Feb (2)", "en-US"), 2);
+  EXPECT_EQ(ParseMonthFromString(u"janv", "fr-FR"), 1);
+  EXPECT_EQ(ParseMonthFromString(u"janv.", "fr-FR"), 1);
+  EXPECT_EQ(ParseMonthFromString(u"janvier", "fr-FR"), 1);
+  EXPECT_EQ(ParseMonthFromString(u"FÉVRIER", "fr-FR"), 2);
+  EXPECT_EQ(ParseMonthFromString(u"fevrier", "fr-FR"), 2);
+  EXPECT_EQ(ParseMonthFromString(u"févr.", "fr-FR"), 2);
+  EXPECT_EQ(ParseMonthFromString(u"08 - AOÛT", "fr-FR"), 8);
+  EXPECT_EQ(ParseMonthFromString(u"12 - DECEMBRE", "fr-FR"), 12);
+
+  // Substring collisions inside words and invalid inputs must not parse as a
+  // month.
+  EXPECT_EQ(ParseMonthFromString(u"MayTheForceBeWithYou", "en-US"),
+            std::nullopt);
+  EXPECT_EQ(ParseMonthFromString(u"SecretMay2026!", "en-US"), std::nullopt);
+  EXPECT_EQ(ParseMonthFromString(u"SmartCookie!", "en-US"), std::nullopt);
+  EXPECT_EQ(ParseMonthFromString(u"Janice", "en-US"), std::nullopt);
+  EXPECT_EQ(ParseMonthFromString(u"Augment", "en-US"), std::nullopt);
+  EXPECT_EQ(ParseMonthFromString(u"May2026", "en-US"), std::nullopt);
+  EXPECT_EQ(ParseMonthFromString(u"", "en-US"), std::nullopt);
+  EXPECT_EQ(ParseMonthFromString(u"   ", "en-US"), std::nullopt);
+  EXPECT_EQ(ParseMonthFromString(u".", "en-US"), std::nullopt);
+  EXPECT_EQ(ParseMonthFromString(u"-1", "en-US"), std::nullopt);
+  EXPECT_EQ(ParseMonthFromString(u"13", "en-US"), std::nullopt);
+
+  // When the killswitch is disabled, unanchored substring matching is restored.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillParseMonthFromStringByWordBoundary);
+  EXPECT_EQ(ParseMonthFromString(u"MayTheForceBeWithYou", "en-US"), 5);
+  EXPECT_EQ(ParseMonthFromString(u"SecretMay2026!", "en-US"), 5);
 }
 
 }  // namespace

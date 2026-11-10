@@ -959,6 +959,13 @@ BASE_FEATURE(kAutofillOtpCoordinator, base::FEATURE_DISABLED_BY_DEFAULT);
 // TODO(crbug.com/40158074): Cleanup when launched.
 BASE_FEATURE(kAutofillPageLanguageDetection, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, `data_util::ParseMonthFromString()` requires named and
+// abbreviated month matches to be bounded by word boundaries rather than
+// matching arbitrary substrings inside words.
+// TODO(crbug.com/581485526): Default enabled in M160, cleanup after M166.
+BASE_FEATURE(kAutofillParseMonthFromStringByWordBoundary,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, focusing on a credit card number field that was traditionally
 // autofilled will yield all credit card suggestions.
 // TODO(crbug.com/354175563): Remove when launched.

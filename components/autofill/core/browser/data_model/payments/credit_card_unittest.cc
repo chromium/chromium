@@ -1674,6 +1674,15 @@ TEST(CreditCardTest, SetExpirationMonth) {
   card.SetInfo(CREDIT_CARD_EXP_MONTH, u"FÉVRIER", "fr-FR");
   EXPECT_EQ(card.GetRawInfo(CREDIT_CARD_EXP_MONTH), u"02");
   EXPECT_EQ(card.expiration_month(), 2);
+
+  // Substring matches inside words should fail and preserve the previous value.
+  card.SetInfo(CREDIT_CARD_EXP_MONTH, u"MayTheForceBeWithYou", "en-US");
+  EXPECT_EQ(card.GetRawInfo(CREDIT_CARD_EXP_MONTH), u"02");
+  EXPECT_EQ(card.expiration_month(), 2);
+
+  card.SetInfo(CREDIT_CARD_EXP_MONTH, u"SecretMay2026!", "en-US");
+  EXPECT_EQ(card.GetRawInfo(CREDIT_CARD_EXP_MONTH), u"02");
+  EXPECT_EQ(card.expiration_month(), 2);
 }
 
 // Verify that we set nickname with the processed string. We replace all tabs
@@ -1882,12 +1891,23 @@ const CreditCardMatchingTypesCase kCreditCardMatchingTypesTestCases[] = {
     // Matching the expiration month.
     {"01", "01", "2020", LOCAL_CARD, {CREDIT_CARD_EXP_MONTH}},
     {"1", "01", "2020", LOCAL_CARD, {CREDIT_CARD_EXP_MONTH}},
+    {"January", "01", "2020", LOCAL_CARD, {CREDIT_CARD_EXP_MONTH}, "US"},
     {"jan", "01", "2020", LOCAL_CARD, {CREDIT_CARD_EXP_MONTH}, "US"},
+    {"May", "05", "2020", LOCAL_CARD, {CREDIT_CARD_EXP_MONTH}, "US"},
+    {"may", "05", "2020", LOCAL_CARD, {CREDIT_CARD_EXP_MONTH}, "US"},
+    // Substring collisions inside words must not match the expiration month.
+    {"MayTheForceBeWithYou", "05", "2020", LOCAL_CARD, FieldTypeSet(), "US"},
+    {"SecretMay2026!", "05", "2020", LOCAL_CARD, FieldTypeSet(), "US"},
+    {"SmartCookie!", "03", "2020", LOCAL_CARD, FieldTypeSet(), "US"},
+    {"Janice", "01", "2020", LOCAL_CARD, FieldTypeSet(), "US"},
+    {"Augment", "08", "2020", LOCAL_CARD, FieldTypeSet(), "US"},
     // Locale-specific interpretations.
     {"janv", "01", "2020", LOCAL_CARD, {CREDIT_CARD_EXP_MONTH}, "FR"},
     {"janv.", "01", "2020", LOCAL_CARD, {CREDIT_CARD_EXP_MONTH}, "FR"},
     {"janvier", "01", "2020", LOCAL_CARD, {CREDIT_CARD_EXP_MONTH}, "FR"},
+    {"FÉVRIER", "02", "2020", LOCAL_CARD, {CREDIT_CARD_EXP_MONTH}, "FR"},
     {"février", "02", "2020", LOCAL_CARD, {CREDIT_CARD_EXP_MONTH}, "FR"},
+    {"fevrier", "02", "2020", LOCAL_CARD, {CREDIT_CARD_EXP_MONTH}, "FR"},
     {"mars", "01", "2020", LOCAL_CARD, FieldTypeSet(), "FR"},
 
     // Matching the expiration year.

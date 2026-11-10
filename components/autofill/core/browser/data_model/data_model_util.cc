@@ -18,6 +18,7 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/i18n/string_search.h"
 #include "base/i18n/unicodestring.h"
 #include "base/notreached.h"
@@ -26,9 +27,11 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_regex_constants.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "third_party/icu/source/common/unicode/locid.h"
+#include "third_party/icu/source/common/unicode/uchar.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
 #include "third_party/icu/source/i18n/unicode/dtfmtsym.h"
@@ -85,6 +88,33 @@ bool ConsumeSeparator(std::u16string_view& input,
   } else {
     return Consume(input, first_separator);
   }
+}
+
+bool IsWordChar(char16_t c) {
+  return u_isalnum(c) || c == u'_';
+}
+
+bool MatchesMonth(std::u16string icu_month, std::u16string_view input) {
+  if (icu_month.empty()) {
+    return false;
+  }
+  size_t match_index = 0;
+  size_t match_length = 0;
+  if (!base::i18n::StringSearchIgnoringCaseAndAccents(
+          std::move(icu_month), input, &match_index, &match_length)) {
+    return false;
+  }
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillParseMonthFromStringByWordBoundary)) {
+    return true;
+  }
+  // Verify that the `icu_month` is not a substring of a longer word.
+  const bool has_leading_boundary =
+      match_index == 0 || !IsWordChar(input[match_index - 1]);
+  const size_t match_end = match_index + match_length;
+  const bool has_trailing_boundary =
+      match_end == input.size() || !IsWordChar(input[match_end]);
+  return has_leading_boundary && has_trailing_boundary;
 }
 
 }  // namespace
@@ -305,6 +335,7 @@ std::optional<int> ParseMonthFromString(std::u16string_view text,
   icu::DateFormatSymbols date_format_symbols(locale, status);
   DCHECK(status == U_ZERO_ERROR || status == U_USING_FALLBACK_WARNING ||
          status == U_USING_DEFAULT_WARNING);
+
   // Full months (January, Janvier, etc.)
   const base::span<const icu::UnicodeString> months = [&] {
     int32_t num_months;
@@ -316,11 +347,7 @@ std::optional<int> ParseMonthFromString(std::u16string_view text,
         base::span(months, base::checked_cast<size_t>(num_months)));
   }();
   for (size_t i = 0; i < months.size(); ++i) {
-    const std::u16string icu_month(
-        base::i18n::UnicodeStringToString16(months[i]));
-    // We look for the ICU-defined month in `trimmed`.
-    if (base::i18n::StringSearchIgnoringCaseAndAccents(icu_month, trimmed,
-                                                       nullptr, nullptr)) {
+    if (MatchesMonth(base::i18n::UnicodeStringToString16(months[i]), trimmed)) {
       month = i + 1;  // Adjust from 0-indexed to 1-indexed.
       return GetExpirationMonth(month);
     }
@@ -341,9 +368,7 @@ std::optional<int> ParseMonthFromString(std::u16string_view text,
     std::u16string icu_month(
         base::i18n::UnicodeStringToString16(short_months[i]));
     base::TrimString(icu_month, u".", &icu_month);
-    // We look for the ICU-defined month in `trimmed_month`.
-    if (base::i18n::StringSearchIgnoringCaseAndAccents(icu_month, trimmed,
-                                                       nullptr, nullptr)) {
+    if (MatchesMonth(std::move(icu_month), trimmed)) {
       month = i + 1;  // Adjust from 0-indexed to 1-indexed.
       return GetExpirationMonth(month);
     }
