@@ -31,6 +31,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/non_installed_bundle_inspection_context.h"
 #include "chrome/browser/web_applications/isolated_web_apps/jobs/prepare_install_info_job.h"
+#include "chrome/browser/web_applications/isolated_web_apps/key_rotation_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/remove_isolated_web_app_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/storage_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/trust_and_signature_verifier.h"
@@ -389,6 +390,18 @@ void InstallIsolatedWebAppCommand::ProcessInstallInfoResultAndProceed(
   const WebApp* iwa = lock_->registrar().GetAppById(
       url_info_.app_id(), WebAppFilter::IsIsolatedApp());
 
+  // If a key rotation revoked the key that signed the installed version, its
+  // service workers must be removed. Otherwise they would keep intercepting the
+  // app's navigations and run the revoked code. This happens only after the
+  // install is finalized, so that a still-open window of the revoked version
+  // can't re-register a service worker from the revoked bundle. Other user
+  // data is kept.
+  remove_service_workers_after_install_ =
+      iwa && IsInstallationSigningKeyRevoked(url_info_.web_bundle_id(),
+                                             *iwa->isolation_data());
+  GetMutableDebugValue().Set("installed_signing_key_revoked",
+                             remove_service_workers_after_install_);
+
   // Policy source always takes precedence over the user installed
   // version, even if it is lower. Such scenario requires user data clearance
   // before downgrading.
@@ -433,12 +446,26 @@ void InstallIsolatedWebAppCommand::OnFinalizeInstall(
     webapps::InstallResultCode install_result_code) {
   install_job_.reset();
   if (install_result_code == webapps::InstallResultCode::kSuccessNewInstall) {
+    if (remove_service_workers_after_install_) {
+      RemoveIsolatedWebAppServiceWorkers(
+          &profile(), url_info_,
+          base::BindOnce(&InstallIsolatedWebAppCommand::OnServiceWorkersRemoved,
+                         weak_factory_.GetWeakPtr(), attempted_version));
+      return;
+    }
     ReportSuccess(attempted_version);
   } else {
     ReportFailure(
         InstallIwaError::kCantInstall, install_result_code,
         "Error during finalization: " + base::ToString(install_result_code));
   }
+}
+
+void InstallIsolatedWebAppCommand::OnServiceWorkersRemoved(
+    const IwaVersion& installed_version,
+    bool success) {
+  GetMutableDebugValue().Set("service_workers_removed", success);
+  ReportSuccess(installed_version);
 }
 
 void InstallIsolatedWebAppCommand::ReportFailure(

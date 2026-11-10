@@ -14,6 +14,7 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/storage_util.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/browser/permission_settings_registry.h"
@@ -25,7 +26,10 @@
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
+#include "content/public/browser/service_worker_context.h"
+#include "content/public/browser/storage_partition.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 namespace web_app {
@@ -150,6 +154,19 @@ void RemoveIsolatedWebAppBrowsingData(Profile* profile,
       /*delete_begin=*/base::Time(), /*delete_end=*/base::Time::Max(),
       removal_mask, chrome_browsing_data_remover::ALL_ORIGIN_TYPES,
       std::move(filter), new RemovalObserver(profile, std::move(callback)));
+}
+
+void RemoveIsolatedWebAppServiceWorkers(
+    Profile* profile,
+    const IsolatedWebAppUrlInfo& url_info,
+    base::OnceCallback<void(bool success)> callback) {
+  profile
+      ->GetStoragePartition(url_info.storage_partition_config(profile),
+                            /*can_create=*/true)
+      ->GetServiceWorkerContext()
+      ->DeleteForStorageKey(
+          blink::StorageKey::CreateFirstParty(url_info.origin()),
+          std::move(callback));
 }
 
 void CloseAndDeleteBundle(Profile* profile,

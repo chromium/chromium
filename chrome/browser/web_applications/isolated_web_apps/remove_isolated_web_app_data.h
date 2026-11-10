@@ -18,12 +18,21 @@ class GURL;
 namespace web_app {
 
 class IsolatedWebAppStorageLocation;
+class IsolatedWebAppUrlInfo;
 
 // Removes all browsing data associated with the Isolated Web App with the
 // given origin.
 void RemoveIsolatedWebAppBrowsingData(Profile* profile,
                                       const url::Origin& iwa_origin,
                                       base::OnceClosure callback);
+
+// Removes all service worker registrations of the Isolated Web App from its
+// storage partition. Other browsing data is kept. `callback` receives whether
+// the removal succeeded.
+void RemoveIsolatedWebAppServiceWorkers(
+    Profile* profile,
+    const IsolatedWebAppUrlInfo& url_info,
+    base::OnceCallback<void(bool success)> callback);
 
 namespace internal {
 // Resets all content settings for a given isolated web app.

@@ -178,6 +178,8 @@ class InstallIsolatedWebAppCommand
   void OnFinalizeInstall(const IwaVersion& attempted_version,
                          const webapps::AppId& unused_app_id,
                          webapps::InstallResultCode install_result_code);
+  void OnServiceWorkersRemoved(const IwaVersion& installed_version,
+                               bool success);
 
   std::unique_ptr<AppLock> lock_;
 
@@ -188,6 +190,10 @@ class InstallIsolatedWebAppCommand
 
   std::optional<IntegrityBlockData> integrity_block_data_;
   std::optional<IwaUpdateInfo> optional_update_info_;
+
+  // Whether the already installed version is signed by a key revoked by a key
+  // rotation, so its service workers must be removed after the install.
+  bool remove_service_workers_after_install_ = false;
 
   std::optional<IwaSourceWithModeAndFileOp> install_source_;
   std::optional<IwaSourceWithMode> destination_source_;
