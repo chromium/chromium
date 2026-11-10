@@ -24,7 +24,6 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/base/features.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -98,23 +97,15 @@ class BookmarkBubbleViewIPHInteractiveTest
   }
 
   bookmarks::BookmarkModel* CreateBookmarkModel() {
-    signin::ConsentLevel consent_level =
-        syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-            ? signin::ConsentLevel::kSignin
-            : signin::ConsentLevel::kSync;
     signin::MakePrimaryAccountAvailable(
         IdentityManagerFactory::GetForProfile(browser()->GetProfile()),
-        "test@email.com", consent_level);
+        "test@email.com", signin::ConsentLevel::kSignin);
 
     bookmarks::BookmarkModel* bookmark_model =
         BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
-
-    // If we are not syncing, we need to add account nodes in order to use the
-    // shopping collection.
-    if (consent_level == signin::ConsentLevel::kSignin) {
-      bookmark_model->CreateAccountPermanentFolders();
-    }
+    // Create account nodes in order to use the shopping collection.
+    bookmark_model->CreateAccountPermanentFolders();
 
     return bookmark_model;
   }

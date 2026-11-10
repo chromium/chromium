@@ -32,8 +32,6 @@ class ManagePasswordsBubbleController : public PasswordBubbleControllerBase {
  public:
   enum class SyncState {
     kNotActive,
-    kActiveWithSyncFeatureEnabled,  // TODO(crbug.com/417950948): Remove after
-                                    // deprecating sync feature.
     kActiveWithAccountPasswords,
   };
 
@@ -66,10 +64,6 @@ class ManagePasswordsBubbleController : public PasswordBubbleControllerBase {
       base::OnceCallback<void(const gfx::Image&)> favicon_ready_callback);
 
   SyncState GetPasswordSyncState() const;
-
-  // Returns the email of current primary account. Returns empty string if no
-  // account is signed in.
-  std::u16string GetPrimaryAccountEmail();
 
   // Called by the view code when the "Google Password Manager" link in the
   // bubble footer in clicked by the user.

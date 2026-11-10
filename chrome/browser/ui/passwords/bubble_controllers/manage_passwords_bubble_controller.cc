@@ -15,7 +15,6 @@
 #include "chrome/browser/password_manager/factories/account_password_store_factory.h"
 #include "chrome/browser/password_manager/factories/password_store_utils.h"
 #include "chrome/browser/password_manager/factories/profile_password_store_factory.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
@@ -29,9 +28,6 @@
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
-#include "components/signin/public/base/consent_level.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/base/features.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -166,29 +162,9 @@ ManagePasswordsBubbleController::GetPasswordSyncState() const {
       return SyncState::kNotActive;
     case password_manager::sync_util::SyncState::kActiveWithNormalEncryption:
     case password_manager::sync_util::SyncState::kActiveWithCustomPassphrase:
-      if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-        return SyncState::kActiveWithAccountPasswords;
-      }
-      return sync_service->IsSyncFeatureEnabled()
-                 ? SyncState::kActiveWithSyncFeatureEnabled
-                 : SyncState::kActiveWithAccountPasswords;
+      return SyncState::kActiveWithAccountPasswords;
   }
   NOTREACHED();
-}
-
-std::u16string ManagePasswordsBubbleController::GetPrimaryAccountEmail() {
-  Profile* profile = GetProfile();
-  if (!profile) {
-    return std::u16string();
-  }
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  if (!identity_manager) {
-    return std::u16string();
-  }
-  return base::UTF8ToUTF16(
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-          .email);
 }
 
 void ManagePasswordsBubbleController::OnGooglePasswordManagerLinkClicked() {

@@ -16,7 +16,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/sync/base/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -255,10 +254,8 @@ TEST_F(SanitizedImageSourceTest, GooglePhotosImage) {
   constexpr char kImageUrl[] = "https://lh3.googleusercontent.com/img.png";
   base::MockCallback<content::URLDataSource::GotDataCallback> callback;
   signin::IdentityTestEnvironment identity_test_env;
-  identity_test_env.MakePrimaryAccountAvailable(
-      "test@gmail.com", syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-                            ? signin::ConsentLevel::kSignin
-                            : signin::ConsentLevel::kSync);
+  identity_test_env.MakePrimaryAccountAvailable("test@gmail.com",
+                                                signin::ConsentLevel::kSignin);
   sanitized_image_source_->set_identity_manager_for_test(
       identity_test_env.identity_manager());
 

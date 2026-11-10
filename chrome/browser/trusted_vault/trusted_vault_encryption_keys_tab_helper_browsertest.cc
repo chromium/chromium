@@ -26,7 +26,6 @@
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/sync/base/features.h"
 #include "components/trusted_vault/features.h"
 #include "components/trusted_vault/trusted_vault_client.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
@@ -315,12 +314,6 @@ class TrustedVaultEncryptionKeysTabHelperBrowserTest
 
   content::test::PrerenderTestHelper& prerender_helper() {
     return prerender_helper_;
-  }
-
-  signin::ConsentLevel GetConsentLevel() const {
-    return syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-               ? signin::ConsentLevel::kSignin
-               : signin::ConsentLevel::kSync;
   }
 
   bool HasEncryptionKeysApi(content::RenderFrameHost* rfh) {
@@ -1280,7 +1273,7 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
 #if !BUILDFLAG(IS_ANDROID)
   signin::MakePrimaryAccountAvailable(
       IdentityManagerFactory::GetForProfile(browser()->GetProfile()),
-      "testusername", GetConsentLevel());
+      "testusername", signin::ConsentLevel::kSignin);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   const GURL initial_url =
@@ -1332,7 +1325,7 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
 #if !BUILDFLAG(IS_ANDROID)
   signin::MakePrimaryAccountAvailable(
       IdentityManagerFactory::GetForProfile(browser()->GetProfile()),
-      "testusername", GetConsentLevel());
+      "testusername", signin::ConsentLevel::kSignin);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   base::HistogramTester histogram_tester;

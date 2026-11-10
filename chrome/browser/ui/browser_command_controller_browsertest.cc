@@ -83,7 +83,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/base/features.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "content/public/test/browser_test.h"
@@ -1378,11 +1377,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
                        ExecuteShowSigninWhenPaused) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(browser()->GetProfile());
-  signin::MakePrimaryAccountAvailable(
-      identity_manager, "user@example.com",
-      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-          ? signin::ConsentLevel::kSignin
-          : signin::ConsentLevel::kSync);
+  signin::MakePrimaryAccountAvailable(identity_manager, "user@example.com",
+                                      signin::ConsentLevel::kSignin);
   signin::SetRefreshTokenForPrimaryAccount(identity_manager);
   signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager);
   EXPECT_TRUE(

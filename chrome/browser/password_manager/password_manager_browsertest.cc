@@ -80,7 +80,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/tribool.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/test/test_sync_user_settings.h"
 #include "components/trusted_vault/trusted_vault_client.h"
@@ -156,10 +155,7 @@ class PasswordManagerBrowserTest : public PasswordManagerBrowserTestBase {
 
     signin::MakePrimaryAccountAvailable(
         IdentityManagerFactory::GetForProfile(browser()->GetProfile()),
-        "user@example.com",
-        syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-            ? signin::ConsentLevel::kSignin
-            : signin::ConsentLevel::kSync);
+        "user@example.com", signin::ConsentLevel::kSignin);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

@@ -245,15 +245,6 @@ std::unique_ptr<views::View> ManagePasswordsView::CreateFooterView() {
           IDS_PASSWORD_MANAGER_BRAND_NAME, open_password_manager_closure,
           views::style::CONTEXT_BUBBLE_FOOTER);
     case ManagePasswordsBubbleController::SyncState::
-        kActiveWithSyncFeatureEnabled:
-      return CreateGooglePasswordManagerLabel(
-          /*text_message_id=*/
-          IDS_PASSWORD_BUBBLES_FOOTER_SYNCED_TO_ACCOUNT,
-          /*link_message_id=*/
-          IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT,
-          controller_.GetPrimaryAccountEmail(), open_password_manager_closure,
-          views::style::CONTEXT_BUBBLE_FOOTER);
-    case ManagePasswordsBubbleController::SyncState::
         kActiveWithAccountPasswords:
       // Account store users have a special footer in the management bubble
       // since they might have a mix of synced and non-synced passwords.
