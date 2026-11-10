@@ -628,6 +628,16 @@ void XMLDocumentParserRs::StartElementNs(
   if (ShouldMarkScriptAlreadyStarted()) {
     flags.SetAlreadyStarted(true);
   }
+  if (reactions.has_value()) {
+    // A synchronous custom element constructor is about to run, so the element
+    // must be fully constructed: some elements (e.g. HTMLInputElement) only
+    // partially construct themselves when created by the parser, deferring the
+    // rest to ParserSetAttributes()/ParserDidSetAttributes(), which is not
+    // used for synchronous custom elements (see below). Mirror
+    // HTMLConstructionSite::CreateElement and clear the CreatedByParser flag.
+    // See crbug.com/1080673 and crbug.com/583431476.
+    flags.SetCreatedByParser(false, nullptr);
+  }
 
   Element* new_element =
       current_node_->GetDocument().CreateElement(q_name, flags, is, registry);
