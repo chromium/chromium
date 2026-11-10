@@ -24,6 +24,7 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeast;
@@ -93,6 +94,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.device_reauth.BiometricStatus;
 import org.chromium.chrome.browser.device_reauth.DeviceAuthAvailabilityCheckerBridge;
@@ -2016,6 +2018,47 @@ public class ManageSyncSettingsTest {
         typeSearchQuery("history and tabs");
 
         assertNoSearchResultsFound();
+    }
+
+    /**
+     * Regression test for crbug.com/579078839: settings in a tab keeps this fragment across an
+     * activity recreation (e.g. a theme change). The restored fragment runs onCreate() before the
+     * tab's SettingsPage exists and passes the host's pending snackbar supplier on to its sign-out
+     * button, so signing out needs that supplier to resolve to the real SnackbarManager.
+     */
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    // On desktop these flags put a confirmation dialog between the click and the sign-out. The
+    // supplier is read on the click, before that, so sign out directly as testPressingSignOut does.
+    @DisableFeatures({
+        SigninFeatures.SIGN_OUT_OF_CHROME,
+        SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA
+    })
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    public void testSettingsInTabThemeChange_signOut() {
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        mSyncTestRule.loadUrl("chrome-native://settings/account");
+        onViewWaiting(withText(R.string.account_section_header)).check(matches(isDisplayed()));
+
+        recreateActivityForThemeChange();
+
+        onViewWaiting(allOf(withText(R.string.account_section_header), isDisplayed()));
+        onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_detail))))
+                .perform(RecyclerViewActions.scrollToLastPosition());
+        onView(withId(R.id.sign_out_button)).perform(click());
+
+        assertNull(mSyncTestRule.getSigninTestRule().getPrimaryAccount());
+    }
+
+    /** Recreates the activity the way a theme change does, which detaches the tab first. */
+    private void recreateActivityForThemeChange() {
+        ChromeTabbedActivity activity = mSyncTestRule.getActivity();
+        mSyncTestRule.setActivity(
+                ApplicationTestUtils.waitForActivityWithClass(
+                        ChromeTabbedActivity.class,
+                        Stage.RESUMED,
+                        activity::onNightModeStateChanged));
     }
 
     @Test

@@ -26,9 +26,6 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -36,13 +33,8 @@ import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.PreferenceUpdateObserver;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
-import org.chromium.ui.base.ActivityResultTracker;
-import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -104,10 +96,17 @@ public class SettingsHostFragment extends Fragment
         return true;
     }
 
-    /** Sets the dependency provider for child fragments. */
+    /**
+     * Sets the dependency provider for child fragments.
+     *
+     * <p>A host keeps the first provider it gets, so no child is given its dependencies twice. A
+     * host restored during an activity recreation makes a pending one in {@link #onAttach}; the
+     * real provider then only resolves its suppliers. https://crbug.com/579078839
+     */
     public void setDependencyProvider(FragmentDependencyProvider dependencyProvider) {
-        if (mDependencyProvider != null && isAdded()) {
-            getChildFragmentManager().unregisterFragmentLifecycleCallbacks(mDependencyProvider);
+        if (mDependencyProvider != null) {
+            mDependencyProvider.populateFrom(dependencyProvider);
+            return;
         }
         mDependencyProvider = dependencyProvider;
         if (isAdded()) {
@@ -116,7 +115,8 @@ public class SettingsHostFragment extends Fragment
                     .registerFragmentLifecycleCallbacks(mDependencyProvider, /* recursive= */ true);
 
             // Ensure existing child fragments have dependencies attached. This is necessary when
-            // the activity restarts, for example after a theme change.
+            // the host was attached before native was initialized, so onAttach() could not make
+            // a pending provider for its restored children.
             attachDependenciesRecursively(getChildFragmentManager());
         }
     }
@@ -213,7 +213,7 @@ public class SettingsHostFragment extends Fragment
                 .registerFragmentLifecycleCallbacks(
                         mWideDisplayPaddingApplier, /* recursive= */ true);
 
-        // Optionally create a temporary dependency provider for the current activity. This is only
+        // Optionally create a pending dependency provider for the current activity. This is only
         // called when the fragment is attached to an activity and the dependency provider has not
         // been set yet, for example during dark/light theme changes.
         if (mDependencyProvider == null && ProfileManager.isInitialized()) {
@@ -243,36 +243,24 @@ public class SettingsHostFragment extends Fragment
     }
 
     /**
-     * Creates a temporary {@link FragmentDependencyProvider} for the current activity.
+     * Creates a pending {@link FragmentDependencyProvider} for the current activity.
      *
      * <p>This is called when the fragment is attached to an activity during state restoration (e.g.
      * theme change) before {@link #setDependencyProvider} is called by {@link
-     * SettingsPageFragmentDelegateImpl}.
+     * SettingsPageFragmentDelegateImpl}. The UI suppliers it hands out are empty until then; see
+     * {@link FragmentDependencyProvider#populateFrom}.
      */
     private FragmentDependencyProvider createOnAttachDependencyProvider() {
         assert ProfileManager.isInitialized();
         Profile profile = ProfileManager.getLastUsedRegularProfile();
-        OneshotSupplierImpl<WindowAndroid> windowAndroidSupplier = new OneshotSupplierImpl<>();
-        OneshotSupplierImpl<SnackbarManager> snackbarSupplier = new OneshotSupplierImpl<>();
-        OneshotSupplierImpl<BottomSheetController> bottomSheetSupplier =
-                new OneshotSupplierImpl<>();
         Activity activity = requireActivity();
         assert activity instanceof ChromeBaseAppCompatActivity;
         ChromeBaseAppCompatActivity chromeActivity = (ChromeBaseAppCompatActivity) activity;
-        ActivityResultTracker activityResultTracker = chromeActivity.getActivityResultTracker();
-        MonotonicObservableSupplier<ModalDialogManager> modalDialogSupplier =
-                chromeActivity.getModalDialogManagerSupplier();
-
-        return new FragmentDependencyProvider(
+        return FragmentDependencyProvider.createPending(
                 activity,
-                /* shownInTab= */ true,
                 profile,
-                windowAndroidSupplier,
-                activityResultTracker,
-                snackbarSupplier,
-                bottomSheetSupplier,
-                modalDialogSupplier,
-                SupplierUtils.ofNull());
+                chromeActivity.getActivityResultTracker(),
+                chromeActivity.getModalDialogManagerSupplier());
     }
 
     @Override

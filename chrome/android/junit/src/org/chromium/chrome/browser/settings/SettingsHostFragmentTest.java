@@ -13,6 +13,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -45,6 +46,10 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -57,11 +62,18 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.PaddedItemDecorationWithDivider;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.site_settings.BaseSiteSettingsFragment;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.sync.SyncService;
+import org.chromium.ui.base.ActivityResultTracker;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+
+import java.util.function.Supplier;
 
 /** Unit tests for {@link SettingsHostFragment}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -878,17 +890,136 @@ public class SettingsHostFragmentTest {
 
     @Test
     public void testSetDependencyProvider_appliesDependenciesToExistingChildFragments() {
+        // A host attached before native is initialized cannot make a pending provider in
+        // onAttach(), so its children get dependencies when the real provider arrives.
+        ProfileManager.resetForTesting();
+        attachHostFragment();
+        assertNull(mSettingsHostFragment.getDependencyProviderForTesting());
+        TestMainSettings mainSettings = new TestMainSettings();
+        mSettingsHostFragment.showFragment(
+                mainSettings, /* addToBackStack= */ false, /* tag= */ null);
+        mSettingsHostFragment.getChildFragmentManager().executePendingTransactions();
+        assertEquals(0, mainSettings.getSetDependenciesCount());
+
+        ProfileManager.setLastUsedProfileForTesting(mock(Profile.class));
+        FragmentDependencyProvider provider =
+                spy(
+                        createDependencyProvider(
+                                new OneshotSupplierImpl<>(),
+                                new OneshotSupplierImpl<>(),
+                                new OneshotSupplierImpl<>()));
+        mSettingsHostFragment.setDependencyProvider(provider);
+
+        verify(provider)
+                .attachDependencies(mSettingsHostFragment.getChildFragmentManager(), mainSettings);
+        assertSame(provider, mSettingsHostFragment.getDependencyProviderForTesting());
+    }
+
+    @Test
+    public void testSetDependencyProvider_keepsPendingProviderAndPopulatesIt() {
+        // Attaching without a dependency provider makes the host create a pending one, as when
+        // the FragmentManager restores the host after an activity recreation. Children added
+        // under it, like restored ones, capture its suppliers before the real provider exists.
+        attachHostFragment();
+        FragmentDependencyProvider pending =
+                mSettingsHostFragment.getDependencyProviderForTesting();
+        assertNotNull(pending);
+        TestMainSettings mainSettings = new TestMainSettings();
+        mSettingsHostFragment.showFragment(
+                mainSettings, /* addToBackStack= */ false, /* tag= */ null);
+        mSettingsHostFragment.getChildFragmentManager().executePendingTransactions();
+        assertEquals(1, mainSettings.getSetDependenciesCount());
+        Supplier<@Nullable SnackbarManager> captured = mainSettings.getSnackbarManagerSupplier();
+        assertNotNull(captured);
+        assertNull(captured.get());
+
+        SnackbarManager snackbarManager = mock(SnackbarManager.class);
+        mSettingsHostFragment.setDependencyProvider(
+                createDependencyProvider(
+                        oneshotOf(mock(WindowAndroid.class)),
+                        oneshotOf(snackbarManager),
+                        oneshotOf(mock(BottomSheetController.class))));
+
+        // The host keeps the pending provider and resolves what the child captured, rather than
+        // providing dependencies a second time.
+        assertSame(pending, mSettingsHostFragment.getDependencyProviderForTesting());
+        assertSame(snackbarManager, captured.get());
+        assertEquals(1, mainSettings.getSetDependenciesCount());
+
+        // A later provider, e.g. from a new SettingsPage adopting this host, changes nothing.
+        mSettingsHostFragment.setDependencyProvider(
+                createDependencyProvider(
+                        oneshotOf(mock(WindowAndroid.class)),
+                        oneshotOf(mock(SnackbarManager.class)),
+                        oneshotOf(mock(BottomSheetController.class))));
+        assertSame(pending, mSettingsHostFragment.getDependencyProviderForTesting());
+        assertSame(snackbarManager, captured.get());
+        assertEquals(1, mainSettings.getSetDependenciesCount());
+    }
+
+    @Test
+    public void testSetDependencyProvider_populatesPendingProviderWhenRealSuppliersResolve() {
         attachHostFragment();
         TestMainSettings mainSettings = new TestMainSettings();
         mSettingsHostFragment.showFragment(
                 mainSettings, /* addToBackStack= */ false, /* tag= */ null);
         mSettingsHostFragment.getChildFragmentManager().executePendingTransactions();
+        Supplier<@Nullable SnackbarManager> captured = mainSettings.getSnackbarManagerSupplier();
+        assertNotNull(captured);
 
-        FragmentDependencyProvider mockProvider = mock(FragmentDependencyProvider.class);
-        mSettingsHostFragment.setDependencyProvider(mockProvider);
+        OneshotSupplierImpl<SnackbarManager> snackbarManagerSupplier = new OneshotSupplierImpl<>();
+        mSettingsHostFragment.setDependencyProvider(
+                createDependencyProvider(
+                        new OneshotSupplierImpl<>(),
+                        snackbarManagerSupplier,
+                        new OneshotSupplierImpl<>()));
+        assertNull(captured.get());
 
-        verify(mockProvider)
-                .attachDependencies(mSettingsHostFragment.getChildFragmentManager(), mainSettings);
+        SnackbarManager snackbarManager = mock(SnackbarManager.class);
+        snackbarManagerSupplier.set(snackbarManager);
+        ShadowLooper.idleMainLooper();
+        assertSame(snackbarManager, captured.get());
+    }
+
+    @Test
+    public void testSetDependencyProvider_beforeAttach_createsNoPendingProvider() {
+        SettingsHostFragment fragment = new TestSettingsHostFragment();
+        FragmentDependencyProvider provider =
+                createDependencyProvider(
+                        new OneshotSupplierImpl<>(),
+                        new OneshotSupplierImpl<>(),
+                        new OneshotSupplierImpl<>());
+        fragment.setDependencyProvider(provider);
+
+        mActivity
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .add(android.R.id.content, fragment, SettingsHostFragment.SETTINGS_NATIVE_PAGE_TAG)
+                .commitNow();
+
+        assertSame(provider, fragment.getDependencyProviderForTesting());
+    }
+
+    private FragmentDependencyProvider createDependencyProvider(
+            OneshotSupplier<WindowAndroid> windowAndroidSupplier,
+            OneshotSupplier<SnackbarManager> snackbarManagerSupplier,
+            OneshotSupplier<BottomSheetController> bottomSheetControllerSupplier) {
+        return new FragmentDependencyProvider(
+                mActivity,
+                /* shownInTab= */ true,
+                ProfileManager.getLastUsedRegularProfile(),
+                windowAndroidSupplier,
+                mActivity.getActivityResultTracker(),
+                snackbarManagerSupplier,
+                bottomSheetControllerSupplier,
+                mActivity.getModalDialogManagerSupplier(),
+                SupplierUtils.ofNull());
+    }
+
+    private static <T> OneshotSupplier<T> oneshotOf(T value) {
+        OneshotSupplierImpl<T> supplier = new OneshotSupplierImpl<>();
+        supplier.set(value);
+        return supplier;
     }
 
     @Test
@@ -1118,6 +1249,8 @@ public class SettingsHostFragmentTest {
     /** Subclass of MainSettings to inject dependencies and avoid native calls. */
     public static class TestMainSettings extends MainSettings {
         private final Profile mMockProfile = mock(Profile.class);
+        private int mSetDependenciesCount;
+        private @Nullable Supplier<@Nullable SnackbarManager> mSnackbarManagerSupplier;
 
         public TestMainSettings() {
             setProfile(mMockProfile);
@@ -1127,6 +1260,33 @@ public class SettingsHostFragmentTest {
         @Override
         public Profile getProfile() {
             return mMockProfile;
+        }
+
+        @Override
+        public void setDependencies(
+                MonotonicObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
+                Supplier<@Nullable WindowAndroid> windowAndroidSupplier,
+                ActivityResultTracker activityResultTracker,
+                Supplier<@Nullable BottomSheetController> bottomSheetControllerSupplier,
+                Supplier<@Nullable SnackbarManager> snackbarManagerSupplier) {
+            super.setDependencies(
+                    modalDialogManagerSupplier,
+                    windowAndroidSupplier,
+                    activityResultTracker,
+                    bottomSheetControllerSupplier,
+                    snackbarManagerSupplier);
+            mSetDependenciesCount++;
+            mSnackbarManagerSupplier = snackbarManagerSupplier;
+        }
+
+        /** Returns how many times the host has provided dependencies to this fragment. */
+        public int getSetDependenciesCount() {
+            return mSetDependenciesCount;
+        }
+
+        /** Returns the snackbar supplier this fragment was given, as it would pass it on. */
+        public @Nullable Supplier<@Nullable SnackbarManager> getSnackbarManagerSupplier() {
+            return mSnackbarManagerSupplier;
         }
 
         @Override
