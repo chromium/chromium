@@ -37,13 +37,4 @@ public class PowerBookmarkMetrics {
                 state,
                 PriceTrackingState.COUNT);
     }
-
-    /** Report the price tracking state for the bookmark shopping item row. */
-    public static void reportBookmarkShoppingItemRowPriceTrackingState(
-            @PriceTrackingState int state) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "PowerBookmarks.BookmarkManager.PriceTrackingEnabled",
-                state,
-                PriceTrackingState.COUNT);
-    }
 }
