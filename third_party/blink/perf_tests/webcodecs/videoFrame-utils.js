@@ -1,3 +1,19 @@
+function skipTest(message) {
+  PerfTestRunner.log('FATAL: ' + message);
+
+  const skip = () => {
+    if (window.testRunner) {
+      testRunner.notifyDone();
+    }
+  };
+
+  if (window.testRunner && window.testRunner.telemetryIsRunning) {
+    testRunner.waitForTelemetry([], skip);
+  } else {
+    skip();
+  }
+}
+
 function waitForNextFrame() {
   return new Promise((resolve, _) => {
     window.requestAnimationFrame(resolve);
@@ -32,8 +48,8 @@ async function createDecodedFrame() {
 
   const support = await VideoDecoder.isConfigSupported(config);
   if (!support.supported) {
-    PerfTestRunner.logFatalError("Skipping test. Unsupported decoder config:" +
-                                 JSON.stringify(config));
+    PerfTestRunner.log(
+        'Skipping test. Unsupported decoder config:' + JSON.stringify(config));
     return null;
   }
 

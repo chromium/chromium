@@ -9,7 +9,7 @@
 (async function() {
   let frame = await createDecodedFrame();
   if (frame == null) {
-    PerfTestRunner.logFatalError("No frame decoded");
+    skipTest("No frame decoded");
     return;
   }
 

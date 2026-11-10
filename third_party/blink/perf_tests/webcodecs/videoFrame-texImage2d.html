@@ -28,12 +28,17 @@
 (async function() {
   let frame = await createDecodedFrame();
   if (frame == null) {
-    PerfTestRunner.logFatalError("No frame decoded");
+    skipTest("No frame decoded");
     return;
   }
 
   const canvas = document.getElementById("canvas");
   const gl = canvas.getContext('webgl2');
+  if (!gl) {
+    frame.close();
+    skipTest("WebGL2 not supported");
+    return;
+  }
   const format = gl.RGBA;
   gl.viewport(0, 0, canvas.width, canvas.height);
 
