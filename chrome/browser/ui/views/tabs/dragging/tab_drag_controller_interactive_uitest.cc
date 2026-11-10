@@ -5789,9 +5789,17 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_FALSE(TabDragController::IsActive());
 }
 
-// TODO(crbug.com/41457552): fix flakiness and re-enable this test on mac/linux.
+// Tears one of two tabs off into a new window, which is created hidden and
+// placed from its tab strip before it is shown.
+// TODO(crbug.com/41457552): On Windows the offset is off by 8 px, which is
+// unrelated to kDeferLayoutDuringBrowserStartup.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_OffsetForDraggingDetachedTab DISABLED_OffsetForDraggingDetachedTab
+#else
+#define MAYBE_OffsetForDraggingDetachedTab OffsetForDraggingDetachedTab
+#endif
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
-                       DISABLED_OffsetForDraggingDetachedTab) {
+                       MAYBE_OffsetForDraggingDetachedTab) {
   AddTabsAndResetBrowser(browser(), 1);
 
   DragWindowAndVerifyOffset(this, GetTabStripForBrowser(browser()), 1);

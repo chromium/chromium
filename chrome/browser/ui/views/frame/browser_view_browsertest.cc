@@ -2563,3 +2563,31 @@ IN_PROC_BROWSER_TEST_F(BrowserViewDeferLayoutTest,
 
   popup_widget->CloseNow();
 }
+
+// A window created for a tab drag is placed from its tab strip before it is
+// shown, so it must not defer layout while invisible.
+IN_PROC_BROWSER_TEST_F(BrowserViewDeferLayoutTest,
+                       NoDeferLayoutForTabDraggingWindow) {
+  BrowserWindowCreateParams params(browser()->GetProfile(),
+                                   /*from_user_gesture=*/true);
+  params.in_tab_dragging = true;
+  BrowserWindowInterface* browser2 = CreateBrowserWindow(std::move(params));
+  BrowserView* browser_view2 = BrowserView::GetBrowserViewForBrowser(browser2);
+  views::Widget* widget2 = browser_view2->GetWidget();
+  ASSERT_FALSE(widget2->IsVisible());
+
+  EXPECT_TRUE(browser_view2->is_startup_layout_disabled_for_testing());
+
+  widget2->LayoutRootViewIfNecessary();
+  chrome::AddTabAt(browser2, GURL("about:blank"), -1, true);
+  widget2->LayoutRootViewIfNecessary();
+  ASSERT_FALSE(browser_view2->GetContentsSize().IsEmpty());
+
+  // A normal window would defer this layout: it is hidden, its size has not
+  // changed, and its contents already have bounds.
+  browser_view2->InvalidateLayout();
+  widget2->LayoutRootViewIfNecessary();
+  EXPECT_FALSE(browser_view2->is_layout_deferred_for_testing());
+
+  widget2->CloseNow();
+}
