@@ -604,6 +604,11 @@ std::string AXImageAnnotator::GenerateImageSourceId(
 }
 
 void AXImageAnnotator::MarkDirty(const blink::WebAXObject& image) const {
+  // The image may remain attached while ignored and excluded from the AX tree
+  // (e.g. via `visibility: hidden` or `alt=""`).
+  if (!image.IsIncludedInTree()) {
+    return;
+  }
   render_accessibility_->MarkWebAXObjectDirty(image);
 
   // Check two unignored parents. If either of them is a link or root web area,

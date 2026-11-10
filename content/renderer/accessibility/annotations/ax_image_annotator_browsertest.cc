@@ -484,4 +484,32 @@ TEST_F(AXImageAnnotatorTest, OnImageAnnotatedChildFrameDetachedDuringUpdate) {
   EXPECT_EQ(nullptr, GetMainFrame()->FirstChild());
 }
 
+// Verifies that hiding an <img> via visibility:hidden before OnImageAnnotated
+// runs (leaving the AXObject attached with IsIncludedInTree() == false) does
+// not trip DCHECK(obj.IsIncludedInTree()) in MarkDirty().
+TEST_F(AXImageAnnotatorTest, OnImageAnnotatedImageHiddenBeforeReply) {
+  LoadHTMLAndRefreshAccessibilityTree(base::StringPrintf(R"HTML(
+      <body>
+        <p>Test document</p>
+        <img id="A" src="%s" style="width: 200px; height: 150px;">
+      </body>
+      )HTML",
+                                                         kImage1)
+                                          .c_str());
+  mock_annotator_service().WaitForCalls(1u);
+  ASSERT_EQ(1u, mock_annotator_service().callbacks_.size());
+
+  ExecuteJavaScriptForTests(
+      "document.getElementById('A').style.visibility = 'hidden';");
+  std::move(mock_annotator_service().callbacks_[0])
+      .Run(image_annotation::mojom::AnnotateImageResult::NewErrorCode(
+          image_annotation::mojom::AnnotateImageError::kFailure));
+  SendPendingAccessibilityEvents();
+
+  WebAXObject image_obj = WebAXObject::FromWebNode(
+      GetMainFrame()->GetDocument().GetElementById("A"));
+  ASSERT_FALSE(image_obj.IsDetached());
+  EXPECT_FALSE(image_obj.IsIncludedInTree());
+}
+
 }  // namespace content
