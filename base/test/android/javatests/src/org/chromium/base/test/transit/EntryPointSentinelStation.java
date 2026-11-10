@@ -16,6 +16,14 @@ import org.chromium.build.annotations.NullMarked;
  */
 @NullMarked
 public class EntryPointSentinelStation extends Station<Activity> {
+    /**
+     * Default timeout for the initial transition out of {@link EntryPointSentinelStation}.
+     *
+     * <p>Cold-starting the instrumentation process and launching the initial Activity synchronously
+     * inside the entry trigger can exceed {@link ConditionWaiter#MAX_TIME_TO_POLL} before
+     * destination Conditions are polled.
+     */
+    public static final long ENTRY_POINT_TIMEOUT_MS = 12000L;
 
     public EntryPointSentinelStation() {
         super(null);
@@ -28,5 +36,20 @@ public class EntryPointSentinelStation extends Station<Activity> {
     public void setAsEntryPoint() {
         setStateActiveWithoutTransition();
         TrafficControl.notifyEntryPointSentinelStationCreated(this);
+    }
+
+    @Override
+    public TripBuilder noopTo() {
+        return super.noopTo().withTimeout(ENTRY_POINT_TIMEOUT_MS);
+    }
+
+    @Override
+    public TripBuilder runTo(Runnable runnable) {
+        return super.runTo(runnable).withTimeout(ENTRY_POINT_TIMEOUT_MS);
+    }
+
+    @Override
+    public TripBuilder runOnUiThreadTo(Runnable runnable) {
+        return super.runOnUiThreadTo(runnable).withTimeout(ENTRY_POINT_TIMEOUT_MS);
     }
 }
