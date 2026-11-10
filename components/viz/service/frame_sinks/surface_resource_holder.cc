@@ -38,7 +38,9 @@ void SurfaceResourceHolder::ReceiveFromChild(
     ResourceRefs& ref = resource_id_info_map_[resource.id];
     ref.refs_holding_resource_alive++;
     ref.refs_received_from_child++;
-    ref.shared_image = resource.shared_image();
+    if (ref.refs_received_from_child == 1) {
+      ref.shared_image = resource.shared_image();
+    }
   }
 }
 
