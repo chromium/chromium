@@ -42,8 +42,8 @@ ChromeRecorderAppUIDelegate::ChromeRecorderAppUIDelegate(
       variations_service_(CHECK_DEREF(variations_service)),
       user_manager_(CHECK_DEREF(user_manager)),
       account_id_(account_id),
-      identity_manager_(CHECK_DEREF(identity_manager)),
-      consent_auditor_(CHECK_DEREF(consent_auditor)) {}
+      identity_manager_(identity_manager),
+      consent_auditor_(consent_auditor) {}
 
 std::u16string ChromeRecorderAppUIDelegate::GetLanguageDisplayName(
     speech::LanguageCode language_code) {
@@ -85,6 +85,11 @@ void ChromeRecorderAppUIDelegate::OpenAiFeedbackDialog(
 }
 
 bool ChromeRecorderAppUIDelegate::CanUseGenerativeAiForCurrentProfile() {
+  // `identity_manager_` is null in a guest session.
+  if (!identity_manager_) {
+    return false;
+  }
+
   const auto account_id =
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   if (account_id.empty()) {
@@ -104,6 +109,11 @@ bool ChromeRecorderAppUIDelegate::CanUseGenerativeAiForCurrentProfile() {
 }
 
 bool ChromeRecorderAppUIDelegate::CanUseSpeakerLabelForCurrentProfile() {
+  // `identity_manager_` is null in a guest session.
+  if (!identity_manager_) {
+    return false;
+  }
+
   const auto account_id =
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   if (account_id.empty()) {
@@ -118,6 +128,10 @@ bool ChromeRecorderAppUIDelegate::CanUseSpeakerLabelForCurrentProfile() {
 
 void ChromeRecorderAppUIDelegate::RecordSpeakerLabelConsent(
     const sync_pb::UserConsentTypes::RecorderSpeakerLabelConsent& consent) {
+  // Speaker labels are unavailable in a guest session, where these are null,
+  // so the consent can't be requested there.
+  CHECK(identity_manager_);
+  CHECK(consent_auditor_);
   CHECK(identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin),
         base::NotFatalUntil::M160);
 

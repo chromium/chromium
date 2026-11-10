@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/webui/recorder_app_ui/recorder_app_ui.h"
 #include "ash/webui/recorder_app_ui/url_constants.h"
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "chrome/browser/ash/system_web_apps/apps/recorder_app/chrome_recorder_app_ui_delegate.h"
@@ -20,6 +21,7 @@
 #include "chromeos/ash/components/signin/identity_manager_provider.h"
 #include "components/soda/soda_features.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_names.h"
 #include "content/public/common/url_constants.h"
 
 namespace ash {
@@ -44,11 +46,18 @@ std::unique_ptr<content::WebUIController>
 RecorderAppUIConfig::CreateWebUIController(content::WebUI* web_ui,
                                            const GURL& url) {
   Profile* profile = Profile::FromWebUI(web_ui);
-  const AccountId& account_id = CHECK_DEREF(AnnotatedAccountId::Get(profile));
-  signin::IdentityManager* identity_manager =
-      IdentityManagerProvider::Get().Find(account_id);
-  consent_auditor::ConsentAuditor* consent_auditor =
-      ConsentAuditorProvider::Get().Find(account_id);
+  const AccountId& account_id =
+      CHECK_DEREF(AnnotatedAccountId::Get(profile->GetOriginalProfile()));
+  // The providers resolve a guest's AccountId to the off-the-record profile,
+  // which has no IdentityManager and which ConsentAuditorFactory rejects.
+  signin::IdentityManager* identity_manager = nullptr;
+  consent_auditor::ConsentAuditor* consent_auditor = nullptr;
+  if (account_id != user_manager::GuestAccountId()) {
+    identity_manager = IdentityManagerProvider::Get().Find(account_id);
+    CHECK(identity_manager);
+    consent_auditor = ConsentAuditorProvider::Get().Find(account_id);
+    CHECK(consent_auditor);
+  }
   media_device_salt::MediaDeviceSaltService* media_device_salt_service =
       MediaDeviceSaltServiceProvider::Get().Find(account_id);
 

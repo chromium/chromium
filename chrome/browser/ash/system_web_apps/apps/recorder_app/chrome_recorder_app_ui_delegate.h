@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_RECORDER_APP_CHROME_RECORDER_APP_UI_DELEGATE_H_
 
 #include "ash/webui/recorder_app_ui/recorder_app_ui_delegate.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "components/account_id/account_id.h"
 #include "components/soda/constants.h"
@@ -34,8 +35,9 @@ class VariationsService;
  */
 class ChromeRecorderAppUIDelegate : public ash::RecorderAppUIDelegate {
  public:
-  // `application_locale_storage`, `variations_service`, `user_manager`,
-  // `identity_manager`, and `consent_auditor` must not be null and must
+  // `application_locale_storage`, `variations_service` and `user_manager` must
+  // not be null and must outlive `this`. `identity_manager` and
+  // `consent_auditor` are null in a guest session. If non-null, they must
   // outlive `this`.
   ChromeRecorderAppUIDelegate(
       const ApplicationLocaleStorage* application_locale_storage,
@@ -72,8 +74,8 @@ class ChromeRecorderAppUIDelegate : public ash::RecorderAppUIDelegate {
   const raw_ref<user_manager::UserManager> user_manager_;
 
   const AccountId account_id_;
-  const raw_ref<signin::IdentityManager> identity_manager_;
-  const raw_ref<consent_auditor::ConsentAuditor> consent_auditor_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
+  const raw_ptr<consent_auditor::ConsentAuditor> consent_auditor_;
 };
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_RECORDER_APP_CHROME_RECORDER_APP_UI_DELEGATE_H_
