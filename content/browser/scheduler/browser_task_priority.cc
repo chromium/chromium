@@ -62,9 +62,10 @@ base::ThreadType ToThreadType(BrowserTaskPriority priority) {
 
 base::ThreadType TaskPriorityToThreadType(
     base::sequence_manager::TaskQueue::QueuePriority priority) {
-  CHECK_LT(static_cast<size_t>(priority),
-           static_cast<size_t>(BrowserTaskPriority::kPriorityCount),
-           base::NotFatalUntil::M160);
+  // TODO(crbug.com/580986950): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_LT(static_cast<size_t>(priority),
+            static_cast<size_t>(BrowserTaskPriority::kPriorityCount));
   return ToThreadType(static_cast<BrowserTaskPriority>(priority));
 }
 
