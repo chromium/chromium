@@ -16,7 +16,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.UrlUtils;
@@ -57,7 +56,6 @@ public class SelectionPopupBackPressTest {
     @Test
     @MediumTest
     @Feature({"TextInput", "SmartSelection"})
-    @DisabledTest(message = "https://crbug.com/572588187")
     public void testBackPressClearSelection() throws TimeoutException {
         testBackPressClearSelectionInternal();
     }
@@ -121,16 +119,19 @@ public class SelectionPopupBackPressTest {
 
     private void testBackPressClearSelectionInternal() throws TimeoutException {
         mActivityTestRule.startOnUrl(TEST_PAGE);
-        DOMUtils.waitForNonZeroNodeBounds(
-                mActivityTestRule.getWebContents(), "selection_popup_text");
-        DOMUtils.longPressNode(mActivityTestRule.getWebContents(), "selection_popup_text");
         SelectionPopupController controller =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            return SelectionPopupController.fromWebContents(
-                                    mActivityTestRule.getWebContents());
+                            SelectionPopupController c =
+                                    SelectionPopupController.fromWebContents(
+                                            mActivityTestRule.getWebContents());
+                            c.setSelectionClient(null);
+                            return c;
                         });
         Assert.assertNotNull(controller);
+        DOMUtils.waitForNonZeroNodeBounds(
+                mActivityTestRule.getWebContents(), "selection_popup_text");
+        DOMUtils.longPressNode(mActivityTestRule.getWebContents(), "selection_popup_text");
         // Wait until popup has been displayed.
         CriteriaHelper.pollUiThread(
                 () -> {
