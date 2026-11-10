@@ -2,18 +2,6 @@
 <!-- Search tags used for CrOS settings search (go/cros-settings-search). -->
 <grit-part>
   <!-- Device section. -->
-  <message name="IDS_OS_SETTINGS_TAG_STORAGE" desc="Text for search result item which, when clicked, navigates the user to storage settings, which display how much space is being used on the hard drive. Alternate phrase for: 'Disk space', 'Hard drive', 'User data encryption'">
-    Storage management
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_STORAGE_ALT1" desc="Text for search result item which, when clicked, navigates the user to storage settings, which display how much space is being used on the hard drive. Alternate phrase for: 'Storage management', 'Hard drive', 'User data encryption'">
-    Disk space
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_STORAGE_ALT2" desc="Text for search result item which, when clicked, navigates the user to storage settings, which display how much space is being used on the hard drive. Alternate phrase for: 'Storage management', 'Disk space', 'User data encryption'">
-    Hard drive
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_STORAGE_ALT3" desc="Text for search result item which, when clicked, navigates the user to storage settings, which display how much space is being used on the hard drive. Alternate phrase for: 'Storage management', 'Disk space', 'User data encryption'">
-    User data encryption
-  </message>
   <message name="IDS_OS_SETTINGS_TAG_POWER" desc="Text for search result item which, when clicked, navigates the user to power settings.">
     Power
   </message>
@@ -37,9 +25,6 @@
   </message>
   <message name="IDS_OS_SETTINGS_TAG_POWER_CHARGE_LIMIT" desc="Text for search result item which, when clicked, navigates the user to power settings, with an option to enable a charge limit.">
     Charge limit
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_EXTERNAL_STORAGE" desc="Text for search result item which, when clicked, navigates the user to external storage preferences.">
-    External storage preferences
   </message>
   <message name="IDS_OS_SETTINGS_TAG_POWER_SOURCE" desc="Text for search result item which, when clicked, navigates the user to power settings, with an option to view/set the power source. Alternate phrase for: 'Energy source', 'Charging source'">
     Power source
@@ -105,95 +90,6 @@
     Suggested actions when searching your screen
   </message>
 
-  <!-- Crostini section. -->
-  <message name="IDS_OS_SETTINGS_TAG_CROSTINI" desc="Text for search result item which, when clicked, navigates the user to Linux (a.k.a. Crostini) settings. Alternate phrase for: 'Crostini, Developers'">
-    Linux
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_CROSTINI_ALT1" desc="Text for search result item which, when clicked, navigates the user to Linux (a.k.a. Crostini) settings. Alternate phrase for: 'Linux, Developers'">
-    Crostini
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_CROSTINI_ALT2" desc="Text for search result item which, when clicked, navigates the user to Linux (a.k.a. Crostini) settings. Alternate phrase for: 'Linux, Crostini'">
-    Developers
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_CROSTINI_SHARED_FOLDERS" desc="Text for search result item which, when clicked, navigates the user to Linux (a.k.a. Crostini) settings, with the option to share folders with the Chromebook. Alternate phrase for: 'Linux shared directories', 'Crostini shared folders', 'Crostini shared directories'">
-    Linux shared folders
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_CROSTINI_SHARED_FOLDERS_ALT1" desc="Text for search result item which, when clicked, navigates the user to Linux (a.k.a. Crostini) settings, with the option to share folders with the Chromebook. Alternate phrase for: 'Linux shared folders', 'Crostini shared folders', 'Crostini shared directories'">
-    Linux shared directories
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_CROSTINI_SHARED_FOLDERS_ALT2" desc="Text for search result item which, when clicked, navigates the user to Linux (a.k.a. Crostini) settings, with the option to share folders with the Chromebook. Alternate phrase for: 'Linux shared folders', 'Linux shared directories', 'Crostini shared directories'">
-    Crostini shared folders
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_CROSTINI_SHARED_FOLDERS_ALT3" desc="Text for search result item which, when clicked, navigates the user to Linux (a.k.a. Crostini) settings, with the option to share folders with the Chromebook. Alternate phrase for: 'Linux shared folders', 'Linux shared directories', 'Crostini shared folders'">
-    Crostini shared directories
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_CROSTINI_USB_PREFERENCES" desc="Text for search result item which, when clicked, navigates the user to Linux (a.k.a. Crostini) settings, with the option to set USB preferences. Alternate phrase for: 'Crostini USB preferences'">
-    Linux USB preferences
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_CROSTINI_USB_PREFERENCES_ALT1" desc="Text for search result item which, when clicked, navigates the user to Linux (a.k.a. Crostini) settings, with the option to set USB preferences. Alternate phrase for: 'Linux USB preferences'">
-    Crostini USB preferences
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_CROSTINI_REMOVE" desc="Text for search result item which, when clicked, navigates the user to Linux (a.k.a. Crostini) settings, with an option to delete the Linux installation on Chromebook. Alternate phrase for: 'Remove Crostini', 'Uninstall Linux', 'Uninstall Crostini', 'Delete Linux', 'Delete Crostini'">
-    Remove Linux
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_CROSTINI_REMOVE_ALT1" desc="Text for search result item which, when clicked, navigates the user to Linux (a.k.a. Crostini) settings, with an option to delete the Linux installation on Chromebook. Alternate phrase for: 'Remove Linux', 'Uninstall Linux', 'Uninstall Crostini', 'Delete Linux', 'Delete Crostini'">
-    Remove Crostini
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_CROSTINI_REMOVE_ALT2" desc="Text for search result item which, when clicked, navigates the user to Linux (a.k.a. Crostini) settings, with an option to delete the Linux installation on Chromebook. Alternate phrase for: 'Remove Linux', 'Remove Crostini', 'Uninstall Crostini', 'Delete Linux', 'Delete Crostini'">
-    Uninstall Linux
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_CROSTINI_REMOVE_ALT3" desc="Text for search result item which, when clicked, navigates the user to Linux (a.k.a. Crostini) settings, with an option to delete the Linux installation on Chromebook. Alternate phrase for: 'Remove Linux', 'Remove Crostini', 'Uninstall Linux', 'Delete Linux', 'Delete Crostini'">
-    Uninstall Crostini
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_CROSTINI_REMOVE_ALT4" desc="Text for search result item which, when clicked, navigates the user to Linux (a.k.a. Crostini) settings, with an option to delete the Linux installation on Chromebook. Alternate phrase for: 'Remove Linux', 'Remove Crostini', 'Uninstall Linux', 'Uninstall Crostini', 'Delete Crostini'">
-    Delete Linux
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_CROSTINI_REMOVE_ALT5" desc="Text for search result item which, when clicked, navigates the user to Linux (a.k.a. Crostini) settings, with an option to delete the Linux installation on Chromebook. Alternate phrase for: 'Remove Linux', 'Remove Crostini', 'Uninstall Linux', 'Uninstall Crostini', 'Delete Linux'">
-    Delete Crostini
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_CROSTINI_SETUP" desc="Text for search result item which, when clicked, navigates the user to Linux (a.k.a. Crostini) settings, with an option to set up Linux integration with Chromebook. Alternate phrase for: 'Set up Crostini'">
-    Set up Linux development environment
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_CROSTINI_SETUP_ALT1" desc="Text for search result item which, when clicked, navigates the user to Linux (a.k.a. Crostini) settings, with an option to set up Linux integration with Chromebook. Alternate phrase for: 'Set up Linux development environment'">
-    Set up Crostini
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_CROSTINI_BACKUP_RESTORE" desc="Text for search result item which, when clicked, navigates the user to Linux (a.k.a. Crostini) settings, with an option to back up and restore Linux apps/files. Alternate phrase for: 'Crostini backup'">
-    Linux backup and restore
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_CROSTINI_BACKUP_RESTORE_ALT1" desc="Text for search result item which, when clicked, navigates the user to Linux (a.k.a. Crostini) settings, with an option to back up and restore Linux apps/files. Alternate phrase for: 'Linux backup'">
-    Crostini backup and restore
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_CROSTINI_ANDROID_APPS" desc="Text for search result item which, when clicked, navigates the user to Linux (a.k.a. Crostini) settings, with options for developing Android apps. Alternate phrase for: 'Crostini Android app development'">
-    Linux Android app development
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_CROSTINI_ANDROID_APPS_ALT1" desc="Text for search result item which, when clicked, navigates the user to Linux (a.k.a. Crostini) settings, with options for developing Android apps. Alternate phrase for: 'Linux Android app development'">
-    Crostini Android app development
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_CROSTINI_ANDROID_APPS_ADB" desc="Text for search result item which, when clicked, navigates the user to Linux (a.k.a. Crostini) settings, with a toggle to enable/disable Android ADB (Android to Chromebook device bridge). Alternate phrase for: 'Crostini Android app ADB'">
-    Linux Android app ADB
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_CROSTINI_ANDROID_APPS_ADB_ALT1" desc="Text for search result item which, when clicked, navigates the user to Linux (a.k.a. Crostini) settings, with a toggle to enable/disable Android ADB (Android to Chromebook device bridge). Alternate phrase for: 'Linux Android app ADB'">
-    Crostini Android app ADB
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_CROSTINI_PORT_FORWARDING" desc="Text for search result item which, when clicked, navigates the user to Linux (a.k.a. Crostini) settings, with an option to set up port forwarding. Alternate phrase for: 'Crostini port forwarding'">
-    Linux port forwarding
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_CROSTINI_PORT_FORWARDING_ALT1" desc="Text for search result item which, when clicked, navigates the user to Linux (a.k.a. Crostini) settings, with an option to set up port forwarding. Alternate phrase for: 'Linux port forwarding'">
-    Crostini port forwarding
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_CROSTINI_DISK_RESIZE" desc="Text for search result item which, when clicked, navigates the user to Linux (a.k.a. Crostini) settings, with an option to resize hard drive partitions. Alternate phrase for: 'Crostini disk resize'">
-    Linux disk resize
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_CROSTINI_DISK_RESIZE_ALT1" desc="Text for search result item which, when clicked, navigates the user to Linux (a.k.a. Crostini) settings, with an option to resize hard drive partitions. Alternate phrase for: 'Linux disk resize'">
-    Crostini disk resize
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_CROSTINI_MIC_ACCESS" desc="Text for search result item which, when clicked, navigates the user to Linux (a.k.a. Crostini) settings, with an toggle to enable/disable access to the device's microphone. Alternate phrase for: 'Crostini microphone access'">
-    Linux microphone access
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_CROSTINI_MIC_ACCESS_ALT1" desc="Text for search result item which, when clicked, navigates the user to Linux (a.k.a. Crostini) settings, with an toggle to enable/disable access to the device's microphone. Alternate phrase for: 'Linux microphone access'">
-    Crostini microphone access
-  </message>
-
   <!-- Date and Time section. -->
   <message name="IDS_OS_SETTINGS_TAG_DATE_TIME" desc="Text for search result item which, when clicked, navigates the user to date and time settings.">
     Date and time settings
@@ -224,38 +120,6 @@
   </message>
   <message name="IDS_OS_SETTINGS_TAG_LANGUAGES_APP_LANGUAGES" desc="Text for search result item which, when clicked, navigates the user to app language settings, with a list of apps which language can be customized.">
     App languages
-  </message>
-
-  <!-- Files section. -->
-  <message name="IDS_OS_SETTINGS_TAG_FILES" desc="Text for search result item which, when clicked, navigates the user to files settings.">
-    Files
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_FILES_REMOVE_GOOGLE_DRIVE_ACCESS" desc="Text for search result item that, when clicked, navigates the user to Settings: Google Drive settings, with a toggle to remove the user's Google Drive access from the device.">
-    Remove Google Drive access
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_FILES_NETWORK_FILE_SHARES" desc="Text for search result item which, when clicked, navigates the user to network file share (a.k.a. SMB share) settings. Alternate phrase for: 'SMB share'">
-    Network file shares
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_FILES_NETWORK_FILE_SHARES_ALT1" desc="Text for search result item which, when clicked, navigates the user to network file share (a.k.a. SMB share) settings. Alternate phrase for: 'Network file shares'">
-    SMB share
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_FILES_MICROSOFT_365" desc="Text for search result item which, when clicked, navigates the user to the Microsoft 365 file settings.">
-    Microsoft 365 file settings
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_FILES_MICROSOFT_365_ALT1" desc="Text for search result item which, when clicked, navigates the user to the Microsoft Office file settings. 'Office file' is an alternate for 'Microsoft 365 file'">
-    Office file settings
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_FILES_GOOGLE_DRIVE" translateable="false" desc="Text for search result item which, when clicked, navigates the user to the Google Drive settings.">
-    Google Drive settings
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_FILES_GOOGLE_DRIVE_FILE_SYNC" desc="Text for search result item which, when clicked, navigates the user to the Files sync feature in Google Drive settings.">
-    File sync
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_FILES_GOOGLE_DRIVE_FILE_SYNC_ALT1" desc="Text for search result item which, when clicked, navigates the user to the Files sync feature in Google Drive settings.">
-    Offline
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_FILES_ONEDRIVE" desc="Text for search result item which, when clicked, navigates the user to the Microsoft OneDrive settings.">
-    Microsoft OneDrive settings
   </message>
 
   <!-- Accessibility section. -->

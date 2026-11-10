@@ -26,7 +26,6 @@ static_library("storage") {
   deps = [
     "//ash/constants",
     "//ash/public/cpp",
-    "//chrome/app:generated_resources",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/file_manager",
@@ -37,6 +36,7 @@ static_library("storage") {
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
     "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/settings_ui/resources:strings",
     "//components/user_manager",
     "//content/public/browser",
     "//ui/base",

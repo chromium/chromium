@@ -6054,6 +6054,495 @@ Press an assigned switch or key to remove assignment.
         Move slightly to capture a different part of the fingerprint.
       </message>
 
+      <!-- Files Page (OS settings) -->
+      <message name="IDS_OS_SETTINGS_FILES" desc="Name of the settings page which displays file preferences.">
+        Files
+      </message>
+      <message name="IDS_SETTINGS_DISCONNECT_GOOGLE_DRIVE" desc="Label for the checkbox which enables disconnecting from Google Drive account.">
+        Disconnect Google Drive account
+      </message>
+      <message name="IDS_SETTINGS_GOOGLE_DRIVE_CLEAN_UP_STORAGE_ACTION" desc="Button for the Offline Storage row where users can clean their offline storage in Settings: Files: Google Drive.">
+        Clean up storage
+      </message>
+      <message name="IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_CLEAN_UP_STORAGE_TITLE" desc="Title text for the Offline Storage confirmation dialog where users can clean up their offline storage in Settings: Files: Google Drive.">
+        Clean up offline storage?
+      </message>
+      <message name="IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_CLEAN_UP_STORAGE_BODY" desc="Title text for the Offline Storage confirmation dialog where users can clear their offline storage in Settings: Files: Google Drive.">
+        This will remove up to <ph name="OFFLINE_STORAGE_SIZE">$1<ex>5.0 GB</ex></ph> of space used by your offline files. Some files will still be available offline. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$2<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_CLEAN_UP_STORAGE_DISABLED_FILE_SYNC_TOOLTIP" desc="Tooltip text that shows when hovering over the clear offline storage button and it is disabled due to file sync being enabled in the Settings: Files: Google Drive.">
+        Can’t clean up storage while file sync is on
+      </message>
+      <message name="IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_CLEAN_UP_STORAGE_DISABLED_TOOLTIP" desc="Tooltip text that shows when hovering over the clear offline storage button and it is disabled due to 0 B of space in the Settings: Files: Google Drive.">
+        No offline storage to clean up
+      </message>
+      <message name="IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_CLEAN_UP_STORAGE_DISABLED_UNKNOWN_STORAGE_TOOLTIP" desc="Tooltip text that shows when hovering over the clear offline storage button that is disabled due to an unknown storage size in the Settings: Files: Google Drive.">
+        Can’t clean up storage until offline storage size is known.
+      </message>
+      <message name="IDS_SETTINGS_GOOGLE_DRIVE_SIGNED_IN_AS" desc="Label indicating account signed in with Google Drive in Settings: Files: Google Drive.">
+        Signed in as <ph name="SPAN_START">&lt;span id="driveAccountEmail"&gt;</ph><ph name="DRIVE_ACCOUNT_EMAIL">$1<ex>john@google.com</ex></ph><ph name="SPAN_END">&lt;/span&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_GOOGLE_DRIVE_FILE_SYNC_TITLE" desc="Title for the everything offline feature in Settings: Files: Google Drive.">
+        File sync
+      </message>
+      <message name="IDS_SETTINGS_GOOGLE_DRIVE_FILE_SYNC_SUBTITLE_WITHOUT_STORAGE" desc="Subtitle for the everything offline feature in Settings: Files: Google Drive.">
+        Your files in My Drive sync to your Chromebook automatically so you can access them without an internet connection.
+      </message>
+      <message name="IDS_SETTINGS_GOOGLE_DRIVE_FILE_SYNC_SUBTITLE_WITH_STORAGE" desc="Subtitle for the everything offline feature in Settings: Files: Google Drive.">
+        Your files in My Drive sync to your Chromebook automatically so you can access them without an internet connection. This will use about <ph name="REQUIRED_SPACE">$1<ex>12.2 GB</ex></ph>. You currently have <ph name="FREE_SPACE_AVAILABLE">$2<ex>96.7 GB</ex></ph> available.
+      </message>
+      <message name="IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_STORAGE_TITLE" desc="Title for the Offline Storage row where users can clear their offline storage in Settings: Files: Google Drive.">
+        Offline storage
+      </message>
+      <message name="IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_STORAGE_SPACE_TAKEN" desc="The storage used by files that are pinned in Settings: Files: Google Drive">
+        Using <ph name="USED_SPACE">$1<ex>10 GB</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_GOOGLE_DRIVE_TURN_OFF_BUTTON_LABEL" desc="Button for the confirmation dialog that spawns when attempting to turn off bulk pinning in Settings: Files: Google Drive.">
+        Turn off
+      </message>
+      <message name="IDS_SETTINGS_GOOGLE_DRIVE_FILE_SYNC_TURN_OFF_TITLE_TEXT" desc="Title text for the confirmation dialog that spawns when attempting to turn off bulk pinning in Settings: Files: Google Drive.">
+        Turn off file sync?
+      </message>
+      <message name="IDS_SETTINGS_GOOGLE_DRIVE_FILE_SYNC_TURN_OFF_BODY_TEXT" desc="Body text for the confirmation dialog that spawns when attempting to turn off bulk pinning in Settings: Files: Google Drive.">
+        New files in My Drive will stop syncing automatically to this Chromebook
+      </message>
+      <message name="IDS_SETTINGS_GOOGLE_DRIVE_FILE_SYNC_LISTING_FILES_TITLE_TEXT" desc="Title text for the dialog that spawns when a user tries to turn on bulk pinning whilst we're still listing files in Settings: Files: Google Drive.">
+        Scanning is taking longer than expected
+      </message>
+      <message name="IDS_SETTINGS_GOOGLE_DRIVE_FILE_SYNC_LISTING_FILES_ITEMS_FOUND_BODY_TEXT" desc="Body text for the dialog that spawns when a user tries to turn on bulk pinning whilst we're still listing files and we have a known count of listed files in Settings: Files: Google Drive.">
+        File sync has found <ph name="ITEMS_FOUND">$1<ex>1,072</ex></ph> files so far and is still checking storage space. Try turning on File sync again in a few minutes.
+      </message>
+      <message name="IDS_SETTINGS_GOOGLE_DRIVE_REMOVE_ACCESS_BUTTON_LABEL" desc="Button label indicates that, when pressed, will disconnect the users Google Drive access in Settings: Files: Google Drive">
+        Remove Drive access
+      </message>
+      <message name="IDS_SETTINGS_GOOGLE_DRIVE_REMOVE_ACCESS_DIALOG_TITLE" desc="Title of the dialog that appears when the Remove Drive access button is pressed in Settings: Files: Google Drive">
+        Remove Google Drive access?
+      </message>
+      <message name="IDS_SETTINGS_GOOGLE_DRIVE_REMOVE_ACCESS_DIALOG_BODY" desc="Body text of the dialog that appears when the Remove Drive access button is pressed in Settings: Files: Google Drive">
+        This will remove access to Google Drive on this Chromebook, including access to any files that have been made available offline
+      </message>
+      <message name="IDS_SETTINGS_GOOGLE_DRIVE_REMOVE_BUTTON_TEXT" desc="Action button text of the dialog that appears when the Remove Drive access button is pressed in Settings: Files: Google Drive">
+        Remove
+      </message>
+      <message name="IDS_SETTINGS_GOOGLE_DRIVE_FILE_SYNC_UNEXPECTED_ERROR_TITLE_TEXT" desc="Title text for the confirmation dialog that spawns when attempting to turn on bulk pinning but an unexpected error occurred in Settings: Files: Google Drive.">
+        Something went wrong
+      </message>
+      <message name="IDS_SETTINGS_GOOGLE_DRIVE_FILE_SYNC_UNEXPECTED_ERROR_BODY_TEXT" desc="Body text for the confirmation dialog that spawns when attempting to turn on bulk pinning but an unexpected error occurred in Settings: Files: Google Drive.">
+        Try again later
+      </message>
+      <message name="IDS_SETTINGS_GOOGLE_DRIVE_FILE_SYNC_OFFLINE_ERROR_TITLE_TEXT" desc="Title text for the confirmation dialog that spawns when attempting to turn on bulk pinning but the device is offline in Settings: Files: Google Drive.">
+        You are currently offline
+      </message>
+      <message name="IDS_SETTINGS_GOOGLE_DRIVE_FILE_SYNC_OFFLINE_ERROR_BODY_TEXT" desc="Body text for the confirmation dialog that spawns when attempting to turn on bulk pinning but the device is offline in Settings: Files: Google Drive.">
+        For initial setup, you need to connect to the internet so files can sync to your Chromebook
+      </message>
+      <message name="IDS_SETTINGS_GOOGLE_DRIVE_BULK_PINNING_NOT_ENOUGH_SPACE_TITLE_TEXT" desc="Title text for the confirmation dialog that spawns when attempting to turn on bulk pinning but the user doesn't have enough free space in Settings: Files: Google Drive.">
+        Not enough storage space
+      </message>
+      <message name="IDS_SETTINGS_GOOGLE_DRIVE_BULK_PINNING_NOT_ENOUGH_SPACE_BODY_TEXT" desc="Body text for the confirmation dialog that spawns when attempting to turn on bulk pinning but the user doesn't have enough free space in Settings: Files: Google Drive.">
+        There isn’t enough storage to sync your files. Try freeing up space.
+      </message>
+      <message name="IDS_SETTINGS_GOOGLE_DRIVE_DISMISS_BUTTON_TEXT" desc="Button text for dialogs in Settings: Files: Google Drive to dismiss the dialog">
+        Dismiss
+      </message>
+      <message name="IDS_SETTINGS_GOOGLE_DRIVE_OK_BUTTON_TEXT" desc="Button text for dialogs in Settings: Files: Google Drive to dismiss the dialog">
+        OK
+      </message>
+      <message name="IDS_SETTINGS_GOOGLE_DRIVE_NOT_SIGNED_IN_SUBLABEL" desc="Label indicating that Google Drive is not signed in (i.e. disabled) for the current user in Settings: Files">
+        Not signed in
+      </message>
+      <message name="IDS_SETTINGS_GOOGLE_DRIVE_ENABLED_ON_METERED_NETWORK_LABEL" desc="Label that shows for the settings to enable using metered network for syncing operations in Settings: Files: Google Drive">
+        Allow syncing on metered networks
+      </message>
+      <message name="IDS_SETTINGS_GOOGLE_DRIVE_FILE_SYNC_ON_SUBLABEL" desc="Sub label for the row indicating that Google Drive is enabled and file sync is on in Settings: Files">
+        File sync on
+      </message>
+      <message name="IDS_SETTINGS_GOOGLE_DRIVE_RECONNECT_AS" desc="Label indicating account that Google Drive would sign in as in Settings: Files: Google Drive.">
+        Connect <ph name="SPAN_START">&lt;span id="driveAccountEmail"&gt;</ph><ph name="DRIVE_ACCOUNT_EMAIL">$1<ex>john@google.com</ex></ph><ph name="SPAN_END">&lt;/span&gt;</ph> to access your Drive files in the Files app
+      </message>
+      <message name="IDS_SETTINGS_GOOGLE_DRIVE_CONNECT" desc="Action to connect Google Drive in Settings: Files: Google Drive.">
+        Connect
+      </message>
+      <message name="IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_CLEAR_CALCULATING_SUBTITLE" desc="Subtitle for the Offline Storage row where users can clear their offline storage in Settings: Files: Google Drive.">
+        Calculating...
+      </message>
+      <message name="IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_CLEAR_ERROR_SUBTITLE" desc="Subtitle for the Offline Storage row where users can clear their offline storage in Settings: Files: Google Drive.">
+        Unknown
+      </message>
+      <message name="IDS_SETTINGS_GOOGLE_DRIVE" translateable="false" desc="Label for the settings link that takes the user to the page where they can manage their Google Drive settings.">
+        Google Drive
+      </message>
+      <message name="IDS_SETTINGS_DOWNLOADS_SMB_SHARES" desc="In Downloads Settings, the title of the SMB shares setting section.">
+        Network file shares
+      </message>
+      <message name="IDS_OS_SETTINGS_DOWNLOADS_SMB_SHARES_DESCRIPTION" desc="In Files Settings, the description of the SMB shares setting section.">
+        Access shared files, folders, or drives on a local network. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_DOWNLOADS_SMB_SHARES_LEARN_MORE_LABEL" desc="Label for the link that teaches users how to setup SMB shares.">
+        Set up or manage network file shares. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_ONE_DRIVE_LABEL" desc="Label for the Settings link that takes the user to the OneDrive account settings.">
+        OneDrive
+      </message>
+      <message name="IDS_SETTINGS_ONE_DRIVE_SIGNED_IN_AS" desc="Label indicating, in the Files Settings subpage, the email address with which the user is currently signed in in OneDrive">
+        Signed in as <ph name="BEGIN_BOLD">&lt;strong&gt;</ph><ph name="DRIVE_ACCOUNT_EMAIL">$1<ex>john@google.com</ex></ph><ph name="END_BOLD">&lt;/strong&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_ONE_DRIVE_DISCONNECTED" desc="Label prompting, in the Files Settings subpage, the user to add a new account for OneDrive">
+        Add your Microsoft account
+      </message>
+      <message name="IDS_OS_SETTINGS_ONE_DRIVE_LOADING" desc="Label indicating that the user's connection status is still being queried.">
+        Loading...
+      </message>
+      <message name="IDS_SETTINGS_ONE_DRIVE_CONNECT" desc="Action to connect OneDrive in Settings: Files: OneDrive.">
+        Connect
+      </message>
+      <message name="IDS_SETTINGS_ONE_DRIVE_DISCONNECT" desc="Action to disconnect from OneDrive in Settings: Files: OneDrive.">
+        Remove access
+      </message>
+      <message name="IDS_SETTINGS_OPEN_ONE_DRIVE_FOLDER" desc="Label for the Settings link in the OneDrive subpage to open the OneDrive folder">
+        Open OneDrive folder
+      </message>
+      <message name="IDS_SETTINGS_OFFICE_LABEL" desc="Label for the Settings link that takes the user to the Microsoft 365 files settings.">
+        Microsoft 365
+      </message>
+      <message name="IDS_SETTINGS_OFFICE_SUBLABEL" desc="Sub-label that describes that users can open Microsoft 365 files.">
+        Open Word, Excel, and PowerPoint files
+      </message>
+      <message name="IDS_SETTINGS_OFFICE_SUBPAGE_TITLE" desc="Title of the Microsoft 365 subpage.">
+        Microsoft 365 files
+      </message>
+      <message name="IDS_SETTINGS_ALWAYS_MOVE_OFFICE_TO_DRIVE_PREFERENCE_LABEL" desc="Label for the preference that allows users to always copy/move files to Drive without asking for confirmation.">
+        Ask before copying or moving Microsoft files to Google Drive
+      </message>
+      <message name="IDS_SETTINGS_ALWAYS_MOVE_OFFICE_TO_ONEDRIVE_PREFERENCE_LABEL" desc="Label for the preference that allows users to always copy/move files to OneDrive without asking for confirmation.">
+        Ask before copying or moving Microsoft files to Microsoft OneDrive
+      </message>
+
+      <!-- Crostini -->
+      <message name="IDS_SETTINGS_CROSTINI_TITLE" desc="The title of Crostini section. It is meant to be used by software developers.">
+        Developers
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_LABEL" desc="The text associated with the primary section setting. This contains settings for a Linux container running in a virtual machine for use by software developers.">
+        Linux development environment
+      </message>
+      <message name="IDS_OS_SETTINGS_CROSTINI_SET_UP" desc="The label for the button that, when clicked, opens the Crostini setup flow.">
+        Set up
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_SHARED_PATHS_INSTRUCTIONS_LOCATE" desc="Instructions for how to locate shared folders in Crostini.">
+        Shared folders are available in Linux at <ph name="BASE_DIR">$1<ex>/mnt/chromeos</ex></ph>.
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_SHARED_PATHS_INSTRUCTIONS_ADD" desc="Instructions for how to add shared folders in Crostini.">
+        To share, right-click on a folder in Files app, then select "Share with Linux".
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_SHARED_PATHS_REMOVE_FAILURE_DIALOG_MESSAGE" desc="Message to show user when unsharing a crostini shared folder fails.">
+        Couldn't unshare because an application is using this folder. The folder will be unshared when Linux is next shut down.
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_EXPORT_IMPORT_TITLE" desc="Title for crostini container export and imoprt (backup and restore) section">
+        Backup &amp; restore
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_EXPORT_LABEL" desc="Description shown next to the button to export (backup) Crostini.">
+        Backup Linux apps and files
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_REMOVE_BUTTON" desc="Label for the button to open a dialog confirming removal of Crostini.">
+        Remove
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_SHARED_USB_DEVICES_DESCRIPTION" desc="Description for managing shared USB devices.">
+        Give Linux apps control over USB devices.
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_ARC_ADB_TITLE" desc="Title of ARC ADB sideloading section.">
+        Develop Android apps
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_ARC_ADB_DESCRIPTION" desc="Description of ARC ADB sideloading in Settings.">
+        To create and test your apps, enable the Android Debug Bridge (ADB). Note that this action allows installation of Android apps that haven't been verified by Google, and requires a factory reset to disable.
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_ARC_ADB_LABEL" desc="Label for enabling ADB in ARC.">
+        Enable ADB debugging
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_ARC_ADB_RESTART_BUTTON" desc="Label for the button that initiates the ADB enabling flow by restarting the device.">
+        Restart and continue
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_ARC_ADB_CONFIRMATION_TITLE_ENABLE" desc="Confirmation dialog title to restart for enabling ADB.">
+        Enable ADB debugging?
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_ARC_ADB_CONFIRMATION_TITLE_DISABLE" desc="Confirmation dialog title to restart for disabling ADB.">
+        Disable ADB debugging?
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_PORT_FORWARDING" desc="Label for managing port forwarding in Linux on ChromeOS.">
+        Port forwarding
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_PORT_FORWARDING_DESCRIPTION" desc="Description for managing port forwarding in Linux on ChromeOS.">
+        Make Linux ports available to other devices on your network.
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_PORT_FORWARDING_NO_PORTS" desc="Label for when user has no port forwarding preferences.">
+        Your ports will appear here
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_PORT_FORWARDING_LIST_PORT_NUMBER" desc="Column heading for the port number of current port preferences.">
+        Port number
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_PORT_FORWARDING_LIST_LABEL" desc="Column heading for the port label of current port preferences.">
+        Label
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_PORT_FORWARDING_ADD_PORT_BUTTON" desc="Label for the button to open a dialog to add a new port.">
+        Add
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_PORT_FORWARDING_ADD_PORT_BUTTON_DESCRIPTION" desc="Accessibility label for the button to open a dialog to add a new port.">
+        Add Port
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_PORT_FORWARDING_ADD_PORT_DIALOG_TITLE" desc="Title for the add port dialog box.">
+        Add port number
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_PORT_FORWARDING_ADD_PORT_DIALOG_PORT_NUMBER_LABEL" desc="Label for the text input of the port number in the add port dialog. This dialog is for when a user wants to add a new port that network traffic should be redirected by into Crostini.">
+        Port number
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_PORT_FORWARDING_ADD_PORT_DIALOG_LABEL_LABEL" desc="Label for the text input of an optional label to attach to the port in the add port dialog. This dialog is for when a user wants to add a new port that network traffic should be redirected by into Crostini.">
+        Label (optional)
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_PORT_FORWARDING_TCP" desc="Label for the TCP protocol when forwarding ports. The parentheses are for formatting reasons.">
+        (TCP)
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_PORT_FORWARDING_UDP" desc="Label for the UDP protocol when forwarding ports. The parentheses are for formatting reasons.">
+        (UDP)
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_PORT_FORWARDING_ADD_ERROR" desc="Description for the error when adding an invalid port.">
+        Port must be between 1024 and 65535
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_PORT_FORWARDING_ADD_EXISTING" desc="Description for the error when trying to add a port that already exists.">
+        Port forward already exists
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_PORT_FORWARDING_REMOVE_ALL_PORTS" desc="Label for the button to deallocate all ports currently being forwarded in Crostini and clear the list of ports in the Crostini port forwarding settings page.">
+        Remove all ports
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_PORT_FORWARDING_REMOVE_PORT" desc="Label for the button to deallocate a specified port and remove it from the list of ports in the Crostini port forwarding settings page.">
+        Remove port
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_PORT_FORWARDING_ACTIVATE_PORT_ERROR" desc="The error message shown on a toast that appears when a request to activate a port for forwarding network traffic into Crostini fails.">
+        Error forwarding port
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_PORT_FORWARDING_TOGGLE_PORT_ARIA_LABEL" desc="The aria label for the toggle that controls the state of a port i.e. the text that screen readers will read out for the button.">
+        Activate port
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_PORT_FORWARDING_REMOVE_ALL_PORTS_ARIA_LABEL" desc="The aria label for the button to deallocate all ports currently being forwarded in Crostini and clears the list of ports in the Crostini port forwarding settings page i.e. the text that screen readers will read out for the button.">
+        Deactivate all ports being forwarded in Linux
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_PORT_FORWARDING_SHOW_MORE_ACTIONS_ARIA_LABEL" desc="The aria label for the button that displays more actions to the user for an individual port i.e. the text that screen readers will read out for the button.">
+        Show more actions for this port
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_DISK_RESIZE_SHOW_BUTTON" desc="The label of the button/link the user clicks to open the disk resizing dialogue." meaning="The label of the button/link the user clicks to open the disk resizing dialogue.">
+        Change
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_DISK_RESIZE_SHOW_BUTTON_ARIA_LABEL" desc="The aria label for the button to show the disk resize dialog i.e. the text that screen readers will read out for the button.">
+        Change disk size
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_DISK_RESERVE_SIZE_BUTTON" desc="The label of the button/link the user clicks to open the disk resizing dialog when the existing disk is dynamically allocated (size was not user chosen)." meaning="The label of the button/link the user clicks to open the disk resizing dialog when the existing disk is dynamically allocated (size was not user chosen).">
+        Reserve size
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_DISK_RESERVE_SIZE_BUTTON_ARIA_LABEL" desc="The aria label for the button to show the disk resize dialog when the existing disk is dynamically allocated (size was not user chosen), i.e. the text that screen readers will read out for the button.">
+        Reserve disk size
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_DISK_RESIZE_LABEL" desc="The label on the row in settings for managing Crostini's disk size.">
+        Disk size
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_DISK_RESIZE_DYNAMICALLY_ALLOCATED_SUBTEXT" desc="The subtext on the row in settings for managing Crostini's disk size when the existing disk is dynamically allocated (size was not user chosen).">
+        Dynamically allocated
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_DISK_RESIZE_NOT_SUPPORTED_SUBTEXT" desc="The subtext on the row in settings for managing Crostini's disk size when the existing disk does not support resizing.">
+        Your container is not configured to support disk resizes. To adjust the amount of space that is reserved for Linux, back up and then restore into a new container.
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_DISK_RESIZE_TITLE" desc="The title of the settings dialogue the user uses to resize the Crostini (AKA Linux) Disk.">
+        Resize Linux disk
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_DISK_RESIZE_UNSUPPORTED" desc="The message displayed to the user when resizing their Crostini disk isn't supported, explaining a workaround.">
+        Your container doesn't support being resized. To adjust the amount of space that is pre-allocated to Linux, back up and then restore into a new container.
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_DISK_RESIZE_RECOMMENDED" desc="The message shown indicating the recommended disk size in Gigabytes.">
+        At least <ph name="INSTALL_SIZE">$1<ex>5.0 GB</ex></ph>  of space is recommended for Linux.
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_DISK_RESIZE_RECOMMENDED_WARNING" desc="The message shown indicating the recommended disk size in Gigabytes, when disk space must be freed to make this possible.">
+        At least <ph name="INSTALL_SIZE">$1<ex>5.0 GB</ex></ph> of space is recommended for Linux. To increase free space, delete files from your device.
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_DISK_RESIZE_LOADING" desc="The message shown to the user while fetching the data needed to resize their disk.">
+        Loading data, this may take up to a few seconds.
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_DISK_RESIZE_ERROR" desc="The message shown to the user when loading data to offer the resize failed. This error is retryable.">
+        Error loading data
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_DISK_RESIZE_ERROR_RETRY" desc="The label of the button to retry loading data if the operation previously failed.">
+        Retry
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_DISK_RESIZE_CANCEL" desc="The label of the button to close the resize dialogue without making any changes.">
+        Cancel
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_DISK_RESIZE_GO_BUTTON" desc="The label of the button to perform the resize operation on the user's Crostini disk">
+        Resize
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_DISK_RESIZE_IN_PROGRESS" desc="The message displayed to the user while disk resizing is in progress.">
+        Resizing
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_DISK_RESIZE_RESIZING_ERROR" desc="The message displayed to the user when disk resizing failed.">
+        Error resizing disk
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_DISK_RESIZE_DONE" desc="The message displayed to the user once disk resizing has completed successfully.">
+        Done
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_DISK_RESIZE_CONFIRMATION_DIALOG_TITLE" desc="Confirmation dialog title when a user is about to reserve a size for a disk which previously did not have a fixed size.">
+        Are you sure you want to reserve a fixed size disk for Linux?
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_DISK_RESIZE_CONFIRMATION_DIALOG_MESSAGE" desc="Message displayed in the confirmation dialog when the user is about to resize a disk to one with a fixed size.">
+        This operation cannot be undone
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_DISK_RESIZE_CONFIRMATION_DIALOG_BUTTON" desc="Button text in the confirmation dialog when the user confirms they want to resize the disk.">
+        Reserve size
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_ARC_ADB_POWERWASH_REQUIRED_SUBLABEL" desc="Sublabel notifying user of powerwash requirement before enabling ARC ADB sideloading.">
+        A factory reset of this Chromebook is required to enable ADB debugging. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_ARC_ADB_CONFIRMATION_MESSAGE_ENABLE" desc="Describes what will happen if the user enables ADB Sideloading.">
+        To enable ADB debugging, a restart of this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> is required. Disabling it requires a reset to factory settings.
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_ARC_ADB_CONFIRMATION_MESSAGE_DISABLE" desc="Describes what will happen if the user disables ADB Sideloading.">
+        Disabling ADB debugging will reset this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> to factory settings. All user accounts and local data will be erased.
+      </message>
+      <message name="IDS_OS_SETTINGS_CROSTINI_SUBTEXT" desc="Description for the section for enabling and managing Crostini.">
+        Run developer tools, IDEs, and editors. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$1<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_SUBTEXT_NOT_SUPPORTED" desc="Description for the Developers section when crostini is not supported due to hardware limitation or account restrictions.">
+        Linux is not supported on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$2<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_REMOVE" desc="Label for the row to open a dialog confirming removal of Crostini.">
+        Remove Linux development environment
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_PORT_FORWARDING_TABLE_TITLE" desc="Title for the list display of current preferences.">
+        Ports
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_MIC_TITLE" desc="Title for sharing mic with Crostini.">
+        Allow Linux to access your microphone
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_MIC_DIALOG_LABEL" desc="Dialog label for sharing mic with Crostini.">
+        The change in microphone setting requires Linux to shut down. Shut down Linux to proceed.
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_MIC_DIALOG_SHUTDOWN_BUTTON" desc="Label for the shutdown button in the Crostini mic sharing dialog.">
+        Shut down
+      </message>
+
+      <!-- Bruschetta sub-page -->
+      <!-- TODO(b/233129383): Finalize and translate these strings -->
+      <message name="IDS_SETTINGS_BRUSCHETTA_LABEL" desc="Label for the Bruschetta sub-page.">
+        Managed Development Environment (<ph name="GENERAL_NAME">$1<ex>HappyVm</ex></ph>)
+      </message>
+      <message name="IDS_SETTINGS_BRUSCHETTA_SHARED_USB_DEVICES_DESCRIPTION" desc="Description for managing shared USB devices.">
+        Give <ph name="SPECIFIC_NAME">$1<ex>HappyVm</ex></ph> control over USB devices.
+      </message>
+      <message name="IDS_SETTINGS_BRUSCHETTA_SHARED_PATHS_INSTRUCTIONS_LOCATE" desc="Instructions for how to locate shared folders in Bruschetta..">
+        Shared folders are available in <ph name="SPECIFIC_NAME">$1<ex>HappyVm</ex></ph> at <ph name="BASE_DIR">$2<ex>/mnt/chromeos</ex></ph>.
+      </message>
+      <message name="IDS_SETTINGS_BRUSCHETTA_SHARED_PATHS_INSTRUCTIONS_ADD" desc="Instructions for how to add shared folders in Bruschetta..">
+        To share, right-click on a folder in Files app, then select "Share with <ph name="SPECIFIC_NAME">$1<ex>HappyVm</ex></ph>".
+      </message>
+      <message name="IDS_SETTINGS_BRUSCHETTA_SHARED_PATHS_REMOVE_FAILURE_DIALOG_MESSAGE" desc="Message to show user when unsharing a Bruschetta shared folder fails..">
+        Couldn't unshare because an application is using this folder. The folder will be unshared when <ph name="SPECIFIC_NAME">$1<ex>HappyVm</ex></ph> is next shut down.
+      </message>
+      <message name="IDS_SETTINGS_BRUSCHETTA_SUBTEXT" desc="Description for the section for enabling and managing Bruschetta (codename).">
+        Run tools, editors, and IDEs in an environment managed by your enterprise on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$2<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_BRUSCHETTA_SUBTEXT_NO_LINK" desc="Description for the section for enabling and managing Bruschetta (codename).">
+        Run tools, editors, and IDEs in an environment managed by your enterprise on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>.
+      </message>
+      <message name="IDS_SETTINGS_BRUSCHETTA_REMOVE" desc="Label for the row to open a dialog confirming removal of Bruschetta (codename).">
+        Remove Managed Development Environment (<ph name="SPECIFIC_NAME">$1<ex>HappyVm</ex></ph>)
+      </message>
+      <message name="IDS_SETTINGS_BRUSCHETTA_REMOVE_BUTTON" desc="Label for the button to open a dialog confirming removal of Bruschetta.">
+        Remove
+      </message>
+      <message name="IDS_SETTINGS_BRUSCHETTA_MIC_TITLE" desc="Title for sharing mic with Bruschetta.">
+        Allow <ph name="SPECIFIC_NAME">$1<ex>HappyVm</ex></ph> to access your microphone
+      </message>
+      <message name="IDS_SETTINGS_BRUSCHETTA_MIC_DIALOG_LABEL" desc="Dialog label for sharing mic with Bruschetta.">
+        The change in microphone setting requires <ph name="SPECIFIC_NAME">$1<ex>HappyVm</ex></ph> to shut down. Shut down <ph name="SPECIFIC_NAME">$1<ex>HappyVm</ex></ph> to proceed.
+      </message>
+      <message name="IDS_SETTINGS_BRUSCHETTA_MIC_DIALOG_SHUTDOWN_BUTTON" desc="Label for the shutdown button in the Bruschetta mic sharing dialog.">
+        Shut down
+      </message>
+
+      <!-- Storage -->
+      <message name="IDS_SETTINGS_STORAGE_TITLE" desc="In Device Settings, the title for storage management.">
+        Storage management
+      </message>
+      <message name="IDS_SETTINGS_STORAGE_ITEM_IN_USE" desc="In Device Settings > Storage, label for the used storage size of ChromeOS internal storage.">
+        In use
+      </message>
+      <message name="IDS_SETTINGS_STORAGE_ITEM_AVAILABLE" desc="In Device Settings > Storage, label for the available storage size of ChromeOS internal storage.">
+        Available
+      </message>
+      <message name="IDS_SETTINGS_STORAGE_ITEM_MY_FILES" desc="In Device Settings > Storage, label for the size of My files root.">
+        My files
+      </message>
+      <message name="IDS_SETTINGS_STORAGE_ITEM_BROWSING_DATA" desc="In Device Settings > Storage, label for the size of browsing data.">
+        Browsing data
+      </message>
+      <message name="IDS_OS_SETTINGS_STORAGE_ITEM_APPS" desc="In Device Settings > Storage, label for the total size of Android apps and web store apps and extensions.">
+        Apps
+      </message>
+      <message name="IDS_SETTINGS_STORAGE_ITEM_OFFLINE" desc="In Device Settings > Storage, label for the total size of pinned files in Google Drive.">
+        Offline files
+      </message>
+      <message name="IDS_SETTINGS_STORAGE_ITEM_CROSTINI" desc="In Device Settings > Storage, label for the total size of Crostini VMs, apps and cache.">
+        Linux storage
+      </message>
+      <message name="IDS_SETTINGS_STORAGE_ITEM_OTHER_USERS" desc="In Device Settings > Storage, label for the total size of other users' data directories.">
+        Other users
+      </message>
+      <message name="IDS_SETTINGS_STORAGE_SIZE_CALCULATING" desc="In Device Settings > Storage, label for storage item's size indicating the size is being calculated.">
+        Calculating...
+      </message>
+      <message name="IDS_SETTINGS_STORAGE_SIZE_UNKNOWN" desc="In Device Settings > Storage, label for storage item's size indicating the size is unknown">
+        Unknown
+      </message>
+      <message name="IDS_SETTINGS_STORAGE_SPACE_LOW_MESSAGE_TITLE" desc="Title of a warning message indicating device's available disk space is low.">
+        Device is low on space
+      </message>
+      <message name="IDS_SETTINGS_STORAGE_SPACE_LOW_MESSAGE_LINE_1" desc="The first paragraph of a warning message indicating device's available disk space is low.">
+        To free up space, delete files from device storage.
+      </message>
+      <message name="IDS_SETTINGS_STORAGE_SPACE_LOW_MESSAGE_LINE_2" desc="The second paragraph of a warning message indicating device's available disk space is low.">
+        If space isn’t made available, users and data may be automatically removed.
+      </message>
+      <message name="IDS_SETTINGS_STORAGE_SPACE_CRITICALLY_LOW_MESSAGE_TITLE" desc="Title of a warning message indicating device's available disk space is critically low.">
+        Device space critically low
+      </message>
+      <message name="IDS_SETTINGS_STORAGE_SPACE_CRITICALLY_LOW_MESSAGE_LINE_1" desc="The first paragraph of a warning message indicating device's available disk space is critically low.">
+        Free up at least 512 MB of space or your device will become unresponsive. To free up space, delete files from device storage.
+      </message>
+      <message name="IDS_SETTINGS_STORAGE_SPACE_CRITICALLY_LOW_MESSAGE_LINE_2" desc="The second paragraph of a warning message indicating device's available disk space is critically low.">
+        If you don’t free up space, users and data may be automatically removed.
+      </message>
+      <message name="IDS_SETTINGS_STORAGE_EXTERNAL" desc="In Device Settings > Storage, label for the subpage for setting preferences for external storage.">
+        External storage preferences
+      </message>
+      <message name="IDS_SETTINGS_STORAGE_ANDROID_APPS_ACCESS_EXTERNAL_DRIVES_NOTE" desc="Label for the additional note for the subpage for setting preferences for external storage.">
+        Apps from Google Play may require full file system access to read and write files on external storage devices. Files and folders created on the device are visible to anyone who uses the external drive. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$1<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_STORAGE_EXTERNAL_STORAGE_EMPTY_LIST_HEADER" desc="Header of the list of external storage devices for the subpage for setting preferences for external storage. This is shown when the list is empty.">
+        Available devices will appear here.
+      </message>
+      <message name="IDS_SETTINGS_STORAGE_EXTERNAL_STORAGE_LIST_HEADER" desc="Header of the list of external storage devices for the subpage for setting preferences for external storage. This is shown when the list is not empty.">
+        Available devices
+      </message>
+      <message name="IDS_SETTINGS_STORAGE_OVERVIEW_ARIA_LABEL" desc="The label to be read aloud by ChromeVox to describe the storage usage progress bar on the Storage page">
+        Storage Usage Overview
+      </message>
+      <message name="IDS_SETTINGS_STORAGE_ITEM_SYSTEM" desc="In Device Settings > Storage, label for the total system size, difference between the size of the filesystem and the size of all items listed on the storage page.">
+        System
+      </message>
+      <message name="IDS_SETTINGS_STORAGE_ITEM_ENCRYPTION_LABEL" desc="In Device Settings > Storage, label for the algorithm used for storage encryption.">
+        User data encryption
+      </message>
+      <message name="IDS_SETTINGS_STORAGE_ITEM_ENCRYPTION_AES_128" desc="In Device Settings > Storage, string for the algorithm used for storage encryption.">
+        AES-128
+      </message>
+      <message name="IDS_SETTINGS_STORAGE_ITEM_ENCRYPTION_AES_256" desc="In Device Settings > Storage, string for the algorithm used for storage encryption.">
+        AES-256
+      </message>
+
       <part file="ash_settings_search_tag_strings.grdp" />
     </messages>
   </release>
