@@ -23,6 +23,7 @@
 #include "ui/actions/actions.h"
 #include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/range/range.h"
 #include "ui/gfx/text_utils.h"
 #include "url/gurl.h"
 
@@ -298,8 +299,8 @@ AppMenuSearchController::ProcessSearchResults(
 
   auto try_add_item = [&remaining_capacity](
                           std::vector<SearchResults::Item>& section,
-                          size_t max_cap,
-                          const AppMenuSearchItem* search_item) {
+                          size_t max_cap, const AppMenuSearchItem* search_item,
+                          const gfx::Range& highlight_range) {
     if (section.size() < max_cap) {
       section.push_back({
           .action_item = search_item->GetActionItem(),
@@ -307,6 +308,7 @@ AppMenuSearchController::ProcessSearchResults(
           .breadcrumb = search_item->GetSecondaryText(),
           .icon_override = search_item->GetIconOverride(),
           .is_checkable = search_item->IsCheckable(),
+          .highlight_range = highlight_range,
       });
       --remaining_capacity;
     }
@@ -327,16 +329,20 @@ AppMenuSearchController::ProcessSearchResults(
     // maximum per-section result caps to keep search results concise.
     switch (search_item->GetType()) {
       case AppMenuSearchItem::Type::kAction:
-        try_add_item(results.actions, kMaxActions, search_item);
+        try_add_item(results.actions, kMaxActions, search_item,
+                     match.exact_match_range);
         break;
       case AppMenuSearchItem::Type::kBookmark:
-        try_add_item(results.bookmarks, kMaxBookmarks, search_item);
+        try_add_item(results.bookmarks, kMaxBookmarks, search_item,
+                     match.exact_match_range);
         break;
       case AppMenuSearchItem::Type::kRecentTabs:
-        try_add_item(results.recent_tabs, kMaxRecentTabs, search_item);
+        try_add_item(results.recent_tabs, kMaxRecentTabs, search_item,
+                     match.exact_match_range);
         break;
       case AppMenuSearchItem::Type::kTabGroup:
-        try_add_item(results.tab_groups, kMaxTabGroups, search_item);
+        try_add_item(results.tab_groups, kMaxTabGroups, search_item,
+                     match.exact_match_range);
         break;
     }
   }
@@ -380,18 +386,26 @@ AppMenuSearchController::BuildSearchResultsTree(SearchResults results) const {
       // Always show the title that matched, even when it's the action's own
       // text. Otherwise the row shows the action's text, which can differ
       // (e.g. a text override on the menu row) or be empty (icon-only
-      // buttons, which are titled by their tooltip). The indexed title is
-      // plain text, so escape ampersands to keep the menu from treating them
-      // as mnemonic markers.
+      // buttons, which are titled by their tooltip). Highlighted rows disable
+      // mnemonics on the MenuItemView so UTF-16 offsets match `item.title`;
+      // unhighlighted rows keep mnemonics enabled, so both title and
+      // secondary title need ampersands escaped.
+      const bool has_highlight = item.highlight_range.IsValid();
+      if (has_highlight) {
+        indirect_item->SetProperty(AppMenuActionItem::kHighlightRangeKey,
+                                   item.highlight_range);
+      }
       indirect_item->SetProperty(
           AppMenuActionItem::kTextOverrideKey,
-          ui::EscapeMenuLabelAmpersands(std::u16string(item.title)));
+          has_highlight
+              ? std::u16string(item.title)
+              : ui::EscapeMenuLabelAmpersands(std::u16string(item.title)));
       if (!item.breadcrumb.empty()) {
-        // MenuItemView draws the secondary title with the same mnemonic
-        // prefix handling as the title, so it needs escaping too.
-        indirect_item->SetProperty(
-            AppMenuActionItem::kSecondaryTextKey,
-            ui::EscapeMenuLabelAmpersands(std::u16string(item.breadcrumb)));
+        indirect_item->SetProperty(AppMenuActionItem::kSecondaryTextKey,
+                                   has_highlight
+                                       ? std::u16string(item.breadcrumb)
+                                       : ui::EscapeMenuLabelAmpersands(
+                                             std::u16string(item.breadcrumb)));
       }
       if (item.icon_override) {
         indirect_item->SetProperty(AppMenuActionItem::kIconOverrideKey,

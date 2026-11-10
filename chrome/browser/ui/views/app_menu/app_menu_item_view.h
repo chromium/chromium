@@ -12,6 +12,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
+#include "ui/gfx/range/range.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 
 class BrowserWindowInterface;
@@ -38,6 +39,9 @@ class AppMenuItemView : public views::MenuItemView {
   const std::optional<std::u16string>& text_override() const {
     return text_override_;
   }
+  const std::optional<gfx::Range>& highlight_range_override() const {
+    return highlight_range_;
+  }
   const std::optional<ui::ImageModel>& icon_override() const {
     return icon_override_;
   }
@@ -60,6 +64,7 @@ class AppMenuItemView : public views::MenuItemView {
 
  private:
   std::optional<std::u16string> text_override_;
+  std::optional<gfx::Range> highlight_range_;
   std::optional<ui::ImageModel> icon_override_;
   int default_icon_size_ = 0;
   std::optional<ui::ColorId> default_icon_color_;

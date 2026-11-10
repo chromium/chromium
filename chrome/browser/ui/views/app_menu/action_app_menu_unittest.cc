@@ -118,6 +118,7 @@
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/range/range.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/strings/grit/ax_strings.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -5767,6 +5768,17 @@ TEST_F(ActionAppMenuTest, AppMenuSearchQueryPopulatesResults) {
   views::MenuItemView* new_tab_item = root->GetMenuItemByID(kActionNewTab);
   ASSERT_TRUE(new_tab_item);
   EXPECT_EQ(new_tab_item->title(), u"New Tab");
+  EXPECT_EQ(new_tab_item->highlight_range(), gfx::Range(0, 7));
+  EXPECT_FALSE(new_tab_item->may_have_mnemonics());
+
+  // The title and highlight overrides are kept when the bound action changes.
+  actions::ActionItem* new_tab_action =
+      actions::ActionManager::Get().FindAction(
+          kActionNewTab, browser_actions_->root_action_item());
+  ASSERT_TRUE(new_tab_action);
+  new_tab_action->SetText(u"Changed");
+  EXPECT_EQ(new_tab_item->title(), u"New Tab");
+  EXPECT_EQ(new_tab_item->highlight_range(), gfx::Range(0, 7));
 
   // Clicking/executing the search result item should invoke the action.
   EXPECT_CALL(mock_action_invoked_, Call(kActionNewTab, testing::_, testing::_))

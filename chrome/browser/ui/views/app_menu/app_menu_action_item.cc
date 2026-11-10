@@ -15,12 +15,14 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/color/color_id.h"
+#include "ui/gfx/range/range.h"
 #include "ui/views/view_class_properties.h"
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(AppMenuActionItem::DisplayType)
 DEFINE_UI_CLASS_PROPERTY_TYPE(AppMenuActionItem::ItemHeight)
 DEFINE_UI_CLASS_PROPERTY_TYPE(AppMenuDragAndDropDelegate*)
 DEFINE_UI_CLASS_PROPERTY_TYPE(const base::Feature*)
+DEFINE_UI_CLASS_PROPERTY_TYPE(gfx::Range*)
 DEFINE_UI_CLASS_PROPERTY_TYPE(ui::ImageModel*)
 DEFINE_UI_CLASS_PROPERTY_TYPE(ui::MenuSeparatorType)
 
@@ -55,6 +57,7 @@ DEFINE_UI_CLASS_PROPERTY_KEY(AppMenuDragAndDropDelegate*,
                              nullptr)
 
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::u16string, kAppMenuTextOverrideInternal)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Range, kAppMenuHighlightRangeInternal)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ui::ImageModel, kAppMenuIconOverrideInternal)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ui::ImageModel, kAppMenuMinorIconInternal)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::u16string, kAppMenuMinorTextInternal)
@@ -73,6 +76,9 @@ const ui::ClassProperty<ui::ColorId>* const
 
 const ui::ClassProperty<std::u16string*>* const
     AppMenuActionItem::kTextOverrideKey = kAppMenuTextOverrideInternal;
+
+const ui::ClassProperty<gfx::Range*>* const
+    AppMenuActionItem::kHighlightRangeKey = kAppMenuHighlightRangeInternal;
 
 const ui::ClassProperty<ui::ImageModel*>* const
     AppMenuActionItem::kIconOverrideKey = kAppMenuIconOverrideInternal;

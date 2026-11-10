@@ -21,6 +21,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
+#include "ui/gfx/range/range.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_tracker.h"
@@ -79,6 +80,9 @@ class AppMenuItemActionViewInterface
 
     if (menu_item->text_override().has_value()) {
       menu_item->SetTitle(*menu_item->text_override());
+    }
+    if (menu_item->highlight_range_override().has_value()) {
+      menu_item->SetHighlightRange(*menu_item->highlight_range_override());
     }
 
     const int default_icon_size = menu_item->default_icon_size();
@@ -156,6 +160,12 @@ AppMenuItemView::AppMenuItemView(views::MenuItemView* parent,
     // The secondary title is not part of the accessible name, so expose it as
     // the description for screen readers.
     GetViewAccessibility().SetDescription(default_secondary_text_);
+  }
+
+  if (gfx::Range* highlight_range =
+          base_action->GetProperty(AppMenuActionItem::kHighlightRangeKey)) {
+    highlight_range_ = *highlight_range;
+    set_may_have_mnemonics(false);
   }
 
   if (const ui::ElementIdentifier element_id =

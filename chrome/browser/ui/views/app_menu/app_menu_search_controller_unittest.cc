@@ -34,6 +34,7 @@
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/gfx/range/range.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/test/button_test_api.h"
 #include "url/gurl.h"
@@ -1030,6 +1031,151 @@ TEST_F(AppMenuSearchControllerTest, OtherDeviceTabsSubmenuIndexed) {
   EXPECT_EQ(items[0]->GetTitle(), u"Synced Page");
   EXPECT_EQ(items[0]->GetType(), AppMenuSearchItem::Type::kRecentTabs);
   EXPECT_EQ(items[0]->GetSecondaryText(), u"Other device tabs");
+}
+
+TEST_F(AppMenuSearchControllerTest, BuildSearchResultsTreeHighlightRange) {
+  menu_root_->AddChild(actions::ActionItem::Builder()
+                           .SetActionId(kActionNewTab)
+                           .SetText(u"New Tab")
+                           .Build());
+  menu_root_->AddChild(actions::ActionItem::Builder()
+                           .SetActionId(kActionNewIncognitoWindow)
+                           .SetText(u"New Incognito Window")
+                           .AddSynonyms({u"private"})
+                           .Build());
+  scope_->AddChild(actions::ActionItem::Builder()
+                       .SetActionId(kActionToggleVerticalTabs)
+                       .SetText(u"Show tabs vertically")
+                       .Build());
+  menu_root_->AddChild(AppMenuActionItem::CreateIndirect(
+      kActionToggleVerticalTabs, scope_.get(),
+      {.text_override = u"Show tabs &horizontally"}));
+  auto rd_submenu = actions::ActionItem::Builder().SetText(u"R&&D").Build();
+  rd_submenu->AddChild(actions::ActionItem::Builder()
+                           .SetActionId(kActionShowChromeLabs)
+                           .SetText(u"Q&&A Portal")
+                           .AddSynonyms({u"faq"})
+                           .Build());
+  menu_root_->AddChild(std::move(rd_submenu));
+
+  controller_->InitializeSearchIndex();
+
+  // Case-insensitive word-prefix match sets highlight range.
+  {
+    const std::unique_ptr<actions::ActionItem> results =
+        controller_->Search(u"  tab  ");
+    ASSERT_NE(results, nullptr);
+    const auto& rows = results->GetChildren().children();
+    ASSERT_FALSE(rows.empty());
+    const gfx::Range* range =
+        rows[0]->GetProperty(AppMenuActionItem::kHighlightRangeKey);
+    ASSERT_NE(range, nullptr);
+    EXPECT_EQ(*range, gfx::Range(4, 7));
+  }
+
+  // Case-insensitive inner-word substring match sets highlight range.
+  {
+    const std::unique_ptr<actions::ActionItem> results =
+        controller_->Search(u"cognito");
+    ASSERT_NE(results, nullptr);
+    const auto& rows = results->GetChildren().children();
+    ASSERT_EQ(rows.size(), 1u);
+    const gfx::Range* range =
+        rows[0]->GetProperty(AppMenuActionItem::kHighlightRangeKey);
+    ASSERT_NE(range, nullptr);
+    EXPECT_EQ(*range, gfx::Range(6, 13));
+  }
+
+  // Text override strips mnemonic '&' and computes accurate highlight range.
+  {
+    const std::unique_ptr<actions::ActionItem> results =
+        controller_->Search(u"horizontal");
+    ASSERT_NE(results, nullptr);
+    const auto& rows = results->GetChildren().children();
+    ASSERT_EQ(rows.size(), 1u);
+    const std::u16string* text_override =
+        rows[0]->GetProperty(AppMenuActionItem::kTextOverrideKey);
+    ASSERT_NE(text_override, nullptr);
+    EXPECT_EQ(*text_override, u"Show tabs horizontally");
+    const gfx::Range* range =
+        rows[0]->GetProperty(AppMenuActionItem::kHighlightRangeKey);
+    ASSERT_NE(range, nullptr);
+    EXPECT_EQ(*range, gfx::Range(10, 20));
+  }
+
+  // Fuzzy transposition match ("atb" -> "New Tab") does not set highlight
+  // range.
+  {
+    const std::unique_ptr<actions::ActionItem> results =
+        controller_->Search(u"atb");
+    ASSERT_NE(results, nullptr);
+    const auto& rows = results->GetChildren().children();
+    ASSERT_FALSE(rows.empty());
+    EXPECT_EQ(rows[0]->GetProperty(AppMenuActionItem::kHighlightRangeKey),
+              nullptr);
+  }
+
+  // Synonym-only match ("private" -> "New Incognito Window") does not set
+  // highlight range.
+  {
+    const std::unique_ptr<actions::ActionItem> results =
+        controller_->Search(u"private");
+    ASSERT_NE(results, nullptr);
+    const auto& rows = results->GetChildren().children();
+    ASSERT_EQ(rows.size(), 1u);
+    EXPECT_EQ(rows[0]->GetProperty(AppMenuActionItem::kHighlightRangeKey),
+              nullptr);
+  }
+
+  // Literal '&' (escaped as "&&" on the ActionItem) in both title and
+  // breadcrumb is unescaped when highlighted (where mnemonics are disabled) and
+  // re-escaped when unhighlighted so MenuItemView does not strip '&'.
+  {
+    const std::unique_ptr<actions::ActionItem> highlighted_results =
+        controller_->Search(u"portal");
+    ASSERT_NE(highlighted_results, nullptr);
+    const auto& highlighted_rows =
+        highlighted_results->GetChildren().children();
+    ASSERT_EQ(highlighted_rows.size(), 1u);
+    ASSERT_NE(
+        highlighted_rows[0]->GetProperty(AppMenuActionItem::kTextOverrideKey),
+        nullptr);
+    EXPECT_EQ(
+        *highlighted_rows[0]->GetProperty(AppMenuActionItem::kTextOverrideKey),
+        u"Q&A Portal");
+    ASSERT_NE(
+        highlighted_rows[0]->GetProperty(AppMenuActionItem::kSecondaryTextKey),
+        nullptr);
+    EXPECT_EQ(
+        *highlighted_rows[0]->GetProperty(AppMenuActionItem::kSecondaryTextKey),
+        u"R&D");
+    const gfx::Range* range =
+        highlighted_rows[0]->GetProperty(AppMenuActionItem::kHighlightRangeKey);
+    ASSERT_NE(range, nullptr);
+    EXPECT_EQ(*range, gfx::Range(4, 10));
+
+    const std::unique_ptr<actions::ActionItem> unhighlighted_results =
+        controller_->Search(u"faq");
+    ASSERT_NE(unhighlighted_results, nullptr);
+    const auto& unhighlighted_rows =
+        unhighlighted_results->GetChildren().children();
+    ASSERT_EQ(unhighlighted_rows.size(), 1u);
+    ASSERT_NE(
+        unhighlighted_rows[0]->GetProperty(AppMenuActionItem::kTextOverrideKey),
+        nullptr);
+    EXPECT_EQ(*unhighlighted_rows[0]->GetProperty(
+                  AppMenuActionItem::kTextOverrideKey),
+              u"Q&&A Portal");
+    ASSERT_NE(unhighlighted_rows[0]->GetProperty(
+                  AppMenuActionItem::kSecondaryTextKey),
+              nullptr);
+    EXPECT_EQ(*unhighlighted_rows[0]->GetProperty(
+                  AppMenuActionItem::kSecondaryTextKey),
+              u"R&&D");
+    EXPECT_EQ(unhighlighted_rows[0]->GetProperty(
+                  AppMenuActionItem::kHighlightRangeKey),
+              nullptr);
+  }
 }
 
 }  // namespace

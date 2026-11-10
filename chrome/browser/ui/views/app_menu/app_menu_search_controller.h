@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_search_item.h"
 #include "ui/base/models/image_model.h"
+#include "ui/gfx/range/range.h"
 
 class AppMenuSearchBarView;
 class FuzzyFinder;
@@ -102,6 +103,10 @@ class AppMenuSearchController {
       // Whether the indexed menu row is a checkbox item, so the search result
       // is rendered as one too, bound to the action's checked state.
       bool is_checkable = false;
+
+      // Consecutive character span in `title` that is a case-insensitive exact
+      // match of the query, or InvalidRange() if none.
+      gfx::Range highlight_range = gfx::Range::InvalidRange();
     };
 
     SearchResults();
