@@ -131,11 +131,7 @@ constexpr CGFloat kLeadingViewYOffset = 1.0;
 
 // The spacing between the items in the button stack.
 constexpr CGFloat kButtonSpacing = 9.0;
-constexpr CGFloat kButtonSpacingUICleanup = 16.0;
-// The minimum touch target diameter for the trailing stack buttons when
-// `kNewTabPageUICleanup` is enabled, sized so the voice search and lens touch
-// targets meet at the midpoint without overlapping.
-constexpr CGFloat kFakeboxButtonMinimumTouchTargetUICleanup = 38.0;
+constexpr CGFloat kButtonSpacingUICleanup = 22.0;
 // Top content inset for the trailing fakebox buttons to optically center the
 // baseline-aligned symbol glyphs with the search engine logo.
 constexpr CGFloat kFakeboxButtonTopContentInsetUICleanup = 2.0;
@@ -1488,14 +1484,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   }
 }
 
-// Configures the touch target for `button` in the fakebox button stack.
-- (void)configureTouchTargetForFakeboxButton:
-    (ExtendedTouchTargetButton*)button {
-  if (IsNewTabPageUICleanupEnabled()) {
-    button.minimumDiameter = kFakeboxButtonMinimumTouchTargetUICleanup;
-  }
-}
-
 // Handles the creation of the plus button.
 - (void)createPlusButton {
   CHECK([self shouldShowPlusButton]);
@@ -1556,7 +1544,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   // Voice search.
   self.voiceSearchButton =
       [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
-  [self configureTouchTargetForFakeboxButton:self.voiceSearchButton];
   self.voiceSearchButton.enabled = _voiceSearchIsEnabled;
   self.voiceSearchButton.isAccessibilityElement = _voiceSearchIsEnabled;
   if (uiCleanupEnabled) {
@@ -1576,7 +1563,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     }
     self.lensButton =
         [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
-    [self configureTouchTargetForFakeboxButton:self.lensButton];
     if (uiCleanupEnabled && !_useNewBadgeForLensButton) {
       AddSquareConstraints(self.lensButton, kFakeboxImageSizeUICleanup);
     }
