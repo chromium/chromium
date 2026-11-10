@@ -144,10 +144,10 @@
   {
     "name": "ai-hub-new-badge",
     "owners": [
-      "joemerramos@google.com",
+      "yasamans@google.com",
       "bling-alchemy-eng@google.com"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "ai-omnibox-ask-placeholder",
@@ -934,10 +934,10 @@
   {
     "name": "ask-gemini-chip-ignore-criteria",
     "owners": [
-      "joemerramos@google.com",
+      "yasamans@google.com",
       "bling-alchemy-eng@google.com"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "assistant-aim-minimized-state",
@@ -1799,10 +1799,10 @@
   {
     "name": "bwg-precise-location",
     "owners": [
-      "joemerramos@google.com",
+      "yasamans@google.com",
       "bling-alchemy-eng@google.com"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "bwg-promo-consent",
