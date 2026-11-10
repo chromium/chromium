@@ -8,6 +8,7 @@
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "device/vr/public/cpp/xr_session_feature_set.h"
 #include "device/vr/public/mojom/xr_session.mojom-shared.h"
 #include "device/vr/util/stage_utils.h"
 #include "ui/gfx/geometry/point3_f.h"
@@ -43,7 +44,7 @@ OpenXrStageBoundsProviderBasicFactory::GetRequestedExtensions() const {
   return *kExtensions;
 }
 
-std::set<device::mojom::XRSessionFeature>
+XRSessionFeatureSet
 OpenXrStageBoundsProviderBasicFactory::GetSupportedFeatures() const {
   return {device::mojom::XRSessionFeature::REF_SPACE_BOUNDED_FLOOR};
 }

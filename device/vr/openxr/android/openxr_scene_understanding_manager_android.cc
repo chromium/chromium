@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <memory>
 #include <optional>
-#include <set>
 #include <utility>
 #include <vector>
 
@@ -17,6 +16,7 @@
 #include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/openxr/openxr_util.h"
+#include "device/vr/public/cpp/xr_session_feature_set.h"
 #include "device/vr/public/mojom/xr_session.mojom-shared.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
@@ -82,7 +82,7 @@ OpenXrSceneUnderstandingManagerAndroidFactory::GetRequestedExtensions() const {
   return *kExtensions;
 }
 
-std::set<device::mojom::XRSessionFeature>
+XRSessionFeatureSet
 OpenXrSceneUnderstandingManagerAndroidFactory::GetSupportedFeatures() const {
   return supported_features_;
 }
@@ -91,19 +91,19 @@ void OpenXrSceneUnderstandingManagerAndroidFactory::CheckAndUpdateEnabledState(
     const OpenXrExtensionEnumeration* extension_enum,
     XrInstance instance,
     XrSystemId system) {
-  supported_features_.clear();
+  supported_features_.Clear();
   if (extension_enum->ExtensionSupported(
           XR_ANDROID_TRACKABLES_EXTENSION_NAME)) {
-    supported_features_.insert(device::mojom::XRSessionFeature::ANCHORS);
+    supported_features_.Put(device::mojom::XRSessionFeature::ANCHORS);
 
     // Hit Test needs Trackables and Raycast extensions.
     if (extension_enum->ExtensionSupported(XR_ANDROID_RAYCAST_EXTENSION_NAME)) {
-      supported_features_.insert(device::mojom::XRSessionFeature::HIT_TEST);
+      supported_features_.Put(device::mojom::XRSessionFeature::HIT_TEST);
     }
   }
   if (extension_enum->ExtensionSupported(
           XR_ANDROID_SCENE_MESHING_EXTENSION_NAME)) {
-    supported_features_.insert(device::mojom::XRSessionFeature::MESH_DETECTION);
+    supported_features_.Put(device::mojom::XRSessionFeature::MESH_DETECTION);
   }
 
   SetEnabled(!supported_features_.empty());

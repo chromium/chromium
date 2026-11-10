@@ -5,13 +5,12 @@
 #ifndef DEVICE_VR_OPENXR_OPENXR_SPATIAL_FRAMEWORK_MANAGER_H_
 #define DEVICE_VR_OPENXR_OPENXR_SPATIAL_FRAMEWORK_MANAGER_H_
 
-#include <set>
-
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_extension_handler_factory.h"
 #include "device/vr/openxr/openxr_scene_understanding_manager.h"
+#include "device/vr/public/cpp/xr_session_feature_set.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace device {
@@ -24,11 +23,10 @@ class OpenXrSpatialPlaneManager;
 // extensions and leveraging them to provide "Scene Understanding" style data.
 class OpenXrSpatialFrameworkManager : public OpenXRSceneUnderstandingManager {
  public:
-  OpenXrSpatialFrameworkManager(
-      const OpenXrExtensionHelper& extension_helper,
-      OpenXrApiWrapper* openxr,
-      XrSpace space,
-      const std::set<device::mojom::XRSessionFeature>& supported_features);
+  OpenXrSpatialFrameworkManager(const OpenXrExtensionHelper& extension_helper,
+                                OpenXrApiWrapper* openxr,
+                                XrSpace space,
+                                XRSessionFeatureSet supported_features);
   ~OpenXrSpatialFrameworkManager() override;
 
   // OpenXRSceneUnderstandingManager
@@ -70,8 +68,7 @@ class OpenXrSpatialFrameworkManagerFactory
 
   const base::flat_set<std::string_view>& GetRequestedExtensions()
       const override;
-  std::set<device::mojom::XRSessionFeature> GetSupportedFeatures()
-      const override;
+  XRSessionFeatureSet GetSupportedFeatures() const override;
   void CheckAndUpdateEnabledState(
       const OpenXrExtensionEnumeration* extension_enum,
       XrInstance instance,
@@ -82,7 +79,7 @@ class OpenXrSpatialFrameworkManagerFactory
                                   XrSpace base_space) const override;
 
  private:
-  std::set<device::mojom::XRSessionFeature> supported_features_;
+  XRSessionFeatureSet supported_features_;
 };
 
 }  // namespace device

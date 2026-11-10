@@ -17,6 +17,7 @@ component("cpp") {
     "vr_device_provider.h",
     "xr_frame_sink_client.cc",
     "xr_frame_sink_client.h",
+    "xr_session_feature_set.h",
   ]
 
   public_deps = [ ":features" ]

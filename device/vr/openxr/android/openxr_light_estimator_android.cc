@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <cmath>
 #include <memory>
-#include <set>
 
 #include "base/bit_cast.h"
 #include "base/containers/flat_set.h"
@@ -21,6 +20,7 @@
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/public/cpp/features.h"
+#include "device/vr/public/cpp/xr_session_feature_set.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "third_party/openxr/dev/xr_android.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
@@ -241,8 +241,8 @@ OpenXrLightEstimatorAndroidFactory::GetRequestedExtensions() const {
   return *kExtensions;
 }
 
-std::set<device::mojom::XRSessionFeature>
-OpenXrLightEstimatorAndroidFactory::GetSupportedFeatures() const {
+XRSessionFeatureSet OpenXrLightEstimatorAndroidFactory::GetSupportedFeatures()
+    const {
   if (!IsEnabled()) {
     return {};
   }

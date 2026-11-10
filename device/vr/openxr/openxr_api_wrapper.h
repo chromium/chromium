@@ -25,6 +25,7 @@
 #include "device/vr/openxr/openxr_unbounded_space_provider.h"
 #include "device/vr/openxr/openxr_view_configuration.h"
 #include "device/vr/openxr/openxr_visibility_mask_handler.h"
+#include "device/vr/public/cpp/xr_session_feature_set.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
 #include "device/vr/vr_export.h"
@@ -115,7 +116,7 @@ class OpenXrApiWrapper {
   }
   bool IsFeatureEnabled(device::mojom::XRSessionFeature feature) const;
 
-  const std::unordered_set<mojom::XRSessionFeature>& GetEnabledFeatures() const;
+  XRSessionFeatureSet GetEnabledFeatures() const;
   std::vector<mojom::XRViewPtr> GetViews() const;
   mojom::VRPosePtr GetViewerPose() const;
   std::vector<mojom::XRInputSourceStatePtr> GetInputState();
@@ -256,7 +257,7 @@ class OpenXrApiWrapper {
   XrSpace unbounded_space_ = XR_NULL_HANDLE;
   bool emulated_local_floor_ = false;
   bool try_recreate_local_floor_ = false;
-  std::unordered_set<mojom::XRSessionFeature> enabled_features_;
+  XRSessionFeatureSet enabled_features_;
   raw_ptr<OpenXrGraphicsBinding> graphics_binding_ = nullptr;
 
   bool received_initial_valid_primary_views_ = false;

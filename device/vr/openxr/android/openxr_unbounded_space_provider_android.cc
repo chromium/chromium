@@ -4,12 +4,11 @@
 
 #include "device/vr/openxr/android/openxr_unbounded_space_provider_android.h"
 
-#include <set>
-
 #include "base/containers/flat_set.h"
 #include "base/no_destructor.h"
 #include "device/vr/openxr/openxr_extension_handler_factory.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
+#include "device/vr/public/cpp/xr_session_feature_set.h"
 #include "device/vr/public/mojom/xr_session.mojom-shared.h"
 #include "third_party/openxr/dev/xr_android.h"
 
@@ -35,7 +34,7 @@ OpenXrUnboundedSpaceProviderAndroidFactory::GetRequestedExtensions() const {
   return *kExtensions;
 }
 
-std::set<device::mojom::XRSessionFeature>
+XRSessionFeatureSet
 OpenXrUnboundedSpaceProviderAndroidFactory::GetSupportedFeatures() const {
   if (!IsEnabled()) {
     return {};

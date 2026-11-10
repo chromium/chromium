@@ -115,8 +115,7 @@ class OpenXrHandTrackerFactory : public OpenXrExtensionHandlerFactory {
 
   const base::flat_set<std::string_view>& GetRequestedExtensions()
       const override;
-  std::set<device::mojom::XRSessionFeature> GetSupportedFeatures()
-      const override;
+  XRSessionFeatureSet GetSupportedFeatures() const override;
 
   void CheckAndUpdateEnabledState(
       const OpenXrExtensionEnumeration* extension_enum,

@@ -4,8 +4,6 @@
 
 #include "device/vr/openxr/openxr_spatial_framework_manager.h"
 
-#include <set>
-
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -18,6 +16,7 @@
 #include "device/vr/openxr/openxr_spatial_plane_manager.h"
 #include "device/vr/openxr/openxr_spatial_utils.h"
 #include "device/vr/openxr/openxr_util.h"
+#include "device/vr/public/cpp/xr_session_feature_set.h"
 #include "device/vr/public/mojom/xr_session.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/openxr/dev/xr_android.h"
@@ -34,16 +33,14 @@ OpenXrSpatialFrameworkManager::OpenXrSpatialFrameworkManager(
     const OpenXrExtensionHelper& extension_helper,
     OpenXrApiWrapper* openxr,
     XrSpace space,
-    const std::set<device::mojom::XRSessionFeature>& supported_features)
-    : extension_helper_(extension_helper),
-      openxr_(openxr),
-      base_space_(space) {
+    XRSessionFeatureSet supported_features)
+    : extension_helper_(extension_helper), openxr_(openxr), base_space_(space) {
   absl::flat_hash_map<XrSpatialCapabilityEXT,
                       absl::flat_hash_set<XrSpatialComponentTypeEXT>>
       capability_configuration;
-  bool mesh_detection_enabled = supported_features.contains(
-      device::mojom::XRSessionFeature::MESH_DETECTION);
-  if (supported_features.contains(
+  bool mesh_detection_enabled =
+      supported_features.Has(device::mojom::XRSessionFeature::MESH_DETECTION);
+  if (supported_features.Has(
           device::mojom::XRSessionFeature::PLANE_DETECTION) ||
       mesh_detection_enabled) {
     plane_manager_ = std::make_unique<OpenXrSpatialPlaneManager>(
@@ -52,7 +49,7 @@ OpenXrSpatialFrameworkManager::OpenXrSpatialFrameworkManager(
     plane_manager_->PopulateCapabilityConfiguration(capability_configuration);
   }
 
-  if (supported_features.contains(device::mojom::XRSessionFeature::HIT_TEST)) {
+  if (supported_features.Has(device::mojom::XRSessionFeature::HIT_TEST)) {
     hit_test_manager_ = std::make_unique<OpenXrSpatialHitTestManager>(
         extension_helper_.get(), *this, plane_manager_.get(), base_space_,
         openxr_->instance(), openxr_->system());
@@ -60,7 +57,7 @@ OpenXrSpatialFrameworkManager::OpenXrSpatialFrameworkManager(
         capability_configuration);
   }
 
-  if (supported_features.contains(device::mojom::XRSessionFeature::ANCHORS)) {
+  if (supported_features.Has(device::mojom::XRSessionFeature::ANCHORS)) {
     anchor_manager_ = std::make_unique<OpenXrSpatialAnchorManager>(
         extension_helper_.get(), *this, plane_manager_.get(), base_space_);
     anchor_manager_->PopulateCapabilityConfiguration(capability_configuration);
@@ -273,7 +270,7 @@ void OpenXrSpatialFrameworkManagerFactory::CheckAndUpdateEnabledState(
     const OpenXrExtensionEnumeration* extension_enum,
     XrInstance instance,
     XrSystemId system_id) {
-  supported_features_.clear();
+  supported_features_.Clear();
   SetEnabled(false);
 
   if (!extension_enum->ExtensionSupported(
@@ -296,16 +293,14 @@ void OpenXrSpatialFrameworkManagerFactory::CheckAndUpdateEnabledState(
   if (extension_enum->ExtensionSupported(
           XR_EXT_SPATIAL_PLANE_TRACKING_EXTENSION_NAME) &&
       OpenXrSpatialPlaneManager::IsSupported(capabilities)) {
-    supported_features_.insert(
-        device::mojom::XRSessionFeature::PLANE_DETECTION);
-    supported_features_.insert(
-        device::mojom::XRSessionFeature::MESH_DETECTION);
+    supported_features_.Put(device::mojom::XRSessionFeature::PLANE_DETECTION);
+    supported_features_.Put(device::mojom::XRSessionFeature::MESH_DETECTION);
   }
 
   if (extension_enum->ExtensionSupported(
           XR_EXT_SPATIAL_ANCHOR_EXTENSION_NAME) &&
       OpenXrSpatialAnchorManager::IsSupported(capabilities)) {
-    supported_features_.insert(device::mojom::XRSessionFeature::ANCHORS);
+    supported_features_.Put(device::mojom::XRSessionFeature::ANCHORS);
   }
 
   if (extension_enum->ExtensionSupported(
@@ -313,15 +308,15 @@ void OpenXrSpatialFrameworkManagerFactory::CheckAndUpdateEnabledState(
     if (OpenXrSpatialHitTestManager::IsSupported(
             instance, system_id, xrEnumerateSpatialCapabilityComponentTypesEXT,
             capabilities)) {
-      supported_features_.insert(device::mojom::XRSessionFeature::HIT_TEST);
+      supported_features_.Put(device::mojom::XRSessionFeature::HIT_TEST);
     }
   }
 
   SetEnabled(!supported_features_.empty());
 }
 
-std::set<device::mojom::XRSessionFeature>
-OpenXrSpatialFrameworkManagerFactory::GetSupportedFeatures() const {
+XRSessionFeatureSet OpenXrSpatialFrameworkManagerFactory::GetSupportedFeatures()
+    const {
   return supported_features_;
 }
 

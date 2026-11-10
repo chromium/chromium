@@ -18,6 +18,7 @@
 #include "device/vr/openxr/openxr_interaction_profiles.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/public/cpp/switches.h"
+#include "device/vr/public/cpp/xr_session_feature_set.h"
 #include "device/vr/public/mojom/xr_hand_tracking_data.mojom.h"
 #include "device/vr/public/mojom/xr_session.mojom-shared.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
@@ -222,8 +223,7 @@ OpenXrHandTrackerFactory::GetRequestedExtensions() const {
   return *kExtensions;
 }
 
-std::set<device::mojom::XRSessionFeature>
-OpenXrHandTrackerFactory::GetSupportedFeatures() const {
+XRSessionFeatureSet OpenXrHandTrackerFactory::GetSupportedFeatures() const {
   if (!IsEnabled()) {
     return {};
   }

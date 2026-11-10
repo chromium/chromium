@@ -6,10 +6,12 @@
 
 #include <memory>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "device/vr/public/cpp/xr_session_feature_set.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/test/fake_vr_device.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -86,6 +88,31 @@ TEST_F(VRDeviceTest, DeviceChangedDispatched) {
   device_remote->ListenToDeviceChanges(listener.BindPendingRemote());
   base::RunLoop().RunUntilIdle();
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(VRDeviceTest, XRSessionFeatureSetOperations) {
+  static_assert(sizeof(XRSessionFeatureSet) == sizeof(uint32_t));
+
+  XRSessionFeatureSet features = {
+      mojom::XRSessionFeature::REF_SPACE_VIEWER,
+      mojom::XRSessionFeature::HIT_TEST,
+      mojom::XRSessionFeature::MESH_DETECTION,
+  };
+  EXPECT_EQ(features.size(), 3u);
+  EXPECT_TRUE(features.Has(mojom::XRSessionFeature::REF_SPACE_VIEWER));
+  EXPECT_TRUE(features.Has(mojom::XRSessionFeature::HIT_TEST));
+  EXPECT_TRUE(features.Has(mojom::XRSessionFeature::MESH_DETECTION));
+  EXPECT_FALSE(features.Has(mojom::XRSessionFeature::ANCHORS));
+
+  features.Put(mojom::XRSessionFeature::ANCHORS);
+  EXPECT_TRUE(features.Has(mojom::XRSessionFeature::ANCHORS));
+
+  features.Remove(mojom::XRSessionFeature::HIT_TEST);
+  EXPECT_FALSE(features.Has(mojom::XRSessionFeature::HIT_TEST));
+  EXPECT_THAT(base::ToVector(features),
+              testing::ElementsAre(mojom::XRSessionFeature::REF_SPACE_VIEWER,
+                                   mojom::XRSessionFeature::ANCHORS,
+                                   mojom::XRSessionFeature::MESH_DETECTION));
 }
 
 }  // namespace device

@@ -9,6 +9,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/containers/to_vector.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -420,10 +421,7 @@ void OpenXrRenderLoop::StartRuntimeFinish(
   }
   session->submit_frame_sink = std::move(submit_frame_sink);
 
-  const auto& enabled_features = openxr_->GetEnabledFeatures();
-  session->enabled_features.insert(session->enabled_features.end(),
-                                   enabled_features.begin(),
-                                   enabled_features.end());
+  session->enabled_features = base::ToVector(openxr_->GetEnabledFeatures());
 
   session->device_config = device::mojom::XRSessionDeviceConfig::New();
   session->device_config->enable_anti_aliasing =

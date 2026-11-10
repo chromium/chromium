@@ -8,7 +8,6 @@
 #include <array>
 #include <concepts>
 #include <memory>
-#include <set>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_set.h"
@@ -21,6 +20,7 @@
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/openxr/openxr_view_configuration.h"
 #include "device/vr/public/cpp/features.h"
+#include "device/vr/public/cpp/xr_session_feature_set.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
 #include "third_party/openxr/dev/xr_android.h"
@@ -728,8 +728,8 @@ OpenXrDepthSensorAndroidFactory::GetRequestedExtensions() const {
   return *kExtensions;
 }
 
-std::set<device::mojom::XRSessionFeature>
-OpenXrDepthSensorAndroidFactory::GetSupportedFeatures() const {
+XRSessionFeatureSet OpenXrDepthSensorAndroidFactory::GetSupportedFeatures()
+    const {
   if (!IsEnabled()) {
     return {};
   }

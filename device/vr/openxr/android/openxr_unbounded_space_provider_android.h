@@ -25,8 +25,7 @@ class OpenXrUnboundedSpaceProviderAndroidFactory
 
   const base::flat_set<std::string_view>& GetRequestedExtensions()
       const override;
-  std::set<device::mojom::XRSessionFeature> GetSupportedFeatures()
-      const override;
+  XRSessionFeatureSet GetSupportedFeatures() const override;
 
   std::unique_ptr<OpenXrUnboundedSpaceProvider> CreateUnboundedSpaceProvider()
       const override;

@@ -6,9 +6,9 @@
 #define DEVICE_VR_OPENXR_OPENXR_EXTENSION_HANDLER_FACTORY_H_
 
 #include <memory>
-#include <set>
 
 #include "base/containers/flat_set.h"
+#include "device/vr/public/cpp/xr_session_feature_set.h"
 #include "device/vr/public/mojom/xr_session.mojom-forward.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
@@ -55,15 +55,9 @@ class OpenXrExtensionHandlerFactory {
   virtual const base::flat_set<std::string_view>& GetRequestedExtensions()
       const = 0;
 
-  // Returns the list of `XRSessionFeatures` that the handler to be created
+  // Returns the set of `XRSessionFeatures` that the handler to be created
   // can support based on the given set of enabled extensions.
-  // Uses a std::set instead of a base::flat_set, even though we expect the size
-  // to be similar to the above, because implementations may need to dynamically
-  // populate this list, unlike the list of extensions which are expected to
-  // essentially be static, as such we do not want to enforce any data types
-  // (or const& values) on this function's implementations.
-  virtual std::set<device::mojom::XRSessionFeature> GetSupportedFeatures()
-      const = 0;
+  virtual XRSessionFeatureSet GetSupportedFeatures() const = 0;
 
   // Returns whether or not this factory is enabled (e.g. can return at least
   // one "ExtensionHandler" type).
