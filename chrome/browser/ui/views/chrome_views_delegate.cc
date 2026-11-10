@@ -35,6 +35,10 @@
 #include "ui/views/widget/widget_delegate.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "chrome/browser/shell_integration_linux.h"
+#endif
+
 // Helpers --------------------------------------------------------------------
 
 namespace {
@@ -196,6 +200,25 @@ void ChromeViewsDelegate::OnBeforeWidgetInit(
         chromeos::kAppTypeKey, chromeos::AppType::SYSTEM_APP);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_LINUX)
+  // Give top-level windows the browser's WM_CLASS and Wayland app ID for any
+  // of these that they don't set themselves (e.g. the video
+  // Picture-in-Picture window and the Live Caption bubble set none), so that
+  // taskbars group them with the browser windows instead of showing them as
+  // a separate application.
+  if (!params->child) {
+    if (params->wm_class_name.empty()) {
+      params->wm_class_name = shell_integration_linux::GetProgramClassName();
+    }
+    if (params->wm_class_class.empty()) {
+      params->wm_class_class = shell_integration_linux::GetProgramClassClass();
+    }
+    if (params->wayland_app_id.empty()) {
+      params->wayland_app_id = shell_integration_linux::GetProgramClassClass();
+    }
+  }
+#endif  // BUILDFLAG(IS_LINUX)
 
   // We need to determine opacity if it's not already specified.
   if (params->opacity == views::Widget::InitParams::WindowOpacity::kInferred) {

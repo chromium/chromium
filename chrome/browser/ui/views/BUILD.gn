@@ -1252,6 +1252,7 @@ source_set("chrome_views_delegate") {
     deps += [
       "//build:branding_buildflags",
       "//chrome/app/theme:chrome_unscaled_resources",
+      "//chrome/browser:shell_integration_linux",
       "//chrome/browser/ui/views:native_widget_factory",
       "//chrome/common:channel_info",
       "//ui/base",
@@ -1802,8 +1803,14 @@ source_set("browser_tests") {
   }
 
   if (is_linux) {
-    sources += [ "eula_dialog_linux_browsertest.cc" ]
-    deps += [ ":eula_dialog_linux" ]
+    sources += [
+      "chrome_views_delegate_linux_browsertest.cc",
+      "eula_dialog_linux_browsertest.cc",
+    ]
+    deps += [
+      ":eula_dialog_linux",
+      "//chrome/browser:shell_integration_linux",
+    ]
   }
 
   if (is_mac) {
