@@ -286,6 +286,44 @@ public class KeyboardShortcutsUnitTest {
                         ApplicationProvider.getApplicationContext(), R.id.new_tab_menu_id));
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_UNIFIED_KEYBOARD_SHORTCUTS)
+    public void testUnifiedShortcutsEnabled_DefersKeyboardShortcuts() {
+        assertNull(dispatchKeyEvent(KeyEvent.KEYCODE_ESCAPE));
+        assertNull(dispatchKeyEvent(KeyEvent.KEYCODE_F6));
+        assertNull(
+                KeyboardShortcuts.dispatchKeyEvent(
+                        createKeyEvent(KeyEvent.KEYCODE_TAB, KeyEvent.META_CTRL_ON),
+                        /* uiInitialized= */ true,
+                        /* fullscreenManager= */ null,
+                        mController,
+                        ApplicationProvider.getApplicationContext()));
+        assertFalse(onKeyDown(KeyEvent.KEYCODE_T, KeyEvent.META_CTRL_ON));
+        assertFalse(onKeyDown(KeyEvent.KEYCODE_F5));
+        verify(mController, never()).onMenuOrKeyboardAction(anyInt(), anyBoolean());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_UNIFIED_KEYBOARD_SHORTCUTS,
+        BlinkFeatures.ANDROID_KEYBOARD_CONTEXT_MENU
+    })
+    public void testUnifiedShortcutsEnabled_PreservesGamepadAndSystemKeys() {
+        GamepadList.setGamepadApiActiveForTesting(false);
+
+        assertTrue(dispatchKeyEvent(KeyEvent.KEYCODE_SEARCH));
+        verify(mController).onMenuOrKeyboardAction(eq(R.id.focus_url_bar), eq(false));
+
+        assertTrue(dispatchKeyEvent(KeyEvent.KEYCODE_BUTTON_R1));
+        verify(mController).onMenuOrKeyboardAction(eq(R.id.select_next_tab), eq(false));
+
+        assertTrue(onKeyDown(KeyEvent.KEYCODE_BUTTON_B));
+        verify(mController).onMenuOrKeyboardAction(eq(R.id.close_tab), eq(false));
+
+        assertTrue(onKeyDown(KeyEvent.KEYCODE_MENU));
+        verify(mController).onMenuOrKeyboardAction(eq(R.id.show_menu), eq(false));
+    }
+
     private static KeyEvent createKeyEvent(int keyCode, int metaState) {
         return new KeyEvent(
                 SystemClock.uptimeMillis(),

@@ -887,6 +887,9 @@ public class KeyboardShortcuts {
                 }
                 return true;
             case KeyEvent.KEYCODE_ESCAPE:
+                if (ChromeFeatureList.sAndroidUnifiedKeyboardShortcuts.isEnabled()) {
+                    break;
+                }
                 if (event.getAction() != KeyEvent.ACTION_DOWN || event.getRepeatCount() != 0) {
                     break;
                 }
@@ -900,6 +903,9 @@ public class KeyboardShortcuts {
 
                 break;
             case KeyEvent.KEYCODE_F6:
+                if (ChromeFeatureList.sAndroidUnifiedKeyboardShortcuts.isEnabled()) {
+                    break;
+                }
                 if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
                     int actionId =
                             event.isShiftPressed()
@@ -913,6 +919,10 @@ public class KeyboardShortcuts {
             case KeyEvent.KEYCODE_TAB:
             case KeyEvent.KEYCODE_PAGE_DOWN:
             case KeyEvent.KEYCODE_PAGE_UP:
+                if (ChromeFeatureList.sAndroidUnifiedKeyboardShortcuts.isEnabled()) {
+                    break;
+                }
+            // fall through
             case KeyEvent.KEYCODE_BUTTON_R1:
             case KeyEvent.KEYCODE_BUTTON_L1:
                 @KeyboardShortcutsSemanticMeaning int meaning = getKeyboardSemanticMeaning(event);
@@ -1138,8 +1148,6 @@ public class KeyboardShortcuts {
             return false;
         }
 
-        TabModel currentTabModel = tabModelSelector.getCurrentModel();
-
         @KeyboardShortcutsSemanticMeaning int semanticMeaning = getKeyboardSemanticMeaning(event);
 
         RecordHistogram.recordEnumeratedHistogram(
@@ -1148,6 +1156,13 @@ public class KeyboardShortcuts {
                         : "Accessibility.Android.KeyboardShortcut.NoScreenReader8",
                 semanticMeaning,
                 KeyboardShortcuts.KeyboardShortcutsSemanticMeaning.MAX_VALUE + 1);
+
+        if (ChromeFeatureList.sAndroidUnifiedKeyboardShortcuts.isEnabled()
+                && !KeyEvent.isGamepadButton(keyCode)) {
+            return false;
+        }
+
+        TabModel currentTabModel = tabModelSelector.getCurrentModel();
 
         // LINT.IfChange(KeyboardShortcutsOnKeyDown)
         switch (semanticMeaning) {

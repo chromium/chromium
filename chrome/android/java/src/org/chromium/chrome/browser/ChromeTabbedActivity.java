@@ -4876,16 +4876,12 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                     /* isIncognitoOnly= */ true);
             RecordUserAction.record("MobileMenuCloseAllIncognitoTabs");
         } else if (id == R.id.focus_url_bar) {
-            boolean isUrlBarVisible =
-                    !isInOverviewMode() && (!isTablet() || getCurrentTabModel().getCount() != 0);
-            if (isUrlBarVisible) {
+            if (isCurrentTabVisible()) {
                 assumeNonNull(getToolbarManager())
                         .focusAndSelectAllUrlBarText(OmniboxFocusReason.MENU_OR_KEYBOARD_ACTION);
             }
         } else if (id == R.id.focus_and_clear_url_bar) {
-            boolean isUrlBarVisible =
-                    !isInOverviewMode() && (!isTablet() || getCurrentTabModel().getCount() != 0);
-            if (isUrlBarVisible) {
+            if (isCurrentTabVisible()) {
                 assumeNonNull(getToolbarManager())
                         .beginFuseboxInput(
                                 new AutocompleteInput(OmniboxFocusReason.MENU_OR_KEYBOARD_ACTION)
@@ -5810,6 +5806,16 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     }
 
     @Override
+    protected boolean isCurrentTabVisible() {
+        return !isInOverviewMode() && getCurrentTabModel().getCount() != 0;
+    }
+
+    @Override
+    protected boolean supportsTabbedBrowserCommands() {
+        return true;
+    }
+
+    @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         Boolean result =
                 KeyboardShortcuts.dispatchKeyEvent(
@@ -5849,12 +5855,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             mHandler.postDelayed(mShowHistoryRunnable, ViewConfiguration.getLongPressTimeout());
             return super.onKeyDown(keyCode, event);
         }
-        boolean isCurrentTabVisible =
-                !isInOverviewMode() && (!isTablet() || getCurrentTabModel().getCount() != 0);
         boolean keyboardShortcutHandled =
                 KeyboardShortcuts.onKeyDown(
                         event,
-                        isCurrentTabVisible,
+                        isCurrentTabVisible(),
                         true,
                         getTabModelSelector(),
                         /* menuOrKeyboardActionController= */ this);

@@ -9,6 +9,8 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/ui/accelerator_table.h"
 #include "chrome/browser/ui/android/browser_command_delegate_android.h"
 #include "third_party/jni_zero/jni_zero.h"
@@ -53,7 +55,11 @@ bool BrowserShortcutManagerAndroid::AcceleratorPressed(
 
   // ExecuteCommand() returns false when the command is disabled or unhandled
   // so the event keeps propagating (required for Escape).
-  return command_delegate_->ExecuteCommand(command_id);
+  if (command_delegate_->ExecuteCommand(command_id)) {
+    base::RecordAction(base::UserMetricsAction("MobileKeyboardShortcutUsed"));
+    return true;
+  }
+  return false;
 }
 
 bool BrowserShortcutManagerAndroid::CanHandleAccelerators() const {

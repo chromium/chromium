@@ -22,14 +22,14 @@ import org.chromium.ui.base.WindowAndroid;
  */
 @NullMarked
 public class BrowserShortcutManager {
+    private final AcceleratorManager mAcceleratorManager;
     private final @Nullable LifetimeAssert mLifetimeAssert;
     private long mNativeBrowserShortcutManagerAndroid;
 
     /**
      * Creates a shortcut manager and registers browser accelerators on {@code windowAndroid}.
      *
-     * <p>The caller must attach an {@link AcceleratorManager} to {@code windowAndroid} before
-     * constructing this manager, and must call {@link #destroy()} before destroying that {@link
+     * <p>The caller must call {@link #destroy()} before destroying the window's {@link
      * AcceleratorManager}.
      *
      * @param windowAndroid The window whose {@link AcceleratorManager} receives shortcut targets.
@@ -37,6 +37,7 @@ public class BrowserShortcutManager {
      */
     public BrowserShortcutManager(
             WindowAndroid windowAndroid, BrowserCommandDelegate commandDelegate) {
+        mAcceleratorManager = AcceleratorManager.getOrCreate(windowAndroid);
         mNativeBrowserShortcutManagerAndroid =
                 BrowserShortcutManagerJni.get().init(windowAndroid, commandDelegate);
         mLifetimeAssert = LifetimeAssert.create(this);
@@ -58,6 +59,18 @@ public class BrowserShortcutManager {
         }
         return BrowserShortcutManagerJni.get()
                 .preHandleKeyEvent(mNativeBrowserShortcutManagerAndroid, event);
+    }
+
+    /**
+     * Handles {@code event} after focused Android Views and web content decline it, executing any
+     * matching non-reserved browser shortcut or window accelerator.
+     *
+     * @param event The incoming key event.
+     * @return {@code true} if the event was handled.
+     */
+    public boolean handleKeyEvent(KeyEvent event) {
+        assert mNativeBrowserShortcutManagerAndroid != 0;
+        return mAcceleratorManager.processKeyEvent(event);
     }
 
     /**

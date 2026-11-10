@@ -197,6 +197,8 @@ import org.chromium.chrome.browser.settings.SettingsTabUtil;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegateImpl;
 import org.chromium.chrome.browser.share.ShareDelegateSupplier;
+import org.chromium.chrome.browser.shortcuts.BrowserCommandDelegate;
+import org.chromium.chrome.browser.shortcuts.BrowserShortcutManager;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.stylus_handwriting.StylusWritingCoordinator;
 import org.chromium.chrome.browser.tab.RequestDesktopUtils;
@@ -266,6 +268,7 @@ import org.chromium.components.browser_ui.widget.textbubble.TextBubbleBackPressH
 import org.chromium.components.cached_flags.CachedFlagsSafeMode;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
@@ -458,6 +461,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     private StartupMetricsTracker mStartupMetricsTracker;
     private @Nullable AcceleratorManager mAcceleratorManager;
+    private @Nullable BrowserShortcutManager mBrowserShortcutManager;
 
     /** Whether or not the activity is in started state. */
     private boolean mStarted;
@@ -2156,6 +2160,12 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
      * {@link WindowAndroid}.
      */
     protected void onDestroyInternal() {
+        // Must be destroyed before mAcceleratorManager so native ~BrowserShortcutManagerAndroid()
+        // can unregister its accelerators from ui::AcceleratorManagerAndroid before it is freed.
+        if (mBrowserShortcutManager != null) {
+            mBrowserShortcutManager.destroy();
+            mBrowserShortcutManager = null;
+        }
         if (mAcceleratorManager != null) {
             mAcceleratorManager.destroy();
             mAcceleratorManager = null;
@@ -2177,24 +2187,41 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                 && getSavedInstanceState().getBoolean(IS_FROM_RECREATING, false);
     }
 
-    /**
-     * Helper method to explicitly process hardware accelerators (e.g. Alt+G) bypassing the standard
-     * dispatchKeyEvent flow. This is necessary when focus is in an input field and the IME has
-     * bypassed normal View dispatch, allowing the accelerator manager to still intercept shortcuts.
-     *
-     * @param event The KeyEvent to process.
-     * @return true if the event was handled and consumed as an accelerator.
-     */
-    protected boolean processAccelerator(KeyEvent event) {
-        return mAcceleratorManager != null && mAcceleratorManager.processKeyEvent(event);
+    /** Returns whether the active tab is visible for keyboard shortcut handling. */
+    protected boolean isCurrentTabVisible() {
+        return true;
+    }
+
+    /** Returns whether multi-tab and full browser window commands are supported. */
+    protected boolean supportsTabbedBrowserCommands() {
+        return false;
     }
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        if (mAcceleratorManager != null && mAcceleratorManager.processKeyEvent(event)) {
+        if (ChromeFeatureList.sAndroidUnifiedKeyboardShortcuts.isEnabled()) {
+            if (mBrowserShortcutManager != null
+                    && !(getCurrentFocus() instanceof ContentView)
+                    && mBrowserShortcutManager.preHandleKeyEvent(event)
+                            == KeyEventPreHandleResult.HANDLED) {
+                return true;
+            }
+        } else if (mAcceleratorManager != null && mAcceleratorManager.processKeyEvent(event)) {
             return true;
         }
         return super.dispatchKeyEvent(event);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // Execute non-reserved browser shortcuts after focused Android Views and web content
+        // decline the event.
+        if (ChromeFeatureList.sAndroidUnifiedKeyboardShortcuts.isEnabled()
+                && mBrowserShortcutManager != null
+                && mBrowserShortcutManager.handleKeyEvent(event)) {
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override
@@ -2210,7 +2237,13 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         // First evaluate hardware accelerators (e.g. Alt+G, user-customizable shortcuts,
         // or extensions shortcuts) that may have bypassed dispatchKeyEvent because the soft
         // keyboard (IME) is active and intercepting hardware keys.
-        if (processAccelerator(event)) {
+        if (ChromeFeatureList.sAndroidUnifiedKeyboardShortcuts.isEnabled()) {
+            @KeyEventPreHandleResult
+            int result = assumeNonNull(mBrowserShortcutManager).preHandleKeyEvent(event);
+            if (result != KeyEventPreHandleResult.NOT_HANDLED) {
+                return result;
+            }
+        } else if (assumeNonNull(mAcceleratorManager).processKeyEvent(event)) {
             return KeyEventPreHandleResult.HANDLED;
         }
 
@@ -2376,9 +2409,22 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                         AsyncTabParamsManagerSingleton.getInstance(),
                         () -> mTabModelOrchestrator.destroyTabPersistentStore()));
 
-        // This must be initialized after initialization of tab reparenting controller.
         var windowAndroid = getWindowAndroid();
         assumeNonNull(windowAndroid);
+
+        if (ChromeFeatureList.sAndroidUnifiedKeyboardShortcuts.isEnabled()) {
+            mBrowserShortcutManager =
+                    new BrowserShortcutManager(
+                            windowAndroid,
+                            new BrowserCommandDelegate(
+                                    this::isCurrentTabVisible,
+                                    () -> getFullscreenManager().getPersistentFullscreenMode(),
+                                    supportsTabbedBrowserCommands(),
+                                    this::getTabModelSelector,
+                                    /* menuOrKeyboardActionController= */ this));
+        }
+
+        // This must be initialized after initialization of tab reparenting controller.
         DisplayAndroid display = windowAndroid.getDisplay();
         mDisplayAndroidObserver =
                 new DisplayAndroidObserver() {

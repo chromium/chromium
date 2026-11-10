@@ -83,10 +83,10 @@ public class BrowserShortcutManagerTest {
                 });
     }
 
-    private boolean processKeyDown(int keyCode, int metaState) {
+    private boolean handleKeyDown(int keyCode, int metaState) {
         return ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        mAcceleratorManager.processKeyEvent(
+                        mShortcutManager.handleKeyEvent(
                                 new KeyEvent(
                                         /* downTime= */ 0,
                                         /* eventTime= */ 0,
@@ -111,26 +111,26 @@ public class BrowserShortcutManagerTest {
 
     @Test
     @SmallTest
-    public void testProcessKeyEvent_ExecutesCommandAndRecordsHistogram() {
+    public void testHandleKeyEvent_ExecutesCommandAndRecordsHistogram() {
         when(mCommandDelegate.executeCommand(ChromeCommandIds.NEW_TAB)).thenReturn(true);
 
         try (var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         TRIGGERED_HISTOGRAM, ChromeCommandIds.NEW_TAB)) {
-            assertTrue(processKeyDown(KeyEvent.KEYCODE_T, KeyEvent.META_CTRL_ON));
+            assertTrue(handleKeyDown(KeyEvent.KEYCODE_T, KeyEvent.META_CTRL_ON));
         }
         verify(mCommandDelegate).executeCommand(ChromeCommandIds.NEW_TAB);
 
-        assertFalse(processKeyDown(KeyEvent.KEYCODE_A, /* metaState= */ 0));
+        assertFalse(handleKeyDown(KeyEvent.KEYCODE_A, /* metaState= */ 0));
     }
 
     @Test
     @SmallTest
-    public void testProcessKeyEvent_UnhandledCommandReturnsFalse() {
+    public void testHandleKeyEvent_UnhandledCommandReturnsFalse() {
         when(mCommandDelegate.executeCommand(ChromeCommandIds.CLOSE_FIND_OR_STOP))
                 .thenReturn(false);
 
-        assertFalse(processKeyDown(KeyEvent.KEYCODE_ESCAPE, /* metaState= */ 0));
+        assertFalse(handleKeyDown(KeyEvent.KEYCODE_ESCAPE, /* metaState= */ 0));
         verify(mCommandDelegate).executeCommand(ChromeCommandIds.CLOSE_FIND_OR_STOP);
     }
 
@@ -141,9 +141,16 @@ public class BrowserShortcutManagerTest {
                 () -> {
                     mShortcutManager.destroy();
                     mShortcutManager = null;
+                    assertFalse(
+                            mAcceleratorManager.processKeyEvent(
+                                    new KeyEvent(
+                                            /* downTime= */ 0,
+                                            /* eventTime= */ 0,
+                                            KeyEvent.ACTION_DOWN,
+                                            KeyEvent.KEYCODE_T,
+                                            /* repeat= */ 0,
+                                            KeyEvent.META_CTRL_ON)));
                 });
-
-        assertFalse(processKeyDown(KeyEvent.KEYCODE_T, KeyEvent.META_CTRL_ON));
         verifyNoInteractions(mCommandDelegate);
     }
 

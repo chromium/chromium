@@ -11,7 +11,6 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -50,7 +49,6 @@ public class BrowserCommandDelegateUnitTest {
     @Mock private IncognitoUtils.Natives mIncognitoUtilsJniMock;
     @Mock private FeedbackPolicyManager mFeedbackPolicyManager;
 
-    private boolean mIsUiInitialized = true;
     private boolean mIsCurrentTabVisible = true;
     private BrowserCommandDelegate mTabbedDelegate;
     private BrowserCommandDelegate mCustomTabDelegate;
@@ -68,7 +66,6 @@ public class BrowserCommandDelegateUnitTest {
 
         mTabbedDelegate =
                 new BrowserCommandDelegate(
-                        () -> mIsUiInitialized,
                         () -> mIsCurrentTabVisible,
                         /* isFullscreenSupplier= */ () -> false,
                         /* tabbedBrowserCommandsSupported= */ true,
@@ -76,23 +73,11 @@ public class BrowserCommandDelegateUnitTest {
                         mController);
         mCustomTabDelegate =
                 new BrowserCommandDelegate(
-                        () -> mIsUiInitialized,
                         () -> mIsCurrentTabVisible,
                         /* isFullscreenSupplier= */ () -> false,
                         /* tabbedBrowserCommandsSupported= */ false,
                         () -> mTabModelSelector,
                         mController);
-    }
-
-    @Test
-    public void testUiNotInitialized_DisablesAllCommands() {
-        mIsUiInitialized = false;
-
-        // Arbitrarily chosen command to verify that no command is enabled or executed before UI
-        // initialization completes.
-        assertFalse(mTabbedDelegate.isCommandEnabled(ChromeCommandIds.SHOW_APP_MENU));
-        assertFalse(mTabbedDelegate.executeCommand(ChromeCommandIds.SHOW_APP_MENU));
-        verify(mController, never()).onMenuOrKeyboardAction(anyInt(), anyBoolean());
     }
 
     @Test

@@ -30,7 +30,6 @@ import java.util.function.Supplier;
  */
 @NullMarked
 public class BrowserCommandDelegate {
-    private final BooleanSupplier mIsUiInitializedSupplier;
     private final BooleanSupplier mIsCurrentTabVisibleSupplier;
     private final BooleanSupplier mIsFullscreenSupplier;
     private final boolean mTabbedBrowserCommandsSupported;
@@ -40,7 +39,6 @@ public class BrowserCommandDelegate {
     /**
      * Creates a {@link BrowserCommandDelegate} for a browser window.
      *
-     * @param isUiInitializedSupplier Supplies whether the window's UI is initialized.
      * @param isCurrentTabVisibleSupplier Supplies whether the active tab is currently visible (not
      *     in the tab switcher / Hub).
      * @param isFullscreenSupplier Supplies whether the browser window is currently in fullscreen.
@@ -51,13 +49,11 @@ public class BrowserCommandDelegate {
      * @param menuOrKeyboardActionController Controller that executes {@code R.id.*} actions.
      */
     public BrowserCommandDelegate(
-            BooleanSupplier isUiInitializedSupplier,
             BooleanSupplier isCurrentTabVisibleSupplier,
             BooleanSupplier isFullscreenSupplier,
             boolean tabbedBrowserCommandsSupported,
             Supplier<@Nullable TabModelSelector> tabModelSelectorSupplier,
             MenuOrKeyboardActionController menuOrKeyboardActionController) {
-        mIsUiInitializedSupplier = isUiInitializedSupplier;
         mIsCurrentTabVisibleSupplier = isCurrentTabVisibleSupplier;
         mIsFullscreenSupplier = isFullscreenSupplier;
         mTabbedBrowserCommandsSupported = tabbedBrowserCommandsSupported;
@@ -105,10 +101,6 @@ public class BrowserCommandDelegate {
      * @return {@code true} if the command is enabled and can be executed.
      */
     boolean isCommandEnabled(int commandId) {
-        if (!mIsUiInitializedSupplier.getAsBoolean()) {
-            return false;
-        }
-
         boolean isCurrentTabVisible = mIsCurrentTabVisibleSupplier.getAsBoolean();
 
         // LINT.IfChange(BrowserCommandDelegateCommands)
