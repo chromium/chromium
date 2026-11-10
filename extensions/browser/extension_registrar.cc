@@ -884,6 +884,7 @@ void ExtensionRegistrar::UnblockAllExtensions() {
   for (const auto& extension : to_unblock) {
     registry_->RemoveBlocked(extension->id());
     AddExtension(extension.get());
+    TriggerOnEnabledIfReAddedAsEnabled(extension->id());
   }
 
   // While extensions are blocked, we won't display any external install
@@ -907,6 +908,7 @@ void ExtensionRegistrar::OnBlocklistStateRemoved(
   DCHECK(extension);
   registry_->RemoveBlocklisted(extension_id);
   AddExtension(extension.get());
+  TriggerOnEnabledIfReAddedAsEnabled(extension_id);
 }
 
 void ExtensionRegistrar::OnBlocklistStateAdded(
@@ -1140,6 +1142,18 @@ void ExtensionRegistrar::ActivateExtension(const Extension* extension,
   registry_->AddReady(extension);
   if (extension_enabled) {
     registry_->TriggerOnReady(extension);
+  }
+}
+
+void ExtensionRegistrar::TriggerOnEnabledIfReAddedAsEnabled(
+    const ExtensionId& extension_id) {
+  // The extension may still be disabled, blocked or blocklisted for another
+  // reason, or `AddExtension()` may have declined to add it. In those cases it
+  // wasn't enabled.
+  const Extension* extension =
+      registry_->enabled_extensions().GetByID(extension_id);
+  if (extension) {
+    registry_->TriggerOnEnabled(extension);
   }
 }
 

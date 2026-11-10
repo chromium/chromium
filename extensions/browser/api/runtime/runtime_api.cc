@@ -404,18 +404,18 @@ void RuntimeAPI::OnExtensionUnloaded(content::BrowserContext* browser_context,
 
 void RuntimeAPI::OnExtensionEnabled(content::BrowserContext* browser_context,
                                     const Extension* extension) {
-  // If the extension was installed or updated while it was disabled (including
-  // when the update itself disabled it), the same
-  // `ExtensionRegistrar::EnableExtension()` call already ran
-  // `OnExtensionInstalledAndLoaded()` when it loaded the extension, before
-  // notifying that it was enabled. That queued a `kInstall` or `kUpdate`
-  // `runtime.onExtensionLoaded` event and recorded it in
-  // `pending_install_load_versions_`.
-  const bool installed_or_updated_while_disabled =
+  // If the extension was installed or updated while it wasn't enabled (while
+  // disabled, including when the update itself disabled it, or while
+  // blocklisted or blocked), the `ExtensionRegistrar` call that loaded it again
+  // already ran `OnExtensionInstalledAndLoaded()`, before notifying that it was
+  // enabled. That queued a `kInstall` or `kUpdate` `runtime.onExtensionLoaded`
+  // event and recorded it in `pending_install_load_versions_`.
+  const bool installed_or_updated_while_not_enabled =
       pending_install_load_versions_.contains(extension->id());
 
   // Dispatch `runtime.onEnabled` when the extension is re-enabled from a
-  // disabled state. Installing or updating the extension cleared its persisted
+  // disabled state, or re-added as enabled after it was blocklisted or
+  // blocked. Installing or updating the extension cleared its persisted
   // event listeners (see `ExtensionPrefs::FinishExtensionInfoPrefs()`), so in
   // that case wait for its background context to register them again.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -424,12 +424,12 @@ void RuntimeAPI::OnExtensionEnabled(content::BrowserContext* browser_context,
                      base::UnsafeDangling(static_cast<void*>(browser_context_)),
                      extension->id(),
                      /*wait_for_lazy_context=*/
-                     installed_or_updated_while_disabled));
+                     installed_or_updated_while_not_enabled));
 
   // `kInstall` and `kUpdate` take precedence over `kEnable` (see
   // `RuntimeEventRouter::DispatchOnExtensionLoadedEvent()` in runtime_api.h),
   // so skip `kEnable`.
-  if (installed_or_updated_while_disabled) {
+  if (installed_or_updated_while_not_enabled) {
     return;
   }
 

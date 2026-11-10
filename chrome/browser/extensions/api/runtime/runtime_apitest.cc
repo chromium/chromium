@@ -11,6 +11,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -52,6 +53,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/browser/offscreen_document_host.h"
@@ -85,7 +87,6 @@
 #if !BUILDFLAG(IS_ANDROID) && PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS) && \
     !BUILDFLAG(IS_CHROMEOS)
 #include "base/allocator/partition_alloc_features.h"
-#include "base/scoped_observation.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -1805,6 +1806,9 @@ INSTANTIATE_TEST_SUITE_P(DockedDevTools,
 // |                            |             |  = pre-update)    |           |
 // | Enable After Install While | "install"   | "install"         | fired     |
 // |  Disabled                  |             |                   |           |
+// | Removed From Blocklist or  | (none)      | "enable"          | fired     |
+// |  Unblocked                 |             |  (previousVersion |           |
+// |                            |             |  = current)       |           |
 // | Extension Reload           | (none)      | "reload"          | (none)    |
 // | Browser Startup            | (none)      | "startup"         | (none)    |
 // | Browser Update             | "chrome_    | "browser_         | (none)    |
@@ -1831,6 +1835,37 @@ class RuntimeLifecycleEventsApiTest : public RuntimeApiTest {
       const RuntimeLifecycleEventsApiTest&) = delete;
 
  protected:
+  // Counts `ExtensionRegistryObserver::OnExtensionEnabled()` notifications for
+  // a single `extension_id`.
+  class EnabledExtensionCounter : public ExtensionRegistryObserver {
+   public:
+    EnabledExtensionCounter(ExtensionRegistry* registry,
+                            const ExtensionId& extension_id)
+        : extension_id_(extension_id) {
+      observation_.Observe(registry);
+    }
+    ~EnabledExtensionCounter() override = default;
+
+    EnabledExtensionCounter(const EnabledExtensionCounter&) = delete;
+    EnabledExtensionCounter& operator=(const EnabledExtensionCounter&) = delete;
+
+    int enabled_count() const { return enabled_count_; }
+
+    // `ExtensionRegistryObserver`:
+    void OnExtensionEnabled(content::BrowserContext* browser_context,
+                            const Extension* extension) override {
+      if (extension->id() == extension_id_) {
+        ++enabled_count_;
+      }
+    }
+
+   private:
+    const ExtensionId extension_id_;
+    int enabled_count_ = 0;
+    base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+        observation_{/*observer=*/this};
+  };
+
   // Writes an extension with `version` to `dir` whose service worker sends a
   // test message for each event it receives:
   // - `chrome.runtime.onInstalled`: `"installed:<reason>:<previousVersion>"`
@@ -1985,6 +2020,20 @@ class RuntimeLifecycleEventsApiTest : public RuntimeApiTest {
       base::ThreadPoolInstance::Get()->FlushForTesting();
     }
 #endif  // BUILDFLAG(IS_ANDROID)
+  }
+
+  // Runs all tasks currently queued on the default task runner by
+  // posting a quit closure behind them. `RuntimeAPI` posts its
+  // `onEnabled` and `onExtensionLoaded` dispatches to this task runner from
+  // `OnExtensionEnabled()`.
+  void RunPostedTasks() {
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    {
+      SCOPED_TRACE("Waiting for posted tasks");
+      run_loop.Run();
+    }
   }
 
  private:
@@ -2479,6 +2528,187 @@ IN_PROC_BROWSER_TEST_F(
 
   ExpectNoOnExtensionLoadedEnableEvent(extension_id,
                                        loaded_enable_failure_listener);
+}
+
+// Test that when an extension is removed from the blocklist:
+// - `chrome.runtime.onExtensionLoaded` is fired with reason `"enable"` and
+//   `previousVersion` set to the extension's current version.
+// - `chrome.runtime.onEnabled` is fired.
+IN_PROC_BROWSER_TEST_F(RuntimeLifecycleEventsApiTest,
+                       OnExtensionLoadedOnRemovedFromBlocklist) {
+  // Install the extension and observe enable events.
+  TestExtensionDir dir;
+  const Extension* extension =
+      InstallLifecycleEventsTestExtension(dir, InstallType::kPacked);
+  ASSERT_TRUE(extension);
+  const ExtensionId extension_id = extension->id();
+  EnabledExtensionCounter enabled_counter(extension_registry(), extension_id);
+
+  // Add the extension to the blocklist, which unloads it.
+  extension_registrar()->BlocklistExtensionForTest(extension_id);
+  ASSERT_TRUE(
+      extension_registry()->blocklisted_extensions().Contains(extension_id));
+
+  // Remove the extension from the blocklist and verify that these events are
+  // received:
+  // - `onEnabled`.
+  // - `onExtensionLoaded` (`"enable"` with `previousVersion` `"1.0"`).
+  ExtensionTestMessageListener enabled_listener("enabled");
+  ExtensionTestMessageListener loaded_listener("loaded:enable:1.0");
+  blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+      extension_id, BitMapBlocklistState::NOT_BLOCKLISTED,
+      ExtensionPrefs::Get(profile()));
+  extension_registrar()->OnBlocklistStateRemoved(extension_id);
+  ASSERT_TRUE(
+      extension_registry()->enabled_extensions().Contains(extension_id));
+  {
+    SCOPED_TRACE("Waiting for enabled event message");
+    ASSERT_TRUE(enabled_listener.WaitUntilSatisfied());
+  }
+  {
+    SCOPED_TRACE("Waiting for enable extension loaded event message");
+    ASSERT_TRUE(loaded_listener.WaitUntilSatisfied());
+  }
+  EXPECT_EQ(1, enabled_counter.enabled_count());
+}
+
+// Test that when blocked extensions are unblocked:
+// - `chrome.runtime.onExtensionLoaded` is fired with reason `"enable"` and
+//   `previousVersion` set to the extension's current version.
+// - `chrome.runtime.onEnabled` is fired.
+IN_PROC_BROWSER_TEST_F(RuntimeLifecycleEventsApiTest,
+                       OnExtensionLoadedOnUnblocked) {
+  // Install the extension and observe enable events.
+  TestExtensionDir dir;
+  const Extension* extension =
+      InstallLifecycleEventsTestExtension(dir, InstallType::kPacked);
+  ASSERT_TRUE(extension);
+  const ExtensionId extension_id = extension->id();
+  EnabledExtensionCounter enabled_counter(extension_registry(), extension_id);
+
+  // Block all extensions, which unloads the extension.
+  extension_registrar()->BlockAllExtensions();
+  ASSERT_TRUE(
+      extension_registry()->blocked_extensions().Contains(extension_id));
+
+  // Unblock all extensions and verify that these events are received:
+  // - `onEnabled`.
+  // - `onExtensionLoaded` (`"enable"` with `previousVersion` `"1.0"`).
+  ExtensionTestMessageListener enabled_listener("enabled");
+  ExtensionTestMessageListener loaded_listener("loaded:enable:1.0");
+  extension_registrar()->UnblockAllExtensions();
+  ASSERT_TRUE(
+      extension_registry()->enabled_extensions().Contains(extension_id));
+  {
+    SCOPED_TRACE("Waiting for enabled event message");
+    ASSERT_TRUE(enabled_listener.WaitUntilSatisfied());
+  }
+  {
+    SCOPED_TRACE("Waiting for enable extension loaded event message");
+    ASSERT_TRUE(loaded_listener.WaitUntilSatisfied());
+  }
+  EXPECT_EQ(1, enabled_counter.enabled_count());
+}
+
+// Test that removing an extension from the malware blocklist while the
+// profile-wide extension block is active leaves the extension unloaded and:
+// - Does not fire `chrome.runtime.onEnabled`.
+// - Does not fire `chrome.runtime.onExtensionLoaded` with reason `"enable"`.
+// - Still fires both events once when all extensions are later unblocked.
+IN_PROC_BROWSER_TEST_F(RuntimeLifecycleEventsApiTest,
+                       NoEventsOnRemovedFromBlocklistWhileBlocked) {
+  // Install the extension and observe enable events.
+  TestExtensionDir dir;
+  const Extension* extension =
+      InstallLifecycleEventsTestExtension(dir, InstallType::kPacked);
+  ASSERT_TRUE(extension);
+  const ExtensionId extension_id = extension->id();
+  EnabledExtensionCounter enabled_counter(extension_registry(), extension_id);
+  ExtensionTestMessageListener enabled_listener("enabled");
+  ExtensionTestMessageListener loaded_listener("loaded:enable:1.0");
+
+  // Blocklist first so the extension is not in two registry sets at once.
+  extension_registrar()->BlocklistExtensionForTest(extension_id);
+  extension_registrar()->BlockAllExtensions();
+
+  // Clear the blocklist verdict while extensions remain blocked.
+  blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+      extension_id, BitMapBlocklistState::NOT_BLOCKLISTED,
+      ExtensionPrefs::Get(profile()));
+  extension_registrar()->OnBlocklistStateRemoved(extension_id);
+  ASSERT_TRUE(
+      extension_registry()->blocked_extensions().Contains(extension_id));
+
+  // Drain posted tasks and verify no enable events fired.
+  RunPostedTasks();
+  EXPECT_EQ(0, enabled_counter.enabled_count());
+  ASSERT_FALSE(enabled_listener.was_satisfied());
+  ASSERT_FALSE(loaded_listener.was_satisfied());
+
+  // Unblock all extensions and verify the enable events fire once.
+  extension_registrar()->UnblockAllExtensions();
+  {
+    SCOPED_TRACE("Waiting for enabled event message");
+    ASSERT_TRUE(enabled_listener.WaitUntilSatisfied());
+  }
+  {
+    SCOPED_TRACE("Waiting for enable extension loaded event message");
+    ASSERT_TRUE(loaded_listener.WaitUntilSatisfied());
+  }
+  EXPECT_EQ(1, enabled_counter.enabled_count());
+}
+
+// Test that lifting the profile-wide extension block for an extension that Safe
+// Browsing added to the malware blocklist during the block leaves the
+// extension unloaded and:
+// - Does not fire `chrome.runtime.onEnabled`.
+// - Does not fire `chrome.runtime.onExtensionLoaded` with reason `"enable"`.
+// - Still fires both events once when the extension is later removed from the
+//   blocklist.
+IN_PROC_BROWSER_TEST_F(RuntimeLifecycleEventsApiTest,
+                       NoEventsOnUnblockedWhileBlocklisted) {
+  // Install the extension and observe enable events.
+  TestExtensionDir dir;
+  const Extension* extension =
+      InstallLifecycleEventsTestExtension(dir, InstallType::kPacked);
+  ASSERT_TRUE(extension);
+  const ExtensionId extension_id = extension->id();
+  EnabledExtensionCounter enabled_counter(extension_registry(), extension_id);
+  ExtensionTestMessageListener enabled_listener("enabled");
+  ExtensionTestMessageListener loaded_listener("loaded:enable:1.0");
+
+  // Block all extensions, then mark the extension blocklisted in prefs only, so
+  // it is not in two registry sets at once.
+  extension_registrar()->BlockAllExtensions();
+  blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+      extension_id, BitMapBlocklistState::BLOCKLISTED_MALWARE,
+      ExtensionPrefs::Get(profile()));
+
+  // Unblock all extensions while the extension remains blocklisted.
+  extension_registrar()->UnblockAllExtensions();
+  ASSERT_TRUE(
+      extension_registry()->blocklisted_extensions().Contains(extension_id));
+
+  // Drain posted tasks and verify no enable events fired.
+  RunPostedTasks();
+  EXPECT_EQ(0, enabled_counter.enabled_count());
+  ASSERT_FALSE(enabled_listener.was_satisfied());
+  ASSERT_FALSE(loaded_listener.was_satisfied());
+
+  // Clear the blocklist verdict and verify the enable events fire once.
+  blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+      extension_id, BitMapBlocklistState::NOT_BLOCKLISTED,
+      ExtensionPrefs::Get(profile()));
+  extension_registrar()->OnBlocklistStateRemoved(extension_id);
+  {
+    SCOPED_TRACE("Waiting for enabled event message");
+    ASSERT_TRUE(enabled_listener.WaitUntilSatisfied());
+  }
+  {
+    SCOPED_TRACE("Waiting for enable extension loaded event message");
+    ASSERT_TRUE(loaded_listener.WaitUntilSatisfied());
+  }
+  EXPECT_EQ(1, enabled_counter.enabled_count());
 }
 
 // Test fixture for reload lifecycle events. Reload is where packed and

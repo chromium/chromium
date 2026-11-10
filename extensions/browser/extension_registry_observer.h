@@ -68,7 +68,8 @@ class ExtensionRegistryObserver {
                                    const Extension* extension,
                                    UnloadedExtensionReason reason) {}
 
-  // Called after an extension goes from disabled to enabled state.
+  // Called after an extension goes from disabled to enabled state. Also called
+  // after a blocklisted or blocked extension is loaded again as enabled.
   virtual void OnExtensionEnabled(content::BrowserContext* browser_context,
                                   const Extension* extension) {}
 
