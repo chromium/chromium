@@ -8702,3 +8702,6 @@ crbug.com/574451292 crbug.com/575210275 external/wpt/largest-contentful-paint/vi
 
 # Gardener 2026-11-09
 crbug.com/583314298 external/wpt/css/css-pseudo/marker-text-combine-upright-002.html [ Failure Pass ]
+
+# Gardener 2026-11-10
+crbug.com/584121768 virtual/prefetch-cancel-unrelated-prefetch/external/wpt/speculation-rules/prefetch/no-http-cache-interference-inflight.https.html [ Crash Failure Pass ]
