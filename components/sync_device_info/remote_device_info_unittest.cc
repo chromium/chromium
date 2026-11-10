@@ -4,10 +4,18 @@
 
 #include "components/sync_device_info/remote_device_info.h"
 
+#include <memory>
+
+#include "base/containers/flat_map.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/features.h"
 #include "components/sync_device_info/device_info.h"
+#include "components/sync_device_info/fake_device_info_tracker.h"
+#include "components/sync_device_info/test_device_info_builder.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -18,12 +26,17 @@
 namespace syncer {
 namespace {
 
+using ::testing::ElementsAre;
+using ::testing::Field;
+using ::testing::IsEmpty;
 using ::testing::Test;
 using FormFactor = DeviceInfo::FormFactor;
 using OsType = DeviceInfo::OsType;
 
 constexpr char kDeviceName[] = "device";
 constexpr char kCacheGuid[] = "guid";
+constexpr char kLocalGuid[] = "local_guid";
+constexpr base::TimeDelta kDefaultMaxAge = base::Days(10);
 
 class RemoteDeviceInfoTest : public Test {
  protected:
@@ -187,6 +200,226 @@ TEST_F(RemoteDeviceInfoTest, StaticGetLastActiveTimeForDisplay) {
                 IDS_SEND_TAB_TO_SELF_DEVICE_LAST_UPDATE_DAYS, 0),
             RemoteDeviceInfo::GetLastActiveTimeForDisplay(
                 last_updated, /*has_high_precision_timestamp=*/false));
+}
+
+// Verifies that `GetRemoteDeviceInfoSortedList()` returns an empty list when
+// `device_info_tracker` tracks no devices.
+TEST_F(RemoteDeviceInfoTest,
+       GetRemoteDeviceInfoSortedList_EmptyTrackerReturnsEmpty) {
+  FakeDeviceInfoTracker tracker;
+  EXPECT_THAT(GetRemoteDeviceInfoSortedList(tracker,
+                                            /*session_last_modified_times=*/{},
+                                            base::Time::Now() - kDefaultMaxAge),
+              IsEmpty());
+}
+
+// Verifies that `GetRemoteDeviceInfoSortedList()` excludes the local device,
+// non-Chrome devices, and expired devices, and sorts remaining remote devices
+// by most recent activity descending.
+TEST_F(RemoteDeviceInfoTest,
+       GetRemoteDeviceInfoSortedList_FiltersAndSortsByRecency) {
+  constexpr char kOlderGuid[] = "older_guid";
+  constexpr char kOlderName[] = "Older Phone";
+  constexpr char kNewerGuid[] = "newer_guid";
+  constexpr char kNewerName[] = "Newer Mac";
+  const base::Time now = base::Time::Now();
+  FakeDeviceInfoTracker tracker;
+
+  tracker.Add(TestDeviceInfoBuilder(OsType::kLinux)
+                  .WithGuid(kLocalGuid)
+                  .WithClientName("Local Device")
+                  .WithLastUpdatedTimestamp(now)
+                  .Build());
+  tracker.SetLocalCacheGuid(kLocalGuid);
+
+  // Non-Chrome devices have an empty `chrome_version` and are excluded by
+  // `GetAllChromeDeviceInfo()`.
+  tracker.Add(TestDeviceInfoBuilder(OsType::kAndroid)
+                  .WithGuid("non_chrome_guid")
+                  .WithChromeVersion("")
+                  .WithLastUpdatedTimestamp(now)
+                  .Build());
+
+  // Devices inactive for more than `kDefaultMaxAge` are excluded.
+  tracker.Add(
+      TestDeviceInfoBuilder(OsType::kWindows)
+          .WithGuid("expired_guid")
+          .WithLastUpdatedTimestamp(now - kDefaultMaxAge - base::Seconds(1))
+          .Build());
+
+  tracker.Add(TestDeviceInfoBuilder(OsType::kAndroid)
+                  .WithGuid(kOlderGuid)
+                  .WithClientName(kOlderName)
+                  .WithFormFactor(FormFactor::kPhone)
+                  .WithLastUpdatedTimestamp(now - base::Days(2))
+                  .Build());
+
+  tracker.Add(TestDeviceInfoBuilder(OsType::kMac)
+                  .WithGuid(kNewerGuid)
+                  .WithClientName(kNewerName)
+                  .WithFormFactor(FormFactor::kDesktop)
+                  .WithLastUpdatedTimestamp(now - base::Days(1))
+                  .Build());
+
+  EXPECT_THAT(
+      GetRemoteDeviceInfoSortedList(tracker,
+                                    /*session_last_modified_times=*/{},
+                                    now - kDefaultMaxAge),
+      ElementsAre(RemoteDeviceInfo(kNewerName, kNewerGuid, FormFactor::kDesktop,
+                                   OsType::kMac, now - base::Days(1),
+                                   /*has_high_precision_timestamp=*/false),
+                  RemoteDeviceInfo(kOlderName, kOlderGuid, FormFactor::kPhone,
+                                   OsType::kAndroid, now - base::Days(2),
+                                   /*has_high_precision_timestamp=*/false)));
+}
+
+// Verifies that `GetRemoteDeviceInfoSortedList()` honors the caller-provided
+// `min_last_active_time` threshold, including the exact boundary.
+TEST_F(RemoteDeviceInfoTest,
+       GetRemoteDeviceInfoSortedList_RespectsMinLastActiveTime) {
+  constexpr char kTenDayGuid[] = "ten_day_guid";
+  constexpr char kTwentyDayGuid[] = "twenty_day_guid";
+  const base::Time now = base::Time::Now();
+  FakeDeviceInfoTracker tracker;
+
+  tracker.Add(TestDeviceInfoBuilder(OsType::kLinux)
+                  .WithGuid(kTenDayGuid)
+                  .WithLastUpdatedTimestamp(now - base::Days(10))
+                  .Build());
+  tracker.Add(TestDeviceInfoBuilder(OsType::kMac)
+                  .WithGuid(kTwentyDayGuid)
+                  .WithLastUpdatedTimestamp(now - base::Days(20))
+                  .Build());
+  tracker.Add(TestDeviceInfoBuilder(OsType::kWindows)
+                  .WithGuid("twenty_nine_day_guid")
+                  .WithLastUpdatedTimestamp(now - base::Days(29))
+                  .Build());
+
+  EXPECT_THAT(GetRemoteDeviceInfoSortedList(tracker,
+                                            /*session_last_modified_times=*/{},
+                                            now - base::Days(10)),
+              ElementsAre(Field(&RemoteDeviceInfo::cache_guid, kTenDayGuid)));
+
+  EXPECT_THAT(
+      GetRemoteDeviceInfoSortedList(tracker,
+                                    /*session_last_modified_times=*/{},
+                                    now - base::Days(28)),
+      ElementsAre(Field(&RemoteDeviceInfo::cache_guid, kTenDayGuid),
+                  Field(&RemoteDeviceInfo::cache_guid, kTwentyDayGuid)));
+}
+
+// Verifies that remote devices with future timestamps caused by clock skew are
+// retained and ranked ahead of older devices.
+TEST_F(RemoteDeviceInfoTest,
+       GetRemoteDeviceInfoSortedList_IncludesFutureTimestampDevice) {
+  constexpr char kRecentGuid[] = "recent_guid";
+  constexpr char kFutureGuid[] = "future_guid";
+  const base::Time now = base::Time::Now();
+  FakeDeviceInfoTracker tracker;
+
+  tracker.Add(TestDeviceInfoBuilder(OsType::kLinux)
+                  .WithGuid(kRecentGuid)
+                  .WithLastUpdatedTimestamp(now - base::Minutes(5))
+                  .Build());
+  tracker.Add(TestDeviceInfoBuilder(OsType::kMac)
+                  .WithGuid(kFutureGuid)
+                  .WithLastUpdatedTimestamp(now + base::Hours(2))
+                  .Build());
+
+  EXPECT_THAT(GetRemoteDeviceInfoSortedList(tracker,
+                                            /*session_last_modified_times=*/{},
+                                            now - kDefaultMaxAge),
+              ElementsAre(Field(&RemoteDeviceInfo::cache_guid, kFutureGuid),
+                          Field(&RemoteDeviceInfo::cache_guid, kRecentGuid)));
+}
+
+// Verifies that `GetRemoteDeviceInfoSortedList()` uses the maximum of the
+// `DeviceInfo` timestamp and the session timestamp, and marks devices with a
+// session timestamp as having a high-precision timestamp even when the
+// `DeviceInfo` timestamp is newer.
+TEST_F(RemoteDeviceInfoTest,
+       GetRemoteDeviceInfoSortedList_UsesMaxOfDeviceAndSessionTimestamps) {
+  constexpr char kDevice1Guid[] = "guid1";
+  constexpr char kDevice2Guid[] = "guid2";
+  constexpr char kDevice1Name[] = "Device 1";
+  constexpr char kDevice2Name[] = "Device 2";
+  const base::Time now = base::Time::Now();
+  FakeDeviceInfoTracker tracker;
+
+  // `kDevice1Guid` has an expired `DeviceInfo` timestamp (11 days ago) and a
+  // fresh session timestamp (5 minutes ago), preventing expiration and ranking
+  // it first.
+  tracker.Add(TestDeviceInfoBuilder(OsType::kAndroid)
+                  .WithGuid(kDevice1Guid)
+                  .WithClientName(kDevice1Name)
+                  .WithFormFactor(FormFactor::kPhone)
+                  .WithLastUpdatedTimestamp(now - base::Days(11))
+                  .Build());
+
+  // `kDevice2Guid` has a newer `DeviceInfo` timestamp (1 hour ago) than its
+  // session timestamp (2 days ago).
+  tracker.Add(TestDeviceInfoBuilder(OsType::kLinux)
+                  .WithGuid(kDevice2Guid)
+                  .WithClientName(kDevice2Name)
+                  .WithFormFactor(FormFactor::kDesktop)
+                  .WithLastUpdatedTimestamp(now - base::Hours(1))
+                  .Build());
+
+  const base::flat_map<std::string, base::Time> session_times = {
+      {kDevice1Guid, now - base::Minutes(5)},
+      {kDevice2Guid, now - base::Days(2)},
+  };
+
+  EXPECT_THAT(
+      GetRemoteDeviceInfoSortedList(tracker, session_times,
+                                    now - kDefaultMaxAge),
+      ElementsAre(
+          RemoteDeviceInfo(kDevice1Name, kDevice1Guid, FormFactor::kPhone,
+                           OsType::kAndroid, now - base::Minutes(5),
+                           /*has_high_precision_timestamp=*/true),
+          RemoteDeviceInfo(kDevice2Name, kDevice2Guid, FormFactor::kDesktop,
+                           OsType::kLinux, now - base::Hours(1),
+                           /*has_high_precision_timestamp=*/true)));
+}
+
+// Verifies that `GetRemoteDeviceInfoSortedList()` passes the local `DeviceInfo`
+// to `GetDeviceDisplayNames()` so a remote device sharing the local device's
+// base display name is disambiguated by release channel when
+// `kSyncDisambiguateDeviceNamesWithChannel` is enabled, even if the local
+// `DeviceInfo` timestamp is older than `min_last_active_time`.
+TEST_F(RemoteDeviceInfoTest,
+       GetRemoteDeviceInfoSortedList_DisambiguatesAgainstLocalDeviceChannel) {
+  constexpr char kGoogleManufacturer[] = "Google";
+  constexpr char kPixel6Model[] = "Pixel 6";
+  base::test::ScopedFeatureList scoped_feature_list(
+      kSyncDisambiguateDeviceNamesWithChannel);
+  const base::Time now = base::Time::Now();
+  FakeDeviceInfoTracker tracker;
+
+  tracker.Add(TestDeviceInfoBuilder(OsType::kAndroid)
+                  .WithGuid(kLocalGuid)
+                  .WithClientName("")
+                  .WithManufacturerName(kGoogleManufacturer)
+                  .WithModelName(kPixel6Model)
+                  .WithSyncUserAgent("Mozilla/5.0 channel(stable)")
+                  .WithLastUpdatedTimestamp(now - base::Days(15))
+                  .Build());
+  tracker.SetLocalCacheGuid(kLocalGuid);
+
+  tracker.Add(TestDeviceInfoBuilder(OsType::kAndroid)
+                  .WithGuid("remote_guid")
+                  .WithClientName("")
+                  .WithManufacturerName(kGoogleManufacturer)
+                  .WithModelName(kPixel6Model)
+                  .WithSyncUserAgent("Mozilla/5.0 channel(canary)")
+                  .WithLastUpdatedTimestamp(now - base::Minutes(1))
+                  .Build());
+
+  EXPECT_THAT(GetRemoteDeviceInfoSortedList(tracker,
+                                            /*session_last_modified_times=*/{},
+                                            now - kDefaultMaxAge),
+              ElementsAre(Field(&RemoteDeviceInfo::device_name,
+                                "Google Phone (Canary)")));
 }
 
 #if BUILDFLAG(IS_ANDROID)

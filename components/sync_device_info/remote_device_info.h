@@ -6,7 +6,9 @@
 #define COMPONENTS_SYNC_DEVICE_INFO_REMOTE_DEVICE_INFO_H_
 
 #include <string>
+#include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/sync_device_info/device_info.h"
@@ -16,6 +18,8 @@
 #endif
 
 namespace syncer {
+
+class DeviceInfoTracker;
 
 // Remote device information for generating cross-device UIs.
 struct RemoteDeviceInfo {
@@ -55,6 +59,16 @@ struct RemoteDeviceInfo {
   // rather than just day-granularity.
   bool has_high_precision_timestamp = false;
 };
+
+// Returns a list of remote Chrome devices from `device_info_tracker`, sorted by
+// most recent activity (the maximum of the device's `last_updated_timestamp()`
+// and its corresponding entry in `session_last_modified_times`). Excludes the
+// local device, non-Chrome devices, and devices whose last active time is older
+// than `min_last_active_time`, and disambiguates duplicate display names.
+std::vector<RemoteDeviceInfo> GetRemoteDeviceInfoSortedList(
+    const DeviceInfoTracker& device_info_tracker,
+    const base::flat_map<std::string, base::Time>& session_last_modified_times,
+    base::Time min_last_active_time);
 
 }  // namespace syncer
 

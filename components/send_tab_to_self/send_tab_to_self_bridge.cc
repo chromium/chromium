@@ -15,8 +15,6 @@
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
-#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -141,32 +139,6 @@ base::flat_map<std::string, base::Time> GetSessionTimestamps(
       session_sync_service->GetOpenTabsUIDelegate();
   return delegate ? delegate->GetAllForeignSessionLastModifiedTimes()
                   : base::flat_map<std::string, base::Time>();
-}
-
-struct DeviceWithTimestamp {
-  raw_ptr<const syncer::DeviceInfo> device;
-  base::Time last_active;
-  bool has_high_precision = false;
-};
-
-// Returns a list of devices with the last active timestamp for each device.
-// The last active timestamp is the maximum of the device's last updated
-// timestamp and the last modified time of any session on the device.
-std::vector<DeviceWithTimestamp> GetDevicesWithLastActiveTime(
-    const std::vector<const syncer::DeviceInfo*>& all_devices,
-    const base::flat_map<std::string, base::Time>& session_timestamps) {
-  return base::ToVector(
-      all_devices, [&session_timestamps](const syncer::DeviceInfo* device) {
-        base::Time last_active = device->last_updated_timestamp();
-        bool has_high_precision = false;
-        auto it = session_timestamps.find(device->guid());
-        if (it != session_timestamps.end()) {
-          last_active = std::max(last_active, it->second);
-          // If the device has a session timestamp, it is highly precise.
-          has_high_precision = true;
-        }
-        return DeviceWithTimestamp{device, last_active, has_high_precision};
-      });
 }
 
 }  // namespace
@@ -755,47 +727,9 @@ SendTabToSelfBridge::GetTargetDeviceInfoSortedList() {
     return {};
   }
 
-  // Pre-calculate last active timestamps for sorting and filtering.
-  std::vector<DeviceWithTimestamp> devices_with_timestamps =
-      GetDevicesWithLastActiveTime(
-          device_info_tracker_->GetAllChromeDeviceInfo(),
-          GetSessionTimestamps(session_sync_service_));
-
-  // Sort the devices so the most recently active devices are first.
-  std::stable_sort(
-      devices_with_timestamps.begin(), devices_with_timestamps.end(),
-      [](const DeviceWithTimestamp& a, const DeviceWithTimestamp& b) {
-        return a.last_active > b.last_active;
-      });
-
-  std::vector<DeviceWithTimestamp> devices;
-  for (const auto& entry : devices_with_timestamps) {
-    if (clock_->Now() - entry.last_active > kDeviceExpiration) {
-      break;
-    }
-    if (!device_info_tracker_->IsRecentLocalCacheGuid(entry.device->guid())) {
-      CHECK_NE(entry.device->guid(), change_processor()->TrackedCacheGuid(),
-               base::NotFatalUntil::M162);
-      devices.push_back(entry);
-    }
-  }
-
-  // Resolve display names for the filtered list by using the most user
-  // friendly name, disambiguating duplicates with release channel if enabled.
-  std::vector<const syncer::DeviceInfo*> raw_devices = base::ToVector(
-      devices,
-      [](const DeviceWithTimestamp& entry) { return entry.device.get(); });
-  std::vector<std::string> device_names =
-      syncer::GetDeviceDisplayNames(raw_devices, GetLocalDeviceInfo());
-  std::vector<syncer::RemoteDeviceInfo> target_devices;
-  target_devices.reserve(devices.size());
-  for (size_t i = 0; i < devices.size(); ++i) {
-    target_devices.emplace_back(
-        std::move(device_names[i]), devices[i].device->guid(),
-        devices[i].device->form_factor(), devices[i].device->os_type(),
-        devices[i].last_active, devices[i].has_high_precision);
-  }
-  return target_devices;
+  return syncer::GetRemoteDeviceInfoSortedList(
+      *device_info_tracker_, GetSessionTimestamps(session_sync_service_),
+      clock_->Now() - kDeviceExpiration);
 }
 
 std::optional<syncer::RemoteDeviceInfo>
