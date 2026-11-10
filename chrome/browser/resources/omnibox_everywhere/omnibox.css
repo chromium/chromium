@@ -351,6 +351,10 @@ cr-composebox-contextual-entrypoint-and-menu,
   top: 0;
 }
 
+#overflowMenuButton {
+  -webkit-mask-image: url(//resources/images/icon_more_vert.svg);
+}
+
 /* TODO(crbug.com/532200145): Refine the selectors. New interactive elements
  * must be added to this list because the root container has
  * '-webkit-app-region: drag' enabled; otherwise, clicks will be swallowed by
@@ -399,13 +403,14 @@ cr-searchbox-input::part(icon),
   padding-top: 0;
 }
 
+/* 48px profile offset + 3x28px buttons + 2x4px gaps + 8px clearance. */
 :host(:not([dropdown-is-visible]):not([has-user-input])) cr-searchbox-input {
-  padding-inline-end: 116px;
+  padding-inline-end: 148px;
 }
 
 :host(:not([dropdown-is-visible]):not([has-user-input]))
     #inputWrapper:has(#profileIcon[is-enterprise-profile]) cr-searchbox-input {
-  padding-inline-end: calc(116px + var(--enterprise-profile-clearance));
+  padding-inline-end: calc(148px + var(--enterprise-profile-clearance));
 }
 
 :host(:not([dropdown-is-visible]):not([has-user-input]))

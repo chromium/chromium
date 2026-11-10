@@ -122,6 +122,20 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
           </div>
           ` :
               ''}
+          <div class="searchbox-icon-button-container overflow ${
+              this.isOverflowMenuOpen ? 'menu-open' : ''}">
+            <button id="overflowMenuButton" class="searchbox-icon-button"
+                tabindex="${this.virtualFocusEnabled &&
+                    this.dropdownIsVisible ? -1 : 0}"
+                aria-haspopup="menu"
+                aria-expanded="${this.isOverflowMenuOpen}"
+                aria-label="${this.i18n('overflowMenuButtonLabel')}"
+                title="${this.i18n('overflowMenuButtonLabel')}"
+                @pointerdown="${this.onOverflowMenuPointerdown_}"
+                @pointercancel="${this.onOverflowMenuPointercancel_}"
+                @click="${this.onOverflowMenuClick_}">
+            </button>
+          </div>
         </div>
       </div>
     </div>

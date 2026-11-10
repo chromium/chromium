@@ -287,6 +287,20 @@ void OmniboxEverywhereService::OnHotkeyDropdownClosed() {
   }
 }
 
+void OmniboxEverywhereService::ShowOverflowMenu(
+    const gfx::Rect& anchor_screen_rect,
+    ui::mojom::MenuSourceType source_type,
+    base::OnceClosure on_closed) {
+  if (ui_manager()) {
+    ui_manager()->ShowOverflowMenu(anchor_screen_rect, source_type,
+                                   std::move(on_closed));
+    return;
+  }
+  if (on_closed) {
+    std::move(on_closed).Run();
+  }
+}
+
 void OmniboxEverywhereService::OpenUrl(const GURL& url,
                                        WindowOpenDisposition disposition,
                                        ui::PageTransition transition) {

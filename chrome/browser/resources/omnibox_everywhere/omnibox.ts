@@ -33,6 +33,7 @@ import {SelectionLineState} from '//resources/mojo/components/omnibox/browser/se
 import type {AutocompleteMatch, AutocompleteResult, DriveUploadError, OmniboxPopupSelection, PageCallbackRouter, PageHandlerInterface, SelectionDirection, SelectionStep} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ModelMode, ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
+import {MenuSourceType} from '//resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
 
 import {OmniboxEverywhereBrowserProxyImpl} from './browser_proxy.js';
 import {getCss} from './omnibox.css.js';
@@ -45,6 +46,7 @@ export interface OmniboxEverywhereOmniboxElement {
     input: SearchboxInputElement,
     inputWrapper: HTMLElement,
     matches: SearchboxDropdownElement,
+    overflowMenuButton: HTMLButtonElement,
     profileIcon: OmniboxEverywhereProfileIconElement,
   };
 }
@@ -152,6 +154,10 @@ export class OmniboxEverywhereOmniboxElement extends
         reflect: true,
         attribute: 'is-context-menu-open',
       },
+      isOverflowMenuOpen: {
+        type: Boolean,
+        reflect: true,
+      },
       isActive: {
         type: Boolean,
         reflect: true,
@@ -177,6 +183,7 @@ export class OmniboxEverywhereOmniboxElement extends
   accessor isDraggingFile: boolean = false;
   accessor isScreenshotMenuOpen: boolean = false;
   accessor isContextMenuOpen: boolean = false;
+  accessor isOverflowMenuOpen: boolean = false;
   protected dragAndDropHandler: DragAndDropHandler;
   protected accessor energyEffectAnimationEnabled_: boolean =
       loadTimeData.getBoolean('energyEffectAnimationEnabled');
@@ -552,6 +559,52 @@ export class OmniboxEverywhereOmniboxElement extends
     });
   }
 
+  private wasOverflowMenuOpenOnPointerDown_: boolean = false;
+  private overflowMenuPointerType_: string = '';
+
+  protected onOverflowMenuPointerdown_(e: PointerEvent) {
+    if (e.button !== 0) {
+      return;
+    }
+    e.preventDefault();
+    this.wasOverflowMenuOpenOnPointerDown_ = this.isOverflowMenuOpen;
+    this.overflowMenuPointerType_ = e.pointerType;
+  }
+
+  protected onOverflowMenuPointercancel_() {
+    this.wasOverflowMenuOpenOnPointerDown_ = false;
+  }
+
+  protected onOverflowMenuClick_(e: MouseEvent) {
+    // A click with `detail` 0 wasn't produced by a pointer: it came from the
+    // keyboard (Enter/Space) or a programmatic click(). Telling the browser
+    // lets a keyboard-opened menu select its first item.
+    const sourceType = e.detail === 0             ? MenuSourceType.kKeyboard :
+        this.overflowMenuPointerType_ === 'touch' ? MenuSourceType.kTouch :
+                                                    MenuSourceType.kMouse;
+    const wasOpen =
+        this.wasOverflowMenuOpenOnPointerDown_ || this.isOverflowMenuOpen;
+    this.wasOverflowMenuOpenOnPointerDown_ = false;
+    this.overflowMenuPointerType_ = '';
+    if (wasOpen) {
+      // The click that dismissed the native menu should not reopen it.
+      this.isOverflowMenuOpen = false;
+      return;
+    }
+    this.isOverflowMenuOpen = true;
+    this.finishAnimations_();
+    // `rect` is in WebUI viewport coordinates (CSS DIPs); the browser converts
+    // it to screen coordinates to anchor the native menu.
+    const rect = this.$.overflowMenuButton.getBoundingClientRect();
+    OmniboxEverywhereBrowserProxyImpl.getInstance().handler.showOverflowMenu(
+        {
+          x: Math.round(rect.left),
+          y: Math.round(rect.top),
+          width: Math.round(rect.width),
+          height: Math.round(rect.height),
+        },
+        sourceType);
+  }
 
   protected onFileChange_(e: CustomEvent<{files: FileList}>) {
     this.processFiles_(
@@ -694,8 +747,15 @@ export class OmniboxEverywhereOmniboxElement extends
     this.isContextMenuOpen = false;
   }
 
+  onOverflowMenuClosed() {
+    this.isOverflowMenuOpen = false;
+  }
+
   override onInputWrapperFocusout(e: FocusEvent) {
-    if (this.isContextMenuOpen || this.$.profileIcon.isMenuOpen) {
+    // Native menus take focus from the WebContents while open; keep the
+    // searchbox state (input, matches) intact until they close.
+    if (this.isContextMenuOpen || this.isOverflowMenuOpen ||
+        this.$.profileIcon.isMenuOpen) {
       return;
     }
     super.onInputWrapperFocusout(e);

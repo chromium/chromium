@@ -948,6 +948,17 @@ bool OmniboxEverywhereUIManager::IsScreenshareCaptureInProgress() const {
          region_select_overlay_ != nullptr;
 }
 
+void OmniboxEverywhereUIManager::ShowOverflowMenu(
+    const gfx::Rect& anchor_screen_rect,
+    ui::mojom::MenuSourceType source_type,
+    base::OnceClosure on_closed) {
+  // Clicking the button can queue a deactivation (e.g. the WebContents losing
+  // focus); cancel it so the popup isn't dismissed as the menu opens.
+  CancelPendingDeactivation();
+  context_menu_controller_->ShowOverflowMenu(anchor_screen_rect, source_type,
+                                             std::move(on_closed));
+}
+
 void OmniboxEverywhereUIManager::OnWidgetActivationChanged(
     views::Widget* widget,
     bool active) {

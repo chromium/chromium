@@ -24,6 +24,7 @@ import {FreStage, SelectionDirection, SelectionLineState, SelectionStep} from 'c
 import type {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SelectedFileInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {TextDirection} from 'chrome://resources/mojo/mojo/public/mojom/base/text_direction.mojom-webui.js';
 import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
+import {MenuSourceType} from 'chrome://resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -1309,6 +1310,94 @@ suite('OmniboxEverywhereOmniboxTest', () => {
         assertTrue(enterLensEvent.defaultPrevented);
         assertEquals(1, testProxy.handler.getCallCount('showScreenshotMenu'));
       });
+
+  suite('OverflowMenu', () => {
+    test('renders after Lens button with menu ARIA semantics', () => {
+      const buttons = omnibox.shadowRoot.querySelectorAll<HTMLElement>(
+          '#actionButtons .searchbox-icon-button');
+      assertDeepEquals(
+          ['voiceSearchButton', 'lensSearchButton', 'overflowMenuButton'],
+          Array.from(buttons, button => button.id));
+      assertEquals(
+          'menu', omnibox.$.overflowMenuButton.getAttribute('aria-haspopup'));
+      assertEquals(
+          'false', omnibox.$.overflowMenuButton.getAttribute('aria-expanded'));
+    });
+
+    test(
+        'opens with rounded rect, preserves dropdown on focusout, and resets ' +
+            'on close or dismissing click',
+        async () => {
+          const button = omnibox.$.overflowMenuButton;
+          button.getBoundingClientRect = () =>
+              ({left: 120.4, top: 35.6, width: 28.2, height: 28.2} as DOMRect);
+          omnibox.dropdownIsVisible = true;
+          button.click();
+
+          const [rect, sourceType] =
+              await testEverywhereProxy.handler.whenCalled('showOverflowMenu');
+          assertDeepEquals({x: 120, y: 36, width: 28, height: 28}, rect);
+          // click() has `detail` 0, like a keyboard activation.
+          assertEquals(MenuSourceType.kKeyboard, sourceType);
+
+          await microtasksFinished();
+          assertTrue(omnibox.isOverflowMenuOpen);
+          assertEquals('true', button.getAttribute('aria-expanded'));
+          assertTrue(button.parentElement!.classList.contains('menu-open'));
+
+          // Focusout while overflow menu is open keeps dropdown visible.
+          omnibox.$.inputWrapper.dispatchEvent(
+              new FocusEvent('focusout', {bubbles: true, relatedTarget: null}));
+          assertTrue(omnibox.dropdownIsVisible);
+
+          // Primary pointerdown prevents focus transfer and suppresses reopen
+          // unless cancelled by pointercancel.
+          testEverywhereProxy.handler.reset();
+          const downEvent = new PointerEvent(
+              'pointerdown', {bubbles: true, cancelable: true, button: 0});
+          button.dispatchEvent(downEvent);
+          assertTrue(downEvent.defaultPrevented);
+          button.click();
+          await microtasksFinished();
+          assertEquals(
+              0, testEverywhereProxy.handler.getCallCount('showOverflowMenu'));
+          assertFalse(omnibox.isOverflowMenuOpen);
+
+          // pointercancel clears suppression so the next click opens the menu.
+          omnibox.isOverflowMenuOpen = true;
+          button.dispatchEvent(
+              new PointerEvent('pointerdown', {bubbles: true, button: 0}));
+          button.dispatchEvent(
+              new PointerEvent('pointercancel', {bubbles: true}));
+          omnibox.onOverflowMenuClosed();
+          await microtasksFinished();
+          assertFalse(omnibox.isOverflowMenuOpen);
+          assertFalse(button.parentElement!.classList.contains('menu-open'));
+
+          button.click();
+          await testEverywhereProxy.handler.whenCalled('showOverflowMenu');
+          assertTrue(omnibox.isOverflowMenuOpen);
+        });
+
+    test('passes the pointer type as the menu source', async () => {
+      const button = omnibox.$.overflowMenuButton;
+      for (const [pointerType, expected] of [
+               ['mouse', MenuSourceType.kMouse],
+               ['touch', MenuSourceType.kTouch],
+      ] as Array<[string, MenuSourceType]>) {
+        testEverywhereProxy.handler.reset();
+        omnibox.isOverflowMenuOpen = false;
+        button.dispatchEvent(new PointerEvent(
+            'pointerdown', {bubbles: true, button: 0, pointerType}));
+        button.dispatchEvent(
+            new MouseEvent('click', {bubbles: true, detail: 1}));
+        const [, sourceType] =
+            await testEverywhereProxy.handler.whenCalled('showOverflowMenu');
+        assertEquals(expected, sourceType);
+        omnibox.onOverflowMenuClosed();
+      }
+    });
+  });
 });
 
 
@@ -2533,6 +2622,16 @@ suite('OmniboxEverywhereAppTest', () => {
 
         // Closing screenshot menu restores MVT container.
         searchbox.isScreenshotMenuOpen = false;
+        await microtasksFinished();
+        assertEquals('flex', window.getComputedStyle(mvContainer).display);
+
+        // Opening overflow menu hides MVT container.
+        searchbox.isOverflowMenuOpen = true;
+        await microtasksFinished();
+        assertEquals('none', window.getComputedStyle(mvContainer).display);
+
+        // Closing overflow menu restores MVT container.
+        searchbox.isOverflowMenuOpen = false;
         await microtasksFinished();
         assertEquals('flex', window.getComputedStyle(mvContainer).display);
 
@@ -4373,5 +4472,20 @@ suite('OmniboxEverywhereContextMenuTest', () => {
         } finally {
           darkTokens.forEach(([k]) => rootStyle.removeProperty(k));
         }
+      });
+
+  test(
+      'onOverflowMenuClosed Mojo listener resets searchbox overflow state',
+      async () => {
+        const omnibox =
+            app.shadowRoot.querySelector('omnibox-everywhere-omnibox');
+        assertTrue(!!omnibox);
+        omnibox.isOverflowMenuOpen = true;
+        await microtasksFinished();
+
+        testEverywhereProxy.page.onOverflowMenuClosed();
+        await microtasksFinished();
+
+        assertFalse(omnibox.isOverflowMenuOpen);
       });
 });

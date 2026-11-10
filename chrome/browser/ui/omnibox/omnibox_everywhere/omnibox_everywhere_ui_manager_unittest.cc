@@ -48,6 +48,7 @@
 #include "content/public/common/drop_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/mojom/themes.mojom.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -863,6 +864,38 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   ui_manager->OnWidgetVisibilityOnScreenChanged(widget, /*visible=*/false);
   EXPECT_TRUE(ui_manager->widget());
   EXPECT_TRUE(widget->IsVisible());
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest, ShowOverflowMenu) {
+  auto ui_manager = CreateUIManager();
+
+  // Without a widget, ShowOverflowMenu immediately runs the closed callback.
+  base::test::TestFuture<void> no_widget_closed;
+  ui_manager->ShowOverflowMenu(gfx::Rect(100, 100, 28, 28),
+                               ui::mojom::MenuSourceType::kMouse,
+                               no_widget_closed.GetCallback());
+  EXPECT_TRUE(no_widget_closed.IsReady());
+  EXPECT_FALSE(ui_manager->context_menu_controller_for_testing()->IsOpen());
+
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+
+  // A deactivation queued while no menu was open (e.g. the WebContents losing
+  // focus as the button is clicked) is cancelled when the menu opens.
+  task_environment()->FastForwardBy(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kActivationGracePeriod +
+      base::Milliseconds(1));
+  ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
+  base::test::TestFuture<void> closed;
+  ui_manager->ShowOverflowMenu(gfx::Rect(100, 100, 28, 28),
+                               ui::mojom::MenuSourceType::kMouse,
+                               closed.GetCallback());
+  task_environment()->FastForwardBy(base::TimeDelta());
+  EXPECT_TRUE(ui_manager->context_menu_controller_for_testing()->IsOpen());
+  EXPECT_TRUE(widget->IsVisible());
+  EXPECT_FALSE(ui_manager->is_demoted());
+  EXPECT_FALSE(closed.IsReady());
 }
 
 // TODO(crbug.com/546604786): Deactivation within grace period tests are flaky

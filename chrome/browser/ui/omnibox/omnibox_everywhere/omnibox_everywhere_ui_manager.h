@@ -12,6 +12,7 @@
 
 #include "base/cancelable_callback.h"
 #include "base/containers/enum_set.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -30,13 +31,13 @@
 #include "third_party/blink/public/mojom/page/draggable_region.mojom-forward.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "base/functional/callback.h"
 #include "base/threading/sequence_bound.h"
 #include "base/win/windows_types.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_shortcut_win.h"
@@ -158,6 +159,14 @@ class OmniboxEverywhereUIManager
   // selection. The widget is intentionally hidden for the duration of that
   // flow, so invocation entry points must be ignored while this is true.
   bool IsScreenshareCaptureInProgress() const;
+
+  // Shows the overflow (three-dot) menu containing the Omnibox Everywhere
+  // settings items, anchored below `anchor_screen_rect` (screen DIPs). Shares
+  // the context menu controller with the right-click menu. `on_closed` runs
+  // when the menu closes, or immediately if it cannot be shown.
+  void ShowOverflowMenu(const gfx::Rect& anchor_screen_rect,
+                        ui::mojom::MenuSourceType source_type,
+                        base::OnceClosure on_closed);
 
   // views::WidgetObserver:
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;

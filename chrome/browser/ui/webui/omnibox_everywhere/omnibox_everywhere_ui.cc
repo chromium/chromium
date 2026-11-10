@@ -282,6 +282,9 @@ OmniboxEverywhereUI::OmniboxEverywhereUI(content::WebUI* web_ui)
       {"loomniboxFreWhereToFindPrimary",
        IDS_LOOMNIBOX_FRE_WHERE_TO_FIND_PRIMARY},
       {"managedByYourOrganization", IDS_MANAGED},
+      // Reuses the standard "More options" accessible label for the overflow
+      // (three-dot) button.
+      {"overflowMenuButtonLabel", IDS_FUSEBOX_MORE_OPTIONS},
       {"profileButtonLabel", IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE},
       {"profileTooltipHeader", IDS_OMNIBOX_EVERYWHERE_PROFILE_TOOLTIP},
       {"screenshotEntireScreenLabel", IDS_OMNIBOX_EVERYWHERE_ENTIRE_SCREEN},
@@ -1125,6 +1128,14 @@ void OmniboxEverywhereUI::OnContextMenuClosed() {
   SynthesizeMouseMoveEvent();
 }
 
+void OmniboxEverywhereUI::OnOverflowMenuClosed() {
+  if (page_handler_) {
+    page_handler_->OnOverflowMenuClosed();
+  }
+  // Clear stale hover state on the overflow button after the menu closes.
+  SynthesizeMouseMoveEvent();
+}
+
 void OmniboxEverywhereUI::OnFileChooserOpened() {
   if (auto* service =
           OmniboxEverywhereServiceFactory::GetForProfile(profile_)) {
@@ -1181,6 +1192,27 @@ void OmniboxEverywhereUI::ShowContextActionMenu(const gfx::Rect& anchor_rect) {
       base::BindRepeating(&OmniboxEverywhereUI::OnContextMenuClosed,
                           weak_factory_.GetWeakPtr()));
   context_menu_->RunMenuAt(screen_point, ui::mojom::MenuSourceType::kNone);
+}
+
+// The overflow menu is hosted by `OmniboxEverywhereUIManager` (via the service)
+// so it shares the right-click menu's model, command handling, and dismissal
+// suppression (the popup must stay open while the native menu has activation).
+void OmniboxEverywhereUI::ShowOverflowMenu(
+    const gfx::Rect& anchor_rect,
+    ui::mojom::MenuSourceType source_type) {
+  content::WebContents* web_contents = web_ui()->GetWebContents();
+  auto* service = OmniboxEverywhereServiceFactory::GetForProfile(profile_);
+  if (!web_contents || !service) {
+    OnOverflowMenuClosed();
+    return;
+  }
+  // `anchor_rect` is in WebUI viewport coordinates; offset it by the
+  // WebContents' screen position to get screen DIP coordinates.
+  service->ShowOverflowMenu(
+      anchor_rect + web_contents->GetContainerBounds().OffsetFromOrigin(),
+      source_type,
+      base::BindOnce(&OmniboxEverywhereUI::OnOverflowMenuClosed,
+                     weak_factory_.GetWeakPtr()));
 }
 
 // static

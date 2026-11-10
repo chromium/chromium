@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -43,6 +44,8 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/menu_runner_handler.h"
@@ -94,7 +97,8 @@ class TestNativeWidget : public BaseTestNativeWidget {
 
 class TestMenuRunnerHandler : public views::MenuRunnerHandler {
  public:
-  TestMenuRunnerHandler() = default;
+  explicit TestMenuRunnerHandler(ui::mojom::MenuSourceType* last_source_type)
+      : last_source_type_(last_source_type) {}
   ~TestMenuRunnerHandler() override = default;
 
   void RunMenuAt(views::Widget* parent,
@@ -102,7 +106,12 @@ class TestMenuRunnerHandler : public views::MenuRunnerHandler {
                  const gfx::Rect& bounds,
                  views::MenuAnchorPosition anchor,
                  ui::mojom::MenuSourceType source_type,
-                 int32_t types) override {}
+                 int32_t types) override {
+    *last_source_type_ = source_type;
+  }
+
+ private:
+  const raw_ptr<ui::mojom::MenuSourceType> last_source_type_;
 };
 
 class TestingAimEligibilityService : public ChromeAimEligibilityService {
@@ -162,6 +171,18 @@ bool HasCommand(const ui::SimpleMenuModel* model, int command_id) {
   return model && model->GetIndexOfCommandId(command_id).has_value();
 }
 
+std::vector<int> GetCommandIds(const ui::SimpleMenuModel* model) {
+  std::vector<int> ids;
+  for (size_t i = 0; i < model->GetItemCount(); ++i) {
+    ids.push_back(model->GetCommandIdAt(i));
+  }
+  return ids;
+}
+
+base::OnceClosure CountingClosure(int* count) {
+  return base::BindOnce([](int* count) { ++*count; }, count);
+}
+
 }  // namespace
 
 class OmniboxEverywhereContextMenuControllerTest : public ChromeViewsTestBase {
@@ -194,7 +215,8 @@ class OmniboxEverywhereContextMenuControllerTest : public ChromeViewsTestBase {
     controller_ =
         std::make_unique<OmniboxEverywhereContextMenuController>(delegate_);
     controller_->SetMenuRunnerFactoryForTesting(base::BindRepeating(
-        [](base::RepeatingClosure* last_on_closed, ui::MenuModel* model,
+        [](base::RepeatingClosure* last_on_closed,
+           ui::mojom::MenuSourceType* last_source_type, ui::MenuModel* model,
            base::RepeatingClosure on_closed) {
           *last_on_closed = on_closed;
           auto runner = std::make_unique<views::MenuRunner>(
@@ -203,10 +225,12 @@ class OmniboxEverywhereContextMenuControllerTest : public ChromeViewsTestBase {
                   views::MenuRunner::CONTEXT_MENU,
               std::move(on_closed));
           views::test::MenuRunnerTestAPI(runner.get())
-              .SetMenuRunnerHandler(std::make_unique<TestMenuRunnerHandler>());
+              .SetMenuRunnerHandler(
+                  std::make_unique<TestMenuRunnerHandler>(last_source_type));
           return runner;
         },
-        base::Unretained(&last_on_closed_)));
+        base::Unretained(&last_on_closed_),
+        base::Unretained(&last_source_type_)));
   }
 
   void TearDown() override {
@@ -255,6 +279,8 @@ class OmniboxEverywhereContextMenuControllerTest : public ChromeViewsTestBase {
   int emoji_panel_shown_count_ = 0;
   FakeDelegate delegate_;
   base::RepeatingClosure last_on_closed_;
+  ui::mojom::MenuSourceType last_source_type_ =
+      ui::mojom::MenuSourceType::kNone;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<OmniboxEverywhereContextMenuController> controller_;
@@ -343,6 +369,98 @@ TEST_F(OmniboxEverywhereContextMenuControllerTest, CancelAndReset) {
   EXPECT_FALSE(controller_->IsOpen());
   EXPECT_FALSE(controller_->model_for_testing());
   EXPECT_EQ(closed_count_before_reset, delegate_.closed_count());
+}
+
+// The overflow menu shows exactly the background right-click menu's items, and
+// closing it runs its callback once and notifies the delegate.
+TEST_F(OmniboxEverywhereContextMenuControllerTest,
+       OverflowMenuMatchesBackgroundMenu) {
+  controller_->HandleContextMenu(content::ContextMenuParams());
+  ASSERT_TRUE(controller_->model_for_testing());
+  const std::vector<int> background_ids =
+      GetCommandIds(controller_->model_for_testing());
+  last_on_closed_.Run();
+
+  int closed_count = 0;
+  controller_->ShowOverflowMenu(gfx::Rect(100, 100, 28, 28),
+                                ui::mojom::MenuSourceType::kMouse,
+                                CountingClosure(&closed_count));
+  ASSERT_TRUE(controller_->IsOpen());
+  ASSERT_TRUE(controller_->model_for_testing());
+  EXPECT_EQ(background_ids, GetCommandIds(controller_->model_for_testing()));
+  EXPECT_TRUE(HasCommand(controller_->model_for_testing(),
+                         CommandId::kManageSearchEngines));
+  EXPECT_TRUE(
+      HasCommand(controller_->model_for_testing(), CommandId::kSettings));
+  EXPECT_EQ(0, closed_count);
+
+  const int delegate_closed_before = delegate_.closed_count();
+  last_on_closed_.Run();
+  EXPECT_FALSE(controller_->IsOpen());
+  EXPECT_EQ(1, closed_count);
+  EXPECT_EQ(delegate_closed_before + 1, delegate_.closed_count());
+}
+
+// The overflow menu is run with the source it was triggered from, so a
+// keyboard-opened menu selects its first item.
+TEST_F(OmniboxEverywhereContextMenuControllerTest,
+       OverflowMenuPassesSourceType) {
+  controller_->ShowOverflowMenu(gfx::Rect(100, 100, 28, 28),
+                                ui::mojom::MenuSourceType::kKeyboard,
+                                base::DoNothing());
+  EXPECT_EQ(ui::mojom::MenuSourceType::kKeyboard, last_source_type_);
+  last_on_closed_.Run();
+
+  controller_->ShowOverflowMenu(gfx::Rect(100, 100, 28, 28),
+                                ui::mojom::MenuSourceType::kMouse,
+                                base::DoNothing());
+  EXPECT_EQ(ui::mojom::MenuSourceType::kMouse, last_source_type_);
+}
+
+// The overflow menu doesn't inherit the previous right-click target, so
+// editing items (including the macOS Writing Direction submenu) stay out.
+TEST_F(OmniboxEverywhereContextMenuControllerTest,
+       OverflowMenuAfterEditableMenuOmitsEditingItems) {
+  content::ContextMenuParams params;
+  params.is_editable = true;
+  controller_->HandleContextMenu(params);
+  ASSERT_TRUE(
+      HasCommand(controller_->model_for_testing(), CommandId::kSelectAll));
+  last_on_closed_.Run();
+
+  controller_->ShowOverflowMenu(gfx::Rect(100, 100, 28, 28),
+                                ui::mojom::MenuSourceType::kMouse,
+                                base::DoNothing());
+  const ui::SimpleMenuModel* model = controller_->model_for_testing();
+  ASSERT_TRUE(model);
+  EXPECT_EQ(CommandId::kManageSearchEngines, model->GetCommandIdAt(0));
+  EXPECT_FALSE(HasCommand(model, CommandId::kSelectAll));
+  EXPECT_FALSE(HasCommand(model, CommandId::kPaste));
+#if BUILDFLAG(IS_MAC)
+  EXPECT_FALSE(HasCommand(model, CommandId::kWritingDirectionMenu));
+#endif  // BUILDFLAG(IS_MAC)
+}
+
+// Replacing the overflow menu with another menu, or resetting the controller,
+// runs the pending overflow closed callback exactly once.
+TEST_F(OmniboxEverywhereContextMenuControllerTest,
+       OverflowMenuClosedCallbackRunsWhenReplacedOrReset) {
+  int first_closed = 0;
+  controller_->ShowOverflowMenu(gfx::Rect(100, 100, 28, 28),
+                                ui::mojom::MenuSourceType::kMouse,
+                                CountingClosure(&first_closed));
+  controller_->HandleContextMenu(content::ContextMenuParams());
+  EXPECT_EQ(1, first_closed);
+  EXPECT_TRUE(controller_->IsOpen());
+
+  int second_closed = 0;
+  controller_->ShowOverflowMenu(gfx::Rect(100, 100, 28, 28),
+                                ui::mojom::MenuSourceType::kMouse,
+                                CountingClosure(&second_closed));
+  controller_->Reset();
+  EXPECT_EQ(1, second_closed);
+  EXPECT_EQ(1, first_closed);
+  EXPECT_FALSE(controller_->IsOpen());
 }
 
 TEST_F(OmniboxEverywhereContextMenuControllerTest,
