@@ -9925,6 +9925,9 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop, FEATURE_VALUE_TYPE(media::kGetDisplayMediaConfersActivation)},
 #endif
 
+    {"geic-actuation", flag_descriptions::kGeicActuationName,
+     flag_descriptions::kGeicActuationDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kGeicActuation)},
     {"geic-enabled", flag_descriptions::kGeicEnabledName,
      flag_descriptions::kGeicEnabledDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kGeic)},

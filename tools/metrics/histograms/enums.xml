@@ -16525,6 +16525,7 @@ from previous Chrome versions.
   <int value="417742858" label="ImprovedSemanticsActivityIndicators:enabled"/>
   <int value="417931522" label="MenuSimplification:enabled"/>
   <int value="418769094" label="MixedContentSiteSetting:enabled"/>
+  <int value="419710039" label="GeicActuation:disabled"/>
   <int value="419984818" label="ExtensionManifestV2DeprecationWarning:enabled"/>
   <int value="419990945" label="AndroidMultiprofile:enabled"/>
   <int value="420160748" label="CornerShortcuts:enabled"/>
@@ -19534,6 +19535,7 @@ from previous Chrome versions.
   <int value="1312025202" label="NTPOfflinePageSuggestions:disabled"/>
   <int value="1312201151" label="NtpAurora:enabled"/>
   <int value="1312920918" label="EnableBubbleCornerRadiusUpdate:disabled"/>
+  <int value="1312928514" label="GeicActuation:enabled"/>
   <int value="1313476409" label="ReportFeedUserActions:disabled"/>
   <int value="1313570156"
       label="HappinessTrackingSurveysForDesktopMigration:enabled"/>
