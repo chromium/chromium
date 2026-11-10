@@ -19,17 +19,32 @@ AndroidTabModelEventBridge::AndroidTabModelEventBridge(
       adapter_(adapter),
       translation_adapter_(translation_adapter) {
   auto* active_tab = model_->GetActiveTab();
-  CHECK(active_tab)
-      << "TabStrip API assumes that there is always at least one selected tab.";
-  last_active_tab_ = active_tab->GetHandle();
+  last_active_tab_ =
+      active_tab ? active_tab->GetHandle() : tabs::TabHandle::Null();
   last_selection_ = model_->GetOrderedMultiSelectedTabs();
   model_->AddObserver(this);
-  adapter_->GetRoot()->AddObserver(this);
+  auto* root = adapter_->GetRoot();
+  root_collection_handle_ = root->GetHandle();
+  root->AddObserver(this);
 }
 
 AndroidTabModelEventBridge::~AndroidTabModelEventBridge() {
-  model_->RemoveObserver(this);
-  adapter_->GetRoot()->RemoveObserver(this);
+  DetachObservations();
+}
+
+void AndroidTabModelEventBridge::DetachObservations() {
+  if (auto* root = root_collection_handle_.Get()) {
+    root->RemoveObserver(this);
+  }
+  root_collection_handle_ = tabs::TabCollectionHandle::Null();
+  if (model_) {
+    model_->RemoveObserver(this);
+    model_ = nullptr;
+  }
+}
+
+void AndroidTabModelEventBridge::OnTabModelDestroyed(TabModel& tab_model) {
+  DetachObservations();
 }
 
 void AndroidTabModelEventBridge::AddObserver(events::EventObserver* observer) {
@@ -59,7 +74,10 @@ void AndroidTabModelEventBridge::OnTabsSelectionsChanged() {
 }
 
 void AndroidTabModelEventBridge::HandleSelectionAndActivationChange() {
-  tabs::TabHandle new_active_tab = model_->GetActiveTab()->GetHandle();
+  CHECK(model_);
+  auto* active_tab = model_->GetActiveTab();
+  tabs::TabHandle new_active_tab =
+      active_tab ? active_tab->GetHandle() : tabs::TabHandle::Null();
   bool active_tab_changed = new_active_tab != last_active_tab_;
 
   // Note that the API currently doesn't care about ordering, but this may

@@ -114,6 +114,7 @@ IN_PROC_BROWSER_TEST_F(AndroidTabStripApiBrowserTest, Get) {
     ASSERT_EQ(base::NumberToString(
                   model_->GetAllTabs().at(0)->GetHandle().raw_value()),
               tab_strip_container->children.at(0)->data->get_tab().id.Id());
+    EXPECT_TRUE(tab_strip_container->children.at(0)->data->get_tab().is_active);
   }
 
   // Now create a new tab and check that it is indeed reflected.

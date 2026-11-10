@@ -29,10 +29,12 @@ void TabStripServiceFeature::Accept(
   tab_strip_service_->Accept(std::move(client));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 void TabStripServiceFeature::AcceptExperimental(
     mojo::PendingReceiver<tabs_api::mojom::TabStripExperimentService> client) {
   tab_strip_service_->AcceptExperimental(std::move(client));
 }
+#endif
 
 tabs_api::TabStripService* TabStripServiceFeature::GetTabStripService() const {
   return tab_strip_service_.get();

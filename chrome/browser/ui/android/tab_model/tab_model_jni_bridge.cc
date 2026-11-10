@@ -43,6 +43,8 @@
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_muted_utils.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/android_tab_model_impl/android_tab_strip_api_injector.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_feature.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -145,11 +147,16 @@ void TabModelJniBridge::AssociateWithBrowserWindow(
   scoped_unowned_user_data_ =
       std::make_unique<ui::ScopedUnownedUserData<TabListInterface>>(
           android_browser_window->GetUnownedUserDataHost(), *this);
+  auto injector = std::make_unique<tabs_api::AndroidTabStripApiInjector>(
+      this, TabLaunchType::FROM_CHROME_UI);
+  tab_strip_service_feature_ = std::make_unique<TabStripServiceFeature>(
+      std::move(injector), android_browser_window->GetUnownedUserDataHost());
   SetSessionId(android_browser_window->GetSessionID());
 }
 
 void TabModelJniBridge::DissociateWithBrowserWindow() {
   CHECK(scoped_unowned_user_data_ != nullptr);
+  tab_strip_service_feature_.reset();
   scoped_unowned_user_data_.reset();
   SetSessionId(SessionID::InvalidValue());
 }
@@ -994,6 +1001,8 @@ TabModel* TabModelJniBridge::FromJavaObject(const JavaRef<jobject>& obj) {
 }
 
 TabModelJniBridge::~TabModelJniBridge() {
+  tab_strip_service_feature_.reset();
+
   // We need to explicitly do this here (instead of e.g. in the
   // TabModelObserverJniBridge dtor) because otherwise, callers might call back
   // into a partially-destructed TabModel.

@@ -26,6 +26,7 @@ class BrowserWindowInterface;
 class SessionID;
 class TabAndroid;
 class TabModelObserverJniBridge;
+class TabStripServiceFeature;
 
 namespace content {
 class WebContents;
@@ -197,6 +198,7 @@ class TabModelJniBridge : public TabModel {
   // the constructor.
   std::unique_ptr<ui::ScopedUnownedUserData<TabListInterface>>
       scoped_unowned_user_data_;
+  std::unique_ptr<TabStripServiceFeature> tab_strip_service_feature_;
 
   // Whether restored background tabs have already been scheduled with
   // BackgroundTabLoadingPolicy. Duplicate calls to

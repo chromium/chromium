@@ -8,6 +8,8 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/android_tab_model_impl/android_translation_adapter.h"
+#include "components/browser_apis/tab_strip/types/tab_states.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/pinned_tab_collection.h"
 #include "components/tabs/public/tab_collection.h"
@@ -26,6 +28,7 @@ AndroidTabStripModelAdapter::~AndroidTabStripModelAdapter() = default;
 std::vector<tabs::TabHandle> AndroidTabStripModelAdapter::GetTabs() const {
   std::vector<tabs::TabHandle> handles;
   for (auto* tab_interface : model_->GetAllTabs()) {
+    CHECK(tab_interface);
     handles.push_back(tab_interface->GetHandle());
   }
   return handles;
@@ -215,10 +218,11 @@ mojom::ContainerPtr AndroidTabStripModelAdapter::GetTabStripTopology(
   tab_strip->data = mojom::Data::NewTabStrip(std::move(tab_strip_data));
 
   for (auto* tab_interface : model_->GetAllTabs()) {
+    CHECK(tab_interface);
+    const tabs::TabHandle handle = tab_interface->GetHandle();
     auto tab = tabs_api::mojom::Container::New();
-    Tab tab_data;
-    tab_data.id = tabs_api::NodeId::FromTabHandle(tab_interface->GetHandle());
-    tab->data = mojom::Data::NewTab(std::move(tab_data));
+    tab->data = mojom::Data::NewTab(
+        AndroidTranslationAdapter::BuildMojoTab(handle, GetTabStates(handle)));
     tab_strip->children.emplace_back(std::move(tab));
   }
 

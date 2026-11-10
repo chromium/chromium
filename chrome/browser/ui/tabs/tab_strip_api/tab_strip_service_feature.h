@@ -7,12 +7,16 @@
 
 #include <memory>
 
+#include "build/build_config.h"
 #include "components/browser_apis/tab_strip/tab_strip_api.mojom.h"
-#include "components/browser_apis/tab_strip/tab_strip_experiment_api.mojom.h"
 #include "components/browser_apis/tab_strip/tab_strip_service.h"
 #include "components/browser_apis/tab_strip/tab_strip_service_view.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/browser_apis/tab_strip/tab_strip_experiment_api.mojom.h"
+#endif
 
 class BrowserWindowInterface;
 
@@ -35,8 +39,10 @@ class TabStripServiceFeature {
   static TabStripServiceFeature* From(BrowserWindowInterface* browser);
 
   void Accept(mojo::PendingReceiver<tabs_api::mojom::TabStripService> client);
+#if !BUILDFLAG(IS_ANDROID)
   void AcceptExperimental(
       mojo::PendingReceiver<tabs_api::mojom::TabStripExperimentService> client);
+#endif
   tabs_api::TabStripService* GetTabStripService() const;
   tabs_api::TabStripServiceView* GetTabStripServiceView();
 

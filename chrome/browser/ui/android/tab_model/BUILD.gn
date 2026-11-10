@@ -65,6 +65,8 @@ source_set("impl") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/navigator",
     "//chrome/browser/ui/tabs:tabs_public",
+    "//chrome/browser/ui/tabs/tab_strip_api",
+    "//chrome/browser/ui/tabs/tab_strip_api/android_tab_model_impl",
     "//components/content_settings/core/browser",
     "//content/public/browser",
     "//content/public/common",

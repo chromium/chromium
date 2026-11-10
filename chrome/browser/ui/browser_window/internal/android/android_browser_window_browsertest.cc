@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/base_switches.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -22,13 +23,17 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/test/android/browser_window_android_browsertest_base.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_feature.h"
 #include "chrome/test/base/android/android_browser_test.h"
+#include "components/browser_apis/tab_strip/tab_strip_service_view.h"
+#include "components/browser_apis/tab_strip/types/tab.h"
 #include "components/feed/feed_feature_list.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/base_window.h"
@@ -52,6 +57,7 @@ class BrowserClosedVerifier : public BrowserCollectionObserver {
       return;
     }
     EXPECT_NE(nullptr, TabListInterface::From(browser));
+    EXPECT_NE(nullptr, TabStripServiceFeature::From(browser));
     EXPECT_FALSE(
         std::ranges::contains(GetAllBrowserWindowInterfaces(), browser));
     target_browser_ = nullptr;
@@ -300,8 +306,52 @@ IN_PROC_BROWSER_TEST_F(
     OnBrowserClosed_TabListInterfaceValidAndWindowExcludedFromIterator) {
   AndroidBrowserWindow* window = GetBrowserWindow();
   ASSERT_NE(nullptr, TabListInterface::From(window));
+  ASSERT_NE(nullptr, TabStripServiceFeature::From(window));
 
   BrowserClosedVerifier verifier(window);
   window->GetWindow()->Close();
   verifier.Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(AndroidBrowserWindowBrowserTest,
+                       TabStripServiceFeatureRegisteredAndReflectsTabs) {
+  AndroidBrowserWindow* window = GetBrowserWindow();
+  GURL initial_url = embedded_test_server()->GetURL("/simple.html");
+  content::OpenURLParams initial_params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          initial_url, ui::mojom::WindowOpenDisposition::kCurrentTab,
+          ui::PAGE_TRANSITION_TYPED);
+  content::WebContents* initial_contents =
+      window->OpenURL(initial_params, base::DoNothing());
+  ASSERT_NE(nullptr, initial_contents);
+  ASSERT_TRUE(content::WaitForLoadStop(initial_contents));
+
+  TabStripServiceFeature* feature = TabStripServiceFeature::From(window);
+  ASSERT_NE(nullptr, feature);
+  ASSERT_NE(nullptr, feature->GetTabStripService());
+
+  tabs_api::TabStripServiceView* view = feature->GetTabStripServiceView();
+  ASSERT_NE(nullptr, view);
+  EXPECT_EQ(1u, view->GetTabs().size());
+  ASSERT_NE(nullptr, view->GetActiveTab());
+  EXPECT_EQ(initial_url, view->GetActiveTab()->url);
+  const tabs::TabHandle initial_handle = view->GetActiveTab()->ToTabHandle();
+
+  GURL new_tab_url = embedded_test_server()->GetURL("/title1.html");
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          new_tab_url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+          ui::PAGE_TRANSITION_LINK);
+  base::test::TestFuture<GURL> future;
+  window->OpenURL(params, base::BindLambdaForTesting(
+                              [&](content::NavigationHandle& handle) {
+                                future.SetValue(handle.GetURL());
+                              }));
+  ASSERT_TRUE(future.Wait());
+
+  EXPECT_EQ(2u, view->GetTabs().size());
+  ASSERT_NE(nullptr, view->GetActiveTab());
+  EXPECT_NE(initial_handle, view->GetActiveTab()->ToTabHandle());
+  EXPECT_EQ(TabListInterface::From(window)->GetActiveTab()->GetHandle(),
+            view->GetActiveTab()->ToTabHandle());
 }

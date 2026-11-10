@@ -46,6 +46,7 @@ class AndroidTabModelEventBridge : public EventBridge,
   void OnTabGroupCreated(tab_groups::TabGroupId group_id) override;
   void OnTabGroupRemoving(tab_groups::TabGroupId group_id) override;
   void OnTabGroupVisualsChanged(tab_groups::TabGroupId group_id) override;
+  void OnTabModelDestroyed(TabModel& tab_model) override;
 
   // TabCollectionObserver:
   // NOTE: Be VERY careful about the TabHandles from this observation. Android
@@ -56,6 +57,8 @@ class AndroidTabModelEventBridge : public EventBridge,
                     const NodeData& node_data) override;
 
  private:
+  void DetachObservations();
+
   // Exchanges a tab collection's TabHandle to an AndroidTab.
   TabAndroid* ToAndroidTab(tabs::TabHandle tab_collection_handle) const;
 
@@ -66,6 +69,7 @@ class AndroidTabModelEventBridge : public EventBridge,
   raw_ptr<TabModel> model_;
   raw_ref<AndroidTabStripModelAdapter> adapter_;
   raw_ref<TranslationAdapter> translation_adapter_;
+  tabs::TabCollectionHandle root_collection_handle_;
 
   // Android tab model does selection change event does not contain the last
   // selected tab, so we will need to keep track of it ourselves.
