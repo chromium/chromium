@@ -252,6 +252,37 @@ TEST_F(InstallableIconFetcherTest, NonSquareManifestIconIsPaddedToSquare) {
   EXPECT_EQ(page_data.primary_icon()->getColor(72, 0), SK_ColorTRANSPARENT);
 }
 
+TEST_F(InstallableIconFetcherTest,
+       MaskableIdealBelowMinimumIsClampedToMinimum) {
+  // The clamp in `GetIdealPrimaryIconSizeInPx()` must raise the ideal to the
+  // 83px maskable minimum so `ManifestIconDownloader::Download()` is invoked
+  // instead of tripping `CHECK_LE`.
+  base::AutoReset<int> override_ideal(&test::g_ideal_favicon_size_for_testing,
+                                      50);
+
+  const GURL kIconUrl("https://www.example.com/maskable.png");
+  blink::Manifest::ImageResource icon;
+  icon.src = kIconUrl;
+  icon.type = u"image/png";
+  icon.sizes.emplace_back(83, 83);
+  icon.purpose.push_back(blink::mojom::ManifestImageResource_Purpose::MASKABLE);
+
+  base::test::TestFuture<InstallableStatusCode> future;
+  InstallablePageData page_data;
+  InstallableIconFetcher fetcher(web_contents(), page_data, {icon},
+                                 /*prefer_maskable=*/true,
+                                 /*fetch_favicon=*/false, future.GetCallback());
+
+  ASSERT_TRUE(web_contents_tester()->HasPendingDownloadImage(kIconUrl));
+  EXPECT_TRUE(web_contents_tester()->TestDidDownloadImage(
+      kIconUrl, 200, {CreateTestBitmap(83, 83)}, {gfx::Size(83, 83)}));
+
+  EXPECT_EQ(future.Get(), InstallableStatusCode::NO_ERROR_DETECTED);
+  ASSERT_TRUE(page_data.primary_icon());
+  EXPECT_EQ(page_data.primary_icon()->width(), 83);
+  EXPECT_EQ(page_data.primary_icon()->height(), 83);
+}
+
 TEST_F(InstallableIconFetcherTest, NonSquareAnyIconBelowMinimumSideIsPadded) {
   const GURL kIconUrl("https://www.example.com/icon-any.png");
   blink::Manifest::ImageResource icon;

@@ -60,36 +60,34 @@ const int kMinimumPrimaryAdaptiveLauncherIconSizeInPx = 83;
 
 using IconPurpose = blink::mojom::ManifestImageResource_Purpose;
 
+int GetMinimumPrimaryIconSizeInPx(IconPurpose purpose);
+
 int GetIdealPrimaryIconSizeInPx(IconPurpose purpose) {
   if (test::g_ideal_favicon_size_for_testing) {
     CHECK_IS_TEST();
-    return test::g_ideal_favicon_size_for_testing;
+    return std::max(test::g_ideal_favicon_size_for_testing,
+                    GetMinimumPrimaryIconSizeInPx(purpose));
   }
 #if BUILDFLAG(IS_ANDROID)
-  if (purpose == IconPurpose::MASKABLE) {
-    return WebappsIconUtils::GetIdealAdaptiveLauncherIconSizeInPx();
-  } else {
-    return WebappsIconUtils::GetIdealHomescreenIconSizeInPx();
-  }
+  int ideal_size =
+      purpose == IconPurpose::MASKABLE
+          ? WebappsIconUtils::GetIdealAdaptiveLauncherIconSizeInPx()
+          : WebappsIconUtils::GetIdealHomescreenIconSizeInPx();
+  return std::max(ideal_size, GetMinimumPrimaryIconSizeInPx(purpose));
 #else
-  if (purpose == IconPurpose::MASKABLE) {
-    return kMinimumPrimaryAdaptiveLauncherIconSizeInPx;
-  } else {
-    return InstallableEvaluator::GetMinimumIconSizeInPx();
-  }
+  return GetMinimumPrimaryIconSizeInPx(purpose);
 #endif
 }
 
 int GetMinimumPrimaryIconSizeInPx(IconPurpose purpose) {
   if (purpose == IconPurpose::MASKABLE) {
     return kMinimumPrimaryAdaptiveLauncherIconSizeInPx;
-  } else {
-#if BUILDFLAG(IS_ANDROID)
-    return WebappsIconUtils::GetMinimumHomescreenIconSizeInPx();
-#else
-    return InstallableEvaluator::GetMinimumIconSizeInPx();
-#endif
   }
+#if BUILDFLAG(IS_ANDROID)
+  return WebappsIconUtils::GetMinimumHomescreenIconSizeInPx();
+#else
+  return InstallableEvaluator::GetMinimumIconSizeInPx();
+#endif
 }
 
 // On Android, |LargeIconWorker::GetLargeIconRawBitmap| will try to find the

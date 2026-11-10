@@ -57,6 +57,7 @@ class CONTENT_EXPORT ManifestIconDownloader final {
   // |global_frame_routing_id| specifies the frame in which to initiate the
   // download. With |square_only|, the returned bitmap is square: a non-square
   // icon is centered in a transparent square at its longest side.
+  // Requires `minimum_icon_size_in_px` <= `ideal_icon_size_in_px`.
   static bool Download(
       content::WebContents* web_contents,
       const GURL& icon_url,

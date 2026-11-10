@@ -53,11 +53,10 @@ bool ManifestIconDownloader::Download(
     bool square_only,
     const GlobalRenderFrameHostId& initiator_frame_routing_id,
     bool suppress_warnings) {
-  // TODO(crbug.com/557584562): CHECK-exclusion: Convert to a CHECK once we are
-  // confident it won't be triggered.
-  DCHECK(minimum_icon_size_in_px <= ideal_icon_size_in_px);
-  if (!web_contents || !icon_url.is_valid())
+  CHECK_LE(minimum_icon_size_in_px, ideal_icon_size_in_px);
+  if (!web_contents || !icon_url.is_valid()) {
     return false;
+  }
 
   const gfx::Size preferred_size(ideal_icon_size_in_px, ideal_icon_size_in_px);
 

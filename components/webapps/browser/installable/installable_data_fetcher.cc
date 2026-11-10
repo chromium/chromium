@@ -165,8 +165,9 @@ void InstallableDataFetcher::CheckAndFetchScreenshots(
 
       int ideal_size_in_px = url.image.sizes.empty()
                                  ? kMinimumScreenshotSizeInPx
-                                 : std::max(url.image.sizes[0].width(),
-                                            url.image.sizes[0].height());
+                                 : std::max({kMinimumScreenshotSizeInPx,
+                                             url.image.sizes[0].width(),
+                                             url.image.sizes[0].height()});
       // Do not pass in a maximum icon size so that screenshots larger than
       // kMaximumScreenshotSizeInPx are not downscaled to the maximum size by
       // `ManifestIconDownloader::Download`. Screenshots with size larger than
