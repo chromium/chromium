@@ -355,6 +355,9 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CancelSync) {
   EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());
 }
 
+// Verifies that all supported account capabilities are fetched on sign-in for
+// both primary adult and secondary minor accounts, and spot-checks a capability
+// whose value differs between adult and minor accounts.
 IN_PROC_BROWSER_TEST_F(LiveSignInTest,
                        MANUAL_AccountCapabilities_FetchedOnSignIn) {
   // Test primary adult account.
@@ -371,7 +374,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest,
     ASSERT_TRUE(
         gaia::AreEmailsSame(core_account_info.email, test_account->user));
 
-    capabilities_observer.WaitForAllCapabilitiesToBeKnown(
+    capabilities_observer.WaitForCapabilitiesFetchAndExpectAllKnown(
         core_account_info.account_id);
     AccountInfo account_info =
         identity_manager()->FindExtendedAccountInfoByAccountId(
@@ -396,7 +399,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest,
             test_account->user);
     ASSERT_FALSE(secondary_account_info.IsEmpty());
 
-    capabilities_observer.WaitForAllCapabilitiesToBeKnown(
+    capabilities_observer.WaitForCapabilitiesFetchAndExpectAllKnown(
         secondary_account_info.GetAccountId());
     AccountInfo account_info =
         identity_manager()->FindExtendedAccountInfoByAccountId(

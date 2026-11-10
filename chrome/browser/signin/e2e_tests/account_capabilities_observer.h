@@ -5,12 +5,18 @@
 #ifndef CHROME_BROWSER_SIGNIN_E2E_TESTS_ACCOUNT_CAPABILITIES_OBSERVER_H_
 #define CHROME_BROWSER_SIGNIN_E2E_TESTS_ACCOUNT_CAPABILITIES_OBSERVER_H_
 
-#include "base/run_loop.h"
+#include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "base/test/test_future.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "google_apis/gaia/core_account_id.h"
+
+class AccountCapabilities;
 
 namespace signin::test {
 
-// Observer class allowing to wait for account capabilities to be known.
+// Observer class allowing to wait for account capabilities to be fetched and
+// verify that all supported capabilities are known.
 class AccountCapabilitiesObserver : public IdentityManager::Observer {
  public:
   explicit AccountCapabilitiesObserver(IdentityManager* identity_manager);
@@ -19,13 +25,21 @@ class AccountCapabilitiesObserver : public IdentityManager::Observer {
   // IdentityManager::Observer:
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
 
-  // This should be called only once per AccountCapabilitiesObserver instance.
-  void WaitForAllCapabilitiesToBeKnown(CoreAccountId account_id);
+  // Waits until capabilities are fetched (`AreAnyCapabilitiesKnown()`) for
+  // `account_id`, then expects that every capability in
+  // `AccountCapabilities::GetSupportedAccountCapabilityNames()` is known,
+  // logging `AccountCapabilities::GetCapabilityDisplayName()` for any
+  // capability that remained `signin::Tribool::kUnknown`.
+  // This should be called only once per `AccountCapabilitiesObserver` instance.
+  void WaitForCapabilitiesFetchAndExpectAllKnown(CoreAccountId account_id);
 
  private:
+  static void ExpectAllCapabilitiesKnown(
+      const AccountCapabilities& capabilities);
+
   raw_ptr<IdentityManager> identity_manager_ = nullptr;
   CoreAccountId account_id_;
-  base::RunLoop run_loop_;
+  base::test::TestFuture<void> capabilities_known_future_;
   base::ScopedObservation<IdentityManager, IdentityManager::Observer>
       identity_manager_observation_{this};
 };

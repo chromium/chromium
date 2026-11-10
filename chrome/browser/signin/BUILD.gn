@@ -658,6 +658,7 @@ source_set("unit_tests") {
     deps += [
       "//chrome/browser/autofill",
       "//chrome/browser/profiles/batch_upload:test_support",
+      "//chrome/browser/signin/e2e_tests:unit_tests",
       "//components/sync/base",
       "//components/sync_bookmarks",
       "//device/bluetooth:mocks",
