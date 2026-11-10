@@ -10,6 +10,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.graphics.Color;
@@ -25,13 +31,22 @@ import android.widget.TextView;
 import androidx.activity.OnBackPressedCallback;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -43,8 +58,13 @@ import java.util.Set;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class AdaptiveUiSheetCoordinatorTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private BottomSheetController mBottomSheetController;
+    @Mock private BottomSheetContent mOtherSheetContent;
+
     private Activity mActivity;
-    private final List<Integer> mDismissRequests = new ArrayList<>();
+    private int mShownCount;
     private final List<Integer> mSheetDismissals = new ArrayList<>();
 
     @Before
@@ -59,7 +79,12 @@ public class AdaptiveUiSheetCoordinatorTest {
     private AdaptiveUiSheetCoordinator createContent(
             PropertyModel model, @AdaptiveUiScope int scope) {
         return new AdaptiveUiSheetCoordinator(
-                mActivity, model, scope, mDismissRequests::add, mSheetDismissals::add);
+                mActivity,
+                model,
+                scope,
+                mBottomSheetController,
+                () -> mShownCount++,
+                mSheetDismissals::add);
     }
 
     private static PropertyModel.Builder newModelBuilder() {
@@ -349,7 +374,7 @@ public class AdaptiveUiSheetCoordinatorTest {
         find(content, R.id.adaptive_ui_sheet_primary_button).performClick();
 
         assertEquals(1, clicks[0]);
-        assertEquals(List.of(DismissReason.PRIMARY_ACTION), mDismissRequests);
+        assertEquals(List.of(DismissReason.PRIMARY_ACTION), mSheetDismissals);
     }
 
     @Test
@@ -365,7 +390,7 @@ public class AdaptiveUiSheetCoordinatorTest {
         find(content, R.id.adaptive_ui_sheet_secondary_button).performClick();
 
         assertEquals(1, clicks[0]);
-        assertEquals(List.of(DismissReason.SECONDARY_ACTION), mDismissRequests);
+        assertEquals(List.of(DismissReason.SECONDARY_ACTION), mSheetDismissals);
     }
 
     @Test
@@ -384,7 +409,7 @@ public class AdaptiveUiSheetCoordinatorTest {
         primary.performClick();
 
         assertEquals(2, clicks[0]);
-        assertTrue(mDismissRequests.isEmpty());
+        assertTrue(mSheetDismissals.isEmpty());
     }
 
     @Test
@@ -401,7 +426,7 @@ public class AdaptiveUiSheetCoordinatorTest {
         find(content, R.id.adaptive_ui_sheet_secondary_button).performClick();
 
         assertEquals(1, clicks[0]);
-        assertTrue(mDismissRequests.isEmpty());
+        assertTrue(mSheetDismissals.isEmpty());
     }
 
     @Test
@@ -412,7 +437,7 @@ public class AdaptiveUiSheetCoordinatorTest {
 
         find(content, R.id.adaptive_ui_sheet_primary_button).performClick();
 
-        assertEquals(List.of(DismissReason.PRIMARY_ACTION), mDismissRequests);
+        assertEquals(List.of(DismissReason.PRIMARY_ACTION), mSheetDismissals);
     }
 
     @Test
@@ -428,7 +453,7 @@ public class AdaptiveUiSheetCoordinatorTest {
         find(content, R.id.adaptive_ui_sheet_secondary_button).performClick();
         content.onBackPressed();
 
-        assertEquals(List.of(DismissReason.PRIMARY_ACTION), mDismissRequests);
+        assertEquals(List.of(DismissReason.PRIMARY_ACTION), mSheetDismissals);
     }
 
     @Test
@@ -439,7 +464,7 @@ public class AdaptiveUiSheetCoordinatorTest {
 
         find(content, R.id.adaptive_ui_sheet_close_button).performClick();
 
-        assertEquals(List.of(DismissReason.CLOSE_BUTTON), mDismissRequests);
+        assertEquals(List.of(DismissReason.CLOSE_BUTTON), mSheetDismissals);
     }
 
     @Test
@@ -458,7 +483,8 @@ public class AdaptiveUiSheetCoordinatorTest {
         content.onBackPressed();
 
         assertEquals(0, clicks[0]);
-        assertTrue(mDismissRequests.isEmpty());
+        // Only destroy() reports, with the fallback reason; the later clicks are ignored.
+        assertEquals(List.of(DismissReason.NAVIGATION), mSheetDismissals);
     }
 
     @Test
@@ -482,7 +508,7 @@ public class AdaptiveUiSheetCoordinatorTest {
         content.onBackPressed();
 
         assertEquals(0, handled[0]);
-        assertEquals(List.of(DismissReason.PRIMARY_ACTION), mDismissRequests);
+        assertEquals(List.of(DismissReason.PRIMARY_ACTION), mSheetDismissals);
     }
 
     @Test
@@ -491,7 +517,7 @@ public class AdaptiveUiSheetCoordinatorTest {
 
         content.onBackPressed();
 
-        assertEquals(List.of(DismissReason.BACK_PRESS), mDismissRequests);
+        assertEquals(List.of(DismissReason.BACK_PRESS), mSheetDismissals);
     }
 
     @Test
@@ -511,7 +537,7 @@ public class AdaptiveUiSheetCoordinatorTest {
         content.onBackPressed();
 
         assertEquals(1, handled[0]);
-        assertTrue(mDismissRequests.isEmpty());
+        assertTrue(mSheetDismissals.isEmpty());
     }
 
     @Test
@@ -531,7 +557,7 @@ public class AdaptiveUiSheetCoordinatorTest {
         content.onBackPressed();
 
         assertEquals(0, handled[0]);
-        assertEquals(List.of(DismissReason.BACK_PRESS), mDismissRequests);
+        assertEquals(List.of(DismissReason.BACK_PRESS), mSheetDismissals);
     }
 
     @Test
@@ -540,7 +566,7 @@ public class AdaptiveUiSheetCoordinatorTest {
 
         assertTrue(content.handleBackPress());
 
-        assertEquals(List.of(DismissReason.BACK_PRESS), mDismissRequests);
+        assertEquals(List.of(DismissReason.BACK_PRESS), mSheetDismissals);
     }
 
     // ---------------------------------------------------------------------------------------
@@ -548,28 +574,29 @@ public class AdaptiveUiSheetCoordinatorTest {
     // ---------------------------------------------------------------------------------------
 
     @Test
-    public void testDestroy_LatchedPrimaryAction() {
+    public void testOnSheetHiddenThenDestroy_LatchedPrimaryAction() {
         PropertyModel model =
                 newModelBuilder().with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "P").build();
         AdaptiveUiSheetCoordinator content = createContent(model);
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(content);
 
         find(content, R.id.adaptive_ui_sheet_primary_button).performClick();
-        assertEquals(List.of(DismissReason.PRIMARY_ACTION), mDismissRequests);
+        assertTrue(mSheetDismissals.isEmpty());
 
         content.onSheetHidden(StateChangeReason.INTERACTION_COMPLETE);
-        assertTrue(mSheetDismissals.isEmpty());
         content.destroy();
         assertEquals(List.of(DismissReason.PRIMARY_ACTION), mSheetDismissals);
     }
 
     @Test
-    public void testDestroy_LatchedSecondaryAction() {
+    public void testOnSheetHiddenThenDestroy_LatchedSecondaryAction() {
         PropertyModel model =
                 newModelBuilder().with(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, "S").build();
         AdaptiveUiSheetCoordinator content = createContent(model);
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(content);
 
         find(content, R.id.adaptive_ui_sheet_secondary_button).performClick();
-        assertEquals(List.of(DismissReason.SECONDARY_ACTION), mDismissRequests);
+        assertTrue(mSheetDismissals.isEmpty());
 
         content.onSheetHidden(StateChangeReason.INTERACTION_COMPLETE);
         content.destroy();
@@ -577,11 +604,12 @@ public class AdaptiveUiSheetCoordinatorTest {
     }
 
     @Test
-    public void testDestroy_LatchedCloseButton() {
+    public void testOnSheetHiddenThenDestroy_LatchedCloseButton() {
         AdaptiveUiSheetCoordinator content = createContent(newModelBuilder().build());
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(content);
 
         find(content, R.id.adaptive_ui_sheet_close_button).performClick();
-        assertEquals(List.of(DismissReason.CLOSE_BUTTON), mDismissRequests);
+        assertTrue(mSheetDismissals.isEmpty());
 
         content.onSheetHidden(StateChangeReason.CLOSE_BUTTON);
         content.destroy();
@@ -589,11 +617,12 @@ public class AdaptiveUiSheetCoordinatorTest {
     }
 
     @Test
-    public void testDestroy_LatchedBackPress() {
+    public void testOnSheetHiddenThenDestroy_LatchedBackPress() {
         AdaptiveUiSheetCoordinator content = createContent(newModelBuilder().build());
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(content);
 
         content.onBackPressed();
-        assertEquals(List.of(DismissReason.BACK_PRESS), mDismissRequests);
+        assertTrue(mSheetDismissals.isEmpty());
 
         content.onSheetHidden(StateChangeReason.BACK_PRESS);
         content.destroy();
@@ -601,7 +630,7 @@ public class AdaptiveUiSheetCoordinatorTest {
     }
 
     @Test
-    public void testDestroy_UnlatchedExternalSwipeDown() {
+    public void testOnSheetHiddenThenDestroy_UnlatchedExternalSwipeDown() {
         AdaptiveUiSheetCoordinator content = createContent(newModelBuilder().build());
 
         content.onSheetHidden(StateChangeReason.SWIPE);
@@ -610,7 +639,7 @@ public class AdaptiveUiSheetCoordinatorTest {
     }
 
     @Test
-    public void testDestroy_UnlatchedExternalTapScrim() {
+    public void testOnSheetHiddenThenDestroy_UnlatchedExternalTapScrim() {
         AdaptiveUiSheetCoordinator content = createContent(newModelBuilder().build());
 
         content.onSheetHidden(StateChangeReason.TAP_SCRIM);
@@ -619,7 +648,7 @@ public class AdaptiveUiSheetCoordinatorTest {
     }
 
     @Test
-    public void testDestroy_UnlatchedNavigation() {
+    public void testOnSheetHiddenThenDestroy_UnlatchedNavigation() {
         AdaptiveUiSheetCoordinator content = createContent(newModelBuilder().build());
 
         content.onSheetHidden(StateChangeReason.NAVIGATION);
@@ -628,7 +657,7 @@ public class AdaptiveUiSheetCoordinatorTest {
     }
 
     @Test
-    public void testDestroy_UnlatchedCloseButton() {
+    public void testOnSheetHiddenThenDestroy_UnlatchedCloseButton() {
         AdaptiveUiSheetCoordinator content = createContent(newModelBuilder().build());
 
         content.onSheetHidden(StateChangeReason.CLOSE_BUTTON);
@@ -671,27 +700,26 @@ public class AdaptiveUiSheetCoordinatorTest {
     }
 
     @Test
-    public void testSetDismissReason_IgnoredIfAlreadyLatched() {
-        AdaptiveUiSheetCoordinator content = createContent(newModelBuilder().build());
-
-        content.onBackPressed();
-        content.setDismissReason(DismissReason.TAB_SWITCHED);
-        content.onSheetHidden(StateChangeReason.NONE);
-        content.destroy();
-
-        assertEquals(List.of(DismissReason.BACK_PRESS), mSheetDismissals);
-    }
-
-    @Test
-    public void testDestroy_ReportsDismissalOnlyOnce() {
+    public void testOnSheetHiddenThenDestroy_Idempotency() {
         AdaptiveUiSheetCoordinator content = createContent(newModelBuilder().build());
 
         content.onSheetHidden(StateChangeReason.SWIPE);
         content.destroy();
-        content.onSheetHidden(StateChangeReason.BACK_PRESS);
+        content.onSheetHidden(StateChangeReason.SWIPE);
         content.destroy();
 
         assertEquals(List.of(DismissReason.SWIPE_DOWN), mSheetDismissals);
+    }
+
+    @Test
+    public void testDestroyWithoutHidden_ReportsFallbackReasonOnce() {
+        AdaptiveUiSheetCoordinator content = createContent(newModelBuilder().build());
+
+        content.destroy();
+        content.onSheetHidden(StateChangeReason.SWIPE);
+        content.destroy();
+
+        assertEquals(List.of(DismissReason.NAVIGATION), mSheetDismissals);
     }
 
     private @DismissReason int closeSheetWithReason(@StateChangeReason int reason) {
@@ -735,7 +763,7 @@ public class AdaptiveUiSheetCoordinatorTest {
     }
 
     @Test
-    public void testOnSheetClosed_TranslatesUnlatchedStateChangeReasons() {
+    public void testOnSheetHiddenThenDestroy_TranslatesUnlatchedStateChangeReasons() {
         assertEquals(DismissReason.BACK_PRESS, closeSheetWithReason(StateChangeReason.BACK_PRESS));
         assertEquals(
                 DismissReason.TOUCH_OUTSIDE, closeSheetWithReason(StateChangeReason.TAP_SCRIM));
@@ -797,5 +825,158 @@ public class AdaptiveUiSheetCoordinatorTest {
         assertNotNull(content.getContentView());
         assertNull(content.getToolbarView());
         assertTrue(content.swipeToDismissEnabled());
+    }
+
+    // ---------------------------------------------------------------------------------------
+    // Driving the BottomSheetController.
+    // ---------------------------------------------------------------------------------------
+
+    private BottomSheetObserver showAndCaptureObserver(AdaptiveUiSheetCoordinator content) {
+        content.show();
+        ArgumentCaptor<BottomSheetObserver> captor =
+                ArgumentCaptor.forClass(BottomSheetObserver.class);
+        verify(mBottomSheetController).addObserver(captor.capture());
+        verify(mBottomSheetController).requestShowContent(content, /* animate= */ true);
+        return captor.getValue();
+    }
+
+    @Test
+    public void testOnShown_OnlyOnceAndOnlyForOwnContent() {
+        AdaptiveUiSheetCoordinator content = createContent(newModelBuilder().build());
+        BottomSheetObserver observer = showAndCaptureObserver(content);
+
+        observer.onSheetContentChanged(mOtherSheetContent);
+        assertEquals(0, mShownCount);
+
+        observer.onSheetContentChanged(content);
+        // Put back in the queue and shown again.
+        observer.onSheetContentChanged(mOtherSheetContent);
+        observer.onSheetContentChanged(content);
+        assertEquals(1, mShownCount);
+    }
+
+    @Test
+    public void testHidden_SuppressedSheetIsNotDismissed() {
+        AdaptiveUiSheetCoordinator content = createContent(newModelBuilder().build());
+        BottomSheetObserver observer = showAndCaptureObserver(content);
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(content);
+
+        observer.onSheetStateChanged(SheetState.HIDDEN, StateChangeReason.OMNIBOX_FOCUS);
+        assertTrue(mSheetDismissals.isEmpty());
+
+        // Restored later, then swiped away; the latest HIDDEN reason wins.
+        observer.onSheetStateChanged(SheetState.HIDDEN, StateChangeReason.SWIPE);
+        content.destroy();
+        assertEquals(List.of(DismissReason.SWIPE_DOWN), mSheetDismissals);
+        verify(mBottomSheetController).removeObserver(observer);
+    }
+
+    @Test
+    public void testClosed_ReasonKeptWhenDestroyedBeforeHidden() {
+        AdaptiveUiSheetCoordinator content = createContent(newModelBuilder().build());
+        BottomSheetObserver observer = showAndCaptureObserver(content);
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(content);
+
+        // With BottomSheetDeferContentSwapOnHidden off, the BottomSheetController destroys the
+        // content before this observer gets the HIDDEN state change.
+        observer.onSheetClosed(StateChangeReason.SWIPE);
+        content.destroy();
+
+        assertEquals(List.of(DismissReason.SWIPE_DOWN), mSheetDismissals);
+    }
+
+    @Test
+    public void testHidden_OtherContentIgnored() {
+        AdaptiveUiSheetCoordinator content = createContent(newModelBuilder().build());
+        BottomSheetObserver observer = showAndCaptureObserver(content);
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mOtherSheetContent);
+
+        observer.onSheetStateChanged(SheetState.HIDDEN, StateChangeReason.SWIPE);
+        content.destroy();
+
+        assertEquals(List.of(DismissReason.NAVIGATION), mSheetDismissals);
+    }
+
+    @Test
+    public void testHide_CurrentSheetWaitsForDestroy() {
+        AdaptiveUiSheetCoordinator content = createContent(newModelBuilder().build());
+        showAndCaptureObserver(content);
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(content);
+
+        content.hide(DismissReason.SECONDARY_ACTION, /* animate= */ true);
+        verify(mBottomSheetController)
+                .hideContent(content, /* animate= */ true, StateChangeReason.INTERACTION_COMPLETE);
+        assertTrue(mSheetDismissals.isEmpty());
+
+        // The BottomSheetController destroys the hidden content; the latched reason wins.
+        content.destroy();
+        assertEquals(List.of(DismissReason.SECONDARY_ACTION), mSheetDismissals);
+    }
+
+    @Test
+    public void testHide_QueuedSheetIsDismissedRightAway() {
+        AdaptiveUiSheetCoordinator content = createContent(newModelBuilder().build());
+        showAndCaptureObserver(content);
+
+        content.hide(DismissReason.NAVIGATION, /* animate= */ true);
+
+        verify(mBottomSheetController).hideContent(eq(content), anyBoolean(), anyInt());
+        assertEquals(List.of(DismissReason.NAVIGATION), mSheetDismissals);
+        assertEquals(0, mShownCount);
+    }
+
+    @Test
+    public void testHide_WithoutAnimationIsDismissedRightAway() {
+        AdaptiveUiSheetCoordinator content = createContent(newModelBuilder().build());
+        showAndCaptureObserver(content);
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(content);
+
+        content.hide(DismissReason.TAB_CLOSED, /* animate= */ false);
+
+        assertEquals(List.of(DismissReason.TAB_CLOSED), mSheetDismissals);
+    }
+
+    @Test
+    public void testRequeuedAfterInSheetClose_AcceptsInputAgain() {
+        int[] clicks = new int[1];
+        PropertyModel model =
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "Primary")
+                        .with(AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED, () -> clicks[0]++)
+                        .build();
+        AdaptiveUiSheetCoordinator content = createContent(model);
+        BottomSheetObserver observer = showAndCaptureObserver(content);
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(content);
+        observer.onSheetContentChanged(content);
+        View primaryButton = find(content, R.id.adaptive_ui_sheet_primary_button);
+
+        // The primary button requests a close; while it is in flight, input is ignored.
+        primaryButton.performClick();
+        primaryButton.performClick();
+        assertEquals(1, clicks[0]);
+        assertTrue(mSheetDismissals.isEmpty());
+
+        // Higher-priority content pushed the sheet back and it is shown again: the close never
+        // happened, so the sheet must accept input again.
+        observer.onSheetContentChanged(mOtherSheetContent);
+        observer.onSheetContentChanged(content);
+        primaryButton.performClick();
+        assertEquals(2, clicks[0]);
+        assertEquals(1, mShownCount);
+
+        content.destroy();
+        assertEquals(List.of(DismissReason.PRIMARY_ACTION), mSheetDismissals);
+    }
+
+    @Test
+    public void testHide_AfterDismissalIsIgnored() {
+        AdaptiveUiSheetCoordinator content = createContent(newModelBuilder().build());
+        showAndCaptureObserver(content);
+        content.destroy();
+
+        content.hide(DismissReason.CLOSE_BUTTON, /* animate= */ true);
+
+        verify(mBottomSheetController, never()).hideContent(eq(content), anyBoolean(), anyInt());
+        assertEquals(1, mSheetDismissals.size());
     }
 }

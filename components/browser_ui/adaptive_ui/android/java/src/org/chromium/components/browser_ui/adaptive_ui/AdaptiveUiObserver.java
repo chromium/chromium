@@ -18,8 +18,10 @@ public interface AdaptiveUiObserver {
     default void onWillShow(@AdaptiveUiContainer int container) {}
 
     /**
-     * Called at most once per {@link AdaptiveUiController#show}, when the entry becomes visible.
-     * Not called if the entry is closed while it still waits in a queue.
+     * Called at most once per {@link AdaptiveUiController#show}, when the container starts showing
+     * the entry (a dialog right after it is shown, a sheet once it takes the entry's content). Not
+     * called if the entry is closed while it still waits in a queue, and not called again if the
+     * container temporarily hides the entry and shows it again.
      */
     default void onShown() {}
 

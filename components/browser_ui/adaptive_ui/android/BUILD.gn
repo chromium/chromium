@@ -8,6 +8,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiContainer.java",
     "java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiController.java",
+    "java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiControllerImpl.java",
     "java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiControllerProvider.java",
     "java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiDialogCoordinator.java",
     "java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiDialogViewBinder.java",
@@ -50,6 +51,7 @@ android_resources("java_resources") {
 
 robolectric_library("junit") {
   sources = [
+    "javatests/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiControllerImplTest.java",
     "javatests/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiControllerTest.java",
     "javatests/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiDialogCoordinatorTest.java",
     "javatests/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiEntryTest.java",

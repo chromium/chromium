@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.activity.ComponentDialog;
 import androidx.activity.OnBackPressedCallback;
 
 import org.chromium.base.Callback;
@@ -17,6 +18,9 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonStyles;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
@@ -36,19 +40,28 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * button and custom-view consistency assertions without {@code CHANGE_CUSTOM_VIEW_OR_BUTTONS}. Live
  * 1:1 keys are bound via {@link PropertyModelChangeProcessor} and {@link
  * AdaptiveUiDialogViewBinder}.
+ *
+ * <p>Also drives the {@link ModalDialogManager}: {@link #show()} queues the dialog, an in-dialog
+ * action or {@link #hide} dismisses it, and the owner hears when it is shown and when it is gone.
  */
 @NullMarked
-final class AdaptiveUiDialogCoordinator implements ModalDialogProperties.Controller {
+final class AdaptiveUiDialogCoordinator
+        implements ModalDialogProperties.Controller, ModalDialogManagerObserver {
     private final PropertyModel mModel;
-    private final Callback<Integer> mDismissRequestHandler;
-    private final Callback<Integer> mOnDialogDismissed;
+    private final ModalDialogManager mModalDialogManager;
+    private final Runnable mOnShown;
+    private final Callback<Integer> mOnDismissed;
     private final PropertyModel mDialogModel;
     private final PropertyModelChangeProcessor<PropertyModel, PropertyModel, PropertyKey>
             mChangeProcessor;
     private final @AdaptiveUiScope int mScope;
-    private boolean mDismissRequested;
     private boolean mDestroyed;
     private @Nullable @DismissReason Integer mRequestedDismissReason;
+
+    /** Whether this is the last dialog the manager created and its onDialogShown is pending. */
+    private boolean mWaitingForOnShown;
+
+    private boolean mShown;
 
     /**
      * @param context The {@link Context} used to inflate the dialog body layout that wraps a custom
@@ -56,22 +69,25 @@ final class AdaptiveUiDialogCoordinator implements ModalDialogProperties.Control
      * @param model The feature's model, built with {@link AdaptiveUiProperties#ALL_KEYS}.
      * @param scope The {@link AdaptiveUiScope} of the entry. The model's back press handler is only
      *     forwarded to the dialog for {@link AdaptiveUiScope#WINDOW}.
-     * @param dismissRequestHandler Receives the {@link DismissReason} when an interaction inside
-     *     the dialog (primary button, secondary button, or close button) should close the entry.
-     * @param onDialogDismissed Receives the normalized {@link DismissReason} once the dialog has
-     *     been dismissed for any reason, unless {@link #destroy()} was called first. Prefers any
-     *     latched reason from {@link #requestDismiss} or {@link #setDismissReason}, otherwise
-     *     translates the {@link DialogDismissalCause} via {@link #fromDialogDismissalCause}.
+     * @param modalDialogManager The window's {@link ModalDialogManager} that shows the dialog.
+     * @param onShown Runs once, right after the {@link ModalDialogManager} shows the dialog. Not
+     *     run again if the dialog is suspended and later shown again.
+     * @param onDismissed Receives the {@link DismissReason} exactly once, when the dialog is
+     *     dismissed. Prefers any latched reason from {@link #requestDismiss} or {@link #hide},
+     *     otherwise translates the {@link DialogDismissalCause} via {@link
+     *     #fromDialogDismissalCause}.
      */
     AdaptiveUiDialogCoordinator(
             Context context,
             PropertyModel model,
             @AdaptiveUiScope int scope,
-            Callback<Integer> dismissRequestHandler,
-            Callback<Integer> onDialogDismissed) {
+            ModalDialogManager modalDialogManager,
+            Runnable onShown,
+            Callback<Integer> onDismissed) {
         mModel = model;
-        mDismissRequestHandler = dismissRequestHandler;
-        mOnDialogDismissed = onDialogDismissed;
+        mModalDialogManager = modalDialogManager;
+        mOnShown = onShown;
+        mOnDismissed = onDismissed;
         mScope = scope;
         mDialogModel = createDialogModel(context, model, scope);
         mChangeProcessor =
@@ -85,6 +101,48 @@ final class AdaptiveUiDialogCoordinator implements ModalDialogProperties.Control
      */
     PropertyModel getDialogModel() {
         return mDialogModel;
+    }
+
+    /** Hands the dialog to the {@link ModalDialogManager}, which may queue it. */
+    void show() {
+        if (mDestroyed) return;
+        mModalDialogManager.addObserver(this);
+        mModalDialogManager.showDialog(mDialogModel, getDialogType(mScope));
+    }
+
+    /**
+     * Dismisses the dialog if it is showing or queued; {@code onDismissed} reports {@code reason}
+     * before this returns.
+     *
+     * @param reason Why the entry is closed.
+     */
+    void hide(@DismissReason int reason) {
+        if (mDestroyed) return;
+        setDismissReason(reason);
+        // Synchronous for both showing and queued dialogs; onDismiss() reports the reason.
+        mModalDialogManager.dismissDialog(mDialogModel, toDialogDismissalCause(reason));
+    }
+
+    /** Maps {@link AdaptiveUiScope#WINDOW} to app-modal and transient entries to tab-modal. */
+    static @ModalDialogType int getDialogType(@AdaptiveUiScope int scope) {
+        return scope == AdaptiveUiScope.WINDOW ? ModalDialogType.APP : ModalDialogType.TAB;
+    }
+
+    // ModalDialogManagerObserver implementation.
+
+    @Override
+    public void onDialogCreated(PropertyModel model, @Nullable ComponentDialog dialog) {
+        mWaitingForOnShown = model == mDialogModel;
+    }
+
+    @Override
+    public void onDialogShown(View dialogView) {
+        if (!mWaitingForOnShown) return;
+        mWaitingForOnShown = false;
+        // A dialog suspended and shown again is still the same presentation.
+        if (mShown) return;
+        mShown = true;
+        mOnShown.run();
     }
 
     /**
@@ -102,15 +160,11 @@ final class AdaptiveUiDialogCoordinator implements ModalDialogProperties.Control
      * Detaches the {@link PropertyModelChangeProcessor} and releases {@link
      * AdaptiveUiProperties#CUSTOM_VIEW} from any wrapper view so it can be reused in a subsequent
      * presentation. Safe to call more than once.
-     *
-     * <p>Unlike {@link AdaptiveUiSheetCoordinator#destroy()} (which implements {@code
-     * BottomSheetContent#destroy()}), {@link ModalDialogProperties.Controller#onDismiss} is the
-     * terminal container callback for dialogs, so calling {@code destroy()} directly before {@code
-     * onDismiss} suppresses {@code mOnDialogDismissed}.
      */
     void destroy() {
         if (mDestroyed) return;
         mDestroyed = true;
+        mModalDialogManager.removeObserver(this);
         mChangeProcessor.destroy();
         View customView = mModel.get(AdaptiveUiProperties.CUSTOM_VIEW);
         if (customView != null) {
@@ -142,7 +196,7 @@ final class AdaptiveUiDialogCoordinator implements ModalDialogProperties.Control
                         ? mRequestedDismissReason
                         : fromDialogDismissalCause(dismissalCause);
         destroy();
-        mOnDialogDismissed.onResult(reason);
+        mOnDismissed.onResult(reason);
     }
 
     private PropertyModel createDialogModel(
@@ -218,7 +272,7 @@ final class AdaptiveUiDialogCoordinator implements ModalDialogProperties.Control
     }
 
     private void onBackPressed() {
-        if (mDestroyed || mDismissRequested) return;
+        if (isDismissing()) return;
         OnBackPressedCallback handler = mModel.get(AdaptiveUiProperties.BACK_PRESS_HANDLER);
         if (handler != null && handler.isEnabled()) {
             handler.handleOnBackPressed();
@@ -231,7 +285,7 @@ final class AdaptiveUiDialogCoordinator implements ModalDialogProperties.Control
             ReadableObjectPropertyKey<@Nullable Runnable> callbackKey,
             ReadableBooleanPropertyKey keepsOpenKey,
             @DismissReason int reason) {
-        if (mDestroyed || mDismissRequested) return;
+        if (isDismissing()) return;
         Runnable callback = mModel.get(callbackKey);
         if (callback != null) callback.run();
         if (mModel.get(keepsOpenKey)) return;
@@ -242,11 +296,15 @@ final class AdaptiveUiDialogCoordinator implements ModalDialogProperties.Control
         requestDismiss(DismissReason.CLOSE_BUTTON);
     }
 
+    /** Whether the dialog is destroyed or a dismissal was already requested. */
+    private boolean isDismissing() {
+        return mDestroyed || mRequestedDismissReason != null;
+    }
+
     private void requestDismiss(@DismissReason int reason) {
-        if (mDestroyed || mDismissRequested) return;
+        if (isDismissing()) return;
         mRequestedDismissReason = reason;
-        mDismissRequested = true;
-        mDismissRequestHandler.onResult(reason);
+        hide(reason);
     }
 
     // LINT.IfChange(DialogDismissReasonMapping)
