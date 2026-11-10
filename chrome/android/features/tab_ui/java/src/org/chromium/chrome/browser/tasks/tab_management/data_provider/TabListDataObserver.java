@@ -66,13 +66,7 @@ public interface TabListDataObserver {
      *
      * @param items The new full list of {@link TabListItem} entries.
      */
-    default void onDataReset(List<? extends TabListItem> items) {
-        // TODO(crbug.com/562590772): Triggered by TabListMediator#resetWithListOfTabs (via
-        // TabListDataProvider#requestDataReset) and TabModelObserver#restoreCompleted.
-        // TabListMediator will update existing PropertyModels in place via updateTab() when the
-        // item sequence is unchanged, or rebuild tab entries in TabListModel via
-        // TabListMediator#addTabInfoToModel() while preserving non-tab items.
-    }
+    default void onDataReset(List<? extends TabListItem> items) {}
 
     /**
      * Called when items are inserted into the data set.
@@ -81,24 +75,14 @@ public interface TabListDataObserver {
      * @param after The item immediately preceding the insertion, or null if inserted at the start
      *     of the list.
      */
-    default void onItemsInserted(List<? extends TabListItem> items, @Nullable TabListItem after) {
-        // TODO(crbug.com/562590772): TabListMediator will listen to this callback on
-        // TabListDataObserver instead of observing TabModelObserver#didAddTab directly, resolving
-        // `after` via TabListModel#indexFromTabId (or the start of the tab region when `after` is
-        // null) and inserting each TabItem via TabListMediator#addTabInfoToModel().
-    }
+    default void onItemsInserted(List<? extends TabListItem> items, @Nullable TabListItem after) {}
 
     /**
      * Called when items are removed from the data set.
      *
      * @param items The removed {@link TabListItem} entries.
      */
-    default void onItemsRemoved(List<? extends TabListItem> items) {
-        // TODO(crbug.com/562590772): TabListMediator will listen to this callback on
-        // TabListDataObserver instead of observing TabModelObserver#didRemoveTabForClosure /
-        // TabModelObserver#tabRemoved directly, resolving each item via TabListModel#indexFromTabId
-        // and removing it from TabListModel.
-    }
+    default void onItemsRemoved(List<? extends TabListItem> items) {}
 
     /**
      * Called when items are moved within the data set.
@@ -107,12 +91,7 @@ public interface TabListDataObserver {
      * @param after The item immediately preceding the new position, or null if moved to the start
      *     of the list.
      */
-    default void onItemsMoved(List<? extends TabListItem> items, @Nullable TabListItem after) {
-        // TODO(crbug.com/562590772): TabListMediator will listen to this callback on
-        // TabListDataObserver instead of observing TabModelObserver#didMoveTab directly, resolving
-        // `after` via TabListModel#indexFromTabId (or the start of the tab region when `after` is
-        // null) and moving each TabItem in TabListModel.
-    }
+    default void onItemsMoved(List<? extends TabListItem> items, @Nullable TabListItem after) {}
 
     /**
      * Called when an existing item in the data set changes properties.
@@ -120,11 +99,7 @@ public interface TabListDataObserver {
      * @param item The updated {@link TabListItem} entry.
      * @param payload The {@link PayloadType} indicating which properties changed.
      */
-    default void onItemUpdated(TabListItem item, @PayloadType int payload) {
-        // TODO(crbug.com/562590772): TabListMediator will listen to this callback on
-        // TabListDataObserver instead of observing individual TabModelObserver / TabObserver
-        // property events directly, updating specific PropertyModel keys based on payload.
-    }
+    default void onItemUpdated(TabListItem item, @PayloadType int payload) {}
 
     /**
      * Called when a tab closure has been undone in the underlying tab model.
