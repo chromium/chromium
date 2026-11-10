@@ -25,6 +25,7 @@
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/box_layout.h"
@@ -194,10 +195,18 @@ void LoginBaseBubbleView::Show() {
     NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert,
                                        true /*send_native_event*/);
   }
+
+  if (LoginButton* bubble_opener = GetBubbleOpener()) {
+    bubble_opener->GetViewAccessibility().SetIsExpanded();
+  }
 }
 
 void LoginBaseBubbleView::Hide() {
   ScheduleAnimation(false /*visible*/);
+
+  if (LoginButton* bubble_opener = GetBubbleOpener()) {
+    bubble_opener->GetViewAccessibility().SetIsCollapsed();
+  }
 }
 
 LoginButton* LoginBaseBubbleView::GetBubbleOpener() const {

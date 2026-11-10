@@ -105,7 +105,9 @@ class RemoveUserButton : public PillButton {
       bubble_->Hide();
       // We explicitly move focus back to the dropdown button so the Tab
       // traversal works correctly.
-      bubble_->GetBubbleOpener()->RequestFocus();
+      if (LoginButton* bubble_opener = bubble_->GetBubbleOpener()) {
+        bubble_opener->RequestFocus();
+      }
     }
 
     if (event->key_code() == ui::VKEY_RETURN) {
@@ -243,7 +245,11 @@ LoginRemoveAccountDialog::LoginRemoveAccountDialog(
   GetViewAccessibility().SetIsModal(true);
 }
 
-LoginRemoveAccountDialog::~LoginRemoveAccountDialog() = default;
+LoginRemoveAccountDialog::~LoginRemoveAccountDialog() {
+  if (bubble_opener_) {
+    bubble_opener_->GetViewAccessibility().SetIsCollapsed();
+  }
+}
 
 LoginButton* LoginRemoveAccountDialog::GetBubbleOpener() const {
   return bubble_opener_.get();

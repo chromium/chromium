@@ -244,12 +244,33 @@ TEST_F(LoginRemoveAccountDialogTest, LoginButtonRipple) {
   EXPECT_EQ(ink_drop_api.GetInkDrop()->GetTargetInkDropState(),
             views::InkDropState::ACTIVATED);
   EXPECT_TRUE(ink_drop_api.GetInkDrop()->IsHighlightFadingInOrVisible());
+  ui::AXNodeData data;
+  bubble_opener->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kCollapsed));
 
   bubble->Hide();
   EXPECT_FALSE(bubble->GetVisible());
   EXPECT_EQ(ink_drop_api.GetInkDrop()->GetTargetInkDropState(),
             views::InkDropState::HIDDEN);
   EXPECT_FALSE(ink_drop_api.GetInkDrop()->IsHighlightFadingInOrVisible());
+  data = ui::AXNodeData();
+  bubble_opener->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kCollapsed));
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kExpanded));
+
+  // Verify that destroying the bubble while shown also resets the opener to
+  // collapsed.
+  bubble->Show();
+  data = ui::AXNodeData();
+  bubble_opener->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kExpanded));
+
+  container->RemoveChildViewT(bubble);
+  data = ui::AXNodeData();
+  bubble_opener->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kCollapsed));
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kExpanded));
 }
 
 TEST_F(LoginRemoveAccountDialogTest, ResetStateHidesConfirmData) {

@@ -3,14 +3,18 @@
 // found in the LICENSE file.
 
 #include "ash/login/ui/login_user_view.h"
+
 #include "ash/login/ui/login_display_style.h"
 #include "ash/login/ui/login_test_base.h"
 #include "ash/login/ui/login_test_utils.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget.h"
@@ -195,7 +199,12 @@ TEST_F(LoginUserViewUnittest, DropdownClickable) {
                   false /*public_account*/);
   LoginUserView::TestApi view_test(view);
 
-  EXPECT_NE(view_test.dropdown(), nullptr);
+  ASSERT_NE(view_test.dropdown(), nullptr);
+
+  ui::AXNodeData data;
+  view_test.dropdown()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kCollapsed));
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kExpanded));
 
   GetEventGenerator()->MoveMouseTo(
       view_test.dropdown()->GetBoundsInScreen().CenterPoint());

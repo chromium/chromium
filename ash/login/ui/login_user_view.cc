@@ -447,6 +447,7 @@ LoginUserView::LoginUserView(LoginDisplayStyle style,
         &LoginUserView::DropdownButtonPressed, base::Unretained(this)));
     dropdown_->SetHasInkDropActionOnClick(false);
     dropdown_->SetFocusBehavior(FocusBehavior::ALWAYS);
+    dropdown_->GetViewAccessibility().SetIsCollapsed();
     dropdown_->SetImageModel(
         views::Button::STATE_NORMAL,
         ui::ImageModel::FromVectorIcon(kLockScreenDropdownIcon,
