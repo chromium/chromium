@@ -8,6 +8,7 @@
 #include <array>
 #include <cmath>
 #include <cstdint>
+#include <functional>
 #include <numeric>
 #include <optional>
 #include <ranges>
@@ -18,7 +19,9 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/extend.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
@@ -33,6 +36,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/types/optional_ref.h"
 #include "components/pdf/renderer/pdf_accessibility_metrics.h"
+#include "components/pdf/renderer/pdf_accessibility_table_detector.h"
 #include "components/pdf/renderer/pdf_accessibility_text_utils.h"
 #include "components/pdf/renderer/pdf_accessibility_tree_builder.h"
 #include "pdf/accessibility_structs.h"
@@ -1012,28 +1016,26 @@ float GetLineRightEdge(
   return right;
 }
 
-const chrome_pdf::AccessibilityTextRunInfo* GetRunBeforeIndex(
-    base::span<const chrome_pdf::AccessibilityTextRunInfo> text_runs,
-    size_t index) {
-  return (index > 0 && index < text_runs.size()) ? &text_runs[index - 1]
-                                                 : nullptr;
-}
-
-const chrome_pdf::AccessibilityTextRunInfo* GetRunAfterIndex(
-    base::span<const chrome_pdf::AccessibilityTextRunInfo> text_runs,
-    size_t index) {
-  return (index + 1 < text_runs.size()) ? &text_runs[index + 1] : nullptr;
-}
-
 TextRunContext GetTextRunContext(const PageLayoutData& layout,
                                  size_t text_run_index) {
+  // A table ends the current block, so a run just inside a table isn't a
+  // neighbor of a run just outside it.
+  const base::flat_set<size_t>& table_runs = *layout.table_text_run_indices;
+  const bool is_table_run = table_runs.contains(text_run_index);
+  const bool has_previous =
+      text_run_index > 0 &&
+      table_runs.contains(text_run_index - 1) == is_table_run;
+  const size_t next_index = text_run_index + 1;
+  const bool has_next = next_index < layout.text_runs.size() &&
+                        table_runs.contains(next_index) == is_table_run;
   return {
       .run = raw_ref(layout.text_runs[text_run_index]),
-      .previous_run = GetRunBeforeIndex(layout.text_runs, text_run_index),
-      .next_run = GetRunAfterIndex(layout.text_runs, text_run_index),
+      .previous_run =
+          has_previous ? &layout.text_runs[text_run_index - 1] : nullptr,
+      .next_run = has_next ? &layout.text_runs[next_index] : nullptr,
       .chars = GetTextRunChars(layout, text_run_index),
-      .next_chars = text_run_index + 1 < layout.text_runs.size()
-                        ? GetTextRunChars(layout, text_run_index + 1)
+      .next_chars = has_next
+                        ? GetTextRunChars(layout, next_index)
                         : base::span<const chrome_pdf::AccessibilityCharInfo>(),
   };
 }
@@ -2402,6 +2404,48 @@ void SortBlockNodesByVerticalBands(std::vector<ui::AXNodeData*>& block_nodes,
   block_nodes = std::move(sorted_blocks);
 }
 
+// Creates a table, row, or cell node with `html_tag`. `bounds` are relative to
+// the page, like text run bounds.
+ui::AXNodeData* CreateTableStructureNode(PdfAccessibilityTreeBuilder& builder,
+                                         ax::mojom::Role role,
+                                         std::string_view html_tag,
+                                         const gfx::RectF& bounds) {
+  ui::AXNodeData* node =
+      builder.CreateAndAppendNode(role, ax::mojom::Restriction::kReadOnly);
+  node->AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
+                           std::string(html_tag));
+  node->relative_bounds.bounds =
+      bounds + builder.page_node()->relative_bounds.bounds.OffsetFromOrigin();
+  return node;
+}
+
+// Detects grid tables on the page and collects the text runs in them. Returns
+// no tables when heuristic enhancements are disabled.
+PageTables ComputePageTables(
+    base::span<const chrome_pdf::AccessibilityTextRunInfo> text_runs,
+    base::span<const RulingLine> ruling_lines) {
+  PageTables result;
+  if (!features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
+    return result;
+  }
+  result.tables = DetectGridTables(text_runs, ruling_lines);
+  if (result.tables.empty()) {
+    return result;
+  }
+  // `BuildPageTree()` adds each table at its anchor, so anchors must be unique
+  // and ascending.
+  CHECK(std::ranges::adjacent_find(result.tables, std::ranges::greater_equal(),
+                                   &HeuristicTable::anchor_text_run_index) ==
+        result.tables.end());
+  std::vector<size_t> table_text_run_indices;
+  for (const HeuristicTable& table : result.tables) {
+    base::Extend(table_text_run_indices, GetTableTextRunIndices(table));
+  }
+  result.table_text_run_indices =
+      base::flat_set<size_t>(std::move(table_text_run_indices));
+  return result;
+}
+
 void RecordListStartReason(const ListMarkerKind& kind) {
   ListStartReason reason;
   if (kind.ordered_marker.has_value()) {
@@ -2608,10 +2652,14 @@ StaticTextState::~StaticTextState() = default;
 PdfAccessibilityTreeBuilderHeuristic::PdfAccessibilityTreeBuilderHeuristic(
     PdfAccessibilityTreeBuilder& builder)
     : builder_(builder),
+      page_tables_(
+          ComputePageTables(builder.text_runs(), builder.ruling_lines())),
       page_layout_{
           .text_runs = builder.text_runs(),
           .chars = builder.chars(),
           .text_run_start_indices = builder.text_run_start_indices(),
+          .table_text_run_indices =
+              raw_ref(page_tables_.table_text_run_indices),
       } {}
 
 PdfAccessibilityTreeBuilderHeuristic::~PdfAccessibilityTreeBuilderHeuristic() =
@@ -2666,9 +2714,37 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
   bool ocr_block = false;
   bool has_ocr_text = false;
 #endif
+  // Index into `page_tables_.tables` of the next table to add.
+  size_t next_table_index = 0;
 
   for (size_t text_run_index = 0; text_run_index < builder_->text_runs().size();
        ++text_run_index) {
+    // Check for a table run first. A table run's text goes in its table cell,
+    // so the paragraph code below is skipped.
+    if (page_layout_.table_text_run_indices->contains(text_run_index)) {
+      BuildStaticNode(&static_text_state);
+      block_node = nullptr;
+      previous_on_line_node = nullptr;
+      current_heading_classifier = HeadingClassifier::kNone;
+      if (!list_levels_.empty()) {
+        list_levels_.back().item_char_counts.push_back(
+            page_layout_.text_run_start_indices[text_run_index] -
+            list_levels_.back().last_item_start_char_index);
+        PopListLevels(list_levels_, /*levels_to_keep=*/0,
+                      ListEndReason::kTable);
+      }
+      // Add each table at its first text run.
+      if (next_table_index < page_tables_.tables.size() &&
+          page_tables_.tables[next_table_index].anchor_text_run_index ==
+              text_run_index) {
+        ui::AXNodeData* table_node =
+            BuildTableNode(page_tables_.tables[next_table_index++]);
+        builder_->page_node()->child_ids.push_back(table_node->id);
+        block_nodes.push_back(table_node);
+      }
+      continue;
+    }
+
     const TextRunContext run_context =
         GetTextRunContext(page_layout_, text_run_index);
     const chrome_pdf::AccessibilityTextRunInfo& text_run = *run_context.run;
@@ -2894,7 +2970,13 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
       break;
     }
 
-    if (!previous_on_line_node) {
+    // A following table run closes the block itself.
+    //
+    // A link or highlight with text in a table can leave `text_run_index` on a
+    // table run. Its `next_run` can be null, so skip it too.
+    if (!previous_on_line_node &&
+        !page_layout_.table_text_run_indices->contains(text_run_index) &&
+        !page_layout_.table_text_run_indices->contains(text_run_index + 1)) {
       if (BreakParagraph(text_run_index, block_node, current_heading_classifier,
                          page_layout_, page_properties, list_levels_,
                          last_recorded_lookahead_run_index_)) {
@@ -3468,6 +3550,59 @@ void PdfAccessibilityTreeBuilderHeuristic::AddRemainingAnnotations(
       para_node->child_ids.push_back(image_node->id);
     }
   }
+}
+
+ui::AXNodeData* PdfAccessibilityTreeBuilderHeuristic::BuildTableNode(
+    const HeuristicTable& table) {
+  ui::AXNodeData* table_node = CreateTableStructureNode(
+      *builder_, ax::mojom::Role::kTable, "table", table.bounds);
+
+  // A table isn't a paragraph block. Clear the block tracking so
+  // `AddTextRunToNode()` doesn't update the language of the last paragraph
+  // block based on the table's text.
+  current_block_node_ = nullptr;
+  current_block_static_text_nodes_.clear();
+
+  // Build and add rows from top to bottom.
+  table_node->child_ids.reserve(table.rows.size());
+  for (const HeuristicTableRow& row : table.rows) {
+    ui::AXNodeData* row_node = CreateTableStructureNode(
+        *builder_, ax::mojom::Role::kRow, "tr", row.bounds);
+    table_node->child_ids.push_back(row_node->id);
+
+    // Build and add cells from left to right.
+    row_node->child_ids.reserve(row.cells.size());
+    for (const HeuristicTableCell& cell : row.cells) {
+      ui::AXNodeData* cell_node = CreateTableStructureNode(
+          *builder_, ax::mojom::Role::kCell, "td", cell.bounds);
+      row_node->child_ids.push_back(cell_node->id);
+
+      // Add the cell's text runs in order. Like in a paragraph, runs on the
+      // same line are linked as previous and next on line.
+      StaticTextState state;
+      const chrome_pdf::AccessibilityTextRunInfo* previous_run = nullptr;
+      ui::AXNodeData* previous_inline_text_box = nullptr;
+      for (size_t run_index : cell.text_run_indices) {
+        const chrome_pdf::AccessibilityTextRunInfo& run =
+            builder_->text_runs()[run_index];
+        ui::AXNodeData* inline_text_box =
+            AddTextRunToNode(run_index, cell_node, &state);
+        state.node->relative_bounds.bounds.Union(
+            inline_text_box->relative_bounds.bounds);
+
+        if (previous_run && AreRunsOnSameLine(*previous_run, run)) {
+          ConnectPreviousAndNextOnLine(previous_inline_text_box,
+                                       inline_text_box);
+        }
+        previous_run = &run;
+        previous_inline_text_box = inline_text_box;
+      }
+      // Finish the cell's last static text node.
+      BuildStaticNode(&state);
+    }
+  }
+
+  return table_node;
 }
 
 }  // namespace pdf

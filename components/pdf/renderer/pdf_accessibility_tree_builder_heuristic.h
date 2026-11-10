@@ -12,10 +12,12 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/raw_span.h"
+#include "components/pdf/renderer/pdf_accessibility_table_detector.h"
 #include "pdf/accessibility_structs.h"
 #include "services/screen_ai/buildflags/buildflags.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
@@ -106,6 +108,16 @@ struct ListLevel {
 //    spacing, and spatial relationships.
 //
 
+// Tables to add to a page, and which text runs they contain.
+struct PageTables {
+  // Tables that share no text runs, in increasing `anchor_text_run_index`
+  // order.
+  std::vector<HeuristicTable> tables;
+
+  // Indices of the text runs in `tables`.
+  base::flat_set<size_t> table_text_run_indices;
+};
+
 // Bundles raw page layout data (text runs, characters, start indices) used by
 // the heuristic tree builder.
 struct PageLayoutData {
@@ -117,6 +129,10 @@ struct PageLayoutData {
 
   // The starting character index for each text run on the page.
   base::raw_span<const uint32_t> text_run_start_indices;
+
+  // Indices of the text runs in detected tables. See
+  // `PageTables::table_text_run_indices`.
+  raw_ref<const base::flat_set<size_t>> table_text_run_indices;
 };
 
 // Bundles a text run with its characters and the runs just before and after
@@ -126,11 +142,11 @@ struct TextRunContext {
   const raw_ref<const chrome_pdf::AccessibilityTextRunInfo> run;
 
   // The immediately preceding text run on the page, or nullptr if `run` is the
-  // first run.
+  // first run or only one of the two runs belongs to a table.
   raw_ptr<const chrome_pdf::AccessibilityTextRunInfo> previous_run = nullptr;
 
   // The immediately following text run on the page, or nullptr if `run` is the
-  // last run.
+  // last run or only one of the two runs belongs to a table.
   raw_ptr<const chrome_pdf::AccessibilityTextRunInfo> next_run = nullptr;
 
   // The characters belonging to `run`.
@@ -314,7 +330,16 @@ class PdfAccessibilityTreeBuilderHeuristic {
 #endif
   );
 
+  // Builds a `kTable` node for `table`, with a `kRow` for each row and a
+  // `kCell` for each cell, including empty ones. Each cell holds the text
+  // nodes for its text runs. Returns the table node; the caller adds it to the
+  // page.
+  ui::AXNodeData* BuildTableNode(const HeuristicTable& table);
+
   raw_ref<PdfAccessibilityTreeBuilder> builder_;
+
+  // The page's tables. Backs `page_layout_.table_text_run_indices`.
+  const PageTables page_tables_;
 
   // The page's text runs and characters from `builder_`.
   const PageLayoutData page_layout_;

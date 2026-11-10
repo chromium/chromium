@@ -13,6 +13,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
@@ -461,6 +462,82 @@ CustomCharData MakeCharVector(const std::vector<std::string>& words) {
     data.char_counts.push_back(run_len);
   }
   return data;
+}
+
+// Row and column boundaries of the grid tables in the grid table tests.
+constexpr float kGridTableRowBoundaries[] = {50.0f, 80.0f, 110.0f};
+constexpr float kGridTableColumnBoundaries[] = {50.0f, 100.0f, 150.0f};
+
+// Returns full-span ruling line segments for a grid with the given column
+// (`xs`) and row (`ys`) boundaries.
+std::vector<chrome_pdf::AccessibilityLineSegment> CreateGridLineSegments(
+    base::span<const float> xs,
+    base::span<const float> ys) {
+  std::vector<chrome_pdf::AccessibilityLineSegment> segments;
+  segments.reserve(xs.size() + ys.size());
+  for (float y : ys) {
+    segments.push_back({gfx::PointF(xs.front(), y), gfx::PointF(xs.back(), y)});
+  }
+  for (float x : xs) {
+    segments.push_back({gfx::PointF(x, ys.front()), gfx::PointF(x, ys.back())});
+  }
+  return segments;
+}
+
+// Checks that `table` is a grid table whose cells hold `expected_cells`, row by
+// row. Each non-empty cell holds one static text node with that text. An empty
+// string means the cell has no children.
+void CheckGridTable(
+    const ui::AXNode* table,
+    const std::vector<std::vector<std::string_view>>& expected_cells) {
+  ASSERT_NE(nullptr, table);
+  ASSERT_FALSE(expected_cells.empty());
+  EXPECT_EQ(ax::mojom::Role::kTable, table->GetRole());
+  EXPECT_EQ("table",
+            table->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag));
+  EXPECT_EQ(static_cast<int>(expected_cells.size()),
+            table->GetTableDomRowCount());
+  EXPECT_EQ(static_cast<int>(expected_cells[0].size()),
+            table->GetTableDomColCount());
+  ASSERT_EQ(expected_cells.size(), table->GetChildCount());
+
+  for (size_t row_index = 0; row_index < expected_cells.size(); ++row_index) {
+    const std::vector<std::string_view>& expected_row =
+        expected_cells[row_index];
+    const ui::AXNode* row = table->GetChildAtIndex(row_index);
+    ASSERT_NE(nullptr, row);
+    EXPECT_EQ(ax::mojom::Role::kRow, row->GetRole());
+    EXPECT_EQ("tr",
+              row->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag));
+    EXPECT_EQ(static_cast<int>(row_index), row->GetTableRowRowIndex());
+    ASSERT_EQ(expected_row.size(), row->GetChildCount());
+
+    for (size_t column_index = 0; column_index < expected_row.size();
+         ++column_index) {
+      const ui::AXNode* cell = row->GetChildAtIndex(column_index);
+      ASSERT_NE(nullptr, cell);
+      EXPECT_EQ(ax::mojom::Role::kCell, cell->GetRole());
+      EXPECT_EQ("td",
+                cell->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag));
+      EXPECT_EQ(static_cast<int>(row_index), cell->GetTableCellDomRowIndex());
+      EXPECT_EQ(static_cast<int>(column_index),
+                cell->GetTableCellDomColIndex());
+      EXPECT_EQ(1, cell->GetTableCellDomRowSpan());
+      EXPECT_EQ(1, cell->GetTableCellDomColSpan());
+
+      if (expected_row[column_index].empty()) {
+        EXPECT_EQ(0u, cell->GetChildCount());
+        continue;
+      }
+      ASSERT_EQ(1u, cell->GetChildCount());
+      const ui::AXNode* static_text = cell->GetChildAtIndex(0u);
+      ASSERT_NE(nullptr, static_text);
+      EXPECT_EQ(ax::mojom::Role::kStaticText, static_text->GetRole());
+      EXPECT_EQ(
+          expected_row[column_index],
+          static_text->GetStringAttribute(ax::mojom::StringAttribute::kName));
+    }
+  }
 }
 
 }  // namespace
@@ -8630,6 +8707,400 @@ TEST_F(PdfAccessibilityTreeTest,
   EXPECT_EQ("JournalFooter",
             second_block->GetChildAtIndex(0u)->GetStringAttribute(
                 ax::mojom::StringAttribute::kName));
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicGridTableParagraphTableParagraph) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // Table grid ruling lines: 2 rows x 3 cols.
+  constexpr float kColumnBoundaries[] = {50.0f, 100.0f, 150.0f, 200.0f};
+  page_objects_.line_segments =
+      CreateGridLineSegments(kColumnBoundaries, kGridTableRowBoundaries);
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"Intro", "A1", "B1", "C1", "A2", "B2", "C2", "Outro"},
+      {
+          gfx::RectF(50.0f, 10.0f, 100.0f, 12.0f),   // "Intro"
+          gfx::RectF(55.0f, 55.0f, 40.0f, 12.0f),    // "A1"
+          gfx::RectF(105.0f, 55.0f, 40.0f, 12.0f),   // "B1"
+          gfx::RectF(155.0f, 55.0f, 40.0f, 12.0f),   // "C1"
+          gfx::RectF(55.0f, 85.0f, 40.0f, 12.0f),    // "A2"
+          gfx::RectF(105.0f, 85.0f, 40.0f, 12.0f),   // "B2"
+          gfx::RectF(155.0f, 85.0f, 40.0f, 12.0f),   // "C2"
+          gfx::RectF(50.0f, 130.0f, 100.0f, 12.0f),  // "Outro"
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(3u, page->GetChildCount());
+
+  CheckParagraph(page->GetChildAtIndex(0u), "Intro");
+
+  CheckGridTable(page->GetChildAtIndex(1u),
+                 {{"A1", "B1", "C1"}, {"A2", "B2", "C2"}});
+
+  CheckParagraph(page->GetChildAtIndex(2u), "Outro");
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicGridTableEmptyCellAndSameLineRuns) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // Table grid ruling lines: 2 rows x 2 cols. The top-left cell holds two runs
+  // on one line, and the bottom-right cell is empty.
+  page_objects_.line_segments = CreateGridLineSegments(
+      kGridTableColumnBoundaries, kGridTableRowBoundaries);
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"A1", "x", "B1", "A2"},
+      {
+          gfx::RectF(55.0f, 55.0f, 20.0f, 12.0f),   // "A1"
+          gfx::RectF(78.0f, 55.0f, 15.0f, 12.0f),   // "x"
+          gfx::RectF(105.0f, 55.0f, 40.0f, 12.0f),  // "B1"
+          gfx::RectF(55.0f, 85.0f, 40.0f, 12.0f),   // "A2"
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  // The top-left cell holds both runs, and the bottom-right cell is empty.
+  const ui::AXNode* table = page->GetChildAtIndex(0u);
+  CheckGridTable(table, {{"A1x", "B1"}, {"A2", ""}});
+
+  // The two runs in the top-left cell are linked as previous and next on line.
+  const ui::AXNode* static_text =
+      table->GetChildAtIndex(0u)->GetChildAtIndex(0u)->GetChildAtIndex(0u);
+  ASSERT_EQ(2u, static_text->GetChildCount());
+  const ui::AXNode* first_inline_text_box = static_text->GetChildAtIndex(0u);
+  const ui::AXNode* second_inline_text_box = static_text->GetChildAtIndex(1u);
+  EXPECT_EQ(second_inline_text_box->id(),
+            first_inline_text_box->GetIntAttribute(
+                ax::mojom::IntAttribute::kNextOnLineId));
+  EXPECT_EQ(first_inline_text_box->id(),
+            second_inline_text_box->GetIntAttribute(
+                ax::mojom::IntAttribute::kPreviousOnLineId));
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicGridTableParagraphTableAtEndOfPage) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // Table grid ruling lines: 2 rows x 2 cols.
+  page_objects_.line_segments = CreateGridLineSegments(
+      kGridTableColumnBoundaries, kGridTableRowBoundaries);
+
+  // Only "Intro" preceding the table, no text after the table.
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"Intro", "A1", "B1", "A2", "B2"},
+      {
+          gfx::RectF(50.0f, 10.0f, 100.0f, 12.0f),  // "Intro"
+          gfx::RectF(55.0f, 55.0f, 40.0f, 12.0f),   // "A1"
+          gfx::RectF(105.0f, 55.0f, 40.0f, 12.0f),  // "B1"
+          gfx::RectF(55.0f, 85.0f, 40.0f, 12.0f),   // "A2"
+          gfx::RectF(105.0f, 85.0f, 40.0f, 12.0f),  // "B2"
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(2u, page->GetChildCount());
+
+  CheckParagraph(page->GetChildAtIndex(0u), "Intro");
+  CheckGridTable(page->GetChildAtIndex(1u), {{"A1", "B1"}, {"A2", "B2"}});
+}
+
+// An image after all the text goes in a new paragraph, not in a table that ends
+// the page.
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicGridTableAtEndOfPageRemainingImageInNewParagraph) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  page_objects_.line_segments = CreateGridLineSegments(
+      kGridTableColumnBoundaries, kGridTableRowBoundaries);
+  constexpr gfx::RectF kImageBounds(50.0f, 130.0f, 50.0f, 50.0f);
+  page_objects_.images.emplace_back(
+      /*alt_text=*/"Logo", /*text_run_index=*/5, kImageBounds,
+      /*page_object_index=*/0);
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"Intro", "A1", "B1", "A2", "B2"},
+      {
+          gfx::RectF(50.0f, 10.0f, 100.0f, 12.0f),  // "Intro"
+          gfx::RectF(55.0f, 55.0f, 40.0f, 12.0f),   // "A1"
+          gfx::RectF(105.0f, 55.0f, 40.0f, 12.0f),  // "B1"
+          gfx::RectF(55.0f, 85.0f, 40.0f, 12.0f),   // "A2"
+          gfx::RectF(105.0f, 85.0f, 40.0f, 12.0f),  // "B2"
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(3u, page->GetChildCount());
+
+  CheckParagraph(page->GetChildAtIndex(0u), "Intro");
+  CheckGridTable(page->GetChildAtIndex(1u), {{"A1", "B1"}, {"A2", "B2"}});
+
+  const ui::AXNode* para = page->GetChildAtIndex(2u);
+  ASSERT_NE(nullptr, para);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, para->GetRole());
+  ASSERT_EQ(1u, para->GetChildCount());
+  const ui::AXNode* image = para->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, image);
+  EXPECT_EQ(ax::mojom::Role::kImage, image->GetRole());
+  EXPECT_EQ("Logo",
+            image->GetStringAttribute(ax::mojom::StringAttribute::kName));
+  CompareRect(kImageBounds, image->data().relative_bounds.bounds);
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicGridTableListTableList) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  page_objects_.line_segments = CreateGridLineSegments(
+      kGridTableColumnBoundaries, kGridTableRowBoundaries);
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"•", "Item 1", "A1", "B1", "A2", "B2", "•", "Item 2"},
+      {
+          gfx::RectF(50.0f, 14.0f, 4.0f, 4.0f),     // Item 1 marker
+          gfx::RectF(60.0f, 10.0f, 50.0f, 12.0f),   // "Item 1"
+          gfx::RectF(55.0f, 55.0f, 40.0f, 12.0f),   // "A1"
+          gfx::RectF(105.0f, 55.0f, 40.0f, 12.0f),  // "B1"
+          gfx::RectF(55.0f, 85.0f, 40.0f, 12.0f),   // "A2"
+          gfx::RectF(105.0f, 85.0f, 40.0f, 12.0f),  // "B2"
+          gfx::RectF(50.0f, 134.0f, 4.0f, 4.0f),    // Item 2 marker
+          gfx::RectF(60.0f, 130.0f, 50.0f, 12.0f),  // "Item 2"
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(3u, page->GetChildCount());
+
+  CheckUnorderedList(page->GetChildAtIndex(0u), {"Item 1"}, "• ");
+  CheckGridTable(page->GetChildAtIndex(1u), {{"A1", "B1"}, {"A2", "B2"}});
+  CheckUnorderedList(page->GetChildAtIndex(2u), {"Item 2"}, "• ");
+  // The table ends the first list, and the page end ends the second.
+  histogram_tester.ExpectBucketCount(
+      "Accessibility.PdfHeuristics.ListEndReason", ListEndReason::kTable, 1);
+  histogram_tester.ExpectBucketCount(
+      "Accessibility.PdfHeuristics.ListEndReason", ListEndReason::kPageEnd, 1);
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicGridTableFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {}, {::features::kPdfAccessibilityHeuristicEnhancements,
+           chrome_pdf::features::kPdfTags});
+
+  page_objects_.line_segments = CreateGridLineSegments(
+      kGridTableColumnBoundaries, kGridTableRowBoundaries);
+
+  const ui::AXNode* page =
+      SetUpUniformHeuristicPage({"Intro", "A1", "B1", "A2", "B2", "Outro"},
+                                {
+                                    gfx::RectF(50.0f, 10.0f, 100.0f, 12.0f),
+                                    gfx::RectF(55.0f, 55.0f, 40.0f, 12.0f),
+                                    gfx::RectF(105.0f, 55.0f, 40.0f, 12.0f),
+                                    gfx::RectF(55.0f, 85.0f, 40.0f, 12.0f),
+                                    gfx::RectF(105.0f, 85.0f, 40.0f, 12.0f),
+                                    gfx::RectF(50.0f, 130.0f, 100.0f, 12.0f),
+                                });
+  ASSERT_NE(nullptr, page);
+
+  for (size_t i = 0; i < page->GetChildCount(); ++i) {
+    EXPECT_NE(ax::mojom::Role::kTable, page->GetChildAtIndex(i)->GetRole());
+  }
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicGridTableBackToBackTables) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // Two 2x2 grids with no text between them. The second grid starts below the
+  // first, so the grids don't touch.
+  constexpr float kSecondTableRowBoundaries[] = {140.0f, 170.0f, 200.0f};
+  page_objects_.line_segments = CreateGridLineSegments(
+      kGridTableColumnBoundaries, kGridTableRowBoundaries);
+  std::ranges::copy(CreateGridLineSegments(kGridTableColumnBoundaries,
+                                           kSecondTableRowBoundaries),
+                    std::back_inserter(page_objects_.line_segments));
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"Intro", "A1", "B1", "A2", "B2", "C1", "D1", "C2", "D2", "Outro"},
+      {
+          gfx::RectF(50.0f, 10.0f, 100.0f, 12.0f),   // "Intro"
+          gfx::RectF(55.0f, 55.0f, 40.0f, 12.0f),    // "A1"
+          gfx::RectF(105.0f, 55.0f, 40.0f, 12.0f),   // "B1"
+          gfx::RectF(55.0f, 85.0f, 40.0f, 12.0f),    // "A2"
+          gfx::RectF(105.0f, 85.0f, 40.0f, 12.0f),   // "B2"
+          gfx::RectF(55.0f, 145.0f, 40.0f, 12.0f),   // "C1"
+          gfx::RectF(105.0f, 145.0f, 40.0f, 12.0f),  // "D1"
+          gfx::RectF(55.0f, 175.0f, 40.0f, 12.0f),   // "C2"
+          gfx::RectF(105.0f, 175.0f, 40.0f, 12.0f),  // "D2"
+          gfx::RectF(50.0f, 220.0f, 100.0f, 12.0f),  // "Outro"
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(4u, page->GetChildCount());
+
+  CheckParagraph(page->GetChildAtIndex(0u), "Intro");
+  CheckGridTable(page->GetChildAtIndex(1u), {{"A1", "B1"}, {"A2", "B2"}});
+  CheckGridTable(page->GetChildAtIndex(2u), {{"C1", "D1"}, {"C2", "D2"}});
+  CheckParagraph(page->GetChildAtIndex(3u), "Outro");
+}
+
+// Images in a table aren't added to its cells yet. The image goes in the
+// paragraph after the table.
+TEST_F(PdfAccessibilityTreeTest, HeuristicGridTableImageInCell) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  page_objects_.line_segments = CreateGridLineSegments(
+      kGridTableColumnBoundaries, kGridTableRowBoundaries);
+
+  constexpr gfx::RectF kImageBounds(55.0f, 85.0f, 20.0f, 20.0f);
+  page_objects_.images.emplace_back(
+      /*alt_text=*/"Logo", /*text_run_index=*/3, kImageBounds,
+      /*page_object_index=*/0);
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"Intro", "A1", "B1", "A2", "B2", "Outro"},
+      {
+          gfx::RectF(50.0f, 10.0f, 100.0f, 12.0f),   // "Intro"
+          gfx::RectF(55.0f, 55.0f, 40.0f, 12.0f),    // "A1"
+          gfx::RectF(105.0f, 55.0f, 40.0f, 12.0f),   // "B1"
+          gfx::RectF(55.0f, 85.0f, 40.0f, 12.0f),    // "A2"
+          gfx::RectF(105.0f, 85.0f, 40.0f, 12.0f),   // "B2"
+          gfx::RectF(50.0f, 130.0f, 100.0f, 12.0f),  // "Outro"
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(3u, page->GetChildCount());
+
+  CheckParagraph(page->GetChildAtIndex(0u), "Intro");
+  CheckGridTable(page->GetChildAtIndex(1u), {{"A1", "B1"}, {"A2", "B2"}});
+
+  // The paragraph after the table holds the image and "Outro".
+  const ui::AXNode* para = page->GetChildAtIndex(2u);
+  ASSERT_NE(nullptr, para);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, para->GetRole());
+  ASSERT_EQ(2u, para->GetChildCount());
+  const ui::AXNode* image = para->GetChildAtIndex(0u);
+  EXPECT_EQ(ax::mojom::Role::kImage, image->GetRole());
+  EXPECT_EQ("Logo",
+            image->GetStringAttribute(ax::mojom::StringAttribute::kName));
+  const ui::AXNode* static_text = para->GetChildAtIndex(1u);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, static_text->GetRole());
+  EXPECT_EQ("Outro",
+            static_text->GetStringAttribute(ax::mojom::StringAttribute::kName));
+}
+
+// A link in a table cell, with text after the table, doesn't crash.
+TEST_F(PdfAccessibilityTreeTest, HeuristicGridTableLinkInCellDoesNotCrash) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  page_objects_.line_segments = CreateGridLineSegments(
+      kGridTableColumnBoundaries, kGridTableRowBoundaries);
+
+  chrome_pdf::AccessibilityLinkInfo link;
+  link.bounds = gfx::RectF(105.0f, 55.0f, 40.0f, 12.0f);
+  link.url = kChromiumTestUrl;
+  link.text_range.index = 2;  // "B1"
+  link.text_range.count = 1;
+  page_objects_.links.push_back(link);
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"Intro", "A1", "B1", "A2", "B2", "Outro"},
+      {
+          gfx::RectF(50.0f, 10.0f, 100.0f, 12.0f),   // "Intro"
+          gfx::RectF(55.0f, 55.0f, 40.0f, 12.0f),    // "A1"
+          gfx::RectF(105.0f, 55.0f, 40.0f, 12.0f),   // "B1"
+          gfx::RectF(55.0f, 85.0f, 40.0f, 12.0f),    // "A2"
+          gfx::RectF(105.0f, 85.0f, 40.0f, 12.0f),   // "B2"
+          gfx::RectF(50.0f, 130.0f, 100.0f, 12.0f),  // "Outro"
+      });
+  EXPECT_NE(nullptr, page);
+}
+
+// A link that starts before a table and covers all of it, with text after the
+// table, doesn't crash. The link keeps all of its text.
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicGridTableLinkFromParagraphThroughTable) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  page_objects_.line_segments = CreateGridLineSegments(
+      kGridTableColumnBoundaries, kGridTableRowBoundaries);
+
+  chrome_pdf::AccessibilityLinkInfo link;
+  link.bounds = gfx::RectF(50.0f, 10.0f, 100.0f, 90.0f);
+  link.url = kChromiumTestUrl;
+  link.text_range.index = 0;  // "Intro"
+  link.text_range.count = 5;  // Through "B2".
+  page_objects_.links.push_back(link);
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"Intro", "A1", "B1", "A2", "B2", "Outro"},
+      {
+          gfx::RectF(50.0f, 10.0f, 100.0f, 12.0f),   // "Intro"
+          gfx::RectF(55.0f, 55.0f, 40.0f, 12.0f),    // "A1"
+          gfx::RectF(105.0f, 55.0f, 40.0f, 12.0f),   // "B1"
+          gfx::RectF(55.0f, 85.0f, 40.0f, 12.0f),    // "A2"
+          gfx::RectF(105.0f, 85.0f, 40.0f, 12.0f),   // "B2"
+          gfx::RectF(50.0f, 130.0f, 100.0f, 12.0f),  // "Outro"
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_GT(page->GetChildCount(), 0u);
+
+  const ui::AXNode* para = page->GetChildAtIndex(0u);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, para->GetRole());
+  ASSERT_GT(para->GetChildCount(), 0u);
+  const ui::AXNode* link_node = para->GetChildAtIndex(0u);
+  EXPECT_EQ(ax::mojom::Role::kLink, link_node->GetRole());
+  EXPECT_EQ("IntroA1B1A2B2",
+            link_node->GetStringAttribute(ax::mojom::StringAttribute::kName));
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicGridTableBandSortReordersBlocks) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // Table ruling lines at y = 200..260.
+  constexpr float kRowBoundaries[] = {200.0f, 230.0f, 260.0f};
+  page_objects_.line_segments =
+      CreateGridLineSegments(kGridTableColumnBoundaries, kRowBoundaries);
+
+  // Text runs in stream order: the table (y=200), then "Intro" (y=50, above
+  // the table), then "Closing" (y=400, below the table).
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"A1", "B1", "A2", "B2", "Intro", "Closing"},
+      {
+          gfx::RectF(55.0f, 205.0f, 40.0f, 12.0f),   // "A1"
+          gfx::RectF(105.0f, 205.0f, 40.0f, 12.0f),  // "B1"
+          gfx::RectF(55.0f, 235.0f, 40.0f, 12.0f),   // "A2"
+          gfx::RectF(105.0f, 235.0f, 40.0f, 12.0f),  // "B2"
+          gfx::RectF(50.0f, 50.0f, 100.0f, 12.0f),   // "Intro" (above table)
+          gfx::RectF(50.0f, 400.0f, 100.0f, 12.0f),  // "Closing" (below table)
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(3u, page->GetChildCount());
+
+  // Band sort restores vertical reading order: Intro (y=50), Table (y=200),
+  // Closing (y=400).
+  CheckParagraph(page->GetChildAtIndex(0u), "Intro");
+  CheckGridTable(page->GetChildAtIndex(1u), {{"A1", "B1"}, {"A2", "B2"}});
+  CheckParagraph(page->GetChildAtIndex(2u), "Closing");
 }
 
 class PdfAccessibilityTreeSplitTextRunsTest

@@ -90,6 +90,7 @@ class PdfAccessibilityTreeBuilder {
       const {
     return *graphics_;
   }
+  const std::vector<RulingLine>& ruling_lines() const { return ruling_lines_; }
   uint32_t page_index() const { return page_index_; }
 
   // Node creation methods used by tree builders.

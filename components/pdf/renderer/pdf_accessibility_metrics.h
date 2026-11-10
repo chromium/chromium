@@ -59,8 +59,9 @@ enum class ListEndReason {
   kHeaderFooter = 6,
   kParagraph = 7,
   kHeading = 8,
+  kTable = 9,
 
-  kMaxValue = kHeading,
+  kMaxValue = kTable,
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:PdfAccessibilityListEndReason)
 

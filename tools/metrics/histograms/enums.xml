@@ -24270,6 +24270,7 @@ Called by update_net_error_codes.py.-->
   <int value="6" label="Header or footer"/>
   <int value="7" label="Paragraph"/>
   <int value="8" label="Heading"/>
+  <int value="9" label="Table"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/pdf/renderer/pdf_accessibility_metrics.h:PdfAccessibilityListEndReason) -->
