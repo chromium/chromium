@@ -208,6 +208,9 @@ BaseRenderingContext2D::~BaseRenderingContext2D() {
   if (context_provider_wrapper_) {
     context_provider_wrapper_->RemoveObserver(this);
   }
+  if (sw_image_provider_context_provider_wrapper_) {
+    sw_image_provider_context_provider_wrapper_->RemoveObserver(this);
+  }
   if (raster_context_provider_) {
     raster_context_provider_->RemoveObserver(this);
   }
@@ -294,6 +297,10 @@ void BaseRenderingContext2D::ResetBacking() {
     context_provider_wrapper_->RemoveObserver(this);
     context_provider_wrapper_.reset();
   }
+  if (sw_image_provider_context_provider_wrapper_) {
+    sw_image_provider_context_provider_wrapper_->RemoveObserver(this);
+    sw_image_provider_context_provider_wrapper_.reset();
+  }
   if (raster_context_provider_) {
     raster_context_provider_->RemoveObserver(this);
     raster_context_provider_.reset();
@@ -346,6 +353,7 @@ void BaseRenderingContext2D::CreateSharedImageProvider(
     RasterMode raster_mode,
     gpu::SharedImageUsageSet shared_image_usage_flags) {
   CHECK(!HasBacking());
+  CHECK(!sw_image_provider_context_provider_wrapper_);
   CHECK(!shared_image_usage_flags.HasAny(gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
                                          gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE));
 
@@ -684,6 +692,7 @@ CanvasImageProvider* BaseRenderingContext2D::GetOrCreateCanvasImageProvider() {
 
   cc::ImageDecodeCache* cache_f16 = nullptr;
   cc::ImageDecodeCache* cache_rgba8 = nullptr;
+  base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper;
   if (is_accelerated) {
     // Callsites are responsible for checking that the context is valid before
     // invoking this method.
@@ -700,6 +709,7 @@ CanvasImageProvider* BaseRenderingContext2D::GetOrCreateCanvasImageProvider() {
     cache_rgba8 =
         context_provider_wrapper_->ContextProvider().ImageDecodeCache(
             kN32_SkColorType);
+    context_provider_wrapper = context_provider_wrapper_;
   } else {
     if (format == viz::SinglePlaneFormat::kRGBA_F16) {
       cache_f16 = &Image::SharedCCDecodeCache(kRGBA_F16_SkColorType);
@@ -707,11 +717,16 @@ CanvasImageProvider* BaseRenderingContext2D::GetOrCreateCanvasImageProvider() {
 
     cache_rgba8 = &Image::SharedCCDecodeCache(kN32_SkColorType);
 
-    if (!context_provider_wrapper_) {
-      context_provider_wrapper_ = SharedGpuContext::ContextProviderWrapper();
-      if (context_provider_wrapper_) {
-        context_provider_wrapper_->AddObserver(this);
+    if (context_provider_wrapper_) {
+      context_provider_wrapper = context_provider_wrapper_;
+    } else {
+      CHECK(!sw_image_provider_context_provider_wrapper_);
+      sw_image_provider_context_provider_wrapper_ =
+          SharedGpuContext::ContextProviderWrapper();
+      if (sw_image_provider_context_provider_wrapper_) {
+        sw_image_provider_context_provider_wrapper_->AddObserver(this);
       }
+      context_provider_wrapper = sw_image_provider_context_provider_wrapper_;
     }
   }
 
@@ -719,7 +734,7 @@ CanvasImageProvider* BaseRenderingContext2D::GetOrCreateCanvasImageProvider() {
       cache_rgba8, cache_f16, color_params_.GetGfxColorSpace(), format,
       is_accelerated ? cc::PlaybackImageProvider::RasterMode::kGpu
                      : cc::PlaybackImageProvider::RasterMode::kSoftware,
-      context_provider_wrapper_);
+      std::move(context_provider_wrapper));
 
   return canvas_image_provider_.get();
 }

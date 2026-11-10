@@ -467,11 +467,21 @@ class MODULES_EXPORT BaseRenderingContext2D
   std::unique_ptr<Canvas2DResourceProvider> shared_image_provider_;
   sk_sp<SkSurface> surface_;
   std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
-  // Initialized on GPU-composited `shared_image_provider_` creation. Also
-  // lazily initialized when rasterizing to a software surface, as that
-  // surface may be called upon to rasterize a texture-backed resource, which
-  // must be bound to a GPU context for the current thread.
+  // Initialized on GPU-composited `shared_image_provider_` creation and
+  // checked to determine whether that backing's GPU context is still live.
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
+  // Lazily initialized when creating a software `canvas_image_provider_` while
+  // `context_provider_wrapper_` is null (either because the backing is not a
+  // GPU-composited SharedImage, or in the gap between GPU context destruction
+  // clearing `context_provider_wrapper_` and `ResetBacking()` tearing down a
+  // CPU-raster GPU-composited `shared_image_provider_`), so that `this` can
+  // observe wrapper destruction (to reset `canvas_image_provider_`) and
+  // unregister itself on backing reset/destruction. Kept separate from
+  // `context_provider_wrapper_` so that acquiring a new wrapper for software
+  // `CanvasImageProvider` does not make a dead GPU-composited
+  // `shared_image_provider_` appear valid.
+  base::WeakPtr<WebGraphicsContext3DProviderWrapper>
+      sw_image_provider_context_provider_wrapper_;
   base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
       shared_image_interface_provider_;
   // `raster_context_provider_` holds a reference on the shared

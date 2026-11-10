@@ -167,6 +167,11 @@ class TestRenderingContext2D final
     return static_cast<HTMLCanvasElement*>(Host());
   }
 
+  std::optional<cc::PaintRecord> FlushCanvasForTesting(
+      FlushReason reason = FlushReason::kOther) {
+    return FlushCanvas(reason);
+  }
+
  private:
   void InitializeForRecording(cc::PaintCanvas* canvas) const override {
     if (restore_matrix_enabled_) {
@@ -462,6 +467,41 @@ TEST_F(BaseRenderingContext2DSharedImageTest, UnacceleratedOverlay) {
   // We do not support single buffering for unaccelerated low latency canvas.
   EXPECT_FALSE(
       shared_image->usage().Has(gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE));
+}
+
+TEST_F(BaseRenderingContext2DSharedImageTest,
+       UnacceleratedSharedImageRemainsInvalidAfterSharedGpuContextRecreation) {
+  V8TestingScope scope;
+  auto* context = CreateBackedContext(scope, RasterMode::kCPU);
+  ASSERT_TRUE(context->IsBackingValid());
+
+  // Hold onto an exported resource ref so that a subsequent
+  // PaintRenderingResultsToResource() would have to allocate a new resource if
+  // the backing were treated as valid.
+  auto held_resource = context->PaintRenderingResultsToResource(
+      kBackBuffer, FlushReason::kOther);
+  ASSERT_TRUE(held_resource);
+
+  context->fillRect(0, 0, 1, 1);
+  context->FlushCanvasForTesting();
+
+  // Recreate SharedGpuContext's context provider while the existing backing has
+  // not yet been reset.
+  SharedGpuContext::Reset();
+  auto new_context_provider = viz::TestContextProvider::CreateRaster();
+  InitializeSharedGpuContext(new_context_provider.get());
+
+  EXPECT_FALSE(context->IsBackingValid());
+
+  // Flushing software raster must not cause the backing to appear valid again.
+  context->fillRect(1, 1, 1, 1);
+  context->FlushCanvasForTesting();
+
+  EXPECT_FALSE(context->IsBackingValid());
+  EXPECT_FALSE(context->PaintRenderingResultsToResource(kBackBuffer,
+                                                        FlushReason::kOther));
+
+  SharedGpuContext::Reset();
 }
 
 TEST_F(BaseRenderingContext2DSharedImageTest, ResourceRecyclingViaSnapshot) {
