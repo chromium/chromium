@@ -278,6 +278,10 @@ constexpr auto kUnorderedListMarkers = std::to_array<std::string_view>({
     "\xE2\x97\x8B",  // ○ U+25CB
     "\xE2\x97\x8F",  // ● U+25CF
     "\xE2\x96\xA0",  // ■ U+25A0
+    "\xE2\x96\xB6",  // ▶ U+25B6
+    "\xE2\x96\xBA",  // ► U+25BA
+    "\xE2\x97\x86",  // ◆ U+25C6
+    "\xE2\x97\x97",  // ◗ U+25D7
     "\xEF\x82\xB7",  // U+F0B7 (Symbol font bullet)
     "\xEF\x82\xA7",  // U+F0A7 (Wingdings square bullet)
 });
@@ -302,6 +306,11 @@ constexpr auto kWingdingsBulletMap =
         {0x6E, 0x25A0},  // ■ U+25A0
         {0x71, 0x2751},  // ❑ U+2751
         {0x76, 0x2756},  // ❖ U+2756
+        // InDesign's Wingdings subsets can put the square bullet at 0x83 or
+        // 0x84.
+        {0x83, kSquareBulletCodePoint},
+        {0x84, kSquareBulletCodePoint},
+        {0x9F, kBulletCodePoint},
         {0xA7, kSquareBulletCodePoint},
         {0xD8, 0x27A2},  // ➢ U+27A2
         {0xFC, 0x2713},  // ✓ U+2713

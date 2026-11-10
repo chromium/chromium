@@ -5899,6 +5899,31 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedListPrivateUseMarkerNames) {
       {"• ", "▪ ", "● ", "• "});
 }
 
+TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedListArrowAndShapeMarkers) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"▶", "Item 1", "►", "Item 2", "◆", "Item 3", "◗ Item 4"},
+      {
+          gfx::RectF(30.0f, 44.0f, 4.0f, 4.0f),
+          gfx::RectF(45.0f, 40.0f, 80.0f, 12.0f),
+          gfx::RectF(30.0f, 57.0f, 4.0f, 4.0f),
+          gfx::RectF(45.0f, 53.0f, 80.0f, 12.0f),
+          gfx::RectF(30.0f, 70.0f, 4.0f, 4.0f),
+          gfx::RectF(45.0f, 66.0f, 80.0f, 12.0f),
+          gfx::RectF(30.0f, 79.0f, 80.0f, 12.0f),
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  CheckUnorderedList(page->GetChildAtIndex(0u),
+                     {"Item 1", "Item 2", "Item 3", "Item 4"},
+                     {"▶ ", "► ", "◆ ", "◗ "});
+}
+
 // Uses run positions from an Italian LaTeX document, with placeholder text.
 //
 // LaTeX can draw the grave accent of "È" as its own tiny "`" run. PDFium emits
@@ -6413,6 +6438,38 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicTopLevelWingdingsPrivateUseBullet) {
   ASSERT_EQ(1u, page->GetChildCount());
 
   CheckUnorderedList(page->GetChildAtIndex(0u), {"Item 1", "Item 2"}, "➢ ");
+}
+
+// InDesign's Wingdings subsets can extract square bullets as the control
+// characters U+0083 and U+0084. Wingdings' round bullet is U+F09F.
+TEST_F(PdfAccessibilityTreeTest, HeuristicTopLevelWingdingsSubsetBullets) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  chrome_pdf::AccessibilityTextStyleInfo wingdings_style = CreateNormalStyle();
+  wingdings_style.font_name = "ABCDEF+Wingdings-Regular";
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"\xC2\x83", "Item 1", "\xC2\x84", "Item 2", "\uF09F", "Item 3"},
+      {
+          gfx::RectF(30.0f, 44.0f, 6.0f, 6.0f),
+          gfx::RectF(45.0f, 40.0f, 80.0f, 12.0f),
+          gfx::RectF(30.0f, 61.0f, 6.0f, 6.0f),
+          gfx::RectF(45.0f, 57.0f, 80.0f, 12.0f),
+          gfx::RectF(30.0f, 78.0f, 6.0f, 6.0f),
+          gfx::RectF(45.0f, 74.0f, 80.0f, 12.0f),
+      },
+      /*directions=*/{},
+      {wingdings_style, normal_style, wingdings_style, normal_style,
+       wingdings_style, normal_style});
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  CheckUnorderedList(page->GetChildAtIndex(0u), {"Item 1", "Item 2", "Item 3"},
+                     {"▪ ", "▪ ", "• "});
 }
 
 // The Symbol font's bullet, extracted as "·" U+00B7, is named "• ".
