@@ -9589,3 +9589,43 @@ TEST_F(TabStripModelTest, ContainsTab) {
   other_strip.CloseAllTabs();
   tabstrip()->CloseAllTabs();
 }
+
+TEST_F(TabStripModelTest, GroupSplitFocusHandleOverloads) {
+  base::test::ScopedFeatureList feature_list(features::kTabGroupsFocusing);
+  PrepareTabstripForSelectionTest(tabstrip(), /*tab_count=*/4,
+                                  /*pinned_count=*/0,
+                                  /*selected_tabs=*/{0});
+  tabs::TabHandle tab0 = tabstrip()->GetTabAtIndex(0)->GetHandle();
+  tabs::TabHandle tab1 = tabstrip()->GetTabAtIndex(1)->GetHandle();
+  tabs::TabHandle tab2 = tabstrip()->GetTabAtIndex(2)->GetHandle();
+  tabs::TabHandle tab3 = tabstrip()->GetTabAtIndex(3)->GetHandle();
+
+  // AddToNewGroup / AddToExistingGroup / RemoveFromGroup with unsorted handles.
+  const tab_groups::TabGroupId group_id =
+      tabstrip()->AddToNewGroup({tab2, tab0});
+  EXPECT_EQ(group_id, tab0.Get()->GetGroup());
+  EXPECT_EQ(group_id, tab2.Get()->GetGroup());
+  tabstrip()->AddToExistingGroup({tab1}, group_id);
+  EXPECT_EQ(group_id, tab1.Get()->GetGroup());
+  tabstrip()->RemoveFromGroup({tab2, tab0, tab1});
+  EXPECT_EQ(std::nullopt, tab0.Get()->GetGroup());
+  EXPECT_EQ(std::nullopt, tab1.Get()->GetGroup());
+  EXPECT_EQ(std::nullopt, tab2.Get()->GetGroup());
+
+  // AddToNewSplit with handles.
+  const split_tabs::SplitTabId split_id = tabstrip()->AddToNewSplit(
+      {tab1, tab3}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kTabContextMenu);
+  EXPECT_EQ(split_id, tab1.Get()->GetSplit());
+  EXPECT_EQ(split_id, tab3.Get()->GetSplit());
+  tabstrip()->RemoveSplit(split_id);
+
+  // EnterFocusMode(vector<TabHandle>).
+  const tab_groups::TabGroupId ephemeral_group =
+      tabstrip()->EnterFocusMode({tab1, tab2});
+  EXPECT_EQ(ephemeral_group, tabstrip()->GetFocusedGroup());
+  EXPECT_TRUE(tabstrip()->IsEphemeralTabGroup(ephemeral_group));
+  tabstrip()->ExitFocusMode();
+
+  tabstrip()->CloseAllTabs();
+}

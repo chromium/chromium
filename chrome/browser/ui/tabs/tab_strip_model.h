@@ -690,12 +690,15 @@ class TabStripModel {
   // Reverses the order of tabs with `split_id`.
   void ReverseTabsInSplit(split_tabs::SplitTabId split_id);
 
-  // Create a new split view with the first entry in `indices` (or the active
-  // tab if there is only one element in `indices`) as the pivot index and add
-  // the rest of the tabs pointed to by `indices` to it. Reorders the tabs so
-  // they are contiguous.
+  // Create a new split view with the first entry in `indices` or `tabs` (or
+  // the active tab if there is only one element) as the pivot and add the rest
+  // of the tabs to it. Reorders the tabs so they are contiguous.
   split_tabs::SplitTabId AddToNewSplit(
       std::vector<int> indices,
+      split_tabs::SplitTabVisualData visual_data,
+      split_tabs::SplitTabCreatedSource source);
+  split_tabs::SplitTabId AddToNewSplit(
+      const std::vector<tabs::TabHandle>& tabs,
       split_tabs::SplitTabVisualData visual_data,
       split_tabs::SplitTabCreatedSource source);
 
@@ -706,20 +709,25 @@ class TabStripModel {
                     const std::vector<int>& indices,
                     split_tabs::SplitTabVisualData visual_data);
 
-  // Create a new tab group and add the set of tabs pointed to be `indices` to
-  // it. Pins all of the tabs if any of them were pinned, and reorders the tabs
-  // so they are contiguous and do not split an existing group in half. Returns
-  // the new group. This may unsplit split tabs if they are only partially
-  // contained in `indices`. `indices` must be sorted in ascending order.
+  // Create a new tab group and add the set of tabs pointed to by `indices` or
+  // `tabs` to it. Pins all of the tabs if any of them were pinned, and
+  // reorders the tabs so they are contiguous and do not split an existing
+  // group in half. Returns the new group. This may unsplit split tabs if they
+  // are only partially contained. `indices` must be sorted in ascending order.
   tab_groups::TabGroupId AddToNewGroup(const std::vector<int> indices);
+  tab_groups::TabGroupId AddToNewGroup(
+      const std::vector<tabs::TabHandle>& tabs);
 
-  // Add the set of tabs pointed to by `indices` to the given tab group `group`.
-  // The tabs take on the pinnedness of the tabs already in the group. Tabs
-  // before the group will move to the start, while tabs after the group will
-  // move to the end. If `add_to_end` is true, all tabs will instead move to
-  // the end. This may unsplit split tabs if they are only partially contained
-  // in `indices`. `indices` must be sorted in ascending order.
+  // Add the set of tabs pointed to by `indices` or `tabs` to the given tab
+  // group `group`. The tabs take on the pinnedness of the tabs already in the
+  // group. Tabs before the group will move to the start, while tabs after the
+  // group will move to the end. If `add_to_end` is true, all tabs will instead
+  // move to the end. This may unsplit split tabs if they are only partially
+  // contained. `indices` must be sorted in ascending order.
   void AddToExistingGroup(const std::vector<int> indices,
+                          const tab_groups::TabGroupId group,
+                          const bool add_to_end = false);
+  void AddToExistingGroup(const std::vector<tabs::TabHandle>& tabs,
                           const tab_groups::TabGroupId group,
                           const bool add_to_end = false);
 
@@ -729,11 +737,12 @@ class TabStripModel {
   void AddToGroupForRestore(const std::vector<int>& indices,
                             const tab_groups::TabGroupId& group);
 
-  // Removes the set of tabs pointed to by `indices` from the the groups they
-  // are in, if any. The tabs are moved out of the group if necessary. This
-  // may unsplit split tabs if they are only partially contained in `indices`.
+  // Removes the set of tabs pointed to by `indices` or `tabs` from the groups
+  // they are in, if any. The tabs are moved out of the group if necessary.
+  // This may unsplit split tabs if they are only partially contained.
   // `indices` must be sorted in ascending order.
   void RemoveFromGroup(const std::vector<int>& indices);
+  void RemoveFromGroup(const std::vector<tabs::TabHandle>& tabs);
 
   // Unsplits all the tabs that are part of the split with `split_id`. The tabs
   // maintain their group and pin properties.
@@ -772,11 +781,13 @@ class TabStripModel {
   // Enters focus mode for `group`.
   void EnterFocusMode(const tab_groups::TabGroupId& group);
 
-  // Non-group focus: creates an ephemeral group from the tabs at `indices` and
-  // enters focus mode for it. Ephemeral groups only exist to back focus mode
-  // and cannot be created any other way. `indices` must be sorted in ascending
-  // order. Returns the new group.
+  // Non-group focus: creates an ephemeral group from the tabs at `indices` or
+  // `tabs` and enters focus mode for it. Ephemeral groups only exist to back
+  // focus mode and cannot be created any other way. `indices` must be sorted
+  // in ascending order. Returns the new group.
   tab_groups::TabGroupId EnterFocusMode(const std::vector<int>& indices);
+  tab_groups::TabGroupId EnterFocusMode(
+      const std::vector<tabs::TabHandle>& tabs);
 
   // Exits focus mode, recording `reason` (if provided) in
   // TabGroups.Focus.ExitReason. If an ephemeral (non-group focus) group was

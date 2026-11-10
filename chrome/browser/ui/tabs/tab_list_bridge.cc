@@ -363,33 +363,14 @@ std::optional<tab_groups::TabGroupId> TabListBridge::CreateTabGroup(
     return std::nullopt;
   }
 
-  // TabStripModel::AddToNewGroup() operates on indices.
-  std::vector<int> tab_indices;
-  tab_indices.reserve(tabs.size());
-  for (const auto& tab_handle : tabs) {
-    int index = GetIndexOfTab(tab_handle);
-    if (index != tab_list::kNoTabIndex) {
-      tab_indices.push_back(index);
-    }
-  }
-
-  return tab_strip_->AddToNewGroup(std::move(tab_indices));
+  return tab_strip_->AddToNewGroup(tabs);
 }
 
 std::optional<split_tabs::SplitTabId> TabListBridge::CreateSplit(
     const std::vector<tabs::TabHandle>& tabs,
     const split_tabs::SplitTabVisualData& visual_data) {
-  std::vector<int> tab_indices;
-  tab_indices.reserve(tabs.size());
-  for (const auto& tab_handle : tabs) {
-    int index = GetIndexOfTab(tab_handle);
-    CHECK_NE(index, tab_list::kNoTabIndex)
-        << "Trying to add a non-existent tab to a split.";
-    tab_indices.push_back(index);
-  }
   return tab_strip_->AddToNewSplit(
-      std::move(tab_indices), visual_data,
-      split_tabs::SplitTabCreatedSource::kExtensionsApi);
+      tabs, visual_data, split_tabs::SplitTabCreatedSource::kExtensionsApi);
 }
 
 void TabListBridge::SetTabGroupVisualData(
@@ -406,45 +387,37 @@ void TabListBridge::SetTabGroupVisualData(
 std::optional<tab_groups::TabGroupId> TabListBridge::AddTabsToGroup(
     std::optional<tab_groups::TabGroupId> group_id,
     const std::set<tabs::TabHandle>& tabs) {
-  std::vector<int> tab_indices;
-  tab_indices.reserve(tabs.size());
-
+  std::vector<tabs::TabHandle> tab_handles;
+  tab_handles.reserve(tabs.size());
   for (const auto& tab_handle : tabs) {
-    auto index = tab_strip_->GetIndexOfTab(tab_handle.Get());
-    CHECK_NE(index, tab_list::kNoTabIndex)
+    CHECK(tab_strip_->ContainsTab(tab_handle))
         << "Trying to add a non-existent tab to a group.";
-
-    tab_indices.push_back(index);
+    tab_handles.push_back(tab_handle);
   }
 
-  std::sort(tab_indices.begin(), tab_indices.end());
   if (group_id.has_value()) {
     // No-op if the specified tab group does not exist.
     if (!tab_strip_->group_model()->ContainsTabGroup(*group_id)) {
       return std::nullopt;
     }
 
-    tab_strip_->AddToExistingGroup(std::move(tab_indices), *group_id);
+    tab_strip_->AddToExistingGroup(tab_handles, *group_id);
     return group_id;
   }
 
-  return tab_strip_->AddToNewGroup(std::move(tab_indices));
+  return tab_strip_->AddToNewGroup(tab_handles);
 }
 
 void TabListBridge::Ungroup(const std::set<tabs::TabHandle>& tabs) {
-  std::vector<int> tab_indices;
-  tab_indices.reserve(tabs.size());
-
+  std::vector<tabs::TabHandle> tab_handles;
+  tab_handles.reserve(tabs.size());
   for (const auto& tab_handle : tabs) {
-    auto index = tab_strip_->GetIndexOfTab(tab_handle.Get());
-    CHECK_NE(index, tab_list::kNoTabIndex)
+    CHECK(tab_strip_->ContainsTab(tab_handle))
         << "Trying to remove a non-existent tab from a group.";
-
-    tab_indices.push_back(index);
+    tab_handles.push_back(tab_handle);
   }
 
-  std::sort(tab_indices.begin(), tab_indices.end());
-  tab_strip_->RemoveFromGroup(tab_indices);
+  tab_strip_->RemoveFromGroup(tab_handles);
 }
 
 void TabListBridge::Unsplit(split_tabs::SplitTabId split_id) {

@@ -2244,6 +2244,20 @@ split_tabs::SplitTabId TabStripModel::AddToNewSplit(
   return split_id;
 }
 
+split_tabs::SplitTabId TabStripModel::AddToNewSplit(
+    const std::vector<tabs::TabHandle>& tabs,
+    split_tabs::SplitTabVisualData visual_data,
+    split_tabs::SplitTabCreatedSource source) {
+  std::vector<int> indices;
+  indices.reserve(tabs.size());
+  for (tabs::TabHandle tab : tabs) {
+    const int index = GetIndexOfTab(tab);
+    CHECK_NE(index, kNoTab);
+    indices.push_back(index);
+  }
+  return AddToNewSplit(std::move(indices), std::move(visual_data), source);
+}
+
 void TabStripModel::RestoreSplit(split_tabs::SplitTabId split_id,
                                  const std::vector<int>& indices,
                                  split_tabs::SplitTabVisualData visual_data) {
@@ -2264,6 +2278,12 @@ void TabStripModel::RestoreSplit(split_tabs::SplitTabId split_id,
 tab_groups::TabGroupId TabStripModel::AddToNewGroup(
     const std::vector<int> indices) {
   return AddToNewGroupAndNotifyImpl(indices, /*is_ephemeral=*/false);
+}
+
+tab_groups::TabGroupId TabStripModel::AddToNewGroup(
+    const std::vector<tabs::TabHandle>& tabs) {
+  return AddToNewGroupAndNotifyImpl(GetSortedIndicesForTabs(tabs),
+                                    /*is_ephemeral=*/false);
 }
 
 tab_groups::TabGroupId TabStripModel::AddToNewGroupAndNotifyImpl(
@@ -2320,6 +2340,16 @@ void TabStripModel::AddToExistingGroup(const std::vector<int> indices,
   AddToExistingGroupImpl(indices, group, add_to_end);
 }
 
+void TabStripModel::AddToExistingGroup(const std::vector<tabs::TabHandle>& tabs,
+                                       const tab_groups::TabGroupId group,
+                                       const bool add_to_end) {
+  std::vector<int> indices = GetSortedIndicesForTabs(tabs);
+  if (indices.empty()) {
+    return;
+  }
+  AddToExistingGroup(std::move(indices), group, add_to_end);
+}
+
 void TabStripModel::AddToGroupForRestore(const std::vector<int>& indices,
                                          const tab_groups::TabGroupId& group) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
@@ -2341,6 +2371,10 @@ void TabStripModel::RemoveFromGroup(const std::vector<int>& indices) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
   RemoveFromGroupImpl(indices);
+}
+
+void TabStripModel::RemoveFromGroup(const std::vector<tabs::TabHandle>& tabs) {
+  RemoveFromGroup(GetSortedIndicesForTabs(tabs));
 }
 
 void TabStripModel::RemoveFromGroupImpl(const std::vector<int>& indices) {
@@ -2562,6 +2596,11 @@ tab_groups::TabGroupId TabStripModel::EnterFocusMode(
       AddToNewGroupAndNotifyImpl(indices, /*is_ephemeral=*/true);
   EnterFocusMode(group);
   return group;
+}
+
+tab_groups::TabGroupId TabStripModel::EnterFocusMode(
+    const std::vector<tabs::TabHandle>& tabs) {
+  return EnterFocusMode(GetSortedIndicesForTabs(tabs));
 }
 
 void TabStripModel::ExitFocusMode(
@@ -3369,10 +3408,9 @@ void TabStripModel::ExecuteContextMenuCommand(tabs::TabHandle context_tab,
       }
 
       std::vector<tabs::TabHandle> tabs = GetTabsForCommand(context_tab);
-      std::vector<int> indices = GetSortedIndicesForTabs(tabs);
       if (WillContextMenuGroup(context_tab)) {
         std::optional<tab_groups::TabGroupId> new_group_id =
-            AddToNewGroup(indices);
+            AddToNewGroup(tabs);
         if (new_group_id.has_value()) {
           OpenTabGroupEditor(new_group_id.value());
         }
@@ -3389,7 +3427,10 @@ void TabStripModel::ExecuteContextMenuCommand(tabs::TabHandle context_tab,
         MarkTabGroupsForClosing(groups_to_delete);
 
         base::OnceCallback<void()> callback = base::BindOnce(
-            &TabStripModel::RemoveFromGroup, base::Unretained(this), indices);
+            [](TabStripModel* model, std::vector<tabs::TabHandle> tabs) {
+              model->RemoveFromGroup(tabs);
+            },
+            base::Unretained(this), std::move(tabs));
         if (!groups_to_delete.empty()) {
           delegate_->OnRemovingAllTabsFromGroups(groups_to_delete,
                                                  std::move(callback));
@@ -3483,7 +3524,6 @@ void TabStripModel::ExecuteContextMenuCommand(tabs::TabHandle context_tab,
       base::RecordAction(UserMetricsAction("TabContextMenu_RemoveFromGroup"));
 
       std::vector<tabs::TabHandle> tabs = GetTabsForCommand(context_tab);
-      std::vector<int> indices_to_remove = GetSortedIndicesForTabs(tabs);
       std::vector<tabs::TabInterface*> tab_ptrs;
       tab_ptrs.reserve(tabs.size());
       for (const auto& tab : tabs) {
@@ -3495,9 +3535,11 @@ void TabStripModel::ExecuteContextMenuCommand(tabs::TabHandle context_tab,
           GetGroupsDestroyedFromRemovingTabs(tab_ptrs);
       MarkTabGroupsForClosing(groups_to_delete);
 
-      base::OnceCallback<void()> callback =
-          base::BindOnce(&TabStripModel::RemoveFromGroup,
-                         base::Unretained(this), indices_to_remove);
+      base::OnceCallback<void()> callback = base::BindOnce(
+          [](TabStripModel* model, std::vector<tabs::TabHandle> tabs) {
+            model->RemoveFromGroup(tabs);
+          },
+          base::Unretained(this), std::move(tabs));
       if (!groups_to_delete.empty()) {
         return delegate_->OnRemovingAllTabsFromGroups(groups_to_delete,
                                                       std::move(callback));
@@ -3523,11 +3565,10 @@ void TabStripModel::ExecuteContextMenuCommand(tabs::TabHandle context_tab,
         // For non-group tab focus, we create a new tab group
         // for the selected tabs and immediately focus it. This allows it to
         // leverage the existing tab group infrastructure.
-        std::vector<int> indices =
-            GetSortedIndicesForTabs(GetTabsForCommand(context_tab));
+        std::vector<tabs::TabHandle> tabs = GetTabsForCommand(context_tab);
         RecordToggleFocusGroupMetrics(/*is_unfocus=*/false,
-                                      /*is_non_group=*/true, indices.size());
-        EnterFocusMode(indices);
+                                      /*is_non_group=*/true, tabs.size());
+        EnterFocusMode(tabs);
         break;
       }
       if (GetFocusedGroup() == group_id) {
@@ -3708,13 +3749,15 @@ void TabStripModel::AddToNewGroupFromTab(tabs::TabHandle context_tab) {
 
   base::OnceCallback<void()> callback = base::BindOnce(
       [](TabStripModel* model, std::vector<tabs::TabHandle> tabs) {
-        std::vector<int> indices = model->GetSortedIndicesForTabs(tabs);
-        if (indices.empty()) {
+        std::erase_if(tabs, [model](tabs::TabHandle tab) {
+          return !model->ContainsTab(tab);
+        });
+        if (tabs.empty()) {
           return;
         }
 
         std::optional<tab_groups::TabGroupId> new_group_id =
-            model->AddToNewGroup(indices);
+            model->AddToNewGroup(tabs);
         model->OpenTabGroupEditor(new_group_id.value());
       },
       base::Unretained(this), tabs_to_add);
@@ -3769,12 +3812,7 @@ void TabStripModel::ExecuteAddToExistingGroupCommand(
         if (!model->group_model()->ContainsTabGroup(group)) {
           return;
         }
-        std::vector<int> indices = model->GetSortedIndicesForTabs(tabs);
-        if (indices.empty()) {
-          return;
-        }
-
-        model->AddToExistingGroup(indices, group, false);
+        model->AddToExistingGroup(tabs, group, false);
       },
       base::Unretained(this), tabs, group);
 
