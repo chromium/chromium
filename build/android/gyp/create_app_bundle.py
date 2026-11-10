@@ -308,11 +308,10 @@ def _GenerateBundleConfigJson(
     # NOTE: Use '**' instead of '*' to work through directories!
     uncompressed_globs.extend('**.' + ext for ext in _UNCOMPRESSED_FILE_EXTS)
     if not compress_dex:
-        # Explicit glob required only when using bundletool to create .apks files.
-        # Play Store looks for and respects "uncompressDexFiles" set below.
-        # b/176198991
-        # This is added as a placeholder entry in order to have no effect unless
-        # processed with app_bundle_utils.GenerateBundleApks().
+        # Bundletool honors "uncompressDexFiles" for split APKs, but ignores it
+        # for --mode=universal. Add a placeholder entry that has no effect
+        # unless rewritten by app_bundle_utils.GenerateBundleApks() for
+        # universal mode.
         uncompressed_globs.append('classesX.dex')
 
     data = {
@@ -331,7 +330,7 @@ def _GenerateBundleConfigJson(
                 'alignment': 'PAGE_ALIGNMENT_16K',
             },
             'uncompressDexFiles': {
-                'enabled': True,  # Applies only for P+.
+                'enabled': not compress_dex,  # Applies only for Q+.
             },
             'inject_min_sdk': True,  # Required for sparseEncoding
         },
