@@ -1009,7 +1009,7 @@ TEST_F(CdpActorSessionTrackerTest,
   // 1. Attach a Pipe actor, query `EventInitiatorInfo` while the walk is still
   // in flight (`HasEmptyProcessTree` = true), advance mock queue time by 10ms,
   // and run the 15ms walk task (`ProcessTreeWalk.Latency` = 15ms excluding
-  // queue time; `DeferredHoldTime` = 25ms total).
+  // queue time).
   const PeerMetadata pipe_meta = {.transport_type =
                                       PeerMetadata::TransportType::kPipe};
   FakeDevToolsAgentHostClient pipe_client("Pipe", pipe_meta);
@@ -1034,12 +1034,9 @@ TEST_F(CdpActorSessionTrackerTest,
       base::Milliseconds(15), 1);
   histograms.ExpectUniqueSample(
       "Enterprise.CdpAttribution.ProcessTreeWalk.IsEmpty", false, 1);
-  histograms.ExpectUniqueTimeSample(
-      "Enterprise.CdpAttribution.UploadSecurityEvent.DeferredHoldTime",
-      base::Milliseconds(25), 1);
 
-  // 2. Attach a second Pipe session that hits the cache immediately (0ms hold
-  // time) without spawning a new process tree walk.
+  // 2. Attach a second Pipe session that hits the cache immediately without
+  // spawning a new process tree walk.
   FakeDevToolsAgentHostClient pipe_child_client("DevTools", pipe_meta);
   FakeDevToolsChannel pipe_child_channel(tab_host.get(), &pipe_child_client);
   tracker_->OnClientAttached(&pipe_child_channel);
@@ -1047,13 +1044,11 @@ TEST_F(CdpActorSessionTrackerTest,
 
   histograms.ExpectTotalCount(
       "Enterprise.CdpAttribution.ProcessTreeWalk.Latency", 1);
-  histograms.ExpectTotalCount(
-      "Enterprise.CdpAttribution.UploadSecurityEvent.DeferredHoldTime", 2);
-  histograms.ExpectBucketCount(
-      "Enterprise.CdpAttribution.UploadSecurityEvent.DeferredHoldTime", 0, 1);
 
-  // 3. Attach a concurrent WebSocket actor on the same tab (2 external actors)
-  // after 10ms queue wait + 30ms walk execution.
+  // 3. Advance mock time by 5ms and attach a concurrent WebSocket actor on the
+  // same tab (2 external actors) after 10ms queue wait + 30ms walk execution so
+  // the WebSocket actor has the most recent `last_command_at`.
+  task_environment()->FastForwardBy(base::Milliseconds(5));
   const net::IPEndPoint ws_ep = MakeLoopbackEndpoint(3100);
   const PeerMetadata ws_meta = {
       .transport_type = PeerMetadata::TransportType::kWebSocket,
@@ -1074,25 +1069,37 @@ TEST_F(CdpActorSessionTrackerTest,
       "Enterprise.CdpAttribution.ProcessTreeWalk.Latency", 30, 1);
   histograms.ExpectUniqueSample(
       "Enterprise.CdpAttribution.ProcessTreeWalk.IsEmpty", false, 2);
-  histograms.ExpectTotalCount(
-      "Enterprise.CdpAttribution.UploadSecurityEvent.DeferredHoldTime", 3);
 
   // Querying `EventInitiatorInfo` with 2 resolved active external actors
-  // records `BuildLatency`, `ActorCollisionCount` (sample = 2), and
-  // `HasEmptyProcessTree` (false).
+  // records `BuildLatency2`, `ActorCollisionCount2` (sample = 2), `Category`
+  // (`kExternalWebSocket`, the actor with the most recent `last_command_at`),
+  // `HasEmptyProcessTree` (false), and `LastCommandEventDelay` for both actors.
   std::optional<EventInitiatorInfo> active_info =
       CdpActorSessionTracker::GetEventInitiatorInfo(web_contents());
   ASSERT_TRUE(active_info.has_value());
   histograms.ExpectTotalCount(
-      "Enterprise.CdpAttribution.UploadSecurityEvent.BuildLatency", 2);
-  histograms.ExpectBucketCount("Enterprise.CdpAttribution.ActorCollisionCount",
+      "Enterprise.CdpAttribution.UploadSecurityEvent.BuildLatency2", 2);
+  histograms.ExpectBucketCount("Enterprise.CdpAttribution.ActorCollisionCount2",
                                2, 1);
+  histograms.ExpectBucketCount(
+      "Enterprise.CdpAttribution.UploadSecurityEvent.Category",
+      SessionCategory::kExternalPipe, 1);
+  histograms.ExpectBucketCount(
+      "Enterprise.CdpAttribution.UploadSecurityEvent.Category",
+      SessionCategory::kExternalWebSocket, 1);
   histograms.ExpectBucketCount(
       "Enterprise.CdpAttribution.UploadSecurityEvent.HasEmptyProcessTree",
       false, 1);
+  histograms.ExpectTotalCount("Enterprise.CdpAttribution.LastCommandEventDelay",
+                              3);
 
-  // 4. Detach the WebSocket actor, advance mock time by 5 seconds (within the
-  // 30s command TTL window), and query `EventInitiatorInfo` again.
+  // 4. Attach built-in DevTools UI alongside the 2 external actors (3 active
+  // actors total across external CDP and DevTools UI), advance mock time by 5
+  // seconds (within the 30s command TTL window), and query `EventInitiatorInfo`
+  // again.
+  FakeDevToolsAgentHostClient devtools_ui_client("DevTools");
+  FakeDevToolsChannel devtools_ui_channel(tab_host.get(), &devtools_ui_client);
+  tracker_->OnClientAttached(&devtools_ui_channel);
   tracker_->OnClientDetached(&ws_channel);
   task_environment()->FastForwardBy(base::Seconds(5));
 
@@ -1100,12 +1107,24 @@ TEST_F(CdpActorSessionTrackerTest,
       CdpActorSessionTracker::GetEventInitiatorInfo(web_contents());
   ASSERT_TRUE(ttl_info.has_value());
   histograms.ExpectTotalCount(
-      "Enterprise.CdpAttribution.UploadSecurityEvent.BuildLatency", 3);
-  histograms.ExpectBucketCount("Enterprise.CdpAttribution.ActorCollisionCount",
-                               2, 2);
+      "Enterprise.CdpAttribution.UploadSecurityEvent.BuildLatency2", 3);
+  histograms.ExpectBucketCount("Enterprise.CdpAttribution.ActorCollisionCount2",
+                               3, 1);
+  histograms.ExpectTotalCount("Enterprise.CdpAttribution.LastCommandEventDelay",
+                              5);
+  histograms.ExpectBucketCount(
+      "Enterprise.CdpAttribution.LastCommandEventDelay", 5000, 2);
 
-  // 5. Attach a WebSocket actor whose walk returns an empty ProcessTree and
-  // verify `ProcessTreeWalk.IsEmpty` (true) and `HasEmptyProcessTree` (true).
+  // 5. Detach the Pipe and DevTools UI sessions and expire the command TTL
+  // window, then attach a WebSocket actor whose walk returns an empty
+  // ProcessTree and verify `ProcessTreeWalk.IsEmpty` (true),
+  // `HasEmptyProcessTree` (true), and `UploadSecurityEvent.Category`
+  // (`kExternalWebSocket`).
+  tracker_->OnClientDetached(&devtools_ui_channel);
+  tracker_->OnClientDetached(&pipe_child_channel);
+  tracker_->OnClientDetached(&pipe_channel);
+  task_environment()->FastForwardBy(base::Seconds(31));
+
   return_empty_ws_tree = true;
   const net::IPEndPoint empty_ws_ep = MakeLoopbackEndpoint(3200);
   const PeerMetadata empty_ws_meta = {
@@ -1125,10 +1144,33 @@ TEST_F(CdpActorSessionTrackerTest,
   histograms.ExpectBucketCount(
       "Enterprise.CdpAttribution.UploadSecurityEvent.HasEmptyProcessTree", true,
       2);
+  histograms.ExpectBucketCount(
+      "Enterprise.CdpAttribution.UploadSecurityEvent.Category",
+      SessionCategory::kExternalWebSocket, 3);
 
   tracker_->OnClientDetached(&empty_ws_channel);
-  tracker_->OnClientDetached(&pipe_child_channel);
-  tracker_->OnClientDetached(&pipe_channel);
+
+  // 6. Expire the command TTL window, attach a built-in DevTools UI session,
+  // and verify `UploadSecurityEvent.Category` records `kDevToolsUi` and
+  // `ActorCollisionCount2` records 1.
+  task_environment()->FastForwardBy(base::Seconds(31));
+  FakeDevToolsAgentHostClient ui_client("DevTools");
+  FakeDevToolsChannel ui_channel(tab_host.get(), &ui_client);
+  tracker_->OnClientAttached(&ui_channel);
+  tracker_->OnCommandHandled(&ui_channel);
+
+  ASSERT_TRUE(CdpActorSessionTracker::GetEventInitiatorInfo(web_contents())
+                  .has_value());
+  histograms.ExpectBucketCount(
+      "Enterprise.CdpAttribution.UploadSecurityEvent.Category",
+      SessionCategory::kDevToolsUi, 1);
+  histograms.ExpectTotalCount(
+      "Enterprise.CdpAttribution.UploadSecurityEvent.Category", 5);
+  histograms.ExpectBucketCount("Enterprise.CdpAttribution.ActorCollisionCount2",
+                               1, 3);
+  histograms.ExpectTotalCount("Enterprise.CdpAttribution.ActorCollisionCount2",
+                              5);
+  tracker_->OnClientDetached(&ui_channel);
 }
 
 TEST_F(CdpActorSessionTrackerTest,

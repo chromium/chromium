@@ -117,6 +117,8 @@ class CdpActorBuffer {
     return external_actors_;
   }
 
+  bool HasDevToolsUiActive() const { return devtools_ui_active_sessions_ > 0; }
+
  private:
   // Prunes entries whose time since `last_command_at` exceeds the TTL.
   void PruneExpiredEntries(base::TimeTicks now);

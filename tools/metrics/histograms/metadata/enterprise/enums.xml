@@ -91,6 +91,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/signin/accounts_policy_manager.h:BrowserSigninUserScopeSignoutAction) -->
 
+<!-- LINT.IfChange(CdpSessionCategory) -->
+
+<enum name="CdpSessionCategory">
+  <int value="0" label="Ignored"/>
+  <int value="1" label="DevTools UI"/>
+  <int value="2" label="External Pipe"/>
+  <int value="3" label="External WebSocket"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/enterprise/connectors/reporting/cdp_actor_session_tracker.h:CdpSessionCategory) -->
+
 <enum name="CertificatePrivateKeySource">
   <int value="0" label="Unexportable"/>
   <int value="1" label="Software"/>

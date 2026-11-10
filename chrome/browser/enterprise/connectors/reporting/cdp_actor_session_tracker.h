@@ -50,12 +50,21 @@ class CdpActorSessionTracker {
   using WebSocketExtractorCallback =
       base::RepeatingCallback<ProcessTree(const net::IPEndPoint&)>;
 
+  // Categories of Chrome DevTools Protocol (CDP) sessions tracked by
+  // `CdpActorSessionTracker` and reported in
+  // `Enterprise.CdpAttribution.UploadSecurityEvent.Category`.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(CdpSessionCategory)
   enum class SessionCategory {
-    kIgnored,
-    kDevToolsUi,
-    kExternalPipe,
-    kExternalWebSocket,
+    kIgnored = 0,
+    kDevToolsUi = 1,
+    kExternalPipe = 2,
+    kExternalWebSocket = 3,
+    kMaxValue = kExternalWebSocket,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:CdpSessionCategory)
 
   struct ClassifiedClient {
     SessionCategory category = SessionCategory::kIgnored;
@@ -143,9 +152,6 @@ class CdpActorSessionTracker {
     bool has_handled_command = false;
   };
 
-  using WaitingTab =
-      std::pair<base::WeakPtr<content::WebContents>, base::TimeTicks>;
-
   struct ProcessTreeCacheEntry {
     ProcessTreeCacheEntry();
     ProcessTreeCacheEntry(const ProcessTreeCacheEntry&) = delete;
@@ -156,7 +162,7 @@ class CdpActorSessionTracker {
 
     std::optional<ProcessTree> cached_tree;
     bool extraction_in_flight = false;
-    std::vector<WaitingTab> waiting_tabs;
+    std::vector<base::WeakPtr<content::WebContents>> waiting_tabs;
   };
 
   void RecordExternalSessionCommand(TrackedChannel& tracked,
