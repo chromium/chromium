@@ -17,6 +17,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/strings/escape.h"
@@ -1622,7 +1623,12 @@ void RequestHandler::RedirectTo(const GURL& idp_config_url,
         "Content-Type: application/x-www-form-urlencoded\r\n";
   }
   in_redirect_to_ = true;
+  // The navigation can synchronously destroy `this`.
+  base::WeakPtr<RequestHandler> weak_this = weak_ptr_factory_.GetWeakPtr();
   web_contents->GetController().LoadURLWithParams(params);
+  if (!weak_this) {
+    return;
+  }
 
   CompleteRequest(FederatedRequestResult::kSuccess,
                   TokenStatus::kSuccessUsingRedirectTo,
