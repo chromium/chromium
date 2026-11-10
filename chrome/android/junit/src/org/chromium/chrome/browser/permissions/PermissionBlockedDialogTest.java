@@ -8,9 +8,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -26,6 +26,7 @@ import android.widget.TextView;
 
 import androidx.annotation.IdRes;
 
+import org.jni_zero.JniRawPtr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -42,6 +43,7 @@ import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.permissions.PermissionBlockedDialog.NativePermissionBlockedDialogController;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogViewBinder;
 import org.chromium.ui.UiUtils;
@@ -71,7 +73,7 @@ public class PermissionBlockedDialogTest {
     private ActivityController<TestActivity> mActivityController;
     private Activity mActivity;
     private PermissionBlockedDialog mDialog;
-    private static final long NATIVE_CONTROLLER = 12345L;
+    private JniRawPtr<NativePermissionBlockedDialogController> mNativeController;
 
     @Before
     public void setUp() {
@@ -82,7 +84,8 @@ public class PermissionBlockedDialogTest {
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
         when(mWindowAndroid.getModalDialogManager()).thenReturn(mModalDialogManager);
 
-        mDialog = new PermissionBlockedDialog(NATIVE_CONTROLLER, mWindowAndroid);
+        mNativeController = spy(JniRawPtr.createForTesting(12345L));
+        mDialog = new PermissionBlockedDialog(mNativeController, mWindowAndroid);
     }
 
     @After
@@ -117,6 +120,9 @@ public class PermissionBlockedDialogTest {
         assertEquals(
                 UiUtils.PROMPT_INPUT_PROTECTION_SHORT_DELAY_MS,
                 model.get(ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS));
+
+        mDialog.onDismiss(model, DialogDismissalCause.NAVIGATE_BACK);
+        verify(mNativeController).release();
     }
 
     @Test
@@ -128,9 +134,12 @@ public class PermissionBlockedDialogTest {
 
         mDialog.onClick(model, ButtonType.POSITIVE);
 
-        verify(mNativeMock).onPrimaryButtonClicked(NATIVE_CONTROLLER);
+        verify(mNativeMock).onPrimaryButtonClicked(mNativeController);
         verify(mModalDialogManager)
                 .dismissDialog(model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+
+        mDialog.onDismiss(model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+        verify(mNativeController).release();
     }
 
     @Test
@@ -142,9 +151,12 @@ public class PermissionBlockedDialogTest {
 
         mDialog.onClick(model, ButtonType.NEGATIVE);
 
-        verify(mNativeMock).onNegativeButtonClicked(NATIVE_CONTROLLER);
+        verify(mNativeMock).onNegativeButtonClicked(mNativeController);
         verify(mModalDialogManager)
                 .dismissDialog(model, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+
+        mDialog.onDismiss(model, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+        verify(mNativeController).release();
     }
 
     @Test
@@ -152,7 +164,8 @@ public class PermissionBlockedDialogTest {
         PropertyModel model = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS).build();
         mDialog.onDismiss(model, DialogDismissalCause.NAVIGATE_BACK);
 
-        verify(mNativeMock).onDialogDismissed(NATIVE_CONTROLLER);
+        verify(mNativeMock).onDialogDismissed(mNativeController);
+        verify(mNativeController).release();
     }
 
     @Test
@@ -174,14 +187,17 @@ public class PermissionBlockedDialogTest {
         assertEquals(1, spans.length);
 
         spans[0].onClick(message);
-        verify(mNativeMock).onLearnMoreClicked(NATIVE_CONTROLLER);
+        verify(mNativeMock).onLearnMoreClicked(mNativeController);
+
+        mDialog.onDismiss(model, DialogDismissalCause.NAVIGATE_BACK);
+        verify(mNativeController).release();
     }
 
     @Test
     public void testButtonTapProtection_disablesClickDuringProtectionPeriod_positiveButton() {
         checkButtonTapProtection(
                 R.id.positive_button,
-                () -> verify(mNativeMock).onPrimaryButtonClicked(NATIVE_CONTROLLER),
+                () -> verify(mNativeMock).onPrimaryButtonClicked(mNativeController),
                 DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
     }
 
@@ -189,7 +205,7 @@ public class PermissionBlockedDialogTest {
     public void testButtonTapProtection_disablesClickDuringProtectionPeriod_negativeButton() {
         checkButtonTapProtection(
                 R.id.negative_button,
-                () -> verify(mNativeMock).onNegativeButtonClicked(NATIVE_CONTROLLER),
+                () -> verify(mNativeMock).onNegativeButtonClicked(mNativeController),
                 DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
     }
 
@@ -217,16 +233,16 @@ public class PermissionBlockedDialogTest {
 
         // Click immediately while within protection period - should be ignored.
         button.performClick();
-        verify(mNativeMock, never()).onPrimaryButtonClicked(anyLong());
-        verify(mNativeMock, never()).onNegativeButtonClicked(anyLong());
+        verify(mNativeMock, never()).onPrimaryButtonClicked(any());
+        verify(mNativeMock, never()).onNegativeButtonClicked(any());
         verify(mModalDialogManager, never()).dismissDialog(any(), anyInt());
 
         // Advance time by less than the protection period - should still be ignored.
         ShadowSystemClock.advanceBy(
                 Duration.ofMillis(UiUtils.PROMPT_INPUT_PROTECTION_SHORT_DELAY_MS / 2));
         button.performClick();
-        verify(mNativeMock, never()).onPrimaryButtonClicked(anyLong());
-        verify(mNativeMock, never()).onNegativeButtonClicked(anyLong());
+        verify(mNativeMock, never()).onPrimaryButtonClicked(any());
+        verify(mNativeMock, never()).onNegativeButtonClicked(any());
         verify(mModalDialogManager, never()).dismissDialog(any(), anyInt());
 
         // Advance time past the protection period.
@@ -237,6 +253,9 @@ public class PermissionBlockedDialogTest {
         button.performClick();
         verifyAcceptedClick.run();
         verify(mModalDialogManager).dismissDialog(model, expectedDismissalCause);
+
+        mDialog.onDismiss(model, expectedDismissalCause);
+        verify(mNativeController).release();
     }
 
     @Test
@@ -285,5 +304,8 @@ public class PermissionBlockedDialogTest {
                         /* flags= */ MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED);
         assertTrue(positiveButton.dispatchTouchEvent(obscuredEvent));
         assertTrue(negativeButton.dispatchTouchEvent(obscuredEvent));
+
+        mDialog.onDismiss(model, DialogDismissalCause.NAVIGATE_BACK);
+        verify(mNativeController).release();
     }
 }

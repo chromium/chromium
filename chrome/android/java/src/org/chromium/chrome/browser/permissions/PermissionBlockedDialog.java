@@ -20,7 +20,10 @@ import android.widget.TextView;
 import androidx.annotation.GravityInt;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -58,18 +61,24 @@ import org.chromium.ui.text.ChromeClickableSpan;
  */
 @NullMarked
 public class PermissionBlockedDialog implements ModalDialogProperties.Controller {
+    @JniType("::PermissionBlockedDialogController")
+    interface NativePermissionBlockedDialogController extends JniTypeToken {}
+
     private final ModalDialogManager mModalDialogManager;
     private final Context mContext;
-    private long mNativeDialogController;
+    private @Nullable JniRawPtr<NativePermissionBlockedDialogController> mNativeDialogController;
     private @Nullable PropertyModel mPropertyModel;
 
     @CalledByNative
-    private static PermissionBlockedDialog create(
-            long nativeDialogController, WindowAndroid windowAndroid) {
+    static PermissionBlockedDialog create(
+            JniRawPtr<NativePermissionBlockedDialogController> nativeDialogController,
+            WindowAndroid windowAndroid) {
         return new PermissionBlockedDialog(nativeDialogController, windowAndroid);
     }
 
-    public PermissionBlockedDialog(long nativeDialogController, WindowAndroid windowAndroid) {
+    public PermissionBlockedDialog(
+            JniRawPtr<NativePermissionBlockedDialogController> nativeDialogController,
+            WindowAndroid windowAndroid) {
         mNativeDialogController = nativeDialogController;
         mContext = assertNonNull(windowAndroid.getActivity().get());
 
@@ -97,9 +106,11 @@ public class PermissionBlockedDialog implements ModalDialogProperties.Controller
             fullString.setSpan(
                     new ChromeClickableSpan(
                             mContext,
-                            _ ->
-                                    PermissionBlockedDialogJni.get()
-                                            .onLearnMoreClicked(mNativeDialogController)),
+                            _ -> {
+                                assert mNativeDialogController != null;
+                                PermissionBlockedDialogJni.get()
+                                        .onLearnMoreClicked(mNativeDialogController);
+                            }),
                     start,
                     fullString.length(),
                     Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -128,6 +139,7 @@ public class PermissionBlockedDialog implements ModalDialogProperties.Controller
 
     @Override
     public void onClick(PropertyModel model, @ButtonType int buttonType) {
+        assert mNativeDialogController != null;
         if (buttonType == ButtonType.POSITIVE) {
             PermissionBlockedDialogJni.get().onPrimaryButtonClicked(mNativeDialogController);
             mModalDialogManager.dismissDialog(
@@ -141,8 +153,10 @@ public class PermissionBlockedDialog implements ModalDialogProperties.Controller
 
     @Override
     public void onDismiss(PropertyModel model, int dismissalCause) {
+        assert mNativeDialogController != null;
         PermissionBlockedDialogJni.get().onDialogDismissed(mNativeDialogController);
-        mNativeDialogController = 0;
+        mNativeDialogController.release();
+        mNativeDialogController = null;
     }
 
     @CalledByNative
@@ -228,12 +242,12 @@ public class PermissionBlockedDialog implements ModalDialogProperties.Controller
 
     @NativeMethods
     interface Natives {
-        void onPrimaryButtonClicked(long nativePermissionBlockedDialogController);
+        void onPrimaryButtonClicked(JniPtr<NativePermissionBlockedDialogController> self);
 
-        void onNegativeButtonClicked(long nativePermissionBlockedDialogController);
+        void onNegativeButtonClicked(JniPtr<NativePermissionBlockedDialogController> self);
 
-        void onLearnMoreClicked(long nativePermissionBlockedDialogController);
+        void onLearnMoreClicked(JniPtr<NativePermissionBlockedDialogController> self);
 
-        void onDialogDismissed(long nativePermissionBlockedDialogController);
+        void onDialogDismissed(JniPtr<NativePermissionBlockedDialogController> self);
     }
 }

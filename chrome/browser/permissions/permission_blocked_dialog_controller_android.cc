@@ -6,6 +6,7 @@
 
 #include "base/android/jni_string.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -114,7 +115,7 @@ PermissionBlockedDialogController::GetOrCreateJavaObject() {
   JNIEnv* env = base::android::AttachCurrentThread();
   ui::ViewAndroid* view_android = web_contents_->GetNativeView();
   return java_object_ = Java_PermissionBlockedDialog_create(
-             env, reinterpret_cast<intptr_t>(this),
+             env, jni_zero::MakeRaw(this),
              view_android->GetWindowAndroid()->GetJavaObject());
 }
 
