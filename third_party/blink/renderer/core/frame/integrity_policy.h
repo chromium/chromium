@@ -21,6 +21,8 @@ struct IntegrityMetadataSet;
 
 class IntegrityPolicy {
  public:
+  // `url` must be the request's URL (i.e. before any redirects), as it is
+  // exposed to the page in violation reports.
   CORE_EXPORT
   static bool AllowRequest(
       ExecutionContext* context,

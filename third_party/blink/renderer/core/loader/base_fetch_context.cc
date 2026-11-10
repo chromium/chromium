@@ -288,9 +288,14 @@ BaseFetchContext::CanRequestInternal(
   CHECK(!GetResourceFetcherProperties().IsDetached() ||
         resource_request.GetKeepalive() || redirect_info.has_value());
 
+  // Integrity Policy operates on the request's URL, which is the first URL in
+  // its URL list. `url` may be a redirect target or the URL of an opaque
+  // response provided by a service worker, neither of which may be exposed in
+  // violation reports.
+  // https://w3c.github.io/webappsec-subresource-integrity/#report-violation
   if (!IntegrityPolicy::AllowRequest(
           GetExecutionContext(), options.WorldForCsp(), request_destination,
-          request_mode, options.integrity_metadata, url)) {
+          request_mode, options.integrity_metadata, url_before_redirects)) {
     return ResourceRequestBlockedReason::kIntegrity;
   }
 
