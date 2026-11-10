@@ -9,6 +9,7 @@
 
 #import "base/memory/scoped_refptr.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
+#import "ios/chrome/browser/autofill/manual_fill/ui/manual_fill_password_cell_mutator.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
 
 @protocol ManualFillContentInjector;
@@ -53,7 +54,9 @@ class GURL;
 // Object in charge of getting the credentials relevant for the manual fill
 // credentials UI.
 @interface ManualFillCredentialsMediator
-    : NSObject <TableViewFaviconDataSource, UISearchResultsUpdating>
+    : NSObject <ManualFillPasswordCellMutator,
+                TableViewFaviconDataSource,
+                UISearchResultsUpdating>
 
 // The consumer for passwords updates. Setting it will trigger the consumer
 // methods with the current data.

@@ -34,6 +34,7 @@ source_set("ui") {
     "manual_fill_labeled_chip.mm",
     "manual_fill_password_cell.h",
     "manual_fill_password_cell.mm",
+    "manual_fill_password_cell_mutator.h",
     "password_consumer.h",
     "password_list_navigator.h",
     "password_view_controller.h",

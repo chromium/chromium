@@ -12,8 +12,8 @@
 @class FaviconAttributes;
 @class FaviconView;
 class GURL;
-@protocol ManualFillContentInjector;
 @class ManualFillCredential;
+@protocol ManualFillPasswordCellMutator;
 
 // Type of manual fill credential.
 enum class ManualFillCredentialType {
@@ -42,13 +42,11 @@ enum class ManualFillCredentialType {
 // to indicate the cell's index (1-based) and the number of available passwords
 // to accessibility users.
 - (instancetype)initWithCredential:(ManualFillCredential*)credential
-                   contentInjector:
-                       (id<ManualFillContentInjector>)contentInjector
+                           mutator:(id<ManualFillPasswordCellMutator>)mutator
                        menuActions:(NSArray<UIAction*>*)menuActions
                          cellIndex:(NSInteger)cellIndex
        cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
             showAutofillFormButton:(BOOL)showAutofillFormButton
-           fromAllPasswordsContext:(BOOL)fromAllPasswordsContext
                     credentialType:(ManualFillCredentialType)credentialType
     NS_DESIGNATED_INITIALIZER;
 
@@ -57,28 +55,25 @@ enum class ManualFillCredentialType {
 @end
 
 // Cell to display a Credential where the username and password are interactable
-// and send the data to the delegate.
+// and send the data to the mutator.
 @interface ManualFillPasswordCell : LegacyTableViewCell
 
 // Identifier to match a URLItem with its URLCell.
 @property(nonatomic, readonly) NSString* uniqueIdentifier;
 
 // Updates the cell with the `credential`. If the user interacts with it, the
-// `contentInjector` will be notified. `menuActions` are the UIActions that
-// should be available from the cell's overflow menu button. `cellIndex`
-// indicates the index (0-based) at which the password represented by this cell
-// is positioned in the list of passwords to show. `cellIndexAccessibilityLabel`
-// is the cell's accessibility label and is used to indicate the cell's index
-// (1-based) and the number of available passwords to accessibility users.
-// `fromAllPasswordsContext` indicates whether the cell is presented in the all
-// password list.
+// `mutator` will be notified. `menuActions` are the UIActions that should be
+// available from the cell's overflow menu button. `cellIndex` indicates the
+// index (0-based) at which the password represented by this cell is positioned
+// in the list of passwords to show. `cellIndexAccessibilityLabel` is the cell's
+// accessibility label and is used to indicate the cell's index (1-based) and
+// the number of available passwords to accessibility users.
 - (void)setUpWithCredential:(ManualFillCredential*)credential
-                contentInjector:(id<ManualFillContentInjector>)contentInjector
+                        mutator:(id<ManualFillPasswordCellMutator>)mutator
                     menuActions:(NSArray<UIAction*>*)menuActions
                       cellIndex:(NSInteger)cellIndex
     cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
          showAutofillFormButton:(BOOL)showAutofillFormButton
-        fromAllPasswordsContext:(BOOL)fromAllPasswordsContext
                  credentialType:(ManualFillCredentialType)credentialType;
 
 // Returns whether the cell represents a backup credential.

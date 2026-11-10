@@ -90,12 +90,11 @@ TEST_F(PasswordViewControllerTest, CheckNoDataItemsMessageRemoved) {
   // Add an password data item.
   ManualFillCredentialItem* password_item = [[ManualFillCredentialItem alloc]
                initWithCredential:credential
-                  contentInjector:nil
+                          mutator:nil
                       menuActions:@[]
                         cellIndex:0
       cellIndexAccessibilityLabel:nil
            showAutofillFormButton:NO
-          fromAllPasswordsContext:NO
                    credentialType:ManualFillCredentialType::kPassword];
   [password_view_controller presentCredentials:@[ password_item ]];
   // Override the type for the test.
@@ -133,12 +132,11 @@ TEST_F(PasswordViewControllerTest,
                                   isBackupCredential:NO];
   ManualFillPasswordCell* passwordCell = [[ManualFillPasswordCell alloc] init];
   [passwordCell setUpWithCredential:passwordCredential
-                    contentInjector:nil
+                            mutator:nil
                         menuActions:@[]
                           cellIndex:0
         cellIndexAccessibilityLabel:@""
              showAutofillFormButton:NO
-            fromAllPasswordsContext:NO
                      credentialType:ManualFillCredentialType::kPassword];
   UILabel* label1 = [passwordCell valueForKey:@"siteNameLabel"];
   EXPECT_TRUE([label1.attributedText.string containsString:@"Password"]);
@@ -153,12 +151,11 @@ TEST_F(PasswordViewControllerTest,
                                   isBackupCredential:NO];
   ManualFillPasswordCell* passkeyCell = [[ManualFillPasswordCell alloc] init];
   [passkeyCell setUpWithCredential:passkeyCredential
-                   contentInjector:nil
+                           mutator:nil
                        menuActions:@[]
                          cellIndex:0
        cellIndexAccessibilityLabel:@""
             showAutofillFormButton:NO
-           fromAllPasswordsContext:NO
                     credentialType:ManualFillCredentialType::kPasskey];
   UILabel* label2 = [passkeyCell valueForKey:@"siteNameLabel"];
   EXPECT_TRUE(
@@ -183,12 +180,11 @@ TEST_F(PasswordViewControllerTest,
                                   isBackupCredential:NO];
   ManualFillPasswordCell* passwordCell = [[ManualFillPasswordCell alloc] init];
   [passwordCell setUpWithCredential:passwordCredential
-                    contentInjector:nil
+                            mutator:nil
                         menuActions:@[]
                           cellIndex:0
         cellIndexAccessibilityLabel:@""
              showAutofillFormButton:NO
-            fromAllPasswordsContext:NO
                      credentialType:ManualFillCredentialType::kPassword];
   UILabel* label1 = [passwordCell valueForKey:@"siteNameLabel"];
   EXPECT_FALSE([label1.attributedText.string containsString:@"Password"]);

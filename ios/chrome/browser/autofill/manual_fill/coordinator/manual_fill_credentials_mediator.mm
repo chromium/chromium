@@ -4,15 +4,18 @@
 
 #import "ios/chrome/browser/autofill/manual_fill/coordinator/manual_fill_credentials_mediator.h"
 
+#import <string_view>
 #import <vector>
 
 #import "base/base64.h"
 #import "base/i18n/message_formatter.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
+#import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/autofill_util.h"
-#import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/password_manager/core/browser/form_fetcher_impl.h"
@@ -86,12 +89,39 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
   return filtered_credentials;
 }
 
+// Logs the relevant metrics for a tap on the "Autofill form" button.
+void LogAutofillFormButtonTappedMetrics(bool from_all_passwords_context,
+                                        bool is_backup_credential,
+                                        NSInteger cell_index) {
+  if (from_all_passwords_context) {
+    base::RecordAction(
+        is_backup_credential
+            ? base::UserMetricsAction(
+                  "ManualFallback_AllPasswords_SuggestionAccepted_Backup")
+            : base::UserMetricsAction(
+                  "ManualFallback_AllPasswords_SuggestionAccepted"));
+  } else {
+    base::RecordAction(
+        is_backup_credential
+            ? base::UserMetricsAction(
+                  "ManualFallback_Password_SuggestionAccepted_Backup")
+            : base::UserMetricsAction(
+                  "ManualFallback_Password_SuggestionAccepted"));
+  }
+
+  std::string_view histogram_suffix =
+      from_all_passwords_context ? ".AllPasswords" : "";
+  std::string histogram = base::StrCat(
+      {"Autofill.UserAcceptedSuggestionAtIndex.Password.ManualFallback",
+       histogram_suffix});
+  base::UmaHistogramSparse(histogram, cell_index);
+}
+
 }  // namespace
 
 @interface ManualFillCredentialsMediator () <CRWWebStateObserver,
                                              FormActivityObserver,
                                              FormFetcherConsumer,
-                                             ManualFillContentInjector,
                                              PasswordCounterObserver,
                                              SavedPasswordsPresenterObserver,
                                              PasskeyModelObserverDelegate>
@@ -374,12 +404,11 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
 
       ManualFillCredentialItem* item = [[ManualFillCredentialItem alloc]
                    initWithCredential:passkeyCredential
-                      contentInjector:self
+                              mutator:self
                           menuActions:@[]
                             cellIndex:i
           cellIndexAccessibilityLabel:cellIndexAccessibilityLabel
                showAutofillFormButton:_showAutofillFormButton
-              fromAllPasswordsContext:[self isFromAllPasswordsContext]
                        credentialType:ManualFillCredentialType::kPasskey];
       [items addObject:item];
     }
@@ -422,12 +451,11 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
 
     ManualFillCredentialItem* item = [[ManualFillCredentialItem alloc]
                  initWithCredential:manualFillCredential
-                    contentInjector:self
+                            mutator:self
                         menuActions:menuActions
                           cellIndex:startIndex + i
         cellIndexAccessibilityLabel:cellIndexAccessibilityLabel
              showAutofillFormButton:_showAutofillFormButton
-            fromAllPasswordsContext:[self isFromAllPasswordsContext]
                      credentialType:ManualFillCredentialType::kPassword];
     [items addObject:item];
   }
@@ -663,43 +691,50 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
       std::make_unique<FormFetcherConsumerBridge>(self, _formFetcher.get());
 }
 
-#pragma mark - ManualFillContentInjector
+#pragma mark - ManualFillPasswordCellMutator
 
-- (BOOL)canUserInjectInPasswordField:(BOOL)passwordField
-                       requiresHTTPS:(BOOL)requiresHTTPS {
-  return [self.contentInjector canUserInjectInPasswordField:passwordField
-                                              requiresHTTPS:requiresHTTPS];
-}
-
-- (void)userDidPickContent:(NSString*)content
-             passwordField:(BOOL)passwordField
-             requiresHTTPS:(BOOL)requiresHTTPS
-           jumpToNextField:(BOOL)jumpToNextField
-                actionType:(autofill::mojom::FieldActionType)actionType {
+- (void)didTapUsernameChipForCredential:(ManualFillCredential*)credential {
+  CHECK(credential);
+  base::RecordAction(
+      base::UserMetricsAction("ManualFallback_Password_SelectUsername"));
   [self.delegate manualFillCredentialsMediatorWillInjectContent:self];
-  [self.contentInjector userDidPickContent:content
-                             passwordField:passwordField
-                             requiresHTTPS:requiresHTTPS
-                           jumpToNextField:jumpToNextField
-                                actionType:actionType];
+  [self.contentInjector
+      userDidPickContent:credential.username
+           passwordField:NO
+           requiresHTTPS:NO
+         jumpToNextField:YES
+              actionType:autofill::mojom::FieldActionType::kReplaceAll];
 }
 
-- (void)autofillFormWithCredential:(ManualFillCredential*)credential
-                      shouldReauth:(BOOL)shouldReauth {
+- (void)didTapPasswordChipForCredential:(ManualFillCredential*)credential {
+  CHECK(credential);
+  if (![self.contentInjector canUserInjectInPasswordField:YES
+                                            requiresHTTPS:YES]) {
+    return;
+  }
+  base::RecordAction(base::UserMetricsAction(
+      credential.isBackupCredential
+          ? "ManualFallback_Password_SelectBackupPassword"
+          : "ManualFallback_Password_SelectPassword"));
+  [self.delegate manualFillCredentialsMediatorWillInjectContent:self];
+  [self.contentInjector
+      userDidPickContent:credential.password
+           passwordField:YES
+           requiresHTTPS:YES
+         jumpToNextField:YES
+              actionType:autofill::mojom::FieldActionType::kReplaceAll];
+}
+
+- (void)didTapAutofillFormButtonForCredential:(ManualFillCredential*)credential
+                                    cellIndex:(NSInteger)cellIndex {
+  CHECK(credential);
+  CHECK_GE(cellIndex, 0);
+  BOOL fromAllPasswordsContext = [self isFromAllPasswordsContext];
+  LogAutofillFormButtonTappedMetrics(fromAllPasswordsContext,
+                                     credential.isBackupCredential, cellIndex);
   [self.delegate manualFillCredentialsMediatorWillInjectContent:self];
   [self.contentInjector autofillFormWithCredential:credential
-                                      shouldReauth:shouldReauth];
-}
-
-- (void)autofillFormWithSuggestion:(FormSuggestion*)formSuggestion
-                           atIndex:(NSInteger)index {
-  [self.delegate manualFillCredentialsMediatorWillInjectContent:self];
-  [self.contentInjector autofillFormWithSuggestion:formSuggestion
-                                           atIndex:index];
-}
-
-- (BOOL)isActiveFormAPasswordForm {
-  return [self.contentInjector isActiveFormAPasswordForm];
+                                      shouldReauth:!fromAllPasswordsContext];
 }
 
 #pragma mark - TableViewFaviconDataSource

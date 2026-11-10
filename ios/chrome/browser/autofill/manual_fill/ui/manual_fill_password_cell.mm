@@ -4,27 +4,19 @@
 
 #import "ios/chrome/browser/autofill/manual_fill/ui/manual_fill_password_cell.h"
 
-#import "base/feature_list.h"
-#import "base/metrics/histogram_functions.h"
-#import "base/metrics/user_metrics.h"
-#import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/strings/grit/components_strings.h"
 #import "components/webauthn/ios/features.h"
 #import "components/webauthn/ios/passkey_suggestion_utils.h"
 #import "ios/chrome/browser/autofill/manual_fill/model/manual_fill_credential.h"
 #import "ios/chrome/browser/autofill/manual_fill/public/manual_fill_constants.h"
-#import "ios/chrome/browser/autofill/manual_fill/public/manual_fill_content_injector.h"
 #import "ios/chrome/browser/autofill/manual_fill/ui/manual_fill_cell_utils.h"
-#import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/autofill/manual_fill/ui/manual_fill_password_cell_mutator.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_container_view.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
-#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-#import "ui/gfx/favicon_size.h"
 #import "url/gurl.h"
 
 @interface ManualFillCredentialItem ()
@@ -32,9 +24,8 @@
 // The credential for this item.
 @property(nonatomic, strong, readonly) ManualFillCredential* credential;
 
-// The delegate for this item.
-@property(nonatomic, weak, readonly) id<ManualFillContentInjector>
-    contentInjector;
+// The mutator for user actions in the cell.
+@property(nonatomic, weak, readonly) id<ManualFillPasswordCellMutator> mutator;
 
 // The UIActions that should be available from the cell's overflow menu button.
 @property(nonatomic, strong) NSArray<UIAction*>* menuActions;
@@ -53,30 +44,23 @@
 
   // If `YES`, autofill button is shown for the item.
   BOOL _showAutofillFormButton;
-
-  // If `YES`, the cell represented by this item is displayed in the all
-  // password list.
-  BOOL _fromAllPasswordsContext;
 }
 
 - (instancetype)initWithCredential:(ManualFillCredential*)credential
-                   contentInjector:
-                       (id<ManualFillContentInjector>)contentInjector
+                           mutator:(id<ManualFillPasswordCellMutator>)mutator
                        menuActions:(NSArray<UIAction*>*)menuActions
                          cellIndex:(NSInteger)cellIndex
        cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
             showAutofillFormButton:(BOOL)showAutofillFormButton
-           fromAllPasswordsContext:(BOOL)fromAllPasswordsContext
                     credentialType:(ManualFillCredentialType)credentialType {
   self = [super initWithType:kItemTypeEnumZero];
   if (self) {
     _credential = credential;
-    _contentInjector = contentInjector;
+    _mutator = mutator;
     _menuActions = menuActions;
     _cellIndex = cellIndex;
     _cellIndexAccessibilityLabel = [cellIndexAccessibilityLabel copy];
     _showAutofillFormButton = showAutofillFormButton;
-    _fromAllPasswordsContext = fromAllPasswordsContext;
     _credentialType = credentialType;
     self.cellClass = [ManualFillPasswordCell class];
   }
@@ -86,12 +70,11 @@
 - (void)configureCell:(ManualFillPasswordCell*)cell {
   [super configureCell:cell];
   [cell setUpWithCredential:self.credential
-                  contentInjector:self.contentInjector
+                          mutator:self.mutator
                       menuActions:self.menuActions
                         cellIndex:_cellIndex
       cellIndexAccessibilityLabel:_cellIndexAccessibilityLabel
            showAutofillFormButton:_showAutofillFormButton
-          fromAllPasswordsContext:_fromAllPasswordsContext
                    credentialType:self.credentialType];
 }
 
@@ -113,27 +96,6 @@ namespace {
 
 // The size that the favicon should have.
 constexpr CGFloat kFaviconContainterViewSize = 30;
-
-// Logs the relevant metrics for a tap on the "Autofill form" button.
-void LogAutofillFormButtonTappedMetrics(BOOL from_all_passwords_context,
-                                        BOOL is_backup_credential,
-                                        NSInteger cell_index) {
-  std::string user_action =
-      from_all_passwords_context
-          ? "ManualFallback_AllPasswords_SuggestionAccepted"
-          : "ManualFallback_Password_SuggestionAccepted";
-  if (is_backup_credential) {
-    user_action.append("_Backup");
-  }
-  base::RecordAction(base::UserMetricsAction(user_action.c_str()));
-
-  const char* histogram_suffix =
-      from_all_passwords_context ? ".AllPasswords" : "";
-  std::string histogram = base::StrCat(
-      {"Autofill.UserAcceptedSuggestionAtIndex.Password.ManualFallback",
-       histogram_suffix});
-  base::UmaHistogramSparse(histogram, cell_index);
-}
 
 }  // namespace
 
@@ -168,8 +130,8 @@ void LogAutofillFormButtonTappedMetrics(BOOL from_all_passwords_context,
 // Separator line. Used to delimit the header from the rest of the cell.
 @property(nonatomic, strong) UIView* grayLine;
 
-// The delegate in charge of processing the user actions in this cell.
-@property(nonatomic, weak) id<ManualFillContentInjector> contentInjector;
+// The mutator in charge of processing user actions in this cell.
+@property(nonatomic, weak) id<ManualFillPasswordCellMutator> mutator;
 
 // Layout guide for the cell's content.
 @property(nonatomic, strong) UILayoutGuide* layoutGuide;
@@ -183,9 +145,6 @@ void LogAutofillFormButtonTappedMetrics(BOOL from_all_passwords_context,
   // The 0-based index at which the password is in the list of passwords to
   // show.
   NSInteger _cellIndex;
-
-  // If `YES`, the cell is displayed in the all password list.
-  BOOL _fromAllPasswordsContext;
 
   // UIImageView for the custom symbol that replaces the favicon in the cell.
   // Stays nil if not needed.
@@ -219,26 +178,25 @@ void LogAutofillFormButtonTappedMetrics(BOOL from_all_passwords_context,
   self.passwordButton.hidden = NO;
 
   self.credential = nil;
+  self.mutator = nil;
 
   self.grayLine.hidden = NO;
 }
 
 - (void)setUpWithCredential:(ManualFillCredential*)credential
-                contentInjector:(id<ManualFillContentInjector>)contentInjector
+                        mutator:(id<ManualFillPasswordCellMutator>)mutator
                     menuActions:(NSArray<UIAction*>*)menuActions
                       cellIndex:(NSInteger)cellIndex
     cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
          showAutofillFormButton:(BOOL)showAutofillFormButton
-        fromAllPasswordsContext:(BOOL)fromAllPasswordsContext
                  credentialType:(ManualFillCredentialType)credentialType {
   _cellIndex = cellIndex;
-  _fromAllPasswordsContext = fromAllPasswordsContext;
   _credentialType = credentialType;
 
   if (self.contentView.subviews.count == 0) {
     [self createViewHierarchy];
   }
-  self.contentInjector = contentInjector;
+  self.mutator = mutator;
   self.credential = credential;
 
   // Holds the views whose leading anchor is constrained relative to the cell's
@@ -439,40 +397,17 @@ void LogAutofillFormButtonTappedMetrics(BOOL from_all_passwords_context,
 }
 
 - (void)userDidTapUsernameButton:(UIButton*)button {
-  base::RecordAction(
-      base::UserMetricsAction("ManualFallback_Password_SelectUsername"));
-  [self.contentInjector
-      userDidPickContent:self.credential.username
-           passwordField:NO
-           requiresHTTPS:NO
-         jumpToNextField:YES
-              actionType:autofill::mojom::FieldActionType::kReplaceAll];
+  [self.mutator didTapUsernameChipForCredential:self.credential];
 }
 
 - (void)userDidTapPasswordButton:(UIButton*)button {
-  if (![self.contentInjector canUserInjectInPasswordField:YES
-                                            requiresHTTPS:YES]) {
-    return;
-  }
-  base::RecordAction(base::UserMetricsAction(
-      [self isBackupCredential] ? "ManualFallback_Password_SelectBackupPassword"
-                                : "ManualFallback_Password_SelectPassword"));
-  [self.contentInjector
-      userDidPickContent:self.credential.password
-           passwordField:YES
-           requiresHTTPS:YES
-         jumpToNextField:YES
-              actionType:autofill::mojom::FieldActionType::kReplaceAll];
+  [self.mutator didTapPasswordChipForCredential:self.credential];
 }
 
-// Called when the "Autofill Form" button is tapped. Fills the current form with
-// the credential' data.
+// Called when the "Autofill Form" button is tapped.
 - (void)onAutofillFormButtonTapped {
-  LogAutofillFormButtonTappedMetrics(_fromAllPasswordsContext,
-                                     [self isBackupCredential], _cellIndex);
-
-  [self.contentInjector autofillFormWithCredential:self.credential
-                                      shouldReauth:!_fromAllPasswordsContext];
+  [self.mutator didTapAutofillFormButtonForCredential:self.credential
+                                            cellIndex:_cellIndex];
 }
 
 // Sets up the favicon with the given `attributes`.
