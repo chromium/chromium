@@ -3,7 +3,7 @@ Short Name: windows_app_sdk_headers
 URL: https://github.com/microsoft/WindowsAppSDK
 Version: 2.0.1
 Revision: 3e1905de7f390ea4bf4c16205341b2b7bd15de30
-Update Mechanism: Manual
+Update Mechanism: Static (https://crbug.com/584031174)
 License: MIT
 License File: src/LICENSE
 Shipped: Yes
