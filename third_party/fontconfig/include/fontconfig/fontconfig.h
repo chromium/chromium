@@ -25,6 +25,10 @@
 #ifndef _FONTCONFIG_H_
 #define _FONTCONFIG_H_
 
+#if defined(FC_CHROMIUM_RENAME_EXPORTS)
+#include "fcchromium_rename.h"
+#endif
+
 #include <limits.h>
 #include <stdarg.h>
 #include <sys/stat.h>
@@ -883,6 +887,18 @@ FcFontSort (FcConfig   *config,
 
 FcPublic void
 FcFontSetSortDestroy (FcFontSet *fs);
+
+/* fcindex.c */
+FcPublic unsigned int
+FcIndexerQueryAll (const FcChar8 *file,
+                   unsigned int   id,
+                   int           *count,
+                   FcFontSet     *set);
+
+FcPublic FcPattern *
+FcIndexerQuery (const FcChar8 *file,
+                unsigned int   id,
+                int           *count);
 
 /* fcmatrix.c */
 FcPublic FcMatrix *

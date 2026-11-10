@@ -95,6 +95,7 @@ if (use_bundled_fontconfig) {
 
   source_set("fontconfig_sources") {
     sources = [
+      "include/fontconfig/fcchromium_rename.h",
       "include/fontconfig/fontconfig.h",
       "src/fc-fontations/fc_woff2.cpp",
       "src/fc-fontations/fc_woff2.h",
@@ -113,6 +114,7 @@ if (use_bundled_fontconfig) {
       "src/src/fcfs.c",
       "src/src/fcgenericalias.c",
       "src/src/fchash.c",
+      "src/src/fcindex.c",
       "src/src/fcinit.c",
       "src/src/fcint.h",
       "src/src/fclang.c",
@@ -143,13 +145,20 @@ if (use_bundled_fontconfig) {
       "HAVE_LIBWOFF2DEC",
     ]
 
-    # Fontconfig symbols should not be exported from chrome, nacl_helper, or
-    # anything else.
-    if (!is_component_build) {
-      defines += [
-        "FC_ATTRIBUTE_VISIBILITY_HIDDEN=__attribute((visibility(\"hidden\")))",
-        "FC_ATTRIBUTE_VISIBILITY_EXPORT=__attribute((visibility(\"hidden\")))",
-      ]
+    # The standard Fc* symbols should never be exported from chrome,
+    # nacl_helper, or anything else. In component builds they would interpose
+    # on the system fontconfig that GTK's cairo and pango use, and the two
+    # fontconfigs' in-memory structures are not compatible
+    # (https://crbug.com/583829716). Component builds export the chromium_Fc*
+    # aliases from include/fcaliastail.h instead; see :fontconfig_rename_config.
+    defines += [
+      "FC_ATTRIBUTE_VISIBILITY_HIDDEN=__attribute((visibility(\"hidden\")))",
+      "FC_ATTRIBUTE_VISIBILITY_EXPORT=__attribute((visibility(\"hidden\")))",
+    ]
+    if (is_component_build) {
+      defines += [ "FC_CHROMIUM_ATTRIBUTE_VISIBILITY_EXPORT=__attribute((visibility(\"default\")))" ]
+    } else {
+      defines += [ "FC_CHROMIUM_ATTRIBUTE_VISIBILITY_EXPORT=__attribute((visibility(\"hidden\")))" ]
     }
 
     deps = [
@@ -178,6 +187,16 @@ if (use_bundled_fontconfig) {
     }
   }
 
+  # Makes code that depends on :fontconfig call the exported chromium_Fc*
+  # names (see include/fontconfig/fcchromium_rename.h). Not applied to
+  # :fontconfig_sources or the Rust bindings, which are linked into the same
+  # library and use the standard names.
+  config("fontconfig_rename_config") {
+    if (is_component_build) {
+      defines = [ "FC_CHROMIUM_RENAME_EXPORTS" ]
+    }
+  }
+
   component("fontconfig") {
     # Prevent private deps (such as :fontconfig_fontations_ffi and its
     # rust_bindgen generator actions) from propagating order-only .harddeps to
@@ -185,6 +204,7 @@ if (use_bundled_fontconfig) {
     check_includes_strict = true
     public_deps = [ ":fontconfig_sources" ]
     deps = [ ":fontconfig_fontations_ffi" ]
+    public_configs = [ ":fontconfig_rename_config" ]
   }
 } else {
   config("fontconfig_config") {
