@@ -7855,6 +7855,24 @@
             ]
         }
     ],
+    "EnableAccountPreviewPreferredAccountFREIOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "AccountPreviewPreferredAccountFREFetchTimeout": "1s"
+                    },
+                    "enable_features": [
+                        "EnableAccountPreviewPreferredAccountFRE"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableAccountPreviewPreferredAccountFollowup": [
         {
             "platforms": [
