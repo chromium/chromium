@@ -54,8 +54,6 @@ gfx::ImageSkia CreateFaviconImageSkia(
 // describes how well the bitmap data with the sizes at |best_indices| will
 // produce the ImageSkia. The score is arbitrary, but it's best for exact
 // matches, and gets worse the more resampling needs to happen.
-// TODO(pkotwicz): Change API so that |desired_sizes| being empty indicates
-// that the index of the largest size is requested.
 // TODO(pkotwicz): Remove callers of this method for which |frame_pixel_sizes|
 // are the sizes of the favicon bitmaps after they were resized.
 void SelectFaviconFrameIndices(const std::vector<gfx::Size>& frame_pixel_sizes,
