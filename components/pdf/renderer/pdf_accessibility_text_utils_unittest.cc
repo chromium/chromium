@@ -12,6 +12,21 @@ namespace pdf {
 namespace {
 
 using chrome_pdf::AccessibilityTextDirection;
+using chrome_pdf::AccessibilityTextRunInfo;
+
+TEST(PdfAccessibilityTextUtilsTest, IsRightToLeftRun) {
+  AccessibilityTextRunInfo run;
+  run.direction = AccessibilityTextDirection::kRightToLeft;
+  EXPECT_TRUE(IsRightToLeftRun(run));
+  run.direction = AccessibilityTextDirection::kNone;
+  EXPECT_FALSE(IsRightToLeftRun(run));
+  run.direction = AccessibilityTextDirection::kLeftToRight;
+  EXPECT_FALSE(IsRightToLeftRun(run));
+  run.direction = AccessibilityTextDirection::kTopToBottom;
+  EXPECT_FALSE(IsRightToLeftRun(run));
+  run.direction = AccessibilityTextDirection::kBottomToTop;
+  EXPECT_FALSE(IsRightToLeftRun(run));
+}
 
 TEST(PdfAccessibilityTextUtilsTest, IsVerticalTextDirection) {
   EXPECT_TRUE(

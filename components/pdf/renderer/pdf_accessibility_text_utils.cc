@@ -21,6 +21,10 @@ bool IsLeftToRightRun(const chrome_pdf::AccessibilityTextRunInfo& run) {
          run.direction == chrome_pdf::AccessibilityTextDirection::kNone;
 }
 
+bool IsRightToLeftRun(const chrome_pdf::AccessibilityTextRunInfo& run) {
+  return run.direction == chrome_pdf::AccessibilityTextDirection::kRightToLeft;
+}
+
 bool IsVerticalTextDirection(chrome_pdf::AccessibilityTextDirection direction) {
   return direction == chrome_pdf::AccessibilityTextDirection::kTopToBottom ||
          direction == chrome_pdf::AccessibilityTextDirection::kBottomToTop;

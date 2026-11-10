@@ -19,6 +19,9 @@ bool IsWhitespace(const chrome_pdf::AccessibilityCharInfo& char_info);
 // Returns whether `run` is horizontal left-to-right text.
 bool IsLeftToRightRun(const chrome_pdf::AccessibilityTextRunInfo& run);
 
+// Returns whether `run` is horizontal right-to-left text.
+bool IsRightToLeftRun(const chrome_pdf::AccessibilityTextRunInfo& run);
+
 // Returns whether `direction` represents vertical text.
 bool IsVerticalTextDirection(chrome_pdf::AccessibilityTextDirection direction);
 

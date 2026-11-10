@@ -3014,12 +3014,7 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
     // Reorder blocks by vertical bands to restore top-to-bottom reading order
     // for pages emitted in authoring/layer order. Band sorting assumes
     // left-to-right columns, so skip pages with any right-to-left text.
-    if (std::ranges::none_of(
-            builder_->text_runs(),
-            [](const chrome_pdf::AccessibilityTextRunInfo& run) {
-              return run.direction ==
-                     chrome_pdf::AccessibilityTextDirection::kRightToLeft;
-            })) {
+    if (std::ranges::none_of(builder_->text_runs(), IsRightToLeftRun)) {
       SortBlockNodesByVerticalBands(block_nodes,
                                     builder_->page_node()->child_ids);
       // Remaining annotations go in a new paragraph rather than a trailing
