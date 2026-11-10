@@ -4,6 +4,7 @@
 
 #include "ui/base/ime/character_composer.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 
@@ -32,6 +33,19 @@ bool CheckCharacterComposeTable(
   return kTreeComposeChecker.CheckSequence(compose_sequence,
                                            composed_character) !=
          ui::ComposeChecker::CheckSequenceResult::NO_MATCH;
+}
+
+// Looks up `key` in `table`, sorted by key, and returns the matching value, if
+// any.
+std::optional<uint16_t> FindInTable(
+    base::span<const ui::TreeComposeChecker::TreeEntry> table,
+    uint16_t key) {
+  auto it = std::ranges::lower_bound(table, key, {},
+                                     &ui::TreeComposeChecker::TreeEntry::key);
+  if (it == table.end() || it->key != key) {
+    return std::nullopt;
+  }
+  return it->value;
 }
 
 // Converts |character| to UTF16 string.
@@ -303,8 +317,8 @@ ComposeChecker::CheckSequenceResult TreeComposeChecker::CheckSequence(
     // character tables.
     int32_t character = -1;
     if (keystroke.IsDeadKey() || keystroke.IsComposeKey()) {
-      tree_index += 2 * data_->tree[tree_index] + 1;  // internal unicode table
-      tree_index += 2 * data_->tree[tree_index] + 1;  // leaf unicode table
+      auto [internal_size, leaf_size] = data_->tree[tree_index];
+      tree_index += 1 + internal_size + leaf_size;  // unicode tables
       // The generate_character_composer_data.py script assigns 0 to the Compose
       // key.
       character = keystroke.IsComposeKey()
@@ -317,48 +331,25 @@ ComposeChecker::CheckSequenceResult TreeComposeChecker::CheckSequence(
       return CheckSequenceResult::NO_MATCH;
 
     // Check the internal subtree table.
-    uint16_t result = 0;
-    uint16_t entries = data_->tree[tree_index++];
-    if (entries &&
-        Find(tree_index, entries, static_cast<uint16_t>(character), &result)) {
-      tree_index = result;
+    auto [internal_size, leaf_size] = data_->tree[tree_index++];
+    if (std::optional<uint16_t> subtree_index =
+            FindInTable(data_->tree.subspan(tree_index, internal_size),
+                        static_cast<uint16_t>(character))) {
+      tree_index = *subtree_index;
       continue;
     }
 
     // Skip over the internal subtree table and check the leaf table.
-    tree_index += 2 * entries;
-    entries = data_->tree[tree_index++];
-    if (entries &&
-        Find(tree_index, entries, static_cast<uint16_t>(character), &result)) {
-      *composed_character = result;
+    tree_index += internal_size;
+    if (std::optional<uint16_t> leaf_character =
+            FindInTable(data_->tree.subspan(tree_index, leaf_size),
+                        static_cast<uint16_t>(character))) {
+      *composed_character = *leaf_character;
       return CheckSequenceResult::FULL_MATCH;
     }
     return CheckSequenceResult::NO_MATCH;
   }
   return CheckSequenceResult::PREFIX_MATCH;
-}
-
-bool TreeComposeChecker::Find(uint16_t index,
-                              uint16_t size,
-                              uint16_t key,
-                              uint16_t* value) const {
-  struct TableEntry {
-    uint16_t key;
-    uint16_t value;
-    bool operator<(const TableEntry& other) const {
-      return this->key < other.key;
-    }
-  };
-  const TableEntry* a =
-      reinterpret_cast<const TableEntry*>(&data_->tree[index]);
-  const TableEntry* z = UNSAFE_TODO(a + size);
-  const TableEntry target = {key, 0};
-  const TableEntry* it = std::lower_bound(a, z, target);
-  if ((it != z) && (it->key == key)) {
-    *value = it->value;
-    return true;
-  }
-  return false;
 }
 
 }  // namespace ui

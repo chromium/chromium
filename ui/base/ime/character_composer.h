@@ -133,9 +133,17 @@ class ComposeChecker {
 // Implementation of |ComposeChecker| using a compact generated tree.
 class TreeComposeChecker : public ComposeChecker {
  public:
+  // An element of the generated tree: either a key-value pair of a lookup
+  // table, or the sizes of the internal and leaf tables that follow it. See
+  // generate_character_composer_data.py for the format.
+  struct TreeEntry {
+    uint16_t key;
+    uint16_t value;
+  };
+
   struct CompositionData {
     size_t maximum_sequence_length;
-    base::raw_span<const uint16_t> tree;
+    base::raw_span<const TreeEntry> tree;
   };
 
   explicit TreeComposeChecker(const CompositionData& data) : data_(data) {}
@@ -144,7 +152,6 @@ class TreeComposeChecker : public ComposeChecker {
       uint32_t* composed_character) const override;
 
  private:
-  bool Find(uint16_t index, uint16_t size, uint16_t key, uint16_t* value) const;
   const raw_ref<const CompositionData> data_;
 };
 

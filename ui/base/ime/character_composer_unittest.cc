@@ -383,12 +383,12 @@ TEST_F(CharacterComposerTest, MainTableIsCorrectlyOrdered) {
     SCOPED_TRACE(index);
     subtrees.push_back(index);
     for (int t = 0; t < kTypes; ++t) {
-      // Skip the internal table and verify the next index is within the data.
-      index += 1 + 2 * kCompositions.tree[index];
-      EXPECT_GT(kCompositions.tree.size(), index);
-      // Skip the leaf table and verify that the next index is not past the
-      // end of the data.
-      index += 1 + 2 * kCompositions.tree[index];
+      // Verify that the table sizes are within the data, then skip the
+      // internal and leaf tables and verify that the next index is not past
+      // the end of the data.
+      ASSERT_GT(kCompositions.tree.size(), index);
+      auto [internal_size, leaf_size] = kCompositions.tree[index];
+      index += 1 + internal_size + leaf_size;
       EXPECT_GE(kCompositions.tree.size(), index);
     }
   }
@@ -400,30 +400,28 @@ TEST_F(CharacterComposerTest, MainTableIsCorrectlyOrdered) {
   while (index < kCompositions.tree.size()) {
     SCOPED_TRACE(index);
     for (int t = 0; t < kTypes; ++t) {
+      auto [internal_size, leaf_size] = kCompositions.tree[index++];
       // Check the internal subtable.
       uint16_t previous_key = 0;
-      uint16_t size = kCompositions.tree[index++];
-      for (uint16_t i = 0; i < size; ++i) {
+      for (uint16_t i = 0; i < internal_size; ++i) {
         // Verify that the subtable is sorted.
-        uint16_t key = kCompositions.tree[index];
-        uint16_t value = kCompositions.tree[index + 1];
+        const auto& [key, value] = kCompositions.tree[index];
         if (i)
           EXPECT_LT(previous_key, key) << index;
         previous_key = key;
         // Verify that the internal link is valid.
         EXPECT_TRUE(std::ranges::contains(subtrees, value)) << index;
-        index += 2;
+        ++index;
       }
       // Check the leaf subtable.
       previous_key = 0;
-      size = kCompositions.tree[index++];
-      for (uint16_t i = 0; i < size; ++i) {
+      for (uint16_t i = 0; i < leaf_size; ++i) {
         // Verify that the subtable is sorted.
-        uint16_t key = kCompositions.tree[index];
+        uint16_t key = kCompositions.tree[index].key;
         if (i)
           EXPECT_LT(previous_key, key) << index;
         previous_key = key;
-        index += 2;
+        ++index;
       }
     }
   }
