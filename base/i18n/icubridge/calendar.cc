@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/i18n/icu4c_tag_converter.h"  // nogncheck
+#include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/i18n/language_tag.h"
 #include "base/i18n/tag_converters.h"
 #include "third_party/icu/source/common/unicode/locid.h"
@@ -76,7 +78,8 @@ IcuBridge::Calendar::WeekInformation GetWeekInfoWithIcuLocale(
 
 IcuBridge::Calendar::WeekInformation IcuBridge::Calendar::GetWeekInformation()
     const {
-  return GetWeekInfoWithIcuLocale(icu::Locale::getDefault());
+  return GetWeekInfoWithIcuLocale(
+      IcuLocaleConverter::GetInstance().FromLanguageTag(GetDefaultIcuLocale()));
 }
 
 }  // namespace base::i18n

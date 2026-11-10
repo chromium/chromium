@@ -10,7 +10,8 @@
 
 #include "base/check.h"
 #include "base/features.h"
-#include "base/i18n/icu4c_tag_converter.h"  // nogncheck
+#include "base/i18n/icu4c_tag_converter.h"           // nogncheck
+#include "base/i18n/icubridge/default_icu_locale.h"  // nogncheck
 #include "base/i18n/language_tag.h"
 #include "base/i18n/unicodestring.h"
 #include "base/memory/ptr_util.h"
@@ -157,11 +158,7 @@ std::u16string TimeZone::GetDisplayName(
 
 std::u16string TimeZone::GetDisplayName(
     const DisplayNameOptions& options) const {
-  icu::UnicodeString name;
-  impl_->icu_timezone->getDisplayName(options.is_day_light,
-                                      ToIcuDisplayType(options.style),
-                                      icu::Locale::getDefault(), name);
-  return UnicodeStringToString16(name);
+  return GetDisplayName(GetDefaultIcuLocale(), options);
 }
 
 base::TimeDelta TimeZone::GetRawOffset() const {

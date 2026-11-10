@@ -12,6 +12,9 @@
 #include "base/check.h"
 #include "base/features.h"
 #include "base/format_macros.h"
+#include "base/i18n/icu4c_tag_converter.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/message_formatter.h"
 #include "base/i18n/unicodestring.h"
 #include "base/memory/ptr_util.h"
@@ -29,7 +32,7 @@ namespace base {
 namespace {
 
 struct CachedPercentFormatter {
-  icu::Locale locale;
+  i18n::LanguageTag locale;
   std::unique_ptr<icu::NumberFormat> formatter;
 };
 
@@ -60,12 +63,15 @@ GetPercentFormatterStorage() {
 icu::NumberFormat& GetPercentNumberFormat() {
   base::ThreadLocalOwnedPointer<CachedPercentFormatter>& storage =
       GetPercentFormatterStorage();
-  const icu::Locale& default_locale = icu::Locale::getDefault();
+  const i18n::LanguageTag default_locale = i18n::GetDefaultIcuLocale();
   CachedPercentFormatter* cached = storage.Get();
   if (!cached || cached->locale != default_locale) {
     UErrorCode status = U_ZERO_ERROR;
-    std::unique_ptr<icu::NumberFormat> formatter = WrapUnique(
-        icu::NumberFormat::createPercentInstance(default_locale, status));
+    std::unique_ptr<icu::NumberFormat> formatter =
+        WrapUnique(icu::NumberFormat::createPercentInstance(
+            i18n::IcuLocaleConverter::GetInstance().FromLanguageTag(
+                default_locale),
+            status));
     CHECK(U_SUCCESS(status));
     CHECK(formatter);
     std::unique_ptr<CachedPercentFormatter> new_cached =

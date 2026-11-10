@@ -10,12 +10,11 @@
 #include <string_view>
 
 #include "base/check_op.h"
-#include "base/i18n/icu4c_tag_converter.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/i18n/tag_converters.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/synchronization/lock.h"
-#include "third_party/icu/source/common/unicode/locid.h"
 #include "third_party/icu/source/common/unicode/ubrk.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
 #include "third_party/icu/source/common/unicode/uloc.h"
@@ -165,8 +164,7 @@ void UBreakIteratorDeleter::operator()(UBreakIterator* ptr) {
 BreakIterator::BreakIterator(std::u16string_view str, BreakType break_type)
     : string_(str),
       break_type_(break_type),
-      locale_tag_(IcuLocaleConverter::GetInstance().ToLanguageTag(
-          icu::Locale::getDefault())) {}
+      locale_tag_(GetDefaultIcuLocale()) {}
 
 BreakIterator::BreakIterator(std::u16string_view str,
                              BreakType break_type,
@@ -181,8 +179,7 @@ BreakIterator::BreakIterator(std::u16string_view str,
     : string_(str),
       rules_(rules),
       break_type_(RULE_BASED),
-      locale_tag_(IcuLocaleConverter::GetInstance().ToLanguageTag(
-          icu::Locale::getDefault())) {}
+      locale_tag_(GetDefaultIcuLocale()) {}
 
 BreakIterator::~BreakIterator() {
   // Custom-locale iterators are created dynamically and not stored in

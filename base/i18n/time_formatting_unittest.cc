@@ -8,6 +8,8 @@
 #include <vector>
 
 #include "base/features.h"
+#include "base/i18n/icu4c_tag_converter.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
 #include "base/i18n/test/scoped_icu_locale.h"
@@ -60,7 +62,10 @@ std::u16string GetShortTimeZone(Time time) {
   UErrorCode status = U_ZERO_ERROR;
   std::unique_ptr<icu::TimeZone> zone(icu::TimeZone::createDefault());
   std::unique_ptr<icu::TimeZoneFormat> zone_formatter(
-      icu::TimeZoneFormat::createInstance(icu::Locale::getDefault(), status));
+      icu::TimeZoneFormat::createInstance(
+          i18n::IcuLocaleConverter::GetInstance().FromLanguageTag(
+              i18n::GetDefaultIcuLocale()),
+          status));
   EXPECT_TRUE(U_SUCCESS(status));
   icu::UnicodeString name;
   zone_formatter->format(

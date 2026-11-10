@@ -8,7 +8,9 @@
 #include <string_view>
 
 #include "base/features.h"
+#include "base/i18n/icu4c_tag_converter.h"
 #include "base/i18n/icubridge/date_time_formatter.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/i18n/icubridge/icu_bridge.h"
 #include "base/i18n/language_tag.h"
 #include "base/i18n/timezone.h"
@@ -276,7 +278,10 @@ bool TimeDurationFormat(TimeDelta time,
   const icu::Measure measures[] = {
       icu::Measure(hours, icu::MeasureUnit::createHour(status), status),
       icu::Measure(minutes, icu::MeasureUnit::createMinute(status), status)};
-  icu::MeasureFormat measure_format(icu::Locale::getDefault(), u_width, status);
+  icu::MeasureFormat measure_format(
+      i18n::IcuLocaleConverter::GetInstance().FromLanguageTag(
+          i18n::GetDefaultIcuLocale()),
+      u_width, status);
   icu::UnicodeString formatted;
   icu::FieldPosition ignore(icu::FieldPosition::DONT_CARE);
   measure_format.formatMeasures(measures, 2, formatted, ignore, status);
@@ -301,7 +306,10 @@ bool TimeDurationFormatWithSeconds(TimeDelta time,
       icu::Measure(hours, icu::MeasureUnit::createHour(status), status),
       icu::Measure(minutes, icu::MeasureUnit::createMinute(status), status),
       icu::Measure(seconds, icu::MeasureUnit::createSecond(status), status)};
-  icu::MeasureFormat measure_format(icu::Locale::getDefault(), u_width, status);
+  icu::MeasureFormat measure_format(
+      i18n::IcuLocaleConverter::GetInstance().FromLanguageTag(
+          i18n::GetDefaultIcuLocale()),
+      u_width, status);
   icu::UnicodeString formatted;
   icu::FieldPosition ignore(icu::FieldPosition::DONT_CARE);
   measure_format.formatMeasures(measures, 3, formatted, ignore, status);
@@ -327,7 +335,10 @@ bool TimeDurationCompactFormatWithSeconds(TimeDelta time,
       icu::Measure(minutes, icu::MeasureUnit::createMinute(status), status);
   const icu::Measure seconds_measure =
       icu::Measure(seconds, icu::MeasureUnit::createSecond(status), status);
-  icu::MeasureFormat measure_format(icu::Locale::getDefault(), u_width, status);
+  icu::MeasureFormat measure_format(
+      i18n::IcuLocaleConverter::GetInstance().FromLanguageTag(
+          i18n::GetDefaultIcuLocale()),
+      u_width, status);
   icu::UnicodeString formatted;
   icu::FieldPosition ignore(icu::FieldPosition::DONT_CARE);
   if (hours != 0 || width == DurationFormatWidth::DURATION_WIDTH_NUMERIC) {
