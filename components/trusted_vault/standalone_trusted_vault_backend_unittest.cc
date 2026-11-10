@@ -19,6 +19,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -2263,7 +2264,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   base::WeakPtr<MockEnrollmentHandler> handler1 =
       GetEnrollmentHandler(SecurityDomainId::kChromeSync)->GetWeakPtr();
 
-  EXPECT_CALL(*handler1, Enroll);
+  EnrollmentHandler::EnrollCallback handler_cb;
+  EXPECT_CALL(*handler1, Enroll).WillOnce(MoveArg<0>(&handler_cb));
   base::MockCallback<StandaloneTrustedVaultBackend::EnrollCallback> enroll_cb;
   EXPECT_CALL(enroll_cb, Run).Times(0);
   backend()->Enroll(kAccountInfo1, SecurityDomainId::kChromeSync,
@@ -2271,6 +2273,14 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   SetPrimaryAccountWithUnknownAuthError(kAccountInfo2);
   EXPECT_THAT(handler1, IsNull());
+  // Even if a callback already posted before the primary account change runs
+  // afterwards, it must be dropped.
+  std::move(handler_cb)
+      .Run(/*new_shared_key=*/{1, 2, 3, 4},
+           /*new_key_version=*/1);
+  EXPECT_THAT(storage()->GetVaultKeys(kAccountInfo2.gaia,
+                                      SecurityDomainId::kChromeSync),
+              IsEmpty());
 }
 
 }  // namespace

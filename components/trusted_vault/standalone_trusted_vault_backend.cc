@@ -366,7 +366,8 @@ void StandaloneTrustedVaultBackend::AttemptRecoveryFactor(
   local_recovery_factors_[local_recovery_factor]->AttemptRecovery(
       security_domain,
       base::BindOnce(&StandaloneTrustedVaultBackend::OnKeysRecovered,
-                     weak_ptr_factory_.GetWeakPtr(), local_recovery_factor));
+                     primary_account_weak_ptr_factory_.GetWeakPtr(),
+                     local_recovery_factor));
 }
 
 void StandaloneTrustedVaultBackend::StoreKeys(
@@ -425,6 +426,7 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
   }
 
   primary_account_ = primary_account;
+  primary_account_weak_ptr_factory_.InvalidateWeakPtrs();
   degraded_recoverability_handlers_.clear();
   ongoing_add_recovery_method_requests_.clear();
   // This aborts all ongoing recoveries / registrations.
@@ -437,6 +439,7 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
   FulfillAllOngoingFetchKeys(TrustedVaultRecoverKeysOutcomeForUMA::kAborted);
 
   if (!primary_account_.has_value()) {
+    NotifyIdleForTestingIfNecessary();
     return;
   }
 
@@ -611,7 +614,8 @@ void StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod(
           UnspecifiedAuthenticationFactorType(method_type_hint),
           base::BindOnce(
               &StandaloneTrustedVaultBackend::OnTrustedRecoveryMethodAdded,
-              weak_ptr_factory_.GetWeakPtr(), security_domain, std::move(cb)));
+              primary_account_weak_ptr_factory_.GetWeakPtr(), security_domain,
+              std::move(cb)));
 }
 
 void StandaloneTrustedVaultBackend::CanEnroll(
@@ -642,9 +646,10 @@ void StandaloneTrustedVaultBackend::Enroll(const CoreAccountInfo& account_info,
           RefreshTokenErrorState::kPersistentAuthError) {
     auto it = enrollment_handlers_.find(security_domain);
     if (it != enrollment_handlers_.end() && it->second) {
-      it->second->Enroll(base::BindOnce(
-          &StandaloneTrustedVaultBackend::OnEnrolled,
-          weak_ptr_factory_.GetWeakPtr(), security_domain, std::move(cb)));
+      it->second->Enroll(
+          base::BindOnce(&StandaloneTrustedVaultBackend::OnEnrolled,
+                         primary_account_weak_ptr_factory_.GetWeakPtr(),
+                         security_domain, std::move(cb)));
       return;
     }
   }
@@ -724,7 +729,7 @@ void StandaloneTrustedVaultBackend::MaybeRegisterLocalRecoveryFactors(
             security_domain,
             base::BindOnce(
                 &StandaloneTrustedVaultBackend::OnRecoveryFactorRegistered,
-                weak_ptr_factory_.GetWeakPtr(), factor_type));
+                primary_account_weak_ptr_factory_.GetWeakPtr(), factor_type));
 
     if (registration_state.has_value() && should_record_metrics) {
       recovery_factor_registration_state_recorded_to_uma_.insert(
@@ -778,17 +783,15 @@ void StandaloneTrustedVaultBackend::OnRecoveryFactorRegistered(
     TrustedVaultRegistrationStatus status,
     int key_version,
     bool had_local_keys) {
+  CHECK(primary_account_.has_value());
   CHECK(GetSupportedSecurityDomainIdValues().contains(security_domain));
-  // SetPrimaryAccount() cancels ongoing registration attempts and clears
-  // the map. However, there is a chance that a call for this callback is
-  // already scheduled at that time. Checking for <= 0 defensively covers this
-  // case.
+
   auto it = ongoing_registration_attempts_.find(
       {security_domain, local_recovery_factor_type});
-  if (it != ongoing_registration_attempts_.end()) {
-    if (--it->second <= 0) {
-      ongoing_registration_attempts_.erase(it);
-    }
+  CHECK(it != ongoing_registration_attempts_.end());
+  CHECK_GT(it->second, 0);
+  if (--it->second == 0) {
+    ongoing_registration_attempts_.erase(it);
   }
 
   if (status == TrustedVaultRegistrationStatus::kRegistrationNotAttempted ||
@@ -796,10 +799,6 @@ void StandaloneTrustedVaultBackend::OnRecoveryFactorRegistered(
     NotifyIdleForTestingIfNecessary();
     return;
   }
-
-  // If |primary_account_| was changed meanwhile, this callback must be
-  // cancelled.
-  DCHECK(primary_account_.has_value());
 
   RecordTrustedVaultRecoveryFactorRegistrationOutcome(
       local_recovery_factor_type, security_domain,
@@ -905,6 +904,7 @@ void StandaloneTrustedVaultBackend::OnTrustedRecoveryMethodAdded(
     base::OnceCallback<void(bool)> cb,
     TrustedVaultRegistrationStatus status,
     int unused_epoch) {
+  CHECK(primary_account_.has_value());
   CHECK(GetSupportedSecurityDomainIdValues().contains(security_domain));
   ongoing_add_recovery_method_requests_.erase(security_domain);
 

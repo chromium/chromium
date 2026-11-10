@@ -415,7 +415,10 @@ class StandaloneTrustedVaultBackend
 
   std::vector<base::OnceClosure> idle_callbacks_for_testing_;
 
-  base::WeakPtrFactory<StandaloneTrustedVaultBackend> weak_ptr_factory_{this};
+  // Used for callbacks tied to `primary_account_`. Invalidated whenever
+  // `primary_account_` changes in `SetPrimaryAccount()`.
+  base::WeakPtrFactory<StandaloneTrustedVaultBackend>
+      primary_account_weak_ptr_factory_{this};
 };
 
 }  // namespace trusted_vault
