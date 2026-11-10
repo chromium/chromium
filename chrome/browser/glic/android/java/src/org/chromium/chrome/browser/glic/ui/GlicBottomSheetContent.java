@@ -79,7 +79,6 @@ public class GlicBottomSheetContent extends TabBottomSheetContent {
     }
 
     void mountNativeFre(SettingsCustomTabLauncher customTabLauncher, Runnable onNativeFreAccepted) {
-        // TODO(b/582354339): Block TalkBack and keyboard focus on the WebUI behind the FRE.
         if (mFreCoordinator != null) return;
 
         ViewGroup expanded = TabBottomSheetUtils.getExpandedContentGroup(getContentView());
@@ -96,6 +95,7 @@ public class GlicBottomSheetContent extends TabBottomSheetContent {
                         this::onFreAccepted,
                         this::onBackPressed);
         mFreScrollView = mFreCoordinator.getView().findViewById(R.id.glic_fre_scroll_view);
+        setWebUiHidden(true);
     }
 
     private void onFreAccepted() {
@@ -121,7 +121,23 @@ public class GlicBottomSheetContent extends TabBottomSheetContent {
         mFreScrollView = null;
         GlicBottomSheetFreCoordinator fre = mFreCoordinator;
         mFreCoordinator = null;
-        if (fre != null) fre.destroy();
+        if (fre != null) {
+            fre.destroy();
+            setWebUiHidden(false);
+        }
+    }
+
+    /** Hides the WebUI behind the FRE card from TalkBack and keyboard focus, or restores it. */
+    private void setWebUiHidden(boolean hidden) {
+        if (!(TabBottomSheetUtils.getWebUiContainer(getContentView()) instanceof ViewGroup webUi)) {
+            return;
+        }
+        webUi.setImportantForAccessibility(
+                hidden
+                        ? View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
+                        : View.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+        webUi.setDescendantFocusability(
+                hidden ? ViewGroup.FOCUS_BLOCK_DESCENDANTS : ViewGroup.FOCUS_BEFORE_DESCENDANTS);
     }
 
     @Override
