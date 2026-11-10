@@ -5,6 +5,7 @@
 #include "chrome/browser/dictation/session_ui_impl.h"
 
 #include "base/memory/weak_ptr.h"
+#include "build/build_config.h"
 #include "chrome/browser/dictation/dictation_interactive_browser_test_base.h"
 #include "chrome/browser/dictation/dictation_keyed_service.h"
 #include "chrome/browser/dictation/listener_stream_provider.h"
@@ -665,8 +666,17 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
-                       AutoSessionEndDelayedShutdownOnAttachedStreamComplete) {
+// TODO(crbug.com/581421020): Flaky on Windows ASAN
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_AutoSessionEndDelayedShutdownOnAttachedStreamComplete \
+  DISABLED_AutoSessionEndDelayedShutdownOnAttachedStreamComplete
+#else
+#define MAYBE_AutoSessionEndDelayedShutdownOnAttachedStreamComplete \
+  AutoSessionEndDelayedShutdownOnAttachedStreamComplete
+#endif
+IN_PROC_BROWSER_TEST_F(
+    DictationSessionUiImplBrowserTest,
+    MAYBE_AutoSessionEndDelayedShutdownOnAttachedStreamComplete) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
   const GURL url =
       embedded_test_server()->GetURL("/textinput/simple_textinput.html");
@@ -765,8 +775,16 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
+// TODO(crbug.com/582769094): Flaky on Windows ASAN
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_OverlayButtonUpdatesOnStreamStateChange \
+  DISABLED_OverlayButtonUpdatesOnStreamStateChange
+#else
+#define MAYBE_OverlayButtonUpdatesOnStreamStateChange \
+  OverlayButtonUpdatesOnStreamStateChange
+#endif
 IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
-                       OverlayButtonUpdatesOnStreamStateChange) {
+                       MAYBE_OverlayButtonUpdatesOnStreamStateChange) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
   const GURL url =
       embedded_test_server()->GetURL("/textinput/simple_textarea.html");
@@ -841,8 +859,15 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
+// TODO(crbug.com/582747074): Flaky on Windows ASAN
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_OverlayButtonEndsActiveStream \
+  DISABLED_OverlayButtonEndsActiveStream
+#else
+#define MAYBE_OverlayButtonEndsActiveStream OverlayButtonEndsActiveStream
+#endif
 IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
-                       OverlayButtonEndsActiveStream) {
+                       MAYBE_OverlayButtonEndsActiveStream) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
   const GURL url =
       embedded_test_server()->GetURL("/textinput/simple_textarea.html");
