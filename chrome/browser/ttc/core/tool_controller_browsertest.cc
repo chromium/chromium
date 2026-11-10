@@ -2185,8 +2185,16 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/583956316): Flakily fails Linux Wayland
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_GetScreenshotTabClosedDuringUrlCheck \
+  DISABLED_GetScreenshotTabClosedDuringUrlCheck
+#else
+#define MAYBE_GetScreenshotTabClosedDuringUrlCheck \
+  GetScreenshotTabClosedDuringUrlCheck
+#endif
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
-                       GetScreenshotTabClosedDuringUrlCheck) {
+                       MAYBE_GetScreenshotTabClosedDuringUrlCheck) {
   ttc_service().StartSession();
   auto* session_controller = ttc_service().session_controller();
   ASSERT_TRUE(session_controller);
