@@ -449,6 +449,8 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   android_tab_id = std::move(match.android_tab_id);
   DestroyJavaObject();
   std::swap(java_match_, match.java_match_);
+  std::swap(java_vector_icon_, match.java_vector_icon_);
+  std::swap(java_bookmark_vector_icon_, match.java_bookmark_vector_icon_);
   UpdateJavaObjectNativeRef();
 #endif
   return *this;

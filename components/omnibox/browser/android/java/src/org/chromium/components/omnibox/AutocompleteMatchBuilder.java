@@ -55,6 +55,8 @@ public class AutocompleteMatchBuilder {
     private byte[] mSerializedSuggestTemplate;
     private @DocumentType int mDocumentType;
     private boolean mIsExtensionMatch;
+    private String mVectorIconName;
+    private String mBookmarkVectorIconName;
 
     /**
      * Create a suggestion builder for a search suggestion.
@@ -110,6 +112,8 @@ public class AutocompleteMatchBuilder {
         mSerializedSuggestTemplate = null;
         mDocumentType = DocumentType.NONE;
         mIsExtensionMatch = false;
+        mVectorIconName = "";
+        mBookmarkVectorIconName = "";
 
         mDisplayTextClassifications.add(new MatchClassification(0, MatchClassificationStyle.NONE));
         mDescriptionClassifications.add(new MatchClassification(0, MatchClassificationStyle.NONE));
@@ -155,7 +159,9 @@ public class AutocompleteMatchBuilder {
                 mAssociatedKeyword,
                 mSerializedSuggestTemplate,
                 mDocumentType,
-                mIsExtensionMatch);
+                mIsExtensionMatch,
+                mVectorIconName,
+                mBookmarkVectorIconName);
     }
 
     /**
@@ -416,6 +422,19 @@ public class AutocompleteMatchBuilder {
      */
     public AutocompleteMatchBuilder setIsExtensionMatch(boolean isExtensionMatch) {
         mIsExtensionMatch = isExtensionMatch;
+        return this;
+    }
+
+    /**
+     * @param vectorIconName Name of the native vector icon for the suggestion.
+     * @param bookmarkVectorIconName Name of the native vector icon when the suggestion is
+     *     bookmarked.
+     * @return Omnibox suggestion builder.
+     */
+    public AutocompleteMatchBuilder setVectorIconNames(
+            String vectorIconName, String bookmarkVectorIconName) {
+        mVectorIconName = vectorIconName;
+        mBookmarkVectorIconName = bookmarkVectorIconName;
         return this;
     }
 }

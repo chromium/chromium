@@ -4,6 +4,7 @@
 
 #include "components/omnibox/browser/autocomplete_match.h"
 
+#include <string>
 #include <vector>
 
 #include "base/android/callback_android.h"
@@ -21,6 +22,13 @@
 #include "components/saved_tab_groups/public/android/tab_group_sync_conversions_utils.h"
 #include "third_party/jni_zero/default_conversions.h"
 #include "third_party/omnibox_proto/suggest_template_info.pb.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/android/java_bitmap.h"
+#include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -33,6 +41,16 @@ using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaArrayOfStrings;
 using base::android::ToJavaByteArray;
 using base::android::ToJavaIntArray;
+
+namespace {
+
+// Returns the name of `icon`, suitable as a cache key, or an empty string if
+// there is no icon.
+std::string VectorIconName(const gfx::VectorIcon* icon) {
+  return icon && !icon->is_empty() && icon->name ? icon->name : std::string();
+}
+
+}  // namespace
 
 // static
 jclass AutocompleteMatch::GetClazz(JNIEnv* env) {
@@ -106,6 +124,9 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
   bool is_extension_match =
       turl && turl->type() == TemplateURL::OMNIBOX_API_EXTENSION;
 
+  java_vector_icon_ = &GetVectorIcon(/*is_bookmark=*/false, turl);
+  java_bookmark_vector_icon_ = &GetVectorIcon(/*is_bookmark=*/true, turl);
+
   java_match_ = std::make_unique<ScopedJavaGlobalRef<jobject>>(
       Java_AutocompleteMatch_build(
           env, reinterpret_cast<intptr_t>(this), static_cast<int>(type),
@@ -124,7 +145,8 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
               ? std::make_optional(matching_tab_group_uuid->AsLowercaseString())
               : std::nullopt,
           associated_keyword, j_suggest_template, document_type,
-          is_extension_match));
+          is_extension_match, VectorIconName(java_vector_icon_),
+          VectorIconName(java_bookmark_vector_icon_)));
 
   return ScopedJavaLocalRef<jobject>(*java_match_);
 }
@@ -139,6 +161,8 @@ void AutocompleteMatch::UpdateJavaObjectNativeRef() {
 }
 
 void AutocompleteMatch::DestroyJavaObject() {
+  java_vector_icon_ = nullptr;
+  java_bookmark_vector_icon_ = nullptr;
   if (!java_match_)
     return;
 
@@ -168,6 +192,24 @@ void AutocompleteMatch::OnClipboardSuggestionContentUpdated(
   JNIEnv* env = base::android::AttachCurrentThread();
   UpdateClipboardContent(env);
   jni_zero::RunRunnable(j_callback);
+}
+
+SkBitmap AutocompleteMatch::GetVectorIconBitmap(bool is_bookmark,
+                                                int size_dip,
+                                                float scale) const {
+  const gfx::VectorIcon* icon =
+      is_bookmark ? java_bookmark_vector_icon_ : java_vector_icon_;
+  if (!icon || icon->is_empty() || size_dip <= 0 || scale <= 0) {
+    return SkBitmap();
+  }
+  // Vector icons are a list of SkPath drawing commands; PaintVectorIcon()
+  // replays them onto a Skia-backed canvas sized `size_dip` @ `scale`. The
+  // icon is painted in black and tinted by the consumer on the Java side (see
+  // OmniboxDrawableState#allowTint).
+  gfx::Canvas canvas(gfx::Size(size_dip, size_dip), scale,
+                     /*is_opaque=*/false);
+  gfx::PaintVectorIcon(&canvas, *icon, size_dip, SK_ColorBLACK);
+  return canvas.GetBitmap();
 }
 
 void AutocompleteMatch::UpdateClipboardContent(JNIEnv* env) {

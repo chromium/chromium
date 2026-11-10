@@ -48,6 +48,10 @@
 #include "base/android/scoped_java_ref.h"
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+class SkBitmap;
+#endif
+
 class AutocompleteProvider;
 class OmniboxAction;
 class TemplateURL;
@@ -349,6 +353,14 @@ struct AutocompleteMatch {
   // Called when the match is updated with the clipboard content.
   void OnClipboardSuggestionContentUpdated(
       const base::android::JavaRef<jobject>& j_callback);
+
+  // Rasterizes the vector icon resolved for the Java object (see
+  // GetOrCreateJavaObject()) into a square bitmap of `size_dip` device
+  // independent pixels at `scale`. Returns an empty SkBitmap (null on the Java
+  // side) if the match has no vector icon.
+  SkBitmap GetVectorIconBitmap(bool is_bookmark,
+                               int size_dip,
+                               float scale) const;
 
   // Update the Java object with clipboard content.
   void UpdateClipboardContent(JNIEnv* env);
@@ -1155,6 +1167,13 @@ struct AutocompleteMatch {
   // See AutocompleteControllerAndroid for more details.
   mutable std::unique_ptr<base::android::ScopedJavaGlobalRef<jobject>>
       java_match_;
+
+  // Vector icons (regular and bookmarked variants) resolved for java_match_
+  // by GetOrCreateJavaObject(), where the TemplateURL is available. Vector
+  // icons have static storage duration, so the pointers never dangle. Reset
+  // together with java_match_.
+  mutable raw_ptr<const gfx::VectorIcon> java_vector_icon_ = nullptr;
+  mutable raw_ptr<const gfx::VectorIcon> java_bookmark_vector_icon_ = nullptr;
 #endif
   base::WeakPtrFactory<AutocompleteMatch> weak_ptr_factory_{this};
 };
