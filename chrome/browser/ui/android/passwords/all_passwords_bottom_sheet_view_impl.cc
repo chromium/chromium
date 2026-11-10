@@ -17,6 +17,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "third_party/jni_zero/default_conversions.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -97,7 +98,7 @@ AllPasswordsBottomSheetViewImpl::GetOrCreateJavaObject() {
     return nullptr;  // No window attached (yet or anymore).
   }
   return java_object_internal_ = Java_AllPasswordsBottomSheetBridge_create(
-             AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
+             AttachCurrentThread(), jni_zero::MakeRaw(this),
              controller_->GetProfile(),
              controller_->GetNativeView()->GetWindowAndroid(),
              controller_->GetFrameOriginUrl().spec());
