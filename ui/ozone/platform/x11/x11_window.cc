@@ -52,6 +52,7 @@
 #include "ui/gfx/x/xproto.h"
 #include "ui/ozone/platform/x11/hit_test_x11.h"
 #include "ui/ozone/platform/x11/x11_window_manager.h"
+#include "ui/ozone/platform/x11/x11_wm_move_loop.h"
 #include "ui/platform_window/common/platform_window_defaults.h"
 #include "ui/platform_window/extensions/workspace_extension_delegate.h"
 #include "ui/platform_window/extensions/x11_extension_delegate.h"
@@ -1688,6 +1689,24 @@ void X11Window::DispatchHostWindowDragMovement(
 
 bool X11Window::RunMoveLoop(const gfx::Vector2d& drag_offset) {
   auto alive = weak_ptr_factory_.GetWeakPtr();
+  // The window manager ignores _NET_WM_MOVERESIZE for windows that it doesn't
+  // manage (override-redirect windows such as bubbles and non-activatable
+  // windows) and for hidden windows, so those keep using the client-driven
+  // move loop. This isn't a CHECK because RunMoveLoop() isn't limited to tab
+  // dragging. Each call picks its loop independently and the loops share no
+  // state, so a tab drag session may mix them.
+  if (!override_redirect_ && window_mapped_in_client_ &&
+      X11WmMoveLoop::IsSupported(*connection_)) {
+    wm_move_loop_ =
+        std::make_unique<X11WmMoveLoop>(*connection_, x_root_window_, xwindow_);
+    const bool moved =
+        wm_move_loop_->Run(drag_offset, window_mapped_in_server_);
+    if (alive) {
+      wm_move_loop_.reset();
+    }
+    return moved;
+  }
+
   const bool moved =
       x11_window_move_client_->RunMoveLoop(!HasCapture(), drag_offset);
   if (alive) {
@@ -1698,6 +1717,10 @@ bool X11Window::RunMoveLoop(const gfx::Vector2d& drag_offset) {
 }
 
 void X11Window::EndMoveLoop() {
+  if (wm_move_loop_) {
+    wm_move_loop_->End();
+    return;
+  }
   x11_window_move_client_->EndMoveLoop();
 }
 
