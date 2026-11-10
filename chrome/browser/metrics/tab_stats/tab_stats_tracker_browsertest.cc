@@ -135,6 +135,15 @@ class TabStatsTrackerBrowserTest : public PlatformBrowserTest {
   TabStatsTrackerBrowserTest& operator=(const TabStatsTrackerBrowserTest&) =
       delete;
 
+#if BUILDFLAG(IS_ANDROID)
+  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
+    PlatformBrowserTest::SetUpDefaultCommandLine(command_line);
+    // Disable the first-run experience (FRE) so launching a separate Incognito
+    // ChromeTabbedActivity window does not redirect to FirstRunActivity.
+    command_line->AppendSwitch("disable-fre");
+  }
+#endif
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(
         switches::kAutoplayPolicy,
