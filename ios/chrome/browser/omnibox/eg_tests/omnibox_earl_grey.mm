@@ -32,8 +32,12 @@ using base::test::ios::WaitUntilConditionOrTimeout;
                   block:^{
                     return [OmniboxAppInterface shortcutsBackendInitialized];
                   }];
+  // `ShortcutsBackend::InitInternal` runs on a `BEST_EFFORT` thread pool
+  // sequence, which can take longer than `kWaitForActionTimeout` (10s) to
+  // complete during cold startup on loaded bots.
   bool conditionMet = [waitCondition
-      waitWithTimeout:base::test::ios::kWaitForActionTimeout.InSecondsF()];
+      waitWithTimeout:base::test::ios::kWaitForClearBrowsingDataTimeout
+                          .InSecondsF()];
   EG_TEST_HELPER_ASSERT_TRUE(conditionMet, errorString);
 }
 
@@ -77,6 +81,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 - (void)addShorcuts:(NSUInteger)shortcutCount
        toTestServer:(net::test_server::EmbeddedTestServer*)testServer {
   [OmniboxEarlGrey waitForShortcutsBackendInitialization];
+  [OmniboxAppInterface clearShortcutsDatabase];
 
   for (NSUInteger i = 1; i <= shortcutCount; ++i) {
     omnibox::Page pageI = omnibox::Page(i);
@@ -93,6 +98,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
     [[EarlGrey selectElementWithMatcher:omnibox::PopupRowWithUrlMatcher(URL)]
         performAction:grey_tap()];
     [ChromeEarlGrey waitForWebStateContainingText:omnibox::PageContent(pageI)];
+    [OmniboxEarlGrey waitForNumberOfShortcutsInDatabase:i];
   }
 }
 

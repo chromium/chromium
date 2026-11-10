@@ -36,6 +36,9 @@
 // Returns whether the shortcuts backend is initialized.
 + (BOOL)shortcutsBackendInitialized;
 
+// Clears all shortcuts from the shortcuts database.
++ (void)clearShortcutsDatabase;
+
 // Returns the number of suggestions in the shortcuts database.
 + (NSInteger)numberOfShortcutsInDatabase;
 

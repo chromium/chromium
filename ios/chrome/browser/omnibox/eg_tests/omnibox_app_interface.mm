@@ -119,12 +119,27 @@ const base::FilePath& GetTestDataDir() {
 
 + (BOOL)shortcutsBackendInitialized {
   scoped_refptr<ShortcutsBackend> shortcuts_backend =
-      ios::ShortcutsBackendFactory::GetForProfileIfExists(
+      ios::ShortcutsBackendFactory::GetForProfile(
           chrome_test_util::GetOriginalProfile());
   if (shortcuts_backend) {
     return shortcuts_backend->initialized();
   }
   return NO;
+}
+
++ (void)clearShortcutsDatabase {
+  scoped_refptr<ShortcutsBackend> shortcuts_backend =
+      ios::ShortcutsBackendFactory::GetForProfileIfExists(
+          chrome_test_util::GetOriginalProfile());
+  if (!shortcuts_backend || !shortcuts_backend->initialized()) {
+    return;
+  }
+  while (!shortcuts_backend->shortcuts_map().empty()) {
+    GURL url = shortcuts_backend->shortcuts_map()
+                   .begin()
+                   ->second.match_core.destination_url;
+    shortcuts_backend->DeleteShortcutsWithURL(url);
+  }
 }
 
 + (NSInteger)numberOfShortcutsInDatabase {

@@ -45,9 +45,7 @@
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
 
   // Enable flags for rich inline autocomplete tests.
-  if ([self isRunningTest:@selector(testRichInlineDefaultSuggestion)]) {
-    config.features_enabled.push_back(omnibox::kRichAutocompletion);
-  }
+  config.features_enabled.push_back(omnibox::kRichAutocompletion);
 
   // Disable AutocompleteProvider types: AutocompleteProvider::Type::kSearch and
   // AutocompleteProvider::Type::kOnDeviceHead.
