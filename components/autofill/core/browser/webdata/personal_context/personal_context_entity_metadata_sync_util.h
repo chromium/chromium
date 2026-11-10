@@ -51,6 +51,15 @@ std::optional<EntitySuppressionKey> CreateEntitySuppressionKeyFromSpecifics(
 bool AreEntitySuppressionSpecificsValid(
     const sync_pb::AutofillEntitySuppressionSpecifics& specifics);
 
+// Returns a copy of `specifics` with `suppression.hash` populated from
+// `entity_suppression_hash` if `suppression` is not yet set, or `std::nullopt`
+// if no migration is needed.
+// TODO(crbug.com/501036619): Remove once legacy entries are no longer
+// supported.
+std::optional<sync_pb::AutofillEntitySuppressionSpecifics>
+MigrateLegacySuppressionSpecificsIfNeeded(
+    const sync_pb::AutofillEntitySuppressionSpecifics& specifics);
+
 // Clears all supported fields from `specifics`. Supported fields are all
 // fields in the protobuf definition that have already been included in the
 // client version.

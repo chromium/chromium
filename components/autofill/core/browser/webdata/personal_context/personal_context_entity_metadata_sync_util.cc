@@ -141,6 +141,18 @@ bool AreEntitySuppressionSpecificsValid(
   return true;
 }
 
+std::optional<sync_pb::AutofillEntitySuppressionSpecifics>
+MigrateLegacySuppressionSpecificsIfNeeded(
+    const sync_pb::AutofillEntitySuppressionSpecifics& specifics) {
+  if (specifics.has_suppression() || !specifics.has_entity_suppression_hash() ||
+      !AreEntitySuppressionSpecificsValid(specifics)) {
+    return std::nullopt;
+  }
+  sync_pb::AutofillEntitySuppressionSpecifics migrated = specifics;
+  migrated.mutable_suppression()->set_hash(specifics.entity_suppression_hash());
+  return migrated;
+}
+
 std::optional<EntitySuppressionKey> CreateEntitySuppressionKeyFromSpecifics(
     const sync_pb::AutofillEntitySuppressionSpecifics& specifics) {
   if (!AreEntitySuppressionSpecificsValid(specifics)) {

@@ -204,6 +204,15 @@ class PersonalContextEntityMetadataSyncBridgeTest : public testing::Test {
     return records ? std::move(*records) : syncer::DataTypeStore::RecordList();
   }
 
+  sync_pb::AutofillEntitySuppressionSpecifics DecryptRecord(
+      const syncer::DataTypeStore::Record& record) {
+    std::string plaintext;
+    EXPECT_TRUE(encryptor().DecryptString(record.value, &plaintext));
+    sync_pb::AutofillEntitySuppressionSpecifics specifics;
+    EXPECT_TRUE(specifics.ParseFromString(plaintext));
+    return specifics;
+  }
+
   PersonalContextEntityMetadataSyncBridge& bridge() { return *bridge_; }
   NiceMock<MockBridgeObserver>& observer() { return observer_; }
   const os_crypt_async::Encryptor& encryptor() { return *encryptor_; }
@@ -1085,6 +1094,98 @@ TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
   EXPECT_THAT(
       bridge().GetSuppressions(),
       ElementsAre(EntitySuppressionKey(LegacyEntitySuppressionEntry(entry))));
+}
+
+// Tests that a legacy record with only `entity_suppression_hash` in the store
+// is migrated on load to also populate `suppression.hash` in the store and
+// Sync while preserving unknown fields.
+// TODO(crbug.com/501036619): Remove once legacy entries are no longer
+// supported.
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
+       LegacyHashFromStore_IsMigratedOnLoad) {
+  EntitySuppressionEntry entry = CreatePassportEntry();
+  const uint32_t hash = GetEntitySuppressionHash(entry).value();
+  sync_pb::AutofillEntitySuppressionSpecifics legacy_specifics;
+  legacy_specifics.set_guid("guid1");
+  legacy_specifics.set_entity_suppression_hash(hash);
+  AddUnknownFieldToProto(legacy_specifics, "unknown_field");
+  WriteEncryptedToStore("guid1", legacy_specifics.SerializeAsString());
+
+  sync_pb::AutofillEntitySuppressionSpecifics expected_specifics =
+      legacy_specifics;
+  expected_specifics.mutable_suppression()->set_hash(hash);
+
+  EXPECT_CALL(mock_processor(), Put("guid1", _, _));
+  EXPECT_CALL(observer(), OnSuppressionsChanged());
+  CreateBridge();
+
+  EXPECT_TRUE(bridge().IsSuppressed(entry));
+  syncer::DataTypeStore::RecordList records = ReadAllRecordsFromStore();
+  ASSERT_EQ(records.size(), 1u);
+  const sync_pb::AutofillEntitySuppressionSpecifics stored_specifics =
+      DecryptRecord(records[0]);
+  EXPECT_THAT(stored_specifics, EqualsProto(expected_specifics));
+  EXPECT_THAT(stored_specifics, HasUnknownField("unknown_field"));
+}
+
+// Tests that a legacy record with only `entity_suppression_hash` received
+// during `MergeFullSyncData` suppresses its entry and is persisted without
+// triggering a sync re-upload.
+// TODO(crbug.com/501036619): Remove once legacy entries are no longer
+// supported.
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
+       LegacyHashFromMergeFullSyncData_IsSuppressedWithoutResync) {
+  CreateBridge();
+  EntitySuppressionEntry entry = CreatePassportEntry();
+  const uint32_t hash = GetEntitySuppressionHash(entry).value();
+  sync_pb::AutofillEntitySuppressionSpecifics legacy_specifics;
+  legacy_specifics.set_guid("guid1");
+  legacy_specifics.set_entity_suppression_hash(hash);
+
+  syncer::EntityChangeList remote_changes;
+  remote_changes.push_back(syncer::EntityChange::CreateAdd(
+      "guid1", std::move(*CreateEntityDataFromEntitySuppressionSpecifics(
+                   legacy_specifics))));
+
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+  EXPECT_CALL(observer(), OnSuppressionsChanged());
+  bridge().MergeFullSyncData(bridge().CreateMetadataChangeList(),
+                             std::move(remote_changes));
+
+  EXPECT_TRUE(bridge().IsSuppressed(entry));
+  syncer::DataTypeStore::RecordList records = ReadAllRecordsFromStore();
+  ASSERT_EQ(records.size(), 1u);
+  EXPECT_THAT(DecryptRecord(records[0]), EqualsProto(legacy_specifics));
+}
+
+// Tests that a legacy record with only `entity_suppression_hash` received
+// during `ApplyIncrementalSyncChanges` suppresses its entry and is persisted
+// without triggering a sync re-upload.
+// TODO(crbug.com/501036619): Remove once legacy entries are no longer
+// supported.
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
+       LegacyHashFromApplyIncrementalSyncChanges_IsSuppressedWithoutResync) {
+  CreateBridge();
+  EntitySuppressionEntry entry = CreatePassportEntry();
+  const uint32_t hash = GetEntitySuppressionHash(entry).value();
+  sync_pb::AutofillEntitySuppressionSpecifics legacy_specifics;
+  legacy_specifics.set_guid("guid1");
+  legacy_specifics.set_entity_suppression_hash(hash);
+
+  syncer::EntityChangeList remote_changes;
+  remote_changes.push_back(syncer::EntityChange::CreateAdd(
+      "guid1", std::move(*CreateEntityDataFromEntitySuppressionSpecifics(
+                   legacy_specifics))));
+
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+  EXPECT_CALL(observer(), OnSuppressionsChanged());
+  bridge().ApplyIncrementalSyncChanges(bridge().CreateMetadataChangeList(),
+                                       std::move(remote_changes));
+
+  EXPECT_TRUE(bridge().IsSuppressed(entry));
+  syncer::DataTypeStore::RecordList records = ReadAllRecordsFromStore();
+  ASSERT_EQ(records.size(), 1u);
+  EXPECT_THAT(DecryptRecord(records[0]), EqualsProto(legacy_specifics));
 }
 
 }  // namespace

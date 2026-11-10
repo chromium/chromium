@@ -97,6 +97,25 @@ TEST(PersonalContextEntityMetadataSyncUtilTest,
             EntitySuppressionKey(kTestHash));
 }
 
+// Tests that `MigrateLegacySuppressionSpecificsIfNeeded` populates
+// `suppression.hash` when only `entity_suppression_hash` is set.
+// TODO(crbug.com/501036619): Remove once legacy entries are no longer
+// supported.
+TEST(PersonalContextEntityMetadataSyncUtilTest,
+     MigrateLegacySuppressionSpecificsIfNeeded) {
+  sync_pb::AutofillEntitySuppressionSpecifics specifics;
+  specifics.set_guid("test-guid-1234");
+  specifics.set_entity_suppression_hash(kTestHash.value());
+
+  std::optional<sync_pb::AutofillEntitySuppressionSpecifics> migrated =
+      MigrateLegacySuppressionSpecificsIfNeeded(specifics);
+  ASSERT_TRUE(migrated.has_value());
+  EXPECT_EQ(migrated->suppression().hash(), kTestHash.value());
+  EXPECT_EQ(migrated->entity_suppression_hash(), kTestHash.value());
+  EXPECT_FALSE(
+      MigrateLegacySuppressionSpecificsIfNeeded(*migrated).has_value());
+}
+
 // Tests that specifics with a `suppression` submessage missing `hash` are
 // considered invalid.
 TEST(PersonalContextEntityMetadataSyncUtilTest,

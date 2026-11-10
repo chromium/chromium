@@ -169,6 +169,12 @@ class PersonalContextEntityMetadataSyncBridge
       base::flat_map<Key, EntryMetadata>& metadata_map,
       syncer::DataTypeStore::WriteBatch& batch);
 
+  // Stages the encrypted write of `specifics` to local storage (via `batch`)
+  // and notifies Sync (via `change_processor()`).
+  void WriteEntryToStoreAndSync(
+      const sync_pb::AutofillEntitySuppressionSpecifics& specifics,
+      syncer::DataTypeStore::WriteBatch& batch);
+
   // Stages the deletion of `guid` from local storage (via `batch`) and
   // notifies Sync (via `change_processor()`).
   void DeleteEntryFromStoreAndSync(const std::string& guid,
@@ -194,7 +200,10 @@ class PersonalContextEntityMetadataSyncBridge
       const std::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::DataTypeStore::RecordList> data_records,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch);
-  void ApplyPostLoadCleanup(base::span<const std::string> guids_to_evict);
+  void ApplyPostLoadCleanup(
+      base::span<const std::string> guids_to_evict,
+      base::span<const sync_pb::AutofillEntitySuppressionSpecifics>
+          records_to_migrate);
   void ReportErrorIfSet(const std::optional<syncer::ModelError>& error);
 
   // Queries all suppression data and returns it as a
