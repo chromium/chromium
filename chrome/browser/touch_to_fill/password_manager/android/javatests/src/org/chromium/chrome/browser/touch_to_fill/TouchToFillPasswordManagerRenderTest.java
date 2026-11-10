@@ -38,7 +38,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
-import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
@@ -185,15 +184,6 @@ public class TouchToFillPasswordManagerRenderTest {
         mTouchToFillView = null;
         mModel = null;
         mBottomSheetController = null;
-        try {
-            ApplicationTestUtils.finishActivity(mActivityTestRule.getActivity());
-        } catch (Exception e) {
-            // Activity was already closed (e.g. due to last test tearing down the suite).
-        }
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    ChromeNightModeTestUtils.tearDownNightModeAfterChromeActivityDestroyed();
-                });
     }
 
     @Test

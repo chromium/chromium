@@ -221,8 +221,6 @@ public class SearchActivityTest {
     @After
     public void tearDown() {
         AutocompleteControllerJni.setInstanceForTesting(null);
-        ThreadUtils.runOnUiThreadBlocking(
-                ChromeNightModeTestUtils::tearDownNightModeAfterChromeActivityDestroyed);
     }
 
     private AutocompleteMatch buildSimpleAutocompleteMatch(String url) {
