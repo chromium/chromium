@@ -93,18 +93,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSettings.GetContentSetting.Network.Duration"
-    units="microseconds" expires_after="2025-02-23">
-  <owner>trishalfonso@google.com</owner>
-  <owner>wanderview@chromium.org</owner>
-  <summary>
-    Measures how long a call to network::CookieSettings::GetContentSetting
-    takes. Logged each time a call is made. Starting M135 sub-sampled with
-    probability 0.001. Note that histogram samples for clients without
-    high-resolution clocks are dropped.
-  </summary>
-</histogram>
-
 <histogram name="ContentSettings.GetCookieSettingInternal.Duration"
     units="microseconds" expires_after="2025-07-13">
   <owner>dullweber@chromium.org</owner>
