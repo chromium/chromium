@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
+import static org.chromium.chrome.browser.fullscreen.FullscreenManagerTestUtils.waitForBottomControlsMinHeightOffset;
 
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +31,6 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
@@ -565,7 +565,6 @@ public class BottomSheetTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/503771877")
     public void testAdditionalBottomOffset() {
         final int height = 300;
         final int margin = 100;
@@ -598,6 +597,8 @@ public class BottomSheetTest {
 
         BottomSheetTestSupport.waitForState(mSheetController, SheetState.FULL);
         assertEquals(height, mSheetController.getCurrentOffset());
+
+        waitForBottomControlsMinHeightOffset(mTestRule.getActivity());
 
         // Change bottom margin; the margin and height should change.
         runOnUiThreadBlocking(
