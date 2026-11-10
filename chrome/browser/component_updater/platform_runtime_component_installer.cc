@@ -9,7 +9,6 @@
 #include <iterator>
 #include <memory>
 #include <string>
-#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -22,7 +21,6 @@
 #include "base/native_library.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/version.h"
 #include "build/branding_buildflags.h"
@@ -41,14 +39,9 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include <windows.h>
-
-#include "base/enterprise_util.h"
-#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/helper.h"
 #include "chrome/installer/util/install_util.h"
-#include "components/policy/core/common/management/management_service.h"
 #endif
 
 namespace {
@@ -89,90 +82,6 @@ base::Time GetReleaseTimeFromVersion(const base::Version& version) {
   return base::Time();
 }
 
-#if BUILDFLAG(IS_WIN)
-using ::component_updater::PlatformRuntimeComponentInstallerPolicy;
-using ::component_updater::PlatformRuntimeInstallationResult;
-using ::component_updater::PlatformRuntimeInstallerDelegate;
-using ::component_updater::ProductComponentInstallResult;
-
-bool IsPathOnNetworkDrive(const base::FilePath& path) {
-  if (path.empty()) {
-    return false;
-  }
-  if (path.IsNetwork()) {
-    return true;
-  }
-  base::FilePath root_path = path;
-  while (!root_path.DirName().empty() && root_path.DirName() != root_path) {
-    root_path = root_path.DirName();
-  }
-  return ::GetDriveType(root_path.value().c_str()) == DRIVE_REMOTE;
-}
-
-// Maps ProductComponentInstallResult to PlatformRuntimeInstallationResult,
-// breaking down internal errors for system installs (managed device and network
-// drive of the staged inner CRX).
-PlatformRuntimeInstallationResult ToPlatformRuntimeInstallationResult(
-    ProductComponentInstallResult result,
-    const base::FilePath& inner_crx,
-    bool is_system_install) {
-  switch (result) {
-    case ProductComponentInstallResult::kSuccess:
-      return PlatformRuntimeInstallationResult::kSuccess;
-    case ProductComponentInstallResult::kAlreadyExists:
-      return PlatformRuntimeInstallationResult::kAlreadyExists;
-    case ProductComponentInstallResult::kCommandNotFound:
-      return PlatformRuntimeInstallationResult::kCommandNotFound;
-    case ProductComponentInstallResult::kNotInstalled:
-      return PlatformRuntimeInstallationResult::kNotInstalled;
-    case ProductComponentInstallResult::kLaunchFailed:
-      return PlatformRuntimeInstallationResult::kLaunchFailed;
-    case ProductComponentInstallResult::kFailedInternal: {
-      if (is_system_install) {
-        // App Command can likely fail due to permission errors if the staged
-        // inner CRX is on a network path, or if the device is managed. Break
-        // down these cases to better understand failure reasons.
-        const bool is_network_path = IsPathOnNetworkDrive(inner_crx);
-        auto* management_service =
-            policy::ManagementServiceFactory::GetForPlatform();
-        const bool is_managed = management_service
-                                    ? management_service->IsManaged()
-                                    : base::IsManagedOrEnterpriseDevice();
-        if (is_managed && is_network_path) {
-          return PlatformRuntimeInstallationResult::
-              kFailedInternalManagedDeviceAndNetworkPath;
-        }
-        if (is_managed) {
-          return PlatformRuntimeInstallationResult::
-              kFailedInternalManagedDevice;
-        }
-        if (is_network_path) {
-          return PlatformRuntimeInstallationResult::kFailedInternalNetworkPath;
-        }
-      }
-      return PlatformRuntimeInstallationResult::kFailedInternal;
-    }
-    case ProductComponentInstallResult::kSignatureVerificationFailed:
-      return PlatformRuntimeInstallationResult::kFailedSignature;
-    case ProductComponentInstallResult::kFailedInvalidInput:
-      return PlatformRuntimeInstallationResult::kFailedInvalidInput;
-    case ProductComponentInstallResult::kFailedComAccessDenied:
-      return PlatformRuntimeInstallationResult::kFailedComAccessDenied;
-    case ProductComponentInstallResult::kFailedComServerDied:
-      return PlatformRuntimeInstallationResult::kFailedComServerDied;
-    case ProductComponentInstallResult::kFailedComInvalidArg:
-      return PlatformRuntimeInstallationResult::kFailedComInvalidArg;
-    case ProductComponentInstallResult::kFailedComUnexpected:
-      return PlatformRuntimeInstallationResult::kFailedComUnexpected;
-    case ProductComponentInstallResult::kFailedComOther:
-      return PlatformRuntimeInstallationResult::kFailedComOther;
-    case ProductComponentInstallResult::kIncompatibleBaseVersion:
-    case ProductComponentInstallResult::kOtherInstallerError:
-      return PlatformRuntimeInstallationResult::kFailedOther;
-  }
-}
-#endif
-
 }  // namespace
 
 namespace component_updater {
@@ -208,39 +117,16 @@ PlatformRuntimeComponentInstallerPolicy::OnCustomInstall(
     const base::DictValue& manifest,
     const base::FilePath& install_dir) {
 #if BUILDFLAG(IS_WIN)
-  base::FilePath inner_crx =
+  const base::FilePath inner_crx =
       install_dir.Append(FILE_PATH_LITERAL("chrome_platform_runtime.crx3"));
-  const bool is_system = install_static::IsSystemInstall();
-  const std::string_view histogram_result_name =
-      is_system
-          ? "ComponentUpdater.PlatformRuntime.InstallationResult.SystemLevel"
-          : "ComponentUpdater.PlatformRuntime.InstallationResult.UserLevel";
-  const std::string_view histogram_duration_name =
-      is_system ? "ComponentUpdater.PlatformRuntime.InstallDuration.SystemLevel"
-                : "ComponentUpdater.PlatformRuntime.InstallDuration.UserLevel";
-
-  if (!base::PathExists(inner_crx)) {
-    base::UmaHistogramEnumeration(
-        histogram_result_name,
-        PlatformRuntimeInstallationResult::kInnerCrxNotFound);
-    return update_client::CrxInstaller::Result(update_client::CategorizedError{
-        .category = update_client::ErrorCategory::kInstaller,
-        .code = static_cast<int>(
-            PlatformRuntimeInstallationResult::kInnerCrxNotFound),
-    });
-  }
-
-  base::ElapsedTimer timer;
-  ProductComponentInstallResult install_result =
+  // Names the component in the ComponentUpdater.ProductComponent.* histograms.
+  static constexpr char kPlatformRuntimeHistogramTag[] = "PlatformRuntime";
+  const ProductComponentInstallOutcome outcome =
       installer_delegate_
-          ? InstallProductComponentForTesting(inner_crx, /*user_data_dir=*/{},
+          ? InstallProductComponentForTesting(kPlatformRuntimeHistogramTag,
+                                              inner_crx, /*user_data_dir=*/{},
                                               installer_delegate_.get())
-          : InstallProductComponent(inner_crx);
-  PlatformRuntimeInstallationResult result =
-      ToPlatformRuntimeInstallationResult(install_result, inner_crx, is_system);
-
-  base::UmaHistogramMediumTimes(histogram_duration_name, timer.Elapsed());
-  base::UmaHistogramEnumeration(histogram_result_name, result);
+          : InstallProductComponent(kPlatformRuntimeHistogramTag, inner_crx);
 
   // Clean up the staged inner CRX from the user dir. The installer (setup.exe
   // or AppCommand) has already copied it to a staging location. Even if
@@ -248,11 +134,14 @@ PlatformRuntimeComponentInstallerPolicy::OnCustomInstall(
   // any subsequent install attempt will download a fresh CRX anyway.
   base::DeleteFile(inner_crx);
 
-  if (result != PlatformRuntimeInstallationResult::kSuccess &&
-      result != PlatformRuntimeInstallationResult::kAlreadyExists) {
+  if (!outcome.Succeeded()) {
+    // The step at which installation ended and the code that gives its details
+    // (e.g., setup.exe's exit code or an HRESULT) are sent to the update server
+    // in the component's event ping.
     return update_client::CrxInstaller::Result(update_client::CategorizedError{
         .category = update_client::ErrorCategory::kInstaller,
-        .code = static_cast<int>(result),
+        .code = static_cast<int>(outcome.step),
+        .extra = outcome.extra_code,
     });
   }
 

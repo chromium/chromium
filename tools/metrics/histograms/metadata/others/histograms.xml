@@ -48,13 +48,6 @@ chromium-metrics-reviews@google.com.
   <variant name="UrlFetcher" summary="URL fetcher"/>
 </variants>
 
-<variants name="DynamicPatchInstallLevel">
-  <variant name="SystemLevel"
-      summary="system-level install, via Google Update's elevated
-               install-component-for-user App Command"/>
-  <variant name="UserLevel" summary="per-user install, via setup.exe"/>
-</variants>
-
 <variants name="ImportantFileClients">
   <variant name="" summary="Unknown file"/>
   <variant name=".AccountManager" summary="ChromeOS serialized accounts file"/>
@@ -101,6 +94,19 @@ chromium-metrics-reviews@google.com.
   <variant name=".NtpRealbox" summary="from the realbox on the NTP"/>
   <variant name=".NtpTabResumption"
       summary="from the Tab resumption module on the NTP"/>
+</variants>
+
+<variants name="ProductComponent">
+  <variant name="DynamicPatch"
+      summary="a dynamic patch (patched child process binaries such as
+               chrome_renderer.dll for the running version of the browser)"/>
+  <variant name="PlatformRuntime" summary="the Platform Runtime component"/>
+</variants>
+
+<variants name="ProductComponentInstallLevel">
+  <variant name="SystemLevel"
+      summary="system-level install, via Google Update's elevated App Command"/>
+  <variant name="UserLevel" summary="per-user install, via setup.exe"/>
 </variants>
 
 <variants name="Spellcheck_Windows_LocaleSupportType">
@@ -734,34 +740,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="ComponentUpdater.DynamicPatch.InstallationResult.{InstallLevel}"
-    enum="ProductComponentInstallResult" expires_after="2027-09-26">
-  <owner>grt@chromium.org</owner>
-  <owner>src/chrome/browser/child_module/OWNERS</owner>
-  <summary>
-    Windows only. The result of installing a dynamic patch (patched child
-    process binaries such as chrome_renderer.dll for the running version of the
-    browser) for a {InstallLevel}. Recorded each time the component updater
-    installs a new version of the dynamic patch component.
-  </summary>
-  <token key="InstallLevel" variants="DynamicPatchInstallLevel"/>
-</histogram>
-
-<histogram name="ComponentUpdater.DynamicPatch.InstallDuration.{InstallLevel}"
-    units="ms" expires_after="2027-09-26">
-  <owner>grt@chromium.org</owner>
-  <owner>src/chrome/browser/child_module/OWNERS</owner>
-  <summary>
-    Windows only. The time taken to install a dynamic patch (patched child
-    process binaries such as chrome_renderer.dll for the running version of the
-    browser) for a {InstallLevel}, whether or not installation succeeded.
-    Recorded each time the component updater installs a new version of the
-    dynamic patch component.
-  </summary>
-  <token key="InstallLevel" variants="DynamicPatchInstallLevel"/>
-</histogram>
-
 <histogram name="ComponentUpdater.InstallResult" enum="ComponentManagerError"
     expires_after="2027-03-28">
   <owner>wanghaifan@google.com</owner>
@@ -769,49 +747,6 @@ chromium-metrics-reviews@google.com.
   <owner>src/components/component_updater/OWNERS</owner>
   <summary>
     Chrome OS only. The installation result of the cros component manager.
-  </summary>
-</histogram>
-
-<histogram
-    name="ComponentUpdater.PlatformRuntime.InstallationResult.SystemLevel"
-    enum="PlatformRuntimeInstallationResult" expires_after="2027-04-11">
-  <owner>quarz@chromium.org</owner>
-  <owner>src/chrome/browser/component_updater/OWNERS</owner>
-  <summary>
-    Records the granular result of installing the Platform Runtime component on
-    Windows for system-level installs via elevated Google Update App Command.
-  </summary>
-</histogram>
-
-<histogram name="ComponentUpdater.PlatformRuntime.InstallationResult.UserLevel"
-    enum="PlatformRuntimeInstallationResult" expires_after="2027-04-11">
-  <owner>quarz@chromium.org</owner>
-  <owner>src/chrome/browser/component_updater/OWNERS</owner>
-  <summary>
-    Records the granular result of installing the Platform Runtime component on
-    Windows for per-user installs via direct setup.exe execution.
-  </summary>
-</histogram>
-
-<histogram name="ComponentUpdater.PlatformRuntime.InstallDuration.SystemLevel"
-    units="ms" expires_after="2027-04-11">
-  <owner>quarz@chromium.org</owner>
-  <owner>src/chrome/browser/component_updater/OWNERS</owner>
-  <summary>
-    Records the total time taken to execute the elevated Google Update App
-    Command installation of the Platform Runtime component on Windows for
-    system-level installs.
-  </summary>
-</histogram>
-
-<histogram name="ComponentUpdater.PlatformRuntime.InstallDuration.UserLevel"
-    units="ms" expires_after="2027-04-11">
-  <owner>quarz@chromium.org</owner>
-  <owner>src/chrome/browser/component_updater/OWNERS</owner>
-  <summary>
-    Records the total time taken to execute the user-level setup.exe
-    installation of the Platform Runtime component on Windows for per-user
-    installs.
   </summary>
 </histogram>
 
@@ -860,6 +795,127 @@ chromium-metrics-reviews@google.com.
     Subsampled: recorded for a random 1% of requests, so absolute counts are not
     meaningful, only the relative bucket proportions.
   </summary>
+</histogram>
+
+<histogram
+    name="ComponentUpdater.ProductComponent.{Component}.InnerCrxOnNetworkDrive.{InstallLevel}"
+    enum="Boolean" expires_after="2027-09-26">
+  <owner>grt@chromium.org</owner>
+  <owner>quarz@chromium.org</owner>
+  <owner>src/chrome/browser/component_updater/OWNERS</owner>
+  <summary>
+    Windows only. Whether the inner CRX of {Component} was on a network drive
+    (e.g., because the User Data directory is on a network share) when it was
+    installed for a {InstallLevel}. Recorded alongside
+    ComponentUpdater.ProductComponent.{Component}.InstallStep.{InstallLevel}
+    each time the component is installed into the Chrome installation directory.
+  </summary>
+  <token key="Component" variants="ProductComponent"/>
+  <token key="InstallLevel" variants="ProductComponentInstallLevel"/>
+</histogram>
+
+<histogram
+    name="ComponentUpdater.ProductComponent.{Component}.InstallCode.InstallerExited.{InstallLevel}"
+    enum="SetupInstallResult" expires_after="2027-09-26">
+  <owner>grt@chromium.org</owner>
+  <owner>quarz@chromium.org</owner>
+  <owner>src/chrome/browser/component_updater/OWNERS</owner>
+  <summary>
+    Windows only. The exit code of setup.exe when installation of {Component}
+    for a {InstallLevel} ended at kInstallerExited (i.e., setup.exe ran to
+    completion): an installer::InstallStatus value, or an NTSTATUS (recorded as
+    a negative value) if setup.exe crashed or was terminated. Recorded alongside
+    ComponentUpdater.ProductComponent.{Component}.InstallStep.{InstallLevel}
+    each time the component is installed into the Chrome installation directory.
+  </summary>
+  <token key="Component" variants="ProductComponent"/>
+  <token key="InstallLevel" variants="ProductComponentInstallLevel"/>
+</histogram>
+
+<histogram
+    name="ComponentUpdater.ProductComponent.{Component}.InstallCode.{HresultStep}.{InstallLevel}"
+    enum="Hresult" expires_after="2027-09-26">
+  <owner>grt@chromium.org</owner>
+  <owner>quarz@chromium.org</owner>
+  <owner>src/chrome/browser/component_updater/OWNERS</owner>
+  <summary>
+    Windows only. The HRESULT of the failure at which installation of
+    {Component} for a {InstallLevel} ended, when it ended at {HresultStep}.
+    Recorded alongside
+    ComponentUpdater.ProductComponent.{Component}.InstallStep.{InstallLevel}
+    each time the component is installed into the Chrome installation directory.
+  </summary>
+  <token key="Component" variants="ProductComponent"/>
+  <token key="HresultStep">
+    <variant name="ComError"
+        summary="kComError: a call to the App Command failed"/>
+    <variant name="GetAppCommandFailed"
+        summary="kGetAppCommandFailed: Google Update's App Command could not
+                 be retrieved, e.g., because the updater's COM registration
+                 is broken or missing or its service is disabled
+                 (system-level only)"/>
+  </token>
+  <token key="InstallLevel" variants="ProductComponentInstallLevel"/>
+</histogram>
+
+<histogram
+    name="ComponentUpdater.ProductComponent.{Component}.InstallCode.{WindowsErrorStep}.{InstallLevel}"
+    enum="WinGetLastError" expires_after="2027-09-26">
+  <owner>grt@chromium.org</owner>
+  <owner>quarz@chromium.org</owner>
+  <owner>src/chrome/browser/component_updater/OWNERS</owner>
+  <summary>
+    Windows only. The Windows error code of the failure at which installation of
+    {Component} for a {InstallLevel} ended, when it ended at {WindowsErrorStep}.
+    Recorded alongside
+    ComponentUpdater.ProductComponent.{Component}.InstallStep.{InstallLevel}
+    each time the component is installed into the Chrome installation directory.
+  </summary>
+  <token key="Component" variants="ProductComponent"/>
+  <token key="WindowsErrorStep">
+    <variant name="LaunchFailed"
+        summary="kLaunchFailed: setup.exe could not be launched (per-user
+                 only; the App Command reports no code when it fails to
+                 launch setup.exe)"/>
+    <variant name="WaitFailed"
+        summary="kWaitFailed: waiting for setup.exe to exit failed (per-user
+                 only)"/>
+  </token>
+  <token key="InstallLevel" variants="ProductComponentInstallLevel"/>
+</histogram>
+
+<histogram
+    name="ComponentUpdater.ProductComponent.{Component}.InstallDuration.{InstallLevel}"
+    units="ms" expires_after="2027-09-26">
+  <owner>grt@chromium.org</owner>
+  <owner>quarz@chromium.org</owner>
+  <owner>src/chrome/browser/component_updater/OWNERS</owner>
+  <summary>
+    Windows only. The time taken to install {Component} into the Chrome
+    installation directory for a {InstallLevel}, whether or not installation
+    succeeded. Recorded alongside
+    ComponentUpdater.ProductComponent.{Component}.InstallStep.{InstallLevel}
+    each time the component is installed.
+  </summary>
+  <token key="Component" variants="ProductComponent"/>
+  <token key="InstallLevel" variants="ProductComponentInstallLevel"/>
+</histogram>
+
+<histogram
+    name="ComponentUpdater.ProductComponent.{Component}.InstallStep.{InstallLevel}"
+    enum="ProductComponentInstallStep" expires_after="2027-09-26">
+  <owner>grt@chromium.org</owner>
+  <owner>quarz@chromium.org</owner>
+  <owner>src/chrome/browser/component_updater/OWNERS</owner>
+  <summary>
+    Windows only. The step at which installation of {Component} for a
+    {InstallLevel} ended. Recorded each time the component is installed into the
+    Chrome installation directory. See
+    ComponentUpdater.ProductComponent.{Component}.InstallCode.*.{InstallLevel}
+    for the details of the step.
+  </summary>
+  <token key="Component" variants="ProductComponent"/>
+  <token key="InstallLevel" variants="ProductComponentInstallLevel"/>
 </histogram>
 
 <histogram name="ComponentUpdater.TranslateKit.LanguagePack.UpdateError"

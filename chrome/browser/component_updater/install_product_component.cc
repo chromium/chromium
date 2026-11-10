@@ -9,10 +9,15 @@
 namespace component_updater {
 
 #if !BUILDFLAG(IS_WIN)
-ProductComponentInstallResult InstallProductComponent(
+bool ProductComponentInstallOutcome::Succeeded() const {
+  return false;
+}
+
+ProductComponentInstallOutcome InstallProductComponent(
+    std::string_view histogram_tag,
     const base::FilePath& inner_crx_path,
     const base::FilePath& user_data_dir) {
-  return ProductComponentInstallResult::kLaunchFailed;
+  return {.step = ProductComponentInstallOutcome::Step::kLaunchFailed};
 }
 #endif
 

@@ -39,10 +39,12 @@ class ComponentUpdateService;
 // version.
 class DynamicPatchComponentInstallerPolicy : public ComponentInstallerPolicy {
  public:
-  // A function with the signature of InstallProductComponent().
-  using InstallCallback = base::RepeatingCallback<ProductComponentInstallResult(
-      const base::FilePath& inner_crx_path,
-      const base::FilePath& user_data_dir)>;
+  // A function that installs `inner_crx_path` for `user_data_dir`, like
+  // InstallProductComponent().
+  using InstallCallback =
+      base::RepeatingCallback<ProductComponentInstallOutcome(
+          const base::FilePath& inner_crx_path,
+          const base::FilePath& user_data_dir)>;
 
   // Installs patches for `user_data_dir`, which must be the browser's User Data
   // directory, via InstallProductComponent(). `modules_dir`, which must not be

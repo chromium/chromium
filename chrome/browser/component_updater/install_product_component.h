@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_COMPONENT_UPDATER_INSTALL_PRODUCT_COMPONENT_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "build/build_config.h"
@@ -27,29 +28,53 @@ struct LaunchOptions;
 
 namespace component_updater {
 
-// Result of installing a product component payload. These values are persisted
-// to logs. Entries should not be renumbered and numeric values should never be
-// reused.
-// LINT.IfChange(ProductComponentInstallResult)
-enum class ProductComponentInstallResult {
-  kSuccess = 0,
-  kAlreadyExists = 1,
-  kLaunchFailed = 2,
-  kSignatureVerificationFailed = 3,
-  kFailedInvalidInput = 4,
-  kIncompatibleBaseVersion = 5,
-  kOtherInstallerError = 6,
-  kCommandNotFound = 7,
-  kNotInstalled = 8,
-  kFailedInternal = 9,
-  kFailedComAccessDenied = 10,
-  kFailedComServerDied = 11,
-  kFailedComInvalidArg = 12,
-  kFailedComUnexpected = 13,
-  kFailedComOther = 14,
-  kMaxValue = kFailedComOther,
+// The outcome of installing a product component payload: the step at which
+// installation ended, and a code that gives the details of that step.
+struct ProductComponentInstallOutcome {
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused. 0 is not used so that a step that
+  // is reported as an update_client error code is never mistaken for success.
+  // LINT.IfChange(ProductComponentInstallStep)
+  enum class Step {
+    // The inner CRX does not exist or the User Data directory could not be
+    // canonicalized. `extra_code` is 0.
+    kInvalidInput = 1,
+    // The running browser is not properly installed on the device: its
+    // installation state could not be read or does not name setup.exe
+    // (per-user installs only). `extra_code` is 0.
+    kNotInstalled = 2,
+    // Google Update's App Command could not be retrieved, e.g., because the
+    // updater's COM registration is broken or missing or its service is
+    // disabled (per-machine installs only). `extra_code` is the HRESULT.
+    kGetAppCommandFailed = 3,
+    // A call to the App Command failed (per-machine installs only).
+    // `extra_code` is the HRESULT.
+    kComError = 4,
+    // setup.exe could not be launched. `extra_code` is the Windows error code
+    // (per-user), or 0 if the App Command reported an error (per-machine), in
+    // which case no code is recorded.
+    kLaunchFailed = 5,
+    // setup.exe ran to completion. `extra_code` is its exit code: an
+    // installer::InstallStatus value, or an NTSTATUS if it crashed or was
+    // terminated.
+    kInstallerExited = 6,
+    // Waiting for setup.exe to exit failed (per-user installs only).
+    // `extra_code` is the Windows error code.
+    kWaitFailed = 7,
+    kMaxValue = kWaitFailed,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/others/enums.xml:ProductComponentInstallStep)
+
+  friend bool operator==(const ProductComponentInstallOutcome&,
+                         const ProductComponentInstallOutcome&) = default;
+
+  // Returns true if setup.exe installed the component or reported that it is
+  // already installed.
+  bool Succeeded() const;
+
+  Step step = Step::kInvalidInput;
+  int extra_code = 0;
 };
-// LINT.ThenChange(/tools/metrics/histograms/metadata/others/enums.xml:ProductComponentInstallResult)
 
 #if BUILDFLAG(IS_WIN)
 // Delegate interface to abstract external Windows installer mechanisms.
@@ -75,8 +100,8 @@ class ProductComponentInstallerDelegate {
 // installation directory. If `user_data_dir` is not empty, the component is
 // installed on behalf of the current user and `user_data_dir` (e.g., a dynamic
 // patch). `user_data_dir` is canonicalized via
-// `child_module::CanonicalizeUserDataDir()`; kFailedInvalidInput is returned if
-// this fails.
+// `child_module::CanonicalizeUserDataDir()`; installation ends at kInvalidInput
+// if this fails.
 //
 // - Windows (per-machine): Invokes Google Update's elevated IAppCommandWeb
 //   ("install-component", or "install-component-for-user" if `user_data_dir`
@@ -84,17 +109,25 @@ class ProductComponentInstallerDelegate {
 //   polls until the command completes.
 // - Windows (per-user): Invokes setup.exe directly with the inner CRX path and
 //   canonicalized UDD path and waits for it to exit.
-// - Non-Windows: Returns kLaunchFailed until platform-specific helpers are
+// - Non-Windows: Ends at kLaunchFailed until platform-specific helpers are
 //   supported.
 //
+// The outcome, the duration of the installation, and whether the inner CRX is
+// on a network drive are recorded in the
+// ComponentUpdater.ProductComponent.<histogram_tag>.* histograms, where
+// `histogram_tag` names the component (e.g., "PlatformRuntime") so that the
+// outcomes of different components are recorded separately.
+//
 // Blocks the calling thread until execution completes (base::MayBlock()).
-ProductComponentInstallResult InstallProductComponent(
+ProductComponentInstallOutcome InstallProductComponent(
+    std::string_view histogram_tag,
     const base::FilePath& inner_crx_path,
     const base::FilePath& user_data_dir = {});
 
 #if BUILDFLAG(IS_WIN)
 // Test-only entry point allowing custom delegate injection.
-ProductComponentInstallResult InstallProductComponentForTesting(
+ProductComponentInstallOutcome InstallProductComponentForTesting(
+    std::string_view histogram_tag,
     const base::FilePath& inner_crx_path,
     const base::FilePath& user_data_dir,
     ProductComponentInstallerDelegate* delegate);

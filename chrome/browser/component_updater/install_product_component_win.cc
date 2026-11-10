@@ -9,6 +9,7 @@
 #include <wrl/client.h>
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -16,12 +17,16 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/process/kill.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
+#include "base/strings/strcat.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/scoped_variant.h"
 #include "chrome/browser/child_module/child_module_paths.h"
@@ -50,44 +55,79 @@ base::Process ProductComponentInstallerDelegate::LaunchProcess(
   return base::LaunchProcess(cmd, options);
 }
 
-namespace {
-
-ProductComponentInstallResult MapInstallerExitCode(DWORD exit_code) {
-  switch (exit_code) {
-    // LINT.IfChange(MapInstallerExitCode)
-    case installer::INSTALL_COMPONENT_SUCCESS:
-      return ProductComponentInstallResult::kSuccess;
-    case installer::INSTALL_COMPONENT_ALREADY_EXISTS:
-      return ProductComponentInstallResult::kAlreadyExists;
-    case installer::INSTALL_COMPONENT_FAILED_INTERNAL:
-      return ProductComponentInstallResult::kFailedInternal;
-    case installer::INSTALL_COMPONENT_FAILED_SIGNATURE:
-      return ProductComponentInstallResult::kSignatureVerificationFailed;
-    case installer::INSTALL_COMPONENT_INVALID_INPUT:
-      return ProductComponentInstallResult::kFailedInvalidInput;
-    // LINT.ThenChange(/chrome/installer/util/util_constants.h:InstallComponent)
-    default:
-      return ProductComponentInstallResult::kOtherInstallerError;
-  }
+bool ProductComponentInstallOutcome::Succeeded() const {
+  return step == Step::kInstallerExited &&
+         (extra_code == installer::INSTALL_COMPONENT_SUCCESS ||
+          extra_code == installer::INSTALL_COMPONENT_ALREADY_EXISTS);
 }
 
-// Maps COM and RPC HRESULT errors returned during AppCommand execution to
-// ProductComponentInstallResult.
-ProductComponentInstallResult MapComError(HRESULT hr) {
-  switch (hr) {
-    case E_ACCESSDENIED:
-      return ProductComponentInstallResult::kFailedComAccessDenied;
-    case RPC_E_SERVER_DIED:
-    case RPC_E_DISCONNECTED:
-    case HRESULT_FROM_WIN32(RPC_S_SERVER_UNAVAILABLE):
-      return ProductComponentInstallResult::kFailedComServerDied;
-    case E_INVALIDARG:
-      return ProductComponentInstallResult::kFailedComInvalidArg;
-    case E_UNEXPECTED:
-      return ProductComponentInstallResult::kFailedComUnexpected;
-    default:
-      return ProductComponentInstallResult::kFailedComOther;
+namespace {
+
+using Step = ProductComponentInstallOutcome::Step;
+
+// Returns the name of `step` in the InstallCode histograms, or an empty string
+// if the step has no code to record.
+std::string_view GetStepHistogramName(Step step) {
+  switch (step) {
+    case Step::kInvalidInput:
+    case Step::kNotInstalled:
+      return {};
+    case Step::kGetAppCommandFailed:
+      return "GetAppCommandFailed";
+    case Step::kComError:
+      return "ComError";
+    case Step::kLaunchFailed:
+      // The App Command reports no code when it fails to launch setup.exe.
+      return install_static::IsSystemInstall() ? std::string_view()
+                                               : "LaunchFailed";
+    case Step::kInstallerExited:
+      return "InstallerExited";
+    case Step::kWaitFailed:
+      return "WaitFailed";
   }
+  NOTREACHED();
+}
+
+// Returns true if `path` is on a network drive.
+bool IsPathOnNetworkDrive(const base::FilePath& path) {
+  if (path.empty()) {
+    return false;
+  }
+  if (path.IsNetwork()) {
+    return true;
+  }
+  base::FilePath root_path = path;
+  while (!root_path.DirName().empty() && root_path.DirName() != root_path) {
+    root_path = root_path.DirName();
+  }
+  return ::GetDriveType(root_path.value().c_str()) == DRIVE_REMOTE;
+}
+
+// Records the step at which installation of `inner_crx_path` for the component
+// identified by `histogram_tag` ended, the code that gives the details of that
+// step, how long installation took, and whether the inner CRX is on a network
+// drive.
+void RecordOutcome(std::string_view histogram_tag,
+                   const base::FilePath& inner_crx_path,
+                   const ProductComponentInstallOutcome& outcome,
+                   base::TimeDelta duration) {
+  const std::string_view install_level =
+      install_static::IsSystemInstall() ? "SystemLevel" : "UserLevel";
+  const std::string prefix =
+      base::StrCat({"ComponentUpdater.ProductComponent.", histogram_tag, "."});
+  base::UmaHistogramEnumeration(
+      base::StrCat({prefix, "InstallStep.", install_level}), outcome.step);
+  const std::string_view step_name = GetStepHistogramName(outcome.step);
+  if (!step_name.empty()) {
+    base::UmaHistogramSparse(
+        base::StrCat({prefix, "InstallCode.", step_name, ".", install_level}),
+        outcome.extra_code);
+  }
+  base::UmaHistogramMediumTimes(
+      base::StrCat({prefix, "InstallDuration.", install_level}), duration);
+  base::UmaHistogramBoolean(
+      base::StrCat({prefix, "InnerCrxOnNetworkDrive.", install_level}),
+      IsPathOnNetworkDrive(inner_crx_path));
 }
 
 // Installs the component for system-level Chrome via elevated Google Update
@@ -95,7 +135,7 @@ ProductComponentInstallResult MapComError(HRESULT hr) {
 // `canonical_udd` is empty. Otherwise, the "install-component-for-user" command
 // is used to install the component for `canonical_udd` on behalf of the calling
 // user, whose SID the updater provides to setup.exe.
-ProductComponentInstallResult InstallSystemLevel(
+ProductComponentInstallOutcome InstallSystemLevel(
     const base::FilePath& inner_crx,
     const base::FilePath& canonical_udd,
     ProductComponentInstallerDelegate* delegate) {
@@ -104,7 +144,8 @@ ProductComponentInstallResult InstallSystemLevel(
       canonical_udd.empty() ? installer::kCmdInstallComponent
                             : installer::kCmdInstallComponentForUser);
   if (!app_command_expected.has_value()) {
-    return ProductComponentInstallResult::kCommandNotFound;
+    return {.step = Step::kGetAppCommandFailed,
+            .extra_code = static_cast<int>(app_command_expected.error())};
   }
 
   Microsoft::WRL::ComPtr<IAppCommandWeb> app_command =
@@ -120,17 +161,17 @@ ProductComponentInstallResult InstallSystemLevel(
   HRESULT hr = app_command->execute(inner_crx_var, udd_var, empty, empty, empty,
                                     empty, empty, empty, empty);
   if (FAILED(hr)) {
-    return MapComError(hr);
+    return {.step = Step::kComError, .extra_code = static_cast<int>(hr)};
   }
 
   UINT status = 0;
   while (true) {
     hr = app_command->get_status(&status);
     if (FAILED(hr)) {
-      return MapComError(hr);
+      return {.step = Step::kComError, .extra_code = static_cast<int>(hr)};
     }
     if (status == COMMAND_STATUS_ERROR) {
-      return ProductComponentInstallResult::kLaunchFailed;
+      return {.step = Step::kLaunchFailed};
     }
     if (status == COMMAND_STATUS_COMPLETE) {
       break;
@@ -141,26 +182,27 @@ ProductComponentInstallResult InstallSystemLevel(
   DWORD exit_code = 0;
   hr = app_command->get_exitCode(&exit_code);
   if (FAILED(hr)) {
-    return MapComError(hr);
+    return {.step = Step::kComError, .extra_code = static_cast<int>(hr)};
   }
 
-  return MapInstallerExitCode(exit_code);
+  return {.step = Step::kInstallerExited,
+          .extra_code = static_cast<int>(exit_code)};
 }
 
 // Installs the component for per-user Chrome by directly executing child
 // setup.exe.
-ProductComponentInstallResult InstallUserLevel(
+ProductComponentInstallOutcome InstallUserLevel(
     const base::FilePath& inner_crx,
     const base::FilePath& canonical_udd,
     ProductComponentInstallerDelegate* delegate) {
   TRACE_EVENT("update_client", "InstallProductComponent::InstallUserLevel");
   installer::ProductState product_state;
   if (!product_state.Initialize(/*system_install=*/false)) {
-    return ProductComponentInstallResult::kNotInstalled;
+    return {.step = Step::kNotInstalled};
   }
   base::FilePath setup_path = product_state.GetSetupPath();
   if (setup_path.empty()) {
-    return ProductComponentInstallResult::kCommandNotFound;
+    return {.step = Step::kNotInstalled};
   }
 
   base::CommandLine cmd(setup_path);
@@ -176,28 +218,25 @@ ProductComponentInstallResult InstallUserLevel(
   ::SetLastError(ERROR_SUCCESS);
   base::Process process = delegate->LaunchProcess(cmd, options);
   if (!process.IsValid()) {
-    const DWORD error_code = ::GetLastError();
-    if (error_code == ERROR_FILE_NOT_FOUND ||
-        error_code == ERROR_PATH_NOT_FOUND) {
-      return ProductComponentInstallResult::kCommandNotFound;
-    }
-    return ProductComponentInstallResult::kLaunchFailed;
+    return {.step = Step::kLaunchFailed,
+            .extra_code = static_cast<int>(::GetLastError())};
   }
 
   ScopedAllowWaitForProductComponentInstallExit allow_wait_for_exit;
   int exit_code = 0;
   if (!process.WaitForExit(&exit_code)) {
-    return ProductComponentInstallResult::kLaunchFailed;
+    return {.step = Step::kWaitFailed,
+            .extra_code = static_cast<int>(::GetLastError())};
   }
-  return MapInstallerExitCode(static_cast<DWORD>(exit_code));
+  return {.step = Step::kInstallerExited, .extra_code = exit_code};
 }
 
-ProductComponentInstallResult InstallProductComponentImpl(
+ProductComponentInstallOutcome InstallProductComponentImpl(
     const base::FilePath& inner_crx_path,
     const base::FilePath& user_data_dir,
     ProductComponentInstallerDelegate* delegate) {
   if (!base::PathExists(inner_crx_path)) {
-    return ProductComponentInstallResult::kFailedInvalidInput;
+    return {.step = Step::kInvalidInput};
   }
   // Setup treats the User Data directory as an opaque string from which it
   // derives where to install the component, so it must be canonicalized here
@@ -206,7 +245,7 @@ ProductComponentInstallResult InstallProductComponentImpl(
   if (!user_data_dir.empty()) {
     canonical_udd = child_module::CanonicalizeUserDataDir(user_data_dir);
     if (canonical_udd.empty()) {
-      return ProductComponentInstallResult::kFailedInvalidInput;
+      return {.step = Step::kInvalidInput};
     }
   }
   return install_static::IsSystemInstall()
@@ -214,22 +253,37 @@ ProductComponentInstallResult InstallProductComponentImpl(
              : InstallUserLevel(inner_crx_path, canonical_udd, delegate);
 }
 
+ProductComponentInstallOutcome InstallAndRecordOutcome(
+    std::string_view histogram_tag,
+    const base::FilePath& inner_crx_path,
+    const base::FilePath& user_data_dir,
+    ProductComponentInstallerDelegate* delegate) {
+  const base::ElapsedTimer timer;
+  const ProductComponentInstallOutcome outcome =
+      InstallProductComponentImpl(inner_crx_path, user_data_dir, delegate);
+  RecordOutcome(histogram_tag, inner_crx_path, outcome, timer.Elapsed());
+  return outcome;
+}
+
 }  // namespace
 
-ProductComponentInstallResult InstallProductComponent(
+ProductComponentInstallOutcome InstallProductComponent(
+    std::string_view histogram_tag,
     const base::FilePath& inner_crx_path,
     const base::FilePath& user_data_dir) {
   ProductComponentInstallerDelegate default_delegate;
-  return InstallProductComponentImpl(inner_crx_path, user_data_dir,
-                                     &default_delegate);
+  return InstallAndRecordOutcome(histogram_tag, inner_crx_path, user_data_dir,
+                                 &default_delegate);
 }
 
-ProductComponentInstallResult InstallProductComponentForTesting(
+ProductComponentInstallOutcome InstallProductComponentForTesting(
+    std::string_view histogram_tag,
     const base::FilePath& inner_crx_path,
     const base::FilePath& user_data_dir,
     ProductComponentInstallerDelegate* delegate) {
   CHECK(delegate);
-  return InstallProductComponentImpl(inner_crx_path, user_data_dir, delegate);
+  return InstallAndRecordOutcome(histogram_tag, inner_crx_path, user_data_dir,
+                                 delegate);
 }
 
 }  // namespace component_updater

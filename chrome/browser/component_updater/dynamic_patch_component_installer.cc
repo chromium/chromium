@@ -9,7 +9,6 @@
 #include <array>
 #include <memory>
 #include <string>
-#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -20,10 +19,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
-#include "base/strings/strcat.h"
-#include "base/timer/elapsed_timer.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "build/branding_buildflags.h"
@@ -31,7 +27,6 @@
 #include "chrome/common/child_module/child_module_helper.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/helper.h"
 #include "components/component_updater/component_installer.h"
 #include "components/update_client/update_client.h"
@@ -64,7 +59,11 @@ DynamicPatchComponentInstallerPolicy::DynamicPatchComponentInstallerPolicy(
     : DynamicPatchComponentInstallerPolicy(
           std::move(user_data_dir),
           std::move(modules_dir),
-          base::BindRepeating(&InstallProductComponent)) {}
+          base::BindRepeating([](const base::FilePath& inner_crx_path,
+                                 const base::FilePath& user_data_dir) {
+            return InstallProductComponent("DynamicPatch", inner_crx_path,
+                                           user_data_dir);
+          })) {}
 
 DynamicPatchComponentInstallerPolicy::DynamicPatchComponentInstallerPolicy(
     base::FilePath user_data_dir,
@@ -124,36 +123,24 @@ DynamicPatchComponentInstallerPolicy::OnCustomInstall(
     const base::DictValue& manifest,
     const base::FilePath& install_dir) {
   const base::FilePath inner_crx = install_dir.Append(kInnerCrxFileName);
-  const std::string_view install_level =
-      install_static::IsSystemInstall() ? "SystemLevel" : "UserLevel";
-
-  const base::ElapsedTimer timer;
-  const ProductComponentInstallResult result =
+  const ProductComponentInstallOutcome outcome =
       install_callback_.Run(inner_crx, user_data_dir_);
-  base::UmaHistogramMediumTimes(
-      base::StrCat(
-          {"ComponentUpdater.DynamicPatch.InstallDuration.", install_level}),
-      timer.Elapsed());
-  base::UmaHistogramEnumeration(
-      base::StrCat(
-          {"ComponentUpdater.DynamicPatch.InstallationResult.", install_level}),
-      result);
 
   // setup.exe operates on its own copy of the inner CRX. Delete this one so
   // that it doesn't occupy space in the User Data directory for as long as this
   // version of the component is installed.
   base::DeleteFile(inner_crx);
 
-  // kAlreadyExists means that setup.exe found this or a newer version of the
-  // patch already installed for this user and User Data directory (e.g., if a
-  // previous installation completed but the browser exited before the
-  // component updater recorded it). VerifyInstallation() determines whether
-  // this version is present.
-  if (result != ProductComponentInstallResult::kSuccess &&
-      result != ProductComponentInstallResult::kAlreadyExists) {
+  // Succeeded() includes the case where setup.exe found this or a newer
+  // version of the patch already installed for this user and User Data
+  // directory (e.g., if a previous installation completed but the browser
+  // exited before the component updater recorded it). VerifyInstallation()
+  // determines whether this version is present.
+  if (!outcome.Succeeded()) {
     return update_client::CrxInstaller::Result(update_client::CategorizedError{
         .category = update_client::ErrorCategory::kInstaller,
-        .code = static_cast<int>(result),
+        .code = static_cast<int>(outcome.step),
+        .extra = outcome.extra_code,
     });
   }
   return update_client::CrxInstaller::Result(0);

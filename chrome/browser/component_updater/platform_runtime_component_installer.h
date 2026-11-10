@@ -45,30 +45,6 @@ enum class PlatformRuntimeInstallTrigger {
   kMaxValue = kBackground,
 };
 
-// Persisted to UMA logs. Entries should not be renumbered and numeric values
-// should never be reused.
-enum class PlatformRuntimeInstallationResult {
-  kSuccess = 0,
-  kAlreadyExists = 1,
-  kInnerCrxNotFound = 2,
-  kCommandNotFound = 3,
-  kLaunchFailed = 4,
-  kFailedInternal = 5,
-  kFailedSignature = 6,
-  kFailedInvalidInput = 7,
-  kFailedOther = 8,
-  kFailedInternalManagedDevice = 9,
-  kFailedInternalNetworkPath = 10,
-  kFailedInternalManagedDeviceAndNetworkPath = 11,
-  kFailedComAccessDenied = 12,
-  kFailedComServerDied = 13,
-  kFailedComInvalidArg = 14,
-  kFailedComUnexpected = 15,
-  kFailedComOther = 16,
-  kNotInstalled = 17,
-  kMaxValue = kNotInstalled,
-};
-
 BASE_DECLARE_FEATURE(kEnablePlatformRuntimeComponent);
 
 #if BUILDFLAG(IS_WIN)

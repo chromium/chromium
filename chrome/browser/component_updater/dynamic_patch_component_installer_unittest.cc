@@ -23,9 +23,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/strings/strcat.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
@@ -83,16 +81,21 @@ InstallCallback UnexpectedInstall() {
   return base::BindRepeating([](const base::FilePath& inner_crx_path,
                                 const base::FilePath& user_data_dir) {
     ADD_FAILURE() << "Unexpected installation of " << inner_crx_path;
-    return ProductComponentInstallResult::kOtherInstallerError;
+    return ProductComponentInstallOutcome{
+        .step = ProductComponentInstallOutcome::Step::kLaunchFailed};
   });
 }
 
-// Returns a callback that returns `result` without installing anything.
-InstallCallback ReturnResult(ProductComponentInstallResult result) {
+// Returns a callback that reports that setup.exe exited with `exit_code`
+// without installing anything.
+InstallCallback ReturnExitCode(int exit_code) {
   return base::BindRepeating(
-      [](ProductComponentInstallResult result, const base::FilePath&,
-         const base::FilePath&) { return result; },
-      result);
+      [](int exit_code, const base::FilePath&, const base::FilePath&) {
+        return ProductComponentInstallOutcome{
+            .step = ProductComponentInstallOutcome::Step::kInstallerExited,
+            .extra_code = exit_code};
+      },
+      exit_code);
 }
 
 // Returns a manifest for version `version` of the component.
@@ -220,33 +223,6 @@ class DynamicPatchComponentInstallerOnCustomInstallTest
     : public DynamicPatchComponentInstallerTest,
       public ::testing::WithParamInterface<bool> {
  protected:
-  static std::string_view GetInstallLevel(bool system_level) {
-    return system_level ? "SystemLevel" : "UserLevel";
-  }
-
-  // Expects that a single installation with `result` was recorded for the
-  // install level under test, and that none was recorded for the other level.
-  void ExpectInstallationRecorded(const base::HistogramTester& histogram_tester,
-                                  ProductComponentInstallResult result) const {
-    const bool system_level = GetParam();
-    histogram_tester.ExpectUniqueSample(
-        base::StrCat({"ComponentUpdater.DynamicPatch.InstallationResult.",
-                      GetInstallLevel(system_level)}),
-        result, 1);
-    histogram_tester.ExpectTotalCount(
-        base::StrCat({"ComponentUpdater.DynamicPatch.InstallDuration.",
-                      GetInstallLevel(system_level)}),
-        1);
-    histogram_tester.ExpectTotalCount(
-        base::StrCat({"ComponentUpdater.DynamicPatch.InstallationResult.",
-                      GetInstallLevel(!system_level)}),
-        0);
-    histogram_tester.ExpectTotalCount(
-        base::StrCat({"ComponentUpdater.DynamicPatch.InstallDuration.",
-                      GetInstallLevel(!system_level)}),
-        0);
-  }
-
   install_static::ScopedInstallDetails install_details_{
       /*system_level=*/GetParam()};
 };
@@ -261,10 +237,10 @@ TEST_P(DynamicPatchComponentInstallerOnCustomInstallTest, Success) {
         EXPECT_EQ(crx_path, inner_crx_path);
         EXPECT_TRUE(base::PathExists(crx_path));
         EXPECT_EQ(user_data_dir, user_data_dir_);
-        return ProductComponentInstallResult::kSuccess;
+        return ProductComponentInstallOutcome{
+            .step = ProductComponentInstallOutcome::Step::kInstallerExited,
+            .extra_code = installer::INSTALL_COMPONENT_SUCCESS};
       }));
-  base::HistogramTester histogram_tester;
-
   const Result result =
       policy->OnCustomInstall(MakeManifest(kPatchVersion), install_dir_);
 
@@ -272,8 +248,6 @@ TEST_P(DynamicPatchComponentInstallerOnCustomInstallTest, Success) {
   EXPECT_EQ(result.result.category, update_client::ErrorCategory::kNone);
   // The inner CRX is deleted once it has been installed.
   EXPECT_FALSE(base::PathExists(inner_crx_path));
-  ExpectInstallationRecorded(histogram_tester,
-                             ProductComponentInstallResult::kSuccess);
 }
 
 // setup.exe reports that the patch already exists if this or a newer version
@@ -281,35 +255,27 @@ TEST_P(DynamicPatchComponentInstallerOnCustomInstallTest, Success) {
 // browser exited before the component updater recorded a previous
 // installation). This is not an installation failure.
 TEST_P(DynamicPatchComponentInstallerOnCustomInstallTest, AlreadyExists) {
-  base::HistogramTester histogram_tester;
-
   const Result result =
-      CreatePolicy(ReturnResult(ProductComponentInstallResult::kAlreadyExists))
+      CreatePolicy(ReturnExitCode(installer::INSTALL_COMPONENT_ALREADY_EXISTS))
           ->OnCustomInstall(MakeManifest(kPatchVersion), install_dir_);
 
   EXPECT_EQ(result.result.category, update_client::ErrorCategory::kNone);
   EXPECT_FALSE(base::PathExists(install_dir_.Append(kInnerCrxFileName)));
-  ExpectInstallationRecorded(histogram_tester,
-                             ProductComponentInstallResult::kAlreadyExists);
 }
 
 TEST_P(DynamicPatchComponentInstallerOnCustomInstallTest, Failure) {
-  base::HistogramTester histogram_tester;
-
   const Result result =
       CreatePolicy(
-          ReturnResult(
-              ProductComponentInstallResult::kSignatureVerificationFailed))
+          ReturnExitCode(installer::INSTALL_COMPONENT_FAILED_SIGNATURE))
           ->OnCustomInstall(MakeManifest(kPatchVersion), install_dir_);
 
   EXPECT_EQ(result.result.category, update_client::ErrorCategory::kInstaller);
-  EXPECT_EQ(result.result.code,
-            static_cast<int>(
-                ProductComponentInstallResult::kSignatureVerificationFailed));
+  EXPECT_EQ(
+      result.result.code,
+      static_cast<int>(ProductComponentInstallOutcome::Step::kInstallerExited));
+  EXPECT_EQ(result.result.extra,
+            static_cast<int>(installer::INSTALL_COMPONENT_FAILED_SIGNATURE));
   EXPECT_FALSE(base::PathExists(install_dir_.Append(kInnerCrxFileName)));
-  ExpectInstallationRecorded(
-      histogram_tester,
-      ProductComponentInstallResult::kSignatureVerificationFailed);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

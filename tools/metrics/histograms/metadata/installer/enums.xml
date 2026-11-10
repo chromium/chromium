@@ -153,6 +153,8 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.IfChange(SetupInstallResult) -->
+
 <enum name="SetupInstallResult">
   <summary>
     Return status of the Windows installer. The values in this enum must be kept
@@ -213,6 +215,33 @@ chromium-metrics-reviews@google.com.
   <int value="56" label="Autoupdates could not be enabled."/>
   <int value="57"
       label="Unpacking the (possibly patched) uncompressed archive failed."/>
+  <int value="58"
+      label="Successfully downgraded Chrome, but the current version is still
+             running."/>
+  <int value="59" label="Successfully downgraded Chrome to an older version."/>
+  <int value="60"
+      label="The setup process could not acquire the exclusive right to
+             modify the Chrome installation."/>
+  <int value="61"
+      label="The task did not complete because another process asked this
+             process to release the exclusive right to modify the Chrome
+             installation."/>
+  <int value="62"
+      label="All files that belong to old versions of Chrome were
+             successfully deleted."/>
+  <int value="63"
+      label="A --delete-old-versions process exited after trying to delete
+             all files that belong to old versions of Chrome too many times
+             without success."/>
+  <int value="64"
+      label="Failed to write the specified DMToken to the registry."/>
+  <int value="65"
+      label="Writing the specified DMToken to the registry succeeded."/>
+  <int value="66" label="Downgrade cleanup failed."/>
+  <int value="67" label="Downgrade cleanup succeeded."/>
+  <int value="68" label="Undoing downgrade cleanup failed."/>
+  <int value="69" label="Undoing downgrade cleanup succeeded."/>
+  <int value="70" label="Unknown downgrade cleanup operation."/>
   <int value="71" label="Rotation of the device trust key failed."/>
   <int value="72" label="Rotation of the device trust key succeeded."/>
   <int value="73" label="Creation of shortcuts succeeded."/>
@@ -230,6 +259,8 @@ chromium-metrics-reviews@google.com.
   <int value="83" label="Failed to install component due to invalid signature"/>
   <int value="84" label="Failed to install component due to invalid input"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/installer/util/util_constants.h:SetupInstallResult) -->
 
 <enum name="UnPackStatus">
   <int value="0" label="No Error"/>

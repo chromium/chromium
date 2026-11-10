@@ -5,6 +5,7 @@
 #include "chrome/browser/component_updater/install_product_component.h"
 
 #include <memory>
+#include <ostream>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -26,6 +27,7 @@
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_reg_util_win.h"
 #include "chrome/browser/child_module/child_module_paths.h"  // nogncheck
@@ -40,6 +42,20 @@
 namespace component_updater {
 
 using ::testing::_;
+using Step = ProductComponentInstallOutcome::Step;
+
+// Prints an outcome in test failure messages.
+void PrintTo(const ProductComponentInstallOutcome& outcome, std::ostream* os) {
+  *os << "{step: " << static_cast<int>(outcome.step)
+      << ", extra_code: " << outcome.extra_code << "}";
+}
+
+namespace {
+
+// The tag of the histograms in which tests record outcomes.
+constexpr char kTag[] = "Test";
+
+}  // namespace
 
 class MockAppCommand
     : public Microsoft::WRL::RuntimeClass<
@@ -131,32 +147,77 @@ class InstallProductComponentWindowsTest : public testing::Test {
     ASSERT_TRUE(base::WriteFile(inner_crx_, "dummy_crx_data"));
   }
 
+  // Expects `mock_delegate_` to provide the "install-component" App Command,
+  // which completes with `exit_code`.
+  void ExpectAppCommandExitCode(DWORD exit_code) {
+    auto mock_app_command = Microsoft::WRL::Make<MockAppCommand>();
+    EXPECT_CALL(*mock_app_command.Get(), execute(_, _, _, _, _, _, _, _, _))
+        .WillOnce(testing::Return(S_OK));
+    EXPECT_CALL(*mock_app_command.Get(), get_status(_))
+        .WillOnce([](UINT* status) {
+          *status = COMMAND_STATUS_COMPLETE;
+          return S_OK;
+        });
+    EXPECT_CALL(*mock_app_command.Get(), get_exitCode(_))
+        .WillOnce([exit_code](DWORD* out_exit_code) {
+          *out_exit_code = exit_code;
+          return S_OK;
+        });
+    EXPECT_CALL(mock_delegate_,
+                GetAppCommand(std::wstring(installer::kCmdInstallComponent)))
+        .WillOnce(testing::Return(mock_app_command));
+  }
+
   content::BrowserTaskEnvironment env_;
   install_static::ScopedInstallDetails scoped_install_details_{
       /*system_level=*/true};
   base::ScopedTempDir temp_dir_;
   base::FilePath inner_crx_;
+  MockProductComponentInstallerDelegate mock_delegate_;
 };
+
+TEST_F(InstallProductComponentWindowsTest, Succeeded) {
+  EXPECT_TRUE((ProductComponentInstallOutcome{
+                   .step = Step::kInstallerExited,
+                   .extra_code = installer::INSTALL_COMPONENT_SUCCESS})
+                  .Succeeded());
+  EXPECT_TRUE((ProductComponentInstallOutcome{
+                   .step = Step::kInstallerExited,
+                   .extra_code = installer::INSTALL_COMPONENT_ALREADY_EXISTS})
+                  .Succeeded());
+  EXPECT_FALSE((ProductComponentInstallOutcome{
+                    .step = Step::kInstallerExited,
+                    .extra_code = installer::INSTALL_COMPONENT_FAILED_INTERNAL})
+                   .Succeeded());
+  // Codes are only meaningful in the context of their step.
+  EXPECT_FALSE((ProductComponentInstallOutcome{
+                    .step = Step::kLaunchFailed,
+                    .extra_code = installer::INSTALL_COMPONENT_SUCCESS})
+                   .Succeeded());
+}
 
 TEST_F(InstallProductComponentWindowsTest, MissingInnerCrx) {
   base::FilePath missing_crx =
       temp_dir_.GetPath().Append(FILE_PATH_LITERAL("nonexistent.crx3"));
   MockProductComponentInstallerDelegate mock_delegate;
-  EXPECT_EQ(InstallProductComponentForTesting(missing_crx, /*user_data_dir=*/{},
-                                              &mock_delegate),
-            ProductComponentInstallResult::kFailedInvalidInput);
+  EXPECT_EQ(InstallProductComponentForTesting(
+                kTag, missing_crx, /*user_data_dir=*/{}, &mock_delegate),
+            (ProductComponentInstallOutcome{.step = Step::kInvalidInput}));
 }
 
-TEST_F(InstallProductComponentWindowsTest, AppCommandNotFound) {
+TEST_F(InstallProductComponentWindowsTest, GetAppCommandFailed) {
   MockProductComponentInstallerDelegate mock_delegate;
   EXPECT_CALL(mock_delegate,
               GetAppCommand(std::wstring(installer::kCmdInstallComponent)))
       .WillOnce(testing::Return(
           base::unexpected(HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))));
 
-  EXPECT_EQ(InstallProductComponentForTesting(inner_crx_, /*user_data_dir=*/{},
-                                              &mock_delegate),
-            ProductComponentInstallResult::kCommandNotFound);
+  EXPECT_EQ(InstallProductComponentForTesting(
+                kTag, inner_crx_, /*user_data_dir=*/{}, &mock_delegate),
+            (ProductComponentInstallOutcome{
+                .step = Step::kGetAppCommandFailed,
+                .extra_code = static_cast<int>(
+                    HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))}));
 }
 
 TEST_F(InstallProductComponentWindowsTest, ExecuteAccessDenied) {
@@ -169,9 +230,11 @@ TEST_F(InstallProductComponentWindowsTest, ExecuteAccessDenied) {
               GetAppCommand(std::wstring(installer::kCmdInstallComponent)))
       .WillOnce(testing::Return(mock_app_command));
 
-  EXPECT_EQ(InstallProductComponentForTesting(inner_crx_, /*user_data_dir=*/{},
-                                              &mock_delegate),
-            ProductComponentInstallResult::kFailedComAccessDenied);
+  EXPECT_EQ(InstallProductComponentForTesting(
+                kTag, inner_crx_, /*user_data_dir=*/{}, &mock_delegate),
+            (ProductComponentInstallOutcome{
+                .step = Step::kComError,
+                .extra_code = static_cast<int>(E_ACCESSDENIED)}));
 }
 
 TEST_F(InstallProductComponentWindowsTest, GetStatusServerDied) {
@@ -186,9 +249,11 @@ TEST_F(InstallProductComponentWindowsTest, GetStatusServerDied) {
               GetAppCommand(std::wstring(installer::kCmdInstallComponent)))
       .WillOnce(testing::Return(mock_app_command));
 
-  EXPECT_EQ(InstallProductComponentForTesting(inner_crx_, /*user_data_dir=*/{},
-                                              &mock_delegate),
-            ProductComponentInstallResult::kFailedComServerDied);
+  EXPECT_EQ(InstallProductComponentForTesting(
+                kTag, inner_crx_, /*user_data_dir=*/{}, &mock_delegate),
+            (ProductComponentInstallOutcome{
+                .step = Step::kComError,
+                .extra_code = static_cast<int>(RPC_E_SERVER_DIED)}));
 }
 
 TEST_F(InstallProductComponentWindowsTest, CommandStatusError) {
@@ -206,9 +271,14 @@ TEST_F(InstallProductComponentWindowsTest, CommandStatusError) {
               GetAppCommand(std::wstring(installer::kCmdInstallComponent)))
       .WillOnce(testing::Return(mock_app_command));
 
-  EXPECT_EQ(InstallProductComponentForTesting(inner_crx_, /*user_data_dir=*/{},
-                                              &mock_delegate),
-            ProductComponentInstallResult::kLaunchFailed);
+  base::HistogramTester histogram_tester;
+  EXPECT_EQ(InstallProductComponentForTesting(
+                kTag, inner_crx_, /*user_data_dir=*/{}, &mock_delegate),
+            (ProductComponentInstallOutcome{.step = Step::kLaunchFailed}));
+  // The App Command reports no code when it fails to launch setup.exe.
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
+                  "ComponentUpdater.ProductComponent.Test.InstallCode."),
+              testing::IsEmpty());
 }
 
 TEST_F(InstallProductComponentWindowsTest, Success) {
@@ -231,9 +301,12 @@ TEST_F(InstallProductComponentWindowsTest, Success) {
               GetAppCommand(std::wstring(installer::kCmdInstallComponent)))
       .WillOnce(testing::Return(mock_app_command));
 
-  EXPECT_EQ(InstallProductComponentForTesting(inner_crx_, /*user_data_dir=*/{},
-                                              &mock_delegate),
-            ProductComponentInstallResult::kSuccess);
+  EXPECT_EQ(InstallProductComponentForTesting(
+                kTag, inner_crx_, /*user_data_dir=*/{}, &mock_delegate),
+            (ProductComponentInstallOutcome{
+                .step = Step::kInstallerExited,
+                .extra_code =
+                    static_cast<int>(installer::INSTALL_COMPONENT_SUCCESS)}));
 }
 
 TEST_F(InstallProductComponentWindowsTest, AlreadyExists) {
@@ -256,9 +329,12 @@ TEST_F(InstallProductComponentWindowsTest, AlreadyExists) {
               GetAppCommand(std::wstring(installer::kCmdInstallComponent)))
       .WillOnce(testing::Return(mock_app_command));
 
-  EXPECT_EQ(InstallProductComponentForTesting(inner_crx_, /*user_data_dir=*/{},
-                                              &mock_delegate),
-            ProductComponentInstallResult::kAlreadyExists);
+  EXPECT_EQ(InstallProductComponentForTesting(
+                kTag, inner_crx_, /*user_data_dir=*/{}, &mock_delegate),
+            (ProductComponentInstallOutcome{
+                .step = Step::kInstallerExited,
+                .extra_code = static_cast<int>(
+                    installer::INSTALL_COMPONENT_ALREADY_EXISTS)}));
 }
 
 TEST_F(InstallProductComponentWindowsTest, SignatureFailure) {
@@ -281,9 +357,12 @@ TEST_F(InstallProductComponentWindowsTest, SignatureFailure) {
               GetAppCommand(std::wstring(installer::kCmdInstallComponent)))
       .WillOnce(testing::Return(mock_app_command));
 
-  EXPECT_EQ(InstallProductComponentForTesting(inner_crx_, /*user_data_dir=*/{},
-                                              &mock_delegate),
-            ProductComponentInstallResult::kSignatureVerificationFailed);
+  EXPECT_EQ(InstallProductComponentForTesting(
+                kTag, inner_crx_, /*user_data_dir=*/{}, &mock_delegate),
+            (ProductComponentInstallOutcome{
+                .step = Step::kInstallerExited,
+                .extra_code = static_cast<int>(
+                    installer::INSTALL_COMPONENT_FAILED_SIGNATURE)}));
 }
 
 TEST_F(InstallProductComponentWindowsTest, InvalidInput) {
@@ -306,9 +385,12 @@ TEST_F(InstallProductComponentWindowsTest, InvalidInput) {
               GetAppCommand(std::wstring(installer::kCmdInstallComponent)))
       .WillOnce(testing::Return(mock_app_command));
 
-  EXPECT_EQ(InstallProductComponentForTesting(inner_crx_, /*user_data_dir=*/{},
-                                              &mock_delegate),
-            ProductComponentInstallResult::kFailedInvalidInput);
+  EXPECT_EQ(InstallProductComponentForTesting(
+                kTag, inner_crx_, /*user_data_dir=*/{}, &mock_delegate),
+            (ProductComponentInstallOutcome{
+                .step = Step::kInstallerExited,
+                .extra_code = static_cast<int>(
+                    installer::INSTALL_COMPONENT_INVALID_INPUT)}));
 }
 
 TEST_F(InstallProductComponentWindowsTest, InternalFailure) {
@@ -331,9 +413,86 @@ TEST_F(InstallProductComponentWindowsTest, InternalFailure) {
               GetAppCommand(std::wstring(installer::kCmdInstallComponent)))
       .WillOnce(testing::Return(mock_app_command));
 
-  EXPECT_EQ(InstallProductComponentForTesting(inner_crx_, /*user_data_dir=*/{},
-                                              &mock_delegate),
-            ProductComponentInstallResult::kFailedInternal);
+  EXPECT_EQ(InstallProductComponentForTesting(
+                kTag, inner_crx_, /*user_data_dir=*/{}, &mock_delegate),
+            (ProductComponentInstallOutcome{
+                .step = Step::kInstallerExited,
+                .extra_code = static_cast<int>(
+                    installer::INSTALL_COMPONENT_FAILED_INTERNAL)}));
+}
+
+// setup.exe's exit code is returned even if it is not one of the codes that
+// setup.exe reports for component installation.
+TEST_F(InstallProductComponentWindowsTest, OtherExitCode) {
+  ExpectAppCommandExitCode(installer::SETUP_SINGLETON_ACQUISITION_FAILED);
+
+  EXPECT_EQ(InstallProductComponentForTesting(
+                kTag, inner_crx_, /*user_data_dir=*/{}, &mock_delegate_),
+            (ProductComponentInstallOutcome{
+                .step = Step::kInstallerExited,
+                .extra_code = installer::SETUP_SINGLETON_ACQUISITION_FAILED}));
+}
+
+// The step and setup.exe's exit code are recorded for the component.
+TEST_F(InstallProductComponentWindowsTest, RecordsInstallerExitCode) {
+  ExpectAppCommandExitCode(installer::SETUP_SINGLETON_ACQUISITION_FAILED);
+
+  base::HistogramTester histogram_tester;
+  InstallProductComponentForTesting(kTag, inner_crx_, /*user_data_dir=*/{},
+                                    &mock_delegate_);
+
+  histogram_tester.ExpectUniqueSample(
+      "ComponentUpdater.ProductComponent.Test.InstallStep.SystemLevel",
+      Step::kInstallerExited, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ComponentUpdater.ProductComponent.Test.InstallCode.InstallerExited."
+      "SystemLevel",
+      installer::SETUP_SINGLETON_ACQUISITION_FAILED, 1);
+  histogram_tester.ExpectTotalCount(
+      "ComponentUpdater.ProductComponent.Test.InstallDuration.SystemLevel", 1);
+  histogram_tester.ExpectUniqueSample(
+      "ComponentUpdater.ProductComponent.Test.InnerCrxOnNetworkDrive."
+      "SystemLevel",
+      false, 1);
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
+                  "ComponentUpdater.ProductComponent."),
+              testing::SizeIs(4));
+}
+
+// The HRESULT of a failed call to the App Command is recorded.
+TEST_F(InstallProductComponentWindowsTest, RecordsComError) {
+  auto mock_app_command = Microsoft::WRL::Make<MockAppCommand>();
+  EXPECT_CALL(*mock_app_command.Get(), execute(_, _, _, _, _, _, _, _, _))
+      .WillOnce(testing::Return(E_ACCESSDENIED));
+  EXPECT_CALL(mock_delegate_,
+              GetAppCommand(std::wstring(installer::kCmdInstallComponent)))
+      .WillOnce(testing::Return(mock_app_command));
+
+  base::HistogramTester histogram_tester;
+  InstallProductComponentForTesting(kTag, inner_crx_, /*user_data_dir=*/{},
+                                    &mock_delegate_);
+
+  histogram_tester.ExpectUniqueSample(
+      "ComponentUpdater.ProductComponent.Test.InstallStep.SystemLevel",
+      Step::kComError, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ComponentUpdater.ProductComponent.Test.InstallCode.ComError.SystemLevel",
+      static_cast<int>(E_ACCESSDENIED), 1);
+}
+
+// No code is recorded for steps that have none.
+TEST_F(InstallProductComponentWindowsTest, RecordsInvalidInput) {
+  base::HistogramTester histogram_tester;
+  InstallProductComponentForTesting(
+      kTag, temp_dir_.GetPath().Append(FILE_PATH_LITERAL("nonexistent.crx3")),
+      /*user_data_dir=*/{}, &mock_delegate_);
+
+  histogram_tester.ExpectUniqueSample(
+      "ComponentUpdater.ProductComponent.Test.InstallStep.SystemLevel",
+      Step::kInvalidInput, 1);
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
+                  "ComponentUpdater.ProductComponent.Test.InstallCode."),
+              testing::IsEmpty());
 }
 
 // A component for a specific User Data directory is installed via the
@@ -370,8 +529,12 @@ TEST_F(InstallProductComponentWindowsTest, ParametersPassedToExecute) {
       GetAppCommand(std::wstring(installer::kCmdInstallComponentForUser)))
       .WillOnce(testing::Return(mock_app_command));
 
-  EXPECT_EQ(InstallProductComponentForTesting(inner_crx_, udd, &mock_delegate),
-            ProductComponentInstallResult::kSuccess);
+  EXPECT_EQ(
+      InstallProductComponentForTesting(kTag, inner_crx_, udd, &mock_delegate),
+      (ProductComponentInstallOutcome{
+          .step = Step::kInstallerExited,
+          .extra_code =
+              static_cast<int>(installer::INSTALL_COMPONENT_SUCCESS)}));
 }
 
 // A component that is not for a specific User Data directory is installed via
@@ -400,9 +563,12 @@ TEST_F(InstallProductComponentWindowsTest,
               GetAppCommand(std::wstring(installer::kCmdInstallComponent)))
       .WillOnce(testing::Return(mock_app_command));
 
-  EXPECT_EQ(InstallProductComponentForTesting(inner_crx_, /*user_data_dir=*/{},
-                                              &mock_delegate),
-            ProductComponentInstallResult::kSuccess);
+  EXPECT_EQ(InstallProductComponentForTesting(
+                kTag, inner_crx_, /*user_data_dir=*/{}, &mock_delegate),
+            (ProductComponentInstallOutcome{
+                .step = Step::kInstallerExited,
+                .extra_code =
+                    static_cast<int>(installer::INSTALL_COMPONENT_SUCCESS)}));
 }
 
 // No command is run if the User Data directory cannot be canonicalized.
@@ -411,10 +577,10 @@ TEST_F(InstallProductComponentWindowsTest, UddNotFound) {
   EXPECT_CALL(mock_delegate, GetAppCommand(_)).Times(0);
 
   EXPECT_EQ(InstallProductComponentForTesting(
-                inner_crx_,
+                kTag, inner_crx_,
                 temp_dir_.GetPath().Append(FILE_PATH_LITERAL("nonexistent")),
                 &mock_delegate),
-            ProductComponentInstallResult::kFailedInvalidInput);
+            (ProductComponentInstallOutcome{.step = Step::kInvalidInput}));
 }
 
 class InstallProductComponentWindowsPerUserTest : public testing::Test {
@@ -476,15 +642,17 @@ class InstallProductComponentWindowsPerUserTest : public testing::Test {
   registry_util::RegistryOverrideManager registry_override_manager_;
 };
 
-TEST_F(InstallProductComponentWindowsPerUserTest, SetupPathNotFound) {
+TEST_F(InstallProductComponentWindowsPerUserTest, NotInstalled) {
   SetInstalled(false);
   MockProductComponentInstallerDelegate mock_delegate;
-  EXPECT_EQ(InstallProductComponentForTesting(inner_crx_, /*user_data_dir=*/{},
-                                              &mock_delegate),
-            ProductComponentInstallResult::kCommandNotFound);
+  EXPECT_CALL(mock_delegate, LaunchProcess(_, _)).Times(0);
+  EXPECT_EQ(InstallProductComponentForTesting(
+                kTag, inner_crx_, /*user_data_dir=*/{}, &mock_delegate),
+            (ProductComponentInstallOutcome{.step = Step::kNotInstalled}));
 }
 
-TEST_F(InstallProductComponentWindowsPerUserTest, CommandNotFound) {
+// A missing setup.exe is reported as a launch failure with its error code.
+TEST_F(InstallProductComponentWindowsPerUserTest, SetupNotFound) {
   MockProductComponentInstallerDelegate mock_delegate;
   EXPECT_CALL(mock_delegate, LaunchProcess(_, _))
       .WillOnce([](const base::CommandLine&, const base::LaunchOptions&) {
@@ -492,9 +660,11 @@ TEST_F(InstallProductComponentWindowsPerUserTest, CommandNotFound) {
         return base::Process();
       });
 
-  EXPECT_EQ(InstallProductComponentForTesting(inner_crx_, /*user_data_dir=*/{},
-                                              &mock_delegate),
-            ProductComponentInstallResult::kCommandNotFound);
+  EXPECT_EQ(InstallProductComponentForTesting(
+                kTag, inner_crx_, /*user_data_dir=*/{}, &mock_delegate),
+            (ProductComponentInstallOutcome{
+                .step = Step::kLaunchFailed,
+                .extra_code = static_cast<int>(ERROR_FILE_NOT_FOUND)}));
 }
 
 TEST_F(InstallProductComponentWindowsPerUserTest, LaunchFailed) {
@@ -505,9 +675,11 @@ TEST_F(InstallProductComponentWindowsPerUserTest, LaunchFailed) {
         return base::Process();
       });
 
-  EXPECT_EQ(InstallProductComponentForTesting(inner_crx_, /*user_data_dir=*/{},
-                                              &mock_delegate),
-            ProductComponentInstallResult::kLaunchFailed);
+  EXPECT_EQ(InstallProductComponentForTesting(
+                kTag, inner_crx_, /*user_data_dir=*/{}, &mock_delegate),
+            (ProductComponentInstallOutcome{
+                .step = Step::kLaunchFailed,
+                .extra_code = static_cast<int>(ERROR_ACCESS_DENIED)}));
 }
 
 TEST_F(InstallProductComponentWindowsPerUserTest, CommandLineParameters) {
@@ -534,8 +706,10 @@ TEST_F(InstallProductComponentWindowsPerUserTest, CommandLineParameters) {
         return base::Process();
       });
 
-  EXPECT_EQ(InstallProductComponentForTesting(inner_crx_, udd, &mock_delegate),
-            ProductComponentInstallResult::kLaunchFailed);
+  EXPECT_EQ(
+      InstallProductComponentForTesting(kTag, inner_crx_, udd, &mock_delegate)
+          .step,
+      Step::kLaunchFailed);
 }
 
 // setup.exe is not launched if the User Data directory cannot be canonicalized.
@@ -544,10 +718,10 @@ TEST_F(InstallProductComponentWindowsPerUserTest, UddNotFound) {
   EXPECT_CALL(mock_delegate, LaunchProcess(_, _)).Times(0);
 
   EXPECT_EQ(InstallProductComponentForTesting(
-                inner_crx_,
+                kTag, inner_crx_,
                 temp_dir_.GetPath().Append(FILE_PATH_LITERAL("nonexistent")),
                 &mock_delegate),
-            ProductComponentInstallResult::kFailedInvalidInput);
+            (ProductComponentInstallOutcome{.step = Step::kInvalidInput}));
 }
 
 TEST_F(InstallProductComponentWindowsPerUserTest, CommandLineWithoutUdd) {
@@ -560,9 +734,10 @@ TEST_F(InstallProductComponentWindowsPerUserTest, CommandLineWithoutUdd) {
             return base::Process();
           });
 
-  EXPECT_EQ(InstallProductComponentForTesting(inner_crx_, /*user_data_dir=*/{},
-                                              &mock_delegate),
-            ProductComponentInstallResult::kLaunchFailed);
+  EXPECT_EQ(InstallProductComponentForTesting(
+                kTag, inner_crx_, /*user_data_dir=*/{}, &mock_delegate)
+                .step,
+            Step::kLaunchFailed);
 }
 
 }  // namespace component_updater
