@@ -935,13 +935,12 @@ TEST_P(FormMutationTest, RemovedAndAddedFormsRegistered) {
   // batched together.
   ExecuteJavaScript(replace_form_JS);
 
-  // Wait until the first message is received.
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool() {
-    return observer_->number_of_events_received() == 1;
+  // Wait on all the messages in the batch.
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    return observer_->form_removal_info() != nullptr &&
+           observer_->form_activity_info() != nullptr;
   }));
 
-  // The removed form message is always the first posted.
-  ASSERT_TRUE(observer_->form_removal_info());
   FormRemovalParams form_removal_params =
       observer_->form_removal_info()->form_removal_params;
   EXPECT_THAT(form_removal_params.frame_id, Not(IsEmpty()));
@@ -949,12 +948,6 @@ TEST_P(FormMutationTest, RemovedAndAddedFormsRegistered) {
   EXPECT_THAT(form_removal_params.removed_forms,
               ElementsAre(FormRendererId(1)));
 
-  // Wait until the next message is received.
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool() {
-    return observer_->number_of_events_received() == 2;
-  }));
-
-  ASSERT_TRUE(observer_->form_activity_info());
   ValidateParamsAfterFormChangedEvent(
       observer_->form_activity_info()->form_activity);
 
