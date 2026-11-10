@@ -12064,25 +12064,6 @@
             ]
         }
     ],
-    "KeepAliveBrowserProcessAlive": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20260910",
-                    "enable_features": [
-                        "KeepAliveBrowserProcessAlive"
-                    ]
-                }
-            ]
-        }
-    ],
     "KeepHostResolverJobAliveForCache": [
         {
             "platforms": [
