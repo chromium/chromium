@@ -224,7 +224,7 @@ enum PhishingImageEmbeddingResult {
   // WebDocumentLoader failed to load.
   kInvalidDocumentLoader,
 };
-// LINT.ThenChange(//components/safe_browsing/core/browser/client_side_detection_host_base.h:ImageEmbeddingResult)
+// LINT.ThenChange(//components/safe_browsing/core/browser/client_side_detection/client_side_detection_host_base.h:ImageEmbeddingResult)
 
 // Interface for starting image embedding. This is scoped to a
 // particular RenderFrame.

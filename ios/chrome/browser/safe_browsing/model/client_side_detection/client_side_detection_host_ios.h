@@ -15,7 +15,7 @@
 #import "base/scoped_observation.h"
 #import "base/time/time.h"
 #import "base/timer/timer.h"
-#import "components/safe_browsing/core/browser/client_side_detection_host_base.h"
+#import "components/safe_browsing/core/browser/client_side_detection/client_side_detection_host_base.h"
 #import "components/safe_browsing/core/browser/db/database_manager.h"
 #import "components/safe_browsing/core/common/client_side_detection_enums.h"
 #import "components/safe_browsing/core/common/phishing_classifier/phishing_classifier.h"

@@ -16,7 +16,7 @@
 #import "base/numerics/safe_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
-#import "components/safe_browsing/core/browser/client_side_detection_host_base.h"
+#import "components/safe_browsing/core/browser/client_side_detection/client_side_detection_host_base.h"
 #import "components/safe_browsing/core/browser/url_checker/safe_browsing_url_checker_impl.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/core/browser/client_side_detection_host_base.h"
+#include "components/safe_browsing/core/browser/client_side_detection/client_side_detection_host_base.h"
 
 #include <string_view>
 #include <utility>

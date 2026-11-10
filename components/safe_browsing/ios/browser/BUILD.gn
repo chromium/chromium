@@ -42,7 +42,6 @@ source_set("unit_tests") {
     ":allow_list",
     ":client_side_detection_images_cache",
     "//components/safe_browsing/core/browser",
-    "//components/safe_browsing/core/browser:client_side_detection_service_base_unittest",
     "//components/safe_browsing/core/browser:ping_manager_unittest",
     "//components/safe_browsing/core/browser:safe_browsing_url_checker_unittest",
     "//components/safe_browsing/core/browser:suspicious_site_warning_allowlist_unittest",

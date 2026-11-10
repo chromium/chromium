@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/core/browser/client_side_detection_host_base.h"
+#include "components/safe_browsing/core/browser/client_side_detection/client_side_detection_host_base.h"
 
 #include <memory>
 #include <optional>
@@ -19,7 +19,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/safe_browsing/core/browser/client_side_detection/client_side_detection_feature_cache_base.h"
 #include "components/safe_browsing/core/browser/client_side_detection/client_side_detection_service_base.h"
-#include "components/safe_browsing/core/browser/credit_card_form_event.h"
+#include "components/safe_browsing/core/browser/client_side_detection/credit_card_form_event.h"
 #include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/safe_browsing/core/common/features.h"
