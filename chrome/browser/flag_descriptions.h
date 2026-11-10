@@ -581,21 +581,10 @@ inline constexpr char kDbdPasswordRemovalOnAndroidDescription[] =
     "on Android, instead directing users to manage passwords and other Google "
     "data via link-outs to relevant Google services.";
 
-inline constexpr char kDefaultBrowserChangedOsNotificationDescription[] =
-    "Enables the framework to show OS Notification when Chrome is no longer "
-    "the default browser.";
-inline constexpr char kDefaultBrowserChangedOsNotificationName[] =
-    "Default Browser Changed OS Notification";
-
 inline constexpr char kDefaultBrowserFrameworkDescription[] =
     "Enables the default browser framework.";
 inline constexpr char kDefaultBrowserFrameworkName[] =
     "Default Browser Framework";
-
-inline constexpr char kDefaultBrowserPromptSurfacesDescription[] =
-    "Enables using various default browser prompt surfaces.";
-inline constexpr char kDefaultBrowserPromptSurfacesName[] =
-    "Default Browser Prompt Surfaces";
 
 inline constexpr char kDefaultBrowserSetterSelectionDescription[] =
     "Enables selecting a default browser setter (e.g. shell integration, "
@@ -605,8 +594,8 @@ inline constexpr char kDefaultBrowserSetterSelectionName[] =
     "Default Browser Setter Selection";
 
 inline constexpr char kDefaultBrowserStickyModalDescription[] =
-    "Enables the sticky modal dialog for the default browser prompt. Requires "
-    "#default-browser-prompt-surfaces to be set to a modal dialog variation.";
+    "Enables the sticky modal dialog for the default browser prompt. Only "
+    "applies when the default browser prompt uses a modal dialog surface.";
 inline constexpr char kDefaultBrowserStickyModalName[] =
     "Default Browser Sticky Modal";
 

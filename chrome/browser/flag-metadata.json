@@ -2914,14 +2914,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "default-browser-changed-os-notification",
-    "owners": [
-      "top-chrome-desktop-ui@google.com",
-      "//chrome/browser/default_browser/OWNERS"
-    ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "default-browser-framework",
     "owners": [
       "top-chrome-desktop-ui@google.com",
@@ -2968,20 +2960,12 @@
     "expiry_milestone": 162
   },
   {
-    "name": "default-browser-prompt-surfaces",
-    "owners": [
-      "top-chrome-desktop-ui@google.com",
-      "//chrome/browser/default_browser/OWNERS"
-    ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "default-browser-setter-selection",
     "owners": [
       "top-chrome-desktop-ui@google.com",
       "//chrome/browser/default_browser/OWNERS"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 166
   },
   {
     "name": "default-browser-sticky-modal",
@@ -2989,7 +2973,7 @@
       "top-chrome-desktop-ui@google.com",
       "//chrome/browser/default_browser/OWNERS"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 166
   },
   {
     "name": "default-search-engine-prewarm",
@@ -10255,7 +10239,7 @@
       "top-chrome-desktop-ui@google.com",
       "//chrome/browser/default_browser/OWNERS"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 166
   },
   {
     "name": "voice-search-evolution-phase1",

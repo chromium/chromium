@@ -465,28 +465,6 @@ const FeatureEntry::FeatureVariation kUniversalOptOutVariations[] = {
     {"with forced eligibility", kUniversalOptOutForceEligible, nullptr}};
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-const FeatureEntry::FeatureParam kDefaultBrowserPromptSurfaces_Infobar[] = {
-    {"prompt_surface", "infobar"}};
-const FeatureEntry::FeatureParam kDefaultBrowserPromptSurfaces_BubbleDialog[] =
-    {{"prompt_surface", "bubble_dialog"}};
-const FeatureEntry::FeatureParam
-    kDefaultBrowserPromptSurfaces_ModalDialogWithSettingsIllustration[] = {
-        {"prompt_surface", "modal_dialog_with_settings_illustration"}};
-const FeatureEntry::FeatureParam
-    kDefaultBrowserPromptSurfaces_ModalDialogWithoutSettingsIllustration[] = {
-        {"prompt_surface", "modal_dialog_without_settings_illustration"}};
-
-const FeatureEntry::FeatureVariation kDefaultBrowserPromptSurfacesVariations[] =
-    {{"with Infobar", kDefaultBrowserPromptSurfaces_Infobar, nullptr},
-     {"with Bubble Dialog", kDefaultBrowserPromptSurfaces_BubbleDialog,
-      nullptr},
-     {"with Modal Dialog with Settings Illustration",
-      kDefaultBrowserPromptSurfaces_ModalDialogWithSettingsIllustration,
-      nullptr},
-     {"with Modal Dialog without Settings Illustration",
-      kDefaultBrowserPromptSurfaces_ModalDialogWithoutSettingsIllustration,
-      nullptr}};
-
 const FeatureEntry::FeatureParam
     kDefaultBrowserStickyModal_WithSettingsIllustration[] = {
         {"IsSticky", "true"},
@@ -11421,23 +11399,10 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAF(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-    {"default-browser-changed-os-notification",
-     flag_descriptions::kDefaultBrowserChangedOsNotificationName,
-     flag_descriptions::kDefaultBrowserChangedOsNotificationDescription, kOsWin,
-     FEATURE_VALUE_TYPE(default_browser::kDefaultBrowserChangedOsNotification)},
-
     {"default-browser-framework",
      flag_descriptions::kDefaultBrowserFrameworkName,
      flag_descriptions::kDefaultBrowserFrameworkDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(default_browser::kDefaultBrowserFramework)},
-
-    {"default-browser-prompt-surfaces",
-     flag_descriptions::kDefaultBrowserPromptSurfacesName,
-     flag_descriptions::kDefaultBrowserPromptSurfacesDescription, kOsWin,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         default_browser::kDefaultBrowserPromptSurfaces,
-         kDefaultBrowserPromptSurfacesVariations,
-         "DefaultBrowserPromptSurfaces")},
 
     {"default-browser-sticky-modal",
      flag_descriptions::kDefaultBrowserStickyModalName,
