@@ -2470,6 +2470,17 @@ TEST_F(ChromeContentBrowserClientTest,
   // Prefetch service delegate.
   EXPECT_FALSE(client.CreatePrefetchServiceDelegate(top_chrome_webui_profile));
 }
+
+// Tests that a response in the Top Chrome WebUI profile, which has no
+// QuickOffice prefs on ChromeOS, isn't forced to be downloaded.
+TEST_F(ChromeContentBrowserClientTest,
+       TopChromeWebUIProfileShouldNotForceDownloadResource) {
+  webui::ScopedTopChromeWebUIProfileForTesting scoped_profile;
+  ChromeContentBrowserClient client;
+  EXPECT_FALSE(client.ShouldForceDownloadResource(
+      webui::GetTopChromeWebUIProfile(), GURL("chrome://webui-toolbar/"),
+      "text/html"));
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 class WillComputeSiteForNavigationTest : public ChromeContentBrowserClientTest {

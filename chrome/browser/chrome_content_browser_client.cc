@@ -7337,6 +7337,11 @@ bool ChromeContentBrowserClient::ShouldForceDownloadResource(
   // it instead.
   if (browser_context) {
     Profile* profile = Profile::FromBrowserContext(browser_context);
+    // TopChromeWebUIProfile only hosts Top Chrome WebUIs, which never load
+    // Office files, and has no QuickOffice prefs.
+    if (profile->IsTopChromeWebUIProfile()) {
+      return false;
+    }
     bool force_download = profile->GetPrefs()->GetBoolean(
         quickoffice::kQuickOfficeForceFileDownloadEnabled);
     if (force_download) {
