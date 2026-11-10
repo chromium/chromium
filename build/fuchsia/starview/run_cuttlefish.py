@@ -13,7 +13,6 @@ import shutil
 import subprocess
 import sys
 import tempfile
-import time
 import zipfile
 
 
@@ -22,6 +21,7 @@ STARVIEW_DIR = os.path.dirname(os.path.abspath(__file__))
 # Setup import path for common testing utils
 sys.path.append(os.path.abspath(os.path.join(STARVIEW_DIR, '..', 'test')))
 import common  # noqa: E402
+import provision_starview  # noqa: E402
 
 AVBTOOL = os.path.join(STARVIEW_DIR, 'avbtool.py')
 CVD_AVB_TESTKEY = os.path.join(STARVIEW_DIR, 'cvd_avb_testkey_rsa4096.pem')
@@ -263,140 +263,17 @@ def boot_cuttlefish(args, cuttlefish_zip, bootloader, temp_dir):
     return qemu_proc, hvc_stop_event
 
 
-def _wait_adb_shell(adb_path, adb_port, cmd, pattern):
-    """Waits for an ADB shell command output to match regex pattern or times out."""
-    target = f'127.0.0.1:{adb_port}'
-    start_time = time.time()
-    while time.time() - start_time < 480:
-        res = subprocess.run(
-            [adb_path, '-s', target, 'shell'] + cmd,
-            capture_output=True,
-            text=True,
-        )
-        if res.returncode == 0 and re.fullmatch(
-            pattern, res.stdout.strip(), re.DOTALL
-        ):
-            return True
-        time.sleep(10)
-        subprocess.run([adb_path, 'connect', target])
-    return False
-
-
 def _configure_display(adb_path, adb_port):
     """Configures guest Android display size and density."""
     target = f'127.0.0.1:{adb_port}'
     logging.info(f"Configuring display size to {_DISPLAY_SIZE}...")
-    res = subprocess.run(
-        [
-            adb_path,
-            '-s',
-            target,
-            'shell',
-            'wm',
-            'size',
-            _DISPLAY_SIZE,
-        ],
-        capture_output=True,
-        text=True,
+    provision_starview.run_shell(
+        adb_path, target, ['wm', 'size', _DISPLAY_SIZE]
     )
-    if res.stdout.strip():
-        logging.info(f"wm size output: {res.stdout.strip()}")
-    if res.stderr.strip():
-        logging.warning(f"wm size stderr: {res.stderr.strip()}")
-
     logging.info(f"Configuring display density to {_DISPLAY_DENSITY}...")
-    res = subprocess.run(
-        [
-            adb_path,
-            '-s',
-            target,
-            'shell',
-            'wm',
-            'density',
-            str(_DISPLAY_DENSITY),
-        ],
-        capture_output=True,
-        text=True,
+    provision_starview.run_shell(
+        adb_path, target, ['wm', 'density', str(_DISPLAY_DENSITY)]
     )
-    if res.stdout.strip():
-        logging.info(f"wm density output: {res.stdout.strip()}")
-    if res.stderr.strip():
-        logging.warning(f"wm density stderr: {res.stderr.strip()}")
-
-
-def _bind_mount_test_data_root(adb_path, adb_port):
-    """Configures a bind mount for /sdcard/chromium_tests_root.
-
-    On Starnix emulators, file-backed mmap() is unsupported over Android's
-    FUSE filesystem (/sdcard). Bind-mounting the test data root directly
-    from underlying media storage bypasses FUSE while ensuring unprivileged
-    test processes have permissions for both mmap() and creating temporary
-    directories. Also ensures standard Download directories exist for test
-    output XML artifacts.
-    """
-    target = f'127.0.0.1:{adb_port}'
-    logging.info("Configuring mmap-capable test data root on Starnix...")
-    logging.info("Waiting for /sdcard to be mounted...")
-    if not _wait_adb_shell(
-        adb_path,
-        adb_port,
-        [
-            'grep -q /storage/emulated /proc/mounts && '
-            'test -d /mnt/pass_through/0/emulated/0 && echo ready'
-        ],
-        'ready',
-    ):
-        logging.error("Timed out waiting for /sdcard to be mounted.")
-        return False
-
-    def _run_shell_cmd(cmd):
-        res = subprocess.run(
-            [adb_path, '-s', target, 'shell'] + cmd,
-            capture_output=True,
-            text=True,
-        )
-        if res.returncode != 0 or res.stderr.strip():
-            logging.warning(
-                f"{' '.join(cmd)} failed (code {res.returncode}): "
-                f"{res.stdout.strip()} {res.stderr.strip()}"
-            )
-            return False
-        return True
-
-    source_root = '/mnt/pass_through/0/emulated/0/chromium_tests_root'
-    _run_shell_cmd(['mkdir', '-p', source_root])
-    _run_shell_cmd(['chmod', '777', source_root])
-    _run_shell_cmd(
-        ['chcon', '-R', 'u:object_r:media_rw_data_file:s0', source_root]
-    )
-    _run_shell_cmd(['mkdir', '-p', '/sdcard/chromium_tests_root'])
-    if _run_shell_cmd(
-        ['mount', '--bind', source_root, '/sdcard/chromium_tests_root']
-    ):
-        logging.info(
-            f"Successfully bind-mounted {source_root} "
-            "over /sdcard/chromium_tests_root"
-        )
-
-    # Ensure Download directories exist and are writable so test runners can
-    # write gtest output XML files and adb pull succeeds during list_tests.
-    download_root = '/mnt/pass_through/0/emulated/0/Download'
-    _run_shell_cmd(['mkdir', '-p', download_root])
-    _run_shell_cmd(['chmod', '777', download_root])
-    _run_shell_cmd(
-        ['chcon', '-R', 'u:object_r:media_rw_data_file:s0', download_root]
-    )
-    _run_shell_cmd(
-        [
-            'mkdir',
-            '-p',
-            '/storage/emulated/0/Download',
-            '/sdcard/Download',
-        ]
-    )
-    _run_shell_cmd(['chmod', '777', '/storage/emulated/0/Download'])
-    _run_shell_cmd(['chmod', '777', '/sdcard/Download'])
-    return True
 
 
 def main():
@@ -423,14 +300,7 @@ def main():
     )
     parser.add_argument(
         '--adb-path',
-        default=os.path.join(
-            common.DIR_SRC_ROOT,
-            'third_party',
-            'android_sdk',
-            'public',
-            'platform-tools',
-            'adb',
-        ),
+        default=provision_starview.DEFAULT_ADB_PATH,
         help='Path to adb binary.',
     )
     parser.add_argument(
@@ -495,7 +365,7 @@ def main():
     qemu_proc = None
 
     subprocess.run(['killall', '-9', 'qemu-system-x86_64'])
-    subprocess.run([args.adb_path, 'kill-server'])
+    provision_starview.run_adb(args.adb_path, ['kill-server'], check=False)
     subprocess.run(['killall', '-9', 'adb'])
 
     tmp_dir = tempfile.gettempdir()
@@ -509,58 +379,11 @@ def main():
                 args, cuttlefish_zip, bootloader, temp_dir
             )
 
-            target = f'127.0.0.1:{args.adb_port}'
-            subprocess.run([args.adb_path, 'connect', target])
-
-            logging.info(
-                f"Waiting for guest ADB to respond on port {args.adb_port}..."
+            provision_starview.provision_device(
+                f'127.0.0.1:{args.adb_port}',
+                adb_path=args.adb_path,
             )
-            if not _wait_adb_shell(
-                args.adb_path, args.adb_port, ['echo', 'ready'], 'ready'
-            ):
-                logging.error("Timed out waiting for guest ADB to respond.")
-                return 1
-            logging.info("Guest ADB is ready.")
-
-            logging.info("Restarting ADB daemon as root...")
-            subprocess.run([args.adb_path, '-s', target, 'root'])
-
-            # Wait for ADB to reconnect as root after daemon restart.
-            if not _wait_adb_shell(
-                args.adb_path, args.adb_port, ['echo', 'ready'], 'ready'
-            ):
-                logging.error(
-                    "Timed out waiting for guest ADB after root restart."
-                )
-                return 1
-
-            # Wait for Android to complete boot.
-            logging.info("Waiting for Android to complete boot...")
-            if not _wait_adb_shell(
-                args.adb_path,
-                args.adb_port,
-                ['getprop', 'sys.boot_completed'],
-                '1',
-            ):
-                logging.warning("Timed out waiting for sys.boot_completed=1.")
-
-            # Wait for package manager to become responsive.
-            logging.info(
-                "Waiting for Android package manager to become ready..."
-            )
-            if not _wait_adb_shell(
-                args.adb_path,
-                args.adb_port,
-                ['pm', 'list', 'packages'],
-                'package:.*',
-            ):
-                logging.error("Timed out waiting for package manager.")
-                return 1
-
             _configure_display(args.adb_path, args.adb_port)
-
-            if not _bind_mount_test_data_root(args.adb_path, args.adb_port):
-                return 1
 
             logging.info("Successfully connected to guest ADB!")
 

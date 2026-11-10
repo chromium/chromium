@@ -13,7 +13,6 @@ sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 )
 import devil_chromium  # noqa: F401
-from devil.android import device_utils
 from pylib.local.emulator import (
     fuchsia_cuttlefish_emulator_environment as fc_env,
 )
@@ -44,8 +43,6 @@ class FuchsiaCuttlefishEmulatorEnvironmentTest(unittest.TestCase):
         mock_proc.stdout = fake_stdout
         mock_proc.poll.return_value = None
 
-        orig_wait = device_utils.DeviceUtils.WaitUntilFullyBooted
-
         with (
             mock.patch('os.path.exists', return_value=True),
             mock.patch(
@@ -57,10 +54,6 @@ class FuchsiaCuttlefishEmulatorEnvironmentTest(unittest.TestCase):
             )
             serial = instance.Start()
             self.assertEqual(serial, '127.0.0.1:6520')
-            # WaitUntilFullyBooted should be monkeypatched after Start.
-            self.assertNotEqual(
-                device_utils.DeviceUtils.WaitUntilFullyBooted, orig_wait
-            )
             mock_popen.assert_called_once_with(
                 [
                     sys.executable,
@@ -77,20 +70,13 @@ class FuchsiaCuttlefishEmulatorEnvironmentTest(unittest.TestCase):
             )
 
             instance.Stop()
-            # After Stop, proc should be terminated and WaitUntilFullyBooted
-            # restored.
             mock_proc.terminate.assert_called_once()
-            self.assertEqual(
-                device_utils.DeviceUtils.WaitUntilFullyBooted, orig_wait
-            )
 
     def test_cuttlefish_instance_premature_exit(self):
         fake_stdout = io.StringIO('Error: failed to find image\n')
         mock_proc = mock.Mock()
         mock_proc.stdout = fake_stdout
         mock_proc.poll.return_value = 1
-
-        orig_wait = device_utils.DeviceUtils.WaitUntilFullyBooted
 
         with (
             mock.patch('os.path.exists', return_value=True),
@@ -101,10 +87,6 @@ class FuchsiaCuttlefishEmulatorEnvironmentTest(unittest.TestCase):
                 RuntimeError, 'exited prematurely with code 1'
             ):
                 instance.Start()
-
-        self.assertEqual(
-            device_utils.DeviceUtils.WaitUntilFullyBooted, orig_wait
-        )
 
     def test_environment_setup_teardown(self):
         mock_instance = mock.Mock()

@@ -7,7 +7,6 @@ import os
 import subprocess
 import sys
 
-from devil.android import device_utils
 from pylib import constants
 from pylib.local.device import local_device_environment
 
@@ -77,7 +76,6 @@ class CuttlefishInstance:
         self._adb_port = adb_port
         self._adb_path = adb_path
         self._proc = None
-        self._orig_wait_until_fully_booted = None
 
     def Start(self):
         assert os.path.exists(CUTTLEFISH_SCRIPT), (
@@ -109,42 +107,9 @@ class CuttlefishInstance:
                 f'{self._proc.poll()}'
             )
 
-        self._orig_wait_until_fully_booted = (
-            device_utils.DeviceUtils.WaitUntilFullyBooted
-        )
-
-        def _starnix_wait_until_fully_booted(device_self, *args, **kwargs):
-            try:
-                device_self._cache['external_storage'] = '/sdcard'
-                device_self._cache['current_user'] = 0
-                device_self._cache['needs_su'] = False
-            except Exception:
-                pass
-
-            try:
-                self._orig_wait_until_fully_booted(device_self, *args, **kwargs)
-            except Exception as e:
-                if 'is_sd_card_ready' in str(e):
-                    logging.warning(
-                        'Ignoring is_sd_card_ready timeout on Starnix '
-                        'device: %s',
-                        e,
-                    )
-                else:
-                    raise
-
-        device_utils.DeviceUtils.WaitUntilFullyBooted = (
-            _starnix_wait_until_fully_booted
-        )
-
         return f'127.0.0.1:{self._adb_port}'
 
     def Stop(self):
-        if self._orig_wait_until_fully_booted:
-            device_utils.DeviceUtils.WaitUntilFullyBooted = (
-                self._orig_wait_until_fully_booted
-            )
-            self._orig_wait_until_fully_booted = None
         if self._proc:
             logging.info('Terminating Cuttlefish process...')
             self._proc.terminate()

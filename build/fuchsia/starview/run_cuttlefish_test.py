@@ -10,6 +10,10 @@ import subprocess
 import sys
 import time
 
+STARVIEW_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.abspath(os.path.join(STARVIEW_DIR, '..', 'test')))
+import provision_starview  # noqa: E402
+
 
 def main():
     start_time = time.time()
@@ -29,22 +33,18 @@ def main():
         if not arg.startswith('--isolated-script-test-')
         and not arg.startswith('--timeout-scale')
     ]
-    starview_dir = os.path.dirname(os.path.abspath(__file__))
-    run_script = os.path.join(starview_dir, 'run_cuttlefish.py')
-    adb_path = os.path.join(
-        starview_dir,
-        '../../../third_party/android_sdk/public/platform-tools/adb',
+    adb_path = (
+        provision_starview.DEFAULT_ADB_PATH
+        if os.path.exists(provision_starview.DEFAULT_ADB_PATH)
+        else 'adb'
     )
-    if not os.path.exists(adb_path):
-        adb_path = 'adb'
 
     # Launch emulator via run_cuttlefish.py on a test port
-    adb_port = 6525
     cmd = [
         sys.executable,
-        run_script,
+        os.path.join(STARVIEW_DIR, 'run_cuttlefish.py'),
         '--adb-port',
-        str(adb_port),
+        '6525',
         '--headless',
     ] + extra_args
     print(f"Starting emulator under test: {' '.join(cmd)}")
@@ -62,104 +62,46 @@ def main():
                 break
 
         if success:
-            # Run adb shell command to verify the Android container is alive
-            adb_cmd = [
+            target = '127.0.0.1:6525'
+            provision_starview.wait_adb_shell(
                 adb_path,
-                '-s',
-                f'127.0.0.1:{adb_port}',
-                'shell',
-                'echo',
-                'STARNIX_ALIVE',
-            ]
-            print(f"Running verification command: {' '.join(adb_cmd)}")
-            for attempt in range(5):
-                res = subprocess.run(adb_cmd, capture_output=True, text=True)
-                print(f"adb output: {res.stdout.strip()}")
-                if 'STARNIX_ALIVE' in res.stdout:
-                    print("Android shell successfully verified!")
-                    break
-                time.sleep(2)
-            else:
-                print("Failed to get expected output from adb shell.")
-                success = False
+                target,
+                ['echo', 'STARNIX_ALIVE'],
+                r'.*STARNIX_ALIVE.*',
+                timeout=15,
+                poll_interval=2.0,
+            )
+            print("Android shell successfully verified!")
 
-            if success:
-                pm_cmd = [
-                    adb_path,
-                    '-s',
-                    f'127.0.0.1:{adb_port}',
-                    'shell',
-                    'pm',
-                    'list',
-                    'packages',
-                ]
-                print(
-                    f"Running package manager verification: {' '.join(pm_cmd)}"
-                )
-                for attempt in range(5):
-                    res = subprocess.run(pm_cmd, capture_output=True, text=True)
-                    if 'package:' in res.stdout:
-                        print("Android package manager successfully verified!")
-                        break
-                    time.sleep(2)
-                else:
-                    print("Failed to get package list from package manager.")
-                    success = False
+            provision_starview.wait_adb_shell(
+                adb_path,
+                target,
+                ['pm', 'list', 'packages'],
+                r'.*package:.*',
+                timeout=15,
+                poll_interval=2.0,
+            )
+            print("Android package manager successfully verified!")
 
-            if success:
-                wm_size_cmd = [
-                    adb_path,
-                    '-s',
-                    f'127.0.0.1:{adb_port}',
-                    'shell',
-                    'wm',
-                    'size',
-                ]
-                print(
-                    'Running display size verification: '
-                    f"{' '.join(wm_size_cmd)}"
-                )
-                for attempt in range(5):
-                    res = subprocess.run(
-                        wm_size_cmd, capture_output=True, text=True
-                    )
-                    print(f"wm size output: {res.stdout.strip()}")
-                    if '1080x1920' in res.stdout:
-                        print("Display size successfully verified!")
-                        break
-                    time.sleep(2)
-                else:
-                    print("Failed to get expected display size from wm size.")
-                    success = False
+            provision_starview.wait_adb_shell(
+                adb_path,
+                target,
+                ['wm', 'size'],
+                r'.*1080x1920.*',
+                timeout=15,
+                poll_interval=2.0,
+            )
+            print("Display size successfully verified!")
 
-            if success:
-                wm_density_cmd = [
-                    adb_path,
-                    '-s',
-                    f'127.0.0.1:{adb_port}',
-                    'shell',
-                    'wm',
-                    'density',
-                ]
-                print(
-                    'Running display density verification: '
-                    f"{' '.join(wm_density_cmd)}"
-                )
-                for attempt in range(5):
-                    res = subprocess.run(
-                        wm_density_cmd, capture_output=True, text=True
-                    )
-                    print(f"wm density output: {res.stdout.strip()}")
-                    if '480' in res.stdout:
-                        print("Display density successfully verified!")
-                        break
-                    time.sleep(2)
-                else:
-                    print(
-                        'Failed to get expected display density from '
-                        'wm density.'
-                    )
-                    success = False
+            provision_starview.wait_adb_shell(
+                adb_path,
+                target,
+                ['wm', 'density'],
+                r'.*480.*',
+                timeout=15,
+                poll_interval=2.0,
+            )
+            print("Display density successfully verified!")
 
     except Exception as e:
         print(f"Test encountered error: {e}")

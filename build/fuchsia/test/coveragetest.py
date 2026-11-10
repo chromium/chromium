@@ -18,6 +18,7 @@ COVERED_FILES = [
     'deploy_to_fuchsia.py',
     'flash_device.py',
     'log_manager.py',
+    'provision_starview.py',
     'publish_package.py',
     'serve_repo.py',
 ]
