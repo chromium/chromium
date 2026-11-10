@@ -5,7 +5,7 @@
 // clang-format off
 import type {SettingsEditDictionaryPageElement} from 'chrome://settings/lazy_load.js';
 import {LanguagesBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import {PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
+import {loadTimeData, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -69,6 +69,62 @@ suite('EditDictionaryPage', function() {
     languageSettingsPrivate.onCustomDictionaryChanged.callListeners([], [WORD]);
     await microtasksFinished();
     assertFalse(editDictPage.$.addWord.disabled);
+  });
+
+  // The custom dictionary backend rejects words longer than 99 *bytes* once
+  // encoded as UTF-8 (see kMaxCustomDictionaryWordBytes), so the UI must
+  // measure bytes rather than UTF-16 code units.
+  test('add word length validation', async () => {
+    const newWord = editDictPage.$.newWord;
+    const addWordButton = editDictPage.$.addWord;
+    const lengthError = loadTimeData.getString('addDictionaryWordLengthError');
+
+    function assertValid() {
+      assertFalse(addWordButton.disabled);
+      assertFalse(newWord.invalid);
+      assertEquals('', newWord.errorMessage);
+    }
+
+    function assertTooLong() {
+      assertTrue(addWordButton.disabled);
+      assertTrue(newWord.invalid);
+      assertEquals(lengthError, newWord.errorMessage);
+    }
+
+    // 99 bytes, 99 code units.
+    newWord.value = 'a'.repeat(99);
+    await microtasksFinished();
+    assertValid();
+
+    // 100 bytes, 100 code units.
+    newWord.value = 'a'.repeat(100);
+    await microtasksFinished();
+    assertTooLong();
+
+    // U+00E9 is 1 code unit but 2 bytes: 49 of them are 98 bytes.
+    newWord.value = '\u00e9'.repeat(49);
+    await microtasksFinished();
+    assertValid();
+
+    // 50 of them are 50 code units but 100 bytes.
+    newWord.value = '\u00e9'.repeat(50);
+    await microtasksFinished();
+    assertTooLong();
+
+    // Each CJK ideograph is 1 code unit but 3 bytes: 34 of them are 102 bytes.
+    newWord.value = '\u5b57'.repeat(34);
+    await microtasksFinished();
+    assertTooLong();
+
+    // Each emoji is 2 code units but 4 bytes: 25 of them are 100 bytes.
+    newWord.value = '\u{1F60E}'.repeat(25);
+    await microtasksFinished();
+    assertTooLong();
+
+    // Pressing Enter must not add a word that is too long.
+    keyDownOn(newWord, 0, [], 'Enter');
+    await microtasksFinished();
+    assertEquals(0, languageSettingsPrivate.getCallCount('addSpellcheckWord'));
   });
 
   test('Enter/Escape key event', async () => {

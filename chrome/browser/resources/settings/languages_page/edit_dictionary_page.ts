@@ -27,8 +27,8 @@ import {getCss} from './edit_dictionary_page.css.js';
 import {getHtml} from './edit_dictionary_page.html.js';
 import {LanguagesBrowserProxyImpl} from './languages_browser_proxy.js';
 
-// Max valid word size defined in
-// https://cs.chromium.org/chromium/src/components/spellcheck/common/spellcheck_common.h?l=28
+// Max valid word size in UTF-8 bytes, see kMaxCustomDictionaryWordBytes in
+// https://cs.chromium.org/chromium/src/components/spellcheck/common/spellcheck_common.h
 const MAX_CUSTOM_DICTIONARY_WORD_BYTES = 99;
 
 export interface SettingsEditDictionaryPageElement {
@@ -142,7 +142,11 @@ export class SettingsEditDictionaryPageElement extends
   }
 
   private newWordIsTooLong_(): boolean {
-    return this.getTrimmedNewWord_().length > MAX_CUSTOM_DICTIONARY_WORD_BYTES;
+    // The limit applies to the UTF-8 encoded word, so count bytes rather than
+    // UTF-16 code units, otherwise words with non-ASCII characters can pass
+    // this check and then be silently dropped by the backend.
+    return new TextEncoder().encode(this.getTrimmedNewWord_()).length >
+        MAX_CUSTOM_DICTIONARY_WORD_BYTES;
   }
 
   /**
