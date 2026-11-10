@@ -123,7 +123,9 @@ export class SettingsPerformancePageElement extends
     // <if expr="_google_chrome">
     _e.stopPropagation();
     PerformanceBrowserProxyImpl.getInstance().openFeedbackDialog(
-        PerformanceFeedbackCategory.NOTIFICATIONS);
+        this.settingsRefresh2026Enabled_ ?
+            PerformanceFeedbackCategory.SETTINGS :
+            PerformanceFeedbackCategory.NOTIFICATIONS);
     // </if>
   }
 }

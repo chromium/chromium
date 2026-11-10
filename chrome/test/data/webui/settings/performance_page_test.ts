@@ -7,6 +7,9 @@ import 'chrome://settings/settings.js';
 import type {CrIconButtonElement} from 'chrome://settings/lazy_load.js';
 import type {ExceptionEditDialogElement, ExceptionEntryElement, ExceptionListElement, ExceptionTabbedAddDialogElement, SettingsPerformancePageElement, SettingsTabHoverPreviewPageElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {convertDateToWindowsEpoch, DISCARD_RING_PREF, HOVER_CARD_IMAGES_PREF, HOVER_CARD_MEMORY_USAGE_PREF, loadTimeData, MemorySaverModeExceptionListAction, PERFORMANCE_INTERVENTION_NOTIFICATION_PREF, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, PrefsBrowserProxy, PrefService, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF} from 'chrome://settings/settings.js';
+// <if expr="_google_chrome">
+import {PerformanceFeedbackCategory} from 'chrome://settings/settings.js';
+// </if>
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -333,6 +336,18 @@ suite('TabDiscardExceptionList', function() {
     assertTrue(isVisible(exceptionList.$.addButton));
     assertExceptionListEquals([]);
   });
+
+  // <if expr="_google_chrome">
+  test('SendFeedbackSettingsRefresh2026', async function() {
+    await enableSettingsRefresh2026();
+    const section = performancePage.shadowRoot.querySelector('settings-section');
+    assertTrue(!!section);
+    section.shadowRoot.querySelector<HTMLElement>('#feedback')!.click();
+    assertEquals(
+        PerformanceFeedbackCategory.SETTINGS,
+        await performanceBrowserProxy.whenCalled('openFeedbackDialog'));
+  });
+  // </if>
 
   test('ManagedExceptionList', async () => {
     const userRules = 3;

@@ -121,6 +121,31 @@ suite('PerformancePageIndex', function() {
     }
   });
 
+  // <if expr="_google_chrome">
+  test('SendFeedbackButtons_SettingsRefresh2026', async function() {
+    loadTimeData.overrideValues({settingsRefresh2026: 'settings-refresh-2026'});
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    index = document.createElement('settings-performance-page-index');
+    document.body.appendChild(index);
+    await microtasksFinished();
+
+    const performanceView = index.$.viewManager.querySelector('#performance');
+    assertTrue(!!performanceView);
+    const performanceSection =
+        performanceView.shadowRoot!.querySelector('settings-section');
+    assertTrue(!!performanceSection);
+    assertTrue(performanceSection.showSendFeedbackButton);
+
+    for (const id of ['tab-hover-preview', 'memory', 'battery', 'speed']) {
+      const view = index.$.viewManager.querySelector(`#${id}`);
+      assertTrue(!!view);
+      const section = view.shadowRoot!.querySelector('settings-section');
+      assertTrue(!!section);
+      assertFalse(section.showSendFeedbackButton, id);
+    }
+  });
+  // </if>
+
   test('BatteryVisibility_HasBattery', async function() {
     await browserProxy.whenCalled('getDeviceHasBattery');
     const batteryPage =

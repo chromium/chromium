@@ -114,7 +114,7 @@ export {SettingsPeoplePageIndexElement} from './people_page/people_page_index.js
 export {SettingsSyncAccountControlElement} from './people_page/sync_account_control.js';
 export {BATTERY_SAVER_MODE_PREF, SettingsBatteryPageElement} from './performance_page/battery_page.js';
 export {MEMORY_SAVER_MODE_AGGRESSIVENESS_PREF, MEMORY_SAVER_MODE_PREF, SettingsMemoryPageElement} from './performance_page/memory_page.js';
-export {PerformanceBrowserProxyImpl} from './performance_page/performance_browser_proxy.js';
+export {PerformanceBrowserProxyImpl, PerformanceFeedbackCategory} from './performance_page/performance_browser_proxy.js';
 export type {CpuPerformanceInfo, PerformanceBrowserProxy} from './performance_page/performance_browser_proxy.js';
 export {BatterySaverModeState, MemorySaverModeAggressiveness, MemorySaverModeExceptionListAction, MemorySaverModeState, PerformanceMetricsProxyImpl} from './performance_page/performance_metrics_proxy.js';
 export type {PerformanceMetricsProxy} from './performance_page/performance_metrics_proxy.js';

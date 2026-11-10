@@ -92,7 +92,7 @@ export class SettingsBatteryPageElement extends SettingsBatteryPageElementBase {
 
   protected showSendFeedbackButton_(): boolean {
     // <if expr="_google_chrome">
-    return true;
+    return loadTimeData.getString('settingsRefresh2026') === '';
     // </if>
     // <if expr="not _google_chrome">
     return false;

@@ -9,6 +9,7 @@ export enum PerformanceFeedbackCategory {
   TABS = 'performance_tabs',
   BATTERY = 'performance_battery',
   SPEED = 'performance_speed',
+  SETTINGS = 'performance_settings',
 }
 
 export interface CpuPerformanceInfo {

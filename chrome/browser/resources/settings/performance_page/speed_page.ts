@@ -161,7 +161,7 @@ export class SpeedPageElement extends SpeedPageElementBase {
 
   protected showSendFeedbackButton_(): boolean {
     // <if expr="_google_chrome">
-    return true;
+    return !this.settingsRefresh2026Enabled_;
     // </if>
     // <if expr="not _google_chrome">
     return false;
