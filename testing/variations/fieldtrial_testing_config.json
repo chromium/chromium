@@ -18605,8 +18605,6 @@
     "SubframeNotVisibleIfParentNotVisible": [
         {
             "platforms": [
-                "android",
-                "android_desktop",
                 "chromeos",
                 "linux",
                 "mac",
