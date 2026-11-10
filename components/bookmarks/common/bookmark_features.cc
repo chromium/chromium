@@ -50,7 +50,7 @@ BASE_FEATURE_PARAM(std::string,
                    kBookmarkEncryptionStageParam,
                    &kEncryptBookmarks,
                    "stage",
-                   "write_both_read_only_clear");
+                   "write_both_read_prefer_encrypted");
 
 constexpr auto kBookmarkEncryptionStageMap =
     base::MakeFixedFlatMap<std::string_view, BookmarkEncryptionStage>(

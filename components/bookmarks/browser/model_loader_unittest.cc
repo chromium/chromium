@@ -82,7 +82,18 @@ MATCHER(FileAndBackupFileExist, "") {
          base::PathExists(arg.ReplaceExtension(kBackupExtension));
 }
 
-TEST(ModelLoaderTest, LoadEmptyModelFromInexistentFile) {
+class ModelLoaderTest : public testing::Test {
+ protected:
+  ModelLoaderTest() {
+    // TODO(crbug.com/435317726): Update the tests using this fixture to setup
+    // encrypted versions of the special test files after launch.
+    feature_list_.InitAndDisableFeature(kEncryptBookmarks);
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(ModelLoaderTest, LoadEmptyModelFromInexistentFile) {
   base::HistogramTester histogram_tester;
   base::test::TaskEnvironment task_environment;
   const base::FilePath test_file_clear =
@@ -167,7 +178,7 @@ TEST(ModelLoaderTest, LoadEmptyModelFromInexistentFile) {
       /*expected_count=*/0);
 }
 
-TEST(ModelLoaderTest, LoadEmptyModelFromInvalidJson) {
+TEST_F(ModelLoaderTest, LoadEmptyModelFromInvalidJson) {
   base::HistogramTester histogram_tester;
   base::test::TaskEnvironment task_environment;
   const base::FilePath test_file_clear =
@@ -252,7 +263,7 @@ TEST(ModelLoaderTest, LoadEmptyModelFromInvalidJson) {
       /*expected_count=*/0);
 }
 
-TEST(ModelLoaderTest, LoadEmptyFromImproperlyEncodedJSON) {
+TEST_F(ModelLoaderTest, LoadEmptyFromImproperlyEncodedJSON) {
   base::HistogramTester histogram_tester;
   base::test::TaskEnvironment task_environment;
   const base::FilePath test_file_clear =
@@ -337,7 +348,7 @@ TEST(ModelLoaderTest, LoadEmptyFromImproperlyEncodedJSON) {
       /*expected_count=*/0);
 }
 
-TEST(ModelLoaderTest, LoadNonEmptyModel) {
+TEST_F(ModelLoaderTest, LoadNonEmptyModel) {
   base::HistogramTester histogram_tester;
   base::test::TaskEnvironment task_environment;
   const base::FilePath test_file_clear =
@@ -427,7 +438,7 @@ TEST(ModelLoaderTest, LoadNonEmptyModel) {
       /*expected_count=*/0);
 }
 
-TEST(ModelLoaderTest, LoadNonEmptyModelFromOneFileWithInternalIdCollisions) {
+TEST_F(ModelLoaderTest, LoadNonEmptyModelFromOneFileWithInternalIdCollisions) {
   base::HistogramTester histogram_tester;
   base::test::TaskEnvironment task_environment;
   const base::FilePath test_file_clear =
@@ -507,7 +518,7 @@ TEST(ModelLoaderTest, LoadNonEmptyModelFromOneFileWithInternalIdCollisions) {
       /*expected_count=*/0);
 }
 
-TEST(ModelLoaderTest, LoadTwoFilesWithNonCollidingIds) {
+TEST_F(ModelLoaderTest, LoadTwoFilesWithNonCollidingIds) {
   base::HistogramTester histogram_tester;
   base::test::TaskEnvironment task_environment;
   const base::FilePath test_file1_clear =
@@ -626,7 +637,7 @@ TEST(ModelLoaderTest, LoadTwoFilesWithNonCollidingIds) {
       /*expected_count=*/1);
 }
 
-TEST(ModelLoaderTest, LoadTwoFilesWithCollidingIdsAcross) {
+TEST_F(ModelLoaderTest, LoadTwoFilesWithCollidingIdsAcross) {
   base::HistogramTester histogram_tester;
   base::test::TaskEnvironment task_environment;
   const base::FilePath test_file_clear =
@@ -706,7 +717,7 @@ TEST(ModelLoaderTest, LoadTwoFilesWithCollidingIdsAcross) {
                                       /*expected_bucket_count=*/1);
 }
 
-TEST(ModelLoaderTest, LoadTwoFilesWhereFirstHasInternalIdCollisions) {
+TEST_F(ModelLoaderTest, LoadTwoFilesWhereFirstHasInternalIdCollisions) {
   base::HistogramTester histogram_tester;
   base::test::TaskEnvironment task_environment;
   const base::FilePath test_file1_clear =
@@ -795,7 +806,7 @@ TEST(ModelLoaderTest, LoadTwoFilesWhereFirstHasInternalIdCollisions) {
                                       /*expected_bucket_count=*/1);
 }
 
-TEST(ModelLoaderTest, LoadTwoFilesWhereSecondHasInternalIdCollisions) {
+TEST_F(ModelLoaderTest, LoadTwoFilesWhereSecondHasInternalIdCollisions) {
   base::HistogramTester histogram_tester;
   base::test::TaskEnvironment task_environment;
   const base::FilePath test_file1_clear =
@@ -883,7 +894,7 @@ TEST(ModelLoaderTest, LoadTwoFilesWhereSecondHasInternalIdCollisions) {
                                       /*expected_bucket_count=*/1);
 }
 
-TEST(ModelLoaderTest, LoadTwoFilesWhereBothHaveInternalIdCollisions) {
+TEST_F(ModelLoaderTest, LoadTwoFilesWhereBothHaveInternalIdCollisions) {
   base::HistogramTester histogram_tester;
   base::test::TaskEnvironment task_environment;
   const base::FilePath test_file1_clear =
@@ -971,7 +982,7 @@ TEST(ModelLoaderTest, LoadTwoFilesWhereBothHaveInternalIdCollisions) {
                                       /*expected_bucket_count=*/1);
 }
 
-TEST(ModelLoaderTest, LoadTwoFilesWhereTheLocalOrSyncableFileDoesNotExist) {
+TEST_F(ModelLoaderTest, LoadTwoFilesWhereTheLocalOrSyncableFileDoesNotExist) {
   base::HistogramTester histogram_tester;
   base::test::TaskEnvironment task_environment;
   const base::FilePath test_file1_clear =
@@ -1069,7 +1080,7 @@ TEST(ModelLoaderTest, LoadTwoFilesWhereTheLocalOrSyncableFileDoesNotExist) {
       /*expected_count=*/1);
 }
 
-TEST(ModelLoaderTest, LoadModelWithNestedUserFolders) {
+TEST_F(ModelLoaderTest, LoadModelWithNestedUserFolders) {
   base::HistogramTester histogram_tester;
   base::test::TaskEnvironment task_environment;
   const base::FilePath test_file_clear =
@@ -1633,7 +1644,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(BookmarkEncryptionStage::kWriteBothReadOnlyClear,
                     BookmarkEncryptionStage::kWriteBothReadPreferEncrypted));
 
-TEST(ModelLoaderTest, LoadBookmarks_ShouldReportDecryptionFailed) {
+TEST_F(ModelLoaderTest, LoadBookmarks_ShouldReportDecryptionFailed) {
   base::test::ScopedFeatureList features;
   test::InitFeaturesForBookmarkTestEncryptionStage(
       features, BookmarkEncryptionStage::kWriteBothReadOnlyClear);
