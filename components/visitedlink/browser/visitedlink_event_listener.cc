@@ -163,6 +163,8 @@ VisitedLinkEventListener::VisitedLinkEventListener(
 VisitedLinkEventListener::~VisitedLinkEventListener() {
   if (!pending_visited_links_.empty())
     pending_visited_links_.clear();
+  // An injected test timer can outlive this listener.
+  coalesce_timer_->Stop();
 }
 
 void VisitedLinkEventListener::NewTable(

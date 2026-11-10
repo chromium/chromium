@@ -1423,6 +1423,19 @@ TEST_F(PseudoPartitionedVisitedLinkTest, HistogramLogging) {
       "History.VisitedLinks.WebView.LookupCollisionCount2", 2);
 }
 
+TEST(VisitedLinkEventListenerTest, StopsCoalesceTimerOnDestruction) {
+  content::BrowserTaskEnvironment task_environment;
+  content::TestBrowserContext browser_context;
+  base::MockOneShotTimer timer;
+  {
+    VisitedLinkEventListener listener(&browser_context);
+    listener.SetCoalesceTimerForTest(&timer);
+    listener.Add(1);
+    ASSERT_TRUE(timer.IsRunning());
+  }
+  EXPECT_FALSE(timer.IsRunning());
+}
+
 class VisitCountingContext : public mojom::VisitedLinkNotificationSink {
  public:
   VisitCountingContext()
