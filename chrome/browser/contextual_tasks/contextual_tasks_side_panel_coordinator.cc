@@ -116,8 +116,14 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "google_apis/gaia/gaia_constants.h"
+#include "google_apis/gaia/gaia_urls.h"
+#include "net/cookies/cookie_change_dispatcher.h"
+#include "net/cookies/cookie_options.h"
+#include "net/cookies/cookie_partition_key_collection.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "third_party/lens_server_proto/search_communication.pb.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
@@ -446,13 +452,21 @@ ContextualTasksSidePanelCoordinator::ContextualTasksSidePanelCoordinator(
   contextual_tasks_panel_host_->AddObserver(this);
 
   if (IsContextualTasksSidePanelRearchitectureEnabled()) {
+    Profile* profile = browser_window_->GetProfile();
     if (signin::IdentityManager* identity_manager =
-            IdentityManagerFactory::GetForProfile(
-                browser_window_->GetProfile())) {
+            IdentityManagerFactory::GetForProfile(profile)) {
       identity_manager_observation_.Observe(identity_manager);
       is_signed_in_to_web_ = !identity_manager->GetAccountsInCookieJar()
                                   .GetPotentiallyInvalidSignedInAccounts()
                                   .empty();
+    } else if (profile && profile->IsOffTheRecord()) {
+      if (content::StoragePartition* partition =
+              profile->GetDefaultStoragePartition()) {
+        partition->GetCookieManagerForBrowserProcess()->AddCookieChangeListener(
+            GaiaUrls::GetInstance()->secure_google_url(), std::nullopt,
+            otr_cookie_listener_receiver_.BindNewPipeAndPassRemote());
+      }
+      CheckOffTheRecordSigninCookie();
     }
   }
 
@@ -1800,6 +1814,15 @@ void ContextualTasksSidePanelCoordinator::OnIdentityManagerShutdown(
   identity_manager_observation_.Reset();
 }
 
+void ContextualTasksSidePanelCoordinator::OnCookieChange(
+    const net::CookieChangeInfo& change) {
+  if (GaiaConstants::kGaiaSigninCookieName != change.cookie.Name() &&
+      change.cause != net::CookieChangeCause::EXPLICIT) {
+    return;
+  }
+  CheckOffTheRecordSigninCookie();
+}
+
 void ContextualTasksSidePanelCoordinator::
     ResetWebContentsToZeroStateAfterWebSignOut() {
   ContextualTasksUiService* ui_service = GetUiService();
@@ -1908,6 +1931,40 @@ void ContextualTasksSidePanelCoordinator::
     panel.web_contents->GetController().LoadURL(
         url, content::Referrer(), ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
         std::string());
+  }
+}
+
+void ContextualTasksSidePanelCoordinator::CheckOffTheRecordSigninCookie() {
+  Profile* profile = browser_window_ ? browser_window_->GetProfile() : nullptr;
+  if (!profile || !profile->GetDefaultStoragePartition()) {
+    return;
+  }
+  network::mojom::CookieManager* cookie_manager =
+      profile->GetDefaultStoragePartition()
+          ->GetCookieManagerForBrowserProcess();
+  if (!cookie_manager) {
+    return;
+  }
+  cookie_manager->GetCookieList(
+      GaiaUrls::GetInstance()->secure_google_url(),
+      net::CookieOptions::MakeAllInclusive(),
+      net::CookiePartitionKeyCollection(),
+      base::BindOnce(
+          &ContextualTasksSidePanelCoordinator::OnOffTheRecordCookiesRead,
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ContextualTasksSidePanelCoordinator::OnOffTheRecordCookiesRead(
+    const net::CookieAccessResultList& cookies,
+    const net::CookieAccessResultList& /*excluded_cookies*/) {
+  const bool was_signed_in_to_web = is_signed_in_to_web_;
+  is_signed_in_to_web_ = std::ranges::any_of(
+      cookies, [](const net::CookieWithAccessResult& cookie_with_result) {
+        return cookie_with_result.cookie.Name() ==
+               GaiaConstants::kGaiaSigninCookieName;
+      });
+  if (was_signed_in_to_web && !is_signed_in_to_web_) {
+    ResetWebContentsToZeroStateAfterWebSignOut();
   }
 }
 
