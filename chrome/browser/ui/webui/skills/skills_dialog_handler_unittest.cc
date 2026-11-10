@@ -40,7 +40,15 @@ class MockSkillsDialogDelegate : public SkillsDialogDelegate {
  public:
   MOCK_METHOD(void, CloseDialog, (), (override));
   MOCK_METHOD(void, OnSkillSaved, (const std::string&), (override));
+  MOCK_METHOD(void,
+              OnSkillSaved,
+              (const std::string&, const std::string&, const std::string&),
+              (override));
   MOCK_METHOD(void, OnSkillDeleted, (const std::string&), (override));
+  MOCK_METHOD(void,
+              OnSkillDeleted,
+              (const std::string&, base::OnceCallback<void(bool)>),
+              (override));
   MOCK_METHOD(BrowserWindowInterface*,
               GetBrowserWindowInterface,
               (),

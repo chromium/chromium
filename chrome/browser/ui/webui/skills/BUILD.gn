@@ -51,6 +51,7 @@ source_set("skills") {
     "//chrome/browser/signin",
     "//chrome/browser/skills",
     "//chrome/browser/skills:public",
+    "//chrome/browser/tab_list",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/toasts/api:toasts",

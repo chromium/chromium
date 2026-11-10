@@ -65,10 +65,16 @@ class SkillsUiTabController : public SkillsUiTabControllerInterface,
                    bool auto_submit) override;
   void SendPrompt(std::string_view prompt) override;
 
-  // SkillsDialogDelegate override:
+  // SkillsDialogDelegate & SkillsUiTabControllerInterface override:
   void CloseDialog() override;
   void OnSkillSaved(const std::string& skill_id) override;
+  void OnSkillSaved(const std::string& skill_id,
+                    const std::string& skill_name,
+                    const std::string& skill_icon) override;
   void OnSkillDeleted(const std::string& skill_id) override;
+  void OnSkillDeleted(const std::string& skill_id,
+                      base::OnceCallback<void(bool)> callback) override;
+  void InvokeSkill(std::string_view skill_id) override;
   BrowserWindowInterface* GetBrowserWindowInterface() override;
 
   // views::WidgetObserver override:
