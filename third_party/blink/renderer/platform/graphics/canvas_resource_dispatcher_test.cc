@@ -462,13 +462,13 @@ TEST_F(CanvasResourceDispatcherTest,
       mock_embedded_frame_sink_provider.CreateScopedOverrideMojoInterface(
           &embedded_frame_sink_provider_receiver);
 
-  auto* context = MakeGarbageCollected<MockContextLifecycleNotifier>();
+  ScopedMockContextLifecycleNotifier context;
   auto* client = MakeGarbageCollected<MockBeginFrameProviderClient>();
   BeginFrameProviderParams params;
   params.parent_frame_sink_id = viz::FrameSinkId(kClientId, kSinkId);
   params.frame_sink_id = viz::FrameSinkId(kClientId, kSinkId + 1);
-  auto* provider =
-      MakeGarbageCollected<BeginFrameProvider>(params, client, context);
+  auto* provider = MakeGarbageCollected<BeginFrameProvider>(params, client,
+                                                            context.Notifier());
 
   provider->RequestBeginFrame();
   embedded_frame_sink_provider_receiver.FlushForTesting();
