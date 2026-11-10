@@ -1490,6 +1490,25 @@ features through Chrome Labs. -->
   </summary>
 </histogram>
 
+<histogram
+    name="WebUI.TopChrome.Graphics.Smoothness.PercentDroppedFrames3.AllSequences"
+    units="%" expires_after="2027-05-09">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Graphics.Smoothness.PercentDroppedFrames3.AllSequences samples recorded by
+    top-chrome WebUI renderer processes (for example
+    chrome://webui-toolbar.top-chrome). Not recorded directly: when the
+    WebiumMetricsMapping feature is enabled, SubprocessMetricsProvider renames
+    those samples to this histogram as it merges histograms from top-chrome
+    WebUI renderers, per the Finch-provided MetricsNameMappingConfiguration.
+    Those samples then no longer count toward
+    Graphics.Smoothness.PercentDroppedFrames3.AllSequences, which separates jank
+    in top-chrome WebUI from jank in web content.
+  </summary>
+</histogram>
+
 <histogram name="WebUI.TopChrome.Preload.Reason" enum="WebUIPreloadReason"
     expires_after="2027-04-11">
   <owner>kerenzhu@chromium.org</owner>
