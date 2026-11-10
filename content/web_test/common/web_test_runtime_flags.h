@@ -6,6 +6,7 @@
 #define CONTENT_WEB_TEST_COMMON_WEB_TEST_RUNTIME_FLAGS_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "content/web_test/common/tracked_dictionary.h"
@@ -47,13 +48,13 @@ class WebTestRuntimeFlags {
   void set_##name(int new_value) { dict_.SetInteger(#name, new_value); }
 
 #define DEFINE_STRING_WEB_TEST_RUNTIME_FLAG(name)             \
-  std::string name() const {                                  \
+  const std::string& name() const {                           \
     const std::string* result =                               \
         dict_.current_values().FindStringByDottedPath(#name); \
     DCHECK(result);                                           \
     return *result;                                           \
   }                                                           \
-  void set_##name(const std::string& new_value) {             \
+  void set_##name(std::string_view new_value) {               \
     dict_.SetString(#name, new_value);                        \
   }
 

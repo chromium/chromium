@@ -18,6 +18,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -354,8 +355,9 @@ class TestRunnerBindings final : public gin::Wrappable<TestRunnerBindings> {
                        v8::Local<v8::Function> callback);
   void SetCustomPolicyDelegate(gin::Arguments* args);
   void SetCustomTextOutput(const std::string& output);
-  void SetDisallowedSubresourcePathSuffixes(std::vector<std::string> suffixes,
-                                            bool block_subresources);
+  void SetDisallowedSubresourcePathSuffixes(
+      const std::vector<std::string>& suffixes,
+      bool block_subresources);
   void SetDomainRelaxationForbiddenForURLScheme(bool forbidden,
                                                 const std::string& scheme);
   void SetDumpConsoleMessages(bool value);
@@ -425,7 +427,7 @@ class TestRunnerBindings final : public gin::Wrappable<TestRunnerBindings> {
 
   bool IsCommandEnabled(const std::string& command);
   std::string PathToLocalResource(const std::string& path);
-  std::string PlatformName();
+  std::string_view PlatformName();
   std::string SelectionAsMarkup();
   void TextZoomIn();
   void TextZoomOut();
@@ -963,6 +965,7 @@ void TestRunnerBindings::InvokeV8Callback(
   v8::Context::Scope context_scope(context);
 
   v8::LocalVector<v8::Value> local_args(isolate);
+  local_args.reserve(bound_args.size() + runtime_args.size());
   for (auto& arg : bound_args)
     local_args.push_back(v8::Local<v8::Value>::New(isolate, std::move(arg)));
   for (const auto& arg : runtime_args)
@@ -1263,20 +1266,20 @@ void TestRunnerBindings::EvaluateScriptInOwnTask(
                                 blink::WebURL(GURL(url)));
   GetWebFrame()
       ->GetTaskRunner(blink::TaskType::kInternalTest)
-      ->PostTask(
-          FROM_HERE,
-          base::BindOnce(
-              [](base::WeakPtr<TestRunnerBindings> weak_this,
-                 blink::WebScriptSource source, base::OnceClosure closure) {
-                if (!weak_this || !weak_this->frame_) {
-                  return;
-                }
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(
+                     [](base::WeakPtr<TestRunnerBindings> weak_this,
+                        const blink::WebScriptSource& source,
+                        base::OnceClosure closure) {
+                       if (!weak_this || !weak_this->frame_) {
+                         return;
+                       }
 
-                weak_this->GetWebFrame()->ExecuteScript(source);
-                std::move(closure).Run();
-              },
-              weak_ptr_factory_.GetWeakPtr(), std::move(source),
-              WrapV8Closure(v8_callback)));
+                       weak_this->GetWebFrame()->ExecuteScript(source);
+                       std::move(closure).Run();
+                     },
+                     weak_ptr_factory_.GetWeakPtr(), std::move(source),
+                     WrapV8Closure(v8_callback)));
 }
 
 void TestRunnerBindings::SetIsolatedWorldInfo(
@@ -1344,7 +1347,7 @@ void TestRunnerBindings::AddOriginAccessAllowListEntry(
   DCHECK(url.has_scheme());
   DCHECK(url.has_host());
 
-  runner_->AddOriginAccessAllowListEntry(source_origin, destination_protocol,
+  runner_->AddOriginAccessAllowListEntry(url, destination_protocol,
                                          destination_host,
                                          allow_destination_subdomains);
 }
@@ -1565,7 +1568,7 @@ void TestRunnerBindings::SimulateScreenOrientationLockChanged(
 }
 
 void TestRunnerBindings::SetDisallowedSubresourcePathSuffixes(
-    std::vector<std::string> suffixes,
+    const std::vector<std::string>& suffixes,
     bool block_subresources) {
   if (!frame_) {
     return;
@@ -2194,13 +2197,13 @@ void TestRunnerBindings::SimulateWebNotificationClick(gin::Arguments* args) {
 
   // Optional |reply| argument.
   if (args->Length() >= 3) {
-    std::string reply_string;
+    std::u16string reply_string;
     if (!args->GetNext(&reply_string)) {
       args->ThrowError();
       return;
     }
 
-    reply = base::UTF8ToUTF16(reply_string);
+    reply = std::move(reply_string);
   }
 
   frame_->GetWebTestControlHostRemote()->SimulateWebNotificationClick(
@@ -2448,7 +2451,7 @@ void TestRunnerBindings::ResolveBeforeInstallPromptPromise(
   }
 }
 
-std::string TestRunnerBindings::PlatformName() {
+std::string_view TestRunnerBindings::PlatformName() {
   if (!frame_) {
     return {};
   }
@@ -2746,9 +2749,9 @@ bool TestRunner::WorkQueue::ProcessWorkItemInternal(
   NOTREACHED();
 }
 
-void TestRunner::WorkQueue::ReplicateStates(const base::DictValue& values,
+void TestRunner::WorkQueue::ReplicateStates(base::DictValue&& values,
                                             WebFrameTestProxy& source) {
-  states_.ApplyUntrackedChanges(values);
+  states_.ApplyUntrackedChanges(std::move(values));
   if (!has_items())
     controller_->FinishTestIfReady(source);
 }
@@ -2806,6 +2809,7 @@ void TestRunner::Reset() {
   setlocale(LC_NUMERIC, "C");
 
   dump_as_audio_ = false;
+  audio_data_.clear();
   dump_back_forward_list_ = false;
   test_repaint_ = false;
   sweep_horizontally_ = false;
@@ -2868,11 +2872,11 @@ bool TestRunner::ShouldDumpAsCustomText() const {
   return web_test_runtime_flags_.has_custom_text_output();
 }
 
-std::string TestRunner::CustomDumpText() const {
+const std::string& TestRunner::CustomDumpText() const {
   return web_test_runtime_flags_.custom_text_output();
 }
 
-void TestRunner::SetCustomTextOutput(const std::string& text,
+void TestRunner::SetCustomTextOutput(std::string_view text,
                                      WebFrameTestProxy& source) {
   web_test_runtime_flags_.set_custom_text_output(text);
   web_test_runtime_flags_.set_has_custom_text_output(true);
@@ -3112,7 +3116,7 @@ SkBitmap TestRunner::DumpPixelsInRenderer(blink::WebLocalFrame* main_frame) {
 
 #if BUILDFLAG(ENABLE_PRINTING)
   blink::WebLocalFrame* target_frame = main_frame;
-  std::string frame_name = web_test_runtime_flags_.printing_frame();
+  const std::string& frame_name = web_test_runtime_flags_.printing_frame();
   if (!frame_name.empty()) {
     blink::WebFrame* frame_to_print =
         main_frame->FindFrameByName(blink::WebString::FromUtf8(frame_name));
@@ -3127,12 +3131,12 @@ SkBitmap TestRunner::DumpPixelsInRenderer(blink::WebLocalFrame* main_frame) {
 }
 
 void TestRunner::ReplicateWebTestRuntimeFlagsChanges(
-    const base::DictValue& changed_values) {
+    base::DictValue&& changed_values) {
   if (!test_is_running_)
     return;
 
   web_test_runtime_flags_.tracked_dictionary().ApplyUntrackedChanges(
-      changed_values);
+      std::move(changed_values));
 }
 
 bool TestRunner::HasCustomTextDump(std::string* custom_text_dump) const {
@@ -3475,7 +3479,7 @@ void TestRunner::QueueNonLoadingScript(const std::string& script,
 }
 
 void TestRunner::QueueLoad(const GURL& current_url,
-                           const std::string& relative_url,
+                           std::string_view relative_url,
                            const std::string& target,
                            WebFrameTestProxy& source) {
   GURL full_url = current_url.Resolve(relative_url);
@@ -3489,11 +3493,11 @@ void TestRunner::ProcessWorkItem(mojom::WorkItemPtr work_item,
   work_queue_.ProcessWorkItem(std::move(work_item), source);
 }
 
-void TestRunner::ReplicateWorkQueueStates(const base::DictValue& values,
+void TestRunner::ReplicateWorkQueueStates(base::DictValue&& values,
                                           WebFrameTestProxy& source) {
   if (!test_is_running_)
     return;
-  work_queue_.ReplicateStates(values, source);
+  work_queue_.ReplicateStates(std::move(values), source);
 }
 
 bool TestRunner::IsFrameInMainWindow(blink::WebLocalFrame* frame) {
@@ -3542,14 +3546,15 @@ void TestRunner::SetMainWindowAndTestConfiguration(
   test_config_ = std::move(*config);
   SetTestIsRunning(true);
 
-  std::string spec = GURL(test_config_.test_url).spec();
+  std::string_view spec = test_config_.test_url.spec();
   size_t path_start = spec.rfind("web_tests/");
-  if (path_start != std::string::npos)
+  if (path_start != std::string_view::npos) {
     spec = spec.substr(path_start);
+  }
 
   bool is_devtools_test =
-      spec.find("/devtools/") != std::string::npos ||
-      spec.find("/inspector-protocol/") != std::string::npos;
+      spec.find("/devtools/") != std::string_view::npos ||
+      spec.find("/inspector-protocol/") != std::string_view::npos;
 
   auto* source =
       static_cast<WebFrameTestProxy*>(RenderFrame::FromWebFrame(frame));
@@ -3569,14 +3574,15 @@ void TestRunner::SetMainWindowAndTestConfiguration(
   bool wpt_printing_test = test_config_.wpt_print_mode;
 
   // For http/tests/loading/, which is served via httpd and becomes /loading/.
-  if (spec.find("/loading/") != std::string::npos)
+  if (spec.find("/loading/") != std::string_view::npos) {
     SetShouldDumpFrameLoadCallbacks(true, *source);
+  }
 
   if (IsWebPlatformTest(spec)) {
     SetIsWebPlatformTestsMode(*source);
 
-    if (spec.find("/print/") != std::string::npos ||
-        spec.find("-print.html") != std::string::npos) {
+    if (spec.find("/print/") != std::string_view::npos ||
+        spec.find("-print.html") != std::string_view::npos) {
       wpt_printing_test = true;
     }
   }
@@ -3594,7 +3600,7 @@ void TestRunner::SetMainWindowAndTestConfiguration(
 }
 
 blink::WebString TestRunner::GetAbsoluteWebStringFromUTF8Path(
-    const std::string& utf8_path) {
+    std::string_view utf8_path) {
   DCHECK(test_is_running_);
   base::FilePath path = base::FilePath::FromUTF8Unsafe(utf8_path);
   if (!path.IsAbsolute()) {
@@ -3650,11 +3656,11 @@ int TestRunner::InProcessWindowCount() {
 }
 
 void TestRunner::AddOriginAccessAllowListEntry(
-    const std::string& source_origin,
-    const std::string& destination_protocol,
-    const std::string& destination_host,
+    const GURL& source_origin,
+    std::string_view destination_protocol,
+    std::string_view destination_host,
     bool allow_destination_subdomains) {
-  blink::WebURL url((GURL(source_origin)));
+  blink::WebURL url(source_origin);
   if (!url.IsValid())
     return;
 
@@ -3676,7 +3682,7 @@ void TestRunner::SetTextSubpixelPositioning(bool value) {
 #endif
 }
 
-void TestRunner::SetMockScreenOrientation(const std::string& orientation_str,
+void TestRunner::SetMockScreenOrientation(std::string_view orientation_str,
                                           WebFrameTestProxy& frame) {
   display::mojom::ScreenOrientation orientation;
 
@@ -3749,8 +3755,7 @@ void TestRunner::DumpIconChanges(WebFrameTestProxy& source) {
 
 void TestRunner::SetAudioData(const gin::ArrayBufferView& view) {
   base::span<const uint8_t> src = view.span();
-  audio_data_.resize(src.size());
-  base::span(audio_data_).copy_from_nonoverlapping(src);
+  audio_data_.assign(src.begin(), src.end());
   dump_as_audio_ = true;
 }
 
@@ -3804,7 +3809,7 @@ void TestRunner::SetPrinting(WebFrameTestProxy& source) {
   SetPrintingForFrame("", source);
 }
 
-void TestRunner::SetPrintingForFrame(const std::string& frame_name,
+void TestRunner::SetPrintingForFrame(std::string_view frame_name,
                                      WebFrameTestProxy& source) {
   web_test_runtime_flags_.set_printing_frame(frame_name);
   web_test_runtime_flags_.set_is_printing(true);
@@ -4034,23 +4039,22 @@ void TestRunner::FinishTest(WebFrameTestProxy& source) {
 
   if (ShouldDumpAsAudio()) {
     TRACE_EVENT0("shell", "TestRunner::CaptureLocalAudioDump");
-    dump_result->audio = GetAudioData();
+    dump_result->audio = std::move(audio_data_);
   } else {
     TextResultType text_result_type = ShouldGenerateTextResults();
     bool pixel_result = ShouldGeneratePixelResults();
 
-    std::string spec = GURL(test_config_.test_url).spec();
+    std::string_view spec = test_config_.test_url.spec();
     size_t path_start = spec.rfind("web_tests/");
-    if (path_start != std::string::npos)
+    if (path_start != std::string_view::npos) {
       spec = spec.substr(path_start);
-
-    std::string mime_type =
-        web_frame->GetDocumentLoader()->GetWebResponse().MimeType().Utf8();
+    }
 
     // In a text/plain document, and in a dumpAsText/ subdirectory, we generate
     // text results no matter what the test may previously have requested.
-    if (mime_type == "text/plain" ||
-        spec.find("/dumpAsText/") != std::string::npos) {
+    if (web_frame->GetDocumentLoader()->GetWebResponse().MimeType() ==
+            "text/plain" ||
+        spec.find("/dumpAsText/") != std::string_view::npos) {
       text_result_type = TextResultType::kText;
       pixel_result = false;
     }
@@ -4063,9 +4067,8 @@ void TestRunner::FinishTest(WebFrameTestProxy& source) {
     //
     // The CustomTextDump always takes precedence if it's been specified by the
     // test.
-    std::string custom_text_dump;
-    if (HasCustomTextDump(&custom_text_dump)) {
-      dump_result->layout = custom_text_dump + "\n";
+    if (ShouldDumpAsCustomText()) {
+      dump_result->layout = base::StrCat({CustomDumpText(), "\n"});
     } else if (!IsRecursiveLayoutDumpRequested()) {
       TRACE_EVENT0("shell", "TestRunner::CaptureLocalLayoutDump");
       dump_result->layout = DumpLayoutAsString(web_frame, text_result_type);

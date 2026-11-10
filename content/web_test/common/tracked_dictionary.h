@@ -5,7 +5,7 @@
 #ifndef CONTENT_WEB_TEST_COMMON_TRACKED_DICTIONARY_H_
 #define CONTENT_WEB_TEST_COMMON_TRACKED_DICTIONARY_H_
 
-#include <string>
+#include <string_view>
 
 #include "base/values.h"
 
@@ -34,14 +34,15 @@ class TrackedDictionary {
   // Overwrites |current_values| with values present in |new_changes|.
   // The new values are not present in |changed_values| afterwards.
   void ApplyUntrackedChanges(const base::DictValue& new_changes);
+  void ApplyUntrackedChanges(base::DictValue&& new_changes);
 
   // Sets a value in |current_values| and tracks the change in |changed_values|.
-  void Set(const std::string& path, base::Value new_value);
+  void Set(std::string_view path, base::Value new_value);
 
   // Type-specific setter for convenience.
-  void SetBoolean(const std::string& path, bool new_value);
-  void SetInteger(const std::string& path, int new_value);
-  void SetString(const std::string& path, const std::string& new_value);
+  void SetBoolean(std::string_view path, bool new_value);
+  void SetInteger(std::string_view path, int new_value);
+  void SetString(std::string_view path, std::string_view new_value);
 
  private:
   base::DictValue current_values_;

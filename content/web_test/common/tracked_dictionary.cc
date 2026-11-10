@@ -4,6 +4,7 @@
 
 #include "content/web_test/common/tracked_dictionary.h"
 
+#include <string_view>
 #include <utility>
 
 namespace content {
@@ -16,14 +17,17 @@ void TrackedDictionary::ResetChangeTracking() {
 
 void TrackedDictionary::ApplyUntrackedChanges(
     const base::DictValue& new_changes) {
-  current_values_.Merge(new_changes.Clone());
+  ApplyUntrackedChanges(new_changes.Clone());
+}
 
+void TrackedDictionary::ApplyUntrackedChanges(base::DictValue&& new_changes) {
   for (const auto [key, value] : new_changes) {
     changed_values_.Remove(key);
   }
+  current_values_.Merge(std::move(new_changes));
 }
 
-void TrackedDictionary::Set(const std::string& path, base::Value new_value) {
+void TrackedDictionary::Set(std::string_view path, base::Value new_value) {
   // Is this truly a *new* value?
   if (const base::Value* old_value = current_values_.FindByDottedPath(path)) {
     if (*old_value == new_value)
@@ -34,16 +38,16 @@ void TrackedDictionary::Set(const std::string& path, base::Value new_value) {
   current_values_.SetByDottedPath(path, std::move(new_value));
 }
 
-void TrackedDictionary::SetBoolean(const std::string& path, bool new_value) {
+void TrackedDictionary::SetBoolean(std::string_view path, bool new_value) {
   Set(path, base::Value(new_value));
 }
 
-void TrackedDictionary::SetInteger(const std::string& path, int new_value) {
+void TrackedDictionary::SetInteger(std::string_view path, int new_value) {
   Set(path, base::Value(new_value));
 }
 
-void TrackedDictionary::SetString(const std::string& path,
-                                  const std::string& new_value) {
+void TrackedDictionary::SetString(std::string_view path,
+                                  std::string_view new_value) {
   Set(path, base::Value(new_value));
 }
 

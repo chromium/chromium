@@ -11,6 +11,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
@@ -160,8 +161,7 @@ class TestRunner {
 
   // Replicates changes to web test runtime flags (i.e. changes that happened in
   // another renderer). See also `OnWebTestRuntimeFlagsChanged()`.
-  void ReplicateWebTestRuntimeFlagsChanges(
-      const base::DictValue& changed_values);
+  void ReplicateWebTestRuntimeFlagsChanges(base::DictValue&& changed_values);
 
   // If custom text dump is present (i.e. if testRunner.setCustomTextOutput has
   // been called from javascript), then returns |true| and populates the
@@ -184,11 +184,11 @@ class TestRunner {
   // Methods used by WebViewTestClient and WebFrameTestClient.
   bool ShouldStayOnPageAfterHandlingBeforeUnload() const;
   bool ShouldDumpAsCustomText() const;
-  std::string CustomDumpText() const;
+  const std::string& CustomDumpText() const;
   void ShowDevTools(const std::string& settings,
                     const std::string& frontend_url);
   void SetShouldDumpAsLayout(bool, WebFrameTestProxy& source);
-  void SetCustomTextOutput(const std::string& text, WebFrameTestProxy& source);
+  void SetCustomTextOutput(std::string_view text, WebFrameTestProxy& source);
   void SetShouldGeneratePixelResults(bool, WebFrameTestProxy& source);
   void SetShouldDumpFrameLoadCallbacks(bool, WebFrameTestProxy& source);
   bool ShouldDumpEditingCallbacks() const;
@@ -248,7 +248,7 @@ class TestRunner {
       WebFrameTestProxy& source);
 
   void ProcessWorkItem(mojom::WorkItemPtr work_item, WebFrameTestProxy& source);
-  void ReplicateWorkQueueStates(const base::DictValue& changed_values,
+  void ReplicateWorkQueueStates(base::DictValue&& changed_values,
                                 WebFrameTestProxy& source);
 
   blink::WebEffectiveConnectionType effective_connection_type() const {
@@ -266,8 +266,7 @@ class TestRunner {
 
   // Returns an asbsolute file path. This depends on the current test
   // configuration so it should only be called while a test is running.
-  blink::WebString GetAbsoluteWebStringFromUTF8Path(
-      const std::string& utf8_path);
+  blink::WebString GetAbsoluteWebStringFromUTF8Path(std::string_view utf8_path);
 
   // Disables automatic drag and drop in web tests' web frame widget
   // (WebTestWebFrameWidgetImpl).
@@ -288,7 +287,7 @@ class TestRunner {
   // Helper class for managing events queued by methods like QueueLoad or
   // QueueScript.
   class WorkQueue {
-    static constexpr const char* kKeyFrozen = "frozen";
+    static constexpr std::string_view kKeyFrozen = "frozen";
 
    public:
     explicit WorkQueue(TestRunner* controller);
@@ -301,8 +300,7 @@ class TestRunner {
     void RequestWork(WebFrameTestProxy& source);
     void ProcessWorkItem(mojom::WorkItemPtr work_item,
                          WebFrameTestProxy& source);
-    void ReplicateStates(const base::DictValue& values,
-                         WebFrameTestProxy& source);
+    void ReplicateStates(base::DictValue&& values, WebFrameTestProxy& source);
 
     // Takes care of notifying the browser after a change to the state.
     void OnStatesChanged(WebFrameTestProxy& source);
@@ -321,7 +319,7 @@ class TestRunner {
 
     bool is_frozen() const { return GetStateValue(kKeyFrozen); }
 
-    bool GetStateValue(const char* key) const {
+    bool GetStateValue(std::string_view key) const {
       std::optional<bool> value =
           states_.current_values().FindBoolByDottedPath(key);
       DCHECK(value.has_value());
@@ -361,7 +359,7 @@ class TestRunner {
   void QueueNonLoadingScript(const std::string& script,
                              WebFrameTestProxy& source);
   void QueueLoad(const GURL& current_url,
-                 const std::string& relative_url,
+                 std::string_view relative_url,
                  const std::string& target,
                  WebFrameTestProxy& source);
 
@@ -384,9 +382,9 @@ class TestRunner {
   int InProcessWindowCount();
 
   // Allows web tests to manage origins' allow list.
-  void AddOriginAccessAllowListEntry(const std::string& source_origin,
-                                     const std::string& destination_protocol,
-                                     const std::string& destination_host,
+  void AddOriginAccessAllowListEntry(const GURL& source_origin,
+                                     std::string_view destination_protocol,
+                                     std::string_view destination_host,
                                      bool allow_destination_subdomains);
 
   // Enables or disables subpixel positioning (i.e. fractional X positions for
@@ -397,7 +395,7 @@ class TestRunner {
   void SetTextSubpixelPositioning(bool value);
 
   // Set the mock orientation on |view| to |orientation|.
-  void SetMockScreenOrientation(const std::string& orientation,
+  void SetMockScreenOrientation(std::string_view orientation,
                                 WebFrameTestProxy& frame);
   // Disable any mock orientation on |view| that is set.
   void DisableMockScreenOrientation(blink::WebView* view);
@@ -483,7 +481,7 @@ class TestRunner {
 
   // Causes layout to happen as if targeted to printed pages.
   void SetPrinting(WebFrameTestProxy& source);
-  void SetPrintingForFrame(const std::string& frame_name,
+  void SetPrintingForFrame(std::string_view frame_name,
                            WebFrameTestProxy& source);
   void SetPrintingSize(int width, int height, WebFrameTestProxy& source);
   void SetPrintingMargin(int size, WebFrameTestProxy& source);
