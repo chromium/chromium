@@ -12379,6 +12379,21 @@
             ]
         }
     ],
+    "LensOverlayCustomBottomSheet": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LensOverlayCustomBottomSheet"
+                    ]
+                }
+            ]
+        }
+    ],
     "LibraryPrefetcherOnlyOrderedText": [
         {
             "platforms": [
