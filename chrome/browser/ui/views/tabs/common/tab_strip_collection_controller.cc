@@ -466,6 +466,9 @@ void TabStripCollectionController::ToggleTabGroupCollapsedState(
 
   if (origin != ToggleTabGroupCollapsedStateOrigin::kMenuAction ||
       should_toggle_group) {
+    if (is_currently_collapsed && tab_closing_helper_) {
+      tab_closing_helper_->ExitTabClosingMode();
+    }
     model_->ChangeTabGroupVisuals(
         group->id(),
         tab_groups::TabGroupVisualData(group->visual_data()->title(),
@@ -675,6 +678,10 @@ void TabStripCollectionController::TabGroupFocusChanged(
     focus_transition_->target_follows_previous =
         model_->GetIndexOfTab(target_group->GetFirstTab()) >
         model_->GetIndexOfTab(previous_group->GetFirstTab());
+  }
+
+  if (tab_closing_helper_) {
+    tab_closing_helper_->ExitTabClosingMode();
   }
 
   const auto motion =

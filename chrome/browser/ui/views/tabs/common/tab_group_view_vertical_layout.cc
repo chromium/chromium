@@ -30,11 +30,6 @@ constexpr int kFocusedHeadersGap = 2;
 TabGroupViewVerticalLayout::TabGroupViewVerticalLayout() = default;
 TabGroupViewVerticalLayout::~TabGroupViewVerticalLayout() = default;
 
-gfx::Size TabGroupViewVerticalLayout::GetMinimumSize(
-    const views::View* host) const {
-  return CalculateProposedLayout(views::SizeBounds(0, 0)).host_size;
-}
-
 views::ProposedLayout TabGroupViewVerticalLayout::CalculateProposedLayout(
     const views::SizeBounds& size_bounds) const {
   views::ProposedLayout layouts;

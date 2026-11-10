@@ -500,18 +500,14 @@ void TabStripView::OnActiveTabChanged(const tabs::TabInterface* active_tab) {
   // Expand group if the activated tab is within a collapsed group unless
   // we are header dragging the collapsed group.
   if (active_tab->GetGroup().has_value()) {
-    TabCollectionNode* group_node = collection_node_->GetNodeForHandle(
+    const TabGroup* const tab_group =
         active_tab->GetBrowserWindowInterface()
             ->GetTabStripModel()
             ->group_model()
-            ->GetTabGroup(active_tab->GetGroup().value())
-            ->GetCollectionHandle());
-    if (group_node) {
-      auto* group_view = views::AsViewClass<TabGroupView>(group_node->view());
-      if (group_view && group_view->IsCollapsed()) {
-        group_view->ToggleCollapsedState(
-            ToggleTabGroupCollapsedStateOrigin::kMenuAction);
-      }
+            ->GetTabGroup(active_tab->GetGroup().value());
+    if (tab_group && tab_group->visual_data()->is_collapsed()) {
+      collection_node_->GetController()->ToggleTabGroupCollapsedState(
+          tab_group, ToggleTabGroupCollapsedStateOrigin::kTabsSelected);
     }
   }
 

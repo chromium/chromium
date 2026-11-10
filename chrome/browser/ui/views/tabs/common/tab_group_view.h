@@ -192,6 +192,7 @@ class TabGroupView : public TabCollectionZOrderManager,
   // updates occur only when collapse/expand animations complete, rather than
   // reacting immediately to visual data updates during animation.
   bool is_collapsed_ = false;
+  bool was_focused_ = false;
   bool is_focus_animating_ = false;
 
   const raw_ptr<TabGroupUnfocusButton> unfocus_header_ = nullptr;
