@@ -175,16 +175,11 @@ tabs::TabInterface* TabListBridge::OpenTab(const GURL& url,
 
 void TabListBridge::SetOpenerForTab(tabs::TabHandle target,
                                     tabs::TabHandle opener) {
-  const int target_index = GetIndexOfTab(target);
-  CHECK_NE(target_index, tab_list::kNoTabIndex);
-
-  tab_strip_->SetOpenerOfTabAt(target_index, opener.Get());
+  tab_strip_->SetOpenerOfTab(target, opener.Get());
 }
 
 tabs::TabInterface* TabListBridge::GetOpenerForTab(tabs::TabHandle target) {
-  const int target_index = GetIndexOfTab(target);
-  CHECK_NE(target_index, tab_list::kNoTabIndex);
-  return tab_strip_->GetOpenerOfTabAt(target_index);
+  return tab_strip_->GetOpenerOfTab(target);
 }
 
 tabs::TabInterface* TabListBridge::InsertWebContentsAt(
@@ -240,7 +235,7 @@ tabs::TabInterface* TabListBridge::GetTab(int index) {
 }
 
 int TabListBridge::GetIndexOfTab(tabs::TabHandle tab) {
-  return tab_strip_->GetIndexOfTab(tab.Get());
+  return tab_strip_->GetIndexOfTab(tab);
 }
 
 void TabListBridge::HighlightTabs(tabs::TabHandle tab_to_activate,
@@ -300,17 +295,11 @@ std::vector<tabs::TabInterface*> TabListBridge::GetAllTabs() {
 }
 
 void TabListBridge::PinTab(tabs::TabHandle tab) {
-  int index = GetIndexOfTab(tab);
-  CHECK_NE(index, tab_list::kNoTabIndex)
-      << "Trying to pin a tab that doesn't exist in this tab list.";
-  tab_strip_->SetTabPinned(index, true);
+  tab_strip_->SetTabPinned(tab, true);
 }
 
 void TabListBridge::UnpinTab(tabs::TabHandle tab) {
-  int index = GetIndexOfTab(tab);
-  CHECK_NE(index, tab_list::kNoTabIndex)
-      << "Trying to unpin a tab that doesn't exist in this tab list.";
-  tab_strip_->SetTabPinned(index, false);
+  tab_strip_->SetTabPinned(tab, false);
 }
 
 bool TabListBridge::ContainsTabGroup(tab_groups::TabGroupId group_id) {

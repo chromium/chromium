@@ -1460,14 +1460,30 @@ bool TabStripModel::TabsNeedLoadingUI() const {
 
 tabs::TabInterface* TabStripModel::GetOpenerOfTabAt(const int index) const {
   CHECK(ContainsIndex(index));
-  const tabs::TabModel* const tab = GetTabModelAtIndex(index);
+  return GetOpenerOfTab(GetTabAtIndex(index)->GetHandle());
+}
 
-  return tab->opener();
+tabs::TabInterface* TabStripModel::GetOpenerOfTab(tabs::TabHandle tab) const {
+  const tabs::TabInterface* tab_ptr = tab.Get();
+  CHECK(tab_ptr);
+  const tabs::TabModel* const tab_model =
+      static_cast<const tabs::TabModel*>(tab_ptr);
+  CHECK_EQ(tab_model->owning_model(), this);
+  return tab_model->opener();
 }
 
 void TabStripModel::SetOpenerOfTabAt(int index, tabs::TabInterface* opener) {
   CHECK(ContainsIndex(index));
-  GetTabModelAtIndex(index)->set_opener(opener);
+  SetOpenerOfTab(GetTabAtIndex(index)->GetHandle(), opener);
+}
+
+void TabStripModel::SetOpenerOfTab(tabs::TabHandle tab,
+                                   tabs::TabInterface* opener) {
+  tabs::TabInterface* tab_ptr = tab.Get();
+  CHECK(tab_ptr);
+  tabs::TabModel* const tab_model = static_cast<tabs::TabModel*>(tab_ptr);
+  CHECK_EQ(tab_model->owning_model(), this);
+  tab_model->set_opener(opener);
 }
 
 int TabStripModel::GetIndexOfLastWebContentsOpenedBy(const WebContents* opener,
@@ -1518,7 +1534,14 @@ void TabStripModel::TabNavigating(WebContents* contents,
 
 void TabStripModel::SetTabBlocked(int index, bool blocked) {
   CHECK(ContainsIndex(index));
-  tabs::TabModel* const tab_model = GetTabModelAtIndex(index);
+  SetTabBlocked(GetTabAtIndex(index)->GetHandle(), blocked);
+}
+
+void TabStripModel::SetTabBlocked(tabs::TabHandle tab, bool blocked) {
+  tabs::TabInterface* tab_ptr = tab.Get();
+  CHECK(tab_ptr);
+  tabs::TabModel* const tab_model = static_cast<tabs::TabModel*>(tab_ptr);
+  CHECK_EQ(tab_model->owning_model(), this);
   if (tab_model->IsBlocked() == blocked) {
     return;
   }
@@ -1539,13 +1562,35 @@ int TabStripModel::SetTabPinned(int index, bool pinned) {
   return SetTabPinnedImpl(index, pinned);
 }
 
+int TabStripModel::SetTabPinned(tabs::TabHandle tab, bool pinned) {
+  ReentrancyCheck reentrancy_check(&reentrancy_guard_);
+  const int index = GetIndexOfTab(tab);
+  CHECK_NE(index, kNoTab);
+
+  if (tab.Get()->IsPinned() == pinned) {
+    return index;
+  }
+
+  return SetTabPinnedImpl(index, pinned);
+}
+
 bool TabStripModel::IsTabPinned(int index) const {
   CHECK(ContainsIndex(index)) << index;
   return index < IndexOfFirstNonPinnedTab();
 }
 
 bool TabStripModel::IsTabCollapsed(int index) const {
-  std::optional<tab_groups::TabGroupId> group = GetTabGroupForTab(index);
+  return ContainsIndex(index) &&
+         IsTabCollapsed(GetTabAtIndex(index)->GetHandle());
+}
+
+bool TabStripModel::IsTabCollapsed(tabs::TabHandle tab) const {
+  const tabs::TabInterface* tab_ptr = tab.Get();
+  if (!tab_ptr ||
+      static_cast<const tabs::TabModel*>(tab_ptr)->owning_model() != this) {
+    return false;
+  }
+  std::optional<tab_groups::TabGroupId> group = tab_ptr->GetGroup();
   return group.has_value() && IsGroupCollapsed(group.value());
 }
 
@@ -1569,7 +1614,14 @@ bool TabStripModel::IsTabBlocked(int index) const {
 }
 
 bool TabStripModel::IsTabInForeground(int index) const {
-  if (!ContainsIndex(index)) {
+  return ContainsIndex(index) &&
+         IsTabInForeground(GetTabAtIndex(index)->GetHandle());
+}
+
+bool TabStripModel::IsTabInForeground(tabs::TabHandle tab) const {
+  const tabs::TabInterface* tab_ptr = tab.Get();
+  if (!tab_ptr ||
+      static_cast<const tabs::TabModel*>(tab_ptr)->owning_model() != this) {
     return false;
   }
 
@@ -1578,17 +1630,11 @@ bool TabStripModel::IsTabInForeground(int index) const {
     return false;
   }
 
-  if (active_tab->IsSplit()) {
-    const gfx::Range index_range =
-        GetIndexRangeOfSplit(active_tab->GetSplit().value());
-
-    // If the active tab is a split, check if the index is within the range of
-    // the split since all of these tabs are in the foreground.
-    return (index >= static_cast<int>(index_range.GetMin()) &&
-            index < static_cast<int>(index_range.GetMax()));
+  if (active_tab == tab_ptr) {
+    return true;
   }
 
-  return active_index() == index;
+  return active_tab->IsSplit() && active_tab->GetSplit() == tab_ptr->GetSplit();
 }
 
 std::optional<tab_groups::TabGroupId> TabStripModel::GetTabGroupForTab(
@@ -2304,7 +2350,19 @@ bool TabStripModel::IsPersistableTabGroup(
 
 std::optional<tab_groups::TabGroupId>
 TabStripModel::GetPersistableTabGroupForTab(int index) const {
-  std::optional<tab_groups::TabGroupId> group_id = GetTabGroupForTab(index);
+  return ContainsIndex(index)
+             ? GetPersistableTabGroupForTab(GetTabAtIndex(index)->GetHandle())
+             : std::nullopt;
+}
+
+std::optional<tab_groups::TabGroupId>
+TabStripModel::GetPersistableTabGroupForTab(tabs::TabHandle tab) const {
+  const tabs::TabInterface* tab_ptr = tab.Get();
+  if (!tab_ptr ||
+      static_cast<const tabs::TabModel*>(tab_ptr)->owning_model() != this) {
+    return std::nullopt;
+  }
+  std::optional<tab_groups::TabGroupId> group_id = tab_ptr->GetGroup();
   return (group_id.has_value() && IsPersistableTabGroup(*group_id))
              ? group_id
              : std::nullopt;
@@ -4341,6 +4399,10 @@ int TabStripModel::GetIndexOfTab(const tabs::TabInterface* tab) const {
   std::optional<size_t> index_of_tab =
       contents_data_->GetIndexOfTabRecursive(tab);
   return index_of_tab.value_or(kNoTab);
+}
+
+int TabStripModel::GetIndexOfTab(tabs::TabHandle tab) const {
+  return GetIndexOfTab(tab.Get());
 }
 
 tabs::TabInterface* TabStripModel::GetTabAtIndex(int index) const {

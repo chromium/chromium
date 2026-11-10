@@ -490,10 +490,12 @@ class TabStripModel {
   // Returns the WebContents that opened the WebContents at `index`, or NULL if
   // there is no opener on record.
   tabs::TabInterface* GetOpenerOfTabAt(const int index) const;
+  tabs::TabInterface* GetOpenerOfTab(tabs::TabHandle tab) const;
 
   // Changes the `opener` of the tab at `index`.
   // Note: A tab must not be its own opener.
   void SetOpenerOfTabAt(int index, tabs::TabInterface* opener);
+  void SetOpenerOfTab(tabs::TabHandle tab, tabs::TabInterface* opener);
 
   // Returns the index of the last WebContents in the model opened by the
   // specified opener, starting at `start_index`.
@@ -507,28 +509,32 @@ class TabStripModel {
   void TabNavigating(content::WebContents* contents,
                      ui::PageTransition transition);
 
-  // Changes the blocked state of the tab at `index`.
+  // Changes the blocked state of the tab at `index` or `tab`.
   void SetTabBlocked(int index, bool blocked);
+  void SetTabBlocked(tabs::TabHandle tab, bool blocked);
 
-  // Changes the pinned state of the tab at `index`. See description above
-  // class for details on this. Returns the index the tab is now at (it may have
-  // been moved to maintain contiguity of pinned tabs at the beginning of the
-  // tabstrip).)
+  // Changes the pinned state of the tab at `index` or `tab`. See description
+  // above class for details on this. Returns the index the tab is now at (it
+  // may have been moved to maintain contiguity of pinned tabs at the beginning
+  // of the tabstrip).)
   int SetTabPinned(int index, bool pinned);
+  int SetTabPinned(tabs::TabHandle tab, bool pinned);
 
   // Returns true if the tab at `index` is pinned.
   // See description above class for details on pinned tabs.
   bool IsTabPinned(int index) const;
 
   bool IsTabCollapsed(int index) const;
+  bool IsTabCollapsed(tabs::TabHandle tab) const;
 
   bool IsGroupCollapsed(const tab_groups::TabGroupId& group) const;
 
   // Returns true if the tab at `index` is blocked by a tab modal dialog.
   bool IsTabBlocked(int index) const;
 
-  // Returns true if the tab at `index` is in the foreground.
+  // Returns true if the tab at `index` or `tab` is in the foreground.
   bool IsTabInForeground(int index) const;
+  bool IsTabInForeground(tabs::TabHandle tab) const;
 
   // Returns true if the tab corresponding to `tab` is allowed to be
   // closed.
@@ -722,10 +728,12 @@ class TabStripModel {
   // session storage (i.e. is not an ephemeral group).
   bool IsPersistableTabGroup(const tab_groups::TabGroupId& group_id) const;
 
-  // Returns the group of the tab at `index` if that group may be persisted,
-  // otherwise nullopt.
+  // Returns the group of the tab at `index` or `tab` if that group may be
+  // persisted, otherwise nullopt.
   std::optional<tab_groups::TabGroupId> GetPersistableTabGroupForTab(
       int index) const;
+  std::optional<tab_groups::TabGroupId> GetPersistableTabGroupForTab(
+      tabs::TabHandle tab) const;
 
   // Promotes an ephemeral tab group into a permanent tab group and notifies
   // observers via OnTabGroupAdded() and then OnTabGroupPromoted().
@@ -961,6 +969,7 @@ class TabStripModel {
 
   // Convert between tabs and indices.
   int GetIndexOfTab(const tabs::TabInterface* tab) const;
+  int GetIndexOfTab(tabs::TabHandle tab) const;
   tabs::TabInterface* GetTabAtIndex(int index) const;
   // Gets the tabs at the specified indices using two pointers instead of
   // calling GetTabAtIndex repeatedly, making the runtime O(count()) instead of

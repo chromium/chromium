@@ -9415,3 +9415,60 @@ TEST_F(TabStripModelTest, ContextMenuCommandWindowActivation) {
   delegate()->SetBrowserWindowInterface(nullptr);
   tabstrip()->CloseAllTabs();
 }
+
+TEST_F(TabStripModelTest, SingleTabStateHandleOverloads) {
+  PrepareTabstripForSelectionTest(tabstrip(), /*tab_count=*/3,
+                                  /*pinned_count=*/0,
+                                  /*selected_tabs=*/{0});
+  tabs::TabHandle tab0 = tabstrip()->GetTabAtIndex(0)->GetHandle();
+  tabs::TabHandle tab1 = tabstrip()->GetTabAtIndex(1)->GetHandle();
+  tabs::TabHandle tab2 = tabstrip()->GetTabAtIndex(2)->GetHandle();
+
+  EXPECT_EQ(0, tabstrip()->GetIndexOfTab(tab0));
+  EXPECT_EQ(TabStripModel::kNoTab,
+            tabstrip()->GetIndexOfTab(tabs::TabHandle::Null()));
+
+  // Opener queries and mutations.
+  EXPECT_EQ(nullptr, tabstrip()->GetOpenerOfTab(tab1));
+  tabstrip()->SetOpenerOfTab(tab1, tab0.Get());
+  EXPECT_EQ(tab0.Get(), tabstrip()->GetOpenerOfTab(tab1));
+
+  // Blocked state.
+  EXPECT_FALSE(tab1.Get()->IsBlocked());
+  tabstrip()->SetTabBlocked(tab1, true);
+  EXPECT_TRUE(tab1.Get()->IsBlocked());
+  tabstrip()->SetTabBlocked(tab1, false);
+  EXPECT_FALSE(tab1.Get()->IsBlocked());
+
+  // Pinned state (pinning tab2 moves it to index 0; unpinning places it at
+  // the start of unpinned tabs, index 0).
+  EXPECT_EQ(0, tabstrip()->SetTabPinned(tab2, true));
+  EXPECT_TRUE(tab2.Get()->IsPinned());
+  EXPECT_EQ(0, tabstrip()->SetTabPinned(tab2, false));
+  EXPECT_FALSE(tab2.Get()->IsPinned());
+
+  // Foreground state (including splits).
+  EXPECT_TRUE(tabstrip()->IsTabInForeground(tab0));
+  EXPECT_FALSE(tabstrip()->IsTabInForeground(tab1));
+  tabstrip()->AddToNewSplit({tabstrip()->GetIndexOfTab(tab1)},
+                            split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kTabContextMenu);
+  EXPECT_TRUE(tabstrip()->IsTabInForeground(tab0));
+  EXPECT_TRUE(tabstrip()->IsTabInForeground(tab1));
+  EXPECT_FALSE(tabstrip()->IsTabInForeground(tab2));
+  tabstrip()->RemoveSplit(tab0.Get()->GetSplit().value());
+
+  // Collapsed and persistable group queries.
+  EXPECT_FALSE(tabstrip()->IsTabCollapsed(tab1));
+  EXPECT_EQ(std::nullopt, tabstrip()->GetPersistableTabGroupForTab(tab1));
+  const tab_groups::TabGroupId group_id =
+      tabstrip()->AddToNewGroup({tabstrip()->GetIndexOfTab(tab1)});
+  EXPECT_EQ(group_id, tabstrip()->GetPersistableTabGroupForTab(tab1));
+  tabstrip()->ChangeTabGroupVisuals(
+      group_id, tab_groups::TabGroupVisualData(
+                    u"Group", tab_groups::TabGroupColorId::kGrey,
+                    /*is_collapsed=*/true));
+  EXPECT_TRUE(tabstrip()->IsTabCollapsed(tab1));
+
+  tabstrip()->CloseAllTabs();
+}
