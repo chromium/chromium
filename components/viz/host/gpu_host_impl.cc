@@ -39,8 +39,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/gfx/win/rendering_window_manager.h"
-#elif BUILDFLAG(IS_MAC)
-#include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #endif
 
 #if BUILDFLAG(IS_OZONE)
@@ -158,12 +156,6 @@ GpuHostImpl::GpuHostImpl(Delegate* delegate,
   delegate_->BindDiscardableMemoryReceiver(
       discardable_manager_remote.InitWithNewPipeAndPassReceiver());
 
-  scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr;
-#if BUILDFLAG(IS_MAC)
-  if (params_.main_thread_task_runner->BelongsToCurrentThread())
-    task_runner = ui::WindowResizeHelperMac::Get()->task_runner();
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
   viz_main_->SetHostProcessId(base::GetCurrentProcId());
 #endif
@@ -191,12 +183,15 @@ GpuHostImpl::GpuHostImpl(Delegate* delegate,
   }
 #endif
 
-  viz_main_->CreateGpuService(
-      gpu_service_remote_.BindNewPipeAndPassReceiver(task_runner),
-      gpu_host_receiver_.BindNewPipeAndPassRemote(task_runner),
-      gpu_logging_receiver_.BindNewPipeAndPassRemote(task_runner),
-      std::move(discardable_manager_remote),
-      use_shader_cache_shm_count_.CloneRegion(), std::move(gpu_service_params));
+  viz_main_->CreateGpuService(gpu_service_remote_.BindNewPipeAndPassReceiver(
+                                  params_.main_thread_task_runner),
+                              gpu_host_receiver_.BindNewPipeAndPassRemote(
+                                  params_.main_thread_task_runner),
+                              gpu_logging_receiver_.BindNewPipeAndPassRemote(
+                                  params_.main_thread_task_runner),
+                              std::move(discardable_manager_remote),
+                              use_shader_cache_shm_count_.CloneRegion(),
+                              std::move(gpu_service_params));
   MaybeSendFontRenderParams();
 
   // The persistent cache is not used by the GPU process for info collection.
@@ -233,6 +228,13 @@ void GpuHostImpl::SetProcessId(base::ProcessId pid) {
   DCHECK_EQ(base::kNullProcessId, pid_);
   DCHECK_NE(base::kNullProcessId, pid);
   pid_ = pid;
+#if BUILDFLAG(IS_WIN)
+  for (const auto& [parent_window, child_window] : pending_child_windows_) {
+    gfx::RenderingWindowManager::GetInstance()->RegisterChild(
+        parent_window, child_window, /*expected_child_process_id=*/pid_);
+  }
+  pending_child_windows_.clear();
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 void GpuHostImpl::OnProcessCrashed() {
@@ -786,10 +788,13 @@ void GpuHostImpl::DidUpdateDXGIInfo(gfx::mojom::DXGIInfoPtr dxgi_info) {
 
 void GpuHostImpl::AddChildWindow(gpu::SurfaceHandle parent_window,
                                  gpu::SurfaceHandle child_window) {
-  if (pid_ != base::kNullProcessId) {
-    gfx::RenderingWindowManager::GetInstance()->RegisterChild(
-        parent_window, child_window, /*expected_child_process_id=*/pid_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (pid_ == base::kNullProcessId) {
+    pending_child_windows_[parent_window] = child_window;
+    return;
   }
+  gfx::RenderingWindowManager::GetInstance()->RegisterChild(
+      parent_window, child_window, /*expected_child_process_id=*/pid_);
 }
 #endif  // BUILDFLAG(IS_WIN)
 

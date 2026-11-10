@@ -327,6 +327,11 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost,
 #endif
 
   base::ProcessId pid_ = base::kNullProcessId;
+#if BUILDFLAG(IS_WIN)
+  // Parent-to-child HWND mappings received via `AddChildWindow()` before
+  // `SetProcessId()` has been called.
+  base::flat_map<gpu::SurfaceHandle, gpu::SurfaceHandle> pending_child_windows_;
+#endif
 
   // List of connection error handlers for the GpuService.
   std::vector<base::OnceClosure> connection_error_handlers_;

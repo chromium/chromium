@@ -41,6 +41,7 @@
 #include "components/viz/host/persistent_cache_sandboxed_file_factory.h"
 #include "components/vrp_flags/buildflags.h"
 #include "content/browser/browser_child_process_host_impl.h"
+#include "content/browser/browser_main_loop.h"
 #include "content/browser/child_process_host_impl.h"
 #include "content/browser/child_process_launcher.h"
 #include "content/browser/compositor/image_transport_factory.h"
@@ -982,7 +983,8 @@ bool GpuProcessHost::Init() {
   params.product = GetContentClient()->browser()->GetProduct();
   params.deadline_to_synchronize_surfaces =
       switches::GetDeadlineToSynchronizeSurfaces();
-  params.main_thread_task_runner = GetUIThreadTaskRunner({});
+  params.main_thread_task_runner =
+      BrowserMainLoop::GetInstance()->GetResizeTaskRunner();
   params.info_collection_gpu_process =
       kind_ == GPU_PROCESS_KIND_INFO_COLLECTION;
   params.gpu_service_running_in_process = in_process_;
