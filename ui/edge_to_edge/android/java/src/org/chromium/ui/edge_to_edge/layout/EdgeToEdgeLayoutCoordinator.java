@@ -135,7 +135,6 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
     public void applyStatusBarColor() {
         if (mView == null) return;
         mView.setStatusBarColor(mStatusBarColor);
-        updateStatusBarIconColor(mView.getRootView(), mStatusBarColor);
     }
 
     @Override
