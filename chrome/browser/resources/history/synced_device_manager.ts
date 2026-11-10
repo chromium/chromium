@@ -90,6 +90,8 @@ export class HistorySyncedDeviceManagerElement extends
        */
       actionMenuModel_: {type: String},
 
+      enableDeviceTabVisibilitySettings_: {type: Boolean},
+
       // <if expr="not is_chromeos">
       accountInfo_: {type: Object},
       // </if>
@@ -106,6 +108,8 @@ export class HistorySyncedDeviceManagerElement extends
       loadTimeData.getBoolean('isGuestSession');
   private accessor signInAllowed_: boolean =
       loadTimeData.getBoolean('isSignInAllowed');
+  protected accessor enableDeviceTabVisibilitySettings_: boolean =
+      loadTimeData.getBoolean('enableDeviceTabVisibilitySettings');
   private signinPausedImpressionRecorded_: boolean = false;
   // <if expr="not is_chromeos">
   protected accessor accountInfo_: AccountInfo|null = null;
@@ -318,6 +322,15 @@ export class HistorySyncedDeviceManagerElement extends
         this.actionMenuModel_);
     this.actionMenuModel_ = null;
     menu.close();
+  }
+
+  protected onManageVisibilityClick_(e: MouseEvent) {
+    const menu = this.$.menu.getIfExists();
+    assert(menu);
+    this.actionMenuModel_ = null;
+    menu.close();
+    BrowserProxyImpl.getInstance().navigateToUrl(
+        loadTimeData.getString('deviceTabVisibilitySettingsUrl'), '_blank', e);
   }
 
   clearSyncedDevicesForTest() {

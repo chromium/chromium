@@ -44,7 +44,26 @@ suite('<history-synced-device-manager>', function() {
     element.sessionList = sessions;
   }
 
-  setup(function() {
+  async function createSyncedDeviceManager():
+      Promise<HistorySyncedDeviceManagerElement> {
+    if (element) {
+      element.remove();
+    }
+    const manager = document.createElement('history-synced-device-manager');
+    // |signInState| is generally set after |searchTerm| in Polymer 2. Set in
+    // the same order in tests, in order to catch regressions like
+    // https://crbug.com/40606784.
+    manager.searchTerm = '';
+    manager.configureSignInForTest({
+      signInAllowed: true,
+      guestSession: false,
+    });
+    document.body.appendChild(manager);
+    await microtasksFinished();
+    return manager;
+  }
+
+  setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     window.history.replaceState({}, '', '/');
     testProxy = new TestHistoryBrowserProxy();
@@ -58,17 +77,7 @@ suite('<history-synced-device-manager>', function() {
       tabsSync: SyncState.TURNED_ON,
       historySync: SyncState.TURNED_OFF,
     });
-    element = document.createElement('history-synced-device-manager');
-    // |signInState| is generally set after |searchTerm| in Polymer 2. Set in
-    // the same order in tests, in order to catch regressions like
-    // https://crbug.com/40606784.
-    element.searchTerm = '';
-    element.configureSignInForTest({
-      signInAllowed: true,
-      guestSession: false,
-    });
-    document.body.appendChild(element);
-    return microtasksFinished();
+    element = await createSyncedDeviceManager();
   });
 
   test('single card, single window', async () => {
@@ -243,6 +252,14 @@ suite('<history-synced-device-manager>', function() {
   });
 
   test('delete a session', async () => {
+    // TODO(crbug.com/570417844): This test covers the legacy "Hide for now"
+    // button. Delete this test once kDeviceTabVisibilitySettings is launched
+    // and cleaned up.
+    loadTimeData.overrideValues({
+      enableDeviceTabVisibilitySettings: false,
+    });
+    element = await createSyncedDeviceManager();
+
     const sessionList: ForeignSession[] = [
       createSession('Nexus 5', [createWindow(['http://www.example.com'])]),
       createSession('Pixel C', [createWindow(['http://www.badssl.com'])]),
@@ -267,6 +284,48 @@ suite('<history-synced-device-manager>', function() {
     cards = getCards(element);
     assertEquals(1, cards.length);
     assertEquals('http://www.badssl.com', cards[0]!.windows[0]!.tabs[0]!.title);
+  });
+
+  // Verifies that enabling `enableDeviceTabVisibilitySettings` replaces the
+  // legacy "Hide for now" menu item with the manage visibility action and
+  // opens the Device tab visibility settings subpage in a new tab when clicked.
+  test('manage device tabs visibility replaces delete session', async () => {
+    loadTimeData.overrideValues({
+      enableDeviceTabVisibilitySettings: true,
+    });
+    element = await createSyncedDeviceManager();
+
+    setForeignSessions([
+      createSession('Nexus 5', [createWindow(['http://www.example.com'])]),
+    ]);
+    await microtasksFinished();
+
+    const cards = getCards(element);
+    assertEquals(1, cards.length);
+    cards[0]!.$.menuButton.click();
+    await microtasksFinished();
+
+    // The legacy "Hide for now" button is omitted when the feature is enabled.
+    assertEquals(
+        null,
+        element.shadowRoot.querySelector<HTMLElement>('#menuDeleteButton'));
+
+    // Clicking "Manage visibility" closes the action menu and opens
+    // `chrome://settings/deviceTabVisibility` without deleting the foreign
+    // session.
+    const manageVisibilityButton =
+        element.shadowRoot.querySelector<HTMLElement>(
+            '#menuManageVisibilityButton');
+    assertTrue(!!manageVisibilityButton);
+    assertEquals(
+        loadTimeData.getString('manageDeviceTabVisibility'),
+        manageVisibilityButton.textContent.trim());
+
+    manageVisibilityButton.click();
+    const url = await testProxy.whenCalled('navigateToUrl');
+    assertEquals('chrome://settings/deviceTabVisibility', url);
+    assertFalse(element.$.menu.getIfExists()!.open);
+    assertEquals(0, foreignSessionProxy.getCallCount('deleteForeignSession'));
   });
 
   test('delete a collapsed session', async () => {

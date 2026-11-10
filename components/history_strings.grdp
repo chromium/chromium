@@ -96,6 +96,10 @@
   <message name="IDS_HISTORY_OTHER_SESSIONS_HIDE_FOR_NOW" desc="In the 'Other Sessions' menu on the history page, the label for the command to remove entry corresponding to a session.">
     Hide for now
   </message>
+  <!-- TODO(crbug.com/570417844): Remove translateable="false" once the string is finalized. -->
+  <message name="IDS_HISTORY_OTHER_SESSIONS_MANAGE_DEVICE_TAB_VISIBILITY" desc="In the 'Other Sessions' menu on the history page, the label for the command to open the Device tab visibility settings subpage." translateable="false">
+    Manage visibility
+  </message>
   <message name="IDS_HISTORY_OTHER_SESSIONS_OPEN_ALL" desc="In the 'Other Sessions' menu on the history page, the label for the command to open all tabs and windows from a session.">
     Open all
   </message>

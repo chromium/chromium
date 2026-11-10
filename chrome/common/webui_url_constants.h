@@ -121,6 +121,10 @@ inline constexpr char kChromeUIDataSharingInternalsHost[] =
 inline constexpr char kChromeUIDefaultHost[] = "version";
 inline constexpr char kChromeUIDelayedHangUIHost[] = "delayeduithreadhang";
 inline constexpr char kChromeUIDeviceLogHost[] = "device-log";
+// TODO(crbug.com/570417844): Finalize the settings URL path with UX/PM
+// before launch.
+inline constexpr char kChromeUIDeviceTabVisibilitySettingsURL[] =
+    "chrome://settings/deviceTabVisibility";
 inline constexpr char kChromeUIDevToolsBlankPath[] = "blank";
 inline constexpr char kChromeUIDevToolsBundledPath[] = "bundled";
 inline constexpr char kChromeUIDevToolsCustomPath[] = "custom";

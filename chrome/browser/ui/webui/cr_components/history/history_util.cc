@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/cr_components/history/history_util.h"
 
+#include "base/feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -24,6 +26,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/features.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -63,6 +66,8 @@ content::WebUIDataSource* HistoryUtil::PopulateCommonSourceForHistory(
       {"itemsSelected", IDS_HISTORY_ITEMS_SELECTED},
       {"itemsUnselected", IDS_HISTORY_ITEMS_UNSELECTED},
       {"loading", IDS_HISTORY_LOADING},
+      {"manageDeviceTabVisibility",
+       IDS_HISTORY_OTHER_SESSIONS_MANAGE_DEVICE_TAB_VISIBILITY},
       {"menu", IDS_MENU},
       {"moreFromSite", IDS_HISTORY_MORE_FROM_SITE},
       {"openAll", IDS_HISTORY_OTHER_SESSIONS_OPEN_ALL},
@@ -106,6 +111,8 @@ content::WebUIDataSource* HistoryUtil::PopulateCommonSourceForHistory(
 
   source->AddString("myActivityGeminiAppsUrl",
                     chrome::kMyActivityGeminiAppsUrl);
+  source->AddString("deviceTabVisibilitySettingsUrl",
+                    chrome::kChromeUIDeviceTabVisibilitySettingsURL);
 
   PrefService* prefs = profile->GetPrefs();
   bool allow_deleting_history =
@@ -115,6 +122,15 @@ content::WebUIDataSource* HistoryUtil::PopulateCommonSourceForHistory(
   source->AddBoolean("isGuestSession", profile->IsGuestSession());
   source->AddBoolean("isSignInAllowed",
                      prefs->GetBoolean(prefs::kSigninAllowed));
+#if !BUILDFLAG(IS_ANDROID)
+  source->AddBoolean(
+      "enableDeviceTabVisibilitySettings",
+      base::FeatureList::IsEnabled(syncer::kDeviceTabVisibilitySettings));
+#else
+  // TODO(crbug.com/570417844): Check how to integrate this into Android
+  // desktop.
+  source->AddBoolean("enableDeviceTabVisibilitySettings", false);
+#endif
 
   source->AddInteger(
       "lastSelectedTab",

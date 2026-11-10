@@ -153,10 +153,17 @@ ${this.shouldShowHistorySyncOptIn_() ? html`
             @click="${this.onOpenAllClick_}">
           $i18n{openAll}
         </button>
-        <button id="menuDeleteButton" class="dropdown-item"
-            @click="${this.onDeleteSessionClick_}">
-          $i18n{deleteSession}
-        </button>
+        ${this.enableDeviceTabVisibilitySettings_ ? html`
+          <button id="menuManageVisibilityButton" class="dropdown-item"
+              @click="${this.onManageVisibilityClick_}">
+            $i18n{manageDeviceTabVisibility}
+          </button>
+        ` : html`
+          <button id="menuDeleteButton" class="dropdown-item"
+              @click="${this.onDeleteSessionClick_}">
+            $i18n{deleteSession}
+          </button>
+        `}
       </cr-action-menu>
     `}">
 </cr-lazy-render-lit>
