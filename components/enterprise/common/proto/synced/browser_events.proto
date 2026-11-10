@@ -113,8 +113,8 @@ message ExternalProcessInfo {
   repeated ExternalProcess external_processes = 1;
 }
 
-// First-party built-in browser feature or surface that was attached to the
-// target tab at event time (or detached within the 30s grace window).
+// First-party built-in browser feature or surface that was actively attached
+// to the target tab at event time.
 message BrowserFeatureInfo {
   enum FeatureType {
     FEATURE_TYPE_UNSPECIFIED = 0;
@@ -158,23 +158,28 @@ message BrowserAgentInfo {
 
 // Represents the entity or browser surface that initiated the event or was
 // active/attached on the target tab at event time.
+// If more than one initiator is detected in the same interaction, only the
+// highest-precedence initiator is reported in the `initiator` oneof, in the
+// following order (highest to lowest):
+// chrome_extension > external_process_info > browser_feature_info >
+// browser_agent_info.
+// TODO(b/582763316): Update EventInitiatorInfo and these comments when
+// expanding attribution to support multiple concurrent actors on a tab.
 message EventInitiatorInfo {
   oneof initiator {
     // Populated when the event was driven by a Chrome extension.
     safe_browsing.ExtensionTelemetryReportRequest.ExtensionInfo
         chrome_extension = 1;
 
-    // Populated when one or more external CDP actors have issued commands to
-    // the target tab (currently attached at event time or detached within the
-    // 30s grace window; passive attachments that never issue commands are not
-    // recorded). Precedence: external_process_info takes priority over
-    // browser_feature_info if both conditions are met on the tab.
+    // Populated when one or more external CDP actors have issued a command to
+    // the target tab within the 30s attribution window prior to event time
+    // (whether still attached or already detached; passive attachments that
+    // never issue commands are not recorded). Takes precedence over
+    // browser_feature_info if both are active on the tab.
     ExternalProcessInfo external_process_info = 2;
 
     // Populated when a built-in browser feature (e.g., native F12 DevTools UI)
-    // was attached to the target tab at event time (or detached within the 30s
-    // grace window). Precedence: external_process_info takes priority over
-    // browser_feature_info if both conditions are met on the tab.
+    // was actively attached to the target tab at event time.
     BrowserFeatureInfo browser_feature_info = 3;
 
     // Populated when an in-browser AI agent (e.g., Gemini in Chrome) was
