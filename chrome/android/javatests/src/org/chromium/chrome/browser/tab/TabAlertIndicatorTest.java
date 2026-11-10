@@ -255,6 +255,7 @@ public class TabAlertIndicatorTest {
     @SmallTest
     // Web Picture-in-Picture requires Android 11+.
     @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.R)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/583907929
     // PiP is not supported for automotive.
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void testAlertStatePipPlaying() throws TimeoutException {
@@ -275,6 +276,7 @@ public class TabAlertIndicatorTest {
 
     @Test
     @SmallTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/583907929
     public void testAlertStatePriority() throws TimeoutException {
         // MUTED
         setMuteState(true);
