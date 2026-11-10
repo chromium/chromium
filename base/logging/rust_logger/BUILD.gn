@@ -38,10 +38,11 @@ rust_static_library("rust_logger") {
     "print_rust_log.rs",
     crate_root,
   ]
-  cxx_bindings = [
-    crate_root,
-    "print_rust_log.rs",
-  ]
+  cxx_bindings = [ "print_rust_log.rs" ]
+  cpp_api_from_rust = {
+    target_name = "cpp_api"
+    cpp_namespace = "logging::internal"
+  }
 }
 
 rust_static_library("test_support") {

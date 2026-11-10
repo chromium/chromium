@@ -6,14 +6,6 @@ mod custom_panic_hook;
 mod log_crate_integration;
 mod print_rust_log;
 
-#[cxx::bridge(namespace = "logging::internal")]
-mod ffi {
-    extern "Rust" {
-        fn init_rust_logging();
-        fn update_rust_log_level(min_log_level: i32);
-    }
-}
-
 /// Initializes the integration between Rust and `base/logging.h`.
 ///
 /// It is safe to call `init_rust_logging` multiple times.
@@ -31,7 +23,7 @@ mod ffi {
 /// and `log::trace!` are compiled out at the call-site via the
 /// `release_max_level_info` Cargo feature on the `log` crate, behaving like
 /// `DVLOG(1)` and `DVLOG(2)`.
-fn init_rust_logging() {
+pub fn init_rust_logging() {
     // Gracefully handle being called more than once - e.g. when
     // `//base/logging_unittest.cc` uses `logging::ScopedLoggingSettings` which
     // calls `InitLogging` to re-initialize logging.
@@ -44,6 +36,8 @@ fn init_rust_logging() {
     });
 }
 
-fn update_rust_log_level(min_log_level: i32) {
+/// Updates the global minimum log level.  Semantics of `min_log_level` is
+/// defined on C++ side - see the constants in `base/logging/log_severity.h`.
+pub fn update_rust_log_level(min_log_level: i32) {
     log_crate_integration::update_min_log_level(min_log_level);
 }

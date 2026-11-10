@@ -23,6 +23,7 @@
 //build/rust
 //build/rust/allocator
 //build/rust/chromium_prelude
+//build/rust/crubit
 //build/rust/gni_impl
 //build/rust/std
 //build/rust/std/rules
@@ -68,6 +69,7 @@
 //third_party/perfetto
 //third_party/protobuf
 //third_party/re2
+//third_party/rust-toolchain/lib/third_party/crubit
 //third_party/rust/anstyle
 //third_party/rust/base64
 //third_party/rust/clap

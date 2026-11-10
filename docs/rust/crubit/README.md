@@ -21,16 +21,16 @@ Notes:
 
 ## Caveats
 
-*   **Some directories cannot use Crubit:** The Android project's
-    Soong/bp build system
-    does not support Crubit at this point. Consequently, Crubit cannot be
-    used in `//base`, `//net`, or
+*   **Some directories cannot use `rust_api_from_cpp`:**
+    The Android project's Soong/bp build system
+    does not support `rust_api_from_cpp` at this point.
+    Consequently, it cannot be used in `//base`, `//net`, or
     [other directories](https://source.chromium.org/chromium/chromium/src/+/main:components/cronet/android/dependencies.txt)
     that [Cronet](../../../components/cronet/README.md) depends on.
-    This is tracked in https://crbug.com/535682335.
-    * Note that it's fine to use Crubit in code that _runs_ on Android
-      (e.g. the [QR code generator](https://crrev.com/c/7749970)), so
-      long as it doesn't need to be compiled by the Android project.
+    This is tracked in https://crbug.com/576651451.
+    * Note that it is okay to use `cpp_api_from_rust` in those directories.
+    * Also note that it's fine to use `rust_api_from_cpp` in code that _runs_ on
+      Android so long as it doesn't need to be compiled by the Android project.
 
 *   **2nd-party project limitations:** In principle, Crubit will work in
     projects like PDFium or V8 as well. However, such projects usually

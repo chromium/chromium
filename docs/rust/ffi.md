@@ -26,10 +26,11 @@ subset of the language.
 **In the future**, we intend to recommend [Crubit](https://crubit.rs) for new
 code (tracked in <https://crbug.com/351793625>). Chromium now supports
 `cc_bindings_from_rs` (aka `cpp_api_from_rust`) for calling Rust from C++.
-However, because the Android build system does not yet support Crubit, it cannot be used in
-`//base`, `//net`, or other dependencies of Cronet (see https://crbug.com/535682335).
 The reverse direction (Rust calling C++) is not yet supported, but integration
-is underway. See [`crubit/README.md`](crubit/README.md) for details.
+is underway (note that the Android build system does not yet support it, so
+it will initially be unavailable in dependencies of Cronet - see
+https://crbug.com/576651451). See [`crubit/README.md`](crubit/README.md) for
+details.
 
 Chromium **does not support any other FFI tools** (e.g.
 [`cbindgen`](https://github.com/mozilla/cbindgen) or

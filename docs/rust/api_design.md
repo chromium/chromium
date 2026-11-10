@@ -58,8 +58,8 @@ Chromium has three options available for interoperation with C and C++:
 1. Cxx: Generates user-specified bindings to C++ code. A
    [third-party crate](https://cxx.rs/) with minimal new feature development.
 1. Crubit: Automatically generates bindings. Supported in Chromium for calling
-   Rust from C++ in most directories (except where Cronet support is required).
-   Support for the reverse direction (calling C++ from Rust) is under development.
+   Rust from C++. Support for the reverse direction (calling C++ from Rust) is
+   under development.
 
 For more information, see [ffi.md](/docs/rust/ffi.md). In the long run, we
 prefer Crubit, but since it is not yet universally available or fully integrated,

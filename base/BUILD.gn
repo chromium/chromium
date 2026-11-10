@@ -1176,7 +1176,11 @@ component("base") {
   deps += [ "//third_party/zlib" ]
 
   deps += [
+    # TODO(https://crbug.com/495537792): Remove direct dependency on
+    # `logging/rust_logger` after moving
+    # `.../rust_logger/print_rust_log_ffi.cc` to its own, separate target.
     "logging/rust_logger",
+    "logging/rust_logger:cpp_api",
     "//third_party/rust/serde_json_lenient/v0_2/wrapper",
   ]
 

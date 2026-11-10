@@ -665,6 +665,7 @@ template("rust_target") {
         visibility += [ ":${_clippy_target_name}" ]
       }
       if (_enable_cpp_api_from_rust_for_this_target && defined(visibility)) {
+        visibility += [ ":${_cpp_api_from_rust_target_name}" ]
         visibility += [ ":${_cpp_api_from_rust_target_name}_crubit_action" ]
         visibility += [ ":${_cpp_api_from_rust_target_name}_crubit_impl" ]
       }
