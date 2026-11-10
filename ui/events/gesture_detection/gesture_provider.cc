@@ -511,8 +511,9 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
     if (!velocity_x && !velocity_y)
       return true;
 
-    // TODO(crbug.com/582397276): CHECK-exclusion: Convert to a CHECK once we
-    // are confident it won't be triggered.
+    // TODO(crbug.com/582031140, crbug.com/582397276):
+    // CHECK-exclusion: Convert to a CHECK once we are confident it
+    // won't be triggered.
     DCHECK(scroll_event_sent_);
     if (!scroll_event_sent_) {
       // The native side needs a EventType::kGestureScrollBegin before
