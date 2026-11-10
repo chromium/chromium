@@ -5,10 +5,15 @@
 #include "net/base/base64.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <string>
 #include <string_view>
 #include <utility>
 
+#include "base/base64.h"
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "net/base/features.h"
 #include "third_party/simdutf/simdutf.h"
@@ -32,23 +37,25 @@ bool SimdutfBase64Decode(std::string_view input,
   }
 
   std::string decode_buf;
-  decode_buf.resize(
-      simdutf::maximal_binary_length_from_base64(input.data(), input.size()));
-  simdutf::result r =
-      simdutf::base64_to_binary(input.data(), input.size(), decode_buf.data());
-  if (r.error != simdutf::error_code::SUCCESS) {
+  simdutf::result result{};
+  decode_buf.resize_and_overwrite(
+      simdutf::maximal_binary_length_from_base64(input.data(), input.size()),
+      [input, &result](char* buffer, size_t available) {
+        result = simdutf::base64_to_binary(input.data(), input.size(), buffer);
+        if (result.error != simdutf::error_code::SUCCESS) {
+          // On failure, count can be an input position, not an output size.
+          return size_t{0};
+        }
+        // If this fails, the decoder has already written out of bounds.
+        CHECK_LE(result.count, available);
+        return result.count;
+      });
+  if (result.error != simdutf::error_code::SUCCESS) {
     return false;
   }
-  // If this failed it would indicate we wrote OOB. It's possible for this to
-  // be elided by the compiler, since writing OOB is UB.
-  CHECK_LE(r.count, decode_buf.size());
-
-  // Shrinks the buffer and makes it NUL-terminated.
-  decode_buf.resize(r.count);
 
   *output = std::move(decode_buf);
   return true;
 }
-
 
 }  // namespace net

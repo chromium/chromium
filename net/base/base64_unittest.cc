@@ -4,11 +4,20 @@
 
 #include "net/base/base64.h"
 
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <initializer_list>
+#include <numeric>
+#include <string>
+#include <string_view>
+
 #include "base/base64.h"
 #include "base/strings/escape.h"
 #include "base/test/scoped_feature_list.h"
 #include "net/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/simdutf/simdutf.h"
 
 namespace net {
 
@@ -60,7 +69,7 @@ TEST_F(Base64Test, ForgivingAndStrictDecode) {
       {"abcde", nullptr, nullptr},
       {"a", nullptr, nullptr},
 
-      // Invalid padding causes failure if kForgiving is set.
+      // Invalid padding is rejected in both modes.
       {"abcd=", nullptr, nullptr},
       {"abcd==", nullptr, nullptr},
       {"abcd===", nullptr, nullptr},
@@ -70,8 +79,7 @@ TEST_F(Base64Test, ForgivingAndStrictDecode) {
       {"=", nullptr, nullptr},
       {"====", nullptr, nullptr},
 
-      // Otherwise, inputs that are multiples of 4 always succeed, this matches
-      // kStrict mode.
+      // Valid padded input succeeds in both modes.
       {"abcd", "i\xB7\x1D", "i\xB7\x1D"},
       {"abc=", "i\xB7", "i\xB7"},
       {"abcdefgh", "i\xB7\x1Dy\xF8!", "i\xB7\x1Dy\xF8!"},
@@ -102,27 +110,108 @@ TEST_F(Base64Test, ForgivingAndStrictDecode) {
     SCOPED_TRACE(::testing::Message()
                  << "Forgiving: "
                  << base::EscapeAllExceptUnreserved(test_case.in));
-    std::string output;
+    std::string output = "unchanged";
     bool success = SimdutfBase64Decode(test_case.in, &output,
                                        base::Base64DecodePolicy::kForgiving);
     bool expected_success = test_case.expected_out_forgiving != nullptr;
     EXPECT_EQ(success, expected_success);
     if (expected_success) {
       EXPECT_EQ(output, test_case.expected_out_forgiving);
+    } else {
+      EXPECT_EQ(output, "unchanged");
     }
   }
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(::testing::Message()
                  << "Strict: "
                  << base::EscapeAllExceptUnreserved(test_case.in));
-    std::string output;
+    std::string output = "unchanged";
     bool success = SimdutfBase64Decode(test_case.in, &output,
                                        base::Base64DecodePolicy::kStrict);
     bool expected_success = test_case.expected_out_strict != nullptr;
     EXPECT_EQ(success, expected_success);
     if (expected_success) {
       EXPECT_EQ(output, test_case.expected_out_strict);
+    } else {
+      EXPECT_EQ(output, "unchanged");
     }
+  }
+}
+
+TEST_F(Base64Test, FailurePreservesOutput) {
+  const auto inputs = std::to_array<std::string>({
+      // Keep a valid prefix long enough for SIMD decoding before the error.
+      std::string(256, 'A') + "AAA&",
+      std::string(256, 'A') + "A===",
+      std::string(256, 'A') + "AA\vA",
+      std::string(256, 'A') + "A",
+  });
+  for (const auto& input : inputs) {
+    SCOPED_TRACE(base::EscapeAllExceptUnreserved(input));
+    for (auto policy : {base::Base64DecodePolicy::kStrict,
+                        base::Base64DecodePolicy::kForgiving}) {
+      SCOPED_TRACE(static_cast<int>(policy));
+      std::string output = "unchanged";
+      EXPECT_FALSE(SimdutfBase64Decode(input, &output, policy));
+      EXPECT_EQ(output, "unchanged");
+
+      std::string in_place = input;
+      EXPECT_FALSE(SimdutfBase64Decode(in_place, &in_place, policy));
+      EXPECT_EQ(in_place, input);
+    }
+  }
+}
+
+TEST_F(Base64Test, BinaryOutputAndAliasedView) {
+  constexpr std::string_view kPrefix = "prefix";
+  // Exercise empty output, padding, small-string boundaries and larger buffers.
+  for (size_t size :
+       {0, 1, 2, 15, 16, 22, 23, 24, 31, 32, 33, 255, 256, 257, 4096}) {
+    SCOPED_TRACE(size);
+    std::string expected(size, '\0');
+    std::ranges::iota(expected, uint8_t{0});
+    const std::string encoded = base::Base64Encode(expected);
+    for (auto policy : {base::Base64DecodePolicy::kStrict,
+                        base::Base64DecodePolicy::kForgiving}) {
+      SCOPED_TRACE(static_cast<int>(policy));
+      std::string output = "unchanged";
+      ASSERT_TRUE(SimdutfBase64Decode(encoded, &output, policy));
+      EXPECT_EQ(output, expected);
+      // std::string::operator[] allows size(), which reads the NUL terminator.
+      EXPECT_EQ(output[output.size()], '\0');
+
+      // Keep small encoded inputs inline to exercise self-aliasing with SSO.
+      std::string in_place = encoded;
+      ASSERT_TRUE(SimdutfBase64Decode(in_place, &in_place, policy));
+      EXPECT_EQ(in_place, expected);
+      EXPECT_EQ(in_place[in_place.size()], '\0');
+
+      in_place.assign(kPrefix).append(encoded).append("suffix");
+      const std::string_view input =
+          std::string_view(in_place).substr(kPrefix.size(), encoded.size());
+      ASSERT_TRUE(SimdutfBase64Decode(input, &in_place, policy));
+      EXPECT_EQ(in_place, expected);
+      EXPECT_EQ(in_place[in_place.size()], '\0');
+    }
+
+    SCOPED_TRACE("Whitespace-padded input");
+    const std::string whitespace_encoded = " " + encoded + "  ";
+    // Whitespace makes the buffer estimate larger than the decoded output.
+    // This exercises shrinking past an uninitialized tail, including to zero.
+    ASSERT_GT(simdutf::maximal_binary_length_from_base64(
+                  whitespace_encoded.data(), whitespace_encoded.size()),
+              expected.size());
+    std::string output = "unchanged";
+    ASSERT_TRUE(SimdutfBase64Decode(whitespace_encoded, &output,
+                                    base::Base64DecodePolicy::kForgiving));
+    EXPECT_EQ(output, expected);
+    EXPECT_EQ(output[output.size()], '\0');
+
+    std::string in_place = whitespace_encoded;
+    ASSERT_TRUE(SimdutfBase64Decode(in_place, &in_place,
+                                    base::Base64DecodePolicy::kForgiving));
+    EXPECT_EQ(in_place, expected);
+    EXPECT_EQ(in_place[in_place.size()], '\0');
   }
 }
 

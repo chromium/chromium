@@ -3885,6 +3885,7 @@ if (!is_ios) {
   # enabled on iOS too.
   test("net_perftests") {
     sources = [
+      "base/data_url_perftest.cc",
       "base/mime_sniffer_perftest.cc",
       "cookies/cookie_monster_perftest.cc",
       "disk_cache/disk_cache_perftest.cc",
