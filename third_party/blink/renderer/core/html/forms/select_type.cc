@@ -324,9 +324,6 @@ class MenuListSelectType final : public SelectType {
   Member<PopoverElementForAppearanceBase> popover_;
   Member<HTMLSlotElement> popover_input_slot_;
   Member<HTMLSlotElement> popover_options_slot_;
-  // TODO(40146374): The option_slot_ can be removed when the CustomizableSelect
-  // flag is removed.
-  Member<HTMLSlotElement> option_slot_;
   Member<MenuListInnerElement> inner_element_;
   int ax_menulist_last_active_index_ = -1;
   bool has_updated_menulist_active_option_ = false;
@@ -351,7 +348,6 @@ void MenuListSelectType::Trace(Visitor* visitor) const {
   visitor->Trace(popover_);
   visitor->Trace(popover_input_slot_);
   visitor->Trace(popover_options_slot_);
-  visitor->Trace(option_slot_);
   visitor->Trace(inner_element_);
   SelectType::Trace(visitor);
 }
