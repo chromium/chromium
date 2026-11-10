@@ -146,6 +146,23 @@ ComposeboxUIConfig* ServerUIConfigFromInputState(
                                       toolsSectionHeader:toolsSectionHeader];
 }
 
+// Returns the server `InputType` corresponding to `attachment_option`.
+omnibox::InputType InputTypeForAttachmentOption(
+    ComposeboxAttachmentOption attachment_option) {
+  using enum ComposeboxAttachmentOption;
+  switch (attachment_option) {
+    case kCurrentTab:
+    case kTab:
+      return omnibox::INPUT_TYPE_BROWSER_TAB;
+    case kFile:
+      return omnibox::INPUT_TYPE_LENS_FILE;
+    case kGallery:
+    case kCamera:
+      return omnibox::INPUT_TYPE_LENS_IMAGE;
+    case kDrive:
+      return omnibox::INPUT_TYPE_DRIVE;
+  }
+}
 }  // namespace
 
 @interface ComposeboxInputStateManager () <ComposeboxModeObserver,
@@ -439,9 +456,6 @@ ComposeboxUIConfig* ServerUIConfigFromInputState(
 
 - (NSUInteger)remainingNumberOfImagesAllowed {
   NSUInteger remainingAttachmentCapacity = [self remainingAttachmentCapacity];
-  if (!EnableComposeboxServerSideState()) {
-    return remainingAttachmentCapacity;
-  }
   if (!_inputState.has_value()) {
     return remainingAttachmentCapacity;
   }
@@ -481,9 +495,6 @@ ComposeboxUIConfig* ServerUIConfigFromInputState(
   NSUInteger capacityForTabs =
       remainingAttachmentCapacity + self.items.tabsCount;
 
-  if (!EnableComposeboxServerSideState()) {
-    return capacityForTabs;
-  }
   if (!_inputState.has_value()) {
     return capacityForTabs;
   }
@@ -829,12 +840,17 @@ ComposeboxUIConfig* ServerUIConfigFromInputState(
 
 // Whether the given attachment option is allowed.
 - (BOOL)isAttachmentAllowed:(ComposeboxAttachmentOption)attachmentOption {
-  if (![self attachmentsAvailable]) {
+  if (![self attachmentsAvailable] || !_inputState.has_value()) {
     return NO;
   }
 
-  // Enforce signed-in status for the Drive option before evaluating server-side
-  // or local rules.
+  if (!std::ranges::contains(_inputState->allowed_input_types,
+                             InputTypeForAttachmentOption(attachmentOption))) {
+    return NO;
+  }
+
+  // Enforce signed-in status and feature flag for the Drive option after
+  // verifying server-side eligibility.
   if (attachmentOption == ComposeboxAttachmentOption::kDrive) {
     BOOL hasPrimaryAccount =
         _identityManager &&
@@ -842,13 +858,11 @@ ComposeboxUIConfig* ServerUIConfigFromInputState(
     if (!hasPrimaryAccount) {
       return NO;
     }
+
+    return IsComposeboxDriveOptionEnabled();
   }
 
-  if (EnableComposeboxServerSideState()) {
-    return [self isAttachmentAllowedByServer:attachmentOption];
-  } else {
-    return [self isAttachmentAllowedLocally:attachmentOption];
-  }
+  return YES;
 }
 
 // Whether the given attachment option is disabled.
@@ -857,11 +871,22 @@ ComposeboxUIConfig* ServerUIConfigFromInputState(
     return YES;
   }
 
-  if (EnableComposeboxServerSideState()) {
-    return [self isAttachmentDisabledByServer:attachmentOption];
-  } else {
-    return [self isAttachmentDisabledLocally:attachmentOption];
+  if (!_inputState.has_value()) {
+    return NO;
   }
+
+  if (!std::ranges::contains(_inputState->disabled_input_types,
+                             InputTypeForAttachmentOption(attachmentOption))) {
+    return NO;
+  }
+
+  // When Drive is flag-disabled, it is hidden via `isAttachmentAllowed:` rather
+  // than shown as disabled.
+  if (attachmentOption == ComposeboxAttachmentOption::kDrive) {
+    return IsComposeboxDriveOptionEnabled();
+  }
+
+  return YES;
 }
 
 // Whether the given tool mode is allowed.
@@ -871,56 +896,68 @@ ComposeboxUIConfig* ServerUIConfigFromInputState(
   }
 
   // All tools are gated by AI omnibox eligibility.
-  if (![self isEligibleToAIM]) {
+  if (![self isEligibleToAIM] || !_inputState.has_value()) {
     return NO;
   }
 
-  // Global checks first
   switch (mode) {
     case ComposeboxMode::kImageGeneration:
       if (experimental_flags::ShouldForceDisableComposeboxCreateImages()) {
         return NO;
       }
-      break;
+      return std::ranges::contains(_inputState->allowed_tools,
+                                   omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
     case ComposeboxMode::kCanvas:
       if (!ShowComposeboxAdditionalAdvancedTools() ||
           experimental_flags::ShouldForceDisableComposeboxCanvas()) {
         return NO;
       }
-      break;
+      return std::ranges::contains(_inputState->allowed_tools,
+                                   omnibox::ToolMode::TOOL_MODE_CANVAS);
     case ComposeboxMode::kDeepSearch:
       if (!ShowDeepSearchTool() ||
           experimental_flags::ShouldForceDisableComposeboxDeepSearch()) {
         return NO;
       }
-      break;
-    case ComposeboxMode::kAIM:
+      return std::ranges::contains(_inputState->allowed_tools,
+                                   omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
     case ComposeboxMode::kPTM:
-      break;
+      return std::ranges::contains(_inputState->allowed_tools,
+                                   omnibox::ToolMode::TOOL_MODE_GEMINI_PRO);
+    case ComposeboxMode::kAIM:
+      return YES;
     case ComposeboxMode::kRegularSearch:
-      if (_entrypoint == ComposeboxEntrypoint::kCobrowse) {
-        return NO;
-      }
-      break;
-  }
-
-  if (EnableComposeboxServerSideState()) {
-    return [self isToolAllowedByServer:mode];
-  } else {
-    return [self isToolAllowedLocally:mode];
+      return _entrypoint != ComposeboxEntrypoint::kCobrowse;
   }
 }
 
 // Whether the given tool mode is disabled.
 - (BOOL)isToolDisabled:(ComposeboxMode)mode {
-  if ([self activeMode] == mode) {
+  if ([self activeMode] == mode || !_inputState.has_value()) {
     // Allows the user to exit the active mode.
     return NO;
   }
-  if (EnableComposeboxServerSideState()) {
-    return [self isToolDisabledByServer:mode];
-  } else {
-    return [self isToolDisabledLocally:mode];
+
+  using enum ComposeboxMode;
+  switch (mode) {
+    case kImageGeneration:
+      return std::ranges::contains(_inputState->disabled_tools,
+                                   omnibox::ToolMode::TOOL_MODE_IMAGE_GEN) ||
+             std::ranges::contains(
+                 _inputState->disabled_tools,
+                 omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD);
+    case kCanvas:
+      return std::ranges::contains(_inputState->disabled_tools,
+                                   omnibox::ToolMode::TOOL_MODE_CANVAS);
+    case kDeepSearch:
+      return std::ranges::contains(_inputState->disabled_tools,
+                                   omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+    case kPTM:
+      return std::ranges::contains(_inputState->disabled_tools,
+                                   omnibox::ToolMode::TOOL_MODE_GEMINI_PRO);
+    case kAIM:
+    case kRegularSearch:
+      return NO;
   }
 }
 
@@ -938,13 +975,7 @@ ComposeboxUIConfig* ServerUIConfigFromInputState(
     return NO;
   }
 
-  // Models are only available from server state.
-  if (!ShowComposeboxAdditionalAdvancedTools() ||
-      !EnableComposeboxServerSideState()) {
-    return NO;
-  }
-
-  if (!_inputState.has_value()) {
+  if (!ShowComposeboxAdditionalAdvancedTools() || !_inputState.has_value()) {
     return NO;
   }
 
@@ -953,13 +984,7 @@ ComposeboxUIConfig* ServerUIConfigFromInputState(
 
 // Whether the given `model` is disabled.
 - (BOOL)isModelDisabled:(omnibox::ModelMode)model {
-  // Models are only available from server state.
-  if (!ShowComposeboxAdditionalAdvancedTools() ||
-      !EnableComposeboxServerSideState()) {
-    return NO;
-  }
-
-  if (!_inputState.has_value()) {
+  if (!ShowComposeboxAdditionalAdvancedTools() || !_inputState.has_value()) {
     return NO;
   }
 
@@ -1120,184 +1145,10 @@ ComposeboxUIConfig* ServerUIConfigFromInputState(
 
 // The absolute value for the maximum number of attachments available.
 - (NSUInteger)totalAttachmentLimit {
-  if (!EnableComposeboxServerSideState() || !_inputState.has_value()) {
+  if (!_inputState.has_value()) {
     return kAttachmentLimit;
   }
   return _inputState->max_total_inputs;
-}
-
-#pragma mark - Helpers
-
-/// Whether the given attachment option is allowed by the server.
-- (BOOL)isAttachmentAllowedByServer:
-    (ComposeboxAttachmentOption)attachmentOption {
-  if (!_inputState.has_value()) {
-    return NO;
-  }
-  using enum ComposeboxAttachmentOption;
-  switch (attachmentOption) {
-    case kCurrentTab:
-    case kTab:
-      return std::ranges::contains(_inputState->allowed_input_types,
-                                   omnibox::INPUT_TYPE_BROWSER_TAB);
-    case kFile:
-      return std::ranges::contains(_inputState->allowed_input_types,
-                                   omnibox::INPUT_TYPE_LENS_FILE);
-    case kGallery:
-    case kCamera:
-      return std::ranges::contains(_inputState->allowed_input_types,
-                                   omnibox::INPUT_TYPE_LENS_IMAGE);
-    case kDrive:
-      return IsComposeboxDriveOptionEnabled() &&
-             std::ranges::contains(_inputState->allowed_input_types,
-                                   omnibox::INPUT_TYPE_DRIVE);
-  }
-}
-
-/// Whether the given attachment option is allowed by local rules.
-- (BOOL)isAttachmentAllowedLocally:
-    (ComposeboxAttachmentOption)attachmentOption {
-  using enum ComposeboxAttachmentOption;
-  switch (attachmentOption) {
-    case kCurrentTab:
-    case kTab:
-      return YES;
-    case kFile:
-      return [self isEligibleToUploadPdf];
-    case kGallery:
-    case kCamera:
-      return YES;
-    case kDrive:
-      return IsComposeboxDriveOptionEnabled() && [self isEligibleToUploadPdf];
-  }
-}
-
-/// Whether the given attachment option is disabled by the server.
-- (BOOL)isAttachmentDisabledByServer:
-    (ComposeboxAttachmentOption)attachmentOption {
-  if (!_inputState.has_value()) {
-    return NO;
-  }
-  using enum ComposeboxAttachmentOption;
-  switch (attachmentOption) {
-    case kCurrentTab:
-    case kTab:
-      return std::ranges::contains(_inputState->disabled_input_types,
-                                   omnibox::INPUT_TYPE_BROWSER_TAB);
-    case kFile:
-      return std::ranges::contains(_inputState->disabled_input_types,
-                                   omnibox::INPUT_TYPE_LENS_FILE);
-    case kGallery:
-    case kCamera:
-      return std::ranges::contains(_inputState->disabled_input_types,
-                                   omnibox::INPUT_TYPE_LENS_IMAGE);
-    case kDrive:
-      return IsComposeboxDriveOptionEnabled() &&
-             std::ranges::contains(_inputState->disabled_input_types,
-                                   omnibox::INPUT_TYPE_DRIVE);
-  }
-}
-
-/// Whether the given attachment option is disabled by local rules.
-- (BOOL)isAttachmentDisabledLocally:
-    (ComposeboxAttachmentOption)attachmentOption {
-  BOOL isImageCreationMode =
-      [self activeMode] == ComposeboxMode::kImageGeneration;
-  using enum ComposeboxAttachmentOption;
-  switch (attachmentOption) {
-    case kCurrentTab:
-    case kTab:
-    case kFile:
-      return isImageCreationMode;
-    case kGallery:
-    case kCamera:
-      return NO;
-    case kDrive:
-      return IsComposeboxDriveOptionEnabled() && isImageCreationMode;
-  }
-}
-
-/// Whether the given tool mode is allowed by the server.
-- (BOOL)isToolAllowedByServer:(ComposeboxMode)mode {
-  if (!_inputState.has_value()) {
-    return NO;
-  }
-  using enum ComposeboxMode;
-  switch (mode) {
-    case kImageGeneration:
-      return std::ranges::contains(_inputState->allowed_tools,
-                                   omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
-    case kCanvas:
-      return std::ranges::contains(_inputState->allowed_tools,
-                                   omnibox::ToolMode::TOOL_MODE_CANVAS);
-    case kDeepSearch:
-      return std::ranges::contains(_inputState->allowed_tools,
-                                   omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
-    case kPTM:
-      return std::ranges::contains(_inputState->allowed_tools,
-                                   omnibox::ToolMode::TOOL_MODE_GEMINI_PRO);
-    case kAIM:
-      return [self isEligibleToAIM];
-    case kRegularSearch:
-      return YES;
-  }
-}
-
-/// Whether the given tool mode is allowed by local rules.
-- (BOOL)isToolAllowedLocally:(ComposeboxMode)mode {
-  using enum ComposeboxMode;
-  switch (mode) {
-    case kImageGeneration:
-      return _aimEligibilityService
-                 ? _aimEligibilityService->IsCreateImagesEligible()
-                 : NO;
-    case kCanvas:
-      return _aimEligibilityService ? _aimEligibilityService->IsCanvasEligible()
-                                    : NO;
-    case kDeepSearch:
-      return _aimEligibilityService
-                 ? _aimEligibilityService->IsDeepSearchEligible()
-                 : NO;
-    case kPTM:
-      return NO;
-    case kAIM:
-      return [self isEligibleToAIM];
-    case kRegularSearch:
-      return YES;
-  }
-}
-
-/// Whether the given tool mode is disabled by the server.
-- (BOOL)isToolDisabledByServer:(ComposeboxMode)mode {
-  if (!_inputState.has_value()) {
-    return NO;
-  }
-  using enum ComposeboxMode;
-  switch (mode) {
-    case kImageGeneration:
-      return std::ranges::contains(_inputState->disabled_tools,
-                                   omnibox::ToolMode::TOOL_MODE_IMAGE_GEN) ||
-             std::ranges::contains(
-                 _inputState->disabled_tools,
-                 omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD);
-    case kCanvas:
-      return std::ranges::contains(_inputState->disabled_tools,
-                                   omnibox::ToolMode::TOOL_MODE_CANVAS);
-    case kDeepSearch:
-      return std::ranges::contains(_inputState->disabled_tools,
-                                   omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
-    case kPTM:
-      return std::ranges::contains(_inputState->disabled_tools,
-                                   omnibox::ToolMode::TOOL_MODE_GEMINI_PRO);
-    case kAIM:
-    case kRegularSearch:
-      return NO;
-  }
-}
-
-/// Whether the given tool mode is disabled by local rules.
-- (BOOL)isToolDisabledLocally:(ComposeboxMode)mode {
-  return mode == ComposeboxMode::kImageGeneration && self.items.hasTabOrFile;
 }
 
 @end

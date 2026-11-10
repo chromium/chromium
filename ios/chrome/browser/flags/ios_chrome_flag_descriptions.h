@@ -519,11 +519,6 @@ inline constexpr char kComposeboxPlusButtonLargeCarouselDescription[] =
     "Uses the larger size of the carousel in the bottom sheet for the plus "
     "button multimodal menu.";
 
-inline constexpr char kComposeboxServerSideStateName[] =
-    "Enable server side state in Composebox";
-inline constexpr char kComposeboxServerSideStateDescription[] =
-    "When enabled, the server side state will be used in the composebox";
-
 inline constexpr char kComposeboxVerbatimSuggestionInAIMName[] =
     "Enable verbatim suggestion in AIM in composebox";
 inline constexpr char kComposeboxVerbatimSuggestionInAIMDescription[] =

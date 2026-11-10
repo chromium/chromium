@@ -2284,11 +2284,6 @@
     "expiry_milestone": 165
   },
   {
-    "name": "composebox-server-side-state",
-    "owners": [ "radunitescu@google.com", "bling-search@google.com" ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "composebox-skills-contextual-tasks",
     "owners": [ "dhruvkathpalia@google.com", "chrome-desktop-ntp@google.com" ],
     "expiry_milestone": 165

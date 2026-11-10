@@ -32,7 +32,6 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
-#import "ui/base/device_form_factor.h"
 
 @interface ComposeboxInputStateManager (Testing)
 - (void)didUpdateInputState:(const contextual_search::InputState&)inputState;
@@ -76,7 +75,6 @@ class ComposeboxInputStateManagerTest : public PlatformTest {
     PlatformTest::SetUp();
     contextual_search::ContextualSearchService::RegisterProfilePrefs(
         pref_service_.registry());
-    scoped_feature_list_.InitWithFeatures({kComposeboxServerSideState}, {});
 
     session_handle_ = std::make_unique<
         contextual_search::MockContextualSearchSessionHandle>();
@@ -357,56 +355,6 @@ TEST_F(ComposeboxInputStateManagerTest, ToolDisabled_ServerSideEnabled) {
               testing::Contains(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN));
 }
 
-// Tests that the image tool is allowed in local fallback mode when the
-// server-side state is disabled and the user is eligible according to the AIM
-// eligibility service.
-TEST_F(ComposeboxInputStateManagerTest, ImageToolAllowed_ServerSideDisabled) {
-  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
-    GTEST_SKIP() << "Server-side state is always enabled on phones.";
-  }
-
-  // Disable server-side state for this test.
-  base::test::ScopedFeatureList local_feature_list;
-  local_feature_list.InitAndDisableFeature(kComposeboxServerSideState);
-
-  // Set up mock expectation for AIM eligibility service.
-  EXPECT_CALL(*mock_aim_service_, IsFuseboxEligible())
-      .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(*mock_aim_service_, IsCreateImagesEligible())
-      .WillRepeatedly(testing::Return(true));
-
-  ComposeboxUIInputState* state = [manager_ computeUIInputStateWithFavicon:nil
-                                                       attachedWebStateIDs:{}];
-  EXPECT_TRUE([state isToolAvailable:ComposeboxMode::kImageGeneration]);
-}
-
-// Tests that the image tool is disabled in local fallback mode when there are
-// already tab or file attachments.
-TEST_F(ComposeboxInputStateManagerTest, ImageToolDisabled_HasTabOrFile) {
-  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
-    GTEST_SKIP() << "Server-side state is always enabled on phones.";
-  }
-
-  // Disable server-side state for this test.
-  base::test::ScopedFeatureList local_feature_list;
-  local_feature_list.InitAndDisableFeature(kComposeboxServerSideState);
-
-  // Add a tab attachment to the collection.
-  ComposeboxInputItemCollection* collection =
-      [[ComposeboxInputItemCollection alloc] init];
-  ComposeboxInputItem* item = [[ComposeboxInputItem alloc]
-      initWithComposeboxInputItemType:ComposeboxInputItemType::
-                                          kComposeboxInputItemTypeTab
-                               source:ComposeboxInputItemSource::kTabPicker];
-  [collection addItem:item];
-
-  manager_.items = collection;
-
-  ComposeboxUIInputState* state = [manager_ computeUIInputStateWithFavicon:nil
-                                                       attachedWebStateIDs:{}];
-  EXPECT_TRUE([state isToolDisabled:ComposeboxMode::kImageGeneration]);
-}
-
 // Tests that onItemsUpdated correctly updates the tool mode in image generation
 // mode.
 TEST_F(ComposeboxInputStateManagerTest, OnItemsUpdated_ImageGenerationMode) {
@@ -464,21 +412,6 @@ TEST_F(ComposeboxInputStateManagerTest, OnItemsUpdated_ImageGenerationMode) {
   // Should fallback to TOOL_MODE_IMAGE_GEN.
   EXPECT_EQ(manager_.inputState->active_tool,
             omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
-}
-
-// Tests that tab attachments are disabled in local fallback mode when the
-// active mode is image generation.
-TEST_F(ComposeboxInputStateManagerTest, TabAttachmentDisabled_ImageGenMode) {
-  // Disable server-side state for this test.
-  base::test::ScopedFeatureList local_feature_list;
-  local_feature_list.InitAndDisableFeature(kComposeboxServerSideState);
-
-  // Set the active mode to image generation.
-  mode_holder_.mode = ComposeboxMode::kImageGeneration;
-
-  ComposeboxUIInputState* state = [manager_ computeUIInputStateWithFavicon:nil
-                                                       attachedWebStateIDs:{}];
-  EXPECT_TRUE([state isAttachmentDisabled:ComposeboxAttachmentOption::kTab]);
 }
 
 #pragma mark - Attachment Capacity
@@ -1046,10 +979,6 @@ TEST_F(ComposeboxInputStateManagerTest,
 // model picker when the feature flag is off.
 TEST_F(ComposeboxInputStateManagerTest,
        ComputeUIInputState_ModelPickerDisabled) {
-  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
-    GTEST_SKIP() << "Model picker is always enabled on phones.";
-  }
-
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(kComposeboxAdditionalAdvancedTools);
 
@@ -1137,6 +1066,52 @@ TEST_F(ComposeboxInputStateManagerTest,
   EXPECT_EQ(state.remainingAttachmentCapacity, 0u);
   // Tab attachment should be disabled.
   EXPECT_TRUE([state isAttachmentDisabled:ComposeboxAttachmentOption::kTab]);
+}
+
+// Tests that tab and file attachments are marked as disabled in the UI state
+// when disallowed by the active server rule while image attachments remain
+// available.
+TEST_F(ComposeboxInputStateManagerTest,
+       ComputeUIInputStateDisablesAttachmentsDisallowedByServerRule) {
+  omnibox::SearchboxConfig config;
+  omnibox::RuleSet* rule_set = config.mutable_rule_set();
+  rule_set->set_max_total_inputs(5);
+  for (omnibox::InputType input_type :
+       {omnibox::INPUT_TYPE_LENS_IMAGE, omnibox::INPUT_TYPE_LENS_FILE,
+        omnibox::INPUT_TYPE_BROWSER_TAB}) {
+    config.add_input_type_configs()->set_input_type(input_type);
+    omnibox::InputTypeRule* input_rule = rule_set->add_input_type_rules();
+    input_rule->set_input_type(input_type);
+    input_rule->set_max_instance(5);
+    input_rule->set_allow_all_input_types(true);
+    rule_set->add_allowed_input_types(input_type);
+  }
+
+  omnibox::ModelConfig* model_config = config.add_model_configs();
+  model_config->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  model_config->set_menu_label("Thinking");
+  omnibox::ModelRule* model_rule = model_config->mutable_rule();
+  model_rule->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  model_rule->add_allowed_input_types(omnibox::INPUT_TYPE_LENS_IMAGE);
+  rule_set->add_allowed_models(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  ASSERT_TRUE(aim_eligibility_callback_);
+  aim_eligibility_callback_.Run();
+
+  [manager_ setActiveModel:omnibox::ModelMode::MODEL_MODE_GEMINI_PRO
+        explicitUserAction:YES];
+
+  ComposeboxUIInputState* state = [manager_ computeUIInputStateWithFavicon:nil
+                                                       attachedWebStateIDs:{}];
+
+  EXPECT_TRUE(
+      [state isAttachmentAvailable:ComposeboxAttachmentOption::kGallery]);
+  EXPECT_FALSE(
+      [state isAttachmentDisabled:ComposeboxAttachmentOption::kGallery]);
+  EXPECT_TRUE([state isAttachmentDisabled:ComposeboxAttachmentOption::kTab]);
+  EXPECT_TRUE([state isAttachmentDisabled:ComposeboxAttachmentOption::kFile]);
 }
 
 // Tests that `computeUIInputStateWithFavicon:attachedWebStateIDs:` disables

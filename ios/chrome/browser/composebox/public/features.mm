@@ -7,7 +7,6 @@
 #import "base/metrics/field_trial_params.h"
 #import "base/time/time.h"
 #import "components/omnibox/common/omnibox_features.h"
-#import "ui/base/device_form_factor.h"
 
 BASE_FEATURE(kComposeboxDevTools, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -52,9 +51,6 @@ BASE_FEATURE(kComposeboxAdditionalAdvancedTools,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool ShowComposeboxAdditionalAdvancedTools() {
-  if (!EnableComposeboxServerSideState()) {
-    return false;
-  }
   return base::FeatureList::IsEnabled(kComposeboxAdditionalAdvancedTools);
 }
 
@@ -63,12 +59,6 @@ bool ShowDeepSearchTool() {
 }
 
 BASE_FEATURE(kComposeboxDeepSearch, base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool EnableComposeboxServerSideState() {
-  return base::FeatureList::IsEnabled(kComposeboxServerSideState);
-}
-
-BASE_FEATURE(kComposeboxServerSideState, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsComposeboxVerbatimSuggestionInAIMEnabled() {
   return base::FeatureList::IsEnabled(kComposeboxVerbatimSuggestionInAIM);

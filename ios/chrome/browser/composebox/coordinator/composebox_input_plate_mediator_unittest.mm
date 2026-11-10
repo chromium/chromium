@@ -314,7 +314,18 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
           return base::CallbackListSubscription();
         });
 
-    searchbox_config_.mutable_rule_set()->set_max_total_inputs(kMaxTotalInputs);
+    omnibox::RuleSet* rule_set = searchbox_config_.mutable_rule_set();
+    rule_set->set_max_total_inputs(kMaxTotalInputs);
+    for (omnibox::InputType input_type :
+         {omnibox::InputType::INPUT_TYPE_LENS_IMAGE,
+          omnibox::InputType::INPUT_TYPE_LENS_FILE,
+          omnibox::InputType::INPUT_TYPE_BROWSER_TAB}) {
+      searchbox_config_.add_input_type_configs()->set_input_type(input_type);
+      omnibox::InputTypeRule* input_rule = rule_set->add_input_type_rules();
+      input_rule->set_input_type(input_type);
+      input_rule->set_max_instance(kMaxTotalInputs);
+      input_rule->set_allow_all_input_types(true);
+    }
     ForwardSearchboxConfig();
 
     auto session_handle = service_->CreateSession(
@@ -354,7 +365,6 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
     bool aimNudge;
     bool advancedTools;
     bool deepSearch;
-    bool serverSideState;
   };
 
   // `PageContextWrapperFactory` implementation that records weak references to
@@ -528,9 +538,6 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
 
   void SetCreateImageEligible(bool createImagesEligible,
                               bool add_tool_rule = true) {
-    EXPECT_CALL(*aim_eligibility_service_, IsCreateImagesEligible())
-        .WillRepeatedly(testing::Return(createImagesEligible));
-
     if (createImagesEligible) {
       SetToolAllowed(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN, add_tool_rule);
       SetToolAllowed(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD,
@@ -541,8 +548,6 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
   }
 
   void SetCanvasEligible(bool canvasEligible) {
-    EXPECT_CALL(*aim_eligibility_service_, IsCanvasEligible())
-        .WillRepeatedly(testing::Return(canvasEligible));
     if (canvasEligible) {
       SetToolAllowed(omnibox::ToolMode::TOOL_MODE_CANVAS);
     }
@@ -550,8 +555,6 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
   }
 
   void SetDeepSearchEligible(bool deepSearchEligible) {
-    EXPECT_CALL(*aim_eligibility_service_, IsDeepSearchEligible())
-        .WillRepeatedly(testing::Return(deepSearchEligible));
     if (deepSearchEligible) {
       SetToolAllowed(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
     }
@@ -593,12 +596,6 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
       enabled_features.push_back(kComposeboxAIMNudge);
     } else {
       disabled_features.push_back(kComposeboxAIMNudge);
-    }
-
-    if (features.serverSideState) {
-      enabled_features.push_back(kComposeboxServerSideState);
-    } else {
-      disabled_features.push_back(kComposeboxServerSideState);
     }
 
     if (features.advancedTools) {
@@ -724,10 +721,6 @@ TEST_F(ComposeboxInputPlateMediatorTest, ShowsQRScannerButtonWithNonGoogleDSE) {
 // Tests create image not shown when not eligible.
 TEST_F(ComposeboxInputPlateMediatorTest,
        CreateImageOptionHiddenWhenNotEligible) {
-  EnableInputPlateFeatures({
-      .serverSideState = true,
-  });
-
   SetAIMEligible(true);
   SetDSEGoogle(true);
   SetCreateImageEligible(false);
@@ -737,10 +730,6 @@ TEST_F(ComposeboxInputPlateMediatorTest,
 
 // Tests create image shown when eligible.
 TEST_F(ComposeboxInputPlateMediatorTest, CreateImageOptionShownWhenEligible) {
-  EnableInputPlateFeatures({
-      .serverSideState = true,
-  });
-
   SetAIMEligible(true);
   SetDSEGoogle(true);
   SetCreateImageEligible(true);
@@ -752,7 +741,6 @@ TEST_F(ComposeboxInputPlateMediatorTest, CreateImageOptionShownWhenEligible) {
 TEST_F(ComposeboxInputPlateMediatorTest, CanvasOptionHiddenWhenNotEligible) {
   EnableInputPlateFeatures({
       .advancedTools = true,
-      .serverSideState = true,
   });
 
   SetAIMEligible(true);
@@ -766,7 +754,6 @@ TEST_F(ComposeboxInputPlateMediatorTest, CanvasOptionHiddenWhenNotEligible) {
 TEST_F(ComposeboxInputPlateMediatorTest, CanvasOptionShownWhenEligible) {
   EnableInputPlateFeatures({
       .advancedTools = true,
-      .serverSideState = true,
   });
 
   SetAIMEligible(true);
@@ -782,7 +769,6 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   EnableInputPlateFeatures({
       .advancedTools = true,
       .deepSearch = true,
-      .serverSideState = true,
   });
 
   SetAIMEligible(true);
@@ -797,7 +783,6 @@ TEST_F(ComposeboxInputPlateMediatorTest, DeepSearchOptionShownWhenEligible) {
   EnableInputPlateFeatures({
       .advancedTools = true,
       .deepSearch = true,
-      .serverSideState = true,
   });
 
   SetAIMEligible(true);
@@ -809,13 +794,9 @@ TEST_F(ComposeboxInputPlateMediatorTest, DeepSearchOptionShownWhenEligible) {
 
 // Tests tools without rule in config are marked as disabled
 TEST_F(ComposeboxInputPlateMediatorTest, ToolWithoutRuleIsMarkedDisabled) {
-  EnableInputPlateFeatures({
-      .serverSideState = true,
-  });
-
   SetAIMEligible(true);
   SetDSEGoogle(true);
-  SetCreateImageEligible(/*deepSearchEligible=*/true,
+  SetCreateImageEligible(/*createImagesEligible=*/true,
                          /*add_tool_rule=*/false);
 
   EXPECT_FALSE(consumer_.createImageHidden);
