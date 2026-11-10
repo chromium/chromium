@@ -11,7 +11,6 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
-#include "media/base/format_utils.h"
 
 namespace media {
 
@@ -46,13 +45,13 @@ VideoFrameSharedImageCache::CachedData
 VideoFrameSharedImageCache::GetOrCreateSharedImage(
     const VideoFrame* video_frame,
     viz::RasterContextProvider* raster_context_provider,
-    const gpu::SharedImageUsageSet& usage) {
-  viz::SharedImageFormat format =
-      VideoPixelFormatToSharedImageFormat(video_frame->format()).value();
-  CHECK(format.is_multi_plane());
+    const gpu::SharedImageUsageSet& usage,
+    const viz::SharedImageFormat& format,
+    SkAlphaType alpha_type,
+    const gfx::ColorSpace& color_space) {
   return GetOrCreateSharedImage(video_frame, raster_context_provider, usage,
-                                format, kUnpremul_SkAlphaType,
-                                video_frame->ColorSpace());
+                                format, alpha_type, color_space,
+                                video_frame->coded_size());
 }
 
 VideoFrameSharedImageCache::CachedData
@@ -62,7 +61,8 @@ VideoFrameSharedImageCache::GetOrCreateSharedImage(
     const gpu::SharedImageUsageSet& usage,
     const viz::SharedImageFormat& format,
     SkAlphaType alpha_type,
-    const gfx::ColorSpace& color_space) {
+    const gfx::ColorSpace& color_space,
+    const gfx::Size& size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   cache_deleting_timer_.Reset();
 
@@ -73,7 +73,7 @@ VideoFrameSharedImageCache::GetOrCreateSharedImage(
     }
     // Return the cached shared image if the video frame data matches the shared
     // image data.
-    if (video_frame->coded_size() == shared_image_->size() &&
+    if (size == shared_image_->size() &&
         color_space == shared_image_->color_space() &&
         format == shared_image_->format() && usage == shared_image_->usage() &&
         alpha_type == shared_image_->alpha_type()) {
@@ -90,8 +90,8 @@ VideoFrameSharedImageCache::GetOrCreateSharedImage(
   CHECK(sii);
 
   shared_image_ = sii->CreateSharedImage(
-      {format, video_frame->coded_size(), color_space, kTopLeft_GrSurfaceOrigin,
-       alpha_type, usage, "VideoFrameSharedImageCache"},
+      {format, size, color_space, kTopLeft_GrSurfaceOrigin, alpha_type, usage,
+       "VideoFrameSharedImageCache"},
       gpu::kNullSurfaceHandle);
   CHECK(shared_image_);
   video_frame_id_ = video_frame->unique_id();

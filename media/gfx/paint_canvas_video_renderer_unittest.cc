@@ -1513,6 +1513,52 @@ TEST_F(PaintCanvasVideoRendererWithGLTest,
   destination_gl->DeleteTextures(1, &texture);
 }
 
+TEST_F(PaintCanvasVideoRendererWithGLTest,
+       CopyVideoFrameYUVDataToGLTexture_IgnoresPaddingOutsideVisibleRect) {
+  constexpr gfx::Size kCodedSize(16, 16);
+  constexpr gfx::Rect kVisibleRect(2, 2, 8, 6);
+  auto frame = VideoFrame::CreateZeroInitializedFrame(
+      PIXEL_FORMAT_I420, kCodedSize, kVisibleRect, kVisibleRect.size(),
+      base::Milliseconds(4));
+  ASSERT_TRUE(frame);
+
+  // Fill only the visible rect with black (Y=0, U=128, V=128), leaving the
+  // surrounding coded area zeroed (Y=0, U=0, V=0, which converts to green).
+  for (int plane : {VideoFrame::Plane::kU, VideoFrame::Plane::kV}) {
+    base::span<uint8_t> data = frame->GetWritableVisiblePlaneData(plane);
+    const size_t stride = frame->stride(plane);
+    const size_t row_bytes = frame->GetVisibleRowBytes(plane);
+    for (int r = 0; r < frame->GetVisibleRows(plane); ++r) {
+      std::ranges::fill(data.subspan(r * stride, row_bytes), 128);
+    }
+  }
+
+  auto* destination_gl = destination_context_->ContextGL();
+  DCHECK(destination_gl);
+  GLenum target = GL_TEXTURE_2D;
+  GLuint texture = 0;
+  destination_gl->GenTextures(1, &texture);
+  destination_gl->BindTexture(target, texture);
+
+  ASSERT_TRUE(PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
+      media_context_.get(), destination_gl, frame, GetRGBSharedImageCache(),
+      GetYUVSharedImageCache(), target, texture, GL_RGBA, GL_RGBA,
+      GL_UNSIGNED_BYTE, 0, kUnpremul_SkAlphaType, kTopLeft_GrSurfaceOrigin));
+
+  base::HeapArray<uint8_t> pixels =
+      ReadbackTexture(destination_gl, texture, kVisibleRect.size());
+  auto get_color = ColorGetter(pixels, kVisibleRect.size());
+
+  for (int y = 0; y < kVisibleRect.height(); ++y) {
+    for (int x = 0; x < kVisibleRect.width(); ++x) {
+      EXPECT_EQ(SK_ColorBLACK, get_color(x, y))
+          << "at (" << x << ", " << y << ")";
+    }
+  }
+
+  destination_gl->DeleteTextures(1, &texture);
+}
+
 // Checks that we correctly copy a RGBA shared image VideoFrame when using
 // CopyVideoFrameYUVDataToGLTexture, including correct cropping.
 TEST_F(PaintCanvasVideoRendererWithGLTest,

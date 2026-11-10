@@ -55,8 +55,8 @@ class MEDIA_EXPORT VideoFrameSharedImageCache {
 
   void ReleaseCachedData();
 
-  // Creates a new shared image if the `video_frame` data differs from that in
-  // `shared_image_`. This function can be called repeatedly to re-use
+  // Creates a new shared image of `size` if the `video_frame` data differs from
+  // that in `shared_image_`. This function can be called repeatedly to re-use
   // `shared_image_` in the case of CPU backed VideoFrames. Returns the
   // `shared_image_` along with Status on whether the shared image was created
   // or reused.
@@ -66,14 +66,17 @@ class MEDIA_EXPORT VideoFrameSharedImageCache {
       const gpu::SharedImageUsageSet& usage,
       const viz::SharedImageFormat& format,
       SkAlphaType alpha_type,
-      const gfx::ColorSpace& color_space);
+      const gfx::ColorSpace& color_space,
+      const gfx::Size& size);
 
-  // Calls the above method but passes in video frame color space and YUV format
-  // derived from video frame format.
+  // Calls the above method with `size` set to `video_frame->coded_size()`.
   CachedData GetOrCreateSharedImage(
       const VideoFrame* video_frame,
       viz::RasterContextProvider* raster_context_provider,
-      const gpu::SharedImageUsageSet& usage);
+      const gpu::SharedImageUsageSet& usage,
+      const viz::SharedImageFormat& format,
+      SkAlphaType alpha_type,
+      const gfx::ColorSpace& color_space);
 
   // Update the `sync_token_` to wait for after performing raster/gles tasks.
   void UpdateSyncToken(const gpu::SyncToken& sync_token);
