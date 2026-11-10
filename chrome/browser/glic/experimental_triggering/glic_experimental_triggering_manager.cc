@@ -5,6 +5,7 @@
 
 #include <utility>
 
+#include "base/containers/adapters.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_provider_metrics.h"
+#include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "components/gcm_driver/crypto/rfc8291_util.h"
@@ -64,7 +66,20 @@ namespace glic {
 GlicExperimentalTriggeringManager::GlicExperimentalTriggeringManager(
     GlicInstance* instance,
     GlicSharingManagerInternal* sharing_manager)
-    : instance_(instance), sharing_manager_(sharing_manager) {}
+    : instance_(instance), sharing_manager_(sharing_manager) {
+  if (instance_) {
+    instance_will_be_destroyed_subscription_ =
+        instance_->RegisterWillBeDestroyed(base::BindOnce(
+            &GlicExperimentalTriggeringManager::OnInstanceWillBeDestroyed,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
+  if (sharing_manager_) {
+    tab_pinning_status_subscription_ =
+        sharing_manager_->AddTabPinningStatusEventCallback(base::BindRepeating(
+            &GlicExperimentalTriggeringManager::OnTabPinningStatusEvent,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
+}
 
 GlicExperimentalTriggeringManager::~GlicExperimentalTriggeringManager() =
     default;
@@ -91,6 +106,142 @@ GlicExperimentalTriggeringManager::AddClientBoundCallback(
 
 void GlicExperimentalTriggeringManager::NotifyClientBound() {
   client_bound_callbacks_.Notify();
+}
+
+base::ScopedClosureRunner
+GlicExperimentalTriggeringManager::RegisterActiveActuationSession() {
+  if (!base::FeatureList::IsEnabled(
+          features::kGlicExperimentalTriggeringKeepInstanceOnUnbind)) {
+    return base::ScopedClosureRunner();
+  }
+  const bool was_active = HasActiveActuationSession();
+  ++active_actuation_sessions_;
+  if (!was_active) {
+    active_actuation_session_changed_callbacks_.Notify(true);
+  }
+  return base::ScopedClosureRunner(base::BindOnce(
+      &GlicExperimentalTriggeringManager::OnActiveActuationSessionEnded,
+      weak_ptr_factory_.GetWeakPtr()));
+}
+
+base::CallbackListSubscription
+GlicExperimentalTriggeringManager::AddActiveActuationSessionChangedCallback(
+    base::RepeatingCallback<void(bool)> callback) {
+  return active_actuation_session_changed_callbacks_.Add(std::move(callback));
+}
+
+void GlicExperimentalTriggeringManager::OnActiveActuationSessionEnded() {
+  CHECK_GT(active_actuation_sessions_, 0);
+  --active_actuation_sessions_;
+  if (active_actuation_sessions_ != 0) {
+    return;
+  }
+  // Notify first: a blank instance whose closed side panel is still bound
+  // removes itself here (unpinning its own tab), so only tabs it leaves behind
+  // need the deferred unpin below.
+  active_actuation_session_changed_callbacks_.Notify(false);
+  UnpinDeferredTabs();
+}
+
+bool GlicExperimentalTriggeringManager::DeferUnusedTabUnpinOnUnbind(
+    tabs::TabHandle tab_handle) {
+  if (!HasActiveActuationSession()) {
+    return false;
+  }
+  std::erase(deferred_unpin_tabs_, tab_handle);
+  deferred_unpin_tabs_.push_back(tab_handle);
+  return true;
+}
+
+tabs::TabInterface* GlicExperimentalTriggeringManager::GetLastDeferredUnpinTab()
+    const {
+  if (!instance_ || !sharing_manager_) {
+    return nullptr;
+  }
+  for (tabs::TabHandle tab_handle : base::Reversed(deferred_unpin_tabs_)) {
+    tabs::TabInterface* tab = tab_handle.Get();
+    if (!tab || !sharing_manager_->IsTabPinned(tab_handle)) {
+      continue;
+    }
+    // Another conversation adopted the tab since it was unbound from this one;
+    // continuing here must not pull it back.
+    auto* helper = GlicInstanceHelper::From(tab);
+    if (helper && helper->GetInstanceId().has_value() &&
+        helper->GetInstanceId() != instance_->id()) {
+      continue;
+    }
+    return tab;
+  }
+  return nullptr;
+}
+
+void GlicExperimentalTriggeringManager::UnpinDeferredTabs() {
+  std::vector<tabs::TabHandle> deferred = std::move(deferred_unpin_tabs_);
+  deferred_unpin_tabs_.clear();
+  // Instance teardown unpins everything itself.
+  if (instance_will_be_destroyed_notified_ || !instance_ || !sharing_manager_) {
+    return;
+  }
+  std::vector<tabs::TabHandle> to_unpin;
+  for (tabs::TabHandle tab_handle : deferred) {
+    tabs::TabInterface* tab = tab_handle.Get();
+    if (!tab || !sharing_manager_->IsTabPinned(tab_handle)) {
+      continue;
+    }
+    // Bound again since the unbind that deferred it: the binding owns the pin.
+    if (auto* helper = GlicInstanceHelper::From(tab);
+        helper && helper->GetInstanceId() == instance_->id()) {
+      continue;
+    }
+    std::optional<GlicPinnedTabUsage> usage =
+        sharing_manager_->GetPinnedTabUsage(tab_handle);
+    if (!usage || usage->pin_event.trigger == GlicPinTrigger::kRestore ||
+        !usage->Unused() || usage->IsExplicitlyPinnedByUser()) {
+      continue;
+    }
+    to_unpin.push_back(tab_handle);
+  }
+  if (!to_unpin.empty()) {
+    sharing_manager_->UnpinTabs(to_unpin);
+  }
+}
+
+void GlicExperimentalTriggeringManager::OnTabPinningStatusEvent(
+    tabs::TabInterface* tab,
+    GlicPinningStatusEvent event) {
+  if (const auto* unpin_event = std::get_if<GlicUnpinEvent>(&event)) {
+    if (tab) {
+      std::erase(deferred_unpin_tabs_, tab->GetHandle());
+    }
+    if (unpin_event->trigger == GlicUnpinTrigger::kTabClose &&
+        sharing_manager_->GetNumPinnedTabs() == 0) {
+      last_pinned_tab_closed_ = true;
+    }
+    return;
+  }
+  last_pinned_tab_closed_ = false;
+}
+
+base::CallbackListSubscription
+GlicExperimentalTriggeringManager::AddInstanceWillBeDestroyedCallback(
+    base::RepeatingCallback<void(InstanceTeardownReason)> callback) {
+  return instance_will_be_destroyed_callbacks_.Add(std::move(callback));
+}
+
+void GlicExperimentalTriggeringManager::OnInstanceWillBeDestroyed(
+    GlicInstance* instance) {
+  NotifyInstanceWillBeDestroyed(
+      last_pinned_tab_closed_ ? InstanceTeardownReason::kTabClosed
+                              : InstanceTeardownReason::kInstanceDestroyed);
+}
+
+void GlicExperimentalTriggeringManager::NotifyInstanceWillBeDestroyed(
+    InstanceTeardownReason reason) {
+  if (instance_will_be_destroyed_notified_) {
+    return;
+  }
+  instance_will_be_destroyed_notified_ = true;
+  instance_will_be_destroyed_callbacks_.Notify(reason);
 }
 
 void GlicExperimentalTriggeringManager::GetExperimentalTriggeringUpdates(

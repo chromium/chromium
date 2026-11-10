@@ -384,8 +384,19 @@ std::optional<std::string_view> GlicInvokeErrorToChromeErrorCode(
       return kErrorCodeGlicClientLoadError;
     case GlicInvokeError::kTabClosed:
       return kErrorCodeGlicTabClosed;
+    // GlicInvokeHandler observes panel and instance teardown before
+    // GlicInstanceImpl removes itself (e.g. TabInterface::WillDetach fires
+    // synchronously), so these invocation errors carry the same attribution
+    // that ExperimentalTriggeringUpdatesHandler::OnInstanceWillBeDestroyed()
+    // would otherwise attach.
     case GlicInvokeError::kPanelClosed:
+    case GlicInvokeError::kInstanceDestroyedBlankInstanceClosed:
       return kErrorCodeGlicPanelClosed;
+    case GlicInvokeError::kInstanceDestroyedUnbound:
+    case GlicInvokeError::kInstanceDestroyedArchived:
+    case GlicInvokeError::kInstanceDestroyedSignedOut:
+    case GlicInvokeError::kInstanceDestroyedShutdown:
+      return kErrorCodeGlicDestroyedBeforeCompletion;
     case GlicInvokeError::kSuperseded:
       return kErrorCodeGlicSuperseded;
     case GlicInvokeError::kUnknown:
@@ -403,11 +414,6 @@ std::optional<std::string_view> GlicInvokeErrorToChromeErrorCode(
     case GlicInvokeError::kProfileNotEnabled:
     case GlicInvokeError::kCancelled:
     case GlicInvokeError::kLiveModeActive:
-    case GlicInvokeError::kInstanceDestroyedBlankInstanceClosed:
-    case GlicInvokeError::kInstanceDestroyedUnbound:
-    case GlicInvokeError::kInstanceDestroyedArchived:
-    case GlicInvokeError::kInstanceDestroyedSignedOut:
-    case GlicInvokeError::kInstanceDestroyedShutdown:
     case GlicInvokeError::kSignInRequired:
       return std::nullopt;
   }

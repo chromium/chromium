@@ -197,6 +197,7 @@ class GlicInstanceImpl : public GlicInstance,
   bool IsDetached();
   bool IsActuating() const override;
   bool HasLiveSurface() const override;
+  bool HasActiveExperimentalTriggeringSession() const override;
   bool IsInvoking() const override;
   bool IsLiveMode() const override;
 
@@ -265,7 +266,8 @@ class GlicInstanceImpl : public GlicInstance,
   // client. When running hidden, drives offscreen rendering on Android.
   void SetHiddenInitializing(bool initializing);
 
-  // Called exactly once, right before the instance is destroyed.
+  // Called exactly once, right before the instance is destroyed or shut down
+  // (whichever comes first), and before its host WebContents are torn down.
   using DestructionCallback = base::OnceCallback<void(GlicInstance*)>;
   base::CallbackListSubscription RegisterWillBeDestroyed(
       DestructionCallback callback) override;
@@ -452,6 +454,7 @@ class GlicInstanceImpl : public GlicInstance,
   mojom::PanelState ComputePanelState();
 
   void OnActuatingChanged(bool actuating);
+  void OnExperimentalTriggeringSessionChanged(bool active);
   // Returns the WebContents to attach for offscreen rendering: the WebUI
   // contents in webview mode, or the guest contents in NoWebview mode.
   // TODO(b/534807813): Remove once webview is deleted; callers should use
@@ -510,6 +513,7 @@ class GlicInstanceImpl : public GlicInstance,
       experimental_triggering_manager_;
   base::CallbackListSubscription pinned_tabs_change_subscription_;
   base::CallbackListSubscription actuating_changed_subscription_;
+  base::CallbackListSubscription experimental_triggering_session_subscription_;
 
   base::OneShotTimer inactivity_timer_;
   base::Time last_activation_timestamp_;

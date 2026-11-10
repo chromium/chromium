@@ -315,6 +315,11 @@ GlicInstanceImpl::GlicInstanceImpl(
   experimental_triggering_manager_ =
       std::make_unique<GlicExperimentalTriggeringManager>(
           this, &GetSharingManagerInternal());
+  experimental_triggering_session_subscription_ =
+      experimental_triggering_manager_
+          ->AddActiveActuationSessionChangedCallback(base::BindRepeating(
+              &GlicInstanceImpl::OnExperimentalTriggeringSessionChanged,
+              weak_ptr_factory_.GetWeakPtr()));
 
   browser_collection_observation_.Observe(
       GlobalBrowserCollection::GetInstance());
@@ -437,6 +442,11 @@ bool GlicInstanceImpl::IsActuating() const {
 
 bool GlicInstanceImpl::HasLiveSurface() const {
   return GetLastActiveSurface().has_value();
+}
+
+bool GlicInstanceImpl::HasActiveExperimentalTriggeringSession() const {
+  return experimental_triggering_manager_ &&
+         experimental_triggering_manager_->HasActiveActuationSession();
 }
 
 bool GlicInstanceImpl::IsLiveMode() const {
@@ -676,6 +686,9 @@ GlicPinCandidateProvider& GlicInstanceImpl::pin_candidate_provider() {
 
 void GlicInstanceImpl::CloseInstanceAndShutdown() {
   VLOG(1) << "Glic [InstanceImpl] CloseInstanceAndShutdown, id=" << id_.value();
+  // Subscribers may end an experimental triggering session synchronously;
+  // nothing about this instance's removal should be re-evaluated mid-teardown.
+  experimental_triggering_session_subscription_ = {};
   will_be_destroyed_callbacks_.Notify(this);
 
   if (actor_task_manager_) {
@@ -840,10 +853,16 @@ void GlicInstanceImpl::UnbindEmbedder(EmbedderKey key,
     std::optional<GlicPinnedTabUsage> usage =
         GetSharingManagerInternal().GetPinnedTabUsage(tab_handle);
     // If the conversation hasn't had a turn since the tab was pinned and the
-    // tab was not manually pinned, then we will unpin the tab.
+    // tab was not manually pinned, then we will unpin the tab. While an
+    // experimental triggering session is active the unpin is deferred to the
+    // end of the session instead, so unbinding the panel neither drops the
+    // actuation target tab nor lets the instance be removed mid-session.
     if (base::FeatureList::IsEnabled(kGlicUnpinOnUnbindIfUnused) && usage &&
         usage->pin_event.trigger != GlicPinTrigger::kRestore &&
-        usage->Unused() && !usage->IsExplicitlyPinnedByUser()) {
+        usage->Unused() && !usage->IsExplicitlyPinnedByUser() &&
+        !(experimental_triggering_manager_ &&
+          experimental_triggering_manager_->DeferUnusedTabUnpinOnUnbind(
+              tab_handle))) {
       GetSharingManagerInternal().UnpinTabs({tab_handle});
     }
 
@@ -973,6 +992,17 @@ void GlicInstanceImpl::OnActuatingChanged(bool actuating) {
   offscreen_rendering_controller_.UpdateState();
 }
 
+void GlicInstanceImpl::OnExperimentalTriggeringSessionChanged(bool active) {
+  offscreen_rendering_controller_.UpdateState();
+  // A blank instance whose side panel was closed during the session was kept
+  // alive by MaybeRemoveBlankInstanceOnClose(); re-evaluate it now. Tabs whose
+  // unpin was deferred by UnbindEmbedder() are unpinned by the manager, which
+  // reaches MaybeRemoveInstance() through OnTabPinningStatusEvent().
+  if (!active && !HasActiveEmbedder()) {
+    MaybeRemoveBlankInstanceOnClose();
+  }
+}
+
 // Returns the WebContents to render offscreen: the WebUI contents in webview
 // mode, or the guest contents that hosts the web client in NoWebview mode.
 // TODO(b/534807813): Remove this helper once webview is deleted and have
@@ -1067,6 +1097,16 @@ std::vector<raw_ptr<tabs::TabInterface>> GlicInstanceImpl::GetBoundTabs()
 
 std::optional<Target::Surface> GlicInstanceImpl::GetLastActiveSurface() const {
   if (embedders_.empty()) {
+    // A side panel closed and unbound during an experimental triggering
+    // session leaves its tab pinned (DeferUnusedTabUnpinOnUnbind). That tab is
+    // still the conversation's surface: later turns continue on it rather than
+    // opening a new tab.
+    if (experimental_triggering_manager_) {
+      if (tabs::TabInterface* tab =
+              experimental_triggering_manager_->GetLastDeferredUnpinTab()) {
+        return Target::Surface(tab->GetHandle());
+      }
+    }
     return std::nullopt;
   }
 
@@ -1746,8 +1786,9 @@ void GlicInstanceImpl::MaybeRemoveBlankInstanceOnClose() {
   if (conversation_id().has_value()) {
     return;
   }
-  // If an invocation is active, do not remove the instance.
-  if (IsInvoking()) {
+  // If an invocation or experimental triggering session is active, do not
+  // remove the instance.
+  if (IsInvoking() || HasActiveExperimentalTriggeringSession()) {
     return;
   }
   // If the user has submitted input, the instance is not blank.
@@ -1848,6 +1889,11 @@ void GlicInstanceImpl::Hibernate() {
 }
 
 void GlicInstanceImpl::Shutdown() {
+  // `will_be_destroyed_callbacks_` is a OnceCallbackList, so subscribers fire
+  // at most once across Shutdown() and CloseInstanceAndShutdown(), and always
+  // before the host WebContents are torn down.
+  experimental_triggering_session_subscription_ = {};
+  will_be_destroyed_callbacks_.Notify(this);
   host_.Hibernate();
 }
 

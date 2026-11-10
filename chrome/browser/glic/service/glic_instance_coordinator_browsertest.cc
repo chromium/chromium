@@ -18,6 +18,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_manager.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_tab_restore_data.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
@@ -1876,6 +1877,206 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorRemoveBlankInstancesTest,
 
   // Wait for the blank instance to be deleted asynchronously.
   ASSERT_OK(WaitForInstanceDeletion(weak_instance));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    GlicInstanceCoordinatorRemoveBlankInstancesTest,
+    KeepBlankInstanceAliveDuringActiveExperimentalTriggeringSession) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  base::WeakPtr<GlicInstanceImpl> weak_instance = instance->GetWeakPtr();
+
+  base::ScopedClosureRunner active_session =
+      instance->GetExperimentalTriggeringManager()
+          ->RegisterActiveActuationSession();
+
+  // Closing the side panel while an experimental triggering actuation session
+  // is active must keep the blank instance alive across the 100ms
+  // blank-instance timer (while the closed side-panel embedder is still bound),
+  // and unbinding that embedder afterward must also keep both the pinned tab
+  // and the instance alive.
+  instance->CloseAllEmbedders();
+  ASSERT_OK(WaitForGlicClose());
+
+  base::RunLoop wait_past_blank_timer;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, wait_past_blank_timer.QuitClosure(), base::Milliseconds(250));
+  wait_past_blank_timer.Run();
+
+  ASSERT_TRUE(weak_instance);
+  EXPECT_NE(instance->GetEmbedderForTab(tab), nullptr);
+  EXPECT_TRUE(
+      instance->GetSharingManagerInternal().IsTabPinned(tab->GetHandle()));
+
+  instance->UnbindEmbedder(SidePanelEmbedderKey(tab));
+  base::RunLoop flush_posted_tasks;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, flush_posted_tasks.QuitClosure());
+  flush_posted_tasks.Run();
+
+  ASSERT_TRUE(weak_instance);
+  EXPECT_EQ(instance->GetEmbedderForTab(tab), nullptr);
+  EXPECT_TRUE(
+      instance->GetSharingManagerInternal().IsTabPinned(tab->GetHandle()));
+  EXPECT_EQ(coordinator().GetInstances().size(), 1u);
+
+  // Once the session ends, the deferred unpin of the still-unused tab runs and
+  // the unbound instance is removed asynchronously.
+  active_session.RunAndReset();
+  ASSERT_OK(WaitForInstanceDeletion(weak_instance));
+  EXPECT_EQ(coordinator().GetInstances().size(), 0u);
+  EXPECT_FALSE(GlicInstanceHelper::From(tab)->GetInstanceId().has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorRemoveBlankInstancesTest,
+                       DeferredUnpinTabRemainsLastActiveSurfaceDuringSession) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  base::WeakPtr<GlicInstanceImpl> weak_instance = instance->GetWeakPtr();
+
+  base::ScopedClosureRunner active_session =
+      instance->GetExperimentalTriggeringManager()
+          ->RegisterActiveActuationSession();
+  auto conversation_info = mojom::ConversationInfo::New();
+  conversation_info->conversation_id = "conv_surface";
+  instance->RegisterConversation(std::move(conversation_info),
+                                 base::DoNothing());
+
+  // Closing and unbinding the panel mid-session keeps the tab pinned and
+  // keeps it as the conversation's surface, so a LastActiveOrNew invocation
+  // (a continuation) resolves to it instead of opening a new tab.
+  instance->CloseAllEmbedders();
+  ASSERT_OK(WaitForGlicClose());
+  instance->UnbindEmbedder(SidePanelEmbedderKey(tab));
+  ASSERT_TRUE(weak_instance);
+  ASSERT_EQ(instance->GetEmbedderForTab(tab), nullptr);
+  std::optional<Target::Surface> surface = instance->GetLastActiveSurface();
+  ASSERT_TRUE(surface.has_value());
+  ASSERT_TRUE(std::holds_alternative<tabs::TabHandle>(*surface));
+  EXPECT_EQ(std::get<tabs::TabHandle>(*surface), tab->GetHandle());
+  EXPECT_TRUE(instance->HasLiveSurface());
+
+  // Once another conversation adopts the tab, it is no longer this
+  // conversation's surface.
+  GlicInvokeOptions options(mojom::InvocationSource::kTopChromeButton);
+  options.target = Target(*tab, NewConversation());
+  coordinator().Invoke(std::move(options));
+  GlicInstanceImpl* other = coordinator().GetInstanceImplForTab(tab);
+  ASSERT_TRUE(other);
+  ASSERT_NE(other, instance);
+  ASSERT_EQ(GlicInstanceHelper::From(tab)->GetInstanceId(), other->id());
+  EXPECT_FALSE(instance->GetLastActiveSurface().has_value());
+  EXPECT_FALSE(instance->HasLiveSurface());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    GlicInstanceCoordinatorRemoveBlankInstancesTest,
+    DeferredUnpinSkipsTabReboundDuringExperimentalTriggeringSession) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  base::WeakPtr<GlicInstanceImpl> weak_instance = instance->GetWeakPtr();
+
+  base::ScopedClosureRunner active_session =
+      instance->GetExperimentalTriggeringManager()
+          ->RegisterActiveActuationSession();
+
+  // Give the instance a conversation so it is not subject to blank-instance
+  // removal; this test is about the deferred unpin only.
+  auto conversation_info = mojom::ConversationInfo::New();
+  conversation_info->conversation_id = "conv_rebound";
+  instance->RegisterConversation(std::move(conversation_info),
+                                 base::DoNothing());
+
+  // Unbind while the session is active (the unpin is deferred), then bind the
+  // tab again before the session ends.
+  instance->CloseAllEmbedders();
+  ASSERT_OK(WaitForGlicClose());
+  instance->UnbindEmbedder(SidePanelEmbedderKey(tab));
+  ASSERT_TRUE(weak_instance);
+  EXPECT_TRUE(
+      instance->GetSharingManagerInternal().IsTabPinned(tab->GetHandle()));
+  instance->BindTabWithoutShowing(tab, GlicPinTrigger::kActuation,
+                                  /*pin_on_bind=*/true);
+  ASSERT_EQ(GlicInstanceHelper::From(tab)->GetInstanceId(), instance->id());
+
+  // Ending the session must leave the re-bound tab pinned and the instance
+  // alive.
+  active_session.RunAndReset();
+  base::RunLoop flush_posted_tasks;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, flush_posted_tasks.QuitClosure());
+  flush_posted_tasks.Run();
+  ASSERT_TRUE(weak_instance);
+  EXPECT_TRUE(
+      instance->GetSharingManagerInternal().IsTabPinned(tab->GetHandle()));
+  EXPECT_EQ(coordinator().GetInstances().size(), 1u);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    GlicInstanceCoordinatorBrowserTest,
+    ClosingLastTabDestroysActiveExperimentalTriggeringInstanceWithTabClosedReason) {
+  tabs::TabInterface* tab2 =
+      GetTabListInterface()->OpenTab(GURL("about:blank"), -1);
+  ASSERT_TRUE(tab2);
+  GetTabListInterface()->ActivateTab(tab2->GetHandle());
+
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  base::WeakPtr<GlicInstanceImpl> weak_instance = instance->GetWeakPtr();
+
+  base::ScopedClosureRunner active_session =
+      instance->GetExperimentalTriggeringManager()
+          ->RegisterActiveActuationSession();
+  std::optional<GlicExperimentalTriggeringManager::InstanceTeardownReason>
+      teardown_reason;
+  auto sub =
+      instance->GetExperimentalTriggeringManager()
+          ->AddInstanceWillBeDestroyedCallback(base::BindLambdaForTesting(
+              [&](GlicExperimentalTriggeringManager::InstanceTeardownReason
+                      reason) { teardown_reason = reason; }));
+
+  GetTabListInterface()->CloseTab(tab2->GetHandle());
+  ASSERT_OK(WaitForInstanceDeletion(weak_instance));
+  EXPECT_EQ(
+      teardown_reason,
+      GlicExperimentalTriggeringManager::InstanceTeardownReason::kTabClosed);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    GlicInstanceCoordinatorBrowserTest,
+    ShutdownNotifiesExperimentalTriggeringInstanceDestroyedBeforeHibernate) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  ASSERT_FALSE(instance->IsHibernated());
+
+  base::ScopedClosureRunner active_session =
+      instance->GetExperimentalTriggeringManager()
+          ->RegisterActiveActuationSession();
+  std::vector<GlicExperimentalTriggeringManager::InstanceTeardownReason>
+      teardown_reasons;
+  bool was_hibernated_during_notification = true;
+  auto sub =
+      instance->GetExperimentalTriggeringManager()
+          ->AddInstanceWillBeDestroyedCallback(base::BindLambdaForTesting(
+              [&](GlicExperimentalTriggeringManager::InstanceTeardownReason
+                      reason) {
+                teardown_reasons.push_back(reason);
+                was_hibernated_during_notification = instance->IsHibernated();
+              }));
+
+  instance->Shutdown();
+  EXPECT_TRUE(instance->IsHibernated());
+  EXPECT_FALSE(was_hibernated_during_notification);
+  EXPECT_THAT(
+      teardown_reasons,
+      testing::ElementsAre(GlicExperimentalTriggeringManager::
+                               InstanceTeardownReason::kInstanceDestroyed));
+
+  // Subsequent CloseInstanceAndShutdown during coordinator teardown must not
+  // emit a duplicate notification.
+  instance->CloseInstanceAndShutdown();
+  EXPECT_EQ(teardown_reasons.size(), 1u);
 }
 
 #if !BUILDFLAG(IS_ANDROID)
