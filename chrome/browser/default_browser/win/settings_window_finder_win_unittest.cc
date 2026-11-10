@@ -158,6 +158,23 @@ TEST_F(SettingsWindowFinderWinTest,
   EXPECT_FALSE(finder1_timeout_called);
 }
 
+TEST_F(SettingsWindowFinderWinTest,
+       NewInstanceDeactivatesPreviousForegroundObserver) {
+  EventTestSettingsWindowFinderWin finder1(kSettingsHwnd);
+  int finder1_notified = 0;
+  finder1.StartObservingForegroundChanges(
+      base::BindLambdaForTesting([&]() { ++finder1_notified; }));
+
+  TestSettingsWindowFinderWin finder2;
+  finder2.StartObservingLocationChanges(reinterpret_cast<HWND>(0x12345),
+                                        base::DoNothing());
+
+  // finder2 took over the hooks, so finder1 no longer reports foreground
+  // changes.
+  finder1.HandleWinEvent(EVENT_SYSTEM_FOREGROUND, kSettingsHwnd, OBJID_WINDOW);
+  EXPECT_EQ(finder1_notified, 0);
+}
+
 TEST_F(SettingsWindowFinderWinTest, FoundPathIgnoresDestroyEvents) {
   EventTestSettingsWindowFinderWin finder(kSettingsHwnd);
   bool found_called = false;
@@ -238,6 +255,69 @@ TEST_F(SettingsWindowFinderWinTest, ObservedWindowStateChangesNotifyOwner) {
     EXPECT_EQ(notified, 1) << "event=0x" << std::hex << event;
     finder.StopObservingLocationChanges();
   }
+}
+
+// Foreground changes are reported whatever window they name: focus leaving
+// Settings matters to the owner as much as focus returning to it.
+TEST_F(SettingsWindowFinderWinTest, ForegroundChangesNotifyForAnyWindow) {
+  EventTestSettingsWindowFinderWin finder(kSettingsHwnd);
+  int notified = 0;
+  finder.StartObservingForegroundChanges(
+      base::BindLambdaForTesting([&]() { ++notified; }));
+
+  finder.HandleWinEvent(EVENT_SYSTEM_FOREGROUND, kSettingsHwnd, OBJID_WINDOW);
+  EXPECT_EQ(notified, 1);
+
+  finder.HandleWinEvent(EVENT_SYSTEM_FOREGROUND, reinterpret_cast<HWND>(0xBAD),
+                        OBJID_WINDOW);
+  EXPECT_EQ(notified, 2);
+
+  // Events for non-window objects are ignored.
+  finder.HandleWinEvent(EVENT_SYSTEM_FOREGROUND, kSettingsHwnd, OBJID_CLIENT);
+  EXPECT_EQ(notified, 2);
+
+  finder.StopObservingForegroundChanges();
+  finder.HandleWinEvent(EVENT_SYSTEM_FOREGROUND, kSettingsHwnd, OBJID_WINDOW);
+  EXPECT_EQ(notified, 2);
+}
+
+TEST_F(SettingsWindowFinderWinTest,
+       ForegroundAndLocationObservationsAreIndependent) {
+  EventTestSettingsWindowFinderWin finder(kSettingsHwnd);
+  int location_notified = 0;
+  int foreground_notified = 0;
+  finder.StartObservingLocationChanges(
+      kSettingsHwnd,
+      base::BindLambdaForTesting([&]() { ++location_notified; }));
+  finder.StartObservingForegroundChanges(
+      base::BindLambdaForTesting([&]() { ++foreground_notified; }));
+
+  finder.HandleWinEvent(EVENT_SYSTEM_FOREGROUND, kSettingsHwnd, OBJID_WINDOW);
+  EXPECT_EQ(location_notified, 0);
+  EXPECT_EQ(foreground_notified, 1);
+
+  finder.HandleWinEvent(EVENT_OBJECT_LOCATIONCHANGE, kSettingsHwnd,
+                        OBJID_WINDOW);
+  EXPECT_EQ(location_notified, 1);
+  EXPECT_EQ(foreground_notified, 1);
+
+  // Stopping one leaves the other running.
+  finder.StopObservingLocationChanges();
+  finder.HandleWinEvent(EVENT_SYSTEM_FOREGROUND, kSettingsHwnd, OBJID_WINDOW);
+  EXPECT_EQ(foreground_notified, 2);
+}
+
+TEST_F(SettingsWindowFinderWinTest, ForegroundCallbackMayStopObserving) {
+  EventTestSettingsWindowFinderWin finder(kSettingsHwnd);
+  int notified = 0;
+  finder.StartObservingForegroundChanges(base::BindLambdaForTesting([&]() {
+    ++notified;
+    finder.StopObservingForegroundChanges();
+  }));
+
+  finder.HandleWinEvent(EVENT_SYSTEM_FOREGROUND, kSettingsHwnd, OBJID_WINDOW);
+  finder.HandleWinEvent(EVENT_SYSTEM_FOREGROUND, kSettingsHwnd, OBJID_WINDOW);
+  EXPECT_EQ(notified, 1);
 }
 
 TEST_F(SettingsWindowFinderWinTest, FoundReleasesGlobalInstance) {

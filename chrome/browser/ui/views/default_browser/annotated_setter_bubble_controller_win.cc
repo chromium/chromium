@@ -6,17 +6,12 @@
 
 #include <windows.h>
 
-#include <cstdint>
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
-#include "base/no_destructor.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/task/task_traits.h"
@@ -35,16 +30,6 @@ namespace {
 class Win32WindowInspector
     : public AnnotatedSetterBubbleControllerWin::WindowInspector {
  public:
-  Win32WindowInspector() { DETACH_FROM_SEQUENCE(sequence_checker_); }
-
-  Win32WindowInspector(const Win32WindowInspector&) = delete;
-  Win32WindowInspector& operator=(const Win32WindowInspector&) = delete;
-
-  ~Win32WindowInspector() override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    StopObservingForegroundChanges();
-  }
-
   std::optional<gfx::Rect> GetWindowRect(HWND hwnd) const override {
     RECT rect;
     if (!::GetWindowRect(hwnd, &rect)) {
@@ -88,74 +73,6 @@ class Win32WindowInspector
     return foreground && (foreground == hwnd ||
                           ::GetAncestor(foreground, GA_ROOTOWNER) == hwnd);
   }
-
-  void StartObservingForegroundChanges(
-      base::RepeatingClosure on_foreground_changed) override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    StopObservingForegroundChanges();
-    on_foreground_changed_ = std::move(on_foreground_changed);
-    // System-wide and including the current process, so switching focus to a
-    // Chrome window or another app is observed as well as returning to
-    // Settings.
-    foreground_hook_ = ::SetWinEventHook(
-        EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, nullptr,
-        &Win32WindowInspector::OnWinEvent, /*idProcess=*/0, /*idThread=*/0,
-        WINEVENT_OUTOFCONTEXT);
-    if (foreground_hook_) {
-      GetActiveHooks().emplace(reinterpret_cast<uintptr_t>(foreground_hook_),
-                               this);
-    }
-  }
-
-  void StopObservingForegroundChanges() override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (foreground_hook_) {
-      GetActiveHooks().erase(reinterpret_cast<uintptr_t>(foreground_hook_));
-      ::UnhookWinEvent(foreground_hook_);
-      foreground_hook_ = nullptr;
-    }
-    on_foreground_changed_.Reset();
-  }
-
- private:
-  using HookMap = base::flat_map<uintptr_t, raw_ptr<Win32WindowInspector>>;
-
-  static HookMap& GetActiveHooks() {
-    static base::NoDestructor<HookMap> hooks;
-    return *hooks;
-  }
-
-  static void CALLBACK OnWinEvent(HWINEVENTHOOK hook,
-                                  DWORD event,
-                                  HWND hwnd,
-                                  LONG id_object,
-                                  LONG id_child,
-                                  DWORD event_thread,
-                                  DWORD event_time) {
-    if (!hwnd || id_object != OBJID_WINDOW ||
-        event != EVENT_SYSTEM_FOREGROUND) {
-      return;
-    }
-    auto it = GetActiveHooks().find(reinterpret_cast<uintptr_t>(hook));
-    if (it == GetActiveHooks().end()) {
-      return;
-    }
-    Win32WindowInspector* inspector = it->second;
-    DCHECK_CALLED_ON_VALID_SEQUENCE(inspector->sequence_checker_);
-    if (inspector->on_foreground_changed_) {
-      // Run a copy in case the callback stops observation reentrantly.
-      base::RepeatingClosure callback = inspector->on_foreground_changed_;
-      callback.Run();
-    }
-  }
-
-  // RAW_PTR_EXCLUSION: HWINEVENTHOOK is an opaque Win32 handle (not a real
-  // pointer, and never allocated by PartitionAlloc).
-  RAW_PTR_EXCLUSION HWINEVENTHOOK foreground_hook_
-      GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
-  base::RepeatingClosure on_foreground_changed_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace
@@ -222,7 +139,7 @@ void AnnotatedSetterBubbleControllerWin::OnSettingsWindowFound(
       base::BindRepeating(
           &AnnotatedSetterBubbleControllerWin::OnSettingsWindowChanged,
           weak_ptr_factory_.GetWeakPtr()));
-  window_inspector_->StartObservingForegroundChanges(base::BindRepeating(
+  settings_window_finder_->StartObservingForegroundChanges(base::BindRepeating(
       &AnnotatedSetterBubbleControllerWin::OnSettingsWindowChanged,
       weak_ptr_factory_.GetWeakPtr()));
   OnSettingsWindowChanged();
@@ -401,7 +318,7 @@ void AnnotatedSetterBubbleControllerWin::TearDown() {
   measure_timer_.Stop();
   settings_window_finder_->Stop();
   settings_window_finder_->StopObservingLocationChanges();
-  window_inspector_->StopObservingForegroundChanges();
+  settings_window_finder_->StopObservingForegroundChanges();
 
   HideBubble();
   bubble_widget_.reset();

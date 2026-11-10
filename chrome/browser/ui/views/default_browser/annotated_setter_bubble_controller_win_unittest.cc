@@ -90,6 +90,15 @@ class FakeSettingsWindowFinder : public SettingsWindowFinderWin {
     on_resized_.Reset();
   }
 
+  void StartObservingForegroundChanges(
+      ForegroundChangedCallback on_foreground_changed) override {
+    on_foreground_changed_ = std::move(on_foreground_changed);
+  }
+
+  void StopObservingForegroundChanges() override {
+    on_foreground_changed_.Reset();
+  }
+
   void TriggerFound(HWND hwnd, base::Process process) {
     ASSERT_TRUE(on_found_);
     std::move(on_found_).Run(hwnd, std::move(process));
@@ -105,17 +114,26 @@ class FakeSettingsWindowFinder : public SettingsWindowFinderWin {
     on_resized_.Run();
   }
 
+  void TriggerForegroundChanged() {
+    ASSERT_TRUE(on_foreground_changed_);
+    on_foreground_changed_.Run();
+  }
+
   int start_count() const { return start_count_; }
   int stop_count() const { return stop_count_; }
   int stop_observing_count() const { return stop_observing_count_; }
   base::TimeDelta timeout() const { return timeout_; }
   HWND observed_hwnd() const { return observed_hwnd_; }
   bool is_observing() const { return !on_resized_.is_null(); }
+  bool is_observing_foreground() const {
+    return !on_foreground_changed_.is_null();
+  }
 
  private:
   WindowFoundCallback on_found_;
   base::OnceClosure on_timeout_;
   WindowResizedCallback on_resized_;
+  ForegroundChangedCallback on_foreground_changed_;
   HWND observed_hwnd_ = nullptr;
   base::TimeDelta timeout_;
   int start_count_ = 0;
@@ -167,35 +185,17 @@ class FakeWindowInspector
   bool IsWindowActive(HWND hwnd) const override {
     return hwnd && hwnd == active_hwnd_;
   }
-  void StartObservingForegroundChanges(
-      base::RepeatingClosure on_foreground_changed) override {
-    on_foreground_changed_ = std::move(on_foreground_changed);
-  }
-  void StopObservingForegroundChanges() override {
-    on_foreground_changed_.Reset();
-  }
 
   void set_window_rect(std::optional<gfx::Rect> rect) { window_rect_ = rect; }
   void set_window_gone(bool gone) { window_gone_ = gone; }
   void set_window_minimized(bool minimized) { window_minimized_ = minimized; }
   void set_active_window(HWND hwnd) { active_hwnd_ = hwnd; }
 
-  void TriggerForegroundChanged(HWND new_active_hwnd) {
-    active_hwnd_ = new_active_hwnd;
-    ASSERT_TRUE(on_foreground_changed_);
-    on_foreground_changed_.Run();
-  }
-
-  bool is_observing_foreground() const {
-    return !on_foreground_changed_.is_null();
-  }
-
  private:
   std::optional<gfx::Rect> window_rect_ = kWindowRect;
   bool window_gone_ = false;
   bool window_minimized_ = false;
   HWND active_hwnd_ = kHwnd;
-  base::RepeatingClosure on_foreground_changed_;
 };
 
 class AnnotatedSetterBubbleControllerWinTest : public ChromeViewsTestBase {
@@ -263,6 +263,14 @@ class AnnotatedSetterBubbleControllerWinTest : public ChromeViewsTestBase {
     ASSERT_TRUE(bubble_widget()->IsVisible());
   }
 
+  // Makes `hwnd` the active window and reports the foreground change.
+  void ChangeForeground(HWND hwnd) {
+    ASSERT_TRUE(window_inspector_);
+    ASSERT_TRUE(finder_);
+    window_inspector_->set_active_window(hwnd);
+    finder_->TriggerForegroundChanged();
+  }
+
   views::Widget* bubble_widget() const {
     return controller_ ? controller_->bubble_widget_for_testing() : nullptr;
   }
@@ -303,6 +311,7 @@ TEST_F(AnnotatedSetterBubbleControllerWinTest,
   StartWithSettingsWindow();
 
   EXPECT_EQ(finder_->observed_hwnd(), kHwnd);
+  EXPECT_TRUE(finder_->is_observing_foreground());
   EXPECT_EQ(bubble_widget(), nullptr);
   EXPECT_EQ(measure_count(), 0);
 
@@ -600,11 +609,11 @@ TEST_F(AnnotatedSetterBubbleControllerWinTest,
        UnfocusedHidesTheBubbleAndRefocusedShowsItAgain) {
   StartWithBubbleShown();
 
-  window_inspector_->TriggerForegroundChanged(kOtherHwnd);
+  ChangeForeground(kOtherHwnd);
   EXPECT_FALSE(bubble_widget()->IsVisible());
   EXPECT_FALSE(outcome_.IsReady());
 
-  window_inspector_->TriggerForegroundChanged(kHwnd);
+  ChangeForeground(kHwnd);
   EXPECT_TRUE(bubble_widget()->IsVisible());
   EXPECT_EQ(bubble()->GetAnchorRect(),
             ScreenToDIPRect(kButtonBounds + kWindowRect.OffsetFromOrigin()));
@@ -621,7 +630,7 @@ TEST_F(AnnotatedSetterBubbleControllerWinTest,
   EXPECT_EQ(bubble_widget(), nullptr);
   EXPECT_FALSE(outcome_.IsReady());
 
-  window_inspector_->TriggerForegroundChanged(kHwnd);
+  ChangeForeground(kHwnd);
   ASSERT_NE(bubble_widget(), nullptr);
   EXPECT_TRUE(bubble_widget()->IsVisible());
   EXPECT_EQ(bubble()->GetAnchorRect(),
@@ -634,10 +643,10 @@ TEST_F(AnnotatedSetterBubbleControllerWinTest,
   HWND bubble_hwnd = views::HWNDForWidget(bubble_widget());
   ASSERT_NE(bubble_hwnd, nullptr);
 
-  window_inspector_->TriggerForegroundChanged(bubble_hwnd);
+  ChangeForeground(bubble_hwnd);
   EXPECT_TRUE(bubble_widget()->IsVisible());
 
-  window_inspector_->TriggerForegroundChanged(kOtherHwnd);
+  ChangeForeground(kOtherHwnd);
   EXPECT_FALSE(bubble_widget()->IsVisible());
 }
 
@@ -650,7 +659,7 @@ TEST_F(AnnotatedSetterBubbleControllerWinTest, ClosingTheBubbleEndsGuidance) {
   EXPECT_EQ(outcome_.Get(), Outcome::kDismissed);
   EXPECT_EQ(bubble_widget(), nullptr);
   EXPECT_FALSE(finder_->is_observing());
-  EXPECT_FALSE(window_inspector_->is_observing_foreground());
+  EXPECT_FALSE(finder_->is_observing_foreground());
 }
 
 TEST_F(AnnotatedSetterBubbleControllerWinTest, NoReplyAfterTheGuidanceEnded) {

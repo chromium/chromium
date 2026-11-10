@@ -39,7 +39,8 @@ class AnnotatedSetterBubble;
 class AnnotatedSetterBubbleControllerWin final
     : public AnnotatedSetterBubbleController {
  public:
-  // Queries and observes the Win32 state of the Settings window.
+  // Queries the Win32 state of the Settings window. Changes to that state are
+  // observed through SettingsWindowFinderWin, which owns the event hooks.
   class WindowInspector {
    public:
     virtual ~WindowInspector() = default;
@@ -52,9 +53,6 @@ class AnnotatedSetterBubbleControllerWin final
                               const base::Process& process) const = 0;
     virtual bool IsWindowMinimized(HWND hwnd) const = 0;
     virtual bool IsWindowActive(HWND hwnd) const = 0;
-    virtual void StartObservingForegroundChanges(
-        base::RepeatingClosure on_foreground_changed) = 0;
-    virtual void StopObservingForegroundChanges() = 0;
   };
 
   // Lets the Settings page reflow after a resize before it is measured.

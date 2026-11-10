@@ -106,6 +106,7 @@ SettingsWindowFinderWin::~SettingsWindowFinderWin() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Stop();
   StopObservingLocationChanges();
+  StopObservingForegroundChanges();
 }
 
 void SettingsWindowFinderWin::Start(base::TimeDelta timeout,
@@ -208,13 +209,45 @@ void SettingsWindowFinderWin::StopObservingLocationChanges() {
   UpdateGlobalInstance();
 }
 
+void SettingsWindowFinderWin::StartObservingForegroundChanges(
+    ForegroundChangedCallback on_foreground_changed) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  StopObservingForegroundChanges();
+
+  on_foreground_changed_ = std::move(on_foreground_changed);
+
+  // Not scoped to the Settings process, and the only hook here that does not
+  // skip this one: the owner needs to learn that focus moved to any window,
+  // including a Chrome window or its own bubble.
+  foreground_hook_ = ::SetWinEventHook(
+      EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, nullptr,
+      &SettingsWindowFinderWin::WinEventCallback, /*idProcess=*/0,
+      /*idThread=*/0, WINEVENT_OUTOFCONTEXT);
+
+  UpdateGlobalInstance();
+}
+
+void SettingsWindowFinderWin::StopObservingForegroundChanges() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (foreground_hook_) {
+    ::UnhookWinEvent(foreground_hook_);
+    foreground_hook_ = nullptr;
+  }
+  on_foreground_changed_.Reset();
+
+  UpdateGlobalInstance();
+}
+
 void SettingsWindowFinderWin::UpdateGlobalInstance() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (winevent_hook_ || uncloak_hook_ || !observation_hooks_.empty()) {
+  if (winevent_hook_ || uncloak_hook_ || foreground_hook_ ||
+      !observation_hooks_.empty()) {
     if (GetGlobalFinderInstance().get() != this) {
       if (auto old_finder = GetGlobalFinderInstance()) {
         old_finder->Stop();
         old_finder->StopObservingLocationChanges();
+        old_finder->StopObservingForegroundChanges();
       }
       GetGlobalFinderInstance() = weak_ptr_factory_.GetWeakPtr();
     }
@@ -330,6 +363,18 @@ void SettingsWindowFinderWin::HandleWinEvent(DWORD event,
                                              LONG idObject) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!hwnd || idObject != OBJID_WINDOW) {
+    return;
+  }
+
+  // Reported whatever window it names: the owner cares about focus leaving
+  // Settings as much as returning to it.
+  if (event == EVENT_SYSTEM_FOREGROUND) {
+    if (on_foreground_changed_) {
+      // Run a copy: the callback may reentrantly stop the observation while
+      // the invocation is still on the stack.
+      ForegroundChangedCallback callback = on_foreground_changed_;
+      callback.Run();
+    }
     return;
   }
 

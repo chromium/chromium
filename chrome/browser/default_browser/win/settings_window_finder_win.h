@@ -64,6 +64,19 @@ class SettingsWindowFinderWin {
   using WindowMoveSizeCallback = base::RepeatingCallback<void(bool)>;
   virtual void SetMoveSizeCallback(WindowMoveSizeCallback on_move_size);
 
+  using ForegroundChangedCallback = base::RepeatingClosure;
+
+  // Starts observing which window is in the foreground. Unlike the location
+  // observation this is system-wide and includes this process's own windows,
+  // so focus moving to a Chrome window or another app is reported as well as
+  // focus returning to Settings. The callback carries no window: ask
+  // ::GetForegroundWindow() for the current one.
+  virtual void StartObservingForegroundChanges(
+      ForegroundChangedCallback on_foreground_changed);
+
+  // Stops observing foreground changes.
+  virtual void StopObservingForegroundChanges();
+
  protected:
   struct WindowAndProcess {
     HWND hwnd = nullptr;
@@ -97,10 +110,12 @@ class SettingsWindowFinderWin {
   base::OnceClosure on_timeout_;
   WindowResizedCallback on_resized_;
   WindowMoveSizeCallback on_move_size_;
+  ForegroundChangedCallback on_foreground_changed_;
   HWND observed_hwnd_ = nullptr;
   base::OneShotTimer timeout_timer_;
   HWINEVENTHOOK winevent_hook_ = nullptr;
   HWINEVENTHOOK uncloak_hook_ = nullptr;
+  HWINEVENTHOOK foreground_hook_ = nullptr;
 
   // Hooks on `observed_hwnd_`, installed and released as a set.
   // RAW_PTR_EXCLUSION: HWINEVENTHOOK is an opaque Win32 handle (not a real
