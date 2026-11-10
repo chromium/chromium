@@ -315,6 +315,7 @@ interface AudioSinkInfo
     method constructor
 interface AudioWorklet : Worklet
     attribute @@toStringTag
+    getter port
     method constructor
 interface AudioWorkletNode : AudioNode
     attribute @@toStringTag
