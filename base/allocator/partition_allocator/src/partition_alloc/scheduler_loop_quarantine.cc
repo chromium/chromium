@@ -314,6 +314,7 @@ void SchedulerLoopQuarantineBranch<thread_bound, quarantine_target>::Configure(
     }
   }
   branch_capacity_in_bytes_ = config.branch_capacity_in_bytes;
+  capacity_unlimited_ = config.capacity_unlimited;
 
   // This bucket index can be invalid if "Neutral" distribution is in use,
   // but value here is only for comparison and should be safe.
@@ -349,8 +350,7 @@ bool SchedulerLoopQuarantineBranch<thread_bound, quarantine_target>::
     return false;
   }
   const size_t slot_size = size_details.slot_size();
-  const size_t capacity_in_bytes =
-      branch_capacity_in_bytes_.load(std::memory_order_relaxed);
+  const size_t capacity_in_bytes = GetCapacityInBytes();
   if (capacity_in_bytes < slot_size) [[unlikely]] {
     return false;
   }
@@ -406,6 +406,32 @@ void SchedulerLoopQuarantineBranch<thread_bound, quarantine_target>::Quarantine(
           PA_UNSAFE_TODO(&allocator_root_->buckets_[largest_bucket_index_]));
 
   const size_t slot_size = size_details.slot_size();
+  auto update_stats_and_zap = [&]() PA_EXCLUSIVE_LOCKS_REQUIRED(lock_) {
+    branch_size_in_bytes_ += slot_size;
+    ++unpublished_stats_.quarantined_count;
+    unpublished_stats_.quarantined_size_in_bytes += slot_size;
+    if (unpublished_stats_.quarantined_count >= kMaxUnpublishedCount)
+        [[unlikely]] {
+      PublishStats();
+    }
+
+    if (enable_zapping_) {
+      internal::SecureMemset(
+          slot_start.ToObject(), internal::kFreedByte,
+          allocator_root_->GetSlotUsableSize(size_details, slot_span));
+    }
+  };
+
+  if (capacity_unlimited_) {
+    ScopedGuardIfNeeded<kThreadBound> guard(lock_);
+    slots_.push_back({
+        .slot_start = slot_start,
+        .bucket_index = size_details.bucket_index(),
+    });
+    update_stats_and_zap();
+    return;
+  }
+
   const size_t capacity_in_bytes =
       branch_capacity_in_bytes_.load(std::memory_order_relaxed);
   if (capacity_in_bytes < slot_size) [[unlikely]] {
@@ -431,7 +457,6 @@ void SchedulerLoopQuarantineBranch<thread_bound, quarantine_target>::Quarantine(
   PurgeInternal(target_size_in_bytes);
 
   // Put the entry onto the list.
-  branch_size_in_bytes_ += slot_size;
   slots_.push_back({
       .slot_start = slot_start,
       .bucket_index = size_details.bucket_index(),
@@ -442,19 +467,7 @@ void SchedulerLoopQuarantineBranch<thread_bound, quarantine_target>::Quarantine(
   const size_t random_index = random_.RandUint32() % slots_.size();
   std::swap(slots_[random_index], slots_.back());
 
-  // Update stats.
-  ++unpublished_stats_.quarantined_count;
-  unpublished_stats_.quarantined_size_in_bytes += slot_size;
-  if (unpublished_stats_.quarantined_count >= kMaxUnpublishedCount)
-      [[unlikely]] {
-    PublishStats();
-  }
-
-  if (enable_zapping_) {
-    internal::SecureMemset(
-        slot_start.ToObject(), internal::kFreedByte,
-        allocator_root_->GetSlotUsableSize(size_details, slot_span));
-  }
+  update_stats_and_zap();
 }
 
 template <bool thread_bound, QuarantineTarget quarantine_target>

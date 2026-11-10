@@ -72,6 +72,7 @@ constexpr SchedulerLoopQuarantineConfig BrowserMainConfig() {
 constexpr SchedulerLoopQuarantineConfig BrowserMainUnlimitedConfig() {
   SchedulerLoopQuarantineConfig config = BrowserMainConfig();
   config.pause_in_between_tasks = true;
+  config.capacity_unlimited = true;
   config.branch_capacity_in_bytes = std::numeric_limits<size_t>::max();
   return config;
 }
