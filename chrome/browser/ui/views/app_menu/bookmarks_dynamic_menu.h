@@ -21,6 +21,8 @@
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "ui/actions/actions.h"
 
+class GURL;
+
 namespace bookmarks {
 class BookmarkNode;
 }
@@ -63,6 +65,8 @@ class BookmarksDynamicMenu : public AppMenuDragAndDropDelegate,
   }
 
   void BuildBookmarksActions(actions::BaseAction* parent_item);
+
+  static const GURL* GetBookmarkUrl(const actions::BaseAction* action);
 
   // AppMenuDragAndDropDelegate:
   bool GetDropFormats(actions::BaseAction* action,

@@ -14,13 +14,21 @@
 #include "base/test/gtest_util.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/views/app_menu/action_app_menu_test_base.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_search_bar_view.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_search_item.h"
+#include "chrome/browser/ui/views/app_menu/bookmarks_dynamic_menu.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process_death_test_mixin.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/actions.h"
@@ -28,6 +36,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/test/button_test_api.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -262,6 +271,53 @@ TEST_F(AppMenuSearchControllerTest, SubmenusAndBreadcrumbs) {
 
   EXPECT_EQ(items[1]->GetTitle(), u"Google Doc");
   EXPECT_EQ(items[1]->GetSecondaryText(), u"Work");
+}
+
+TEST_F(AppMenuSearchControllerTest,
+       ExtractsDomainFromBookmarkUrlAsSecondaryText) {
+  TestingProfile profile;
+  BookmarkModelFactory::GetInstance()->SetTestingFactory(
+      &profile, BookmarkModelFactory::GetDefaultFactory());
+  BookmarkMergedSurfaceServiceFactory::GetInstance()->SetTestingFactory(
+      &profile, BookmarkMergedSurfaceServiceFactory::GetDefaultFactory());
+
+  bookmarks::BookmarkModel* model =
+      BookmarkModelFactory::GetForBrowserContext(&profile);
+  ASSERT_TRUE(model);
+  model->LoadEmptyForTest();
+
+  BookmarkMergedSurfaceService* service =
+      BookmarkMergedSurfaceServiceFactory::GetForProfile(&profile);
+  ASSERT_TRUE(service);
+  service->LoadForTesting({});
+
+  const bookmarks::BookmarkNode* work_folder =
+      model->AddFolder(model->bookmark_bar_node(), 0, u"Work");
+  model->AddURL(work_folder, 0, u"Google Doc",
+                GURL("https://www.google.com/docs/document/d/123"));
+  model->AddFolder(model->bookmark_bar_node(), 1, u"Empty Folder");
+
+  testing::NiceMock<MockBrowserWindowInterface> mock_window;
+  ON_CALL(mock_window, GetProfile()).WillByDefault(testing::Return(&profile));
+  testing::NiceMock<MockAppMenuDragAndDropHost> mock_host;
+
+  BookmarksDynamicMenu bookmarks_menu(&mock_window, &mock_host);
+  auto bookmarks_submenu = actions::ActionItem::Builder()
+                               .SetActionId(kActionBookmarksSubmenu)
+                               .SetText(u"Bookmarks and lists")
+                               .Build();
+  bookmarks_menu.BuildBookmarksActions(bookmarks_submenu.get());
+  menu_root_->AddChild(std::move(bookmarks_submenu));
+
+  controller_->InitializeSearchIndex();
+
+  const auto& items = controller_->search_items_for_testing();
+  ASSERT_EQ(items.size(), 1u);
+  EXPECT_EQ(items[0]->GetTitle(), u"Google Doc");
+  EXPECT_EQ(items[0]->GetType(), AppMenuSearchItem::Type::kBookmark);
+  EXPECT_EQ(items[0]->GetSecondaryText(), u"google.com");
+
+  menu_root_->ResetActionList();
 }
 
 TEST_F(AppMenuSearchControllerTest, ZoomSubmenuAndTooltips) {
@@ -793,6 +849,15 @@ TEST_F(AppMenuSearchControllerTest, EmptySubmenusAreNotIndexed) {
                            .SetText(u"Dynamic Folder")
                            .SetPopulateChildrenCallback(base::BindRepeating(
                                [](actions::BaseAction* parent) {}))
+                           .Build());
+
+  // Empty folder explicitly marked with `kIsSubmenuKey` (matching empty
+  // bookmark folders created by
+  // `BookmarksDynamicMenu::AddBookmarkFolderAction`) should not be indexed as a
+  // leaf.
+  menu_root_->AddChild(actions::ActionItem::Builder()
+                           .SetText(u"Empty Bookmark Folder")
+                           .SetProperty(AppMenuActionItem::kIsSubmenuKey, true)
                            .Build());
 
   controller_->InitializeSearchIndex();

@@ -50,6 +50,7 @@
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer_tree_owner.h"
+#include "url/gurl.h"
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(BookmarksDynamicMenu::BookmarkFolderOrURL*)
 
@@ -214,6 +215,16 @@ BookmarksDynamicMenu::~BookmarksDynamicMenu() {
         AppMenuActionItem::kDragAndDropDelegateKey,
         static_cast<AppMenuDragAndDropDelegate*>(nullptr));
   }
+}
+
+// static
+const GURL* BookmarksDynamicMenu::GetBookmarkUrl(
+    const actions::BaseAction* action) {
+  const BookmarkFolderOrURL* folder_or_url =
+      action ? action->GetProperty(kBookmarkFolderOrURLKey) : nullptr;
+  const bookmarks::BookmarkNode* node =
+      folder_or_url ? folder_or_url->GetIfBookmarkURL() : nullptr;
+  return node ? &node->url() : nullptr;
 }
 
 void BookmarksDynamicMenu::BuildBookmarksActions(

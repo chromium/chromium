@@ -167,6 +167,7 @@ source_set("impl") {
     "//components/sync_sessions",
     "//components/tab_groups",
     "//components/tabs:public",
+    "//components/url_formatter",
     "//components/user_education/common",
     "//components/vector_icons",
     "//components/zoom",
@@ -179,6 +180,7 @@ source_set("impl") {
     "//ui/gfx",
     "//ui/views",
     "//ui/views/controls/webview",
+    "//url",
   ]
 
   if (use_aura) {
@@ -277,6 +279,7 @@ if (toolkit_views) {
       "//ui/views",
       "//ui/views:test_support",
       "//ui/views/controls/webview",
+      "//url",
     ]
   }
 

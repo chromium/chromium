@@ -17,11 +17,14 @@
 #include "chrome/browser/ui/fuzzy_search/fuzzy_finder.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_search_bar_view.h"
+#include "chrome/browser/ui/views/app_menu/bookmarks_dynamic_menu.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/url_formatter/elide_url.h"
 #include "ui/actions/actions.h"
 #include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/text_utils.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -84,11 +87,12 @@ bool CanProcessItem(actions::BaseAction* action) {
          AppMenuActionItem::DisplayType::kMaxSearchable;
 }
 
-// Determines if an action item is a submenu or container (e.g. has children or
-// has a dynamic populate callback).
+// Determines if an action item is a submenu or container (e.g. has children,
+// has a dynamic populate callback, or is explicitly marked as a submenu).
 bool IsSubmenuContainer(const actions::BaseAction* action) {
   return !action->GetChildren().children().empty() ||
-         action->HasPopulateChildActionsCallback();
+         action->HasPopulateChildActionsCallback() ||
+         action->GetProperty(AppMenuActionItem::kIsSubmenuKey);
 }
 
 // Extracts the display title for an item with fallback priority:
@@ -107,6 +111,21 @@ std::u16string ExtractItemTitle(actions::BaseAction* action) {
     return text;
   }
   return std::u16string(action->GetActionItem()->GetTooltipText());
+}
+
+// Extracts the secondary text for an item, formatting its URL domain if present
+// and falling back to the enclosing submenu `context`.
+std::u16string ExtractSecondaryText(actions::BaseAction* action,
+                                    AppMenuSearchItem::Type item_type,
+                                    std::u16string_view context) {
+  if (item_type == AppMenuSearchItem::Type::kBookmark) {
+    const GURL* url = BookmarksDynamicMenu::GetBookmarkUrl(action);
+    if (url && url->is_valid()) {
+      return url_formatter::
+          FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(*url);
+    }
+  }
+  return std::u16string(context);
 }
 
 }  // namespace
@@ -240,9 +259,10 @@ void AppMenuSearchController::FlattenHierarchyRecursive(
   }
 
   if (!title.empty()) {
-    AddSearchItem(action,
-                  GetSearchItemType(action->GetActionItem(), current_type),
-                  title, context);
+    const AppMenuSearchItem::Type item_type =
+        GetSearchItemType(action->GetActionItem(), current_type);
+    AddSearchItem(action, item_type, title,
+                  ExtractSecondaryText(action, item_type, context));
   }
 }
 
