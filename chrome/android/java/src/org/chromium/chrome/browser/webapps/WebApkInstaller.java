@@ -4,10 +4,15 @@
 
 package org.chromium.chrome.browser.webapps;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Intent;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -26,9 +31,11 @@ import org.chromium.components.webapps.WebApkInstallResult;
  */
 @NullMarked
 public class WebApkInstaller {
+    @JniType("::WebApkInstaller")
+    interface NativeWebApkInstaller extends JniTypeToken {}
 
-    /** Weak pointer to the native WebApkInstaller. */
-    private long mNativePointer;
+    /** Borrowed pointer to the native WebApkInstaller, released in {@link #destroy()}. */
+    private @Nullable JniRawPtr<NativeWebApkInstaller> mNativePointer;
 
     /** Talks to Google Play to install WebAPKs. */
     private final @Nullable GooglePlayWebApkInstallDelegate mInstallDelegate;
@@ -36,24 +43,25 @@ public class WebApkInstaller {
     private final String mWebApkServerUrl;
     private @Nullable String mPendingManifestId;
 
-    private WebApkInstaller(long nativePtr) {
+    private WebApkInstaller(JniRawPtr<NativeWebApkInstaller> nativePtr) {
         mNativePointer = nativePtr;
         mInstallDelegate = AppHooks.get().getGooglePlayWebApkInstallDelegate();
         mWebApkServerUrl = AppHooks.get().getWebApkServerUrl();
     }
 
     @CalledByNative
-    private static WebApkInstaller create(long nativePtr) {
+    static WebApkInstaller create(JniRawPtr<NativeWebApkInstaller> nativePtr) {
         return new WebApkInstaller(nativePtr);
     }
 
     @CalledByNative
     private void destroy() {
+        assumeNonNull(mNativePointer).release();
+        mNativePointer = null;
         if (mPendingManifestId != null) {
             WebappRegistry.getInstance().removePendingWebApk(mPendingManifestId);
             mPendingManifestId = null;
         }
-        mNativePointer = 0;
     }
 
     /**
@@ -138,7 +146,7 @@ public class WebApkInstaller {
             WebappRegistry.getInstance().removePendingWebApk(mPendingManifestId);
             mPendingManifestId = null;
         }
-        if (mNativePointer != 0) {
+        if (mNativePointer != null) {
             WebApkInstallerJni.get().onInstallFinished(mNativePointer, result);
         }
     }
@@ -185,13 +193,16 @@ public class WebApkInstaller {
 
             @Override
             protected void onPostExecute(Integer result) {
-                WebApkInstallerJni.get().onGotSpaceStatus(mNativePointer, result);
+                if (mNativePointer != null) {
+                    WebApkInstallerJni.get().onGotSpaceStatus(mNativePointer, result);
+                }
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     @CalledByNative
-    private @JniType("std::string") String getWebApkServerUrl() {
+    @JniType("std::string")
+    private String getWebApkServerUrl() {
         return mWebApkServerUrl;
     }
 
@@ -201,8 +212,8 @@ public class WebApkInstaller {
 
     @NativeMethods
     interface Natives {
-        void onInstallFinished(long nativeWebApkInstaller, @WebApkInstallResult int result);
+        void onInstallFinished(JniPtr<NativeWebApkInstaller> self, @WebApkInstallResult int result);
 
-        void onGotSpaceStatus(long nativeWebApkInstaller, int status);
+        void onGotSpaceStatus(JniPtr<NativeWebApkInstaller> self, int status);
     }
 }
