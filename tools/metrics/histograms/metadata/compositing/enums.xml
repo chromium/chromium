@@ -51,6 +51,26 @@ chromium-metrics-reviews@google.com.
 
 <!--LINT.ThenChange(//cc/scheduler/commit_earlyout_reason.h:CommitEarlyOutReason) -->
 
+<!--LINT.IfChange(CALayerBackdropResult) -->
+
+<enum name="CALayerBackdropResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Quad bounds empty after clipping"/>
+  <int value="2" label="Feature Disabled"/>
+  <int value="3" label="Post-process filter not supported"/>
+  <int value="4" label="Unsupported scale"/>
+  <int value="5" label="Unsupported blur amount"/>
+  <int value="6" label="Unsupported combination of filters for blur"/>
+  <int value="7" label="Unsupported saturation amount"/>
+  <int value="8" label="Unsupported brightness amount"/>
+  <int value="9" label="Unsupported contrast amount"/>
+  <int value="10" label="Unsupported background filter type"/>
+  <int value="11" label="Unsupported transform matrix"/>
+  <int value="12" label="Unsupported partial clip of rrect boundary"/>
+</enum>
+
+<!--LINT.ThenChange(//components/viz/service/display/ca_layer_overlay.cc:CALayerBackdropResult) -->
+
 <enum name="CALayerResult">
   <int value="0" label="Success"/>
   <int value="1" label="Unknown failure"/>

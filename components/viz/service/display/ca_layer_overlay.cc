@@ -35,6 +35,36 @@ namespace viz {
 
 namespace {
 
+// LINT.IfChange(CALayerBackdropResult)
+
+// Enumerates all of the ways that a quad could succeed or fail to be rendered
+// using an accelerated overlay and must be rendered using Skia (or not at all).
+// The following values are output as metrics and the values/order should not
+// be changed.
+enum class CALayerBackdropResult {
+  // Indicates that the layer can be rendered using an overlay.
+  kSuccess = 0,
+  // Quads that are empty after clip/visibility calculations are not sent to the
+  // overlay renderer.
+  kEmptyBounds = 1,
+  // The following statuses indicate that the layer must be rendered using Skia.
+  kFeatureDisabled = 2,
+  kUnsupportedPostProcessingFilter = 3,
+  kUnsupportedScale = 4,
+  kUnsupportedBlurAmount = 5,
+  kUnsupportedBlurFilterChain = 6,
+  kUnsupportedSaturateAmount = 7,
+  kUnsupportedBrightnessAmount = 8,
+  kUnsupportedContrastAmount = 9,
+  kUnsupportedBackgroundFilter = 10,
+  kUnsupportedTransform = 11,
+  kUnsupportedRRectClip = 12,
+  // For metrics recording. Keep this current with the highest-value status.
+  kMaxValue = kUnsupportedRRectClip
+};
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/compositing/enums.xml:CALayerBackdropResult)
+
 // The CoreAnimation renderer's performance starts suffering when too many
 // quads are promoted to CALayers. At extremes, corruption can occur.
 // https://crbug.com/1022116
@@ -68,6 +98,11 @@ const int kMaxNumVideos = 5;
 
 void RecordCALayerHistogram(gfx::CALayerResult result) {
   UMA_HISTOGRAM_ENUMERATION("Compositing.Renderer.CALayerResult", result);
+}
+
+void RecordCALayerBackdropResultHistogram(CALayerBackdropResult result) {
+  UMA_HISTOGRAM_ENUMERATION("Compositing.Renderer.CALayerBackdropResult",
+                            result);
 }
 
 bool FilterOperationSupported(const cc::FilterOperation& operation) {
@@ -142,13 +177,11 @@ constexpr std::array<float, 20> kIdentityColorMatrix = {
     0.f, 0.f, 0.f, 1.f, 0.f,  //
 };
 
-bool ExtractBackdropFilter(const AggregatedRenderPassDrawQuad* quad,
-                           OverlayCandidate* ca_layer_overlay) {
-  if (quad->backdrop_filters.IsEmpty()) {
-    return true;
-  }
+CALayerBackdropResult ExtractBackdropFilter(
+    const AggregatedRenderPassDrawQuad* quad,
+    OverlayCandidate* ca_layer_overlay) {
   if (!ui::CABackdropLayerSupported()) {
-    return false;
+    return CALayerBackdropResult::kFeatureDisabled;
   }
   // Foreground filters, CSS masks, gradient masks, and non-unit opacity on the
   // RenderPassDrawQuad apply to the combined backdrop-filtered backdrop and
@@ -158,7 +191,7 @@ bool ExtractBackdropFilter(const AggregatedRenderPassDrawQuad* quad,
   if (!quad->filters.IsEmpty() || !quad->mask_resource_id().is_null() ||
       quad->shared_quad_state->mask_filter_info.HasGradientMask() ||
       quad->shared_quad_state->opacity != 1.0f) {
-    return false;
+    return CALayerBackdropResult::kUnsupportedPostProcessingFilter;
   }
 
   // Reject non-positive or non-finite `filters_scale` so the filter-to-quad
@@ -166,7 +199,7 @@ bool ExtractBackdropFilter(const AggregatedRenderPassDrawQuad* quad,
   if (quad->filters_scale.x() <= 0.0f || quad->filters_scale.y() <= 0.0f ||
       !std::isfinite(quad->filters_scale.x()) ||
       !std::isfinite(quad->filters_scale.y())) {
-    return false;
+    return CALayerBackdropResult::kUnsupportedScale;
   }
 
   // Scale blur radius from CSS filter space to RenderPass local space using
@@ -198,7 +231,7 @@ bool ExtractBackdropFilter(const AggregatedRenderPassDrawQuad* quad,
     switch (op.type()) {
       case cc::FilterOperation::BLUR: {
         if (!std::isfinite(amount) || amount < 0.0f) {
-          return false;
+          return CALayerBackdropResult::kUnsupportedBlurAmount;
         }
         if (amount == 0.0f) {
           break;
@@ -207,7 +240,7 @@ bool ExtractBackdropFilter(const AggregatedRenderPassDrawQuad* quad,
         // Reject chains where a non-identity color matrix precedes blur() (can
         // be supported with a pre-blur color matrix if needed later).
         if (has_blur || has_color_matrix || !has_uniform_scale) {
-          return false;
+          return CALayerBackdropResult::kUnsupportedBlurFilterChain;
         }
         has_blur = true;
         filter_params.blur_radius = amount * scale;
@@ -215,7 +248,7 @@ bool ExtractBackdropFilter(const AggregatedRenderPassDrawQuad* quad,
       }
       case cc::FilterOperation::SATURATE: {
         if (!std::isfinite(amount) || amount < 0.0f) {
-          return false;
+          return CALayerBackdropResult::kUnsupportedSaturateAmount;
         }
         if (amount != 1.0f) {
           SkColorMatrix m;
@@ -227,7 +260,7 @@ bool ExtractBackdropFilter(const AggregatedRenderPassDrawQuad* quad,
       }
       case cc::FilterOperation::BRIGHTNESS: {
         if (!std::isfinite(amount) || amount < 0.0f) {
-          return false;
+          return CALayerBackdropResult::kUnsupportedBrightnessAmount;
         }
         if (amount != 1.0f) {
           SkColorMatrix m;
@@ -239,7 +272,7 @@ bool ExtractBackdropFilter(const AggregatedRenderPassDrawQuad* quad,
       }
       case cc::FilterOperation::CONTRAST: {
         if (!std::isfinite(amount) || amount < 0.0f) {
-          return false;
+          return CALayerBackdropResult::kUnsupportedContrastAmount;
         }
         if (amount != 1.0f) {
           const float translate = -0.5f * amount + 0.5f;
@@ -252,7 +285,7 @@ bool ExtractBackdropFilter(const AggregatedRenderPassDrawQuad* quad,
         break;
       }
       default:
-        return false;
+        return CALayerBackdropResult::kUnsupportedBackgroundFilter;
     }
   }
 
@@ -273,7 +306,7 @@ bool ExtractBackdropFilter(const AggregatedRenderPassDrawQuad* quad,
     auto bounds = SkPathToRRectF(
         quad->backdrop_filter_bounds->makeTransform(local_matrix));
     if (!bounds.has_value()) {
-      return false;
+      return CALayerBackdropResult::kUnsupportedTransform;
     }
     // Plain rectangles can always be clipped directly to `visible_rect`.
     // Rounded rects cannot be partially clipped without losing their corner
@@ -287,19 +320,19 @@ bool ExtractBackdropFilter(const AggregatedRenderPassDrawQuad* quad,
       gfx::RectF effective_visible_rect = visible_rect;
       effective_visible_rect.Outset(1.0f);
       if (!effective_visible_rect.Contains(bounds->rect())) {
-        return false;
+        return CALayerBackdropResult::kUnsupportedRRectClip;
       }
     }
     // CARendererLayerTree treats empty `bounds` as "unspecified" and falls back
     // to the full padded quad `rect_`, so reject empty bounds here.
     if (bounds->IsEmpty()) {
-      return false;
+      return CALayerBackdropResult::kEmptyBounds;
     }
     ca_layer_overlay->backdrop_filter_bounds = *bounds;
   }
 
   ca_layer_overlay->backdrop_filter_params = std::move(filter_params);
-  return true;
+  return CALayerBackdropResult::kSuccess;
 }
 
 gfx::CALayerResult FromRenderPassQuad(
@@ -308,8 +341,15 @@ gfx::CALayerResult FromRenderPassQuad(
     OverlayCandidate* ca_layer_overlay) {
   const SharedQuadState* shared_quad_state = quad->shared_quad_state;
 
-  if (!ExtractBackdropFilter(quad, ca_layer_overlay)) {
-    return gfx::kCALayerFailedRenderPassBackdropFilters;
+  // Don't check (and record) backdrop filter support for quads without a
+  // backdrop filter.
+  if (!quad->backdrop_filters.IsEmpty()) {
+    const CALayerBackdropResult backdrop_result =
+        ExtractBackdropFilter(quad, ca_layer_overlay);
+    RecordCALayerBackdropResultHistogram(backdrop_result);
+    if (backdrop_result != CALayerBackdropResult::kSuccess) {
+      return gfx::kCALayerFailedRenderPassBackdropFilters;
+    }
   }
 
   if (shared_quad_state->sorting_context_id != 0)
