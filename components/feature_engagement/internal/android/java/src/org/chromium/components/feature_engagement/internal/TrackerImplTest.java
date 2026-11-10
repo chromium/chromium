@@ -22,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
@@ -49,6 +50,10 @@ public class TrackerImplTest {
     public void setUp() {
         TrackerImplJni.setInstanceForTesting(mTrackerJniMock);
         mTracker = TrackerImpl.create(NATIVE_PTR);
+        mTracker.setInterruptiveCooldownGroupEnabledSupplier(
+                SupplierUtils.alwaysTrueBooleanSupplier());
+        mTracker.setBlueBubbleCooldownGroupEnabledSupplier(
+                SupplierUtils.alwaysTrueBooleanSupplier());
         mUserActionTester = new UserActionTester();
 
         // Default: feature and cooldown groups pass wouldTriggerHelpUi and shouldTriggerHelpUi.
@@ -256,6 +261,48 @@ public class TrackerImplTest {
                 .wouldTriggerHelpUi(NATIVE_PTR, FeatureConstants.INTERRUPTIVE_IPH_COOLDOWN_GROUP);
         verify(mTrackerJniMock, never())
                 .wouldTriggerHelpUi(NATIVE_PTR, FeatureConstants.BLUE_BUBBLE_COOLDOWN_GROUP);
+        verify(mTrackerJniMock).shouldTriggerHelpUi(NATIVE_PTR, TEST_FEATURE);
+    }
+
+    @Test
+    public void testShouldTriggerHelpUi_InterruptiveCooldownGroupDisabled_SkipsCooldownChecks() {
+        mTracker.setInterruptiveCooldownGroupEnabledSupplier(
+                SupplierUtils.alwaysFalseBooleanSupplier());
+        FeatureProperties props =
+                new FeatureProperties(
+                        UiFormat.DIALOG,
+                        /* isBlockedByCooldownGroup= */ true,
+                        /* blocksCooldownGroup= */ true);
+
+        assertTrue(mTracker.shouldTriggerHelpUi(TEST_FEATURE, props));
+
+        verify(mTrackerJniMock, never())
+                .wouldTriggerHelpUi(NATIVE_PTR, FeatureConstants.INTERRUPTIVE_IPH_COOLDOWN_GROUP);
+        verify(mTrackerJniMock, never())
+                .shouldTriggerHelpUi(NATIVE_PTR, FeatureConstants.INTERRUPTIVE_IPH_COOLDOWN_GROUP);
+        verify(mTrackerJniMock, never())
+                .dismissed(NATIVE_PTR, FeatureConstants.INTERRUPTIVE_IPH_COOLDOWN_GROUP);
+        verify(mTrackerJniMock).shouldTriggerHelpUi(NATIVE_PTR, TEST_FEATURE);
+    }
+
+    @Test
+    public void testShouldTriggerHelpUi_BlueBubbleCooldownGroupDisabled_SkipsCooldownChecks() {
+        mTracker.setBlueBubbleCooldownGroupEnabledSupplier(
+                SupplierUtils.alwaysFalseBooleanSupplier());
+        FeatureProperties props =
+                new FeatureProperties(
+                        UiFormat.BLUE_BUBBLE,
+                        /* isBlockedByCooldownGroup= */ true,
+                        /* blocksCooldownGroup= */ true);
+
+        assertTrue(mTracker.shouldTriggerHelpUi(TEST_FEATURE, props));
+
+        verify(mTrackerJniMock, never())
+                .wouldTriggerHelpUi(NATIVE_PTR, FeatureConstants.BLUE_BUBBLE_COOLDOWN_GROUP);
+        verify(mTrackerJniMock, never())
+                .shouldTriggerHelpUi(NATIVE_PTR, FeatureConstants.BLUE_BUBBLE_COOLDOWN_GROUP);
+        verify(mTrackerJniMock, never())
+                .dismissed(NATIVE_PTR, FeatureConstants.BLUE_BUBBLE_COOLDOWN_GROUP);
         verify(mTrackerJniMock).shouldTriggerHelpUi(NATIVE_PTR, TEST_FEATURE);
     }
 

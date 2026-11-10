@@ -46,6 +46,22 @@ public interface Tracker {
      */
     default void setAggressivelyCooldownIphsSupplier(BooleanSupplier supplier) {}
 
+    /**
+     * Sets a supplier that returns whether the interruptive IPH cooldown group is enabled. Defaults
+     * to false. While false, formats in that group are neither blocked by it nor contribute to it.
+     *
+     * @param supplier Returns true when the interruptive cooldown group is enabled.
+     */
+    default void setInterruptiveCooldownGroupEnabledSupplier(BooleanSupplier supplier) {}
+
+    /**
+     * Sets a supplier that returns whether the blue bubble cooldown group is enabled. Defaults to
+     * false. While false, blue bubbles are neither blocked by the group nor contribute to it.
+     *
+     * @param supplier Returns true when the blue bubble cooldown group is enabled.
+     */
+    default void setBlueBubbleCooldownGroupEnabledSupplier(BooleanSupplier supplier) {}
+
     /** Must be called whenever an event happens. */
     void notifyEvent(String event);
 

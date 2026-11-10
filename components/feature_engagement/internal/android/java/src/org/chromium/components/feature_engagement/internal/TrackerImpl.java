@@ -72,9 +72,20 @@ public class TrackerImpl implements Tracker {
     private BooleanSupplier mEnterprisePolicyBlocksPromotionsSupplier =
             SupplierUtils.alwaysFalseBooleanSupplier();
 
-    // Defaults to false; flag-guarded by kUserEducationFramework and
+    // Whether legacy shouldTriggerHelpUi(String) callers should aggressively trigger cooldown
+    // groups. Defaults to false; flag-guarded by kUserEducationFramework and
     // kUserEducationAggressivelyCooldownIphs in TrackerFactory.
     private BooleanSupplier mAggressivelyCooldownIphsSupplier =
+            SupplierUtils.alwaysFalseBooleanSupplier();
+
+    // Whether the interruptive IPH cooldown group is enabled. Defaults to false; flag-guarded by
+    // kUserEducationFramework and kUserEducationInterruptiveCooldownGroup in TrackerFactory.
+    private BooleanSupplier mInterruptiveCooldownGroupEnabledSupplier =
+            SupplierUtils.alwaysFalseBooleanSupplier();
+
+    // Whether the blue bubble cooldown group is enabled. Defaults to false; flag-guarded by
+    // kUserEducationFramework and kUserEducationBlueBubbleCooldownGroup in TrackerFactory.
+    private BooleanSupplier mBlueBubbleCooldownGroupEnabledSupplier =
             SupplierUtils.alwaysFalseBooleanSupplier();
 
     @CalledByNative
@@ -95,6 +106,16 @@ public class TrackerImpl implements Tracker {
     @Override
     public void setAggressivelyCooldownIphsSupplier(BooleanSupplier supplier) {
         mAggressivelyCooldownIphsSupplier = supplier;
+    }
+
+    @Override
+    public void setInterruptiveCooldownGroupEnabledSupplier(BooleanSupplier supplier) {
+        mInterruptiveCooldownGroupEnabledSupplier = supplier;
+    }
+
+    @Override
+    public void setBlueBubbleCooldownGroupEnabledSupplier(BooleanSupplier supplier) {
+        mBlueBubbleCooldownGroupEnabledSupplier = supplier;
     }
 
     @Override
@@ -296,20 +317,25 @@ public class TrackerImpl implements Tracker {
     // LINT.IfChange(UiFormatCooldownFeature)
     /**
      * Returns the FET cooldown group feature name for the given {@link UiFormat}, or {@code null}
-     * if the format does not belong to a cooldown group.
+     * if the format does not belong to a cooldown group or the embedder has that group disabled
+     * (see the cooldown group enabled suppliers).
      *
      * @param format The {@link UiFormat} to look up.
      * @return The cooldown group feature name, or {@code null}.
      */
-    private static @Nullable String getCooldownFeature(@UiFormat int format) {
+    private @Nullable String getCooldownFeature(@UiFormat int format) {
         switch (format) {
             case UiFormat.BLUE_BUBBLE:
-                return FeatureConstants.BLUE_BUBBLE_COOLDOWN_GROUP;
+                return mBlueBubbleCooldownGroupEnabledSupplier.getAsBoolean()
+                        ? FeatureConstants.BLUE_BUBBLE_COOLDOWN_GROUP
+                        : null;
             case UiFormat.BOTTOM_SHEET:
             case UiFormat.FRE:
             case UiFormat.ALERTS:
             case UiFormat.DIALOG:
-                return FeatureConstants.INTERRUPTIVE_IPH_COOLDOWN_GROUP;
+                return mInterruptiveCooldownGroupEnabledSupplier.getAsBoolean()
+                        ? FeatureConstants.INTERRUPTIVE_IPH_COOLDOWN_GROUP
+                        : null;
             case UiFormat.UNKNOWN:
             case UiFormat.SET_UP_LIST:
             case UiFormat.MAGIC_STACK:

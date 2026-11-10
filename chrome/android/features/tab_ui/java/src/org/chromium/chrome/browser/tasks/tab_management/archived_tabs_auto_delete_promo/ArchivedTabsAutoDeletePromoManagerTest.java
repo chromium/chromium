@@ -97,7 +97,10 @@ public class ArchivedTabsAutoDeletePromoManagerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP)
+    @EnableFeatures({
+        ChromeFeatureList.USER_EDUCATION_FRAMEWORK,
+        ChromeFeatureList.USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP
+    })
     public void testTryToShowPromo_CooldownGroupEnabledAndAllowed_ShowsPromo() {
         createManager(
                 /* decisionMade= */ false,
@@ -133,7 +136,10 @@ public class ArchivedTabsAutoDeletePromoManagerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP)
+    @EnableFeatures({
+        ChromeFeatureList.USER_EDUCATION_FRAMEWORK,
+        ChromeFeatureList.USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP
+    })
     public void testTryToShowPromo_CooldownGroupEnabledAndBlocked_NoPromo() {
         createManager(
                 /* decisionMade= */ false,

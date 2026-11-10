@@ -14,7 +14,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tasks.tab_management.archived_tabs.TabArchiveSettingsFragment;
@@ -211,8 +211,7 @@ public class ArchivedTabsAutoDeletePromoCoordinator {
     }
 
     private void notifyTrackerDismissed() {
-        if (mTracker != null
-                && ChromeFeatureList.sUserEducationInterruptiveCooldownGroup.isEnabled()) {
+        if (mTracker != null && TrackerFactory.isInterruptiveCooldownGroupEnabled()) {
             mTracker.dismissed(FeatureConstants.ARCHIVED_TABS_AUTO_DELETE_PROMO_FEATURE);
         }
     }
