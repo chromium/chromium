@@ -5796,6 +5796,21 @@
             ]
         }
     ],
+    "ComposeboxVerbatimSuggestionInAIM": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "DisableVerbatimSuggestionInAIM",
+                    "disable_features": [
+                        "ComposeboxVerbatimSuggestionInAIM"
+                    ]
+                }
+            ]
+        }
+    ],
     "CompositedAnimationsForceMainFrames": [
         {
             "platforms": [
