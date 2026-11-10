@@ -6,6 +6,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "content/browser/background_sync/background_sync_base_browsertest.h"
 #include "content/browser/background_sync/background_sync_manager.h"
 #include "content/public/common/content_features.h"
@@ -238,7 +239,14 @@ IN_PROC_BROWSER_TEST_F(PeriodicBackgroundSyncBrowserTest,
   EXPECT_TRUE(HasTag("foo"));
 }
 
-IN_PROC_BROWSER_TEST_F(PeriodicBackgroundSyncBrowserTest, MultipleEventsFired) {
+// TODO(crbug.com/584167615): Consistently failing on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_MultipleEventsFired DISABLED_MultipleEventsFired
+#else
+#define MAYBE_MultipleEventsFired MultipleEventsFired
+#endif
+IN_PROC_BROWSER_TEST_F(PeriodicBackgroundSyncBrowserTest,
+                       MAYBE_MultipleEventsFired) {
   SetTestClock(&clock_);
 
   RegisterServiceWorker();
