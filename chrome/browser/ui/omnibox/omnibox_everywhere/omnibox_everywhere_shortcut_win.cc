@@ -29,8 +29,6 @@ namespace omnibox_everywhere {
 
 namespace {
 
-constexpr wchar_t kAppName[] = L"app_search_with_chrome";
-
 base::FilePath GetChromeExePath() {
   base::FilePath chrome_dir;
   if (!base::PathService::Get(base::DIR_EXE, &chrome_dir)) {
@@ -109,7 +107,7 @@ std::wstring GetDisplayName() {
 
 std::wstring GetAppUserModelId() {
   return shell_integration::win::GetAppUserModelIdForApp(
-      kAppName,
+      chrome::kOmniboxEverywhereAppName,
       /*profile_path=*/base::FilePath());
 }
 

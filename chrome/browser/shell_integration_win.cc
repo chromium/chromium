@@ -123,6 +123,12 @@ std::wstring GetAppUserModelIdImpl(const std::wstring& prefix,
 // |is_per_user_install|).
 std::wstring GetExpectedAppId(const base::CommandLine& command_line,
                               bool is_per_user_install) {
+  if (command_line.HasSwitch(switches::kOmniboxEverywhere)) {
+    // Omnibox Everywhere windows use a profile-independent app AUMI.
+    return win::GetAppUserModelIdForApp(chrome::kOmniboxEverywhereAppName,
+                                        /*profile_path=*/base::FilePath());
+  }
+
   base::FilePath user_data_dir;
   if (command_line.HasSwitch(switches::kUserDataDir))
     user_data_dir = command_line.GetSwitchValuePath(switches::kUserDataDir);

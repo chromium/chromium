@@ -43,6 +43,9 @@ inline constexpr base::FilePath::CharType kRendererDll[] =
     FILE_PATH_LITERAL("chrome_renderer.dll");
 inline constexpr base::FilePath::CharType kStatusTrayWindowClass[] =
     FILE_PATH_LITERAL("Chrome_StatusTrayWindow");
+// App name used to build the Omnibox Everywhere AppUserModelId.
+inline constexpr wchar_t kOmniboxEverywhereAppName[] =
+    L"app_search_with_chrome";
 #else
 inline constexpr base::FilePath::CharType kRendererProcessExecutableName[] =
     FILE_PATH_LITERAL("chrome_renderer");
