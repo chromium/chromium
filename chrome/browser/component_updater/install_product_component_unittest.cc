@@ -4,11 +4,13 @@
 
 #include "chrome/browser/component_updater/install_product_component.h"
 
+#include <array>
 #include <memory>
 #include <ostream>
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -27,6 +29,7 @@
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_reg_util_win.h"
@@ -131,7 +134,27 @@ class MockProductComponentInstallerDelegate
               LaunchProcess,
               (const base::CommandLine&, const base::LaunchOptions&),
               (override));
+  MOCK_METHOD(void, WaitBeforeRetry, (base::TimeDelta), (override));
 };
+
+// Returns an AppCommand that runs to completion with `exit_code`.
+Microsoft::WRL::ComPtr<MockAppCommand> MakeCompletedAppCommand(
+    DWORD exit_code) {
+  auto mock_app_command = Microsoft::WRL::Make<MockAppCommand>();
+  EXPECT_CALL(*mock_app_command.Get(), execute(_, _, _, _, _, _, _, _, _))
+      .WillOnce(testing::Return(S_OK));
+  EXPECT_CALL(*mock_app_command.Get(), get_status(_))
+      .WillOnce([](UINT* status) {
+        *status = COMMAND_STATUS_COMPLETE;
+        return S_OK;
+      });
+  EXPECT_CALL(*mock_app_command.Get(), get_exitCode(_))
+      .WillOnce([exit_code](DWORD* code) {
+        *code = exit_code;
+        return S_OK;
+      });
+  return mock_app_command;
+}
 
 // Matches a VARIANT holding a BSTR equal to `expected`.
 MATCHER_P(IsBstrVariant, expected, "") {
@@ -150,22 +173,9 @@ class InstallProductComponentWindowsTest : public testing::Test {
   // Expects `mock_delegate_` to provide the "install-component" App Command,
   // which completes with `exit_code`.
   void ExpectAppCommandExitCode(DWORD exit_code) {
-    auto mock_app_command = Microsoft::WRL::Make<MockAppCommand>();
-    EXPECT_CALL(*mock_app_command.Get(), execute(_, _, _, _, _, _, _, _, _))
-        .WillOnce(testing::Return(S_OK));
-    EXPECT_CALL(*mock_app_command.Get(), get_status(_))
-        .WillOnce([](UINT* status) {
-          *status = COMMAND_STATUS_COMPLETE;
-          return S_OK;
-        });
-    EXPECT_CALL(*mock_app_command.Get(), get_exitCode(_))
-        .WillOnce([exit_code](DWORD* out_exit_code) {
-          *out_exit_code = exit_code;
-          return S_OK;
-        });
     EXPECT_CALL(mock_delegate_,
                 GetAppCommand(std::wstring(installer::kCmdInstallComponent)))
-        .WillOnce(testing::Return(mock_app_command));
+        .WillOnce(testing::Return(MakeCompletedAppCommand(exit_code)));
   }
 
   content::BrowserTaskEnvironment env_;
@@ -424,18 +434,18 @@ TEST_F(InstallProductComponentWindowsTest, InternalFailure) {
 // setup.exe's exit code is returned even if it is not one of the codes that
 // setup.exe reports for component installation.
 TEST_F(InstallProductComponentWindowsTest, OtherExitCode) {
-  ExpectAppCommandExitCode(installer::SETUP_SINGLETON_ACQUISITION_FAILED);
+  ExpectAppCommandExitCode(installer::OS_ERROR);
 
-  EXPECT_EQ(InstallProductComponentForTesting(
-                kTag, inner_crx_, /*user_data_dir=*/{}, &mock_delegate_),
-            (ProductComponentInstallOutcome{
-                .step = Step::kInstallerExited,
-                .extra_code = installer::SETUP_SINGLETON_ACQUISITION_FAILED}));
+  EXPECT_EQ(
+      InstallProductComponentForTesting(kTag, inner_crx_, /*user_data_dir=*/{},
+                                        &mock_delegate_),
+      (ProductComponentInstallOutcome{.step = Step::kInstallerExited,
+                                      .extra_code = installer::OS_ERROR}));
 }
 
 // The step and setup.exe's exit code are recorded for the component.
 TEST_F(InstallProductComponentWindowsTest, RecordsInstallerExitCode) {
-  ExpectAppCommandExitCode(installer::SETUP_SINGLETON_ACQUISITION_FAILED);
+  ExpectAppCommandExitCode(installer::OS_ERROR);
 
   base::HistogramTester histogram_tester;
   InstallProductComponentForTesting(kTag, inner_crx_, /*user_data_dir=*/{},
@@ -447,7 +457,7 @@ TEST_F(InstallProductComponentWindowsTest, RecordsInstallerExitCode) {
   histogram_tester.ExpectUniqueSample(
       "ComponentUpdater.ProductComponent.Test.InstallCode.InstallerExited."
       "SystemLevel",
-      installer::SETUP_SINGLETON_ACQUISITION_FAILED, 1);
+      installer::OS_ERROR, 1);
   histogram_tester.ExpectTotalCount(
       "ComponentUpdater.ProductComponent.Test.InstallDuration.SystemLevel", 1);
   histogram_tester.ExpectUniqueSample(
@@ -493,6 +503,92 @@ TEST_F(InstallProductComponentWindowsTest, RecordsInvalidInput) {
   EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
                   "ComponentUpdater.ProductComponent.Test.InstallCode."),
               testing::IsEmpty());
+}
+
+// Installation is retried after increasing delays while setup.exe cannot
+// acquire the setup singleton, and succeeds once it can. Only the outcome of
+// the last attempt is recorded.
+TEST_F(InstallProductComponentWindowsTest, SetupSingletonBusyThenSuccess) {
+  auto busy1 =
+      MakeCompletedAppCommand(installer::SETUP_SINGLETON_ACQUISITION_FAILED);
+  auto busy2 =
+      MakeCompletedAppCommand(installer::SETUP_SINGLETON_ACQUISITION_FAILED);
+  auto success = MakeCompletedAppCommand(installer::INSTALL_COMPONENT_SUCCESS);
+  {
+    testing::InSequence sequence;
+    EXPECT_CALL(mock_delegate_,
+                GetAppCommand(std::wstring(installer::kCmdInstallComponent)))
+        .WillOnce(testing::Return(busy1));
+    EXPECT_CALL(mock_delegate_, WaitBeforeRetry(base::Seconds(10)));
+    EXPECT_CALL(mock_delegate_,
+                GetAppCommand(std::wstring(installer::kCmdInstallComponent)))
+        .WillOnce(testing::Return(busy2));
+    EXPECT_CALL(mock_delegate_, WaitBeforeRetry(base::Seconds(20)));
+    EXPECT_CALL(mock_delegate_,
+                GetAppCommand(std::wstring(installer::kCmdInstallComponent)))
+        .WillOnce(testing::Return(success));
+  }
+
+  base::HistogramTester histogram_tester;
+  EXPECT_EQ(InstallProductComponentForTesting(
+                kTag, inner_crx_, /*user_data_dir=*/{}, &mock_delegate_),
+            (ProductComponentInstallOutcome{
+                .step = Step::kInstallerExited,
+                .extra_code = installer::INSTALL_COMPONENT_SUCCESS}));
+  histogram_tester.ExpectUniqueSample(
+      "ComponentUpdater.ProductComponent.Test.InstallStep.SystemLevel",
+      Step::kInstallerExited, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ComponentUpdater.ProductComponent.Test.InstallCode.InstallerExited."
+      "SystemLevel",
+      installer::INSTALL_COMPONENT_SUCCESS, 1);
+}
+
+// Installation gives up after a bounded number of retries if setup.exe
+// repeatedly cannot acquire the setup singleton.
+TEST_F(InstallProductComponentWindowsTest, SetupSingletonBusyRetriesExhausted) {
+  // One initial attempt plus three retries.
+  std::vector<Microsoft::WRL::ComPtr<MockAppCommand>> busy_commands;
+  for (int i = 0; i < 4; ++i) {
+    busy_commands.push_back(
+        MakeCompletedAppCommand(installer::SETUP_SINGLETON_ACQUISITION_FAILED));
+  }
+  {
+    testing::InSequence sequence;
+    constexpr auto kDelays = std::to_array<base::TimeDelta>(
+        {base::Seconds(10), base::Seconds(20), base::Seconds(40)});
+    for (size_t i = 0; i < busy_commands.size(); ++i) {
+      EXPECT_CALL(mock_delegate_,
+                  GetAppCommand(std::wstring(installer::kCmdInstallComponent)))
+          .WillOnce(testing::Return(busy_commands[i]));
+      if (i < kDelays.size()) {
+        EXPECT_CALL(mock_delegate_, WaitBeforeRetry(kDelays[i]));
+      }
+    }
+  }
+
+  base::HistogramTester histogram_tester;
+  EXPECT_EQ(InstallProductComponentForTesting(
+                kTag, inner_crx_, /*user_data_dir=*/{}, &mock_delegate_),
+            (ProductComponentInstallOutcome{
+                .step = Step::kInstallerExited,
+                .extra_code = installer::SETUP_SINGLETON_ACQUISITION_FAILED}));
+  histogram_tester.ExpectUniqueSample(
+      "ComponentUpdater.ProductComponent.Test.InstallCode.InstallerExited."
+      "SystemLevel",
+      installer::SETUP_SINGLETON_ACQUISITION_FAILED, 1);
+}
+
+// Failures other than setup singleton contention are not retried.
+TEST_F(InstallProductComponentWindowsTest, OtherFailuresNotRetried) {
+  ExpectAppCommandExitCode(installer::INSTALL_COMPONENT_FAILED_INTERNAL);
+  EXPECT_CALL(mock_delegate_, WaitBeforeRetry(_)).Times(0);
+
+  EXPECT_EQ(InstallProductComponentForTesting(
+                kTag, inner_crx_, /*user_data_dir=*/{}, &mock_delegate_),
+            (ProductComponentInstallOutcome{
+                .step = Step::kInstallerExited,
+                .extra_code = installer::INSTALL_COMPONENT_FAILED_INTERNAL}));
 }
 
 // A component for a specific User Data directory is installed via the
@@ -738,6 +834,38 @@ TEST_F(InstallProductComponentWindowsPerUserTest, CommandLineWithoutUdd) {
                 kTag, inner_crx_, /*user_data_dir=*/{}, &mock_delegate)
                 .step,
             Step::kLaunchFailed);
+}
+
+// Per-user installation is also retried while setup.exe cannot acquire the
+// setup singleton.
+TEST_F(InstallProductComponentWindowsPerUserTest,
+       SetupSingletonBusyThenSuccess) {
+  auto launch_exiting_with = [](int exit_code) {
+    return [exit_code](const base::CommandLine&,
+                       const base::LaunchOptions& options) {
+      base::CommandLine cmd(base::FilePath(FILE_PATH_LITERAL("cmd.exe")));
+      cmd.AppendArg("/c");
+      cmd.AppendArg("exit " + base::NumberToString(exit_code));
+      return base::LaunchProcess(cmd, options);
+    };
+  };
+
+  MockProductComponentInstallerDelegate mock_delegate;
+  {
+    testing::InSequence sequence;
+    EXPECT_CALL(mock_delegate, LaunchProcess(_, _))
+        .WillOnce(
+            launch_exiting_with(installer::SETUP_SINGLETON_ACQUISITION_FAILED));
+    EXPECT_CALL(mock_delegate, WaitBeforeRetry(base::Seconds(10)));
+    EXPECT_CALL(mock_delegate, LaunchProcess(_, _))
+        .WillOnce(launch_exiting_with(installer::INSTALL_COMPONENT_SUCCESS));
+  }
+
+  EXPECT_EQ(InstallProductComponentForTesting(
+                kTag, inner_crx_, /*user_data_dir=*/{}, &mock_delegate),
+            (ProductComponentInstallOutcome{
+                .step = Step::kInstallerExited,
+                .extra_code = installer::INSTALL_COMPONENT_SUCCESS}));
 }
 
 }  // namespace component_updater

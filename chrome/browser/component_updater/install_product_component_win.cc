@@ -55,6 +55,10 @@ base::Process ProductComponentInstallerDelegate::LaunchProcess(
   return base::LaunchProcess(cmd, options);
 }
 
+void ProductComponentInstallerDelegate::WaitBeforeRetry(base::TimeDelta delay) {
+  base::PlatformThread::Sleep(delay);
+}
+
 bool ProductComponentInstallOutcome::Succeeded() const {
   return step == Step::kInstallerExited &&
          (extra_code == installer::INSTALL_COMPONENT_SUCCESS ||
@@ -253,16 +257,38 @@ ProductComponentInstallOutcome InstallProductComponentImpl(
              : InstallUserLevel(inner_crx_path, canonical_udd, delegate);
 }
 
+// Installs the component, retrying if setup.exe could not acquire exclusive
+// access to the installation because another setup.exe operation was in
+// progress, and records the outcome of the last attempt.
 ProductComponentInstallOutcome InstallAndRecordOutcome(
     std::string_view histogram_tag,
     const base::FilePath& inner_crx_path,
     const base::FilePath& user_data_dir,
     ProductComponentInstallerDelegate* delegate) {
+  // setup.exe exits with SETUP_SINGLETON_ACQUISITION_FAILED if another
+  // setup.exe operation on the same installation (e.g., a browser update or
+  // another component installation) does not release the setup singleton
+  // within a few seconds. Such contention is transient, so installation is
+  // retried after exponentially increasing delays: 10s, 20s, and then 40s.
+  static constexpr int kMaxSetupSingletonRetries = 3;
+  static constexpr base::TimeDelta kInitialSetupSingletonRetryDelay =
+      base::Seconds(10);
+
   const base::ElapsedTimer timer;
-  const ProductComponentInstallOutcome outcome =
-      InstallProductComponentImpl(inner_crx_path, user_data_dir, delegate);
-  RecordOutcome(histogram_tag, inner_crx_path, outcome, timer.Elapsed());
-  return outcome;
+  base::TimeDelta retry_delay = kInitialSetupSingletonRetryDelay;
+  for (int retry = 0;; ++retry) {
+    const ProductComponentInstallOutcome outcome =
+        InstallProductComponentImpl(inner_crx_path, user_data_dir, delegate);
+    const bool setup_singleton_busy =
+        outcome.step == Step::kInstallerExited &&
+        outcome.extra_code == installer::SETUP_SINGLETON_ACQUISITION_FAILED;
+    if (!setup_singleton_busy || retry == kMaxSetupSingletonRetries) {
+      RecordOutcome(histogram_tag, inner_crx_path, outcome, timer.Elapsed());
+      return outcome;
+    }
+    delegate->WaitBeforeRetry(retry_delay);
+    retry_delay *= 2;
+  }
 }
 
 }  // namespace

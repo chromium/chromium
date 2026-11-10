@@ -441,6 +441,7 @@ class MockPlatformRuntimeInstallerDelegate
               (const base::CommandLine& cmd,
                const base::LaunchOptions& options),
               (override));
+  MOCK_METHOD(void, WaitBeforeRetry, (base::TimeDelta delay), (override));
 };
 
 using Step = ProductComponentInstallOutcome::Step;
@@ -925,7 +926,7 @@ TEST_F(PlatformRuntimeComponentInstallerWindowsTest,
       });
   EXPECT_CALL(*mock_app_command.Get(), get_exitCode(_))
       .WillOnce([](DWORD* exit_code) {
-        *exit_code = installer::SETUP_SINGLETON_ACQUISITION_FAILED;
+        *exit_code = installer::OS_ERROR;
         return S_OK;
       });
 
@@ -943,7 +944,7 @@ TEST_F(PlatformRuntimeComponentInstallerWindowsTest,
   EXPECT_EQ(result.result.category, update_client::ErrorCategory::kInstaller);
   EXPECT_EQ(result.result.code, static_cast<int>(Step::kInstallerExited));
   EXPECT_EQ(result.result.extra,
-            static_cast<int>(installer::SETUP_SINGLETON_ACQUISITION_FAILED));
+            static_cast<int>(installer::OS_ERROR));
   EXPECT_FALSE(base::PathExists(inner_crx));
 
   histogram_tester.ExpectUniqueSample(
@@ -953,7 +954,7 @@ TEST_F(PlatformRuntimeComponentInstallerWindowsTest,
   histogram_tester.ExpectUniqueSample(
       "ComponentUpdater.ProductComponent.PlatformRuntime.InstallCode."
       "InstallerExited.SystemLevel",
-      static_cast<int>(installer::SETUP_SINGLETON_ACQUISITION_FAILED), 1);
+      static_cast<int>(installer::OS_ERROR), 1);
 }
 
 TEST_F(PlatformRuntimeComponentInstallerWindowsTest,
@@ -1113,7 +1114,7 @@ TEST_F(PlatformRuntimeComponentInstallerWindowsTest,
             base::CommandLine cmd(base::FilePath(FILE_PATH_LITERAL("cmd.exe")));
             cmd.AppendArg("/c");
             cmd.AppendArg(absl::StrFormat(
-                "exit %d", installer::SETUP_SINGLETON_ACQUISITION_FAILED));
+                "exit %d", installer::OS_ERROR));
             return base::LaunchProcess(cmd, options);
           });
 
@@ -1124,7 +1125,7 @@ TEST_F(PlatformRuntimeComponentInstallerWindowsTest,
       base::DictValue(), component_install_dir_.GetPath());
   EXPECT_EQ(result.result.code, static_cast<int>(Step::kInstallerExited));
   EXPECT_EQ(result.result.extra,
-            static_cast<int>(installer::SETUP_SINGLETON_ACQUISITION_FAILED));
+            static_cast<int>(installer::OS_ERROR));
   EXPECT_FALSE(base::PathExists(inner_crx));
 
   histogram_tester.ExpectUniqueSample(
@@ -1134,7 +1135,7 @@ TEST_F(PlatformRuntimeComponentInstallerWindowsTest,
   histogram_tester.ExpectUniqueSample(
       "ComponentUpdater.ProductComponent.PlatformRuntime.InstallCode."
       "InstallerExited.UserLevel",
-      static_cast<int>(installer::SETUP_SINGLETON_ACQUISITION_FAILED), 1);
+      static_cast<int>(installer::OS_ERROR), 1);
 }
 
 TEST_F(PlatformRuntimeComponentInstallerWindowsTest,

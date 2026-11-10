@@ -15,6 +15,7 @@
 #include <wrl/client.h>
 
 #include "base/process/process.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/win/windows_types.h"
 
@@ -93,6 +94,10 @@ class ProductComponentInstallerDelegate {
   // Used for per-user setup.exe component installation.
   virtual base::Process LaunchProcess(const base::CommandLine& cmd,
                                       const base::LaunchOptions& options);
+
+  // Blocks the calling thread for `delay` before installation is retried
+  // because another setup.exe operation was in progress.
+  virtual void WaitBeforeRetry(base::TimeDelta delay);
 };
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -111,6 +116,11 @@ class ProductComponentInstallerDelegate {
 //   canonicalized UDD path and waits for it to exit.
 // - Non-Windows: Ends at kLaunchFailed until platform-specific helpers are
 //   supported.
+//
+// On Windows, if setup.exe cannot acquire exclusive access to the installation
+// because another setup.exe operation (e.g., a browser update or another
+// component installation) is in progress, installation is retried a few times
+// after increasing delays before giving up.
 //
 // The outcome, the duration of the installation, and whether the inner CRX is
 // on a network drive are recorded in the
