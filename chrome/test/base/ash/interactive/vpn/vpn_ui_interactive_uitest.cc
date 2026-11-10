@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include "ash/ash_element_identifiers.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "chrome/test/base/ash/interactive/settings/interactive_uitest_elements.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_profile_client.h"

@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/url_constants.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_handler.h"
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_shares_localized_strings_provider.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/experiences/settings_ui/resources/grit/ash_settings_strings.h"
 #include "components/user_manager/user.h"

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_share_dialog.h"
 
 #include "ash/constants/webui_url_constants.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/ash/smb_client/smb_service.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_handler.h"
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_shares_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/theme_source.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/smb_shares_resources.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/strings/grit/components_strings.h"

@@ -15,8 +15,8 @@ static_library("internet") {
   deps = [
     "//ash/constants",
     "//ash/public/cpp",
+    "//ash/strings",
     "//ash/webui/common:trusted_types_util",
-    "//chrome/app:generated_resources",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/internet_config_dialog:resources",
     "//chrome/browser/resources/chromeos/internet_detail_dialog:resources",

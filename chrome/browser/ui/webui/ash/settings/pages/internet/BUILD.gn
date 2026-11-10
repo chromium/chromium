@@ -25,6 +25,7 @@ static_library("internet") {
   deps = [
     "//ash/constants",
     "//ash/public/cpp",
+    "//ash/strings",
     "//ash/webui/network_ui:network_health_resource_provider",
     "//ash/webui/settings/public/constants:mojom",
     "//chrome/app:generated_resources",

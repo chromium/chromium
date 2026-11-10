@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_shares_localized_strings_provider.h"
 
+#include "ash/strings/grit/ash_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/webui/web_ui_util.h"

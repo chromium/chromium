@@ -11,6 +11,7 @@
 #include "ash/constants/url_constants.h"
 #include "ash/public/cpp/hotspot_config_service.h"
 #include "ash/public/cpp/network_config_service.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/webui/network_ui/network_health_resource_provider.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/containers/span.h"

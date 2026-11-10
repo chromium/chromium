@@ -6,12 +6,12 @@
 
 #include "ash/constants/url_constants.h"
 #include "ash/public/cpp/network_config_service.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/theme_source.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/internet_config_dialog_resources.h"
 #include "chrome/grit/internet_config_dialog_resources_map.h"
 #include "chromeos/ash/components/network/network_handler.h"

@@ -30,41 +30,6 @@
     Google Accounts
   </message>
 
-  <!-- Files Page (OS settings) -->
-  <message name="IDS_SETTINGS_DOWNLOADS_SMB_SHARES_ADD_SHARE" desc="In SMB shares settings subpage, text for the link to add a new SMB share.">
-    Add file share
-  </message>
-  <message name="IDS_SETTINGS_DOWNLOADS_SHARE_ADDED_ERROR_MESSAGE" desc="The message shown when mounting a new SMB share fails.">
-    Error mounting share. Check the file share URL and try again.
-  </message>
-  <message name="IDS_SETTINGS_DOWNLOADS_SHARE_ADDED_AUTH_FAILED_MESSAGE" desc="The message shown when mounting a new SMB share fails due to an authentication failure.">
-    Error mounting share. Please check your credentials and try again.
-  </message>
-  <message name="IDS_SETTINGS_DOWNLOADS_SHARE_ADDED_NOT_FOUND_MESSAGE" desc="The message shown when mounting a new SMB share fails because the share cannot be found.">
-    Error mounting share. The specified share was not found on the network.
-  </message>
-  <message name="IDS_SETTINGS_DOWNLOADS_SHARE_ADDED_UNSUPPORTED_DEVICE_MESSAGE" desc="The message shown when mounting a new SMB share fails because the specified device is not supported.">
-    Error mounting share. Please check that the file server you are connecting to supports SMBv2 or later.
-  </message>
-  <message name="IDS_SETTINGS_DOWNLOADS_SHARE_ADDED_MOUNT_EXISTS_MESSAGE" desc="The message shown when mounting a new SMB share fails because the share is already mounted.">
-    Error mounting share. The specified share is already mounted.
-  </message>
-  <message name="IDS_SETTINGS_DOWNLOADS_SHARE_ADDED_TOO_MANY_MOUNTS_MESSAGE" desc="The message shown when mounting a new SMB share fails because too many SMB shares are already mounted.">
-    Error mounting share. Too many SMB shares are already mounted.
-  </message>
-  <message name="IDS_SETTINGS_DOWNLOADS_SHARE_ADDED_MOUNT_INVALID_URL_MESSAGE" desc="The message shown when mounting a new SMB share fails because the URL is an invalid format.">
-    Invalid URL format. Supported formats are \\server\share and smb://server/share.
-  </message>
-  <message name="IDS_SETTINGS_DOWNLOADS_SHARE_ADDED_MOUNT_INVALID_SSO_URL_MESSAGE" desc="The message shown when mounting a new SMB share fails because the URL is an invalid format when SSO authentication is used.">
-    Invalid URL format. Server must be specified as a host name when SSO authentication is used.
-  </message>
-  <message name="IDS_SETTINGS_DOWNLOADS_SHARE_ADDED_MOUNT_INVALID_USERNAME_MESSAGE" desc="The message shown when mounting a new SMB share fails because the username is invalid.">
-    Invalid username
-  </message>
-  <message name="IDS_SETTINGS_DOWNLOADS_SHARE_ADDED_SUCCESS_MESSAGE" desc="The message shown when a new SMB share is successfully mounted.">
-    Share mounted successfully.
-  </message>
-
   <!-- A11y (OS Settings) -->
   <message name="IDS_SETTINGS_ACCESSIBILITY_MANAGE_ACCESSIBILITY_FEATURES" desc="In the settings tab, the title of a link that opens a screen allowing the user to change accessibility features.">
     Manage accessibility features
@@ -95,38 +60,6 @@
   <!-- Android apps page (OS settings) -->
   <message name="IDS_SETTINGS_ANDROID_APPS_REMOVE_BUTTON" desc="Label for the button for the removal of the Google Play Store">
     Remove
-  </message>
-
-  <!-- Internet page (OS settings) -->
-  <message name="IDS_SETTINGS_INTERNET_DETAIL" desc="Name of the settings page which displays network details.">
-    Network Details
-  </message>
-  <message name="IDS_SETTINGS_INTERNET_JOIN_TYPE" desc="Title for the network configuration dialog for a new network.">
-    Join <ph name="TYPE">$1<ex>WiFi</ex></ph> network
-  </message>
-  <message name="IDS_SETTINGS_INTERNET_BUTTON_CONNECT" desc="Settings > Internet > Network details: The label for the button to connect to a network.">
-    Connect
-  </message>
-  <message name="IDS_SETTINGS_INTERNET_BUTTON_DISCONNECT" desc="Settings > Internet > Network details: The label for the button to disconnect from a network.">
-    Disconnect
-  </message>
-  <message name="IDS_SETTINGS_INTERNET_BUTTON_FORGET" desc="Settings > Internet > Network details: The label for the button to forget a network (remove from the list of known networks).">
-    Forget
-  </message>
-  <message name="IDS_SETTINGS_INTERNET_BUTTON_SIGNIN" desc="Settings > Internet > Network details: The label for the button to signin to a network behind a captive portal.">
-    Sign in
-  </message>
-  <message name="IDS_SETTINGS_INTERNET_NETWORK_IP_ADDRESS" desc="Settings > Internet > Network details: Label for the network IP Address.">
-    IP Address
-  </message>
-  <message name="IDS_SETTINGS_INTERNET_NETWORK_IP_CONFIG_AUTO" desc="Settings > Internet > Network details: Label for the checkbox determining whether to automatically configure the network IP config.">
-    Configure IP address automatically
-  </message>
-  <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_NETWORK" desc="Settings > Internet > Network details: Network section label.">
-    Network
-  </message>
-  <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_PROXY" desc="Settings > Internet > Network details: Proxy section label.">
-    Proxy
   </message>
 
   <!-- Kerberos In-Browser dialog -->
