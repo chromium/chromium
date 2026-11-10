@@ -3876,14 +3876,24 @@ BrowserView::GetNativeViewHostsForTopControlsSlide() {
   return results;
 }
 
-void BrowserView::ReparentTopContainerForStartOfImmersive() {
+void BrowserView::ReparentTopContainerToOverlayViewIfNeeded() {
+  const ImmersiveModeController* const controller =
+      ImmersiveModeController::From(browser());
+  CHECK(controller);
+  if (!controller->ShouldMoveTopContainerToOverlayView()) {
+    return;
+  }
+
+  CHECK(overlay_view_tracker_);
+  if (top_container()->parent() == overlay_view_tracker_.view()) {
+    return;
+  }
+
   top_container()->SetPaintToLayer();
   top_container()->layer()->SetFillsBoundsOpaquely(false);
 
   ReparentTabStripAndWebAppViewsToTopContainer(
       TabStripAndWebAppViewsReparentedState::kImmersiveMode);
-
-  CHECK(overlay_view_tracker_);
 
   // Note: while `BrowserViewLayout` is responsible for positioning controls in
   // the top container, these controls can still internally invalidate. When the
@@ -3904,7 +3914,7 @@ void BrowserView::ReparentTopContainerForStartOfImmersive() {
   overlay_view_tracker_.view()->SetVisible(true);
 }
 
-void BrowserView::ReparentTopContainerForEndOfImmersive() {
+void BrowserView::ReparentTopContainerToBrowserView() {
   if (top_container()->parent() == this && tab_strip_view()->parent() == this) {
     return;
   }
@@ -3923,7 +3933,7 @@ void BrowserView::ReparentTopContainerForEndOfImmersive() {
 
   EnsureFocusOrder();
 
-  // See comment in `ReparentTopContainerForStartOfImmersive()`; this isn't
+  // See comment in `ReparentTopContainerToOverlayViewIfNeeded()`; this isn't
   // strictly necessary on all platforms but doesn't break anything either as
   // this is the default state.
   top_container()->SetProperty(views::kViewDoesNotLayOutChildren, true);
@@ -6154,10 +6164,23 @@ void BrowserView::OnImmersiveFullscreenEntered() {
     control->CloseMenu();
   }
 
-  ReparentTopContainerForStartOfImmersive();
+  ReparentTopContainerToOverlayViewIfNeeded();
 
   InvalidateLayout();
   GetWidget()->GetRootView()->DeprecatedLayoutImmediately();
+}
+
+void BrowserView::UpdateTopContainerParentForImmersive() {
+  const ImmersiveModeController* const controller =
+      ImmersiveModeController::From(browser());
+  CHECK(controller);
+  if (controller->IsEnabled() &&
+      controller->ShouldMoveTopContainerToOverlayView()) {
+    ReparentTopContainerToOverlayViewIfNeeded();
+  } else {
+    ReparentTopContainerToBrowserView();
+  }
+  InvalidateLayout();
 }
 
 void BrowserView::OnImmersiveFullscreenExited() {
@@ -6171,7 +6194,7 @@ void BrowserView::OnImmersiveFullscreenExited() {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  ReparentTopContainerForEndOfImmersive();
+  ReparentTopContainerToBrowserView();
 
   InvalidateLayout();
   GetWidget()->GetRootView()->DeprecatedLayoutImmediately();
@@ -6180,7 +6203,7 @@ void BrowserView::OnImmersiveFullscreenExited() {
 }
 
 void BrowserView::OnImmersiveModeControllerDestroyed() {
-  ReparentTopContainerForEndOfImmersive();
+  ReparentTopContainerToBrowserView();
 
   vertical_tabs_enable_state_lock_.reset();
 }

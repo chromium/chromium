@@ -129,6 +129,17 @@ class ImmersiveModeController {
   // visible when revealing topchrome.
   virtual int GetExtraInfobarOffset() const = 0;
 
+  // Returns true if the top container should move into the overlay view while
+  // immersive fullscreen is enabled, so that it can slide in on top of the
+  // contents. Otherwise it stays in the browser view, which lays out top chrome
+  // and the contents as in a regular window, e.g. on Mac when "Always Show
+  // Toolbar in Full Screen" is enabled.
+  //
+  // The controller must call
+  // BrowserView::UpdateTopContainerParentForImmersive() when the result changes
+  // while enabled.
+  virtual bool ShouldMoveTopContainerToOverlayView() const;
+
   // Called when entering or exiting content fullscreen.
   // Content fullscreen is distinct from browser fullscreen. Content fullscreen
   // is when a single tab enters fullscreen, where browser fullscreen is when

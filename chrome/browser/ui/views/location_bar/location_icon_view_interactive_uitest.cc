@@ -142,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(LocationIconViewTest,
   FocusOmnibox();
 
   // This triggers OnImmersiveFullscreenExited() ->
-  // ReparentTopContainerForEndOfImmersive() which reparents the toolbar
+  // ReparentTopContainerToBrowserView() which reparents the toolbar
   // hierarchy while the omnibox (and location icon) may be updating.
   //
   // The crash scenario:

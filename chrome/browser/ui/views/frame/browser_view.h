@@ -437,6 +437,12 @@ class BrowserView : public BrowserWindow,
   // FullscreenController. This method does any processing which was skipped.
   void FullscreenStateChanged();
 
+  // Moves the top container into the overlay view if immersive fullscreen is
+  // enabled and the immersive mode controller wants it there, and back into
+  // the browser view otherwise. See
+  // ImmersiveModeController::ShouldMoveTopContainerToOverlayView().
+  void UpdateTopContainerParentForImmersive();
+
   // TODO(tluk): Replace this accessor with `ToolbarButtonProvider::From()`.
   ToolbarButtonProvider* toolbar_button_provider();
 
@@ -1009,11 +1015,13 @@ class BrowserView : public BrowserWindow,
       version_info::Channel,
       Profile* profile) const;
 
-  // Reparents |top_container_| to |overlay_view_|.
-  void ReparentTopContainerForStartOfImmersive();
+  // Reparents |top_container_| to |overlay_view_|, unless the immersive mode
+  // controller keeps it in the browser view. See
+  // ImmersiveModeController::ShouldMoveTopContainerToOverlayView().
+  void ReparentTopContainerToOverlayViewIfNeeded();
 
-  // Reparents |top_container_| to |main_container_|.
-  void ReparentTopContainerForEndOfImmersive();
+  // Reparents |top_container_| back to the browser view.
+  void ReparentTopContainerToBrowserView();
 
   // In certain situations, such as immersive mode and touch ui mode on
   // ChromeOS, the tab strip and PWA views must be parented to the top container
@@ -1156,7 +1164,7 @@ class BrowserView : public BrowserWindow,
   raw_ptr<TopContainerView> top_container_ = nullptr;
   // The insertion index of the top container in the BrowserView view tree.
   // This is used to correctly reparent the top container when exiting
-  // fullscreen mode. See BrowserView::ReparentTopContainerForEndOfImmersive.
+  // fullscreen mode. See BrowserView::ReparentTopContainerToBrowserView.
   std::optional<size_t> top_container_insertion_index_;
 
   // Optional offset applied to background painted by ThemedBackground w.r.t to
@@ -1178,7 +1186,7 @@ class BrowserView : public BrowserWindow,
 
   // The insertion index of the HorizontalTabStripRegionView in the BrowserView
   // view tree. This is used to correctly reparent the tabstrip when exiting
-  // fullscreen mode. See BrowserView::ReparentTopContainerForEndOfImmersive.
+  // fullscreen mode. See BrowserView::ReparentTopContainerToBrowserView.
   std::optional<size_t> horizontal_tab_strip_region_insertion_index_;
   // The Toolbar containing the navigation buttons, menus and the address bar.
   raw_ptr<ToolbarView> toolbar_ = nullptr;

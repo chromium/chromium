@@ -457,10 +457,14 @@ void BrowserFrameViewMac::PaintChildren(const views::PaintInfo& info) {
   // Tabbed immersive fullscreen paints its own background. In this case we
   // allow painting of the frame's children, which fixes a flickering bug:
   // 1400287.
+  //
+  // None of this applies if the top container stays in the browser view.
+  const ImmersiveModeController* const controller =
+      ImmersiveModeController::From(GetBrowserView()->browser());
   if (WindowFeatureController::From(GetBrowserView()->browser())
           ->UsesImmersiveFullscreenTabbedMode() ||
-      !ImmersiveModeController::From(GetBrowserView()->browser())
-           ->IsRevealed()) {
+      !controller->IsRevealed() ||
+      !controller->ShouldMoveTopContainerToOverlayView()) {
     BrowserFrameView::PaintChildren(info);
   }
 }

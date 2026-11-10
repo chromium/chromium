@@ -80,7 +80,13 @@ void TopContainerView::PaintChildren(const views::PaintInfo& paint_info) {
 // TODO (b/287068468): Verify if it's needed on MacOS, once it's verified, we
 // can decide whether keep or remove this function.
 #if !BUILDFLAG(IS_CHROMEOS)
-  if (ImmersiveModeController::From(browser_view_->browser())->IsRevealed()) {
+  // Only needed while the top container is in the overlay view. In the
+  // browser view, the frame is already painted underneath it, and painting the
+  // frame here would paint the browser view again.
+  const ImmersiveModeController* const controller =
+      ImmersiveModeController::From(browser_view_->browser());
+  if (controller->IsRevealed() &&
+      controller->ShouldMoveTopContainerToOverlayView()) {
     // Top-views depend on parts of the frame (themes, window title, window
     // controls) being painted underneath them. Clip rect has already been set
     // to the bounds of this view, so just paint the frame.  Use a clone without

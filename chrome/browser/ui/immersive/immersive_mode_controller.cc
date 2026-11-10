@@ -32,6 +32,10 @@ void ImmersiveModeController::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
 
+bool ImmersiveModeController::ShouldMoveTopContainerToOverlayView() const {
+  return true;
+}
+
 void ImmersiveModeController::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
