@@ -1384,6 +1384,9 @@ def main():
       '^.*Sanitizer-.*sunrpc.*cpp$',
       # sysroot/host glibc version mismatch, crbug.com/1506551
       '^.*Sanitizer.*mallinfo2.cpp$',
+      # TODO(https://crbug.com/584147743): These fail with our glibc.
+      '^LeakSanitizer-.*use_tls_dynamic.cpp$',
+      '^MemorySanitizer-.*preinit_array.cpp$',
     ]
   elif sys.platform == 'darwin':
     lit_excludes += [
