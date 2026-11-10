@@ -9,19 +9,24 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/system_alert_handler.h"
 
+namespace {
+
+NSString* const kAppIdleBeforeAlertCheckFailure =
+    @"App failed to idle before checking for system alerts";
+
+}  // namespace
+
 @implementation SystemAlertHandlerImpl
 
 - (void)handleSystemAlertIfVisible {
-  // Asks the app under test whether SpringBoard is showing an alert. Going
-  // through an EarlGrey matcher also synchronizes with the app's idle state,
-  // which callers in test `setUp` and `loadURL:` rely on; see b/579116520.
-  // This is not guaranteed to report alerts raised by a previous app process;
-  // see `-handleLeftoverSystemAlertIfVisible`.
-  NSError* systemAlertFoundError = nil;
-  [[EarlGrey selectElementWithMatcher:grey_systemAlertViewShown()]
-      assertWithMatcher:grey_nil()
-                  error:&systemAlertFoundError];
-  if (!systemAlertFoundError) {
+  // Waits for the app to idle so that callers only proceed once in-flight UI
+  // transitions have settled.
+  GREYWaitForAppToIdle(kAppIdleBeforeAlertCheckFailure);
+
+  // Asks the app under test whether SpringBoard is showing an alert, which is
+  // not guaranteed to report alerts raised by a previous app process; see
+  // `-handleLeftoverSystemAlertIfVisible`.
+  if ([EarlGrey WaitForAlertVisibility:NO withTimeout:0.0]) {
     return;
   }
   [self handleVisibleSystemAlert];
