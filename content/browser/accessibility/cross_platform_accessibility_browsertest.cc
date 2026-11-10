@@ -2496,6 +2496,60 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
                 .ToString());
 }
 
+class SVGEmbeddedAsReplacedElementAccessibilityBrowserTest
+    : public CrossPlatformAccessibilityBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    CrossPlatformAccessibilityBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "SVGEmbeddedAsReplacedElement");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(SVGEmbeddedAsReplacedElementAccessibilityBrowserTest,
+                       GetBoundsRectFittedSvgObject) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <!DOCTYPE html>
+      <body style="margin: 0">
+        <object aria-label="Object"
+                style="display: block; width: 100px; height: 100px;
+                       object-fit: cover"
+                data="data:image/svg+xml,<svg
+                      xmlns='http://www.w3.org/2000/svg' width='16' height='8'
+                      aria-label='Fitted SVG'></svg>">
+        </object>
+      </body>)HTML");
+  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
+                                                "Fitted SVG");
+
+  ui::BrowserAccessibility* svg_document = FindNode("Fitted SVG");
+  ASSERT_NE(nullptr, svg_document);
+
+  // The <object> has size 100x100, so object-fit: cover resizes the 16x8 SVG
+  // document to 200x100. It is centered in its parent, so it starts at x=-50.
+  const gfx::Rect expected_bounds(-50, 0, 200, 100);
+  auto svg_bounds = [&]() {
+    return svg_document->GetBoundsRect(ui::AXCoordinateSystem::kRootFrame,
+                                       ui::AXClippingBehavior::kUnclipped);
+  };
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return svg_bounds() == expected_bounds;
+  })) << "Expected bounds "
+      << expected_bounds.ToString() << ", got " << svg_bounds().ToString();
+
+  // The SVG document is at the origin of its own frame.
+  EXPECT_EQ(gfx::Rect(0, 0, 200, 100),
+            svg_document->GetBoundsRect(ui::AXCoordinateSystem::kFrame,
+                                        ui::AXClippingBehavior::kUnclipped));
+
+  // The <object> reports the replaced content rect of its child frame.
+  ui::BrowserAccessibility* object = FindNode("Object");
+  ASSERT_NE(nullptr, object);
+  EXPECT_EQ(expected_bounds,
+            object->GetBoundsRect(ui::AXCoordinateSystem::kRootFrame,
+                                  ui::AXClippingBehavior::kUnclipped));
+}
+
 // TODO(crbug.com/40835208): Enable on Fuchsia when content_browsertests
 // runs in non-headless mode.
 #if BUILDFLAG(IS_FUCHSIA)

@@ -115,6 +115,7 @@
 #include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
+#include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/mathml_names.h"
@@ -8010,8 +8011,14 @@ void AXObject::GetRelativeBounds(AXObject** out_container,
 
   // Frames need to take their border and padding into account so the
   // child element's computed position will be correct.
-  if (layout_object->IsBox() && layout_object->GetNode() &&
-      layout_object->GetNode()->IsFrameOwnerElement()) {
+  if (const auto* embedded_content =
+          DynamicTo<LayoutEmbeddedContent>(layout_object)) {
+    // ReplacedContentRect() can differ from the physical content box,
+    // for example with object-fit and object-position.
+    out_bounds_in_container =
+        gfx::RectF(embedded_content->ReplacedContentRect());
+  } else if (layout_object->IsBox() && layout_object->GetNode() &&
+             layout_object->GetNode()->IsFrameOwnerElement()) {
     out_bounds_in_container =
         gfx::RectF(To<LayoutBox>(layout_object)->PhysicalContentBoxRect());
   }
