@@ -1211,9 +1211,20 @@ base::FilePath DeserializePath(const std::string& bytes) {
   return base::FilePath(s);
 }
 
+bool HasLeadingCurrentDirectoryPrefix(const base::FilePath& path) {
+  // `FilePath::GetComponents()` drops a leading `.`, so check the prefix first.
+  return path.value().starts_with(base::FilePath::kCurrentDirectory) &&
+         (path.value().size() == 1 ||
+          base::FilePath::IsSeparator(path.value()[1]));
+}
+
 bool IsValidRootPath(FileSystemAccessHandleData::DataCase data_case,
                      const base::FilePath& root_path) {
-  if (root_path.empty() || root_path.ReferencesParent()) {
+  if (root_path.empty() || root_path.ReferencesParent() ||
+      HasLeadingCurrentDirectoryPrefix(root_path) ||
+      std::ranges::contains(
+          root_path.GetComponents(),
+          base::FilePath::StringViewType(base::FilePath::kCurrentDirectory))) {
     return false;
   }
   if (data_case == FileSystemAccessHandleData::kLocal) {
@@ -1231,13 +1242,8 @@ bool IsPlainRelativePath(const base::FilePath& path) {
   if (path.empty()) {
     return true;
   }
-  if (path.IsAbsolute() || path.ReferencesParent()) {
-    return false;
-  }
-  // `FilePath::GetComponents()` drops a leading `.`, so check the prefix first.
-  if (path.value().starts_with(base::FilePath::kCurrentDirectory) &&
-      (path.value().size() == 1 ||
-       base::FilePath::IsSeparator(path.value()[1]))) {
+  if (path.IsAbsolute() || path.ReferencesParent() ||
+      HasLeadingCurrentDirectoryPrefix(path)) {
     return false;
   }
   for (const auto& component : path.GetComponents()) {

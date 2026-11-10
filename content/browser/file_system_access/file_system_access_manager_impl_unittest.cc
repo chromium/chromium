@@ -16,6 +16,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_view_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -2181,20 +2182,42 @@ TEST_F(FileSystemAccessManagerImplTest,
   const base::FilePath invalid_root_paths[] = {
       base::FilePath(),
       dir_.GetPath().AppendASCII("foo").Append(FILE_PATH_LITERAL("../bar")),
+      dir_.GetPath().Append(FILE_PATH_LITERAL(".")),
+      dir_.GetPath().Append(FILE_PATH_LITERAL("./foo")),
+      base::FilePath(FILE_PATH_LITERAL(".")),
+      base::FilePath(FILE_PATH_LITERAL("./foo")),
       base::FilePath(FILE_PATH_LITERAL("relative/root")),
+#if BUILDFLAG(IS_POSIX)
+      base::FilePath(FILE_PATH_LITERAL("/.")),
+#elif BUILDFLAG(IS_WIN)
+      base::FilePath(FILE_PATH_LITERAL("C:\\.")),
+#endif
+#if BUILDFLAG(IS_ANDROID)
+      base::FilePath("content://authority/tree/foo/."),
+#endif
+  };
+  const base::FilePath relative_paths[] = {
+      base::FilePath(),
+      base::FilePath(FILE_PATH_LITERAL("child")),
   };
 
   EXPECT_CALL(permission_context_, GetReadPermissionGrant).Times(0);
   EXPECT_CALL(permission_context_, GetWritePermissionGrant).Times(0);
 
-  for (const auto& root_path : invalid_root_paths) {
-    FileSystemAccessHandleData data;
-    data.set_handle_type(FileSystemAccessHandleData::kDirectory);
-    data.mutable_local()->set_root_path(SerializePathForTesting(root_path));
-    data.mutable_local()->set_relative_path(
-        SerializePathForTesting(base::FilePath()));
-    data.mutable_local()->set_origin(kTestStorageKey.origin().Serialize());
-    EXPECT_FALSE(DeserializeAndResolveToken(data)) << root_path;
+  for (auto handle_type : {FileSystemAccessHandleData::kFile,
+                           FileSystemAccessHandleData::kDirectory}) {
+    for (const auto& root_path : invalid_root_paths) {
+      for (const auto& relative_path : relative_paths) {
+        FileSystemAccessHandleData data;
+        data.set_handle_type(handle_type);
+        data.mutable_local()->set_root_path(SerializePathForTesting(root_path));
+        data.mutable_local()->set_relative_path(
+            SerializePathForTesting(relative_path));
+        data.mutable_local()->set_origin(kTestStorageKey.origin().Serialize());
+        EXPECT_FALSE(DeserializeAndResolveToken(data))
+            << root_path << " / " << relative_path;
+      }
+    }
   }
 }
 
@@ -2214,16 +2237,26 @@ TEST_F(FileSystemAccessManagerImplTest,
     EXPECT_FALSE(DeserializeAndResolveToken(data));
   }
 
-  {
+  const base::FilePath invalid_external_root_paths[] = {
+      base::FilePath::FromUTF8Unsafe(kTestMountPoint)
+          .Append(FILE_PATH_LITERAL("../foo")),
+      base::FilePath(FILE_PATH_LITERAL(".")),
+      base::FilePath::FromUTF8Unsafe(base::StrCat({"./", kTestMountPoint})),
+      base::FilePath::FromUTF8Unsafe(
+          base::StrCat({"./", kTestMountPoint, "/foo"})),
+      base::FilePath::FromUTF8Unsafe(kTestMountPoint)
+          .Append(FILE_PATH_LITERAL(".")),
+      base::FilePath::FromUTF8Unsafe(kTestMountPoint)
+          .Append(FILE_PATH_LITERAL("./foo")),
+  };
+  for (const auto& root_path : invalid_external_root_paths) {
     FileSystemAccessHandleData data;
     data.set_handle_type(FileSystemAccessHandleData::kFile);
-    data.mutable_external()->set_root_path(
-        SerializePathForTesting(base::FilePath::FromUTF8Unsafe(kTestMountPoint)
-                                    .Append(FILE_PATH_LITERAL("../foo"))));
+    data.mutable_external()->set_root_path(SerializePathForTesting(root_path));
     data.mutable_external()->set_relative_path(
         SerializePathForTesting(base::FilePath()));
     data.mutable_external()->set_origin(kTestStorageKey.origin().Serialize());
-    EXPECT_FALSE(DeserializeAndResolveToken(data));
+    EXPECT_FALSE(DeserializeAndResolveToken(data)) << root_path;
   }
 
   // Unregistered external mounts produce an invalid `root` URL. Without the
