@@ -38,6 +38,7 @@ static_library("privacy") {
 
   deps = [
     "//ash/constants",
+    "//ash/strings",
     "//ash/webui/projector_app/public/cpp",
     "//base:i18n",
     "//build:branding_buildflags",

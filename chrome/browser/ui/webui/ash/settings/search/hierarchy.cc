@@ -7,11 +7,11 @@
 #include <utility>
 #include <vector>
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/ash/settings/constants/constants_util.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/os_settings_sections.h"
-#include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash::settings {

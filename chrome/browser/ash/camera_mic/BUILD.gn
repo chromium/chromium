@@ -20,7 +20,7 @@ static_library("camera_mic") {
     "//ash",
     "//ash/constants",
     "//ash/public/cpp",
-    "//ash/strings:strings_grit",
+    "//ash/strings",
     "//ash/webui/settings/public/constants:mojom",
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",

@@ -333,9 +333,6 @@ chromium_strings.grd. -->
           <message name="IDS_SHORT_PRODUCT_OS_NAME" desc="The ChromeOS Flex application short name">
             ChromeOS Flex
           </message>
-          <message name="IDS_INSTALLED_PRODUCT_OS_NAME" desc="Installed OS name">
-            ChromeOS Flex
-          </message>
         </if>
         <if expr="not reven">
           <message name="IDS_PRODUCT_OS_NAME" desc="The ChromeOS application name">
@@ -343,9 +340,6 @@ chromium_strings.grd. -->
           </message>
           <message name="IDS_SHORT_PRODUCT_OS_NAME" desc="The ChromeOS application short name">
             ChromeOS
-          </message>
-          <message name="IDS_INSTALLED_PRODUCT_OS_NAME" desc="Installed OS name">
-            ChromeOS Flex
           </message>
         </if>
       </if>

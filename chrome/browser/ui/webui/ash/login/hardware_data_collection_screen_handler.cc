@@ -7,9 +7,9 @@
 #include <string>
 
 #include "ash/login/resources/grit/ash_login_strings.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/hardware_data_collection_screen.h"
-#include "chrome/grit/branded_strings.h"
 #include "components/login/localized_values_builder.h"
 
 namespace ash {

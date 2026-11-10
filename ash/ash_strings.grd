@@ -10199,6 +10199,92 @@ To shut down the device, press and hold the power button on the device again.
     <ph name="LINE_BREAKS2">&lt;br&gt;&lt;br&gt;</ph>
     This doesn't affect apps or content on other devices.
       </message>
+
+      <!-- Shared Auth Setup and Settings app strings -->
+      <message name="IDS_INTERNAL_APP_SETTINGS" desc="The name of Settings.">
+        Settings
+      </message>
+      <message name="IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_PLACEHOLDER" desc="Placeholder text for the input that lets the user enter a new local password.">
+        Password
+      </message>
+      <message name="IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_CONFIRM_PLACEHOLDER" desc="Placeholder text for the input where the user should enter a new local password for a second time for confirmation.">
+        Confirm password
+      </message>
+      <message name="IDS_AUTH_SETUP_SHOW_PASSWORD" desc="A tooltip on a button that reveals the password.">
+        Show password
+      </message>
+      <message name="IDS_AUTH_SETUP_HIDE_PASSWORD" desc="A tooltip on a button that hides the password that is being shown.">
+        Hide password
+      </message>
+      <message name="IDS_AUTH_SETUP_SHOW_PIN" desc="A tooltip on a button that reveals the PIN.">
+        Show PIN
+      </message>
+      <message name="IDS_AUTH_SETUP_HIDE_PIN" desc="A tooltip on a button that hides the PIN that is being shown.">
+        Hide PIN
+      </message>
+      <message name="IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_MIN_CHARS_HINT" desc="The hint about the minimal length of a password when the user sets a new password.">
+        Password must be at least 8 characters
+      </message>
+      <message name="IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_ERROR_TOO_SHORT" desc="Error message shown when the password is too short.">
+        Must be at least <ph name="MIN_LENGTH">$1<ex>8</ex></ph> characters
+      </message>
+      <message name="IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_REQ_LETTER_OR_SYMBOL" desc="Requirement for low complexity password.">
+        Must have at least one letter or symbol
+      </message>
+      <message name="IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_REQ_TWO_CLASSES" desc="Requirement for medium complexity password.">
+        Must have two of the following: uppercase letters, lowercase letters, numbers, or symbols
+      </message>
+      <message name="IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_REQ_FOUR_CLASSES" desc="Requirement for high complexity password.">
+        Must have uppercase letters, lowercase letters, numbers, and symbols
+      </message>
+      <message name="IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_ERROR_CONTAINS_TRIVIAL_SEQUENCE" desc="Error message shown when the password contains trivial sequences.">
+        Must not have repeated characters or sequences of 4 or more
+      </message>
+      <message name="IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_COMPLEXITY_ERROR_NONE" desc="The hint about password requirements when the LocalPinAndPassword policy is set to None.">
+        Must be at least 1 character
+      </message>
+      <message name="IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_COMPLEXITY_ERROR_LOW" desc="The hint about password requirements when the LocalPinAndPassword policy is set to Low.">
+        Must be at least 6 characters and have at least one letter or symbol
+      </message>
+      <message name="IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_COMPLEXITY_ERROR_MEDIUM" desc="The hint about password requirements when the LocalPinAndPassword policy is set to Medium.">
+        Must be at least 8 characters and have at least two of the following: uppercase letters, lowercase letters, numbers, or symbols. Must not have repeated characters or sequences of 4 or more.
+      </message>
+      <message name="IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_COMPLEXITY_ERROR_HIGH" desc="The hint about password requirements when the LocalPinAndPassword policy is set to High.">
+        Must be at least 12 characters and have uppercase letters, lowercase letters, numbers, and symbols. Must not have repeated characters or sequences of 4 or more.
+      </message>
+      <message name="IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_NO_MATCH_ERROR" desc="Error message shown when the user sets a password but the first entry does not match the second entry.">
+        Passwords do not match
+      </message>
+
+      <!-- Shared PIN keyboard strings -->
+      <message name="IDS_PIN_KEYBOARD_HINT_TEXT_PIN" desc="Text to display in the pin field for user pod when no pin has been entered.">
+        PIN
+      </message>
+      <message name="IDS_PIN_KEYBOARD_HINT_TEXT_PIN_PASSWORD" desc="Text to display in the pin field for user pod when no pin has been entered, and passwords are allowed.">
+        PIN or password
+      </message>
+      <message name="IDS_PIN_KEYBOARD_DELETE_ACCESSIBLE_NAME" desc="Text to be spoken when the focus is set to the delete button of the PIN keyboard.">
+        Delete
+      </message>
+
+      <!-- Installed OS name -->
+      <if expr="_google_chrome">
+        <if expr="reven">
+          <message name="IDS_INSTALLED_PRODUCT_OS_NAME" desc="Installed OS name">
+            ChromeOS Flex
+          </message>
+        </if>
+        <if expr="not reven">
+          <message name="IDS_INSTALLED_PRODUCT_OS_NAME" desc="Installed OS name">
+            ChromeOS Flex
+          </message>
+        </if>
+      </if>
+      <if expr="not _google_chrome">
+        <message name="IDS_INSTALLED_PRODUCT_OS_NAME" desc="Installed OS name">
+          ChromiumOS
+        </message>
+      </if>
     </messages>
   </release>
 </grit>

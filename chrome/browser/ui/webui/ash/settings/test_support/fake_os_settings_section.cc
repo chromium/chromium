@@ -7,8 +7,8 @@
 #include <optional>
 #include <sstream>
 
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/webui/settings/public/constants/routes.mojom-shared.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/experiences/settings_ui/resources/grit/ash_settings_strings.h"
 
 namespace ash::settings {

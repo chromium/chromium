@@ -40,8 +40,8 @@ static_library("test_support") {
   deps = [
     "//ash/constants",
     "//ash/public/cpp",
+    "//ash/strings",
     "//base/test:test_support",
-    "//chrome/app:generated_resources",
     "//chrome/browser:chrome_content_browser_client",
     "//chrome/browser/ui/webui/ash/settings",
     "//chrome/browser/ui/webui/ash/settings/constants",

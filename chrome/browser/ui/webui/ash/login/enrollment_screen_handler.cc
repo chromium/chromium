@@ -32,7 +32,6 @@
 #include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
-#include "chrome/grit/branded_strings.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/login/localized_values_builder.h"
 #include "components/policy/core/browser/cloud/message_util.h"
