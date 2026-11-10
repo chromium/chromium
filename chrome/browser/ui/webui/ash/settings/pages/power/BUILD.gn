@@ -26,6 +26,7 @@ static_library("power") {
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/common",
     "//chromeos/ash/components/dbus",
+    "//chromeos/ash/experiences/settings_ui/resources:strings",
     "//chromeos/dbus/power:power_manager_proto",
     "//components/prefs",
     "//content/public/browser",

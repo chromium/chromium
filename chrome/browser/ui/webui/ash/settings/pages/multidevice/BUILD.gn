@@ -43,6 +43,7 @@ static_library("multidevice") {
     "//chrome/common",
     "//chromeos/ash/components/multidevice/logging",
     "//chromeos/ash/components/osauth/public",
+    "//chromeos/ash/experiences/settings_ui/resources:strings",
     "//chromeos/ash/services/multidevice_setup/public/cpp:prefs",
     "//chromeos/ash/services/multidevice_setup/public/cpp:url_provider",
     "//chromeos/constants",

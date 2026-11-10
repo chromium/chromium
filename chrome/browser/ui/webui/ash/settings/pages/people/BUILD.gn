@@ -72,6 +72,7 @@ static_library("people") {
     "//chromeos/ash/components/signin:identity_manager_provider",
     "//chromeos/ash/components/sync:sync_service_provider",
     "//chromeos/ash/experiences/arc:arc_app_constants",
+    "//chromeos/ash/experiences/settings_ui/resources:strings",
     "//components/omnibox/common",
     "//components/services/app_service",
     "//components/signin/public/base",

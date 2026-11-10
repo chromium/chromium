@@ -20,6 +20,7 @@
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/signin/identity_manager_provider.h"
+#include "chromeos/ash/experiences/settings_ui/resources/grit/ash_settings_strings.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/google/core/common/google_util.h"
 #include "components/signin/public/identity_manager/identity_manager.h"

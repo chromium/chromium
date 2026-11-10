@@ -9,12 +9,6 @@
   <message name="IDS_SETTINGS_DEVICE_ON" desc="In Settings pages, the label when a bluetooth, wifi, or mobile device is on (enabled)." meaning="Device is enabled.">
     On
   </message>
-  <message name="IDS_SETTINGS_DONE_BUTTON" desc="Generic 'Done' label for buttons (normally for dialogs)">
-    Done
-  </message>
-  <message name="IDS_SETTINGS_CANCEL_BUTTON" desc="Generic 'Cancel' label for buttons (normally for dialogs)">
-    Cancel
-  </message>
   <message name="IDS_SETTINGS_DISMISS" desc="Label to dismiss a shortcut reminder.">
     Dismiss
   </message>
@@ -306,40 +300,6 @@
   <message name="IDS_OS_SETTINGS_ACCOUNTS_MENU_ITEM_DESCRIPTION" desc="Description text showing number of accounts. This string shows only when there is more than 1 account. Displayed in the menu item for the Accounts page.">
     <ph name="NUM_ACCOUNTS">$1<ex>2</ex></ph> accounts
   </message>
-  <message name="IDS_OS_SETTINGS_SYNC_TURN_ON" desc="Button label for turning on synchronization of settings across ChromeOS devices.">
-    Turn on
-  </message>
-  <message name="IDS_OS_SETTINGS_SYNC_TURN_OFF" desc="Button label for turning off synchronization of settings across ChromeOS devices.">
-    Turn off
-  </message>
-  <if expr="reven">
-    <message name="IDS_OS_SETTINGS_SYNC_FEATURE_LABEL" desc="Label describing the OS sync feature.">
-      Your apps and settings will sync across all ChromeOS Flex devices where you are signed in with your Google account. For browser sync options, go to <ph name="LINK_BEGIN">&lt;a href='#'&gt;</ph>Chrome settings<ph name="LINK_END">&lt;/a&gt;</ph>.
-    </message>
-    <message name="IDS_OS_SETTINGS_SYNC_FEATURE_LABEL_2" desc="Label describing the OS sync feature.">
-      Your apps and settings will sync across all ChromeOS Flex devices where you are signed in with your Google Account. To manage what browser data is saved in your Google Account, go to <ph name="LINK_BEGIN">&lt;a href='#'&gt;</ph>Chrome settings<ph name="LINK_END">&lt;/a&gt;</ph>.
-    </message>
-  </if>
-  <if expr="not reven">
-    <message name="IDS_OS_SETTINGS_SYNC_FEATURE_LABEL" desc="Label describing the OS sync feature.">
-      Your apps and settings will sync across all ChromeOS devices where you are signed in with your Google account. For browser sync options, go to <ph name="LINK_BEGIN">&lt;a href='#'&gt;</ph>Chrome settings<ph name="LINK_END">&lt;/a&gt;</ph>.
-    </message>
-    <message name="IDS_OS_SETTINGS_SYNC_FEATURE_LABEL_2" desc="Label describing the OS sync feature.">
-      Your apps and settings will sync across all ChromeOS devices where you are signed in with your Google Account. To manage what browser data is saved in your Google Account, go to <ph name="LINK_BEGIN">&lt;a href='#'&gt;</ph>Chrome settings<ph name="LINK_END">&lt;/a&gt;</ph>.
-    </message>
-  </if>
-  <message name="IDS_OS_SETTINGS_SYNC_APPS_CHECKBOX_LABEL" desc="Label for the checkbox which enables syncing of apps across devices.">
-    Apps
-  </message>
-  <message name="IDS_OS_SETTINGS_SYNC_SETTINGS_CHECKBOX_LABEL" desc="Label for the checkbox which enables syncing of OS settings across devices.">
-    Settings
-  </message>
-  <message name="IDS_OS_SETTINGS_WALLPAPER_CHECKBOX_LABEL" desc="Label for the checkbox which enables syncing of wallpaper across devices.">
-    Wallpaper
-  </message>
-  <message name="IDS_OS_SETTINGS_WIFI_CONFIGURATIONS_CHECKBOX_LABEL" desc="Label for the checkbox which enables syncing of Wi-Fi networks across devices.">
-    Wi-Fi networks
-  </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_SUBMENU_LABEL" desc="Label of Account Manager submenu in Settings page.">
     Google Accounts
   </message>
@@ -348,12 +308,6 @@
   </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_PAGE_TITLE_V2" desc="Title of Account Manager Settings page.">
     <ph name="NAME">$1<ex>John</ex></ph>'s accounts
-  </message>
-  <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_FINGERPRINT_SUBPAGE_TITLE" desc="Title of the fingerprint subpage.">
-    Fingerprint
-  </message>
-  <message name="IDS_SETTINGS_PEOPLE_MANAGE_OTHER_PEOPLE" desc="Label for the button that opens the multi-profile user manager.">
-    Manage other people
   </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_EDUCATION_ACCOUNT" desc="Status label which indicates that specified account is a school/EDU account.">
     School account
@@ -656,12 +610,6 @@
   </message>
   <message name="IDS_SETTINGS_DOWNLOADS_SHARE_ADDED_AUTH_FAILED_MESSAGE" desc="The message shown when mounting a new SMB share fails due to an authentication failure.">
     Error mounting share. Please check your credentials and try again.
-  </message>
-  <message name="IDS_SETTINGS_IN_SESSION_AUTH_ORIGIN_NAME_PROMPT" desc="Text shown in the auth dialog to indicate we are currently authenticating for ChromeOS settings">
-    <ph name="ORIGIN_NAME">$1<ex>Chrome</ex></ph> would like to confirm it's you
-  </message>
-  <message name="IDS_SETTINGS_IN_SESSION_AUTH_ORIGIN_NAME_PROMPT_LOCATION" desc="Location in text shown in the auth dialog to indicate we are currently authenticating for ChromeOS settings">
-    ChromeOS Settings
   </message>
   <message name="IDS_SETTINGS_DOWNLOADS_SHARE_ADDED_NOT_FOUND_MESSAGE" desc="The message shown when mounting a new SMB share fails because the share cannot be found.">
     Error mounting share. The specified share was not found on the network.
@@ -2151,9 +2099,6 @@
   <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_TITLE_LOCK" desc="Text on the people page which opens up the quick unlock subpage and the title of the quick unlock subpage.">
     Lock screen
   </message>
-  <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_TITLE_LOGIN_LOCK_V2" desc="Text on the people page which opens up the security and sign-in section.">
-    Lock screen and sign-in
-  </message>
   <message name="IDS_SETTINGS_PEOPLE_PASSWORD_PROMPT_ENTER_PASSWORD_LOCK" desc="Text above a password input field that tells the user they need to submit their password to configure these settings.">
     Enter your password to configure screen lock
   </message>
@@ -2592,21 +2537,6 @@
   <message name="IDS_SETTINGS_SET_DATE_TIME" desc="Label for the button that shows the dialog for setting the system date and time.">
     Set date and time
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_HUB_GEOLOCATION_DIALOG_TITLE" desc="Title for the dialog, that enables users to grant the system geolocation permission for system services. This pop-up is used in few places (e.g. Automatic Time Zone) to let users conveniently enable geolocation and make the underlying feature fucntional, without navigating to the settings page.">
-    Allow system services to use your location?
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_HUB_GEOLOCATION_DIALOG_BODY_PARAGRAPH1" desc="Description of the dialog that prompts the user to enable system geolocation access. This gives detailed explanation of the outcomes of enabling system geolocation access for system services.">
-    This allows system services to use Location Accuracy to determine your location. Location Accuracy uses information about wireless signals and sensors to estimate device location.
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_HUB_GEOLOCATION_DIALOG_BODY_PARAGRAPH2" desc="Description of the dialog that prompts the user to enable system geolocation access. This gives detailed explanation of the outcomes of enabling system geolocation access for system services.">
-    You can turn off location in Settings &gt; Privacy and security &gt; Privacy controls &gt; Location access. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_HUB_GEOLOCATION_DIALOG_CONFIRM_BUTTON" desc="Label of the confirm button for the geolocation dialog, that enables geolocation for ChromeOS system services.">
-    Allow
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_HUB_GEOLOCATION_DIALOG_CANCEL_BUTTON" desc="Label of the cancel button, that dismisses the geolocation dialog.">
-    Cancel
-  </message>
 
   <!-- Apps Section Page -->
   <!-- TODO(jamescook): Use device type instead of "Chromebook", which may
@@ -2697,314 +2627,6 @@
   </message>
   <message name="IDS_SETTINGS_STORAGE_ITEM_ENCRYPTION_AES_256" desc="In Device Settings > Storage, string for the algorithm used for storage encryption.">
     AES-256
-  </message>
-
-  <!-- Privacy Page -->
-  <message name="IDS_OS_SETTINGS_ENABLE_LOGGING_TOGGLE_TITLE" desc="The label of the checkbox to enable/disable crash and user metrics logging in ChromeOS.">
-    Send diagnostic and usage data
-  </message>
-  <message name="IDS_OS_SETTINGS_ENABLE_LOGGING_TOGGLE_DESCRIPTION" desc="The description of the checkbox to enable/disable crash and user metrics logging in ChromeOS for user of the device.">
-    Help improve Chrome and ChromeOS features and performance by automatically sending crash reports as well as diagnostic and usage data to Google.
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_TITLE" desc="Name of the privacy settings page.">
-    Privacy and security
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_MENU_ITEM_DESCRIPTION" desc="Description for the Privacy menu item in the left menu.">
-    Lock screen, controls
-  </message>
-  <message name="IDS_SETTINGS_ENABLE_CONTENT_PROTECTION_ATTESTATION" desc="description label for verified access about premium contents">
-    Enable Verified Access
-  </message>
-  <message name="IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_TOGGLE_TITLE" desc="The title of the toggle to enable/disable peripheral data access protection. Peripheral data access protection refers to the system (ChromeOS) preventing external peripherals (e.g. Thunderbolt docks) from accessing the device's memory.">
-    Block Thunderbolt or USB4 accessories from accessing and sharing memory (RAM)
-  </message>
-  <message name="IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_TOGGLE_DESCRIPTION" desc="The description of the toggle to enable/disable peripheral data access protection. Peripheral data access protection refers to the system (ChromeOS) preventing external peripherals (e.g. Thunderbolt docks) from accessing the device's memory.">
-    Some Thunderbolt or USB4 accessories need memory access to work properly.
-  </message>
-  <message name="IDS_OS_SETTINGS_DISABLE_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_TITLE" desc="The title of the dialog that asks users for confirmation that they indeed do want to disable Data Access Protection.">
-    Allow external accessories to access memory?
-  </message>
-  <message name="IDS_OS_SETTINGS_DISABLE_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_DESCRIPTION" desc="The description of the dialog that asks users for confirmation that they indeed do want to disable Data Access Protection.">
-    External accessories may be able to access or share personal data.
-  </message>
-  <message name="IDS_OS_SETTINGS_DISABLE_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_SUB_DESCRIPTION" desc="The description of the dialog that states that disabling peripheral data access protection may reset the user's peripherals and may take a few seconds.">
-    For this change to take effect, reconnect your external accessories.
-  </message>
-  <message name="IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_CANCEL_BUTTON_LABEL" desc="The label of the cancel button for the data access protection confirmation dialog">
-    Cancel
-  </message>
-  <message name="IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_ALLOW_BUTTON_LABEL" desc="The label of the confirmation button to disable data access protection">
-    Allow
-  </message>
-  <message name="IDS_OS_SETTINGS_SMART_PRIVACY_TITLE" desc="Text on the privacy page that opens up the smart privacy section.">
-    Screen privacy
-  </message>
-  <message name="IDS_OS_SETTINGS_SMART_PRIVACY_DESC" desc="The text explaining to the user the manner in which their presence is sensed and data usage policy.">
-    Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> uses a built-in sensor to detect people in front of your device. All data is processed on your device immediately and then deleted. Sensor data is never sent to Google. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
-  </message>
-  <message name="IDS_OS_SETTINGS_SMART_PRIVACY_QUICK_DIM_TITLE" desc="The name of the quick dim feature shown as the label of a toggle in the smart privacy subpage.">
-    Lock-on-leave
-  </message>
-  <message name="IDS_OS_SETTINGS_SMART_PRIVACY_QUICK_LOCK_LONG" desc="The name of the maximum value of the quick lock slider in the smart privacy subpage.">
-    Long
-  </message>
-    <message name="IDS_OS_SETTINGS_SMART_PRIVACY_QUICK_LOCK_SHORT" desc="The name of the minimum value of the quick lock slider in the smart privacy subpage.">
-    Short
-  </message>
-    <message name="IDS_OS_SETTINGS_SMART_PRIVACY_QUICK_LOCK_TITLE" desc="The text that shows the Time to lock for the quick lock slider in the smart privacy subpage.">
-    Time to lock
-  </message>
-  <message name="IDS_OS_SETTINGS_SMART_PRIVACY_QUICK_DIM_SUBTEXT" desc="Sub-label elaborating on the meaning of smart screen locking.">
-    If you move away from your device, your screen will lock automatically. When you're in front of your device, your screen will stay awake longer. If you aren't using a lock screen, your device will sleep instead of lock.
-  </message>
-  <message name="IDS_OS_SETTINGS_SMART_PRIVACY_SNOOPING_TITLE" desc="Text in the smart privacy section which is the subheader for snooping protection options.">
-    Viewing protection (Beta)
-  </message>
-  <message name="IDS_OS_SETTINGS_SMART_PRIVACY_SNOOPING_SUBTEXT" desc="Sub-label elaborating on the meaning of snooping protection.">
-    When someone else looks at your screen, show the Privacy eye icon on the bottom right of your screen
-  </message>
-  <message name="IDS_OS_SETTINGS_SMART_PRIVACY_SNOOPING_NOTIFICATIONS" desc="Text for the name of the toggle in the smart privacy section requesting notification hiding when a snooper is detected.">
-    Hide notification content when someone else is detected
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_TITLE" desc="Text on the privacy page that opens up the privacy hub section.">
-    Privacy controls
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SUBTEXT" desc="Sub-label elaborating on the contents of the Privacy controls(aka Privacy Hub) os-settings page.">
-    Manage your privacy by controlling access to microphone, camera, and more
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_CAMERA_TOGGLE_TITLE" desc="The title of the toggle to enable/disable camera from the privacy hub.">
-    Camera access
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_PAGE_CAMERA_ROW_SUBTEXT" desc="Sub-label for the camera access row in the Privacy controls (aka Privacy Hub) os-settings page when camera access is allowed.">
-    Apps and websites with the camera permission, as well as system services, can use your camera
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_PAGE_CAMERA_ROW_FALLBACK_SUBTEXT" desc="Sub-label for the camera access row in the Privacy controls (aka Privacy Hub) os-settings page when camera access is enabled and also the camera led fallback mechanism is enabled.">
-    Apps and websites with the camera permission, as well as system services, can use your camera. To use the camera, you may need to restart the app or refresh the page.
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_CAMERA_SUBPAGE_CAMERA_TOGGLE_SUBTEXT" desc="Sub-label for the camera access toggle in the privacy hub camera subpage when camera access is allowed.">
-    Camera access is allowed for apps, websites with the camera permission, and system services
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_CAMERA_SUBPAGE_CAMERA_TOGGLE_FALLBACK_SUBTEXT" desc="Sub-label for the camera access toggle in the privacy hub camera subpage when camera access is allowed and also the camera led fallback mechanism is enabled.">
-    Camera access is allowed for apps, websites with the camera permission, and system services. To use the camera, you may need to restart the app or refresh the page.
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_CAMERA_ACCESS_BLOCKED_TEXT" desc="The text displayed as a sublabel in the privacy hub page and in the camera subpage when camera access is disabled.">
-    Camera access is blocked
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MICROPHONE_TOGGLE_TITLE" desc="The title of the toggle to enable/disable microphone from the privacy hub.">
-    Microphone access
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_PAGE_MICROPHONE_ROW_SUBTEXT" desc="Sub-label for the microphone access row in the Privacy controls (aka Privacy Hub) os-settings page when microphone access is allowed.">
-    Apps and websites with the microphone permission, as well as system services, can use your microphone
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MICROPHONE_SUBPAGE_MICROPHONE_TOGGLE_SUBTEXT" desc="Sub-label for the microphone access toggle in the privacy hub microphone subpage when microphone access is allowed.">
-    Microphone access is allowed for apps, websites with the microphone permission, and system services
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MICROPHONE_ACCESS_BLOCKED_TEXT" desc="The text displayed as a sublabel in the privacy hub page and in the microphone subpage when microphone access is disabled.">
-    Microphone access is blocked
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_CAMERA_CONNECTED_TEXT" desc="Text to display in the Privacy Hub subpage when no camera is connected to the device.">
-    No camera
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_MICROPHONE_CONNECTED_TEXT" desc="Text to display in the Privacy Hub subpage when no microphone is connected to the device.">
-    No microphone
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_HW_MICROPHONE_TOGGLE_TOOLTIP" desc="Tooltip to display in the Privacy Hub subpage when the hardware microphone switch is engaged.">
-    To turn on microphone access, turn on the physical microphone switch on your device
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SPEAK_ON_MUTE_DETECTION_TOGGLE_TITLE" desc="The title of the toggle to enable/disable microphone from the privacy hub.">
-    Mute nudge
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SPEAK_ON_MUTE_DETECTION_TOGGLE_SUBTEXT" desc="Sub-label for the microphone access toggle in the Privacy controls (aka Privacy Hub) os-settings page.">
-    You'll get notified if you talk while your mic is muted when using certain apps, like video chat apps. Audio never leaves your device.
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_AREA_TITLE" desc="The title of the geolocation row under the Privacy controls (aka Privacy Hub) os-settings page.">
-    Location access
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_AREA_ALLOWED_SUBTEXT" desc="The subtext of the geolocation row under the Privacy controls (aka Privacy Hub) os-settings page. Shown when the system geolocation state is allowed, explaining how the system is affected.">
-    Apps and websites with the location permission, as well as system services, can use your location
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_AREA_ONLY_ALLOWED_FOR_SYSTEM_SUBTEXT" desc="The subtext of the geolocation row under the Privacy controls (aka Privacy Hub) os-settings page. Shown when the system geolocation state is only-allowed-for-system, explaining how the system is affected.">
-    Only system services can use your location
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_AREA_DISALLOWED_SUBTEXT" desc="The subtext of the geolocation row under the Privacy controls (aka Privacy Hub) os-settings page. Shown when the system geolocation state is blocked, explaining how the system is affected.">
-    Location access is blocked
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_ACCESS_LEVEL_ALLOWED" desc="In Geolocation setting subpage (under Privacy Controls), shows the current state of system geolocation access. ">
-    Allowed
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_ACCESS_LEVEL_ONLY_ALLOWED_FOR_SYSTEM" desc="In Geolocation setting subpage (under Privacy Controls), shows the current state of system geolocation access.">
-    Only allowed for system services
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_ACCESS_LEVEL_DISALLOWED" desc="In Geolocation setting subpage (under Privacy Controls), shows the current state of system geolocation access.">
-    Off
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_CHANGE_ACCESS_BUTTON_TEXT" desc="In Geolocation setting subpage (under Privacy Controls) the name of the button to launch a dialog where users can choose the system geolocation access level. ">
-    Change access
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_ACCESS_LEVEL_DESCRIPTION_ALLOWED" desc="In Geolocation setting subpage (under Privacy Controls). The description of the 'Allow' radio-button when user launches the dialog to change the system geolocation state.">
-    Apps, websites, and system services can use your location
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_ACCESS_LEVEL_DESCRIPTION_ONLY_ALLOWED_FOR_SYSTEM" desc="In Geolocation setting subpage (under Privacy Controls). The description of the 'Only allowed for system services' radio-button when user launches the dialog to change the system geolocation state.">
-    Your location may still be visible to apps and websites through your IP address
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_ACCESS_LEVEL_DESCRIPTION_DISALLOWED" desc="In Geolocation setting subpage (under Privacy Controls). The description of the 'Off' radio-button when user launches the dialog to change the system geolocation state.">
-    Your location may still be visible to apps and websites through your IP address
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_ACCESS_LEVEL_DIALOG_DESCRIPTION_ALLOWED" desc="In Geolocation setting subpage (under Privacy Controls), Dropdown list item to set system-wide geolocation access level. ">
-    Apps and websites with the location permission, as well as system services, can use your location <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_ACCESS_LEVEL_DIALOG_DESCRIPTION_ONLY_ALLOWED_FOR_SYSTEM" desc="In Geolocation setting subpage (under Privacy Controls), Dropdown list item to set system-wide geolocation access level. Blocks access to all clients but system-services (such as PWAs or Android apps).">
-    Only system services can use your location. However, your location may still be visible to apps and websites through your IP address. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_ACCESS_LEVEL_DIALOG_DESCRIPTION_DISALLOWED" desc="In Geolocation setting subpage (under Privacy Controls), Dropdown list item to set system-wide geolocation access level. Blocks geolocation access to every geolocation client (including system services).">
-    Nothing can use your location. However, your location may still be visible to apps and websites through your IP address. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_ACCURACY_TOGGLE_TEXT" desc="In Geolocation setting advance subpage (under Privacy Controls), text description for the toggle settings that controls location accuracy toggle.">
-    Location Accuracy provides more accurate location for apps and services. To do this, Google periodically processes information about device sensors and wireless signals from your device to crowdsource wireless signal locations. These are used without identifying you to improve location accuracy and location-based services and to generally improve, provide, and maintain Google's services based on Google's and third parties' legitimate interests to serve users' needs.
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_ACCURACY_TOGGLE_TITLE" desc="In Geolocation setting advance subpage (under Privacy Controls), title displayed for the toggle to control location accuracy toggle.">
-    Location Accuracy (Android only)
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_ADVANCED_AREA_TITLE" desc="The title of the advanced location settings page.">
-    Advanced location settings
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_PRIMARY_USER_CONTROLLED" desc="Text to show when the geolocation setting is controlled by the primary user.">
-    This setting is controlled by <ph name="USER_EMAIL">$1<ex>joe@gmail.com</ex></ph>.
-  </message>
-  <message name="IDS_OS_SETTINGS_HW_DATA_USAGE_TOGGLE_TITLE" desc="The label of the checkbox to enable/disable device hardware data collection and usage in ChromeOS Flex.">
-    <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph> hardware support and stability
-  </message>
-  <message name="IDS_OS_SETTINGS_HW_DATA_USAGE_TOGGLE_DESC" desc="The description of the checkbox to enable/disable device hardware data collection and usage in ChromeOS Flex.">
-    Let Google use your hardware data to help improve <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph>. If you decline, this data is still sent to Google to determine proper updates, but is not stored or used otherwise.
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_WEBSITES_SECTION_TITLE" desc="The title of the Websites section of the privacy hub sensor subpages.">
-    Websites
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MANAGE_CAMERA_PERMISSIONS_IN_CHROME_TEXT" desc="The label of the Chrome row in the Websites section of the camera subpage. This row is displayed when camera is allowed.">
-    Manage website camera permissions in Chrome
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MANAGE_MIC_PERMISSIONS_IN_CHROME_TEXT" desc="The label of the Chrome row in the Websites section of the microphone subpage. This row is displayed when microphone is allowed.">
-    Manage website microphone permissions in Chrome
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MANAGE_LOCATION_PERMISSIONS_IN_CHROME_TEXT" desc="The label of the Chrome row in the Websites section of the location subpage. This row is displayed when location is allowed.">
-    Manage website location permissions in Chrome
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_WEBSITE_CAN_USE_CAMERA_TEXT" desc="The text displayed in the Websites section of the camera subpage when camera is not allowed.">
-    Websites are not allowed to use your camera
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_WEBSITE_CAN_USE_MIC_TEXT" desc="The text displayed in the Websites section of the microphone subpage when microphone is not allowed.">
-    Websites are not allowed to use your microphone
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_WEBSITE_CAN_USE_LOCATION_TEXT" desc="The text displayed in the Websites section of the location subpage when location is not allowed for websites.">
-    Websites are not allowed to use your location
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_APPS_SECTION_TITLE" desc="The title of the Apps section of the privacy hub sensor subpages.">
-    Apps
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_APP_CAN_USE_CAMERA_TEXT" desc="The text displayed in the Apps section of the camera subpage when camera is not allowed.">
-    Apps are not allowed to use your camera
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_APP_CAN_USE_MIC_TEXT" desc="The text displayed in the Apps section of the microphone subpage when microphone is not allowed.">
-    Apps are not allowed to use your microphone
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_APP_CAN_USE_LOCATION_TEXT" desc="The text displayed in the Apps section of the location subpage when location is not allowed.">
-    Apps are not allowed to use your location
-  </message>
-  <message name="IDS_OS_SETTINGS_SECURE_DNS_TITLE" desc="Text for secure DNS toggle in Privacy options for ChromeOS">
-    Use secure connections to look up sites
-  </message>
-  <message name="IDS_OS_SETTINGS_SECURE_DNS_DESCRIPTION" desc="Description of secure DNS in Privacy options">
-    Make it harder for people with access to your internet traffic to see which sites you visit. <ph name="PRODUCT_NAME">$1<ex>ChromeOS</ex></ph> uses a secure connection to look up a site's IP address in the DNS (Domain Name System).
-  </message>
-  <message name="IDS_OS_SETTINGS_SECURE_DNS_AUTOMATIC_MODE_DESCRIPTION" desc="Text of the select option that puts secure DNS in Network Default mode">
-    Network default
-  </message>
-  <message name="IDS_OS_SETTINGS_SECURE_DNS_NETWORK_DEFAULT_MODE_DESCRIPTION" desc="Description when the user selects Network Default resolver from DNS dropdown menu">
-    Secure connections might not always be available when using the network default. Consider selecting a different provider to ensure you're always using a secure connection.
-  </message>
-  <message name="IDS_OS_SETTINGS_SECURE_DNS_WITH_DOMAIN_CONFIG_DESCRIPTION" desc="Description of secure DNS in Privacy options when included or excluded domains configuration is set">
-    Make it harder for people with access to your internet traffic to see which sites you visit. <ph name="PRODUCT_NAME">$1<ex>ChromeOS</ex></ph> uses a secure connection to look up a site's IP address in the DNS (Domain Name System). Secure connections are not used for some domains configured by your administrator.
-  </message>
-  <message name="IDS_OS_SETTINGS_SECURE_DNS_WITH_IDENTIFIERS_AND_DOMAIN_CONFIG_DESCRIPTION" desc="Description of secure DNS in Privacy options when DoH identifiers and included or excluded domains configuration is set">
-    Use a secure connection to look up a site’s IP address in the DNS (Domain Name System). This uses a managed service provider at <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER">$1<ex>https://dns.example.net/dns-query{?dns}</ex></ph>. Secure connections are not used for some domains configured by your administrator.
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_SECTION_TITLE" desc="The title of the System services section of the privacy hub sensor subpages.">
-    System services
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_GEOLOCATION_NOT_CONFIGURED" desc="The sub-label displayed in the rows of the System services section of the privacy hub geolocation subpage, when the respective feature is not configured to use geolocation service (e.g. time zone is selected from the static list, not set to be resolved automatically)">
-    Manually set, not using location
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_ALLOWED_TEXT" desc="The sub-label displayed in the rows of the System services section of the privacy hub sensor subpages when sensor access is allowed.">
-    Allowed
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_BLOCKED_TEXT" desc="The sub-label displayed in the rows of the System services section of the privacy hub sensor subpages when sensor access is not allowed.">
-    Blocked
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SENSOR_NAME_WITH_BLOCKED_SUFFIX" desc="The text displayed in the rows of the sensor (camera or microphone) list when the sensor access is blocked.">
-    <ph name="SENSOR_NAME">$1<ex>Front Camera</ex></ph> (blocked)
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_CAMERA_APP_PERMISSION_ROW_ARIA_LABEL" desc="ARIA (accessibility) label describing the action button (toggle button or external link button or managed icon) in the app permission rows of the privacy hub camera subpage.">
-    <ph name="APP_NAME">$1<ex>Google Meet</ex></ph> camera permission
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_LOCATION_APP_PERMISSION_ROW_ARIA_LABEL" desc="ARIA (accessibility) label describing the action button (toggle button or external link button or managed icon) in the app permission rows of the privacy hub location subpage.">
-    <ph name="APP_NAME">$1<ex>Google Meet</ex></ph> location permission
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MICROPHONE_APP_PERMISSION_ROW_ARIA_LABEL" desc="ARIA (accessibility) label describing the action button (toggle button or external link button or managed icon) in the app permission rows of the privacy hub microphone subpage.">
-    <ph name="APP_NAME">$1<ex>Google Meet</ex></ph> microphone permission
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_APP_PERMISSION_ROW_ARIA_DESCRIPTION" desc="ARIA (accessibility) description describing the action buttons (toggle button or managed icon) in the app permission rows of the privacy hub subpages.">
-    Permission is <ph name="PERMISSION_STATE">$1<ex>Ask every time</ex></ph>
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_APP_PERMISSION_ROW_ANDROID_SETTINGS_LINK_ARIA_DESCRIPTION" desc="ARIA (accessibility) description describing the android settings link in the app permission rows of the privacy hub subpages.">
-    Opens in new tab, Permission is <ph name="PERMISSION_STATE">$1<ex>Ask every time</ex></ph>
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_AUTOMATIC_TIME_ZONE_BLOCKED_TEXT" desc="The sub-label displayed in the 'Automatic time zone' in the System services section of the privacy hub 'Location access' subpage when location access is not allowed.">
-    Blocked. Time zone is currently set to <ph name="TIMEZONE">$1<ex>(UTC-X:XX)</ex></ph> and can only be updated manually.
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_SUNSET_SCHEDULE_BLOCKED_TEXT" desc="The sub-label displayed in the 'Sunset schedule' in the System services section of the privacy hub 'Location access' subpage when location access is not allowed.">
-    Blocked. Schedule is currently set to <ph name="SUNRISE_TIME">$1<ex>6am</ex></ph> - <ph name="SUNSET_TIME">$2<ex>6pm</ex></ph> and can only be updated manually.
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_AUTOMATIC_TIME_ZONE_NAME" desc="The name label of the 'Automatic time zone' service displayed in the System services section of the privacy hub 'Location access' subpage.">
-    Automatic time zone
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_SUNSET_SCHEDULE_NAME" desc="The name label of the 'Sunset schedule' service displayed in the System services section of the privacy hub 'Location access' subpage.">
-    Automatic sunset schedule
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_LOCAL_WEATHER_NAME" desc="The name label of the 'Local weather' service displayed in the System services section of the privacy hub 'Location access' subpage.">
-    Local weather
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_DARK_THEME_NAME" desc="The name label of the 'Wallpaper Dark Mode' service displayed in the System services section of the privacy hub 'Location access' subpage.">
-    Automatic light/dark theme
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_CAMERA_TOGGLE_NO_CAMERA_CONNECTED_TOOLTIP_TEXT" desc="Text displayed in the privacy hub subpage camera toggle button tooltip when no camera is connected to the device.">
-    No camera connected
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MICROPHONE_TOGGLE_NO_MICROPHONE_CONNECTED_TOOLTIP_TEXT" desc="Text displayed in the privacy hub subpage microphone toggle button tooltip when no microphone is connected to the device.">
-    No microphone connected
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_ALLOW_CAMERA_ACCESS_DIALOG_TITLE" desc="The title of the dialog that asks users to enable system wide camera access.">
-    Turn on camera access?
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_ALLOW_LOCATION_ACCESS_DIALOG_TITLE" desc="The title of the dialog that asks users to enable system wide location access.">
-    Turn on location access?
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_ALLOW_MICROPHONE_ACCESS_DIALOG_TITLE" desc="The title of the dialog that asks users to enable system wide microphone access.">
-    Turn on microphone access?
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_ALLOW_CAMERA_ACCESS_DIALOG_BODY_TEXT" desc="The text displayed on the body of the dialog that asks users to enable system wide camera access.">
-    This allows camera access for apps, websites with the camera permission, and system services
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_ALLOW_LOCATION_ACCESS_DIALOG_BODY_TEXT" desc="The text displayed on the body of the dialog that asks users to enable system wide location access.">
-    This allows location access for apps, websites with the location permission, and system services
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_ALLOW_MICROPHONE_ACCESS_DIALOG_BODY_TEXT" desc="The text displayed on the body of the dialog that asks users to enable system wide microphone access.">
-    This allows microphone access for apps, websites with the microphone permission, and system services
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_DIALOG_CONFIRM_BUTTON_LABEL" desc="Label of the confirm button for the allow sensor access dialog.">
-    Allow
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_DIALOG_CANCEL_BUTTON_LABEL" desc="Label of the cancel button for the allow sensor access dialog.">
-    Cancel
   </message>
 
   <!-- Startup (OS settings) -->
