@@ -345,12 +345,12 @@
   {
     "name": "android-app-integration-module",
     "owners": ["hanxi@chromium.org", "gangwu@chromium.org", "clank-start@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "android-app-integration-multi-data-source",
     "owners": ["hanxi@chromium.org", "gangwu@chromium.org", "clank-start@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "android-app-rating-prompt",
@@ -518,7 +518,7 @@
   {
     "name": "android-multiprofile-startup-data",
     "owners": [ "hanxi@google.com", "clank-start@google.com" ],
-    "expiry_milestone": 165
+    "expiry_milestone": 175
   },
   {
     "name": "android-navigation-blur-transition-animation",
@@ -3212,7 +3212,7 @@
   {
     "name": "disable-partner-homepage-android",
     "owners": [ "ckitagawa@chromium.org", "clank-tab-dev@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "disable-process-reuse",
@@ -4552,7 +4552,7 @@
   {
     "name": "enable-segmentation-platform-android-home-module-ranker-v2",
     "owners": ["ritikagup@google.com",  "hanxi@chromium.org", "clank-start@chromium.org" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "enable-segmentation-platform-ephemeral_card_ranker",
@@ -7260,7 +7260,7 @@
   {
     "name": "ntp-aurora-v2",
     "owners": ["yanlinghu@google.com", "hanxi@chromium.org", "clank-start@google.com"],
-    "expiry_milestone": 161
+    "expiry_milestone": 170
   },
   {
     "name": "ntp-background-downsample-image",
@@ -7356,7 +7356,7 @@
   {
     "name": "ntp-mvc-refactor",
     "owners": ["hanxi@google.com", "yanlinghu@google.com", "clank-start@google.com"],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "ntp-mvt-in-bottom-sheet",
