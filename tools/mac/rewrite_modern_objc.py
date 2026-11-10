@@ -8,9 +8,10 @@ Does the same as Xcode's Edit->Convert->To Modern Objective-C Syntax.
 
 Note that this just runs compile commands and doesn't look at build
 dependencies, i.e. it doesn't make sure generated headers exist.  It also
-requires reclient to be disabled.  Suggested workflow: Build the target you want
-to convert locally with reclient to create generated headers, then disable
-reclient, re-run gn, and then run this script.
+requires remote execution to be disabled.  Suggested workflow: Build the target
+you want to convert locally with remote execution to create generated headers,
+then disable remote execution (use_remoteexec=false), re-run gn, and then run
+this script.
 
 Since Chrome's clang disables the rewriter, to run this you will need to
 build ToT clang with `-DCLANG_ENABLE_ARCMT` and (temporarily) add the following

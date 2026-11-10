@@ -172,7 +172,7 @@ def main():
     gn_args = [
         arg
         for arg in gn_args
-        if not re.search(r'use_(remoteexec|reclient|siso)\s*=.*', arg)
+        if not re.search(r'use_(remoteexec|siso)\s*=.*', arg)
     ]
     # make sure it doesn't use remoteexec
     gn_args.append('use_remoteexec = false')

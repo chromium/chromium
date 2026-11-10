@@ -52,7 +52,7 @@ target_cpu = "arm64"
 system_webview_package_name = "..."
 
 # Optional: speeds up build time. For instructions, refer to
-# https://chromium.googlesource.com/chromium/src/+/main/docs/linux/build_instructions.md#use-reclient
+# https://chromium.googlesource.com/chromium/src/+/main/docs/linux/build_instructions.md#use-remote-execution
 use_remoteexec = true
 ```
 

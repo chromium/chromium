@@ -1273,7 +1273,7 @@ def _ParseCommandArguments():
     type=int,
     default=None,
     help='Run N jobs to build in parallel. If not specified, a default value '
-    'will be derived based on CPUs and reclient/siso availability. Please '
+    'will be derived based on CPUs and siso/remote execution availability. Please '
     'refer to \'autoninja -h\' for more details.',
   )
 
