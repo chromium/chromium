@@ -2229,16 +2229,6 @@ Called by update_net_error_codes.py.-->
 
 <!-- LINT.ThenChange(//ash/system/eche/eche_tray.h:ConnectionFailReason) -->
 
-<enum name="ConnectivityDetectorConnectionState">
-  <int value="0" label="Initial state or connection state can't be evaluated"/>
-  <int value="1" label="The network is disconnected"/>
-  <int value="2"
-      label="The network is connected, but it can't reach the Internet"/>
-  <int value="3"
-      label="The network is connected, but capitive portal is detected"/>
-  <int value="4" label="The network is validated"/>
-</enum>
-
 <enum name="ContentIndexCategory">
   <summary>
     The type of a Content Index entry. Corresponds to

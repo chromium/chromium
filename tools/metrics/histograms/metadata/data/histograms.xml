@@ -22,21 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="ConnectivityDetector.ConnectionState.{Client}"
-    enum="ConnectivityDetectorConnectionState" expires_after="2023-04-20">
-  <owner>curranmax@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
-  <owner>jianli@chromium.org</owner>
-  <summary>
-    Result of the connection state after the HTTP Probe made by connectivity
-    detector finishes and the connection state is updated.
-  </summary>
-  <token key="Client">
-    <variant name="OfflineDetector"/>
-    <variant name="OfflineIndicatorController"/>
-  </token>
-</histogram>
-
 <histogram name="DataUse.BytesReceived3.Delegate" units="bytes"
     expires_after="2026-11-15">
   <owner>curranmax@chromium.org</owner>

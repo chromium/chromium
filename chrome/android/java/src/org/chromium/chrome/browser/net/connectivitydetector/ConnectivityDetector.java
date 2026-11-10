@@ -18,7 +18,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -72,8 +71,6 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
         // The network is connected to Internet and validated. If the connected network imposes
         // capitive portal, the user has already signed into it.
         int VALIDATED = 4;
-        // Count.
-        int RESULT_COUNT = 5;
     }
 
     // Denotes how the connectivity check is done.
@@ -244,9 +241,6 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
 
     private final Delegate mDelegate;
 
-    // Name of the client used for recording histograms.
-    private final String mClientName;
-
     private @ConnectionType int mConnectionType = ConnectionType.CONNECTION_UNKNOWN;
     private @ConnectionState int mConnectionState = ConnectionState.NONE;
 
@@ -258,9 +252,8 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
     private final Handler mHandler;
     private @Nullable Runnable mRunnable;
 
-    public ConnectivityDetector(Observer observer, String clientName) {
+    public ConnectivityDetector(Observer observer) {
         mObserver = observer;
-        mClientName = clientName;
         mDelegate = sDelegateForTesting != null ? sDelegateForTesting : new DelegateImpl();
         mHandler = new Handler();
         NetworkChangeNotifier.addConnectionTypeObserver(this);
@@ -370,10 +363,6 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
                         if (mConnectionType == ConnectionType.CONNECTION_NONE) return;
 
                         updateConnectionStatePerProbeResult(result);
-                        RecordHistogram.recordEnumeratedHistogram(
-                                "ConnectivityDetector.ConnectionState." + mClientName,
-                                mConnectionState,
-                                ConnectionState.RESULT_COUNT);
                         processConnectivityCheckResult();
                     });
         }
