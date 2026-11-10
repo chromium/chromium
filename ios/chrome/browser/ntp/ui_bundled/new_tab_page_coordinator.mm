@@ -14,6 +14,7 @@
 #import "base/time/time.h"
 #import "components/contextual_search/contextual_search_service.h"
 #import "components/contextual_search/contextual_search_session_handle.h"
+#import "components/contextual_search/footprints/public/drive_disclaimer_controller.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
@@ -943,8 +944,7 @@
          templateURLService:self.templateURLService
               sessionHandle:_contextualSearchSession.get()
                  entrypoint:ComposeboxEntrypoint::kOther
-                isIncognito:profile->IsOffTheRecord()
-           urlLoaderFactory:_sharedURLLoaderFactory];
+                isIncognito:profile->IsOffTheRecord()];
 }
 
 #pragma mark - Configurators
@@ -2731,7 +2731,8 @@
     // Builds the picker presenter.
     _composeboxPickerPresenter = [[ComposeboxPickerPresenter alloc]
         initWithBaseViewController:self.baseViewController
-                           browser:self.browser];
+                           browser:self.browser
+         driveDisclaimerController:nullptr];
     _composeboxPickerPresenter.delegate = self;
 
     [_composeboxPickerPresenter presentGalleryPickerWithLimit:attachmentLimit];

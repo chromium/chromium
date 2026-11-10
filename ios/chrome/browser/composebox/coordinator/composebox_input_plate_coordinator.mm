@@ -15,6 +15,7 @@
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/contextual_search/contextual_search_service.h"
 #import "components/contextual_search/contextual_search_session_handle.h"
+#import "components/contextual_search/footprints/public/drive_disclaimer_controller.h"
 #import "components/contextual_search/internal/ios/composebox_query_controller_ios.h"
 #import "components/lens/lens_features.h"
 #import "components/lens/lens_overlay_invocation_source.h"
@@ -39,6 +40,7 @@
 #import "ios/chrome/browser/composebox/public/composebox_theme.h"
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_attachment_diff.h"
+#import "ios/chrome/browser/composebox/shared/coordinator/composebox_drive_disclaimer_util.h"
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_drive_result.h"
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_presenter.h"
 #import "ios/chrome/browser/composebox/shared/metrics/composebox_metrics_recorder.h"
@@ -204,7 +206,9 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
   _viewController.delegate = self;
   _pickerPresenter = [[ComposeboxPickerPresenter alloc]
       initWithBaseViewController:_viewController
-                         browser:self.browser];
+                         browser:self.browser
+       driveDisclaimerController:composebox::CreateDriveDisclaimerController(
+                                     self.browser)];
   _pickerPresenter.delegate = self;
   _pickerPresenter.dataSource = self;
   _pickerPresenter.metricsRecorder = _metricsRecorder;

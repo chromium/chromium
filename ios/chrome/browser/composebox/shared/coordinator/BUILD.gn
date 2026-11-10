@@ -2,6 +2,8 @@ source_set("coordinator") {
   sources = [
     "composebox_attachment_diff.h",
     "composebox_attachment_diff.mm",
+    "composebox_drive_disclaimer_util.h",
+    "composebox_drive_disclaimer_util.mm",
     "composebox_picker_drive_result.h",
     "composebox_picker_drive_result.mm",
     "composebox_picker_image_result.h",
@@ -11,11 +13,11 @@ source_set("coordinator") {
   ]
   deps = [
     "//base",
-    "//components/contextual_search:prefs",
     "//components/contextual_search:public",
+    "//components/contextual_search/footprints/internal",
     "//components/lens",
     "//components/omnibox/common",
-    "//components/prefs",
+    "//components/signin/public/identity_manager",
     "//ios/chrome/browser/composebox/public:attachment_selection",
     "//ios/chrome/browser/composebox/public:input_item_source",
     "//ios/chrome/browser/composebox/shared/metrics",
@@ -23,6 +25,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:system_identity",
@@ -30,8 +33,12 @@ source_set("coordinator") {
     "//ios/chrome/browser/tabs/model",
     "//ios/public/provider/chrome/browser/privacy_primitive:privacy_primitive_api",
     "//net",
+    "//services/network/public/cpp",
   ]
-  public_deps = [ "//ios/web/public" ]
+  public_deps = [
+    "//components/contextual_search/footprints/public",
+    "//ios/web/public",
+  ]
 }
 
 source_set("unit_tests") {
@@ -40,10 +47,9 @@ source_set("unit_tests") {
   deps = [
     ":coordinator",
     "//base/test:test_support",
-    "//components/contextual_search:prefs",
     "//components/contextual_search:public",
+    "//components/contextual_search/footprints/public",
     "//components/omnibox/common",
-    "//components/prefs",
     "//ios/chrome/browser/composebox/public:attachment_selection",
     "//ios/chrome/browser/composebox/public:entrypoint",
     "//ios/chrome/browser/composebox/shared/metrics",

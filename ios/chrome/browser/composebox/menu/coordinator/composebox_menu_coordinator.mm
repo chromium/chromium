@@ -13,6 +13,7 @@
 #import "base/unguessable_token.h"
 #import "components/contextual_search/contextual_search_service.h"
 #import "components/contextual_search/contextual_search_session_handle.h"
+#import "components/contextual_search/footprints/public/drive_disclaimer_controller.h"
 #import "components/contextual_tasks/public/features.h"
 #import "components/omnibox/browser/aim_eligibility_service.h"
 #import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h"
@@ -26,6 +27,7 @@
 #import "ios/chrome/browser/composebox/public/composebox_attachment_selection.h"
 #import "ios/chrome/browser/composebox/public/composebox_focus_params.h"
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_attachment_diff.h"
+#import "ios/chrome/browser/composebox/shared/coordinator/composebox_drive_disclaimer_util.h"
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_drive_result.h"
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_presenter.h"
 #import "ios/chrome/browser/composebox/shared/metrics/composebox_metrics_recorder.h"
@@ -168,8 +170,7 @@ CGFloat const kSheetPresentationCornerRadius = 38.0f;
            templateURLService:templateURLService
                 sessionHandle:_sessionHandle.get()
                    entrypoint:_entrypoint
-                  isIncognito:profile->IsOffTheRecord()
-             urlLoaderFactory:profile->GetSharedURLLoaderFactory()];
+                  isIncognito:profile->IsOffTheRecord()];
     _stateManager.delegate = self;
     _stateManager.metricsRecorder = _metricsRecorder;
 
@@ -620,11 +621,16 @@ CGFloat const kSheetPresentationCornerRadius = 38.0f;
 
 // Builds the picker presenter.
 - (void)createPickerPresenter {
+  if (!self.browser) {
+    return;
+  }
   UIViewController* baseViewController =
       _viewController ?: self.baseViewController;
   _pickerPresenter = [[ComposeboxPickerPresenter alloc]
       initWithBaseViewController:baseViewController
-                         browser:self.browser];
+                         browser:self.browser
+       driveDisclaimerController:composebox::CreateDriveDisclaimerController(
+                                     self.browser)];
   _pickerPresenter.delegate = self;
   _pickerPresenter.dataSource = self;
   _pickerPresenter.metricsRecorder = _metricsRecorder;

@@ -7,14 +7,17 @@
 #import <PhotosUI/PhotosUI.h>
 #import <UIKit/UIKit.h>
 
+#import <memory>
 #import <optional>
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/contextual_search/footprints/public/drive_disclaimer_controller.h"
+#import "components/contextual_search/footprints/public/fpop_service.h"
+#import "components/contextual_search/footprints/public/proto/footprints_oneplatform.pb.h"
 #import "components/contextual_search/input_state_model.h"
-#import "components/contextual_search/pref_names.h"
 #import "components/omnibox/common/omnibox_features.h"
-#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/composebox/public/composebox_attachment_selection.h"
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
 #import "ios/chrome/browser/composebox/shared/metrics/composebox_metrics_recorder.h"
@@ -27,6 +30,7 @@
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_picker_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -43,6 +47,76 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "url/gurl.h"
+
+namespace {
+
+// Fake `FpopService` implementation that allows tests to control the
+// `ShouldShowMobileConsentFlow` eligibility result and optionally defer
+// completion to test in-flight state.
+class FakeFpopService : public contextual_search::FpopService {
+ public:
+  using ShouldShowMobileConsentFlowCallback = base::OnceCallback<void(
+      bool,
+      const footprints::oneplatform::ShouldShowMobileConsentFlowResponse&)>;
+
+  void GetFacs(const footprints::oneplatform::GetFacsRequest& request,
+               base::OnceCallback<
+                   void(bool, const footprints::oneplatform::GetFacsResponse&)>
+                   callback) override {}
+
+  void UpdateActivityControlsSettings(
+      const footprints::oneplatform::UpdateActivityControlsSettingsRequest&
+          request,
+      base::OnceCallback<void(bool,
+                              const footprints::oneplatform::
+                                  UpdateActivityControlsSettingsResponse&)>
+          callback) override {}
+
+  void ShouldShowMobileConsentFlow(
+      const footprints::oneplatform::ShouldShowMobileConsentFlowRequest&
+          request,
+      ShouldShowMobileConsentFlowCallback callback) override {
+    ++call_count_;
+    if (defer_response_) {
+      pending_callback_ = std::move(callback);
+      return;
+    }
+    RunCallback(std::move(callback));
+  }
+
+  void set_eligibility_status(
+      drive_picker::DriveDisclaimerController::ConsentEligibilityStatus
+          status) {
+    eligibility_status_ = status;
+  }
+
+  void set_defer_response(bool defer) { defer_response_ = defer; }
+
+  int call_count() const { return call_count_; }
+
+  void CompletePendingCallback() {
+    ASSERT_TRUE(pending_callback_);
+    RunCallback(std::move(pending_callback_));
+  }
+
+ private:
+  void RunCallback(ShouldShowMobileConsentFlowCallback callback) {
+    footprints::oneplatform::ShouldShowMobileConsentFlowResponse response;
+    response.mutable_should_show_flow_result()
+        ->mutable_eligibility()
+        ->set_status(static_cast<int>(eligibility_status_));
+    std::move(callback).Run(true, response);
+  }
+
+  drive_picker::DriveDisclaimerController::ConsentEligibilityStatus
+      eligibility_status_ = drive_picker::DriveDisclaimerController::
+          ConsentEligibilityStatus::kCanConsent;
+  bool defer_response_ = false;
+  int call_count_ = 0;
+  ShouldShowMobileConsentFlowCallback pending_callback_;
+};
+
+}  // namespace
 
 #pragma mark - FakePrivacyPrimitiveServiceWithCallback
 
@@ -223,7 +297,13 @@ class ComposeboxPickerPresenterTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
+    // Attach `base_view_controller_.view` to a window so `view.window` is
+    // non-nil when `onDriveDisclaimerChecked:` verifies that the presenting
+    // view controller is still in the view hierarchy after the async check
+    // completes.
+    window_ = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, 320, 480)];
     base_view_controller_ = [[UIViewController alloc] init];
+    [window_ addSubview:base_view_controller_.view];
 
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
@@ -246,9 +326,14 @@ class ComposeboxPickerPresenterTest : public PlatformTest {
     data_source_ = [[FakePresenterDataSource alloc] init];
     data_source_.remainingCapacity = 8;
 
+    auto fake_fpop_service = std::make_unique<FakeFpopService>();
+    fake_fpop_service_ = fake_fpop_service.get();
     presenter_ = [[ComposeboxPickerPresenter alloc]
         initWithBaseViewController:base_view_controller_
-                           browser:browser_.get()];
+                           browser:browser_.get()
+         driveDisclaimerController:std::make_unique<
+                                       drive_picker::DriveDisclaimerController>(
+                                       std::move(fake_fpop_service))];
     presenter_.dataSource = data_source_;
     metrics_recorder_ = [[ComposeboxMetricsRecorder alloc]
         initWithEntrypoint:ComposeboxEntrypoint::kNTPFakebox];
@@ -257,12 +342,14 @@ class ComposeboxPickerPresenterTest : public PlatformTest {
 
   void TearDown() override {
     ios::provider::test::SetPrivacyPrimitiveServiceFactory(nil);
+    fake_fpop_service_ = nullptr;
     presenter_ = nil;
     metrics_recorder_ = nil;
     data_source_ = nil;
     handler_ = nil;
     browser_.reset();
     base_view_controller_ = nil;
+    window_ = nil;
     profile_ = nullptr;
     PlatformTest::TearDown();
   }
@@ -285,6 +372,7 @@ class ComposeboxPickerPresenterTest : public PlatformTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   TestProfileManagerIOS profile_manager_;
   raw_ptr<TestProfileIOS> profile_ = nullptr;
+  UIWindow* window_ = nil;
   UIViewController* base_view_controller_ = nil;
   std::unique_ptr<TestBrowser> browser_;
   FakePresenterDriveFilePickerHandler* handler_ = nil;
@@ -292,10 +380,11 @@ class ComposeboxPickerPresenterTest : public PlatformTest {
   FakePresenterDataSource* data_source_ = nil;
   ComposeboxMetricsRecorder* metrics_recorder_ = nil;
   ComposeboxPickerPresenter* presenter_ = nil;
+  raw_ptr<FakeFpopService> fake_fpop_service_ = nullptr;
 };
 
 // Tests that when the disclaimer feature is disabled and user is signed in, the
-// Drive picker is presented directly.
+// Drive picker is presented directly without checking disclaimer status.
 TEST_F(ComposeboxPickerPresenterTest,
        TestPresentDriveFilePicker_DisclaimerDisabled) {
   scoped_feature_list_.InitAndDisableFeature(
@@ -305,32 +394,34 @@ TEST_F(ComposeboxPickerPresenterTest,
 
   [presenter_ presentDriveFilePicker];
 
+  EXPECT_EQ(fake_fpop_service_->call_count(), 0);
   EXPECT_TRUE(handler_.drivePickerShown);
   EXPECT_EQ(handler_.maxAttachmentCount, 8u);
   EXPECT_NE(handler_.snackbarPresenter, nil);
 }
 
-// Tests that when the user has already consented, the Drive picker is
-// presented directly even if the disclaimer feature is enabled.
+// Tests that when the user has already consented, the on-demand disclaimer
+// check presents the Drive picker directly.
 TEST_F(ComposeboxPickerPresenterTest, TestPresentDriveFilePicker_PreConsented) {
   scoped_feature_list_.InitAndEnableFeature(
       omnibox::kComposeboxDriveContextMenuOptionDisclaimer);
 
-  profile_->GetPrefs()->SetInteger(
-      contextual_search::kDriveConsentState,
-      static_cast<int>(contextual_search::DriveConsentState::kConsent));
+  fake_fpop_service_->set_eligibility_status(
+      drive_picker::DriveDisclaimerController::ConsentEligibilityStatus::
+          kAlreadyConsented);
 
   SignIn();
 
   [presenter_ presentDriveFilePicker];
 
+  EXPECT_EQ(fake_fpop_service_->call_count(), 1);
   EXPECT_TRUE(handler_.drivePickerShown);
   EXPECT_EQ(handler_.maxAttachmentCount, 8u);
   EXPECT_NE(handler_.snackbarPresenter, nil);
 }
 
 // Tests that when kForceDriveDisclaimerAccepted is enabled, the Drive picker is
-// presented directly without needing consent.
+// presented directly without making a Footprints network call.
 TEST_F(ComposeboxPickerPresenterTest,
        TestPresentDriveFilePicker_ForceAccepted) {
   scoped_feature_list_.InitWithFeatures(
@@ -339,14 +430,11 @@ TEST_F(ComposeboxPickerPresenterTest,
                             omnibox::kForceDriveDisclaimerAccepted},
       /*disabled_features=*/{});
 
-  profile_->GetPrefs()->SetInteger(
-      contextual_search::kDriveConsentState,
-      static_cast<int>(contextual_search::DriveConsentState::kNotConsent));
-
   SignIn();
 
   [presenter_ presentDriveFilePicker];
 
+  EXPECT_EQ(fake_fpop_service_->call_count(), 0);
   EXPECT_TRUE(handler_.drivePickerShown);
   EXPECT_EQ(handler_.maxAttachmentCount, 8u);
   EXPECT_NE(handler_.snackbarPresenter, nil);
@@ -358,10 +446,6 @@ TEST_F(ComposeboxPickerPresenterTest, TestPresentDriveFilePicker_NoIdentity) {
   scoped_feature_list_.InitAndEnableFeature(
       omnibox::kComposeboxDriveContextMenuOptionDisclaimer);
 
-  profile_->GetPrefs()->SetInteger(
-      contextual_search::kDriveConsentState,
-      static_cast<int>(contextual_search::DriveConsentState::kNotConsent));
-
   EXPECT_DEATH_IF_SUPPORTED([presenter_ presentDriveFilePicker], "");
 }
 
@@ -372,13 +456,106 @@ TEST_F(ComposeboxPickerPresenterTest,
   scoped_feature_list_.InitAndEnableFeature(
       omnibox::kComposeboxDriveContextMenuOptionDisclaimer);
 
-  profile_->GetPrefs()->SetInteger(
-      contextual_search::kDriveConsentState,
-      static_cast<int>(contextual_search::DriveConsentState::kNotConsent));
+  fake_fpop_service_->set_eligibility_status(
+      drive_picker::DriveDisclaimerController::ConsentEligibilityStatus::
+          kCanConsent);
 
   SignIn();
 
   [presenter_ presentDriveFilePicker];
+
+  EXPECT_EQ(fake_fpop_service_->call_count(), 1);
+  EXPECT_FALSE(handler_.drivePickerShown);
+}
+
+// Tests that when the account is restricted (`kCannotConsent`), the on-demand
+// disclaimer check records `kPermissionDenied`, shows the error snackbar, and
+// does not present the Drive picker.
+TEST_F(ComposeboxPickerPresenterTest,
+       TestPresentDriveFilePicker_RestrictedShowsSnackbar) {
+  scoped_feature_list_.InitAndEnableFeature(
+      omnibox::kComposeboxDriveContextMenuOptionDisclaimer);
+
+  fake_fpop_service_->set_eligibility_status(
+      drive_picker::DriveDisclaimerController::ConsentEligibilityStatus::
+          kCannotConsent);
+
+  SignIn();
+
+  id mock_snackbar_commands =
+      OCMStrictProtocolMock(@protocol(SnackbarCommands));
+  OCMExpect([mock_snackbar_commands showSnackbarMessage:[OCMArg isNotNil]
+                                           bottomOffset:0]);
+  [browser_->GetCommandDispatcher()
+      startDispatchingToTarget:mock_snackbar_commands
+                   forProtocol:@protocol(SnackbarCommands)];
+
+  base::HistogramTester histogram_tester;
+
+  [presenter_ presentDriveFilePicker];
+
+  EXPECT_EQ(fake_fpop_service_->call_count(), 1);
+  EXPECT_FALSE(handler_.drivePickerShown);
+  EXPECT_OCMOCK_VERIFY(mock_snackbar_commands);
+
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.MobileFusebox.PickerOutcome.Drive",
+      static_cast<int>(MobileFuseboxPickerOutcome::kPermissionDenied), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.MobileFusebox.PickerOutcome",
+      static_cast<int>(MobileFuseboxPickerOutcome::kPermissionDenied), 1);
+}
+
+// Tests that duplicate taps on Google Drive while `CheckDisclaimerStatusAsync`
+// is in flight are ignored.
+TEST_F(ComposeboxPickerPresenterTest,
+       TestPresentDriveFilePicker_DoubleTapIgnoredWhileCheckInFlight) {
+  scoped_feature_list_.InitAndEnableFeature(
+      omnibox::kComposeboxDriveContextMenuOptionDisclaimer);
+
+  fake_fpop_service_->set_eligibility_status(
+      drive_picker::DriveDisclaimerController::ConsentEligibilityStatus::
+          kAlreadyConsented);
+  fake_fpop_service_->set_defer_response(true);
+
+  SignIn();
+
+  [presenter_ presentDriveFilePicker];
+  [presenter_ presentDriveFilePicker];
+
+  EXPECT_EQ(fake_fpop_service_->call_count(), 1);
+  EXPECT_FALSE(handler_.drivePickerShown);
+
+  fake_fpop_service_->CompletePendingCallback();
+
+  EXPECT_EQ(fake_fpop_service_->call_count(), 1);
+  EXPECT_TRUE(handler_.drivePickerShown);
+}
+
+// Tests that if the presenting view controller is dismissed from its window
+// while `CheckDisclaimerStatusAsync` is in flight, completing the check does
+// not present the Drive picker.
+TEST_F(ComposeboxPickerPresenterTest,
+       TestPresentDriveFilePicker_DismissedViewControllerWhileCheckInFlight) {
+  scoped_feature_list_.InitAndEnableFeature(
+      omnibox::kComposeboxDriveContextMenuOptionDisclaimer);
+
+  fake_fpop_service_->set_eligibility_status(
+      drive_picker::DriveDisclaimerController::ConsentEligibilityStatus::
+          kAlreadyConsented);
+  fake_fpop_service_->set_defer_response(true);
+
+  SignIn();
+
+  [presenter_ presentDriveFilePicker];
+  EXPECT_EQ(fake_fpop_service_->call_count(), 1);
+
+  // Simulate the presenting view controller being dismissed before the async
+  // check completes.
+  [base_view_controller_.view removeFromSuperview];
+  ASSERT_EQ(base_view_controller_.view.window, nil);
+
+  fake_fpop_service_->CompletePendingCallback();
 
   EXPECT_FALSE(handler_.drivePickerShown);
 }
@@ -393,10 +570,6 @@ TEST_F(ComposeboxPickerPresenterTest,
 
   scoped_feature_list_.InitAndEnableFeature(
       omnibox::kComposeboxDriveContextMenuOptionDisclaimer);
-
-  profile_->GetPrefs()->SetInteger(
-      contextual_search::kDriveConsentState,
-      static_cast<int>(contextual_search::DriveConsentState::kNotConsent));
 
   SignIn();
 
@@ -443,6 +616,8 @@ TEST_F(ComposeboxPickerPresenterTest,
 TEST_F(ComposeboxPickerPresenterTest,
        TestPresentDriveFilePicker_DelegatedActionDismissesPresentedModal) {
   id mock_base_view_controller = OCMClassMock([UIViewController class]);
+  OCMStub([mock_base_view_controller view])
+      .andReturn(base_view_controller_.view);
   id mock_modal = OCMClassMock([UIViewController class]);
   OCMStub([mock_base_view_controller presentedViewController])
       .andReturn(mock_modal);
@@ -458,7 +633,10 @@ TEST_F(ComposeboxPickerPresenterTest,
 
   ComposeboxPickerPresenter* presenter = [[ComposeboxPickerPresenter alloc]
       initWithBaseViewController:mock_base_view_controller
-                         browser:browser_.get()];
+                         browser:browser_.get()
+       driveDisclaimerController:std::make_unique<
+                                     drive_picker::DriveDisclaimerController>(
+                                     std::make_unique<FakeFpopService>())];
   presenter.dataSource = data_source_;
   presenter.metricsRecorder = metrics_recorder_;
 
@@ -468,10 +646,6 @@ TEST_F(ComposeboxPickerPresenterTest,
 
   scoped_feature_list_.InitAndEnableFeature(
       omnibox::kComposeboxDriveContextMenuOptionDisclaimer);
-
-  profile_->GetPrefs()->SetInteger(
-      contextual_search::kDriveConsentState,
-      static_cast<int>(contextual_search::DriveConsentState::kNotConsent));
 
   SignIn();
 
@@ -518,10 +692,6 @@ TEST_F(ComposeboxPickerPresenterTest,
 
   scoped_feature_list_.InitAndEnableFeature(
       omnibox::kComposeboxDriveContextMenuOptionDisclaimer);
-
-  profile_->GetPrefs()->SetInteger(
-      contextual_search::kDriveConsentState,
-      static_cast<int>(contextual_search::DriveConsentState::kNotConsent));
 
   SignIn();
 
