@@ -116,7 +116,7 @@ CreateContentBrowserURLLoaderThrottles(
                                           initiator, idp_origin, status);
               },
               browser_context->GetWeakPtr(), frame_tree_node_id),
-          GetSetLoginHeaderDataDecoderParser())) {
+          GetSetLoginHeaderInProcessParser())) {
     throttles.push_back(std::move(throttle));
   }
 

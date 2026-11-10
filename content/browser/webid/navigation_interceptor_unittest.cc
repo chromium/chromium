@@ -31,7 +31,6 @@
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/structured_headers.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -185,9 +184,6 @@ TEST_F(NavigationInterceptorTest, SerializedHeaderFormat) {
 }
 
 TEST_F(NavigationInterceptorTest, WillProcessResponse) {
-  // Uses an in-process data decoder service for testing.
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
-
   NavigateAndCommit(GURL("https://rp.example/"));
 
   std::unique_ptr<MockRequestInitiator> mock_initiator =
@@ -235,9 +231,6 @@ TEST_F(NavigationInterceptorTest, WillProcessResponse) {
 
 TEST_F(NavigationInterceptorTest,
        WillProcessResponseWithFederationInitiateRequest) {
-  // Uses an in-process data decoder service for testing.
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
-
   NavigateAndCommit(GURL("https://rp.example/"));
 
   std::unique_ptr<MockRequestInitiator> mock_initiator =
@@ -284,9 +277,6 @@ TEST_F(NavigationInterceptorTest,
 }
 
 TEST_F(NavigationInterceptorTest, WillProcessResponseWithRedirect) {
-  // Uses an in-process data decoder service for testing.
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
-
   NavigateAndCommit(GURL("https://rp.example/"));
 
   std::unique_ptr<MockRequestInitiator> mock_initiator =
@@ -377,9 +367,6 @@ TEST_F(NavigationInterceptorTest, WillProcessResponseNoActivation) {
 // Navigations without an initiator origin, e.g. ones the user starts from the
 // browser UI, should not be intercepted.
 TEST_F(NavigationInterceptorTest, WillProcessResponseWithoutInitiator) {
-  // Uses an in-process data decoder service for testing.
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
-
   NavigateAndCommit(GURL("https://rp.example/"));
 
   InterceptorMockNavigationHandle mock_navigation_handle(web_contents());
@@ -412,9 +399,6 @@ TEST_F(NavigationInterceptorTest, WillProcessResponseWithoutInitiator) {
 }
 
 TEST_F(NavigationInterceptorTest, NavigationAfterStartRequest) {
-  // Uses an in-process data decoder service for testing.
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
-
   // TODO(crbug.com/462217238): Make interception work with bfcache.
   DisableBackForwardCacheForTesting(
       web_contents(),
@@ -456,9 +440,6 @@ TEST_F(NavigationInterceptorTest, NavigationAfterStartRequest) {
 }
 
 TEST_F(NavigationInterceptorTest, WillProcessResponseTokenRequestFails) {
-  // Uses an in-process data decoder service for testing.
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
-
   NavigateAndCommit(GURL("https://rp.example/"));
 
   auto mock_initiator = std::make_unique<MockRequestInitiator>();
@@ -525,9 +506,6 @@ TEST_F(NavigationInterceptorTest, WillProcessResponseTokenRequestFails) {
 
 TEST_F(NavigationInterceptorTest,
        WillProcessResponseTokenRequestTooManyRequests) {
-  // Uses an in-process data decoder service for testing.
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
-
   NavigateAndCommit(GURL("https://rp.example/"));
 
   auto mock_initiator = std::make_unique<MockRequestInitiator>();
@@ -971,9 +949,6 @@ TEST_F(NavigationInterceptorTest,
 }
 
 TEST_F(NavigationInterceptorTest, WillProcessResponseWithConnectionStatus) {
-  // Uses an in-process data decoder service for testing.
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
-
   bool connection_status_received = false;
   FederatedEmbedderLoginRequest::Set(
       web_contents(), url::Origin::Create(GURL("https://idp.example/")), "1234",
@@ -1023,9 +998,6 @@ TEST_F(NavigationInterceptorTest, WillProcessResponseWithConnectionStatus) {
 
 TEST_F(NavigationInterceptorTest,
        WillProcessResponseWithMismatchingConnectionStatus) {
-  // Uses an in-process data decoder service for testing.
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
-
   bool connection_status_received = false;
   FederatedEmbedderLoginRequest::Set(
       web_contents(), url::Origin::Create(GURL("https://idp.example/")), "1234",
@@ -1075,9 +1047,6 @@ TEST_F(NavigationInterceptorTest,
 
 TEST_F(NavigationInterceptorTest,
        WillProcessResponseInPopupWithConnectionStatus) {
-  // Uses an in-process data decoder service for testing.
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
-
   bool connection_status_received = false;
   FederatedEmbedderLoginRequest::Set(
       web_contents(), url::Origin::Create(GURL("https://idp.example/")), "1234",
@@ -1132,9 +1101,6 @@ TEST_F(NavigationInterceptorTest,
 
 TEST_F(NavigationInterceptorTest,
        WillProcessResponseWithMismatchedOriginConnectionStatus) {
-  // Uses an in-process data decoder service for testing.
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
-
   bool connection_status_received = false;
   FederatedEmbedderLoginRequest::Set(
       web_contents(), url::Origin::Create(base_url_), "1234",
@@ -1186,9 +1152,6 @@ TEST_F(NavigationInterceptorTest,
 
 TEST_F(NavigationInterceptorTest,
        WillRedirectRequestWithValidSameOriginInterception) {
-  // Uses an in-process data decoder service for testing.
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
-
   NavigateAndCommit(GURL("https://rp.example/"));
 
   std::unique_ptr<MockRequestInitiator> mock_initiator =
@@ -1256,9 +1219,6 @@ TEST_F(NavigationInterceptorTest,
 
 TEST_F(NavigationInterceptorTest,
        WillRedirectRequestWithCrossOriginBypassAttempt) {
-  // Uses an in-process data decoder service for testing.
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
-
   NavigateAndCommit(GURL("https://rp.example/"));
 
   std::unique_ptr<MockRequestInitiator> mock_initiator =
@@ -1339,9 +1299,6 @@ class EmbedderLoginNavigationInterceptorTest
 
 TEST_F(EmbedderLoginNavigationInterceptorTest,
        IgnoreConnectionStatusWithoutEmbedderLoginRequest) {
-  // Uses an in-process data decoder service for testing.
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
-
   NavigateAndCommit(GURL("https://rp.example/"));
   InterceptorMockNavigationHandle mock_navigation_handle(web_contents());
   mock_navigation_handle.set_url(base_url_);
@@ -1373,9 +1330,6 @@ TEST_F(EmbedderLoginNavigationInterceptorTest,
 // navigated window, should not start a FedCM request on behalf of the document
 // shown in the navigated frame. Regression test for crbug.com/574633825.
 TEST_F(EmbedderLoginNavigationInterceptorTest, IgnoreCrossOriginInitiator) {
-  // Uses an in-process data decoder service for testing.
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
-
   FederatedEmbedderLoginRequest::Set(web_contents(),
                                      url::Origin::Create(base_url_),
                                      /*account_id=*/"1234", base::DoNothing());
@@ -1417,9 +1371,6 @@ TEST_F(EmbedderLoginNavigationInterceptorTest, IgnoreCrossOriginInitiator) {
 // crbug.com/574633825.
 TEST_F(EmbedderLoginNavigationInterceptorTest,
        IgnoreConnectionStatusFromCrossOriginInitiator) {
-  // Uses an in-process data decoder service for testing.
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
-
   bool connection_status_received = false;
   FederatedEmbedderLoginRequest::Set(
       web_contents(), url::Origin::Create(base_url_), /*account_id=*/"1234",
@@ -1454,9 +1405,6 @@ TEST_F(EmbedderLoginNavigationInterceptorTest,
 }
 
 TEST_F(NavigationInterceptorTest, TokenRequestFailsSynchronousDestruction) {
-  // Uses an in-process data decoder service for testing.
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
-
   NavigateAndCommit(GURL("https://rp.example/"));
 
   auto mock_initiator = std::make_unique<MockRequestInitiator>();

@@ -328,69 +328,6 @@ TEST_F(IdentityUrlLoaderThrottleTest, InProcessParserCallback) {
   EXPECT_TRUE(result_item->item.is_integer());
 }
 
-TEST_F(IdentityUrlLoaderThrottleTest, DataDecoderParserCallback) {
-  base::test::TaskEnvironment task_environment;
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
-
-  ParseSetLoginHeaderCallback parse_cb = GetSetLoginHeaderDataDecoderParser();
-
-  std::optional<net::structured_headers::ParameterizedItem> result_item;
-  parse_cb.Run(
-      "logged-in; foo=bar",
-      base::BindOnce(
-          [](std::optional<net::structured_headers::ParameterizedItem>* out,
-             std::optional<net::structured_headers::ParameterizedItem> res) {
-            *out = res;
-          },
-          &result_item));
-  task_environment.RunUntilIdle();
-  ASSERT_TRUE(result_item);
-  EXPECT_EQ(result_item->item,
-            net::structured_headers::Item(net::structured_headers::Item::token,
-                                          "logged-in"));
-
-  result_item.reset();
-  parse_cb.Run(
-      "logged-out",
-      base::BindOnce(
-          [](std::optional<net::structured_headers::ParameterizedItem>* out,
-             std::optional<net::structured_headers::ParameterizedItem> res) {
-            *out = res;
-          },
-          &result_item));
-  task_environment.RunUntilIdle();
-  ASSERT_TRUE(result_item);
-  EXPECT_EQ(result_item->item,
-            net::structured_headers::Item(net::structured_headers::Item::token,
-                                          "logged-out"));
-
-  result_item.reset();
-  parse_cb.Run(
-      "\"logged-in\"",
-      base::BindOnce(
-          [](std::optional<net::structured_headers::ParameterizedItem>* out,
-             std::optional<net::structured_headers::ParameterizedItem> res) {
-            *out = res;
-          },
-          &result_item));
-  task_environment.RunUntilIdle();
-  ASSERT_TRUE(result_item);
-  EXPECT_TRUE(result_item->item.is_string());
-
-  result_item.reset();
-  parse_cb.Run(
-      "123",
-      base::BindOnce(
-          [](std::optional<net::structured_headers::ParameterizedItem>* out,
-             std::optional<net::structured_headers::ParameterizedItem> res) {
-            *out = res;
-          },
-          &result_item));
-  task_environment.RunUntilIdle();
-  ASSERT_TRUE(result_item);
-  EXPECT_TRUE(result_item->item.is_integer());
-}
-
 TEST_F(IdentityUrlLoaderThrottleTest, CertError) {
   TestDelegate delegate;
   std::unique_ptr<blink::URLLoaderThrottle> throttle =

@@ -36,7 +36,6 @@ using ParseSetLoginHeaderCallback = base::RepeatingCallback<void(
         callback)>;
 
 CONTENT_EXPORT ParseSetLoginHeaderCallback GetSetLoginHeaderInProcessParser();
-CONTENT_EXPORT ParseSetLoginHeaderCallback GetSetLoginHeaderDataDecoderParser();
 
 CONTENT_EXPORT std::unique_ptr<blink::URLLoaderThrottle>
 MaybeCreateIdentityUrlLoaderThrottle(SetIdpStatusCallback status_cb,

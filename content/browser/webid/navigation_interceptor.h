@@ -76,10 +76,10 @@ class CONTENT_EXPORT NavigationInterceptor
 
   void OnHeaderParsed(
       const GURL& intercepted_url,
-      base::expected<net::structured_headers::Dictionary, std::string> result);
+      std::optional<net::structured_headers::Dictionary> result);
   void OnConnectionStatusHeaderParsed(
       const GURL& intercepted_url,
-      base::expected<net::structured_headers::Dictionary, std::string> result);
+      std::optional<net::structured_headers::Dictionary> result);
   void OnTokenResponse(
       blink::mojom::RequestTokenStatus status,
       const std::optional<GURL>& selected_identity_provider_config_url,

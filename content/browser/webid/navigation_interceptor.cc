@@ -29,7 +29,6 @@
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/structured_headers.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/mojom/webid/federated_request.mojom.h"
@@ -221,22 +220,31 @@ NavigationThrottle::ThrottleCheckResult NavigationInterceptor::ProcessRequest(
     return PROCEED;
   }
 
+  // TODO(crbug.com/574411295): Investigate whether the asynchronous handling of
+  // the dictionaries can be replaced with synchronous handling.
   if (connection_status_header) {
     // It's possible that both headers are present. In that case, if there's no
     // embedder login request, we should just proceed.
     if (has_embedder_login_request) {
-      data_decoder::DataDecoder::ParseStructuredHeaderDictionaryIsolated(
-          *connection_status_header,
+      std::optional<net::structured_headers::Dictionary> dict =
+          net::structured_headers::ParseDictionary(*connection_status_header);
+
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
           base::BindOnce(&NavigationInterceptor::OnConnectionStatusHeaderParsed,
-                         weak_ptr_factory_.GetWeakPtr(), intercepted_url));
+                         weak_ptr_factory_.GetWeakPtr(), intercepted_url,
+                         std::move(dict)));
     } else {
       return PROCEED;
     }
   } else if (intercept_header) {
-    data_decoder::DataDecoder::ParseStructuredHeaderDictionaryIsolated(
-        *intercept_header,
-        base::BindOnce(&NavigationInterceptor::OnHeaderParsed,
-                       weak_ptr_factory_.GetWeakPtr(), intercepted_url));
+    std::optional<net::structured_headers::Dictionary> dict =
+        net::structured_headers::ParseDictionary(*intercept_header);
+
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&NavigationInterceptor::OnHeaderParsed,
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  intercepted_url, std::move(dict)));
   } else {
     return PROCEED;
   }
@@ -251,7 +259,7 @@ NavigationThrottle::ThrottleCheckResult NavigationInterceptor::ProcessRequest(
 
 void NavigationInterceptor::OnConnectionStatusHeaderParsed(
     const GURL& intercepted_url,
-    base::expected<net::structured_headers::Dictionary, std::string> result) {
+    std::optional<net::structured_headers::Dictionary> result) {
   RenderFrameHost* rfh = document_.AsRenderFrameHostIfValid();
   if (!rfh) {
     // The document is no longer valid, likely because the target frame has
@@ -298,7 +306,7 @@ void NavigationInterceptor::OnConnectionStatusHeaderParsed(
 
 void NavigationInterceptor::OnHeaderParsed(
     const GURL& intercepted_url,
-    base::expected<net::structured_headers::Dictionary, std::string> result) {
+    std::optional<net::structured_headers::Dictionary> result) {
   RenderFrameHost* rfh = document_.AsRenderFrameHostIfValid();
   if (!rfh) {
     // The document is no longer valid, likely because the target frame has

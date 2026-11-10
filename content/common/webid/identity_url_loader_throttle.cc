@@ -21,7 +21,6 @@
 #include "net/cert/cert_status_flags.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/structured_headers.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -40,6 +39,8 @@ static constexpr char kSetLoginHeaderValueLoggedOut[] = "logged-out";
 
 namespace content {
 
+// TODO(crbug.com/574411295): Remove the callback abstraction associated with
+// this, as `net::structured_headers::ParseItem` can be invoked synchronously.
 ParseSetLoginHeaderCallback GetSetLoginHeaderInProcessParser() {
   return base::BindRepeating(
       [](const std::string& header_value,
@@ -48,30 +49,6 @@ ParseSetLoginHeaderCallback GetSetLoginHeaderInProcessParser() {
              callback) {
         std::move(callback).Run(
             net::structured_headers::ParseItem(header_value));
-      });
-}
-
-ParseSetLoginHeaderCallback GetSetLoginHeaderDataDecoderParser() {
-  return base::BindRepeating(
-      [](const std::string& header_value,
-         base::OnceCallback<void(
-             std::optional<net::structured_headers::ParameterizedItem> item)>
-             callback) {
-        data_decoder::DataDecoder::ParseStructuredHeaderItemIsolated(
-            header_value,
-            base::BindOnce(
-                [](base::OnceCallback<void(
-                       std::optional<net::structured_headers::ParameterizedItem>
-                           item)> cb,
-                   base::expected<net::structured_headers::ParameterizedItem,
-                                  std::string> result) {
-                  if (result.has_value()) {
-                    std::move(cb).Run(std::move(*result));
-                  } else {
-                    std::move(cb).Run(std::nullopt);
-                  }
-                },
-                std::move(callback)));
       });
 }
 
