@@ -731,6 +731,53 @@ TEST_F(GeminiContainerMediatorTest,
               testing::Optional(ios::provider::GeminiDormantReason::kUserStop));
 }
 
+// Tests that an immediate `kDormant` status in Live mode is forwarded to the
+// event handler even if `kDormant` was the last status before switching modes.
+TEST_F(GeminiContainerMediatorTest,
+       TestDidUpdateProcessingStatusDormantForwardedAfterModeSwitchToLive) {
+  [mediator_ didSwitchToMode:ios::provider::GeminiViewMode::kFloaty];
+  [mediator_
+      didUpdateProcessingStatus:ios::provider::GeminiClientMode::kDormant
+                  dormantReason:ios::provider::GeminiDormantReason::kUnknown
+                          error:nil
+                      errorCode:ios::provider::GeminiErrorCode::kNone
+                      sessionID:kTestSessionID
+                 conversationID:kTestConversationID];
+
+  delegate_.last_processing_status_changed_.reset();
+  delegate_.last_dormant_reason_changed_.reset();
+
+  // Switch to Live mode and immediately receive `kDormant` (e.g., Live startup
+  // failure before reaching `kListening`).
+  [mediator_ didSwitchToMode:ios::provider::GeminiViewMode::kLive];
+  [mediator_
+      didUpdateProcessingStatus:ios::provider::GeminiClientMode::kDormant
+                  dormantReason:ios::provider::GeminiDormantReason::kServerPause
+                          error:nil
+                      errorCode:ios::provider::GeminiErrorCode::kNone
+                      sessionID:kTestSessionID
+                 conversationID:kTestConversationID];
+
+  EXPECT_THAT(delegate_.last_processing_status_changed_,
+              testing::Optional(ios::provider::GeminiClientMode::kDormant));
+  EXPECT_THAT(
+      delegate_.last_dormant_reason_changed_,
+      testing::Optional(ios::provider::GeminiDormantReason::kServerPause));
+
+  // A subsequent `kDormant` in the same mode is deduplicated and ignored.
+  delegate_.last_processing_status_changed_.reset();
+  delegate_.last_dormant_reason_changed_.reset();
+  [mediator_
+      didUpdateProcessingStatus:ios::provider::GeminiClientMode::kDormant
+                  dormantReason:ios::provider::GeminiDormantReason::kServerPause
+                          error:nil
+                      errorCode:ios::provider::GeminiErrorCode::kNone
+                      sessionID:kTestSessionID
+                 conversationID:kTestConversationID];
+  EXPECT_FALSE(delegate_.last_processing_status_changed_.has_value());
+  EXPECT_FALSE(delegate_.last_dormant_reason_changed_.has_value());
+}
+
 // Tests that the mediator handles a null delegate gracefully without crashing.
 TEST_F(GeminiContainerMediatorTest, TestNullDelegate) {
   GeminiContainerMediator* null_delegate_mediator =

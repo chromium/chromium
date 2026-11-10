@@ -136,6 +136,8 @@ TEST_F(GeminiContainerUIStateManagerTest, TestWorklogDisplayMode) {
 // Tests that initial state properties are correctly set upon initialization.
 TEST_F(GeminiContainerUIStateManagerTest, TestInitialProperties) {
   EXPECT_EQ(ios::provider::GeminiViewMode::kUnknown, state_manager_.viewMode);
+  EXPECT_EQ(ios::provider::GeminiViewMode::kUnknown,
+            state_manager_.lastProcessingStatusUpdateViewMode);
   EXPECT_FALSE([state_manager_ isInGeminiLiveMode]);
   EXPECT_EQ(ios::provider::GeminiClientMode::kUnknown,
             state_manager_.processingStatus);
@@ -550,9 +552,14 @@ TEST_F(GeminiContainerUIStateManagerTest, TestUpdateDetent) {
 // Tests that reset restores state manager properties.
 TEST_F(GeminiContainerUIStateManagerTest, TestReset) {
   [state_manager_ setupInitialUIStateWithConversation:NO];
+  [state_manager_
+      transitionToProcessingStatus:ios::provider::GeminiClientMode::kThinking
+                             error:nil];
   state_manager_.hasConversation = YES;
   [state_manager_ reset];
   EXPECT_EQ(ios::provider::GeminiViewMode::kUnknown, state_manager_.viewMode);
+  EXPECT_EQ(ios::provider::GeminiViewMode::kUnknown,
+            state_manager_.lastProcessingStatusUpdateViewMode);
   EXPECT_EQ(ios::provider::GeminiClientMode::kUnknown,
             state_manager_.processingStatus);
   EXPECT_FALSE(state_manager_.hasConversation);
@@ -697,4 +704,60 @@ TEST_F(GeminiContainerUIStateManagerTest,
   EXPECT_TRUE(delegate_.lastUIState.hasGrabber);
   EXPECT_TRUE(delegate_.lastUIState.zeroStateVisible);
   EXPECT_FALSE(state_manager_.hasConversation);
+}
+
+// Tests that `lastProcessingStatusUpdateViewMode` only updates when
+// `transitionToProcessingStatus:error:` runs, allowing status updates with an
+// unchanged `processingStatus` to be processed after a mode switch while
+// deduplicating repeated updates within the same mode.
+TEST_F(GeminiContainerUIStateManagerTest,
+       TestLastProcessingStatusUpdateViewModeTracksStatusUpdatesAcrossModes) {
+  [state_manager_ setupInitialUIStateWithConversation:NO];
+  EXPECT_EQ(ios::provider::GeminiViewMode::kFloaty, state_manager_.viewMode);
+  EXPECT_EQ(ios::provider::GeminiClientMode::kDormant,
+            state_manager_.processingStatus);
+  EXPECT_EQ(ios::provider::GeminiViewMode::kUnknown,
+            state_manager_.lastProcessingStatusUpdateViewMode);
+
+  // First `kDormant` update in Floaty records `kFloaty` as the last update
+  // view mode even though `processingStatus` was already `kDormant`.
+  [state_manager_
+      transitionToProcessingStatus:ios::provider::GeminiClientMode::kDormant
+                             error:nil];
+  EXPECT_EQ(ios::provider::GeminiViewMode::kFloaty,
+            state_manager_.lastProcessingStatusUpdateViewMode);
+
+  // Switching to Live mode updates `viewMode` without updating
+  // `lastProcessingStatusUpdateViewMode`.
+  [state_manager_ transitionToMode:ios::provider::GeminiViewMode::kLive];
+  EXPECT_EQ(ios::provider::GeminiViewMode::kLive, state_manager_.viewMode);
+  EXPECT_EQ(ios::provider::GeminiViewMode::kFloaty,
+            state_manager_.lastProcessingStatusUpdateViewMode);
+
+  // Receiving `kDormant` in Live mode updates
+  // `lastProcessingStatusUpdateViewMode` to `kLive`.
+  [state_manager_
+      transitionToProcessingStatus:ios::provider::GeminiClientMode::kDormant
+                             error:nil];
+  EXPECT_EQ(ios::provider::GeminiViewMode::kLive,
+            state_manager_.lastProcessingStatusUpdateViewMode);
+
+  // Switching back to Floaty and receiving `kDormant` with an error processes
+  // the error because `viewMode` changed since the last status update, then
+  // deduplicates a subsequent identical `kDormant` error in Floaty.
+  [state_manager_ transitionToMode:ios::provider::GeminiViewMode::kFloaty];
+  [delegate_ reset];
+  NSError* error = [NSError errorWithDomain:@"TestDomain" code:1 userInfo:nil];
+  [state_manager_
+      transitionToProcessingStatus:ios::provider::GeminiClientMode::kDormant
+                             error:error];
+  EXPECT_EQ(ios::provider::GeminiViewMode::kFloaty,
+            state_manager_.lastProcessingStatusUpdateViewMode);
+  EXPECT_EQ(1, delegate_.changeCount);
+
+  [delegate_ reset];
+  [state_manager_
+      transitionToProcessingStatus:ios::provider::GeminiClientMode::kDormant
+                             error:error];
+  EXPECT_EQ(0, delegate_.changeCount);
 }

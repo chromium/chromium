@@ -66,6 +66,10 @@ struct GeminiContainerUIState {
 // Current view mode of the Gemini UI (e.g. floaty or live).
 @property(nonatomic, readonly) ios::provider::GeminiViewMode viewMode;
 
+// View mode when `processingStatus` was last updated.
+@property(nonatomic, readonly)
+    ios::provider::GeminiViewMode lastProcessingStatusUpdateViewMode;
+
 // Resets and applies the initial container UI state. `hasConversation`
 // indicates whether the container is starting with an existing conversation.
 - (void)setupInitialUIStateWithConversation:(BOOL)hasConversation;

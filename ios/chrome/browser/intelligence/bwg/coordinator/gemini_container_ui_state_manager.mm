@@ -99,6 +99,7 @@ GeminiContainerUIState::WorklogDisplayMode() const {
   if (self) {
     _viewMode = GeminiViewMode::kUnknown;
     _processingStatus = GeminiClientMode::kUnknown;
+    _lastProcessingStatusUpdateViewMode = GeminiViewMode::kUnknown;
   }
   return self;
 }
@@ -174,11 +175,15 @@ GeminiContainerUIState::WorklogDisplayMode() const {
 
 - (void)transitionToProcessingStatus:(GeminiClientMode)processingStatus
                                error:(NSError*)error {
-  if (_processingStatus == processingStatus) {
+  // Only deduplicate when the view mode hasn't changed since the last status
+  // update so mode-switch status updates are still processed.
+  if (_processingStatus == processingStatus &&
+      _lastProcessingStatusUpdateViewMode == _viewMode) {
     return;
   }
 
   _processingStatus = processingStatus;
+  _lastProcessingStatusUpdateViewMode = _viewMode;
 
   // Keep track of `_processingStatus` for all cases, but skip the remaining
   // state updates that are specific to the container UI.
@@ -249,6 +254,7 @@ GeminiContainerUIState::WorklogDisplayMode() const {
   _hasConversation = NO;
   _viewMode = GeminiViewMode::kUnknown;
   _processingStatus = GeminiClientMode::kUnknown;
+  _lastProcessingStatusUpdateViewMode = GeminiViewMode::kUnknown;
   _currentUIState = {};
 }
 

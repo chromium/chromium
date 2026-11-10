@@ -618,7 +618,16 @@ class GeminiContainerMediatorTabHelperObserver
                         errorCode:(GeminiErrorCode)errorCode
                         sessionID:(NSString*)sessionID
                    conversationID:(NSString*)conversationID {
-  if (_stateManager.processingStatus == processingStatus) {
+  // Only deduplicate processing status updates when the view mode hasn't
+  // changed, ensuring mode-switch status updates (e.g., an immediate `kDormant`
+  // failure upon entering Live) are forwarded even if `processingStatus`
+  // matches the previous mode's status. `lastProcessingStatusUpdateViewMode` is
+  // updated inside `transitionToProcessingStatus:error:` rather than in
+  // `didSwitchToMode:` so the mode change remains detectable until the next
+  // status update arrives.
+  if (_stateManager.processingStatus == processingStatus &&
+      _stateManager.lastProcessingStatusUpdateViewMode ==
+          _stateManager.viewMode) {
     return;
   }
 
