@@ -22,7 +22,7 @@ include_rules = [
   "+chrome/browser/ash/system",
   "+chrome/browser/chromeos/extensions/vpn_provider",
   "+chrome/browser/enterprise/browser_management/management_identity.h",
-  "+chrome/browser/profiles",
+  "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/ash/cast_config",
   "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h",
