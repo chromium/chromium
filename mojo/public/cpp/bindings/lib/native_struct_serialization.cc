@@ -105,9 +105,11 @@ bool UnmappedNativeStructSerializerImpl::DeserializeMessageAttachments(
     return true;
   }
 
-  auto* handles_data = data->handles.Get();
+  // SAFETY: Validated by the message validator.
+  auto* handles_data = UNSAFE_BUFFERS(data->handles.Get());
   for (size_t i = 0; i < handles_data->size(); ++i) {
-    auto* handle_data = handles_data->at(i).Get();
+    // SAFETY: See above.
+    auto* handle_data = UNSAFE_BUFFERS(handles_data->at(i).Get());
     if (!handle_data) {
       return false;
     }

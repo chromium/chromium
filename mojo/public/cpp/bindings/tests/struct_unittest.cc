@@ -401,7 +401,8 @@ TEST_F(StructTest, Serialization_NativeStruct) {
     mojo::Message message;
     Data* data = nullptr;
     EXPECT_EQ(32u, SerializeStruct(native, &message, &data));
-    EXPECT_EQ(0u, data->data.Get()->size());
+    // SAFETY: `data` was just serialized into `message`.
+    EXPECT_EQ(0u, UNSAFE_BUFFERS(data->data.Get())->size());
 
     native::NativeStructPtr output_native;
     mojo::internal::Deserialize<native::NativeStructDataView>(
@@ -416,7 +417,8 @@ TEST_F(StructTest, Serialization_NativeStruct) {
     mojo::Message message;
     Data* data = nullptr;
     EXPECT_EQ(40u, SerializeStruct(native, &message, &data));
-    EXPECT_EQ(2u, data->data.Get()->size());
+    // SAFETY: `data` was just serialized into `message`.
+    EXPECT_EQ(2u, UNSAFE_BUFFERS(data->data.Get())->size());
 
     native::NativeStructPtr output_native;
     mojo::internal::Deserialize<native::NativeStructDataView>(

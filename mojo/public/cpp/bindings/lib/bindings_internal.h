@@ -94,13 +94,15 @@ inline void EncodePointer(const void* ptr, uint64_t* offset) {
   *offset = static_cast<uint64_t>(p_obj - p_slot);
 }
 
-// Note: This function doesn't validate the encoded pointer value.
-inline const void* DecodePointer(const uint64_t* offset) {
+// Doesn't validate the encoded pointer. Callers must ensure `*offset` is 0 or
+// points within the same buffer (e.g. locally encoded or validated message).
+UNSAFE_BUFFER_USAGE inline const void* DecodePointer(const uint64_t* offset) {
   if (!*offset) {
     return nullptr;
   }
+  // SAFETY: Required from caller, enforced by UNSAFE_BUFFER_USAGE.
   const void* ret =
-      UNSAFE_TODO(reinterpret_cast<const char*>(offset) + *offset);
+      UNSAFE_BUFFERS(reinterpret_cast<const char*>(offset) + *offset);
   UNSAFE_ASSUME(ret != nullptr);
   return ret;
 }
@@ -124,9 +126,16 @@ struct Pointer {
   using BaseType = T;
 
   void Set(T* ptr) { EncodePointer(ptr, &offset); }
-  const T* Get() const { return static_cast<const T*>(DecodePointer(&offset)); }
-  T* Get() {
-    return static_cast<T*>(const_cast<void*>(DecodePointer(&offset)));
+
+  // Callers must uphold the requirements of `DecodePointer()`.
+  UNSAFE_BUFFER_USAGE const T* Get() const {
+    // SAFETY: Required from caller, enforced by UNSAFE_BUFFER_USAGE.
+    return static_cast<const T*>(UNSAFE_BUFFERS(DecodePointer(&offset)));
+  }
+  UNSAFE_BUFFER_USAGE T* Get() {
+    // SAFETY: Required from caller, enforced by UNSAFE_BUFFER_USAGE.
+    return static_cast<T*>(
+        const_cast<void*>(UNSAFE_BUFFERS(DecodePointer(&offset))));
   }
 
   bool is_null() const { return offset == 0; }

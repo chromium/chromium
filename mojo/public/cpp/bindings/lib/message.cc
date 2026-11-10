@@ -529,7 +529,9 @@ NOINLINE const uint8_t* Message::payload() const {
   }
 
   DCHECK(!header_v2()->payload.is_null());
-  return static_cast<const uint8_t*>(header_v2()->payload.Get());
+  // SAFETY: The message header is either validated or locally serialized.
+  return static_cast<const uint8_t*>(
+      UNSAFE_BUFFERS(header_v2()->payload.Get()));
 }
 
 uint32_t Message::payload_num_bytes() const {
@@ -538,10 +540,11 @@ uint32_t Message::payload_num_bytes() const {
   if (version() < 2) {
     num_bytes = data_num_bytes() - header()->num_bytes;
   } else {
+    // SAFETY: The message header is either validated or locally serialized.
     auto payload_begin =
-        reinterpret_cast<uintptr_t>(header_v2()->payload.Get());
-    auto payload_end =
-        reinterpret_cast<uintptr_t>(header_v2()->payload_interface_ids.Get());
+        reinterpret_cast<uintptr_t>(UNSAFE_BUFFERS(header_v2()->payload.Get()));
+    auto payload_end = reinterpret_cast<uintptr_t>(
+        UNSAFE_BUFFERS(header_v2()->payload_interface_ids.Get()));
     if (!payload_end) {
       payload_end =
           reinterpret_cast<uintptr_t>(UNSAFE_TODO(data() + data_num_bytes()));
@@ -554,14 +557,18 @@ uint32_t Message::payload_num_bytes() const {
 }
 
 uint32_t Message::payload_num_interface_ids() const {
+  // SAFETY: The message header is either validated or locally serialized.
   auto* array_pointer =
-      version() < 2 ? nullptr : header_v2()->payload_interface_ids.Get();
+      version() < 2 ? nullptr
+                    : UNSAFE_BUFFERS(header_v2()->payload_interface_ids.Get());
   return array_pointer ? static_cast<uint32_t>(array_pointer->size()) : 0;
 }
 
 const uint32_t* Message::payload_interface_ids() const {
+  // SAFETY: The message header is either validated or locally serialized.
   auto* array_pointer =
-      version() < 2 ? nullptr : header_v2()->payload_interface_ids.Get();
+      version() < 2 ? nullptr
+                    : UNSAFE_BUFFERS(header_v2()->payload_interface_ids.Get());
   return array_pointer ? array_pointer->storage() : nullptr;
 }
 
@@ -668,7 +675,9 @@ bool Message::DeserializeAssociatedEndpointHandles(
   }
 
   endpoint_handles.reserve(num_ids);
-  uint32_t* ids = header_v2()->payload_interface_ids.Get()->storage();
+  // SAFETY: The message header is either validated or locally serialized.
+  uint32_t* ids =
+      UNSAFE_BUFFERS(header_v2()->payload_interface_ids.Get())->storage();
   bool result = true;
   for (uint32_t i = 0; i < num_ids; ++i) {
     auto handle =
@@ -693,7 +702,9 @@ void Message::NotifyPeerClosureForSerializedHandles(
     return;
   }
 
-  const uint32_t* ids = header_v2()->payload_interface_ids.Get()->storage();
+  // SAFETY: The message header is either validated or locally serialized.
+  const uint32_t* ids =
+      UNSAFE_BUFFERS(header_v2()->payload_interface_ids.Get())->storage();
   for (uint32_t i = 0; i < num_ids; ++i) {
     group_controller->NotifyLocalEndpointOfPeerClosure(UNSAFE_TODO(ids[i]));
   }

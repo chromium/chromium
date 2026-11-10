@@ -8,6 +8,7 @@
 
 #include <ranges>
 
+#include "base/compiler_specific.h"
 #include "base/strings/stringprintf.h"
 #include "mojo/public/cpp/bindings/lib/array_internal.h"
 #include "mojo/public/cpp/bindings/lib/map_data_internal.h"
@@ -292,7 +293,9 @@ bool ValidateMapImpl(const void* data,
                                     validate_values_func)) {
     return false;
   }
-  if (object->keys.Get()->size() != object->values.Get()->size()) {
+  // SAFETY: Validated above.
+  if (UNSAFE_BUFFERS(object->keys.Get())->size() !=
+      UNSAFE_BUFFERS(object->values.Get())->size()) {
     ReportValidationError(validation_context,
                           VALIDATION_ERROR_DIFFERENT_SIZED_ARRAYS_IN_MAP);
     return false;
@@ -305,9 +308,10 @@ NOINLINE bool ValidateContainerImpl(
     ValidationContext* validation_context,
     const ContainerValidateParams* validate_params,
     ValidateContainerFunc* validate_func) {
+  // SAFETY: The decoded pointer is bounds-checked before it is dereferenced.
   return ValidateParamsOffset(offset, validation_context) &&
-         validate_func(DecodePointer(offset), validation_context,
-                       validate_params);
+         validate_func(UNSAFE_BUFFERS(DecodePointer(offset)),
+                       validation_context, validate_params);
 }
 
 NOINLINE bool ValidateNonNullContainerImpl(
@@ -325,9 +329,10 @@ NOINLINE bool ValidateByteArrayContainer(
     const uint64_t* offset,
     ValidationContext* validation_context,
     const ContainerValidateParams* validate_params) {
+  // SAFETY: The decoded pointer is bounds-checked before it is dereferenced.
   return ValidateParamsOffset(offset, validation_context) &&
-         ValidatePrimitiveOrEnumArray(DecodePointer(offset), validation_context,
-                                      validate_params, 1);
+         ValidatePrimitiveOrEnumArray(UNSAFE_BUFFERS(DecodePointer(offset)),
+                                      validation_context, validate_params, 1);
 }
 
 NOINLINE bool ValidateNonNullByteArrayContainer(
@@ -345,9 +350,11 @@ NOINLINE bool ValidatePrimitiveOrEnumArrayContainer(
     ValidationContext* validation_context,
     const ContainerValidateParams* validate_params,
     uint32_t element_size) {
+  // SAFETY: The decoded pointer is bounds-checked before it is dereferenced.
   return ValidateParamsOffset(offset, validation_context) &&
-         ValidatePrimitiveOrEnumArray(DecodePointer(offset), validation_context,
-                                      validate_params, element_size);
+         ValidatePrimitiveOrEnumArray(UNSAFE_BUFFERS(DecodePointer(offset)),
+                                      validation_context, validate_params,
+                                      element_size);
 }
 
 NOINLINE bool ValidateNonNullPrimitiveOrEnumArrayContainer(
@@ -365,9 +372,10 @@ bool ValidateBoolArrayContainer(
     const uint64_t* offset,
     ValidationContext* validation_context,
     const ContainerValidateParams* validate_params) {
+  // SAFETY: The decoded pointer is bounds-checked before it is dereferenced.
   return ValidateParamsOffset(offset, validation_context) &&
-         ValidateBoolArray(DecodePointer(offset), validation_context,
-                           validate_params);
+         ValidateBoolArray(UNSAFE_BUFFERS(DecodePointer(offset)),
+                           validation_context, validate_params);
 }
 
 bool ValidateNonNullBoolArrayContainer(
@@ -385,9 +393,11 @@ NOINLINE bool ValidateStructArrayContainer(
     ValidationContext* validation_context,
     const ContainerValidateParams* validate_params,
     ValidateStructFunc* validate_func) {
+  // SAFETY: The decoded pointer is bounds-checked before it is dereferenced.
   return ValidateParamsOffset(offset, validation_context) &&
-         ValidateStructArray(DecodePointer(offset), validation_context,
-                             validate_params, validate_func);
+         ValidateStructArray(UNSAFE_BUFFERS(DecodePointer(offset)),
+                             validation_context, validate_params,
+                             validate_func);
 }
 
 NOINLINE bool ValidateNonNullStructArrayContainer(
@@ -405,9 +415,10 @@ bool ValidateUnionArrayContainer(const uint64_t* offset,
                                  ValidationContext* validation_context,
                                  const ContainerValidateParams* validate_params,
                                  ValidateUnionFunc* validate_func) {
+  // SAFETY: The decoded pointer is bounds-checked before it is dereferenced.
   return ValidateParamsOffset(offset, validation_context) &&
-         ValidateUnionArray(DecodePointer(offset), validation_context,
-                            validate_params, validate_func);
+         ValidateUnionArray(UNSAFE_BUFFERS(DecodePointer(offset)),
+                            validation_context, validate_params, validate_func);
 }
 
 NOINLINE bool ValidateNonNullUnionArrayContainer(
@@ -427,10 +438,11 @@ NOINLINE bool ValidateMapContainer(
     const ContainerValidateParams* validate_params,
     ValidateContainerFunc* validate_keys_func,
     ValidateContainerFunc* validate_values_func) {
+  // SAFETY: The decoded pointer is bounds-checked before it is dereferenced.
   return ValidateParamsOffset(offset, validation_context) &&
-         ValidateMapImpl(DecodePointer(offset), validation_context,
-                         validate_params, validate_keys_func,
-                         validate_values_func);
+         ValidateMapImpl(UNSAFE_BUFFERS(DecodePointer(offset)),
+                         validation_context, validate_params,
+                         validate_keys_func, validate_values_func);
 }
 
 NOINLINE bool ValidateNonNullMapContainer(
@@ -449,8 +461,10 @@ NOINLINE bool ValidateStructImpl(const uint64_t* offset,
                                  ValidationContext* validation_context,
                                  ValidateStructFunc* validate_func) {
   ValidationContext::ScopedDepthTracker depth_tracker(validation_context);
+  // SAFETY: The decoded pointer is bounds-checked before it is dereferenced.
   return ValidateParamsOffset(offset, validation_context) &&
-         validate_func(DecodePointer(offset), validation_context);
+         validate_func(UNSAFE_BUFFERS(DecodePointer(offset)),
+                       validation_context);
 }
 
 NOINLINE bool ValidateNonNullStructImpl(const uint64_t* offset,
@@ -492,8 +506,10 @@ NOINLINE bool ValidateNonNullInlinedUnionImpl(
 bool ValidateNonInlinedUnionImpl(const uint64_t* offset,
                                  ValidationContext* validation_context,
                                  ValidateUnionFunc* validate_func) {
+  // SAFETY: The decoded pointer is bounds-checked before it is dereferenced.
   return ValidateParamsOffset(offset, validation_context) &&
-         validate_func(DecodePointer(offset), validation_context, false);
+         validate_func(UNSAFE_BUFFERS(DecodePointer(offset)),
+                       validation_context, false);
 }
 
 NOINLINE bool ValidateNonNullNonInlinedUnionImpl(

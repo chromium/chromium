@@ -416,8 +416,9 @@ struct ArraySerializer<MojomType, MaybeConstUserType, UserTypeIterator> {
     }
     ArrayIterator<Traits, UserType> iterator(*output);
     for (size_t i = 0; i < input->size(); ++i) {
-      if (!Deserialize<Element>(input->at(i).Get(), &iterator.GetNext(),
-                                message)) {
+      // SAFETY: Validated by the message validator.
+      if (!Deserialize<Element>(UNSAFE_BUFFERS(input->at(i).Get()),
+                                &iterator.GetNext(), message)) {
         return false;
       }
     }

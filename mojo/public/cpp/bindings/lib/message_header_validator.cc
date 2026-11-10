@@ -87,7 +87,9 @@ bool IsValidMessageHeader(const internal::MessageHeader* header,
   if (!internal::ValidatePointerNonNullable(header_v2->payload, 5,
                                             validation_context) ||
       !internal::ValidatePointer(header_v2->payload, validation_context) ||
-      !validation_context->ClaimMemory(header_v2->payload.Get(), 1)) {
+      // SAFETY: Bounds-checked by `ClaimMemory()` before use.
+      !validation_context->ClaimMemory(UNSAFE_BUFFERS(header_v2->payload.Get()),
+                                       1)) {
     return false;
   }
 
@@ -99,8 +101,11 @@ bool IsValidMessageHeader(const internal::MessageHeader* header,
   }
 
   if (!header_v2->payload_interface_ids.is_null()) {
-    size_t num_ids = header_v2->payload_interface_ids.Get()->size();
-    const uint32_t* ids = header_v2->payload_interface_ids.Get()->storage();
+    // SAFETY: Validated above.
+    const auto* ids_data =
+        UNSAFE_BUFFERS(header_v2->payload_interface_ids.Get());
+    size_t num_ids = ids_data->size();
+    const uint32_t* ids = ids_data->storage();
     for (size_t i = 0; i < num_ids; ++i) {
       if (!IsValidInterfaceId(UNSAFE_TODO(ids[i])) ||
           IsPrimaryInterfaceId(UNSAFE_TODO(ids[i]))) {

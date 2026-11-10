@@ -6,6 +6,7 @@
 #define MOJO_PUBLIC_CPP_BINDINGS_MAP_DATA_VIEW_H_
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "mojo/public/cpp/bindings/array_data_view.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
 #include "mojo/public/cpp/bindings/lib/map_data_internal.h"
@@ -22,9 +23,10 @@ class MapDataView {
 
   MapDataView() {}
 
+  // SAFETY: Validated by the message validator.
   MapDataView(Data_* data, Message* message)
-      : keys_(data ? data->keys.Get() : nullptr, message),
-        values_(data ? data->values.Get() : nullptr, message) {}
+      : keys_(data ? UNSAFE_BUFFERS(data->keys.Get()) : nullptr, message),
+        values_(data ? UNSAFE_BUFFERS(data->values.Get()) : nullptr, message) {}
 
   bool is_null() const {
     DCHECK_EQ(keys_.is_null(), values_.is_null());

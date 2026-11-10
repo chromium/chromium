@@ -20,6 +20,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
@@ -118,7 +119,9 @@ bool InterfaceEndpointClientAdapter::AcceptWithResponder(
   // Associated interface IDs are only included in header versions >= 2
   if (message->version() >= 2 &&
       !message->header_v2()->payload_interface_ids.is_null()) {
-    auto* ids_array = message->header_v2()->payload_interface_ids.Get();
+    // SAFETY: The message header has been validated.
+    auto* ids_array =
+        UNSAFE_BUFFERS(message->header_v2()->payload_interface_ids.Get());
     for (size_t i = 0; i < associated_handles.size() && i < ids_array->size();
          ++i) {
       ids_array->at(i) = associated_handles[i].id();

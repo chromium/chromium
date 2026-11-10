@@ -8,6 +8,7 @@
 #include <type_traits>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "mojo/public/cpp/bindings/array_data_view.h"
 #include "mojo/public/cpp/bindings/lib/array_serialization.h"
@@ -141,10 +142,11 @@ struct Serializer<MapDataView<Key, Value>, MaybeConstUserType> {
     std::vector<UserKey> keys;
     std::vector<UserValue> values;
 
-    if (!KeyArraySerializer::DeserializeElements(input->keys.Get(), &keys,
-                                                 message) ||
-        !ValueArraySerializer::DeserializeElements(input->values.Get(), &values,
-                                                   message)) {
+    // SAFETY: Validated by the message validator.
+    if (!KeyArraySerializer::DeserializeElements(
+            UNSAFE_BUFFERS(input->keys.Get()), &keys, message) ||
+        !ValueArraySerializer::DeserializeElements(
+            UNSAFE_BUFFERS(input->values.Get()), &values, message)) {
       return false;
     }
 

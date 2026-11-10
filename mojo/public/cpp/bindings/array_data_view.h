@@ -203,12 +203,15 @@ class ArrayDataViewImpl<T> {
       : data_(data), message_(message) {}
 
   void GetDataView(size_t index, T* output) {
-    *output = T(data_->at(index).Get(), message_);
+    // SAFETY: Validated by the message validator.
+    *output = T(UNSAFE_BUFFERS(data_->at(index).Get()), message_);
   }
 
   template <typename U>
   bool Read(size_t index, U* output) {
-    return Deserialize<T>(data_->at(index).Get(), output, message_);
+    // SAFETY: Validated by the message validator.
+    return Deserialize<T>(UNSAFE_BUFFERS(data_->at(index).Get()), output,
+                          message_);
   }
 
  protected:

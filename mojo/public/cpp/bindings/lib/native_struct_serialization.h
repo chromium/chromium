@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/pickle.h"
 #include "ipc/ipc_message.h"
@@ -80,7 +81,9 @@ struct NativeStructSerializerImpl {
     // Because ArrayHeader's num_bytes includes the length of the header and
     // Pickle's payload_size does not, we need to adjust the stored value
     // momentarily so Pickle can view the data.
-    ArrayHeader* header = reinterpret_cast<ArrayHeader*>(data->data.Get());
+    // SAFETY: Validated by the message validator.
+    ArrayHeader* header =
+        reinterpret_cast<ArrayHeader*>(UNSAFE_BUFFERS(data->data.Get()));
     DCHECK_GE(header->num_bytes, sizeof(ArrayHeader));
     header->num_bytes -= sizeof(ArrayHeader);
 
