@@ -22,12 +22,11 @@
 #include "chrome/browser/ash/login/reauth_stats.h"
 #include "chrome/browser/ash/login/signin/token_handle_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/account.h"
@@ -125,13 +124,6 @@ CreateDeviceAccountErrorNotification(
   return notification;
 }
 
-void SaveForceOnlineSignin(const Profile* const profile) {
-  const AccountId account_id =
-      multi_user_util::GetAccountIdFromProfile(profile);
-  user_manager::UserManager::Get()->SaveForceOnlineSignin(
-      account_id, true /* force_online_signin */);
-}
-
 std::u16string GetMessageBodyForSecondaryAccountErrors() {
   return l10n_util::GetStringUTF16(
       IDS_SIGNIN_ERROR_SECONDARY_ACCOUNT_BUBBLE_VIEW_MESSAGE);
@@ -180,6 +172,8 @@ SigninErrorNotifier::SigninErrorNotifier(
     : local_state_(CHECK_DEREF(local_state)),
       error_controller_(controller),
       profile_(profile),
+      account_id_(
+          CHECK_DEREF(AnnotatedAccountId::Get(profile->GetOriginalProfile()))),
       supervised_user_service_(CHECK_DEREF(supervised_user_service)),
       identity_manager_(identity_manager),
       account_manager_(AccountManagerFactory::Get()->GetAccountManager(
@@ -188,8 +182,8 @@ SigninErrorNotifier::SigninErrorNotifier(
           TokenHandleStoreFactory::Get()->GetTokenHandleStore()) {
   CHECK(account_manager_, base::NotFatalUntil::M161);
   // Create unique user-scoped notification IDs for this profile.
-  const user_manager::User& user = CHECK_DEREF(
-      BrowserContextHelper::Get()->GetUserByBrowserContext(profile));
+  const user_manager::User& user =
+      CHECK_DEREF(user_manager::UserManager::Get()->FindUser(account_id_));
   device_account_notification_id_ =
       CreateUserScopedNotificationId(kSettingsSigninUrl, user.username_hash());
   secondary_account_notification_id_ = CreateUserScopedNotificationId(
@@ -197,12 +191,10 @@ SigninErrorNotifier::SigninErrorNotifier(
       user.username_hash());
 
   error_controller_->AddObserver(this);
-  const AccountId account_id =
-      multi_user_util::GetAccountIdFromProfile(profile_);
-  if (token_handle_store_->HasToken(account_id) &&
-      !token_handle_store_->IsRecentlyChecked(account_id)) {
+  if (token_handle_store_->HasToken(account_id_) &&
+      !token_handle_store_->IsRecentlyChecked(account_id_)) {
     token_handle_store_->IsReauthRequired(
-        account_id, profile->GetURLLoaderFactory(),
+        account_id_, profile->GetURLLoaderFactory(),
         base::BindOnce(&SigninErrorNotifier::OnTokenHandleCheck,
                        weak_factory_.GetWeakPtr()));
   }
@@ -270,12 +262,10 @@ void SigninErrorNotifier::OnErrorChanged() {
     return;
   }
 
-  const AccountId account_id =
-      multi_user_util::GetAccountIdFromProfile(profile_);
   if (!IsAccountManagerAvailable(profile_)) {
     // If this flag is disabled, Chrome OS does not have a concept of Secondary
     // Accounts. Preserve existing behavior.
-    RecordReauthReason(local_state_.get(), account_id,
+    RecordReauthReason(local_state_.get(), account_id_,
                        ReauthReason::kSyncFailed);
     HandleDeviceAccountError(
         /*error_message=*/GetMessageBodyForDeviceAccountErrors(
@@ -288,7 +278,7 @@ void SigninErrorNotifier::OnErrorChanged() {
   const CoreAccountId primary_account_id =
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   if (error_account_id == primary_account_id) {
-    RecordReauthReason(local_state_.get(), account_id,
+    RecordReauthReason(local_state_.get(), account_id_,
                        ReauthReason::kSyncFailed);
     HandleDeviceAccountError(
         /*error_message=*/GetMessageBodyForDeviceAccountErrors(
@@ -310,12 +300,12 @@ void SigninErrorNotifier::HandleDeviceAccountError(
   // We need to save the flag in the local state because
   // TokenHandleStore::IsReauthRequired might fail on the login screen due to
   // lack of network connectivity.
-  SaveForceOnlineSignin(profile_);
+  user_manager::UserManager::Get()->SaveForceOnlineSignin(
+      account_id_, /*force_online_signin=*/true);
   message_center::MessageCenter::Get()->AddNotification(
       CreateDeviceAccountErrorNotification(
-          /*email=*/multi_user_util::GetAccountIdFromProfile(profile_)
-              .GetUserEmail(),
-          device_account_notification_id_, error_message));
+          /*email=*/account_id_.GetUserEmail(), device_account_notification_id_,
+          error_message));
 }
 
 void SigninErrorNotifier::HandleSecondaryAccountError(
@@ -334,8 +324,7 @@ void SigninErrorNotifier::OnCheckDummyGaiaTokenForAllAccounts(
   // Set `profile_id` for multi-user notification blocker. Note the primary user
   // account id is used to identify the profile for the blocker so it is used
   // instead of the secondary user account id.
-  notifier_id.profile_id =
-      multi_user_util::GetAccountIdFromProfile(profile_).GetUserEmail();
+  notifier_id.profile_id = account_id_.GetUserEmail();
 
   const bool are_all_accounts_migrated =
       AreAllAccountsMigrated(account_dummy_token_list) &&
@@ -378,8 +367,8 @@ void SigninErrorNotifier::OnCheckDummyGaiaTokenForAllAccounts(
 
 void SigninErrorNotifier::HandleSecondaryAccountReauthNotificationClick(
     std::optional<int> button_index) {
-  auto* user =
-      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile_.get());
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->FindUser(account_id_);
   if (user) {
     // TODO(crbug.com/447287122): Revisit here to see if there's a case where no
     // active session is there.

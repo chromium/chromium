@@ -107,6 +107,9 @@ class SigninErrorNotifier : public SigninErrorController::Observer,
   // The Profile this service belongs to.
   const raw_ptr<Profile> profile_;
 
+  // The AccountId of the user who owns `profile_`.
+  const AccountId account_id_;
+
   const raw_ref<supervised_user::SupervisedUserService>
       supervised_user_service_;
 

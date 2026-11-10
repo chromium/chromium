@@ -82,7 +82,6 @@ static_library("signin") {
     "//chrome/browser/sync",
     "//chrome/browser/sync:factories",
     "//chrome/browser/ui:chrome_pages",
-    "//chrome/browser/ui/ash/multi_user",
     "//chrome/common",
     "//chrome/common:constants",
     "//chromeos/ash/components/account_manager",
