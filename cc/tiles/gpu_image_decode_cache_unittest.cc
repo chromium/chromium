@@ -33,8 +33,6 @@
 #include "cc/test/test_tile_task_runner.h"
 #include "cc/test/transfer_cache_test_helper.h"
 #include "cc/tiles/raster_dark_mode_filter.h"
-#include "components/viz/common/gpu/context_cache_controller.h"
-#include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_raster_interface.h"
 #include "gpu/command_buffer/common/command_buffer_id.h"
@@ -98,25 +96,6 @@ class FakeGPUImageDecodeTestRasterInterface : public viz::TestRasterInterface,
     transfer_cache_helper_->DeleteEntryDirect(MakeEntryKey(type, id));
   }
 
-  void SetAggressivelyFreeResources(bool aggressively_free_resources) override {
-    viz::TestContextSupport::SetAggressivelyFreeResources(
-        aggressively_free_resources);
-    if (aggressively_free_resources) {
-      ++aggressively_free_resources_count_;
-    }
-  }
-
-  void ShallowFlushCHROMIUM() override {
-    viz::TestRasterInterface::ShallowFlushCHROMIUM();
-    ++shallow_flush_count_;
-  }
-
-  size_t aggressively_free_resources_count() const {
-    return aggressively_free_resources_count_;
-  }
-
-  size_t shallow_flush_count() const { return shallow_flush_count_; }
-
   std::pair<TransferCacheEntryType, uint32_t> MakeEntryKey(uint32_t type,
                                                            uint32_t id) {
     DCHECK_LE(type, static_cast<uint32_t>(TransferCacheEntryType::kLast));
@@ -127,8 +106,6 @@ class FakeGPUImageDecodeTestRasterInterface : public viz::TestRasterInterface,
   raw_ptr<TransferCacheTestHelper> transfer_cache_helper_;
   size_t mapped_entry_size_ = 0;
   base::AlignedHeapArray<uint8_t> mapped_entry_;
-  size_t aggressively_free_resources_count_ = 0;
-  size_t shallow_flush_count_ = 0;
 };
 
 class FakeRasterDarkModeFilter : public RasterDarkModeFilter {
@@ -4013,7 +3990,6 @@ class GpuImageDecodeCachePurgeOnTimerTest : public GpuImageDecodeCacheTest {
     current_default_handle_ = std::make_unique<
         base::SingleThreadTaskRunner::CurrentHandleOverrideForTesting>(
         task_runner_);
-    context_provider_->SetCacheControllerTaskRunnerForTesting(task_runner_);
 
     cache_ = CreateCache();
     client_id_ = cache_->GenerateClientId();
@@ -4257,65 +4233,6 @@ TEST_P(GpuImageDecodeCachePurgeOnTimerTest, NoCache) {
   cache_->UnrefImage(draw_image);
   EXPECT_EQ(cache_->GetWorkingSetBytesForTesting(), 0u);
   EXPECT_EQ(cache_->GetNumCacheEntriesForTesting(), 0u);
-}
-
-TEST_P(GpuImageDecodeCachePurgeOnTimerTest,
-       PurgeNotifiesCacheControllerAndFreesResourcesOnIdle) {
-  auto* test_support = static_cast<FakeGPUImageDecodeTestRasterInterface*>(
-      context_provider_->support());
-  auto* test_raster = static_cast<FakeGPUImageDecodeTestRasterInterface*>(
-      context_provider_->GetTestRasterInterface());
-
-  std::unique_ptr<viz::ContextCacheController::ScopedVisibility> visibility;
-  {
-    viz::RasterContextProvider::ScopedRasterContextLock context_lock(
-        context_provider_.get());
-    visibility = context_provider_->CacheController()->ClientBecameVisible();
-  }
-  FastForwardBy(base::Seconds(1));
-  EXPECT_EQ(test_support->aggressively_free_resources_count(), 1u);
-
-  CreateAndUnrefImage(1);
-
-  // Let the post-upload ContextCacheController idle task run 1s after upload.
-  FastForwardBy(base::Seconds(1));
-  EXPECT_EQ(test_support->aggressively_free_resources_count(), 2u);
-  EXPECT_EQ(test_raster->shallow_flush_count(), 0u);
-
-  // UnrefImage() queued a pending unlock (with no pending deletion). Flushing
-  // via ReduceCacheUsage() flushes the unlock and schedules 1s idle cleanup.
-  cache_->ReduceCacheUsage();
-  EXPECT_EQ(cache_->GetNumCacheEntriesForTesting(), 1u);
-  EXPECT_EQ(test_raster->shallow_flush_count(), 1u);
-  FastForwardBy(base::Seconds(1));
-  EXPECT_EQ(test_support->aggressively_free_resources_count(), 3u);
-
-  // 30s after upload, the entry is purged. TryFlushPendingWork() deletes the
-  // transfer cache entry (with no pending unlock), flushes, and notifies
-  // ContextCacheController so idle cleanup runs 1s later.
-  FastForwardBy(GpuImageDecodeCache::get_purge_interval() - base::Seconds(2));
-  EXPECT_EQ(cache_->GetNumCacheEntriesForTesting(), 0u);
-  EXPECT_FALSE(cache_->HasPendingPurgeTaskForTesting());
-  EXPECT_EQ(cache_->ids_pending_deletion_count_for_testing(), 0u);
-  EXPECT_EQ(test_raster->shallow_flush_count(), 2u);
-  EXPECT_EQ(test_support->aggressively_free_resources_count(), 3u);
-
-  FastForwardBy(base::Seconds(1));
-  EXPECT_EQ(test_support->aggressively_free_resources_count(), 4u);
-
-  // When there are no pending unlock or deletion operations,
-  // TryFlushPendingWork() is a no-op and does not flush or schedule idle work.
-  cache_->ReduceCacheUsage();
-  FastForwardBy(base::Seconds(1));
-  EXPECT_EQ(test_raster->shallow_flush_count(), 2u);
-  EXPECT_EQ(test_support->aggressively_free_resources_count(), 4u);
-
-  {
-    viz::RasterContextProvider::ScopedRasterContextLock context_lock(
-        context_provider_.get());
-    context_provider_->CacheController()->ClientBecameNotVisible(
-        std::move(visibility));
-  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
