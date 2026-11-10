@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_VIEW_FULL_WEBUI_H_
 #define CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_VIEW_FULL_WEBUI_H_
 
+#include <memory>
 #include <optional>
 
 #include "base/functional/callback.h"
@@ -21,6 +22,7 @@ class NavigationHandle;
 class LocationBar;
 class OmniboxController;
 class OmniboxView;
+class OmniboxPopupFullPresenter;
 class OmniboxPopupPresenterDelegate;
 class OmniboxPopupHandler;
 
@@ -32,6 +34,13 @@ class OmniboxPopupViewFullWebUI : public OmniboxPopupViewWebUI,
       OmniboxController* controller,
       LocationBar* location_bar,
       OmniboxPopupPresenterDelegate& presenter_delegate,
+      base::RepeatingClosure on_ready_callback = base::RepeatingClosure());
+  OmniboxPopupViewFullWebUI(
+      OmniboxView* omnibox_view,
+      OmniboxController* controller,
+      LocationBar* location_bar,
+      OmniboxPopupPresenterDelegate& presenter_delegate,
+      std::unique_ptr<OmniboxPopupHost> popup_host,
       base::RepeatingClosure on_ready_callback = base::RepeatingClosure());
   OmniboxPopupViewFullWebUI(const OmniboxPopupViewFullWebUI&) = delete;
   OmniboxPopupViewFullWebUI& operator=(const OmniboxPopupViewFullWebUI&) =
@@ -87,6 +96,14 @@ class OmniboxPopupViewFullWebUI : public OmniboxPopupViewWebUI,
   }
 
  private:
+  OmniboxPopupViewFullWebUI(
+      OmniboxView* omnibox_view,
+      OmniboxController* controller,
+      LocationBar* location_bar,
+      OmniboxPopupPresenterDelegate& presenter_delegate,
+      std::unique_ptr<OmniboxPopupFullPresenter> presenter,
+      base::RepeatingClosure on_ready_callback);
+
   // Gets the OmniboxPopupHandler associated with this view's WebUI.
   OmniboxPopupHandler* GetPopupHandler();
 

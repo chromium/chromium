@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -46,11 +47,28 @@ OmniboxPopupViewWebUI::OmniboxPopupViewWebUI(
     OmniboxController* controller,
     LocationBar* location_bar,
     OmniboxPopupPresenterDelegate& presenter_delegate,
-    std::unique_ptr<OmniboxPopupPresenterBase> presenter)
+    std::unique_ptr<OmniboxPopupPresenter> presenter)
+    // Braced initialization evaluates `presenter.get()` before
+    // `std::move(presenter)`.
+    : OmniboxPopupViewWebUI{omnibox_view,    controller,
+                            location_bar,    presenter_delegate,
+                            presenter.get(), std::move(presenter)} {}
+
+OmniboxPopupViewWebUI::OmniboxPopupViewWebUI(
+    OmniboxView* omnibox_view,
+    OmniboxController* controller,
+    LocationBar* location_bar,
+    OmniboxPopupPresenterDelegate& presenter_delegate,
+    OmniboxPopupPresenterBase* presenter,
+    std::unique_ptr<OmniboxPopupHost> popup_host)
     : OmniboxPopupView(controller),
       omnibox_view_(omnibox_view),
       location_bar_(location_bar),
-      presenter_(std::move(presenter)) {
+      presenter_delegate_(presenter_delegate),
+      popup_host_(std::move(popup_host)),
+      presenter_(presenter) {
+  CHECK(popup_host_);
+  CHECK(!presenter || presenter == popup_host_.get());
   controller->edit_model()->set_popup_view(this);
   edit_model_observation_.Observe(controller->edit_model());
 }
@@ -60,11 +78,15 @@ OmniboxPopupViewWebUI::~OmniboxPopupViewWebUI() {
 }
 
 bool OmniboxPopupViewWebUI::IsOpen() const {
-  return presenter_->IsShown();
+  return popup_host_->IsShown();
 }
 
 OmniboxPopupPresenterBase* OmniboxPopupViewWebUI::presenter() {
-  return presenter_.get();
+  return presenter_;
+}
+
+OmniboxPopupHost* OmniboxPopupViewWebUI::popup_host() const {
+  return popup_host_.get();
 }
 
 void OmniboxPopupViewWebUI::InvalidateLine(size_t line) {}
@@ -88,13 +110,12 @@ void OmniboxPopupViewWebUI::UpdatePopupAppearance() {
   const bool should_be_visible =
       controller()->popup_state_manager()->popup_state() !=
           OmniboxPopupState::kAim &&
-      (has_results_or_chips ||
-       (presenter_->delegate().is_full_webui_omnibox() &&
-        controller()->edit_model()->has_focus())) &&
+      (has_results_or_chips || (presenter_delegate_->is_full_webui_omnibox() &&
+                                controller()->edit_model()->has_focus())) &&
       !omnibox_view_->IsImeShowingPopup();
 
   if (!should_be_visible) {
-    presenter_->Hide();
+    popup_host_->Hide();
     // Update the popup state manager that the classic popup is closing.
     // Do this AFTER widget operations. LocationBarView is subscribed to state
     // changes and attempts to call `UpdatePopupAppearance()` again if the
@@ -109,13 +130,13 @@ void OmniboxPopupViewWebUI::UpdatePopupAppearance() {
   } else {
     const bool was_visible = IsOpen();
 
-    presenter_->Show();
+    popup_host_->Show();
     if (!was_visible) {
       // Set the request time to now when the popup is first shown. This ensures
       // that latency is measured from the user interaction to show, even if the
       // WebUI was preloaded at startup.
       WebUIContentsPreloadManager::GetInstance()->SetRequestTime(
-          presenter_->GetWebUIContent()->GetWebContents(),
+          popup_host_->GetWebUIContent()->GetWebContents(),
           base::TimeTicks::Now());
     }
     // Update the popup state manager to reflect the appropriate "opened" state.
@@ -128,14 +149,13 @@ void OmniboxPopupViewWebUI::UpdatePopupAppearance() {
             base::TimeTicks::Now() - construction_time();
         logged_first_shown_metric_ = true;
         base::UmaHistogramTimes(
-            base::StrCat({presenter_->GetPopupMetricPrefix(),
+            base::StrCat({presenter()->GetPopupMetricPrefix(),
                           ".ConstructionToFirstShownDuration"}),
             delta);
       }
     }
 
-    auto* controller = presenter()
-                           ->GetWebUIContent()
+    auto* controller = popup_host_->GetWebUIContent()
                            ->contents_wrapper()
                            ->GetWebUIController();
     if (auto* handler = controller ? controller->omnibox_handler() : nullptr) {
@@ -161,7 +181,7 @@ void OmniboxPopupViewWebUI::StepSelection(
     OmniboxPopupSelection::Direction direction,
     OmniboxPopupSelection::Step step) {
   auto* controller =
-      presenter()->GetWebUIContent()->contents_wrapper()->GetWebUIController();
+      popup_host_->GetWebUIContent()->contents_wrapper()->GetWebUIController();
   if (auto* handler = controller ? controller->omnibox_handler() : nullptr) {
     handler->SetAimButtonVisible(omnibox_view_->AimButtonVisible());
     if (!omnibox::ShouldUseWebUIOmniboxFullHandler()) {
@@ -177,7 +197,7 @@ void OmniboxPopupViewWebUI::StepSelection(
 void OmniboxPopupViewWebUI::OpenCurrentSelection(
     ui::mojom::WindowOpenDisposition disposition) {
   auto* controller =
-      presenter()->GetWebUIContent()->contents_wrapper()->GetWebUIController();
+      popup_host_->GetWebUIContent()->contents_wrapper()->GetWebUIController();
   if (auto* handler = controller ? controller->omnibox_handler() : nullptr) {
     if (!omnibox::ShouldUseWebUIOmniboxFullHandler()) {
       // Full webui omnibox avoids this code path by intentionally excluding

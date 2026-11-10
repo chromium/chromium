@@ -42,6 +42,7 @@
 #include "chrome/browser/ui/views/location_bar/webui_content_setting_image_control.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_host.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_full_webui.h"
@@ -324,8 +325,8 @@ void WebUILocationBar::SetFocusWithin(bool focused) {
   RefreshAiModePageAction();
 
   // Lets a popup that creates its content on demand start loading it.
-  if (focused && omnibox_popup_view_ && omnibox_popup_view_->presenter()) {
-    omnibox_popup_view_->presenter()->OnOmniboxFocused();
+  if (focused && omnibox_popup_view_ && omnibox_popup_view_->popup_host()) {
+    omnibox_popup_view_->popup_host()->OnOmniboxFocused();
   }
 
   NotifyFocusChanged();
@@ -1246,8 +1247,8 @@ void WebUILocationBar::OnPopupStateChanged(OmniboxPopupState old_state,
       }
       break;
     case OmniboxPopupState::kFull:
-      if (omnibox_popup_view_->presenter()) {
-        omnibox_popup_view_->presenter()->Hide();
+      if (omnibox_popup_view_->popup_host()) {
+        omnibox_popup_view_->popup_host()->Hide();
       }
       break;
     case OmniboxPopupState::kAim:
@@ -1266,8 +1267,8 @@ void WebUILocationBar::OnPopupStateChanged(OmniboxPopupState old_state,
       // updating the popup state.
       break;
     case OmniboxPopupState::kFull:
-      if (omnibox_popup_view_->presenter()) {
-        omnibox_popup_view_->presenter()->Show();
+      if (omnibox_popup_view_->popup_host()) {
+        omnibox_popup_view_->popup_host()->Show();
       }
       break;
     case OmniboxPopupState::kAim:
@@ -1364,17 +1365,17 @@ void WebUILocationBar::ClearInPopupStateTransition() {
 // which ensures the omnibox knows as soon as possible and ignores focus-loss
 // events during the whole time that the embedded permission prompt is showing.
 void WebUILocationBar::SetPermissionPromptShowing(bool showing) {
-  OmniboxPopupPresenterBase* presenter = nullptr;
-  // Get Omnibox popup presenter for AIM or normal omnibox, depending
-  // on which is showing.
+  OmniboxPopupHost* popup_host = nullptr;
+  // Get Omnibox popup host for AIM or normal omnibox, depending on which is
+  // showing.
   if (omnibox_popup_aim_presenter_ && omnibox_popup_aim_presenter_->IsShown()) {
-    presenter = omnibox_popup_aim_presenter_.get();
-  } else if (GetOmniboxPopupView() && GetOmniboxPopupView()->presenter() &&
-             GetOmniboxPopupView()->presenter()->IsShown()) {
-    presenter = GetOmniboxPopupView()->presenter();
+    popup_host = omnibox_popup_aim_presenter_.get();
+  } else if (GetOmniboxPopupView() && GetOmniboxPopupView()->popup_host() &&
+             GetOmniboxPopupView()->popup_host()->IsShown()) {
+    popup_host = GetOmniboxPopupView()->popup_host();
   }
-  if (presenter) {
-    presenter->SetPermissionPromptShowing(showing);
+  if (popup_host) {
+    popup_host->SetPermissionPromptShowing(showing);
   }
 }
 

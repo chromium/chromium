@@ -15,6 +15,7 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/frame/app_menu_button_observer.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_full_popup_webui_content.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "ui/events/event_observer.h"
 #include "ui/gfx/geometry/insets.h"
@@ -29,9 +30,7 @@ class AppMenuControl;
 class LocationBar;
 class OmniboxPopupPresenterDelegate;
 class OmniboxController;
-class OmniboxFullPopupWebUIContent;
 class OmniboxPopupUI;
-class OmniboxPopupWebUIBaseContent;
 template <typename T>
 class WebUIContentsWrapperT;
 
@@ -110,7 +109,7 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   // with `bottom = 0` when collapsed.
   gfx::Insets GetShadowMargin() const;
 
-  OmniboxFullPopupWebUIContent* GetWebUIContent();
+  OmniboxFullPopupWebUIContent* GetWebUIContent() override;
 
  private:
   // views::WidgetObserver:

@@ -15,7 +15,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_webui_creation.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_content_delegate.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
@@ -396,6 +398,26 @@ TEST_F(OmniboxPopupPresenterBaseTest, PermissionPromptShowingStateAndReset) {
   EXPECT_FALSE(presenter_->IsShown());
   presenter_->OnPromptRemoved();
   EXPECT_FALSE(presenter_->IsPermissionPromptPreventingClose());
+}
+
+TEST_F(OmniboxPopupPresenterBaseTest,
+       IsClosePreventedByDeactivationBlockerOrPermissionPrompt) {
+  base::test::ScopedFeatureList feature_list(
+      omnibox::kOmniboxKeepOpenOnFileSelection);
+  ShowWidget();
+  EXPECT_FALSE(presenter_->IsClosePrevented());
+
+  std::unique_ptr<OmniboxPopupDeactivationBlocker> blocker =
+      presenter_->CreateDeactivationBlocker();
+  ASSERT_TRUE(blocker);
+  EXPECT_TRUE(presenter_->IsClosePrevented());
+  blocker.reset();
+  EXPECT_FALSE(presenter_->IsClosePrevented());
+
+  presenter_->SetPermissionPromptShowing(true);
+  EXPECT_TRUE(presenter_->IsClosePrevented());
+  presenter_->ResetPermissionPromptShowingState();
+  EXPECT_FALSE(presenter_->IsClosePrevented());
 }
 
 TEST_F(OmniboxPopupPresenterBaseTest,
