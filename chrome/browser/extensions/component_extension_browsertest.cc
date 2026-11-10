@@ -2,16 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "base/auto_reset.h"
 #include "base/command_line.h"
+#include "base/containers/to_value_list.h"
+#include "base/functional/bind.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/webui_url_constants.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui_data_source.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_launcher.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_manager.h"
@@ -424,6 +438,152 @@ IN_PROC_BROWSER_TEST_F(ComponentExtensionBrowserTest,
   // IsExtensionIncognitoEnabled because `extension` is already null. Therefore,
   // the primary queue is cleared, but the Incognito queue is not.
   UnloadExtension(target->id());
+}
+
+// Tests for the WebUI origins extensions may access; see
+// GetAllowedWebUIOrigins().
+class ComponentExtensionWebUIOriginsBrowserTest
+    : public ComponentExtensionBrowserTest {
+ protected:
+  static constexpr char kImageHostPermission[] = "chrome://image/*";
+
+  // Loads an extension that declares `host_permissions`, and navigates the
+  // active tab to its page.
+  const Extension* LoadAndNavigate(
+      const std::vector<std::string>& host_permissions,
+      bool load_as_component) {
+    auto manifest =
+        base::DictValue()
+            .Set("name", "WebUI Origins Test")
+            .Set("version", "1.0")
+            .Set("manifest_version", 3)
+            .Set("host_permissions", base::ToValueList(host_permissions));
+    if (load_as_component) {
+      manifest.Set("key", kExtensionKey);
+    }
+
+    auto dir = std::make_unique<TestExtensionDir>();
+    dir->WriteManifest(manifest);
+    dir->WriteFile(FILE_PATH_LITERAL("page.html"),
+                   "<!doctype html><html><body></body></html>");
+    // Non-component extensions get install warnings for chrome:// host
+    // permissions they aren't allowed to request.
+    const Extension* extension = LoadExtension(
+        dir->UnpackedPath(), {.ignore_manifest_warnings = !load_as_component,
+                              .load_as_component = load_as_component});
+    test_dirs_.push_back(std::move(dir));
+    if (!extension) {
+      return nullptr;
+    }
+    if (!content::NavigateToURL(GetActiveWebContents(),
+                                extension->GetResourceURL("page.html"))) {
+      return nullptr;
+    }
+    return extension;
+  }
+
+  // Returns "loaded" or "error" for an <img> pointing at `url`.
+  std::string LoadImage(const GURL& url) {
+    return content::EvalJs(GetActiveWebContents(), content::JsReplace(R"(
+          new Promise(resolve => {
+            const img = new Image();
+            img.onload = () => resolve('loaded');
+            img.onerror = () => resolve('error');
+            img.src = $1;
+          }))",
+                                                                      url))
+        .ExtractString();
+  }
+
+  // Embeds `url` in a subframe and returns the subframe once its navigation
+  // finishes.
+  content::RenderFrameHost* EmbedSubframe(const GURL& url) {
+    content::WebContents* web_contents = GetActiveWebContents();
+    content::TestNavigationObserver observer(web_contents);
+    EXPECT_TRUE(content::ExecJs(web_contents, content::JsReplace(R"(
+          const iframe = document.createElement('iframe');
+          iframe.src = $1;
+          document.body.appendChild(iframe);
+        )",
+                                                                 url)));
+    observer.Wait();
+    return content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
+  }
+
+  // Registers a chrome:// data source at `source_name` that serves `body` for
+  // every path, and lets extensions embed it.
+  void AddTestSource(const std::string& source_name, std::string body) {
+    content::WebUIDataSource* source =
+        content::WebUIDataSource::CreateAndAdd(profile(), source_name);
+    source->SetRequestFilter(
+        base::BindRepeating([](const std::string& path) { return true; }),
+        base::BindRepeating(
+            [](const std::string& body, const std::string& path,
+               content::WebUIDataSource::GotDataCallback callback) {
+              std::move(callback).Run(
+                  base::MakeRefCounted<base::RefCountedString>(body));
+            },
+            std::move(body)));
+    source->DisableDenyXFrameOptions();
+  }
+
+  // Registers a chrome://image/ data source that serves an SVG, standing in
+  // for the SanitizedImageSource that the New Tab Page registers, and returns
+  // the image's URL.
+  GURL AddTestImageSource() {
+    AddTestSource(
+        chrome::kChromeUIImageHost,
+        "<svg xmlns='http://www.w3.org/2000/svg' width='1' height='1'/>");
+    return GURL("chrome://image/test.svg");
+  }
+
+ private:
+  std::vector<std::unique_ptr<TestExtensionDir>> test_dirs_;
+};
+
+// A component extension that declares the chrome://image/ host permission can
+// load it.
+IN_PROC_BROWSER_TEST_F(ComponentExtensionWebUIOriginsBrowserTest,
+                       DeclaredImageHostLoads) {
+  const GURL image_url = AddTestImageSource();
+  ASSERT_TRUE(LoadAndNavigate({kImageHostPermission},
+                              /*load_as_component=*/true));
+  EXPECT_EQ("loaded", LoadImage(image_url));
+}
+
+// A component extension that doesn't declare it can't. (The renderer blocks the
+// request; the host permission gate itself is covered by
+// WebUIOriginAccessTest.HostPermissionOptIns*.)
+IN_PROC_BROWSER_TEST_F(ComponentExtensionWebUIOriginsBrowserTest,
+                       UndeclaredImageHostBlocked) {
+  const GURL image_url = AddTestImageSource();
+  ASSERT_TRUE(LoadAndNavigate({}, /*load_as_component=*/true));
+  EXPECT_EQ("error", LoadImage(image_url));
+}
+
+// A non-component extension can't load chrome://image/, even if it declares it.
+// (The parser drops the permission and the renderer blocks the request; the
+// trust check itself is covered by
+// WebUIOriginAccessTest.HostPermissionOptInsRequireTrust.)
+IN_PROC_BROWSER_TEST_F(ComponentExtensionWebUIOriginsBrowserTest,
+                       NonComponentCannotUseImageHost) {
+  const GURL image_url = AddTestImageSource();
+  ASSERT_TRUE(LoadAndNavigate({kImageHostPermission},
+                              /*load_as_component=*/false));
+  EXPECT_EQ("error", LoadImage(image_url));
+}
+
+// Component extension frames are granted navigations to chrome://theme/.
+IN_PROC_BROWSER_TEST_F(ComponentExtensionWebUIOriginsBrowserTest,
+                       ComponentCanEmbedTheme) {
+  AddTestSource(chrome::kChromeUIThemeHost,
+                "<!doctype html><html><body>ok</body></html>");
+  ASSERT_TRUE(LoadAndNavigate({}, /*load_as_component=*/true));
+  content::RenderFrameHost* child =
+      EmbedSubframe(GURL(chrome::kChromeUIThemeURL));
+  ASSERT_TRUE(child);
+  EXPECT_EQ(GURL(chrome::kChromeUIThemeURL), child->GetLastCommittedURL());
+  EXPECT_FALSE(child->IsErrorDocument());
 }
 
 }  // namespace extensions

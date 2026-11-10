@@ -26,6 +26,7 @@ source_set("extensions") {
     "permissions/chrome_permission_message_provider.h",
     "permissions/chrome_permission_message_rules.h",
     "sync_helper.h",
+    "webui_origin_access.h",
   ]
 
   # Files that can only be included from here.
@@ -51,6 +52,7 @@ source_set("extensions") {
     "permissions/chrome_permission_message_provider.cc",
     "permissions/chrome_permission_message_rules.cc",
     "sync_helper.cc",
+    "webui_origin_access.cc",
   ]
 
   public_deps = [
@@ -173,6 +175,7 @@ source_set("unit_tests") {
     "permissions/permissions_data_unittest.cc",
     "permissions/settings_override_permission_unittest.cc",
     "sync_type_unittest.cc",
+    "webui_origin_access_unittest.cc",
   ]
 
   if (!is_android) {
@@ -201,6 +204,7 @@ source_set("unit_tests") {
     "//extensions/common",
     "//extensions/common:common_constants",
     "//extensions/strings",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }

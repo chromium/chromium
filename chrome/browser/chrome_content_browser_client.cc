@@ -449,7 +449,6 @@
 #include "services/network/public/mojom/web_transport.mojom.h"
 #include "services/network/public/mojom/websocket.mojom.h"
 #include "storage/browser/file_system/in_memory_file_system_backend.h"
-#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
@@ -687,6 +686,7 @@
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/browser/extensions/chrome_extension_cookies.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/common/extensions/webui_origin_access.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/extension_config_map.h"
 #include "extensions/browser/extension_config_map_factory.h"
@@ -6474,14 +6474,6 @@ ChromeContentBrowserClient::CreateNonNetworkNavigationURLLoaderFactory(
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 namespace {
-// Components of chrome that are implemented as extensions are allowed to use
-// chrome://resources/ URLs in workers.
-bool ExtensionWorkerHasAccessToChromeResources(
-    const extensions::Extension* extension) {
-  return extension && extension->is_extension() &&
-         Manifest::IsComponentLocation(extension->location());
-}
-
 void AddChromeSchemeFactoriesForWorker(
     content::BrowserContext* browser_context,
     const std::optional<url::Origin>& request_initiator,
@@ -6502,10 +6494,16 @@ void AddChromeSchemeFactoriesForWorker(
       registry->enabled_extensions().GetExtensionOrAppByURL(
           request_initiator->GetURL());
 
+  if (!extension) {
+    return;
+  }
+
   // Support for chrome:// scheme if appropriate for workers.
-  if (ExtensionWorkerHasAccessToChromeResources(extension)) {
-    std::vector<std::string> allowed_webui_hosts = {
-        content::kChromeUIResourcesHost};
+  // The allowed hosts are defined by extensions::GetAllowedWebUIOrigins().
+  std::vector<std::string> allowed_webui_hosts =
+      extensions::GetAllowedChromeUIHosts(*extension,
+                                          extensions::WebUIOriginUse::kWorker);
+  if (!allowed_webui_hosts.empty()) {
     factories->emplace(content::kChromeUIScheme,
                        content::CreateWebUIURLLoaderFactoryForWorker(
                            browser_context, content::kChromeUIScheme,
@@ -6801,34 +6799,11 @@ void ChromeContentBrowserClient::AddChromeSchemeFactories(
     return;
   }
 
-  std::vector<std::string> allowed_webui_hosts;
   // Support for chrome:// scheme if appropriate.
-  if ((extension->is_extension() || extension->is_platform_app()) &&
-      Manifest::IsComponentLocation(extension->location())) {
-    // Components of chrome that are implemented as extensions or platform apps
-    // are allowed to use chrome://resources/ and chrome://theme/ URLs.
-    allowed_webui_hosts.emplace_back(content::kChromeUIResourcesHost);
-    allowed_webui_hosts.emplace_back(chrome::kChromeUIThemeHost);
-    // For testing purposes chrome://webui-test/ is also allowed.
-    allowed_webui_hosts.emplace_back(chrome::kChromeUIWebUITestHost);
-    // chrome://image/ is only allowed for component extensions that explicitly
-    // declare it in their manifest's host permissions.
-    if (extension->permissions_data()->HasHostPermission(
-            GURL(chrome::kChromeUIImageURL))) {
-      allowed_webui_hosts.emplace_back(chrome::kChromeUIImageHost);
-    }
-  }
-  if (extension->is_extension() || extension->is_legacy_packaged_app() ||
-      (extension->is_platform_app() &&
-       Manifest::IsComponentLocation(extension->location()))) {
-    // Extensions, legacy packaged apps, and component platform apps are allowed
-    // to use chrome://favicon/, chrome://extension-icon/ and chrome://app-icon
-    // URLs. Hosted apps are not allowed because they are served via web servers
-    // (and are generally never given access to Chrome APIs).
-    allowed_webui_hosts.emplace_back(chrome::kChromeUIExtensionIconHost);
-    allowed_webui_hosts.emplace_back(chrome::kChromeUIFaviconHost);
-    allowed_webui_hosts.emplace_back(chrome::kChromeUIAppIconHost);
-  }
+  // The allowed hosts are defined by extensions::GetAllowedWebUIOrigins().
+  std::vector<std::string> allowed_webui_hosts =
+      extensions::GetAllowedChromeUIHosts(
+          *extension, extensions::WebUIOriginUse::kFrameSubresource);
   if (!allowed_webui_hosts.empty()) {
     factories->emplace(
         content::kChromeUIScheme,
@@ -6927,8 +6902,9 @@ void ChromeContentBrowserClient::
         render_process_id, browser_context, extension, factories);
   }
 
-  // This logic should match
-  // ChromeExtensionWebContentsObserver::RenderFrameCreated.
+  // The chrome:// hosts allowed here and the ChildProcessSecurityPolicy grants
+  // in ChromeExtensionWebContentsObserver::SetUpRenderFrameHost are both
+  // defined by extensions::GetAllowedWebUIOrigins().
   if (web_contents) {
     AddChromeSchemeFactories(render_process_id, frame_host, web_contents,
                              extension, factories);
@@ -8508,10 +8484,12 @@ void ChromeContentBrowserClient::
             Profile::FromBrowserContext(process->GetBrowserContext()));
     const extensions::Extension* extension =
         registry->enabled_extensions().GetExtensionOrAppByURL(script_url);
-    if (ExtensionWorkerHasAccessToChromeResources(extension)) {
+    if (extension) {
       auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
-      policy->GrantRequestOrigin(
-          child_id, url::Origin::Create(GURL(blink::kChromeUIResourcesURL)));
+      for (const url::Origin& origin : extensions::GetAllowedWebUIOrigins(
+               *extension, extensions::WebUIOriginUse::kWorker)) {
+        policy->GrantRequestOrigin(child_id, origin);
+      }
     }
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
