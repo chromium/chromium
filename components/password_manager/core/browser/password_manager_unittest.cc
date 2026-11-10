@@ -3708,8 +3708,6 @@ TEST_P(PasswordManagerTest, PasswordGenerationPresavePassword) {
                FormFetcher::State::NOT_WAITING;
   }));
 
-  base::HistogramTester histogram_tester;
-
   // The user accepts a generated password.
   form.password_value = PasswordString(u"password");
   manager()->OnPresaveGeneratedPassword(&driver_, form.form_data,
@@ -3735,8 +3733,6 @@ TEST_P(PasswordManagerTest, PasswordGenerationPresavePassword) {
       GetAllLoginsSync(store_.get()),
       ElementsAre(Pair(sanitized_updated_form.signon_realm,
                        ElementsAre(FormMatches(sanitized_updated_form)))));
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.GeneratedFormHasNoFormManager", false, 2);
 
   // The user removes the generated password.
   manager()->OnPasswordNoLongerGenerated(&driver_, updated_form.form_data);
@@ -3745,15 +3741,12 @@ TEST_P(PasswordManagerTest, PasswordGenerationPresavePassword) {
 }
 
 TEST_P(PasswordManagerTest, PasswordGenerationPresavePassword_NoFormManager) {
-  // Checks that GeneratedFormHasNoFormManager metric is sent if there is no
-  // corresponding PasswordFormManager for the given form. It should be uncommon
-  // case.
+  // Checks that nothing is presaved if there is no corresponding
+  // `PasswordFormManager` for the given form. It should be an uncommon case.
   std::vector<FormData> observed;
   manager()->OnPasswordFormsParsed(&driver_, observed);
   manager()->OnPasswordFormsRendered(&driver_, observed);
   task_environment_.RunUntilIdle();
-
-  base::HistogramTester histogram_tester;
 
   // The user accepts a generated password.
   FormData form_data(MakeSignUpFormData());
@@ -3765,8 +3758,6 @@ TEST_P(PasswordManagerTest, PasswordGenerationPresavePassword_NoFormManager) {
                                         form_data.fields()[1].value());
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(GetAllLoginsSync(store_.get()).empty());
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.GeneratedFormHasNoFormManager", true, 1);
 }
 
 TEST_P(PasswordManagerTest, PasswordGenerationPresavePasswordAndLogin) {
@@ -7295,7 +7286,8 @@ TEST_P(PasswordManagerTest, HatsSurveyNotTriggeredAfterAutomaticFilling) {
 TEST_P(PasswordManagerTest, MarksHasPasswordFormForFirstCctPageLoad) {
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   auto first_cct_page_recorder =
-      std::make_unique<FirstCctPageLoadPasswordsUkmRecorder>(ukm::SourceId(1));
+      std::make_unique<FirstCctPageLoadPasswordsUkmRecorder>(
+          static_cast<ukm::SourceId>(1));
 
   ON_CALL(client_, GetFirstCctPageLoadUkmRecorder)
       .WillByDefault(Return(first_cct_page_recorder.get()));

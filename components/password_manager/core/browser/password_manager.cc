@@ -739,8 +739,6 @@ void PasswordManager::OnPresaveGeneratedPassword(
   }
   PasswordFormManager* form_manager =
       GetMatchedManagerForForm(driver, form_data.renderer_id());
-  UMA_HISTOGRAM_BOOLEAN("PasswordManager.GeneratedFormHasNoFormManager",
-                        !form_manager);
   if (form_manager) {
     // TODO(crbug.com/513276101): Explicit construction of std::u16string
     // R-Value to be removed once OnPresaveGeneratedPassword converted to take

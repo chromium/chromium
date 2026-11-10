@@ -1764,16 +1764,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.GeneratedFormHasNoFormManager"
-    enum="BooleanFormManager" expires_after="2026-11-15">
-  <owner>kazinova@google.com</owner>
-  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
-  <summary>
-    When the generation state of a password was changed, records whether an
-    existing form corresponding to the password was found.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.HasPasswordChangeUrl" enum="Boolean"
     expires_after="2027-12-16">
   <owner>atsvirchkova@google.com</owner>
