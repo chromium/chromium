@@ -6710,28 +6710,10 @@
             ]
         }
     ],
-    "DelayMainJobStudy": [
+    "DelayMainJobFollowup": [
         {
             "platforms": [
                 "android",
-                "android_desktop"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithDelayMainJob",
-                    "params": {
-                        "AdditionalDelay": "100ms"
-                    },
-                    "enable_features": [
-                        "AdditionalDelayMainJob"
-                    ]
-                }
-            ]
-        }
-    ],
-    "DelayMainJobStudyDesktop": [
-        {
-            "platforms": [
                 "chromeos",
                 "linux",
                 "mac",
