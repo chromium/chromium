@@ -754,11 +754,12 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
   dialog_controller_->set_cable_transport_info(qr_string);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  if (IsChromeSigninPage(GetRenderFrameHost()) &&
-      switches::IsMagiChromePasskeyAutofillEnabled()) {
+  if (IsChromeSigninPage(GetRenderFrameHost())) {
     is_chrome_signin_request_ = true;
 #if BUILDFLAG(IS_WIN)
-    discovery_factory->set_force_hybrid_discovery(true);
+    if (switches::IsMagiChromePasskeyAutofillEnabled()) {
+      discovery_factory->set_force_hybrid_discovery(true);
+    }
 #endif  // BUILDFLAG(IS_WIN)
   }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
