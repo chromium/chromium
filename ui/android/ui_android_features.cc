@@ -13,9 +13,6 @@ BASE_FEATURE(kAndroidHDR, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidPreserveStatusBarInsetsWhenUnfocused,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAndroidUnifiedKeyboardShortcuts,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kAndroidUseCorrectDisplayWorkArea,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

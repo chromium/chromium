@@ -146,11 +146,6 @@ public class UiAndroidFeatureList {
     public static final MutableBooleanParamWithSafeDefault sSubmenuTypeOverrideForceDrilldown =
             sSubmenuTypeOverride.newBooleanParam("force_drilldown", false);
 
-    public static final MutableFlagWithSafeDefault sAndroidUnifiedKeyboardShortcuts =
-            newMutableFlagWithSafeDefault(
-                    UiAndroidFeatures.ANDROID_UNIFIED_KEYBOARD_SHORTCUTS,
-                    /* defaultValue= */ false);
-
     public static final List<CachedFlag> sFlagsCachedUiAndroid =
             List.of(
                     sAndroidPreserveStatusBarInsetsWhenUnfocused,

@@ -13966,7 +13966,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"android-unified-keyboard-shortcuts",
      flag_descriptions::kAndroidUnifiedKeyboardShortcutsName,
      flag_descriptions::kAndroidUnifiedKeyboardShortcutsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(ui::kAndroidUnifiedKeyboardShortcuts)},
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidUnifiedKeyboardShortcuts)},
 #endif
     {"enable-desktop-qr-code-detection",
      flag_descriptions::kEnableDesktopQrCodeDetectionName,
