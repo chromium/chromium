@@ -4,7 +4,6 @@
 
 """Utility functions for parsing XML strings into ElementTree nodes."""
 
-import sys
 import xml.etree.ElementTree as ET
 import xml.sax
 
@@ -50,20 +49,6 @@ class _FirstTagFinder(xml.sax.ContentHandler):
     raise _FirstTagFoundError()
 
 
-class _CommentedXMLParser(ET.XMLParser):
-  """A Python 2 compatible ElementTree builder that preserves comments."""
-
-  def __init__(self, *args, **kwargs):
-    super(_CommentedXMLParser, self).__init__(*args, **kwargs)
-    self._parser.CommentHandler = self.comment
-
-  def comment(self, data):
-
-    self._target.start(ET.Comment, {})
-    self._target.data(data)
-    self._target.end(ET.Comment)
-
-
 def GetTopLevelContent(file_content):
   """Returns a string of all the text in the xml file before the first tag."""
   handler = _FirstTagFinder()
@@ -94,14 +79,5 @@ def GetTopLevelContent(file_content):
 
 def ParseXMLString(raw_xml):
   """Parses raw_xml and returns an ElementTree node that includes comments."""
-  if sys.version_info.major == 2:
-    return ET.fromstring(raw_xml.encode('utf-8'), _CommentedXMLParser())
-  else:
-    if sys.version_info >= (3, 8, 0):
-      tree_builder = ET.TreeBuilder(insert_comments=True)
-    else:
-      # Print a warning if running with an old Py3 version (e.g macOS default).
-      print('Warning: Python < 3.8 detected, comments will be stripped.')
-      print('Consider running with depot_tools/python-bin/python3 instead.')
-      tree_builder = ET.TreeBuilder()
-    return ET.fromstring(raw_xml, ET.XMLParser(target=tree_builder))
+  tree_builder = ET.TreeBuilder(insert_comments=True)
+  return ET.fromstring(raw_xml, ET.XMLParser(target=tree_builder))
