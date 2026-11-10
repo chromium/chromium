@@ -4,7 +4,6 @@
 
 #include "components/send_tab_to_self/send_tab_to_self_bridge.h"
 
-#include <map>
 #include <utility>
 #include <vector>
 
@@ -41,15 +40,12 @@
 #include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/test_matchers.h"
 #include "components/sync_device_info/device_info.h"
-#include "components/sync_device_info/device_info_util.h"
-#include "components/sync_device_info/device_name_util.h"
 #include "components/sync_device_info/fake_device_info_tracker.h"
 #include "components/sync_device_info/remote_device_info.h"
 #include "components/sync_device_info/test_device_info_builder.h"
 #include "components/sync_sessions/fake_open_tabs_ui_delegate.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
-#include "components/sync_sessions/synced_session.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -61,7 +57,6 @@ using syncer::RemoteDeviceInfo;
 using testing::_;
 using testing::AllOf;
 using testing::ElementsAre;
-using testing::Field;
 using testing::IsEmpty;
 using testing::NotNull;
 using testing::Return;
@@ -1584,80 +1579,6 @@ TEST_F(SendTabToSelfBridgeTest, NotifyRemoteSendTabToSelfEntryAdded) {
   EXPECT_EQ(2ul, bridge()->GetAllGuids().size());
 }
 
-// Tests that `GetTargetDeviceInfoSortedList()` keeps all devices sharing a
-// display name and sorts them by recency.
-TEST_F(SendTabToSelfBridgeTest,
-       GetTargetDeviceInfoSortedList_DeduplicationBehavior) {
-  const std::string kRecentGuid = "guid1";
-  const std::string kOldGuid = "guid2";
-  const std::string kOlderGuid = "guid3";
-  const std::string kDeviceName = "device_name";
-
-  InitializeBridge();
-
-  // Create multiple `DeviceInfo` objects with the same name but different
-  // GUIDs.
-  std::unique_ptr<syncer::DeviceInfo> recent_device =
-      CreateDevice(kRecentGuid, kDeviceName, clock()->Now() - base::Days(1));
-  AddTestDevice(recent_device.get());
-
-  std::unique_ptr<syncer::DeviceInfo> old_device =
-      CreateDevice(kOldGuid, kDeviceName, clock()->Now() - base::Days(3));
-  AddTestDevice(old_device.get());
-
-  std::unique_ptr<syncer::DeviceInfo> older_device =
-      CreateDevice(kOlderGuid, kDeviceName, clock()->Now() - base::Days(5));
-  AddTestDevice(older_device.get());
-
-  // All devices should be returned without deduplication, sorted by recency.
-  RemoteDeviceInfo target_device_info1(
-      kDeviceName, recent_device->guid(), recent_device->form_factor(),
-      recent_device->os_type(), recent_device->last_updated_timestamp(),
-      /*has_high_precision_timestamp=*/false);
-  RemoteDeviceInfo target_device_info2(
-      kDeviceName, old_device->guid(), old_device->form_factor(),
-      old_device->os_type(), old_device->last_updated_timestamp(),
-      /*has_high_precision_timestamp=*/false);
-  RemoteDeviceInfo target_device_info3(
-      kDeviceName, older_device->guid(), older_device->form_factor(),
-      older_device->os_type(), older_device->last_updated_timestamp(),
-      /*has_high_precision_timestamp=*/false);
-
-  EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),
-              ElementsAre(target_device_info1, target_device_info2,
-                          target_device_info3));
-}
-
-// Verifies that non-Chrome `DeviceInfo` entries (such as Google Play Services
-// clients with an empty `chrome_version`) are excluded from
-// `GetTargetDeviceInfoSortedList()`.
-TEST_F(SendTabToSelfBridgeTest,
-       GetTargetDeviceInfoSortedList_ExcludesNonChromeDevices) {
-  InitializeBridge();
-
-  std::unique_ptr<syncer::DeviceInfo> chrome_device =
-      CreateDevice("chrome_guid", "chrome_device_name", clock()->Now());
-  AddTestDevice(chrome_device.get());
-
-  std::unique_ptr<syncer::DeviceInfo> non_chrome_device =
-      syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kAndroid)
-          .WithGuid("non_chrome_guid")
-          .WithClientName("non_chrome_device_name")
-          .WithChromeVersion("")
-          .WithLastUpdatedTimestamp(clock()->Now())
-          .Build();
-  AddTestDevice(non_chrome_device.get());
-
-  RemoteDeviceInfo target_device_info(
-      chrome_device->client_name(), chrome_device->guid(),
-      chrome_device->form_factor(), chrome_device->os_type(),
-      chrome_device->last_updated_timestamp(),
-      /*has_high_precision_timestamp=*/false);
-
-  EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),
-              ElementsAre(target_device_info));
-}
-
 // Tests that only devices that are not expired are returned.
 TEST_F(SendTabToSelfBridgeTest,
        GetTargetDeviceInfoSortedList_NoExpiredDevices) {
@@ -1679,153 +1600,6 @@ TEST_F(SendTabToSelfBridgeTest,
 
   EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),
               ElementsAre(target_device_info));
-}
-
-// Tests that `GetTargetDeviceInfoSortedList()` excludes the local device by
-// GUID while retaining remote devices that share the local device's name.
-TEST_F(SendTabToSelfBridgeTest, GetTargetDeviceInfoSortedList_NoLocalDevice) {
-  InitializeBridge();
-
-  std::unique_ptr<syncer::DeviceInfo> local_device =
-      CreateDevice(kLocalDeviceCacheGuid, kLocalDeviceName, clock()->Now());
-  AddTestDevice(local_device.get());
-
-  std::unique_ptr<syncer::DeviceInfo> other_local_device = CreateDevice(
-      "other_local_guid", kLocalDeviceName, clock()->Now() - base::Minutes(1));
-  AddTestDevice(other_local_device.get());
-
-  std::unique_ptr<syncer::DeviceInfo> other_device = CreateDevice(
-      "other_guid", "other_device_name", clock()->Now() - base::Minutes(2));
-  AddTestDevice(other_device.get());
-
-  RemoteDeviceInfo other_local_target_info(
-      other_local_device->client_name(), other_local_device->guid(),
-      other_local_device->form_factor(), other_local_device->os_type(),
-      other_local_device->last_updated_timestamp(),
-      /*has_high_precision_timestamp=*/false);
-  RemoteDeviceInfo other_target_info(
-      other_device->client_name(), other_device->guid(),
-      other_device->form_factor(), other_device->os_type(),
-      other_device->last_updated_timestamp(),
-      /*has_high_precision_timestamp=*/false);
-
-  EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),
-              ElementsAre(other_local_target_info, other_target_info));
-}
-
-// Tests that a device is no longer returned after time advances and it expires.
-TEST_F(SendTabToSelfBridgeTest,
-       GetTargetDeviceInfoSortedList_Updated_DeviceExpired) {
-  InitializeBridge();
-
-  // Set a device that is about to expire and a more recent device.
-  std::unique_ptr<syncer::DeviceInfo> older_device =
-      CreateDevice("older_guid", "older_name", clock()->Now() - base::Days(9));
-  AddTestDevice(older_device.get());
-
-  std::unique_ptr<syncer::DeviceInfo> recent_device = CreateDevice(
-      "recent_guid", "recent_name", clock()->Now() - base::Days(1));
-  AddTestDevice(recent_device.get());
-
-  RemoteDeviceInfo older_device_info(
-      older_device->client_name(), older_device->guid(),
-      older_device->form_factor(), older_device->os_type(),
-      older_device->last_updated_timestamp(),
-      /*has_high_precision_timestamp=*/false);
-  RemoteDeviceInfo recent_device_info(
-      recent_device->client_name(), recent_device->guid(),
-      recent_device->form_factor(), recent_device->os_type(),
-      recent_device->last_updated_timestamp(),
-      /*has_high_precision_timestamp=*/false);
-
-  // Make sure the list has the 2 devices.
-  EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),
-              ElementsAre(recent_device_info, older_device_info));
-
-  // Advance the time so that the older device expires.
-  clock()->Advance(base::Days(5));
-
-  // Make sure only the recent device is in the list.
-  EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),
-              ElementsAre(recent_device_info));
-}
-
-// Tests that a new device is also returned after it is added.
-TEST_F(SendTabToSelfBridgeTest,
-       GetTargetDeviceInfoSortedList_Updated_NewEntries) {
-  InitializeBridge();
-
-  // Set a valid device.
-  std::unique_ptr<syncer::DeviceInfo> device =
-      CreateDevice("guid", "name", clock()->Now());
-  AddTestDevice(device.get());
-
-  // Make sure the list has the device.
-  RemoteDeviceInfo device_info(device->client_name(), device->guid(),
-                               device->form_factor(), device->os_type(),
-                               device->last_updated_timestamp(),
-                               /*has_high_precision_timestamp=*/false);
-
-  EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),
-              ElementsAre(device_info));
-
-  // Add a new device.
-  std::unique_ptr<syncer::DeviceInfo> new_device =
-      CreateDevice("new_guid", "new_name", clock()->Now());
-  AddTestDevice(new_device.get());
-
-  // Make sure both devices are in the list.
-  RemoteDeviceInfo new_device_info(
-      new_device->client_name(), new_device->guid(), new_device->form_factor(),
-      new_device->os_type(), new_device->last_updated_timestamp(),
-      /*has_high_precision_timestamp=*/false);
-
-  EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),
-              ElementsAre(device_info, new_device_info));
-}
-
-// Tests the device list is updated if the last_updated_timestamp of one of
-// them changes. Regression test for crbug.com/1257573.
-TEST_F(SendTabToSelfBridgeTest,
-       GetTargetDeviceInfoSortedList_Updated_LastUpdatedTimestampChanged) {
-  InitializeBridge();
-
-  std::unique_ptr<syncer::DeviceInfo> device1 =
-      CreateDevice("guid1", "name1", clock()->Now() - base::Days(1));
-  AddTestDevice(device1.get());
-  std::unique_ptr<syncer::DeviceInfo> device2_old =
-      CreateDevice("guid2", "name2", clock()->Now() - base::Days(2));
-  AddTestDevice(device2_old.get());
-
-  EXPECT_THAT(
-      bridge()->GetTargetDeviceInfoSortedList(),
-      ElementsAre(
-          RemoteDeviceInfo(device1->client_name(), device1->guid(),
-                           device1->form_factor(), device1->os_type(),
-                           device1->last_updated_timestamp(),
-                           /*has_high_precision_timestamp=*/false),
-          RemoteDeviceInfo(device2_old->client_name(), device2_old->guid(),
-                           device2_old->form_factor(), device2_old->os_type(),
-                           device2_old->last_updated_timestamp(),
-                           /*has_high_precision_timestamp=*/false)));
-
-  // Simulate device 2 being used today.
-  std::unique_ptr<syncer::DeviceInfo> device2_new = CreateDevice(
-      device2_old->guid(), device2_old->client_name(), clock()->Now());
-  device_info_tracker()->Replace(device2_old.get(), device2_new.get());
-
-  // Device 2 is now the most recently used and should be the first on the list.
-  EXPECT_THAT(
-      bridge()->GetTargetDeviceInfoSortedList(),
-      ElementsAre(
-          RemoteDeviceInfo(device2_new->client_name(), device2_new->guid(),
-                           device2_new->form_factor(), device2_new->os_type(),
-                           device2_new->last_updated_timestamp(),
-                           /*has_high_precision_timestamp=*/false),
-          RemoteDeviceInfo(device1->client_name(), device1->guid(),
-                           device1->form_factor(), device1->os_type(),
-                           device1->last_updated_timestamp(),
-                           /*has_high_precision_timestamp=*/false)));
 }
 
 TEST_F(SendTabToSelfBridgeTest, NotifyRemoteSendTabToSelfEntryOpened) {
@@ -2117,191 +1891,6 @@ TEST_F(SendTabToSelfBridgeTest,
               ElementsAre(expected_device_info));
 }
 
-// Tests that the device info timestamp is used if it is more recent than the
-// sessions sync service timestamp.
-TEST_F(SendTabToSelfBridgeTest,
-       GetTargetDeviceInfoSortedList_UsesDeviceTimestampIfNewer) {
-  InitializeBridge();
-
-  const base::Time device_time = clock()->Now();
-  const base::Time session_time = clock()->Now() - base::Days(1);
-
-  std::unique_ptr<syncer::DeviceInfo> device =
-      CreateDevice("guid", "name", device_time);
-  AddTestDevice(device.get());
-
-  open_tabs_ui_delegate()->AddForeignSession("guid", session_time);
-
-  RemoteDeviceInfo expected_device_info(device->client_name(), device->guid(),
-                                        device->form_factor(),
-                                        device->os_type(), device_time,
-                                        /*has_high_precision_timestamp=*/true);
-
-  EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),
-              ElementsAre(expected_device_info));
-}
-
-// Tests that devices sharing a manufacturer and form factor use their base
-// display name in `GetTargetDeviceInfoSortedList()`.
-TEST_F(SendTabToSelfBridgeTest,
-       GetTargetDeviceInfoSortedList_ShortNameCollisionBehavior) {
-  InitializeBridge();
-
-  // Create two devices with the same manufacturer and form factor, but
-  // different models.
-  std::unique_ptr<syncer::DeviceInfo> device1 =
-      syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kAndroid)
-          .WithGuid("guid1")
-          .WithClientName("model1")
-          .WithModelName("model1")
-          .WithLastUpdatedTimestamp(clock()->Now())
-          .Build();
-  ASSERT_EQ("Manufacturer Phone", syncer::GetDeviceDisplayName(device1.get()));
-  AddTestDevice(device1.get());
-
-  std::unique_ptr<syncer::DeviceInfo> device2 =
-      syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kAndroid)
-          .WithGuid("guid2")
-          .WithClientName("model2")
-          .WithModelName("model2")
-          .WithLastUpdatedTimestamp(clock()->Now() - base::Seconds(1))
-          .Build();
-  ASSERT_EQ("Manufacturer Phone", syncer::GetDeviceDisplayName(device2.get()));
-  AddTestDevice(device2.get());
-
-  EXPECT_THAT(
-      bridge()->GetTargetDeviceInfoSortedList(),
-      ElementsAre(Field(&RemoteDeviceInfo::device_name, "Manufacturer Phone"),
-                  Field(&RemoteDeviceInfo::device_name, "Manufacturer Phone")));
-}
-
-// Tests that when `kSyncDisambiguateDeviceNamesWithChannel` is enabled,
-// multiple instances with the same base display name are disambiguated by
-// release channel.
-TEST_F(SendTabToSelfBridgeTest,
-       GetTargetDeviceInfoSortedList_DisambiguateMultipleChannels) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      syncer::kSyncDisambiguateDeviceNamesWithChannel);
-  InitializeBridge();
-
-  std::unique_ptr<syncer::DeviceInfo> device1 =
-      syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kAndroid)
-          .WithGuid("guid1")
-          .WithClientName("")
-          .WithManufacturerName("Google")
-          .WithModelName("Pixel 6")
-          .WithSyncUserAgent("Mozilla/5.0 channel(stable)")
-          .WithLastUpdatedTimestamp(clock()->Now())
-          .Build();
-  AddTestDevice(device1.get());
-
-  std::unique_ptr<syncer::DeviceInfo> device2 =
-      syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kAndroid)
-          .WithGuid("guid2")
-          .WithClientName("")
-          .WithManufacturerName("Google")
-          .WithModelName("Pixel 6")
-          .WithSyncUserAgent("Mozilla/5.0 channel(canary)")
-          .WithLastUpdatedTimestamp(clock()->Now() - base::Seconds(1))
-          .Build();
-  AddTestDevice(device2.get());
-
-  EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),
-              ElementsAre(Field(&RemoteDeviceInfo::device_name, "Google Phone"),
-                          Field(&RemoteDeviceInfo::device_name,
-                                "Google Phone (Canary)")));
-}
-
-TEST_F(SendTabToSelfBridgeTest,
-       GetTargetDeviceInfoSortedList_SessionTimestampPreventsExpiration) {
-  InitializeBridge();
-
-  // Device info is expired, but session is not expired.
-  const base::Time device_time = clock()->Now() - (kExpiryTime + base::Days(1));
-  const base::Time session_time = clock()->Now() - base::Days(1);
-
-  std::unique_ptr<syncer::DeviceInfo> device =
-      CreateDevice("guid", "name", device_time);
-  AddTestDevice(device.get());
-
-  open_tabs_ui_delegate()->AddForeignSession("guid", session_time);
-
-  EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(), SizeIs(1));
-}
-
-TEST_F(SendTabToSelfBridgeTest,
-       GetTargetDeviceInfoSortedList_DeviceTimestampPreventsExpiration) {
-  InitializeBridge();
-
-  // Device info is not expired, but session is expired.
-  const base::Time device_time = clock()->Now() - base::Days(1);
-  const base::Time session_time =
-      clock()->Now() - (kExpiryTime + base::Days(1));
-
-  std::unique_ptr<syncer::DeviceInfo> device =
-      CreateDevice("guid", "name", device_time);
-  AddTestDevice(device.get());
-
-  open_tabs_ui_delegate()->AddForeignSession("guid", session_time);
-
-  EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(), SizeIs(1));
-}
-
-// Verifies that `GetTargetDeviceInfoSortedList()` preserves the order from
-// `GetAllChromeDeviceInfo()` when two devices have identical timestamps.
-TEST_F(SendTabToSelfBridgeTest,
-       GetTargetDeviceInfoSortedList_StableSortIdenticalTimestamps) {
-  InitializeBridge();
-
-  const base::Time now = clock()->Now();
-  // Device 1 and Device 2 have the same timestamp. Add Device 1 first, then
-  // Device 2.
-  std::unique_ptr<syncer::DeviceInfo> device1 =
-      CreateDevice("guid1", "Device B", now);
-  std::unique_ptr<syncer::DeviceInfo> device2 =
-      CreateDevice("guid2", "Device A", now);
-
-  AddTestDevice(device1.get());
-  AddTestDevice(device2.get());
-
-  std::vector<RemoteDeviceInfo> list =
-      bridge()->GetTargetDeviceInfoSortedList();
-  // Stable sort should preserve the order from `GetAllChromeDeviceInfo()` if
-  // timestamps are equal. `FakeDeviceInfoTracker::GetAllChromeDeviceInfo()`
-  // returns devices in order of addition.
-  EXPECT_THAT(list, ElementsAre(Field(&RemoteDeviceInfo::cache_guid, "guid1"),
-                                Field(&RemoteDeviceInfo::cache_guid, "guid2")));
-}
-
-TEST_F(SendTabToSelfBridgeTest, GetTargetDeviceInfoSortedList_FormFactors) {
-  InitializeBridge();
-
-  std::unique_ptr<syncer::DeviceInfo> desktop =
-      syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kLinux)
-          .WithGuid("desktop_guid")
-          .WithClientName("desktop")
-          .WithLastUpdatedTimestamp(clock()->Now())
-          .Build();
-
-  std::unique_ptr<syncer::DeviceInfo> phone =
-      syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kAndroid)
-          .WithGuid("phone_guid")
-          .WithClientName("phone")
-          .WithLastUpdatedTimestamp(clock()->Now() - base::Seconds(1))
-          .Build();
-
-  AddTestDevice(desktop.get());
-  AddTestDevice(phone.get());
-
-  std::vector<RemoteDeviceInfo> list =
-      bridge()->GetTargetDeviceInfoSortedList();
-  EXPECT_THAT(list, UnorderedElementsAre(
-                        Field(&RemoteDeviceInfo::form_factor,
-                              syncer::DeviceInfo::FormFactor::kDesktop),
-                        Field(&RemoteDeviceInfo::form_factor,
-                              syncer::DeviceInfo::FormFactor::kPhone)));
-}
-
 TEST_F(SendTabToSelfBridgeTest, GetTargetDeviceInfo) {
   InitializeBridge();
 
@@ -2326,37 +1915,6 @@ TEST_F(SendTabToSelfBridgeTest, GetTargetDeviceInfo) {
   std::optional<RemoteDeviceInfo> invalid_device =
       bridge()->GetTargetDeviceInfo("non_existent_guid");
   EXPECT_FALSE(invalid_device.has_value());
-}
-
-// Tests that `GetTargetDeviceInfoSortedList()` excludes the local device by
-// GUID while keeping a remote device with the same display name and model.
-TEST_F(SendTabToSelfBridgeTest,
-       GetTargetDeviceInfoSortedList_ExcludeLocalDeviceBehavior) {
-  const std::string kMyLocalGuid = "unique_local_guid";
-  const std::string kMyDuplicateGuid = "unique_duplicate_guid";
-
-  // Initialize bridge.
-  InitializeBridgeWithoutDevice();
-
-  // Set local cache GUID.
-  SetLocalDeviceCacheGuid(kMyLocalGuid);
-
-  // Add a local device.
-  std::unique_ptr<syncer::DeviceInfo> local_device =
-      CreateDevice(kMyLocalGuid, "local_name", clock()->Now(), "local_model");
-
-  device_info_tracker()->Add(std::move(local_device));
-  device_info_tracker()->SetLocalCacheGuid(kMyLocalGuid);
-
-  // Add another device with the same name and model but different GUID.
-  std::unique_ptr<syncer::DeviceInfo> duplicate_device = CreateDevice(
-      kMyDuplicateGuid, "local_name", clock()->Now(), "local_model");
-  device_info_tracker()->Add(std::move(duplicate_device));
-
-  EXPECT_THAT(
-      bridge()->GetTargetDeviceInfoSortedList(),
-      ElementsAre(AllOf(Field(&RemoteDeviceInfo::cache_guid, kMyDuplicateGuid),
-                        Field(&RemoteDeviceInfo::device_name, "local_name"))));
 }
 
 // Tests that SendEntry records false for local device name availability and
