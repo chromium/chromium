@@ -20,6 +20,9 @@ struct FuzzySearchResult {
   raw_ptr<FuzzySearchItem> item = nullptr;
   double score = 0.0;
   std::vector<gfx::Range> match_ranges;
+  // First contiguous case- and accent-insensitive match of the query in
+  // `item->GetTitle()`, or `gfx::Range::InvalidRange()` if none.
+  gfx::Range exact_match_range = gfx::Range::InvalidRange();
 };
 
 // Performs fuzzy search over a collection of FuzzySearchItems (matching against

@@ -78,6 +78,17 @@ bool IsWordBoundary(std::u16string_view text, size_t i) {
   return i == 0 || base::IsUnicodeWhitespace(text[i - 1]);
 }
 
+gfx::Range FindExactMatchRange(
+    base::i18n::FixedPatternStringSearchIgnoringCaseAndAccents& search,
+    std::u16string_view text) {
+  size_t match_start = 0;
+  size_t match_length = 0;
+  if (!search.Search(text, &match_start, &match_length) || match_length == 0) {
+    return gfx::Range::InvalidRange();
+  }
+  return gfx::Range(match_start, match_start + match_length);
+}
+
 }  // namespace
 
 FuzzyFinder::FuzzyFinder(std::vector<raw_ptr<FuzzySearchItem>> searchable_items)
@@ -106,22 +117,22 @@ std::vector<FuzzySearchResult> FuzzyFinder::Find(std::u16string_view query,
     return {};
   }
 
-  std::vector<FuzzySearchResult> results;
-  results.reserve(max_results);
-
-  // Create the searcher object once per query; ignores case and accents.
   base::i18n::FixedPatternStringSearchIgnoringCaseAndAccents search{
       std::u16string(trimmed_query)};
+
+  std::vector<FuzzySearchResult> results;
+  results.reserve(max_results);
 
   // Iterate through the searchable items and perform the search.
   for (FuzzySearchItem* item : searchable_items_) {
     CHECK(item);
-    size_t match_start = 0;
-    size_t match_length = 0;
-    if (search.Search(item->GetTitle(), &match_start, &match_length)) {
+    const gfx::Range match_range =
+        FindExactMatchRange(search, item->GetTitle());
+    if (match_range.IsValid()) {
       FuzzySearchResult result;
       result.item = item;
-      result.match_ranges.emplace_back(match_start, match_start + match_length);
+      result.match_ranges.push_back(match_range);
+      result.exact_match_range = match_range;
       results.emplace_back(std::move(result));
       if (results.size() >= max_results) {
         break;
@@ -168,6 +179,15 @@ std::vector<FuzzySearchResult> FuzzyFinder::FuzzyFind(std::u16string_view query,
 
   if (results.size() > max_results) {
     results.resize(max_results);
+  }
+
+  if (!results.empty()) {
+    base::i18n::FixedPatternStringSearchIgnoringCaseAndAccents search{
+        std::u16string(trimmed_query)};
+    for (FuzzySearchResult& result : results) {
+      result.exact_match_range =
+          FindExactMatchRange(search, result.item->GetTitle());
+    }
   }
 
   return results;

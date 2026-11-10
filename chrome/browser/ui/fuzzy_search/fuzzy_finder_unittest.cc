@@ -365,6 +365,8 @@ TEST_F(FuzzyFinderTest, LegacyFindSubstringMatching) {
   EXPECT_THAT(ExtractResultTitles(results), ElementsAre(u"New Tab"));
   ASSERT_EQ(results.size(), 1u);
   EXPECT_EQ(results[0].item, items[0]);
+  EXPECT_THAT(results[0].match_ranges, ElementsAre(gfx::Range(0, 7)));
+  EXPECT_EQ(results[0].exact_match_range, gfx::Range(0, 7));
 }
 
 TEST_F(FuzzyFinderTest, FuzzyFindExactAndWordBoundaryRanking) {
@@ -623,15 +625,45 @@ TEST_F(FuzzyFinderTest, MatchRangesComputation) {
   auto prefix_results = prefix_finder.FuzzyFind(u"New", /*max_results=*/1);
   ASSERT_EQ(prefix_results.size(), 1u);
   EXPECT_THAT(prefix_results[0].match_ranges, ElementsAre(gfx::Range(0, 3)));
+  EXPECT_EQ(prefix_results[0].exact_match_range, gfx::Range(0, 3));
 
-  // 2. Infix match: "Open New Tab" with query "New" -> [5, 8)
+  // 2. Infix and inner-word matches: "Open New Tab" with query "New" -> [5, 8),
+  // and "New Incognito Window" with query "cognito" -> [6, 13).
   auto infix_items = CreateItems({{u"Open New Tab"}});
   FuzzyFinder infix_finder(infix_items);
   auto infix_results = infix_finder.FuzzyFind(u"New", /*max_results=*/1);
   ASSERT_EQ(infix_results.size(), 1u);
   EXPECT_THAT(infix_results[0].match_ranges, ElementsAre(gfx::Range(5, 8)));
+  EXPECT_EQ(infix_results[0].exact_match_range, gfx::Range(5, 8));
 
-  // 3. Multi-word acronym match: "Google Chrome Browser" with query "gcb"
+  auto inner_items = CreateItems({{u"New Incognito Window"}});
+  FuzzyFinder inner_finder(inner_items);
+  auto inner_results = inner_finder.FuzzyFind(u"cognito", /*max_results=*/1);
+  ASSERT_EQ(inner_results.size(), 1u);
+  EXPECT_THAT(inner_results[0].match_ranges, ElementsAre(gfx::Range(6, 13)));
+  EXPECT_EQ(inner_results[0].exact_match_range, gfx::Range(6, 13));
+
+  // 3. Accent-insensitive exact match: "Café Mode" with query "cafe" populates
+  // `exact_match_range` for the contiguous word while `match_ranges` reflects
+  // the unaccented fuzzy character alignment.
+  auto accent_items = CreateItems({{u"Café Mode"}});
+  FuzzyFinder accent_finder(accent_items);
+  auto accent_results = accent_finder.FuzzyFind(u"cafe", /*max_results=*/1);
+  ASSERT_EQ(accent_results.size(), 1u);
+  EXPECT_THAT(accent_results[0].match_ranges,
+              ElementsAre(gfx::Range(0, 3), gfx::Range(8, 9)));
+  EXPECT_EQ(accent_results[0].exact_match_range, gfx::Range(0, 4));
+
+  // 4. Transposition match: "Tab" with query "atb" merges into a single fuzzy
+  // range [0, 3) but is not an exact match, so `exact_match_range` is invalid.
+  auto swap_items = CreateItems({{u"Tab"}});
+  FuzzyFinder swap_finder(swap_items);
+  auto swap_results = swap_finder.FuzzyFind(u"atb", /*max_results=*/1);
+  ASSERT_EQ(swap_results.size(), 1u);
+  EXPECT_THAT(swap_results[0].match_ranges, ElementsAre(gfx::Range(0, 3)));
+  EXPECT_EQ(swap_results[0].exact_match_range, gfx::Range::InvalidRange());
+
+  // 5. Multi-word acronym match: "Google Chrome Browser" with query "gcb"
   auto multi_items = CreateItems({{u"Google Chrome Browser"}});
   FuzzyFinder multi_finder(multi_items);
   auto multi_results = multi_finder.FuzzyFind(u"gcb", /*max_results=*/1);
@@ -639,20 +671,24 @@ TEST_F(FuzzyFinderTest, MatchRangesComputation) {
   EXPECT_THAT(
       multi_results[0].match_ranges,
       ElementsAre(gfx::Range(0, 1), gfx::Range(7, 8), gfx::Range(14, 15)));
+  EXPECT_EQ(multi_results[0].exact_match_range, gfx::Range::InvalidRange());
 
-  // 4. Synonym match leaves match_ranges empty.
+  // 6. Synonym match leaves match_ranges empty and exact_match_range invalid.
   auto syn_items = CreateItems({{u"Settings", u"", {u"Preferences"}}});
   FuzzyFinder syn_finder(syn_items);
   auto syn_results = syn_finder.FuzzyFind(u"Preferences", /*max_results=*/1);
   ASSERT_EQ(syn_results.size(), 1u);
   EXPECT_TRUE(syn_results[0].match_ranges.empty());
+  EXPECT_EQ(syn_results[0].exact_match_range, gfx::Range::InvalidRange());
 
-  // 5. Secondary text match leaves match_ranges empty.
+  // 7. Secondary text match leaves match_ranges empty and exact_match_range
+  // invalid.
   auto sec_items = CreateItems({{u"Settings", u"Preferences"}});
   FuzzyFinder sec_finder(sec_items);
   auto sec_results = sec_finder.FuzzyFind(u"Preferences", /*max_results=*/1);
   ASSERT_EQ(sec_results.size(), 1u);
   EXPECT_TRUE(sec_results[0].match_ranges.empty());
+  EXPECT_EQ(sec_results[0].exact_match_range, gfx::Range::InvalidRange());
 }
 
 }  // namespace
