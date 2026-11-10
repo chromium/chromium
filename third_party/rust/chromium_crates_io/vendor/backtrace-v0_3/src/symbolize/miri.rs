@@ -1,7 +1,7 @@
 use core::ffi::c_void;
 use core::marker::PhantomData;
 
-use super::super::backtrace::miri::{resolve_addr, Frame};
+use super::super::backtrace::miri::{Frame, resolve_addr};
 use super::BytesOrWideString;
 use super::{ResolveWhat, SymbolName};
 

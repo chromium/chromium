@@ -200,7 +200,7 @@ impl<'a> Iterator for NoteIter<'a> {
         Some(Note {
             name: name,
             desc: desc,
-            tipe: nhdr.n_type.get(NE),
+            tipe: nhdr.n_type.get(NE).0,
         })
     }
 }

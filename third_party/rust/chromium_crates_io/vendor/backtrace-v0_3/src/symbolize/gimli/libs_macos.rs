@@ -25,9 +25,9 @@ pub(super) fn native_libraries() -> Vec<Library> {
 }
 
 fn native_library(i: u32) -> Option<Library> {
+    use object::NativeEndian;
     use object::macho;
     use object::read::macho::{MachHeader, Segment};
-    use object::NativeEndian;
 
     // Fetch the name of this library which corresponds to the path of
     // where to load it as well.

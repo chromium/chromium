@@ -8,6 +8,36 @@ As a unique component of `std` it may make exceptional changes in order to suppo
 
 ## [Unreleased]
 
+## [0.3.77](https://github.com/rust-lang/backtrace-rs/compare/backtrace-v0.3.76...backtrace-v0.3.77) - 2026-10-27
+
+### Platform Support
+- [AIX] Update backtrace to account for libc changes and fix XCOFF parsing
+- Swap `WaitForSingleObjectEx` with `WaitForSingleObject` and check result
+- Always use `extern "system"` for Windows imports
+- Micro-optimize code size of /proc/maps parsing code
+- simplify scan for xcoff .text section
+- deny(unsafe_op_in_unsafe_fn) in backtrace/win32.rs
+- GetCurrentProcess only once
+
+### Dependencies and versioning
+- Update ruzstd to 0.9.1
+- Disable fuchsia dependencies on `backtrace` when `backtrace` is disabled (rust-lang/backtrace-rs#776)
+- Update `object` to 0.40.0
+- Upgrade addr2line, libloading, miniz_oxide
+- Bump rustc-demangle
+- update to edition 2024 and MSRV 1.88
+
+### CI and publishing
+- A bunch of CI work motivated by `zizmor`
+- Remove redundant `homepage` from Cargo.toml
+- Switch to trusted publishing
+- Test i686-msvc as a target only
+- Fix apt-get install failures in CI
+- Fix accuracy test with new cargo build layout
+- don't test -no_uuid in CI
+- Fix line-tables-only on macOS 15
+- Fix `function_casts_as_integer` failures
+
 ## [0.3.76](https://github.com/rust-lang/backtrace-rs/compare/backtrace-v0.3.75...backtrace-v0.3.76) - 2025-09-26
 
 ### Behavior

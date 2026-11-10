@@ -1,5 +1,5 @@
 use super::mystd::path::Path;
-use super::{gimli, Context, Endian, EndianSlice, Mapping, Stash};
+use super::{Context, Endian, EndianSlice, Mapping, Stash, gimli};
 use alloc::boxed::Box;
 use alloc::sync::Arc;
 use alloc::vec::Vec;
@@ -163,7 +163,7 @@ fn find_header(data: &'_ [u8]) -> Option<(&'_ Mach, &'_ [u8])> {
 pub struct Object<'a> {
     endian: NativeEndian,
     data: &'a [u8],
-    dwarf: Option<&'a [MachSection]>,
+    dwarf: Option<(&'a MachSegment, &'a [MachSection])>,
     syms: Vec<(&'a [u8], u64)>,
     syms_sort_by_name: bool,
     // Only set for executables/libraries, and not the source object files.
@@ -185,7 +185,10 @@ impl<'a> Object<'a> {
             if let Some((segment, section_data)) = MachSegment::from_command(command).ok()? {
                 // Object files should have all sections in a single unnamed segment load command.
                 if segment.name() == b"__DWARF" || (is_object && segment.name() == b"") {
-                    dwarf = segment.sections(endian, section_data).ok();
+                    dwarf = segment
+                        .sections(endian, section_data)
+                        .ok()
+                        .map(|sections| (segment, sections));
                 }
             } else if let Some(symtab) = command.symtab().ok()? {
                 let symbols = symtab.symbols::<Mach, _>(endian, data).ok()?;
@@ -228,16 +231,19 @@ impl<'a> Object<'a> {
 
     pub fn section(&self, _: &Stash, name: &str) -> Option<&'a [u8]> {
         let name = name.as_bytes();
-        let dwarf = self.dwarf?;
-        let section = dwarf.into_iter().find(|section| {
-            let section_name = section.name();
-            section_name == name || {
-                section_name.starts_with(b"__")
-                    && name.starts_with(b".")
-                    && &section_name[2..] == &name[1..]
-            }
-        })?;
-        Some(section.data(self.endian, self.data).ok()?)
+        let (segment, sections) = self.dwarf?;
+        let (section, offset) = segment
+            .section_offsets(self.endian, sections)
+            .filter_map(|section| section.ok())
+            .find(|(section, _offset)| {
+                let section_name = section.name();
+                section_name == name || {
+                    section_name.starts_with(b"__")
+                        && name.starts_with(b".")
+                        && &section_name[2..] == &name[1..]
+                }
+            })?;
+        Some(section.data(self.endian, self.data, offset).ok()?)
     }
 
     pub fn search_symtab<'b>(&'b self, addr: u64) -> Option<&'b [u8]> {

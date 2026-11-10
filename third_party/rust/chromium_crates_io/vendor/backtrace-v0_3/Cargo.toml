@@ -10,10 +10,10 @@
 # See Cargo.toml.orig for the original contents.
 
 [package]
-edition = "2021"
-rust-version = "1.82.0"
+edition = "2024"
+rust-version = "1.88.0"
 name = "backtrace"
-version = "0.3.76"
+version = "0.3.77"
 authors = ["The Rust Project Developers"]
 build = false
 exclude = ["/ci/"]
@@ -25,7 +25,6 @@ autobenches = false
 description = """
 A library to acquire a stack trace (backtrace) at runtime in a Rust program.
 """
-homepage = "https://github.com/rust-lang/backtrace-rs"
 documentation = "https://docs.rs/backtrace"
 readme = "README.md"
 license = "MIT OR Apache-2.0"
@@ -62,7 +61,6 @@ required-features = ["std"]
 name = "accuracy"
 path = "tests/accuracy/main.rs"
 required-features = ["std"]
-edition = "2021"
 
 [[test]]
 name = "concurrent-panics"
@@ -94,7 +92,6 @@ required-features = ["std"]
 name = "smoke"
 path = "tests/smoke.rs"
 required-features = ["std"]
-edition = "2021"
 
 [[bench]]
 name = "benchmarks"
@@ -110,7 +107,7 @@ optional = true
 default-features = false
 
 [dependencies.rustc-demangle]
-version = "0.1.24"
+version = "0.1.27"
 
 [dependencies.serde]
 version = "1.0"
@@ -118,13 +115,13 @@ features = ["derive"]
 optional = true
 
 [dev-dependencies.libloading]
-version = "0.8"
+version = "0.9"
 
 [target.'cfg(any(windows, target_os = "cygwin"))'.dependencies.windows-link]
 version = "0.2"
 
 [target.'cfg(not(all(windows, target_env = "msvc", not(target_vendor = "uwp"))))'.dependencies.addr2line]
-version = "0.25.0"
+version = "0.27.0"
 default-features = false
 
 [target.'cfg(not(all(windows, target_env = "msvc", not(target_vendor = "uwp"))))'.dependencies.libc]
@@ -132,11 +129,11 @@ version = "0.2.156"
 default-features = false
 
 [target.'cfg(not(all(windows, target_env = "msvc", not(target_vendor = "uwp"))))'.dependencies.miniz_oxide]
-version = "0.8"
+version = "0.9"
 default-features = false
 
 [target.'cfg(not(all(windows, target_env = "msvc", not(target_vendor = "uwp"))))'.dependencies.object]
-version = "0.37.0"
+version = "0.40.0"
 features = [
     "read_core",
     "elf",
@@ -149,7 +146,7 @@ features = [
 default-features = false
 
 [target.'cfg(not(all(windows, target_env = "msvc", not(target_vendor = "uwp"))))'.dependencies.ruzstd]
-version = "0.8.1"
+version = "0.9.1"
 optional = true
 default-features = false
 

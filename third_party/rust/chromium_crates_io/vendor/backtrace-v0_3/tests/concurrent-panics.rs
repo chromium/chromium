@@ -1,8 +1,8 @@
 use std::env;
 use std::panic;
 use std::process::Command;
-use std::sync::atomic::{AtomicBool, Ordering::SeqCst};
 use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering::SeqCst};
 use std::thread;
 
 const PANICS: usize = 100;
@@ -45,9 +45,11 @@ fn parent() {
 fn child() {
     let done = Arc::new(AtomicBool::new(false));
     let done2 = done.clone();
-    let a = thread::spawn(move || loop {
-        if done2.load(SeqCst) {
-            break format!("{:?}", backtrace::Backtrace::new());
+    let a = thread::spawn(move || {
+        loop {
+            if done2.load(SeqCst) {
+                break format!("{:?}", backtrace::Backtrace::new());
+            }
         }
     });
 
@@ -55,10 +57,12 @@ fn child() {
         .map(|_| {
             thread::spawn(|| {
                 for _ in 0..PANICS {
-                    assert!(panic::catch_unwind(|| {
-                        panic!();
-                    })
-                    .is_err());
+                    assert!(
+                        panic::catch_unwind(|| {
+                            panic!();
+                        })
+                        .is_err()
+                    );
                 }
             })
         })

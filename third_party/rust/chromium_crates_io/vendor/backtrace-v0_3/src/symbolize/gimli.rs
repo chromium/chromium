@@ -2,8 +2,8 @@
 //!
 //! This is the default symbolication implementation for Rust.
 
-use self::gimli::read::EndianSlice;
 use self::gimli::NativeEndian as Endian;
+use self::gimli::read::EndianSlice;
 use self::mmap::Mmap;
 use self::stash::Stash;
 use super::BytesOrWideString;

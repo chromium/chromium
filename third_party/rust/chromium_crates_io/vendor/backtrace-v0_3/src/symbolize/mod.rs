@@ -10,7 +10,7 @@ cfg_if::cfg_if! {
 use super::backtrace::Frame;
 use super::types::BytesOrWideString;
 use core::ffi::c_void;
-use rustc_demangle::{try_demangle, Demangle};
+use rustc_demangle::{Demangle, try_demangle};
 
 /// Resolve an address to a symbol, passing the symbol to the specified
 /// closure.

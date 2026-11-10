@@ -8,6 +8,7 @@
 //!
 //! Note that all dbghelp support is loaded dynamically, see `src/dbghelp.rs`
 //! for more information about that.
+#![deny(unsafe_op_in_unsafe_fn)]
 
 use super::super::{dbghelp, windows_sys::*};
 use core::ffi::c_void;
@@ -97,11 +98,12 @@ struct MyContext(CONTEXT);
 #[inline(always)]
 pub unsafe fn trace(cb: &mut dyn FnMut(&super::Frame) -> bool) {
     // Allocate necessary structures for doing the stack walk
-    let process = GetCurrentProcess();
-    let thread = GetCurrentThread();
+    let process = unsafe { GetCurrentProcess() };
+    let thread = unsafe { GetCurrentThread() };
 
-    let mut context = mem::zeroed::<MyContext>();
-    RtlCaptureContext(&mut context.0);
+    // This is a classic C-style out-ptr struct. Zero it to start.
+    let mut context = unsafe { mem::zeroed::<MyContext>() };
+    unsafe { RtlCaptureContext(&mut context.0) };
 
     // Ensure this process's symbols are initialized
     let dbghelp = match dbghelp::init() {
@@ -112,14 +114,13 @@ pub unsafe fn trace(cb: &mut dyn FnMut(&super::Frame) -> bool) {
     let function_table_access = dbghelp.SymFunctionTableAccess64();
     let get_module_base = dbghelp.SymGetModuleBase64();
 
-    let process_handle = GetCurrentProcess();
-
     // Attempt to use `StackWalkEx` if we can, but fall back to `StackWalk64`
     // since it's in theory supported on more systems.
-    match (*dbghelp.dbghelp()).StackWalkEx() {
+    match unsafe { (*dbghelp.dbghelp()).StackWalkEx() } {
         #[allow(non_snake_case)]
         Some(StackWalkEx) => {
-            let mut inner: STACKFRAME_EX = mem::zeroed();
+            // This is a classic C-style out-ptr struct. Zero it to start.
+            let mut inner: STACKFRAME_EX = unsafe { mem::zeroed() };
             inner.StackFrameSize = mem::size_of::<STACKFRAME_EX>() as u32;
             let mut frame = super::Frame {
                 inner: Frame {
@@ -133,20 +134,22 @@ pub unsafe fn trace(cb: &mut dyn FnMut(&super::Frame) -> bool) {
                 _ => unreachable!(),
             };
 
-            while StackWalkEx(
-                image as u32,
-                process,
-                thread,
-                frame_ptr,
-                &mut context.0 as *mut CONTEXT as *mut _,
-                None,
-                Some(function_table_access),
-                Some(get_module_base),
-                None,
-                0,
-            ) == TRUE
-            {
-                frame.inner.base_address = get_module_base(process_handle, frame.ip() as _) as _;
+            while unsafe {
+                StackWalkEx(
+                    image as u32,
+                    process,
+                    thread,
+                    frame_ptr,
+                    &mut context.0 as *mut CONTEXT as *mut _,
+                    None,
+                    Some(function_table_access),
+                    Some(get_module_base),
+                    None,
+                    0,
+                ) == TRUE
+            } {
+                frame.inner.base_address =
+                    unsafe { get_module_base(process, frame.ip() as _) as _ };
 
                 if !cb(&frame) {
                     break;
@@ -156,7 +159,8 @@ pub unsafe fn trace(cb: &mut dyn FnMut(&super::Frame) -> bool) {
         None => {
             let mut frame = super::Frame {
                 inner: Frame {
-                    stack_frame: StackFrame::Old(mem::zeroed()),
+                    // This is a classic C-style out-ptr struct. Zero it to start.
+                    stack_frame: StackFrame::Old(unsafe { mem::zeroed() }),
                     base_address: 0 as _,
                 },
             };
@@ -166,19 +170,21 @@ pub unsafe fn trace(cb: &mut dyn FnMut(&super::Frame) -> bool) {
                 _ => unreachable!(),
             };
 
-            while dbghelp.StackWalk64()(
-                image as u32,
-                process,
-                thread,
-                frame_ptr,
-                &mut context.0 as *mut CONTEXT as *mut _,
-                None,
-                Some(function_table_access),
-                Some(get_module_base),
-                None,
-            ) == TRUE
-            {
-                frame.inner.base_address = get_module_base(process_handle, frame.ip() as _) as _;
+            while unsafe {
+                dbghelp.StackWalk64()(
+                    image as u32,
+                    process,
+                    thread,
+                    frame_ptr,
+                    &mut context.0 as *mut CONTEXT as *mut _,
+                    None,
+                    Some(function_table_access),
+                    Some(get_module_base),
+                    None,
+                ) == TRUE
+            } {
+                frame.inner.base_address =
+                    unsafe { get_module_base(process, frame.ip() as _) as _ };
 
                 if !cb(&frame) {
                     break;

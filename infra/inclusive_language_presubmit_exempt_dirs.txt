@@ -606,7 +606,6 @@ third_party/pylint/pylint
 third_party/rapidhash
 third_party/rust/chromium_crates_io/patches/regex-lite-v0_1
 third_party/rust/chromium_crates_io/supply-chain
-third_party/rust/chromium_crates_io/vendor/addr2line-v0_25
 third_party/rust/chromium_crates_io/vendor/ahash-v0_8
 third_party/rust/chromium_crates_io/vendor/ahash-v0_8/.github/workflows
 third_party/rust/chromium_crates_io/vendor/aho-corasick-v1/.github/workflows
@@ -617,7 +616,6 @@ third_party/rust/chromium_crates_io/vendor/antlr4rust-v0_5/src
 third_party/rust/chromium_crates_io/vendor/anyhow-v1
 third_party/rust/chromium_crates_io/vendor/anyhow-v1/.github/workflows
 third_party/rust/chromium_crates_io/vendor/array-init-v2/.github/workflows
-third_party/rust/chromium_crates_io/vendor/backtrace-v0_3/.github/workflows
 third_party/rust/chromium_crates_io/vendor/base64-v0_23
 third_party/rust/chromium_crates_io/vendor/bit-set-v0_8
 third_party/rust/chromium_crates_io/vendor/bit-set-v0_8/.github/workflows
@@ -646,8 +644,6 @@ third_party/rust/chromium_crates_io/vendor/erased-serde-v0_4/.github/workflows
 third_party/rust/chromium_crates_io/vendor/flate2-v1
 third_party/rust/chromium_crates_io/vendor/fs2-v0_4
 third_party/rust/chromium_crates_io/vendor/getrandom-v0_4
-third_party/rust/chromium_crates_io/vendor/gimli-v0_32
-third_party/rust/chromium_crates_io/vendor/gimli-v0_32/src/read
 third_party/rust/chromium_crates_io/vendor/hashbrown-v0_17
 third_party/rust/chromium_crates_io/vendor/hashbrown-v0_17/src
 third_party/rust/chromium_crates_io/vendor/hex-v0_4

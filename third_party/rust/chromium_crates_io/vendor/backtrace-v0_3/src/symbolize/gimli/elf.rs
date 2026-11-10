@@ -1,11 +1,11 @@
 #![allow(clippy::useless_conversion)]
 
+use super::Either;
 use super::mystd::ffi::OsStr;
 use super::mystd::fs;
 use super::mystd::os::unix::ffi::OsStrExt;
 use super::mystd::path::{Path, PathBuf};
-use super::Either;
-use super::{gimli, Context, Endian, EndianSlice, Mapping, Stash};
+use super::{Context, Endian, EndianSlice, Mapping, Stash, gimli};
 use alloc::string::String;
 use alloc::sync::Arc;
 use alloc::vec::Vec;
@@ -13,9 +13,9 @@ use core::convert::{TryFrom, TryInto};
 use core::str;
 #[cfg(feature = "ruzstd")]
 use object::elf::ELFCOMPRESS_ZSTD;
-use object::elf::{ELFCOMPRESS_ZLIB, ELF_NOTE_GNU, NT_GNU_BUILD_ID, SHF_COMPRESSED};
-use object::read::elf::{CompressionHeader, FileHeader, SectionHeader, SectionTable, Sym};
+use object::elf::{ELF_NOTE_GNU, ELFCOMPRESS_ZLIB, NT_GNU_BUILD_ID, SHF_COMPRESSED};
 use object::read::StringTable;
+use object::read::elf::{CompressionHeader, FileHeader, SectionHeader, SectionTable, Sym};
 use object::{BigEndian, Bytes, NativeEndian};
 
 #[cfg(target_pointer_width = "32")]
@@ -219,8 +219,7 @@ impl<'a> Object<'a> {
             // Check for DWARF-standard (gABI) compression, i.e., as generated
             // by ld's `--compress-debug-sections=zlib-gabi` and
             // `--compress-debug-sections=zstd` flags.
-            let flags: u64 = section.sh_flags(self.endian).into();
-            if (flags & u64::from(SHF_COMPRESSED)) == 0 {
+            if !section.sh_flags(self.endian).contains(SHF_COMPRESSED) {
                 // Not compressed.
                 return Some(data.0);
             }
@@ -268,7 +267,7 @@ impl<'a> Object<'a> {
         if data.read_bytes(8).ok()?.0 != b"ZLIB\0\0\0\0" {
             return None;
         }
-        let size = usize::try_from(data.read::<object::U32Bytes<_>>().ok()?.get(BigEndian)).ok()?;
+        let size = usize::try_from(data.read::<object::U32<_>>().ok()?.get(BigEndian)).ok()?;
         let buf = stash.allocate(size);
         decompress_zlib(data.0, buf)?;
         Some(buf)
@@ -340,11 +339,11 @@ impl<'a> Object<'a> {
 }
 
 fn decompress_zlib(input: &[u8], output: &mut [u8]) -> Option<()> {
+    use miniz_oxide::inflate::TINFLStatus;
     use miniz_oxide::inflate::core::inflate_flags::{
         TINFL_FLAG_PARSE_ZLIB_HEADER, TINFL_FLAG_USING_NON_WRAPPING_OUTPUT_BUF,
     };
-    use miniz_oxide::inflate::core::{decompress, DecompressorOxide};
-    use miniz_oxide::inflate::TINFLStatus;
+    use miniz_oxide::inflate::core::{DecompressorOxide, decompress};
 
     let (status, in_read, out_read) = decompress(
         &mut DecompressorOxide::new(),

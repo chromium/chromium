@@ -1,0 +1,11 @@
+Name: object
+URL: https://crates.io/crates/object
+Version: 0.40.0
+Revision: 400e64fbcb03fddb4b1ae8aef1868976ab999acc
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/object-v0_40/LICENSE-APACHE
+Shipped: no
+Security Critical: no
+
+Description: A unified interface for reading and writing object file formats.

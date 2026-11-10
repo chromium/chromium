@@ -6,7 +6,10 @@ use core::fmt;
 
 const HEX_WIDTH: usize = 2 + 2 * core::mem::size_of::<usize>();
 
-#[cfg(target_os = "fuchsia")]
+#[cfg(all(
+    target_os = "fuchsia",
+    any(not(backtrace_in_libstd), feature = "backtrace")
+))]
 mod fuchsia;
 
 /// A formatter for backtraces.
@@ -43,8 +46,9 @@ impl<'a, 'b> BacktraceFmt<'a, 'b> {
     pub fn new(
         fmt: &'a mut fmt::Formatter<'b>,
         format: PrintFmt,
-        print_path: &'a mut (dyn FnMut(&mut fmt::Formatter<'_>, BytesOrWideString<'_>) -> fmt::Result
-                     + 'b),
+        print_path: &'a mut (
+                    dyn FnMut(&mut fmt::Formatter<'_>, BytesOrWideString<'_>) -> fmt::Result + 'b
+                ),
     ) -> Self {
         BacktraceFmt {
             fmt,
@@ -60,7 +64,10 @@ impl<'a, 'b> BacktraceFmt<'a, 'b> {
     /// symbolicated later, and otherwise this should just be the first method
     /// you call after creating a `BacktraceFmt`.
     pub fn add_context(&mut self) -> fmt::Result {
-        #[cfg(target_os = "fuchsia")]
+        #[cfg(all(
+            target_os = "fuchsia",
+            any(not(backtrace_in_libstd), feature = "backtrace")
+        ))]
         fuchsia::print_dso_context(self.fmt)?;
         Ok(())
     }
@@ -82,7 +89,10 @@ impl<'a, 'b> BacktraceFmt<'a, 'b> {
     /// This is currently a no-op but is added for future compatibility with
     /// backtrace formats.
     pub fn finish(&mut self) -> fmt::Result {
-        #[cfg(target_os = "fuchsia")]
+        #[cfg(all(
+            target_os = "fuchsia",
+            any(not(backtrace_in_libstd), feature = "backtrace")
+        ))]
         fuchsia::finish_context(self.fmt)?;
         Ok(())
     }

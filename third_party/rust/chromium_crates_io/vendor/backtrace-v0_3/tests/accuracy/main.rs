@@ -1,4 +1,3 @@
-#![cfg(dbginfo = "collapsible")]
 mod auxiliary;
 
 macro_rules! pos {
@@ -27,19 +26,9 @@ fn doit() {
     {
         // TODO(#238) this shouldn't have to happen first in this function, but
         // currently it does.
-        let mut dir = std::env::current_exe().unwrap();
-        dir.pop();
-        if cfg!(windows) {
-            dir.push("dylib_dep.dll");
-        } else if cfg!(target_vendor = "apple") {
-            dir.push("libdylib_dep.dylib");
-        } else if cfg!(target_os = "aix") {
-            dir.push("libdylib_dep.a");
-        } else {
-            dir.push("libdylib_dep.so");
-        }
+        let path = dylib_dep_path();
         unsafe {
-            let lib = libloading::Library::new(&dir).unwrap();
+            let lib = libloading::Library::new(&path).unwrap();
             let api = lib.get::<extern "C" fn(Pos, fn(Pos, Pos))>(b"foo").unwrap();
             api(pos!(), |a, b| {
                 check!(a, b);
@@ -48,6 +37,36 @@ fn doit() {
     }
 
     outer(pos!());
+}
+
+fn dylib_dep_path() -> std::path::PathBuf {
+    let name = format!(
+        "{}dylib_dep{}",
+        std::env::consts::DLL_PREFIX,
+        std::env::consts::DLL_SUFFIX
+    );
+    let exe = std::env::current_exe().unwrap();
+
+    // Old layout: test and dylib are both in `<profile>/deps/`
+    let path = exe.ancestors().nth(1).unwrap().join(&name);
+    if path.exists() {
+        return path;
+    }
+
+    // New layout:
+    // test is in `<profile>/build/backtrace/<hash1>/out/`
+    // dylib is in `<profile>/build/dylib-dep/<hash2>/out/`
+    let dir = exe
+        .ancestors()
+        .nth(4)
+        .unwrap_or_else(|| panic!("unexpected exe path {}", exe.display()))
+        .join("dylib-dep");
+    std::fs::read_dir(&dir)
+        .unwrap_or_else(|err| panic!("read_dir({}) failed: {err}", dir.display()))
+        .flatten()
+        .map(|entry| entry.path().join("out").join(&name))
+        .find(|p| p.exists())
+        .unwrap_or_else(|| panic!("missing {} in {}/*/out/", name, dir.display()))
 }
 
 #[inline(never)]

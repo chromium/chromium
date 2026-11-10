@@ -1,52 +1,58 @@
 name: Release-plz
 
-permissions:
-  pull-requests: write
-  contents: write
+permissions: {}
 
 on:
-  push: { branches: [master] }
+  push: { branches: [main] }
 
 jobs:
   # Release unpublished packages.
   release-plz-release:
-    name: Release-plz release
+    name: Release-plz release # zizmor: ignore[concurrency-limits] Can't risk skipping a release: https://release-plz.dev/docs/github/quickstart#concurrency
     runs-on: ubuntu-24.04
+    environment: publish
+    permissions:
+      contents: write # Required by `release-plz/action` to push tags and create releases.
+      pull-requests: read # Required by `release-plz/action` to detect the release PR and its commits.
+      id-token: write # Required by `release-plz/action` to obtain an OIDC token.
     if: ${{ github.repository_owner == 'rust-lang' }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           fetch-depth: 0
+          persist-credentials: false
       - name: Install Rust toolchain
         run: rustup update stable --no-self-update && rustup default stable
       - name: Run release-plz
-        uses: release-plz/action@v0.5
+        uses: release-plz/action@8921286633dfa0c4020f7f30bd1c14fe19cbb10e # v0.5.142
         with:
           command: release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
 
   # Create a PR with the new versions and changelog, preparing the next release.
   release-plz-pr:
     name: Release-plz PR
     runs-on: ubuntu-24.04
+    permissions:
+      contents: write # Required by `release-plz/action` to push to the pull request branch.
+      pull-requests: write # Required by `release-plz/action` to create and update pull requests.
     if: ${{ github.repository_owner == 'rust-lang' }}
     concurrency:
       group: release-plz-${{ github.ref }}
       cancel-in-progress: false
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           fetch-depth: 0
+          persist-credentials: false
       - name: Install Rust toolchain
         run: rustup update stable --no-self-update && rustup default stable
       - name: Run release-plz
-        uses: release-plz/action@v0.5
+        uses: release-plz/action@8921286633dfa0c4020f7f30bd1c14fe19cbb10e # v0.5.142
         with:
           command: release-pr
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}

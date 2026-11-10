@@ -60,4 +60,4 @@ Windows.Win32.System.Threading.GetCurrentProcessId
 Windows.Win32.System.Threading.GetCurrentThread
 Windows.Win32.System.Threading.INFINITE
 Windows.Win32.System.Threading.ReleaseMutex
-Windows.Win32.System.Threading.WaitForSingleObjectEx
+Windows.Win32.System.Threading.WaitForSingleObject

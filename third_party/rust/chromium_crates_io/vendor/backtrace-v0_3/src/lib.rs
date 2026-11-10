@@ -105,11 +105,11 @@ extern crate std;
 #[allow(unused_extern_crates)]
 extern crate alloc;
 
-pub use self::backtrace::{trace_unsynchronized, Frame};
+pub use self::backtrace::{Frame, trace_unsynchronized};
 mod backtrace;
 
 pub use self::symbolize::resolve_frame_unsynchronized;
-pub use self::symbolize::{resolve_unsynchronized, Symbol, SymbolName};
+pub use self::symbolize::{Symbol, SymbolName, resolve_unsynchronized};
 mod symbolize;
 
 pub use self::types::BytesOrWideString;

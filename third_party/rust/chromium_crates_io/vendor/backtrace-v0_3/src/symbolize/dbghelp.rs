@@ -245,8 +245,8 @@ unsafe fn do_resolve(
     // the real value.
     // SAFETY: We assume NameLen has been initialized by SymFromAddrW, and we initialized MaxNameLen
     let name_len = unsafe { cmp::min((*info).NameLen as usize, (*info).MaxNameLen as usize - 1) };
-    // Name must be initialized by SymFromAddrW, but we only interact with it as a pointer anyways.
-    let name_ptr = (&raw const (*info).Name).cast::<u16>();
+    // SAFETY: Name must be initialized by SymFromAddrW, but we only interact with it as a pointer anyways.
+    let name_ptr = unsafe { (&raw const (*info).Name).cast::<u16>() };
 
     // Reencode the utf-16 symbol to utf-8 so we can use `SymbolName::new` like
     // all other platforms

@@ -55,12 +55,12 @@ cargo_crate("lib") {
   inputs = []
 
   build_native_rust_unit_tests = false
-  edition = "2021"
+  edition = "2024"
   cargo_pkg_authors = "The Rust Project Developers"
   cargo_pkg_name = "backtrace"
   cargo_pkg_description = "A library to acquire a stack trace (backtrace) at runtime in a Rust program."
   cargo_pkg_repository = "https://github.com/rust-lang/backtrace-rs"
-  cargo_pkg_version = "0.3.76"
+  cargo_pkg_version = "0.3.77"
 
   allow_unsafe = true
 
@@ -70,10 +70,10 @@ cargo_crate("lib") {
   ]
   if (!is_win) {
     deps += [
-      "//third_party/rust/addr2line/v0_25:lib",
+      "//third_party/rust/addr2line/v0_27:lib",
       "//third_party/rust/libc/v0_2:lib",
-      "//third_party/rust/miniz_oxide/v0_8:lib",
-      "//third_party/rust/object/v0_37:lib",
+      "//third_party/rust/miniz_oxide/v0_9:lib",
+      "//third_party/rust/object/v0_40:lib",
     ]
   }
   if (is_win) {

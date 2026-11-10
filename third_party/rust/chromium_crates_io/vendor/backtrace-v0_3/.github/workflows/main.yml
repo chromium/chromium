@@ -3,10 +3,12 @@ name: CI
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
+
+permissions: {}
 
 jobs:
   test:
@@ -22,51 +24,55 @@ jobs:
             rust: beta
           - os: ubuntu-24.04
             rust: nightly
-          - os: macos-14
+          - os: macos-latest
             rust: stable
-          - os: macos-14
+          - os: macos-latest
             rust: nightly
-          - os: macos-latest # macOS 15
-            rust: stable
           - os: windows-latest
             rust: stable-x86_64-msvc
           - os: windows-latest
-            rust: stable-i686-msvc
+            target: i686-pc-windows-msvc
+            rust: stable-x86_64-msvc
           - os: windows-latest
             rust: stable-x86_64-gnu
           - os: windows-latest
             rust: nightly-x86_64-msvc
           - os: windows-latest
-            rust: nightly-i686-msvc
+            target: i686-pc-windows-msvc
+            rust: nightly-x86_64-msvc
           - os: windows-latest
             rust: nightly-x86_64-gnu
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           submodules: true
+          persist-credentials: false
       - name: Install Rust (rustup)
         run: rustup update ${{ matrix.rust }} --no-self-update && rustup default ${{ matrix.rust }}
         shell: bash
       - run: echo RUSTFLAGS=-Dwarnings >> $GITHUB_ENV
         shell: bash
 
+      # Install the target toolchain if it differs from the host
+      - name: Install target (rustup)
+        run: |
+          rustup target add ${{ matrix.target }}
+          echo CARGO_BUILD_TARGET="${{ matrix.target }}" >> $GITHUB_ENV
+        shell: bash
+        if: ${{ matrix.target != null }}
+
       # full fidelity of backtraces on 32-bit msvc requires frame pointers, so
       # enable that for our tests
       - name: Force frame pointers
         run: echo RUSTFLAGS="-Cforce-frame-pointers $RUSTFLAGS" >> $GITHUB_ENV
         shell: bash
-        if: contains(matrix.rust, 'i686')
+        if: contains(matrix.target, 'i686')
 
       # Starting with Ubuntu 22.04 libc6-dbg is needed.
       - name: Install libc debug info
-        run: sudo apt-get install -y libc6-dbg
+        run: sudo apt-get update && sudo apt-get install -y libc6-dbg
         shell: bash
         if: contains(matrix.os, 'ubuntu-24.04')
-
-      - name: Enable collapse_debuginfo based on version
-        run: echo RUSTFLAGS="--cfg dbginfo=\"collapsible\" $RUSTFLAGS" >> $GITHUB_ENV
-        shell: bash
-        if: contains(matrix.rust, 'nightly') || contains(matrix.rust, 'beta')
 
       - run: cargo build
       - run: cargo test
@@ -81,11 +87,7 @@ jobs:
           CARGO_PROFILE_DEV_SPLIT_DEBUGINFO: packed
           CARGO_PROFILE_TEST_SPLIT_DEBUGINFO: packed
       - run: cargo test --manifest-path crates/without_debuginfo/Cargo.toml
-      - if: matrix.os != 'macos-latest'
-        run: cargo test --manifest-path crates/line-tables-only/Cargo.toml
-      # FIXME: This currently fails on macOS 15.
-      - if: matrix.os == 'macos-latest'
-        run: '! cargo test --manifest-path crates/line-tables-only/Cargo.toml'
+      - run: cargo test --manifest-path crates/line-tables-only/Cargo.toml
 
       # Test debuginfo compression still works
       - run: cargo test
@@ -101,20 +103,15 @@ jobs:
       # Test that, on macOS, packed/unpacked debuginfo both work
       - run: cargo clean && cargo test
         # Test that, on macOS, packed/unpacked debuginfo both work
-        if: contains(matrix.os, 'macos')
+        if: matrix.os == 'macos-latest'
         env:
           CARGO_PROFILE_DEV_SPLIT_DEBUGINFO: unpacked
           CARGO_PROFILE_TEST_SPLIT_DEBUGINFO: unpacked
       - run: cargo clean && cargo test
-        if: contains(matrix.os, 'macos')
+        if: matrix.os == 'macos-latest'
         env:
           CARGO_PROFILE_DEV_SPLIT_DEBUGINFO: packed
           CARGO_PROFILE_TEST_SPLIT_DEBUGINFO: packed
-      # Test that, on macOS, binaries with no UUID work
-      - run: cargo clean && cargo test
-        if: contains(matrix.os, 'macos')
-        env:
-          RUSTFLAGS: "-C link-arg=-Wl,-no_uuid"
 
       # Test that, on Linux, packed/unpacked debuginfo both work
       - run: cargo clean && cargo test
@@ -153,9 +150,10 @@ jobs:
     name: Windows AArch64
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           submodules: true
+          persist-credentials: false
       - name: Install Rust
         run: rustup update stable --no-self-update && rustup default stable
         shell: bash
@@ -174,12 +172,13 @@ jobs:
           - target: x86_64-apple-ios
           - target: aarch64-apple-ios-macabi
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           submodules: true
+          persist-credentials: false
       - run: rustup target add ${{ matrix.target }}
       - name: Run tests
-        run: cargo test ${{ contains(matrix.target, 'macabi') && '' || '--no-run' }} --target ${{ matrix.target }}
+        run: cargo test ${{ case(contains(matrix.target, 'macabi'), '', '--no-run') }} --target ${{ matrix.target }}
         env:
           RUSTFLAGS: -Dwarnings
 
@@ -206,9 +205,10 @@ jobs:
           - i686-linux-android
           - x86_64-linux-android
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           submodules: true
+          persist-credentials: false
       - name: Install Rust
         run: rustup update stable --no-self-update && rustup default stable
       - run: rustup target add ${{ matrix.target }}
@@ -221,9 +221,10 @@ jobs:
     name: Rustfmt
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           submodules: true
+          persist-credentials: false
       - name: Install Rust
         run: rustup update stable --no-self-update && rustup default stable && rustup component add rustfmt
       - run: cargo fmt --all -- --check
@@ -240,9 +241,10 @@ jobs:
           - x86_64-fortanix-unknown-sgx
           - x86_64-unknown-illumos
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           submodules: true
+          persist-credentials: false
       - name: Install Rust
         run: rustup update nightly --no-self-update && rustup default nightly
       - run: rustup target add ${{ matrix.target }}
@@ -250,6 +252,7 @@ jobs:
         shell: bash
       - run: cargo build --target ${{ matrix.target }}
       - run: cargo build --manifest-path crates/as-if-std/Cargo.toml --target ${{ matrix.target }}
+      - run: cargo build --manifest-path crates/as-if-std/Cargo.toml --no-default-features --target ${{ matrix.target }}
 
   msrv:
     name: MSRV
@@ -261,20 +264,22 @@ jobs:
           - os: ubuntu-24.04
           - os: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           submodules: true
+          persist-credentials: false
       - name: Install Rust
-        run: rustup update 1.82.0 --no-self-update && rustup default 1.82.0
+        run: rustup update 1.88.0 --no-self-update && rustup default 1.88.0
       - run: cargo build
 
   miri:
     name: Miri
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           submodules: true
+          persist-credentials: false
       - name: Install Miri
         run: |
           rustup toolchain install nightly --component miri

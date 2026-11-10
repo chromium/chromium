@@ -1,13 +1,13 @@
 use super::mystd::path::Path;
-use super::{gimli, Context, Endian, EndianSlice, Mapping, Stash};
+use super::{Context, Endian, EndianSlice, Mapping, Stash, gimli};
 use alloc::sync::Arc;
 use alloc::vec::Vec;
 use core::convert::TryFrom;
-use object::pe::{ImageDosHeader, ImageSymbol};
-use object::read::coff::ImageSymbol as _;
-use object::read::pe::{ImageNtHeaders, ImageOptionalHeader, SectionTable};
-use object::read::StringTable;
 use object::LittleEndian as LE;
+use object::pe::{ImageDosHeader, ImageSymbol};
+use object::read::StringTable;
+use object::read::coff::Symbol as _;
+use object::read::pe::{ImageNtHeaders, ImageOptionalHeader, SectionTable};
 
 #[cfg(target_pointer_width = "32")]
 type Pe = object::pe::ImageNtHeaders32;
