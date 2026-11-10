@@ -493,8 +493,6 @@ enum class RefreshTokenBindingUpgradeType {
   kLiveLaunch,
 };
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE_PARAM(bool, kOamlCookieUpgradeEnabled);
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE_PARAM(RefreshTokenBindingUpgradeType,
                            kRefreshTokenBindingUpgradeType);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
