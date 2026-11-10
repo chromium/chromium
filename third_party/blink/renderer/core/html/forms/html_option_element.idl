@@ -37,7 +37,7 @@
     [ImplementedAs=formForBinding] readonly attribute HTMLElement? form;
     [CEReactions] attribute DOMString label;
     [CEReactions, Reflect=selected] attribute boolean defaultSelected;
-    [ImplementedAs=selectedForBinding] attribute boolean selected;
+    [CEReactions, ImplementedAs=selectedForBinding] attribute boolean selected;
     [CEReactions] attribute DOMString value;
 
     [CEReactions] attribute DOMString text;

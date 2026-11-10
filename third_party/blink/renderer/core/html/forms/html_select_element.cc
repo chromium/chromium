@@ -1393,10 +1393,21 @@ void HTMLSelectElement::AppendToFormData(FormData& form_data) {
 
 void HTMLSelectElement::ResetImpl() {
   for (auto& option : GetOptionList()) {
-    option.SetSelectedState(option.FastHasAttribute(html_names::kSelectedAttr));
+    // skip_mutation_observer_update is set to true here because
+    // last_on_change_option_ isn't updated until ResetToDefaultSelection()
+    // below, and updating the MutationObserver of a newly selected option
+    // copies its text into the InnerElement, which hits a DCHECK in
+    // MenuListSelectType::OptionToBeShown because SelectedOption() doesn't
+    // match last_on_change_option_ yet. Instead, UpdateMutationObserver is
+    // explicitly called for each option after ResetToDefaultSelection().
+    option.SetSelectedState(option.FastHasAttribute(html_names::kSelectedAttr),
+                            /*skip_mutation_observer_update=*/true);
     option.SetDirty(false);
   }
   ResetToDefaultSelection();
+  for (auto& option : GetOptionList()) {
+    option.UpdateMutationObserver(/*in_style_recalc=*/false);
+  }
   if (RuntimeEnabledFeatures::SelectedcontentSpec2Enabled()) {
     UpdateAllSelectedcontents();
   }

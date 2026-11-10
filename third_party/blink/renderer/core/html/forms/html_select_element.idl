@@ -48,8 +48,8 @@
     [CEReactions, RaisesException] setter void (unsigned long index, HTMLOptionElement? option);
 
     readonly attribute HTMLCollection selectedOptions;
-    attribute long selectedIndex;
-    [ImplementedAs=valueForBinding] attribute DOMString value;
+    [CEReactions] attribute long selectedIndex;
+    [CEReactions, ImplementedAs=valueForBinding] attribute DOMString value;
 
     readonly attribute boolean willValidate;
     readonly attribute ValidityState validity;
