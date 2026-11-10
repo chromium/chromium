@@ -1,9 +1,0 @@
-{
-  "gn_args": {
-    "show_includes": true,
-    "target_cpu": "x64",
-    "target_os": "linux",
-    "use_remoteexec": false,
-    "use_siso": true
-  }
-}
