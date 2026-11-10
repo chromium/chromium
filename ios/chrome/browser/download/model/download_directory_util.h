@@ -12,8 +12,8 @@ class FilePath;
 }
 
 // Fills `directory_path` with the FilePath to the temporary downloads
-// directory. Returns true if this is successful. This method does not create
-// the directory, it just returns the path.
+// directory for the current session. Returns true if this is successful. This
+// method does not create the directory, it just returns the path.
 bool GetTempDownloadsDirectory(base::FilePath* directory_path);
 
 // Fills `directory_path` with the FilePath to the downloads directory. This
@@ -30,7 +30,8 @@ base::FilePath ConvertToRelativeDownloadPath(
 base::FilePath ConvertToAbsoluteDownloadPath(
     const base::FilePath& relative_path);
 
-// Asynchronously deletes downloads directory.
+// Asynchronously deletes temporary downloads directories from previous
+// sessions, skipping the current session's directory.
 void DeleteTempDownloadsDirectory();
 
 namespace test {
