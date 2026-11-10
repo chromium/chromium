@@ -8,6 +8,7 @@
 
 #import <memory>
 
+#import "base/apple/foundation_util.h"
 #import "base/ios/block_types.h"
 #import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -44,8 +45,22 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
+// `SceneDelegate` whose `sceneState` can be detached, as when the scene
+// disconnects.
+@interface TaskOrchestratorTestSceneDelegate : SceneDelegate
+// The `SceneState` returned by `sceneState`.
+@property(nonatomic, strong) SceneState* testSceneState;
+@end
+
+@implementation TaskOrchestratorTestSceneDelegate
+- (SceneState*)sceneState {
+  return self.testSceneState;
+}
+@end
+
 namespace {
-// Creates a new SceneState with the given `persistentIdentifier`.
+// Creates a new SceneState with the given `persistentIdentifier`, whose scene
+// delegate allows detaching it.
 SceneState* CreateFakeSceneState(NSString* persistent_identifier) {
   id fake_scene = OCMClassMock([UIWindowScene class]);
   id fake_scene_session = OCMClassMock([UISceneSession class]);
@@ -54,9 +69,10 @@ SceneState* CreateFakeSceneState(NSString* persistent_identifier) {
   OCMStub([fake_scene session]).andReturn(fake_scene_session);
   SceneState* scene_state = [[SceneState alloc] init];
   scene_state.scene = fake_scene;
-  id mock_scene_delegate = OCMClassMock([SceneDelegate class]);
-  OCMStub([mock_scene_delegate sceneState]).andReturn(scene_state);
-  OCMStub([fake_scene delegate]).andReturn(mock_scene_delegate);
+  TaskOrchestratorTestSceneDelegate* scene_delegate =
+      [[TaskOrchestratorTestSceneDelegate alloc] init];
+  scene_delegate.testSceneState = scene_state;
+  OCMStub([fake_scene delegate]).andReturn(scene_delegate);
   return scene_state;
 }
 }  // namespace
@@ -392,6 +408,42 @@ class TaskOrchestratorProfileSwitchTest : public TaskOrchestratorTest {
     return task;
   }
 
+  // Returns a task, ready at `TaskExecutionUIReady`, that does not require any
+  // switch. `execute_block` is run when the task is executed.
+  TaskRequest* CreateNonSwitchingTask(ProceduralBlock execute_block) {
+    TaskRequest* task = [TaskRequest taskForTestingWithScene:scene_state_.scene
+                                                executeBlock:execute_block];
+    task.minimumStage = TaskExecutionStage::TaskExecutionUIReady;
+    return task;
+  }
+
+  // Starts the switch requested by `switching_task` and returns once
+  // `ChangeProfileCommands` holds its continuation.
+  void StartSwitch(TaskRequest* switching_task) {
+    [orchestrator_ addTaskRequest:switching_task];
+    [orchestrator_ updateToStage:TaskExecutionStage::TaskExecutionUIReady
+                        forScene:scene_state_];
+    [change_profile_handler_ waitForChangeProfile];
+    ASSERT_TRUE(change_profile_handler_.hasContinuation);
+  }
+
+  // Sets the `SceneState` returned by the scene's delegate, which is nil once
+  // the scene is disconnected.
+  void SetDelegateSceneState(SceneState* scene_state) {
+    base::apple::ObjCCastStrict<TaskOrchestratorTestSceneDelegate>(
+        scene_state_.scene.delegate)
+        .testSceneState = scene_state;
+  }
+
+  // Moves the scene to `TaskExecutionUIReady` again, as a `SceneState`
+  // recreated by a profile switch does.
+  void ReachUIReadyAgain() {
+    [orchestrator_ updateToStage:TaskExecutionStage::TaskExecutionProfileLoaded
+                        forScene:scene_state_];
+    [orchestrator_ updateToStage:TaskExecutionStage::TaskExecutionUIReady
+                        forScene:scene_state_];
+  }
+
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
   raw_ptr<TestProfileIOS> profile_;
@@ -445,6 +497,107 @@ TEST_F(TaskOrchestratorProfileSwitchTest,
   [change_profile_handler_ runContinuationForSceneState:scene_state_];
   EXPECT_TRUE(future.Wait());
   EXPECT_FALSE(scene_state_.hasPendingIntent);
+}
+
+// Tests that if the ChangeProfileContinuation is destroyed without being
+// invoked, the switching state is reset and the task requiring the switch is
+// dropped so subsequent tasks on the same scene can still execute.
+TEST_F(TaskOrchestratorProfileSwitchTest,
+       TestDroppedContinuationResetsSwitchingAndDropsGaiaTasks) {
+  __block BOOL dropped_task_executed = NO;
+  ASSERT_NO_FATAL_FAILURE(StartSwitch(CreateSwitchingTask(^{
+    dropped_task_executed = YES;
+  })));
+  EXPECT_TRUE(scene_state_.hasPendingIntent);
+
+  [change_profile_handler_ dropContinuation];
+  EXPECT_FALSE(dropped_task_executed);
+  EXPECT_FALSE(scene_state_.hasPendingIntent);
+
+  // Subsequent tasks on the same scene execute instead of being permanently
+  // blocked by `is_switching`.
+  base::test::TestFuture<void> next_task_future;
+  [orchestrator_ addTaskRequest:CreateNonSwitchingTask(base::CallbackToBlock(
+                                    next_task_future.GetCallback()))];
+  EXPECT_TRUE(next_task_future.IsReady());
+  EXPECT_FALSE(dropped_task_executed);
+}
+
+// Tests that tasks not requiring a switch, queued while the dropped switch was
+// in progress, run right away if the scene is still UI-ready, without
+// restarting the switch.
+TEST_F(TaskOrchestratorProfileSwitchTest,
+       TestDroppedContinuationRunsReadyTasksWithoutGaiaID) {
+  __block BOOL gaia_task_executed = NO;
+  ASSERT_NO_FATAL_FAILURE(StartSwitch(CreateSwitchingTask(^{
+    gaia_task_executed = YES;
+  })));
+  base::test::TestFuture<void> future;
+  [orchestrator_ addTaskRequest:CreateNonSwitchingTask(base::CallbackToBlock(
+                                    future.GetCallback()))];
+  EXPECT_FALSE(future.IsReady());
+
+  [change_profile_handler_ dropContinuation];
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_FALSE(gaia_task_executed);
+  EXPECT_FALSE(scene_state_.hasPendingIntent);
+  EXPECT_FALSE(change_profile_handler_.lastChangeProfileParams.has_value());
+}
+
+// Tests that tasks not requiring a switch are kept when the switch is dropped
+// while the scene's UI is torn down, as when another profile switch replaces
+// its `SceneState`, and run once the scene is UI-ready again.
+TEST_F(TaskOrchestratorProfileSwitchTest,
+       TestDroppedContinuationKeepsTasksWithoutGaiaID) {
+  __block BOOL gaia_task_executed = NO;
+  ASSERT_NO_FATAL_FAILURE(StartSwitch(CreateSwitchingTask(^{
+    gaia_task_executed = YES;
+  })));
+  base::test::TestFuture<void> future;
+  [orchestrator_ addTaskRequest:CreateNonSwitchingTask(base::CallbackToBlock(
+                                    future.GetCallback()))];
+  [orchestrator_ updateToStage:TaskExecutionStage::TaskExecutionStageNone
+                      forScene:scene_state_];
+
+  [change_profile_handler_ dropContinuation];
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_TRUE(scene_state_.hasPendingIntent);
+
+  ReachUIReadyAgain();
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_FALSE(gaia_task_executed);
+  EXPECT_FALSE(scene_state_.hasPendingIntent);
+  EXPECT_FALSE(change_profile_handler_.lastChangeProfileParams.has_value());
+}
+
+// Tests that all the tasks of a scene disconnected during the switch are
+// dropped once its continuation is destroyed, as `clearTasksForScene:` only
+// kept them for the switch, and that the scene is no longer blocked.
+TEST_F(TaskOrchestratorProfileSwitchTest,
+       TestDroppedContinuationAfterSceneDisconnectDropsAllTasks) {
+  __block BOOL stale_task_executed = NO;
+  ASSERT_NO_FATAL_FAILURE(StartSwitch(CreateSwitchingTask(^{
+    stale_task_executed = YES;
+  })));
+  [orchestrator_ addTaskRequest:CreateNonSwitchingTask(^{
+                   stale_task_executed = YES;
+                 })];
+
+  [orchestrator_ clearTasksForScene:scene_state_];
+  SetDelegateSceneState(nil);
+  [change_profile_handler_ dropContinuation];
+
+  // Reconnecting the same scene session runs new tasks but not the stale ones.
+  SetDelegateSceneState(scene_state_);
+  ReachUIReadyAgain();
+  EXPECT_FALSE(stale_task_executed);
+  EXPECT_NSEQ(nil, [orchestrator_ gaiaIDForScene:scene_state_]);
+  base::test::TestFuture<void> new_task_future;
+  [orchestrator_ addTaskRequest:CreateNonSwitchingTask(base::CallbackToBlock(
+                                    new_task_future.GetCallback()))];
+  EXPECT_TRUE(new_task_future.IsReady());
+  EXPECT_FALSE(stale_task_executed);
+  EXPECT_FALSE(change_profile_handler_.lastChangeProfileParams.has_value());
 }
 
 // Tests that the switch is attributed to the share extension when the task

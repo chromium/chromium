@@ -65,6 +65,11 @@ struct ChangeProfileParams {
 // completion closure. `hasContinuation` must be `YES`.
 - (void)runContinuationForSceneState:(SceneState*)sceneState;
 
+// Destroys the stored `ChangeProfileContinuation` without invoking it, as
+// happens when the `SceneState` holding it is deallocated mid-switch.
+// `hasContinuation` must be `YES`.
+- (void)dropContinuation;
+
 @end
 
 #endif  // IOS_CHROME_APP_TEST_FAKE_CHANGE_PROFILE_COMMANDS_H_

@@ -10,11 +10,13 @@
 #import <optional>
 #import <string>
 #import <string_view>
+#import <tuple>
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
+#import "base/functional/callback_helpers.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/identity_manager/account_info.h"
@@ -28,6 +30,7 @@
 #import "ios/chrome/app/task_scheduling_outcome.h"
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_authentication_continuation.h"
 #import "ios/chrome/browser/google_one/shared/google_one_deep_link_util.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_activation_level.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/url_context.h"
@@ -314,14 +317,22 @@ SceneState* GetSceneStateForScene(UIScene* scene) {
                                      type:switchType];
 
   __weak __typeof(self) weakSelf = self;
+  base::ScopedClosureRunner cleanup(base::BindOnce(
+      [](__weak TaskOrchestrator* orchestrator, std::string scene_key) {
+        [orchestrator onProfileOrAccountSwitchDroppedForScene:scene_key];
+      },
+      weakSelf, std::string(sceneKey)));
+
   ChangeProfileContinuation completionContinuation = base::BindOnce(
       [](__weak TaskOrchestrator* orchestrator, std::string scene_key,
-         SceneState* scene_state, base::OnceClosure closure) {
+         base::ScopedClosureRunner cleanup, SceneState* scene_state,
+         base::OnceClosure closure) {
+        std::ignore = cleanup.Release();
         [orchestrator
             onProfileOrAccountSwitchCompletedForScene:scene_key
                                            completion:std::move(closure)];
       },
-      weakSelf, std::string(sceneKey));
+      weakSelf, std::string(sceneKey), std::move(cleanup));
 
   ChangeProfileContinuation continuation = ChainChangeProfileContinuations(
       CreateChangeProfileAuthenticationContinuation(urlContext,
@@ -346,6 +357,41 @@ SceneState* GetSceneStateForScene(UIScene* scene) {
   sceneInfo.is_switching = false;
   [self executeTasksForScene:sceneKey];
   std::move(closure).Run();
+}
+
+// Called when a profile or account switch continuation is destroyed without
+// being invoked (e.g. the scene disconnected, or another profile switch
+// replaced its `SceneState`). Resets the switching state so the scene is not
+// left permanently stuck with `is_switching` set.
+- (void)onProfileOrAccountSwitchDroppedForScene:(std::string_view)sceneKey {
+  auto it = _tasksPerScene.find(sceneKey);
+  if (it == _tasksPerScene.end()) {
+    return;
+  }
+  SceneInfo& sceneInfo = it->second;
+  SceneState* sceneState = GetSceneStateForScene(sceneInfo.scene);
+  // `SceneDelegate` detaches the `SceneState` of a disconnected scene before
+  // releasing it, and with it the continuation, so a missing or disconnected
+  // `SceneState` means the scene is gone. `clearTasksForScene:` kept its tasks
+  // only because the switch was in progress, so finish that cleanup now.
+  if (!sceneState ||
+      sceneState.activationLevel == SceneActivationLevelDisconnected) {
+    _tasksPerScene.erase(it);
+    return;
+  }
+
+  sceneInfo.is_switching = false;
+  sceneInfo.switched_gaia_id = nil;
+  // Tasks with a Gaia ID required the abandoned switch, and running them now
+  // could undo a profile explicitly chosen since. The other tasks run in the
+  // scene's current profile, right away if the scene already reached their
+  // stage, as the stage updates received during the switch were ignored.
+  NSIndexSet* gaiaTaskIndexes = [sceneInfo.pending_tasks
+      indexesOfObjectsPassingTest:^BOOL(TaskRequest* task, NSUInteger, BOOL*) {
+        return task.gaiaID.length > 0;
+      }];
+  [sceneInfo.pending_tasks removeObjectsAtIndexes:gaiaTaskIndexes];
+  [self executeTasksForScene:sceneKey];
 }
 
 @end

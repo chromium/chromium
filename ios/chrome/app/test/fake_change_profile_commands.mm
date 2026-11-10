@@ -95,6 +95,12 @@
   std::move(_continuation).Run(sceneState, base::DoNothing());
 }
 
+- (void)dropContinuation {
+  EXPECT_FALSE(_shutdownCalled);
+  ASSERT_FALSE(_continuation.is_null());
+  _continuation.Reset();
+}
+
 #pragma mark - ChangeProfileCommands
 
 - (void)changeProfile:(std::string_view)profileName
