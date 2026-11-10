@@ -10157,6 +10157,48 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_PROXY" desc="Settings > Internet > Network details: Proxy section label.">
         Proxy
       </message>
+
+      <!-- Shared Crostini, ARC, Kerberos, and Account dialog strings -->
+      <message name="IDS_SETTINGS_ACCOUNT_MANAGER_USE_IN_ARC_BUTTON_LABEL" desc="Per-account button label on OS Account Manager page. Clicking this button makes account available in ARC / Android apps.">
+        Use with Android apps
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_EXPORT" desc="Tile for exporting (backing up) the crostini container.">
+        Backup
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_IMPORT" desc="Title for importing (restoring) the crostini container.">
+        Restore
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_IMPORT_LABEL" desc="Description shown next to the button to import (restore) Crostini.">
+        Replace your Linux apps and files with a previous backup
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_CONFIRM_IMPORT_DIALOG_WINDOW_TITLE" desc="Title of the confirmation dialog displayed before container import begins.">
+        Confirm Restore
+      </message>
+      <message name="IDS_SETTINGS_CROSTINI_CONFIRM_IMPORT_DIALOG_WINDOW_MESSAGE" desc="Message of the confirmation dialog displayed before container import begins.">
+        Restoring from a backup will delete existing Linux applications and data in your Linux files folder.
+      </message>
+      <message name="IDS_SETTINGS_ANDROID_APPS_REMOVE_BUTTON" desc="Label for the button for the removal of the Google Play Store">
+        Remove
+      </message>
+      <message name="IDS_SETTINGS_KERBEROS_IN_BROWSER_DIALOG_TITLE" desc="The title of the Kerberos In-Browser dialog">
+        Kerberos authentication failed
+      </message>
+      <message name="IDS_SETTINGS_KERBEROS_IN_BROWSER_DIALOG_DESCRIPTION" desc="The description of the Kerberos In-Browser dialog">
+        The page you are trying to visit couldn't verify your Kerberos tickets
+      </message>
+      <message name="IDS_SETTINGS_KERBEROS_IN_BROWSER_DIALOG_VISIT_WITHOUT_TICKET_BUTTON" desc="The text on the 'Visit without a ticket' button of the Kerberos In-Browser dialog">
+        Visit without a ticket
+      </message>
+      <message name="IDS_SETTINGS_KERBEROS_IN_BROWSER_DIALOG_MANAGE_TICKETS_BUTTON" desc="The text on the 'Manage tickets' button of the Kerberos In-Browser dialog">
+        Manage tickets
+      </message>
+      <message name="IDS_OS_SETTINGS_ANDROID_APPS_DISABLE_DIALOG_MESSAGE" desc="Describes what will happen if the user opts out of android apps.">
+        Google Play and apps you've downloaded from Google Play will be deleted from this Chromebook.
+    <ph name="LINE_BREAKS1">&lt;br&gt;&lt;br&gt;</ph>
+    Content you've purchased through Google Play such as movies, TV shows, music, books, as well as purchases from other apps may also be deleted.
+    <ph name="LINE_BREAKS2">&lt;br&gt;&lt;br&gt;</ph>
+    This doesn't affect apps or content on other devices.
+      </message>
     </messages>
   </release>
 </grit>

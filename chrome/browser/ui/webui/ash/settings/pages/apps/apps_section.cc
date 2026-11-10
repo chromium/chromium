@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/chrome_webui_url_constants.h"
 #include "ash/constants/url_constants.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"

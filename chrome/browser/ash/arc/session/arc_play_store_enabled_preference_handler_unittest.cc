@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/callback_list.h"
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
@@ -23,7 +24,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/ash/login/fake_login_display_host.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"

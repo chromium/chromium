@@ -138,6 +138,7 @@ static_library("file_manager") {
     "//ash",
     "//ash/constants",
     "//ash/public/cpp",
+    "//ash/strings",
     "//ash/webui/file_manager:constants",
     "//base:i18n",
     "//chrome/app:generated_resources",

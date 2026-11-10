@@ -57,15 +57,10 @@ specific_include_rules = {
     "+chrome/browser/signin",
   ],
 
-  "arc_play_store_enabled_preference_handler\\.cc": [
-    "+chrome/grit",
-  ],
-
   # Only the test still installs the ConsentAuditor through the //chrome-side
   # factory; production goes through ash::ConsentAuditorProvider.
   "arc_play_store_enabled_preference_handler_unittest\\.cc": [
     "+chrome/browser/consent_auditor",
     "+chrome/browser/signin",
-    "+chrome/grit",
   ],
 }

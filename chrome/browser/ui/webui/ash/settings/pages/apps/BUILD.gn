@@ -29,6 +29,7 @@ static_library("apps") {
 
   deps = [
     "//ash/constants",
+    "//ash/strings",
     "//chrome/app:generated_resources",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/app_list/arc",

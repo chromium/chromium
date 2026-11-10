@@ -7,10 +7,10 @@
 #include <memory>
 
 #include "ash/constants/webui_url_constants.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/kerberos_resources.h"
 #include "chrome/grit/kerberos_resources_map.h"
 #include "content/public/browser/web_ui.h"

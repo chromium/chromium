@@ -35,10 +35,6 @@ specific_include_rules = {
     "+chrome/browser/browser_process_platform_part.h",
   ],
 
-  "crostini_export_import\\.cc": [
-    "+chrome/grit",
-  ],
-
   "crostini_export_import_notification_controller\\.cc": [
     "+chrome/grit",
   ],

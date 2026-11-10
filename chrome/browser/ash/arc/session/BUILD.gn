@@ -190,6 +190,7 @@ source_set("unit_tests") {
   deps = [
     ":session",
     "//ash/public/cpp",
+    "//ash/strings",
     "//base",
     "//base/test:test_support",
     "//chrome/app/vector_icons",
