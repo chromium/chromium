@@ -119,7 +119,6 @@ static const Vector<const CSSProperty*>& AllEditingProperties(
     const ExecutionContext* execution_context) {
   DEFINE_STATIC_LOCAL(Vector<const CSSProperty*>, properties, ());
   if (properties.empty()) {
-    properties.ReserveInitialCapacity(std::size(kStaticEditingProperties) + 2);
     CSSProperty::FilterWebExposedCSSPropertiesIntoVector(
         execution_context, kStaticEditingProperties, properties);
   }
