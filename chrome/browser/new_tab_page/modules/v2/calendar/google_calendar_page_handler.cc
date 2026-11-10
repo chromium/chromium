@@ -44,6 +44,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             "The request is authenticated with an OAuth2 access token "
             "identifying the Google account."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "calendar-json.googleapis.com"
           internal {
             contacts {
               email: "rtatum@google.com"
