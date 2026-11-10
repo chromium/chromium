@@ -14,9 +14,13 @@
 
 namespace remoting {
 
-// Minidump with stacks, PEB, TEBs and unloaded module list.
+// Minidump with stacks, PEB, TEBs, and unloaded module list. Auxiliary state
+// providers are disabled so dbghelp does not load external provider DLLs in the
+// crash server process.
+// TODO(crbug.com/581367663): Migrate Windows host crash reporting to Crashpad.
 const MINIDUMP_TYPE kMinidumpType = static_cast<MINIDUMP_TYPE>(
-    MiniDumpWithProcessThreadData | MiniDumpWithUnloadedModules);
+    MiniDumpWithProcessThreadData | MiniDumpWithUnloadedModules |
+    MiniDumpWithoutAuxiliaryState);
 
 class BreakpadWin {
  public:
