@@ -1219,7 +1219,10 @@ void ShelfView::EndDrag(bool cancel) {
       AnimateToIdealBounds();
       // TODO(crbug.com/40266934): Remove the check below once the bounds
       // animator works better with zero animation duration.
-      if (!bounds_animator_->GetAnimationDuration().is_zero()) {
+      // SetAnimationDelegate requires an active animation; if the view was
+      // already at its ideal bounds, CancelDrag already restored its opacity.
+      if (!bounds_animator_->GetAnimationDuration().is_zero() &&
+          bounds_animator_->IsAnimating(drag_and_drop_view)) {
         bounds_animator_->SetAnimationDelegate(drag_and_drop_view,
                                                std::move(animation_delegate));
       }
@@ -1477,12 +1480,18 @@ void ShelfView::OnTabletModeChanged() {
 void ShelfView::AnimateToIdealBounds() {
   CalculateIdealBounds();
 
-  for (size_t i = 0; i < view_model_->view_size(); ++i) {
-    View* view = view_model_->view_at(i);
-    bounds_animator_->AnimateViewTo(view, view_model_->ideal_bounds(i));
-    // Now that the item animation starts, we have to make sure that the
-    // padding of the first gets properly transferred to the new first item.
-    view->SetBorder(nullptr);
+  // Only animate when items move or an animation is already in progress, since
+  // BoundsAnimator::AnimateViewTo runs a full-duration animation even when
+  // already at target bounds.
+  if (bounds_animator_->IsAnimating() ||
+      !views::ViewModelUtils::IsAtIdealBounds(*view_model_)) {
+    for (size_t i = 0; i < view_model_->view_size(); ++i) {
+      View* view = view_model_->view_at(i);
+      bounds_animator_->AnimateViewTo(view, view_model_->ideal_bounds(i));
+      // Now that the item animation starts, we have to make sure that the
+      // padding of the first gets properly transferred to the new first item.
+      view->SetBorder(nullptr);
+    }
   }
 
   UpdateSeparatorBounds(/*animate=*/true);
@@ -1520,10 +1529,14 @@ void ShelfView::UpdateSeparatorBounds(bool animate) {
       shelf()->PrimaryAxisValue(kSeparatorThickness, kSeparatorSize),
       shelf()->PrimaryAxisValue(kSeparatorSize, kSeparatorThickness));
 
-  if (animate)
+  // Only animate if the separator moves or is already mid-animation, to avoid
+  // starting a zero-distance animation.
+  if (animate && (separator_->bounds() != separator_bounds ||
+                  bounds_animator_->IsAnimating(separator_))) {
     bounds_animator_->AnimateViewTo(separator_, separator_bounds);
-  else
+  } else {
     separator_->SetBoundsRect(separator_bounds);
+  }
 }
 
 void ShelfView::FadeIn(views::View* view) {
@@ -2255,8 +2268,16 @@ void ShelfView::ShelfItemAdded(int model_index) {
   // TODO(crbug.com/40266934): Remove the check below once the bounds animator
   // works better with zero animation duration.
   if (!bounds_animator_->GetAnimationDuration().is_zero()) {
-    bounds_animator_->SetAnimationDelegate(
-        view, std::make_unique<StartFadeAnimationDelegate>(this, view));
+    if (bounds_animator_->IsAnimating(view)) {
+      // Wait for existing items to finish making space before fading in.
+      bounds_animator_->SetAnimationDelegate(
+          view, std::make_unique<StartFadeAnimationDelegate>(this, view));
+    } else {
+      // No existing items moved (e.g. first item on an empty shelf), so notify
+      // observers and fade in immediately.
+      shelf_->NotifyShelfIconPositionsChanged();
+      FadeIn(view);
+    }
   }
 }
 

@@ -2854,6 +2854,33 @@ TEST_F(ShelfViewTest, SwipeOnItemDuringFadeOut) {
   VerifyShelfItemBoundsAreValid();
 }
 
+// Verifies that shelf mutations that do not move any item or the separator do
+// not start a zero-distance bounds animation.
+TEST_F(ShelfViewTest, SkipsZeroDistanceBoundsAnimations) {
+  test_api_->SetAnimationDuration(base::Milliseconds(100));
+
+  // ShelfViewTest::SetUp pre-populates one item; remove it to start from an
+  // empty shelf.
+  GetModel()->RemoveItemAt(0);
+  test_api_->RunMessageLoopUntilAnimationsDone();
+
+  // Adding the first item on an empty shelf needs no space-making movement on
+  // existing items, so it should fade in directly without a bounds animation.
+  AddItem(TYPE_PINNED_APP, /*wait_for_animations=*/false);
+  EXPECT_FALSE(GetShelfView()->IsAnimating());
+
+  // Adding a second item shifts the centered first item, which must still run
+  // a bounds animation.
+  const ShelfID app_id = AddItem(TYPE_APP, /*wait_for_animations=*/false);
+  EXPECT_TRUE(GetShelfView()->IsAnimating());
+  test_api_->RunMessageLoopUntilAnimationsDone();
+
+  // Pinning the sole unpinned app hides the separator without changing either
+  // item's ideal bounds, so no bounds animation should start.
+  GetModel()->PinExistingItemWithID(app_id.app_id);
+  EXPECT_FALSE(GetShelfView()->IsAnimating());
+}
+
 class TrustedPinnedShelfViewTest : public ShelfViewTest,
                                    public testing::WithParamInterface<bool> {
  protected:
