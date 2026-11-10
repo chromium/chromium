@@ -3136,6 +3136,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kVariationsHeaderWebExtensionName,
      flag_descriptions::kVariationsHeaderWebExtensionDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kVariationsHeaderWebExtension)},
+    {"ios-support-media-capture-policies",
+     flag_descriptions::kIOSSupportMediaCapturePoliciesName,
+     flag_descriptions::kIOSSupportMediaCapturePoliciesDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSSupportMediaCapturePolicies)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

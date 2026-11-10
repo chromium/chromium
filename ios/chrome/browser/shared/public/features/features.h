@@ -1068,4 +1068,10 @@ BASE_DECLARE_FEATURE(kVariationsHeaderWebExtension);
 // Returns true if the VariationsHeaderWebExtension feature is enabled.
 bool IsVariationsHeaderWebExtensionEnabled();
 
+// Enables the IOSSupportMediaCapturePolicies feature.
+BASE_DECLARE_FEATURE(kIOSSupportMediaCapturePolicies);
+
+// Returns true if the IOSSupportMediaCapturePolicies feature is enabled.
+bool IsIOSSupportMediaCapturePoliciesEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

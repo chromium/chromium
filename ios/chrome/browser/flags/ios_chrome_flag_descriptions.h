@@ -1222,6 +1222,11 @@ inline constexpr char kIOSSoftLockName[] = "Soft Lock on iOS";
 inline constexpr char kIOSSoftLockDescription[] =
     "Enables experimental Soft Lock on iOS.";
 
+inline constexpr char kIOSSupportMediaCapturePoliciesName[] =
+    "iOS Support Media Capture Policies";
+inline constexpr char kIOSSupportMediaCapturePoliciesDescription[] =
+    "Enables the media capture policies feature on iOS.";
+
 inline constexpr char kIOSTabRemindersName[] = "Tab Reminders";
 inline constexpr char kIOSTabRemindersDescription[] =
     "Enables the Tab Reminder notifications feature on iOS.";

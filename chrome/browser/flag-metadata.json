@@ -6592,6 +6592,11 @@
     "expiry_milestone": 144
   },
   {
+    "name": "ios-support-media-capture-policies",
+    "owners": [ "yashigt@google.com", "bling-pandamonium@google.com" ],
+    "expiry_milestone": 163
+  },
+  {
     "name": "ios-tab-reminders",
     "owners": ["bwwilliams@google.com", "bling-pandamonium@google.com"],
     "expiry_milestone": 151

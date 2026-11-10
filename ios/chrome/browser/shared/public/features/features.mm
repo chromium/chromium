@@ -1304,3 +1304,10 @@ BASE_FEATURE(kVariationsHeaderWebExtension, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsVariationsHeaderWebExtensionEnabled() {
   return base::FeatureList::IsEnabled(kVariationsHeaderWebExtension);
 }
+
+BASE_FEATURE(kIOSSupportMediaCapturePolicies,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsIOSSupportMediaCapturePoliciesEnabled() {
+  return base::FeatureList::IsEnabled(kIOSSupportMediaCapturePolicies);
+}
