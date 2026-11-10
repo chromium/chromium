@@ -242,6 +242,18 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="(Obsolete) Embeddings search result"/>
 </enum>
 
+<!-- LINT.IfChange(HistoryTimePeriodOptionId) -->
+
+<enum name="HistoryTimePeriodOptionId">
+  <int value="0" label="All time"/>
+  <int value="1" label="Yesterday"/>
+  <int value="2" label="Earlier this week"/>
+  <int value="3" label="Last week"/>
+  <int value="4" label="2 weeks ago"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/history/core/browser/time_period_filter_utils.h:TimePeriodOptionId) -->
+
 <enum name="OtherSessionsActions">
   <int value="0" label="Menu initialized"/>
   <int value="1" label="Menu shown (deprecated)"/>

@@ -2574,6 +2574,20 @@ chromium-metrics-reviews@google.com.
   <token key="HasCriticalActions" variants="HasCriticalActions"/>
 </histogram>
 
+<histogram name="HistoryPage.TimePeriodFilterSelected"
+    enum="HistoryTimePeriodOptionId" expires_after="2027-05-06">
+  <owner>zalmashni@google.com</owner>
+  <owner>rainhard@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>
+    Records the time period option the user selected in the time period filter
+    chip on the chrome://history page. Recorded every time the user selects an
+    option in the dropdown, including when switching back to &quot;All
+    time&quot;. Not recorded when the filter is reset via the &quot;Clear
+    all&quot; button.
+  </summary>
+</histogram>
+
 <histogram name="HistoryPage.TimeToFirstVisibleContent" units="ms"
     expires_after="2027-09-01">
   <owner>wylieb@chromium.org</owner>

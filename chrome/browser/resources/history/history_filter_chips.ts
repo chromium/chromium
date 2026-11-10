@@ -140,6 +140,9 @@ export class HistoryFilterChipsElement extends CrLitElement {
         this.timePeriodOptions.some(option => option.id === id) ?
         id :
         TimePeriodOptionId.kAllTime;
+    BrowserProxyImpl.getInstance().recordHistogram(
+        'HistoryPage.TimePeriodFilterSelected', this.selectedTimePeriodOptionId,
+        TimePeriodOptionId.MAX_VALUE + 1);
     this.fireChange_(this.userVisits, this.actorVisits);
   }
 
