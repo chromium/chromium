@@ -771,6 +771,7 @@ int UkmRecorderImpl::PruneOldSources(size_t max_kept_sources,
   // Build a list of timestamp->source pairs for all source we consider for
   // pruning.
   std::vector<std::pair<base::TimeTicks, SourceId>> timestamp_source_id_pairs;
+  timestamp_source_id_pairs.reserve(pruning_set.size());
   for (const auto& source_id : pruning_set) {
     auto creation_time = recordings_.sources[source_id]->creation_time();
     timestamp_source_id_pairs.emplace_back(
