@@ -946,6 +946,10 @@ bool SecureCreateDirectory(const base::FilePath& path,
   }
 
   base::win::SecurityDescriptor sd;
+  // Set the owner explicitly. An object's owner implicitly holds WRITE_DAC, so
+  // if a pre-existing directory kept its creator as owner, that creator could
+  // undo the restrictive DACL applied below.
+  sd.set_owner(base::win::Sid(base::win::WellKnownSid::kBuiltinAdministrators));
   sd.set_dacl_protected(true);  // Protects from inheriting parent DACLs
 
   // Add DACL entries strictly for SYSTEM and BuiltinAdministrators with full
@@ -989,9 +993,9 @@ bool SecureCreateDirectory(const base::FilePath& path,
   }
 
   // If CreateDirectory failed (e.g., because the directory already exists),
-  // open a handle to the directory to set the DACL.
+  // open a handle to the directory to set the owner and DACL.
   base::File handle(::CreateFile(
-      path.value().c_str(), WRITE_DAC | READ_CONTROL,
+      path.value().c_str(), WRITE_DAC | WRITE_OWNER | READ_CONTROL,
       FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr,
       OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT,
       nullptr));
@@ -1024,10 +1028,10 @@ bool SecureCreateDirectory(const base::FilePath& path,
     return false;
   }
 
-  // Apply the DACL to the directory.
-  if (!sd.WriteToHandle(handle.GetPlatformFile(),
-                        base::win::SecurityObjectType::kFile,
-                        DACL_SECURITY_INFORMATION)) {
+  // Apply the owner and DACL to the directory.
+  if (!sd.WriteToHandle(
+          handle.GetPlatformFile(), base::win::SecurityObjectType::kFile,
+          DACL_SECURITY_INFORMATION | OWNER_SECURITY_INFORMATION)) {
     HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
     LOGFN(ERROR) << "Failed to write SecurityDescriptor to handle for " << path
                  << " hr=" << putHR(hr);

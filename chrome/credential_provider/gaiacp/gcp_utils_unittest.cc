@@ -669,6 +669,11 @@ TEST_F(GcpUtilsSecureCreateDirectoryTest, NewDirectory) {
               AllOf(StartsWith(L"D:P"), HasSubstr(L";;;BA)"),
                     HasSubstr(L";;;SY)"), Not(HasSubstr(L";;;AU)")),
                     Not(HasSubstr(L";;;AC)")), Not(HasSubstr(L";;;WD)"))));
+  auto sd = base::win::SecurityDescriptor::FromFile(new_dir,
+                                                    OWNER_SECURITY_INFORMATION);
+  ASSERT_TRUE(sd.has_value());
+  EXPECT_EQ(sd->owner(),
+            base::win::Sid(base::win::WellKnownSid::kBuiltinAdministrators));
 }
 
 TEST_F(GcpUtilsSecureCreateDirectoryTest, GrantReadOnChildren) {
@@ -687,10 +692,24 @@ TEST_F(GcpUtilsSecureCreateDirectoryTest, ExistingDirectory) {
   base::FilePath existing_dir = temp_dir_.GetPath().Append(L"ExistingDir");
   EXPECT_TRUE(base::CreateDirectory(existing_dir));
   EXPECT_TRUE(base::DirectoryExists(existing_dir));
+
+  // Set the initial owner to the current user SID to simulate a pre-created
+  // directory owned by a user rather than Administrators.
+  if (auto token = base::win::AccessToken::FromCurrentProcess(); token) {
+    base::win::SecurityDescriptor user_sd;
+    user_sd.set_owner(token->User());
+    EXPECT_TRUE(user_sd.WriteToFile(existing_dir, OWNER_SECURITY_INFORMATION));
+  }
+
   EXPECT_TRUE(SecureCreateDirectory(existing_dir));
   EXPECT_THAT(base::GetFileDacl(existing_dir),
               AllOf(StartsWith(L"D:P"), HasSubstr(L";;;BA)"),
                     HasSubstr(L";;;SY)"), Not(HasSubstr(L";;;WD)"))));
+  auto sd = base::win::SecurityDescriptor::FromFile(existing_dir,
+                                                    OWNER_SECURITY_INFORMATION);
+  ASSERT_TRUE(sd.has_value());
+  EXPECT_EQ(sd->owner(),
+            base::win::Sid(base::win::WellKnownSid::kBuiltinAdministrators));
 }
 
 TEST_F(GcpUtilsSecureCreateDirectoryTest,
