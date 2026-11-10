@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -88,14 +86,6 @@ public class WarmupManager {
 
     /** Records stats, observes crashes, and cleans up spareTab object. */
     private class HiddenTabObserver implements TabObserver {
-        // This WindowAndroid is "owned" by the Tab and should be destroyed when it is no longer
-        // needed by the Tab or when the Tab is destroyed.
-        private WindowAndroid mOwnedWindowAndroid;
-
-        public HiddenTabObserver(WindowAndroid ownedWindowAndroid) {
-            mOwnedWindowAndroid = ownedWindowAndroid;
-        }
-
         @Override
         // Invoked when tab crashes, or when the associated renderer process is killed.
         public void onCrash(Tab tab) {
@@ -105,20 +95,13 @@ public class WarmupManager {
         }
 
         @Override
-        public void onDestroyed(Tab tab) {
-            destroyOwnedWindow(tab);
+        public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
+            // The tab was taken and attached, so it's no longer the spare tab.
+            tab.removeObserver(this);
         }
 
         @Override
-        public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
-            destroyOwnedWindow(tab);
-        }
-
-        @SuppressWarnings("NullAway")
-        private void destroyOwnedWindow(Tab tab) {
-            assert mOwnedWindowAndroid != null;
-            mOwnedWindowAndroid.destroy();
-            mOwnedWindowAndroid = null;
+        public void onDestroyed(Tab tab) {
             tab.removeObserver(this);
         }
     }
@@ -278,9 +261,7 @@ public class WarmupManager {
         }
 
         if (mSpareTab != null) {
-            WindowAndroid window = mSpareTab.getWindowAndroid();
-            assumeNonNull(window);
-            mSpareTab.addObserver(new HiddenTabObserver(window));
+            mSpareTab.addObserver(new HiddenTabObserver());
         }
     }
 

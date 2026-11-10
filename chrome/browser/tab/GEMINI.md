@@ -135,6 +135,7 @@ A `Tab` exists in one of the following mutually distinct runtime states:
 3. **Window-Only Swap (`window != null && tabDelegateFactory == null`)**:
    - Updates `WindowAndroid` without replacing `TabDelegateFactory` and **does NOT fire `TabObserver.onActivityAttachmentChanged`**.
 - **Prewarmed / Hidden Tabs (`HiddenTabHolder`)**: Have a non-null `WindowAndroid` backed by an Application `Context` (`windowHasActivity(window) == false`), so `isDetachedFromActivity()` returns `true` until attached to an Activity.
+- **Detached Spare Tabs (`TabBuilder.createDetachedSpareTab`)**: Get a placeholder `WindowAndroid` that the tab owns. A `TabObserver` added in `createDetachedSpareTab` destroys it when the tab is attached to a different non-null window or destroyed. Detaching (`onActivityAttachmentChanged(tab, null)`) keeps it, so a failed reparent can fall back to it. Callers (`WarmupManager`, `TabReparentingDelegate`, `PopupCreatorImpl`) must not destroy it themselves.
 
 ### F. Additional Non-Obvious Architectural Details
 - **Java Owns Native `TabAndroid` & Static `sTabMap` Scaling**:

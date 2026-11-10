@@ -688,4 +688,53 @@ public class TabImplTest {
                     tab.destroy();
                 });
     }
+
+    @Test
+    @SmallTest
+    @Feature({"Tab"})
+    public void testDetachedSpareTab_placeholderWindowDestroyedOnAttach() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabDelegateFactory delegateFactory =
+                            ((TabImpl) mActivityTestRule.getActivityTab()).getDelegateFactory();
+                    Tab tab = createDetachedSpareTab(delegateFactory);
+                    WindowAndroid placeholder = tab.getWindowAndroid();
+                    assertNotNull(placeholder);
+
+                    // Detaching, as reparenting does, keeps the placeholder.
+                    tab.updateAttachment(null, null);
+                    assertFalse(placeholder.isDestroyed());
+
+                    tab.updateAttachment(
+                            mActivityTestRule.getActivity().getWindowAndroid(), delegateFactory);
+                    assertTrue(placeholder.isDestroyed());
+                    tab.destroy();
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Tab"})
+    public void testDetachedSpareTab_placeholderWindowDestroyedWithTab() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Tab tab =
+                            createDetachedSpareTab(
+                                    ((TabImpl) mActivityTestRule.getActivityTab())
+                                            .getDelegateFactory());
+                    WindowAndroid placeholder = tab.getWindowAndroid();
+                    assertNotNull(placeholder);
+
+                    tab.destroy();
+                    assertTrue(placeholder.isDestroyed());
+                });
+    }
+
+    private Tab createDetachedSpareTab(TabDelegateFactory delegateFactory) {
+        return TabBuilder.createDetachedSpareTab(
+                mActivityTestRule.getActivity(),
+                delegateFactory,
+                mActivityTestRule.getActivityTab().getProfile(),
+                /* webContents= */ null);
+    }
 }
