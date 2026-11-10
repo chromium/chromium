@@ -33,10 +33,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 
-#if BUILDFLAG(ENABLE_PDF_INK2)
-#include "ui/gfx/geometry/size.h"
-#endif
-
 namespace gfx {
 class Point;
 }  // namespace gfx
@@ -313,10 +309,6 @@ class PDFiumPage {
 
   // Generates a page thumbnail accommodating a specific `device_pixel_ratio`.
   Thumbnail GenerateThumbnail(float device_pixel_ratio);
-
-#if BUILDFLAG(ENABLE_PDF_INK2)
-  gfx::Size GetThumbnailSize(float device_pixel_ratio);
-#endif
 
   uint32_t index() const { return index_; }
 

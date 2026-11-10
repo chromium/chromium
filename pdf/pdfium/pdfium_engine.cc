@@ -5813,12 +5813,6 @@ void PDFiumEngine::UpdateTextActiveAndInvalidate(TextId id, bool active) {
   UpdateTextActiveAndInvalidateHelper(it->second, active);
 }
 
-gfx::Size PDFiumEngine::GetThumbnailSize(int page_index,
-                                         float device_pixel_ratio) {
-  CHECK(PageIndexInBounds(page_index));
-  return pages_[page_index]->GetThumbnailSize(device_pixel_ratio);
-}
-
 void PDFiumEngine::ApplyStroke(int page_index,
                                InkStrokeId id,
                                const ink::Stroke& stroke) {

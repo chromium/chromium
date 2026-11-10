@@ -319,13 +319,6 @@ class FakeClient : public PdfInkModuleClient {
 
   MOCK_METHOD(SelectionRectMap, GetSelectionRectMap, (), (override));
 
-  gfx::Size GetThumbnailSize(int page_index) override {
-    CHECK_GE(page_index, 0);
-    CHECK_LT(static_cast<size_t>(page_index), page_layouts_.size());
-    return Thumbnail::CalculateImageSize(page_layouts_[page_index].size(),
-                                         /*device_pixel_ratio=*/1);
-  }
-
   gfx::Vector2dF GetViewportOriginOffset() override {
     return viewport_origin_offset_;
   }

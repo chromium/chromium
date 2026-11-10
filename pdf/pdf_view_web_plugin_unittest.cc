@@ -3453,8 +3453,6 @@ class PdfViewWebPluginInkTest
             Return(gfx::Rect(/*x=*/0, /*y=*/0, /*width=*/100, /*height=*/50)));
     ON_CALL(*engine_ptr_, GetPageSizeInPoints)
         .WillByDefault(Return(gfx::SizeF(75.0f, 37.5f)));
-    ON_CALL(*engine_ptr_, GetThumbnailSize)
-        .WillByDefault(Return(gfx::Size(50, 25)));
     ON_CALL(*engine_ptr_, IsPageVisible).WillByDefault(Return(true));
 
     // Draw some trivial strokes.
@@ -3503,8 +3501,6 @@ class PdfViewWebPluginInkTest
         .WillByDefault(Return(kScreenRect));
     ON_CALL(*engine_ptr_, GetPageSizeInPoints)
         .WillByDefault(Return(kPageSizeInPoints));
-    ON_CALL(*engine_ptr_, GetThumbnailSize)
-        .WillByDefault(Return(gfx::Size(50, 50)));
     ON_CALL(*engine_ptr_, IsPageVisible).WillByDefault(Return(true));
 
     UpdatePluginGeometry(/*device_scale=*/1.0f, kScreenRect);
@@ -3775,13 +3771,6 @@ TEST_P(PdfViewWebPluginInkTest, GetSelectionRectMap) {
       .WillByDefault(Return(selection_map));
   EXPECT_THAT(plugin_->ink_module_client_for_testing()->GetSelectionRectMap(),
               ElementsAre(Pair(0, ElementsAre(kRect))));
-}
-
-TEST_P(PdfViewWebPluginInkTest, GetThumbnailSize) {
-  SetUpWithTrivialInkStrokes();
-  EXPECT_EQ(gfx::Size(50, 25),
-            plugin_->ink_module_client_for_testing()->GetThumbnailSize(
-                /*page_index=*/0));
 }
 
 TEST_P(PdfViewWebPluginInkTest, GetZoom) {
@@ -4192,8 +4181,6 @@ TEST_P(PdfViewWebPluginInkTextHighlightTest,
       });
   ON_CALL(*engine_ptr_, GetPageSizeInPoints)
       .WillByDefault(Return(gfx::SizeF(100.0f, 50.0f)));
-  ON_CALL(*engine_ptr_, GetThumbnailSize)
-      .WillByDefault(Return(gfx::Size(50, 25)));
   ON_CALL(*engine_ptr_, IsPageVisible).WillByDefault(Return(true));
 
   // Enter annotation mode and select the highlighter.

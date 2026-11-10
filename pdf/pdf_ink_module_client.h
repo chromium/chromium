@@ -112,10 +112,6 @@ class PdfInkModuleClient {
   // Returns all current text selection rects in PDF coordinates.
   virtual SelectionRectMap GetSelectionRectMap() = 0;
 
-  // Gets the thumbnail size for `page_index`. The size must be non-empty for
-  // any valid page index.
-  virtual gfx::Size GetThumbnailSize(int page_index) = 0;
-
   // Gets the offset within the rendering viewport to where the page images
   // will be drawn.  Since the offset is a location within the viewport, it
   // must always contain non-negative values.  Values are in scaled CSS

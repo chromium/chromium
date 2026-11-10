@@ -2567,15 +2567,6 @@ Thumbnail PDFiumPage::GenerateThumbnail(float device_pixel_ratio) {
   return thumbnail;
 }
 
-#if BUILDFLAG(ENABLE_PDF_INK2)
-gfx::Size PDFiumPage::GetThumbnailSize(float device_pixel_ratio) {
-  CHECK(available());
-  FPDF_PAGE page = GetPage();
-  return Thumbnail::CalculateImageSize(GetPageSizeInPoints(page),
-                                       device_pixel_ratio);
-}
-#endif
-
 void PDFiumPage::GenerateAndSendThumbnail(float device_pixel_ratio,
                                           SendThumbnailCallback send_callback) {
   std::move(send_callback).Run(GenerateThumbnail(device_pixel_ratio));

@@ -371,11 +371,6 @@ class PdfViewWebPlugin::PdfInkModuleClientImpl : public PdfInkModuleClient {
     return plugin_->engine_->GetSelectionRectMap();
   }
 
-  gfx::Size GetThumbnailSize(int page_index) override {
-    return plugin_->engine_->GetThumbnailSize(page_index,
-                                              plugin_->device_scale_);
-  }
-
   gfx::Vector2dF GetViewportOriginOffset() override {
     return plugin_->available_area_.OffsetFromOrigin();
   }

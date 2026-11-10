@@ -152,8 +152,6 @@ class TestPDFiumEngine : public PDFiumEngine {
 
   MOCK_METHOD(void, UpdateTextActiveAndInvalidate, (TextId, bool), (override));
 
-  MOCK_METHOD(gfx::Size, GetThumbnailSize, (int, float), (override));
-
   MOCK_METHOD(void,
               ApplyStroke,
               (int, InkStrokeId, const ink::Stroke&),

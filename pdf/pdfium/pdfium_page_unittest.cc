@@ -1560,21 +1560,6 @@ TEST_P(PDFiumPageThumbnailTest, GenerateThumbnailWithNoOverlapCropBox) {
   EXPECT_TRUE(IsImageBlank(*image));
 }
 
-#if BUILDFLAG(ENABLE_PDF_INK2)
-TEST_P(PDFiumPageThumbnailTest, GetThumbnailSize) {
-  TestClient client(/*use_skia_renderer=*/GetParam());
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("variable_page_sizes.pdf"));
-  ASSERT_EQ(7, engine->GetNumberOfPages());
-
-  for (const auto& params : kGenerateThumbnailTestParams) {
-    EXPECT_EQ(
-        params.expected_thumbnail_size,
-        engine->GetThumbnailSize(params.page_index, params.device_pixel_ratio));
-  }
-}
-#endif  // BUILDFLAG(ENABLE_PDF_INK2)
-
 INSTANTIATE_TEST_SUITE_P(All, PDFiumPageThumbnailTest, testing::Bool());
 
 }  // namespace chrome_pdf

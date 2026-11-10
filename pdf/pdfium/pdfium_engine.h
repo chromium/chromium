@@ -478,9 +478,6 @@ class PDFiumEngine : public DocumentLoader::Client,
   // testing.
   virtual void UpdateTextActiveAndInvalidate(TextId id, bool active);
 
-  // Virtual to support testing.
-  virtual gfx::Size GetThumbnailSize(int page_index, float device_pixel_ratio);
-
   // Writes the supplied stroke for the page at `page_index`.  The same `id`
   // gets used with `UpdateStrokeUsage()`.  Must provide a valid `page_index`.
   // Virtual to support testing.
