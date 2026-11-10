@@ -711,6 +711,42 @@ IN_PROC_BROWSER_TEST_P(TabGroupViewTest, FocusTraversalInFocusMode) {
   model->ExitFocusMode();
 }
 
+// Closing the focused group while its enter transition is still running tears
+// the group view down cleanly and animates the remaining tabs back in across
+// both orientations.
+IN_PROC_BROWSER_TEST_P(TabGroupViewTest,
+                       FocusModeGroupClosedMidEnterAnimation) {
+  DisableFocusAnimations();
+  tab_groups::TabGroupId group_id = CreateInactiveTabGroup();
+  ASSERT_NE(GetTabGroupView(group_id), nullptr);
+  EnableFocusAnimations();
+
+  TabStripModel* const model = browser()->GetTabStripModel();
+  model->EnterFocusMode(group_id);
+  AdvanceFocusMotion(base::Milliseconds(150));
+  ASSERT_TRUE(BrowserAnimationController::From(browser())->IsAnimating(
+      FocusModeAnimations::kFocusMode));
+
+  model->CloseAllTabsInGroup(group_id);
+  RunScheduledLayouts();
+  AdvanceFocusMotion(base::Milliseconds(125));
+  for (views::View* child : unpinned_collection_node()->view()->children()) {
+    EXPECT_TRUE(child->GetVisible());
+    EXPECT_GT(is_horizontal() ? child->width() : child->height(), 0);
+  }
+  FinishFocusMotion();
+
+  EXPECT_FALSE(model->group_model()->ContainsTabGroup(group_id));
+  EXPECT_FALSE(model->GetFocusedGroup().has_value());
+  EXPECT_EQ(unpinned_collection_node()->GetChildNodeOfType(
+                TabCollectionNode::Type::GROUP),
+            nullptr);
+  for (views::View* child : unpinned_collection_node()->view()->children()) {
+    EXPECT_TRUE(child->GetVisible());
+    EXPECT_EQ(child->layer(), nullptr);
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     TabGroupViewTest,
@@ -1180,36 +1216,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewBrowserTest,
   EXPECT_FALSE(group_view->unfocus_header()->GetVisible());
   EXPECT_TRUE(group_view->group_line()->GetVisible());
   for (views::View* child : unpinned_view->children()) {
-    EXPECT_TRUE(child->GetVisible());
-    EXPECT_EQ(child->layer(), nullptr);
-  }
-}
-
-// Closing the focused group while its enter transition is still running tears
-// the group view down cleanly and leaves no focus motion behind.
-IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewBrowserTest,
-                       FocusModeGroupClosedMidEnterAnimation) {
-  DisableFocusAnimations();
-  tab_groups::TabGroupId group_id = CreateInactiveTabGroup();
-  ASSERT_NE(GetTabGroupView(group_id), nullptr);
-  EnableFocusAnimations();
-
-  TabStripModel* const model = browser()->GetTabStripModel();
-  model->EnterFocusMode(group_id);
-  AdvanceFocusMotion(base::Milliseconds(150));
-  ASSERT_TRUE(BrowserAnimationController::From(browser())->IsAnimating(
-      FocusModeAnimations::kFocusMode));
-
-  model->CloseAllTabsInGroup(group_id);
-  RunScheduledLayouts();
-  FinishFocusMotion();
-
-  EXPECT_FALSE(model->group_model()->ContainsTabGroup(group_id));
-  EXPECT_FALSE(model->GetFocusedGroup().has_value());
-  EXPECT_EQ(unpinned_collection_node()->GetChildNodeOfType(
-                TabCollectionNode::Type::GROUP),
-            nullptr);
-  for (views::View* child : unpinned_collection_node()->view()->children()) {
     EXPECT_TRUE(child->GetVisible());
     EXPECT_EQ(child->layer(), nullptr);
   }

@@ -126,57 +126,61 @@ UnpinnedTabContainerViewHorizontalLayout::CalculateProposedLayout(
           &UnpinnedTabContainerViewHorizontalLayout::IsChildVisibleInContainer,
           base::Unretained(this), focused_group_id));
 
-  if (collection.visible_children.empty()) {
-    return layouts;
-  }
-
-  const gfx::Range detached_range = GetDetachedDragRange();
-  if (!detached_range.is_empty()) {
-    collection.leading_padding = detached_range.start();
-    if (size_bounds.width().is_bounded()) {
-      collection.leading_padding =
-          std::min(collection.leading_padding,
-                   std::max(0, size_bounds.width().value() -
-                                   static_cast<int>(detached_range.length())));
+  // Even when no children are visible (e.g. when a focused group was removed
+  // mid-transition), populate hidden child layouts so BlendProposedLayouts()
+  // and ApplyLayout() see every child.
+  int computed_width = 0;
+  std::vector<int> allocated_widths;
+  if (!collection.visible_children.empty()) {
+    const gfx::Range detached_range = GetDetachedDragRange();
+    if (!detached_range.is_empty()) {
+      collection.leading_padding = detached_range.start();
+      if (size_bounds.width().is_bounded()) {
+        collection.leading_padding = std::min(
+            collection.leading_padding,
+            std::max(0, size_bounds.width().value() -
+                            static_cast<int>(detached_range.length())));
+      }
     }
-  }
 
-  const int horizontal_padding =
-      collection.leading_padding + collection.trailing_padding;
-  const int net_preferred_width = horizontal_padding +
-                                  collection.total_preferred_width -
-                                  collection.overlap_total;
-  int available_width =
-      detached_range.is_empty()
-          ? net_preferred_width
-          : std::min(
-                net_preferred_width,
-                horizontal_padding + static_cast<int>(detached_range.length()));
-  // If in tab closing mode, constrain the available width to the locked
-  // override so remaining tabs do not expand under the cursor.
-  if (std::optional<int> override_width = GetClosingModeOverrideWidth()) {
-    available_width = std::min(*override_width, available_width);
-  }
-  if (size_bounds.width().is_bounded()) {
-    available_width = std::min(size_bounds.width().value(), available_width);
-  }
+    const int horizontal_padding =
+        collection.leading_padding + collection.trailing_padding;
+    const int net_preferred_width = horizontal_padding +
+                                    collection.total_preferred_width -
+                                    collection.overlap_total;
+    int available_width =
+        detached_range.is_empty()
+            ? net_preferred_width
+            : std::min(net_preferred_width,
+                       horizontal_padding +
+                           static_cast<int>(detached_range.length()));
+    // If in tab closing mode, constrain the available width to the locked
+    // override so remaining tabs do not expand under the cursor.
+    if (std::optional<int> override_width = GetClosingModeOverrideWidth()) {
+      available_width = std::min(*override_width, available_width);
+    }
+    if (size_bounds.width().is_bounded()) {
+      available_width = std::min(size_bounds.width().value(), available_width);
+    }
 
-  const int min_layout_width = horizontal_padding + collection.total_min_width -
-                               collection.overlap_total;
-  int computed_width = net_preferred_width;
-  if (available_width > 0) {
-    computed_width =
-        std::clamp(available_width, min_layout_width, net_preferred_width);
-  }
+    const int min_layout_width = horizontal_padding +
+                                 collection.total_min_width -
+                                 collection.overlap_total;
+    computed_width = net_preferred_width;
+    if (available_width > 0) {
+      computed_width =
+          std::clamp(available_width, min_layout_width, net_preferred_width);
+    }
 
-  const int available_for_allocation =
-      std::max(0, computed_width - horizontal_padding) +
-      collection.overlap_total;
-  std::vector<int> allocated_widths = CalculateProportionalChildWidths(
-      available_for_allocation, collection.preferred_widths,
-      collection.crossover_widths, collection.min_widths,
-      collection.total_preferred_width, collection.total_crossover_width,
-      collection.total_min_width);
+    const int available_for_allocation =
+        std::max(0, computed_width - horizontal_padding) +
+        collection.overlap_total;
+    allocated_widths = CalculateProportionalChildWidths(
+        available_for_allocation, collection.preferred_widths,
+        collection.crossover_widths, collection.min_widths,
+        collection.total_preferred_width, collection.total_crossover_width,
+        collection.total_min_width);
+  }
 
   // If a tab is being dragged, expand the host size to accommodate the dragged
   // tab's position, clamped to the available bounded width.
