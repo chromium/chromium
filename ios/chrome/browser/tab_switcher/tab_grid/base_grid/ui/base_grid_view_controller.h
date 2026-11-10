@@ -174,7 +174,8 @@ class WebStateID;
 // Returns the layout of the grid for use in an animated transition.
 - (TabGridTransitionLayout*)transitionLayout;
 
-// Returns TabGridTransitionItem for the active cell.
+// Returns TabGridTransitionItem for the active tab cell, or nil if the active
+// cell is not a materialized visible tab cell with a non-empty frame.
 - (TabGridTransitionItem*)transitionItemForActiveCell;
 
 // Notifies the ViewController that its content is being displayed.

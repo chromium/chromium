@@ -474,7 +474,6 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
   _contentInsets = contentInsets;
 }
 
-
 - (TabGridTransitionLayout*)transitionLayout {
   return [TabGridTransitionLayout
       layoutWithActiveCell:self.transitionItemForActiveCell
@@ -484,24 +483,43 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
 - (TabGridTransitionItem*)transitionItemForActiveCell {
   [self.collectionView layoutIfNeeded];
 
+  const NSUInteger selectedIndex = self.selectedIndex;
+  if (selectedIndex == NSNotFound) {
+    return nil;
+  }
+
   NSIndexPath* selectedItemIndexPath =
-      [self indexPathForTabIndex:self.selectedIndex];
+      [self indexPathForTabIndex:selectedIndex];
   if (![self.collectionView.indexPathsForVisibleItems
           containsObject:selectedItemIndexPath]) {
     return nil;
   }
+
   UICollectionViewCell* collectionViewCell =
       [self.collectionView cellForItemAtIndexPath:selectedItemIndexPath];
   if ([collectionViewCell isKindOfClass:[GroupGridCell class]]) {
-    // TODO(crbug.com/40942154): Handle once the annimations are available for
+    // TODO(crbug.com/40942154): Handle once the animations are available for
     // group cells.
     return nil;
   }
 
+  // `indexPathsForVisibleItems` can include an item near the viewport edge
+  // while `cellForItemAtIndexPath:` still returns nil.
   GridCell* cell = ObjCCastStrict<GridCell>(collectionViewCell);
+  if (!cell) {
+    return nil;
+  }
+
+  // `snapshotFrame` can be empty if the grid has zero bounds or the cell's
+  // subviews have not laid out at a non-zero size yet; passing an empty frame
+  // to `GridToTabAnimation` divides by zero (`CALayerInvalidGeometry`).
+  const CGRect snapshotFrame = [cell snapshotFrame];
+  if (CGRectIsEmpty(snapshotFrame)) {
+    return nil;
+  }
 
   return [TabGridTransitionItem itemWithSnapshot:cell.snapshot
-                                   originalFrame:[cell snapshotFrame]];
+                                   originalFrame:snapshotFrame];
 }
 
 - (void)contentWillAppearAnimated:(BOOL)animated {

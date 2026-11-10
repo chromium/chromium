@@ -259,6 +259,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/regular",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/test:fakes",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions",
     "//ios/chrome/browser/tab_switcher/ui_bundled/test:fakes",
     "//ios/chrome/test:test_support",
     "//ios/web/public",

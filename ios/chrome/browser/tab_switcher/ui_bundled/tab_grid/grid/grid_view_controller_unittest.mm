@@ -12,6 +12,8 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_cell.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_layout.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/tab_grid_transition_item.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/tab_grid_transition_layout.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_switcher_item.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/root_view_controller_test.h"
@@ -45,6 +47,25 @@ class BaseGridViewControllerTest : public RootViewControllerTest {
   }
 
  protected:
+  // Attaches `view_controller_` as the root view controller and waits until at
+  // least one cell is visible.
+  [[nodiscard]] bool PresentGridAndWaitForVisibleCells() {
+    SetRootViewController(view_controller_);
+
+    return base::test::ios::WaitUntilConditionOrTimeout(
+        base::test::ios::kWaitForUIElementTimeout, ^bool {
+          return view_controller_.collectionView.visibleCells.count > 0;
+        });
+  }
+
+  // Returns the index path for the currently selected tab item in section 0.
+  // Assumes `view_controller_.selectedIndex` is not `NSNotFound`.
+  NSIndexPath* SelectedIndexPath() {
+    return [NSIndexPath indexPathForItem:base::checked_cast<NSInteger>(
+                                             view_controller_.selectedIndex)
+                               inSection:0];
+  }
+
   TabSwitcherItem* TabItemForIndex(NSInteger index) {
     GridDiffableDataSource* dataSource = view_controller_.diffableDataSource;
     return [dataSource
@@ -291,4 +312,58 @@ TEST_F(BaseGridViewControllerTest,
 
   [view_controller_ setMultipleScenesAvailable:NO];
   EXPECT_FALSE(view_controller_.collectionView.dragInteractionEnabled);
+}
+
+// Tests that `transitionLayout.activeCell` has a non-empty frame when the
+// selected tab cell is visible on screen and becomes nil when deselected.
+TEST_F(BaseGridViewControllerTest,
+       TransitionLayoutActiveCellReflectsSelectionAndVisibility) {
+  ASSERT_TRUE(PresentGridAndWaitForVisibleCells());
+
+  TabGridTransitionItem* active_cell =
+      view_controller_.transitionLayout.activeCell;
+  ASSERT_NE(active_cell, nil);
+  EXPECT_FALSE(CGRectIsEmpty(active_cell.originalFrame));
+
+  [view_controller_ selectItemWithIdentifier:nil];
+  EXPECT_EQ(view_controller_.transitionLayout.activeCell, nil);
+}
+
+// Tests that `transitionLayout.activeCell` returns nil when UIKit reports the
+// selected index path in `indexPathsForVisibleItems` while
+// `cellForItemAtIndexPath:` returns nil.
+TEST_F(BaseGridViewControllerTest,
+       TransitionLayoutActiveCellNilWhenVisibleIndexHasNilCell) {
+  ASSERT_TRUE(PresentGridAndWaitForVisibleCells());
+  ASSERT_NE(view_controller_.selectedIndex,
+            base::checked_cast<NSUInteger>(NSNotFound));
+
+  NSIndexPath* selected_index_path = SelectedIndexPath();
+  ASSERT_TRUE([view_controller_.collectionView.indexPathsForVisibleItems
+      containsObject:selected_index_path]);
+  id collection_view_mock = OCMPartialMock(view_controller_.collectionView);
+  OCMStub([collection_view_mock cellForItemAtIndexPath:selected_index_path])
+      .andReturn(nil);
+
+  EXPECT_EQ(view_controller_.transitionLayout.activeCell, nil);
+  [collection_view_mock stopMocking];
+}
+
+// Tests that `transitionLayout.activeCell` returns nil when the selected
+// visible cell has an empty `snapshotFrame`.
+TEST_F(BaseGridViewControllerTest,
+       TransitionLayoutActiveCellNilWhenSnapshotFrameIsEmpty) {
+  ASSERT_TRUE(PresentGridAndWaitForVisibleCells());
+  ASSERT_NE(view_controller_.selectedIndex,
+            base::checked_cast<NSUInteger>(NSNotFound));
+
+  GridCell* selected_cell =
+      base::apple::ObjCCastStrict<GridCell>([view_controller_.collectionView
+          cellForItemAtIndexPath:SelectedIndexPath()]);
+  ASSERT_NE(selected_cell, nil);
+  id cell_mock = OCMPartialMock(selected_cell);
+  OCMStub([cell_mock snapshotFrame]).andReturn(CGRectZero);
+
+  EXPECT_EQ(view_controller_.transitionLayout.activeCell, nil);
+  [cell_mock stopMocking];
 }
