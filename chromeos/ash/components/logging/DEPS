@@ -1,0 +1,9 @@
+specific_include_rules = {
+  "log_redirect\\.cc": [
+    "+content/public/browser/browser_child_process_host_iterator.h",
+    "+content/public/browser/browser_thread.h",
+    "+content/public/browser/child_process_host.h",
+    "+content/public/browser/render_process_host.h",
+    "+content/public/browser/zygote_host/zygote_host_linux.h",
+  ],
+}

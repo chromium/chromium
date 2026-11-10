@@ -20,6 +20,24 @@ component("logging") {
   deps = [ "//base" ]
 }
 
+# Redirects Chrome logs to the user session log directory.
+# This is used only in the browser process.
+component("redirect") {
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_LOGGING_REDIRECT_IMPL" ]
+
+  sources = [
+    "log_redirect.cc",
+    "log_redirect.h",
+  ]
+
+  deps = [
+    ":logging",
+    "//ash/constants",
+    "//base",
+    "//content/public/browser",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 

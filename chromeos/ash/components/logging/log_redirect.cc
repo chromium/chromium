@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/logging/logging.h"
+#include "chromeos/ash/components/logging/log_redirect.h"
 
 #include <cstdio>
 
@@ -83,8 +83,9 @@ void LogFileSetUp(logging::LoggingDestination logging_dest,
                                                           log_file_fd);
 
   // Redirect child processes' logs.
-  for (content::BrowserChildProcessHostIterator it; !it.Done(); ++it)
+  for (content::BrowserChildProcessHostIterator it; !it.Done(); ++it) {
     ReinitializeLoggingForProcessHost(it.GetHost(), settings, log_file_fd);
+  }
 
   for (auto it(content::RenderProcessHost::AllHostsIterator()); !it.IsAtEnd();
        it.Advance()) {
@@ -104,8 +105,9 @@ void RedirectChromeLogging(const base::CommandLine& command_line) {
 
   // Only redirect when on an actual device. To do otherwise conflicts with
   // --vmodule that developers may want to use.
-  if (!base::SysInfo::IsRunningOnChromeOS() && !g_force_log_redirection)
+  if (!base::SysInfo::IsRunningOnChromeOS() && !g_force_log_redirection) {
     return;
+  }
 
   if (g_chrome_logging_redirect_tried) {
     LOG(WARNING) << "NOT redirecting logging for multi-profiles case.";

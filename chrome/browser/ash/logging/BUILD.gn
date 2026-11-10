@@ -4,20 +4,6 @@
 
 assert(is_chromeos)
 
-static_library("logging") {
-  sources = [
-    "logging.cc",
-    "logging.h",
-  ]
-
-  deps = [
-    "//ash/constants",
-    "//base",
-    "//chromeos/ash/components/logging",
-    "//content/public/browser",
-  ]
-}
-
 source_set("browser_tests") {
   testonly = true
 
@@ -26,12 +12,12 @@ source_set("browser_tests") {
   sources = [ "logging_browsertest.cc" ]
 
   deps = [
-    ":logging",
     "//ash/constants",
     "//base",
     "//chrome/browser/ash/login:test_support",
     "//chrome/browser/ash/login/test:test_support",
     "//chromeos/ash/components/logging",
+    "//chromeos/ash/components/logging:redirect",
     "//components/account_id",
     "//components/session_manager/core",
     "//content/public/browser",

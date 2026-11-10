@@ -26,7 +26,6 @@ include_rules = [
   "+chrome/browser/ash/input_method",
   "+chrome/browser/ash/lobster",
   "+chrome/browser/ash/locale",
-  "+chrome/browser/ash/logging",
   "+chrome/browser/ash/login",
   "+chrome/browser/ash/magic_boost",
   "+chrome/browser/ash/mahi/web_contents",
