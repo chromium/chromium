@@ -11407,6 +11407,21 @@
             ]
         }
     ],
+    "IOSLevelUp": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSLevelUp"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSLogApplicationStorageSizeMetrics": [
         {
             "platforms": [
