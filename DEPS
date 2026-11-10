@@ -420,7 +420,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling android_deps_autorolled_version
   # and whatever else without interference from each other.
-  'android_deps_autorolled_version': 'jlZgo06Pz5zh0Rcw53Wb8Xg7EIEn7OU4LZVkRuQGcscC',
+  'android_deps_autorolled_version': 'dNYyLi0q-yvPOwcvzWgXfxIUAKyyw3023oquYGr2Y0oC',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling android_sdk_emulator_version
   # and whatever else without interference from each other.
@@ -3048,7 +3048,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/robolectric/${{platform}}',
-              'version': 'version:2@android-all-17-robolectric-15733970-2921868143',
+              'version': 'version:2@android-all-17-robolectric-16653203-5af0e5518e',
           },
       ],
       'condition': 'checkout_android and non_git_source and '

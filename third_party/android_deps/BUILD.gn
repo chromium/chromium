@@ -123,12 +123,16 @@ if (!limit_android_deps) {
       info_path = "committed/libs/com_google_android_gms_play_services_auth/com_google_android_gms_play_services_auth.info"
       enable_bytecode_checks = false
       deps = [
+        ":org_jetbrains_kotlinx_kotlinx_coroutines_android_java",
+        ":org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
+        ":org_jetbrains_kotlinx_kotlinx_coroutines_play_services_java",
         "$google_play_services_package:google_play_services_auth_api_phone_java",
         "$google_play_services_package:google_play_services_auth_base_java",
         "$google_play_services_package:google_play_services_base_java",
         "$google_play_services_package:google_play_services_basement_java",
         "$google_play_services_package:google_play_services_fido_java",
         "$google_play_services_package:google_play_services_tasks_java",
+        "//third_party/android_deps:kotlin_stdlib_java",
         "//third_party/androidx:androidx_fragment_fragment_java",
         "//third_party/androidx:androidx_loader_loader_java",
       ]

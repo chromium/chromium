@@ -1392,7 +1392,7 @@
     {
         "name": "play-services-auth",
         "group": "com.google.android.gms",
-        "version": "21.4.0"
+        "version": "21.5.1"
     },
     {
         "name": "play-services-auth-api-phone",
@@ -1457,7 +1457,7 @@
     {
         "name": "play-services-identity-credentials",
         "group": "com.google.android.gms",
-        "version": "16.0.0-alpha12"
+        "version": "16.0.0-alpha13"
     },
     {
         "name": "play-services-iid",
@@ -1702,7 +1702,7 @@
     {
         "name": "test-parameter-injector",
         "group": "com.google.testparameterinjector",
-        "version": "1.22"
+        "version": "1.25"
     },
     {
         "name": "truth",
@@ -1717,7 +1717,7 @@
     {
         "name": "icu4j",
         "group": "com.ibm.icu",
-        "version": "78.3"
+        "version": "79.1"
     },
     {
         "name": "dalvik-dx",
@@ -1917,12 +1917,12 @@
     {
         "name": "bc-jdk18on-bom",
         "group": "org.bouncycastle",
-        "version": "1.85"
+        "version": "1.86.2"
     },
     {
         "name": "bcprov-jdk18on",
         "group": "org.bouncycastle",
-        "version": "1.85"
+        "version": "1.86"
     },
     {
         "name": "tagsoup",
@@ -1942,7 +1942,7 @@
     {
         "name": "animal-sniffer-annotations",
         "group": "org.codehaus.mojo",
-        "version": "1.28"
+        "version": "1.29.1"
     },
     {
         "name": "commonmark",
@@ -1957,7 +1957,7 @@
     {
         "name": "conscrypt-openjdk-uber",
         "group": "org.conscrypt",
-        "version": "2.6.2"
+        "version": "2.8.0"
     },
     {
         "name": "hamcrest",
@@ -2142,67 +2142,67 @@
     {
         "name": "annotations",
         "group": "org.robolectric",
-        "version": "4.17"
+        "version": "4.18-beta-1"
     },
     {
         "name": "junit",
         "group": "org.robolectric",
-        "version": "4.17"
+        "version": "4.18-beta-1"
     },
     {
         "name": "nativeruntime",
         "group": "org.robolectric",
-        "version": "4.17"
+        "version": "4.18-beta-1"
     },
     {
         "name": "nativeruntime-dist-compat",
         "group": "org.robolectric",
-        "version": "1.0.19"
+        "version": "1.0.20"
     },
     {
         "name": "pluginapi",
         "group": "org.robolectric",
-        "version": "4.17"
+        "version": "4.18-beta-1"
     },
     {
         "name": "plugins-maven-dependency-resolver",
         "group": "org.robolectric",
-        "version": "4.17"
+        "version": "4.18-beta-1"
     },
     {
         "name": "resources",
         "group": "org.robolectric",
-        "version": "4.17"
+        "version": "4.18-beta-1"
     },
     {
         "name": "robolectric",
         "group": "org.robolectric",
-        "version": "4.17"
+        "version": "4.18-beta-1"
     },
     {
         "name": "sandbox",
         "group": "org.robolectric",
-        "version": "4.17"
+        "version": "4.18-beta-1"
     },
     {
         "name": "shadowapi",
         "group": "org.robolectric",
-        "version": "4.17"
+        "version": "4.18-beta-1"
     },
     {
         "name": "shadows-framework",
         "group": "org.robolectric",
-        "version": "4.17"
+        "version": "4.18-beta-1"
     },
     {
         "name": "utils",
         "group": "org.robolectric",
-        "version": "4.17"
+        "version": "4.18-beta-1"
     },
     {
         "name": "utils-reflector",
         "group": "org.robolectric",
-        "version": "4.17"
+        "version": "4.18-beta-1"
     },
     {
         "name": "safere",
@@ -2212,6 +2212,6 @@
     {
         "name": "snakeyaml",
         "group": "org.yaml",
-        "version": "2.6"
+        "version": "2.7"
     }
 ]

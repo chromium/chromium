@@ -38,6 +38,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.annotation.GraphicsMode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -53,6 +54,7 @@ import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link GlicBottomSheetFreCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
 public class GlicBottomSheetFreCoordinatorUnitTest {
     private static final long FADE_ADVANCE_MS =
             GlicBottomSheetFreTransitionController.CROSSFADE_DURATION_MS + 50;

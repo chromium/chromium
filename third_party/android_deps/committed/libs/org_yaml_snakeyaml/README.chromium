@@ -1,7 +1,7 @@
 Name: SnakeYAML
 Short Name: snakeyaml
-URL: https://repo.maven.apache.org/maven2/org/yaml/snakeyaml/2.6/snakeyaml-2.6.jar
-Version: 2.6
+URL: https://repo.maven.apache.org/maven2/org/yaml/snakeyaml/2.7/snakeyaml-2.7.jar
+Version: 2.7
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
@@ -12,7 +12,7 @@ Shipped: no
 Description:
 YAML 1.1 parser and emitter for Java
 
-See also: https://bitbucket.org/snakeyaml/snakeyaml
+See also: https://codeberg.org/snakeyaml/snakeyaml
 
 
 Local Modifications:
