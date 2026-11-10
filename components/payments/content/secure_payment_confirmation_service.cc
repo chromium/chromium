@@ -36,11 +36,9 @@ namespace payments {
 
 namespace {
 
-#if !BUILDFLAG(IS_IOS)
 constexpr char kIsBbkHardwareSupportedHistogramName[] =
     "PaymentRequest.GetSecurePaymentConfirmationCapabilities."
     "BrowserBoundKeyHardware";
-#endif
 
 void OnIsUserVerifyingPlatformAuthenticatorAvailable(
     SecurePaymentConfirmationService::
@@ -378,16 +376,23 @@ void SecurePaymentConfirmationService::OnCreateUnboundKey(
 
 void SecurePaymentConfirmationService::IsBrowserBoundKeyHardwareSupported(
     base::OnceCallback<void(bool)> callback) {
+  scoped_refptr<BrowserBoundKeyStore> bbk_store = test_browser_bound_key_store_;
 #if !BUILDFLAG(IS_IOS)
-  scoped_refptr<BrowserBoundKeyStore> bbk_store =
-      test_browser_bound_key_store_
-          ? test_browser_bound_key_store_
-          : GetBrowserBoundKeyStoreInstance(BrowserBoundKeyStore::Config{
+  if (!bbk_store) {
+    bbk_store = GetBrowserBoundKeyStoreInstance(BrowserBoundKeyStore::Config{
 #if BUILDFLAG(IS_MAC)
-                .keychain_access_group =
-                    browser_bound_key_store_keychain_access_group_
+        .keychain_access_group = browser_bound_key_store_keychain_access_group_
 #endif  // BUILDFLAG(IS_MAC)
-            });
+    });
+  }
+#endif  // !BUILDFLAG(IS_IOS)
+
+  // Report the capability as unsupported rather than dropping the
+  // callback, which would leave the caller waiting forever.
+  if (!bbk_store) {
+    std::move(callback).Run(/*supported=*/false);
+    return;
+  }
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
@@ -400,7 +405,6 @@ void SecurePaymentConfirmationService::IsBrowserBoundKeyHardwareSupported(
             std::move(callback).Run(supported);
           },
           std::move(callback)));
-#endif  // !BUILDFLAG(IS_IOS)
 }
 
 void SecurePaymentConfirmationService::RecordFirstSystemPromptResult(
