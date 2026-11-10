@@ -21,6 +21,8 @@
 ../../web_tests/external/wpt/fonts/**/*.woff2
 -../../web_tests/external/wpt/fonts/CSSTest/**
 ../../web_tests/external/wpt/jpegxl/resources/*.jxl
+../../web_tests/external/wpt/webcodecs/four-colors-limited-range-420-8bpc.jpg
+../../web_tests/fast/replaced/resources/compass.jpg
 ../../web_tests/images/resources/**
 ../../web_tests/images/bmp-suite/**/*.bmp
 ../../web_tests/images/bmp-suite/**/*.png

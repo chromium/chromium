@@ -202,6 +202,8 @@
 ../../web_tests/external/wpt/jpegxl/resources/spline_on_first_frame.jxl
 ../../web_tests/external/wpt/jpegxl/resources/transparent-32x32.jxl
 ../../web_tests/external/wpt/jpegxl/resources/with_icc.jxl
+../../web_tests/external/wpt/webcodecs/four-colors-limited-range-420-8bpc.jpg
+../../web_tests/fast/replaced/resources/compass.jpg
 ../../web_tests/images/bmp-suite/bad/badbitcount.bmp
 ../../web_tests/images/bmp-suite/bad/badbitssize.bmp
 ../../web_tests/images/bmp-suite/bad/baddens1.bmp
