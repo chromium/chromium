@@ -1342,16 +1342,14 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
   user_data->OnHandshakeComplete();
   dispatched_messages.clear();
 
-  // Attaching a tab to the session handle should not mount `CONTEXT_LIBRARY`
-  // when `CanShareTabContext()` is false.
+  // Attaching a tab to the session handle should neither mount
+  // `CONTEXT_LIBRARY` nor emit `OnContextStateChanged` when
+  // `CanShareTabContext()` is false.
   base::UnguessableToken token = base::UnguessableToken::Create();
   mock_handle->GetUploadedContextTokensForTesting().push_back(token);
   mock_handle->AttachTabPendingUpload(token, /*tab_id=*/1,
                                       GURL("https://example.com"), "Example");
-  EXPECT_FALSE(dispatched_messages.empty());
-  for (const auto& msg : dispatched_messages) {
-    EXPECT_FALSE(msg.has_inject_chrome_input());
-  }
+  EXPECT_TRUE(dispatched_messages.empty());
 
   // `HandleThreadContextLibraryUpdateFromAim()` should return early and record
   // `kFeatureDisabled` without populating restored tabs.
@@ -1377,6 +1375,7 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {{kContextualTasksContextLibrary, {}},
+       {kContextualTasksTabBasedSuggestions, {}},
        {kContextualTasksContext,
         {{kContextualTasksContextSmartTabSharing.name, "true"},
          {kContextualTasksContextSmartTabSharingRearchitecture.name, "true"}}},
@@ -1386,12 +1385,24 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
                                    true);
   base::HistogramTester histogram_tester;
 
+  std::vector<contextual_search::FileInfo> uploaded_files;
   auto session_handle = std::make_unique<testing::NiceMock<
       contextual_search::MockContextualSearchSessionHandle>>();
   auto* mock_handle = session_handle.get();
+  ON_CALL(*mock_handle, search_session_id())
+      .WillByDefault(testing::Return("suggest_session_123"));
+  ON_CALL(*mock_handle, GetUploadedContextFileInfos())
+      .WillByDefault(testing::ReturnPointee(&uploaded_files));
   ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents_)
       ->SetTaskSession(std::nullopt, std::move(session_handle),
                        /*input_state_model=*/nullptr);
+  base::ScopedClosureRunner clear_session(base::BindOnce(
+      [](content::WebContents* wc) {
+        ContextualSearchWebContentsHelper::GetOrCreateForWebContents(wc)
+            ->SetTaskSession(std::nullopt, /*handle=*/nullptr,
+                             /*input_state_model=*/nullptr);
+      },
+      web_contents_.get()));
 
   auto* user_data =
       ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
@@ -1409,6 +1420,11 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
       active_task_context_provider_registration(
           unowned_user_data_host, mock_active_task_context_provider);
   webui::SetBrowserWindowInterface(web_contents_, &mock_browser_window);
+  base::ScopedClosureRunner clear_browser_window(base::BindOnce(
+      [](content::WebContents* wc) {
+        webui::SetBrowserWindowInterface(wc, nullptr);
+      },
+      web_contents_.get()));
 #endif
 
   // Before `HandshakeResponse` disables `TABS`, Smart Tab Sharing is active by
@@ -1421,6 +1437,11 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
       [](std::vector<lens::ClientToSearchMessage>* messages,
          const lens::ClientToSearchMessage& msg) { messages->push_back(msg); },
       &dispatched_messages));
+  base::ScopedClosureRunner reset_dispatcher(base::BindOnce(
+      [](ContextualTasksWebContentsUserData* ud) {
+        ud->SetSearchMessageDispatcherForTesting(base::NullCallback());
+      },
+      user_data));
 
   // Receive a `HandshakeResponse` without `LENS` (simulating a server before
   // the `capabilities` rollout). Tab sharing should remain active as normal.
@@ -1432,6 +1453,21 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
                                  handshake_bytes.size());
   EXPECT_TRUE(user_data->OnSearchMessageReceived(handshake_bytes));
   EXPECT_TRUE(user_data->IsSmartTabSharingActive());
+
+  // Stage a ready manual tab while `TABS` is active so context state becomes
+  // `CONTEXT_STATE_READY` and suggest inputs populate `added_contexts`.
+  base::UnguessableToken ready_token = base::UnguessableToken::Create();
+  contextual_search::FileInfo ready_file;
+  ready_file.file_token = ready_token;
+  lens::LensOverlayRequestId ready_req;
+  ready_req.set_context_id(101);
+  ready_file.request_id = ready_req;
+  ready_file.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
+  uploaded_files.push_back(ready_file);
+  mock_handle->GetUploadedContextTokensForTesting().push_back(ready_token);
+  mock_handle->AttachTabPendingUpload(
+      ready_token, /*tab_id=*/10, GURL("https://ready.example.com"), "Ready");
 
   // Receive a `HandshakeResponse` that advertises `LENS` only (omitting
   // `TABS`).
@@ -1448,10 +1484,13 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
   testing::Mock::VerifyAndClearExpectations(&mock_active_task_context_provider);
 #endif
 
-  // Smart Tab Sharing should now be inactive and `CONTEXT_LIBRARY` must be
-  // unmounted.
+  // Smart Tab Sharing should now be inactive, `CONTEXT_LIBRARY` must be
+  // unmounted, context state must reset to `CONTEXT_STATE_NONE`, and suggest
+  // inputs must clear `added_contexts`.
   EXPECT_FALSE(user_data->IsSmartTabSharingActive());
   bool saw_context_library_unmount = false;
+  bool saw_context_state_none = false;
+  bool saw_suggest_inputs_cleared = false;
   for (const auto& msg : dispatched_messages) {
     if (msg.has_inject_chrome_input() &&
         msg.inject_chrome_input().input_type() ==
@@ -1459,20 +1498,39 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
       EXPECT_FALSE(msg.inject_chrome_input().is_active());
       saw_context_library_unmount = true;
     }
+    if (msg.has_on_context_state_changed()) {
+      EXPECT_EQ(msg.on_context_state_changed().context_state(),
+                lens::ClientToSearchMessage::OnContextStateChanged::
+                    CONTEXT_STATE_NONE);
+      EXPECT_TRUE(msg.on_context_state_changed().input_types().empty());
+      saw_context_state_none = true;
+    }
+    if (msg.has_on_suggest_inputs_changed()) {
+      EXPECT_TRUE(msg.on_suggest_inputs_changed().added_contexts().empty());
+      saw_suggest_inputs_cleared = true;
+    }
   }
   EXPECT_TRUE(saw_context_library_unmount);
+  EXPECT_TRUE(saw_context_state_none);
+  EXPECT_TRUE(saw_suggest_inputs_cleared);
 
   // Attaching tab context to the session handle should not mount
-  // `CONTEXT_LIBRARY` while the page lacks the `TABS` capability.
+  // `CONTEXT_LIBRARY`, emit `OnContextStateChanged`, or emit
+  // `OnSuggestInputsChanged` while the page lacks the `TABS` capability.
   dispatched_messages.clear();
   base::UnguessableToken token = base::UnguessableToken::Create();
+  contextual_search::FileInfo extra_file;
+  extra_file.file_token = token;
+  lens::LensOverlayRequestId extra_req;
+  extra_req.set_context_id(102);
+  extra_file.request_id = extra_req;
+  extra_file.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
+  uploaded_files.push_back(extra_file);
   mock_handle->GetUploadedContextTokensForTesting().push_back(token);
   mock_handle->AttachTabPendingUpload(token, /*tab_id=*/1,
                                       GURL("https://example.com"), "Example");
-  EXPECT_FALSE(dispatched_messages.empty());
-  for (const auto& msg : dispatched_messages) {
-    EXPECT_FALSE(msg.has_inject_chrome_input());
-  }
+  EXPECT_TRUE(dispatched_messages.empty());
 
   // `HandleThreadContextLibraryUpdateFromAim()` should also be blocked when the
   // server handshake omitted `TABS`.
@@ -1491,8 +1549,8 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
       1);
   EXPECT_TRUE(mock_handle->GetTabContextState().restored.empty());
 
-  // If a subsequent `HandshakeResponse` includes `TABS`, Smart Tab Sharing and
-  // `CONTEXT_LIBRARY` mounting become active again.
+  // If a subsequent `HandshakeResponse` includes `TABS`, Smart Tab Sharing,
+  // `CONTEXT_LIBRARY` mounting, and suggest inputs become active again.
   dispatched_messages.clear();
   resp->add_capabilities(lens::SearchToClientMessage::HandshakeResponse::TABS);
   handshake_bytes.resize(handshake_msg.ByteSizeLong());
@@ -1501,6 +1559,7 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
   EXPECT_TRUE(user_data->OnSearchMessageReceived(handshake_bytes));
   EXPECT_TRUE(user_data->IsSmartTabSharingActive());
   bool saw_context_library_mount = false;
+  bool saw_suggest_inputs_restored = false;
   for (const auto& msg : dispatched_messages) {
     if (msg.has_inject_chrome_input() &&
         msg.inject_chrome_input().input_type() ==
@@ -1508,12 +1567,13 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
         msg.inject_chrome_input().is_active()) {
       saw_context_library_mount = true;
     }
+    if (msg.has_on_suggest_inputs_changed()) {
+      EXPECT_EQ(msg.on_suggest_inputs_changed().added_contexts_size(), 2);
+      saw_suggest_inputs_restored = true;
+    }
   }
   EXPECT_TRUE(saw_context_library_mount);
-
-#if !BUILDFLAG(IS_ANDROID)
-  webui::SetBrowserWindowInterface(web_contents_, nullptr);
-#endif
+  EXPECT_TRUE(saw_suggest_inputs_restored);
 }
 
 TEST_F(ContextualTasksWebContentsUserDataTest,
@@ -3562,6 +3622,143 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
       "ContextualTasks.PageContextIneligible.Panel", 0);
   histogram_tester.ExpectTotalCount(
       "ContextualSearch.ErrorPageShown.ContextualTasks", 0);
+}
+
+TEST_F(ContextualTasksWebContentsUserDataTest,
+       ImplicitLensOverlayTabUpload_DoesNotEmitUploadingOrReadyContextState) {
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+
+  std::vector<lens::ClientToSearchMessage> context_state_messages;
+  user_data->SetSearchMessageDispatcherForTesting(base::BindLambdaForTesting(
+      [&context_state_messages](const lens::ClientToSearchMessage& message) {
+        if (message.has_on_context_state_changed()) {
+          context_state_messages.push_back(message);
+        }
+      }));
+  base::ScopedClosureRunner reset_dispatcher(base::BindOnce(
+      [](ContextualTasksWebContentsUserData* ud) {
+        ud->SetSearchMessageDispatcherForTesting(base::NullCallback());
+      },
+      user_data));
+  user_data->OnHandshakeComplete();
+  context_state_messages.clear();
+
+  contextual_search::ContextualSearchContextController::
+      ContextUploadStatusObserver* registered_observer = nullptr;
+  std::optional<contextual_search::FileInfo> stored_file_info;
+  testing::NiceMock<contextual_search::MockContextualSearchContextController>
+      mock_context_controller;
+  base::WeakPtrFactory<contextual_search::ContextualSearchContextController>
+      controller_weak_factory(&mock_context_controller);
+  ON_CALL(mock_context_controller, AsWeakPtr())
+      .WillByDefault([&controller_weak_factory]() {
+        return controller_weak_factory.GetWeakPtr();
+      });
+  EXPECT_CALL(mock_context_controller, AddObserver(testing::_))
+      .WillOnce(testing::SaveArg<0>(&registered_observer));
+
+  ON_CALL(mock_context_controller, GetFileInfo(testing::_))
+      .WillByDefault([&stored_file_info](const base::UnguessableToken& token)
+                         -> const contextual_search::FileInfo* {
+        if (stored_file_info && stored_file_info->file_token == token) {
+          return &*stored_file_info;
+        }
+        return nullptr;
+      });
+  ON_CALL(mock_context_controller,
+          StartFileUploadFlow(testing::_, testing::_, testing::_))
+      .WillByDefault([&](const base::UnguessableToken& file_token,
+                         std::unique_ptr<lens::ContextualInputData> input_data,
+                         std::optional<lens::ImageEncodingOptions>) {
+        contextual_search::FileInfo info;
+        info.file_token = file_token;
+        info.is_implicit_upload = input_data->is_implicit_upload;
+        info.upload_status =
+            contextual_search::ContextUploadStatus::kProcessing;
+        info.input_data = std::move(input_data);
+        stored_file_info = std::move(info);
+        if (registered_observer) {
+          registered_observer->OnContextUploadStatusChanged(
+              file_token, lens::MimeType::kAnnotatedPageContent,
+              contextual_search::ContextUploadStatus::kProcessing,
+              std::nullopt);
+        }
+      });
+
+  auto session_handle = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  auto* mock_handle = session_handle.get();
+  ON_CALL(*mock_handle, GetController())
+      .WillByDefault(testing::Return(&mock_context_controller));
+  ON_CALL(*mock_handle, GetUploadedContextFileInfos())
+      .WillByDefault([&stored_file_info]() {
+        std::vector<contextual_search::FileInfo> infos;
+        if (stored_file_info) {
+          contextual_search::FileInfo copy;
+          copy.file_token = stored_file_info->file_token;
+          copy.is_implicit_upload = stored_file_info->is_implicit_upload;
+          copy.upload_status = stored_file_info->upload_status;
+          infos.push_back(std::move(copy));
+        }
+        return infos;
+      });
+  ON_CALL(*mock_handle,
+          StartTabContextUploadFlow(testing::_, testing::_, testing::_))
+      .WillByDefault(
+          [mock_handle](
+              const base::UnguessableToken& file_token,
+              std::unique_ptr<lens::ContextualInputData> contextual_input_data,
+              std::optional<lens::ImageEncodingOptions> image_options) {
+            mock_handle
+                ->ContextualSearchSessionHandle::StartTabContextUploadFlow(
+                    file_token, std::move(contextual_input_data),
+                    image_options);
+          });
+
+  // Attaching the session via `SetTaskSession` (`OnSessionChanged`) subscribes
+  // `user_data` to `mock_context_controller`.
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents_)
+      ->SetTaskSession(std::nullopt, std::move(session_handle),
+                       /*input_state_model=*/nullptr);
+  base::ScopedClosureRunner clear_session(base::BindOnce(
+      [](content::WebContents* wc) {
+        ContextualSearchWebContentsHelper::GetOrCreateForWebContents(wc)
+            ->SetTaskSession(std::nullopt, /*handle=*/nullptr,
+                             /*input_state_model=*/nullptr);
+      },
+      web_contents_.get()));
+  EXPECT_EQ(registered_observer, user_data);
+  context_state_messages.clear();
+
+  // Opening/reopening the Lens Overlay starts an implicit tab context upload.
+  // Neither `StartTabContextUploadFlow` nor `kUploadSuccessful` may emit
+  // `CONTEXT_STATE_UPLOADING` or `CONTEXT_STATE_READY`.
+  const base::UnguessableToken overlay_token = base::UnguessableToken::Create();
+  mock_handle->GetUploadedContextTokensForTesting().push_back(overlay_token);
+  auto input_data = std::make_unique<lens::ContextualInputData>();
+  input_data->tab_session_id = SessionID::FromSerializedValue(42);
+  input_data->page_url = GURL("https://www.wikipedia.org/");
+  input_data->page_title = "Wikipedia";
+  input_data->is_implicit_upload = true;
+  mock_handle->StartTabContextUploadFlow(overlay_token, std::move(input_data),
+                                         std::nullopt);
+  EXPECT_TRUE(context_state_messages.empty());
+
+  ASSERT_TRUE(stored_file_info.has_value());
+  stored_file_info->upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
+  ASSERT_NE(registered_observer, nullptr);
+  registered_observer->OnContextUploadStatusChanged(
+      overlay_token, lens::MimeType::kAnnotatedPageContent,
+      contextual_search::ContextUploadStatus::kUploadSuccessful, std::nullopt);
+  EXPECT_TRUE(context_state_messages.empty());
+
+  EXPECT_CALL(mock_context_controller, RemoveObserver(user_data)).Times(1);
+  clear_session.RunAndReset();
+  reset_dispatcher.RunAndReset();
 }
 #endif
 

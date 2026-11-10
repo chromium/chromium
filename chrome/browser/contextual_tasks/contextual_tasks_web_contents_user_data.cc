@@ -1661,6 +1661,8 @@ void ContextualTasksWebContentsUserData::OnSessionChanged(
 
 bool ContextualTasksWebContentsUserData::MaybeRefreshTabContextSubscription(
     contextual_search::ContextualSearchSessionHandle* session_handle) {
+  ObserveContextController(session_handle ? session_handle->GetController()
+                                          : nullptr);
   if (subscribed_session_handle_.get() == session_handle &&
       !subscribed_session_handle_.WasInvalidated()) {
     return false;
@@ -1706,11 +1708,13 @@ ContextualTasksWebContentsUserData::ContextState
 ContextualTasksWebContentsUserData::ComputeContextState() {
   bool any_uploading = false;
   bool any_ready = GetPrimaryPageSearchState().is_lens_crop_mounted;
-  for (const auto& tab : GetSelectedTabs()) {
-    if (pending_context_uploads_.contains(tab.context_token)) {
-      any_uploading = true;
-    } else if (!failed_context_uploads_.contains(tab.context_token)) {
-      any_ready = true;
+  if (CanShareTabsForCurrentPage()) {
+    for (const auto& tab : GetSelectedTabs()) {
+      if (pending_context_uploads_.contains(tab.context_token)) {
+        any_uploading = true;
+      } else if (!failed_context_uploads_.contains(tab.context_token)) {
+        any_ready = true;
+      }
     }
   }
   if (any_uploading) {
@@ -1748,9 +1752,11 @@ void ContextualTasksWebContentsUserData::UpdateContextState() {
   if (page_state.is_lens_crop_mounted) {
     state_changed->add_input_types(omnibox::INPUT_TYPE_LENS_IMAGE);
   }
-  for (const auto& tab : GetSelectedTabs()) {
-    if (!failed_context_uploads_.contains(tab.context_token)) {
-      state_changed->add_input_types(omnibox::INPUT_TYPE_BROWSER_TAB);
+  if (CanShareTabsForCurrentPage()) {
+    for (const auto& tab : GetSelectedTabs()) {
+      if (!failed_context_uploads_.contains(tab.context_token)) {
+        state_changed->add_input_types(omnibox::INPUT_TYPE_BROWSER_TAB);
+      }
     }
   }
 
@@ -1766,7 +1772,7 @@ void ContextualTasksWebContentsUserData::UpdateContextState() {
 
 std::vector<lens::AddedContext>
 ContextualTasksWebContentsUserData::ComputeSuggestInputContexts() {
-  if (!subscribed_session_handle_) {
+  if (!subscribed_session_handle_ || !CanShareTabsForCurrentPage()) {
     return {};
   }
 
