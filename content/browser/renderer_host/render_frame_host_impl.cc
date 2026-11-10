@@ -13478,20 +13478,18 @@ void RenderFrameHostImpl::CommitNavigation(
       }
 
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
-          pending_factory_proxy;
-      url_loader_factory::CreateAndConnectToPendingReceiver(
-          pending_factory_proxy.InitWithNewPipeAndPassReceiver(),
-          ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
-          url_loader_factory::TerminalParams::ForNonNetwork(
-              std::move(original_pending_factory),
-              GetProcess()->GetDeprecatedID()),
-          url_loader_factory::ContentClientParams(
-              GetBrowserContext(), this, GetProcess()->GetDeprecatedID(),
-              subresource_loader_factories_config.origin(),
-              net::IsolationInfo(),
-              subresource_loader_factories_config.ukm_source_id()),
-          devtools_instrumentation::WillCreateURLLoaderFactoryParams::ForFrame(
-              this));
+          pending_factory_proxy = url_loader_factory::CreatePendingRemote(
+              ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
+              url_loader_factory::TerminalParams::ForNonNetwork(
+                  std::move(original_pending_factory),
+                  GetProcess()->GetDeprecatedID()),
+              url_loader_factory::ContentClientParams(
+                  GetBrowserContext(), this, GetProcess()->GetDeprecatedID(),
+                  subresource_loader_factories_config.origin(),
+                  net::IsolationInfo(),
+                  subresource_loader_factories_config.ukm_source_id()),
+              devtools_instrumentation::WillCreateURLLoaderFactoryParams::
+                  ForFrame(this));
       subresource_loader_factories->pending_scheme_specific_factories().emplace(
           scheme, std::move(pending_factory_proxy));
     }
