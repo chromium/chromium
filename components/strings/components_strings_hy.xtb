@@ -3,6 +3,7 @@
 <translationbundle lang="hy">
 <translation id="1008557486741366299">Հիմա չէ</translation>
 <translation id="100957008357583611">Օգտագործե՞լ ձեր տեղադրության տվյալները</translation>
+<translation id="1010148478459329879">Ձեր Google հաշվում կարող են լինել այցելությունների պատմության այլ ձևեր ևս, օրինակ՝ <ph name="BEGIN_LINK_GAA" />Gemini-ի պատմությունը<ph name="END_LINK_GAA" />։ Դրանք կգտնեք <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> էջում։</translation>
 <translation id="1010200102790553230">Էջը բեռնել ավելի ուշ</translation>
 <translation id="1010225406377140704">Կապվեք ուղարկողի հետ՝ խնդրելով նոր հղում ուղարկել</translation>
 <translation id="1011206368273183593">Ֆայլերի նախապատրաստում</translation>
@@ -920,7 +921,6 @@
 <translation id="251033673027346551">Այցելեք Google Wallet՝ <ph name="BEGIN_LINK" />տվյալների և գաղտնիության կարգավորումները<ph name="END_LINK" /> կառավարելու համար։</translation>
 <translation id="2512101340618156538">Արգելված է (կանխադրված)</translation>
 <translation id="2512413427717747692">«Դարձնել Chrome-ը կանխադրված դիտարկիչ» կոճակ։ Սեղմեք Enter՝ iOS-ի կարգավորումներում Chrome-ը համակարգի կանխադրված դիտարկիչը դարձնելու համար։</translation>
-<translation id="2513217232843681817">Ձեր Google հաշվում կարող են լինել այցելությունների պատմության այլ ձևեր ևս, օրինակ՝ ավտոմատ դիտարկման այցելությունները <ph name="BEGIN_LINK_GAA" />Gemini հավելվածների օգտագործման պատմության<ph name="END_LINK_GAA" /> մեջ։ Դրանք կգտնեք <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> էջում։</translation>
 <translation id="2515629240566999685">Ստուգել ազդանշանը ձեր տարածքում</translation>
 <translation id="2518584823165598232">Այս քարտն անհասանելի է։ Դիմեք ձեր քարտի մատակարարին։</translation>
 <translation id="2521385132275182522">Ամրակ ներքևի աջ կողմում</translation>
@@ -3963,7 +3963,6 @@
 <translation id="7584287158780898016">Միացրեք գների հետագծման ծանուցումները</translation>
 <translation id="7586676035079382730">Ծանուցումների ուղարկումն արգելված է</translation>
 <translation id="7588707273764747927">Փոխանցում</translation>
-<translation id="7589062909165841767">Ձեր Google հաշվում կարող է նաև պահվել <ph name="BEGIN_LINK_GAA" />Gemini հավելվածներում ձեր գործողությունների պատմությունը<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">Կիսվե՞լ կոնֆիդենցիալ բովանդակությամբ</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> կայքն ուզում է օգտագործել <ph name="TOP_LEVEL_URL" /> կայքի քուքիներն ու տվյալները</translation>
 <translation id="7592362899630581445">Սերվերի վկայագիրը խախտում է անունների սահմանափակումները:</translation>
@@ -4255,7 +4254,6 @@
 <translation id="8075736640322370409">Արագ ստեղծել Google աղյուսակ</translation>
 <translation id="8075898834294118863">Կառավարել կայքի կարգավորումները</translation>
 <translation id="8076492880354921740">Ներդիրներ</translation>
-<translation id="8076880883123051368">Ձեր Google հաշվում կարող են լինել այցելությունների պատմության այլ ձևեր ևս, օրինակ՝ <ph name="BEGIN_LINK_GAA" />Gemini հավելվածներում գործողությունների պատմությունը<ph name="END_LINK_GAA" />։ Դրանք կգտնեք <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> էջում։</translation>
 <translation id="8077465698530018904">Հեռացնել ընտրված տարածաշրջանը</translation>
 <translation id="8077669823243888800">Envelope Chinese #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Վերբեռնե՞լ կոնֆիդենցիալ ֆայլը}one{Վերբեռնե՞լ կոնֆիդենցիալ ֆայլը}other{Վերբեռնե՞լ կոնֆիդենցիալ ֆայլերը}}</translation>
@@ -4307,6 +4305,7 @@
 <translation id="8163468049564974856">Միացրեք ինքնալրացումը՝ առցանց վճարումներն անվտանգ կատարելու համար։ Քարտի տվյալները գաղտնագրվում են Google Wallet-ում։</translation>
 <translation id="8163866351304776260">Չորս անցք ձախ կողմում</translation>
 <translation id="8164078261547504572">Ուզո՞ւմ եք գնիջեցումների մասին նամակներ ստանալ</translation>
+<translation id="8166435925529495192">Ձեր Google հաշվում կարող է նաև պահվել <ph name="BEGIN_LINK_GAA" />Gemini-ի պատմությունը<ph name="END_LINK_GAA" /></translation>
 <translation id="8169175551046720804">«<ph name="DATA_CONTROLS_KEYS" />» բանալիները հնարավոր չէ ավելացնել նույն բառարանում</translation>
 <translation id="8172809706700703589">Կազմիր ինձ համար իրերի ցուցակ</translation>
 <translation id="8174047975335711832">Սարքի մասին տեղեկություններ</translation>
@@ -4971,6 +4970,7 @@
     &lt;li&gt;ապատեղադրեք կամ անջատեք «<ph name="SOFTWARE_NAME" />» ծրագիրը,&lt;/li&gt;
     &lt;li&gt;միացեք այլ ցանցի։&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">Ձեր Google հաշվում կարող են լինել այցելությունների պատմության այլ ձևեր ևս, օրինակ՝ ավտոմատ դիտարկման այցելությունները <ph name="BEGIN_LINK_GAA" />Gemini-ի պատմության<ph name="END_LINK_GAA" /> մեջ։ Դրանք կգտնեք <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> էջում։</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">IBAN-ի ավելացում</translation>
 <translation id="995782501881226248">YouTube</translation>

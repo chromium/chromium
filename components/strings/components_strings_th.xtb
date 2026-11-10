@@ -3,6 +3,7 @@
 <translationbundle lang="th">
 <translation id="1008557486741366299">ไม่ใช่ตอนนี้</translation>
 <translation id="100957008357583611">ใช้ตำแหน่งของคุณไหม</translation>
+<translation id="1010148478459329879">บัญชี Google อาจมีประวัติการท่องเว็บรูปแบบอื่นๆ ที่ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> เช่น <ph name="BEGIN_LINK_GAA" />ประวัติการใช้ Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="1010200102790553230">โหลดหน้าภายหลัง</translation>
 <translation id="1010225406377140704">ติดต่อผู้ส่งเพื่อขอลิงก์ใหม่</translation>
 <translation id="1011206368273183593">กำลังเตรียมไฟล์</translation>
@@ -920,7 +921,6 @@
 <translation id="251033673027346551">ไปที่ Google Wallet เพื่อจัดการ<ph name="BEGIN_LINK" />ค่ากำหนดข้อมูลและความเป็นส่วนตัว<ph name="END_LINK" /></translation>
 <translation id="2512101340618156538">ไม่อนุญาต (ค่าเริ่มต้น)</translation>
 <translation id="2512413427717747692">ปุ่มตั้ง Chrome เป็นเบราว์เซอร์เริ่มต้น กด Enter เพื่อตั้ง Chrome เป็นเบราว์เซอร์เริ่มต้นของระบบในการตั้งค่า iOS</translation>
-<translation id="2513217232843681817">บัญชี Google อาจมีประวัติการท่องเว็บรูปแบบอื่นๆ ที่ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> เช่น การเข้าชมจากการท่องเว็บอัตโนมัติใน<ph name="BEGIN_LINK_GAA" />กิจกรรมบนแอป Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="2515629240566999685">ตรวจสอบสัญญาณในพื้นที่ของคุณ</translation>
 <translation id="2518584823165598232">บัตรใบนี้ใช้งานไม่ได้ โปรดติดต่อผู้ให้บริการบัตร</translation>
 <translation id="2521385132275182522">เย็บด้วยลวดเย็บกระดาษด้านขวาล่าง</translation>
@@ -3964,7 +3964,6 @@
 <translation id="7584287158780898016">เปิดใช้การแจ้งเตือนการติดตามราคา</translation>
 <translation id="7586676035079382730">ไม่อนุญาตให้แสดงการแจ้งเตือน</translation>
 <translation id="7588707273764747927">โอน</translation>
-<translation id="7589062909165841767">บัญชี Google ของคุณอาจมี<ph name="BEGIN_LINK_GAA" />กิจกรรมบนแอป Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">แชร์เนื้อหาที่เป็นความลับไหม</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> ต้องการใช้คุกกี้และข้อมูลเว็บไซต์ใน <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">ใบรับรองของเซิร์ฟเวอร์ละเมิดข้อกำหนดชื่อ</translation>
@@ -4256,7 +4255,6 @@
 <translation id="8075736640322370409">สร้างชีตใหม่ใน Google ชีตอย่างรวดเร็ว</translation>
 <translation id="8075898834294118863">จัดการการตั้งค่าเว็บไซต์</translation>
 <translation id="8076492880354921740">แท็บ</translation>
-<translation id="8076880883123051368">บัญชี Google อาจมีประวัติการท่องเว็บรูปแบบอื่นๆ ที่ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> เช่น <ph name="BEGIN_LINK_GAA" />กิจกรรมบนแอป Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="8077465698530018904">นำขอบเขตที่เลือกออก</translation>
 <translation id="8077669823243888800">Envelope Chinese #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{อัปโหลดไฟล์ลับไหม}other{อัปโหลดไฟล์ลับไหม}}</translation>
@@ -4308,6 +4306,7 @@
 <translation id="8163468049564974856">เปิดการป้อนข้อความอัตโนมัติเพื่อชำระเงินออนไลน์อย่างปลอดภัย รายละเอียดบัตรจะได้รับการเข้ารหัสใน Google Wallet</translation>
 <translation id="8163866351304776260">เจาะรูด้านซ้าย 4 รู</translation>
 <translation id="8164078261547504572">ต้องการรับอีเมลแจ้งเมื่อราคาต่ำลงไหม</translation>
+<translation id="8166435925529495192">บัญชี Google ของคุณอาจมี<ph name="BEGIN_LINK_GAA" />ประวัติการใช้ Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="8169175551046720804">ตั้งค่าคีย์ "<ph name="DATA_CONTROLS_KEYS" />" ในพจนานุกรมเดียวกันนี้ไม่ได้</translation>
 <translation id="8172809706700703589">สร้างลิสต์จัดของสำหรับการเดินทางของฉัน</translation>
 <translation id="8174047975335711832">ข้อมูลอุปกรณ์</translation>
@@ -4973,6 +4972,7 @@
     &lt;li&gt;ลองถอนการติดตั้งหรือปิดใช้ "<ph name="SOFTWARE_NAME" />"&lt;/li&gt;
     &lt;li&gt;ลองเชื่อมต่อกับเครือข่ายอื่น&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">บัญชี Google อาจมีประวัติการท่องเว็บรูปแบบอื่นๆ ที่ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> เช่น การเข้าชมจากการท่องเว็บอัตโนมัติใน<ph name="BEGIN_LINK_GAA" />ประวัติการใช้ Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">เพิ่ม IBAN</translation>
 <translation id="995782501881226248">YouTube</translation>

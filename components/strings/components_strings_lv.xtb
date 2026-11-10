@@ -3,6 +3,7 @@
 <translationbundle lang="lv">
 <translation id="1008557486741366299">Vēlāk</translation>
 <translation id="100957008357583611">Vai izmantot jūsu atrašanās vietas datus?</translation>
+<translation id="1010148478459329879">Jūsu Google kontam var būt citu veidu pārlūkošanas vēstures dati vietnē <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, piemēram, <ph name="BEGIN_LINK_GAA" />Gemini vēsture<ph name="END_LINK_GAA" />.</translation>
 <translation id="1010200102790553230">Ielādēt lapu vēlāk</translation>
 <translation id="1010225406377140704">Sazinieties ar nosūtītāju un lūdziet jaunu saiti.</translation>
 <translation id="1011206368273183593">Notiek failu sagatavošana…</translation>
@@ -920,7 +921,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="251033673027346551">Pārejiet uz lietotni Google maks, lai pārvaldītu <ph name="BEGIN_LINK" />datu un konfidencialitātes preferences<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Atļauja nav piešķirta (noklusējums)</translation>
 <translation id="2512413427717747692">Poga “Iestatīt Chrome kā noklusējuma pārlūku”; nospiediet taustiņu Enter, lai iestatītu Chrome kā sistēmas noklusējuma pārlūku iOS iestatījumos.</translation>
-<translation id="2513217232843681817">Jūsu Google kontam var būt citu veidu pārlūkošanas vēstures dati vietnē <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, piemēram, automātiskās pārlūkošanas apmeklējumi sadaļā <ph name="BEGIN_LINK_GAA" />Gemini Apps darbības<ph name="END_LINK_GAA" />.</translation>
 <translation id="2515629240566999685">Pārbaudiet signālu savā apkaimē.</translation>
 <translation id="2518584823165598232">Šī karte nav pieejama. Lūdzu, sazinieties ar kartes izsniedzēju.</translation>
 <translation id="2521385132275182522">Skavojums apakšējā labajā malā</translation>
@@ -3963,7 +3963,6 @@ Papildu informācija:
 <translation id="7584287158780898016">Brīdinājumu iespējošana par cenu izsekošanu</translation>
 <translation id="7586676035079382730">Paziņojumi nav atļauti</translation>
 <translation id="7588707273764747927">Pārneses papīrs</translation>
-<translation id="7589062909165841767">Jūsu Google kontā var būt saglabātas jūsu <ph name="BEGIN_LINK_GAA" />Gemini Apps darbības<ph name="END_LINK_GAA" />.</translation>
 <translation id="7591288787774558753">Vai kopīgot konfidenciālu saturu?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> vēlas izmantot sīkfailus un vietnes datus šeit: <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Servera sertifikātā ir pārkāpti nosaukuma ierobežojumi.</translation>
@@ -4255,7 +4254,6 @@ Papildu informācija:
 <translation id="8075736640322370409">Ātri izveidot jaunu Google izklājlapu</translation>
 <translation id="8075898834294118863">Pārvaldīt vietnes iestatījumus</translation>
 <translation id="8076492880354921740">Cilnes</translation>
-<translation id="8076880883123051368">Jūsu Google kontam var būt citu veidu pārlūkošanas vēstures dati vietnē <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, piemēram, <ph name="BEGIN_LINK_GAA" />Gemini Apps darbības<ph name="END_LINK_GAA" />.</translation>
 <translation id="8077465698530018904">Noņemt atlasīto reģionu</translation>
 <translation id="8077669823243888800">Ķīniešu aploksne 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Vai augšupielādēt konfidenciālo failu?}zero{Vai augšupielādēt konfidenciālos failus?}one{Vai augšupielādēt konfidenciālos failus?}other{Vai augšupielādēt konfidenciālos failus?}}</translation>
@@ -4307,6 +4305,7 @@ Papildu informācija:
 <translation id="8163468049564974856">Ieslēdziet automātisko aizpildi, lai droši norēķinātos tiešsaistē. Jūsu kartes dati lietotnē Google maks tiek šifrēti.</translation>
 <translation id="8163866351304776260">Četri caurumi kreisajā malā</translation>
 <translation id="8164078261547504572">Vai vēlaties saņemt e-pasta ziņojumus par cenu kritumu?</translation>
+<translation id="8166435925529495192">Jūsu Google kontā var būt saglabāta jūsu <ph name="BEGIN_LINK_GAA" />Gemini vēsture<ph name="END_LINK_GAA" />.</translation>
 <translation id="8169175551046720804">Atslēgas “<ph name="DATA_CONTROLS_KEYS" />” nevar iestatīt vienā vārdnīcā</translation>
 <translation id="8172809706700703589">Izveido līdzi ņemamo mantu sarakstu manam ceļojumam</translation>
 <translation id="8174047975335711832">Informācija par ierīci</translation>
@@ -4972,6 +4971,7 @@ Papildu informācija:
     &lt;li&gt;Mēģiniet atinstalēt vai atspējot programmatūru <ph name="SOFTWARE_NAME" />.&lt;/li&gt;
     &lt;li&gt;Mēģiniet izveidot savienojumu ar citu tīklu.&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">Jūsu Google kontam var būt citu veidu pārlūkošanas vēstures dati vietnē <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, piemēram, automātiskās pārlūkošanas apmeklējumi sadaļā <ph name="BEGIN_LINK_GAA" />Gemini vēsture<ph name="END_LINK_GAA" />.</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">IBAN pievienošana</translation>
 <translation id="995782501881226248">YouTube</translation>

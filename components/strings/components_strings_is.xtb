@@ -3,6 +3,7 @@
 <translationbundle lang="is">
 <translation id="1008557486741366299">Ekki núna</translation>
 <translation id="100957008357583611">Nota staðsetninguna þína?</translation>
+<translation id="1010148478459329879">Google-reikningurinn þinn gæti verið með annars konar vafraferil á <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, t.d. <ph name="BEGIN_LINK_GAA" />Gemini-ferilinn<ph name="END_LINK_GAA" /> þinn</translation>
 <translation id="1010200102790553230">Hlaða síðu seinna</translation>
 <translation id="1010225406377140704">Hafðu samband við sendandann til að biðja um nýjan tengil.</translation>
 <translation id="1011206368273183593">Undirbýr skrár</translation>
@@ -920,7 +921,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="251033673027346551">Farðu í Google-veski til að stjórna <ph name="BEGIN_LINK" />stillingum gagna og persónuverndar<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Ekki heimilað (sjálfgefið)</translation>
 <translation id="2512413427717747692">Hnappur til að stilla Chrome sem sjálfgefinn vafra, ýttu á Enter til að stilla Chrome sem sjálfgefinn vafra kerfisins í stillingum iOS</translation>
-<translation id="2513217232843681817">Google-reikningurinn þinn kann að vera með annars konar vafraferil á <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, eins og heimsóknir með sjálfvirkri vöfrun í <ph name="BEGIN_LINK_GAA" />Gemini-forritavirkninni<ph name="END_LINK_GAA" /> þinni</translation>
 <translation id="2515629240566999685">Athuga merkið á þínu svæði</translation>
 <translation id="2518584823165598232">Þetta kort er ekki tiltækt. Hafðu samband við kortaútgefandann.</translation>
 <translation id="2521385132275182522">Hefti neðst til hægri</translation>
@@ -3964,7 +3964,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="7584287158780898016">Kveikja á verðrakningartilkynningum</translation>
 <translation id="7586676035079382730">Tilkynningar ekki leyfðar</translation>
 <translation id="7588707273764747927">Flutningsfilma</translation>
-<translation id="7589062909165841767">Google reikningurinn þinn kann að vera með <ph name="BEGIN_LINK_GAA" />Gemini-forritavirknina þína<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">Deila trúnaðarupplýsingum?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> vill nota fótspor og gögn vefsvæða á <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Vottorð þjónsins brýtur heitistakmarkanir.</translation>
@@ -4256,7 +4255,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="8075736640322370409">Búa til nýjan Google töflureikni í skyndi</translation>
 <translation id="8075898834294118863">Stjórna stillingum vefsvæðis</translation>
 <translation id="8076492880354921740">Flipar</translation>
-<translation id="8076880883123051368">Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil á <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, eins og <ph name="BEGIN_LINK_GAA" />Gemini-forritavirkni þína<ph name="END_LINK_GAA" /></translation>
 <translation id="8077465698530018904">Fjarlægja valið svæði</translation>
 <translation id="8077669823243888800">Umslag: kínverskt #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Hlaða upp skrá sem inniheldur trúnaðarmál?}one{Hlaða upp skrám sem innihalda trúnaðarmál?}other{Hlaða upp skrám sem innihalda trúnaðarmál?}}</translation>
@@ -4308,6 +4306,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="8163468049564974856">Kveiktu á sjálfvirkri útfyllingu til að ganga frá netgreiðslum á öruggan hátt. Kortaupplýsingarnar þínar eru dulkóðaðar í Google-veski.</translation>
 <translation id="8163866351304776260">Fjögur göt vinstra megin</translation>
 <translation id="8164078261547504572">Viltu fá tölvupóst þegar verð lækka?</translation>
+<translation id="8166435925529495192">Google-reikningurinn þinn gæti innihaldið <ph name="BEGIN_LINK_GAA" />Gemini-ferilinn þinn<ph name="END_LINK_GAA" /></translation>
 <translation id="8169175551046720804">Ekki er hægt að setja upp lyklana „<ph name="DATA_CONTROLS_KEYS" />“ í sama reglusafni</translation>
 <translation id="8172809706700703589">Búðu til pökkunarlista fyrir ferðalagið</translation>
 <translation id="8174047975335711832">Upplýsingar um tæki</translation>
@@ -4973,6 +4972,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
     &lt;li&gt;Prófaðu að fjarlægja eða slökkva á „<ph name="SOFTWARE_NAME" />“&lt;/li&gt;
     &lt;li&gt;Prófaðu að tengjast við annað net&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">Google-reikningurinn þinn gæti verið með annars konar vafraferil á <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, t.d. heimsóknir með sjálfvirkri vöfrun í <ph name="BEGIN_LINK_GAA" />Gemini-ferlinum<ph name="END_LINK_GAA" /> þínum</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Bæta við IBAN</translation>
 <translation id="995782501881226248">YouTube</translation>

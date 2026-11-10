@@ -3,6 +3,7 @@
 <translationbundle lang="sr">
 <translation id="1008557486741366299">Не сада</translation>
 <translation id="100957008357583611">Желите ли да користите локацију?</translation>
+<translation id="1010148478459329879">Google налог може да има друге облике историје прегледања на <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, као што је <ph name="BEGIN_LINK_GAA" />Gemini историја<ph name="END_LINK_GAA" /></translation>
 <translation id="1010200102790553230">Касније учитај страницу</translation>
 <translation id="1010225406377140704">Затражите нови линк од пошиљаоца</translation>
 <translation id="1011206368273183593">Фајлови се припремају</translation>
@@ -920,7 +921,6 @@
 <translation id="251033673027346551">Отворите Google новчаник да бисте управљали <ph name="BEGIN_LINK" />подешавањима података и приватности<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Није дозвољено (подразумевано)</translation>
 <translation id="2512413427717747692">Дугме Подеси Chrome као подразумевани прегледач, притисните Enter да бисте подесили Chrome као подразумевани прегледач система у подешавањима iOS-а</translation>
-<translation id="2513217232843681817">Google налог може да има друге облике историје прегледања на <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, као што су посете аутоматског прегледања у <ph name="BEGIN_LINK_GAA" />Активностима у Gemini апликацијама<ph name="END_LINK_GAA" /></translation>
 <translation id="2515629240566999685">да проверите сигнал у својој области</translation>
 <translation id="2518584823165598232">Ова картица није доступна. Обратите се добављачу картице.</translation>
 <translation id="2521385132275182522">Спајање у доњем десном углу</translation>
@@ -3964,7 +3964,6 @@
 <translation id="7584287158780898016">Омогућите обавештења о праћењу цена</translation>
 <translation id="7586676035079382730">Обавештења нису дозвољена</translation>
 <translation id="7588707273764747927">Пренос</translation>
-<translation id="7589062909165841767">На Google налогу можда имате <ph name="BEGIN_LINK_GAA" />Активности у Gemini апликацијама<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">Желите да делите поверљиви садржај?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> жели да користи колачиће и податке о сајтовима на <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Сертификат сервера крши ограничења за име.</translation>
@@ -4256,7 +4255,6 @@
 <translation id="8075736640322370409">Брзо направите нову Google табелу</translation>
 <translation id="8075898834294118863">Управљајте подешавањима сајтова</translation>
 <translation id="8076492880354921740">Картице</translation>
-<translation id="8076880883123051368">Google налог може да има друге облике историје прегледања на <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, као што су <ph name="BEGIN_LINK_GAA" />Активности у Gemini апликацијама<ph name="END_LINK_GAA" /></translation>
 <translation id="8077465698530018904">Уклони изабрани регион</translation>
 <translation id="8077669823243888800">Кинеска коверта бр. 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Желите да отпремите поверљиви фајл?}one{Желите да отпремите поверљиве фајлове?}few{Желите да отпремите поверљиве фајлове?}other{Желите да отпремите поверљиве фајлове?}}</translation>
@@ -4308,6 +4306,7 @@
 <translation id="8163468049564974856">Укључите аутоматско попуњавање да бисте безбедно плаћали онлајн. Подаци о картици се шифрују у Google новчанику.</translation>
 <translation id="8163866351304776260">Четвороструко бушење на левој страни</translation>
 <translation id="8164078261547504572">Желите ли имејлове када цене падну?</translation>
+<translation id="8166435925529495192">На Google налогу можда имате <ph name="BEGIN_LINK_GAA" />Gemini историју<ph name="END_LINK_GAA" /></translation>
 <translation id="8169175551046720804">Кључеви <ph name="DATA_CONTROLS_KEYS" /> не могу да се подесе у истом речнику</translation>
 <translation id="8172809706700703589">Направи ми списак ствари које треба да спакујем за путовање</translation>
 <translation id="8174047975335711832">Информације о уређају</translation>
@@ -4974,6 +4973,7 @@
     &lt;li&gt;Пробајте да деинсталирате или онемогућите „<ph name="SOFTWARE_NAME" />“&lt;/li&gt;
     &lt;li&gt;Пробајте да се повежете са другом мрежом&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">Google налог може да има друге облике историје прегледања на <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, као што су посете аутоматског прегледања у <ph name="BEGIN_LINK_GAA" />Gemini историји<ph name="END_LINK_GAA" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Додајте IBAN</translation>
 <translation id="995782501881226248">YouTube</translation>

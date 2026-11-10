@@ -3,6 +3,7 @@
 <translationbundle lang="ar">
 <translation id="1008557486741366299">ليس الآن</translation>
 <translation id="100957008357583611">هل تريد استخدام موقعك الجغرافي؟</translation>
+<translation id="1010148478459329879">‏قد يتضمّن حسابك على Google نماذج أخرى من سجلّ التصفّح على <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />، مثل <ph name="BEGIN_LINK_GAA" />سجلّ Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="1010200102790553230">تحميل الصفحة لاحقًا</translation>
 <translation id="1010225406377140704">يُرجى التواصل مع المُرسِل لطلب رابط جديد</translation>
 <translation id="1011206368273183593">جارٍ تحضير الملفات</translation>
@@ -920,7 +921,6 @@
 <translation id="251033673027346551">‏يُرجى الانتقال إلى "محفظة Google" لإدارة <ph name="BEGIN_LINK" />الإعدادات المفضَّلة للبيانات والخصوصية<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">غير مسموح به (الإعداد التلقائي)</translation>
 <translation id="2512413427717747692">‏زر ضبط Chrome كمتصفِّح تلقائي، انقر على مفتاح Enter لضبط Chrome كمتصفِّح تلقائي للنظام في إعدادات iOS</translation>
-<translation id="2513217232843681817">‏قد يتضمّن حسابك على Google نماذج أخرى من سجلّ التصفّح على <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />، مثل زيارات التصفّح التلقائي في <ph name="BEGIN_LINK_GAA" />نشاطك على تطبيقات Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="2515629240566999685">التحقّق من اتصال الإنترنت في منطقتك</translation>
 <translation id="2518584823165598232">هذه البطاقة غير متوفّرة. يُرجى التواصل مع مقدِّم البطاقة.</translation>
 <translation id="2521385132275182522">وضع دبوس أسفل اليمين</translation>
@@ -3965,7 +3965,6 @@
 <translation id="7584287158780898016">ننصحك بتفعيل تنبيهات ميزة "تتبُّع الأسعار"</translation>
 <translation id="7586676035079382730">تم رفض طلب إرسال الإشعارات.</translation>
 <translation id="7588707273764747927">نقل</translation>
-<translation id="7589062909165841767">‏قد يتضمّن حسابك على Google <ph name="BEGIN_LINK_GAA" />نشاطك على تطبيقات Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">هل تريد مشاركة المحتوى السرّي؟</translation>
 <translation id="7591636454931265313">يحاول <ph name="EMBEDDED_URL" /> استخدام بيانات الموقع الإلكتروني وملفات تعريف الارتباط على <ph name="TOP_LEVEL_URL" />.</translation>
 <translation id="7592362899630581445">تنتهك شهادة الخادم القيود المفروضة على الاسم.</translation>
@@ -4257,7 +4256,6 @@
 <translation id="8075736640322370409">‏إنشاء "جدول بيانات Google" جديد بسرعة</translation>
 <translation id="8075898834294118863">إدارة إعدادات المواقع الإلكترونية</translation>
 <translation id="8076492880354921740">علامات التبويب</translation>
-<translation id="8076880883123051368">‏قد يتضمّن حسابك على Google نماذج أخرى من سجلّ التصفّح على <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />، مثل <ph name="BEGIN_LINK_GAA" />نشاطك على تطبيقات Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="8077465698530018904">إزالة المنطقة المحدّدة</translation>
 <translation id="8077669823243888800">ظرف صيني رقم 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{هل تريد تحميل الملف السرّي؟}zero{هل تريد تحميل الملفات السرّية؟}two{هل تريد تحميل الملفَين السرّيَين؟}few{هل تريد تحميل الملفات السرّية؟}many{هل تريد تحميل الملفات السرّية؟}other{هل تريد تحميل الملفات السرّية؟}}</translation>
@@ -4309,6 +4307,7 @@
 <translation id="8163468049564974856">‏يمكنك تفعيل ميزة "الملء التلقائي" لإكمال عمليات الدفع على الإنترنت بأمان. وللعلم، يتم تشفير معلومات بطاقة الدفع في "محفظة Google".</translation>
 <translation id="8163866351304776260">عمل أربعة ثقوب يسارًا</translation>
 <translation id="8164078261547504572">هل تريد تلقّي رسائل إلكترونية عند انخفاض الأسعار؟</translation>
+<translation id="8166435925529495192">‏قد يتضمّن حسابك على Google <ph name="BEGIN_LINK_GAA" />سجلّ Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="8169175551046720804">لا يمكن ضبط المفاتيح "<ph name="DATA_CONTROLS_KEYS" />" في القاموس ذاته.</translation>
 <translation id="8172809706700703589">أريد إنشاء قائمة بمستلزمات رحلتي</translation>
 <translation id="8174047975335711832">معلومات عن الجهاز</translation>
@@ -4977,6 +4976,7 @@
     &lt;li&gt;حاوِل إلغاء تثبيت "<ph name="SOFTWARE_NAME" />" أو إيقاف&lt;/li&gt;
     &lt;li&gt;حاوِل الاتصال بشبكة أخرى&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">‏قد يتضمّن حسابك على Google نماذج أخرى من سجلّ التصفّح على <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />، مثل زيارات التصفّح التلقائي في <ph name="BEGIN_LINK_GAA" />سجلّ Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">‏إضافة رقم الحساب بصيغة IBAN</translation>
 <translation id="995782501881226248">YouTube</translation>

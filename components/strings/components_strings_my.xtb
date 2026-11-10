@@ -3,6 +3,7 @@
 <translationbundle lang="my">
 <translation id="1008557486741366299">ယခု မလို</translation>
 <translation id="100957008357583611">သင့်တည်နေရာကို အသုံးပြုမလား။</translation>
+<translation id="1010148478459329879">သင့် Google Account တွင် <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> ၌ <ph name="BEGIN_LINK_GAA" />Gemini မှတ်တမ်း<ph name="END_LINK_GAA" /> ကဲ့သို့ အခြားကြည့်ရှုမှုမှတ်တမ်းများလည်း ရှိနိုင်သည်။</translation>
 <translation id="1010200102790553230">စာမျက်နှာကို နောက်မှဖွင့်ရန်</translation>
 <translation id="1010225406377140704">လင့်ခ်အသစ်တောင်းဆိုရန်အတွက် ပို့သူထံ ဆက်သွယ်ပါ</translation>
 <translation id="1011206368273183593">ဖိုင်များကို ပြင်ဆင်နေသည်</translation>
@@ -921,7 +922,6 @@
 <translation id="251033673027346551"><ph name="BEGIN_LINK" />ဒေတာနှင့် ကိုယ်ရေးအချက်အလက်လုံခြုံမှု သတ်မှတ်ချက်များ<ph name="END_LINK" /> ကို စီမံရန် Google Wallet သို့ သွားပါ။</translation>
 <translation id="2512101340618156538">ခွင့်ပြုမထားပါ (မူရင်း)</translation>
 <translation id="2512413427717747692">Chrome ကို မူရင်းဘရောင်ဇာအနေဖြင့် သတ်မှတ်ခြင်း။ Chrome ကို iOS ဆက်တင်များတွင် စနစ်၏ မူရင်းဘရောင်ဇာအဖြစ် သတ်မှတ်ရန် Enter ခလုတ် နှိပ်ပါ</translation>
-<translation id="2513217232843681817">သင့် Google Account တွင် <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> ၌ သင်၏ <ph name="BEGIN_LINK_GAA" />Gemini Apps အသုံးပြုမှု<ph name="END_LINK_GAA" /> ရှိ အော်တိုဘရောက်စ် ဝင်ကြည့်မှုများကဲ့သို့သော အခြားကြည့်ရှုမှုမှတ်တမ်းအမျိုးအစားများ ရှိနေနိုင်သည်</translation>
 <translation id="2515629240566999685">သင့်နေရာဒေသရှိ လှိုင်းဆွဲအားကို စစ်ဆေးနေသည်</translation>
 <translation id="2518584823165598232">ဤကတ်ကို မရနိုင်ပါ။ သင့်ကတ် ဝန်ဆောင်မှုပေးသူကို ဆက်သွယ်ပါ။</translation>
 <translation id="2521385132275182522">ညာဘက်အောက်ခြေတွင် ချုပ်စက်ဖြင့် ချုပ်ရန်</translation>
@@ -3965,7 +3965,6 @@
 <translation id="7584287158780898016">ဈေးနှုန်းခြေရာခံခြင်းဆိုင်ရာ သတိပေးချက်များ ဖွင့်ခြင်း</translation>
 <translation id="7586676035079382730">အကြောင်းကြားချက်များ ခွင့်ပြုမထားပါ</translation>
 <translation id="7588707273764747927">လွှဲပြောင်းရန်</translation>
-<translation id="7589062909165841767">သင့် Google Account တွင် သင်၏ <ph name="BEGIN_LINK_GAA" />Gemini Apps အသုံးပြုမှု<ph name="END_LINK_GAA" /> ပါဝင်နိုင်သည်</translation>
 <translation id="7591288787774558753">လျှို့ဝှက်အကြောင်းအရာကို မျှဝေမလား။</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> က <ph name="TOP_LEVEL_URL" /> တွင် ကွတ်ကီးနှင့် ဝဘ်ဆိုက်ဒေတာများ အသုံးပြုလိုသည်</translation>
 <translation id="7592362899630581445">ဆာဗာ၏ အသိမှတ်ပြုလက်မှတ် သည် အမည်ကန့်သတ်ချက် ကျော်လွန်နေပါသည်။</translation>
@@ -4258,7 +4257,6 @@
 <translation id="8075736640322370409">Google Sheet အသစ် အမြန်ပြုလုပ်ရန်</translation>
 <translation id="8075898834294118863">ဝဘ်ဆိုက်ဆက်တင်များ စီမံရန်</translation>
 <translation id="8076492880354921740">တဘ်များ</translation>
-<translation id="8076880883123051368">သင့် Google Account သည် <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> တွင် သင်၏ <ph name="BEGIN_LINK_GAA" />Gemini Apps အသုံးပြုမှု<ph name="END_LINK_GAA" /> ကဲ့သို့သော အခြားပုံစံဖြင့် ကြည့်ရှုမှုမှတ်တမ်းများ ရှိနေနိုင်သည်</translation>
 <translation id="8077465698530018904">ရွေးထားသောအပိုင်းကို ဖယ်ရှားရန်</translation>
 <translation id="8077669823243888800">Chinese #8 စာအိတ်</translation>
 <translation id="8078006011486731853">{0,plural, =1{လျှို့ဝှက်ဖိုင်ကို အပ်လုဒ်လုပ်မလား။}other{လျှို့ဝှက်ဖိုင်များကို အပ်လုဒ်လုပ်မလား။}}</translation>
@@ -4310,6 +4308,7 @@
 <translation id="8163468049564974856">အွန်လိုင်းတွင် လုံခြုံစွာ ငွေရှင်းရန် အော်တိုဖြည့်ခြင်းကို ဖွင့်ပါ။ သင့်ကတ်အသေးစိတ်ကို Google Wallet တွင် အသွင်ဝှက်ထားသည်။</translation>
 <translation id="8163866351304776260">ဘယ်ဘက်တွင် လေးချက်ဖောက်ရန်</translation>
 <translation id="8164078261547504572">ဈေးကျချိန် အီးမေးလ်ရယူလိုသလား။</translation>
+<translation id="8166435925529495192">သင့် Google Account တွင် <ph name="BEGIN_LINK_GAA" />Gemini မှတ်တမ်း<ph name="END_LINK_GAA" /> ရှိနိုင်သည်</translation>
 <translation id="8169175551046720804">"<ph name="DATA_CONTROLS_KEYS" />" ကီးများကို အဘိဓာန်တူ တစ်ခုတည်းတွင် သတ်မှတ်၍မရပါ</translation>
 <translation id="8172809706700703589">ခရီးသွားဖို့ ပစ္စည်းစာရင်း လုပ်ပေးပါ</translation>
 <translation id="8174047975335711832">စက်ကိရိယာ အချက်အလက်</translation>
@@ -4975,6 +4974,7 @@
     &lt;li&gt;"<ph name="SOFTWARE_NAME" />" ပရိုဂရမ်ကို ပိတ်ကြည့်ပါ သို့မဟုတ် ဖယ်ရှားကြည့်ပါ&lt;/li&gt;
     &lt;li&gt;အခြားကွန်ရက်သို့ ချိတ်ဆက်ကြည့်ပါ&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">သင့် Google Account တွင် <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> ၌ <ph name="BEGIN_LINK_GAA" />Gemini မှတ်တမ်း<ph name="END_LINK_GAA" /> ရှိ အလိုအလျောက် ဘရောက်ဇာဖြင့် ဝင်ကြည့်ခြင်းများကဲ့သို့ အခြားကြည့်ရှုမှုမှတ်တမ်းမျိုးများ ရှိနိုင်သည်</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">IBAN ထည့်ခြင်း</translation>
 <translation id="995782501881226248">YouTube</translation>

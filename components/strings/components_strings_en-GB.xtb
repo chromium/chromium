@@ -3,6 +3,7 @@
 <translationbundle lang="en-GB">
 <translation id="1008557486741366299">Not Now</translation>
 <translation id="100957008357583611">Use your location?</translation>
+<translation id="1010148478459329879">Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, such as your <ph name="BEGIN_LINK_GAA" />Gemini history<ph name="END_LINK_GAA" /></translation>
 <translation id="1010200102790553230">Load page later</translation>
 <translation id="1010225406377140704">Contact the sender to ask for a new link</translation>
 <translation id="1011206368273183593">Preparing files</translation>
@@ -920,7 +921,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="251033673027346551">Visit Google Wallet to manage <ph name="BEGIN_LINK" />data and privacy preferences<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Not allowed (default)</translation>
 <translation id="2512413427717747692">Set Chrome as default browser button, press Enter to set Chrome as the system's default browser in iOS settings</translation>
-<translation id="2513217232843681817">Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, such as auto browse visits in your <ph name="BEGIN_LINK_GAA" />Gemini Apps activity<ph name="END_LINK_GAA" /></translation>
 <translation id="2515629240566999685">Checking the signal in your area</translation>
 <translation id="2518584823165598232">This card is not available. Please contact your card provider.</translation>
 <translation id="2521385132275182522">Staple bottom right</translation>
@@ -3965,7 +3965,6 @@ Additional details:
 <translation id="7584287158780898016">Enable price tracking alerts</translation>
 <translation id="7586676035079382730">Notifications not allowed</translation>
 <translation id="7588707273764747927">Transfer</translation>
-<translation id="7589062909165841767">Your Google Account may have your <ph name="BEGIN_LINK_GAA" />Gemini Apps activity<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">Share confidential content?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> wants to use cookies and site data on <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Server's certificate violates name constraints.</translation>
@@ -4257,7 +4256,6 @@ Additional details:
 <translation id="8075736640322370409">Create a new Google Sheet quickly</translation>
 <translation id="8075898834294118863">Manage site settings</translation>
 <translation id="8076492880354921740">Tabs</translation>
-<translation id="8076880883123051368">Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, such as your <ph name="BEGIN_LINK_GAA" />Gemini Apps activity<ph name="END_LINK_GAA" /></translation>
 <translation id="8077465698530018904">Remove selected region</translation>
 <translation id="8077669823243888800">Envelope Chinese no.8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Upload confidential file?}other{Upload confidential files?}}</translation>
@@ -4309,6 +4307,7 @@ Additional details:
 <translation id="8163468049564974856">Turn on autofill to safely check out online. Your card details are encrypted in Google Wallet.</translation>
 <translation id="8163866351304776260">Quad punch left</translation>
 <translation id="8164078261547504572">Want emails when prices drop?</translation>
+<translation id="8166435925529495192">Your Google Account may have your <ph name="BEGIN_LINK_GAA" />Gemini history<ph name="END_LINK_GAA" /></translation>
 <translation id="8169175551046720804">Keys '<ph name="DATA_CONTROLS_KEYS" />' cannot be set in the same dictionary</translation>
 <translation id="8172809706700703589">Create a packing list for my trip</translation>
 <translation id="8174047975335711832">Device information</translation>
@@ -4974,6 +4973,7 @@ Additional details:
     &lt;li&gt;Try uninstalling or disabling '<ph name="SOFTWARE_NAME" />'&lt;/li&gt;
     &lt;li&gt;Try connecting to another network&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, such as auto browse visits in your <ph name="BEGIN_LINK_GAA" />Gemini history<ph name="END_LINK_GAA" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Add IBAN</translation>
 <translation id="995782501881226248">YouTube</translation>

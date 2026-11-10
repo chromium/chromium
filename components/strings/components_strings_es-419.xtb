@@ -3,6 +3,7 @@
 <translationbundle lang="es-419">
 <translation id="1008557486741366299">Ahora no</translation>
 <translation id="100957008357583611">¿Deseas usar tu ubicación?</translation>
+<translation id="1010148478459329879">Es posible que tu Cuenta de Google tenga otras formas de historial de navegación en <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, como tu <ph name="BEGIN_LINK_GAA" />Historial de Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="1010200102790553230">Cargar la página más tarde</translation>
 <translation id="1010225406377140704">Comunícate con el remitente para solicitar un nuevo vínculo</translation>
 <translation id="1011206368273183593">Preparando archivos</translation>
@@ -920,7 +921,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="251033673027346551">Visita la Billetera de Google para administrar las <ph name="BEGIN_LINK" />preferencias de datos y privacidad<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">No se permite (predeterminado)</translation>
 <translation id="2512413427717747692">Establece Chrome como el botón de navegador predeterminado, presiona Intro para establecer Chrome como el navegador predeterminado en la configuración de iOS</translation>
-<translation id="2513217232843681817">Es posible que tu Cuenta de Google tenga otras formas de historial de navegación en <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, como las visitas de navegación automática en tu <ph name="BEGIN_LINK_GAA" />Actividad en las Apps con Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="2515629240566999685">Verificar la señal en tu área</translation>
 <translation id="2518584823165598232">Esta tarjeta no está disponible. Comunícate con el proveedor de la tarjeta.</translation>
 <translation id="2521385132275182522">Grapa en la esquina inferior derecha</translation>
@@ -3966,7 +3966,6 @@ Detalles adicionales:
 <translation id="7584287158780898016">Habilita las alertas de seguimiento de precios</translation>
 <translation id="7586676035079382730">No se permiten las notificaciones</translation>
 <translation id="7588707273764747927">Transferencia</translation>
-<translation id="7589062909165841767">Es posible que la Cuenta de Google tenga tu <ph name="BEGIN_LINK_GAA" />Actividad en las Apps con Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">¿Deseas compartir contenido confidencial?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> desea utilizar cookies y datos de los sitios en <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">El certificado del servidor no cumple con las restricciones de nombre.</translation>
@@ -4258,7 +4257,6 @@ Detalles adicionales:
 <translation id="8075736640322370409">Crea una hoja de cálculo de Google nueva rápidamente</translation>
 <translation id="8075898834294118863">Administrar la configuración de sitios</translation>
 <translation id="8076492880354921740">Pestañas</translation>
-<translation id="8076880883123051368">Es posible que tu Cuenta de Google tenga otras formas de historial de navegación en <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, como tu <ph name="BEGIN_LINK_GAA" />Actividad en las Apps con Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="8077465698530018904">Quitar la región seleccionada</translation>
 <translation id="8077669823243888800">Sobre chino n.º 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{¿Quieres subir este archivo confidencial?}other{¿Quieres subir estos archivos confidenciales?}}</translation>
@@ -4310,6 +4308,7 @@ Detalles adicionales:
 <translation id="8163468049564974856">Activa función de autocompletar para realizar pagos en línea de forma segura. Los detalles de tu tarjeta se encriptan en la Billetera de Google.</translation>
 <translation id="8163866351304776260">Perforación cuádruple a la izquierda</translation>
 <translation id="8164078261547504572">¿Quieres recibir correos electrónicos cuando bajen los precios?</translation>
+<translation id="8166435925529495192">Es posible que la Cuenta de Google tenga tu <ph name="BEGIN_LINK_GAA" />Historial de Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="8169175551046720804">Las claves "<ph name="DATA_CONTROLS_KEYS" />" no se pueden establecer en el mismo diccionario.</translation>
 <translation id="8172809706700703589">Crea una lista de equipaje para mi viaje</translation>
 <translation id="8174047975335711832">Información del dispositivo</translation>
@@ -4976,6 +4975,7 @@ Detalles adicionales:
     &lt;li&gt;Prueba desinstalar o inhabilitar "<ph name="SOFTWARE_NAME" />"&lt;/li&gt;
     &lt;li&gt;Prueba conectarte a otra red&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">Es posible que tu Cuenta de Google tenga otras formas de historial de navegación en <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, como las visitas de navegación automática en tu <ph name="BEGIN_LINK_GAA" />Historial de Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Agregar un IBAN</translation>
 <translation id="995782501881226248">YouTube</translation>

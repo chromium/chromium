@@ -3,6 +3,7 @@
 <translationbundle lang="bn">
 <translation id="1008557486741366299">এখনই নয়</translation>
 <translation id="100957008357583611">আপনার লোকেশন ব্যবহার করতে চান?</translation>
+<translation id="1010148478459329879"><ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> লিঙ্কে আপনার Google অ্যাকাউন্টের অন্যান্য ধরনের ব্রাউজিং ইতিহাস থাকতে পারে, যেমন <ph name="BEGIN_LINK_GAA" />Gemini ইতিহাস<ph name="END_LINK_GAA" /></translation>
 <translation id="1010200102790553230">পৃষ্ঠা পরে দেখার জন্য লোড করে রাখুন</translation>
 <translation id="1010225406377140704">প্রেরকের সাথে যোগাযোগ করে নতুন একটি লিঙ্ক পাঠানোর অনুরোধ করুন</translation>
 <translation id="1011206368273183593">ফাইল তৈরি করা হচ্ছে</translation>
@@ -921,7 +922,6 @@
 <translation id="251033673027346551"><ph name="BEGIN_LINK" />ডেটা ও গোপনীয়তা সংক্রান্ত পছন্দ<ph name="END_LINK" /> ম্যানেজ করতে Google Wallet-এ যান।</translation>
 <translation id="2512101340618156538">অনুমতি নেই (ডিফল্ট)</translation>
 <translation id="2512413427717747692">Chrome-কে ডিফল্ট ব্রাউজার বোতাম হিসেবে সেট করুন, iOS সেটিংসে Chrome-কে সিস্টেমের ডিফল্ট ব্রাউজার হিসেবে সেট করতে Enter কী প্রেস করুন</translation>
-<translation id="2513217232843681817"><ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> লিঙ্কে আপনার Google অ্যাকাউন্টের অন্যান্য ধরনের ব্রাউজিং ইতিহাস থাকতে পারে, যেমন আপনার <ph name="BEGIN_LINK_GAA" />Gemini অ্যাপ অ্যাক্টিভিটি<ph name="END_LINK_GAA" />তে অটোমেটিক ব্রাউজ করা ভিজিট</translation>
 <translation id="2515629240566999685">আপনার এলাকায় সংকেত পরীক্ষা করে দেখুন</translation>
 <translation id="2518584823165598232">এই কার্ড উপলভ্য নয়। আপনার কার্ড প্রদানকারীর সাথে যোগাযোগ করুন।</translation>
 <translation id="2521385132275182522">নিচে ডানদিকে স্টেপল করুন</translation>
@@ -3965,7 +3965,6 @@
 <translation id="7584287158780898016">প্রাইস ট্র্যাকিং সংক্রান্ত সতর্কতা চালু করুন</translation>
 <translation id="7586676035079382730">বিজ্ঞপ্তি ব্যবহারের অনুমতি নেই</translation>
 <translation id="7588707273764747927">ট্রান্সফার</translation>
-<translation id="7589062909165841767">আপনার Google অ্যাকাউন্টে <ph name="BEGIN_LINK_GAA" />Gemini অ্যাপ অ্যাক্টিভিটি<ph name="END_LINK_GAA" /> থাকতে পারে</translation>
 <translation id="7591288787774558753">গোপনীয় কন্টেন্ট শেয়ার করবেন?</translation>
 <translation id="7591636454931265313"><ph name="TOP_LEVEL_URL" />-এ <ph name="EMBEDDED_URL" /> কুকি ও সাইট ডেটা ব্যবহার করার অনুমতি চাইছে</translation>
 <translation id="7592362899630581445">সার্ভারের সার্টিফিকেট, নামের সীমাবদ্ধতাগুলি লঙ্ঘন করে৷</translation>
@@ -4257,7 +4256,6 @@
 <translation id="8075736640322370409">চটপট Google Sheet তৈরি করুন</translation>
 <translation id="8075898834294118863">'সাইট সেটিংস' বোতাম ম্যানেজ করুন</translation>
 <translation id="8076492880354921740">ট্যাবগুলি</translation>
-<translation id="8076880883123051368"><ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> লিঙ্কে আপনার Google অ্যাকাউন্টের অন্যান্য ধরনের ব্রাউজিং ইতিহাস থাকতে পারে, যেমন <ph name="BEGIN_LINK_GAA" />Gemini অ্যাপ অ্যাক্টিভিটি<ph name="END_LINK_GAA" /></translation>
 <translation id="8077465698530018904">বেছে নেওয়া অঞ্চল সরান</translation>
 <translation id="8077669823243888800">এনভেলপ চিনা #৮</translation>
 <translation id="8078006011486731853">{0,plural, =1{গোপনীয় ফাইল আপলোড করবেন?}one{গোপনীয় ফাইল আপলোড করবেন?}other{গোপনীয় ফাইল আপলোড করবেন?}}</translation>
@@ -4309,6 +4307,7 @@
 <translation id="8163468049564974856">অনলাইনে নিরাপদে চেক-আউট করতে অটোফিল চালু করুন। আপনার কার্ডের বিবরণ Google Wallet-এ এনক্রিপ্ট করা থাকে।</translation>
 <translation id="8163866351304776260">বাঁদিকে কোয়াড পাঞ্চ</translation>
 <translation id="8164078261547504572">দাম কমলে ইমেল পেতে চান?</translation>
+<translation id="8166435925529495192">আপনার Google অ্যাকাউন্টে আপনার <ph name="BEGIN_LINK_GAA" />Gemini ইতিহাস<ph name="END_LINK_GAA" /> থাকতে পারে</translation>
 <translation id="8169175551046720804">"<ph name="DATA_CONTROLS_KEYS" />" কী একই অভিধানে সেট করা যাচ্ছে না</translation>
 <translation id="8172809706700703589">আমার ট্রিপের জন্য প্যাকিং লিস্ট তৈরি করো</translation>
 <translation id="8174047975335711832">ডিভাইস সংক্রান্ত তথ্য</translation>
@@ -4974,6 +4973,7 @@
     &lt;li&gt;"<ph name="SOFTWARE_NAME" />" আন-ইনস্টল অথবা অক্ষম করে দেখুন&lt;/li&gt;
     &lt;li&gt;অন্য ওয়াই-ফাই নেটওয়ার্কের সাথে সংযুক্ত করে দেখুন&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403"><ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> লিঙ্কে আপনার Google অ্যাকাউন্টের অন্যান্য ধরনের ব্রাউজিং ইতিহাস থাকতে পারে, যেমন আপনার <ph name="BEGIN_LINK_GAA" />Gemini ইতিহাস<ph name="END_LINK_GAA" />-এ অটোমেটিক ব্রাউজ করা ভিজিট</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">IBAN যোগ করুন</translation>
 <translation id="995782501881226248">YouTube</translation>

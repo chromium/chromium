@@ -3,6 +3,7 @@
 <translationbundle lang="ka">
 <translation id="1008557486741366299">ახლა არა</translation>
 <translation id="100957008357583611">გსურთ თქვენი მდებარეობის გამოყენება?</translation>
+<translation id="1010148478459329879">თქვენს Google ანგარიშში შეიძლება ინახებოდეს დათვალიერების ისტორიის სხვა ფორმებიც მისამართზე <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, მაგალითად, თქვენი <ph name="BEGIN_LINK_GAA" />Gemini-ს ისტორია<ph name="END_LINK_GAA" />.</translation>
 <translation id="1010200102790553230">გვერდის მოგვიანებით ჩატვირთვა</translation>
 <translation id="1010225406377140704">დაუკავშირდით გამომგზავნს ახალი ბმულის მოსათხოვად</translation>
 <translation id="1011206368273183593">მიმდინარეობს ფაილების მომზადება</translation>
@@ -920,7 +921,6 @@
 <translation id="251033673027346551">ეწვიეთ Google საფულეს <ph name="BEGIN_LINK" />მონაცემებისა და კონფიდენციალურობის პარამეტრების<ph name="END_LINK" /> სამართავად.</translation>
 <translation id="2512101340618156538">აკრძალულია (ნაგულისხმევად)</translation>
 <translation id="2512413427717747692">სისტემის ნაგულისხმევ ბრაუზერად Chrome-ის დაყენების ღილაკი, iOS პარამეტრებიდან Chrome სისტემის ნაგულისხმევ ბრაუზერად რომ დააყენოთ, დააჭირეთ კლავიშს Enter</translation>
-<translation id="2513217232843681817">თქვენს Google ანგარიშში შეიძლება ინახებოდეს დათვალიერების ისტორიის სხვა ფორმებიც მისამართზე <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, მაგალითად, ბრაუზერის ავტორეჟიმის ვიზიტები თქვენს <ph name="BEGIN_LINK_GAA" />Gemini აპებში აქტივობაში<ph name="END_LINK_GAA" /></translation>
 <translation id="2515629240566999685">თქვენს ზონაში სიგნალის შემოწმება</translation>
 <translation id="2518584823165598232">ეს ბარათი მიუწვდომელია. დაუკავშირდით თქვენი ბარათის გამცემს.</translation>
 <translation id="2521385132275182522">ქვედა მარჯვენა ნაწილის დასტეპლერება</translation>
@@ -3964,7 +3964,6 @@
 <translation id="7584287158780898016">ფასების მეთვალყურის გაფრთხილებების ჩართვა</translation>
 <translation id="7586676035079382730">შეტყობინებები დაუშვებელია</translation>
 <translation id="7588707273764747927">გადასაყვანი</translation>
-<translation id="7589062909165841767">თქვენს Google ანგარიშში შეიძლება ინახებოდეს <ph name="BEGIN_LINK_GAA" />Gemini აპებში აქტივობა<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">გსურთ კონფიდენციალური კონტენტის გაზიარება?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> ითხოვს <ph name="TOP_LEVEL_URL" />-ის ქუქი-ჩანაწერებისა და საიტის მონაცემების გამოყენების ნებართვას</translation>
 <translation id="7592362899630581445">სერვერის სერთიფიკატი არღვევს სახელის შეზღუდვებს.</translation>
@@ -4256,7 +4255,6 @@
 <translation id="8075736640322370409">ახალი Google Sheet-ის სწრაფად შექმნა</translation>
 <translation id="8075898834294118863">საიტების პარამეტრების მართვა</translation>
 <translation id="8076492880354921740">ჩანართები</translation>
-<translation id="8076880883123051368">თქვენს Google ანგარიშში შეიძლება ინახებოდეს ვების დათვალიერების სხვა ტიპის ისტორია, მაგალითად <ph name="BEGIN_LINK_GAA" />Gemini აპებში აქტივობა<ph name="END_LINK_GAA" />, რომელიც ხელმისაწვდომია მისამართზე <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />.</translation>
 <translation id="8077465698530018904">არჩეული რეგიონის ამოშლა</translation>
 <translation id="8077669823243888800">კონვერტი Chinese 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{გსურთ კონფიდენციალური ფაილის ატვირთვა?}other{გსურთ კონფიდენციალური ფაილების ატვირთვა?}}</translation>
@@ -4308,6 +4306,7 @@
 <translation id="8163468049564974856">ჩართეთ ავტომატური შევსება ონლაინ უსაფრთხო ანგარიშსწორებისთვის. თქვენი ბარათის მონაცემები დაშიფრულია Google საფულეში.</translation>
 <translation id="8163866351304776260">ოთხმაგად გახვრეტა მარცხნივ</translation>
 <translation id="8164078261547504572">გსურთ, ელფოსტით შეიტყოთ ფასების დაწევის შესახებ?</translation>
+<translation id="8166435925529495192">თქვენს Google ანგარიშში შეიძლება ინახებოდეს <ph name="BEGIN_LINK_GAA" />Gemini-ს ისტორია<ph name="END_LINK_GAA" /></translation>
 <translation id="8169175551046720804">„<ph name="DATA_CONTROLS_KEYS" />“ გასაღებები ვერ განისაზღვრება ერთსა და იმავე ლექსიკონში</translation>
 <translation id="8172809706700703589">შემიდგინე ჩასალაგებელი ნივთების სია მოგზაურობისთვის</translation>
 <translation id="8174047975335711832">მოწყობილობის ინფორმაცია</translation>
@@ -4973,6 +4972,7 @@
     &lt;li&gt;ცადეთ „<ph name="SOFTWARE_NAME" />“-ის დეინსტალაცია ან გათიშვა&lt;/li&gt;
     &lt;li&gt;ცადეთ სხვა ქსელთან დაკავშირება&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">თქვენს Google ანგარიშში შეიძლება ინახებოდეს დათვალიერების ისტორიის სხვა ფორმებიც მისამართზე <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, მაგალითად, ბრაუზერის ავტორეჟიმის ვიზიტები თქვენს <ph name="BEGIN_LINK_GAA" />Gemini-ს ისტორიაში<ph name="END_LINK_GAA" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">IBAN-ის დამატება</translation>
 <translation id="995782501881226248">YouTube</translation>

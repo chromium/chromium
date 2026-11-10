@@ -3,6 +3,7 @@
 <translationbundle lang="ne">
 <translation id="1008557486741366299">अहिले होइन</translation>
 <translation id="100957008357583611">यो वेबसाइटलाई आफ्नो यन्त्रको स्थान प्रयोग गर्न दिने हो?</translation>
+<translation id="1010148478459329879">तपाईंको <ph name="BEGIN_LINK_GAA" />Gemini हिस्ट्री<ph name="END_LINK_GAA" />लगायतका तपाईंको Google खाताका अन्य प्रकारका ब्राउजिङ हिस्ट्री <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> मा सेभ गरिएका हुन सक्छन्</translation>
 <translation id="1010200102790553230">पृष्ठ पछि लोड गर्नुहोस्</translation>
 <translation id="1010225406377140704">नयाँ लिंक माग्न प्रेषकलाई सम्पर्क गर्नुहोस्</translation>
 <translation id="1011206368273183593">फाइलहरू तयार पारिँदै छन्</translation>
@@ -920,7 +921,6 @@
 <translation id="251033673027346551"><ph name="BEGIN_LINK" />डेटा तथा गोपनीयतासम्बन्धी प्राथमिकताहरू<ph name="END_LINK" /> व्यवस्थापन गर्न Google Wallet मा जानुहोस्।</translation>
 <translation id="2512101340618156538">अनुमति दिइएको छैन (डिफल्ट)</translation>
 <translation id="2512413427717747692">Chrome लाई डिफल्ट ब्राउजर बटनका रूपमा सेट गर्नुहोस्, iOS का सेटिङमा गई Chrome लाई सिस्टमको डिफल्ट ब्राउजरका रूपमा सेट गर्न इन्टर थिच्नुहोस्</translation>
-<translation id="2513217232843681817">तपाईंको Google खातामा अन्य प्रकारका ब्राउजिङ हिस्ट्री (जस्तै, तपाईंले <ph name="BEGIN_LINK_GAA" />Gemini एपहरूमा गरेका गतिविधि<ph name="END_LINK_GAA" />मा भएका स्वतः ब्राउज गर्ने सुविधा प्रयोग गरी खोलिएका पेजहरू) <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> मा सेभ गरिएका हुन सक्छन्</translation>
 <translation id="2515629240566999685">आफ्नो क्षेत्रको सिग्नल जाँच गर्नुहोस्</translation>
 <translation id="2518584823165598232">यो कार्ड उपलब्ध छैन। कृपया आफ्नो कार्ड प्रदायकलाई सम्पर्क गर्नुहोस्।</translation>
 <translation id="2521385132275182522">फेदको दायाँपट्टि स्टिच</translation>
@@ -3962,7 +3962,6 @@
 <translation id="7584287158780898016">मूल्य ट्र्याकिङसम्बन्धी अलर्टहरू अन गर्नुहोस्</translation>
 <translation id="7586676035079382730">सूचना पठाउने अनुमति दिइएको छैन</translation>
 <translation id="7588707273764747927">ट्रान्स्फर</translation>
-<translation id="7589062909165841767">तपाईंको Google खातामा तपाईंले <ph name="BEGIN_LINK_GAA" />Gemini एपहरूमा गरेका गतिविधि<ph name="END_LINK_GAA" /> सेभ गरिएका हुन सक्छन्</translation>
 <translation id="7591288787774558753">गोप्य सामग्री सेयर गर्ने हो?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> <ph name="TOP_LEVEL_URL" /> मा कुकी र साइटको डेटा प्रयोग गर्न चाहन्छ</translation>
 <translation id="7592362899630581445">सर्भरको प्रमाणपत्रले नाम प्रतिबन्धहरूलाई उल्लङ्घन गर्छ।</translation>
@@ -4254,7 +4253,6 @@
 <translation id="8075736640322370409">Google Sheets प्रयोग गरी तुरुन्तै नयाँ पाना बनाउनुहोस्</translation>
 <translation id="8075898834294118863">साइटसम्बन्धी सेटिङ मिलाउनुहोस्</translation>
 <translation id="8076492880354921740">ट्याबहरू</translation>
-<translation id="8076880883123051368">तपाईंले <ph name="BEGIN_LINK_GAA" />Gemini एपहरूमा गरेका गतिविधि<ph name="END_LINK_GAA" /> जस्ता तपाईंको Google खाताका अन्य प्रकारका ब्राउजिङ हिस्ट्री <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> मा सेभ गरिएका हुन सक्छन्</translation>
 <translation id="8077465698530018904">चयन गरिएको क्षेत्र हटाउनुहोस्</translation>
 <translation id="8077669823243888800">Envelope Chinese #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{गोप्य फाइल अपलोड गर्ने हो?}other{गोप्य फाइलहरू अपलोड गर्ने हो?}}</translation>
@@ -4306,6 +4304,7 @@
 <translation id="8163468049564974856">सुरक्षित तरिकाले अनलाइन चेकआउट गर्न अटोफिल अन गर्नुहोस्। तपाईंको कार्डसम्बन्धी विवरण Google Wallet मा इन्क्रिप्ट गरिन्छ।</translation>
 <translation id="8163866351304776260">बायाँपट्टि चार प्वाल</translation>
 <translation id="8164078261547504572">मूल्य घट्दा इमेल प्राप्त गर्न चाहनुहुन्छ?</translation>
+<translation id="8166435925529495192">तपाईंको Google खातामा तपाईंको <ph name="BEGIN_LINK_GAA" />Gemini हिस्ट्री<ph name="END_LINK_GAA" /> सेभ गरिएको हुन सक्छ</translation>
 <translation id="8169175551046720804">"<ph name="DATA_CONTROLS_KEYS" />" नामक कीहरूलाई एउटै डिक्सनरीमा सेट गर्न सकिँदैन</translation>
 <translation id="8172809706700703589">मेरो यात्राका लागि प्याकिङको सूची बनाउनुहोस्</translation>
 <translation id="8174047975335711832">यन्त्रको जानकारी</translation>
@@ -4971,6 +4970,7 @@
     &lt;li&gt;"<ph name="SOFTWARE_NAME" />" को स्थापना रद्द गरी हेर्नुहोस्‌&lt;/li&gt;
     &lt;li&gt;अर्को नेटवर्कमा जडान गरी हेर्नुहोस्&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">तपाईंको <ph name="BEGIN_LINK_GAA" />Gemini हिस्ट्री<ph name="END_LINK_GAA" />मा सेभ गरिएका स्वतः ब्राउज गर्ने सुविधा प्रयोग गरी खोलिएका पेजहरूलगायतका तपाईंको Google खाताका अन्य प्रकारका ब्राउजिङ हिस्ट्री <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> मा सेभ गरिएका हुन सक्छन्</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">IBAN हाल्नुहोस्</translation>
 <translation id="995782501881226248">YouTube</translation>

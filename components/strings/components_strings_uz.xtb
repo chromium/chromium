@@ -3,6 +3,7 @@
 <translationbundle lang="uz">
 <translation id="1008557486741366299">Hozir emas</translation>
 <translation id="100957008357583611">Geolokatsiya ishlatilsinmi?</translation>
+<translation id="1010148478459329879"><ph name="BEGIN_LINK_GAA" />Gemini tarixi<ph name="END_LINK_GAA" /> kabi Google hisobingiz orqali bajargan boshqa shakldagi internet faoliyat tarixini <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> orqali kuzatish mumkin.</translation>
 <translation id="1010200102790553230">Sahifani keyinroq yuklash</translation>
 <translation id="1010225406377140704">Yuboruvchidan yangi havola yuborishni soʻrang</translation>
 <translation id="1011206368273183593">Fayllar tayyorlanmoqda</translation>
@@ -919,7 +920,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="251033673027346551"><ph name="BEGIN_LINK" />Maʼlumotlar va maxfiylik sozlamalarini<ph name="END_LINK" /> boshqarish uchun Google Walletga kiring.</translation>
 <translation id="2512101340618156538">Ruxsat berilmagan (standart)</translation>
 <translation id="2512413427717747692">Chrome brauzerini asosiy brauzer tugmasi sifatida sozlash, iOS sozlamalari orqali Chrome brauzerini tizimning asosiy brauzeri sifatida sozlash uchun Enter tugmasini bosing.</translation>
-<translation id="2513217232843681817"><ph name="BEGIN_LINK_GAA" />Gemini ilovalaridagi faoliyat<ph name="END_LINK_GAA" /> kabi Google hisobingiz orqali bajargan boshqa shakldagi internet faoliyat tarixini <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> orqali kuzatish mumkin.</translation>
 <translation id="2515629240566999685">Mobil aloqa signalini tekshirish</translation>
 <translation id="2518584823165598232">Bu karta ishlamayapti. Provayderingizga murojaat qiling.</translation>
 <translation id="2521385132275182522">Quyi oʻngdan steplerlash</translation>
@@ -3958,7 +3958,6 @@ Batafsil axborot:
 <translation id="7584287158780898016">Narx kuzatuvi bildirgilarini yoqish</translation>
 <translation id="7586676035079382730">Bildirishnomalarga kirishga ruxsat berilmagan</translation>
 <translation id="7588707273764747927">Transfer qogʻozi</translation>
-<translation id="7589062909165841767">Google hisobingizda <ph name="BEGIN_LINK_GAA" />Gemini ilovalaridagi faoliyat<ph name="END_LINK_GAA" /> saqlanishi mumkin</translation>
 <translation id="7591288787774558753">Maxfiy kontent ulashilsinmi?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> sayti <ph name="TOP_LEVEL_URL" /> cookie-fayllari va sayt maʼlumotlaridan foydalanmoqchi</translation>
 <translation id="7592362899630581445">Server sertifikati nom cheklovlarni buzgan.</translation>
@@ -4250,7 +4249,6 @@ Batafsil axborot:
 <translation id="8075736640322370409">Google Sheetda yangi jadvalni tez yaratish</translation>
 <translation id="8075898834294118863">Sayt sozlamalarini boshqarish</translation>
 <translation id="8076492880354921740">Varaqlar</translation>
-<translation id="8076880883123051368"><ph name="BEGIN_LINK_GAA" />Gemini ilovalaridagi faoliyat<ph name="END_LINK_GAA" /> kabi Google hisobingiz orqali bajargan boshqa shakldagi internet faoliyat tarixini <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> orqali kuzatish mumkin.</translation>
 <translation id="8077465698530018904">Tanlangan hududni olib tashlash</translation>
 <translation id="8077669823243888800">Envelope Chinese #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Maxfiy fayl yuklansinmi?}other{Maxfiy fayllar yuklansinmi?}}</translation>
@@ -4302,6 +4300,7 @@ Batafsil axborot:
 <translation id="8163468049564974856">Onlayn toʻlovlarni xavfsiz amalga oshirish uchun avtomatik kiritishni yoqing. Karta tafsilotlari Google Walletda shifrlanadi.</translation>
 <translation id="8163866351304776260">Chapdan 4 ta teshik ochish</translation>
 <translation id="8164078261547504572">Narxlar tushganda xat olishni istaysizmi?</translation>
+<translation id="8166435925529495192">Google hisobingizda <ph name="BEGIN_LINK_GAA" />Gemini tarixi<ph name="END_LINK_GAA" /> saqlanishi mumkin</translation>
 <translation id="8169175551046720804">"<ph name="DATA_CONTROLS_KEYS" />" kalitlari bir xil lugʻatda sozlanmaydi</translation>
 <translation id="8172809706700703589">Safarim uchun olinadigan narsalar roʻyxatini yarat.</translation>
 <translation id="8174047975335711832">Qurilma haqida axborot</translation>
@@ -4967,6 +4966,7 @@ Batafsil axborot:
     &lt;li&gt;“<ph name="SOFTWARE_NAME" />” dasturini o‘chirib ko‘ring&lt;/li&gt;
     &lt;li&gt;Boshqa Wi-Fi tarmoqqa ulanib ko‘ring&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403"><ph name="BEGIN_LINK_GAA" />Gemini tarixidagi<ph name="END_LINK_GAA" /> avtomatik kezish tashriflari kabi Google hisobingiz orqali bajargan boshqa shakldagi internet faoliyat tarixini <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> orqali kuzatish mumkin.</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">IBAN kiritish</translation>
 <translation id="995782501881226248">YouTube</translation>

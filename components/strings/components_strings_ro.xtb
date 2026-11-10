@@ -3,6 +3,7 @@
 <translationbundle lang="ro">
 <translation id="1008557486741366299">Nu acum</translation>
 <translation id="100957008357583611">Folosești locația?</translation>
+<translation id="1010148478459329879">Contul Google poate să ofere alte forme ale istoricului de navigare la <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, cum ar fi <ph name="BEGIN_LINK_GAA" />istoricul Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="1010200102790553230">Încarcă pagina mai târziu</translation>
 <translation id="1010225406377140704">Contactează expeditorul pentru a solicita un link nou</translation>
 <translation id="1011206368273183593">Se pregătesc fișierele</translation>
@@ -920,7 +921,6 @@
 <translation id="251033673027346551">Accesează Portofel Google ca să gestionezi <ph name="BEGIN_LINK" />datele și preferințele de confidențialitate<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Nepermise (prestabilit)</translation>
 <translation id="2512413427717747692">Butonul Setează Chrome ca browser prestabilit, apasă pe Enter ca să setezi Chrome ca browser prestabilit pentru sistem în setările iOS</translation>
-<translation id="2513217232843681817">Contul Google poate să ofere alte forme ale istoricului de navigare la <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, cum ar fi accesările prin navigare automată din <ph name="BEGIN_LINK_GAA" />activitatea din Aplicațiile Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="2515629240566999685">să verifici semnalul din zona ta.</translation>
 <translation id="2518584823165598232">Acest card nu este disponibil. Contactează furnizorul cardului.</translation>
 <translation id="2521385132275182522">Capsare în dreapta jos</translation>
@@ -3965,7 +3965,6 @@ Detalii suplimentare:
 <translation id="7584287158780898016">Activează alertele de urmărire a prețurilor</translation>
 <translation id="7586676035079382730">Notificările nu sunt permise</translation>
 <translation id="7588707273764747927">Transfer</translation>
-<translation id="7589062909165841767">Contul Google poate să includă <ph name="BEGIN_LINK_GAA" />activitatea din Aplicațiile Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">Permiți accesul la conținut confidențial?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> dorește să utilizeze cookie-uri și date privind site-urile pe <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Certificatul serverului încalcă limitările privind numele.</translation>
@@ -4257,7 +4256,6 @@ Detalii suplimentare:
 <translation id="8075736640322370409">Creează rapid o Foaie de calcul Google</translation>
 <translation id="8075898834294118863">Butonul Gestionează setările pentru site-uri</translation>
 <translation id="8076492880354921740">File</translation>
-<translation id="8076880883123051368">Contul Google poate să ofere alte forme ale istoricului de navigare la <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, cum ar fi <ph name="BEGIN_LINK_GAA" />activitatea din Aplicațiile Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="8077465698530018904">Elimină regiunea selectată</translation>
 <translation id="8077669823243888800">Plic chinezesc 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Încarci un fișier confidențial?}few{Încarci fișiere confidențiale?}other{Încarci fișiere confidențiale?}}</translation>
@@ -4309,6 +4307,7 @@ Detalii suplimentare:
 <translation id="8163468049564974856">Activează completarea automată pentru a finaliza achizițiile online în siguranță. Detaliile cardului sunt criptate în Portofelul Google.</translation>
 <translation id="8163866351304776260">Perforare cvadruplă în stânga</translation>
 <translation id="8164078261547504572">Vrei să primești e-mailuri când scad prețurile?</translation>
+<translation id="8166435925529495192">Contul tău Google poate să-ți includă <ph name="BEGIN_LINK_GAA" />Istoricul Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="8169175551046720804">Cheile <ph name="DATA_CONTROLS_KEYS" /> nu pot fi setate în același dicționar</translation>
 <translation id="8172809706700703589">Creează o listă de bagaje pentru călătorie</translation>
 <translation id="8174047975335711832">Informații despre dispozitiv</translation>
@@ -4975,6 +4974,7 @@ Detalii suplimentare:
     &lt;li&gt;încearcă să dezinstalezi sau să dezactivezi „<ph name="SOFTWARE_NAME" />”&lt;/li&gt;;
     &lt;li&gt;încearcă să te conectezi la altă rețea Wi-Fi.&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">Contul Google poate să ofere alte forme ale istoricului de navigare la <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, cum ar fi accesările prin navigare automată din <ph name="BEGIN_LINK_GAA" />Istoricul Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Adaugă codul IBAN</translation>
 <translation id="995782501881226248">YouTube</translation>

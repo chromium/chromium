@@ -3,6 +3,7 @@
 <translationbundle lang="el">
 <translation id="1008557486741366299">Όχι τώρα</translation>
 <translation id="100957008357583611">Χρήση της τοποθεσίας σας;</translation>
+<translation id="1010148478459329879">Στον Λογαριασμό σας Google ενδέχεται να περιλαμβάνονται άλλες μορφές ιστορικού περιήγησης στη διεύθυνση <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, όπως το <ph name="BEGIN_LINK_GAA" />Ιστορικό Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="1010200102790553230">Φόρτωση σελίδας αργότερα</translation>
 <translation id="1010225406377140704">Επικοινωνήστε με τον αποστολέα, για να ζητήσετε νέο σύνδεσμο</translation>
 <translation id="1011206368273183593">Προετοιμασία αρχείων</translation>
@@ -920,7 +921,6 @@
 <translation id="251033673027346551">Επισκεφτείτε το Πορτοφόλι Google για να διαχειριστείτε τις <ph name="BEGIN_LINK" />προτιμήσεις δεδομένων και απορρήτου<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Δεν επιτρέπεται (προεπιλογή)</translation>
 <translation id="2512413427717747692">Κουμπί για τον ορισμό του Chrome ως προεπιλεγμένου προγράμματος περιήγησης, πατήστε Enter για να ορίσετε το Chrome ως το προεπιλεγμένο πρόγραμμα περιήγησης του συστήματος στις ρυθμίσεις του iOS</translation>
-<translation id="2513217232843681817">Ο Λογαριασμός σας Google ενδέχεται να διαθέτει άλλες μορφές ιστορικού περιήγησης στη διεύθυνση <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, όπως επισκέψεις αυτόματης περιήγησης στη <ph name="BEGIN_LINK_GAA" />Δραστηριότητα στις Εφαρμογές Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="2515629240566999685">Ελέγξτε το σήμα στην περιοχή σας.</translation>
 <translation id="2518584823165598232">Αυτή η κάρτα δεν είναι διαθέσιμη. Επικοινωνήστε με τον πάροχο της κάρτας σας.</translation>
 <translation id="2521385132275182522">Συρραφή κάτω δεξιά</translation>
@@ -3967,7 +3967,6 @@
 <translation id="7584287158780898016">Ενεργοποίηση ειδοποιήσεων παρακολούθησης τιμής</translation>
 <translation id="7586676035079382730">Η πρόσβαση στις ειδοποιήσεις δεν επιτράπηκε</translation>
 <translation id="7588707273764747927">Μεταφορά</translation>
-<translation id="7589062909165841767">Ο Λογαριασμός σας Google μπορεί να περιλαμβάνει τη <ph name="BEGIN_LINK_GAA" />δραστηριότητά σας στις Εφαρμογές Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">Κοινοποίηση εμπιστευτικού περιεχομένου;</translation>
 <translation id="7591636454931265313">Το <ph name="EMBEDDED_URL" /> θέλει να χρησιμοποιήσει cookie και δεδομένα ιστοτόπου στο <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Το πιστοποιητικό του διακομιστή παραβαίνει τους περιορισμούς ονόματος.</translation>
@@ -4259,7 +4258,6 @@
 <translation id="8075736640322370409">Γρήγορη δημιουργία νέου Φύλλου Google</translation>
 <translation id="8075898834294118863">Διαχείριση ρυθμίσεων ιστοτόπων</translation>
 <translation id="8076492880354921740">Καρτέλες</translation>
-<translation id="8076880883123051368">Ο Λογαριασμός σας Google ενδέχεται να διαθέτει άλλες μορφές ιστορικού περιήγησης στη διεύθυνση <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, όπως η <ph name="BEGIN_LINK_GAA" />Δραστηριότητα στις Εφαρμογές Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="8077465698530018904">Κατάργηση επιλεγμένης περιοχής</translation>
 <translation id="8077669823243888800">Κινεζικός φάκελος #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Μεταφόρτωση εμπιστευτικού αρχείου;}other{Μεταφόρτωση εμπιστευτικών αρχείων;}}</translation>
@@ -4311,6 +4309,7 @@
 <translation id="8163468049564974856">Ενεργοποιήστε την αυτόματη συμπλήρωση για να ολοκληρώνετε με ασφάλεια τις αγορές σας στο διαδίκτυο. Τα στοιχεία της κάρτας σας κρυπτογραφούνται στο Πορτοφόλι Google.</translation>
 <translation id="8163866351304776260">Τετραπλό τρύπημα στα αριστερά</translation>
 <translation id="8164078261547504572">Θέλετε να λαμβάνετε μηνύματα ηλεκτρονικού ταχυδρομείου όταν πέφτουν οι τιμές;</translation>
+<translation id="8166435925529495192">Στον Λογαριασμό σας Google ενδέχεται να περιλαμβάνεται το <ph name="BEGIN_LINK_GAA" />Ιστορικό Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="8169175551046720804">Δεν είναι δυνατός ο ορισμός των κλειδιών "<ph name="DATA_CONTROLS_KEYS" />" στο ίδιο λεξικό</translation>
 <translation id="8172809706700703589">Δημιούργησε μια λίστα με τα πράγματα που πρέπει να πάρω μαζί μου στο ταξίδι μου</translation>
 <translation id="8174047975335711832">Στοιχεία συσκευής</translation>
@@ -4977,6 +4976,7 @@
     &lt;li&gt;Δοκιμάστε να απεγκαταστήσετε το λογισμικό "<ph name="SOFTWARE_NAME" />"&lt;/li&gt;
     &lt;li&gt;Δοκιμάστε να συνδεθείτε σε κάποιο άλλο δίκτυο&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">Στον Λογαριασμό σας Google ενδέχεται να περιλαμβάνονται άλλες μορφές ιστορικού περιήγησης στη διεύθυνση <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, όπως επισκέψεις αυτόματης περιήγησης στο <ph name="BEGIN_LINK_GAA" />Ιστορικό Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Προσθήκη IBAN</translation>
 <translation id="995782501881226248">YouTube</translation>

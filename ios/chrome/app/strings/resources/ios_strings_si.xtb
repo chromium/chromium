@@ -9,6 +9,7 @@
 <translation id="1013952917065545813">ඔබ මෑතකදී වසා දැමූ ටැබ නැවත විවෘත කිරීමට ඔබට නැවත මෙහි පැමිණිය හැකිය</translation>
 <translation id="1016495303386450659">අයිතමය යාවත්කාලීන කරන ලදි</translation>
 <translation id="1018804590490383958">ස්කෑන් කර ස්වයං පුරවන්න</translation>
+<translation id="1019990162050689579">Gemini යෙදුම් ක්‍රියාකාරකම</translation>
 <translation id="102471647093736603">ගෙන යාමට ඔබා අල්ලාගෙන සිටින්න</translation>
 <translation id="102645702181682900">කාර්යය ආරම්භ විය</translation>
 <translation id="102916930470544692">මුරයතුර</translation>
@@ -391,6 +392,7 @@
 <translation id="2139867232736819575">ඔබ පිටපත් කළ පාඨය සොයන්න</translation>
 <translation id="2140913838150159519">පටිත්තක් අමුණන්න</translation>
 <translation id="2147127444698817042">iPhone මත පමණක් ලබා ගත හැක</translation>
+<translation id="2148326276832455306">කතාබස් සමාලෝචනය කර Google AI වැඩි දියුණු කිරීමට භාවිතා කරයි. ඔබට ඔබේ ස්ථානය පිළිබඳ තතු ඇතුළුව <ph name="BEGIN_LINK" />ඔබේ ක්‍රියාකාරකම් කළමනාකරණය කළ<ph name="END_LINK" /> හැක. <ph name="BEGIN_LINK" />ඔබේ තේරීම් පිළිබඳව තව දැන ගන්න<ph name="END_LINK" />.</translation>
 <translation id="2148799636999124959">ඔබේ සුරැකි මුරපද සමග අඩවි සහ යෙදුම් වෙත ඉක්මනින් පුරනය වන්න.</translation>
 <translation id="2149968176347646218">සබැඳුම සුරක්ෂිත නොවේ</translation>
 <translation id="2149973817440762519">පිටු සලකුණු සංස්කරණය කරන්න</translation>
@@ -456,6 +458,7 @@
 <translation id="2327445548174191329"><ph name="DEVICE_NAME" /> සිට</translation>
 <translation id="2330607597130465898">ආරක්ෂාව නැත</translation>
 <translation id="233375395665273385">මකා දමා වරන්න</translation>
+<translation id="2340966584724330791">Google ඔබේ කතාබස් සහ ඔබ Gemini සමග බෙදා ගන්නා දේ (ගොනු, වීඩියෝ, තිර සහ ඡායාරූප වැනි) රැස් කරයි. එය ඔබේ ප්‍රතිපෝෂණ, ඔබ Gemini සමග පිවිසෙන වෙබ් අඩවි වලින් ලැබෙන තතු, නිෂ්පාදන භාවිතය සහ ස්ථාන තතු (ඔබේ උපාංගයේ සාමාන්‍ය ස්ථානය, IP ලිපිනය, හෝ ඔබේ Google ගිණුමේ නිවසේ හෝ කාර්යාල ලිපින ඇතුළුව) ද රැස් කරයි.</translation>
 <translation id="2350463587705616331">සෙපියා පසුබිම් වර්ණය</translation>
 <translation id="2351097562818989364">ඔබේ පරිවර්තන සැකසුම් නැවත සැකසී තිබේ.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{ඔබට ඔබේ Google ගිණුමේ {EMAIL}, {DOMAIN_ONE} සඳහා ඔබේ මුරපදය සුරැකිය හැක.}=2{ඔබට ඔබේ Google ගිණුමේ {EMAIL}, {DOMAIN_ONE} සහ {DOMAIN_TWO} සඳහා ඔබේ මුරපද සුරැකිය හැක.}=3{ඔබට ඔබේ Google ගිණුමේ {EMAIL}, {DOMAIN_ONE}, {DOMAIN_TWO}, සහ තව {OTHER_DOMAINS_COUNT}ක් සඳහා ඔබේ මුරපද සුරැකිය හැක.}one{ඔබට ඔබේ Google ගිණුමේ {EMAIL}, {DOMAIN_ONE}, {DOMAIN_TWO}, සහ තව {OTHER_DOMAINS_COUNT}ක් සඳහා ඔබේ මුරපද සුරැකිය හැක.}other{ඔබට ඔබේ Google ගිණුමේ {EMAIL}, {DOMAIN_ONE}, {DOMAIN_TWO}, සහ තව {OTHER_DOMAINS_COUNT}ක් සඳහා ඔබේ මුරපද සුරැකිය හැක.}}</translation>
@@ -668,7 +671,6 @@
 <translation id="3038136505713492417">මෙම උපාංගයේ ඔබේ මුරයතුරු භාවිත කිරීමට ඒ ඔබ බව සත්‍යාපනය කරන්න</translation>
 <translation id="3039671569659952257">ෆෝල්ඩරය මකන්න</translation>
 <translation id="3041835740069544003">Chrome හට දැන් වඩාත් බුද්ධිමත් පෝරම අවබෝධය සමග තවත් පෝරම හඳුනාගෙන පිරවිය හැක. මෙය සිදු කිරීම සඳහා, පිටු අන්තර්ගතය සහ URL යොමු ක්ලවුඩ් තුළ පෞද්ගලික අවකාශයක සැකසිය හැක. සැකසීම් තුළ කළමනාකරණය කරන්න.</translation>
-<translation id="3042118633250374317">Google එහි සේවාවන් සැපයීමට, Google, එහි පරිශීලකයින් සහ මහජනතාව ආරක්ෂා කිරීමට සහ මානව සමාලෝචකයින්ගේ සහාය ඇතිව එහි සේවාවන් සංවර්ධනය කිරීමට සහ වැඩිදියුණු කිරීමට ඔබේ ඉතිහාසය භාවිතා කරයි. ඔබ සමාලෝචනය කිරීමට හෝ භාවිත කිරීමට අකමැති තොරතුරු ඇතුළත් නොකරන්න.</translation>
 <translation id="3050988301648974170">මුරපද පරීක්ෂණය විවෘත කරන්න</translation>
 <translation id="3053332585453689122">ඔබ පිවිසෙන URLs සහ පිටු අන්තර්ගතය, බාගැනීම්, දිගු ක්‍රියාකාරකම් සහ පද්ධති තොරතුරුවල කුඩා සාම්පලයක් Google ආරක්ෂිත බ්‍රවුස් කිරීම වෙත ඒවා හානිකර දැයි පරීක්ෂා කිරීමට යවයි.</translation>
 <translation id="3055102495753300780">තොරතුරු ගබඩා කිරීම</translation>
@@ -740,6 +742,7 @@
 <translation id="3265736395246760288">ඔබේ ඕනෑම සමමුහුර්ත උපාංගයකින් වේගයෙන් පුරන්න.</translation>
 <translation id="3268166994745151153">මෙයින් අදහස් කරන්නේ ඔබට ඔබේ වත්මන් ප්‍රගතිය අහිමි වනු ඇති බවයි</translation>
 <translation id="3272527697863656322">අවලංගු කරන්න</translation>
+<translation id="3272955648592358996">ඔබේ දත්ත Google AI වැඩි දියුණු කරයි</translation>
 <translation id="3273510436356991673">ඔබේ මුල් තිරය අභිරුචි කරන්න</translation>
 <translation id="327455571215090823">වඩාත් දක්ෂ ස්වයං පිරවුම, පෞද්ගලිකව තබා ඇත</translation>
 <translation id="3277021493514034324">අඩවි ලිපිනය පිටපත් කරන ලදී</translation>
@@ -916,6 +919,7 @@
 <translation id="3888863481921783344">ඔබේ සිදුවීමට හැකි ආරාධිතයන් පෙන්වීමට මෙය භාවිතා කරනු ඇත.</translation>
 <translation id="3891414008432200754">මිල</translation>
 <translation id="3892144330757387737">ඔබට ඔබේ ඉතිහාසය මෙහි හමුවනු ඇත</translation>
+<translation id="3892695492576181257">එය ක්‍රියාත්මක වූ විට, ඔබේ ක්‍රියාකාරකම් මාස 18ක් සඳහා Gemini යෙදුම් ක්‍රියාකාරකම්වල සුරකින අතර, එය ඔබට මාස 3ක් හෝ 36ක් දක්වා වෙනස් කළ හැක. Google ඔබේ ක්‍රියාකාරකම් භාවිත කරන්නේ එහි සේවාවන් (Gemini ආකෘති ඇතුළුව) සංවර්ධනය කිරීමට සහ වැඩි දියුණු කිරීමට මෙන්ම මානව සමාලෝචකයින්ගේ සහය ඇතිව Google, එහි පරිශීලකයින් සහ මහජනතාව ආරක්ෂා කිරීමට ය. සේවා සපයන්නන් විසින් සමාලෝචනය කරන ලද දත්ත ඔබේ ගිණුමෙන් විසන්ධි කර වසර 3ක් සඳහා සුරකිනු ලැබේ.</translation>
 <translation id="3893858854379998374">ඔබේ ගිණුමේ පිටුසන් සුරැකීමට, ඔබේ භාවිත නොකළ පිටුසන් මකන්න</translation>
 <translation id="3897092660631435901">මෙනුව</translation>
 <translation id="3904270275864974753">කැරෝසලය සංස්කරණය කරන්න</translation>
@@ -1110,7 +1114,6 @@
 <translation id="4488754974567924717">ඔබේ මුරපද අවදානමට ලක් වී ඇති නම්, අපි ඔබට දන්වන්නෙමු</translation>
 <translation id="4489536976005181779">{count,plural, =1{ඔබේ ගිණුමේ, {email} ඔබේ කියවීම් ලැයිස්තුවට පිටුව එක් කර ඇත}one{ඔබේ ගිණුමේ, {email} ඔබේ කියවීම් ලැයිස්තුවට පිටු එක් කර ඇත}other{ඔබේ ගිණුමේ, {email} ඔබේ කියවීම් ලැයිස්තුවට පිටු එක් කර ඇත}}</translation>
 <translation id="4493604894403585654">ඔබ <ph name="USER_EMAIL" /> ලෙස පුරනය වී ඇත. ඔබට සැකසීම් තුළ ඕනෑම වේලාවකට සමමුහූර්ත කිරීම නැවැත්විය හැක. Google ඔබේ ඉතිහාසය මත පදනම්ව සෙවීම සහ අනෙකුත් සේවා පුද්ගලායන කරාවි.</translation>
-<translation id="4495251723189610737">ඔබේ කතාබස් ඔබේ Gemini ඉතිහාසයේ සුරකිනු ඇත. ඉතිහාසයට ඔබේ ශ්‍රව්‍ය, Gemini සජීවී වීඩියෝ සහ තිර බෙදාගැනීම්, ඔබ Gemini සමග බෙදා ගන්නා දේ (ප්‍රේරක, <ph name="BEGIN_LINK" />උඩුගත කිරීම්<ph name="END_LINK" />, සහ <ph name="BEGIN_LINK" />තිර<ph name="END_LINK" /> වැනි), Gemini හි ප්‍රතිචාර, කාර්යයන් සහ මෙවලම් ඇමතුම්, ප්‍රතිපෝෂණ, ඔබ Gemini සමග පිවිසෙන වෙබ් අඩවි වලින් තතු, නිෂ්පාදන භාවිත දත්ත, ඔබේ උපාංගයේ සාමාන්‍ය ස්ථානය, IP ලිපිනය, සහ ඔබේ Google ගිණුමේ නිවසේ හෝ කාර්යාල ලිපින ඇතුළත් වේ. එයට ඔබ Gemini වෙත සම්බන්ධ කරන යෙදුම්වල දත්ත ද ඇතුළත් විය හැක.</translation>
 <translation id="4502423230170890588">මෙම උපාංගයෙන් ඉවත් කරන්නද?</translation>
 <translation id="4508486880075514067">පූර්ණ තිරයට දිග හරින්න</translation>
 <translation id="4508750114462689118">පුරනය-වීමේ ප්‍රවර්ධනය වසන්න</translation>
@@ -1215,7 +1218,6 @@
 <translation id="4808744395915275922">යාවත්කාලීන</translation>
 <translation id="4813345808229079766">සබඳතාව</translation>
 <translation id="4821595350501541683">පටිති වසා ඇති අතර බ්‍රවුස් කිරීමේ දත්ත මකා දමන ලදි</translation>
-<translation id="4821645169621230110">ඔබේ ඉතිහාසය භාවිතා කරන ආකාරය</translation>
 <translation id="4823322556950229674">ලිපින තීරුව සහ ආපසු යාමේ බොත්තම පහළට ගෙන යාමට, ඔබා අල්ලාගෙන සිටින්න</translation>
 <translation id="4824480232751123840">හඬ පරිමාව</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} සහ තවත් 1}one{{domain} සහ තවත් {count}}other{{domain} සහ තවත් {count}}}</translation>
@@ -1243,7 +1245,6 @@
 <translation id="4877597489778380935">මට පසුව සිහිකැඳවන්න</translation>
 <translation id="4881695831933465202">විවෘත කරන්න</translation>
 <translation id="4883766694719903356">අප්‍රසිද්ධ පටිත්ත ජාලකය</translation>
-<translation id="4884205780547482830">ඔබේ දත්ත ජනන AI පුහුණු කිරීමට උදවු වේ</translation>
 <translation id="4884937942297374058">වැඩිදියුණු කළ ආරක්ෂාව ක්‍රියාවිරහිතයි</translation>
 <translation id="4887391901725877182">සිරස්තල</translation>
 <translation id="488785315393301722">විස්තර පෙන්වන්න</translation>
@@ -1330,7 +1331,6 @@
 <translation id="5128788795241319992">නව මෙනුව ගවේෂණය කරන්න</translation>
 <translation id="5132942445612118989">ඔබේ මුරපද, ඉතිහාසය සහ තවත් දෑ සියලුම උපාංගවල සමමුහු කරන්න</translation>
 <translation id="5137568953923142260">එක වරක් ඉඩ දෙන්න</translation>
-<translation id="5139344197062265975">Gemini සමග කතාබස් කිරීමට ඔබේ මයික්‍රෆෝනය භාවිත කරන්න. ඔබ Gemini සමග කතා කරන විට, ශ්‍රව්‍ය Gemini ඉතිහාසය තුළ ගබඩා වේ (එය ක්‍රියාත්මක නම්). ඔබේ දත්ත ජනන AI ආකෘති වැඩිදියුණු කිරීමට භාවිතා නොකෙරේ</translation>
 <translation id="5141363746588976328">ඔබේ පටිති කාඩ්පතේ මිල පහත වැටීම් සඟවන්න</translation>
 <translation id="514154868070499296">අකුරු වර්ගය: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">පටිති මාරුකරවනය වෙතින් ඉවත් වන්න</translation>
@@ -1430,6 +1430,7 @@
 <translation id="5447973833955560753">ප්‍රතිසාධන මුරපදය</translation>
 <translation id="5448623529214315261">සුරකින ලද ඡායාරූපය <ph name="INDEX" /></translation>
 <translation id="5452354193031718372">ප්‍රබල මුරපදයක් භාවිත කරන්න</translation>
+<translation id="5453088693079603292">එකතු කරන ක්‍රියාකාරකම් මොනවා ද</translation>
 <translation id="5454211924362324495">ඔබේ මුරපදය අන් අය භාවිතා කිරීම නැවැත්වීම සඳහා, <ph name="BEGIN_LINK" />එය <ph name="WEBSITE" /> මත වෙනස් කරන්න<ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">ඔබේ සෙවීමට එක් කරන්න</translation>
 <translation id="5457226814769348910">නොබැඳි අනුවාදය විවෘත කරන්න</translation>
@@ -1543,6 +1544,7 @@
 <translation id="5801568494490449797">අභිරුචි</translation>
 <translation id="5803566855766646066">ඔබට මෙම අලුත් කාඩ්පත ඉවත ලෑ යුතු බව ඔබට තහවුරුද?</translation>
 <translation id="5804241973901381774">අවසර</translation>
+<translation id="58081802114142635">ඔබේ ක්‍රියාකාරකම් Google AI වැඩි දියුණු කරයි</translation>
 <translation id="5817176759448082654">මුරපද පරීක්ෂාව</translation>
 <translation id="5818161931099046557">Google ගිණුම තුළ සංස්කරණය කරන්න</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> විසින් කළමනාකරණය කෙරේ. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
@@ -1591,6 +1593,7 @@
 <translation id="5971459446352190251">QR කේතය සෙවීම</translation>
 <translation id="5971872012779224351">{count,plural, =1{පිටුසන් 1ක් මකන ලදි}one{පිටුසන් {count}ක් මකන ලදි}other{පිටුසන් {count}ක් මකන ලදි}}</translation>
 <translation id="5972844218283131174">සියල්ල තේරීමෙන් ඉවත් කරන්න</translation>
+<translation id="597482816780655631">Gemini AI වන අතර පුද්ගලයින් ගැන ඇතුළුව වැරදි සිදු විය හැක. සමහර අන්තර්ගතයන් සියලු දෙනාටම සුදුසු නොවිය හැක. කතාබස් සමාලෝචනය කර Google AI වැඩිදියුණු කිරීමට භාවිත කරයි. <ph name="BEGIN_LINK" />ඔබේ තේරීම් ගැන දැන ගන්න<ph name="END_LINK" />. අපගේ <ph name="BEGIN_LINK" />නියම<ph name="END_LINK" /> සහ <ph name="BEGIN_LINK" />රහස්‍යතා නිවේදනය<ph name="END_LINK" /> අදාළ වේ.</translation>
 <translation id="5976160379964388480">වෙනත්</translation>
 <translation id="5977976211062815271">මෙම උපාංගය මත</translation>
 <translation id="5986043348928676121">මීළඟ</translation>
@@ -1601,7 +1604,6 @@
 <translation id="6000893618966378846">"බ්‍රවුස් කිරීමේ දත්ත මකන්න" සම්පූර්ණයි!</translation>
 <translation id="6004988584831654445">ඔබ සියල්ල සකසා ඇත! නව කාර්යයන් පැමිණෙන විට දැනුම්දීම් ලබා ගන්න.</translation>
 <translation id="6006672969046233841">නව පටිත්ත</translation>
-<translation id="6006758170939001741">අපගේ <ph name="BEGIN_LINK" />නියම<ph name="END_LINK" />, <ph name="BEGIN_LINK" />කොරියානු ස්ථාන නියම<ph name="END_LINK" />, සහ <ph name="BEGIN_LINK" />රහස්‍යතා නිවේදනය<ph name="END_LINK" /> අදාළ වේ. කතාබස් සමාලෝචනය කර ජනන AI ආකෘතිය පුහුණු කිරීමට භාවිතා කරයි. Gemini AI වන අතර පුද්ගලයින් ගැන ඇතුළුව වැරදි සිදු විය හැක. ඇතැම් අන්තර්ගතයන් සියලු දෙනාටම සුදුසු නොවිය හැක. ඔබට <ph name="BEGIN_LINK" />ඔබේ ස්ථානය පිළිබඳ තතු<ph name="END_LINK" /> ඇතුළුව <ph name="BEGIN_LINK" />ඔබේ ඉතිහාසය කළමනාකරණය කළ<ph name="END_LINK" /> හැක. <ph name="BEGIN_LINK" />ඔබේ තේරීම් පිළිබඳව තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="6011308810877101166">සෙවීම් යෝජනා වැඩි දියුණු කරන්න</translation>
 <translation id="6012140227487808125">සංකේතනය කරමින්...</translation>
 <translation id="6014801569448771146">ඔබේ මුරපද පරීක්‍ෂා කරන්න</translation>
@@ -1698,6 +1700,7 @@
 <translation id="628251768213143684">ඔබට සැමවිට ඔබේ Google ගිණුමේ සුරැකී ඇති දේ කළමනාකරණය කළ හැක</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> පරිවර්තන කිරීමට පිරිනමන්න</translation>
 <translation id="6293101329759844770">සුරක්ෂිත බ්‍රවුස් කිරීම ක්‍රියාත්මක කිරීමට, <ph name="BEGIN_LINK" />Google සේවා<ph name="END_LINK" /> විවෘත කර සුරක්ෂිත බ්‍රවුස් කිරීම තට්ටු කරන්න.</translation>
+<translation id="6295140892595702619">Gemini සමග කතාබස් කිරීමට ඔබේ මයික්‍රෆෝනය භාවිත කරන්න. ඔබ Gemini සමග කතා කරන විට, ශ්‍රව්‍ය Gemini යෙදුම් ක්‍රියාකාරකම් තුළ ගබඩා වේ (එය ක්‍රියාත්මක නම්). ඔබේ දත්ත ජනන AI ආකෘති වැඩිදියුණු කිරීමට භාවිතා නොකෙරේ</translation>
 <translation id="6295751040240588413">වලංගු නොවන කාඩ්පත් අපනාමය</translation>
 <translation id="629730747756840877">ගිණුම</translation>
 <translation id="6301104306974789820">මිල නිරීක්ෂණ දැනුම්දීම් ලබා ගන්න</translation>
@@ -1817,6 +1820,7 @@
 <translation id="6609890790934458793"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" />, සහ <ph name="THIRD_WEBSITE" /> සඳහා වන මුරපද මකා දැමෙනු ඇත. ඔබේ ගිණුම් මකා නොදමනු ඇත.</translation>
 <translation id="661266467055912436">ඔබේ සහ වෙබය මත සියලු දෙනාගේම ආරක්‍ෂාව වැඩිදියුණු කරයි.</translation>
 <translation id="6612912757320004438">පටිති දැනුම්දීම් වලට ඉඩ දෙන්න…</translation>
+<translation id="6613372200395638275">අනුවර්තන කළ උදවු සැපයීමට, Gemini ඔබේ සමහර දත්ත (ඔබේ කථාබස්වල කොටස්, ස්ථානය, සහ වෙනත් අදාළ තතු වැනි) සිතියම් සහ පියාසැරි වැනි වෙනත් Google සේවා සමග බෙදා ගනී. ඔබ පසුව ඔබේ Gemini යෙදුම් ක්‍රියාකාරකම් මකා දැමුවත්, මෙම සේවා වැඩි දියුණු කිරීමට තතු භාවිත කළ හැක. <ph name="BEGIN_LINK" />Gemini යෙදුම් රහස්‍යතා මධ්‍යස්ථානය<ph name="END_LINK" /> තුළ වැඩිදුර ඉගෙන ගන්න.</translation>
 <translation id="6617761071025228250">පෙළ හිස් කරන්න</translation>
 <translation id="6619015782482868078">ජලජ තේමාව</translation>
 <translation id="6620279676667515405">අවලංගු කරන්න</translation>
@@ -1892,7 +1896,6 @@
 <translation id="6830728435402077660">සුරක්ෂිත නැත</translation>
 <translation id="6831043979455480757">පරිවර්තනය කරන්න</translation>
 <translation id="6842136130964845393">ඔබට ඔබගේ සුරකින ලද මුරපදවලට සැම විට ප්‍රවේශ විය හැකි බවට සහතික කර ගැනීමට, ඒ ඔබ බව සත්‍යාපනය කරන්න</translation>
-<translation id="6843744036364481304">සුරකින ලද කතාබස් ඉතිහාසය කුමක්ද</translation>
 <translation id="6844773122575789617">AI මාදිලිය ක්‍රියාත්මක කරන්න</translation>
 <translation id="6851516051005285358">ඩෙක්ස්ටොප් අඩවිය ඉල්ලන්න</translation>
 <translation id="6857446173140146664">පසුබිම මකන්න</translation>
@@ -1977,6 +1980,7 @@
 <translation id="7091023926159231962">{count,plural, =1{{count} මුරපදයක් ආයාත කිරීමට නොහැකි විය}one{මුරපද {count}ක් ආයාත කිරීමට නොහැකි විය}other{මුරපද {count}ක් ආයාත කිරීමට නොහැකි විය}}</translation>
 <translation id="7095110968493193530"><ph name="EMAIL" /> සඳහා Google මුරපද කළමනාකරු වෙත</translation>
 <translation id="7097046145876891318">ලිපින තීරුවේ, කාලයත් සමග මිල වෙනස්වීම් බැලීමට මිල ඉතිහාසය තට්ටු කරන්න</translation>
+<translation id="7098554251807199977">Gemini සමග ඔබේ සංවාද හෝ ඔබේ <ph name="BEGIN_LINK" />Google Workspace දත්ත<ph name="END_LINK" /> සමාලෝචනය කරනු නොලැබේ හෝ ජනන AI ආකෘති වැඩි දියුණු කිරීමට භාවිත කරනු නොලැබේ.</translation>
 <translation id="7102005569666697658">බාගනිමින්… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">මෙනුව → සැකසීම් → ගෙවීමේ ක්‍රම</translation>
 <translation id="7108338896283013870">සඟවන්න</translation>
@@ -2017,7 +2021,6 @@
 <translation id="7223134495231529579">බාගැනීම් වෙත සුරකින්න</translation>
 <translation id="722339453342442311">දැන් පරීක්‍ෂා කරන්න</translation>
 <translation id="7227235818314667565">බෙදා ගැනීම කළමනාකරණය කරන්න</translation>
-<translation id="7232376892719594461">Gemini සමග ඔබේ සංවාද හෝ ඔබේ <ph name="BEGIN_LINK" />Google Workspace දත්ත<ph name="END_LINK" /> සමාලෝචනය කරනු නොලැබේ හෝ ජනන AI ආකෘති පුහුණු කිරීමට භාවිත කරනු නොලැබේ.</translation>
 <translation id="7233006041370588369">පිරවීමට මුරපදයක් තෝරන්න.</translation>
 <translation id="7238074332967840767">සුරක්ෂිතතාව</translation>
 <translation id="723874023660911012">පැතිකඩවල් මාරු කරන්න</translation>
@@ -2032,7 +2035,6 @@
 <translation id="728025568708172005">මට වටපිටාව පෙන්වන්න</translation>
 <translation id="7280980607183752256">මෙම ගොනුව ආයාත කළ නොහැක</translation>
 <translation id="7282197670900591579">සිට්‍රොන් තේමාව</translation>
-<translation id="7283937415134849498">වඩාත් ගැළපෙන අයුරින් උදවු සැපයීමට, Gemini ඔබේ ඇතැම් දත්ත (ඔබේ කතාබස්වල කොටස්, ස්ථානය, සහ වෙනත් අදාළ තොරතුරු වැනි) සිතියම් සහ පියාසැරි වැනි වෙනත් Google සේවා සමඟ බෙදා ගනී. ඔබ පසුව ඔබේ Gemini ඉතිහාසය මකා දැමුවත්, මෙම සේවා වැඩි දියුණු කිරීමට එම තතු භාවිත කළ හැක. <ph name="BEGIN_LINK" />Gemini යෙදුම් රහස්‍යතා මධ්‍යස්ථානය<ph name="END_LINK" /> තුළ තව දැන ගන්න.</translation>
 <translation id="7293429513719260019">භාෂාව තෝරන්න</translation>
 <translation id="72961285530871072">මෙය ඔබගේ Level Up ප්‍රගතිය ස්ථිරවම මකා දමනු ඇති අතර, ඔබගේ පැතිකඩට අදාළ Level Up විශේෂාංග භාවිත දත්ත මින් ඉදිරියට Google වෙත යවනු නොලැබේ.
 
@@ -2134,7 +2136,6 @@
 <translation id="7596103009408415410">{COUNT,plural, =1{{COUNT} අක්‍රිය පටිත්තක් වසන්න ද?}one{අක්‍රිය පටිති {COUNT}ක් වසන්න ද?}other{අක්‍රිය පටිති {COUNT}ක් වසන්න ද?}}</translation>
 <translation id="7598439272585186139">වැඩි ආරක්ෂාවක් ලබා ගන්න</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> කිසිදා පරිවර්තනය නොකරන්න</translation>
-<translation id="760230853074995500">කතාබස් සමාලෝචනය කර ජනන AI ආකෘතිය පුහුණු කිරීමට භාවිතා කරයි. ඔබට <ph name="BEGIN_LINK" />ඔබේ ස්ථානය පිළිබඳ තතු<ph name="END_LINK" /> ඇතුළුව <ph name="BEGIN_LINK" />ඔබේ ඉතිහාසය කළමනාකරණය කළ<ph name="END_LINK" /> හැක. <ph name="BEGIN_LINK" />ඔබේ තේරීම් පිළිබඳව තව දැන ගන්න<ph name="END_LINK" />.</translation>
 <translation id="7603308509262646847">කාඩ්පත් හිමියා <ph name="NAME" /> ස්වයංක්‍රීයව පුරවන්න</translation>
 <translation id="7603852183842204213">උත්පතන අවහිරයි ( <ph name="NUMBER_OF_BLOCKED_POPUPS" /> )</translation>
 <translation id="7605594153474022051">සමමුහුර්තය වැඩ නොකරයි</translation>
@@ -2420,6 +2421,7 @@
 <translation id="8439758443371991593">කියවීම් ලැයිස්තුවට එක් කිරීම සඟවන්න</translation>
 <translation id="8443986842926457191">URL අනුලකුණු 2048කට වඩා වැඩි වේ</translation>
 <translation id="8449869326050867919">මුරපදය බෙදා ගන්නා ලදි</translation>
+<translation id="8461708300275916315">ඔබ 18ට අඩු නම්</translation>
 <translation id="8473815223723723001">Gemini සමග රූපය සංස්කරණය කරන්න</translation>
 <translation id="8473863474539038330">ලිපින සහ තව</translation>
 <translation id="8474378002946546633">දැනුම්දීම්වලට ඉඩ දෙන්න</translation>
@@ -2499,6 +2501,7 @@
 <translation id="8672733398999596205">සියල්ල සබල කරන්න</translation>
 <translation id="8674716540979958118">ඔබට අවදානමට පත් වූ මුරපද ඇත.</translation>
 <translation id="8679900250380464358">කියවීම් ලැයිස්තුවට එක් කරන්න</translation>
+<translation id="8680643216091361291">ඔබේ <ph name="BEGIN_LINK" />ක්‍රියාකාරකම් තබා ගන්න<ph name="END_LINK" /> සැකසීම පෙරනිමියෙන් ක්‍රියාවිරහිතයි. එය ක්‍රියාවිරහිත වූ විට, Google ඔබේ කතාබස් දින 3ක් සුරකියි. එය Gemini යෙදුම් නිවැරදිව ක්‍රියා කිරීමට, ඒවා ආරක්ෂිතව තබා ගැනීමට සහ ගැටලු නිරාකරණය කිරීමට ඔබේ ප්‍රතිපෝෂණය භාවිත කිරීමට ඒවා භාවිත කරයි. සියලු දෙනා වෙනුවෙන් ම Google AI වැඩිදියුණු කිරීමට උදවු කිරීම සඳහා ඔබට ක්‍රියාකාරකම් තබා ගැනීම ක්‍රියාත්මක කළ හැක.</translation>
 <translation id="8680787084697685621">ගිණුමේ සයින් ඉන් විස්තර යල් පැන ගොස් තිබේ.</translation>
 <translation id="868648444055742370">"<ph name="SITE_DOMAIN" />" හට ඔබේ මයික්‍රෆෝනයට ප්‍රවේශ වීමට ඉඩ නැත</translation>
 <translation id="8690752723634292147">මකා දැමීම තහවුරු කරන්න</translation>
@@ -2530,7 +2533,6 @@
 <translation id="8746155870861185046">උද්දීපනය බෙදා ගන්න</translation>
 <translation id="8748678031495824833">පිටුවේ AI මෙවලම් විවෘත කරන්න</translation>
 <translation id="8750037785291841318">ඔබට ඔබේ ටැබ මෙහි හමුවනු ඇත</translation>
-<translation id="8751126814549746156">ඔබේ ඉතිහාසය මාස 18 කට පසු ස්වයංක්‍රීයව මකා දැමෙනු ඇත. ඔබට සැකසීම් තුළ මෙම කාල සීමාව වෙනස් කළ හැක. සේවා සපයන්නන් විසින් සමාලෝචනය කරන ලද කථාබස් ඔබේ ගිණුමෙන් වෙන් කර වසර 3ක් දක්වා තබා ගනී. ඔබට ඕනෑම වේලාවක ඔබේ ඉතිහාස සැකසීම <ph name="BEGIN_LINK" />ක්‍රියාවිරහිත කළ<ph name="END_LINK" /> හැක.</translation>
 <translation id="8756969031206844760">මුරපදය යාවත්කාලීන කරන්න ද?</translation>
 <translation id="8763613688786959833">අවසාන පටිත්ත වෙත යන්න</translation>
 <translation id="8766790350274092814"><ph name="WEBSITE" /> සහ <ph name="SECOND_WEBSITE" /> සඳහා වන මුරපද මකා දැමෙනු ඇත. ඔබේ ගිණුම් මකා නොදමනු ඇත.</translation>
@@ -2557,6 +2559,7 @@
 <translation id="882557203579758546">පිටුව තුළ සොයා ගන්න…</translation>
 <translation id="8829809207373502270">මෙම මුරයතුර තවදුරටත් ක්‍රියා නොකරයි. එය <ph name="WEBSITE" /> වෙතින් මකා දැමූ අතර ඉක්මනින් මෙතැනින් මකා දමනු ඇත. <ph name="BEGIN_LINK" />මුරයතුරු පිළිබඳව<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">අක්‍රිය සියල්ල වසන්න</translation>
+<translation id="8831871601813227635">අපගේ <ph name="BEGIN_LINK" />නියම<ph name="END_LINK" />, <ph name="BEGIN_LINK" />කොරියානු ස්ථාන නියම<ph name="END_LINK" />, සහ <ph name="BEGIN_LINK" />රහස්‍යතා නිවේදනය<ph name="END_LINK" /> අදාළ වේ. කතාබස් සමාලෝචනය කර Google AI වැඩිදියුණු කිරීමට භාවිත කරයි. Gemini AI වන අතර පුද්ගලයින් ගැන ඇතුළුව වැරදි සිදු විය හැක. සමහර අන්තර්ගතයන් සියලු දෙනාටම සුදුසු නොවිය හැක. ඔබට ඔබේ ස්ථානය පිළිබඳ තතු ඇතුළුව <ph name="BEGIN_LINK" />ඔබේ ක්‍රියාකාරකම් කළමනාකරණය කළ<ph name="END_LINK" /> හැක. <ph name="BEGIN_LINK" />ඔබේ තේරීම් පිළිබඳව තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="8837654851594567190">ප්‍රකාශකයා අනුව පිළිවෙලට සකසන්න</translation>
 <translation id="884351711508006491">ඔබේ තතු ඔබේ උපාංගයට සුරකින ලදි.</translation>
 <translation id="8844136307393039959">ඔබේ ලුහුබැඳ ගිය නිෂ්පාදනයේ මිල පහත වැටීම</translation>
@@ -2576,7 +2579,6 @@
 <translation id="8893208530912252670">වීඩියෝ</translation>
 <translation id="890009681345348416">මුරපද 40+ ස්වයංව පුරවා ඇත</translation>
 <translation id="8900845556227858314">බ්‍රව්සර යෙදුම</translation>
-<translation id="8903042868629070803">ඔබ වයස අවුරුදු 18 හෝ ඊට වැඩි නම්, Google ඔබේ ඉතිහාසය <ph name="BEGIN_LINK" />ජනන AI ආකෘති පුහුණු කිරීමට<ph name="END_LINK" /> ද භාවිත කරයි. ඔබට ඉදිරි ගනුදෙනු කතාබස් සඳහා ඕනෑම වේලාවක <ph name="BEGIN_LINK" />මෙය ක්‍රියාවිරහිත<ph name="END_LINK" /> කළ හැක.</translation>
 <translation id="890565330728586731">ආපසු</translation>
 <translation id="8907722425137681851">පිටුව තුළ සොයා ගන්න…</translation>
 <translation id="8909135823018751308">බෙදාගන්න…</translation>
@@ -2629,7 +2631,6 @@
 <translation id="9066097352053395362">පිටුසන සංස්කරණය සඟවන්න</translation>
 <translation id="9070824521421603770">ඔබව වරනය වන අතර පටිති වසා දමනු ඇත</translation>
 <translation id="9072837124205571418">සියලු උපාංග වලින් පටිති සමූහ</translation>
-<translation id="9073322251019919253">Gemini AI වන අතර පුද්ගලයින් ගැන ඇතුළුව වැරදි සිදු විය හැක. ඇතැම් අන්තර්ගතයන් සියලු දෙනාටම සුදුසු නොවිය හැක. කතාබස් සමාලෝචනය කර ජනන AI ආකෘතිය පුහුණු කිරීමට භාවිතා කරයි. ඔබට <ph name="BEGIN_LINK" />ඔබේ ස්ථානය පිළිබඳ තතු<ph name="END_LINK" /> ඇතුළුව <ph name="BEGIN_LINK" />ඔබේ ඉතිහාසය කළමනාකරණය කළ<ph name="END_LINK" /> හැක. <ph name="BEGIN_LINK" />ඔබේ තේරීම් ගැන දැන ගන්න<ph name="END_LINK" />. අපගේ <ph name="BEGIN_LINK" />නියම<ph name="END_LINK" /> සහ <ph name="BEGIN_LINK" />රහස්‍යතා නිවේදනය<ph name="END_LINK" /> අදාළ වේ.</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> සඳහා මුරපදය යාවත්කාලීන කරන්නේද?</translation>
 <translation id="908365381820697818">දැන් ඔබට Gmail සහ තවත් දේවලින් තතු සොයා පුරවා ගත හැක</translation>
 <translation id="9083838294503912307">උපාංග හරහා සමමුහුර්ත සහ පෞද්ගලීකරණය කිරීමට, සමමුහුර්තය ක්‍රියාත්මක කරන්න.</translation>

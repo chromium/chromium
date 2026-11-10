@@ -3,6 +3,7 @@
 <translationbundle lang="sv">
 <translation id="1008557486741366299">Inte nu</translation>
 <translation id="100957008357583611">Får din plats användas?</translation>
+<translation id="1010148478459329879">Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, till exempel <ph name="BEGIN_LINK_GAA" />Gemini-historik<ph name="END_LINK_GAA" /></translation>
 <translation id="1010200102790553230">Läs in sidan senare</translation>
 <translation id="1010225406377140704">Kontakta avsändaren och be om en ny länk</translation>
 <translation id="1011206368273183593">Filerna förbereds</translation>
@@ -920,7 +921,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="251033673027346551">Besök Google Wallet för att hantera <ph name="BEGIN_LINK" />data- och integritetsinställningar<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Tillåts inte (standard)</translation>
 <translation id="2512413427717747692">Knappen Ställ in Chrome som standardwebbläsare: tryck på Retur om du vill ställa in Chrome som standardwebbläsare i systeminställningarna för iOS</translation>
-<translation id="2513217232843681817">Det kan finnas andra former av webbhistorik för Google-kontot på <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, till exempel besök via automatisk webbsökning i <ph name="BEGIN_LINK_GAA" />Gemini-appaktiviteten<ph name="END_LINK_GAA" /></translation>
 <translation id="2515629240566999685">kontrollera mottagningen i området</translation>
 <translation id="2518584823165598232">Kortet är inte tillgängligt. Kontakta kortutgivaren.</translation>
 <translation id="2521385132275182522">Häfta nere till höger</translation>
@@ -3965,7 +3965,6 @@ Mer information.
 <translation id="7584287158780898016">Aktivera prisbevakningsaviseringar</translation>
 <translation id="7586676035079382730">Aviseringar tillåts inte</translation>
 <translation id="7588707273764747927">Överföringspapper</translation>
-<translation id="7589062909165841767">Ditt Google-konto kan innehålla din <ph name="BEGIN_LINK_GAA" />Gemini-appaktivitet<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">Vill du dela konfidentiellt innehåll?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> vill använda cookies och webbplatsdata på <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Serverns certifikat strider mot namnrestriktionerna.</translation>
@@ -4257,7 +4256,6 @@ Mer information.
 <translation id="8075736640322370409">Skapa ett nytt Google-kalkylark snabbt</translation>
 <translation id="8075898834294118863">Hantera webbplatsinställningar</translation>
 <translation id="8076492880354921740">Flikar</translation>
-<translation id="8076880883123051368">Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, till exempel <ph name="BEGIN_LINK_GAA" />Gemini-appaktivitet<ph name="END_LINK_GAA" /></translation>
 <translation id="8077465698530018904">Ta bort den valda regionen</translation>
 <translation id="8077669823243888800">Kinesiskt nr 8-kuvert</translation>
 <translation id="8078006011486731853">{0,plural, =1{Vill du ladda upp en konfidentiell fil?}other{Vill du ladda upp konfidentiella filer?}}</translation>
@@ -4309,6 +4307,7 @@ Mer information.
 <translation id="8163468049564974856">Aktivera autofyll för att betala säkert online. Dina kortuppgifter krypteras i Google Wallet.</translation>
 <translation id="8163866351304776260">Fyra hål till vänster</translation>
 <translation id="8164078261547504572">Vill du få e-postmeddelanden när priserna sänks?</translation>
+<translation id="8166435925529495192">Ditt Google-konto kan innehålla din <ph name="BEGIN_LINK_GAA" />Gemini-historik<ph name="END_LINK_GAA" /></translation>
 <translation id="8169175551046720804">Tangenterna <ph name="DATA_CONTROLS_KEYS" /> kan inte anges i samma ordlista</translation>
 <translation id="8172809706700703589">Skapa en packlista för min resa</translation>
 <translation id="8174047975335711832">Enhetsinformation</translation>
@@ -4975,6 +4974,7 @@ Mer information:
     &lt;li&gt;Testa att avinstallera eller inaktivera <ph name="SOFTWARE_NAME" />&lt;/li&gt;
     &lt;li&gt;Testa att ansluta till ett annat nätverk&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">Det kan finnas andra former av webbhistorik för Google-kontot på <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, till exempel besök via automatisk webbsökning i <ph name="BEGIN_LINK_GAA" />Gemini-historiken<ph name="END_LINK_GAA" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Lägg till IBAN</translation>
 <translation id="995782501881226248">YouTube</translation>

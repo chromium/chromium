@@ -3,6 +3,7 @@
 <translationbundle lang="fi">
 <translation id="1008557486741366299">Ei nyt</translation>
 <translation id="100957008357583611">Käytä sijaintiasi?</translation>
+<translation id="1010148478459329879">Google-tililläsi voi olla muita selaushistoriatietoja osoitteessa <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, esimerkiksi <ph name="BEGIN_LINK_GAA" />Gemini-historia<ph name="END_LINK_GAA" /></translation>
 <translation id="1010200102790553230">Lataa sivu myöhemmin</translation>
 <translation id="1010225406377140704">Pyydä uutta linkkiä lähettäjältä</translation>
 <translation id="1011206368273183593">Valmistellaan tiedostoja</translation>
@@ -920,7 +921,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="251033673027346551">Jos haluat muuttaa <ph name="BEGIN_LINK" />data- ja yksityisyysasetuksia<ph name="END_LINK" />, siirry Google Walletiin.</translation>
 <translation id="2512101340618156538">Ei sallittu (oletus)</translation>
 <translation id="2512413427717747692">Valitse Chrome oletusselaimeksi ‑painike, painamalla Enter voit valita Chromen järjestelmän oletusselaimeksi iOS-asetuksista</translation>
-<translation id="2513217232843681817">Google-tililläsi voi olla muita selaushistoriatietoja osoitteessa <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, esimerkiksi automaattisen selauksen käyntejä <ph name="BEGIN_LINK_GAA" />Gemini-sovellustoiminnassa<ph name="END_LINK_GAA" /></translation>
 <translation id="2515629240566999685">Tarkista alueesi mobiilisignaali.</translation>
 <translation id="2518584823165598232">Kortti ei ole käytettävissä. Ota yhteyttä kortin myöntäjään.</translation>
 <translation id="2521385132275182522">Niitti oikeassa alareunassa</translation>
@@ -3966,7 +3966,6 @@ Lisätietoja:
 <translation id="7584287158780898016">Ota hintaseuranta-ilmoitukset käyttöön</translation>
 <translation id="7586676035079382730">Ilmoituksia ei sallittu</translation>
 <translation id="7588707273764747927">Siirrä</translation>
-<translation id="7589062909165841767">Google-tililläsi voi olla <ph name="BEGIN_LINK_GAA" />Gemini-sovellustoimintaa<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">Jaetaanko luottamuksellinen sisältö?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> haluaa käyttää evästeitä ja sivustodataa täällä: <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Palvelimen varmenne rikkoo nimirajoituksia.</translation>
@@ -4258,7 +4257,6 @@ Lisätietoja:
 <translation id="8075736640322370409">Luo uusi Google Sheets -taulukko nopeasti</translation>
 <translation id="8075898834294118863">Muuta sivustoasetuksia</translation>
 <translation id="8076492880354921740">Välilehdet</translation>
-<translation id="8076880883123051368">Google-tililläsi voi olla muita selaushistoriatietoja osoitteessa <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, esimerkiksi <ph name="BEGIN_LINK_GAA" />Gemini-sovellustoiminta<ph name="END_LINK_GAA" /></translation>
 <translation id="8077465698530018904">Poista valittu alue</translation>
 <translation id="8077669823243888800">Kirjekuori kiinalainen #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Ladataanko luottamuksellinen tiedosto?}other{Ladataanko luottamukselliset tiedostot?}}</translation>
@@ -4310,6 +4308,7 @@ Lisätietoja:
 <translation id="8163468049564974856">Laita automaattinen täyttö päälle, niin voit maksaa turvallisesti verkossa. Korttisi tiedot salataan Google Walletissa.</translation>
 <translation id="8163866351304776260">Neljä reikää vasemmalla</translation>
 <translation id="8164078261547504572">Haluatko ilmoituksia hintojen laskemisesta?</translation>
+<translation id="8166435925529495192">Google-tililläsi voi olla <ph name="BEGIN_LINK_GAA" />Gemini-historiaa<ph name="END_LINK_GAA" /></translation>
 <translation id="8169175551046720804">Avaimia "<ph name="DATA_CONTROLS_KEYS" />" ei voi asettaa samaan sanakirjaan</translation>
 <translation id="8172809706700703589">Luo pakkauslista matkaa varten</translation>
 <translation id="8174047975335711832">Laitteen tiedot</translation>
@@ -4977,6 +4976,7 @@ Lisätietoja:
     &lt;li&gt;Yritä poistaa <ph name="SOFTWARE_NAME" /> tai poistaa se käytöstä&lt;/li&gt;
     &lt;li&gt;Yritä yhdistää toiseen verkkoon&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">Google-tililläsi voi olla muita selaushistoriatietoja osoitteessa <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, esimerkiksi automaattisen selauksen käyntejä <ph name="BEGIN_LINK_GAA" />Gemini-historiassa<ph name="END_LINK_GAA" /></translation>
 <translation id="994346157028146140">JIS B1 (728 mm x 1 030 mm)</translation>
 <translation id="995755448277384931">Lisää IBAN-numero</translation>
 <translation id="995782501881226248">YouTube</translation>

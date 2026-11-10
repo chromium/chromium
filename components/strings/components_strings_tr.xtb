@@ -3,6 +3,7 @@
 <translationbundle lang="tr">
 <translation id="1008557486741366299">Şimdi Değil</translation>
 <translation id="100957008357583611">Konumunuz kullanılsın mı?</translation>
+<translation id="1010148478459329879"><ph name="BEGIN_LINK_GMA" />Myactivity.google.com<ph name="END_LINK_GMA" /> adresinde Google Hesabınızın başka biçimlerde tarama geçmişi olabilir. Örneğin, <ph name="BEGIN_LINK_GAA" />Gemini Geçmişiniz<ph name="END_LINK_GAA" /></translation>
 <translation id="1010200102790553230">Sayfayı daha sonra yükle</translation>
 <translation id="1010225406377140704">Yeni bir bağlantı istemek için bağlantıyı gönderen kişiyle iletişime geçin</translation>
 <translation id="1011206368273183593">Dosyalar hazırlanıyor</translation>
@@ -920,7 +921,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="251033673027346551"><ph name="BEGIN_LINK" />Veri ve gizlilik tercihlerini<ph name="END_LINK" /> yönetmek için Google Cüzdan'ı ziyaret edin.</translation>
 <translation id="2512101340618156538">İzin verilmiyor (varsayılan)</translation>
 <translation id="2512413427717747692">Chrome'u varsayılan tarayıcı olarak ayarlama düğmesi, Chrome'u iOS ayarlarından sistemin varsayılan tarayıcısı olarak ayarlamak için Enter'a basın</translation>
-<translation id="2513217232843681817"><ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> adresinde Google Hesabınızın başka biçimlerde tarama geçmişi olabilir. Örneğin, <ph name="BEGIN_LINK_GAA" />Gemini Uygulamaları Etkinliğinizdeki<ph name="END_LINK_GAA" /> otomatik gezinme ziyaretleri</translation>
 <translation id="2515629240566999685">Bulunduğunuz bölgedeki sinyali kontrol edin</translation>
 <translation id="2518584823165598232">Bu kart kullanılamıyor. Lütfen kart sağlayıcınızla iletişime geçin.</translation>
 <translation id="2521385132275182522">Sağ altta tel zımba</translation>
@@ -3965,7 +3965,6 @@ Ek ayrıntılar:
 <translation id="7584287158780898016">Fiyat takibi uyarılarını etkinleştirin</translation>
 <translation id="7586676035079382730">Bildirimlere izin verilmiyor</translation>
 <translation id="7588707273764747927">Aktar</translation>
-<translation id="7589062909165841767">Google Hesabınızda <ph name="BEGIN_LINK_GAA" />Gemini Uygulamaları Etkinliğiniz<ph name="END_LINK_GAA" /> olabilir</translation>
 <translation id="7591288787774558753">Gizli içerik paylaşılsın mı?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" />, <ph name="TOP_LEVEL_URL" /> üzerinde çerezleri ve site verilerini kullanmak istiyor</translation>
 <translation id="7592362899630581445">Sunucunun sertifikası ad sınırlamasını ihlal ediyor.</translation>
@@ -4257,7 +4256,6 @@ Ek ayrıntılar:
 <translation id="8075736640322370409">Hızlıca yeni bir Google E-Tablosu oluşturun</translation>
 <translation id="8075898834294118863">Site ayarlarını yönet</translation>
 <translation id="8076492880354921740">Sekmeler</translation>
-<translation id="8076880883123051368"><ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> adresinde Google Hesabınızın başka biçimlerde tarama geçmişi olabilir. Örneğin, <ph name="BEGIN_LINK_GAA" />Gemini Uygulamaları Etkinliğiniz<ph name="END_LINK_GAA" /></translation>
 <translation id="8077465698530018904">Seçili bölgeyi kaldır</translation>
 <translation id="8077669823243888800">Zarf Chinese #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Gizli dosya yüklensin mi?}other{Gizli dosyalar yüklensin mi?}}</translation>
@@ -4309,6 +4307,7 @@ Ek ayrıntılar:
 <translation id="8163468049564974856">İnternette güvenli bir şekilde ödeme yapmak için otomatik doldurmayı etkinleştirin. Kart bilgileriniz Google Cüzdan'da şifrelenir.</translation>
 <translation id="8163866351304776260">Solda dörtlü delik</translation>
 <translation id="8164078261547504572">Fiyatlar düştüğünde e-posta almak ister misiniz?</translation>
+<translation id="8166435925529495192">Google Hesabınızda <ph name="BEGIN_LINK_GAA" />Gemini Geçmişiniz<ph name="END_LINK_GAA" /> olabilir</translation>
 <translation id="8169175551046720804">"<ph name="DATA_CONTROLS_KEYS" />" anahtarları aynı sözlükte ayarlanamaz</translation>
 <translation id="8172809706700703589">Gezim için götürülecekler listesi oluştur</translation>
 <translation id="8174047975335711832">Cihaz bilgileri</translation>
@@ -4974,6 +4973,7 @@ Ek ayrıntılar:
     &lt;li&gt;"<ph name="SOFTWARE_NAME" />" yazılımının yüklemesini kaldırmayı veya devre dışı bırakmayı deneyin&lt;/li&gt;
     &lt;li&gt;Başka bir kablosuz ağa bağlanmayı deneyin&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403"><ph name="BEGIN_LINK_GMA" />Myactivity.google.com<ph name="END_LINK_GMA" /> adresinde Google Hesabınızın başka biçimlerde tarama geçmişi olabilir. Örneğin, <ph name="BEGIN_LINK_GAA" />Gemini Etkinliğinizdeki<ph name="END_LINK_GAA" /> otomatik gezinme ziyaretleri</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">IBAN ekleyin</translation>
 <translation id="995782501881226248">YouTube</translation>

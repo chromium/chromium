@@ -3,6 +3,7 @@
 <translationbundle lang="hu">
 <translation id="1008557486741366299">Ne most</translation>
 <translation id="100957008357583611">Engedélyezi a helyadatok használatát?</translation>
+<translation id="1010148478459329879">Előfordulhat, hogy a böngészési előzmények más formái még megtalálhatók Google-fiókjában a <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> webhelyen, például a <ph name="BEGIN_LINK_GAA" />Gemini-előzmények<ph name="END_LINK_GAA" />.</translation>
 <translation id="1010200102790553230">Oldal betöltése később</translation>
 <translation id="1010225406377140704">Új link kéréséhez felveheti a kapcsolatot a küldővel</translation>
 <translation id="1011206368273183593">Fájlok előkészítése…</translation>
@@ -920,7 +921,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="251033673027346551">A <ph name="BEGIN_LINK" />adatok és az adatvédelmi beállítások<ph name="END_LINK" /> kezeléséhez nyissa meg a Google Walletet.</translation>
 <translation id="2512101340618156538">Nem engedélyezett (alapértelmezett)</translation>
 <translation id="2512413427717747692">A Chrome beállítása alapértelmezett böngészőként gomb. Nyomja le az Entert, ha a Chrome-ot szeretné beállítani a rendszer alapértelmezett böngészőjeként az iOS beállításaiban</translation>
-<translation id="2513217232843681817">Előfordulhat, hogy a böngészési előzmények más formái még megtalálhatók Google-fiókjában a <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> webhelyen – például az automatikus böngészési látogatások a <ph name="BEGIN_LINK_GAA" />Gemini-appokban végzett tevékenységek<ph name="END_LINK_GAA" /> között.</translation>
 <translation id="2515629240566999685">A térerő ellenőrzése tartózkodási helyén</translation>
 <translation id="2518584823165598232">Ez a kártya nem áll rendelkezésre. Forduljon a kártyát biztosító szolgáltatóhoz.</translation>
 <translation id="2521385132275182522">Kapocs jobbra lent</translation>
@@ -3962,7 +3962,6 @@ További részletek:
 <translation id="7584287158780898016">Árfigyelési értesítések engedélyezése</translation>
 <translation id="7586676035079382730">Értesítések nem engedélyezettek</translation>
 <translation id="7588707273764747927">Transzfer</translation>
-<translation id="7589062909165841767">Előfordulhat, hogy Google-fiókjában megtalálhatók a <ph name="BEGIN_LINK_GAA" />Gemini-appokban végzett tevékenységek<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">Biztosan megosztja a bizalmas tartalmat?</translation>
 <translation id="7591636454931265313">A(z) <ph name="EMBEDDED_URL" /> cookie-kat és webhelyadatokat szeretne használni a következő webhelyen: <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">A szervertanúsítvány sérti a névre vonatkozó megkötéseket.</translation>
@@ -4254,7 +4253,6 @@ További részletek:
 <translation id="8075736640322370409">Új Google-táblázat létrehozása gyorsan</translation>
 <translation id="8075898834294118863">Webhelybeállítások kezelése</translation>
 <translation id="8076492880354921740">Lapok</translation>
-<translation id="8076880883123051368">Előfordulhat, hogy a böngészési előzmények más formái még megtalálhatók Google-fiókjában a <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> webhelyen, például a <ph name="BEGIN_LINK_GAA" />Gemini-appokban végzett tevékenységek<ph name="END_LINK_GAA" />.</translation>
 <translation id="8077465698530018904">Kiválasztott régió eltávolítása</translation>
 <translation id="8077669823243888800">8. kínai boríték</translation>
 <translation id="8078006011486731853">{0,plural, =1{Feltölti a bizalmas fájlt?}other{Feltölti a bizalmas fájlokat?}}</translation>
@@ -4306,6 +4304,7 @@ További részletek:
 <translation id="8163468049564974856">Kapcsolja be az automatikus kitöltést a biztonságos online fizetéshez. A kártyaadatok titkosítva vannak a Google Walletben.</translation>
 <translation id="8163866351304776260">Négy lyuk a bal oldalon</translation>
 <translation id="8164078261547504572">Szeretne e-mailt kapni az árcsökkenésekről?</translation>
+<translation id="8166435925529495192">Előfordulhat, hogy Google-fiókjában megtalálhatók a <ph name="BEGIN_LINK_GAA" />Gemini-előzmények<ph name="END_LINK_GAA" /></translation>
 <translation id="8169175551046720804">A(z) „<ph name="DATA_CONTROLS_KEYS" />” kulcsok nem állíthatók be ugyanabban a szótárban</translation>
 <translation id="8172809706700703589">Készíts csomagolási listát az utazásomhoz</translation>
 <translation id="8174047975335711832">Eszközadatok</translation>
@@ -4972,6 +4971,7 @@ További részletek:
     &lt;li&gt;Próbálkozzon a(z) „<ph name="SOFTWARE_NAME" />” eltávolításával vagy letiltásával.&lt;/li&gt;
     &lt;li&gt;Próbáljon másik hálózathoz csatlakozni.&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">Előfordulhat, hogy a böngészési előzmények más formái még megtalálhatók Google-fiókjában a <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> webhelyen – például az automatikus böngészési látogatások a <ph name="BEGIN_LINK_GAA" />Gemini-előzmények<ph name="END_LINK_GAA" /> között.</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">IBAN hozzáadása</translation>
 <translation id="995782501881226248">YouTube</translation>

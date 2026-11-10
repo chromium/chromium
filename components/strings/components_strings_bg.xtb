@@ -3,6 +3,7 @@
 <translationbundle lang="bg">
 <translation id="1008557486741366299">Не сега</translation>
 <translation id="100957008357583611">Да се използва ли местоположението ви?</translation>
+<translation id="1010148478459329879">В профила ви в Google може да има други видове история на сърфиране, съхранявани на адрес <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, като например <ph name="BEGIN_LINK_GAA" />историята ви в Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="1010200102790553230">Зареждане на страницата по-късно</translation>
 <translation id="1010225406377140704">Свържете се с подателя, за да поискате нова връзка</translation>
 <translation id="1011206368273183593">Файловете се подготвят</translation>
@@ -920,7 +921,6 @@
 <translation id="251033673027346551">Отворете Google Wallet, за да управлявате <ph name="BEGIN_LINK" />предпочитанията за поверителността и данните<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Не е разрешено (по подразбиране)</translation>
 <translation id="2512413427717747692">Бутон за задаване на Chrome като браузър по подразбиране. Натиснете Enter за задаване на Chrome като браузъра по подразбиране за системата в настройките на iOS</translation>
-<translation id="2513217232843681817">В профила ви в Google може да има други видове история на сърфиране, съхранявани на адрес <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, като например автоматичното сърфиране в сайтове в <ph name="BEGIN_LINK_GAA" />активността ви в приложенията Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="2515629240566999685">Проверете сигнала в района.</translation>
 <translation id="2518584823165598232">Тази карта не е налице. Моля, свържете се с доставчика ѝ.</translation>
 <translation id="2521385132275182522">Телбодиране долу вдясно</translation>
@@ -3965,7 +3965,6 @@
 <translation id="7584287158780898016">Активиране на сигналите за проследяване на цените</translation>
 <translation id="7586676035079382730">Достъпът до известията не е разрешен</translation>
 <translation id="7588707273764747927">Трансферна хартия</translation>
-<translation id="7589062909165841767">В профила ви в Google може да има <ph name="BEGIN_LINK_GAA" />активност в приложенията Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">Да се сподели ли поверително съдържание?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> иска да използва „бисквитки“ и данни за сайтове на <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Сертификатът на сървъра нарушава ограниченията за име.</translation>
@@ -4257,7 +4256,6 @@
 <translation id="8075736640322370409">Бързо създаване на таблица в Google Таблици</translation>
 <translation id="8075898834294118863">Управление на настройките за сайтовете</translation>
 <translation id="8076492880354921740">Раздели</translation>
-<translation id="8076880883123051368">В профила ви в Google може да има други видове история на сърфиране, съхранявани на адрес <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, като например <ph name="BEGIN_LINK_GAA" />активността ви в приложенията Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="8077465698530018904">Премахване на избраната област</translation>
 <translation id="8077669823243888800">Плик, китайски №8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Да се качи ли поверителният файл?}other{Да се качат ли поверителните файлове?}}</translation>
@@ -4309,6 +4307,7 @@
 <translation id="8163468049564974856">Включете автоматичното попълване, за да плащате безопасно онлайн. Данните за картата ви се шифроват в Google Wallet.</translation>
 <translation id="8163866351304776260">Четворно перфориране отляво</translation>
 <translation id="8164078261547504572">Искате ли да получавате имейли при понижения на цени?</translation>
+<translation id="8166435925529495192">В профила ви в Google може да има <ph name="BEGIN_LINK_GAA" />история в Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="8169175551046720804">Ключовете <ph name="DATA_CONTROLS_KEYS" /> не могат да бъдат зададени в един и същ речник</translation>
 <translation id="8172809706700703589">Създай списък с неща, които да взема за пътуването си</translation>
 <translation id="8174047975335711832">Информация за устройството</translation>
@@ -4974,6 +4973,7 @@
     &lt;li&gt;Опитайте да деинсталирате или деактивирате <ph name="SOFTWARE_NAME" />.&lt;/li&gt;
     &lt;li&gt;Опитайте да се свържете с друга мрежа.&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">В профила ви в Google може да има други видове история на сърфиране, съхранявани на адрес <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, като например автоматичното сърфиране в сайтове в <ph name="BEGIN_LINK_GAA" />историята ви в Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Добавяне на IBAN</translation>
 <translation id="995782501881226248">YouTube</translation>

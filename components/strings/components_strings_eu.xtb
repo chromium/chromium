@@ -3,6 +3,7 @@
 <translationbundle lang="eu">
 <translation id="1008557486741366299">Ez une honetan</translation>
 <translation id="100957008357583611">Kokapena erabili nahi duzu?</translation>
+<translation id="1010148478459329879">Baliteke Google-ko kontuak bestelako arakatze-historiak izatea <ph name="BEGIN_LINK_GAA" />myactivity.google.com<ph name="END_LINK_GAA" /> helbidean, hala nola <ph name="BEGIN_LINK_GMA" />Gemini-ren historia<ph name="END_LINK_GMA" /></translation>
 <translation id="1010200102790553230">Kargatu orria geroago</translation>
 <translation id="1010225406377140704">Beste esteka bat eskatzeko, jarri igorlearekin harremanetan</translation>
 <translation id="1011206368273183593">Fitxategiak prestatzen</translation>
@@ -920,7 +921,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="251033673027346551">Joan Google Wallet-era <ph name="BEGIN_LINK" />datuen eta pribatutasunaren hobespenak<ph name="END_LINK" /> kudeatzeko.</translation>
 <translation id="2512101340618156538">Baimenik gabe (lehenetsia)</translation>
 <translation id="2512413427717747692">Chrome arakatzaile lehenetsi gisa ezartzeko botoia: sakatu "Sartu" Chrome sistemaren arakatzaile lehenetsi gisa ezartzeko iOS-en ezarpenetan</translation>
-<translation id="2513217232843681817">Google-ko kontuko historia arakatzeko beste modu batzuk aurkitu nahi izanez gero (adibidez, <ph name="BEGIN_LINK_GAA" />Gemini-ren aplikazioetako jardueretako<ph name="END_LINK_GAA" /> arakatze automatikoko bisitak), joan <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> helbidera</translation>
 <translation id="2515629240566999685">Seinalea egiaztatu.</translation>
 <translation id="2518584823165598232">Txartel hau ez dago erabilgarri. Jarri txartelaren hornitzailearekin harremanetan.</translation>
 <translation id="2521385132275182522">Grapa bat behean, eskuinetara</translation>
@@ -3959,7 +3959,6 @@ Xehetasun gehiago:
 <translation id="7584287158780898016">Gaitu prezioen jarraipenari buruzko alertak</translation>
 <translation id="7586676035079382730">Ukatu da jakinarazpenak bidaltzeko baimena</translation>
 <translation id="7588707273764747927">Transferentzia</translation>
-<translation id="7589062909165841767">Baliteke Google-ko kontuak <ph name="BEGIN_LINK_GAA" />Gemini-ren aplikazioetako jarduerak<ph name="END_LINK_GAA" /> edukitzea</translation>
 <translation id="7591288787774558753">Isilpeko edukia partekatu nahi duzu?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> webguneak <ph name="TOP_LEVEL_URL" /> webguneko cookieak eta datuak erabili nahi ditu</translation>
 <translation id="7592362899630581445">Zerbitzariaren ziurtagiriak izen-murriztapenak urratzen ditu.</translation>
@@ -4251,7 +4250,6 @@ Xehetasun gehiago:
 <translation id="8075736640322370409">Sortu bizkor Google-ko kalkulu-orri bat</translation>
 <translation id="8075898834294118863">Kudeatu webguneen ezarpenak</translation>
 <translation id="8076492880354921740">Fitxak</translation>
-<translation id="8076880883123051368">Google-ko kontuko historia arakatzeko beste modu batzuk aurkitu nahi izanez gero (<ph name="BEGIN_LINK_GAA" />Gemini-ren aplikazioetako jarduerak<ph name="END_LINK_GAA" />, esaterako), joan <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> helbidera</translation>
 <translation id="8077465698530018904">Kendu hautatutako eremua</translation>
 <translation id="8077669823243888800">Gutun-azal txinatarra 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Isilpeko fitxategia kargatu nahi duzu?}other{Isilpeko fitxategiak kargatu nahi dituzu?}}</translation>
@@ -4303,6 +4301,7 @@ Xehetasun gehiago:
 <translation id="8163468049564974856">Aktibatu betetze automatikoa sarean modu seguruan ordaintzeko. Txartelaren xehetasunak enkriptatuta daude Google Wallet-en.</translation>
 <translation id="8163866351304776260">Lau zulo ezkerrean</translation>
 <translation id="8164078261547504572">Prezioak jaisten direnean mezu elektronikoak jaso nahi dituzu?</translation>
+<translation id="8166435925529495192">Baliteke Google-ko kontuak <ph name="BEGIN_LINK_GAA" />Gemini-ren historia<ph name="END_LINK_GAA" /> izatea</translation>
 <translation id="8169175551046720804">"<ph name="DATA_CONTROLS_KEYS" />" gakoak ezin dira ezarri hiztegi berean</translation>
 <translation id="8172809706700703589">Sortu bidaian eraman beharreko gauzen zerrenda bat</translation>
 <translation id="8174047975335711832">Gailuaren informazioa</translation>
@@ -4967,6 +4966,7 @@ Xehetasun gehiago:
     &lt;li&gt;Desinstalatu edo desgaitu "<ph name="SOFTWARE_NAME" />".&lt;/li&gt;
     &lt;li&gt;Konektatu beste sare batera.&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">Baliteke Google-ko kontuak bestelako arakatze-historiak izatea <ph name="BEGIN_LINK_GAA" />myactivity.google.com<ph name="END_LINK_GAA" /> helbidean, hala nola <ph name="BEGIN_LINK_GMA" />Gemini-ren historian<ph name="END_LINK_GMA" /> gordetako arakatze automatikoko bisitak</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Gehitu IBANa</translation>
 <translation id="995782501881226248">YouTube</translation>

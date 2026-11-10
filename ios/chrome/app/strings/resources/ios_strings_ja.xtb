@@ -9,6 +9,7 @@
 <translation id="1013952917065545813">ここでは、最近閉じたタブをもう一度開くことができます</translation>
 <translation id="1016495303386450659">更新済みのアイテム</translation>
 <translation id="1018804590490383958">スキャンして自動入力</translation>
+<translation id="1019990162050689579">Gemini アプリ アクティビティ</translation>
 <translation id="102471647093736603">長押しして移動</translation>
 <translation id="102645702181682900">タスクが開始されました</translation>
 <translation id="102916930470544692">パスキー</translation>
@@ -391,6 +392,7 @@
 <translation id="2139867232736819575">コピーしたテキストを検索</translation>
 <translation id="2140913838150159519">タブを固定する</translation>
 <translation id="2147127444698817042">iPhone でのみご利用いただける機能</translation>
+<translation id="2148326276832455306">チャットはレビューされ、Google AI の改善に使用されます。ユーザーは、位置情報などの<ph name="BEGIN_LINK" />アクティビティを管理<ph name="END_LINK" />できます。<ph name="BEGIN_LINK" />選択内容の詳細<ph name="END_LINK" />。</translation>
 <translation id="2148799636999124959">保存したパスワードを使って、サイトやアプリにすばやくログインできます。</translation>
 <translation id="2149968176347646218">接続は安全ではありません</translation>
 <translation id="2149973817440762519">ブックマークを編集</translation>
@@ -456,6 +458,7 @@
 <translation id="2327445548174191329">送信元: <ph name="DEVICE_NAME" /></translation>
 <translation id="2330607597130465898">保護なし</translation>
 <translation id="233375395665273385">削除してログアウト</translation>
+<translation id="2340966584724330791">Google は、Gemini との会話や Gemini と共有した情報（ファイル、動画、画面、写真など）を収集します。また、ユーザーからのフィードバック、Gemini で閲覧したウェブサイトの情報、関連プロダクトの使用に関する情報、位置に関する情報（デバイスのおおよその現在地、IP アドレス、Google アカウントに登録されている自宅または職場の住所など）も収集されます。</translation>
 <translation id="2350463587705616331">セピアの背景色</translation>
 <translation id="2351097562818989364">翻訳設定をリセットしました。</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{{DOMAIN_ONE} のパスワードを Google アカウント（{EMAIL}）に保存できます。}=2{{DOMAIN_ONE} と {DOMAIN_TWO} のパスワードを Google アカウント（{EMAIL}）に保存できます。}=3{{DOMAIN_ONE}、{DOMAIN_TWO}、他 {OTHER_DOMAINS_COUNT} 件のパスワードを Google アカウント（{EMAIL}）に保存できます。}other{{DOMAIN_ONE}、{DOMAIN_TWO}、他 {OTHER_DOMAINS_COUNT} 件のパスワードを Google アカウント（{EMAIL}）に保存できます。}}</translation>
@@ -668,7 +671,6 @@
 <translation id="3038136505713492417">このデバイスでパスキーを使用するには、本人確認を行ってください</translation>
 <translation id="3039671569659952257">フォルダを削除</translation>
 <translation id="3041835740069544003">Chrome でより高度なフォーム認識が可能になり、より多くのフォームを検出して入力できるようになりました。この機能では、ページのコンテンツと URL がクラウドのプライベート スペースで処理される場合があります。この機能は設定で管理できます。</translation>
-<translation id="3042118633250374317">Google は、サービスの提供、Google やユーザー、一般の人々の保護、およびサービスの開発と改善のため、人間のレビュアーによる確認を経て履歴を使用します。レビュアーに見られたくない内容や Google に使用されたくない情報は入力しないでください。</translation>
 <translation id="3050988301648974170">パスワード チェックアップを開きます</translation>
 <translation id="3053332585453689122">アクセスした URL と、ページのコンテンツ、ダウンロード、拡張機能のアクティビティ、システム情報の一部のサンプルを Google セーフ ブラウジングに送信して、有害かどうか確認します。</translation>
 <translation id="3055102495753300780">情報容量</translation>
@@ -740,6 +742,7 @@
 <translation id="3265736395246760288">同期しているすべてのデバイスからすばやくログインできます。</translation>
 <translation id="3268166994745151153">現在の選択内容は失われます</translation>
 <translation id="3272527697863656322">キャンセル</translation>
+<translation id="3272955648592358996">お客様のデータは Google AI の改善に役立てられます</translation>
 <translation id="3273510436356991673">ホーム画面をカスタマイズ</translation>
 <translation id="327455571215090823">プライバシーを保護してスマートに自動入力</translation>
 <translation id="3277021493514034324">サイトのアドレスがコピーされました</translation>
@@ -916,6 +919,7 @@
 <translation id="3888863481921783344">予定の招待者の候補を表示するために使用されます。</translation>
 <translation id="3891414008432200754">価格</translation>
 <translation id="3892144330757387737">履歴はここに表示されます</translation>
+<translation id="3892695492576181257">この設定がオンの場合、アクティビティは [Gemini アプリ アクティビティ] に 18 か月間保存されます。保存期間は 3 か月または 36 か月に変更できます。Google は、サービス（Gemini モデルを含む）の開発と改善、および Google、Google のユーザー、一般の人々の保護を目的として、人間のレビュアーのサポートを介してユーザーのアクティビティを使用します。サービス プロバイダが確認したデータは、アカウントから切り離された形で 3 年間保存されます。</translation>
 <translation id="3893858854379998374">アカウントにブックマークを保存するには、使用していないブックマークを削除してください</translation>
 <translation id="3897092660631435901">メニュー</translation>
 <translation id="3904270275864974753">カルーセルの編集</translation>
@@ -1110,7 +1114,6 @@
 <translation id="4488754974567924717">パスワードが不正使用された場合はお知らせします</translation>
 <translation id="4489536976005181779">{count,plural, =1{アカウント「{email}」のリーディング リストにページを追加しました}other{アカウント「{email}」のリーディング リストにページを追加しました}}</translation>
 <translation id="4493604894403585654"><ph name="USER_EMAIL" /> でログインしています。同期は [設定] でいつでも停止できます。Google では、履歴に基づいて検索やその他のサービスをパーソナライズすることがあります。</translation>
-<translation id="4495251723189610737">チャットは Gemini の履歴に保存されます。履歴には、音声、Gemini Live の動画と画面共有、Gemini と共有した内容（プロンプト、<ph name="BEGIN_LINK" />アップロード<ph name="END_LINK" />、<ph name="BEGIN_LINK" />画面<ph name="END_LINK" />など）、Gemini の回答、タスクとツールの呼び出し、フィードバック、Gemini でアクセスしたウェブサイトの情報、サービスの使用状況データ、デバイスのおおよその現在地、IP アドレス、Google アカウントの自宅や職場の住所が含まれます。また、Gemini に接続したアプリのデータも含まれる場合があります。</translation>
 <translation id="4502423230170890588">このデバイスから削除</translation>
 <translation id="4508486880075514067">全画面に展開</translation>
 <translation id="4508750114462689118">ログイン プロモーションを閉じる</translation>
@@ -1215,7 +1218,6 @@
 <translation id="4808744395915275922">更新</translation>
 <translation id="4813345808229079766">接続</translation>
 <translation id="4821595350501541683">タブを閉じて閲覧データを削除しました</translation>
-<translation id="4821645169621230110">履歴の使用方法について</translation>
 <translation id="4823322556950229674">アドレスバーと戻るボタンを長押しすると、一番下に移動できます</translation>
 <translation id="4824480232751123840">数量</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} とその他 1 タブ}other{{domain} とその他 {count} タブ}}</translation>
@@ -1243,7 +1245,6 @@
 <translation id="4877597489778380935">後で通知</translation>
 <translation id="4881695831933465202">開く</translation>
 <translation id="4883766694719903356">シークレット タブのグリッド</translation>
-<translation id="4884205780547482830">ユーザーのデータは生成 AI のトレーニングに役立てられます</translation>
 <translation id="4884937942297374058">保護強化機能がオフになっています</translation>
 <translation id="4887391901725877182">字幕</translation>
 <translation id="488785315393301722">詳細を表示</translation>
@@ -1330,7 +1331,6 @@
 <translation id="5128788795241319992">新しいメニューを確認する</translation>
 <translation id="5132942445612118989">すべてのデバイスでパスワード、履歴、その他の設定を同期する</translation>
 <translation id="5137568953923142260">今回だけ許可</translation>
-<translation id="5139344197062265975">マイクを使って Gemini と会話できます。Gemini に話しかけると、内容が Gemini の履歴に保存されます（オンになっている場合）。ユーザーのデータが生成 AI モデルの改善に使用されることはありません。</translation>
 <translation id="5141363746588976328">タブの値下げ情報カードを非表示にする</translation>
 <translation id="514154868070499296">フォント: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">タブ切り替え機能を終了</translation>
@@ -1430,6 +1430,7 @@
 <translation id="5447973833955560753">再設定用のパスワード</translation>
 <translation id="5448623529214315261">保存した写真 <ph name="INDEX" /></translation>
 <translation id="5452354193031718372">安全なパスワードを使用:</translation>
+<translation id="5453088693079603292">収集されるアクティビティ</translation>
 <translation id="5454211924362324495">他のユーザーがパスワードを使用できないようにするには、<ph name="BEGIN_LINK" /><ph name="WEBSITE" /> でパスワードを変更<ph name="END_LINK" />します</translation>
 <translation id="5457082343331641453">検索に追加する</translation>
 <translation id="5457226814769348910">オフライン版を開く</translation>
@@ -1543,6 +1544,7 @@
 <translation id="5801568494490449797">設定</translation>
 <translation id="5803566855766646066">この新しいカードを破棄してもよろしいですか？</translation>
 <translation id="5804241973901381774">権限</translation>
+<translation id="58081802114142635">ユーザーのアクティビティをもとに Google AI を改善</translation>
 <translation id="5817176759448082654">パスワード チェックアップ</translation>
 <translation id="5818161931099046557">Google アカウントで編集</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> によって管理されています。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
@@ -1591,6 +1593,7 @@
 <translation id="5971459446352190251">QR コード検索</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 個のブックマークが削除されました}other{{count} 個のブックマークが削除されました}}</translation>
 <translation id="5972844218283131174">すべての選択を解除</translation>
+<translation id="597482816780655631">Gemini は AI であり、不正確な情報（人物に関する情報など）を表示することがあります。一部のユーザーには適していない可能性のあるコンテンツを提供することがあります。チャットはレビューされ、Google AI の改善に使用されます。<ph name="BEGIN_LINK" />お客様が選択できる項目の詳細をご確認ください<ph name="END_LINK" />。<ph name="BEGIN_LINK" />利用規約<ph name="END_LINK" />と<ph name="BEGIN_LINK" />プライバシーに関するお知らせ<ph name="END_LINK" />が適用されます。</translation>
 <translation id="5976160379964388480">その他</translation>
 <translation id="5977976211062815271">保存先: このデバイス</translation>
 <translation id="5986043348928676121">次へ</translation>
@@ -1601,7 +1604,6 @@
 <translation id="6000893618966378846">「閲覧履歴データの削除」が完了しました。</translation>
 <translation id="6004988584831654445">タスク完了。新しいタスクが届いたときに通知を受け取る。</translation>
 <translation id="6006672969046233841">新しいタブ</translation>
-<translation id="6006758170939001741"><ph name="BEGIN_LINK" />利用規約<ph name="END_LINK" />、<ph name="BEGIN_LINK" />韓国の位置情報に関する利用規約<ph name="END_LINK" />、および<ph name="BEGIN_LINK" />プライバシーに関するお知らせ<ph name="END_LINK" />が適用されます。チャットはレビューされ、生成 AI モデルのトレーニングに使用されます。Gemini は AI であり、不正確な情報（人物に関する情報など）を表示することがあります。一部のユーザーには適していない可能性のあるコンテンツを提供することがあります。ユーザーは、<ph name="BEGIN_LINK" />位置情報<ph name="END_LINK" />などの<ph name="BEGIN_LINK" />履歴を管理<ph name="END_LINK" />できます。<ph name="BEGIN_LINK" />ユーザーが選択できる設定の詳細<ph name="END_LINK" />をご確認ください。</translation>
 <translation id="6011308810877101166">検索候補の関連性を高める</translation>
 <translation id="6012140227487808125">暗号化しています...</translation>
 <translation id="6014801569448771146">パスワードの確認</translation>
@@ -1698,6 +1700,7 @@
 <translation id="628251768213143684">Google アカウントに保存する情報はいつでも管理できます</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" />を翻訳するか尋ねる</translation>
 <translation id="6293101329759844770">セーフ ブラウジングをオンにするには、[<ph name="BEGIN_LINK" />Google サービス<ph name="END_LINK" />] を開いて [セーフ ブラウジング] をタップします。</translation>
+<translation id="6295140892595702619">マイクを使用して Gemini と会話できます。Gemini に話しかけると、音声は Gemini アプリ アクティビティに保存されます（オンになっている場合）。ユーザーのデータが生成 AI モデルの改善に使用されることはありません。</translation>
 <translation id="6295751040240588413">無効なカード ニックネーム</translation>
 <translation id="629730747756840877">アカウント</translation>
 <translation id="6301104306974789820">価格トラッキングの通知を受け取る</translation>
@@ -1817,6 +1820,7 @@
 <translation id="6609890790934458793"><ph name="WEBSITE" />、<ph name="SECOND_WEBSITE" />、<ph name="THIRD_WEBSITE" /> のパスワードが削除されます。アカウントは削除されません。</translation>
 <translation id="661266467055912436">すべてのウェブユーザーの安全性を高めます。</translation>
 <translation id="6612912757320004438">タブの通知を許可…</translation>
+<translation id="6613372200395638275">Gemini は、カスタマイズされたサポートを提供するため、ユーザーデータの一部（ユーザーとのチャットの一部、位置情報、その他の関連情報など）を他の Google サービス（Google マップ、Google フライトなど）と共有します。これらのサービスは、ユーザーが Gemini アプリ アクティビティを削除した後も、改善のためにその情報を使用する場合があります。詳しくは、<ph name="BEGIN_LINK" />Gemini アプリのプライバシー ハブ<ph name="END_LINK" />をご覧ください。</translation>
 <translation id="6617761071025228250">テキストを消去</translation>
 <translation id="6619015782482868078">アクアのテーマ</translation>
 <translation id="6620279676667515405">キャンセル</translation>
@@ -1892,7 +1896,6 @@
 <translation id="6830728435402077660">保護されていません</translation>
 <translation id="6831043979455480757">翻訳</translation>
 <translation id="6842136130964845393">保存したパスワードに常にアクセスできるようにするには、本人確認を行ってください</translation>
-<translation id="6843744036364481304">保存されるチャット履歴</translation>
 <translation id="6844773122575789617">AI モードをオンにする</translation>
 <translation id="6851516051005285358">PC 版サイトを見る</translation>
 <translation id="6857446173140146664">背景を削除</translation>
@@ -1977,6 +1980,7 @@
 <translation id="7091023926159231962">{count,plural, =1{{count} 件のパスワードをインポートできませんでした}other{{count} 件のパスワードをインポートできませんでした}}</translation>
 <translation id="7095110968493193530"><ph name="EMAIL" /> の Google パスワード マネージャーに移動</translation>
 <translation id="7097046145876891318">アドレスバーで [価格の推移] をタップすると、価格の変動状況を確認できます</translation>
+<translation id="7098554251807199977">Gemini との会話や <ph name="BEGIN_LINK" />Google Workspace のデータ<ph name="END_LINK" />が確認されたり、生成 AI モデルの改善に使用されたりすることはありません。</translation>
 <translation id="7102005569666697658">ダウンロードしています… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">[メニュー] → [設定] → [お支払い方法]</translation>
 <translation id="7108338896283013870">非表示</translation>
@@ -2017,7 +2021,6 @@
 <translation id="7223134495231529579">"ダウンロード” に保存</translation>
 <translation id="722339453342442311">今すぐ確認</translation>
 <translation id="7227235818314667565">共有を管理</translation>
-<translation id="7232376892719594461">Gemini との会話や <ph name="BEGIN_LINK" />Google Workspace のデータ<ph name="END_LINK" />がレビューされたり、生成 AI モデルのトレーニングに使用されたりすることはありません。</translation>
 <translation id="7233006041370588369">入力するパスワードを選択してください。</translation>
 <translation id="7238074332967840767">安全性</translation>
 <translation id="723874023660911012">プロファイルを切り替える</translation>
@@ -2032,7 +2035,6 @@
 <translation id="728025568708172005">スタートガイド ツアー</translation>
 <translation id="7280980607183752256">このファイルはインポートできません</translation>
 <translation id="7282197670900591579">シトロンのテーマ</translation>
-<translation id="7283937415134849498">Gemini は、カスタマイズされたサポートを提供するため、ユーザーデータの一部（ユーザーとのチャットの一部、位置情報、その他の関連情報など）を他の Google サービス（Google マップ、Google フライトなど）と共有します。これらのサービスは、ユーザーが Gemini の履歴を削除した後も、改善のためにその情報を使用する場合があります。詳しくは、<ph name="BEGIN_LINK" />Gemini アプリのプライバシー ハブ<ph name="END_LINK" />をご覧ください。</translation>
 <translation id="7293429513719260019">言語を選択</translation>
 <translation id="72961285530871072">これにより、Level Up の進行状況が完全に削除され、プロフィールの Level Up 使用状況データが Google に送信されなくなります。
 
@@ -2134,7 +2136,6 @@ Level Up はいつでも再開できます。</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{アクティブでない {COUNT} 個のタブを閉じますか？}other{アクティブでない {COUNT} 個のタブを閉じますか？}}</translation>
 <translation id="7598439272585186139">セキュリティを強化</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" />を翻訳しない</translation>
-<translation id="760230853074995500">チャットはレビューされ、生成 AI モデルのトレーニングに使用されます。ユーザーは、<ph name="BEGIN_LINK" />位置情報<ph name="END_LINK" />などの<ph name="BEGIN_LINK" />履歴を管理<ph name="END_LINK" />できます。<ph name="BEGIN_LINK" />ユーザーが選択できる設定の詳細<ph name="END_LINK" />をご確認ください。</translation>
 <translation id="7603308509262646847">カード所有者「<ph name="NAME" />」を自動入力する</translation>
 <translation id="7603852183842204213">ブロックしたポップアップ: <ph name="NUMBER_OF_BLOCKED_POPUPS" /></translation>
 <translation id="7605594153474022051">同期が機能していません</translation>
@@ -2420,6 +2421,7 @@ Level Up はいつでも再開できます。</translation>
 <translation id="8439758443371991593">[リーディング リストに追加] を非表示</translation>
 <translation id="8443986842926457191">URL が 2048 文字を超えています</translation>
 <translation id="8449869326050867919">パスワードを共有しました</translation>
+<translation id="8461708300275916315">ユーザーが 18 歳未満の場合</translation>
 <translation id="8473815223723723001">Gemini を使用して画像を編集</translation>
 <translation id="8473863474539038330">住所やその他の情報</translation>
 <translation id="8474378002946546633">通知を許可する</translation>
@@ -2499,6 +2501,7 @@ Level Up はいつでも再開できます。</translation>
 <translation id="8672733398999596205">すべて有効にする</translation>
 <translation id="8674716540979958118">不正使用されたパスワードがあります。</translation>
 <translation id="8679900250380464358">リーディング リストに追加</translation>
+<translation id="8680643216091361291">[<ph name="BEGIN_LINK" />アクティビティの保存<ph name="END_LINK" />] の設定はデフォルトでオフになっています。この設定がオフの場合、Google はチャットを 3 日間保存します。これらのデータは、Gemini アプリを正しく動作させ、安全性を維持し、ユーザーからのフィードバックを問題の修正に役立てるために使用されます。[アクティビティの保存] をオンにすると、Google AI の改善にご協力いただけます。</translation>
 <translation id="8680787084697685621">アカウントのログイン情報が古くなっています。</translation>
 <translation id="868648444055742370">「<ph name="SITE_DOMAIN" />」はマイクにアクセスできません</translation>
 <translation id="8690752723634292147">削除の確認</translation>
@@ -2530,7 +2533,6 @@ Level Up はいつでも再開できます。</translation>
 <translation id="8746155870861185046">選択箇所を共有</translation>
 <translation id="8748678031495824833">ページ上の AI ツールを開く</translation>
 <translation id="8750037785291841318">タブはここに表示されます</translation>
-<translation id="8751126814549746156">履歴は 18 か月後に自動的に削除されます。この期間は [設定] で変更できます。サービス プロバイダによってレビューされたチャットはアカウントから切り離され、最長 3 年間保存されます。履歴の設定はいつでも<ph name="BEGIN_LINK" />オフ<ph name="END_LINK" />にできます。</translation>
 <translation id="8756969031206844760">パスワードを更新しますか？</translation>
 <translation id="8763613688786959833">最後のタブに移動</translation>
 <translation id="8766790350274092814"><ph name="WEBSITE" /> と <ph name="SECOND_WEBSITE" /> のパスワードが削除されます。アカウントは削除されません。</translation>
@@ -2557,6 +2559,7 @@ Level Up はいつでも再開できます。</translation>
 <translation id="882557203579758546">ページ内を検索…</translation>
 <translation id="8829809207373502270">このパスキーは利用できなくなりました。<ph name="WEBSITE" /> から削除され、まもなくここでも削除されます。<ph name="BEGIN_LINK" />パスキーについて<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">アクティブでないタブをすべて閉じる</translation>
+<translation id="8831871601813227635"><ph name="BEGIN_LINK" />利用規約<ph name="END_LINK" />、<ph name="BEGIN_LINK" />韓国の位置情報に関する利用規約<ph name="END_LINK" />、および<ph name="BEGIN_LINK" />プライバシーに関するお知らせ<ph name="END_LINK" />が適用されます。チャットはレビューされ、Google AI の改善に使用されます。Gemini は AI であり、不正確な情報（人物に関する情報など）を表示することがあります。一部のユーザーには適していない可能性のあるコンテンツを提供することがあります。ユーザーは、位置情報などの<ph name="BEGIN_LINK" />アクティビティを管理<ph name="END_LINK" />できます。<ph name="BEGIN_LINK" />ユーザーが選択できる設定の詳細<ph name="END_LINK" /></translation>
 <translation id="8837654851594567190">パブリッシャーで並べ替え</translation>
 <translation id="884351711508006491">情報はデバイスに保存されます。</translation>
 <translation id="8844136307393039959">トラッキングしている商品の値下げ情報</translation>
@@ -2576,7 +2579,6 @@ Level Up はいつでも再開できます。</translation>
 <translation id="8893208530912252670">動画</translation>
 <translation id="890009681345348416">40 件以上のパスワードを自動入力しました</translation>
 <translation id="8900845556227858314">ブラウザアプリ</translation>
-<translation id="8903042868629070803">18 歳以上の場合、Google は<ph name="BEGIN_LINK" />生成 AI モデルのトレーニング<ph name="END_LINK" />にも履歴を使用します。今後のチャットでは、いつでも<ph name="BEGIN_LINK" />この設定をオフ<ph name="END_LINK" />にできます。</translation>
 <translation id="890565330728586731">戻る</translation>
 <translation id="8907722425137681851">ページ内を検索…</translation>
 <translation id="8909135823018751308">共有...</translation>
@@ -2629,7 +2631,6 @@ Level Up はいつでも再開できます。</translation>
 <translation id="9066097352053395362">[ブックマークを編集] を非表示</translation>
 <translation id="9070824521421603770">ログアウトしてタブを閉じます</translation>
 <translation id="9072837124205571418">すべてのデバイスのタブグループ</translation>
-<translation id="9073322251019919253">Gemini は AI であり、不正確な情報（人物に関する情報など）を表示することがあります。一部のユーザーには適していない可能性のあるコンテンツを提供することがあります。チャットはレビューされ、生成 AI モデルのトレーニングに使用されます。ユーザーは、<ph name="BEGIN_LINK" />位置情報<ph name="END_LINK" />などの<ph name="BEGIN_LINK" />履歴を管理<ph name="END_LINK" />できます。<ph name="BEGIN_LINK" />ユーザーが選択できる設定の詳細<ph name="END_LINK" />をご確認ください。<ph name="BEGIN_LINK" />利用規約<ph name="END_LINK" />と<ph name="BEGIN_LINK" />プライバシーに関するお知らせ<ph name="END_LINK" />が適用されます。</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> のパスワードを更新しますか？</translation>
 <translation id="908365381820697818">Gmail などから情報を探して入力できるようになりました</translation>
 <translation id="9083838294503912307">カスタマイズした設定を複数のデバイスで同期して使用するには、同期を有効にします。</translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="or">
 <translation id="1008557486741366299">ଏବେ ନୁହେଁ</translation>
 <translation id="100957008357583611">ଆପଣଙ୍କ ଲୋକେସନ୍ ବ୍ୟବହାର କରିବେ?</translation>
+<translation id="1010148478459329879">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଆପଣଙ୍କ <ph name="BEGIN_LINK_GAA" />Gemini ଇତିହାସ<ph name="END_LINK_GAA" /> ପରି ଅନ୍ୟ ପ୍ରକାରର ବ୍ରାଉଜିଂ ଇତିହାସ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />ରେ ଥାଇପାରେ</translation>
 <translation id="1010200102790553230">ପରେ ପୃଷ୍ଠା ଲୋଡ୍‌ କରନ୍ତୁ</translation>
 <translation id="1010225406377140704">ଏକ ନୂଆ ଲିଙ୍କ ମାଗିବାକୁ ଆପଣ ପ୍ରେରକଙ୍କ ସହ କଣ୍ଟାକ୍ଟ କରନ୍ତୁ</translation>
 <translation id="1011206368273183593">ଫାଇଲଗୁଡ଼ିକୁ ପ୍ରସ୍ତୁତ କରାଯାଉଛି</translation>
@@ -920,7 +921,6 @@
 <translation id="251033673027346551"><ph name="BEGIN_LINK" />ଡାଟା ଏବଂ ଗୋପନୀୟତା ପସନ୍ଦଗୁଡ଼ିକୁ<ph name="END_LINK" /> ପରିଚାଳନା କରିବା ପାଇଁ Google Walletକୁ ଭିଜିଟ କରନ୍ତୁ।</translation>
 <translation id="2512101340618156538">ଅନୁମତି ଦିଆଯାଇନାହିଁ (ଡିଫଲ୍ଟ)</translation>
 <translation id="2512413427717747692">Chromeକୁ ଡିଫଲ୍ଟ ବ୍ରାଉଜର ବଟନ ଭାବେ ସେଟ କରନ୍ତୁ, iOS ସେଟିଂସରେ ସିଷ୍ଟମର ଡିଫଲ୍ଟ ବ୍ରାଉଜର ଭାବେ ସେଟ କରିବା ପାଇଁ Enter ଦବାନ୍ତୁ</translation>
-<translation id="2513217232843681817">ଆପଣଙ୍କ <ph name="BEGIN_LINK_GAA" />Gemini ଆପ୍ସ କାର୍ଯ୍ୟକଳାପ<ph name="END_LINK_GAA" />ରେ ସ୍ୱତଃ ବ୍ରାଉଜ ଭିଜିଟ ପରି ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଅନ୍ୟ ପ୍ରକାରର ବ୍ରାଉଜିଂ ଇତିହାସ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />ରେ ଥାଇପାରେ</translation>
 <translation id="2515629240566999685">ଆପଣଙ୍କ କ୍ଷେତ୍ରରେ ଥିବା ସିଗନାଲ୍‍କୁ ଯାଞ୍ଚ କରାଯାଉଛି</translation>
 <translation id="2518584823165598232">ଏହି କାର୍ଡ ଉପଲବ୍ଧ ନାହିଁ। ଦୟାକରି ଆପଣଙ୍କର କାର୍ଡ ପ୍ରଦାନକାରୀଙ୍କୁ କଣ୍ଟାକ୍ଟ କରନ୍ତୁ।</translation>
 <translation id="2521385132275182522">ତଳ ଡାହାଣ ପଟରେ ଷ୍ଟାପଲ୍</translation>
@@ -3960,7 +3960,6 @@
 <translation id="7584287158780898016">ମୂଲ୍ୟ ଟ୍ରାକିଂ ଆଲର୍ଟଗୁଡ଼ିକୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="7586676035079382730">ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
 <translation id="7588707273764747927">ଟ୍ରାନ୍ସଫର</translation>
-<translation id="7589062909165841767">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଆପଣଙ୍କର <ph name="BEGIN_LINK_GAA" />Gemini ଆପ୍ସ କାର୍ଯ୍ୟକଳାପ<ph name="END_LINK_GAA" /> ଥାଇପାରେ</translation>
 <translation id="7591288787774558753">ଗୋପନୀୟ ବିଷୟବସ୍ତୁ ସେୟାର କରିବେ?</translation>
 <translation id="7591636454931265313"><ph name="TOP_LEVEL_URL" />ରେ <ph name="EMBEDDED_URL" /> କୁକୀଗୁଡ଼ିକ ଏବଂ ସାଇଟ୍ ଡାଟା ବ୍ୟବହାର କରିବାକୁ ଚାହୁଁଛି</translation>
 <translation id="7592362899630581445">ସର୍ଭର୍ ସାର୍ଟିଫିକେଟ୍ ନାମର କଟକଣାକୁ ଲଙ୍ଘନ କରେ।</translation>
@@ -4252,7 +4251,6 @@
 <translation id="8075736640322370409">ଶୀଘ୍ର ଏକ ନୂଆ Google Sheet ତିଆରି କରନ୍ତୁ</translation>
 <translation id="8075898834294118863">ସାଇଟ୍ ସେଟିଂସକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="8076492880354921740">ଟାବ୍</translation>
-<translation id="8076880883123051368">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଅନ୍ୟ ପ୍ରକାରର ବ୍ରାଉଜିଂ ଇତିହାସ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />ରେ ଥାଇପାରେ ଯେପରି <ph name="BEGIN_LINK_GAA" />Gemini ଆପ୍ସ କାର୍ଯ୍ୟକଳାପ<ph name="END_LINK_GAA" /></translation>
 <translation id="8077465698530018904">ଚୟନିତ ଅଞ୍ଚଳକୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="8077669823243888800">ଏନଭେଲପ ଚାଇନିଜ #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{ଗୋପନୀୟ ଫାଇଲକୁ ଅପଲୋଡ କରିବେ?}other{ଗୋପନୀୟ ଫାଇଲଗୁଡ଼ିକୁ ଅପଲୋଡ କରିବେ?}}</translation>
@@ -4304,6 +4302,7 @@
 <translation id="8163468049564974856">ଅନଲାଇନରେ ସୁରକ୍ଷିତ ଭାବେ ଚେକ ଆଉଟ କରିବାକୁ ଅଟୋଫିଲ ଚାଲୁ କରନ୍ତୁ। Google Walletରେ କାର୍ଡ ବିବରଣୀକୁ ଏନକ୍ରିପ୍ଟ କରାଯାଇଛି।</translation>
 <translation id="8163866351304776260">ବାମ ପଟରେ ଚାରୋଟି ପଞ୍ଚ୍</translation>
 <translation id="8164078261547504572">ମୂଲ୍ୟରେ ହ୍ରାସ ହେଲେ ଇମେଲ ପାଇବେ?</translation>
+<translation id="8166435925529495192">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଆପଣଙ୍କର <ph name="BEGIN_LINK_GAA" />Gemini ଇତିହାସ<ph name="END_LINK_GAA" /> ଥାଇପାରେ</translation>
 <translation id="8169175551046720804">"<ph name="DATA_CONTROLS_KEYS" />" କୀଗୁଡ଼ିକୁ ସମାନ ଶବ୍ଦକୋଷରେ ସେଟ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="8172809706700703589">ମୋ ଟ୍ରିପ ପାଇଁ ଏକ ପେକିଂ ତାଲିକା ତିଆରି କରନ୍ତୁ</translation>
 <translation id="8174047975335711832">ଡିଭାଇସ୍‌ ସୂଚନା</translation>
@@ -4967,6 +4966,7 @@
     &lt;li&gt;"<ph name="SOFTWARE_NAME" />"କୁ ଅନ୍‌ଇନ୍‌ଷ୍ଟଲ୍ ବା ଅକ୍ଷମ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ&lt;/li&gt;
     &lt;li&gt;ଅନ୍ୟାନ୍ୟ ନେଟ୍‌ୱର୍କ ସହ ସଂଯୋଗ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">ଆପଣଙ୍କ <ph name="BEGIN_LINK_GAA" />Gemini ଇତିହାସ<ph name="END_LINK_GAA" />ରେ ସ୍ୱତଃ ବ୍ରାଉଜ ଭିଜିଟ ପରି ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଅନ୍ୟ ପ୍ରକାରର ବ୍ରାଉଜିଂ ଇତିହାସ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />ରେ ଥାଇପାରେ</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">IBAN ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="995782501881226248">YouTube</translation>

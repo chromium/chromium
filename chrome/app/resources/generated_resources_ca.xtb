@@ -362,7 +362,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="125097549534200450">esborra</translation>
 <translation id="1251366534849411931">Hi ha d'haver una clau d'obertura: <ph name="ERROR_LINE" /></translation>
 <translation id="1251578593170406502">S'estan cercant xarxes de dades mòbils...</translation>
-<translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{1 adreça d'interès i altres elements s'han desat només en aquest dispositiu. Per utilitzar-los als altres dispositius que fas servir, desa'ls al teu Compte de Google. Amb aquesta acció, també s'eliminaran els duplicats que hi hagi.}other{{BOOKMARK_COUNT} adreces d'interès i altres elements s'han desat només en aquest dispositiu. Per utilitzar-los als altres dispositius que fas servir, desa'ls al teu Compte de Google. Amb aquesta acció, també s'eliminaran els duplicats que hi hagi.}}</translation>
+<translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{1 adreça d'interès i altres elements s'han desat només en aquest dispositiu. Per utilitzar-los als altres dispositius que fas servir, desa'ls al teu Compte de Google. Amb aquesta acció, també es netejaran els duplicats que hi hagi.}other{{BOOKMARK_COUNT} adreces d'interès i altres elements s'han desat només en aquest dispositiu. Per utilitzar-los als altres dispositius que fas servir, desa'ls al teu Compte de Google. Amb aquesta acció, també es netejaran els duplicats que hi hagi.}}</translation>
 <translation id="125220115284141797">Predeterminats</translation>
 <translation id="1252219782845132919">Amaga el grup</translation>
 <translation id="1252597096488926946">Deixa de fixar els botons de desplaçament</translation>
@@ -1926,7 +1926,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2473195200299095979">Tradueix aquesta pàgina</translation>
 <translation id="2475982808118771221">S'ha produït un error</translation>
 <translation id="2476435723907345463">S'ha suprimit l'accés a les claus d'accés</translation>
-<translation id="2476901513051581836">No es pot alliberar emmagatzematge fins que no es conegui la mida de l'emmagatzematge sense connexió.</translation>
+<translation id="2476901513051581836">No es pot netejar emmagatzematge fins que no es conegui la mida de l'emmagatzematge sense connexió.</translation>
 <translation id="2477065602824695373">Com que has configurat diversos interruptors, la cerca automàtica s'ha desactivat.</translation>
 <translation id="2478176599153288112">Permisos de fitxer multimèdia per a "<ph name="EXTENSION" />"</translation>
 <translation id="2479148705183875116">Ves a Configuració</translation>
@@ -2236,7 +2236,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2714617928488200509">Models</translation>
 <translation id="2715751256863167692">Amb aquesta actualització es restableix el dispositiu Chromebook i se suprimeixen les dades d'usuari actuals.</translation>
-<translation id="2715934493766003251">No es pot alliberar emmagatzematge mentre la sincronització de fitxers està activada</translation>
+<translation id="2715934493766003251">No es pot netejar emmagatzematge mentre la sincronització de fitxers està activada</translation>
 <translation id="2716986496990888774">El teu pare o mare gestiona aquesta opció de configuració.</translation>
 <translation id="271749239614426244">Ignora els moviments lleus del cursor</translation>
 <translation id="2718395828230677721">Llum nocturna</translation>
@@ -6387,7 +6387,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5869522115854928033">Contrasenyes desades</translation>
 <translation id="5869611709939872766">Hola, <ph name="FIRST_NAME" />. Què et passa pel cap?</translation>
 <translation id="5870155679953074650">Errors greus</translation>
-<translation id="587234395549708302">Vols eliminar les adreces d'interès?</translation>
+<translation id="587234395549708302">Vols netejar les adreces d'interès?</translation>
 <translation id="587502357434914765">Selecciona de la pantalla</translation>
 <translation id="5875534259258494936">La compartició de pantalla ha finalitzat</translation>
 <translation id="5876691914815078365">Aplicacions de Chrome &gt; <ph name="APP_NAME" /></translation>
@@ -6656,7 +6656,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6089289670051481345">Tritanomalia</translation>
 <translation id="6090068946774422711">Inicia la sessió per obtenir la llista de lectura i altres dades de <ph name="DEVICE" /></translation>
 <translation id="6090760257419195752">Advertiments ignorats</translation>
-<translation id="609174145569509836">Allibera emmagatzematge</translation>
+<translation id="609174145569509836">Neteja emmmagatzematge</translation>
 <translation id="6091761513005122595">L'ús compartit s'ha activat correctament.</translation>
 <translation id="6093803049406781019">Suprimeix el perfil</translation>
 <translation id="6094172114910013425">Pots compartir una captura de pantalla amb Google perquè el contingut s'utilitzi com a referència a la cerca. Quan comparteixis una captura de tota la pantalla, Google només veurà el que tu vegis.</translation>
@@ -6786,7 +6786,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6183773856988300112">Gemini a Chrome utilitza la navegació automàtica per treballar a les teves pestanyes i completar les tasques que li demanis. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="6184099524311454384">Cerca pestanyes</translation>
 <translation id="6185151644843671709">S'ha desat la clau d'accés i s'ha creat el PIN</translation>
-<translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 contrasenya i altres elements s'han desat només en aquest dispositiu. Per utilitzar-los als altres dispositius que fas servir, desa'ls al teu Compte de Google. Amb aquesta acció, també s'eliminaran els duplicats que hi hagi.}other{{PASSWORD_COUNT} contrasenyes i altres elements s'han desat només en aquest dispositiu. Per utilitzar-los als altres dispositius que fas servir, desa'ls al teu Compte de Google. Amb aquesta acció, també s'eliminaran els duplicats que hi hagi.}}</translation>
+<translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 contrasenya i altres elements s'han desat només en aquest dispositiu. Per utilitzar-los als altres dispositius que fas servir, desa'ls al teu Compte de Google. Amb aquesta acció, també es netejaran els duplicats que hi hagi.}other{{PASSWORD_COUNT} contrasenyes i altres elements s'han desat només en aquest dispositiu. Per utilitzar-los als altres dispositius que fas servir, desa'ls al teu Compte de Google. Amb aquesta acció, també es netejaran els duplicats que hi hagi.}}</translation>
 <translation id="6186177419203903310">S'activaran les notificacions de tots els perifèrics USB nous del sistema. Confirmes que vols continuar?</translation>
 <translation id="6188822118034543225">Utilitza el menú de vista dividida per canviar entre els dissenys en paral·lel i apilat.</translation>
 <translation id="6190953336330058278">Aplicacions d'El meu telèfon</translation>
@@ -7266,7 +7266,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6569931898053264308">Estalvi mitjà</translation>
 <translation id="6570622975915850879">Utilitza un dispositiu diferent</translation>
 <translation id="65711204837946324">Necessita permís per poder baixar-lo</translation>
-<translation id="6571178651832779742">Per eliminar les adreces d'interès duplicades, desa-les al teu Compte de Google</translation>
+<translation id="6571178651832779742">Per netejar les adreces d'interès duplicades, desa-les al teu Compte de Google</translation>
 <translation id="6571533309669248172">Format de text</translation>
 <translation id="6571772921213691236">Edita les dades d'inici de sessió</translation>
 <translation id="657229725818377235">Obtén més protecció contra baixades i llocs web perillosos</translation>
@@ -7854,7 +7854,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7000347579424117903">Inclou la tecla Ctrl, Alt o Cerca</translation>
 <translation id="7001397294201412227">Utilitza un telèfon, una tauleta o una clau de seguretat</translation>
 <translation id="7001556399332161712">Cerca i suggeriments</translation>
-<translation id="7001809623433867903">Vols eliminar les adreces d'interès?</translation>
+<translation id="7001809623433867903">Vols netejar les adreces d'interès?</translation>
 <translation id="7003339318920871147">Bases de dades web</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} fitxer}other{{COUNT} fitxers}}</translation>
 <translation id="7003537330107832201">Hi ha disponible una versió nova (<ph name="VERSION" />) de l'aplicació <ph name="APP_NAME" />. Es tancaran totes les finestres obertes per aplicar l'actualització. És possible que es perdin les dades que no s'hagin desat.</translation>
@@ -9294,7 +9294,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Aquest fitxer està encriptat. Demana al propietari que el desencripti.}other{Alguns d'aquests fitxers estan encriptats. Demana al propietari que els desencripti.}}</translation>
 <translation id="8088104901946731753">Les teves aplicacions i opcions de configuració se sincronitzaran en tots els dispositius amb ChromeOS en què tinguis la sessió iniciada amb el teu Compte de Google. Per gestionar quines dades del navegador es desen al teu Compte de Google, ves a la <ph name="LINK_BEGIN" />configuració de Chrome<ph name="LINK_END" />.</translation>
 <translation id="808894953321890993">Canvia la contrasenya</translation>
-<translation id="8089782219932231262">{BOOKMARK_COUNT,plural, =1{1 adreça d'interès s'ha desat només en aquest dispositiu. Per utilitzar-la als altres dispositius que fas servir, desa-la al teu Compte de Google. Amb aquesta acció, també s'eliminaran els duplicats que hi hagi.}other{{BOOKMARK_COUNT} adreces d'interès s'han desat només en aquest dispositiu. Per utilitzar-les als altres dispositius que fas servir, desa-les al teu Compte de Google. Amb aquesta acció, també s'eliminaran els duplicats que hi hagi.}}</translation>
+<translation id="8089782219932231262">{BOOKMARK_COUNT,plural, =1{1 adreça d'interès s'ha desat només en aquest dispositiu. Per utilitzar-la als altres dispositius que fas servir, desa-la al teu Compte de Google. Amb aquesta acció, també es netejaran els duplicats que hi hagi.}other{{BOOKMARK_COUNT} adreces d'interès s'han desat només en aquest dispositiu. Per utilitzar-les als altres dispositius que fas servir, desa-les al teu Compte de Google. Amb aquesta acció, també es netejaran els duplicats que hi hagi.}}</translation>
 <translation id="8090234456044969073">Llegir una llista dels llocs web més visitats</translation>
 <translation id="8090513782447872344">Pots tornar-hi en qualsevol moment per donar-hi una altra ullada</translation>
 <translation id="8090686009202681725">Crea un tema amb IA</translation>
@@ -10234,7 +10234,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 <translation id="8808686172382650546">Gat</translation>
 <translation id="8809147117840417135">Verd blavós clar</translation>
 <translation id="8811862054141704416">Accés al micròfon de Crostini</translation>
-<translation id="8812180570908649670">{PASSWORD_COUNT,plural, =1{1 contrasenya s'ha desat només en aquest dispositiu. Per utilitzar-la als altres dispositius que fas servir, desa-la al teu Compte de Google. Amb aquesta acció, també s'eliminaran els duplicats que hi hagi.}other{{PASSWORD_COUNT} contrasenyes s'han desat només en aquest dispositiu. Per utilitzar-les als altres dispositius que fas servir, desa-les al teu Compte de Google. Amb aquesta acció, també s'eliminaran els duplicats que hi hagi.}}</translation>
+<translation id="8812180570908649670">{PASSWORD_COUNT,plural, =1{1 contrasenya s'ha desat només en aquest dispositiu. Per utilitzar-la als altres dispositius que fas servir, desa-la al teu Compte de Google. Amb aquesta acció, també es netejaran els duplicats que hi hagi.}other{{PASSWORD_COUNT} contrasenyes s'han desat només en aquest dispositiu. Per utilitzar-les als altres dispositius que fas servir, desa-les al teu Compte de Google. Amb aquesta acció, també es netejaran els duplicats que hi hagi.}}</translation>
 <translation id="8813199641941291474">S'ha bloquejat el control i la reprogramació de dispositius MIDI</translation>
 <translation id="8813698869395535039">No es pot iniciar la sessió a <ph name="USERNAME" /></translation>
 <translation id="8813872945700551674">Demana als teus pares que aprovin "<ph name="EXTENSION_NAME" />"</translation>
@@ -10273,7 +10273,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 <translation id="8838601485495657486">Opac</translation>
 <translation id="8838770651474809439">Hamburguesa</translation>
 <translation id="883924185304953854">Cerca per imatge</translation>
-<translation id="8839975272851327869">{ITEM_COUNT,plural, =1{1 element s'ha desat només en aquest dispositiu. Per utilitzar-lo als altres dispositius que fas servir, desa'l al teu Compte de Google. Amb aquesta acció, també s'eliminaran els duplicats que hi hagi.}other{{ITEM_COUNT} elements s'han desat només en aquest dispositiu. Per utilitzar-los als altres dispositius que fas servir, desa'ls al teu Compte de Google. Amb aquesta acció, també s'eliminaran els duplicats que hi hagi.}}</translation>
+<translation id="8839975272851327869">{ITEM_COUNT,plural, =1{1 element s'ha desat només en aquest dispositiu. Per utilitzar-lo als altres dispositius que fas servir, desa'l al teu Compte de Google. Amb aquesta acció, també es netejaran els duplicats que hi hagi.}other{{ITEM_COUNT} elements s'han desat només en aquest dispositiu. Per utilitzar-los als altres dispositius que fas servir, desa'ls al teu Compte de Google. Amb aquesta acció, també es netejaran els duplicats que hi hagi.}}</translation>
 <translation id="8841843049738266382">Llegir i canviar els usuaris de la llista d'accés permès</translation>
 <translation id="8841884135319684422">Finalitza la tasca</translation>
 <translation id="8842594465773264717">Suprimeix aquesta empremta digital</translation>

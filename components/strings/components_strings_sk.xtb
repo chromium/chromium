@@ -3,6 +3,7 @@
 <translationbundle lang="sk">
 <translation id="1008557486741366299">Teraz nie</translation>
 <translation id="100957008357583611">Chcete použiť svoju polohu?</translation>
+<translation id="1010148478459329879">Vo svojom účte Google môžete mať ďalšie formy histórie prehliadania na <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, napríklad <ph name="BEGIN_LINK_GAA" />históriu Gemini<ph name="END_LINK_GAA" />.</translation>
 <translation id="1010200102790553230">Načítať stránku neskôr</translation>
 <translation id="1010225406377140704">Požiadajte odosielateľa o nový odkaz</translation>
 <translation id="1011206368273183593">Pripravujú sa súbory</translation>
@@ -920,7 +921,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="251033673027346551">Ak chcete spravovať <ph name="BEGIN_LINK" />predvoľby údajov a ochrany súkromia<ph name="END_LINK" />, prejdite do Peňaženky Google.</translation>
 <translation id="2512101340618156538">Nepovolené (predvolené)</translation>
 <translation id="2512413427717747692">Tlačidlo nastavenia Chromu ako predvoleného prehliadača, stlačením klávesa Enter nastavíte Chrome ako predvolený prehliadač systému v nastaveniach iOS</translation>
-<translation id="2513217232843681817">Vo svojom účte Google môžete mať ďalšie formy histórie prehliadania na <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, napríklad návštevy automatickej navigácie v <ph name="BEGIN_LINK_GAA" />aktivite v aplikáciách Gemini<ph name="END_LINK_GAA" />.</translation>
 <translation id="2515629240566999685">Skontrolovať signál vo vašej oblasti</translation>
 <translation id="2518584823165598232">Táto karta nie je k dispozícii. Kontaktujte jej poskytovateľa.</translation>
 <translation id="2521385132275182522">Zošiť spinkou vpravo dolu</translation>
@@ -3960,7 +3960,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="7584287158780898016">Povoliť upozornenia sledovania cien</translation>
 <translation id="7586676035079382730">Upozornenia nie sú povolené</translation>
 <translation id="7588707273764747927">Prepisovací</translation>
-<translation id="7589062909165841767">Vo svojom účte Google môžete mať <ph name="BEGIN_LINK_GAA" />aktivitu v aplikáciách Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">Chcete zdieľať dôverný obsah?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> chce používať súbory cookie a údaje webu na <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Certifikát servera porušuje obmedzenia názvov.</translation>
@@ -4252,7 +4251,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="8075736640322370409">Rýchlo vytvoriť novú tabuľku Google</translation>
 <translation id="8075898834294118863">Spravovať nastavenia webov</translation>
 <translation id="8076492880354921740">Karty</translation>
-<translation id="8076880883123051368">Vo svojom účte Google môžete mať ďalšie formy histórie prehliadania na <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, napríklad <ph name="BEGIN_LINK_GAA" />aktivitu v aplikáciách Gemini<ph name="END_LINK_GAA" />.</translation>
 <translation id="8077465698530018904">Odstrániť vybraný región</translation>
 <translation id="8077669823243888800">Čínska obálka č. 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Chcete nahrať dôverný súbor?}few{Chcete nahrať dôverné súbory?}many{Upload confidential files?}other{Chcete nahrať dôverné súbory?}}</translation>
@@ -4304,6 +4302,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="8163468049564974856">Zapnite automatické dopĺňanie, aby ste mohli bezpečne platiť na internete. Údaje vašej karty sú v Peňaženke Google šifrované.</translation>
 <translation id="8163866351304776260">Štyri dierky vľavo</translation>
 <translation id="8164078261547504572">Chcete dostávať správy pri poklesoch cien?</translation>
+<translation id="8166435925529495192">Vo svojom účte Google môžete mať <ph name="BEGIN_LINK_GAA" />históriu Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="8169175551046720804">Klávesy <ph name="DATA_CONTROLS_KEYS" /> nemôžu byť nastavené v rovnakom slovníku</translation>
 <translation id="8172809706700703589">Spíš mi zoznam vecí, ktoré si mám zbaliť na cestu</translation>
 <translation id="8174047975335711832">Informácie o zariadení</translation>
@@ -4969,6 +4968,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
     &lt;li&gt;skúste softvér <ph name="SOFTWARE_NAME" /> odinštalovať alebo vypnúť,&lt;/li&gt;
     &lt;li&gt;skúste sa pripojiť k inej sieti Wi-Fi.&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">Vo svojom účte Google môžete mať ďalšie formy histórie prehliadania na <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, napríklad návštevy automatickej navigácie v <ph name="BEGIN_LINK_GAA" />histórii Gemini<ph name="END_LINK_GAA" />.</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Pridanie čísla IBAN</translation>
 <translation id="995782501881226248">YouTube</translation>

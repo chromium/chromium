@@ -3,6 +3,7 @@
 <translationbundle lang="ja">
 <translation id="1008557486741366299">後で</translation>
 <translation id="100957008357583611">位置情報を使用しますか？</translation>
+<translation id="1010148478459329879">お使いの Google アカウントの <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> に、他の形式の閲覧履歴（<ph name="BEGIN_LINK_GAA" />Gemini の履歴<ph name="END_LINK_GAA" />など）が記録されている場合があります</translation>
 <translation id="1010200102790553230">後でページを読み込む</translation>
 <translation id="1010225406377140704">送信者に連絡して新しいリンクをリクエストしてください</translation>
 <translation id="1011206368273183593">ファイルを準備しています</translation>
@@ -920,7 +921,6 @@
 <translation id="251033673027346551"><ph name="BEGIN_LINK" />データとプライバシーの設定<ph name="END_LINK" />を管理するには、Google ウォレットにアクセスしてください。</translation>
 <translation id="2512101340618156538">ブロック（デフォルト）</translation>
 <translation id="2512413427717747692">Chrome を既定のブラウザに設定するボタンです。Enter キーを押すと iOS 設定で Chrome をシステムの既定のブラウザに設定できます</translation>
-<translation id="2513217232843681817">お使いの Google アカウントの <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> に、他の形式の閲覧履歴（<ph name="BEGIN_LINK_GAA" />Gemini アプリ アクティビティ<ph name="END_LINK_GAA" />の自動ブラウジングによるアクセスなど）が記録されている場合があります</translation>
 <translation id="2515629240566999685">電波状況を確認する</translation>
 <translation id="2518584823165598232">このカードは使用できません。カード発行会社にお問い合わせください。</translation>
 <translation id="2521385132275182522">ステープル（右下）</translation>
@@ -3965,7 +3965,6 @@
 <translation id="7584287158780898016">価格トラッキングのアラートを有効にする</translation>
 <translation id="7586676035079382730">通知は許可されていません</translation>
 <translation id="7588707273764747927">転写</translation>
-<translation id="7589062909165841767">お使いの Google アカウントに <ph name="BEGIN_LINK_GAA" />Gemini アプリ アクティビティ<ph name="END_LINK_GAA" />が記録されている場合があります</translation>
 <translation id="7591288787774558753">機密コンテンツを共有しますか？</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> から <ph name="TOP_LEVEL_URL" /> での Cookie とサイトデータの使用許可を求められています</translation>
 <translation id="7592362899630581445">サーバーの証明書が名前の制約に違反しています。</translation>
@@ -4257,7 +4256,6 @@
 <translation id="8075736640322370409">新しい Google スプレッドシートをすばやく作成します</translation>
 <translation id="8075898834294118863">サイトの設定を管理</translation>
 <translation id="8076492880354921740">タブ</translation>
-<translation id="8076880883123051368">お使いの Google アカウントの <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> に、他の形式の閲覧履歴（<ph name="BEGIN_LINK_GAA" />Gemini アプリ アクティビティ<ph name="END_LINK_GAA" />など）が記録されている場合があります</translation>
 <translation id="8077465698530018904">選択した範囲を削除</translation>
 <translation id="8077669823243888800">中国 #8 封筒</translation>
 <translation id="8078006011486731853">{0,plural, =1{機密ファイルをアップロードしますか？}other{機密ファイルをアップロードしますか？}}</translation>
@@ -4309,6 +4307,7 @@
 <translation id="8163468049564974856">自動入力をオンにすると、オンラインで安全に決済できます。カード情報は Google ウォレットで暗号化されます。</translation>
 <translation id="8163866351304776260">4 穴パンチ（左）</translation>
 <translation id="8164078261547504572">値下げがあったときにメールで通知を受け取りますか？</translation>
+<translation id="8166435925529495192">お使いの Google アカウントに <ph name="BEGIN_LINK_GAA" />Gemini の履歴<ph name="END_LINK_GAA" />が記録されている場合があります</translation>
 <translation id="8169175551046720804">キー「<ph name="DATA_CONTROLS_KEYS" />」は同じ辞書に設定できません</translation>
 <translation id="8172809706700703589">旅行の持ち物リストを作成して</translation>
 <translation id="8174047975335711832">デバイス情報</translation>
@@ -4974,6 +4973,7 @@
     &lt;li&gt;「<ph name="SOFTWARE_NAME" />」をアンインストールまたは無効化してみてください&lt;/li&gt;
     &lt;li&gt;別のネットワークに接続してみてください&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">お使いの Google アカウントの <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> に、他の形式の閲覧履歴（<ph name="BEGIN_LINK_GAA" />Gemini の履歴<ph name="END_LINK_GAA" />の自動ブラウジングによるアクセスなど）が記録されている場合があります</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">IBAN の追加</translation>
 <translation id="995782501881226248">YouTube</translation>

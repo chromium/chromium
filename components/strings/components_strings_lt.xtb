@@ -3,6 +3,7 @@
 <translationbundle lang="lt">
 <translation id="1008557486741366299">Ne dabar</translation>
 <translation id="100957008357583611">Naudoti vietovę?</translation>
+<translation id="1010148478459329879">„Google“ paskyroje gali būti kito tipo naršymo istorijos, kuri pasiekiama adresu <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, pvz., <ph name="BEGIN_LINK_GAA" />„Gemini“ istorija<ph name="END_LINK_GAA" /></translation>
 <translation id="1010200102790553230">Įkelti puslapį vėliau</translation>
 <translation id="1010225406377140704">Susisiekite su siuntėju ir paprašykite naujos nuorodos</translation>
 <translation id="1011206368273183593">Ruošiami failai</translation>
@@ -920,7 +921,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="251033673027346551">Apsilankykite „Google Wallet“, kad galėtumėte tvarkyti <ph name="BEGIN_LINK" />duomenų ir privatumo nuostatas<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Neleidžiama (numatytasis nustatymas)</translation>
 <translation id="2512413427717747692">„Chrome“ nustatymo kaip numatytosios naršyklės režimas; paspauskite „Enter“, kad nustatytumėte „Chrome“ kaip numatytąją sistemos naršyklę „iOS“ nustatymuose</translation>
-<translation id="2513217232843681817">„Google“ paskyroje gali būti kito tipo naršymo istorijos, kuri pasiekiama adresu <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, pvz., automatinio naršymo apsilankymų <ph name="BEGIN_LINK_GAA" />„Gemini Apps“ veikloje<ph name="END_LINK_GAA" /></translation>
 <translation id="2515629240566999685">Patikrinti signalo stiprumą savo srityje</translation>
 <translation id="2518584823165598232">Ši kortelė nepasiekiama. Susisiekite su kortelę išdavusia įstaiga.</translation>
 <translation id="2521385132275182522">Sankabėlė apačioje dešinėje</translation>
@@ -3966,7 +3966,6 @@ Papildoma išsami informacija:
 <translation id="7584287158780898016">Kainų stebėjimo įspėjimų įgalinimas</translation>
 <translation id="7586676035079382730">Pranešimai neleidžiami</translation>
 <translation id="7588707273764747927">Veidrodinis atspaudas</translation>
-<translation id="7589062909165841767">„Google“ paskyroje gali būti jūsų <ph name="BEGIN_LINK_GAA" />„Gemini Apps“ veikla<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">Bendrinti konfidencialų turinį?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> nori naudoti slapukus ir svetainės duomenis <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Serverio sertifikatas pažeidžia pavadinimų apribojimus.</translation>
@@ -4258,7 +4257,6 @@ Papildoma išsami informacija:
 <translation id="8075736640322370409">Greitai sukurkite naują „Google“ skaičiuoklę</translation>
 <translation id="8075898834294118863">Tvarkyti svetainių nustatymus</translation>
 <translation id="8076492880354921740">Skirtukai</translation>
-<translation id="8076880883123051368">„Google“ paskyroje gali būti kito tipo naršymo istorijos, kuri pasiekiama adresu <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, pvz., <ph name="BEGIN_LINK_GAA" />„Gemini Apps“ veikla<ph name="END_LINK_GAA" /></translation>
 <translation id="8077465698530018904">Pašalinti pasirinktą sritį</translation>
 <translation id="8077669823243888800">Nr. 8 kinietiškas vokas</translation>
 <translation id="8078006011486731853">{0,plural, =1{Įkelti konfidencialų failą?}one{Įkelti konfidencialius failus?}few{Įkelti konfidencialius failus?}many{Įkelti konfidencialius failus?}other{Įkelti konfidencialius failus?}}</translation>
@@ -4310,6 +4308,7 @@ Papildoma išsami informacija:
 <translation id="8163468049564974856">Įjunkite automatinį pildymą, kad galėtumėte saugiai atsiskaityti internetu. Išsami kortelės informacija užšifruojama „Google Wallet“.</translation>
 <translation id="8163866351304776260">Keturios skylės kairėje</translation>
 <translation id="8164078261547504572">Norite gauti el. laiškus, kai kainos sumažės?</translation>
+<translation id="8166435925529495192">„Google“ paskyroje gali būti jūsų <ph name="BEGIN_LINK_GAA" />„Gemini“ istorija<ph name="END_LINK_GAA" /></translation>
 <translation id="8169175551046720804">Klavišų „<ph name="DATA_CONTROLS_KEYS" />“ negalima nustatyti tame pačiame žodyne</translation>
 <translation id="8172809706700703589">Sukurk kelionei reikalingų daiktų sąrašą</translation>
 <translation id="8174047975335711832">Įrenginio informacija</translation>
@@ -4976,6 +4975,7 @@ Papildoma išsami informacija:
     &lt;li&gt;Pabandykite pašalinti arba išjungti „<ph name="SOFTWARE_NAME" />“.&lt;/li&gt;
     &lt;li&gt;Pabandykite prisijungti prie kito tinklo.&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">„Google“ paskyroje gali būti kito tipo naršymo istorijos, kuri pasiekiama adresu <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, pvz., automatinio naršymo apsilankymų <ph name="BEGIN_LINK_GAA" />„Gemini“ istorijoje<ph name="END_LINK_GAA" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">IBAN pridėjimas</translation>
 <translation id="995782501881226248">YouTube</translation>

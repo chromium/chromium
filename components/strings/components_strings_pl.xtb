@@ -3,6 +3,7 @@
 <translationbundle lang="pl">
 <translation id="1008557486741366299">Nie teraz</translation>
 <translation id="100957008357583611">Użyć lokalizacji?</translation>
+<translation id="1010148478459329879">Inne rodzaje historii przeglądania, np. <ph name="BEGIN_LINK_GAA" />historia Gemini<ph name="END_LINK_GAA" />, mogą być nadal dostępne na Twoim koncie Google na <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="1010200102790553230">Wczytaj stronę później</translation>
 <translation id="1010225406377140704">Skontaktuj się z nadawcą, aby poprosić o nowy link</translation>
 <translation id="1011206368273183593">Przygotowuję pliki</translation>
@@ -920,7 +921,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="251033673027346551">Otwórz Portfel Google, aby zarządzać <ph name="BEGIN_LINK" />preferencjami dotyczącymi danych i prywatności<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Nie zezwolono (domyślnie)</translation>
 <translation id="2512413427717747692">Przycisk ustawiania Chrome jako przeglądarki domyślnej. Naciśnij Enter, aby ustawić Chrome jako domyślną przeglądarkę systemową w ustawieniach iOS</translation>
-<translation id="2513217232843681817">Inne rodzaje historii przeglądania, np. wizyty w ramach automatycznego przeglądania zapisane w <ph name="BEGIN_LINK_GAA" />aktywności w aplikacjach z Gemini<ph name="END_LINK_GAA" />, mogą być nadal dostępne na Twoim koncie Google na stronie <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="2515629240566999685">Sprawdź sygnał w swojej okolicy</translation>
 <translation id="2518584823165598232">Ta karta jest niedostępna. Skontaktuj się jej z dostawcą.</translation>
 <translation id="2521385132275182522">Zszywka w prawym dolnym rogu</translation>
@@ -3965,7 +3965,6 @@ Dodatkowe informacje:
 <translation id="7584287158780898016">Włącz alerty o śledzeniu cen</translation>
 <translation id="7586676035079382730">Powiadomienia nie są dozwolone</translation>
 <translation id="7588707273764747927">Przenoszenie</translation>
-<translation id="7589062909165841767">Na Twoim koncie Google może być zapisana <ph name="BEGIN_LINK_GAA" />aktywność w aplikacjach z Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">Udostępnić treści poufne?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> chce używać plików cookie i danych witryn na stronie <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Certyfikat serwera narusza ograniczenia dotyczące nazw.</translation>
@@ -4257,7 +4256,6 @@ Dodatkowe informacje:
 <translation id="8075736640322370409">Szybko utwórz nowy arkusz Google</translation>
 <translation id="8075898834294118863">Zarządzaj ustawieniami witryn</translation>
 <translation id="8076492880354921740">Karty</translation>
-<translation id="8076880883123051368">Inne rodzaje historii przeglądania, np. <ph name="BEGIN_LINK_GAA" />aktywność w aplikacjach z Gemini<ph name="END_LINK_GAA" />, mogą być nadal dostępne na Twoim koncie Google na <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="8077465698530018904">Usuń wybrany region</translation>
 <translation id="8077669823243888800">Koperta chińska nr 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Przesłać poufny plik?}few{Przesłać poufne pliki?}many{Przesłać poufne pliki?}other{Przesłać poufne pliki?}}</translation>
@@ -4309,6 +4307,7 @@ Dodatkowe informacje:
 <translation id="8163468049564974856">Włącz autouzupełnianie, aby bezpiecznie płacić online. Dane karty są zaszyfrowane w Portfelu Google.</translation>
 <translation id="8163866351304776260">Cztery otwory po lewej</translation>
 <translation id="8164078261547504572">Chcesz otrzymywać e-maile o obniżkach cen?</translation>
+<translation id="8166435925529495192">Na Twoim koncie Google może być zapisana <ph name="BEGIN_LINK_GAA" />historia Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="8169175551046720804">Nie można ustawić kluczy „<ph name="DATA_CONTROLS_KEYS" />” w tym samym słowniku</translation>
 <translation id="8172809706700703589">Utwórz listę rzeczy do spakowania na wyjazd</translation>
 <translation id="8174047975335711832">Informacje o urządzeniu</translation>
@@ -4973,6 +4972,7 @@ Dodatkowe informacje:
     &lt;li&gt;Odinstaluj lub wyłącz oprogramowanie „<ph name="SOFTWARE_NAME" />”.&lt;/li&gt;
     &lt;li&gt;Połącz się z inną siecią.&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">Inne rodzaje historii przeglądania, np. wizyty w ramach automatycznego przeglądania zapisane w <ph name="BEGIN_LINK_GAA" />historii Gemini<ph name="END_LINK_GAA" />, mogą być nadal dostępne na Twoim koncie Google na stronie <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Dodaj numer IBAN</translation>
 <translation id="995782501881226248">YouTube</translation>

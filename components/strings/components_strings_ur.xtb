@@ -3,6 +3,7 @@
 <translationbundle lang="ur">
 <translation id="1008557486741366299">ابھی نہیں</translation>
 <translation id="100957008357583611">آپ کا مقام استعمال کریں؟</translation>
+<translation id="1010148478459329879">‏ممکن ہے کہ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />‎ پر آپ کے Google اکاؤنٹ میں براؤزنگ کی سرگزشت کی دیگر شکلیں موجود ہوں، جیسے کہ آپ کی <ph name="BEGIN_LINK_GAA" />Gemini کی سرگزشت<ph name="END_LINK_GAA" /></translation>
 <translation id="1010200102790553230">صفحہ بعد میں لوڈ کریں</translation>
 <translation id="1010225406377140704">نیا لنک طلب کرنے کے لیے ارسال کنندہ سے رابطہ کریں</translation>
 <translation id="1011206368273183593">فائلز تیار ہو رہی ہیں</translation>
@@ -920,7 +921,6 @@
 <translation id="251033673027346551">‏<ph name="BEGIN_LINK" />ڈیٹا اور رازداری کی ترجیحات<ph name="END_LINK" /> کا نظم کرنے کے لیے Google والٹ ملاحظہ کریں۔</translation>
 <translation id="2512101340618156538">اجازت نہیں ہے (ڈیفالٹ)</translation>
 <translation id="2512413427717747692">‏Chrome کو بطور ڈیفالٹ براؤزر بٹن سیٹ کریں، iOS ترتیبات میں Chrome کو سسٹم کے ڈیفالٹ براؤزر کے بطور سیٹ کرنے کے لیے Enter دبائیں</translation>
-<translation id="2513217232843681817">‏ممکن ہے کہ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />‎ پر آپ کے Google اکاؤنٹ میں براؤزنگ کی سرگزشت کی دیگر شکلیں موجود ہوں، جیسے کہ آپ کی <ph name="BEGIN_LINK_GAA" />Gemini ایپس کی سرگرمی<ph name="END_LINK_GAA" /> میں آٹو براؤز کے دورے</translation>
 <translation id="2515629240566999685">آپ کے علاقہ میں سگنل چیک کیا جا رہا ہے</translation>
 <translation id="2518584823165598232">یہ کارڈ دستیاب نہیں ہے۔ براہ کرم اپنے کارڈ فراہم کنندہ سے رابطہ کریں۔</translation>
 <translation id="2521385132275182522">نیچے بائیں طرف سٹیپل</translation>
@@ -3966,7 +3966,6 @@
 <translation id="7584287158780898016">قیمت کی ٹریکنگ کے الرٹس کو فعال کریں</translation>
 <translation id="7586676035079382730">اطلاعات کی اجازت نہیں ہے</translation>
 <translation id="7588707273764747927">ٹرانسفر</translation>
-<translation id="7589062909165841767">‏آپ کے Google اکاؤنٹ میں آپ کی <ph name="BEGIN_LINK_GAA" />Gemini ایپس کی سرگرمی<ph name="END_LINK_GAA" /> موجود ہو سکتی ہے</translation>
 <translation id="7591288787774558753">رازدارانہ مواد کا اشتراک کریں؟</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> <ph name="TOP_LEVEL_URL" /> پر موجود کوکیز اور سائٹ کا ڈیٹا استعمال کرنا چاہتا ہے</translation>
 <translation id="7592362899630581445">سرور سرٹیفیکیٹ نام کی پابندیوں کی خلاف ورزی کرتا ہے۔</translation>
@@ -4258,7 +4257,6 @@
 <translation id="8075736640322370409">‏تیزی سے ایک نئی Google Sheet تخلیق کریں</translation>
 <translation id="8075898834294118863">سائٹ کی ترتیبات کا نظم کریں</translation>
 <translation id="8076492880354921740">ٹیبز</translation>
-<translation id="8076880883123051368">‏ممکن ہے کہ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />‎ پر آپ کے Google اکاؤنٹ میں براؤزنگ کی سرگزشت کی دیگر شکلیں موجود ہوں، جیسے کہ آپ کی <ph name="BEGIN_LINK_GAA" />Gemini ایپس کی سرگرمی<ph name="END_LINK_GAA" /></translation>
 <translation id="8077465698530018904">منتخب کردہ علاقے کو ہٹائیں</translation>
 <translation id="8077669823243888800">‏Chinese #8 لفافہ</translation>
 <translation id="8078006011486731853">{0,plural, =1{رازدارانہ فائل اپ لوڈ کریں؟}other{رازدارانہ فائلز اپ لوڈ کریں؟}}</translation>
@@ -4310,6 +4308,7 @@
 <translation id="8163468049564974856">‏آن لائن محفوظ طریقے سے چیک آؤٹ کرنے کے لیے آٹو فل آن کریں۔ آپ کے کارڈ کی تفصیلات Google والٹ میں مرموز کردہ ہیں۔</translation>
 <translation id="8163866351304776260">بائیں طرف مستطیل سوراخ</translation>
 <translation id="8164078261547504572">قیمتیں گرنے پر ای میلز چاہتے ہیں؟</translation>
+<translation id="8166435925529495192">‏آپ کے Google اکاؤنٹ میں آپ کی <ph name="BEGIN_LINK_GAA" />Gemini کی سرگزشت<ph name="END_LINK_GAA" /> موجود ہو سکتی ہے</translation>
 <translation id="8169175551046720804">کلیدیں "<ph name="DATA_CONTROLS_KEYS" />" ایک ہی ڈکشنری میں سیٹ نہیں کی جا سکتیں</translation>
 <translation id="8172809706700703589">میرے آنے والے سفر کے لیے پیکنگ کی فہرست بنائیں</translation>
 <translation id="8174047975335711832">آلہ کی معلومات</translation>
@@ -4975,6 +4974,7 @@
     &lt;li&gt;"<ph name="SOFTWARE_NAME" />" اَن انسٹال یا غیر فعال کرنے کی کوشش کریں&lt;/li&gt;
     &lt;li&gt;کسی اور Wi-Fi نیٹ ورک سے منسلک ہونے کی کوشش کریں&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">‏ممکن ہے کہ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />‎ پر آپ کے Google اکاؤنٹ میں براؤزنگ کی سرگزشت کی دیگر شکلیں موجود ہوں، جیسے کہ آپ کی <ph name="BEGIN_LINK_GAA" />Gemini کی سرگزشت<ph name="END_LINK_GAA" /> میں آٹو براؤز کے دورے</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">‏IBAN شامل کریں</translation>
 <translation id="995782501881226248">YouTube</translation>

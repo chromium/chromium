@@ -3,6 +3,7 @@
 <translationbundle lang="sq">
 <translation id="1008557486741366299">Jo tani</translation>
 <translation id="100957008357583611">Të përdoret vendndodhja jote?</translation>
+<translation id="1010148478459329879">"Llogaria jote e Google" mund të ketë forma të tjera të historikut të shfletimit në <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, si p.sh. <ph name="BEGIN_LINK_GAA" />Historiku i Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="1010200102790553230">Ngarkoje faqen më vonë</translation>
 <translation id="1010225406377140704">Kontakto me dërguesin për t'i kërkuar një lidhje të re</translation>
 <translation id="1011206368273183593">Skedarët po përgatiten</translation>
@@ -920,7 +921,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="251033673027346551">Vizito "Portofolin e Google" për të menaxhuar <ph name="BEGIN_LINK" />preferencat e të dhënave dhe privatësisë<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Nuk lejohet (e parazgjedhur)</translation>
 <translation id="2512413427717747692">Cakto Chrome si butonin e shfletuesit të parazgjedhur; shtyp "Enter" për të caktuar Chrome si shfletuesin e parazgjedhur të sistemit te cilësimet e iOS</translation>
-<translation id="2513217232843681817">"Llogaria jote e Google" mund të ketë forma të tjera të historikut të shfletimit në <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, si p.sh. vizitat e shfletimit automatik në <ph name="BEGIN_LINK_GAA" />Aktivitetin e aplikacioneve Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="2515629240566999685">Të kontrollosh sinjalin në zonën tënde</translation>
 <translation id="2518584823165598232">Kjo kartë nuk ofrohet. Kontakto me ofruesin e kartës.</translation>
 <translation id="2521385132275182522">Kapje me tel poshtë djathtas</translation>
@@ -3963,7 +3963,6 @@ Detaje shtesë:
 <translation id="7584287158780898016">Aktivizo sinjalizimet për monitorimin e çmimeve</translation>
 <translation id="7586676035079382730">Njoftimet nuk lejohen</translation>
 <translation id="7588707273764747927">Transferim</translation>
-<translation id="7589062909165841767">"Llogaria jote e Google" mund të ketë <ph name="BEGIN_LINK_GAA" />Aktivitetin e aplikacioneve Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">Të ndahet përmbajtja konfidenciale?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> dëshiron të përdorë kukit dhe të dhënat e sajtit në <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Certifikata e serverit shkel kufizimet për serverin.</translation>
@@ -4255,7 +4254,6 @@ Detaje shtesë:
 <translation id="8075736640322370409">Krijo shpejt një "Fletë të re të Google"</translation>
 <translation id="8075898834294118863">Menaxho cilësimet e sajtit</translation>
 <translation id="8076492880354921740">Skedat</translation>
-<translation id="8076880883123051368">"Llogaria jote e Google" mund të ketë forma të tjera të historikut të shfletimit në <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, si p.sh. <ph name="BEGIN_LINK_GAA" />Aktiviteti i aplikacioneve Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="8077465698530018904">Hiq rajonin e zgjedhur</translation>
 <translation id="8077669823243888800">Zarf kinez nr. 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Të ngarkohet skedari konfidencial?}other{Të ngarkohen skedarët konfidencialë?}}</translation>
@@ -4307,6 +4305,7 @@ Detaje shtesë:
 <translation id="8163468049564974856">Aktivizo plotësimin automatik për të përfunduar blerjet online në mënyrë të sigurt. Detajet e kartës sate janë të enkriptuara te "Portofoli i Google".</translation>
 <translation id="8163866351304776260">Katër shpime majtas</translation>
 <translation id="8164078261547504572">Dëshiron të marrësh email-e kur të bien çmimet?</translation>
+<translation id="8166435925529495192">"Llogaria jote e Google" mund të ketë <ph name="BEGIN_LINK_GAA" />Historikun e Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="8169175551046720804">Çelësat "<ph name="DATA_CONTROLS_KEYS" />" nuk mund të caktohen në të njëjtin fjalor</translation>
 <translation id="8172809706700703589">Krijo një listë paketimi për udhëtimin tim</translation>
 <translation id="8174047975335711832">Informacioni i pajisjes</translation>
@@ -4972,6 +4971,7 @@ Detaje shtesë:
     &lt;li&gt;Provo të çinstalosh ose të çaktivizosh "<ph name="SOFTWARE_NAME" />"&lt;/li&gt;
     &lt;li&gt;Provo të lidhesh me një rrjet tjetër&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">"Llogaria jote e Google" mund të ketë forma të tjera të historikut të shfletimit në <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, si p.sh. vizitat e shfletimit automatik në <ph name="BEGIN_LINK_GAA" />Historikun e Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Shto numrin IBAN</translation>
 <translation id="995782501881226248">YouTube</translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="ky">
 <translation id="1008557486741366299">Азыр эмес</translation>
 <translation id="100957008357583611">Жайгашкан жериңиз көрүнсүнбү?</translation>
+<translation id="1010148478459329879">Көрүлгөн вебсайттардын башка түрлөрү, мисалы, <ph name="BEGIN_LINK_GAA" />Gemini таржымалы<ph name="END_LINK_GAA" /> Google аккаунтуңузда (<ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />) сакталышы мүмкүн</translation>
 <translation id="1010200102790553230">Барак кийинчерээк жүктөлсүн</translation>
 <translation id="1010225406377140704">Жаңы шилтемени суроо үчүн жөнөтүүчүгө кайрылыңыз</translation>
 <translation id="1011206368273183593">Файлдар даярдалууда</translation>
@@ -920,7 +921,6 @@
 <translation id="251033673027346551"><ph name="BEGIN_LINK" />Маалыматты жана купуялык параметрлерин<ph name="END_LINK" /> тескөө үчүн Google Капчыкка өтүңүз.</translation>
 <translation id="2512101340618156538">Тыюу салынган (демейки)</translation>
 <translation id="2512413427717747692">Chrome'ду демейки серепчи катары коюу баскычы, iOS параметрлеринен Chrome'ду системанын демейки серепчиси катары коюу үчүн Enter баскычын басыңыз</translation>
-<translation id="2513217232843681817">Көрүлгөн вебсайттардын башка түрлөрү, мисалы, <ph name="BEGIN_LINK_GAA" />Gemini колдонмолорундагы аракеттер<ph name="END_LINK_GAA" /> бөлүмүндөгү авто серептөө режиминде баш багуулар Google аккаунтуңузда (<ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />) сакталышы мүмкүн</translation>
 <translation id="2515629240566999685">Аймагыңыздагы сигналды текшерип көрүңүз</translation>
 <translation id="2518584823165598232">Бул карта жеткиликсиз. Картанын эмитентине кайрылыңыз.</translation>
 <translation id="2521385132275182522">Төмөнк оң жагын илмек менен бекитүү</translation>
@@ -3963,7 +3963,6 @@
 <translation id="7584287158780898016">Бааларга көз салуу билдирмелерин иштетүү</translation>
 <translation id="7586676035079382730">Билдирмелерге тыюу салынды</translation>
 <translation id="7588707273764747927">Өткөрүү</translation>
-<translation id="7589062909165841767">Google аккаунтуңузда <ph name="BEGIN_LINK_GAA" />Gemini колдонмолорундагы аракетиңиз<ph name="END_LINK_GAA" /> болушу мүмкүн</translation>
 <translation id="7591288787774558753">Купуя мазмунду бөлүшөсүзбү?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> cookie-файлдарын жана сайттын маалыматын <ph name="TOP_LEVEL_URL" /> доменинде колдонгону жатат</translation>
 <translation id="7592362899630581445">Сервердин тастыктамасы ысым чектөөлөрүн бузууда.</translation>
@@ -4255,7 +4254,6 @@
 <translation id="8075736640322370409">Жаңы Google таблицасын тез түзүү</translation>
 <translation id="8075898834294118863">Сайттын параметрлерин башкаруу</translation>
 <translation id="8076492880354921740">Өтмөктөр</translation>
-<translation id="8076880883123051368">Көрүлгөн вебсайттардын башка түрлөрү, мисалы, <ph name="BEGIN_LINK_GAA" />Gemini колдонмолорундагы аракеттер<ph name="END_LINK_GAA" /> Google аккаунтуңузда (<ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />) сакталышы мүмкүн</translation>
 <translation id="8077465698530018904">Тандалган аймакты өчүрүү</translation>
 <translation id="8077669823243888800">Конверт Кытайча #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Купуя файлды жүктөп бересизби?}other{Купуя файлдарды жүктөп бересизби?}}</translation>
@@ -4307,6 +4305,7 @@
 <translation id="8163468049564974856">Интернетте коопсуз төлөө үчүн автотолтурууну күйгүзүңүз. Картаңыздын чоо-жайы Google Капчыкта шифрленет.</translation>
 <translation id="8163866351304776260">Сол жагын төрт жолу тешүү</translation>
 <translation id="8164078261547504572">Баалар төмөндөгөндө электрондук каттарды алгыңыз келеби?</translation>
+<translation id="8166435925529495192">Google аккаунтуңузда <ph name="BEGIN_LINK_GAA" />Gemini таржымалы<ph name="END_LINK_GAA" /> сакталышы мүмкүн</translation>
 <translation id="8169175551046720804">"<ph name="DATA_CONTROLS_KEYS" />" ачкычтарын бир сөздүктө туураласа болбойт</translation>
 <translation id="8172809706700703589">Саякатка керектүү нерселердин тизмесин түз</translation>
 <translation id="8174047975335711832">Түзмөк маалыматы</translation>
@@ -4972,6 +4971,7 @@
     &lt;li&gt;"<ph name="SOFTWARE_NAME" />" программасын чыгарып салып же өчүрүп көрүңүз&lt;/li&gt;
     &lt;li&gt;Башка тармакка туташып көрүңүз&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">Көрүлгөн вебсайттардын башка түрлөрү, мисалы, <ph name="BEGIN_LINK_GAA" />Gemini таржымалы<ph name="END_LINK_GAA" /> бөлүмүндөгү авто серептөө режиминде баш багуулар Google аккаунтуңузда (<ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />) сакталышы мүмкүн</translation>
 <translation id="994346157028146140">JIS B1 (728mm x 1030mm)</translation>
 <translation id="995755448277384931">IBAN кошуу</translation>
 <translation id="995782501881226248">YouTube</translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="pa">
 <translation id="1008557486741366299">ਹੁਣ ਨਹੀਂ</translation>
 <translation id="100957008357583611">ਕੀ ਤੁਹਾਡੇ ਟਿਕਾਣੇ ਦੀ ਵਰਤੋਂ ਕਰਨੀ ਹੈ?</translation>
+<translation id="1010148478459329879">ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> 'ਤੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਦੀਆਂ ਹੋਰ ਕਿਸਮਾਂ ਹੋ ਸਕਦੀਆਂ ਹਨ, ਜਿਵੇਂ ਕਿ ਤੁਹਾਡਾ <ph name="BEGIN_LINK_GAA" />Gemini ਇਤਿਹਾਸ<ph name="END_LINK_GAA" /></translation>
 <translation id="1010200102790553230">ਪੰਨਾ ਬਾਅਦ ਵਿੱਚ ਲੋਡ ਕਰੋ</translation>
 <translation id="1010225406377140704">ਨਵਾਂ ਲਿੰਕ ਮੰਗਣ ਲਈ, ਭੇਜਣ ਵਾਲੇ ਨਾਲ ਸੰਪਰਕ ਕਰੋ</translation>
 <translation id="1011206368273183593">ਫ਼ਾਈਲਾਂ ਤਿਆਰ ਹੋ ਰਹੀਆਂ ਹਨ</translation>
@@ -920,7 +921,6 @@
 <translation id="251033673027346551"><ph name="BEGIN_LINK" />ਡਾਟਾ ਅਤੇ ਪਰਦੇਦਾਰੀ ਤਰਜੀਹਾਂ<ph name="END_LINK" /> ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ Google Wallet 'ਤੇ ਜਾਓ।</translation>
 <translation id="2512101340618156538">ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ (ਪੂਰਵ-ਨਿਰਧਾਰਿਤ)</translation>
 <translation id="2512413427717747692">'Chrome ਨੂੰ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਬ੍ਰਾਊਜ਼ਰ ਵਜੋਂ ਸੈੱਟ ਕਰੋ' ਸੰਬੰਧੀ ਬਟਨ, iOS ਸੈਟਿੰਗਾਂ ਵਿੱਚ Chrome ਨੂੰ ਸਿਸਟਮ ਦੇ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਬ੍ਰਾਊਜ਼ਰ ਵਜੋਂ ਸੈੱਟ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
-<translation id="2513217232843681817">ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> 'ਤੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਦੀਆਂ ਹੋਰ ਕਿਸਮਾਂ ਹੋ ਸਕਦੀਆਂ ਹਨ, ਜਿਵੇਂ ਕਿ ਤੁਹਾਡੀ <ph name="BEGIN_LINK_GAA" />Gemini ਐਪਾਂ ਸੰਬੰਧੀ ਸਰਗਰਮੀ<ph name="END_LINK_GAA" /> ਵਿੱਚ ਆਟੋ ਬ੍ਰਾਊਜ਼ ਫੇਰੀਆਂ</translation>
 <translation id="2515629240566999685">ਆਪਣੇ ਖੇਤਰ ਵਿੱਚ ਸਿਗਨਲ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="2518584823165598232">ਇਹ ਕਾਰਡ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਕਾਰਡ ਪ੍ਰਦਾਨਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="2521385132275182522">ਹੇਠਾਂ ਸੱਜੇ ਪਾਸੇ ਪਿੰਨ</translation>
@@ -3960,7 +3960,6 @@
 <translation id="7584287158780898016">ਕੀਮਤ ਸੰਬੰਧੀ ਟਰੈਕਿੰਗ ਅਲਰਟ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="7586676035079382730">ਸੂਚਨਾਵਾਂ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="7588707273764747927">ਟ੍ਰਾਂਸਫ਼ਰ ਕਰੋ</translation>
-<translation id="7589062909165841767">ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਤੁਹਾਡੀ <ph name="BEGIN_LINK_GAA" />Gemini ਐਪਾਂ ਸੰਬੰਧੀ ਸਰਗਰਮੀ<ph name="END_LINK_GAA" /> ਸ਼ਾਮਲ ਹੋ ਸਕਦੀ ਹੈ</translation>
 <translation id="7591288787774558753">ਕੀ ਗੁਪਤ ਸਮੱਗਰੀ ਨੂੰ ਸਾਂਝਾ ਕਰਨਾ ਹੈ?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> ਦੀ <ph name="TOP_LEVEL_URL" /> 'ਤੇ ਕੁਕੀਜ਼ ਅਤੇ ਸਾਈਟ ਡਾਟਾ ਵਰਤਣ ਦੀ ਇੱਛਾ ਹੈ</translation>
 <translation id="7592362899630581445">ਸਰਵਰ ਦਾ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਨਾਮ ਪਾਬੰਦੀਆਂ ਦੀ ਉਲੰਘਣਾ ਕਰਦਾ ਹੈ।</translation>
@@ -4252,7 +4251,6 @@
 <translation id="8075736640322370409">ਤੇਜ਼ੀ ਨਾਲ ਨਵੀਂ Google ਸ਼ੀਟ ਬਣਾਓ</translation>
 <translation id="8075898834294118863">ਸਾਈਟ ਸੈਟਿੰਗਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="8076492880354921740">ਟੈਬਾਂ</translation>
-<translation id="8076880883123051368">ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> 'ਤੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਦੀਆਂ ਹੋਰ ਕਿਸਮਾਂ ਹੋ ਸਕਦੀਆਂ ਹਨ, ਜਿਵੇਂ ਕਿ ਤੁਹਾਡੀ <ph name="BEGIN_LINK_GAA" />Gemini ਐਪਾਂ ਸੰਬੰਧੀ ਸਰਗਰਮੀ<ph name="END_LINK_GAA" /></translation>
 <translation id="8077465698530018904">ਚੁਣਿਆ ਗਿਆ ਖੇਤਰ ਹਟਾਓ</translation>
 <translation id="8077669823243888800">ਚੀਨੀ #8 ਆਕਾਰ ਦਾ ਲਿਫ਼ਾਫ਼ਾ</translation>
 <translation id="8078006011486731853">{0,plural, =1{ਕੀ ਗੁਪਤ ਫ਼ਾਈਲ ਨੂੰ ਅੱਪਲੋਡ ਕਰਨਾ ਹੈ?}one{ਕੀ ਗੁਪਤ ਫ਼ਾਈਲ ਨੂੰ ਅੱਪਲੋਡ ਕਰਨਾ ਹੈ?}other{ਕੀ ਗੁਪਤ ਫ਼ਾਈਲਾਂ ਨੂੰ ਅੱਪਲੋਡ ਕਰਨਾ ਹੈ?}}</translation>
@@ -4304,6 +4302,7 @@
 <translation id="8163468049564974856">ਆਨਲਾਈਨ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਚੈੱਕ-ਆਊਟ ਕਰਨ ਲਈ ਆਟੋਫਿਲ ਨੂੰ ਚਾਲੂ ਕਰੋ। ਤੁਹਾਡੇ ਕਾਰਡ ਦੇ ਵੇਰਵੇ Google Wallet ਵਿੱਚ ਇਨਕ੍ਰਿਪਟ ਕੀਤੇ ਜਾਂਦੇ ਹਨ।</translation>
 <translation id="8163866351304776260">ਖੱਬੇ ਪਾਸੇ ਚਾਰ ਮੋਰੀਆਂ</translation>
 <translation id="8164078261547504572">ਕੀ ਤੁਸੀਂ ਕੀਮਤਾਂ ਘਟਣ 'ਤੇ ਈਮੇਲਾਂ ਪ੍ਰਾਪਤ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
+<translation id="8166435925529495192">ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਤੁਹਾਡਾ <ph name="BEGIN_LINK_GAA" />Gemini ਇਤਿਹਾਸ<ph name="END_LINK_GAA" /> ਸ਼ਾਮਲ ਹੋ ਸਕਦਾ ਹੈ</translation>
 <translation id="8169175551046720804">ਕੁੰਜੀਆਂ "<ph name="DATA_CONTROLS_KEYS" />" ਨੂੰ ਉਸੇ ਸ਼ਬਦਕੋਸ਼ ਵਿੱਚ ਸੈੱਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="8172809706700703589">ਮੇਰੀ ਯਾਤਰਾ ਲਈ ਪੈਕਿੰਗ ਸੂਚੀ ਬਣਾਓ</translation>
 <translation id="8174047975335711832">ਡੀਵਾਈਸ ਜਾਣਕਾਰੀ</translation>
@@ -4969,6 +4968,7 @@
     &lt;li&gt;"<ph name="SOFTWARE_NAME" />" ਨੂੰ ਅਣਸਥਾਪਤ ਜਾਂ ਬੰਦ ਕਰਕੇ ਦੇਖੋ&lt;/li&gt;
     &lt;li&gt;ਕਿਸੇ ਹੋਰ ਵਾਈ-ਫਾਈ ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਕਰਕੇ ਦੇਖੋ&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> 'ਤੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਦੀਆਂ ਹੋਰ ਕਿਸਮਾਂ ਹੋ ਸਕਦੀਆਂ ਹਨ, ਜਿਵੇਂ ਕਿ ਤੁਹਾਡੇ <ph name="BEGIN_LINK_GAA" />Gemini ਇਤਿਹਾਸ<ph name="END_LINK_GAA" /> ਵਿੱਚ ਆਟੋ ਬ੍ਰਾਊਜ਼ ਫੇਰੀਆਂ</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">IBAN ਨੂੰ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="995782501881226248">YouTube</translation>

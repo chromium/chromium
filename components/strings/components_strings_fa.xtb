@@ -3,6 +3,7 @@
 <translationbundle lang="fa">
 <translation id="1008557486741366299">حالا نه</translation>
 <translation id="100957008357583611">از مکان شما استفاده شود؟</translation>
+<translation id="1010148478459329879">‏«حساب Google» شما ممکن است دربردارنده سایر شکل‌هایی از سابقه مرور در <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> باشد، مانند <ph name="BEGIN_LINK_GAA" />سابقه Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="1010200102790553230">بار کردن صفحه در فرصتی دیگر</translation>
 <translation id="1010225406377140704">برای درخواست پیوند جدید، با فرستنده تماس بگیرید</translation>
 <translation id="1011206368273183593">درحال آماده‌سازی فایل‌ها</translation>
@@ -921,7 +922,6 @@
 <translation id="251033673027346551">‏برای مدیریت <ph name="BEGIN_LINK" />اولویت‌های حریم خصوصی و داده‌ها<ph name="END_LINK" />، از «کیف پول Google» بازدید کنید.</translation>
 <translation id="2512101340618156538">مجاز نیست (پیش‌فرض)</translation>
 <translation id="2512413427717747692">‏Chrome را به‌عنوان دکمه مرورگر پیش‌فرض تنظیم کنید. برای تنظیم Chrome به‌عنوان مرورگر پیش‌فرض سیستم در تنظیمات iOS، کلید ورود را فشار دهید</translation>
-<translation id="2513217232843681817">‏«حساب Google» شما ممکن است دربردارنده شکل‌های دیگری از سابقه مرور در <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> باشد، مانند بازدیدهای مرور خودکار در <ph name="BEGIN_LINK_GAA" />فعالیت برنامه‌های Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="2515629240566999685">بررسی سیگنال در منطقه‌تان</translation>
 <translation id="2518584823165598232">این کارت دردسترس نیست. لطفاً با ارائه‌کننده کارت تماس بگیرید.</translation>
 <translation id="2521385132275182522">منگنه در پایین سمت راست</translation>
@@ -3966,7 +3966,6 @@
 <translation id="7584287158780898016">فعال کردن هشدارهای پیگیری قیمت</translation>
 <translation id="7586676035079382730">اعلان‌ها مجاز نیست</translation>
 <translation id="7588707273764747927">انتقال دادن</translation>
-<translation id="7589062909165841767">‏«حساب Google» شما ممکن است دربردارنده <ph name="BEGIN_LINK_GAA" />فعالیت برنامه‌های Gemini<ph name="END_LINK_GAA" /> شما باشد</translation>
 <translation id="7591288787774558753">محتوای محرمانه هم‌رسانی شود؟</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> می‌خواهد از کوکی‌ها و داده‌های سایت <ph name="TOP_LEVEL_URL" /> استفاده کند</translation>
 <translation id="7592362899630581445">گواهی سرور محدودیت‌های نام را نقض می‌کند.</translation>
@@ -4258,7 +4257,6 @@
 <translation id="8075736640322370409">‏ایجاد سریع «کاربرگ‌نگار Google» جدید</translation>
 <translation id="8075898834294118863">مدیریت تنظیمات سایت</translation>
 <translation id="8076492880354921740">زبانه‌ها</translation>
-<translation id="8076880883123051368">‏«حساب Google» شما ممکن است دربردارنده شکل‌های دیگری از سابقه مرور در <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />باشد، مانند <ph name="BEGIN_LINK_GAA" />فعالیت برنامه‌های Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="8077465698530018904">برداشتن منطقه انتخاب‌شده</translation>
 <translation id="8077669823243888800">پاکت چینی شماره ۸</translation>
 <translation id="8078006011486731853">{0,plural, =1{فایل محرمانه بارگذاری شود؟}one{فایل محرمانه بارگذاری شود؟}other{فایل‌های محرمانه بارگذاری شود؟}}</translation>
@@ -4310,6 +4308,7 @@
 <translation id="8163468049564974856">‏برای تسویه‌حساب ایمن به‌صورت آنلاین، تکمیل خودکار را روشن کنید. جزئیات کارت در «کیف پول Google» رمزگذاری می‌شود.</translation>
 <translation id="8163866351304776260">چهار سوراخ در چپ</translation>
 <translation id="8164078261547504572">می‌خواهید هنگام کاهش یافتن قیمت‌ها، ایمیل دریافت کنید؟</translation>
+<translation id="8166435925529495192">‏«حساب Google» شما ممکن است دربردارنده <ph name="BEGIN_LINK_GAA" />سابقه Gemini<ph name="END_LINK_GAA" /> شما باشد</translation>
 <translation id="8169175551046720804">کلیدهای «<ph name="DATA_CONTROLS_KEYS" />» را نمی‌توان در واژه‌نامه یکسان تنظیم کرد</translation>
 <translation id="8172809706700703589">فهرستی برای بستن چمدان سفرم ایجاد کنید</translation>
 <translation id="8174047975335711832">اطلاعات دستگاه</translation>
@@ -4975,6 +4974,7 @@
     &lt;li&gt;«<ph name="SOFTWARE_NAME" />» را حذف‌نصب یا غیرفعال کنید&lt;/li&gt;
     &lt;li&gt;به شبکه دیگری متصل شوید&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">‏«حساب Google» شما ممکن است دربردارنده سایر شکل‌هایی از سابقه مرور در <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> باشد، مانند بازدیدهای مرور خودکار در <ph name="BEGIN_LINK_GAA" />سابقه Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">‏افزودن IBAN</translation>
 <translation id="995782501881226248">YouTube</translation>

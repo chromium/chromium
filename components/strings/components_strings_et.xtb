@@ -3,6 +3,7 @@
 <translationbundle lang="et">
 <translation id="1008557486741366299">Mitte praegu</translation>
 <translation id="100957008357583611">Kas kasutada teie asukohta?</translation>
+<translation id="1010148478459329879">Teie Google’i kontol võib aadressil <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> olla muus vormis sirvimisajalugu, nt teie <ph name="BEGIN_LINK_GAA" />Gemini ajalugu<ph name="END_LINK_GAA" />.</translation>
 <translation id="1010200102790553230">Laadi leht hiljem</translation>
 <translation id="1010225406377140704">Võtke uue lingi küsimiseks ühendust saatjaga</translation>
 <translation id="1011206368273183593">Failide ettevalmistamine</translation>
@@ -920,7 +921,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="251033673027346551">Külastage Google Walletit, et hallata <ph name="BEGIN_LINK" />andmeid ja privaatsuseelistusi<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Pole lubatud (vaikeseade)</translation>
 <translation id="2512413427717747692">Chrome'i vaikebrauseriks määramise nupp. Vajutage sisestusklahvi, et määrata Chrome iOS-i seadetes süsteemi vaikebrauseriks</translation>
-<translation id="2513217232843681817">Teie Google'i kontol võib aadressil <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> olla muus vormis sirvimisajalugu, nt automaatse sirvimise külastused teie <ph name="BEGIN_LINK_GAA" />Gemini rakenduste tegevuses<ph name="END_LINK_GAA" />.</translation>
 <translation id="2515629240566999685">Kontrollige oma piirkonna signaali</translation>
 <translation id="2518584823165598232">See kaart ei ole saadaval. Võtke ühendust oma kaardi väljaandjaga.</translation>
 <translation id="2521385132275182522">Kirjaklamber paremal all</translation>
@@ -3965,7 +3965,6 @@ Lisateave:
 <translation id="7584287158780898016">Hinnajälgimise märguannete lubamine</translation>
 <translation id="7586676035079382730">Märguanded ei ole lubatud</translation>
 <translation id="7588707273764747927">Siirdamine</translation>
-<translation id="7589062909165841767">Teie Google'i kontol võib olla teie <ph name="BEGIN_LINK_GAA" />Gemini rakenduste tegevus<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">Kas jagada konfidentsiaalset sisu?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> soovib ülataseme URL-il <ph name="TOP_LEVEL_URL" /> kasutada küpsisefaile ja saidi andmeid</translation>
 <translation id="7592362899630581445">Serveri sertifikaat rikub nime piiranguid.</translation>
@@ -4257,7 +4256,6 @@ Lisateave:
 <translation id="8075736640322370409">Kiirelt uue Google'i arvutustabeli loomine</translation>
 <translation id="8075898834294118863">Saidi seadete haldamine</translation>
 <translation id="8076492880354921740">Vahelehed</translation>
-<translation id="8076880883123051368">Teie Google'i kontol võib aadressil <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> olla muus vormis sirvimisajalugu, nt teie <ph name="BEGIN_LINK_GAA" />Gemini rakenduste tegevus<ph name="END_LINK_GAA" /></translation>
 <translation id="8077465698530018904">Eemalda valitud piirkond</translation>
 <translation id="8077669823243888800">Ümbrik Hiina nr 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Kas laadida üles konfidentsiaalne fail?}other{Kas laadida üles konfidentsiaalsed failid?}}</translation>
@@ -4309,6 +4307,7 @@ Lisateave:
 <translation id="8163468049564974856">Lülitage automaattäide sisse, et veebis turvaliselt maksta. Teie kaardi andmed on Google Walletis krüpteeritud.</translation>
 <translation id="8163866351304776260">Neli auku vasakul</translation>
 <translation id="8164078261547504572">Kas soovite hinnalanguste kohta e-kirju?</translation>
+<translation id="8166435925529495192">Teie Google’i kontol võib olla teie <ph name="BEGIN_LINK_GAA" />Gemini ajalugu<ph name="END_LINK_GAA" />.</translation>
 <translation id="8169175551046720804">Võtmeid „<ph name="DATA_CONTROLS_KEYS" />“ ei saa samas kataloogis seada</translation>
 <translation id="8172809706700703589">Koosta minu reisi jaoks pakkimisnimekiri</translation>
 <translation id="8174047975335711832">Seadme teave</translation>
@@ -4974,6 +4973,7 @@ Lisateave:
     &lt;li&gt;Proovige tarkvara „<ph name="SOFTWARE_NAME" />” desinstallida või keelata&lt;/li&gt;
     &lt;li&gt;Proovige luua ühendus mõne teise võrguga&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">Teie Google’i kontol võib aadressil <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> olla muus vormis sirvimisajalugu, nt automaatse sirvimise külastused teie <ph name="BEGIN_LINK_GAA" />Gemini ajaloos<ph name="END_LINK_GAA" />.</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">IBAN-i lisamine</translation>
 <translation id="995782501881226248">YouTube</translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="id">
 <translation id="1008557486741366299">Jangan Sekarang</translation>
 <translation id="100957008357583611">Gunakan lokasi Anda?</translation>
+<translation id="1010148478459329879">Akun Google Anda mungkin memiliki histori penjelajahan dalam bentuk lain di <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, seperti <ph name="BEGIN_LINK_GAA" />Histori Gemini<ph name="END_LINK_GAA" /> Anda</translation>
 <translation id="1010200102790553230">Muat halaman nanti</translation>
 <translation id="1010225406377140704">Hubungi pengirim untuk meminta link baru</translation>
 <translation id="1011206368273183593">Menyiapkan file</translation>
@@ -921,7 +922,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="251033673027346551">Buka Google Wallet untuk mengelola <ph name="BEGIN_LINK" />preferensi data dan privasi<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Tidak diizinkan (default)</translation>
 <translation id="2512413427717747692">Tombol Setel Chrome sebagai browser default, tekan Enter untuk menyetel Chrome sebagai browser default sistem di setelan iOS</translation>
-<translation id="2513217232843681817">Akun Google Anda mungkin memiliki histori penjelajahan dalam bentuk lain di <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, seperti kunjungan penjelajahan otomatis di <ph name="BEGIN_LINK_GAA" />Aktivitas Aplikasi Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="2515629240566999685">Periksa sinyal di area Anda</translation>
 <translation id="2518584823165598232">Kartu ini tidak tersedia. Hubungi penyedia kartu Anda.</translation>
 <translation id="2521385132275182522">Jepretan di kanan bawah</translation>
@@ -3963,7 +3963,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="7584287158780898016">Aktifkan notifikasi pemantauan harga</translation>
 <translation id="7586676035079382730">Notifikasi tidak diizinkan</translation>
 <translation id="7588707273764747927">Transfer</translation>
-<translation id="7589062909165841767">Akun Google Anda mungkin memiliki <ph name="BEGIN_LINK_GAA" />Aktivitas Aplikasi Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">Bagikan konten rahasia?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> ingin menggunakan cookie dan data situs di <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Sertifikat server melanggar batasan nama.</translation>
@@ -4255,7 +4254,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="8075736640322370409">Buat Spreadsheet Google baru dengan cepat</translation>
 <translation id="8075898834294118863">Kelola setelan situs</translation>
 <translation id="8076492880354921740">Tab</translation>
-<translation id="8076880883123051368">Akun Google Anda mungkin memiliki bentuk histori penjelajahan lainnya di <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, seperti <ph name="BEGIN_LINK_GAA" />Aktivitas Aplikasi Gemini<ph name="END_LINK_GAA" /> Anda</translation>
 <translation id="8077465698530018904">Hapus wilayah yang dipilih</translation>
 <translation id="8077669823243888800">Envelope Chinese #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Upload file rahasia?}other{Upload file rahasia?}}</translation>
@@ -4307,6 +4305,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="8163468049564974856">Aktifkan isi otomatis untuk check out online dengan aman. Detail kartu Anda akan dienkripsi di Google Wallet.</translation>
 <translation id="8163866351304776260">Empat lubang di kiri</translation>
 <translation id="8164078261547504572">Dapatkan email saat ada penurunan harga?</translation>
+<translation id="8166435925529495192">Akun Google Anda mungkin memiliki <ph name="BEGIN_LINK_GAA" />Histori Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="8169175551046720804">Kunci "<ph name="DATA_CONTROLS_KEYS" />" tidak dapat ditetapkan dalam kamus yang sama</translation>
 <translation id="8172809706700703589">Buatkan daftar perlengkapan untuk perjalanan saya</translation>
 <translation id="8174047975335711832">Informasi perangkat</translation>
@@ -4970,6 +4969,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
     &lt;li&gt;Coba uninstal atau nonaktifkan "<ph name="SOFTWARE_NAME" />"&lt;/li&gt;
     &lt;li&gt;Coba hubungkan ke jaringan lain&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">Akun Google Anda mungkin memiliki histori penjelajahan dalam bentuk lain di <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, seperti kunjungan penjelajahan otomatis di <ph name="BEGIN_LINK_GAA" />Histori Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Tambahkan IBAN</translation>
 <translation id="995782501881226248">YouTube</translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="ms">
 <translation id="1008557486741366299">Bukan Sekarang</translation>
 <translation id="100957008357583611">Gunakan lokasi anda?</translation>
+<translation id="1010148478459329879">Google Account anda mungkin mengandungi bentuk sejarah penyemakan imbas yang lain pada <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, seperti <ph name="BEGIN_LINK_GAA" />Sejarah Gemini<ph name="END_LINK_GAA" /> anda</translation>
 <translation id="1010200102790553230">Muatkan halaman kemudian</translation>
 <translation id="1010225406377140704">Hubungi pengirim untuk meminta pautan baharu</translation>
 <translation id="1011206368273183593">Menyediakan fail</translation>
@@ -920,7 +921,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="251033673027346551">Lawati Google Wallet untuk mengurus <ph name="BEGIN_LINK" />pilihan data dan privasi<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Tidak dibenarkan (lalai)</translation>
 <translation id="2512413427717747692">Tetapkan Chrome sebagai butang penyemak imbas lalai, tekan Enter untuk menetapkan Chrome sebagai penyemak imbas lalai sistem dalam tetapan iOS</translation>
-<translation id="2513217232843681817">Google Account anda mungkin mengandungi bentuk sejarah penyemakan imbas yang lain pada <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, seperti lawatan semak imbas automatik dalam <ph name="BEGIN_LINK_GAA" />Aktiviti Apl Gemini<ph name="END_LINK_GAA" /> anda</translation>
 <translation id="2515629240566999685">Semak isyarat di kawasan anda</translation>
 <translation id="2518584823165598232">Kad ini tidak tersedia. Sila hubungi penyedia kad anda.</translation>
 <translation id="2521385132275182522">Kokot bawah sebelah kanan</translation>
@@ -3966,7 +3966,6 @@ Butiran tambahan:
 <translation id="7584287158780898016">Dayakan makluman penjejakan harga</translation>
 <translation id="7586676035079382730">Pemberitahuan tidak dibenarkan</translation>
 <translation id="7588707273764747927">Pindahkan</translation>
-<translation id="7589062909165841767">Google Account anda mungkin mengandungi <ph name="BEGIN_LINK_GAA" />Aktiviti Apl Gemini<ph name="END_LINK_GAA" /> anda</translation>
 <translation id="7591288787774558753">Kongsi kandungan sulit?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> mahu menggunakan kuki dan data tapak pada <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Sijil pelayan melanggar kekangan nama.</translation>
@@ -4258,7 +4257,6 @@ Butiran tambahan:
 <translation id="8075736640322370409">Buat Google Sheets baharu dengan pantas</translation>
 <translation id="8075898834294118863">Urus tetapan laman</translation>
 <translation id="8076492880354921740">Tab</translation>
-<translation id="8076880883123051368">Google Account anda mungkin mengandungi bentuk sejarah penyemakan imbas yang lain pada <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, seperti <ph name="BEGIN_LINK_GAA" />Aktiviti Apl Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="8077465698530018904">Alih keluar rantau yang dipilih</translation>
 <translation id="8077669823243888800">Sampul Cina #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Muat naik fail sulit?}other{Muat naik fail sulit?}}</translation>
@@ -4310,6 +4308,7 @@ Butiran tambahan:
 <translation id="8163468049564974856">Hidupkan autolengkap untuk menyemak keluar dalam talian dengan selamat. Butiran kad anda disulitkan dalam Google Wallet.</translation>
 <translation id="8163866351304776260">Empat tebukan kiri</translation>
 <translation id="8164078261547504572">Mahu dimaklumkan melalui e-mel apabila terdapat penurunan harga?</translation>
+<translation id="8166435925529495192">Google Account anda mungkin mengandungi <ph name="BEGIN_LINK_GAA" />Sejarah Gemini<ph name="END_LINK_GAA" /> anda</translation>
 <translation id="8169175551046720804">Kekunci "<ph name="DATA_CONTROLS_KEYS" />" tidak boleh ditetapkan dalam kamus yang sama</translation>
 <translation id="8172809706700703589">Buat senarai barang untuk dibawa bagi perjalanan saya</translation>
 <translation id="8174047975335711832">Maklumat peranti</translation>
@@ -4976,6 +4975,7 @@ Butiran tambahan:
     &lt;li&gt;Cuba nyahpasang atau lumpuhkan  "<ph name="SOFTWARE_NAME" />"&lt;/li&gt;
     &lt;li&gt;Cuba sambung ke rangkaian lain&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">Google Account anda mungkin mengandungi bentuk sejarah penyemakan imbas yang lain pada <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, seperti lawatan semak imbas automatik dalam <ph name="BEGIN_LINK_GAA" />Sejarah Gemini<ph name="END_LINK_GAA" /> anda</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Tambah IBAN</translation>
 <translation id="995782501881226248">YouTube</translation>

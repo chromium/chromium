@@ -3,6 +3,7 @@
 <translationbundle lang="uk">
 <translation id="1008557486741366299">Не зараз</translation>
 <translation id="100957008357583611">Використовувати геодані?</translation>
+<translation id="1010148478459329879">Історія вебперегляду (зокрема <ph name="BEGIN_LINK_GAA" />історія дій у Gemini<ph name="END_LINK_GAA" />) також може зберігатись у вашому обліковому записі Google на сторінці <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="1010200102790553230">Завантажити сторінку пізніше</translation>
 <translation id="1010225406377140704">Зв’яжіться з відправником і попросіть надіслати нове посилання</translation>
 <translation id="1011206368273183593">Підготовка файлів</translation>
@@ -920,7 +921,6 @@
 <translation id="251033673027346551">Перейдіть у Google Гаманець, щоб керувати <ph name="BEGIN_LINK" />даними й налаштуваннями конфіденційності<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Заборонено (за умовчанням)</translation>
 <translation id="2512413427717747692">Кнопка "Зробити Chrome веб-переглядачем за умовчанням": щоб зробити Chrome веб-переглядачем системи за умовчанням у налаштуваннях iOS, натисніть Enter</translation>
-<translation id="2513217232843681817">Історія вебперегляду (зокрема дані про відвідування сайтів у режимі автоматичного вебперегляду в <ph name="BEGIN_LINK_GAA" />історії дій у додатках Gemini<ph name="END_LINK_GAA" />) також може зберігатись у вашому обліковому записі Google на сторінці <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="2515629240566999685">перевірити сигнал у своїй місцевості</translation>
 <translation id="2518584823165598232">Ця картка недоступна. Зв’яжіться з її постачальником.</translation>
 <translation id="2521385132275182522">Скріпити внизу праворуч</translation>
@@ -3965,7 +3965,6 @@
 <translation id="7584287158780898016">Увімкніть сповіщення про відстеження цін</translation>
 <translation id="7586676035079382730">Сповіщення заборонено</translation>
 <translation id="7588707273764747927">Трансферний папір</translation>
-<translation id="7589062909165841767">У вашому обліковому записі Google може зберігатись <ph name="BEGIN_LINK_GAA" />історія дій у додатках Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">Поділитися конфіденційним контентом?</translation>
 <translation id="7591636454931265313">Сайт <ph name="EMBEDDED_URL" /> хоче отримати доступ до файлів cookie й даних сайту <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Сертифікат сервера порушує обмежувальні умови щодо імен.</translation>
@@ -4257,7 +4256,6 @@
 <translation id="8075736640322370409">Швидко створюйте нові таблиці Google</translation>
 <translation id="8075898834294118863">Керувати налаштуваннями сайтів</translation>
 <translation id="8076492880354921740">Вкладки</translation>
-<translation id="8076880883123051368">Історія вебперегляду (зокрема <ph name="BEGIN_LINK_GAA" />історія дій у додатках Gemini<ph name="END_LINK_GAA" />) також може зберігатись у вашому обліковому записі Google на сторінці <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="8077465698530018904">Вилучити вибрану область</translation>
 <translation id="8077669823243888800">Конверт Chinese № 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Завантажити конфіденційний файл?}one{Завантажити конфіденційні файли?}few{Завантажити конфіденційні файли?}many{Завантажити конфіденційні файли?}other{Завантажити конфіденційні файли?}}</translation>
@@ -4309,6 +4307,7 @@
 <translation id="8163468049564974856">Увімкніть автозаповнення, щоб безпечно здійснювати покупки онлайн. Дані картки шифруються в Google Гаманці.</translation>
 <translation id="8163866351304776260">Пробити чотири отвори ліворуч</translation>
 <translation id="8164078261547504572">Хочете отримувати електронні листи про зниження цін?</translation>
+<translation id="8166435925529495192"><ph name="BEGIN_LINK_GAA" />Історія дій у Gemini<ph name="END_LINK_GAA" /> також може зберігатись у вашому обліковому записі Google</translation>
 <translation id="8169175551046720804">Ключі "<ph name="DATA_CONTROLS_KEYS" />" не можна додати в той самий словник</translation>
 <translation id="8172809706700703589">Створи список речей, які потрібно взяти в поїздку</translation>
 <translation id="8174047975335711832">Інформація про пристрій</translation>
@@ -4975,6 +4974,7 @@
     &lt;li&gt;Видаліть або вимкніть <ph name="SOFTWARE_NAME" />&lt;/li&gt;
     &lt;li&gt;Під’єднайтеся до іншої мережі&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">Історія вебперегляду (зокрема дані автоматичного вебперегляду з <ph name="BEGIN_LINK_GAA" />історії дій у Gemini<ph name="END_LINK_GAA" />) також може зберігатись у вашому обліковому записі Google на сторінці <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Додати номер IBAN</translation>
 <translation id="995782501881226248">YouTube</translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="km">
 <translation id="1008557486741366299">មិនមែនឥឡូវនេះទេ</translation>
 <translation id="100957008357583611">ប្រើទីតាំងរបស់អ្នកឬ?</translation>
+<translation id="1010148478459329879">គណនី Google របស់អ្នក​អាចមាន​ទម្រង់​ផ្សេងទៀត​នៃប្រវត្តិ​រុករក​តាមអ៊ីនធឺណិត​នៅ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> ដូចជា<ph name="BEGIN_LINK_GAA" />ប្រវត្តិ Gemini<ph name="END_LINK_GAA" /> របស់អ្នក​ជាដើម</translation>
 <translation id="1010200102790553230">ផ្ទុកទំព័រនៅ​ពេលក្រោយ</translation>
 <translation id="1010225406377140704">សូម​ទាក់ទង​ទៅអ្នកផ្ញើ ដើម្បី​ស្នើសុំ​តំណថ្មី</translation>
 <translation id="1011206368273183593">កំពុងរៀបចំ​ឯកសារ</translation>
@@ -923,7 +924,6 @@
 <translation id="251033673027346551">ចូលទៅកាន់ Google Wallet ដើម្បីគ្រប់គ្រង<ph name="BEGIN_LINK" />ចំណូលចិត្តទិន្នន័យ និងឯកជនភាព<ph name="END_LINK" />។</translation>
 <translation id="2512101340618156538">មិនអនុញ្ញាត (លំនាំដើម)</translation>
 <translation id="2512413427717747692">កំណត់ Chrome ជាប៊ូតុងកម្មវិធីរុករកតាមអ៊ីនធឺណិតលំនាំដើម ចុច "Enter" ដើម្បីកំណត់ Chrome ជាកម្មវិធីរុករកតាមអ៊ីនធឺណិតលំនាំដើមរបស់ប្រព័ន្ធនៅក្នុងការកំណត់ iOS</translation>
-<translation id="2513217232843681817">គណនី Google របស់អ្នក​អាចមាន​ទម្រង់​ផ្សេងទៀត​នៃប្រវត្តិ​រុករក​តាមអ៊ីនធឺណិត​នៅ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> ដូចជា​ការចូលមើល​តាមរយៈការរុករកស្វ័យប្រវត្តិ​នៅក្នុង<ph name="BEGIN_LINK_GAA" />សកម្មភាព​កម្មវិធី Gemini<ph name="END_LINK_GAA" /> របស់អ្នក​ជាដើម</translation>
 <translation id="2515629240566999685">ពិនិត្យសេវានៅក្នុងតំបន់របស់អ្នក</translation>
 <translation id="2518584823165598232">មិនអាច​ប្រើ​កាតនេះ​បានទេ។ សូម​ទាក់ទង​ទៅក្រុមហ៊ុនផ្ដល់​សេវាកាត​របស់អ្នក។</translation>
 <translation id="2521385132275182522">កិប​ខាងក្រោម​ផ្នែកខាង​ស្ដាំ</translation>
@@ -3969,7 +3969,6 @@
 <translation id="7584287158780898016">បើក​ការជូនដំណឹង​អំពី​ការតាមដានតម្លៃ</translation>
 <translation id="7586676035079382730">មិនបានអនុញ្ញាតឱ្យមានការជូនដំណឹងទេ</translation>
 <translation id="7588707273764747927">ផ្ទេរ</translation>
-<translation id="7589062909165841767">គណនី Google របស់អ្នក​អាចមាន<ph name="BEGIN_LINK_GAA" />សកម្មភាព​កម្មវិធី Gemini<ph name="END_LINK_GAA" /> របស់អ្នក</translation>
 <translation id="7591288787774558753">ចែករំលែក​ខ្លឹមសារ​សម្ងាត់ឬ?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> ចង់ប្រើ​ទិន្នន័យ​គេហទំព័រ និង​ខូគី​នៅលើ <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">វិញ្ញាបនប័ត្រម៉ាស៊ីនមេបំពានលើឧបសគ្គឈ្មោះ។</translation>
@@ -4262,7 +4261,6 @@
 <translation id="8075736640322370409">បង្កើត​បញ្ជី Google ថ្មីបានរហ័ស</translation>
 <translation id="8075898834294118863">គ្រប់គ្រងការកំណត់គេហទំព័រ</translation>
 <translation id="8076492880354921740">ផ្ទាំង</translation>
-<translation id="8076880883123051368">គណនី Google របស់អ្នក​អាចមាន​ទម្រង់​ផ្សេងទៀត​នៃប្រវត្តិ​រុករក​តាមអ៊ីនធឺណិត​នៅ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> ដូចជា<ph name="BEGIN_LINK_GAA" />សកម្មភាព​កម្មវិធី Gemini<ph name="END_LINK_GAA" /> របស់អ្នក​ជាដើម</translation>
 <translation id="8077465698530018904">ដកតំបន់ដែលបានជ្រើសរើសចេញ</translation>
 <translation id="8077669823243888800">ស្រោមសំបុត្រចិន #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{បង្ហោះ​ឯកសារសម្ងាត់ឬ?}other{បង្ហោះ​ឯកសារសម្ងាត់ឬ?}}</translation>
@@ -4314,6 +4312,7 @@
 <translation id="8163468049564974856">បើកការបំពេញស្វ័យប្រវត្តិ ដើម្បីបង់ប្រាក់ចេញដោយសុវត្ថិភាពលើអ៊ីនធឺណិត។ ព័ត៌មានលម្អិតកាតរបស់អ្នក​ត្រូវបាន​អ៊ីនគ្រីប​នៅក្នុង Google Wallet។</translation>
 <translation id="8163866351304776260">ចោះ​បួនរន្ធ​ខាងឆ្វេង</translation>
 <translation id="8164078261547504572">ចង់​ទទួលបាន​អ៊ីមែល​នៅ​ពេល​ធ្លាក់​ថ្លៃ​មែនទេ?</translation>
+<translation id="8166435925529495192">គណនី Google របស់អ្នក​អាចមាន<ph name="BEGIN_LINK_GAA" />ប្រវត្តិ Gemini<ph name="END_LINK_GAA" /> របស់អ្នក</translation>
 <translation id="8169175551046720804">មិនអាច​កំណត់កូដ "<ph name="DATA_CONTROLS_KEYS" />" នៅក្នុង​វចនានុក្រម​តែមួយ​បានទេ</translation>
 <translation id="8172809706700703589">បង្កើតបញ្ជីវេចខ្ចប់សម្រាប់ដំណើរកម្សាន្តរបស់ខ្ញុំ</translation>
 <translation id="8174047975335711832">ព័ត៌មានឧបករណ៍</translation>
@@ -4978,6 +4977,7 @@
     &lt;li&gt;សាកល្បងលុប ឬបិទ "<ph name="SOFTWARE_NAME" />"&lt;/li&gt;
     &lt;li&gt;សាកល្បងភ្ជាប់ទៅបណ្តាញផ្សេង&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">គណនី Google របស់អ្នក​អាចមាន​ទម្រង់​ផ្សេងទៀត​នៃប្រវត្តិ​រុករក​តាមអ៊ីនធឺណិត​នៅ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> ដូចជា​ការចូលមើល​តាមរយៈការរុករកស្វ័យប្រវត្តិ​នៅក្នុង<ph name="BEGIN_LINK_GAA" />ប្រវត្តិ Gemini<ph name="END_LINK_GAA" /> របស់អ្នក​ជាដើម</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">បញ្ចូល IBAN</translation>
 <translation id="995782501881226248">YouTube</translation>

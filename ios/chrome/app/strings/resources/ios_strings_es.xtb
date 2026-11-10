@@ -9,6 +9,7 @@
 <translation id="1013952917065545813">Puedes volver aquí para abrir de nuevo las últimas pestañas que hayas cerrado recientemente.</translation>
 <translation id="1016495303386450659">Elemento actualizado</translation>
 <translation id="1018804590490383958">Escanear y autocompletar</translation>
+<translation id="1019990162050689579">Actividad en la aplicación Gemini</translation>
 <translation id="102471647093736603">Mantén pulsado para mover</translation>
 <translation id="102645702181682900">Tarea iniciada</translation>
 <translation id="102916930470544692">Llave de acceso</translation>
@@ -391,6 +392,7 @@
 <translation id="2139867232736819575">Buscar el texto que has copiado</translation>
 <translation id="2140913838150159519">Fijar una pestaña</translation>
 <translation id="2147127444698817042">Solo disponible en iPhone</translation>
+<translation id="2148326276832455306">Las conversaciones se revisan y se usan para mejorar la IA de Google. Puedes <ph name="BEGIN_LINK" />gestionar tu actividad<ph name="END_LINK" />, incluida información sobre tu ubicación. <ph name="BEGIN_LINK" />Consulta más información sobre tus opciones<ph name="END_LINK" />.</translation>
 <translation id="2148799636999124959">Inicia sesión rápidamente en sitios y apps con tus contraseñas guardadas.</translation>
 <translation id="2149968176347646218">La conexión no es segura</translation>
 <translation id="2149973817440762519">Editar marcador</translation>
@@ -456,6 +458,7 @@
 <translation id="2327445548174191329">De <ph name="DEVICE_NAME" /></translation>
 <translation id="2330607597130465898">Sin protección</translation>
 <translation id="233375395665273385">Eliminar y cerrar sesión</translation>
+<translation id="2340966584724330791">Google recoge tus conversaciones y lo que compartes con Gemini, como archivos, vídeos, pantallas y fotos. También recoge tus comentarios, información de los sitios web que visitas con Gemini, datos de uso del producto e información de ubicación (incluida la ubicación general o la dirección IP de tu dispositivo, o las direcciones de casa o del trabajo de tu cuenta de Google).</translation>
 <translation id="2350463587705616331">Color de fondo sepia</translation>
 <translation id="2351097562818989364">Se han restablecido tus ajustes de traducción.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Puedes guardar tu contraseña de {DOMAIN_ONE} en tu cuenta de Google ({EMAIL}).}=2{Puedes guardar tus contraseñas de {DOMAIN_ONE} y {DOMAIN_TWO} en tu cuenta de Google ({EMAIL}).}=3{Puedes guardar tus contraseñas de {DOMAIN_ONE}, {DOMAIN_TWO} y {OTHER_DOMAINS_COUNT} más en tu cuenta de Google ({EMAIL}).}other{Puedes guardar tus contraseñas de {DOMAIN_ONE}, {DOMAIN_TWO} y {OTHER_DOMAINS_COUNT} más en tu cuenta de Google ({EMAIL}).}}</translation>
@@ -668,7 +671,6 @@
 <translation id="3038136505713492417">Verifica que eres tú para usar tus llaves de acceso en este dispositivo</translation>
 <translation id="3039671569659952257">Eliminar carpeta</translation>
 <translation id="3041835740069544003">Ahora, Chrome puede detectar y rellenar más formularios con Comprensión de formularios más inteligente. Para ello, el contenido y las URLs de las páginas se pueden procesar en un espacio privado en la nube. Puedes gestionar esta función en la configuración.</translation>
-<translation id="3042118633250374317">Google usa tu historial para ofrecer sus servicios, proteger a Google, a sus usuarios y al público en general, y desarrollar y mejorar sus servicios con la ayuda de revisores humanos. No incluyas información que no quieras que se revise ni use.</translation>
 <translation id="3050988301648974170">Abrir Revisión de contraseñas</translation>
 <translation id="3053332585453689122">Envía las URLs que visitas y una pequeña muestra del contenido de la página, de las descargas, de la actividad de las extensiones y de la información del sistema a Navegación segura de Google para comprobar si son dañinas.</translation>
 <translation id="3055102495753300780">Almacenamiento de información</translation>
@@ -740,6 +742,7 @@
 <translation id="3265736395246760288">Inicia sesión más rápido desde cualquiera de tus dispositivos sincronizados.</translation>
 <translation id="3268166994745151153">Esto significa que perderás tu progreso actual</translation>
 <translation id="3272527697863656322">Cancelar</translation>
+<translation id="3272955648592358996">Tus datos mejoran la IA de Google</translation>
 <translation id="3273510436356991673">Personaliza tu pantalla de inicio</translation>
 <translation id="327455571215090823">Función Autocompletar más inteligente y privada</translation>
 <translation id="3277021493514034324">Se ha copiado la dirección del sitio web</translation>
@@ -916,6 +919,7 @@
 <translation id="3888863481921783344">Se usará para mostrarte posibles invitados a tu evento.</translation>
 <translation id="3891414008432200754">Precio</translation>
 <translation id="3892144330757387737">Aquí verás tu historial</translation>
+<translation id="3892695492576181257">Si esta opción está activada, tu actividad se guarda en Actividad en las Aplicaciones de Gemini durante 18 meses, aunque puedes cambiar este periodo a 3 o 36 meses. Google usa tu actividad para desarrollar y mejorar sus servicios (incluidos los modelos de Gemini), así como para proteger a Google, a sus usuarios y al público en general con la ayuda de revisores humanos. Los datos revisados por proveedores de servicios se desvinculan de tu cuenta y se guardan durante 3 años.</translation>
 <translation id="3893858854379998374">Para guardar marcadores en tu cuenta, elimina los que no uses</translation>
 <translation id="3897092660631435901">Menú</translation>
 <translation id="3904270275864974753">Editar carrusel</translation>
@@ -1110,7 +1114,6 @@
 <translation id="4488754974567924717">Si se vulneran tus contraseñas, te avisaremos</translation>
 <translation id="4489536976005181779">{count,plural, =1{Página añadida a la lista de lectura de tu cuenta ({email})}other{Páginas añadidas a la lista de lectura de tu cuenta ({email})}}</translation>
 <translation id="4493604894403585654">Has iniciado sesión como <ph name="USER_EMAIL" />. Puedes detener la sincronización en cualquier momento desde la configuración. Google puede personalizar la Búsqueda y otros servicios en función de tu historial.</translation>
-<translation id="4495251723189610737">Tus conversaciones se guardarán en tu historial de Gemini. El historial incluye tus grabaciones de audio, vídeos de Gemini Live y pantallas compartidas, lo que compartes con Gemini (como peticiones, <ph name="BEGIN_LINK" />subidas<ph name="END_LINK" /> y <ph name="BEGIN_LINK" />pantallas<ph name="END_LINK" />), las respuestas de Gemini, las tareas y las llamadas a herramientas, tus comentarios, información de los sitios web que visitas con Gemini, datos de uso de productos, la ubicación general de tu dispositivo, la dirección IP y las direcciones de casa o del trabajo de tu cuenta de Google. También puede incluir datos de las aplicaciones que conectes a Gemini.</translation>
 <translation id="4502423230170890588">Eliminar del dispositivo</translation>
 <translation id="4508486880075514067">Ampliar a pantalla completa</translation>
 <translation id="4508750114462689118">Cierra el inicio de sesión en la promoción</translation>
@@ -1215,7 +1218,6 @@
 <translation id="4808744395915275922">Actualizaciones</translation>
 <translation id="4813345808229079766">Conexión</translation>
 <translation id="4821595350501541683">Se han cerrado las pestañas y eliminado los datos de navegación</translation>
-<translation id="4821645169621230110">Cómo se usa tu historial</translation>
 <translation id="4823322556950229674">Puedes mantener pulsada la barra de direcciones y el botón para volver y moverlos a la parte inferior</translation>
 <translation id="4824480232751123840">Volumen</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} y 1 más}other{{domain} y {count} más}}</translation>
@@ -1243,7 +1245,6 @@
 <translation id="4877597489778380935">Recordar más tarde</translation>
 <translation id="4881695831933465202">Abrir</translation>
 <translation id="4883766694719903356">Cuadrícula de pestañas de Incógnito</translation>
-<translation id="4884205780547482830">Tus datos ayudan a entrenar la IA generativa</translation>
 <translation id="4884937942297374058">La protección mejorada está desactivada</translation>
 <translation id="4887391901725877182">Subtítulos</translation>
 <translation id="488785315393301722">Mostrar detalles</translation>
@@ -1330,7 +1331,6 @@
 <translation id="5128788795241319992">Explora el nuevo menú</translation>
 <translation id="5132942445612118989">Sincroniza tus contraseñas, tu historial y más en todos tus dispositivos</translation>
 <translation id="5137568953923142260">Permitir una vez</translation>
-<translation id="5139344197062265975">Usa el micrófono para hablar con Gemini. Cuando le hablas a Gemini, el audio se guarda en el historial de Gemini (si la opción está activada). Tus datos no se usan para mejorar modelos de IA generativa.</translation>
 <translation id="5141363746588976328">Ocultar tarjeta Bajadas de precio en tus pestañas</translation>
 <translation id="514154868070499296">Fuente: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Salir de la función de cambio de pestaña</translation>
@@ -1430,6 +1430,7 @@
 <translation id="5447973833955560753">Contraseña de recuperación</translation>
 <translation id="5448623529214315261">Foto guardada <ph name="INDEX" /></translation>
 <translation id="5452354193031718372">Usar contraseña segura:</translation>
+<translation id="5453088693079603292">Qué actividad se recoge</translation>
 <translation id="5454211924362324495">Para impedir que otros usuarios usen tu contraseña, <ph name="BEGIN_LINK" />cámbiala en <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Añade algo a tu búsqueda</translation>
 <translation id="5457226814769348910">Abrir versión sin conexión</translation>
@@ -1543,6 +1544,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="5801568494490449797">Preferencias</translation>
 <translation id="5803566855766646066">¿Seguro que quieres descartar esta nueva tarjeta?</translation>
 <translation id="5804241973901381774">Permisos</translation>
+<translation id="58081802114142635">Tu actividad mejora la IA de Google</translation>
 <translation id="5817176759448082654">Revisión de contraseñas</translation>
 <translation id="5818161931099046557">Editar en la cuenta de Google</translation>
 <translation id="5819208479324046259">Gestionado por <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
@@ -1591,6 +1593,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="5971459446352190251">Búsqueda mediante códigos QR</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 marcador eliminado}other{{count} marcadores eliminados}}</translation>
 <translation id="5972844218283131174">Desmarcar todo</translation>
+<translation id="597482816780655631">Gemini es una IA y puede cometer errores, incluso sobre personas. Es posible que parte del contenido no sea adecuado para todos los usuarios. Las conversaciones se revisan y se usan para mejorar la IA de Google. <ph name="BEGIN_LINK" />Consulta más información sobre tus opciones<ph name="END_LINK" />. Se aplican nuestros <ph name="BEGIN_LINK" />Términos<ph name="END_LINK" /> y el <ph name="BEGIN_LINK" />Aviso de Privacidad<ph name="END_LINK" />.</translation>
 <translation id="5976160379964388480">Otros</translation>
 <translation id="5977976211062815271">En este dispositivo</translation>
 <translation id="5986043348928676121">Siguiente</translation>
@@ -1601,7 +1604,6 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6000893618966378846">"Eliminar datos de navegación" completado</translation>
 <translation id="6004988584831654445">¡Todo listo! Recibe notificaciones cuando haya nuevas tareas.</translation>
 <translation id="6006672969046233841">Nueva pestaña</translation>
-<translation id="6006758170939001741">Se aplican nuestros <ph name="BEGIN_LINK" />Términos<ph name="END_LINK" />, los <ph name="BEGIN_LINK" />Términos del Servicio de Ubicación de Corea<ph name="END_LINK" /> y el <ph name="BEGIN_LINK" />Aviso de Privacidad<ph name="END_LINK" />. Las conversaciones se revisan y se usan para entrenar modelos de IA generativa. Gemini es una IA y puede cometer errores, incluso sobre personas. Es posible que parte del contenido no sea adecuado para todos los usuarios. Puedes <ph name="BEGIN_LINK" />gestionar tu historial<ph name="END_LINK" />, incluida la <ph name="BEGIN_LINK" />información sobre tu ubicación<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Más información sobre tus opciones<ph name="END_LINK" /></translation>
 <translation id="6011308810877101166">Mejorar las sugerencias de búsqueda</translation>
 <translation id="6012140227487808125">Cifrando...</translation>
 <translation id="6014801569448771146">Comprueba tus contraseñas</translation>
@@ -1698,6 +1700,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="628251768213143684">Siempre puedes gestionar lo que se guarda en tu cuenta de Google</translation>
 <translation id="6284652193729350524">Ofrecer traducir del <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Para activar Navegación segura, abre <ph name="BEGIN_LINK" />Servicios de Google<ph name="END_LINK" /> y toca Navegación segura.</translation>
+<translation id="6295140892595702619">Usa el micrófono para hablar con Gemini. Cuando le hablas a Gemini, el audio se almacena en Actividad en las Aplicaciones de Gemini (si la opción está activada). Tus datos no se usan para mejorar modelos de IA generativa.</translation>
 <translation id="6295751040240588413">Nombre de la tarjeta no válido</translation>
 <translation id="629730747756840877">Cuenta</translation>
 <translation id="6301104306974789820">Recibe notificaciones de seguimiento de precios</translation>
@@ -1817,6 +1820,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6609890790934458793">Se eliminarán las contraseñas de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> y <ph name="THIRD_WEBSITE" />. Tus cuentas no se eliminarán.</translation>
 <translation id="661266467055912436">Mejora tu seguridad y la de todo el mundo en la Web.</translation>
 <translation id="6612912757320004438">Permitir notificaciones de pestañas…</translation>
+<translation id="6613372200395638275">Para ofrecerte ayuda personalizada, Gemini comparte algunos de tus datos (como partes de tus conversaciones, tu ubicación y otra información pertinente) con otros servicios de Google, como Maps y Vuelos. Esos servicios pueden usar la información para mejorar, aunque luego elimines tu actividad en las aplicaciones de Gemini. Consulta más información en el <ph name="BEGIN_LINK" />Centro de Privacidad de las Aplicaciones de Gemini<ph name="END_LINK" />.</translation>
 <translation id="6617761071025228250">Borrar texto</translation>
 <translation id="6619015782482868078">Tema aguamarina</translation>
 <translation id="6620279676667515405">Cancelar</translation>
@@ -1892,7 +1896,6 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6830728435402077660">No es seguro</translation>
 <translation id="6831043979455480757">Traducir</translation>
 <translation id="6842136130964845393">Verifica tu identidad para asegurarte de que siempre tengas acceso a tus contraseñas guardadas</translation>
-<translation id="6843744036364481304">Qué historial de chat se guarda</translation>
 <translation id="6844773122575789617">Activar Modo IA</translation>
 <translation id="6851516051005285358">Solicitar sitio para ordenadores</translation>
 <translation id="6857446173140146664">Eliminar fondo</translation>
@@ -1977,6 +1980,7 @@ Para continuar desde tu ordenador, cambia a <ph name="OTHER_EMAIL" />. Podrás a
 <translation id="7091023926159231962">{count,plural, =1{No se ha podido importar {count} contraseña}other{No se han podido importar {count} contraseñas}}</translation>
 <translation id="7095110968493193530">En el gestor de contraseñas de Google de <ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">En la barra de direcciones, toca el historial de precios para ver los cambios de precio a lo largo del tiempo</translation>
+<translation id="7098554251807199977">Ni tus conversaciones con Gemini ni tus <ph name="BEGIN_LINK" />datos de Google Workspace<ph name="END_LINK" /> serán revisados ni se usarán de ningún otro modo para mejorar los modelos de IA generativa.</translation>
 <translation id="7102005569666697658">Descargando… (<ph name="FILE_SIZE" />)</translation>
 <translation id="7104701424653979232">Menú → Configuración → Métodos de pago</translation>
 <translation id="7108338896283013870">Ocultar</translation>
@@ -2017,7 +2021,6 @@ Para continuar desde tu ordenador, cambia a <ph name="OTHER_EMAIL" />. Podrás a
 <translation id="7223134495231529579">Guardar en Descargas</translation>
 <translation id="722339453342442311">Comprobar ahora</translation>
 <translation id="7227235818314667565">Gestionar uso compartido</translation>
-<translation id="7232376892719594461">Ni tus conversaciones con Gemini ni tus <ph name="BEGIN_LINK" />datos de Google Workspace<ph name="END_LINK" /> se revisarán ni se usarán para entrenar modelos de IA generativa.</translation>
 <translation id="7233006041370588369">Selecciona la contraseña que quieras rellenar.</translation>
 <translation id="7238074332967840767">Seguridad</translation>
 <translation id="723874023660911012">Cambiar de perfil</translation>
@@ -2133,7 +2136,6 @@ Puedes reiniciar Level Up en cualquier momento.</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{¿Cerrar {COUNT} pestaña inactiva?}other{¿Cerrar {COUNT} pestañas inactivas?}}</translation>
 <translation id="7598439272585186139">Aumenta la seguridad</translation>
 <translation id="7600965453749440009">No traducir nunca del <ph name="LANGUAGE" /></translation>
-<translation id="760230853074995500">Las conversaciones se revisan y se usan para entrenar modelos de IA generativa. Puedes <ph name="BEGIN_LINK" />gestionar tu historial<ph name="END_LINK" />, incluida la <ph name="BEGIN_LINK" />información sobre tu ubicación<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Más información sobre tus opciones<ph name="END_LINK" />.</translation>
 <translation id="7603308509262646847">Autocompletar el titular de la tarjeta: <ph name="NAME" /></translation>
 <translation id="7603852183842204213">Pop-ups bloqueados (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">La sincronización no funciona</translation>
@@ -2419,6 +2421,7 @@ Puedes reiniciar Level Up en cualquier momento.</translation>
 <translation id="8439758443371991593">Ocultar Añadir a lista de lectura</translation>
 <translation id="8443986842926457191">La URL contiene más de 2048 caracteres</translation>
 <translation id="8449869326050867919">Contraseña compartida</translation>
+<translation id="8461708300275916315">Si tienes menos de 18 años</translation>
 <translation id="8473815223723723001">Editar imagen con Gemini</translation>
 <translation id="8473863474539038330">Direcciones y más</translation>
 <translation id="8474378002946546633">Permitir notificaciones</translation>
@@ -2498,6 +2501,7 @@ Puedes reiniciar Level Up en cualquier momento.</translation>
 <translation id="8672733398999596205">Habilitar todo</translation>
 <translation id="8674716540979958118">Tienes contraseñas vulneradas.</translation>
 <translation id="8679900250380464358">Añadir a lista de lectura</translation>
+<translation id="8680643216091361291">El ajuste <ph name="BEGIN_LINK" />Guardar actividad<ph name="END_LINK" /> está desactivado de forma predeterminada. Cuando está desactivado, Google guarda tus conversaciones durante 3 días y las usa para que las aplicaciones de Gemini funcionen correctamente, para proteger su seguridad y para solucionar problemas a partir de tus opiniones. Puedes activar el ajuste Guardar actividad y ayudar a mejorar la IA de Google para todos los usuarios.</translation>
 <translation id="8680787084697685621">La información de inicio de sesión no está actualizada.</translation>
 <translation id="868648444055742370">"<ph name="SITE_DOMAIN" />" no tiene permiso para acceder a tu micrófono</translation>
 <translation id="8690752723634292147">Confirmar eliminación</translation>
@@ -2529,7 +2533,6 @@ Puedes reiniciar Level Up en cualquier momento.</translation>
 <translation id="8746155870861185046">Compartir resaltado</translation>
 <translation id="8748678031495824833">Abrir herramientas de IA en la página</translation>
 <translation id="8750037785291841318">Aquí verás tus pestañas</translation>
-<translation id="8751126814549746156">Tu historial se elimina automáticamente al cabo de 18 meses. Puedes cambiar este periodo en Ajustes. Las conversaciones revisadas por los proveedores de servicios se separan de tu cuenta y se conservan durante un máximo de 3 años. Puedes <ph name="BEGIN_LINK" />desactivar<ph name="END_LINK" /> el ajuste Historial en cualquier momento.</translation>
 <translation id="8756969031206844760">¿Quieres actualizar la contraseña?</translation>
 <translation id="8763613688786959833">Ir a la última pestaña</translation>
 <translation id="8766790350274092814">Se eliminarán las contraseñas de <ph name="WEBSITE" /> y <ph name="SECOND_WEBSITE" />. Tus cuentas no se eliminarán.</translation>
@@ -2556,6 +2559,7 @@ Puedes reiniciar Level Up en cualquier momento.</translation>
 <translation id="882557203579758546">Buscar en la página…</translation>
 <translation id="8829809207373502270">Esta llave de acceso ya no funciona. Se ha eliminado de <ph name="WEBSITE" /> y pronto se eliminará de aquí. <ph name="BEGIN_LINK" />Información sobre las llaves de acceso<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Cerrar todas las inactivas</translation>
+<translation id="8831871601813227635">Se aplican nuestros <ph name="BEGIN_LINK" />Términos<ph name="END_LINK" />, los <ph name="BEGIN_LINK" />Términos del Servicio de Ubicación de Corea<ph name="END_LINK" /> y el <ph name="BEGIN_LINK" />Aviso de Privacidad<ph name="END_LINK" />. Las conversaciones se revisan y se usan para mejorar la IA de Google. Gemini es una IA y puede cometer errores, incluso sobre personas. Es posible que parte del contenido no sea adecuado para todos los usuarios. Puedes <ph name="BEGIN_LINK" />gestionar tu actividad<ph name="END_LINK" />, incluida información sobre tu ubicación. <ph name="BEGIN_LINK" />Consulta más información sobre tus opciones<ph name="END_LINK" />.</translation>
 <translation id="8837654851594567190">Ordenar por editor</translation>
 <translation id="884351711508006491">Tu información se guarda en tu dispositivo.</translation>
 <translation id="8844136307393039959">Bajada de precio en el producto que sigues</translation>
@@ -2575,7 +2579,6 @@ Puedes reiniciar Level Up en cualquier momento.</translation>
 <translation id="8893208530912252670">Vídeos</translation>
 <translation id="890009681345348416">Más de 40 contraseñas autocompletadas</translation>
 <translation id="8900845556227858314">Aplicación de navegador</translation>
-<translation id="8903042868629070803">Si tienes 18 años o más, Google también usa tu historial para <ph name="BEGIN_LINK" />entrenar modelos de IA generativa<ph name="END_LINK" />. Puedes <ph name="BEGIN_LINK" />desactivar esta opción<ph name="END_LINK" /> para futuras conversaciones en cualquier momento.</translation>
 <translation id="890565330728586731">Atrás</translation>
 <translation id="8907722425137681851">Buscar en la página…</translation>
 <translation id="8909135823018751308">Compartir…</translation>
@@ -2628,7 +2631,6 @@ Puedes reiniciar Level Up en cualquier momento.</translation>
 <translation id="9066097352053395362">Ocultar Editar marcador</translation>
 <translation id="9070824521421603770">Tu sesión y tus pestañas se cerrarán</translation>
 <translation id="9072837124205571418">Grupos de pestañas de todos los dispositivos</translation>
-<translation id="9073322251019919253">Gemini es una IA y puede cometer errores, incluso sobre personas. Es posible que parte del contenido no sea adecuado para todos los usuarios. Las conversaciones se revisan y se usan para entrenar modelos de IA generativa. Puedes <ph name="BEGIN_LINK" />gestionar tu historial<ph name="END_LINK" />, incluida la <ph name="BEGIN_LINK" />información sobre tu ubicación<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Infórmate sobre tus opciones<ph name="END_LINK" />. Se aplican nuestros <ph name="BEGIN_LINK" />Términos<ph name="END_LINK" /> y el <ph name="BEGIN_LINK" />Aviso de Privacidad<ph name="END_LINK" />.</translation>
 <translation id="9081058212938299310">¿Quieres actualizar la contraseña de <ph name="USERNAME" />?</translation>
 <translation id="908365381820697818">Ahora puedes buscar y rellenar información de Gmail y más</translation>
 <translation id="9083838294503912307">Activa la sincronización para sincronizar y personalizar todos tus dispositivos.</translation>

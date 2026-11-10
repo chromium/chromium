@@ -9,6 +9,7 @@
 <translation id="1013952917065545813">Ovdje se možete vratiti da biste ponovo otvorili kartice koje ste nedavno zatvorili</translation>
 <translation id="1016495303386450659">Stavka je ažurirana</translation>
 <translation id="1018804590490383958">Skenirajte i automatski popunite</translation>
+<translation id="1019990162050689579">Aktivnost u Gemini aplikacijama</translation>
 <translation id="102471647093736603">Pritisnite i zadržite za premještanje</translation>
 <translation id="102645702181682900">Zadatak je pokrenut</translation>
 <translation id="102916930470544692">Pristupni ključ</translation>
@@ -391,6 +392,7 @@
 <translation id="2139867232736819575">Pretraživanje teksta koji ste kopirali</translation>
 <translation id="2140913838150159519">Prikvačivanje kartice</translation>
 <translation id="2147127444698817042">Dostupno samo na iPhoneu</translation>
+<translation id="2148326276832455306">Razgovori se pregledavaju i upotrebljavaju za poboljšanje Googleovog AI-ja. Možete <ph name="BEGIN_LINK" />upravljati svojom aktivnošću<ph name="END_LINK" />, uključujući podatke o svojoj lokaciji. <ph name="BEGIN_LINK" />Saznajte više o svojim odabirima<ph name="END_LINK" />.</translation>
 <translation id="2148799636999124959">Brzo se prijavite na web-lokacije i u aplikacije pomoću spremljenih zaporki.</translation>
 <translation id="2149968176347646218">Veza nije sigurna</translation>
 <translation id="2149973817440762519">Uredi oznaku</translation>
@@ -456,6 +458,7 @@
 <translation id="2327445548174191329">Izvor: <ph name="DEVICE_NAME" /></translation>
 <translation id="2330607597130465898">Nema zaštite</translation>
 <translation id="233375395665273385">Izbriši i odjavi se</translation>
+<translation id="2340966584724330791">Google prikuplja vaše razgovore i sadržaj koji dijelite s Geminijem (kao što su datoteke, videozapisi, zasloni i fotografije). Prikuplja i vaše povratne informacije, podatke s web-lokacija koje posjećujete pomoću Geminija, podatke o upotrebi proizvoda i podatke o lokaciji (uključujući opću lokaciju vašeg uređaja, IP adresu ili kućnu ili poslovnu adresu s vašeg Google računa).</translation>
 <translation id="2350463587705616331">Boja pozadine: sepija</translation>
 <translation id="2351097562818989364">Vaše su postavke prevođenja vraćene na zadano.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Zaporku za {DOMAIN_ONE} možete spremiti na svoj Google račun, {EMAIL}.}=2{Zaporke za {DOMAIN_ONE} i {DOMAIN_TWO} možete spremiti na svoj Google račun, {EMAIL}.}=3{Zaporke za {DOMAIN_ONE}, {DOMAIN_TWO} i još {OTHER_DOMAINS_COUNT} domenu možete spremiti na svoj Google račun, {EMAIL}.}one{Zaporke za {DOMAIN_ONE}, {DOMAIN_TWO} i još {OTHER_DOMAINS_COUNT} domena možete spremiti na svoj Google račun, {EMAIL}.}few{Zaporke za {DOMAIN_ONE}, {DOMAIN_TWO} i još {OTHER_DOMAINS_COUNT} domena možete spremiti na svoj Google račun, {EMAIL}.}other{Zaporke za {DOMAIN_ONE}, {DOMAIN_TWO} i još {OTHER_DOMAINS_COUNT} domena možete spremiti na svoj Google račun, {EMAIL}.}}</translation>
@@ -668,7 +671,6 @@
 <translation id="3038136505713492417">Potvrdite da ste to vi da biste upotrebljavali pristupne ključeve na ovom uređaju</translation>
 <translation id="3039671569659952257">Izbriši mapu</translation>
 <translation id="3041835740069544003">Chrome sada može otkriti i popuniti više obrazaca uz pametnije razumijevanje obrazaca. U tu se svrhu sadržaj i URL-ovi stranica mogu obraditi u privatnom prostoru u oblaku. Upravljajte u postavkama.</translation>
-<translation id="3042118633250374317">Google upotrebljava vašu povijest za pružanje svojih usluga, zaštitu Googlea, njegovih korisnika i javnosti te za razvoj i poboljšanje svojih usluga uz pomoć pregledavatelja. Nemojte uključivati informacije za koje ne želite da se pregledavaju ili upotrebljavaju.</translation>
 <translation id="3050988301648974170">Otvorite Provjeru zaporki</translation>
 <translation id="3053332585453689122">URL-ove koje posjećujete i mali uzorak sadržaja stranice, preuzimanja, aktivnosti proširenja i informacija o sustavu šalje Google sigurnom pregledavanju kako bi se provjerilo jesu li štetni.</translation>
 <translation id="3055102495753300780">Pohrana podataka</translation>
@@ -740,6 +742,7 @@
 <translation id="3265736395246760288">Brže se prijavite s bilo kojeg sinkroniziranog uređaja.</translation>
 <translation id="3268166994745151153">To znači da ćete izgubiti trenutačni napredak</translation>
 <translation id="3272527697863656322">Odustani</translation>
+<translation id="3272955648592358996">Vaši podaci poboljšavaju Googleov AI</translation>
 <translation id="3273510436356991673">Prilagodite početni zaslon</translation>
 <translation id="327455571215090823">Pametnije automatsko popunjavanje uz zaštitu privatnosti</translation>
 <translation id="3277021493514034324">Adresa web-lokacije kopirana</translation>
@@ -916,6 +919,7 @@
 <translation id="3888863481921783344">To će se upotrebljavati da bi vam se prikazale osobe koje se mogu pozvati na vaš događaj.</translation>
 <translation id="3891414008432200754">Cijena</translation>
 <translation id="3892144330757387737">Ovdje ćete pronaći svoju povijest</translation>
+<translation id="3892695492576181257">Kad je ta postavka uključena, vaša se aktivnost sprema u aktivnost u Gemini aplikacijama na razdoblje od 18 mjeseci, što možete promijeniti na 3 mjeseca ili 36 mjeseci. Google upotrebljava vašu aktivnost za razvoj i poboljšanje svojih usluga (uključujući Gemini modele), kao i za zaštitu Googlea, njegovih korisnika i javnosti uz pomoć pregledavatelja. Podaci koje pregledavaju davatelji usluga nisu povezani s vašim računom i čuvaju se tri godine.</translation>
 <translation id="3893858854379998374">Da biste spremili oznake na svoj račun, izbrišite oznake koje ne upotrebljavate</translation>
 <translation id="3897092660631435901">Izbornik</translation>
 <translation id="3904270275864974753">Uredite rotirajući izbornik</translation>
@@ -1110,7 +1114,6 @@
 <translation id="4488754974567924717">Obavijestit ćemo vas ako su zaporke ugrožene</translation>
 <translation id="4489536976005181779">{count,plural, =1{Stranica je dodana na vaš popis za čitanje na vašem računu, {email}}one{Stranice su dodane na vaš popis za čitanje na vašem računu, {email}}few{Stranice su dodane na vaš popis za čitanje na vašem računu, {email}}other{Stranice su dodane na vaš popis za čitanje na vašem računu, {email}}}</translation>
 <translation id="4493604894403585654">Prijavljeni ste kao <ph name="USER_EMAIL" />. Sinkronizaciju možete uvijek zaustaviti u postavkama. Google može prilagoditi Pretraživanje i druge usluge na temelju vaše povijesti.</translation>
-<translation id="4495251723189610737">Vaši će se razgovori spremati u vašu povijest na Geminiju. Povijest uključuje vaše audiozapise, videozapise i dijeljenja zaslona iz interakcija s Geminijem Live, sadržaj koji dijelite s Geminijem (kao što su upiti, <ph name="BEGIN_LINK" />prijenosi<ph name="END_LINK" /> i <ph name="BEGIN_LINK" />zasloni<ph name="END_LINK" />), Geminijeve odgovore, zadatke i pozive alata, povratne informacije, podatke s web-lokacija koje posjećujete s Geminijem, podatke o upotrebi proizvoda, opću lokaciju vašeg uređaja, IP adresu te kućnu ili poslovnu adresu s vašeg Google računa. Može uključivati i podatke iz aplikacija koje povežete s Geminijem.</translation>
 <translation id="4502423230170890588">Ukloni s ovog uređaja</translation>
 <translation id="4508486880075514067">Proširi na cijeli zaslon</translation>
 <translation id="4508750114462689118">Zatvori promociju za prijavu</translation>
@@ -1215,7 +1218,6 @@
 <translation id="4808744395915275922">Ažuriranja</translation>
 <translation id="4813345808229079766">Veza</translation>
 <translation id="4821595350501541683">Kartice su zatvorene i izbrisani su podaci o pregledavanju</translation>
-<translation id="4821645169621230110">Kako se upotrebljava vaša povijest</translation>
 <translation id="4823322556950229674">Možete pritisnuti i zadržati da biste adresnu traku i gumb za natrag premjestili na dno</translation>
 <translation id="4824480232751123840">Volumen</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} i još 1}one{{domain} i još {count}}few{{domain} i još {count}}other{{domain} i još {count}}}</translation>
@@ -1243,7 +1245,6 @@
 <translation id="4877597489778380935">Podsjeti me kasnije</translation>
 <translation id="4881695831933465202">Otvori</translation>
 <translation id="4883766694719903356">Rešetka anonimne kartice</translation>
-<translation id="4884205780547482830">Vaši podaci pomažu u obuci generativnog AI-ja</translation>
 <translation id="4884937942297374058">Isključena je poboljšana zaštita</translation>
 <translation id="4887391901725877182">Pomoćni titlovi</translation>
 <translation id="488785315393301722">Pokaži pojedinosti</translation>
@@ -1330,7 +1331,6 @@
 <translation id="5128788795241319992">Istražite novi izbornik</translation>
 <translation id="5132942445612118989">Sinkronizirajte svoje zaporke, povijest i drugo na svim uređajima</translation>
 <translation id="5137568953923142260">Dopusti jednom</translation>
-<translation id="5139344197062265975">Upotrijebite mikrofon da biste razgovarali s Geminijem. Kada razgovarate s Geminijem, zvuk se pohranjuje u povijest na Geminiju (ako je uključena). Vaši se podaci ne upotrebljavaju za poboljšanje modela generativnog AI-ja</translation>
 <translation id="5141363746588976328">Sakrij karticu Sniženja cijena na karticama</translation>
 <translation id="514154868070499296">Font: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Zatvori izmjenjivanje kartica</translation>
@@ -1430,6 +1430,7 @@
 <translation id="5447973833955560753">Zaporka za oporavak</translation>
 <translation id="5448623529214315261">Spremljena fotografija <ph name="INDEX" /></translation>
 <translation id="5452354193031718372">Upotrijebite snažnu zaporku:</translation>
+<translation id="5453088693079603292">Koja se aktivnost prikuplja</translation>
 <translation id="5454211924362324495">Da biste drugima onemogućili da upotrebljavaju vašu zaporku, <ph name="BEGIN_LINK" />promijenite je na web-lokaciji<ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Dodajte u pretraživanje</translation>
 <translation id="5457226814769348910">Otvori offline verziju</translation>
@@ -1543,6 +1544,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="5801568494490449797">Postavke</translation>
 <translation id="5803566855766646066">Jeste li sigurni da želite odbaciti ovu novu karticu?</translation>
 <translation id="5804241973901381774">Dopuštenja</translation>
+<translation id="58081802114142635">Vaša aktivnost poboljšava Googleov AI</translation>
 <translation id="5817176759448082654">Provjera zaporki</translation>
 <translation id="5818161931099046557">Uredite na Google računu</translation>
 <translation id="5819208479324046259">Uređajem upravlja <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
@@ -1591,6 +1593,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="5971459446352190251">Pretraživanje QR kodova</translation>
 <translation id="5971872012779224351">{count,plural, =1{Izbrisana je jedna oznaka}one{Izbrisana je {count} oznaka}few{Izbrisane su {count} oznake}other{Izbrisano je {count} oznaka}}</translation>
 <translation id="5972844218283131174">Poništi odabir za sve</translation>
+<translation id="597482816780655631">Gemini je AI i može pogriješiti, uključujući kada daje informacije o osobama. Neki sadržaji možda nisu prikladni za sve. Razgovori se pregledavaju i upotrebljavaju za poboljšanje Googleovog AI-ja. <ph name="BEGIN_LINK" />Saznajte više o svojim odabirima<ph name="END_LINK" />. Primjenjuju se naši <ph name="BEGIN_LINK" />uvjeti<ph name="END_LINK" /> i <ph name="BEGIN_LINK" />obavijest o privatnosti<ph name="END_LINK" />.</translation>
 <translation id="5976160379964388480">Drugo</translation>
 <translation id="5977976211062815271">Na ovom uređaju</translation>
 <translation id="5986043348928676121">Dalje</translation>
@@ -1601,7 +1604,6 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="6000893618966378846">Brisanje podataka o pregledavanju je dovršeno!</translation>
 <translation id="6004988584831654445">Spremni ste! Primajte obavijesti kad stignu novi zadaci.</translation>
 <translation id="6006672969046233841">Nova kartica</translation>
-<translation id="6006758170939001741">Primjenjuju se naši <ph name="BEGIN_LINK" />uvjeti<ph name="END_LINK" />, <ph name="BEGIN_LINK" />uvjeti upotrebe podataka o lokaciji na Googleovim uslugama za Koreju<ph name="END_LINK" /> i <ph name="BEGIN_LINK" />obavijest o privatnosti<ph name="END_LINK" />. Razgovori se pregledavaju i upotrebljavaju za obuku modela generativnog AI-ja. Gemini je AI i može pogriješiti, uključujući kada daje informacije o osobama. Neki sadržaji možda nisu prikladni za svakoga. Možete <ph name="BEGIN_LINK" />upravljati svojom poviješću<ph name="END_LINK" />, uključujući <ph name="BEGIN_LINK" />podatke o svojoj lokaciji<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Saznajte više o svojim odabirima<ph name="END_LINK" /></translation>
 <translation id="6011308810877101166">Poboljšaj prijedloge za pretraživanje</translation>
 <translation id="6012140227487808125">Enkripcija…</translation>
 <translation id="6014801569448771146">Provjerite zaporke</translation>
@@ -1698,6 +1700,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="628251768213143684">Uvijek možete upravljati time koji će se podaci spremati na vaš Google račun</translation>
 <translation id="6284652193729350524">Ponudi prijevod za <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Da biste uključili sigurno pregledavanje, otvorite odjeljak <ph name="BEGIN_LINK" />Googleove usluge<ph name="END_LINK" /> i dodirnite Sigurno pregledavanje.</translation>
+<translation id="6295140892595702619">Upotrijebite mikrofon da biste razgovarali s Geminijem. Kada razgovarate s Geminijem, zvuk se pohranjuje u aktivnost u Gemini aplikacijama (ako je uključena). Vaši se podaci ne upotrebljavaju za poboljšanje generativnih AI modela</translation>
 <translation id="6295751040240588413">Nadimak kartice nije važeći</translation>
 <translation id="629730747756840877">Račun</translation>
 <translation id="6301104306974789820">Primajte obavijesti o praćenju cijena</translation>
@@ -1817,6 +1820,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="6609890790934458793">Izbrisat će se zaporke za <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> i <ph name="THIRD_WEBSITE" />. Vaši se računi neće izbrisati.</translation>
 <translation id="661266467055912436">Poboljšava sigurnost za vas i sve ostale na webu.</translation>
 <translation id="6612912757320004438">Dopustite obavijesti o karticama…</translation>
+<translation id="6613372200395638275">Da bi vam pružio prilagođenu pomoć, Gemini dijeli neke vaše podatke (kao što su dijelovi vaših razgovora, lokacija i drugi relevantni podaci) s drugim Googleovim uslugama, kao što su Karte i Letovi. Te usluge mogu upotrebljavati te podatke za poboljšanje, čak i ako naknadno izbrišete aktivnost u Gemini aplikacijama. Saznajte više u <ph name="BEGIN_LINK" />centru za privatnost u Gemini aplikacijama<ph name="END_LINK" />.</translation>
 <translation id="6617761071025228250">Izbrišite tekst</translation>
 <translation id="6619015782482868078">Akvamarin tema</translation>
 <translation id="6620279676667515405">Otkaži</translation>
@@ -1892,7 +1896,6 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="6830728435402077660">Nije sigurno</translation>
 <translation id="6831043979455480757">Prevedi</translation>
 <translation id="6842136130964845393">Da biste uvijek mogli pristupati spremljenim zaporkama, potvrdite da ste to vi</translation>
-<translation id="6843744036364481304">Koja se povijest razgovora sprema</translation>
 <translation id="6844773122575789617">Uključi AI način</translation>
 <translation id="6851516051005285358">Zatraži web-lokaciju za računala</translation>
 <translation id="6857446173140146664">Brisanje pozadine</translation>
@@ -1977,6 +1980,7 @@ Da biste nastavili s računala, prebacite se na <ph name="OTHER_EMAIL" />. Dohva
 <translation id="7091023926159231962">{count,plural, =1{Uvoz {count} zaporke nije uspio}one{Uvoz {count} zaporke nije uspio}few{Uvoz {count} zaporke nije uspio}other{Uvoz {count} zaporki nije uspio}}</translation>
 <translation id="7095110968493193530">Na Google upravitelj zaporki za <ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">U adresnoj traci dodirnite povijest cijena da biste vidjeli promjene cijena tijekom vremena</translation>
+<translation id="7098554251807199977">Vaši razgovori s Geminijem ni vaši <ph name="BEGIN_LINK" />podaci s Google Workspacea<ph name="END_LINK" /> neće se pregledavati niti upotrebljavati za poboljšanje generativnih AI modela.</translation>
 <translation id="7102005569666697658">Preuzimanje… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Izbornik → Postavke → Načini plaćanja</translation>
 <translation id="7108338896283013870">Sakrij preglednik</translation>
@@ -2017,7 +2021,6 @@ Da biste nastavili s računala, prebacite se na <ph name="OTHER_EMAIL" />. Dohva
 <translation id="7223134495231529579">Spremi u preuzimanja</translation>
 <translation id="722339453342442311">Provjeri sad</translation>
 <translation id="7227235818314667565">Upravljanje dijeljenjem</translation>
-<translation id="7232376892719594461">Vaši razgovori s Geminijem i vaši <ph name="BEGIN_LINK" />podaci s Google Workspacea<ph name="END_LINK" /> neće se pregledavati niti upotrebljavati za obuku modela generativnog AI-ja.</translation>
 <translation id="7233006041370588369">Odaberite zaporku za unos.</translation>
 <translation id="7238074332967840767">Sigurnost</translation>
 <translation id="723874023660911012">Promijenite profil</translation>
@@ -2133,7 +2136,6 @@ Možete ponovno pokrenuti bilo kada.</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{Želite li zatvoriti {COUNT} neaktivnu karticu?}one{Želite li zatvoriti {COUNT} neaktivnu karticu?}few{Želite li zatvoriti {COUNT} neaktivne kartice?}other{Želite li zatvoriti {COUNT} neaktivnih kartica?}}</translation>
 <translation id="7598439272585186139">Dodatna zaštita</translation>
 <translation id="7600965453749440009">Nikad ne prevodi <ph name="LANGUAGE" /></translation>
-<translation id="760230853074995500">Razgovori se pregledavaju i upotrebljavaju za obuku modela generativnog AI-ja. Možete <ph name="BEGIN_LINK" />upravljati svojom poviješću<ph name="END_LINK" />, uključujući <ph name="BEGIN_LINK" />podatke o svojoj lokaciji<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Saznajte više o svojim odabirima<ph name="END_LINK" />.</translation>
 <translation id="7603308509262646847">Automatski popunite nositelja kartice <ph name="NAME" /></translation>
 <translation id="7603852183842204213">Blokirani skočni (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">Sinkronizacija ne radi</translation>
@@ -2419,6 +2421,7 @@ Možete ponovno pokrenuti bilo kada.</translation>
 <translation id="8439758443371991593">Sakrij stavku Dodaj na popis za čitanje</translation>
 <translation id="8443986842926457191">URL ima više od 2048 znakova</translation>
 <translation id="8449869326050867919">Podijeljena je zaporka</translation>
+<translation id="8461708300275916315">Ako ste mlađi od 18 godina</translation>
 <translation id="8473815223723723001">Uredite sliku uz Gemini</translation>
 <translation id="8473863474539038330">Adrese i drugo</translation>
 <translation id="8474378002946546633">Dopusti obavijesti</translation>
@@ -2498,6 +2501,7 @@ Možete ponovno pokrenuti bilo kada.</translation>
 <translation id="8672733398999596205">Omogući sve</translation>
 <translation id="8674716540979958118">Imate ugrožene zaporke.</translation>
 <translation id="8679900250380464358">Dodaj na popis za čitanje</translation>
+<translation id="8680643216091361291">Postavka <ph name="BEGIN_LINK" />Spremanje aktivnosti<ph name="END_LINK" /> prema zadanim je postavkama isključena. Kad je ta postavka isključena, Google zadržava vaše razgovore tri dana. Upotrebljava ih kako bi Gemini aplikacije ispravno radile, kako bi bile sigurne i kako bi se pomoću vaših povratnih informacija riješili problemi. Spremanje aktivnosti možete uključiti kako biste pomogli poboljšati Googleov AI za sve korisnike.</translation>
 <translation id="8680787084697685621">Pojedinosti prijave na račun su zastarjele.</translation>
 <translation id="868648444055742370">Web-lokaciji <ph name="SITE_DOMAIN" /> nije dopušten pristup vašem mikrofonu</translation>
 <translation id="8690752723634292147">Potvrdite brisanje</translation>
@@ -2529,7 +2533,6 @@ Možete ponovno pokrenuti bilo kada.</translation>
 <translation id="8746155870861185046">Podijeli isticanje</translation>
 <translation id="8748678031495824833">Otvori AI alate na stranici</translation>
 <translation id="8750037785291841318">Ovdje ćete pronaći svoje kartice</translation>
-<translation id="8751126814549746156">Vaša se povijest automatski briše nakon 18 mjeseci. To razdoblje možete promijeniti u postavkama. Razgovori koje pregledaju davatelji usluga odvajaju se od vašeg računa i čuvaju do tri godine. Postavku Povijest možete u svakom trenutku <ph name="BEGIN_LINK" />isključiti<ph name="END_LINK" />.</translation>
 <translation id="8756969031206844760">Želite li ažurirati zaporku?</translation>
 <translation id="8763613688786959833">Idi na zadnju karticu</translation>
 <translation id="8766790350274092814">Izbrisat će se zaporke za <ph name="WEBSITE" /> i <ph name="SECOND_WEBSITE" />. Vaši se računi neće izbrisati.</translation>
@@ -2556,6 +2559,7 @@ Možete ponovno pokrenuti bilo kada.</translation>
 <translation id="882557203579758546">Traži na stranici…</translation>
 <translation id="8829809207373502270">Taj pristupni ključ više ne funkcionira. Izbrisan je s web-lokacije <ph name="WEBSITE" />, a uskoro će se izbrisati i odavde. <ph name="BEGIN_LINK" />O pristupnim ključevima<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Zatvori sve neaktivno</translation>
+<translation id="8831871601813227635">Primjenjuju se naši <ph name="BEGIN_LINK" />uvjeti<ph name="END_LINK" />, <ph name="BEGIN_LINK" />uvjeti upotrebe podataka o lokaciji na Googleovim uslugama za Koreju<ph name="END_LINK" /> i <ph name="BEGIN_LINK" />obavijest o privatnosti<ph name="END_LINK" />. Razgovori se pregledavaju i upotrebljavaju za poboljšanje Googleovog AI-ja. Gemini je AI i može pogriješiti, uključujući kada daje informacije o osobama. Neki sadržaji možda nisu prikladni za sve. Možete <ph name="BEGIN_LINK" />upravljati svojom aktivnošću<ph name="END_LINK" />, uključujući podatke o svojoj lokaciji. <ph name="BEGIN_LINK" />Saznajte više o svojim odabirima<ph name="END_LINK" /></translation>
 <translation id="8837654851594567190">Poredaj po izdavaču</translation>
 <translation id="884351711508006491">Vaši se podaci spremaju na vaš uređaj.</translation>
 <translation id="8844136307393039959">Cijena proizvoda koji pratite je snižena</translation>
@@ -2575,7 +2579,6 @@ Možete ponovno pokrenuti bilo kada.</translation>
 <translation id="8893208530912252670">Videozapisi</translation>
 <translation id="890009681345348416">Automatski je popunjeno više od 40 zaporki</translation>
 <translation id="8900845556227858314">Aplikacija preglednika</translation>
-<translation id="8903042868629070803">Ako imate 18 ili više godina, Google upotrebljava vašu povijest i za <ph name="BEGIN_LINK" />obuku generativnih AI modela<ph name="END_LINK" />. Tu postavku možete <ph name="BEGIN_LINK" />isključiti<ph name="END_LINK" /> za buduće razgovore kad god želite.</translation>
 <translation id="890565330728586731">Natrag</translation>
 <translation id="8907722425137681851">Tražite na stranici…</translation>
 <translation id="8909135823018751308">Dijeljenje…</translation>
@@ -2628,7 +2631,6 @@ Možete ponovno pokrenuti bilo kada.</translation>
 <translation id="9066097352053395362">Sakrij stavku Uredi oznaku</translation>
 <translation id="9070824521421603770">Odjavit ćete se i kartice će se zatvoriti</translation>
 <translation id="9072837124205571418">Grupe kartica sa svih uređaja</translation>
-<translation id="9073322251019919253">Gemini je AI i može pogriješiti, uključujući kada daje informacije o osobama. Neki sadržaji možda nisu prikladni za svakoga. Razgovori se pregledavaju i upotrebljavaju za obuku modela generativnog AI-ja. Možete <ph name="BEGIN_LINK" />upravljati svojom poviješću<ph name="END_LINK" />, uključujući <ph name="BEGIN_LINK" />podatke o svojoj lokaciji<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Saznajte više o svojim odabirima<ph name="END_LINK" />. Primjenjuju se naši <ph name="BEGIN_LINK" />uvjeti<ph name="END_LINK" /> i <ph name="BEGIN_LINK" />obavijest o privatnosti<ph name="END_LINK" />.</translation>
 <translation id="9081058212938299310">Želite li ažurirati zaporku za <ph name="USERNAME" />?</translation>
 <translation id="908365381820697818">Sada možete pronaći i popuniti informacije s Gmaila i drugih izvora</translation>
 <translation id="9083838294503912307">Da biste sinkronizirali i prilagodili više uređaja, uključite sinkronizaciju.</translation>

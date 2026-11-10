@@ -3,6 +3,7 @@
 <translationbundle lang="az">
 <translation id="1008557486741366299">İndi yox</translation>
 <translation id="100957008357583611">Məkanınızdan istifadə edilsin?</translation>
+<translation id="1010148478459329879">Google Hesabınızın <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> ünvanında <ph name="BEGIN_LINK_GAA" />Gemini tarixçəniz<ph name="END_LINK_GAA" /> kimi digər brauzer tarixçəsi formaları ola bilər.</translation>
 <translation id="1010200102790553230">Səhifəni sonra yükləyin</translation>
 <translation id="1010225406377140704">Yeni keçid əldə etmək üçün göndərən şəxslə əlaqə saxlayın</translation>
 <translation id="1011206368273183593">Fayllar hazırlanır</translation>
@@ -920,7 +921,6 @@
 <translation id="251033673027346551"><ph name="BEGIN_LINK" />Data və məxfilik tərcihlərini<ph name="END_LINK" /> idarə etmək üçün Google Pulqabına daxil olun.</translation>
 <translation id="2512101340618156538">İcazə verilməyib (defolt)</translation>
 <translation id="2512413427717747692">"Chrome'u defolt brauzer kimi ayarlayın" düyməsi, Enter düyməsinə basaraq iOS ayarlarında Chrome'u sistemin defolt brauzeri kimi ayarlayın</translation>
-<translation id="2513217232843681817">Google hesabınızın <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> ünvanında <ph name="BEGIN_LINK_GAA" />Gemini tətbiq fəaliyyətinizdəki<ph name="END_LINK_GAA" /> avtonaviqasiya ziyarətləri kimi digər axtarış tarixçəsi formaları ola bilər.</translation>
 <translation id="2515629240566999685">Ərazinizdəki siqnal yoxlanılır</translation>
 <translation id="2518584823165598232">Bu kart əlçatan deyil. Kart provayderinizlə əlaqə saxlayın.</translation>
 <translation id="2521385132275182522">Aşağı sağdan ştapel vurun</translation>
@@ -3960,7 +3960,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="7584287158780898016">Qiymət izləmə xəbərdarlıqlarını aktivləşdirin</translation>
 <translation id="7586676035079382730">Bildirişlərə icazə verilmir</translation>
 <translation id="7588707273764747927">Ötürmə</translation>
-<translation id="7589062909165841767">Google Hesabınızda <ph name="BEGIN_LINK_GAA" />Gemini tətbiq fəaliyyətiniz<ph name="END_LINK_GAA" /> ola bilər</translation>
 <translation id="7591288787774558753">Məxfi kontent paylaşılsın?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> <ph name="TOP_LEVEL_URL" /> ünvanında kukilər və sayt datasını istifadə etmək istəyir</translation>
 <translation id="7592362899630581445">Serverin sertifikatı ad limitlərini pozur.</translation>
@@ -4252,7 +4251,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="8075736640322370409">Cəld yeni Google Cədvəl yaradın</translation>
 <translation id="8075898834294118863">Sayt ayarlarını idarə edin</translation>
 <translation id="8076492880354921740">Tablar</translation>
-<translation id="8076880883123051368">Google Hesabınızın <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> ünvanında <ph name="BEGIN_LINK_GAA" />Gemini tətbiq fəaliyyətiniz<ph name="END_LINK_GAA" /> kimi digər axtarış tarixçəsi formaları ola bilər.</translation>
 <translation id="8077465698530018904">Seçilmiş regionu silin</translation>
 <translation id="8077669823243888800">Zərf Çin #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Məxfi fayl yüklənsin?}other{Məxfi fayllar yüklənsin?}}</translation>
@@ -4304,6 +4302,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="8163468049564974856">Onlayn ödəniş zamanı təhlükəsizliyi təmin etmək üçün avtodoldurmanı aktiv edin. Kart təfərrüatları Google Pulqabıda şifrələnir.</translation>
 <translation id="8163866351304776260">Soldan dördlü deşik açın</translation>
 <translation id="8164078261547504572">Qiymətlər düşəndə e-məktub almaq istəyirsiniz?</translation>
+<translation id="8166435925529495192">Google Hesabınızda <ph name="BEGIN_LINK_GAA" />Gemini tarixçəniz<ph name="END_LINK_GAA" /> ola bilər</translation>
 <translation id="8169175551046720804">"<ph name="DATA_CONTROLS_KEYS" />" açar sözləri eyni lüğətdə ola bilməz</translation>
 <translation id="8172809706700703589">Səyahətim üçün qablaşdırma siyahısı yarat</translation>
 <translation id="8174047975335711832">Cihaz haqqında məlumat</translation>
@@ -4969,6 +4968,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
     &lt;li&gt;"<ph name="SOFTWARE_NAME" />" proqramını sistemdən silin və ya deaktiv edin&lt;/li&gt;
     &lt;li&gt;Başqa şəbəkəyə qoşulun&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">Google Hesabınızın <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> ünvanında <ph name="BEGIN_LINK_GAA" />Gemini tarixçənizdəki<ph name="END_LINK_GAA" /> avtonaviqasiya girişləri kimi digər brauzer tarixçəsi formaları ola bilər.</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">IBAN əlavə edin</translation>
 <translation id="995782501881226248">YouTube</translation>

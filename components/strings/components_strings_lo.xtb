@@ -3,6 +3,7 @@
 <translationbundle lang="lo">
 <translation id="1008557486741366299">ບໍ່ແມ່ນດຽວນີ້</translation>
 <translation id="100957008357583611">ໃຊ້ສະຖານທີ່ຂອງທ່ານບໍ?</translation>
+<translation id="1010148478459329879">ບັນຊີ Google ຂອງທ່ານອາດມີປະຫວັດການທ່ອງເວັບຮູບແບບອື່ນໆຢູ່ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> ເຊັ່ນ: <ph name="BEGIN_LINK_GAA" />ປະຫວັດ Gemini<ph name="END_LINK_GAA" /> ຂອງທ່ານ</translation>
 <translation id="1010200102790553230">ໂຫຼດໜ້າໃນພາຍຫຼັງ</translation>
 <translation id="1010225406377140704">ຕິດຕໍ່ຜູ້ສົ່ງເພື່ອຂໍລິ້ງໃໝ່</translation>
 <translation id="1011206368273183593">ກຳລັງກະກຽມໄຟລ໌</translation>
@@ -920,7 +921,6 @@
 <translation id="251033673027346551">ເຂົ້າເບິ່ງ Google Wallet ເພື່ອຈັດການ <ph name="BEGIN_LINK" />ຄ່າກຳນົດຂໍ້ມູນ ແລະ ຄວາມເປັນສ່ວນຕົວ<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">ບໍ່ອະນຸຍາດ (ຄ່າເລີ່ມຕົ້ນ)</translation>
 <translation id="2512413427717747692">ປຸ່ມຕັ້ງ Chrome ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນ, ກົດ Enter ເພື່ອຕັ້ງ Chrome ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງລະບົບໃນການຕັ້ງຄ່າ iOS</translation>
-<translation id="2513217232843681817">ບັນຊີ Google ຂອງທ່ານອາດມີປະຫວັດການທ່ອງເວັບຮູບແບບອື່ນໆຢູ່ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> ເຊັ່ນ: ການເຂົ້າເບິ່ງຈາກການທ່ອງເວັບອັດຕະໂນມັດໃນ <ph name="BEGIN_LINK_GAA" />ການເຄື່ອນໄຫວແອັບ Gemini<ph name="END_LINK_GAA" /> ຂອງທ່ານ</translation>
 <translation id="2515629240566999685">ກຳລັງກວດເບິ່ງສັນຍານໃນພື້ນທີ່ຂອງທ່ານ</translation>
 <translation id="2518584823165598232">ບັດນີ້ບໍ່ພ້ອມນຳໃຊ້. ກະລຸນາຕິດຕໍ່ຜູ້ໃຫ້ບໍລິການບັດຂອງທ່ານ.</translation>
 <translation id="2521385132275182522">ໜີບກະຫຼັບເຟີຢູ່ລຸ່ມສຸດເບື້ອງຂວາ</translation>
@@ -3964,7 +3964,6 @@
 <translation id="7584287158780898016">ເປີດໃຊ້ການແຈ້ງເຕືອນການຕິດຕາມລາຄາ</translation>
 <translation id="7586676035079382730">ບໍ່ອະນຸຍາດໃຫ້ສະແດງການແຈ້ງເຕືອນ</translation>
 <translation id="7588707273764747927">ໂອນ</translation>
-<translation id="7589062909165841767">ບັນຊີ Google ຂອງທ່ານອາດມີ <ph name="BEGIN_LINK_GAA" />ການເຄື່ອນໄຫວແອັບ Gemini<ph name="END_LINK_GAA" /> ຂອງທ່ານ</translation>
 <translation id="7591288787774558753">ແບ່ງປັນເນື້ອຫາທີ່ເປັນຄວາມລັບບໍ?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> ຕ້ອງການໃຊ້ຄຸກກີ້ ແລະ ຂໍ້ມູນເວັບໄຊໃນ <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">ໃບຢັ້ງຢືນຂອງເຊີບເວີລະເມີດຂໍ້ຈໍາກັດດ້ານຊື່.</translation>
@@ -4256,7 +4255,6 @@
 <translation id="8075736640322370409">ສ້າງ Google Sheet ໃໝ່ໄດ້ຢ່າງວ່ອງໄວ</translation>
 <translation id="8075898834294118863">ຈັດການການຕັ້ງຄ່າເວັບໄຊ</translation>
 <translation id="8076492880354921740">ແຖບ</translation>
-<translation id="8076880883123051368">ບັນຊີ Google ຂອງທ່ານອາດມີປະຫວັດການທ່ອງເວັບຮູບແບບອື່ນໆຢູ່ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> ເຊັ່ນ: <ph name="BEGIN_LINK_GAA" />ການເຄື່ອນໄຫວແອັບ Gemini<ph name="END_LINK_GAA" /> ຂອງທ່ານ</translation>
 <translation id="8077465698530018904">ລຶບພາກພື້ນທີ່ເລືອກອອກ</translation>
 <translation id="8077669823243888800">Envelope Chinese #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{ອັບໂຫຼດໄຟລ໌ລັບບໍ?}other{ອັບໂຫຼດໄຟລ໌ລັບບໍ?}}</translation>
@@ -4308,6 +4306,7 @@
 <translation id="8163468049564974856">ເປີດໃຊ້ການຕື່ມຂໍ້ມູນອັດຕະໂນມັດເພື່ອຈ່າຍເງິນອອນລາຍຢ່າງປອດໄພ. ລາຍລະອຽດບັດຂອງທ່ານຈະຖືກເຂົ້າລະຫັດໄວ້ໃນ Google Wallet.</translation>
 <translation id="8163866351304776260">ເຈາະຮູຢູ່ເບື້ອງຍ້າຍສີ່ຮູ</translation>
 <translation id="8164078261547504572">ຕ້ອງການໃຫ້ສົ່ງອີເມວບອກເມື່ອຫຼຸດລາຄາບໍ?</translation>
+<translation id="8166435925529495192">ບັນຊີ Google ຂອງທ່ານອາດມີ <ph name="BEGIN_LINK_GAA" />ປະຫວັດ Gemini<ph name="END_LINK_GAA" /> ຂອງທ່ານ</translation>
 <translation id="8169175551046720804">ບໍ່ສາມາດຕັ້ງຄ່າລະຫັດ "<ph name="DATA_CONTROLS_KEYS" />" ໃນວັດຈະນານຸກົມດຽວກັນໄດ້</translation>
 <translation id="8172809706700703589">ສ້າງລາຍຊື່ສິ່ງທີ່ຕ້ອງກຽມສຳລັບການເດີນທາງຂອງຂ້ອຍ</translation>
 <translation id="8174047975335711832">ຂໍ້​ມູນ​ອຸ​ປະ​ກອນ</translation>
@@ -4973,6 +4972,7 @@
     &lt;li&gt;ລອງຖອນຕິດຕັ້ງ ຫຼື ປິດນຳໃຊ້ "<ph name="SOFTWARE_NAME" />"&lt;/li&gt;
     &lt;li&gt;ລອງເຊື່ອມຕໍ່ກັບເຄືອຂ່າຍອື່ນ&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">ບັນຊີ Google ຂອງທ່ານອາດມີປະຫວັດການທ່ອງເວັບຮູບແບບອື່ນໆຢູ່ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> ເຊັ່ນ: ການເຂົ້າເບິ່ງຈາກການທ່ອງເວັບອັດຕະໂນມັດໃນ <ph name="BEGIN_LINK_GAA" />ປະຫວັດ Gemini<ph name="END_LINK_GAA" /> ຂອງທ່ານ</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">ເພີ່ມ IBAN</translation>
 <translation id="995782501881226248">YouTube</translation>

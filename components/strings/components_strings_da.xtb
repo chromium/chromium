@@ -3,6 +3,7 @@
 <translationbundle lang="da">
 <translation id="1008557486741366299">Ikke nu</translation>
 <translation id="100957008357583611">Vil du bruge din lokation?</translation>
+<translation id="1010148478459329879">Din Google-konto kan have andre former for browserhistorik på <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, f.eks. din <ph name="BEGIN_LINK_GAA" />Gemini-historik<ph name="END_LINK_GAA" /></translation>
 <translation id="1010200102790553230">Indlæs side senere</translation>
 <translation id="1010225406377140704">Kontakt afsenderen for at bede om et nyt link</translation>
 <translation id="1011206368273183593">Forbereder filer</translation>
@@ -920,7 +921,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="251033673027346551">Gå til Google Wallet for at administrere <ph name="BEGIN_LINK" />data- og privatlivsindstillinger<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Ikke tilladt (standard)</translation>
 <translation id="2512413427717747692">Knappen Angiv Chrome som standardbrowser, tryk på Enter for at angive Chrome som systemets standardbrowser i iOS-indstillingerne</translation>
-<translation id="2513217232843681817">Din Google-konto kan have andre former for browserhistorik på <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, f.eks. besøg med Automatisk browsing i din <ph name="BEGIN_LINK_GAA" />Gemini-appaktivitet<ph name="END_LINK_GAA" /></translation>
 <translation id="2515629240566999685">Tjekke signalet i dit område</translation>
 <translation id="2518584823165598232">Dette kort er ikke tilgængeligt. Kontakt din kortudsteder.</translation>
 <translation id="2521385132275182522">Hæftning nederst til højre</translation>
@@ -3965,7 +3965,6 @@ Yderligere oplysninger:
 <translation id="7584287158780898016">Aktivér underretninger om prissporing</translation>
 <translation id="7586676035079382730">Notifikationer er ikke tilladt</translation>
 <translation id="7588707273764747927">Overføringspapir</translation>
-<translation id="7589062909165841767">Din Google-konto kan indeholde din <ph name="BEGIN_LINK_GAA" />Gemini-appaktivitet<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">Vil du dele fortroligt indhold?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> vil gerne benytte cookies og websitedata på <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Begrænsningerne for serverens certifikatnavn er overtrådt.</translation>
@@ -4257,7 +4256,6 @@ Yderligere oplysninger:
 <translation id="8075736640322370409">Opret hurtigt et nyt Google-regneark</translation>
 <translation id="8075898834294118863">Administrer indstillinger for websites</translation>
 <translation id="8076492880354921740">Faner</translation>
-<translation id="8076880883123051368">Din Google-konto kan have andre former for browserhistorik på <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, f.eks. din <ph name="BEGIN_LINK_GAA" />Gemini-appaktivitet<ph name="END_LINK_GAA" /></translation>
 <translation id="8077465698530018904">Fjern den valgte region</translation>
 <translation id="8077669823243888800">Konvolut Kinesisk nr. 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Vil du uploade den fortrolige fil?}one{Vil du uploade den fortrolige fil?}other{Vil du uploade de fortrolige filer?}}</translation>
@@ -4309,6 +4307,7 @@ Yderligere oplysninger:
 <translation id="8163468049564974856">Aktivér autofyld for at betale sikkert online. Dine kortoplysninger krypteres i Google Wallet.</translation>
 <translation id="8163866351304776260">Fire huller i venstre side</translation>
 <translation id="8164078261547504572">Vil du have mails, når priserne falder?</translation>
+<translation id="8166435925529495192">Din Google-konto kan indeholde din <ph name="BEGIN_LINK_GAA" />Gemini-historik<ph name="END_LINK_GAA" /></translation>
 <translation id="8169175551046720804">Værdierne "<ph name="DATA_CONTROLS_KEYS" />" kan ikke angives i den samme ordbog</translation>
 <translation id="8172809706700703589">Opret en pakkeliste til min rejse</translation>
 <translation id="8174047975335711832">Enhedsoplysninger</translation>
@@ -4975,6 +4974,7 @@ Yderligere oplysninger:
     &lt;li&gt;Prøv at afinstallere eller deaktivere "<ph name="SOFTWARE_NAME" />"&lt;/li&gt;
     &lt;li&gt;Prøv at oprette forbindelse til et andet netværk&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">Din Google-konto kan have andre former for browserhistorik på <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, f.eks. besøg med Automatisk browsing i din <ph name="BEGIN_LINK_GAA" />Gemini-historik<ph name="END_LINK_GAA" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Tilføj IBAN</translation>
 <translation id="995782501881226248">YouTube</translation>

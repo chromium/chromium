@@ -3,6 +3,7 @@
 <translationbundle lang="no">
 <translation id="1008557486741366299">Ikke nå</translation>
 <translation id="100957008357583611">bruke posisjonen din?</translation>
+<translation id="1010148478459329879">Det kan hende Google-kontoen din har andre typer nettleserlogger på <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, for eksempel <ph name="BEGIN_LINK_GAA" />Gemini-loggen<ph name="END_LINK_GAA" /></translation>
 <translation id="1010200102790553230">Last inn siden senere</translation>
 <translation id="1010225406377140704">Kontakt avsenderen for å be om en ny link</translation>
 <translation id="1011206368273183593">Klargjør filer</translation>
@@ -920,7 +921,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="251033673027346551">Gå til Google Wallet for å administrere <ph name="BEGIN_LINK" />data- og personverninnstillinger<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Ikke tillatt (standard)</translation>
 <translation id="2512413427717747692">Knappen «Angi Chrome som standardnettleser» – trykk på Enter for å angi Chrome som systemets standardnettleser i iOS-innstillingene</translation>
-<translation id="2513217232843681817">Det kan hende Google-kontoen din har andre typer nettleserlogger på <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, for eksempel besøk med auto-navigering i <ph name="BEGIN_LINK_GAA" />aktiviteten din i Gemini-apper<ph name="END_LINK_GAA" /></translation>
 <translation id="2515629240566999685">Sjekk signalet i området ditt</translation>
 <translation id="2518584823165598232">Dette kortet er ikke tilgjengelig. Kontakt kortutstederen.</translation>
 <translation id="2521385132275182522">Stift nede til høyre</translation>
@@ -3964,7 +3964,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="7584287158780898016">Slå på varsler om prissporing</translation>
 <translation id="7586676035079382730">Varsler er ikke tillatt</translation>
 <translation id="7588707273764747927">Overføring</translation>
-<translation id="7589062909165841767">Google-kontoen din kan ha <ph name="BEGIN_LINK_GAA" />Aktivitet i Gemini-apper<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">Vil du dele konfidensielt innhold?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> vil bruke informasjonskapsler og nettstedsdata på <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Tjenerens sertifikat bryter navnereglene.</translation>
@@ -4256,7 +4255,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="8075736640322370409">Opprett et nytt Google-regneark raskt</translation>
 <translation id="8075898834294118863">Administrer nettstedsinnstillinger</translation>
 <translation id="8076492880354921740">Faner</translation>
-<translation id="8076880883123051368">Det kan hende Google-kontoen din har andre typer nettleserlogger på <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, for eksempel <ph name="BEGIN_LINK_GAA" />aktiviteten din i Gemini-apper<ph name="END_LINK_GAA" /></translation>
 <translation id="8077465698530018904">Fjern det valgte området</translation>
 <translation id="8077669823243888800">Kinesisk konvolutt nr. 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Vil du laste opp denne konfidensielle filen?}other{Vil du laste opp disse konfidensielle filene?}}</translation>
@@ -4308,6 +4306,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="8163468049564974856">Slå på autofyll for å betale trygt på nettet. Kortinformasjonen din er kryptert i Google Wallet.</translation>
 <translation id="8163866351304776260">Fire hull venstre</translation>
 <translation id="8164078261547504572">Vil du motta e-post når prisene går ned?</translation>
+<translation id="8166435925529495192">Google-kontoen din kan ha <ph name="BEGIN_LINK_GAA" />Gemini-loggen<ph name="END_LINK_GAA" /></translation>
 <translation id="8169175551046720804">Nøklene «<ph name="DATA_CONTROLS_KEYS" />» kan ikke være angitt i samme ordliste</translation>
 <translation id="8172809706700703589">Lag en pakkeliste for turen min</translation>
 <translation id="8174047975335711832">Enhetsinformasjon</translation>
@@ -4973,6 +4972,7 @@ Mer informasjon:
     &lt;li&gt;Prøv å avinstallere eller slå av «<ph name="SOFTWARE_NAME" />»&lt;/li&gt;
     &lt;li&gt;Prøv å koble til et annet nettverk&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">Det kan hende Google-kontoen din har andre typer nettleserlogger på <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, for eksempel besøk med auto-navigering i <ph name="BEGIN_LINK_GAA" />Gemini-loggen<ph name="END_LINK_GAA" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Legg til IBAN-nummer</translation>
 <translation id="995782501881226248">YouTube</translation>

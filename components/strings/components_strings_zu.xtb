@@ -3,6 +3,7 @@
 <translationbundle lang="zu">
 <translation id="1008557486741366299">Hhayi manje</translation>
 <translation id="100957008357583611">Sebenzisa indawo yakho?</translation>
+<translation id="1010148478459329879">IGoogle Account yakho ingaba nezinye izindlela zomlando wokubhrawuza kokuthi <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, njengokuthi <ph name="BEGIN_LINK_GAA" />Umlando wakho weGemini<ph name="END_LINK_GAA" /></translation>
 <translation id="1010200102790553230">Layisha ikhasi kamuva</translation>
 <translation id="1010225406377140704">Xhumana nomthumeli ukuze ucele ilinki entsha</translation>
 <translation id="1011206368273183593">Ilungiselela amafayela</translation>
@@ -920,7 +921,6 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="251033673027346551">Vakashela iGoogle Wallet ukuze ulawule <ph name="BEGIN_LINK" />idatha nezintandokazi zobumfihlo<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Akuvumelekile (okuzenzekelayo)</translation>
 <translation id="2512413427717747692">Setha i-Chrome njengenkinobho yebhrawuza ezenzakalelayo, cindezela okuthi Enter ukuze usethe i-Chrome njengebhrawuza ezenzakalelayo yesistimu kumasethingi e-iOS</translation>
-<translation id="2513217232843681817">IGoogle Account yakho ingaba nezinye izindlela zomlando wokubhrawuza kokuthi <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, njengokuvakasha kokubhrawuza ngokuzenzekela <ph name="BEGIN_LINK_GAA" />Emsebenzini wama-App eGemini<ph name="END_LINK_GAA" /> wakho</translation>
 <translation id="2515629240566999685">Ukuhlola isignali endaweni yakho</translation>
 <translation id="2518584823165598232">Alitholakali leli khadi. Sicela uxhumane nabahlinzeki bekhadi lakho.</translation>
 <translation id="2521385132275182522">Namathisela phansi kwesokudla</translation>
@@ -3961,7 +3961,6 @@ Imininingwane engeziwe:
 <translation id="7584287158780898016">Sebenzisa izexwayiso zokulandelela intengo</translation>
 <translation id="7586676035079382730">Izaziso azivunyelwe</translation>
 <translation id="7588707273764747927">Dlulisa</translation>
-<translation id="7589062909165841767">IGoogle Account yakho ingaba <ph name="BEGIN_LINK_GAA" />noMsebenzi wama-App eGemini<ph name="END_LINK_GAA" /> wakho</translation>
 <translation id="7591288787774558753">Yabelana ngokuqukethwe okuyimfihlo?</translation>
 <translation id="7591636454931265313">I-<ph name="EMBEDDED_URL" /> ifuna ukusebenzisa amakhukhi nedatha yesayithi ku-<ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Isitifiketi seseva siphula ukucindezelwa kwegama.</translation>
@@ -4253,7 +4252,6 @@ Imininingwane engeziwe:
 <translation id="8075736640322370409">Dala i-Google Sheet entsha ngokushesha</translation>
 <translation id="8075898834294118863">Phatha amasethingi wesayithi</translation>
 <translation id="8076492880354921740">Okwamathebhu</translation>
-<translation id="8076880883123051368">IGoogle Account ingaba namanye amafomu omlando wokubhrawuza kokuthi <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, <ph name="BEGIN_LINK_GAA" />njengoMsebenzi wama-App eGemini<ph name="END_LINK_GAA" /> wakho</translation>
 <translation id="8077465698530018904">Susa isifunda esikhethiwe</translation>
 <translation id="8077669823243888800">Imvilophu ye-Chinese #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Layisha ifayela eliyimfihlo?}one{Layisha amafayela ayimfihlo?}other{Layisha amafayela ayimfihlo?}}</translation>
@@ -4305,6 +4303,7 @@ Imininingwane engeziwe:
 <translation id="8163468049564974856">Vula ukugcwalisa okuzenzekelayo ukuze uphume ngokuphephile ku-inthanethi. Imininingwane yekhadi lakho ibethelwe kuGoogle Wallet.</translation>
 <translation id="8163866351304776260">Ukushaya okune kwesokunxele</translation>
 <translation id="8164078261547504572">Ufuna ama-imeyili uma izintengo zehla?</translation>
+<translation id="8166435925529495192">IGoogle Account yakho ingaba <ph name="BEGIN_LINK_GAA" />Nomlando wakho  weGemini<ph name="END_LINK_GAA" /></translation>
 <translation id="8169175551046720804">Okhiye "<ph name="DATA_CONTROLS_KEYS" />" abanakusethwa kusichazamazwi esisodwa</translation>
 <translation id="8172809706700703589">Sungula uhlu lokupakisha lohambo lwami</translation>
 <translation id="8174047975335711832">Ulwazi lwedivayisi</translation>
@@ -4970,6 +4969,7 @@ Imininingwane engeziwe:
     &lt;li&gt;Zama ukukhipha noma ukukhubaza i-"<ph name="SOFTWARE_NAME" />"&lt;/li&gt;
     &lt;li&gt;Zama ukuxhuma kwenye inethiwekhi&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">IGoogle Account yakho ingaba nezinye izindlela zomlando wokubhrawuza kokuthi <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, njengokuvakasha kokubhrawuza ngokuzenzekela <ph name="BEGIN_LINK_GAA" />Emlandweni wakho weGemini<ph name="END_LINK_GAA" /></translation>
 <translation id="994346157028146140">I-JIS B1</translation>
 <translation id="995755448277384931">Engeza i-IBAN</translation>
 <translation id="995782501881226248">I-YouTube</translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="ca">
 <translation id="1008557486741366299">Ara no</translation>
 <translation id="100957008357583611">Vols utilitzar la teva ubicació?</translation>
+<translation id="1010148478459329879">A <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> trobaràs altres maneres d'explorar l'historial de navegació del teu Compte de Google, com ara <ph name="BEGIN_LINK_GAA" />Historial de Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="1010200102790553230">Carrega la pàgina més tard</translation>
 <translation id="1010225406377140704">Contacta amb el remitent per demanar-li un enllaç nou</translation>
 <translation id="1011206368273183593">S'estan preparant els fitxers</translation>
@@ -920,7 +921,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="251033673027346551">Visita Google Wallet per gestionar les <ph name="BEGIN_LINK" />preferències de dades i privadesa<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">No permès (opció predeterminada)</translation>
 <translation id="2512413427717747692">Botó per establir Chrome com a navegador predeterminat: prem Retorn per establir Chrome com a navegador predeterminat del sistema a la configuració d'iOS</translation>
-<translation id="2513217232843681817">A <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> trobaràs altres maneres d'explorar l'historial de navegació del teu Compte de Google, com ara les visites de navegació automàtica a <ph name="BEGIN_LINK_GAA" />Activitat en aplicacions de Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="2515629240566999685">Comprova el senyal a la teva zona.</translation>
 <translation id="2518584823165598232">Aquesta targeta no està disponible. Contacta amb el proveïdor de la targeta.</translation>
 <translation id="2521385132275182522">Grapat a la part inferior dreta</translation>
@@ -3965,7 +3965,6 @@ Detalls addicionals:
 <translation id="7584287158780898016">Activa les alertes de seguiment de preus</translation>
 <translation id="7586676035079382730">No està permès utilitzar les notificacions</translation>
 <translation id="7588707273764747927">Transferència</translation>
-<translation id="7589062909165841767">És possible que el teu Compte de Google tingui l'opció <ph name="BEGIN_LINK_GAA" />Activitat en aplicacions de Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">Vols compartir contingut confidencial?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> vol utilitzar galetes i dades del lloc web a <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">El certificat del servidor incompleix les restriccions de nom.</translation>
@@ -4257,7 +4256,6 @@ Detalls addicionals:
 <translation id="8075736640322370409">Crea un full de càlcul de Google ràpidament</translation>
 <translation id="8075898834294118863">Gestiona la configuració del lloc web</translation>
 <translation id="8076492880354921740">Pestanyes</translation>
-<translation id="8076880883123051368">A <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> trobaràs altres maneres d'explorar l'historial de navegació del teu Compte de Google, com ara <ph name="BEGIN_LINK_GAA" />Activitat en aplicacions de Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="8077465698530018904">Suprimeix la regió seleccionada</translation>
 <translation id="8077669823243888800">Sobre xinès número 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Vols penjar el fitxer confidencial?}other{Vols penjar els fitxers confidencials?}}</translation>
@@ -4309,6 +4307,7 @@ Detalls addicionals:
 <translation id="8163468049564974856">Activa l'emplenament automàtic per tramitar compres en línia de manera segura. Els detalls de la targeta s'encripten a Google Wallet.</translation>
 <translation id="8163866351304776260">Encunyació quàdruple a l'esquerra</translation>
 <translation id="8164078261547504572">Vols rebre correus electrònics quan baixin els preus?</translation>
+<translation id="8166435925529495192">És possible que el teu Compte de Google tingui l'opció <ph name="BEGIN_LINK_GAA" />Historial de Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="8169175551046720804">Les claus "<ph name="DATA_CONTROLS_KEYS" />" no es poden establir en el mateix diccionari</translation>
 <translation id="8172809706700703589">Crea una llista d'equipatge per al meu viatge</translation>
 <translation id="8174047975335711832">Informació del dispositiu</translation>
@@ -4973,6 +4972,7 @@ Detalls addicionals:
     &lt;li&gt;Prova de desinstal·lar o desactivar <ph name="SOFTWARE_NAME" />&lt;/li&gt;
     &lt;li&gt;Prova de connectar-te a una altra xarxa&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">A <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> trobaràs altres maneres d'explorar l'historial de navegació del teu Compte de Google, com ara les visites de navegació automàtica a <ph name="BEGIN_LINK_GAA" />Historial de Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Afegeix un IBAN</translation>
 <translation id="995782501881226248">YouTube</translation>

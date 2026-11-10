@@ -3,6 +3,7 @@
 <translationbundle lang="cy">
 <translation id="1008557486741366299">Nid Nawr</translation>
 <translation id="100957008357583611">Defnyddio eich lleoliad?</translation>
+<translation id="1010148478459329879">Mae'n bosib y bydd gan eich Cyfrif Google fathau eraill o hanes pori yn <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, megis eich <ph name="BEGIN_LINK_GAA" />Hanes Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="1010200102790553230">Llwytho'r dudalen yn nes ymlaen</translation>
 <translation id="1010225406377140704">Cysylltwch â'r anfonwr i ofyn am ddolen newydd</translation>
 <translation id="1011206368273183593">Wrthi'n paratoi ffeiliau</translation>
@@ -920,7 +921,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="251033673027346551">Ewch i Google Wallet i reoli <ph name="BEGIN_LINK" />data a dewisiadau preifatrwydd<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Ni chaniateir (diofyn)</translation>
 <translation id="2512413427717747692">Gosod Chrome fel botwm porwr diofyn, pwyso Enter i osod Chrome fel porwr diofyn y system yng ngosodiadau iOS</translation>
-<translation id="2513217232843681817">Mae'n bosib y bydd gan eich Cyfrif Google fathau eraill o hanes pori yn <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, megis ymweliadau awto-bori yn eich <ph name="BEGIN_LINK_GAA" />Gweithgarwch Apiau Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="2515629240566999685">Wrthi'n gwirio'r signal yn eich ardal</translation>
 <translation id="2518584823165598232">Nid yw'r cerdyn hwn ar gael. Cysylltwch â darparwr eich cerdyn.</translation>
 <translation id="2521385132275182522">Stapl ar y dde isaf</translation>
@@ -3964,7 +3964,6 @@ Manylion ychwanegol:
 <translation id="7584287158780898016">Galluogi rhybuddion olrhain prisiau</translation>
 <translation id="7586676035079382730">Ni chaniateir hysbysiadau</translation>
 <translation id="7588707273764747927">Trosglwyddo</translation>
-<translation id="7589062909165841767">Mae'n bosib bod gan eich Cyfrif Google eich <ph name="BEGIN_LINK_GAA" />Gweithgarwch Apiau Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">Rhannu cynnwys cyfrinachol?</translation>
 <translation id="7591636454931265313">Mae <ph name="EMBEDDED_URL" /> eisiau defnyddio cwcis a data gwefan ar <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Mae tystysgrif y gweinydd yn torri cyfyngiadau enw.</translation>
@@ -4256,7 +4255,6 @@ Manylion ychwanegol:
 <translation id="8075736640322370409">Creu Google Sheet yn gyflym</translation>
 <translation id="8075898834294118863">Rheoli gosodiadau gwefan</translation>
 <translation id="8076492880354921740">Tabiau</translation>
-<translation id="8076880883123051368">Mae'n bosib y bydd gan eich Cyfrif Google fathau eraill o hanes pori yn <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, megis eich <ph name="BEGIN_LINK_GAA" />Gweithgarwch Apiau Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="8077465698530018904">Tynnu'r ardal a ddewiswyd</translation>
 <translation id="8077669823243888800">Amlen Chinese #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Uwchlwytho ffeil gyfrinachol?}zero{Uwchlwytho ffeiliau cyfrinachol?}two{Uwchlwytho ffeiliau cyfrinachol?}few{Uwchlwytho ffeiliau cyfrinachol?}many{Uwchlwytho ffeiliau cyfrinachol?}other{Uwchlwytho ffeiliau cyfrinachol?}}</translation>
@@ -4308,6 +4306,7 @@ Manylion ychwanegol:
 <translation id="8163468049564974856">Trowch awtolenwi ymlaen i dalu'n ddiogel ar-lein. Mae manylion eich cerdyn wedi'u hamgryptio yn Google Wallet.</translation>
 <translation id="8163866351304776260">Pedwar twll ar y chwith</translation>
 <translation id="8164078261547504572">Eisiau e-byst pan fydd prisiau yn gostwng?</translation>
+<translation id="8166435925529495192">Mae'n bosib bod gan eich Cyfrif Google eich <ph name="BEGIN_LINK_GAA" />Hanes Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="8169175551046720804">Ni ellir gosod bysellau "<ph name="DATA_CONTROLS_KEYS" />" yn yr un geiriadur</translation>
 <translation id="8172809706700703589">Creu rhestr pacio ar gyfer fy nhaith</translation>
 <translation id="8174047975335711832">Gwybodaeth am y ddyfais</translation>
@@ -4972,6 +4971,7 @@ Manylion ychwanegol:
     &lt;li&gt;Rhowch gynnig ar ddadosod neu analluogi "<ph name="SOFTWARE_NAME" />"&lt;/li&gt;
     &lt;li&gt;Rhowch gynnig ar gysylltu â rhwydwaith arall&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">Mae'n bosib y bydd gan eich Cyfrif Google fathau eraill o hanes pori yn <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, megis ymweliadau awto-bori yn eich <ph name="BEGIN_LINK_GAA" />Hanes Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Ychwanegu'r IBAN</translation>
 <translation id="995782501881226248">YouTube</translation>

@@ -9,6 +9,7 @@
 <translation id="1013952917065545813">Võite siia tagasi tulla, et avada hiljuti suletud vahelehti uuesti.</translation>
 <translation id="1016495303386450659">Üksus on värskendatud</translation>
 <translation id="1018804590490383958">Skanni ja täida automaatselt</translation>
+<translation id="1019990162050689579">Gemini rakenduste tegevus</translation>
 <translation id="102471647093736603">Liigutamiseks vajutage pikalt</translation>
 <translation id="102645702181682900">Ülesannet alustati</translation>
 <translation id="102916930470544692">Pääsuvõti</translation>
@@ -391,6 +392,7 @@
 <translation id="2139867232736819575">Otsi kopeeritud teksti</translation>
 <translation id="2140913838150159519">Vahelehe kinnitamine</translation>
 <translation id="2147127444698817042">Saadaval ainult iPhone'is</translation>
+<translation id="2148326276832455306">Vestlused vaadatakse üle ja neid kasutatakse Google’i AI täiustamiseks. Saate <ph name="BEGIN_LINK" />hallata oma tegevusi<ph name="END_LINK" />, sh teavet oma asukoha kohta. <ph name="BEGIN_LINK" />Lugege valikute kohta lisaks<ph name="END_LINK" />.</translation>
 <translation id="2148799636999124959">Salvestatud paroolide abil saate saitidele ja rakendustesse kiiresti sisse logida.</translation>
 <translation id="2149968176347646218">Ühendus ei ole turvaline</translation>
 <translation id="2149973817440762519">Muuda järjehoidjat</translation>
@@ -456,6 +458,7 @@
 <translation id="2327445548174191329">Seadmest <ph name="DEVICE_NAME" /></translation>
 <translation id="2330607597130465898">Kaitse puudub</translation>
 <translation id="233375395665273385">Kustuta ja logi välja</translation>
+<translation id="2340966584724330791">Google kogub teie vestlusi ja seda, mida Geminiga jagate (nt failid, videod, ekraanipildid ja fotod). Google kogub ka teie tagasisidet, Geminiga külastatavatelt veebisaitidelt pärinevat teavet, teenuste kasutusteavet ja asukohateavet (sh teie seadme ligikaudne asukoht, IP-aadress või teie Google'i kontol olev kodune või töökoha aadress).</translation>
 <translation id="2350463587705616331">Seepia taustavärv</translation>
 <translation id="2351097562818989364">Teie tõlkeseaded on lähtestatud.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Saate salvestada domeeni {DOMAIN_ONE} parooli oma Google’i kontole {EMAIL}.}=2{Saate salvestada domeenide {DOMAIN_ONE} ja {DOMAIN_TWO} paroolid oma Google’i kontole {EMAIL}.}=3{Saate salvestada domeenide {DOMAIN_ONE}, {DOMAIN_TWO} ja veel {OTHER_DOMAINS_COUNT} muu domeeni paroolid oma Google’i kontole {EMAIL}.}other{Saate salvestada domeenide {DOMAIN_ONE}, {DOMAIN_TWO} ja veel {OTHER_DOMAINS_COUNT} muu domeeni paroolid oma Google’i kontole {EMAIL}.}}</translation>
@@ -668,7 +671,6 @@
 <translation id="3038136505713492417">Kinnitage oma isik, et oma pääsuvõtit selles seadmes kasutada</translation>
 <translation id="3039671569659952257">Kustuta kaust</translation>
 <translation id="3041835740069544003">Chrome suudab nüüd tänu nutikamale vormide mõistmisele tuvastada ja täita rohkem vorme. Selleks võidakse lehtede sisu ja URL-e töödelda privaatses pilveruumis. Saate seda seadetes hallata.</translation>
-<translation id="3042118633250374317">Google kasutab teie ajalugu oma teenuste pakkumiseks, Google'i, selle kasutajate ja avalikkuse kaitsmiseks ning oma teenuste arendamiseks ja täiustamiseks ülevaatajate abiga. Ärge sisestage teavet, mida te ei soovi, et üle vaadataks või kasutataks.</translation>
 <translation id="3050988301648974170">Avage Paroolikontroll</translation>
 <translation id="3053332585453689122">Saadab teie külastatavad URL-id ning lehesisu, allalaadimiste, laienduste tegevuse ja süsteemiteabe väikeseid näidiseid Google'i ohutu sirvimise teenusele, et kontrollida, kas need on ohutud.</translation>
 <translation id="3055102495753300780">Infoühikud</translation>
@@ -740,6 +742,7 @@
 <translation id="3265736395246760288">Logige kiiremini sisse mis tahes sünkroonitud seadmest</translation>
 <translation id="3268166994745151153">See tähendab, et kaotate oma praeguse edenemise.</translation>
 <translation id="3272527697863656322">Loobu</translation>
+<translation id="3272955648592358996">Teie andmed täiustavad Google'i AI-d</translation>
 <translation id="3273510436356991673">Avakuva kohandamine</translation>
 <translation id="327455571215090823">Nutikam automaattäide, mis jääb privaatseks</translation>
 <translation id="3277021493514034324">Saidi aadress on kopeeritud</translation>
@@ -916,6 +919,7 @@
 <translation id="3888863481921783344">Seda kasutatakse teile nende kontaktide näitamiseks, keda soovite võib-olla sündmusele kutsuda.</translation>
 <translation id="3891414008432200754">Hind</translation>
 <translation id="3892144330757387737">Leiate oma ajaloo siit</translation>
+<translation id="3892695492576181257">Kui see seade on sisse lülitatud, salvestatakse teie tegevus Gemini rakenduste tegevusse 18 kuuks, kuid saate selle muuta kolmeks või 36 kuuks. Google kasutab teie tegevust selleks, et arendada ja täiustada oma teenuseid (sh Gemini mudeleid), samuti selleks, et kaitsta ülevaatajate abiga Google’it, selle kasutajaid ja avalikkust. Andmeid, mille teenusepakkujad on üle vaadanud, ei seostata teie kontoga ja need salvestatakse kolmeks aastaks.</translation>
 <translation id="3893858854379998374">Järjehoidjate salvestamiseksoma kontole kustutage kasutamata järjehoidjad.</translation>
 <translation id="3897092660631435901">Menüü</translation>
 <translation id="3904270275864974753">Karusselli muutmine</translation>
@@ -1110,7 +1114,6 @@
 <translation id="4488754974567924717">Kui teie paroolid on ohustatud, anname teile sellest teada</translation>
 <translation id="4489536976005181779">{count,plural, =1{Leht lisati teie kontol {email} lugemisloendisse}other{Lehed lisati teie kontol {email} lugemisloendisse}}</translation>
 <translation id="4493604894403585654">Olete logitud sisse kontole <ph name="USER_EMAIL" />. Sünkroonimise võite seadetes igal ajal lõpetada. Google võib Otsingut ja muid teenuseid teie ajaloo alusel isikupärastada.</translation>
-<translation id="4495251723189610737">Teie vestlused salvestatakse teie Gemini ajalukku. Ajalugu hõlmab teie heli, Gemini Live'i videoid ja ekraanijagamisi, seda, mida Geminiga jagate (nt päringud, <ph name="BEGIN_LINK" />üleslaadimised<ph name="END_LINK" /> ja <ph name="BEGIN_LINK" />ekraanikuvad<ph name="END_LINK" />), Gemini vastuseid, ülesandeid ja tööriistakutseid, tagasisidet, teavet veebisaitidelt, mida Geminiga külastate, teenuse kasutusandmeid, teie seadme ligikaudset asukohta, IP-aadressi ning teie Google'i kontol olevat kodust või töökoha aadressi. See võib hõlmata ka andmeid rakendustest, mille olete Geminiga ühendanud.</translation>
 <translation id="4502423230170890588">Eemalda sellest seadmest</translation>
 <translation id="4508486880075514067">Laienda täisekraanile</translation>
 <translation id="4508750114462689118">Sule sisselogimisviip</translation>
@@ -1215,7 +1218,6 @@
 <translation id="4808744395915275922">Värskendused</translation>
 <translation id="4813345808229079766">Ühendus</translation>
 <translation id="4821595350501541683">Vahelehed suleti ja sirvimisandmed kustutati</translation>
-<translation id="4821645169621230110">Kuidas teie ajalugu kasutatakse?</translation>
 <translation id="4823322556950229674">Aadressiriba ja tagasinupu allapoole liigutamiseks puudutage neid pikalt.</translation>
 <translation id="4824480232751123840">Ruumala</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} ja veel 1}other{{domain} ja veel {count}}}</translation>
@@ -1243,7 +1245,6 @@
 <translation id="4877597489778380935">Tuleta hiljem meelde</translation>
 <translation id="4881695831933465202">Ava</translation>
 <translation id="4883766694719903356">Inkognito vahelehtede ruudustik</translation>
-<translation id="4884205780547482830">Teie andmed aitavad generatiivset AI-d treenida</translation>
 <translation id="4884937942297374058">Täiustatud kaitse on välja lülitatud</translation>
 <translation id="4887391901725877182">Subtiitrid</translation>
 <translation id="488785315393301722">Üksikasjade kuvamine</translation>
@@ -1330,7 +1331,6 @@
 <translation id="5128788795241319992">Uue menüü avastamine</translation>
 <translation id="5132942445612118989">Teie paroolide, ajaloo ja muude andmete sünkroonimine kõigis seadmetes</translation>
 <translation id="5137568953923142260">Luba üks kord</translation>
-<translation id="5139344197062265975">Kasutage Geminiga suhtlemiseks oma mikrofoni. Kui vestlete Geminiga, talletatakse heli Gemini ajalukku (kui see on sisse lülitatud). Teie andmeid ei kasutata generatiivse AI mudelite täiustamiseks.</translation>
 <translation id="5141363746588976328">Teie vahelehtede hinnalanguste kaardi peitmine</translation>
 <translation id="514154868070499296">Font: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Välju vahelehtede vahetist</translation>
@@ -1430,6 +1430,7 @@
 <translation id="5447973833955560753">Taastamise parool</translation>
 <translation id="5448623529214315261">Salvestatud foto <ph name="INDEX" /></translation>
 <translation id="5452354193031718372">Kasutage tugevat parooli:</translation>
+<translation id="5453088693079603292">Milliseid tegevusi kogutakse?</translation>
 <translation id="5454211924362324495">Kui soovite, et teised ei saaks teie parooli kasutada, <ph name="BEGIN_LINK" />muutke seda saidil <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Täiendage otsingut</translation>
 <translation id="5457226814769348910">Ava võrguühenduseta versioon</translation>
@@ -1543,6 +1544,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="5801568494490449797">Eelistused</translation>
 <translation id="5803566855766646066">Kas soovite kindlasti sellest uuest kaardist loobuda?</translation>
 <translation id="5804241973901381774">Load</translation>
+<translation id="58081802114142635">Teie tegevus täiustab Google’i AI-d</translation>
 <translation id="5817176759448082654">Paroolikontroll</translation>
 <translation id="5818161931099046557">Google'i kontol muutmine</translation>
 <translation id="5819208479324046259">Seadet haldab <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
@@ -1591,6 +1593,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="5971459446352190251">QR-koodi otsing</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 järjehoidja kustutati}other{{count} järjehoidjat kustutati}}</translation>
 <translation id="5972844218283131174">Tühista kõik valikud</translation>
+<translation id="597482816780655631">Gemini on tehisintellekt ja võib teha vigu, sh inimestega seotud vigu. Osa sisust ei pruugi kõigile sobida. Vestlused vaadatakse üle ja neid kasutatakse Google’i AI täiustamiseks. <ph name="BEGIN_LINK" />Lugege lisateavet oma valikute kohta<ph name="END_LINK" />. Kehtivad meie <ph name="BEGIN_LINK" />tingimused<ph name="END_LINK" /> ja <ph name="BEGIN_LINK" />privaatsusteatis<ph name="END_LINK" />.</translation>
 <translation id="5976160379964388480">Muud</translation>
 <translation id="5977976211062815271">Selles seadmes</translation>
 <translation id="5986043348928676121">Järgmine</translation>
@@ -1601,7 +1604,6 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6000893618966378846">„Sirvimisandmete kustutamine“ on tehtud!</translation>
 <translation id="6004988584831654445">Valmis! Saate märguandeid uute ülesannete saabumise kohta.</translation>
 <translation id="6006672969046233841">Uus vaheleht</translation>
-<translation id="6006758170939001741">Kehtivad meie <ph name="BEGIN_LINK" />tingimused<ph name="END_LINK" />, <ph name="BEGIN_LINK" />Korea asukohatingimused<ph name="END_LINK" /> ja <ph name="BEGIN_LINK" />privaatsusteatis<ph name="END_LINK" />. Vestlused vaadatakse üle ja neid kasutatakse generatiivse AI mudelite treenimiseks. Gemini on tehisintellekt ja võib teha vigu, sh inimestega seotud vigu. Osa sisust ei pruugi kõigile sobida. Saate <ph name="BEGIN_LINK" />hallata oma ajalugu<ph name="END_LINK" />, sh <ph name="BEGIN_LINK" />teavet oma asukoha kohta<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Lisateave teie valikute kohta<ph name="END_LINK" /></translation>
 <translation id="6011308810877101166">Otsingusoovituste täiustamine</translation>
 <translation id="6012140227487808125">Krüpteerimine …</translation>
 <translation id="6014801569448771146">Kontrollige oma paroole</translation>
@@ -1698,6 +1700,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="628251768213143684">Google'i kontole salvestatud teavet saate alati hallata</translation>
 <translation id="6284652193729350524">Paku tõlkimist keelde <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Google'i ohutu sirvimise sisselülitamiseks avage jaotis <ph name="BEGIN_LINK" />Google'i teenused<ph name="END_LINK" /> ja puudutage valikut Google'i ohutu sirvimine.</translation>
+<translation id="6295140892595702619">Kasutage Geminiga suhtlemiseks oma mikrofoni. Kui vestlete Geminiga, talletatakse heli Gemini rakenduste tegevuses (kui see on sisse lülitatud). Teie andmeid ei kasutata generatiivse AI mudelite täiustamiseks.</translation>
 <translation id="6295751040240588413">Kaardi sobimatu hüüdnimi</translation>
 <translation id="629730747756840877">Konto</translation>
 <translation id="6301104306974789820">Hankige hinna jälgimise teavitusi</translation>
@@ -1817,6 +1820,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6609890790934458793">Teenuste <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> ja <ph name="THIRD_WEBSITE" /> paroolid kustutatakse. Teie kontosid ei kustutata.</translation>
 <translation id="661266467055912436">Täiendab turvalisust teie ja kõigi teiste veebikasutajate jaoks.</translation>
 <translation id="6612912757320004438">Luba vahelehemärguanded…</translation>
+<translation id="6613372200395638275">Kohandatud abi pakkumiseks jagab Gemini osa teie andmetest (nt osa teie vestlustest, asukohta ja muud asjakohast teavet) teiste Google’i teenustega, nagu Maps ja Lennud. Need teenused võivad seda teavet kasutada täiustuste tegemiseks, isegi kui kustutate hiljem oma Gemini rakenduste tegevused. Vaadake lisateavet <ph name="BEGIN_LINK" />Gemini rakenduste privaatsusjaotisest<ph name="END_LINK" />.</translation>
 <translation id="6617761071025228250">Kustuta tekst</translation>
 <translation id="6619015782482868078">Rohekassinine teema</translation>
 <translation id="6620279676667515405">Tühista</translation>
@@ -1892,7 +1896,6 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6830728435402077660">Pole turvaline</translation>
 <translation id="6831043979455480757">Tõlgi</translation>
 <translation id="6842136130964845393">Selleks, et saaksite alati oma salvesatud paroolidele juurde pääseda, kinnitage oma isik</translation>
-<translation id="6843744036364481304">Mis vestlusajalugu salvestatakse?</translation>
 <translation id="6844773122575789617">Lülita AI-režiim sisse</translation>
 <translation id="6851516051005285358">Taotle arvutisaiti</translation>
 <translation id="6857446173140146664">Tausta kustutamine</translation>
@@ -1977,6 +1980,7 @@ Arvutis jätkamiseks minge üle kontole <ph name="OTHER_EMAIL" />. Saate selle k
 <translation id="7091023926159231962">{count,plural, =1{{count} parooli ei saanud importida}other{{count} parooli ei saanud importida}}</translation>
 <translation id="7095110968493193530">Konto <ph name="EMAIL" /> Google'i paroolihaldurile</translation>
 <translation id="7097046145876891318">Puudutage aadressiribal hinnaajalugu, et näha aja jooksul toimunud hinnamuudatusi</translation>
+<translation id="7098554251807199977">Teie Gemini vestlusi ega <ph name="BEGIN_LINK" />Google Workspace’i andmeid<ph name="END_LINK" /> ei vaadata üle ega kasutata generatiivse AI mudelite täiustamiseks.</translation>
 <translation id="7102005569666697658">Allalaadimine … <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menüü → Seaded → Makseviisid</translation>
 <translation id="7108338896283013870">Peida</translation>
@@ -2017,7 +2021,6 @@ Arvutis jätkamiseks minge üle kontole <ph name="OTHER_EMAIL" />. Saate selle k
 <translation id="7223134495231529579">Salvesta allalaaditud failide hulka</translation>
 <translation id="722339453342442311">Kontrolli kohe</translation>
 <translation id="7227235818314667565">Jagamise haldamine</translation>
-<translation id="7232376892719594461">Teie Gemini vestlusi ega <ph name="BEGIN_LINK" />Google Workspace’i andmeid<ph name="END_LINK" /> ei vaadata üle ega kasutata generatiivse AI mudelite treenimiseks.</translation>
 <translation id="7233006041370588369">Valige sisestamiseks parool.</translation>
 <translation id="7238074332967840767">Ohutus</translation>
 <translation id="723874023660911012">Profiili vahetamine</translation>
@@ -2133,7 +2136,6 @@ Saate igal ajal uuesti alustada.</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{Kas sulgeda {COUNT} inaktiivne vaheleht?}other{Kas sulgeda {COUNT} inaktiivset vahelehte?}}</translation>
 <translation id="7598439272585186139">Parandage turvalisust</translation>
 <translation id="7600965453749440009">Ära kunagi tõlgi: <ph name="LANGUAGE" /></translation>
-<translation id="760230853074995500">Vestlused vaadatakse üle ja neid kasutatakse generatiivse AI mudelite treenimiseks. Saate <ph name="BEGIN_LINK" />hallata oma ajalugu<ph name="END_LINK" />, sh <ph name="BEGIN_LINK" />teavet oma asukoha kohta<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Vaadake lisateavet oma valikute kohta<ph name="END_LINK" />.</translation>
 <translation id="7603308509262646847">Kaardiomaniku nime <ph name="NAME" /> automaatne sisestamine</translation>
 <translation id="7603852183842204213">Blokeer. hüpikuid (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">Sünkroonimine ei tööta</translation>
@@ -2419,6 +2421,7 @@ Saate igal ajal uuesti alustada.</translation>
 <translation id="8439758443371991593">Peida valik Lisa lugemisloendisse</translation>
 <translation id="8443986842926457191">URL on pikem kui 2048 tähemärki</translation>
 <translation id="8449869326050867919">Parool on jagatud</translation>
+<translation id="8461708300275916315">Kui oled alla 18-aastane</translation>
 <translation id="8473815223723723001">Muuda pilti Geminiga</translation>
 <translation id="8473863474539038330">Aadressid ja muu</translation>
 <translation id="8474378002946546633">Luba märguanded</translation>
@@ -2498,6 +2501,7 @@ Saate igal ajal uuesti alustada.</translation>
 <translation id="8672733398999596205">Luba kõik</translation>
 <translation id="8674716540979958118">Teil on ohustatud paroole.</translation>
 <translation id="8679900250380464358">Lisa lugemisloendisse</translation>
+<translation id="8680643216091361291"><ph name="BEGIN_LINK" />Tegevuse säilitamise<ph name="END_LINK" /> seade on vaikimisi välja lülitatud. Kui see on välja lülitatud, salvestab Google vestlused kolmeks päevaks. Vestlusi kasutatakse Gemini rakenduste nõuetekohase töö ja turvalisuse tagamiseks ning probleemide lahendamiseks sinu tagasiside põhjal. Võid tegevuse säilitamise seade sisse lülitada; nii aitad Google'i AI-d kõigi jaoks paremaks muuta.</translation>
 <translation id="8680787084697685621">Konto sisselogimisüksikasjad on aegunud.</translation>
 <translation id="868648444055742370">Saidil „<ph name="SITE_DOMAIN" />“ ei ole lubatud teie mikrofonile juurde pääseda.</translation>
 <translation id="8690752723634292147">Kinnita kustutamine</translation>
@@ -2529,7 +2533,6 @@ Saate igal ajal uuesti alustada.</translation>
 <translation id="8746155870861185046">Esiletõstu jagamine</translation>
 <translation id="8748678031495824833">Lehel olevate AI-tööriistade avamine</translation>
 <translation id="8750037785291841318">Oma vahelehed leiate siit</translation>
-<translation id="8751126814549746156">Teie ajalugu kustutatakse automaatselt 18 kuu pärast. Seda ajavahemikku saate muuta seadetes. Enne, kui teenusepakkujad teie vestlusi üle vaatavad, eraldatakse vestlused teie kontost. Neid vestlusi säilitatakse kuni kolm aastat. Ajaloo seade võite igal ajal <ph name="BEGIN_LINK" />välja lülitada<ph name="END_LINK" />.</translation>
 <translation id="8756969031206844760">Kas värskendada parooli?</translation>
 <translation id="8763613688786959833">Eelmisele vahelehele liikumine</translation>
 <translation id="8766790350274092814">Teenuste <ph name="WEBSITE" /> ja <ph name="SECOND_WEBSITE" /> paroolid kustutatakse. Teie kontosid ei kustutata.</translation>
@@ -2556,6 +2559,7 @@ Saate igal ajal uuesti alustada.</translation>
 <translation id="882557203579758546">Lehelt otsimine …</translation>
 <translation id="8829809207373502270">See pääsuvõti ei toimi enam. See on veebisaidilt <ph name="WEBSITE" /> kustutatud ja kustutatakse varsti ka siit. <ph name="BEGIN_LINK" />Teave pääsuvõtmete kohta<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Sulge kõik inaktiivsed</translation>
+<translation id="8831871601813227635">Kehtivad meie <ph name="BEGIN_LINK" />tingimused<ph name="END_LINK" />, <ph name="BEGIN_LINK" />Korea asukohatingimused<ph name="END_LINK" /> ja <ph name="BEGIN_LINK" />privaatsusteatis<ph name="END_LINK" />. Vestlused vaadatakse üle ja neid kasutatakse Google’i AI täiustamiseks. Gemini on tehisintellekt ja võib teha vigu, sh inimestega seotud vigu. Osa sisust ei pruugi kõigile sobida. Saate <ph name="BEGIN_LINK" />hallata oma tegevusi<ph name="END_LINK" />, sh teavet oma asukoha kohta. <ph name="BEGIN_LINK" />Lugege lisateavet oma valikute kohta<ph name="END_LINK" />.</translation>
 <translation id="8837654851594567190">Sordi väljaandja järgi</translation>
 <translation id="884351711508006491">Teie teave salvestatakse teie seadmesse.</translation>
 <translation id="8844136307393039959">Teie jälgitava toote hind langes</translation>
@@ -2575,7 +2579,6 @@ Saate igal ajal uuesti alustada.</translation>
 <translation id="8893208530912252670">Videod</translation>
 <translation id="890009681345348416">Üle 40 parooli on automaatselt täidetud</translation>
 <translation id="8900845556227858314">Brauserirakendus</translation>
-<translation id="8903042868629070803">Kui olete vähemalt 18-aastane, kasutab Google teie ajalugu ka <ph name="BEGIN_LINK" />generatiivse AI mudelite treenimiseks<ph name="END_LINK" />. Saate selle tulevaste vestluste jaoks igal ajal <ph name="BEGIN_LINK" />välja lülitada<ph name="END_LINK" />.</translation>
 <translation id="890565330728586731">Tagasi</translation>
 <translation id="8907722425137681851">Lehelt otsimine …</translation>
 <translation id="8909135823018751308">Jaga ...</translation>
@@ -2628,7 +2631,6 @@ Saate igal ajal uuesti alustada.</translation>
 <translation id="9066097352053395362">Peida valik Muuda järjehoidjat</translation>
 <translation id="9070824521421603770">Teid logitakse välja ja vahelehed suletakse</translation>
 <translation id="9072837124205571418">Kõikide seadmete vahelehegrupid</translation>
-<translation id="9073322251019919253">Gemini on tehisintellekt ja võib teha vigu, sh inimestega seotud vigu. Osa sisust ei pruugi kõigile sobida. Vestlused vaadatakse üle ja neid kasutatakse generatiivse AI mudelite treenimiseks. Saate <ph name="BEGIN_LINK" />hallata oma ajalugu<ph name="END_LINK" />, sh <ph name="BEGIN_LINK" />teavet oma asukoha kohta<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Vaadake lisateavet oma valikute kohta<ph name="END_LINK" />. Kehtivad meie <ph name="BEGIN_LINK" />tingimused<ph name="END_LINK" /> ja <ph name="BEGIN_LINK" />privaatsusteatis<ph name="END_LINK" />.</translation>
 <translation id="9081058212938299310">Kas soovite kasutaja <ph name="USERNAME" /> parooli värskendada?</translation>
 <translation id="908365381820697818">Nüüd saate leida ja täita teavet Gmailist ja mujalt</translation>
 <translation id="9083838294503912307">Seadmete vahel sünkroonimiseks ja isikupärastamiseks lülitage sünkroonimine sisse.</translation>

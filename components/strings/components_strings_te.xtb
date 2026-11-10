@@ -3,6 +3,7 @@
 <translationbundle lang="te">
 <translation id="1008557486741366299">ఇప్పుడు కాదు</translation>
 <translation id="100957008357583611">మీ లొకేషన్‌ను ఉపయోగించాలా?</translation>
+<translation id="1010148478459329879">మీ Google ఖాతాకు సంబంధించి <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />లో మీ <ph name="BEGIN_LINK_GAA" />Gemini హిస్టరీ<ph name="END_LINK_GAA" /> వంటి ఇతర రకాల బ్రౌజింగ్ హిస్టరీ కూడా ఉండవచ్చు.</translation>
 <translation id="1010200102790553230">పేజీని తర్వాత లోడ్ చేయి</translation>
 <translation id="1010225406377140704">కొత్త లింక్ కోసం అడగడానికి పంపినవారిని సంప్రదించండి</translation>
 <translation id="1011206368273183593">ఫైల్స్‌ను సిద్ధం చేస్తోంది</translation>
@@ -915,7 +916,6 @@
 <translation id="251033673027346551"><ph name="BEGIN_LINK" />డేటా, గోప్యతా ప్రాధాన్యతల<ph name="END_LINK" />ను మేనేజ్ చేయడానికి Google Walletకు వెళ్లండి.</translation>
 <translation id="2512101340618156538">అనుమతించనివి (ఆటోమేటిక్ సెట్టింగ్)</translation>
 <translation id="2512413427717747692">Chromeను ఆటోమేటిక్ బ్రౌజర్‌గా సెట్ చేసే బటన్, 'Enter'ను నొక్కి iOS సెట్టింగ్‌లలో Chromeను ఆటోమేటిక్ బ్రౌజర్‌గా సెట్ చేయండి</translation>
-<translation id="2513217232843681817">మీ Google ఖాతాకు సంబంధించి <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />లో ఇతర రకాల బ్రౌజింగ్ హిస్టరీ కూడా ఉండవచ్చు, ఉదాహరణకు మీ <ph name="BEGIN_LINK_GAA" />Gemini యాప్స్ యాక్టివిటీ<ph name="END_LINK_GAA" />లోని ఆటోమేటిక్ బ్రౌజింగ్ సందర్శనలు వంటివి.</translation>
 <translation id="2515629240566999685">మీ ప్రాంతంలో సిగ్నల్‌ను చెక్ చేయడం</translation>
 <translation id="2518584823165598232">ఈ కార్డ్ అందుబాటులో లేదు. దయచేసి మీకు కార్డ్‌ను అందించిన వారిని సంప్రదించండి.</translation>
 <translation id="2521385132275182522">కుడివైపు దిగువ భాగంలో స్టేపుల్</translation>
@@ -3960,7 +3960,6 @@
 <translation id="7584287158780898016">ధర ట్రాకింగ్ అలర్ట్‌లను ఎనేబుల్ చేయండి</translation>
 <translation id="7586676035079382730">నోటిఫికేషన్‌లు అనుమతించబడలేదు</translation>
 <translation id="7588707273764747927">ట్రాన్స్‌ఫర్</translation>
-<translation id="7589062909165841767">మీ Google ఖాతా మీ <ph name="BEGIN_LINK_GAA" />Gemini యాప్స్ యాక్టివిటీ<ph name="END_LINK_GAA" />ని కలిగి ఉండవచ్చు</translation>
 <translation id="7591288787774558753">గోప్యమైన కంటెంట్‌ను షేర్ చేయాలా?</translation>
 <translation id="7591636454931265313"><ph name="TOP_LEVEL_URL" />లోని కుక్కీలను, సైట్ డేటాను వినియోగించడానికి <ph name="EMBEDDED_URL" /> అనుమతి అడుగుతోంది</translation>
 <translation id="7592362899630581445">సర్వర్ యొక్క ప్రమాణపత్రం పేరు పరిమితులను ఉల్లంఘిస్తోంది.</translation>
@@ -4252,7 +4251,6 @@
 <translation id="8075736640322370409">కొత్త Google షీట్‌ను త్వరగా క్రియేట్ చేయండి</translation>
 <translation id="8075898834294118863">సైట్ సెట్టింగ్‌లను మేనేజ్ చేయండి</translation>
 <translation id="8076492880354921740">ట్యాబ్‌లు</translation>
-<translation id="8076880883123051368">మీ Google ఖాతా <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> వెబ్‌సైట్‌లో ఇతర రకాల బ్రౌజింగ్ హిస్టరీ ఉండవచ్చు, ఉదా., <ph name="BEGIN_LINK_GAA" />Gemini యాప్స్ యాక్టివిటీ<ph name="END_LINK_GAA" /></translation>
 <translation id="8077465698530018904">ఎంచుకున్న ప్రాంతాన్ని తీసివేయండి</translation>
 <translation id="8077669823243888800">ఎన్వలప్ చైనీస్ #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{గోప్యమైన ఫైల్‌ను అప్‌లోడ్ చేయాలా?}other{గోప్యమైన ఫైల్స్‌ను అప్‌లోడ్ చేయాలా?}}</translation>
@@ -4304,6 +4302,7 @@
 <translation id="8163468049564974856">ఆన్‌లైన్‌లో సురక్షితంగా చెక్ అవుట్ చేయడానికి ఆటోఫిల్‌ను ఆన్ చేయండి. మీ కార్డ్ వివరాలు Google Walletలో ఎన్‌క్రిప్ట్ అయి ఉంటాయి.</translation>
 <translation id="8163866351304776260">ఎడమవైపు నాలుగు రంధ్రాలు</translation>
 <translation id="8164078261547504572">ధరలు తగ్గినప్పుడు ఈమెయిల్స్ పొందాలనుకుంటున్నారా?</translation>
+<translation id="8166435925529495192">మీ Google ఖాతాలో మీ <ph name="BEGIN_LINK_GAA" />Gemini హిస్టరీ<ph name="END_LINK_GAA" /> ఉండవచ్చు</translation>
 <translation id="8169175551046720804">"<ph name="DATA_CONTROLS_KEYS" />" కీలను అదే రకమైన డిక్షనరీలో సెట్ చేయడం సాధ్యం కాదు</translation>
 <translation id="8172809706700703589">నా ట్రిప్ కోసం ప్యాకింగ్ లిస్ట్‌ను క్రియేట్ చేయి</translation>
 <translation id="8174047975335711832">డివైజ్ సమాచారం</translation>
@@ -4969,6 +4968,7 @@
     &lt;li&gt;"<ph name="SOFTWARE_NAME" />"ని అన్ఇన్‌స్టాల్ చేయడం లేదా నిలిపివేయడం ప్రయత్నించండి&lt;/li&gt;
     &lt;li&gt;మరో నెట్‌వర్క్‌కు కనెక్ట్ చేయడం ప్రయత్నించండి&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">మీ Google ఖాతాకు సంబంధించి <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />లో ఇతర రకాల బ్రౌజింగ్ హిస్టరీ కూడా ఉండవచ్చు, ఉదాహరణకు మీ <ph name="BEGIN_LINK_GAA" />Gemini హిస్టరీ<ph name="END_LINK_GAA" />లోని ఆటోమేటిక్ బ్రౌజింగ్ సందర్శనలు వంటివి.</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">IBANను జోడించండి</translation>
 <translation id="995782501881226248">YouTube</translation>

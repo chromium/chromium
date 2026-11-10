@@ -3,6 +3,7 @@
 <translationbundle lang="iw">
 <translation id="1008557486741366299">לא עכשיו</translation>
 <translation id="100957008357583611">להשתמש במיקום שלך?</translation>
+<translation id="1010148478459329879">‏יכול להיות שבחשבון שלך ב-Google מופיעים סוגים אחרים של היסטוריית גלישה בכתובת <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, כמו <ph name="BEGIN_LINK_GAA" />ההיסטוריה ב-Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="1010200102790553230">לטעינת הדף מאוחר יותר</translation>
 <translation id="1010225406377140704">אפשר לפנות אל השולח/ת ולבקש קישור חדש</translation>
 <translation id="1011206368273183593">הקבצים בהכנה…</translation>
@@ -920,7 +921,6 @@
 <translation id="251033673027346551">‏כדי לנהל את <ph name="BEGIN_LINK" />העדפות הנתונים והפרטיות<ph name="END_LINK" />, עליך לעבור אל Google Wallet.</translation>
 <translation id="2512101340618156538">אין הרשאה (ברירת מחדל)</translation>
 <translation id="2512413427717747692">‏כפתור להגדרת Chrome כדפדפן ברירת המחדל, יש ללחוץ על Enter כדי להגדיר את Chrome כדפדפן ברירת המחדל של המערכת בהגדרות iOS</translation>
-<translation id="2513217232843681817">‏יכול להיות שבחשבון Google שלך יש סוגים אחרים של היסטוריית גלישה בכתובת <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, כמו כניסות בפעולות אוטומטיות בדפדפן ב<ph name="BEGIN_LINK_GAA" />פעילות בממשקי Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="2515629240566999685">לבדוק את האות באזור שלך</translation>
 <translation id="2518584823165598232">הכרטיס הזה לא זמין. עליך לפנות לספק הכרטיס שלך.</translation>
 <translation id="2521385132275182522">סיכת הידוק בפינה הימנית התחתונה</translation>
@@ -3970,7 +3970,6 @@ Del</translation>
 <translation id="7584287158780898016">הפעלת התראות על מעקב מחירים</translation>
 <translation id="7586676035079382730">אין הרשאת גישה להתראות</translation>
 <translation id="7588707273764747927">Transfer</translation>
-<translation id="7589062909165841767">‏יכול להיות שיש בחשבון Google את פרטי <ph name="BEGIN_LINK_GAA" />הפעילות בממשקי Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">לשתף מידע סודי?</translation>
 <translation id="7591636454931265313">‏<ph name="EMBEDDED_URL" /> רוצה להשתמש בקובצי Cookie ובנתונים שבאתר <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">אישור השרת מפר את אילוצי השמות.</translation>
@@ -4262,7 +4261,6 @@ Del</translation>
 <translation id="8075736640322370409">‏יצירה מהירה של גיליון אלקטרוני חדש ב-Google Sheets</translation>
 <translation id="8075898834294118863">ניהול ההגדרות לאתרים</translation>
 <translation id="8076492880354921740">כרטיסיות</translation>
-<translation id="8076880883123051368">‏יכול להיות שבחשבון שלך ב-Google יש סוגים אחרים של היסטוריית גלישה בכתובת <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, כמו למשל <ph name="BEGIN_LINK_GAA" />הפעילות בממשקי Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="8077465698530018904">הסרת האזור שנבחר</translation>
 <translation id="8077669823243888800">מעטפה – סינית 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{להעלות את הקובץ הסודי?}one{להעלות את הקבצים הסודיים?}two{להעלות את הקבצים הסודיים?}other{להעלות את הקבצים הסודיים?}}</translation>
@@ -4314,6 +4312,7 @@ Del</translation>
 <translation id="8163468049564974856">‏כדי לשלם באינטרנט בצורה בטוחה, צריך להפעיל את המילוי האוטומטי. פרטי הכרטיס מוצפנים ב-Google Wallet.</translation>
 <translation id="8163866351304776260">4 ניקובים בצד שמאל</translation>
 <translation id="8164078261547504572">רוצה לקבל אימיילים על ירידה במחיר?</translation>
+<translation id="8166435925529495192">‏יכול להיות שבחשבון שלך ב-Google מופיעים פרטי <ph name="BEGIN_LINK_GAA" />ההיסטוריה ב-Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="8169175551046720804">לא ניתן להגדיר את המפתחות <ph name="DATA_CONTROLS_KEYS" /> באותו מילון</translation>
 <translation id="8172809706700703589">תכין לי רשימת ציוד לנסיעה</translation>
 <translation id="8174047975335711832">מידע מהמכשיר</translation>
@@ -4979,6 +4978,7 @@ Del</translation>
     &lt;li&gt;להסיר את ההתקנה של "<ph name="SOFTWARE_NAME" />"&lt;/li&gt;
     &lt;li&gt;להתחבר לרשת אחרת&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">‏יכול להיות שבחשבון שלך ב-Google מופיעים סוגים אחרים של היסטוריית גלישה בכתובת <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, כמו כניסות דרך פעולות אוטומטיות בדפדפן <ph name="BEGIN_LINK_GAA" />בהיסטוריה שלך ב-Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">‏הוספת IBAN</translation>
 <translation id="995782501881226248">YouTube</translation>

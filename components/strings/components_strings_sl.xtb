@@ -3,6 +3,7 @@
 <translationbundle lang="sl">
 <translation id="1008557486741366299">Ne zdaj</translation>
 <translation id="100957008357583611">Želite uporabiti lokacijo?</translation>
+<translation id="1010148478459329879">V računu Google so morda druge vrste zgodovine brskanja na <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, kot je <ph name="BEGIN_LINK_GAA" />zgodovina v Geminiju<ph name="END_LINK_GAA" /></translation>
 <translation id="1010200102790553230">Naloži stran pozneje</translation>
 <translation id="1010225406377140704">Obrnite se na pošiljatelja in ga prosite za novo povezavo</translation>
 <translation id="1011206368273183593">Pripravljanje datotek</translation>
@@ -920,7 +921,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="251033673027346551">Obiščite Google Denarnico, če želite upravljati <ph name="BEGIN_LINK" />nastavitve podatkov in zasebnosti<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Ni dovoljeno (privzeto)</translation>
 <translation id="2512413427717747692">Gumb za nastavite Chroma kot privzeti brskalnik, pritisnite tipko Enter, če želite nastaviti Chrome kot privzeti brskalnik sistema v nastavitvah sistema iOS.</translation>
-<translation id="2513217232843681817">V računu Google so morda druge vrste zgodovine brskanja na <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, kot so obiski s samodejnim brskanjem v <ph name="BEGIN_LINK_GAA" />dejavnosti v aplikacijah Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="2515629240566999685">preveriti signal na svojem območju</translation>
 <translation id="2518584823165598232">Ta kartica ni na voljo. Obrnite se na ponudnika kartice.</translation>
 <translation id="2521385132275182522">Spenjanje spodaj desno</translation>
@@ -3965,7 +3965,6 @@ Dodatne podrobnosti:
 <translation id="7584287158780898016">Omogočanje opozoril o spremljanju cen</translation>
 <translation id="7586676035079382730">Obvestila niso dovoljena</translation>
 <translation id="7588707273764747927">Transfer</translation>
-<translation id="7589062909165841767">V računu Google je morda <ph name="BEGIN_LINK_GAA" />dejavnost v aplikacijah Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">Želite deliti zaupno vsebino?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> želi uporabljati piškotke in podatke spletnih mest na <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Strežnikovo potrdilo krši omejitve imen.</translation>
@@ -4257,7 +4256,6 @@ Dodatne podrobnosti:
 <translation id="8075736640322370409">Hitro ustvarjanje nove Google Preglednice</translation>
 <translation id="8075898834294118863">Upravljanje nastavitev spletnega mesta</translation>
 <translation id="8076492880354921740">Zavihki</translation>
-<translation id="8076880883123051368">V računu Google so morda druge vrste zgodovine brskanja na <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, kot je <ph name="BEGIN_LINK_GAA" />dejavnost v aplikacijah Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="8077465698530018904">Odstranitev izbrane regije</translation>
 <translation id="8077669823243888800">Kitajska kuverta št. 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Želite naložiti zaupno datoteko?}one{Želite naložiti zaupne datoteke?}two{Želite naložiti zaupne datoteke?}few{Želite naložiti zaupne datoteke?}other{Želite naložiti zaupne datoteke?}}</translation>
@@ -4309,6 +4307,7 @@ Dodatne podrobnosti:
 <translation id="8163468049564974856">Vklopite samodejno izpolnjevanje za varno zaključevanje spletnih plačil. Podatki o kartici so šifrirani v Google Denarnici.</translation>
 <translation id="8163866351304776260">Četverno luknjanje na levi</translation>
 <translation id="8164078261547504572">Želite prejemati e-poštna sporočila ob znižanju cen?</translation>
+<translation id="8166435925529495192">V računu Google je morda <ph name="BEGIN_LINK_GAA" />zgodovina v Geminiju<ph name="END_LINK_GAA" /></translation>
 <translation id="8169175551046720804">Ključev »<ph name="DATA_CONTROLS_KEYS" />« ni mogoče nastaviti v istem slovarju</translation>
 <translation id="8172809706700703589">Ustvari seznam za pakiranje za moje potovanje</translation>
 <translation id="8174047975335711832">Podatki o napravi</translation>
@@ -4974,6 +4973,7 @@ Dodatne podrobnosti:
     &lt;li&gt;Poskusite odstraniti »<ph name="SOFTWARE_NAME" />«&lt;/li&gt;
     &lt;li&gt;Poskusite se povezati z drugim omrežjem&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">V računu Google so morda druge vrste zgodovine brskanja na <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, kot so obiski s samodejnim brskanjem v <ph name="BEGIN_LINK_GAA" />zgodovini v Geminiju<ph name="END_LINK_GAA" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Dodajanje IBAN-a</translation>
 <translation id="995782501881226248">YouTube</translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="fil">
 <translation id="1008557486741366299">Hindi Ngayon</translation>
 <translation id="100957008357583611">Gamitin ang iyong lokasyon?</translation>
+<translation id="1010148478459329879">Posibleng may iba pang uri ng history ng pag-browse ang Google Account mo sa <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, gaya ng iyong <ph name="BEGIN_LINK_GAA" />History sa Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="1010200102790553230">I-load ang page sa ibang pagkakataon</translation>
 <translation id="1010225406377140704">Makipag-ugnayan sa sender para humingi ng bagong link</translation>
 <translation id="1011206368273183593">Ihinahanda ang mga file</translation>
@@ -920,7 +921,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="251033673027346551">Bisitahin ang Google Wallet para pamahalaan ang <ph name="BEGIN_LINK" />mga preference sa data at privacy<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Hindi pinapayagan (default)</translation>
 <translation id="2512413427717747692">Itakda ang Chrome bilang default na button ng browser, pindutin ang Enter para itakda ang Chrome bilang default na browser ng system sa mga setting ng iOS</translation>
-<translation id="2513217232843681817">Posibleng may iba pang uri ng history ng pag-browse ang Google Account mo sa <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, gaya ng mga pagbisita sa awtomatikong pag-browse sa iyong <ph name="BEGIN_LINK_GAA" />Aktibidad sa Mga Gemini App<ph name="END_LINK_GAA" /></translation>
 <translation id="2515629240566999685">Suriin ang signal sa iyong lugar</translation>
 <translation id="2518584823165598232">Hindi available ang card na ito. Makipag-ugnayan sa provider ng iyong card.</translation>
 <translation id="2521385132275182522">Staple bottom right</translation>
@@ -3965,7 +3965,6 @@ Mga karagdagang detalye:
 <translation id="7584287158780898016">I-enable ang mga alerto sa pagsubaybay sa presyo</translation>
 <translation id="7586676035079382730">Hindi pinapayagan ang mga notification</translation>
 <translation id="7588707273764747927">Transfer</translation>
-<translation id="7589062909165841767">Posibleng nasa Google Account mo ang iyong <ph name="BEGIN_LINK_GAA" />Aktibidad sa Mga Gemini App<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">Magbahagi ng kumpidensyal na content?</translation>
 <translation id="7591636454931265313">Gustong gamitin ng <ph name="EMBEDDED_URL" /> ang mga cookie at data ng site sa <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Lumabag ang certificate ng server sa limitasyon sa pangalan.</translation>
@@ -4257,7 +4256,6 @@ Mga karagdagang detalye:
 <translation id="8075736640322370409">Gumawa ng bagong Google Sheet nang mabilis</translation>
 <translation id="8075898834294118863">Pamahalaan ang mga setting ng site</translation>
 <translation id="8076492880354921740">Mga Tab</translation>
-<translation id="8076880883123051368">Posibleng may iba pang uri ng history ng pag-browse ang Google Account mo sa <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, gaya ng iyong <ph name="BEGIN_LINK_GAA" />Aktibidad sa Mga Gemini App<ph name="END_LINK_GAA" /></translation>
 <translation id="8077465698530018904">Alisin ang napiling rehiyon</translation>
 <translation id="8077669823243888800">Envelope Chinese #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{I-upload ang kumpidensyal na file?}one{I-upload ang mga kumpidensyal na file?}other{I-upload ang mga kumpidensyal na file?}}</translation>
@@ -4309,6 +4307,7 @@ Mga karagdagang detalye:
 <translation id="8163468049564974856">I-on ang autofill para ligtas na mag-check out online. Naka-encrypt sa Google Wallet ang mga detalye ng iyong card.</translation>
 <translation id="8163866351304776260">Quad punch left</translation>
 <translation id="8164078261547504572">Gusto mo bang makatanggap ng mga email kapag bumaba ang mga presyo?</translation>
+<translation id="8166435925529495192">Posibleng nasa Google Account mo ang iyong <ph name="BEGIN_LINK_GAA" />History sa Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="8169175551046720804">Hindi puwedeng itakda sa iisang dictionary ang mga key na "<ph name="DATA_CONTROLS_KEYS" />"</translation>
 <translation id="8172809706700703589">Gumawa ng listahan ng dadalhin para sa biyahe ko</translation>
 <translation id="8174047975335711832">Impormasyon ng device</translation>
@@ -4974,6 +4973,7 @@ Mga karagdagang detalye:
     &lt;li&gt;Subukang i-uninstall o i-disable ang "<ph name="SOFTWARE_NAME" />"&lt;/li&gt;
     &lt;li&gt;Subukang kumonekta sa ibang network&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">Posibleng may iba pang uri ng history ng pag-browse ang Google Account mo sa <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, gaya ng mga pagbisita sa awtomatikong pag-browse sa iyong <ph name="BEGIN_LINK_GAA" />History sa Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Magdagdag ng IBAN</translation>
 <translation id="995782501881226248">YouTube</translation>

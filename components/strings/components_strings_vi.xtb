@@ -3,6 +3,7 @@
 <translationbundle lang="vi">
 <translation id="1008557486741366299">Để sau</translation>
 <translation id="100957008357583611">Sử dụng thông tin vị trí của bạn?</translation>
+<translation id="1010148478459329879">Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web khác tại <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, chẳng hạn như <ph name="BEGIN_LINK_GAA" />Nhật ký trên Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="1010200102790553230">Tải trang vào lúc khác</translation>
 <translation id="1010225406377140704">Liên hệ với người gửi để yêu cầu đường liên kết mới</translation>
 <translation id="1011206368273183593">Đang chuẩn bị tệp</translation>
@@ -920,7 +921,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="251033673027346551">Hãy truy cập vào Google Wallet để quản lý <ph name="BEGIN_LINK" />các lựa chọn ưu tiên về dữ liệu và quyền riêng tư<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Không được phép (mặc định)</translation>
 <translation id="2512413427717747692">Đặt Chrome làm nút trình duyệt mặc định, nhấn Enter để đặt Chrome làm trình duyệt mặc định của hệ thống trong phần cài đặt iOS</translation>
-<translation id="2513217232843681817">Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web khác tại <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, chẳng hạn như lượt truy cập tự động duyệt web trong phần <ph name="BEGIN_LINK_GAA" />Hoạt động trên Các ứng dụng Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="2515629240566999685">Kiểm tra tín hiệu trong khu vực của bạn</translation>
 <translation id="2518584823165598232">Thẻ này không dùng được. Vui lòng liên hệ với nhà cung cấp thẻ của bạn.</translation>
 <translation id="2521385132275182522">Dập ghim dưới cùng bên phải</translation>
@@ -3965,7 +3965,6 @@ Thông tin chi tiết bổ sung:
 <translation id="7584287158780898016">Bật thông báo theo dõi giá</translation>
 <translation id="7586676035079382730">Không cho phép thông báo</translation>
 <translation id="7588707273764747927">Giấy in chuyển nhiệt</translation>
-<translation id="7589062909165841767">Tài khoản Google của bạn có thể có <ph name="BEGIN_LINK_GAA" />Hoạt động trên Các ứng dụng Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">Chia sẻ nội dung bảo mật?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> muốn sử dụng cookie và dữ liệu trang web trên <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Chứng chỉ của máy chủ vi phạm hạn chế tên.</translation>
@@ -4257,7 +4256,6 @@ Thông tin chi tiết bổ sung:
 <translation id="8075736640322370409">Tạo nhanh một trang tính mới trên Google Trang tính</translation>
 <translation id="8075898834294118863">Quản lý chế độ cài đặt trang web</translation>
 <translation id="8076492880354921740">Thẻ</translation>
-<translation id="8076880883123051368">Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web khác tại <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, chẳng hạn như <ph name="BEGIN_LINK_GAA" />Hoạt động trên Các ứng dụng Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="8077465698530018904">Xoá vùng đã chọn</translation>
 <translation id="8077669823243888800">Phong bì kiểu Trung số 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Tải tệp bảo mật lên?}other{Tải các tệp bảo mật lên?}}</translation>
@@ -4309,6 +4307,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8163468049564974856">Hãy bật tính năng tự động điền để thanh toán trực tuyến một cách an toàn. Chi tiết thẻ của bạn được mã hoá trong Google Wallet.</translation>
 <translation id="8163866351304776260">Đục 4 lỗ bên trái</translation>
 <translation id="8164078261547504572">Bạn muốn nhận email thông báo khi giá giảm?</translation>
+<translation id="8166435925529495192">Tài khoản Google của bạn có thể có <ph name="BEGIN_LINK_GAA" />Nhật ký trên Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="8169175551046720804">Không thể thiết lập các khoá "<ph name="DATA_CONTROLS_KEYS" />" trong cùng một từ điển</translation>
 <translation id="8172809706700703589">Lập danh sách đồ dùng cần mang cho chuyến đi của tôi</translation>
 <translation id="8174047975335711832">Thông tin thiết bị</translation>
@@ -4976,6 +4975,7 @@ Thông tin chi tiết bổ sung:
     &lt;li&gt;Hãy thử gỡ cài đặt hoặc vô hiệu hóa "<ph name="SOFTWARE_NAME" />"&lt;/li&gt;
     &lt;li&gt;Hãy thử kết nối với một mạng khác&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web khác tại <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, chẳng hạn như lượt truy cập tự động duyệt web trong phần <ph name="BEGIN_LINK_GAA" />Nhật ký trên Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Thêm số IBAN</translation>
 <translation id="995782501881226248">YouTube</translation>

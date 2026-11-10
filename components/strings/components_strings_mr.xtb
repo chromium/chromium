@@ -3,6 +3,7 @@
 <translationbundle lang="mr">
 <translation id="1008557486741366299">सध्या नाही</translation>
 <translation id="100957008357583611">तुमचे स्थान वापरायचे का?</translation>
+<translation id="1010148478459329879">तुमच्या Google खाते मध्ये, <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> येथे इतर स्वरूपांमधील ब्राउझिंग इतिहास असू शकतो, जसे की तुमचा <ph name="BEGIN_LINK_GAA" />Gemini इतिहास<ph name="END_LINK_GAA" /></translation>
 <translation id="1010200102790553230">पेज नंतर लोड करा</translation>
 <translation id="1010225406377140704">नवीन लिंकची विनंती करण्यासाठी पाठवणाऱ्याशी संपर्क साधा</translation>
 <translation id="1011206368273183593">फाइल तयार करत आहे</translation>
@@ -920,7 +921,6 @@
 <translation id="251033673027346551"><ph name="BEGIN_LINK" />डेटा आणि गोपनीयता प्राधान्ये<ph name="END_LINK" /> व्यवस्थापित करण्यासाठी Google Wallet ला भेट द्या.</translation>
 <translation id="2512101340618156538">अनुमती नाही (डीफॉल्ट)</translation>
 <translation id="2512413427717747692">Chrome ला डीफॉल्ट ब्राउझर बटण म्हणून सेट करा, iOS सेटिंग्जमध्ये Chrome ला सिस्टीमचा डीफॉल्ट ब्राउझर म्हणून सेट करण्यासाठी एंटर प्रेस करा</translation>
-<translation id="2513217232843681817">तुमच्या Google खाते मध्ये, <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> येथे इतर स्वरूपांमधील ब्राउझिंग इतिहास असू शकतो, जसे की तुमची <ph name="BEGIN_LINK_GAA" />Gemini अ‍ॅप्स अ‍ॅक्टिव्हिटी<ph name="END_LINK_GAA" /> यामधील ऑटोमॅटिक ब्राउझिंग भेटी</translation>
 <translation id="2515629240566999685">आपल्या क्षेत्रातील सिग्नल तपासणे</translation>
 <translation id="2518584823165598232">हे कार्ड उपलब्ध नाही. कृपया तुमच्या कार्ड पुरवठादाराशी संपर्क साधा.</translation>
 <translation id="2521385132275182522">स्टेपल बॉटम राइट</translation>
@@ -3965,7 +3965,6 @@
 <translation id="7584287158780898016">किमतीचा माग ठेवण्याशी संबंधित अलर्ट सुरू करा</translation>
 <translation id="7586676035079382730">सूचनांना अनुमती नाही</translation>
 <translation id="7588707273764747927">ट्रान्सफर</translation>
-<translation id="7589062909165841767">तुमच्या Google खाते मध्ये तुमची <ph name="BEGIN_LINK_GAA" />Gemini अ‍ॅप्स अ‍ॅक्टिव्हिटी<ph name="END_LINK_GAA" /> असू शकते</translation>
 <translation id="7591288787774558753">गोपनीय आशय शेअर करायचा आहे का?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> ला <ph name="TOP_LEVEL_URL" /> वरील कुकी आणि साइट डेटा वापरायचा आहे.</translation>
 <translation id="7592362899630581445">सर्व्हरचे सर्टिफिकेट नाव मर्यादांचे उल्लंघन करते.</translation>
@@ -4257,7 +4256,6 @@
 <translation id="8075736640322370409">नवीन Google शीट झटपट तयार करा</translation>
 <translation id="8075898834294118863">साइट सेटिंग्ज व्यवस्थापित करा</translation>
 <translation id="8076492880354921740">टॅब</translation>
-<translation id="8076880883123051368">तुमच्या Google खाते मध्ये, <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> येथे इतर स्वरूपांमधील ब्राउझिंग इतिहास असू शकतो, जसे की तुमची <ph name="BEGIN_LINK_GAA" />Gemini अ‍ॅप्स अ‍ॅक्टिव्हिटी<ph name="END_LINK_GAA" /></translation>
 <translation id="8077465698530018904">निवडलेला प्रदेश काढून टाका</translation>
 <translation id="8077669823243888800">एन्व्हलप चायनीज #८</translation>
 <translation id="8078006011486731853">{0,plural, =1{गोपनीय फाइल अपलोड करायची आहे का?}other{गोपनीय फाइल अपलोड करायच्या आहेत का?}}</translation>
@@ -4309,6 +4307,7 @@
 <translation id="8163468049564974856">ऑनलाइन सुरक्षितपणे चेक आउट करण्यासाठी ऑटोफिल सुरू करा. तुमच्या कार्डचे तपशील Google Wallet मध्ये एन्क्रिप्ट केलेले असतात.</translation>
 <translation id="8163866351304776260">क्वाड पंच लेफ्ट</translation>
 <translation id="8164078261547504572">किमतीमध्ये घट झाल्यावर ईमेल मिळवायची आहेत का?</translation>
+<translation id="8166435925529495192">तुमच्या Google खाते मध्ये तुमचा <ph name="BEGIN_LINK_GAA" />Gemini इतिहास<ph name="END_LINK_GAA" /> असू शकतो</translation>
 <translation id="8169175551046720804">"<ph name="DATA_CONTROLS_KEYS" />" या की समान डिक्शनरीमध्ये सेट केल्या जाऊ शकत नाहीत</translation>
 <translation id="8172809706700703589">माझ्या प्रवासासाठी पॅकिंग सूची तयार कर</translation>
 <translation id="8174047975335711832">डिव्हाइस माहिती</translation>
@@ -4974,6 +4973,7 @@
     &lt;li&gt;"<ph name="SOFTWARE_NAME" />" अनइंस्टॉल किंवा बंद करून पहा&lt;/li&gt;
     &lt;li&gt;दुसर्‍या वाय-फाय नेटवर्कशी कनेक्ट करून पहा&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">तुमच्या Google खाते मध्ये, <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> येथे इतर स्वरूपांमधील ब्राउझिंग इतिहास असू शकतो, जसे की तुमचा <ph name="BEGIN_LINK_GAA" />Gemini इतिहास<ph name="END_LINK_GAA" /> यामधील ऑटोमॅटिक ब्राउझिंग भेटी</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">IBAN जोडा</translation>
 <translation id="995782501881226248">YouTube</translation>

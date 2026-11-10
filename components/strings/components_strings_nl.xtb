@@ -3,6 +3,7 @@
 <translationbundle lang="nl">
 <translation id="1008557486741366299">Niet nu</translation>
 <translation id="100957008357583611">Je locatie gebruiken?</translation>
+<translation id="1010148478459329879">Er kunnen andere vormen van browsegeschiedenis zijn opgeslagen voor je Google-account op <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, zoals je <ph name="BEGIN_LINK_GAA" />Gemini-geschiedenis<ph name="END_LINK_GAA" /></translation>
 <translation id="1010200102790553230">Pagina later laden</translation>
 <translation id="1010225406377140704">Neem contact op met de afzender om een nieuwe link te vragen</translation>
 <translation id="1011206368273183593">Bestanden voorbereiden</translation>
@@ -920,7 +921,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="251033673027346551">Ga naar Google Wallet om <ph name="BEGIN_LINK" />voorkeuren voor gegevens en privacy<ph name="END_LINK" /> te beheren.</translation>
 <translation id="2512101340618156538">Niet toegestaan (standaard)</translation>
 <translation id="2512413427717747692">Knop Chrome instellen als standaardbrowser, druk op Enter om Chrome in te stellen als de standaardbrowser van het systeem in de iOS-instellingen</translation>
-<translation id="2513217232843681817">Er kunnen andere vormen van browsegeschiedenis zijn opgeslagen voor je Google-account op <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, zoals bezoeken van automatisch browsen in je <ph name="BEGIN_LINK_GAA" />Gemini Apps-activiteit<ph name="END_LINK_GAA" /></translation>
 <translation id="2515629240566999685">Check of je bereik hebt in je omgeving</translation>
 <translation id="2518584823165598232">Deze kaart is niet beschikbaar. Neem contact op met je kaartprovider.</translation>
 <translation id="2521385132275182522">Nietje rechtsonder</translation>
@@ -3958,7 +3958,6 @@ Aanvullende informatie:
 <translation id="7584287158780898016">Meldingen voor prijzen volgen aanzetten</translation>
 <translation id="7586676035079382730">Meldingen niet toegestaan</translation>
 <translation id="7588707273764747927">Transfer</translation>
-<translation id="7589062909165841767">Je Google-account kan je <ph name="BEGIN_LINK_GAA" />Gemini Apps-activiteit<ph name="END_LINK_GAA" /> bevatten</translation>
 <translation id="7591288787774558753">Vertrouwelijke content delen?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> wil cookies en sitegegevens gebruiken op <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Het certificaat van de server is in strijd met naambeperkingen.</translation>
@@ -4250,7 +4249,6 @@ Aanvullende informatie:
 <translation id="8075736640322370409">Snel een nieuwe Google-spreadsheet maken</translation>
 <translation id="8075898834294118863">Site-instellingen beheren</translation>
 <translation id="8076492880354921740">Tabbladen</translation>
-<translation id="8076880883123051368">Er kunnen andere vormen van browsegeschiedenis zijn opgeslagen voor je Google-account op <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, zoals je <ph name="BEGIN_LINK_GAA" />Gemini Apps-activiteit<ph name="END_LINK_GAA" /></translation>
 <translation id="8077465698530018904">Geselecteerde regio verwijderen</translation>
 <translation id="8077669823243888800">Envelop Chinees #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Vertrouwelijk bestand uploaden?}other{Vertrouwelijke bestanden uploaden?}}</translation>
@@ -4302,6 +4300,7 @@ Aanvullende informatie:
 <translation id="8163468049564974856">Zet automatisch invullen aan om online beveiligd te betalen. Je kaartgegevens worden versleuteld in Google Wallet.</translation>
 <translation id="8163866351304776260">Vier perforaties links</translation>
 <translation id="8164078261547504572">Wil je e-mail ontvangen als de prijzen dalen?</translation>
+<translation id="8166435925529495192">Je Google-account kan je <ph name="BEGIN_LINK_GAA" />Gemini-geschiedenis<ph name="END_LINK_GAA" /> bevatten</translation>
 <translation id="8169175551046720804">De sleutels '<ph name="DATA_CONTROLS_KEYS" />' kunnen niet in hetzelfde woordenboek worden ingesteld</translation>
 <translation id="8172809706700703589">Maak een inpaklijst voor mijn reis</translation>
 <translation id="8174047975335711832">Apparaatgegevens</translation>
@@ -4966,6 +4965,7 @@ Aanvullende informatie:
     &lt;li&gt;Probeer <ph name="SOFTWARE_NAME" /> te verwijderen of uit te zetten&lt;/li&gt;
     &lt;li&gt;Maak verbinding met een ander netwerk&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">Er kunnen andere vormen van browsegeschiedenis zijn opgeslagen voor je Google-account op <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, zoals bezoeken van automatisch browsen in je <ph name="BEGIN_LINK_GAA" />Gemini-geschiedenis<ph name="END_LINK_GAA" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">IBAN toevoegen</translation>
 <translation id="995782501881226248">YouTube</translation>

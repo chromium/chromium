@@ -3,6 +3,7 @@
 <translationbundle lang="cs">
 <translation id="1008557486741366299">Teď ne</translation>
 <translation id="100957008357583611">Použít určování polohy?</translation>
+<translation id="1010148478459329879">Váš účet Google může mít na adrese <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> další formy historie prohlížení, například <ph name="BEGIN_LINK_GAA" />Historii Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="1010200102790553230">Načíst stránku později</translation>
 <translation id="1010225406377140704">Kontaktujte odesílatele a požádejte ho o nový odkaz</translation>
 <translation id="1011206368273183593">Příprava souborů</translation>
@@ -920,7 +921,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="251033673027346551">Pokud chcete spravovat <ph name="BEGIN_LINK" />předvolby dat a ochrany soukromí<ph name="END_LINK" />, přejděte do Peněženky Google.</translation>
 <translation id="2512101340618156538">Nepovoleno (výchozí)</translation>
 <translation id="2512413427717747692">Tlačítko nastavení Chromu jako výchozího prohlížeče: Stisknutím klávesy Enter nastavíte Chrome jako výchozí prohlížeč v nastavení iOS</translation>
-<translation id="2513217232843681817">Váš účet Google může mít na adrese <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> další formy historie prohlížení, například automatické návštěvy v rámci <ph name="BEGIN_LINK_GAA" />aktivity v aplikacích s Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="2515629240566999685">Zkontrolovat, zda máte dostatečně silný signál</translation>
 <translation id="2518584823165598232">Tato karta není k dispozici. Kontaktujte poskytovatele karty.</translation>
 <translation id="2521385132275182522">Sponka vpravo dole</translation>
@@ -3959,7 +3959,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7584287158780898016">Zapněte si upozornění na ceny</translation>
 <translation id="7586676035079382730">Oznámení nejsou povolena</translation>
 <translation id="7588707273764747927">Převod</translation>
-<translation id="7589062909165841767">Váš účet Google může obsahovat vaši <ph name="BEGIN_LINK_GAA" />aktivitu v aplikacích s Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">Sdílet důvěrný obsah?</translation>
 <translation id="7591636454931265313">Web <ph name="EMBEDDED_URL" /> chce používat soubory cookie a data webů v doméně <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Certifikát serveru porušuje omezení názvů domén.</translation>
@@ -4251,7 +4250,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8075736640322370409">Rychle vytvořit novou Tabulku Google</translation>
 <translation id="8075898834294118863">Spravovat nastavení webů</translation>
 <translation id="8076492880354921740">Karty</translation>
-<translation id="8076880883123051368">Váš účet Google může mít na adrese <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> další formy historie prohlížení, například vaši <ph name="BEGIN_LINK_GAA" />Aktivitu v aplikacích s Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="8077465698530018904">Odstranit vybranou oblast</translation>
 <translation id="8077669823243888800">Obálka čínská č. 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Nahrát důvěrný soubor?}few{Nahrát důvěrné soubory?}many{Nahrát důvěrné soubory?}other{Nahrát důvěrné soubory?}}</translation>
@@ -4303,6 +4301,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8163468049564974856">Zapněte automatické vyplňování a bezpečně plaťte online. Údaje o kartách jsou v Peněžence Google zašifrovány.</translation>
 <translation id="8163866351304776260">Čtyři díry vlevo</translation>
 <translation id="8164078261547504572">Chcete dostat e‑maily, když ceny klesnou?</translation>
+<translation id="8166435925529495192">V účtu Google můžete mít <ph name="BEGIN_LINK_GAA" />Historii Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="8169175551046720804">Klíče „<ph name="DATA_CONTROLS_KEYS" />“ nemohou být nastaveny ve stejném slovníku</translation>
 <translation id="8172809706700703589">Vytvoř mi seznam věcí, co si mám zabalit na cestu</translation>
 <translation id="8174047975335711832">Informace o zařízení</translation>
@@ -4968,6 +4967,7 @@ Další podrobnosti:
     &lt;li&gt;Zkuste software <ph name="SOFTWARE_NAME" /> odinstalovat nebo deaktivovat.&lt;/li&gt;
     &lt;li&gt;Zkuste se připojit k jiné síti.&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">Váš účet Google může mít na adrese <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> další formy historie prohlížení, například návštěvy v rámci automatického procházení v <ph name="BEGIN_LINK_GAA" />Historii Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Přidání čísla IBAN</translation>
 <translation id="995782501881226248">YouTube</translation>
