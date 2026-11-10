@@ -59,7 +59,8 @@ namespace autofill {
 
 namespace {
 // Returns true if the field type is eligible to be saved in the autocomplete
-// history. Some types (promo codes, IBANs, CCs, CVCs) are excluded.
+// history. Some types (promo codes, IBANs, CCs, CVCs, passwords, one-time
+// codes) are excluded.
 bool IsPredictedFieldTypeSaveable(const AutofillField* field) {
   if (!field) {
     return true;
@@ -71,6 +72,12 @@ bool IsPredictedFieldTypeSaveable(const AutofillField* field) {
       case CREDIT_CARD_VERIFICATION_CODE:
       case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
       case CREDIT_CARD_NUMBER:
+      case PASSWORD:
+      case ACCOUNT_CREATION_PASSWORD:
+      case NEW_PASSWORD:
+      case PROBABLY_NEW_PASSWORD:
+      case CONFIRMATION_PASSWORD:
+      case ONE_TIME_CODE:
         return false;
       case NO_SERVER_DATA:
       case UNKNOWN_TYPE:
@@ -103,8 +110,6 @@ bool IsPredictedFieldTypeSaveable(const AutofillField* field) {
       case CREDIT_CARD_TYPE:
       case COMPANY_NAME:
       case MERCHANT_EMAIL_SIGNUP:
-      case PASSWORD:
-      case ACCOUNT_CREATION_PASSWORD:
       case ADDRESS_HOME_STREET_ADDRESS:
       case ADDRESS_HOME_SORTING_CODE:
       case ADDRESS_HOME_DEPENDENT_LOCALITY:
@@ -112,13 +117,10 @@ bool IsPredictedFieldTypeSaveable(const AutofillField* field) {
       case NOT_ACCOUNT_CREATION_PASSWORD:
       case USERNAME:
       case USERNAME_AND_EMAIL_ADDRESS:
-      case NEW_PASSWORD:
-      case PROBABLY_NEW_PASSWORD:
       case NOT_NEW_PASSWORD:
       case CREDIT_CARD_NAME_FIRST:
       case CREDIT_CARD_NAME_LAST:
       case PHONE_HOME_EXTENSION:
-      case CONFIRMATION_PASSWORD:
       case AMBIGUOUS_TYPE:
       case SEARCH_TERM:
       case PRICE:
@@ -141,7 +143,6 @@ bool IsPredictedFieldTypeSaveable(const AutofillField* field) {
       case PHONE_HOME_NUMBER_PREFIX:
       case PHONE_HOME_NUMBER_SUFFIX:
       case NUMERIC_QUANTITY:
-      case ONE_TIME_CODE:
       case DELIVERY_INSTRUCTIONS:
       case ADDRESS_HOME_OVERFLOW:
       case ADDRESS_HOME_LANDMARK:
@@ -218,6 +219,7 @@ bool IsHtmlFieldTypeSaveable(HtmlFieldType field_type) {
     case HtmlFieldType::kCreditCardNumber:
     case HtmlFieldType::kIban:
     case HtmlFieldType::kMerchantPromoCode:
+    case HtmlFieldType::kOneTimeCode:
       return false;
     case HtmlFieldType::kUnspecified:
     case HtmlFieldType::kName:
@@ -262,7 +264,6 @@ bool IsHtmlFieldTypeSaveable(HtmlFieldType field_type) {
     case HtmlFieldType::kCreditCardExpDate4DigitYear:
     case HtmlFieldType::kCreditCardExp2DigitYear:
     case HtmlFieldType::kCreditCardExp4DigitYear:
-    case HtmlFieldType::kOneTimeCode:
     case HtmlFieldType::kUnrecognized:
       return true;
   }
