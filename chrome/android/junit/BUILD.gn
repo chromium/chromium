@@ -1343,6 +1343,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/tab/TabAttributesTest.java",
       "src/org/chromium/chrome/browser/tab/TabBrowserControlsConstraintsHelperTest.java",
       "src/org/chromium/chrome/browser/tab/TabBrowserControlsOffsetHelperTest.java",
+      "src/org/chromium/chrome/browser/tab/TabNativePageControllerUnitTest.java",
       "src/org/chromium/chrome/browser/tab/TabStateBrowserControlsVisibilityDelegateTest.java",
       "src/org/chromium/chrome/browser/tab/TabUnitTest.java",
       "src/org/chromium/chrome/browser/tab/TabUtilsUnitTest.java",

@@ -448,7 +448,7 @@ public class TabUnitTest {
         mTab.show(TabSelectionType.FROM_USER);
         mIsTabHidden = false;
         mTab.addObserver(mObserver);
-        mTab.showNativePage(mNativePage);
+        mTab.getNativePageControllerForTesting().showNativePage(mNativePage);
         mTab.getAttachStateChangeListenerForTesting().onViewAttachedToWindow(mNativePageView);
         return smoothTransitionDelegate;
     }
@@ -597,7 +597,7 @@ public class TabUnitTest {
         doReturn(view).when(mNativePage).getView();
         doReturn(false).when(mNativePage).isFrozen();
 
-        mTab.showNativePage(mNativePage);
+        mTab.getNativePageControllerForTesting().showNativePage(mNativePage);
         assertEquals(parent, view.getParent());
 
         mTab.destroy();
@@ -649,7 +649,7 @@ public class TabUnitTest {
                     @Override
                     void pushNativePageStateToNavigationEntry() {}
                 };
-        mTab.showNativePage(mNativePage);
+        mTab.getNativePageControllerForTesting().showNativePage(mNativePage);
         mTab.updateAttachment(mWindowAndroid, mDelegateFactory);
         assertEquals(mNativePage, mTab.getNativePage());
 
@@ -712,7 +712,7 @@ public class TabUnitTest {
                     void pushNativePageStateToNavigationEntry() {}
                 };
         mTab.updateAttachment(mWindowAndroid, mDelegateFactory);
-        mTab.showNativePage(mNativePage);
+        mTab.getNativePageControllerForTesting().showNativePage(mNativePage);
         assertEquals(mNativePage, mTab.getNativePage());
         assertEquals(view, mTab.getView());
         assertEquals(parent, view.getParent());
@@ -792,7 +792,7 @@ public class TabUnitTest {
                     void pushNativePageStateToNavigationEntry() {}
                 };
         mTab.updateAttachment(mWindowAndroid, mDelegateFactory);
-        mTab.showNativePage(mNativePage);
+        mTab.getNativePageControllerForTesting().showNativePage(mNativePage);
         assertEquals(mNativePage, mTab.getNativePage());
 
         // The view still has a parent upon re-attaching hidden without a prior detach.
@@ -835,7 +835,7 @@ public class TabUnitTest {
                 };
         mTab.setNativePtrForTesting(1);
         mTab.updateAttachment(mWindowAndroid, mDelegateFactory);
-        mTab.showNativePage(mNativePage);
+        mTab.getNativePageControllerForTesting().showNativePage(mNativePage);
         doReturn("Loading PDF").when(mWebContents).getTitle();
         mTab.updateTitle();
         assertEquals("Loading PDF", mTab.getTitle());
@@ -908,7 +908,7 @@ public class TabUnitTest {
                 };
         mTab.setNativePtrForTesting(1);
         mTab.updateAttachment(mWindowAndroid, mDelegateFactory);
-        mTab.showNativePage(mNativePage);
+        mTab.getNativePageControllerForTesting().showNativePage(mNativePage);
         assertEquals(mNativePage, mTab.getNativePage());
         assertEquals(parent, view.getParent());
 
@@ -989,15 +989,6 @@ public class TabUnitTest {
         mTab.updateAttachment(mWindowAndroid, mDelegateFactory);
         assertTrue(mTab.getNativePage().isFrozen());
         verify(mDelegateFactory, never()).createNativePage(any(), any(), any(), any());
-    }
-
-    @Test
-    public void testMaybeLoadNativePage_nullOrEmptyUrl() {
-        mTab.updateAttachment(mWindowAndroid, mDelegateFactory);
-        assertFalse(
-                mTab.maybeShowNativePage(
-                        (String) null, /* forceReload= */ false, /* pdfInfo= */ null));
-        assertFalse(mTab.maybeShowNativePage("", /* forceReload= */ false, /* pdfInfo= */ null));
     }
 
     @Test
@@ -1547,8 +1538,6 @@ public class TabUnitTest {
 
         mTab =
                 new TabImpl(TAB1_ID, mProfile, TabLaunchType.FROM_CHROME_UI) {
-                    private NativePage mCurrentNativePage = frozenNativePage;
-
                     @Override
                     public boolean isInitialized() {
                         return true;
@@ -1560,24 +1549,16 @@ public class TabUnitTest {
                     }
 
                     @Override
-                    public NativePage getNativePage() {
-                        return mCurrentNativePage;
-                    }
-
-                    @Override
-                    void showNativePage(NativePage nativePage) {
-                        mCurrentNativePage = nativePage;
-                    }
-
-                    @Override
                     public WebContents getWebContents() {
                         return mWebContents;
                     }
                 };
         mTab.setNativePtrForTesting(1);
         mTab.updateAttachment(mWindowAndroid, mDelegateFactory);
+        mTab.getNativePageControllerForTesting().showNativePage(frozenNativePage);
 
         NativePage liveNativePage = mock(NativePage.class);
+        when(liveNativePage.getView()).thenReturn(new View(mActivity));
         when(mDelegateFactory.createNativePage(
                         eq("chrome://history"),
                         /* candidatePage= */ isNull(),
@@ -1619,8 +1600,6 @@ public class TabUnitTest {
 
         mTab =
                 new TabImpl(TAB1_ID, mProfile, TabLaunchType.FROM_CHROME_UI) {
-                    private NativePage mCurrentNativePage = frozenPdfNativePage;
-
                     @Override
                     public boolean isInitialized() {
                         return true;
@@ -1632,24 +1611,16 @@ public class TabUnitTest {
                     }
 
                     @Override
-                    public NativePage getNativePage() {
-                        return mCurrentNativePage;
-                    }
-
-                    @Override
-                    void showNativePage(NativePage nativePage) {
-                        mCurrentNativePage = nativePage;
-                    }
-
-                    @Override
                     public WebContents getWebContents() {
                         return mWebContents;
                     }
                 };
         mTab.setNativePtrForTesting(1);
         mTab.updateAttachment(mWindowAndroid, mDelegateFactory);
+        mTab.getNativePageControllerForTesting().showNativePage(frozenPdfNativePage);
 
         NativePage livePdfNativePage = mock(NativePage.class);
+        when(livePdfNativePage.getView()).thenReturn(new View(mActivity));
         when(livePdfNativePage.isPdf()).thenReturn(true);
         when(mDelegateFactory.createNativePage(eq(pdfUrl), any(), eq(mTab), any()))
                 .thenReturn(livePdfNativePage);

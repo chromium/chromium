@@ -36,9 +36,6 @@ import org.jni_zero.CalledByNativeForTesting;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.ActivityState;
-import org.chromium.base.ApplicationStatus;
-import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -57,7 +54,6 @@ import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.version_info.VersionInfo;
-import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -92,9 +88,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelType;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.ui.native_page.BeforeUnloadCallback;
-import org.chromium.chrome.browser.ui.native_page.FrozenNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
-import org.chromium.chrome.browser.ui.native_page.NativePage.SmoothTransitionDelegate;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.components.autofill.AutofillManagerWrapper;
 import org.chromium.components.autofill.AutofillProvider;
@@ -126,7 +120,6 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.browser.back_forward_transition.AnimationStage;
 import org.chromium.content_public.browser.navigation_controller.UserAgentOverrideOption;
-import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ImmutableWeakReference;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.ViewAndroidDelegate;
@@ -206,18 +199,6 @@ class TabImpl implements Tab {
 
     /** Gives {@link Tab} a way to interact with the Android window. */
     private @Nullable WindowAndroid mWindowAndroid;
-
-    /** The current native page (e.g. chrome-native://newtab), or {@code null} if there is none. */
-    private @Nullable NativePage mNativePage;
-
-    private @Nullable ActivityStateListener mDetachedNativePageFreezeListener;
-
-    /**
-     * True after a native page has been hidden, before a new background color has been explicitly
-     * set. This is useful when the implicit background color (previously set before showing the
-     * native page) is no longer necessarily relevant.
-     */
-    private boolean mWaitingOnBgColorAfterHidingNativePage;
 
     /** {@link WebContents} showing the current page, or {@code null} if the tab is frozen. */
     private @Nullable WebContents mWebContents;
@@ -364,17 +345,6 @@ class TabImpl implements Tab {
      */
     private @TabLaunchType int mTabLaunchTypeAtCreation;
 
-    /**
-     * Variables used to track native page creation prior to mNativePage assignment. Avoids the case
-     * where native pages can unintentionally re-create themselves by calling {@link
-     * NativePage#onStateChange} during the creation process.
-     */
-    private boolean mIsAlreadyCreatingNativePage;
-
-    private @Nullable String mPendingNativePageHost;
-
-    private @Nullable SmoothTransitionDelegate mNativePageSmoothTransitionDelegate;
-
     private @Nullable Callback<Boolean> mIsDraggingObserver;
 
     private @TriState int mWasLastActive;
@@ -409,6 +379,8 @@ class TabImpl implements Tab {
      */
     private SensitiveContentClient.@Nullable Observer mSensitiveContentClientObserver;
 
+    private final TabNativePageController mNativePageController;
+
     /**
      * Creates an instance of a {@link TabImpl}. Package-private. Use {@link TabBuilder} to create
      * an instance.
@@ -434,24 +406,13 @@ class TabImpl implements Tab {
 
                     @Override
                     public void onViewDetachedFromWindow(View view) {
-                        NativePage nativePage = getNativePage();
-                        if (isNativePage()
-                                && nativePage != null
-                                && !nativePage.isFrozen()
-                                && nativePage.getView() == view) {
-                            if (mNativePageSmoothTransitionDelegate != null) {
-                                mNativePageSmoothTransitionDelegate.cancel();
-                                mNativePageSmoothTransitionDelegate = null;
-                            } else {
-                                // reset ntp view state.
-                                view.setAlpha(1f);
-                            }
-                        }
+                        mNativePageController.onViewDetachedFromWindow(view);
                         mIsViewAttachedToWindow = false;
                         updateInteractableState();
                     }
                 };
         mTabViewManager = new TabViewManagerImpl(this);
+        mNativePageController = new TabNativePageController(this, mAttachStateChangeListener);
         new TabThemeColorHelper(this, this::updateThemeColor);
         mThemeColor = TabState.UNSPECIFIED_THEME_COLOR;
     }
@@ -518,10 +479,9 @@ class TabImpl implements Tab {
     @Override
     public void updateAttachment(
             @Nullable WindowAndroid window, @Nullable TabDelegateFactory tabDelegateFactory) {
+        assert !mIsDestroyed;
         // Non-null delegate factory while being detached is not valid.
         assert !(window == null && tabDelegateFactory != null);
-
-        unregisterAndClearDetachedNativePageFreezeListener();
 
         if (window != null) {
             attachToWindow(window, tabDelegateFactory);
@@ -542,25 +502,7 @@ class TabImpl implements Tab {
 
         updateWindowAndroid(window);
 
-        // Reload or freeze the NativePage (if any), since the old NativePage holds a reference to
-        // the old Activity. If hidden, detach its view and freeze the native page to avoid eager
-        // instantiation of background native pages. Unfrozen PDF pages are exempted from freezing
-        // because freezing destroys the PdfPage and removes the ChromePdfViewerFragment from
-        // FragmentManager, losing unsaved annotations. Instead, reloading via
-        // maybeShowNativePage() allows the new PdfCoordinator to reclaim the restored fragment by
-        // tag and relocate misplaced fragment views before destroying the old page. Already-frozen
-        // PDF pages remain frozen.
-        if (isNativePage()) {
-            if (isHidden() && (!mNativePage.isPdf() || mNativePage.isFrozen())) {
-                detachAndFreezeNativePage();
-            } else {
-                detachNativePageView();
-                maybeShowNativePage(
-                        getUrl().getSpec(),
-                        /* forceReload= */ true,
-                        PdfUtils.getPdfInfo(getNativePage()));
-            }
-        }
+        mNativePageController.onAttachToWindow();
 
         // Notify observers only on a full re-attachment (reparenting), not on a window-only swap
         // where tabDelegateFactory is null.
@@ -576,32 +518,7 @@ class TabImpl implements Tab {
         // detached so callers of getWindowAndroid() do not crash with NullPointerException, while
         // callers (e.g. ReparentingTask#detach()) clear webContents.setTopLevelNativeWindow(null).
         updateIsDetachedFromActivity(/* window= */ null);
-        if (hasLiveNativePage()) {
-            Activity activity = getActivity(mWindowAndroid);
-            if (ChromeFeatureList.sDeferDetachedNativePageFreeze.isEnabled()
-                    && activity != null
-                    && ApplicationStatus.isInitialized()
-                    && ApplicationStatus.getStateForActivity(activity) < ActivityState.STOPPED
-                    && !isHidden()) {
-                // Defer freezing the NativePage until the old Activity is stopped. This prevents
-                // visual glitches (e.g. blank NTP or misdrawn ToolbarPhone) while the old Activity
-                // is still visible before being torn down or paused.
-                mDetachedNativePageFreezeListener =
-                        (listenerActivity, newState) -> {
-                            if (newState >= ActivityState.STOPPED) {
-                                unregisterAndClearDetachedNativePageFreezeListener();
-                                if (mIsDestroyed) return;
-                                if (mIsDetachedFromActivity && hasLiveNativePage()) {
-                                    freezeDetachedNativePage();
-                                }
-                            }
-                        };
-                ApplicationStatus.registerStateListenerForActivity(
-                        mDetachedNativePageFreezeListener, activity);
-            } else {
-                freezeDetachedNativePage();
-            }
-        }
+        mNativePageController.onDetachFromWindow(getActivity(mWindowAndroid));
 
         // Clear the current tab supplier during detachment/reparenting to indicate that the
         // tab is not held by another tab model. For unclear reasons, removeTab() doesn't
@@ -611,33 +528,6 @@ class TabImpl implements Tab {
 
         for (TabObserver observer : mObservers) {
             observer.onActivityAttachmentChanged(this, /* window= */ null);
-        }
-    }
-
-    private void freezeDetachedNativePage() {
-        // Since mIsDetachedFromActivity is now true, getView() returns null while
-        // isNativePage() remains true. Update interactability first so NativePage
-        // observers (e.g. NtpFeedSurfaceLifecycleManager) can save UI state while the
-        // view hierarchy is still attached to the window.
-        // PDF pages are exempted from freezing because freezing destroys the PdfPage and
-        // loses unsaved annotations, but their view is still detached from the Activity.
-        // Notify observers afterwards so they observe the final NativePage state
-        // (e.g. ToolbarPhone must not keep NTP layout for a frozen NewTabPage) and
-        // CompositorViewHolder reclaims focus.
-        updateInteractableState();
-        NativePage nativePage = mNativePage;
-        if (nativePage != null && nativePage.isPdf()) {
-            detachNativePageView();
-        } else {
-            detachAndFreezeNativePage();
-        }
-        notifyContentChanged();
-    }
-
-    private void unregisterAndClearDetachedNativePageFreezeListener() {
-        if (mDetachedNativePageFreezeListener != null) {
-            ApplicationStatus.unregisterActivityStateListener(mDetachedNativePageFreezeListener);
-            mDetachedNativePageFreezeListener = null;
         }
     }
 
@@ -668,10 +558,9 @@ class TabImpl implements Tab {
     public @Nullable View getView() {
         if (mCustomView != null) return mCustomView;
 
-        if (mNativePage != null) {
-            return (mNativePage.isFrozen() || mIsDetachedFromActivity)
-                    ? null
-                    : mNativePage.getView();
+        NativePage nativePage = getNativePage();
+        if (nativePage != null) {
+            return (nativePage.isFrozen() || mIsDetachedFromActivity) ? null : nativePage.getView();
         }
 
         return mContentView;
@@ -743,20 +632,13 @@ class TabImpl implements Tab {
 
     @Override
     public @Nullable NativePage getNativePage() {
-        return mNativePage;
+        return mNativePageController.getNativePage();
     }
 
     @Override
     @CalledByNative
-    @EnsuresNonNullIf("mNativePage")
     public boolean isNativePage() {
-        return mNativePage != null;
-    }
-
-    /** Returns whether {@link #mNativePage} is set and not frozen (i.e. it has a live view). */
-    @EnsuresNonNullIf("mNativePage")
-    private boolean hasLiveNativePage() {
-        return mNativePage != null && !mNativePage.isFrozen();
+        return getNativePage() != null;
     }
 
     /**
@@ -765,7 +647,8 @@ class TabImpl implements Tab {
      */
     @CalledByNative
     public boolean isPdf() {
-        return mNativePage != null && mNativePage.isPdf();
+        NativePage nativePage = getNativePage();
+        return nativePage != null && nativePage.isPdf();
     }
 
     /**
@@ -774,10 +657,11 @@ class TabImpl implements Tab {
      */
     @CalledByNative
     public @Nullable @JniType("std::string") String getCanonicalFilepath() {
-        if (mNativePage == null || !mNativePage.isPdf()) {
+        NativePage nativePage = getNativePage();
+        if (nativePage == null || !nativePage.isPdf()) {
             return null;
         }
-        String filepath = mNativePage.getCanonicalFilepath();
+        String filepath = nativePage.getCanonicalFilepath();
         if (filepath == null) {
             return null;
         }
@@ -871,31 +755,7 @@ class TabImpl implements Tab {
 
     @Override
     public void freezeNativePage() {
-        if (!hasLiveNativePage()) return;
-        View view = mNativePage.getView();
-        if (view == null || view.getParent() != null) {
-            return;
-        }
-        view.removeOnAttachStateChangeListener(mAttachStateChangeListener);
-        if (mNativePageSmoothTransitionDelegate != null) {
-            mNativePageSmoothTransitionDelegate.cancel();
-            mNativePageSmoothTransitionDelegate = null;
-        }
-        mNativePage = FrozenNativePage.freeze(mNativePage);
-        updateInteractableState();
-    }
-
-    private void detachNativePageView() {
-        if (!hasLiveNativePage()) return;
-        View view = mNativePage.getView();
-        if (view != null) {
-            UiUtils.removeViewFromParent(view);
-        }
-    }
-
-    private void detachAndFreezeNativePage() {
-        detachNativePageView();
-        freezeNativePage();
+        mNativePageController.freezeNativePage();
     }
 
     @Override
@@ -914,8 +774,9 @@ class TabImpl implements Tab {
         if (mCustomView != null && mCustomViewBackgroundColor != null) {
             return mCustomViewBackgroundColor;
         }
-        if (mNativePage != null) {
-            return mNativePage.getBackgroundColor();
+        NativePage nativePage = getNativePage();
+        if (nativePage != null) {
+            return nativePage.getBackgroundColor();
         }
         return mWebContentBackgroundColor;
     }
@@ -1085,7 +946,8 @@ class TabImpl implements Tab {
             // TabImplJni.get().loadUrl until the android view has entirely rendered.
             if (!mIsNativePageCommitPending) {
                 mIsNativePageCommitPending =
-                        maybeShowNativePage(params.getUrl(), /* forceReload= */ false, pdfInfo);
+                        mNativePageController.maybeShowNativePage(
+                                params.getUrl(), /* forceReload= */ false, pdfInfo);
             }
 
             if ("chrome://java-crash/".equals(params.getUrl())) {
@@ -1542,7 +1404,7 @@ class TabImpl implements Tab {
             // recreate the NativePage now.
             NativePage nativePage = getNativePage();
             PdfUtils.recordPdfFrozenStateWhenDisplayed(nativePage);
-            maybeUnfreezeNativePage();
+            mNativePageController.maybeUnfreezeNativePage();
             NativePageAssassin.getInstance().tabShown(this);
 
             // If the page is still loading, update the progress bar (otherwise it would not show
@@ -1567,7 +1429,7 @@ class TabImpl implements Tab {
             Log.i(TAG, "TabImpl.show early return: WebContents visibility=%d", wc.getVisibility());
         }
 
-        if (maybeUnfreezeNativePage()) {
+        if (mNativePageController.maybeUnfreezeNativePage()) {
             // Native page was unfrozen.
             Log.i(TAG, "show: Tab was not hidden, but native page needed to be unfrozen.");
         } else if (isFrozen() || needsReload()) {
@@ -1641,16 +1503,15 @@ class TabImpl implements Tab {
     @CalledByNative
     private @TabDestroyStatus int destroyInternal(boolean deleteNativeWebContents) {
         ThreadUtils.assertOnUiThread();
-        unregisterAndClearDetachedNativePageFreezeListener();
-        detachNativePageView();
+        if (mIsDestroyed) return TabDestroyStatus.NO_SHUTDOWN;
+        // Set at the start since preparing for destroy, detaching, or destroying the WebContents
+        // can lead to calling back into this class.
+        mIsDestroyed = true;
+        mNativePageController.prepareForDestroy();
 
         // Ensure the tab signals to C++ it was removed from the TabModel. This should be a no-op
         // for most tab closures, but during activity shutdown/recreation it can be relevant.
         clearCurrentTabSupplier(DetachReason.DELETE);
-
-        // Set at the start since destroying the WebContents can lead to calling back into
-        // this class.
-        mIsDestroyed = true;
 
         if (mIsDraggingObserver != null) {
             TabDragStateData data = TabDragStateData.getForTab(this);
@@ -1676,7 +1537,7 @@ class TabImpl implements Tab {
 
         mObservers.clear();
         mTabViewManager.destroy();
-        hideNativePage(/* notify= */ false);
+        mNativePageController.destroy();
         mWebContentsState = null;
 
         if (mWindowAndroid != null) {
@@ -1938,7 +1799,7 @@ class TabImpl implements Tab {
     private void showRenderedPage() {
         // During title update, we prioritize titles in NativePage instead of those from
         // WebContents. Thus we should remove the obsolete NativePage before title update.
-        if (mNativePage != null) hideNativePage(/* notify= */ true);
+        mNativePageController.hideNativePage(/* notify= */ true);
         updateTitle();
     }
 
@@ -2070,10 +1931,7 @@ class TabImpl implements Tab {
                 // Non-null nativePageSmoothTransitionDelegate means the page is transiting to
                 // a native page; otherwise, it possibly means transiting from a native page to
                 // another page.
-                if (mNativePageSmoothTransitionDelegate != null) {
-                    mNativePageSmoothTransitionDelegate.cancel();
-                    mNativePageSmoothTransitionDelegate = null;
-                } else if (isNativePage()) {
+                if (!mNativePageController.cancelSmoothTransition() && isNativePage()) {
                     // May reach this if a navigation is committed in the mid of gesture.
                     view.setAlpha(1f);
                 }
@@ -2095,25 +1953,23 @@ class TabImpl implements Tab {
                 }
                 return;
             case AnimationStage.WAITING_FOR_EMBEDDER_CONTENT_FOR_COMMITTED_ENTRY:
-                if (mNativePageSmoothTransitionDelegate != null) {
-                    // Navigating back to native pages.
-                    mNativePageSmoothTransitionDelegate.start(
-                            () -> {
-                                if (isDestroyed()) return;
-                                WebContents currentWebContents = getWebContents();
-                                if (currentWebContents == null
-                                        || currentWebContents.isDestroyed()) {
-                                    return;
-                                }
-                                var currentManager =
-                                        currentWebContents
-                                                .getBackForwardTransitionAnimationManager();
-                                assert currentManager != null;
-                                currentManager.onContentForNavigationEntryShown();
-                                notifyContentChanged();
-                            });
-                    mNativePageSmoothTransitionDelegate = null;
-                } else if (isNativePage()) { // Navigation from native page was cancelled.
+                // Navigating back to native pages.
+                if (mNativePageController.startSmoothTransition(
+                        () -> {
+                            if (isDestroyed()) return;
+                            WebContents currentWebContents = getWebContents();
+                            if (currentWebContents == null || currentWebContents.isDestroyed()) {
+                                return;
+                            }
+                            var currentManager =
+                                    currentWebContents.getBackForwardTransitionAnimationManager();
+                            assert currentManager != null;
+                            currentManager.onContentForNavigationEntryShown();
+                            notifyContentChanged();
+                        })) {
+                    return;
+                }
+                if (isNativePage()) { // Navigation from native page was cancelled.
                     if (view.getAlpha() != 1f) {
                         // This means the content/ is waiting for the NTP to be fully visible.
                         view.setAlpha(1f);
@@ -2196,7 +2052,7 @@ class TabImpl implements Tab {
         boolean preferReuse = transitionType == PageTransition.TYPED || mIsNativePageCommitPending;
         var pdfInfo = isPdf ? PdfInfo.initReuse(preferReuse, initiatorOrigin) : null;
         mIsNativePageCommitPending = false;
-        if (!maybeShowNativePage(url.getSpec(), isReload, pdfInfo)) {
+        if (!mNativePageController.maybeShowNativePage(url.getSpec(), isReload, pdfInfo)) {
             String downloadUrl = PdfUtils.getPdfReDownloadUrlForNavigation(url, isPdf);
             if (downloadUrl != null) {
                 // When the download url is not null, we are navigating to a pdf native page which
@@ -2281,79 +2137,6 @@ class TabImpl implements Tab {
         mIsShowingErrorPage = isShowingErrorPage;
     }
 
-    /**
-     * Shows a native page for url if it's a valid chrome-native URL. Otherwise, does nothing.
-     *
-     * @param url The url of the current navigation.
-     * @param forceReload If true, the current native page (if any) will not be reused, even if it
-     *     matches the URL.
-     * @param pdfInfo Information of the pdf, or null if there is no associated pdf download.
-     * @return True, if a native page was displayed for url.
-     */
-    boolean maybeShowNativePage(String url, boolean forceReload, @Nullable PdfInfo pdfInfo) {
-        // While detached for reparenting we don't have an owning Activity, or TabModelSelector,
-        // so we can't create the native page. The native page will be created once reparenting is
-        // completed.
-        if (isDetachedFromActivity()) return false;
-        // TODO(crbug.com/40943608): Remove the assert after determining why WebContents can be
-        // null.
-        WebContents webContents = getWebContents();
-        assert webContents != null;
-        if (webContents == null) return false;
-        // If the given url is null, there's no work to do.
-        if (url == null) return false;
-
-        // We might be in the middle of loading a native page, in that case we should bail to avoid
-        // recreating another instance.
-        String nativePageHost = Uri.parse(url).getHost();
-        if (mIsAlreadyCreatingNativePage
-                && TextUtils.equals(mPendingNativePageHost, nativePageHost)) {
-            return true;
-        }
-
-        mPendingNativePageHost = nativePageHost;
-        mIsAlreadyCreatingNativePage = true;
-
-        // Prefer reusing the NativePage when loading pdf. Never offer a frozen page as the reuse
-        // candidate: it has no view, and NativePageFactory.createNativePageForCustomTab() would
-        // hand it straight back on URL match, leaving the tab with a frozen NativePage and a null
-        // view. See crbug.com/568278676.
-        boolean loadPdf = PdfUtils.isReuseFragmentEnabled() && pdfInfo != null;
-        NativePage currentPage = getNativePage();
-        boolean canReuseCurrent =
-                currentPage != null && !currentPage.isFrozen() && (!forceReload || loadPdf);
-        NativePage candidateForReuse = canReuseCurrent ? currentPage : null;
-
-        assumeNonNull(mDelegateFactory);
-        NativePage nativePage =
-                mDelegateFactory.createNativePage(url, candidateForReuse, this, pdfInfo);
-
-        mIsAlreadyCreatingNativePage = false;
-        mPendingNativePageHost = null;
-
-        if (nativePage != null) {
-            showNativePage(nativePage);
-            notifyPageTitleChanged();
-            notifyFaviconChanged();
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Unfreezes the current {@link NativePage} if it was frozen while in the background.
-     *
-     * @return Whether the {@link NativePage} was frozen and an unfreeze was triggered.
-     */
-    private boolean maybeUnfreezeNativePage() {
-        NativePage nativePage = getNativePage();
-        if (nativePage != null && nativePage.isFrozen()) {
-            return maybeShowNativePage(
-                    nativePage.getUrl(), /* forceReload= */ true, PdfUtils.getPdfInfo(nativePage));
-        }
-        return false;
-    }
-
     /** Calls onContentChanged on all TabObservers. */
     void notifyContentChanged() {
         for (TabObserver observer : mObservers) observer.onContentChanged(this);
@@ -2386,21 +2169,24 @@ class TabImpl implements Tab {
 
             assumeNonNull(mUrl);
             title = mUrl.getSpec();
-        } else if (isNativePage()) {
-            title = mNativePage.getTitle();
-            // Keep the navigation entry title, which is used as the WebContents title, in sync
-            // with the native page title. The native page title may change after the page is
-            // shown, e.g. a PdfPage gets the file name once the PDF download completes. The
-            // renderer may also reset the entry title, e.g. once the empty placeholder document
-            // of a PdfPage finishes parsing.
-            WebContents webContents = getWebContents();
-            if (mNativeTabAndroid != 0
-                    && webContents != null
-                    && !TextUtils.equals(webContents.getTitle(), title)) {
-                pushNativePageStateToNavigationEntry();
+        } else {
+            NativePage nativePage = getNativePage();
+            if (nativePage != null) {
+                title = nativePage.getTitle();
+                // Keep the navigation entry title, which is used as the WebContents title, in sync
+                // with the native page title. The native page title may change after the page is
+                // shown, e.g. a PdfPage gets the file name once the PDF download completes. The
+                // renderer may also reset the entry title, e.g. once the empty placeholder document
+                // of a PdfPage finishes parsing.
+                WebContents webContents = getWebContents();
+                if (mNativeTabAndroid != 0
+                        && webContents != null
+                        && !TextUtils.equals(webContents.getTitle(), title)) {
+                    pushNativePageStateToNavigationEntry();
+                }
+            } else if (getWebContents() != null) {
+                title = getWebContents().getTitle();
             }
-        } else if (getWebContents() != null) {
-            title = getWebContents().getTitle();
         }
         updateTitle(title);
     }
@@ -2456,18 +2242,15 @@ class TabImpl implements Tab {
     void changeWebContentBackgroundColor(int color) {
         mWebContentBackgroundColor = color;
         onBackgroundColorChanged();
-        mWaitingOnBgColorAfterHidingNativePage = false;
+        mNativePageController.onWebContentBackgroundColorChanged();
     }
 
     /** Called to notify when the page had painted something non-empty. */
     void notifyDidFirstVisuallyNonEmptyPaint() {
-        if (mWaitingOnBgColorAfterHidingNativePage) {
-            onBackgroundColorChanged();
-        }
-        mWaitingOnBgColorAfterHidingNativePage = false;
+        mNativePageController.onDidFirstVisuallyNonEmptyPaint();
     }
 
-    private void onBackgroundColorChanged() {
+    final void onBackgroundColorChanged() {
         int newBackgroundColor = getBackgroundColor();
         // Avoid notifying the observers if the background color hasn't actually changed.
         if (mTabBackgroundColor == newBackgroundColor) return;
@@ -2605,7 +2388,7 @@ class TabImpl implements Tab {
                 setupContentView(webContents);
             }
 
-            hideNativePage(/* notify= */ false);
+            mNativePageController.hideNativePage(/* notify= */ false);
 
             ContentUtils.setUserAgentOverride(
                     mWebContents,
@@ -2693,71 +2476,6 @@ class TabImpl implements Tab {
     }
 
     /**
-     * Shows the given {@code nativePage} if it's not already showing.
-     *
-     * @param nativePage The {@link NativePage} to show.
-     */
-    void showNativePage(NativePage nativePage) {
-        assert nativePage != null;
-        if (mNativePage == nativePage) return;
-        // The new page must be installed after the old one is detached but before observers are
-        // notified and the old page is destroyed.
-        NativePage previousNativePage = detachCurrentNativePage();
-        mNativePage = nativePage;
-        if (hasLiveNativePage()) {
-            View view = mNativePage.getView();
-            assumeNonNull(view);
-            view.addOnAttachStateChangeListener(mAttachStateChangeListener);
-        }
-        if (isDisplayingBackForwardAnimation()) {
-            mNativePageSmoothTransitionDelegate = mNativePage.enableSmoothTransition();
-            assumeNonNull(mNativePageSmoothTransitionDelegate);
-            mNativePageSmoothTransitionDelegate.prepare();
-        }
-        pushNativePageStateToNavigationEntry();
-        onBackgroundColorChanged();
-        updateThemeColor(TabState.UNSPECIFIED_THEME_COLOR);
-        notifyContentChanged();
-        destroyNativePageInternal(previousNativePage);
-    }
-
-    /**
-     * Hide and destroy the native page if it was being shown.
-     *
-     * @param notify {@code true} to trigger {@link #onContentChanged} event.
-     */
-    private void hideNativePage(boolean notify) {
-        NativePage previousNativePage = detachCurrentNativePage();
-        if (notify) notifyContentChanged();
-        destroyNativePageInternal(previousNativePage);
-    }
-
-    /**
-     * Detaches the current native page, if any, from this tab without destroying it.
-     *
-     * @return The previously shown native page, which the caller is responsible for destroying.
-     */
-    private @Nullable NativePage detachCurrentNativePage() {
-        if (mNativePageSmoothTransitionDelegate != null) {
-            mNativePageSmoothTransitionDelegate.cancel();
-            mNativePageSmoothTransitionDelegate = null;
-        } else if (isNativePage() && getView() != null) {
-            getView().setAlpha(1.f);
-        }
-        NativePage previousNativePage = mNativePage;
-        if (mNativePage != null) {
-            if (hasLiveNativePage()) {
-                View view = mNativePage.getView();
-                assumeNonNull(view);
-                view.removeOnAttachStateChangeListener(mAttachStateChangeListener);
-            }
-            mNativePage = null;
-            mWaitingOnBgColorAfterHidingNativePage = true;
-        }
-        return previousNativePage;
-    }
-
-    /**
      * Set {@link TabDelegateFactory} instance and updates the references.
      *
      * @param factory TabDelegateFactory instance.
@@ -2784,13 +2502,13 @@ class TabImpl implements Tab {
         }
     }
 
-    private void notifyPageTitleChanged() {
+    final void notifyPageTitleChanged() {
         for (TabObserver observer : getTabObservers()) {
             observer.onTitleUpdated(this);
         }
     }
 
-    private void notifyFaviconChanged() {
+    final void notifyFaviconChanged() {
         for (TabObserver observer : getTabObservers()) {
             observer.onFaviconUpdated(this, null, null);
         }
@@ -2800,7 +2518,7 @@ class TabImpl implements Tab {
      * Update the interactable state of the tab. If the state has changed, it will call the {@link
      * #onInteractableStateChanged(boolean)} method.
      */
-    private void updateInteractableState() {
+    final void updateInteractableState() {
         boolean currentState =
                 !mIsHidden && !isFrozen() && mIsViewAttachedToWindow && !isDetachedFromActivity();
 
@@ -3241,13 +2959,6 @@ class TabImpl implements Tab {
         return webContents != null ? WebContentsAccessibility.fromWebContents(webContents) : null;
     }
 
-    private void destroyNativePageInternal(@Nullable NativePage nativePage) {
-        if (nativePage == null) return;
-        assert nativePage != mNativePage : "Attempting to destroy active page.";
-
-        nativePage.destroy();
-    }
-
     /**
      * Destroys the current {@link WebContents}.
      *
@@ -3672,6 +3383,10 @@ class TabImpl implements Tab {
 
     OnAttachStateChangeListener getAttachStateChangeListenerForTesting() {
         return mAttachStateChangeListener;
+    }
+
+    TabNativePageController getNativePageControllerForTesting() {
+        return mNativePageController;
     }
 
     @NativeMethods

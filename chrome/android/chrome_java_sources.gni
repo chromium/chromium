@@ -1229,6 +1229,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/tab/TabGestureStateListener.java",
   "java/src/org/chromium/chrome/browser/tab/TabHelpers.java",
   "java/src/org/chromium/chrome/browser/tab/TabImpl.java",
+  "java/src/org/chromium/chrome/browser/tab/TabNativePageController.java",
   "java/src/org/chromium/chrome/browser/tab/TabParentIntent.java",
   "java/src/org/chromium/chrome/browser/tab/TabStateBrowserControlsVisibilityDelegate.java",
   "java/src/org/chromium/chrome/browser/tab/TabThemeColorHelper.java",
