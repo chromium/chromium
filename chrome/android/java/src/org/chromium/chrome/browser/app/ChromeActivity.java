@@ -291,6 +291,7 @@ import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.ApplicationViewportInsetTracker;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.KeyEventPreHandleResult;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.UiAndroidFeatureList;
 import org.chromium.ui.base.WindowAndroid;
@@ -2197,20 +2198,20 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     }
 
     @Override
-    public boolean preHandleKeyboardEvent(KeyEvent event) {
+    public @KeyEventPreHandleResult int preHandleKeyboardEvent(KeyEvent event) {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.UNIVERSAL_KEYBOARD_HANDLING)) {
-            return false;
+            return KeyEventPreHandleResult.NOT_HANDLED;
         }
 
         if (!didFinishNativeInitialization()) {
-            return false;
+            return KeyEventPreHandleResult.NOT_HANDLED;
         }
 
         // First evaluate hardware accelerators (e.g. Alt+G, user-customizable shortcuts,
         // or extensions shortcuts) that may have bypassed dispatchKeyEvent because the soft
         // keyboard (IME) is active and intercepting hardware keys.
         if (processAccelerator(event)) {
-            return true;
+            return KeyEventPreHandleResult.HANDLED;
         }
 
         // If the soft keyboard (IME) is active, Android may bypass Activity.dispatchKeyEvent()
@@ -2225,7 +2226,9 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                         getFullscreenManager(),
                         /* menuOrKeyboardActionController= */ this,
                         /* context= */ this);
-        return Boolean.TRUE.equals(dispatchResult);
+        return Boolean.TRUE.equals(dispatchResult)
+                ? KeyEventPreHandleResult.HANDLED
+                : KeyEventPreHandleResult.NOT_HANDLED;
     }
 
     @Override

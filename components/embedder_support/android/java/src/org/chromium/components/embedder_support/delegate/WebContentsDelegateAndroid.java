@@ -27,6 +27,7 @@ import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.navigation_controller.UserAgentOverrideOption;
 import org.chromium.content_public.common.ResourceRequestBody;
+import org.chromium.ui.base.KeyEventPreHandleResult;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowAndroid.KeyboardShortcutsDelegate;
 import org.chromium.ui.resources.dynamics.CaptureResult;
@@ -122,13 +123,12 @@ public class WebContentsDelegateAndroid {
     }
 
     @CalledByNative
-    public static boolean preHandleKeyboardEvent(WindowAndroid window, KeyEvent event) {
-        if (window == null) return false;
+    private static @JniType("ui::KeyEventPreHandleResult") @KeyEventPreHandleResult int
+            preHandleKeyboardEvent(WindowAndroid window, KeyEvent event) {
         KeyboardShortcutsDelegate delegate = window.getKeyboardShortcutsDelegate();
-        if (delegate != null) {
-            return delegate.preHandleKeyboardEvent(event);
-        }
-        return false;
+        return delegate != null
+                ? delegate.preHandleKeyboardEvent(event)
+                : KeyEventPreHandleResult.NOT_HANDLED;
     }
 
     @CalledByNative

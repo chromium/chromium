@@ -611,7 +611,7 @@ content::KeyboardEventProcessingResult GlicSidePanelUi::PreHandleKeyboardEvent(
       if (auto* delegate = tab_->GetContents()->GetDelegate()) {
         auto result =
             delegate->PreHandleKeyboardEvent(tab_->GetContents(), event);
-        if (result != content::KeyboardEventProcessingResult::NOT_HANDLED) {
+        if (result == content::KeyboardEventProcessingResult::HANDLED) {
           // If the primary tab handled Escape (e.g. exiting fullscreen mode or
           // pointer lock), also close the side panel.
           Close(CloseOptions());

@@ -41,6 +41,7 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
+#include "ui/android/accelerator_manager_android.h"
 #include "ui/android/color_utils_android.h"
 #include "ui/android/resources/capture_result.h"
 #include "ui/android/view_android.h"
@@ -353,9 +354,14 @@ WebContentsDelegateAndroid::PreHandleKeyboardEvent(
   ui::WindowAndroid* window = source->GetTopLevelNativeWindow();
   if (window) {
     JNIEnv* env = AttachCurrentThread();
-    if (Java_WebContentsDelegateAndroid_preHandleKeyboardEvent(
-            env, window->GetJavaObject(), event.os_event)) {
-      return content::KeyboardEventProcessingResult::HANDLED;
+    switch (Java_WebContentsDelegateAndroid_preHandleKeyboardEvent(
+        env, window->GetJavaObject(), event.os_event)) {
+      case ui::KeyEventPreHandleResult::kHandled:
+        return content::KeyboardEventProcessingResult::HANDLED;
+      case ui::KeyEventPreHandleResult::kNotHandled:
+        return content::KeyboardEventProcessingResult::NOT_HANDLED;
+      case ui::KeyEventPreHandleResult::kNotHandledIsShortcut:
+        return content::KeyboardEventProcessingResult::NOT_HANDLED_IS_SHORTCUT;
     }
   }
   return content::KeyboardEventProcessingResult::NOT_HANDLED;
