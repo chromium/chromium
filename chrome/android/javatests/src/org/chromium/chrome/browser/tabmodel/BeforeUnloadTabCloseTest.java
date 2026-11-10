@@ -160,19 +160,14 @@ public class BeforeUnloadTabCloseTest {
         assertTabOpen(kept);
     }
 
-    // Graceful shutdown is enabled in the unload-time handler tests, as on desktop Android builds, so
-    // that teardown runs the handlers rather than racing the renderer's shutdown.
-
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_ANDROID_GRACEFUL_SHUTDOWN})
     public void testCloseTab_PageHideHandlerOnly_NoDispatchAndHandlerRuns() throws Exception {
         closeTabWithOnlyHandlerAndWaitForBeacon("window", "pagehide");
     }
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_ANDROID_GRACEFUL_SHUTDOWN})
     // The unload Permissions-Policy deprecation would stop the handler from being registered.
     @DisableFeatures({"DeprecateUnload"})
     public void testCloseTab_UnloadHandlerOnly_NoDispatchAndHandlerRuns() throws Exception {
@@ -181,7 +176,6 @@ public class BeforeUnloadTabCloseTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_ANDROID_GRACEFUL_SHUTDOWN})
     public void testCloseTab_VisibilityChangeHandlerOnly_NoDispatchAndHandlerRuns()
             throws Exception {
         closeTabWithOnlyHandlerAndWaitForBeacon("document", "visibilitychange");

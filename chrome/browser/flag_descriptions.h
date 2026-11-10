@@ -6721,12 +6721,6 @@ inline constexpr char kTabBottomSheetHalfHeightDescription[] =
     "Allows configuring the half height ratio of the tab bottom sheet. "
     "Disabling this flag will use the pre-existing default value.";
 
-inline constexpr char kTabAndroidGracefulShutdownName[] =
-    "Tab Android Graceful Shutdown";
-inline constexpr char kTabAndroidGracefulShutdownDescription[] =
-    "Enables Graceful Shutdown of WebContents on Android to allow pagehide and "
-    "keepalive fetches to complete.";
-
 inline constexpr char kTabBottomSheetResizeWebviewName[] =
     "Tab bottom sheet - Resize WebView";
 inline constexpr char kTabBottomSheetResizeWebviewDescription[] =

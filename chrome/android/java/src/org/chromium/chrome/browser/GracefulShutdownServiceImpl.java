@@ -18,7 +18,6 @@ import org.chromium.base.SplitCompatService;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
@@ -48,9 +47,6 @@ public class GracefulShutdownServiceImpl extends SplitCompatService.Impl {
 
     /** Starts the GracefulShutdownService ONLY if the last open activity is dying. */
     public static void maybeStartGracefulShutdown(Context context) {
-        if (!ChromeFeatureList.sTabAndroidGracefulShutdown.isEnabled()) {
-            return;
-        }
         if (!GracefulShutdownService.isLastActivityDying()) {
             return;
         }

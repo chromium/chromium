@@ -881,7 +881,6 @@ public abstract class ChromeFeatureList {
             "SyncTrustedVaultErrorMessageDuration";
     public static final String TABBED_CCT_IF_ALLOWED_BY_EMBEDDER = "TabbedCctIfAllowedByEmbedder";
     public static final String TABBED_CCT_IF_ENABLED_BY_EMBEDDER = "TabbedCctIfEnabledByEmbedder";
-    public static final String TAB_ANDROID_GRACEFUL_SHUTDOWN = "TabAndroidGracefulShutdown";
     public static final String TAB_BOTTOM_SHEET = "TabBottomSheet";
     public static final String TAB_BOTTOM_SHEET_EDGE_TO_EDGE = "TabBottomSheetEdgeToEdge";
     public static final String TAB_BOTTOM_SHEET_FULL_HEIGHT = "TabBottomSheetFullHeight";
@@ -1908,8 +1907,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(SKIP_DETACHED_TAB_RESIZE_ON_SIZE_CHANGED, true);
     public static final MutableFlagWithSafeDefault sSkipDuplicateOnUrlUpdated =
             newMutableFlagWithSafeDefault(SKIP_DUPLICATE_ON_URL_UPDATED, false);
-    public static final MutableFlagWithSafeDefault sTabAndroidGracefulShutdown =
-            newMutableFlagWithSafeDefault(TAB_ANDROID_GRACEFUL_SHUTDOWN, true);
     public static final MutableFlagWithSafeDefault sTabBottomSheet =
             newMutableFlagWithSafeDefault(TAB_BOTTOM_SHEET, true);
     public static final MutableFlagWithSafeDefault sTabBottomSheetEdgeToEdge =

@@ -86,7 +86,6 @@ import org.chromium.chrome.browser.ChromeKeyboardVisibilityDelegate;
 import org.chromium.chrome.browser.ChromeWindow;
 import org.chromium.chrome.browser.ConfirmQuitHelper;
 import org.chromium.chrome.browser.DeferredStartupHandler;
-import org.chromium.chrome.browser.GracefulShutdownService;
 import org.chromium.chrome.browser.GracefulShutdownServiceImpl;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.KeyboardShortcuts;
@@ -2082,9 +2081,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         }
 
         @TabDestroyStatus int status = destroyTabModels();
-        if (ChromeFeatureList.sTabAndroidGracefulShutdown.isEnabled()
-                && status == TabDestroyStatus.SLOW_SHUTDOWN
-                && GracefulShutdownService.isLastActivityDying()) {
+        if (status == TabDestroyStatus.SLOW_SHUTDOWN) {
             GracefulShutdownServiceImpl.maybeStartGracefulShutdown(
                     ContextUtils.getApplicationContext());
         }

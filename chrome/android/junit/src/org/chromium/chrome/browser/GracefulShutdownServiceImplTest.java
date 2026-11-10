@@ -33,9 +33,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.SplitCompatService;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.components.browser_ui.notifications.ForegroundServiceUtils;
 
@@ -188,7 +186,6 @@ public class GracefulShutdownServiceImplTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_ANDROID_GRACEFUL_SHUTDOWN)
     public void testMaybeStartGracefulShutdown_launchFailed() {
         mActivity.finish();
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
@@ -209,28 +206,6 @@ public class GracefulShutdownServiceImplTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_ANDROID_GRACEFUL_SHUTDOWN)
-    public void testMaybeStartGracefulShutdown_securityException() {
-        mActivity.finish();
-        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
-
-        doThrow(new SecurityException("Foreground service not allowed"))
-                .when(mMockForegroundServiceUtils)
-                .startForegroundService(any());
-
-        var watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Tab.Android.GracefulShutdownStatus",
-                        GracefulShutdownService.Status.LAUNCH_FAILED);
-
-        GracefulShutdownServiceImpl.maybeStartGracefulShutdown(mContext);
-
-        watcher.assertExpected();
-        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.DESTROYED);
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.TAB_ANDROID_GRACEFUL_SHUTDOWN)
     public void testMaybeStartGracefulShutdown_success() {
         mActivity.finish();
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);

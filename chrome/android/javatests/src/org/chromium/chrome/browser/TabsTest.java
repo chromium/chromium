@@ -49,7 +49,6 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
@@ -890,7 +889,6 @@ public class TabsTest {
     @Test
     @LargeTest
     @Feature({"Android-TabSwitcher"})
-    @EnableFeatures(ChromeFeatureList.TAB_ANDROID_GRACEFUL_SHUTDOWN)
     @RequiresRestart("Destroys Activity to test shutdown")
     public void testTabsWithUnloadHandlerAreKeptAliveOnShutdown() throws Exception {
         final Tab tab = mActivityTestRule.getActivityTab();

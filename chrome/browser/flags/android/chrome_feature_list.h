@@ -310,7 +310,6 @@ BASE_DECLARE_FEATURE(kSubmenusInAppMenu);
 BASE_DECLARE_FEATURE(kSubmenusInAppMenuLff);
 BASE_DECLARE_FEATURE(kSuppressAccessibilityOnDeferredContentView);
 BASE_DECLARE_FEATURE(kSyncRestoreOnStartupPref);
-BASE_DECLARE_FEATURE(kTabAndroidGracefulShutdown);
 BASE_DECLARE_FEATURE(kTabBottomSheet);
 BASE_DECLARE_FEATURE(kTabBottomSheetEdgeToEdge);
 BASE_DECLARE_FEATURE(kTabBottomSheetFullHeight);
