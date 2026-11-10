@@ -107,7 +107,6 @@
 #include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/shell.h"
 #include "base/check_is_test.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "components/account_id/account_id.h"
 #include "ui/base/base_window.h"
 #endif
@@ -224,27 +223,23 @@ class WebContentsDestructionObserver : public content::WebContentsObserver {
   base::OnceClosure destruction_cb_;
 };
 
-// Returns true if `browser` is currently shown on the desktop of a user whose
-// original profile matches `profile`'s original profile. On non-ChromeOS
+// Returns true if `browser` is currently shown on the desktop of the user who
+// owns it, i.e. it is not teleported to another user's desktop. On non-ChromeOS
 // platforms this is always true.
-bool IsBrowserShownForProfile(BrowserWindowInterface& browser,
-                              const Profile* profile) {
+bool IsBrowserShownForOwner(BrowserWindowInterface& browser) {
 #if BUILDFLAG(IS_CHROMEOS)
-  // Get the profile on which the window is currently shown.
   // ash::Shell might be NULL under test scenario.
   // TODO(crbug.com/427889779): Consider to drop this check.
   if (ash::Shell::HasInstance()) {
     ash::MultiUserWindowManager* const multi_user_window_manager =
         ash::Shell::Get()->multi_user_window_manager();
+    const gfx::NativeWindow window = browser.GetWindow()->GetNativeWindow();
     const AccountId& shown_account_id =
-        multi_user_window_manager->GetUserPresentingWindow(
-            browser.GetWindow()->GetNativeWindow());
-    Profile* shown_profile =
-        shown_account_id.is_valid()
-            ? multi_user_util::GetProfileFromAccountId(shown_account_id)
-            : nullptr;
-    if (shown_profile &&
-        shown_profile->GetOriginalProfile() != profile->GetOriginalProfile()) {
+        multi_user_window_manager->GetUserPresentingWindow(window);
+    const AccountId& owner_account_id =
+        multi_user_window_manager->GetWindowOwner(window);
+    if (shown_account_id.is_valid() && owner_account_id.is_valid() &&
+        shown_account_id != owner_account_id) {
       return false;
     }
   } else {
@@ -284,8 +279,7 @@ BrowserWindowInterface* FindAnyBrowser(const Profile* profile,
         return true;
       }
     }
-    if (browser->IsDeleteScheduled() ||
-        !IsBrowserShownForProfile(*browser, profile)) {
+    if (browser->IsDeleteScheduled() || !IsBrowserShownForOwner(*browser)) {
       return true;
     }
     found = browser;
