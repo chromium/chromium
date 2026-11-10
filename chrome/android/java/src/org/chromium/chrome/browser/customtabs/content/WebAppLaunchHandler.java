@@ -27,6 +27,7 @@ import android.os.Bundle;
 import android.os.Process;
 import android.text.TextUtils;
 
+import androidx.browser.customtabs.TrustedWebUtils;
 import androidx.browser.trusted.FileHandlingData;
 import androidx.browser.trusted.LaunchHandlerClientMode.ClientMode;
 import androidx.browser.trusted.sharing.ShareData;
@@ -59,7 +60,10 @@ import org.chromium.content_public.browser.WebContents;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Manages web application launch configurations based on client mode. Provides methods to process
@@ -696,6 +700,63 @@ public class WebAppLaunchHandler {
     }
 
     /**
+     * A single-use token for share data verified against the original caller before the First Run
+     * Experience; see {@link #verifyShareDataBeforeFirstRun}.
+     */
+    static final String EXTRA_PRE_FRE_SHARE_DATA_TOKEN =
+            "org.chromium.chrome.browser.customtabs.content.PRE_FRE_SHARE_DATA_TOKEN";
+
+    /**
+     * Share data verified before the First Run Experience, by token. Kept in process rather than in
+     * the intent, so that an external app cannot supply it, and the intent does not need to be
+     * marked as trusted. Only accessed on the UI thread.
+     */
+    private static final Map<String, Bundle> sPreFreVerifiedShareData = new HashMap<>();
+
+    /**
+     * Verifies the caller's permissions for any URIs in a TWA intent's share data before the First
+     * Run Experience (FRE) intercepts the intent, and keeps the verified share data, for {@link
+     * #copyShareDataPermissions} to use when Chrome relaunches the intent after the FRE.
+     *
+     * <p>After the FRE, Chrome itself is the caller, and the client app's own access to the shared
+     * URIs (e.g. granted to it by the app the user shared from) may have lapsed, so the URIs could
+     * no longer be verified and would be dropped from the share.
+     *
+     * @param activity The launcher activity, which received the intent from the original caller.
+     * @param intent The intent that will be relaunched after the FRE.
+     */
+    public static void verifyShareDataBeforeFirstRun(Activity activity, Intent intent) {
+        // Already verified, before Chrome relaunched the intent on the way to the FRE.
+        String token = IntentUtils.safeGetStringExtra(intent, EXTRA_PRE_FRE_SHARE_DATA_TOKEN);
+        if (token != null && sPreFreVerifiedShareData.containsKey(token)) {
+            return;
+        }
+        IntentUtils.safeRemoveExtra(intent, EXTRA_PRE_FRE_SHARE_DATA_TOKEN);
+        if (!IntentUtils.safeGetBooleanExtra(
+                        intent, TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, false)
+                || IntentUtils.safeGetBundleExtra(intent, EXTRA_SHARE_DATA) == null) {
+            return;
+        }
+        Intent verifiedIntent = new Intent();
+        copyShareDataPermissions(activity, intent, verifiedIntent);
+        Bundle verifiedBundle =
+                IntentUtils.safeGetBundleExtra(
+                        verifiedIntent, CustomTabIntentDataProvider.EXTRA_VERIFIED_SHARE_DATA);
+        ShareData verifiedShareData =
+                verifiedBundle == null ? null : ShareData.fromBundle(verifiedBundle);
+        // Only needed if a URI was verified. Otherwise, verifying again after the FRE gives the
+        // same result.
+        if (verifiedShareData == null
+                || verifiedShareData.uris == null
+                || verifiedShareData.uris.isEmpty()) {
+            return;
+        }
+        token = UUID.randomUUID().toString();
+        sPreFreVerifiedShareData.put(token, verifiedBundle);
+        intent.putExtra(EXTRA_PRE_FRE_SHARE_DATA_TOKEN, token);
+    }
+
+    /**
      * Checks caller permissions for any file URIs in sourceIntent's share data and stashes the
      * verified results in targetIntent.
      *
@@ -709,6 +770,20 @@ public class WebAppLaunchHandler {
         // by external client apps.
         IntentUtils.safeRemoveExtra(
                 targetIntent, CustomTabIntentDataProvider.EXTRA_VERIFIED_SHARE_DATA);
+        IntentUtils.safeRemoveExtra(targetIntent, EXTRA_PRE_FRE_SHARE_DATA_TOKEN);
+
+        // If the intent carries a token from verifyShareDataBeforeFirstRun(), its share data was
+        // verified against the original caller before the First Run Experience. The token is only
+        // valid in this process and only once, so an external app cannot supply one. After the
+        // FRE, Chrome is the caller, and the client app's own access to the shared URIs may have
+        // lapsed, so they cannot be verified again.
+        String token = IntentUtils.safeGetStringExtra(sourceIntent, EXTRA_PRE_FRE_SHARE_DATA_TOKEN);
+        Bundle preVerifiedShareData = token == null ? null : sPreFreVerifiedShareData.remove(token);
+        if (preVerifiedShareData != null) {
+            targetIntent.putExtra(
+                    CustomTabIntentDataProvider.EXTRA_VERIFIED_SHARE_DATA, preVerifiedShareData);
+            return;
+        }
 
         Bundle shareDataBundle = IntentUtils.safeGetBundleExtra(sourceIntent, EXTRA_SHARE_DATA);
         if (shareDataBundle == null) {

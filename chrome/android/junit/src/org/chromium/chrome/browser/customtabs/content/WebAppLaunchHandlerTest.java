@@ -39,6 +39,7 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSessionToken;
+import androidx.browser.customtabs.TrustedWebUtils;
 import androidx.browser.trusted.FileHandlingData;
 import androidx.browser.trusted.LaunchHandlerClientMode;
 import androidx.browser.trusted.TrustedWebActivityIntentBuilder;
@@ -56,6 +57,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.Promise;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
@@ -1192,6 +1194,126 @@ public class WebAppLaunchHandlerTest {
         Assert.assertNotNull(result);
         Assert.assertEquals(1, result.uris.size());
         Assert.assertEquals(validUri, result.uris.get(0));
+    }
+
+    /** Returns a TWA share intent from a client app, as received by ChromeLauncherActivity. */
+    private Intent createShareIntentToSelf(Uri... uris) {
+        Intent intent = new Intent();
+        intent.putExtra(CustomTabsIntent.EXTRA_SESSION, mock(IBinder.class));
+        intent.putExtra(TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, true);
+        intent.putExtra(
+                TrustedWebActivityIntentBuilder.EXTRA_SHARE_DATA,
+                new ShareData("title", "text", Arrays.asList(uris)).toBundle());
+        return intent;
+    }
+
+    private static boolean hasPreFreToken(Intent intent) {
+        return intent.hasExtra(WebAppLaunchHandler.EXTRA_PRE_FRE_SHARE_DATA_TOKEN);
+    }
+
+    /** Returns the share data verified for |intent| as Chrome relaunches it after the FRE. */
+    private ShareData verifyAfterFirstRun(Intent intent) {
+        Intent targetIntent = new Intent();
+        WebAppLaunchHandler.copyShareDataPermissions(mActivity, intent, targetIntent);
+        Assert.assertFalse(hasPreFreToken(targetIntent));
+        ShareData result = getVerifiedShareData(targetIntent);
+        Assert.assertNotNull(result);
+        return result;
+    }
+
+    private static @Nullable ShareData getVerifiedShareData(Intent intent) {
+        Bundle bundle =
+                intent.getBundleExtra(CustomTabIntentDataProvider.EXTRA_VERIFIED_SHARE_DATA);
+        return bundle == null ? null : ShareData.fromBundle(bundle);
+    }
+
+    @Test
+    public void testVerifyShareDataBeforeFirstRun_RelaunchUsesPreVerifiedData() {
+        Uri uri = Uri.parse("content://com.example/shared.jpg");
+        Intent intent = createShareIntentToSelf(uri);
+        mActivity.setUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+        // Before the FRE, the caller (the client app) can read the URI.
+        WebAppLaunchHandler.verifyShareDataBeforeFirstRun(mActivity, intent);
+        Assert.assertTrue(hasPreFreToken(intent));
+        // The external intent is not marked as trusted.
+        Assert.assertFalse(IntentUtils.isTrustedIntentFromSelf(intent));
+
+        // After the FRE, Chrome relaunches the intent, and the client app's access has lapsed.
+        mActivity.denyUriPermission(uri);
+        Assert.assertEquals(Arrays.asList(uri), verifyAfterFirstRun(intent).uris);
+    }
+
+    @Test
+    public void testVerifyShareDataBeforeFirstRun_TokenIsSingleUse() {
+        Uri uri = Uri.parse("content://com.example/shared.jpg");
+        Intent intent = createShareIntentToSelf(uri);
+        mActivity.setUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        WebAppLaunchHandler.verifyShareDataBeforeFirstRun(mActivity, intent);
+        mActivity.denyUriPermission(uri);
+        Assert.assertEquals(Arrays.asList(uri), verifyAfterFirstRun(intent).uris);
+
+        // Replaying the same intent does not reuse the earlier verification.
+        Assert.assertTrue(verifyAfterFirstRun(intent).uris.isEmpty());
+    }
+
+    @Test
+    public void testVerifyShareDataBeforeFirstRun_UnauthorizedUriNotKept() {
+        Uri uri = Uri.parse("content://com.victim/secret.pdf");
+        Intent intent = createShareIntentToSelf(uri);
+        mActivity.denyUriPermission(uri);
+
+        WebAppLaunchHandler.verifyShareDataBeforeFirstRun(mActivity, intent);
+
+        Assert.assertFalse(hasPreFreToken(intent));
+        Assert.assertTrue(verifyAfterFirstRun(intent).uris.isEmpty());
+    }
+
+    @Test
+    public void testVerifyShareDataBeforeFirstRun_TextOnlyShareNotKept() {
+        Intent intent = createShareIntentToSelf();
+
+        WebAppLaunchHandler.verifyShareDataBeforeFirstRun(mActivity, intent);
+
+        Assert.assertFalse(hasPreFreToken(intent));
+    }
+
+    @Test
+    public void testVerifyShareDataBeforeFirstRun_NonTwaIntentNotKept() {
+        Uri uri = Uri.parse("content://com.example/shared.jpg");
+        Intent intent = createShareIntentToSelf(uri);
+        intent.removeExtra(TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY);
+        mActivity.setUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+        WebAppLaunchHandler.verifyShareDataBeforeFirstRun(mActivity, intent);
+
+        Assert.assertFalse(hasPreFreToken(intent));
+    }
+
+    @Test
+    public void testVerifyShareDataBeforeFirstRun_KeepsEarlierVerification() {
+        Uri uri = Uri.parse("content://com.example/shared.jpg");
+        Intent intent = createShareIntentToSelf(uri);
+        mActivity.setUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        WebAppLaunchHandler.verifyShareDataBeforeFirstRun(mActivity, intent);
+
+        // Chrome relaunches the intent on the way to the FRE (e.g. to add NEW_TASK), by when the
+        // URI can no longer be verified. The earlier verification is kept.
+        mActivity.denyUriPermission(uri);
+        WebAppLaunchHandler.verifyShareDataBeforeFirstRun(mActivity, intent);
+
+        Assert.assertEquals(Arrays.asList(uri), verifyAfterFirstRun(intent).uris);
+    }
+
+    @Test
+    public void testCopyShareDataPermissions_ForgedTokenIgnored() {
+        // An external app cannot bypass verification by setting a token itself.
+        Uri uri = Uri.parse("content://com.victim/secret.pdf");
+        Intent intent = createShareIntentToSelf(uri);
+        intent.putExtra(WebAppLaunchHandler.EXTRA_PRE_FRE_SHARE_DATA_TOKEN, "forged");
+        mActivity.denyUriPermission(uri);
+
+        Assert.assertTrue(verifyAfterFirstRun(intent).uris.isEmpty());
     }
 
     @Test

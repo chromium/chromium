@@ -31,6 +31,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.customtabs.AuthTabIntentDataProvider;
+import org.chromium.chrome.browser.customtabs.content.WebAppLaunchHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.locale.LocaleManager;
@@ -323,6 +324,12 @@ public abstract class FirstRunFlowSequencer {
         if (uri != null && UrlConstants.CONTENT_SCHEME.equals(uri.getScheme())) {
             caller.grantUriPermission(
                     caller.getPackageName(), uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        }
+
+        // Similarly, verify any files shared to a TWA while the original caller is still known,
+        // since Chrome itself is the caller when it relaunches the intent after the FRE.
+        if (caller instanceof Activity activity) {
+            WebAppLaunchHandler.verifyShareDataBeforeFirstRun(activity, fromIntent);
         }
 
         Log.d(TAG, "Redirecting user through FRE.");
