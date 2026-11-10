@@ -1001,7 +1001,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sAccountPickerDialog =
             newCachedFlag(
                     ACCOUNT_PICKER_DIALOG,
-                    /* defaultValue= */ false,
+                    /* defaultValue= */ true,
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sAiOverlayDialog = newCachedFlag(AI_OVERLAY_DIALOG, false);
     public static final CachedFlag sAllocInstanceIdIncreasedDefaultRange =

@@ -701,7 +701,7 @@ static int64_t JNI_ChromeFeatureMap_GetNativeMap(JNIEnv* env) {
 // BASE_FEATURE_START
 // go/keep-sorted start sticky_comments=yes
 BASE_FEATURE(kAccountForSuppressedKeyboardInsets, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kAccountPickerDialog, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAccountPickerDialog, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kActorLiveNotification, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kActorNotificationIntentRouting, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kActorSilenceNotificationsAfterFirstWorking, base::FEATURE_DISABLED_BY_DEFAULT);

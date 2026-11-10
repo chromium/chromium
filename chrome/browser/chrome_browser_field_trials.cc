@@ -336,11 +336,6 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // factors.
   feature_overrides.EnableFeature(chrome::android::kAndroidFreLayoutUpdate);
 
-  // Enable Account Picker dialog on Android Desktop.
-  // TODO(crbug.com/553630105): Remove when rollout is complete to all form
-  // factors.
-  feature_overrides.EnableFeature(chrome::android::kAccountPickerDialog);
-
   // Disables the Grid Tab Switcher (Hub layout) on Desktop Android in favor of
   // the desktop tab strip.
   // TODO(crbug.com/545634112): Remove when launched to 100% on Desktop Android.
