@@ -39,6 +39,8 @@
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -118,6 +120,18 @@ ActorTask::TabHandleSet ToTabHandles(
     }
   }
   return tabs;
+}
+
+// Drops pre-existing main-frame navigations so they cannot commit ungated once
+// the surface enters actor control or transient observation.
+void StopPendingMainFrameNavigation(content::WebContents* contents) {
+  if (contents && contents->HasUncommittedNavigationInPrimaryMainFrame()) {
+    content::NavigationEntry* pending_entry =
+        contents->GetController().GetPendingEntry();
+    if (!pending_entry || !pending_entry->GetURL().IsAboutBlank()) {
+      contents->Stop();
+    }
+  }
 }
 
 }  // namespace
@@ -676,6 +690,7 @@ void ActorTask::AddActorSurface(ActorSurfaceHandle actor_surface_handle,
       std::make_unique<ActorControlledTabState>(this, stop_task_on_detach));
   last_actuated_tab_ = actor_surface_handle;
 
+  StopPendingMainFrameNavigation(actor_surface->GetWebContents());
   DidTabEnterActorControl(actor_surface_handle);
 
   // TODO(b/567721071): UI actually cares about visible tabs - determine how UI
@@ -777,7 +792,9 @@ void ActorTask::ObserveActorSurfaceOnce(
                  .first;
   ActorControlledTabState* state = itr->second.get();
 
-  DidContentsEnterActorControl(state, actor_surface->GetWebContents());
+  content::WebContents* contents = actor_surface->GetWebContents();
+  StopPendingMainFrameNavigation(contents);
+  DidContentsEnterActorControl(state, contents);
 }
 
 void ActorTask::OnActorSurfaceWillDetach(
