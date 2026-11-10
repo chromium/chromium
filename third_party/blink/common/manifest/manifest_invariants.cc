@@ -165,17 +165,21 @@ std::optional<ManifestInvariantError> Manifest::ValidateInvariants() const {
   }
 
   // Protocol handlers validation.
-  for (const auto& protocol_handler : protocol_handlers()) {
-    if (!origin.IsSameOriginWith(protocol_handler.url)) {
-      return ManifestInvariantError::kProtocolHandlerUrlCrossOrigin;
-    }
-    blink::ProtocolHandlerSecurityLevel security_level =
-        blink::CommonSchemeRegistry::IsIsolatedAppScheme(origin.scheme())
+  if (!protocol_handlers().empty()) {
+    const bool is_isolated_app =
+        blink::CommonSchemeRegistry::IsIsolatedAppScheme(origin.scheme());
+    const blink::ProtocolHandlerSecurityLevel security_level =
+        is_isolated_app
             ? blink::ProtocolHandlerSecurityLevel::kIsolatedAppFeatures
             : blink::ProtocolHandlerSecurityLevel::kStrict;
-    if (!blink::IsValidCustomHandlerScheme(
-            base::UTF16ToUTF8(protocol_handler.protocol), security_level)) {
-      return ManifestInvariantError::kProtocolHandlerInvalidScheme;
+    for (const auto& protocol_handler : protocol_handlers()) {
+      if (!origin.IsSameOriginWith(protocol_handler.url)) {
+        return ManifestInvariantError::kProtocolHandlerUrlCrossOrigin;
+      }
+      if (!blink::IsValidCustomHandlerScheme(
+              base::UTF16ToUTF8(protocol_handler.protocol), security_level)) {
+        return ManifestInvariantError::kProtocolHandlerInvalidScheme;
+      }
     }
   }
 
@@ -191,57 +195,62 @@ std::optional<ManifestInvariantError> Manifest::ValidateInvariants() const {
     return ManifestInvariantError::kLockScreenStartUrlCrossOrigin;
   }
 
-  // migrate-from validation.
-  net::SchemefulSite site(origin);
-  for (const auto& migrate_from_item : migrate_from()) {
-    if (!migrate_from_item.id.is_valid()) {
-      return ManifestInvariantError::kMigrateFromIdInvalid;
-    }
-    if (!site.IsSameSiteWith(migrate_from_item.id)) {
-      return ManifestInvariantError::kMigrateFromIdCrossSite;
-    }
-    if (migrate_from_item.install_url) {
-      if (!migrate_from_item.install_url->is_valid()) {
-        return ManifestInvariantError::kMigrateFromInstallUrlInvalid;
+  // migrate-from and migrate-to validation.
+  if (!migrate_from().empty() || migrate_to().has_value()) {
+    net::SchemefulSite site(origin);
+    for (const auto& migrate_from_item : migrate_from()) {
+      if (!migrate_from_item.id.is_valid()) {
+        return ManifestInvariantError::kMigrateFromIdInvalid;
       }
-      if (!site.IsSameSiteWith(*migrate_from_item.install_url)) {
-        return ManifestInvariantError::kMigrateFromInstallUrlCrossSite;
+      if (!site.IsSameSiteWith(migrate_from_item.id)) {
+        return ManifestInvariantError::kMigrateFromIdCrossSite;
       }
-      if (!url::IsSameOriginWith(migrate_from_item.id,
-                                 *migrate_from_item.install_url)) {
-        return ManifestInvariantError::kMigrateFromInstallUrlCrossOriginWithId;
+      if (migrate_from_item.install_url) {
+        if (!migrate_from_item.install_url->is_valid()) {
+          return ManifestInvariantError::kMigrateFromInstallUrlInvalid;
+        }
+        if (!site.IsSameSiteWith(*migrate_from_item.install_url)) {
+          return ManifestInvariantError::kMigrateFromInstallUrlCrossSite;
+        }
+        if (!url::IsSameOriginWith(migrate_from_item.id,
+                                   *migrate_from_item.install_url)) {
+          return ManifestInvariantError::
+              kMigrateFromInstallUrlCrossOriginWithId;
+        }
       }
     }
-  }
 
-  // migrate-to validation.
-  if (migrate_to()) {
-    if (!migrate_to()->id.is_valid()) {
-      return ManifestInvariantError::kMigrateToIdInvalid;
-    }
-    if (!site.IsSameSiteWith(migrate_to()->id)) {
-      return ManifestInvariantError::kMigrateToIdCrossSite;
-    }
-    if (!migrate_to()->install_url.is_valid()) {
-      return ManifestInvariantError::kMigrateToInstallUrlInvalid;
-    }
-    if (!site.IsSameSiteWith(migrate_to()->install_url)) {
-      return ManifestInvariantError::kMigrateToInstallUrlCrossSite;
-    }
-    if (!url::IsSameOriginWith(migrate_to()->id, migrate_to()->install_url)) {
-      return ManifestInvariantError::kMigrateToInstallUrlCrossOriginWithId;
+    if (migrate_to()) {
+      if (!migrate_to()->id.is_valid()) {
+        return ManifestInvariantError::kMigrateToIdInvalid;
+      }
+      if (!site.IsSameSiteWith(migrate_to()->id)) {
+        return ManifestInvariantError::kMigrateToIdCrossSite;
+      }
+      if (!migrate_to()->install_url.is_valid()) {
+        return ManifestInvariantError::kMigrateToInstallUrlInvalid;
+      }
+      if (!site.IsSameSiteWith(migrate_to()->install_url)) {
+        return ManifestInvariantError::kMigrateToInstallUrlCrossSite;
+      }
+      if (!url::IsSameOriginWith(migrate_to()->id, migrate_to()->install_url)) {
+        return ManifestInvariantError::kMigrateToInstallUrlCrossOriginWithId;
+      }
     }
   }
 
   // Shortcuts validation.
-  for (const auto& shortcut : shortcuts()) {
-    if (!shortcut.url.is_valid()) {
-      return ManifestInvariantError::kShortcutUrlInvalid;
-    }
-    if (!(url::IsSameOriginWith(scope(), shortcut.url) &&
-          base::StartsWith(shortcut.url.path(), scope().path(),
-                           base::CompareCase::SENSITIVE))) {
-      return ManifestInvariantError::kShortcutUrlOutOfScope;
+  if (!shortcuts().empty()) {
+    const std::string_view scope_path = scope().path();
+    for (const auto& shortcut : shortcuts()) {
+      if (!shortcut.url.is_valid()) {
+        return ManifestInvariantError::kShortcutUrlInvalid;
+      }
+      if (!(origin.IsSameOriginWith(shortcut.url) &&
+            base::StartsWith(shortcut.url.path(), scope_path,
+                             base::CompareCase::SENSITIVE))) {
+        return ManifestInvariantError::kShortcutUrlOutOfScope;
+      }
     }
   }
 

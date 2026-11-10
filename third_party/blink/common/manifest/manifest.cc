@@ -4,6 +4,7 @@
 
 #include "third_party/blink/public/common/manifest/manifest.h"
 
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -244,14 +245,14 @@ bool Manifest::operator==(const Manifest& other) const {
   // LINT.IfChange(ManifestEquality)
   auto AsTuple = [](const Data& d) {
     return std::tie(
-        d.manifest_url, d.dir, d.name, d.short_name, d.description, d.id,
-        d.has_custom_id, d.start_url, d.has_valid_specified_start_url,
-        d.display, d.display_override, d.orientation, d.icons, d.screenshots,
-        d.shortcuts, d.share_target, d.file_handlers, d.protocol_handlers,
-        d.scope_extensions, d.lock_screen, d.note_taking,
+        d.id, d.start_url, d.scope, d.display, d.display_override,
+        d.manifest_url, d.dir, d.name, d.short_name, d.description,
+        d.has_custom_id, d.has_valid_specified_start_url, d.orientation,
+        d.icons, d.screenshots, d.shortcuts, d.share_target, d.file_handlers,
+        d.protocol_handlers, d.scope_extensions, d.lock_screen, d.note_taking,
         d.related_applications, d.prefer_related_applications, d.migrate_from,
         d.migrate_to, d.theme_color, d.background_color, d.gcm_sender_id,
-        d.scope, d.update_manifest_url, d.launch_handler, d.translations,
+        d.update_manifest_url, d.launch_handler, d.translations,
         d.dark_theme_color, d.dark_background_color, d.tab_strip, d.version,
         d.name_localized, d.short_name_localized, d.description_localized,
         d.icons_localized);
@@ -281,7 +282,7 @@ GURL Manifest::GetDefaultScope(const GURL& document_url) {
   } else {
     end_pos = parsed.CountCharactersBefore(url::Parsed::PATH, false);
   }
-  return GURL(spec.substr(0, end_pos));
+  return GURL(std::string_view(spec).substr(0, end_pos));
 }
 
 // static
