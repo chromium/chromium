@@ -5,11 +5,13 @@
 #include "third_party/blink/renderer/core/paint/timing/container_timing.h"
 
 #include <limits>
+#include <utility>
 
 #include "cc/base/region.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/paint/timing/container_timing_paint_attribution_tracker.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/performance_container_timing.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
@@ -65,12 +67,11 @@ bool ContainerTiming::ContributesToContainerTiming(Element* element) {
   return tracker->GetContainerRootFor(element) != nullptr;
 }
 
-ContainerTiming::Record::Record(const DOMPaintTimingInfo& paint_timing_info,
+ContainerTiming::Record::Record(Element* container_root,
                                 const AtomicString& identifier)
-    : first_paint_timing_info_(paint_timing_info), identifier_(identifier) {}
+    : container_root_(container_root), identifier_(identifier) {}
 
-void ContainerTiming::Record::MaybeUpdateLastNewPaintedArea(
-    const DOMPaintTimingInfo& paint_timing_info,
+bool ContainerTiming::Record::MaybeUpdateLastNewPaintedArea(
     Element* element,
     const gfx::Rect& enclosing_rect) {
   // Nominate the element by its own clipped area, the way LCP selects its
@@ -90,37 +91,40 @@ void ContainerTiming::Record::MaybeUpdateLastNewPaintedArea(
   }
 
   if (painted_region_.Contains(enclosing_rect)) {
-    return;
+    return false;
   }
 
   painted_region_.Union(enclosing_rect);
-  last_new_painted_area_paint_timing_info_ = paint_timing_info;
-  has_pending_changes_ = true;
+  return !std::exchange(has_pending_changes_, true);
 }
 
-void ContainerTiming::Record::MaybeEmitPerformanceEntry(
-    WindowPerformance* performance,
-    Element* container_root) {
-  if (!has_pending_changes_) {
-    return;
-  }
-  performance->AddContainerTiming(
-      last_new_painted_area_paint_timing_info_, painted_region_.bounds(),
-      GetRegionSize(painted_region_), container_root, identifier_,
-      largest_painted_area_element_, first_paint_timing_info_);
+PerformanceContainerTiming* ContainerTiming::Record::CreatePerformanceEntry(
+    DOMWindow* source) {
+  CHECK(has_pending_changes_);
+  auto* entry = PerformanceContainerTiming::Create(
+      painted_region_.bounds(), GetRegionSize(painted_region_), container_root_,
+      identifier_, largest_painted_area_element_, source);
   has_pending_changes_ = false;
   // Start the comparison over, so the next entry reports the largest element
   // painted since this one.
   largest_painted_area_ = 0;
   largest_painted_area_element_ = nullptr;
+  return entry;
+}
+
+void ContainerTiming::Record::SetFirstRenderTimeIfUnset(
+    DOMHighResTimeStamp presentation_time) {
+  if (first_render_time_ == 0.0) {
+    first_render_time_ = presentation_time;
+  }
 }
 
 void ContainerTiming::Record::Trace(Visitor* visitor) const {
+  visitor->Trace(container_root_);
   visitor->Trace(largest_painted_area_element_);
 }
 
 ContainerTiming::Record* ContainerTiming::GetOrCreateRecord(
-    const DOMPaintTimingInfo& paint_timing_info,
     Element* container_root) {
   Record* record = nullptr;
   auto it = container_root_records_.find(container_root);
@@ -129,7 +133,7 @@ ContainerTiming::Record* ContainerTiming::GetOrCreateRecord(
     record = it->value;
   } else {
     record = MakeGarbageCollected<Record>(
-        paint_timing_info,
+        container_root,
         container_root->FastGetAttribute(html_names::kContainertimingAttr));
     container_root_records_.insert(container_root, record);
   }
@@ -157,47 +161,30 @@ void ContainerTiming::OnContainerRootDisconnected(Element* element) {
   container_root_records_.erase(element);
 }
 
-void ContainerTiming::OnElementPainted(
-    const DOMPaintTimingInfo& paint_timing_info,
-    Element* element,
-    const gfx::RectF& intersection_rect) {
-  if (!element) {
-    return;
-  }
+void ContainerTiming::OnElementPainted(Element& element,
+                                       const gfx::RectF& intersection_rect) {
   // The tracker only maps elements that are actually attributed to a container
   // root. A null result means this paint (e.g. a text record that only exists
-  // for LCP) is not under any container root and must be ignored.
+  // for element timing) is not under any container root and must be ignored.
   //
-  // This runs at presentation time, not during paint, so we deliberately don't
-  // assert that ContainerTimingChanged() is clean: an attribute change between
-  // paint and now marks the layout object for re-attribution on a future
-  // pre-paint, which doesn't affect this callback. We report the paint that
-  // already happened using the attribution captured at the last pre-paint.
+  // TODO(crbug.com/559075199): decoupling ContainerTiming from ElementTiming
+  // would let this become a CHECK.
   Element* container_root =
-      paint_attribution_tracker_->GetContainerRootFor(element);
+      paint_attribution_tracker_->GetContainerRootFor(&element);
   if (!container_root) {
-    // ElementTiming sends elements that contribute to either element timing or
-    // container timing, so `container_root` will be null if the `element`
-    // doesn't contribute to container timing. The element may have also been
-    // detached since paint, leaving no reachable container root.
-    //
-    // TODO(crbug.com/535107494, crbug.com/559075199): decoupling
-    // ContainerTiming from ElementTiming and attributing at paint time would
-    // let this become a CHECK.
     return;
   }
 
   const gfx::Rect enclosing_rect = gfx::ToEnclosingRect(intersection_rect);
-  // The attribute and connected re-checks are not redundant: this runs at
-  // presentation time, so the tracker can be stale relative to the live DOM if
-  // the containertiming attribute was removed, or the root disconnected, since
-  // the last pre-paint. Skip roots that are no longer roots. See
-  // StaleTrackerGuard_* tests.
+  // Skip roots that are no longer roots, in case the containertiming attribute
+  // was removed, or the root disconnected, since the last pre-paint walk
+  // updated the tracker. See StaleTrackerGuard_* tests.
   while (container_root && container_root->isConnected() &&
          container_root->FastHasAttribute(html_names::kContainertimingAttr)) {
-    Record* record = GetOrCreateRecord(paint_timing_info, container_root);
-    record->MaybeUpdateLastNewPaintedArea(paint_timing_info, element,
-                                          enclosing_rect);
+    Record* record = GetOrCreateRecord(container_root);
+    if (record->MaybeUpdateLastNewPaintedArea(&element, enclosing_rect)) {
+      dirty_records_.push_back(record);
+    }
     // A container root with containertimingignore does not propagate to
     // ancestor roots.
     if (container_root->FastHasAttribute(
@@ -209,39 +196,30 @@ void ContainerTiming::OnElementPainted(
   }
 }
 
-void ContainerTiming::MaybeQueuePaint(Element& element,
-                                      const gfx::RectF& intersection_rect) {
-  if (paint_attribution_tracker_->GetContainerRootFor(&element)) {
-    pending_paints_.push_back(
-        MakeGarbageCollected<PendingPaint>(intersection_rect, &element));
-  }
-}
-
 OptionalPaintTimingCallback ContainerTiming::TakePaintTimingCallback() {
-  if (pending_paints_.empty()) {
+  if (dirty_records_.empty()) {
     return std::nullopt;
   }
-  auto* paints = MakeGarbageCollected<GCedHeapVector<Member<PendingPaint>>>(
-      std::move(pending_paints_));
+  auto* entries = MakeGarbageCollected<GCedHeapVector<PendingEntry>>();
+  for (Record* record : dirty_records_) {
+    entries->emplace_back(record,
+                          record->CreatePerformanceEntry(GetSupplementable()));
+  }
+  dirty_records_.clear();
   return blink::BindOnce(&ContainerTiming::FlushTimingsOnFramePresented,
-                         WrapWeakPersistent(this), WrapPersistent(paints));
+                         WrapWeakPersistent(this), WrapPersistent(entries));
 }
 
 void ContainerTiming::FlushTimingsOnFramePresented(
-    GCedHeapVector<Member<PendingPaint>>* paints,
+    GCedHeapVector<PendingEntry>* entries,
     const base::TimeTicks&,
     const DOMPaintTimingInfo& paint_timing_info,
-    uint64_t) {
-  for (const PendingPaint* paint : *paints) {
-    OnElementPainted(paint_timing_info, paint->element,
-                     paint->intersection_rect);
-  }
-  EmitPerformanceEntries();
-}
-
-void ContainerTiming::EmitPerformanceEntries() {
-  for (const auto& pair : container_root_records_) {
-    pair.value->MaybeEmitPerformanceEntry(performance_.Get(), pair.key.Get());
+    uint64_t navigation_id) {
+  for (const auto& [record, entry] : *entries) {
+    record->SetFirstRenderTimeIfUnset(paint_timing_info.presentation_time);
+    entry->FinalizeEntry(paint_timing_info, navigation_id,
+                         record->FirstRenderTime());
+    performance_->AddContainerTiming(entry);
   }
 }
 
@@ -249,7 +227,7 @@ void ContainerTiming::Trace(Visitor* visitor) const {
   Supplement<LocalDOMWindow>::Trace(visitor);
   visitor->Trace(performance_);
   visitor->Trace(container_root_records_);
-  visitor->Trace(pending_paints_);
+  visitor->Trace(dirty_records_);
   visitor->Trace(paint_attribution_tracker_);
 }
 

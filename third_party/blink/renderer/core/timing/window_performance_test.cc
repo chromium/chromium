@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/event_timing.h"
+#include "third_party/blink/renderer/core/timing/performance_container_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_element_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_event_timing.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -1893,11 +1894,14 @@ TEST_P(WindowPerformanceTest, EventTimingCombinedTraceEvents) {
 TEST_P(WindowPerformanceTest, ContainerTimingTraceEvent) {
   using trace_analyzer::Query;
   trace_analyzer::Start("*");
-  performance_->AddContainerTiming(
-      DOMPaintTimingInfo{.paint_time = 2000, .presentation_time = 2000},
-      gfx::Rect(10, 20, 30, 40), 1200, nullptr, AtomicString("identifier"),
-      /*element*/ nullptr,
-      DOMPaintTimingInfo{.paint_time = 1000, .presentation_time = 1000});
+  PerformanceContainerTiming* entry = PerformanceContainerTiming::Create(
+      gfx::Rect(10, 20, 30, 40), 1200, /*root_element=*/nullptr,
+      AtomicString("identifier"), /*last_painted_element=*/nullptr,
+      performance_->DomWindow());
+  entry->FinalizeEntry(DOMPaintTimingInfo{2000, 2000},
+                       performance_->NavigationId().web_exposed_id,
+                       /*first_render_time=*/1000);
+  performance_->AddContainerTiming(entry);
   auto analyzer = trace_analyzer::Stop();
   trace_analyzer::TraceEventVector events;
   Query q = Query::EventNameIs("PerformanceContainerTiming");

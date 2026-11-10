@@ -33,7 +33,10 @@ class ContainerTimingTest : public PageTestBase {
   }
 
   void TriggerPopulateEntries() {
-    GetContainerTiming().EmitPerformanceEntries();
+    auto* performance =
+        DOMWindowPerformance::performance(*GetDocument().domWindow());
+    SimulateContainerTimingPresentation(
+        GetContainerTiming(), performance->NavigationId().web_exposed_id);
   }
 
   wtf_size_t GetContainerEntryCount() {
@@ -356,8 +359,8 @@ TEST_F(ContainerTimingTest, StaleTrackerGuard_ParentRootRemoved) {
   EXPECT_EQ(count_initial + 1u, GetContainerEntryCount());
 }
 
-// A paint presented after its root was disconnected must not recreate the
-// dropped record.
+// A paint that reaches a root disconnected since the last pre-paint walk must
+// not recreate the dropped record.
 TEST_F(ContainerTimingTest, StaleTrackerGuard_RootDisconnected) {
   SetBodyContent(R"HTML(
     <div id="root" containertiming="root"><div id="content">x</div></div>
@@ -372,12 +375,11 @@ TEST_F(ContainerTimingTest, StaleTrackerGuard_RootDisconnected) {
   EXPECT_FALSE(GetContainerTiming().HasRecordForTesting(root));
 }
 
-// Regression test for the graceful early return in OnElementPainted (previously
-// a CHECK). The painted element is inside a container timing root, but it is
-// neither a text-aggregation nor an image-generating node, so the pre-paint
-// walk never marks it in the tracker and GetContainerRootFor() returns null.
-// This must not crash and must not produce an entry. It mirrors the
-// presentation-time case where a painted element has been detached since paint.
+// Regression test for the graceful early return in OnElementPainted. The
+// painted element is inside a container timing root, but it is neither a
+// text-aggregation nor an image-generating node, so the pre-paint walk never
+// marks it in the tracker and GetContainerRootFor() returns null. This must not
+// crash and must not produce an entry.
 TEST_F(ContainerTimingTest, NullContainerRoot_UntrackedElementReturns) {
   SetBodyContent(R"HTML(
     <div id="root" containertiming="root">
@@ -396,9 +398,9 @@ TEST_F(ContainerTimingTest, NullContainerRoot_UntrackedElementReturns) {
 }
 
 // Regression test for removing the ContainerTimingChanged() cleanliness CHECKs
-// from OnElementPainted. That method runs at presentation time, so the painted
-// element's ContainerTimingChanged() bit can be dirty when an attribute was
-// toggled since the last pre-paint. Toggling containertimingignore on a
+// from OnElementPainted. The painted element's ContainerTimingChanged() bit can
+// be dirty when an attribute was toggled without a pre-paint walk since, as
+// these tests simulate paints directly. Toggling containertimingignore on a
 // self-root keeps its containertiming attribute (so it stays a valid root)
 // while MarkContainerTimingChanged() dirties its layout object. Painting must
 // proceed without crashing and still record.
@@ -971,6 +973,120 @@ TEST_F(ContainerTimingTest, ReinsertedRootStartsFreshRecord) {
   EXPECT_EQ(10000, GetLastContainerEntry()->size());
 }
 
+// A paint that does not grow any container root leaves nothing to report.
+TEST_F(ContainerTimingTest, NoCallbackWhenNoContainerGrew) {
+  SetBodyContent(R"HTML(
+    <div id="root" containertiming="root">
+      <div id="content">x</div>
+    </div>
+  )HTML");
+
+  auto* content = GetElementById("content");
+  ASSERT_TRUE(content);
+
+  SimulatePaint(content, gfx::RectF(0, 0, 100, 100));
+  TriggerPopulateEntries();
+  ASSERT_EQ(1u, GetContainerEntryCount());
+
+  // Inside the region painted so far.
+  SimulatePaint(content, gfx::RectF(10, 10, 50, 50));
+  EXPECT_FALSE(GetContainerTiming().TakePaintTimingCallback());
+}
+
+// Entries carry the navigation id from paint time, not the one current at
+// presentation time.
+TEST_F(ContainerTimingTest, NavigationIdChangedBetweenPaintAndPresentation) {
+  SetBodyContent(R"HTML(
+    <div id="root" containertiming="root">
+      <div id="content">x</div>
+    </div>
+  )HTML");
+
+  auto* content = GetElementById("content");
+  ASSERT_TRUE(content);
+
+  auto* performance =
+      DOMWindowPerformance::performance(*GetDocument().domWindow());
+  const uint64_t initial_navigation_id =
+      performance->NavigationId().web_exposed_id;
+
+  SimulatePaint(content, gfx::RectF(0, 0, 100, 100));
+  OptionalPaintTimingCallback callback =
+      GetContainerTiming().TakePaintTimingCallback();
+  ASSERT_TRUE(callback);
+
+  performance->IncrementNavigationId();
+  EXPECT_NE(performance->NavigationId().web_exposed_id, initial_navigation_id);
+
+  std::move(*callback).Run(
+      base::TimeTicks::Now(),
+      DOMPaintTimingInfo{.paint_time = 1000, .presentation_time = 1000},
+      initial_navigation_id);
+
+  ASSERT_EQ(1u, GetContainerEntryCount());
+  EXPECT_EQ(initial_navigation_id, GetLastContainerEntry()->navigationId());
+}
+
+// Disconnecting the root between paint and presentation drops its record, but
+// the entry created at paint time is still reported.
+TEST_F(ContainerTimingTest, RootDisconnectedBetweenPaintAndPresentation) {
+  SetBodyContent(R"HTML(
+    <div id="root" containertiming="root"><div id="content">x</div></div>
+  )HTML");
+  auto* root = GetElementById("root");
+  auto* content = GetElementById("content");
+
+  SimulatePaint(content, gfx::RectF(0, 0, 100, 100));
+  OptionalPaintTimingCallback callback =
+      GetContainerTiming().TakePaintTimingCallback();
+  ASSERT_TRUE(callback);
+
+  root->remove();
+  EXPECT_FALSE(GetContainerTiming().HasRecordForTesting(root));
+
+  auto* performance =
+      DOMWindowPerformance::performance(*GetDocument().domWindow());
+  std::move(*callback).Run(
+      base::TimeTicks::Now(),
+      DOMPaintTimingInfo{.paint_time = 1000, .presentation_time = 1000},
+      performance->NavigationId().web_exposed_id);
+
+  ASSERT_EQ(1u, GetContainerEntryCount());
+  EXPECT_EQ(nullptr, GetLastContainerEntry()->rootElement());
+  EXPECT_EQ("root", GetLastContainerEntry()->identifier());
+  EXPECT_FALSE(GetContainerTiming().HasRecordForTesting(root));
+}
+
+// Removing containertiming between paint and presentation drops the record, but
+// the entry created at paint time is still reported.
+TEST_F(ContainerTimingTest, AttributeRemovedBetweenPaintAndPresentation) {
+  SetBodyContent(R"HTML(
+    <div id="root" containertiming="root"><div id="content">x</div></div>
+  )HTML");
+  auto* root = GetElementById("root");
+  auto* content = GetElementById("content");
+
+  SimulatePaint(content, gfx::RectF(0, 0, 100, 100));
+  OptionalPaintTimingCallback callback =
+      GetContainerTiming().TakePaintTimingCallback();
+  ASSERT_TRUE(callback);
+
+  root->removeAttribute(html_names::kContainertimingAttr);
+  EXPECT_FALSE(GetContainerTiming().HasRecordForTesting(root));
+
+  auto* performance =
+      DOMWindowPerformance::performance(*GetDocument().domWindow());
+  std::move(*callback).Run(
+      base::TimeTicks::Now(),
+      DOMPaintTimingInfo{.paint_time = 1000, .presentation_time = 1000},
+      performance->NavigationId().web_exposed_id);
+
+  ASSERT_EQ(1u, GetContainerEntryCount());
+  EXPECT_EQ(root, GetLastContainerEntry()->rootElement());
+  EXPECT_EQ("root", GetLastContainerEntry()->identifier());
+  EXPECT_FALSE(GetContainerTiming().HasRecordForTesting(root));
+}
+
 class ContainerTimingIframeIsolationTest : public PageTestBase {
  protected:
   void SetUp() override {
@@ -1019,8 +1135,10 @@ TEST_F(ContainerTimingIframeIsolationTest, IframeIsolation) {
   auto* parent_performance =
       DOMWindowPerformance::performance(*GetDocument().domWindow());
   auto* child_performance = DOMWindowPerformance::performance(*child_window);
-  parent_ct.EmitPerformanceEntries();
-  child_ct.EmitPerformanceEntries();
+  SimulateContainerTimingPresentation(
+      parent_ct, parent_performance->NavigationId().web_exposed_id);
+  SimulateContainerTimingPresentation(
+      child_ct, child_performance->NavigationId().web_exposed_id);
 
   EXPECT_EQ(0u, parent_performance
                     ->getBufferedEntriesByType(AtomicString("container"))

@@ -13,43 +13,36 @@ namespace blink {
 
 // static
 PerformanceContainerTiming* PerformanceContainerTiming::Create(
-    const AtomicString& name,
-    DOMHighResTimeStamp start_time,
     const gfx::Rect& intersection_rect,
     double size,
     Element* root_element,
     const AtomicString& identifier,
     Element* last_painted_element,
-    DOMHighResTimeStamp first_render_time,
-    DOMWindow* source,
-    uint64_t navigation_id) {
-  // duration is set to 0 by specification, so we set same finish and start
-  // time
+    DOMWindow* source) {
   return MakeGarbageCollected<PerformanceContainerTiming>(
-      name, start_time, start_time /* end_time */, intersection_rect, size,
-      root_element, identifier, last_painted_element, first_render_time, source,
-      navigation_id);
+      intersection_rect, size, root_element, identifier, last_painted_element,
+      source);
 }
 
 PerformanceContainerTiming::PerformanceContainerTiming(
-    const AtomicString& name,
-    DOMHighResTimeStamp start_time,
-    DOMHighResTimeStamp end_time,
     const gfx::Rect& intersection_rect,
     double size,
     Element* root_element,
     const AtomicString& identifier,
     Element* last_painted_element,
-    DOMHighResTimeStamp first_render_time,
-    DOMWindow* source,
-    uint64_t navigation_id)
-    : PerformanceEntry(name, start_time, end_time, source, navigation_id),
+    DOMWindow* source)
+    : PerformanceEntry(
+          /*duration=*/0.0,
+          g_empty_atom,
+          /*start_time=*/0.0,
+          source,
+          /*navigation_id=*/
+          PerformanceTimelineEntryIdInfo::kNone.web_exposed_id),
       intersection_rect_(DOMRectReadOnly::FromRect(intersection_rect)),
       size_(size),
       root_element_(root_element),
       identifier_(identifier),
-      last_painted_element_(last_painted_element),
-      first_render_time_(first_render_time) {}
+      last_painted_element_(last_painted_element) {}
 
 PerformanceContainerTiming::~PerformanceContainerTiming() = default;
 
@@ -59,6 +52,32 @@ const AtomicString& PerformanceContainerTiming::entryType() const {
 
 PerformanceEntryType PerformanceContainerTiming::EntryTypeEnum() const {
   return PerformanceEntry::EntryType::kContainer;
+}
+
+DOMHighResTimeStamp PerformanceContainerTiming::startTime() const {
+  return GetPaintTimingInfo().presentation_time;
+}
+
+bool PerformanceContainerTiming::IsReadyForReporting() const {
+  return navigationId() !=
+             PerformanceTimelineEntryIdInfo::kNone.web_exposed_id &&
+         HasPaintTimingInfo() && first_render_time_ != 0.0;
+}
+
+void PerformanceContainerTiming::FinalizeEntry(
+    const DOMPaintTimingInfo& paint_timing_info,
+    uint64_t navigation_id) {
+  CHECK(!IsReadyForReporting());
+  PerformanceEntry::FinalizeEntry(paint_timing_info, navigation_id);
+  CHECK(IsReadyForReporting());
+}
+
+void PerformanceContainerTiming::FinalizeEntry(
+    const DOMPaintTimingInfo& paint_timing_info,
+    uint64_t navigation_id,
+    DOMHighResTimeStamp first_render_time) {
+  first_render_time_ = first_render_time;
+  FinalizeEntry(paint_timing_info, navigation_id);
 }
 
 Element* PerformanceContainerTiming::rootElement() const {

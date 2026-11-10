@@ -265,7 +265,7 @@ void ElementTiming::QueuePerformanceEntriesForReportingIfNeeded(
   }
 
   if (EnsureContainerTiming()) {
-    container_timing_->MaybeQueuePaint(*element, intersection_rect);
+    container_timing_->OnElementPainted(*element, intersection_rect);
   }
 }
 
@@ -293,7 +293,7 @@ void ElementTiming::QueuePerformanceEntriesForReportingIfNeeded(
   }
 
   if (EnsureContainerTiming()) {
-    container_timing_->MaybeQueuePaint(*element, record.ElementTimingRect());
+    container_timing_->OnElementPainted(*element, record.ElementTimingRect());
   }
 }
 

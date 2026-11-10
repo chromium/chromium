@@ -1450,28 +1450,16 @@ void WindowPerformance::AddElementTiming(PerformanceElementTiming* entry) {
   }
 }
 
-void WindowPerformance::AddContainerTiming(
-    const DOMPaintTimingInfo& paint_timing_info,
-    const gfx::Rect& rect,
-    uint64_t size,
-    Element* root_element,
-    const AtomicString& identifier,
-    Element* last_painted_element,
-    const DOMPaintTimingInfo& first_paint_timing_info) {
+void WindowPerformance::AddContainerTiming(PerformanceContainerTiming* entry) {
   DCHECK(IsContainerTimingEnabled());
+  CHECK(entry->IsReadyForReporting());
   if (!DomWindow()) {
     return;
   }
 
-  PerformanceContainerTiming* entry = PerformanceContainerTiming::Create(
-      g_empty_atom, paint_timing_info.presentation_time, rect, size,
-      root_element, identifier, last_painted_element,
-      first_paint_timing_info.presentation_time, DomWindow(),
-      NavigationId().web_exposed_id);
   TRACE_EVENT2("loading", "PerformanceContainerTiming", "data",
                entry->ToTracedValue(), "frame",
                GetFrameIdForTracing(DomWindow()->GetFrame()));
-  entry->SetPaintTimingInfo(paint_timing_info);
   UseCounter::Count(GetExecutionContext(),
                     WebFeature::kContainerTimingEntryEmitted);
   if (HasObserverFor(PerformanceEntry::kContainer)) {

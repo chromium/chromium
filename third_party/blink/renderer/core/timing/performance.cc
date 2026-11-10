@@ -1261,6 +1261,7 @@ void Performance::NotifyObserversOfEntry(PerformanceEntry& entry) const {
 
 void Performance::NotifyObserversOfContainerEntry(
     PerformanceEntry& entry) const {
+  CHECK(entry.IsReadyForReporting());
   bool observer_found = false;
   CHECK(entry.EntryTypeEnum() == PerformanceEntry::kContainer);
   for (auto& observer : observers_) {
