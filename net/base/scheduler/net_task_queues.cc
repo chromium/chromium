@@ -89,10 +89,13 @@ NetTaskQueues::NetTaskQueues(
   CreateNetworkTaskRunners();
 }
 
-NetTaskQueues::~NetTaskQueues() = default;
+NetTaskQueues::~NetTaskQueues() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 void NetTaskQueues::CreateTaskQueues(
     base::sequence_manager::SequenceManager* sequence_manager) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (size_t i = 0; i < task_queues_.size(); ++i) {
     task_queues_[i] = sequence_manager->CreateTaskQueue(
         base::sequence_manager::TaskQueue::Spec(
@@ -116,6 +119,7 @@ void NetTaskQueues::CreateTaskQueues(
 }
 
 void NetTaskQueues::CreateNetworkTaskRunners() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (size_t i = 0; i < task_queues_.size(); ++i) {
     task_runners_[i] = task_queues_[i]->task_runner();
   }
@@ -123,6 +127,7 @@ void NetTaskQueues::CreateNetworkTaskRunners() {
 
 void NetTaskQueues::SetOnTaskCompletedHandler(
     base::sequence_manager::TaskQueue::OnTaskCompletedHandler handler) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& queue : task_queues_) {
     queue->SetOnTaskCompletedHandler(handler);
   }
@@ -131,6 +136,7 @@ void NetTaskQueues::SetOnTaskCompletedHandler(
 void NetTaskQueues::OnWillProcessTask(base::PassKey<NetworkTaskObserver>,
                                       RequestPriority priority,
                                       const base::PendingTask& pending_task) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // The track name for TRACE_COUNTER must be a const expression.
   switch (priority) {
     case RequestPriority::THROTTLED:
