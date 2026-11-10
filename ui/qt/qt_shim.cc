@@ -236,11 +236,15 @@ size_t QtShim::GetMonitorConfig(MonitorScale** monitors, float* primary_scale) {
   monitor_scales_.resize(n_monitors);
   for (size_t i = 0; i < n_monitors; i++) {
     const QScreen* screen = app_.screens()[i];
-    MonitorScale monitor = monitor_scales_[i];
-    monitor.x_px = screen->geometry().x();
-    monitor.y_px = screen->geometry().y();
-    monitor.width_px = screen->geometry().width();
-    monitor.height_px = screen->geometry().height();
+    MonitorScale& monitor = monitor_scales_[i];
+    // QScreen::geometry() keeps the native origin but scales the size by the
+    // device pixel ratio, so scale the size back to physical pixels.
+    const QRect geometry = screen->geometry();
+    const qreal dpr = screen->devicePixelRatio();
+    monitor.x_px = geometry.x();
+    monitor.y_px = geometry.y();
+    monitor.width_px = static_cast<int>(std::round(geometry.width() * dpr));
+    monitor.height_px = static_cast<int>(std::round(geometry.height() * dpr));
     monitor.scale = GetScreenScale(screen);
   }
   *monitors = monitor_scales_.data();

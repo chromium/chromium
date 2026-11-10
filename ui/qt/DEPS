@@ -11,3 +11,9 @@ include_rules = [
   "+ui/shell_dialogs",
   "+ui/views",
 ]
+
+specific_include_rules = {
+  ".*_unittest\.cc": [
+    "+ui/display/types",
+  ],
+}

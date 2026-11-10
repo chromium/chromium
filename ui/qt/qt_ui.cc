@@ -816,11 +816,10 @@ void QtUi::ScaleFactorMaybeChangedImpl() {
   display::DisplayConfig new_config;
   size_t n_monitors =
       shim_->GetMonitorConfig(&qt_monitors, &new_config.primary_scale);
-  std::vector<display::DisplayGeometry> ui_monitors;
-  ui_monitors.reserve(n_monitors);
+  new_config.display_geometries.reserve(n_monitors);
   for (size_t i = 0; i < n_monitors; i++) {
     const qt::MonitorScale& monitor = UNSAFE_TODO(qt_monitors[i]);
-    ui_monitors.push_back(display::DisplayGeometry{
+    new_config.display_geometries.push_back(display::DisplayGeometry{
         {monitor.x_px, monitor.y_px, monitor.width_px, monitor.height_px},
         monitor.scale});
   }

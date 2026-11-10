@@ -8,6 +8,7 @@ import("//build/config/linux/pkg_config.gni")
 import("//build/config/sysroot.gni")
 import("//build/config/ui.gni")
 import("//printing/buildflags/buildflags.gni")
+import("//testing/test.gni")
 import("//ui/qt/qt.gni")
 
 assert(use_qt)
@@ -140,7 +141,10 @@ if (use_qt6) {
 }
 
 component("qt") {
-  visibility = [ "//ui/linux:linux_ui_factory" ]
+  visibility = [
+    ":qt_unittests",
+    "//ui/linux:linux_ui_factory",
+  ]
 
   defines = [ "IS_QT_IMPL" ]
 
@@ -183,5 +187,27 @@ component("qt") {
     "os_settings_provider_qt.h",
     "qt_ui.cc",
     "qt_ui.h",
+  ]
+}
+
+test("qt_unittests") {
+  use_xvfb = true
+
+  sources = [
+    "qt_ui_unittest.cc",
+    "run_all_unittests.cc",
+  ]
+
+  deps = [
+    ":qt",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//ui/color",
+    "//ui/color:mixers",
+    "//ui/display/types",
+    "//ui/gfx:test_support",
+    "//ui/gfx/geometry",
+    "//ui/linux:linux_ui",
   ]
 }
