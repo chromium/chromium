@@ -587,7 +587,7 @@
   {
     "name": "android-tab-declutter-archive-on-desktop",
     "owners": [ "hitarthkothari@google.com", "ckitagawa@google.com", "clank-tab-dev@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "android-tab-search-close-tab-button",
