@@ -9,6 +9,7 @@
 #include "base/android/jni_bytebuffer.h"
 #include "base/feature_list.h"
 #include "base/numerics/checked_math.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "third_party/webrtc/api/video/video_common.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -26,8 +27,8 @@ class DesktopCapturerAndroidJni : public DesktopCapturerAndroidJniInterface {
   ~DesktopCapturerAndroidJni() override = default;
   base::android::ScopedJavaLocalRef<jobject> Create(
       JNIEnv* env,
-      int64_t native_ptr) override {
-    return Java_ScreenCapture_create(env, native_ptr);
+      DesktopCapturerAndroid* native_ptr) override {
+    return Java_ScreenCapture_create(env, jni_zero::MakeRaw(native_ptr));
   }
   bool StartCapture(JNIEnv* env,
                     const base::android::JavaRef<jobject>& obj) override {
@@ -75,8 +76,7 @@ void DesktopCapturerAndroid::Start(Callback* callback) {
   current_frame_.reset();
 
   JNIEnv* env = base::android::AttachCurrentThread();
-  screen_capture_.Reset(
-      jni_interface_->Create(env, reinterpret_cast<intptr_t>(this)));
+  screen_capture_.Reset(jni_interface_->Create(env, this));
 
   if (!jni_interface_->StartCapture(env, screen_capture_)) {
     // Error immediately if we can't start capture.

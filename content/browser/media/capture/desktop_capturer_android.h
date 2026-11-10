@@ -22,6 +22,8 @@
 
 namespace content {
 
+class DesktopCapturerAndroid;
+
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDesktopCaptureAndroidFrameBufferReuse);
 
 class CONTENT_EXPORT DesktopCapturerAndroidJniInterface {
@@ -29,7 +31,7 @@ class CONTENT_EXPORT DesktopCapturerAndroidJniInterface {
   virtual ~DesktopCapturerAndroidJniInterface() = default;
   virtual base::android::ScopedJavaLocalRef<jobject> Create(
       JNIEnv* env,
-      int64_t native_ptr) = 0;
+      DesktopCapturerAndroid* native_ptr) = 0;
   virtual bool StartCapture(JNIEnv* env,
                             const base::android::JavaRef<jobject>& obj) = 0;
   virtual void Destroy(JNIEnv* env,

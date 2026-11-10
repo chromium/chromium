@@ -49,6 +49,7 @@ import android.view.WindowMetrics;
 import androidx.activity.result.ActivityResult;
 import androidx.test.core.app.ApplicationProvider;
 
+import org.jni_zero.JniRawPtr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -109,6 +110,7 @@ public class ScreenCaptureTest {
     }
 
     private final ArrayList<ImageHandlerState> mImageHandlerStates = new ArrayList<>();
+    private JniRawPtr<ScreenCapture.NativeDesktopCapturerAndroid> mNativePtr;
     private ScreenCapture mScreenCapture;
     private Context mContext;
 
@@ -178,7 +180,8 @@ public class ScreenCaptureTest {
     public void setUp() {
         mContext = spy(ApplicationProvider.getApplicationContext());
 
-        mScreenCapture = spy(new ScreenCapture(NATIVE_POINTER, this::createTestImageHandler));
+        mNativePtr = JniRawPtr.createForTesting(NATIVE_POINTER);
+        mScreenCapture = spy(new ScreenCapture(mNativePtr, this::createTestImageHandler));
         ScreenCaptureJni.setInstanceForTesting(mNativeMock);
 
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
@@ -195,6 +198,7 @@ public class ScreenCaptureTest {
 
     @After
     public void tearDown() {
+        mScreenCapture.destroy();
         ScreenCapture.resetStaticStateForTesting();
         ScreenCaptureJni.setInstanceForTesting(null);
     }
@@ -358,7 +362,7 @@ public class ScreenCaptureTest {
 
         final MediaProjection.Callback callback = getMediaProjectionCallback();
         callback.onStop();
-        verify(mNativeMock).onStop(NATIVE_POINTER);
+        verify(mNativeMock).onStop(mNativePtr);
 
         mScreenCapture.destroy();
         assertEquals(1, mImageHandlerStates.size());
@@ -377,7 +381,7 @@ public class ScreenCaptureTest {
         mScreenCapture.destroy();
         callback.onStop();
 
-        verify(mNativeMock, never()).onStop(NATIVE_POINTER);
+        verify(mNativeMock, never()).onStop(any());
     }
 
     @Test
@@ -550,11 +554,11 @@ public class ScreenCaptureTest {
 
         mScreenCapture.destroy();
         verify(mMediaProjection).stop();
-        verify(mNativeMock, never()).onStop(NATIVE_POINTER);
+        verify(mNativeMock, never()).onStop(any());
 
         // Trigger onStop after destroy and check we don't try to call the native side.
         callback.onStop();
-        verify(mNativeMock, never()).onStop(NATIVE_POINTER);
+        verify(mNativeMock, never()).onStop(any());
     }
 
     @Test
@@ -563,7 +567,7 @@ public class ScreenCaptureTest {
         doAnswer(invocation -> pendingReleases.add(invocation.getArgument(1)))
                 .when(mNativeMock)
                 .onRgbaFrameAvailable(
-                        anyLong(),
+                        any(),
                         any(Runnable.class),
                         anyLong(),
                         any(),
@@ -631,7 +635,7 @@ public class ScreenCaptureTest {
         doAnswer(invocation -> pendingReleases.add(invocation.getArgument(1)))
                 .when(mNativeMock)
                 .onRgbaFrameAvailable(
-                        anyLong(),
+                        any(),
                         any(Runnable.class),
                         anyLong(),
                         any(),
@@ -698,7 +702,7 @@ public class ScreenCaptureTest {
         doAnswer(invocation -> pendingReleases.add(invocation.getArgument(1)))
                 .when(mNativeMock)
                 .onRgbaFrameAvailable(
-                        anyLong(),
+                        any(),
                         any(Runnable.class),
                         anyLong(),
                         any(),
@@ -754,7 +758,7 @@ public class ScreenCaptureTest {
         doAnswer(invocation -> pendingReleases.add(invocation.getArgument(1)))
                 .when(mNativeMock)
                 .onRgbaFrameAvailable(
-                        anyLong(),
+                        any(),
                         any(Runnable.class),
                         anyLong(),
                         any(),
@@ -920,7 +924,7 @@ public class ScreenCaptureTest {
         final ByteBuffer buffer2 = planes[2].getBuffer();
         verify(mNativeMock)
                 .onI420FrameAvailable(
-                        eq(NATIVE_POINTER),
+                        eq(mNativePtr),
                         any(Runnable.class),
                         eq(timestamp),
                         eq(buffer0),
@@ -938,7 +942,7 @@ public class ScreenCaptureTest {
                         eq(cropRect.bottom));
         verify(mNativeMock, never())
                 .onRgbaFrameAvailable(
-                        anyLong(), any(), anyLong(), any(), anyInt(), anyInt(), anyInt(), anyInt(),
+                        any(), any(), anyLong(), any(), anyInt(), anyInt(), anyInt(), anyInt(),
                         anyInt(), anyInt());
     }
 
@@ -984,7 +988,7 @@ public class ScreenCaptureTest {
         // Verify no call to the native side.
         verify(mNativeMock, never())
                 .onI420FrameAvailable(
-                        anyLong(), any(), anyLong(), any(), anyInt(), anyInt(), any(), anyInt(),
+                        any(), any(), anyLong(), any(), anyInt(), anyInt(), any(), anyInt(),
                         anyInt(), any(), anyInt(), anyInt(), anyInt(), anyInt(), anyInt(),
                         anyInt());
     }
@@ -1008,8 +1012,8 @@ public class ScreenCaptureTest {
         ScreenCapture.onPick(mWebContents, activityResult);
         ScreenCapture.onForegroundServiceRunning(true);
 
-        // Simulate destroy() called concurrently (sets native pointer to 0) during UI block.
-        // We trigger it when WebContentsObserver registers itself (calls addObserver).
+        // Simulate destroy() called concurrently during UI block. We trigger it when
+        // WebContentsObserver registers itself (calls addObserver).
         doAnswer(
                         invocation -> {
                             mScreenCapture.destroy();

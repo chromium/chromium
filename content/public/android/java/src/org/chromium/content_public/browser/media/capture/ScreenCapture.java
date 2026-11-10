@@ -28,6 +28,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
@@ -109,8 +113,12 @@ public class ScreenCapture implements ImageHandler.Delegate {
     // until that foreground service is running.
     private static final ConditionVariable sLatch = new ConditionVariable(false);
 
+    @JniType("::content::DesktopCapturerAndroid")
+    interface NativeDesktopCapturerAndroid extends JniTypeToken {}
+
     // Holds the pointer to the C++ side object. The C++ side has the ownership of the Java side.
-    private volatile long mNativeDesktopCapturerAndroid;
+    private volatile @Nullable JniRawPtr<NativeDesktopCapturerAndroid>
+            mNativeDesktopCapturerAndroid;
 
     private final Handler mHandler;
     private final ImageHandlerFactory mImageHandlerFactory;
@@ -129,12 +137,14 @@ public class ScreenCapture implements ImageHandler.Delegate {
     private volatile @Nullable Context mContext;
     private volatile @Nullable ComponentCallbacks mComponentCallbacks;
 
-    private ScreenCapture(long nativeDesktopCapturerAndroid) {
+    private ScreenCapture(JniRawPtr<NativeDesktopCapturerAndroid> nativeDesktopCapturerAndroid) {
         this(nativeDesktopCapturerAndroid, ImageHandler::new);
     }
 
     @VisibleForTesting
-    ScreenCapture(long nativeDesktopCapturerAndroid, ImageHandlerFactory imageHandlerFactory) {
+    ScreenCapture(
+            JniRawPtr<NativeDesktopCapturerAndroid> nativeDesktopCapturerAndroid,
+            ImageHandlerFactory imageHandlerFactory) {
         mNativeDesktopCapturerAndroid = nativeDesktopCapturerAndroid;
         mHandler = new Handler(assumeNonNull(Looper.myLooper()));
         mImageHandlerFactory = imageHandlerFactory;
@@ -186,7 +196,8 @@ public class ScreenCapture implements ImageHandler.Delegate {
     }
 
     @CalledByNative
-    static ScreenCapture create(long nativeDesktopCapturerAndroid) {
+    static ScreenCapture create(
+            JniRawPtr<NativeDesktopCapturerAndroid> nativeDesktopCapturerAndroid) {
         return new ScreenCapture(nativeDesktopCapturerAndroid);
     }
 
@@ -218,7 +229,7 @@ public class ScreenCapture implements ImageHandler.Delegate {
         // We need to wait for the foreground service to start before trying to use the
         // MediaProjection API. It's okay to block here since we are on the desktop capturer thread.
         sLatch.block();
-        if (mNativeDesktopCapturerAndroid == 0) return false;
+        if (mNativeDesktopCapturerAndroid == null) return false;
 
         final WebContents webContents = pickState.mWebContents;
         // Store a local reference to context. This avoids issues such as context becoming null
@@ -227,7 +238,7 @@ public class ScreenCapture implements ImageHandler.Delegate {
         final var resolvedContextRef = new AtomicReference<Context>();
         if (!ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    if (mNativeDesktopCapturerAndroid == 0) {
+                    if (mNativeDesktopCapturerAndroid == null) {
                         return false;
                     }
                     Context context = maybeGetContext(webContents);
@@ -245,7 +256,7 @@ public class ScreenCapture implements ImageHandler.Delegate {
                                     updateContext();
                                 }
                             };
-                    if (mNativeDesktopCapturerAndroid == 0) {
+                    if (mNativeDesktopCapturerAndroid == null) {
                         return false;
                     }
                     registerComponentCallbacks();
@@ -253,7 +264,7 @@ public class ScreenCapture implements ImageHandler.Delegate {
                 })) {
             return false;
         }
-        if (mNativeDesktopCapturerAndroid == 0) return false;
+        if (mNativeDesktopCapturerAndroid == null) return false;
 
         Context localContext = resolvedContextRef.get();
         final var manager =
@@ -287,7 +298,7 @@ public class ScreenCapture implements ImageHandler.Delegate {
                         PixelFormat.RGBA_8888));
 
         // If capture already destroyed, then ensure we clean-up.
-        if (mNativeDesktopCapturerAndroid == 0) {
+        if (mNativeDesktopCapturerAndroid == null) {
             cleanupOSResources();
             cleanupJavaResources();
             return false;
@@ -298,7 +309,11 @@ public class ScreenCapture implements ImageHandler.Delegate {
 
     @CalledByNative
     void destroy() {
-        mNativeDesktopCapturerAndroid = 0;
+        final var nativePtr = mNativeDesktopCapturerAndroid;
+        if (nativePtr != null) {
+            mNativeDesktopCapturerAndroid = null;
+            nativePtr.release();
+        }
         cleanupOSResources();
         cleanupJavaResources();
     }
@@ -351,7 +366,7 @@ public class ScreenCapture implements ImageHandler.Delegate {
 
     private void onConfigurationChanged(Configuration config) {
         assert mHandler.getLooper().isCurrentThread();
-        if (mNativeDesktopCapturerAndroid == 0) return;
+        if (mNativeDesktopCapturerAndroid == null) return;
         if (mImageHandlerQueue.isEmpty()) return;
 
         final CaptureState captureState =
@@ -392,7 +407,7 @@ public class ScreenCapture implements ImageHandler.Delegate {
     private class MediaProjectionCallback extends MediaProjection.Callback {
         @Override
         public void onCapturedContentResize(int width, int height) {
-            if (mNativeDesktopCapturerAndroid == 0) return;
+            if (mNativeDesktopCapturerAndroid == null) return;
             if (mContext == null) return;
 
             final int format =
@@ -412,9 +427,10 @@ public class ScreenCapture implements ImageHandler.Delegate {
 
         @Override
         public void onStop() {
-            if (mNativeDesktopCapturerAndroid == 0) return;
+            final var nativePtr = mNativeDesktopCapturerAndroid;
+            if (nativePtr == null) return;
             mMediaProjection = null;
-            ScreenCaptureJni.get().onStop(mNativeDesktopCapturerAndroid);
+            ScreenCaptureJni.get().onStop(nativePtr);
         }
     }
 
@@ -476,7 +492,8 @@ public class ScreenCapture implements ImageHandler.Delegate {
             Plane plane,
             Rect cropRect) {
         // If the native side was destroyed, then exit without calling JNI methods.
-        if (mNativeDesktopCapturerAndroid == 0) return;
+        final var nativePtr = mNativeDesktopCapturerAndroid;
+        if (nativePtr == null) return;
 
         // Don't close old `ImageHandler`s until we have a Image written to the new
         // Image handler. This is to make sure that if the OS is still trying to write
@@ -485,7 +502,7 @@ public class ScreenCapture implements ImageHandler.Delegate {
 
         ScreenCaptureJni.get()
                 .onRgbaFrameAvailable(
-                        mNativeDesktopCapturerAndroid,
+                        nativePtr,
                         releaseCb,
                         timestampNs,
                         plane.getBuffer(),
@@ -505,7 +522,8 @@ public class ScreenCapture implements ImageHandler.Delegate {
             Plane[] planes,
             Rect cropRect) {
         // If the native side was destroyed, then exit without calling JNI methods.
-        if (mNativeDesktopCapturerAndroid == 0) return;
+        final var nativePtr = mNativeDesktopCapturerAndroid;
+        if (nativePtr == null) return;
 
         // Don't close old `ImageHandler`s until we have a Image written to the new
         // Image handler. This is to make sure that if the OS is still trying to write
@@ -514,7 +532,7 @@ public class ScreenCapture implements ImageHandler.Delegate {
 
         ScreenCaptureJni.get()
                 .onI420FrameAvailable(
-                        mNativeDesktopCapturerAndroid,
+                        nativePtr,
                         releaseCb,
                         timestampNs,
                         planes[0].getBuffer(),
@@ -541,7 +559,7 @@ public class ScreenCapture implements ImageHandler.Delegate {
     @Override
     public void recreateImageHandler(CaptureState captureState) {
         // If the native side was destroyed, then don't bother recreating the ImageHandler.
-        if (mNativeDesktopCapturerAndroid == 0) return;
+        if (mNativeDesktopCapturerAndroid == null) return;
 
         recreateListener(captureState);
     }
@@ -549,7 +567,7 @@ public class ScreenCapture implements ImageHandler.Delegate {
     @NativeMethods
     interface Natives {
         void onRgbaFrameAvailable(
-                long nativeDesktopCapturerAndroid,
+                JniPtr<NativeDesktopCapturerAndroid> self,
                 Runnable releaseCb,
                 long timestampNs,
                 ByteBuffer buf,
@@ -561,7 +579,7 @@ public class ScreenCapture implements ImageHandler.Delegate {
                 int bottom);
 
         void onI420FrameAvailable(
-                long nativeDesktopCapturerAndroid,
+                JniPtr<NativeDesktopCapturerAndroid> self,
                 Runnable releaseCb,
                 long timestampNs,
                 ByteBuffer yBuffer,
@@ -578,6 +596,6 @@ public class ScreenCapture implements ImageHandler.Delegate {
                 int right,
                 int bottom);
 
-        void onStop(long nativeDesktopCapturerAndroid);
+        void onStop(JniPtr<NativeDesktopCapturerAndroid> self);
     }
 }
