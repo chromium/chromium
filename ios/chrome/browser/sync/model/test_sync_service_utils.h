@@ -11,6 +11,6 @@ class KeyedService;
 class ProfileIOS;
 
 // Returns a TestSyncService.
-std::unique_ptr<KeyedService> CreateTestSyncService(ProfileIOS* profile);
+std::unique_ptr<KeyedService> CreateTestSyncService(ProfileIOS& profile);
 
 #endif  // IOS_CHROME_BROWSER_SYNC_MODEL_TEST_SYNC_SERVICE_UTILS_H_

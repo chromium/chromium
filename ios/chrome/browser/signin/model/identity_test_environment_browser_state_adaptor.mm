@@ -12,9 +12,9 @@
 // static
 std::unique_ptr<KeyedService>
 IdentityTestEnvironmentBrowserStateAdaptor::BuildIdentityManagerForTests(
-    ProfileIOS* profile) {
+    ProfileIOS& profile) {
   return signin::IdentityTestEnvironment::BuildIdentityManagerForTests(
-      SigninClientFactory::GetForProfile(profile), profile->GetPrefs(),
+      SigninClientFactory::GetForProfile(profile), profile.GetPrefs(),
       IOSProfileMetricsServiceFactory::GetForProfile(profile),
-      profile->GetStatePath());
+      profile.GetStatePath());
 }

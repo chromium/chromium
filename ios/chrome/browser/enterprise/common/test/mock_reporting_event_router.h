@@ -98,7 +98,7 @@ class MockReportingEventRouter
 
   // Static factory method to build a MockReportingEventRouter.
   static std::unique_ptr<KeyedService> BuildMockReportingEventRouter(
-      ProfileIOS* profile);
+      ProfileIOS& profile);
 };
 
 #endif  // IOS_CHROME_BROWSER_ENTERPRISE_COMMON_TEST_MOCK_REPORTING_EVENT_ROUTER_H_

@@ -12,6 +12,6 @@
 class ProfileIOS;
 
 // Returns a reauthentication service with a fake reauthentication module.
-std::unique_ptr<KeyedService> CreateFakeReauthService(ProfileIOS* profile);
+std::unique_ptr<KeyedService> CreateFakeReauthService(ProfileIOS& profile);
 
 #endif  // IOS_CHROME_BROWSER_DEVICE_REAUTH_MODEL_FAKE_REAUTHENTICATION_SERVICE_UTIL_H_

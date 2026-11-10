@@ -7,6 +7,6 @@
 #include "components/sync/test/test_sync_service.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
-std::unique_ptr<KeyedService> CreateTestSyncService(ProfileIOS* profile) {
+std::unique_ptr<KeyedService> CreateTestSyncService(ProfileIOS& profile) {
   return std::make_unique<syncer::TestSyncService>();
 }

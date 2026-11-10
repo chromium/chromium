@@ -15,7 +15,7 @@ MockReportingEventRouter::~MockReportingEventRouter() = default;
 
 // static
 std::unique_ptr<KeyedService>
-MockReportingEventRouter::BuildMockReportingEventRouter(ProfileIOS* profile) {
+MockReportingEventRouter::BuildMockReportingEventRouter(ProfileIOS& profile) {
   return std::make_unique<MockReportingEventRouter>(
       enterprise_connectors::IOSRealtimeReportingClientFactory::GetForProfile(
           profile));
