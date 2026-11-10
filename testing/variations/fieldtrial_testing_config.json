@@ -10475,6 +10475,26 @@
             ]
         }
     ],
+    "HashPrefixRealTimeLookupsOnIncognitoAndGuest": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "HashPrefixRealTimeLookupsOnIncognitoAndGuest"
+                    ]
+                }
+            ]
+        }
+    ],
     "HatsAudio": [
         {
             "platforms": [
