@@ -8,7 +8,7 @@ fn test_serialization_roundtrip(context: &mut Context) {
 	match context.deserialize_variables(&mut v.as_slice()) {
 		Ok(()) => (),
 		Err(s) => {
-			eprintln!("Data: {:?}", &v);
+			eprintln!("Data: {v:?}");
 			eprintln!("Context: {ctx_debug_repr}");
 			panic!("Failed to deserialize: {s}");
 		}

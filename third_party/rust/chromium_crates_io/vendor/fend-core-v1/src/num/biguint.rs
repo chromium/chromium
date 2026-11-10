@@ -1067,7 +1067,7 @@ impl BigUint {
 					b.push(0);
 				}
 				let (chunks, rem) = b.as_chunks::<8>();
-				assert!(rem.is_empty());
+				assert_eq!(rem, []);
 				let mut v = Self::Large(chunks.iter().map(|&c| u64::from_le_bytes(c)).collect());
 				let sign = match tag {
 					2 => Sign::Positive,
