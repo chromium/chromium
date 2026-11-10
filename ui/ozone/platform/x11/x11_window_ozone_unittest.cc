@@ -392,6 +392,29 @@ TEST_F(X11WindowOzoneTest, NotifyStartupCompletePreservesGeometryCache) {
   EXPECT_EQ(window->GetBoundsInPixels(), kNewBounds);
 }
 
+// Verifies that _GTK_FRAME_EXTENTS is not set when the window manager can't
+// handle it (https://crbug.com/396808830).
+TEST_F(X11WindowOzoneTest, NoFrameExtentsWhenDecorationInsetsUnsupported) {
+  testing::NiceMock<MockPlatformWindowDelegate> delegate;
+  ON_CALL(delegate, CalculateInsetsInDIP(_))
+      .WillByDefault(testing::Return(gfx::Insets(4)));
+  gfx::AcceleratedWidget widget;
+  auto window = CreatePlatformWindow(&delegate, gfx::Rect(10, 20, 300, 400),
+                                     &widget, nullptr);
+  if (window->CanSetDecorationInsets()) {
+    GTEST_SKIP() << "The window manager supports _GTK_FRAME_EXTENTS.";
+  }
+
+  window->Show(/*inactive=*/false);
+  x11::Connection::Get()->Sync();
+
+  scoped_refptr<base::RefCountedMemory> data;
+  x11::Atom type;
+  EXPECT_FALSE(GetRawBytesOfProperty(
+      static_cast<x11::Window>(widget),
+      x11::Connection::Get()->GetAtom("_GTK_FRAME_EXTENTS"), &data, &type));
+}
+
 namespace {
 
 constexpr int kTouchDeviceId = 0;
