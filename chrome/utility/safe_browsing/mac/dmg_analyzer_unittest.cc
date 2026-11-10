@@ -399,6 +399,41 @@ TEST_P(DMGAnalyzerTest, ContainedTarRecorded) {
   EXPECT_TRUE(results.archived_binary.Get(0).has_digests());
 }
 
+// Regression test for crbug.com/553139466. A regular (non-directory) file named
+// with an .app extension must be recorded like any other checked binary,
+// rather than being skipped as if it were an application bundle directory.
+TEST_P(DMGAnalyzerTest, RegularFileNamedAppRecorded) {
+  base::test::TaskEnvironment task_environment;
+  DMGAnalyzer analyzer_;
+  base::FilePath temp_path;
+  base::File temp_file;
+  base::CreateTemporaryFile(&temp_path);
+  temp_file.Initialize(
+      temp_path, (base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_READ |
+                  base::File::FLAG_WRITE | base::File::FLAG_WIN_TEMPORARY |
+                  base::File::FLAG_DELETE_ON_CLOSE));
+
+  MockDMGIterator::FileList file_list{
+      {"DMG/Install.app", {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08}},
+  };
+
+  std::unique_ptr<MockDMGIterator> iterator =
+      std::make_unique<MockDMGIterator>(true, file_list);
+  safe_browsing::ArchiveAnalyzerResults results;
+  base::RunLoop run_loop;
+  analyzer_.AnalyzeDMGFileForTesting(std::move(iterator), &results,
+                                     std::move(temp_file),
+                                     run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_TRUE(results.success);
+  EXPECT_TRUE(results.has_executable);
+  ASSERT_EQ(1, results.archived_binary.size());
+  EXPECT_EQ("DMG/Install.app", results.archived_binary.Get(0).file_path());
+  EXPECT_TRUE(results.archived_binary.Get(0).is_executable());
+  EXPECT_TRUE(results.archived_binary.Get(0).has_digests());
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          DMGAnalyzerTest,
                          testing::Bool(),
