@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.BadgeConfig;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.ui.signin.ConfirmManagedSyncDataDialogCoordinator;
+import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
@@ -203,13 +204,21 @@ public class FullscreenSigninCoordinator implements IdentityManager.Observer {
         mDelegate = delegate;
         mDelegate.getProfileSupplier().onAvailable(this::onProfileAvailable);
         mMediator =
-                new FullscreenSigninMediatorLegacy(
-                        context,
-                        modalDialogManager,
-                        mDelegate,
-                        privacyPreferencesManager,
-                        config,
-                        accessPoint);
+                SigninFeatureMap.sFullscreenSigninMediatorStateMachine.isEnabled()
+                        ? new FullscreenSigninMediator(
+                                context,
+                                modalDialogManager,
+                                mDelegate,
+                                privacyPreferencesManager,
+                                config,
+                                accessPoint)
+                        : new FullscreenSigninMediatorLegacy(
+                                context,
+                                modalDialogManager,
+                                mDelegate,
+                                privacyPreferencesManager,
+                                config,
+                                accessPoint);
     }
 
     private void onProfileAvailable(ProfileProvider result) {

@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -95,19 +96,21 @@ import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * Unit tests for {@link FullscreenSigninMediatorLegacy}.
+ * Unit tests for {@link FullscreenSigninMediator} and {@link FullscreenSigninMediatorLegacy}.
  *
- * <p>TODO(crbug.com/493130564): Revert to regular runner after
- * MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS launch.
+ * <p>TODO(crbug.com/493130564, crbug.com/491392611): Revert to regular runner after
+ * MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS and FULLSCREEN_SIGNIN_MEDIATOR_STATE_MACHINE launch.
  */
 @RunWith(ParameterizedRobolectricTestRunner.class)
 public class FullscreenSigninMediatorTest {
     @Rule(order = Rule.DEFAULT_ORDER - 1)
     public final BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
 
-    @Parameters(name = "{index}_isIdentityMgr={0}")
-    public static Collection parameters() {
-        return Arrays.asList(false, true);
+    @Parameters(name = "{index}_isIdentityMgr={0}_isStateMachine={1}")
+    public static Collection<Object[]> parameters() {
+        // The state machine mediator reads accounts only from IdentityManager and assumes
+        // MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS is enabled, so {false, true} is not tested.
+        return Arrays.asList(new Object[][] {{false, false}, {true, false}, {true, true}});
     }
 
     @Rule
@@ -143,6 +146,7 @@ public class FullscreenSigninMediatorTest {
     private OneshotSupplierImpl<Boolean> mChildAccountStatusSupplier = new OneshotSupplierImpl<>();
     private final Promise<Void> mNativeInitializationPromise = new Promise<>();
     private final boolean mIsIdentityManagerSourceOfAccounts;
+    private final boolean mIsStateMachineEnabled;
 
     private FullscreenSigninCoordinator.Mediator mMediator;
     private PropertyModel mModel;
@@ -151,8 +155,10 @@ public class FullscreenSigninMediatorTest {
     private int mLogoId;
     private String mSelectedAccountEmail;
 
-    public FullscreenSigninMediatorTest(boolean isIdentityManagerSourceOfAccounts) {
+    public FullscreenSigninMediatorTest(
+            boolean isIdentityManagerSourceOfAccounts, boolean isStateMachineEnabled) {
         mIsIdentityManagerSourceOfAccounts = isIdentityManagerSourceOfAccounts;
+        mIsStateMachineEnabled = isStateMachineEnabled;
     }
 
     @Before
@@ -164,6 +170,8 @@ public class FullscreenSigninMediatorTest {
         FeatureOverrides.overrideFlag(
                 SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS,
                 mIsIdentityManagerSourceOfAccounts);
+        FeatureOverrides.overrideFlag(
+                SigninFeatures.FULLSCREEN_SIGNIN_MEDIATOR_STATE_MACHINE, mIsStateMachineEnabled);
 
         IdentityServicesProvider.setSigninManagerForTesting(mSigninManagerMock);
         IdentityServicesProvider.setAccountPreviewDataServiceForTesting(
@@ -175,10 +183,15 @@ public class FullscreenSigninMediatorTest {
         mProfileSupplier.set(mProfileProviderMock);
 
         lenient().when(mDelegateMock.getProfileSupplier()).thenReturn(mProfileSupplier);
-        when(mDelegateMock.getNativeInitializationPromise())
+        // TODO(crbug.com/579875669): Make these strict once FullscreenSigninMediator subscribes to
+        // all three load inputs.
+        lenient()
+                .when(mDelegateMock.getNativeInitializationPromise())
                 .thenReturn(mNativeInitializationPromise);
-        when(mDelegateMock.getPolicyLoadListener()).thenReturn(mPolicyLoadListener);
-        when(mDelegateMock.getChildAccountStatusSupplier()).thenReturn(mChildAccountStatusSupplier);
+        lenient().when(mDelegateMock.getPolicyLoadListener()).thenReturn(mPolicyLoadListener);
+        lenient()
+                .when(mDelegateMock.getChildAccountStatusSupplier())
+                .thenReturn(mChildAccountStatusSupplier);
 
         // Policies and child account status are ready, while native initialization is fulfilled in
         // initializeNative().
@@ -193,6 +206,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testInitialLoadWhenAllInputsReadyAtConstruction_doesNotRecordLoadHistograms() {
+        assumeFalse(mIsStateMachineEnabled);
         setUpSigninSupported(true);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         mNativeInitializationPromise.fulfill(null);
@@ -208,6 +222,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testInitialLoadWaitsForNativeInitialization() {
+        assumeFalse(mIsStateMachineEnabled);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
 
         createMediator();
@@ -238,6 +253,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testInitialLoadWaitsForAccounts() {
+        assumeFalse(mIsStateMachineEnabled);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
 
         try (var blocker = mAccountManagerTestRule.blockGetAccountsUpdate()) {
@@ -257,6 +273,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testInitialLoadWaitsForPolicyLoad() {
+        assumeFalse(mIsStateMachineEnabled);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         mPolicyLoadListener = new OneshotSupplierImpl<>();
         when(mDelegateMock.getPolicyLoadListener()).thenReturn(mPolicyLoadListener);
@@ -276,6 +293,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testInitialLoadWaitsForChildAccountStatusLoad() {
+        assumeFalse(mIsStateMachineEnabled);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         mChildAccountStatusSupplier = new OneshotSupplierImpl<>();
         when(mDelegateMock.getChildAccountStatusSupplier()).thenReturn(mChildAccountStatusSupplier);
@@ -296,6 +314,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testProfileDataUpdateUpdatesSelectedAccount() {
+        assumeFalse(mIsStateMachineEnabled);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         createMediator();
         initializeNative();
@@ -311,6 +330,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testAccountRemovalClearsSelectedAccount() {
+        assumeFalse(mIsStateMachineEnabled);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         createMediator();
         initializeNative();
@@ -325,6 +345,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testChildBadgeIsSetForChildAccount() {
+        assumeFalse(mIsStateMachineEnabled);
         mAccountManagerTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
         createMediator();
         initializeNative();
@@ -346,6 +367,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testSignInWithChildAccount_usesForcedSigninAccessPoint() {
+        assumeFalse(mIsStateMachineEnabled);
         setUpSigninSupported(true);
         // Skip the account management check, so that sign-in is requested directly.
         when(mSigninManagerMock.getUserAcceptedAccountManagement()).thenReturn(true);
@@ -364,6 +386,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testChildBadgeIsRemovedWhenAccountStopsBeingSupervised() {
+        assumeFalse(mIsStateMachineEnabled);
         mAccountManagerTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
         createMediator();
         initializeNative();
@@ -394,6 +417,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testDestroyStopsObservingAccounts() {
+        assumeFalse(mIsStateMachineEnabled);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         createMediator();
         initializeNative();
@@ -407,6 +431,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testChildAccountStatusReadyAfterDestroy() {
+        assumeFalse(mIsStateMachineEnabled);
         mAccountManagerTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
         createMediator();
         initializeNative();
@@ -421,6 +446,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testSignInWithDefaultLogoWaitsForAnimation() {
+        assumeFalse(mIsStateMachineEnabled);
         setUpSigninSupported(true);
         // Skip the account management check, so that sign-in is requested directly.
         when(mSigninManagerMock.getUserAcceptedAccountManagement()).thenReturn(true);
@@ -445,6 +471,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testSignInWithCustomLogoCompletesWithoutAnimation() {
+        assumeFalse(mIsStateMachineEnabled);
         setUpSigninSupported(true);
         // Skip the account management check, so that sign-in is requested directly.
         when(mSigninManagerMock.getUserAcceptedAccountManagement()).thenReturn(true);
@@ -468,6 +495,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testSigninFunnel_promoShownWithAccount() {
+        assumeFalse(mIsStateMachineEnabled);
         setUpSigninSupported(true);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         createMediator();
@@ -482,6 +510,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testSigninFunnel_promoShownNoAccount() {
+        assumeFalse(mIsStateMachineEnabled);
         setUpSigninSupported(true);
         createMediator();
 
@@ -494,6 +523,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testSigninFunnel_notLoggedWhenSigninNotSupported() {
+        assumeFalse(mIsStateMachineEnabled);
         setUpSigninSupported(false);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         createMediator();
@@ -519,6 +549,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testSigninFunnel_promoShownLoggedAgainOnReset_coordinatorReused() {
+        assumeFalse(mIsStateMachineEnabled);
         setUpSigninSupported(true);
         // Simulates a flow that reuses the coordinator on back press, like the FRE.
         doAnswer(
@@ -542,6 +573,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testSigninFunnel_promoShownNotLoggedAgainOnReset_coordinatorRecreated() {
+        assumeFalse(mIsStateMachineEnabled);
         setUpSigninSupported(true);
         // Simulates a flow that recreates the coordinator on back press, like the fullscreen
         // sign-in promo, where the delegate doesn't log the event again.
@@ -558,6 +590,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testSigninFunnel_resetWithNoAccount_notifiesDelegate() {
+        assumeFalse(mIsStateMachineEnabled);
         setUpSigninSupported(true);
         createMediator();
         initializeNative();
@@ -571,6 +604,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testPendingChildAccountShowsSupervisedUi() {
+        assumeFalse(mIsStateMachineEnabled);
         setUpSigninSupported(true);
         // The selected account isn't on the device yet, so it becomes a pending selection.
         mSelectedAccountEmail = TestAccounts.CHILD_ACCOUNT.getEmail();
@@ -595,6 +629,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testSigninFunnel_signinButtonClicked_ignoredIfAlreadyClicked() {
+        assumeFalse(mIsStateMachineEnabled);
         setUpSigninSupported(true);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         createMediator();
@@ -615,6 +650,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testSigninFunnel_signinDeclinedButtonClicked_ignoredIfAlreadyClicked() {
+        assumeFalse(mIsStateMachineEnabled);
         setUpSigninSupported(true);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         createMediator();
@@ -635,6 +671,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testSigninFunnel_accountPickerShown() {
+        assumeFalse(mIsStateMachineEnabled);
         setUpSigninSupported(true);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         createMediator();
@@ -653,6 +690,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testSigninFunnel_defaultAccountSelected() {
+        assumeFalse(mIsStateMachineEnabled);
         setUpSigninSupported(true);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
@@ -669,6 +707,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testSigninFunnel_nonDefaultAccountSelected() {
+        assumeFalse(mIsStateMachineEnabled);
         setUpSigninSupported(true);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
@@ -686,6 +725,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testSigninFunnel_pendingSelectedAccount_noAccountSelectedEventLogged() {
+        assumeFalse(mIsStateMachineEnabled);
         setUpSigninSupported(true);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
@@ -702,6 +742,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testSigninFunnel_accountPickerDismissed() {
+        assumeFalse(mIsStateMachineEnabled);
         setUpSigninSupported(true);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         createMediator();
@@ -716,6 +757,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testSigninFunnel_accountPickerDismissed_notLoggedAfterDestroy() {
+        assumeFalse(mIsStateMachineEnabled);
         setUpSigninSupported(true);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         createMediator();
@@ -731,6 +773,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testSigninFunnel_accountAdded() {
+        assumeFalse(mIsStateMachineEnabled);
         setUpSigninSupported(true);
         createMediator();
         initializeNative();
@@ -744,6 +787,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testSigninFunnel_accountAdded_notLoggedAfterDestroy() {
+        assumeFalse(mIsStateMachineEnabled);
         setUpSigninSupported(true);
         createMediator();
         initializeNative();
@@ -758,6 +802,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testSignInAbortedKeepsForcedSigninTitle() {
+        assumeFalse(mIsStateMachineEnabled);
         setUpSigninSupported(true);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         enableForcedSigninPolicy();
@@ -784,6 +829,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testSyncDataManagedByPolicy_showsSubtitleWithoutSync() {
+        assumeFalse(mIsStateMachineEnabled);
         setUpSigninSupported(true);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         when(mSyncServiceMock.isTypeManagedByPolicy(anyInt())).thenReturn(false);
@@ -800,6 +846,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testReset_afterSignInComplete_resetsStateAndAllowsContinueAgain() {
+        assumeFalse(mIsStateMachineEnabled);
         setUpSigninSupported(true);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         when(mSigninManagerMock.getUserAcceptedAccountManagement()).thenReturn(true);
@@ -832,6 +879,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testDismissWhenSignedIn_signsOutThenAdvances() {
+        assumeFalse(mIsStateMachineEnabled);
         setUpSigninSupported(true);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
@@ -855,6 +903,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testDismissWhenSignedIn_ignoresClicksUntilReset() {
+        assumeFalse(mIsStateMachineEnabled);
         setUpSigninSupported(true);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
@@ -884,6 +933,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testContinueOnAutomotive_displaysDeviceLockBeforeSignin() {
+        assumeFalse(mIsStateMachineEnabled);
         setUpSigninSupported(true);
         DeviceInfo.setIsAutomotiveForTesting(true);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
@@ -909,6 +959,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testContinueOnAutomotive_deviceLockCanceled_allowsRetry() {
+        assumeFalse(mIsStateMachineEnabled);
         setUpSigninSupported(true);
         DeviceInfo.setIsAutomotiveForTesting(true);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
@@ -927,6 +978,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testSetConfig_updatesTitleAndSubtitleAfterInitialLoad() {
+        assumeFalse(mIsStateMachineEnabled);
         setUpSigninSupported(true);
         createMediator();
         initializeNative();
@@ -941,6 +993,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testSetConfig_preservesForcedByPolicyTitleAndSubtitle() {
+        assumeFalse(mIsStateMachineEnabled);
         setUpSigninSupported(true);
         enableForcedSigninPolicy();
         createMediator();
@@ -965,6 +1018,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testSetConfig_preservesUnsupportedSigninTitleAndSubtitle() {
+        assumeFalse(mIsStateMachineEnabled);
         setUpSigninSupported(false);
         createMediator();
         initializeNative();
@@ -1007,14 +1061,23 @@ public class FullscreenSigninMediatorTest {
     }
 
     private void createMediator() {
+        FullscreenSigninConfig config = createConfig("title", "subtitle");
         mMediator =
-                new FullscreenSigninMediatorLegacy(
-                        RuntimeEnvironment.getApplication(),
-                        mModalDialogManagerMock,
-                        mDelegateMock,
-                        mPrivacyPreferencesManagerMock,
-                        createConfig("title", "subtitle"),
-                        SigninAccessPoint.START_PAGE);
+                mIsStateMachineEnabled
+                        ? new FullscreenSigninMediator(
+                                RuntimeEnvironment.getApplication(),
+                                mModalDialogManagerMock,
+                                mDelegateMock,
+                                mPrivacyPreferencesManagerMock,
+                                config,
+                                SigninAccessPoint.START_PAGE)
+                        : new FullscreenSigninMediatorLegacy(
+                                RuntimeEnvironment.getApplication(),
+                                mModalDialogManagerMock,
+                                mDelegateMock,
+                                mPrivacyPreferencesManagerMock,
+                                config,
+                                SigninAccessPoint.START_PAGE);
         mModel = mMediator.getModel();
         RobolectricUtil.runAllBackgroundAndUi();
     }
