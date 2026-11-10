@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/side_panel/side_panel_prefs.h"
 
+#include <optional>
+
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/values.h"
@@ -132,5 +134,18 @@ base::ListValue GetConfigurableSidePanelAlignments(Profile* profile) {
 #endif
   return panels;
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+bool IsSidePanelRightAligned(const PrefService& pref_service,
+                             SidePanelEntryId entry_id) {
+  const base::DictValue& overrides =
+      pref_service.GetDict(prefs::kSidePanelAlignmentOverrides);
+  if (std::optional<bool> override_value =
+          overrides.FindBool(SidePanelEntryIdToString(entry_id))) {
+    return *override_value;
+  }
+  return pref_service.GetBoolean(prefs::kSidePanelHorizontalAlignment);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace side_panel_prefs
