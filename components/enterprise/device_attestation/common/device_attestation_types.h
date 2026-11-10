@@ -15,11 +15,10 @@ struct BlobGenerationResult {
 
   // Returns whether the blob generation succeeded. This is the single
   // definition of attestation success; prefer it over inspecting the fields
-  // directly so that all consumers agree. Note that a result carrying neither
-  // a blob nor an error message is treated as a failure.
-  bool IsSuccess() const {
-    return !attestation_blob.empty() && error_message.empty();
-  }
+  // directly so that all consumers agree. Note that `error_message` is not
+  // checked because some implementations (e.g. Android) populate a placeholder
+  // string such as "No error" even when a blob is successfully generated.
+  bool IsSuccess() const { return !attestation_blob.empty(); }
 };
 
 struct AttestationResult {

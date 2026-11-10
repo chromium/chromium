@@ -56,6 +56,23 @@ class DeviceAttestationServiceAndroidTest : public testing::Test {
   ~DeviceAttestationServiceAndroidTest() override = default;
 
  protected:
+  void VerifySuccessMetrics() {
+    // A successful generation records the request, the success result, the blob
+    // size and the success latency, but no failure latency.
+    histogram_tester_.ExpectUniqueSample(
+        "Enterprise.DeviceSignals.Attestation.Requested", true, 1);
+    histogram_tester_.ExpectUniqueSample(
+        "Enterprise.DeviceSignals.Attestation.Result",
+        AttestationBlobResult::kSuccess, 1);
+    histogram_tester_.ExpectUniqueSample(
+        "Enterprise.DeviceSignals.Attestation.BlobSize",
+        std::string_view(kFakeBlob).size(), 1);
+    histogram_tester_.ExpectTotalCount(
+        "Enterprise.DeviceSignals.Attestation.Success.Latency", 1);
+    histogram_tester_.ExpectTotalCount(
+        "Enterprise.DeviceSignals.Attestation.Failure.Latency", 0);
+  }
+
   base::test::TaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<DeviceAttestationServiceAndroid> service_;
@@ -169,6 +186,7 @@ TEST_F(DeviceAttestationServiceAndroidTest,
   EXPECT_EQ(test_future.Get().blob_generation_result.attestation_blob,
             kFakeBlob);
   EXPECT_EQ(test_future.Get().content_binding_version, 1);
+  VerifySuccessMetrics();
 }
 
 // This test validates the hashes that will be used for the content binding
@@ -202,21 +220,29 @@ TEST_F(DeviceAttestationServiceAndroidTest,
   EXPECT_EQ(test_future.Get().blob_generation_result.attestation_blob,
             kFakeBlob);
   EXPECT_EQ(test_future.Get().content_binding_version, 0);
+  VerifySuccessMetrics();
+}
 
-  // A successful generation records the request, the success result, the blob
-  // size and the success latency, but no failure latency.
-  histogram_tester_.ExpectUniqueSample(
-      "Enterprise.DeviceSignals.Attestation.Requested", true, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Enterprise.DeviceSignals.Attestation.Result",
-      AttestationBlobResult::kSuccess, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Enterprise.DeviceSignals.Attestation.BlobSize",
-      std::string_view(kFakeBlob).size(), 1);
-  histogram_tester_.ExpectTotalCount(
-      "Enterprise.DeviceSignals.Attestation.Success.Latency", 1);
-  histogram_tester_.ExpectTotalCount(
-      "Enterprise.DeviceSignals.Attestation.Failure.Latency", 0);
+// Tests that a successful blob generation records the success result, blob
+// size, and latency even when a placeholder error message (e.g. "No error") is
+// populated.
+TEST_F(DeviceAttestationServiceAndroidTest,
+       GetAttestationResponse_RecordsMetricsOnSuccessWithErrorMessage) {
+  enterprise_management::ChromeProfileReportRequest report;
+
+  EXPECT_CALL(*client_,
+              GenerateAttestationBlob(testing::_, testing::_, testing::_,
+                                      testing::_, testing::_))
+      .WillOnce(base::test::RunOnceCallback<4>(BlobGenerationResult{
+          .attestation_blob = kFakeBlob, .error_message = "No error"}));
+
+  base::test::TestFuture<const AttestationResult&> test_future;
+  service_->GetAttestationResponse("flow_name", report, "legacy_payload",
+                                   "1713895415", "some_nonce",
+                                   test_future.GetCallback());
+
+  ASSERT_TRUE(test_future.Wait());
+  VerifySuccessMetrics();
 }
 
 // Tests that a failed blob generation records the failure result and latency,
