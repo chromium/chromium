@@ -6048,14 +6048,6 @@ be describing additional metrics about the same event.
       The time taken for accessibility for the main frame in microseconds during
       the sampled frame.
     </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="AccessibilityBeginMainFrame">
     <summary>
@@ -6067,14 +6059,6 @@ be describing additional metrics about the same event.
       Time spent computing IntersectionObservations for anchor elements, in
       microseconds.
     </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="AnchorElementMetricsIntersectionObserverBeginMainFrame">
     <summary>
@@ -6107,14 +6091,6 @@ be describing additional metrics about the same event.
       The time taken by the compositing commit in microseconds during the
       sampled frame.
     </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="CompositingCommitBeginMainFrame">
     <summary>
@@ -6126,14 +6102,6 @@ be describing additional metrics about the same event.
       The time taken by the compositing inputs phase in microseconds during the
       sampled frame.
     </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="CompositingInputsBeginMainFrame">
     <summary>
@@ -6160,14 +6128,6 @@ be describing additional metrics about the same event.
       Time spent computing IntersectionObservations for
       DisplayLockDocumentState, in microseconds.
     </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="DisplayLockIntersectionObserverBeginMainFrame">
     <summary>
@@ -6224,14 +6184,6 @@ be describing additional metrics about the same event.
       test time, rather the style, layout, compositing, etc time to prepare for
       the test.
     </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="HitTestDocumentUpdateBeginMainFrame">
     <summary>
@@ -6244,14 +6196,6 @@ be describing additional metrics about the same event.
       The time spent committing layer tree impl data in the compositor thread,
       in microseconds.
     </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="ImplCompositorCommitBeginMainFrame">
     <summary>
@@ -6265,14 +6209,6 @@ be describing additional metrics about the same event.
       The time taken to compute intersection observer state for the main frame
       in microseconds during the sampled frame.
     </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="IntersectionObservationBeginMainFrame">
     <summary>
@@ -6285,13 +6221,6 @@ be describing additional metrics about the same event.
       The number of blink-internal IntersectionObservations that were recomputed
       during the sampled frame.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="IntersectionObservationInternalCountBeginMainFrame">
     <summary>
@@ -6304,13 +6233,6 @@ be describing additional metrics about the same event.
       The number of javascript-instantiated IntersectionObservations that were
       recomputed during the sampled frame.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="IntersectionObservationJavascriptCountBeginMainFrame">
     <summary>
@@ -6340,14 +6262,6 @@ be describing additional metrics about the same event.
       Time spent computing IntersectionObservations for javascript observers, in
       microseconds.
     </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="JavascriptIntersectionObserverBeginMainFrame">
     <summary>
@@ -6379,14 +6293,6 @@ be describing additional metrics about the same event.
       Time spent computing IntersectionObservations for lazy loading, in
       microseconds.
     </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="LazyLoadIntersectionObserverBeginMainFrame">
     <summary>
@@ -6399,14 +6305,6 @@ be describing additional metrics about the same event.
       The time between a BeginMainFrame and the commit of paint results for the
       sampled frame, in microseconds.
     </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="MainFrameIsBeforeFCP" enum="Boolean">
     <summary>
@@ -6428,14 +6326,6 @@ be describing additional metrics about the same event.
       Time spent computing IntersectionObservations for media elements, in
       microseconds.
     </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="MediaIntersectionObserverBeginMainFrame">
     <summary>
@@ -6477,14 +6367,6 @@ be describing additional metrics about the same event.
       Time spent computing IntersectionObservations for permission elements, in
       microseconds.
     </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="PermissionElementIntersectionObserverBeginMainFrame">
     <summary>
@@ -6523,14 +6405,6 @@ be describing additional metrics about the same event.
       The time taken for pre-paint for the main frame in microseconds during the
       sampled frame.
     </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="PrePaintBeginMainFrame">
     <summary>
@@ -6602,14 +6476,6 @@ be describing additional metrics about the same event.
       Time spent computing internal geometry information about iframes, in
       microseconds.
     </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="UpdateViewportIntersectionBeginMainFrame">
     <summary>
@@ -6651,14 +6517,6 @@ be describing additional metrics about the same event.
       The time spent waiting for the compositor thread to begin processing a
       commit, in microseconds.
     </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="WaitForCommitBeginMainFrame">
     <summary>
