@@ -5,6 +5,7 @@
 #ifndef NET_SOCKET_TCP_CONNECT_JOB_H_
 #define NET_SOCKET_TCP_CONNECT_JOB_H_
 
+#include <cstddef>
 #include <memory>
 #include <optional>
 #include <set>
@@ -79,6 +80,22 @@ class NET_EXPORT_PRIVATE TcpConnectJob
     : public ConnectJob,
       public HostResolver::ServiceEndpointRequest::Delegate {
  public:
+  // How a successful TcpConnectJob established its connection.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(TcpConnectJobSuccessSource)
+  enum class SuccessSource {
+    kInitialConnectorFirstAttempt = 0,
+    kInitialConnectorLaterAttempt = 1,
+    kSlowTimerConnector = 2,
+    kStaleConnector = 3,
+    kPromotedStaleConnector = 4,
+    kMaxValue = kPromotedStaleConnector,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:TcpConnectJobSuccessSource)
+
   // In cases where both IPv6 and IPv4 addresses were returned from DNS,
   // TcpConnectJobs will start a second connection attempt to just
   // the IPv4 addresses after this much time. (This is "Happy Eyeballs".)
@@ -132,6 +149,15 @@ class NET_EXPORT_PRIVATE TcpConnectJob
   // don't want to accidentally use a proxy's ServiceEndpoint at non-proxy
   // ConnectJob layers.
   ServiceEndpoint PassServiceEndpoint();
+
+  // Returns true once at least one connector has initiated a TCP connection
+  // attempt.
+  bool HasStartedTcpAttempt() const;
+
+  // Returns true while paused waiting on a possible async deletion after
+  // `host_resolution_callback` returned `kMayBeDeletedAsync` (e.g. HTTP/2 IP
+  // pooling).
+  bool IsWaitingOnPossibleAsyncDeletion() const;
 
   static base::TimeDelta ConnectionTimeout();
 
@@ -217,6 +243,7 @@ class NET_EXPORT_PRIVATE TcpConnectJob
   // Remaining ConnectJob methods:
   int ConnectInternal() override;
   void ChangePriorityInternal(RequestPriority priority) override;
+  void OnTimedOutInternal() override;
 
   // One of the three principal methods running the the TcpConnectJob's state
   // machine. Returns either final error code of the TcpConnectJob if complete,
@@ -366,6 +393,16 @@ class NET_EXPORT_PRIVATE TcpConnectJob
   // method is invoked.
   void NotifyDelegateIfDone(int result);
 
+  // Called by a `Connector` each time it initiates a TCP socket connection
+  // attempt.
+  void OnAttemptStarted();
+
+  // Records completion histograms once per non-override `TcpConnectJob` upon
+  // terminal completion or job timeout. `winning_connector` must be non-null
+  // when `result == OK`.
+  void RecordCompletionHistograms(int result,
+                                  const Connector* winning_connector);
+
   const scoped_refptr<TransportSocketParams> params_;
 
   // The number of tasks posted as a result of the`host_resolution_callback`
@@ -438,6 +475,14 @@ class NET_EXPORT_PRIVATE TcpConnectJob
   // calls that can't be cancelled coming in late, and to double-check that the
   // TcpConnectJob isn't completing twice.
   bool is_done_ = false;
+
+  // Timestamp when `ConnectInternal()` started, used for job-level timing
+  // histograms.
+  base::TimeTicks job_start_time_;
+  // Total TCP socket connection attempts initiated across all connectors.
+  size_t attempt_count_ = 0;
+  // Ensures job-level completion histograms are emitted at most once.
+  bool metrics_recorded_ = false;
 
   base::WeakPtrFactory<TcpConnectJob> weak_ptr_factory_{this};
 };

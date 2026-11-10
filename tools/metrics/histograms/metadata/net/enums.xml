@@ -3850,6 +3850,24 @@ Called by update_net_trust_anchors.py.-->
 
 <!-- LINT.ThenChange(//net/disk_cache/sql/sql_shared_cache_index_database.h:SqlSharedCacheIndexDatabaseResult) -->
 
+<!-- LINT.IfChange(SSLConnectJobOutcome) -->
+
+<enum name="SSLConnectJobOutcome">
+  <int value="0" label="Succeeded on initial attempt"/>
+  <int value="1" label="Succeeded after stale DNS retry"/>
+  <int value="2" label="Succeeded after legacy crypto retry"/>
+  <int value="3" label="Succeeded after ECH retry"/>
+  <int value="4" label="Failed before TCP attempt"/>
+  <int value="5" label="Failed during TCP connect"/>
+  <int value="6" label="Failed during SSL handshake"/>
+  <int value="7" label="Canceled at host resolution for HTTP/2 IP pooling"/>
+  <int value="8" label="Canceled during DNS resolution"/>
+  <int value="9" label="Canceled during TCP connect"/>
+  <int value="10" label="Canceled during SSL handshake"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/socket/ssl_connect_job.h:SSLConnectJobOutcome) -->
+
 <enum name="SSLECHResult">
   <summary>The result of a TLS connection that offered ECH</summary>
   <int value="0" label="The connection succeeded on the initial connection"/>
@@ -3956,6 +3974,18 @@ Called by update_net_trust_anchors.py.-->
 </enum>
 
 <!-- LINT.ThenChange(//net/socket/stream_socket_close_reason.h:StreamSocketCloseReason) -->
+
+<!-- LINT.IfChange(TcpConnectJobSuccessSource) -->
+
+<enum name="TcpConnectJobSuccessSource">
+  <int value="0" label="Initial connector, first attempt"/>
+  <int value="1" label="Initial connector, later attempt"/>
+  <int value="2" label="Slow timer connector"/>
+  <int value="3" label="Stale DNS connector"/>
+  <int value="4" label="Promoted or fresh-validated stale DNS"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/socket/tcp_connect_job.h:TcpConnectJobSuccessSource) -->
 
 <enum name="TrafficAnnotationUniqueIdHash">
   <int value="29693511" label="loading_predictor_preconnect"/>

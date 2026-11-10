@@ -4,11 +4,15 @@
 
 #include "net/socket/ssl_connect_job.h"
 
+#include <cstdint>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/containers/extend.h"
+#include "base/containers/flat_set.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -2023,6 +2027,560 @@ TEST_P(SSLConnectJobOptimisticDnsTest, StaleDnsEarlyDataDisabled) {
   EXPECT_TRUE(data1.AllWriteDataConsumed());
   EXPECT_TRUE(data2.AllReadDataConsumed());
   EXPECT_TRUE(data2.AllWriteDataConsumed());
+}
+
+TEST_P(SSLConnectJobTest, HistogramsSucceededInitial) {
+  for (IoMode io_mode : {SYNCHRONOUS, ASYNC}) {
+    SCOPED_TRACE(io_mode);
+    base::HistogramTester histogram_tester;
+    host_resolver_.set_synchronous_mode(io_mode == SYNCHRONOUS);
+
+    StaticSocketDataProvider data;
+    data.set_connect_data(MockConnect(io_mode, OK));
+    socket_factory_.AddSocketDataProvider(&data);
+    SSLSocketDataProvider ssl(io_mode, OK);
+    socket_factory_.AddSSLSocketDataProvider(&ssl);
+
+    TestConnectJobDelegate test_delegate;
+    std::unique_ptr<ConnectJob> ssl_connect_job =
+        CreateConnectJob(&test_delegate);
+    test_delegate.StartJobExpectingResult(ssl_connect_job.get(), OK,
+                                          io_mode == SYNCHRONOUS);
+    ssl_connect_job.reset();
+
+    if (IsUsingHappyEyeballsV2()) {
+      histogram_tester.ExpectUniqueSample(
+          "Net.SSLConnectJob.Outcome",
+          SSLConnectJob::Outcome::kSucceededInitial, 1);
+      histogram_tester.ExpectTotalCount(
+          "Net.SSLConnectJob.CompleteTime.Succeeded", 1);
+    } else {
+      histogram_tester.ExpectTotalCount("Net.SSLConnectJob.Outcome", 0);
+      histogram_tester.ExpectTotalCount(
+          "Net.SSLConnectJob.CompleteTime.Succeeded", 0);
+    }
+    histogram_tester.ExpectTotalCount("Net.SSLConnectJob.CompleteTime.Failed",
+                                      0);
+    histogram_tester.ExpectTotalCount("Net.SSLConnectJob.CompleteTime.Canceled",
+                                      0);
+  }
+}
+
+TEST_P(SSLConnectJobTest, HistogramsSucceededAfterLegacyCryptoRetry) {
+  if (!IsUsingHappyEyeballsV2()) {
+    GTEST_SKIP() << "SSLConnectJob histograms require HappyEyeballsV2.";
+  }
+  base::HistogramTester histogram_tester;
+
+  StaticSocketDataProvider data1;
+  data1.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory_.AddSocketDataProvider(&data1);
+  SSLSocketDataProvider ssl1(ASYNC, ERR_SSL_PROTOCOL_ERROR);
+  socket_factory_.AddSSLSocketDataProvider(&ssl1);
+
+  StaticSocketDataProvider data2;
+  data2.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory_.AddSocketDataProvider(&data2);
+  SSLSocketDataProvider ssl2(ASYNC, OK);
+  socket_factory_.AddSSLSocketDataProvider(&ssl2);
+
+  TestConnectJobDelegate test_delegate;
+  std::unique_ptr<ConnectJob> ssl_connect_job =
+      CreateConnectJob(&test_delegate);
+  EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(test_delegate.WaitForResult(), test::IsOk());
+  ssl_connect_job.reset();
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.SSLConnectJob.Outcome",
+      SSLConnectJob::Outcome::kSucceededAfterLegacyCryptoRetry, 1);
+  histogram_tester.ExpectTotalCount("Net.SSLConnectJob.CompleteTime.Succeeded",
+                                    1);
+  histogram_tester.ExpectTotalCount("Net.SSLConnectJob.CompleteTime.Failed", 0);
+  histogram_tester.ExpectTotalCount("Net.SSLConnectJob.CompleteTime.Canceled",
+                                    0);
+}
+
+TEST_P(SSLConnectJobTest, HistogramsSucceededAfterEchRetry) {
+  if (!IsUsingHappyEyeballsV2()) {
+    GTEST_SKIP() << "SSLConnectJob histograms require HappyEyeballsV2.";
+  }
+  std::vector<uint8_t> ech_config_list1, ech_config_list2;
+  ASSERT_TRUE(MakeTestEchKeys("public.example", /*max_name_len=*/128,
+                              &ech_config_list1));
+  ASSERT_TRUE(MakeTestEchKeys("public.example", /*max_name_len=*/128,
+                              &ech_config_list2));
+
+  HostResolverEndpointResult endpoint;
+  endpoint.ip_endpoints = {IPEndPoint(ParseIP("1::"), 8441)};
+  endpoint.metadata.supported_protocol_alpns = {"http/1.1"};
+  endpoint.metadata.ech_config_list = ech_config_list1;
+  host_resolver_.rules()->AddRule(
+      "host",
+      MockHostResolverBase::RuleResolver::RuleResult(std::vector{endpoint}));
+
+  StaticSocketDataProvider data1;
+  data1.set_expected_addresses(AddressList(endpoint.ip_endpoints));
+  data1.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory_.AddSocketDataProvider(&data1);
+  SSLSocketDataProvider ssl1(ASYNC, ERR_ECH_NOT_NEGOTIATED);
+  ssl1.expected_ech_config_list = ech_config_list1;
+  ssl1.ech_retry_configs = ech_config_list2;
+  socket_factory_.AddSSLSocketDataProvider(&ssl1);
+
+  StaticSocketDataProvider data2;
+  data2.set_expected_addresses(AddressList(endpoint.ip_endpoints));
+  data2.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory_.AddSocketDataProvider(&data2);
+  SSLSocketDataProvider ssl2(ASYNC, OK);
+  ssl2.expected_ech_config_list = ech_config_list2;
+  socket_factory_.AddSSLSocketDataProvider(&ssl2);
+
+  base::HistogramTester histogram_tester;
+  TestConnectJobDelegate test_delegate;
+  std::unique_ptr<ConnectJob> ssl_connect_job =
+      CreateConnectJob(&test_delegate, ProxyChain::Direct(), MEDIUM);
+  EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(test_delegate.WaitForResult(), test::IsOk());
+  ssl_connect_job.reset();
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.SSLConnectJob.Outcome",
+      SSLConnectJob::Outcome::kSucceededAfterEchRetry, 1);
+  histogram_tester.ExpectTotalCount("Net.SSLConnectJob.CompleteTime.Succeeded",
+                                    1);
+  // Only the initial non-override TcpConnectJob should emit TcpConnectJob
+  // histograms; the ECH retry override job must be excluded.
+  histogram_tester.ExpectTotalCount("Net.TcpConnectJob.CompleteTime.Succeeded",
+                                    1);
+}
+
+TEST_P(SSLConnectJobTest, HistogramsFailurePhases) {
+  if (!IsUsingHappyEyeballsV2()) {
+    base::HistogramTester histogram_tester;
+    host_resolver_.rules()->AddSimulatedFailure("host");
+    TestConnectJobDelegate test_delegate;
+    std::unique_ptr<ConnectJob> ssl_connect_job =
+        CreateConnectJob(&test_delegate);
+    EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
+    EXPECT_THAT(test_delegate.WaitForResult(),
+                test::IsError(ERR_NAME_NOT_RESOLVED));
+    ssl_connect_job.reset();
+
+    histogram_tester.ExpectTotalCount("Net.SSLConnectJob.Outcome", 0);
+    histogram_tester.ExpectTotalCount("Net.SSLConnectJob.CompleteTime.Failed",
+                                      0);
+    return;
+  }
+
+  // 1. Failure before TCP (DNS failure).
+  {
+    base::HistogramTester histogram_tester;
+    host_resolver_.rules()->AddSimulatedFailure("host");
+
+    TestConnectJobDelegate test_delegate;
+    std::unique_ptr<ConnectJob> ssl_connect_job =
+        CreateConnectJob(&test_delegate);
+    EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
+    EXPECT_THAT(test_delegate.WaitForResult(),
+                test::IsError(ERR_NAME_NOT_RESOLVED));
+    ssl_connect_job.reset();
+
+    histogram_tester.ExpectUniqueSample(
+        "Net.SSLConnectJob.Outcome", SSLConnectJob::Outcome::kFailedBeforeTcp,
+        1);
+    histogram_tester.ExpectTotalCount("Net.SSLConnectJob.CompleteTime.Failed",
+                                      1);
+    histogram_tester.ExpectTotalCount("Net.SSLConnectJob.CompleteTime.Canceled",
+                                      0);
+  }
+
+  host_resolver_.rules()->ClearRules();
+
+  // 2. Failure during TCP.
+  {
+    base::HistogramTester histogram_tester;
+    StaticSocketDataProvider data;
+    data.set_connect_data(MockConnect(ASYNC, ERR_CONNECTION_FAILED));
+    socket_factory_.AddSocketDataProvider(&data);
+
+    TestConnectJobDelegate test_delegate;
+    std::unique_ptr<ConnectJob> ssl_connect_job =
+        CreateConnectJob(&test_delegate);
+    EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
+    EXPECT_THAT(test_delegate.WaitForResult(),
+                test::IsError(ERR_CONNECTION_FAILED));
+    ssl_connect_job.reset();
+
+    histogram_tester.ExpectUniqueSample(
+        "Net.SSLConnectJob.Outcome", SSLConnectJob::Outcome::kFailedDuringTcp,
+        1);
+    histogram_tester.ExpectTotalCount("Net.SSLConnectJob.CompleteTime.Failed",
+                                      1);
+  }
+
+  // 3. Failure during SSL (certificate error still returns negative error).
+  {
+    base::HistogramTester histogram_tester;
+    StaticSocketDataProvider data;
+    data.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+    socket_factory_.AddSocketDataProvider(&data);
+    SSLSocketDataProvider ssl(ASYNC, ERR_CERT_COMMON_NAME_INVALID);
+    socket_factory_.AddSSLSocketDataProvider(&ssl);
+
+    TestConnectJobDelegate test_delegate(
+        TestConnectJobDelegate::SocketExpected::ALWAYS);
+    std::unique_ptr<ConnectJob> ssl_connect_job =
+        CreateConnectJob(&test_delegate);
+    EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
+    EXPECT_THAT(test_delegate.WaitForResult(),
+                test::IsError(ERR_CERT_COMMON_NAME_INVALID));
+    ssl_connect_job.reset();
+
+    histogram_tester.ExpectUniqueSample(
+        "Net.SSLConnectJob.Outcome", SSLConnectJob::Outcome::kFailedDuringSsl,
+        1);
+    histogram_tester.ExpectTotalCount("Net.SSLConnectJob.CompleteTime.Failed",
+                                      1);
+    histogram_tester.ExpectTotalCount(
+        "Net.SSLConnectJob.CompleteTime.Succeeded", 0);
+  }
+
+  // 4. SSL handshake timeout.
+  {
+    base::HistogramTester histogram_tester;
+    host_resolver_.set_synchronous_mode(true);
+    StaticSocketDataProvider data;
+    data.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+    socket_factory_.AddSocketDataProvider(&data);
+    SSLSocketDataProvider ssl(SYNCHRONOUS, ERR_IO_PENDING);
+    socket_factory_.AddSSLSocketDataProvider(&ssl);
+
+    TestConnectJobDelegate test_delegate;
+    std::unique_ptr<ConnectJob> ssl_connect_job =
+        CreateConnectJob(&test_delegate);
+    ASSERT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
+
+    task_environment_.FastForwardBy(
+        SSLConnectJob::HandshakeTimeoutForTesting());
+    EXPECT_THAT(test_delegate.WaitForResult(), test::IsError(ERR_TIMED_OUT));
+    ssl_connect_job.reset();
+
+    histogram_tester.ExpectUniqueSample(
+        "Net.SSLConnectJob.Outcome", SSLConnectJob::Outcome::kFailedDuringSsl,
+        1);
+    histogram_tester.ExpectUniqueTimeSample(
+        "Net.SSLConnectJob.CompleteTime.Failed",
+        SSLConnectJob::HandshakeTimeoutForTesting(), 1);
+    histogram_tester.ExpectTotalCount("Net.SSLConnectJob.CompleteTime.Canceled",
+                                      0);
+  }
+}
+
+TEST_P(SSLConnectJobTest, HistogramsCancellationPhases) {
+  if (!IsUsingHappyEyeballsV2()) {
+    base::HistogramTester histogram_tester;
+    host_resolver_.set_ondemand_mode(true);
+    TestConnectJobDelegate test_delegate;
+    std::unique_ptr<ConnectJob> ssl_connect_job =
+        CreateConnectJob(&test_delegate);
+    ASSERT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
+    ssl_connect_job.reset();
+
+    histogram_tester.ExpectTotalCount("Net.SSLConnectJob.Outcome", 0);
+    histogram_tester.ExpectTotalCount("Net.SSLConnectJob.CompleteTime.Canceled",
+                                      0);
+    return;
+  }
+
+  // 1. Canceled during DNS.
+  {
+    base::HistogramTester histogram_tester;
+    host_resolver_.set_ondemand_mode(true);
+
+    TestConnectJobDelegate test_delegate;
+    std::unique_ptr<ConnectJob> ssl_connect_job =
+        CreateConnectJob(&test_delegate);
+    ASSERT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
+    task_environment_.FastForwardBy(base::Milliseconds(10));
+    ssl_connect_job.reset();
+
+    histogram_tester.ExpectUniqueSample(
+        "Net.SSLConnectJob.Outcome", SSLConnectJob::Outcome::kCanceledDuringDns,
+        1);
+    histogram_tester.ExpectUniqueTimeSample(
+        "Net.SSLConnectJob.CompleteTime.Canceled", base::Milliseconds(10), 1);
+  }
+
+  // 2. Canceled for HTTP/2 IP pooling (OnHostResolutionCallback returns
+  // kMayBeDeletedAsync).
+  {
+    base::HistogramTester histogram_tester;
+    host_resolver_.set_ondemand_mode(true);
+    bool callback_invoked = false;
+    auto transport_params = base::MakeRefCounted<TransportSocketParams>(
+        kHostHttps, NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+        handles::kInvalidNetworkHandle,
+        base::BindRepeating(
+            [](bool* invoked, const HostPortPair&,
+               const HostResolverEndpointsOrServiceEndpoints&,
+               const base::flat_set<std::string>&) {
+              *invoked = true;
+              return OnHostResolutionCallbackResult::kMayBeDeletedAsync;
+            },
+            &callback_invoked),
+        base::flat_set<std::string>({"h2", "http/1.1"}));
+    auto ssl_params = base::MakeRefCounted<SSLSocketParams>(
+        ConnectJobParams(std::move(transport_params)),
+        HostPortPair::FromSchemeHostPort(kHostHttps), SSLConfig(),
+        NetworkAnonymizationKey());
+
+    TestConnectJobDelegate test_delegate;
+    auto ssl_connect_job = std::make_unique<SSLConnectJob>(
+        DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_,
+        std::move(ssl_params), &test_delegate, /*net_log=*/nullptr);
+    ASSERT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
+
+    task_environment_.FastForwardBy(base::Milliseconds(15));
+    host_resolver_.ResolveOnlyRequestNow();
+    EXPECT_TRUE(callback_invoked);
+    ssl_connect_job.reset();
+
+    histogram_tester.ExpectUniqueSample(
+        "Net.SSLConnectJob.Outcome",
+        SSLConnectJob::Outcome::kCanceledForSpdyIpPooling, 1);
+    histogram_tester.ExpectUniqueTimeSample(
+        "Net.SSLConnectJob.CompleteTime.Canceled", base::Milliseconds(15), 1);
+  }
+
+  // 3. Canceled during TCP connect.
+  {
+    base::HistogramTester histogram_tester;
+    host_resolver_.set_ondemand_mode(false);
+    host_resolver_.set_synchronous_mode(true);
+    StaticSocketDataProvider data;
+    data.set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
+    socket_factory_.AddSocketDataProvider(&data);
+
+    TestConnectJobDelegate test_delegate;
+    std::unique_ptr<ConnectJob> ssl_connect_job =
+        CreateConnectJob(&test_delegate);
+    ASSERT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
+    task_environment_.FastForwardBy(base::Milliseconds(25));
+    ssl_connect_job.reset();
+
+    histogram_tester.ExpectUniqueSample(
+        "Net.SSLConnectJob.Outcome", SSLConnectJob::Outcome::kCanceledDuringTcp,
+        1);
+    histogram_tester.ExpectUniqueTimeSample(
+        "Net.SSLConnectJob.CompleteTime.Canceled", base::Milliseconds(25), 1);
+  }
+
+  // 4. Canceled during SSL handshake.
+  {
+    base::HistogramTester histogram_tester;
+    host_resolver_.set_ondemand_mode(false);
+    host_resolver_.set_synchronous_mode(true);
+    StaticSocketDataProvider data;
+    data.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+    socket_factory_.AddSocketDataProvider(&data);
+    SSLSocketDataProvider ssl(SYNCHRONOUS, ERR_IO_PENDING);
+    socket_factory_.AddSSLSocketDataProvider(&ssl);
+
+    TestConnectJobDelegate test_delegate;
+    std::unique_ptr<ConnectJob> ssl_connect_job =
+        CreateConnectJob(&test_delegate);
+    ASSERT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
+    task_environment_.FastForwardBy(base::Milliseconds(35));
+    ssl_connect_job.reset();
+
+    histogram_tester.ExpectUniqueSample(
+        "Net.SSLConnectJob.Outcome", SSLConnectJob::Outcome::kCanceledDuringSsl,
+        1);
+    histogram_tester.ExpectUniqueTimeSample(
+        "Net.SSLConnectJob.CompleteTime.Canceled", base::Milliseconds(35), 1);
+  }
+}
+
+TEST_P(SSLConnectJobTest, HistogramsExcludedForProxies) {
+  base::HistogramTester histogram_tester;
+  host_resolver_.set_ondemand_mode(true);
+
+  TestConnectJobDelegate socks_delegate;
+  std::unique_ptr<ConnectJob> socks_ssl_job =
+      CreateConnectJob(&socks_delegate, ProxyChain(kSocksProxyServer));
+  ASSERT_THAT(socks_ssl_job->Connect(), test::IsError(ERR_IO_PENDING));
+  socks_ssl_job.reset();
+
+  TestConnectJobDelegate http_proxy_delegate;
+  std::unique_ptr<ConnectJob> http_proxy_ssl_job =
+      CreateConnectJob(&http_proxy_delegate, kHttpProxyChain);
+  ASSERT_THAT(http_proxy_ssl_job->Connect(), test::IsError(ERR_IO_PENDING));
+  http_proxy_ssl_job.reset();
+
+  histogram_tester.ExpectTotalCount("Net.SSLConnectJob.Outcome", 0);
+  histogram_tester.ExpectTotalCount("Net.SSLConnectJob.CompleteTime.Succeeded",
+                                    0);
+  histogram_tester.ExpectTotalCount("Net.SSLConnectJob.CompleteTime.Failed", 0);
+  histogram_tester.ExpectTotalCount("Net.SSLConnectJob.CompleteTime.Canceled",
+                                    0);
+}
+
+TEST_P(SSLConnectJobOptimisticDnsTest, HistogramsSucceededAfterStaleDnsRetry) {
+  HostResolverEndpointResult endpoint;
+  endpoint.ip_endpoints = {IPEndPoint(ParseIP("1::"), 8441)};
+  host_resolver_.rules()->AddRule(
+      "host",
+      MockHostResolverBase::RuleResolver::RuleResult(std::vector{endpoint}));
+  host_resolver_.set_is_stale_while_refreshing(true);
+
+  StaticSocketDataProvider data1;
+  data1.set_expected_addresses(AddressList(endpoint.ip_endpoints));
+  data1.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory_.AddSocketDataProvider(&data1);
+  SSLSocketDataProvider ssl_fail(ASYNC, ERR_CERT_COMMON_NAME_INVALID);
+  socket_factory_.AddSSLSocketDataProvider(&ssl_fail);
+
+  StaticSocketDataProvider data2;
+  data2.set_expected_addresses(AddressList(endpoint.ip_endpoints));
+  data2.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory_.AddSocketDataProvider(&data2);
+  SSLSocketDataProvider ssl_success(ASYNC, OK);
+  socket_factory_.AddSSLSocketDataProvider(&ssl_success);
+
+  base::HistogramTester histogram_tester;
+  TestConnectJobDelegate test_delegate;
+  std::unique_ptr<ConnectJob> ssl_connect_job =
+      CreateConnectJob(&test_delegate, ProxyChain::Direct());
+  EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(test_delegate.WaitForResult(), test::IsOk());
+  ssl_connect_job.reset();
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.SSLConnectJob.Outcome",
+      SSLConnectJob::Outcome::kSucceededAfterStaleDnsRetry, 1);
+  histogram_tester.ExpectTotalCount("Net.SSLConnectJob.CompleteTime.Succeeded",
+                                    1);
+  histogram_tester.ExpectTotalCount("Net.SSLConnectJob.CompleteTime.Failed", 0);
+}
+
+TEST_P(SSLConnectJobTest, HistogramsIgnoredCertError) {
+  if (!IsUsingHappyEyeballsV2()) {
+    GTEST_SKIP() << "SSLConnectJob histograms require HappyEyeballsV2.";
+  }
+  session_->IgnoreCertificateErrorsForTesting();
+
+  StaticSocketDataProvider data;
+  data.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory_.AddSocketDataProvider(&data);
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  ssl.expected_ignore_certificate_errors = true;
+  ssl.ssl_info.cert_status = CERT_STATUS_COMMON_NAME_INVALID;
+  socket_factory_.AddSSLSocketDataProvider(&ssl);
+
+  base::HistogramTester histogram_tester;
+  TestConnectJobDelegate test_delegate;
+  std::unique_ptr<ConnectJob> ssl_connect_job =
+      CreateConnectJob(&test_delegate);
+  test_delegate.StartJobExpectingResult(ssl_connect_job.get(), OK,
+                                        /*expect_sync_result=*/false);
+  ssl_connect_job.reset();
+
+  histogram_tester.ExpectUniqueSample("Net.SSLConnectJob.Outcome",
+                                      SSLConnectJob::Outcome::kSucceededInitial,
+                                      1);
+  histogram_tester.ExpectTotalCount("Net.SSLConnectJob.CompleteTime.Succeeded",
+                                    1);
+  histogram_tester.ExpectTotalCount("Net.SSLConnectJob.CompleteTime.Failed", 0);
+  histogram_tester.ExpectTotalCount("Net.SSLConnectJob.CompleteTime.Canceled",
+                                    0);
+}
+
+TEST_P(SSLConnectJobTest, HistogramsFailureAfterRestartUsesFinalAttemptPhase) {
+  if (!IsUsingHappyEyeballsV2()) {
+    GTEST_SKIP() << "SSLConnectJob histograms require HappyEyeballsV2.";
+  }
+  host_resolver_.set_synchronous_mode(true);
+
+  MockConnectCompleter tcp_completer;
+  StaticSocketDataProvider data1;
+  data1.set_connect_data(MockConnect(&tcp_completer));
+  socket_factory_.AddSocketDataProvider(&data1);
+  SSLSocketDataProvider ssl1(ASYNC, ERR_SSL_PROTOCOL_ERROR);
+  socket_factory_.AddSSLSocketDataProvider(&ssl1);
+
+  base::HistogramTester histogram_tester;
+  TestConnectJobDelegate test_delegate;
+  std::unique_ptr<ConnectJob> ssl_connect_job =
+      CreateConnectJob(&test_delegate);
+  ASSERT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
+  ASSERT_TRUE(tcp_completer.is_connecting());
+
+  // Make DNS fail for the legacy-crypto retry after the first SSL handshake
+  // fails, verifying that ResetStateForRestart() causes Outcome to reflect the
+  // final attempt's phase (kFailedBeforeTcp rather than kFailedDuringSsl).
+  host_resolver_.rules()->AddSimulatedFailure("host");
+  tcp_completer.Complete(OK);
+
+  EXPECT_THAT(test_delegate.WaitForResult(),
+              test::IsError(ERR_NAME_NOT_RESOLVED));
+  ssl_connect_job.reset();
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.SSLConnectJob.Outcome", SSLConnectJob::Outcome::kFailedBeforeTcp, 1);
+  histogram_tester.ExpectTotalCount("Net.SSLConnectJob.CompleteTime.Failed", 1);
+  histogram_tester.ExpectTotalCount("Net.SSLConnectJob.CompleteTime.Succeeded",
+                                    0);
+}
+
+TEST_P(SSLConnectJobOptimisticDnsTest, HistogramsChainedRestarts) {
+  HostResolverEndpointResult endpoint;
+  endpoint.ip_endpoints = {IPEndPoint(ParseIP("1::"), 8441)};
+  host_resolver_.rules()->AddRule(
+      "host",
+      MockHostResolverBase::RuleResolver::RuleResult(std::vector{endpoint}));
+  host_resolver_.set_is_stale_while_refreshing(true);
+
+  // 1. Stale DNS attempt fails TLS, triggering stale DNS retry.
+  StaticSocketDataProvider data1;
+  data1.set_expected_addresses(AddressList(endpoint.ip_endpoints));
+  data1.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory_.AddSocketDataProvider(&data1);
+  SSLSocketDataProvider ssl_stale_fail(ASYNC, ERR_CERT_COMMON_NAME_INVALID);
+  socket_factory_.AddSSLSocketDataProvider(&ssl_stale_fail);
+
+  // 2. Fresh DNS retry fails with a protocol error, triggering legacy crypto
+  // retry.
+  StaticSocketDataProvider data2;
+  data2.set_expected_addresses(AddressList(endpoint.ip_endpoints));
+  data2.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory_.AddSocketDataProvider(&data2);
+  SSLSocketDataProvider ssl_legacy_fail(ASYNC, ERR_SSL_PROTOCOL_ERROR);
+  socket_factory_.AddSSLSocketDataProvider(&ssl_legacy_fail);
+
+  // 3. Legacy crypto retry succeeds; Outcome attributes success to the most
+  // recent restart.
+  StaticSocketDataProvider data3;
+  data3.set_expected_addresses(AddressList(endpoint.ip_endpoints));
+  data3.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory_.AddSocketDataProvider(&data3);
+  SSLSocketDataProvider ssl_success(ASYNC, OK);
+  socket_factory_.AddSSLSocketDataProvider(&ssl_success);
+
+  base::HistogramTester histogram_tester;
+  TestConnectJobDelegate test_delegate;
+  std::unique_ptr<ConnectJob> ssl_connect_job =
+      CreateConnectJob(&test_delegate, ProxyChain::Direct());
+  EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(test_delegate.WaitForResult(), test::IsOk());
+  ssl_connect_job.reset();
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.SSLConnectJob.Outcome",
+      SSLConnectJob::Outcome::kSucceededAfterLegacyCryptoRetry, 1);
+  histogram_tester.ExpectTotalCount("Net.SSLConnectJob.CompleteTime.Succeeded",
+                                    1);
+  histogram_tester.ExpectTotalCount("Net.SSLConnectJob.CompleteTime.Failed", 0);
 }
 
 }  // namespace

@@ -6,13 +6,18 @@
 
 #include <cstdlib>
 #include <memory>
+#include <optional>
 #include <set>
+#include <string_view>
 #include <utility>
 #include <variant>
 
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "net/base/connection_endpoint_metadata.h"
 #include "net/base/features.h"
@@ -110,6 +115,8 @@ SSLConnectJob::SSLConnectJob(
                                     base::Unretained(this))) {}
 
 SSLConnectJob::~SSLConnectJob() {
+  MaybeRecordHistograms(std::nullopt);
+
   // In the case the job was canceled, need to delete nested job first to
   // correctly order NetLog events.
   tcp_connect_job_ = nullptr;
@@ -196,6 +203,7 @@ base::TimeDelta SSLConnectJob::HandshakeTimeoutForTesting() {
 void SSLConnectJob::OnIOComplete(int result) {
   int rv = DoLoop(result);
   if (rv != ERR_IO_PENDING) {
+    MaybeRecordHistograms(rv);
     NotifyDelegateOfCompletion(rv);  // Deletes |this|.
   }
 }
@@ -290,6 +298,9 @@ int SSLConnectJob::DoTransportConnectComplete(int result) {
   resolution_details_ = nested_connect_job_->GetResolutionDetails();
   ConnectionAttempts connection_attempts =
       nested_connect_job_->GetConnectionAttempts();
+  if (tcp_connect_job_) {
+    nested_job_had_tcp_attempt_ = tcp_connect_job_->HasStartedTcpAttempt();
+  }
   connection_attempts_.insert(connection_attempts_.end(),
                               connection_attempts.begin(),
                               connection_attempts.end());
@@ -468,6 +479,7 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
   if (result != OK && is_connected_via_stale_dns_) {
     ResetStateForRestart();
     disable_stale_dns_ = true;
+    last_restart_success_outcome_ = Outcome::kSucceededAfterStaleDnsRetry;
     next_state_ = GetInitialState(params_->GetConnectionType());
     return OK;
   }
@@ -488,6 +500,7 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
        result == ERR_SSL_VERSION_OR_CIPHER_MISMATCH)) {
     ResetStateForRestart();
     disable_legacy_crypto_with_fallback_ = false;
+    last_restart_success_outcome_ = Outcome::kSucceededAfterLegacyCryptoRetry;
     next_state_ = GetInitialState(params_->GetConnectionType());
     return OK;
   }
@@ -521,6 +534,7 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
         });
 
     ResetStateForRestart();
+    last_restart_success_outcome_ = Outcome::kSucceededAfterEchRetry;
     next_state_ = GetInitialState(params_->GetConnectionType());
     return OK;
   }
@@ -553,8 +567,23 @@ SSLConnectJob::State SSLConnectJob::GetInitialState(
 }
 
 int SSLConnectJob::ConnectInternal() {
+  job_start_time_ = base::TimeTicks::Now();
   next_state_ = GetInitialState(params_->GetConnectionType());
-  return DoLoop(OK);
+  int rv = DoLoop(OK);
+  if (rv != ERR_IO_PENDING) {
+    MaybeRecordHistograms(rv);
+  }
+  return rv;
+}
+
+void SSLConnectJob::ChangePriorityInternal(RequestPriority priority) {
+  if (nested_connect_job_) {
+    nested_connect_job_->ChangePriority(priority);
+  }
+}
+
+void SSLConnectJob::OnTimedOutInternal() {
+  MaybeRecordHistograms(ERR_TIMED_OUT);
 }
 
 void SSLConnectJob::ResetStateForRestart() {
@@ -566,14 +595,54 @@ void SSLConnectJob::ResetStateForRestart() {
   ssl_cert_request_info_ = nullptr;
   ssl_negotiation_started_ = false;
   is_connected_via_stale_dns_ = false;
+  nested_job_had_tcp_attempt_ = false;
   resolve_error_info_ = ResolveErrorInfo();
   server_address_ = IPEndPoint();
 }
 
-void SSLConnectJob::ChangePriorityInternal(RequestPriority priority) {
-  if (nested_connect_job_) {
-    nested_connect_job_->ChangePriority(priority);
+void SSLConnectJob::MaybeRecordHistograms(std::optional<int> result) {
+  if (metrics_recorded_ ||
+      params_->GetConnectionType() != SSLSocketParams::DIRECT ||
+      !base::FeatureList::IsEnabled(features::kHappyEyeballsV2) ||
+      job_start_time_.is_null()) {
+    return;
   }
+  metrics_recorded_ = true;
+
+  Outcome outcome;
+  std::string_view time_histogram;
+  if (!result.has_value()) {
+    time_histogram = "Net.SSLConnectJob.CompleteTime.Canceled";
+    if (tcp_connect_job_) {
+      if (tcp_connect_job_->IsWaitingOnPossibleAsyncDeletion()) {
+        outcome = Outcome::kCanceledForSpdyIpPooling;
+      } else if (!tcp_connect_job_->HasStartedTcpAttempt()) {
+        outcome = Outcome::kCanceledDuringDns;
+      } else {
+        outcome = Outcome::kCanceledDuringTcp;
+      }
+    } else {
+      CHECK(ssl_negotiation_started_);
+      outcome = Outcome::kCanceledDuringSsl;
+    }
+  } else if (*result == OK) {
+    time_histogram = "Net.SSLConnectJob.CompleteTime.Succeeded";
+    outcome =
+        last_restart_success_outcome_.value_or(Outcome::kSucceededInitial);
+  } else {
+    time_histogram = "Net.SSLConnectJob.CompleteTime.Failed";
+    if (ssl_negotiation_started_) {
+      outcome = Outcome::kFailedDuringSsl;
+    } else if (nested_job_had_tcp_attempt_) {
+      outcome = Outcome::kFailedDuringTcp;
+    } else {
+      outcome = Outcome::kFailedBeforeTcp;
+    }
+  }
+
+  base::UmaHistogramEnumeration("Net.SSLConnectJob.Outcome", outcome);
+  base::UmaHistogramLongTimes100(time_histogram,
+                                 base::TimeTicks::Now() - job_start_time_);
 }
 
 }  // namespace net

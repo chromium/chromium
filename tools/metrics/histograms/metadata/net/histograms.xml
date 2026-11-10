@@ -9668,6 +9668,47 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.SSLConnectJob.CompleteTime.{Result}" units="ms"
+    expires_after="2027-05-02">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Total elapsed time of a direct SSLConnectJob from ConnectInternal(),
+    including any internal restarts (stale DNS, legacy crypto, or ECH retry),
+    recorded once when the job {Result}. Not recorded for proxied connections
+    (HTTP or SOCKS proxy) or when HappyEyeballsV2 is disabled (such as on
+    Cronet).
+  </summary>
+  <token key="Result">
+    <variant name="Canceled"
+        summary="is destroyed while in flight before completing"/>
+    <variant name="Failed" summary="fails with an error or times out"/>
+    <variant name="Succeeded" summary="completes the TLS handshake"/>
+  </token>
+</histogram>
+
+<histogram name="Net.SSLConnectJob.Outcome" enum="SSLConnectJobOutcome"
+    expires_after="2027-05-02">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Final outcome of a direct SSLConnectJob, distinguishing initial vs.
+    retry-recovered successes (attributed to the most recent restart if multiple
+    restarts occurred), the phase of terminal failure (including certificate
+    errors unless ignored), and the phase of cancellation. If a restart occurred
+    before a terminal failure or cancellation, the recorded phase reflects the
+    final attempt. Cancellation at host resolution for HTTP/2 IP pooling covers
+    only jobs paused when an existing session is found during host resolution;
+    in-flight jobs later canceled when a concurrently connecting HTTP/2 session
+    completes are recorded under CanceledDuringTcp or CanceledDuringSsl.
+    Recorded once per direct SSLConnectJob upon completion, handshake timeout,
+    or destruction while in flight. Not recorded for proxied connections (HTTP
+    or SOCKS proxy) or when HappyEyeballsV2 is disabled (such as on Cronet).
+  </summary>
+</histogram>
+
 <histogram name="Net.SSLExtendedMainSecretSupported" enum="BooleanSupported"
     expires_after="2027-06-30">
   <owner>davidben@chromium.org</owner>
@@ -9892,6 +9933,106 @@ chromium-metrics-reviews@google.com.
   <summary>
     Time taken to successfully establish a TCP connection to an individual
     endpoint.
+  </summary>
+</histogram>
+
+<histogram name="Net.TcpConnectJob.AttemptsPerJob.{Result}" units="attempts"
+    expires_after="2027-05-02">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Total number of TCP connection attempts initiated across all connectors
+    (including stale and slow-timer connectors) in a non-override TcpConnectJob,
+    recorded once when the job {Result}. Not recorded when the job is canceled
+    or uses a ServiceEndpointOverride (such as ECH retry). Note: TcpConnectJob
+    is only used when HappyEyeballsV2 is enabled (enabled by default except on
+    Cronet), and covers all non-override TCP jobs including plain HTTP, proxy
+    transport legs, and non-ECH SSLConnectJob restarts.
+  </summary>
+  <token key="Result">
+    <variant name="Failed"
+        summary="fails with an error or times out (0 is recorded if the job
+                 fails before starting any TCP attempt, e.g. due to DNS
+                 failure)"/>
+    <variant name="Succeeded"
+        summary="establishes a usable connection (always at least 1)"/>
+  </token>
+</histogram>
+
+<histogram name="Net.TcpConnectJob.CompleteTime.{Result}" units="ms"
+    expires_after="2027-05-02">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Total elapsed time of a non-override TcpConnectJob from ConnectInternal(),
+    recorded once when the job {Result}. Not recorded when the job is canceled
+    or uses a ServiceEndpointOverride (such as ECH retry). Note: TcpConnectJob
+    is only used when HappyEyeballsV2 is enabled (enabled by default except on
+    Cronet), and covers all non-override TCP jobs including plain HTTP, proxy
+    transport legs, and non-ECH SSLConnectJob restarts.
+  </summary>
+  <token key="Result">
+    <variant name="Failed" summary="fails with an error or times out"/>
+    <variant name="Succeeded" summary="establishes a usable connection"/>
+  </token>
+</histogram>
+
+<histogram name="Net.TcpConnectJob.SuccessSource"
+    enum="TcpConnectJobSuccessSource" expires_after="2027-05-02">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    How a successful TcpConnectJob established its connection: on the first
+    attempt of the initial connector, on a subsequent attempt of an initial
+    connector after fast failure, via the secondary connector created by the
+    Happy Eyeballs slow timer, via a stale DNS attempt before fresh DNS
+    validation (or to an IP absent from fresh results), or via a stale-started
+    DNS attempt validated by matching fresh DNS results arriving before
+    completion (including promoted stale connectors in dual-race mode). Recorded
+    once per successful non-override TcpConnectJob. Not recorded when using a
+    ServiceEndpointOverride (such as ECH retry). Note: TcpConnectJob is only
+    used when HappyEyeballsV2 is enabled (enabled by default except on Cronet),
+    and covers all non-override TCP jobs including plain HTTP, proxy transport
+    legs, and non-ECH SSLConnectJob restarts.
+  </summary>
+</histogram>
+
+<histogram name="Net.TcpConnectJob.SupersededAttemptCount" units="attempts"
+    expires_after="2027-05-02">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Number of other connectors with an active in-flight connection attempt (or
+    connected socket awaiting DNS crypto readiness) that are discarded when the
+    winning connector completes a TcpConnectJob. Recorded once per successful
+    non-override TcpConnectJob. Not recorded when using a
+    ServiceEndpointOverride (such as ECH retry). Note: TcpConnectJob is only
+    used when HappyEyeballsV2 is enabled (enabled by default except on Cronet),
+    and covers all non-override TCP jobs including plain HTTP, proxy transport
+    legs, and non-ECH SSLConnectJob restarts.
+  </summary>
+</histogram>
+
+<histogram name="Net.TcpConnectJob.TimeToFirstAttempt" units="ms"
+    expires_after="2027-05-02">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <owner>src/net/OWNERS</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Elapsed time from TcpConnectJob::ConnectInternal() until the first TCP
+    connection attempt is initiated (on either a stale or fresh connector).
+    Recorded once per non-override TcpConnectJob when its first TCP connection
+    attempt starts, regardless of whether the job later succeeds, fails, or is
+    canceled. Not recorded if no TCP attempt is started or when using a
+    ServiceEndpointOverride (such as ECH retry). Note: TcpConnectJob is only
+    used when HappyEyeballsV2 is enabled (enabled by default except on Cronet),
+    and covers all non-override TCP jobs including plain HTTP, proxy transport
+    legs, and non-ECH SSLConnectJob restarts.
   </summary>
 </histogram>
 

@@ -5,6 +5,7 @@
 #include "net/socket/tcp_connect_job.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <memory>
 #include <optional>
 #include <ranges>
@@ -22,7 +23,9 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -119,7 +122,8 @@ TcpConnectJob::TcpConnectJob(
       params_(params),
       endpoint_override_(std::move(endpoint_result_override)),
       disable_stale_dns_(disable_stale_dns) {
-  fresh_state_.primary_connector = std::make_unique<Connector>(this, "first");
+  fresh_state_.primary_connector = std::make_unique<Connector>(
+      this, "first", /*created_by_slow_timer=*/false);
   DCHECK(base::FeatureList::IsEnabled(features::kHappyEyeballsV2));
   if (endpoint_override_) {
     UpdateSvcbOptional();
@@ -182,6 +186,14 @@ ServiceEndpoint TcpConnectJob::PassServiceEndpoint() {
   return std::move(final_service_endpoint_).value();
 }
 
+bool TcpConnectJob::HasStartedTcpAttempt() const {
+  return attempt_count_ > 0;
+}
+
+bool TcpConnectJob::IsWaitingOnPossibleAsyncDeletion() const {
+  return waiting_on_possible_async_deletion_count_ > 0;
+}
+
 base::TimeDelta TcpConnectJob::ConnectionTimeout() {
   // TODO(eroman): The use of this constant needs to be re-evaluated. The time
   // needed for TCPClientSocketXXX::Connect() can be arbitrarily long, since
@@ -218,6 +230,7 @@ size_t TcpConnectJob::GetStaleConnectorCountForTesting() const {
 
 int TcpConnectJob::ConnectInternal() {
   connect_timing_.domain_lookup_start = base::TimeTicks::Now();
+  job_start_time_ = connect_timing_.domain_lookup_start;
 
   int rv = OK;
   if (!endpoint_override_) {
@@ -249,6 +262,10 @@ void TcpConnectJob::ChangePriorityInternal(RequestPriority priority) {
     // attempts doesn't have priorities.
     dns_request_->ChangeRequestPriority(priority);
   }
+}
+
+void TcpConnectJob::OnTimedOutInternal() {
+  RecordCompletionHistograms(ERR_TIMED_OUT, /*winning_connector=*/nullptr);
 }
 
 int TcpConnectJob::DoServiceEndpointsUpdated(
@@ -376,8 +393,8 @@ int TcpConnectJob::DoTryAdvanceWaitingConnectors() {
   if (IsDualRaceOptimisticDnsEnabled()) {
     if (dns_request_ && dns_request_->IsStaleWhileRefreshing()) {
       if (!stale_state_.primary_connector) {
-        stale_state_.primary_connector =
-            std::make_unique<Connector>(this, "stale_primary");
+        stale_state_.primary_connector = std::make_unique<Connector>(
+            this, "stale_primary", /*created_by_slow_timer=*/false);
       }
     }
 
@@ -455,7 +472,8 @@ void TcpConnectJob::OnSlow(bool is_stale) {
   // Since the connectors may be flipped here, the static names of the
   // connectors for logging purposes are "first" and "second", rather than
   // "primary" and "ipv4".
-  state.ipv4_connector = std::make_unique<Connector>(this, "second");
+  state.ipv4_connector = std::make_unique<Connector>(
+      this, "second", /*created_by_slow_timer=*/true);
   if (!state.primary_connector->is_connecting_to_ipv6()) {
     std::swap(state.primary_connector, state.ipv4_connector);
   }
@@ -952,6 +970,8 @@ int TcpConnectJob::SetDone(int result, Connector* connector) {
     result = connection_attempts_.back().result;
   }
 
+  RecordCompletionHistograms(result, connector);
+
   // Cancel all work, and any pending callbacks. Main methods all have
   // `CHECK(!is_done_)` to catch if they are incorrectly run after completion,
   // to help ensure this is comprehensive.
@@ -1001,6 +1021,69 @@ void TcpConnectJob::NotifyDelegateIfDone(int result) {
     DCHECK(is_done_);
     NotifyDelegateOfCompletion(result);
   }
+}
+
+void TcpConnectJob::OnAttemptStarted() {
+  if (attempt_count_ == 0 && !metrics_recorded_ && !endpoint_override_ &&
+      !job_start_time_.is_null()) {
+    base::UmaHistogramLongTimes100("Net.TcpConnectJob.TimeToFirstAttempt",
+                                   base::TimeTicks::Now() - job_start_time_);
+  }
+  ++attempt_count_;
+}
+
+void TcpConnectJob::RecordCompletionHistograms(
+    int result,
+    const Connector* winning_connector) {
+  if (metrics_recorded_ || endpoint_override_ || job_start_time_.is_null()) {
+    return;
+  }
+  metrics_recorded_ = true;
+
+  const base::TimeDelta elapsed = base::TimeTicks::Now() - job_start_time_;
+  if (result != OK) {
+    base::UmaHistogramLongTimes100("Net.TcpConnectJob.CompleteTime.Failed",
+                                   elapsed);
+    base::UmaHistogramCounts100("Net.TcpConnectJob.AttemptsPerJob.Failed",
+                                base::saturated_cast<int>(attempt_count_));
+    return;
+  }
+
+  CHECK(winning_connector);
+  CHECK_GE(winning_connector->attempts_started(), 1u);
+
+  base::UmaHistogramLongTimes100("Net.TcpConnectJob.CompleteTime.Succeeded",
+                                 elapsed);
+  base::UmaHistogramCounts100("Net.TcpConnectJob.AttemptsPerJob.Succeeded",
+                              base::saturated_cast<int>(attempt_count_));
+
+  SuccessSource source;
+  if (winning_connector->current_attempt_started_as_stale()) {
+    source = IsConnectedViaStaleDns() ? SuccessSource::kStaleConnector
+                                      : SuccessSource::kPromotedStaleConnector;
+  } else if (IsConnectedViaStaleDns()) {
+    source = SuccessSource::kStaleConnector;
+  } else if (winning_connector->created_by_slow_timer()) {
+    source = SuccessSource::kSlowTimerConnector;
+  } else if (winning_connector->attempts_started() > 1) {
+    source = SuccessSource::kInitialConnectorLaterAttempt;
+  } else {
+    source = SuccessSource::kInitialConnectorFirstAttempt;
+  }
+  base::UmaHistogramEnumeration("Net.TcpConnectJob.SuccessSource", source);
+
+  int superseded_count = 0;
+  for (const Connector* candidate :
+       {fresh_state_.primary_connector.get(), fresh_state_.ipv4_connector.get(),
+        stale_state_.primary_connector.get(),
+        stale_state_.ipv4_connector.get()}) {
+    if (candidate && candidate != winning_connector &&
+        candidate->has_in_flight_attempt()) {
+      ++superseded_count;
+    }
+  }
+  base::UmaHistogramExactLinear("Net.TcpConnectJob.SupersededAttemptCount",
+                                superseded_count, /*exclusive_max=*/4);
 }
 
 bool TcpConnectJob::IsConnectedViaStaleDns() const {

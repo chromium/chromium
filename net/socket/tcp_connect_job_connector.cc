@@ -29,8 +29,11 @@
 namespace net {
 
 TcpConnectJob::Connector::Connector(TcpConnectJob* parent,
-                                    std::string_view name)
-    : parent_(*parent), name_(name) {}
+                                    std::string_view name,
+                                    bool created_by_slow_timer)
+    : parent_(*parent),
+      name_(name),
+      created_by_slow_timer_(created_by_slow_timer) {}
 
 TcpConnectJob::Connector::~Connector() = default;
 
@@ -158,6 +161,9 @@ int TcpConnectJob::Connector::DoObtainIPEndPoint() {
   // ensures we have the necessary ALPN/ECH metadata to verify the socket
   // if the connection succeeds but the IP is missing from the fresh results.
   bool is_stale = parent_->IsStaleConnector(*this);
+  current_attempt_started_as_stale_ =
+      is_stale || (!parent_->disable_stale_dns_ && parent_->dns_request_ &&
+                   parent_->dns_request_->IsStaleWhileRefreshing());
 
   if (is_stale && service_endpoint) {
     current_service_endpoint_ = *service_endpoint;
@@ -176,6 +182,8 @@ int TcpConnectJob::Connector::DoTcpConnect() {
   if (start_time_.is_null()) {
     start_time_ = base::TimeTicks::Now();
   }
+  ++attempts_started_;
+  parent_->OnAttemptStarted();
 
   next_state_ = State::kTcpConnectComplete;
 

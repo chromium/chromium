@@ -17,6 +17,7 @@
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "net/base/address_list.h"
@@ -4435,6 +4436,458 @@ TEST_P(TcpConnectJobOptimisticDnsTest, FreshDone_DnsCompletes_DoesNotCrash) {
   EXPECT_TRUE(connect_job_->HasEstablishedConnection());
   WaitForSuccess(kIpV6Endpoint1, stale_endpoint,
                  {ConnectionAttempt(kIpV4Endpoint1, ERR_CONNECTION_REFUSED)});
+}
+
+TEST_F(TcpConnectJobTest, HistogramsInitialConnectorFirstAttempt) {
+  base::HistogramTester histogram_tester;
+  const auto endpoint = CreateServiceEndpoint({kIpV6Endpoint1});
+  auto request = host_resolver_.AddFakeRequest();
+
+  MockConnectCompleter connect_completer;
+  AddConnect(MockConnect(&connect_completer), kIpV6Endpoint1);
+
+  EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+  FastForwardBy(base::Milliseconds(20));
+
+  request->set_crypto_ready(true)
+      .set_endpoints({endpoint})
+      .CallOnServiceEndpointRequestFinished(OK);
+  EXPECT_TRUE(connect_completer.is_connecting());
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.TcpConnectJob.TimeToFirstAttempt", base::Milliseconds(20), 1);
+
+  FastForwardBy(base::Milliseconds(30));
+  connect_completer.Complete(OK);
+  WaitForSuccess(kIpV6Endpoint1, endpoint);
+
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.TcpConnectJob.CompleteTime.Succeeded", base::Milliseconds(50), 1);
+  histogram_tester.ExpectTotalCount("Net.TcpConnectJob.CompleteTime.Failed", 0);
+  histogram_tester.ExpectUniqueSample(
+      "Net.TcpConnectJob.AttemptsPerJob.Succeeded", 1, 1);
+  histogram_tester.ExpectTotalCount("Net.TcpConnectJob.AttemptsPerJob.Failed",
+                                    0);
+  histogram_tester.ExpectUniqueSample(
+      "Net.TcpConnectJob.SuccessSource",
+      TcpConnectJob::SuccessSource::kInitialConnectorFirstAttempt, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.TcpConnectJob.SupersededAttemptCount", 0, 1);
+}
+
+TEST_F(TcpConnectJobTest, HistogramsInitialConnectorLaterAttempt) {
+  base::HistogramTester histogram_tester;
+  const auto endpoint = CreateServiceEndpoint({kIpV6Endpoint1, kIpV4Endpoint1});
+  auto request = host_resolver_.AddFakeRequest();
+
+  std::array<MockConnectCompleter, 2> connect_completers;
+  AddConnect(MockConnect(&connect_completers[0]), kIpV6Endpoint1);
+  AddConnect(MockConnect(&connect_completers[1]), kIpV4Endpoint1);
+
+  EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+  request->set_crypto_ready(true)
+      .set_endpoints({endpoint})
+      .CallOnServiceEndpointRequestFinished(OK);
+  EXPECT_TRUE(connect_completers[0].is_connecting());
+
+  FastForwardBy(base::Milliseconds(10));
+  connect_completers[0].Complete(ERR_CONNECTION_REFUSED);
+  EXPECT_TRUE(connect_completers[1].is_connecting());
+
+  FastForwardBy(base::Milliseconds(15));
+  connect_completers[1].Complete(OK);
+  WaitForSuccess(kIpV4Endpoint1, endpoint,
+                 {ConnectionAttempt(kIpV6Endpoint1, ERR_CONNECTION_REFUSED)});
+
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.TcpConnectJob.TimeToFirstAttempt", base::TimeDelta(), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.TcpConnectJob.CompleteTime.Succeeded", base::Milliseconds(25), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.TcpConnectJob.AttemptsPerJob.Succeeded", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.TcpConnectJob.SuccessSource",
+      TcpConnectJob::SuccessSource::kInitialConnectorLaterAttempt, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.TcpConnectJob.SupersededAttemptCount", 0, 1);
+}
+
+TEST_F(TcpConnectJobTest, HistogramsSlowTimerConnectorSupersedesPrimary) {
+  base::HistogramTester histogram_tester;
+  const auto endpoint = CreateServiceEndpoint({kIpV6Endpoint1, kIpV4Endpoint1});
+  auto request = host_resolver_.AddFakeRequest();
+
+  std::array<MockConnectCompleter, 2> connect_completers;
+  AddConnect(MockConnect(&connect_completers[0]), kIpV6Endpoint1);
+  AddConnect(MockConnect(&connect_completers[1]), kIpV4Endpoint1);
+
+  EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+  request->set_crypto_ready(true)
+      .set_endpoints({endpoint})
+      .CallOnServiceEndpointRequestFinished(OK);
+  EXPECT_TRUE(connect_completers[0].is_connecting());
+  EXPECT_FALSE(connect_completers[1].is_connecting());
+
+  FastForwardBy(TcpConnectJob::kIPv6FallbackTime);
+  EXPECT_TRUE(connect_completers[0].is_connecting());
+  EXPECT_TRUE(connect_completers[1].is_connecting());
+
+  FastForwardBy(base::Milliseconds(20));
+  connect_completers[1].Complete(OK);
+  WaitForSuccess(kIpV4Endpoint1, endpoint);
+
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.TcpConnectJob.CompleteTime.Succeeded",
+      TcpConnectJob::kIPv6FallbackTime + base::Milliseconds(20), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.TcpConnectJob.AttemptsPerJob.Succeeded", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.TcpConnectJob.SuccessSource",
+      TcpConnectJob::SuccessSource::kSlowTimerConnector, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.TcpConnectJob.SupersededAttemptCount", 1, 1);
+}
+
+TEST_F(TcpConnectJobTest, HistogramsSupersededConnectorWaitingForCryptoReady) {
+  base::HistogramTester histogram_tester;
+  const auto endpoint = CreateServiceEndpoint({kIpV6Endpoint1, kIpV4Endpoint1});
+  auto request = host_resolver_.AddFakeRequest();
+
+  std::array<MockConnectCompleter, 2> connect_completers;
+  AddConnect(MockConnect(&connect_completers[0]), kIpV6Endpoint1);
+  AddConnect(MockConnect(&connect_completers[1]), kIpV4Endpoint1);
+
+  EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+  request->set_crypto_ready(false)
+      .set_endpoints({endpoint})
+      .CallOnServiceEndpointsUpdated();
+  EXPECT_TRUE(connect_completers[0].is_connecting());
+  EXPECT_FALSE(connect_completers[1].is_connecting());
+
+  // Trigger the slow timer so both connectors have in-flight TCP handshakes,
+  // then complete both TCP sockets while DNS is still not crypto-ready so both
+  // enter State::kWaitForCryptoReady.
+  FastForwardBy(TcpConnectJob::kIPv6FallbackTime);
+  EXPECT_TRUE(connect_completers[1].is_connecting());
+  connect_completers[0].Complete(OK);
+  connect_completers[1].Complete(OK);
+
+  // Once DNS becomes crypto-ready, primary_connector completes first while
+  // ipv4_connector is still in State::kWaitForCryptoReady.
+  request->set_crypto_ready(true).CallOnServiceEndpointRequestFinished(OK);
+  WaitForSuccess(kIpV6Endpoint1, endpoint);
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.TcpConnectJob.AttemptsPerJob.Succeeded", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.TcpConnectJob.SuccessSource",
+      TcpConnectJob::SuccessSource::kInitialConnectorFirstAttempt, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.TcpConnectJob.SupersededAttemptCount", 1, 1);
+}
+
+TEST_F(TcpConnectJobTest, HistogramsDnsFailure) {
+  base::HistogramTester histogram_tester;
+  auto request = host_resolver_.AddFakeRequest();
+
+  EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+  FastForwardBy(base::Milliseconds(15));
+  request->CallOnServiceEndpointRequestFinished(ERR_NAME_NOT_RESOLVED);
+  WaitForError(ERR_NAME_NOT_RESOLVED,
+               {ConnectionAttempt(IPEndPoint(), ERR_NAME_NOT_RESOLVED)});
+
+  histogram_tester.ExpectTotalCount("Net.TcpConnectJob.TimeToFirstAttempt", 0);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.TcpConnectJob.CompleteTime.Failed", base::Milliseconds(15), 1);
+  histogram_tester.ExpectTotalCount("Net.TcpConnectJob.CompleteTime.Succeeded",
+                                    0);
+  histogram_tester.ExpectUniqueSample("Net.TcpConnectJob.AttemptsPerJob.Failed",
+                                      0, 1);
+  histogram_tester.ExpectTotalCount("Net.TcpConnectJob.SuccessSource", 0);
+  histogram_tester.ExpectTotalCount("Net.TcpConnectJob.SupersededAttemptCount",
+                                    0);
+}
+
+TEST_F(TcpConnectJobTest, HistogramsAllTcpAttemptsFail) {
+  base::HistogramTester histogram_tester;
+  const auto endpoint = CreateServiceEndpoint({kIpV6Endpoint1, kIpV4Endpoint1});
+  auto request = host_resolver_.AddFakeRequest();
+
+  AddConnect(MockConnect(ASYNC, ERR_CONNECTION_REFUSED), kIpV6Endpoint1);
+  AddConnect(MockConnect(ASYNC, ERR_CONNECTION_REFUSED), kIpV4Endpoint1);
+
+  EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+  request->set_crypto_ready(true)
+      .set_endpoints({endpoint})
+      .CallOnServiceEndpointRequestFinished(OK);
+  WaitForError(ERR_CONNECTION_REFUSED,
+               {ConnectionAttempt(kIpV6Endpoint1, ERR_CONNECTION_REFUSED),
+                ConnectionAttempt(kIpV4Endpoint1, ERR_CONNECTION_REFUSED)});
+
+  histogram_tester.ExpectTotalCount("Net.TcpConnectJob.TimeToFirstAttempt", 1);
+  histogram_tester.ExpectTotalCount("Net.TcpConnectJob.CompleteTime.Failed", 1);
+  histogram_tester.ExpectUniqueSample("Net.TcpConnectJob.AttemptsPerJob.Failed",
+                                      2, 1);
+  histogram_tester.ExpectTotalCount("Net.TcpConnectJob.SuccessSource", 0);
+}
+
+TEST_F(TcpConnectJobTest, HistogramsConnectionTimeout) {
+  base::HistogramTester histogram_tester;
+  const auto endpoint = CreateServiceEndpoint({kIpV6Endpoint1});
+  auto request = host_resolver_.AddFakeRequest();
+
+  MockConnectCompleter connect_completer;
+  AddConnect(MockConnect(&connect_completer), kIpV6Endpoint1);
+
+  EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+  request->set_crypto_ready(true)
+      .set_endpoints({endpoint})
+      .CallOnServiceEndpointRequestFinished(OK);
+  EXPECT_TRUE(connect_completer.is_connecting());
+
+  FastForwardBy(TcpConnectJob::ConnectionTimeout());
+  EXPECT_THAT(test_delegate_->WaitForResult(), IsError(ERR_TIMED_OUT));
+
+  histogram_tester.ExpectTotalCount("Net.TcpConnectJob.TimeToFirstAttempt", 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.TcpConnectJob.CompleteTime.Failed",
+      TcpConnectJob::ConnectionTimeout(), 1);
+  // The 4-minute job timeout must fit within an interior bucket rather than the
+  // 1-hour overflow bucket.
+  EXPECT_EQ(
+      histogram_tester.GetBucketCount("Net.TcpConnectJob.CompleteTime.Failed",
+                                      base::Hours(1).InMilliseconds()),
+      0);
+  histogram_tester.ExpectUniqueSample("Net.TcpConnectJob.AttemptsPerJob.Failed",
+                                      1, 1);
+}
+
+TEST_F(TcpConnectJobTest,
+       HistogramsLateDnsAfterTimeoutDoesNotRecordTimeToFirstAttempt) {
+  base::HistogramTester histogram_tester;
+  const auto endpoint = CreateServiceEndpoint({kIpV6Endpoint1});
+  auto request = host_resolver_.AddFakeRequest();
+
+  MockConnectCompleter connect_completer;
+  AddConnect(MockConnect(&connect_completer), kIpV6Endpoint1);
+
+  EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+  FastForwardBy(TcpConnectJob::ConnectionTimeout());
+  EXPECT_THAT(test_delegate_->WaitForResult(), IsError(ERR_TIMED_OUT));
+
+  histogram_tester.ExpectUniqueSample("Net.TcpConnectJob.AttemptsPerJob.Failed",
+                                      0, 1);
+  histogram_tester.ExpectTotalCount("Net.TcpConnectJob.TimeToFirstAttempt", 0);
+
+  // If the owner has not destroyed `connect_job_` synchronously yet and DNS
+  // finishes later, `OnAttemptStarted()` must not emit `TimeToFirstAttempt`
+  // after terminal metrics were already recorded.
+  request->set_crypto_ready(true)
+      .set_endpoints({endpoint})
+      .CallOnServiceEndpointRequestFinished(OK);
+  EXPECT_TRUE(connect_completer.is_connecting());
+  histogram_tester.ExpectTotalCount("Net.TcpConnectJob.TimeToFirstAttempt", 0);
+}
+
+TEST_F(TcpConnectJobTest, HistogramsCanceledInFlight) {
+  base::HistogramTester histogram_tester;
+  const auto endpoint = CreateServiceEndpoint({kIpV6Endpoint1});
+  auto request = host_resolver_.AddFakeRequest();
+
+  MockConnectCompleter connect_completer;
+  AddConnect(MockConnect(&connect_completer), kIpV6Endpoint1);
+
+  EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+  request->set_crypto_ready(true)
+      .set_endpoints({endpoint})
+      .CallOnServiceEndpointRequestFinished(OK);
+  EXPECT_TRUE(connect_completer.is_connecting());
+
+  connect_job_.reset();
+
+  histogram_tester.ExpectTotalCount("Net.TcpConnectJob.TimeToFirstAttempt", 1);
+  histogram_tester.ExpectTotalCount("Net.TcpConnectJob.CompleteTime.Succeeded",
+                                    0);
+  histogram_tester.ExpectTotalCount("Net.TcpConnectJob.CompleteTime.Failed", 0);
+  histogram_tester.ExpectTotalCount(
+      "Net.TcpConnectJob.AttemptsPerJob.Succeeded", 0);
+  histogram_tester.ExpectTotalCount("Net.TcpConnectJob.AttemptsPerJob.Failed",
+                                    0);
+  histogram_tester.ExpectTotalCount("Net.TcpConnectJob.SuccessSource", 0);
+  histogram_tester.ExpectTotalCount("Net.TcpConnectJob.SupersededAttemptCount",
+                                    0);
+}
+
+TEST_F(TcpConnectJobTest, HistogramsExcludedForEndpointOverride) {
+  base::HistogramTester histogram_tester;
+  const auto endpoint = CreateServiceEndpoint({kIpV6Endpoint1});
+  service_endpoint_override_.emplace(endpoint, kDnsAliases);
+  AddConnect(MockConnect(SYNCHRONOUS, OK), kIpV6Endpoint1);
+
+  InitRunAndExpectSuccess(kIpV6Endpoint1, endpoint,
+                          /*expect_sync_result=*/true);
+
+  histogram_tester.ExpectTotalCount("Net.TcpConnectJob.TimeToFirstAttempt", 0);
+  histogram_tester.ExpectTotalCount("Net.TcpConnectJob.CompleteTime.Succeeded",
+                                    0);
+  histogram_tester.ExpectTotalCount("Net.TcpConnectJob.CompleteTime.Failed", 0);
+  histogram_tester.ExpectTotalCount(
+      "Net.TcpConnectJob.AttemptsPerJob.Succeeded", 0);
+  histogram_tester.ExpectTotalCount("Net.TcpConnectJob.AttemptsPerJob.Failed",
+                                    0);
+  histogram_tester.ExpectTotalCount("Net.TcpConnectJob.SuccessSource", 0);
+  histogram_tester.ExpectTotalCount("Net.TcpConnectJob.SupersededAttemptCount",
+                                    0);
+}
+
+TEST_P(TcpConnectJobOptimisticDnsTest, HistogramsStaleConnectorWins) {
+  base::HistogramTester histogram_tester;
+  const auto stale_endpoint = CreateServiceEndpoint({kIpV4Endpoint1});
+  auto request = host_resolver_.AddFakeRequest();
+
+  MockConnectCompleter connect_completer;
+  AddConnect(MockConnect(&connect_completer), kIpV4Endpoint1);
+
+  EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+  request->set_crypto_ready(true)
+      .set_is_stale_while_refreshing(true)
+      .set_endpoints({stale_endpoint})
+      .set_aliases(kDnsAliases)
+      .CallOnServiceEndpointsUpdated();
+  EXPECT_TRUE(connect_completer.is_connecting());
+
+  connect_completer.Complete(OK);
+  WaitForSuccess(kIpV4Endpoint1, stale_endpoint);
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.TcpConnectJob.SuccessSource",
+      TcpConnectJob::SuccessSource::kStaleConnector, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.TcpConnectJob.AttemptsPerJob.Succeeded", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.TcpConnectJob.SupersededAttemptCount", 0, 1);
+}
+
+TEST_P(TcpConnectJobOptimisticDnsTest, HistogramsPromotedStaleConnectorWins) {
+  base::HistogramTester histogram_tester;
+  const auto endpoint = CreateServiceEndpoint({kIpV4Endpoint1});
+  auto request = host_resolver_.AddFakeRequest();
+
+  MockConnectCompleter connect_completer;
+  AddConnect(MockConnect(&connect_completer), kIpV4Endpoint1);
+
+  EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+  request->set_crypto_ready(true)
+      .set_is_stale_while_refreshing(true)
+      .set_endpoints({endpoint})
+      .set_aliases(kDnsAliases)
+      .CallOnServiceEndpointsUpdated();
+  EXPECT_TRUE(connect_completer.is_connecting());
+
+  // Matching fresh results arrive while the stale-started attempt is in flight
+  // (promoting the stale connector in dual-race mode, or validating the
+  // in-flight attempt in single-state mode).
+  request->set_is_stale_while_refreshing(false)
+      .set_endpoints({endpoint})
+      .CallOnServiceEndpointRequestFinished(OK);
+
+  connect_completer.Complete(OK);
+  WaitForSuccess(kIpV4Endpoint1, endpoint);
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.TcpConnectJob.SuccessSource",
+      TcpConnectJob::SuccessSource::kPromotedStaleConnector, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.TcpConnectJob.AttemptsPerJob.Succeeded", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.TcpConnectJob.SupersededAttemptCount", 0, 1);
+}
+
+TEST_P(TcpConnectJobOptimisticDnsTest,
+       HistogramsPromotedStaleFailsAndFreshFallbackWins) {
+  base::HistogramTester histogram_tester;
+  const auto stale_endpoint = CreateServiceEndpoint({kIpV4Endpoint1});
+  const auto fresh_endpoint =
+      CreateServiceEndpoint({kIpV4Endpoint1, kIpV4Endpoint2});
+  auto request = host_resolver_.AddFakeRequest();
+
+  std::array<MockConnectCompleter, 2> connect_completers;
+  AddConnect(MockConnect(&connect_completers[0]), kIpV4Endpoint1);
+  AddConnect(MockConnect(&connect_completers[1]), kIpV4Endpoint2);
+
+  EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+  request->set_crypto_ready(true)
+      .set_is_stale_while_refreshing(true)
+      .set_endpoints({stale_endpoint})
+      .set_aliases(kDnsAliases)
+      .CallOnServiceEndpointsUpdated();
+  EXPECT_TRUE(connect_completers[0].is_connecting());
+
+  // Deliver fresh results while the stale-started attempt is in flight, then
+  // fail that attempt so the connector falls back to a fresh-only IP.
+  request->set_is_stale_while_refreshing(false)
+      .set_endpoints({fresh_endpoint})
+      .CallOnServiceEndpointRequestFinished(OK);
+  connect_completers[0].Complete(ERR_CONNECTION_REFUSED);
+  EXPECT_TRUE(connect_completers[1].is_connecting());
+
+  connect_completers[1].Complete(OK);
+  WaitForSuccess(kIpV4Endpoint2, fresh_endpoint,
+                 {ConnectionAttempt(kIpV4Endpoint1, ERR_CONNECTION_REFUSED)});
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.TcpConnectJob.SuccessSource",
+      TcpConnectJob::SuccessSource::kInitialConnectorLaterAttempt, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.TcpConnectJob.AttemptsPerJob.Succeeded", 2, 1);
+}
+
+TEST_P(TcpConnectJobOptimisticDnsTest, HistogramsMultipleSupersededAttempts) {
+  if (!UseStaleConnectors()) {
+    GTEST_SKIP()
+        << "Multiple superseded connectors across stale/fresh states require "
+           "dual-race mode.";
+  }
+
+  base::HistogramTester histogram_tester;
+  const auto stale_endpoint =
+      CreateServiceEndpoint({kIpV6Endpoint1, kIpV4Endpoint1});
+  const auto fresh_endpoint = CreateServiceEndpoint({kIpV4Endpoint2});
+  auto request = host_resolver_.AddFakeRequest();
+
+  std::array<MockConnectCompleter, 3> connect_completers;
+  AddConnect(MockConnect(&connect_completers[0]), kIpV6Endpoint1);
+  AddConnect(MockConnect(&connect_completers[1]), kIpV4Endpoint1);
+  AddConnect(MockConnect(&connect_completers[2]), kIpV4Endpoint2);
+
+  EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+  request->set_crypto_ready(true)
+      .set_is_stale_while_refreshing(true)
+      .set_endpoints({stale_endpoint})
+      .set_aliases(kDnsAliases)
+      .CallOnServiceEndpointsUpdated();
+  EXPECT_TRUE(connect_completers[0].is_connecting());
+
+  // Start the stale slow-timer connector so two stale connectors are in flight.
+  FastForwardBy(TcpConnectJob::kIPv6FallbackTime);
+  EXPECT_TRUE(connect_completers[1].is_connecting());
+
+  // Fresh DNS arrives with a distinct IP; the fresh connector wins while both
+  // stale connectors are still in flight.
+  request->set_is_stale_while_refreshing(false)
+      .set_endpoints({fresh_endpoint})
+      .CallOnServiceEndpointRequestFinished(OK);
+  EXPECT_TRUE(connect_completers[2].is_connecting());
+
+  connect_completers[2].Complete(OK);
+  WaitForSuccess(kIpV4Endpoint2, fresh_endpoint);
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.TcpConnectJob.AttemptsPerJob.Succeeded", 3, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.TcpConnectJob.SuccessSource",
+      TcpConnectJob::SuccessSource::kInitialConnectorFirstAttempt, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.TcpConnectJob.SupersededAttemptCount", 2, 1);
 }
 
 }  // namespace

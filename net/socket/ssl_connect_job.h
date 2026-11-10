@@ -96,6 +96,28 @@ class NET_EXPORT_PRIVATE SSLSocketParams
 class NET_EXPORT_PRIVATE SSLConnectJob : public ConnectJob,
                                          public ConnectJob::Delegate {
  public:
+  // Final outcome of a direct SSLConnectJob.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(SSLConnectJobOutcome)
+  enum class Outcome {
+    kSucceededInitial = 0,
+    kSucceededAfterStaleDnsRetry = 1,
+    kSucceededAfterLegacyCryptoRetry = 2,
+    kSucceededAfterEchRetry = 3,
+    kFailedBeforeTcp = 4,
+    kFailedDuringTcp = 5,
+    kFailedDuringSsl = 6,
+    kCanceledForSpdyIpPooling = 7,
+    kCanceledDuringDns = 8,
+    kCanceledDuringTcp = 9,
+    kCanceledDuringSsl = 10,
+    kMaxValue = kCanceledDuringSsl,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:SSLConnectJobOutcome)
+
   class NET_EXPORT_PRIVATE Factory {
    public:
     Factory() = default;
@@ -177,10 +199,16 @@ class NET_EXPORT_PRIVATE SSLConnectJob : public ConnectJob,
   // ERR_IO_PENDING if it cannot immediately service the request.
   // Otherwise, it returns a net error code.
   int ConnectInternal() override;
+  void ChangePriorityInternal(RequestPriority priority) override;
+  void OnTimedOutInternal() override;
 
   void ResetStateForRestart();
 
-  void ChangePriorityInternal(RequestPriority priority) override;
+  // Records job-level outcome and elapsed-time histograms once per direct
+  // `SSLConnectJob` (when `kHappyEyeballsV2` is enabled). `result` is the
+  // terminal net error code (`OK` on success, negative error on failure or
+  // timeout), or `std::nullopt` when destroyed while still in flight.
+  void MaybeRecordHistograms(std::optional<int> result);
 
   scoped_refptr<SSLSocketParams> params_;
   std::optional<ResolutionDetails> resolution_details_;
@@ -189,8 +217,10 @@ class NET_EXPORT_PRIVATE SSLConnectJob : public ConnectJob,
   CompletionRepeatingCallback callback_;
   std::unique_ptr<ConnectJob> nested_connect_job_;
   // Points to `nested_connect_job_` if it's of type TcpConnectJob. Used to call
-  // GetServiceEndpoint() on successful connect if non-null.
-  raw_ptr<TcpConnectJob> tcp_connect_job_;
+  // PassServiceEndpoint() on successful connect, and to query
+  // HasStartedTcpAttempt() and IsWaitingOnPossibleAsyncDeletion() for
+  // histograms.
+  raw_ptr<TcpConnectJob> tcp_connect_job_ = nullptr;
   std::unique_ptr<StreamSocket> nested_socket_;
   std::unique_ptr<SSLClientSocket> ssl_socket_;
 
@@ -239,6 +269,18 @@ class NET_EXPORT_PRIVATE SSLConnectJob : public ConnectJob,
   // attempt. Set to true when a previous connection attempt via stale DNS
   // failed and the job needs to retry with fresh results.
   bool disable_stale_dns_ = false;
+
+  // Timestamp when `ConnectInternal()` started, used for job-level timing
+  // histograms across all internal restarts.
+  base::TimeTicks job_start_time_;
+  // True if the current nested transport job initiated at least one TCP
+  // connection attempt. Reset in `ResetStateForRestart()`.
+  bool nested_job_had_tcp_attempt_ = false;
+  // Success `Outcome` corresponding to the most recent internal restart, if
+  // any. Intentionally preserved across `ResetStateForRestart()`.
+  std::optional<Outcome> last_restart_success_outcome_;
+  // Ensures job-level histograms are emitted at most once.
+  bool metrics_recorded_ = false;
 };
 
 }  // namespace net
