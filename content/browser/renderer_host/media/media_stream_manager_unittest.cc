@@ -1198,6 +1198,109 @@ TEST_F(MediaStreamManagerTest, ValidateAudioSession) {
       base::UnguessableToken::Create(), kRenderFrameHostId));
 }
 
+TEST_F(MediaStreamManagerTest, VideoDeviceIdToSessionId) {
+  const char kDeviceRawId[] = "device_1";
+  SetVideoCaptureDevices({media::VideoCaptureDeviceInfo{
+      media::VideoCaptureDeviceDescriptor{/*display_name=*/"Camera",
+                                          /*device_id=*/kDeviceRawId}}});
+  media_stream_manager_->UseFakeUIFactoryForTests(base::BindRepeating([]() {
+    return std::make_unique<FakeMediaStreamUIProxy>(
+        /*tests_use_fake_render_frame_hosts=*/true);
+  }));
+  EXPECT_CALL(*media_observer_, OnMediaRequestStateChanged(_, _, _, _, _, _))
+      .Times(testing::AnyNumber());
+
+  const auto salt_and_origin = MediaDeviceSaltAndOrigin::Empty();
+  const std::string hmac_device_id =
+      GetHMACForRawMediaDeviceID(salt_and_origin, kDeviceRawId);
+
+  const auto open_video_stream =
+      [&](GlobalRenderFrameHostId render_frame_host_id) {
+        base::test::TestFuture<blink::mojom::MediaStreamRequestResult,
+                               const std::string&,
+                               blink::mojom::StreamDevicesSetPtr, bool>
+            future;
+        media_stream_manager_->GenerateStreams(
+            render_frame_host_id, /*requester_id=*/1, /*page_request_id=*/1,
+            GetVideoStreamControls(hmac_device_id), salt_and_origin,
+            /*user_gesture=*/false,
+            StreamSelectionInfo::NewSearchOnlyByDeviceId({}),
+            future.GetCallback(),
+            /*device_stopped_callback=*/base::DoNothing(),
+            /*device_changed_callback=*/base::DoNothing(),
+            /*device_request_state_change_callback=*/base::DoNothing(),
+            /*device_capture_configuration_change_callback=*/base::DoNothing(),
+            /*device_capture_handle_change_callback=*/base::DoNothing(),
+            /*zoom_level_change_callback=*/base::DoNothing());
+        return future.Take();
+      };
+
+  auto [result_1, label_1, devices_set_1, ptz_1] =
+      open_video_stream(kRenderFrameHostId);
+  ASSERT_EQ(result_1, blink::mojom::MediaStreamRequestResult::OK);
+  ASSERT_EQ(devices_set_1->stream_devices.size(), 1u);
+  ASSERT_TRUE(devices_set_1->stream_devices[0]->video_device.has_value());
+  const blink::MediaStreamDevice video_device_1 =
+      *devices_set_1->stream_devices[0]->video_device;
+  ASSERT_EQ(video_device_1.id, hmac_device_id);
+  ASSERT_FALSE(video_device_1.session_id().is_empty());
+
+  EXPECT_EQ(media_stream_manager_->VideoDeviceIdToSessionId(video_device_1.id,
+                                                            kRenderFrameHostId),
+            video_device_1.session_id());
+  EXPECT_TRUE(
+      media_stream_manager_
+          ->VideoDeviceIdToSessionId("unknown_device_id", kRenderFrameHostId)
+          .is_empty());
+
+  const GlobalRenderFrameHostId other_frame(
+      kRenderFrameHostId.child_id, kRenderFrameHostId.frame_routing_id + 1);
+  const GlobalRenderFrameHostId other_process(
+      ChildProcessId(kRenderFrameHostId.child_id.value() + 1),
+      kRenderFrameHostId.frame_routing_id);
+  EXPECT_TRUE(media_stream_manager_
+                  ->VideoDeviceIdToSessionId(video_device_1.id, other_frame)
+                  .is_empty());
+  EXPECT_TRUE(media_stream_manager_
+                  ->VideoDeviceIdToSessionId(video_device_1.id, other_process)
+                  .is_empty());
+
+  // If another same-origin frame opens the same camera, both frames receive the
+  // same HMAC `device.id` with distinct sessions, and each resolves its own.
+  auto [result_2, label_2, devices_set_2, ptz_2] =
+      open_video_stream(other_frame);
+  ASSERT_EQ(result_2, blink::mojom::MediaStreamRequestResult::OK);
+  ASSERT_EQ(devices_set_2->stream_devices.size(), 1u);
+  ASSERT_TRUE(devices_set_2->stream_devices[0]->video_device.has_value());
+  const blink::MediaStreamDevice video_device_2 =
+      *devices_set_2->stream_devices[0]->video_device;
+  EXPECT_EQ(video_device_2.id, video_device_1.id);
+  EXPECT_NE(video_device_2.session_id(), video_device_1.session_id());
+
+  EXPECT_EQ(media_stream_manager_->VideoDeviceIdToSessionId(video_device_1.id,
+                                                            kRenderFrameHostId),
+            video_device_1.session_id());
+  EXPECT_EQ(media_stream_manager_->VideoDeviceIdToSessionId(video_device_2.id,
+                                                            other_frame),
+            video_device_2.session_id());
+
+  // Stopping `other_frame`'s stream must not allow it to fall back to
+  // `kRenderFrameHostId`'s still-active session.
+  media_stream_manager_->CancelRequest(label_2);
+  EXPECT_TRUE(media_stream_manager_
+                  ->VideoDeviceIdToSessionId(video_device_2.id, other_frame)
+                  .is_empty());
+  EXPECT_EQ(media_stream_manager_->VideoDeviceIdToSessionId(video_device_1.id,
+                                                            kRenderFrameHostId),
+            video_device_1.session_id());
+
+  media_stream_manager_->CancelRequest(label_1);
+  EXPECT_TRUE(
+      media_stream_manager_
+          ->VideoDeviceIdToSessionId(video_device_1.id, kRenderFrameHostId)
+          .is_empty());
+}
+
 TEST_F(MediaStreamManagerTest, AudioOutputAuthorizationUsesBoundFrame) {
   media_stream_manager_->UseFakeUIFactoryForTests(base::BindRepeating([]() {
     return std::make_unique<FakeMediaStreamUIProxy>(
