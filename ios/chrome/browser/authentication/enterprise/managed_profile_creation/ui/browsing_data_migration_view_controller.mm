@@ -115,11 +115,14 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 #pragma mark - Private
 
 // Creates the Cell that allows the user to select how to handle browsing data.
-- (UITableViewCell*)createBrowsingDataMigrationCellItem:(NSString*)title
-                                                details:(NSString*)details
-                                               selected:(BOOL)selected
-                                accessibilityIdentifier:
-                                    (NSString*)accessibilityIdentifier {
+// `indexPath` is the index path of the cell, used to dequeue the existing cell
+// when the item is reconfigured.
+- (UITableViewCell*)
+    createBrowsingDataMigrationCellItem:(NSString*)title
+                                details:(NSString*)details
+                               selected:(BOOL)selected
+                accessibilityIdentifier:(NSString*)accessibilityIdentifier
+                              indexPath:(NSIndexPath*)indexPath {
   TableViewCellContentConfiguration* configuration =
       [[TableViewCellContentConfiguration alloc] init];
 
@@ -140,7 +143,8 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   configuration.leadingConfiguration = checkmarkConfig;
 
   UITableViewCell* cell =
-      [TableViewCellContentConfiguration dequeueTableViewCell:self.tableView];
+      [TableViewCellContentConfiguration dequeueTableViewCell:self.tableView
+                                                 forIndexPath:indexPath];
 
   cell.contentConfiguration = configuration;
 
@@ -198,7 +202,8 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
           createBrowsingDataMigrationCellItem:title
                                       details:details
                                      selected:_browsingDataSeparate
-                      accessibilityIdentifier:kKeepBrowsingDataSeparateCellId];
+                      accessibilityIdentifier:kKeepBrowsingDataSeparateCellId
+                                    indexPath:indexPath];
     }
     case ItemIdentifierMergeBrowsingData: {
       auto title = l10n_util::GetNSString(
@@ -206,11 +211,11 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       auto details = l10n_util::GetNSStringF(
           IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_MERGE_BROWSING_DATA_SUBTITLE,
           base::SysNSStringToUTF16(_userEmail));
-      return
-          [self createBrowsingDataMigrationCellItem:title
-                                            details:details
-                                           selected:!_browsingDataSeparate
-                            accessibilityIdentifier:kMergeBrowsingDataCellId];
+      return [self createBrowsingDataMigrationCellItem:title
+                                               details:details
+                                              selected:!_browsingDataSeparate
+                               accessibilityIdentifier:kMergeBrowsingDataCellId
+                                             indexPath:indexPath];
     }
   }
   NOTREACHED();
