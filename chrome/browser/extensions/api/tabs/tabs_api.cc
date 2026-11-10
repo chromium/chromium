@@ -1542,13 +1542,6 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
       return RespondNow(Error(std::move(error)));
     }
 
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
-    if (extension()) {
-      enterprise_connectors::ExtensionActorTracker::SetActiveActor(
-          original_contents, extension_id(), static_function_name());
-    }
-#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
-
 #if BUILDFLAG(FULL_SAFE_BROWSING)
     NotifyExtensionTelemetry(Profile::FromBrowserContext(browser_context()),
                              extension(), safe_browsing::TabsApiInfo::UPDATE,
@@ -1756,6 +1749,13 @@ bool TabsUpdateFunction::UpdateURL(content::WebContents* web_contents,
   // Marking the navigation as initiated via an API means that the focus
   // will stay in the omnibox - see https://crbug.com/40693812.
   load_params.transition_type = ui::PAGE_TRANSITION_FROM_API;
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+  if (extension()) {
+    enterprise_connectors::ExtensionActorTracker::SetActiveActor(
+        web_contents, extension_id(), static_function_name());
+  }
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
   base::WeakPtr<content::NavigationHandle> navigation_handle =
       web_contents->GetController().LoadURLWithParams(load_params);
