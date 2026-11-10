@@ -84,6 +84,10 @@
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/window/dialog_delegate.h"
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 using extensions::InstallPromptData;
 using extensions::PermissionIDSet;
 using extensions::PermissionMessage;
@@ -1118,6 +1122,19 @@ class ExtensionInstallDialogPictureInPictureInputProtectorTest
         second_widget->GetWindowBoundsInScreen());
   }
 
+  // Returns false on platforms (e.g. Wayland) that don't expose the position
+  // of top-level windows. There, the occlusion tracker can't tell whether
+  // separate top-level windows overlap, so it never reports them as occluding.
+  static bool PlatformSupportsGlobalScreenCoordinates() {
+#if BUILDFLAG(IS_OZONE)
+    return ui::OzonePlatform::GetInstance()
+        ->GetPlatformProperties()
+        .supports_global_screen_coordinates;
+#else
+    return true;
+#endif
+  }
+
   void ResizeWidgetAndWaitIfNeeded(
       views::Widget* widget,
       const gfx::Rect& target_bounds,
@@ -1204,9 +1221,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogPictureInPictureInputProtectorTest,
       WidgetsOverlap(delegate_view->GetWidget(), browser_view->GetWidget()));
 
   // Verify that button pressed events are ignored, since the extension install
-  // dialog is occluded.
-  EXPECT_TRUE(delegate_view->ShouldIgnoreButtonPressedEventHandlingForTesting(
-      nullptr, mouse_event));
+  // dialog is occluded. Without global screen coordinates, the dialog and the
+  // picture-in-picture window are separate top-level windows whose relative
+  // position is unknown, so the dialog is not considered occluded.
+  EXPECT_EQ(PlatformSupportsGlobalScreenCoordinates(),
+            delegate_view->ShouldIgnoreButtonPressedEventHandlingForTesting(
+                nullptr, mouse_event));
   CloseAndWait(delegate_view->GetWidget());
 }
 
