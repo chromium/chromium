@@ -74,6 +74,9 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
 
 - (void)reloadTableViewData {
   [_tableView reloadData];
+  // `reloadData` clears the table view's selection, so it needs to be restored
+  // to keep it in sync with the checkmark.
+  [self selectCurrentRow];
   [self updateHeight];
 }
 
