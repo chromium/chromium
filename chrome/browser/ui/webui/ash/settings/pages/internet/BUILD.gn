@@ -42,6 +42,7 @@ static_library("internet") {
     "//chromeos/ash/components/network",
     "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/ash/experiences/arc/session",
+    "//chromeos/ash/experiences/settings_ui/resources:strings",
     "//chromeos/strings",
     "//components/onc",
     "//components/prefs",

@@ -3228,6 +3228,641 @@ Press an assigned switch or key to remove assignment.
         Select-to-speak settings
       </message>
 
+      <!-- Internet page (OS settings) -->
+      <message name="IDS_OS_SETTINGS_INTERNET_MENU_ITEM_DESCRIPTION_WIFI_ONLY" desc="Description for the Internet menu item in the left menu when no networks are connected and mobile data is not supported.">
+        Wi-Fi
+      </message>
+      <message name="IDS_OS_SETTINGS_INTERNET_MENU_ITEM_DESCRIPTION_WIFI_AND_MOBILE_DATA" desc="Description for the Internet menu item in the left menu when no networks are connected but mobile data is supported.">
+        Wi-Fi, mobile data
+      </message>
+      <message name="IDS_OS_SETTINGS_INTERNET_MENU_ITEM_DESCRIPTION_INSTANT_HOTSPOT_AVAILABLE" desc="Description for the Internet menu item in the left menu when no networks are connected but instant hotspot available.">
+        Instant hotspot available
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_ADD_CELLULAR" desc="The accessibility label for the add cellular icon at Settings > Internet > Add Cellular label. This text will not be visible, but will be announced when ChromeVox is on and the user navigates to the icon. Clicking this icon will show a dialog that allows the user to activate a physical SIM or set up eSIM.">
+        Add Cellular...
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_ADD_CONNECTION" desc="Settings > Internet > Add connection expanding section label.">
+        Add connection
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_ADD_CONNECTION_EXPAND_ACCESSIBILITY_LABEL" desc="Label for the button that toggles showing the options for a new connection. Only visible by screen reader software.">
+        Add network connection
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_ADD_CONNECTION_NOT_ALLOWED" desc="Settings > Internet > Message when Add connection is not allowed.">
+        Add connection is disabled by your administrator
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_ADD_THIRD_PARTY_VPN" desc="Settings > Internet > Add third party (Extension or ARC) VPN label">
+        Add <ph name="PROVIDER_NAME">$1<ex>VPN Demo</ex></ph>...
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_ADD_VPN" desc="Settings > Internet > Add VPN label.">
+        Add built-in VPN...
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_ADD_WIFI" desc="Settings > Internet > Add Wi-Fi label.">
+        Add Wi-Fi...
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_CONFIG_NAME" desc="Title for the network configuration dialog for an existing network.">
+        Configure <ph name="NAME">$1<ex>My WiFi network</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_ETHERNET_DETAILS" desc="Name of the settings page which displays details about an Ethernet network.">
+        Ethernet details
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_WIFI_DETAILS" desc="Name of the settings page which displays details about a Wi-Fi network.">
+        Wi-Fi details
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_CELLULAR_DETAILS" desc="Name of the settings page which displays details about a cellular network (e.g., an LTE network).">
+        Cellular details
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_CELLULAR_SUBTITLE_WITH_LEARN_MORE_LINK" desc="Subtitle of the cellular subpage which explains the behavior of a carrier locked Chromebook.">
+        This device can only connect to a specific mobile network. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_INSTANT_TETHERING_DETAILS" desc="Name of the settings page which displays details about an Instant Tethering network (i.e., using a phone's internet through the Instant Tethering feature).">
+        Instant Tethering details
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_VPN_DETAILS" desc="Name of the settings page which displays details about a VPN connection.">
+        VPN details
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_HOTSPOT_DETAILS" desc="Name of the settings page which displays details about Hotspot.">
+        Hotspot details
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_HOTSPOT_SUBTITLE_WITH_LEARN_MORE_LINK" desc="Subtitle of the hotspot subpage which explains how hotspot may affect your Chromebook.">
+        Uses your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>’s mobile data and your carrier may charge additional fees. May increase battery usage. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$2"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_HOTSPOT_MOBILE_DATA_NOT_SUPPORTED_SUBLABEL_WITH_LEARN_MORE_LINK" desc="Sublabel of the hotspot summary which explains the hostpost toggle is disabled because the mobile data plan doesn't support hotspot.">
+        Your mobile data may not support hotspot. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_HOTSPOT_NO_MOBILE_DATA_SUBLABEL_WITH_LEARN_MORE_LINK" desc="Sublabel of the hotspot summary which notice user to first connect to mobile data to use hotspot.">
+        Connect to mobile data to use hotspot. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_HOTSPOT_TOGGLE_A11Y_LABEL" desc="Accessibility label for Hotspot enable/disable toggle.">
+        Hotspot
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_HOTSPOT_SUMMARY_STATE_ON" desc="Sublabel for Hotspot summary row, when Hotspot is on.">
+        On
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_HOTSPOT_SUMMARY_STATE_TURNING_ON" desc="Sublabel for Hotspot summary row, when Hotspot is turning on.">
+        Turning on...
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_HOTSPOT_SUMMARY_STATE_OFF" desc="Sublabel for Hotspot summary row, when Hotspot is off.">
+        Off
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_HOTSPOT_SUMMARY_STATE_TURNING_OFF" desc="Sublabel for Hotspot summary row, when Hotspot is turning off.">
+        Turning off...
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_HOTSPOT_ENABLED_A11Y_LABEL" desc="Accessibility announcement when Hotspot is enabled.">
+        Hotspot enabled
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_HOTSPOT_DISABLED_A11Y_LABEL" desc="Accessibility announcement when Hotspot is disabled.">
+        Hotspot disabled
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_HOTSPOT_NAME_LABEL" desc="Label for showing the hotspot name in the hotspot subpage.">
+        Hotspot name
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIGURE_BUTTON" desc="Text for button that opens the hotspot configuration dialog.">
+        Configure
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONNECTED_DEVICE_COUNT_LABEL" desc="Label for showing the current connected device count in the hotspot subpage.">
+        Devices currently connected to hotspot
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_HOTSPOT_AUTO_DISABLED_LABEL" desc="Label for showing if hotspot should be turned off automatically when no devices are connected in the hotspot subpage.">
+        Turn off hotspot automatically
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_HOTSPOT_AUTO_DISABLED_SUBLABEL" desc="Sublabel for showing if hotspot should be turned off automatically when no devices are connected in the hotspot subpage.">
+        When no devices are connected
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_HOTSPOT_SETTINGS_TITLE" desc="Settings > Network > Hotspot > Configure hotspot dialog: Title for the hotspot configuration dialog.">
+        Configure <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> hotspot
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_HOTSPOT_SETTINGS_SUBTITLE_WITH_LEARN_MORE_LINK" desc="Subtitle of the hotspot configuration dialog which explains that creating a WiFi hotspot to provide internet to other devices.">
+        Create a Wi-Fi hotspot using your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>'s mobile data to provide internet to other devices. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$2"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_NAME_LABEL" desc="Settings > Network > Hotspot > Configure hotspot dialog: Label for the hotspot name input.">
+        Hotspot name
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_NAME_INFO" desc="Settings > Network > Hotspot > Configure hotspot dialog: Info label under the hotspot name input to inform users that the hotspot name will be visible to others.">
+        This will be visible to others
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_NAME_EMPTY_INFO" desc="Settings > Network > Hotspot > Configure hotspot dialog: Info label under the hotspot name input to inform users that the hotspot name will be visible to others.">
+        Name cannot be empty
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_NAME_TOO_LONG_INFO" desc="Settings > Network > Hotspot > Configure hotspot dialog: Info label under the hotspot name input to inform users that the hotspot name will be visible to others.">
+        Name cannot exceed 32 characters
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_PASSWORD_LABEL" desc="Settings > Network > Hotspot > Configure hotspot dialog: Label for the hotspot password input.">
+        Password
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_PASSWORD_INFO" desc="Settings > Network > Hotspot > Configure hotspot dialog: Info label under the hotspot password input to inform users that the hotspot password must be longer than 8 characters.">
+        Use at least 8 characters
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_SECURITY_LABEL" desc="Settings > Network > Hotspot > Configure hotspot dialog: Label for the hotspot security select dropdown.">
+        Security
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_BSSID_TOGGLE_LABEL" desc="Settings > Network > Hotspot > Configure hotspot dialog: Label for the toggle which control whether to randomize the BSSID.">
+        Improve privacy for this hotspot
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_BSSID_TOGGLE_SUBLABEL" desc="Settings > Network > Hotspot > Configure hotspot dialog: Sublabel for the toggle which control whether to randomize the BSSID.">
+        Randomize your hardware's ID (BSSID) to prevent others from tracking this device.
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_COMPATIBILITY_TOGGLE_LABEL" desc="Settings > Network > Hotspot > Configure hotspot dialog: Label for the toggle which control whether to set the hotspot bandwidth to 2.4GHz.">
+        Extend compatibility
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_COMPATIBILITY_TOGGLE_SUBLABEL" desc="Settings > Network > Hotspot > Configure hotspot dialog: Sublabel for the toggle which control whether to set the hotspot bandwidth to 2.4GHz.">
+        Help other devices find this hotspot.
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_WARNING_MESSAGE" desc="Settings > Network > Hotspot > Configure hotspot dialog: The Label for the dialog warning message informing the user that changing hotspot settings will restart the hotspot and devices using the hotspot will disconnect.">
+        Changing settings will restart the hotspot. Devices using the hotspot will disconnect.
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_SAVE_BUTTON" desc="Settings > Network > Hotspot > Configure hotspot dialog: Text for the button to save hotspot configuration.">
+        Save
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_CANCEL_BUTTON" desc="Settings > Network > Hotspot > Configure hotspot dialog: Text for the button to cancel hotspot configuration dialog.">
+        Cancel
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_GENERAL_ERROR_MESSAGE" desc="Settings > Network > Hotspot > Configure hotspot dialog: Error message shown when save configuration failed.">
+        Error saving the configuration
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_INVALID_CONFIGURATION_ERROR_MESSAGE" desc="Settings > Network > Hotspot > Configure hotspot dialog: Error message shown when save configuration failed because of invalid configuration.">
+        Invalid hotspot configuration
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_NOT_LOGIN_ERROR_MESSAGE" desc="Settings > Network > Hotspot > Configure hotspot dialog: Error message shown when save configuration failed because the user is not logged in.">
+        Cannot save configuration without login first
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_WIFI_NETWORKS" desc="Name of the settings page which displays a list of Wi-Fi networks which the user can choose to connect to.">
+        Wi-Fi networks
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_MOBILE_DATA_NETWORKS" desc="Name of the settings page which displays a list of mobile data networks which the user can choose to connect to.">
+        Mobile data networks
+      </message>
+      <message name="IDS_SETTINGS_NETWORK_DEVICE_TURNING_ON" desc="Settings > Network > Message when a device (e.g a Cellular modem) is turning on.">
+        Turning on...
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_DEVICE_BUSY" desc="Settings > Internet > Message when the cellular modem is busy applying updates (e.g., installing an eSIM profile).">
+        Applying changes...
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_DEVICE_FLASHING" desc="Settings > Internet > Message when the cellular modem is busy updating firmware.">
+        Modem firmware update in progress. Don't turn off your device.
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_KNOWN_NETWORKS" desc="Name of the settings page which displays the list of known networks.">
+        Known Networks
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_YOUR_DEVICE_HOTSPOTS" desc="Name of a settings page header displayed over a list of the user's devices available for Instant Hotspot.">
+        Your device hotspots
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_TETHER_NOTIFICATION_CONTROL_TITLE" desc="Title of a control allowing users to disable notifications for Instant Hotspot.">
+        Show notification
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_TETHER_NOTIFICATION_CONTROL_DESCRIPTION" desc="Description of a control allowing users to disable notifications for Instant Hotspot.">
+        When your Chromebook is offline and hotspots are available
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NO_NETWORKS" desc="Entry when there are no preferred networks or no networks of a particular type.">
+        None
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_LEGACY" desc="Name of the settings page which displays internet preferences.">
+        Network
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_HOTSPOT" desc="Name of the settings page which displays hotspot preferences.">
+        Hotspot
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_SUMMARY_BUTTON_ACCESSIBILITY_LABEL" desc="Accessibility only label for network summary item button that opens network details.">
+        <ph name="NETWORK_TYPE">$1<ex>Mobile Data</ex></ph> - <ph name="NETWORK_DISPLAY_NAME">$2<ex>Verizon Wireless</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_TOGGLE_MOBILE_ACCESSIBILITY_LABEL" desc="Accessibility only label for mobile data enable/disable toggle .">
+        Mobile data enable
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_TOGGLE_WIFI_ACCESSIBILITY_LABEL" desc="Accessibility only label for WiFi enable/disable toggle .">
+        Wi-Fi enable
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_KNOWN_NETWORKS_ALL" desc="Title for list of all other (non preferred) networks.">
+        All networks
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_KNOWN_NETWORKS_BUTTON" desc="Text for button that opens the known networks subpage.">
+        Known networks
+      </message>
+      <message name="IDS_OS_SETTINGS_INTERNET_KNOWN_NETWORKS_MESSAGE" desc="Message describing the behavior of the known networks page.">
+        Preferred networks will be used if more than one previous network is available
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_KNOWN_NETWORKS_PREFFERED" desc="Title for list of preferred networks.">
+        Preferred networks
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_KNOWN_NETWORKS_MENU_ADD_PREFERRED" desc="Settings > Internet > Known networks > Dropdown menu item to add a network to the list of preferred networks.">
+        Add to preferred
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_KNOWN_NETWORKS_MENU_REMOVE_PREFERRED" desc="Settings > Internet > Known networks > Dropdown menu item to remove a network from the list of preferred networks.">
+        Remove from preferred
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_KNOWN_NETWORKS_MENU_FORGET" desc="Settings > Internet > Known networks > Dropdown menu item to forget a known network.">
+        Forget
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_KNOWN_NETWORKS_MENU_BUTTON_TITLE" desc="Settings > Internet > Known networks > Item > Title for button that opens dropdown menu for the network.">
+        More actions for <ph name="NETWORK_NAME">$1<ex>Google-A</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_SETTINGS_NETWORK_ALLOW_DATA_ROAMING" desc="Settings > Internet > Network details: Toggle label to allow mobile data roaming.">
+        Allow mobile data roaming
+      </message>
+      <message name="IDS_SETTINGS_SETTINGS_NETWORK_ALLOW_DATA_ROAMING_REQUIRED" desc="Settings > Internet > Network details: Toggle sublabel when mobile data roaming is required by provider.">
+        Roaming required by provider
+      </message>
+      <message name="IDS_SETTINGS_SETTINGS_NETWORK_ALLOW_DATA_ROAMING_ENABLED_HOME" desc="Settings > Internet > Network details: Toggle sublabel when roaming is allowed and it's connected to the home network.">
+        Not currently roaming
+      </message>
+      <message name="IDS_SETTINGS_SETTINGS_NETWORK_ALLOW_DATA_ROAMING_ENABLED_ROAMING" desc="Settings > Internet > Network details: Toggle sublabel when roaming is allowed and it's connected to a roaming network">
+        Currently roaming
+      </message>
+      <message name="IDS_SETTINGS_SETTINGS_NETWORK_ALLOW_DATA_ROAMING_DISABLED" desc="Settings > Internet > Network details: Toggle sublabel when roaming is not allowed.">
+        Off
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_VPN_PREFERENCES" desc="Settings > Internet > VPN: Title of preferences group.">
+        VPN Preferences
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_ALWAYS_ON_VPN" desc="Settings > Internet > Network details: Label for the checkbox determining that all internet traffic has to go through this VPN (virtual private network), and all other network connections are blocked.">
+        Always connect through this VPN
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_ALWAYS_ON_VPN_ENABLE_LABEL" desc="Settings > Internet > VPN: Toggle label to enable always-on VPN.">
+        Always-on VPN
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_ALWAYS_ON_VPN_ENABLE_SUBLABEL" desc="Settings > Internet > VPN: Toggle sublabel to enable always-on VPN.">
+        Automatically connects when you log in
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_ALWAYS_ON_VPN_LOCKDOWN_LABEL" desc="Settings > Internet > VPN: Label for the toggle that enables always-on VPN lockdown.">
+        Block traffic without VPN
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_ALWAYS_ON_VPN_LOCKDOWN_SUBLABEL" desc="Settings > Internet > VPN: Sublabel for the toggle that enables always-on VPN lockdown.">
+        Chrome browser and Android traffic will be blocked unless a VPN is connected
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_ALWAYS_ON_VPN_SERVICE" desc="Settings > Internet > VPN: Label for the dropdown menu determining which VPN client will be automatically started on login.">
+        VPN service
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_HIDDEN" desc="Settings > Internet > Network details: Label for the checkbox to set a wi-fi network as hidden.">
+        Hidden network
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_HIDDEN_SUBLABEL" desc="Settings > Internet > Network details: Label for the checkbox to set a wi-fi network as hidden.">
+        Using a hidden network isn't recommended for security reasons.
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_AUTO_CONNECT_CELLULAR" desc="Settings > Internet > Mobile Data details: Label for the checkbox determining whether to automatically connect to the cellular network.">
+        Automatically connect to cellular network
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_MENU_REMOVE" desc="Settings > Internet > Network details > Dot menu: Label for the button to remove an eSIM cellular network">
+        Remove Profile
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_MENU_RENAME" desc="Settings > Internet > Network details > Dot menu: Label for the button to rename an eSIM cellular network">
+        Rename Profile
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_INSTALL_ERROR_DIALOG_TITLE" desc="Settings > Network > Mobile data > Download > Install error dialog: Title for the dialog prompting the user to enter the confirmation code required to activate the eSIM profile they are attempting to install">
+        Set up new network
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_INSTALL_ERROR_DIALOG_CONFIRMATION_CODE_MESSAGE" desc="Settings > Network > Mobile data > Download > Install error dialog: Message for the dialog prompting the user to enter the confirmation code required to activate the eSIM profile they are attempting to install">
+        Please enter your confirmation code.
+      </message>
+      <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_INSTALL_ERROR_DIALOG_CONFIRMATION_CODE_ERROR" desc="Settings > Network > Mobile data > Download > Install error dialog: Error indicating that installing the eSIM profile was unsuccessful.">
+        Unable to connect to this profile. For technical support, please contact your carrier.
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_INSTALL_ERROR_DIALOG_GENERIC_ERROR_MESSAGE" desc="Settings > Network > Mobile data > Download > Install error dialog: Message for the dialog informing the user that there was an error installing their eSIM profile.">
+        Profile could not be downloaded. Please try again later or contact carrier for help.
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_RENAME_DIALOG_RENAME_PROFILE" desc="Settings > Internet > Network details > Rename profile dialog: Label for the dialog informing the user to rename an eSIM cellular network">
+        Rename Profile
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_RENAME_DIALOG_ERROR_MESSAGE" desc="Settings > Internet > Network details > Rename eSIM cellular profile dialog: Error message shown when rename fails">
+        Profile could not be renamed. Please try again or contact your carrier for technical support.
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_RENAME_DIALOG_DONE" desc="Settings > Internet > Network details >Rename profile dialog: The Label for the dialog done button to rename an eSIM cellular network">
+        Done
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_RENAME_DIALOG_CANCEL" desc="Settings > Internet > Network details >Rename profile dialog: The Label for the dialog cancel button to rename an eSIM cellular network">
+        Cancel
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_RENAME_INPUT_TITLE" desc="Settings > Internet > Network details >Rename profile dialog: The title for the dialog input that renames an eSIM cellular network.">
+        New profile name
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_RENAME_INPUT_SUBTITLE" desc="Settings > Internet > Network details >Rename profile dialog: The Label for the dialog input that renames an eSIM cellular network, informing the user that letters, numbers and special characters are allowed.">
+        Name can use letters, numbers, and special characters
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_RENAME_INPUT_CHARACTER_COUNT" desc="Settings > Internet > Network details >Rename profile dialog: The Label for the dialog input that renames an eSIM cellular network, informing the user the number of characters they have inputted compared to the maximum number of characters allowed.">
+        <ph name="CURRENT_CHARACTER_COUNT">$1<ex>15</ex></ph>/<ph name="MAX_CHARACTER_COUNT">$2<ex>20</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_RENAME_DONE_BUTTON_A11Y_LABEL" desc="Settings > Internet > Network details >Rename profile dialog: The accessibility label for done button in the rename profile dialog.">
+        Rename profile to <ph name="PROFILE_NAME">$1<ex>Verizon</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_RENAME_INPUT_A11Y_LABEL" desc="Settings > Internet > Network details >Rename profile dialog: The a11y label for the dialog input that renames an eSIM cellular network, informing the user that letters, numbers and special characters are allowed, as well as the maximum number of characters permitted.">
+        Name can use letters, numbers, and special characters, and must be <ph name="MAX_CHARACTER_COUNT">$1<ex>20</ex></ph> characters or fewer
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_RENAME_DIALOG_ERROR_TOAST" desc="Settings > Internet > Network details > Rename eSIM cellular profile dialog: Message in toast shown when rename fails">
+        Profile could not be renamed. Please try again or contact your carrier for technical support.
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_REMOVE_PROFILE_DIALOG_TITLE" desc="Settings > Internet > Network details >Remove profile dialog: Title remove esim profile dialog">
+        Remove "<ph name="ESIM_PROFILE_NAME">$1<ex>Profile 1</ex></ph>"?
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_REMOVE_PROFILE_DIALOG_DESCRIPTION" desc="Settings > Internet > Network details >Remove profile dialog: Description for the remove esim profile dialog, warning the user that they may not be to reinstall the profile they are about to remove.">
+        You may not be able to reinstall this profile
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_REMOVE_PROFILE_DIALOG_CANCEL" desc="Settings > Internet > Network details >Remove profile dialog: The Label for the dialog cancel button to remove an eSIM cellular network">
+        Cancel
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_REMOVE_PROFILE_DIALOG_REMOVE" desc="Settings > Internet > Network details > Remove profile dialog: The Label for the dialog remove button to remove an eSIM cellular network">
+        Remove
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_REMOVE_PROFILE_DIALOG_OKAY" desc="Settings > Internet > Network details > Remove eSIM cellular profile dialog: The Label for the dialog okay button">
+        Okay
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_REMOVE_PROFILE_DIALOG_A11Y_CANCEL" desc="Settings > Internet > Network details > Remove eSIM cellular profile dialog: A11Y label for cancel button.">
+        Cancel removal of eSIM profile named <ph name="PROFILE_NAME">$1<ex>Verizon</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_REMOVE_PROFILE_DIALOG_A11Y_REMOVE" desc="Settings > Internet > Network details > Remove eSIM cellular profile dialog: A11Y label for remove button.">
+        Remove eSIM profile named <ph name="PROFILE_NAME">$1<ex>Verizon</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_ESIM_DIALOG_CONNECTION_WARNING" desc="Settings > Internet > Network details > Rename profile dialog | Remove profile dialog: The Label for the dialog warning message informing the user they may disconnect from their current cellular network connection if they proceed.">
+        This may cause your mobile network to briefly disconnect
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_INSTALLING_PROFILE" desc="Settings > Internet > Mobile data: Message indicating that an eSIM profile is being installed and notifying the user why mobile settings are temporarily disabled.">
+        Adding profile. This may take a few minutes.
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_RENAMING_PROFILE" desc="Settings > Internet > Mobile data: Message indicating that an eSIM profile is being renamed and notifying the user why mobile settings are temporarily disabled.">
+        Renaming profile. This may take a few minutes.
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_REMOVING_PROFILE" desc="Settings > Internet > Mobile data: Message indicating that an eSIM profile is being uninstalled and notifying the user why mobile settings are temporarily disabled.">
+        Removing profile. This may take a few minutes.
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_CONNECTING_TO_PROFILE" desc="Settings > Internet > Mobile data: Message indicating that an eSIM profile connection is currently in progress and notifying the user why mobile settings are temporarily disabled.">
+        Connecting to profile. This may take a few minutes.
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_REFRESHING_PROFILE_LIST" desc="Settings > Internet > Mobile data: Message indicating that the list of eSIM profiles is being refreshed and notifying the user why mobile settings are temporarily disabled.">
+        Refreshing profile list. This may take a few minutes.
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_RESETTING_ESIM" desc="Settings > Internet > Mobile data: Message indicating that the eSIM is being reset and notifying the user why mobile settings are temporarily disabled.">
+        Your administrator is resetting your eSIM. This may take a few minutes.
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_REQUESTING_AVAILABLE_PROFILES" desc="Settings > Internet > Mobile data: Message indicating that we are looking for eSIM profiles that are available for installation and notifying the user why mobile settings are temporarily disabled.">
+        Looking for available profiles. This may take a few minutes.
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_REMOVE_PROFILE_DIALOG_ERROR_MESSAGE" desc="Settings > Internet > Network details > Remove eSIM cellular profile dialog: Error message shown when remove fails">
+        Profile could not be removed. Please try again or contact your carrier for technical support.
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_BUTTON_ACTIVATE" desc="Settings > Internet > Network details: The label for the button to activate a Cellular network.">
+        Activate
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_BUTTON_CONFIGURE" desc="Settings > Internet > Network details: The label for the button to configure a network (change its settings).">
+        Configure
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_BUTTON_VIEW_ACCOUNT" desc="Settings > Internet > Network details: The label for the button to view the account details for a Cellular network.">
+        View Account
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_CONNECT_NOT_ALLOWED" desc="Settings > Internet > Message when connecting to a non policy network is not allowed.">
+        Connecting to this network is disabled by your administrator
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_METERED" desc="Settings > Internet > Network details: Label for the toggle indicating whether a network is metered.">
+        Metered network
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_METERED_DESC" desc="Settings > Internet > Network details: Subtext description for the toggle indicating whether a network is metered.">
+        Helps reduce network data usage by pausing automatic app and system updates
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_PREFER" desc="Settings > Internet > Network details: Label for the checkbox determining whether a network is preferred over other networks.">
+        Prefer this network
+      </message>
+      <message name="IDS_OS_SETTINGS_INTERNET_NETWORK_PREFER_DESCRIPTION" desc="Settings > Internet > Network details: Description of the label for the checkbox determining whether a network is preferred over other networks.">
+        This network will be preferred if more than one previously connected or configured network is available
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_PRIMARY_USER_CONTROLLED" desc="Settings > Internet > Network details: Text to show when a network configuration is controlled by the primary user.">
+        Network configuration is controlled by <ph name="USER_EMAIL">$1<ex>joe@gmail.com</ex></ph>.
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_A11Y_MANAGED_BY_ADMINISTRATOR" desc="Settings > Internet > Network details: A11Y label for managed by administrator icon, indicating which network settings is being managed by an administrator">
+        <ph name="NETWORK_NAME">$1<ex>Google-A</ex></ph> is managed by your administrator
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_ADVANCED" desc="Settings > Internet > Network details: Advanced section label.">
+        Advanced
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_ADVANCED_ACCESSIBILITY_LABEL" desc="Label for the button that toggles showing the advanced network properties. Only visible by screen reader software.">
+        Show advanced network properties
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_NETWORK_ACCESSIBILITY_LABEL" desc="Label for the button that toggles showing the network address configuration settings. Only visible by screen reader software.">
+        Show network address settings
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_PASSPOINT_GO_TO_SUBSCRIPTION_TITLE" desc="Settings > Network > Wi-Fi > Network details: Title of the Passpoint removal dialog that leads the user to the subscription page.">
+        Remove this network in Passpoint subscription page?
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_PASSPOINT_GO_TO_SUBSCRIPTION_INFORMATION" desc="Settings > Network > Wi-Fi > Network details: Information displayed in the Passpoint removal dialog that leads the user to the subscription page.">
+        To forget this subscription and its associated networks, go to the Passpoint subscription page to remove the subscription.
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_PASSPOINT_GO_TO_SUBSCRIPTION_BUTTON" desc="Settings > Network > Wi-Fi > Network details: Label of the button that leads the user to the subscription page.">
+        Go to subscription
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_PASSPOINT_GO_TO_SUBSCRIPTION_BUTTON_A11Y_LABEL" desc="Settings > Network > Wi-Fi > Network details: Accessibility label for the button that leads the user to the subscription page.">
+        Go to subscription page
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_PROXY_ACCESSIBILITY_LABEL" desc="Label for the button that toggles showing the proxy configuration settings. Only visible by screen reader software.">
+        Show proxy settings
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_SHARED" desc="Settings > Internet > Network details: Text to show when a network is shared.">
+        Other users of this device can use this network
+      </message>
+      <message name="IDS_OS_SETTINGS_INTERNET_NETWORK_SHARED_OWNER" desc="Settings > Internet > Network details: Text to show when a network is shared and was configured by the current user.">
+        Other users on this device can also use this network
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_SHARED_NOT_OWNER" desc="Settings > Internet > Network details: Text to show when a network is shared with you (by another user or configured before login).">
+        This network is shared with you
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_CARRIER_LOCKED_WITH_LEARN_MORE_LINK" desc="Settings > Internet > Network details: Text to show when a network is carrier locked">
+        Your device can't connect to this network. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_NOT_SYNCED" desc="Settings > Internet > Network details: Text to show when a network is not synced to the user's account.">
+        This network is not synced to your account. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$1<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_SYNCED_DEVICE" desc="Settings > Internet > Network details: Text to show when a shared network is synced to the user's account.  Also notes that changes to the network that are made by other users are not synced.">
+        Synced with other devices on your account. Settings modified by other users will not be synced. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$1<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_SYNCED_USER" desc="Settings > Internet > Network details: Text to show when a user network is synced.">
+        Synced with other devices on your account. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$1<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_WIFI_NETWORK_OUT_OF_RANGE" desc="Text shown when viewing the Wi-Fi network detail page when the currently-viewed Wi-Fi network has been lost (e.g., has gone out of range).">
+        Network out of range
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_MOBILE_PROVIDER_LOCKED" desc="Text shown when viewing network detail page when the mobile provider is locked due to carrier lock">
+        Cannot connect. Locked by another mobile provider.
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_CELLULAR_SETUP_DIALOG_TITLE" desc="The title text of the cellular setup dialog that allows users set up a new cellular network by activating a physical SIM card or setting up the device's built in eSIM.">
+        Set up new network
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_TETHER_PHONE_OUT_OF_RANGE" desc="Text shown when viewing the Tether network detail page when the currently-viewed Tether network has been lost (e.g., has gone out of range). Because Tether networks are provided by Android phones, we use the word 'phone' here instead of 'network'.">
+        Unable to detect your phone
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_GMSCORE_NOTIFICATIONS_TITLE" desc="Title of the section which explains how to enable Google Play Services notifications on an Android phone in order to use Instant Tethering.">
+        To use Instant Tethering, turn on notifications for Google Play Services.
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_GMSCORE_NOTIFICATIONS_ONE_DEVICE_SUBTITLE" desc="Subtitle of the section which explains how to enable Google Play Services notifications. This subtitle is used when only one phone needs to have its notifications enabled.">
+        On your '<ph name="PHONE_NAME">$1<ex>Google Pixel</ex></ph>':
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_GMSCORE_NOTIFICATIONS_TWO_DEVICES_SUBTITLE" desc="Subtitle of the section which explains how to enable Google Play Services notifications. This subtitle is used when two phones need to have their notifications enabled.">
+        On your '<ph name="PHONE_NAME_1">$1<ex>Google Pixel</ex></ph>' and '<ph name="PHONE_NAME_2">$2<ex>Google Pixel 2</ex></ph>':
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_GMSCORE_NOTIFICATIONS_MANY_DEVICES_SUBTITLE" desc="Subtitle of the section which explains how to enable Google Play Services notifications. This subtitle is used when three or more phones need to have their notifications enabled.">
+        On your devices:
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_GMSCORE_NOTIFICATIONS_FIRST_STEP" desc="First instruction for how to enable Google Play Services notifications on an Android phone. This step teaches the user how to look at notification settings.">
+        Go to Settings &gt; Apps &amp; notifications &gt; Notifications.
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_GMSCORE_NOTIFICATIONS_SECOND_STEP" desc="Second instruction for how to enable Google Play Services notifications on an Android phone. This step teaches the user how to look at notification settings for the Google Play Services app.">
+        Tap App notifications &gt; Google Play services.
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_GMSCORE_NOTIFICATIONS_THIRD_STEP" desc="Third instruction for how to enable Google Play Services notifications on an Android phone. This step teaches the user how to enable notifications when already viewing noticiations settings for Google Play Services.">
+        Turn on Google Play services.
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_GMSCORE_NOTIFICATIONS_FOURTH_STEP" desc="Fourth instruction for how to enable Google Play Services notifications on an Android phone. This step teaches the user how to enable the Instant Tethering notification channel for Google Play Services.">
+        Scroll to the bottom of the screen and turn on Instant Tethering, if it appears. If it doesn't, you're all set.
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_TETHER_CONNECTION_DIALOG_TITLE" desc="Settings > Internet > Tether Connection Dialog > Title asking the user to create a new hotspot.">
+        Connect to new hotspot?
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_TETHER_CONNECTION_AVAILABLE_DEVICE_TITLE" desc="Settings > Internet > Tether Connection Dialog > Label for explaining that the device following the colon is available for tethering.">
+        Available device:
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_TETHER_CONNECTION_BATTERY_PERCENTAGE" desc="Settings > Internet > Tether Connection Dialog > Description of how much battery a device has.">
+        <ph name="BATTERY_PERCENTAGE">$1<ex>100</ex></ph>% Battery
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_TETHER_CONNECTION_EXPLANATION" desc="Settings > Internet > Tether Connection Dialog > Explanation of what will happen if the user connects to a tether hotspot.">
+        Your <ph name="PHONE_NAME">$1<ex>Google Pixel XL</ex></ph> will create a private Wi-Fi connection.
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_TETHER_CONNECTION_CARRIER_WARNING" desc="Settings > Internet > Tether Connection Dialog > Warning to users that cellular providers may block the use of tethering.">
+        Some carriers might block this feature.
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_TETHER_CONNECTION_DESCRIPTION_TITLE" desc="Settings > Internet > Tether Connection Dialog > Title of the section describing what will happen when tethering is enabled.">
+        While the hotspot is on, your <ph name="PHONE_NAME">$1<ex>Google Pixel XL</ex></ph> will:
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_TETHER_CONNECTION_DESCRIPTION_MOBILE_DATA" desc="Settings > Internet > Tether Connection Dialog > Bulletpoint alerting the user that tethering will use mobile data.">
+        Use mobile data
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_TETHER_CONNECTION_DESCRIPTION_BATTERY" desc="Settings > Internet > Tether Connection Dialog > Bullet point alerting the user that tethering will use both devices' batteries.">
+        Use the battery more quickly (currently <ph name="BATTERY_PERCENTAGE">$1<ex>100</ex></ph>%)
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_TETHER_CONNECTION_DESCRIPTION_WIFI" desc="Settings > Internet > Tether Connection Dialog > Bullet point alerting the user that the tether host (i.e., the device to which the current device will connect to) will disconnect from Wi-Fi.">
+        Disconnect from Wi-Fi
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_TETHER_CONNECTION_NOT_NOW_BUTTON" desc="Settings > Internet > Tether Connection Dialog > Button which, when tapped, closes the dialog and does not connect the device.">
+        Not now
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_TETHER_CONNECTION_CONNECT_BUTTON" desc="Settings > Internet > Tether Connection Dialog > Button which, when tapped, starts a connection attempt to the device.">
+        Connect
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_LOOKING_FOR_MOBILE_NETWORK" desc="Text shown when viewing the Mobile data page when there are no cellular or tether networks available.">
+        Looking for a mobile network. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_ESIM_LABEL" desc="Label describing list of cellular networks as eSIM networks">
+        eSIM
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_PSIM_LABEL" desc="Label on Mobile data page describing list of cellular networks as SIM networks">
+        SIM
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_TETHER_LABEL" desc="Label on Mobile data page describing list of networks as instant tether networks">
+        Instant Tethering
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_ESIM_NOT_SETUP" desc="Text shown when viewing the Mobile data page and no eSIM profile is available">
+        No mobile networks set up
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_ESIM_NOT_SETUP_WITH_SETUP_LINK" desc="Text shown with a download eSIM profile link when viewing the Mobile data page and no eSIM profile is available">
+        No mobile networks set up. Download a new <ph name="BEGIN_LINK">&lt;a href="#" id="cellularEsimLink"&gt;</ph>profile.<ph name="END_LINK">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_PSIM_NOT_INSERTED_LABEL" desc="Text shown when viewing the Mobile data page and no physical SIM card is inserted">
+        No SIM card inserted
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_TETHER_NOT_SETUP_WITH_LEARN_MORE_LINK" desc="Text shown when viewing the Mobile data page and no instant tether network is available">
+        No device detected. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_SHOW_EID_POPUP_BUTTON_LABEL" desc="A11y and tooltop label for EID and QR Code popup show button when viewing cellular network list">
+        Show device EID and QR Code popup
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_ESIM_NO_CONNECTION_ERROR_TOAST" desc="Message in toast displayed when user tries to perform an eSIM operation when not connected to a non-cellular network.">
+        Connect to Wi-Fi or Ethernet to set up eSIM
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_ESIM_MOBILE_DATA_NOT_ENABLED_ERROR_TOAST" desc="Message in toast displayed when user tries to set up an eSIM profile when mobile data is not enabled.">
+        Enable mobile data to install an eSIM profile
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_ESIM_PROFILE_LIMIT_REACHED_ERROR_TOAST" desc="Message in toast displayed when user tries to set up an eSIM profile when they have reached the maximum number of allowed eSIM profiles installed.">
+        You can install up to <ph name="PROFILE_LIMIT">$1<ex>5</ex></ph> eSIM profiles on this device. To add another profile, first remove an existing profile.
+      </message>
+      <message name="IDS_SETTINGS_DEVICE_INFO_POPUP_MENU_ITEM_TITLE" desc="Title for the dropdown menu entry in network settings subpage that shows the network device info dialog.">
+        Device network info
+      </message>
+      <message name="IDS_SETTINGS_MOBILE_DEVICE_INFO_POPUP_TITLE" desc="Title for the Mobile network device info popup dialog that shows mobile network device information.">
+        Device mobile network info
+      </message>
+      <message name="IDS_SETTINGS_MOBILE_DEVICE_INFO_POPUP_DESCRIPTION" desc="Description text in the Mobile network device info popup dialog that tells user about the details that are shown.">
+        These numbers can be used to help activate service
+      </message>
+      <message name="IDS_SETTINGS_DEVICE_INFO_EID_LABEL" desc="Label for the EID number of the device shown in the network device info popup dialog.">
+        EID
+      </message>
+      <message name="IDS_SETTINGS_DEVICE_INFO_IMEI_LABEL" desc="Label for the IMEI number of the device shown in the network device info popup dialog.">
+        IMEI
+      </message>
+      <message name="IDS_SETTINGS_DEVICE_INFO_SERIAL_LABEL" desc="Label for the Serial number of the device shown in the network device info popup dialog.">
+        Serial number
+      </message>
+      <message name="IDS_SETTINGS_DEVICE_INFO_A11Y_LABEL_EID" desc="A11y label for the network device info popup dialog that's read out when only EID is displayed.">
+        Your device EID is <ph name="EID_NUMBER">$1<ex>123456789</ex></ph>. This number can be used to help activate service.
+      </message>
+      <message name="IDS_SETTINGS_DEVICE_INFO_A11Y_LABEL_IMEI" desc="A11y label for the network device info popup dialog that's read out when only IMEI is displayed.">
+        Your device IMEI is <ph name="IMEI_NUMBER">$1<ex>123456789</ex></ph>. This number can be used to help activate service.
+      </message>
+      <message name="IDS_SETTINGS_DEVICE_INFO_A11Y_LABEL_SERIAL" desc="A11y label for the network device info popup dialog that's read out when only Serial is displayed.">
+        Your device serial number is <ph name="SERIAL_NUMBER">$1<ex>123456789</ex></ph>. This number can be used to help activate service.
+      </message>
+      <message name="IDS_SETTINGS_DEVICE_INFO_A11Y_LABEL_EID_AND_IMEI" desc="A11y label for the network device info popup dialog that's read out when both EID and IMEI is displayed.">
+        Your device EID is <ph name="EID_NUMBER">$1<ex>123456789</ex></ph> and device IMEI is <ph name="IMEI_NUMBER">$1<ex>123456789</ex></ph>. These numbers can be used to help activate service.
+      </message>
+      <message name="IDS_SETTINGS_DEVICE_INFO_A11Y_LABEL_EID_AND_SERIAL" desc="A11y label for the network device info popup dialog that's read out when EID and serial number is displayed.">
+        Your device EID is <ph name="EID_NUMBER">$1<ex>123456789</ex></ph> and device serial number is <ph name="SERIAL_NUMBER">$1<ex>123456789</ex></ph>. These numbers can be used to help activate service.
+      </message>
+      <message name="IDS_SETTINGS_DEVICE_INFO_A11Y_LABEL_IMEI_AND_SERIAL" desc="A11y label for the network device info popup dialog that's read out when IMEI and serial number is displayed.">
+        Your device IMEI is <ph name="IMEI_NUMBER">$1<ex>123456789</ex></ph> and device serial is <ph name="SERIAL_NUMBER">$1<ex>123456789</ex></ph>. These numbers can be used to help activate service.
+      </message>
+      <message name="IDS_SETTINGS_DEVICE_INFO_A11Y_LABEL_EID_IMEI_AND_SERIAL" desc="A11y label for the network device info popup dialog that's read out when EID, IMEI and serial number is displayed.">
+        Your device EID is <ph name="EID_NUMBER">$1<ex>123456789</ex></ph> , device IMEI is <ph name="IMEI_NUMBER">$1<ex>123456789</ex></ph> and device serial number is <ph name="SERIAL_NUMBER">$1<ex>123456789</ex></ph>. These numbers can be used to help activate service.
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_PASSPOINT_DETAILS" desc="Name of the settings page which displays details about Passpoint.">
+        Passpoint provider details
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_PASSPOINT_SECTION_LABEL" desc="Label of the section that contains the list of Passpoint subscriptions.">
+        Passpoint subscriptions
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_PASSPOINT_PROVIDER_LABEL" desc="Label of the link to the Passpoint provider details page.">
+        Passpoint provider
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_PASSPOINT_REMOVE_SUBSCRIPTION" desc="Label of the button used to remove a subscription from the Passpoint detail page.">
+        Remove
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_PASSPOINT_HEADLINE" desc="Headline text describing how Passpoint subscription is synced with the user account.">
+        Subscription is installed on this device only and not synced with other devices under your account. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_PASSPOINT_SUBSCRIPTION_EXPIRATION" desc="Label of the subscription expiration date.">
+        Expiration date
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_PASSPOINT_SOURCE" desc="Label of the source that installed the Passpoint subscription.">
+        Passpoint provider
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_PASSPOINT_TRUSTED_CA" desc="Label of the subscription trusted certificate authority used to authenticate the server.">
+        Trusted CA
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_PASSPOINT_SYSTEM_CA" desc="Text displayed when the subscription relies on system CA certificates for server authentication.">
+        System CAs
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_PASSPOINT_ASSOCIATED_WIFI_NETWORKS" desc="Label for the list of Wi-Fi networks connected using the Passpoint subscription.">
+        Associated Wi-Fi networks
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_PASSPOINT_DOMAINS" desc="Label for the list of domains included in the Passpoint subscription.">
+        Domains
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_PASSPOINT_DOMAINS_A11Y_LABEL" desc="Label for the button that toggles showing the Passpoint domains. Only visible by screen reader software.">
+        Show domains
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_PASSPOINT_REMOVAL_TITLE" desc="Title of the dialog displayed when the remove button is clicked on Passpoint details page.">
+        Remove subscription from device
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_PASSPOINT_REMOVAL_DESCRIPTION" desc="Text of the dialog displayed when the remove button is clicked on Passpoint details page.">
+        <ph name="SUBSCRIPTION_NAME">$1<ex>My Passpoint Provider</ex></ph> will be removed from this device only. To make changes to your subscription, contact the subscription provider. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_PASSPOINT_LEARN_MORE_A11Y" desc="A11y label that describes the Learn more link leading to the Passpoint user guide.">
+        Learn more about Passpoint subscriptions
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_PASSPOINT_REMOVE_CANCEL_A11Y" desc="A11y label for the Cancel button of the dialog displayed when a Passpoint network is removed.">
+        Cancel forgetting subscription
+      </message>
+
       <part file="ash_settings_search_tag_strings.grdp" />
     </messages>
   </release>

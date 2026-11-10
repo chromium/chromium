@@ -35,6 +35,7 @@ source_set("interactive_ui_tests") {
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/network:test_support",
+    "//chromeos/ash/experiences/settings_ui/resources:strings",
     "//chromeos/components/onc:test_support",
     "//chromeos/strings:strings_grit",
     "//content/test:test_support",
