@@ -10498,6 +10498,7 @@
         {
             "platforms": [
                 "android",
+                "android_desktop",
                 "chromeos",
                 "ios",
                 "linux",
