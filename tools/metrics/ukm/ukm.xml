@@ -3519,140 +3519,6 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="Autofill.OneTimeTokens">
-  <owner>kazinova@google.com</owner>
-  <owner>battre@chromium.org</owner>
-  <summary>
-    Recorded when one-time token (OTP) events occur on a page.
-  </summary>
-  <metric name="Gmail.SenderDomainMatchAcceptedMatchType.Cached"
-      enum="GmailOtpSenderDomainMatchType">
-    <summary>
-      Records the match type of a Gmail OTP whose sender domain passed the check
-      against the origin of the page's OTP form. Recorded once per checked token
-      that came from Chrome's 1-minute Gmail OTP cache. Mirrors the UMA
-      histogram
-      OneTimeTokens.GmailAgentic.SenderDomainMatchAcceptedMatchType.Cached.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Gmail.SenderDomainMatchAcceptedMatchType.Received"
-      enum="GmailOtpSenderDomainMatchType">
-    <summary>
-      Records the match type of a Gmail OTP whose sender domain passed the check
-      against the origin of the page's OTP form. Recorded once per checked token
-      that arrived while Chrome was waiting for a Gmail OTP for this page.
-      Mirrors the UMA histogram
-      OneTimeTokens.GmailAgentic.SenderDomainMatchAcceptedMatchType.Received.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Gmail.SenderDomainMatchRejectionReason.Cached"
-      enum="GmailOtpSenderDomainMatchType">
-    <summary>
-      Records why a Gmail OTP's sender domain failed the check against the
-      origin of the page's OTP form. Recorded once per checked token that came
-      from Chrome's 1-minute Gmail OTP cache. Mirrors the UMA histogram
-      OneTimeTokens.GmailAgentic.SenderDomainMatchRejectionReason.Cached.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Gmail.SenderDomainMatchRejectionReason.Received"
-      enum="GmailOtpSenderDomainMatchType">
-    <summary>
-      Records why a Gmail OTP's sender domain failed the check against the
-      origin of the page's OTP form. Recorded once per checked token that
-      arrived while Chrome was waiting for a Gmail OTP for this page. Mirrors
-      the UMA histogram
-      OneTimeTokens.GmailAgentic.SenderDomainMatchRejectionReason.Received.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Latency.FieldDetectionToTickleInMillis">
-    <summary>
-      Records the latency in milliseconds between detecting an OTP field on a
-      web page and receiving a push notification (tickle) from the backend.
-      Recorded when a tickle arrives after an OTP field was detected.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Latency.TickleToFieldDetectionInMillis">
-    <summary>
-      Records the latency in milliseconds between receiving a push notification
-      (tickle) from the backend and detecting an OTP field on a web page.
-      Recorded when an OTP field is detected on a page after a tickle was
-      already received.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Tickle.Arrival" enum="OneTimeTokensTickleArrival">
-    <summary>
-      Records the arrival order and timing of push notifications (tickles)
-      relative to OTP form detection on a web page. Only recorded for
-      kAfterFieldDetection and kBeforeFieldDetection, where an OTP form was
-      detected and the URL can be reliably established.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Tickle.FormOutcome" enum="OneTimeTokensTickleFormOutcome">
-    <summary>
-      Records the outcome of an OTP form on a web page relative to push
-      notification (tickle) delivery and user interaction (e.g. tickle arrived
-      before user interaction, after user interaction, or no tickle received
-      within timeout).
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-</event>
-
 <event name="Autofill.PayLaterTabSelected" singular="true">
   <owner>yishuil@google.com</owner>
   <owner>wilsonlow@google.com</owner>
@@ -17276,6 +17142,140 @@ be describing additional metrics about the same event.
     <summary>
       Placeholder metric, always true.
     </summary>
+  </metric>
+</event>
+
+<event name="OneTimeTokens">
+  <owner>kazinova@google.com</owner>
+  <owner>battre@chromium.org</owner>
+  <summary>
+    Recorded when one-time token (OTP) events occur on a page.
+  </summary>
+  <metric name="Gmail.SenderDomainMatchAcceptedMatchType.Cached"
+      enum="GmailOtpSenderDomainMatchType">
+    <summary>
+      Records the match type of a Gmail OTP whose sender domain passed the check
+      against the origin of the page's OTP form. Recorded once per checked token
+      that came from Chrome's 1-minute Gmail OTP cache. Mirrors the UMA
+      histogram
+      OneTimeTokens.GmailAgentic.SenderDomainMatchAcceptedMatchType.Cached.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Gmail.SenderDomainMatchAcceptedMatchType.Received"
+      enum="GmailOtpSenderDomainMatchType">
+    <summary>
+      Records the match type of a Gmail OTP whose sender domain passed the check
+      against the origin of the page's OTP form. Recorded once per checked token
+      that arrived while Chrome was waiting for a Gmail OTP for this page.
+      Mirrors the UMA histogram
+      OneTimeTokens.GmailAgentic.SenderDomainMatchAcceptedMatchType.Received.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Gmail.SenderDomainMatchRejectionReason.Cached"
+      enum="GmailOtpSenderDomainMatchType">
+    <summary>
+      Records why a Gmail OTP's sender domain failed the check against the
+      origin of the page's OTP form. Recorded once per checked token that came
+      from Chrome's 1-minute Gmail OTP cache. Mirrors the UMA histogram
+      OneTimeTokens.GmailAgentic.SenderDomainMatchRejectionReason.Cached.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Gmail.SenderDomainMatchRejectionReason.Received"
+      enum="GmailOtpSenderDomainMatchType">
+    <summary>
+      Records why a Gmail OTP's sender domain failed the check against the
+      origin of the page's OTP form. Recorded once per checked token that
+      arrived while Chrome was waiting for a Gmail OTP for this page. Mirrors
+      the UMA histogram
+      OneTimeTokens.GmailAgentic.SenderDomainMatchRejectionReason.Received.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Latency.FieldDetectionToTickleInMillis">
+    <summary>
+      Records the latency in milliseconds between detecting an OTP field on a
+      web page and receiving a push notification (tickle) from the backend.
+      Recorded when a tickle arrives after an OTP field was detected.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Latency.TickleToFieldDetectionInMillis">
+    <summary>
+      Records the latency in milliseconds between receiving a push notification
+      (tickle) from the backend and detecting an OTP field on a web page.
+      Recorded when an OTP field is detected on a page after a tickle was
+      already received.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Tickle.Arrival" enum="OneTimeTokensTickleArrival">
+    <summary>
+      Records the arrival order and timing of push notifications (tickles)
+      relative to OTP form detection on a web page. Only recorded for
+      kAfterFieldDetection and kBeforeFieldDetection, where an OTP form was
+      detected and the URL can be reliably established.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Tickle.FormOutcome" enum="OneTimeTokensTickleFormOutcome">
+    <summary>
+      Records the outcome of an OTP form on a web page relative to push
+      notification (tickle) delivery and user interaction (e.g. tickle arrived
+      before user interaction, after user interaction, or no tickle received
+      within timeout).
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 

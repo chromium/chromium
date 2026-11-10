@@ -64,7 +64,7 @@ void EmailOneTimeTokenFetchCoordinator::SignalNetworkRequestNeeded(
       << "Notification queued in coordinator. Current queue size: "
       << pending_queue_.size() << ", message_reference: "
       << EncodeMessageReference(notification.encrypted_message_reference);
-  base::UmaHistogramCounts100("Autofill.OneTimeTokens.Backend.Gmail.QueueSize",
+  base::UmaHistogramCounts100("OneTimeTokens.Backend.Gmail.QueueSize",
                               pending_queue_.size());
   ProcessQueue();
 }
@@ -93,7 +93,7 @@ void EmailOneTimeTokenFetchCoordinator::ProcessQueue() {
     QueuedNotification queued_item = std::move(pending_queue_.front());
     pending_queue_.pop_front();
 
-    base::UmaHistogramTimes("Autofill.OneTimeTokens.Backend.Gmail.QueueLatency",
+    base::UmaHistogramTimes("OneTimeTokens.Backend.Gmail.QueueLatency",
                             base::TimeTicks::Now() - queued_item.entry_time);
 
     auto [it, inserted] = active_requests_.insert(

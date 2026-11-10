@@ -77,10 +77,9 @@ ExpiringSubscription GmailOtpBackendImpl::Subscribe(
     LOG_OTT(&log_sink_)
         << "Subscription failed: SharedURLLoaderFactory is null "
            "(backend initialization failed)";
-    base::UmaHistogramBoolean("Autofill.OneTimeTokens.Backend.Gmail.Success",
-                              false);
+    base::UmaHistogramBoolean("OneTimeTokens.Backend.Gmail.Success", false);
     base::UmaHistogramEnumeration(
-        "Autofill.OneTimeTokens.Backend.Gmail.ErrorCode",
+        "OneTimeTokens.Backend.Gmail.ErrorCode",
         OneTimeTokenRetrievalError::kGmailOtpBackendInitializationFailed);
 
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -122,7 +121,7 @@ GmailOtpBackendImpl::PurgeExpiredAndGetCachedOneTimeTokens() {
 void GmailOtpBackendImpl::OnIncomingOneTimeTokenBackendNotification(
     const OneTimeTokenBackendNotification& notification) {
   base::UmaHistogramBoolean(
-      "Autofill.OneTimeTokens.Backend.Gmail.HasActiveSubscription",
+      "OneTimeTokens.Backend.Gmail.HasActiveSubscription",
       subscription_manager_.GetNumberSubscribers() > 0 ||
           tickle_subscription_manager_.GetNumberSubscribers() > 0);
 
@@ -194,7 +193,7 @@ void GmailOtpBackendImpl::ProcessCachedNotifications() {
                       << " cached notification(s) for active subscribers.";
   for (const auto& notification : std::views::reverse(items)) {
     base::UmaHistogramMediumTimes(
-        "Autofill.OneTimeTokens.Backend.Gmail.SubscriptionWaitLatency",
+        "OneTimeTokens.Backend.Gmail.SubscriptionWaitLatency",
         base::TimeTicks::Now() - notification.notification_received_timeticks);
     coordinator_->SignalNetworkRequestNeeded(notification);
   }
@@ -236,18 +235,17 @@ void GmailOtpBackendImpl::OnResponseFromGmailOtpBackend(
     const OneTimeTokenBackendNotification& notification,
     base::TimeTicks trigger_time,
     base::expected<OneTimeToken, OneTimeTokenRetrievalError> reply) {
-  base::UmaHistogramBoolean("Autofill.OneTimeTokens.Backend.Gmail.Success",
+  base::UmaHistogramBoolean("OneTimeTokens.Backend.Gmail.Success",
                             reply.has_value());
 
   if (reply.has_value()) {
-    base::UmaHistogramTimes(
-        "Autofill.OneTimeTokens.Backend.Gmail.SuccessLatency",
-        base::TimeTicks::Now() - trigger_time);
-  } else {
-    base::UmaHistogramTimes("Autofill.OneTimeTokens.Backend.Gmail.ErrorLatency",
+    base::UmaHistogramTimes("OneTimeTokens.Backend.Gmail.SuccessLatency",
                             base::TimeTicks::Now() - trigger_time);
-    base::UmaHistogramEnumeration(
-        "Autofill.OneTimeTokens.Backend.Gmail.ErrorCode", reply.error());
+  } else {
+    base::UmaHistogramTimes("OneTimeTokens.Backend.Gmail.ErrorLatency",
+                            base::TimeTicks::Now() - trigger_time);
+    base::UmaHistogramEnumeration("OneTimeTokens.Backend.Gmail.ErrorCode",
+                                  reply.error());
   }
 
   active_fetchers_.erase(notification.encrypted_message_reference);

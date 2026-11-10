@@ -44,7 +44,7 @@ void RecordSenderDomainMatchRejectionReason(
                   "SenderDomainMatchRejectionReason.Received",
       reason);
   if (ukm_source_id != ukm::kInvalidSourceId) {
-    ukm::builders::Autofill_OneTimeTokens builder(ukm_source_id);
+    ukm::builders::OneTimeTokens builder(ukm_source_id);
     int64_t value = std::to_underlying(reason);
     is_cached
         ? builder.SetGmail_SenderDomainMatchRejectionReason_Cached(value)
@@ -64,7 +64,7 @@ void RecordSenderDomainMatchAcceptedMatchType(
                   "SenderDomainMatchAcceptedMatchType.Received",
       match_type);
   if (ukm_source_id != ukm::kInvalidSourceId) {
-    ukm::builders::Autofill_OneTimeTokens builder(ukm_source_id);
+    ukm::builders::OneTimeTokens builder(ukm_source_id);
     int64_t value = std::to_underlying(match_type);
     is_cached
         ? builder.SetGmail_SenderDomainMatchAcceptedMatchType_Cached(value)

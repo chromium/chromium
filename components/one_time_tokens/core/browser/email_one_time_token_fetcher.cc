@@ -121,7 +121,7 @@ void EmailOneTimeTokenFetcher::OnAccessTokenFetched(
     base::TimeTicks auth_start_time,
     GoogleServiceAuthError error,
     signin::AccessTokenInfo info) {
-  base::UmaHistogramTimes("Autofill.OneTimeTokens.Backend.Gmail.AuthLatency",
+  base::UmaHistogramTimes("OneTimeTokens.Backend.Gmail.AuthLatency",
                           base::TimeTicks::Now() - auth_start_time);
   access_token_fetcher_.reset();
   bool auth_success = error.state() == GoogleServiceAuthError::NONE;
@@ -224,7 +224,7 @@ void EmailOneTimeTokenFetcher::StartOneTimeTokenServiceCall(
 void EmailOneTimeTokenFetcher::OnResponseBytesFromOneTimeTokenService(
     base::TimeTicks network_request_start_time,
     std::optional<std::string> response_body) {
-  base::UmaHistogramTimes("Autofill.OneTimeTokens.Backend.Gmail.NetworkLatency",
+  base::UmaHistogramTimes("OneTimeTokens.Backend.Gmail.NetworkLatency",
                           base::TimeTicks::Now() - network_request_start_time);
   std::optional<net::HttpStatusCode> response_code = GetHttpResponseCode();
   simple_url_loader_.reset();

@@ -35,8 +35,8 @@ namespace {
 // Member function pointer to the latency setter method on the UKM builder
 // (e.g. SetLatency_FieldDetectionToTickleInMillis). The int64_t parameter is
 // the latency in milliseconds.
-using UkmLatencySetter = ukm::builders::Autofill_OneTimeTokens& (
-    ukm::builders::Autofill_OneTimeTokens::*)(int64_t);
+using UkmLatencySetter =
+    ukm::builders::OneTimeTokens& (ukm::builders::OneTimeTokens::*)(int64_t);
 
 // Returns true if a correlated previous event was found and metrics were
 // recorded.
@@ -63,7 +63,7 @@ bool TryRecordTickleMetrics(std::optional<base::TimeTicks>& previous_event_time,
                                     arrival_type);
       if (ukm_source_id.has_value() &&
           *ukm_source_id != ukm::kInvalidSourceId) {
-        ukm::builders::Autofill_OneTimeTokens builder(*ukm_source_id);
+        ukm::builders::OneTimeTokens builder(*ukm_source_id);
         (builder.*latency_setter)(latency.InMilliseconds());
         builder.SetTickle_Arrival(std::to_underlying(arrival_type));
         builder.Record(ukm::UkmRecorder::Get());
@@ -141,8 +141,7 @@ void OtpMetricsTracker::OnOtpFieldDetected(FormGlobalId form_id,
       tickle_time_, field_detection_time_,
       kTickleToFieldDetectionLatencyHistogram,
       one_time_tokens::TickleArrival::kBeforeFieldDetection, ukm_source_id_,
-      &ukm::builders::Autofill_OneTimeTokens::
-          SetLatency_TickleToFieldDetectionInMillis);
+      &ukm::builders::OneTimeTokens::SetLatency_TickleToFieldDetectionInMillis);
 
   if (matched_existing_tickle) {
     // Tickle arrived before the form loaded (pre-arrival), so it arrived
@@ -168,8 +167,7 @@ void OtpMetricsTracker::OnTickleReceived() {
       field_detection_time_, tickle_time_,
       kFieldDetectionToTickleLatencyHistogram,
       one_time_tokens::TickleArrival::kAfterFieldDetection, ukm_source_id_,
-      &ukm::builders::Autofill_OneTimeTokens::
-          SetLatency_FieldDetectionToTickleInMillis);
+      &ukm::builders::OneTimeTokens::SetLatency_FieldDetectionToTickleInMillis);
 
   if (matched_existing_field) {
     if (form_outcome_timeout_timer_.IsRunning()) {
@@ -223,7 +221,7 @@ void OtpMetricsTracker::RecordFormOutcomeMetrics(
   base::UmaHistogramEnumeration(one_time_tokens::kTickleFormOutcomeHistogram,
                                 form_outcome);
   if (ukm_source_id_.has_value() && *ukm_source_id_ != ukm::kInvalidSourceId) {
-    ukm::builders::Autofill_OneTimeTokens builder(*ukm_source_id_);
+    ukm::builders::OneTimeTokens builder(*ukm_source_id_);
     builder.SetTickle_FormOutcome(std::to_underlying(form_outcome));
     builder.Record(ukm::UkmRecorder::Get());
   }

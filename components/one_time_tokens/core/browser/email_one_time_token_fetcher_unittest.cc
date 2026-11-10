@@ -165,8 +165,7 @@ TEST_F(EmailOneTimeTokenFetcherTest, Success) {
   EXPECT_EQ(result->type(), OneTimeTokenType::kGmail);
   EXPECT_EQ(result->sender_address(), kSenderAddress);
   histogram_tester_.ExpectUniqueTimeSample(
-      "Autofill.OneTimeTokens.Backend.Gmail.AuthLatency",
-      base::Milliseconds(123), 1);
+      "OneTimeTokens.Backend.Gmail.AuthLatency", base::Milliseconds(123), 1);
 }
 
 TEST_F(EmailOneTimeTokenFetcherTest, SuccessPreservesTimestamps) {
@@ -213,8 +212,7 @@ TEST_F(EmailOneTimeTokenFetcherTest, AccessTokenError) {
   EXPECT_EQ(result.error(),
             OneTimeTokenRetrievalError::kGmailOtpBackendAuthError);
   histogram_tester_.ExpectUniqueTimeSample(
-      "Autofill.OneTimeTokens.Backend.Gmail.AuthLatency",
-      base::Milliseconds(456), 1);
+      "OneTimeTokens.Backend.Gmail.AuthLatency", base::Milliseconds(456), 1);
 }
 
 // Tests that an error is returned when the network request to the Gmail OTP
@@ -238,7 +236,7 @@ TEST_F(EmailOneTimeTokenFetcherTest, NetworkError) {
   EXPECT_EQ(result.error(),
             OneTimeTokenRetrievalError::kGmailOtpBackendInvalidResponse);
   histogram_tester_.ExpectTotalCount(
-      "Autofill.OneTimeTokens.Backend.Gmail.NetworkLatency", 1);
+      "OneTimeTokens.Backend.Gmail.NetworkLatency", 1);
 }
 
 // Tests that an error is returned when the network request fails entirely
@@ -263,7 +261,7 @@ TEST_F(EmailOneTimeTokenFetcherTest, NetworkDisconnected) {
   EXPECT_EQ(result.error(),
             OneTimeTokenRetrievalError::kGmailOtpBackendNetworkError);
   histogram_tester_.ExpectTotalCount(
-      "Autofill.OneTimeTokens.Backend.Gmail.NetworkLatency", 1);
+      "OneTimeTokens.Backend.Gmail.NetworkLatency", 1);
 }
 
 // Tests that an error is returned when the response proto is invalid.

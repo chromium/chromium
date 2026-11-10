@@ -3710,12 +3710,12 @@ TEST_F(OtpManagerImplTest,
                            Optional(std::string("otp@mail.example.test"))))));
   // The sender domain check result is recorded to UKM against the page.
   auto entries = autofill_client().GetUkmRecorder()->GetEntriesByName(
-      ukm::builders::Autofill_OneTimeTokens::kEntryName);
+      ukm::builders::OneTimeTokens::kEntryName);
   ASSERT_EQ(entries.size(), 1u);
   EXPECT_EQ(entries[0]->source_id, autofill_driver().GetPageUkmSourceId());
   autofill_client().GetUkmRecorder()->ExpectEntryMetric(
       entries[0],
-      ukm::builders::Autofill_OneTimeTokens::
+      ukm::builders::OneTimeTokens::
           kGmail_SenderDomainMatchAcceptedMatchType_ReceivedName,
       static_cast<int64_t>(
           one_time_tokens::GmailOtpSenderDomainMatchType::kPsl));
