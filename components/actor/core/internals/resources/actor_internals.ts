@@ -28,6 +28,16 @@ class ActorEventLog {
       new Map<number, {collapsed: boolean, parentIds: number[]}>();
   private indentationByTrack = new Map<string, number>();
   private objectUrls: string[] = [];
+  private resizeObserver = new ResizeObserver((entries) => {
+    for (const entry of entries) {
+      const content = entry.target as HTMLElement;
+      const toggle = content.previousElementSibling as HTMLElement;
+      if (toggle && !content.classList.contains('expanded')) {
+        toggle.style.display =
+            content.scrollHeight > content.clientHeight ? 'block' : 'none';
+      }
+    }
+  });
 
   constructor() {
     this.table = getRequiredElement<HTMLTableElement>('actor-events-table');
@@ -117,15 +127,32 @@ class ActorEventLog {
     return {row, cells};
   }
 
- private formatMapDetails(detailsMap: Map<string, string>): string {
-  return [...detailsMap]
-    .filter(([_, value]) => value)
-    .map(([key, value]) => `${key}: ${value}`)
-    .join('\n');
+  private formatMapDetails(detailsMap: Map<string, string>): string {
+    return [...detailsMap]
+        .filter(([_, value]) => value)
+        .map(([key, value]) => `${key}: ${value}`)
+        .join('\n');
   }
 
-  private formatDetailsCell(entry: JournalEntry,
-      detailsCell: HTMLTableCellElement ) {
+  private formatDetailsCell(
+      entry: JournalEntry, detailsCell: HTMLTableCellElement) {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'details-wrapper';
+
+    const toggle = document.createElement('button');
+    toggle.className = 'toggle-collapse-btn';
+    toggle.textContent = 'Expand';
+    wrapper.appendChild(toggle);
+
+    const content = document.createElement('div');
+    content.className = 'details-content whitespace-pre';
+    wrapper.appendChild(content);
+
+    toggle.onclick = () => {
+      const isExpanded = content.classList.toggle('expanded');
+      toggle.textContent = isExpanded ? 'Collapse' : 'Expand';
+    };
+
     if (entry.details['proto']) {
       const protobytes = entry.details['proto'];
       const typeName = entry.details['proto_type'] || 'Protobuf';
@@ -135,7 +162,7 @@ class ActorEventLog {
           `https://protoshop.corp.google.com/embed?tabs=viewer,editor,textproto&type=${
               typeName}&protobytes=${encodeURIComponent(protobytes)}`;
       link.target = '_blank';
-      detailsCell.appendChild(link);
+      content.appendChild(link);
 
       // Create a copy of the details, but strip out the proto related fields.
       const otherDetails = new Map<string, string>();
@@ -148,11 +175,11 @@ class ActorEventLog {
       if (otherDetails.size > 0) {
         const span = document.createElement('span');
         span.textContent = '\n' + this.formatMapDetails(otherDetails);
-        detailsCell.appendChild(span);
+        content.appendChild(span);
       }
     } else if (entry.screenshot) {
       const byteArray = new Uint8Array(entry.screenshot);
-      const blob = new Blob([byteArray], { type: 'image/jpeg' });
+      const blob = new Blob([byteArray], {type: 'image/jpeg'});
       const blobUrl = URL.createObjectURL(blob);
       this.objectUrls.push(blobUrl);
 
@@ -162,10 +189,10 @@ class ActorEventLog {
       container.style.gap = '5px';
 
       const img = document.createElement('img');
-      img.src = blobUrl; // Use the Blob URL for the small image
+      img.src = blobUrl;  // Use the Blob URL for the small image
       img.style.width = '200px';
       img.style.height = '100px';
-      img.style.cursor = 'pointer'; // Indicate it's clickable
+      img.style.cursor = 'pointer';  // Indicate it's clickable
 
       img.onclick = () => {
         const newTab = window.open(img.src, '_blank');
@@ -197,14 +224,18 @@ class ActorEventLog {
         container.appendChild(toggleButton);
       }
 
-      detailsCell.appendChild(container);
+      content.appendChild(container);
     } else {
-      detailsCell.textContent = this.formatMapDetails(new Map(Object.entries(entry.details)));
+      content.textContent =
+          this.formatMapDetails(new Map(Object.entries(entry.details)));
     }
-    detailsCell.classList.add('whitespace-pre');
+
     if ('error' in entry.details) {
       detailsCell.classList.add('error-cell');
     }
+
+    detailsCell.appendChild(wrapper);
+    this.resizeObserver.observe(content);
   }
 
   private formatTypeCell(
@@ -231,7 +262,8 @@ class ActorEventLog {
 
       // 3. Add to stack and increment the map *for its future children* (to
       // N+1)
-      this.activeSpans.push({id: newSpanId, track: entry.track, event: entry.event});
+      this.activeSpans.push(
+          {id: newSpanId, track: entry.track, event: entry.event});
       this.incrementIndentation(entry.track);
 
       typeSpan.className = 'type-b';
@@ -414,6 +446,7 @@ class ActorEventLog {
    * desynchronization.
    */
   clearTable() {
+    this.resizeObserver.disconnect();
     this.table.replaceChildren(this.table.querySelector('thead')!);
     this.activeSpans = [];
     this.spanState.clear();

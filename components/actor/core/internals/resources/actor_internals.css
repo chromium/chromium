@@ -63,3 +63,25 @@ td {
 .newly-uncollapsed td {
   animation: newly-uncollapsed-fade-out 2s;
 }
+
+.details-wrapper {
+  position: relative;
+}
+
+.details-content {
+  max-height: 200px;
+  overflow-y: hidden;
+}
+
+.details-content.expanded {
+  max-height: none;
+  overflow-y: visible;
+}
+
+.toggle-collapse-btn {
+  display: none;
+  margin-bottom: 4px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
