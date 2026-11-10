@@ -5,43 +5,41 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 <resources>
-    <!-- Tab Bottom Sheet -->
-    <dimen name="tab_bottom_sheet_resizing_view_icon_size">32dp</dimen>
-    <dimen name="tab_bottom_sheet_resizing_view_text_margin_top">20dp</dimen>
-    <dimen name="tab_bottom_sheet_resizing_fade_offset">40dp</dimen>
-    <dimen name="tab_bottom_sheet_placeholder_padding">24dp</dimen>
-    <dimen name="tab_bottom_sheet_placeholder_drawable_padding">16dp</dimen>
-
-    <!-- The total visible height requested by TabBottomSheet at peek state, counting the
-         contents of the peek view plus the space consumed by the drag handle bar frame.
-         (12dp handle area + 52dp control min size + 8dp bottom padding) -->
-    <dimen name="tab_bottom_sheet_peek_height_total">72dp</dimen>
-    <dimen name="tab_bottom_sheet_web_ui_top_margin">18dp</dimen>
-    <!-- Cumulative top overlay padding required to avoid clipping visual headers beneath
-         the floating drag handle. 8dp top margin + 4dp intrinsic handle) -->
+    <!-- go/keep-sorted start group_start_regex=<dimen -->
+    <!-- Cumulative top overlay padding required to avoid clipping visual headers beneath -->
+    <!-- the floating drag handle. 8dp top margin + 4dp intrinsic handle) -->
     <dimen name="tab_bottom_sheet_handle_area_height">12dp</dimen>
+    <dimen name="tab_bottom_sheet_peek_button_margin_end">10dp</dimen>
+    <dimen name="tab_bottom_sheet_peek_close_button_margin_end">6dp</dimen>
+    <dimen name="tab_bottom_sheet_peek_close_button_size">40dp</dimen>
     <dimen name="tab_bottom_sheet_peek_container_bottom_padding">8dp</dimen>
     <dimen name="tab_bottom_sheet_peek_corner_radius">@dimen/bottom_sheet_corner_radius</dimen>
-
-    <!-- Tab Bottom Sheet Peek View Dimensions -->
-    <dimen name="tab_bottom_sheet_peek_button_margin_end">10dp</dimen>
-    <dimen name="tab_bottom_sheet_peek_padding_start">12dp</dimen>
-    <dimen name="tab_bottom_sheet_peek_padding_end">12dp</dimen>
-    <dimen name="tab_bottom_sheet_peek_padding_top">3dp</dimen>
-    <dimen name="tab_bottom_sheet_peek_icon_size">24dp</dimen>
-    <dimen name="tab_bottom_sheet_peek_icon_margin_start">6dp</dimen>
-    <dimen name="tab_bottom_sheet_peek_icon_margin_end">12dp</dimen>
-    <dimen name="tab_bottom_sheet_peek_text_container_margin_end">8dp</dimen>
     <dimen name="tab_bottom_sheet_peek_description_margin_top">-2dp</dimen>
-    <dimen name="tab_bottom_sheet_peek_close_button_size">40dp</dimen>
-    <dimen name="tab_bottom_sheet_peek_close_button_margin_end">6dp</dimen>
-    <dimen name="tab_bottom_sheet_skeleton_padding_horiz">16dp</dimen>
-    <dimen name="tab_bottom_sheet_skeleton_padding_bottom">16dp</dimen>
+    <!-- The total visible height requested by TabBottomSheet at peek state, counting the -->
+    <!-- contents of the peek view plus the space consumed by the drag handle bar frame. -->
+    <!-- (12dp handle area + 52dp control min size + 8dp bottom padding) -->
+    <dimen name="tab_bottom_sheet_peek_height_total">72dp</dimen>
+    <dimen name="tab_bottom_sheet_peek_icon_margin_end">12dp</dimen>
+    <dimen name="tab_bottom_sheet_peek_icon_margin_start">6dp</dimen>
+    <dimen name="tab_bottom_sheet_peek_icon_size">24dp</dimen>
+    <dimen name="tab_bottom_sheet_peek_padding_end">12dp</dimen>
+    <dimen name="tab_bottom_sheet_peek_padding_start">12dp</dimen>
+    <dimen name="tab_bottom_sheet_peek_padding_top">3dp</dimen>
+    <dimen name="tab_bottom_sheet_peek_text_container_margin_end">8dp</dimen>
+    <dimen name="tab_bottom_sheet_placeholder_drawable_padding">16dp</dimen>
+    <dimen name="tab_bottom_sheet_placeholder_padding">24dp</dimen>
+    <dimen name="tab_bottom_sheet_resizing_fade_offset">40dp</dimen>
+    <dimen name="tab_bottom_sheet_resizing_view_icon_size">32dp</dimen>
+    <dimen name="tab_bottom_sheet_resizing_view_text_margin_top">20dp</dimen>
     <dimen name="tab_bottom_sheet_skeleton_bar_height">24dp</dimen>
     <dimen name="tab_bottom_sheet_skeleton_bar_radius">4dp</dimen>
-    <dimen name="tab_bottom_sheet_skeleton_pill_height">56dp</dimen>
-    <dimen name="tab_bottom_sheet_skeleton_pill_radius">28dp</dimen>
-    <dimen name="tab_bottom_sheet_skeleton_pill_margin_top">20dp</dimen>
-    <dimen name="tab_bottom_sheet_skeleton_spacing">16dp</dimen>
     <dimen name="tab_bottom_sheet_skeleton_buffer">24dp</dimen>
+    <dimen name="tab_bottom_sheet_skeleton_padding_bottom">16dp</dimen>
+    <dimen name="tab_bottom_sheet_skeleton_padding_horiz">16dp</dimen>
+    <dimen name="tab_bottom_sheet_skeleton_pill_height">56dp</dimen>
+    <dimen name="tab_bottom_sheet_skeleton_pill_margin_top">20dp</dimen>
+    <dimen name="tab_bottom_sheet_skeleton_pill_radius">28dp</dimen>
+    <dimen name="tab_bottom_sheet_skeleton_spacing">16dp</dimen>
+    <dimen name="tab_bottom_sheet_web_ui_top_margin">18dp</dimen>
+    <!-- go/keep-sorted end -->
 </resources>
