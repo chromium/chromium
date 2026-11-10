@@ -10,9 +10,12 @@
 #include "components/soda/mock_soda_installer.h"
 #include "components/soda/soda_util.h"
 #include "content/browser/speech/fake_speech_recognition_manager_delegate.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/speech_recognition_audio_forwarder_config.h"
-#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/test/mock_speech_recognition_event_listener.h"
+#include "media/audio/audio_system.h"
+#include "media/base/audio_parameters.h"
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
 #include "media/mojo/mojom/speech_recognizer.mojom.h"
@@ -28,12 +31,81 @@ namespace content {
 using testing::_;
 using testing::NiceMock;
 
+namespace {
+
+class TestAudioSystem : public media::AudioSystem {
+ public:
+  void GetInputStreamParameters(const std::string& device_id,
+                                OnAudioParamsCallback on_params_cb) override {
+    std::move(on_params_cb)
+        .Run(media::AudioParameters::UnavailableDeviceParams());
+  }
+  void GetOutputStreamParameters(const std::string& device_id,
+                                 OnAudioParamsCallback on_params_cb) override {}
+  void HasInputDevices(OnBoolCallback on_has_devices_cb) override {}
+  void HasOutputDevices(OnBoolCallback on_has_devices_cb) override {}
+  void GetDeviceDescriptions(
+      bool for_input,
+      OnDeviceDescriptionsCallback on_descriptions_cb) override {}
+  void GetAssociatedOutputDeviceID(
+      const std::string& input_device_id,
+      OnDeviceIdCallback on_device_id_cb) override {}
+  void GetInputDeviceInfo(
+      const std::string& input_device_id,
+      OnInputDeviceInfoCallback on_input_device_info_cb) override {}
+};
+
+class DeferredRecognitionDelegate
+    : public FakeSpeechRecognitionManagerDelegate {
+ public:
+  DeferredRecognitionDelegate()
+      : FakeSpeechRecognitionManagerDelegate(nullptr) {}
+
+  void CheckRecognitionIsAllowed(
+      int session_id,
+      base::OnceCallback<void(bool ask_user, bool is_allowed)> callback)
+      override {
+    pending_callback_ = std::move(callback);
+  }
+
+  SpeechRecognitionEventListener* GetEventListener() override {
+    return nullptr;
+  }
+
+  bool HasPendingCallback() const { return !pending_callback_.is_null(); }
+
+  base::OnceCallback<void(bool ask_user, bool is_allowed)> TakeCallback() {
+    return std::move(pending_callback_);
+  }
+
+ private:
+  base::OnceCallback<void(bool ask_user, bool is_allowed)> pending_callback_;
+};
+
+}  // namespace
+
 class SpeechRecognitionManagerImplTest
-    : public testing::Test,
+    : public RenderViewHostTestHarness,
       public media::mojom::SpeechRecognitionSessionClient {
  public:
   SpeechRecognitionManagerImplTest() = default;
   ~SpeechRecognitionManagerImplTest() override = default;
+
+  void SetUp() override {
+    RenderViewHostTestHarness::SetUp();
+    manager_ = absl::WrapUnique(
+        new SpeechRecognitionManagerImpl(&audio_system_, nullptr));
+  }
+
+  void TearDown() override {
+    receiver_.reset();
+    manager_.reset();
+    RenderViewHostTestHarness::TearDown();
+  }
+
+  void SetDelegate(std::unique_ptr<SpeechRecognitionManagerDelegate> delegate) {
+    manager_->delegate_ = std::move(delegate);
+  }
 
   // media::mojom::SpeechRecognitionSessionClient:
   void ResultRetrieved(std::vector<media::mojom::WebSpeechRecognitionResultPtr>
@@ -55,14 +127,13 @@ class SpeechRecognitionManagerImplTest
   base::test::ScopedFeatureList feature_2_{
       ash::features::kOnDeviceSpeechRecognition};
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  BrowserTaskEnvironment environment_;
 
  protected:
+  TestAudioSystem audio_system_;
   speech::MockSodaInstaller mock_soda_installer_;
   bool on_device_speech_recognition_supported_ =
       speech::IsOnDeviceSpeechRecognitionSupported();
-  std::unique_ptr<SpeechRecognitionManagerImpl> manager_ =
-      absl::WrapUnique(new SpeechRecognitionManagerImpl(nullptr, nullptr));
+  std::unique_ptr<SpeechRecognitionManagerImpl> manager_;
   mojo::Receiver<media::mojom::SpeechRecognitionSessionClient> receiver_{this};
   NiceMock<MockSpeechRecognitionEventListener> listener_;
   media::mojom::SpeechRecognitionErrorCode error_ =
@@ -309,6 +380,103 @@ TEST_F(SpeechRecognitionManagerImplTest, ConfigEventListenerThrowsError) {
   EXPECT_CALL(listener_, OnRecognitionEnd(_));
   manager_->CreateSession(config, mojo::NullReceiver(), mojo::NullRemote(),
                           std::nullopt);
+}
+
+TEST_F(SpeechRecognitionManagerImplTest,
+       StopCaptureDuringPermissionCheckPreventsStart) {
+  auto delegate = std::make_unique<DeferredRecognitionDelegate>();
+  DeferredRecognitionDelegate* delegate_ptr = delegate.get();
+  SetDelegate(std::move(delegate));
+
+  SpeechRecognitionSessionConfig config;
+  config.on_device = false;
+  config.language = "en-US";
+  config.initial_context.global_id = main_rfh()->GetGlobalId();
+  config.event_listener = listener_.GetWeakPtr();
+
+  // Case 1: StopAudioCaptureForSession() arrives while
+  // CheckRecognitionIsAllowed() is still pending. Running the permission
+  // callback afterward must be ignored without requesting media access or
+  // starting recognition.
+  {
+    const int session_id = manager_->CreateSession(config);
+    manager_->StartSession(session_id);
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return delegate_ptr->HasPendingCallback() &&
+             SpeechRecognitionManagerImpl::GetSessionTrackerCountForTesting(
+                 main_rfh()->GetGlobalId()) == 1;
+    }));
+
+    auto permission_cb = delegate_ptr->TakeCallback();
+    ASSERT_TRUE(permission_cb);
+
+    EXPECT_CALL(listener_, OnRecognitionStart(session_id)).Times(0);
+    EXPECT_CALL(listener_, OnRecognitionEnd(session_id)).Times(1);
+
+    manager_->StopAudioCaptureForSession(session_id);
+    std::move(permission_cb).Run(/*ask_user=*/true, /*is_allowed=*/true);
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return SpeechRecognitionManagerImpl::GetSessionTrackerCountForTesting(
+                 main_rfh()->GetGlobalId()) == 0;
+    }));
+  }
+
+  // Case 2: RecognitionAllowedCallback() has already posted EVENT_START, and
+  // StopAudioCaptureForSession() arrives before SessionStart() executes.
+  {
+    const int session_id = manager_->CreateSession(config);
+    manager_->StartSession(session_id);
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return delegate_ptr->HasPendingCallback() &&
+             SpeechRecognitionManagerImpl::GetSessionTrackerCountForTesting(
+                 main_rfh()->GetGlobalId()) == 1;
+    }));
+
+    auto permission_cb = delegate_ptr->TakeCallback();
+    ASSERT_TRUE(permission_cb);
+
+    EXPECT_CALL(listener_, OnRecognitionStart(session_id)).Times(0);
+    EXPECT_CALL(listener_, OnRecognitionEnd(session_id)).Times(1);
+
+    std::move(permission_cb).Run(/*ask_user=*/false, /*is_allowed=*/true);
+    manager_->StopAudioCaptureForSession(session_id);
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return SpeechRecognitionManagerImpl::GetSessionTrackerCountForTesting(
+                 main_rfh()->GetGlobalId()) == 0;
+    }));
+  }
+}
+
+TEST_F(SpeechRecognitionManagerImplTest, ResultsDroppedAfterAbortRequested) {
+  SpeechRecognitionSessionConfig config;
+  config.on_device = false;
+  config.language = "en-US";
+  config.initial_context.global_id = main_rfh()->GetGlobalId();
+  config.event_listener = listener_.GetWeakPtr();
+
+  const int session_id = manager_->CreateSession(config);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return SpeechRecognitionManagerImpl::GetSessionTrackerCountForTesting(
+               main_rfh()->GetGlobalId()) == 1;
+  }));
+
+  std::vector<media::mojom::WebSpeechRecognitionResultPtr> results;
+  results.push_back(media::mojom::WebSpeechRecognitionResult::New());
+
+  EXPECT_CALL(listener_, OnRecognitionResults(session_id, _)).Times(1);
+  manager_->OnRecognitionResults(session_id, results);
+  testing::Mock::VerifyAndClearExpectations(&listener_);
+
+  // Once AbortSession() sets abort_requested, any recognition result already in
+  // flight on the IO thread ahead of EVENT_ABORT must be dropped.
+  EXPECT_CALL(listener_, OnRecognitionResults(session_id, _)).Times(0);
+  EXPECT_CALL(listener_, OnRecognitionEnd(session_id)).Times(1);
+  manager_->AbortSession(session_id);
+  manager_->OnRecognitionResults(session_id, results);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return SpeechRecognitionManagerImpl::GetSessionTrackerCountForTesting(
+               main_rfh()->GetGlobalId()) == 0;
+  }));
 }
 
 }  // namespace content

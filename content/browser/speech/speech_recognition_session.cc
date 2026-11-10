@@ -42,7 +42,6 @@ void SpeechRecognitionSession::Abort() {
 void SpeechRecognitionSession::StopCapture() {
   SpeechRecognitionManager::GetInstance()->StopAudioCaptureForSession(
       session_id_);
-  stopped_ = true;
 }
 
 void SpeechRecognitionSession::UpdateRecognitionContext(

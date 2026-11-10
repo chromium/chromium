@@ -42,10 +42,13 @@ class CONTENT_EXPORT SpeechRecognizerImplAndroid : public SpeechRecognizer {
   bool IsCapturingAudio() const override;
 
  private:
+  friend class SpeechRecognizerImplAndroidTest;
+
   enum State {
     STATE_IDLE = 0,
     STATE_CAPTURING_AUDIO,
-    STATE_AWAITING_FINAL_RESULT
+    STATE_AWAITING_FINAL_RESULT,
+    STATE_ENDED
   };
 
   void OnAudioStartOnIOThread();

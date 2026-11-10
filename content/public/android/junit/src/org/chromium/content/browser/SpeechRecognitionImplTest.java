@@ -381,6 +381,23 @@ public class SpeechRecognitionImplTest {
     }
 
     @Test
+    public void testStopRecognitionBeforeReadyForSpeechEndsImmediately() {
+        startRecognition(/* continuous= */ true, /* interimResults= */ true);
+
+        mSpeechRecognition.stopRecognition();
+
+        verify(mRecognizerMock).cancel();
+        verify(mRecognizerMock, never()).stopListening();
+        verify(mRecognizerMock).destroy();
+        verify(mNativesMock).onRecognitionEnd(mNativePtr);
+        verify(mNativesMock, never()).onRecognitionError(any(), anyInt());
+
+        // Any trailing callback from Android's recognizer after termination is ignored.
+        mListener.onReadyForSpeech(new Bundle());
+        verifyNoMoreInteractions(mNativesMock);
+    }
+
+    @Test
     public void testResultsEndRecognition() {
         startRecognition(/* continuous= */ false, /* interimResults= */ true);
 

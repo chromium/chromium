@@ -444,8 +444,9 @@ void SpeechRecognitionManagerImpl::RecognitionAllowedCallback(int session_id,
 
   Session* session = iter->second.get();
 
-  if (session->abort_requested)
+  if (session->abort_requested || session->stop_requested) {
     return;
+  }
 
   if (ask_user) {
     SpeechRecognitionSessionContext& context = session->context;
@@ -574,12 +575,13 @@ void SpeechRecognitionManagerImpl::StopAudioCaptureForSession(int session_id) {
   if (iter == sessions_.end())
     return;
 
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&FrameSessionTracker::RemoveObserverForSession,
-                                iter->second->config.initial_context.global_id,
-                                session_id));
-
   iter->second->ui.reset();
+
+  if (iter->second->abort_requested || iter->second->stop_requested) {
+    return;
+  }
+
+  iter->second->stop_requested = true;
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&SpeechRecognitionManagerImpl::DispatchEvent,
@@ -682,8 +684,9 @@ void SpeechRecognitionManagerImpl::OnRecognitionResults(
     int session_id,
     const std::vector<media::mojom::WebSpeechRecognitionResultPtr>& results) {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
-  if (!SessionExists(session_id))
+  if (!SessionExists(session_id) || GetSession(session_id)->abort_requested) {
     return;
+  }
 
   if (SpeechRecognitionEventListener* delegate_listener = GetDelegateListener())
     delegate_listener->OnRecognitionResults(session_id, results);
@@ -1087,8 +1090,9 @@ void SpeechRecognitionManagerImpl::ExecuteTransitionAndGetNextState(
         case EVENT_AUDIO_ENDED:
           return ResetCapturingSessionId(*session);
         case EVENT_START:
-        case EVENT_STOP_CAPTURE:
           return;
+        case EVENT_STOP_CAPTURE:
+          return SessionStopAudioCapture(*session);
         case EVENT_RECOGNITION_ENDED:
           return NotFeasible(*session, event);
       }
@@ -1112,6 +1116,9 @@ SpeechRecognitionManagerImpl::GetSessionState(int session_id) const {
 //  - Are guaranteed to be not reentrant (themselves and each other);
 
 void SpeechRecognitionManagerImpl::SessionStart(const Session& session) {
+  if (session.stop_requested) {
+    return;
+  }
   const blink::MediaStreamDevices& devices = session.context.devices;
   std::string device_id;
   if (devices.empty()) {

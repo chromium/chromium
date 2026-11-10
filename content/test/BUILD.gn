@@ -3681,6 +3681,7 @@ test("content_unittests") {
       "../browser/media/key_system_support_android_unittest.cc",
       "../browser/renderer_host/render_widget_host_view_android_unittest.cc",
       "../browser/sms/sms_provider_gms_unittest.cc",
+      "../browser/speech/speech_recognizer_impl_android_unittest.cc",
       "../browser/web_contents/web_contents_view_android_unittest.cc",
       "../renderer/java/gin_java_bridge_value_converter_unittest.cc",
     ]
@@ -3699,6 +3700,7 @@ test("content_unittests") {
       "//content/public/android:jar_jni",
       "//gin:v8_snapshot_assets",
       "//gpu/command_buffer/service:android_texture_owner_test_support",
+      "//media/mojo/mojom:web_speech_recognition",
       "//third_party/blink/public/common",
       "//third_party/blink/public/common:font_unique_name_table_proto",
       "//ui/accessibility:ax_base_android",

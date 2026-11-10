@@ -467,6 +467,14 @@ public class SpeechRecognitionImpl {
     void stopRecognition() {
         if (mRecognizer == null) return;
 
+        if (mState == STATE_IDLE) {
+            // Audio capture (onReadyForSpeech) has not started yet, so there is no result to wait
+            // for. Cancel and end immediately, matching desktop pre-capture stop behavior.
+            mRecognizer.cancel();
+            terminate(SpeechRecognitionErrorCode.NONE);
+            return;
+        }
+
         mContinuous = false;
         mRecognizer.stopListening();
     }

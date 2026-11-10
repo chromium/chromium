@@ -161,6 +161,7 @@ class CONTENT_EXPORT SpeechRecognitionManagerImpl
 
     int id = kSessionIDInvalid;
     bool abort_requested = false;
+    bool stop_requested = false;
     bool has_error = false;
     SpeechRecognitionSessionConfig config;
     SpeechRecognitionSessionContext context;

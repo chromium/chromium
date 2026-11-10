@@ -75,7 +75,9 @@ class SpeechRecognizerImplAndroid::UiPeer {
     if (!j_recognition_.is_null()) {
       Java_SpeechRecognitionImpl_stopRecognition(AttachCurrentThread(),
                                                  j_recognition_);
+      return;
     }
+    OnRecognitionEnd(nullptr);
   }
 
   void OnAudioStart(JNIEnv* env) {
@@ -217,6 +219,9 @@ void SpeechRecognizerImplAndroid::AbortRecognition() {
 
 void SpeechRecognizerImplAndroid::StopAudioCapture() {
   if (BrowserThread::CurrentlyOn(BrowserThread::IO)) {
+    if (state_ == STATE_AWAITING_FINAL_RESULT || state_ == STATE_ENDED) {
+      return;
+    }
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&UiPeer::StopAudioCapture,
                                   base::Unretained(ui_peer_.get())));
@@ -228,7 +233,7 @@ void SpeechRecognizerImplAndroid::StopAudioCapture() {
 
 bool SpeechRecognizerImplAndroid::IsActive() const {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
-  return state_ != STATE_IDLE;
+  return state_ != STATE_IDLE && state_ != STATE_ENDED;
 }
 
 bool SpeechRecognizerImplAndroid::IsCapturingAudio() const {
@@ -276,7 +281,10 @@ void SpeechRecognizerImplAndroid::OnRecognitionErrorOnIOThread(int32_t error) {
 
 void SpeechRecognizerImplAndroid::OnRecognitionEndOnIOThread() {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
-  state_ = STATE_IDLE;
+  if (state_ == STATE_ENDED) {
+    return;
+  }
+  state_ = STATE_ENDED;
   listener()->OnRecognitionEnd(session_id());
 }
 
