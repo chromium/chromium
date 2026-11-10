@@ -16,6 +16,7 @@
 #include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -333,12 +334,10 @@ void SavedPasswordsPresenter::AddCredentials(
     return;
   }
 
-  std::vector<StoredCredential> stored_credentials;
-  std::ranges::transform(credentials, std::back_inserter(stored_credentials),
-                         [&](const CredentialUIEntry& credential) {
-                           return GenerateStoredCredentialFromCredential(
-                               credential, type);
-                         });
+  std::vector<StoredCredential> stored_credentials =
+      base::ToVector(credentials, [&](const CredentialUIEntry& credential) {
+        return GenerateStoredCredentialFromCredential(credential, type);
+      });
 
   CHECK(std::ranges::all_of(
       stored_credentials, [&](const StoredCredential& form) {
