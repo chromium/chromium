@@ -237,10 +237,6 @@ void TranslateAgent::RunLanguageDetectionAndRegisterPage(
   if (ShouldOverrideLanguageDetectionForTesting()) {
     std::string language = "fr";
     LanguageDetectionDetails details;
-    details.time = base::Time::Now();
-    // The browser uses the URL to tell the Reading Mode side panel apart from
-    // the page itself, so it must be set here too.
-    details.url = url;
     details.adopted_language = language;
     details.contents = contents;
     details.has_run_lang_detection = true;
