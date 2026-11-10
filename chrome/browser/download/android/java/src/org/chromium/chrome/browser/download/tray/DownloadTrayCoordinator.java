@@ -56,7 +56,9 @@ public class DownloadTrayCoordinator implements DownloadTrayMediator.PopupContro
      * @param context The context used to inflate the tray.
      * @param model The model to observe for download state changes.
      * @param anchorSupplier Supplies the view to anchor popups to, or null if unavailable.
-     * @param isWindowFocused Whether this window has focus; only the focused window shows popups.
+     * @param isWindowFocused Whether this is the window the user last focused; only that window
+     *     shows popups.
+     * @param isIncognitoSelected Whether this window is showing incognito tabs.
      * @param onActioned Invoked when the user acts on a download from the tray.
      * @param delegate Performs actions that need dependencies outside the download module.
      */
@@ -65,6 +67,7 @@ public class DownloadTrayCoordinator implements DownloadTrayMediator.PopupContro
             DownloadStateModel model,
             Supplier<@Nullable View> anchorSupplier,
             BooleanSupplier isWindowFocused,
+            BooleanSupplier isIncognitoSelected,
             Runnable onActioned,
             DownloadTrayDelegate delegate) {
         mContext = context;
@@ -74,6 +77,7 @@ public class DownloadTrayCoordinator implements DownloadTrayMediator.PopupContro
                         model,
                         anchorSupplier,
                         isWindowFocused,
+                        isIncognitoSelected,
                         onActioned,
                         delegate,
                         /* popupController= */ this);

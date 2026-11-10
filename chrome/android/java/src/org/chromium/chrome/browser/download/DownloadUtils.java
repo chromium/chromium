@@ -79,6 +79,7 @@ import org.chromium.components.download.ResumeMode;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.FailState;
 import org.chromium.components.offline_items_collection.LaunchLocation;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
@@ -430,6 +431,48 @@ public class DownloadUtils {
             OfflineContentAggregatorFactory.get()
                     .openItem(openParams, assertNonNull(offlineItem.id));
         }
+    }
+
+    /**
+     * Opens a completed download in a new Chrome tab if Chrome can display its format (e.g. PDFs,
+     * images or web pages), even when another app is the default for it. Unlike {@link #openItem},
+     * which prefers the default app on desktop, opens nothing otherwise. Incognito downloads only
+     * open here if Chrome can open them in an incognito tab.
+     *
+     * @param offlineItem The completed download to open.
+     * @param context The context used to open the download.
+     * @param otrProfileId The {@link OtrProfileId} of the download. Null if in regular mode.
+     * @param source The location from which the download was opened.
+     * @return Whether the download was opened in Chrome.
+     */
+    public static boolean openItemInChrome(
+            OfflineItem offlineItem,
+            Context context,
+            @Nullable OtrProfileId otrProfileId,
+            @DownloadOpenSource int source) {
+        // Only regular downloads have a file Chrome can load; e.g. offline pages open differently.
+        ContentId id = offlineItem.id;
+        String filePath = offlineItem.filePath;
+        if (id == null || filePath == null || !LegacyHelpers.isLegacyDownload(id)) return false;
+        boolean isIncognito = OtrProfileId.isOffTheRecord(otrProfileId);
+        // Only PDFs open in an incognito tab; other formats would open in a regular one, so leave
+        // incognito downloads of those to the default app (as desktop does for e.g. images).
+        if (isIncognito && !MimeTypeUtils.PDF_MIME_TYPE.equalsIgnoreCase(offlineItem.mimeType)) {
+            return false;
+        }
+        DownloadManagerService service = DownloadManagerService.getDownloadManagerService();
+        if (!service.isDownloadOpenableInBrowser(offlineItem.mimeType, isIncognito)) return false;
+        DownloadOpenRequest req =
+                DownloadOpenRequest.builder(context, filePath)
+                        .mimeType(offlineItem.mimeType)
+                        .downloadGuid(id.id)
+                        .otrProfileId(otrProfileId)
+                        .source(source)
+                        .build();
+        if (!openInChromeInternal(req)) return false;
+        DownloadMetrics.recordDownloadOpen(source, offlineItem.mimeType);
+        service.updateLastAccessTime(id.id, otrProfileId);
+        return true;
     }
 
     /**

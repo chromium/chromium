@@ -39,6 +39,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.CallbackUtils;
@@ -68,6 +69,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.app.download.DownloadTrayDelegateImpl;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.BackPressMetrics;
 import org.chromium.chrome.browser.back_press.BackPressMetrics.NavigationDirection;
@@ -95,6 +97,7 @@ import org.chromium.chrome.browser.download.DownloadStateModel;
 import org.chromium.chrome.browser.download.DownloadToolbarButtonController;
 import org.chromium.chrome.browser.download.DownloadToolbarButtonState;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
+import org.chromium.chrome.browser.download.tray.DownloadTrayCoordinator;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.findinpage.FindToolbarManager;
@@ -467,6 +470,7 @@ public class ToolbarManager
 
     private @Nullable DownloadStateModel mDownloadStateModel;
     private @Nullable DownloadToolbarButtonController mDownloadToolbarButtonController;
+    private @Nullable DownloadTrayCoordinator mDownloadTrayCoordinator;
     private final Callback<DownloadToolbarButtonState> mDownloadButtonStateObserver =
             mDownloadButtonStateSupplier::set;
 
@@ -2972,14 +2976,26 @@ public class ToolbarManager
         PictureInPictureWindowManagerBridge.initializeWithNative();
 
         if (DownloadFeatures.isDownloadToolbarButtonEnabled()) {
-            // The offline content aggregator requires native, so the model and controller are
-            // created here and bridged to the toolbar via mDownloadButtonStateSupplier.
+            // The offline content aggregator requires native, so the download model, controller and
+            // tray are created here.
             mDownloadStateModel = new DownloadStateModel(OfflineContentAggregatorFactory.get());
             mDownloadToolbarButtonController =
                     new DownloadToolbarButtonController(mDownloadStateModel);
             mDownloadToolbarButtonController
                     .getStateSupplier()
                     .addSyncObserverAndCall(mDownloadButtonStateObserver);
+            mDownloadTrayCoordinator =
+                    new DownloadTrayCoordinator(
+                            mActivity,
+                            mDownloadStateModel,
+                            this::getDownloadButtonView,
+                            // As on desktop (the profile's last active browser), only the last
+                            // focused window pops up the tray; unlike window focus, this still
+                            // holds while e.g. the app menu is open.
+                            () -> ApplicationStatus.getLastTrackedFocusedActivity() == mActivity,
+                            mIncognitoStateProvider::isIncognitoSelected,
+                            mDownloadToolbarButtonController::markActioned,
+                            new DownloadTrayDelegateImpl(mActivity));
         }
 
         TraceEvent.end("ToolbarManager.initializeWithNative");
@@ -3029,7 +3045,6 @@ public class ToolbarManager
     /**
      * Returns the download button view, or null if the button is not present or not yet inflated.
      */
-    // TODO(crbug.com/564646561): Use this view to anchor the downloads tray.
     public @Nullable View getDownloadButtonView() {
         return mToolbar.getDownloadButtonView();
     }
@@ -3209,6 +3224,11 @@ public class ToolbarManager
 
         if (mHomeButtonCoordinator != null) {
             mHomeButtonCoordinator.destroy();
+        }
+
+        if (mDownloadTrayCoordinator != null) {
+            mDownloadTrayCoordinator.destroy();
+            mDownloadTrayCoordinator = null;
         }
 
         if (mDownloadToolbarButtonController != null) {

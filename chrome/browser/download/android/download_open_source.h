@@ -11,6 +11,7 @@
 // or reused.
 // GENERATED_JAVA_ENUM_PACKAGE: (
 //   org.chromium.chrome.browser.download)
+// LINT.IfChange(DownloadOpenSource)
 enum class DownloadOpenSource {
   // The action source is unknown.
   kUnknown = 0,
@@ -46,7 +47,10 @@ enum class DownloadOpenSource {
   kExternalApp = 15,
   // New download tab open button.
   kNewDownloadTabOpenButton = 16,
-  kMaxValue = kNewDownloadTabOpenButton
+  // Download toolbar button tray.
+  kDownloadTray = 17,
+  kMaxValue = kDownloadTray
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidDownloadOpenSource)
 
 #endif  // CHROME_BROWSER_DOWNLOAD_ANDROID_DOWNLOAD_OPEN_SOURCE_H_

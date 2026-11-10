@@ -273,6 +273,8 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="JavaScript Dialog"/>
 </enum>
 
+<!-- LINT.IfChange(AndroidDownloadOpenSource) -->
+
 <enum name="AndroidDownloadOpenSource">
   <int value="0" label="UNKNOWN"/>
   <int value="1" label="ANDROID_DOWNLOAD_MANAGER"/>
@@ -291,7 +293,10 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="DUPLICATE_DOWNLOAD_DIALOG"/>
   <int value="15" label="EXTERNAL_APP"/>
   <int value="16" label="NEW_DOWNLOAD_TAB_OPEN_BUTTON"/>
+  <int value="17" label="DOWNLOAD_TRAY"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/download/android/download_open_source.h:DownloadOpenSource) -->
 
 <!-- LINT.IfChange(AndroidDownloadOpenTarget) -->
 

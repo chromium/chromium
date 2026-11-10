@@ -67,7 +67,13 @@ public class DownloadTrayCoordinatorTest {
         mModel = new DownloadStateModel(mProvider);
         mCoordinator =
                 new DownloadTrayCoordinator(
-                        activity, mModel, () -> anchor, () -> true, mOnActioned, mDelegate);
+                        activity,
+                        mModel,
+                        () -> anchor,
+                        /* isWindowFocused= */ () -> true,
+                        /* isIncognitoSelected= */ () -> false,
+                        mOnActioned,
+                        mDelegate);
     }
 
     @After

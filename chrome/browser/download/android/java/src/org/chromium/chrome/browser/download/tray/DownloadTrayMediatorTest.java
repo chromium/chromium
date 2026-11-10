@@ -35,6 +35,7 @@ import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.download.DownloadStateModel;
 import org.chromium.chrome.browser.download.R;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.components.download.DownloadDangerType;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
@@ -65,6 +66,7 @@ public class DownloadTrayMediatorTest {
     private DownloadStateModel mModel;
     private DownloadTrayMediator mMediator;
     private boolean mIsWindowFocused = true;
+    private boolean mIsIncognitoSelected;
     private View mCurrentAnchor;
 
     @Before
@@ -90,6 +92,7 @@ public class DownloadTrayMediatorTest {
                         mModel,
                         () -> mCurrentAnchor,
                         () -> mIsWindowFocused,
+                        () -> mIsIncognitoSelected,
                         mOnActioned,
                         mDelegate,
                         mPopupController);
@@ -105,6 +108,14 @@ public class DownloadTrayMediatorTest {
         item.title = guid + ".pdf";
         item.state = state;
         item.totalSizeBytes = 4_300_000;
+        return item;
+    }
+
+    private static OfflineItem createIncognitoItem(
+            String guid, @OfflineItemState int state, OtrProfileId profileId) {
+        OfflineItem item = createItem(guid, state);
+        item.isOffTheRecord = true;
+        item.otrProfileId = OtrProfileId.serialize(profileId);
         return item;
     }
 
@@ -234,6 +245,59 @@ public class DownloadTrayMediatorTest {
         mModel.onItemUpdated(createItem("c", OfflineItemState.COMPLETE), /* updateDelta= */ null);
         mModel.onItemRemoved(id("d"));
         assertEquals("c.pdf", captureShownRow().get(DownloadTrayItemProperties.TITLE));
+    }
+
+    @Test
+    public void testIncognitoDownloads_onlyShownWhileIncognitoTabsAreShown() {
+        OtrProfileId primary = OtrProfileId.getPrimaryOtrProfileId();
+        mModel.onItemsAdded(
+                List.of(
+                        createItem("a", OfflineItemState.IN_PROGRESS),
+                        createItem("b", OfflineItemState.IN_PROGRESS),
+                        createIncognitoItem("c", OfflineItemState.IN_PROGRESS, primary),
+                        createIncognitoItem("d", OfflineItemState.IN_PROGRESS, primary)));
+
+        // Showing regular tabs, an incognito download neither replaces a waiting regular one nor
+        // holds it back.
+        mModel.onItemUpdated(createItem("a", OfflineItemState.COMPLETE), /* updateDelta= */ null);
+        mModel.onItemUpdated(
+                createIncognitoItem("c", OfflineItemState.COMPLETE, primary),
+                /* updateDelta= */ null);
+        mModel.onItemUpdated(createItem("b", OfflineItemState.FAILED), /* updateDelta= */ null);
+        assertEquals("a.pdf", captureShownRow().get(DownloadTrayItemProperties.TITLE));
+
+        // Showing incognito tabs, downloads from their profile show, and other incognito profiles'
+        // (e.g. incognito Custom Tabs') don't hold them back.
+        clearInvocations(mPopupController);
+        mIsIncognitoSelected = true;
+        mFakeTime.advanceMillis(DownloadTrayMediator.MIN_SHOW_INTERVAL_MS);
+        mModel.onItemsAdded(
+                List.of(
+                        createIncognitoItem(
+                                "cct",
+                                OfflineItemState.IN_PROGRESS,
+                                new OtrProfileId("CCT:Incognito-1"))));
+        mModel.onItemUpdated(
+                createIncognitoItem("d", OfflineItemState.COMPLETE, primary),
+                /* updateDelta= */ null);
+        assertEquals("d.pdf", captureShownRow().get(DownloadTrayItemProperties.TITLE));
+    }
+
+    @Test
+    public void testSwitchingToRegularTabsBeforeShowing_dropsIncognitoCompletion() {
+        OtrProfileId primary = OtrProfileId.getPrimaryOtrProfileId();
+        mIsIncognitoSelected = true;
+        mModel.onItemsAdded(
+                List.of(
+                        createIncognitoItem("a", OfflineItemState.IN_PROGRESS, primary),
+                        createItem("b", OfflineItemState.IN_PROGRESS)));
+        mModel.onItemUpdated(
+                createIncognitoItem("a", OfflineItemState.COMPLETE, primary),
+                /* updateDelta= */ null);
+
+        mIsIncognitoSelected = false;
+        mModel.onItemUpdated(createItem("b", OfflineItemState.FAILED), /* updateDelta= */ null);
+        verify(mPopupController, never()).showCompletion(any(), any());
     }
 
     @Test

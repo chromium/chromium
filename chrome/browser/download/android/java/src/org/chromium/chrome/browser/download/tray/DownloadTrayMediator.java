@@ -17,6 +17,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.DownloadStateModel;
 import org.chromium.chrome.browser.download.R;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.OfflineItem;
@@ -58,6 +59,7 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
     private final DownloadStateModel mModel;
     private final Supplier<@Nullable View> mAnchorSupplier;
     private final BooleanSupplier mIsWindowFocused;
+    private final BooleanSupplier mIsIncognitoSelected;
     private final Runnable mOnActioned;
     private final DownloadTrayDelegate mDelegate;
     private final PopupController mPopupController;
@@ -81,7 +83,9 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
      * @param context The context used to resolve resources.
      * @param model The model to observe for download state changes.
      * @param anchorSupplier Supplies the view to anchor popups to, or null if unavailable.
-     * @param isWindowFocused Whether this window has focus; only the focused window shows popups.
+     * @param isWindowFocused Whether this is the window the user last focused; only that window
+     *     shows popups.
+     * @param isIncognitoSelected Whether this window is showing incognito tabs.
      * @param onActioned Invoked when the user acts on a download from the tray.
      * @param delegate Performs actions that need dependencies outside the download module.
      * @param popupController Shows and dismisses the popup.
@@ -91,6 +95,7 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
             DownloadStateModel model,
             Supplier<@Nullable View> anchorSupplier,
             BooleanSupplier isWindowFocused,
+            BooleanSupplier isIncognitoSelected,
             Runnable onActioned,
             DownloadTrayDelegate delegate,
             PopupController popupController) {
@@ -98,6 +103,7 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
         mModel = model;
         mAnchorSupplier = anchorSupplier;
         mIsWindowFocused = isWindowFocused;
+        mIsIncognitoSelected = isIncognitoSelected;
         mOnActioned = onActioned;
         mDelegate = delegate;
         mPopupController = popupController;
@@ -120,7 +126,7 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
     @Override
     public void onItemChanged(OfflineItem item, @Nullable OfflineItem previous) {
         // The model only caches active downloads, so a null previous means it wasn't active.
-        if (previous == null) return;
+        if (previous == null || !isVisibleInWindow(item)) return;
         // As on desktop, an active download ends when it stops being active or is flagged as
         // dangerous (desktop counts those as done). Pausing or waiting to auto-resume isn't an
         // ending: a waiting completion is shown once that download ends.
@@ -154,7 +160,8 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
         OfflineItem item = mPendingCompletion;
         mPendingCompletion = null;
 
-        if (!mIsWindowFocused.getAsBoolean()) return;
+        // Re-checked as the window may have switched between regular and incognito since.
+        if (!mIsWindowFocused.getAsBoolean() || !isVisibleInWindow(item)) return;
 
         long now = TimeUtils.elapsedRealtimeMillis();
         if (now - mLastShownTimeMs < MIN_SHOW_INTERVAL_MS) return;
@@ -178,14 +185,32 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
      * Whether any download is still downloading. As on desktop ({@code IsAllDone()} in {@code
      * DownloadDisplayController}), the popup waits for these so a burst of downloads ends in one
      * popup. Paused downloads, pending ones (interrupted and waiting to auto-resume, e.g. for a
-     * network) and dangerous ones awaiting the user's decision (which desktop treats as done) don't
-     * hold it back.
+     * network), dangerous ones awaiting the user's decision (which desktop treats as done) and ones
+     * this window doesn't show don't hold it back.
      */
     private boolean isAnythingDownloading() {
         for (OfflineItem active : mModel.getActiveItems()) {
-            if (active.state == OfflineItemState.IN_PROGRESS && !isDangerous(active)) return true;
+            if (active.state == OfflineItemState.IN_PROGRESS
+                    && !isDangerous(active)
+                    && isVisibleInWindow(active)) {
+                return true;
+            }
         }
         return false;
+    }
+
+    /**
+     * Whether this window may show {@code item}. As on the Downloads page ({@code
+     * OffTheRecordOfflineItemFilter}), regular downloads show in every window, and incognito ones
+     * only while the window shows incognito tabs. Like desktop, this keeps incognito file names out
+     * of regular browsing.
+     */
+    private boolean isVisibleInWindow(OfflineItem item) {
+        if (!item.isOffTheRecord) return true;
+        // Incognito tabs use the primary off-the-record profile; e.g. incognito Custom Tabs don't.
+        return mIsIncognitoSelected.getAsBoolean()
+                && OtrProfileId.getPrimaryOtrProfileId()
+                        .equals(OtrProfileId.deserializeWithoutVerify(item.otrProfileId));
     }
 
     /** Whether {@code item} is dangerous and so has its own warning UI instead of the tray. */
