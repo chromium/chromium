@@ -650,8 +650,9 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfIphInteractiveUiTest,
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting)));
 }
 
+// TODO(crbug.com/578337306): Flaky on multiple platforms
 IN_PROC_BROWSER_TEST_F(SendTabToSelfIphInteractiveUiTest,
-                       TutorialFlowCompletesWhenNonFirstTabIsActive) {
+                       DISABLED_TutorialFlowCompletesWhenNonFirstTabIsActive) {
   const GURL eligible_url =
       embedded_https_test_server().GetURL("example.com", "/title1.html");
 
