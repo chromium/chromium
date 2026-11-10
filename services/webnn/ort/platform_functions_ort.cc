@@ -80,7 +80,8 @@ bool PlatformFunctions::InitializeFromPath(
       base::LoadNativeLibrary(ort_library_path, &error));
   if (!ort_library.is_valid()) {
     LOG(ERROR) << "[WebNN] Failed to load ONNX Runtime library from: "
-               << ort_library_path << ", error: " << error.ToString();
+               << ort_library_path
+               << ", error: " << logging::SystemErrorCodeToString(error.code);
     return false;
   }
 
