@@ -4,8 +4,10 @@
 
 #include "chrome/renderer/accessibility/read_anything/read_anything_app_controller.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <deque>
+#include <iterator>
 #include <string>
 #include <utility>
 #include <vector>
@@ -475,6 +477,24 @@ class ReadAnythingAppControllerTest : public testing::Test {
     ui::AXTreeUpdate update;
     test::SetUpdateTreeID(&update, tree_id_);
     update.nodes = nodes;
+    AccessibilityEventReceived({std::move(update)});
+  }
+
+  // Sends the active tree's PDF with the given pages under its PDF root, and
+  // whether all of its pages are loaded into its accessibility tree.
+  void SendPdfPages(std::vector<ui::AXNodeData> pages, bool loaded) {
+    ui::AXNodeData root;
+    root.id = 1;
+    root.role = ax::mojom::Role::kPdfRoot;
+    for (const ui::AXNodeData& page : pages) {
+      root.child_ids.push_back(page.id);
+    }
+    ui::AXTreeUpdate update;
+    test::SetUpdateTreeID(&update, tree_id_);
+    update.tree_data.loaded = loaded;
+    update.root_id = root.id;
+    update.nodes = {std::move(root)};
+    std::ranges::move(pages, std::back_inserter(update.nodes));
     AccessibilityEventReceived({std::move(update)});
   }
 
@@ -4115,6 +4135,116 @@ TEST_F(ReadAnythingAppControllerScreen2xTest,
   // 6. Verify that selections_from_reading_mode_ was reset to 0 by the user
   // event.
   EXPECT_EQ(model().unprocessed_selections_from_reading_mode(), 0);
+}
+
+TEST_F(ReadAnythingAppControllerScreen2xTest,
+       PdfStillLoading_DoesNotReportDistilledContent) {
+  base::test::ScopedFeatureList feature_list(translate::kEnableTranslatePdf);
+  controller().OnActiveAXTreeIDChanged(tree_id_, ukm::kInvalidSourceId,
+                                       /*is_pdf=*/true);
+  page_handler_.FlushForTesting();
+  Mock::VerifyAndClearExpectations(&page_handler_);
+  EXPECT_CALL(page_handler_, OnDistillationStatus(testing::_, testing::_))
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationWithContent))
+      .Times(0);
+
+  // The first page is distilled and drawn, but the rest of the PDF is still
+  // loading.
+  SendPdfPages({test::TextNode(/*id=*/2, u"Page 1")}, /*loaded=*/false);
+  OnAXTreeDistilled(tree_id_, {2});
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+  page_handler_.FlushForTesting();
+
+  EXPECT_NE(read_anything::mojom::ReadAnythingDistillationState::
+                kDistillationWithContent,
+            model().distillation_state());
+}
+
+TEST_F(ReadAnythingAppControllerScreen2xTest,
+       PdfFullyLoaded_ReportsDistilledContent) {
+  base::test::ScopedFeatureList feature_list(translate::kEnableTranslatePdf);
+  controller().OnActiveAXTreeIDChanged(tree_id_, ukm::kInvalidSourceId,
+                                       /*is_pdf=*/true);
+  SendPdfPages({test::TextNode(/*id=*/2, u"Page 1")}, /*loaded=*/false);
+  OnAXTreeDistilled(tree_id_, {2});
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+  page_handler_.FlushForTesting();
+  Mock::VerifyAndClearExpectations(&page_handler_);
+  EXPECT_CALL(page_handler_, OnDistillationStatus(testing::_, testing::_))
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationInProgress))
+      .Times(testing::AnyNumber());
+
+  // Once the last page loads and the whole PDF is distilled, the content is
+  // reported, e.g. so that a pending translation covers all of it.
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationWithContent))
+      .Times(1);
+  SendPdfPages({test::TextNode(/*id=*/2, u"Page 1"),
+                test::TextNode(/*id=*/3, u"Page 2")},
+               /*loaded=*/true);
+  OnAXTreeDistilled(tree_id_, {2, 3});
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+  page_handler_.FlushForTesting();
+
+  EXPECT_EQ(read_anything::mojom::ReadAnythingDistillationState::
+                kDistillationWithContent,
+            model().distillation_state());
+}
+
+TEST_F(ReadAnythingAppControllerScreen2xTest,
+       PdfStillLoading_TranslatePdfDisabled_ReportsDistilledContent) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(translate::kEnableTranslatePdf);
+  controller().OnActiveAXTreeIDChanged(tree_id_, ukm::kInvalidSourceId,
+                                       /*is_pdf=*/true);
+
+  // Without PDF translation, the content is reported without waiting for the
+  // rest of the PDF to load.
+  SendPdfPages({test::TextNode(/*id=*/2, u"Page 1")}, /*loaded=*/false);
+  OnAXTreeDistilled(tree_id_, {2});
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+  page_handler_.FlushForTesting();
+
+  EXPECT_EQ(read_anything::mojom::ReadAnythingDistillationState::
+                kDistillationWithContent,
+            model().distillation_state());
+}
+
+TEST_F(ReadAnythingAppControllerScreen2xTest,
+       ImmersiveMode_PdfStillLoading_KeepsProcessingUpdates) {
+  base::test::ScopedFeatureList feature_list(translate::kEnableTranslatePdf);
+  CloseAndReopen(
+      read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
+  controller().OnActiveAXTreeIDChanged(tree_id_, ukm::kInvalidSourceId,
+                                       /*is_pdf=*/true);
+  SendPdfPages({test::TextNode(/*id=*/2, u"Page 1")}, /*loaded=*/false);
+  OnAXTreeDistilled(tree_id_, {2});
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+  page_handler_.FlushForTesting();
+
+  // The rest of the PDF can still load, rather than being queued until
+  // immersive mode is reopened.
+  EXPECT_FALSE(controller().IsUpdateProcessingPaused());
+
+  SendPdfPages({test::TextNode(/*id=*/2, u"Page 1"),
+                test::TextNode(/*id=*/3, u"Page 2")},
+               /*loaded=*/true);
+  OnAXTreeDistilled(tree_id_, {2, 3});
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+  page_handler_.FlushForTesting();
+
+  // Once the whole PDF is distilled, updates are paused as for other content.
+  EXPECT_TRUE(controller().IsUpdateProcessingPaused());
 }
 
 TEST_F(ReadAnythingAppControllerScreen2xTest,

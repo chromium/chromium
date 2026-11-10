@@ -784,6 +784,9 @@ class ReadAnythingAppModel {
   // PDF handling.
   bool IsPdf() const;
   void SetIsPdf(bool is_pdf);
+  // Returns whether the active tree is a PDF whose pages have all been loaded
+  // into its accessibility tree.
+  bool IsPdfFullyLoaded() const;
 
   // Whether the active tab's contents are currently translated.
   bool is_content_translated() const { return is_content_translated_; }

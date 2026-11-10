@@ -302,6 +302,67 @@ TEST_F(ReadAnythingAppModelTest, SetIsPdf_IsTrackedPerTree) {
   EXPECT_TRUE(model().IsPdf());
 }
 
+class ReadAnythingAppModelIsPdfFullyLoadedTest
+    : public ReadAnythingAppModelTest {
+ protected:
+  // Makes the active tree one with an embedding document root, and optionally
+  // a PDF root below it, whose tree data has the given `loaded` state.
+  void SetUpActiveTree(bool is_pdf, bool has_pdf_root, bool loaded) {
+    ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+    ui::AXNodeData root;
+    root.id = 1;
+    root.role = ax::mojom::Role::kRootWebArea;
+    ui::AXNodeData embed;
+    embed.id = 2;
+    embed.role = ax::mojom::Role::kEmbeddedObject;
+    root.child_ids = {embed.id};
+    ui::AXTreeUpdate update;
+    test::SetUpdateTreeID(&update, tree_id);
+    update.tree_data.loaded = loaded;
+    update.root_id = root.id;
+    update.nodes = {root, embed};
+    if (has_pdf_root) {
+      ui::AXNodeData pdf_root;
+      pdf_root.id = 3;
+      pdf_root.role = ax::mojom::Role::kPdfRoot;
+      update.nodes[1].child_ids = {pdf_root.id};
+      update.nodes.push_back(std::move(pdf_root));
+    }
+    ApplyAccessibilityUpdates(tree_id, {std::move(update)});
+    model().SetActiveTreeId(tree_id);
+    model().SetIsPdf(is_pdf);
+  }
+};
+
+TEST_F(ReadAnythingAppModelIsPdfFullyLoadedTest, PdfLoaded_ReturnsTrue) {
+  SetUpActiveTree(/*is_pdf=*/true, /*has_pdf_root=*/true, /*loaded=*/true);
+  EXPECT_TRUE(model().IsPdfFullyLoaded());
+}
+
+TEST_F(ReadAnythingAppModelIsPdfFullyLoadedTest, PdfStillLoading_ReturnsFalse) {
+  SetUpActiveTree(/*is_pdf=*/true, /*has_pdf_root=*/true, /*loaded=*/false);
+  EXPECT_FALSE(model().IsPdfFullyLoaded());
+}
+
+TEST_F(ReadAnythingAppModelIsPdfFullyLoadedTest,
+       PdfRootNotYetInTree_ReturnsFalse) {
+  // The loaded state is the embedding document's until the PDF's root is in
+  // the tree.
+  SetUpActiveTree(/*is_pdf=*/true, /*has_pdf_root=*/false, /*loaded=*/true);
+  EXPECT_FALSE(model().IsPdfFullyLoaded());
+}
+
+TEST_F(ReadAnythingAppModelIsPdfFullyLoadedTest, NotPdf_ReturnsFalse) {
+  SetUpActiveTree(/*is_pdf=*/false, /*has_pdf_root=*/true, /*loaded=*/true);
+  EXPECT_FALSE(model().IsPdfFullyLoaded());
+}
+
+TEST_F(ReadAnythingAppModelIsPdfFullyLoadedTest, NoActiveTree_ReturnsFalse) {
+  model().SetActiveTreeId(ui::AXTreeID::CreateNewAXTreeID());
+  model().SetIsPdf(true);
+  EXPECT_FALSE(model().IsPdfFullyLoaded());
+}
+
 TEST_F(ReadAnythingAppModelTest, SetIsPdf_PreservesStateAcrossPendingUpdates) {
   ui::AXTreeID pdf_tree_id = ui::AXTreeID::CreateNewAXTreeID();
   ui::AXTreeID web_tree_id = ui::AXTreeID::CreateNewAXTreeID();

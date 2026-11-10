@@ -1032,6 +1032,10 @@ bool PdfAccessibilityTree::GetTreeData(ui::AXTreeData* tree_data) const {
   }
 
   tree_data->tree_id = render_frame()->GetWebFrame()->GetAXTreeID();
+  // The PDF's content is loaded once all of its pages are in the tree. This is
+  // always set, since otherwise the embedding document's tree data, which is
+  // loaded before the PDF, could be used.
+  tree_data->loaded = next_page_index_ == page_count_;
   tree_data->focus_id = tree_data_.focus_id;
   tree_data->sel_is_backward = tree_data_.sel_is_backward;
   tree_data->sel_anchor_object_id = tree_data_.sel_anchor_object_id;

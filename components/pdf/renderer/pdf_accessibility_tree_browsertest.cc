@@ -47,6 +47,7 @@
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_id_forward.h"
+#include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_manager.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -890,6 +891,38 @@ TEST_F(PdfAccessibilityTreeTest, TestEmptyPDFPage) {
 
   EXPECT_EQ(ax::mojom::Role::kPdfRoot,
             pdf_accessibility_tree_->GetRoot()->GetRole());
+}
+
+TEST_F(PdfAccessibilityTreeTest, TreeDataLoadedOnceAllPagesAreAdded) {
+  page_count_ = 2;
+  CreatePdfAccessibilityTree();
+  pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
+  pdf_accessibility_tree_->SetAccessibilityDocInfo(
+      CreateAccessibilityDocInfo());
+  WaitForThreadTasks();
+
+  // Each check presets `loaded` to the opposite value, so that it verifies that
+  // GetTreeData() sets it.
+  ui::AXTreeData tree_data;
+  tree_data.loaded = true;
+  ASSERT_TRUE(pdf_accessibility_tree_->GetTreeData(&tree_data));
+  EXPECT_FALSE(tree_data.loaded);
+
+  page_info_.page_index = 0;
+  pdf_accessibility_tree_->SetAccessibilityPageInfo(page_info_, text_runs_,
+                                                    chars_, page_objects_);
+  WaitForThreadTasks();
+  tree_data.loaded = true;
+  ASSERT_TRUE(pdf_accessibility_tree_->GetTreeData(&tree_data));
+  EXPECT_FALSE(tree_data.loaded);
+
+  page_info_.page_index = 1;
+  pdf_accessibility_tree_->SetAccessibilityPageInfo(page_info_, text_runs_,
+                                                    chars_, page_objects_);
+  WaitForThreadTasks();
+  tree_data.loaded = false;
+  ASSERT_TRUE(pdf_accessibility_tree_->GetTreeData(&tree_data));
+  EXPECT_TRUE(tree_data.loaded);
 }
 
 TEST_F(PdfAccessibilityTreeTest, TestAccessibilityDisabledDuringPDFLoad) {

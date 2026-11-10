@@ -1011,7 +1011,10 @@ void ReadAnythingAppController::OnAXTreeDistilled(
                 kDistillationEmpty);
         DrawEmptyState();
       }
-    } else if (!IsPdf() || !pdf_draw_debouncer_->IsRunning()) {
+    } else if (!IsPdf() || (!pdf_draw_debouncer_->IsRunning() &&
+                            ShouldReportPdfContent())) {
+      // A PDF's content is drawn as its pages are distilled, but may only be
+      // reported once the whole PDF is loaded. See ShouldReportPdfContent().
       SetDistillationState(read_anything::mojom::ReadAnythingDistillationState::
                                kDistillationWithContent);
     }
@@ -1059,11 +1062,28 @@ void ReadAnythingAppController::OnPdfDebounceFinished() {
     }
   }
 
-  SetDistillationState(
-      model_.is_empty() ? read_anything::mojom::ReadAnythingDistillationState::
-                              kDistillationEmpty
-                        : read_anything::mojom::ReadAnythingDistillationState::
-                              kDistillationWithContent);
+  if (model_.is_empty()) {
+    SetDistillationState(
+        read_anything::mojom::ReadAnythingDistillationState::kDistillationEmpty);
+  } else if (ShouldReportPdfContent()) {
+    SetDistillationState(read_anything::mojom::ReadAnythingDistillationState::
+                             kDistillationWithContent);
+  }
+}
+
+bool ReadAnythingAppController::ShouldReportPdfContent() const {
+  // TODO(crbug.com/467180032): Wait for the whole PDF to load for all PDFs in
+  // Reading Mode, and set the page start time when the content is first drawn
+  // rather than when it's reported.
+  if (!IsTranslatePdfEnabled()) {
+    return true;
+  }
+  // Only report the content once the whole PDF is loaded into its accessibility
+  // tree, since more of it is distilled and drawn as it loads. E.g. a pending
+  // translation is triggered once the content is reported, and only the content
+  // drawn by then is translated. This also keeps immersive mode processing
+  // updates until the PDF is loaded.
+  return model_.IsPdfFullyLoaded();
 }
 
 bool ReadAnythingAppController::PostProcessSelection() {

@@ -12,6 +12,7 @@
 #include <string>
 #include <type_traits>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/containers/flat_map.h"
@@ -700,6 +701,32 @@ void ReadAnythingAppModel::SetIsPdf(bool is_pdf) {
   }
 
   EnsureTreeInfoExists(active_tree_id_).is_pdf = is_pdf;
+}
+
+bool ReadAnythingAppModel::IsPdfFullyLoaded() const {
+  if (!IsPdf() || !ContainsActiveTree()) {
+    return false;
+  }
+  const ui::AXSerializableTree* tree = GetActiveTree();
+  // The PDF's accessibility tree reports that it's loaded once all of its pages
+  // are in the tree. See PdfAccessibilityTree::GetTreeData().
+  if (!tree->root() || !tree->data().loaded) {
+    return false;
+  }
+  // Until the PDF's root is in the tree, the tree data is the embedding
+  // document's, which is loaded before the PDF.
+  std::vector<const ui::AXNode*> nodes = {tree->root()};
+  while (!nodes.empty()) {
+    const ui::AXNode* node = nodes.back();
+    nodes.pop_back();
+    if (node->GetRole() == ax::mojom::Role::kPdfRoot) {
+      return true;
+    }
+    for (const ui::AXNode* child : node->children()) {
+      nodes.push_back(child);
+    }
+  }
+  return false;
 }
 
 bool ReadAnythingAppModel::IsDocs() const {

@@ -560,6 +560,11 @@ class ReadAnythingAppController
 
   void OnPdfDebounceFinished();
 
+  // Returns whether the active PDF's distilled content can be reported as
+  // kDistillationWithContent, which waits for the whole PDF to load when
+  // translate::kEnableTranslatePdf is enabled.
+  bool ShouldReportPdfContent() const;
+
   // Logs the time it took for the AXTree to become ready after the active
   // tree ID changed.
   void MaybeLogAXTreeReady();
