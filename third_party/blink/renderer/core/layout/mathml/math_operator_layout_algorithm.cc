@@ -49,7 +49,8 @@ const LayoutResult* MathOperatorLayoutAlgorithm::Layout() {
   const LayoutResult* child_layout_result = To<InlineNode>(child).Layout(
       GetConstraintSpace(), /* break_token */ nullptr,
       /* column_spanner_path */ nullptr, &context);
-  container_builder_.AddResult(*child_layout_result, {});
+  container_builder_.AddResult(*child_layout_result, /*offset=*/LogicalOffset(),
+                               /*margins=*/BoxStrut());
 
   // https://w3c.github.io/mathml-core/#layout-of-operators
   LayoutUnit operator_target_size;

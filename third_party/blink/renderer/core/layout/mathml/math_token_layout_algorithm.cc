@@ -78,7 +78,8 @@ const LayoutResult* MathTokenLayoutAlgorithm::Layout() {
   const FontHeight line_metrics = line_box.Metrics();
   container_builder_.AddResult(
       *child_layout_result,
-      {BorderScrollbarPadding().inline_start, ascent - line_metrics.ascent});
+      {BorderScrollbarPadding().inline_start, ascent - line_metrics.ascent},
+      /*margins=*/BoxStrut());
 
   LayoutUnit intrinsic_block_size = ascent + descent;
   LayoutUnit block_size = ComputeBlockSizeForFragment(
