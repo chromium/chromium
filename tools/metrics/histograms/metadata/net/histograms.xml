@@ -311,12 +311,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//net/socket/stream_socket_close_reason.h:StreamSocketCloseReason) -->
 
-<variants name="StructuredHeaderType">
-  <variant name="Dictionary" summary="a Dictionary"/>
-  <variant name="Item" summary="an Item"/>
-  <variant name="List" summary="a List"/>
-</variants>
-
 <variants name="SuccessOrFailure">
   <variant name="Failure" summary="Operation failed"/>
   <variant name="Success" summary="Operation succeeded"/>
@@ -9866,30 +9860,6 @@ chromium-metrics-reviews@google.com.
     top-level Structured Header is successful. See crbug.com/517189418 for
     details.
   </summary>
-</histogram>
-
-<histogram name="Net.StructuredHeaders.Parse{Type}.Success"
-    enum="BooleanSuccess" expires_after="2027-05-28">
-  <owner>apaseltiner@chromium.org</owner>
-  <owner>net-dev@chromium.org</owner>
-  <summary>
-    The result (success or failure) of parsing a structured-header {Type}. See
-    crbug.com/377941140 for more details.
-  </summary>
-  <token key="Type" variants="StructuredHeaderType"/>
-</histogram>
-
-<histogram name="Net.StructuredHeaders.Parse{Type}.Time" units="microseconds"
-    expires_after="2027-05-28">
-  <owner>apaseltiner@chromium.org</owner>
-  <owner>net-dev@chromium.org</owner>
-  <summary>
-    The time taken to parse a structured-header {Type} via the
-    net::structured_headers::Parse{Type} function. Recorded for all clients, not
-    just ones with high-resolution time, and recorded regardless of whether
-    parsing succeeds or fails. See crbug.com/377941140 for more details.
-  </summary>
-  <token key="Type" variants="StructuredHeaderType"/>
 </histogram>
 
 <histogram name="Net.TaskRunner.RequestPriority" enum="RequestPriority"

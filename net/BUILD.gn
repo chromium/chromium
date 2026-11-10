@@ -3413,9 +3413,6 @@ target(_test_target_type, "net_unittests") {
     "QuicVersionsFuzzTest.ParseSerializeParseIdentityProperty",
     "SchemefulSiteTest.FuzzSchemefulSite",
     "SocketPoolAdditionalCapacityTest.ValidateRandomizedInputs",
-    "StructuredHeadersTest.ParseDictionaryParity",
-    "StructuredHeadersTest.ParseItemParity",
-    "StructuredHeadersTest.ParseListParity",
     "TransportParametersFuzzTest.ParseTransportParametersDoesNotCrash",
     "UrlUnescapeIteratorTest.SameOutputAsUnescapePercentEncodedUrl",
   ]

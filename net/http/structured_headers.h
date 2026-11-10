@@ -10,7 +10,6 @@
 #include <string_view>
 #include <vector>
 
-#include "base/feature.h"
 #include "net/base/net_export.h"
 #include "net/third_party/quiche/src/quiche/common/structured_headers.h"
 
@@ -29,9 +28,6 @@ using ListOfLists = quiche::structured_headers::ListOfLists;
 using List = quiche::structured_headers::List;
 using Parameters = quiche::structured_headers::Parameters;
 using InnerList = quiche::structured_headers::InnerList;
-
-// See crbug.com/377941140 for details of this migration.
-NET_EXPORT BASE_DECLARE_FEATURE(kStructuredHeadersInRust);
 
 // Parses an Item strictly according to RFC 8941.
 NET_EXPORT std::optional<ParameterizedItem> ParseItemStrict(std::string_view);

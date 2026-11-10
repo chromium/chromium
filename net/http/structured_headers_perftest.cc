@@ -9,18 +9,13 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "third_party/google_benchmark/src/include/benchmark/benchmark.h"
 
 namespace net::structured_headers {
 
 namespace {
 
-template <bool kUseRust>
 void BM_StructuredHeadersParseItemDistinctParams(::benchmark::State& state) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(kStructuredHeadersInRust, kUseRust);
-
   const int num_params = state.range(0);
   std::string input = "item";
   input.reserve(num_params * 8);
@@ -33,11 +28,7 @@ void BM_StructuredHeadersParseItemDistinctParams(::benchmark::State& state) {
   }
 }
 
-template <bool kUseRust>
 void BM_StructuredHeadersParseItemDuplicateParams(::benchmark::State& state) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(kStructuredHeadersInRust, kUseRust);
-
   const int num_params = state.range(0);
   const int unique_keys = std::max(1, num_params / 8);
   std::string input = "item";
@@ -51,12 +42,8 @@ void BM_StructuredHeadersParseItemDuplicateParams(::benchmark::State& state) {
   }
 }
 
-template <bool kUseRust>
 void BM_StructuredHeadersParseDictionaryDistinctKeys(
     ::benchmark::State& state) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(kStructuredHeadersInRust, kUseRust);
-
   const int num_keys = state.range(0);
   std::string input = "k0";
   input.reserve(num_keys * 8);
@@ -69,12 +56,8 @@ void BM_StructuredHeadersParseDictionaryDistinctKeys(
   }
 }
 
-template <bool kUseRust>
 void BM_StructuredHeadersParseDictionaryDuplicateKeys(
     ::benchmark::State& state) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(kStructuredHeadersInRust, kUseRust);
-
   const int num_keys = state.range(0);
   const int unique_keys = std::max(1, num_keys / 8);
   std::string input = "k0";
@@ -88,28 +71,16 @@ void BM_StructuredHeadersParseDictionaryDuplicateKeys(
   }
 }
 
-BENCHMARK_TEMPLATE(BM_StructuredHeadersParseItemDistinctParams, false)
+BENCHMARK(BM_StructuredHeadersParseItemDistinctParams)
     ->RangeMultiplier(8)
     ->Range(8, 32768);
-BENCHMARK_TEMPLATE(BM_StructuredHeadersParseItemDistinctParams, true)
+BENCHMARK(BM_StructuredHeadersParseItemDuplicateParams)
     ->RangeMultiplier(8)
     ->Range(8, 32768);
-BENCHMARK_TEMPLATE(BM_StructuredHeadersParseItemDuplicateParams, false)
+BENCHMARK(BM_StructuredHeadersParseDictionaryDistinctKeys)
     ->RangeMultiplier(8)
     ->Range(8, 32768);
-BENCHMARK_TEMPLATE(BM_StructuredHeadersParseItemDuplicateParams, true)
-    ->RangeMultiplier(8)
-    ->Range(8, 32768);
-BENCHMARK_TEMPLATE(BM_StructuredHeadersParseDictionaryDistinctKeys, false)
-    ->RangeMultiplier(8)
-    ->Range(8, 32768);
-BENCHMARK_TEMPLATE(BM_StructuredHeadersParseDictionaryDistinctKeys, true)
-    ->RangeMultiplier(8)
-    ->Range(8, 32768);
-BENCHMARK_TEMPLATE(BM_StructuredHeadersParseDictionaryDuplicateKeys, false)
-    ->RangeMultiplier(8)
-    ->Range(8, 32768);
-BENCHMARK_TEMPLATE(BM_StructuredHeadersParseDictionaryDuplicateKeys, true)
+BENCHMARK(BM_StructuredHeadersParseDictionaryDuplicateKeys)
     ->RangeMultiplier(8)
     ->Range(8, 32768);
 

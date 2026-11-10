@@ -80,6 +80,9 @@ class DataDecoder {
   // InProcessDataDecoderService.
   mojom::DataDecoderService* GetService();
 
+  // Deprecated: It is safe to call `net::structured_headers::ParseItemStrict`
+  // and `net::structured_headers::ParseItem` synchronously.
+  //
   // Parses the potentially unsafe string in |header| as a structured header
   // item using this DataDecoder's service instance or some other
   // platform-specific decoding facility.
@@ -89,6 +92,9 @@ class DataDecoder {
   void ParseStructuredHeaderItem(const std::string& header,
                                  StructuredHeaderParseItemCallback callback);
 
+  // Deprecated: It is safe to call `net::structured_headers::ParseItemStrict`
+  // and `net::structured_headers::ParseItem` synchronously.
+  //
   // Parses the potentially unsafe string in |header| as a structured header
   // item. This static helper uses a dedicated instance of the Data Decoder
   // service on applicable platforms.
@@ -96,6 +102,9 @@ class DataDecoder {
       const std::string& header,
       StructuredHeaderParseItemCallback callback);
 
+  // Deprecated: It is safe to call `net::structured_headers::ParseListStrict`
+  // and `net::structured_headers::ParseList` synchronously.
+  //
   // Parses the potentially unsafe string in |header| as a structured header
   // list using this DataDecoder's service instance or some other
   // platform-specific decoding facility.
@@ -105,6 +114,9 @@ class DataDecoder {
   void ParseStructuredHeaderList(const std::string& header,
                                  StructuredHeaderParseListCallback callback);
 
+  // Deprecated: It is safe to call `net::structured_headers::ParseListStrict`
+  // and `net::structured_headers::ParseList` synchronously.
+  //
   // Parses the potentially unsafe string in |header| as a structured header
   // list. This static helper uses a dedicated instance of the Data Decoder
   // service on applicable platforms.
@@ -112,6 +124,10 @@ class DataDecoder {
       const std::string& header,
       StructuredHeaderParseListCallback callback);
 
+  // Deprecated: It is safe to call
+  // `net::structured_headers::ParseDictionaryStrict` and
+  // `net::structured_headers::ParseDictionary` synchronously.
+  //
   // Parses the potentially unsafe string in `header` as a structured header
   // dictionary using this DataDecoder's service instance or some other
   // platform-specific decoding facility.
@@ -122,6 +138,10 @@ class DataDecoder {
       const std::string& header,
       StructuredHeaderParseDictionaryCallback callback);
 
+  // Deprecated: It is safe to call
+  // `net::structured_headers::ParseDictionaryStrict` and
+  // `net::structured_headers::ParseDictionary` synchronously.
+  //
   // Parses the potentially unsafe string in `header` as a structured header
   // dictionary. This static helper uses a dedicated instance of the Data
   // Decoder service on applicable platforms.
