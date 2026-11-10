@@ -339,6 +339,32 @@ std::optional<CustomFormControlOptions> ParseCustomFormControlOptions(
   return extracted;
 }
 
+// Transforms `result`, the result of `setValue()`, into a
+// `CustomFormControlSetValueResult`. Returns `kExecutionError` if its `status`
+// isn't one of the statuses of the manager contract or its getter throws.
+CustomFormControlSetValueResult ParseSetValueResult(
+    v8::Isolate* isolate,
+    v8::Local<v8::Context> context,
+    v8::Local<v8::Value> result) {
+  using enum CustomFormControlSetValueResult;
+  if (!result->IsObject()) {
+    return kExecutionError;
+  }
+  v8::TryCatch try_catch(isolate);
+  std::optional<std::u16string> status =
+      GetStringProperty(isolate, context, result.As<v8::Object>(), "status");
+  if (try_catch.HasCaught() || !status) {
+    return kExecutionError;
+  }
+  if (*status == u"OK") {
+    return kOk;
+  }
+  if (*status == u"OPTION_NOT_FOUND") {
+    return kOptionNotFound;
+  }
+  return kExecutionError;
+}
+
 }  // namespace
 
 // A call whose promise hasn't settled yet.
@@ -683,6 +709,26 @@ void CustomFormControlScriptExecutor::ExtractOptions(
               options = ParseCustomFormControlOptions(isolate, context, result);
             }
             std::move(callback).Run(std::move(options));
+          },
+          std::move(callback)));
+}
+
+void CustomFormControlScriptExecutor::SetValue(
+    const blink::WebNode& node,
+    SelectOption option,
+    base::OnceCallback<void(CustomFormControlSetValueResult)> callback) {
+  CallFunction(
+      MayReturnPromise(true), "setValue",
+      {node, std::move(option.value), std::move(option.text)},
+      base::BindOnce(
+          [](base::OnceCallback<void(CustomFormControlSetValueResult)> callback,
+             v8::Isolate* isolate, v8::Local<v8::Context> context,
+             v8::MaybeLocal<v8::Value> maybe_result) {
+            v8::Local<v8::Value> result;
+            std::move(callback).Run(
+                maybe_result.ToLocal(&result)
+                    ? ParseSetValueResult(isolate, context, result)
+                    : CustomFormControlSetValueResult::kExecutionError);
           },
           std::move(callback)));
 }

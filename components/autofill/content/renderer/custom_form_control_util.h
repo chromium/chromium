@@ -49,6 +49,18 @@ struct CustomFormControlOptions {
   bool popover_needs_to_be_closed = false;
 };
 
+// The outcome of the manager's `setValue()`.
+enum class CustomFormControlSetValueResult {
+  // The option was selected, and the script verified it in the DOM.
+  kOk,
+  // The control has no option that matches the value and text. This is a
+  // mismatch with the data to fill, not a script failure.
+  kOptionNotFound,
+  // The script couldn't find, open or update the control. Also used if the
+  // call fails or returns an invalid result.
+  kExecutionError,
+};
+
 // Groups `controls` by their outermost ancestor `<form>` element. Unowned
 // controls are grouped under a null `blink::WebFormElement()`. Relative order
 // of `controls` is preserved within each form.

@@ -25,6 +25,8 @@ namespace autofill {
 
 struct CustomFormControl;
 struct CustomFormControlOptions;
+enum class CustomFormControlSetValueResult;
+struct SelectOption;
 
 // Runs the custom form control script of the current document in an isolated
 // world, so that the script can access the frame's DOM without sharing globals
@@ -93,6 +95,16 @@ class CustomFormControlScriptExecutor : public content::RenderFrameObserver {
       const blink::WebNode& node,
       base::OnceCallback<void(std::optional<CustomFormControlOptions>)>
           callback);
+
+  // Calls the manager's `setValue()` with `node`, `option.value` and
+  // `option.text` to select `option`, and runs `callback` with the result. The
+  // result is `kExecutionError` if the call fails or doesn't return one of the
+  // statuses of the manager contract (e.g. returns no or an unknown `status`).
+  // `callback` may run asynchronously.
+  void SetValue(
+      const blink::WebNode& node,
+      SelectOption option,
+      base::OnceCallback<void(CustomFormControlSetValueResult)> callback);
 
  private:
   friend class CustomFormControlScriptExecutorTestApi;
