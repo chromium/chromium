@@ -6,7 +6,7 @@ tell application "Chromium"
 	set var to bookmark folder "New" of bookmarks bar
 	-- Change the folder to whichever you want.
 	repeat with i in (bookmark items of var)
-		set u to URL of i
-		tell window 1 to make new tab with properties {u}
+		set theLocation to URL of i
+		tell window 1 to make new tab with properties {URL:theLocation}
 	end repeat
 end tell

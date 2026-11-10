@@ -4,20 +4,20 @@
 
 -- This script bookmarks the currently open tabs of a window.
 tell application "Chromium"
-	set url_list to {}
-	set title_list to {}
-	tell window 1
-		repeat with i from 1 to (count tabs)
-			set end of url_list to (URL of tab i)
-			set end of title_list to (title of tab i)
-		end repeat
-	end tell
-	tell bookmarks bar
-		set var to make new bookmark folder with properties {title:"New"}
-		tell var
-			repeat with i from 1 to (count url_list)
-				make new bookmark item with properties {URL:(item i of url_list), title:(item i of title_list)}
-			end repeat
-		end tell
-	end tell
+  set url_list to {}
+  set name_list to {}
+  tell window 1
+    repeat with i from 1 to (count tabs)
+      set end of url_list to (URL of tab i)
+      set end of name_list to (name of tab i)
+    end repeat
+  end tell
+  tell bookmarks bar
+    set var to make new bookmark folder with properties {name:"New"}
+    tell var
+      repeat with i from 1 to (count url_list)
+        make new bookmark item with properties {URL:(item i of url_list), name:(item i of name_list)}
+      end repeat
+    end tell
+  end tell
 end tell

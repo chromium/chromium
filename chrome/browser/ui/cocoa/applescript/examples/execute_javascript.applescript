@@ -4,7 +4,7 @@
 
 -- This script execute a string of javascript code.
 tell application "Chromium"
-	tell tab 1 of window 1
-		execute javascript "alert('Hello World')"
-	end tell
+  tell tab 1 of window 1
+    execute javascript "alert('Hello World')"
+  end tell
 end tell

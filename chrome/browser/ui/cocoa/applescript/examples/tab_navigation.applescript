@@ -4,10 +4,11 @@
 
 tell application "Chromium"
   tell window 1
-    -- creates a new tab and navigates to a particular URL.
+    -- Creates a new tab and navigates to a particular URL.
     make new tab with properties {URL:"http://google.com"}
+
     -- Duplicate a tab.
-    set var to URL of tab 2
-    make new tab with properties {URL:var}
+    set theLocation to URL of tab 2
+    make new tab with properties {URL:theLocation}
   end tell
 end tell
