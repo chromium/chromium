@@ -75,6 +75,14 @@ class WaylandBufferHandle {
   // wl_buffer.release events.
   void OnExplicitRelease(WaylandSurface* requestor);
 
+  // Records whether the latest attach of a kSyncobj buffer set
+  // linux-drm-syncobj acquire and release points. If it did not (e.g. no
+  // acquire fence has been provided yet), the compositor releases the buffer
+  // with wl_buffer.release instead.
+  void set_attached_with_explicit_sync(bool attached_with_explicit_sync) {
+    attached_with_explicit_sync_ = attached_with_explicit_sync;
+  }
+
  private:
   void OnWlBufferCreated(wl::Object<wl_buffer> wl_buffer);
   void OnWlBufferReleased(wl_buffer* wl_buffer);
@@ -111,12 +119,17 @@ class WaylandBufferHandle {
   // https://wayland.app/protocols/linux-drm-syncobj-v1#wp_linux_drm_syncobj_surface_v1:request:set_release_point
   std::unique_ptr<WaylandSyncobjReleaseTimeline> release_timeline_;
 
+  // Whether the latest attach of this kSyncobj buffer used explicit sync. While
+  // it does, the delivery of wl_buffer.release is undefined and such events are
+  // ignored in favor of the release point.
+  bool attached_with_explicit_sync_ = false;
+
   // Callbacks that binds WaylandFrameManager::OnWlBufferRelease() function,
   // which erases a pending release buffer entry from the
   // WaylandFrame::submitted_buffers, when wl_buffer.release event is signalled
   // from the wl_compositor.
-  // When linux explicit synchronization is adopted, buffer_listener is unset
-  // and this callback should be reset by OnExplicitRelease() instead.
+  // When linux explicit synchronization is used for a commit, this callback
+  // should be reset by OnExplicitRelease() instead.
   base::flat_map<WaylandSurface*, base::OnceCallback<void(wl_buffer*, bool)>>
       released_callbacks_;
 

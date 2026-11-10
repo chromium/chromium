@@ -511,7 +511,11 @@ std::optional<bool> WaylandSurface::ApplyPendingState() {
         case WaylandBufferHandle::SyncMethod::kSyncobj:
           // We need to try setting explicit sync first so that we don't attach
           // the buffer if there is a failure when setting explicit sync.
-          if (!SetExplicitSync().has_value()) {
+          if (std::optional<bool> explicit_sync = SetExplicitSync();
+              explicit_sync.has_value()) {
+            pending_state_.buffer->set_attached_with_explicit_sync(
+                *explicit_sync);
+          } else {
             // There was a failure while trying to set explicit sync. So we need
             // to early-out and discard this frame and show the previous frame.
             AttachBuffer(nullptr);

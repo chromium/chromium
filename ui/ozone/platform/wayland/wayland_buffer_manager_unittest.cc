@@ -2525,6 +2525,86 @@ TEST_P(WaylandBufferManagerDrmSyncobjTest,
   RunFencedReleaseScenario(/*expect_exported_release_fence=*/false);
 }
 
+// Tests that buffers committed without an acquire fence are attached without
+// explicit sync and are released by wl_buffer.release events.
+TEST_P(WaylandBufferManagerDrmSyncobjTest, ReleaseWithoutAcquireFence) {
+  constexpr uint32_t kBufferId1 = 1;
+  constexpr uint32_t kBufferId2 = 2;
+
+  const gfx::AcceleratedWidget widget = window_->GetWidget();
+  const gfx::Rect bounds = window_->GetBoundsInPixels();
+
+  MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(), widget);
+
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    EXPECT_CALL(*server->zwp_linux_dmabuf_v1(), CreateParams(_, _, _)).Times(2);
+  });
+  CreateDmabufBasedBufferAndSetTerminateExpectation(/*fail=*/false, kBufferId1);
+  CreateDmabufBasedBufferAndSetTerminateExpectation(/*fail=*/false, kBufferId2);
+  ProcessCreatedBufferResourcesWithExpectation(/*expected_size=*/2u,
+                                               /*fail=*/false);
+
+  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
+    auto* mock_surface = server->GetObject<wl::MockSurface>(id);
+    constexpr uint32_t kNumberOfCommits = 3;
+    EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(kNumberOfCommits);
+    EXPECT_CALL(*mock_surface, Frame(_)).Times(kNumberOfCommits);
+    EXPECT_CALL(*mock_surface, Commit()).Times(kNumberOfCommits);
+  });
+
+  EXPECT_CALL(mock_surface_gpu,
+              OnSubmission(kBufferId1, gfx::SwapResult::SWAP_ACK, _))
+      .Times(1);
+  EXPECT_CALL(mock_surface_gpu, OnPresentation(kBufferId1, _)).Times(1);
+  CommitBuffer(widget, kBufferId1, kBufferId1,
+               gfx::FrameData(delegate_.viz_seq()), bounds,
+               gfx::RoundedCornersF(), kDefaultScale, bounds);
+  SendFrameCallbackForSurface(surface_id_);
+  base::RunLoop().RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(&mock_surface_gpu);
+
+  // The second frame can only be acked once the first buffer is released.
+  EXPECT_CALL(mock_surface_gpu, OnSubmission(_, _, _)).Times(0);
+  EXPECT_CALL(mock_surface_gpu, OnPresentation(_, _)).Times(0);
+  CommitBuffer(widget, kBufferId2, kBufferId2,
+               gfx::FrameData(delegate_.viz_seq()), bounds,
+               gfx::RoundedCornersF(), kDefaultScale, bounds);
+  SendFrameCallbackForSurface(surface_id_);
+  base::RunLoop().RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(&mock_surface_gpu);
+
+  // No explicit sync is used without an acquire fence, so wl_buffer.release
+  // must release the first buffer.
+  EXPECT_CALL(mock_surface_gpu,
+              OnSubmission(kBufferId2, gfx::SwapResult::SWAP_ACK, _))
+      .Times(1);
+  EXPECT_CALL(mock_surface_gpu, OnPresentation(kBufferId2, _)).Times(1);
+  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
+    auto* mock_surface = server->GetObject<wl::MockSurface>(id);
+    mock_surface->ReleaseBuffer(mock_surface->prev_attached_buffer());
+  });
+  base::RunLoop().RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(&mock_surface_gpu);
+
+  // The released buffer can be committed again.
+  EXPECT_CALL(mock_surface_gpu,
+              OnSubmission(kBufferId1, gfx::SwapResult::SWAP_ACK, _))
+      .Times(1);
+  EXPECT_CALL(mock_surface_gpu, OnPresentation(kBufferId1, _)).Times(1);
+  CommitBuffer(widget, kBufferId1, kBufferId1,
+               gfx::FrameData(delegate_.viz_seq()), bounds,
+               gfx::RoundedCornersF(), kDefaultScale, bounds);
+  SendFrameCallbackForSurface(surface_id_);
+  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
+    auto* mock_surface = server->GetObject<wl::MockSurface>(id);
+    mock_surface->ReleaseBuffer(mock_surface->prev_attached_buffer());
+  });
+  base::RunLoop().RunUntilIdle();
+
+  DestroyBufferAndSetTerminateExpectation(kBufferId1, /*fail=*/false);
+  DestroyBufferAndSetTerminateExpectation(kBufferId2, /*fail=*/false);
+}
+
 // Tests that destroying a channel doesn't result in resetting surface state
 // and buffers can be attached after the channel has been reinitialized.
 TEST_P(WaylandBufferManagerTest,
