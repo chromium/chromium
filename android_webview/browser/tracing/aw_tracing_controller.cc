@@ -2,11 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "android_webview/browser/tracing/aw_tracing_controller.h"
+#include <stdint.h>
+
+#include <memory>
+#include <string>
+#include <utility>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/android/jni_weak_ref.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_macros.h"
@@ -21,7 +26,18 @@
 
 using base::android::JavaRef;
 
+namespace android_webview {
+
 namespace {
+
+// LINT.IfChange(WebViewApiCallTracingController)
+enum class ApiCall {
+  kTracingStart = 0,
+  kTracingStartWithMemoryDump = 1,
+
+  kMaxValue = kTracingStartWithMemoryDump
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:WebViewApiCallTracingController)
 
 class AwTraceDataEndpoint
     : public content::TracingController::TraceDataEndpoint {
@@ -61,25 +77,31 @@ class AwTraceDataEndpoint
   base::OnceClosure completed_callback_;
 };
 
-}  // namespace
-
-namespace android_webview {
-
-static int64_t JNI_AwTracingController_Init(JNIEnv* env,
-                                            const JavaRef<jobject>& obj) {
-  AwTracingController* controller = new AwTracingController(env, obj);
-  return reinterpret_cast<intptr_t>(controller);
+void OnTraceDataComplete(const JavaObjectWeakGlobalRef& weak_java_object) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> obj = weak_java_object.get(env);
+  if (obj.obj()) {
+    Java_AwTracingController_onTraceDataComplete(env, obj);
+  }
 }
 
-AwTracingController::AwTracingController(JNIEnv* env,
-                                         const jni_zero::JavaRef<jobject>& obj)
-    : weak_java_object_(env, obj) {}
+void OnTraceDataReceived(const JavaObjectWeakGlobalRef& weak_java_object,
+                         std::unique_ptr<std::string> chunk) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> obj = weak_java_object.get(env);
+  if (obj.obj()) {
+    base::android::ScopedJavaLocalRef<jbyteArray> java_trace_data =
+        base::android::ToJavaByteArray(env, *chunk);
+    Java_AwTracingController_onTraceDataChunkReceived(env, obj,
+                                                      java_trace_data);
+  }
+}
 
-AwTracingController::~AwTracingController() {}
+}  // namespace
 
-bool AwTracingController::Start(JNIEnv* env,
-                                const std::string& categories,
-                                int32_t jmode) {
+static bool JNI_AwTracingController_Start(JNIEnv* env,
+                                          const std::string& categories,
+                                          int32_t jmode) {
   base::trace_event::TraceConfig trace_config(
       categories, static_cast<base::trace_event::TraceRecordMode>(jmode));
 
@@ -95,38 +117,19 @@ bool AwTracingController::Start(JNIEnv* env,
       /*privacy_filtering_enabled=*/true);
 }
 
-bool AwTracingController::StopAndFlush(JNIEnv* env) {
+static bool JNI_AwTracingController_StopAndFlush(
+    JNIEnv* env,
+    const JavaRef<jobject>& caller) {
+  JavaObjectWeakGlobalRef weak_java_object(env, caller);
   // privacy_filtering_enabled=true is required for filtering out potential PII.
   return content::TracingController::GetInstance()->StopTracing(
       AwTraceDataEndpoint::Create(
-          base::BindRepeating(&AwTracingController::OnTraceDataReceived,
-                              weak_factory_.GetWeakPtr()),
-          base::BindOnce(&AwTracingController::OnTraceDataComplete,
-                         weak_factory_.GetWeakPtr())),
+          base::BindRepeating(&OnTraceDataReceived, weak_java_object),
+          base::BindOnce(&OnTraceDataComplete, weak_java_object)),
       /*agent_label=*/"");
 }
 
-void AwTracingController::OnTraceDataComplete() {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jobject> obj = weak_java_object_.get(env);
-  if (obj.obj()) {
-    Java_AwTracingController_onTraceDataComplete(env, obj);
-  }
-}
-
-void AwTracingController::OnTraceDataReceived(
-    std::unique_ptr<std::string> chunk) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jobject> obj = weak_java_object_.get(env);
-  if (obj.obj()) {
-    base::android::ScopedJavaLocalRef<jbyteArray> java_trace_data =
-        base::android::ToJavaByteArray(env, *chunk);
-    Java_AwTracingController_onTraceDataChunkReceived(env, obj,
-                                                      java_trace_data);
-  }
-}
-
-bool AwTracingController::IsTracing(JNIEnv* env) {
+static bool JNI_AwTracingController_IsTracing(JNIEnv* env) {
   return content::TracingController::GetInstance()->IsTracing();
 }
 
