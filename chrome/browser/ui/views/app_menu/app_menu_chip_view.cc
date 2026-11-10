@@ -71,6 +71,7 @@ void AppMenuChipView::AttachTo(views::MenuItemView* menu_item,
   menu_item->AddChildView(std::move(chip_view));
   menu_item->AddChildView(std::move(edge_spacing_view));
   menu_item->SetHighlightWhenSelectedWithChildViews(true);
+  menu_item->SetTriggerActionWithNonIconChildViews(true);
 
   menu_item->GetViewAccessibility().SetName(
       views::MenuItemView::GetAccessibleNameForMenuItem(

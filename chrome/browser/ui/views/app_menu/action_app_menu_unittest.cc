@@ -138,6 +138,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "ui/views/controls/menu/menu_closure_animation_mac.h"
+#include "ui/views/controls/menu/menu_cocoa_watcher_mac.h"
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -175,12 +176,28 @@ class ActionAppMenuTest : public ActionAppMenuTestBase {
   }
 
   void TearDown() override {
+#if BUILDFLAG(IS_MAC)
+    views::MenuCocoaWatcherMac::SetNotificationFilterForTesting(
+        views::MacNotificationFilter::DontIgnoreNotifications);
+#endif
     button_ = nullptr;
     widget_.reset();
     ActionAppMenuTestBase::TearDown();
   }
 
  protected:
+  // Shows `widget_` so menus opened from it are visible. On Mac the menu host
+  // stays hidden while its parent is, and MenuController treats events on a
+  // hidden menu as outside it. Showing the widget makes it key, which would
+  // cancel the menu on Mac, so window and app notifications are ignored.
+  void ShowWidgetForPointerEvents() {
+#if BUILDFLAG(IS_MAC)
+    views::MenuCocoaWatcherMac::SetNotificationFilterForTesting(
+        views::MacNotificationFilter::IgnoreAllNotifications);
+#endif
+    widget_->Show();
+  }
+
   // The fixture's actions have plain text. Sets `action_id`'s text to the
   // string with mnemonic used in production, and returns its mnemonic.
   char16_t SetTextWithMnemonic(actions::ActionId action_id, int string_id) {
@@ -267,6 +284,39 @@ class ActionAppMenuTest : public ActionAppMenuTestBase {
     ui::AXNodeData data;
     button.GetViewAccessibility().GetAccessibleNodeData(&data);
     return data.GetStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts);
+  }
+
+  // Sends a finger tap at `point` in `view` through `view`'s menu widget, so
+  // child views get the tap first and the MenuController only sees it if no
+  // view handles it. Call ShowWidgetForPointerEvents() before opening the menu.
+  static void TapAt(views::View* view, const gfx::Point& point) {
+    views::Widget* widget = view->GetWidget();
+    CHECK(widget->IsVisible());
+    const gfx::Point location =
+        views::View::ConvertPointToTarget(view, widget->GetRootView(), point);
+    ui::GestureEvent tap_down(
+        location.x(), location.y(), 0, ui::EventTimeForNow(),
+        ui::GestureEventDetails(ui::EventType::kGestureTapDown));
+    widget->OnGestureEvent(&tap_down);
+    ui::GestureEvent tap(location.x(), location.y(), 0, ui::EventTimeForNow(),
+                         ui::GestureEventDetails(ui::EventType::kGestureTap));
+    widget->OnGestureEvent(&tap);
+  }
+
+  // Mouse twin of TapAt().
+  static void ClickAt(views::View* view, const gfx::Point& point) {
+    views::Widget* widget = view->GetWidget();
+    CHECK(widget->IsVisible());
+    const gfx::Point location =
+        views::View::ConvertPointToTarget(view, widget->GetRootView(), point);
+    ui::MouseEvent press(ui::EventType::kMousePressed, location, location,
+                         ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                         ui::EF_LEFT_MOUSE_BUTTON);
+    widget->OnMouseEvent(&press);
+    ui::MouseEvent release(ui::EventType::kMouseReleased, location, location,
+                           ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                           ui::EF_LEFT_MOUSE_BUTTON);
+    widget->OnMouseEvent(&release);
   }
 
   std::unique_ptr<views::Widget> widget_;
@@ -1887,11 +1937,175 @@ TEST_F(ActionAppMenuTest, TappingDisabledZoomButtonDoesNotCrash) {
       ui::GestureEventDetails(ui::EventType::kGestureTapDown));
   root->GetMenuController()->OnGestureEvent(root->GetSubmenu(), &tap_down);
 
-  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  // The disabled button doesn't handle the tap, so it falls through to the
+  // zoom row. That row only hosts its controls, so the menu stays open, as it
+  // does for a mouse click.
+  EXPECT_CALL(on_menu_closed, Run()).Times(0);
   ui::GestureEvent tap(tap_location.x(), tap_location.y(), 0,
                        ui::EventTimeForNow(),
                        ui::GestureEventDetails(ui::EventType::kGestureTap));
   root->GetMenuController()->OnGestureEvent(root->GetSubmenu(), &tap);
+
+  EXPECT_TRUE(menu.IsShowing());
+  testing::Mock::VerifyAndClearExpectations(&on_menu_closed);
+  EXPECT_CALL(on_menu_closed, Run());
+  menu.CloseMenu();
+}
+
+// A finger tap that lands between two block buttons is not handled by either
+// button. It must leave the menu open like a mouse click there does, rather
+// than activate the block row itself (whose command id 0 is kActionCut).
+TEST_F(ActionAppMenuTest, GestureTapOnBlockRowGapKeepsMenuOpen) {
+  ShowWidgetForPointerEvents();
+#if BUILDFLAG(IS_MAC)
+  // A wrong Accept() would close the menu only after the closure animation;
+  // skip it so WaitForMenuClosureAnimation() below exposes that.
+  views::MenuClosureAnimationMac::ScopedDisableAnimationsForTesting
+      disable_closure_animations;
+#endif
+  base::HistogramTester histogram_tester;
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  ASSERT_TRUE(menu.IsShowing());
+
+  AppMenuBlockButton* new_tab_button = GetBlockButton(menu, 0);
+  AppMenuBlockButton* new_window_button = GetBlockButton(menu, 1);
+  ASSERT_TRUE(new_tab_button);
+  ASSERT_TRUE(new_window_button);
+  ASSERT_LT(new_tab_button->bounds().right(), new_window_button->bounds().x());
+  const gfx::Point gap(
+      (new_tab_button->bounds().right() + new_window_button->bounds().x()) / 2,
+      new_tab_button->bounds().CenterPoint().y());
+
+  EXPECT_CALL(mock_action_invoked_, Call(_, _, _)).Times(0);
+  EXPECT_CALL(on_menu_closed, Run()).Times(0);
+  TapAt(new_tab_button->parent(), gap);
+  views::test::WaitForMenuClosureAnimation();
+
+  EXPECT_TRUE(menu.IsShowing());
+  histogram_tester.ExpectUniqueSample("WrenchMenu.MenuAction",
+                                      MENU_ACTION_MENU_OPENED, 1);
+  testing::Mock::VerifyAndClearExpectations(&on_menu_closed);
+  EXPECT_CALL(on_menu_closed, Run());
+  menu.CloseMenu();
+}
+
+// Guard test: the block button handles the tap itself, so this passes with or
+// without the tap gate. It fails if the gate starts swallowing taps that a
+// child button would handle.
+TEST_F(ActionAppMenuTest, GestureTapOnBlockButtonInvokesAction) {
+  ShowWidgetForPointerEvents();
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  ASSERT_TRUE(menu.IsShowing());
+
+  AppMenuBlockButton* new_window_button = GetBlockButton(menu, 1);
+  ASSERT_TRUE(new_window_button);
+
+  EXPECT_CALL(on_menu_closed, Run());
+  EXPECT_CALL(mock_action_invoked_, Call(kActionNewWindow, _, _));
+  TapAt(new_window_button, new_window_button->GetLocalBounds().CenterPoint());
+  views::test::WaitForMenuClosureAnimation();
+
+  EXPECT_FALSE(menu.IsShowing());
+}
+
+// Footer twin of GestureTapOnBlockRowGapKeepsMenuOpen: a tap on the empty space
+// between the footer buttons leaves the menu open.
+TEST_F(ActionAppMenuTest, GestureTapOnFooterRowGapKeepsMenuOpen) {
+  ShowWidgetForPointerEvents();
+#if BUILDFLAG(IS_MAC)
+  views::MenuClosureAnimationMac::ScopedDisableAnimationsForTesting
+      disable_closure_animations;
+#endif
+  base::HistogramTester histogram_tester;
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  ASSERT_TRUE(menu.IsShowing());
+
+  views::SubmenuView* submenu = menu.root_menu_item_for_testing()->GetSubmenu();
+  views::MenuItemView* footer_item =
+      submenu->GetMenuItemAt(submenu->GetMenuItems().size() - 1);
+  auto* footer_view =
+      views::AsViewClass<AppMenuFooterView>(footer_item->children()[0]);
+  ASSERT_TRUE(footer_view);
+  // The top container is [left buttons, flexible spacer, right buttons].
+  views::View* top_container = footer_view->top_container_for_testing();
+  ASSERT_EQ(top_container->children().size(), 3u);
+  views::View* spacer = top_container->children()[1];
+  ASSERT_GT(spacer->width(), 0);
+
+  EXPECT_CALL(mock_action_invoked_, Call(_, _, _)).Times(0);
+  EXPECT_CALL(on_menu_closed, Run()).Times(0);
+  TapAt(spacer, spacer->GetLocalBounds().CenterPoint());
+  views::test::WaitForMenuClosureAnimation();
+
+  EXPECT_TRUE(menu.IsShowing());
+  histogram_tester.ExpectUniqueSample("WrenchMenu.MenuAction",
+                                      MENU_ACTION_MENU_OPENED, 1);
+  testing::Mock::VerifyAndClearExpectations(&on_menu_closed);
+  EXPECT_CALL(on_menu_closed, Run());
+  menu.CloseMenu();
+}
+
+// Opens `menu`, attaches a chip to the Print row and returns the chip.
+AppMenuChipView* AttachChipToPrintRow(ActionAppMenu& menu) {
+  views::MenuItemView* print_item =
+      menu.root_menu_item_for_testing()->GetMenuItemByID(kActionPrint);
+  CHECK(print_item);
+  AppMenuChipView::AttachTo(print_item, u"New");
+  print_item->ScrollRectToVisible(print_item->GetLocalBounds());
+  print_item->GetWidget()->LayoutRootViewIfNecessary();
+  const auto chip = std::ranges::find_if(print_item->children(),
+                                         &views::IsViewClass<AppMenuChipView>);
+  CHECK(chip != print_item->children().end());
+  return views::AsViewClass<AppMenuChipView>(*chip);
+}
+
+// A chip row's body activates the row. Fails if AppMenuChipView::AttachTo()
+// stops opting the row in, because the tap gate then blocks the row.
+TEST_F(ActionAppMenuTest, GestureTapOnChipRowInvokesAction) {
+  ShowWidgetForPointerEvents();
+#if BUILDFLAG(IS_MAC)
+  // Accept() runs the closure animation on its own timers, which
+  // WaitForMenuClosureAnimation() does not wait for.
+  views::MenuClosureAnimationMac::ScopedDisableAnimationsForTesting
+      disable_closure_animations;
+#endif
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  ASSERT_TRUE(menu.IsShowing());
+  AppMenuChipView* chip = AttachChipToPrintRow(menu);
+
+  EXPECT_CALL(on_menu_closed, Run());
+  EXPECT_CALL(mock_action_invoked_, Call(kActionPrint, _, _));
+  TapAt(chip, chip->GetLocalBounds().CenterPoint());
+  views::test::WaitForMenuClosureAnimation();
+
+  EXPECT_FALSE(menu.IsShowing());
+}
+
+// Mouse twin of GestureTapOnChipRowInvokesAction. Fails without the chip
+// opt-in, because the mouse gate already blocked chip rows.
+TEST_F(ActionAppMenuTest, ClickOnChipRowInvokesAction) {
+  ShowWidgetForPointerEvents();
+#if BUILDFLAG(IS_MAC)
+  views::MenuClosureAnimationMac::ScopedDisableAnimationsForTesting
+      disable_closure_animations;
+#endif
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  ASSERT_TRUE(menu.IsShowing());
+  AppMenuChipView* chip = AttachChipToPrintRow(menu);
+
+  EXPECT_CALL(on_menu_closed, Run());
+  EXPECT_CALL(mock_action_invoked_, Call(kActionPrint, _, _));
+  ClickAt(chip, chip->GetLocalBounds().CenterPoint());
   views::test::WaitForMenuClosureAnimation();
 
   EXPECT_FALSE(menu.IsShowing());

@@ -597,6 +597,13 @@ class VIEWS_EXPORT MenuController final : public gfx::AnimationDelegate,
   // Returns the depth of the menu.
   static size_t MenuDepth(MenuItemView* item);
 
+  // Returns true if a pointer release (mouse release or gesture tap) that no
+  // child view handled should activate `item`. An item that hosts child views
+  // is a container of its own controls; the release landed between them, so it
+  // activates the item only if the item opts in.
+  static bool CanPointerReleaseActivate(MenuItemView* item,
+                                        const ui::Event& event);
+
   // Selects the next or previous (depending on |direction|) menu item.
   void IncrementSelection(SelectionIncrementDirectionType direction);
 

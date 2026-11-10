@@ -3387,6 +3387,32 @@ TEST_F(MenuControllerTest, RegisterClickWithChildViews) {
   DestroyMenuControllerDelegate();
 }
 
+// Gesture twin of RegisterClickWithChildViews: a tap on an item with child
+// views activates it only when the item opts in, exactly like a click.
+TEST_F(MenuControllerTest, RegisterGestureTapWithChildViews) {
+  CreateMenu();
+  DestroyMenuControllerOnMenuClosed(menu_controller_delegate());
+  ShowSubmenu();
+  SubmenuView* submenu = menu_item()->GetSubmenu();
+  MenuItemView* first_menu_item = submenu->GetMenuItemAt(0);
+  first_menu_item->AddChildView(std::make_unique<View>());
+  const gfx::Point location = first_menu_item->bounds().CenterPoint();
+
+  ProcessGestureEvent(
+      submenu,
+      ui::GestureEvent(location.x(), location.y(), 0, ui::EventTimeForNow(),
+                       ui::GestureEventDetails(ui::EventType::kGestureTap)));
+  EXPECT_EQ(menu_controller_delegate()->on_menu_closed_called(), 0);
+
+  first_menu_item->SetTriggerActionWithNonIconChildViews(true);
+  ProcessGestureEvent(
+      submenu,
+      ui::GestureEvent(location.x(), location.y(), 0, ui::EventTimeForNow(),
+                       ui::GestureEventDetails(ui::EventType::kGestureTap)));
+  EXPECT_EQ(menu_controller_delegate()->on_menu_closed_called(), 1);
+  DestroyMenuControllerDelegate();
+}
+
 #endif  // defined(USE_AURA)
 
 // Tests that having the MenuController deleted during OnMousePressed does not

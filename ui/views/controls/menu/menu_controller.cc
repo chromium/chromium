@@ -1220,9 +1220,7 @@ void MenuController::OnMouseReleased(SubmenuView* source,
       part.menu->GetDelegate()->ExecuteCommand(command, event.flags());
       return;
     }
-    if ((!part.menu->NonIconChildViewsCount() ||
-         part.menu->GetTriggerActionWithNonIconChildViews()) &&
-        part.menu->GetDelegate()->IsTriggerableEvent(part.menu, event)) {
+    if (CanPointerReleaseActivate(part.menu, event)) {
       Accept(part.menu, event.flags());
       return;
     }
@@ -1370,8 +1368,7 @@ void MenuController::OnGestureEvent(SubmenuView* source,
               command, *event)) {
         item_selected_by_touch_ = true;
         part.menu->GetDelegate()->ExecuteCommand(command, 0);
-      } else if (part.menu->GetDelegate()->IsTriggerableEvent(part.menu,
-                                                              *event)) {
+      } else if (CanPointerReleaseActivate(part.menu, *event)) {
         item_selected_by_touch_ = true;
         Accept(part.menu, event->flags());
       }
@@ -3451,6 +3448,14 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
 // static
 size_t MenuController::MenuDepth(MenuItemView* item) {
   return item ? (MenuDepth(item->GetParentMenuItem()) + 1) : size_t{0};
+}
+
+// static
+bool MenuController::CanPointerReleaseActivate(MenuItemView* item,
+                                               const ui::Event& event) {
+  return (!item->NonIconChildViewsCount() ||
+          item->GetTriggerActionWithNonIconChildViews()) &&
+         item->GetDelegate()->IsTriggerableEvent(item, event);
 }
 
 void MenuController::IncrementSelection(
