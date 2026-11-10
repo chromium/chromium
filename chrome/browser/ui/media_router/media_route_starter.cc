@@ -196,8 +196,15 @@ std::unique_ptr<RouteParameters> MediaRouteStarter::CreateRouteParameters(
 
   params->request = std::make_unique<RouteRequest>(sink_id);
 
-  params->origin = for_presentation_source ? presentation_request_->frame_origin
-                                           : url::Origin::Create(GURL());
+  if (for_presentation_source) {
+    params->origin = presentation_request_->frame_origin;
+  } else if (cast_mode == MediaCastMode::REMOTE_PLAYBACK &&
+             start_presentation_context_) {
+    params->origin =
+        start_presentation_context_->presentation_request().frame_origin;
+  } else {
+    params->origin = url::Origin::Create(GURL());
+  }
 
   params->timeout = GetRouteRequestTimeout(cast_mode);
   return params;

@@ -36,7 +36,12 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "media/media_buildflags.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
+
+#if BUILDFLAG(ENABLE_MEDIA_REMOTING)
+#include "chrome/browser/media/cast_remoting_connector.h"
+#endif
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
@@ -214,6 +219,11 @@ void FullscreenController::EnterFullscreenModeForTab(
   CHECK(web_contents, base::NotFatalUntil::M162);
 
   if (MaybeToggleFullscreenWithinTab(web_contents, true)) {
+#if BUILDFLAG(ENABLE_MEDIA_REMOTING)
+    if (auto* connector = CastRemotingConnector::Get(web_contents)) {
+      connector->DidAcquireFullscreen(requesting_frame);
+    }
+#endif
     // During tab capture of fullscreen-within-tab views, the browser window
     // fullscreen state is unchanged, so return now.
     return;
@@ -277,6 +287,11 @@ void FullscreenController::EnterFullscreenModeForTab(
         requesting_another_screen) {
       EnterFullscreenModeInternal(FullscreenInternalOption::kTab,
                                   requesting_frame, fullscreen_tab_params);
+#if BUILDFLAG(ENABLE_MEDIA_REMOTING)
+      if (auto* connector = CastRemotingConnector::Get(web_contents)) {
+        connector->DidAcquireFullscreen(requesting_frame);
+      }
+#endif
       return;
     }
 
@@ -285,6 +300,12 @@ void FullscreenController::EnterFullscreenModeForTab(
     tab_fullscreen_ = true;
     exclusive_access_manager()->UpdateBubble(base::NullCallback());
   }
+
+#if BUILDFLAG(ENABLE_MEDIA_REMOTING)
+  if (auto* connector = CastRemotingConnector::Get(web_contents)) {
+    connector->DidAcquireFullscreen(requesting_frame);
+  }
+#endif
 
   // This is only a change between Browser and Tab fullscreen. We generate
   // a fullscreen notification now because there is no window change.

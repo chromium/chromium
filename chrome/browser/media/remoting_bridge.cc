@@ -16,8 +16,9 @@ using media::mojom::RemotingStopReason;
 
 RemotingBridge::RemotingBridge(
     base::span<Client* const> clients,
-    mojo::PendingRemote<media::mojom::RemotingSource> source)
-    : source_(std::move(source)) {
+    mojo::PendingRemote<media::mojom::RemotingSource> source,
+    content::GlobalRenderFrameHostId render_frame_host_id)
+    : source_(std::move(source)), render_frame_host_id_(render_frame_host_id) {
   CHECK(!clients.empty());
   source_.set_disconnect_handler(
       base::BindOnce(&RemotingBridge::Stop, base::Unretained(this),
@@ -49,9 +50,11 @@ RemotingBridge::~RemotingBridge() {
 void RemotingBridge::CreateMediaRemoter(
     base::span<Client* const> clients,
     mojo::PendingRemote<media::mojom::RemotingSource> source,
-    mojo::PendingReceiver<media::mojom::Remoter> receiver) {
+    mojo::PendingReceiver<media::mojom::Remoter> receiver,
+    content::GlobalRenderFrameHostId render_frame_host_id) {
   mojo::MakeSelfOwnedReceiver(
-      std::make_unique<RemotingBridge>(clients, std::move(source)),
+      std::make_unique<RemotingBridge>(clients, std::move(source),
+                                       render_frame_host_id),
       std::move(receiver));
 }
 

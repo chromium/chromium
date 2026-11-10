@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "content/public/browser/global_routing_id.h"
 #include "media/mojo/mojom/remoting.mojom.h"
 #include "media/mojo/mojom/remoting_common.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -64,7 +65,9 @@ class RemotingBridge final : public media::mojom::Remoter {
   // still be destroyed during the lifetime of a RemotingBridge, which it
   // signals with OnClientDestroyed().
   RemotingBridge(base::span<Client* const> clients,
-                 mojo::PendingRemote<media::mojom::RemotingSource> source);
+                 mojo::PendingRemote<media::mojom::RemotingSource> source,
+                 content::GlobalRenderFrameHostId render_frame_host_id =
+                     content::GlobalRenderFrameHostId());
 
   RemotingBridge(const RemotingBridge&) = delete;
   RemotingBridge& operator=(const RemotingBridge&) = delete;
@@ -77,7 +80,13 @@ class RemotingBridge final : public media::mojom::Remoter {
   static void CreateMediaRemoter(
       base::span<Client* const> clients,
       mojo::PendingRemote<media::mojom::RemotingSource> source,
-      mojo::PendingReceiver<media::mojom::Remoter> receiver);
+      mojo::PendingReceiver<media::mojom::Remoter> receiver,
+      content::GlobalRenderFrameHostId render_frame_host_id =
+          content::GlobalRenderFrameHostId());
+
+  content::GlobalRenderFrameHostId render_frame_host_id() const {
+    return render_frame_host_id_;
+  }
 
   // The Client calls these to forward notifications to the RemotingSource.
   // Notifications from a Client that is not the active one are dropped.
@@ -142,6 +151,10 @@ class RemotingBridge final : public media::mojom::Remoter {
 
   // The Client currently serving |source_|, or null if none is ready to.
   raw_ptr<Client> active_client_ = nullptr;
+
+  // The RenderFrameHost ID from which this bridge was created (may be invalid
+  // if not created from a RenderFrameHost).
+  const content::GlobalRenderFrameHostId render_frame_host_id_;
 
   // Ensure RemotingBridge is used on a single thread.
   THREAD_CHECKER(thread_checker_);

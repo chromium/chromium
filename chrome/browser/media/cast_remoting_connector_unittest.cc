@@ -14,15 +14,22 @@
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/remoting_bridge.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/media_router/common/media_route.h"
 #include "components/media_router/common/media_source.h"
 #include "components/media_router/common/pref_names.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_renderer_host.h"
 #include "media/mojo/mojom/remoting.mojom.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -40,8 +47,21 @@ namespace {
 
 constexpr SessionID kRemotingTabId = SessionID::FromSerializedValue(2);
 
+class TestWebContentsDelegate : public content::WebContentsDelegate {
+ public:
+  bool IsFullscreenForTabOrPending(
+      const content::WebContents* web_contents) override {
+    return is_fullscreen_;
+  }
+  void set_is_fullscreen(bool is_fullscreen) { is_fullscreen_ = is_fullscreen; }
+
+ private:
+  bool is_fullscreen_ = true;
+};
+
 RemotingSinkMetadataPtr GetDefaultSinkMetadata() {
   RemotingSinkMetadataPtr metadata = RemotingSinkMetadata::New();
+  metadata->friendly_name = "Living Room TV";
   metadata->features.push_back(
       media::mojom::RemotingSinkFeature::CONTENT_DECRYPTION);
   metadata->video_capabilities.push_back(
@@ -657,3 +677,319 @@ INSTANTIATE_TEST_SUITE_P(All,
                                            ROUTE_TERMINATES,
                                            EXTERNAL_FAILURE,
                                            USER_DISABLED));
+
+class CastRemotingConnectorRenderFrameTest
+    : public ChromeRenderViewHostTestHarness {
+ public:
+  CastRemotingConnectorRenderFrameTest()
+      : ChromeRenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+    web_contents()->SetDelegate(&web_contents_delegate_);
+    pref_service_.registry()->RegisterBooleanPref(
+        media_router::prefs::kMediaRouterMediaRemotingEnabled, true);
+    connector_ = CastRemotingConnector::CreateForTesting(
+        &pref_service_, kRemotingTabId, web_contents());
+    connector_->set_remoting_allowed_for_testing(true);
+  }
+
+  void TearDown() override {
+    connector_.reset();
+    web_contents()->SetDelegate(nullptr);
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+  content::RenderFrameHost* AppendSubframeWithFullscreenPolicy(
+      const std::string& frame_name) {
+    network::ParsedPermissionsPolicy policy = {
+        network::ParsedPermissionsPolicyDeclaration(
+            network::mojom::PermissionsPolicyFeature::kFullscreen,
+            /*allowed_origins=*/{},
+            /*self_if_matches=*/std::nullopt,
+            /*matches_all_origins=*/true,
+            /*matches_opaque_src=*/false)};
+    return content::RenderFrameHostTester::For(main_rfh())
+        ->AppendChildWithPolicy(frame_name, policy);
+  }
+
+  mojo::PendingRemote<media::mojom::Remoter> CreateRemoterForFrame(
+      MockRemotingSource* source,
+      content::RenderFrameHost* rfh) {
+    mojo::PendingRemote<media::mojom::RemotingSource> source_pending_remote;
+    source->Bind(source_pending_remote.InitWithNewPipeAndPassReceiver());
+    mojo::PendingRemote<media::mojom::Remoter> remoter_pending_remote;
+    RemotingBridge::Client* clients[] = {connector_.get()};
+    mojo::MakeSelfOwnedReceiver(
+        std::make_unique<RemotingBridge>(
+            clients, std::move(source_pending_remote), rfh->GetGlobalId()),
+        remoter_pending_remote.InitWithNewPipeAndPassReceiver());
+    return remoter_pending_remote;
+  }
+
+  CastRemotingConnector* GetConnector() const { return connector_.get(); }
+
+  sync_preferences::TestingPrefServiceSyncable pref_service_;
+  std::unique_ptr<CastRemotingConnector> connector_;
+  TestWebContentsDelegate web_contents_delegate_;
+};
+
+TEST_F(CastRemotingConnectorRenderFrameTest,
+       MainFrameReceivesFriendlyNameAndCanStart) {
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://example.com"), main_rfh());
+
+  MockRemotingSource source;
+  mojo::Remote<media::mojom::Remoter> remoter(
+      CreateRemoterForFrame(&source, main_rfh()));
+  std::unique_ptr<MockMediaRemoter> media_remoter =
+      std::make_unique<MockMediaRemoter>(GetConnector());
+
+  EXPECT_CALL(source,
+              OnSinkAvailable(testing::Field(
+                  &RemotingSinkMetadata::friendly_name, "Living Room TV")))
+      .Times(1);
+  media_remoter->OnSinkAvailable();
+  task_environment()->RunUntilIdle();
+
+  EXPECT_CALL(source, OnStarted()).Times(1);
+  remoter->Start();
+  task_environment()->RunUntilIdle();
+}
+
+TEST_F(CastRemotingConnectorRenderFrameTest,
+       CrossOriginSubframeDoesNotReceiveFriendlyName) {
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://example.com"), main_rfh());
+  content::RenderFrameHost* subframe =
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
+  subframe = content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://attacker.com"), subframe);
+
+  MockRemotingSource source;
+  mojo::Remote<media::mojom::Remoter> remoter(
+      CreateRemoterForFrame(&source, subframe));
+  std::unique_ptr<MockMediaRemoter> media_remoter =
+      std::make_unique<MockMediaRemoter>(GetConnector());
+
+  EXPECT_CALL(source, OnSinkAvailable(testing::Field(
+                          &RemotingSinkMetadata::friendly_name, "")))
+      .Times(1);
+  media_remoter->OnSinkAvailable();
+  task_environment()->RunUntilIdle();
+}
+
+TEST_F(
+    CastRemotingConnectorRenderFrameTest,
+    CrossOriginSubframeRejectedDuringTabMirroringAndDoesNotPreemptMainFrame) {
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://example.com"), main_rfh());
+  content::RenderFrameHost* subframe =
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
+  subframe = content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://attacker.com"), subframe);
+
+  MockRemotingSource main_source;
+  mojo::Remote<media::mojom::Remoter> main_remoter(
+      CreateRemoterForFrame(&main_source, main_rfh()));
+
+  MockRemotingSource subframe_source;
+  mojo::Remote<media::mojom::Remoter> subframe_remoter(
+      CreateRemoterForFrame(&subframe_source, subframe));
+
+  std::unique_ptr<MockMediaRemoter> media_remoter =
+      std::make_unique<MockMediaRemoter>(GetConnector());
+
+  EXPECT_CALL(main_source, OnSinkAvailable(_)).Times(1);
+  EXPECT_CALL(subframe_source, OnSinkAvailable(_)).Times(1);
+  media_remoter->OnSinkAvailable();
+  task_environment()->RunUntilIdle();
+
+  // Subframe attempt during Tab Mirroring without fullscreen must fail and not
+  // disconnect main frame.
+  EXPECT_CALL(subframe_source,
+              OnStartFailed(RemotingStartFailReason::REMOTING_NOT_PERMITTED))
+      .Times(1);
+  EXPECT_CALL(main_source, OnSinkGone()).Times(0);
+  subframe_remoter->Start();
+  task_environment()->RunUntilIdle();
+
+  // Even if the main frame enters fullscreen, the cross-origin subframe must
+  // still be rejected.
+  GetConnector()->DidAcquireFullscreen(main_rfh());
+  EXPECT_CALL(subframe_source,
+              OnStartFailed(RemotingStartFailReason::REMOTING_NOT_PERMITTED))
+      .Times(1);
+  subframe_remoter->Start();
+  task_environment()->RunUntilIdle();
+
+  // Main frame can still start successfully.
+  EXPECT_CALL(main_source, OnStarted()).Times(1);
+  EXPECT_CALL(subframe_source, OnSinkGone()).Times(1);
+  main_remoter->Start();
+  task_environment()->RunUntilIdle();
+}
+
+TEST_F(CastRemotingConnectorRenderFrameTest,
+       CrossOriginSubframeCanStartWhenFullscreenDuringTabMirroring) {
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://example.com"), main_rfh());
+  content::RenderFrameHost* subframe =
+      AppendSubframeWithFullscreenPolicy("subframe");
+  subframe = content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://attacker.com"), subframe);
+
+  MockRemotingSource subframe_source;
+  mojo::Remote<media::mojom::Remoter> subframe_remoter(
+      CreateRemoterForFrame(&subframe_source, subframe));
+
+  std::unique_ptr<MockMediaRemoter> media_remoter =
+      std::make_unique<MockMediaRemoter>(GetConnector());
+
+  EXPECT_CALL(subframe_source, OnSinkAvailable(_)).Times(1);
+  media_remoter->OnSinkAvailable();
+  task_environment()->RunUntilIdle();
+
+  // If the WebContents is not actually fullscreen, DidAcquireFullscreen is
+  // ignored.
+  web_contents_delegate_.set_is_fullscreen(false);
+  GetConnector()->DidAcquireFullscreen(subframe);
+  EXPECT_CALL(subframe_source,
+              OnStartFailed(RemotingStartFailReason::REMOTING_NOT_PERMITTED))
+      .Times(1);
+  subframe_remoter->Start();
+  task_environment()->RunUntilIdle();
+  web_contents_delegate_.set_is_fullscreen(true);
+
+  // A cross-origin subframe without the fullscreen permissions policy cannot
+  // acquire fullscreen permission.
+  content::RenderFrameHost* subframe_no_policy =
+      content::RenderFrameHostTester::For(main_rfh())
+          ->AppendChild("subframe_no_policy");
+  subframe_no_policy =
+      content::NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL("https://attacker2.com"), subframe_no_policy);
+  MockRemotingSource no_policy_source;
+  mojo::Remote<media::mojom::Remoter> no_policy_remoter(
+      CreateRemoterForFrame(&no_policy_source, subframe_no_policy));
+  GetConnector()->DidAcquireFullscreen(subframe_no_policy);
+  EXPECT_CALL(no_policy_source,
+              OnStartFailed(RemotingStartFailReason::REMOTING_NOT_PERMITTED))
+      .Times(1);
+  no_policy_remoter->Start();
+  task_environment()->RunUntilIdle();
+
+  // Acquiring and then exiting tab fullscreen clears fullscreen permission.
+  GetConnector()->DidAcquireFullscreen(subframe);
+  GetConnector()->DidToggleFullscreenModeForTab(false, false);
+  EXPECT_CALL(subframe_source,
+              OnStartFailed(RemotingStartFailReason::REMOTING_NOT_PERMITTED))
+      .Times(1);
+  subframe_remoter->Start();
+  task_environment()->RunUntilIdle();
+
+  // Frame deletion also clears fullscreen permission.
+  GetConnector()->DidAcquireFullscreen(subframe);
+  GetConnector()->RenderFrameDeleted(subframe);
+  EXPECT_CALL(subframe_source,
+              OnStartFailed(RemotingStartFailReason::REMOTING_NOT_PERMITTED))
+      .Times(1);
+  subframe_remoter->Start();
+  task_environment()->RunUntilIdle();
+
+  // Subframe with fullscreen policy acquires fullscreen while tab is
+  // fullscreen.
+  GetConnector()->DidAcquireFullscreen(subframe);
+
+  EXPECT_CALL(subframe_source, OnStarted()).Times(1);
+  subframe_remoter->Start();
+  task_environment()->RunUntilIdle();
+}
+
+TEST_F(CastRemotingConnectorRenderFrameTest,
+       CrossOriginSubframeAuthorizedForRemotePlaybackCanStart) {
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://example.com"), main_rfh());
+  content::RenderFrameHost* subframe =
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
+  subframe = content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://attacker.com"), subframe);
+
+  MockRemotingSource main_source;
+  mojo::Remote<media::mojom::Remoter> main_remoter(
+      CreateRemoterForFrame(&main_source, main_rfh()));
+
+  MockRemotingSource subframe_source;
+  mojo::Remote<media::mojom::Remoter> subframe_remoter(
+      CreateRemoterForFrame(&subframe_source, subframe));
+
+  std::unique_ptr<MockMediaRemoter> media_remoter =
+      std::make_unique<MockMediaRemoter>(GetConnector());
+
+  EXPECT_CALL(main_source, OnSinkAvailable(_)).Times(1);
+  EXPECT_CALL(subframe_source, OnSinkAvailable(_)).Times(1);
+  media_remoter->OnSinkAvailable();
+  task_environment()->RunUntilIdle();
+
+  // Authorizing the main frame for RemotePlayback does not allow a
+  // cross-origin subframe to start.
+  EXPECT_CALL(main_source, OnSinkAvailable(_)).Times(1);
+  EXPECT_CALL(subframe_source, OnSinkAvailable(_)).Times(1);
+  GetConnector()->GrantPermissionForRemotePlayback(
+      main_rfh()->GetLastCommittedOrigin());
+  EXPECT_CALL(subframe_source,
+              OnStartFailed(RemotingStartFailReason::REMOTING_NOT_PERMITTED))
+      .Times(1);
+  subframe_remoter->Start();
+  task_environment()->RunUntilIdle();
+
+  // Authorizing the subframe origin allows both the subframe and the main frame
+  // to start (the main frame is never locked out).
+  EXPECT_CALL(main_source, OnSinkAvailable(_)).Times(1);
+  EXPECT_CALL(subframe_source, OnSinkAvailable(_)).Times(1);
+  GetConnector()->GrantPermissionForRemotePlayback(
+      subframe->GetLastCommittedOrigin());
+
+  EXPECT_CALL(subframe_source, OnStarted()).Times(1);
+  EXPECT_CALL(main_source, OnSinkGone()).Times(AtLeast(1));
+  subframe_remoter->Start();
+  task_environment()->RunUntilIdle();
+
+  EXPECT_CALL(subframe_source, OnStopped(RemotingStopReason::ROUTE_TERMINATED))
+      .Times(1);
+  EXPECT_CALL(subframe_source, OnSinkGone()).Times(AtLeast(1));
+  EXPECT_CALL(main_source, OnSinkAvailable(_)).Times(1);
+  EXPECT_CALL(subframe_source, OnSinkAvailable(_)).Times(1);
+  media_remoter->OnStopped(RemotingStopReason::ROUTE_TERMINATED);
+  media_remoter->OnSinkAvailable();
+  task_environment()->RunUntilIdle();
+
+  // Main frame can still start even when subframe origin was authorized.
+  EXPECT_CALL(main_source, OnStarted()).Times(1);
+  EXPECT_CALL(subframe_source, OnSinkGone()).Times(AtLeast(1));
+  main_remoter->Start();
+  task_environment()->RunUntilIdle();
+
+  EXPECT_CALL(main_source, OnStopped(RemotingStopReason::ROUTE_TERMINATED))
+      .Times(1);
+  EXPECT_CALL(main_source, OnSinkGone()).Times(AtLeast(1));
+  EXPECT_CALL(main_source, OnSinkAvailable(_)).Times(1);
+  EXPECT_CALL(subframe_source, OnSinkAvailable(_)).Times(1);
+  media_remoter->OnStopped(RemotingStopReason::ROUTE_TERMINATED);
+  media_remoter->OnSinkAvailable();
+  task_environment()->RunUntilIdle();
+
+  // Navigating the subframe in-place to a different cross-origin revokes its
+  // authorization.
+  subframe = content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://other-attacker.com"), subframe);
+  MockRemotingSource navigated_subframe_source;
+  mojo::Remote<media::mojom::Remoter> navigated_subframe_remoter(
+      CreateRemoterForFrame(&navigated_subframe_source, subframe));
+  EXPECT_CALL(navigated_subframe_source,
+              OnStartFailed(RemotingStartFailReason::REMOTING_NOT_PERMITTED))
+      .Times(1);
+  navigated_subframe_remoter->Start();
+  task_environment()->RunUntilIdle();
+}

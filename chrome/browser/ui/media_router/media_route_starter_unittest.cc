@@ -729,6 +729,25 @@ TEST_F(MediaRouteStarterTest, CreateRouteParameters_StartPresentationContext) {
   EXPECT_CALL(*this, RequestError(_));
 }
 
+TEST_F(MediaRouteStarterTest,
+       CreateRouteParameters_StartPresentationContext_RemotePlayback) {
+  auto start_presentation_context = CreateStartPresentationContext(
+      CreatePresentationRequest(kRemotePlaybackUrl, kStartOriginUrl));
+
+  CreateStarter(MediaRouterUIParameters(kDefaultModes, web_contents(),
+                                        std::move(start_presentation_context)));
+
+  UpdateSinks({cast_sink().sink()}, std::vector<url::Origin>());
+
+  auto params = media_route_starter()->CreateRouteParameters(
+      cast_sink().id(), MediaCastMode::REMOTE_PLAYBACK);
+  ASSERT_TRUE(params);
+  EXPECT_EQ(MediaCastMode::REMOTE_PLAYBACK, params->cast_mode);
+  EXPECT_EQ(url::Origin::Create(GURL(kStartOriginUrl)), params->origin);
+
+  EXPECT_CALL(*this, RequestError(_));
+}
+
 // Demonstrates that desktop mirroring routes are created correctly.
 TEST_F(MediaRouteStarterTest, StartRoute_DesktopMirroring) {
   CreateStarterForDefaultModes();

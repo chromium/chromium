@@ -5,6 +5,7 @@
 import("//build/config/chromeos/args.gni")
 import("//build/config/ozone.gni")
 import("//extensions/buildflags/buildflags.gni")
+import("//media/media_options.gni")
 
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
@@ -56,6 +57,7 @@ source_set("exclusive_access") {
     "//components/safe_browsing/content/browser:safe_browsing_service",
     "//components/strings:components_strings",
     "//components/strings:components_strings_grit",
+    "//media:media_buildflags",
     "//services/metrics/public/cpp:gen_ukm_builders",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
@@ -68,6 +70,9 @@ source_set("exclusive_access") {
       "//extensions/browser",
       "//extensions/common",
     ]
+  }
+  if (enable_media_remoting) {
+    deps += [ "//chrome/browser/media" ]
   }
   if (!is_android) {
     deps += [

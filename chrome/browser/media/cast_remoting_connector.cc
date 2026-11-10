@@ -22,7 +22,10 @@
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
+#include "url/origin.h"
 
 using content::BrowserThread;
 using media::mojom::RemotingSinkMetadata;
@@ -43,15 +46,27 @@ CastRemotingConnector* CastRemotingConnector::Get(
       return nullptr;
     connector = new CastRemotingConnector(
         user_prefs::UserPrefs::Get(contents->GetBrowserContext()),
-        sessions::SessionTabHelper::IdForTab(contents));
+        sessions::SessionTabHelper::IdForTab(contents), contents);
     contents->SetUserData(kUserDataKey, base::WrapUnique(connector));
   }
   return connector;
 }
 
+// static
+std::unique_ptr<CastRemotingConnector> CastRemotingConnector::CreateForTesting(
+    PrefService* pref_service,
+    SessionID tab_id,
+    content::WebContents* web_contents) {
+  return base::WrapUnique(
+      new CastRemotingConnector(pref_service, tab_id, web_contents));
+}
+
 CastRemotingConnector::CastRemotingConnector(PrefService* pref_service,
-                                             SessionID tab_id)
-    : pref_service_(pref_service), tab_id_(tab_id) {
+                                             SessionID tab_id,
+                                             content::WebContents* web_contents)
+    : content::WebContentsObserver(web_contents),
+      pref_service_(pref_service),
+      tab_id_(tab_id) {
   StartObservingPref();
 }
 
@@ -69,14 +84,46 @@ CastRemotingConnector::~CastRemotingConnector() {
 
 void CastRemotingConnector::ResetRemotingPermission() {
   remoting_allowed_ = GetRemotingAllowedUserPref();
+  authorized_remote_playback_origin_.reset();
 }
 
-void CastRemotingConnector::GrantPermissionForRemotePlayback() {
+void CastRemotingConnector::GrantPermissionForRemotePlayback(
+    std::optional<url::Origin> authorized_origin) {
   remoting_allowed_ = true;
+  if (authorized_origin.has_value() && !authorized_origin->opaque()) {
+    authorized_remote_playback_origin_ = std::move(authorized_origin);
+  } else {
+    authorized_remote_playback_origin_.reset();
+  }
   if (HasSinkMetadata() && !active_bridge_) {
     for (RemotingBridge* notifyee : bridges_) {
-      notifyee->OnSinkAvailable(this, sink_metadata_);
+      notifyee->OnSinkAvailable(this, GetSinkMetadataForBridge(notifyee));
     }
+  }
+}
+
+void CastRemotingConnector::DidAcquireFullscreen(
+    content::RenderFrameHost* rfh) {
+  if (!rfh || !web_contents() || !web_contents()->IsFullscreen() ||
+      !rfh->IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::kFullscreen)) {
+    return;
+  }
+  fullscreen_frame_id_ = rfh->GetGlobalId();
+}
+
+void CastRemotingConnector::DidToggleFullscreenModeForTab(
+    bool entered_fullscreen,
+    bool will_cause_resize) {
+  if (!entered_fullscreen) {
+    fullscreen_frame_id_.reset();
+  }
+}
+
+void CastRemotingConnector::RenderFrameDeleted(
+    content::RenderFrameHost* render_frame_host) {
+  if (fullscreen_frame_id_ == render_frame_host->GetGlobalId()) {
+    fullscreen_frame_id_.reset();
   }
 }
 
@@ -111,6 +158,7 @@ void CastRemotingConnector::OnMirrorServiceStopped() {
 
   ResetRemotingPermission();
   sink_metadata_ = RemotingSinkMetadata();
+  sink_metadata_without_friendly_name_ = RemotingSinkMetadata();
   if (active_bridge_)
     StopRemoting(active_bridge_, RemotingStopReason::SERVICE_GONE, false);
   for (RemotingBridge* notifyee : bridges_)
@@ -161,6 +209,13 @@ bool CastRemotingConnector::StartRemotingCommon(RemotingBridge* bridge) {
   if (active_bridge_) {
     DVLOG(2) << "Remoting start failed: Cannot start multiple.";
     bridge->OnStartFailed(this, RemotingStartFailReason::CANNOT_START_MULTIPLE);
+    return false;
+  }
+
+  if (!IsBridgeAllowedToStart(bridge)) {
+    DVLOG(2) << "Remoting start failed: Bridge frame is not permitted.";
+    bridge->OnStartFailed(this,
+                          RemotingStartFailReason::REMOTING_NOT_PERMITTED);
     return false;
   }
 
@@ -296,7 +351,7 @@ bool CastRemotingConnector::HasSinkMetadata() const {
 void CastRemotingConnector::OnClientActivated(RemotingBridge* bridge) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   if (HasSinkMetadata() && !active_bridge_ && remoting_allowed_) {
-    bridge->OnSinkAvailable(this, sink_metadata_);
+    bridge->OnSinkAvailable(this, GetSinkMetadataForBridge(bridge));
   }
 }
 
@@ -329,10 +384,12 @@ void CastRemotingConnector::OnSinkAvailable(
   sink_metadata_.features.push_back(
       media::mojom::RemotingSinkFeature::RENDERING);
 #endif
+  sink_metadata_without_friendly_name_ = sink_metadata_;
+  sink_metadata_without_friendly_name_.friendly_name.clear();
 
   if (remoting_allowed_) {
     for (RemotingBridge* notifyee : bridges_) {
-      notifyee->OnSinkAvailable(this, sink_metadata_);
+      notifyee->OnSinkAvailable(this, GetSinkMetadataForBridge(notifyee));
     }
   }
 }
@@ -341,6 +398,7 @@ void CastRemotingConnector::OnSinkGone() {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   DVLOG(2) << __func__;
   sink_metadata_ = RemotingSinkMetadata();
+  sink_metadata_without_friendly_name_ = RemotingSinkMetadata();
   if (active_bridge_)
     StopRemoting(active_bridge_, RemotingStopReason::SERVICE_GONE, false);
   for (RemotingBridge* notifyee : bridges_)
@@ -389,7 +447,7 @@ void CastRemotingConnector::OnPrefChanged() {
   if (remoting_allowed_) {
     if (HasSinkMetadata() && !active_bridge_) {
       for (RemotingBridge* notifyee : bridges_) {
-        notifyee->OnSinkAvailable(this, sink_metadata_);
+        notifyee->OnSinkAvailable(this, GetSinkMetadataForBridge(notifyee));
       }
     }
   } else {
@@ -406,4 +464,83 @@ bool CastRemotingConnector::GetRemotingAllowedUserPref() const {
       media_router::prefs::kMediaRouterMediaRemotingEnabled);
   return pref && pref->GetValue()->GetBool();
 #endif
+}
+
+bool CastRemotingConnector::IsCrossOriginSubframe(
+    content::RenderFrameHost* rfh) const {
+  if (!web_contents()) {
+    return false;
+  }
+  if (!rfh) {
+    // Fail closed if the frame was detached or destroyed while the Mojo pipe
+    // remains open.
+    return true;
+  }
+  content::RenderFrameHost* main_frame = web_contents()->GetPrimaryMainFrame();
+  if (!main_frame) {
+    return true;
+  }
+  return rfh != main_frame && !rfh->GetLastCommittedOrigin().IsSameOriginWith(
+                                  main_frame->GetLastCommittedOrigin());
+}
+
+bool CastRemotingConnector::IsCrossOriginSubframeBridge(
+    const RemotingBridge* bridge) const {
+  if (!web_contents() || !bridge->render_frame_host_id()) {
+    return false;
+  }
+  return IsCrossOriginSubframe(
+      content::RenderFrameHost::FromID(bridge->render_frame_host_id()));
+}
+
+bool CastRemotingConnector::IsBridgeAllowedToStart(
+    const RemotingBridge* bridge) const {
+  if (!web_contents() || !bridge->render_frame_host_id()) {
+    return true;
+  }
+  content::RenderFrameHost* rfh =
+      content::RenderFrameHost::FromID(bridge->render_frame_host_id());
+  if (!rfh || !rfh->IsActive() || rfh->IsNestedWithinFencedFrame() ||
+      content::WebContents::FromRenderFrameHost(rfh) != web_contents()) {
+    return false;
+  }
+
+  // The primary main frame and same-origin subframes are always allowed.
+  if (!IsCrossOriginSubframe(rfh)) {
+    return true;
+  }
+
+  // If Remote Playback explicitly authorized an origin, allow cross-origin
+  // subframes that are same-origin with that authorized origin.
+  if (authorized_remote_playback_origin_.has_value() &&
+      rfh->GetLastCommittedOrigin().IsSameOriginWith(
+          *authorized_remote_playback_origin_)) {
+    return true;
+  }
+
+  // During Tab Mirroring, a cross-origin subframe may only start remoting
+  // if its frame (or an ancestor subframe) currently owns fullscreen, but not
+  // when the top-level main frame is fullscreen.
+  if (fullscreen_frame_id_.has_value() && web_contents()->IsFullscreen()) {
+    content::RenderFrameHost* main_frame =
+        web_contents()->GetPrimaryMainFrame();
+    for (content::RenderFrameHost* curr = rfh; curr && curr != main_frame;
+         curr = curr->GetParent()) {
+      if (curr->GetGlobalId() == *fullscreen_frame_id_) {
+        return curr->IsFeatureEnabled(
+            network::mojom::PermissionsPolicyFeature::kFullscreen);
+      }
+    }
+  }
+  return false;
+}
+
+const media::mojom::RemotingSinkMetadata&
+CastRemotingConnector::GetSinkMetadataForBridge(
+    const RemotingBridge* bridge) const {
+  if (!sink_metadata_.friendly_name.empty() &&
+      IsCrossOriginSubframeBridge(bridge)) {
+    return sink_metadata_without_friendly_name_;
+  }
+  return sink_metadata_;
 }
