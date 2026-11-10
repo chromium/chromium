@@ -135,6 +135,8 @@ void IsolatedWebAppApplyUpdateCommand::StartWithLock(
       &IsolatedWebAppApplyUpdateCommand::CheckTrustAndSignatures,
       &IsolatedWebAppApplyUpdateCommand::
           HandleKeyRotationOrDowngradeIfNecessary,
+      &IsolatedWebAppApplyUpdateCommand::
+          RemoveServiceWorkersForRevokedKeyIfNecessary,
       &IsolatedWebAppApplyUpdateCommand::CreateStoragePartition,
       &IsolatedWebAppApplyUpdateCommand::PrepareInstallInfo,
       &IsolatedWebAppApplyUpdateCommand::FinalizeUpdate);
@@ -231,6 +233,40 @@ void IsolatedWebAppApplyUpdateCommand::HandleKeyRotationOrDowngradeIfNecessary(
     ReportFailure(base::StringPrintf("Installed app is already on version %s.",
                                      current_version.GetString().c_str()));
   }
+}
+
+void IsolatedWebAppApplyUpdateCommand::
+    RemoveServiceWorkersForRevokedKeyIfNecessary(
+        base::OnceClosure next_step_callback) {
+  // If a key rotation revoked the key that signed the installed version, its
+  // service workers must be removed before finalizing the update. Otherwise
+  // they would keep intercepting the app's navigations and run the revoked
+  // code.
+  const bool installed_signing_key_revoked = IsInstallationSigningKeyRevoked(
+      url_info_.web_bundle_id(), isolation_data());
+  GetMutableDebugValue().Set("installed_signing_key_revoked",
+                             installed_signing_key_revoked);
+  if (!installed_signing_key_revoked) {
+    std::move(next_step_callback).Run();
+    return;
+  }
+
+  RemoveIsolatedWebAppServiceWorkers(
+      &profile(), url_info_,
+      base::BindOnce(&IsolatedWebAppApplyUpdateCommand::OnServiceWorkersRemoved,
+                     weak_factory_.GetWeakPtr(),
+                     std::move(next_step_callback)));
+}
+
+void IsolatedWebAppApplyUpdateCommand::OnServiceWorkersRemoved(
+    base::OnceClosure next_step_callback,
+    bool success) {
+  GetMutableDebugValue().Set("service_workers_removed", success);
+  if (!success) {
+    ReportFailure("Failed to remove service workers for revoked key.");
+    return;
+  }
+  std::move(next_step_callback).Run();
 }
 
 void IsolatedWebAppApplyUpdateCommand::CreateStoragePartition(

@@ -99,6 +99,10 @@ class IsolatedWebAppApplyUpdateCommand
 
   void HandleKeyRotationOrDowngradeIfNecessary(
       base::OnceClosure next_step_callback);
+  void RemoveServiceWorkersForRevokedKeyIfNecessary(
+      base::OnceClosure next_step_callback);
+  void OnServiceWorkersRemoved(base::OnceClosure next_step_callback,
+                               bool success);
 
   void CreateStoragePartition(base::OnceClosure next_step_callback);
 

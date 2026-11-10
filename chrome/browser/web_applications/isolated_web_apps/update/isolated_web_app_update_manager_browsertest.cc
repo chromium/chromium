@@ -2131,6 +2131,64 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
                                   GetKeyPair2().public_key))));
 }
 
+// Regression test for b/578652410: when a key rotation revokes the installed
+// key and the app is updated to a bundle signed by the rotated key, service
+// workers registered by the revoked version must be removed.
+// TODO(b/402650079) flaky on mac
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_RemovesServiceWorkersOfRevokedKey \
+  DISABLED_RemovesServiceWorkersOfRevokedKey
+#else
+#define MAYBE_RemovesServiceWorkersOfRevokedKey \
+  RemovesServiceWorkersOfRevokedKey
+#endif
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
+                       MAYBE_RemovesServiceWorkersOfRevokedKey) {
+  data_provider_->Update(
+      [&](auto& update) { update.AddToManagedAllowlist(web_bundle_id_); });
+  const IsolatedWebAppUrlInfo url_info =
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_);
+  iwa_test_update_server_.AddBundle(
+      IsolatedWebAppBuilder(ManifestBuilder().SetVersion("1.0.0"))
+          .AddHtml("/", kIndexHtml304WithServiceWorker)
+          .AddJs("/register-sw.js", kRegisterServiceWorkerScript)
+          .AddJs("/sw.js", kServiceWorkerScript)
+          .BuildBundle(web_bundle_id_, {GetKeyPair1()}));
+  profile()->GetPrefs()->SetList(
+      prefs::kIsolatedWebAppInstallForceList,
+      base::ListValue().Append(
+          iwa_test_update_server_.CreateForceInstallPolicyEntry(
+              web_bundle_id_)));
+  WebAppTestInstallObserver(profile()).BeginListeningAndWait(
+      {url_info.app_id()});
+
+  // Register a service worker, then close the app so updates can be applied.
+  content::RenderFrameHost* app_frame =
+      OpenApp(url_info.app_id(), "?register-sw=1");
+  content::StoragePartition* storage_partition =
+      app_frame->GetStoragePartition();
+  ServiceWorkerVersionStartedRunningWaiter(storage_partition)
+      .AwaitStartedRunning();
+  BrowserWindowInterface* app_browser = GetBrowserFromFrame(app_frame);
+  ui_test_utils::BrowserDestroyedObserver browser_destroyed(app_browser);
+  app_browser->GetWindow()->Close();
+  browser_destroyed.Wait();
+
+  // Hard-rotate the key, which triggers an update to the K2-signed bundle.
+  AddBundleSignedBy(GetKeyPair2());
+  WebAppTestManifestUpdatedObserver manifest_updated_observer(
+      &provider().install_manager());
+  manifest_updated_observer.BeginListening({url_info.app_id()});
+  data_provider_->Update([&](auto& update) {
+    update.AddToKeyRotations(web_bundle_id_, GetKeyPair2().public_key.bytes());
+  });
+  manifest_updated_observer.Wait();
+
+  test::CheckServiceWorkerStatus(
+      url_info.origin().GetURL(), storage_partition,
+      content::ServiceWorkerCapability::NO_SERVICE_WORKER);
+}
+
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
                        AppStopsOpeningOnUpdateFailure) {
   data_provider_->Update(
