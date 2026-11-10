@@ -261,7 +261,8 @@ class VideoSenderTest : public ::testing::Test, public WithCastEnvironment {
     RunTasksAndAdvanceClock();
   }
 
-  void EncodeOneFrameAndDestroySender(double encoder_utilization);
+  void EncodeOneFrameAndDestroySender(double encoder_utilization,
+                                      std::optional<double> lossiness = 0.1);
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> accelerator_task_runner_;
@@ -514,7 +515,8 @@ TEST_F(VideoSenderTest, BuiltInEncoderWithNV12) {
 // `encoder_utilization`, and then destroys the sender so that the
 // session-level histograms are recorded.
 void VideoSenderTest::EncodeOneFrameAndDestroySender(
-    double encoder_utilization) {
+    double encoder_utilization,
+    std::optional<double> lossiness) {
   CreateSender(EncoderType::kMock);
 
   VideoEncoder::FrameEncodedCallback callback;
@@ -534,7 +536,7 @@ void VideoSenderTest::EncodeOneFrameAndDestroySender(
 
   auto encoded_frame = std::make_unique<SenderEncodedFrame>();
   encoded_frame->encoder_utilization = encoder_utilization;
-  encoded_frame->lossiness = 0.1f;
+  encoded_frame->lossiness = lossiness;
   encoded_frame->encode_completion_time = NowTicks();
   encoded_frame->is_key_frame = true;
   encoded_frame->frame_id = FrameId::first();
@@ -591,6 +593,59 @@ TEST_F(VideoSenderTest, DoesNotRecordEncoderUtilizationWithoutFrames) {
   histogram_tester.ExpectTotalCount(
       "CastStreaming.Sender.Video.PercentFramesEncoderOverutilized.Hardware",
       0);
+  histogram_tester.ExpectTotalCount(
+      "CastStreaming.Sender.Video.AverageLossiness", 0);
+  histogram_tester.ExpectTotalCount(
+      "CastStreaming.Sender.Video.AverageTargetBitrate", 0);
+  histogram_tester.ExpectTotalCount(
+      "CastStreaming.Sender.Video.PercentTimeAtMaxBitrate", 0);
+}
+
+TEST_F(VideoSenderTest, RecordsAverageLossiness) {
+  base::HistogramTester histogram_tester;
+  EncodeOneFrameAndDestroySender(0.3, /*lossiness=*/0.1);
+
+  histogram_tester.ExpectUniqueSample(
+      "CastStreaming.Sender.Video.AverageLossiness", 10, 1);
+}
+
+TEST_F(VideoSenderTest, DoesNotRecordAverageLossinessWhenNotComputed) {
+  base::HistogramTester histogram_tester;
+  EncodeOneFrameAndDestroySender(0.3, /*lossiness=*/std::nullopt);
+
+  histogram_tester.ExpectTotalCount(
+      "CastStreaming.Sender.Video.AverageLossiness", 0);
+}
+
+TEST_F(VideoSenderTest, RecordsTimeWeightedBitrateMetrics) {
+  base::HistogramTester histogram_tester;
+  FrameSenderConfig config = GetDefaultVideoSenderConfig();
+  config.min_bitrate = 1000000;
+  config.max_bitrate = 4000000;
+  set_bandwidth(4000000);
+  CreateSender(EncoderType::kMock, config);
+
+  EXPECT_CALL(mock_encoder(), GenerateKeyFrame()).Times(AtLeast(1));
+  EXPECT_CALL(mock_encoder(), SetBitRate(4000000));
+  EXPECT_CALL(mock_encoder(), SetBitRate(2000000));
+  EXPECT_CALL(mock_encoder(), EncodeVideoFrame(_, _, _))
+      .WillRepeatedly(testing::Return(true));
+
+  // 3 seconds at the maximum of 4 Mbps...
+  video_sender().InsertRawVideoFrame(GetNewVideoFrame(), NowTicks());
+  AdvanceClock(base::Seconds(3));
+
+  // ...then 1 second at 2 Mbps.
+  set_bandwidth(2000000);
+  video_sender().InsertRawVideoFrame(GetNewVideoFrame(), NowTicks());
+  AdvanceClock(base::Seconds(1));
+  DestroySender();
+
+  // (3 s * 4000 kbps + 1 s * 2000 kbps) / 4 s = 3500 kbps.
+  histogram_tester.ExpectUniqueSample(
+      "CastStreaming.Sender.Video.AverageTargetBitrate", 3500, 1);
+  histogram_tester.ExpectUniqueSample(
+      "CastStreaming.Sender.Video.PercentTimeAtMaxBitrate", 75, 1);
 }
 
 TEST_F(VideoSenderTest,

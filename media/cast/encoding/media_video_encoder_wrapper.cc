@@ -434,10 +434,10 @@ void MediaVideoEncoderWrapper::OnEncodedFrame(
     encoder_reports_qp_ = false;
   }
 
-  encoded_frame->lossiness =
-      complexity ? ComputeLossiness(output.data.size(), metadata.frame_duration,
-                                    *complexity)
-                 : 0.0f;
+  if (complexity) {
+    encoded_frame->lossiness = ComputeLossiness(
+        output.data.size(), metadata.frame_duration, *complexity);
+  }
 
   encoded_frame->capture_begin_time = metadata.capture_begin_time;
   encoded_frame->capture_end_time = metadata.capture_end_time;

@@ -6,6 +6,7 @@
 #define MEDIA_CAST_SENDER_VIDEO_SENDER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -107,6 +108,14 @@ class VideoSender : public FrameSender::Client {
   // against the target utilization.
   void ReportResourceUtilization(double utilization, bool is_key_frame);
 
+  // Adds the time since the last call, at `last_bitrate_`, to the
+  // time-weighted bitrate metrics. Called whenever the target bitrate changes,
+  // and when the sender is destroyed.
+  void AccumulateBitrateTime();
+
+  // Records the session-level UMA. Called once, from the destructor.
+  void RecordSessionMetrics();
+
   // The backing frame sender implementation.
   std::unique_ptr<FrameSender> frame_sender_;
 
@@ -156,7 +165,7 @@ class VideoSender : public FrameSender::Client {
   // OnEncodedVideoFrame().  See header file comments for SenderEncodedFrame for
   // an explanation of these values.
   double last_reported_encoder_utilization_ = -1.0;
-  double last_reported_lossiness_ = -1.0;
+  std::optional<double> last_reported_lossiness_;
 
   // Used to calculate the percentage of lost frames. We currently report this
   // metric as the number of frames dropped in the entire session.
@@ -174,6 +183,20 @@ class VideoSender : public FrameSender::Client {
 
   // The number of frames dropped by the encoder itself (empty outputs).
   int number_of_frames_dropped_by_encoder_ = 0;
+
+  // Used to report the session-average lossiness of encoded frames. Frames
+  // whose lossiness was not computed are not included.
+  double lossiness_sum_ = 0.0;
+  int lossiness_samples_ = 0;
+
+  // Used to report the time-weighted average target bitrate, and the
+  // percentage of time spent at the maximum bitrate. These are weighted by
+  // time rather than by frame, so that low frame rate periods, such as a static
+  // screen, are not under-represented.
+  base::TimeTicks last_bitrate_change_time_;
+  double bitrate_seconds_sum_ = 0.0;
+  base::TimeDelta time_with_bitrate_;
+  base::TimeDelta time_at_max_bitrate_;
 
   // Used to throttle metrics reporting of the bitrate.
   int frames_since_bitrate_reported_ = 0;

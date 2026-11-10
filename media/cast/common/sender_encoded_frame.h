@@ -39,8 +39,8 @@ struct SenderEncodedFrame final : public EncodedFrame {
   // frame contains very complex content and/or the target encode bitrate is
   // very small, and values greater than 1.0 indicating the encoder cannot
   // encode the frame within the target bitrate (even at its lowest quality
-  // setting).  Negative values indicate the field was not computed.
-  double lossiness = -1.0;
+  // setting).  `std::nullopt` indicates the field was not computed.
+  std::optional<double> lossiness;
 
   // The time at which the encode of the frame completed.
   base::TimeTicks encode_completion_time;

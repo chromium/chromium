@@ -16,6 +16,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -1355,6 +1356,49 @@ TEST_F(OpenscreenSessionHostTest, ClampsInvalidBandwidthBackoffParams) {
   EXPECT_EQ(backed_off, GetVideoNetworkBandwidth());
 
   StopSession();
+}
+
+TEST_F(OpenscreenSessionHostTest, RecordsBandwidthReductionsPerMinute) {
+  base::HistogramTester histogram_tester;
+  CreateSession(SessionType::VIDEO_ONLY);
+  StartSession();
+
+  auto fake_video_sender = std::make_unique<FakeVideoSender>();
+  FakeVideoSender* fake_sender_ptr = fake_video_sender.get();
+  SetVideoSender(std::move(fake_video_sender));
+
+  // Two reductions, and one increase that should not be counted.
+  UpdateBandwidthEstimate(100000000);
+  fake_sender_ptr->set_frames_dropped(1);
+  UpdateBandwidthEstimate(1000);
+  fake_sender_ptr->set_frames_dropped(2);
+  UpdateBandwidthEstimate(1000);
+  UpdateBandwidthEstimate(100000000);
+
+  task_environment().AdvanceClock(base::Minutes(2));
+  StopSession();
+
+  histogram_tester.ExpectUniqueSample(
+      "CastStreaming.Sender.Video.BandwidthReductionsPerMinute", 1, 1);
+}
+
+TEST_F(OpenscreenSessionHostTest,
+       DoesNotRecordBandwidthReductionsForShortSessions) {
+  base::HistogramTester histogram_tester;
+  CreateSession(SessionType::VIDEO_ONLY);
+  StartSession();
+
+  auto fake_video_sender = std::make_unique<FakeVideoSender>();
+  FakeVideoSender* fake_sender_ptr = fake_video_sender.get();
+  SetVideoSender(std::move(fake_video_sender));
+
+  fake_sender_ptr->set_frames_dropped(1);
+  UpdateBandwidthEstimate(1000);
+  task_environment().AdvanceClock(base::Seconds(30));
+  StopSession();
+
+  histogram_tester.ExpectTotalCount(
+      "CastStreaming.Sender.Video.BandwidthReductionsPerMinute", 0);
 }
 
 TEST_F(OpenscreenSessionHostTest, PreservesBandwidthWhenNoFramesDropped) {

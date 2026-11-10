@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "components/mirroring/mojom/cast_message_channel.mojom.h"
@@ -218,6 +219,11 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   void UpdateBandwidthLegacy(bool is_congested, uint32_t usable_bandwidth);
   void UpdateBandwidthGradualBackoff(bool is_congested,
                                      uint32_t usable_bandwidth);
+
+  // Records how often the usable bandwidth was reduced while sending video,
+  // and resets the counters. Called when the video sender is replaced or
+  // destroyed.
+  void RecordBandwidthMetrics();
 
   // Create and send OFFER message.
   void Negotiate();
@@ -426,6 +432,12 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   // The usable bandwidth in use before the most recent backoff due to
   // congestion. Used to quickly recover after congestion clears.
   uint32_t usable_bandwidth_before_backoff_ = 0;
+
+  // Used to report how often the usable bandwidth is reduced while video is
+  // being sent. The start time is set by the first bandwidth update with a
+  // video sender, and both values are reset by `RecordBandwidthMetrics()`.
+  base::TimeTicks first_video_bandwidth_update_time_;
+  int num_bandwidth_reductions_ = 0;
 
   // Indicate whether we're in the middle of switching tab sources.
   bool switching_tab_source_ = false;

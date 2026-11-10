@@ -20,6 +20,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/clamped_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -491,6 +492,7 @@ void OpenscreenSessionHost::OnNegotiated(
         // the video sender instance.
         base::BindRepeating(&OpenscreenSessionHost::GetVideoNetworkBandwidth,
                             base::Unretained(this)));
+    RecordBandwidthMetrics();
     video_sender_ = std::move(video_sender);
     num_video_frames_dropped_ = 0;
     usable_bandwidth_before_backoff_ = 0;
@@ -910,6 +912,7 @@ void OpenscreenSessionHost::StopStreaming() {
   StopCapturingAudio();
   PauseCapturingVideo();
   audio_sender_.reset();
+  RecordBandwidthMetrics();
   video_sender_.reset();
   refresh_timer_.Stop();
   remoting_stream_data_.reset();
@@ -1142,6 +1145,9 @@ void OpenscreenSessionHost::UpdateBandwidthEstimate(
   if (!video_sender_) {
     return;
   }
+  if (first_video_bandwidth_update_time_.is_null()) {
+    first_video_bandwidth_update_time_ = base::TimeTicks::Now();
+  }
 
   const int current_frames_dropped = GetCongestionFrameDrops(*video_sender_);
   // `current_frames_dropped` is cumulative for the lifetime of `video_sender_`,
@@ -1172,6 +1178,10 @@ void OpenscreenSessionHost::UpdateBandwidthEstimate(
     UpdateBandwidthGradualBackoff(is_congested, usable_bandwidth);
   } else {
     UpdateBandwidthLegacy(is_congested, usable_bandwidth);
+  }
+
+  if (usable_bandwidth_ < prev_usable_bandwidth) {
+    ++num_bandwidth_reductions_;
   }
 
   if (VLOG_IS_ON(2)) {
@@ -1268,6 +1278,26 @@ void OpenscreenSessionHost::UpdateBandwidthGradualBackoff(
   // `usable_bandwidth_` unchanged: without frame drops, a lower estimate (such
   // as during a static screen when little data is sent) is not evidence of
   // congestion.
+}
+
+void OpenscreenSessionHost::RecordBandwidthMetrics() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!first_video_bandwidth_update_time_.is_null()) {
+    const base::TimeDelta duration =
+        base::TimeTicks::Now() - first_video_bandwidth_update_time_;
+    // A rate over a short period is too noisy to be useful.
+    if (duration >= base::Minutes(1)) {
+      constexpr int kMaxReductionsPerMinute =
+          base::Minutes(1) / kBandwidthUpdateInterval;
+      base::UmaHistogramCustomCounts(
+          "CastStreaming.Sender.Video.BandwidthReductionsPerMinute",
+          base::ClampRound(num_bandwidth_reductions_ /
+                           (duration / base::Minutes(1))),
+          1, kMaxReductionsPerMinute + 1, 50);
+    }
+  }
+  first_video_bandwidth_update_time_ = base::TimeTicks();
+  num_bandwidth_reductions_ = 0;
 }
 
 void OpenscreenSessionHost::Negotiate() {

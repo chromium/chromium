@@ -97,6 +97,22 @@ constexpr char kHistogramPercentFramesEncoderOverutilizedSoftware[] =
 // Encoder utilization is clamped to [0.0, 2.0], i.e. [0, 200] percent.
 constexpr int kMaxEncoderUtilizationPercent = 200;
 
+// UMA histogram for the session-average lossiness of encoded frames, multiplied
+// by 100. Lossiness is clamped to [0.0, 5.0], so the recorded value is in
+// [0, 500].
+constexpr char kHistogramAverageLossiness[] =
+    "CastStreaming.Sender.Video.AverageLossiness";
+constexpr int kMaxScaledLossiness = 500;
+
+// UMA histogram for the time-weighted average target bitrate over a session.
+constexpr char kHistogramAverageTargetBitrate[] =
+    "CastStreaming.Sender.Video.AverageTargetBitrate";
+
+// UMA histogram for the percentage of a session's time spent at the maximum
+// target bitrate.
+constexpr char kHistogramPercentTimeAtMaxBitrate[] =
+    "CastStreaming.Sender.Video.PercentTimeAtMaxBitrate";
+
 // Extract capture begin/end timestamps from |video_frame|'s metadata and log
 // it.
 void LogVideoCaptureTimestamps(CastEnvironment* cast_environment,
@@ -158,6 +174,10 @@ VideoSender::VideoSender(
 }
 
 VideoSender::~VideoSender() {
+  RecordSessionMetrics();
+}
+
+void VideoSender::RecordSessionMetrics() {
   // Record the number of frames dropped during this session.
   base::UmaHistogramPercentage(
       kHistogramDroppedFrames,
@@ -181,6 +201,48 @@ VideoSender::~VideoSender() {
             : kHistogramPercentFramesEncoderOverutilizedSoftware,
         (encoder_overutilized_frames_ * 100) / encoder_utilization_samples_);
   }
+
+  if (lossiness_samples_ > 0) {
+    const int average_lossiness =
+        base::ClampRound(lossiness_sum_ * 100 / lossiness_samples_);
+    base::UmaHistogramCustomCounts(
+        kHistogramAverageLossiness,
+        std::min(average_lossiness, kMaxScaledLossiness), 1,
+        kMaxScaledLossiness, 50);
+  }
+
+  // The bitrate is first set when a frame is sent to the encoder, so this is
+  // null if no frame was ever sent to the encoder.
+  if (!last_bitrate_change_time_.is_null()) {
+    AccumulateBitrateTime();
+    if (time_with_bitrate_.is_positive()) {
+      const double seconds = time_with_bitrate_.InSecondsF();
+      base::UmaHistogramCounts100000(
+          kHistogramAverageTargetBitrate,
+          base::ClampRound(bitrate_seconds_sum_ / seconds / 1000));
+      base::UmaHistogramPercentage(
+          kHistogramPercentTimeAtMaxBitrate,
+          base::ClampRound(time_at_max_bitrate_ / time_with_bitrate_ * 100));
+    }
+  }
+}
+
+void VideoSender::AccumulateBitrateTime() {
+  // The target bitrate is only updated when it changes by more than 5% (see
+  // `InsertRawVideoFrame()`), so a bitrate within 5% of the maximum counts as
+  // being at the maximum.
+  constexpr double kAtMaxBitrateThreshold = 0.95;
+
+  const base::TimeTicks now = cast_environment_->NowTicks();
+  if (!last_bitrate_change_time_.is_null()) {
+    const base::TimeDelta elapsed = now - last_bitrate_change_time_;
+    bitrate_seconds_sum_ += last_bitrate_ * elapsed.InSecondsF();
+    time_with_bitrate_ += elapsed;
+    if (last_bitrate_ >= max_bitrate_ * kAtMaxBitrateThreshold) {
+      time_at_max_bitrate_ += elapsed;
+    }
+  }
+  last_bitrate_change_time_ = now;
 }
 
 void VideoSender::InsertRawVideoFrame(
@@ -310,6 +372,7 @@ void VideoSender::InsertRawVideoFrame(
 
   if (should_update_bitrate) {
     video_encoder_->SetBitRate(suggested_bitrate);
+    AccumulateBitrateTime();
     last_bitrate_ = suggested_bitrate;
   }
 
@@ -328,8 +391,8 @@ void VideoSender::InsertRawVideoFrame(
     video_frame = RenderPerformanceMetricsOverlay(
         frame_sender_->GetTargetPlayoutDelay(), low_latency_mode_,
         suggested_bitrate, frames_in_encoder_ + 1,
-        last_reported_encoder_utilization_, last_reported_lossiness_,
-        std::move(video_frame));
+        last_reported_encoder_utilization_,
+        last_reported_lossiness_.value_or(-1.0), std::move(video_frame));
   }
 
   if (video_encoder_->EncodeVideoFrame(
@@ -368,7 +431,7 @@ double VideoSender::GetEncoderUtilization() const {
 }
 
 double VideoSender::GetLossiness() const {
-  return last_reported_lossiness_;
+  return last_reported_lossiness_.value_or(-1.0);
 }
 
 int VideoSender::GetFramesInserted() const {
@@ -425,7 +488,7 @@ void VideoSender::OnEncodedVideoFrame(
 
   TRACE_EVENT_END("cast.stream", GetTracingTrack(video_frame.get()),
                   "encoder_utilization", last_reported_encoder_utilization_,
-                  "lossiness", last_reported_lossiness_);
+                  "lossiness", last_reported_lossiness_.value_or(-1.0));
   // The encode failed.
   if (!encoded_frame) {
     DVLOG(3) << "Encode failed";
@@ -449,10 +512,15 @@ void VideoSender::OnEncodedVideoFrame(
     }
   }
 
+  if (last_reported_lossiness_.has_value()) {
+    lossiness_sum_ += *last_reported_lossiness_;
+    ++lossiness_samples_;
+  }
+
   // Report the resource utilization for processing this frame.
-  ReportResourceUtilization(
-      std::max(last_reported_encoder_utilization_, last_reported_lossiness_),
-      encoded_frame->is_key_frame);
+  ReportResourceUtilization(std::max(last_reported_encoder_utilization_,
+                                     last_reported_lossiness_.value_or(-1.0)),
+                            encoded_frame->is_key_frame);
 
   const RtpTimeTicks rtp_timestamp = encoded_frame->rtp_timestamp;
   const CastStreamingFrameDropReason reason =
@@ -485,10 +553,10 @@ void VideoSender::OnFrameDroppedByEncoder(
   // The encoder utilization is still measured for dropped frames, but
   // lossiness is not meaningful for an empty output.
   last_reported_encoder_utilization_ = encoded_frame.encoder_utilization;
-  ReportResourceUtilization(
-      std::max({last_reported_encoder_utilization_, last_reported_lossiness_,
-                kEncoderDroppedFrameUtilization}),
-      /*is_key_frame=*/false);
+  ReportResourceUtilization(std::max({last_reported_encoder_utilization_,
+                                      last_reported_lossiness_.value_or(-1.0),
+                                      kEncoderDroppedFrameUtilization}),
+                            /*is_key_frame=*/false);
 }
 
 void VideoSender::ReportResourceUtilization(double utilization,

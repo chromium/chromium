@@ -351,8 +351,9 @@ TEST_P(VideoEncoderTest, EncodesVariedFrameSizes) {
     if (is_testing_software_vp8_encoder()) {
       ASSERT_TRUE(std::isfinite(encoded_frame->encoder_utilization));
       EXPECT_LE(0.0, encoded_frame->encoder_utilization);
-      ASSERT_TRUE(std::isfinite(encoded_frame->lossiness));
-      EXPECT_LE(0.0, encoded_frame->lossiness);
+      ASSERT_TRUE(encoded_frame->lossiness.has_value());
+      ASSERT_TRUE(std::isfinite(*encoded_frame->lossiness));
+      EXPECT_LE(0.0, *encoded_frame->lossiness);
     }
   }
 }

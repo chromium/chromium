@@ -533,13 +533,67 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="CastStreaming.Sender.Video.AverageLossiness" units="units"
+    expires_after="2027-08-01">
+  <owner>jophba@chromium.org</owner>
+  <owner>mfoltz@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Records the average lossiness of encoded video frames over a Cast Streaming
+    mirroring session, multiplied by 100. Lossiness estimates how much detail
+    the encoder had to discard to fit a frame within the target bitrate: the
+    frame's size relative to the target bitrate, multiplied by the frame's
+    normalized quantizer (or an estimate of the frame's complexity). 0 means the
+    frame was easy to encode at the target bitrate; 100 means the content is
+    complex and/or the target bitrate is low; values above 100 (up to 500) mean
+    the encoder could not fit the frame within the target bitrate even at its
+    lowest quality. Lower is better. This is the closest sender-side measure of
+    how sharp the video looks on the receiver. Frames whose lossiness could not
+    be computed are not included. Recorded once when the video sender is
+    destroyed, if at least one frame was encoded. See crbug.com/572902679.
+  </summary>
+</histogram>
+
+<histogram name="CastStreaming.Sender.Video.AverageTargetBitrate" units="kbps"
+    expires_after="2027-08-01">
+  <owner>jophba@chromium.org</owner>
+  <owner>mfoltz@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Records the average target video bitrate over a Cast Streaming mirroring
+    session, weighted by time. Unlike CastStreaming.Sender.Video.Bitrate2, which
+    is sampled every 500 frames, this is not biased toward periods with a high
+    frame rate, so it includes periods of static content such as a document.
+    Recorded once when the video sender is destroyed, if a target bitrate was
+    ever set. See crbug.com/572902679.
+  </summary>
+</histogram>
+
+<histogram name="CastStreaming.Sender.Video.BandwidthReductionsPerMinute"
+    units="reductions" expires_after="2027-08-01">
+  <owner>jophba@chromium.org</owner>
+  <owner>mfoltz@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Records how many times per minute the usable network bandwidth for video was
+    reduced during a Cast Streaming mirroring session, usually because video
+    frames were being dropped. The usable bandwidth is updated every 500 ms, so
+    the maximum is 120. A high value means the bandwidth kept backing off and
+    recovering. Recorded when the video sender is replaced or destroyed, for
+    sessions where video was sent for at least one minute. See
+    crbug.com/572902679.
+  </summary>
+</histogram>
+
 <histogram name="CastStreaming.Sender.Video.Bitrate2" units="kbps"
     expires_after="2027-08-01">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
     Records the currently set video bit rate during a Cast Streaming mirroring
-    session. This metric is subsampled every 500 frames.
+    session. This metric is subsampled every 500 frames, so it is biased toward
+    periods with a high frame rate. See
+    CastStreaming.Sender.Video.AverageTargetBitrate for a time-weighted average.
 
     Replaces CastStreaming.Sender.Video.Bitrate, which used a minimum of 1000
     kbps and put every sample below 1 Mbps in the underflow bucket.
@@ -587,6 +641,22 @@ chromium-metrics-reviews@google.com.
     <variant name="Hardware" summary="hardware"/>
     <variant name="Software" summary="software"/>
   </token>
+</histogram>
+
+<histogram name="CastStreaming.Sender.Video.PercentTimeAtMaxBitrate" units="%"
+    expires_after="2027-08-01">
+  <owner>jophba@chromium.org</owner>
+  <owner>mfoltz@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Records the percentage of a Cast Streaming mirroring session's time that the
+    target video bitrate was at the maximum allowed for the session. Since the
+    target bitrate is only updated when it changes by more than 5%, a target
+    within 5% of the maximum counts as being at the maximum. A low value means
+    the bandwidth estimate or congestion backoff held the bitrate down. Recorded
+    once when the video sender is destroyed, if a target bitrate was ever set.
+    See crbug.com/572902679.
+  </summary>
 </histogram>
 
 <histogram

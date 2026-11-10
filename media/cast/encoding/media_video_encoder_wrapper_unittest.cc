@@ -254,7 +254,8 @@ TEST_F(MediaVideoEncoderWrapperTest, InitializeEncoderAndSendFrame) {
   EXPECT_EQ(encoded_frame->reference_time, frame_info.reference_time);
   EXPECT_EQ(encoded_frame->is_key_frame, true);
   EXPECT_EQ(encoded_frame->frame_id, FrameId::first());
-  EXPECT_GE(encoded_frame->lossiness, 0.0f);
+  ASSERT_TRUE(encoded_frame->lossiness.has_value());
+  EXPECT_GE(*encoded_frame->lossiness, 0.0);
 }
 
 // Test that the encoder is tuned for screen content, since mirroring always
@@ -830,7 +831,8 @@ TEST_F(MediaVideoEncoderWrapperTest, UsesEncoderQpForLossinessWhenAvailable) {
 
   const auto encoded_key_frame = EncodeVideoFrame(key_frame_info);
   ASSERT_NE(encoded_key_frame, nullptr);
-  EXPECT_DOUBLE_EQ(encoded_key_frame->lossiness,
+  ASSERT_TRUE(encoded_key_frame->lossiness.has_value());
+  EXPECT_DOUBLE_EQ(*encoded_key_frame->lossiness,
                    bitrate_utilization * kKeyFrameQp);
 
   // Subsequent frames bypass FrameComplexityEstimator (which would return 0.0
@@ -838,7 +840,8 @@ TEST_F(MediaVideoEncoderWrapperTest, UsesEncoderQpForLossinessWhenAvailable) {
   // `output.qp`.
   const auto encoded_delta_frame = EncodeVideoFrame(delta_frame_info);
   ASSERT_NE(encoded_delta_frame, nullptr);
-  EXPECT_DOUBLE_EQ(encoded_delta_frame->lossiness,
+  ASSERT_TRUE(encoded_delta_frame->lossiness.has_value());
+  EXPECT_DOUBLE_EQ(*encoded_delta_frame->lossiness,
                    bitrate_utilization * kDeltaFrameQp);
 }
 
