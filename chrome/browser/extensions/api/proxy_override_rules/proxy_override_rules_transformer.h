@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_PROXY_OVERRIDE_RULES_PROXY_OVERRIDE_RULES_TRANSFORMER_H_
 #define CHROME_BROWSER_EXTENSIONS_API_PROXY_OVERRIDE_RULES_PROXY_OVERRIDE_RULES_TRANSFORMER_H_
 
+#include <memory>
 #include <optional>
 #include <string>
 
@@ -32,6 +33,10 @@ class ProxyOverrideRulesTransformer : public PrefTransformerInterface {
       const base::Value& browser_pref,
       bool is_incognito_profile) override;
   bool IsExtensionModifiable(content::BrowserContext* context) const override;
+
+ protected:
+  std::unique_ptr<PrefModifiabilityObserver> CreateModifiabilityObserver(
+      content::BrowserContext* context) override;
 };
 
 }  // namespace extensions

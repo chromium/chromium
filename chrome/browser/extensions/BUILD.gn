@@ -873,6 +873,13 @@ source_set("extensions") {
       ]
     }
 
+    if (is_linux || is_mac || is_win || is_android) {
+      sources += [
+        "api/proxy_override_rules/proxy_override_rules_modifiability_observer.cc",
+        "api/proxy_override_rules/proxy_override_rules_modifiability_observer.h",
+      ]
+    }
+
     allow_circular_includes_from += [
       # autofill generated pref includes
       # extensions/api/settings_private/generated_pref.h.

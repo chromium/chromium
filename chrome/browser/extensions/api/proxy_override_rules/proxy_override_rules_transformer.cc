@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/proxy_override_rules/proxy_override_rules_transformer.h"
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
@@ -11,12 +12,21 @@
 #include "base/check.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/proxy_override_rules_private.h"
+#include "components/policy/core/common/policy_service.h"
 #include "components/proxy_config/proxy_prefs_utils.h"
+#include "extensions/browser/pref_modifiability_observer.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/base/scheme_host_port_matcher_rule.h"
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/api/proxy_override_rules/proxy_override_rules_modifiability_observer.h"
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_ANDROID)
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -81,7 +91,6 @@ bool ValidateRule(const api_por::ProxyOverrideRule& rule, std::string& error) {
 
   return true;
 }
-
 }  // namespace
 
 ProxyOverrideRulesTransformer::ProxyOverrideRulesTransformer() = default;
@@ -131,6 +140,21 @@ bool ProxyOverrideRulesTransformer::IsExtensionModifiable(
           : nullptr;
   return proxy_config::AreUserProxyOverrideRulesAllowed(profile->GetPrefs(),
                                                         policy_service);
+}
+
+std::unique_ptr<PrefModifiabilityObserver>
+ProxyOverrideRulesTransformer::CreateModifiabilityObserver(
+    content::BrowserContext* context) {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID)
+  Profile* profile = Profile::FromBrowserContext(context);
+  CHECK(profile);
+  return std::make_unique<ProxyOverrideRulesModifiabilityObserver>(this,
+                                                                   profile);
+#else
+  return nullptr;
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace extensions

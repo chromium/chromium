@@ -6,11 +6,15 @@
 
 #include <stddef.h>
 
+#include <functional>
 #include <map>
 #include <memory>
 #include <optional>
+#include <set>
+#include <string_view>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -34,6 +38,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_prefs_helper.h"
+#include "extensions/browser/extension_prefs_helper_factory.h"
 #include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/pref_names.h"
@@ -75,6 +80,56 @@ bool StringToScope(const std::string& s, ChromeSettingScope& scope) {
   return scope != ChromeSettingScope::kNone;
 }
 
+constexpr std::pair<ChromeSettingScope, const char*> kPersistedScopes[] = {
+    {ChromeSettingScope::kRegular, pref_names::kPrefPreferences},
+    {ChromeSettingScope::kRegularOnly, pref_names::kPrefRegularOnlyPreferences},
+    {ChromeSettingScope::kIncognitoPersistent,
+     pref_names::kPrefIncognitoPreferences},
+};
+
+// Collects all browser preference keys that have a persisted
+// extension-controlled value in `ExtensionPrefs` across any scope. Used on
+// `PreferenceAPI` startup to scrub values that are no longer modifiable and
+// start observing modifiability for those that remain active.
+std::set<std::string, std::less<>> GetPersistedExtensionControlledPrefs(
+    ExtensionPrefs* extension_prefs) {
+  std::set<std::string, std::less<>> persisted_prefs;
+  for (const auto& extension_id : extension_prefs->GetExtensions()) {
+    for (const auto& [_, scope_pref] : kPersistedScopes) {
+      const base::DictValue* prefs_dict =
+          extension_prefs->ReadPrefAsDict(extension_id, scope_pref);
+      if (!prefs_dict) {
+        continue;
+      }
+      for (const auto [pref_key, unused] : *prefs_dict) {
+        persisted_prefs.insert(pref_key);
+      }
+    }
+  }
+  return persisted_prefs;
+}
+
+void ClearExtensionControlledPref(Profile* profile,
+                                  const std::string& browser_pref) {
+  auto* prefs_helper = ExtensionPrefsHelper::Get(profile);
+  auto* extension_prefs = ExtensionPrefs::Get(profile);
+  if (!prefs_helper || !extension_prefs) {
+    return;
+  }
+  for (const auto& extension_id : extension_prefs->GetExtensions()) {
+    for (const auto& [scope, scope_pref] : kPersistedScopes) {
+      const base::DictValue* prefs_dict =
+          extension_prefs->ReadPrefAsDict(extension_id, scope_pref);
+      if (prefs_dict && prefs_dict->contains(browser_pref)) {
+        prefs_helper->RemoveExtensionControlledPref(extension_id, browser_pref,
+                                                    scope);
+      }
+    }
+    prefs_helper->RemoveExtensionControlledPref(
+        extension_id, browser_pref, ChromeSettingScope::kIncognitoSessionOnly);
+  }
+}
+
 }  // namespace
 
 PreferenceEventRouter::PreferenceEventRouter(Profile* profile)
@@ -100,6 +155,9 @@ PreferenceEventRouter::~PreferenceEventRouter() = default;
 
 void PreferenceEventRouter::OnPrefChanged(PrefService* pref_service,
                                           const std::string& browser_pref) {
+  if (suppress_pref_changed_) {
+    return;
+  }
   bool incognito = (pref_service != profile_->GetPrefs());
 
   std::string event_name;
@@ -114,6 +172,7 @@ void PreferenceEventRouter::OnPrefChanged(PrefService* pref_service,
   CHECK(pref);
   PrefTransformerInterface* transformer =
       PrefMapping::GetInstance()->FindTransformerForBrowserPref(browser_pref);
+  CHECK(transformer);
   std::optional<base::Value> transformed_value =
       transformer->BrowserToExtensionPref(*pref->GetValue(), incognito);
   if (!transformed_value) {
@@ -144,6 +203,30 @@ void PreferenceEventRouter::OnPrefChanged(PrefService* pref_service,
   extensions::preference_helpers::DispatchEventToExtensions(
       profile_, histogram_value, event_name, std::move(args), permission,
       incognito, browser_pref);
+}
+
+void PreferenceEventRouter::OnPrefModifiabilityChanged(
+    const std::string& browser_pref) {
+  PrefTransformerInterface* transformer =
+      PrefMapping::GetInstance()->FindTransformerForBrowserPref(browser_pref);
+  CHECK(transformer);
+
+  if (!transformer->IsExtensionModifiable(profile_)) {
+    base::AutoReset<bool> suppress(&suppress_pref_changed_, true);
+    ClearExtensionControlledPref(profile_, browser_pref);
+  }
+
+  // Dispatch `OnPrefChanged()` once per `PrefService` (regular and incognito)
+  // for the final value and updated `levelOfControl`, unless a higher-priority
+  // store controls the preference (where neither the effective value nor
+  // `levelOfControl` changed).
+  for (PrefService* prefs :
+       {registrar_.prefs(), incognito_registrar_->prefs()}) {
+    const PrefService::Preference* pref = prefs->FindPreference(browser_pref);
+    if (pref && pref->IsExtensionModifiable()) {
+      OnPrefChanged(prefs, browser_pref);
+    }
+  }
 }
 
 void PreferenceEventRouter::OnOffTheRecordProfileCreated(
@@ -183,6 +266,8 @@ PreferenceAPI::PreferenceAPI(content::BrowserContext* context)
   registry.RegisterFunction<ClearPreferenceFunction>();
 
   PrefMapping* pref_mapping = PrefMapping::GetInstance();
+  const std::set<std::string, std::less<>> persisted_prefs =
+      GetPersistedExtensionControlledPrefs(ExtensionPrefs::Get(profile_));
 
   for (const auto& pref : PrefMapping::GetMappings()) {
     std::string event_name;
@@ -191,13 +276,28 @@ PreferenceAPI::PreferenceAPI(content::BrowserContext* context)
                                                     &event_name, &permission);
     CHECK(rv, base::NotFatalUntil::M161);
     EventRouter::Get(profile_)->RegisterObserver(this, event_name);
+
+    if (persisted_prefs.contains(pref.browser_pref)) {
+      PrefTransformerInterface* transformer =
+          pref_mapping->FindTransformerForBrowserPref(pref.browser_pref);
+      CHECK(transformer);
+      if (!transformer->IsExtensionModifiable(profile_)) {
+        ClearExtensionControlledPref(profile_, pref.browser_pref);
+      } else {
+        ObservePrefModifiability(pref.browser_pref);
+      }
+    }
   }
   content_settings_store()->AddObserver(this);
 }
 
-PreferenceAPI::~PreferenceAPI() = default;
+PreferenceAPI::~PreferenceAPI() {
+  RemoveModifiabilityObservers();
+}
 
 void PreferenceAPI::Shutdown() {
+  shutting_down_ = true;
+  RemoveModifiabilityObservers();
   EventRouter::Get(profile_)->UnregisterObserver(this);
   if (!ExtensionPrefs::Get(profile_)->extensions_disabled()) {
     ClearIncognitoSessionOnlyContentSettings();
@@ -228,7 +328,50 @@ void PreferenceAPI::EnsurePreferenceEventRouterCreated() {
   if (!preference_event_router_) {
     preference_event_router_ =
         std::make_unique<PreferenceEventRouter>(profile_);
+    for (const auto& pref : PrefMapping::GetMappings()) {
+      ObservePrefModifiability(pref.browser_pref);
+    }
   }
+}
+
+void PreferenceAPI::ObservePrefModifiability(const std::string& browser_pref) {
+  if (shutting_down_ || observed_modifiability_prefs_.contains(browser_pref)) {
+    return;
+  }
+  PrefTransformerInterface* transformer =
+      PrefMapping::GetInstance()->FindTransformerForBrowserPref(browser_pref);
+  CHECK(transformer);
+  transformer->AddObserver(profile_, browser_pref, this);
+  observed_modifiability_prefs_.insert(browser_pref);
+}
+
+void PreferenceAPI::OnPrefModifiabilityChanged(
+    const std::string& browser_pref) {
+  // When an `onChange` listener is registered, delegate to
+  // `PreferenceEventRouter` so clearing extension values and dispatching the
+  // resulting `onChange` update happen together (coalescing intermediate
+  // `OnPrefChanged()` callbacks). Otherwise, clear unmodifiable values directly
+  // without instantiating `PreferenceEventRouter`.
+  if (preference_event_router_) {
+    preference_event_router_->OnPrefModifiabilityChanged(browser_pref);
+    return;
+  }
+  PrefTransformerInterface* transformer =
+      PrefMapping::GetInstance()->FindTransformerForBrowserPref(browser_pref);
+  CHECK(transformer);
+  if (!transformer->IsExtensionModifiable(profile_)) {
+    ClearExtensionControlledPref(profile_, browser_pref);
+  }
+}
+
+void PreferenceAPI::RemoveModifiabilityObservers() {
+  for (const std::string& browser_pref : observed_modifiability_prefs_) {
+    PrefTransformerInterface* transformer =
+        PrefMapping::GetInstance()->FindTransformerForBrowserPref(browser_pref);
+    CHECK(transformer);
+    transformer->RemoveObserver(profile_, this);
+  }
+  observed_modifiability_prefs_.clear();
 }
 
 void PreferenceAPI::OnContentSettingChanged(const ExtensionId& extension_id,
@@ -262,6 +405,7 @@ void
 BrowserContextKeyedAPIFactory<PreferenceAPI>::DeclareFactoryDependencies() {
   DependsOn(ContentSettingsService::GetFactoryInstance());
   DependsOn(ExtensionPrefsFactory::GetInstance());
+  DependsOn(ExtensionPrefsHelperFactory::GetInstance());
   DependsOn(ExtensionPrefValueMapFactory::GetInstance());
   DependsOn(ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
 }
@@ -335,6 +479,7 @@ void GetPreferenceFunction::ProduceGetResult(
     bool incognito) {
   PrefTransformerInterface* transformer =
       PrefMapping::GetInstance()->FindTransformerForBrowserPref(browser_pref);
+  CHECK(transformer);
   std::optional<base::Value> transformed_value =
       transformer->BrowserToExtensionPref(*pref_value, incognito);
   if (!transformed_value) {
@@ -470,6 +615,10 @@ ExtensionFunction::ResponseAction SetPreferenceFunction::Run() {
     prefs_helper->SetExtensionControlledPref(extension_id(),
                                              prefs::kSafeBrowsingEnhanced,
                                              scope, base::Value(false));
+  }
+
+  if (auto* preference_api = PreferenceAPI::Get(browser_context())) {
+    preference_api->ObservePrefModifiability(browser_pref);
   }
 
   prefs_helper->SetExtensionControlledPref(extension_id(), browser_pref, scope,

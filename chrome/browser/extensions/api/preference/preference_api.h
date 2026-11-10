@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_API_PREFERENCE_PREFERENCE_API_H_
 
 #include <memory>
+#include <set>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -18,6 +19,7 @@
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/browser/pref_transformer_interface.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/types.h"
 
@@ -40,6 +42,10 @@ class PreferenceEventRouter : public ProfileObserver {
 
   ~PreferenceEventRouter() override;
 
+  // Clears extension-controlled values if `browser_pref` is no longer
+  // modifiable and dispatches the resulting `onChange` update.
+  void OnPrefModifiabilityChanged(const std::string& browser_pref);
+
  private:
   void OnPrefChanged(PrefService* pref_service,
                      const std::string& pref_key);
@@ -56,13 +62,19 @@ class PreferenceEventRouter : public ProfileObserver {
   // Weak, owns us (transitively via ExtensionService).
   raw_ptr<Profile> profile_;
 
+  // Suppresses intermediate `OnPrefChanged()` callbacks (regular and incognito)
+  // while `OnPrefModifiabilityChanged()` clears extension values, before
+  // dispatching a single consolidated update per `PrefService`.
+  bool suppress_pref_changed_ = false;
+
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       observed_profiles_{this};
 };
 
 class PreferenceAPI : public BrowserContextKeyedAPI,
                       public EventRouter::Observer,
-                      public ContentSettingsStore::Observer {
+                      public ContentSettingsStore::Observer,
+                      public PrefTransformerInterface::Observer {
  public:
   using ChromeSettingScope = extensions::api::types::ChromeSettingScope;
   explicit PreferenceAPI(content::BrowserContext* context);
@@ -87,6 +99,11 @@ class PreferenceAPI : public BrowserContextKeyedAPI,
   // Ensures that a PreferenceEventRouter is created only once.
   void EnsurePreferenceEventRouterCreated();
 
+  // Lazily registers `this` to observe dynamic modifiability changes on
+  // `browser_pref`'s transformer (a no-op if the transformer does not create a
+  // `PrefModifiabilityObserver`).
+  void ObservePrefModifiability(const std::string& browser_pref);
+
  private:
   friend class BrowserContextKeyedAPIFactory<PreferenceAPI>;
 
@@ -94,12 +111,18 @@ class PreferenceAPI : public BrowserContextKeyedAPI,
   void OnContentSettingChanged(const ExtensionId& extension_id,
                                bool incognito) override;
 
+  // PrefTransformerInterface::Observer implementation.
+  void OnPrefModifiabilityChanged(const std::string& browser_pref) override;
+
   // Clears incognito session-only content settings for all extensions.
   void ClearIncognitoSessionOnlyContentSettings();
+  void RemoveModifiabilityObservers();
 
   scoped_refptr<ContentSettingsStore> content_settings_store();
 
   raw_ptr<Profile> profile_;
+  bool shutting_down_ = false;
+  std::set<std::string> observed_modifiability_prefs_;
 
   // BrowserContextKeyedAPI implementation.
   static const char* service_name() {
