@@ -5703,7 +5703,7 @@
   {
     "name": "glass-frame",
     "owners": [ "emshack@chromium.org", "top-chrome-desktop-ui@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 165
   },
   {
     "name": "glass-toolbar",
@@ -7042,7 +7042,7 @@
   {
     "name": "menu-simplification",
     "owners": [ "stluong@chromium.org", "top-chrome-desktop-ui@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 165
   },
   {
     "name": "metrickit-defer-registration",
