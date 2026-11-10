@@ -1737,14 +1737,6 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
         std::make_unique<glic::GlicSelectionObserver>(new_contents);
   }
 
-  if (omnibox_autofill_bubble_controller_) {
-    omnibox_autofill_bubble_controller_.reset();
-    omnibox_autofill_bubble_controller_ =
-        GetUserDataFactory()
-            .CreateInstance<autofill::OmniboxAutofillBubbleController>(*tab,
-                                                                       tab);
-  }
-
   if (web_payments_observer_) {
     web_payments_observer_ =
         std::make_unique<payments::WebPaymentsObserver>(new_contents);

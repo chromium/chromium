@@ -4,7 +4,11 @@
 
 #include "chrome/browser/ui/autofill/payments/omnibox_autofill_bubble_controller.h"
 
+#include <algorithm>
+#include <utility>
+
 #include "base/check_deref.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
@@ -55,6 +59,10 @@ OmniboxAutofillBubbleController::OmniboxAutofillBubbleController(
       scoped_unowned_user_data_(
           CHECK_DEREF(tab_interface).GetUnownedUserDataHost(),
           *this),
+      will_discard_contents_subscription_(
+          tab_interface->RegisterWillDiscardContents(base::BindRepeating(
+              &OmniboxAutofillBubbleController::WillDiscardContents,
+              base::Unretained(this)))),
       payments_data_manager_(PersonalDataManagerFactory::GetForBrowserContext(
                                  web_contents()->GetBrowserContext())
                                  ->payments_data_manager()) {}
@@ -90,17 +98,13 @@ void OmniboxAutofillBubbleController::Initialize(
   // autofill flow.
   // TODO(crbug.com/527195586): The underlying fix should be to use instrument
   // IDs rather than GUIDs.
-  if (!should_show_google_pay_logo_) {
-    for (const auto& suggestion : suggestions_) {
-      const CreditCard* credit_card =
-          payments_data_manager_->GetCreditCardByGUID(
-              std::get<Suggestion::Guid>(suggestion.payload).value());
-      if (credit_card && payments_data_manager_->IsServerCard(credit_card)) {
-        should_show_google_pay_logo_ = true;
-        break;
-      }
-    }
-  }
+  should_show_google_pay_logo_ =
+      std::ranges::any_of(suggestions_, [this](const Suggestion& suggestion) {
+        const CreditCard* const credit_card =
+            payments_data_manager_->GetCreditCardByGUID(
+                suggestion.GetPayload<Suggestion::Guid>().value());
+        return credit_card && payments_data_manager_->IsServerCard(credit_card);
+      });
 }
 
 // static
@@ -210,6 +214,24 @@ void OmniboxAutofillBubbleController::OnSuggestionAccepted(
 base::WeakPtr<OmniboxAutofillBubbleController>
 OmniboxAutofillBubbleController::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+void OmniboxAutofillBubbleController::WillDiscardContents(
+    tabs::TabInterface* tab,
+    content::WebContents* old_contents,
+    content::WebContents* new_contents) {
+  HideBubble(/*initiated_by_bubble_manager=*/false);
+  suggestions_.clear();
+  on_suggestions_shown_callback_.Reset();
+  on_suggestions_hidden_callback_.Reset();
+  did_select_suggestion_callback_.Reset();
+  did_deselect_suggestion_callback_.Reset();
+  did_accept_suggestion_callback_.Reset();
+  should_show_google_pay_logo_ = false;
+  if (OmniboxAutofillPageActionController* const page_action_controller =
+          OmniboxAutofillPageActionController::From(*GetTabInterface())) {
+    page_action_controller->HideChip();
+  }
 }
 
 actions::ActionItem* OmniboxAutofillBubbleController::GetActionItem() {

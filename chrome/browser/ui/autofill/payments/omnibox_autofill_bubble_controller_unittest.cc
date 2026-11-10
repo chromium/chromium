@@ -5,8 +5,10 @@
 #include "chrome/browser/ui/autofill/payments/omnibox_autofill_bubble_controller.h"
 
 #include <memory>
+#include <utility>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
@@ -28,6 +30,10 @@
 namespace autofill {
 
 namespace {
+
+using ::testing::IsEmpty;
+using ::testing::Return;
+using ::testing::ReturnRef;
 
 std::unique_ptr<KeyedService> BuildTestPersonalDataManager(
     content::BrowserContext* context) {
@@ -54,11 +60,16 @@ class OmniboxAutofillBubbleControllerTest
     NavigateAndCommit(GURL("about:blank"));
 
     ON_CALL(mock_tab_interface_, GetBrowserWindowInterface())
-        .WillByDefault(testing::Return(nullptr));
+        .WillByDefault(Return(nullptr));
     ON_CALL(mock_tab_interface_, GetContents())
-        .WillByDefault(testing::Return(web_contents()));
+        .WillByDefault(Return(web_contents()));
     ON_CALL(mock_tab_interface_, GetUnownedUserDataHost())
-        .WillByDefault(testing::ReturnRef(tab_unowned_user_data_host_));
+        .WillByDefault(ReturnRef(tab_unowned_user_data_host_));
+    ON_CALL(mock_tab_interface_, RegisterWillDiscardContents)
+        .WillByDefault(
+            [this](tabs::TabInterface::WillDiscardContentsCallback callback) {
+              return will_discard_contents_callbacks_.Add(std::move(callback));
+            });
 
     controller_ =
         std::make_unique<OmniboxAutofillBubbleController>(&mock_tab_interface_);
@@ -74,10 +85,20 @@ class OmniboxAutofillBubbleControllerTest
         PersonalDataManagerFactory::GetForBrowserContext(profile()));
   }
 
+  void DiscardContents() {
+    will_discard_contents_callbacks_.Notify(&mock_tab_interface_,
+                                            web_contents(), nullptr);
+  }
+
  protected:
   tabs::MockTabInterface mock_tab_interface_;
   ui::UnownedUserDataHost tab_unowned_user_data_host_;
   std::unique_ptr<OmniboxAutofillBubbleController> controller_;
+
+ private:
+  base::RepeatingCallbackList<
+      tabs::TabInterface::WillDiscardContentsCallback::RunType>
+      will_discard_contents_callbacks_;
 };
 
 // `ShouldShowGooglePayLogo()` returns `false` for local cards.
@@ -144,6 +165,12 @@ TEST_F(OmniboxAutofillBubbleControllerTest,
 
   // Logo visibility should remain true once set for the flow.
   EXPECT_TRUE(controller_->ShouldShowGooglePayLogo());
+
+  // Re-initializing for a new flow without server cards resets logo visibility.
+  controller_->Initialize(suggestions, base::DoNothing(), base::DoNothing(),
+                          base::DoNothing(), base::DoNothing(),
+                          base::DoNothing());
+  EXPECT_FALSE(controller_->ShouldShowGooglePayLogo());
 }
 
 TEST_F(OmniboxAutofillBubbleControllerTest, OnSuggestionsShown) {
@@ -265,6 +292,63 @@ TEST_F(OmniboxAutofillBubbleControllerTest,
               HideSuggestionChip(kActionAutofillPayment))
       .Times(0);
 
+  controller_->OnBubbleClosed(PaymentsUiClosedReason::kAccepted);
+}
+
+// Tests that discarding tab contents clears suggestions, callbacks, and logo
+// state and hides the omnibox chip.
+TEST_F(OmniboxAutofillBubbleControllerTest,
+       WillDiscardContents_ClearsStateAndHidesChip) {
+  const std::string guid = "server_card_guid";
+  CreditCard server_card = test::GetMaskedServerCard();
+  server_card.set_guid(guid);
+  personal_data_manager()->test_payments_data_manager().AddCreditCard(
+      server_card);
+
+  std::vector<Suggestion> suggestions = {
+      Suggestion(u"Card", SuggestionType::kCreditCardEntry)};
+  suggestions[0].payload = Suggestion::Guid(guid);
+
+  base::MockRepeatingCallback<void(base::span<const Suggestion>)>
+      on_suggestions_shown_callback;
+  base::MockRepeatingCallback<void(SuggestionHidingReason)>
+      on_suggestions_hidden_callback;
+  base::MockRepeatingCallback<void(const Suggestion&)>
+      did_select_suggestion_callback;
+  base::MockRepeatingCallback<void()> did_deselect_suggestion_callback;
+  base::MockRepeatingCallback<void(
+      const Suggestion&, const AutofillSuggestionDelegate::SuggestionMetadata&)>
+      did_accept_suggestion_callback;
+
+  controller_->Initialize(suggestions, on_suggestions_shown_callback.Get(),
+                          on_suggestions_hidden_callback.Get(),
+                          did_select_suggestion_callback.Get(),
+                          did_deselect_suggestion_callback.Get(),
+                          did_accept_suggestion_callback.Get());
+  ASSERT_FALSE(controller_->GetSuggestions().empty());
+  ASSERT_TRUE(controller_->ShouldShowGooglePayLogo());
+
+  page_actions::MockPageActionController mock_page_action_controller;
+  OmniboxAutofillPageActionController page_action_controller(
+      mock_tab_interface_, mock_page_action_controller);
+
+  EXPECT_CALL(mock_page_action_controller,
+              HideSuggestionChip(kActionAutofillPayment));
+  EXPECT_CALL(mock_page_action_controller, Hide(kActionAutofillPayment));
+  DiscardContents();
+
+  EXPECT_THAT(controller_->GetSuggestions(), IsEmpty());
+  EXPECT_FALSE(controller_->ShouldShowGooglePayLogo());
+
+  EXPECT_CALL(on_suggestions_shown_callback, Run).Times(0);
+  EXPECT_CALL(on_suggestions_hidden_callback, Run).Times(0);
+  EXPECT_CALL(did_select_suggestion_callback, Run).Times(0);
+  EXPECT_CALL(did_deselect_suggestion_callback, Run).Times(0);
+  EXPECT_CALL(did_accept_suggestion_callback, Run).Times(0);
+  controller_->OnSuggestionsShown();
+  controller_->OnSuggestionSelected(suggestions[0]);
+  controller_->OnSuggestionDeselected();
+  controller_->OnSuggestionAccepted(suggestions[0], /*row=*/0);
   controller_->OnBubbleClosed(PaymentsUiClosedReason::kAccepted);
 }
 

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_OMNIBOX_AUTOFILL_BUBBLE_CONTROLLER_H_
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_OMNIBOX_AUTOFILL_BUBBLE_CONTROLLER_H_
 
+#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -80,10 +81,14 @@ class OmniboxAutofillBubbleController : public AutofillBubbleControllerBase {
   void DoShowBubble() override;
 
  private:
+  void WillDiscardContents(tabs::TabInterface* tab,
+                           content::WebContents* old_contents,
+                           content::WebContents* new_contents);
   actions::ActionItem* GetActionItem();
 
   ui::ScopedUnownedUserData<OmniboxAutofillBubbleController>
       scoped_unowned_user_data_;
+  base::CallbackListSubscription will_discard_contents_subscription_;
 
   const raw_ref<PaymentsDataManager> payments_data_manager_;
 

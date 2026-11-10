@@ -229,13 +229,6 @@ void AutofillBubbleControllerBase::WillDiscardContents(
     tabs::TabInterface* tab,
     content::WebContents* old_contents,
     content::WebContents* new_contents) {
-  // `WillDiscardContents` fires before `tab->GetContents()` is updated, so
-  // even controllers recreated in `TabFeatures::WillDiscardContents()`
-  // initially observe `old_contents` and rely on this to switch to
-  // `new_contents`.
-  // TODO(crbug.com/582209796): Evict active/queued bubbles in `BubbleManager`
-  // and reset per-bubble state before removing controller recreation in
-  // `TabFeatures::WillDiscardContents()`.
   Observe(new_contents);
 }
 
