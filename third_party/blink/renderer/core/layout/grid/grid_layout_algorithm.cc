@@ -561,22 +561,6 @@ LayoutUnit Baseline(const GridItemData& grid_item,
   return GetTrackBaseline(grid_item, layout_data, track_direction);
 }
 
-LayoutUnit ComputeBlockSizeForSubgrid(const GridSizingSubtree& sizing_subtree,
-                                      const GridItemData& subgrid_data,
-                                      const ConstraintSpace& space,
-                                      SizingConstraint sizing_constraint) {
-  DCHECK(sizing_subtree);
-  DCHECK(subgrid_data.IsSubgrid());
-
-  const auto& node = To<GridNode>(subgrid_data.node);
-  return ComputeBlockSizeForFragment(
-      space, node,
-      ComputeBorders(space, node) + ComputePadding(space, node.Style()),
-      node.ComputeSubgridIntrinsicBlockSize(sizing_subtree, space,
-                                            sizing_constraint),
-      space.AvailableSize().inline_size);
-}
-
 }  // namespace
 
 LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
@@ -629,8 +613,8 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
 
   auto MinMaxSizesFunc = [&](SizeType type) -> MinMaxSizesResult {
     if (grid_item->IsSubgrid()) {
-      return To<GridNode>(node).ComputeSubgridMinMaxSizes(
-          sizing_subtree.SubgridSizingSubtree(*grid_item), space);
+      return ComputeMinMaxSizesForSubgrid(
+          node, sizing_subtree.SubgridSizingSubtree(*grid_item), space);
     }
     return node.ComputeMinMaxSizes(item_style.GetWritingMode(), type, space,
                                    MinMaxSizesInput::UnconstrainedUntriaged());
@@ -683,6 +667,12 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
     DCHECK(!is_parallel_with_track_direction);
 
     if (grid_item->IsSubgrid()) {
+      // An orthogonal grid-lanes subgrid's stacking contribution can change
+      // when its inherited parent rows resolve.
+      if (is_for_columns && node.IsGridLanes()) {
+        grid_item->is_sizing_dependent_on_block_size = true;
+        sizing_subtree.SetHasBlockSizeDependentGridItem();
+      }
       return ComputeBlockSizeForSubgrid(
           sizing_subtree.SubgridSizingSubtree(*grid_item), *grid_item, space,
           sizing_constraint);
@@ -768,10 +758,12 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
         CHECK(grid_item->IsSubgrid());
         const GridSizingSubtree& subgrid_sizing_subtree =
             sizing_subtree.SubgridSizingSubtree(*grid_item);
-        if (subgrid_sizing_subtree.LayoutData().IsSubgridWithStandaloneAxis(
+        if ((node.IsGridLanes() &&
+             item_style.GridLanesTrackSizingDirection() == kForRows) ||
+            subgrid_sizing_subtree.LayoutData().IsSubgridWithStandaloneAxis(
                 kForColumns)) {
-          return To<GridNode>(node).ComputeSubgridMinMaxSizes(
-              subgrid_sizing_subtree, space);
+          return ComputeMinMaxSizesForSubgrid(node, subgrid_sizing_subtree,
+                                              space);
         }
         return MinMaxSizesResult();
       };
@@ -1511,11 +1503,18 @@ ConstraintSpace GridLayoutAlgorithm::CreateConstraintSpaceForMeasure(
   auto containing_grid_area_size = kIndefiniteLogicalSize;
   const auto writing_mode = GetConstraintSpace().GetWritingMode();
 
-  if (track_direction == kForColumns) {
+  // Leave the axis being sized indefinite and use the item's span in the
+  // opposite axis to constrain measurement. A grid-lanes subgrid has no
+  // track collection in its stacking axis, so only its grid axis can
+  // provide this constraint.
+  if (track_direction == kForColumns &&
+      subgridded_item.ParentHasTrackCollection(kForRows, writing_mode)) {
     containing_grid_area_size.block_size =
         subgridded_item->CalculateAvailableSize(
             subgridded_item.Rows(writing_mode));
-  } else {
+  } else if (track_direction == kForRows &&
+             subgridded_item.ParentHasTrackCollection(kForColumns,
+                                                      writing_mode)) {
     containing_grid_area_size.inline_size =
         subgridded_item->CalculateAvailableSize(
             subgridded_item.Columns(writing_mode));

@@ -363,6 +363,16 @@ void InitializeTrackCollection(const SubgriddedItemData& opt_subgrid_data,
 // sizing.
 bool HasBlockSizeDependentGridItem(const GridItems& grid_items);
 
+LayoutUnit ComputeBlockSizeForSubgrid(const GridSizingSubtree& sizing_subtree,
+                                      const GridItemData& subgrid_data,
+                                      const ConstraintSpace& space,
+                                      SizingConstraint sizing_constraint);
+
+MinMaxSizesResult ComputeMinMaxSizesForSubgrid(
+    const BlockNode& node,
+    const GridSizingSubtree& sizing_subtree,
+    const ConstraintSpace& space);
+
 // Computes a virtual item's contribution for the requested track-sizing step
 // using its group's cached measurements and the tracks it spans.
 // `track_baseline` is the shared baseline for the track that `virtual_item`

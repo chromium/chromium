@@ -231,6 +231,111 @@ MinMaxSizesResult GridLanesLayoutAlgorithm::ComputeMinMaxSizes(
   return {intrinsic_sizes, depends_on_block_constraints};
 }
 
+LayoutUnit GridLanesLayoutAlgorithm::ComputeSubgridStackingSize(
+    const GridSizingSubtree& sizing_subtree,
+    SizingConstraint sizing_constraint) {
+  CHECK(sizing_subtree.HasValidRootFor(Node()));
+  const auto direction = Style().GridLanesTrackSizingDirection();
+  auto& layout_data = sizing_subtree.LayoutData();
+  CHECK(layout_data.HasSubgriddedAxis(direction));
+  const auto& tracks =
+      direction == kForColumns ? layout_data.Columns() : layout_data.Rows();
+  if (tracks.HasIndefiniteSet()) {
+    sizing_subtree.SetSubgridHasIndefiniteStandaloneAxis();
+    if (sizing_constraint == SizingConstraint::kLayout) {
+      // Layout measurement cannot use unresolved inherited geometry.
+      sizing_constraint = SizingConstraint::kMaxContent;
+    }
+  }
+
+  bool must_invalidate_placement_cache = false;
+  auto* items = Node().ConstructGridItems(Node().CachedLineResolver(),
+                                          &must_invalidate_placement_cache);
+  CHECK(!must_invalidate_placement_cache);
+  if (items->IsEmpty()) {
+    return LayoutUnit();
+  }
+
+  GridLanesRunningPositions running_positions(
+      tracks, Style(),
+      ResolveFitToleranceForGridLanes(Style(), grid_lanes_available_size_));
+  const auto stacking_gap =
+      StackingAxisGap(Style(), grid_lanes_available_size_);
+  RunGridLanesPlacementPhase(
+      *items, &sizing_subtree, /*layout_subtree=*/nullptr, layout_data,
+      sizing_constraint, stacking_gap, PlacementPhase::kMeasureSubgridStacking,
+      /*baseline_accumulator=*/nullptr, running_positions);
+  return running_positions.GetStackingAxisSizeForSpan(
+             GridSpan::TranslatedDefiniteGridSpan(
+                 /*start_line=*/0,
+                 /*end_line=*/tracks.EndLineOfImplicitGrid())) -
+         stacking_gap;
+}
+
+LayoutUnit GridLanesLayoutAlgorithm::ComputeSubgridItemStackingSize(
+    const GridSizingSubtree& child_subtree,
+    const SubgriddedItemData& item,
+    const ConstraintSpace& space,
+    SizingConstraint sizing_constraint) {
+  const auto& node = item->node;
+  auto MinMaxSizesFunc = [&](SizeType type) -> MinMaxSizesResult {
+    if (item.IsSubgrid()) {
+      return ComputeMinMaxSizesForSubgrid(node, child_subtree, space);
+    }
+    return node.ComputeMinMaxSizes(node.Style().GetWritingMode(), type, space,
+                                   MinMaxSizesInput::UnconstrainedUntriaged());
+  };
+  const bool is_inline_stacking_axis =
+      (Style().GridLanesTrackSizingDirection() == kForColumns) !=
+      item->is_parallel_with_root_grid;
+  if (is_inline_stacking_axis) {
+    const auto sizes =
+        ComputeMinAndMaxContentContributionForSelf(node, space, MinMaxSizesFunc)
+            .sizes;
+    return sizing_constraint == SizingConstraint::kMinContent ? sizes.min_size
+                                                              : sizes.max_size;
+  }
+  if (item.IsSubgrid()) {
+    return ComputeBlockSizeForSubgrid(child_subtree, *item, space,
+                                      sizing_constraint);
+  }
+
+  const LayoutResult* result;
+  if (space.AvailableSize().inline_size == kIndefiniteSize) {
+    const auto sizes =
+        ComputeMinAndMaxContentContributionForSelf(node, space, MinMaxSizesFunc)
+            .sizes;
+    const auto fallback_space = CreateConstraintSpaceForMeasure(
+        item, /*opt_fixed_inline_size=*/sizes.max_size,
+        /*make_grid_axis_definite=*/true, /*is_for_min_max_sizing=*/true,
+        /*opt_layout_subtree=*/nullptr, /*is_for_subgrid_stacking=*/true);
+    result = LayoutGridItemForMeasure(*item, fallback_space, sizing_constraint);
+  } else {
+    result = LayoutGridItemForMeasure(*item, space, sizing_constraint);
+  }
+  return LogicalBoxFragment(
+             node.Style().GetWritingDirection(),
+             To<PhysicalBoxFragment>(result->GetPhysicalFragment()))
+      .BlockSize();
+}
+
+MinMaxSizesResult GridLanesLayoutAlgorithm::ComputeSubgridMinMaxSizes(
+    const GridSizingSubtree& sizing_subtree) {
+  CHECK_EQ(Style().GridLanesTrackSizingDirection(), kForRows);
+  const auto size = ComputeSubgridStackingSize(sizing_subtree,
+                                               SizingConstraint::kMaxContent) +
+                    BorderScrollbarPadding().InlineSum();
+  return {{size, size}, !sizing_subtree.GetGridItems().IsEmpty()};
+}
+
+LayoutUnit GridLanesLayoutAlgorithm::ComputeSubgridIntrinsicBlockSize(
+    const GridSizingSubtree& sizing_subtree,
+    SizingConstraint sizing_constraint) {
+  CHECK_EQ(Style().GridLanesTrackSizingDirection(), kForColumns);
+  return ComputeSubgridStackingSize(sizing_subtree, sizing_constraint) +
+         BorderScrollbarPadding().BlockSum();
+}
+
 void GridLanesLayoutAlgorithm::ApplyTrackReverseOverflowShift(
     GridLayoutData* layout_data,
     LayoutUnit total_intrinsic_block_size) {
@@ -1771,9 +1876,16 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
     BaselineAccumulator* baseline_accumulator,
     GridLanesRunningPositions& running_positions,
     GridLanesDataVector* out_grid_lanes) {
-  const bool is_for_layout = sizing_constraint == SizingConstraint::kLayout;
+  const bool is_for_subgrid_stacking =
+      placement_phase == PlacementPhase::kMeasureSubgridStacking;
+  const bool is_for_layout = sizing_constraint == SizingConstraint::kLayout &&
+                             !is_for_subgrid_stacking;
   CHECK(sizing_subtree || layout_subtree);
   CHECK(!sizing_subtree || !layout_subtree);
+  if (is_for_subgrid_stacking) {
+    CHECK(sizing_subtree);
+    CHECK(!out_grid_lanes);
+  }
   const bool is_fragmentation_collection =
       out_grid_lanes && InvolvedInBlockFragmentation(container_builder_);
 
@@ -1804,10 +1916,10 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
 
   // During the `kCalculateBaselines` pass, subgrid layout is skipped to
   // avoid corrupting cached placement data. The sibling iterator is only
-  // walked during the final placement pass.
+  // walked during final placement or sizing-only stacking measurement.
   GridSizingSubtree next_subgrid_sizing_subtree;
   GridLayoutSubtree* next_subgrid_layout_subtree = nullptr;
-  if (placement_phase == PlacementPhase::kFinalPlacement) {
+  if (placement_phase != PlacementPhase::kCalculateBaselines) {
     if (sizing_subtree) {
       next_subgrid_sizing_subtree = sizing_subtree->FirstChild();
     } else {
@@ -1821,7 +1933,7 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
     GridLayoutSubtree* child_layout_subtree = nullptr;
     const bool is_subgrid = grid_lanes_item.IsSubgrid();
     if (is_subgrid) {
-      if (placement_phase == PlacementPhase::kFinalPlacement) {
+      if (placement_phase != PlacementPhase::kCalculateBaselines) {
         // Standalone grid-lanes layout has sizing state; grid-lanes subgrids
         // instead use finalized geometry inherited from their parent.
         if (sizing_subtree) {
@@ -1868,8 +1980,8 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
 
     if (child_sizing_subtree && needs_resolved_placement) {
       // The updates are written to the sizing tree's `GridLayoutData`, which is
-      // the single source of truth. A fresh layout subtree is finalized from it
-      // below, so the subgrid's layout sees the resolved data.
+      // the single source of truth. Final placement finalizes a fresh layout
+      // subtree below; sizing-only measurement keeps using the sizing tree.
       const GridTrackSizingDirection subgrid_axis_direction =
           grid_lanes_item.RelativeDirectionInSubgrid(grid_axis_direction);
 
@@ -1904,12 +2016,12 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
 
     // Finalize a fresh layout subtree for this subgrid from the sizing tree,
     // reflecting any updates made for auto placed subgrids.
-    if (child_sizing_subtree) {
+    if (child_sizing_subtree && !is_for_subgrid_stacking) {
       child_layout_subtree = MakeGarbageCollected<GridLayoutSubtree>(
           child_sizing_subtree.FinalizeTree());
     }
-    if (is_subgrid && grid_lanes_item.node.IsGridLanes() &&
-        grid_lanes_item.is_auto_placed) {
+    if (!is_for_subgrid_stacking && is_subgrid &&
+        grid_lanes_item.node.IsGridLanes() && grid_lanes_item.is_auto_placed) {
       // Descendants were sized before this subgrid's final position was known.
       // Their inherited tracks may need updating even if their own positions
       // within this subgrid are explicit.
@@ -1960,7 +2072,8 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
         !is_subgrid || (grid_lanes_item.node.IsGridLanes()
                             ? child_layout_subtree != nullptr
                             : static_cast<bool>(child_sizing_subtree));
-    if (!is_for_layout && can_calculate_inline_contribution) {
+    if (!is_for_layout && !is_for_subgrid_stacking &&
+        can_calculate_inline_contribution) {
       opt_fixed_inline_size = CalculateItemInlineContribution(
           child_sizing_subtree, subgridded_item, *sizing_constraint,
           child_layout_subtree);
@@ -1977,21 +2090,26 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
             : CreateConstraintSpaceForMeasure(
                   subgridded_item, opt_fixed_inline_size,
                   /*make_grid_axis_definite=*/true,
-                  /*is_for_min_max_sizing=*/true, child_layout_subtree);
+                  /*is_for_min_max_sizing=*/true, child_layout_subtree,
+                  is_for_subgrid_stacking);
 
     const auto& item_node = grid_lanes_item.node;
     const auto& item_style = item_node.Style();
-    const LayoutResult* result =
-        is_for_layout ? item_node.Layout(space)
-                      : LayoutGridItemForMeasure(grid_lanes_item, space,
-                                                 *sizing_constraint);
-
-    const auto& physical_fragment =
-        To<PhysicalBoxFragment>(result->GetPhysicalFragment());
-    const LogicalBoxFragment fragment(container_writing_direction,
-                                      physical_fragment);
-    const LayoutUnit stacking_size =
-        is_for_columns ? fragment.BlockSize() : fragment.InlineSize();
+    const LayoutResult* result = nullptr;
+    LayoutUnit stacking_size;
+    if (is_for_subgrid_stacking) {
+      stacking_size = ComputeSubgridItemStackingSize(
+          child_sizing_subtree, subgridded_item, space, *sizing_constraint);
+    } else {
+      result = is_for_layout ? item_node.Layout(space)
+                             : LayoutGridItemForMeasure(grid_lanes_item, space,
+                                                        *sizing_constraint);
+      const LogicalBoxFragment fragment(
+          container_writing_direction,
+          To<PhysicalBoxFragment>(result->GetPhysicalFragment()));
+      stacking_size =
+          is_for_columns ? fragment.BlockSize() : fragment.InlineSize();
+    }
 
     // Margins can affect the visual placement of the item, but should not cause
     // the running position to move backwards. If the margin size is greater
@@ -2000,19 +2118,24 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
     // stacking axis.
     auto margins = ComputeMarginsFor(space, item_style, container_space);
     LayoutUnit fragment_size =
-        is_for_columns ? fragment.BlockSize() + margins.BlockSum()
-                       : fragment.InlineSize() + margins.InlineSum();
+        stacking_size +
+        (is_for_columns ? margins.BlockSum() : margins.InlineSum());
     const LayoutUnit visual_stacking_axis_size =
         fragment_size + stacking_axis_gap;
     const LayoutUnit fragment_stacking_axis_contribution =
         visual_stacking_axis_size.ClampNegativeToZero();
 
-    // Without a lane graph this indexes the child that will be added to the
+    // The stacking-axis size measurement pass for grid-lanes subgridded to
+    // grid computes contributions for parent track sizing, not final placement.
+    // It does not add children to the container builder, so it uses
+    // `kNotFound` instead of a child index.
+    // Otherwise, without a lane graph, use the next child index in the
     // container builder. With a lane graph (gap decorations or fragmentation
-    // collection), the item's path in its start lane is determined later, after
+    // collection), the item's path in its start lane is determined after
     // dense placement has selected an opening.
-    wtf_size_t item_index =
-        out_grid_lanes ? kNotFound : container_builder_.Children().size();
+    wtf_size_t item_index = out_grid_lanes || is_for_subgrid_stacking
+                                ? kNotFound
+                                : container_builder_.Children().size();
 
     // If dense packing is set, we need to figure out if the item can possibly
     // fit into any previous track openings. If it can, then we need to adjust
@@ -2057,6 +2180,10 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
     // since baseline alignment needs to know the track's baseline to properly
     // align items within their grid areas.
     if (placement_phase == PlacementPhase::kFinalPlacement) {
+      const auto& physical_fragment =
+          To<PhysicalBoxFragment>(result->GetPhysicalFragment());
+      const LogicalBoxFragment fragment(container_writing_direction,
+                                        physical_fragment);
       // `start_offset_in_stacking_axis` specifies where in the stacking axis
       // the item should be placed, so we need to adjust the `containing_rect`
       // in the stacking axis to accommodate the newly placed item.
@@ -2166,6 +2293,16 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
             grid_lanes_item.resolved_position, grid_axis_direction);
       }
     }
+
+    // Sizing-only measurement needs placement state, not final fragments or
+    // alignment, and may still have unresolved inherited subgrid geometry.
+    if (is_for_subgrid_stacking) {
+      continue;
+    }
+    const auto& physical_fragment =
+        To<PhysicalBoxFragment>(result->GetPhysicalFragment());
+    const LogicalBoxFragment fragment(container_writing_direction,
+                                      physical_fragment);
 
     if (placement_phase == PlacementPhase::kCalculateBaselines) {
       // In the baseline calculation pass, skip items without baseline
@@ -3992,7 +4129,8 @@ ConstraintSpace GridLanesLayoutAlgorithm::CreateConstraintSpaceForMeasure(
     std::optional<LayoutUnit> opt_fixed_inline_size,
     bool make_grid_axis_definite,
     bool is_for_min_max_sizing,
-    const GridLayoutSubtree* opt_layout_subtree) const {
+    const GridLayoutSubtree* opt_layout_subtree,
+    bool is_for_subgrid_stacking) const {
   LogicalSize containing_size = grid_lanes_available_size_;
   const auto writing_mode = GetConstraintSpace().GetWritingMode();
   const auto grid_axis_direction = Style().GridLanesTrackSizingDirection();
@@ -4004,11 +4142,10 @@ ConstraintSpace GridLanesLayoutAlgorithm::CreateConstraintSpaceForMeasure(
   if (grid_axis_direction == kForColumns) {
     containing_size.inline_size = kIndefiniteSize;
 
-    // Only set a definite inline size if the item is orthogonal because the
-    // block and inline constraints get swapped for such items later on, and
-    // unlike the inline constraint, the block constraint can be definite in
-    // a measure pass.
-    if (make_grid_axis_definite && !is_parallel_with_root_grid) {
+    // Inline intrinsic measurement needs an indefinite inline size. Measuring
+    // a subgrid's stacking extent instead preserves its inherited grid axis.
+    if (make_grid_axis_definite &&
+        (!is_parallel_with_root_grid || is_for_subgrid_stacking)) {
       LayoutUnit start_offset;
       containing_size.inline_size = subgridded_item->CalculateAvailableSize(
           subgridded_item.Columns(writing_mode), &start_offset);
@@ -4037,10 +4174,10 @@ ConstraintSpace GridLanesLayoutAlgorithm::CreateConstraintSpaceForMeasure(
     }
     containing_size.block_size = kIndefiniteSize;
 
-    // Don't set a definite block size if the item is orthogonal because the
-    // block and inline constraints get swapped later on for such items, and the
-    // inline constraint should always be indefinite in a measure pass.
-    if (make_grid_axis_definite && is_parallel_with_root_grid) {
+    // Keep an orthogonal item's inline size indefinite for inline intrinsic
+    // measurement, but preserve inherited tracks for subgrid stacking.
+    if (make_grid_axis_definite &&
+        (is_parallel_with_root_grid || is_for_subgrid_stacking)) {
       LayoutUnit start_offset;
       containing_size.block_size = subgridded_item->CalculateAvailableSize(
           subgridded_item.Rows(writing_mode), &start_offset);

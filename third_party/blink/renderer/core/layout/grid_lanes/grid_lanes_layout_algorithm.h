@@ -46,6 +46,11 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   using LayoutAlgorithm::Style;
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&);
+  MinMaxSizesResult ComputeSubgridMinMaxSizes(
+      const GridSizingSubtree& sizing_subtree);
+  LayoutUnit ComputeSubgridIntrinsicBlockSize(
+      const GridSizingSubtree& sizing_subtree,
+      SizingConstraint sizing_constraint);
   const LayoutResult* Layout();
 
   GridLineResolver BuildGridLineResolver(
@@ -115,6 +120,7 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   enum class PlacementPhase {
     kCalculateBaselines,
     kFinalPlacement,
+    kMeasureSubgridStacking,
   };
 
   const LayoutResult* LayoutInternal();
@@ -204,7 +210,9 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   // cumulative positions along the stacking axis for each track. The
   // `baseline_accumulator` output parameter accumulates container-level
   // baselines from the items. Exactly one of `sizing_subtree` or
-  // `layout_subtree` provides child subgrid geometry.
+  // `layout_subtree` provides child subgrid geometry. kMeasureSubgridStacking
+  // instead uses sizing-only subgrid contributions, sharing placement state
+  // updates without finalizing unresolved geometry or adding fragments.
   void RunGridLanesPlacementPhase(
       GridItems& grid_items,
       const GridSizingSubtree* sizing_subtree,
@@ -413,12 +421,15 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
       SizingConstraint sizing_constraint,
       const GridLayoutSubtree* opt_layout_subtree);
 
+  // Stacking measurement preserves the inherited grid-axis constraint, even
+  // when that axis is inline in the item's writing mode.
   ConstraintSpace CreateConstraintSpaceForMeasure(
       const SubgriddedItemData& subgridded_item,
       std::optional<LayoutUnit> opt_fixed_inline_size = std::nullopt,
       bool make_grid_axis_definite = false,
       bool is_for_min_max_sizing = false,
-      const GridLayoutSubtree* opt_layout_subtree = nullptr) const;
+      const GridLayoutSubtree* opt_layout_subtree = nullptr,
+      bool is_for_subgrid_stacking = false) const;
 
   // Computes the shared baseline for items within a single virtual item group
   // (i.e., items that share the same span and baseline alignment). Returns the
@@ -455,6 +466,17 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
       SizingConstraint sizing_constraint) const;
 
   LayoutUnit ComputeIntrinsicBlockSizeIgnoringChildren();
+
+  LayoutUnit ComputeSubgridStackingSize(const GridSizingSubtree& sizing_subtree,
+                                        SizingConstraint sizing_constraint);
+
+  // Returns the item's stacking-axis size when measuring a grid-lanes subgrid
+  // with a regular grid parent.
+  LayoutUnit ComputeSubgridItemStackingSize(
+      const GridSizingSubtree& child_subtree,
+      const SubgriddedItemData& item,
+      const ConstraintSpace& space,
+      SizingConstraint sizing_constraint);
 
   // For a `track-reverse` scroll container whose track area overflows, bake the
   // reversed shift into the grid-axis track offsets, so the tracks land in

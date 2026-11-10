@@ -1242,6 +1242,45 @@ bool HasBlockSizeDependentGridItem(const GridItems& grid_items) {
   return false;
 }
 
+LayoutUnit ComputeBlockSizeForSubgrid(const GridSizingSubtree& sizing_subtree,
+                                      const GridItemData& subgrid_data,
+                                      const ConstraintSpace& space,
+                                      SizingConstraint sizing_constraint) {
+  CHECK(sizing_subtree);
+  CHECK(subgrid_data.IsSubgrid());
+  const auto& node = subgrid_data.node;
+  LayoutUnit intrinsic_block_size;
+  if (node.IsGrid()) {
+    intrinsic_block_size = To<GridNode>(node).ComputeSubgridIntrinsicBlockSize(
+        sizing_subtree, space, sizing_constraint);
+  } else {
+    CHECK(node.IsGridLanes());
+    const auto geometry = CalculateInitialFragmentGeometry(
+        space, node, /*break_token=*/nullptr, /*is_intrinsic=*/true);
+    intrinsic_block_size = GridLanesLayoutAlgorithm({node, geometry, space})
+                               .ComputeSubgridIntrinsicBlockSize(
+                                   sizing_subtree, sizing_constraint);
+  }
+  return ComputeBlockSizeForFragment(
+      space, node,
+      ComputeBorders(space, node) + ComputePadding(space, node.Style()),
+      intrinsic_block_size, space.AvailableSize().inline_size);
+}
+
+MinMaxSizesResult ComputeMinMaxSizesForSubgrid(
+    const BlockNode& node,
+    const GridSizingSubtree& sizing_subtree,
+    const ConstraintSpace& space) {
+  if (node.IsGrid()) {
+    return To<GridNode>(node).ComputeSubgridMinMaxSizes(sizing_subtree, space);
+  }
+  CHECK(node.IsGridLanes());
+  const auto geometry = CalculateInitialFragmentGeometry(
+      space, node, /*break_token=*/nullptr, /*is_intrinsic=*/true);
+  return GridLanesLayoutAlgorithm({node, geometry, space})
+      .ComputeSubgridMinMaxSizes(sizing_subtree);
+}
+
 bool ValidateMinMaxSizesCache(const BlockNode& node,
                               const GridSizingSubtree& sizing_subtree,
                               GridTrackSizingDirection track_direction) {
