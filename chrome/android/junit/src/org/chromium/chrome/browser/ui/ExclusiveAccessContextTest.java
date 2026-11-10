@@ -8,6 +8,7 @@ import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.jni_zero.JniRawPtr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -35,29 +36,31 @@ public class ExclusiveAccessContextTest {
     @Mock private FullscreenManager mFullscreenManager;
     @Mock private ExclusiveAccessContext.Natives mExclusiveAccessContextJni;
     private final UnownedUserDataHost mUnownedUserDataHost = new UnownedUserDataHost();
+    private JniRawPtr<ExclusiveAccessContext.NativeExclusiveAccessContextAndroid> mNativePtr;
 
     @Before
     public void setUp() {
         ExclusiveAccessContextJni.setInstanceForTesting(mExclusiveAccessContextJni);
+        mNativePtr = JniRawPtr.createForTesting(123L);
     }
 
     @After
     public void tearDown() {
+        mNativePtr.release();
         SnackbarManagerProvider.detach(mSnackbarManager);
     }
 
     @Test
     public void testTouchDownNotifiesNative() {
-        long nativePtr = 123L;
         ActivityTabProvider activityTabProvider = new ActivityTabProvider();
         ExclusiveAccessContext context =
                 ExclusiveAccessContext.create(
-                        nativePtr, mWindowAndroid, mFullscreenManager, activityTabProvider);
+                        mNativePtr, mWindowAndroid, mFullscreenManager, activityTabProvider);
 
         // Simulate touch down on the active tab.
         context.mActiveTabObserver.onTouchDown();
 
-        verify(mExclusiveAccessContextJni).onExclusiveAccessUserInput(nativePtr);
+        verify(mExclusiveAccessContextJni).onExclusiveAccessUserInput(mNativePtr);
     }
 
     @Test
@@ -66,7 +69,10 @@ public class ExclusiveAccessContextTest {
         SnackbarManagerProvider.attach(mWindowAndroid, mSnackbarManager);
         ExclusiveAccessContext context =
                 ExclusiveAccessContext.create(
-                        123L, mWindowAndroid, mFullscreenManager, new ActivityTabProvider());
+                        mNativePtr,
+                        mWindowAndroid,
+                        mFullscreenManager,
+                        new ActivityTabProvider());
 
         assertSame(mSnackbarManager, context.getSnackbarManager());
     }

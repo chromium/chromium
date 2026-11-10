@@ -7,10 +7,12 @@
 #include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/android/chrome_jni_headers/ExclusiveAccessContext_jni.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/exclusive_access/exclusive_access_bubble_android.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
+
+#include "chrome/android/chrome_jni_headers/ExclusiveAccessContext_jni.h"
 
 ExclusiveAccessContextAndroid::ExclusiveAccessContextAndroid(
     JNIEnv* env,
@@ -18,8 +20,8 @@ ExclusiveAccessContextAndroid::ExclusiveAccessContextAndroid(
     const jni_zero::JavaRef<jobject>& j_fullscreen_manager,
     const jni_zero::JavaRef<jobject>& j_activity_tab_provider) {
   java_context_.Reset(Java_ExclusiveAccessContext_create(
-      env, reinterpret_cast<int64_t>(this), j_window_android,
-      j_fullscreen_manager, j_activity_tab_provider));
+      env, jni_zero::MakeRaw(this),
+      j_window_android, j_fullscreen_manager, j_activity_tab_provider));
 }
 
 ExclusiveAccessContextAndroid::ExclusiveAccessContextAndroid() = default;
