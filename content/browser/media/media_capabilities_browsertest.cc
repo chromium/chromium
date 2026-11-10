@@ -277,6 +277,14 @@ class MediaCapabilitiesTestWithConfigType
   }
 };
 
+// Key system configuration cannot be set for the "webrtc" decoding type
+// (TypeError rejection is covered in
+// external/wpt/media-capabilities/decodingInfoEncryptedMedia.https.html). Use
+// this fixture so key-system tests are only instantiated for "file" and
+// "media-source" instead of starting content_shell just to GTEST_SKIP().
+class MediaCapabilitiesKeySystemTestWithConfigType
+    : public MediaCapabilitiesTestWithConfigType {};
+
 // Cover basic codec support of content types where the answer of support
 // (or not) should be common to both "media-source" and "file" query types.
 // for more exhaustive codec string testing.
@@ -337,13 +345,8 @@ IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
 #if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
 // Cover Dolby Vision codec support of content types where the answer of support
 // (or not) should be common to both "media-source" and "file" query types.
-IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
+IN_PROC_BROWSER_TEST_P(MediaCapabilitiesKeySystemTestWithConfigType,
                        DolbyVisionVideoDecodeTypes) {
-  if (GetParam() == kWebRtc) {
-    GTEST_SKIP() << "The keySystemConfiguration object cannot be set for "
-                    "webrtc MediaDecodingType.";
-  }
-
   base::FilePath file_path =
       media::GetTestDataFilePath(std::string(kDecodeTestFile));
 
@@ -583,13 +586,8 @@ IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
 // This is to test setting both MediaCapabilities and the KeySystem to verify
 // that MediaCapabilities does not support configurations when KeySystem is
 // specified.
-IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
+IN_PROC_BROWSER_TEST_P(MediaCapabilitiesKeySystemTestWithConfigType,
                        VideoTypeWithHdrMetadataAndKeySystem) {
-  if (GetParam() == kWebRtc) {
-    GTEST_SKIP() << "The keySystemConfiguration object cannot be set for "
-                    "webrtc MediaDecodingType.";
-  }
-
   base::FilePath file_path =
       media::GetTestDataFilePath(std::string(kDecodeTestFile));
 
@@ -612,13 +610,8 @@ IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
                 kSmpteSt2094_10, media::kClearKeyKeySystem));
 }
 
-IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
+IN_PROC_BROWSER_TEST_P(MediaCapabilitiesKeySystemTestWithConfigType,
                        AudioOnlyWithKeySystem) {
-  if (GetParam() == kWebRtc) {
-    GTEST_SKIP() << "The keySystemConfiguration object cannot be set for "
-                    "webrtc MediaDecodingType.";
-  }
-
   base::FilePath file_path =
       media::GetTestDataFilePath(std::string(kDecodeTestFile));
 
@@ -704,12 +697,8 @@ IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
                               "'audio/webm; codecs=\"invalid\"'"));
 }
 
-IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
+IN_PROC_BROWSER_TEST_P(MediaCapabilitiesKeySystemTestWithConfigType,
                        CombinedAudioVideoWithKeySystem) {
-  if (GetParam() == kWebRtc) {
-    GTEST_SKIP() << "The keySystemConfiguration object cannot be set for "
-                    "webrtc MediaDecodingType.";
-  }
   base::FilePath file_path =
       media::GetTestDataFilePath(std::string(kDecodeTestFile));
 
@@ -768,5 +757,12 @@ INSTANTIATE_TEST_SUITE_P(MediaSource,
 INSTANTIATE_TEST_SUITE_P(WebRtc,
                          MediaCapabilitiesTestWithConfigType,
                          ::testing::Values(ConfigType::kWebRtc));
+
+INSTANTIATE_TEST_SUITE_P(File,
+                         MediaCapabilitiesKeySystemTestWithConfigType,
+                         ::testing::Values(ConfigType::kFile));
+INSTANTIATE_TEST_SUITE_P(MediaSource,
+                         MediaCapabilitiesKeySystemTestWithConfigType,
+                         ::testing::Values(ConfigType::kMediaSource));
 
 }  // namespace content
