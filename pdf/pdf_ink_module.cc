@@ -40,6 +40,7 @@
 #include "pdf/pdf_ink_ids.h"
 #include "pdf/pdf_ink_metrics_handler.h"
 #include "pdf/pdf_ink_module_client.h"
+#include "pdf/pdf_ink_signature_creation_handler.h"
 #include "pdf/pdf_ink_text.h"
 #include "pdf/pdf_ink_transform.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -242,12 +243,22 @@ bool IsPrintOrSaveKeyboardEvent(const blink::WebKeyboardEvent& event) {
                      event.windows_key_code == ui::KeyboardCode::VKEY_S);
 }
 
+std::unique_ptr<PdfInkSignatureCreationHandler>
+MaybeCreatePdfInkSignatureCreationHandler(PdfInkModuleClient& client) {
+  if (!features::kPdfInk2Signatures.Get()) {
+    return nullptr;
+  }
+  return std::make_unique<PdfInkSignatureCreationHandler>(client);
+}
+
 }  // namespace
 
 PdfInkModule::PdfInkModule(PdfInkModuleClient& client)
     : client_(client),
       highlighter_brush_(CreateDefaultHighlighterBrush()),
-      pen_brush_(CreateDefaultPenBrush()) {
+      pen_brush_(CreateDefaultPenBrush()),
+      signature_creation_handler_(
+          MaybeCreatePdfInkSignatureCreationHandler(client)) {
   CHECK(base::FeatureList::IsEnabled(features::kPdfInk2));
   CHECK(is_drawing_stroke());
 
@@ -404,13 +415,14 @@ bool PdfInkModule::OnMessage(const base::DictValue& message) {
       });
 
   auto it = kMessageHandlers.find(*message.FindString("type"));
-  if (it == kMessageHandlers.end()) {
-    return false;
+  if (it != kMessageHandlers.end()) {
+    MessageHandler handler = it->second;
+    (this->*handler)(message);
+    return true;
   }
 
-  MessageHandler handler = it->second;
-  (this->*handler)(message);
-  return true;
+  return signature_creation_handler_ &&
+         signature_creation_handler_->OnMessage(message);
 }
 
 void PdfInkModule::OnGeometryChanged() {

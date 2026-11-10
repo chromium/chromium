@@ -50,6 +50,7 @@ class WebTouchEvent;
 namespace chrome_pdf {
 
 class PdfInkModuleClient;
+class PdfInkSignatureCreationHandler;
 
 class PdfInkModule {
  public:
@@ -534,6 +535,9 @@ class PdfInkModule {
   // loaded from the PDF, or std::nullopt if text annotations never got loaded.
   // Updated after each save operation.
   std::optional<size_t> baseline_text_annotation_count_;
+
+  const std::unique_ptr<PdfInkSignatureCreationHandler>
+      signature_creation_handler_;
 
   base::WeakPtrFactory<PdfInkModule> weak_factory_{this};
 };
