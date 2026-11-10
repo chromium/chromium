@@ -356,7 +356,12 @@ class Worker(object):
         self._num_tests = 0
 
     def __del__(self):
-        self.stop()
+        # Don't log here. The garbage collector can run `__del__()` in the
+        # middle of another logging call, and logging again from the same
+        # thread can deadlock on a non-reentrant stream lock (for example,
+        # typ's captured output while blink_python_tests runs).
+        if self._driver:
+            self._driver.stop()
 
     def start(self):
         """This method is called when the object is starting to be used and it is safe
