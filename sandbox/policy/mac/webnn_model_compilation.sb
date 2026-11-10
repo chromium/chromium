@@ -20,6 +20,15 @@
 ; The browser process copies the compiled model created by the compiler
 ; process to the webnn_gpu_protected subdirectory which prevents the
 ; compiler process from accessing the compiled model after it has been copied.
-(deny file-read* file-write*
+; `file-write-create` and `file-write-unlink` must be listed explicitly because
+; Seatbelt prioritizes specific operations from the earlier `allow` rule on
+; `darwin-user-temp-dir` over the `file-write*` wildcard in a later `deny` rule.
+(deny file-read* file-write* file-write-create file-write-unlink
   (subpath (string-append (param darwin-user-temp-dir) "/webnn_gpu_protected"))
+)
+
+(deny file-write-create (vnode-type SYMLINK))
+
+(deny file-write-unlink
+  (literal (string-append (param darwin-user-temp-dir) "/webnn_compiler_protected"))
 )

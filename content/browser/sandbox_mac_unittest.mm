@@ -35,6 +35,7 @@
 #include "base/test/multiprocess_test.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
+#include "base/unguessable_token.h"
 #include "content/browser/sandbox_parameters_mac.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
@@ -850,6 +851,120 @@ TEST_F(SandboxMacTest, NetworkSymlinkAllowed) {
 
   ExecuteWithParams("NetworkSymlinkAllowedProcess",
                     sandbox::mojom::Sandbox::kNetwork,
+                    /*append_temp_dir_suffix=*/false);
+}
+
+MULTIPROCESS_TEST_MAIN(WebNNModelCompilationProcess) {
+  std::string extra_data = GetExtraDataValue();
+  CHECK(!extra_data.empty());
+  std::vector<std::string> parts = base::SplitString(
+      extra_data, ";", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  CHECK_EQ(parts.size(), 2u);
+  base::FilePath temp_dir(parts[0]);
+  std::string token = parts[1];
+
+  CheckCreateSeatbeltServer();
+
+  // The compiler process can create and manage its own staging directories
+  // under `TemporaryItems` and `webnn_compiler_protected`.
+  base::FilePath temp_items_dir = temp_dir.Append("TemporaryItems");
+  CHECK(base::CreateDirectory(temp_items_dir));
+  base::FilePath staged_model_dir =
+      temp_items_dir.Append(base::StrCat({"staged_", token, ".mlmodelc"}));
+  CHECK(base::CreateDirectory(staged_model_dir));
+  base::File staged_file(
+      staged_model_dir.Append("model.mil"),
+      base::File::FLAG_CREATE | base::File::FLAG_WRITE | base::File::FLAG_READ);
+  CHECK(staged_file.IsValid());
+  constexpr std::string_view kData = "model";
+  CHECK(staged_file.WriteAndCheck(0, base::as_byte_span(kData)));
+  staged_file.Close();
+
+  base::FilePath compiler_protected_dir =
+      temp_dir.Append("webnn_compiler_protected");
+  CHECK(base::CreateDirectory(compiler_protected_dir));
+  base::FilePath compiler_dir =
+      compiler_protected_dir.Append(base::StrCat({"compiler_", token}));
+  CHECK(base::Move(staged_model_dir, compiler_dir));
+  CHECK(base::DeletePathRecursively(compiler_dir));
+
+  // Unlinking or renaming the `webnn_compiler_protected` directory itself is
+  // denied.
+  CHECK_EQ(rmdir(compiler_protected_dir.value().c_str()), -1);
+  CHECK_EQ(errno, EPERM);
+  CHECK_EQ(
+      rename(compiler_protected_dir.value().c_str(),
+             temp_dir.Append("renamed_compiler_protected").value().c_str()),
+      -1);
+  CHECK_EQ(errno, EPERM);
+
+  // Creating symbolic links is denied anywhere in `darwin-user-temp-dir`.
+  std::string symlink_name = base::StrCat({"symlink_", token});
+  CHECK(!base::CreateSymbolicLink(temp_items_dir,
+                                  compiler_protected_dir.Append(symlink_name)));
+  CHECK_EQ(base::File::GetLastFileError(),
+           base::File::FILE_ERROR_ACCESS_DENIED);
+  CHECK(!base::CreateSymbolicLink(temp_items_dir,
+                                  temp_items_dir.Append(symlink_name)));
+  CHECK_EQ(base::File::GetLastFileError(),
+           base::File::FILE_ERROR_ACCESS_DENIED);
+
+  // Creating, reading, writing, or unlinking anything under
+  // `webnn_gpu_protected` is denied.
+  base::FilePath gpu_protected_dir = temp_dir.Append("webnn_gpu_protected");
+  base::File::Error dir_error = base::File::FILE_OK;
+  CHECK(!base::CreateDirectoryAndGetError(
+      gpu_protected_dir.Append(base::StrCat({"sub_", token})), &dir_error));
+  CHECK_EQ(dir_error, base::File::FILE_ERROR_ACCESS_DENIED);
+
+  base::File denied_create(
+      gpu_protected_dir.Append(base::StrCat({"new_file_", token})),
+      base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+  CHECK(!denied_create.IsValid());
+  CHECK_EQ(denied_create.error_details(), base::File::FILE_ERROR_ACCESS_DENIED);
+
+  base::FilePath existing_file =
+      gpu_protected_dir.Append(base::StrCat({"existing_file_", token}));
+  base::File denied_read(existing_file,
+                         base::File::FLAG_OPEN | base::File::FLAG_READ);
+  CHECK(!denied_read.IsValid());
+  CHECK_EQ(denied_read.error_details(), base::File::FILE_ERROR_ACCESS_DENIED);
+
+  CHECK_EQ(unlink(existing_file.value().c_str()), -1);
+  CHECK_EQ(errno, EPERM);
+
+  CHECK_EQ(rename(existing_file.value().c_str(),
+                  temp_dir.Append(base::StrCat({"stolen_file_", token}))
+                      .value()
+                      .c_str()),
+           -1);
+  CHECK_EQ(errno, EPERM);
+
+  return 0;
+}
+
+TEST_F(SandboxMacTest, WebNNModelCompilationGpuProtectedRestricted) {
+  char dir_path[PATH_MAX + 1];
+  ASSERT_NE(confstr(_CS_DARWIN_USER_TEMP_DIR, dir_path, sizeof(dir_path)), 0u);
+
+  base::FilePath canonical_temp_dir =
+      sandbox::policy::GetCanonicalPath(base::FilePath(dir_path));
+  base::FilePath gpu_protected_dir =
+      canonical_temp_dir.Append("webnn_gpu_protected");
+  ASSERT_TRUE(base::CreateDirectory(gpu_protected_dir));
+
+  std::string token = base::UnguessableToken::Create().ToString();
+  base::FilePath existing_file =
+      gpu_protected_dir.Append(base::StrCat({"existing_file_", token}));
+  ASSERT_TRUE(base::WriteFile(existing_file, "gpu"));
+  base::ScopedClosureRunner cleanup(
+      base::BindOnce([](const base::FilePath& file) { base::DeleteFile(file); },
+                     existing_file));
+
+  extra_data_ = base::StrCat({canonical_temp_dir.value(), ";", token});
+
+  ExecuteWithParams("WebNNModelCompilationProcess",
+                    sandbox::mojom::Sandbox::kWebNNModelCompilation,
                     /*append_temp_dir_suffix=*/false);
 }
 
