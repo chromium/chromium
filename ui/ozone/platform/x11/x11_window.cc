@@ -2468,6 +2468,7 @@ void X11Window::HandleEvent(const x11::Event& xev) {
                                    x11::EventMask::SubstructureRedirect);
       } else if (protocol == connection_->GetAtom("_NET_WM_SYNC_REQUEST")) {
         configure_counter_value_.reset();
+        last_configure_size_.reset();
         const int32_t hi = static_cast<int32_t>(client->data.data32[3]);
         const uint32_t lo = client->data.data32[2];
         // The spec says the WM should never send a counter value of 0, so
@@ -2539,7 +2540,13 @@ void X11Window::OnWindowMapped() {
 void X11Window::OnConfigureEvent(const x11::ConfigureNotifyEvent& configure) {
   CHECK_EQ(xwindow_, configure.window, base::NotFatalUntil::M163);
 
-  if (configure_counter_value_ && !last_configure_size_) {
+  if (configure_counter_value_) {
+    // The WM may send several ConfigureNotify events for a single sync request
+    // (e.g. KWin sends one when the window is mapped and another for a resize
+    // that the client requests while the sync request is still pending). The
+    // counter must only be updated after a frame of the most recent size has
+    // been swapped, otherwise the size may never match and the WM waits for
+    // its timeout before painting the window.
     last_configure_size_ = gfx::Size(configure.width, configure.height);
     MaybeUpdateSyncCounter();
   }

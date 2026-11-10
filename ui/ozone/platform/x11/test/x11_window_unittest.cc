@@ -25,6 +25,7 @@
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/sync.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/ozone/test/mock_platform_window_delegate.h"
 #include "ui/platform_window/extensions/x11_extension_delegate.h"
@@ -709,6 +710,108 @@ TEST_F(X11WindowTest, SynchronousDestructionDuringEventDispatch) {
   // DispatchUiEvent will then continue and should return safely due to the
   // liveness check.
   window_ptr->DispatchUiEvent(&mouse_event, xev);
+}
+
+class X11WindowSyncCounterTest : public X11WindowTest {
+ protected:
+  void SetUp() override {
+    X11WindowTest::SetUp();
+    window_ = CreateX11Window(&delegate_, gfx::Rect(10, 10, 100, 100), nullptr);
+    delegate_.set_window(window_.get());
+    auto* connection = x11::Connection::Get();
+    uint32_t counter = 0;
+    if (connection->GetPropertyAs(
+            xwindow(), connection->GetAtom("_NET_WM_SYNC_REQUEST_COUNTER"),
+            &counter)) {
+      counter_ = static_cast<x11::Sync::Counter>(counter);
+    }
+  }
+
+  void TearDown() override {
+    delegate_.set_window(nullptr);
+    window_.reset();
+    X11WindowTest::TearDown();
+  }
+
+  void SendSyncRequest(uint32_t value) {
+    auto* connection = x11::Connection::Get();
+    x11::ClientMessageEvent event{
+        .format = 32,
+        .window = xwindow(),
+        .type = connection->GetAtom("WM_PROTOCOLS"),
+    };
+    event.data.data32 = {
+        static_cast<uint32_t>(connection->GetAtom("_NET_WM_SYNC_REQUEST")), 0,
+        value, 0, 0};
+    connection->DispatchEvent(x11::Event(false, std::move(event)));
+  }
+
+  void SendConfigure(const gfx::Size& size) {
+    x11::ConfigureNotifyEvent event{
+        .event = xwindow(),
+        .window = xwindow(),
+        .width = static_cast<uint16_t>(size.width()),
+        .height = static_cast<uint16_t>(size.height()),
+    };
+    x11::Connection::Get()->DispatchEvent(x11::Event(false, std::move(event)));
+  }
+
+  uint32_t GetCounterValue() {
+    auto reply = x11::Connection::Get()->sync().QueryCounter(counter_).Sync();
+    EXPECT_TRUE(reply);
+    return reply ? reply->counter_value.lo : 0;
+  }
+
+  x11::Window xwindow() const {
+    return static_cast<x11::Window>(delegate_.widget());
+  }
+
+  TestPlatformWindowDelegate delegate_;
+  std::unique_ptr<X11Window> window_;
+  x11::Sync::Counter counter_{};
+};
+
+// Tests that the sync counter is updated once a frame of the most recent
+// configured size is swapped when the WM sends several ConfigureNotify events
+// for a single _NET_WM_SYNC_REQUEST. Regression test for
+// https://crbug.com/504189540.
+TEST_F(X11WindowSyncCounterTest, MultipleConfiguresForOneSyncRequest) {
+  if (counter_ == x11::Sync::Counter{}) {
+    GTEST_SKIP() << "XSync is unavailable";
+  }
+  EXPECT_EQ(GetCounterValue(), 0u);
+
+  SendSyncRequest(1);
+  SendConfigure(gfx::Size(100, 100));
+  SendConfigure(gfx::Size(101, 101));
+
+  // A frame of the stale size must not update the counter.
+  window_->OnCompleteSwapAfterResize(gfx::Size(100, 100));
+  EXPECT_EQ(GetCounterValue(), 0u);
+
+  window_->OnCompleteSwapAfterResize(gfx::Size(101, 101));
+  EXPECT_EQ(GetCounterValue(), 1u);
+}
+
+// Tests that a new _NET_WM_SYNC_REQUEST discards the configured size from an
+// earlier request that was never acknowledged.
+TEST_F(X11WindowSyncCounterTest, NewSyncRequestResetsConfigureSize) {
+  if (counter_ == x11::Sync::Counter{}) {
+    GTEST_SKIP() << "XSync is unavailable";
+  }
+
+  SendSyncRequest(1);
+  SendConfigure(gfx::Size(120, 120));
+
+  // The counter must not be updated before the ConfigureNotify that follows
+  // the new request has been handled.
+  SendSyncRequest(2);
+  window_->OnCompleteSwapAfterResize(gfx::Size(120, 120));
+  EXPECT_EQ(GetCounterValue(), 0u);
+
+  SendConfigure(gfx::Size(130, 130));
+  window_->OnCompleteSwapAfterResize(gfx::Size(130, 130));
+  EXPECT_EQ(GetCounterValue(), 2u);
 }
 
 }  // namespace ui
