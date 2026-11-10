@@ -74,7 +74,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "const_format"
   cargo_pkg_description = "Compile-time string formatting"
   cargo_pkg_repository = "https://github.com/rodrimati1992/const_format_crates/"
-  cargo_pkg_version = "0.2.36"
+  cargo_pkg_version = "0.2.37"
 
   allow_unsafe = true
 

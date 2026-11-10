@@ -401,7 +401,7 @@ macro_rules! __assertc_equality_inner {
             $(, $fmt_literal:expr $(,$fmt_arg:expr)*)? $(,)?
         )
         ($($op:tt)*)
-        ($op_str:expr)
+        ($op_str:tt)
     )=>{
         const _: () = {
             use $crate::__cf_osRcTFl4A;

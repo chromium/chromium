@@ -1,6 +1,6 @@
 [package]
 name = "const_format_proc_macros"
-version = "0.2.34"
+version = "0.2.37"
 authors = ["rodrimati1992 <rodrimatt1985@gmail.com>"]
 rust-version = "1.57.0"
 edition = "2021"

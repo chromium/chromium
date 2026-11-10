@@ -126,7 +126,7 @@ macro_rules! __assertcp_equality_inner {
             $(, $fmt_literal:expr $(,$fmt_arg:expr)*)? $(,)?
         )
         ($($op:tt)*)
-        ($op_str:expr)
+        ($op_str:tt)
     )=>{
         #[allow(non_snake_case)]
         const _: () = {

@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.57.0"
 name = "const_format_proc_macros"
-version = "0.2.34"
+version = "0.2.37"
 authors = ["rodrimati1992 <rodrimatt1985@gmail.com>"]
 build = false
 include = [
@@ -47,6 +47,16 @@ rustc-args = [
     'feature = "all"',
 ]
 
+[features]
+all = ["derive"]
+debug = ["syn/extra-traits"]
+default = []
+derive = [
+    "syn",
+    "syn/derive",
+    "syn/printing",
+]
+
 [lib]
 name = "const_format_proc_macros"
 path = "src/lib.rs"
@@ -72,13 +82,3 @@ version = "0.2"
 
 [dev-dependencies.fastrand]
 version = "1.3.4"
-
-[features]
-all = ["derive"]
-debug = ["syn/extra-traits"]
-default = []
-derive = [
-    "syn",
-    "syn/derive",
-    "syn/printing",
-]

@@ -1,9 +1,7 @@
 
-
 [![Rust](https://github.com/rodrimati1992/const_format_crates/workflows/Rust/badge.svg)](https://github.com/rodrimati1992/const_format_crates/actions)
 [![crates-io](https://img.shields.io/crates/v/const_format.svg)](https://crates.io/crates/const_format)
 [![api-docs](https://docs.rs/const_format/badge.svg)](https://docs.rs/const_format/*)
-
 
 Compile-time string formatting.
 
@@ -19,35 +17,32 @@ the sections below describe the features that are available for each version.
 These macros are available in Rust 1.71.0:
 
 - [`concatcp`]:
-Concatenates `integers`, `bool`, `char`, and `&str` constants into a `&'static str` constant.
+  Concatenates `integers`, `bool`, `char`, and `&str` constants into a `&'static str` constant.
 
 - [`formatcp`]:
-[`format`]-like formatting which takes `integers`, `bool`, `char`, and `&str` constants,
+  [`format`]-like formatting which takes `integers`, `bool`, `char`, and `&str` constants,
 and emits a `&'static str` constant.
 
 - [`str_get`]:
-Indexes a `&'static str` constant, returning `None` when the index is out of bounds.
+  Indexes a `&'static str` constant, returning `None` when the index is out of bounds.
 
 - [`str_index`]:
-Indexes a `&'static str` constant.
+  Indexes a `&'static str` constant.
 
 - [`str_repeat`]:
-Creates a `&'static str` by repeating a `&'static str` constant `times` times.
+  Creates a `&'static str` by repeating a `&'static str` constant `times` times.
 
 - [`str_splice`]:
-Replaces a substring in a `&'static str` constant.
+  Replaces a substring in a `&'static str` constant.
 
 - [`map_ascii_case`]:
-Converts a `&'static str` constant to a different casing style,
-determined by a [`Case`] argument.
+  Converts a `&'static str` constant to a different casing style, determined by a [`Case`] argument.
 
 - [`str_replace`]:
-Replaces all the instances of a pattern in a `&'static str` constant with
-another `&'static str` constant.
+  Replaces all the instances of a pattern in a `&'static str` constant with another `&'static str` constant.
 
--  [`str_split`]: 
-Splits a string constant
-
+- [`str_split`]:
+  Splits a string constant
 
 The `"assertcp"` feature enables the [`assertcp`], [`assertcp_eq`],
 and [`assertcp_ne`] macros.
@@ -222,9 +217,11 @@ assert_eq!(const_format::concatcp!(2u32, 2 + 1u8, 3u8 + 1), "234");
 ```
 
 Example of what does not compile:
+
 ```rust,compile_fail
 assert_eq!(const_format::concatcp!(1 + 1, 2 + 1), "23");
 ```
+
 # Plans
 
 None right now.
@@ -237,6 +234,7 @@ The [`ConstDebug`] derive macro has the `#[cdeb(crate = "foo::bar")]` attribute 
 tell it where to find the `const_format` crate.
 
 Example of renaming the `const_format` crate in the Cargo.toml file:
+
 ```toml
 [dependencies]
 cfmt = {version = "0.*", package = "const_format"}
@@ -260,7 +258,7 @@ but it was renamed to avoid confusion with the `"assertcp"` feature.
 - `"assertcp"`:
 Enables the [`assertcp`], [`assertcp_eq`], and [`assertcp_ne`] assertion macros.
 
-- `"rust_1_83"`: 
+- `"rust_1_83"`:
 Makes macros that evaluate to a value become compatible with [inline const patterns].
 
 # No-std support
@@ -273,6 +271,10 @@ Makes macros that evaluate to a value become compatible with [inline const patte
 
 Features that require newer versions of Rust, or the nightly compiler,
 need to be explicitly enabled with cargo features.
+
+# Development
+
+`cargo` commands (e.g. `cargo build`, `cargo test`) must be run within each crate's subdirectory.
 
 [`assertc`]: https://docs.rs/const_format/0.2.*/const_format/macro.assertc.html
 
@@ -304,10 +306,6 @@ need to be explicitly enabled with cargo features.
 
 [`write`]: https://doc.rust-lang.org/std/macro.write.html
 
-[`Formatter`]: https://docs.rs/const_format/0.2.*/const_format/fmt/struct.Formatter.html
-
-[`StrWriter`]: https://docs.rs/const_format/0.2.*/const_format/fmt/struct.StrWriter.html
-
 [`ConstDebug`]: https://docs.rs/const_format/0.2.*/const_format/derive.ConstDebug.html
 
 [`FormatMarker`]: https://docs.rs/const_format/0.2.*/const_format/marker_traits/trait.FormatMarker.html
@@ -329,7 +327,5 @@ need to be explicitly enabled with cargo features.
 [`str_replace`]: https://docs.rs/const_format/0.2.*/const_format/macro.str_replace.html
 
 [`str_split`]: https://docs.rs/const_format/0.2.*/const_format/macro.str_split.html
-
-[`str::replace`]: https://doc.rust-lang.org/std/primitive.str.html#method.replace
 
 [inline const patterns]: https://doc.rust-lang.org/1.83.0/unstable-book/language-features/inline-const-pat.html

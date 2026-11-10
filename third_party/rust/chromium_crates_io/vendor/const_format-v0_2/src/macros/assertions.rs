@@ -40,13 +40,13 @@ macro_rules! __assertc_common {
         $fmt_macro:ident
         ($($span:tt)*)
         ($cond:expr)
-        ($($fmt_literal:expr $(,$fmt_arg:expr)*)?)
+        ($($fmt_literal:ident ! $fmt_literal_args:tt $(,$fmt_arg:expr)*)?)
     ) => (
         const PANIC_IF_TRUE_NHPMWYD3NJA: bool = !($cond);
 
         const MSG_NHPMWYD3NJA: &str = $crate::pmr::$fmt_macro!(
             (PANIC_IF_TRUE_NHPMWYD3NJA)
-            ($($fmt_literal,)?),
+            ($($fmt_literal!$fmt_literal_args,)?),
             $($($fmt_arg,)*)?
         );
 

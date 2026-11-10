@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.71.0"
 name = "const_format"
-version = "0.2.36"
+version = "0.2.37"
 authors = ["rodrimati1992 <rodrimatt1985@gmail.com>"]
 build = false
 include = [
@@ -88,7 +88,7 @@ name = "const_format"
 path = "src/lib.rs"
 
 [dependencies.const_format_proc_macros]
-version = "=0.2.34"
+version = "=0.2.37"
 
 [dependencies.konst]
 version = "0.2.20"
