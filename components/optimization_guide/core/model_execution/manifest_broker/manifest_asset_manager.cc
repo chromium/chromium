@@ -484,12 +484,20 @@ void ManifestAssetManager::UninstallAllAssets() {
   RecomputeAssetPriorities();
 }
 
-void ManifestAssetManager::UninstallCapability(
-    const Manifest::AssetId& model_asset_id) {
+void ManifestAssetManager::UninstallCapability(OnDeviceBaseModel base_model) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (const auto& use_case_name :
-       factory_->manifest().GetUseCasesRequiringAsset(model_asset_id)) {
-    usage_tracker_->RequestUninstall(use_case_name);
+  if (base_model == OnDeviceBaseModel::kUnknown) {
+    return;
+  }
+  for (const auto& [asset_id, _] :
+       factory_->manifest().GetAssets().on_demand_components()) {
+    if (ConvertComponentKeyToEnum(asset_id) != base_model) {
+      continue;
+    }
+    for (const auto& use_case_name :
+         factory_->manifest().GetUseCasesRequiringAsset(asset_id)) {
+      usage_tracker_->RequestUninstall(use_case_name);
+    }
   }
   RecomputeAssetPriorities();
 }

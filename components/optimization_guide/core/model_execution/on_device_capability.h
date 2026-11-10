@@ -381,9 +381,9 @@ class OnDeviceModelControl {
   // Uninstalls all downloaded on-device models and clears their usage history.
   virtual void UninstallModels() = 0;
 
-  // Uninstalls a specific base model capability identified by `model_asset_id`
+  // Uninstalls a specific base model capability identified by `base_model`
   // along with any dependent adaptations and unshared safety models.
-  virtual void UninstallCapability(const std::string& model_asset_id) = 0;
+  virtual void UninstallCapability(OnDeviceBaseModel base_model) = 0;
 
   // Waits for broker initialization (raising manifest load priority), then
   // replies on the calling sequence with installed base models and their sizes

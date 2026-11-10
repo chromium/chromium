@@ -1092,7 +1092,8 @@ TEST_F(ManifestAssetManagerTest,
           kOnDeviceAiAutoRemoveUnusedModelsEnabled,
       false);
 
-  DummyAsset compose_asset = DummyAsset::For("compose");
+  DummyAsset compose_asset =
+      DummyAsset::For("compose").WithAssetId("gemma4_component");
   DummyAsset test_asset = DummyAsset::For("test");
   usage_tracker_.RaisePriority(compose_asset.use_case,
                                UsageTracker::Priority::kUserBlocking);
@@ -1111,12 +1112,12 @@ TEST_F(ManifestAssetManagerTest,
   task_environment_.FastForwardBy(base::Days(31));
 
   base::HistogramTester histogram_tester;
-  manifest_broker_state_->UninstallCapability(compose_asset.asset_id);
+  manifest_broker_state_->UninstallCapability(OnDeviceBaseModel::kGemma4);
 
   EXPECT_TRUE(component_state_.WaitForUninstall(compose_asset.public_key));
   EXPECT_FALSE(component_state_.WasUninstallRequested(test_asset.public_key));
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.ModelExecution.OnDeviceModelUninstallReason.Unknown",
+      "OptimizationGuide.ModelExecution.OnDeviceModelUninstallReason.Gemma4",
       Manifest::UninstallReason::kUserRequested, 1);
 }
 
@@ -1766,7 +1767,7 @@ TEST_F(ManifestAssetManagerTest, GetInstalledModelsReflectsComponentStates) {
   // Advance past the 10s disk space freshness window so kUninstalling is
   // deferred; `ready_asset` is still immediately excluded as kUninstall.
   task_environment_.FastForwardBy(base::Seconds(11));
-  manifest_broker_state_->UninstallCapability(ready_asset.asset_id);
+  manifest_broker_state_->UninstallCapability(OnDeviceBaseModel::kGemma4);
   EXPECT_TRUE(get_installed_models().empty());
 }
 

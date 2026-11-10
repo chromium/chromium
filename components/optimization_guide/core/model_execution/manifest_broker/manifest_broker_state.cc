@@ -356,16 +356,15 @@ void ManifestBrokerState::UninstallModels() {
       weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ManifestBrokerState::UninstallCapability(
-    const std::string& model_asset_id) {
+void ManifestBrokerState::UninstallCapability(OnDeviceBaseModel base_model) {
   EnsureInitialization(base::BindOnce(
-      [](base::WeakPtr<ManifestBrokerState> self, std::string model_asset_id,
+      [](base::WeakPtr<ManifestBrokerState> self, OnDeviceBaseModel base_model,
          const on_device_model::Capabilities&) {
         if (self && self->asset_manager_) {
-          self->asset_manager_->UninstallCapability(model_asset_id);
+          self->asset_manager_->UninstallCapability(base_model);
         }
       },
-      weak_ptr_factory_.GetWeakPtr(), model_asset_id));
+      weak_ptr_factory_.GetWeakPtr(), base_model));
 }
 
 void ManifestBrokerState::GetInstalledModels(InstalledModelsCallback callback) {

@@ -125,8 +125,8 @@ class ManifestAssetManager : public UsageTracker::Observer,
   void UninstallAllAssets();
 
   // Requests uninstall for all use cases requiring the base model asset
-  // identified by `model_asset_id` and recomputes asset priorities.
-  void UninstallCapability(const Manifest::AssetId& model_asset_id);
+  // identified by `base_model` and recomputes asset priorities.
+  void UninstallCapability(OnDeviceBaseModel base_model);
 
  private:
   enum class ComponentState {

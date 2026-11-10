@@ -306,14 +306,18 @@ TEST_F(ManifestBrokerStateTest, SetUseCaseRequestedFalseBeforeManifestLoaded) {
 }
 
 TEST_F(ManifestBrokerStateTest, UninstallCapabilityBeforeManifestLoaded) {
-  ScenarioBuilder::MinimalTestScenario(fake_.component_state());
+  ScenarioBuilder(fake_.component_state())
+      .AddBaseModel("gemma4_component")
+      .AddUnsafeSolution("test", "gemma4_component")
+      .Finish();
   ASSERT_TRUE(fake_.WarmupPrefsAndAssets());
 
   // Call UninstallCapability immediately on startup before the manifest has
   // finished loading and creating ManifestAssetManager.
-  fake_.state().UninstallCapability("model_A");
+  fake_.state().UninstallCapability(OnDeviceBaseModel::kGemma4);
 
-  EXPECT_TRUE(fake_.component_state().WaitForUninstall("model_A_key"));
+  EXPECT_TRUE(
+      fake_.component_state().WaitForUninstall("gemma4_component_key"));
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return fake_.client().GetSubscriber("test").unavailable_reason() ==
            mojom::ModelUnavailableReason::kPendingUsage;
@@ -329,39 +333,38 @@ TEST_F(ManifestBrokerStateTest,
                                      kOnDeviceAiAutoRemoveUnusedModelsEnabled,
                                  false);
 
-  proto::SolutionConfig compose_config;
-  *compose_config.mutable_feature() = SimpleComposeConfig();
-
-  // Include `model_C` ("prompt_api") which also references `polisher` but is
-  // never used, to verify that an unused use case in the manifest does not
-  // retain the shared auxiliary model when all used base models are
-  // uninstalled.
   ScenarioBuilder(fake_.component_state())
-      .AddBaseModel("model_A")
-      .AddBaseModel("model_B")
-      .AddBaseModel("model_C")
+      .AddBaseModel("nano_v3_gpu_component")
+      .AddBaseModel("summarizer_small_expert_model_component")
+      .AddBaseModel("speech_recognition_small_expert_model_component")
+      .AddBaseModel("nano_v3_cpu_component")
       .AddBaseModel("polisher")
-      .AddAdaptation("adapt_A", "model_A")
-      .AddPostprocessedModel("post_A", "model_A", "polisher")
-      .AddPostprocessedModel("post_B", "model_B", "polisher")
-      .AddPostprocessedModel("post_C", "model_C", "polisher")
+      .AddAdaptation("adapt_A", "nano_v3_gpu_component")
+      .AddPostprocessedModel("post_asr",
+                             "speech_recognition_small_expert_model_component",
+                             "polisher")
       .AddUnsafeSolution("test", "adapt_A")
-      .AddUnsafeSolution("summarize", "post_A")
-      .AddUnsafeSolution("compose", "post_B", std::move(compose_config))
-      .AddUnsafeSolution("prompt_api", "post_C")
+      .AddUnsafeSolution("summarizer_api",
+                         "summarizer_small_expert_model_component")
+      .AddUnsafeSolution("speech_recognition_small_expert_model", "post_asr")
+      .AddUnsafeSolution("prompt_api", "nano_v3_cpu_component")
       .Finish();
   fake_.Startup();
 
   fake_.client().RequestAssetsFor("test");
-  fake_.client().RequestAssetsFor("summarize");
-  fake_.client().RequestAssetsFor("compose");
+  fake_.client().RequestAssetsFor("summarizer_api");
+  fake_.client().RequestAssetsFor("speech_recognition_small_expert_model");
 
   EXPECT_TRUE(fake_.component_state().WaitForRegistration(
-      {"model_A_key", base::Version("1.0.0.0")}));
+      {"nano_v3_gpu_component_key", base::Version("1.0.0.0")}));
   EXPECT_TRUE(fake_.component_state().WaitForRegistration(
       {"adapt_A_key", base::Version("12345")}));
   EXPECT_TRUE(fake_.component_state().WaitForRegistration(
-      {"model_B_key", base::Version("1.0.0.0")}));
+      {"summarizer_small_expert_model_component_key",
+       base::Version("1.0.0.0")}));
+  EXPECT_TRUE(fake_.component_state().WaitForRegistration(
+      {"speech_recognition_small_expert_model_component_key",
+       base::Version("1.0.0.0")}));
   EXPECT_TRUE(fake_.component_state().WaitForRegistration(
       {"polisher_key", base::Version("1.0.0.0")}));
 
@@ -373,47 +376,71 @@ TEST_F(ManifestBrokerStateTest,
     EXPECT_TRUE(test_future.Take());
 
     base::test::TestFuture<ModelBrokerClient::CreateSessionResult>
-        compose_future;
-    fake_.client().CreateSession(mojom::OnDeviceFeature::kCompose,
+        summarize_future;
+    fake_.client().CreateSession("summarizer_api", SessionConfigParams{},
+                                 summarize_future.GetCallback());
+    EXPECT_TRUE(summarize_future.Take());
+
+    base::test::TestFuture<ModelBrokerClient::CreateSessionResult> asr_future;
+    fake_.client().CreateSession("speech_recognition_small_expert_model",
                                  SessionConfigParams{},
-                                 compose_future.GetCallback());
-    EXPECT_TRUE(compose_future.Take());
+                                 asr_future.GetCallback());
+    EXPECT_TRUE(asr_future.Take());
   }
 
-  // Advance past the 30-day retention window so that "test"/"summarize"
-  // (model_A) and "compose" (model_B) become kEvictable. With Auto-Removal
-  // disabled, uninstalling model_A should still retain the expired model_B and
-  // the shared polisher model.
+  // Advance past the 30-day retention window so that "test"
+  // (nano_v3_gpu_component), "summarizer_api"
+  // (summarizer_small_expert_model_component), and
+  // "speech_recognition_small_expert_model"
+  // (speech_recognition_small_expert_model_component) become kEvictable. With
+  // Auto-Removal disabled, uninstalling kV3NanoGpu should still retain the
+  // other expired models.
   task_environment_.FastForwardBy(base::Days(31));
 
   OnDeviceModelControl* model_control = fake_.state().GetModelControl();
   ASSERT_NE(model_control, nullptr);
 
-  // Uninstalling model_A should uninstall model_A and its adaptation adapt_A,
-  // while keeping model_B and the shared polisher model.
-  model_control->UninstallCapability("model_A");
+  // Uninstalling kV3NanoGpu should uninstall nano_v3_gpu_component and its
+  // adaptation adapt_A, while keeping summarizer_small_expert_model_component,
+  // speech_recognition_small_expert_model_component, and the polisher model.
+  model_control->UninstallCapability(OnDeviceBaseModel::kV3NanoGpu);
 
-  EXPECT_TRUE(fake_.component_state().WaitForUninstall("model_A_key"));
+  EXPECT_TRUE(
+      fake_.component_state().WaitForUninstall("nano_v3_gpu_component_key"));
   EXPECT_TRUE(fake_.component_state().WaitForUninstall("adapt_A_key"));
-  EXPECT_FALSE(fake_.component_state().WasUninstallRequested("model_B_key"));
+  EXPECT_FALSE(fake_.component_state().WasUninstallRequested(
+      "summarizer_small_expert_model_component_key"));
+  EXPECT_FALSE(fake_.component_state().WasUninstallRequested(
+      "speech_recognition_small_expert_model_component_key"));
   EXPECT_FALSE(fake_.component_state().WasUninstallRequested("polisher_key"));
 
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return fake_.client().GetSubscriber("test").unavailable_reason() ==
            mojom::ModelUnavailableReason::kPendingUsage;
   }));
-  EXPECT_EQ(fake_.client().GetSubscriber("compose").unavailable_reason(),
+  EXPECT_EQ(
+      fake_.client().GetSubscriber("summarizer_api").unavailable_reason(),
+      std::nullopt);
+  EXPECT_EQ(fake_.client()
+                .GetSubscriber("speech_recognition_small_expert_model")
+                .unavailable_reason(),
             std::nullopt);
 
-  // Uninstalling the remaining used model_B should now also uninstall the
-  // shared polisher model even though unused model_C also references polisher
-  // in the manifest.
-  model_control->UninstallCapability("model_B");
+  // Uninstalling kSpeechRecognitionSmallExpert should uninstall both
+  // speech_recognition_small_expert_model_component and its polisher model,
+  // while still retaining summarizer_small_expert_model_component.
+  model_control->UninstallCapability(
+      OnDeviceBaseModel::kSpeechRecognitionSmallExpert);
 
-  EXPECT_TRUE(fake_.component_state().WaitForUninstall("model_B_key"));
+  EXPECT_TRUE(fake_.component_state().WaitForUninstall(
+      "speech_recognition_small_expert_model_component_key"));
   EXPECT_TRUE(fake_.component_state().WaitForUninstall("polisher_key"));
+  EXPECT_FALSE(fake_.component_state().WasUninstallRequested(
+      "summarizer_small_expert_model_component_key"));
   EXPECT_TRUE(base::test::RunUntil([&]() {
-    return fake_.client().GetSubscriber("compose").unavailable_reason() ==
+    return fake_.client()
+               .GetSubscriber("speech_recognition_small_expert_model")
+               .unavailable_reason() ==
            mojom::ModelUnavailableReason::kPendingUsage;
   }));
 }
@@ -685,7 +712,7 @@ TEST_F(ManifestBrokerStateTest, GetInstalledModelsAndUninstall) {
 
   // Uninstalling nano_v3_gpu_component should immediately exclude it from
   // GetInstalledModels.
-  model_control->UninstallCapability("nano_v3_gpu_component");
+  model_control->UninstallCapability(OnDeviceBaseModel::kV3NanoGpu);
 
   {
     base::test::TestFuture<std::vector<OnDeviceModelControl::InstalledModel>>
