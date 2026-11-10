@@ -187,19 +187,6 @@ void MockMojoMediaStreamDispatcherHost::StopStreamDevice(
   }
 }
 
-void MockMojoMediaStreamDispatcherHost::OpenDevice(
-    int32_t request_id,
-    const String& device_id,
-    mojom::blink::MediaStreamType type,
-    OpenDeviceCallback callback) {
-  MediaStreamDevice device;
-  device.id = device_id.Utf8();
-  device.type = type;
-  device.set_session_id(session_id_);
-  std::move(callback).Run(true /* success */, Format("dummy{}", request_id),
-                          device);
-}
-
 std::string MockMojoMediaStreamDispatcherHost::MaybeAppendSessionId(
     std::string device_id,
     const base::UnguessableToken& session_id) {

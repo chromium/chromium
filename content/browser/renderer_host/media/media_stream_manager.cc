@@ -215,8 +215,6 @@ const char* RequestTypeToString(blink::MediaStreamRequestType type) {
       return "MEDIA_GENERATE_STREAM";
     case blink::MEDIA_GET_OPEN_DEVICE:
       return "MEDIA_GET_OPEN_DEVICE";
-    case blink::MEDIA_OPEN_DEVICE_PEPPER_ONLY:
-      return "MEDIA_OPEN_DEVICE_PEPPER_ONLY";
     default:
       NOTREACHED();
   }
@@ -283,19 +281,6 @@ std::string GetGenerateStreamsLogString(
       "{requester_id=%d}, {page_request_id=%d})",
       render_frame_host_id.child_id.value(),
       render_frame_host_id.frame_routing_id, requester_id, page_request_id);
-}
-
-std::string GetOpenDeviceLogString(GlobalRenderFrameHostId render_frame_host_id,
-                                   int requester_id,
-                                   int page_request_id,
-                                   const std::string& device_id,
-                                   MediaStreamType type) {
-  return base::StringPrintf(
-      "OpenDevice({render_process_id=%d}, {render_frame_id=%d}, "
-      "{requester_id=%d}, {page_request_id=%d}, {device_id=%s}, {type=%s})",
-      render_frame_host_id.child_id.value(),
-      render_frame_host_id.frame_routing_id, requester_id, page_request_id,
-      device_id.c_str(), StreamTypeToString(type));
 }
 
 std::string GetStopStreamDeviceLogString(
@@ -818,11 +803,6 @@ class MediaStreamManager::DeviceRequest {
                                             bool pan_tilt_zoom_allowed) {
     NOTREACHED();
   }
-
-  // TODO(crbug.com/40247147): Combine FinalizeRequest and
-  // FinalizeMediaAccessRequest, implement it for the remaining subclasses and
-  // make it into on pure virtual function.
-  virtual void FinalizeRequest(const std::string& label) { NOTREACHED(); }
 
   virtual void FinalizeMediaAccessRequest(
       const std::string& label,
@@ -1492,71 +1472,6 @@ class MediaStreamManager::GetOpenDeviceRequest
   base::WeakPtrFactory<DeviceRequest> weak_factory_{this};
 };
 
-class MediaStreamManager::OpenDeviceRequest
-    : public MediaStreamManager::DeviceRequest {
- public:
-  OpenDeviceRequest(GlobalRenderFrameHostId requesting_render_frame_host_id,
-                    int requester_id,
-                    int page_request_id,
-                    const StreamControls& controls,
-                    MediaDeviceSaltAndOrigin salt_and_origin,
-                    DeviceStoppedCallback device_stopped_callback,
-                    OpenDeviceCallback open_device_callback)
-      : DeviceRequest(requesting_render_frame_host_id,
-                      requester_id,
-                      page_request_id,
-                      /*user gesture=*/false,
-                      // For pepper, we default to searching for a device always
-                      // based on device ID, independently of whether the
-                      // request is for an audio or a video device.
-                      StreamSelectionInfo::NewSearchOnlyByDeviceId({}),
-                      blink::MEDIA_OPEN_DEVICE_PEPPER_ONLY,
-                      controls,
-                      std::move(salt_and_origin),
-                      std::move(device_stopped_callback)),
-        open_device_callback_(std::move(open_device_callback)) {
-    CHECK(open_device_callback_, base::NotFatalUntil::M158);
-  }
-
-  ~OpenDeviceRequest() override {
-    CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
-    if (open_device_callback_) {
-      std::move(open_device_callback_)
-          .Run(/*success=*/false, std::string(), MediaStreamDevice());
-    }
-  }
-
-  void FinalizeRequest(const std::string& label) override {
-    CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
-    CHECK(open_device_callback_, base::NotFatalUntil::M158);
-    SendLogMessage(base::StringPrintf(
-        "FinalizeOpenDevice({label=%s}, {requester_id="
-        "%d}, {request_type=%s})",
-        label.c_str(), requester_id, RequestTypeToString(request_type())));
-    std::move(open_device_callback_)
-        .Run(/*success=*/true, label,
-             blink::ToMediaStreamDevicesList(stream_devices_set).front());
-  }
-
-  void FinalizeRequestFailed(MediaStreamRequestResult result) override {
-    CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
-    CHECK(open_device_callback_, base::NotFatalUntil::M158);
-    std::move(open_device_callback_)
-        .Run(/*success=*/false, /*label=*/std::string(), MediaStreamDevice());
-  }
-
- private:
-  base::WeakPtr<DeviceRequest> GetWeakPtr() override {
-    return weak_factory_.GetWeakPtr();
-  }
-
-  // This callback is only used by pepper and tries to open the device
-  // identified by device_id. If it is opened successfully, it returns this
-  // device. Otherwise, returns an empty device.
-  OpenDeviceCallback open_device_callback_;
-  base::WeakPtrFactory<DeviceRequest> weak_factory_{this};
-};
-
 // static
 void MediaStreamManager::SendMessageToNativeLog(const std::string& message) {
   if (!BrowserThread::CurrentlyOn(BrowserThread::IO)) {
@@ -1950,7 +1865,6 @@ void MediaStreamManager::StopStreamDevice(
     }
     switch (request->request_type()) {
       case blink::MEDIA_DEVICE_ACCESS:
-      case blink::MEDIA_OPEN_DEVICE_PEPPER_ONLY:
         break;
       case blink::MEDIA_DEVICE_UPDATE:
       case blink::MEDIA_GENERATE_STREAM:
@@ -1990,7 +1904,6 @@ bool MediaStreamManager::KeepDeviceAliveForTransfer(
     DeviceRequest* const request = device_request.second.get();
     switch (request->request_type()) {
       case blink::MEDIA_DEVICE_ACCESS:
-      case blink::MEDIA_OPEN_DEVICE_PEPPER_ONLY:
         break;
       case blink::MEDIA_DEVICE_UPDATE:
       case blink::MEDIA_GENERATE_STREAM:
@@ -2145,47 +2058,6 @@ void MediaStreamManager::CloseDevice(MediaStreamType type,
       }
     }
   }
-}
-
-void MediaStreamManager::OpenDevice(
-    GlobalRenderFrameHostId render_frame_host_id,
-    int requester_id,
-    int page_request_id,
-    const std::string& device_id,
-    MediaStreamType type,
-    MediaDeviceSaltAndOrigin salt_and_origin,
-    OpenDeviceCallback open_device_callback,
-    DeviceStoppedCallback device_stopped_callback) {
-  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
-  CHECK(type == MediaStreamType::DEVICE_AUDIO_CAPTURE ||
-            type == MediaStreamType::DEVICE_VIDEO_CAPTURE,
-        base::NotFatalUntil::M158);
-  SendLogMessage(GetOpenDeviceLogString(render_frame_host_id, requester_id,
-                                        page_request_id, device_id, type));
-  StreamControls controls;
-  if (blink::IsAudioInputMediaType(type)) {
-    controls.audio.stream_type = type;
-    controls.audio.device_ids.push_back(device_id);
-  } else if (blink::IsVideoInputMediaType(type)) {
-    controls.video.stream_type = type;
-    controls.video.device_ids.push_back(device_id);
-  } else {
-    NOTREACHED();
-  }
-  auto request = std::make_unique<OpenDeviceRequest>(
-      render_frame_host_id, requester_id, page_request_id, controls,
-      std::move(salt_and_origin), std::move(device_stopped_callback),
-      std::move(open_device_callback));
-  const std::string& label = AddRequest(std::move(request))->first;
-
-  // Post a task and handle the request asynchronously. The reason is that the
-  // requester won't have a label for the request until this function returns
-  // and thus can not handle a response. Using base::Unretained is safe since
-  // MediaStreamManager is deleted on the UI thread, after the IO thread has
-  // been stopped.
-  GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&MediaStreamManager::SetUpRequest,
-                                base::Unretained(this), label));
 }
 
 void MediaStreamManager::EnsureDeviceMonitorStarted() {
@@ -3316,8 +3188,7 @@ void MediaStreamManager::FinalizeRequestFailed(
   switch (request->request_type()) {
     case blink::MEDIA_DEVICE_ACCESS:
     case blink::MEDIA_GENERATE_STREAM:
-    case blink::MEDIA_GET_OPEN_DEVICE:
-    case blink::MEDIA_OPEN_DEVICE_PEPPER_ONLY: {
+    case blink::MEDIA_GET_OPEN_DEVICE: {
       request->FinalizeRequestFailed(result);
       break;
     }
@@ -3536,10 +3407,6 @@ void MediaStreamManager::HandleRequestDone(const std::string& label,
   CHECK(RequestDone(*request), base::NotFatalUntil::M158);
 
   switch (request->request_type()) {
-    case blink::MEDIA_OPEN_DEVICE_PEPPER_ONLY:
-      request->FinalizeRequest(label);
-      OnStreamStarted(label);
-      break;
     case blink::MEDIA_GENERATE_STREAM: {
       FinalizeGenerateStreams(label, request);
       OnStreamStarted(label);

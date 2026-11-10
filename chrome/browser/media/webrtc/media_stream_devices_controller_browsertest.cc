@@ -824,27 +824,6 @@ IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
   VerifyResultState(MediaStreamRequestResult::OK, true, true);
 }
 
-IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
-                       PepperRequestInsecure) {
-  InitWithUrl(GURL("http://www.example.com"));
-
-  prompt_factory()->set_response_type(
-      permissions::PermissionRequestManager::ACCEPT_ALL);
-
-  content::MediaStreamRequest request =
-      CreateRequestWithType(example_audio_id(), example_video_id(), false,
-                            blink::MEDIA_OPEN_DEVICE_PEPPER_ONLY);
-  // Explicitly mismatch the origin to ensure the permissions are requested with
-  // a different URL than the one its initiated from.
-  request.security_origin = GURL("http://www.not_init_example.com");
-
-  RequestPermissions(GetWebContents(), request);
-  ASSERT_EQ(0, prompt_factory()->TotalRequestCount());
-
-  VerifyResultState(MediaStreamRequestResult::INVALID_SECURITY_ORIGIN, false,
-                    false);
-}
-
 IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest, WebContentsDestroyed) {
   InitWithUrl(embedded_test_server()->GetURL("/simple.html"));
 
@@ -988,28 +967,6 @@ IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
   VerifyResultState(MediaStreamRequestResult::PERMISSION_DENIED_BY_CONTROLLER,
                     false, false);
   EXPECT_TRUE(GetContentSettings()->GetMicrophoneCameraState().empty());
-}
-
-IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
-                       PepperAudioRequestNoCamera) {
-  MediaCaptureDevicesDispatcher::GetInstance()->SetTestVideoCaptureDevices({});
-  InitWithUrl(GURL(chrome::kChromeUIVersionURL));
-  RequestPermissions(
-      GetWebContents(),
-      CreateRequestWithType(example_audio_id(), std::string(), false,
-                            blink::MEDIA_OPEN_DEVICE_PEPPER_ONLY));
-  VerifyResultState(MediaStreamRequestResult::OK, true, false);
-}
-
-IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
-                       PepperVideoRequestNoMic) {
-  MediaCaptureDevicesDispatcher::GetInstance()->SetTestAudioCaptureDevices({});
-  InitWithUrl(GURL(chrome::kChromeUIVersionURL));
-  RequestPermissions(
-      GetWebContents(),
-      CreateRequestWithType(std::string(), example_video_id(), false,
-                            blink::MEDIA_OPEN_DEVICE_PEPPER_ONLY));
-  VerifyResultState(MediaStreamRequestResult::OK, false, true);
 }
 
 IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,

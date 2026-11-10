@@ -41,12 +41,7 @@ class MockMojoMediaStreamDispatcherHost
   void StopStreamDevice(
       const String& device_id,
       const std::optional<base::UnguessableToken>& session_id) override;
-  void OpenDevice(int32_t request_id,
-                  const String& device_id,
-                  mojom::blink::MediaStreamType type,
-                  OpenDeviceCallback callback) override;
 
-  MOCK_METHOD1(CloseDevice, void(const String&));
   MOCK_METHOD3(SetCapturingLinkSecured,
                void(const std::optional<base::UnguessableToken>&,
                     mojom::blink::MediaStreamType,

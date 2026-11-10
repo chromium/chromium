@@ -588,57 +588,6 @@ void MediaStreamDispatcherHost::StopStreamDevice(
       session_id.value_or(base::UnguessableToken()));
 }
 
-void MediaStreamDispatcherHost::OpenDevice(int32_t page_request_id,
-                                           const std::string& device_id,
-                                           blink::mojom::MediaStreamType type,
-                                           OpenDeviceCallback callback) {
-  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M152);
-
-  // OpenDevice is only supported for microphone or webcam capture.
-  if (type != blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE &&
-      type != blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
-    ReceivedBadMessage(render_frame_host_id_.child_id,
-                       bad_message::MDDH_INVALID_DEVICE_TYPE_REQUEST);
-    return;
-  }
-
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(get_salt_and_origin_cb_, render_frame_host_id_,
-                     base::BindPostTaskToCurrentDefault(base::BindOnce(
-                         &MediaStreamDispatcherHost::DoOpenDevice,
-                         weak_factory_.GetWeakPtr(), page_request_id, device_id,
-                         type, std::move(callback)))));
-}
-
-void MediaStreamDispatcherHost::DoOpenDevice(
-    int32_t page_request_id,
-    const std::string& device_id,
-    blink::mojom::MediaStreamType type,
-    OpenDeviceCallback callback,
-    const MediaDeviceSaltAndOrigin& salt_and_origin) {
-  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M152);
-
-  if (!MediaStreamManager::IsOriginAllowed(render_frame_host_id_.child_id,
-                                           salt_and_origin.origin())) {
-    std::move(callback).Run(false /* success */, std::string(),
-                            blink::MediaStreamDevice());
-    return;
-  }
-
-  media_stream_manager_->OpenDevice(
-      render_frame_host_id_, requester_id_, page_request_id, device_id, type,
-      std::move(salt_and_origin), std::move(callback),
-      base::BindRepeating(&MediaStreamDispatcherHost::OnDeviceStopped,
-                          weak_factory_.GetWeakPtr()));
-}
-
-void MediaStreamDispatcherHost::CloseDevice(const std::string& label) {
-  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M152);
-
-  media_stream_manager_->CancelRequest(label);
-}
-
 void MediaStreamDispatcherHost::SetCapturingLinkSecured(
     const std::optional<base::UnguessableToken>& session_id,
     blink::mojom::MediaStreamType type,

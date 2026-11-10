@@ -342,7 +342,7 @@ interface MediaStreamDispatcherHost {
   [EnableIfNot=is_android|is_ios]
   FocusCapturedSurface(string label, bool focus);
 
-  // Cancels the request for a new media stream or opening a device.
+  // Cancels the request for a new media stream.
   CancelRequest(int32 request_id);
 
   // Closes a stream device that has been opened by GenerateStream.
@@ -352,13 +352,6 @@ interface MediaStreamDispatcherHost {
   // will be kept alive until all the transfers are complete.
   StopStreamDevice(
       string device_id, mojo_base.mojom.UnguessableToken? session_id);
-
-  // Opens a device identified by `device_id`.
-  OpenDevice(int32 request_id, string device_id, MediaStreamType type)
-      => (bool success, string label, MediaStreamDevice device);
-
-  // Cancels an open request identified by `label`.
-  CloseDevice(string label);
 
   // Tells the browser process if the video capture is secure (i.e., all
   // connected video sinks meet the requirement of output protection.).

@@ -30,7 +30,6 @@ enum MediaStreamRequestType {
   MEDIA_DEVICE_UPDATE,
   MEDIA_GENERATE_STREAM,
   MEDIA_GET_OPEN_DEVICE,
-  MEDIA_OPEN_DEVICE_PEPPER_ONLY  // Only used in requests made by Pepper.
 };
 
 // Convenience predicates to determine whether the given type represents some

@@ -131,11 +131,6 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
   void StopStreamDevice(
       const std::string& device_id,
       const std::optional<base::UnguessableToken>& session_id) override;
-  void OpenDevice(int32_t request_id,
-                  const std::string& device_id,
-                  blink::mojom::MediaStreamType type,
-                  OpenDeviceCallback callback) override;
-  void CloseDevice(const std::string& label) override;
   void SetCapturingLinkSecured(
       const std::optional<base::UnguessableToken>& session_id,
       blink::mojom::MediaStreamType type,
@@ -189,11 +184,6 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
       blink::mojom::StreamSelectionInfoPtr audio_stream_selection_info_ptr,
       GenerateStreamsCallback callback,
       GenerateStreamsUIThreadCheckResult ui_check_result);
-  void DoOpenDevice(int32_t request_id,
-                    const std::string& device_id,
-                    blink::mojom::MediaStreamType type,
-                    OpenDeviceCallback callback,
-                    const MediaDeviceSaltAndOrigin& salt_and_origin);
 
   void OnDeviceStopped(const std::string& label,
                        const blink::MediaStreamDevice& device);

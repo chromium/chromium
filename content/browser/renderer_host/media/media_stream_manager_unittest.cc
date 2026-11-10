@@ -343,11 +343,6 @@ class TestMediaStreamDispatcherHost
   void StopStreamDevice(
       const std::string& device_id,
       const std::optional<base::UnguessableToken>& session_id) override {}
-  void OpenDevice(int32_t request_id,
-                  const std::string& device_id,
-                  blink::mojom::MediaStreamType type,
-                  OpenDeviceCallback callback) override {}
-  void CloseDevice(const std::string& label) override {}
   void SetCapturingLinkSecured(
       const std::optional<base::UnguessableToken>& session_id,
       blink::mojom::MediaStreamType type,

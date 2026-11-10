@@ -105,11 +105,6 @@ class CONTENT_EXPORT MediaStreamManager
       blink::mojom::StreamDevicesSetPtr stream_devices_set,
       bool pan_tilt_zoom_allowed)>;
 
-  using OpenDeviceCallback =
-      base::OnceCallback<void(bool success,
-                              const std::string& label,
-                              const blink::MediaStreamDevice& device)>;
-
   using DeviceStoppedCallback =
       base::RepeatingCallback<void(const std::string& label,
                                    const blink::MediaStreamDevice& device)>;
@@ -286,19 +281,6 @@ class CONTENT_EXPORT MediaStreamManager
                         int requester_id,
                         const std::string& device_id,
                         const base::UnguessableToken& session_id);
-
-  // Open a device identified by |device_id|. |type| must be either
-  // MEDIA_DEVICE_AUDIO_CAPTURE or MEDIA_DEVICE_VIDEO_CAPTURE.
-  // |device_stopped_callback| is set to receive device stopped notifications.
-  // The request is identified using string returned to the caller.
-  void OpenDevice(GlobalRenderFrameHostId render_frame_host_id,
-                  int requester_id,
-                  int page_request_id,
-                  const std::string& device_id,
-                  blink::mojom::MediaStreamType type,
-                  MediaDeviceSaltAndOrigin salt_and_origin,
-                  OpenDeviceCallback open_device_callback,
-                  DeviceStoppedCallback device_stopped_callback);
 
   // Find `device_id` in the list of `requests_` for `render_frame_host_id`,
   // and returns its session id, or an empty base::UnguessableToken if not
@@ -549,8 +531,6 @@ class CONTENT_EXPORT MediaStreamManager
   class GenerateStreamsRequest;
   // Contains data specific for GetOpenDevice requests
   class GetOpenDeviceRequest;
-  // Contains data specific for OpenDevice requests
-  class OpenDeviceRequest;
 
   // |DeviceRequests| is a list to ensure requests are processed in the order
   // they arrive. The first member of the pair is the label of the

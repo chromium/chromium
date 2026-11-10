@@ -210,8 +210,7 @@ MediaStreamDevicesController::MediaStreamDevicesController(
       enumerator_(enumerator),
       request_(request),
       callback_(std::move(callback)) {
-  DCHECK(network::IsUrlPotentiallyTrustworthy(request_.security_origin) ||
-         request_.request_type == blink::MEDIA_OPEN_DEVICE_PEPPER_ONLY);
+  DCHECK(network::IsUrlPotentiallyTrustworthy(request_.security_origin));
 
   if (!enumerator_)
     enumerator_ = &owned_enumerator_;
@@ -258,31 +257,6 @@ blink::mojom::StreamDevicesSetPtr MediaStreamDevicesController::GetDevices(
       blink::mojom::StreamDevices::New());
   blink::mojom::StreamDevices& devices = *stream_devices_set->stream_devices[0];
   switch (request_.request_type) {
-    case blink::MEDIA_OPEN_DEVICE_PEPPER_ONLY: {
-      // For open device request, when requested device_id is empty, pick
-      // the first available of the given type. If requested device_id is
-      // not empty, return the desired device if it's available. Otherwise,
-      // return no device.
-      if (audio_allowed &&
-          request_.audio_type ==
-              blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
-        DCHECK_EQ(blink::mojom::MediaStreamType::NO_SERVICE,
-                  request_.video_type);
-        devices.audio_device =
-            enumerator_->GetPreferredAudioDeviceForBrowserContext(
-                browser_context, request_.requested_audio_device_ids);
-      } else if (video_allowed &&
-                 request_.video_type ==
-                     blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
-        DCHECK_EQ(blink::mojom::MediaStreamType::NO_SERVICE,
-                  request_.audio_type);
-        // Pepper API opens only one device at a time.
-        devices.video_device =
-            enumerator_->GetPreferredVideoDeviceForBrowserContext(
-                browser_context, request_.requested_video_device_ids);
-      }
-      break;
-    }
     case blink::MEDIA_GENERATE_STREAM: {
       // Get the exact audio or video device if an id is specified.
       if (audio_allowed && !request_.requested_audio_device_ids.empty()) {
@@ -364,8 +338,7 @@ ContentSetting MediaStreamDevicesController::GetContentSetting(
   DCHECK(permission == blink::PermissionType::AUDIO_CAPTURE ||
          permission == blink::PermissionType::VIDEO_CAPTURE);
   DCHECK(!request_.security_origin.is_empty());
-  DCHECK(network::IsUrlPotentiallyTrustworthy(request_.security_origin) ||
-         request_.request_type == blink::MEDIA_OPEN_DEVICE_PEPPER_ONLY);
+  DCHECK(network::IsUrlPotentiallyTrustworthy(request_.security_origin));
   if (!PermissionIsRequested(permission, request)) {
     // No denial reason set as it will have been previously set.
     return CONTENT_SETTING_DEFAULT;

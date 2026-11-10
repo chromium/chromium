@@ -44,7 +44,6 @@ void RecordMediaStreamRequestResponseMetric(
     case blink::MEDIA_DEVICE_ACCESS:
     case blink::MEDIA_GENERATE_STREAM:
     case blink::MEDIA_GET_OPEN_DEVICE:
-    case blink::MEDIA_OPEN_DEVICE_PEPPER_ONLY:
       return;
   }
 }

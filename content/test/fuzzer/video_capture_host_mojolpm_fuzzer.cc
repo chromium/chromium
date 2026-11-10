@@ -47,6 +47,8 @@
 #include "media/capture/video/video_capture_system_impl.h"
 #include "media/capture/video_capture_types.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
+#include "third_party/blink/public/common/mediastream/media_stream_controls.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/libprotobuf-mutator/src/src/libfuzzer/libfuzzer_macro.h"
 
 constexpr const char* kCmdline[] = {"video_capture_host_mojolpm_fuzzer",
@@ -118,7 +120,7 @@ class VideoCaptureHostTestcase {
 
   // We want to open video sessions, to enable behaviour for the fuzzer.
   // To do this, we enumerate with the `MediaDeviceManager` (on UI thread),
-  // then `OpenDevice` with the `MediaStreamManager` (on IO thread).
+  // then `GenerateStreams` with the `MediaStreamManager` (on IO thread).
   // `OpenSession` is repeated for each `render_process_id`.
   // So the same devices are opened for multiple ids.
   void OpenSession(int render_process_id,
@@ -154,12 +156,13 @@ class VideoCaptureHostTestcase {
 
   // A callback which confirms opening device success. This provides the
   // session ids for the devices, stored in `opened_session_ids_`.
-  void OnDeviceOpened(base::OnceClosure quit_closure,
-                      int render_process_id,
-                      uint32_t device_index,
-                      bool success,
-                      const std::string& label,
-                      const blink::MediaStreamDevice& opened_device);
+  void OnStreamsGenerated(base::OnceClosure quit_closure,
+                          int render_process_id,
+                          uint32_t device_index,
+                          blink::mojom::MediaStreamRequestResult result,
+                          const std::string& label,
+                          blink::mojom::StreamDevicesSetPtr stream_devices_set,
+                          bool pan_tilt_zoom_allowed);
 
   // Create and bind a new instance for fuzzing. This needs to make sure that
   // the new instance has been created and bound on the correct sequence
@@ -461,15 +464,24 @@ void VideoCaptureHostTestcase::OpenSessionOnIOThread(
   // Open video devices.
   for (uint32_t device_index = 0; device_index < video_devices.size();
        device_index++) {
+    blink::StreamControls controls(/*request_audio=*/false,
+                                   /*request_video=*/true);
+    controls.video.device_ids = {video_devices[device_index].device_id};
+
     base::RunLoop run_loop{base::RunLoop::Type::kNestableTasksAllowed};
-    media_stream_manager_->OpenDevice(
+    media_stream_manager_->GenerateStreams(
         {render_process_id, render_frame_id}, requester_id, page_request_id,
-        video_devices[device_index].device_id,
-        blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, salt_and_origin,
-        base::BindOnce(&VideoCaptureHostTestcase::OnDeviceOpened,
+        controls, salt_and_origin, /*user_gesture=*/false,
+        blink::mojom::StreamSelectionInfo::NewSearchOnlyByDeviceId({}),
+        base::BindOnce(&VideoCaptureHostTestcase::OnStreamsGenerated,
                        base::Unretained(this), run_loop.QuitClosure(),
                        render_process_id, device_index),
-        content::MediaStreamManager::DeviceStoppedCallback());
+        /*device_stopped_callback=*/base::DoNothing(),
+        /*device_changed_callback=*/base::DoNothing(),
+        /*device_request_state_change_callback=*/base::DoNothing(),
+        /*device_capture_configuration_change_callback=*/base::DoNothing(),
+        /*device_capture_handle_change_callback=*/base::DoNothing(),
+        /*zoom_level_change_callback=*/base::DoNothing());
     run_loop.Run();
   }
 
@@ -528,16 +540,18 @@ void VideoCaptureHostTestcase::VideoInputDevicesEnumerated(
   std::move(quit_closure).Run();
 }
 
-void VideoCaptureHostTestcase::OnDeviceOpened(
+void VideoCaptureHostTestcase::OnStreamsGenerated(
     base::OnceClosure quit_closure,
     int render_process_id,
     uint32_t device_index,
-    bool success,
+    blink::mojom::MediaStreamRequestResult result,
     const std::string& label,
-    const blink::MediaStreamDevice& opened_device) {
-  if (success) {
+    blink::mojom::StreamDevicesSetPtr stream_devices_set,
+    bool pan_tilt_zoom_allowed) {
+  if (result == blink::mojom::MediaStreamRequestResult::OK &&
+      stream_devices_set->stream_devices[0]->video_device) {
     opened_session_ids_[render_process_id][device_index] =
-        opened_device.session_id();
+        stream_devices_set->stream_devices[0]->video_device->session_id();
   }
   std::move(quit_closure).Run();
 }
