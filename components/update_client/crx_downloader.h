@@ -94,7 +94,17 @@ class CrxDownloader : public base::RefCountedThreadSafe<CrxDownloader> {
   // behavior is undefined. The callback gets invoked if the download can't
   // be started. |expected_hash| represents the SHA256 cryptographic hash of
   // the download payload, represented as a hexadecimal string. Returns a
-  // callback that can be run to cancel the download.
+  // callback that can be run to cancel the download. Cancelling interrupts the
+  // attempt in progress, whether it is for a fallback URL or in a successor
+  // downloader, if that downloader supports it (only `UrlFetcherDownloader`
+  // does today; BITS, Delivery Optimization, and the macOS
+  // `BackgroundDownloader` do not). In any case, no other URL or successor
+  // downloader is tried afterwards, and a cancelled download that fails
+  // completes with `CrxDownloaderError::CANCELLED`. A downloader that can't
+  // interrupt its transfer may still complete it: if the file passes the hash
+  // verification, the download completes successfully so that the file remains
+  // available to downloaders that cache it (such as the macOS
+  // `BackgroundDownloader`).
   base::OnceClosure StartDownloadFromUrl(const GURL& url,
                                          const std::string& expected_hash,
                                          ProgressCallback progress_callback,
@@ -142,6 +152,16 @@ class CrxDownloader : public base::RefCountedThreadSafe<CrxDownloader> {
                            const Result& result,
                            const DownloadMetrics& download_metrics);
 
+  // Runs DoStartDownload() for `url` and keeps the cancellation callback of the
+  // attempt, unless the attempt completed during the call.
+  void StartAttempt(const GURL& url);
+
+  // Cancels the download and the attempt in progress.
+  void CancelDownload();
+
+  // Ends the download handled by this downloader with `result`.
+  void FinishDownload(const Result& result);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Used to post callbacks to the main sequence.
@@ -158,6 +178,19 @@ class CrxDownloader : public base::RefCountedThreadSafe<CrxDownloader> {
   std::vector<GURL>::iterator current_url_;
 
   std::vector<DownloadMetrics> download_metrics_;
+
+  // True once the callback returned by StartDownload() has run.
+  bool is_cancelled_ = false;
+
+  // True while an attempt of this downloader is in progress, from
+  // DoStartDownload() until OnDownloadComplete().
+  bool is_attempt_in_progress_ = false;
+
+  // Cancels the attempt in progress: the cancellation callback returned by
+  // DoStartDownload() for the current URL, or the one returned by the
+  // successor once the download is routed to it. Reset when an attempt of
+  // this downloader completes, since it may retain this downloader.
+  base::OnceClosure cancel_attempt_callback_;
 };
 
 std::ostream& operator<<(std::ostream& os,

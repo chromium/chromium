@@ -7,10 +7,12 @@
 #include <stdint.h>
 
 #include <utility>
+#include <vector>
 
 #include "base/byte_size.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
@@ -29,9 +31,12 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::ContentsEqual;
+using ::testing::ElementsAre;
+using ::testing::IsEmpty;
 
 namespace update_client {
 namespace {
@@ -41,7 +46,8 @@ constexpr char kTestFileName[] = "jebgalgnebhfojomionfpkfelancnnkf.crx";
 constexpr char hash_jebg[] =
     "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498";
 
-// A successor downloader that fails the test if it is started.
+// A successor downloader that fails the test if it is started. It also fails
+// the attempt, so that the download completes instead of hanging.
 class FailingSuccessorDownloader : public CrxDownloader {
  public:
   FailingSuccessorDownloader() : CrxDownloader(nullptr) {}
@@ -51,8 +57,108 @@ class FailingSuccessorDownloader : public CrxDownloader {
 
   base::OnceClosure DoStartDownload(const GURL& url) override {
     ADD_FAILURE() << "Successor started after cancellation: " << url;
+    DownloadMetrics metrics;
+    metrics.url = url;
+    metrics.error = std::to_underlying(CrxDownloaderError::GENERIC_ERROR);
+    OnDownloadComplete(/*is_handled=*/true, {.error = metrics.error}, metrics);
     return base::DoNothing();
   }
+};
+
+// A downloader whose attempts only complete when the test says so. The
+// attempts are numbered from 0, in the order they start. Running the
+// cancellation callback of an attempt records its number. Then, if
+// `completes_on_cancel` is true, the attempt completes with CANCELLED, as with
+// UrlFetcherDownloader. Otherwise, the transfer goes on, as with BITS,
+// Delivery Optimization and NSURLSession, which can't interrupt it.
+class ControlledDownloader : public CrxDownloader {
+ public:
+  ControlledDownloader(scoped_refptr<CrxDownloader> successor,
+                       bool completes_on_cancel)
+      : CrxDownloader(std::move(successor)),
+        completes_on_cancel_(completes_on_cancel) {}
+
+  // Fails the attempt in progress with `error`. The URL is not handled, so
+  // the download may go on with the next URL or the successor downloader.
+  void FailAttempt(int error) {
+    DownloadMetrics metrics;
+    metrics.url = url();
+    metrics.error = error;
+    OnDownloadComplete(/*is_handled=*/false, {.error = error}, metrics);
+  }
+
+  // Completes the attempt in progress with the downloaded file at `path`.
+  void SucceedAttempt(const base::FilePath& path) {
+    DownloadMetrics metrics;
+    metrics.url = url();
+    OnDownloadComplete(/*is_handled=*/true, {.response = path}, metrics);
+  }
+
+  // Sets a callback to run when the next attempt starts.
+  void set_attempt_started_callback(base::OnceClosure callback) {
+    attempt_started_callback_ = std::move(callback);
+  }
+
+  int num_attempts() const { return num_attempts_; }
+
+  const std::vector<int>& cancelled_attempts() const {
+    return cancelled_attempts_;
+  }
+
+ private:
+  ~ControlledDownloader() override = default;
+
+  base::OnceClosure DoStartDownload(const GURL& url) override {
+    const int attempt = num_attempts_++;
+    if (attempt_started_callback_) {
+      std::move(attempt_started_callback_).Run();
+    }
+    return base::BindOnce(&ControlledDownloader::CancelAttempt, this, attempt);
+  }
+
+  void CancelAttempt(int attempt) {
+    cancelled_attempts_.push_back(attempt);
+    if (!completes_on_cancel_) {
+      return;
+    }
+    DownloadMetrics metrics;
+    metrics.url = url();
+    metrics.error = std::to_underlying(CrxDownloaderError::CANCELLED);
+    OnDownloadComplete(/*is_handled=*/true, {.error = metrics.error}, metrics);
+  }
+
+  const bool completes_on_cancel_;
+  int num_attempts_ = 0;
+  std::vector<int> cancelled_attempts_;
+  base::OnceClosure attempt_started_callback_;
+};
+
+// Records how a download completes.
+class DownloadRecorder {
+ public:
+  CrxDownloader::DownloadCallback Callback() {
+    return base::BindLambdaForTesting(
+        [this](const CrxDownloader::Result& result) {
+          ++num_completions_;
+          result_ = result;
+          run_loop_.Quit();
+        });
+  }
+
+  // Waits until the download completes, or until Quit() is called.
+  void Wait() { run_loop_.Run(); }
+
+  // Ends Wait() without a completion, so that a test fails instead of hanging.
+  void Quit() { run_loop_.Quit(); }
+
+  int num_completions() const { return num_completions_; }
+
+  const CrxDownloader::Result& result() const { return result_; }
+
+ private:
+  base::RunLoop run_loop_;
+  int num_completions_ = 0;
+  CrxDownloader::Result result_;
 };
 
 }  // namespace
@@ -444,28 +550,260 @@ TEST_F(CrxDownloaderTest, CancelDoesNotFallBackToSuccessor) {
   test_url_loader_factory_.SetInterceptor(base::BindLambdaForTesting(
       [&](const network::ResourceRequest&) { request_loop.Quit(); }));
 
-  base::RunLoop run_loop;
-  int num_complete_calls = 0;
-  CrxDownloader::Result result;
+  DownloadRecorder recorder;
   base::OnceClosure cancel = downloader->StartDownloadFromUrl(
       GURL("http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf"),
       hash_jebg,
-      /*progress_callback=*/base::DoNothing(),
-      base::BindLambdaForTesting([&](const CrxDownloader::Result& r) {
-        ++num_complete_calls;
-        result = r;
-        run_loop.Quit();
-      }));
+      /*progress_callback=*/base::DoNothing(), recorder.Callback());
   request_loop.Run();
-  ASSERT_EQ(0, num_complete_calls);
+  ASSERT_EQ(0, recorder.num_completions());
 
   std::move(cancel).Run();
-  run_loop.Run();
+  recorder.Wait();
 
-  EXPECT_EQ(1, num_complete_calls);
-  EXPECT_EQ(std::to_underlying(CrxDownloaderError::CANCELLED), result.error);
-  EXPECT_TRUE(result.response.empty());
+  EXPECT_EQ(1, recorder.num_completions());
+  EXPECT_EQ(std::to_underlying(CrxDownloaderError::CANCELLED),
+            recorder.result().error);
+  EXPECT_TRUE(recorder.result().response.empty());
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
+}
+
+// Cancelling a download that is retried from its second URL cancels the
+// retry, not the first attempt, and does not fall back to the successor.
+TEST_F(CrxDownloaderTest, CancelInterruptsUrlRetry) {
+  auto downloader = base::MakeRefCounted<ControlledDownloader>(
+      base::MakeRefCounted<FailingSuccessorDownloader>(),
+      /*completes_on_cancel=*/true);
+
+  DownloadRecorder recorder;
+  base::OnceClosure cancel = downloader->StartDownload(
+      {GURL("http://localhost/download/first.crx"),
+       GURL("http://localhost/download/second.crx")},
+      hash_jebg, /*progress_callback=*/base::DoNothing(), recorder.Callback());
+  ASSERT_EQ(1, downloader->num_attempts());
+
+  base::RunLoop retry_loop;
+  downloader->set_attempt_started_callback(retry_loop.QuitClosure());
+  downloader->FailAttempt(net::ERR_FILE_NOT_FOUND);
+  retry_loop.Run();
+  ASSERT_EQ(2, downloader->num_attempts());
+
+  std::move(cancel).Run();
+  recorder.Wait();
+
+  EXPECT_THAT(downloader->cancelled_attempts(), ElementsAre(1));
+  EXPECT_EQ(1, recorder.num_completions());
+  EXPECT_EQ(std::to_underlying(CrxDownloaderError::CANCELLED),
+            recorder.result().error);
+  EXPECT_TRUE(recorder.result().response.empty());
+
+  const auto download_metrics = downloader->download_metrics();
+  ASSERT_EQ(2u, download_metrics.size());
+  EXPECT_EQ(net::ERR_FILE_NOT_FOUND, download_metrics[0].error);
+  EXPECT_EQ(std::to_underlying(CrxDownloaderError::CANCELLED),
+            download_metrics[1].error);
+}
+
+// Cancelling a download that fell back to the successor downloader cancels
+// the attempt of the successor.
+TEST_F(CrxDownloaderTest, CancelInterruptsSuccessor) {
+  auto successor = base::MakeRefCounted<ControlledDownloader>(
+      /*successor=*/nullptr, /*completes_on_cancel=*/true);
+  auto downloader = base::MakeRefCounted<ControlledDownloader>(
+      successor, /*completes_on_cancel=*/true);
+
+  DownloadRecorder recorder;
+  base::OnceClosure cancel = downloader->StartDownloadFromUrl(
+      GURL("http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx"),
+      hash_jebg, /*progress_callback=*/base::DoNothing(), recorder.Callback());
+
+  base::RunLoop fallback_loop;
+  successor->set_attempt_started_callback(fallback_loop.QuitClosure());
+  downloader->FailAttempt(net::ERR_FILE_NOT_FOUND);
+  fallback_loop.Run();
+  ASSERT_EQ(1, successor->num_attempts());
+
+  std::move(cancel).Run();
+  recorder.Wait();
+
+  EXPECT_THAT(downloader->cancelled_attempts(), IsEmpty());
+  EXPECT_THAT(successor->cancelled_attempts(), ElementsAre(0));
+  EXPECT_EQ(1, recorder.num_completions());
+  EXPECT_EQ(std::to_underlying(CrxDownloaderError::CANCELLED),
+            recorder.result().error);
+  EXPECT_TRUE(recorder.result().response.empty());
+
+  const auto download_metrics = downloader->download_metrics();
+  ASSERT_EQ(2u, download_metrics.size());
+  EXPECT_EQ(net::ERR_FILE_NOT_FOUND, download_metrics[0].error);
+  EXPECT_EQ(std::to_underlying(CrxDownloaderError::CANCELLED),
+            download_metrics[1].error);
+}
+
+// A cancelled download whose downloader can't interrupt the transfer, and
+// that then fails with another error, completes with CANCELLED without trying
+// the next URL or the successor downloader.
+TEST_F(CrxDownloaderTest, CancelPreventsRetryAfterUninterruptibleFailure) {
+  auto downloader = base::MakeRefCounted<ControlledDownloader>(
+      base::MakeRefCounted<FailingSuccessorDownloader>(),
+      /*completes_on_cancel=*/false);
+
+  DownloadRecorder recorder;
+  base::OnceClosure cancel = downloader->StartDownload(
+      {GURL("http://localhost/download/first.crx"),
+       GURL("http://localhost/download/second.crx")},
+      hash_jebg, /*progress_callback=*/base::DoNothing(), recorder.Callback());
+  // Attempt 0 has already started: any other attempt would be a retry after
+  // the cancellation.
+  downloader->set_attempt_started_callback(base::BindLambdaForTesting([&] {
+    ADD_FAILURE() << "Next URL tried after cancellation";
+    recorder.Quit();
+  }));
+
+  std::move(cancel).Run();
+  EXPECT_THAT(downloader->cancelled_attempts(), ElementsAre(0));
+
+  downloader->FailAttempt(net::ERR_ABORTED);
+  recorder.Wait();
+
+  EXPECT_EQ(1, downloader->num_attempts());
+  EXPECT_EQ(1, recorder.num_completions());
+  EXPECT_EQ(std::to_underlying(CrxDownloaderError::CANCELLED),
+            recorder.result().error);
+  EXPECT_EQ(0, recorder.result().extra_code1);
+  EXPECT_TRUE(recorder.result().response.empty());
+
+  // The metrics report the actual outcome of the transfer.
+  const auto download_metrics = downloader->download_metrics();
+  ASSERT_EQ(1u, download_metrics.size());
+  EXPECT_EQ(net::ERR_ABORTED, download_metrics[0].error);
+}
+
+// Cancelling a download after its attempt failed, but before the failure is
+// handled, does not run the cancellation callback of the completed attempt,
+// and completes with CANCELLED without trying the next URL.
+TEST_F(CrxDownloaderTest, CancelAfterFailureDoesNotCancelCompletedAttempt) {
+  auto downloader = base::MakeRefCounted<ControlledDownloader>(
+      base::MakeRefCounted<FailingSuccessorDownloader>(),
+      /*completes_on_cancel=*/true);
+
+  DownloadRecorder recorder;
+  base::OnceClosure cancel = downloader->StartDownload(
+      {GURL("http://localhost/download/first.crx"),
+       GURL("http://localhost/download/second.crx")},
+      hash_jebg, /*progress_callback=*/base::DoNothing(), recorder.Callback());
+  // Attempt 0 has already started: any other attempt would be a retry after
+  // the cancellation.
+  downloader->set_attempt_started_callback(base::BindLambdaForTesting([&] {
+    ADD_FAILURE() << "Next URL tried after cancellation";
+    recorder.Quit();
+  }));
+
+  // The failure is handled by a posted task, which runs after the
+  // cancellation.
+  downloader->FailAttempt(net::ERR_FILE_NOT_FOUND);
+  std::move(cancel).Run();
+  recorder.Wait();
+
+  EXPECT_THAT(downloader->cancelled_attempts(), IsEmpty());
+  EXPECT_EQ(1, downloader->num_attempts());
+  EXPECT_EQ(1, recorder.num_completions());
+  EXPECT_EQ(std::to_underlying(CrxDownloaderError::CANCELLED),
+            recorder.result().error);
+  EXPECT_TRUE(recorder.result().response.empty());
+
+  const auto download_metrics = downloader->download_metrics();
+  ASSERT_EQ(1u, download_metrics.size());
+  EXPECT_EQ(net::ERR_FILE_NOT_FOUND, download_metrics[0].error);
+}
+
+// Cancelling a download while the file of its successful attempt is being
+// verified does not run the cancellation callback of the completed attempt:
+// the download completes successfully.
+TEST_F(CrxDownloaderTest, CancelDuringHashVerificationCompletesSuccessfully) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath file = temp_dir.GetPath().AppendASCII(kTestFileName);
+  ASSERT_TRUE(base::CopyFile(GetTestFilePath(kTestFileName), file));
+
+  auto downloader = base::MakeRefCounted<ControlledDownloader>(
+      base::MakeRefCounted<FailingSuccessorDownloader>(),
+      /*completes_on_cancel=*/true);
+
+  DownloadRecorder recorder;
+  base::OnceClosure cancel = downloader->StartDownloadFromUrl(
+      GURL("http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx"),
+      hash_jebg, /*progress_callback=*/base::DoNothing(), recorder.Callback());
+
+  // The file is verified by a posted task, whose reply runs after the
+  // cancellation.
+  downloader->SucceedAttempt(file);
+  std::move(cancel).Run();
+  recorder.Wait();
+
+  EXPECT_THAT(downloader->cancelled_attempts(), IsEmpty());
+  EXPECT_EQ(1, recorder.num_completions());
+  EXPECT_EQ(0, recorder.result().error);
+  EXPECT_EQ(file, recorder.result().response);
+  EXPECT_TRUE(base::PathExists(file));
+
+  const auto download_metrics = downloader->download_metrics();
+  ASSERT_EQ(1u, download_metrics.size());
+  EXPECT_EQ(0, download_metrics[0].error);
+}
+
+// A cancelled download routed to a successor that can't interrupt the
+// transfer, and whose transfer then fails, completes with CANCELLED without
+// trying the next URL in the successor or the successor of the successor.
+TEST_F(CrxDownloaderTest, CancelUninterruptibleSuccessorPreventsFallback) {
+  auto successor = base::MakeRefCounted<ControlledDownloader>(
+      base::MakeRefCounted<FailingSuccessorDownloader>(),
+      /*completes_on_cancel=*/false);
+  auto downloader = base::MakeRefCounted<ControlledDownloader>(
+      successor, /*completes_on_cancel=*/true);
+
+  DownloadRecorder recorder;
+  base::OnceClosure cancel = downloader->StartDownload(
+      {GURL("http://localhost/download/first.crx"),
+       GURL("http://localhost/download/second.crx")},
+      hash_jebg, /*progress_callback=*/base::DoNothing(), recorder.Callback());
+
+  // Both URLs fail in the first downloader, which falls back to the successor.
+  base::RunLoop retry_loop;
+  downloader->set_attempt_started_callback(retry_loop.QuitClosure());
+  downloader->FailAttempt(net::ERR_FILE_NOT_FOUND);
+  retry_loop.Run();
+  base::RunLoop fallback_loop;
+  successor->set_attempt_started_callback(fallback_loop.QuitClosure());
+  downloader->FailAttempt(net::ERR_FILE_NOT_FOUND);
+  fallback_loop.Run();
+  ASSERT_EQ(1, successor->num_attempts());
+
+  // Attempt 0 of the successor has already started: any other attempt would
+  // be a retry after the cancellation.
+  successor->set_attempt_started_callback(base::BindLambdaForTesting([&] {
+    ADD_FAILURE() << "Next URL tried after cancellation";
+    recorder.Quit();
+  }));
+
+  std::move(cancel).Run();
+  EXPECT_THAT(successor->cancelled_attempts(), ElementsAre(0));
+
+  successor->FailAttempt(net::ERR_ABORTED);
+  recorder.Wait();
+
+  EXPECT_THAT(downloader->cancelled_attempts(), IsEmpty());
+  EXPECT_EQ(1, successor->num_attempts());
+  EXPECT_EQ(1, recorder.num_completions());
+  EXPECT_EQ(std::to_underlying(CrxDownloaderError::CANCELLED),
+            recorder.result().error);
+  EXPECT_TRUE(recorder.result().response.empty());
+
+  const auto download_metrics = downloader->download_metrics();
+  ASSERT_EQ(3u, download_metrics.size());
+  EXPECT_EQ(net::ERR_FILE_NOT_FOUND, download_metrics[0].error);
+  EXPECT_EQ(net::ERR_FILE_NOT_FOUND, download_metrics[1].error);
+  EXPECT_EQ(net::ERR_ABORTED, download_metrics[2].error);
 }
 
 // Tests that falling back to a successor downloader succeeds and posts progress
