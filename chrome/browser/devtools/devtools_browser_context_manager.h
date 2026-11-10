@@ -11,10 +11,26 @@
 #include "base/no_destructor.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "content/public/browser/devtools_manager_delegate.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include <memory>
+
+#include "base/android/scoped_java_ref.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
+
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
+#endif  // BUILDFLAG(IS_ANDROID)
 
 class BrowserWindowInterface;
 class GlobalBrowserCollection;
@@ -35,6 +51,11 @@ class DevToolsBrowserContextManager : public BrowserCollectionObserver,
   void DisposeBrowserContext(
       content::BrowserContext* context,
       content::DevToolsManagerDelegate::DisposeCallback callback);
+#if BUILDFLAG(IS_ANDROID)
+  tabs::TabInterface* CreateTabForBrowserContext(
+      Profile* otr_profile,
+      std::unique_ptr<content::WebContents> web_contents);
+#endif  // BUILDFLAG(IS_ANDROID)
 
  private:
   friend class base::NoDestructor<DevToolsBrowserContextManager>;
@@ -56,6 +77,10 @@ class DevToolsBrowserContextManager : public BrowserCollectionObserver,
   base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
       browser_collection_observation_{this};
   base::flat_map<std::string, raw_ptr<Profile, CtnExperimental>> otr_profiles_;
+#if BUILDFLAG(IS_ANDROID)
+  absl::flat_hash_map<std::string, base::android::ScopedJavaGlobalRef<jobject>>
+      otr_tab_models_;
+#endif  // BUILDFLAG(IS_ANDROID)
   base::flat_map<std::string, content::DevToolsManagerDelegate::DisposeCallback>
       pending_context_disposals_;
 

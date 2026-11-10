@@ -7,10 +7,12 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "chrome/browser/android/devtools_manager_delegate_android.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/devtools/devtools_browser_context_manager.h"
 #include "chrome/browser/devtools/protocol/browser_handler_android.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
@@ -91,6 +93,9 @@ protocol::Response TargetHandlerAndroid::CreateTarget(
     return protocol::Response::ServerError("Could not find TabModelList");
   }
 
+  const bool enforce_incognito_isolation =
+      base::FeatureList::IsEnabled(chrome::android::kEnforceIncognitoIsolation);
+
   TabModel* tab_model = models[0];
   CHECK(tab_model);
 
@@ -110,8 +115,20 @@ protocol::Response TargetHandlerAndroid::CreateTarget(
         "Creating a target with a local URL is not allowed");
   }
 
-  Profile* const default_profile = tab_model->GetProfile();
+  CHECK(tab_model->GetProfile());
+  Profile* const default_profile =
+      enforce_incognito_isolation
+          ? tab_model->GetProfile()->GetOriginalProfile()
+          : tab_model->GetProfile();
   CHECK(default_profile);
+
+  if (enforce_incognito_isolation) {
+    tab_model = nullptr;
+    TabModelList::ForEach(default_profile, [&](TabModel* candidate) {
+      tab_model = candidate;
+      return false;
+    });
+  }
 
   Profile* profile = default_profile;
   if (browser_context_id.has_value()) {
@@ -131,7 +148,19 @@ protocol::Response TargetHandlerAndroid::CreateTarget(
   WebContents* web_contents = owned_web_contents.get();
   DevToolsManagerDelegateAndroid::MarkCreatedByDevTools(*web_contents);
 
-  if (new_window.value_or(false) && profile == default_profile) {
+  if (enforce_incognito_isolation && profile != default_profile) {
+    tabs::TabInterface* new_tab =
+        DevToolsBrowserContextManager::GetInstance().CreateTabForBrowserContext(
+            profile, std::move(owned_web_contents));
+    if (!new_tab || !new_tab->GetContents()) {
+      return protocol::Response::ServerError("Could not create a Tab");
+    }
+    web_contents = new_tab->GetContents();
+    content::NavigationController::LoadURLParams load_params(gurl);
+    web_contents->GetController().LoadURLWithParams(load_params);
+  } else if ((new_window.value_or(false) ||
+              (enforce_incognito_isolation && !tab_model)) &&
+             profile == default_profile) {
     BrowserWindowCreateParams create_params(*profile,
                                             /*from_user_gesture=*/false);
     create_params.web_contents = std::move(owned_web_contents);
@@ -157,7 +186,7 @@ protocol::Response TargetHandlerAndroid::CreateTarget(
       content::NavigationController::LoadURLParams load_params(gurl);
       load_params.transition_type = ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
       web_contents->GetController().LoadURLWithParams(load_params);
-    } else {
+    } else if (tab_model) {
       // Preserve the established target-creation behavior when Android cannot
       // create a separate browser window. The failed call destroyed its
       // supplied WebContents, so the fallback must create a fresh tab.
@@ -167,12 +196,12 @@ protocol::Response TargetHandlerAndroid::CreateTarget(
         return protocol::Response::ServerError("Could not create a Tab");
       }
       DevToolsManagerDelegateAndroid::MarkCreatedByDevTools(*web_contents);
+    } else {
+      return protocol::Response::ServerError("Could not create a Tab");
     }
   } else {
-    // Insert the pre-created WebContents so default-profile and explicit-
-    // context targets use the same tab-model path. Keeping disposable profiles
-    // in the current model also avoids racing context disposal with a pending
-    // Android Activity.
+    CHECK(tab_model);
+    // Insert the pre-created WebContents into the regular TabModel.
     tabs::TabInterface* new_tab = tab_model->CreateTab(
         /*parent=*/nullptr, std::move(owned_web_contents),
         TabModel::kInvalidIndex, TabModel::TabLaunchType::FROM_CHROME_UI,

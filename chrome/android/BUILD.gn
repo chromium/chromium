@@ -2841,6 +2841,7 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/chrome/browser/device_dialog/SerialChooserDialog.java",
       "java/src/org/chromium/chrome/browser/device_dialog/UsbChooserDialog.java",
       "java/src/org/chromium/chrome/browser/devtools/DevToolsActivity.java",
+      "java/src/org/chromium/chrome/browser/devtools/DevToolsBrowserContextTabModel.java",
       "java/src/org/chromium/chrome/browser/download/DownloadController.java",
       "java/src/org/chromium/chrome/browser/download/DownloadItem.java",
       "java/src/org/chromium/chrome/browser/download/DownloadManagerService.java",
