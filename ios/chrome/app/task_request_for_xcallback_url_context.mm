@@ -18,6 +18,7 @@
 #import "ios/chrome/app/startup/app_startup_utils.h"
 #import "ios/chrome/app/task_request_url_context_private.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/app_group/app_group_utils.h"
 #import "ios/chrome/common/x_callback_url.h"
@@ -266,12 +267,10 @@ std::optional<AppGroupCommandTab> TabForAppGroupCommand(
   }
 
   [self openTabWithSceneState:sceneState
-                  externalURL:tab->url
-                   virtualURL:GURL()
+                urlLoadParams:UrlLoadParams::InNewTab(tab->url)
                    targetMode:tab->target_mode
             postOpeningAction:tab->post_opening_action
-        postOpeningCompletion:nil
-             fromWidgetOrSiri:NO];
+        postOpeningCompletion:nil];
 }
 
 // Opens the http(s) URL passed in the `url` query parameter of the `/open`
@@ -286,13 +285,11 @@ std::optional<AppGroupCommandTab> TabForAppGroupCommand(
   }
 
   [self openTabWithSceneState:sceneState
-                  externalURL:externalURL
-                   virtualURL:GURL()
+                urlLoadParams:UrlLoadParams::InNewTab(externalURL)
                    targetMode:ApplicationModeForTabOpening::UNDETERMINED
             postOpeningAction:XCallbackPoaToPostOpeningAction(
                                   parameters[kPostOpeningActionParameter])
-        postOpeningCompletion:nil
-             fromWidgetOrSiri:NO];
+        postOpeningCompletion:nil];
 }
 
 @end

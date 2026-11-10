@@ -12,8 +12,8 @@
 #import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/app/task_request_url_context.h"
 
-class GURL;
 @class SceneState;
+struct UrlLoadParams;
 
 // Class extension declaring private properties and methods of
 // TaskRequestForURLContext for use by its subclasses.
@@ -45,17 +45,15 @@ class GURL;
     targetModeForSceneState:(SceneState*)sceneState
                 defaultMode:(ApplicationModeForTabOpening)defaultMode;
 
-// Opens a tab with the specified parameters and dismisses modals. At most one
-// of `postOpeningAction` (other than `NO_ACTION`) and `postOpeningCompletion`
-// may be provided. If `postOpeningCompletion` is non-nil, it is executed after
+// Opens a tab loading `urlLoadParams` and dismisses modals. At most one of
+// `postOpeningAction` (other than `NO_ACTION`) and `postOpeningCompletion` may
+// be provided. If `postOpeningCompletion` is non-nil, it is executed after
 // opening; otherwise `postOpeningAction` is resolved via `TabOpening`.
 - (void)openTabWithSceneState:(SceneState*)sceneState
-                  externalURL:(const GURL&)externalURL
-                   virtualURL:(const GURL&)virtualURL
+                urlLoadParams:(const UrlLoadParams&)urlLoadParams
                    targetMode:(ApplicationModeForTabOpening)targetMode
             postOpeningAction:(TabOpeningPostOpeningAction)postOpeningAction
-        postOpeningCompletion:(ProceduralBlock)postOpeningCompletion
-             fromWidgetOrSiri:(BOOL)fromWidgetOrSiri;
+        postOpeningCompletion:(ProceduralBlock)postOpeningCompletion;
 
 @end
 

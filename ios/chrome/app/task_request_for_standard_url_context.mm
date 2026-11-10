@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/google_one_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/base/url_util.h"
 #import "url/gurl.h"
@@ -289,12 +290,10 @@ void ShowGoogleOneForURL(SceneState* scene_state, const GURL& url) {
   }
 
   [self openTabWithSceneState:sceneState
-                  externalURL:externalGURL
-                   virtualURL:virtualGURL
+                urlLoadParams:UrlLoadParams::InNewTab(externalGURL, virtualGURL)
                    targetMode:targetMode
             postOpeningAction:postOpeningAction
-        postOpeningCompletion:postOpeningCompletion
-             fromWidgetOrSiri:NO];
+        postOpeningCompletion:postOpeningCompletion];
 }
 
 - (NSString*)gaiaID {

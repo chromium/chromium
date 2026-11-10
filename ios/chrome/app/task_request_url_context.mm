@@ -196,21 +196,15 @@ void TriggerPostOpeningAction(id<TabOpening> tab_opener,
 }
 
 - (void)openTabWithSceneState:(SceneState*)sceneState
-                  externalURL:(const GURL&)externalURL
-                   virtualURL:(const GURL&)virtualURL
+                urlLoadParams:(const UrlLoadParams&)urlLoadParams
                    targetMode:(ApplicationModeForTabOpening)targetMode
             postOpeningAction:(TabOpeningPostOpeningAction)postOpeningAction
-        postOpeningCompletion:(ProceduralBlock)postOpeningCompletion
-             fromWidgetOrSiri:(BOOL)fromWidgetOrSiri {
+        postOpeningCompletion:(ProceduralBlock)postOpeningCompletion {
   CHECK(!postOpeningAction || !postOpeningCompletion)
       << "Can't provide both postOpeningAction and postOpeningCompletion";
 
   ApplicationModeForTabOpening resolvedMode =
       [self targetModeForSceneState:sceneState defaultMode:targetMode];
-
-  UrlLoadParams urlLoadParams =
-      UrlLoadParams::InNewTab(externalURL, virtualURL);
-  urlLoadParams.from_widget_or_siri = fromWidgetOrSiri;
 
   const BOOL dismissOmnibox =
       postOpeningAction != TabOpeningPostOpeningAction::FOCUS_OMNIBOX;
