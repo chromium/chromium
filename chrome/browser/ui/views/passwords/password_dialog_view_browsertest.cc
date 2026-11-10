@@ -60,6 +60,7 @@
 #include "ui/base/ui_base_switches.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -1298,9 +1299,15 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
             PasswordCombinedSelectorView::kHeaderActorIconId);
   auto* actor_icon_view = static_cast<views::ImageView*>(header_view);
 
-  // 1. Before the server accepts connections, the custom icon slot center pixel
+  // 1. Before the server accepts connections, the Password Manager icon slot
+  // center pixel (x = 184 + 36/2 = 202, y = 90/2 = 45) is stamped with the
+  // Password Manager vector icon, and the custom actor icon slot center pixel
   // (x = 228 + 36/2 = 246, y = 90/2 = 45) is initialized with the default
   // Search icon (non-transparent and not the fetched SK_ColorBLUE icon).
+  const SkColor initial_pm_color =
+      actor_icon_view->GetImage().bitmap()->getColor(202, 45);
+  EXPECT_NE(initial_pm_color, SK_ColorTRANSPARENT);
+  EXPECT_NE(initial_pm_color, gfx::kPlaceholderColor);
   const SkColor initial_slot_color =
       actor_icon_view->GetImage().bitmap()->getColor(246, 45);
   EXPECT_NE(initial_slot_color, SK_ColorTRANSPARENT);
@@ -1308,12 +1315,15 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
 
   // 2. Start accepting connections and verify the end-to-end network fetch,
   // PNG decode, UpdateAvatar(), and RemoteActorHeaderImageSource::Draw() stamp
-  // the 24x24 SK_ColorBLUE icon into the slot.
+  // the 24x24 SK_ColorBLUE icon into the slot while preserving the Password
+  // Manager icon slot.
   embedded_test_server()->StartAcceptingConnections();
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return actor_icon_view->GetImage().bitmap()->getColor(246, 45) ==
            SK_ColorBLUE;
   }));
+  EXPECT_EQ(actor_icon_view->GetImage().bitmap()->getColor(202, 45),
+            initial_pm_color);
 
   // 3. Verify non-square images are center-cropped to a square before scaling:
   // a 48x24 SK_ColorRED image with a centered 24x24 SK_ColorGREEN square must
