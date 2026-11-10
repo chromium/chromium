@@ -54,6 +54,7 @@ using ::base::test::RunOnceCallbackRepeatedly;
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
+using ::testing::IsEmpty;
 using ::testing::NiceMock;
 using ::testing::Optional;
 using ::testing::Property;
@@ -2570,50 +2571,188 @@ TEST_F(OtpManagerImplTest, OnGmailOtpRetrieved_DeliversSuggestionsOnSuccess) {
   EXPECT_FALSE(test_api(otp_manager).has_gmail_otp_retrieval_subscription());
 }
 
-// Tests that OnGmailOtpRetrieved does not invoke the pending callback when
-// retrieval fails.
-TEST_F(OtpManagerImplTest, OnGmailOtpRetrieved_DoesNotInvokeCallbackOnFailure) {
-  prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), true);
+class OtpManagerImplInFlightGmailTest : public OtpManagerImplTest {
+ public:
+  void SetUp() override {
+    OtpManagerImplTest::SetUp();
+    SetUpGmailOtpRetrieval();
+    otp_manager_.emplace(autofill_manager(), &sms_otp_service_);
+    const FormStructure* form = AddFormWithOtpField();
+    ASSERT_TRUE(form);
+    otp_manager_->GetOtpSuggestions(*form, test_field_, future_.GetCallback());
+    EXPECT_FALSE(future_.IsReady());
+    ASSERT_TRUE(test_api(*otp_manager_).has_gmail_otp_retrieval_subscription());
+  }
+
+  void TearDown() override {
+    otp_manager_.reset();
+    OtpManagerImplTest::TearDown();
+  }
+
+  void SimulateSmsRetrievalError() {
+    sms_otp_service_.SimulateOtpArrived(base::unexpected(
+        one_time_tokens::OneTimeTokenRetrievalError::kSmsOtpBackendTimeout));
+    EXPECT_FALSE(future_.IsReady());
+  }
+
+  OtpManagerImpl& otp_manager() { return *otp_manager_; }
+
+ protected:
+  std::optional<OtpManagerImpl> otp_manager_;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future_;
+};
+
+// Tests that `OnGmailOtpRetrieved` does not invoke the pending callback when
+// retrieval fails while an SMS OTP subscription is still active, allowing a
+// subsequent SMS OTP arrival to fulfill the callback.
+TEST_F(OtpManagerImplInFlightGmailTest,
+       OnGmailOtpRetrieved_DoesNotInvokeCallbackOnFailure) {
+  test_api(otp_manager())
+      .OnGmailOtpRetrieved(
+          base::unexpected(one_time_tokens::OneTimeTokenRetrievalError::
+                               kGmailOtpBackendNetworkError));
+
+  EXPECT_FALSE(future_.IsReady());
+  EXPECT_FALSE(test_api(otp_manager()).has_gmail_otp_retrieval_subscription());
+
+  EXPECT_CALL(otp_phish_guard_delegate(), StartOtpPhishGuardCheck)
+      .WillOnce(RunOnceCallback<1>(/*is_phishing=*/false));
+  sms_otp_service_.SimulateOtpArrived(
+      one_time_tokens::OneTimeToken(one_time_tokens::OneTimeTokenType::kSmsOtp,
+                                    "123456", base::TimeTicks::Now()));
+  EXPECT_TRUE(future_.IsReady());
+  EXPECT_THAT(
+      future_.Get(),
+      ElementsAre(Property(&one_time_tokens::OneTimeToken::value, "123456")));
+}
+
+// Tests that `OnGmailOtpRetrieved` does not invoke the pending callback when
+// the retrieved token is empty while an SMS OTP subscription is still active,
+// allowing a subsequent SMS OTP arrival to fulfill the callback.
+TEST_F(OtpManagerImplInFlightGmailTest,
+       OnGmailOtpRetrieved_DoesNotInvokeCallbackWhenTokenEmpty) {
+  test_api(otp_manager())
+      .OnGmailOtpRetrieved(CreateSampleGmailOtpResult(/*value=*/""));
+
+  EXPECT_FALSE(future_.IsReady());
+  EXPECT_FALSE(test_api(otp_manager()).has_gmail_otp_retrieval_subscription());
+
+  EXPECT_CALL(otp_phish_guard_delegate(), StartOtpPhishGuardCheck)
+      .WillOnce(RunOnceCallback<1>(/*is_phishing=*/false));
+  sms_otp_service_.SimulateOtpArrived(
+      one_time_tokens::OneTimeToken(one_time_tokens::OneTimeTokenType::kSmsOtp,
+                                    "654321", base::TimeTicks::Now()));
+  EXPECT_TRUE(future_.IsReady());
+  EXPECT_THAT(
+      future_.Get(),
+      ElementsAre(Property(&one_time_tokens::OneTimeToken::value, "654321")));
+}
+
+// Tests that `OnGmailOtpRetrieved` resolves the pending callback with empty
+// suggestions when retrieval fails and no SMS OTP subscription is active.
+TEST_F(OtpManagerImplInFlightGmailTest,
+       OnGmailOtpRetrieved_ResolvesCallbackEmptyOnFailureWhenNoSmsInFlight) {
+  SimulateSmsRetrievalError();
+
+  test_api(otp_manager())
+      .OnGmailOtpRetrieved(
+          base::unexpected(one_time_tokens::OneTimeTokenRetrievalError::
+                               kGmailOtpBackendNetworkError));
+
+  EXPECT_TRUE(future_.IsReady());
+  EXPECT_THAT(future_.Get(), IsEmpty());
+  EXPECT_FALSE(test_api(otp_manager()).has_gmail_otp_retrieval_subscription());
+}
+
+// Tests that `OnGmailOtpRetrieved` resolves the pending callback with empty
+// suggestions when the retrieved token is empty and no SMS OTP subscription is
+// active.
+TEST_F(
+    OtpManagerImplInFlightGmailTest,
+    OnGmailOtpRetrieved_ResolvesCallbackEmptyWhenTokenEmptyAndNoSmsInFlight) {
+  SimulateSmsRetrievalError();
+
+  test_api(otp_manager())
+      .OnGmailOtpRetrieved(CreateSampleGmailOtpResult(/*value=*/""));
+
+  EXPECT_TRUE(future_.IsReady());
+  EXPECT_THAT(future_.Get(), IsEmpty());
+  EXPECT_FALSE(test_api(otp_manager()).has_gmail_otp_retrieval_subscription());
+}
+
+// Tests that disabling the Gmail OTP filling preference while a Gmail OTP
+// retrieval is in flight and no SMS OTP subscription is active resolves the
+// pending callback with empty suggestions.
+TEST_F(OtpManagerImplInFlightGmailTest,
+       DisableGmailOtpFillingPref_ResolvesPendingCallbackWhenNoSmsInFlight) {
+  SimulateSmsRetrievalError();
+
+  prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), false);
+
+  EXPECT_TRUE(future_.Wait());
+  EXPECT_THAT(future_.Get(), IsEmpty());
+  EXPECT_FALSE(test_api(otp_manager()).has_gmail_otp_retrieval_subscription());
+}
+
+// Tests that when SMS OTP is not supported on the platform (e.g. Desktop) and
+// no Gmail OTP is cached yet, `GetOtpSuggestions` resolves the callback
+// immediately with empty suggestions rather than blocking on the 60-second
+// `GmailOtpRetriever` subscription.
+TEST_F(
+    OtpManagerImplTest,
+    GetOtpSuggestions_PlatformNotSupported_ResolvesSynchronouslyWhileGmailRetrieverInFlight) {
+  SetUpGmailOtpRetrieval();
+  sms_otp_service_.set_platform_supported(false);
   OtpManagerImpl otp_manager(autofill_manager(), &sms_otp_service_);
   const FormStructure* form = AddFormWithOtpField();
   ASSERT_TRUE(form);
 
   base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   otp_manager.GetOtpSuggestions(*form, test_field_, future.GetCallback());
+
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_THAT(future.Get(), IsEmpty());
+  EXPECT_TRUE(test_api(otp_manager).has_gmail_otp_retrieval_subscription());
+}
+
+// Tests that when `SmsOtpService::Subscribe` synchronously reports an
+// initialization error (`kSmsOtpBackendInitializationFailed`) before returning
+// a subscription, the subscription is discarded so a subsequent Gmail OTP
+// retrieval failure resolves the callback instead of hanging until expiration.
+TEST_F(
+    OtpManagerImplTest,
+    OnGmailOtpRetrieved_ResolvesCallbackEmptyAfterSyncSmsErrorDuringSubscribe) {
+  class SyncErrorSmsOtpService : public one_time_tokens::FakeSmsOtpService {
+   public:
+    one_time_tokens::ExpiringSubscription Subscribe(
+        base::Time expiration,
+        Callback callback,
+        base::OnceClosure expiration_callback) override {
+      callback.Run(
+          base::unexpected(one_time_tokens::OneTimeTokenRetrievalError::
+                               kSmsOtpBackendInitializationFailed));
+      return one_time_tokens::FakeSmsOtpService::Subscribe(
+          expiration, std::move(callback), std::move(expiration_callback));
+    }
+  } sync_error_sms_service;
+
+  SetUpGmailOtpRetrieval();
+  OtpManagerImpl otp_manager(autofill_manager(), &sync_error_sms_service);
+  const FormStructure* form = AddFormWithOtpField();
+  ASSERT_TRUE(form);
+
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
+  otp_manager.GetOtpSuggestions(*form, test_field_, future.GetCallback());
   EXPECT_FALSE(future.IsReady());
+  EXPECT_EQ(sync_error_sms_service.num_subscribers(), 0u);
 
   test_api(otp_manager)
       .OnGmailOtpRetrieved(
           base::unexpected(one_time_tokens::OneTimeTokenRetrievalError::
                                kGmailOtpBackendNetworkError));
 
-  EXPECT_FALSE(future.IsReady());
-  EXPECT_FALSE(test_api(otp_manager).has_gmail_otp_retrieval_subscription());
-}
-
-// Tests that OnGmailOtpRetrieved does not invoke the pending callback when
-// retrieved token is empty.
-TEST_F(OtpManagerImplTest,
-       OnGmailOtpRetrieved_DoesNotInvokeCallbackWhenTokenEmpty) {
-  prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), true);
-  OtpManagerImpl otp_manager(autofill_manager(), &sms_otp_service_);
-  const FormStructure* form = AddFormWithOtpField();
-  ASSERT_TRUE(form);
-
-  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
-  otp_manager.GetOtpSuggestions(*form, test_field_, future.GetCallback());
-  EXPECT_FALSE(future.IsReady());
-
-  test_api(otp_manager)
-      .OnGmailOtpRetrieved(one_time_tokens::GmailOtpRetriever::Result{
-          .token = one_time_tokens::OneTimeToken(
-              one_time_tokens::OneTimeTokenType::kGmail, "",
-              base::TimeTicks::Now(), "sender@example.com"),
-          .source = one_time_tokens::GmailOtpRetriever::Source::kReceived,
-      });
-
-  EXPECT_FALSE(future.IsReady());
-  EXPECT_FALSE(test_api(otp_manager).has_gmail_otp_retrieval_subscription());
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_THAT(future.Get(), IsEmpty());
 }
 
 // Tests that Gmail OTPs returned by `SmsOtpService` are ignored, even if

@@ -172,22 +172,27 @@ void OtpManagerImpl::GetRecentOtpsAndRenewSubscription() {
     sms_otp_subscription_.SetExpirationTime(base::Time::Now() +
                                             kSmsOtpSubscriptionDuration);
   } else {
-    sms_otp_subscription_ = sms_otp_service_->Subscribe(
-        base::Time::Now() + kSmsOtpSubscriptionDuration,
-        /*callback=*/
-        base::BindRepeating(&OtpManagerImpl::OnOneTimeTokenReceived,
-                            weak_ptr_factory_.GetWeakPtr()),
-        /*expiration_callback=*/
-        base::BindOnce(
-            [](base::WeakPtr<OtpManagerImpl> self) {
-              if (!self) {
-                return;
-              }
-              CHECK(!self->sms_otp_subscription_.IsAlive());
-              self->OnOneTimeTokenReceived(base::unexpected(
-                  OneTimeTokenRetrievalError::kSubscriptionExpired));
-            },
-            weak_ptr_factory_.GetWeakPtr()));
+    sms_error_during_subscribe_ = false;
+    one_time_tokens::ExpiringSubscription subscription =
+        sms_otp_service_->Subscribe(
+            base::Time::Now() + kSmsOtpSubscriptionDuration,
+            /*callback=*/
+            base::BindRepeating(&OtpManagerImpl::OnOneTimeTokenReceived,
+                                weak_ptr_factory_.GetWeakPtr()),
+            /*expiration_callback=*/
+            base::BindOnce(
+                [](base::WeakPtr<OtpManagerImpl> self) {
+                  if (!self) {
+                    return;
+                  }
+                  CHECK(!self->sms_otp_subscription_.IsAlive());
+                  self->OnOneTimeTokenReceived(base::unexpected(
+                      OneTimeTokenRetrievalError::kSubscriptionExpired));
+                },
+                weak_ptr_factory_.GetWeakPtr()));
+    if (!sms_error_during_subscribe_) {
+      sms_otp_subscription_ = std::move(subscription);
+    }
   }
 }
 
@@ -235,11 +240,9 @@ void OtpManagerImpl::ClearGmailOtpState() {
   last_retrieved_gmail_otp_.reset();
   last_triggered_otp_value_.clear();
   gmail_phish_guard_weak_ptr_factory_.InvalidateWeakPtrs();
-  if (is_gmail_phish_guard_pending_) {
-    is_gmail_phish_guard_pending_ = false;
-    if (!sms_otp_subscription_.IsAlive()) {
-      CancelPendingGetSuggestionsCallbackAsync();
-    }
+  is_gmail_phish_guard_pending_ = false;
+  if (!sms_otp_subscription_.IsAlive()) {
+    CancelPendingGetSuggestionsCallbackAsync();
   }
 }
 
@@ -500,21 +503,24 @@ void OtpManagerImpl::OnGmailOtpRetrieved(
                    OneTimeTokenRetrievalError> result) {
   base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
       FROM_HERE, std::move(gmail_otp_retriever_));
-  // TODO(crbug.com/556170395): figure out correct behaviour for cases when OTP
-  // values are absent, or fetching resulted in an error. Running the callback
-  // right here has a potential of breaking the case when the page is actually
-  // waiting for an SMS OTP which ends up arriving a bit later.
   if (!result) {
     LOG_AF(owner_->client().GetCurrentLogManager())
         << LoggingScope::kOneTimeTokens
         << "OTP retrieval resulted in a failure. Error code: "
         << std::to_underlying(result.error());
+    if (!sms_otp_subscription_.IsAlive()) {
+      OnOneTimeTokenReceived(base::unexpected(result.error()));
+    }
     return;
   }
   if (result->token.value().empty()) {
     LOG_AF(owner_->client().GetCurrentLogManager())
         << LoggingScope::kOneTimeTokens
         << "Retrieved an empty OTP value, no suggestions will be generated.";
+    if (!sms_otp_subscription_.IsAlive()) {
+      OnOneTimeTokenReceived(
+          base::unexpected(OneTimeTokenRetrievalError::kUnknown));
+    }
     return;
   }
 
@@ -526,13 +532,19 @@ void OtpManagerImpl::OnGmailOtpRetrieved(
 
 void OtpManagerImpl::OnOneTimeTokenReceived(
     base::expected<OneTimeToken, OneTimeTokenRetrievalError> token_or_error) {
-  // Errors can originate from both the SMS and the Gmail OTP flows. Like SMS
-  // OTPs, they must not consume `last_pending_get_suggestions_callback_` while
-  // a PhishGuard check for a Gmail OTP is pending. Otherwise, the callback is
-  // run with empty suggestions.
+  // An SMS error or expiry ends the SMS OTP subscription, and Gmail failures
+  // are forwarded here only once it has ended. Keep the pending callback while
+  // a Gmail OTP may still answer it; on Desktop (no SMS backend), only for a
+  // pending PhishGuard check, as a late Gmail OTP triggers suggestions itself.
   if (!token_or_error) {
-    if (last_pending_get_suggestions_callback_ &&
-        !is_gmail_phish_guard_pending_) {
+    sms_error_during_subscribe_ = true;
+    sms_otp_subscription_.Cancel();
+    const bool is_waiting_for_gmail_otp =
+        is_gmail_phish_guard_pending_ ||
+        (gmail_otp_retriever_ &&
+         token_or_error.error() !=
+             OneTimeTokenRetrievalError::kSmsOtpBackendPlatformNotSupported);
+    if (last_pending_get_suggestions_callback_ && !is_waiting_for_gmail_otp) {
       std::move(last_pending_get_suggestions_callback_).Run({});
     }
     return;
