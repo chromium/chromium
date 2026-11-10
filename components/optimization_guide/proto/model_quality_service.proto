@@ -13,6 +13,7 @@ import "components/optimization_guide/proto/features/annotation_reducer_one_p_re
 import "components/optimization_guide/proto/features/annotation_reducer_query_classifier.proto";
 import "components/optimization_guide/proto/features/at_memory.proto";
 import "components/optimization_guide/proto/features/atmem_query_analyzer.proto";
+import "components/optimization_guide/proto/features/agentic_autofill.proto";
 import "components/optimization_guide/proto/features/bling_prototyping.proto";
 import "components/optimization_guide/proto/features/classify_api.proto";
 import "components/optimization_guide/proto/features/compose.proto";
@@ -153,6 +154,8 @@ message LogAiDataRequest {
     SmartSelectionSuggestionsLoggingData smart_selection_suggestions = 48;
 
     QuickAnswersLoggingData quick_answers = 49;
+
+    AgenticAutofillLoggingData agentic_autofill = 50;
 
     DefaultLoggingData default = 1000;
   }

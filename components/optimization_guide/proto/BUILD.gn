@@ -24,6 +24,7 @@ fuzzable_proto_library("optimization_guide_proto") {
     "feature_configs.proto",
     "features/actions_data.proto",
     "features/actor_login.proto",
+    "features/agentic_autofill.proto",
     "features/amount_extraction.proto",
     "features/annotation_reducer_live_tab_resolver.proto",
     "features/annotation_reducer_one_p_resolver.proto",
