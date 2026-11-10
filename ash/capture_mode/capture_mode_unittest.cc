@@ -5693,6 +5693,69 @@ TEST_P(CaptureModeCursorOverlayTest, OverlayBoundsAccountForCursorScaleFactor) {
   }
 }
 
+// Verifies that the cursor overlay bounds reflect `SetCustomCursorSize()` (even
+// when software cursor compositing is not enabled) and still respect
+// `cursor.image_scale_factor()` when no custom cursor size is set on a
+// fractional-DSF display.
+TEST_P(CaptureModeCursorOverlayTest, OverlayBoundsMatchCustomCursorSize) {
+  // 800x640 at 1.6 DSF gives a 500x400 DIP root window.
+  UpdateDisplay("800x640*1.6");
+  StartRecordingAndSetupFakeOverlay(CaptureModeSource::kFullscreen);
+
+  auto* generator = GetEventGenerator();
+  // {400, 320} in host pixels corresponds to {250, 200} in DIPs at 1.6 DSF.
+  generator->MoveMouseTo({400, 320});
+
+  const gfx::Size root_size = window()->GetRootWindow()->bounds().size();
+  ASSERT_EQ(root_size, (gfx::Size{500, 400}));
+  auto get_overlay_bounds_in_dip = [&]() {
+    // Click to trigger an immediate (unthrottled) cursor overlay update.
+    generator->ClickLeftButton();
+    FlushOverlay();
+    EXPECT_FALSE(fake_overlay()->IsHidden());
+    return gfx::ScaleRect(fake_overlay()->last_bounds(), root_size.width(),
+                          root_size.height());
+  };
+
+  auto* cursor_manager = Shell::Get()->cursor_manager();
+  cursor_manager->SetCustomCursorSize(64);
+  ASSERT_FALSE(IsCursorCompositingEnabled());
+  // int(64 * 1.6f) = 102 px -> 102 / 1.6f = 63.75 DIPs.
+  const gfx::SizeF size_64 = get_overlay_bounds_in_dip().size();
+  EXPECT_FLOAT_EQ(size_64.width(), 63.75f);
+  EXPECT_FLOAT_EQ(size_64.height(), 63.75f);
+
+  cursor_manager->SetCustomCursorSize(100);
+  // int(100 * 1.6f) = 160 px -> 160 / 1.6f = 100 DIPs.
+  EXPECT_EQ(get_overlay_bounds_in_dip().size(), (gfx::SizeF{100.f, 100.f}));
+
+  // Verify custom cursor bitmap when a custom cursor size (100 DIPs) is set:
+  // 50x50 bitmap with {10, 10} hotspot is rescaled by 160 / 50 = 3.2f ->
+  // 160x160 px (100x100 DIPs) and {32, 32} px ({20, 20} DIP) hotspot at
+  // {250, 200}.
+  ui::Cursor custom_cursor =
+      ui::Cursor::NewCustom(gfx::test::CreateBitmap(50), {10, 10}, 2.f);
+  custom_cursor.SetPlatformCursor(
+      ui::CursorFactory::GetInstance()->CreateImageCursor(
+          custom_cursor.type(), custom_cursor.custom_bitmap(),
+          custom_cursor.custom_hotspot(), custom_cursor.image_scale_factor()));
+  cursor_manager->SetCursor(custom_cursor);
+  cursor_manager->LockCursor();
+  EXPECT_EQ(get_overlay_bounds_in_dip(),
+            (gfx::RectF{230.f, 180.f, 100.f, 100.f}));
+
+  // Clear custom cursor size (`std::nullopt`) and verify the custom cursor uses
+  // `cursor.image_scale_factor()` (2.f -> 25x25 DIPs with {5, 5} DIP hotspot at
+  // {250, 200}) rather than display DSF (1.6f).
+  cursor_manager->UnlockCursor();
+  cursor_manager->SetCustomCursorSize(std::nullopt);
+  cursor_manager->SetCursor(std::move(custom_cursor));
+  cursor_manager->LockCursor();
+  EXPECT_EQ(get_overlay_bounds_in_dip(),
+            (gfx::RectF{245.f, 195.f, 25.f, 25.f}));
+  cursor_manager->UnlockCursor();
+}
+
 // -----------------------------------------------------------------------------
 // TODO(afakhry): Add more cursor overlay tests.
 

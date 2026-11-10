@@ -48,6 +48,7 @@
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
+#include "ui/wm/core/cursor_manager.h"
 #include "ui/wm/core/window_util.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -836,9 +837,18 @@ void VideoRecordingWatcher::UpdateCursorOverlayNow(
     return;
   }
 
+  // `GetCursorData()` scales the cursor bitmap to match the display's device
+  // scale factor (including when a custom cursor size is set), except for
+  // custom cursors without a custom cursor size which retain
+  // `cursor.image_scale_factor()`.
+  const float cursor_scale_factor =
+      cursor.type() == ui::mojom::CursorType::kCustom &&
+              !cursor_manager_->GetCustomCursorSize().has_value()
+          ? cursor.image_scale_factor()
+          : current_root_->GetHost()->device_scale_factor();
   const gfx::RectF cursor_overlay_bounds = GetCursorOverlayBounds(
       window_being_recorded_, location, cursor_data->hotspot,
-      cursor_data->scale_factor, cursor_image);
+      cursor_scale_factor, cursor_image);
 
   if (cursor != last_cursor_) {
     last_cursor_ = cursor;
