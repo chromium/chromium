@@ -204,19 +204,6 @@ LoggingDestination LoggingDestFromCommandLine(
 
 }  // anonymous namespace
 
-LoggingDestination DetermineLoggingDestination(
-    const base::CommandLine& command_line) {
-  bool unused = false;
-  return LoggingDestFromCommandLine(command_line, unused);
-}
-
-#if BUILDFLAG(IS_CHROMEOS)
-base::FilePath GetSessionLogFile(const base::CommandLine& command_line) {
-  return ash::GetSessionLogDir().Append(
-      GetLogFileName(command_line).BaseName());
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 void InitChromeLogging(const base::CommandLine& command_line,
                        OldFileDeletionState delete_old_log_file) {
   DCHECK(!chrome_logging_initialized_)
@@ -253,7 +240,7 @@ void InitChromeLogging(const base::CommandLine& command_line,
       // profile directory that is created for the temporary session instead
       // of in the system log directory, for privacy reasons.
       if (command_line.HasSwitch(ash::switches::kGuestSession)) {
-        log_path = GetSessionLogFile(command_line);
+        log_path = ash::GetSessionLogDir().Append(log_path.BaseName());
       }
 
       // Prepares a log file.  We rotate the previous log file and prepare a new

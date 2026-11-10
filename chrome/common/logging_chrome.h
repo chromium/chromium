@@ -6,7 +6,6 @@
 #define CHROME_COMMON_LOGGING_CHROME_H_
 
 #include "base/logging/logging_settings.h"
-#include "build/build_config.h"
 
 namespace base {
 class CommandLine;
@@ -24,14 +23,6 @@ namespace logging {
 // will delete each others' logs.
 void InitChromeLogging(const base::CommandLine& command_line,
                        OldFileDeletionState delete_old_log_file);
-
-LoggingDestination DetermineLoggingDestination(
-    const base::CommandLine& command_line);
-
-#if BUILDFLAG(IS_CHROMEOS)
-// Get the log file location.
-base::FilePath GetSessionLogFile(const base::CommandLine& command_line);
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Call when done using logging for Chrome.
 void CleanupChromeLogging();
