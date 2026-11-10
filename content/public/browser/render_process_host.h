@@ -860,6 +860,12 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Listener,
   // to support MockRenderProcessHost usage in tests.
   virtual bool IsOnlyHostingPrerenderedFramesOrEmpty() = 0;
 
+  // Returns whether the process is hosting any outermost main frame RFH that
+  // has not yet committed or any RFH that is currently loading. This is for
+  // internal use only, and is only exposed here to support
+  // MockRenderProcessHost usage in tests.
+  virtual bool HasLoadingFrames() const = 0;
+
   // Static management functions -----------------------------------------------
 
   // Flag to run the renderer in process.  This is primarily

@@ -305,6 +305,7 @@ class MockRenderProcessHost : public RenderProcessHost {
       const GlobalRenderFrameHostId& render_frame_host_id) override {}
 
   bool IsOnlyHostingPrerenderedFramesOrEmpty() override;
+  bool HasLoadingFrames() const override;
 
   // IPC::Listener via RenderProcessHost.
   void OnChannelConnected(int32_t peer_pid) override;

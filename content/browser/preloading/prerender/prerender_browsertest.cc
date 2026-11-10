@@ -17490,9 +17490,14 @@ class PrerenderProcessReuseWithoutStrictSiteIsolationBrowserTest
  public:
   PrerenderProcessReuseWithoutStrictSiteIsolationBrowserTest() {
     if (PreferWarmProcess()) {
-      feature_list_.InitAndEnableFeature(features::kPreferWarmRendererProcess);
+      feature_list_.InitWithFeatures(
+          {features::kPreferWarmRendererProcess,
+           features::kPreferWarmRendererProcessAvoidPrewarmContention},
+          {});
     } else {
-      feature_list_.InitAndDisableFeature(features::kPreferWarmRendererProcess);
+      feature_list_.InitWithFeatures(
+          {}, {features::kPreferWarmRendererProcess,
+               features::kPreferWarmRendererProcessAvoidPrewarmContention});
     }
   }
 
@@ -17558,6 +17563,194 @@ IN_PROC_BROWSER_TEST_P(
   } else {
     // Under partial site isolation, since b.test's process is unlocked,
     // navigating to a.test normally would just reuse the unlocked process.
+    EXPECT_EQ(navigation_process, initial_process);
+    EXPECT_NE(navigation_process, prerender_process);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(
+    PrerenderProcessReuseWithoutStrictSiteIsolationBrowserTest,
+    AvoidPrewarmContentionWhilePrerenderLoading) {
+  base::HistogramTester histogram_tester;
+  net::test_server::ControllableHttpResponse main_response(
+      embedded_test_server(), "/prerender_slow.html");
+  net::test_server::ControllableHttpResponse subresource_response(
+      embedded_test_server(), "/slow_image.png");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // 1. Navigate to an initial empty page in an unlocked process (RPH_0).
+  const GURL initial_url("about:blank");
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+  RenderProcessHost* initial_process = current_frame_host()->GetProcess();
+
+  // 2. Start prerendering a cross-site page on a.test, holding its main
+  // response so the prerender navigation has not committed yet.
+  const GURL prerender_url =
+      embedded_test_server()->GetURL("a.test", "/prerender_slow.html");
+  std::unique_ptr<PrerenderHandle> prerender_handle =
+      AddEmbedderTriggeredPrerenderAsync(prerender_url);
+  main_response.WaitForRequest();
+
+  PrerenderHostId prerender_host_id =
+      prerender_helper()->GetHostForUrl(prerender_url);
+  ASSERT_TRUE(prerender_host_id);
+  RenderProcessHostImpl* prerender_process =
+      static_cast<RenderProcessHostImpl*>(
+          GetProcessForPrerenderHost(prerender_host_id));
+  ASSERT_TRUE(prerender_process);
+  EXPECT_TRUE(prerender_process->IsOnlyHostingPrerenderedFramesOrEmpty());
+  EXPECT_TRUE(prerender_process->HasLoadingFrames());
+
+  // 3. Commit the prerender main frame, but keep a subresource pending so the
+  // prerender frame tree is still loading before DidStopLoading().
+  main_response.Send(net::HTTP_OK, "text/html",
+                     "<html><body><img src=\"/slow_image.png\"></body></html>");
+  main_response.Done();
+  subresource_response.WaitForRequest();
+  EXPECT_TRUE(prerender_process->HasLoadingFrames());
+
+  // 4. While the prerender is still loading, navigating from about:blank to a
+  // same-site URL on a.test must NOT swap to `prerender_process`; it should
+  // stay in `initial_process` (RPH_0).
+  const GURL navigation_url =
+      embedded_test_server()->GetURL("a.test", "/title2.html");
+  EXPECT_TRUE(NavigateToURL(shell(), navigation_url));
+  RenderProcessHost* navigation_process = current_frame_host()->GetProcess();
+  EXPECT_EQ(navigation_process, initial_process);
+  EXPECT_NE(navigation_process, prerender_process);
+  histogram_tester.ExpectTotalCount(
+      "BrowserRenderProcessHost.ReuseExistingProcess.ReusePolicy", 0);
+
+  // 5. Complete the prerender subresource load and wait for DidStopLoading().
+  subresource_response.Send(net::HTTP_OK, "image/png", "");
+  subresource_response.Done();
+  prerender_helper()->WaitForPrerenderLoadCompletion(prerender_url);
+  EXPECT_FALSE(prerender_process->HasLoadingFrames());
+  EXPECT_TRUE(prerender_process->IsOnlyHostingPrerenderedFramesOrEmpty());
+
+  // 6. Now that the prerender has finished loading, a new primary main-frame
+  // navigation from about:blank to a.test should swap to `prerender_process`
+  // when `kPreferWarmRendererProcess` is enabled.
+  Shell* new_window_shell =
+      Shell::CreateNewWindow(shell()->web_contents()->GetBrowserContext(),
+                             initial_url, nullptr, gfx::Size());
+  ASSERT_TRUE(NavigateToURL(new_window_shell, initial_url));
+  FrameTreeNode* new_window_root =
+      static_cast<WebContentsImpl*>(new_window_shell->web_contents())
+          ->GetPrimaryFrameTree()
+          .root();
+  RenderProcessHost* new_window_initial_process =
+      new_window_root->current_frame_host()->GetProcess();
+  EXPECT_NE(new_window_initial_process, prerender_process);
+
+  EXPECT_TRUE(NavigateToURL(new_window_shell, navigation_url));
+  RenderProcessHost* new_window_process =
+      new_window_root->current_frame_host()->GetProcess();
+  if (PreferWarmProcess()) {
+    EXPECT_NE(new_window_process, new_window_initial_process);
+    EXPECT_EQ(new_window_process, prerender_process);
+    histogram_tester.ExpectUniqueSample(
+        "BrowserRenderProcessHost.ReuseExistingProcess.ReusePolicy",
+        ProcessReusePolicy::kReusePrerenderingProcessForMainFrame, 1);
+  } else {
+    EXPECT_EQ(new_window_process, new_window_initial_process);
+    EXPECT_NE(new_window_process, prerender_process);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(
+    PrerenderProcessReuseWithoutStrictSiteIsolationBrowserTest,
+    AvoidPrewarmContentionWithAboutBlankAndCrossOriginSubframes) {
+  base::HistogramTester histogram_tester;
+  net::test_server::ControllableHttpResponse main_response(
+      embedded_test_server(), "/prerender_with_subframes.html");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // 1. Navigate to an initial empty page in an unlocked process.
+  const GURL initial_url("about:blank");
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+  RenderProcessHost* initial_process = current_frame_host()->GetProcess();
+
+  // 2. Start prerendering a cross-site page on a.test that contains both an
+  // <iframe> without src (initial empty document) and an explicit about:blank
+  // <iframe>.
+  const GURL prerender_url = embedded_test_server()->GetURL(
+      "a.test", "/prerender_with_subframes.html");
+  std::unique_ptr<PrerenderHandle> prerender_handle =
+      AddEmbedderTriggeredPrerenderAsync(prerender_url);
+  main_response.WaitForRequest();
+  main_response.Send(
+      net::HTTP_OK, "text/html",
+      "<html><body><iframe></iframe><iframe src=\"about:blank\"></iframe>"
+      "</body></html>");
+  main_response.Done();
+  prerender_helper()->WaitForPrerenderLoadCompletion(prerender_url);
+
+  PrerenderHostId prerender_host_id =
+      prerender_helper()->GetHostForUrl(prerender_url);
+  ASSERT_TRUE(prerender_host_id);
+  RenderFrameHostImpl* prerender_main_rfh = static_cast<RenderFrameHostImpl*>(
+      prerender_helper()->GetPrerenderedMainFrameHost(prerender_host_id));
+  ASSERT_TRUE(prerender_main_rfh);
+  ASSERT_EQ(2u, prerender_main_rfh->child_count());
+  RenderProcessHostImpl* prerender_process =
+      static_cast<RenderProcessHostImpl*>(prerender_main_rfh->GetProcess());
+  ASSERT_TRUE(prerender_process);
+
+  // Subframes staying on the initial empty document / synchronous about:blank
+  // never set `has_committed_any_navigation()` to true, but must not keep
+  // `HasLoadingFrames()` returning true after the page finishes loading.
+  RenderFrameHostImpl* empty_iframe_rfh =
+      prerender_main_rfh->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* about_blank_iframe_rfh =
+      prerender_main_rfh->child_at(1)->current_frame_host();
+  EXPECT_EQ(prerender_process, empty_iframe_rfh->GetProcess());
+  EXPECT_EQ(prerender_process, about_blank_iframe_rfh->GetProcess());
+  EXPECT_FALSE(empty_iframe_rfh->has_committed_any_navigation());
+  EXPECT_FALSE(about_blank_iframe_rfh->has_committed_any_navigation());
+  EXPECT_FALSE(prerender_process->HasLoadingFrames());
+
+  // 3. Append a cross-origin <iframe> whose navigation is deferred in
+  // WillStartRequest() by PrerenderSubframeNavigationThrottle. Verify that a
+  // deferred cross-origin subframe navigation does not keep `prerender_process`
+  // marked as loading.
+  const GURL cross_origin_iframe_url =
+      embedded_test_server()->GetURL("b.test", "/title1.html");
+  TestNavigationManager iframe_navigation_manager(web_contents(),
+                                                  cross_origin_iframe_url);
+  ASSERT_TRUE(ExecJs(prerender_main_rfh, JsReplace(R"(
+                       const i = document.createElement('iframe');
+                       i.src = $1;
+                       document.body.appendChild(i);
+                     )",
+                                                   cross_origin_iframe_url)));
+  ASSERT_TRUE(
+      iframe_navigation_manager.WaitForFirstYieldAfterDidStartNavigation());
+  auto* request = static_cast<NavigationRequest*>(
+      iframe_navigation_manager.GetNavigationHandle());
+  ASSERT_TRUE(request);
+  EXPECT_TRUE(request->IsDeferredForTesting());
+  ASSERT_EQ(3u, prerender_main_rfh->child_count());
+  RenderFrameHostImpl* cross_origin_iframe_rfh =
+      prerender_main_rfh->child_at(2)->current_frame_host();
+  EXPECT_EQ(prerender_process, cross_origin_iframe_rfh->GetProcess());
+  EXPECT_FALSE(cross_origin_iframe_rfh->has_committed_any_navigation());
+  EXPECT_FALSE(prerender_process->HasLoadingFrames());
+  EXPECT_TRUE(prerender_process->IsOnlyHostingPrerenderedFramesOrEmpty());
+
+  // 4. Navigating from about:blank to a same-site URL on a.test should reuse
+  // `prerender_process` when `kPreferWarmRendererProcess` is enabled.
+  const GURL navigation_url =
+      embedded_test_server()->GetURL("a.test", "/title2.html");
+  EXPECT_TRUE(NavigateToURL(shell(), navigation_url));
+  RenderProcessHost* navigation_process = current_frame_host()->GetProcess();
+  if (PreferWarmProcess()) {
+    EXPECT_NE(navigation_process, initial_process);
+    EXPECT_EQ(navigation_process, prerender_process);
+    histogram_tester.ExpectUniqueSample(
+        "BrowserRenderProcessHost.ReuseExistingProcess.ReusePolicy",
+        ProcessReusePolicy::kReusePrerenderingProcessForMainFrame, 1);
+  } else {
     EXPECT_EQ(navigation_process, initial_process);
     EXPECT_NE(navigation_process, prerender_process);
   }

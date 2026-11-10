@@ -780,4 +780,8 @@ bool MockRenderProcessHost::IsOnlyHostingPrerenderedFramesOrEmpty() {
   return false;
 }
 
+bool MockRenderProcessHost::HasLoadingFrames() const {
+  return false;
+}
+
 }  // namespace content

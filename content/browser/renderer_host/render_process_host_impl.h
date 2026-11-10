@@ -379,6 +379,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void SetBatterySaverMode(bool battery_saver_mode_enabled) override;
   uint64_t GetPrivateMemoryFootprint() override;
   bool IsOnlyHostingPrerenderedFramesOrEmpty() override;
+  bool HasLoadingFrames() const override;
 
   void PauseSocketManagerForRenderFrameHost(
       const GlobalRenderFrameHostId& render_frame_host_id) override;

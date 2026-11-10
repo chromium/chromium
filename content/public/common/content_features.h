@@ -251,6 +251,8 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kPdfOpaqueOrigin);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPeriodicBackgroundSync);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPopulateUnattachedAuraScreenInfo);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPreconnectManagerDirectFastPath);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kPreferWarmRendererProcessAvoidPrewarmContention);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchActivationBeacon);
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchAheadOfImminentNavigation);

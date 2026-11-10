@@ -17,6 +17,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/process_lock.h"
+#include "content/browser/process_reuse_policy.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/spare_render_process_host_manager_impl.h"
 #include "content/browser/security/cpsp/child_process_security_policy_impl.h"
@@ -1214,6 +1215,113 @@ TEST_F(RenderProcessHostUnitTest, GetPendingReuseRefCount) {
 
   mock_host.DecrementPendingReuseRefCount();
   EXPECT_EQ(0, mock_host.GetPendingReuseRefCountForTesting());
+}
+
+namespace {
+
+class PrerenderOnlyMockRenderProcessHost : public MockRenderProcessHost {
+ public:
+  explicit PrerenderOnlyMockRenderProcessHost(BrowserContext* browser_context)
+      : MockRenderProcessHost(browser_context) {}
+
+  bool IsOnlyHostingPrerenderedFramesOrEmpty() override { return true; }
+  bool HasLoadingFrames() const override { return has_loading_frames_; }
+  void set_has_loading_frames(bool has_loading) {
+    has_loading_frames_ = has_loading;
+  }
+
+ private:
+  bool has_loading_frames_ = false;
+};
+
+}  // namespace
+
+TEST_F(RenderProcessHostUnitTest, HasWarmLockedProcessAvoidPrewarmContention) {
+  const GURL kUrl("https://foo.com");
+  ChildProcessSecurityPolicyImpl::GetInstance()->AddFutureIsolatedOrigins(
+      {url::Origin::Create(kUrl)},
+      ChildProcessSecurityPolicy::IsolatedOriginSource::TEST,
+      browser_context());
+
+  scoped_refptr<SiteInstanceImpl> site_instance = CreateForUrl(kUrl);
+  const IsolationContext& isolation_context =
+      site_instance->GetIsolationContext();
+  const SiteInfo& site_info = site_instance->GetSiteInfo();
+
+  PrerenderOnlyMockRenderProcessHost prerender_host(browser_context());
+  prerender_host.SetProcessLock(ProcessLock::FromSiteInfo(site_info));
+  prerender_host.SetIsUsed();
+
+  // 1. Pending navigation tracker: when
+  // kPreferWarmRendererProcessAvoidPrewarmContention is enabled, pending
+  // navigations are ignored for kReusePrerenderingProcessForMainFrame.
+  RenderProcessHostImpl::AddExpectedNavigationToSite(
+      browser_context(), &prerender_host, site_info);
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        features::kPreferWarmRendererProcessAvoidPrewarmContention);
+    EXPECT_TRUE(RenderProcessHostImpl::HasWarmLockedProcess(
+        browser_context(), isolation_context, site_info,
+        ProcessReusePolicy::kReusePrerenderingProcessForMainFrame));
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        features::kPreferWarmRendererProcessAvoidPrewarmContention);
+    EXPECT_FALSE(RenderProcessHostImpl::HasWarmLockedProcess(
+        browser_context(), isolation_context, site_info,
+        ProcessReusePolicy::kReusePrerenderingProcessForMainFrame));
+    // Non-prerendering reuse policies still consider pending navigations.
+    EXPECT_TRUE(RenderProcessHostImpl::HasWarmLockedProcess(
+        browser_context(), isolation_context, site_info,
+        ProcessReusePolicy::kReusePendingOrCommittedSiteSubframe));
+  }
+  RenderProcessHostImpl::RemoveExpectedNavigationToSite(
+      browser_context(), &prerender_host, site_info);
+
+  // 2. Committed site tracker: when
+  // kPreferWarmRendererProcessAvoidPrewarmContention is enabled, the process
+  // must also be ready (IsReady() == true) and have no loading frames.
+  const GlobalRenderFrameHostId kDummyFrameRoutingId(
+      prerender_host.GetDeprecatedID(), 1);
+  prerender_host.RegisterRenderFrameHost(kDummyFrameRoutingId,
+                                         /*is_outermost_main_frame=*/true);
+  RenderProcessHostImpl::AddFrameWithSite(browser_context(), &prerender_host,
+                                          site_info);
+  ASSERT_FALSE(prerender_host.IsReady());
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        features::kPreferWarmRendererProcessAvoidPrewarmContention);
+    EXPECT_TRUE(RenderProcessHostImpl::HasWarmLockedProcess(
+        browser_context(), isolation_context, site_info,
+        ProcessReusePolicy::kReusePrerenderingProcessForMainFrame));
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        features::kPreferWarmRendererProcessAvoidPrewarmContention);
+    EXPECT_FALSE(RenderProcessHostImpl::HasWarmLockedProcess(
+        browser_context(), isolation_context, site_info,
+        ProcessReusePolicy::kReusePrerenderingProcessForMainFrame));
+
+    prerender_host.SimulateReady();
+    ASSERT_TRUE(prerender_host.IsReady());
+    prerender_host.set_has_loading_frames(true);
+    EXPECT_FALSE(RenderProcessHostImpl::HasWarmLockedProcess(
+        browser_context(), isolation_context, site_info,
+        ProcessReusePolicy::kReusePrerenderingProcessForMainFrame));
+
+    prerender_host.set_has_loading_frames(false);
+    EXPECT_TRUE(RenderProcessHostImpl::HasWarmLockedProcess(
+        browser_context(), isolation_context, site_info,
+        ProcessReusePolicy::kReusePrerenderingProcessForMainFrame));
+  }
+  RenderProcessHostImpl::RemoveFrameWithSite(browser_context(), &prerender_host,
+                                             site_info);
+  prerender_host.UnregisterRenderFrameHost(kDummyFrameRoutingId,
+                                           /*is_outermost_main_frame=*/true);
 }
 
 class SpareRenderProcessHostUnitTest : public RenderViewHostImplTestHarness {

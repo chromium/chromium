@@ -123,6 +123,7 @@
 #include "content/browser/push_messaging/push_messaging_manager.h"
 #include "content/browser/quota/quota_context.h"
 #include "content/browser/renderer_host/embedded_frame_sink_provider_impl.h"
+#include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/media/media_stream_track_metrics_host.h"
 #include "content/browser/renderer_host/recently_destroyed_hosts.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
@@ -945,6 +946,19 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
         ProcessReusePolicy::kReusePrerenderingProcessForMainFrame) {
       if (!host->IsOnlyHostingPrerenderedFramesOrEmpty()) {
         return false;
+      }
+      if (base::FeatureList::IsEnabled(
+              features::kPreferWarmRendererProcessAvoidPrewarmContention)) {
+        // Once a navigation commits (`DidCommitNavigation`), the process moves
+        // from `kPendingSiteProcessCountTrackerKey` into
+        // `kCommittedSiteProcessCountTrackerKey`, while the page continues
+        // parsing HTML, running scripts, and loading subresources until
+        // `DidStopLoading()`. `HasLoadingFrames()` filters out processes in
+        // `kCommittedSiteProcessCountTrackerKey` during this post-commit
+        // loading phase.
+        if (!host->IsReady() || host->HasLoadingFrames()) {
+          return false;
+        }
       }
     }
 
@@ -5223,10 +5237,25 @@ bool RenderProcessHostImpl::HasWarmLockedProcess(
   }
 
   // Identify all process trackers to query for a reusable locked process.
+  // Note: `kPendingSiteProcessCountTrackerKey` only tracks uncommitted
+  // `NavigationRequest`s before `DidCommitNavigation` (cleared in
+  // `~NavigationRequest() -> ResetExpectedProcess()`). When
+  // `kPreferWarmRendererProcessAvoidPrewarmContention` is enabled for
+  // `kReusePrerenderingProcessForMainFrame`, we skip
+  // `kPendingSiteProcessCountTrackerKey` because uncommitted navigations have
+  // not finished loading, and additionally check `HasLoadingFrames()` in
+  // `IsEligibleForProcessReuse()` for processes in
+  // `kCommittedSiteProcessCountTrackerKey` whose main frame has committed
+  // (`DidCommitNavigation`) but has not yet reached `DidStopLoading()`.
   std::vector<const void*> tracker_keys = {
       kCommittedSiteProcessCountTrackerKey,
-      kPendingSiteProcessCountTrackerKey,
   };
+  if (process_reuse_policy !=
+          ProcessReusePolicy::kReusePrerenderingProcessForMainFrame ||
+      !base::FeatureList::IsEnabled(
+          features::kPreferWarmRendererProcessAvoidPrewarmContention)) {
+    tracker_keys.push_back(kPendingSiteProcessCountTrackerKey);
+  }
 
   if (RenderProcessHostImpl::ShouldDelayProcessShutdown()) {
     tracker_keys.push_back(kDelayedShutdownSiteProcessCountTrackerKey);
@@ -6388,14 +6417,21 @@ RenderProcessHostImpl::FindReusableProcessHostForSiteInstance(
   std::vector<RenderProcessHost*> eligible_background_hosts;
 
   // First, add the RenderProcessHosts expecting a navigation to |site_url| to
-  // the list of eligible RenderProcessHosts.
-  SiteProcessCountTracker* pending_tracker =
-      static_cast<SiteProcessCountTracker*>(
-          browser_context->GetUserData(kPendingSiteProcessCountTrackerKey));
-  if (pending_tracker) {
-    pending_tracker->FindRenderProcessesForSiteInstance(
-        site_instance, process_reuse_policy, &eligible_foreground_hosts,
-        &eligible_background_hosts);
+  // the list of eligible RenderProcessHosts. Skip pending (uncommitted)
+  // navigations for `kReusePrerenderingProcessForMainFrame` when avoiding
+  // prewarm contention, matching `HasWarmLockedProcess()`.
+  if (process_reuse_policy !=
+          ProcessReusePolicy::kReusePrerenderingProcessForMainFrame ||
+      !base::FeatureList::IsEnabled(
+          features::kPreferWarmRendererProcessAvoidPrewarmContention)) {
+    SiteProcessCountTracker* pending_tracker =
+        static_cast<SiteProcessCountTracker*>(
+            browser_context->GetUserData(kPendingSiteProcessCountTrackerKey));
+    if (pending_tracker) {
+      pending_tracker->FindRenderProcessesForSiteInstance(
+          site_instance, process_reuse_policy, &eligible_foreground_hosts,
+          &eligible_background_hosts);
+    }
   }
 
   if (eligible_foreground_hosts.empty()) {
@@ -6593,6 +6629,18 @@ void RenderProcessHostImpl::GetBoundInterfacesForTesting(
 bool RenderProcessHostImpl::IsOnlyHostingPrerenderedFramesOrEmpty() {
   return prerendering_frame_host_id_set_.size() ==
          render_frame_host_id_set_.size();
+}
+
+bool RenderProcessHostImpl::HasLoadingFrames() const {
+  for (const auto& rfh_id : render_frame_host_id_set_) {
+    RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(rfh_id);
+    if (rfh && ((rfh->IsOutermostMainFrame() &&
+                 !rfh->has_committed_any_navigation()) ||
+                rfh->is_loading())) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace content

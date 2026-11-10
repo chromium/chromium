@@ -822,6 +822,14 @@ BASE_FEATURE(kPopulateUnattachedAuraScreenInfo,
 BASE_FEATURE(kPreconnectManagerDirectFastPath,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, avoids prewarm/prerender contention when
+// `kPreferWarmRendererProcess` is enabled by requiring prerender processes to
+// be ready and have completed loading before being considered warm for
+// process reuse, and (in //chrome's PrerenderManager) freezing DSE prewarm
+// pages after DidStopLoading.
+BASE_FEATURE(kPreferWarmRendererProcessAvoidPrewarmContention,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, activation beacon is sent when a prefetched page is activated.
 // The activation beacon is a beacon that echoes back a server specified token
 // to the server when a prefetched page is activated.
