@@ -727,18 +727,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Bookmarks.OpenBookmarkManager.PerProfileType"
-    enum="BrowserProfileType" expires_after="2025-07-13">
-  <owner>roagarwal@chromium.org</owner>
-  <owner>chrome-incognito@google.com</owner>
-  <summary>
-    This records the number of times the bookmark manager is opened from regular
-    or Incognito tab. This histogram only records the count from
-    ChromeTabbedActivity where we actually have the Bookmark manager UI.
-    Recorded when the bookmark menu item is clicked in Android.
-  </summary>
-</histogram>
-
 <histogram name="Bookmarks.OpenBookmarkTimeInterval2.{BookmarkType}" units="ms"
     expires_after="2027-04-11">
   <owner>wylieb@google.com</owner>

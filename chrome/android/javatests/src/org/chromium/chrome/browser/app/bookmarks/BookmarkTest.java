@@ -138,7 +138,6 @@ import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.ShoppingSpecifics;
-import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.SyncService.SyncStateChangedListener;
 import org.chromium.content_public.browser.test.util.TouchCommon;
@@ -1873,78 +1872,6 @@ public class BookmarkTest {
                 1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM));
-    }
-
-    /**
-     * Test that we record Bookmarks.BookmarkTestUtil.openBookmarkManager.PerProfileType when
-     * R.id.all_bookmarks_menu_id is clicked in regular mode.
-     *
-     * <p>Please note that this test doesn't run for tablet because of the way bookmark manager is
-     * opened for tablets via BookmarkTestUtil.openBookmarkManager test method which circumvents the
-     * click of R.id.all_bookmarks_menu_id, this doesn't happen in actual case and the metric indeed
-     * gets recorded in tablets.
-     */
-    @Test
-    @MediumTest
-    @Restriction({DeviceFormFactor.PHONE})
-    @RequiresRestart("Asserts exact total count of 0 prior to opening bookmark manager")
-    public void testRecordsHistogramWhenBookmarkManagerOpened_InRegular() throws Throwable {
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "Bookmarks.OpenBookmarkManager.PerProfileType"));
-
-        openBookmarkManager();
-        pressBack();
-        BookmarkTestUtil.waitForTabbedActivity();
-
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "Bookmarks.OpenBookmarkManager.PerProfileType"));
-
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "Bookmarks.OpenBookmarkManager.PerProfileType",
-                        BrowserProfileType.REGULAR));
-    }
-
-    /**
-     * Test that we record Bookmarks.OpenBookmarkManager.PerProfileType when
-     * R.id.all_bookmarks_menu_id is clicked in Incognito mode.
-     *
-     * <p>Please note that this test doesn't run for tablet because of the way bookmark manager is
-     * opened for tablets via openBookmarkManager test method which circumvents the click of
-     * R.id.all_bookmarks_menu_id. This doesn't happen in actual case and the metric indeed gets
-     * recorded in tablets.
-     */
-    @Test
-    @MediumTest
-    @Restriction({DeviceFormFactor.PHONE})
-    @DisabledTest(message = "https://crbug.com/344981899, this test needs to be fixed post-UNO")
-    @RequiresRestart("Asserts exact total count of 0 prior to opening bookmark manager")
-    public void testRecordsHistogramWhenBookmarkManagerOpened_InIncognito() throws Throwable {
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "Bookmarks.OpenBookmarkManager.PerProfileType"));
-
-        mActivityTestRule.loadUrlInNewTab("about:blank", /* incognito= */ true);
-        openBookmarkManager();
-        pressBack();
-        BookmarkTestUtil.waitForTabbedActivity();
-
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "Bookmarks.OpenBookmarkManager.PerProfileType"));
-
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "Bookmarks.OpenBookmarkManager.PerProfileType",
-                        BrowserProfileType.INCOGNITO));
     }
 
     @Test

@@ -408,7 +408,6 @@ import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.prefs.PrefChangeRegistrar;
-import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.supervised_user.SupervisedUserConstants;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
@@ -4689,16 +4688,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             if (currentTabIsNtp) {
                 NewTabPageUma.recordAction(NewTabPageUma.ACTION_OPENED_BOOKMARKS_MANAGER);
             }
-
-            @BrowserProfileType
-            int type =
-                    getCurrentTabModel().isIncognito()
-                            ? BrowserProfileType.INCOGNITO
-                            : BrowserProfileType.REGULAR;
-            RecordHistogram.recordEnumeratedHistogram(
-                    "Bookmarks.OpenBookmarkManager.PerProfileType",
-                    type,
-                    BrowserProfileType.MAX_VALUE + 1);
 
             RecordUserAction.record("MobileMenuAllBookmarks");
         } else if (id == R.id.show_reading_list_menu_id) {
