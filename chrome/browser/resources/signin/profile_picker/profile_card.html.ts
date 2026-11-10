@@ -17,7 +17,7 @@ export function getHtml(this: ProfileCardElement) {
       <img
           class="profile-avatar ${
               this.profileState.hasAvatarRing ? 'with-avatar-ring' : ''}"
-          alt="" .src="${this.profileState.avatarIcon}">
+          alt="" .src="${this.profileState.avatarIcon}" draggable="false">
       <div id="iconContainer"
           ?hidden="${!this.profileState.avatarBadge.length}">
         <cr-icon icon="${this.profileState.avatarBadge}"></cr-icon>

@@ -150,6 +150,7 @@ suite('ProfilePickerMainViewTest', function() {
       assertEquals(
           avatarElement.classList.contains('with-avatar-ring'),
           expectedProfile.hasAvatarRing);
+      assertFalse(avatarElement.draggable);
     }
   }
 
@@ -717,16 +718,23 @@ suite('ProfilePickerProfilesReorderingTest', function() {
       assertTrue(cards[cycle.dragIndex]!.matches(':focus-within'));
 
       // - Perform the Drag Start.
+      let itemsCleared = false;
       const dragStartEvent = new DragEvent('dragstart');
       Object.defineProperty(dragStartEvent, 'dataTransfer', {
         value: {
           effectAllowed: 'uninitialized',
+          items: {
+            clear: () => {
+              itemsCleared = true;
+            },
+          },
           setDragImage: () => {},
         },
       });
       cards[cycle.dragIndex]!.dispatchEvent(dragStartEvent);
       assertTrue(cards[cycle.dragIndex]!.classList.contains('dragging'));
       assertEquals(dragStartEvent.dataTransfer!.effectAllowed, 'move');
+      assertTrue(itemsCleared);
       assertFalse(cards[cycle.dragIndex]!.matches(':focus-within'));
 
       // - Perform the list of Drag Enter events with position checks.

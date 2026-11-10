@@ -303,6 +303,10 @@ export class DragDropReorderTileListDelegate {
 
     // `event.dataTransfer` may be null in tests.
     if (event.dataTransfer) {
+      // Clear any default drag data (e.g. from sub-elements or text selection)
+      // so OS drop targets such as File Explorer on the Windows taskbar do not
+      // treat internal tile reordering as an external file/URL drag.
+      event.dataTransfer.items.clear();
       const pos = tile.getBoundingClientRect();
       // Make the dragging image the tile itself so that reaction to any sub
       // element that is also draggable shows the whole tile being dragged and
