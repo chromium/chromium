@@ -21,6 +21,11 @@
   width: 100%;
 }
 
+/* Keeps the palette body mounted, but hidden, while Settings is open. */
+[hidden] {
+  display: none !important;
+}
+
 .palette-container {
   background-color: var(--color-sys-surface, #fff);
   box-sizing: border-box;

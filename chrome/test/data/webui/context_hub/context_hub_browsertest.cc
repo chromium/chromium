@@ -34,3 +34,13 @@ IN_PROC_BROWSER_TEST_F(ContextHubBrowserTest, Topics) {
 IN_PROC_BROWSER_TEST_F(ContextHubBrowserTest, TabGroups) {
   RunTestWithoutTestLoader("context_hub/tab_groups_test.js", "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(ContextHubBrowserTest, MemoryBanksPaletteSettings) {
+  RunTestWithoutTestLoader("context_hub/memory_banks_palette_settings_test.js",
+                           "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(ContextHubBrowserTest, MemoryBanksPalette) {
+  RunTestWithoutTestLoader("context_hub/memory_banks_palette_test.js",
+                           "mocha.run()");
+}

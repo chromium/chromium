@@ -1,0 +1,146 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: flex;
+  flex: 1 1 0%;
+  flex-direction: column;
+  font-family: 'Google Sans', 'Google Sans Text', Roboto, sans-serif;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+#useSuggestedButton {
+  background: none;
+  border: none;
+  color: var(--color-sys-primary);
+  cursor: pointer;
+  flex-shrink: 0;
+  font: inherit;
+  font-weight: 500;
+  padding: 0;
+}
+
+#useSuggestedButton:hover {
+  text-decoration: underline;
+}
+
+#useSuggestedButton:focus-visible {
+  border-radius: 4px;
+  outline: 2px solid var(--color-sys-primary);
+  outline-offset: 2px;
+}
+
+#suggestedShortcutKey {
+  background-color: var(--color-sys-surface);
+  border: 1px solid var(--color-sys-outline-variant);
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 1px 5px;
+  white-space: nowrap;
+}
+
+#suggestion {
+  align-items: center;
+  color: var(--color-sys-on-surface-variant);
+  display: flex;
+  font-size: 12px;
+  gap: 12px;
+}
+
+#settingsHeader {
+  align-items: center;
+  border-bottom: 1px solid var(--color-sys-outline-variant);
+  display: flex;
+  flex-shrink: 0;
+  font-size: 14px;
+  font-weight: 500;
+  gap: 8px;
+  padding: 8px 12px;
+}
+
+#backButton {
+  --cr-icon-button-icon-size: 18px;
+  --cr-icon-button-size: 28px;
+  margin: 0;
+}
+
+#shortcutSection {
+  border-bottom: 1px solid var(--color-sys-outline-variant);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+}
+
+#shortcutLabel {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+#shortcutDescription {
+  color: var(--color-sys-on-surface-variant);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+#shortcutRow {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+#shortcutField {
+  align-items: center;
+  border: 1px solid var(--color-sys-outline);
+  border-radius: 8px;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: flex;
+  flex: 1;
+  font-size: 13px;
+  min-height: 32px;
+  outline: none;
+  padding: 0 12px;
+}
+
+#shortcutField.placeholder {
+  color: var(--color-sys-on-surface-variant);
+}
+
+#shortcutField.recording {
+  border-color: var(--color-sys-primary);
+  box-shadow: 0 0 0 1px var(--color-sys-primary);
+  color: var(--color-sys-primary);
+}
+
+#shortcutField.invalid {
+  border-color: var(--color-sys-error);
+  box-shadow: 0 0 0 1px var(--color-sys-error);
+  color: var(--color-sys-error);
+}
+
+#editButton {
+  flex-shrink: 0;
+  font-size: 12px;
+  height: 32px;
+}
+
+#error {
+  color: var(--color-sys-error);
+  font-size: 12px;
+  line-height: 1.4;
+}

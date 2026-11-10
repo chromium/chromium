@@ -20,12 +20,13 @@ export function getHtml(this: MemoryBanksPaletteElement) {
           <span>Memory Banks</span>
         </div>
         <div class="header-actions">
-          <cr-icon-button
+          <cr-icon-button id="settingsButton"
               class="settings-btn"
               iron-icon="cr:settings-filled"
               aria-label="Settings"
-              title="Open Context Hub (chrome://context-hub)"
-              @click="${this.onSettingsClick}">
+              title="Settings"
+              ?hidden="${this.activePanel !== 'palette'}"
+              @click="${this.onSettingsButtonClick}">
           </cr-icon-button>
           <cr-icon-button
               iron-icon="cr:close"
@@ -35,7 +36,7 @@ export function getHtml(this: MemoryBanksPaletteElement) {
         </div>
       </div>
 
-      <div class="search-container">
+      <div class="search-container" ?hidden="${this.activePanel !== 'palette'}">
         <cr-search-field
             class="search-input"
             label="Search your memories, #tags, or collections..."
@@ -45,7 +46,7 @@ export function getHtml(this: MemoryBanksPaletteElement) {
         </cr-search-field>
       </div>
 
-      <div class="filter-bar">
+      <div class="filter-bar" ?hidden="${this.activePanel !== 'palette'}">
         <div
             class="filter-chip ${this.filterType === 'all' ? 'active' : ''}"
             @click="${this.onFilterAllClick}">
@@ -70,7 +71,7 @@ export function getHtml(this: MemoryBanksPaletteElement) {
         </div>
       </div>
 
-      <div class="results-list">
+      <div class="results-list" ?hidden="${this.activePanel !== 'palette'}">
         ${this.displayedItems.length === 0 ? html`
           <div class="empty-state">
             <div class="empty-sparkle-container">
@@ -177,6 +178,15 @@ export function getHtml(this: MemoryBanksPaletteElement) {
           `)}
         `}
       </div>
+
+      <memory-banks-palette-settings id="settings"
+          ?hidden="${this.activePanel !== 'settings'}"
+          .currentShortcutDisplayText="${this.currentShortcutDisplayText}"
+          .suggestedShortcutAccelerator="${this.suggestedShortcutAccelerator}"
+          .suggestedShortcutDisplayText="${this.suggestedShortcutDisplayText}"
+          @back-click="${this.onSettingsBackClick}"
+          @shortcut-changed="${this.onSettingsShortcutChanged}">
+      </memory-banks-palette-settings>
 
       <cr-toast id="toast" .duration="${this.toastDuration}">
         ${!this.toastIsError ? html`
