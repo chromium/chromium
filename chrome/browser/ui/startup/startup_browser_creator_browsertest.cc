@@ -2920,6 +2920,24 @@ INSTANTIATE_TEST_SUITE_P(,
                          StartupBrowserCreatorTestWithGuestParam,
                          testing::Bool());
 
+// Tests that a `--guest` launch notification received while Chrome is already
+// running opens a Guest window without loading the Guest profile
+// synchronously on the UI thread, where blocking is disallowed.
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
+                       ProcessCommandLineAlreadyRunningGuest) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  ASSERT_FALSE(
+      profile_manager->GetProfileByPath(ProfileManager::GetGuestProfilePath()));
+
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitch(switches::kGuest);
+  ChromeBrowserMainParts::ProcessSingletonNotificationForTesting(command_line);
+
+  BrowserWindowInterface* guest_browser = ui_test_utils::WaitForBrowserToOpen();
+  ASSERT_TRUE(guest_browser);
+  EXPECT_TRUE(guest_browser->GetProfile()->IsGuestSession());
+}
+
 class StartupBrowserWithRealWebAppTest : public StartupBrowserCreatorTest {
  protected:
   StartupBrowserWithRealWebAppTest() = default;
