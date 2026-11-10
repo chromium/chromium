@@ -2272,6 +2272,10 @@ void AccessibilityManager::PostSwitchChromeVoxProfile() {
   }
 }
 
+content::BrowserContext* AccessibilityManager::browser_context() {
+  return profile_;
+}
+
 void AccessibilityManager::OnChromeVoxPanelDestroying() {
   chromevox_panel_widget_observer_.reset(nullptr);
   chromevox_panel_ = nullptr;

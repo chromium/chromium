@@ -21,7 +21,6 @@
 #include "services/accessibility/android/ax_tree_source_android.h"
 #include "services/accessibility/android/public/mojom/accessibility_helper.mojom-forward.h"
 
-class Profile;
 
 namespace content {
 class BrowserContext;
@@ -149,7 +148,7 @@ class ArcAccessibilityHelperBridge
 
   bool is_focus_event_enabled_ = false;
   bool use_full_focus_mode_ = false;
-  const raw_ptr<Profile> profile_;
+  const raw_ptr<content::BrowserContext> browser_context_;
   const raw_ptr<ArcBridgeService> arc_bridge_service_;
 
   const AccessibilityHelperInstanceRemoteProxy accessibility_helper_instance_;

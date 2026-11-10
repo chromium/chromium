@@ -27,11 +27,12 @@ static_library("accessibility") {
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/arc/input_method_manager",
-    "//chrome/browser/profiles:profile",
     "//chromeos/ash/experiences/arc",
     "//chromeos/ash/experiences/extensions/common/api",
     "//components/exo",
     "//components/prefs",
+    "//components/user_prefs",
+    "//content/public/browser",
     "//extensions/browser",
     "//services/accessibility/android:android_lib",
     "//services/accessibility/android/public/mojom",
@@ -69,6 +70,7 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//services/accessibility/android:android_lib",
     "//services/accessibility/android:test_support",
+
     # Contains only *_unittest.cc files (not #included by sources above); keep
     # so those tests are linked into unit_tests.
     "//services/accessibility/android:tests",

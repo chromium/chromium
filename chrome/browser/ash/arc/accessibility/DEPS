@@ -17,7 +17,6 @@ include_rules = [
   "+chrome/browser/ash/accessibility",
   "+chrome/browser/ash/app_list/arc",
   "+chrome/browser/ash/arc/input_method_manager",
-  "+chrome/browser/profiles",
 
   # Dependencies outside of //chrome:
   "+services/accessibility/android",

@@ -408,6 +408,10 @@ class AccessibilityManager
   // Profile having the a11y context.
   Profile* profile() { return profile_; }
 
+  // The same context, for callers that do not need a Profile. Null before a
+  // user session has started.
+  content::BrowserContext* browser_context();
+
   // Extension id of extension receiving keyboard events.
   void SetKeyboardListenerExtensionId(const std::string& id,
                                       content::BrowserContext* context);

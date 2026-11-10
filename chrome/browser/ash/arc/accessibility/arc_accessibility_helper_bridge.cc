@@ -16,7 +16,6 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs_factory.h"
 #include "chrome/browser/ash/arc/accessibility/geometry_util.h"
 #include "chrome/browser/ash/arc/input_method_manager/arc_input_method_manager_service.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/message_center/arc_notification_surface.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
@@ -27,6 +26,8 @@
 #include "components/exo/wm_helper.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_prefs/user_prefs.h"
+#include "content/public/browser/browser_context.h"
 #include "extensions/browser/event_router.h"
 #include "services/accessibility/android/accessibility_info_data_wrapper.h"
 #include "services/accessibility/android/android_accessibility_util.h"
@@ -81,11 +82,12 @@ bool ShouldAnnounceEvent(
 
 void DispatchFocusChange(
     ax::android::mojom::AccessibilityNodeInfoData* node_data,
-    Profile* profile) {
+    content::BrowserContext* browser_context) {
   AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
   if (!node_data || !accessibility_manager ||
-      accessibility_manager->profile() != profile)
+      accessibility_manager->browser_context() != browser_context) {
     return;
+  }
 
   CHECK(exo::WMHelper::HasInstance(), base::NotFatalUntil::M160);
   aura::Window* active_window = exo::WMHelper::GetInstance()->GetActiveWindow();
@@ -157,16 +159,15 @@ ArcAccessibilityHelperBridge::GetForBrowserContext(
 ArcAccessibilityHelperBridge::ArcAccessibilityHelperBridge(
     content::BrowserContext* browser_context,
     ArcBridgeService* arc_bridge_service)
-    : profile_(Profile::FromBrowserContext(browser_context)),
+    : browser_context_(browser_context),
       arc_bridge_service_(arc_bridge_service),
       accessibility_helper_instance_(arc_bridge_service_),
       tree_tracker_(this,
-                    profile_,
+                    browser_context_,
                     accessibility_helper_instance_,
                     arc_bridge_service_) {
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
-  pref_change_registrar_->Init(
-      Profile::FromBrowserContext(browser_context)->GetPrefs());
+  pref_change_registrar_->Init(user_prefs::UserPrefs::Get(browser_context));
 
   arc_bridge_service_->accessibility_helper()->SetHost(this);
   arc_bridge_service_->accessibility_helper()->AddObserver(this);
@@ -362,7 +363,7 @@ void ArcAccessibilityHelperBridge::ExtensionListenerAdded() {
 }
 
 extensions::EventRouter* ArcAccessibilityHelperBridge::GetEventRouter() const {
-  return extensions::EventRouter::Get(profile_);
+  return extensions::EventRouter::Get(browser_context_);
 }
 
 ax::android::mojom::AccessibilityFilterType
@@ -375,8 +376,9 @@ ArcAccessibilityHelperBridge::GetFilterType() {
     return ax::android::mojom::AccessibilityFilterType::OFF;
 
   // TODO(yawano): Support the case where primary user is in background.
-  if (accessibility_manager->profile() != profile_)
+  if (accessibility_manager->browser_context() != browser_context_) {
     return ax::android::mojom::AccessibilityFilterType::OFF;
+  }
 
   if (accessibility_manager->IsSelectToSpeakEnabled() ||
       accessibility_manager->IsSwitchAccessEnabled() ||
@@ -489,7 +491,7 @@ void ArcAccessibilityHelperBridge::HandleFilterTypeFocusEvent(
   if (event_data.get()->node_data.size() == 1 &&
       event_data->event_type ==
           ax::android::mojom::AccessibilityEventType::VIEW_FOCUSED) {
-    DispatchFocusChange(event_data.get()->node_data[0].get(), profile_);
+    DispatchFocusChange(event_data.get()->node_data[0].get(), browser_context_);
   }
 }
 
@@ -534,7 +536,7 @@ void ArcAccessibilityHelperBridge::HandleFilterTypeAllEvent(
           ax::android::mojom::AccessibilityEventType::VIEW_FOCUSED) {
     for (size_t i = 0; i < event_data->node_data.size(); ++i) {
       if (event_data->node_data[i]->id == event_data->source_id) {
-        DispatchFocusChange(event_data->node_data[i].get(), profile_);
+        DispatchFocusChange(event_data->node_data[i].get(), browser_context_);
         break;
       }
     }

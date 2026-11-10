@@ -32,6 +32,10 @@ namespace ash {
 class ArcNotificationSurface;
 }
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
 namespace arc {
 
 using SetNativeChromeVoxCallback = base::OnceCallback<void(
@@ -53,7 +57,7 @@ class ArcAccessibilityTreeTracker : public aura::EnvObserver {
 
   ArcAccessibilityTreeTracker(
       ax::android::AXTreeSourceAndroid::Delegate* tree_source_delegate_,
-      Profile* const profile,
+      content::BrowserContext* const browser_context,
       const AccessibilityHelperInstanceRemoteProxy&
           accessibility_helper_instance,
       ArcBridgeService* const arc_bridge_service);
@@ -166,7 +170,7 @@ class ArcAccessibilityTreeTracker : public aura::EnvObserver {
   virtual void DispatchCustomSpokenFeedbackToggled(bool enabled);
   virtual aura::Window* GetFocusedArcWindow() const;
 
-  const raw_ptr<Profile> profile_;
+  const raw_ptr<content::BrowserContext> browser_context_;
   raw_ptr<ax::android::AXTreeSourceAndroid::Delegate> tree_source_delegate_;
   const raw_ref<const AccessibilityHelperInstanceRemoteProxy>
       accessibility_helper_instance_;
