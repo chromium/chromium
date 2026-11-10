@@ -11,8 +11,10 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/paint/paint_and_raster_invalidation_test.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -29,6 +31,11 @@ class ObjectPaintInvalidatorTest : public RenderingTest {
 
   static bool IsValidDisplayItemClient(const DisplayItemClient* client) {
     return client->IsValid();
+  }
+
+  static PaintInvalidationReason GetPaintInvalidationReason(
+      const DisplayItemClient* client) {
+    return client->GetPaintInvalidationReason();
   }
 };
 
@@ -126,6 +133,74 @@ TEST_F(ObjectPaintInvalidatorTest, VisibilityHidden) {
   UpdateAllLifecyclePhasesForTest();
   // |target| is not validated because it didn't paint anything.
   EXPECT_FALSE(IsValidDisplayItemClient(target));
+}
+
+TEST_F(ObjectPaintInvalidatorTest, VisibilityHiddenWithVisibleDescendantMask) {
+  ScopedPaintUnderInvalidationCheckingForTest under_invalidation_checking(true);
+  SetBodyInnerHTML(R"HTML(
+    <svg id="svg" width="200" height="200">
+      <mask id="m">
+        <rect id="mask_rect" width="100" height="100" fill="white"/>
+      </mask>
+      <g id="target" style="visibility: hidden; mask: url(#m)">
+        <rect id="child" width="100" height="100" fill="green"
+              style="visibility: visible"/>
+      </g>
+    </svg>
+  )HTML");
+
+  const auto* target = GetLayoutObjectByElementId("target");
+  // Even though |target| has visibility: hidden, it has a visible child and
+  // records a kSVGMask display item keyed on itself.
+  EXPECT_TRUE(IsValidDisplayItemClient(target));
+
+  // Mutating the referenced <mask> marks |target| with
+  // ShouldDoFullPaintInvalidation() while |target| remains visibility: hidden.
+  GetElementById("mask_rect")
+      ->setAttribute(svg_names::kFillAttr, AtomicString("black"));
+  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
+      DocumentUpdateReason::kTest);
+  EXPECT_FALSE(IsValidDisplayItemClient(target));
+  EXPECT_EQ(PaintInvalidationReason::kImage,
+            GetPaintInvalidationReason(target));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(IsValidDisplayItemClient(target));
+
+  // Subtree full paint invalidation on an ancestor must also invalidate
+  // |target| even though it was and remains visibility: hidden.
+  GetLayoutObjectByElementId("svg")->SetSubtreeShouldDoFullPaintInvalidation();
+  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
+      DocumentUpdateReason::kTest);
+  EXPECT_FALSE(IsValidDisplayItemClient(target));
+  EXPECT_EQ(PaintInvalidationReason::kSubtree,
+            GetPaintInvalidationReason(target));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(IsValidDisplayItemClient(target));
+}
+
+TEST_F(ObjectPaintInvalidatorTest,
+       VisibilityHiddenWithVisibleDescendantClipPathOffset) {
+  ScopedPaintUnderInvalidationCheckingForTest under_invalidation_checking(true);
+  SetBodyInnerHTML(R"HTML(
+    <svg width="0" height="0">
+      <clipPath id="c"><text y="50" font-size="50">X</text></clipPath>
+    </svg>
+    <div id="spacer" style="height: 10px"></div>
+    <div id="target" style="visibility: hidden; clip-path: url(#c)">
+      <div style="visibility: visible; width: 100px; height: 100px;
+                  background: green"></div>
+    </div>
+  )HTML");
+
+  const auto* target = GetLayoutObjectByElementId("target");
+  EXPECT_TRUE(IsValidDisplayItemClient(target));
+
+  GetElementById("spacer")->SetInlineStyleProperty(CSSPropertyID::kHeight,
+                                                   "50px");
+  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
+      DocumentUpdateReason::kTest);
+  EXPECT_FALSE(IsValidDisplayItemClient(target));
+  UpdateAllLifecyclePhasesForTest();
 }
 
 TEST_F(ObjectPaintInvalidatorTest,

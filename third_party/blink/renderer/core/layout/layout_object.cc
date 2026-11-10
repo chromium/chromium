@@ -3263,7 +3263,11 @@ static bool InvisibleBeforeAndAfterStyleChange(const LayoutObject& object,
              SkipPaintInvalidationWhileStayingInvisibleEnabled() &&
          old_style && object.VisualRectRespectsVisibility() &&
          old_style->Visibility() != EVisibility::kVisible &&
-         new_style.Visibility() != EVisibility::kVisible;
+         new_style.Visibility() != EVisibility::kVisible &&
+         // Even if `object` is invisible, it may paint a mask or mask-based
+         // clip-path that affects its visible descendants.
+         !old_style->HasMask() && !new_style.HasMask() &&
+         !old_style->HasClipPath() && !new_style.HasClipPath();
 }
 
 DISABLE_CFI_PERF
