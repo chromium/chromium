@@ -1053,9 +1053,9 @@ void ContextualTasksWebContentsUserData::HandleOnSubmitQueryRequest(
       GetLensAddedContexts(overlay_token);
 
   QueryContextualizer::ContextualizeParams params;
-  // Without a task (e.g. full-tab AI Mode in zero state),
-  // `query_contextualizer_` only uploads the delayed tabs (no
-  // recontextualization).
+  // Without a task (e.g. untasked zero-state AI Mode), `query_contextualizer_`
+  // skips `tabs_to_recontextualize` (`context` is null) and only uploads
+  // `auto_suggested_chip_tabs`, smart-selected tabs, and extracted URLs.
   params.task_id = GetEffectiveTaskId();
   params.query_text = std::string(query_text);
   params.tabs_to_recontextualize =
@@ -1082,8 +1082,13 @@ std::vector<int32_t>
 ContextualTasksWebContentsUserData::GetTabsToRecontextualize(
     contextual_search::ContextualSearchSessionHandle& session_handle,
     const std::optional<base::UnguessableToken>& overlay_token) {
-  // Recontextualize the active tab (if it is an attachment of the task),
-  // unless the query has a visual selection or the tab was deselected.
+  // Recontextualize the active tab if it is tracked in the session (`attached`
+  // or `restored` tabs, or active upload tokens), unless the query has a
+  // visual selection or the tab was deselected. Reopened threads populate
+  // `restored` in `HandleThreadContextLibraryUpdateFromAim()` before updating
+  // `ContextualTasksService` (`AttachUrlToTask()` is unused), and
+  // `QueryContextualizer` ignores `tabs_to_recontextualize` when `task_id` is
+  // `std::nullopt`.
   auto* browser_window_interface = GetBrowserWindowInterface();
   auto* tab_list = browser_window_interface
                        ? TabListInterface::From(browser_window_interface)
@@ -1385,6 +1390,15 @@ void ContextualTasksWebContentsUserData::
         session_handle->IsTabDeselected(SessionID::FromSerializedValue(*tab_id),
                                         open_tab->url, open_tab->title)) {
       continue;
+    }
+    // Record the resolved open tab's `SessionID` on the server `UrlResource` as
+    // well: on reopened threads `submitted_context` is empty, so
+    // `ConvertAiModeContextToUrlResources()` leaves `tab_id` unset, which would
+    // otherwise prevent `QueryContextualizer::GetMatchingAttachment()` from
+    // matching the restored active tab on subsequent submissions.
+    if (!active_committed_resources.back().tab_id.has_value()) {
+      active_committed_resources.back().tab_id =
+          SessionID::FromSerializedValue(*tab_id);
     }
     contextual_search::TabInfo tab;
     tab.tab_id = *tab_id;

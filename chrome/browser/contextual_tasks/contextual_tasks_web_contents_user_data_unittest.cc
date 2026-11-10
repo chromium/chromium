@@ -1770,9 +1770,16 @@ TEST_F(
   ASSERT_NE(user_data, nullptr);
   user_data->SetTaskId(task_id);
 
+  const SessionID open_tab_session_id =
+      sessions::SessionTabHelper::IdForTab(open_tab_contents);
   EXPECT_CALL(*mock_tasks_service,
               SetUrlResourcesFromServer(task_id, testing::_))
-      .Times(1);
+      .WillOnce([open_tab_session_id](const base::Uuid&,
+                                      std::vector<UrlResource> resources) {
+        ASSERT_EQ(resources.size(), 2u);
+        EXPECT_EQ(resources[0].tab_id, open_tab_session_id);
+        EXPECT_FALSE(resources[1].tab_id.has_value());
+      });
 
   lens::SearchToClientMessage::UpdateThreadContextLibrary update;
   // Tab 1: matches `open_tab_contents`.
@@ -3760,6 +3767,380 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
   EXPECT_CALL(mock_context_controller, RemoveObserver(user_data)).Times(1);
   clear_session.RunAndReset();
   reset_dispatcher.RunAndReset();
+}
+
+TEST_F(
+    ContextualTasksWebContentsUserDataTest,
+    HandleOnSubmitQueryRequest_RecontextualizesReopenedThreadRestoredActiveTab) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {kContextualTasksRearchitecture, kContextualTasksContextLibrary}, {});
+
+  ContextualTasksServiceFactory::GetInstance()->SetTestingFactory(
+      profile_.get(), base::BindRepeating([](content::BrowserContext*) {
+        return std::unique_ptr<KeyedService>(
+            std::make_unique<testing::NiceMock<MockContextualTasksService>>());
+      }));
+  auto* mock_tasks_service = static_cast<MockContextualTasksService*>(
+      ContextualTasksServiceFactory::GetForProfile(profile_.get()));
+  ASSERT_NE(mock_tasks_service, nullptr);
+
+  ui::UnownedUserDataHost unowned_user_data_host;
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window;
+  ON_CALL(mock_browser_window, GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(unowned_user_data_host));
+  testing::NiceMock<MockTabListInterface> mock_tab_list;
+  ui::ScopedUnownedUserData<TabListInterface> tab_list_registration(
+      unowned_user_data_host, mock_tab_list);
+  webui::SetBrowserWindowInterface(web_contents_, &mock_browser_window);
+
+  content::WebContents* active_contents =
+      web_contents_factory_->CreateWebContents(profile_.get());
+  sessions::SessionTabHelper::CreateForWebContents(active_contents,
+                                                   base::NullCallback());
+  const GURL reopened_url("https://example.com/reopened-tab");
+  content::WebContentsTester::For(active_contents)
+      ->NavigateAndCommit(reopened_url);
+  content::WebContentsTester::For(active_contents)->SetTitle(u"Reopened Tab");
+  const SessionID active_session_id =
+      sessions::SessionTabHelper::IdForTab(active_contents);
+
+  tabs::MockTabInterface mock_active_tab;
+  ON_CALL(mock_active_tab, GetContents())
+      .WillByDefault(testing::Return(active_contents));
+  ON_CALL(mock_active_tab, GetTitle())
+      .WillByDefault(testing::Return(u"Reopened Tab"));
+  ON_CALL(mock_active_tab, GetBrowserWindowInterface())
+      .WillByDefault(testing::Return(&mock_browser_window));
+  std::vector<tabs::TabInterface*> all_tabs = {&mock_active_tab};
+  ON_CALL(mock_tab_list, GetActiveTab())
+      .WillByDefault(testing::Return(&mock_active_tab));
+  ON_CALL(mock_tab_list, GetAllTabs())
+      .WillByDefault(testing::ReturnPointee(&all_tabs));
+
+  StubTabContextualizationController tab_controller(
+      &mock_active_tab,
+      base::BindLambdaForTesting(
+          [active_session_id, active_contents](
+              lens::TabContextualizationController::GetPageContextCallback
+                  callback) {
+            auto data = std::make_unique<lens::ContextualInputData>();
+            data->tab_session_id = active_session_id;
+            data->page_url = active_contents->GetLastCommittedURL();
+            data->page_title = "Reopened Tab";
+            data->is_page_context_eligible = true;
+            data->viewport_screenshot_bytes = {4, 5, 6};
+            std::move(callback).Run(std::move(data));
+          }));
+
+  contextual_search::ContextualSearchContextController::
+      ContextUploadStatusObserver* captured_observer = nullptr;
+  testing::NiceMock<contextual_search::MockContextualSearchContextController>
+      mock_context_controller;
+  base::WeakPtrFactory<contextual_search::ContextualSearchContextController>
+      controller_weak_factory(&mock_context_controller);
+  ON_CALL(mock_context_controller, AsWeakPtr())
+      .WillByDefault([&controller_weak_factory]() {
+        return controller_weak_factory.GetWeakPtr();
+      });
+  ON_CALL(mock_context_controller, AddObserver(testing::_))
+      .WillByDefault([&captured_observer](
+                         contextual_search::ContextualSearchContextController::
+                             ContextUploadStatusObserver* obs) {
+        captured_observer = obs;
+      });
+  ON_CALL(mock_context_controller, RemoveObserver(testing::_))
+      .WillByDefault([&captured_observer](
+                         contextual_search::ContextualSearchContextController::
+                             ContextUploadStatusObserver* obs) {
+        if (captured_observer == obs) {
+          captured_observer = nullptr;
+        }
+      });
+
+  auto session_handle = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  auto* mock_handle = session_handle.get();
+  ON_CALL(*mock_handle, GetController())
+      .WillByDefault(testing::Return(&mock_context_controller));
+  ON_CALL(*mock_handle, CreateContextToken()).WillByDefault([]() {
+    return base::UnguessableToken::Create();
+  });
+  int recontextualization_uploads = 0;
+  ON_CALL(*mock_handle,
+          StartTabContextUploadFlow(testing::_, testing::_, testing::_))
+      .WillByDefault([&recontextualization_uploads, &captured_observer](
+                         const base::UnguessableToken& file_token,
+                         std::unique_ptr<lens::ContextualInputData> data,
+                         std::optional<lens::ImageEncodingOptions>) {
+        ++recontextualization_uploads;
+        EXPECT_EQ(data->upload_type,
+                  lens::LensOverlayContextualInputUploadType::
+                      CONTEXTUAL_INPUT_UPLOAD_TYPE_RECONTEXTUALIZATION);
+        if (captured_observer) {
+          captured_observer->OnContextUploadStatusChanged(
+              file_token, lens::MimeType::kUnknown,
+              contextual_search::ContextUploadStatus::kUploadSuccessful,
+              std::nullopt);
+        }
+      });
+
+  const base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents_)
+      ->SetTaskSession(task_id, std::move(session_handle),
+                       /*input_state_model=*/nullptr);
+
+  ContextualTask stored_task(task_id);
+  ON_CALL(*mock_tasks_service, SetUrlResourcesFromServer(task_id, testing::_))
+      .WillByDefault([&stored_task](const base::Uuid&,
+                                    std::vector<UrlResource> resources) {
+        stored_task.SetUrlResourcesFromServer(std::move(resources));
+      });
+  ON_CALL(*mock_tasks_service,
+          GetContextForTask(task_id, testing::_, testing::_, testing::_))
+      .WillByDefault(
+          [&stored_task](
+              const base::Uuid&, const std::set<ContextualTaskContextSource>&,
+              std::unique_ptr<ContextDecorationParams>,
+              base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
+                  callback) {
+            std::move(callback).Run(
+                std::make_unique<ContextualTaskContext>(stored_task));
+          });
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+  user_data->SetTaskId(task_id);
+  user_data->OnHandshakeComplete();
+  user_data->SetSearchMessageDispatcherForTesting(base::DoNothing());
+
+  // Reopen the thread: AIM sends committed tab contexts while
+  // `submitted_context` on `session_handle` is empty.
+  lens::SearchToClientMessage::UpdateThreadContextLibrary update;
+  auto* open_tab_ctx = update.add_contexts();
+  open_tab_ctx->set_context_id(301);
+  open_tab_ctx->set_has_chrome_tab_data(true);
+  open_tab_ctx->mutable_webpage()->set_url(reopened_url.spec());
+  open_tab_ctx->mutable_webpage()->set_title("Reopened Tab");
+
+  const GURL closed_url("https://example.com/closed-tab");
+  auto* closed_tab_ctx = update.add_contexts();
+  closed_tab_ctx->set_context_id(302);
+  closed_tab_ctx->set_has_chrome_tab_data(true);
+  closed_tab_ctx->mutable_webpage()->set_url(closed_url.spec());
+  closed_tab_ctx->mutable_webpage()->set_title("Closed Tab");
+
+  user_data->HandleThreadContextLibraryUpdateFromAim(update);
+  ASSERT_TRUE(mock_handle->GetTabContextState().ContainsTab(active_session_id));
+
+  // 1. Submitting on the reopened thread recontextualizes the open restored
+  // active tab because `HandleThreadContextLibraryUpdateFromAim` populated both
+  // `restored` tabs and `UrlResource::tab_id`.
+  content::WebContentsTester::For(web_contents_)
+      ->TestDidReceiveMouseDownEvent();
+  user_data->HandleOnSubmitQueryRequest("follow up on reopened thread");
+  EXPECT_EQ(tab_controller.get_page_context_calls(), 1);
+  EXPECT_EQ(recontextualization_uploads, 1);
+
+  // 2. Deselecting the restored tab stops recontextualization on submit.
+  mock_handle->DeleteTabContext(active_session_id, reopened_url,
+                                "Reopened Tab");
+  ASSERT_TRUE(mock_handle->IsTabDeselected(active_session_id, reopened_url,
+                                           "Reopened Tab"));
+  content::WebContentsTester::For(web_contents_)
+      ->TestDidReceiveMouseDownEvent();
+  user_data->HandleOnSubmitQueryRequest("after deselect");
+  EXPECT_EQ(tab_controller.get_page_context_calls(), 1);
+  EXPECT_EQ(recontextualization_uploads, 1);
+
+  // 3. Navigating to an unaffiliated URL (or a URL that was closed when the
+  // thread reopened and therefore excluded from `restored`) does not
+  // recontextualize.
+  content::WebContentsTester::For(active_contents)
+      ->NavigateAndCommit(closed_url);
+  content::WebContentsTester::For(web_contents_)
+      ->TestDidReceiveMouseDownEvent();
+  user_data->HandleOnSubmitQueryRequest("on previously closed url");
+  EXPECT_EQ(tab_controller.get_page_context_calls(), 1);
+  EXPECT_EQ(recontextualization_uploads, 1);
+
+  user_data->SetSearchMessageDispatcherForTesting(base::NullCallback());
+  ON_CALL(*mock_handle, GetController())
+      .WillByDefault(testing::Return(nullptr));
+  webui::SetBrowserWindowInterface(web_contents_, nullptr);
+  web_contents_ = nullptr;
+  web_contents_factory_.reset();
+}
+
+TEST_F(
+    ContextualTasksWebContentsUserDataTest,
+    HandleOnSubmitQueryRequest_UntaskedZeroStateOnlyUploadsAutoSuggestedTabs) {
+  ui::UnownedUserDataHost unowned_user_data_host;
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window;
+  ON_CALL(mock_browser_window, GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(unowned_user_data_host));
+  testing::NiceMock<MockTabListInterface> mock_tab_list;
+  ui::ScopedUnownedUserData<TabListInterface> tab_list_registration(
+      unowned_user_data_host, mock_tab_list);
+  webui::SetBrowserWindowInterface(web_contents_, &mock_browser_window);
+
+  // Active tab in the browser window (unaffiliated with any task).
+  content::WebContents* active_contents =
+      web_contents_factory_->CreateWebContents(profile_.get());
+  sessions::SessionTabHelper::CreateForWebContents(active_contents,
+                                                   base::NullCallback());
+  const GURL active_url("https://example.com/unaffiliated-active");
+  content::WebContentsTester::For(active_contents)
+      ->NavigateAndCommit(active_url);
+  const SessionID active_session_id =
+      sessions::SessionTabHelper::IdForTab(active_contents);
+
+  tabs::MockTabInterface mock_active_tab;
+  ON_CALL(mock_active_tab, GetContents())
+      .WillByDefault(testing::Return(active_contents));
+  ON_CALL(mock_active_tab, GetBrowserWindowInterface())
+      .WillByDefault(testing::Return(&mock_browser_window));
+
+  // Auto-suggested delayed chip tab.
+  content::WebContents* chip_contents =
+      web_contents_factory_->CreateWebContents(profile_.get());
+  sessions::SessionTabHelper::CreateForWebContents(chip_contents,
+                                                   base::NullCallback());
+  const GURL chip_url("https://example.com/auto-chip");
+  content::WebContentsTester::For(chip_contents)->NavigateAndCommit(chip_url);
+  const SessionID chip_session_id =
+      sessions::SessionTabHelper::IdForTab(chip_contents);
+
+  tabs::MockTabInterface mock_chip_tab;
+  ON_CALL(mock_chip_tab, GetContents())
+      .WillByDefault(testing::Return(chip_contents));
+  ON_CALL(mock_chip_tab, GetBrowserWindowInterface())
+      .WillByDefault(testing::Return(&mock_browser_window));
+
+  std::vector<tabs::TabInterface*> all_tabs = {&mock_active_tab,
+                                               &mock_chip_tab};
+  ON_CALL(mock_tab_list, GetActiveTab())
+      .WillByDefault(testing::Return(&mock_active_tab));
+  ON_CALL(mock_tab_list, GetAllTabs())
+      .WillByDefault(testing::ReturnPointee(&all_tabs));
+
+  StubTabContextualizationController active_tab_controller(
+      &mock_active_tab,
+      base::BindLambdaForTesting(
+          [active_session_id, active_url](
+              lens::TabContextualizationController::GetPageContextCallback
+                  callback) {
+            auto data = std::make_unique<lens::ContextualInputData>();
+            data->tab_session_id = active_session_id;
+            data->page_url = active_url;
+            data->is_page_context_eligible = true;
+            std::move(callback).Run(std::move(data));
+          }));
+  StubTabContextualizationController chip_tab_controller(
+      &mock_chip_tab,
+      base::BindLambdaForTesting(
+          [chip_session_id, chip_url](
+              lens::TabContextualizationController::GetPageContextCallback
+                  callback) {
+            auto data = std::make_unique<lens::ContextualInputData>();
+            data->tab_session_id = chip_session_id;
+            data->page_url = chip_url;
+            data->is_page_context_eligible = true;
+            std::move(callback).Run(std::move(data));
+          }));
+
+  contextual_search::ContextualSearchContextController::
+      ContextUploadStatusObserver* captured_observer = nullptr;
+  testing::NiceMock<contextual_search::MockContextualSearchContextController>
+      mock_context_controller;
+  base::WeakPtrFactory<contextual_search::ContextualSearchContextController>
+      controller_weak_factory(&mock_context_controller);
+  ON_CALL(mock_context_controller, AsWeakPtr())
+      .WillByDefault([&controller_weak_factory]() {
+        return controller_weak_factory.GetWeakPtr();
+      });
+  ON_CALL(mock_context_controller, AddObserver(testing::_))
+      .WillByDefault([&captured_observer](
+                         contextual_search::ContextualSearchContextController::
+                             ContextUploadStatusObserver* obs) {
+        captured_observer = obs;
+      });
+  ON_CALL(mock_context_controller, RemoveObserver(testing::_))
+      .WillByDefault([&captured_observer](
+                         contextual_search::ContextualSearchContextController::
+                             ContextUploadStatusObserver* obs) {
+        if (captured_observer == obs) {
+          captured_observer = nullptr;
+        }
+      });
+
+  auto session_handle = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  auto* mock_handle = session_handle.get();
+  ON_CALL(*mock_handle, GetController())
+      .WillByDefault(testing::Return(&mock_context_controller));
+  ON_CALL(*mock_handle, CreateContextToken()).WillByDefault([]() {
+    return base::UnguessableToken::Create();
+  });
+
+  std::vector<GURL> uploaded_tab_urls;
+  ON_CALL(*mock_handle,
+          StartTabContextUploadFlow(testing::_, testing::_, testing::_))
+      .WillByDefault([&uploaded_tab_urls, &captured_observer](
+                         const base::UnguessableToken& file_token,
+                         std::unique_ptr<lens::ContextualInputData> data,
+                         std::optional<lens::ImageEncodingOptions>) {
+        ASSERT_TRUE(data->page_url.has_value());
+        uploaded_tab_urls.push_back(*data->page_url);
+        EXPECT_EQ(data->upload_type,
+                  lens::LensOverlayContextualInputUploadType::
+                      CONTEXTUAL_INPUT_UPLOAD_TYPE_AUTO_TAB_CHIP);
+        if (captured_observer) {
+          captured_observer->OnContextUploadStatusChanged(
+              file_token, lens::MimeType::kUnknown,
+              contextual_search::ContextUploadStatus::kUploadSuccessful,
+              std::nullopt);
+        }
+      });
+
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents_)
+      ->SetTaskSession(/*task_id=*/std::nullopt, std::move(session_handle),
+                       /*input_state_model=*/nullptr);
+
+  testing::NiceMock<MockContextualTasksService> mock_tasks_service;
+  EXPECT_CALL(mock_tasks_service,
+              GetContextForTask(testing::_, testing::_, testing::_, testing::_))
+      .Times(0);
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+  user_data->SetContextualTasksServiceForTesting(&mock_tasks_service);
+  user_data->RecordTabIdMapping(mock_active_tab.GetHandle().raw_value(),
+                                active_session_id.id());
+  user_data->RecordTabIdMapping(mock_chip_tab.GetHandle().raw_value(),
+                                chip_session_id.id());
+  user_data->OnHandshakeComplete();
+  user_data->SetSearchMessageDispatcherForTesting(base::DoNothing());
+
+  mock_handle->AddPendingDelayedTab(chip_session_id.id(), chip_url, "Chip Tab");
+
+  content::WebContentsTester::For(web_contents_)
+      ->TestDidReceiveMouseDownEvent();
+  user_data->HandleOnSubmitQueryRequest("zero state submit");
+
+  EXPECT_EQ(active_tab_controller.get_page_context_calls(), 0);
+  EXPECT_EQ(chip_tab_controller.get_page_context_calls(), 1);
+  EXPECT_THAT(uploaded_tab_urls, testing::ElementsAre(chip_url));
+
+  user_data->SetSearchMessageDispatcherForTesting(base::NullCallback());
+  user_data->SetContextualTasksServiceForTesting(nullptr);
+  ON_CALL(*mock_handle, GetController())
+      .WillByDefault(testing::Return(nullptr));
+  webui::SetBrowserWindowInterface(web_contents_, nullptr);
 }
 #endif
 
