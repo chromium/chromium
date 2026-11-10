@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.history;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -28,6 +31,7 @@ import org.chromium.chrome.browser.history.HistoryProvider.TimePeriodOption;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
+import org.chromium.components.critical_actions.ActionType;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -92,7 +96,8 @@ public class BrowsingHistoryBridgeTest {
                 urls,
                 timestampsList,
                 false,
-                false);
+                false,
+                /* criticalActions= */ List.of());
         mBrowsingHistoryBridge.onQueryHistoryComplete(items, false);
 
         adapter.markItemForRemoval(items.get(0));
@@ -144,7 +149,8 @@ public class BrowsingHistoryBridgeTest {
                 urls,
                 timestampsList,
                 /* blockedVisit= */ false,
-                /* isActorVisit= */ false);
+                /* isActorVisit= */ false,
+                /* criticalActions= */ List.of());
 
         assertEquals(1, items.size());
         HistoryItem item = items.get(0);
@@ -178,7 +184,8 @@ public class BrowsingHistoryBridgeTest {
                 urls,
                 timestampsList,
                 /* blockedVisit= */ false,
-                /* isActorVisit= */ false);
+                /* isActorVisit= */ false,
+                /* criticalActions= */ List.of());
 
         assertEquals(1, items.size());
         HistoryItem item = items.get(0);
@@ -189,6 +196,138 @@ public class BrowsingHistoryBridgeTest {
         assertEquals(2, allTimestamps.size());
         assertArrayEquals(primaryTimestamps, allTimestamps.get(primaryUrl));
         assertArrayEquals(secondaryTimestamps, allTimestamps.get(secondaryUrl));
+    }
+
+    @Test
+    public void testCreateHistoryItemAndAddToList_PassesCriticalActions() {
+        List<HistoryItem> items = new ArrayList<>();
+        GURL url = new GURL("https://example.com");
+        CriticalAction formFill =
+                BrowsingHistoryBridge.createCriticalAction(
+                        "id1", ActionType.FORM_FILL, "Filled a form", "Form tooltip");
+        CriticalAction password =
+                BrowsingHistoryBridge.createCriticalAction(
+                        "id2",
+                        ActionType.GOOGLE_PASSWORD_MANAGER,
+                        "Used a password",
+                        "Password tooltip");
+
+        BrowsingHistoryBridge.createHistoryItemAndAddToList(
+                items,
+                url,
+                "example.com",
+                "Example Title",
+                /* appId= */ null,
+                /* mostRecentJavaTimestamp= */ 1000L,
+                List.of(url),
+                List.of(new long[] {1000L}),
+                /* blockedVisit= */ false,
+                /* isActorVisit= */ true,
+                List.of(formFill, password));
+
+        assertEquals(1, items.size());
+        List<CriticalAction> actions = items.get(0).getCriticalActions();
+        assertEquals(
+                List.of(
+                        new CriticalAction(
+                                "id1", ActionType.FORM_FILL, "Filled a form", "Form tooltip"),
+                        new CriticalAction(
+                                "id2",
+                                ActionType.GOOGLE_PASSWORD_MANAGER,
+                                "Used a password",
+                                "Password tooltip")),
+                actions);
+        assertEquals("id1", actions.get(0).getId());
+        assertEquals(1, actions.get(0).getActionType());
+        assertEquals("Filled a form", actions.get(0).getLabel());
+        assertEquals("Form tooltip", actions.get(0).getTooltip());
+    }
+
+    @Test
+    public void testHistoryItem_CriticalActionsDefaultToEmpty() {
+        GURL url = new GURL("https://example.com");
+        HistoryItem item =
+                new HistoryItem(
+                        url,
+                        "example.com",
+                        "Title",
+                        /* appId= */ null,
+                        1000L,
+                        new long[] {1000L},
+                        /* blockedVisit= */ false,
+                        /* isActorVisit= */ false);
+
+        assertTrue(item.getCriticalActions().isEmpty());
+    }
+
+    @Test
+    public void testHistoryItem_CriticalActionsDefensiveCopy() {
+        GURL url = new GURL("https://example.com");
+        List<CriticalAction> mutableActions = new ArrayList<>();
+        mutableActions.add(new CriticalAction("id", ActionType.FORM_FILL, "label", "tooltip"));
+
+        HistoryItem item =
+                new HistoryItem(
+                        url,
+                        "example.com",
+                        "Title",
+                        /* appId= */ null,
+                        1000L,
+                        Map.of(url, new long[] {1000L}),
+                        /* blockedVisit= */ false,
+                        /* isActorVisit= */ true,
+                        mutableActions);
+
+        mutableActions.clear();
+        List<CriticalAction> actions = item.getCriticalActions();
+        assertEquals(
+                List.of(new CriticalAction("id", ActionType.FORM_FILL, "label", "tooltip")),
+                actions);
+        assertThrows(UnsupportedOperationException.class, actions::clear);
+    }
+
+    @Test
+    public void testHistoryItem_CriticalActionsPreservedByBuilder() {
+        GURL url = new GURL("https://example.com");
+        CriticalAction action = new CriticalAction("id", ActionType.FORM_FILL, "label", "tooltip");
+        HistoryItem item =
+                new HistoryItem(
+                        url,
+                        "example.com",
+                        "Title",
+                        /* appId= */ null,
+                        1000L,
+                        Map.of(url, new long[] {1000L}),
+                        /* blockedVisit= */ false,
+                        /* isActorVisit= */ true,
+                        List.of(action));
+
+        HistoryItem copy = item.toBuilder().setIsExpanded(true).build();
+
+        assertEquals(
+                List.of(new CriticalAction("id", ActionType.FORM_FILL, "label", "tooltip")),
+                copy.getCriticalActions());
+    }
+
+    @Test
+    public void testCriticalAction_EqualsAndHashCode() {
+        CriticalAction action =
+                new CriticalAction("id1", ActionType.FORM_FILL, "label1", "tooltip1");
+        CriticalAction same = new CriticalAction("id1", ActionType.FORM_FILL, "label1", "tooltip1");
+
+        assertEquals(action, same);
+        assertEquals(action.hashCode(), same.hashCode());
+
+        assertNotEquals(
+                action, new CriticalAction("id2", ActionType.FORM_FILL, "label1", "tooltip1"));
+        assertNotEquals(
+                action, new CriticalAction("id1", ActionType.DOWNLOAD, "label1", "tooltip1"));
+        assertNotEquals(
+                action, new CriticalAction("id1", ActionType.FORM_FILL, "label2", "tooltip1"));
+        assertNotEquals(
+                action, new CriticalAction("id1", ActionType.FORM_FILL, "label1", "tooltip2"));
+        assertNotEquals(action, null);
+        assertNotEquals(action, new Object());
     }
 
     @Test

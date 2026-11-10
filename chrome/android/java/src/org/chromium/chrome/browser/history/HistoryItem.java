@@ -30,6 +30,7 @@ public class HistoryItem extends TimedItem {
     private final @Nullable String mAppId;
     private final boolean mWasBlockedVisit;
     private final boolean mIsActorVisit;
+    private final List<CriticalAction> mCriticalActions;
     private final long mMostRecentJavaTimestamp;
     private final long[] mNativeTimestampList;
     private final Map<GURL, long[]> mAllTimestamps;
@@ -62,6 +63,41 @@ public class HistoryItem extends TimedItem {
             Map<GURL, long[]> allTimestamps,
             boolean blockedVisit,
             boolean isActorVisit) {
+        this(
+                url,
+                domain,
+                title,
+                appId,
+                mostRecentJavaTimestamp,
+                allTimestamps,
+                blockedVisit,
+                isActorVisit,
+                List.of());
+    }
+
+    /**
+     * @param url The url for this item.
+     * @param domain The string to display for the item's domain.
+     * @param title The string to display for the item's title.
+     * @param appId ID of the app that this item was generated for. {@code null} if this is
+     *     generated for BrApp, or the app can't be identified.
+     * @param mostRecentJavaTimestamp Most recent Java compatible navigation time.
+     * @param allTimestamps Map of URLs to microsecond resolution navigation times. A single history
+     *     item may contain multiple URLs if similar visits are grouped together under this item.
+     * @param blockedVisit Whether the visit to this item was blocked when it was attempted.
+     * @param isActorVisit Whether the visit is actor initiated.
+     * @param criticalActions Critical actions performed during the visits of this item.
+     */
+    public HistoryItem(
+            GURL url,
+            String domain,
+            String title,
+            @Nullable String appId,
+            long mostRecentJavaTimestamp,
+            Map<GURL, long[]> allTimestamps,
+            boolean blockedVisit,
+            boolean isActorVisit,
+            List<CriticalAction> criticalActions) {
         mUrl = url;
         mDomain = domain;
         mTitle =
@@ -80,6 +116,7 @@ public class HistoryItem extends TimedItem {
         }
         mWasBlockedVisit = blockedVisit;
         mIsActorVisit = isActorVisit;
+        mCriticalActions = List.copyOf(criticalActions);
         mSubItems = null;
         mIsExpanded = false;
         mIsClusterHead = false;
@@ -152,6 +189,14 @@ public class HistoryItem extends TimedItem {
      */
     public boolean isActorVisit() {
         return mIsActorVisit;
+    }
+
+    /**
+     * @return The critical actions performed during the visits of this item. Empty if there are
+     *     none.
+     */
+    public List<CriticalAction> getCriticalActions() {
+        return mCriticalActions;
     }
 
     @Override
@@ -294,6 +339,7 @@ public class HistoryItem extends TimedItem {
         private final Map<GURL, long[]> mAllTimestamps;
         private final boolean mWasBlockedVisit;
         private final boolean mIsActorVisit;
+        private final List<CriticalAction> mCriticalActions;
         private @Nullable HistoryContentManager mManager;
 
         private String mTitle;
@@ -312,6 +358,7 @@ public class HistoryItem extends TimedItem {
             mAllTimestamps = item.getAllTimestamps();
             mWasBlockedVisit = item.wasBlockedVisit();
             mIsActorVisit = item.isActorVisit();
+            mCriticalActions = item.getCriticalActions();
             mManager = item.mManager;
 
             mIsExpanded = item.isExpanded();
@@ -365,6 +412,7 @@ public class HistoryItem extends TimedItem {
         mAllTimestamps = builder.mAllTimestamps;
         mWasBlockedVisit = builder.mWasBlockedVisit;
         mIsActorVisit = builder.mIsActorVisit;
+        mCriticalActions = builder.mCriticalActions;
         mManager = builder.mManager;
 
         mIsExpanded = builder.mIsExpanded;

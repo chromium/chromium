@@ -17,6 +17,7 @@ namespace critical_actions {
 
 // Enum defining list of critical categories supported by Critical Action
 // History.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.critical_actions
 // LINT.IfChange(CriticalActionType)
 enum class ActionType {
   kUnknown = 0,

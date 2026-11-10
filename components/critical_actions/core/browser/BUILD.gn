@@ -92,3 +92,17 @@ source_set("unit_tests") {
     "//url",
   ]
 }
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+
+  android_library("critical_actions_enums_java") {
+    srcjar_deps = [ ":critical_actions_enums_javagen" ]
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+  }
+
+  java_cpp_enum("critical_actions_enums_javagen") {
+    sources = [ "critical_action_types.h" ]
+    visibility = [ ":*" ]  # Depend on through :critical_actions_enums_java
+  }
+}

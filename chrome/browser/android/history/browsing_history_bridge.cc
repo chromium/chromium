@@ -12,11 +12,14 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
+#include "chrome/browser/critical_actions/critical_action_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/web_history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "components/critical_actions/core/browser/critical_action_service.h"
+#include "components/critical_actions/core/browser/critical_action_types.h"
 #include "components/history/core/browser/browsing_history_service.h"
 #include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_service.h"
@@ -67,8 +70,9 @@ inline ScopedJavaLocalRef<jobject> ToJniType<std::vector<int64_t>>(
 
 // Declared before `BrowsingHistoryBridge_jni.h`, which instantiates them, and
 // defined after it because the implementations call
-// `Java_BrowsingHistoryBridge_createClientGroup` and
-// `Java_BrowsingHistoryBridge_createTimePeriodOption` from that header.
+// `Java_BrowsingHistoryBridge_createClientGroup`,
+// `Java_BrowsingHistoryBridge_createTimePeriodOption` and
+// `Java_BrowsingHistoryBridge_createCriticalAction` from that header.
 template <>
 ScopedJavaLocalRef<jobject> ToJniType<ClientGroup>(JNIEnv* env,
                                                    const ClientGroup& client);
@@ -76,6 +80,10 @@ template <>
 ScopedJavaLocalRef<jobject> ToJniType<TimePeriodOption>(
     JNIEnv* env,
     const TimePeriodOption& option);
+template <>
+ScopedJavaLocalRef<jobject> ToJniType<critical_actions::CriticalActionEntry>(
+    JNIEnv* env,
+    const critical_actions::CriticalActionEntry& action);
 }  // namespace jni_zero
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -96,6 +104,15 @@ ScopedJavaLocalRef<jobject> ToJniType<TimePeriodOption>(
   return Java_BrowsingHistoryBridge_createTimePeriodOption(
       env, static_cast<int>(option.id), option.label,
       TimeToJavaMs(option.begin_time), TimeToJavaMs(option.end_time));
+}
+
+template <>
+ScopedJavaLocalRef<jobject> ToJniType<critical_actions::CriticalActionEntry>(
+    JNIEnv* env,
+    const critical_actions::CriticalActionEntry& action) {
+  return Java_BrowsingHistoryBridge_createCriticalAction(
+      env, action.critical_action_id, static_cast<int>(action.action_type),
+      action.GetLabel(), action.GetTooltip());
 }
 }  // namespace jni_zero
 
@@ -118,7 +135,7 @@ BrowsingHistoryBridge::BrowsingHistoryBridge(JNIEnv* env,
       this, local_history, web_history, sync_service,
       device_info_service ? device_info_service->GetDeviceInfoTracker()
                           : nullptr,
-      /*critical_action_provider=*/nullptr);
+      critical_actions::CriticalActionFactory::GetForProfile(profile_));
 
   j_history_service_obj_.Reset(env, obj);
 }
@@ -234,7 +251,8 @@ void BrowsingHistoryBridge::OnQueryComplete(
       Java_BrowsingHistoryBridge_createHistoryItemAndAddToList(
           env, j_query_result_obj_, entry.url, domain, entry.title,
           entry.app_id, most_recent_java_timestamp, urls,
-          native_timestamps_list, entry.blocked_visit, entry.is_actor_visit);
+          native_timestamps_list, entry.blocked_visit, entry.is_actor_visit,
+          entry.critical_actions);
     } else {
       // This relies on the list of timestamps per url in |all_timestamps| being
       // a sorted data structure. When similar visits grouping is disabled,
@@ -252,7 +270,8 @@ void BrowsingHistoryBridge::OnQueryComplete(
       Java_BrowsingHistoryBridge_createHistoryItemAndAddToList(
           env, j_query_result_obj_, entry.url, domain, entry.title,
           entry.app_id, most_recent_java_timestamp, {entry.url},
-          {native_timestamps}, entry.blocked_visit, entry.is_actor_visit);
+          {native_timestamps}, entry.blocked_visit, entry.is_actor_visit,
+          entry.critical_actions);
     }
   }
 

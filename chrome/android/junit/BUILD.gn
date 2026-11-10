@@ -288,6 +288,7 @@ if (is_android) {
       "//components/content_relationship_verification/android:junit_test_support",
       "//components/content_settings/android:content_settings_enums_java",
       "//components/content_settings/android:java",
+      "//components/critical_actions/core/browser:critical_actions_enums_java",
       "//components/data_sharing:test_support_java",
       "//components/data_sharing/public:public_java",
       "//components/data_sharing/public/protocol:proto_java",

@@ -666,6 +666,7 @@ if (_is_default_toolchain) {
       "//components/content_settings/android:java",
       "//components/contextual_search:components_contextual_search_java",
       "//components/crash/android:java",
+      "//components/critical_actions/core/browser:critical_actions_enums_java",
       "//components/data_sharing/public:public_java",
       "//components/device_reauth:device_reauth_java_enums",
       "//components/device_signals/core/browser/android:java",

@@ -746,6 +746,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/history/AppSpecificHistoryIphController.java",
   "java/src/org/chromium/chrome/browser/history/BrowserHistoryInfoHeaderPref.java",
   "java/src/org/chromium/chrome/browser/history/BrowsingHistoryBridge.java",
+  "java/src/org/chromium/chrome/browser/history/CriticalAction.java",
   "java/src/org/chromium/chrome/browser/history/HistoryActivity.java",
   "java/src/org/chromium/chrome/browser/history/HistoryAdapter.java",
   "java/src/org/chromium/chrome/browser/history/HistoryContentManager.java",

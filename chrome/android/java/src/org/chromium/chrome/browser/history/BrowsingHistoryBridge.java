@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.history.HistoryProvider.ClientGroup;
 import org.chromium.chrome.browser.history.HistoryProvider.TimePeriodOption;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
+import org.chromium.components.critical_actions.ActionType;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -153,7 +154,9 @@ public class BrowsingHistoryBridge implements HistoryProvider {
             @JniType("std::vector<GURL>") List<GURL> urls,
             @JniType("std::vector<std::vector<int64_t>>") List<long[]> nativeTimestampsList,
             boolean blockedVisit,
-            boolean isActorVisit) {
+            boolean isActorVisit,
+            @JniType("std::vector<critical_actions::CriticalActionEntry>")
+                    List<CriticalAction> criticalActions) {
         assert urls.size() == nativeTimestampsList.size();
         Map<GURL, long[]> allTimestamps = new HashMap<>();
         for (int i = 0; i < urls.size(); i++) {
@@ -168,7 +171,17 @@ public class BrowsingHistoryBridge implements HistoryProvider {
                         mostRecentJavaTimestamp,
                         allTimestamps,
                         blockedVisit,
-                        isActorVisit));
+                        isActorVisit,
+                        criticalActions));
+    }
+
+    @CalledByNative
+    public static CriticalAction createCriticalAction(
+            @JniType("std::string") String id,
+            @ActionType int actionType,
+            @JniType("std::string") String label,
+            @JniType("std::string") String tooltip) {
+        return new CriticalAction(id, actionType, label, tooltip);
     }
 
     @CalledByNative
