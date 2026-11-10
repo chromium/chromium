@@ -1306,7 +1306,7 @@ TEST_F(AutocompleteMatchTest, RearrangeActionsInSuggest) {
   }
 }
 
-#if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
 TEST_F(AutocompleteMatchTest, ValidateGetVectorIcons) {
   AutocompleteMatch match;
 
