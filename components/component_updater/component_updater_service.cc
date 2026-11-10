@@ -58,61 +58,6 @@ enum UpdateType {
 
 namespace component_updater {
 
-ComponentInfo::ComponentInfo(const std::string& id,
-                             const std::string& fingerprint,
-                             const std::u16string& name,
-                             const base::Version& version,
-                             const std::string& cohort_id)
-    : id(id),
-      fingerprint(fingerprint),
-      name(name),
-      version(version),
-      cohort_id(cohort_id) {}
-ComponentInfo::ComponentInfo(const ComponentInfo& other) = default;
-ComponentInfo& ComponentInfo::operator=(const ComponentInfo& other) = default;
-ComponentInfo::ComponentInfo(ComponentInfo&& other) noexcept = default;
-ComponentInfo& ComponentInfo::operator=(ComponentInfo&& other) noexcept =
-    default;
-ComponentInfo::~ComponentInfo() = default;
-
-ComponentRegistration::ComponentRegistration(
-    const std::string& app_id,
-    const std::string& name,
-    std::vector<uint8_t> public_key_hash,
-    const base::Version& version,
-    const std::string& fingerprint,
-    std::map<std::string, std::string> installer_attributes,
-    scoped_refptr<update_client::ActionHandler> action_handler,
-    scoped_refptr<update_client::CrxInstaller> installer,
-    bool requires_network_encryption,
-    bool supports_group_policy_enable_component_updates,
-    bool allow_cached_copies,
-    bool allow_updates_on_metered_connection,
-    bool allow_updates)
-    : app_id(app_id),
-      name(name),
-      public_key_hash(public_key_hash),
-      version(version),
-      fingerprint(fingerprint),
-      installer_attributes(installer_attributes),
-      action_handler(action_handler),
-      installer(installer),
-      requires_network_encryption(requires_network_encryption),
-      supports_group_policy_enable_component_updates(
-          supports_group_policy_enable_component_updates),
-      allow_cached_copies(allow_cached_copies),
-      allow_updates_on_metered_connection(allow_updates_on_metered_connection),
-      allow_updates(allow_updates) {}
-ComponentRegistration::ComponentRegistration(
-    const ComponentRegistration& other) = default;
-ComponentRegistration& ComponentRegistration::operator=(
-    const ComponentRegistration& other) = default;
-ComponentRegistration::ComponentRegistration(
-    ComponentRegistration&& other) noexcept = default;
-ComponentRegistration& ComponentRegistration::operator=(
-    ComponentRegistration&& other) noexcept = default;
-ComponentRegistration::~ComponentRegistration() = default;
-
 CrxUpdateService::CrxUpdateService(scoped_refptr<Configurator> config,
                                    std::unique_ptr<UpdateScheduler> scheduler,
                                    scoped_refptr<UpdateClient> update_client,
@@ -230,11 +175,9 @@ bool CrxUpdateService::RegisterComponent(
 
   // Create an initial state for this component. The state is mutated in
   // response to events from the UpdateClient instance.
-  CrxUpdateItem item;
-  item.id = component.app_id;
-  item.component = ToCrxComponent(component);
-  const auto [unused, inserted] =
-      component_states_.insert(std::make_pair(component.app_id, item));
+  const auto [unused, inserted] = component_states_.insert(std::make_pair(
+      component.app_id, CrxUpdateItem{.id = component.app_id,
+                                      .component = ToCrxComponent(component)}));
   CHECK(inserted);
 
 #if BUILDFLAG(CHROME_FOR_TESTING)
@@ -302,10 +245,12 @@ std::vector<ComponentInfo> CrxUpdateService::GetComponents() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<ComponentInfo> result;
   for (const auto& [app_id, registration] : components_) {
-    result.emplace_back(
-        app_id, registration.fingerprint, base::UTF8ToUTF16(registration.name),
-        registration.version,
-        config_->GetPersistedData()->GetCohort(registration.app_id));
+    result.push_back({.id = app_id,
+                      .fingerprint = registration.fingerprint,
+                      .name = base::UTF8ToUTF16(registration.name),
+                      .version = registration.version,
+                      .cohort_id = config_->GetPersistedData()->GetCohort(
+                          registration.app_id)});
   }
   return result;
 }
@@ -325,24 +270,6 @@ void CrxUpdateService::EnsureRequiredComponentsReady(base::TimeDelta timeout) {
 
 update_client::CrxComponent CrxUpdateService::ToCrxComponent(
     const ComponentRegistration& component) const {
-  update_client::CrxComponent crx;
-  crx.pk_hash = component.public_key_hash;
-  crx.app_id = component.app_id;
-  crx.installer = component.installer;
-  crx.action_handler = component.action_handler;
-  crx.version = component.version;
-  crx.fingerprint = component.fingerprint;
-  crx.name = component.name;
-  crx.installer_attributes = component.installer_attributes;
-  crx.requires_network_encryption = component.requires_network_encryption;
-  crx.allow_cached_copies = component.allow_cached_copies;
-  crx.allow_updates_on_metered_connection =
-      component.allow_updates_on_metered_connection;
-
-  crx.brand = brand_;
-  crx.crx_format_requirement =
-      crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF;
-
   bool component_updates_enabled =
       config_->GetPrefService()->GetBoolean(prefs::kComponentUpdatesEnabled);
   // Some components should update even when enterprise policy disables
@@ -351,7 +278,24 @@ update_client::CrxComponent CrxUpdateService::ToCrxComponent(
       !component.supports_group_policy_enable_component_updates;
   bool should_update =
       override_component_updates_enabled || component_updates_enabled;
-  crx.updates_enabled = component.allow_updates && should_update;
+
+  update_client::CrxComponent crx = {
+      .pk_hash = component.public_key_hash,
+      .installer = component.installer,
+      .action_handler = component.action_handler,
+      .app_id = component.app_id,
+      .version = component.version,
+      .brand = brand_,
+      .fingerprint = component.fingerprint,
+      .name = component.name,
+      .installer_attributes = component.installer_attributes,
+      .requires_network_encryption = component.requires_network_encryption,
+      .crx_format_requirement =
+          crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF,
+      .updates_enabled = component.allow_updates && should_update,
+      .allow_cached_copies = component.allow_cached_copies,
+      .allow_updates_on_metered_connection =
+          component.allow_updates_on_metered_connection};
 
 #if BUILDFLAG(CHROME_FOR_TESTING)
   if (required_components_controller_) {

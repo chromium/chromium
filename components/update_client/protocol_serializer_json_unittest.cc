@@ -52,7 +52,8 @@ TEST(SerializeRequestJSON, Serialize) {
         "source1", "location1", {{"attr1", "1"}, {"attr2", "2"}}, "c1", "ch1",
         "cn1", "test", {0, 1}, /*cached_hashes=*/{},
         MakeProtocolUpdateCheck(true, "33.12", true, false),
-        {{"install", "foobar_install_data_index", ""}},
+        {{.name = "install",
+          .install_data_index = "foobar_install_data_index"}},
         MakeProtocolPing("id1", metadata.get(), {}), std::move(events)));
 
     const auto request = std::make_unique<ProtocolSerializerJSON>()->Serialize(

@@ -100,18 +100,18 @@ base::expected<ProtocolParser::Operation, std::string> ParseOperation(
     return base::unexpected("'operation' contains a non-dictionary.");
   }
   const base::DictValue& node = node_val.GetDict();
-  ProtocolParser::Operation op;
   base::expected<std::string, std::string> type = Parse(node, "type");
   if (!type.has_value()) {
     return base::unexpected(type.error());
   }
-  op.type = type.value();
-  op.sha256_out = ParseWithDefault(node, "out", "sha256", {});
-  op.sha256_in = ParseWithDefault(node, "in", "sha256", {});
-  op.sha256_previous = ParseWithDefault(node, "previous", "sha256", {});
-  op.path = ParseWithDefault(node, "path", {});
-  op.arguments = ParseWithDefault(node, "arguments", {});
-  op.size = ParseNumberWithDefault(node, "size", 0);
+  ProtocolParser::Operation op = {
+      .type = type.value(),
+      .sha256_in = ParseWithDefault(node, "in", "sha256", {}),
+      .sha256_out = ParseWithDefault(node, "out", "sha256", {}),
+      .sha256_previous = ParseWithDefault(node, "previous", "sha256", {}),
+      .path = ParseWithDefault(node, "path", {}),
+      .arguments = ParseWithDefault(node, "arguments", {}),
+      .size = ParseNumberWithDefault(node, "size", 0)};
   if (const base::ListValue* list = node.FindList("urls")) {
     for (const base::Value& url_node : *list) {
       if (!url_node.is_dict()) {
@@ -137,9 +137,8 @@ base::expected<ProtocolParser::Pipeline, std::string> ParsePipeline(
   if (!node_val.is_dict()) {
     return base::unexpected("'pipeline' contains a non-dictionary.");
   }
-  ProtocolParser::Pipeline pipeline;
-  pipeline.pipeline_id =
-      ParseWithDefault(node_val.GetDict(), "pipeline_id", {});
+  ProtocolParser::Pipeline pipeline = {
+      .pipeline_id = ParseWithDefault(node_val.GetDict(), "pipeline_id", {})};
   if (const base::ListValue* node = node_val.GetDict().FindList("operations")) {
     for (const base::Value& operation_node : *node) {
       base::expected<ProtocolParser::Operation, std::string> operation =
@@ -159,8 +158,9 @@ void ParseData(const base::Value& data_node_val, ProtocolParser::App* result) {
   }
   const base::DictValue& data_node = data_node_val.GetDict();
 
-  result->data.emplace_back(GetValueString(data_node, "index"),
-                            GetValueString(data_node, "#text"));
+  result->data.push_back(
+      {.install_data_index = GetValueString(data_node, "index"),
+       .text = GetValueString(data_node, "#text")});
 }
 
 bool ParseUpdateCheck(const base::Value* node_val,

@@ -115,10 +115,8 @@ class TestUpdater : public OnDemandUpdater {
   // Registers a CRX component for updates.
   bool RegisterComponent(const ComponentRegistration& component) {
     component_installers_[component.name] = component.installer;
-    update_client::CrxComponent crx;
-    crx.pk_hash = component.public_key_hash;
-    component_id_to_name_[update_client::GetCrxComponentID(crx)] =
-        component.name;
+    component_id_to_name_[update_client::GetCrxComponentID(
+        {.pk_hash = component.public_key_hash})] = component.name;
     return true;
   }
 

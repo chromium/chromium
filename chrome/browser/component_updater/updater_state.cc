@@ -37,12 +37,6 @@ constexpr char kUpdaterPrefsLastChecked[] = "last_checked";
 constexpr char kUpdaterPrefsLastStarted[] = "last_started";
 }  // namespace
 
-UpdaterState::State::State() = default;
-UpdaterState::State::State(const UpdaterState::State&) = default;
-UpdaterState::State& UpdaterState::State::operator=(
-    const UpdaterState::State&) = default;
-UpdaterState::State::~State() = default;
-
 std::unique_ptr<UpdaterState::StateReader> UpdaterState::StateReader::Create(
     bool is_machine) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -144,19 +138,19 @@ UpdaterState::StateReaderChromiumUpdater::GetLastUpdateCheckError() const {
 }
 
 UpdaterState::State UpdaterState::StateReader::Read(bool is_machine) const {
-  State state;
-  state.updater_name = GetUpdaterName();
-  state.updater_version = GetUpdaterVersion(is_machine);
-  state.last_autoupdate_started = GetUpdaterLastStartedAU(is_machine);
-  state.last_checked = GetUpdaterLastChecked(is_machine);
-  state.is_autoupdate_check_enabled = IsAutoupdateCheckEnabled();
-  state.update_policy = [this] {
-    const int update_policy = GetUpdatePolicy();
-    CHECK((update_policy >= 0 && update_policy <= 3) || update_policy == -1);
-    return update_policy;
-  }();
-  state.last_update_check_error = GetLastUpdateCheckError();
-  return state;
+  return {.updater_name = GetUpdaterName(),
+          .updater_version = GetUpdaterVersion(is_machine),
+          .last_autoupdate_started = GetUpdaterLastStartedAU(is_machine),
+          .last_checked = GetUpdaterLastChecked(is_machine),
+          .is_autoupdate_check_enabled = IsAutoupdateCheckEnabled(),
+          .update_policy =
+              [this] {
+                const int update_policy = GetUpdatePolicy();
+                CHECK((update_policy >= 0 && update_policy <= 3) ||
+                      update_policy == -1);
+                return update_policy;
+              }(),
+          .last_update_check_error = GetLastUpdateCheckError()};
 }
 
 UpdaterState::UpdaterState(bool is_machine)

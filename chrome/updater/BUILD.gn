@@ -104,7 +104,6 @@ if (is_win || is_mac || is_linux) {
       "activity_impl.h",
       "app/app_install.cc",
       "app/app_install.h",
-      "app/app_install_progress.cc",
       "app/app_install_progress.h",
       "app/app_patch_worker.cc",
       "app/app_patch_worker.h",

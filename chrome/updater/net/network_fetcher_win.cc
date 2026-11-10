@@ -83,12 +83,11 @@ scoped_refptr<winhttp::ProxyConfiguration> GetProxyConfiguration(
   if (policy_service_proxy_configuration) {
     VLOG(1) << "Using cloud policy configuration for proxy.";
     return base::MakeRefCounted<winhttp::ProxyConfiguration>(winhttp::ProxyInfo{
-        policy_service_proxy_configuration->proxy_auto_detect,
-        base::SysUTF8ToWide(
+        .auto_detect = policy_service_proxy_configuration->proxy_auto_detect,
+        .auto_config_url = base::SysUTF8ToWide(
             policy_service_proxy_configuration->proxy_pac_url.value_or("")),
-        base::SysUTF8ToWide(
-            policy_service_proxy_configuration->proxy_url.value_or("")),
-        L""});
+        .proxy = base::SysUTF8ToWide(
+            policy_service_proxy_configuration->proxy_url.value_or(""))});
   }
   VLOG(1) << "Using the auto proxy configuration.";
   return base::MakeRefCounted<winhttp::AutoProxyConfiguration>();

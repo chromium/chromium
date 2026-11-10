@@ -119,12 +119,6 @@ std::optional<base::FilePath> EnsureCrashDatabasePath(UpdaterScope scope);
 // Contains the parsed values from the tag. The tag is provided as a command
 // line argument to the `--install` or the `--handoff` switch.
 struct TagParsingResult {
-  TagParsingResult();
-  TagParsingResult(std::optional<tagging::TagArgs> tag_args,
-                   tagging::ErrorCode error);
-  ~TagParsingResult();
-  TagParsingResult(const TagParsingResult&);
-  TagParsingResult& operator=(const TagParsingResult&);
   std::optional<tagging::TagArgs> tag_args;
   tagging::ErrorCode error = tagging::ErrorCode::kSuccess;
 };

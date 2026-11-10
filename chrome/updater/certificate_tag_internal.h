@@ -83,9 +83,6 @@ struct SectorFormat {
 
 // MSIDirEntry represents a parsed MSI directory entry for a stream.
 struct MSIDirEntry {
-  MSIDirEntry(const MSIDirEntry&);
-  MSIDirEntry();
-  ~MSIDirEntry();
   char name[64] = {};
   uint16_t num_name_bytes = 0;
   uint8_t object_type = 0;
@@ -103,9 +100,6 @@ struct MSIDirEntry {
 
 // MSIHeader represents a parsed MSI header.
 struct MSIHeader {
-  MSIHeader(const MSIHeader&);
-  MSIHeader();
-  ~MSIHeader();
   uint8_t magic[8] = {};
   uint8_t clsid[16] = {};
   uint16_t minor_version = 0;

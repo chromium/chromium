@@ -29,10 +29,6 @@ using UpdateFoundCallback =
 
 // This struct contains update information for a specific extension.
 struct ExtensionUpdateData {
-  ExtensionUpdateData();
-  ExtensionUpdateData(const ExtensionUpdateData& other);
-  ~ExtensionUpdateData();
-
   std::string install_source;
   bool is_corrupt_reinstall{false};
   std::optional<std::string> pending_version;
@@ -46,13 +42,9 @@ struct ExtensionUpdateCheckParams {
     FOREGROUND,
   };
 
-  ExtensionUpdateCheckParams();
-  ExtensionUpdateCheckParams(const ExtensionUpdateCheckParams& other);
-  ~ExtensionUpdateCheckParams();
-
   ExtensionUpdateDataMap update_info;
-  UpdateCheckPriority priority;
-  bool install_immediately;
+  UpdateCheckPriority priority = BACKGROUND;
+  bool install_immediately = false;
 };
 
 }  // namespace extensions

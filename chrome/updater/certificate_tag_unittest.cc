@@ -269,13 +269,10 @@ MSIBinary GetMsiBinary(const std::vector<uint32_t>& fat_entries,
           ? (difat_entries.size() - kNumDifatHeaderEntries - 1) / 1024 + 1
           : 0;
 
-  MSIHeader header;
-  header.dll_version = 4;
-  header.sector_shift = 12;
-  header.num_difat_sectors = n;
-
   MSIBinary bin;
-  bin.header_ = header;
+  bin.header_ = {.dll_version = 4,
+                 .sector_shift = 12,
+                 .num_difat_sectors = static_cast<uint32_t>(n)};
   bin.sector_format_ = *NewSectorFormat(12);
   bin.fat_entries_ = fat_entries;
   bin.difat_entries_ = difat_entries;

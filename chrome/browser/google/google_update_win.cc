@@ -956,12 +956,6 @@ void BeginUpdateCheck(const std::string& locale,
 
 // UpdateState -----------------------------------------------------------------
 
-UpdateState::UpdateState() = default;
-UpdateState::UpdateState(const UpdateState&) = default;
-UpdateState::UpdateState(UpdateState&&) = default;
-UpdateState& UpdateState::operator=(UpdateState&&) = default;
-UpdateState::~UpdateState() = default;
-
 std::optional<UpdateState> GetLastUpdateState() {
   return *GetLastUpdateStateStorage();
 }

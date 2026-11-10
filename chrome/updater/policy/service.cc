@@ -487,17 +487,6 @@ PolicyStatus<T> PolicyService::QueryAppPolicy(
   return status;
 }
 
-PolicyServiceProxyConfiguration::PolicyServiceProxyConfiguration() = default;
-PolicyServiceProxyConfiguration::~PolicyServiceProxyConfiguration() = default;
-PolicyServiceProxyConfiguration::PolicyServiceProxyConfiguration(
-    const PolicyServiceProxyConfiguration&) = default;
-PolicyServiceProxyConfiguration::PolicyServiceProxyConfiguration(
-    PolicyServiceProxyConfiguration&&) noexcept = default;
-PolicyServiceProxyConfiguration& PolicyServiceProxyConfiguration::operator=(
-    const PolicyServiceProxyConfiguration&) = default;
-PolicyServiceProxyConfiguration& PolicyServiceProxyConfiguration::operator=(
-    PolicyServiceProxyConfiguration&&) noexcept = default;
-
 std::optional<PolicyServiceProxyConfiguration>
 PolicyServiceProxyConfiguration::Get(
     scoped_refptr<PolicyService> policy_service) {

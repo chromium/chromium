@@ -228,14 +228,14 @@ int AppUninstall::Initialize() {
 }
 
 void AppUninstall::UninstallAll(UninstallPingReason reason) {
-  update_client::CrxComponent uninstall_data;
-  uninstall_data.ap = config_->GetUpdaterPersistedData()->GetAP(kUpdaterAppId);
-  uninstall_data.app_id = kUpdaterAppId;
-  uninstall_data.brand =
-      config_->GetUpdaterPersistedData()->GetBrandCode(kUpdaterAppId);
-  uninstall_data.requires_network_encryption = false;
-  uninstall_data.version =
-      config_->GetUpdaterPersistedData()->GetProductVersion(kUpdaterAppId);
+  update_client::CrxComponent uninstall_data = {
+      .app_id = kUpdaterAppId,
+      .version =
+          config_->GetUpdaterPersistedData()->GetProductVersion(kUpdaterAppId),
+      .ap = config_->GetUpdaterPersistedData()->GetAP(kUpdaterAppId),
+      .brand = config_->GetUpdaterPersistedData()->GetBrandCode(kUpdaterAppId),
+      .requires_network_encryption = false,
+  };
   if (!uninstall_data.version.IsValid()) {
     // In cases where there is no version in persisted data, fall back to the
     // currently-running version of the updater.

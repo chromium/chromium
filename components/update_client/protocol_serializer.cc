@@ -114,28 +114,34 @@ protocol_request::Request MakeProtocolRequest(
     const base::flat_map<std::string, std::string>& additional_attributes,
     const base::flat_map<std::string, std::string>& updater_state_attributes,
     std::vector<protocol_request::App> apps) {
-  protocol_request::Request request;
-  request.protocol_version = protocol_request::kProtocolVersion;
-  request.is_machine = is_machine;
-
-  // Session id and request id.
   CHECK(!session_id.empty());
   CHECK(session_id.starts_with('{'));
   CHECK(session_id.ends_with('}'));
-  request.session_id = session_id;
-  request.request_id = base::StrCat(
-      {"{", base::Uuid::GenerateRandomV4().AsLowercaseString(), "}"});
 
-  request.updatername = prod_id;
-  request.updaterversion = browser_version;
-  request.prodversion = browser_version;
-  request.updaterchannel = channel;
-  request.prodchannel = channel;
-  request.operating_system = UpdateQueryParams::GetOS();
-  request.arch = UpdateQueryParams::GetArch();
-  request.dlpref = download_preference;
-  request.domain_joined = domain_joined;
-  request.additional_attributes = additional_attributes;
+  protocol_request::Request request = {
+      .protocol_version = protocol_request::kProtocolVersion,
+      .is_machine = is_machine,
+      // Session id and request id.
+      .session_id = session_id,
+      .request_id = base::StrCat(
+          {"{", base::Uuid::GenerateRandomV4().AsLowercaseString(), "}"}),
+      .updatername = prod_id,
+      .updaterversion = browser_version,
+      .prodversion = browser_version,
+      .updaterchannel = channel,
+      .prodchannel = channel,
+      .operating_system = std::string(UpdateQueryParams::GetOS()),
+      .arch = std::string(UpdateQueryParams::GetArch()),
+      .dlpref = download_preference,
+      .domain_joined = domain_joined,
+      .additional_attributes = additional_attributes,
+      // OS version and platform information.
+      .os = {.platform = os_long_name,
+             .version = GetOSVersion(),
+             .service_pack = GetServicePack(),
+             .arch = GetArchitecture(),
+             .device_form_factor = device_form_factor},
+      .apps = std::move(apps)};
 
 #if BUILDFLAG(IS_WIN)
   if (base::win::OSInfo::GetInstance()->IsWowX86OnAMD64()) {
@@ -155,13 +161,6 @@ protocol_request::Request MakeProtocolRequest(
   request.hw.sse42 = cpu.has_sse42();
   request.hw.avx = cpu.has_avx();
 #endif
-
-  // OS version and platform information.
-  request.os.platform = os_long_name;
-  request.os.version = GetOSVersion();
-  request.os.service_pack = GetServicePack();
-  request.os.arch = GetArchitecture();
-  request.os.device_form_factor = device_form_factor;
 
   if (!updater_state_attributes.empty()) {
     request.updater = std::make_optional<protocol_request::Updater>();
@@ -206,7 +205,6 @@ protocol_request::Request MakeProtocolRequest(
     }
   }
 
-  request.apps = std::move(apps);
   return request;
 }
 
@@ -231,29 +229,28 @@ protocol_request::App MakeProtocolApp(
     const std::vector<protocol_request::Data>& data,
     std::optional<protocol_request::Ping> ping,
     std::optional<std::vector<base::DictValue>> events) {
-  protocol_request::App app;
-  app.app_id = app_id;
-  app.version = version.GetString();
-  app.ap = ap;
-  app.events = std::move(events);
-  app.brand_code = FilterBrandCode(brand_code);
-  app.lang = lang;
-  app.install_date = install_date;
-  app.install_id = install_id;
-  app.install_source = install_source;
-  app.install_location = install_location;
-  app.installer_attributes = FilterInstallerAttributes(installer_attributes);
-  app.cohort = cohort;
-  app.cohort_hint = cohort_hint;
-  app.cohort_name = cohort_name;
-  app.release_channel = release_channel;
-  app.enabled = disabled_reasons.empty();
-  app.disabled_reasons = disabled_reasons;
-  app.cached_hashes = cached_hashes;
-  app.update_check = std::move(update_check);
-  app.data = data;
-  app.ping = std::move(ping);
-  return app;
+  return {
+      .app_id = app_id,
+      .version = version.GetString(),
+      .ap = ap,
+      .installer_attributes = FilterInstallerAttributes(installer_attributes),
+      .lang = lang,
+      .brand_code = FilterBrandCode(brand_code),
+      .install_date = install_date,
+      .install_id = install_id,
+      .install_source = install_source,
+      .install_location = install_location,
+      .cohort = cohort,
+      .cohort_hint = cohort_hint,
+      .cohort_name = cohort_name,
+      .release_channel = release_channel,
+      .enabled = disabled_reasons.empty(),
+      .disabled_reasons = disabled_reasons,
+      .update_check = std::move(update_check),
+      .data = data,
+      .ping = std::move(ping),
+      .events = std::move(events),
+      .cached_hashes = cached_hashes};
 }
 
 protocol_request::UpdateCheck MakeProtocolUpdateCheck(
@@ -261,19 +258,18 @@ protocol_request::UpdateCheck MakeProtocolUpdateCheck(
     const std::string& target_version_prefix,
     bool rollback_allowed,
     bool same_version_update_allowed) {
-  protocol_request::UpdateCheck update_check;
-  update_check.is_update_disabled = is_update_disabled;
-  update_check.target_version_prefix = target_version_prefix;
-  update_check.rollback_allowed = rollback_allowed;
-  update_check.same_version_update_allowed = same_version_update_allowed;
-  return update_check;
+  return {.is_update_disabled = is_update_disabled,
+          .target_version_prefix = target_version_prefix,
+          .rollback_allowed = rollback_allowed,
+          .same_version_update_allowed = same_version_update_allowed};
 }
 
 protocol_request::Ping MakeProtocolPing(const std::string& app_id,
                                         const PersistedData* metadata,
                                         bool active) {
   CHECK(metadata);
-  protocol_request::Ping ping;
+  protocol_request::Ping ping = {.ping_freshness =
+                                     metadata->GetPingFreshness(app_id)};
 
   if (active) {
     const int date_last_active = metadata->GetDateLastActive(app_id);
@@ -290,7 +286,6 @@ protocol_request::Ping MakeProtocolPing(const std::string& app_id,
   } else {
     ping.days_since_last_roll_call = metadata->GetDaysSinceLastRollCall(app_id);
   }
-  ping.ping_freshness = metadata->GetPingFreshness(app_id);
 
   return ping;
 }

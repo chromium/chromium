@@ -1432,15 +1432,14 @@ void LegacyAppCommandWebImpl::SendPing(UpdaterScope scope,
             GetAppServerWinInstance()->config();
         scoped_refptr<PersistedData> persisted_data =
             config->GetUpdaterPersistedData();
-        update_client::CrxComponent app_command_data;
-        app_command_data.ap = persisted_data->GetAP(app_id);
-        app_command_data.app_id = app_id;
-        app_command_data.brand = persisted_data->GetBrandCode(app_id);
-        app_command_data.requires_network_encryption = false;
-        app_command_data.version = persisted_data->GetProductVersion(app_id);
-
         update_client::UpdateClientFactory(config)->SendPing(
-            app_command_data,
+            {
+                .app_id = app_id,
+                .version = persisted_data->GetProductVersion(app_id),
+                .ap = persisted_data->GetAP(app_id),
+                .brand = persisted_data->GetBrandCode(app_id),
+                .requires_network_encryption = false,
+            },
             {
                 .event_type =
                     update_client::protocol_request::kEventAppCommandComplete,

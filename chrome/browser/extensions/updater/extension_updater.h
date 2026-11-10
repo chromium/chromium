@@ -72,16 +72,6 @@ class ExtensionUpdater : public KeyedService,
   using FinishedCallback = base::OnceClosure;
 
   struct CheckParams {
-    // Creates a default CheckParams instance that checks for all extensions.
-    CheckParams();
-    ~CheckParams();
-
-    CheckParams(const CheckParams& other) = delete;
-    CheckParams& operator=(const CheckParams& other) = delete;
-
-    CheckParams(CheckParams&& other);
-    CheckParams& operator=(CheckParams&& other);
-
     // The set of extensions that should be checked for updates. If empty
     // all extensions will be included in the update check.
     std::list<ExtensionId> ids;
@@ -252,11 +242,6 @@ class ExtensionUpdater : public KeyedService,
   };
 
   struct InProgressCheck {
-    InProgressCheck();
-    InProgressCheck(const InProgressCheck&) = delete;
-    InProgressCheck& operator=(const InProgressCheck&) = delete;
-    ~InProgressCheck();
-
     bool is_full_check = false;
     bool install_immediately = false;
     bool awaiting_update_service = false;

@@ -91,12 +91,10 @@ PersistedData::PersistedData(
 
   PersistedDataEvent event;
   for (const std::string& app_id : GetAppIds()) {
-    PersistedDataEvent::RegisteredApp app;
-    app.app_id = app_id;
-    app.brand_code = GetBrandCode(app_id);
-    app.cohort = GetCohort(app_id);
-    app.version = GetProductVersion(app_id).GetString();
-    event.AddRegisteredApp(app);
+    event.AddRegisteredApp({.app_id = app_id,
+                            .version = GetProductVersion(app_id).GetString(),
+                            .cohort = GetCohort(app_id),
+                            .brand_code = GetBrandCode(app_id)});
   }
   event.SetEulaRequired(GetEulaRequired())
       .SetLastChecked(GetLastChecked())

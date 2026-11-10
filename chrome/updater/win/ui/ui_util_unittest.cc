@@ -33,9 +33,8 @@ TEST(UiUtilTest, GetBundleCompletionCode) {
     for (CompletionCodes completion_code :
          {CompletionCodes::COMPLETION_CODE_ERROR,
           CompletionCodes::COMPLETION_CODE_INSTALL_FINISHED_BEFORE_CANCEL}) {
-      ObserverCompletionInfo info;
-      info.completion_code = completion_code;
-      EXPECT_EQ(GetBundleCompletionCode(info), completion_code);
+      EXPECT_EQ(GetBundleCompletionCode({.completion_code = completion_code}),
+                completion_code);
     }
   }
   {
@@ -55,11 +54,9 @@ TEST(UiUtilTest, GetBundleCompletionCode) {
           CompletionCodes::COMPLETION_CODE_RESTART_BROWSER_NOTICE_ONLY,
           CompletionCodes::COMPLETION_CODE_LAUNCH_COMMAND,
           CompletionCodes::COMPLETION_CODE_INSTALL_FINISHED_BEFORE_CANCEL}) {
-      ObserverCompletionInfo info;
-      AppCompletionInfo app_info;
-      app_info.completion_code = completion_code;
-      info.apps_info.push_back(app_info);
-      EXPECT_EQ(GetBundleCompletionCode(info), completion_code);
+      EXPECT_EQ(GetBundleCompletionCode(
+                    {.apps_info = {{.completion_code = completion_code}}}),
+                completion_code);
     }
   }
   {
@@ -68,9 +65,7 @@ TEST(UiUtilTest, GetBundleCompletionCode) {
     for (CompletionCodes code : {CompletionCodes::COMPLETION_CODE_SUCCESS,
                                  CompletionCodes::COMPLETION_CODE_EXIT_SILENTLY,
                                  CompletionCodes::COMPLETION_CODE_REBOOT}) {
-      AppCompletionInfo app_info;
-      app_info.completion_code = code;
-      info.apps_info.push_back(app_info);
+      info.apps_info.push_back({.completion_code = code});
     }
     EXPECT_EQ(GetBundleCompletionCode(info),
               CompletionCodes::COMPLETION_CODE_REBOOT);
@@ -89,11 +84,10 @@ TEST(UiUtilTest, BundleCompletionPreservesTopLevelOverrides) {
 }
 
 TEST(UiUtilTest, BundleCompletionUsesApplicationError) {
-  ObserverCompletionInfo info;
-  info.apps_info.emplace_back().completion_code =
-      CompletionCodes::COMPLETION_CODE_SUCCESS;
-  info.apps_info.emplace_back().completion_code =
-      CompletionCodes::COMPLETION_CODE_ERROR;
+  const ObserverCompletionInfo info = {
+      .apps_info = {
+          {.completion_code = CompletionCodes::COMPLETION_CODE_SUCCESS},
+          {.completion_code = CompletionCodes::COMPLETION_CODE_ERROR}}};
   EXPECT_EQ(GetBundleCompletionCode(info),
             CompletionCodes::COMPLETION_CODE_ERROR);
 }
@@ -109,20 +103,20 @@ TEST(UiUtilTest, GetBundleCompletionErrorMessages) {
   EXPECT_EQ(GetBundleCompletionErrorMessages(info),
             L"First application failure");
   info.apps_info.emplace_back();
-  info.apps_info.emplace_back().completion_message =
-      u"Second application failure";
+  info.apps_info.push_back(
+      {.completion_message = u"Second application failure"});
   EXPECT_EQ(GetBundleCompletionErrorMessages(info),
             L"First application failure\nSecond application failure");
 }
 
 TEST(UiUtilTest, CompletionMessagesPreserveLineEndings) {
-  ObserverCompletionInfo info;
-  info.completion_text = u"Bundle failure\r\nMore detail\nLast line";
+  ObserverCompletionInfo info = {
+      .completion_text = u"Bundle failure\r\nMore detail\nLast line"};
   EXPECT_EQ(GetBundleCompletionErrorMessages(info),
             L"Bundle failure\r\nMore detail\nLast line");
-  info.apps_info.emplace_back().completion_message =
-      u"First failure\r\nMore detail";
-  info.apps_info.emplace_back().completion_message = u"Second failure\r\n";
+  info.apps_info.push_back(
+      {.completion_message = u"First failure\r\nMore detail"});
+  info.apps_info.push_back({.completion_message = u"Second failure\r\n"});
   EXPECT_EQ(GetBundleCompletionErrorMessages(info),
             L"First failure\r\nMore detail\nSecond failure\r\n");
 }

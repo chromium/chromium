@@ -79,10 +79,8 @@ class MockAppInstallProgress : public AppInstallProgress {
 };
 
 ObserverCompletionInfo MakeCompletionInfo(const std::u16string& text) {
-  ObserverCompletionInfo info;
-  info.completion_code = CompletionCodes::COMPLETION_CODE_ERROR;
-  info.completion_text = text;
-  return info;
+  return {.completion_code = CompletionCodes::COMPLETION_CODE_ERROR,
+          .completion_text = text};
 }
 
 }  // namespace

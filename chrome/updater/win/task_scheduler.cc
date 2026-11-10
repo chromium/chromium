@@ -1417,15 +1417,6 @@ class TaskSchedulerV2 final : public TaskScheduler {
 
 }  // namespace
 
-TaskScheduler::TaskInfo::TaskInfo() = default;
-TaskScheduler::TaskInfo::TaskInfo(const TaskScheduler::TaskInfo&) = default;
-TaskScheduler::TaskInfo::TaskInfo(TaskScheduler::TaskInfo&&) noexcept = default;
-TaskScheduler::TaskInfo& TaskScheduler::TaskInfo::operator=(
-    const TaskScheduler::TaskInfo&) = default;
-TaskScheduler::TaskInfo& TaskScheduler::TaskInfo::operator=(
-    TaskScheduler::TaskInfo&&) noexcept = default;
-TaskScheduler::TaskInfo::~TaskInfo() = default;
-
 // static.
 [[nodiscard]] scoped_refptr<TaskScheduler> TaskScheduler::CreateInstance(
     UpdaterScope scope,

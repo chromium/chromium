@@ -110,32 +110,29 @@ TEST_F(NetworkFetcherFactoryTest, NulloptProxyConfig) {
 }
 
 TEST_F(NetworkFetcherFactoryTest, AutoDetectProxyConfig) {
-  PolicyServiceProxyConfiguration proxy_config;
-  proxy_config.proxy_auto_detect = true;
   auto factory = base::MakeRefCounted<NetworkFetcherFactory>(
-      std::move(proxy_config), /*event_logger=*/nullptr);
+      PolicyServiceProxyConfiguration{.proxy_auto_detect = true},
+      /*event_logger=*/nullptr);
   ASSERT_NE(factory, nullptr);
   auto fetcher = factory->Create();
   EXPECT_NE(fetcher, nullptr);
 }
 
 TEST_F(NetworkFetcherFactoryTest, ExplicitProxyUrl) {
-  PolicyServiceProxyConfiguration proxy_config;
-  proxy_config.proxy_auto_detect = false;
-  proxy_config.proxy_url = "http://proxy.example.com:8080";
   auto factory = base::MakeRefCounted<NetworkFetcherFactory>(
-      std::move(proxy_config), /*event_logger=*/nullptr);
+      PolicyServiceProxyConfiguration{.proxy_url =
+                                          "http://proxy.example.com:8080"},
+      /*event_logger=*/nullptr);
   ASSERT_NE(factory, nullptr);
   auto fetcher = factory->Create();
   EXPECT_NE(fetcher, nullptr);
 }
 
 TEST_F(NetworkFetcherFactoryTest, PacUrl) {
-  PolicyServiceProxyConfiguration proxy_config;
-  proxy_config.proxy_auto_detect = false;
-  proxy_config.proxy_pac_url = "http://proxy.example.com/pac";
   auto factory = base::MakeRefCounted<NetworkFetcherFactory>(
-      std::move(proxy_config), /*event_logger=*/nullptr);
+      PolicyServiceProxyConfiguration{.proxy_pac_url =
+                                          "http://proxy.example.com/pac"},
+      /*event_logger=*/nullptr);
   ASSERT_NE(factory, nullptr);
   auto fetcher = factory->Create();
   EXPECT_NE(fetcher, nullptr);

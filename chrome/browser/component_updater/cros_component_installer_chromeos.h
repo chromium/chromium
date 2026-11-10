@@ -197,8 +197,6 @@ class CrOSComponentInstaller : public ComponentManagerAsh {
   //   (3) If the load request is in progress, the callbacks to invoke after the
   //   load request finishes.
   struct LoadInfo {
-    LoadInfo();
-    ~LoadInfo();
     // If null, then the request is pending.
     std::optional<bool> success;
     // Only populated on success.

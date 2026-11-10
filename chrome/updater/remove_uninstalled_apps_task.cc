@@ -149,12 +149,13 @@ void RemoveAppIDsAndSendUninstallPings(
     const std::string& app_id = app_to_remove.app_id_;
     const int ping_reason = std::to_underlying(app_to_remove.ping_reason_);
     // Read the ping data before `remove_app` deletes it.
-    update_client::CrxComponent crx_component;
-    crx_component.ap = persisted_data->GetAP(app_id);
-    crx_component.app_id = app_id;
-    crx_component.brand = persisted_data->GetBrandCode(app_id);
-    crx_component.version = app_to_remove.app_version_;
-    crx_component.requires_network_encryption = false;
+    const update_client::CrxComponent crx_component = {
+        .app_id = app_id,
+        .version = app_to_remove.app_version_,
+        .ap = persisted_data->GetAP(app_id),
+        .brand = persisted_data->GetBrandCode(app_id),
+        .requires_network_encryption = false,
+    };
     if (remove_app.Run(app_to_remove)) {
       VLOG(1) << "Uninstall ping for app id: " << app_id
               << ". Ping reason: " << ping_reason;

@@ -117,16 +117,13 @@ class ProgressWndTest : public ui::ProgressWndEvents, public ::testing::Test {
 TEST_F(ProgressWndTest, ClickedButton) {
   // Calls ProgressWnd::OnComplete then simulates a button push on the dialog.
   auto button_tester = [&](CompletionCodes code, int button_to_push) {
-    AppCompletionInfo app_completion_info;
-    app_completion_info.post_install_url = GURL("http://some-test-url");
-    app_completion_info.completion_code = code;
-    ObserverCompletionInfo observer_completion_info;
-    observer_completion_info.completion_text = u"some text";
-    observer_completion_info.apps_info.push_back(app_completion_info);
     MessageLoop ui_message_loop;
     std::unique_ptr<ProgressWnd> progress_wnd =
         MakeProgressWindow(&ui_message_loop);
-    progress_wnd->OnComplete(observer_completion_info);
+    progress_wnd->OnComplete(
+        {.completion_text = u"some text",
+         .apps_info = {{.completion_code = code,
+                        .post_install_url = GURL("http://some-test-url")}}});
     const HWND button = ::GetDlgItem(progress_wnd->hwnd(), button_to_push);
     ::SendMessageW(progress_wnd->hwnd(), WM_COMMAND,
                    MAKEWPARAM(button_to_push, BN_CLICKED),
@@ -230,12 +227,9 @@ TEST_F(ProgressWndTest, DeterminePostInstallUrls) {
     MessageLoop message_loop;
     std::unique_ptr<ProgressWnd> progress_wnd =
         MakeProgressWindow(&message_loop);
-    ObserverCompletionInfo observer_completion_info;
-    AppCompletionInfo app_completion_info;
-    app_completion_info.completion_code = code;
-    app_completion_info.post_install_url = GURL("http://some-test-url");
-    observer_completion_info.apps_info.push_back(app_completion_info);
-    progress_wnd->DeterminePostInstallUrls(observer_completion_info);
+    progress_wnd->DeterminePostInstallUrls(
+        {.apps_info = {{.completion_code = code,
+                        .post_install_url = GURL("http://some-test-url")}}});
     EXPECT_EQ(progress_wnd->post_install_urls_,
               std::vector<GURL>{GURL("http://some-test-url")});
     progress_wnd->DestroyWindow();
@@ -339,13 +333,10 @@ TEST_F(ProgressWndTest, OnComplete) {
   {
     std::unique_ptr<ProgressWnd> progress_wnd =
         MakeProgressWindow(&ui_message_loop);
-    AppCompletionInfo app_completion_info;
-    app_completion_info.completion_code =
-        CompletionCodes::COMPLETION_CODE_SUCCESS;
-    ObserverCompletionInfo observer_completion_info;
-    observer_completion_info.completion_text = u"text";
-    observer_completion_info.apps_info.push_back(app_completion_info);
-    progress_wnd->OnComplete(observer_completion_info);
+    progress_wnd->OnComplete(
+        {.completion_text = u"text",
+         .apps_info = {
+             {.completion_code = CompletionCodes::COMPLETION_CODE_SUCCESS}}});
     wchar_t completion_text[kMaxStringLen] = {};
     ::GetDlgItemTextW(progress_wnd->hwnd(), IDC_COMPLETE_TEXT, completion_text,
                       std::size(completion_text));
@@ -380,14 +371,13 @@ TEST_F(ProgressWndTest, LaunchCmdLine) {
   MessageLoop ui_message_loop;
   std::unique_ptr<ProgressWnd> progress_wnd =
       MakeProgressWindow(&ui_message_loop);
-  AppCompletionInfo app_completion_info;
-  app_completion_info.completion_code =
-      CompletionCodes::COMPLETION_CODE_EXIT_SILENTLY_ON_LAUNCH_COMMAND;
-  app_completion_info.post_install_launch_command_line =
-      base::WideToUTF8(test_process_cmd_line.GetCommandLineString());
-  ObserverCompletionInfo observer_completion_info;
-  observer_completion_info.completion_text = u"text";
-  observer_completion_info.apps_info.push_back(app_completion_info);
+  const ObserverCompletionInfo observer_completion_info = {
+      .completion_text = u"text",
+      .apps_info = {
+          {.completion_code =
+               CompletionCodes::COMPLETION_CODE_EXIT_SILENTLY_ON_LAUNCH_COMMAND,
+           .post_install_launch_command_line = base::WideToUTF8(
+               test_process_cmd_line.GetCommandLineString())}}};
   progress_wnd->OnComplete(observer_completion_info);
 
   EXPECT_TRUE(event_holder.event.TimedWait(TestTimeouts::action_max_timeout()));
@@ -1074,13 +1064,11 @@ TEST_F(ProgressWndTest, WindowIconsPersistAcrossCompletion) {
 
   // Complete the installation and verify window icons remain active across
   // completion.
-  ObserverCompletionInfo info;
-  info.completion_code = CompletionCodes::COMPLETION_CODE_SUCCESS;
-  info.completion_text = u"Install successful!";
-  AppCompletionInfo app_info;
-  app_info.completion_code = CompletionCodes::COMPLETION_CODE_SUCCESS;
-  info.apps_info.push_back(app_info);
-  progress_wnd->OnComplete(info);
+  progress_wnd->OnComplete(
+      {.completion_code = CompletionCodes::COMPLETION_CODE_SUCCESS,
+       .completion_text = u"Install successful!",
+       .apps_info = {
+           {.completion_code = CompletionCodes::COMPLETION_CODE_SUCCESS}}});
 
   const HICON completed_big_icon = reinterpret_cast<HICON>(
       ::SendMessage(progress_wnd->hwnd(), WM_GETICON, ICON_BIG, 0));

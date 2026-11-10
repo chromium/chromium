@@ -338,12 +338,6 @@ class ActivateStartEvent : public HistoryEventBuilder<ActivateStartEvent> {
 class PersistedDataEvent : public HistoryEventBuilder<PersistedDataEvent> {
  public:
   struct RegisteredApp {
-    RegisteredApp();
-    RegisteredApp(const RegisteredApp&);
-    RegisteredApp& operator=(const RegisteredApp&);
-    RegisteredApp(RegisteredApp&&) noexcept;
-    RegisteredApp& operator=(RegisteredApp&&) noexcept;
-    ~RegisteredApp();
     std::string app_id;
     std::string version;
     std::optional<std::string> cohort;

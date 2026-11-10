@@ -51,8 +51,6 @@ class Unpacker : public base::RefCountedThreadSafe<Unpacker> {
  public:
   // Contains the result of the unpacking.
   struct Result {
-    Result();
-
     // Unpack error: 0 indicates success.
     UnpackerError error = UnpackerError::kNone;
 

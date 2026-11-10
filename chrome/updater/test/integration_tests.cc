@@ -1931,11 +1931,10 @@ TEST_F(IntegrationTest, SendPing) {
               [](base::WaitableEvent& ping_complete_event,
                  const std::string& app_id,
                  const update_client::UpdateClient::PingParams& ping_params) {
-                update_client::CrxComponent ping_data;
-                ping_data.app_id = app_id;
-                ping_data.requires_network_encryption = false;
                 update_client::UpdateClientFactory(CreatePingConfigurator())
-                    ->SendPing(ping_data, ping_params,
+                    ->SendPing({.app_id = app_id,
+                                .requires_network_encryption = false},
+                               ping_params,
                                base::BindOnce(
                                    [](base::WaitableEvent& ping_complete_event,
                                       update_client::Error error) {

@@ -566,14 +566,6 @@ bool IsLastInSector(const SectorFormat& format, int index) {
          (index - kNumDifatHeaderEntries + 1) % format.ints == 0;
 }
 
-MSIDirEntry::MSIDirEntry(const MSIDirEntry&) = default;
-MSIDirEntry::MSIDirEntry() = default;
-MSIDirEntry::~MSIDirEntry() = default;
-
-MSIHeader::MSIHeader(const MSIHeader&) = default;
-MSIHeader::MSIHeader() = default;
-MSIHeader::~MSIHeader() = default;
-
 std::vector<uint8_t> MSIBinary::ReadStream(const std::string& name,
                                            uint32_t start,
                                            uint64_t stream_size,

@@ -107,13 +107,6 @@ struct TagArgs {
     kMax
   };
 
-  TagArgs();
-  ~TagArgs();
-  TagArgs(const TagArgs&);
-  TagArgs& operator=(const TagArgs&);
-  TagArgs(TagArgs&&) noexcept;
-  TagArgs& operator=(TagArgs&&) noexcept;
-
   std::string bundle_name;
   std::string installation_id;
   std::string brand_code;

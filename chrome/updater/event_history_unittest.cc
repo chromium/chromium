@@ -431,23 +431,19 @@ TEST_F(EventHistoryTest, PersistedDataEventToDict) {
   ASSERT_TRUE(base::Time::FromString("2 Jan 2024 12:00:00 GMT", &last_checked));
   base::Time last_started;
   ASSERT_TRUE(base::Time::FromString("1 Jan 2024 12:00:00 GMT", &last_started));
-  PersistedDataEvent::RegisteredApp app1;
-  app1.app_id = "app1";
-  app1.version = "1.0";
-  app1.cohort = "cohort1";
-  app1.brand_code = "brand1";
-  PersistedDataEvent::RegisteredApp app2;
-  app2.app_id = "app2";
-  app2.version = "2.0";
-  app2.brand_code = "brand2";
-  std::optional<base::DictValue> event = PersistedDataEvent()
-                                             .SetEventId("test-event-id")
-                                             .SetEulaRequired(true)
-                                             .SetLastChecked(last_checked)
-                                             .SetLastStarted(last_started)
-                                             .AddRegisteredApp(app1)
-                                             .AddRegisteredApp(app2)
-                                             .Build();
+  std::optional<base::DictValue> event =
+      PersistedDataEvent()
+          .SetEventId("test-event-id")
+          .SetEulaRequired(true)
+          .SetLastChecked(last_checked)
+          .SetLastStarted(last_started)
+          .AddRegisteredApp({.app_id = "app1",
+                             .version = "1.0",
+                             .cohort = "cohort1",
+                             .brand_code = "brand1"})
+          .AddRegisteredApp(
+              {.app_id = "app2", .version = "2.0", .brand_code = "brand2"})
+          .Build();
 
   base::ListValue expected_apps;
   expected_apps.Append(base::DictValue()

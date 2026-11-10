@@ -326,7 +326,10 @@ std::queue<Operation> MakeOperations(
           operation.path.empty()
               ? nullptr
               : std::make_unique<CrxInstaller::InstallParams>(
-                    operation.path, operation.arguments, install_data),
+                    CrxInstaller::InstallParams{
+                        .run = operation.path,
+                        .arguments = operation.arguments,
+                        .server_install_data = install_data}),
           is_foreground, event_adder, state_tracker, install_progress_callback,
           install_complete_callback));
     } else if (operation.type == "run") {

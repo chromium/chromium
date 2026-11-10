@@ -402,8 +402,6 @@ void CrOSComponentInstaller::EmitInstalledSignal(const std::string& component) {
   }
 }
 
-CrOSComponentInstaller::LoadInfo::LoadInfo() = default;
-CrOSComponentInstaller::LoadInfo::~LoadInfo() = default;
 std::map<std::string, CrOSComponentInstaller::LoadInfo>&
 CrOSComponentInstaller::GetLoadCacheForTesting() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

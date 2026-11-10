@@ -38,11 +38,6 @@ class UpdaterState {
   FRIEND_TEST_ALL_PREFIXES(UpdaterStateTest, UpdaterNamePerUser);
 
   struct State {
-    State();
-    State(const State&);
-    State& operator=(const State&);
-    ~State();
-
     std::string updater_name;
     base::Version updater_version;
     base::Time last_autoupdate_started;

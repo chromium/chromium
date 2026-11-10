@@ -17,7 +17,10 @@ TEST(WinHttpProxyInfoTest, DefaultIsDirectConnection) {
 }
 
 TEST(WinHttpProxyInfoTest, CanCopy) {
-  ProxyInfo proxy_info(true, L"Foo", L"Bar", L"Baz");
+  ProxyInfo proxy_info = {.auto_detect = true,
+                          .auto_config_url = L"Foo",
+                          .proxy = L"Bar",
+                          .proxy_bypass = L"Baz"};
   ProxyInfo proxy_info2(proxy_info);
 
   EXPECT_TRUE(proxy_info.auto_detect);
@@ -31,7 +34,10 @@ TEST(WinHttpProxyInfoTest, CanCopy) {
 }
 
 TEST(WinHttpProxyInfoTest, CanMove) {
-  ProxyInfo proxy_info{true, L"Foo", L"Bar", L"Baz"};
+  ProxyInfo proxy_info = {.auto_detect = true,
+                          .auto_config_url = L"Foo",
+                          .proxy = L"Bar",
+                          .proxy_bypass = L"Baz"};
   ProxyInfo proxy_info2 = std::move(proxy_info);
 
   EXPECT_TRUE(proxy_info2.auto_detect);

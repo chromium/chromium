@@ -63,17 +63,6 @@ using CrxComponent = ::update_client::CrxComponent;
 using CrxUpdateItem = ::update_client::CrxUpdateItem;
 
 struct ComponentInfo {
-  ComponentInfo(const std::string& id,
-                const std::string& fingerprint,
-                const std::u16string& name,
-                const base::Version& version,
-                const std::string& cohort_id);
-  ComponentInfo(const ComponentInfo& other);
-  ComponentInfo& operator=(const ComponentInfo& other);
-  ComponentInfo(ComponentInfo&& other) noexcept;
-  ComponentInfo& operator=(ComponentInfo&& other) noexcept;
-  ~ComponentInfo();
-
   std::string id;
   std::string fingerprint;
   std::u16string name;
@@ -82,26 +71,6 @@ struct ComponentInfo {
 };
 
 struct ComponentRegistration {
-  ComponentRegistration(
-      const std::string& app_id,
-      const std::string& name,
-      std::vector<uint8_t> public_key_hash,
-      const base::Version& version,
-      const std::string& fingerprint,
-      std::map<std::string, std::string> installer_attributes,
-      scoped_refptr<update_client::ActionHandler> action_handler,
-      scoped_refptr<update_client::CrxInstaller> installer,
-      bool requires_network_encryption,
-      bool supports_group_policy_enable_component_updates,
-      bool allow_cached_copies,
-      bool allow_updates_on_metered_connection,
-      bool allow_updates);
-  ComponentRegistration(const ComponentRegistration& other);
-  ComponentRegistration& operator=(const ComponentRegistration& other);
-  ComponentRegistration(ComponentRegistration&& other) noexcept;
-  ComponentRegistration& operator=(ComponentRegistration&& other) noexcept;
-  ~ComponentRegistration();
-
   std::string app_id;
   std::string name;
   std::vector<uint8_t> public_key_hash;
@@ -110,11 +79,11 @@ struct ComponentRegistration {
   std::map<std::string, std::string> installer_attributes;
   scoped_refptr<update_client::ActionHandler> action_handler;
   scoped_refptr<update_client::CrxInstaller> installer;
-  bool requires_network_encryption;
-  bool supports_group_policy_enable_component_updates;
-  bool allow_cached_copies;
-  bool allow_updates_on_metered_connection;
-  bool allow_updates;
+  bool requires_network_encryption = true;
+  bool supports_group_policy_enable_component_updates = false;
+  bool allow_cached_copies = true;
+  bool allow_updates_on_metered_connection = true;
+  bool allow_updates = true;
 };
 
 // The component update service is in charge of installing or upgrading select

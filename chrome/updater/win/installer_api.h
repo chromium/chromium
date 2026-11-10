@@ -80,11 +80,6 @@ struct EnumTraits<InstallerApiResult> {
 // the Installer API values written by the installer before the installer
 // process exits. This data does not include the installer progress.
 struct InstallerOutcome {
-  InstallerOutcome();
-  InstallerOutcome(const InstallerOutcome&);
-  InstallerOutcome& operator=(const InstallerOutcome&);
-  ~InstallerOutcome();
-
   std::optional<InstallerApiResult> installer_result;
   std::optional<int> installer_error;
   std::optional<int> installer_extracode1;

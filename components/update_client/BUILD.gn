@@ -129,7 +129,6 @@ static_library("update_client") {
     "pipeline.h",
     "pipeline_util.cc",
     "pipeline_util.h",
-    "protocol_definition.cc",
     "protocol_definition.h",
     "protocol_handler.cc",
     "protocol_handler.h",

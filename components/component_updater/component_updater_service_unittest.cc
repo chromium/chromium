@@ -343,28 +343,6 @@ TEST_F(ComponentUpdaterTest, RegisterComponent) {
   const std::string id1 = "abagagagagagagagagagagagagagagag";
   const std::string id2 = "jebgalgnebhfojomionfpkfelancnnkf";
 
-  ComponentRegistration component1(
-      id1, /*name=*/{}, base::ToVector(update_client::abag_hash),
-      base::Version("1.0"),
-      /*fingerprint=*/{}, {},
-      /*action_handler=*/nullptr, installer,
-      /*requires_network_encryption=*/false,
-      /*supports_group_policy_enable_component_updates=*/true,
-      /*allow_cached_copies=*/true,
-      /*allow_updates_on_metered_connection=*/true,
-      /*allow_updates=*/true);
-
-  ComponentRegistration component2(
-      id2, /*name=*/{}, base::ToVector(update_client::jebg_hash),
-      base::Version("0.9"),
-      /*fingerprint=*/{}, /*installer_attributes=*/{},
-      /*action_handler=*/nullptr, installer,
-      /*requires_network_encryption=*/false,
-      /*supports_group_policy_enable_component_updates=*/true,
-      /*allow_cached_copies=*/true,
-      /*allow_updates_on_metered_connection=*/true,
-      /*allow_updates=*/true);
-
   // Quit after two update checks have fired.
   LoopHandler loop_handler(2, quit_closure());
   EXPECT_CALL(update_client(), Update(_, _, _, /*is_foreground=*/false, _))
@@ -375,8 +353,20 @@ TEST_F(ComponentUpdaterTest, RegisterComponent) {
   EXPECT_CALL(scheduler(), Schedule(_, _, _, _));
   EXPECT_CALL(scheduler(), Stop());
 
-  EXPECT_TRUE(component_updater().RegisterComponent(component1));
-  EXPECT_TRUE(component_updater().RegisterComponent(component2));
+  EXPECT_TRUE(component_updater().RegisterComponent(
+      {.app_id = id1,
+       .public_key_hash = base::ToVector(update_client::abag_hash),
+       .version = base::Version("1.0"),
+       .installer = installer,
+       .requires_network_encryption = false,
+       .supports_group_policy_enable_component_updates = true}));
+  EXPECT_TRUE(component_updater().RegisterComponent(
+      {.app_id = id2,
+       .public_key_hash = base::ToVector(update_client::jebg_hash),
+       .version = base::Version("0.9"),
+       .installer = installer,
+       .requires_network_encryption = false,
+       .supports_group_policy_enable_component_updates = true}));
 
   RunThreads();
   EXPECT_TRUE(component_updater().UnregisterComponent(id1));
@@ -417,28 +407,22 @@ TEST_F(ComponentUpdaterTest, OnDemandUpdate) {
   EXPECT_CALL(scheduler(), Stop());
 
   {
-    EXPECT_TRUE(cus.RegisterComponent(ComponentRegistration(
-        "jebgalgnebhfojomionfpkfelancnnkf", /*name=*/{},
-        base::ToVector(update_client::jebg_hash), base::Version("0.9"),
-        /*fingerprint=*/{}, /*installer_attributes=*/{},
-        /*action_handler=*/nullptr, base::MakeRefCounted<MockInstaller>(),
-        /*requires_network_encryption=*/false,
-        /*supports_group_policy_enable_component_updates=*/true,
-        /*allow_cached_copies=*/true,
-        /*allow_updates_on_metered_connection=*/true,
-        /*allow_updates=*/true)));
+    EXPECT_TRUE(cus.RegisterComponent(
+        {.app_id = "jebgalgnebhfojomionfpkfelancnnkf",
+         .public_key_hash = base::ToVector(update_client::jebg_hash),
+         .version = base::Version("0.9"),
+         .installer = base::MakeRefCounted<MockInstaller>(),
+         .requires_network_encryption = false,
+         .supports_group_policy_enable_component_updates = true}));
   }
   {
-    EXPECT_TRUE(cus.RegisterComponent(ComponentRegistration(
-        "abagagagagagagagagagagagagagagag", /*name=*/{},
-        base::ToVector(update_client::abag_hash), base::Version("0.9"),
-        /*fingerprint=*/{}, /*installer_attributes=*/{},
-        /*action_handler=*/nullptr, base::MakeRefCounted<MockInstaller>(),
-        /*requires_network_encryption=*/false,
-        /*supports_group_policy_enable_component_updates=*/true,
-        /*allow_cached_copies=*/true,
-        /*allow_updates_on_metered_connection=*/true,
-        /*allow_updates=*/true)));
+    EXPECT_TRUE(cus.RegisterComponent(
+        {.app_id = "abagagagagagagagagagagagagagagag",
+         .public_key_hash = base::ToVector(update_client::abag_hash),
+         .version = base::Version("0.9"),
+         .installer = base::MakeRefCounted<MockInstaller>(),
+         .requires_network_encryption = false,
+         .supports_group_policy_enable_component_updates = true}));
   }
 
   OnDemandTester ondemand_tester;
@@ -472,15 +456,13 @@ TEST_F(ComponentUpdaterTest, UpdateChecksDisabled) {
                        /*update_checks_disabled=*/true);
 
   const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
-  EXPECT_TRUE(cus.RegisterComponent(ComponentRegistration(
-      id, /*name=*/{}, base::ToVector(update_client::jebg_hash),
-      base::Version("0.9"), /*fingerprint=*/{}, /*installer_attributes=*/{},
-      /*action_handler=*/nullptr, base::MakeRefCounted<MockInstaller>(),
-      /*requires_network_encryption=*/false,
-      /*supports_group_policy_enable_component_updates=*/true,
-      /*allow_cached_copies=*/true,
-      /*allow_updates_on_metered_connection=*/true,
-      /*allow_updates=*/true)));
+  EXPECT_TRUE(cus.RegisterComponent(
+      {.app_id = id,
+       .public_key_hash = base::ToVector(update_client::jebg_hash),
+       .version = base::Version("0.9"),
+       .installer = base::MakeRefCounted<MockInstaller>(),
+       .requires_network_encryption = false,
+       .supports_group_policy_enable_component_updates = true}));
   CrxUpdateItem item;
   EXPECT_TRUE(cus.GetComponentDetails(id, &item));
 
@@ -520,16 +502,13 @@ TEST_F(ComponentUpdaterTest, MaybeThrottle) {
   EXPECT_CALL(scheduler(), Schedule(_, _, _, _));
   EXPECT_CALL(scheduler(), Stop());
 
-  EXPECT_TRUE(component_updater().RegisterComponent(ComponentRegistration(
-      "jebgalgnebhfojomionfpkfelancnnkf", /*name=*/{},
-      base::ToVector(update_client::jebg_hash), base::Version("0.9"), {},
-      /*installer_attributes=*/{}, /*action_handler=*/nullptr,
-      base::MakeRefCounted<MockInstaller>(),
-      /*requires_network_encryption=*/false,
-      /*supports_group_policy_enable_component_updates=*/true,
-      /*allow_cached_copies=*/true,
-      /*allow_updates_on_metered_connection=*/true,
-      /*allow_updates=*/true)));
+  EXPECT_TRUE(component_updater().RegisterComponent(
+      {.app_id = "jebgalgnebhfojomionfpkfelancnnkf",
+       .public_key_hash = base::ToVector(update_client::jebg_hash),
+       .version = base::Version("0.9"),
+       .installer = base::MakeRefCounted<MockInstaller>(),
+       .requires_network_encryption = false,
+       .supports_group_policy_enable_component_updates = true}));
   component_updater().MaybeThrottle("jebgalgnebhfojomionfpkfelancnnkf",
                                     base::DoNothing());
 
@@ -546,18 +525,14 @@ TEST_F(ComponentUpdaterTest, ComponentDetails) {
 
   const base::Version version("1.0");
 
-  ComponentRegistration component(
-      id, name, base::ToVector(update_client::abag_hash), version,
-      /*fingerprint=*/{}, /*installer_attributes=*/{},
-      /*action_handler=*/nullptr,
-      /*installer=*/base::MakeRefCounted<MockInstaller>(),
-      /*requires_network_encryption=*/false,
-      /*supports_group_policy_enable_component_updates=*/true,
-      /*allow_cached_copies=*/true,
-      /*allow_updates_on_metered_connection=*/true,
-      /*allow_updates=*/true);
-
-  ASSERT_TRUE(component_updater().RegisterComponent(component));
+  ASSERT_TRUE(component_updater().RegisterComponent(
+      {.app_id = id,
+       .name = name,
+       .public_key_hash = base::ToVector(update_client::abag_hash),
+       .version = version,
+       .installer = base::MakeRefCounted<MockInstaller>(),
+       .requires_network_encryption = false,
+       .supports_group_policy_enable_component_updates = true}));
 
   CrxUpdateItem item;
   ASSERT_TRUE(component_updater().GetComponentDetails(id, &item));
@@ -582,18 +557,15 @@ TEST_F(ComponentUpdaterTest, UpdatesDisabled) {
 
   const base::Version version("1.0");
 
-  ComponentRegistration component(
-      id, name, base::ToVector(update_client::abag_hash), version,
-      /*fingerprint=*/{}, /*installer_attributes=*/{},
-      /*action_handler=*/nullptr,
-      /*installer=*/base::MakeRefCounted<MockInstaller>(),
-      /*requires_network_encryption=*/false,
-      /*supports_group_policy_enable_component_updates=*/true,
-      /*allow_cached_copies=*/true,
-      /*allow_updates_on_metered_connection=*/true,
-      /*allow_updates=*/false);
-
-  ASSERT_TRUE(component_updater().RegisterComponent(component));
+  ASSERT_TRUE(component_updater().RegisterComponent(
+      {.app_id = id,
+       .name = name,
+       .public_key_hash = base::ToVector(update_client::abag_hash),
+       .version = version,
+       .installer = base::MakeRefCounted<MockInstaller>(),
+       .requires_network_encryption = false,
+       .supports_group_policy_enable_component_updates = true,
+       .allow_updates = false}));
 
   CrxUpdateItem item;
   ASSERT_TRUE(component_updater().GetComponentDetails(id, &item));
@@ -614,21 +586,17 @@ TEST_F(ComponentUpdaterTest, UpdatesDisabledByPolicy) {
   configurator()->GetPrefService()->SetBoolean(prefs::kComponentUpdatesEnabled,
                                                false);
 
-  ComponentRegistration component(
-      id, name, base::ToVector(update_client::abag_hash), version,
-      /*fingerprint=*/{}, /*installer_attributes=*/{},
-      /*action_handler=*/nullptr,
-      /*installer=*/base::MakeRefCounted<MockInstaller>(),
-      /*requires_network_encryption=*/false,
-      // Enables admin control of component updates. In production, this value
-      // is determined by the component implementation of
-      // ComponentInstallerPolicy::SupportsGroupPolicyEnabledComponentUpdates
-      /*supports_group_policy_enable_component_updates=*/true,
-      /*allow_cached_copies=*/true,
-      /*allow_updates_on_metered_connection=*/true,
-      /*allow_updates=*/true);
-
-  ASSERT_TRUE(component_updater().RegisterComponent(component));
+  ASSERT_TRUE(component_updater().RegisterComponent(
+      {.app_id = id,
+       .name = name,
+       .public_key_hash = base::ToVector(update_client::abag_hash),
+       .version = version,
+       .installer = base::MakeRefCounted<MockInstaller>(),
+       .requires_network_encryption = false,
+       // Enables admin control of component updates. In production, this value
+       // is determined by the component implementation of
+       // ComponentInstallerPolicy::SupportsGroupPolicyEnabledComponentUpdates
+       .supports_group_policy_enable_component_updates = true}));
 
   CrxUpdateItem item;
   ASSERT_TRUE(component_updater().GetComponentDetails(id, &item));
@@ -650,19 +618,15 @@ TEST_F(ComponentUpdaterTest, CriticalComponentAlwaysUpdates) {
   configurator()->GetPrefService()->SetBoolean(prefs::kComponentUpdatesEnabled,
                                                false);
 
-  ComponentRegistration component(
-      id, name, base::ToVector(update_client::abag_hash), version,
-      /*fingerprint=*/{}, /*installer_attributes=*/{},
-      /*action_handler=*/nullptr,
-      /*installer=*/base::MakeRefCounted<MockInstaller>(),
-      /*requires_network_encryption=*/false,
-      // Exempt the component from the policy that disables updates.
-      /*supports_group_policy_enable_component_updates=*/false,
-      /*allow_cached_copies=*/true,
-      /*allow_updates_on_metered_connection=*/true,
-      /*allow_updates=*/true);
-
-  ASSERT_TRUE(component_updater().RegisterComponent(component));
+  ASSERT_TRUE(component_updater().RegisterComponent(
+      {.app_id = id,
+       .name = name,
+       .public_key_hash = base::ToVector(update_client::abag_hash),
+       .version = version,
+       .installer = base::MakeRefCounted<MockInstaller>(),
+       .requires_network_encryption = false,
+       // Exempt the component from the policy that disables updates.
+       .supports_group_policy_enable_component_updates = false}));
 
   CrxUpdateItem item;
   ASSERT_TRUE(component_updater().GetComponentDetails(id, &item));
@@ -683,15 +647,13 @@ TEST_F(ComponentUpdaterTest,
       base::MakeRefCounted<MockInstaller>();
   EXPECT_CALL(*installer, Uninstall()).Times(0);
 
-  ComponentRegistration component(
-      id, /*name=*/{}, base::ToVector(update_client::abag_hash),
-      base::Version("1.0"), /*fingerprint=*/{}, /*installer_attributes=*/{},
-      /*action_handler=*/nullptr, installer,
-      /*requires_network_encryption=*/false,
-      /*supports_group_policy_enable_component_updates=*/true,
-      /*allow_cached_copies=*/true,
-      /*allow_updates_on_metered_connection=*/true,
-      /*allow_updates=*/true);
+  const ComponentRegistration component = {
+      .app_id = id,
+      .public_key_hash = base::ToVector(update_client::abag_hash),
+      .version = base::Version("1.0"),
+      .installer = installer,
+      .requires_network_encryption = false,
+      .supports_group_policy_enable_component_updates = true};
 
   EXPECT_TRUE(component_updater().RegisterComponent(component));
 
@@ -721,15 +683,13 @@ TEST_F(ComponentUpdaterTest,
   // processing the pending unregistration list.
   EXPECT_CALL(*installer, Uninstall()).WillOnce(Return(true));
 
-  ComponentRegistration component(
-      id, /*name=*/{}, base::ToVector(update_client::abag_hash),
-      base::Version("1.0"), /*fingerprint=*/{}, /*installer_attributes=*/{},
-      /*action_handler=*/nullptr, installer,
-      /*requires_network_encryption=*/false,
-      /*supports_group_policy_enable_component_updates=*/true,
-      /*allow_cached_copies=*/true,
-      /*allow_updates_on_metered_connection=*/true,
-      /*allow_updates=*/true);
+  const ComponentRegistration component = {
+      .app_id = id,
+      .public_key_hash = base::ToVector(update_client::abag_hash),
+      .version = base::Version("1.0"),
+      .installer = installer,
+      .requires_network_encryption = false,
+      .supports_group_policy_enable_component_updates = true};
 
   EXPECT_TRUE(component_updater().RegisterComponent(component));
 

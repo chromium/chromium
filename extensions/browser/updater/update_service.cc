@@ -85,13 +85,10 @@ void UpdateService::SendUninstallPing(const std::string& id,
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(update_client_);
 
-  update_client::CrxComponent crx;
-  crx.app_id = id;
-  crx.version = version;
   // A ScopedBrowserContextKeepAlive is bound into the callback to keep the
   // context alive throughout the operation.
   update_client_->SendPing(
-      crx,
+      {.app_id = id, .version = version},
       {.event_type = update_client::protocol_request::kEventUninstall,
        .result = update_client::protocol_request::kEventResultSuccess,
        .error_code = 0,

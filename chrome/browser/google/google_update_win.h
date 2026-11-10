@@ -102,12 +102,6 @@ void BeginUpdateCheck(const std::string& locale,
 
 // The state from a completed update check.
 struct UpdateState {
-  UpdateState();
-  UpdateState(const UpdateState&);
-  UpdateState(UpdateState&&);
-  UpdateState& operator=(UpdateState&&);
-  ~UpdateState();
-
   // GOOGLE_UPDATE_NO_ERROR if the last check or update succeeded; otherwise,
   // the nature of the failure.
   GoogleUpdateErrorCode error_code = GOOGLE_UPDATE_NO_ERROR;

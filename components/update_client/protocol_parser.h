@@ -23,14 +23,6 @@ class ProtocolParser {
  public:
   // The result of parsing one |app| entity in an update check response.
   struct Data {
-    Data();
-    Data(const std::string& install_data_index, const std::string& text);
-    Data(const Data& other);
-    Data& operator=(const Data&);
-    Data(Data&&) noexcept;
-    Data& operator=(Data&&) noexcept;
-    ~Data();
-
     // The `install_data_index` specified by the update check.
     std::string install_data_index;
 
@@ -39,12 +31,6 @@ class ProtocolParser {
   };
 
   struct Operation {
-    Operation();
-    Operation(const Operation& other);
-    Operation& operator=(const Operation&);
-    Operation(Operation&&) noexcept;
-    Operation& operator=(Operation&&) noexcept;
-    ~Operation();
     std::string type;
     std::string sha256_in;
     std::string sha256_out;
@@ -56,24 +42,11 @@ class ProtocolParser {
   };
 
   struct Pipeline {
-    Pipeline();
-    Pipeline(const Pipeline& other);
-    Pipeline& operator=(const Pipeline&);
-    Pipeline(Pipeline&&) noexcept;
-    Pipeline& operator=(Pipeline&&) noexcept;
-    ~Pipeline();
     std::string pipeline_id;
     std::vector<Operation> operations;
   };
 
   struct App {
-    App();
-    App(const App& other);
-    App& operator=(const App&);
-    App(App&&) noexcept;
-    App& operator=(App&&) noexcept;
-    ~App();
-
     std::string app_id;
 
     // status indicates the outcome of the check. It can be filled from either
@@ -102,13 +75,6 @@ class ProtocolParser {
 
   static constexpr int kNoDaystart = -1;
   struct Results {
-    Results();
-    Results(const Results& other);
-    Results& operator=(const Results&);
-    Results(Results&&) noexcept;
-    Results& operator=(Results&&) noexcept;
-    ~Results();
-
     // This will be >= 0, or kNoDaystart if the <daystart> tag was not present.
     int daystart_elapsed_days = kNoDaystart;
 

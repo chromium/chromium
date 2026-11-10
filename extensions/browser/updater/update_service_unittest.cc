@@ -184,9 +184,8 @@ class FakeUpdateClient : public update_client::UpdateClient {
   void ChangeUpdateState(UpdateRequest& request,
                          update_client::ComponentState state) {
     for (const std::string& id : request.extension_ids) {
-      update_client::CrxUpdateItem item;
-      item.id = id;
-      item.state = state;
+      update_client::CrxUpdateItem item = {
+          .state = state, .id = id, .next_version = base::Version("2.0")};
 
       std::map<std::string, std::string> custom_attributes;
       if (is_malware_update_item_) {
@@ -201,8 +200,6 @@ class FakeUpdateClient : public update_client::UpdateClient {
       if (!custom_attributes.empty()) {
         item.custom_updatecheck_data = custom_attributes;
       }
-
-      item.next_version = base::Version("2.0");
 
       request.state_change_callback.Run(item);
     }
@@ -445,9 +442,9 @@ class UpdateServiceTest : public ExtensionsTest {
 
     ExtensionRegistry::Get(browser_context())->AddEnabled(extension1);
 
-    ExtensionUpdateCheckParams update_check_params;
-    update_check_params.update_info[extension1->id()] = ExtensionUpdateData();
-    update_check_params.install_immediately = install_immediately;
+    ExtensionUpdateCheckParams update_check_params = {
+        .update_info = {{extension1->id(), ExtensionUpdateData()}},
+        .install_immediately = install_immediately};
 
     // Start an update check and verify that the UpdateClient was sent the right
     // data.
@@ -600,8 +597,8 @@ TEST_F(UpdateServiceTest, CheckOmahaMalwareAttributes) {
 
   update_client()->set_is_malware_update_item();
 
-  ExtensionUpdateCheckParams update_check_params;
-  update_check_params.update_info[extension_id] = ExtensionUpdateData();
+  ExtensionUpdateCheckParams update_check_params = {
+      .update_info = {{extension_id, ExtensionUpdateData()}}};
 
   bool executed = false;
   bool found_update = false;
@@ -633,8 +630,8 @@ TEST_F(UpdateServiceTest, CheckOmahaAllowlistAttributes) {
 
   update_client()->set_allowlist_state(extensions::ALLOWLIST_ALLOWLISTED);
 
-  ExtensionUpdateCheckParams update_check_params;
-  update_check_params.update_info[extension_id] = ExtensionUpdateData();
+  ExtensionUpdateCheckParams update_check_params = {
+      .update_info = {{extension_id, ExtensionUpdateData()}}};
 
   bool executed = false;
   bool found_update = false;
@@ -658,9 +655,8 @@ TEST_F(UpdateServiceTest, CheckNoOmahaAttributes) {
       ExtensionBuilder("1").SetVersion("1.2").SetID(extension_id).Build();
   EXPECT_TRUE(registry->AddDisabled(extension1));
 
-
-  ExtensionUpdateCheckParams update_check_params;
-  update_check_params.update_info[extension_id] = ExtensionUpdateData();
+  ExtensionUpdateCheckParams update_check_params = {
+      .update_info = {{extension_id, ExtensionUpdateData()}}};
 
   bool found_update = false;
   bool executed = false;
@@ -684,14 +680,13 @@ TEST_F(UpdateServiceTest, CheckNoOmahaAttributes) {
 
 TEST_F(UpdateServiceTest, InProgressUpdate_Successful) {
   base::HistogramTester histogram_tester;
-  ExtensionUpdateCheckParams update_check_params;
-
-  // Extensions with empty IDs will be ignored.
-  update_check_params.update_info["A"] = ExtensionUpdateData();
-  update_check_params.update_info["B"] = ExtensionUpdateData();
-  update_check_params.update_info["C"] = ExtensionUpdateData();
-  update_check_params.update_info["D"] = ExtensionUpdateData();
-  update_check_params.update_info["E"] = ExtensionUpdateData();
+  ExtensionUpdateCheckParams update_check_params = {
+      // Extensions with empty IDs will be ignored.
+      .update_info = {{"A", ExtensionUpdateData()},
+                      {"B", ExtensionUpdateData()},
+                      {"C", ExtensionUpdateData()},
+                      {"D", ExtensionUpdateData()},
+                      {"E", ExtensionUpdateData()}}};
 
   bool found_update = false;
   bool executed = false;
@@ -711,12 +706,13 @@ TEST_F(UpdateServiceTest, InProgressUpdate_Successful) {
 // lead to incorrect behaviour: corrupted extension won't be reinstalled.
 TEST_F(UpdateServiceTest, InProgressUpdate_DuplicateWithDifferentData) {
   base::HistogramTester histogram_tester;
-  ExtensionUpdateCheckParams uc1, uc2;
-  uc1.update_info["A"] = ExtensionUpdateData();
+  ExtensionUpdateCheckParams uc1 = {
+      .update_info = {{"A", ExtensionUpdateData()}}};
 
-  uc2.update_info["A"] = ExtensionUpdateData();
-  uc2.update_info["A"].install_source = "reinstall";
-  uc2.update_info["A"].is_corrupt_reinstall = true;
+  ExtensionUpdateCheckParams uc2 = {
+      .update_info = {
+          {"A",
+           {.install_source = "reinstall", .is_corrupt_reinstall = true}}}};
 
   bool found_update1 = false;
   bool executed1 = false;
@@ -756,14 +752,14 @@ TEST_F(UpdateServiceTest, InProgressUpdate_DuplicateWithDifferentData) {
 TEST_F(UpdateServiceTest, InProgressUpdate_NonOverlapped) {
   // 2 non-overallped update requests.
   base::HistogramTester histogram_tester;
-  ExtensionUpdateCheckParams uc1, uc2;
+  ExtensionUpdateCheckParams uc1 = {
+      .update_info = {{"A", ExtensionUpdateData()},
+                      {"B", ExtensionUpdateData()},
+                      {"C", ExtensionUpdateData()}}};
 
-  uc1.update_info["A"] = ExtensionUpdateData();
-  uc1.update_info["B"] = ExtensionUpdateData();
-  uc1.update_info["C"] = ExtensionUpdateData();
-
-  uc2.update_info["D"] = ExtensionUpdateData();
-  uc2.update_info["E"] = ExtensionUpdateData();
+  ExtensionUpdateCheckParams uc2 = {
+      .update_info = {{"D", ExtensionUpdateData()},
+                      {"E", ExtensionUpdateData()}}};
 
   bool found_update1 = false;
   bool executed1 = false;

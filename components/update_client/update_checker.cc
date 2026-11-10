@@ -239,7 +239,8 @@ void UpdateCheckerImpl::CheckForUpdatesHelper(
           if (install_data_index.empty()) {
             return {};
           } else {
-            return {{"install", install_data_index, ""}};
+            return {
+                {.name = "install", .install_data_index = install_data_index}};
           }
         }(crx_component->install_data_index),
         MakeProtocolPing(app_id, config_->GetPersistedData(),

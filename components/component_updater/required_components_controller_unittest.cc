@@ -33,16 +33,11 @@ class RequiredComponentsControllerTest : public testing::Test {
 
   ComponentRegistration CreateComponent(std::string_view name,
                                         std::string_view id) {
-    return ComponentRegistration(
-        std::string(id), std::string(name), /*public_key_hash=*/{},
-        base::Version("1.0"),
-        /*fingerprint=*/{}, /*installer_attributes=*/{},
-        /*action_handler=*/nullptr, /*installer=*/nullptr,
-        /*requires_network_encryption=*/false,
-        /*supports_group_policy_enable_component_updates=*/true,
-        /*allow_cached_copies=*/true,
-        /*allow_updates_on_metered_connection=*/true,
-        /*allow_updates=*/true);
+    return {.app_id = std::string(id),
+            .name = std::string(name),
+            .version = base::Version("1.0"),
+            .requires_network_encryption = false,
+            .supports_group_policy_enable_component_updates = true};
   }
 
   bool RequestComponentUpdate(std::string_view name, std::string_view id) {
@@ -93,10 +88,9 @@ TEST_F(RequiredComponentsControllerTest, ComponentsUpdateDelay) {
       FROM_HERE,
       base::BindOnce(
           [](RequiredComponentsController* controller) {
-            update_client::CrxUpdateItem update_item;
-            update_item.id = "id";
-            update_item.state = update_client::ComponentState::kUpToDate;
-            controller->OnEvent(update_item);
+            controller->OnEvent(
+                {.state = update_client::ComponentState::kUpToDate,
+                 .id = "id"});
           },
           base::Unretained(controller_.get())),
       base::Milliseconds(20));
@@ -105,10 +99,9 @@ TEST_F(RequiredComponentsControllerTest, ComponentsUpdateDelay) {
       FROM_HERE,
       base::BindOnce(
           [](RequiredComponentsController* controller) {
-            update_client::CrxUpdateItem update_item;
-            update_item.id = "id2";
-            update_item.state = update_client::ComponentState::kUpdated;
-            controller->OnEvent(update_item);
+            controller->OnEvent(
+                {.state = update_client::ComponentState::kUpdated,
+                 .id = "id2"});
           },
           base::Unretained(controller_.get())),
       base::Milliseconds(30));
@@ -131,11 +124,10 @@ TEST_F(RequiredComponentsControllerTest, ComponentsUpdateError) {
       FROM_HERE,
       base::BindOnce(
           [](RequiredComponentsController* controller) {
-            update_client::CrxUpdateItem update_item;
-            update_item.id = "id";
-            update_item.state = update_client::ComponentState::kUpdateError;
-            update_item.error_code = 42;
-            controller->OnEvent(update_item);
+            controller->OnEvent(
+                {.state = update_client::ComponentState::kUpdateError,
+                 .id = "id",
+                 .error_code = 42});
           },
           base::Unretained(controller_.get())),
       base::Milliseconds(10));
@@ -153,10 +145,9 @@ TEST_F(RequiredComponentsControllerTest, ChainedExplicitComponent) {
       FROM_HERE,
       base::BindOnce(
           [](RequiredComponentsController* controller) {
-            update_client::CrxUpdateItem update_item;
-            update_item.id = "id1";
-            update_item.state = update_client::ComponentState::kUpToDate;
-            controller->OnEvent(update_item);
+            controller->OnEvent(
+                {.state = update_client::ComponentState::kUpToDate,
+                 .id = "id1"});
           },
           base::Unretained(controller_.get())),
       base::Milliseconds(10));
@@ -174,10 +165,9 @@ TEST_F(RequiredComponentsControllerTest, ChainedExplicitComponent) {
       FROM_HERE,
       base::BindOnce(
           [](RequiredComponentsController* controller) {
-            update_client::CrxUpdateItem update_item;
-            update_item.id = "id2";
-            update_item.state = update_client::ComponentState::kUpdated;
-            controller->OnEvent(update_item);
+            controller->OnEvent(
+                {.state = update_client::ComponentState::kUpdated,
+                 .id = "id2"});
           },
           base::Unretained(controller_.get())),
       base::Milliseconds(30));

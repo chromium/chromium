@@ -186,12 +186,6 @@ std::optional<InstallerOutcome> GetLastInstallerOutcome(
 
 }  // namespace
 
-InstallerOutcome::InstallerOutcome() = default;
-InstallerOutcome::InstallerOutcome(const InstallerOutcome&) = default;
-InstallerOutcome& InstallerOutcome::operator=(const InstallerOutcome&) =
-    default;
-InstallerOutcome::~InstallerOutcome() = default;
-
 std::optional<base::win::RegKey> ClientStateAppKeyOpen(
     UpdaterScope updater_scope,
     const std::string& app_id,

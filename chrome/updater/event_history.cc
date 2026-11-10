@@ -442,17 +442,6 @@ std::optional<base::DictValue> ActivateEndEvent::BuildInternal(
   return event;
 }
 
-PersistedDataEvent::RegisteredApp::RegisteredApp() = default;
-PersistedDataEvent::RegisteredApp::RegisteredApp(const RegisteredApp&) =
-    default;
-PersistedDataEvent::RegisteredApp& PersistedDataEvent::RegisteredApp::operator=(
-    const RegisteredApp&) = default;
-PersistedDataEvent::RegisteredApp::RegisteredApp(RegisteredApp&&) noexcept =
-    default;
-PersistedDataEvent::RegisteredApp& PersistedDataEvent::RegisteredApp::operator=(
-    RegisteredApp&&) noexcept = default;
-PersistedDataEvent::RegisteredApp::~RegisteredApp() = default;
-
 PersistedDataEvent::PersistedDataEvent() = default;
 PersistedDataEvent::PersistedDataEvent(PersistedDataEvent&&) noexcept = default;
 PersistedDataEvent& PersistedDataEvent::operator=(

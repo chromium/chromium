@@ -47,8 +47,6 @@ base::FilePath GetVerifiedContentsPath(const base::FilePath& extension_path) {
 
 namespace update_client {
 
-Unpacker::Result::Result() = default;
-
 Unpacker::Unpacker(const std::string& app_id,
                    const std::string& prod_id,
                    const base::FilePath& path,
@@ -212,9 +210,7 @@ void Unpacker::EndUnpacking(UnpackerError error, int extended_error) {
     RetryFileOperation(&base::DeletePathRecursively, unpack_path_);
   }
 
-  Result result;
-  result.error = error;
-  result.extended_error = extended_error;
+  Result result = {.error = error, .extended_error = extended_error};
   if (error == UnpackerError::kNone) {
     VLOG(2) << "Unpacked successfully";
     result.unpack_path = unpack_path_;

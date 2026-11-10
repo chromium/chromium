@@ -794,15 +794,13 @@ void UpdateServiceImplImpl::RegisterApp(
                                         enterprise_companion::kCompanionAppId);
   config_->GetUpdaterPersistedData()->RegisterApp(request);
   if (send_event) {
-    update_client::CrxComponent install_data;
-    install_data.ap = request.ap;
-    install_data.app_id = request.app_id;
-    install_data.brand = request.brand_code;
-    install_data.lang = request.lang.value_or("");
-    install_data.requires_network_encryption = false;
-    install_data.version = base::Version(request.version);
     update_client_->SendPing(
-        install_data,
+        {.app_id = request.app_id,
+         .version = base::Version(request.version),
+         .ap = request.ap,
+         .brand = request.brand_code,
+         .lang = request.lang.value_or(""),
+         .requires_network_encryption = false},
         {.event_type = update_client::protocol_request::kEventInstall,
          .result = update_client::protocol_request::kEventResultSuccess},
         base::BindOnce([](update_client::Error error) {
@@ -1606,18 +1604,16 @@ void UpdateServiceImplImpl::RunInstallerImpl(
               // Send an install ping. In some environments the ping cannot be
               // sent, so do not wait for it to be sent before calling back
               // the client.
-              update_client::CrxComponent install_data;
-              install_data.ap = ap;
-              install_data.app_id = app_id;
-              install_data.lang = language;
-              install_data.brand = brand;
-              install_data.requires_network_encryption = false;
-              install_data.install_source = install_source.empty()
-                                                ? kInstallSourceOffline
-                                                : install_source;
-              install_data.version = installer_version;
               update_client->SendPing(
-                  install_data,
+                  {.app_id = app_id,
+                   .version = installer_version,
+                   .ap = ap,
+                   .brand = brand,
+                   .lang = language,
+                   .requires_network_encryption = false,
+                   .install_source = install_source.empty()
+                                         ? kInstallSourceOffline
+                                         : install_source},
                   {.event_type = update_client::protocol_request::kEventInstall,
                    .result =
                        result.result.category ==

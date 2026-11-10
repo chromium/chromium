@@ -307,22 +307,6 @@ std::optional<ProtocolParserXML::Results> ProtocolParserXML::DoParse(
   return results;
 }
 
-ProtocolParserXML::App::App() = default;
-ProtocolParserXML::App::App(const App&) = default;
-ProtocolParserXML::App& ProtocolParserXML::App::operator=(const App&) = default;
-ProtocolParserXML::App::App(App&&) noexcept = default;
-ProtocolParserXML::App& ProtocolParserXML::App::operator=(App&&) noexcept =
-    default;
-ProtocolParserXML::App::~App() = default;
-ProtocolParserXML::Results::Results() = default;
-ProtocolParserXML::Results::Results(const Results&) = default;
-ProtocolParserXML::Results& ProtocolParserXML::Results::operator=(
-    const Results&) = default;
-ProtocolParserXML::Results::Results(Results&&) noexcept = default;
-ProtocolParserXML::Results& ProtocolParserXML::Results::operator=(
-    Results&&) noexcept = default;
-ProtocolParserXML::Results::~Results() = default;
-
 std::optional<ProtocolParserXML::Results> ProtocolParserXML::Parse(
     const std::string& xml) {
   return ProtocolParserXML().DoParse(xml);

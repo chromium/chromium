@@ -26,14 +26,14 @@ TEST(WinHttpProxyConfiguration, AutoProxy) {
 
 TEST(WinHttpProxyConfiguration, NamedProxy) {
   auto proxy_configuration = base::MakeRefCounted<ProxyConfiguration>(
-      ProxyInfo(false, L"", L"http://192.168.0.1", L""));
+      ProxyInfo{.proxy = L"http://192.168.0.1"});
   EXPECT_EQ(proxy_configuration->access_type(),
             WINHTTP_ACCESS_TYPE_NAMED_PROXY);
 }
 
 TEST(WinHttpProxyConfiguration, WPADProxyGetProxyForUrl) {
   auto proxy_configuration =
-      base::MakeRefCounted<ProxyConfiguration>(ProxyInfo(true, L"", L"", L""));
+      base::MakeRefCounted<ProxyConfiguration>(ProxyInfo{.auto_detect = true});
   EXPECT_EQ(proxy_configuration->access_type(),
             WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY);
   std::optional<ScopedWinHttpProxyInfo> winhttp_proxy_info =

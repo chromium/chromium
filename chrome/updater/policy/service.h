@@ -339,15 +339,6 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
 
 // Decouples the proxy configuration from `PolicyService`.
 struct PolicyServiceProxyConfiguration {
-  PolicyServiceProxyConfiguration();
-  ~PolicyServiceProxyConfiguration();
-  PolicyServiceProxyConfiguration(const PolicyServiceProxyConfiguration&);
-  PolicyServiceProxyConfiguration(PolicyServiceProxyConfiguration&&) noexcept;
-  PolicyServiceProxyConfiguration& operator=(
-      const PolicyServiceProxyConfiguration&);
-  PolicyServiceProxyConfiguration& operator=(
-      PolicyServiceProxyConfiguration&&) noexcept;
-
   // Note `Get()` returns a nullopt when there's no proxy policies. Otherwise
   // `proxy_auto_detect` must have a value, and is only set to true when the
   // policy chooses "auto-detect".

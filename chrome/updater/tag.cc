@@ -622,13 +622,6 @@ AppArgs& AppArgs::operator=(const AppArgs&) = default;
 AppArgs::AppArgs(AppArgs&&) noexcept = default;
 AppArgs& AppArgs::operator=(AppArgs&&) noexcept = default;
 
-TagArgs::TagArgs() = default;
-TagArgs::~TagArgs() = default;
-TagArgs::TagArgs(const TagArgs&) = default;
-TagArgs& TagArgs::operator=(const TagArgs&) = default;
-TagArgs::TagArgs(TagArgs&&) noexcept = default;
-TagArgs& TagArgs::operator=(TagArgs&&) noexcept = default;
-
 ErrorCode Parse(std::string_view tag,
                 std::optional<std::string_view> app_installer_data_args,
                 TagArgs& args) {

@@ -110,11 +110,6 @@ class PKIMetadataComponentInstallerService final {
 
  private:
   struct LoadedPKIMetadata {
-    LoadedPKIMetadata();
-    ~LoadedPKIMetadata();
-    LoadedPKIMetadata(LoadedPKIMetadata&&) noexcept;
-    LoadedPKIMetadata& operator=(LoadedPKIMetadata&&) noexcept;
-
     bool network_service_only = false;
 #if BUILDFLAG(IS_CT_SUPPORTED)
     std::string ct_config_bytes;
@@ -224,16 +219,6 @@ class PKIMetadataComponentInstallerService final {
   absl::flat_hash_set<std::vector<uint8_t>> crs_trusted_mtc_ca_ids_;
 
   struct MtcCaIdAndLandmarkTrustAnchorIds {
-    MtcCaIdAndLandmarkTrustAnchorIds();
-    ~MtcCaIdAndLandmarkTrustAnchorIds();
-    MtcCaIdAndLandmarkTrustAnchorIds(const MtcCaIdAndLandmarkTrustAnchorIds&);
-    MtcCaIdAndLandmarkTrustAnchorIds(
-        MtcCaIdAndLandmarkTrustAnchorIds&&) noexcept;
-    MtcCaIdAndLandmarkTrustAnchorIds& operator=(
-        const MtcCaIdAndLandmarkTrustAnchorIds&);
-    MtcCaIdAndLandmarkTrustAnchorIds& operator=(
-        MtcCaIdAndLandmarkTrustAnchorIds&&) noexcept;
-
     std::vector<uint8_t> ca_id;
     std::vector<std::vector<uint8_t>> landmark_trust_anchor_ids;
   };

@@ -65,11 +65,9 @@ std::vector<update_client::CrxComponent> MakeOverinstallPings(
             << product.pv << ", actually installed: " << actual_version
             << ". An install ping will be sent.";
 
-    update_client::CrxComponent ping_data;
-    ping_data.app_id = product.app_id;
-    ping_data.version = actual_version;
-    ping_data.requires_network_encryption = false;
-    pings.push_back(ping_data);
+    pings.push_back({.app_id = product.app_id,
+                     .version = actual_version,
+                     .requires_network_encryption = false});
   }
   return pings;
 }

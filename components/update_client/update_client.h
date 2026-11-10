@@ -194,9 +194,6 @@ class CrxInstaller : public base::RefCountedThreadSafe<CrxInstaller> {
   };
 
   struct InstallParams {
-    InstallParams(const std::string& run,
-                  const std::string& arguments,
-                  const std::string& server_install_data);
     std::string run;
     std::string arguments;
     std::string server_install_data;
@@ -266,13 +263,6 @@ class ActionHandler : public base::RefCountedThreadSafe<ActionHandler> {
 using InstallerAttributes = std::map<std::string, std::string>;
 
 struct CrxComponent {
-  CrxComponent();
-  CrxComponent(const CrxComponent& other);
-  CrxComponent& operator=(const CrxComponent& other);
-  CrxComponent(CrxComponent&& other) noexcept;
-  CrxComponent& operator=(CrxComponent&& other) noexcept;
-  ~CrxComponent();
-
   // Optional SHA256 hash of the CRX's public key. If not supplied, the unpacker
   // can accept any CRX for this app, provided that the CRX meets the
   // VerifierFormat requirements specified by the service's configurator.

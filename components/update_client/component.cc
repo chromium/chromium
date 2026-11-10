@@ -103,8 +103,18 @@ CrxUpdateItem Component::GetCrxUpdateItem() const {
 
   CHECK(!id_.empty());
 
-  CrxUpdateItem crx_update_item;
-  crx_update_item.state = state_->state();
+  CrxUpdateItem crx_update_item = {.state = state_->state(),
+                                   .id = id_,
+                                   .last_check = last_check_,
+                                   .next_version = next_version_,
+                                   .downloaded_bytes = downloaded_bytes_,
+                                   .total_bytes = total_bytes_,
+                                   .install_progress = install_progress_,
+                                   .error_category = error_category_,
+                                   .error_code = error_code_,
+                                   .extra_code1 = extra_code1_,
+                                   .custom_updatecheck_data = custom_attrs_,
+                                   .installer_result = installer_result_};
   if (crx_update_item.state == ComponentState::kUpdating &&
       state_hint_ != ComponentState::kNew) {
     // TODO(crbug.com/353249967): Move state_hint_ into
@@ -113,20 +123,9 @@ CrxUpdateItem Component::GetCrxUpdateItem() const {
     // sensitive to which substate the pipeline is in.
     crx_update_item.state = state_hint_;
   }
-  crx_update_item.id = id_;
   if (crx_component_) {
     crx_update_item.component = *crx_component_;
   }
-  crx_update_item.last_check = last_check_;
-  crx_update_item.next_version = next_version_;
-  crx_update_item.downloaded_bytes = downloaded_bytes_;
-  crx_update_item.install_progress = install_progress_;
-  crx_update_item.total_bytes = total_bytes_;
-  crx_update_item.error_category = error_category_;
-  crx_update_item.error_code = error_code_;
-  crx_update_item.extra_code1 = extra_code1_;
-  crx_update_item.custom_updatecheck_data = custom_attrs_;
-  crx_update_item.installer_result = installer_result_;
 
   return crx_update_item;
 }

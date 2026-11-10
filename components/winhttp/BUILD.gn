@@ -18,7 +18,6 @@ static_library("winhttp") {
     "net_util.h",
     "network_fetcher.cc",
     "proxy_configuration.cc",
-    "proxy_info.cc",
     "scoped_hinternet.cc",
     "scoped_winhttp_proxy_info.cc",
   ]

@@ -1412,14 +1412,6 @@ void AppInstallProgressForwarder::Forward(
       NOTREACHED();
   }
 
-  ObserverCompletionInfo observer_info;
-  observer_info.completion_code = completion_code;
-  observer_info.completion_text = base::WideToUTF16(completion_text);
-  observer_info.help_url = GURL(
-      absl::StrFormat("%s?product=%s&error=%d", HELP_CENTER_URL,
-                      base::EscapeUrlEncodedData(update_state.app_id, false),
-                      update_state.error_code));
-
   AppCompletionInfo app_info;
   if (update_state.state == UpdateService::UpdateState::State::kNotStarted) {
     app_info.app_id = kUpdaterAppId;
@@ -1457,9 +1449,14 @@ void AppInstallProgressForwarder::Forward(
       app_info.completion_code = CompletionCodes::COMPLETION_CODE_ERROR;
     }
   }
-  observer_info.apps_info.push_back(app_info);
 
-  return observer_info;
+  return {.completion_code = completion_code,
+          .completion_text = base::WideToUTF16(completion_text),
+          .help_url = GURL(absl::StrFormat(
+              "%s?product=%s&error=%d", HELP_CENTER_URL,
+              base::EscapeUrlEncodedData(update_state.app_id, false),
+              update_state.error_code)),
+          .apps_info = {app_info}};
 }
 
 scoped_refptr<App> MakeAppInstall(bool is_silent_install) {

@@ -78,13 +78,6 @@ class TaskScheduler : public base::RefCountedThreadSafe<TaskScheduler> {
   // Detailed description of a scheduled task. This type is returned by the
   // GetTaskInfo() method.
   struct TaskInfo {
-    TaskInfo();
-    TaskInfo(const TaskInfo&);
-    TaskInfo(TaskInfo&&) noexcept;
-    ~TaskInfo();
-    TaskInfo& operator=(const TaskInfo&);
-    TaskInfo& operator=(TaskInfo&&) noexcept;
-
     std::wstring name;
 
     // Description of the task.

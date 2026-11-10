@@ -56,11 +56,6 @@ struct AppCompletionInfo {
   bool is_noupdate = false;  // |noupdate| response from server.
   std::string post_install_launch_command_line;
   GURL post_install_url;
-
-  AppCompletionInfo();
-  AppCompletionInfo(const AppCompletionInfo&);
-  AppCompletionInfo& operator=(const AppCompletionInfo&);
-  ~AppCompletionInfo();
 };
 
 struct ObserverCompletionInfo {
@@ -68,11 +63,6 @@ struct ObserverCompletionInfo {
   std::u16string completion_text;
   GURL help_url;
   std::vector<AppCompletionInfo> apps_info;
-
-  ObserverCompletionInfo();
-  ObserverCompletionInfo(const ObserverCompletionInfo&);
-  ObserverCompletionInfo& operator=(const ObserverCompletionInfo&);
-  ~ObserverCompletionInfo();
 };
 
 // Defines an interface for observing install progress. This interface is

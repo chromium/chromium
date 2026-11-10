@@ -140,13 +140,13 @@ void SendPing(int exit_code, int extra_code) {
           base::BindOnce(
               [](scoped_refptr<SendPingResult> result, int exit_code,
                  int extra_code) {
-                update_client::CrxComponent ping_data;
-                ping_data.app_id = kUpdaterAppId;
-                ping_data.version = base::Version(kUpdaterVersion);
-                ping_data.requires_network_encryption = false;
                 update_client::UpdateClientFactory(CreatePingConfigurator())
                     ->SendPing(
-                        ping_data,
+                        {
+                            .app_id = kUpdaterAppId,
+                            .version = base::Version(kUpdaterVersion),
+                            .requires_network_encryption = false,
+                        },
                         {
                             .event_type =
                                 update_client::protocol_request::kEventInstall,

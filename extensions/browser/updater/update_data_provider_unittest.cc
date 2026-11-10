@@ -211,9 +211,8 @@ TEST_F(UpdateDataProviderTest, GetData_EnabledExtensionWithData) {
                /*disable_reasons=*/{}, ManifestLocation::kExternalPref);
 
   ExtensionUpdateDataMap update_data;
-  auto& info = update_data[kExtensionId1];
-  info.is_corrupt_reinstall = true;
-  info.install_source = "webstore";
+  update_data[kExtensionId1] = {.install_source = "webstore",
+                                .is_corrupt_reinstall = true};
 
   std::vector<std::optional<update_client::CrxComponent>> data;
   data_provider->GetData(
@@ -471,12 +470,9 @@ TEST_F(UpdateDataProviderTest, GetData_MultipleExtensions_CorruptExtension) {
                /*disable_reasons=*/{}, ManifestLocation::kExternalPolicy);
 
   ExtensionUpdateDataMap update_data;
-  auto& info1 = update_data[kExtensionId1];
-  auto& info2 = update_data[kExtensionId2];
-
-  info1.install_source = "webstore";
-  info2.is_corrupt_reinstall = true;
-  info2.install_source = "sideload";
+  update_data[kExtensionId1] = {.install_source = "webstore"};
+  update_data[kExtensionId2] = {.install_source = "sideload",
+                                .is_corrupt_reinstall = true};
 
   std::vector<std::optional<update_client::CrxComponent>> data;
   data_provider->GetData(
@@ -546,8 +542,7 @@ TEST_F(UpdateDataProviderTest, GetData_Pending_Version) {
                /*disable_reasons=*/{}, ManifestLocation::kInternal);
 
   ExtensionUpdateDataMap update_data;
-  update_data[kExtensionId1] = {};
-  update_data[kExtensionId1].pending_version = pending_version;
+  update_data[kExtensionId1] = {.pending_version = pending_version};
 
   std::vector<std::optional<update_client::CrxComponent>> data;
   data_provider->GetData(

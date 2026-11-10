@@ -212,33 +212,6 @@ PKIMetadataComponentInstallerService::PKIMetadataComponentInstallerService() {
   }
 }
 
-PKIMetadataComponentInstallerService::MtcCaIdAndLandmarkTrustAnchorIds::
-    MtcCaIdAndLandmarkTrustAnchorIds() = default;
-PKIMetadataComponentInstallerService::MtcCaIdAndLandmarkTrustAnchorIds::
-    ~MtcCaIdAndLandmarkTrustAnchorIds() = default;
-PKIMetadataComponentInstallerService::MtcCaIdAndLandmarkTrustAnchorIds::
-    MtcCaIdAndLandmarkTrustAnchorIds(
-        MtcCaIdAndLandmarkTrustAnchorIds&&) noexcept = default;
-PKIMetadataComponentInstallerService::MtcCaIdAndLandmarkTrustAnchorIds::
-    MtcCaIdAndLandmarkTrustAnchorIds(
-        const MtcCaIdAndLandmarkTrustAnchorIds& other) = default;
-PKIMetadataComponentInstallerService::MtcCaIdAndLandmarkTrustAnchorIds&
-PKIMetadataComponentInstallerService::MtcCaIdAndLandmarkTrustAnchorIds::
-operator=(const MtcCaIdAndLandmarkTrustAnchorIds&) = default;
-PKIMetadataComponentInstallerService::MtcCaIdAndLandmarkTrustAnchorIds&
-PKIMetadataComponentInstallerService::MtcCaIdAndLandmarkTrustAnchorIds::
-operator=(MtcCaIdAndLandmarkTrustAnchorIds&&) noexcept = default;
-
-PKIMetadataComponentInstallerService::LoadedPKIMetadata::LoadedPKIMetadata() =
-    default;
-PKIMetadataComponentInstallerService::LoadedPKIMetadata::~LoadedPKIMetadata() =
-    default;
-PKIMetadataComponentInstallerService::LoadedPKIMetadata::LoadedPKIMetadata(
-    LoadedPKIMetadata&&) noexcept = default;
-PKIMetadataComponentInstallerService::LoadedPKIMetadata&
-PKIMetadataComponentInstallerService::LoadedPKIMetadata::operator=(
-    LoadedPKIMetadata&&) noexcept = default;
-
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 // static
 std::optional<mojo_base::ProtoWrapper>
@@ -285,8 +258,8 @@ void PKIMetadataComponentInstallerService::ConfigurePKIMetadata(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(
           [](const base::FilePath& install_dir, bool network_service_only) {
-            LoadedPKIMetadata data;
-            data.network_service_only = network_service_only;
+            LoadedPKIMetadata data = {.network_service_only =
+                                          network_service_only};
 #if BUILDFLAG(IS_CT_SUPPORTED)
             if (base::FeatureList::IsEnabled(
                     features::kCertificateTransparencyAskBeforeEnabling)) {
@@ -652,8 +625,7 @@ bool PKIMetadataComponentInstallerService::UpdateMtcMetadataTrustAnchorIDs(
   std::vector<MtcCaIdAndLandmarkTrustAnchorIds>
       mtc_ca_id_landmark_trust_anchor_ids;
   for (const auto& [ca_id, ca_data] : parsed->mtc_anchor_data()) {
-    MtcCaIdAndLandmarkTrustAnchorIds tai_entry;
-    tai_entry.ca_id = ca_id;
+    MtcCaIdAndLandmarkTrustAnchorIds tai_entry = {.ca_id = ca_id};
     if (ca_data.trusted_landmark_ranges.empty()) {
       // If a CA entry in the fastpush had no trusted landmark data, don't add
       // an empty entry to the landmark trust anchor ids map.

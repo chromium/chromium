@@ -117,12 +117,11 @@ TEST_P(PingManagerTest, SendPing) {
   for (const std::string& lang : {"ar", "en-UK", ""}) {
     // Test eventresult="1" is sent for successful updates.
     Component component(*update_context, "abc");
-    component.crx_component_ = CrxComponent();
-    component.crx_component_->app_id = "abc";
-    component.crx_component_->version = base::Version("1.0");
-    component.crx_component_->ap = "ap1";
-    component.crx_component_->brand = "BRND";
-    component.crx_component_->lang = lang;
+    component.crx_component_ = CrxComponent{.app_id = "abc",
+                                            .version = base::Version("1.0"),
+                                            .ap = "ap1",
+                                            .brand = "BRND",
+                                            .lang = lang};
     component.state_ = std::make_unique<Component::StateUpdated>(&component);
     component.previous_version_ = base::Version("1.0");
     component.next_version_ = base::Version("2.0");
@@ -199,9 +198,8 @@ TEST_P(PingManagerTest, SendPing) {
   {
     // Test eventresult="0" is sent for failed updates.
     Component component(*update_context, "abc");
-    component.crx_component_ = CrxComponent();
-    component.crx_component_->app_id = "abc";
-    component.crx_component_->version = base::Version("1.0");
+    component.crx_component_ =
+        CrxComponent{.app_id = "abc", .version = base::Version("1.0")};
     component.state_ =
         std::make_unique<Component::StateUpdateError>(&component);
     component.previous_version_ = base::Version("1.0");
@@ -236,9 +234,8 @@ TEST_P(PingManagerTest, SendPing) {
   {
     // Test the error values.
     Component component(*update_context, "abc");
-    component.crx_component_ = CrxComponent();
-    component.crx_component_->app_id = "abc";
-    component.crx_component_->version = base::Version("1.0");
+    component.crx_component_ =
+        CrxComponent{.app_id = "abc", .version = base::Version("1.0")};
     component.state_ =
         std::make_unique<Component::StateUpdateError>(&component);
     component.previous_version_ = base::Version("1.0");
@@ -280,9 +277,8 @@ TEST_P(PingManagerTest, SendPing) {
   {
     // Test an invalid |next_version| is not serialized.
     Component component(*update_context, "abc");
-    component.crx_component_ = CrxComponent();
-    component.crx_component_->app_id = "abc";
-    component.crx_component_->version = base::Version("1.0");
+    component.crx_component_ =
+        CrxComponent{.app_id = "abc", .version = base::Version("1.0")};
     component.state_ =
         std::make_unique<Component::StateUpdateError>(&component);
     component.previous_version_ = base::Version("1.0");
@@ -315,9 +311,8 @@ TEST_P(PingManagerTest, SendPing) {
   {
     // Test a valid |previouversion| and |next_version| = base::Version("0")
     // are serialized correctly under <event...> for uninstall.
-    CrxComponent crx_component;
-    crx_component.app_id = "abc";
-    crx_component.version = base::Version("1.2.3.4");
+    const CrxComponent crx_component = {.app_id = "abc",
+                                        .version = base::Version("1.2.3.4")};
 
     EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
     base::MakeRefCounted<UpdateEngine>(
@@ -359,8 +354,7 @@ TEST_P(PingManagerTest, SendPing) {
       config_->SetIsMachineExternallyManaged(is_managed);
       EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
       Component component(*update_context, "abc");
-      component.crx_component_ = CrxComponent();
-      component.crx_component_->app_id = "abc";
+      component.crx_component_ = CrxComponent{.app_id = "abc"};
       component.previous_version_ = base::Version("1.0");
       component.AppendEvent(component.MakeEventUpdateComplete());
       ping_manager_->SendPing(component.session_id(), *component.crx_component_,
@@ -381,9 +375,8 @@ TEST_P(PingManagerTest, SendPing) {
 
   {
     // Test `app_command_id`.
-    CrxComponent crx_component;
-    crx_component.app_id = "abc";
-    crx_component.version = base::Version("1.2.3.4");
+    const CrxComponent crx_component = {.app_id = "abc",
+                                        .version = base::Version("1.2.3.4")};
 
     EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
     base::MakeRefCounted<UpdateEngine>(
@@ -442,11 +435,10 @@ TEST_P(PingManagerTest, RequiresEncryption) {
   const auto update_context = MakeMockUpdateContext();
   {
     Component component(*update_context, "abc");
-    component.crx_component_ = CrxComponent();
-    component.crx_component_->app_id = "abc";
-    component.crx_component_->version = base::Version("1.0");
-    component.crx_component_->ap = "ap1";
-    component.crx_component_->brand = "BRND";
+    component.crx_component_ = CrxComponent{.app_id = "abc",
+                                            .version = base::Version("1.0"),
+                                            .ap = "ap1",
+                                            .brand = "BRND"};
     component.state_ = std::make_unique<Component::StateUpdated>(&component);
     component.previous_version_ = base::Version("1.0");
     component.next_version_ = base::Version("2.0");

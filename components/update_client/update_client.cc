@@ -47,29 +47,6 @@
 
 namespace update_client {
 
-CrxInstaller::InstallParams::InstallParams(
-    const std::string& run,
-    const std::string& arguments,
-    const std::string& server_install_data)
-    : run(run),
-      arguments(arguments),
-      server_install_data(server_install_data) {}
-
-CrxUpdateItem::CrxUpdateItem() : state(ComponentState::kNew) {}
-CrxUpdateItem::CrxUpdateItem(const CrxUpdateItem& other) = default;
-CrxUpdateItem& CrxUpdateItem::operator=(const CrxUpdateItem& other) = default;
-CrxUpdateItem::CrxUpdateItem(CrxUpdateItem&& other) noexcept = default;
-CrxUpdateItem& CrxUpdateItem::operator=(CrxUpdateItem&& other) noexcept =
-    default;
-CrxUpdateItem::~CrxUpdateItem() = default;
-
-CrxComponent::CrxComponent() = default;
-CrxComponent::CrxComponent(const CrxComponent& other) = default;
-CrxComponent& CrxComponent::operator=(const CrxComponent& other) = default;
-CrxComponent::CrxComponent(CrxComponent&& other) noexcept = default;
-CrxComponent& CrxComponent::operator=(CrxComponent&& other) noexcept = default;
-CrxComponent::~CrxComponent() = default;
-
 // It is important that an instance of the UpdateClient binds an unretained
 // pointer to itself. Otherwise, a life time circular dependency between this
 // instance and its inner members prevents the destruction of this instance.

@@ -142,11 +142,10 @@ class MsiSetInstallerResultTest
     ASSERT_NO_FATAL_FAILURE(
         registry_override_manager_.OverrideRegistry(HKEY_LOCAL_MACHINE));
     if (SetResults()) {
-      InstallerOutcome installer_outcome = {};
-      installer_outcome.installer_result = InstallerApiResult::kCustomError;
-      installer_outcome.installer_text = "some text";
       EXPECT_TRUE(SetInstallerOutcomeForTesting(
-          UpdaterScope::kSystem, base::WideToUTF8(kAppId), installer_outcome));
+          UpdaterScope::kSystem, base::WideToUTF8(kAppId),
+          {.installer_result = InstallerApiResult::kCustomError,
+           .installer_text = "some text"}));
       ASSERT_TRUE(
           GetInstallerOutcome(UpdaterScope::kSystem, base::WideToUTF8(kAppId)));
 

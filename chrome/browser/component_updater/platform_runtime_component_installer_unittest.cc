@@ -141,8 +141,8 @@ TEST_F(PlatformRuntimeComponentInstallerTest, ShouldTriggerInstallOrUpdate) {
   // GetComponentDetails returns true, component is set, but version is invalid.
   EXPECT_CALL(*service, GetComponentDetails(crx_id, _))
       .WillOnce([](const std::string& id, update_client::CrxUpdateItem* item) {
-        item->component = update_client::CrxComponent();
-        item->component->version = base::Version();
+        item->component =
+            update_client::CrxComponent{.version = base::Version()};
         return true;
       });
   EXPECT_TRUE(
@@ -151,8 +151,8 @@ TEST_F(PlatformRuntimeComponentInstallerTest, ShouldTriggerInstallOrUpdate) {
   // GetComponentDetails returns true, component version is kNullVersion.
   EXPECT_CALL(*service, GetComponentDetails(crx_id, _))
       .WillOnce([](const std::string& id, update_client::CrxUpdateItem* item) {
-        item->component = update_client::CrxComponent();
-        item->component->version = base::Version("0.0.0.0");
+        item->component =
+            update_client::CrxComponent{.version = base::Version("0.0.0.0")};
         return true;
       });
   EXPECT_TRUE(
@@ -161,12 +161,12 @@ TEST_F(PlatformRuntimeComponentInstallerTest, ShouldTriggerInstallOrUpdate) {
   // For the remaining cases, component is installed & valid.
   auto set_installed_mock = [&](MockComponentUpdateService* mock_service) {
     EXPECT_CALL(*mock_service, GetComponentDetails(crx_id, _))
-        .WillOnce(
-            [](const std::string& id, update_client::CrxUpdateItem* item) {
-              item->component = update_client::CrxComponent();
-              item->component->version = base::Version("1.0.0.0");
-              return true;
-            });
+        .WillOnce([](const std::string& id,
+                     update_client::CrxUpdateItem* item) {
+          item->component =
+              update_client::CrxComponent{.version = base::Version("1.0.0.0")};
+          return true;
+        });
   };
 
   // Installed, valid version, local_state is valid but last install
@@ -301,8 +301,8 @@ TEST_F(PlatformRuntimeComponentInstallerTest,
   // Case: Stale trigger.
   EXPECT_CALL(*service, GetComponentDetails(crx_id, _))
       .WillOnce([](const std::string& id, update_client::CrxUpdateItem* item) {
-        item->component = update_client::CrxComponent();
-        item->component->version = base::Version("1.0.0.0");
+        item->component =
+            update_client::CrxComponent{.version = base::Version("1.0.0.0")};
         return true;
       });
   local_state->SetTime(kPlatformRuntimeLastReleaseTime,
@@ -355,8 +355,7 @@ TEST_F(PlatformRuntimeComponentInstallerTest,
   const std::string crx_id = "test_crx_id";
   EXPECT_CALL(*service, GetComponentDetails(crx_id, _))
       .WillOnce([&](const std::string& id, update_client::CrxUpdateItem* item) {
-        item->component = update_client::CrxComponent();
-        item->component->version = version;
+        item->component = update_client::CrxComponent{.version = version};
         return true;
       });
   EXPECT_TRUE(
@@ -546,8 +545,8 @@ TEST_F(PlatformRuntimeComponentInstallerWindowsTest,
 
   EXPECT_CALL(*service, GetComponentDetails(_, _))
       .WillOnce([](const std::string& id, update_client::CrxUpdateItem* item) {
-        item->component = update_client::CrxComponent();
-        item->component->version = base::Version("1.0.0.0");
+        item->component =
+            update_client::CrxComponent{.version = base::Version("1.0.0.0")};
         return true;
       });
 
@@ -579,8 +578,8 @@ TEST_F(PlatformRuntimeComponentInstallerWindowsTest,
 
   EXPECT_CALL(*service, GetComponentDetails(_, _))
       .WillOnce([](const std::string& id, update_client::CrxUpdateItem* item) {
-        item->component = update_client::CrxComponent();
-        item->component->version = base::Version("1.0.0.0");
+        item->component =
+            update_client::CrxComponent{.version = base::Version("1.0.0.0")};
         return true;
       });
 

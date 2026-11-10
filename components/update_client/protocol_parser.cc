@@ -12,51 +12,6 @@ namespace update_client {
 ProtocolParser::ProtocolParser() = default;
 ProtocolParser::~ProtocolParser() = default;
 
-ProtocolParser::Results::Results() = default;
-ProtocolParser::Results::Results(const Results& other) = default;
-ProtocolParser::Results& ProtocolParser::Results::operator=(const Results&) =
-    default;
-ProtocolParser::Results::Results(Results&&) noexcept = default;
-ProtocolParser::Results& ProtocolParser::Results::operator=(
-    Results&&) noexcept = default;
-ProtocolParser::Results::~Results() = default;
-
-ProtocolParser::App::App() = default;
-ProtocolParser::App::App(const App& other) = default;
-ProtocolParser::App& ProtocolParser::App::operator=(const App&) = default;
-ProtocolParser::App::App(App&&) noexcept = default;
-ProtocolParser::App& ProtocolParser::App::operator=(App&&) noexcept = default;
-ProtocolParser::App::~App() = default;
-
-ProtocolParser::Operation::Operation() = default;
-ProtocolParser::Operation::Operation(const Operation& other) = default;
-ProtocolParser::Operation& ProtocolParser::Operation::operator=(
-    const Operation&) = default;
-ProtocolParser::Operation::Operation(Operation&&) noexcept = default;
-ProtocolParser::Operation& ProtocolParser::Operation::operator=(
-    Operation&&) noexcept = default;
-ProtocolParser::Operation::~Operation() = default;
-
-ProtocolParser::Pipeline::Pipeline() = default;
-ProtocolParser::Pipeline::Pipeline(const Pipeline& other) = default;
-ProtocolParser::Pipeline& ProtocolParser::Pipeline::operator=(const Pipeline&) =
-    default;
-ProtocolParser::Pipeline::Pipeline(Pipeline&&) noexcept = default;
-ProtocolParser::Pipeline& ProtocolParser::Pipeline::operator=(
-    Pipeline&&) noexcept = default;
-ProtocolParser::Pipeline::~Pipeline() = default;
-
-ProtocolParser::Data::Data() = default;
-ProtocolParser::Data::Data(const Data& other) = default;
-ProtocolParser::Data& ProtocolParser::Data::operator=(const Data&) = default;
-ProtocolParser::Data::Data(const std::string& install_data_index,
-                           const std::string& text)
-    : install_data_index(install_data_index), text(text) {}
-ProtocolParser::Data::Data(Data&&) noexcept = default;
-ProtocolParser::Data& ProtocolParser::Data::operator=(Data&&) noexcept =
-    default;
-ProtocolParser::Data::~Data() = default;
-
 void ProtocolParser::ParseError(std::string_view details) {
   if (!errors_.empty()) {
     errors_ += "\r\n";

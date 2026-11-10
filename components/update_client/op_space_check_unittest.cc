@@ -41,16 +41,9 @@ class OpSpaceCheckTest : public testing::Test {
 };
 
 TEST_F(OpSpaceCheckTest, EnoughSpaceForFullUpdate) {
-  ProtocolParser::Pipeline pipeline;
-  ProtocolParser::Operation download_op;
-  download_op.type = "download";
-  download_op.size = 5000;
-  pipeline.operations.push_back(download_op);
-
-  ProtocolParser::Operation crx_op;
-  crx_op.type = "crx3";
-  crx_op.size = 5000;
-  pipeline.operations.push_back(crx_op);
+  const ProtocolParser::Pipeline pipeline = {
+      .operations = {{.type = "download", .size = 5000},
+                     {.type = "crx3", .size = 5000}}};
 
   auto get_available_space = base::BindRepeating(
       [](const base::FilePath&) -> int64_t { return 15000; });
@@ -70,16 +63,9 @@ TEST_F(OpSpaceCheckTest, EnoughSpaceForFullUpdate) {
 }
 
 TEST_F(OpSpaceCheckTest, NotEnoughSpaceForFullUpdate) {
-  ProtocolParser::Pipeline pipeline;
-  ProtocolParser::Operation download_op;
-  download_op.type = "download";
-  download_op.size = 5000;
-  pipeline.operations.push_back(download_op);
-
-  ProtocolParser::Operation crx_op;
-  crx_op.type = "crx3";
-  crx_op.size = 5000;
-  pipeline.operations.push_back(crx_op);
+  const ProtocolParser::Pipeline pipeline = {
+      .operations = {{.type = "download", .size = 5000},
+                     {.type = "crx3", .size = 5000}}};
 
   auto get_available_space = base::BindRepeating(
       [](const base::FilePath&) -> int64_t { return 8000; });
@@ -107,16 +93,9 @@ TEST_F(OpSpaceCheckTest, NotEnoughSpaceForFullUpdate) {
 }
 
 TEST_F(OpSpaceCheckTest, EnoughSpaceForDiffUpdate) {
-  ProtocolParser::Pipeline pipeline;
-  ProtocolParser::Operation download_op;
-  download_op.type = "download";
-  download_op.size = 1000;
-  pipeline.operations.push_back(download_op);
-
-  ProtocolParser::Operation crx_op;
-  crx_op.type = "crx3";
-  crx_op.size = 5000;
-  pipeline.operations.push_back(crx_op);
+  const ProtocolParser::Pipeline pipeline = {
+      .operations = {{.type = "download", .size = 1000},
+                     {.type = "crx3", .size = 5000}}};
 
   auto get_available_space = base::BindRepeating(
       [](const base::FilePath&) -> int64_t { return 12000; });
@@ -136,16 +115,9 @@ TEST_F(OpSpaceCheckTest, EnoughSpaceForDiffUpdate) {
 }
 
 TEST_F(OpSpaceCheckTest, NotEnoughSpaceForDiffUpdate) {
-  ProtocolParser::Pipeline pipeline;
-  ProtocolParser::Operation download_op;
-  download_op.type = "download";
-  download_op.size = 1000;
-  pipeline.operations.push_back(download_op);
-
-  ProtocolParser::Operation crx_op;
-  crx_op.type = "crx3";
-  crx_op.size = 5000;
-  pipeline.operations.push_back(crx_op);
+  const ProtocolParser::Pipeline pipeline = {
+      .operations = {{.type = "download", .size = 1000},
+                     {.type = "crx3", .size = 5000}}};
 
   auto get_available_space = base::BindRepeating(
       [](const base::FilePath&) -> int64_t { return 10000; });

@@ -144,35 +144,36 @@ void Installer::MakeCrxComponentFromAppInfo(
 
   app_info_ = app_info;
 
-  update_client::CrxComponent component;
-  component.installer = scoped_refptr<Installer>(this);
-  component.action_handler = MakeActionHandler();
-  component.requires_network_encryption = false;
-  component.crx_format_requirement = crx_verifier_format_;
+  update_client::CrxComponent component = {
+      .installer = scoped_refptr<Installer>(this),
+      .action_handler = MakeActionHandler(),
+      .app_id = app_id_,
+      .version = app_info_.version,
+      .ap = app_info_.ap,
+      .brand = app_info_.brand,
+      .lang = app_info_.lang,
+      .fingerprint = persisted_data_->GetFingerprint(app_id_),
+      .name = app_id_,
+      .requires_network_encryption = false,
+      .crx_format_requirement = crx_verifier_format_,
+      .updates_enabled = !update_disabled_,
+      .install_source = install_source_,
+      .channel = target_channel_,
+      .target_version_prefix = target_version_prefix_,
+      .rollback_allowed = rollback_allowed_,
+      .same_version_update_allowed =
+          policy_same_version_update_ ==
+          UpdateService::PolicySameVersionUpdate::kAllowed,
+  };
   if (crx_public_key_hash_) {
     component.pk_hash = *crx_public_key_hash_;
   }
-  component.app_id = app_id_;
 
   // Query server for install data only when the client does not specify one.
   if (client_install_data_.empty()) {
     component.install_data_index = install_data_index_;
   }
 
-  component.ap = app_info_.ap;
-  component.lang = app_info_.lang;
-  component.brand = app_info_.brand;
-  component.name = app_id_;
-  component.version = app_info_.version;
-  component.fingerprint = persisted_data_->GetFingerprint(app_id_);
-  component.channel = target_channel_;
-  component.rollback_allowed = rollback_allowed_;
-  component.same_version_update_allowed =
-      policy_same_version_update_ ==
-      UpdateService::PolicySameVersionUpdate::kAllowed;
-  component.target_version_prefix = target_version_prefix_;
-  component.updates_enabled = !update_disabled_;
-  component.install_source = install_source_;
   if (major_version_rollout_policy_) {
     component.installer_attributes.emplace(
         "major_version_rollout_policy",

@@ -190,21 +190,18 @@ std::unique_ptr<Component> UpdateCheckerTest::MakeComponent(
     const std::string& lang,
     const std::string& install_data_index,
     bool allow_updates_on_metered_connection) const {
-  CrxComponent crx_component;
-  crx_component.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
-  crx_component.brand = brand;
-  crx_component.lang = lang;
-  crx_component.install_data_index = install_data_index;
-  crx_component.name = "test_jebg";
-  crx_component.pk_hash = base::ToVector(jebg_hash);
-  crx_component.installer = nullptr;
-  crx_component.version = base::Version("0.9");
-  crx_component.allow_updates_on_metered_connection =
-      allow_updates_on_metered_connection;
-
   auto component = std::make_unique<Component>(*update_context_, kUpdateItemId);
   component->state_ = std::make_unique<Component::StateNew>(component.get());
-  component->crx_component_ = crx_component;
+  component->crx_component_ =
+      CrxComponent{.pk_hash = base::ToVector(jebg_hash),
+                   .app_id = "jebgalgnebhfojomionfpkfelancnnkf",
+                   .version = base::Version("0.9"),
+                   .brand = brand,
+                   .lang = lang,
+                   .install_data_index = install_data_index,
+                   .name = "test_jebg",
+                   .allow_updates_on_metered_connection =
+                       allow_updates_on_metered_connection};
 
   return component;
 }

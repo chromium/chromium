@@ -129,15 +129,6 @@ std::string GetUpdateURLData(const extensions::ExtensionPrefs* prefs,
 
 }  // namespace
 
-ExtensionUpdater::CheckParams::CheckParams() = default;
-
-ExtensionUpdater::CheckParams::~CheckParams() = default;
-
-ExtensionUpdater::CheckParams::CheckParams(
-    ExtensionUpdater::CheckParams&& other) = default;
-ExtensionUpdater::CheckParams& ExtensionUpdater::CheckParams::operator=(
-    ExtensionUpdater::CheckParams&& other) = default;
-
 ExtensionUpdater::FetchedCRXFile::FetchedCRXFile(
     const CRXFileInfo& file,
     bool file_ownership_passed,
@@ -158,10 +149,6 @@ ExtensionUpdater::FetchedCRXFile& ExtensionUpdater::FetchedCRXFile::operator=(
     FetchedCRXFile&& other) = default;
 
 ExtensionUpdater::FetchedCRXFile::~FetchedCRXFile() = default;
-
-ExtensionUpdater::InProgressCheck::InProgressCheck() = default;
-
-ExtensionUpdater::InProgressCheck::~InProgressCheck() = default;
 
 // static
 ExtensionUpdater* ExtensionUpdater::Get(
@@ -490,12 +477,12 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
   // will be allocated to at most one of these stacks. `update_check_params`
   // contains the update_client set, while `downloader_->AddPendingExtension`
   // and `request.in_progress_ids` are used for the ExtensionDownloader set.
-  ExtensionUpdateCheckParams update_check_params;
-  update_check_params.priority =
-      params.fetch_priority == DownloadFetchPriority::kBackground
-          ? ExtensionUpdateCheckParams::UpdateCheckPriority::BACKGROUND
-          : ExtensionUpdateCheckParams::UpdateCheckPriority::FOREGROUND;
-  update_check_params.install_immediately = params.install_immediately;
+  ExtensionUpdateCheckParams update_check_params = {
+      .priority =
+          params.fetch_priority == DownloadFetchPriority::kBackground
+              ? ExtensionUpdateCheckParams::UpdateCheckPriority::BACKGROUND
+              : ExtensionUpdateCheckParams::UpdateCheckPriority::FOREGROUND,
+      .install_immediately = params.install_immediately};
 
   InProgressCheck& request = requests_in_progress_[request_id];
   request.is_full_check = is_full_check;

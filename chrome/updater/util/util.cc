@@ -153,15 +153,6 @@ std::optional<base::FilePath> EnsureCrashDatabasePath(UpdaterScope scope) {
       });
 }
 
-TagParsingResult::TagParsingResult() = default;
-TagParsingResult::TagParsingResult(std::optional<tagging::TagArgs> tag_args,
-                                   tagging::ErrorCode error)
-    : tag_args(tag_args), error(error) {}
-TagParsingResult::~TagParsingResult() = default;
-TagParsingResult::TagParsingResult(const TagParsingResult&) = default;
-TagParsingResult& TagParsingResult::operator=(const TagParsingResult&) =
-    default;
-
 TagParsingResult GetTagArgsForCommandLine(
     const base::CommandLine& command_line) {
   std::string tag = command_line.HasSwitch(kInstallSwitch)
@@ -176,7 +167,7 @@ TagParsingResult GetTagArgsForCommandLine(
       tag, command_line.GetSwitchValueUTF8(kAppArgsSwitch), tag_args);
   VLOG_IF(1, error != tagging::ErrorCode::kSuccess)
       << "Tag parsing returned " << error << ".";
-  return {tag_args, error};
+  return {.tag_args = tag_args, .error = error};
 }
 
 TagParsingResult GetTagArgs() {

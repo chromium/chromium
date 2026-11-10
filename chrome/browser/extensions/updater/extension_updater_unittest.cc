@@ -2877,9 +2877,7 @@ TEST_F(ExtensionUpdaterTest, TestHasFullCheckInProgress) {
   EXPECT_FALSE(updater.HasFullCheckInProgress());
 
   // A targeted check must not report as a full check.
-  ExtensionUpdater::CheckParams params;
-  params.ids = {id1};
-  updater.CheckNow(std::move(params));
+  updater.CheckNow({.ids = {id1}});
   EXPECT_FALSE(updater.HasFullCheckInProgress());
 
   // A parameterless check covers all extensions and must report as a full
@@ -2908,10 +2906,8 @@ TEST_F(ExtensionUpdaterTest, TestUninstallWhileUpdateCheck) {
   updater.InitAndEnable(extension_prefs(), pref_service(), kUpdateFrequency,
                         nullptr, factory.GetDownloaderFactory());
   updater.set_crx_installer_factory_for_test(&crx_installer_factory);
-  ExtensionUpdater::CheckParams params;
-  params.ids = {id};
   updater.Start();
-  updater.CheckNow(std::move(params));
+  updater.CheckNow({.ids = {id}});
 
   SetExtensions(ExtensionList(), ExtensionList());
   ASSERT_FALSE(registry->enabled_extensions().GetByID(id));

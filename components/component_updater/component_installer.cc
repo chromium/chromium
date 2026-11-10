@@ -589,16 +589,25 @@ void ComponentInstaller::FinishRegistration(
   current_fingerprint_ = registration_info->fingerprint;
 
   if (!std::move(register_callback)
-           .Run(ComponentRegistration(
-               registration_info->crx_id, installer_policy_->GetName(),
-               registration_info->public_key_hash, current_version_,
-               current_fingerprint_,
-               installer_policy_->GetInstallerAttributes(), action_handler_,
-               this, installer_policy_->RequiresNetworkEncryption(),
-               installer_policy_->SupportsGroupPolicyEnabledComponentUpdates(),
-               installer_policy_->AllowCachedCopies(),
-               installer_policy_->AllowUpdatesOnMeteredConnections(),
-               installer_policy_->AllowUpdates()))) {
+           .Run(ComponentRegistration{
+               .app_id = registration_info->crx_id,
+               .name = installer_policy_->GetName(),
+               .public_key_hash = registration_info->public_key_hash,
+               .version = current_version_,
+               .fingerprint = current_fingerprint_,
+               .installer_attributes =
+                   installer_policy_->GetInstallerAttributes(),
+               .action_handler = action_handler_,
+               .installer = this,
+               .requires_network_encryption =
+                   installer_policy_->RequiresNetworkEncryption(),
+               .supports_group_policy_enable_component_updates =
+                   installer_policy_
+                       ->SupportsGroupPolicyEnabledComponentUpdates(),
+               .allow_cached_copies = installer_policy_->AllowCachedCopies(),
+               .allow_updates_on_metered_connection =
+                   installer_policy_->AllowUpdatesOnMeteredConnections(),
+               .allow_updates = installer_policy_->AllowUpdates()})) {
     VLOG(0) << "Component registration failed for "
             << installer_policy_->GetName();
     if (!callback.is_null()) {

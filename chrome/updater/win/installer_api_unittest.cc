@@ -64,16 +64,13 @@ TEST_P(InstallerAPITest, GetInstallerOutcome) {
   EXPECT_FALSE(GetClientStateKeyLastInstallerOutcome(updater_scope_, kAppId));
   EXPECT_FALSE(GetUpdaterKeyLastInstallerOutcome(updater_scope_));
 
-  {
-    InstallerOutcome installer_outcome;
-    installer_outcome.installer_result = InstallerApiResult::kSystemError;
-    installer_outcome.installer_error = 1;
-    installer_outcome.installer_extracode1 = -2;
-    installer_outcome.installer_text = "some text";
-    installer_outcome.installer_cmd_line = "some cmd line";
-    EXPECT_TRUE(SetInstallerOutcomeForTesting(updater_scope_, kAppId,
-                                              installer_outcome));
-  }
+  EXPECT_TRUE(SetInstallerOutcomeForTesting(
+      updater_scope_, kAppId,
+      {.installer_result = InstallerApiResult::kSystemError,
+       .installer_error = 1,
+       .installer_extracode1 = -2,
+       .installer_text = "some text",
+       .installer_cmd_line = "some cmd line"}));
 
   std::optional<InstallerOutcome> installer_outcome =
       GetInstallerOutcome(updater_scope_, kAppId);
@@ -112,17 +109,13 @@ TEST_P(InstallerAPITest, GetInstallerOutcome) {
   EXPECT_FALSE(installer_outcome->installer_text);
   EXPECT_FALSE(installer_outcome->installer_cmd_line);
 
-  {
-    InstallerOutcome installer_outcome_for_deletion;
-    installer_outcome_for_deletion.installer_result =
-        InstallerApiResult::kSystemError;
-    installer_outcome_for_deletion.installer_error = 1;
-    installer_outcome_for_deletion.installer_extracode1 = -2;
-    installer_outcome_for_deletion.installer_text = "some text";
-    installer_outcome_for_deletion.installer_cmd_line = "some cmd line";
-    EXPECT_TRUE(SetInstallerOutcomeForTesting(updater_scope_, kAppId,
-                                              installer_outcome_for_deletion));
-  }
+  EXPECT_TRUE(SetInstallerOutcomeForTesting(
+      updater_scope_, kAppId,
+      {.installer_result = InstallerApiResult::kSystemError,
+       .installer_error = 1,
+       .installer_extracode1 = -2,
+       .installer_text = "some text",
+       .installer_cmd_line = "some cmd line"}));
 
   // No installer outcome values after clearing the installer outcome.
   EXPECT_TRUE(DeleteInstallerOutput(updater_scope_, kAppId));
@@ -139,12 +132,12 @@ TEST_P(InstallerAPITest, GetInstallerOutcome) {
 
 TEST_P(InstallerAPITest, MakeInstallerResult) {
   {
-    InstallerOutcome installer_outcome;
-    installer_outcome.installer_result = InstallerApiResult::kSuccess;
-    installer_outcome.installer_error = 1;
-    installer_outcome.installer_extracode1 = -2;
-    installer_outcome.installer_text = "some text";
-    installer_outcome.installer_cmd_line = "some cmd line";
+    InstallerOutcome installer_outcome = {
+        .installer_result = InstallerApiResult::kSuccess,
+        .installer_error = 1,
+        .installer_extracode1 = -2,
+        .installer_text = "some text",
+        .installer_cmd_line = "some cmd line"};
     const auto installer_result = MakeInstallerResult(installer_outcome, 10);
     EXPECT_EQ(installer_result.result.category,
               update_client::ErrorCategory::kNone);
@@ -155,12 +148,12 @@ TEST_P(InstallerAPITest, MakeInstallerResult) {
   }
 
   {
-    InstallerOutcome installer_outcome;
-    installer_outcome.installer_result = InstallerApiResult::kCustomError;
-    installer_outcome.installer_error = 1;
-    installer_outcome.installer_extracode1 = -2;
-    installer_outcome.installer_text = "some text";
-    installer_outcome.installer_cmd_line = "some cmd line";
+    InstallerOutcome installer_outcome = {
+        .installer_result = InstallerApiResult::kCustomError,
+        .installer_error = 1,
+        .installer_extracode1 = -2,
+        .installer_text = "some text",
+        .installer_cmd_line = "some cmd line"};
     auto installer_result = MakeInstallerResult(installer_outcome, 10);
     EXPECT_EQ(installer_result.result.category,
               update_client::ErrorCategory::kInstaller);
@@ -179,12 +172,12 @@ TEST_P(InstallerAPITest, MakeInstallerResult) {
   }
 
   {
-    InstallerOutcome installer_outcome;
-    installer_outcome.installer_result = InstallerApiResult::kMsiError;
-    installer_outcome.installer_error = 1;
-    installer_outcome.installer_extracode1 = -2;
-    installer_outcome.installer_text = "some text";
-    installer_outcome.installer_cmd_line = "some cmd line";
+    InstallerOutcome installer_outcome = {
+        .installer_result = InstallerApiResult::kMsiError,
+        .installer_error = 1,
+        .installer_extracode1 = -2,
+        .installer_text = "some text",
+        .installer_cmd_line = "some cmd line"};
     auto installer_result = MakeInstallerResult(installer_outcome, 10);
     EXPECT_EQ(installer_result.result.category,
               update_client::ErrorCategory::kInstaller);
@@ -203,12 +196,12 @@ TEST_P(InstallerAPITest, MakeInstallerResult) {
   }
 
   {
-    InstallerOutcome installer_outcome;
-    installer_outcome.installer_result = InstallerApiResult::kSystemError;
-    installer_outcome.installer_error = 1;
-    installer_outcome.installer_extracode1 = -2;
-    installer_outcome.installer_text = "some text";
-    installer_outcome.installer_cmd_line = "some cmd line";
+    InstallerOutcome installer_outcome = {
+        .installer_result = InstallerApiResult::kSystemError,
+        .installer_error = 1,
+        .installer_extracode1 = -2,
+        .installer_text = "some text",
+        .installer_cmd_line = "some cmd line"};
     auto installer_result = MakeInstallerResult(installer_outcome, 10);
     EXPECT_EQ(installer_result.result.category,
               update_client::ErrorCategory::kInstaller);
@@ -227,12 +220,12 @@ TEST_P(InstallerAPITest, MakeInstallerResult) {
   }
 
   {
-    InstallerOutcome installer_outcome;
-    installer_outcome.installer_result = InstallerApiResult::kExitCode;
-    installer_outcome.installer_error = 1;
-    installer_outcome.installer_extracode1 = -2;
-    installer_outcome.installer_text = "some text";
-    installer_outcome.installer_cmd_line = "some cmd line";
+    InstallerOutcome installer_outcome = {
+        .installer_result = InstallerApiResult::kExitCode,
+        .installer_error = 1,
+        .installer_extracode1 = -2,
+        .installer_text = "some text",
+        .installer_cmd_line = "some cmd line"};
     auto installer_result = MakeInstallerResult(installer_outcome, 0);
 
     EXPECT_EQ(installer_result.result.category,
