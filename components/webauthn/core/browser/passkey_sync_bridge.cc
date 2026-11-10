@@ -5,7 +5,6 @@
 #include "components/webauthn/core/browser/passkey_sync_bridge.h"
 
 #include <algorithm>
-#include <iterator>
 #include <memory>
 #include <numeric>
 #include <optional>
@@ -15,6 +14,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/flat_tree.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -232,11 +232,12 @@ void PasskeySyncBridge::ApplyDisableSyncChanges(
   CHECK(store_);
   store_->DeleteAllDataAndMetadata(std::move(delete_metadata_change_list),
                                    base::DoNothing());
-  std::vector<PasskeyModelChange> changes;
-  for (const auto& passkey : data_) {
-    changes.emplace_back(PasskeyModelChange::ChangeType::REMOVE,
-                         passkey.second);
-  }
+  std::vector<PasskeyModelChange> changes =
+      base::ToVector(data_, [](const auto& pair) {
+        return PasskeyModelChange(PasskeyModelChange::ChangeType::REMOVE,
+                                  pair.second);
+      });
+
   data_.clear();
   NotifyPasskeysChanged(std::move(changes));
 }
@@ -255,10 +256,9 @@ bool PasskeySyncBridge::IsEmpty() const {
 }
 
 base::flat_set<std::string> PasskeySyncBridge::GetAllSyncIds() const {
-  std::vector<std::string> sync_ids;
-  std::ranges::transform(data_, std::back_inserter(sync_ids),
-                         [](const auto& pair) { return pair.first; });
-  return base::flat_set<std::string>(base::sorted_unique, std::move(sync_ids));
+  return base::flat_set<std::string>(
+      base::sorted_unique,
+      base::ToVector(data_, [](const auto& pair) { return pair.first; }));
 }
 
 base::flat_set<int32_t> PasskeySyncBridge::GetDeviceAuthorizationKeyVersions()
