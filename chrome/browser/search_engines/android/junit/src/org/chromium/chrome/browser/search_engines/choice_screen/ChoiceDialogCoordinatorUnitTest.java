@@ -69,7 +69,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.util.stream.IntStream;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures(ChromeFeatureList.CHROME_SEARCH_ONLY_CLAY_SCOPE)
+@EnableFeatures(ChromeFeatureList.CHROME_SEARCH_ONLY_CLAY_SCOPE)
 public class ChoiceDialogCoordinatorUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
     public @Rule FakeTimeTestRule mFakeTimeRule = new FakeTimeTestRule();
@@ -143,7 +143,6 @@ public class ChoiceDialogCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.CHROME_SEARCH_ONLY_CLAY_SCOPE)
     public void testMaybeShow_chromeSearchOnlyChoice() {
         var shouldShowSupplier = ObservableSuppliers.createNullable(true);
         doReturn(shouldShowSupplier)

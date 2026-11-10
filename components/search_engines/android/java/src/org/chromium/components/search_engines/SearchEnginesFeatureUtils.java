@@ -67,8 +67,7 @@ public class SearchEnginesFeatureUtils {
      *   <li><code>--enable-choice-apis-fake-backend</code> or <code>
      *       --enable-choice-apis-fake-backend=0</code>: {@link ChoiceScope#DEFAULT}
      *   <li><code>--enable-choice-apis-fake-backend=1</code>: {@link
-     *       ChoiceScope#CHROME_SEARCH_ONLY} (note: the {@code ChromeSearchOnlyClayScope} feature
-     *       flag must also be enabled for the dialog UI to display search-only strings)
+     *       ChoiceScope#CHROME_SEARCH_ONLY}
      * </ul>
      *
      * <p>The "fake backend" mode simulates a long-running backend query. It will respond that
