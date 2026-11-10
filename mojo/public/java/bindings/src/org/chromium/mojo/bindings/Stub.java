@@ -10,8 +10,8 @@ import org.chromium.mojo.system.Core;
 
 /**
  * Base implementation of Stub. Stubs are message receivers that deserialize the payload and call
- * the appropriate method in the implementation. If the method returns `result`, the stub serializes
- * the response and sends it back.
+ * the appropriate method in the implementation. If the method returns {@code result}, the stub
+ * serializes the response and sends it back.
  *
  * @param <I> the type of the interface to delegate calls to.
  */
@@ -34,7 +34,7 @@ public abstract class Stub<I extends Interface> implements MessageReceiverWithRe
      * Constructor.
      *
      * @param core the {@link Core} implementation to use.
-     * @param implementation which will receive requests.
+     * @param impl the implementation which will receive requests.
      * @param interfaceId the id that is associated with this stub.
      */
     public Stub(Core core, I impl, int interfaceId) {
@@ -121,7 +121,7 @@ public abstract class Stub<I extends Interface> implements MessageReceiverWithRe
     /**
      * Deserializes and dispatches a message for a method without a response.
      *
-     * @return false if |methodId| is not a method without a response.
+     * @return false if {@code methodId} is not a method without a response.
      */
     protected boolean handleMessage(int methodId, Decoder decoder) {
         return false;
@@ -130,7 +130,7 @@ public abstract class Stub<I extends Interface> implements MessageReceiverWithRe
     /**
      * Deserializes and dispatches a message for a method with a response.
      *
-     * @return false if |methodId| is not a method with a response.
+     * @return false if {@code methodId} is not a method with a response.
      */
     protected boolean handleMessageWithResponder(
             int methodId, Decoder decoder, MessageReceiver receiver, long requestId) {

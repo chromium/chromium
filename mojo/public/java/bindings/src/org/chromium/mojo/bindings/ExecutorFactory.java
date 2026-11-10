@@ -43,21 +43,27 @@ public class ExecutorFactory {
      */
     private static class PipedExecutor implements Executor, Callback {
 
-        /** The handle which is written to. Access to this object must be protected with |mLock|. */
+        /**
+         * The handle which is written to. Access to this object must be protected with {@code
+         * mLock}.
+         */
         private final MessagePipeHandle mWriteHandle;
 
         /** The handle which is read from. */
         private final MessagePipeHandle mReadHandle;
 
         /**
-         * The list of actions left to be run. Access to this object must be protected with |mLock|.
+         * The list of actions left to be run. Access to this object must be protected with {@code
+         * mLock}.
          */
         private final List<Runnable> mPendingActions;
 
-        /** Lock protecting access to |mWriteHandle| and |mPendingActions|. */
+        /** Lock protecting access to {@code mWriteHandle} and {@code mPendingActions}. */
         private final Object mLock;
 
-        /** The {@link Watcher} to get notified of new message availability on |mReadHandle|. */
+        /**
+         * The {@link Watcher} to get notified of new message availability on {@code mReadHandle}.
+         */
         private final Watcher mWatcher;
 
         /** Constructor. */
@@ -97,8 +103,8 @@ public class ExecutorFactory {
         }
 
         /**
-         * Read the next message on |mReadHandle|, and return |true| if successful, |false|
-         * otherwise.
+         * Read the next message on {@code mReadHandle}, and return {@code true} if successful,
+         * {@code false} otherwise.
          */
         private boolean readNotifyBufferMessage() {
             try {
@@ -113,7 +119,7 @@ public class ExecutorFactory {
             return false;
         }
 
-        /** Run the next action in the |mPendingActions| queue. */
+        /** Run the next action in the {@code mPendingActions} queue. */
         private void runNextAction() {
             Runnable toRun = null;
             synchronized (mLock) {
@@ -123,7 +129,8 @@ public class ExecutorFactory {
         }
 
         /**
-         * Execute the given |command| in the executor thread. This can be called on any thread.
+         * Execute the given {@code command} in the executor thread. This can be called on any
+         * thread.
          *
          * @see Executor#execute(Runnable)
          */

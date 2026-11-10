@@ -118,8 +118,7 @@ public class RouterImpl implements Router {
      * Constructor.
      *
      * @param messagePipeHandle The {@link MessagePipeHandle} to route message for.
-     * @param watcher the {@link Watcher} to use to get notification of new messages on the
-     *            handle.
+     * @param watcher the {@link Watcher} to use to get notification of new messages on the handle.
      */
     public RouterImpl(MessagePipeHandle messagePipeHandle, Watcher watcher) {
         mConnector = new Connector(messagePipeHandle, watcher);
@@ -216,7 +215,9 @@ public class RouterImpl implements Router {
         mConnector.setErrorHandler(errorHandler);
     }
 
-    /** Receive a message from the connector. Returns |true| if the message has been handled. */
+    /**
+     * Receive a message from the connector. Returns {@code true} if the message has been handled.
+     */
     private boolean handleIncomingMessage(Message message) throws BadMessageException {
         mEnqueuedMessages.add(message);
         return dispatchMessages();

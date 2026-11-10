@@ -26,8 +26,8 @@ public abstract class Union {
     /**
      * Returns the serialization of the union. This method can close Handles.
      *
-     * @param core the |Core| implementation used to generate handles. Only used if the data
-     *            structure being encoded contains interfaces, can be |null| otherwise.
+     * @param core the {@code Core} implementation used to generate handles. Only used if the data
+     *     structure being encoded contains interfaces, can be {@code null} otherwise.
      */
     public Message serialize(Core core) {
         Encoder encoder = new Encoder(core, BindingsHelper.UNION_SIZE);

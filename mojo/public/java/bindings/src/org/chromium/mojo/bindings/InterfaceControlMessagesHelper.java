@@ -121,8 +121,8 @@ public class InterfaceControlMessagesHelper {
     }
 
     /**
-     * Handles a received run or close pipe message. Closing the pipe is handled by returning
-     * |false|.
+     * Handles a received run or close pipe message. Closing the pipe is handled by returning {@code
+     * false}.
      */
     static boolean handleRunOrClosePipe(int version, ServiceMessage message)
             throws BadMessageException {

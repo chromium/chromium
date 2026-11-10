@@ -63,15 +63,15 @@ public interface Interface extends ConnectionErrorHandler, Closeable {
 
             /**
              * Queries the max version that the remote side supports. On completion, the result will
-             * be returned as the input of |callback|. The version number of this interface pointer
-             * will also be updated.
+             * be returned as the input of {@code callback}. The version number of this interface
+             * pointer will also be updated.
              */
             void queryVersion(QueryVersionCallback callback);
 
             /**
              * If the remote side doesn't support the specified version, it will close its end of
-             * the message pipe asynchronously. The call does nothing if |version| is no greater
-             * than getVersion().
+             * the message pipe asynchronously. The call does nothing if {@code version} is no
+             * greater than getVersion().
              *
              * <p>If you make a call to requireVersion() with a version number X which is not
              * supported by the remote side, it is guaranteed that all calls to the interface
@@ -365,7 +365,7 @@ public interface Interface extends ConnectionErrorHandler, Closeable {
     }
 
     /**
-     * The |Manager| object enables building of proxies and stubs for a given interface.
+     * The {@code Manager} object enables building of proxies and stubs for a given interface.
      *
      * @param <I> the type of the interface the manager can handle.
      * @param <P> the type of the proxy the manager can handle. To be noted, P always extends I.
@@ -416,8 +416,8 @@ public interface Interface extends ConnectionErrorHandler, Closeable {
         }
 
         /**
-         * Returns a Proxy that will send messages to the given |handle|. This implies that the
-         * other end of the handle must be bound to an implementation of the interface.
+         * Returns a Proxy that will send messages to the given {@code handle}. This implies that
+         * the other end of the handle must be bound to an implementation of the interface.
          */
         public final P attachProxy(MessagePipeHandle handle, int version) {
             RouterImpl router = new RouterImpl(handle);
@@ -431,9 +431,9 @@ public interface Interface extends ConnectionErrorHandler, Closeable {
         }
 
         /**
-         * Constructs a new |InterfaceRequest| for the interface. This method returns a Pair where
-         * the first element is a proxy, and the second element is the request. The proxy can be
-         * used immediately.
+         * Constructs a new {@code InterfaceRequest} for the interface. This method returns a Pair
+         * where the first element is a proxy, and the second element is the request. The proxy can
+         * be used immediately.
          */
         public final Pair<P, InterfaceRequest<I>> getInterfaceRequest(Core core) {
             Pair<MessagePipeHandle, MessagePipeHandle> handles = core.createMessagePipe(null);
@@ -473,7 +473,7 @@ public interface Interface extends ConnectionErrorHandler, Closeable {
             return proxy;
         }
 
-        /** Binds the implementation to the given |router|. */
+        /** Binds the implementation to the given {@code router}. */
         final void bind(@Nullable Core core, I impl, Router router) {
             var stub = buildStub(core, impl, Router.PRIMARY_INTERFACE_ID);
             router.setErrorHandler(impl);
@@ -487,12 +487,12 @@ public interface Interface extends ConnectionErrorHandler, Closeable {
             }
         }
 
-        /** Returns a Proxy that will send messages to the given |router|. */
+        /** Returns a Proxy that will send messages to the given {@code router}. */
         final P attachProxy(@Nullable Core core, Router router) {
             return buildProxy(core, new AutoCloseableRouter(core, router));
         }
 
-        /** Creates a new array of the given |size|. */
+        /** Creates a new array of the given {@code size}. */
         protected abstract I[] buildArray(int size);
 
         /** Constructs a Stub delegating to the given implementation. */

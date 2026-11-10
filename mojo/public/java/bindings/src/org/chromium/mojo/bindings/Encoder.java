@@ -44,10 +44,10 @@ public class Encoder {
         public int dataEnd;
 
         /**
-         * @param core the |Core| implementation used to generate handles. Only used if the data
-         *            structure being encoded contains interfaces, can be |null| otherwise.
+         * @param core the {@code Core} implementation used to generate handles. Only used if the
+         *     data structure being encoded contains interfaces, can be {@code null} otherwise.
          * @param bufferSize A hint on the size of the message. Used to build the initial byte
-         *            buffer.
+         *     buffer.
          */
         private EncoderState(@Nullable Core core, int bufferSize) {
             assert bufferSize % BindingsHelper.ALIGNMENT == 0;
@@ -101,8 +101,8 @@ public class Encoder {
     /**
      * Constructor.
      *
-     * @param core the |Core| implementation used to generate handles. Only used if the data
-     *            structure being encoded contains interfaces, can be |null| otherwise.
+     * @param core the {@code Core} implementation used to generate handles. Only used if the data
+     *     structure being encoded contains interfaces, can be {@code null} otherwise.
      * @param sizeHint A hint on the size of the message. Used to build the initial byte buffer.
      */
     public Encoder(@Nullable Core core, int sizeHint) {

@@ -42,13 +42,13 @@ public class BindingsHelper {
     /** The value used for the expected length of a non-fixed size array. */
     public static final int UNSPECIFIED_ARRAY_LENGTH = -1;
 
-    /** Passed as |arrayNullability| when neither the array nor its elements are nullable. */
+    /** Passed as {@code arrayNullability} when neither the array nor its elements are nullable. */
     public static final int NOTHING_NULLABLE = 0;
 
-    /** "Array bit" of |arrayNullability| is set iff the array itself is nullable. */
+    /** "Array bit" of {@code arrayNullability} is set iff the array itself is nullable. */
     public static final int ARRAY_NULLABLE = (1 << 0);
 
-    /** "Element bit" of |arrayNullability| is set iff the array elements are nullable. */
+    /** "Element bit" of {@code arrayNullability} is set iff the array elements are nullable. */
     public static final int ELEMENT_NULLABLE = (1 << 1);
 
     public static boolean isArrayNullable(int arrayNullability) {
@@ -59,12 +59,12 @@ public class BindingsHelper {
         return (arrayNullability & ELEMENT_NULLABLE) > 0;
     }
 
-    /** Align |size| on {@link BindingsHelper#ALIGNMENT}. */
+    /** Align {@code size} on {@link BindingsHelper#ALIGNMENT}. */
     public static int align(int size) {
         return (size + ALIGNMENT - 1) & ~(ALIGNMENT - 1);
     }
 
-    /** Align |size| on {@link BindingsHelper#ALIGNMENT}. */
+    /** Align {@code size} on {@link BindingsHelper#ALIGNMENT}. */
     public static long align(long size) {
         return (size + ALIGNMENT - 1) & ~(ALIGNMENT - 1);
     }
@@ -100,14 +100,16 @@ public class BindingsHelper {
         return res;
     }
 
-    /** Computes the size needed to represent |numElements|, aligned to |alignmentBytes|. */
+    /**
+     * Computes the size needed to represent {@code numElements}, aligned to {@code alignmentBytes}.
+     */
     public static int computeBitfieldSize(long alignmentBytes, int numElements) {
         // Math must be in long to ensure that we do not overflow.
         long alignmentBits = alignmentBytes * 8;
         return (int) (((numElements + alignmentBits - 1) / alignmentBits) * alignmentBytes);
     }
 
-    /** Returns |true| if and only if the two objects are equals, handling |null|. */
+    /** Returns {@code true} if and only if the two objects are equals, handling {@code null}. */
     public static boolean equals(Object o1, Object o2) {
         if (o1 == o2) {
             return true;
@@ -118,7 +120,7 @@ public class BindingsHelper {
         return o1.equals(o2);
     }
 
-    /** Returns the hash code of the object, handling |null|. */
+    /** Returns the hash code of the object, handling {@code null}. */
     public static int hashCode(Object o) {
         if (o == null) {
             return 0;
@@ -161,7 +163,8 @@ public class BindingsHelper {
     }
 
     /**
-     * Returns an {@link AsyncWaiter} to use with the given handle, or |null| if none if available.
+     * Returns an {@link AsyncWaiter} to use with the given handle, or {@code null} if none if
+     * available.
      */
     static @Nullable Watcher getWatcherForHandle(Handle handle) {
         if (handle.getCore() != null) {
