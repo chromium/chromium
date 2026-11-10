@@ -344,7 +344,7 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
         },
     },
 });
-// LINT.ThenChange(//components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom:PageActionId,//chrome/browser/ui/page_action/action_ids.h:kActionIds)
+// LINT.ThenChange(//components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom:PageActionId,//chrome/browser/ui/page_action/action_ids.h:kActionIds,//tools/metrics/histograms/metadata/page/histograms.xml:PageActionType)
 
 constexpr bool CheckIgnoreFlagUsage() {
   for (const auto& [action_id, properties] : kPageActionProperties) {

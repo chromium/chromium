@@ -115,11 +115,13 @@ if (!is_android) {
       "page_action_metrics_recorder_unittest.cc",
       "page_action_model_unittest.cc",
       "page_action_observer_unittest.cc",
+      "page_action_properties_provider_unittest.cc",
     ]
 
     deps = [
       ":page_action",
       ":test_support",
+      "//base/test:test_support",
       "//chrome/browser/ui:ui_features",
       "//chrome/test:test_support",
       "//components/tabs:test_support",
@@ -129,6 +131,8 @@ if (!is_android) {
       "//components/user_education/test",
       "//ui/events:test_support",
     ]
+
+    data = [ "//tools/metrics/histograms/metadata/page/histograms.xml" ]
 
     # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
     # enable the diagnostic by removing this line.

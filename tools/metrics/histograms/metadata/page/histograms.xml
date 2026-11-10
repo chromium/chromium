@@ -430,34 +430,52 @@ chromium-metrics-reviews@google.com.
   <variant name=".GoogleSearch" summary="SRP navigations"/>
 </variants>
 
+<!-- LINT.IfChange(PageActionType) -->
+
 <variants name="PageActionType">
-  <variant name="AiMode"/>
-  <variant name="BookmarksStar"/>
-  <variant name="CookieControls"/>
-  <variant name="Discounts"/>
-  <variant name="FileSystemAccess"/>
-  <variant name="Find"/>
-  <variant name="GmailOtpOptIn"/>
-  <variant name="Indigo"/>
-  <variant name="IntentPicker"/>
-  <variant name="JsOptimizations"/>
-  <variant name="LensOverlay"/>
-  <variant name="LensOverlayHomework"/>
-  <variant name="ManagePasswords"/>
-  <variant name="MandatoryReauth"/>
-  <variant name="MemorySaver"/>
-  <variant name="OptimizationGuide"/>
-  <variant name="PaymentsOfferNotification"/>
-  <variant name="PriceInsights"/>
-  <variant name="PWAInstall"/>
-  <variant name="ReadingMode"/>
-  <variant name="SaveAutofillAddress"/>
-  <variant name="SaveCard"/>
-  <variant name="Translate"/>
-  <variant name="VirtualCardEnroll"/>
-  <variant name="VirtualCardManualFeedback"/>
-  <variant name="Zoom"/>
+  <variant name="AddressAutofill" summary="Save or update address (Autofill)"/>
+  <variant name="AiMode" summary="AI Mode"/>
+  <variant name="AutofillPayment" summary="Autofill payment"/>
+  <variant name="BookmarksStar" summary="Bookmark star"/>
+  <variant name="ContextualCueing" summary="Anchored contextual cue"/>
+  <variant name="ContextualSidePanel" summary="Contextual tasks side panel"/>
+  <variant name="CookieControls" summary="Cookie controls"/>
+  <variant name="Discounts" summary="Commerce discounts"/>
+  <variant name="FakePageActionForDebug"
+      summary="Fake page action used for debugging"/>
+  <variant name="Federation" summary="Federation"/>
+  <variant name="FilledCardInformation" summary="Filled card information"/>
+  <variant name="Find" summary="Find in page"/>
+  <variant name="Glic" summary="Glic contextual cueing"/>
+  <variant name="GmailOtpOptIn" summary="Gmail OTP opt-in"/>
+  <variant name="Indigo" summary="Indigo"/>
+  <variant name="IntentPicker" summary="Intent picker"/>
+  <variant name="JsOptimizations" summary="JavaScript optimizations"/>
+  <variant name="LensOverlay" summary="Lens Overlay"/>
+  <variant name="LensOverlayHomework" summary="Lens Overlay homework"/>
+  <variant name="ManagePasswords" summary="Manage passwords"/>
+  <variant name="MandatoryReauth"
+      summary="Autofill mandatory re-authentication"/>
+  <variant name="MemorySaver" summary="Memory Saver chip"/>
+  <variant name="MultistepFilter" summary="Multistep filter"/>
+  <variant name="PaymentsChurnedUsers" summary="Payments churned users"/>
+  <variant name="PaymentsOfferNotification"
+      summary="Payments offers and rewards"/>
+  <variant name="PriceInsights" summary="Commerce price insights"/>
+  <variant name="PwaInstall" summary="PWA install"/>
+  <variant name="ReadingMode" summary="Reading mode"/>
+  <variant name="RecordReplay" summary="Record and replay"/>
+  <variant name="SavePayments" summary="Save payments (card or IBAN)"/>
+  <variant name="ShowCollaborationRecentActivity"
+      summary="Collaboration recent activity"/>
+  <variant name="ShowFileSystemAccess" summary="File System Access"/>
+  <variant name="Translate" summary="Translate"/>
+  <variant name="VirtualCardEnroll" summary="Virtual card enroll"/>
+  <variant name="WalletReminderNotice" summary="Wallet reminder notice"/>
+  <variant name="Zoom" summary="Zoom"/>
 </variants>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/page_action/page_action_properties_provider.cc:kPageActionProperties) -->
 
 <variants name="PageActionVisualState">
   <variant name="Chip"/>

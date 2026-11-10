@@ -7,8 +7,13 @@
 
 // Used for histograms, do not reorder. When adding to this enum, please also
 // modify the corresponding references in
-// tools/metrics/histograms/metadata/page/enums.xml and
-// tools/metrics/histograms/metadata/page/histograms.xml.
+// tools/metrics/histograms/metadata/page/enums.xml.
+//
+// The PageActionType variants in
+// tools/metrics/histograms/metadata/page/histograms.xml are not derived from
+// this enum. They list the PageActionProperties::histogram_name values from
+// chrome/browser/ui/page_action/page_action_properties_provider.cc, and
+// PageActionPropertiesProviderTest checks that the two match.
 //
 // LINT.IfChange(PageActionIconType)
 enum class PageActionIconType {
