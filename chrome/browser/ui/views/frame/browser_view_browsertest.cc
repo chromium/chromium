@@ -11,6 +11,7 @@
 #include "base/callback_list.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
@@ -77,10 +78,12 @@
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/tab_modal_confirm_dialog_views.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_accessibility.h"
+#include "chrome/browser/ui/views/tabs/tab/tab_close_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -135,6 +138,9 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/base_window.h"
 #include "ui/base/buildflags.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/test/clipboard_test_util.h"
+#include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -152,6 +158,8 @@
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/test/views_test_utils.h"
@@ -2563,3 +2571,187 @@ IN_PROC_BROWSER_TEST_F(BrowserViewDeferLayoutTest,
 
   popup_widget->CloseNow();
 }
+
+#if !BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, CutCopyPasteFocusedNativeViews) {
+  ui::TestClipboard::CreateForCurrentThread();
+  base::ScopedClosureRunner destroy_clipboard(
+      base::BindOnce(&ui::Clipboard::DestroyClipboardForCurrentThread));
+
+  // 1. Focusing a tab's close button and invoking Cut/Copy/Paste must not click
+  // the button or close the tab (regression test for crbug.com/582411426).
+  chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1, true);
+  ASSERT_EQ(2, browser()->GetTabStripModel()->count());
+  browser_view()->horizontal_tab_strip_for_testing()->StopAnimating();
+  views::test::RunScheduledLayout(browser_view());
+
+  browser_view()->GetWidget()->Activate();
+  views::test::WaitForWidgetActive(browser_view()->GetWidget(), true);
+  views::FocusManager* focus_manager = browser_view()->GetFocusManager();
+
+  Tab* active_tab = browser_view()->horizontal_tab_strip_for_testing()->tab_at(
+      browser()->GetTabStripModel()->active_index());
+  ASSERT_TRUE(active_tab->close_button());
+  focus_manager->SetFocusedView(active_tab->close_button());
+  ASSERT_EQ(active_tab->close_button(), focus_manager->GetFocusedView());
+  ASSERT_TRUE(active_tab->close_button()->CanHandleAccelerators());
+
+  browser_view()->Cut();
+  browser_view()->Copy();
+  browser_view()->Paste();
+  EXPECT_EQ(2, browser()->GetTabStripModel()->count());
+
+  // 2. Focusing a Button (even a default button that registers VKEY_RETURN) and
+  // invoking Cut/Copy/Paste must not trigger its click callback.
+  int button_clicks = 0;
+  auto* test_button =
+      browser_view()->AddChildView(std::make_unique<views::MdTextButton>(
+          base::BindRepeating([](int* clicks) { ++(*clicks); }, &button_clicks),
+          u"Test Button"));
+  test_button->SetIsDefault(true);
+  test_button->SizeToPreferredSize();
+  test_button->RequestFocus();
+  ASSERT_EQ(test_button, focus_manager->GetFocusedView());
+  ASSERT_TRUE(test_button->CanHandleAccelerators());
+
+  browser_view()->Cut();
+  browser_view()->Copy();
+  browser_view()->Paste();
+  EXPECT_EQ(0, button_clicks);
+
+  // 3. Focusing a selectable Label and invoking Copy must still copy its
+  // selected text even though Labels do not register Ctrl+C with FocusManager.
+  auto* selectable_label = browser_view()->AddChildView(
+      std::make_unique<views::Label>(u"selectable_label_text"));
+  ASSERT_TRUE(selectable_label->SetSelectable(true));
+  selectable_label->SizeToPreferredSize();
+  selectable_label->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  selectable_label->RequestFocus();
+  selectable_label->SelectAll();
+  ASSERT_EQ(selectable_label, focus_manager->GetFocusedView());
+  ASSERT_TRUE(focus_manager->GetFocusedView()->CanHandleAccelerators());
+
+  browser_view()->Copy();
+  EXPECT_EQ(u"selectable_label_text",
+            ui::clipboard_test_util::ReadText(
+                ui::Clipboard::GetForCurrentThread(),
+                ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr));
+
+  // 4. Focusing a Textfield (Omnibox) must still execute Cut/Copy/Paste.
+  OmniboxViewViews* omnibox_view =
+      browser_view()->GetLocationBarView()->omnibox_view();
+  omnibox_view->RequestFocus();
+  ASSERT_EQ(omnibox_view, focus_manager->GetFocusedView());
+  omnibox_view->SetUserText(u"omnibox_edit_text");
+  omnibox_view->SelectAll(false);
+
+  browser_view()->Copy();
+  EXPECT_EQ(u"omnibox_edit_text",
+            ui::clipboard_test_util::ReadText(
+                ui::Clipboard::GetForCurrentThread(),
+                ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr));
+
+  browser_view()->Cut();
+  EXPECT_EQ(u"", omnibox_view->GetText());
+
+  browser_view()->Paste();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return omnibox_view->GetText() == u"omnibox_edit_text"; }));
+
+  browser_view()->RemoveChildViewT(selectable_label);
+  browser_view()->RemoveChildViewT(test_button);
+}
+
+namespace {
+
+class TestAcceleratorWebView : public views::WebView {
+  METADATA_HEADER(TestAcceleratorWebView, views::WebView)
+
+ public:
+  explicit TestAcceleratorWebView(content::BrowserContext* browser_context)
+      : views::WebView(browser_context) {
+    SetFocusBehavior(FocusBehavior::ALWAYS);
+  }
+  bool AcceleratorPressed(const ui::Accelerator& accelerator) override {
+    accelerator_pressed_ = true;
+    return true;
+  }
+  bool accelerator_pressed() const { return accelerator_pressed_; }
+
+ private:
+  bool accelerator_pressed_ = false;
+};
+
+BEGIN_METADATA(TestAcceleratorWebView)
+END_METADATA
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, CutCopyPasteFocusedViewRouting) {
+  ui::TestClipboard::CreateForCurrentThread();
+  base::ScopedClosureRunner destroy_clipboard(
+      base::BindOnce(&ui::Clipboard::DestroyClipboardForCurrentThread));
+
+  browser_view()->GetWidget()->Activate();
+  views::test::WaitForWidgetActive(browser_view()->GetWidget(), true);
+
+  // 1. When a views::WebView is focused, CutCopyPaste should not forward
+  // raw accelerators to the WebView's AcceleratorPressed().
+  auto* test_web_view = browser_view()->AddChildView(
+      std::make_unique<TestAcceleratorWebView>(browser()->GetProfile()));
+  test_web_view->RequestFocus();
+  ASSERT_EQ(test_web_view, browser_view()->GetFocusManager()->GetFocusedView());
+
+  browser_view()->Copy();
+  EXPECT_FALSE(test_web_view->accelerator_pressed());
+
+  // 2. When a native Textfield (Omnibox) is focused, CutCopyPaste should
+  // execute the edit command directly on it.
+  OmniboxViewViews* omnibox_view =
+      browser_view()->GetLocationBarView()->omnibox_view();
+  omnibox_view->RequestFocus();
+  ASSERT_EQ(omnibox_view, browser_view()->GetFocusManager()->GetFocusedView());
+  omnibox_view->SetUserText(u"copy_test_text");
+  omnibox_view->SelectAll(false);
+
+  browser_view()->Copy();
+
+  std::u16string clipboard_text = ui::clipboard_test_util::ReadText(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr);
+  EXPECT_EQ(u"copy_test_text", clipboard_text);
+
+  // 3. When an active child widget has focus, CutCopyPaste should use the
+  // child widget's FocusManager and execute the command on its focused view.
+  auto child_widget_delegate = std::make_unique<views::WidgetDelegate>();
+  auto* child_textfield = child_widget_delegate->SetContentsView(
+      std::make_unique<views::Textfield>());
+  child_textfield->SetAccessibleName(u"Child Textfield");
+  auto child_widget = std::make_unique<views::Widget>();
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
+  params.delegate = child_widget_delegate.get();
+  params.parent = browser_view()->GetWidget()->GetNativeView();
+  child_widget->Init(std::move(params));
+
+  child_widget->Show();
+  child_widget->Activate();
+  views::test::WaitForWidgetActive(child_widget.get(), true);
+
+  child_textfield->RequestFocus();
+  ASSERT_EQ(child_textfield, child_widget->GetFocusManager()->GetFocusedView());
+  child_textfield->SetText(u"child_widget_text");
+  child_textfield->SelectAll(false);
+
+  browser_view()->Copy();
+
+  clipboard_text = ui::clipboard_test_util::ReadText(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr);
+  EXPECT_EQ(u"child_widget_text", clipboard_text);
+
+  child_widget.reset();
+  browser_view()->RemoveChildViewT(test_web_view);
+}
+#endif  // !BUILDFLAG(IS_MAC)

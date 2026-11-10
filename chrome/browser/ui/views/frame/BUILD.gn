@@ -2288,6 +2288,7 @@ source_set("browser_tests") {
     "//ui/accessibility:test_support",
     "//ui/base:data_exchange",
     "//ui/base:ozone_buildflags",
+    "//ui/base/clipboard:clipboard_test_support",
   ]
 
   if (use_ozone) {

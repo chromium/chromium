@@ -356,6 +356,7 @@
 #include "ui/views/animation/compositor_animation_runner.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/menu_button.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -3470,44 +3471,58 @@ void BrowserView::CutCopyPaste(int command_id) {
     remote_cocoa::ApplicationBridge::ForwardCutCopyPasteToNSApp(command);
   }
 #else
-  // If a WebContents is focused, call its member method.
-  //
-  // We could make WebContents register accelerators and then just use the
-  // plumbing for accelerators below to dispatch these, but it's not clear
-  // whether that would still allow keypresses of ctrl-X/C/V to be sent as
-  // key events (and not accelerators) to the WebContents so it can give the web
-  // page a chance to override them.
-  WebContents* contents = browser_->GetTabStripModel()->GetActiveWebContents();
-  if (contents) {
-    void (WebContents::*method)();
-    if (command_id == IDC_CUT) {
-      method = &content::WebContents::Cut;
-    } else if (command_id == IDC_COPY) {
-      method = &content::WebContents::Copy;
-    } else {
-      method = &content::WebContents::Paste;
-    }
-    if (DoCutCopyPasteForWebContents(contents, method)) {
-      return;
-    }
+  void (WebContents::*method)();
+  if (command_id == IDC_CUT) {
+    method = &content::WebContents::Cut;
+  } else if (command_id == IDC_COPY) {
+    method = &content::WebContents::Copy;
+  } else {
+    method = &content::WebContents::Paste;
+  }
 
-    WebContents* devtools =
-        DevToolsWindow::GetInTabWebContents(contents, nullptr);
-    if (devtools && DoCutCopyPasteForWebContents(devtools, method)) {
-      return;
+  // If a child/owned widget (such as a bubble or modal dialog) is currently
+  // active, use its FocusManager; otherwise use the browser widget's.
+  views::Widget* target_widget = GetWidget();
+  for (views::Widget* child :
+       views::Widget::GetAllOwnedWidgets(GetWidget()->GetNativeView())) {
+    if (child->IsActive()) {
+      target_widget = child;
+      break;
     }
   }
 
-  // If a native View (such as the Omnibox or FindBar) is focused, execute the
-  // accelerator directly on it rather than processing through FocusManager
-  // (which would re-enter BrowserView and ActionItems).
-  views::View* focused_view = GetFocusManager()->GetFocusedView();
+  views::FocusManager* focus_manager = target_widget->GetFocusManager();
+  views::View* focused_view =
+      focus_manager ? focus_manager->GetFocusedView() : nullptr;
+  if (!focused_view && focus_manager) {
+    focused_view = focus_manager->GetStoredFocusView();
+  }
   if (focused_view) {
-    ui::Accelerator accelerator;
-    if (GetAccelerator(command_id, &accelerator) &&
-        focused_view->CanHandleAccelerators() &&
-        focused_view->AcceleratorPressed(accelerator)) {
-      return;
+    // If a WebContents (such as the active tab, docked DevTools, a side panel,
+    // or a WebUI dialog) is focused, call its member method directly rather
+    // than forwarding an accelerator to the hosting WebView.
+    for (views::View* view = focused_view; view; view = view->parent()) {
+      if (auto* web_view = views::AsViewClass<views::WebView>(view)) {
+        if (content::WebContents* web_contents = web_view->web_contents()) {
+          DoCutCopyPasteForWebContents(web_contents, method);
+        }
+        return;
+      }
+    }
+
+    // If a native Textfield (such as the Omnibox or FindBar) or selectable
+    // Label is focused, execute the accelerator directly on it rather than
+    // processing through FocusManager (which would re-enter BrowserView and
+    // ActionItems). Other non-text Views do not register Cut/Copy/Paste
+    // accelerators and may misinterpret raw AcceleratorPressed() calls.
+    if (views::IsViewClass<views::Textfield>(focused_view) ||
+        views::IsViewClass<views::Label>(focused_view)) {
+      ui::Accelerator accelerator;
+      if (GetAccelerator(command_id, &accelerator) &&
+          focused_view->CanHandleAccelerators() &&
+          focused_view->AcceleratorPressed(accelerator)) {
+        return;
+      }
     }
   }
 #endif  // BUILDFLAG(IS_MAC)
