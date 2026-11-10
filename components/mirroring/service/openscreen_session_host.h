@@ -272,16 +272,25 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
     // The session is initializing, and can't be used yet.
     kInitializing,
 
-    // A mirroring streaming session is starting or started.
+    // A mirroring streaming session is starting or active.
     kMirroring,
 
-    // A remoting streaming session is starting or started.
+    // A remoting streaming session is negotiated and active.
     kRemoting,
 
     // The session is stopped due to a user request or a fatal error.
     kStopped,
   };
   State state_ = State::kInitializing;
+
+  // Tracks the mode of an in-flight OFFER until OnNegotiated() or OnError()
+  // completes.
+  enum class PendingOfferMode {
+    kNone,
+    kMirroring,
+    kRemoting,
+  };
+  PendingOfferMode pending_offer_mode_ = PendingOfferMode::kNone;
 
   // Informed of changes to session state.
   mojo::Remote<mojom::SessionObserver> observer_;
