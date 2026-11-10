@@ -189,10 +189,17 @@ export class SitePermissionsEditPermissionsDialogElement extends
 
     const extensionSiteAccessData: ExtensionSiteAccessInfo[] = [];
     matchingExtensionsInfo.forEach(({id, siteAccess, canRequestAllSites}) => {
-      assert(this.extensionsIdToInfo_.has(id));
-      const {name, iconUrl} = this.extensionsIdToInfo_.get(id)!;
-      const addedByPolicy = getItemSource(this.extensionsIdToInfo_.get(id)!) ===
-          SourceType.POLICY;
+      // It is possible for matching extensions to contain an extension not
+      // present in `extensionsIdToInfo_` (for example, if it should not be
+      // displayed in extension settings or was removed while the request was
+      // in flight). Ignore it in that case.
+      const extension = this.extensionsIdToInfo_.get(id);
+      if (!extension) {
+        return;
+      }
+
+      const {name, iconUrl} = extension;
+      const addedByPolicy = getItemSource(extension) === SourceType.POLICY;
       extensionSiteAccessData.push(
           {id, name, iconUrl, siteAccess, addedByPolicy, canRequestAllSites});
 

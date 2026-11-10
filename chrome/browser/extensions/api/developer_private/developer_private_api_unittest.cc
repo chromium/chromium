@@ -2956,6 +2956,21 @@ TEST_F(DeveloperPrivateApiUnitTest,
               testing::UnorderedElementsAre(MatchMatchingExtensionInfo(
                   extension_1->id(), developer::HostAccess::kOnSpecificSites,
                   /*can_request_all_sites=*/false)));
+
+  // An extension that should not be displayed in extension settings (such as a
+  // component extension) should not be returned.
+  scoped_refptr<const Extension> component_extension =
+      ExtensionBuilder("component")
+          .SetLocation(mojom::ManifestLocation::kComponent)
+          .AddHostPermission("*://mail.google.com/")
+          .Build();
+  AddExtensionAndGrantPermissions(profile(), registrar(), *component_extension);
+
+  GetMatchingExtensionsForSite(profile(), "http://mail.google.com/", &infos);
+  EXPECT_THAT(infos,
+              testing::UnorderedElementsAre(MatchMatchingExtensionInfo(
+                  extension_1->id(), developer::HostAccess::kOnSpecificSites,
+                  /*can_request_all_sites=*/false)));
 }
 
 // Test that the host access returned by GetMatchingExtensionsForSite reflects
