@@ -404,6 +404,64 @@ TEST_F(VerticalTabStripTopContainerTest,
   EXPECT_EQ(collapse_it->bounds.x(), kCaptionButtonWidth);
 }
 
+TEST_F(
+    VerticalTabStripTopContainerTest,
+    CollapsingFromWrappedWidthWithOrganizerPanelKeepsButtonsBelowCaptionButtons) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(organizer_panel::kOrganizerPanel);
+  ResetTopContainer();
+
+  constexpr int kCaptionButtonWidth = 80;
+  constexpr int kToolbarHeight = 46;
+  constexpr int kWrappedUncollapsedWidth = 140;
+  const int horizontal_padding =
+      GetLayoutConstant(LayoutConstant::kVerticalTabStripHorizontalPadding);
+  const int wrapped_container_width =
+      kWrappedUncollapsedWidth - 2 * horizontal_padding;
+  const int collapsed_container_width =
+      tabs::kVerticalTabStripCollapsedWidth - 2 * horizontal_padding;
+
+  top_container()->SetCaptionButtonWidthForLayout(kCaptionButtonWidth);
+  top_container()->SetToolbarHeightForLayout(kToolbarHeight);
+  controller()->SetUncollapsedWidth(kWrappedUncollapsedWidth);
+  controller()->SetExpandOnHoverEnabled(true);
+  ASSERT_TRUE(top_container()->WillWrapDueToOverflow(wrapped_container_width));
+
+  LayoutView(wrapped_container_width);
+  const gfx::Rect expanded_collapse_bounds = collapse_button()->bounds();
+  const int expanded_container_height = top_container()->height();
+  EXPECT_EQ(expanded_collapse_bounds.x(), 0);
+  EXPECT_GT(expanded_collapse_bounds.y(), kToolbarHeight / 2);
+
+  // Starting collapse from a wrapped width should keep the collapse button
+  // wrapped below the caption buttons rather than unwrapping onto their row.
+  test_delegate().SetIsCollapsing(true);
+  top_container()->InvalidateLayout();
+  LayoutView(wrapped_container_width);
+  EXPECT_EQ(collapse_button()->bounds(), expanded_collapse_bounds);
+  EXPECT_EQ(top_container()->height(), expanded_container_height);
+  EXPECT_FALSE(combo_button()->GetVisible());
+
+  // As toolbar_height approaches and reaches 0 -> kCollapsed, neither the
+  // collapse button nor container height should jump.
+  top_container()->SetToolbarHeightForLayout(1);
+  LayoutView(collapsed_container_width);
+  const gfx::Rect near_end_bounds = collapse_button()->bounds();
+  const int near_end_height = top_container()->height();
+
+  top_container()->SetToolbarHeightForLayout(0);
+  LayoutView(collapsed_container_width);
+  EXPECT_EQ(collapse_button()->bounds(), near_end_bounds);
+  EXPECT_EQ(top_container()->height(), near_end_height);
+
+  test_delegate().SetIsCollapsing(false);
+  controller()->RequestCollapse(true);
+  top_container()->InvalidateLayout();
+  LayoutView(collapsed_container_width);
+  EXPECT_EQ(collapse_button()->bounds(), near_end_bounds);
+  EXPECT_EQ(top_container()->height(), near_end_height);
+}
+
 TEST_F(VerticalTabStripTopContainerTest,
        ComboButtonUnclippedAfterContainerShown) {
   top_container()->SetSize(gfx::Size(0, 0));

@@ -227,11 +227,18 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
     const int baseline_height = GetBaselineMinHeight();
     host_size.SetToMax(gfx::Size(0, baseline_height));
 
+    const int horizontal_padding =
+        GetLayoutConstant(LayoutConstant::kVerticalTabStripHorizontalPadding);
+
     // If there is not enough space for the buttons on a single line with
     // caption buttons, shift them below.
-    const bool wrapped_due_to_overflow = !keep_horizontal_layout &&
-                                         size_bounds.width().is_bounded() &&
-                                         WillWrapDueToOverflow(available_width);
+    const bool wrapped_due_to_overflow =
+        size_bounds.width().is_bounded() &&
+        (keep_horizontal_layout
+             ? (is_collapsing && state_controller_ &&
+                WillWrapDueToOverflow(state_controller_->GetUncollapsedWidth() -
+                                      2 * horizontal_padding))
+             : WillWrapDueToOverflow(available_width));
 
     // In collapsed mode with expand on hover, the vertical tab strip is
     // positioned below the caption buttons exclusion zone, so the collapse
@@ -249,13 +256,16 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
     // line as the caption buttons, then we lay them out with collapse_button_
     // anchored to the left. tab_search_ and tab_groups_ are on the right.
     if (wrapped_due_to_overflow) {
-      host_size.Enlarge(0,
-                        GetLayoutConstant(LayoutConstant::kBookmarkBarHeight));
-      y_baseline = toolbar_height_ +
-                   (GetLayoutConstant(LayoutConstant::kBookmarkBarHeight) -
-                    GetLayoutConstant(
-                        LayoutConstant::kBookmarkBarButtonImageLabelPadding)) /
-                       2;
+      const int bookmark_bar_height =
+          GetLayoutConstant(LayoutConstant::kBookmarkBarHeight);
+      host_size.SetToMax(gfx::Size(0, toolbar_height_ + bookmark_bar_height));
+      y_baseline = std::max(
+          y_baseline,
+          toolbar_height_ +
+              (bookmark_bar_height -
+               GetLayoutConstant(
+                   LayoutConstant::kBookmarkBarButtonImageLabelPadding)) /
+                  2);
     }
 
     int current_y = 0;
@@ -272,8 +282,6 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
               LayoutConstant::kVerticalTabStripCollapsedVerticalPadding);
     }
 
-    const int horizontal_padding =
-        GetLayoutConstant(LayoutConstant::kVerticalTabStripHorizontalPadding);
     const int collapsed_width =
         tabs::kVerticalTabStripCollapsedWidth - 2 * horizontal_padding;
     const int expected_uncollapsed_width =
@@ -482,9 +490,7 @@ int VerticalTabStripTopContainer::GetBaselineMinHeight() const {
         std::max(min_height, collapse_button_->GetPreferredSize().height());
   }
 
-  if (toolbar_height_ == 0) {
-    min_height += GetLayoutInsets(TOOLBAR_BUTTON).height();
-  }
+  min_height += GetLayoutInsets(TOOLBAR_BUTTON).height();
 
   return std::max(toolbar_height_, min_height);
 }
