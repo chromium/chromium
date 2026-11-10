@@ -73,6 +73,7 @@
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider_manager.h"
@@ -1279,6 +1280,93 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
                            check_find_is_menu_open_script)
                .ExtractBool() == false;
   }));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
+                       ContentSettingAndPageActionIconTouchPadding) {
+  WaitForInitialWebUIToolbar(browser());
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  auto* content_settings =
+      content_settings::PageSpecificContentSettings::GetForFrame(
+          web_contents->GetPrimaryMainFrame());
+  content_settings->OnContentBlocked(ContentSettingsType::IMAGES);
+  content_settings->OnContentBlocked(ContentSettingsType::JAVASCRIPT);
+
+  tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents);
+  auto* page_action_controller = page_actions::PageActionController::From(tab);
+  for (actions::ActionId action_id :
+       {kActionShowTranslate, kActionBookmarkThisTab}) {
+    actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
+        action_id, BrowserActions::From(browser())->root_action_item());
+    ASSERT_TRUE(action_item);
+    action_item->SetVisible(true);
+    action_item->SetEnabled(true);
+    if (action_item->GetImage().IsEmpty()) {
+      action_item->SetImage(
+          ui::ImageModel::FromVectorIcon(vector_icons::kFeedbackIcon));
+    }
+    page_action_controller->Show(action_id);
+  }
+  GetLocationBar()->Update(web_contents);
+
+  auto verify_icon_geometry = [&](int expected_width, int expected_height,
+                                  int expected_gap) {
+    const std::string check_geometry_script = content::JsReplace(
+        R"(
+        (() => {
+          const locationBar = document.querySelector('toolbar-app')
+              ?.shadowRoot?.querySelector('location-bar');
+          if (!locationBar) {
+            return false;
+          }
+          const csIcons = Array.from(
+              locationBar.shadowRoot?.querySelector('content-settings-icons')
+                  ?.shadowRoot?.querySelectorAll('content-setting-icon') || []);
+          const paIcons = Array.from(
+              locationBar.shadowRoot?.querySelector('page-action-icons')
+                  ?.shadowRoot?.querySelectorAll('page-action-icon') || [])
+              .filter(icon => !icon.hasAttribute('is-aim') &&
+                              !icon.$$.button.hasAttribute('has-label'));
+          if (csIcons.length < 2 || paIcons.length < 2) {
+            return false;
+          }
+          const csRect0 = csIcons[0].getBoundingClientRect();
+          const csRect1 = csIcons[1].getBoundingClientRect();
+          const paRect0 = paIcons[0].getBoundingClientRect();
+          const paRect1 = paIcons[1].getBoundingClientRect();
+          return Math.round(csRect0.width) === $1 &&
+                 Math.round(csRect0.height) === $2 &&
+                 Math.round(csRect1.width) === $1 &&
+                 Math.round(csRect1.height) === $2 &&
+                 Math.round(csRect1.left - csRect0.right) === $3 &&
+                 Math.round(paRect0.width) === $1 &&
+                 Math.round(paRect0.height) === $2 &&
+                 Math.round(paRect1.width) === $1 &&
+                 Math.round(paRect1.height) === $2 &&
+                 Math.round(paRect1.left - paRect0.right) === $3;
+        })()
+        )",
+        expected_width, expected_height, expected_gap);
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return content::EvalJs(GetWebUIToolbarWebContents(),
+                             check_geometry_script)
+          .ExtractBool();
+    }));
+  };
+
+  verify_icon_geometry(/*expected_width=*/24, /*expected_height=*/24,
+                       /*expected_gap=*/8);
+
+  {
+    ui::TouchUiController::TouchUiScoperForTesting touch_ui_scoper(true);
+    verify_icon_geometry(/*expected_width=*/40, /*expected_height=*/30,
+                         /*expected_gap=*/8);
+  }
+
+  verify_icon_geometry(/*expected_width=*/24, /*expected_height=*/24,
+                       /*expected_gap=*/8);
 }
 
 }  // namespace

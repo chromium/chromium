@@ -45,6 +45,12 @@
        var(--toolbar-chip-icon-size)) / 2);
 
 
+  --toolbar-chip-collapsed-padding-start: calc(
+      var(--location-bar-page-action-icon-padding-start) +
+      var(--dynamic-base-padding));
+  --toolbar-chip-collapsed-padding-end: calc(
+      var(--location-bar-page-action-icon-padding-end) +
+      var(--dynamic-base-padding));
   --toolbar-chip-padding-start: calc(
       var(--location-bar-page-action-icon-padding-start) +
       var(--dynamic-base-padding));

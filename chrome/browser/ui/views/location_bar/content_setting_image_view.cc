@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/content_setting_bubble_contents.h"
@@ -33,6 +34,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/property_effects.h"
@@ -127,6 +129,10 @@ ContentSettingImageView::ContentSettingImageView(
       accessible_name, accessible_name.empty()
                            ? ax::mojom::NameFrom::kAttributeExplicitlyEmpty
                            : ax::mojom::NameFrom::kAttribute);
+
+  // Base class constructor calls UpdateBorder() non-polymorphically. Call it
+  // here so the overridden border insets take effect immediately.
+  UpdateBorder();
 
   // The chrome refresh version of this view has a ripple effect which is
   // configured by the background.
@@ -276,6 +282,19 @@ bool ContentSettingImageView::OnKeyPressed(const ui::KeyEvent& event) {
 void ContentSettingImageView::OnThemeChanged() {
   UpdateImage();
   IconLabelBubbleView::OnThemeChanged();
+}
+
+void ContentSettingImageView::SetBorder(std::unique_ptr<views::Border> b) {
+  has_custom_border_ = (b != nullptr);
+  IconLabelBubbleView::SetBorder(std::move(b));
+}
+
+void ContentSettingImageView::UpdateBorder() {
+  if (has_custom_border_) {
+    return;
+  }
+  IconLabelBubbleView::SetBorder(views::CreateEmptyBorder(
+      GetLayoutInsets(LOCATION_BAR_PAGE_ACTION_ICON_PADDING)));
 }
 
 bool ContentSettingImageView::ShouldShowSeparator() const {

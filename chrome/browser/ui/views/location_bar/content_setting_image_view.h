@@ -69,6 +69,8 @@ class ContentSettingImageView : public IconLabelBubbleView,
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   void OnThemeChanged() override;
+  void SetBorder(std::unique_ptr<views::Border> b) override;
+  void UpdateBorder() override;
   bool ShouldShowSeparator() const override;
   bool ShowBubble(const ui::Event& event) override;
   bool IsBubbleShowing() const override;
@@ -151,6 +153,11 @@ class ContentSettingImageView : public IconLabelBubbleView,
   bool keep_label_expanded_ = false;
   // The WebContents for which the label is kept expanded.
   base::WeakPtr<content::WebContents> label_expanded_web_contents_;
+
+  // True if a custom border was set from outside (e.g. by PiP frame views or
+  // web app frame titlebars). When true, `UpdateBorder()` does not overwrite
+  // it.
+  bool has_custom_border_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_CONTENT_SETTING_IMAGE_VIEW_H_

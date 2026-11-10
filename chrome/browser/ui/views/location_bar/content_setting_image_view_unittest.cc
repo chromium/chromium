@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_view_delegate.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
@@ -29,11 +30,14 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_variant.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/font_list.h"
+#include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
@@ -305,6 +309,69 @@ TEST_F(ContentSettingImageViewTest, AutoCloseBubbleWhenHidden) {
   view->Update();
   bubble_destroyed_waiter.Wait();
   EXPECT_FALSE(view->IsBubbleShowing());
+}
+
+TEST_F(ContentSettingImageViewTest, PaddingIncreasesInTouchMode) {
+  auto [view, model] = AddContentSettingImageView();
+  model->set_visible(true);
+  view->Update();
+  ASSERT_TRUE(view->GetVisible());
+  ASSERT_FALSE(view->ShouldShowLabel());
+
+  const gfx::Insets non_touch_insets =
+      GetLayoutInsets(LOCATION_BAR_PAGE_ACTION_ICON_PADDING);
+  const gfx::Size expected_non_touch_size(20 + non_touch_insets.width(),
+                                          20 + non_touch_insets.height());
+  EXPECT_EQ(view->GetInsets(), non_touch_insets);
+  EXPECT_EQ(view->GetPreferredSize(), expected_non_touch_size);
+  EXPECT_EQ(view->GetMinimumSize(), expected_non_touch_size);
+
+  {
+    ui::TouchUiController::TouchUiScoperForTesting touch_ui_scoper(true);
+    const gfx::Insets touch_insets =
+        GetLayoutInsets(LOCATION_BAR_PAGE_ACTION_ICON_PADDING);
+    const gfx::Size expected_touch_size(20 + touch_insets.width(),
+                                        20 + touch_insets.height());
+    EXPECT_EQ(view->GetInsets(), touch_insets);
+    EXPECT_EQ(view->GetPreferredSize(), expected_touch_size);
+    EXPECT_EQ(view->GetMinimumSize(), expected_touch_size);
+
+    // Also verify a newly constructed view in touch mode initializes its
+    // border insets properly.
+    auto [touch_view, touch_model] = AddContentSettingImageView();
+    touch_model->set_visible(true);
+    touch_view->Update();
+    EXPECT_EQ(touch_view->GetInsets(), touch_insets);
+    EXPECT_EQ(touch_view->GetPreferredSize(), expected_touch_size);
+    EXPECT_EQ(touch_view->GetMinimumSize(), expected_touch_size);
+  }
+
+  EXPECT_EQ(view->GetInsets(), non_touch_insets);
+  EXPECT_EQ(view->GetPreferredSize(), expected_non_touch_size);
+  EXPECT_EQ(view->GetMinimumSize(), expected_non_touch_size);
+}
+
+TEST_F(ContentSettingImageViewTest, CustomBorderNotOverwritten) {
+  auto [view, model] = AddContentSettingImageView();
+  model->set_visible(true);
+  view->Update();
+
+  // Non-location-bar hosts (e.g. PiP frames and web app titlebars) set a fixed
+  // custom border.
+  constexpr gfx::Insets kCustomInsets(4);
+  view->SetBorder(views::CreateEmptyBorder(kCustomInsets));
+  EXPECT_EQ(view->GetInsets(), kCustomInsets);
+
+  // Calling UpdateBorder() explicitly or toggling touch mode must not overwrite
+  // the custom border.
+  view->UpdateBorder();
+  EXPECT_EQ(view->GetInsets(), kCustomInsets);
+
+  {
+    ui::TouchUiController::TouchUiScoperForTesting touch_ui_scoper(true);
+    view->UpdateBorder();
+    EXPECT_EQ(view->GetInsets(), kCustomInsets);
+  }
 }
 
 }  // namespace

@@ -33,6 +33,8 @@
   --toolbar-chip-icon-size: var(--toolbar-button-icon-size);
   --toolbar-chip-icon-label-gap: 0px;
   --toolbar-chip-border-radius: calc(var(--toolbar-chip-height) / 2);
+  --toolbar-chip-collapsed-padding-start: 0px;
+  --toolbar-chip-collapsed-padding-end: 0px;
   --toolbar-chip-padding-start: 0px;
   --toolbar-chip-padding-end: 0px;
 
@@ -70,7 +72,9 @@
   justify-content: center;
   min-width: var(--toolbar-chip-height);
   outline: none;
-  padding: 0;
+  padding-block: 0;
+  padding-inline-end: var(--toolbar-chip-collapsed-padding-end);
+  padding-inline-start: var(--toolbar-chip-collapsed-padding-start);
   position: relative;
   user-select: none; /* Disables text selection on double-click/drag */
   width: 100%;

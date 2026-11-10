@@ -37,12 +37,18 @@
       var(--location-bar-page-action-icon-padding-bottom));
   --toolbar-chip-icon-size: var(--location-bar-trailing-icon-size);
   --toolbar-chip-icon-label-gap: var(--location-bar-child-internal-spacing);
-  --toolbar-chip-padding-start: calc(
-      var(--location-bar-page-action-icon-padding-start) +
-      var(--location-bar-icon-interior-padding-start));
-  --toolbar-chip-padding-end: calc(
-      var(--location-bar-page-action-icon-padding-end) +
-      var(--location-bar-icon-interior-padding-end));
+  --toolbar-chip-collapsed-padding-start:
+      var(--location-bar-page-action-icon-padding-start);
+  --toolbar-chip-collapsed-padding-end:
+      var(--location-bar-page-action-icon-padding-end);
+  --toolbar-chip-padding-start:
+      var(--location-bar-page-action-icon-padding-start);
+  --toolbar-chip-padding-end:
+      var(--location-bar-page-action-icon-padding-end);
+  /* Optical alignment: in C++ Views IconLabelBubbleView, ContentSettingImageView
+   * uses empty border insets without extra label-side rounding cushion, so
+   * disable toolbar-chip-button's generic H/4 cushion. */
+  --toolbar-chip-label-side-spacing: 0px;
 }
 
 #icon {
