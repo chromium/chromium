@@ -644,5 +644,61 @@ suite('CrLazyListTest', () => {
     assertEquals(
         viewSize / items[0]!.height, lazyList.querySelectorAll('.item').length,
         'Number of items created should reflect the height of the first item.');
+    assertEquals(
+        `${items[0]!.height}px`,
+        lazyList.style.getPropertyValue('--list-item-size'));
   });
+
+  test(
+      'Estimates height and updates --list-item-size in chunking mode',
+      async () => {
+        const numItems = 6 * SAMPLE_HEIGHT_VIEWPORT_ITEM_COUNT;
+        await setupTest(getTestItems(numItems), /* scrollOffset = */ 0, 4);
+        assertEquals(SAMPLE_HEIGHT_VIEWPORT_ITEM_COUNT, queryItems().length);
+        assertEquals(
+            `${SAMPLE_ITEM_HEIGHT}px`,
+            lazyList.style.getPropertyValue('--list-item-size'));
+        assertEquals(
+            `${numItems * SAMPLE_ITEM_HEIGHT}px`,
+            lazyList.$.container.style.height);
+
+        // Scroll down two viewports so the initial chunks are offscreen.
+        let listFilled = eventToPromise('viewport-filled', testApp);
+        testApp.scrollTop = 2 * SAMPLE_AVAIL_HEIGHT;
+        await listFilled;
+        await microtasksFinished();
+        assertEquals(
+            3 * SAMPLE_HEIGHT_VIEWPORT_ITEM_COUNT, queryItems().length);
+        assertEquals(
+            `${SAMPLE_ITEM_HEIGHT}px`,
+            lazyList.style.getPropertyValue('--list-item-size'));
+        assertEquals(
+            `${numItems * SAMPLE_ITEM_HEIGHT}px`,
+            lazyList.$.container.style.height);
+
+        // Resize the container while scrolled down so earlier chunks are
+        // offscreen, and verify that chunk offsets, --list-item-size, and
+        // container height remain accurate.
+        listFilled = eventToPromise('viewport-filled', lazyList);
+        testApp.style.maxHeight = `${2 * SAMPLE_AVAIL_HEIGHT}px`;
+        testApp.style.height = `${2 * SAMPLE_AVAIL_HEIGHT}px`;
+        await listFilled;
+        await microtasksFinished();
+
+        const firstChunk = lazyList.querySelector<HTMLElement>('#chunk-0');
+        assertTrue(!!firstChunk);
+        const lastChunk = lazyList.querySelector<HTMLElement>('#chunk-5');
+        assertTrue(!!lastChunk);
+        assertEquals(
+            5 * 4 * SAMPLE_ITEM_HEIGHT,
+            lastChunk.offsetTop - firstChunk.offsetTop);
+        assertEquals(
+            4 * SAMPLE_HEIGHT_VIEWPORT_ITEM_COUNT, queryItems().length);
+        assertEquals(
+            `${SAMPLE_ITEM_HEIGHT}px`,
+            lazyList.style.getPropertyValue('--list-item-size'));
+        assertEquals(
+            `${numItems * SAMPLE_ITEM_HEIGHT}px`,
+            lazyList.$.container.style.height);
+      });
 });

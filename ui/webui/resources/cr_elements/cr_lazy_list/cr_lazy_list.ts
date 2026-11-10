@@ -155,7 +155,11 @@ export class CrLazyListElement<T> extends CrLitElement {
     }
 
     if (changedProperties.has('itemSize')) {
-      this.style.setProperty('--list-item-size', `${this.itemSize}px`);
+      if (!this.itemSize) {
+        this.style.removeProperty('--list-item-size');
+      } else {
+        this.style.setProperty('--list-item-size', `${this.itemSize}px`);
+      }
     }
 
     if (changedProperties.has('chunkSize')) {
@@ -330,6 +334,13 @@ export class CrLazyListElement<T> extends CrLitElement {
       return false;
     }
 
+    if (!this.itemSize) {
+      // Update --list-item-size before rendering additional items so newly
+      // created content-visibility: auto elements or chunks use this estimate
+      // instead of the 100px CSS fallback prior to their first paint.
+      this.style.setProperty('--list-item-size', `${itemHeight}px`);
+    }
+
     const desiredDomItemCount =
         Math.min(Math.ceil(height / itemHeight), this.items.length);
     if (desiredDomItemCount > this.numItemsDisplayed_) {
@@ -408,9 +419,12 @@ export class CrLazyListElement<T> extends CrLitElement {
     // Await 1 cycle to ensure any child Lit elements have time to finish
     // rendering, or the height estimated below will be incorrect.
     await new Promise(resolve => setTimeout(resolve, 0));
-    const estScrollHeight = this.items.length > 0 ?
-        this.items.length * this.domItemAverageHeight_() :
-        0;
+    const averageHeight =
+        this.items.length > 0 ? this.domItemAverageHeight_() : 0;
+    if (averageHeight > 0 && !this.itemSize) {
+      this.style.setProperty('--list-item-size', `${averageHeight}px`);
+    }
+    const estScrollHeight = this.items.length * averageHeight;
     this.$.container.style.height = estScrollHeight + 'px';
   }
 
