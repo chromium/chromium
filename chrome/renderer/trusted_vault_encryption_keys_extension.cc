@@ -4,11 +4,13 @@
 
 #include "chrome/renderer/trusted_vault_encryption_keys_extension.h"
 
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/buildflag.h"
@@ -17,9 +19,9 @@
 #include "components/trusted_vault/trusted_vault_histograms.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "content/public/common/isolated_world_ids.h"
-#include "content/public/renderer/chrome_object_extensions_utils.h"
 #include "content/public/renderer/render_frame.h"
 #include "gin/arguments.h"
+#include "gin/converter.h"
 #include "gin/function_template.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -28,7 +30,9 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "v8/include/v8-array-buffer.h"
 #include "v8/include/v8-context.h"
+#include "v8/include/v8-exception.h"
 #include "v8/include/v8-function.h"
+#include "v8/include/v8-isolate.h"
 #include "v8/include/v8-object.h"
 #include "v8/include/v8-primitive.h"
 
@@ -213,6 +217,79 @@ void RecordCallToAddTrustedSyncEncryptionRecoveryMethodToUma(ValidArgs args) {
       args == ValidArgs::kValidArgs);
 }
 
+// Similar to content::GetOrCreateChromeObject(), but inspects the own property
+// descriptor on the global object and uses CreateDataProperty() rather than
+// ordinary [[Get]]/[[Set]]. This avoids invoking page-defined accessors, Proxy
+// traps, or Blink's Window named-property interceptor (e.g. a child frame or
+// DOM element named "chrome"), and tolerates failure instead of CHECK-crashing.
+v8::Local<v8::Object> GetOrCreateChromeObjectWithoutRunningScript(
+    v8::Isolate* isolate,
+    v8::Local<v8::Context> context) {
+  v8::Local<v8::Object> global = context->Global();
+  v8::Local<v8::String> chrome_string = gin::StringToSymbol(isolate, "chrome");
+
+  v8::Local<v8::Value> descriptor_value;
+  if (!global->GetOwnPropertyDescriptor(context, chrome_string)
+           .ToLocal(&descriptor_value)) {
+    return v8::Local<v8::Object>();
+  }
+
+  v8::Local<v8::Value> chrome_value;
+  if (descriptor_value->IsUndefined()) {
+    chrome_value = v8::Undefined(isolate);
+  } else if (descriptor_value->IsObject()) {
+    v8::Local<v8::Object> descriptor = descriptor_value.As<v8::Object>();
+    v8::Local<v8::String> value_string = gin::StringToSymbol(isolate, "value");
+    // Only inspect the property value if this is a data descriptor. Accessor
+    // descriptors (with getter/setter) do not have a "value" property.
+    if (!descriptor->HasRealNamedProperty(context, value_string)
+             .FromMaybe(false) ||
+        !descriptor->Get(context, value_string).ToLocal(&chrome_value)) {
+      return v8::Local<v8::Object>();
+    }
+  } else {
+    return v8::Local<v8::Object>();
+  }
+
+  if (chrome_value->IsUndefined()) {
+    v8::Local<v8::Object> chrome = v8::Object::New(isolate);
+    if (!global->CreateDataProperty(context, chrome_string, chrome)
+             .FromMaybe(false)) {
+      return v8::Local<v8::Object>();
+    }
+    return chrome;
+  }
+
+  if (chrome_value->IsObject() && !chrome_value->IsProxy()) {
+    v8::Local<v8::Object> chrome = chrome_value.As<v8::Object>();
+    v8::Local<v8::Context> creation_context;
+    if (chrome != global && !chrome->HasNamedLookupInterceptor() &&
+        chrome->GetCreationContext(isolate).ToLocal(&creation_context) &&
+        creation_context == context) {
+      return chrome;
+    }
+  }
+
+  return v8::Local<v8::Object>();
+}
+
+bool InstallFunction(v8::Isolate* isolate,
+                     v8::Local<v8::Context> context,
+                     v8::Local<v8::Object> chrome,
+                     std::string_view name,
+                     base::RepeatingCallback<void(gin::Arguments*)> callback) {
+  v8::Local<v8::Function> function;
+  if (!gin::CreateFunctionTemplate(isolate, std::move(callback))
+           ->GetFunction(context)
+           .ToLocal(&function)) {
+    return false;
+  }
+  return chrome
+      ->CreateDataProperty(context, gin::StringToSymbol(isolate, name),
+                           function)
+      .FromMaybe(false);
+}
+
 }  // namespace
 
 // static
@@ -256,8 +333,25 @@ void TrustedVaultEncryptionKeysExtension::Install() {
 
   v8::Context::Scope context_scope(context);
 
+  // This runs from RenderFrameObserver::DidCreateScriptContext(), while the
+  // frame's window proxy is still being initialized. Author script must not
+  // run here: property operations below could otherwise invoke page-defined
+  // accessors or traps synchronously, which can detach the frame and destroy
+  // `this` while `Install()` is still on the stack (use-after-free). Make V8
+  // throw instead of running script, never CHECK on property operations, and
+  // obtain `weak_this` before any V8 property operation.
+  v8::Isolate::DisallowJavascriptExecutionScope no_script(
+      isolate, v8::Isolate::DisallowJavascriptExecutionScope::THROW_ON_FAILURE);
+  v8::TryCatch try_catch(isolate);
+
+  const base::WeakPtr<TrustedVaultEncryptionKeysExtension> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
+
   v8::Local<v8::Object> chrome =
-      content::GetOrCreateChromeObject(isolate, context);
+      GetOrCreateChromeObjectWithoutRunningScript(isolate, context);
+  if (chrome.IsEmpty()) {
+    return;
+  }
 
   // On Android, there is no existing plumbing for setSyncEncryptionKeys() and
   // setClientEncryptionKeys(), so let's not expose the Javascript function as
@@ -265,42 +359,25 @@ void TrustedVaultEncryptionKeysExtension::Install() {
   // because there is no underlying Android API to invoke, given that sign in
   // and reauth flows are handled outside the browser.
 #if !BUILDFLAG(IS_ANDROID)
-  chrome
-      ->Set(context, gin::StringToSymbol(isolate, "setSyncEncryptionKeys"),
-            gin::CreateFunctionTemplate(
-                isolate,
-                base::BindRepeating(
-                    &TrustedVaultEncryptionKeysExtension::SetSyncEncryptionKeys,
-                    weak_ptr_factory_.GetWeakPtr()))
-                ->GetFunction(context)
-                .ToLocalChecked())
-      .Check();
-
-  chrome
-      ->Set(
-          context, gin::StringToSymbol(isolate, "setClientEncryptionKeys"),
-          gin::CreateFunctionTemplate(
-              isolate,
-              base::BindRepeating(
-                  &TrustedVaultEncryptionKeysExtension::SetClientEncryptionKeys,
-                  weak_ptr_factory_.GetWeakPtr()))
-              ->GetFunction(context)
-              .ToLocalChecked())
-      .Check();
+  if (!InstallFunction(
+          isolate, context, chrome, "setSyncEncryptionKeys",
+          base::BindRepeating(
+              &TrustedVaultEncryptionKeysExtension::SetSyncEncryptionKeys,
+              weak_this)) ||
+      !InstallFunction(
+          isolate, context, chrome, "setClientEncryptionKeys",
+          base::BindRepeating(
+              &TrustedVaultEncryptionKeysExtension::SetClientEncryptionKeys,
+              weak_this))) {
+    return;
+  }
 #endif
 
-  chrome
-      ->Set(context,
-            gin::StringToSymbol(isolate,
-                                "addTrustedSyncEncryptionRecoveryMethod"),
-            gin::CreateFunctionTemplate(
-                isolate,
-                base::BindRepeating(&TrustedVaultEncryptionKeysExtension::
-                                        AddTrustedSyncEncryptionRecoveryMethod,
-                                    weak_ptr_factory_.GetWeakPtr()))
-                ->GetFunction(context)
-                .ToLocalChecked())
-      .Check();
+  InstallFunction(
+      isolate, context, chrome, "addTrustedSyncEncryptionRecoveryMethod",
+      base::BindRepeating(&TrustedVaultEncryptionKeysExtension::
+                              AddTrustedSyncEncryptionRecoveryMethod,
+                          weak_this));
 }
 
 #if !BUILDFLAG(IS_ANDROID)

@@ -1204,6 +1204,94 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
               IsEmpty());
 }
 
+// Regression test for crbug.com/581913835: ensure that page-defined setters or
+// Proxy traps on `window.chrome` are not invoked synchronously during
+// `TrustedVaultEncryptionKeysExtension::Install()` (which could otherwise
+// detach the frame and destroy `TrustedVaultEncryptionKeysExtension` while
+// `Install()` is still on the stack).
+IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
+                       ShouldNotRunScriptDuringInstall) {
+  const GURL initial_url =
+      https_server()->GetURL("accounts.google.com", "/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), initial_url));
+
+  constexpr std::string_view kScript = R"(
+    (async () => {
+      let setterCalls = 0;
+
+      async function runCase(makeHook) {
+        const target = document.createElement('iframe');
+        target.setAttribute('sandbox', 'allow-same-origin');
+        target.srcdoc =
+            '<iframe srcdoc="<iframe name=below></iframe>"></iframe>';
+        await new Promise(r => {
+          target.onload = r;
+          document.body.appendChild(target);
+        });
+
+        const child = window.open('', 'below').parent;
+        child.name = 'chrome';
+        Object.defineProperty(child, 'loadTimes', {
+          configurable: true,
+          set() {
+            const hook = makeHook(target);
+            Object.defineProperty(target.contentWindow, 'chrome', {
+              configurable: true,
+              value: hook,
+            });
+          },
+        });
+
+        // Trigger lazy main-world initialization of `target`.
+        void target.contentWindow;
+        target.remove();
+      }
+
+      // Case 1: Foreign-realm object with a `setSyncEncryptionKeys` setter.
+      await runCase((target) => {
+        const hook = {};
+        Object.defineProperty(hook, 'setSyncEncryptionKeys', {
+          configurable: true,
+          set() {
+            setterCalls++;
+            target.remove();
+          },
+        });
+        return hook;
+      });
+
+      // Case 2: Same-realm object with a `setSyncEncryptionKeys` setter.
+      await runCase((target) => {
+        const hook = new target.contentWindow.Object();
+        target.contentWindow.Object.defineProperty(
+            hook, 'setSyncEncryptionKeys', {
+              configurable: true,
+              set() {
+                setterCalls++;
+                target.remove();
+              },
+            });
+        return hook;
+      });
+
+      // Case 3: Same-realm Proxy with a `defineProperty` trap.
+      await runCase((target) => {
+        return new target.contentWindow.Proxy({}, {
+          defineProperty() {
+            setterCalls++;
+            target.remove();
+            return true;
+          },
+        });
+      });
+
+      return setterCalls;
+    })()
+  )";
+
+  EXPECT_EQ(0, content::EvalJs(web_contents(), kScript));
+}
+
 IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
                        ShouldPropagateUserActionTriggerForMetrics) {
   const GURL initial_url =
