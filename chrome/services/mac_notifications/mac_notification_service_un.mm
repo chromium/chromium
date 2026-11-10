@@ -916,34 +916,34 @@ void MacNotificationServiceUN::DoSynchronizeNotifications(
   }
 }
 
-void MacNotificationServiceUN::SynchronizePermissionStatus() {
-  SynchronizePermissionStatus(/*log_result=*/false);
+void MacNotificationServiceUN::SynchronizePermissionStatus(
+    SynchronizePermissionStatusCallback callback) {
+  SynchronizePermissionStatus(/*log_result=*/false, std::move(callback));
 }
 
-void MacNotificationServiceUN::SynchronizePermissionStatus(bool log_result) {
+void MacNotificationServiceUN::SynchronizePermissionStatus(
+    bool log_result,
+    SynchronizePermissionStatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (callback) {
+    pending_synchronize_permission_callbacks_.push_back(std::move(callback));
+  }
   if (is_synchronizing_permission_status_) {
     return;
   }
 
   is_synchronizing_permission_status_ = true;
-  __block auto permission_status_callback = base::BindPostTaskToCurrentDefault(
-      base::BindOnce(&MacNotificationServiceUN::OnGotAuthorizationStatus,
-                     weak_factory_.GetWeakPtr())
-          .Then(base::BindOnce(
-              [](base::WeakPtr<MacNotificationServiceUN> service) {
-                if (service) {
-                  DCHECK_CALLED_ON_VALID_SEQUENCE(service->sequence_checker_);
-                  service->is_synchronizing_permission_status_ = false;
-                }
-              },
-              weak_factory_.GetWeakPtr())));
+  __block auto permission_status_callback =
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
+          &MacNotificationServiceUN::OnSynchronizePermissionStatusComplete,
+          weak_factory_.GetWeakPtr()));
   [notification_center_ getNotificationSettingsWithCompletionHandler:^(
                             UNNotificationSettings* _Nonnull settings) {
     if (log_result) {
       LogUNNotificationSettings(settings);
     }
-    std::move(permission_status_callback).Run(settings.authorizationStatus);
+    std::move(permission_status_callback)
+        .Run(settings.authorizationStatus, settings.badgeSetting);
   }];
 }
 
@@ -970,6 +970,20 @@ void MacNotificationServiceUN::OnNotificationsClosed(
     delivered_notifications_.erase(notification_id);
 }
 
+void MacNotificationServiceUN::OnSynchronizePermissionStatusComplete(
+    UNAuthorizationStatus status,
+    UNNotificationSetting badge_setting) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  is_synchronizing_permission_status_ = false;
+  auto callbacks = std::exchange(pending_synchronize_permission_callbacks_, {});
+  OnGotAuthorizationStatus(status);
+  CHECK(last_permission_status_.has_value());
+  const bool badge_enabled = badge_setting == UNNotificationSettingEnabled;
+  for (auto& callback : callbacks) {
+    std::move(callback).Run(*last_permission_status_, badge_enabled);
+  }
+}
+
 void MacNotificationServiceUN::OnGotAuthorizationStatus(
     UNAuthorizationStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -990,11 +1004,10 @@ void MacNotificationServiceUN::OnGotAuthorizationStatus(
       is_permission_prompt_pending_) {
     mojo_status = mojom::PermissionStatus::kPromptPending;
   }
-  if (mojo_status == last_permission_status_) {
-    return;
+  if (mojo_status != last_permission_status_) {
+    last_permission_status_ = mojo_status;
+    permission_status_changed_callback_.Run(mojo_status);
   }
-  last_permission_status_ = mojo_status;
-  permission_status_changed_callback_.Run(mojo_status);
 }
 
 }  // namespace mac_notifications

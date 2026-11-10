@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -80,8 +81,15 @@ class MacNotificationServiceUN : public mojom::MacNotificationService {
   bool DidRecentlyHandleClickAction() const;
 
   // Queries `UNUserNotificationCenter` for the current authorization status and
-  // reports any change via `permission_status_changed_callback_`.
-  void SynchronizePermissionStatus();
+  // reports any change via `permission_status_changed_callback_`. If `callback`
+  // is provided, it is invoked with the current `PermissionStatus` and whether
+  // the per-app badge setting (`UNNotificationSettings.badgeSetting`) is
+  // enabled once the query completes.
+  using SynchronizePermissionStatusCallback =
+      base::OnceCallback<void(mojom::PermissionStatus status,
+                              bool badge_enabled)>;
+  void SynchronizePermissionStatus(
+      SynchronizePermissionStatusCallback callback = base::NullCallback());
 
  private:
   // Holds state for an in-flight notification delivery request (including its
@@ -151,7 +159,9 @@ class MacNotificationServiceUN : public mojom::MacNotificationService {
   void DoSynchronizeNotifications(
       std::vector<mojom::NotificationIdentifierPtr> notifications);
 
-  void SynchronizePermissionStatus(bool log_result);
+  void SynchronizePermissionStatus(
+      bool log_result,
+      SynchronizePermissionStatusCallback callback = base::NullCallback());
 
   // Called when the application becomes active. macOS doesn't notify apps when
   // their notification permission changes, so this is a good moment to poll
@@ -163,6 +173,11 @@ class MacNotificationServiceUN : public mojom::MacNotificationService {
 
   // Called when the notifications got closed for any reason.
   void OnNotificationsClosed(const std::vector<std::string>& notification_ids);
+
+  // Called when `SynchronizePermissionStatus` finishes querying settings.
+  void OnSynchronizePermissionStatusComplete(
+      UNAuthorizationStatus status,
+      UNNotificationSetting badge_setting);
 
   // Called when we got an updated UNAuthorizationStatus.
   void OnGotAuthorizationStatus(UNAuthorizationStatus status);
@@ -222,6 +237,9 @@ class MacNotificationServiceUN : public mojom::MacNotificationService {
       GUARDED_BY_CONTEXT(sequence_checker_);
   bool is_synchronizing_permission_status_
       GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  std::vector<SynchronizePermissionStatusCallback>
+      pending_synchronize_permission_callbacks_
+          GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Declared after members that may hold Mojo response callbacks (such as
   // `synchronize_notifications_done_callbacks_` and `notification_center_`) so

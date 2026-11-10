@@ -28,6 +28,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/common/process_type.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 
 AppShimHost::AppShimHost(AppShimHost::Client* client,
@@ -349,6 +350,30 @@ remote_cocoa::ApplicationHost* AppShimHost::GetRemoteCocoaApplicationHost()
 
 chrome::mojom::AppShim* AppShimHost::GetAppShim() const {
   return app_shim_.get();
+}
+
+void AppShimHost::SetBadgeLabel(
+    const std::string& badge_label,
+    chrome::mojom::AppShim::SetBadgeLabelCallback callback) {
+  GetAppShim()->SetBadgeLabel(
+      badge_label,
+      base::BindOnce(&AppShimHost::OnSetBadgeLabelComplete,
+                     weak_factory_.GetWeakPtr(),
+                     mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+                         std::move(callback),
+                         chrome::mojom::AppShimBadgeResult::kNoResponse)));
+}
+
+void AppShimHost::OnSetBadgeLabelComplete(
+    chrome::mojom::AppShim::SetBadgeLabelCallback callback,
+    chrome::mojom::AppShimBadgeResult result) {
+  if (notification_permission_status_overridden_for_testing_) {
+    result = last_notification_permission_status_ ==
+                     mac_notifications::mojom::PermissionStatus::kGranted
+                 ? chrome::mojom::AppShimBadgeResult::kSuccess
+                 : chrome::mojom::AppShimBadgeResult::kBlockedByOSPermission;
+  }
+  std::move(callback).Run(result);
 }
 
 void AppShimHost::BindChildHistogramFetcherFactory(

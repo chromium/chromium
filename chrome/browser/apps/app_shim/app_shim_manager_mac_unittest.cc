@@ -298,8 +298,12 @@ class TestAppShim : public chrome::mojom::AppShim,
       mojo::PendingAssociatedReceiver<remote_cocoa::mojom::Application>
           receiver) override {}
   void CreateCommandDispatcherForWidget(uint64_t widget_id) override {}
-  void SetBadgeLabel(const std::string& badge_label) override {
+  void SetBadgeLabel(const std::string& badge_label,
+                     SetBadgeLabelCallback callback) override {
     badge_label_ = badge_label;
+    if (badge_result_.has_value()) {
+      std::move(callback).Run(*badge_result_);
+    }
   }
   void SetUserAttention(
       chrome::mojom::AppShimAttentionType attention_type) override {}
@@ -339,6 +343,8 @@ class TestAppShim : public chrome::mojom::AppShim,
   std::vector<chrome::mojom::ProfileMenuItemPtr> profile_menu_items_;
   std::vector<chrome::mojom::ApplicationDockMenuItemPtr> dock_menu_items_;
   std::string badge_label_;
+  std::optional<chrome::mojom::AppShimBadgeResult> badge_result_ =
+      chrome::mojom::AppShimBadgeResult::kSuccess;
   mojo::Receiver<mac_notifications::mojom::MacNotificationProvider>
       notification_provider_receiver_{this};
   base::test::TestFuture<RequestNotificationPermissionCallback>
@@ -1958,6 +1964,9 @@ TEST_F(AppShimManagerTest, FindProfileFromURL) {
 }
 
 TEST_F(AppShimManagerTest, UpdateAppBadge) {
+  scoped_feature_list_.InitWithFeatures(
+      {features::kAppShimNotificationAttribution}, {});
+
   // Set this app to be installed for profile A and B.
   AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
                                                    profile_path_a_);
@@ -1976,11 +1985,16 @@ TEST_F(AppShimManagerTest, UpdateAppBadge) {
   EXPECT_EQ(host_aa_.get(), manager_->FindHost(&profile_b_, kTestAppIdA));
 
   // And update the badge in either profile, verifying that the combined value
-  // is reflected.
+  // is reflected and metrics are recorded when setting (but not clearing) a
+  // badge.
+  base::HistogramTester histogram_tester;
   EXPECT_EQ("", host_aa_->test_app_shim_->badge_label_);
   manager_->UpdateAppBadge(&profile_a_, kTestAppIdA,
                            badging::BadgeManager::BadgeValue(4));
   EXPECT_EQ("4", host_aa_->test_app_shim_->badge_label_);
+  histogram_tester.ExpectUniqueSample(
+      "Notifications.Permissions.AppShim.BadgeUpdateResult",
+      chrome::mojom::AppShimBadgeResult::kSuccess, 1);
   manager_->UpdateAppBadge(&profile_b_, kTestAppIdA,
                            badging::BadgeManager::BadgeValue(3));
   EXPECT_EQ("7", host_aa_->test_app_shim_->badge_label_);
@@ -1990,10 +2004,44 @@ TEST_F(AppShimManagerTest, UpdateAppBadge) {
   manager_->UpdateAppBadge(&profile_b_, kTestAppIdA,
                            badging::BadgeManager::BadgeValue());
   EXPECT_EQ("•", host_aa_->test_app_shim_->badge_label_);
+  histogram_tester.ExpectUniqueSample(
+      "Notifications.Permissions.AppShim.BadgeUpdateResult",
+      chrome::mojom::AppShimBadgeResult::kSuccess, 4);
   manager_->UpdateAppBadge(&profile_a_, kTestAppIdA, std::nullopt);
   EXPECT_EQ("•", host_aa_->test_app_shim_->badge_label_);
   manager_->UpdateAppBadge(&profile_b_, kTestAppIdA, std::nullopt);
   EXPECT_EQ("", host_aa_->test_app_shim_->badge_label_);
+  histogram_tester.ExpectUniqueSample(
+      "Notifications.Permissions.AppShim.BadgeUpdateResult",
+      chrome::mojom::AppShimBadgeResult::kSuccess, 4);
+
+  host_aa_->test_app_shim_->badge_result_ =
+      chrome::mojom::AppShimBadgeResult::kBlockedByOSPermission;
+  manager_->UpdateAppBadge(&profile_a_, kTestAppIdA,
+                           badging::BadgeManager::BadgeValue(1));
+  EXPECT_EQ("1", host_aa_->test_app_shim_->badge_label_);
+  histogram_tester.ExpectBucketCount(
+      "Notifications.Permissions.AppShim.BadgeUpdateResult",
+      chrome::mojom::AppShimBadgeResult::kBlockedByOSPermission, 1);
+
+  host_aa_->test_app_shim_->badge_result_ =
+      chrome::mojom::AppShimBadgeResult::kNoPermissionService;
+  manager_->UpdateAppBadge(&profile_a_, kTestAppIdA,
+                           badging::BadgeManager::BadgeValue(2));
+  EXPECT_EQ("2", host_aa_->test_app_shim_->badge_label_);
+  histogram_tester.ExpectBucketCount(
+      "Notifications.Permissions.AppShim.BadgeUpdateResult",
+      chrome::mojom::AppShimBadgeResult::kNoPermissionService, 1);
+
+  host_aa_->test_app_shim_->badge_result_ = std::nullopt;
+  manager_->UpdateAppBadge(&profile_a_, kTestAppIdA,
+                           badging::BadgeManager::BadgeValue(3));
+  EXPECT_EQ("3", host_aa_->test_app_shim_->badge_label_);
+  histogram_tester.ExpectBucketCount(
+      "Notifications.Permissions.AppShim.BadgeUpdateResult",
+      chrome::mojom::AppShimBadgeResult::kNoResponse, 1);
+  histogram_tester.ExpectTotalCount(
+      "Notifications.Permissions.AppShim.BadgeUpdateResult", 7);
 }
 
 TEST_F(AppShimManagerTest, UpdateApplicationDockMenu) {

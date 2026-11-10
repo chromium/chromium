@@ -15,6 +15,7 @@
 @interface FakeUNNotificationSettings : NSObject
 @property(nonatomic, assign) UNAlertStyle alertStyle;
 @property(nonatomic, assign) UNAuthorizationStatus authorizationStatus;
+@property(nonatomic, assign) UNNotificationSetting badgeSetting;
 @end
 
 @interface FakeUNUserNotificationCenter : NSObject

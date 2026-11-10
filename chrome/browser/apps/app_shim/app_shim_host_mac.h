@@ -138,6 +138,9 @@ class AppShimHost : public chrome::mojom::AppShimHost,
   // Return the app shim interface. Virtual for tests.
   virtual chrome::mojom::AppShim* GetAppShim() const;
 
+  void SetBadgeLabel(const std::string& badge_label,
+                     chrome::mojom::AppShim::SetBadgeLabelCallback callback);
+
   void SetOnShimConnectedForTesting(base::OnceClosure closure);
 
   // Overrides the notification permission status for this host and ignores any
@@ -257,6 +260,9 @@ class AppShimHost : public chrome::mojom::AppShimHost,
  private:
   void MaybeRecordLaunchResult(LaunchResult result);
   void RecordLifecycleState(LifecycleState state);
+  void OnSetBadgeLabelComplete(
+      chrome::mojom::AppShim::SetBadgeLabelCallback callback,
+      chrome::mojom::AppShimBadgeResult result);
 
   // If a launch was initiated by Chrome, this stores the launch mode.
   // This is used to log the Apps.AppShim.LaunchResult.{LaunchMode} metric
@@ -289,8 +295,12 @@ class AppShimHost : public chrome::mojom::AppShimHost,
       last_notification_permission_status_;
   bool notification_permission_status_overridden_for_testing_ = false;
 
-  // This weak factory is used for launch callbacks only.
+  // This weak factory is used for launch callbacks only and is invalidated in
+  // `OnBootstrapConnected()` and `LaunchShimInternal()`.
   base::WeakPtrFactory<AppShimHost> launch_weak_factory_;
+  // Weak factory whose pointers remain valid for the lifetime of `AppShimHost`
+  // (including across `OnBootstrapConnected()` for queued `AppShim` messages).
+  base::WeakPtrFactory<AppShimHost> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_APPS_APP_SHIM_APP_SHIM_HOST_MAC_H_

@@ -1061,6 +1061,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Notifications.Permissions.AppShim.BadgeUpdateOSStatus"
+    enum="MacAppShimBadgeOSStatus" expires_after="2027-06-01">
+  <owner>mek@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    The macOS system notification and badging permission status of an installed
+    web app's app shim at the time Chrome updates the app badge in the Dock.
+    Recorded in the app shim process when SetBadgeLabel queries the OS
+    notification settings (macOS only).
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Permissions.AppShim.BadgeUpdateResult"
+    enum="MacAppShimBadgeResult" expires_after="2027-06-01">
+  <owner>mek@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    The result of updating an installed web app's Dock badge in its app shim
+    process when Chrome updates a profile's app badge to a non-empty value.
+    Recorded in the browser process when the SetBadgeLabel Mojo callback runs
+    (or when the connection drops before completing) (macOS only).
+  </summary>
+</histogram>
+
 <histogram
     name="Notifications.Permissions.AppShim.OSPermissionRequestResult{Source}"
     enum="UNNotificationPermissionRequestResult" expires_after="2027-06-01">

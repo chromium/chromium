@@ -68,7 +68,10 @@ class TestingAppShim : public chrome::mojom::AppShim {
   void CreateCommandDispatcherForWidget(uint64_t widget_id) override {}
   void SetUserAttention(
       chrome::mojom::AppShimAttentionType attention_type) override {}
-  void SetBadgeLabel(const std::string& badge_label) override {}
+  void SetBadgeLabel(const std::string& badge_label,
+                     SetBadgeLabelCallback callback) override {
+    std::move(callback).Run(chrome::mojom::AppShimBadgeResult::kSuccess);
+  }
   void UpdateProfileMenu(std::vector<chrome::mojom::ProfileMenuItemPtr>
                              profile_menu_items) override {}
   void UpdateApplicationDockMenu(

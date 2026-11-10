@@ -58,6 +58,7 @@
 #include "components/variations/variations_switches.h"
 #include "content/public/browser/remote_cocoa.h"
 #include "crypto/hash.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
@@ -832,8 +833,43 @@ void AppShimController::CreateCommandDispatcherForWidget(uint64_t widget_id) {
   }
 }
 
-void AppShimController::SetBadgeLabel(const std::string& badge_label) {
+void AppShimController::SetBadgeLabel(const std::string& badge_label,
+                                      SetBadgeLabelCallback callback) {
   NSApp.dockTile.badgeLabel = base::SysUTF8ToNSString(badge_label);
+  if (!notification_service_un()) {
+    std::move(callback).Run(
+        chrome::mojom::AppShimBadgeResult::kNoPermissionService);
+    return;
+  }
+  notification_service_un()->SynchronizePermissionStatus(
+      base::BindOnce([](mac_notifications::mojom::PermissionStatus status,
+                        bool badge_enabled) {
+        BadgeUpdateOSStatus os_status;
+        switch (status) {
+          case mac_notifications::mojom::PermissionStatus::kNotDetermined:
+            os_status = BadgeUpdateOSStatus::kNotDetermined;
+            break;
+          case mac_notifications::mojom::PermissionStatus::kPromptPending:
+            os_status = BadgeUpdateOSStatus::kPromptPending;
+            break;
+          case mac_notifications::mojom::PermissionStatus::kDenied:
+            os_status = BadgeUpdateOSStatus::kDenied;
+            break;
+          case mac_notifications::mojom::PermissionStatus::kGranted:
+            os_status = badge_enabled
+                            ? BadgeUpdateOSStatus::kGranted
+                            : BadgeUpdateOSStatus::kGrantedBadgeDisabled;
+            break;
+        }
+        base::UmaHistogramEnumeration(
+            "Notifications.Permissions.AppShim.BadgeUpdateOSStatus", os_status);
+        return os_status == BadgeUpdateOSStatus::kGranted
+                   ? chrome::mojom::AppShimBadgeResult::kSuccess
+                   : chrome::mojom::AppShimBadgeResult::kBlockedByOSPermission;
+      })
+          .Then(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+              std::move(callback),
+              chrome::mojom::AppShimBadgeResult::kNoPermissionService)));
 }
 
 void AppShimController::UpdateProfileMenu(

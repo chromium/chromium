@@ -503,6 +503,10 @@ class AppShimManager
   // Updates the badge for the specified host.
   void UpdateApplicationBadge(ProfileState* profile_state);
 
+  // Records metrics when `AppShim::SetBadgeLabel` completes for a non-empty
+  // profile badge update.
+  void OnBadgeUpdated(chrome::mojom::AppShimBadgeResult result);
+
   // Retrieve the ProfileState for a given (Profile, AppId) pair. If one
   // does not exist, create one.
   ProfileState* GetOrCreateProfileState(Profile* profile,

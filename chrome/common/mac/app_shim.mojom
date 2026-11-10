@@ -47,6 +47,25 @@ enum AppShimAttentionType {
   kCritical,
 };
 
+// This enum is persisted to logs. Entries should not be renumbered and numeric
+// values should never be reused.
+// LINT.IfChange(AppShimBadgeResult)
+enum AppShimBadgeResult {
+  // The badge label was updated and the app shim has OS notification and
+  // badging permission.
+  kSuccess = 0,
+  // The badge label could not be displayed because OS notification or badging
+  // permission is not granted for the app shim.
+  kBlockedByOSPermission = 1,
+  // Notification permission status could not be determined because the app
+  // shim does not have a UNUserNotificationCenter service (e.g. notification
+  // attribution is not enabled or the shim is not ad-hoc signed).
+  kNoPermissionService = 2,
+  // The app shim did not respond before the Mojo connection was dropped.
+  kNoResponse = 3,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/notifications/enums.xml:MacAppShimBadgeResult)
+
 // Enum describing if the application was launched automatically as a
 // 'Login Item' or via Resume.
 enum AppShimLoginItemRestoreState {
@@ -107,7 +126,7 @@ interface AppShim {
   SetUserAttention(AppShimAttentionType attention_type);
 
   // Instructs the shim to set its badge label.
-  SetBadgeLabel(string badge_label);
+  SetBadgeLabel(string badge_label) => (AppShimBadgeResult result);
 
   // Called to update the state of the profiles NSMenu.
   UpdateProfileMenu(array<ProfileMenuItem> profile_menu_items);

@@ -118,6 +118,7 @@ enum RequestPermissionResult {
 
 // This enum is persisted to disk. Do not delete or re-order entries. New
 // entries should only be added at the end.
+// LINT.IfChange(MacNotificationPermissionStatus)
 enum PermissionStatus {
   // A permission prompt has never been shown for this application.
   kNotDetermined = 1,
@@ -129,6 +130,7 @@ enum PermissionStatus {
   // A permission prompt has been accepted.
   kGranted = 4,
 };
+// LINT.ThenChange(//chrome/app_shim/app_shim_controller.h:MacAppShimBadgeOSStatus)
 
 // Result of attempting to display a notification via MacNotificationService.
 // These values are persisted to logs. Entries should not be renumbered and

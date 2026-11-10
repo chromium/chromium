@@ -11,6 +11,14 @@
 @implementation FakeUNNotificationSettings
 @synthesize alertStyle = _alertStyle;
 @synthesize authorizationStatus = _authorizationStatus;
+@synthesize badgeSetting = _badgeSetting;
+
+- (instancetype)init {
+  if ((self = [super init])) {
+    _badgeSetting = UNNotificationSettingEnabled;
+  }
+  return self;
+}
 @end
 
 @implementation FakeUNUserNotificationCenter {

@@ -70,6 +70,19 @@ class AppShimController
     scoped_refptr<base::SequencedTaskRunner> io_thread_runner;
   };
 
+  // This enum is persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(MacAppShimBadgeOSStatus)
+  enum class BadgeUpdateOSStatus {
+    kNotDetermined = 1,
+    kPromptPending = 2,
+    kDenied = 3,
+    kGranted = 4,
+    kGrantedBadgeDisabled = 5,
+    kMaxValue = kGrantedBadgeDisabled,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/notifications/enums.xml:MacAppShimBadgeOSStatus)
+
   explicit AppShimController(const Params& params);
 
   AppShimController(const AppShimController&) = delete;
@@ -215,7 +228,8 @@ class AppShimController
       mojo::PendingAssociatedReceiver<remote_cocoa::mojom::Application>
           receiver) override;
   void CreateCommandDispatcherForWidget(uint64_t widget_id) override;
-  void SetBadgeLabel(const std::string& badge_label) override;
+  void SetBadgeLabel(const std::string& badge_label,
+                     SetBadgeLabelCallback callback) override;
   void SetUserAttention(
       chrome::mojom::AppShimAttentionType attention_type) override;
   void UpdateProfileMenu(std::vector<chrome::mojom::ProfileMenuItemPtr>
