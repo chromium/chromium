@@ -3948,8 +3948,6 @@
           'chrome-intelligence-swarming-pool',
           'gce',
           'x64_ai_wpt_shards',
-          'ci_only',
-          'experiments',
         ],
       },
       'chrome_ai_wpt_tests_manifest_cpu_gemma4_conversation_suite': {
@@ -3957,8 +3955,6 @@
           'chrome-intelligence-swarming-pool',
           'gce',
           'x64_ai_wpt_shards',
-          'ci_only',
-          'experiments',
         ],
       },
       'chrome_ai_wpt_tests_manifest_cpu_gemma4_suite': {
@@ -3982,7 +3978,6 @@
           'x64_ai_wpt_shards',
           'linux_gpu_high_tier_ai_wpt_dimensions',
           'ci_only',
-          'experiments',
         ],
       },
       'chrome_ai_wpt_tests_manifest_gpu_high_tier_gemma4_conversation_suite': {
@@ -3992,7 +3987,6 @@
           'x64_ai_wpt_shards',
           'linux_gpu_high_tier_gemma4_ai_wpt_dimensions',
           'ci_only',
-          'experiments',
         ],
       },
       'chrome_ai_wpt_tests_manifest_gpu_high_tier_gemma4_suite': {
@@ -4017,7 +4011,6 @@
           'non-gce',
           'x64_ai_wpt_shards',
           'ci_only',
-          'experiments',
         ],
       },
       'chrome_ai_wpt_tests_manifest_gpu_low_tier_gemma4_conversation_suite': {
@@ -4027,7 +4020,6 @@
           'x64_ai_wpt_shards',
           'linux_gpu_high_tier_gemma4_ai_wpt_dimensions',
           'ci_only',
-          'experiments',
         ],
       },
       'chrome_ai_wpt_tests_manifest_gpu_low_tier_gemma4_suite': {
@@ -4095,13 +4087,11 @@
       'chrome_ai_wpt_tests_manifest_conversation_suite': {
         'mixins': [
           'ci_only',
-          'experiments',
         ],
       },
       'chrome_ai_wpt_tests_manifest_gemma4_conversation_suite': {
         'mixins': [
           'ci_only',
-          'experiments',
         ],
       },
       'chrome_ai_wpt_tests_manifest_gemma4_suite': {},
@@ -4142,7 +4132,6 @@
           'x64_ai_wpt_shards',
           'win_cpu_ai_wpt_dimensions',
           'ci_only',
-          'experiments',
         ],
       },
       'chrome_ai_wpt_tests_manifest_cpu_gemma4_conversation_suite': {
@@ -4151,7 +4140,6 @@
           'x64_ai_wpt_shards',
           'win_cpu_ai_wpt_dimensions',
           'ci_only',
-          'experiments',
         ],
       },
       'chrome_ai_wpt_tests_manifest_cpu_gemma4_suite': {
@@ -4175,7 +4163,6 @@
           'x64_ai_wpt_shards',
           'win_gpu_ai_wpt_dimensions',
           'ci_only',
-          'experiments',
         ],
       },
       'chrome_ai_wpt_tests_manifest_gpu_high_tier_gemma4_conversation_suite': {
@@ -4185,7 +4172,6 @@
           'x64_ai_wpt_shards',
           'win_gpu_gemma4_ai_wpt_dimensions',
           'ci_only',
-          'experiments',
         ],
       },
       'chrome_ai_wpt_tests_manifest_gpu_high_tier_gemma4_suite': {
@@ -4211,7 +4197,6 @@
           'x64_ai_wpt_shards',
           'win_gpu_ai_wpt_dimensions',
           'ci_only',
-          'experiments',
         ],
       },
       'chrome_ai_wpt_tests_manifest_gpu_low_tier_gemma4_conversation_suite': {
@@ -4221,7 +4206,6 @@
           'x64_ai_wpt_shards',
           'win_gpu_gemma4_ai_wpt_dimensions',
           'ci_only',
-          'experiments',
         ],
       },
       'chrome_ai_wpt_tests_manifest_gpu_low_tier_gemma4_suite': {
@@ -4306,13 +4290,11 @@
       'chrome_ai_wpt_tests_manifest_conversation_suite': {
         'mixins': [
           'ci_only',
-          'experiments',
         ],
       },
       'chrome_ai_wpt_tests_manifest_gemma4_conversation_suite': {
         'mixins': [
           'ci_only',
-          'experiments',
         ],
       },
       'chrome_ai_wpt_tests_manifest_gemma4_suite': {},

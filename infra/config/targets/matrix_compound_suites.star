@@ -860,14 +860,12 @@ targets.legacy_matrix_compound_suite(
         "chrome_ai_wpt_tests_manifest_conversation_suite": targets.legacy_matrix_config(
             mixins = [
                 "ci_only",
-                "experiments",
             ],
         ),
         "chrome_ai_wpt_tests_manifest_gemma4_suite": None,
         "chrome_ai_wpt_tests_manifest_gemma4_conversation_suite": targets.legacy_matrix_config(
             mixins = [
                 "ci_only",
-                "experiments",
             ],
         ),
     },
@@ -880,14 +878,12 @@ targets.legacy_matrix_compound_suite(
         "chrome_ai_wpt_tests_manifest_conversation_suite": targets.legacy_matrix_config(
             mixins = [
                 "ci_only",
-                "experiments",
             ],
         ),
         "chrome_ai_wpt_tests_manifest_gemma4_suite": None,
         "chrome_ai_wpt_tests_manifest_gemma4_conversation_suite": targets.legacy_matrix_config(
             mixins = [
                 "ci_only",
-                "experiments",
             ],
         ),
         "model_validation_tests_light_suite": None,
@@ -966,8 +962,6 @@ targets.legacy_matrix_compound_suite(
                 "chrome-intelligence-swarming-pool",
                 "gce",
                 "x64_ai_wpt_shards",
-                "ci_only",
-                "experiments",
             ],
         ),
         "chrome_ai_wpt_tests_manifest_cpu_gemma4_suite": targets.legacy_matrix_config(
@@ -982,8 +976,6 @@ targets.legacy_matrix_compound_suite(
                 "chrome-intelligence-swarming-pool",
                 "gce",
                 "x64_ai_wpt_shards",
-                "ci_only",
-                "experiments",
             ],
         ),
         "chrome_ai_wpt_tests_manifest_gpu_high_tier_suite": targets.legacy_matrix_config(
@@ -1001,7 +993,6 @@ targets.legacy_matrix_compound_suite(
                 "x64_ai_wpt_shards",
                 "linux_gpu_high_tier_ai_wpt_dimensions",
                 "ci_only",
-                "experiments",
             ],
         ),
         "chrome_ai_wpt_tests_manifest_gpu_high_tier_gemma4_suite": targets.legacy_matrix_config(
@@ -1019,7 +1010,6 @@ targets.legacy_matrix_compound_suite(
                 "x64_ai_wpt_shards",
                 "linux_gpu_high_tier_gemma4_ai_wpt_dimensions",
                 "ci_only",
-                "experiments",
             ],
         ),
         "chrome_ai_wpt_tests_manifest_gpu_low_tier_suite": targets.legacy_matrix_config(
@@ -1035,7 +1025,6 @@ targets.legacy_matrix_compound_suite(
                 "non-gce",
                 "x64_ai_wpt_shards",
                 "ci_only",
-                "experiments",
             ],
         ),
         "chrome_ai_wpt_tests_manifest_gpu_low_tier_gemma4_suite": targets.legacy_matrix_config(
@@ -1053,7 +1042,6 @@ targets.legacy_matrix_compound_suite(
                 "x64_ai_wpt_shards",
                 "linux_gpu_high_tier_gemma4_ai_wpt_dimensions",
                 "ci_only",
-                "experiments",
             ],
         ),
         "litert_lm_advanced_main_legacy_tests_gpu_suite": targets.legacy_matrix_config(
@@ -1164,7 +1152,6 @@ targets.legacy_matrix_compound_suite(
                 "x64_ai_wpt_shards",
                 "win_cpu_ai_wpt_dimensions",
                 "ci_only",
-                "experiments",
             ],
         ),
         "chrome_ai_wpt_tests_manifest_cpu_gemma4_suite": targets.legacy_matrix_config(
@@ -1180,7 +1167,6 @@ targets.legacy_matrix_compound_suite(
                 "x64_ai_wpt_shards",
                 "win_cpu_ai_wpt_dimensions",
                 "ci_only",
-                "experiments",
             ],
         ),
         "chrome_ai_wpt_tests_manifest_gpu_high_tier_suite": targets.legacy_matrix_config(
@@ -1198,7 +1184,6 @@ targets.legacy_matrix_compound_suite(
                 "x64_ai_wpt_shards",
                 "win_gpu_ai_wpt_dimensions",
                 "ci_only",
-                "experiments",
             ],
         ),
         "chrome_ai_wpt_tests_manifest_gpu_high_tier_gemma4_suite": targets.legacy_matrix_config(
@@ -1216,7 +1201,6 @@ targets.legacy_matrix_compound_suite(
                 "x64_ai_wpt_shards",
                 "win_gpu_gemma4_ai_wpt_dimensions",
                 "ci_only",
-                "experiments",
             ],
         ),
         "chrome_ai_wpt_tests_manifest_gpu_low_tier_suite": targets.legacy_matrix_config(
@@ -1234,7 +1218,6 @@ targets.legacy_matrix_compound_suite(
                 "x64_ai_wpt_shards",
                 "win_gpu_ai_wpt_dimensions",
                 "ci_only",
-                "experiments",
             ],
         ),
         "chrome_ai_wpt_tests_manifest_gpu_low_tier_gemma4_suite": targets.legacy_matrix_config(
@@ -1252,7 +1235,6 @@ targets.legacy_matrix_compound_suite(
                 "x64_ai_wpt_shards",
                 "win_gpu_gemma4_ai_wpt_dimensions",
                 "ci_only",
-                "experiments",
             ],
         ),
         "litert_e2e_tests_cpu_suite": targets.legacy_matrix_config(

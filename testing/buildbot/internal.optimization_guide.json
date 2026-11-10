@@ -1363,8 +1363,6 @@
           "--child-processes=1",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -1435,8 +1433,6 @@
           "--child-processes=1",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -1509,7 +1505,6 @@
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -1583,7 +1578,6 @@
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -1656,7 +1650,6 @@
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -1729,7 +1722,6 @@
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -2150,7 +2142,6 @@
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -2224,7 +2215,6 @@
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -2298,7 +2288,6 @@
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -2372,7 +2361,6 @@
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -2446,7 +2434,6 @@
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -2520,7 +2507,6 @@
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -2919,7 +2905,6 @@
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -2993,7 +2978,6 @@
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -3067,7 +3051,6 @@
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -3141,7 +3124,6 @@
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -3215,7 +3197,6 @@
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -3289,7 +3270,6 @@
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -3694,7 +3674,6 @@
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -3768,7 +3747,6 @@
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -3846,7 +3824,6 @@
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -3924,7 +3901,6 @@
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -3998,7 +3974,6 @@
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -4072,7 +4047,6 @@
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -4782,7 +4756,6 @@
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -4852,7 +4825,6 @@
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -4928,7 +4900,6 @@
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -5006,7 +4977,6 @@
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -5080,7 +5050,6 @@
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -5154,7 +5123,6 @@
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"

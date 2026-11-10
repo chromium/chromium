@@ -31,7 +31,7 @@ crbug.com/499322156 external/wpt/ai/decision-model/* [ Skip ]
 # There is no TranslateKit component for Win ARM64.
 crbug.com/379233932 [ win arm64 ] external/wpt/ai/translator/* [ Skip ]
 
-# Temporarily skip TinyGemma small expert model WPTs (Proofreader and Summarizer
-# speed preference) until small expert model support lands for Conversation API.
-crbug.com/560276842 external/wpt/ai/proofreader/* [ Skip ]
-crbug.com/560276842 external/wpt/ai/summarizer/speed/* [ Skip ]
+# On the Conversation API, contextUsage after append() doesn't match
+# measureContextUsage(): append() reports the tokens it prefilled, which include
+# the BOS token but not the end of the turn, which is left open.
+crbug.com/572916962 external/wpt/ai/language-model/language-model-append.tentative.https.window.html [ Failure ]
