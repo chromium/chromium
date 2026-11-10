@@ -2025,6 +2025,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Net.DeviceBoundSessions.PreProvisionedKeyCount" units="keys"
+    expires_after="2027-10-21">
+  <owner>jdoerrie@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Number of unclaimed pre-provisioned DBSC-SSO relying party keys held by one
+    network context's device bound session service (per profile, not
+    browser-wide), summed across all identity providers and relying parties,
+    recorded after each successful store.
+  </summary>
+</histogram>
+
 <histogram name="Net.DeviceBoundSessions.Prewarm.Duration{Outcome}" units="ms"
     expires_after="2027-09-30">
   <owner>ahijazi@chromium.org</owner>

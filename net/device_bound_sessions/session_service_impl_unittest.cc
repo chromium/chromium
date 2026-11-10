@@ -5898,12 +5898,11 @@ class SessionServiceImplPreProvisionedKeyTest : public SessionServiceImplTest {
 };
 
 TEST_F(SessionServiceImplPreProvisionedKeyTest,
-       DeleteAllSessionsUpdatesCounter) {
+       DeleteAllSessionsClearsPreProvisionedKeys) {
   auto rp_origin = url::Origin::Create(GURL("https://example.test"));
   auto provider_origin = url::Origin::Create(GURL("https://provider.test"));
 
-  const size_t kNumKeysToGenerate =
-      SingleSignOnKeyManager::kMaxPreProvisionedKeysPerIdentityProvider;
+  constexpr size_t kNumKeysToGenerate = 2;
 
   std::vector<unexportable_keys::UnexportableSigningKeyId> key_ids;
   for (size_t i = 0; i < kNumKeysToGenerate; ++i) {
@@ -5933,8 +5932,7 @@ TEST_F(SessionServiceImplPreProvisionedKeyTest,
                               run_loop.QuitClosure());
   run_loop.Run();
 
-  // Try to add one more key. Since the keys should have been purged and the
-  // counter correctly decremented, this should succeed.
+  // Re-adding an earlier `provider_key` succeeds once the keys were purged.
   base::test::TestFuture<unexportable_keys::ServiceErrorOr<
       unexportable_keys::UnexportableSigningKeyId>>
       key_future;
@@ -5944,8 +5942,7 @@ TEST_F(SessionServiceImplPreProvisionedKeyTest,
       key_future.GetCallback());
   unexportable_keys::UnexportableSigningKeyId key_id = *key_future.Take();
 
-  EXPECT_TRUE(
-      AddPreProvisionedKey(rp_origin, "new_key", provider_origin, key_id));
+  EXPECT_TRUE(AddPreProvisionedKey(rp_origin, "0", provider_origin, key_id));
 }
 
 TEST_F(SessionServiceImplPreProvisionedKeyTest,
@@ -5957,8 +5954,7 @@ TEST_F(SessionServiceImplPreProvisionedKeyTest,
   AddSessionsForTesting(
       {{kSessionId, "https://example.test/refresh", "https://example.test"}});
 
-  const size_t kNumKeysToGenerate =
-      SingleSignOnKeyManager::kMaxPreProvisionedKeysPerIdentityProvider;
+  constexpr size_t kNumKeysToGenerate = 2;
 
   std::vector<unexportable_keys::UnexportableSigningKeyId> key_ids;
   for (size_t i = 0; i < kNumKeysToGenerate; ++i) {
@@ -5999,8 +5995,7 @@ TEST_F(SessionServiceImplPreProvisionedKeyTest,
     EXPECT_TRUE(key_service()->GetWrappedKey(key_id).has_value());
   }
 
-  // Try to add one more key. Since the keys should NOT have been purged and
-  // the counter shouldn't have been decremented, this should fail.
+  // Since the keys were not purged, re-adding `"0"` fails as a duplicate.
   base::test::TestFuture<unexportable_keys::ServiceErrorOr<
       unexportable_keys::UnexportableSigningKeyId>>
       key_future;
@@ -6010,8 +6005,7 @@ TEST_F(SessionServiceImplPreProvisionedKeyTest,
       key_future.GetCallback());
   unexportable_keys::UnexportableSigningKeyId key_id = *key_future.Take();
 
-  EXPECT_FALSE(
-      AddPreProvisionedKey(rp_origin, "new_key", provider_origin, key_id));
+  EXPECT_FALSE(AddPreProvisionedKey(rp_origin, "0", provider_origin, key_id));
 }
 
 TEST_F(SessionServiceImplPreProvisionedKeyTest,

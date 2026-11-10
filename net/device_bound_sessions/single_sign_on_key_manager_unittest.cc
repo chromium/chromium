@@ -15,14 +15,13 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_view_util.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/gmock_move_support.h"
-#include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
@@ -45,7 +44,6 @@
 #include "net/device_bound_sessions/session_params.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -374,70 +372,48 @@ TEST_F(SingleSignOnKeyManagerTest, MissingInitiator) {
               ErrorIs(SessionError::kInvalidPreProvisionedKeyInitiatorMissing));
 }
 
-TEST_F(SingleSignOnKeyManagerTest, MultipleKeysLimit) {
+TEST_F(SingleSignOnKeyManagerTest, AddPreProvisionedKeyRecordsCount) {
   auto rp_origin = url::Origin::Create(GURL("https://example.test"));
+  auto other_rp_origin = url::Origin::Create(GURL("https://other-rp.test"));
   auto provider_origin = ProviderOrigin();
 
-  const size_t kNumKeysToGenerate =
-      SingleSignOnKeyManager::kMaxPreProvisionedKeysPerIdentityProvider + 1;
-
+  // Keys for one IdP aren't capped.
+  constexpr size_t kNumKeysToGenerate = 15;
   for (size_t i = 0; i < kNumKeysToGenerate; ++i) {
-    std::string provider_key = base::NumberToString(i);
-    bool should_add_key =
-        i < SingleSignOnKeyManager::kMaxPreProvisionedKeysPerIdentityProvider;
-
-    EXPECT_EQ(manager().AddPreProvisionedKey(
-                  rp_origin, provider_key, provider_origin,
-                  unexportable_keys::UnexportableSigningKeyId()),
-              should_add_key);
+    base::HistogramTester step_histogram_tester;
+    EXPECT_TRUE(manager().CanGenerateKey(provider_origin, rp_origin));
+    EXPECT_TRUE(manager().AddPreProvisionedKey(
+        rp_origin, base::NumberToString(i), provider_origin,
+        unexportable_keys::UnexportableSigningKeyId()));
+    step_histogram_tester.ExpectUniqueSample(
+        "Net.DeviceBoundSessions.PreProvisionedKeyCount", i + 1, 1);
   }
-}
+  EXPECT_TRUE(manager().CanGenerateKey(provider_origin, rp_origin));
 
-TEST_F(SingleSignOnKeyManagerTest, MultipleKeysLimitSharedAcrossRps) {
-  // Test that keys created for *different relying parties* but the
-  // *same Identity Provider* share the same IDP limit and will eventually
-  // hit the roof.
-  auto provider_origin = url::Origin::Create(GURL("https://company.idp.test"));
+  EXPECT_TRUE(manager().AddPreProvisionedKey(
+      other_rp_origin, "other_key", provider_origin,
+      unexportable_keys::UnexportableSigningKeyId()));
 
-  const size_t kNumKeysToGenerate =
-      SingleSignOnKeyManager::kMaxPreProvisionedKeysPerIdentityProvider + 1;
-
-  for (size_t i = 0; i < kNumKeysToGenerate; ++i) {
-    std::string provider_key = base::NumberToString(i);
-    // Vary the RP origin.
-    auto iter_rp_origin = url::Origin::Create(GURL(
-        base::StrCat({"https://sub", base::NumberToString(i), ".rp.test"})));
-
-    bool should_add_key =
-        i < SingleSignOnKeyManager::kMaxPreProvisionedKeysPerIdentityProvider;
-    EXPECT_EQ(manager().AddPreProvisionedKey(
-                  iter_rp_origin, provider_key, provider_origin,
-                  unexportable_keys::UnexportableSigningKeyId()),
-              should_add_key);
+  {
+    base::HistogramTester duplicate_histogram_tester;
+    EXPECT_FALSE(manager().AddPreProvisionedKey(
+        rp_origin, "0", provider_origin,
+        unexportable_keys::UnexportableSigningKeyId()));
+    duplicate_histogram_tester.ExpectTotalCount(
+        "Net.DeviceBoundSessions.PreProvisionedKeyCount", 0);
   }
-}
 
-TEST_F(SingleSignOnKeyManagerTest, MultipleKeysLimitSharedAcrossIdpSubdomains) {
-  // Test that keys created for the *same Relying Party* but Identity
-  // Providers on varying subdomains share the same limit.
-  auto rp_origin = url::Origin::Create(GURL("https://rp.test"));
-
-  const size_t kNumKeysToGenerate =
-      SingleSignOnKeyManager::kMaxPreProvisionedKeysPerIdentityProvider + 1;
-
-  for (size_t i = 0; i < kNumKeysToGenerate; ++i) {
-    std::string provider_key = base::NumberToString(i);
-
-    // Vary the IdP origin using subdomains.
-    auto provider_origin = url::Origin::Create(
-        GURL(absl::StrFormat("https://company%d.idp.test", i)));
-
-    bool should_add_key =
-        i < SingleSignOnKeyManager::kMaxPreProvisionedKeysPerIdentityProvider;
-    EXPECT_EQ(manager().AddPreProvisionedKey(
-                  rp_origin, provider_key, provider_origin,
-                  unexportable_keys::UnexportableSigningKeyId()),
-              should_add_key);
+  manager().ClearPreProvisionedKeys(base::BindRepeating(
+      [](const url::Origin& rp_origin, const url::Origin& origin,
+         const SchemefulSite& site) { return origin == rp_origin; },
+      rp_origin));
+  {
+    base::HistogramTester post_clear_histogram_tester;
+    EXPECT_TRUE(manager().AddPreProvisionedKey(
+        rp_origin, "after_clear", provider_origin,
+        unexportable_keys::UnexportableSigningKeyId()));
+    post_clear_histogram_tester.ExpectUniqueSample(
+        "Net.DeviceBoundSessions.PreProvisionedKeyCount", 2, 1);
   }
 }
 
@@ -563,27 +539,6 @@ TEST_F(SingleSignOnKeyManagerTest,
       unexportable_keys::UnexportableSigningKeyId()));
 }
 
-TEST_F(SingleSignOnKeyManagerTest,
-       AddPreProvisionedKey_OtherIdpAtLimit_ReturnsTrue) {
-  auto rp_origin = url::Origin::Create(GURL("https://rp.test"));
-  auto full_provider_origin =
-      url::Origin::Create(GURL("https://full-idp.test"));
-  auto other_provider_origin =
-      url::Origin::Create(GURL("https://other-idp.test"));
-
-  for (size_t i = 0;
-       i < SingleSignOnKeyManager::kMaxPreProvisionedKeysPerIdentityProvider;
-       ++i) {
-    EXPECT_TRUE(manager().AddPreProvisionedKey(
-        rp_origin, base::NumberToString(i), full_provider_origin,
-        unexportable_keys::UnexportableSigningKeyId()));
-  }
-
-  EXPECT_TRUE(manager().AddPreProvisionedKey(
-      rp_origin, "other", other_provider_origin,
-      unexportable_keys::UnexportableSigningKeyId()));
-}
-
 using SingleSignOnKeyManagerCanGenerateKeyTest = SingleSignOnKeyManagerTest;
 using SingleSignOnKeyManagerGenerateKeyTest = SingleSignOnKeyManagerTest;
 
@@ -592,78 +547,6 @@ TEST_F(SingleSignOnKeyManagerCanGenerateKeyTest, NoCookieAccessReturnsFalse) {
 
   EXPECT_FALSE(manager().CanGenerateKey(
       ProviderOrigin(), url::Origin::Create(GURL("https://rp.test"))));
-}
-
-TEST_F(SingleSignOnKeyManagerCanGenerateKeyTest,
-       InFlightRequestCountsTowardsLimit) {
-  auto rp_origin = url::Origin::Create(GURL("https://rp.test"));
-  auto provider_origin = ProviderOrigin();
-
-  // Fill the store up to one key below the limit.
-  for (size_t i = 0;
-       i <
-       SingleSignOnKeyManager::kMaxPreProvisionedKeysPerIdentityProvider - 1;
-       ++i) {
-    ASSERT_TRUE(manager().AddPreProvisionedKey(
-        rp_origin, base::NumberToString(i), provider_origin,
-        unexportable_keys::UnexportableSigningKeyId()));
-  }
-
-  // One key below the limit, CanGenerateKey is true.
-  EXPECT_TRUE(manager().CanGenerateKey(provider_origin, rp_origin));
-
-  // Start an in-flight request.
-  TestFuture<SessionErrorOr<std::string>> future;
-  manager().GenerateKey(aik_id(), CreateGenerateKeyParam(), provider_origin,
-                        future.GetCallback());
-
-  // The in-flight request counts, so the limit is reached.
-  EXPECT_FALSE(manager().CanGenerateKey(provider_origin, rp_origin));
-
-  EXPECT_THAT(future.Take(), HasValue());
-
-  // Once completed, the key is stored, so CanGenerateKey is still false.
-  EXPECT_FALSE(manager().CanGenerateKey(provider_origin, rp_origin));
-}
-
-TEST_F(SingleSignOnKeyManagerCanGenerateKeyTest,
-       InFlightRequestForOtherIdpDoesNotCount) {
-  auto rp_origin = url::Origin::Create(GURL("https://rp.test"));
-  auto provider_origin = ProviderOrigin();
-  auto other_provider_origin =
-      url::Origin::Create(GURL("https://other-provider.test"));
-
-  for (size_t i = 0;
-       i <
-       SingleSignOnKeyManager::kMaxPreProvisionedKeysPerIdentityProvider - 1;
-       ++i) {
-    ASSERT_TRUE(manager().AddPreProvisionedKey(
-        rp_origin, base::NumberToString(i), provider_origin,
-        unexportable_keys::UnexportableSigningKeyId()));
-  }
-
-  TestFuture<SessionErrorOr<std::string>> future;
-  manager().GenerateKey(aik_id(), CreateGenerateKeyParam(),
-                        other_provider_origin, future.GetCallback());
-
-  // The total is at the limit, but `provider_origin` is one key below it.
-  EXPECT_TRUE(manager().CanGenerateKey(provider_origin, rp_origin));
-  EXPECT_THAT(future.Take(), HasValue());
-}
-
-// `GenerateKey()` requires `CanGenerateKey()`'s key limit to hold.
-TEST_F(SingleSignOnKeyManagerGenerateKeyTest, AtLimitDeath) {
-  auto rp_origin = url::Origin::Create(GURL("https://rp.test"));
-  for (size_t i = 0;
-       i < SingleSignOnKeyManager::kMaxPreProvisionedKeysPerIdentityProvider;
-       ++i) {
-    ASSERT_TRUE(manager().AddPreProvisionedKey(
-        rp_origin, base::NumberToString(i), ProviderOrigin(),
-        unexportable_keys::UnexportableSigningKeyId()));
-  }
-
-  EXPECT_CHECK_DEATH(manager().GenerateKey(
-      aik_id(), CreateGenerateKeyParam(), ProviderOrigin(), base::DoNothing()));
 }
 
 TEST_F(SingleSignOnKeyManagerGenerateKeyTest, ValidParamStoresKey) {
@@ -997,18 +880,6 @@ TEST_F(SingleSignOnKeyManagerGenerateKeyTest,
 }
 
 TEST_F(SingleSignOnKeyManagerGenerateKeyTest, NewRequestInCallbackSucceeds) {
-  // Fill the store up to two keys below the limit. The second request only
-  // fits if the first one gave up its slot before its callback ran.
-  auto rp_origin = url::Origin::Create(GURL("https://rp.test"));
-  for (size_t i = 0;
-       i <
-       SingleSignOnKeyManager::kMaxPreProvisionedKeysPerIdentityProvider - 2;
-       ++i) {
-    ASSERT_TRUE(manager().AddPreProvisionedKey(
-        rp_origin, base::NumberToString(i), ProviderOrigin(),
-        unexportable_keys::UnexportableSigningKeyId()));
-  }
-
   TestFuture<SessionErrorOr<std::string>> future2;
   bool first_callback_ran = false;
   manager().GenerateKey(
@@ -1016,7 +887,6 @@ TEST_F(SingleSignOnKeyManagerGenerateKeyTest, NewRequestInCallbackSucceeds) {
       base::BindLambdaForTesting([&](SessionErrorOr<std::string> result) {
         EXPECT_THAT(result, HasValue());
         first_callback_ran = true;
-        EXPECT_TRUE(manager().CanGenerateKey(ProviderOrigin(), rp_origin));
         // Start a second request synchronously from within the first callback.
         manager().GenerateKey(aik_id(), CreateGenerateKeyParam(),
                               ProviderOrigin(), future2.GetCallback());

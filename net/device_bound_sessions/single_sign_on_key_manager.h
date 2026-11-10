@@ -5,7 +5,6 @@
 #ifndef NET_DEVICE_BOUND_SESSIONS_SINGLE_SIGN_ON_KEY_MANAGER_H_
 #define NET_DEVICE_BOUND_SESSIONS_SINGLE_SIGN_ON_KEY_MANAGER_H_
 
-#include <cstddef>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -17,7 +16,6 @@
 #include "base/types/optional_ref.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "net/base/net_export.h"
-#include "net/base/schemeful_site.h"
 #include "net/device_bound_sessions/generate_key_param.h"
 #include "net/device_bound_sessions/session_error.h"
 #include "net/device_bound_sessions/session_service.h"
@@ -35,9 +33,6 @@ namespace net::device_bound_sessions {
 // on Secure-Session-GenerateKey certified with the IdP's attestation key (AIK).
 class NET_EXPORT SingleSignOnKeyManager {
  public:
-  // Maximum number of pre-provisioned keys per Identity Provider site.
-  static constexpr size_t kMaxPreProvisionedKeysPerIdentityProvider = 10;
-
   // `key_service` must outlive `this`.
   explicit SingleSignOnKeyManager(
       unexportable_keys::UnexportableKeyService& key_service,
@@ -50,9 +45,7 @@ class NET_EXPORT SingleSignOnKeyManager {
   SingleSignOnKeyManager& operator=(SingleSignOnKeyManager&&) = delete;
 
   // Returns whether a Secure-Session-GenerateKey request may start. The IdP at
-  // `provider_origin` needs access to its cookies on `rp_origin`. Its stored
-  // keys plus in-flight requests must stay below
-  // `kMaxPreProvisionedKeysPerIdentityProvider`.
+  // `provider_origin` needs access to its cookies on `rp_origin`.
   bool CanGenerateKey(const url::Origin& provider_origin,
                       const url::Origin& rp_origin) const;
 
@@ -79,9 +72,7 @@ class NET_EXPORT SingleSignOnKeyManager {
   // A key insertion can fail if:
   // - the Identity Provider site does not have access to its cookies from a
   //   third-party context;
-  // - the key already exists (same `rp_origin` and `provider_key`);
-  // - there are already `kMaxPreProvisionedKeysPerIdentityProvider` keys
-  //   stored for the Identity Provider site.
+  // - the key already exists (same `rp_origin` and `provider_key`).
   bool AddPreProvisionedKey(const url::Origin& rp_origin,
                             std::string_view provider_key,
                             const url::Origin& provider_origin,
@@ -106,26 +97,12 @@ class NET_EXPORT SingleSignOnKeyManager {
   class GenerateKeyRequest;
   struct GeneratedKey;
 
-  // Whether `CountKeys()` includes in-flight `GenerateKey()` requests.
-  enum class InFlightRequests { kCount, kIgnore };
-
   struct PreProvisionedKeyEntry {
     url::Origin provider_origin;
-    net::SchemefulSite provider_site;
     url::Origin rp_origin;
     std::string provider_key;
     unexportable_keys::UnexportableSigningKeyId key_id;
   };
-
-  // Helper function to check if a pre-provisioned key created by
-  // `provider_origin` can be added to the in-memory store.
-  bool CanAddPreProvisionedKey(const url::Origin& provider_origin,
-                               const url::Origin& rp_origin) const;
-
-  // Returns the number of keys stored for `provider_site`, plus its in-flight
-  // `GenerateKey()` requests if `in_flight_requests` is `kCount`.
-  size_t CountKeys(const net::SchemefulSite& provider_site,
-                   InFlightRequests in_flight_requests) const;
 
   // Called once `request` has finished. Stores the generated key unless
   // `request`'s site data was cleared or `AddPreProvisionedKey()` rejects it.
@@ -138,8 +115,7 @@ class NET_EXPORT SingleSignOnKeyManager {
   const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;
   SessionService::CookieAccessCallback has_cookie_access_cb_;
   std::vector<PreProvisionedKeyEntry> pre_provisioned_keys_;
-  // In-flight `GenerateKey()` requests. They count towards the per-IdP limit
-  // in `CanGenerateKey()`, and destroying `this` cancels them.
+  // In-flight `GenerateKey()` requests. Destroying `this` cancels them.
   absl::flat_hash_set<std::unique_ptr<GenerateKeyRequest>>
       generate_key_requests_;
 };

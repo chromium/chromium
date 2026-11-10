@@ -21,6 +21,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
@@ -28,6 +29,7 @@
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "crypto/unexportable_key.h"
+#include "net/base/schemeful_site.h"
 #include "net/device_bound_sessions/cookie_access_check_params.h"
 #include "net/device_bound_sessions/jwk_utils.h"
 #include "net/device_bound_sessions/session.h"
@@ -82,8 +84,7 @@ class SingleSignOnKeyManager::GenerateKeyRequest {
       : key_service_(key_service),
         idp_aik_(idp_aik),
         param_(std::move(param)),
-        provider_origin_(std::move(provider_origin)),
-        provider_site_(provider_origin_) {}
+        provider_origin_(std::move(provider_origin)) {}
 
   GenerateKeyRequest(const GenerateKeyRequest&) = delete;
   GenerateKeyRequest& operator=(const GenerateKeyRequest&) = delete;
@@ -99,7 +100,6 @@ class SingleSignOnKeyManager::GenerateKeyRequest {
   }
 
   const url::Origin& provider_origin() const { return provider_origin_; }
-  const net::SchemefulSite& provider_site() const { return provider_site_; }
   const url::Origin& rp_origin() const { return param_.target_origin; }
   bool site_data_cleared() const { return site_data_cleared_; }
 
@@ -211,7 +211,6 @@ class SingleSignOnKeyManager::GenerateKeyRequest {
   const unexportable_keys::UnexportableAttestationKeyId idp_aik_;
   GenerateKeyParam param_;
   url::Origin provider_origin_;
-  net::SchemefulSite provider_site_;
   std::optional<unexportable_keys::UnexportableSigningKeyId> rp_key_id_;
   // JWK thumbprint of `rp_key_id_`, set right after keygen.
   std::string thumbprint_;
@@ -232,10 +231,7 @@ bool SingleSignOnKeyManager::CanGenerateKey(
     const url::Origin& provider_origin,
     const url::Origin& rp_origin) const {
   return CanAccessPreProvisionedKey(has_cookie_access_cb_, provider_origin,
-                                    rp_origin) &&
-         CountKeys(net::SchemefulSite(provider_origin),
-                   InFlightRequests::kCount) <
-             kMaxPreProvisionedKeysPerIdentityProvider;
+                                    rp_origin);
 }
 
 void SingleSignOnKeyManager::GenerateKey(
@@ -244,11 +240,6 @@ void SingleSignOnKeyManager::GenerateKey(
     url::Origin provider_origin,
     SessionService::KeyBindingCallback callback) {
   CHECK(!callback.is_null());
-  // Checks the count part of `CanGenerateKey()`. The cookie part depends on
-  // `has_cookie_access_cb_`, so it is only checked again when storing the key.
-  CHECK_LT(
-      CountKeys(net::SchemefulSite(provider_origin), InFlightRequests::kCount),
-      kMaxPreProvisionedKeysPerIdentityProvider);
   GenerateKeyRequest* request =
       generate_key_requests_
           .insert(std::make_unique<GenerateKeyRequest>(
@@ -268,10 +259,8 @@ bool SingleSignOnKeyManager::AddPreProvisionedKey(
     std::string_view provider_key,
     const url::Origin& provider_origin,
     unexportable_keys::UnexportableSigningKeyId key_id) {
-  // An opaque origin is its own `SchemefulSite`, so it would escape the per-IdP
-  // key limit.
-  CHECK(!provider_origin.opaque());
-  if (!CanAddPreProvisionedKey(provider_origin, rp_origin)) {
+  if (!CanAccessPreProvisionedKey(has_cookie_access_cb_, provider_origin,
+                                  rp_origin)) {
     return false;
   }
 
@@ -285,10 +274,11 @@ bool SingleSignOnKeyManager::AddPreProvisionedKey(
 
   pre_provisioned_keys_.push_back(
       {.provider_origin{provider_origin},
-       .provider_site{SchemefulSite(provider_origin)},
        .rp_origin{rp_origin},
        .provider_key{std::string(provider_key)},
        .key_id{key_id}});
+  base::UmaHistogramCounts1000("Net.DeviceBoundSessions.PreProvisionedKeyCount",
+                               pre_provisioned_keys_.size());
   return true;
 }
 
@@ -350,32 +340,6 @@ void SingleSignOnKeyManager::ClearPreProvisionedKeys(
       request->MarkSiteDataCleared();
     }
   }
-}
-
-bool SingleSignOnKeyManager::CanAddPreProvisionedKey(
-    const url::Origin& provider_origin,
-    const url::Origin& rp_origin) const {
-  // Called while the finishing request is still in `generate_key_requests_`,
-  // so counting in-flight requests would count it against its own key. The
-  // slots of in-flight requests were already reserved by `CanGenerateKey()`.
-  return CanAccessPreProvisionedKey(has_cookie_access_cb_, provider_origin,
-                                    rp_origin) &&
-         CountKeys(SchemefulSite(provider_origin), InFlightRequests::kIgnore) <
-             kMaxPreProvisionedKeysPerIdentityProvider;
-}
-
-size_t SingleSignOnKeyManager::CountKeys(
-    const net::SchemefulSite& provider_site,
-    InFlightRequests in_flight_requests) const {
-  size_t count = static_cast<size_t>(
-      std::ranges::count(pre_provisioned_keys_, provider_site,
-                         &PreProvisionedKeyEntry::provider_site));
-  if (in_flight_requests == InFlightRequests::kCount) {
-    count += static_cast<size_t>(
-        std::ranges::count(generate_key_requests_, provider_site,
-                           &GenerateKeyRequest::provider_site));
-  }
-  return count;
 }
 
 void SingleSignOnKeyManager::OnGenerateKeyDone(

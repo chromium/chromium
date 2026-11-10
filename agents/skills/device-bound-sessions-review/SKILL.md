@@ -70,11 +70,12 @@ header's provider parameters (`ProviderRegistrationParams`), and
 - **DBSC-SSO** (`provider_key` only; `kDeviceBoundSessionsForSingleSignOn`): an
   identity provider (IdP) first has the browser generate a key for a relying
   party (RP) (`Secure-Session-GenerateKey`), certified by the IdP session's
-  attestation key. `SingleSignOnKeyManager` keeps these pre-provisioned keys in
-  memory only, keyed by RP origin and a browser-computed JWK thumbprint, capped
-  per IdP site, and usable only while the IdP can access its cookies on the RP.
-  The RP's registration looks the key up by `provider_key` instead of generating
-  one, and a successful registration consumes it.
+  attestation key. `SingleSignOnKeyManager` tracks these pre-provisioned keys in
+  memory, never in the session store (on macOS the key itself is a Keychain
+  item), keyed by RP origin and a browser-computed JWK thumbprint, and usable
+  only while the IdP can access its cookies on the RP. The RP's registration
+  looks the key up by `provider_key` instead of generating one, and a successful
+  registration consumes it.
 - **Federated** (`provider_key`, `provider_url` and `provider_session_id`;
   `kDeviceBoundSessionsFederatedRegistration`): the RP's session reuses the key
   of an existing IdP session. The browser checks that the IdP session exists at
@@ -89,9 +90,9 @@ When reviewing registration changes:
   registered as standalone, and SSO or federated registration never falls back
   to generating a new key.
 - **Check key ownership per flow.** Standalone registration creates a new key,
-  SSO keys live only in memory until a registration consumes them, and a
-  federated session signs with its IdP session's key, so key cleanup can't
-  assume one session per key.
+  SSO keys are tracked only by `SingleSignOnKeyManager` until a registration
+  consumes them, and a federated session signs with its IdP session's key, so
+  key cleanup can't assume one session per key.
 - **Treat provider parameters, `.well-known` files and redirect targets as
   untrusted input.** Base authorization on values the browser computed or
   verified (such as the key thumbprint), not on values the IdP or RP sent.
