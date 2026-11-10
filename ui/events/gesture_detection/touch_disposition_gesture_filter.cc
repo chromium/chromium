@@ -558,7 +558,9 @@ void TouchDispositionGestureFilter::CancelFlingIfNecessary(
                             ending_event_primary_tool_type_,
                             ending_event_flags_, packet_being_sent),
               packet_being_sent);
-  CHECK(!needs_fling_ending_event_, base::NotFatalUntil::M163);
+  // TODO(crbug.com/584058716): CHECK-exclusion: Convert to a CHECK once
+  // we are confident it won't be triggered.
+  DCHECK(!needs_fling_ending_event_);
 }
 
 void TouchDispositionGestureFilter::EndScrollIfNecessary(
