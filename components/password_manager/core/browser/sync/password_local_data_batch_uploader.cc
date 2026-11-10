@@ -156,9 +156,12 @@ void PasswordLocalDataBatchUploader::TriggerLocalDataMigrationForItems(
 void PasswordLocalDataBatchUploader::OnGotLocalPasswordsForDescription(
     base::OnceCallback<void(syncer::LocalDataDescription)> description_callback,
     std::unique_ptr<PasswordFetchRequest> request) {
+  std::vector<PasswordForm> results = request->TakeResults();
   std::vector<GURL> urls;
+  urls.reserve(results.size());
   std::vector<syncer::LocalDataItemModel> local_data_models;
-  for (auto& result : request->TakeResults()) {
+  local_data_models.reserve(results.size());
+  for (auto& result : results) {
     syncer::LocalDataItemModel item;
     item.id = PasswordFormKey(PasswordFormUniqueKey(result));
     item.title = result.url.GetHost();
