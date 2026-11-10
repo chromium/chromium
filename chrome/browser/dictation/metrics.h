@@ -15,6 +15,8 @@ inline constexpr std::string_view kFirstRunExitStatusHistogramName =
     "VoiceTyping.FirstRunExitStatus";
 inline constexpr std::string_view kIsEnabledOnProfileInitHistogramName =
     "VoiceTyping.IsEnabledOnProfileInit";
+inline constexpr std::string_view kPageContextEligibilityHistogramName =
+    "VoiceTyping.PageContextEligibility";
 inline constexpr std::string_view kSessionStartSourceHistogramName =
     "VoiceTyping.SessionStartSource";
 inline constexpr std::string_view kSessionUrlCategoryHistogramName =
@@ -116,12 +118,34 @@ enum class DictationStreamExitStatus {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/voice_typing/enums.xml:DictationStreamExitStatus)
 
+// Outcome of page context eligibility checks when fetching context for a
+// Dictation stream on a web page.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(DictationPageContextEligibility)
+enum class DictationPageContextEligibility {
+  // Page passed all checks and page context was allowed.
+  kEligible = 0,
+  // Page context was blocked by the Optimization Guide DICTATION_ELIGIBLE hint
+  // check (ineligible verdict, missing hint/metadata, or Optimization Guide
+  // unavailable).
+  kHintIneligible = 1,
+  // Page context was blocked by the CSE/IRM PageContextEligibility check.
+  kCseIrmIneligible = 2,
+  kMaxValue = kCseIrmIneligible,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/voice_typing/enums.xml:DictationPageContextEligibility)
+
 // Records how the Dictation FRE dialog was exited.
 void RecordDictationFirstRunExitStatus(DictationFirstRunExitStatus status);
 
 // Records whether Dictation is overall enabled (feature and policies enabled)
 // when DictationKeyedService is initialized for a profile.
 void RecordDictationIsEnabledOnProfileInit(bool is_enabled);
+
+// Records the outcome of page context eligibility checks for a web page.
+void RecordDictationPageContextEligibility(
+    DictationPageContextEligibility status);
 
 // Records the entry point for starting a Dictation session.
 void RecordDictationSessionStartSource(DictationSessionEntryPoint entry_point);

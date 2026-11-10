@@ -9,11 +9,13 @@
 #include <string_view>
 
 #include "base/strings/string_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/dictation/dictation_browser_test_base.h"
 #include "chrome/browser/dictation/dictation_keyed_service.h"
 #include "chrome/browser/dictation/features.h"
 #include "chrome/browser/dictation/listener_stream_provider.h"
+#include "chrome/browser/dictation/metrics.h"
 #include "chrome/browser/dictation/target.h"
 #include "chrome/browser/dictation/test_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -122,6 +124,7 @@ class DictationContextBrowserTest : public DictationBrowserTestBase {
 };
 
 IN_PROC_BROWSER_TEST_F(DictationContextBrowserTest, APCCaptured) {
+  base::HistogramTester histogram_tester;
   // This test page has a bit of text content.
   NavigateToUrl("/simple.html");
 
@@ -152,6 +155,9 @@ IN_PROC_BROWSER_TEST_F(DictationContextBrowserTest, APCCaptured) {
                 base::TRIM_ALL),
             "Non empty simple page");
   EXPECT_EQ(context->annotated_page_content->main_frame_data().title(), "OK");
+  histogram_tester.ExpectUniqueSample(
+      kPageContextEligibilityHistogramName,
+      DictationPageContextEligibility::kEligible, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(DictationContextBrowserTest, SelectedTextCaptured) {
@@ -306,6 +312,7 @@ IN_PROC_BROWSER_TEST_F(DictationContextBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(DictationContextBrowserTest, IneligiblePageElided) {
+  base::HistogramTester histogram_tester;
   ScopedPageContextEligibilityForTesting scoped_eligibility(&g_ineligible_api);
 
   const GURL url = embedded_test_server()->GetURL("/simple.html");
@@ -333,12 +340,16 @@ IN_PROC_BROWSER_TEST_F(DictationContextBrowserTest, IneligiblePageElided) {
   EXPECT_FALSE(context->annotated_page_content.has_value());
   EXPECT_FALSE(context->inner_text.has_value());
   EXPECT_FALSE(context->editable_content.has_value());
+  histogram_tester.ExpectUniqueSample(
+      kPageContextEligibilityHistogramName,
+      DictationPageContextEligibility::kCseIrmIneligible, 1);
 }
 
 // Pages whose Optimization Guide hint marks them ineligible must not have any
 // page context extracted.
 IN_PROC_BROWSER_TEST_F(DictationContextBrowserTest,
                        NoPageContextWithIneligibleHint) {
+  base::HistogramTester histogram_tester;
   AddOptimizationGuideIneligibleHint(
       embedded_test_server()->GetURL("/simple.html"));
   NavigateToUrl("/simple.html", /*add_eligible_hint=*/false);
@@ -359,12 +370,16 @@ IN_PROC_BROWSER_TEST_F(DictationContextBrowserTest,
   EXPECT_FALSE(context->annotated_page_content.has_value());
   EXPECT_FALSE(context->inner_text.has_value());
   EXPECT_FALSE(context->editable_content.has_value());
+  histogram_tester.ExpectUniqueSample(
+      kPageContextEligibilityHistogramName,
+      DictationPageContextEligibility::kHintIneligible, 1);
 }
 
 // Pages with no cached Optimization Guide hint (where `CanApplyOptimization`
 // returns `kUnknown`) must not have any page context extracted.
 IN_PROC_BROWSER_TEST_F(DictationContextBrowserTest,
                        NoPageContextWithoutEligibleHint) {
+  base::HistogramTester histogram_tester;
   NavigateToUrl("/simple.html", /*add_eligible_hint=*/false);
 
   StartSession();
@@ -383,6 +398,9 @@ IN_PROC_BROWSER_TEST_F(DictationContextBrowserTest,
   EXPECT_FALSE(context->annotated_page_content.has_value());
   EXPECT_FALSE(context->inner_text.has_value());
   EXPECT_FALSE(context->editable_content.has_value());
+  histogram_tester.ExpectUniqueSample(
+      kPageContextEligibilityHistogramName,
+      DictationPageContextEligibility::kHintIneligible, 1);
 }
 
 // Tests for editors that keep their text and selection in an EditContext

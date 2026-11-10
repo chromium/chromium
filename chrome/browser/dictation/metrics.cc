@@ -16,6 +16,11 @@ void RecordDictationIsEnabledOnProfileInit(bool is_enabled) {
   base::UmaHistogramBoolean(kIsEnabledOnProfileInitHistogramName, is_enabled);
 }
 
+void RecordDictationPageContextEligibility(
+    DictationPageContextEligibility status) {
+  base::UmaHistogramEnumeration(kPageContextEligibilityHistogramName, status);
+}
+
 void RecordDictationSessionStartSource(DictationSessionEntryPoint entry_point) {
   base::UmaHistogramEnumeration(kSessionStartSourceHistogramName, entry_point);
 }

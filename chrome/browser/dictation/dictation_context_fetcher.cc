@@ -15,6 +15,7 @@
 #include "chrome/browser/dictation/dictation_keyed_service.h"
 #include "chrome/browser/dictation/features.h"
 #include "chrome/browser/dictation/logging.h"
+#include "chrome/browser/dictation/metrics.h"
 #include "chrome/browser/dictation/target.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
@@ -167,6 +168,8 @@ void DictationContextFetcher::Fetch(Target& target,
       optimization_guide::PageContextEligibilityStatus::kNotEligible) {
     VT_LOG(web_contents->GetBrowserContext())
         << "Page not eligible for context";
+    RecordDictationPageContextEligibility(
+        DictationPageContextEligibility::kCseIrmIneligible);
     DictationContext context;
     std::move(callback).Run(std::move(context));
     return;
@@ -186,6 +189,8 @@ void DictationContextFetcher::Fetch(Target& target,
       optimization_guide::PageContextEligibilityStatus::kNotEligible) {
     VT_LOG(web_contents->GetBrowserContext())
         << "Page not eligible for context per Optimization Guide";
+    RecordDictationPageContextEligibility(
+        DictationPageContextEligibility::kHintIneligible);
     std::move(callback).Run(DictationContext());
     return;
   }
@@ -256,15 +261,27 @@ void DictationContextFetcher::OnPageContextFetched(
   CHECK(service);
   // Fail closed if the page is not explicitly eligible under both checks.
   if (GetPageContextEligibility(web_contents.get()) !=
-          optimization_guide::PageContextEligibilityStatus::kEligible ||
-      service->CheckOptimizationGuideHint(
-          web_contents->GetLastCommittedURL()) !=
-          optimization_guide::PageContextEligibilityStatus::kEligible) {
+      optimization_guide::PageContextEligibilityStatus::kEligible) {
     VT_LOG(web_contents->GetBrowserContext())
         << "Page not eligible for context";
+    RecordDictationPageContextEligibility(
+        DictationPageContextEligibility::kCseIrmIneligible);
     std::move(callback).Run(std::move(context));
     return;
   }
+  if (service->CheckOptimizationGuideHint(
+          web_contents->GetLastCommittedURL()) !=
+      optimization_guide::PageContextEligibilityStatus::kEligible) {
+    VT_LOG(web_contents->GetBrowserContext())
+        << "Page not eligible for context per Optimization Guide";
+    RecordDictationPageContextEligibility(
+        DictationPageContextEligibility::kHintIneligible);
+    std::move(callback).Run(std::move(context));
+    return;
+  }
+
+  RecordDictationPageContextEligibility(
+      DictationPageContextEligibility::kEligible);
 
   // TODO(b/527240600): Handle errors
   if (result.has_value()) {

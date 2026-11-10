@@ -29,6 +29,18 @@ found in the LICENSE file.
   </summary>
 </histogram>
 
+<histogram name="VoiceTyping.PageContextEligibility"
+    enum="DictationPageContextEligibility" expires_after="2027-06-01">
+  <owner>amyasinghal@google.com</owner>
+  <owner>src/chrome/browser/dictation/OWNERS</owner>
+  <summary>
+    Records the outcome of page context eligibility checks (whether page context
+    was allowed, blocked by the Optimization Guide DICTATION_ELIGIBLE hint, or
+    blocked by CSE/IRM PageContextEligibility) whenever page context is fetched
+    for a Dictation stream on a web page.
+  </summary>
+</histogram>
+
 <histogram name="VoiceTyping.SessionStartSource"
     enum="DictationSessionEntryPoint" expires_after="2027-06-01">
   <owner>amyasinghal@google.com</owner>

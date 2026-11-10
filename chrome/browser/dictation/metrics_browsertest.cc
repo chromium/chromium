@@ -111,7 +111,9 @@ IN_PROC_BROWSER_TEST_F(
 
 // Note: DictationUrlCategory::kGlic is tested in
 // DictationGlicBrowserTest.RecordsSessionUrlCategoryGlic in
-// dictation_keyed_service_browsertest.cc.
+// dictation_keyed_service_browsertest.cc, and
+// kPageContextEligibilityHistogramName is tested in DictationContextBrowserTest
+// in dictation_context_browsertest.cc.
 IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
                        RecordSessionUrlCategoryWebOnSessionStart) {
   base::HistogramTester histogram_tester;
