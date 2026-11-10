@@ -144,6 +144,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
 
   const NetworkConfig* network_config() const { return network_config_.get(); }
 
+  // Returns the positive session ID exposed by Shill in NetworkConfig to
+  // identify unique network connection lifecycles, or std::nullopt if
+  // NetworkConfig or its session ID is not set.
+  std::optional<int> session_id() const;
+
   // Wireless property accessors
   bool connectable() const { return connectable_; }
   void set_connectable(bool connectable) { connectable_ = connectable; }

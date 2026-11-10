@@ -19,6 +19,17 @@ class NetworkState;
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 std::string NetworkId(const NetworkState* network);
 
+// Returns a consistent network identifier for logs including the Shill
+// NetworkConfig SessionID (e.g. "wifi_psk_1 sid=12" or "wifi_psk_1 sid=none").
+// If |network| is null returns "<none>".
+COMPONENT_EXPORT(CHROMEOS_NETWORK)
+std::string NetworkIdWithSession(const NetworkState* network);
+
+// Returns NetworkIdWithSession() for the current default network, or "<none>"
+// if there is no default network.
+COMPONENT_EXPORT(CHROMEOS_NETWORK)
+std::string DefaultNetworkIdWithSession();
+
 // Returns a consistent network identifier for logs. Looks up the network by
 // |service_path|. If no network is found, returns service_x for /service/x.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)

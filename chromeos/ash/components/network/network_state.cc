@@ -413,6 +413,10 @@ GURL NetworkState::GetWebProxyAutoDiscoveryUrl() const {
   return gurl;
 }
 
+std::optional<int> NetworkState::session_id() const {
+  return network_config_ ? network_config_->session_id : std::nullopt;
+}
+
 std::string NetworkState::GetVpnProviderType() const {
   return vpn_provider_ ? vpn_provider_->type : std::string();
 }

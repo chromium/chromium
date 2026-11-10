@@ -56,6 +56,10 @@ struct COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConfig {
   // platform.
   int mtu = 0;
 
+  // Unique identifier for the current Network connection instance on this
+  // Service, defined by Shill's Network layer in the platform.
+  std::optional<int> session_id;
+
   // The prefixes for the destinations which should not or should be routed
   // via this network.These two properties are only meaningful for a VPN
   // network.

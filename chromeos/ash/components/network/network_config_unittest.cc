@@ -30,6 +30,7 @@ TEST(NetworkConfigTest, ParseValue) {
   properties.Set(shill::kNetworkConfigSearchDomainsProperty,
                  base::ListValue().Append("domain1").Append("domain2"));
   properties.Set(shill::kNetworkConfigMTUProperty, 1400);
+  properties.Set(shill::kNetworkConfigSessionIDProperty, 42);
   properties.Set(shill::kNetworkConfigIncludedRoutesProperty,
                  base::ListValue().Append("10.10.10.0/24").Append("fd01::/64"));
   properties.Set(shill::kNetworkConfigExcludedRoutesProperty,
@@ -56,6 +57,7 @@ TEST(NetworkConfigTest, ParseValue) {
   EXPECT_EQ(config->search_domains[0], "domain1");
   EXPECT_EQ(config->search_domains[1], "domain2");
   EXPECT_EQ(config->mtu, 1400);
+  EXPECT_EQ(config->session_id, 42);
   ASSERT_EQ(config->included_routes.size(), 2u);
   EXPECT_EQ(config->included_routes[0].addr.ToString(), "10.10.10.0");
   EXPECT_EQ(config->included_routes[0].prefix_len, 24);

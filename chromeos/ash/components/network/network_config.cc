@@ -145,6 +145,13 @@ std::unique_ptr<NetworkConfig> NetworkConfig::ParseFromServicePropertyValue(
     network_config->mtu = mtu;
   }
 
+  // Session ID.
+  if (int session_id =
+          dict->FindInt(shill::kNetworkConfigSessionIDProperty).value_or(0);
+      session_id > 0) {
+    network_config->session_id = session_id;
+  }
+
   return network_config;
 }
 

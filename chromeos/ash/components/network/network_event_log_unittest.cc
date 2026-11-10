@@ -133,6 +133,26 @@ TEST_F(NetworkEventLogTest, NetworkId) {
   EXPECT_EQ("vpn_openvpn_6", NetworkId(service6));
 }
 
+TEST_F(NetworkEventLogTest, NetworkIdWithSession) {
+  EXPECT_EQ("<none>", NetworkIdWithSession(nullptr));
+  EXPECT_EQ("ethernet_0 sid=none", DefaultNetworkIdWithSession());
+
+  const NetworkState* service2 = GetNetworkState("/service/2");
+  ASSERT_TRUE(service2);
+  EXPECT_EQ(std::nullopt, service2->session_id());
+  EXPECT_EQ("wifi_none_2 sid=none", NetworkIdWithSession(service2));
+
+  auto* service_test = ShillServiceClient::Get()->GetTestInterface();
+  service_test->SetServiceProperty(
+      "/service/2", shill::kNetworkConfigProperty,
+      base::Value(
+          base::DictValue().Set(shill::kNetworkConfigSessionIDProperty, 17)));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(17, service2->session_id());
+  EXPECT_EQ("wifi_none_2 sid=17", NetworkIdWithSession(service2));
+}
+
 TEST_F(NetworkEventLogTest, NetworkPathId) {
   EXPECT_EQ("ethernet_0", NetworkPathId("/service/0"));
   EXPECT_EQ("cellular_LTE_1", NetworkPathId("/service/1"));

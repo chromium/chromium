@@ -4,6 +4,9 @@
 
 #include "chromeos/ash/components/network/network_event_log.h"
 
+#include <optional>
+
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
@@ -56,6 +59,28 @@ std::string NetworkId(const NetworkState* network) {
     result += network->GetVpnProviderType() + "_";
   }
   return result + id;
+}
+
+std::string NetworkIdWithSession(const NetworkState* network) {
+  if (!network) {
+    return kUnknownId;
+  }
+  std::string result = NetworkId(network);
+  std::optional<int> session_id = network->session_id();
+  if (session_id.has_value()) {
+    result += " sid=" + base::NumberToString(*session_id);
+  } else {
+    result += " sid=none";
+  }
+  return result;
+}
+
+std::string DefaultNetworkIdWithSession() {
+  NetworkStateHandler* handler = GetNetworkStateHandler();
+  if (!handler) {
+    return kUnknownId;
+  }
+  return NetworkIdWithSession(handler->DefaultNetwork());
 }
 
 // Calls NetworkId() if a NetworkState for |service_path| exists, otherwise
