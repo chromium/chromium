@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.handoff;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.HandoffActivityData;
@@ -15,6 +13,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.PersistableBundle;
 import android.os.UserManager;
 import android.provider.Browser;
@@ -29,13 +29,21 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.ExternalIntentUrlChecker;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.intents.BrowserIntentUtils;
+import org.chromium.chrome.browser.share.link_to_text.LinkToTextHelper;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.content_public.browser.GestureListenerManager;
+import org.chromium.content_public.browser.GestureStateListener;
+import org.chromium.content_public.browser.RenderCoordinates;
+import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -49,6 +57,8 @@ import java.util.Objects;
 @NullMarked
 @SuppressLint("NewApi")
 public class HandoffController implements Destroyable {
+    @VisibleForTesting static final int FETCH_TEXT_DEBOUNCE_MS = 300;
+
     @IntDef({
         HandoffEnableTrigger.TAB_SWITCH,
         HandoffEnableTrigger.URL_NAVIGATION,
@@ -67,7 +77,53 @@ public class HandoffController implements Destroyable {
     private final Callback<@Nullable Tab> mCurrentTabObserver =
             _ -> updateHandoffState(HandoffEnableTrigger.TAB_SWITCH);
 
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
+    private final Runnable mFetchRunnable = () -> fetchActiveTabTextFragment();
+    private @Nullable WebContents mActiveWebContents;
+    private String mActiveTabTextFragment = "";
+
+    // True while scrolling or while a debounced Mojo selector fetch is pending/in-flight, so
+    // onShown and onPageLoadFinished know whether to re-trigger extraction.
+    private boolean mHasPendingScrollFetch;
+
+    // Monotonically increasing token incremented when starting or canceling a fetch to ignore
+    // stale Mojo callbacks from earlier in-flight requests.
+    private int mFetchGeneration;
+
     private @Nullable GURL mTabLastUrlSeen;
+
+    private final GestureStateListener mGestureStateListener =
+            new GestureStateListener() {
+                @Override
+                public void onScrollStarted(
+                        int scrollOffsetY, int scrollExtentY, boolean isDirectionUp) {
+                    cancelPendingFetch();
+                    mHasPendingScrollFetch = true;
+                }
+
+                @Override
+                public void onFlingStartGesture(
+                        int scrollOffsetY, int scrollExtentY, boolean isDirectionUp) {
+                    cancelPendingFetch();
+                    mHasPendingScrollFetch = true;
+                }
+
+                @Override
+                public void onScrollEnded(int scrollOffsetY, int scrollExtentY) {
+                    scheduleTextFragmentFetch(scrollOffsetY);
+                }
+
+                @Override
+                public void onFlingEndGesture(int scrollOffsetY, int scrollExtentY) {
+                    scheduleTextFragmentFetch(scrollOffsetY);
+                }
+
+                @Override
+                public void onScrollOffsetOrExtentChanged(int scrollOffsetY, int scrollExtentY) {
+                    // Handles #anchor/JS scrolls, pinch-zoom, and scroll-anchoring layout shifts.
+                    scheduleTextFragmentFetch(scrollOffsetY);
+                }
+            };
 
     /** Delegate interface for Android Handoff system APIs. */
     interface Delegate {
@@ -129,19 +185,46 @@ public class HandoffController implements Destroyable {
         mActivityTabProvider = activityTabProvider;
         mDelegate = delegate;
         mTabModelSelector.getCurrentTabSupplier().addSyncObserver(mCurrentTabObserver);
-
         Tab currentTab = activityTabProvider.get();
-        mTabLastUrlSeen = (currentTab != null) ? currentTab.getUrl() : null;
+        mTabLastUrlSeen =
+                (currentTab != null && !currentTab.isIncognitoBranded())
+                        ? currentTab.getUrl()
+                        : null;
 
         mActivityTabTabObserver =
                 new ActivityTabTabObserver(activityTabProvider) {
                     @Override
                     protected void onObservingDifferentTab(@Nullable Tab tab) {
-                        boolean isNormalTab = tab != null && !tab.isIncognitoBranded();
-                        assumeNonNull(tab);
-                        mTabLastUrlSeen = isNormalTab ? tab.getUrl() : null;
-
+                        cancelAndClearTextFragment();
+                        updateGestureListener(tab);
+                        if (tab != null && !tab.isIncognitoBranded()) {
+                            mTabLastUrlSeen = tab.getUrl();
+                            scheduleTextFragmentFetch();
+                        } else {
+                            mTabLastUrlSeen = null;
+                        }
                         updateHandoffState(HandoffEnableTrigger.TAB_SWITCH);
+                    }
+
+                    @Override
+                    public void onContentChanged(Tab tab) {
+                        // Rebind gesture listener when WebContents swaps (e.g. prerender or tab
+                        // restore).
+                        cancelAndClearTextFragment();
+                        updateGestureListener(tab);
+                        if (!tab.isIncognitoBranded()) {
+                            scheduleTextFragmentFetch();
+                        }
+                    }
+
+                    @Override
+                    public void onShown(Tab tab, @TabSelectionType int type) {
+                        // If the user scrolled and immediately backgrounded Chrome before we
+                        // finished extracting the new text, fetch it now that the tab is visible.
+                        if (!tab.isIncognitoBranded()
+                                && (mActiveTabTextFragment.isEmpty() || mHasPendingScrollFetch)) {
+                            scheduleTextFragmentFetch();
+                        }
                     }
 
                     @Override
@@ -152,19 +235,134 @@ public class HandoffController implements Destroyable {
                         if (tab.isIncognitoBranded()) return;
                         mTabLastUrlSeen = currentUrl;
 
+                        cancelAndClearTextFragment();
+                        scheduleTextFragmentFetch();
                         updateHandoffState(HandoffEnableTrigger.URL_NAVIGATION);
+                    }
+
+                    @Override
+                    public void onPageLoadFinished(Tab tab, GURL url) {
+                        // When navigating back or restoring a tab, Chrome may restore the scroll
+                        // position before the page finishes loading. Fetch the text once loaded.
+                        if (!tab.isIncognitoBranded()
+                                && (mActiveTabTextFragment.isEmpty() || mHasPendingScrollFetch)) {
+                            scheduleTextFragmentFetch();
+                        }
                     }
                 };
     }
 
+    private void cancelPendingFetch() {
+        mHandler.removeCallbacks(mFetchRunnable);
+        // Invalidate any in-flight Mojo request.
+        mFetchGeneration++;
+    }
+
+    private void cancelAndClearTextFragment() {
+        cancelPendingFetch();
+        mActiveTabTextFragment = "";
+        mHasPendingScrollFetch = false;
+    }
+
+    private void scheduleTextFragmentFetch() {
+        Tab tab = mActivityTabProvider.get();
+        WebContents webContents = (tab != null) ? tab.getWebContents() : null;
+        RenderCoordinates coords =
+                (webContents != null && !webContents.isDestroyed())
+                        ? RenderCoordinates.fromWebContents(webContents)
+                        : null;
+        int scrollOffsetY = (coords != null) ? coords.getScrollYPixInt() : 0;
+        scheduleTextFragmentFetch(scrollOffsetY);
+    }
+
+    private void scheduleTextFragmentFetch(int scrollOffsetY) {
+        cancelPendingFetch();
+        mHasPendingScrollFetch = scrollOffsetY > 0;
+        if (mHasPendingScrollFetch) {
+            // Wait for scrolling to settle before asking Blink to extract viewport text.
+            mHandler.postDelayed(mFetchRunnable, FETCH_TEXT_DEBOUNCE_MS);
+        } else {
+            // At the top of the page, no scroll selector is needed.
+            mActiveTabTextFragment = "";
+        }
+    }
+
+    private void updateGestureListener(@Nullable Tab tab) {
+        WebContents newWebContents =
+                (tab != null && !tab.isIncognitoBranded()) ? tab.getWebContents() : null;
+        if (mActiveWebContents == newWebContents) return;
+
+        // 1. Detach the scroll listener from the previous WebContents.
+        if (mActiveWebContents != null && !mActiveWebContents.isDestroyed()) {
+            GestureListenerManager glm = GestureListenerManager.fromWebContents(mActiveWebContents);
+            if (glm != null) {
+                glm.removeListener(mGestureStateListener);
+            }
+        }
+        // 2. Attach the scroll listener to the new active WebContents.
+        mActiveWebContents = newWebContents;
+        if (mActiveWebContents != null && !mActiveWebContents.isDestroyed()) {
+            GestureListenerManager glm = GestureListenerManager.fromWebContents(mActiveWebContents);
+            if (glm != null) {
+                glm.addListener(
+                        mGestureStateListener, RootScrollOffsetUpdateFrequency.ON_SCROLL_END);
+            }
+        }
+    }
+
+    private void fetchActiveTabTextFragment() {
+        Tab tab = mActivityTabProvider.get();
+        if (tab == null || !isHandoffEnabled(tab)) {
+            mActiveTabTextFragment = "";
+            mHasPendingScrollFetch = false;
+            return;
+        }
+
+        // Skip extraction if the tab is backgrounded or its native view/renderer is not ready yet;
+        // mHasPendingScrollFetch stays true so onShown or onPageLoadFinished can retry later.
+        if (tab.isHidden()
+                || tab.getWebContents() == null
+                || tab.getWebContents().isDestroyed()
+                || tab.getWebContents().getTopLevelNativeWindow() == null) {
+            return;
+        }
+
+        RenderFrameHost mainFrame = tab.getWebContents().getMainFrame();
+        if (mainFrame == null || !mainFrame.isRenderFrameLive()) {
+            return;
+        }
+
+        // Request the text fragment for the center of the current viewport from Blink.
+        final int requestGeneration = ++mFetchGeneration;
+        final GURL requestUrl = tab.getUrl();
+        LinkToTextHelper.requestSelectorForViewportCenter(
+                tab.getWebContents(),
+                (selector) -> {
+                    // Drop responses invalidated by a scroll, tab switch, or navigation.
+                    if (requestGeneration != mFetchGeneration) return;
+                    Tab currentTab = mActivityTabProvider.get();
+                    if (currentTab != tab || !Objects.equals(currentTab.getUrl(), requestUrl)) {
+                        return;
+                    }
+                    mHasPendingScrollFetch = false;
+                    mActiveTabTextFragment = (selector != null) ? selector : "";
+                });
+    }
+
     @Override
     public void destroy() {
+        cancelAndClearTextFragment();
+        updateGestureListener(null);
         mActivityTabTabObserver.destroy();
         mTabModelSelector.getCurrentTabSupplier().removeObserver(mCurrentTabObserver);
     }
 
     ActivityTabTabObserver getActiveTabObserverForTesting() {
         return mActivityTabTabObserver;
+    }
+
+    GestureStateListener getGestureStateListenerForTesting() {
+        return mGestureStateListener;
     }
 
     /**
@@ -234,7 +432,35 @@ public class HandoffController implements Destroyable {
         RecordUserAction.record("HandoffDataRequested");
 
         // 2. Build the handoff data via delegate.
-        return (HandoffActivityData)
-                mDelegate.buildHandoffActivityData(mActivity, tab.getUrl().getSpec());
+        String url = appendTextFragment(tab.getUrl().getSpec(), mActiveTabTextFragment);
+        return (HandoffActivityData) mDelegate.buildHandoffActivityData(mActivity, url);
+    }
+
+    private String appendTextFragment(String url, String selector) {
+        Uri uri = Uri.parse(url);
+        String existingFragment = uri.getEncodedFragment();
+        if (existingFragment == null) existingFragment = "";
+
+        // 1. Keep any fragment text before ":~:text=" (e.g. "intro" in "#intro:~:text=old").
+        int directiveIndex = existingFragment.indexOf(LinkToTextHelper.TEXT_FRAGMENT_PREFIX);
+        String baseFragment =
+                directiveIndex >= 0
+                        ? existingFragment.substring(0, directiveIndex)
+                        : existingFragment;
+
+        // 2. When selector is empty, remove any existing ":~:text=" from the URL.
+        if (selector == null || selector.isEmpty()) {
+            if (directiveIndex < 0) {
+                return url;
+            }
+            return uri.buildUpon()
+                    .encodedFragment(baseFragment.isEmpty() ? null : baseFragment)
+                    .toString();
+        }
+
+        // 3. Otherwise, append ":~:text=<selector>" to baseFragment.
+        return uri.buildUpon()
+                .encodedFragment(baseFragment + LinkToTextHelper.TEXT_FRAGMENT_PREFIX + selector)
+                .toString();
     }
 }
