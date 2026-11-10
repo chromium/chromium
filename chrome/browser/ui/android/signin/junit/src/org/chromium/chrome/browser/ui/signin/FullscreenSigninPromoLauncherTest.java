@@ -565,11 +565,7 @@ public class FullscreenSigninPromoLauncherTest {
                 .thenReturn(mSigninIntent);
         mPrefManager.setSigninPromoLastShownTimeWithRandomOffset(mTimeInPast);
         mPrefManager.setSigninPromoLastAccountEmails(Set.of(TestAccounts.ACCOUNT1.getEmail()));
-        FeatureProperties expectedProps =
-                new FeatureProperties(
-                        UiFormat.FRE,
-                        /* isBlockedByCooldownGroup= */ true,
-                        /* blocksCooldownGroup= */ true);
+        FeatureProperties expectedProps = new FeatureProperties(UiFormat.FRE);
         when(mTrackerMock.shouldTriggerHelpUi(
                         eq(FeatureConstants.FULLSCREEN_SIGNIN_PROMO_FEATURE), eq(expectedProps)))
                 .thenReturn(true);

@@ -95,7 +95,7 @@ public final class TrackerFactory {
      * UserEducationFramework flag and the UserEducationBlueBubbleCooldownGroup sub-flag are
      * enabled.
      */
-    public static boolean isBlueBubbleCooldownGroupEnabled() {
+    private static boolean isBlueBubbleCooldownGroupEnabled() {
         return ChromeFeatureList.sUserEducationFramework.isEnabled()
                 && ChromeFeatureList.sUserEducationBlueBubbleCooldownGroup.isEnabled();
     }

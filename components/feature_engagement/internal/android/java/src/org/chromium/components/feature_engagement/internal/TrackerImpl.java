@@ -4,6 +4,8 @@
 
 package org.chromium.components.feature_engagement.internal;
 
+import static org.chromium.components.feature_engagement.internal.CooldownBypassAllowlist.isAllowedToBypassCooldownGroup;
+import static org.chromium.components.feature_engagement.internal.CooldownBypassAllowlist.isAllowedToSkipBlockingCooldownGroup;
 import static org.chromium.components.feature_engagement.internal.EnterprisePolicyBypassAllowlist.isAllowedToBypassEnterprisePolicy;
 
 import androidx.annotation.CheckResult;
@@ -127,11 +129,7 @@ public class TrackerImpl implements Tracker {
     @Override
     @Deprecated
     public boolean shouldTriggerHelpUi(String feature) {
-        FeatureProperties properties =
-                new FeatureProperties(
-                        UiFormat.UNKNOWN,
-                        /* isBlockedByCooldownGroup= */ false,
-                        /* blocksCooldownGroup= */ false);
+        FeatureProperties properties = new FeatureProperties(UiFormat.UNKNOWN);
 
         // Call the new method to share enterprise policy check logic.
         if (!shouldTriggerHelpUi(feature, properties)) {
@@ -153,11 +151,7 @@ public class TrackerImpl implements Tracker {
     @Override
     @Deprecated
     public TriggerDetails shouldTriggerHelpUiWithSnooze(String feature) {
-        FeatureProperties properties =
-                new FeatureProperties(
-                        UiFormat.UNKNOWN,
-                        /* isBlockedByCooldownGroup= */ false,
-                        /* blocksCooldownGroup= */ false);
+        FeatureProperties properties = new FeatureProperties(UiFormat.UNKNOWN);
 
         // Call the new method to share enterprise policy check logic.
         TriggerDetails details = shouldTriggerHelpUiWithSnooze(feature, properties);
@@ -223,7 +217,7 @@ public class TrackerImpl implements Tracker {
         // we need to contribute to the cooldown group.
         if (!TrackerImplJni.get().wouldTriggerHelpUi(mNativePtr, cooldownFeature)) {
             RecordUserAction.record("InProductHelp.CooldownGroupActive." + cooldownFeature);
-            if (featureProperties.isBlockedByCooldownGroup()) {
+            if (isBlockedByCooldownGroup(feature)) {
                 RecordUserAction.record("InProductHelp.ShouldTriggerHelpUI." + feature);
                 RecordUserAction.record(
                         "InProductHelp.ShouldTriggerHelpUIResult.NotTriggered." + feature);
@@ -244,7 +238,7 @@ public class TrackerImpl implements Tracker {
         }
 
         // 4. If we need to block the cooldown group, notify the cooldown group.
-        if (featureProperties.blocksCooldownGroup()) {
+        if (blocksCooldownGroup(feature)) {
             recordCooldownTriggered(format);
         }
 
@@ -396,6 +390,19 @@ public class TrackerImpl implements Tracker {
     private boolean isBlockedByEnterprisePolicy(String feature) {
         return mEnterprisePolicyBlocksPromotionsSupplier.getAsBoolean()
                 && !isAllowedToBypassEnterprisePolicy(feature);
+    }
+
+    /**
+     * Returns whether the feature is blocked by its format's cooldown group while that group is
+     * cooling down.
+     */
+    private boolean isBlockedByCooldownGroup(String feature) {
+        return !isAllowedToBypassCooldownGroup(feature);
+    }
+
+    /** Returns whether triggering the feature contributes to its format's cooldown group. */
+    private boolean blocksCooldownGroup(String feature) {
+        return !isAllowedToSkipBlockingCooldownGroup(feature);
     }
 
     @Override

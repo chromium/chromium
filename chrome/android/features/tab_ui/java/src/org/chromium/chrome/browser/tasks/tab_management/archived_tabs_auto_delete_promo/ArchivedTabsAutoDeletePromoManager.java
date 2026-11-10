@@ -66,11 +66,7 @@ public class ArchivedTabsAutoDeletePromoManager implements Destroyable {
                 if (tracker == null) {
                     return;
                 }
-                FeatureProperties featureProperties =
-                        new FeatureProperties(
-                                UiFormat.BOTTOM_SHEET,
-                                /* isBlockedByCooldownGroup= */ true,
-                                /* blocksCooldownGroup= */ true);
+                FeatureProperties featureProperties = new FeatureProperties(UiFormat.BOTTOM_SHEET);
                 if (!tracker.shouldTriggerHelpUi(
                         FeatureConstants.ARCHIVED_TABS_AUTO_DELETE_PROMO_FEATURE,
                         featureProperties)) {

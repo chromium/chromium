@@ -277,11 +277,7 @@ public final class FullscreenSigninPromoLauncher {
     private static boolean shouldTriggerFullscreenPromo(Profile profile) {
         assert TrackerFactory.isInterruptiveCooldownGroupEnabled();
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
-        FeatureProperties featureProperties =
-                new FeatureProperties(
-                        UiFormat.FRE,
-                        /* isBlockedByCooldownGroup= */ true,
-                        /* blocksCooldownGroup= */ true);
+        FeatureProperties featureProperties = new FeatureProperties(UiFormat.FRE);
         return tracker.shouldTriggerHelpUi(
                 FeatureConstants.FULLSCREEN_SIGNIN_PROMO_FEATURE, featureProperties);
     }

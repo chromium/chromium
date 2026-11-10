@@ -110,11 +110,7 @@ public class ArchivedTabsAutoDeletePromoManagerTest {
         when(mMockBottomSheetController.requestShowContent(
                         any(ArchivedTabsAutoDeletePromoSheetContent.class), eq(true)))
                 .thenReturn(true);
-        FeatureProperties expectedProps =
-                new FeatureProperties(
-                        UiFormat.BOTTOM_SHEET,
-                        /* isBlockedByCooldownGroup= */ true,
-                        /* blocksCooldownGroup= */ true);
+        FeatureProperties expectedProps = new FeatureProperties(UiFormat.BOTTOM_SHEET);
         when(mMockTracker.shouldTriggerHelpUi(
                         eq(FeatureConstants.ARCHIVED_TABS_AUTO_DELETE_PROMO_FEATURE),
                         eq(expectedProps)))

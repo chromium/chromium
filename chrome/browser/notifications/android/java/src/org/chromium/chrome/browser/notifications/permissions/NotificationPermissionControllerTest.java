@@ -1082,11 +1082,7 @@ public class NotificationPermissionControllerTest {
         Profile profile = mock(Profile.class);
         Tracker tracker = mock(Tracker.class);
         TrackerFactory.setTrackerForTests(tracker);
-        FeatureProperties expectedProps =
-                new FeatureProperties(
-                        UiFormat.ALERTS,
-                        /* isBlockedByCooldownGroup= */ false,
-                        /* blocksCooldownGroup= */ true);
+        FeatureProperties expectedProps = new FeatureProperties(UiFormat.ALERTS);
         when(tracker.shouldTriggerHelpUi(
                         eq(FeatureConstants.NOTIFICATION_PERMISSION_PROMO_FEATURE),
                         eq(expectedProps)))

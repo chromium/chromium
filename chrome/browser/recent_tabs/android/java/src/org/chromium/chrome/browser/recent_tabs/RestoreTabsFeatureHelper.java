@@ -115,12 +115,7 @@ public class RestoreTabsFeatureHelper {
         // successfully, IPH must show. Alternatively, the former lets the logic know if the promo
         // is expected to show, which can help determine if it is being shown for the first or
         // second time.
-        boolean isCooldownEnabled = TrackerFactory.isInterruptiveCooldownGroupEnabled();
-        FeatureProperties featureProperties =
-                new FeatureProperties(
-                        UiFormat.BOTTOM_SHEET,
-                        /* isBlockedByCooldownGroup= */ false,
-                        /* blocksCooldownGroup= */ isCooldownEnabled);
+        FeatureProperties featureProperties = new FeatureProperties(UiFormat.BOTTOM_SHEET);
         List<ForeignSession> sessions = mForeignSessionHelper.getMobileAndTabletForeignSessions();
         if (hasValidSyncedDevices(sessions)
                 && tracker.shouldTriggerHelpUi(

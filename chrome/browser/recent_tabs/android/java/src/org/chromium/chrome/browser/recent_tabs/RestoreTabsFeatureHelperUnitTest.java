@@ -172,47 +172,7 @@ public class RestoreTabsFeatureHelperUnitTest {
                 /* modalDialogManagerSupplier= */ null);
         verify(mMockTracker)
                 .shouldTriggerHelpUi(
-                        eq(RESTORE_TABS_FEATURE),
-                        eq(new FeatureProperties(UiFormat.BOTTOM_SHEET, false, false)));
-        verify(mDelegate).showPromo(anyList());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP)
-    @DisableFeatures(ChromeFeatureList.USER_EDUCATION_FRAMEWORK)
-    public void testRestoreTabsFeatureHelper_hasValidSyncedDevices_FrameworkDisabled() {
-        // Setup mock data
-        ForeignSessionTab tab = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", 32L, 32L, 0);
-        List<ForeignSessionTab> tabs = new ArrayList<>();
-        tabs.add(tab);
-        ForeignSessionWindow window = new ForeignSessionWindow(31L, 1, tabs);
-        List<ForeignSessionWindow> windows = new ArrayList<>();
-        windows.add(window);
-        ForeignSession session =
-                new ForeignSession("tag", "John's iPhone 6", 32L, windows, FormFactor.PHONE);
-        List<ForeignSession> sessions = new ArrayList<>();
-        sessions.add(session);
-
-        doAnswer(
-                        invocation -> {
-                            List<ForeignSession> invokedSessions = invocation.getArgument(1);
-                            invokedSessions.addAll(sessions);
-                            return true;
-                        })
-                .when(mForeignSessionHelperJniMock)
-                .getMobileAndTabletForeignSessions(mNativeForeignSessionHelper, new ArrayList<>());
-        mHelper.maybeShowPromo(
-                mActivity,
-                mProfile,
-                mTabCreatorManager,
-                mBottomSheetController,
-                mGTSTabListModelSizeSupplier,
-                mScrollGTSToRestoredTabsCallback,
-                /* modalDialogManagerSupplier= */ null);
-        verify(mMockTracker)
-                .shouldTriggerHelpUi(
-                        eq(RESTORE_TABS_FEATURE),
-                        eq(new FeatureProperties(UiFormat.BOTTOM_SHEET, false, false)));
+                        eq(RESTORE_TABS_FEATURE), eq(new FeatureProperties(UiFormat.BOTTOM_SHEET)));
         verify(mDelegate).showPromo(anyList());
     }
 
@@ -251,8 +211,7 @@ public class RestoreTabsFeatureHelperUnitTest {
                 /* modalDialogManagerSupplier= */ null);
         verify(mMockTracker)
                 .shouldTriggerHelpUi(
-                        eq(RESTORE_TABS_FEATURE),
-                        eq(new FeatureProperties(UiFormat.BOTTOM_SHEET, false, true)));
+                        eq(RESTORE_TABS_FEATURE), eq(new FeatureProperties(UiFormat.BOTTOM_SHEET)));
         verify(mDelegate).showPromo(anyList());
     }
 

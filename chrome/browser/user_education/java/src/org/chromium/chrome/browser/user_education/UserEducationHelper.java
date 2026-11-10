@@ -162,12 +162,7 @@ public class UserEducationHelper {
         mTextBubble = null;
         final boolean shouldTrigger;
         if (BLUE_BUBBLE_COOLDOWN_FEATURES.contains(featureName)) {
-            boolean isCooldownEnabled = TrackerFactory.isBlueBubbleCooldownGroupEnabled();
-            FeatureProperties featureProperties =
-                    new FeatureProperties(
-                            UiFormat.BLUE_BUBBLE,
-                            /* isBlockedByCooldownGroup= */ isCooldownEnabled,
-                            /* blocksCooldownGroup= */ isCooldownEnabled);
+            FeatureProperties featureProperties = new FeatureProperties(UiFormat.BLUE_BUBBLE);
             shouldTrigger = tracker.shouldTriggerHelpUi(featureName, featureProperties);
         } else {
             shouldTrigger = tracker.shouldTriggerHelpUi(featureName);

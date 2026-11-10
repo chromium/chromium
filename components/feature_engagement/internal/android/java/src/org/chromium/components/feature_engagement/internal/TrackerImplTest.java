@@ -74,7 +74,7 @@ public class TrackerImplTest {
         when(mTrackerJniMock.shouldTriggerHelpUi(NATIVE_PTR, TEST_FEATURE)).thenReturn(false);
         mTracker.setEnterprisePolicyBlocksPromotionsSupplier(() -> true);
 
-        FeatureProperties props = new FeatureProperties(UiFormat.DIALOG, true, true);
+        FeatureProperties props = new FeatureProperties(UiFormat.DIALOG);
         assertFalse(mTracker.shouldTriggerHelpUi(TEST_FEATURE, props));
 
         // Should delegate to native to record normal failure metrics, not enterprise policy.
@@ -88,11 +88,7 @@ public class TrackerImplTest {
     @Test
     public void testBlockedByEnterprisePolicy() {
         mTracker.setEnterprisePolicyBlocksPromotionsSupplier(() -> true);
-        FeatureProperties props =
-                new FeatureProperties(
-                        UiFormat.DIALOG,
-                        /* isBlockedByCooldownGroup= */ true,
-                        /* blocksCooldownGroup= */ true);
+        FeatureProperties props = new FeatureProperties(UiFormat.DIALOG);
 
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
@@ -124,11 +120,7 @@ public class TrackerImplTest {
     public void testBypassEnterprisePolicy_allowlistedFeature() {
         String allowlistedFeature = FeatureConstants.NOTIFICATION_PERMISSION_PROMO_FEATURE;
         mTracker.setEnterprisePolicyBlocksPromotionsSupplier(() -> true);
-        FeatureProperties props =
-                new FeatureProperties(
-                        UiFormat.DIALOG,
-                        /* isBlockedByCooldownGroup= */ true,
-                        /* blocksCooldownGroup= */ false);
+        FeatureProperties props = new FeatureProperties(UiFormat.DIALOG);
 
         assertTrue(mTracker.shouldTriggerHelpUi(allowlistedFeature, props));
         verify(mTrackerJniMock).shouldTriggerHelpUi(NATIVE_PTR, allowlistedFeature);
@@ -157,11 +149,7 @@ public class TrackerImplTest {
                         NATIVE_PTR, FeatureConstants.INTERRUPTIVE_IPH_COOLDOWN_GROUP))
                 .thenReturn(false);
 
-        FeatureProperties props =
-                new FeatureProperties(
-                        UiFormat.BOTTOM_SHEET,
-                        /* isBlockedByCooldownGroup= */ true,
-                        /* blocksCooldownGroup= */ true);
+        FeatureProperties props = new FeatureProperties(UiFormat.BOTTOM_SHEET);
 
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
@@ -201,6 +189,7 @@ public class TrackerImplTest {
 
     @Test
     public void testBypassCooldownGroup_andBlocksCooldownGroup() {
+        String allowlistedFeature = FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE;
         when(mTrackerJniMock.wouldTriggerHelpUi(
                         NATIVE_PTR, FeatureConstants.INTERRUPTIVE_IPH_COOLDOWN_GROUP))
                 .thenReturn(false);
@@ -208,13 +197,9 @@ public class TrackerImplTest {
                         NATIVE_PTR, FeatureConstants.INTERRUPTIVE_IPH_COOLDOWN_GROUP))
                 .thenReturn(false);
 
-        FeatureProperties props =
-                new FeatureProperties(
-                        UiFormat.FRE,
-                        /* isBlockedByCooldownGroup= */ false,
-                        /* blocksCooldownGroup= */ true);
+        FeatureProperties props = new FeatureProperties(UiFormat.BOTTOM_SHEET);
 
-        assertTrue(mTracker.shouldTriggerHelpUi(TEST_FEATURE, props));
+        assertTrue(mTracker.shouldTriggerHelpUi(allowlistedFeature, props));
 
         assertEquals(
                 1,
@@ -225,19 +210,15 @@ public class TrackerImplTest {
                 1,
                 mUserActionTester.getActionCount(
                         "InProductHelp.ShouldTriggerHelpUIResult.BypassedCooldownGroup."
-                                + TEST_FEATURE));
+                                + allowlistedFeature));
         verify(mTrackerJniMock)
                 .notifyEvent(NATIVE_PTR, EventConstants.INTERRUPTIVE_IPH_COOLDOWN_GROUP_TRIGGER);
-        verify(mTrackerJniMock).shouldTriggerHelpUi(NATIVE_PTR, TEST_FEATURE);
+        verify(mTrackerJniMock).shouldTriggerHelpUi(NATIVE_PTR, allowlistedFeature);
     }
 
     @Test
     public void testBlocksCooldownGroup_triggersAndDismissesCooldownFeature() {
-        FeatureProperties props =
-                new FeatureProperties(
-                        UiFormat.BLUE_BUBBLE,
-                        /* isBlockedByCooldownGroup= */ true,
-                        /* blocksCooldownGroup= */ true);
+        FeatureProperties props = new FeatureProperties(UiFormat.BLUE_BUBBLE);
 
         assertTrue(mTracker.shouldTriggerHelpUi(TEST_FEATURE, props));
 
@@ -248,12 +229,18 @@ public class TrackerImplTest {
     }
 
     @Test
+    public void testIsAllowedToSkipBlockingCooldownGroup_defaultsToFalse() {
+        // No feature is exempt from contributing to its cooldown group yet, including features
+        // that may bypass being blocked by it.
+        assertFalse(CooldownBypassAllowlist.isAllowedToSkipBlockingCooldownGroup(TEST_FEATURE));
+        assertFalse(
+                CooldownBypassAllowlist.isAllowedToSkipBlockingCooldownGroup(
+                        FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE));
+    }
+
+    @Test
     public void testNonCooldownFormat_skipsCooldownChecks() {
-        FeatureProperties props =
-                new FeatureProperties(
-                        UiFormat.MAGIC_STACK,
-                        /* isBlockedByCooldownGroup= */ true,
-                        /* blocksCooldownGroup= */ true);
+        FeatureProperties props = new FeatureProperties(UiFormat.MAGIC_STACK);
 
         assertTrue(mTracker.shouldTriggerHelpUi(TEST_FEATURE, props));
 
@@ -268,11 +255,7 @@ public class TrackerImplTest {
     public void testShouldTriggerHelpUi_InterruptiveCooldownGroupDisabled_SkipsCooldownChecks() {
         mTracker.setInterruptiveCooldownGroupEnabledSupplier(
                 SupplierUtils.alwaysFalseBooleanSupplier());
-        FeatureProperties props =
-                new FeatureProperties(
-                        UiFormat.DIALOG,
-                        /* isBlockedByCooldownGroup= */ true,
-                        /* blocksCooldownGroup= */ true);
+        FeatureProperties props = new FeatureProperties(UiFormat.DIALOG);
 
         assertTrue(mTracker.shouldTriggerHelpUi(TEST_FEATURE, props));
 
@@ -289,11 +272,7 @@ public class TrackerImplTest {
     public void testShouldTriggerHelpUi_BlueBubbleCooldownGroupDisabled_SkipsCooldownChecks() {
         mTracker.setBlueBubbleCooldownGroupEnabledSupplier(
                 SupplierUtils.alwaysFalseBooleanSupplier());
-        FeatureProperties props =
-                new FeatureProperties(
-                        UiFormat.BLUE_BUBBLE,
-                        /* isBlockedByCooldownGroup= */ true,
-                        /* blocksCooldownGroup= */ true);
+        FeatureProperties props = new FeatureProperties(UiFormat.BLUE_BUBBLE);
 
         assertTrue(mTracker.shouldTriggerHelpUi(TEST_FEATURE, props));
 
@@ -324,11 +303,7 @@ public class TrackerImplTest {
 
     @Test
     public void testShouldTriggerHelpUiWithSnooze() {
-        FeatureProperties props =
-                new FeatureProperties(
-                        UiFormat.ALERTS,
-                        /* isBlockedByCooldownGroup= */ true,
-                        /* blocksCooldownGroup= */ true);
+        FeatureProperties props = new FeatureProperties(UiFormat.ALERTS);
 
         TriggerDetails details = mTracker.shouldTriggerHelpUiWithSnooze(TEST_FEATURE, props);
         assertTrue(details.shouldTriggerIph);
@@ -338,14 +313,7 @@ public class TrackerImplTest {
 
     @Test
     public void testFeaturePropertiesToString() {
-        FeatureProperties props =
-                new FeatureProperties(
-                        UiFormat.BLUE_BUBBLE,
-                        /* isBlockedByCooldownGroup= */ false,
-                        /* blocksCooldownGroup= */ true);
-        assertEquals(
-                "FeatureProperties{format=BLUE_BUBBLE, isBlockedByCooldownGroup=false,"
-                        + " blocksCooldownGroup=true}",
-                props.toString());
+        FeatureProperties props = new FeatureProperties(UiFormat.BLUE_BUBBLE);
+        assertEquals("FeatureProperties{format=BLUE_BUBBLE}", props.toString());
     }
 }

@@ -168,6 +168,7 @@ if (is_android) {
 
     srcjar_deps = [ ":jni_headers" ]
     sources = [
+      "android/java/src/org/chromium/components/feature_engagement/internal/CooldownBypassAllowlist.java",
       "android/java/src/org/chromium/components/feature_engagement/internal/EnterprisePolicyBypassAllowlist.java",
       "android/java/src/org/chromium/components/feature_engagement/internal/TrackerImpl.java",
     ]

@@ -619,10 +619,7 @@ public class TipsUtils {
                                 }
                                 tracker = TrackerFactory.getTrackerForProfile(profile);
                                 FeatureProperties featureProperties =
-                                        new FeatureProperties(
-                                                UiFormat.BOTTOM_SHEET,
-                                                /* isBlockedByCooldownGroup= */ true,
-                                                /* blocksCooldownGroup= */ true);
+                                        new FeatureProperties(UiFormat.BOTTOM_SHEET);
                                 if (!tracker.shouldTriggerHelpUi(
                                         FeatureConstants.ANDROID_TIPS_OPT_IN_PROMO_FEATURE,
                                         featureProperties)) {

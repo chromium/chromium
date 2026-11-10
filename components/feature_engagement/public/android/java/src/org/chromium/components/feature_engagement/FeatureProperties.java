@@ -7,34 +7,24 @@ package org.chromium.components.feature_engagement;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
-import java.util.Objects;
-
 /**
- * Properties describing a user education feature's UI format and cooldown group behavior.
+ * Properties describing a user education feature's UI format.
  *
- * <p>Whether a feature is blocked by the {@code PromotionsEnabled} enterprise policy is determined
- * centrally by {@code EnterprisePolicyBypassAllowlist}.
+ * <p>Whether a feature is blocked by the {@code PromotionsEnabled} enterprise policy or may bypass
+ * its format's cooldown group is determined centrally by {@code EnterprisePolicyBypassAllowlist}
+ * and {@code CooldownBypassAllowlist}.
  */
 @NullMarked
 public class FeatureProperties {
     private final @UiFormat int mFormat;
-    private final boolean mIsBlockedByCooldownGroup;
-    private final boolean mBlocksCooldownGroup;
 
     /**
      * Constructs a {@link FeatureProperties} instance.
      *
      * @param format The {@link UiFormat} of the user education surface.
-     * @param isBlockedByCooldownGroup Whether the feature is blocked by the cooldown group for its
-     *     format type.
-     * @param blocksCooldownGroup Whether triggering this feature contributes to the cooldown group
-     *     for its format type.
      */
-    public FeatureProperties(
-            @UiFormat int format, boolean isBlockedByCooldownGroup, boolean blocksCooldownGroup) {
+    public FeatureProperties(@UiFormat int format) {
         mFormat = format;
-        mIsBlockedByCooldownGroup = isBlockedByCooldownGroup;
-        mBlocksCooldownGroup = blocksCooldownGroup;
     }
 
     /** Returns the {@link UiFormat} of the user education surface. */
@@ -42,42 +32,21 @@ public class FeatureProperties {
         return mFormat;
     }
 
-    /** Returns whether the feature is blocked by the cooldown group for its format type. */
-    public boolean isBlockedByCooldownGroup() {
-        return mIsBlockedByCooldownGroup;
-    }
-
-    /**
-     * Returns whether triggering this feature contributes to the cooldown group for its format
-     * type.
-     */
-    public boolean blocksCooldownGroup() {
-        return mBlocksCooldownGroup;
-    }
-
     @Override
     public boolean equals(@Nullable Object o) {
         if (this == o) return true;
         if (!(o instanceof FeatureProperties other)) return false;
-        return mFormat == other.mFormat
-                && mIsBlockedByCooldownGroup == other.mIsBlockedByCooldownGroup
-                && mBlocksCooldownGroup == other.mBlocksCooldownGroup;
+        return mFormat == other.mFormat;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(mFormat, mIsBlockedByCooldownGroup, mBlocksCooldownGroup);
+        return Integer.hashCode(mFormat);
     }
 
     @Override
     public String toString() {
-        return "FeatureProperties{format="
-                + formatToString(mFormat)
-                + ", isBlockedByCooldownGroup="
-                + mIsBlockedByCooldownGroup
-                + ", blocksCooldownGroup="
-                + mBlocksCooldownGroup
-                + "}";
+        return "FeatureProperties{format=" + formatToString(mFormat) + "}";
     }
 
     // LINT.IfChange(UiFormat)

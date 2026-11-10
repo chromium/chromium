@@ -212,11 +212,7 @@ public class NotificationPermissionController {
 
         if (mProfile != null && TrackerFactory.isInterruptiveCooldownGroupEnabled()) {
             Tracker tracker = TrackerFactory.getTrackerForProfile(mProfile);
-            FeatureProperties featureProperties =
-                    new FeatureProperties(
-                            UiFormat.ALERTS,
-                            /* isBlockedByCooldownGroup= */ false,
-                            /* blocksCooldownGroup= */ true);
+            FeatureProperties featureProperties = new FeatureProperties(UiFormat.ALERTS);
             if (!tracker.shouldTriggerHelpUi(
                     FeatureConstants.NOTIFICATION_PERMISSION_PROMO_FEATURE, featureProperties)) {
                 return false;

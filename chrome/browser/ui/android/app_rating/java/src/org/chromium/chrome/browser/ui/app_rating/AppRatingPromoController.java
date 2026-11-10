@@ -135,12 +135,7 @@ public class AppRatingPromoController {
         // This is necessary because another promo might have been triggered while we were waiting
         // for the async segmentation result.
         if (mTracker != null) {
-            boolean isCooldownEnabled = TrackerFactory.isInterruptiveCooldownGroupEnabled();
-            FeatureProperties featureProperties =
-                    new FeatureProperties(
-                            UiFormat.DIALOG,
-                            /* isBlockedByCooldownGroup= */ isCooldownEnabled,
-                            /* blocksCooldownGroup= */ isCooldownEnabled);
+            FeatureProperties featureProperties = new FeatureProperties(UiFormat.DIALOG);
             if (!mTracker.shouldTriggerHelpUi(
                     FeatureConstants.APP_RATING_PROMPT_FEATURE, featureProperties)) {
                 return;
