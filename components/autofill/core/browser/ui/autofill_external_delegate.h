@@ -36,8 +36,11 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
 
+class GURL;
+
 namespace gfx {
 class Rect;
+class RectF;
 }  // namespace gfx
 
 namespace autofill {
@@ -276,6 +279,19 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
   // `field_id`.
   void OnAutofillAiSuppressionUndone(EntityInstance::EntityId entity_id,
                                      FieldGlobalId field_id);
+
+  // Asks the client to show the SPII verification UI for `filled_entity`.
+  void ShowAttributionVerification(const FormGlobalId& form_id,
+                                   const FieldGlobalId& field_id,
+                                   const gfx::RectF& field_bounds,
+                                   const GURL& source_url,
+                                   const EntityInstance& filled_entity);
+
+  // Handles the user decision returned by the SPII verification UI.
+  void ApplyVerificationDecision(
+      const FormGlobalId& form_id,
+      const FieldGlobalId& field_id,
+      AutofillClient::AutofillAiVerificationDecision decision);
 
   base::WeakPtr<AutofillExternalDelegate> GetWeakPtr();
 

@@ -13,6 +13,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -101,6 +102,8 @@
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace autofill {
 
@@ -176,6 +179,7 @@ void OnEntityInstanceFetched(
     const FieldGlobalId& field_id,
     const FieldTypeSet& ai_field_types,
     EntityInstance::RecordType record_type,
+    base::OnceCallback<void(const EntityInstance&)> on_entity_filled,
     base::expected<EntityInstance, AutofillAiAccessManager::FailureReason>
         result,
     bool reauth_attempted,
@@ -211,6 +215,33 @@ void OnEntityInstanceFetched(
 
   manager->client().HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
                                     FillingProduct::kAutofillAi);
+  if (result.has_value() && on_entity_filled) {
+    std::move(on_entity_filled).Run(result.value());
+  }
+}
+
+// Returns the HTTPS source URL to show in the in-context SPII verification UI
+// after filling `entity`: the most recent source, or the first one in server
+// order if no source has a timestamp. Returns an empty `GURL` if verification
+// is disabled or `entity` is ineligible.
+GURL GetSpiiVerificationSourceUrl(const EntityInstance& entity) {
+  using Payload = EntityInstance::PersonalContextRecordTypePayload;
+  const Payload* payload = std::get_if<Payload>(&entity.record_type_data());
+  if (!payload ||
+      !base::FeatureList::IsEnabled(features::kAutofillAiSpiiVerification) ||
+      GetPersonalContextSpiiType(entity.type(), entity.record_type()) !=
+          EntityInstance::PersonalContextSpiiType::kSpii) {
+    return GURL();
+  }
+  // Sources without a timestamp compare as oldest; ties keep server order.
+  const Payload::Source* best = nullptr;
+  for (const Payload::Source& source : payload->sources) {
+    if (source.url.is_valid() && source.url.SchemeIs(url::kHttpsScheme) &&
+        (!best || source.timestamp() > best->timestamp())) {
+      best = &source;
+    }
+  }
+  return best ? best->url : GURL();
 }
 
 std::optional<AutofillProfile> GetTestAddressByGUID(
@@ -1081,6 +1112,15 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           base::BindOnce(&AutofillClient::DismissAutofillAiLoadingDialog,
                          manager_->client().GetWeakPtr());
 #endif  // BUILDFLAG(IS_ANDROID)
+      base::OnceCallback<void(const EntityInstance&)> on_entity_filled;
+      if (GURL source_url = GetSpiiVerificationSourceUrl(*entity);
+          !source_url.is_empty()) {
+        on_entity_filled = base::BindOnce(
+            &AutofillExternalDelegate::ShowAttributionVerification,
+            weak_ptr_factory_.GetWeakPtr(), effective_form_id,
+            effective_field_id, autofill_field->bounds(),
+            std::move(source_url));
+      }
       const bool is_async =
           manager_->GetAutofillAiAccessManager().FetchEntityInstance(
               *entity, will_fill_sensitive_info,
@@ -1095,7 +1135,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
                   manager_->GetBrowserAutofillManagerWeakPtr(),
                   GetTriggerSource(), effective_form_id, effective_field_id,
                   autofill_field->Type().GetAutofillAiTypes(),
-                  entity->record_type()));
+                  entity->record_type(), std::move(on_entity_filled)));
 
       if (is_async &&
           (base::FeatureList::IsEnabled(features::kAutofillAmbientAutofill) ||
@@ -1933,6 +1973,35 @@ void AutofillExternalDelegate::OnAutofillAiSuppressionUndone(
   manager_->driver().RendererShouldTriggerSuggestions(
       field_id, AutofillSuggestionTriggerSource::kFormControlElementClicked);
 #endif  // BUILDFLAG(IS_ANDROID)
+}
+
+void AutofillExternalDelegate::ShowAttributionVerification(
+    const FormGlobalId& form_id,
+    const FieldGlobalId& field_id,
+    const gfx::RectF& field_bounds,
+    const GURL& source_url,
+    const EntityInstance& filled_entity) {
+  manager_->client().ShowAutofillAiAttributionVerification(
+      filled_entity, source_url, field_bounds,
+      base::BindOnce(&AutofillExternalDelegate::ApplyVerificationDecision,
+                     weak_ptr_factory_.GetWeakPtr(), form_id, field_id));
+}
+
+void AutofillExternalDelegate::ApplyVerificationDecision(
+    const FormGlobalId& form_id,
+    const FieldGlobalId& field_id,
+    AutofillClient::AutofillAiVerificationDecision decision) {
+  using Decision = AutofillClient::AutofillAiVerificationDecision;
+  switch (decision) {
+    case Decision::kUndo:
+    case Decision::kHide:
+      manager_->UndoAutofill(mojom::ActionPersistence::kFill, form_id,
+                             field_id);
+      break;
+    case Decision::kDismiss:
+    case Decision::kConfirm:
+      break;
+  }
 }
 
 }  // namespace autofill
