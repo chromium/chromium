@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 # Browser-side support for the TTC debug tools: the per-session debug record
-# (pipeline health, timeline, turns, problems and audio). See
+# (pipeline health, timeline, turns, tool calls, problems and audio). See
 # TtcDebugToolsService.
 source_set("debug") {
   sources = [

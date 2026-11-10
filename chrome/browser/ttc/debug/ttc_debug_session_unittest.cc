@@ -11,6 +11,7 @@
 
 #include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/ttc/app/public/debug_sink.h"
@@ -26,6 +27,7 @@ using EventKind = TtcDebugSession::EventKind;
 using Health = TtcDebugSession::Health;
 using IssueSeverity = TtcDebugSession::IssueSeverity;
 using Stage = TtcDebugSession::Stage;
+using ToolStatus = TtcDebugSession::ToolStatus;
 using TurnStatus = TtcDebugSession::TurnStatus;
 using testing::ElementsAre;
 using testing::HasSubstr;
@@ -57,6 +59,8 @@ class RecordingObserver : public TtcDebugSession::Observer {
                   update.new_events.end());
     turns.insert(turns.end(), update.changed_turns.begin(),
                  update.changed_turns.end());
+    tool_calls.insert(tool_calls.end(), update.changed_tool_calls.begin(),
+                      update.changed_tool_calls.end());
     issues.insert(issues.end(), update.changed_issues.begin(),
                   update.changed_issues.end());
   }
@@ -66,6 +70,7 @@ class RecordingObserver : public TtcDebugSession::Observer {
   std::vector<size_t> first_event_indices;
   std::vector<TtcDebugSession::TimelineEvent> events;
   std::vector<TtcDebugSession::Turn> turns;
+  std::vector<TtcDebugSession::ToolCall> tool_calls;
   std::vector<TtcDebugSession::Issue> issues;
 };
 
@@ -138,6 +143,36 @@ class TtcDebugSessionTest : public testing::Test {
       }
     }
     return nullptr;
+  }
+
+  static TtcDebugSession::TabSnapshot ForegroundTab() {
+    return {.tab_id = 7,
+            .url = "https://example.com/",
+            .title = "Example",
+            .visible = true,
+            .active_in_window = true};
+  }
+
+  static TtcDebugSession::TabSnapshot BackgroundTab() {
+    TtcDebugSession::TabSnapshot tab = ForegroundTab();
+    tab.visible = false;
+    tab.active_in_window = false;
+    return tab;
+  }
+
+  // Runs a navigate tool call from the server through to a successful actor
+  // result.
+  void RunNavigate(std::string_view call_id,
+                   const TtcDebugSession::TabSnapshot& target) {
+    session_->OnServerFrame(DebugSink::ToolCall{
+        .call_id = std::string(call_id),
+        .name = "navigate",
+        .arguments_json = R"({"url":"https://google.com"})"});
+    session_->OnToolDispatched(call_id, "navigate",
+                               R"({"url":"https://google.com"})", target,
+                               /*verifying=*/true);
+    task_environment_.FastForwardBy(base::Milliseconds(300));
+    session_->OnToolFinished(call_id, /*ok=*/true, "kOk", "", target);
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -430,6 +465,118 @@ TEST_F(TtcDebugSessionTest, CapReachedIsReportedOnce) {
   EXPECT_TRUE(session->GetSnapshot().audio_cap_reached);
 }
 
+TEST_F(TtcDebugSessionTest, VerifiedToolCallRaisesNoIssues) {
+  session_->OnTransportStateChanged(true);
+  RunNavigate("c1", ForegroundTab());
+  session_->OnToolEffect("c1", /*verified=*/true, "committed google.com");
+  session_->OnToolResponseSent("c1", /*sent=*/true, R"({"result":"ok"})");
+  task_environment_.FastForwardBy(base::Seconds(1));
+  session_->OnServerFrame(DebugSink::Transcript{.text = "Done."});
+  task_environment_.FastForwardBy(TtcDebugSession::kModelFollowUpTimeout);
+
+  ASSERT_EQ(session_->tool_calls().size(), 1u);
+  const TtcDebugSession::ToolCall& tool_call = session_->tool_calls()[0];
+  EXPECT_EQ(tool_call.name, "navigate");
+  EXPECT_EQ(tool_call.status, TtcDebugSession::ToolStatus::kOk);
+  EXPECT_EQ(tool_call.effect, TtcDebugSession::ToolEffect::kVerified);
+  EXPECT_EQ(tool_call.response_json, R"({"result":"ok"})");
+  EXPECT_TRUE(tool_call.model_followed_up);
+  EXPECT_TRUE(tool_call.target_before.has_value());
+  EXPECT_TRUE(session_->issues().empty());
+  EXPECT_TRUE(HasEvent(EventKind::kToolStart));
+  EXPECT_TRUE(HasEvent(EventKind::kToolEnd));
+}
+
+// The reported bug: the actor says the tool succeeded, but the effect never
+// shows up where the user is looking.
+TEST_F(TtcDebugSessionTest, BackgroundTargetAndNoEffectAreFlagged) {
+  session_->OnTransportStateChanged(true);
+  RunNavigate("c1", BackgroundTab());
+  const TtcDebugSession::Issue* background =
+      OpenIssue("tool_background_target:1");
+  ASSERT_TRUE(background);
+  EXPECT_EQ(background->severity, TtcDebugSession::IssueSeverity::kWarning);
+  EXPECT_EQ(background->tool_call_id, 1);
+
+  session_->OnToolEffect("c1", /*verified=*/false, "tab is not visible");
+  const TtcDebugSession::Issue* no_effect = OpenIssue("tool_no_effect:1");
+  ASSERT_TRUE(no_effect);
+  EXPECT_EQ(no_effect->severity, TtcDebugSession::IssueSeverity::kError);
+  EXPECT_EQ(session_->tool_calls()[0].effect,
+            TtcDebugSession::ToolEffect::kNoEffect);
+  EXPECT_EQ(session_->GetSnapshot().open_errors, 1);
+  EXPECT_EQ(session_->GetSnapshot().open_warnings, 1);
+  EXPECT_THAT(journal_.names, testing::Contains("TtcDebugIssue"));
+}
+
+TEST_F(TtcDebugSessionTest, ToolErrorRaisesIssue) {
+  session_->OnServerFrame(DebugSink::ToolCall{
+      .call_id = "c1", .name = "navigate", .arguments_json = "{}"});
+  session_->OnToolDispatched("c1", "navigate", "{}", ForegroundTab(),
+                             /*verifying=*/true);
+  session_->OnToolFinished("c1", /*ok=*/false, "kNavigateInvalidUrl", "bad url",
+                           std::nullopt);
+  const TtcDebugSession::Issue* issue = OpenIssue("tool_error:1");
+  ASSERT_TRUE(issue);
+  EXPECT_EQ(issue->severity, TtcDebugSession::IssueSeverity::kError);
+  EXPECT_EQ(session_->tool_calls()[0].effect,
+            TtcDebugSession::ToolEffect::kNotChecked);
+}
+
+TEST_F(TtcDebugSessionTest, ToolRejectedAndNoTargetRaiseIssues) {
+  session_->OnToolCallRejected("c1", "invalid arguments JSON");
+  EXPECT_TRUE(OpenIssue("tool_rejected:1"));
+  EXPECT_EQ(session_->tool_calls()[0].status,
+            TtcDebugSession::ToolStatus::kRejected);
+
+  session_->OnServerFrame(DebugSink::ToolCall{
+      .call_id = "c2", .name = "go_back", .arguments_json = "{}"});
+  session_->OnToolNoTarget("c2", "go_back");
+  EXPECT_TRUE(OpenIssue("tool_no_target:2"));
+}
+
+TEST_F(TtcDebugSessionTest, ToolTimeoutResolvesWhenToolFinishes) {
+  session_->OnTransportStateChanged(true);
+  session_->OnServerFrame(DebugSink::ToolCall{
+      .call_id = "c1", .name = "click", .arguments_json = "{}"});
+  session_->OnToolDispatched("c1", "click", "{}", ForegroundTab(),
+                             /*verifying=*/false);
+  task_environment_.FastForwardBy(TtcDebugSession::kToolTimeout -
+                                  base::Milliseconds(300));
+  EXPECT_FALSE(AnyIssue("tool_timeout:1"));
+  task_environment_.FastForwardBy(base::Milliseconds(600));
+  EXPECT_TRUE(OpenIssue("tool_timeout:1"));
+  session_->OnToolFinished("c1", /*ok=*/true, "kOk", "", ForegroundTab());
+  EXPECT_FALSE(OpenIssue("tool_timeout:1"));
+  EXPECT_TRUE(AnyIssue("tool_timeout:1")->resolved);
+}
+
+TEST_F(TtcDebugSessionTest, ModelSilentAfterToolResponse) {
+  session_->OnTransportStateChanged(true);
+  RunNavigate("c1", ForegroundTab());
+  session_->OnToolResponseSent("c1", /*sent=*/true, "{}");
+  task_environment_.FastForwardBy(TtcDebugSession::kModelFollowUpTimeout +
+                                  TtcDebugSession::kDetectorInterval);
+  const TtcDebugSession::Issue* issue = OpenIssue("model_silent_after_tool:1");
+  ASSERT_TRUE(issue);
+  EXPECT_EQ(issue->category, TtcDebugSession::IssueCategory::kModel);
+
+  // A late reply resolves it.
+  ReceiveAudio(1);
+  EXPECT_FALSE(OpenIssue("model_silent_after_tool:1"));
+  EXPECT_TRUE(session_->tool_calls()[0].model_followed_up);
+}
+
+TEST_F(TtcDebugSessionTest, DroppedToolResponseIsAnError) {
+  RunNavigate("c1", ForegroundTab());
+  session_->OnToolResponseSent("c1", /*sent=*/false, "{}");
+  EXPECT_TRUE(OpenIssue("tool_response_not_sent:1"));
+  EXPECT_TRUE(session_->tool_calls()[0].response_dropped);
+  // Nothing can follow up on a response that was never sent.
+  task_environment_.FastForwardBy(TtcDebugSession::kModelFollowUpTimeout * 2);
+  EXPECT_FALSE(AnyIssue("model_silent_after_tool:1"));
+}
+
 TEST_F(TtcDebugSessionTest, RepeatedIssuesAreDeduplicated) {
   session_->OnServerFrame(
       DebugSink::ServerError{.code = "INTERNAL", .message = "first"});
@@ -532,6 +679,49 @@ TEST_F(TtcDebugSessionTest, PageContextFailureResolvedByNextContextUpdate) {
   EXPECT_EQ(blocked->severity, TtcDebugSession::IssueSeverity::kInfo);
 }
 
+TEST_F(TtcDebugSessionTest, ActorStepsAreAttachedToTheRunningTool) {
+  session_->OnServerFrame(DebugSink::ToolCall{
+      .call_id = "c1", .name = "navigate", .arguments_json = "{}"});
+  session_->OnToolDispatched("c1", "navigate", "{}", ForegroundTab(),
+                             /*verifying=*/true);
+  session_->OnActorJournalEntry("NavigateTool", 'B', "url=https://a.test",
+                                /*has_error=*/false);
+  session_->OnActorJournalEntry("NavigateTool", 'E', "error=boom",
+                                /*has_error=*/true);
+  ASSERT_EQ(session_->tool_calls()[0].actor_steps.size(), 2u);
+  const TtcDebugSession::Issue* issue = OpenIssue("actor_error:NavigateTool");
+  ASSERT_TRUE(issue);
+  EXPECT_EQ(issue->tool_call_id, 1);
+}
+
+TEST_F(TtcDebugSessionTest, ObserversGetChangedToolCallsAndIssues) {
+  RecordingObserver observer;
+  session_->AddObserver(&observer);
+  RunNavigate("c1", BackgroundTab());
+  task_environment_.FastForwardBy(TtcDebugSession::kFlushInterval);
+  ASSERT_FALSE(observer.tool_calls.empty());
+  EXPECT_EQ(observer.tool_calls.back().status,
+            TtcDebugSession::ToolStatus::kOk);
+  ASSERT_FALSE(observer.issues.empty());
+  EXPECT_EQ(observer.issues.back().key, "tool_background_target:1");
+  EXPECT_EQ(observer.last_snapshot.open_warnings, 1);
+  session_->RemoveObserver(&observer);
+}
+
+TEST_F(TtcDebugSessionTest, ExportIncludesToolCallsAndIssues) {
+  RunNavigate("c1", BackgroundTab());
+  base::DictValue value = session_->ToValue();
+  const base::ListValue* tool_calls = value.FindList("tool_calls");
+  ASSERT_TRUE(tool_calls);
+  ASSERT_EQ(tool_calls->size(), 1u);
+  EXPECT_EQ(*(*tool_calls)[0].GetDict().FindString("name"), "navigate");
+  const base::ListValue* issues = value.FindList("issues");
+  ASSERT_TRUE(issues);
+  ASSERT_EQ(issues->size(), 1u);
+  EXPECT_EQ(*(*issues)[0].GetDict().FindString("key"),
+            "tool_background_target:1");
+}
+
 TEST_F(TtcDebugSessionTest, EndedSessionIgnoresFurtherInput) {
   session_->End();
   const size_t events = session_->events().size();
@@ -629,6 +819,7 @@ TEST_F(TtcDebugSessionTest, FrequentEventsDontCrowdOutOthers) {
 
 TEST_F(TtcDebugSessionTest, LateObserverOnlyGetsNewChanges) {
   session_->OnTransportStateChanged(true);
+  RunNavigate("c1", BackgroundTab());
   task_environment_.FastForwardBy(base::Seconds(1));
   const size_t backlog = session_->events().size();
 
@@ -640,6 +831,7 @@ TEST_F(TtcDebugSessionTest, LateObserverOnlyGetsNewChanges) {
   EXPECT_EQ(observer.first_event_indices[0], backlog);
   EXPECT_TRUE(observer.events.empty());
   EXPECT_TRUE(observer.turns.empty());
+  EXPECT_TRUE(observer.tool_calls.empty());
   EXPECT_TRUE(observer.issues.empty());
 
   session_->OnServerFrame(
@@ -778,12 +970,58 @@ TEST_F(TtcDebugSessionTest, PlaybackAfterTurnClosedIsRecorded) {
   EXPECT_TRUE(session_->turns()[0].first_playback_ms.has_value());
 }
 
+TEST_F(TtcDebugSessionTest, BackgroundTargetIsCountedOnce) {
+  // Dispatched and finished in a background tab: one occurrence.
+  RunNavigate("c1", BackgroundTab());
+  const TtcDebugSession::Issue* issue = OpenIssue("tool_background_target:1");
+  ASSERT_TRUE(issue);
+  EXPECT_EQ(issue->count, 1);
+  EXPECT_EQ(issue->title, "navigate is acting on a background tab");
+  EXPECT_EQ(session_->issues().size(), 1u);
+
+  // Dispatched in the foreground, finished in the background.
+  session_->OnServerFrame(DebugSink::ToolCall{
+      .call_id = "c2", .name = "navigate", .arguments_json = "{}"});
+  session_->OnToolDispatched("c2", "navigate", "{}", ForegroundTab(),
+                             /*verifying=*/true);
+  session_->OnToolFinished("c2", /*ok=*/true, "kOk", "", BackgroundTab());
+  issue = OpenIssue("tool_background_target:2");
+  ASSERT_TRUE(issue);
+  EXPECT_EQ(issue->count, 1);
+  EXPECT_EQ(issue->title, "navigate finished in a background tab");
+}
+
+TEST_F(TtcDebugSessionTest, BrowserLevelToolHasNoTarget) {
+  // Browser-level tools are reported without a target.
+  session_->OnServerFrame(DebugSink::ToolCall{
+      .call_id = "c1", .name = "switch_tab", .arguments_json = "{}"});
+  session_->OnToolDispatched("c1", "switch_tab", "{}", std::nullopt,
+                             /*verifying=*/false);
+  session_->OnToolFinished("c1", /*ok=*/true, "kOk", "", std::nullopt);
+  const TtcDebugSession::ToolCall& tool_call = session_->tool_calls()[0];
+  EXPECT_EQ(tool_call.status, ToolStatus::kOk);
+  EXPECT_FALSE(tool_call.target_before.has_value());
+  EXPECT_FALSE(tool_call.target_after.has_value());
+  EXPECT_TRUE(session_->issues().empty());
+}
+
 TEST_F(TtcDebugSessionTest, LongTextIsTruncated) {
   // Two-byte UTF-8 characters, so that a byte cut could split one.
   std::string long_text;
   for (size_t i = 0; i < TtcDebugSession::kMaxTextLength; ++i) {
     long_text += "\xC3\xA9";
   }
+  session_->OnServerFrame(DebugSink::ToolCall{
+      .call_id = "c1", .name = "navigate", .arguments_json = long_text});
+  const TtcDebugSession::ToolCall& tool_call = session_->tool_calls()[0];
+  EXPECT_LE(tool_call.arguments_json.size(), TtcDebugSession::kMaxTextLength);
+  EXPECT_TRUE(tool_call.arguments_json.ends_with(kEllipsis));
+  EXPECT_TRUE(base::IsStringUTF8(tool_call.arguments_json));
+  for (const auto& event : session_->events()) {
+    EXPECT_LE(event.label.size(), TtcDebugSession::kMaxTextLength);
+    EXPECT_TRUE(base::IsStringUTF8(event.label));
+  }
+
   // Issue keys, titles, details and evidence are bounded, and repeats are
   // still recognized.
   session_->OnError(long_text);
@@ -810,6 +1048,35 @@ TEST_F(TtcDebugSessionTest, TranscriptsAreCapped) {
   EXPECT_LE(transcript.size(), TtcDebugSession::kMaxTranscriptLength);
   EXPECT_GT(transcript.size(), TtcDebugSession::kMaxTranscriptLength - 1000);
   EXPECT_TRUE(transcript.ends_with(kEllipsis));
+}
+
+TEST_F(TtcDebugSessionTest, ToolCallsAreCapped) {
+  for (size_t i = 0; i < TtcDebugSession::kMaxToolCalls; ++i) {
+    session_->OnServerFrame(
+        DebugSink::ToolCall{.call_id = base::NumberToString(i),
+                            .name = "click",
+                            .arguments_json = "{}"});
+  }
+  EXPECT_EQ(session_->GetSnapshot().dropped_items, 0);
+  EXPECT_FALSE(HasEvent(EventKind::kItemsTruncated));
+
+  // A dropped call is counted once, however often it is reported.
+  session_->OnServerFrame(DebugSink::ToolCall{
+      .call_id = "extra", .name = "click", .arguments_json = "{}"});
+  session_->OnToolDispatched("extra", "click", "{}", ForegroundTab(),
+                             /*verifying=*/false);
+  session_->OnToolFinished("extra", /*ok=*/true, "kOk", "", ForegroundTab());
+  EXPECT_EQ(session_->tool_calls().size(), TtcDebugSession::kMaxToolCalls);
+  EXPECT_EQ(session_->GetSnapshot().dropped_items, 1);
+  session_->OnServerFrame(DebugSink::ToolCall{
+      .call_id = "another", .name = "click", .arguments_json = "{}"});
+  EXPECT_EQ(session_->GetSnapshot().dropped_items, 2);
+  EXPECT_EQ(CountEvents(EventKind::kItemsTruncated), 1);
+
+  // Calls that were kept still update.
+  session_->OnToolDispatched("0", "click", "{}", ForegroundTab(),
+                             /*verifying=*/false);
+  EXPECT_EQ(session_->tool_calls()[0].status, ToolStatus::kRunning);
 }
 
 TEST_F(TtcDebugSessionTest, IssuesAreCapped) {

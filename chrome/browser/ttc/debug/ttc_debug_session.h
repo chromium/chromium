@@ -37,17 +37,19 @@ namespace ttc {
 class SessionJournal;
 
 // Debug record of one TTC session, fed by the pipeline through the DebugSink
-// interface. It keeps:
+// interface and by ToolController through the browser-side methods below. It
+// keeps:
 //  - per-stage pipeline health and counters (Snapshot),
 //  - a timeline of events for the whole session,
 //  - per-turn latency records and a "no response" watchdog,
-//  - problems detected in real time (ttc_debug_session_issues.cc),
+//  - tool calls traced to their effect, and problems detected in real time
+//    (ttc_debug_session_issues.cc),
 //  - the exact audio sent and received (TtcSessionAudioRecorder).
 // Input is ignored once the session has ended. Observers (the debug page)
 // receive batched updates at most every kFlushInterval.
 //
 // Memory is bounded: text is truncated (kMaxTextLength, kMaxTranscriptLength),
-// and issues and turns beyond their caps are dropped and counted in
+// and tool calls, issues and turns beyond their caps are dropped and counted in
 // Snapshot::dropped_items.
 class TtcDebugSession final : public DebugSink {
  public:
@@ -94,7 +96,7 @@ class TtcDebugSession final : public DebugSink {
     bool audio_cap_reached = false;
     int open_errors = 0;
     int open_warnings = 0;
-    // Issues and turns dropped because their cap was reached.
+    // Tool calls, issues and turns dropped because their cap was reached.
     int64_t dropped_items = 0;
     std::array<StageStatus, kStageCount> stages;
   };
@@ -120,7 +122,10 @@ class TtcDebugSession final : public DebugSink {
     kAudioCapReached,
     kItemsTruncated,
     kSessionEnded,
+    kToolStart,
+    kToolEnd,
     kIssue,
+    kActor,
     kServerJournal,
     kContextSent,
   };
@@ -149,13 +154,57 @@ class TtcDebugSession final : public DebugSink {
     std::string output_transcript;
   };
 
+  // State of a tab a tool acted on.
+  struct TabSnapshot {
+    int tab_id = -1;
+    std::string url;
+    std::string title;
+    bool visible = false;
+    // Whether it is the active tab of its window.
+    bool active_in_window = false;
+  };
+
+  enum class ToolStatus { kPending, kRunning, kOk, kError, kRejected };
+  enum class ToolEffect { kNotChecked, kChecking, kVerified, kNoEffect };
+
+  // One tool call, traced from the server's request to the model's follow-up.
+  struct ToolCall {
+    ToolCall();
+    ToolCall(const ToolCall&);
+    ToolCall& operator=(const ToolCall&);
+    ~ToolCall();
+
+    int id = 0;
+    std::string call_id;
+    std::string name;
+    std::string arguments_json;
+    int turn_index = 0;
+    double received_ms = 0;
+    std::optional<double> dispatched_ms;
+    std::optional<double> finished_ms;
+    std::optional<double> response_sent_ms;
+    ToolStatus status = ToolStatus::kPending;
+    ToolEffect effect = ToolEffect::kNotChecked;
+    std::string effect_detail;
+    std::optional<TabSnapshot> target_before;
+    std::optional<TabSnapshot> target_after;
+    std::string result_code;
+    std::string result_message;
+    std::string response_json;
+    bool response_dropped = false;
+    std::vector<std::string> actor_steps;
+    bool model_followed_up = false;
+  };
+
   enum class IssueSeverity { kInfo, kWarning, kError };
   enum class IssueCategory {
+    kTool,
     kServer,
     kTransport,
     kAudio,
     kPageContext,
     kModel,
+    kActor,
   };
 
   // A problem detected in real time.
@@ -177,6 +226,7 @@ class TtcDebugSession final : public DebugSink {
     double last_ms = 0;
     int count = 1;
     std::optional<int> turn_index;
+    std::optional<int> tool_call_id;
     // Condition-based issues resolve once the condition clears.
     bool resolved = false;
     std::optional<double> resolved_ms;
@@ -194,6 +244,7 @@ class TtcDebugSession final : public DebugSink {
     size_t first_event_index = 0;
     std::vector<TimelineEvent> new_events;
     std::vector<Turn> changed_turns;
+    std::vector<ToolCall> changed_tool_calls;
     std::vector<Issue> changed_issues;
   };
 
@@ -223,9 +274,10 @@ class TtcDebugSession final : public DebugSink {
   // Total bytes of event labels; further events are dropped like past their
   // cap.
   static constexpr size_t kMaxEventLabelBytes = 16 * 1024 * 1024;
+  static constexpr size_t kMaxToolCalls = 1000;
   static constexpr size_t kMaxIssues = 1000;
   static constexpr size_t kMaxTurns = 1000;
-  // Labels, issue details and evidence.
+  // Labels, tool arguments and responses, issue details and evidence.
   static constexpr size_t kMaxTextLength = 4096;
   // Each transcript of a turn.
   static constexpr size_t kMaxTranscriptLength = 16 * 1024;
@@ -238,9 +290,12 @@ class TtcDebugSession final : public DebugSink {
   static constexpr base::TimeDelta kErrorWindow = base::Seconds(5);
 
   // Detector thresholds.
+  static constexpr base::TimeDelta kToolTimeout = base::Seconds(15);
+  static constexpr base::TimeDelta kModelFollowUpTimeout = base::Seconds(10);
   static constexpr int kMicSilenceIssueChunks = 30;  // 3 s.
   static constexpr base::TimeDelta kPlaybackStallTimeout = base::Seconds(2);
   static constexpr base::TimeDelta kDetectorInterval = base::Milliseconds(250);
+  static constexpr size_t kMaxActorStepsPerTool = 60;
 
   // `journal` is optional and is detached when the session ends. `clock` must
   // outlive this object.
@@ -258,6 +313,8 @@ class TtcDebugSession final : public DebugSink {
   // output levels, chunks sent and playback. They're left out of ToValue().
   static bool IsFrequentEvent(EventKind kind);
   static std::string_view TurnStatusName(TurnStatus status);
+  static std::string_view ToolStatusName(ToolStatus status);
+  static std::string_view ToolEffectName(ToolEffect effect);
   static std::string_view IssueSeverityName(IssueSeverity severity);
   static std::string_view IssueCategoryName(IssueCategory category);
 
@@ -269,6 +326,7 @@ class TtcDebugSession final : public DebugSink {
   Snapshot GetSnapshot() const;
   const std::vector<TimelineEvent>& events() const { return events_; }
   const std::vector<Turn>& turns() const { return turns_; }
+  const std::vector<ToolCall>& tool_calls() const { return tool_calls_; }
   const std::vector<Issue>& issues() const { return issues_; }
   const TtcSessionAudioRecorder& recorder() const { return recorder_; }
 
@@ -297,6 +355,37 @@ class TtcDebugSession final : public DebugSink {
   // ErrorCode, e.g. "SetupTimeout".
   void OnError(std::string_view error);
 
+  // Tool calls rejected before they reached the browser, and tool responses.
+  void OnToolCallRejected(std::string_view call_id, std::string_view reason);
+  void OnToolResponseSent(std::string_view call_id,
+                          bool sent,
+                          std::string_view response_json);
+
+  // Browser-side tool execution (from ToolController via the forwarder).
+  // `verifying` is true if the effect of the tool will be checked.
+  void OnToolDispatched(std::string_view call_id,
+                        std::string_view name,
+                        std::string_view arguments_json,
+                        const std::optional<TabSnapshot>& target,
+                        bool verifying);
+  void OnToolNoTarget(std::string_view call_id, std::string_view name);
+  // `result_code` is only displayed; `ok` says whether the tool succeeded.
+  void OnToolFinished(std::string_view call_id,
+                      bool ok,
+                      std::string_view result_code,
+                      std::string_view message,
+                      const std::optional<TabSnapshot>& target_after);
+  void OnToolEffect(std::string_view call_id,
+                    bool verified,
+                    std::string_view detail);
+
+  // An actor journal entry for the session's actor task. `type` is 'B', 'E'
+  // or 'I'.
+  void OnActorJournalEntry(std::string_view event,
+                           char type,
+                           std::string_view details,
+                           bool has_error);
+
   // Page context.
   void OnPageContextFailed(std::string_view url, std::string_view error);
   void OnPageContextBlocked(std::string_view url);
@@ -309,6 +398,8 @@ class TtcDebugSession final : public DebugSink {
   // Like Truncate(), in place.
   static void TruncateInPlace(std::string& text,
                               size_t max_length = kMaxTextLength);
+  // `tab` with its URL and title truncated.
+  static TabSnapshot TruncateTab(const TabSnapshot& tab);
 
   // Time since the session started.
   base::TimeDelta Elapsed() const;
@@ -355,16 +446,31 @@ class TtcDebugSession final : public DebugSink {
     std::string title;
     std::string detail;
     Evidence evidence;
+    std::optional<int> tool_call_id;
   };
   // Raises the issue `key`, or bumps its count if it is already open.
   void RaiseIssue(std::string key, IssueSpec spec);
+  // Raises "<kind>:<tool call id>" with the tool call's evidence attached.
+  void RaiseToolIssue(std::string_view kind,
+                      const ToolCall& tool_call,
+                      IssueSeverity severity,
+                      std::string title,
+                      std::string detail);
   void ResolveIssue(std::string_view key);
   // Keeps the condition-based issue `key` open exactly while `active`.
   void SetCondition(std::string_view key,
                     bool active,
                     base::FunctionRef<IssueSpec()> spec);
   Issue* FindOpenIssue(std::string_view key);
+  static std::string ToolIssueKey(std::string_view kind, int tool_call_id);
   void MarkIssueChanged(const Issue& issue);
+  ToolCall* FindToolCall(std::string_view call_id);
+  // Null if the call is new and kMaxToolCalls is reached.
+  ToolCall* FindOrCreateToolCall(std::string_view call_id,
+                                 std::string_view name);
+  void MarkToolCallChanged(const ToolCall& tool_call);
+  ToolCall* RunningToolCall();
+  Evidence ToolEvidence(const ToolCall& tool_call) const;
   // Whether audio arrived after the last playback and wasn't dropped by an
   // interruption.
   bool HasUnplayedAudio() const;
@@ -422,7 +528,10 @@ class TtcDebugSession final : public DebugSink {
   int no_response_turn_ = 0;
   base::OneShotTimer watchdog_;
 
+  std::vector<ToolCall> tool_calls_;
   std::vector<Issue> issues_;
+  // Tool call awaiting a follow-up from the model after its response.
+  std::optional<int> awaiting_follow_up_;
   base::RepeatingTimer detector_timer_;
 
   std::vector<TimelineEvent> events_;
@@ -439,6 +548,8 @@ class TtcDebugSession final : public DebugSink {
   bool items_truncated_reported_ = false;
   // Whether a turn is being dropped, so that it is only counted once.
   bool dropping_turn_ = false;
+  // The last dropped tool call, so that it is only counted once.
+  std::string last_dropped_call_id_;
   // Keys of dropped issues, so that each is only counted once.
   std::set<std::string, std::less<>> dropped_issue_keys_;
 
@@ -448,6 +559,7 @@ class TtcDebugSession final : public DebugSink {
   // Pending observer updates.
   size_t first_unflushed_event_ = 0;
   std::set<int> changed_turns_;
+  std::set<int> changed_tool_calls_;
   std::set<int> changed_issues_;
   base::RepeatingTimer flush_timer_;
   base::ObserverList<Observer> observers_;

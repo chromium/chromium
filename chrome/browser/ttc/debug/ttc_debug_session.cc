@@ -200,8 +200,14 @@ std::string_view TtcDebugSession::EventKindName(EventKind kind) {
       return "items_truncated";
     case EventKind::kSessionEnded:
       return "session_ended";
+    case EventKind::kToolStart:
+      return "tool_start";
+    case EventKind::kToolEnd:
+      return "tool_end";
     case EventKind::kIssue:
       return "issue";
+    case EventKind::kActor:
+      return "actor";
     case EventKind::kServerJournal:
       return "server_journal";
     case EventKind::kContextSent:
@@ -378,6 +384,14 @@ void TtcDebugSession::OnServerActivity() {
     }
     no_response_turn_ = 0;
   }
+  // The model reacted to the last tool response.
+  if (awaiting_follow_up_) {
+    ToolCall& tool_call = tool_calls_[*awaiting_follow_up_ - 1];
+    tool_call.model_followed_up = true;
+    MarkToolCallChanged(tool_call);
+    ResolveIssue(ToolIssueKey("model_silent_after_tool", tool_call.id));
+    awaiting_follow_up_.reset();
+  }
 }
 
 void TtcDebugSession::ArmWatchdog() {
@@ -514,6 +528,10 @@ void TtcDebugSession::OnClientFrame(const ClientFrame& frame) {
     }
   } else if (const auto* context = std::get_if<ContextUpdate>(&frame)) {
     HandleContextUpdate(*context);
+  } else if (const auto* response = std::get_if<ToolCallResponse>(&frame)) {
+    // Client frames are only reported once they are sent.
+    OnToolResponseSent(response->call_id, /*sent=*/true,
+                       response->response_json);
   }
 }
 
@@ -676,6 +694,14 @@ void TtcDebugSession::HandleFrame(const Interrupted& interrupted) {
 void TtcDebugSession::HandleFrame(const DebugSink::ToolCall& frame) {
   AddServerFrameEvent("tool_call", frame.name);
   OnServerActivity();
+  ToolCall* tool_call = FindOrCreateToolCall(frame.call_id, frame.name);
+  if (!tool_call) {
+    return;
+  }
+  tool_call->arguments_json = Truncate(frame.arguments_json);
+  AddEvent(EventKind::kToolStart, static_cast<float>(tool_call->id),
+           base::StrCat({tool_call->name, " ", tool_call->arguments_json}));
+  MarkToolCallChanged(*tool_call);
 }
 
 void TtcDebugSession::HandleFrame(const ServerError& error) {
@@ -1019,6 +1045,7 @@ void TtcDebugSession::AddObserver(Observer* observer) {
     // happens from now on.
     first_unflushed_event_ = events_.size();
     changed_turns_.clear();
+    changed_tool_calls_.clear();
     changed_issues_.clear();
   } else {
     // Sends the others what they haven't had yet, so that the new observer's
@@ -1050,6 +1077,7 @@ void TtcDebugSession::Flush() {
   if (observers_.empty()) {
     first_unflushed_event_ = events_.size();
     changed_turns_.clear();
+    changed_tool_calls_.clear();
     changed_issues_.clear();
     return;
   }
@@ -1062,6 +1090,10 @@ void TtcDebugSession::Flush() {
     update.changed_turns.push_back(turns_[index - 1]);
   }
   changed_turns_.clear();
+  for (int id : changed_tool_calls_) {
+    update.changed_tool_calls.push_back(tool_calls_[id - 1]);
+  }
+  changed_tool_calls_.clear();
   for (int id : changed_issues_) {
     update.changed_issues.push_back(issues_[id - 1]);
   }
