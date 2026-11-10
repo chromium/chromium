@@ -17,8 +17,8 @@ import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/pol
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
-import type {App} from './extended_updates.mojom-webui.js';
-import {ExtendedUpdatesBrowserProxy} from './extended_updates_browser_proxy.js';
+import type {App, BrowserProxy} from './extended_updates.mojom-webui.js';
+import {browserProxyFactory} from './extended_updates.mojom-webui.js';
 
 export interface ExtendedUpdatesAppElement {
   $: {
@@ -82,20 +82,21 @@ export class ExtendedUpdatesAppElement extends PolymerElement {
     this.$.extendedUpdatesDialog.onBeforeShow();
     this.$.extendedUpdatesDialog.show();
 
-    this.browserProxy_.getInstalledAndroidApps().then((apps: App[]) => {
-      this.apps = apps;
-    });
+    this.browserProxy_.handler.getInstalledAndroidApps().then(
+        ({apps}: {apps: App[]}) => {
+          this.apps = apps;
+        });
   }
 
   declare protected shouldHideBackdrop: boolean;
   declare protected showPopup: boolean;
   declare protected apps: App[];
-  private browserProxy_: ExtendedUpdatesBrowserProxy;
+  private browserProxy_: BrowserProxy;
 
   constructor() {
     super();
 
-    this.browserProxy_ = ExtendedUpdatesBrowserProxy.getInstance();
+    this.browserProxy_ = browserProxyFactory.getInstance();
   }
 
   private onWindowResolutionChange_(): void {
@@ -117,12 +118,12 @@ export class ExtendedUpdatesAppElement extends PolymerElement {
   }
 
   private onCancelButtonClick_(): void {
-    this.browserProxy_.closeDialog();
+    this.browserProxy_.handler.closeDialog();
   }
 
   private onPopupConfirmButtonClick_(): void {
-    this.browserProxy_.optInToExtendedUpdates();
-    this.browserProxy_.closeDialog();
+    this.browserProxy_.handler.optInToExtendedUpdates();
+    this.browserProxy_.handler.closeDialog();
   }
 
   private onPopupCancelButtonClick_(): void {

@@ -9,8 +9,8 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertExhaustive} from '../assert_extras.js';
+import {browserProxyFactory as oneDriveProxyFactory} from '../mojom-webui/one_drive_handler.mojom-webui.js';
 
-import {OneDriveBrowserProxy} from './one_drive_browser_proxy.js';
 import {getTemplate} from './one_drive_subpage.html.js';
 
 const SettingsOneDriveSubpageElementBase = I18nMixin(PolymerElement);
@@ -47,7 +47,7 @@ export class SettingsOneDriveSubpageElement extends
 
   declare private connectionState_: OneDriveConnectionState;
   private userEmailAddress_: string|null = null;
-  private oneDriveProxy_ = OneDriveBrowserProxy.getInstance();
+  private oneDriveProxy_ = oneDriveProxyFactory.getInstance();
   private allowUserToRemoveOdfs_: boolean = true;
 
   /**
@@ -58,10 +58,10 @@ export class SettingsOneDriveSubpageElement extends
 
   override connectedCallback(): void {
     super.connectedCallback();
-    this.oneDriveProxy_.observer.onODFSMountOrUnmount.addListener(
+    this.oneDriveProxy_.callbackRouter.onODFSMountOrUnmount.addListener(
         this.updateUserEmailAddress_.bind(this));
-    this.oneDriveProxy_.observer.onAllowUserToRemoveODFSChanged.addListener(
-        this.updateAllowUserToRemoveOdfs_.bind(this));
+    this.oneDriveProxy_.callbackRouter.onAllowUserToRemoveODFSChanged
+        .addListener(this.updateAllowUserToRemoveOdfs_.bind(this));
   }
 
   updateConnectionStateForTesting(connectionState: OneDriveConnectionState):

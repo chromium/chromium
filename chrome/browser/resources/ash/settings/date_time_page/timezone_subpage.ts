@@ -22,14 +22,14 @@ import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {isChild} from '../common/load_time_booleans.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import type {SettingsDropdownMenuElement} from '../controls/settings_dropdown_menu.js';
-import type {PageCallbackRouter as DateTimePageCallbackRouter, PageHandlerRemote as DateTimePageHandlerRemote} from '../mojom-webui/date_time_handler.mojom-webui.js';
+import type {BrowserProxy as DateTimeBrowserProxy, PageCallbackRouter as DateTimePageCallbackRouter, PageHandlerInterface as DateTimePageHandlerInterface} from '../mojom-webui/date_time_handler.mojom-webui.js';
+import {browserProxyFactory} from '../mojom-webui/date_time_handler.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {GeolocationAccessLevel} from '../os_privacy_page/privacy_hub_geolocation_subpage.js';
 import type {Route} from '../os_settings_routes.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {routes} from '../router.js';
 
-import {DateTimeBrowserProxy} from './date_time_browser_proxy.js';
 import {TimeZoneAutoDetectMethod} from './date_time_types.js';
 import type {TimezoneSelectorElement} from './timezone_selector.js';
 import {getTemplate} from './timezone_subpage.html.js';
@@ -106,7 +106,7 @@ export class TimezoneSubpageElement extends TimezoneSubpageElementBase {
   /**
    * Returns the browser proxy page handler (to invoke functions).
    */
-  get pageHandler(): DateTimePageHandlerRemote {
+  get pageHandler(): DateTimePageHandlerInterface {
     return this.browserProxy_.handler;
   }
 
@@ -114,13 +114,13 @@ export class TimezoneSubpageElement extends TimezoneSubpageElementBase {
    * Returns the browser proxy callback router (to receive async messages).
    */
   get callbackRouter(): DateTimePageCallbackRouter {
-    return this.browserProxy_.observer;
+    return this.browserProxy_.callbackRouter;
   }
 
   constructor() {
     super();
 
-    this.browserProxy_ = DateTimeBrowserProxy.getInstance();
+    this.browserProxy_ = browserProxyFactory.getInstance();
   }
 
   override connectedCallback(): void {

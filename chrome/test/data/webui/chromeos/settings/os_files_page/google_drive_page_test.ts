@@ -7,34 +7,17 @@ import 'chrome://os-settings/lazy_load.js';
 import type {SettingsGoogleDriveSubpageElement} from 'chrome://os-settings/lazy_load.js';
 import {ConfirmationDialogType} from 'chrome://os-settings/lazy_load.js';
 import type {CrButtonElement, GoogleDrivePageRemote, PaperTooltipElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
-import {CrSettingsPrefs, GoogleDriveBrowserProxy, GoogleDrivePageCallbackRouter, GoogleDrivePageHandlerRemote, Stage} from 'chrome://os-settings/os_settings.js';
+import {CrSettingsPrefs, GoogleDrivePageHandlerRemote, googleDriveProxyFactory, Stage} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 import {assertAsync, querySelectorShadow} from '../utils.js';
 
-/**
- * A fake BrowserProxy implementation that enables switching out the real one to
- * mock various mojo responses.
- */
-class GoogleDriveTestBrowserProxy extends TestBrowserProxy implements
-    GoogleDriveBrowserProxy {
+interface GoogleDriveTestProxy {
   handler: TestMock<GoogleDrivePageHandlerRemote>&GoogleDrivePageHandlerRemote;
-
-  observer: GoogleDrivePageCallbackRouter;
-
   observerRemote: GoogleDrivePageRemote;
-
-  constructor() {
-    super(
-        ['calculateRequiredSpace', 'getContentCacheSize', 'clearPinnedFiles']);
-    this.handler = TestMock.fromClass(GoogleDrivePageHandlerRemote);
-    this.observer = new GoogleDrivePageCallbackRouter();
-    this.observerRemote = this.observer.$.bindNewPipeAndPassRemote();
-  }
 }
 
 /**
@@ -50,7 +33,7 @@ suite('<settings-google-drive-subpage>', function() {
   let page: SettingsGoogleDriveSubpageElement;
   let prefElement: SettingsPrefsElement;
   let connectDisconnectButton: CrButtonElement;
-  let testBrowserProxy: GoogleDriveTestBrowserProxy;
+  let testBrowserProxy: GoogleDriveTestProxy;
   let bulkPinningToggle: SettingsToggleButtonElement;
   let offlineStorageSubtitle: HTMLElement;
   let clearOfflineStorageButton: CrButtonElement;
@@ -89,8 +72,10 @@ suite('<settings-google-drive-subpage>', function() {
               '#cleanUpStorageTooltip')!.textContent.trim();
 
   setup(async () => {
-    testBrowserProxy = new GoogleDriveTestBrowserProxy();
-    GoogleDriveBrowserProxy.setInstance(testBrowserProxy);
+    const handler = TestMock.fromClass(GoogleDrivePageHandlerRemote);
+    const {instance, remote} = googleDriveProxyFactory.createForTest(handler);
+    googleDriveProxyFactory.setInstance(instance);
+    testBrowserProxy = {handler, observerRemote: remote};
 
     prefElement = document.createElement('settings-prefs');
     document.body.appendChild(prefElement);

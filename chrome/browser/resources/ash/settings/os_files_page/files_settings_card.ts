@@ -24,12 +24,13 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {assertExhaustive} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
+import type {BrowserProxy as OneDriveBrowserProxy} from '../mojom-webui/one_drive_handler.mojom-webui.js';
+import {browserProxyFactory as oneDriveProxyFactory} from '../mojom-webui/one_drive_handler.mojom-webui.js';
 import type {Route} from '../os_settings_routes.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {Router, routes} from '../router.js';
 
 import {getTemplate} from './files_settings_card.html.js';
-import {OneDriveBrowserProxy} from './one_drive_browser_proxy.js';
 import {OneDriveConnectionState} from './one_drive_subpage.js';
 
 const FilesSettingsCardElementBase =
@@ -126,7 +127,7 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
     super();
 
     if (this.shouldShowOneDriveSettings_) {
-      this.oneDriveBrowserProxy_ = OneDriveBrowserProxy.getInstance();
+      this.oneDriveBrowserProxy_ = oneDriveProxyFactory.getInstance();
     }
   }
 
@@ -136,8 +137,8 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
     if (this.shouldShowOneDriveSettings_) {
       assert(this.oneDriveBrowserProxy_);
       this.updateOneDriveEmail_();
-      this.oneDriveBrowserProxy_.observer.onODFSMountOrUnmount.addListener(
-          this.updateOneDriveEmail_.bind(this));
+      this.oneDriveBrowserProxy_.callbackRouter.onODFSMountOrUnmount
+          .addListener(this.updateOneDriveEmail_.bind(this));
     }
   }
 

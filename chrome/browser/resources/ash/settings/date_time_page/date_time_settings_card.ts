@@ -22,13 +22,13 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {isChild} from '../common/load_time_booleans.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
-import type {PageCallbackRouter as DateTimePageCallbackRouter, PageHandlerRemote as DateTimePageHandlerRemote} from '../mojom-webui/date_time_handler.mojom-webui.js';
+import type {PageCallbackRouter as DateTimePageCallbackRouter, PageHandlerInterface as DateTimePageHandlerInterface} from '../mojom-webui/date_time_handler.mojom-webui.js';
+import {browserProxyFactory} from '../mojom-webui/date_time_handler.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import type {Route} from '../os_settings_routes.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {Router, routes} from '../router.js';
 
-import {DateTimeBrowserProxy} from './date_time_browser_proxy.js';
 import {getTemplate} from './date_time_settings_card.html.js';
 
 const DateTimeSettingsCardElementBase =
@@ -96,15 +96,15 @@ export class DateTimeSettingsCardElement extends
   /**
    * Returns the browser proxy page handler (to invoke functions).
    */
-  get pageHandler(): DateTimePageHandlerRemote {
-    return DateTimeBrowserProxy.getInstance().handler;
+  get pageHandler(): DateTimePageHandlerInterface {
+    return browserProxyFactory.getInstance().handler;
   }
 
   /**
    * Returns the browser proxy callback router (to receive async messages).
    */
   get callbackRouter(): DateTimePageCallbackRouter {
-    return DateTimeBrowserProxy.getInstance().observer;
+    return browserProxyFactory.getInstance().callbackRouter;
   }
 
   constructor() {

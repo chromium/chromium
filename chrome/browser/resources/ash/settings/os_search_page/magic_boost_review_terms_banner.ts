@@ -13,16 +13,17 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {MagicBoostNoticeBrowserProxy} from '../os_search_page/magic_boost_browser_proxy.js';
+import type {BrowserProxy} from '../mojom-webui/magic_boost_handler.mojom-webui.js';
+import {browserProxyFactory} from '../mojom-webui/magic_boost_handler.mojom-webui.js';
 
 import {getTemplate} from './magic_boost_review_terms_banner.html.js';
 
 export class MagicBoostReviewTermsBanner extends PolymerElement {
-  private magicBoostNoticeProxy_: MagicBoostNoticeBrowserProxy;
+  private magicBoostNoticeProxy_: BrowserProxy;
 
   constructor() {
     super();
-    this.magicBoostNoticeProxy_ = MagicBoostNoticeBrowserProxy.getInstance();
+    this.magicBoostNoticeProxy_ = browserProxyFactory.getInstance();
   }
   static get is() {
     return 'magic-boost-review-terms-banner';
@@ -47,7 +48,7 @@ export class MagicBoostReviewTermsBanner extends PolymerElement {
   declare buttonLabel: string;
 
   private onReviewButtonClick_(): void {
-    this.magicBoostNoticeProxy_.showNotice();
+    this.magicBoostNoticeProxy_.handler.showNotice();
   }
 }
 

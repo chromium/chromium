@@ -20,14 +20,14 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
-import type {PageCallbackRouter as GoogleDrivePageCallbackRouter, PageHandlerRemote as GoogleDrivePageHandlerRemote, Status} from '../mojom-webui/google_drive_handler.mojom-webui.js';
+import type {PageCallbackRouter as GoogleDrivePageCallbackRouter, PageHandlerInterface as GoogleDrivePageHandlerInterface, Status} from '../mojom-webui/google_drive_handler.mojom-webui.js';
+import {browserProxyFactory as googleDriveProxyFactory} from '../mojom-webui/google_drive_handler.mojom-webui.js';
 import {Stage} from '../mojom-webui/pinning_manager_types.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import type {Route} from '../os_settings_routes.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {routes} from '../router.js';
 
-import {GoogleDriveBrowserProxy} from './google_drive_browser_proxy.js';
 import {getTemplate} from './google_drive_subpage.html.js';
 
 const SettingsGoogleDriveSubpageElementBase =
@@ -71,7 +71,7 @@ export class SettingsGoogleDriveSubpageElement extends
     super();
     this.contentCacheSize_ = ContentCacheSizeType.CALCULATING;
     this.showSpinner = false;
-    this.proxy_ = GoogleDriveBrowserProxy.getInstance();
+    this.proxy_ = googleDriveProxyFactory.getInstance();
   }
 
   static get is() {
@@ -170,7 +170,7 @@ export class SettingsGoogleDriveSubpageElement extends
   /**
    * A connection with the browser process to send/receive messages.
    */
-  private proxy_ = GoogleDriveBrowserProxy.getInstance();
+  private proxy_ = googleDriveProxyFactory.getInstance();
 
   /**
    * Keeps track of the latest response about bulk pinning from the page
@@ -217,7 +217,7 @@ export class SettingsGoogleDriveSubpageElement extends
   /**
    * Returns the browser proxy page handler (to invoke functions).
    */
-  get pageHandler(): GoogleDrivePageHandlerRemote {
+  get pageHandler(): GoogleDrivePageHandlerInterface {
     return this.proxy_.handler;
   }
 
@@ -225,7 +225,7 @@ export class SettingsGoogleDriveSubpageElement extends
    * Returns the browser proxy callback router (to receive async messages).
    */
   get callbackRouter(): GoogleDrivePageCallbackRouter {
-    return this.proxy_.observer;
+    return this.proxy_.callbackRouter;
   }
 
   /**

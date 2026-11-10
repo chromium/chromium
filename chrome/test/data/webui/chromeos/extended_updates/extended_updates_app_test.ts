@@ -6,13 +6,12 @@ import 'chrome://extended-updates-dialog/app.js';
 
 import {ExtendedUpdatesAppElement} from 'chrome://extended-updates-dialog/app.js';
 import type {App} from 'chrome://extended-updates-dialog/extended_updates.mojom-webui.js';
-import {ExtendedUpdatesBrowserProxy} from 'chrome://extended-updates-dialog/extended_updates_browser_proxy.js';
+import {browserProxyFactory, PageHandlerRemote} from 'chrome://extended-updates-dialog/extended_updates.mojom-webui.js';
 import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
-
-import {TestExtendedUpdatesBrowserProxy} from './test_extended_updates_browser_proxy.js';
 
 suite('<extended-updates>', () => {
   let app: ExtendedUpdatesAppElement;
@@ -55,11 +54,16 @@ suite('<extended-updates>', () => {
   }
 
   suite('<app-test>', () => {
-    let browserProxy: TestExtendedUpdatesBrowserProxy;
+    let handler: TestMock<PageHandlerRemote>&PageHandlerRemote;
 
     setup(async () => {
-      browserProxy = new TestExtendedUpdatesBrowserProxy();
-      ExtendedUpdatesBrowserProxy.setInstance(browserProxy);
+      handler = TestMock.fromClass(PageHandlerRemote);
+      handler.setResultFor(
+          'optInToExtendedUpdates', Promise.resolve({success: true}));
+      handler.setResultFor(
+          'getInstalledAndroidApps', Promise.resolve({apps: []}));
+      const {instance} = browserProxyFactory.createForTest(handler);
+      browserProxyFactory.setInstance(instance);
 
       await setupAppElement();
     });
@@ -78,8 +82,8 @@ suite('<extended-updates>', () => {
       assertTrue(!!popupConfirmButton);
       assertTrue(isVisible(popupConfirmButton));
       popupConfirmButton.click();
-      await browserProxy.whenCalled('optInToExtendedUpdates');
-      await browserProxy.whenCalled('closeDialog');
+      await handler.whenCalled('optInToExtendedUpdates');
+      await handler.whenCalled('closeDialog');
     });
 
     test('popup cancel button closes popup', async () => {
@@ -108,7 +112,7 @@ suite('<extended-updates>', () => {
       assertTrue(!!cancelButton);
       assertTrue(isVisible(cancelButton));
       cancelButton.click();
-      await browserProxy.whenCalled('closeDialog');
+      await handler.whenCalled('closeDialog');
     });
 
     test('apps property reactive binding', async () => {
@@ -116,7 +120,8 @@ suite('<extended-updates>', () => {
         {id: '1', title: 'App 1'},
         {id: '2', title: 'App 2'},
       ];
-      browserProxy.setInstalledAndroidApps(mockApps);
+      handler.setResultFor(
+          'getInstalledAndroidApps', Promise.resolve({apps: mockApps}));
 
       await setupAppElement();
 
