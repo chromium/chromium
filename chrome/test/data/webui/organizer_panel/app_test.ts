@@ -840,4 +840,34 @@ suite('OrganizerPanelAppTest', () => {
     assertEquals(
         2, metrics.count('Tabs.Organizer.NumTabsClosedPerInstance', 0));
   });
+
+  test('records StartSearch user action at most once per session', () => {
+    // Empty search does not record StartSearch.
+    app.$.searchField.setValue('');
+    assertEquals(0, metrics.count('OrganizerPanel.StartSearch'));
+
+    // Entering a search query records StartSearch once.
+    app.$.searchField.setValue('a');
+    assertEquals(1, metrics.count('OrganizerPanel.StartSearch'));
+
+    // Subsequent queries in the same session do not record again, even
+    // after clearing the search field.
+    app.$.searchField.setValue('ab');
+    app.$.searchField.setValue('');
+    app.$.searchField.setValue('c');
+    assertEquals(1, metrics.count('OrganizerPanel.StartSearch'));
+
+    // Hiding the panel starts a new session, so searching again records
+    // StartSearch once more.
+    Object.defineProperty(
+        document, 'visibilityState', {value: 'hidden', writable: true});
+    document.dispatchEvent(new Event('visibilitychange'));
+    Object.defineProperty(
+        document, 'visibilityState', {value: 'visible', writable: true});
+    document.dispatchEvent(new Event('visibilitychange'));
+    assertEquals(1, metrics.count('OrganizerPanel.StartSearch'));
+
+    app.$.searchField.setValue('d');
+    assertEquals(2, metrics.count('OrganizerPanel.StartSearch'));
+  });
 });

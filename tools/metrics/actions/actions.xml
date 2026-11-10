@@ -29611,11 +29611,37 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="OrganizerPanel.OpenSectionMenu">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when clicking the 3-dot menu button in a section header.
+  </description>
+</action>
+
 <action name="OrganizerPanel.OpenTabGroup">
   <owner>agale@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when clicking an existing group in TabGroupsDelegate.
+  </description>
+</action>
+
+<action name="OrganizerPanel.OpenTabGroupMenu">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when opening the tab group context menu via right-click or the
+    3-dot menu button in TabGroupsDelegate.
+  </description>
+</action>
+
+<action name="OrganizerPanel.StartSearch">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when a search query is entered in the organizer panel. Recorded at
+    most once per organizer panel session.
   </description>
 </action>
 

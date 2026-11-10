@@ -204,6 +204,7 @@ export class OrganizerListSectionHeaderElement extends
 
   protected onMenuButtonClick_(e: Event) {
     e.stopPropagation();
+    chrome.histograms.recordUserAction('OrganizerPanel.OpenSectionMenu');
     this.$.menu.showAt(this.$.menuButton, {
       anchorAlignmentY: AnchorAlignment.AFTER_END,
       noOffset: true,

@@ -8,6 +8,8 @@ import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {render} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -21,6 +23,7 @@ class TestClient implements OrganizerListSectionClient {
 
 suite('TabGroupsDelegateTest', () => {
   let delegate: TabGroupsDelegate;
+  let metrics: MetricsTracker;
   let mockHandler: TestMock<TabGroupsOrganizerPageHandlerRemote>&
       TabGroupsOrganizerPageHandlerRemote;
   let mockOrganizerPanelHandler: TestMock<OrganizerPanelPageHandlerRemote>&
@@ -53,6 +56,7 @@ suite('TabGroupsDelegateTest', () => {
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    metrics = fakeMetricsPrivate();
     loadTimeData.resetForTesting({
       createTabGroup: 'Create tab group',
       openTabGroup: 'Open tab group',
@@ -235,6 +239,7 @@ suite('TabGroupsDelegateTest', () => {
     const args = await mockHandler.whenCalled('showContextMenu');
     assertDeepEquals(sampleGroups[0]!.id, args[0]);
     assertDeepEquals({x: 10, y: 20, width: 30, height: 40}, args[1]);
+    assertEquals(1, metrics.count('OrganizerPanel.OpenTabGroupMenu'));
   });
 
   test('calls showContextMenu on context menu click', async () => {
@@ -245,6 +250,7 @@ suite('TabGroupsDelegateTest', () => {
     const args = await mockHandler.whenCalled('showContextMenu');
     assertDeepEquals(sampleGroups[0]!.id, args[0]);
     assertDeepEquals({x: 15, y: 25, width: 0, height: 0}, args[1]);
+    assertEquals(1, metrics.count('OrganizerPanel.OpenTabGroupMenu'));
   });
 
   test(

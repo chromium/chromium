@@ -107,9 +107,8 @@ export class TabGroupsDelegate implements
   async onItemActionButtonClicked(
       item: OrganizerListSectionItem<TabGroup>, buttonElement: HTMLElement) {
     assert(item.data);
-    setCloseAction(OrganizerPanelCloseAction.OPEN_TAB_GROUP_MENU);
     const rect = buttonElement.getBoundingClientRect();
-    await this.browserProxy_.handler.showContextMenu(item.data.id, {
+    await this.showContextMenu_(item.data.id, {
       x: Math.round(rect.x),
       y: Math.round(rect.y),
       width: Math.round(rect.width),
@@ -120,13 +119,20 @@ export class TabGroupsDelegate implements
   async onItemContextMenuClicked(
       item: OrganizerListSectionItem<TabGroup>, x: number, y: number) {
     assert(item.data);
-    setCloseAction(OrganizerPanelCloseAction.OPEN_TAB_GROUP_MENU);
-    await this.browserProxy_.handler.showContextMenu(item.data.id, {
+    await this.showContextMenu_(item.data.id, {
       x: Math.round(x),
       y: Math.round(y),
       width: 0,
       height: 0,
     });
+  }
+
+  private async showContextMenu_(
+      id: string,
+      anchorRect: {x: number, y: number, width: number, height: number}) {
+    chrome.histograms?.recordUserAction?.('OrganizerPanel.OpenTabGroupMenu');
+    setCloseAction(OrganizerPanelCloseAction.OPEN_TAB_GROUP_MENU);
+    await this.browserProxy_.handler.showContextMenu(id, anchorRect);
   }
 
   private notifyClient_() {

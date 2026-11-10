@@ -74,6 +74,7 @@ export class OrganizerPanelAppElement extends CrLitElement {
   private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
   private verticalTabsEnabledChangedListenerId_: number|null = null;
   private inTrayViewChangedListenerId_: number|null = null;
+  private hasRecordedSearch_: boolean = false;
   private onKeydown_: (e: KeyboardEvent) => void = (e: KeyboardEvent) => {
     if (e.key === 'Tab') {
       const path = e.composedPath();
@@ -109,6 +110,7 @@ export class OrganizerPanelAppElement extends CrLitElement {
       recordCloseMetrics();
       this.$.searchField.setValue('');
       this.searchQuery_ = '';
+      this.hasRecordedSearch_ = false;
       this.$.list.scrollTop = 0;
     }
   };
@@ -191,6 +193,10 @@ export class OrganizerPanelAppElement extends CrLitElement {
   }
 
   protected onSearchChanged_(e: CustomEvent<string>) {
+    if (!this.hasRecordedSearch_ && e.detail.length > 0) {
+      chrome.histograms.recordUserAction('OrganizerPanel.StartSearch');
+      this.hasRecordedSearch_ = true;
+    }
     this.searchQuery_ = e.detail;
   }
 

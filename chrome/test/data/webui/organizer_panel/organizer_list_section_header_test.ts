@@ -395,12 +395,16 @@ suite('OrganizerListSectionHeaderTest', () => {
     assertEquals(2, metrics.count('OrganizerPanel.ExpandSection'));
 
     // Menu selections fire menu-action even when re-selecting the active item.
+    let menuClickCount = 0;
     for (const [button, expectedOption] of [
              [header.$.showAllButton, OrganizerSectionMenuOption.SHOW_ALL],
              [header.$.showAllButton, OrganizerSectionMenuOption.SHOW_ALL],
              [header.$.showSomeButton, OrganizerSectionMenuOption.SHOW_SOME],
     ] as const) {
       header.$.menuButton.click();
+      menuClickCount++;
+      assertEquals(
+          menuClickCount, metrics.count('OrganizerPanel.OpenSectionMenu'));
       await microtasksFinished();
       const whenMenuAction =
           eventToPromise<CustomEvent<{option: OrganizerSectionMenuOption}>>(
