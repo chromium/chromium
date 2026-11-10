@@ -65,6 +65,8 @@ template("apply_updater_branding") {
     "-e",
     "QUALIFICATION_APPID=\"$qualification_appid\"",
     "-e",
+    "PLATFORM_EXPERIENCE_HELPER_APPID=\"$platform_experience_helper_appid\"",
+    "-e",
     "CRX_PKHASH=\"$crx_pkhash\"",
     "-e",
     "LEGACY_GOOGLE_UPDATE_APPID=\"$legacy_google_update_appid\"",
