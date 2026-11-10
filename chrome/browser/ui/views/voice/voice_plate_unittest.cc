@@ -100,6 +100,20 @@ TEST_F(VoicePlateTest, CenteredOverlappingTheBottomOfTheAnchor) {
   EXPECT_EQ(bounds.y(), anchor_bounds.bottom() - 10);
 }
 
+TEST_F(VoicePlateTest, OverlapsOnlyByShadowWhenRenderedOverWebContents) {
+  auto voice_plate =
+      std::make_unique<TestVoicePlate>(anchor_view_, gfx::Size(200, 30));
+  voice_plate->Show();
+  const int anchor_bottom = anchor_view_->GetBoundsInScreen().bottom();
+
+  voice_plate->SetRenderOverWebContents(true);
+  EXPECT_EQ(voice_plate->GetBubbleBounds().y(),
+            anchor_bottom - views::BubbleBorder::kShadowBlur);
+
+  voice_plate->SetRenderOverWebContents(false);
+  EXPECT_EQ(voice_plate->GetBubbleBounds().y(), anchor_bottom - 10);
+}
+
 TEST_F(VoicePlateTest, WidthIsLimitedByTheAnchor) {
   auto voice_plate =
       std::make_unique<TestVoicePlate>(anchor_view_, gfx::Size(2000, 30));

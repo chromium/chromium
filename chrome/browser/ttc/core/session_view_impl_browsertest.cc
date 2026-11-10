@@ -21,10 +21,18 @@
 #include "chrome/browser/ui/views/voice/waveform_view.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/ttc/app/public/error_codes.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/views/bubble/bubble_border.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
+#include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
 namespace ttc {
@@ -45,6 +53,47 @@ class SessionViewImplBrowserTest : public TtcInteractiveBrowserTestBase {
     return Do([this, lifecycle]() {
       session_controller().SetSessionLifecycle(lifecycle);
     });
+  }
+
+  void SetTabFullscreen(bool fullscreen) {
+    content::WebContents* const tab =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    using ui_test_utils::FullscreenWaiter;
+    const FullscreenWaiter::Expectation expectation =
+        fullscreen ? FullscreenWaiter::Expectation{.tab_fullscreen = true}
+                   : FullscreenWaiter::kNoFullscreen;
+    FullscreenWaiter waiter(browser(), expectation);
+    if (fullscreen) {
+      tab->GetDelegate()->EnterFullscreenModeForTab(tab->GetPrimaryMainFrame(),
+                                                    {});
+    } else {
+      tab->ExitFullscreen(/*will_cause_resize=*/true);
+    }
+    waiter.Wait();
+  }
+
+  views::View* GetBrowserView(ui::ElementIdentifier id) {
+    return views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+        id, BrowserElements::From(browser())->GetContext());
+  }
+
+  // The plate's window bounds, including its shadow.
+  gfx::Rect GetPlateBounds() {
+    return GetBrowserView(TtcVoicePlate::kViewElementId)
+        ->GetWidget()
+        ->GetWindowBoundsInScreen();
+  }
+
+  // Whether the plate's top edge is inside the browser window, which in
+  // fullscreen is the screen. Only the bubble shadow (`kShadowBlur`) may extend
+  // past it, as with toasts in fullscreen. Uses the browser view's widget: on
+  // Mac immersive the top container lives in a separate overlay widget.
+  bool IsPlateTopInWindow() {
+    const gfx::Rect window = GetBrowserView(kBrowserViewElementId)
+                                 ->GetWidget()
+                                 ->GetWindowBoundsInScreen();
+    const int min_top = window.y() - views::BubbleBorder::kShadowBlur;
+    return GetPlateBounds().y() >= min_top;
   }
 };
 
@@ -374,6 +423,43 @@ IN_PROC_BROWSER_TEST_F(SessionViewImplBrowserTest,
 
   EXPECT_TRUE(base::test::RunUntil(
       [&service]() { return !service.is_session_active(); }));
+}
+
+// Tab fullscreen hides the toolbar the plate normally overlaps.
+IN_PROC_BROWSER_TEST_F(SessionViewImplBrowserTest,
+                       TabFullscreenKeepsPlateOnScreen) {
+  SetTabFullscreen(true);
+
+  // clang-format off
+  RunTestSequence(
+    StartSession(),
+    WaitForShow(TtcVoicePlate::kViewElementId)
+  );
+  // clang-format on
+
+  EXPECT_TRUE(IsPlateTopInWindow());
+}
+
+IN_PROC_BROWSER_TEST_F(SessionViewImplBrowserTest,
+                       PlateFollowsTabFullscreenChanges) {
+  // clang-format off
+  RunTestSequence(
+    StartSession(),
+    WaitForShow(TtcVoicePlate::kViewElementId)
+  );
+  // clang-format on
+  const int windowed_y = GetPlateBounds().y();
+
+  SetTabFullscreen(true);
+  // The plate is already inside the window before fullscreen, so also wait
+  // for it to move up.
+  EXPECT_TRUE(base::test::RunUntil([this, windowed_y]() {
+    return IsPlateTopInWindow() && GetPlateBounds().y() < windowed_y;
+  }));
+
+  SetTabFullscreen(false);
+  EXPECT_TRUE(base::test::RunUntil(
+      [this, windowed_y]() { return GetPlateBounds().y() == windowed_y; }));
 }
 
 }  // namespace

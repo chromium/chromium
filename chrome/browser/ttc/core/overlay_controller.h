@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
@@ -26,6 +27,7 @@ namespace ttc {
 
 class TtcView;
 class TtcViewDelegate;
+class TtcVoicePlate;
 
 // Owns the TTC views shown on top of the browser window and keeps them in the
 // tabbed browser window the user is currently working in.
@@ -46,6 +48,7 @@ class OverlayController : public BrowserCollectionObserver {
   void MoveToWindow(BrowserWindowInterface* browser);
 
   void CreateViews(views::View* anchor_view);
+  void OnFullscreenStateChanged();
 
   // Safe because the delegate is guaranteed to outlive this object.
   const raw_ref<TtcViewDelegate> delegate_;
@@ -58,6 +61,12 @@ class OverlayController : public BrowserCollectionObserver {
 
   // Empty if there was no suitable window to show the overlay in.
   std::vector<std::unique_ptr<TtcView>> views_;
+
+  // Owned by `views_`; null iff `views_` is empty.
+  raw_ptr<TtcVoicePlate> voice_plate_ = nullptr;
+
+  // Fullscreen changes of `anchored_browser_`.
+  base::CallbackListSubscription fullscreen_subscription_;
 
   base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
       browser_collection_observation_{this};

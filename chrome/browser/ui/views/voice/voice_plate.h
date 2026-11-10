@@ -29,6 +29,11 @@ class VoicePlate : public views::BubbleDialogDelegate {
 
   virtual void UpdateAudioLevel(float audio_level) = 0;
 
+  // Set when fullscreen hides the top container the plate is anchored to.
+  // The plate then overlaps the anchor by its shadow only, as `ToastView`
+  // does, instead of pulling up over the hidden toolbar and off the screen.
+  void SetRenderOverWebContents(bool render_over_web_contents);
+
   // views::BubbleDialogDelegate:
   gfx::Rect GetBubbleBounds() override;
   void Init() override;
@@ -41,6 +46,7 @@ class VoicePlate : public views::BubbleDialogDelegate {
 
  private:
   std::unique_ptr<views::Widget> widget_;
+  bool render_over_web_contents_ = false;
 };
 
 }  // namespace voice

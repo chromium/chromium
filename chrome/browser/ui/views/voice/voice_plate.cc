@@ -38,6 +38,16 @@ void VoicePlate::Show() {
   widget_->ShowInactive();
 }
 
+void VoicePlate::SetRenderOverWebContents(bool render_over_web_contents) {
+  if (render_over_web_contents_ == render_over_web_contents) {
+    return;
+  }
+  render_over_web_contents_ = render_over_web_contents;
+  if (GetWidget()) {
+    SizeToContents();
+  }
+}
+
 gfx::Rect VoicePlate::GetBubbleBounds() {
   views::View* anchor_view = GetAnchorView();
   if (!anchor_view || !GetWidget()) {
@@ -59,7 +69,9 @@ gfx::Rect VoicePlate::GetBubbleBounds() {
   // Overlap the bottom of the toolbar/omnibox by only a few pixels (e.g. 10
   // dip).
   constexpr int kOverlapAmount = 10;
-  const int y = anchor_bounds.bottom() - kOverlapAmount;
+  const int y = anchor_bounds.bottom() - (render_over_web_contents_
+                                              ? views::BubbleBorder::kShadowBlur
+                                              : kOverlapAmount);
   return gfx::Rect(x, y, width, preferred_size.height());
 }
 

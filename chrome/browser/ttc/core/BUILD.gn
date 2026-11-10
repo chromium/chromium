@@ -189,6 +189,8 @@ source_set("impl") {
       "//chrome/browser/lifetime",
       "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/browser/ui:browser_window_header",
+      "//chrome/browser/ui/exclusive_access",
+      "//chrome/browser/ui/fullscreen",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts/api:toasts",
@@ -197,6 +199,9 @@ source_set("impl") {
       "//chrome/browser/ui/views/toolbar",
       "//ui/views",
     ]
+    if (is_mac) {
+      deps += [ "//chrome/browser/ui:fullscreen_util_mac" ]
+    }
   }
 }
 
@@ -415,7 +420,9 @@ if (!is_android) {
       "//content/test:test_support",
       "//testing/gmock",
       "//testing/gtest",
+      "//third_party/blink/public/common",
       "//ui/base/interaction",
+      "//ui/gfx/geometry",
       "//ui/views",
     ]
   }
