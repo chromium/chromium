@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.commerce;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -132,18 +133,25 @@ public class PriceNotificationSettingsFragment extends ChromeBaseSettingsFragmen
         arePriceTrackingNotificationsEnabled(
                 (enabled) -> {
                     if (mMobileNotificationsText == null) return;
+                    // The notification channel lookup may complete asynchronously (see
+                    // AsyncNotificationManagerProxyImpl), by which time this fragment may have
+                    // been detached. Fragment#getString() would then throw an
+                    // IllegalStateException, and there is no UI left to update anyway.
+                    Context context = getContext();
+                    if (!isAdded() || context == null) return;
                     String linkText =
-                            getString(R.string.chrome_notification_settings_for_price_tracking);
+                            context.getString(
+                                    R.string.chrome_notification_settings_for_price_tracking);
 
                     String settingsFullText;
                     if (enabled) {
                         settingsFullText =
-                                getString(
+                                context.getString(
                                         R.string.price_notifications_settings_mobile_description_on,
                                         linkText);
                     } else {
                         settingsFullText =
-                                getString(
+                                context.getString(
                                         R.string
                                                 .price_notifications_settings_mobile_description_off,
                                         linkText);
@@ -154,7 +162,7 @@ public class PriceNotificationSettingsFragment extends ChromeBaseSettingsFragmen
                                     "<link>",
                                     "</link>",
                                     new ChromeClickableSpan(
-                                            getContext(), (view) -> launchAppSettings()));
+                                            context, (view) -> launchAppSettings()));
 
                     mMobileNotificationsText.setSummary(
                             SpanApplier.applySpans(settingsFullText, info));
