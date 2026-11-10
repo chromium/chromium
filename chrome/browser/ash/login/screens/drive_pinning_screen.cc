@@ -9,16 +9,19 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_login_pref_names.h"
 #include "base/byte_size.h"
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
+#include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/drive_pinning_screen_handler.h"
 #include "chromeos/ash/components/drivefs/drivefs_pinning_manager.h"
 #include "components/drive/drive_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "ui/base/text/bytes_formatting.h"
 
 namespace ash {
@@ -270,17 +273,20 @@ void DrivePinningScreen::OnNextClicked(bool enable_drive_pinning) {
   OnNext(enable_drive_pinning);
 }
 
-std::string DrivePinningScreen::RetrieveChoobeSubtitle() {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
+std::string DrivePinningScreen::RetrieveChoobeSubtitle(
+    const PrefService& pref_service) {
   bool drive_pinning =
-      profile->GetPrefs()->GetBoolean(prefs::kOobeDrivePinningEnabledDeferred);
+      pref_service.GetBoolean(prefs::kOobeDrivePinningEnabledDeferred);
   if (drive_pinning) {
     return "choobeDevicePinningSubtitleEnabled";
   }
   return "choobeDevicePinningSubtitleDisabled";
 }
 
-ScreenSummary DrivePinningScreen::GetScreenSummary() {
+ScreenSummary DrivePinningScreen::GetScreenSummary(
+    const WizardContext& context) {
+  PrefService& pref_service =
+      CHECK_DEREF(CHECK_DEREF(context.onboarding_user.get()).GetProfilePrefs());
   ScreenSummary summary;
   summary.screen_id = DrivePinningScreenView::kScreenId;
   summary.icon_id = "oobe-40:drive-pinning-choobe";
@@ -290,7 +296,7 @@ ScreenSummary DrivePinningScreen::GetScreenSummary() {
   if (WizardController::default_controller()
           ->choobe_flow_controller()
           ->IsScreenCompleted(DrivePinningScreenView::kScreenId)) {
-    summary.subtitle_resource = RetrieveChoobeSubtitle();
+    summary.subtitle_resource = RetrieveChoobeSubtitle(pref_service);
   }
 
   return summary;

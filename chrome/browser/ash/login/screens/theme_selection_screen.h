@@ -11,6 +11,8 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 
+class PrefService;
+
 namespace ash {
 
 class ThemeSelectionScreenView;
@@ -63,8 +65,8 @@ class ThemeSelectionScreen : public BaseScreen {
   void ShowImpl() override;
   void HideImpl() override;
   void OnUserAction(const base::ListValue& args) override;
-  ScreenSummary GetScreenSummary() override;
-  std::string RetrieveChoobeSubtitle();
+  ScreenSummary GetScreenSummary(const WizardContext& context) override;
+  std::string RetrieveChoobeSubtitle(const PrefService& pref_service);
 
   ThemeSelectionScreen::SelectedTheme initial_theme_;
   base::WeakPtr<ThemeSelectionScreenView> view_;

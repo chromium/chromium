@@ -64,7 +64,10 @@ class BaseScreen {
 
   bool is_hidden() { return is_hidden_; }
 
-  virtual ScreenSummary GetScreenSummary();
+  // Summarizes the screen for the CHOOBE list. The summary is asked for while
+  // the screen is not shown, so `context` is passed in rather than read from
+  // context(), which is only set between Show() and Hide().
+  virtual ScreenSummary GetScreenSummary(const WizardContext& context);
 
  protected:
   virtual void ShowImpl() = 0;

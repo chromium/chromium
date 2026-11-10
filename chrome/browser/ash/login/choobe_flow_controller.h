@@ -15,6 +15,8 @@ class PrefService;
 
 namespace ash {
 
+class WizardContext;
+
 // Controls the CHOOBE flow which is a part of the onboarding flow.
 // CHOOBE Flow consists of a list of optional screens. The user can
 // specify which optional screens to go through from the CHOOBE screen.
@@ -56,7 +58,10 @@ class ChoobeFlowController {
   // Returns summaries of screens that the user is eligible to go through.
   // Used to fill CHOOBE screen tiles. The order of screens tiles should match
   // the order of the returned vector.
-  std::vector<ScreenSummary> GetEligibleScreensSummaries();
+  // `context` names the user going through onboarding, which is what the
+  // screens summarize themselves against.
+  std::vector<ScreenSummary> GetEligibleScreensSummaries(
+      const WizardContext& context);
 
   // Called once the user has selected the screens to go through to persist
   // their selection.

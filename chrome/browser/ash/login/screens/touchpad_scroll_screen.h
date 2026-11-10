@@ -12,6 +12,8 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 
+class PrefService;
+
 namespace ash {
 class TouchpadScrollScreenView;
 
@@ -53,15 +55,15 @@ class TouchpadScrollScreen : public BaseScreen {
   void ShowImpl() override;
   void HideImpl() override;
   void OnUserAction(const base::ListValue& args) override;
-  ScreenSummary GetScreenSummary() override;
+  ScreenSummary GetScreenSummary(const WizardContext& context) override;
 
   // Called when the user changes the toggle button.
-  void OnScrollUpdate(bool is_reverse_scroll);
+  void OnScrollUpdate(PrefService& pref_service, bool is_reverse_scroll);
 
   // Get user synced preferences for touchpad scroll direction.
-  bool GetNaturalScrollPrefValue();
+  bool GetNaturalScrollPrefValue(PrefService& pref_service);
 
-  std::string RetrieveChoobeSubtitle();
+  std::string RetrieveChoobeSubtitle(PrefService& pref_service);
 
   bool initial_pref_value_;
   bool ignore_pref_sync_for_testing_ = false;

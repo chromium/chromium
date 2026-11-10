@@ -70,7 +70,7 @@ void BaseScreen::OnUserAction(const base::ListValue& args) {
   NOTREACHED() << "Unhandled user action: action_id=" << args[0];
 }
 
-ScreenSummary BaseScreen::GetScreenSummary() {
+ScreenSummary BaseScreen::GetScreenSummary(const WizardContext& context) {
   NOTIMPLEMENTED();
   return {};
 }

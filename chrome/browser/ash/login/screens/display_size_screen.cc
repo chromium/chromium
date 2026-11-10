@@ -8,6 +8,7 @@
 #include "ash/constants/ash_login_pref_names.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
+#include "base/check_deref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/ranges.h"
 #include "base/strings/string_number_conversions.h"
@@ -20,6 +21,7 @@
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "components/prefs/pref_service.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/util/display_manager_util.h"
@@ -239,7 +241,10 @@ void DisplaySizeScreen::OnUserAction(const base::ListValue& args) {
   BaseScreen::OnUserAction(args);
 }
 
-ScreenSummary DisplaySizeScreen::GetScreenSummary() {
+ScreenSummary DisplaySizeScreen::GetScreenSummary(
+    const WizardContext& context) {
+  PrefService& pref_service =
+      CHECK_DEREF(CHECK_DEREF(context.onboarding_user.get()).GetProfilePrefs());
   ScreenSummary summary;
   summary.screen_id = DisplaySizeScreenView::kScreenId;
   summary.icon_id = "oobe-40:display-size-choobe";
@@ -250,8 +255,7 @@ ScreenSummary DisplaySizeScreen::GetScreenSummary() {
   if (WizardController::default_controller()
           ->choobe_flow_controller()
           ->IsScreenCompleted(DisplaySizeScreenView::kScreenId)) {
-    summary.subtitle_resource = RetrieveChoobeSubtitle(
-        ProfileManager::GetActiveUserProfile()->GetPrefs());
+    summary.subtitle_resource = RetrieveChoobeSubtitle(&pref_service);
   }
 
   return summary;

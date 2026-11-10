@@ -3,15 +3,16 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/screens/choobe_screen.h"
-#include "chrome/browser/profiles/profile_manager.h"
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/schedule_enums.h"
+#include "base/check_deref.h"
 #include "chrome/browser/ash/login/choobe_flow_controller.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/ash/login/choobe_screen_handler.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user.h"
 
 namespace ash {
 namespace {
@@ -66,14 +67,14 @@ bool ChoobeScreen::MaybeSkip(WizardContext& context) {
     // until user reach theme selection screen and apply any mode.
     // if theme is managed or recommended then we should just apply the policy
     // and no action are needed
+    user_manager::User& user = CHECK_DEREF(context.onboarding_user.get());
+    PrefService& pref_service = CHECK_DEREF(user.GetProfilePrefs());
     const PrefService::Preference* pref =
-        ProfileManager::GetActiveUserProfile()->GetPrefs()->FindPreference(
-            prefs::kDarkModeScheduleType);
+        pref_service.FindPreference(prefs::kDarkModeScheduleType);
     if (!pref->IsManaged() && !pref->IsRecommended()) {
-      ProfileManager::GetActiveUserProfile()->GetPrefs()->SetBoolean(
-          prefs::kDarkModeEnabled, false);
-      ProfileManager::GetActiveUserProfile()->GetPrefs()->SetInteger(
-          prefs::kDarkModeScheduleType, static_cast<int>(ScheduleType::kNone));
+      pref_service.SetBoolean(prefs::kDarkModeEnabled, false);
+      pref_service.SetInteger(prefs::kDarkModeScheduleType,
+                              static_cast<int>(ScheduleType::kNone));
     }
     return false;
   }
@@ -87,9 +88,10 @@ void ChoobeScreen::SkipScreen() {
 }
 
 void ChoobeScreen::OnSelect(base::ListValue screens) {
+  user_manager::User& user = CHECK_DEREF(context()->onboarding_user.get());
   WizardController::default_controller()
       ->choobe_flow_controller()
-      ->OnScreensSelected(*ProfileManager::GetActiveUserProfile()->GetPrefs(),
+      ->OnScreensSelected(CHECK_DEREF(user.GetProfilePrefs()),
                           std::move(screens));
   exit_callback_.Run(Result::SELECTED);
 }
@@ -104,7 +106,8 @@ void ChoobeScreen::ShowImpl() {
   }
 
   auto screens =
-      controller->choobe_flow_controller()->GetEligibleScreensSummaries();
+      controller->choobe_flow_controller()->GetEligibleScreensSummaries(
+          CHECK_DEREF(context()));
 
   view_->Show(std::move(screens));
 }

@@ -14,6 +14,8 @@
 
 class Profile;
 
+class PrefService;
+
 namespace ash {
 class DisplaySizeScreenView;
 
@@ -54,7 +56,7 @@ class DisplaySizeScreen : public BaseScreen {
   void ShowImpl() override;
   void HideImpl() override;
   void OnUserAction(const base::ListValue& args) override;
-  ScreenSummary GetScreenSummary() override;
+  ScreenSummary GetScreenSummary(const WizardContext& context) override;
 
   base::WeakPtr<DisplaySizeScreenView> view_;
   ScreenExitCallback exit_callback_;

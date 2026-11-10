@@ -117,7 +117,8 @@ void ChoobeFlowController::ResumeChoobe(const PrefService& prefs) {
   }
 }
 
-std::vector<ScreenSummary> ChoobeFlowController::GetEligibleScreensSummaries() {
+std::vector<ScreenSummary> ChoobeFlowController::GetEligibleScreensSummaries(
+    const WizardContext& context) {
   EnsureEligibleScreensPopulated();
   std::vector<ScreenSummary> summaries;
   for (auto id : kOptionalScreens) {
@@ -129,7 +130,7 @@ std::vector<ScreenSummary> ChoobeFlowController::GetEligibleScreensSummaries() {
     ScreenSummary summary = LoginDisplayHost::default_host()
                                 ->GetWizardController()
                                 ->GetScreen(screen_id)
-                                ->GetScreenSummary();
+                                ->GetScreenSummary(context);
 
     // Mark the screen as completed if it exists in completed_screens_ids_ set.
     summary.is_completed =

@@ -18,6 +18,8 @@
 
 class Profile;
 
+class PrefService;
+
 namespace ash {
 class DrivePinningScreenView;
 
@@ -66,7 +68,7 @@ class DrivePinningScreen
   // calculation.
   void StartCalculatingRequiredSpace();
 
-  std::string RetrieveChoobeSubtitle();
+  std::string RetrieveChoobeSubtitle(const PrefService& pref_service);
 
   void OnProgressForTest(const drivefs::pinning::Progress& progress);
 
@@ -78,7 +80,7 @@ class DrivePinningScreen
   bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
-  ScreenSummary GetScreenSummary() override;
+  ScreenSummary GetScreenSummary(const WizardContext& context) override;
 
   // DriveIntegrationService::Observer implementation.
   void OnBulkPinProgress(const drivefs::pinning::Progress& progress) override;
