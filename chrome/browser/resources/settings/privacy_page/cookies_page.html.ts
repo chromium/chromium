@@ -24,123 +24,63 @@ export function getHtml(this: SettingsCookiesPageElement) {
     $i18n{thirdPartyCookiesPageDescription}
   </div>
   <div id="generalControls">
-    ${this.isSettingsRefresh2026_ ? html`
-      <settings-radio-group id="thirdPartyCookieBlockingSettingGroup"
-          no-set-pref pref-key="generated.third_party_cookie_blocking_setting"
-          is-horizontal
-          @change="${this.onThirdPartyCookieBlockingSettingGroupChange_}">
-        <controlled-radio-button id="block3pcIncognito"
-            pref-key="generated.third_party_cookie_blocking_setting"
-            name="${ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY}"
-            label="$i18n{thirdPartyCookiesPageAllowRadioLabel}">
-          <ul class="icon-bulleted-list" slot="additional-content">
-            <li>
-              <cr-icon icon="privacy:cookie"></cr-icon>
-              <span class="cr-secondary-text">
-                $i18n{cookiePageSettingsAllowBulletOne}
-              </span>
-            </li>
-            <li>
-              <cr-icon icon="settings20:web"></cr-icon>
-              <span class="cr-secondary-text">
-                $i18n{cookiePageSettingsAllowBulletTwo}
-              </span>
-            </li>
-            <li>
-              <cr-icon icon="settings20:incognito"></cr-icon>
-              <span class="cr-secondary-text">
-                $i18n{cookiePageSettingsAllowBulletThree}
-              </span>
-            </li>
-          </ul>
-        </controlled-radio-button>
-        <controlled-radio-button id="blockAll3pc"
-            pref-key="generated.third_party_cookie_blocking_setting"
-            name="${ThirdPartyCookieBlockingSetting.BLOCK_THIRD_PARTY}"
-            label="$i18n{thirdPartyCookiesPageBlockRadioLabel}">
-          <ul class="icon-bulleted-list" slot="additional-content">
-            <li>
-              <cr-icon icon="settings:block"></cr-icon>
-              <span class="cr-secondary-text">
-                $i18n{cookiePageSettingsBlockBulletOne}
-              </span>
-            </li>
-            <li>
-              <cr-icon icon="privacy:cookie"></cr-icon>
-              <span class="cr-secondary-text">
-                $i18n{cookiePageSettingsBlockBulletTwo}
-              </span>
-            </li>
-            <li>
-              <cr-icon icon="settings20:broken-image"></cr-icon>
-              <span class="cr-secondary-text">
-                $i18n{cookiePageSettingsBlockBulletThree}
-              </span>
-            </li>
-          </ul>
-        </controlled-radio-button>
-      </settings-radio-group>
-    ` : ''}
-
-    ${!this.isSettingsRefresh2026_ ? html`
-      <settings-radio-group id="thirdPartyCookieBlockingSettingGroup"
-          no-set-pref pref-key="generated.third_party_cookie_blocking_setting"
-          selectable-elements="cr-radio-button, settings-collapse-radio-button"
-          @change="${this.onThirdPartyCookieBlockingSettingGroupChange_}">
-        <settings-collapse-radio-button id="block3pcIncognito"
-            pref-key="generated.third_party_cookie_blocking_setting"
-            name="${ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY}"
-            label="$i18n{thirdPartyCookiesPageAllowRadioLabel}"
-            expand-aria-label="$i18n{allowThirdPartyCookiesExpandA11yLabel}">
-          <div slot="collapse">
-            <div class="bullet-line">
-              <cr-icon icon="privacy:cookie"></cr-icon>
-              <div class="secondary">
-                $i18n{cookiePageSettingsAllowBulletOne}
-              </div>
-            </div>
-            <div class="bullet-line one-line">
-              <cr-icon icon="settings20:web"></cr-icon>
-              <div class="secondary">
-                $i18n{cookiePageSettingsAllowBulletTwo}
-              </div>
-            </div>
-            <div class="bullet-line one-line">
-              <cr-icon icon="settings20:incognito"></cr-icon>
-              <div class="secondary">
-                $i18n{cookiePageSettingsAllowBulletThree}
-              </div>
+    <settings-radio-group id="thirdPartyCookieBlockingSettingGroup" no-set-pref
+        pref-key="generated.third_party_cookie_blocking_setting"
+        selectable-elements="cr-radio-button, settings-collapse-radio-button"
+        @change="${this.onThirdPartyCookieBlockingSettingGroupChange_}">
+      <settings-collapse-radio-button id="block3pcIncognito"
+          pref-key="generated.third_party_cookie_blocking_setting"
+          name="${ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY}"
+          label="$i18n{thirdPartyCookiesPageAllowRadioLabel}"
+          expand-aria-label="$i18n{allowThirdPartyCookiesExpandA11yLabel}">
+        <div slot="collapse">
+          <div class="bullet-line">
+            <cr-icon icon="privacy:cookie"></cr-icon>
+            <div class="secondary">
+              $i18n{cookiePageSettingsAllowBulletOne}
             </div>
           </div>
-        </settings-collapse-radio-button>
-        <settings-collapse-radio-button id="blockAll3pc"
-            pref-key="generated.third_party_cookie_blocking_setting"
-            name="${ThirdPartyCookieBlockingSetting.BLOCK_THIRD_PARTY}"
-            label="$i18n{thirdPartyCookiesPageBlockRadioLabel}"
-            expand-aria-label="$i18n{blockThirdPartyCookiesExpandA11yLabel}">
-          <div slot="collapse">
-            <div class="bullet-line">
-              <cr-icon icon="settings:block"></cr-icon>
-              <div class="secondary">
-                $i18n{cookiePageSettingsBlockBulletOne}
-              </div>
-            </div>
-            <div class="bullet-line one-line">
-              <cr-icon icon="privacy:cookie"></cr-icon>
-              <div class="secondary">
-                $i18n{cookiePageSettingsBlockBulletTwo}
-              </div>
-            </div>
-            <div class="bullet-line one-line">
-              <cr-icon icon="settings20:broken-image"></cr-icon>
-              <div class="secondary">
-                $i18n{cookiePageSettingsBlockBulletThree}
-              </div>
+          <div class="bullet-line one-line">
+            <cr-icon icon="settings20:web"></cr-icon>
+            <div class="secondary">
+              $i18n{cookiePageSettingsAllowBulletTwo}
             </div>
           </div>
-        </settings-collapse-radio-button>
-      </settings-radio-group>
-    ` : ''}
+          <div class="bullet-line one-line">
+            <cr-icon icon="settings20:incognito"></cr-icon>
+            <div class="secondary">
+              $i18n{cookiePageSettingsAllowBulletThree}
+            </div>
+          </div>
+        </div>
+      </settings-collapse-radio-button>
+      <settings-collapse-radio-button id="blockAll3pc"
+          pref-key="generated.third_party_cookie_blocking_setting"
+          name="${ThirdPartyCookieBlockingSetting.BLOCK_THIRD_PARTY}"
+          label="$i18n{thirdPartyCookiesPageBlockRadioLabel}"
+          expand-aria-label="$i18n{blockThirdPartyCookiesExpandA11yLabel}">
+        <div slot="collapse">
+          <div class="bullet-line">
+            <cr-icon icon="settings:block"></cr-icon>
+            <div class="secondary">
+              $i18n{cookiePageSettingsBlockBulletOne}
+            </div>
+          </div>
+          <div class="bullet-line one-line">
+            <cr-icon icon="privacy:cookie"></cr-icon>
+            <div class="secondary">
+              $i18n{cookiePageSettingsBlockBulletTwo}
+            </div>
+          </div>
+          <div class="bullet-line one-line">
+            <cr-icon icon="settings20:broken-image"></cr-icon>
+            <div class="secondary">
+              $i18n{cookiePageSettingsBlockBulletThree}
+            </div>
+          </div>
+        </div>
+      </settings-collapse-radio-button>
+    </settings-radio-group>
   </div>
   ${this.showUniversalOptOutSettings_ ? html`
     <h2 id="siteRequestsHeader">

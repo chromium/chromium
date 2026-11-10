@@ -1508,12 +1508,6 @@ IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest, UniversalOptOut) {
   RunTest("settings/cookies_page_test.js", "runMochaSuite('UniversalOptOut')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest,
-                       CookiesPageSettingsRefresh2026Test) {
-  RunTest("settings/cookies_page_test.js",
-          "runMochaSuite('CookiesPageSettingsRefresh2026Test')");
-}
-
 // Test with --enable-pixel-output-in-tests enabled, required by fingerprint
 // element test using HTML canvas.
 class SettingsWithPixelOutputTest : public SettingsBrowserTest {

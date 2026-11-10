@@ -13,7 +13,6 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import '../controls/collapse_radio_button.js';
-import '../controls/controlled_radio_button.js';
 import '../controls/settings_radio_group.js';
 import '../controls/settings_toggle_button.js';
 import '../icons.html.js';
@@ -71,8 +70,6 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
       showUniversalOptOutSettings_: {type: Boolean},
 
       pageTitle_: {type: String},
-
-      isSettingsRefresh2026_: {type: Boolean},
     };
   }
 
@@ -80,8 +77,6 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   protected accessor pageTitle_: string = '';
   protected accessor showUniversalOptOutSettings_: boolean =
       loadTimeData.getBoolean('showUniversalOptOutSettings');
-  protected accessor isSettingsRefresh2026_: boolean =
-      loadTimeData.getString('settingsRefresh2026') !== '';
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();

@@ -19,34 +19,6 @@
   opacity: var(--cr-disabled-opacity);
 }
 
-:host-context([settings-refresh-2026]) {
-  align-content: flex-start;
-  column-gap: 10px;
-  flex-wrap: wrap;
-  row-gap: 16px;
-
-  #label {
-    font-weight: 500;
-  }
-
-  #labelWrapper {
-    align-items: center;
-    display: flex;
-    flex: 1;
-    justify-content: space-between;
-  }
-
-  slot[name='additional-content'],
-  ::slotted([slot='additional-content']) {
-    display: block;
-    flex-basis: 100%;
-  }
-
-  #overlay {
-    display: none !important;
-  }
-}
-
 cr-policy-pref-indicator {
   margin-inline-start: var(--cr-controlled-by-spacing);
   /* Enable pointer events for the indicator so :hover works. Disable

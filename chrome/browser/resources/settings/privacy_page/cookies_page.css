@@ -58,27 +58,3 @@ settings-collapse-radio-button:not(:first-of-type) {
 settings-collapse-radio-button .bullet-line:last-child {
   padding-bottom: 12px;
 }
-
-:host-context([settings-refresh-2026]) ul.icon-bulleted-list {
-  --cr-icon-size: 20px;
-  list-style-type: none;
-  margin-bottom: 0;
-  margin-top: 0;
-  padding-inline-start: 0;
-}
-
-:host-context([settings-refresh-2026]) ul.icon-bulleted-list li {
-  align-items: flex-start;
-  display: flex;
-  margin-bottom: 8px;
-  margin-top: 0;
-}
-
-:host-context([settings-refresh-2026]) ul.icon-bulleted-list li:last-child {
-  margin-bottom: 0;
-}
-
-:host-context([settings-refresh-2026]) ul.icon-bulleted-list cr-icon {
-  flex-shrink: 0;
-  margin-inline-end: 10px;
-}
