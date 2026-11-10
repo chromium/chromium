@@ -3137,6 +3137,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"ephemeral-bottom-sheet", flag_descriptions::kEphemeralBottomSheetName,
      flag_descriptions::kEphemeralBottomSheetDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEphemeralBottomSheet)},
+    {"variations-header-web-extension",
+     flag_descriptions::kVariationsHeaderWebExtensionName,
+     flag_descriptions::kVariationsHeaderWebExtensionDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kVariationsHeaderWebExtension)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

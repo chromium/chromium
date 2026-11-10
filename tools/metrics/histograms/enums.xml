@@ -18532,6 +18532,7 @@ from previous Chrome versions.
   <int value="1031278117" label="FedCmDisconnect:enabled"/>
   <int value="1031281564"
       label="DisablePeripheralDataAccessProtection:disabled"/>
+  <int value="1032094738" label="VariationsHeaderWebExtension:disabled"/>
   <int value="1032214050"
       label="GlicExperimentalTriggeringOsNotification:enabled"/>
   <int value="1032328293"
@@ -18964,6 +18965,7 @@ from previous Chrome versions.
   <int value="1155923106" label="NTPOfflinePages:enabled"/>
   <int value="1156107561" label="StylusWritingToInput:disabled"/>
   <int value="1158333871" label="QueryTilesEnableQueryEditing:enabled"/>
+  <int value="1158568956" label="VariationsHeaderWebExtension:enabled"/>
   <int value="1159222900" label="CollapseTabGroupDuringDrag:disabled"/>
   <int value="1159760152"
       label="ContextMenuSearchAndShopWithGoogleLens:disabled"/>

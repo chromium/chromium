@@ -1298,3 +1298,9 @@ bool IsEphemeralBottomSheetEnabled() {
   return IsAimCobrowseEnabled() &&
          base::FeatureList::IsEnabled(kEphemeralBottomSheet);
 }
+
+BASE_FEATURE(kVariationsHeaderWebExtension, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsVariationsHeaderWebExtensionEnabled() {
+  return base::FeatureList::IsEnabled(kVariationsHeaderWebExtension);
+}

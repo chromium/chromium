@@ -1061,4 +1061,11 @@ BASE_DECLARE_FEATURE(kEphemeralBottomSheet);
 // Returns true if the EphemeralBottomSheet feature is enabled.
 bool IsEphemeralBottomSheetEnabled();
 
+// Enables a built-in WKWebExtension that attaches the variations header (as
+// `x-temp-tablet`) to web-initiated requests to Google-associated domains.
+BASE_DECLARE_FEATURE(kVariationsHeaderWebExtension);
+
+// Returns true if the VariationsHeaderWebExtension feature is enabled.
+bool IsVariationsHeaderWebExtensionEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_
