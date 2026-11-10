@@ -1347,7 +1347,9 @@ std::u16string DownloadUIModel::GetInProgressAccessibleAlertText() const {
 
   // Time remaining is unknown, try to announce percent remaining.
   if (PercentComplete() > 0) {
-    CHECK_LE(PercentComplete(), 100, base::NotFatalUntil::M161);
+    // TODO(crbug.com/581778411): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK_LE(PercentComplete(), 100);
     return l10n_util::GetStringFUTF16(
         IDS_DOWNLOAD_STATUS_PERCENT_COMPLETE_ACCESSIBLE_ALERT,
         GetFileNameToReportUser().LossyDisplayName(),
