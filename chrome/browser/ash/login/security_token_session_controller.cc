@@ -25,7 +25,6 @@
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/ash/login/lock/screen_locker_controller.h"
-#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/security_token_restriction/security_token_session_restriction_view.h"
@@ -518,8 +517,7 @@ void SecurityTokenSessionController::ExtensionStopsProvidingCertificate() {
             base::BindOnce(&SecurityTokenSessionController::TriggerAction,
                            weak_ptr_factory_.GetWeakPtr()),
             behavior_,
-            enterprise_util::GetDomainFromEmail(
-                primary_user_->GetDisplayEmail())),
+            gaia::ExtractDomainName(primary_user_->GetDisplayEmail())),
         nullptr, nullptr);
     fullscreen_notification_->Show();
   }
@@ -533,7 +531,7 @@ void SecurityTokenSessionController::AddLockNotification() {
   SetNotificationDisplayedKnownUserFlag();
 
   std::string domain =
-      enterprise_util::GetDomainFromEmail(primary_user_->GetDisplayEmail());
+      gaia::ExtractDomainName(primary_user_->GetDisplayEmail());
   DisplayNotification(
       l10n_util::GetStringFUTF16(IDS_SECURITY_TOKEN_SESSION_LOCK_MESSAGE_TITLE,
                                  ui::GetChromeOSDeviceName()),
@@ -551,7 +549,7 @@ void SecurityTokenSessionController::ScheduleLogoutNotification() {
 
   local_state_->SetString(
       ash::prefs::kSecurityTokenSessionNotificationScheduledDomain,
-      enterprise_util::GetDomainFromEmail(primary_user_->GetDisplayEmail()));
+      gaia::ExtractDomainName(primary_user_->GetDisplayEmail()));
 }
 
 void SecurityTokenSessionController::Reset() {
