@@ -9,7 +9,6 @@
 #import "ios/chrome/browser/aim/model/mock_ios_chrome_aim_eligibility_service.h"
 #import "ios/chrome/browser/composebox/model/ios_contextual_search_service_factory.h"
 #import "ios/chrome/browser/composebox/model/mock_ios_contextual_search_service.h"
-#import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -49,10 +48,6 @@
           ->SetTabUploadAutoSucceed(autoSucceed);
     }
   }
-}
-
-+ (BOOL)isServerSideStateEnabled {
-  return EnableComposeboxServerSideState();
 }
 
 + (NSString*)lastSentAIMQueryText {

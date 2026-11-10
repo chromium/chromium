@@ -46,7 +46,7 @@ source_set("test_support") {
     "//base",
     "//components/application_locale_storage",
     "//components/contextual_search/internal/ios",
-    "//components/lens:lens_url_utils",
+    "//components/lens",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
@@ -54,5 +54,6 @@ source_set("test_support") {
     "//ios/chrome/browser/variations/model/client",
     "//ios/chrome/common",
     "//testing/gmock",
+    "//url",
   ]
 }

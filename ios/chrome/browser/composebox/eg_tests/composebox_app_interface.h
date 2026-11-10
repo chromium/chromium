@@ -28,9 +28,6 @@
 // `MockIOSContextualSearchService`.
 + (void)setTabUploadAutoSucceed:(BOOL)autoSucceed;
 
-// Returns whether the composebox server side state is enabled.
-+ (BOOL)isServerSideStateEnabled;
-
 // Returns the query text from the most recent search URL request sent via
 // `MockIOSContextualSearchService`.
 + (NSString*)lastSentAIMQueryText;

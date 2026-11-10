@@ -281,6 +281,9 @@ void RemoveAttachmentWithTitle(NSString* title) {
 
 - (void)setUp {
   [super setUp];
+  [self addTeardownBlock:^{
+    [ComposeboxAppInterface setTabUploadAutoSucceed:NO];
+  }];
   self.testServer->RegisterRequestHandler(
       base::BindRepeating(&StandardResponse));
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
@@ -885,11 +888,6 @@ void RemoveAttachmentWithTitle(NSString* title) {
 // Tests that tapping the attach tabs button opens the tab picker. Ensures that
 // the title is set correctly and buttons are correctly enabled or disabled.
 - (void)testTabPickerUI {
-  if ([ComposeboxAppInterface isServerSideStateEnabled]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Skipped when kComposeboxServerSideState is enabled.");
-  }
-
   [ComposeboxAppInterface setFuseboxEligible:YES];
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   OpenTabPicker();
@@ -953,11 +951,6 @@ void RemoveAttachmentWithTitle(NSString* title) {
 // (User should not be able to attach NTPs to the composebox). It also ensure
 // that the user can dismiss the view.
 - (void)testTabPickerEmptyStateView {
-  if ([ComposeboxAppInterface isServerSideStateEnabled]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Skipped when kComposeboxServerSideState is enabled.");
-  }
-
   [ComposeboxAppInterface setFuseboxEligible:YES];
   [ChromeEarlGrey closeAllNormalTabs];
   [ChromeEarlGrey openNewTab];
@@ -995,10 +988,6 @@ void RemoveAttachmentWithTitle(NSString* title) {
 // carousel, the attachment limit is respected, and the AIM button is visible.
 
 - (void)testAttachMultipleTabsAndLimit {
-  if ([ComposeboxAppInterface isServerSideStateEnabled]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Skipped when kComposeboxServerSideState is enabled.");
-  }
   [ComposeboxAppInterface setFuseboxEligible:YES];
   [ComposeboxAppInterface setTabUploadAutoSucceed:YES];
   std::vector<GURL> URLS;
@@ -1099,11 +1088,6 @@ void RemoveAttachmentWithTitle(NSString* title) {
 // Tests that an unrealized tab (e.g., after an app restart) can be successfully
 // attached without timing out. (Regression test for crbug.com/525358986).
 - (void)testAttachUnrealizedTab {
-  if ([ComposeboxAppInterface isServerSideStateEnabled]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Skipped when kComposeboxServerSideState is enabled.");
-  }
-
   [ComposeboxAppInterface setFuseboxEligible:YES];
   [ComposeboxAppInterface setTabUploadAutoSucceed:YES];
 
@@ -1162,13 +1146,12 @@ void RemoveAttachmentWithTitle(NSString* title) {
 // Tests that cancelling the tab picker records the manual user exit outcome
 // metric.
 - (void)testTabPickerCancelOutcomeMetric {
-  if ([ComposeboxAppInterface isServerSideStateEnabled]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Skipped when kComposeboxServerSideState is enabled.");
-  }
-
   GREYAssertNil([MetricsAppInterface setupHistogramTester],
                 @"Failed to setup histogram tester.");
+  [self addTeardownBlock:^{
+    GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                  @"Failed to release histogram tester.");
+  }];
 
   [ComposeboxAppInterface setFuseboxEligible:YES];
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
@@ -1190,9 +1173,6 @@ void RemoveAttachmentWithTitle(NSString* title) {
                          forHistogram:
                              @"Omnibox.MobileFusebox.PickerOutcome.Tabs"],
       @"Failed to record manual user exit metric for tab picker cancellation.");
-
-  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                @"Failed to release histogram tester.");
 }
 
 @end
@@ -1205,10 +1185,11 @@ void RemoveAttachmentWithTitle(NSString* title) {
 @implementation ComposeboxEligiblityTestCase
 
 - (void)setUp {
+  [super setUp];
   [self addTeardownBlock:^{
     [ComposeboxAppInterface resetDefaultTools];
+    [ComposeboxAppInterface setTabUploadAutoSucceed:NO];
   }];
-  [super setUp];
   self.testServer->RegisterRequestHandler(
       base::BindRepeating(&StandardResponse));
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
@@ -1253,11 +1234,8 @@ void RemoveAttachmentWithTitle(NSString* title) {
 // Tests that a tab cannot be attached when in image generation mode, and that
 // image generation mode can be entered after attachments are removed.
 - (void)testNoTabAttachmentsInImageGeneration {
-  if ([ComposeboxAppInterface isServerSideStateEnabled]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Skipped when kComposeboxServerSideState is enabled.");
-  }
   [ComposeboxAppInterface setFuseboxEligible:YES];
+  [ComposeboxAppInterface setTabUploadAutoSucceed:YES];
   [ComposeboxAppInterface
       setToolEnabled:YES
          forToolMode:omnibox::ToolMode::TOOL_MODE_IMAGE_GEN];
@@ -1277,6 +1255,14 @@ void RemoveAttachmentWithTitle(NSString* title) {
       selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
       performAction:grey_tap()];
   VerifyTabIsAttachedWithTitle(pageTitle);
+
+  // Wait for the Send button to be enabled so that the asynchronous tab upload
+  // and `InputStateModel` tool-disabling update have completed before checking
+  // the `+` menu.
+  id<GREYMatcher> sendButtonMatcher = grey_allOf(
+      grey_accessibilityID(kComposeboxSendButtonAccessibilityIdentifier),
+      grey_enabled(), grey_sufficientlyVisible(), nil);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:sendButtonMatcher];
 
   // Display the plus menu to verify that the image generation action is
   // disabled. This mode only supports a single image attachment, making it
@@ -1346,11 +1332,6 @@ void RemoveAttachmentWithTitle(NSString* title) {
 
 // Tests that image generation action is present when eligible.
 - (void)testComposeboxCreateImageEligible {
-  if ([ComposeboxAppInterface isServerSideStateEnabled]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Skipped when kComposeboxServerSideState is enabled.");
-  }
-
   [ComposeboxAppInterface setFuseboxEligible:YES];
   [ComposeboxAppInterface
       setToolEnabled:YES
@@ -1384,11 +1365,6 @@ void RemoveAttachmentWithTitle(NSString* title) {
 // Tests that the tab picker scrolls to the active tab when opened with many
 // tabs.
 - (void)testTabPickerScrollsToActiveTab {
-  if ([ComposeboxAppInterface isServerSideStateEnabled]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Skipped when kComposeboxServerSideState is enabled.");
-  }
-
   [ComposeboxAppInterface setFuseboxEligible:YES];
 
   // Close all normal tabs and open 10 tabs.

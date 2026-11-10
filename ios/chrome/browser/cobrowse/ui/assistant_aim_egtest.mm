@@ -324,7 +324,6 @@ void RemoveSharedTab(NSString* title) {
   config.features_enabled.push_back(kAssistantContainer);
   config.features_enabled.push_back(kComposeboxPhysicalKeyboardReturnKeys);
   config.features_disabled.push_back(omnibox::kAimServerEligibilityEnabled);
-  config.features_disabled.push_back(kComposeboxServerSideState);
 
   if ([self isRunningTest:@selector(testMinimizedStateWhenFlagEnabled)]) {
     config.features_enabled.push_back(kAssistantAimMinimizedState);
