@@ -37,6 +37,10 @@
 #include "ui/base/resource/resource_bundle_android.h"
 #include "ui/base/ui_base_paths.h"
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/extensions/api/image_writer_private/removable_storage_provider_android.h"
+#endif
+
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/ChromeBackupWatcher_jni.h"
 
@@ -115,6 +119,23 @@ int ChromeBrowserMainPartsAndroid::PreEarlyInitialization() {
   return ChromeBrowserMainParts::PreEarlyInitialization();
 }
 
+int ChromeBrowserMainPartsAndroid::PreMainMessageLoopRun() {
+  TRACE_EVENT0("startup",
+               "ChromeBrowserMainPartsAndroid::PreMainMessageLoopRun");
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  android_usb_storage_provider_ =
+      std::make_unique<extensions::image_writer::AndroidUsbStorageProvider>();
+#endif
+  return ChromeBrowserMainParts::PreMainMessageLoopRun();
+}
+
+void ChromeBrowserMainPartsAndroid::PostMainMessageLoopRun() {
+  ChromeBrowserMainParts::PostMainMessageLoopRun();
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  android_usb_storage_provider_.reset();
+#endif
+}
+
 void ChromeBrowserMainPartsAndroid::PostBrowserStart() {
   ChromeBrowserMainParts::PostBrowserStart();
 
@@ -139,8 +160,8 @@ void ChromeBrowserMainPartsAndroid::PostBrowserStart() {
     // `base::Unretained(this)` is safe because `app_status_listener_` is owned
     // by `this` and unregisters the listener upon destruction, ensuring the
     // callback cannot be invoked after `this` is destroyed.
-    app_status_listener_ = base::android::ApplicationStatusListener::New(
-        base::BindRepeating(
+    app_status_listener_ =
+        base::android::ApplicationStatusListener::New(base::BindRepeating(
             &ChromeBrowserMainPartsAndroid::OnApplicationStateChange,
             base::Unretained(this)));
 

@@ -2119,6 +2119,13 @@ source_set("core") {
       "//chrome/browser/guest_view",
       "//extensions/components/javascript_dialog_extensions_client",
     ]
+    if (is_android) {
+      deps += [
+        "//chrome/browser/extensions/api/image_writer_private",
+        "//chrome/common/extensions/api",
+        "//services/device/public/mojom",
+      ]
+    }
   } else if (is_android) {
     deps += [ "//chrome/browser/android/guest_view" ]
   }

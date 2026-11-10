@@ -11,6 +11,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/chrome_browser_main.h"
+#include "extensions/buildflags/buildflags.h"
 
 namespace base::android {
 class ScudoPurgeCoordinator;
@@ -19,6 +20,12 @@ class ScudoPurgeCoordinator;
 namespace crash_reporter {
 class ChildExitObserver;
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+namespace extensions::image_writer {
+class AndroidUsbStorageProvider;
+}  // namespace extensions::image_writer
+#endif
 
 class ChromeBrowserMainPartsAndroid : public ChromeBrowserMainParts {
  public:
@@ -35,6 +42,8 @@ class ChromeBrowserMainPartsAndroid : public ChromeBrowserMainParts {
   int PreCreateThreads() override;
   void PostProfileInit(Profile* profile, bool is_initial_profile) override;
   int PreEarlyInitialization() override;
+  int PreMainMessageLoopRun() override;
+  void PostMainMessageLoopRun() override;
 
   // ChromeBrowserMainParts overrides.
   void PostBrowserStart() override;
@@ -55,6 +64,11 @@ class ChromeBrowserMainPartsAndroid : public ChromeBrowserMainParts {
       scudo_purge_coordinator_;
   std::unique_ptr<base::android::ApplicationStatusListener>
       app_status_listener_;
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  std::unique_ptr<extensions::image_writer::AndroidUsbStorageProvider>
+      android_usb_storage_provider_;
+#endif
 };
 
 #endif  // CHROME_BROWSER_CHROME_BROWSER_MAIN_ANDROID_H_

@@ -20,6 +20,10 @@
 
 #include "base/barrier_closure.h"
 #include "base/check.h"
+#include "base/check_deref.h"
+#include "base/check_op.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_tree.h"
 #include "base/containers/span.h"
 #include "base/containers/span_reader.h"
 #include "base/containers/span_writer.h"
@@ -28,7 +32,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/byte_conversions.h"
@@ -37,6 +41,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/common/extensions/api/image_writer_private.h"
@@ -55,6 +60,7 @@ constexpr uint8_t kUsbClassMassStorage = 0x08;
 constexpr uint8_t kUsbSubClassScsi = 0x06;
 constexpr uint8_t kUsbProtocolBulkOnly = 0x50;
 constexpr unsigned int kUsbTimeoutMs = 10000;
+AndroidUsbStorageProvider* g_instance = nullptr;
 
 // In Linux sysfs, a block device's `device` symlink resolves into a path such
 // as `/sys/devices/.../usbX/.../hostY/targetY:0:0/Y:0:0:0/block/sdZ`, where the
@@ -613,25 +619,28 @@ class MojoUsbCapacityReader {
   base::WeakPtrFactory<MojoUsbCapacityReader> weak_factory_{this};
 };
 
-// Coordinates asynchronous Android removable storage enumeration. All methods
-// run on `content::BrowserThread::UI`. Uses `base::RefCountedThreadSafe`
-// because the `PostTaskAndReplyWithResult` reply callback holding `this` may be
-// destroyed on a background thread if shutdown occurs while the
-// `SKIP_ON_SHUTDOWN` task is in flight.
-class AndroidUsbDeviceEnumerator
-    : public base::RefCountedThreadSafe<AndroidUsbDeviceEnumerator> {
+}  // namespace
+
+// Coordinates a single asynchronous Android removable storage enumeration pass
+// on `content::BrowserThread::UI`, owned by `AndroidUsbStorageProvider`.
+class AndroidUsbStorageProvider::Enumerator {
  public:
-  AndroidUsbDeviceEnumerator(
-      mojo::PendingRemote<device::mojom::UsbDeviceManager> usb_manager,
-      base::FilePath sys_block_dir,
-      base::FilePath dev_block_dir,
-      base::FilePath dev_dir,
-      RemovableStorageProvider::DeviceListReadyCallback callback)
+  Enumerator(mojo::PendingRemote<device::mojom::UsbDeviceManager> usb_manager,
+             base::FilePath sys_block_dir,
+             base::FilePath dev_block_dir,
+             base::FilePath dev_dir,
+             base::flat_map<std::string, double>* capacity_by_guid,
+             RemovableStorageProvider::DeviceListReadyCallback callback)
       : callback_(std::move(callback)),
         usb_manager_(std::move(usb_manager)),
         sys_block_dir_(std::move(sys_block_dir)),
         dev_block_dir_(std::move(dev_block_dir)),
-        dev_dir_(std::move(dev_dir)) {}
+        dev_dir_(std::move(dev_dir)),
+        capacity_by_guid_(CHECK_DEREF(capacity_by_guid)) {}
+
+  Enumerator(const Enumerator&) = delete;
+  Enumerator& operator=(const Enumerator&) = delete;
+  ~Enumerator() = default;
 
   void Start() {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -640,16 +649,13 @@ class AndroidUsbDeviceEnumerator
       return;
     }
     usb_manager_.set_disconnect_handler(base::BindOnce(
-        &AndroidUsbDeviceEnumerator::OnManagerDisconnected, this));
+        &Enumerator::OnManagerDisconnected, weak_factory_.GetWeakPtr()));
     usb_manager_->GetDevices(
         /*options=*/nullptr,
-        base::BindOnce(&AndroidUsbDeviceEnumerator::OnGetDevices, this));
+        base::BindOnce(&Enumerator::OnGetDevices, weak_factory_.GetWeakPtr()));
   }
 
  private:
-  friend class base::RefCountedThreadSafe<AndroidUsbDeviceEnumerator>;
-  ~AndroidUsbDeviceEnumerator() = default;
-
   void OnManagerDisconnected() {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     FinalizeDeviceList(nullptr);
@@ -657,34 +663,48 @@ class AndroidUsbDeviceEnumerator
 
   void OnGetDevices(std::vector<device::mojom::UsbDeviceInfoPtr> devices) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    std::vector<std::string> candidate_guids;
+    std::vector<const device::mojom::UsbDeviceInfo*> bot_devices;
     for (const auto& info : devices) {
       if (info && ExtractMassStorageEndpoints(*info).has_value()) {
-        candidate_guids.push_back(info->guid);
+        bot_devices.push_back(info.get());
       }
     }
-    if (candidate_guids.empty()) {
+    // Evict cached capacities from previous enumerations for USB devices that
+    // have since been unplugged and are no longer in `bot_devices`.
+    base::EraseIf(*capacity_by_guid_, [&](const auto& entry) {
+      return std::ranges::none_of(
+          bot_devices, [&](const device::mojom::UsbDeviceInfo* info) {
+            return info->guid == entry.first;
+          });
+    });
+
+    if (bot_devices.empty()) {
       RunBackgroundScan();
       return;
     }
     base::RepeatingClosure barrier = base::BarrierClosure(
-        candidate_guids.size(),
-        base::BindOnce(&AndroidUsbDeviceEnumerator::RunBackgroundScan, this));
-    for (const std::string& guid : candidate_guids) {
+        bot_devices.size(),
+        base::BindOnce(&Enumerator::RunBackgroundScan,
+                       weak_factory_.GetWeakPtr()));
+    for (const device::mojom::UsbDeviceInfo* info : bot_devices) {
       usb_manager_->RefreshDeviceInfo(
-          guid, base::BindOnce(&AndroidUsbDeviceEnumerator::OnRefreshDeviceInfo,
-                               this, barrier));
+          info->guid,
+          base::BindOnce(&Enumerator::OnRefreshDeviceInfo,
+                         weak_factory_.GetWeakPtr(), barrier, info->guid));
     }
   }
 
   void OnRefreshDeviceInfo(base::OnceClosure done_closure,
+                           const std::string& guid,
                            device::mojom::UsbDeviceInfoPtr refreshed_info) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    if (refreshed_info) {
-      if (std::optional<UsbMassStorageCandidate> updated =
-              ExtractMassStorageCandidate(*refreshed_info)) {
-        refreshed_candidates_.push_back(std::move(*updated));
-      }
+    std::optional<UsbMassStorageCandidate> updated =
+        refreshed_info ? ExtractMassStorageCandidate(*refreshed_info)
+                       : std::nullopt;
+    if (updated.has_value()) {
+      refreshed_candidates_.push_back(std::move(*updated));
+    } else {
+      capacity_by_guid_->erase(guid);
     }
     std::move(done_closure).Run();
   }
@@ -710,8 +730,8 @@ class AndroidUsbDeviceEnumerator
                   .GetDeviceList(usb_candidates);
             },
             sys_block_dir_, dev_block_dir_, dev_dir_, refreshed_candidates_),
-        base::BindOnce(&AndroidUsbDeviceEnumerator::OnBackgroundScanComplete,
-                       this));
+        base::BindOnce(&Enumerator::OnBackgroundScanComplete,
+                       weak_factory_.GetWeakPtr()));
   }
 
   void OnBackgroundScanComplete(scoped_refptr<StorageDeviceList> device_list) {
@@ -731,13 +751,19 @@ class AndroidUsbDeviceEnumerator
     };
     std::vector<PendingCapacityQuery> queries;
     for (size_t i = 0; i < device_list->data.size(); ++i) {
-      const auto& item = device_list->data[i];
+      auto& item = device_list->data[i];
       if (item.capacity > 0) {
         continue;
       }
       std::optional<ParsedDeviceId> parsed_id =
           ParseUsbDeviceId(item.storage_unit_id);
       if (!parsed_id.has_value()) {
+        continue;
+      }
+      if (auto cached_it = capacity_by_guid_->find(parsed_id->guid);
+          cached_it != capacity_by_guid_->end()) {
+        CHECK_GT(cached_it->second, 0.0);
+        item.capacity = cached_it->second;
         continue;
       }
       auto it = std::ranges::find(refreshed_candidates_, parsed_id->guid,
@@ -759,8 +785,8 @@ class AndroidUsbDeviceEnumerator
 
     base::RepeatingClosure barrier = base::BarrierClosure(
         queries.size(),
-        base::BindOnce(&AndroidUsbDeviceEnumerator::FinalizeDeviceList, this,
-                       device_list));
+        base::BindOnce(&Enumerator::FinalizeDeviceList,
+                       weak_factory_.GetWeakPtr(), device_list));
     for (const auto& query : queries) {
       const UsbMassStorageCandidate& candidate =
           refreshed_candidates_[query.candidate_index];
@@ -770,8 +796,9 @@ class AndroidUsbDeviceEnumerator
           mojo::NullRemote());
       auto reader = std::make_unique<MojoUsbCapacityReader>(
           std::move(device_remote), candidate,
-          base::BindOnce(&AndroidUsbDeviceEnumerator::OnMojoCapacityResult,
-                         this, device_list, query.item_index, barrier));
+          base::BindOnce(&Enumerator::OnMojoCapacityResult,
+                         weak_factory_.GetWeakPtr(), device_list,
+                         query.item_index, query.candidate_index, barrier));
       capacity_readers_.push_back(std::move(reader));
       capacity_readers_.back()->Start();
     }
@@ -779,11 +806,17 @@ class AndroidUsbDeviceEnumerator
 
   void OnMojoCapacityResult(scoped_refptr<StorageDeviceList> device_list,
                             size_t item_index,
+                            size_t candidate_index,
                             base::OnceClosure done_closure,
                             double capacity) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    const UsbMassStorageCandidate& candidate =
+        refreshed_candidates_[candidate_index];
     if (capacity > 0) {
       device_list->data[item_index].capacity = capacity;
+      (*capacity_by_guid_)[candidate.guid] = capacity;
+    } else {
+      capacity_by_guid_->erase(candidate.guid);
     }
     std::move(done_closure).Run();
   }
@@ -793,11 +826,17 @@ class AndroidUsbDeviceEnumerator
     if (!callback_) {
       return;
     }
+    usb_manager_.reset();
     if (device_list) {
       std::erase_if(device_list->data,
                     [](const auto& item) { return item.capacity <= 0; });
     }
-    std::move(callback_).Run(std::move(device_list));
+    // Post completion asynchronously so `AndroidUsbStorageProvider` never
+    // destroys `this` (or `capacity_readers_`) while `Enumerator` or
+    // `MojoUsbCapacityReader` frames are still on the stack.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback_), std::move(device_list)));
   }
 
   RemovableStorageProvider::DeviceListReadyCallback callback_;
@@ -805,12 +844,77 @@ class AndroidUsbDeviceEnumerator
   const base::FilePath sys_block_dir_;
   const base::FilePath dev_block_dir_;
   const base::FilePath dev_dir_;
+  const raw_ref<base::flat_map<std::string, double>> capacity_by_guid_;
   std::vector<UsbMassStorageCandidate> refreshed_candidates_;
   std::vector<std::unique_ptr<MojoUsbCapacityReader>> capacity_readers_;
   bool started_background_scan_ = false;
+  base::WeakPtrFactory<Enumerator> weak_factory_{this};
 };
 
-}  // namespace
+// static
+AndroidUsbStorageProvider* AndroidUsbStorageProvider::GetInstance() {
+  return g_instance;
+}
+
+AndroidUsbStorageProvider::AndroidUsbStorageProvider()
+    : AndroidUsbStorageProvider(base::FilePath(FILE_PATH_LITERAL("/sys/block")),
+                                base::FilePath(FILE_PATH_LITERAL("/dev/block")),
+                                base::FilePath(FILE_PATH_LITERAL("/dev"))) {}
+
+AndroidUsbStorageProvider::AndroidUsbStorageProvider(
+    base::FilePath sys_block_dir,
+    base::FilePath dev_block_dir,
+    base::FilePath dev_dir)
+    : sys_block_dir_(std::move(sys_block_dir)),
+      dev_block_dir_(std::move(dev_block_dir)),
+      dev_dir_(std::move(dev_dir)) {
+  CHECK(!g_instance);
+  g_instance = this;
+}
+
+AndroidUsbStorageProvider::~AndroidUsbStorageProvider() {
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
+}
+
+void AndroidUsbStorageProvider::GetAllDevices(
+    mojo::PendingRemote<device::mojom::UsbDeviceManager> usb_manager,
+    RemovableStorageProvider::DeviceListReadyCallback callback) {
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  pending_callbacks_.push_back(std::move(callback));
+  if (active_enumerator_) {
+    return;
+  }
+  active_enumerator_ = std::make_unique<Enumerator>(
+      std::move(usb_manager), sys_block_dir_, dev_block_dir_, dev_dir_,
+      &capacity_by_guid_,
+      base::BindOnce(&AndroidUsbStorageProvider::OnEnumerationFinished,
+                     weak_factory_.GetWeakPtr()));
+  active_enumerator_->Start();
+}
+
+void AndroidUsbStorageProvider::OnEnumerationFinished(
+    scoped_refptr<StorageDeviceList> device_list) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  active_enumerator_.reset();
+  auto callbacks = std::exchange(pending_callbacks_, {});
+  for (size_t i = 0; i < callbacks.size(); ++i) {
+    scoped_refptr<StorageDeviceList> result;
+    if (device_list) {
+      if (i + 1 == callbacks.size()) {
+        result = std::move(device_list);
+      } else {
+        result = base::MakeRefCounted<StorageDeviceList>();
+        result->data.reserve(device_list->data.size());
+        for (const auto& item : device_list->data) {
+          AppendStorageDevice(*result, item.storage_unit_id, item.capacity,
+                              item.vendor, item.model);
+        }
+      }
+    }
+    std::move(callbacks[i]).Run(std::move(result));
+  }
+}
 
 std::string FormatUsbDeviceId(std::string_view guid,
                               uint16_t vendor_id,
@@ -924,28 +1028,17 @@ std::optional<UsbMassStorageEndpoints> ExtractMassStorageEndpoints(
 
 void GetAllDevicesOnAndroid(
     RemovableStorageProvider::DeviceListReadyCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  AndroidUsbStorageProvider* provider =
+      AndroidUsbStorageProvider::GetInstance();
+  if (!provider) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
   mojo::PendingRemote<device::mojom::UsbDeviceManager> usb_manager;
   content::GetDeviceService().BindUsbDeviceManager(
       usb_manager.InitWithNewPipeAndPassReceiver());
-  base::MakeRefCounted<AndroidUsbDeviceEnumerator>(
-      std::move(usb_manager), base::FilePath(FILE_PATH_LITERAL("/sys/block")),
-      base::FilePath(FILE_PATH_LITERAL("/dev/block")),
-      base::FilePath(FILE_PATH_LITERAL("/dev")), std::move(callback))
-      ->Start();
-}
-
-void GetAllDevicesOnAndroidForTesting(
-    mojo::PendingRemote<device::mojom::UsbDeviceManager> usb_manager,
-    base::FilePath sys_block_dir,
-    base::FilePath dev_block_dir,
-    base::FilePath dev_dir,
-    RemovableStorageProvider::DeviceListReadyCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::MakeRefCounted<AndroidUsbDeviceEnumerator>(
-      std::move(usb_manager), std::move(sys_block_dir),
-      std::move(dev_block_dir), std::move(dev_dir), std::move(callback))
-      ->Start();
+  provider->GetAllDevices(std::move(usb_manager), std::move(callback));
 }
 
 }  // namespace extensions::image_writer

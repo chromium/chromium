@@ -21,6 +21,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_future.h"
@@ -107,15 +108,19 @@ class FakeBotUsbDevice : public device::mojom::UsbDevice {
  public:
   FakeBotUsbDevice(uint32_t block_count,
                    uint32_t block_size,
-                   bool fail_first_test_unit_ready_with_unit_attention)
+                   bool fail_first_test_unit_ready_with_unit_attention,
+                   int* open_count)
       : block_count_(block_count),
         block_size_(block_size),
-        unit_attention_pending_(
-            fail_first_test_unit_ready_with_unit_attention) {}
+        unit_attention_pending_(fail_first_test_unit_ready_with_unit_attention),
+        open_count_(open_count) {}
 
   ~FakeBotUsbDevice() override = default;
 
   void Open(OpenCallback callback) override {
+    if (open_count_) {
+      ++(*open_count_);
+    }
     std::move(callback).Run(device::mojom::UsbOpenDeviceResult::NewSuccess(
         device::mojom::UsbOpenDeviceSuccess::OK));
   }
@@ -255,6 +260,7 @@ class FakeBotUsbDevice : public device::mojom::UsbDevice {
   uint32_t current_tag_ = 0;
   uint8_t current_opcode_ = 0;
   uint8_t next_command_status_ = 0;
+  raw_ptr<int> open_count_ = nullptr;
 };
 
 class TestUsbDeviceManager : public device::mojom::UsbDeviceManager {
@@ -280,6 +286,19 @@ class TestUsbDeviceManager : public device::mojom::UsbDeviceManager {
     block_counts_[guid] = block_count;
     block_sizes_[guid] = block_size;
     unit_attention_[guid] = unit_attention;
+  }
+
+  void RemoveDevice(const std::string& guid) {
+    devices_.erase(guid);
+    permissions_.erase(guid);
+    block_counts_.erase(guid);
+    block_sizes_.erase(guid);
+    unit_attention_.erase(guid);
+  }
+
+  int GetDeviceOpenCount(const std::string& guid) const {
+    auto it = open_counts_.find(guid);
+    return it == open_counts_.end() ? 0 : it->second;
   }
 
   void EnumerateDevicesAndSetClient(
@@ -317,10 +336,10 @@ class TestUsbDeviceManager : public device::mojom::UsbDeviceManager {
     if (!devices_.contains(guid) || !permissions_[guid]) {
       return;
     }
-    mojo::MakeSelfOwnedReceiver(
-        std::make_unique<FakeBotUsbDevice>(
-            block_counts_[guid], block_sizes_[guid], unit_attention_[guid]),
-        std::move(device_receiver));
+    mojo::MakeSelfOwnedReceiver(std::make_unique<FakeBotUsbDevice>(
+                                    block_counts_[guid], block_sizes_[guid],
+                                    unit_attention_[guid], &open_counts_[guid]),
+                                std::move(device_receiver));
   }
 
   void GetSecurityKeyDevice(
@@ -349,6 +368,7 @@ class TestUsbDeviceManager : public device::mojom::UsbDeviceManager {
   std::map<std::string, uint32_t> block_counts_;
   std::map<std::string, uint32_t> block_sizes_;
   std::map<std::string, bool> unit_attention_;
+  std::map<std::string, int> open_counts_;
 };
 
 class RemovableStorageProviderAndroidTest : public testing::Test {
@@ -361,12 +381,15 @@ class RemovableStorageProviderAndroidTest : public testing::Test {
     ASSERT_TRUE(base::CreateDirectory(sys_block_dir_));
     ASSERT_TRUE(base::CreateDirectory(dev_block_dir_));
     ASSERT_TRUE(base::CreateDirectory(dev_dir_));
+    storage_provider_ = std::make_unique<AndroidUsbStorageProvider>(
+        sys_block_dir_, dev_block_dir_, dev_dir_);
   }
+
+  void TearDown() override { storage_provider_.reset(); }
 
   scoped_refptr<StorageDeviceList> EnumerateDevices() {
     base::test::TestFuture<scoped_refptr<StorageDeviceList>> future;
-    GetAllDevicesOnAndroidForTesting(usb_manager_.BindNewPipeAndPassRemote(),
-                                     sys_block_dir_, dev_block_dir_, dev_dir_,
+    storage_provider_->GetAllDevices(usb_manager_.BindNewPipeAndPassRemote(),
                                      future.GetCallback());
     return future.Get();
   }
@@ -377,6 +400,7 @@ class RemovableStorageProviderAndroidTest : public testing::Test {
   base::FilePath dev_block_dir_;
   base::FilePath dev_dir_;
   TestUsbDeviceManager usb_manager_;
+  std::unique_ptr<AndroidUsbStorageProvider> storage_provider_;
 };
 
 TEST_F(RemovableStorageProviderAndroidTest,
@@ -526,8 +550,7 @@ TEST_F(RemovableStorageProviderAndroidTest,
   std::ignore = disconnected_manager.InitWithNewPipeAndPassReceiver();
 
   base::test::TestFuture<scoped_refptr<StorageDeviceList>> future;
-  GetAllDevicesOnAndroidForTesting(std::move(disconnected_manager),
-                                   sys_block_dir_, dev_block_dir_, dev_dir_,
+  storage_provider_->GetAllDevices(std::move(disconnected_manager),
                                    future.GetCallback());
   EXPECT_FALSE(future.Get());
 }
@@ -564,6 +587,170 @@ TEST_F(RemovableStorageProviderAndroidTest,
   EXPECT_FALSE(ParseUsbDeviceId("usb:guid:0781:ZZZZ").has_value());
   EXPECT_FALSE(ParseUsbDeviceId("usb:guid:10000:5581").has_value());
   EXPECT_FALSE(ParseUsbDeviceId("usb:guid:0781:10000").has_value());
+}
+
+TEST_F(RemovableStorageProviderAndroidTest,
+       CachesPositiveUsbCapacityAcrossPollsUntilDetached) {
+  usb_manager_.AddDevice(
+      CreateUsbDeviceInfo("guid-cached", 0x0781, 0x5581, "SanDisk", "Ultra",
+                          /*class_code=*/0x08, /*subclass_code=*/0x06,
+                          /*protocol_code=*/0x50),
+      /*grant_permission=*/true,
+      /*block_count=*/32768,
+      /*block_size=*/512);
+
+  scoped_refptr<StorageDeviceList> first_poll = EnumerateDevices();
+  ASSERT_TRUE(first_poll);
+  ASSERT_EQ(first_poll->data.size(), 1u);
+  EXPECT_DOUBLE_EQ(first_poll->data[0].capacity, 32768.0 * 512.0);
+  EXPECT_EQ(usb_manager_.GetDeviceOpenCount("guid-cached"), 1);
+
+  // A subsequent poll while the same GUID remains attached reuses the cached
+  // SCSI capacity without re-opening or re-claiming the USB device.
+  scoped_refptr<StorageDeviceList> second_poll = EnumerateDevices();
+  ASSERT_TRUE(second_poll);
+  ASSERT_EQ(second_poll->data.size(), 1u);
+  EXPECT_DOUBLE_EQ(second_poll->data[0].capacity, 32768.0 * 512.0);
+  EXPECT_EQ(usb_manager_.GetDeviceOpenCount("guid-cached"), 1);
+
+  // Detaching the device evicts its cached GUID so a subsequent attachment
+  // probes fresh capacity.
+  usb_manager_.RemoveDevice("guid-cached");
+  scoped_refptr<StorageDeviceList> detached_poll = EnumerateDevices();
+  ASSERT_TRUE(detached_poll);
+  EXPECT_TRUE(detached_poll->data.empty());
+
+  usb_manager_.AddDevice(
+      CreateUsbDeviceInfo("guid-cached", 0x0781, 0x5581, "SanDisk", "Ultra",
+                          /*class_code=*/0x08, /*subclass_code=*/0x06,
+                          /*protocol_code=*/0x50),
+      /*grant_permission=*/true,
+      /*block_count=*/65536,
+      /*block_size=*/512);
+  scoped_refptr<StorageDeviceList> reattached_poll = EnumerateDevices();
+  ASSERT_TRUE(reattached_poll);
+  ASSERT_EQ(reattached_poll->data.size(), 1u);
+  EXPECT_DOUBLE_EQ(reattached_poll->data[0].capacity, 65536.0 * 512.0);
+  EXPECT_EQ(usb_manager_.GetDeviceOpenCount("guid-cached"), 2);
+
+  // Revoking USB permission causes `RefreshDeviceInfo` to return nullptr and
+  // evicts the cached GUID so re-granting permission probes fresh capacity.
+  usb_manager_.AddDevice(
+      CreateUsbDeviceInfo("guid-cached", 0x0781, 0x5599, "SanDisk", "Extreme",
+                          /*class_code=*/0x08, /*subclass_code=*/0x06,
+                          /*protocol_code=*/0x50),
+      /*grant_permission=*/false,
+      /*block_count=*/262144,
+      /*block_size=*/512);
+  scoped_refptr<StorageDeviceList> revoked_poll = EnumerateDevices();
+  ASSERT_TRUE(revoked_poll);
+  EXPECT_TRUE(revoked_poll->data.empty());
+
+  usb_manager_.AddDevice(
+      CreateUsbDeviceInfo("guid-cached", 0x0781, 0x5599, "SanDisk", "Extreme",
+                          /*class_code=*/0x08, /*subclass_code=*/0x06,
+                          /*protocol_code=*/0x50),
+      /*grant_permission=*/true,
+      /*block_count=*/262144,
+      /*block_size=*/512);
+  scoped_refptr<StorageDeviceList> regranted_poll = EnumerateDevices();
+  ASSERT_TRUE(regranted_poll);
+  ASSERT_EQ(regranted_poll->data.size(), 1u);
+  EXPECT_DOUBLE_EQ(regranted_poll->data[0].capacity, 262144.0 * 512.0);
+  EXPECT_EQ(usb_manager_.GetDeviceOpenCount("guid-cached"), 3);
+}
+
+TEST_F(RemovableStorageProviderAndroidTest,
+       CoalescesConcurrentEnumerationsIntoSingleUsbProbe) {
+  usb_manager_.AddDevice(
+      CreateUsbDeviceInfo("guid-concurrent", 0x0781, 0x5581, "SanDisk", "Ultra",
+                          /*class_code=*/0x08, /*subclass_code=*/0x06,
+                          /*protocol_code=*/0x50),
+      /*grant_permission=*/true,
+      /*block_count=*/32768,
+      /*block_size=*/512);
+
+  base::test::TestFuture<scoped_refptr<StorageDeviceList>> first_future;
+  base::test::TestFuture<scoped_refptr<StorageDeviceList>> second_future;
+  storage_provider_->GetAllDevices(usb_manager_.BindNewPipeAndPassRemote(),
+                                   first_future.GetCallback());
+  storage_provider_->GetAllDevices(usb_manager_.BindNewPipeAndPassRemote(),
+                                   second_future.GetCallback());
+
+  scoped_refptr<StorageDeviceList> first_list = first_future.Get();
+  scoped_refptr<StorageDeviceList> second_list = second_future.Get();
+  ASSERT_TRUE(first_list);
+  ASSERT_TRUE(second_list);
+  EXPECT_NE(first_list.get(), second_list.get());
+  ASSERT_EQ(first_list->data.size(), 1u);
+  ASSERT_EQ(second_list->data.size(), 1u);
+  EXPECT_DOUBLE_EQ(first_list->data[0].capacity, 32768.0 * 512.0);
+  EXPECT_DOUBLE_EQ(second_list->data[0].capacity, 32768.0 * 512.0);
+  EXPECT_EQ(usb_manager_.GetDeviceOpenCount("guid-concurrent"), 1);
+}
+
+TEST_F(RemovableStorageProviderAndroidTest,
+       ReprobesUsbDeviceWhenPreviousPollReturnedZeroCapacity) {
+  usb_manager_.AddDevice(
+      CreateUsbDeviceInfo("guid-spinup", 0x0781, 0x5582, "SanDisk", "Extreme",
+                          /*class_code=*/0x08, /*subclass_code=*/0x06,
+                          /*protocol_code=*/0x50),
+      /*grant_permission=*/true,
+      /*block_count=*/0,
+      /*block_size=*/512);
+
+  scoped_refptr<StorageDeviceList> unready_poll = EnumerateDevices();
+  ASSERT_TRUE(unready_poll);
+  EXPECT_TRUE(unready_poll->data.empty());
+  EXPECT_EQ(usb_manager_.GetDeviceOpenCount("guid-spinup"), 1);
+
+  // Zero capacity must not be cached: once the drive reports valid blocks on
+  // the next poll, enumeration re-probes and surfaces it.
+  usb_manager_.AddDevice(
+      CreateUsbDeviceInfo("guid-spinup", 0x0781, 0x5582, "SanDisk", "Extreme",
+                          /*class_code=*/0x08, /*subclass_code=*/0x06,
+                          /*protocol_code=*/0x50),
+      /*grant_permission=*/true,
+      /*block_count=*/32768,
+      /*block_size=*/512);
+  scoped_refptr<StorageDeviceList> ready_poll = EnumerateDevices();
+  ASSERT_TRUE(ready_poll);
+  ASSERT_EQ(ready_poll->data.size(), 1u);
+  EXPECT_DOUBLE_EQ(ready_poll->data[0].capacity, 32768.0 * 512.0);
+  EXPECT_EQ(usb_manager_.GetDeviceOpenCount("guid-spinup"), 2);
+}
+
+TEST_F(RemovableStorageProviderAndroidTest,
+       ShutdownAndReinitializeResetsCachedUsbCapacities) {
+  usb_manager_.AddDevice(
+      CreateUsbDeviceInfo("guid-lifecycle", 0x0781, 0x5581, "SanDisk", "Ultra",
+                          /*class_code=*/0x08, /*subclass_code=*/0x06,
+                          /*protocol_code=*/0x50),
+      /*grant_permission=*/true,
+      /*block_count=*/32768,
+      /*block_size=*/512);
+
+  scoped_refptr<StorageDeviceList> first_poll = EnumerateDevices();
+  ASSERT_TRUE(first_poll);
+  ASSERT_EQ(first_poll->data.size(), 1u);
+  EXPECT_EQ(usb_manager_.GetDeviceOpenCount("guid-lifecycle"), 1);
+
+  // Destroying and recreating the provider resets `GetInstance()` and clears
+  // cached capacities.
+  storage_provider_.reset();
+  EXPECT_EQ(AndroidUsbStorageProvider::GetInstance(), nullptr);
+  base::test::TestFuture<scoped_refptr<StorageDeviceList>> shutdown_future;
+  GetAllDevicesOnAndroid(shutdown_future.GetCallback());
+  EXPECT_EQ(shutdown_future.Get(), nullptr);
+
+  storage_provider_ = std::make_unique<AndroidUsbStorageProvider>(
+      sys_block_dir_, dev_block_dir_, dev_dir_);
+  EXPECT_EQ(AndroidUsbStorageProvider::GetInstance(), storage_provider_.get());
+
+  scoped_refptr<StorageDeviceList> after_reinit_poll = EnumerateDevices();
+  ASSERT_TRUE(after_reinit_poll);
+  ASSERT_EQ(after_reinit_poll->data.size(), 1u);
+  EXPECT_EQ(usb_manager_.GetDeviceOpenCount("guid-lifecycle"), 2);
 }
 
 }  // namespace
