@@ -171,21 +171,19 @@ public class ActorTaskHelper implements ActorKeyedService.Observer, StartStopWit
         return mActorService;
     }
 
-    /** Stops any active Actor tasks that belong to this window when the activity is destroyed. */
-    public void onDestroy() {
-        if (ActorUtils.isBackgroundActuationEnabled()) {
-            return;
-        }
-        forEachActiveTask(
-                task -> {
-                    if (isTaskInCurrentWindow(task) && mActorService != null) {
-                        mActorService.stopTask(task.getId(), StoppedReason.SHUTDOWN);
-                    }
-                });
-    }
-
-    /** Cleans up the helper, removing observers and clearing flags. */
+    /**
+     * Stops any active Actor tasks that belong to this window, then removes observers and clears
+     * flags.
+     */
     public void destroy() {
+        if (!ActorUtils.isBackgroundActuationEnabled()) {
+            forEachActiveTask(
+                    task -> {
+                        if (isTaskInCurrentWindow(task) && mActorService != null) {
+                            mActorService.stopTask(task.getId(), StoppedReason.SHUTDOWN);
+                        }
+                    });
+        }
         if (mActingTab != null) {
             OffscreenRenderingManager.getInstance().stopOffscreenRendering(mActingTab);
             mActingTab = null;

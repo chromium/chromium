@@ -122,7 +122,6 @@ public class GlicUiCoordinator implements Destroyable {
         KEY.detachFromHost(mWindowAndroid.getUnownedUserDataHost());
         mExternalTriggerSnackbarController.destroy();
         mActorOverlayCoordinator.destroy();
-        mActorTaskHelper.onDestroy();
         mActorTaskHelper.destroy();
     }
 

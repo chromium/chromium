@@ -317,7 +317,7 @@ public class ActorTaskHelperTest {
     }
 
     @Test
-    public void testOnDestroy_OnlyCurrentWindow() {
+    public void testDestroy_OnlyCurrentWindow() {
         TabModelSelector selector = mock(TabModelSelector.class);
         SettableMonotonicObservableSupplier<TabModelSelector> selectorSupplier =
                 ObservableSuppliers.createMonotonic();
@@ -344,7 +344,7 @@ public class ActorTaskHelperTest {
         when(mActorService.getActiveTasks())
                 .thenReturn(Arrays.asList(taskInWindow, taskOtherWindow));
 
-        helper.onDestroy();
+        helper.destroy();
 
         verify(mActorService).stopTask(101, StoppedReason.SHUTDOWN);
         verify(mActorService, never()).stopTask(102, StoppedReason.SHUTDOWN);
@@ -352,7 +352,7 @@ public class ActorTaskHelperTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
-    public void testOnDestroy_BackgroundActuationAndNotificationsEnabled_DoesNotStopTasks() {
+    public void testDestroy_BackgroundActuationAndNotificationsEnabled_DoesNotStopTasks() {
         NotificationProxyUtils.setNotificationEnabledForTest(true);
         TabModelSelector selector = mock(TabModelSelector.class);
         SettableMonotonicObservableSupplier<TabModelSelector> selectorSupplier =
@@ -374,14 +374,14 @@ public class ActorTaskHelperTest {
 
         when(mActorService.getActiveTasks()).thenReturn(Collections.singletonList(taskInWindow));
 
-        helper.onDestroy();
+        helper.destroy();
 
         verify(mActorService, never()).stopTask(anyInt(), anyInt());
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
-    public void testOnDestroy_BackgroundActuationEnabled_NotificationsDisabled_StopsTasks() {
+    public void testDestroy_BackgroundActuationEnabled_NotificationsDisabled_StopsTasks() {
         NotificationProxyUtils.setNotificationEnabledForTest(false);
         TabModelSelector selector = mock(TabModelSelector.class);
         SettableMonotonicObservableSupplier<TabModelSelector> selectorSupplier =
@@ -403,7 +403,7 @@ public class ActorTaskHelperTest {
 
         when(mActorService.getActiveTasks()).thenReturn(Collections.singletonList(taskInWindow));
 
-        helper.onDestroy();
+        helper.destroy();
 
         verify(mActorService).stopTask(101, StoppedReason.SHUTDOWN);
     }
@@ -452,7 +452,7 @@ public class ActorTaskHelperTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
-    public void testOnDestroy_BackgroundActuationEnabled_ChannelBlocked_StopsTasks() {
+    public void testDestroy_BackgroundActuationEnabled_ChannelBlocked_StopsTasks() {
         NotificationProxyUtils.setNotificationEnabledForTest(true);
         NotificationManagerProxy mockNotificationManager = mock(NotificationManagerProxy.class);
         NotificationChannel channel = mock(NotificationChannel.class);
@@ -482,7 +482,7 @@ public class ActorTaskHelperTest {
 
         when(mActorService.getActiveTasks()).thenReturn(Collections.singletonList(taskInWindow));
 
-        helper.onDestroy();
+        helper.destroy();
 
         verify(mActorService).stopTask(101, StoppedReason.SHUTDOWN);
     }
