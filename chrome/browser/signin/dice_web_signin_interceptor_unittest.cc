@@ -2026,6 +2026,48 @@ TEST_F(DiceWebSigninInterceptorTest, AccountInfoRemovedWhileWaiting) {
       SigninInterceptionHeuristicOutcome::kAbortSignedOut, 1);
 }
 
+TEST_F(DiceWebSigninInterceptorTest,
+       RefreshTokenRemovedWithoutExtendedInfoRemovalWhileWaiting) {
+  base::HistogramTester histogram_tester;
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "bob@example.com", signin::ConsentLevel::kSignin);
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+  MaybeIntercept(account_info.GetAccountId());
+  testing::Mock::VerifyAndClearExpectations(mock_delegate());
+  EXPECT_TRUE(interceptor()->is_interception_in_progress());
+
+  // Remove the refresh token without enabling extended account info removal.
+  // `OnRefreshTokenRemovedForAccount` should immediately abort interception and
+  // cancel the 5s timeout so it does not later look up a missing account.
+  identity_test_env()->RemoveRefreshTokenForAccount(
+      account_info.GetAccountId());
+
+  EXPECT_FALSE(interceptor()->is_interception_in_progress());
+  task_environment()->FastForwardBy(base::Seconds(5));
+  histogram_tester.ExpectUniqueSample(
+      "Signin.Intercept.HeuristicOutcome",
+      SigninInterceptionHeuristicOutcome::kAbortSignedOut, 1);
+}
+
+TEST_F(DiceWebSigninInterceptorTest,
+       MaybeInterceptAfterAccountRemovedAbortsSignedOut) {
+  base::HistogramTester histogram_tester;
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+  CoreAccountId account_id = account_info.GetAccountId();
+
+  identity_test_env()->EnableRemovalOfExtendedAccountInfo();
+  identity_test_env()->RemoveRefreshTokenForAccount(account_id);
+
+  MaybeIntercept(account_id);
+  EXPECT_FALSE(interceptor()->is_interception_in_progress());
+  task_environment()->FastForwardBy(base::Seconds(5));
+  histogram_tester.ExpectUniqueSample(
+      "Signin.Intercept.HeuristicOutcome",
+      SigninInterceptionHeuristicOutcome::kAbortSignedOut, 1);
+}
+
 TEST_F(DiceWebSigninInterceptorTest, WaitForAccountCapabilitiesTimeout) {
   base::HistogramTester histogram_tester;
   AccountInfo primary_account_info =

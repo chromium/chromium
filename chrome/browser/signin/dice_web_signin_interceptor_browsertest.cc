@@ -3514,7 +3514,10 @@ class DiceWebSigninInterceptorLatePolicyCallbackUAFTest
 
   bool HasPendingFetcher(DiceWebSigninInterceptor* interceptor) {
     return interceptor->state_
-               ->account_level_signin_restriction_policy_fetcher_ != nullptr;
+                   ->account_level_signin_restriction_policy_fetcher_ !=
+               nullptr ||
+           interceptor->state_->account_level_management_status_fetcher_ !=
+               nullptr;
   }
 
   bool HasProfileCreator(DiceWebSigninInterceptor* interceptor) {
@@ -3632,4 +3635,66 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorLatePolicyCallbackUAFTest,
   // so calling MoveAccount() will not trigger a premature Reset() and
   // destruction of DiceSignedInProfileCreator.
   profile_waiter.WaitForProfileAdded();
+}
+
+// Regression test for crbug.com/580836376: when full extended account info
+// (including capabilities) is already available, the interceptor must still
+// observe `IdentityManager` while waiting asynchronously for the enterprise
+// policy fetch so that signing out cancels the interception and timeout rather
+// than crashing in `OnInterceptionInfoFetchTimeout()`.
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorLatePolicyCallbackUAFTest,
+                       SignOutWhileWaitingForEnterprisePolicyFetch) {
+  base::HistogramTester histogram_tester;
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "primary@gmail.com", signin::ConsentLevel::kSignin);
+
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+  account_info = AccountInfo::Builder(account_info)
+                     .SetFullName("fullname")
+                     .SetGivenName("givenname")
+                     .SetHostedDomain("example.com")
+                     .SetAvatarUrl("https://example.com")
+                     .SetLocale("en")
+                     .Build();
+  AccountCapabilitiesTestMutator mutator(&account_info);
+  mutator.set_is_subject_to_parental_controls(false);
+  mutator.set_is_subject_to_enterprise_features(true);
+  mutator.set_is_subject_to_account_level_enterprise_policies(true);
+  ASSERT_TRUE(account_info.IsValid());
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+  content::WebContents* web_contents =
+      AddTab(embedded_test_server()->GetURL("/defaultresponse"));
+
+  DiceWebSigninInterceptor* interceptor =
+      DiceWebSigninInterceptorFactory::GetForProfile(GetProfile());
+  interceptor->SetInterceptedAccountProfileSeparationPoliciesForTesting(
+      std::nullopt);
+
+  interceptor->MaybeInterceptWebSignin(
+      web_contents, account_info.GetAccountId(),
+      signin_metrics::AccessPoint::kWebSignin,
+      /*is_new_account=*/true,
+      /*is_chrome_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
+
+  // Even though full extended account info is already available, the
+  // interceptor must keep observing `IdentityManager` while the enterprise
+  // policy fetch is pending.
+  ASSERT_TRUE(interceptor->is_interception_in_progress());
+  ASSERT_TRUE(HasPendingFetcher(interceptor));
+  ASSERT_TRUE(IsObservingIdentityManager(interceptor));
+
+  // Sign out of the intercepted account while the policy fetch is pending.
+  identity_test_env()->RemoveRefreshTokenForAccount(
+      account_info.GetAccountId());
+
+  EXPECT_FALSE(interceptor->is_interception_in_progress());
+  EXPECT_FALSE(HasPendingFetcher(interceptor));
+  EXPECT_FALSE(IsObservingIdentityManager(interceptor));
+  EXPECT_FALSE(delegate()->bubble_shown());
+  histogram_tester.ExpectUniqueSample(
+      "Signin.Intercept.HeuristicOutcome",
+      SigninInterceptionHeuristicOutcome::kAbortSignedOut, 1);
 }

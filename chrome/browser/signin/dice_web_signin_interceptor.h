@@ -336,6 +336,8 @@ class DiceWebSigninInterceptor : public KeyedService,
   // signin::IdentityManager::Observer:
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
   void OnExtendedAccountInfoRemoved(const AccountInfo& info) override;
+  void OnRefreshTokenRemovedForAccount(
+      const CoreAccountId& account_id) override;
 
   // Called when one or more of the async info fetches times out.
   void OnInterceptionInfoFetchTimeout();
@@ -444,7 +446,7 @@ class DiceWebSigninInterceptor : public KeyedService,
   // Called when the user management status and the value of the cloud user
   // level value of the ManagedAccountsSigninRestriction are received.
   void OnAccountLevelManagedAccountsSigninRestrictionReceived(
-      const AccountInfo& account_info,
+      const CoreAccountId& account_id,
       std::optional<policy::UserManagementStatus> management_status,
       policy::ProfileSeparationPolicies profile_separation_policies);
 
