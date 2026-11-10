@@ -460,7 +460,10 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   gfx::Rect ConvertSubframeBoundsToScreenWithoutConstraints(
       const gfx::Rect& bounds_in_dips,
       RenderWidgetHostViewBase* subframe_view);
-  virtual void DismissUnboundedSurface();
+  // Dismisses any active unbounded surface associated with this view or its
+  // root view.
+  void DismissUnboundedSurface();
+  bool TakeDismissUnboundedSurfaceCalledForTesting();
   // Destroys the active unbounded surface if `this` is either the root view
   // hosting it or the subframe view (`GetTargetView()`) that owns it.
   void DestroyUnboundedSurfaceForThisView();
@@ -832,6 +835,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   // executing, otherwise `this` would be deleted out from under it, and then
   // deleted a second time when `DestroyOrDefer` completes.
   bool in_destroy_or_defer_ = false;
+  bool dismiss_unbounded_surface_called_for_testing_ = false;
 
   base::WeakPtrFactory<RenderWidgetHostViewBase> weak_factory_{this};
 };

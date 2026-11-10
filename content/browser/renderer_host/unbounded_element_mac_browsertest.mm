@@ -6,6 +6,8 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "cc/base/features.h"
@@ -22,6 +24,7 @@
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/shell/browser/shell.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/cocoa_test_event_utils.h"
 
 // A mock window class that simulates the custom level-restoration behavior
@@ -57,6 +60,17 @@
     ++_sendEventCount;
   }
   [super sendEvent:event];
+}
+@end
+
+// A test view that accepts first responder so tests can simulate focus moving
+// outside the owner view to other browser UI.
+@interface FocusableTestView : NSView
+@end
+
+@implementation FocusableTestView
+- (BOOL)acceptsFirstResponder {
+  return YES;
 }
 @end
 
@@ -368,6 +382,126 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacUnboundedZOrderTest,
   std::string get_style =
       "getComputedStyle(document.getElementById('target')).visibility";
   EXPECT_EQ("visible", EvalJs(shell()->web_contents(), get_style));
+}
+
+// A key-down while the owning `RenderWidgetHostViewCocoa` is not the first
+// responder (e.g. a browser shortcut while focus is in the omnibox) dismisses
+// the surface and still reaches its window. A key-down while the owning view
+// is the first responder is left to `RenderWidgetHostImpl`.
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacUnboundedZOrderTest,
+                       LocalEventMonitorDismissesOnKeyDownOutsideOwnerView) {
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  ASSERT_TRUE(ExecJs(shell()->web_contents(), R"(
+    document.body.innerHTML = `<div id="target" unbounded></div>`;
+    document.getElementById('target').showUnboundedElement();
+  )"));
+
+  RenderFrameHostImpl* rfhi = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetPrimaryMainFrame());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return rfhi->GetUnboundedSurfaceWindow() != nullptr; }));
+  UnboundedSurfaceWindow* unbounded_window = rfhi->GetUnboundedSurfaceWindow();
+  ASSERT_TRUE(unbounded_window);
+  ScopedDismissRecorder recorder(
+      unbounded_window, UnboundedSurfaceHostImpl::GetForCurrentDocument(rfhi));
+
+  RenderWidgetHostViewMac* rwhv_mac =
+      static_cast<RenderWidgetHostViewMac*>(rfhi->GetView());
+  NSView* cocoa_view = rwhv_mac->GetInProcessNSView();
+  NSWindow* parent_nswindow = [cocoa_view window];
+  ASSERT_TRUE(parent_nswindow);
+
+  // A key-down while the owning view is the first responder does not dismiss.
+  ASSERT_TRUE([parent_nswindow makeFirstResponder:cocoa_view]);
+  [NSApp sendEvent:cocoa_test_event_utils::SynthesizeKeyEvent(
+                       parent_nswindow, /*keyDown=*/true, ui::VKEY_A, 0)];
+  EXPECT_EQ(0, recorder.TakeDismissCount());
+
+  // Editing shortcuts (such as Cmd+C) while the owning view is the first
+  // responder do not dismiss the surface.
+  [NSApp sendEvent:cocoa_test_event_utils::SynthesizeKeyEvent(
+                       parent_nswindow, /*keyDown=*/true, ui::VKEY_C,
+                       NSEventModifierFlagCommand)];
+  EXPECT_EQ(0, recorder.TakeDismissCount());
+
+  // A Command key browser shortcut while the owning view is the first responder
+  // dismisses the surface before ChromeCommandDispatcherDelegate intercepts
+  // it. Add a non-destructive menu item so the shortcut matches a main-menu
+  // browser command without closing or unfocusing the window under test.
+  NSMenuItem* test_menu_item =
+      [[NSMenuItem alloc] initWithTitle:@"Test Command"
+                                 action:@selector(description)
+                          keyEquivalent:@"d"];
+  test_menu_item.keyEquivalentModifierMask = NSEventModifierFlagCommand;
+  NSMenu* file_menu = [[NSApp mainMenu] itemAtIndex:1].submenu
+                          ? [[NSApp mainMenu] itemAtIndex:1].submenu
+                          : [NSApp mainMenu];
+  [file_menu addItem:test_menu_item];
+
+  [NSApp sendEvent:cocoa_test_event_utils::SynthesizeKeyEvent(
+                       parent_nswindow, /*keyDown=*/true, ui::VKEY_D,
+                       NSEventModifierFlagCommand)];
+  EXPECT_EQ(1, recorder.TakeDismissCount());
+  [file_menu removeItem:test_menu_item];
+
+  // A key-down while focus is in other browser UI in the same window (e.g. the
+  // omnibox) dismisses the surface.
+  FocusableTestView* other_view =
+      [[FocusableTestView alloc] initWithFrame:NSMakeRect(0, 0, 50, 50)];
+  [parent_nswindow.contentView addSubview:other_view];
+  ASSERT_TRUE([parent_nswindow makeFirstResponder:other_view]);
+  ASSERT_EQ(other_view, [parent_nswindow firstResponder]);
+  // Blurring the owner view requests a dismissal of its own; discard it
+  // so we can isolate the key event behavior.
+  recorder.TakeDismissCount();
+
+  [NSApp sendEvent:cocoa_test_event_utils::SynthesizeKeyEvent(
+                       parent_nswindow, /*keyDown=*/true, ui::VKEY_A, 0)];
+  EXPECT_EQ(1, recorder.TakeDismissCount());
+
+  [other_view removeFromSuperview];
+  other_view = nil;
+}
+
+// The owning window losing key status dismisses the surface, even when the
+// owning `RenderWidgetHostViewCocoa` is not the first responder.
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacUnboundedZOrderTest,
+                       WindowResigningKeyDismissesSurface) {
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  ASSERT_TRUE(ExecJs(shell()->web_contents(), R"(
+    document.body.innerHTML = `<div id="target" unbounded></div>`;
+    document.getElementById('target').showUnboundedElement();
+  )"));
+
+  RenderFrameHostImpl* rfhi = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetPrimaryMainFrame());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return rfhi->GetUnboundedSurfaceWindow() != nullptr; }));
+  UnboundedSurfaceWindow* unbounded_window = rfhi->GetUnboundedSurfaceWindow();
+  ASSERT_TRUE(unbounded_window);
+  ScopedDismissRecorder recorder(
+      unbounded_window, UnboundedSurfaceHostImpl::GetForCurrentDocument(rfhi));
+
+  RenderWidgetHostViewMac* rwhv_mac =
+      static_cast<RenderWidgetHostViewMac*>(rfhi->GetView());
+  NSWindow* parent_nswindow = [rwhv_mac->GetInProcessNSView() window];
+  ASSERT_TRUE(parent_nswindow);
+  [parent_nswindow makeFirstResponder:nil];
+  ASSERT_NE(rwhv_mac->GetInProcessNSView(), [parent_nswindow firstResponder]);
+  // Blurring the owner view requests a dismissal of its own; discard it
+  // so we can test the window key-change behavior in isolation.
+  recorder.TakeDismissCount();
+
+  // Becoming key keeps the surface open.
+  rwhv_mac->OnWindowIsKeyChanged(true);
+  EXPECT_EQ(0, recorder.TakeDismissCount());
+
+  rwhv_mac->OnWindowIsKeyChanged(false);
+  EXPECT_EQ(1, recorder.TakeDismissCount());
 }
 
 }  // namespace content

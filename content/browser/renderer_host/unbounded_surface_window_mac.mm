@@ -31,6 +31,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accelerated_widget_mac/display_ca_layer_tree.h"
 #import "ui/base/cocoa/base_view.h"
+#import "ui/base/cocoa/nsmenu_additions.h"
 #include "ui/base/cocoa/remote_layer_api.h"
 #include "ui/compositor/recyclable_compositor_mac.h"
 #include "ui/display/display.h"
@@ -108,6 +109,77 @@
 
 namespace content {
 
+namespace {
+
+// Returns true if the first responder of the window receiving `event` is the
+// `RenderWidgetHostViewCocoa` of `owner_view`, or a descendant of it.
+bool IsOwnerFirstResponder(NSEvent* event,
+                           RenderWidgetHostViewBase* owner_view) {
+  if (!owner_view) {
+    return false;
+  }
+  NSView* owner_ns_view =
+      static_cast<RenderWidgetHostViewMac*>(owner_view)->GetInProcessNSView();
+  if (!owner_ns_view) {
+    return false;
+  }
+  NSView* responder =
+      base::apple::ObjCCast<NSView>(event.window.firstResponder);
+  return responder && [responder isDescendantOf:owner_ns_view];
+}
+
+bool IsEditingAction(SEL action) {
+  return action == @selector(copy:) || action == @selector(cut:) ||
+         action == @selector(paste:) ||
+         action == @selector(pasteAndMatchStyle:) ||
+         action == @selector(selectAll:) || action == @selector(undo:) ||
+         action == @selector(redo:) || action == @selector(delete:);
+}
+
+// Returns true if `event`, seen by the local event monitor, should dismiss
+// the unbounded surface shown in `surface_window` for `owner_view`.
+bool ShouldDismissForLocalEvent(NSEvent* event,
+                                RenderWidgetHostViewBase* owner_view,
+                                NSWindow* surface_window) {
+  if (event.window == surface_window) {
+    return false;
+  }
+  if (event.type == NSEventTypeKeyDown) {
+    if (!IsOwnerFirstResponder(event, owner_view)) {
+      return true;
+    }
+    // Reserved browser shortcuts on macOS (e.g. Cmd+T, Cmd+W) are intercepted
+    // by ChromeCommandDispatcherDelegate::prePerformKeyEquivalent during
+    // -[NSWindow performKeyEquivalent:] before reaching
+    // RenderWidgetHostViewCocoa or RenderWidgetHostImpl. When a menu item in
+    // the main menu matches this event, dismiss the surface for browser
+    // commands, but avoid dismissing on text editing commands (e.g. Cmd+C,
+    // Cmd+V, Cmd+X, Cmd+A, Cmd+Z) or unhandled shortcuts.
+    if ((event.modifierFlags & NSEventModifierFlagCommand) != 0) {
+      NSMenuItem* item =
+          [[NSApp mainMenu] cr_menuItemForKeyEquivalentEvent:event];
+      if (item && !IsEditingAction(item.action)) {
+        return true;
+      }
+      return false;
+    }
+    return false;
+  }
+  // Avoid dismissing when clicking inside a child popup window (such as an
+  // <input type=date> picker) opened from the owning RenderWidgetHostView.
+  auto* parent_view_mac = static_cast<RenderWidgetHostViewMac*>(owner_view);
+  if (parent_view_mac && parent_view_mac->PopupChildHostView()) {
+    NSView* popup_view =
+        parent_view_mac->PopupChildHostView()->GetInProcessNSView();
+    if (popup_view && event.window == [popup_view window]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+}  // namespace
+
 UnboundedSurfaceWindowMac::UnboundedSurfaceWindowMac(
     RenderWidgetHostViewMac* parent_view,
     const gfx::Rect& bounds_in_screen,
@@ -143,9 +215,9 @@ UnboundedSurfaceWindowMac::~UnboundedSurfaceWindowMac() {
   display_ca_layer_tree_.reset();
   root_layer_.reset();
 
-  if (click_event_tap_) {
-    [NSEvent removeMonitor:click_event_tap_];
-    click_event_tap_ = nil;
+  if (local_event_monitor_) {
+    [NSEvent removeMonitor:local_event_monitor_];
+    local_event_monitor_ = nil;
   }
 
   if (window_) {
@@ -275,49 +347,33 @@ void UnboundedSurfaceWindowMac::InitWindow(const gfx::Rect& bounds_in_screen) {
   [window_ orderFront:nil];
   // Dismiss when clicking anywhere in the application outside `window_` (such
   // as the browser tab strip, toolbar, or another web contents) that does not
-  // route through the owning `RenderWidgetHostImpl`. If a click lands on the
-  // owning `RenderWidgetHostViewCocoa` outside `window_`, both this monitor and
+  // route through the owning `RenderWidgetHostImpl`, or when pressing a key
+  // while `firstResponder` is outside the owning `RenderWidgetHostViewCocoa`
+  // (e.g. a browser shortcut while focus is in the omnibox or another tab). If
+  // a click lands on the owning `RenderWidgetHostViewCocoa` outside `window_`,
+  // both this monitor and
   // `RenderWidgetHostImpl::ForwardMouseEventWithLatencyInfo()` call
   // `Dismiss()`; that is safe because
   // `UnboundedSurfaceHostImpl::OnDismissRequested()` is idempotent while
   // `dismiss_pending_` is true, and if `beforetoggle` is canceled,
-  // `click_event_tap_` remains installed for subsequent clicks.
+  // `local_event_monitor_` remains installed for subsequent events. The
+  // handler always returns `event` so that it is never swallowed.
   base::WeakPtr<UnboundedSurfaceWindow> weak_this = GetWeakPtr();
   base::WeakPtr<RenderWidgetHostViewBase> weak_parent_view = parent_view_;
-  click_event_tap_ = [NSEvent
-      addLocalMonitorForEventsMatchingMask:(NSEventMaskLeftMouseDown |
-                                            NSEventMaskRightMouseDown |
-                                            NSEventMaskOtherMouseDown)
-                                   handler:^NSEvent*(NSEvent* event) {
-                                     if (!weak_this) {
-                                       return event;
-                                     }
-                                     if (event.window ==
-                                         weak_this->GetNativeWindow()
-                                             .GetNativeNSWindow()) {
-                                       return event;
-                                     }
-                                     // Avoid dismissing when clicking inside
-                                     // a child popup window (such as an
-                                     // <input type=date> picker) opened from
-                                     // the owning RenderWidgetHostView.
-                                     auto* parent_mac =
-                                         static_cast<RenderWidgetHostViewMac*>(
-                                             weak_parent_view.get());
-                                     if (parent_mac &&
-                                         parent_mac->PopupChildHostView()) {
-                                       NSView* popup_view =
-                                           parent_mac->PopupChildHostView()
-                                               ->GetInProcessNSView();
-                                       if (popup_view &&
-                                           event.window ==
-                                               [popup_view window]) {
-                                         return event;
-                                       }
-                                     }
-                                     weak_this->Dismiss();
-                                     return event;
-                                   }];
+  NSEvent* (^handler)(NSEvent*) = ^NSEvent*(NSEvent* event) {
+    if (weak_this && ShouldDismissForLocalEvent(
+                         event, weak_parent_view.get(),
+                         weak_this->GetNativeWindow().GetNativeNSWindow())) {
+      weak_this->Dismiss();
+    }
+    return event;
+  };
+  local_event_monitor_ =
+      [NSEvent addLocalMonitorForEventsMatchingMask:(NSEventMaskLeftMouseDown |
+                                                     NSEventMaskRightMouseDown |
+                                                     NSEventMaskOtherMouseDown |
+                                                     NSEventMaskKeyDown)
+                                            handler:handler];
 }
 
 void UnboundedSurfaceWindowMac::SetBounds(const gfx::Rect& bounds_in_screen) {
