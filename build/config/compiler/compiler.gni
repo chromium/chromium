@@ -244,8 +244,9 @@ declare_args() {
   # relocations. This is safe to enable only when all C++ code is built with the
   # flag set to the same value.
   use_relative_vtables_abi =
-      is_fuchsia || (is_android && current_cpu == "arm64" &&
-                     use_custom_libcxx && !is_component_build)
+      is_fuchsia ||
+      (is_android && (current_cpu == "arm64" || current_cpu == "x64") &&
+       use_custom_libcxx)
 
   # Enable C++14 sized global deallocation functions.
   # Enable only on ASan or platforms without strict binary size requirements
