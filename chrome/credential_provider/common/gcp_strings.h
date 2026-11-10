@@ -120,6 +120,9 @@ extern const char kGcpwEndpointPathPromoParameter[];
 // Crashpad related constants.
 extern const wchar_t kRunAsCrashpadHandlerEntryPoint[];
 
+// rundll32 entry point that performs the post sign in actions.
+extern const wchar_t kPerformPostSigninActionsEntryPoint[];
+
 // Flags to manipulate behavior of Chrome when importing credentials for the
 // account signs in through GCPW.
 extern const wchar_t kAllowImportOnlyOnFirstRun[];

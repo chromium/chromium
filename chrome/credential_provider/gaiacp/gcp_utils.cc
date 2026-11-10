@@ -743,37 +743,41 @@ HRESULT GetPathToDllFromHandle(HINSTANCE dll_handle,
   return S_OK;
 }
 
-HRESULT GetEntryPointArgumentForRunDll(HINSTANCE dll_handle,
-                                       const wchar_t* entrypoint,
-                                       std::wstring* entrypoint_arg) {
-  DCHECK(entrypoint);
-  DCHECK(entrypoint_arg);
+namespace {
 
-  entrypoint_arg->clear();
-
-  // rundll32 expects the first command line argument to be the path to the
-  // DLL, followed by a comma and the name of the function to call.  There can
-  // be no spaces around the comma. The dll path is quoted because short names
-  // may be disabled in the system and path can not have space otherwise. It is
-  // recommended to use the short path name of the DLL.
-  base::FilePath path_to_dll;
-  HRESULT hr = GetPathToDllFromHandle(dll_handle, &path_to_dll);
-  if (FAILED(hr))
-    return hr;
-
-  wchar_t short_path[MAX_PATH];
-  DWORD short_length = std::size(short_path);
-  short_length =
-      ::GetShortPathName(path_to_dll.value().c_str(), short_path, short_length);
-  if (short_length >= std::size(short_path)) {
-    hr = HRESULT_FROM_WIN32(::GetLastError());
+// Fills |short_path| with the short (8.3) form of |path_to_dll|, e.g.
+// C:\PROGRA~1\Google\Gaia1_0.dll, or the long form if 8.3 names are disabled.
+HRESULT GetShortPathToDll(const base::FilePath& path_to_dll,
+                          std::wstring* short_path) {
+  wchar_t buffer[MAX_PATH];
+  DWORD length = std::size(buffer);
+  length = ::GetShortPathName(path_to_dll.value().c_str(), buffer, length);
+  if (length >= std::size(buffer)) {
+    HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
     LOGFN(ERROR) << "GetShortPathNameW hr=" << putHR(hr);
     return hr;
   }
 
-  *entrypoint_arg = base::StrCat({L"\"", short_path, L"\",", entrypoint});
+  *short_path = std::wstring(std::wstring_view(buffer, length));
+  return S_OK;
+}
 
-  // In tests, the current module is the unittest exe, not the real dll.
+// Builds the command line that runs rundll32.exe with |entrypoint_arg|, which
+// must be <dll path>,<entrypoint> with no spaces around the comma.
+HRESULT BuildRunDllCommandLine(const base::FilePath& path_to_dll,
+                               std::wstring_view entrypoint_arg,
+                               base::CommandLine* command_line) {
+  // Build the full path to rundll32.
+  base::FilePath system_dir;
+  if (!base::PathService::Get(base::DIR_SYSTEM, &system_dir)) {
+    return HRESULT_FROM_WIN32(::GetLastError());
+  }
+
+  command_line->SetProgram(
+      system_dir.Append(FILE_PATH_LITERAL("rundll32.exe")));
+  command_line->AppendArgNative(entrypoint_arg);
+
+  // In tests, |path_to_dll| is usually the unittest exe, not the real dll.
   // The unittest exe does not expose entrypoints, so return S_FALSE as a hint
   // that this will not work.  The command line is built anyway though so
   // tests of the command line construction can be written.
@@ -783,27 +787,56 @@ HRESULT GetEntryPointArgumentForRunDll(HINSTANCE dll_handle,
              : S_FALSE;
 }
 
-HRESULT GetCommandLineForEntrypoint(HINSTANCE dll_handle,
-                                    const wchar_t* entrypoint,
-                                    base::CommandLine* command_line) {
-  DCHECK(entrypoint);
+}  // namespace
+
+HRESULT GetCommandLineForCrashpadHandler(const base::FilePath& path_to_dll,
+                                         base::CommandLine* command_line) {
   DCHECK(command_line);
 
-  // Build the full path to rundll32.
-  base::FilePath system_dir;
-  if (!base::PathService::Get(base::DIR_SYSTEM, &system_dir))
-    return HRESULT_FROM_WIN32(::GetLastError());
+  std::wstring short_path;
+  HRESULT hr = GetShortPathToDll(path_to_dll, &short_path);
+  if (FAILED(hr)) {
+    return hr;
+  }
 
-  command_line->SetProgram(
-      system_dir.Append(FILE_PATH_LITERAL("rundll32.exe")));
+  return BuildRunDllCommandLine(
+      path_to_dll, FormatRunDllArgumentForCrashpadHandler(short_path),
+      command_line);
+}
 
-  std::wstring entrypoint_arg;
-  HRESULT hr =
-      GetEntryPointArgumentForRunDll(dll_handle, entrypoint, &entrypoint_arg);
-  if (SUCCEEDED(hr))
-    command_line->AppendArgNative(entrypoint_arg);
+std::wstring FormatRunDllArgumentForCrashpadHandler(
+    std::wstring_view dll_path) {
+  // Never quoted, see gcp_utils.h.
+  return base::StrCat({dll_path, L",", kRunAsCrashpadHandlerEntryPoint});
+}
 
-  return hr;
+HRESULT GetCommandLineForPerformPostSigninActions(
+    HINSTANCE dll_handle,
+    base::CommandLine* command_line) {
+  DCHECK(command_line);
+
+  base::FilePath path_to_dll;
+  HRESULT hr = GetPathToDllFromHandle(dll_handle, &path_to_dll);
+  if (FAILED(hr)) {
+    return hr;
+  }
+
+  std::wstring short_path;
+  hr = GetShortPathToDll(path_to_dll, &short_path);
+  if (FAILED(hr)) {
+    return hr;
+  }
+
+  return BuildRunDllCommandLine(
+      path_to_dll, FormatRunDllArgumentForPerformPostSigninActions(short_path),
+      command_line);
+}
+
+std::wstring FormatRunDllArgumentForPerformPostSigninActions(
+    std::wstring_view dll_path) {
+  // Always quoted, see gcp_utils.h.
+  return base::StrCat(
+      {L"\"", dll_path, L"\",", kPerformPostSigninActionsEntryPoint});
 }
 
 // Gets localized name for builtin administrator account. Extracting

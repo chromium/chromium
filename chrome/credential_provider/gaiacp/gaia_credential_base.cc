@@ -1924,8 +1924,8 @@ HRESULT CGaiaCredentialBase::ForkPerformPostSigninActionsStub(
   }
 
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  hr = GetCommandLineForEntrypoint(CURRENT_MODULE(),
-                                   L"PerformPostSigninActions", &command_line);
+  hr = GetCommandLineForPerformPostSigninActions(CURRENT_MODULE(),
+                                                 &command_line);
   if (hr == S_FALSE) {
     // This happens in tests.  It means this code is running inside the
     // unittest exe and not the credential provider dll.  Just ignore saving
@@ -1933,7 +1933,8 @@ HRESULT CGaiaCredentialBase::ForkPerformPostSigninActionsStub(
     LOGFN(VERBOSE) << "Not running SAIS";
     return S_OK;
   } else if (FAILED(hr)) {
-    LOGFN(ERROR) << "GetCommandLineForEntryPoint hr=" << putHR(hr);
+    LOGFN(ERROR) << "GetCommandLineForPerformPostSigninActions hr="
+                 << putHR(hr);
     *status_text = AllocErrorString(IDS_INTERNAL_ERROR_BASE);
     return hr;
   }
