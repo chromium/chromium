@@ -486,6 +486,8 @@ TEST_F(TtcMesClientTest, DebugSinkGetsClientFrames) {
   tools[0].name = "open_tab";
   tools[1].name = "scroll";
   client().SendToolSetUpdate(tools);
+
+  // TODO(b/584066906): Test this once it's implemented.
   client().ReportPlaybackStatus(12);
 
   EXPECT_THAT(debug_sink_.client_frames,
@@ -493,7 +495,7 @@ TEST_F(TtcMesClientTest, DebugSinkGetsClientFrames) {
                   "text_input:hi",
                   base::StrCat({"context_update:https://a.test/|",
                                 base::NumberToString(apc.ByteSizeLong())}),
-                  "toolset_update:open_tab,scroll", "playback_status:12"));
+                  "toolset_update:open_tab,scroll"));
   EXPECT_EQ(debug_sink_.dropped, 0);
 }
 

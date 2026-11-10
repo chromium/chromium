@@ -523,8 +523,6 @@ void TtcMesClient::ReportPlaybackStatus(int64_t last_played_sequence_number) {
   optimization_guide::proto::TtcClientFrame frame;
   frame.set_client_timestamp_ms(
       base::Time::Now().InMillisecondsSinceUnixEpoch());
-  frame.mutable_playback_status()->set_last_played_sequence_number(
-      last_played_sequence_number);
   SendFrame(frame);
 }
 
@@ -604,9 +602,9 @@ void TtcMesClient::ReportClientFrameToDebugSink(
       });
       break;
     case Frame::kPlaybackStatus:
+      // TODO(bokan): this is being replaced by duration and generation_id.
       debug_sink_->OnClientFrame(DebugSink::PlaybackStatus{
-          .last_played_sequence_number =
-              frame.playback_status().last_played_sequence_number(),
+          .last_played_sequence_number = 0,
       });
       break;
     case Frame::kCloseRequest:
@@ -784,8 +782,6 @@ void TtcMesClient::LogClientFrame(
     }
     case optimization_guide::proto::TtcClientFrame::kPlaybackStatus:
       event_name = "PlaybackStatus";
-      details.Add("last_played_sequence_number",
-                  frame.playback_status().last_played_sequence_number());
       break;
     case optimization_guide::proto::TtcClientFrame::kCloseRequest:
       event_name = "CloseSessionRequest";
