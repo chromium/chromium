@@ -1802,6 +1802,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="7956713633345437162">Mobiele bookmarks</translation>
 <translation id="7957413488482743710">Een virtuele kaart verbergt je werkelijke kaart om je te beschermen tegen potentiële fraude. <ph name="BEGIN_LINK1" />Meer informatie over virtuele kaarten<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Tabbladen op dit apparaat</translation>
+<translation id="7959802829514004148">Kan pdf niet downloaden</translation>
 <translation id="7961926449547174351">Je hebt Opslagtoegang uitgezet. Ga naar Instellingen om deze aan te zetten.</translation>
 <translation id="7965838025086216108">Je kunt opgeslagen wachtwoorden op elk apparaat gebruiken. Ze worden opgeslagen in Google Wachtwoordmanager voor <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Toegevoegd aan leeslijst</translation>
@@ -1890,6 +1891,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8244387390464017490">Pagina Nieuw tabblad aanpassen</translation>
 <translation id="8244444485683708655">Camerafoto toevoegen</translation>
 <translation id="8250920743982581267">Documenten</translation>
+<translation id="8254205582828322729">Tik op Opslaan om dit wachtwoord makkelijk te gebruiken als je de volgende keer inlogt</translation>
 <translation id="8257429805444572809">Afgemeld voor <ph name="DOMAIN" /></translation>
 <translation id="8258999165172757081">Toegevoegd</translation>
 <translation id="8259179246279078674">Omdat de vooraf geladen pagina's versleuteld zijn, krijgt Google geen informatie over de content van de vooraf geladen pagina. Google-servers kunnen wel zien welke sites privé vooraf worden geladen. Deze informatie wordt alleen gebruikt om de pagina's vooraf te laden en is niet gekoppeld aan andere informatie in je Google-account.</translation>
@@ -1979,6 +1981,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8560602726703398413">Bekijk je leeslijst in Bookmarks</translation>
 <translation id="85618473456579127">Tik rechtsboven op Profiel</translation>
 <translation id="8565021320663436446"><ph name="MEMBER_FULL_NAME" /> verwijderen?</translation>
+<translation id="8567433453247478023">Tik op Privacy en beveiliging</translation>
 <translation id="8570677896027847510">Bestand kan niet beveiligd worden gedownload</translation>
 <translation id="8571213806525832805">Afgelopen 4 weken</translation>
 <translation id="8580435650274205305">Vervaldatum, vereist</translation>
@@ -1999,6 +2002,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8635399646025169806">Tabbladgroep behouden?</translation>
 <translation id="8636825310635137004">Zet synchronisatie aan om de tabbladen op je andere apparaten te bekijken</translation>
 <translation id="8639963783467694461">Instellingen voor Automatisch invullen</translation>
+<translation id="8642256427178803328">Zet Incognitotabbladen vergrendelen als je Chrome sluit aan</translation>
 <translation id="8644482734962137770">Gemini heeft toestemming nodig om Chrome te gebruiken</translation>
 <translation id="8662474268934425487">Inloggen op <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Bestandsnaam bestaat al</translation>

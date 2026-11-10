@@ -484,6 +484,7 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="6096348254544841612">Personnalisez et contrôlez Chromium. Une mise à jour est disponible.</translation>
 <translation id="6107893135096467929">Activée • Chromium ne peut pas vérifier d'où vient cette extension</translation>
 <translation id="611228897408671387">Votre compte dans Chromium</translation>
+<translation id="6114975763361458436">Fermer la Recherche dans le panneau latéral</translation>
 <translation id="6119438414301547735">Autoriser l'extension à afficher les demandes d'accès dans la barre d'outils Chromium</translation>
 <translation id="6129621093834146363">Chromium a bloqué <ph name="FILE_NAME" />, car ce fichier est dangereux.</translation>
 <translation id="6132897690380286411">Chromium se fermera bientôt et supprimera les données</translation>
@@ -496,6 +497,7 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="6182736845697986886">Échec de l'installation en raison d'une erreur interne du serveur de mise à jour.</translation>
 <translation id="6183079672144801177">Vérifiez si vous êtes bien connecté à Chromium sur votre <ph name="TARGET_DEVICE_NAME" />, puis procédez de nouveau à l'envoi.</translation>
 <translation id="6192070012454216182">Recherchez des informations et posez des questions depuis n'importe où, même si Chromium est réduit. Permet à Chromium de s'exécuter en arrière-plan.</translation>
+<translation id="6210269448287455102">Rouvrir la Recherche dans le panneau latéral</translation>
 <translation id="6212496753309875659">Cet ordinateur dispose déjà d'une version plus récente de Chromium. Si le logiciel ne fonctionne pas, veuillez le désinstaller, puis réessayer.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium va être relancé maintenant}=1{Chromium va être relancé dans 1 seconde}one{Chromium va être relancé dans # seconde}other{Chromium va être relancé dans # secondes}}</translation>
 <translation id="6232046770428574552">Chromium se mettra à jour quand l'écran ne sera pas utilisé</translation>
@@ -593,6 +595,7 @@ Certaines fonctionnalités seront peut-être indisponibles. Veuillez spécifier 
             • Les raccourcis Chromium seront réinitialisés
             <ph name="LINE_BREAKS" />
             Les favoris, l'historique et les mots de passe enregistrés ne seront pas affectés.</translation>
+<translation id="6930607614725241390">Rechercher dans le panneau latéral</translation>
 <translation id="6948031725951063910">Vous avez atteint la limite de <ph name="BOOKMARK_LIMIT" /> favoris de Chromium. Par conséquent, certains de vos favoris n'ont pas encore été enregistrés dans votre compte Google.
 
 Vous ne pourrez pas enregistrer de nouveaux favoris dans votre compte tant que vous n'en aurez pas supprimé. Si vous vous déconnectez maintenant, les favoris non enregistrés seront supprimés.</translation>

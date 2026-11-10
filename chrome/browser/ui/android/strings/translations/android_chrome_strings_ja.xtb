@@ -1802,6 +1802,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="7956713633345437162">モバイルのブックマーク</translation>
 <translation id="7957413488482743710">仮想カードを使用すると、実際のカードを非表示にして、不正行為から保護できます。<ph name="BEGIN_LINK1" />仮想カードの詳細<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">このデバイスのタブ</translation>
+<translation id="7959802829514004148">PDF をダウンロードできませんでした</translation>
 <translation id="7961926449547174351">ストレージへのアクセスは無効になっています。[設定] で有効にしてください。</translation>
 <translation id="7965838025086216108">保存したパスワードは他のデバイスで使用できます。パスワードは、<ph name="ACCOUNT" /> の Google パスワード マネージャーに保存されます。</translation>
 <translation id="7968014550143838305">リーディング リストに追加しました</translation>
@@ -1890,6 +1891,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="8244387390464017490">新しいタブページを編集</translation>
 <translation id="8244444485683708655">カメラの写真を添付</translation>
 <translation id="8250920743982581267">ドキュメント</translation>
+<translation id="8254205582828322729">[保存] をタップすると、次回ログイン時にこのパスワードを簡単に使用できます</translation>
 <translation id="8257429805444572809"><ph name="DOMAIN" /> の登録を解除しました</translation>
 <translation id="8258999165172757081">追加済み</translation>
 <translation id="8259179246279078674">プリロードされたページは暗号化されているため、Google はプリロードされたページのコンテンツを一切把握できません。Google サーバーは、どのサイトが非公開でプリロードされたかを把握します。この情報はページをプリロードするためにのみ使用され、Google アカウントから他の情報にリンクされることはありません。</translation>
@@ -1979,6 +1981,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="8560602726703398413">リーディング リストはブックマークからアクセスできます</translation>
 <translation id="85618473456579127">右上のプロフィールをタップ</translation>
 <translation id="8565021320663436446"><ph name="MEMBER_FULL_NAME" /> を削除しますか？</translation>
+<translation id="8567433453247478023">[プライバシーとセキュリティ] をタップします</translation>
 <translation id="8570677896027847510">ファイルを安全にダウンロードできません</translation>
 <translation id="8571213806525832805">過去 4 週間</translation>
 <translation id="8580435650274205305">有効期限、必須です</translation>
@@ -1999,6 +2002,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="8635399646025169806">タブグループを保持しますか？</translation>
 <translation id="8636825310635137004">他のデバイスと同じタブを使用するには、同期を有効にします。</translation>
 <translation id="8639963783467694461">自動入力の設定</translation>
+<translation id="8642256427178803328">[Chrome を終了するときにシークレット タブをロックする] をオンにします</translation>
 <translation id="8644482734962137770">Gemini に Chrome の使用を許可する必要があります</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" /> にログイン</translation>
 <translation id="8664979001105139458">同じ名前のファイルが存在します</translation>

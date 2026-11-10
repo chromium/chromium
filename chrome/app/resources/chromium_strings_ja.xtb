@@ -481,6 +481,7 @@
 <translation id="6096348254544841612">Chromium をカスタマイズしてご活用ください。アップデートが利用可能です。</translation>
 <translation id="6107893135096467929">オン • Chromium では、この拡張機能の提供元を確認できません</translation>
 <translation id="611228897408671387">Chromium のアカウント設定</translation>
+<translation id="6114975763361458436">サイドパネルの検索を閉じる</translation>
 <translation id="6119438414301547735">拡張機能に Chromium ツールバーへのアクセス リクエストの表示を許可する</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> は危険なファイルであるため、Chromium でブロックしました。</translation>
 <translation id="6132897690380286411">Chromium はまもなく終了し、データが削除されます</translation>
@@ -493,6 +494,7 @@
 <translation id="6182736845697986886">更新サーバーの内部エラーが発生したため、インストールできませんでした。</translation>
 <translation id="6183079672144801177"><ph name="TARGET_DEVICE_NAME" /> で Chromium にログインしていることを確認してから、もう一度送信してください。</translation>
 <translation id="6192070012454216182">Chromium を最小化しているときでも、あらゆる場所から検索や質問を行えます。Chromium のバックグラウンドでの実行を許可します。</translation>
+<translation id="6210269448287455102">サイドパネルの検索を再度開く</translation>
 <translation id="6212496753309875659">新しいバージョンの Chromium が既にインストールされています。ソフトウェアが動作しない場合は、Chromium をアンインストールしてからもう一度お試しください。</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium は今すぐ再起動されます}=1{Chromium は 1 秒後に再起動されます}other{Chromium は # 秒後に再起動されます}}</translation>
 <translation id="6232046770428574552">Chromium は、画面が使用されていないときに更新されます</translation>
@@ -590,6 +592,7 @@
             • Chromium のショートカットがリセットされます
             <ph name="LINE_BREAKS" />
             ブックマーク、履歴、保存したパスワードへの影響はありません。</translation>
+<translation id="6930607614725241390">サイドパネルで検索</translation>
 <translation id="6948031725951063910">Chromium のブックマーク数の上限（<ph name="BOOKMARK_LIMIT" /> 個）に達したため、Google アカウントにまだ保存されていないブックマークがあります。
 
 新しいブックマークをアカウントに保存するには、既存のブックマークを削除してください。今すぐログアウトすると、保存されていないブックマークは削除されます。</translation>

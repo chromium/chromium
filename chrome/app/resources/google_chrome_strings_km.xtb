@@ -345,6 +345,7 @@
 <translation id="4022972681110646219">បកប្រែ​អេក្រង់</translation>
 <translation id="4023601594785368013">ភាសាដើម៖ <ph name="LANGUAGE" /></translation>
 <translation id="4034249157893816477">ភ្ជាប់មក​ជាមួយ Chrome ដើម្បី​ជួយអ្នក​ក្នុងការ​បង្កើត រក្សាទុក និង​បំពេញ​ពាក្យសម្ងាត់ខ្លាំង​ដោយ​ស្វ័យប្រវត្តិ។ បញ្ចូលផ្លូវកាត់ ដើម្បីងាយស្រួលចូលប្រើ។</translation>
+<translation id="4034420818911109432"><ph name="USER_NAME" />, <ph name="EMAIL" />។ សមាជិកភាព Google។</translation>
 <translation id="4035053306113201399">ChromeOS ត្រូវការចាប់ផ្ដើមឡើងវិញ ដើម្បីប្រើកំណែថ្មី។</translation>
 <translation id="4050175100176540509">ការធ្វើឲ្យប្រសើរឡើងផ្នែកសុវត្ថិភាពសំខាន់ៗ និងលក្ខណៈពិសេសថ្មីៗមាននៅក្នុងកំណែថ្មីបំផុតនេះ។</translation>
 <translation id="4053720452172726777">កែសម្រួល និងគ្រប់គ្រង Google Chrome</translation>
@@ -939,6 +940,7 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="9148058034647219655">ចាកចេញ</translation>
 <translation id="9150331942025550505">ទទួលបានអានុភាពរបស់ AI នៅពេលអ្នកប្រើកម្មវិធី Chrome នៅលើ <ph name="DEVICE_TYPE" /> របស់អ្នក</translation>
 <translation id="919706545465235479">អាប់ដេត Chrome ដើម្បីចាប់ផ្តើមសមកាលកម្ម</translation>
+<translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />។ សមាជិកភាព Google។</translation>
 <translation id="922152298093051471">ប្ដូរ Chrome តាមបំណង</translation>
 <translation id="93760716455950538">ចាប់ផ្ដើម ChromeOS Flex ឡើងវិញ</translation>
 <translation id="943390475793766444">Chrome ណែនាំឱ្យស្កេនឯកសារនេះ ដោយសារវាអាចបង្កគ្រោះថ្នាក់។</translation>

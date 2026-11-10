@@ -481,6 +481,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="6096348254544841612">Dostosowywanie i kontrolowanie Chromium. Dostępna jest aktualizacja.</translation>
 <translation id="6107893135096467929">Włączone • Chromium nie może sprawdzić, skąd pochodzi to rozszerzenie</translation>
 <translation id="611228897408671387">Twoje konto w Chromium</translation>
+<translation id="6114975763361458436">Zamknij wyszukiwarkę w panelu bocznym</translation>
 <translation id="6119438414301547735">Zezwalaj rozszerzeniu na wyświetlanie próśb o dostęp na pasku narzędzi Chromium</translation>
 <translation id="6129621093834146363">Plik <ph name="FILE_NAME" /> jest niebezpieczny, dlatego został zablokowany przez Chromium.</translation>
 <translation id="6132897690380286411">Przeglądarka Chromium zostanie wkrótce zamknięta, a dane zostaną usunięte</translation>
@@ -493,6 +494,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="6182736845697986886">Instalacja się nie udała z powodu wewnętrznego błędu serwera aktualizacji.</translation>
 <translation id="6183079672144801177">Najpierw zaloguj się w Chromium na swoim urządzeniu <ph name="TARGET_DEVICE_NAME" />, a potem ponów próbę wysyłania.</translation>
 <translation id="6192070012454216182">Wyszukuj i zadawaj pytania z dowolnego miejsca, nawet gdy przeglądarka Chromium jest zminimalizowana. Zezwala na działanie Chromium w tle.</translation>
+<translation id="6210269448287455102">Otwórz ponownie wyszukiwarkę w panelu bocznym</translation>
 <translation id="6212496753309875659">Na tym komputerze jest już zainstalowana nowsza wersja Chromium. Jeśli program nie działa, odinstaluj go i spróbuj ponownie.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium uruchomi się ponownie teraz}=1{Chromium uruchomi się ponownie za 1 sekundę}few{Chromium uruchomi się ponownie za # sekundy}many{Chromium uruchomi się ponownie za # sekund}other{Chromium uruchomi się ponownie za # sekundy}}</translation>
 <translation id="6232046770428574552">Chromium zaktualizuje się, gdy nie będziesz korzystać z ekranu</translation>
@@ -590,6 +592,7 @@ Niektóre funkcje mogą być niedostępne. Podaj inny katalog z profilem lub uż
             • zresetowanie skrótów Chromium.
             <ph name="LINE_BREAKS" />
             Zakładki, historia i zapisane hasła pozostaną bez zmian.</translation>
+<translation id="6930607614725241390">Szukaj w panelu bocznym</translation>
 <translation id="6948031725951063910">Osiągnięto limit <ph name="BOOKMARK_LIMIT" /> zakładek w Chromium, więc niektóre z Twoich zakładek nie zostały jeszcze zapisane na Twoim koncie Google.
 
 Dopóki nie usuniesz niektórych zakładek, nie będzie można zapisywać nowych na Twoim koncie. Jeśli wylogujesz się teraz, niezapisane zakładki zostaną usunięte.</translation>

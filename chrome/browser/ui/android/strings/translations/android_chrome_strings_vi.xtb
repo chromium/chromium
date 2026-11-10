@@ -1802,6 +1802,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7956713633345437162">Dấu trang trên thiết bị di động</translation>
 <translation id="7957413488482743710">Thẻ ảo giúp bạn ẩn thẻ thực, bảo vệ bạn trước nguy cơ bị lừa đảo. <ph name="BEGIN_LINK1" />Tìm hiểu thêm về thẻ ảo<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Thẻ trên thiết bị này</translation>
+<translation id="7959802829514004148">Không tải được tệp PDF xuống</translation>
 <translation id="7961926449547174351">Bạn đã tắt Quyền truy cập bộ nhớ. Vui lòng chuyển đến phần Cài đặt để bật quyền này.</translation>
 <translation id="7965838025086216108">Bạn có thể dùng mật khẩu đã lưu trên mọi thiết bị. Những mật khẩu này được lưu vào Trình quản lý mật khẩu của Google cho tài khoản <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Đã thêm vào danh sách đọc</translation>
@@ -1890,6 +1891,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8244387390464017490">Tuỳ chỉnh trang thẻ mới</translation>
 <translation id="8244444485683708655">Đính kèm hình ảnh chụp bằng camera</translation>
 <translation id="8250920743982581267">Tài liệu</translation>
+<translation id="8254205582828322729">Nhấn vào Lưu để dễ dàng sử dụng mật khẩu này vào lần đăng nhập tới</translation>
 <translation id="8257429805444572809">Đã huỷ đăng ký nhận thông báo từ <ph name="DOMAIN" /></translation>
 <translation id="8258999165172757081">Đã thêm</translation>
 <translation id="8259179246279078674">Vì các trang tải trước đã được mã hóa, nên Google sẽ không tìm hiểu bất cứ điều gì về nội dung trên trang được tải trước. Máy chủ của Google sẽ tìm hiểu những trang web nào đã được tải trước ở chế độ riêng tư. Thông tin này chỉ được dùng để tải trước các trang và không được liên kết với thông tin khác trong Tài khoản Google của bạn.</translation>
@@ -1979,6 +1981,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8560602726703398413">Tìm danh sách đọc trong phần Dấu trang</translation>
 <translation id="85618473456579127">Nhấn vào hồ sơ ở trên cùng bên phải</translation>
 <translation id="8565021320663436446">Xoá <ph name="MEMBER_FULL_NAME" />?</translation>
+<translation id="8567433453247478023">Nhấn vào Quyền riêng tư và bảo mật</translation>
 <translation id="8570677896027847510">Không thể tải tệp xuống một cách an toàn</translation>
 <translation id="8571213806525832805">4 tuần qua</translation>
 <translation id="8580435650274205305">Bạn cần điền ngày hết hạn</translation>
@@ -1999,6 +2002,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8635399646025169806">Giữ lại nhóm thẻ?</translation>
 <translation id="8636825310635137004">Để có các thẻ từ các thiết bị khác của bạn, hãy bật đồng bộ hóa.</translation>
 <translation id="8639963783467694461">Cài đặt tự động điền</translation>
+<translation id="8642256427178803328">Bật chế độ Khoá các thẻ ẩn danh khi bạn đóng Chrome</translation>
 <translation id="8644482734962137770">Gemini cần có quyền sử dụng Chrome</translation>
 <translation id="8662474268934425487">Đăng nhập vào <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Tên tệp đã tồn tại</translation>

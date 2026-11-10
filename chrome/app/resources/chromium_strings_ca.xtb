@@ -484,6 +484,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="6096348254544841612">Personalitza i controla Chromium. Hi ha una actualització disponible.</translation>
 <translation id="6107893135096467929">Activat • Chromium no pot verificar d'on prové aquesta extensió</translation>
 <translation id="611228897408671387">El teu compte a Chromium</translation>
+<translation id="6114975763361458436">Tanca la Cerca al tauler lateral</translation>
 <translation id="6119438414301547735">Permet que l'extensió mostri sol·licituds d'accés a la barra d'eines de Chromium</translation>
 <translation id="6129621093834146363">Chromium ha bloquejat <ph name="FILE_NAME" /> perquè és perillós.</translation>
 <translation id="6132897690380286411">Chromium es tancarà aviat i suprimirà les dades</translation>
@@ -496,6 +497,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="6182736845697986886">La instal·lació ha fallat a causa d'un error intern del servidor d'actualitzacions.</translation>
 <translation id="6183079672144801177">Assegura't que tinguis la sessió iniciada a Chromium a <ph name="TARGET_DEVICE_NAME" /> i prova d'enviar-ho de nou.</translation>
 <translation id="6192070012454216182">Fes cerques i preguntes des de qualsevol lloc, fins i tot si Chromium està minimitzat. Permet que Chromium s'executi en segon pla.</translation>
+<translation id="6210269448287455102">Torna a obrir la Cerca al tauler lateral</translation>
 <translation id="6212496753309875659">Aquest equip ja té una versió més recent de Chromium. Si el programari no funciona, desinstal·leu Chromium i torneu-ho a provar.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium es reiniciarà ara}=1{Chromium es reiniciarà d'aquí a 1 segon}other{Chromium es reiniciarà d'aquí a # segons}}</translation>
 <translation id="6232046770428574552">Chromium s'actualitzarà quan la pantalla no s'utilitzi</translation>
@@ -593,6 +595,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
             • Es restabliran les dreceres de Chromium.
             <ph name="LINE_BREAKS" />
             Les adreces d'interès, l'historial i les contrasenyes desades no es veuran afectats.</translation>
+<translation id="6930607614725241390">Cerca al tauler lateral</translation>
 <translation id="6948031725951063910">Has arribat al límit de <ph name="BOOKMARK_LIMIT" /> adreces d'interès de Chromium, de manera que algunes encara no s'han desat al teu Compte de Google.
 
 No es poden desar adreces d'interès noves al teu compte fins que no en suprimeixis algunes. Si tanques la sessió ara, se suprimiran les adreces d'interès no desades.</translation>

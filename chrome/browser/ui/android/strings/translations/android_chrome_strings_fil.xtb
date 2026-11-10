@@ -1802,6 +1802,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7956713633345437162">Mga bookmark sa mobile</translation>
 <translation id="7957413488482743710">Itinatago ng virtual card ang iyong aktwal na card para makatulong na protektahan ka laban sa potensyal na panloloko. <ph name="BEGIN_LINK1" />Matuto pa tungkol sa mga virtual na card<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Mga tab sa device na ito</translation>
+<translation id="7959802829514004148">Hindi ma-download ang PDF</translation>
 <translation id="7961926449547174351">Na-disable mo ang access sa Storage, pumunta sa Mga Setting para i-enable ito.</translation>
 <translation id="7965838025086216108">Puwede mong gamitin ang mga naka-save na password sa anumang device. Sine-save ang mga ito sa Google Password Manager para sa <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Idinagdag sa list ng babasahin</translation>
@@ -1890,6 +1891,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8244387390464017490">I-customize ang bagong tab</translation>
 <translation id="8244444485683708655">Mag-attach ng larawan mula sa camera</translation>
 <translation id="8250920743982581267">Mga Dokumento</translation>
+<translation id="8254205582828322729">I-tap ang I-save para madaling magamit ang password na ito sa susunod na mag-sign in ka</translation>
 <translation id="8257429805444572809">Nag-unsubscribe sa <ph name="DOMAIN" /></translation>
 <translation id="8258999165172757081">Naidagdag</translation>
 <translation id="8259179246279078674">Dahil naka-encrypt ang mga na-preload na page, walang malalaman ang Google tungkol sa na-preload na content ng page. Malalaman ng mga server ng Google kung aling mga site ang pribadong pini-preload. Ginagamit lang ang impormasyong ito para i-preload ang mga page, at hindi ito naka-link sa iba pang impormasyon mula sa iyong Google Account.</translation>
@@ -1979,6 +1981,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8560602726703398413">Makita ang iyong listahan ng babasahin sa Mga Bookmark</translation>
 <translation id="85618473456579127">I-tap ang profile sa kanang bahagi sa itaas</translation>
 <translation id="8565021320663436446">Alisin si <ph name="MEMBER_FULL_NAME" />?</translation>
+<translation id="8567433453247478023">I-tap ang Privacy at seguridad</translation>
 <translation id="8570677896027847510">Hindi secure na mada-download ang mga file</translation>
 <translation id="8571213806525832805">Huling 4 na linggo</translation>
 <translation id="8580435650274205305">Nire-require ang petsa ng pag-expire</translation>
@@ -1999,6 +2002,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8635399646025169806">Panatilihin ang grupo ng tab?</translation>
 <translation id="8636825310635137004">Upang makuha ang iyong mga tab mula sa iba mo pang mga device, i-on ang pag-sync.</translation>
 <translation id="8639963783467694461">Mga setting ng autofill</translation>
+<translation id="8642256427178803328">I-on ang I-lock ang mga tab na Incognito kapag umalis ka sa Chrome</translation>
 <translation id="8644482734962137770">Kailangan ng Gemini ng pahintulot para magamit ang Chrome</translation>
 <translation id="8662474268934425487">Mag-sign in sa <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">May ganito nang pangalan ng file</translation>

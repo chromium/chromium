@@ -486,6 +486,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="6096348254544841612">Prilagodite in nadzirajte Chromium. Posodobitev je na voljo.</translation>
 <translation id="6107893135096467929">Vklopljeno • Chromium ne more preveriti, od kod izvira ta razširitev</translation>
 <translation id="611228897408671387">Vaš račun v Chromiumu</translation>
+<translation id="6114975763361458436">Zapiranje Iskanja v stranskem podoknu</translation>
 <translation id="6119438414301547735">Omogočanje razširitve za prikaz zahtev za dostop v orodni vrstici Chromiuma</translation>
 <translation id="6129621093834146363">Datoteka <ph name="FILE_NAME" /> je nevarna, zato jo je Chromium blokiral.</translation>
 <translation id="6132897690380286411">Chromium se bo kmalu zaprl in izbrisal bo podatke</translation>
@@ -498,6 +499,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="6182736845697986886">Namestitev ni uspela zaradi notranje napake strežnika za posodobitve.</translation>
 <translation id="6183079672144801177">Preverite, ali ste v napravi <ph name="TARGET_DEVICE_NAME" /> prijavljeni v Chromium, nato poskusite znova poslati.</translation>
 <translation id="6192070012454216182">Iščite in postavljajte vprašanja kjer koli, tudi če je Chromium pomanjšan. Omogoča izvajanje Chromiuma v ozadju.</translation>
+<translation id="6210269448287455102">Vnovično odpiranje Iskanja v stranskem podoknu</translation>
 <translation id="6212496753309875659">Ta računalnik že ima novejšo različico Chromiuma. Če programska oprema ne deluje, odstranite Chromium in poskusite znova.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium se bo zdaj znova zagnal}=1{Chromium se bo znova zagnal čez eno sekundo}one{Chromium se bo znova zagnal čez # sekundo}two{Chromium se bo znova zagnal čez # sekundi}few{Chromium se bo znova zagnal čez # sekunde}other{Chromium se bo znova zagnal čez # sekund}}</translation>
 <translation id="6232046770428574552">Chromium se bo posodobil, ko zaslon ne bo v uporabi</translation>
@@ -595,6 +597,7 @@ Nekatere funkcije morda ne bodo na voljo. Določite drug imenik profila ali upor
             • ponastavljene bodo bližnjice za Chromium.
             <ph name="LINE_BREAKS" />
             To ne bo vplivalo na zaznamke, zgodovino in shranjena gesla.</translation>
+<translation id="6930607614725241390">Iskanje v stranskem podoknu</translation>
 <translation id="6948031725951063910">Dosegli ste omejitev Chromiuma za toliko zaznamkov: <ph name="BOOKMARK_LIMIT" />, zato nekateri zaznamki še niso bili shranjeni v računu Google.
 
 Novih zaznamkov ni mogoče shraniti v račun, dokler nekaterih ne izbrišete. Če se odjavite zdaj, bodo neshranjeni zaznamki izbrisani.</translation>

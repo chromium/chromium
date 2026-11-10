@@ -486,6 +486,7 @@ Om sidan inte fungerar som förväntat kan du testa att tillåta optimering.</tr
 <translation id="6096348254544841612">Anpassa och styr Chromium. En uppdatering är tillgänglig.</translation>
 <translation id="6107893135096467929">På • Chromium kan inte verifiera var tillägget kommer från</translation>
 <translation id="611228897408671387">Ditt konto i Chromium</translation>
+<translation id="6114975763361458436">Stäng Sök på sidopanelen</translation>
 <translation id="6119438414301547735">Tillåt att tillägg visar åtkomstförfrågningar i verktygsfältet i Chromium</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> är skadlig och har blockerats av Chromium.</translation>
 <translation id="6132897690380286411">Chromium avslutas snart och data raderas</translation>
@@ -498,6 +499,7 @@ Om sidan inte fungerar som förväntat kan du testa att tillåta optimering.</tr
 <translation id="6182736845697986886">Installationen misslyckades på grund av ett internt fel på uppdateringsservern.</translation>
 <translation id="6183079672144801177">Se till att du är inloggad i Chromium på <ph name="TARGET_DEVICE_NAME" /> och försök skicka igen.</translation>
 <translation id="6192070012454216182">Sök och ställ frågor var som helst, även när Chromium är minimerat. Tillåter att Chromium körs i bakgrunden.</translation>
+<translation id="6210269448287455102">Öppna Sök i sidopanelen igen</translation>
 <translation id="6212496753309875659">Det finns redan en nyare version av Chromium på den här datorn. Avinstallera Chromium och försök igen om mjukvaran inte fungerar.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium startas om nu}=1{Om en sekund startas Chromium om}other{Om # sekunder startas Chromium om}}</translation>
 <translation id="6232046770428574552">Chromium uppdateras när skärmen inte används</translation>
@@ -595,6 +597,7 @@ Vissa funktioner är kanske inte tillgängliga. Ange en annan profilkatalog elle
             • återställa Chromium-genvägar.
             <ph name="LINE_BREAKS" />
             Bokmärken, historiken och sparade lösenord påverkas inte.</translation>
+<translation id="6930607614725241390">Sök i sidopanelen</translation>
 <translation id="6948031725951063910">Du har nått gränsen på <ph name="BOOKMARK_LIMIT" /> bokmärken i Chromium, så vissa av dina bokmärken har inte sparats i Google-kontot ännu.
 
 Nya bokmärken kan inte sparas i ditt konto förrän du har raderat några. Om du loggar ut nu raderas bokmärken som inte har sparats.</translation>

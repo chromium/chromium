@@ -3688,6 +3688,13 @@ Microsoft Outlook 卡片需要由管理员进行额外配置。如需详细了�
 <translation id="3284094172359247914">控制对 WebUSB API 的使用</translation>
 <translation id="3285231260918855067">水印文字的轮廓不透明度，范围为 0（透明）到 100（不透明）。</translation>
 <translation id="3286159327013237833">允许在登录屏幕上自动点击</translation>
+<translation id="3286515980166695377">此政策已在 M153 中弃用，并自 M159 起失效。在 <ph name="MAC_OS_NAME" /> 上，安装渐进式 Web 应用 (PWA) 时创建的原生应用现已永久启用 Ad-hoc 签名。这能确保每个已安装的应用在 <ph name="MAC_OS_NAME" /> 系统组件中都拥有唯一的身份。
+
+如果此政策已启用或未设置，安装渐进式 Web 应用 (PWA) 时创建的原生应用便会使用 Ad-hoc 签名。这能确保每个已安装的应用在 <ph name="MAC_OS_NAME" /> 系统组件中都拥有唯一的身份。
+
+如果此政策已停用，安装渐进式 Web 应用时创建的每个原生应用都将具有相同的身份。这可能会干扰 <ph name="MAC_OS_NAME" /> 功能。
+
+仅当使用的端点安全解决方案会阻止使用 Ad-hoc 签名的应用时，才应停用此政策。</translation>
 <translation id="3288595667065905535">发布版</translation>
 <translation id="3294430356898755483">通过设置此政策，管理员可以为用户配置打印机列表。当用户首次尝试打印时，需要选择打印机。
 
@@ -5508,6 +5515,11 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
 
 请注意，强制执行的限制会受到 <ph name="ALLOW_SOCKET_POOL_SIZE_RANDOMIZATION_FOR_PROXIES_POLICY_NAME" /> 的影响。</translation>
 <translation id="4528981768990874684">停用 <ph name="IP_PROTECTION_NAME" />功能。</translation>
+<translation id="4529292353296224032">启用此政策会禁止使用键盘快捷键或扩展程序 API 截屏。停用或不设置此政策则会允许截屏。
+
+在 <ph name="PRODUCT_NAME" /> 版本 155 至 158 中，启用此政策还会阻止扩展程序通过“chrome.debugger.attach()”附加调试程序，例如当 <ph name="CHROME_VARIATIONS_POLICY_NAME" /> 政策停用所有变体版本时。
+
+请注意，在 <ph name="MS_WIN_NAME" />、<ph name="MAC_OS_NAME" /> 和 <ph name="LINUX_OS_NAME" /> 上，此政策不会阻止用户通过操作系统或第三方应用截屏。</translation>
 <translation id="453031441196755904">此政策已被弃用。</translation>
 <translation id="4531088355818260318">此政策支持定义一系列规则，以便将自定义 HTTP 标头注入与特定网址格式匹配的 Web 请求中。此政策设置的标头优先于请求中最初存在的标头，以及用户或扩展程序尝试进行的修改。
 
@@ -5668,6 +5680,21 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
       如果此政策设为 false，用户将无法在设备上执行网络数据包捕获流程。</translation>
 <translation id="4599810650416623373">禁止在这些网站上使用 JavaScript 优化功能</translation>
 <translation id="4600786265870346112">启用大号光标</translation>
+<translation id="460264931744856609">通过设置此政策，您可以控制 <ph name="PRODUCT_NAME" /> 的扩展程序管理设置，其中包括由现有的扩展程序相关政策控制的设置。
+
+此政策仅用于将扩展程序 ID 或更新网址与其特定的设置相关联。您可为特殊 ID<ph name="DEFAULT_SCOPE" />设定默认配置，该配置会应用于未在此政策中设定自定义配置的所有扩展程序。
+
+此政策可以覆盖旧版政策中针对各扩展程序的配置。
+
+请注意，来自 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />、<ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />、<ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> 或 <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> 的任何按 ID 配置的扩展程序设置都只会从 <ph name="DEFAULT_SCOPE" /> 默认设置继承“installation_mode”和“update_url”。它不会继承任何其他属性。对于更新网址，相应配置会应用于具有在扩展程序清单中注明的确切更新网址的扩展程序（如 http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy 中所述）。如果“override_update_url”flag 设为 true，则系统会根据 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> 政策中或此政策的“update_url”字段中指定的“更新”网址安装并更新扩展程序。如果“update_url”是 Chrome 应用商店网址，“override_update_url”flag 会被忽略。
+
+在 <ph name="PRODUCT_NAME" /> 版本 155 至 158 中，如果将“runtime_blocked_hosts”应用于具有“debugger”权限的扩展程序，系统会在所有目标上完全停用“chrome.debugger.attach()”，例如当 <ph name="CHROME_VARIATIONS_POLICY_NAME" /> 政策停用所有变体版本时。
+
+只有当 <ph name="MS_WIN_NAME" /> 实例已加入 <ph name="MS_AD_NAME" /> 网域、已加入 <ph name="MS_AAD_NAME" /> 或已注册 <ph name="CHROME_ENTERPRISE_CORE_NAME" />时，才能在该实例上强制安装并非来自 Chrome 应用商店的应用和扩展程序。
+
+只有当 <ph name="MAC_OS_NAME" /> 实例是通过 MDM 进行管理、已通过 MCX 加入网域或已注册 <ph name="CHROME_ENTERPRISE_CORE_NAME" />时，才能在该实例上强制安装并非来自 Chrome 应用商店的应用和扩展程序。
+
+注意：此政策仅适用于支持扩展程序的平台。</translation>
 <translation id="4602988345256038309">允许与这台计算机建立远程支持连接</translation>
 <translation id="4605677392792989397">通过设置此政策，您可以配置企业登录网址（仅限 HTTP 和 HTTPS 协议）列表。密码保护服务会在这些网址上捕获密码的加盐哈希值，用于检测密码重用情况。为了使 <ph name="PRODUCT_NAME" /> 能够正确捕获密码的加盐哈希值，请确保登录页面遵循了这些准则 (https://www.chromium.org/developers/design-documents/create-amazing-password-forms)。
 

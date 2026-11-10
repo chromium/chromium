@@ -1802,6 +1802,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7956713633345437162">모바일 북마크</translation>
 <translation id="7957413488482743710">가상 카드는 실제 카드를 숨겨서 사기당할 위험을 줄여줍니다. <ph name="BEGIN_LINK1" />가상 카드 자세히 알아보기<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">이 기기의 탭</translation>
+<translation id="7959802829514004148">PDF를 다운로드할 수 없음</translation>
 <translation id="7961926449547174351">저장소 액세스 권한을 사용 중지했습니다. 설정으로 이동하여 사용 설정해 주세요.</translation>
 <translation id="7965838025086216108">저장된 비밀번호는 모든 기기에서 사용할 수 있습니다. <ph name="ACCOUNT" />의 Google 비밀번호 관리자에 비밀번호가 저장됩니다.</translation>
 <translation id="7968014550143838305">읽기 목록에 추가됨</translation>
@@ -1890,6 +1891,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8244387390464017490">새 탭 페이지 맞춤설정</translation>
 <translation id="8244444485683708655">카메라 사진 첨부</translation>
 <translation id="8250920743982581267">문서</translation>
+<translation id="8254205582828322729">다음에 로그인할 때 이 비밀번호를 쉽게 사용하려면 저장을 탭합니다</translation>
 <translation id="8257429805444572809"><ph name="DOMAIN" /> 도메인 구독을 취소했습니다</translation>
 <translation id="8258999165172757081">추가됨</translation>
 <translation id="8259179246279078674">미리 로드된 페이지는 암호화되어 있으므로 Google에서는 미리 로드된 페이지의 콘텐츠에 관해 어떠한 정보도 알 수 없습니다. Google 서버는 어떤 사이트가 비공개로 미리 로드되었는지 파악하게 됩니다. 이 정보는 페이지를 미리 로드하는 데에만 사용되며, Google 계정의 다른 정보와 연결되지 않습니다.</translation>
@@ -1979,6 +1981,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8560602726703398413">북마크에서 읽기 목록 찾기</translation>
 <translation id="85618473456579127">오른쪽 상단에서 프로필을 탭합니다.</translation>
 <translation id="8565021320663436446"><ph name="MEMBER_FULL_NAME" />님을 삭제하시겠습니까?</translation>
+<translation id="8567433453247478023">개인 정보 보호 및 보안을 탭합니다</translation>
 <translation id="8570677896027847510">파일을 안전하게 다운로드할 수 없음</translation>
 <translation id="8571213806525832805">지난 4주</translation>
 <translation id="8580435650274205305">만료일을 입력해야 합니다.</translation>
@@ -1999,6 +2002,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8635399646025169806">탭 그룹을 유지하시겠습니까?</translation>
 <translation id="8636825310635137004">다른 기기에서 탭을 가져오려면 동기화를 사용 설정하세요.</translation>
 <translation id="8639963783467694461">자동 완성 설정</translation>
+<translation id="8642256427178803328">'Chrome 종료 시 시크릿 탭 잠금'을 사용 설정합니다</translation>
 <translation id="8644482734962137770">Gemini가 Chrome을 사용하려면 권한이 필요합니다</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" />에 로그인</translation>
 <translation id="8664979001105139458">이미 존재하는 이름입니다.</translation>

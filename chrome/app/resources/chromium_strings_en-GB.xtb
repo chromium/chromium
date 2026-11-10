@@ -486,6 +486,7 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="6096348254544841612">Customise and control Chromium. Update is available.</translation>
 <translation id="6107893135096467929">On • Chromium can't verify where this extension comes from</translation>
 <translation id="611228897408671387">Your account in Chromium</translation>
+<translation id="6114975763361458436">Close Search in side panel</translation>
 <translation id="6119438414301547735">Allow extension to show access requests in the Chromium toolbar</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> is dangerous, so Chromium has blocked it.</translation>
 <translation id="6132897690380286411">Chromium will soon close and delete data</translation>
@@ -498,6 +499,7 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="6182736845697986886">Installation failed because of an update server internal error.</translation>
 <translation id="6183079672144801177">Make sure that you are signed in to Chromium on your <ph name="TARGET_DEVICE_NAME" /> and then try sending again.</translation>
 <translation id="6192070012454216182">Search and ask questions from anywhere, even if Chromium is minimised. Allows Chromium to run in the background.</translation>
+<translation id="6210269448287455102">Reopen Search in side panel</translation>
 <translation id="6212496753309875659">This computer already has a more recent version of Chromium. If the software is not working, please uninstall Chromium and try again.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium will relaunch now}=1{Chromium will relaunch in 1 second}other{Chromium will relaunch in # seconds}}</translation>
 <translation id="6232046770428574552">Chromium will update when your screen is unused</translation>
@@ -595,6 +597,7 @@ Some features may be unavailable. Please specify a different profile directory o
             • Reset Chromium shortcuts
             <ph name="LINE_BREAKS" />
             Bookmarks, history and saved passwords won't be affected.</translation>
+<translation id="6930607614725241390">Search in side panel</translation>
 <translation id="6948031725951063910">You reached Chromium's limit of <ph name="BOOKMARK_LIMIT" /> bookmarks, so some of your bookmarks haven't been saved in your Google Account yet.
 
 New bookmarks can't be saved in your account until you delete some. If you sign out now, unsaved bookmarks will be deleted.</translation>

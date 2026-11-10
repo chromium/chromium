@@ -484,6 +484,7 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="6096348254544841612">Personalize e controle o Chromium. Está disponível uma atualização.</translation>
 <translation id="6107893135096467929">Ativada • O Chromium não consegue validar a origem desta extensão</translation>
 <translation id="611228897408671387">A sua conta no Chromium</translation>
+<translation id="6114975763361458436">Fechar Pesquisa no painel lateral</translation>
 <translation id="6119438414301547735">Permitir que a extensão mostre pedidos de acesso na barra de ferramentas do Chromium</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> é perigoso, por isso o Chromium bloqueou-o.</translation>
 <translation id="6132897690380286411">O Chromium vai ser fechado e vai eliminar os dados em breve</translation>
@@ -496,6 +497,7 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="6182736845697986886">A instalação falhou devido a um erro interno do servidor de atualização.</translation>
 <translation id="6183079672144801177">Certifique-se de que tem sessão iniciada no Chromium no seu <ph name="TARGET_DEVICE_NAME" /> e, em seguida, tente enviar novamente.</translation>
 <translation id="6192070012454216182">Pesquisar e fazer perguntas em qualquer lugar, mesmo que o Chromium esteja minimizado. Permite que o Chromium seja executado em segundo plano.</translation>
+<translation id="6210269448287455102">Reabrir Pesquisa no painel lateral</translation>
 <translation id="6212496753309875659">Este computador já tem uma versão mais recente do Chromium. Se o software não estiver a funcionar, desinstale o Chromium e tente novamente.</translation>
 <translation id="6219195342503754812">{0,plural, =0{O Chromium será reiniciado agora}=1{O Chromium será reiniciado dentro de 1 segundo}other{O Chromium será reiniciado dentro de # segundos}}</translation>
 <translation id="6232046770428574552">O Chromium irá ser atualizado quando o ecrã não estiver a ser usado</translation>
@@ -593,6 +595,7 @@ Algumas funcionalidades podem não estar disponíveis. Especifique um diretório
             • Repor os atalhos do Chromium
             <ph name="LINE_BREAKS" />
             Os marcadores, o histórico e as palavras-passe guardadas não serão afetados.</translation>
+<translation id="6930607614725241390">Pesquise no painel lateral</translation>
 <translation id="6948031725951063910">Atingiu o limite de <ph name="BOOKMARK_LIMIT" /> marcadores do Chromium, por isso, alguns dos seus marcadores ainda não foram guardados na sua Conta Google.
 
 Não é possível guardar novos marcadores na sua conta até eliminar alguns. Se terminar sessão agora, os marcadores não guardados são eliminados.</translation>

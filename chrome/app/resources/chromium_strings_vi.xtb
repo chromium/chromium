@@ -484,6 +484,7 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="6096348254544841612">Tùy chỉnh và kiểm soát Chromium. Đã có bản cập nhật.</translation>
 <translation id="6107893135096467929">Bật • Chromium không thể xác minh nguồn gốc của tiện ích này</translation>
 <translation id="611228897408671387">Tài khoản của bạn trong Chromium</translation>
+<translation id="6114975763361458436">Đóng tính năng Tìm kiếm trong bảng điều khiển bên</translation>
 <translation id="6119438414301547735">Cho phép tiện ích hiện các yêu cầu truy cập trong thanh công cụ của Chromium</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> nguy hiểm, do đó Chromium đã chặn tệp.</translation>
 <translation id="6132897690380286411">Chromium sắp đóng và xoá dữ liệu</translation>
@@ -496,6 +497,7 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="6182736845697986886">Không cài đặt được do lỗi nội bộ của máy chủ cập nhật.</translation>
 <translation id="6183079672144801177">Đảm bảo bạn đã đăng nhập vào Chromium trên <ph name="TARGET_DEVICE_NAME" /> của mình rồi thử gửi lại.</translation>
 <translation id="6192070012454216182">Tìm kiếm và đặt câu hỏi ở bất cứ đâu, ngay cả khi Chromium đang ở trạng thái thu nhỏ. Cho phép Chromium chạy ở chế độ nền.</translation>
+<translation id="6210269448287455102">Mở lại tính năng Tìm kiếm trong bảng điều khiển bên</translation>
 <translation id="6212496753309875659">Máy tính này đã có phiên bản Chromium mới hơn. Nếu phần mềm không hoạt động, hãy gỡ cài đặt Chromium và thử lại.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium sẽ khởi động lại ngay bây giờ}=1{Chromium sẽ khởi động lại sau 1 giây}other{Chromium sẽ khởi động lại sau # giây}}</translation>
 <translation id="6232046770428574552">Chromium sẽ cập nhật khi bạn không sử dụng màn hình</translation>
@@ -593,6 +595,7 @@ Một số tính năng có thể không khả dụng. Hãy chỉ định thư m�
             • Đặt lại phím tắt Chromium
             <ph name="LINE_BREAKS" />
             Dấu trang, nhật ký và mật khẩu đã lưu sẽ không bị ảnh hưởng.</translation>
+<translation id="6930607614725241390">Tìm kiếm trong bảng điều khiển bên</translation>
 <translation id="6948031725951063910">Bạn đã đạt đến hạn mức <ph name="BOOKMARK_LIMIT" /> dấu trang của Chromium nên một số dấu trang chưa được lưu vào Tài khoản Google của bạn.
 
 Bạn phải xoá bớt một số dấu trang thì mới có thể lưu dấu trang mới vào tài khoản. Nếu bạn đăng xuất ngay bây giờ, các dấu trang chưa lưu sẽ bị xoá.</translation>

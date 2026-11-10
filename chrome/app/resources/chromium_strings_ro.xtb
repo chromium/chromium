@@ -484,6 +484,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="6096348254544841612">Personalizează și controlează Chromium. Este disponibilă o actualizare.</translation>
 <translation id="6107893135096467929">Activată • Chromium nu poate verifica de unde provine această extensie</translation>
 <translation id="611228897408671387">Contul tău în Chromium</translation>
+<translation id="6114975763361458436">Închide căutarea în panoul lateral</translation>
 <translation id="6119438414301547735">Permite extensiei să afișeze solicitări de acces în bara de instrumente Chromium</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> este periculos, așadar Chromium l-a blocat.</translation>
 <translation id="6132897690380286411">În curând, Chromium se va închide și va șterge datele</translation>
@@ -496,6 +497,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="6182736845697986886">Nu s-a instalat, din cauza unei erori interne a serverului de actualizare.</translation>
 <translation id="6183079672144801177">Asigură-te că te-ai conectat la Chromium pe <ph name="TARGET_DEVICE_NAME" /> și încearcă din nou să trimiți.</translation>
 <translation id="6192070012454216182">Caută și pune întrebări de oriunde, chiar dacă Chromium este minimizat. Permite ca Chromium să ruleze în fundal.</translation>
+<translation id="6210269448287455102">Redeschide Căutarea în panoul lateral</translation>
 <translation id="6212496753309875659">Acest computer are deja o versiune mai recentă de Chromium. Dacă software-ul nu funcționează, dezinstalați Chromium și încercați din nou.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium se va relansa acum}=1{Chromium se va relansa într-o secundă}few{Chromium se va relansa în # secunde}other{Chromium se va relansa în # de secunde}}</translation>
 <translation id="6232046770428574552">Chromium se va actualiza când ecranul nu este folosit</translation>
@@ -593,6 +595,7 @@ Este posibil ca unele funcții să nu fie disponibile. Specificați un director 
             • va reinițializa comenzile rapide Chromium.
             <ph name="LINE_BREAKS" />
             Marcajele, istoricul și parolele salvate nu vor fi afectate.</translation>
+<translation id="6930607614725241390">Caută în panoul lateral</translation>
 <translation id="6948031725951063910">Ai atins limita de <ph name="BOOKMARK_LIMIT" /> marcaje pentru Chromium, așadar unele dintre marcaje nu au fost salvate încă în Contul Google.
 
 Nu poți salva marcaje noi în cont până când nu ștergi câteva. Dacă te deconectezi acum, marcajele nesalvate vor fi șterse.</translation>

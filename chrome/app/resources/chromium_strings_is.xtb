@@ -486,6 +486,7 @@ Ef þessi síða virkar ekki sem skyldi skaltu prófa að leyfa fínstillingu.</
 <translation id="6096348254544841612">Sérstilltu og stjórnaðu Chromium. Uppfærsla er í boði.</translation>
 <translation id="6107893135096467929">Kveikt • Chromium getur ekki staðfest hvaðan þessi viðbót kemur</translation>
 <translation id="611228897408671387">Reikningurinn þinn í Chromium</translation>
+<translation id="6114975763361458436">Loka leit í hliðarglugga</translation>
 <translation id="6119438414301547735">Leyfa viðbót að sýna aðgangsbeiðnir í tækjastiku Chromium</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> er skaðleg skrá og Chromium útilokaði hana.</translation>
 <translation id="6132897690380286411">Chromium mun bráðlega lokast og eyða gögnum</translation>
@@ -498,6 +499,7 @@ Ef þessi síða virkar ekki sem skyldi skaltu prófa að leyfa fínstillingu.</
 <translation id="6182736845697986886">Uppsetning mistókst vegna innri villu uppfærsluþjóns.</translation>
 <translation id="6183079672144801177">Vertu viss um að þú sért skráð(ur) inn á Chromium í <ph name="TARGET_DEVICE_NAME" /> og reyndu svo að senda aftur.</translation>
 <translation id="6192070012454216182">Leitaðu og spyrðu spurninga hvar sem er, jafnvel þó Chromium sé minnkað. Leyfir Chromium að keyra í bakgrunni.</translation>
+<translation id="6210269448287455102">Opna leit aftur í hliðarglugga</translation>
 <translation id="6212496753309875659">Á þessari tölvu er þegar nýrri útgáfa af Chromium. Ef hugbúnaðurinn virkar ekki skaltu fjarlægja Chromium og reyna aftur.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium verður endurræst núna}=1{Chromium verður endurræst eftir 1 sekúndu}one{Chromium verður endurræst eftir # sekúndu}other{Chromium verður endurræst eftir # sekúndur}}</translation>
 <translation id="6232046770428574552">Chromium verður uppfært þegar skjárinn er ekki í notkun</translation>
@@ -595,6 +597,7 @@ Sumir eiginleikar kunna að verða óaðgengilegir. Tilgreindu aðra prófílam�
             • Endurstilla flýtileiðir Chromium
             <ph name="LINE_BREAKS" />
             Þetta hefur ekki áhrif á bókamerki, feril og vistuð aðgangsorð.</translation>
+<translation id="6930607614725241390">Leit í hliðarglugga</translation>
 <translation id="6948031725951063910">Þú náðir hámarksfjölda bókamerkja í Chromium (<ph name="BOOKMARK_LIMIT" />) svo að sum bókamerkin þín hafa ekki verið vistuð á Google-reikningnum þínum enn sem komið er.
 
 Ekki er hægt að vista ný bókamerki á reikningnum þínum fyrr en þú eyðir einhverjum. Ef þú skráir þig út núna verður óvistuðum bókamerkjum eytt.</translation>

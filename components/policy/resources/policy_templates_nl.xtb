@@ -3702,6 +3702,13 @@ Als <ph name="NTPCARDSVISIBLE" /> niet wordt toegepast, wordt de kaart Outlook n
 <translation id="3284094172359247914">Gebruik van de WebUSB API beheren</translation>
 <translation id="3285231260918855067">Ondoorzichtigheid van de omtrek van de watermerktekst, van 0 (transparant) tot 100 (ondoorzichtig).</translation>
 <translation id="3286159327013237833">Automatisch klikken op het inlogscherm aanzetten</translation>
+<translation id="3286515980166695377">Dit beleid is beëindigd in M153 en heeft geen effect meer vanaf M159. Ad-hoc-handtekeningen voor systeemeigen apps die worden gemaakt bij de installatie van een progressive web-app (PWA), staan nu permanent aan op <ph name="MAC_OS_NAME" />. Hierdoor heeft elke geïnstalleerde app een unieke identiteit voor <ph name="MAC_OS_NAME" />-systeemcomponenten.
+
+Als je het beleid toepast of niet instelt, wordt het gebruik van ad-hoc-handtekeningen aangezet voor de systeemeigen app die wordt gemaakt bij de installatie van een progressive web-app (PWA). Hierdoor heeft elke geïnstalleerde app een unieke identiteit voor <ph name="MAC_OS_NAME" />-systeemcomponenten.
+
+Als je het beleid niet toepast, heeft elke systeemeigen app die wordt gemaakt bij het installeren van progressive web-apps dezelfde identiteit. Dit kan de <ph name="MAC_OS_NAME" />-functionaliteit verstoren.
+
+Zet het beleid alleen uit als je een oplossing voor beveiliging van eindpunten gebruikt die apps met een ad-hoc-handtekening blokkeert.</translation>
 <translation id="3288595667065905535">Releasekanaal</translation>
 <translation id="3294430356898755483">Als je dit beleid instelt, kunnen beheerders een lijst met printers instellen voor hun gebruikers. Als gebruikers voor het eerst iets afdrukken, moeten ze een printer selecteren.
 
@@ -5547,6 +5554,11 @@ Als je deze waarde tot boven de standaardwaarde (128) verhoogt, doe je dat op ei
 
 De afgedwongen limieten worden beïnvloed door <ph name="ALLOW_SOCKET_POOL_SIZE_RANDOMIZATION_FOR_PROXIES_POLICY_NAME" />.</translation>
 <translation id="4528981768990874684">Zet de functie <ph name="IP_PROTECTION_NAME" /> uit.</translation>
+<translation id="4529292353296224032">Als je het beleid toepast, zijn screenshots die worden gemaakt met sneltoetsen of extensie-API's niet toegestaan. Als je het beleid niet toepast of niet instelt, zijn screenshots toegestaan.
+
+In <ph name="PRODUCT_NAME" />-versies 155 tot 158 kan dit beleid ook voorkomen dat extensies het foutopsporingsprogramma koppelen via chrome.debugger.attach(), bijvoorbeeld als het beleid <ph name="CHROME_VARIATIONS_POLICY_NAME" /> alle varianten uitzet.
+
+Op <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> en <ph name="LINUX_OS_NAME" /> voorkomt dit niet dat screenshots worden gemaakt met het besturingssysteem of apps van derden.</translation>
 <translation id="453031441196755904">Dit beleid is beëindigd.</translation>
 <translation id="4531088355818260318">Met dit beleid kun je een lijst met regels definiëren om aangepaste HTTP-headers in te voegen in webverzoeken die overeenkomen met specifieke URL-patronen. Headers die zijn ingesteld door dit beleid, hebben voorrang op headers die oorspronkelijk aanwezig waren in het verzoek en op wijzigingen die gebruikers of extensies proberen aan te brengen.
 
@@ -5708,6 +5720,21 @@ Dit beleid heeft geen effect als <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_
       Als je het beleid instelt op False, zijn opnamen van netwerkpakketten niet beschikbaar op het apparaat.</translation>
 <translation id="4599810650416623373">JavaScript-optimalisaties blokkeren op deze sites</translation>
 <translation id="4600786265870346112">Grote cursor gebruiken</translation>
+<translation id="460264931744856609">Als je dit beleid instelt, worden de extensiebeheerinstellingen voor <ph name="PRODUCT_NAME" /> beheerd, waaronder instellingen die worden beheerd door bestaande, aan extensies gerelateerde beleidsregels.
+
+Met dit beleid wordt alleen een extensie-ID of een update-URL toegewezen aan de bijbehorende specifieke instelling. Er kan een standaardconfiguratie worden ingesteld voor de speciale ID <ph name="DEFAULT_SCOPE" />, die van toepassing is op alle extensies waarvoor geen aangepaste configuratie is ingesteld in dit beleid.
+
+Dit beleid kan de configuratie per extensie uit oudere beleidsregels overschrijven.
+
+Instellingen voor extensies per ID van <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> of <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> nemen alleen de standaardinstellingen voor <ph name="DEFAULT_SCOPE" /> over voor installation_mode en update_url. De property neemt geen andere property's over. Bij een update-URL is de configuratie van toepassing op alle extensies met de exacte update-URL die wordt vermeld in het manifest van de extensie (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Als de flag override_update_url is ingesteld op Waar, wordt de extensie geïnstalleerd en aangepast met de update-URL die is gespecificeerd in het beleid <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> of in het veld update_url in dit beleid. De markering override_update_url wordt genegeerd als de update_url een URL voor de Chrome Web Store is.
+
+In <ph name="PRODUCT_NAME" />-versies 155 tot 158 kan 'chrome.debugger.attach()' volledig worden uitgezet voor alle doelen als je 'runtime_blocked_hosts' toepast op een extensie met het recht 'debugger', bijvoorbeeld als het beleid <ph name="CHROME_VARIATIONS_POLICY_NAME" /> alle varianten uitzet.
+
+In <ph name="MS_WIN_NAME" /> kunnen instanties, apps en extensies van buiten de Chrome Web Store alleen afgedwongen geïnstalleerd worden als de instantie is gekoppeld aan een <ph name="MS_AD_NAME" />-domein of aan <ph name="MS_AAD_NAME" />, of is ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+In <ph name="MAC_OS_NAME" /> kunnen instanties, apps en extensies van buiten de Chrome Web Store alleen afgedwongen worden geïnstalleerd als de instantie wordt beheerd via MDM, via MCX aan een domein is gekoppeld of is ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Opmerking: Dit beleid geldt alleen voor platforms die extensies ondersteunen.</translation>
 <translation id="4602988345256038309">Verbindingen voor externe support met deze machine toestaan</translation>
 <translation id="4605677392792989397">Als je het beleid instelt, wordt de lijst met zakelijke login-URL's (alleen HTTP- en HTTPS-protocollen) ingesteld. De service voor wachtwoordbeveiliging legt salted hashes van wachtwoorden op deze URL's vast en gebruikt ze om hergebruik van wachtwoorden op te sporen. Zorg ervoor dat je inlogpagina's voldoen aan de richtlijnen op https://www.chromium.org/developers/design-documents/create-amazing-password-forms, zodat <ph name="PRODUCT_NAME" /> de 'salted hashes' van wachtwoorden juist vastlegt.
 

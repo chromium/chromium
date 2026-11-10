@@ -481,6 +481,7 @@ Bu sayfa beklendiği gibi çalışmıyorsa optimizasyona izin vermeyi deneyin.</
 <translation id="6096348254544841612">Chromium'u özelleştirin ve kontrol edin. Güncelleme mevcut.</translation>
 <translation id="6107893135096467929">Açık • Chromium, bu uzantının kaynağını doğrulayamıyor</translation>
 <translation id="611228897408671387">Chromium'daki hesabınız</translation>
+<translation id="6114975763361458436">Yan panelde Arama'yı kapat</translation>
 <translation id="6119438414301547735">Uzantının, Chromium araç çubuğunda erişim isteklerini göstermesine izin ver</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> tehlikeli olduğu için Chromium tarafından engellendi.</translation>
 <translation id="6132897690380286411">Chromium yakında kapanacak ve verileri silecek</translation>
@@ -493,6 +494,7 @@ Bu sayfa beklendiği gibi çalışmıyorsa optimizasyona izin vermeyi deneyin.</
 <translation id="6182736845697986886">Güncelleme sunucusundaki dahili hata nedeniyle yükleme işlemi başarısız oldu.</translation>
 <translation id="6183079672144801177"><ph name="TARGET_DEVICE_NAME" /> cihazınızdan Chromium'da oturum açtığınızdan emin olup tekrar göndermeyi deneyin.</translation>
 <translation id="6192070012454216182">Chromium simge durumuna küçültülmüş olsa bile her yerden arama yapın ve soru sorun. Chromium'un arka planda çalışmasına izin verir.</translation>
+<translation id="6210269448287455102">Arama'yı yan panelde yeniden aç</translation>
 <translation id="6212496753309875659">Bu bilgisayarda Chromium'un daha yeni bir sürümü de var. Yazılım çalışmıyorsa, Chromium'u kaldırın ve tekrar deneyin.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium şimdi yeniden başlatılacak}=1{Chromium 1 saniye içinde yeniden başlatılacak}other{Chromium # saniye içinde yeniden başlatılacak}}</translation>
 <translation id="6232046770428574552">Chromium, ekranınız kullanılmadığında güncellenecek</translation>
@@ -590,6 +592,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
             • Chromium kısayolları sıfırlanır.
             <ph name="LINE_BREAKS" />
             Yer işaretleri, geçmiş ve kayıtlı şifreler etkilenmez.</translation>
+<translation id="6930607614725241390">Yan panelde ara</translation>
 <translation id="6948031725951063910">Chromium'un <ph name="BOOKMARK_LIMIT" /> yer işareti sınırına ulaştınız. Bu nedenle, yer işaretlerinizden bazıları henüz Google Hesabınıza kaydedilmedi.
 
 Bazı yer işaretlerini silene kadar hesabınıza yeni yer işaretleri kaydedilemez. Oturumu şimdi kapatırsanız kaydedilmemiş yer işaretleri silinir.</translation>

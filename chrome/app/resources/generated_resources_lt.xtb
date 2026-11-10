@@ -195,6 +195,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1131227874850108863">Uždaryti akcentų meniu</translation>
 <translation id="1133418583142946603">Pridėti dabartinį skirtuką</translation>
 <translation id="1133751489735776037">Spustelėti tris kartus pelės klavišu</translation>
+<translation id="113562361054424305">organizavimas, pavadinimas, grupė, kelios užduotys, produktyvumas, tinkinti</translation>
 <translation id="1136712381129578788">Saugos raktas užblokuotas, nes per daug kartų įvestas neteisingas PIN kodas. Norėdami jį atblokuoti, išimkite ir įdėkite iš naujo.</translation>
 <translation id="1137589305610962734">laikini duomenys</translation>
 <translation id="1137673463384776352">Atidaryti nuorodą programoje „<ph name="APP" />“</translation>
@@ -243,6 +244,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1168704243733734901">Naujausia <ph name="INDEX" /> DI tema iš <ph name="SUBJECT" /> <ph name="STYLE" /> stiliumi su nuotaika <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Automatiškai keisti kalbą, kad atitiktų pasirinktą turinį</translation>
 <translation id="1169496364218149825">{NUM_SITES,plural, =1{Vienos svetainės peržiūra baigta}one{{NUM_SITES} svetainės peržiūra baigta}few{{NUM_SITES} svetainių peržiūra baigta}many{{NUM_SITES} svetainės peržiūra baigta}other{{NUM_SITES} svetainių peržiūra baigta}}</translation>
+<translation id="1171217208175215606">skirtukai, sąrašas, naršyti, šoninė juosta, valdikliai, paieška, keisti</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> nori prisijungti prie HID įrenginio</translation>
 <translation id="1172750555846831341">Versti pagal trumpąjį kraštą</translation>
 <translation id="1173036203040243666">Šis skirtukas susietas su „Bluetooth“ įrenginiu</translation>
@@ -1298,6 +1300,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1989288015781834552">Paleiskite iš naujo ir baikite atnaujinti. Skirtukai bus atidaryti iš naujo.</translation>
 <translation id="1989903373608997757">Visada naudoti</translation>
 <translation id="1990046457226896323">Kalbos failai atsisiųsti</translation>
+<translation id="199097111653220410">bendrinti, mobilusis, įrenginys, chromebook, pixel, sinchronizavimo istorija, perkelti, telefonas, planšetė</translation>
 <translation id="1991370806334788445">Pabandykite leisti trečiųjų šalių slapukus: tai reiškia, kad naršydami būsite mažiau apsaugoti, bet labiau tikėtina, kad svetainės funkcijos tinkamai veiks.</translation>
 <translation id="199191324030140441">Išjungti netrukdymo režimą</translation>
 <translation id="1992397118740194946">Nenustatyta</translation>
@@ -1319,6 +1322,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="2009047848105043829">Tvarkyti įrenginius</translation>
 <translation id="2010501376126504057">Suderinami įrenginiai</translation>
 <translation id="2010636492623189611">Pasirinkta.</translation>
+<translation id="2011038507319686520">tikrinti, CSS, HTML, pultas, kodavimas, derinimas, šaltinis, kodas, įrankiai, javascript</translation>
 <translation id="2012935757369720523">Ištrinti failą</translation>
 <translation id="2014191284313949173">Uždaryti izoliuotus langus</translation>
 <translation id="2016473077102413275">Funkcijos, kurioms reikalingi vaizdai, neveiks</translation>
@@ -1585,6 +1589,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2224337661447660594">Nėra interneto ryšio</translation>
 <translation id="2224444042887712269">Šis nustatymas priklauso <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Redaguoti aplanko pavadinimą</translation>
+<translation id="2225324271908646144">tv, ekranas, ekrano vaizdo bendrinimas, srautas, belaidis, rodymas, projektas, garsiakalbis, garsas, vaizdo įrašas</translation>
 <translation id="2225927550500503913">Virtuali kortelė įjungta</translation>
 <translation id="2226826835915474236">Neaktyvūs spartieji klavišai</translation>
 <translation id="2226907662744526012">Atrakinti automatiškai įvedus PIN kodą</translation>
@@ -1610,6 +1615,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2243452222143104807">Neaktyvus skirtukas</translation>
 <translation id="2243934210752059021">paieškos klavišas + „Alt“ + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="2244790431750694258">„<ph name="APP_NAME" />“ – „<ph name="APP_TITLE" />“</translation>
+<translation id="2245495948760299380">temos, fonai, ekrano fonas, spalvos, tamsus, režimas, asmeninis, stilius, estetika</translation>
 <translation id="2245603955208828424">Rodyklių klavišais pereikite nuo vienos elemento raidės prie kitos</translation>
 <translation id="2246104792527215550">Keisti slaptažodžius automatiškai</translation>
 <translation id="2246549592927364792">Gauti vaizdų aprašų iš „Google“?</translation>
@@ -2080,6 +2086,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2615159404909536465">{FILE_COUNT,plural, =1{Atidaryti ir redaguoti „<ph name="FILE1" />“ šiame plėtinyje}one{Atidaryti ir redaguoti „<ph name="FILE1" />“ šioje programoje}few{Atidaryti ir redaguoti „<ph name="FILE1" />“ šioje programoje}many{Atidaryti ir redaguoti „<ph name="FILE1" />“ šioje programoje}other{Atidaryti ir redaguoti „<ph name="FILE1" />“ šioje programoje}}</translation>
 <translation id="2615836333611528168">„Windows“ nustatymų dydis bus pakeistas, kad tilptų čia.</translation>
 <translation id="2616366145935564096">Skaityti ir keisti duomenis <ph name="WEBSITE_1" /></translation>
+<translation id="2618671887100522385">sparta, stebėti, aktyvus, procesai, skirtukas, sąrašas, kūrėjas, lėtas, kompiuteris, centrinis procesorius, ištekliai, nutekėjimas</translation>
 <translation id="2618797463720777311">Bendrinimo netoliese nustatymas</translation>
 <translation id="2619305858360733464"><ph name="SHARED_STATE" /> grupė be pavadinimo – <ph name="OPENED_STATE" /></translation>
 <translation id="2619340799655338321">paleisti / pristabdyti</translation>
@@ -2315,6 +2322,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2776560192867872731">Pakeiskite įrenginio „<ph name="DEVICE_NAME" />“ pavadinimą</translation>
 <translation id="2777525873368474674">Įklijuoti vaizdo nuorodą</translation>
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{Rasta viena svetainė su daug pranešimų}one{Rasta {NUM_SITES} svetainė su daug pranešimų}few{Rastos {NUM_SITES} svetainės su daug pranešimų}many{Rasta {NUM_SITES} svetainės su daug pranešimų}other{Rasta {NUM_SITES} svetainių su daug pranešimų}}</translation>
+<translation id="2778303331874954775">tįk, kalba, fono valymas, trukdžiai, pritaikomumas, kontrastas, šriftas, dydis, supaprastinti, tekstas, skaitymas, straipsniai</translation>
 <translation id="2778471504622896352">Pridėkite nuotolinių programų prie „ChromeOS“ paleidimo priemonės</translation>
 <translation id="2781037472881921606">Jei norite gauti istoriją iš kitų įrenginių, sinchronizuokite istoriją. Galite bet kada sustabdyti sinchronizavimą skiltyje „Nustatymai“. „Google“ gali suasmeninti Paiešką ir kitas paslaugas pagal jūsų istoriją.</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
@@ -5301,6 +5309,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5079950360618752063">Naudoti siūlomą slaptažodį</translation>
 <translation id="508059534790499809">Atnaujinti „Kerberos“ bilietą</translation>
 <translation id="5081974595802103358">Nepavyko nukopijuoti nuorodos</translation>
+<translation id="5082833370980450224">bendrinti, fotoaparatas, nuskaitymas mobiliuoju įrenginiu, brūkšninis kodas, nuorodos perkėlimas</translation>
 <translation id="5083035541015925118">„Ctrl“ + „Alt“ + rodyklė aukštyn</translation>
 <translation id="5084622689760736648">Labiau tikėtina, kad svetainės veiks taip, kaip tikitės</translation>
 <translation id="5084686326967545037">Atlikite įrenginyje nurodytus veiksmus</translation>
@@ -5793,6 +5802,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5473062644742711742">Daugiau pritaikomumo įrankių rasite „Chrome“ internetinėje parduotuvėje</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN kodą turi sudaryti bent vienas simbolis}one{PIN kodą turi sudaryti bent # simbolis}few{PIN kodą turi sudaryti bent # simboliai}many{PIN kodą turi sudaryti bent # simbolio}other{PIN kodą turi sudaryti bent # simbolių}}</translation>
+<translation id="5475490160544819366">išdėstymas, šoninė juosta, vertikalus, šonas, matomas, ekranas, erdvė, platus, monitoriai, organizavimas</translation>
 <translation id="5475744834448251260">PIN kodas arba piršto atspaudas</translation>
 <translation id="547615291475756075">Pa&amp;didinti</translation>
 <translation id="5476957746413745956">Koreguokite greitį atskirai kiekviena kryptimi</translation>
@@ -9537,6 +9547,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8405046151008197676">Gaukite svarbiausios informacijos apie paskiausią naujinį</translation>
 <translation id="8405118833120731611">{0,plural, =1{Uždaryti šį profilį}one{Uždaryti šį profilį (# langą)}few{Uždaryti šį profilį (# langus)}many{Uždaryti šį profilį (# lango)}other{Uždaryti šį profilį (# langų)}}</translation>
 <translation id="8407199357649073301">Žurnalo lygis:</translation>
+<translation id="8407985628044864418">sparta, RAM, delsa, užstrigimas, strigtis, ištekliai, naudojimas, akumuliatorius, optimizavimo priemonė, lėtas</translation>
 <translation id="8410079205308393430">Rodyti pasiūlymus</translation>
 <translation id="8411043186249152291">visas ekranas</translation>
 <translation id="8412136526970428322">Leidžiama: <ph name="PERMISSION" /> ir dar <ph name="COUNT" /></translation>

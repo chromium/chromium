@@ -485,6 +485,7 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="6096348254544841612">Personalizo dhe kontrollo Chromium. Ofrohet përditësim.</translation>
 <translation id="6107893135096467929">Aktive • Chromium nuk mund të verifikojë se nga vjen kjo shtesë</translation>
 <translation id="611228897408671387">Llogaria jote në Chromium</translation>
+<translation id="6114975763361458436">Mbyll "Kërko" në panelin anësor</translation>
 <translation id="6119438414301547735">Lejo që shtesat të shfaqin kërkesat për qasje në shiritin e veglave të Chromium</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> është i rrezikshëm, prandaj Chromium e ka bllokuar.</translation>
 <translation id="6132897690380286411">Chromium do të mbyllet dhe do t'i fshijë të dhënat së shpejti</translation>
@@ -497,6 +498,7 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="6182736845697986886">Instalimi dështoi për shkak të një gabimi të brendshëm të serverit të përditësimit.</translation>
 <translation id="6183079672144801177">Sigurohu që të jesh i identifikuar në Chromium në pajisjen tënde <ph name="TARGET_DEVICE_NAME" /> dhe më pas provo ta dërgosh përsëri.</translation>
 <translation id="6192070012454216182">Kërko dhe bëj pyetje nga kudo, edhe nëse Chromium është minimizuar. Lejon që Chromium të ekzekutohet në sfond.</translation>
+<translation id="6210269448287455102">Rihap "Kërko" në panelin anësor</translation>
 <translation id="6212496753309875659">Ky kompjuter e ka tashmë një version më të ri të Chromium. Nëse softueri nuk punon, çinstaloje Chromium dhe provo përsëri.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium do të hapet përsëri tani}=1{Chromium do të hapet përsëri për 1 sekondë}other{Chromium do të hapet përsëri për # sekonda}}</translation>
 <translation id="6232046770428574552">Chromium do të përditësohet kur ekrani yt të mos përdoret</translation>
@@ -594,6 +596,7 @@ Disa funksione mund të mos ofrohen. Specifiko një direktori tjetër profili os
             • Do të rivendosë shkurtoret e Chromium
             <ph name="LINE_BREAKS" />
             Faqeshënuesit, historiku dhe fjalëkalimet e ruajtura nuk do të preken.</translation>
+<translation id="6930607614725241390">Kërko në panelin anësor</translation>
 <translation id="6948031725951063910">Ke arritur kufirin e Chromium prej <ph name="BOOKMARK_LIMIT" /> faqeshënuesish, prandaj disa nga faqeshënuesit e tu nuk janë ruajtur ende në "Llogarinë tënde të Google".
 
 Faqeshënuesit e rinj nuk mund të ruhen në llogarinë tënde derisa të fshish disa. Nëse del tani, faqeshënuesit e paruajtur do të fshihen.</translation>

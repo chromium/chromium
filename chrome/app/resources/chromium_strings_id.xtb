@@ -484,6 +484,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="6096348254544841612">Sesuaikan dan kontrol Chromium. Update tersedia.</translation>
 <translation id="6107893135096467929">Aktif • Chromium tidak dapat memverifikasi asal ekstensi ini</translation>
 <translation id="611228897408671387">Akun Anda di Chromium</translation>
+<translation id="6114975763361458436">Tutup Penelusuran di panel samping</translation>
 <translation id="6119438414301547735">Izinkan ekstensi menampilkan permintaan akses di toolbar Chromium</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> berbahaya, sehingga Chromium memblokirnya.</translation>
 <translation id="6132897690380286411">Chromium akan segera ditutup serta menghapus data</translation>
@@ -496,6 +497,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="6182736845697986886">Penginstalan gagal karena server update mengalami error internal.</translation>
 <translation id="6183079672144801177">Pastikan Anda login ke Chromium di <ph name="TARGET_DEVICE_NAME" /> Anda, lalu coba kirimkan lagi.</translation>
 <translation id="6192070012454216182">Telusuri dan ajukan pertanyaan dari mana saja, termasuk saat Chromium sedang diminimalkan. Mengizinkan Chromium berjalan di latar belakang.</translation>
+<translation id="6210269448287455102">Buka kembali Penelusuran di panel samping</translation>
 <translation id="6212496753309875659">Komputer ini sudah memiliki versi Chromium yang lebih baru. Jika software tidak bekerja, harap coba uninstal Chromium, lalu cobalah kembali.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium akan diluncurkan ulang sekarang}=1{Chromium akan diluncurkan ulang dalam 1 detik}other{Chromium akan diluncurkan ulang dalam # detik}}</translation>
 <translation id="6232046770428574552">Chromium akan diupdate saat layar Anda tidak digunakan</translation>
@@ -593,6 +595,7 @@ Sebagian fitur mungkin tidak tersedia. Tentukan direktori profil yang berbeda at
             • Mereset pintasan Chromium
             <ph name="LINE_BREAKS" />
             Bookmark, histori, dan sandi tersimpan tidak akan terpengaruh.</translation>
+<translation id="6930607614725241390">Telusuri di panel samping</translation>
 <translation id="6948031725951063910">Anda telah mencapai batas <ph name="BOOKMARK_LIMIT" /> bookmark Chromium, sehingga beberapa bookmark belum disimpan di Akun Google Anda.
 
 Bookmark baru tidak dapat disimpan di akun hingga Anda menghapus beberapa bookmark. Jika Anda logout sekarang, bookmark yang belum disimpan akan dihapus.</translation>

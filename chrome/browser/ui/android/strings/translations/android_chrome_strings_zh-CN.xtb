@@ -1800,6 +1800,7 @@
 <translation id="7956713633345437162">移动设备书签</translation>
 <translation id="7957413488482743710">使用虚拟卡可隐藏您的实体卡信息，保护您免遭潜在欺诈活动的威胁。<ph name="BEGIN_LINK1" />详细了解虚拟卡<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">此设备上的标签页</translation>
+<translation id="7959802829514004148">无法下载 PDF</translation>
 <translation id="7961926449547174351">您已停用存储空间的访问权限，请转到“设置”启用该访问权限。</translation>
 <translation id="7965838025086216108">您可在任何设备上使用已保存的密码。系统会将密码保存到 <ph name="ACCOUNT" /> 的 Google 密码管理工具中。</translation>
 <translation id="7968014550143838305">已添加到阅读清单</translation>
@@ -1888,6 +1889,7 @@
 <translation id="8244387390464017490">自定义新标签页页面</translation>
 <translation id="8244444485683708655">附加摄像头照片</translation>
 <translation id="8250920743982581267">文档</translation>
+<translation id="8254205582828322729">点按“保存”，即可在下次登录时轻松使用此密码</translation>
 <translation id="8257429805444572809">不再接收 <ph name="DOMAIN" /> 的通知</translation>
 <translation id="8258999165172757081">已添加</translation>
 <translation id="8259179246279078674">由于预加载的网页均已加密，因此 Google 不会得知与预加载的网页内容有关的任何信息。不过，Google 服务器会得知哪些网站是以私密方式预加载的。该信息仅用于预加载网页，不会关联到您 Google 账号中的其他信息。</translation>
@@ -1977,6 +1979,7 @@
 <translation id="8560602726703398413">您可在“书签”界面中找到自己的阅读清单</translation>
 <translation id="85618473456579127">点按右上角的个人资料</translation>
 <translation id="8565021320663436446">要移除<ph name="MEMBER_FULL_NAME" />吗？</translation>
+<translation id="8567433453247478023">点按“隐私与安全”</translation>
 <translation id="8570677896027847510">无法安全地下载文件</translation>
 <translation id="8571213806525832805">过去 4 周</translation>
 <translation id="8580435650274205305">失效日期（必填）</translation>
@@ -1997,6 +2000,7 @@
 <translation id="8635399646025169806">要保留标签页分组吗？</translation>
 <translation id="8636825310635137004">要访问您从其他设备打开的标签页，请开启同步功能。</translation>
 <translation id="8639963783467694461">自动填充设置</translation>
+<translation id="8642256427178803328">开启“在您退出 Chrome 时锁定无痕式标签页”</translation>
 <translation id="8644482734962137770">Gemini 需要 Chrome 的使用权限</translation>
 <translation id="8662474268934425487">登录 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">文件名已存在</translation>

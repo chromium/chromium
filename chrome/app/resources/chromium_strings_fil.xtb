@@ -486,6 +486,7 @@ Kung hindi gumagana ang page na ito gaya ng inaasahan, subukang payagan ang pag-
 <translation id="6096348254544841612">I-customize at kontrolin ang Chromium. May available na update.</translation>
 <translation id="6107893135096467929">Naka-on • Hindi ma-verify ng Chromium kung saan galing ang extension na ito</translation>
 <translation id="611228897408671387">Iyong account sa Chromium</translation>
+<translation id="6114975763361458436">Isara ang Paghahanap sa panel sa gilid</translation>
 <translation id="6119438414301547735">Payagan ang extension na ipakita ang mga kahilingan sa access sa toolbar ng Chromium</translation>
 <translation id="6129621093834146363">Mapanganib ang <ph name="FILE_NAME" />, kaya na-block ito ng Chromium.</translation>
 <translation id="6132897690380286411">Magsasara at magde-delete na ng data ang Chromium sa ilang saglit</translation>
@@ -498,6 +499,7 @@ Kung hindi gumagana ang page na ito gaya ng inaasahan, subukang payagan ang pag-
 <translation id="6182736845697986886">Hindi na-install dahil sa isang internal na error sa server ng update.</translation>
 <translation id="6183079672144801177">Tiyaking naka-sign in ka sa Chromium sa iyong <ph name="TARGET_DEVICE_NAME" /> at pagkatapos ay subukang ipadala ulit.</translation>
 <translation id="6192070012454216182">Maghanap at magtanong mula sa kahit saan, kahit na naka-minimize ang Chromium. Pinapayagan ang Chromium na tumakbo sa background.</translation>
+<translation id="6210269448287455102">Buksan ulit ang Search sa panel sa gilid</translation>
 <translation id="6212496753309875659">May mas bagong bersyon ng Chromium na ang computer na ito. Kung hindi gumagana ang software, mangyaring i-uninstall ang Chromium at subukan ulit.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Muli nang ilulunsad ang Chromium ngayon}=1{Muli nang ilulunsad ang Chromium sa loob ng 1 segundo}one{Muli nang ilulunsad ang Chromium sa loob ng # segundo}other{Muli nang ilulunsad ang Chromium sa loob ng # na segundo}}</translation>
 <translation id="6232046770428574552">Mag-a-update ang Chromium kapag hindi ginagamit ang iyong screen</translation>
@@ -595,6 +597,7 @@ Maaaring hindi available ang ilang tampok. Mangyaring tumukoy ng ibang direktory
             • I-reset ang mga shortcut ng Chromium
             <ph name="LINE_BREAKS" />
             Hindi maaapektuhan ang mga bookmark, history, at naka-save na password.</translation>
+<translation id="6930607614725241390">Maghanap sa panel sa gilid</translation>
 <translation id="6948031725951063910">Naabot mo ang limitasyon ng Chromium na <ph name="BOOKMARK_LIMIT" /> (na) bookmark, kaya hindi pa nase-save sa iyong Google Account ang ilan sa mga bookmark mo.
 
 Hindi mase-save ang mga bagong bookmark sa iyong account hangga't hindi ka nagde-delete ng ilan. Kung magsa-sign out ka ngayon, made-delete ang mga hindi na-save na bookmark.</translation>

@@ -484,6 +484,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="6096348254544841612">Налаштуйте й контролюйте Chromium. Доступне оновлення.</translation>
 <translation id="6107893135096467929">Увімкнено • Chromium не може перевірити, звідки походить це розширення</translation>
 <translation id="611228897408671387">Ваш обліковий запис у Chromium</translation>
+<translation id="6114975763361458436">Закрити Пошук на бічній панелі</translation>
 <translation id="6119438414301547735">Дозволити розширенню показувати запити на доступ на панелі інструментів Chromium</translation>
 <translation id="6129621093834146363">Файл <ph name="FILE_NAME" /> небезпечний, тому Chromium заблокував його.</translation>
 <translation id="6132897690380286411">Незабаром Chromium закриється і видалить дані веб-перегляду</translation>
@@ -496,6 +497,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="6182736845697986886">Не вдалося встановити через внутрішню помилку сервера оновлень.</translation>
 <translation id="6183079672144801177">Переконайтеся, що ви ввійшли в Chromium на пристрої <ph name="TARGET_DEVICE_NAME" />, і повторіть спробу.</translation>
 <translation id="6192070012454216182">Шукайте інформацію і ставте запитання будь-де, навіть якщо Chromium згорнуто. Дозволяє Chromium працювати у фоновому режимі.</translation>
+<translation id="6210269448287455102">Знову відкрити Пошук на бічній панелі</translation>
 <translation id="6212496753309875659">На цьому комп’ютері вже встановлено новішу версію Chromium. Якщо програмне забезпечення не працює, видаліть Chromium і повторіть спробу.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium перезапуститься зараз}=1{Chromium перезапуститься через 1 секунду}one{Chromium перезапуститься через # секунду}few{Chromium перезапуститься через # секунди}many{Chromium перезапуститься через # секунд}other{Chromium перезапуститься через # секунди}}</translation>
 <translation id="6232046770428574552">Chromium оновиться, коли екран не використовуватиметься</translation>
@@ -593,6 +595,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
             • ярлики Chromium буде скинуто.
             <ph name="LINE_BREAKS" />
             Це не вплине на закладки, історію і збережені паролі.</translation>
+<translation id="6930607614725241390">Пошук на бічній панелі</translation>
 <translation id="6948031725951063910">Ви додали максимальну кількість закладок у Chromium (<ph name="BOOKMARK_LIMIT" />), тому деякі з них іще не збережено у вашому обліковому записі Google.
 
 Щоб зберегти нові закладки в обліковому записі, видаліть деякі з наявних. Якщо вийти зараз, незбережені закладки буде видалено.</translation>
