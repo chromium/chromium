@@ -43,13 +43,14 @@ class AwPermissionRequest {
   AwPermissionRequest(const AwPermissionRequest&) = delete;
   AwPermissionRequest& operator=(const AwPermissionRequest&) = delete;
 
+  ~AwPermissionRequest();
+
   // Return the Java peer. Must be null-checked.
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
   // Invoked by Java peer when request is processed, |granted| indicates the
   // request was granted or not.
   void OnAccept(bool granted);
-  void Destroy();
 
   // Return the origin which initiated the request.
   const GURL& GetOrigin();
@@ -66,9 +67,8 @@ class AwPermissionRequest {
  private:
   friend class TestPermissionRequestHandlerClient;
 
-  AwPermissionRequest(std::unique_ptr<AwPermissionRequestDelegate> delegate,
-                      base::android::ScopedJavaLocalRef<jobject>* java_peer);
-  ~AwPermissionRequest();
+  explicit AwPermissionRequest(
+      std::unique_ptr<AwPermissionRequestDelegate> delegate);
 
   void OnAcceptInternal(bool accept);
   void DeleteThis();

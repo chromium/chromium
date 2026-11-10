@@ -8,43 +8,50 @@ import android.net.Uri;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.CleanupReference;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.Nullable;
 
 /** This class wraps permission request in Chromium side, and can only be created by native side. */
 @Lifetime.Temporary
 @JNINamespace("android_webview")
 public class AwPermissionRequest {
+    @JniType("::android_webview::AwPermissionRequest")
+    interface NativeAwPermissionRequest extends JniTypeToken {}
+
     private final Uri mOrigin;
     private final long mResources;
     private boolean mProcessed;
 
     // AwPermissionRequest native instance.
-    private long mNativeAwPermissionRequest;
+    private @Nullable JniUniquePtr<NativeAwPermissionRequest> mNativeAwPermissionRequest;
 
     // Responsible for deleting native peer.
-    private CleanupReference mCleanupReference;
+    private @Nullable CleanupReference mCleanupReference;
 
     @CalledByNative
-    private static AwPermissionRequest create(
-            long nativeAwPermissionRequest, @JniType("std::string") String url, long resources) {
-        if (nativeAwPermissionRequest == 0) return null;
-        Uri origin = Uri.parse(url);
-        return new AwPermissionRequest(nativeAwPermissionRequest, origin, resources);
+    static AwPermissionRequest create(
+            JniUniquePtr<NativeAwPermissionRequest> nativeAwPermissionRequest,
+            @JniType("std::string") String url,
+            long resources) {
+        return new AwPermissionRequest(nativeAwPermissionRequest, Uri.parse(url), resources);
     }
 
-    private AwPermissionRequest(long nativeAwPermissionRequest, Uri origin, long resources) {
+    private AwPermissionRequest(
+            JniUniquePtr<NativeAwPermissionRequest> nativeAwPermissionRequest,
+            Uri origin,
+            long resources) {
         mNativeAwPermissionRequest = nativeAwPermissionRequest;
         mOrigin = origin;
         mResources = resources;
-        mCleanupReference =
-                new CleanupReference(
-                        this,
-                        (e) -> AwPermissionRequestJni.get().destroy(nativeAwPermissionRequest));
+        mCleanupReference = new CleanupReference(this, (e) -> nativeAwPermissionRequest.destroy());
     }
 
     public Uri getOrigin() {
@@ -57,7 +64,7 @@ public class AwPermissionRequest {
 
     public void grant() {
         validate();
-        if (mNativeAwPermissionRequest != 0) {
+        if (mNativeAwPermissionRequest != null) {
             AwPermissionRequestJni.get().onAccept(mNativeAwPermissionRequest, true);
             destroyNative();
         }
@@ -66,7 +73,7 @@ public class AwPermissionRequest {
 
     public void deny() {
         validate();
-        if (mNativeAwPermissionRequest != 0) {
+        if (mNativeAwPermissionRequest != null) {
             AwPermissionRequestJni.get().onAccept(mNativeAwPermissionRequest, false);
             destroyNative();
         }
@@ -75,9 +82,11 @@ public class AwPermissionRequest {
 
     @CalledByNative
     private void destroyNative() {
-        mCleanupReference.cleanupNow();
-        mCleanupReference = null;
-        mNativeAwPermissionRequest = 0;
+        mNativeAwPermissionRequest = null;
+        if (mCleanupReference != null) {
+            mCleanupReference.cleanupNow();
+            mCleanupReference = null;
+        }
     }
 
     private void validate() {
@@ -93,8 +102,6 @@ public class AwPermissionRequest {
 
     @NativeMethods
     interface Natives {
-        void onAccept(long nativeAwPermissionRequest, boolean allowed);
-
-        void destroy(long nativeAwPermissionRequest);
+        void onAccept(JniPtr<NativeAwPermissionRequest> self, boolean allowed);
     }
 }

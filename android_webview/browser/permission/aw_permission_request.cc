@@ -4,10 +4,13 @@
 
 #include "android_webview/browser/permission/aw_permission_request.h"
 
+#include <string>
 #include <utility>
 
 #include "android_webview/browser/permission/aw_permission_request_delegate.h"
 #include "base/android/jni_string.h"
+#include "base/memory/ptr_util.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/AwPermissionRequest_jni.h"
@@ -22,24 +25,24 @@ namespace android_webview {
 base::android::ScopedJavaLocalRef<jobject> AwPermissionRequest::Create(
     std::unique_ptr<AwPermissionRequestDelegate> delegate,
     base::WeakPtr<AwPermissionRequest>* weak_ptr) {
-  base::android::ScopedJavaLocalRef<jobject> java_peer;
-  AwPermissionRequest* permission_request =
-      new AwPermissionRequest(std::move(delegate), &java_peer);
+  JNIEnv* env = AttachCurrentThread();
+  auto permission_request =
+      base::WrapUnique(new AwPermissionRequest(std::move(delegate)));
   *weak_ptr = permission_request->weak_factory_.GetWeakPtr();
+  std::string origin = permission_request->GetOrigin().spec();
+  int64_t resources = permission_request->GetResources();
+  AwPermissionRequest* raw_request = permission_request.get();
+  ScopedJavaLocalRef<jobject> java_peer = Java_AwPermissionRequest_create(
+      env, jni_zero::MakeUnique(std::move(permission_request)), origin,
+      resources);
+  raw_request->java_ref_ = JavaObjectWeakGlobalRef(env, java_peer);
   return java_peer;
 }
 
 AwPermissionRequest::AwPermissionRequest(
-    std::unique_ptr<AwPermissionRequestDelegate> delegate,
-    ScopedJavaLocalRef<jobject>* java_peer)
+    std::unique_ptr<AwPermissionRequestDelegate> delegate)
     : delegate_(std::move(delegate)), processed_(false) {
   DCHECK(delegate_.get());
-  DCHECK(java_peer);
-
-  JNIEnv* env = AttachCurrentThread();
-  *java_peer = Java_AwPermissionRequest_create(
-      env, reinterpret_cast<int64_t>(this), GetOrigin().spec(), GetResources());
-  java_ref_ = JavaObjectWeakGlobalRef(env, *java_peer);
 }
 
 AwPermissionRequest::~AwPermissionRequest() {
@@ -62,10 +65,6 @@ void AwPermissionRequest::DeleteThis() {
   if (!j_request)
     return;
   Java_AwPermissionRequest_destroyNative(AttachCurrentThread(), j_request);
-}
-
-void AwPermissionRequest::Destroy() {
-  delete this;
 }
 
 ScopedJavaLocalRef<jobject> AwPermissionRequest::GetJavaObject() {
