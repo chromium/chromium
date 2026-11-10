@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/content/browser/integrators/custom_form_controls/custom_form_control_script_index.h"
+#include "components/autofill/core/browser/integrators/custom_form_controls/custom_form_control_script_index.h"
 
 #include <string_view>
 #include <utility>

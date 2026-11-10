@@ -253,9 +253,9 @@
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/views/autofill/autofill_ai/entity_suppression_dialog_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views.h"
-#include "components/autofill/content/browser/integrators/custom_form_controls/custom_form_control_script_index.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"  // nogncheck
+#include "components/autofill/core/browser/integrators/custom_form_controls/custom_form_control_script_index.h"
 
 #endif  // BUILDFLAG(IS_ANDROID)
 

@@ -44,7 +44,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_drag_api/desktop_tab_drag_impl/tab_drag_session_desktop_injector.h"
-#include "components/autofill/content/browser/integrators/custom_form_controls/custom_form_control_script_index.h"
+#include "components/autofill/core/browser/integrators/custom_form_controls/custom_form_control_script_index.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #endif
