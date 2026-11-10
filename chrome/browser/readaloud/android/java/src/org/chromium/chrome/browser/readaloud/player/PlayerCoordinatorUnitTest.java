@@ -7,6 +7,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
@@ -19,6 +21,7 @@ import android.widget.FrameLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.jni_zero.JniRawPtr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -37,6 +40,8 @@ import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
+import org.chromium.chrome.browser.layouts.scene_layer.SceneLayerJni;
 import org.chromium.chrome.browser.readaloud.ReadAloudMiniPlayerSceneLayer;
 import org.chromium.chrome.browser.readaloud.ReadAloudMiniPlayerSceneLayerJni;
 import org.chromium.chrome.browser.readaloud.ReadAloudPrefs;
@@ -58,6 +63,7 @@ import org.chromium.components.prefs.PrefService;
 @RunWith(BaseRobolectricTestRunner.class)
 public class PlayerCoordinatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private SceneLayer.Natives mBaseSceneLayerJni;
     @Mock ReadAloudMiniPlayerSceneLayer.Natives mSceneLayerNativeMock;
 
     @Mock private BottomSheetController mBottomSheetController;
@@ -79,7 +85,6 @@ public class PlayerCoordinatorUnitTest {
     @Before
     public void setUp() {
         ReadAloudMiniPlayerSceneLayerJni.setInstanceForTesting(mSceneLayerNativeMock);
-        doReturn(123456789L).when(mSceneLayerNativeMock).init(any());
         doReturn(mBottomControlsStacker).when(mDelegate).getBottomControlsStacker();
         doReturn(mBrowserControlsStateProvider).when(mBottomControlsStacker).getBrowserControls();
         mPlayerCoordinator =
@@ -124,6 +129,23 @@ public class PlayerCoordinatorUnitTest {
                 .getFeedbackTypeSupplier();
         doReturn(mActivity).when(mDelegate).getActivity();
 
+        SceneLayer[] createdLayer = new SceneLayer[1];
+        SceneLayerJni.setInstanceForTesting(mBaseSceneLayerJni);
+        doAnswer(
+                        invocation -> {
+                            createdLayer[0] = invocation.getArgument(0);
+                            createdLayer[0].setNativePtr(123456789L);
+                            return JniRawPtr.createForTesting(123456789L);
+                        })
+                .when(mSceneLayerNativeMock)
+                .init(any());
+        doAnswer(
+                        invocation -> {
+                            createdLayer[0].setNativePtr(0L);
+                            return null;
+                        })
+                .when(mBaseSceneLayerJni)
+                .destroy(anyLong());
         mPlayerCoordinator = new PlayerCoordinator(mDelegate);
 
         // Mini player should be inflated and attached.
@@ -131,6 +153,7 @@ public class PlayerCoordinatorUnitTest {
         assertTrue(container.getChildAt(0) instanceof MiniPlayerLayout);
         // User prefs should be read into the model.
         verify(prefs).getDouble(eq("readaloud.speed"));
+        mPlayerCoordinator.destroy();
     }
 
     @Test

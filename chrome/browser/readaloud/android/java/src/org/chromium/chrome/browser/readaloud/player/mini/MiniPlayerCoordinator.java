@@ -35,6 +35,7 @@ public class MiniPlayerCoordinator {
     private static @Nullable ViewStub sViewStubForTesting;
     private final MiniPlayerMediator mMediator;
     private final MiniPlayerLayout mLayout;
+    private final ReadAloudMiniPlayerSceneLayer mSceneLayer;
     private final PlayerCoordinator mPlayerCoordinator;
     private final UserEducationHelper mUserEducationHelper;
     /*  View-inflation-capable Context for read_aloud_playback isolated split */
@@ -101,6 +102,7 @@ public class MiniPlayerCoordinator {
         mMediator = mediator;
         mMediator.setCoordinator(this);
         mLayout = layout;
+        mSceneLayer = sceneLayer;
         mSideUiStateProviderSupplier = sideUiStateProviderSupplier;
         assert layout != null;
         sceneLayer.setIsVisible(true);
@@ -132,6 +134,7 @@ public class MiniPlayerCoordinator {
 
     public void destroy() {
         mLayout.destroy();
+        mSceneLayer.destroy();
         if (mMarginAdjuster != null
                 && mSideUiStateProviderSupplier != null
                 && mSideUiStateProviderSupplier.get() != null) {

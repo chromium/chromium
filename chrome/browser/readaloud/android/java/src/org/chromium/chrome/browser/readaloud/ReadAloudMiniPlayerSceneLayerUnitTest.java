@@ -10,12 +10,15 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 
 import android.graphics.RectF;
 
+import org.jni_zero.JniRawPtr;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,6 +31,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
+import org.chromium.chrome.browser.layouts.scene_layer.SceneLayerJni;
 
 /** Unit tests for {ReadAloudMiniPlayerSceneLayer}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -37,15 +41,38 @@ public class ReadAloudMiniPlayerSceneLayerUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
+    @Mock private SceneLayer.Natives mBaseSceneLayerJni;
     @Mock private ReadAloudMiniPlayerSceneLayerJni mSceneLayerJni;
 
+    private JniRawPtr<ReadAloudMiniPlayerSceneLayer.NativeReadAloudMiniPlayerSceneLayer> mNativePtr;
     private ReadAloudMiniPlayerSceneLayer mSceneLayer;
 
     @Before
     public void setUp() {
+        SceneLayerJni.setInstanceForTesting(mBaseSceneLayerJni);
         ReadAloudMiniPlayerSceneLayerJni.setInstanceForTesting(mSceneLayerJni);
-        doReturn(PTR).when(mSceneLayerJni).init(any());
+        doAnswer(
+                        invocation -> {
+                            SceneLayer layer = invocation.getArgument(0);
+                            layer.setNativePtr(PTR);
+                            mNativePtr = JniRawPtr.createForTesting(PTR);
+                            return mNativePtr;
+                        })
+                .when(mSceneLayerJni)
+                .init(any());
+        doAnswer(
+                        invocation -> {
+                            mSceneLayer.setNativePtr(0L);
+                            return null;
+                        })
+                .when(mBaseSceneLayerJni)
+                .destroy(anyLong());
         mSceneLayer = new ReadAloudMiniPlayerSceneLayer(mBrowserControlsStateProvider);
+    }
+
+    @After
+    public void tearDown() {
+        mSceneLayer.destroy();
     }
 
     @Test
@@ -61,7 +88,7 @@ public class ReadAloudMiniPlayerSceneLayerUnitTest {
 
         verify(mSceneLayerJni)
                 .updateReadAloudMiniPlayerLayer(
-                        /* nativeReadAloudMiniPlayerSceneLayer= */ eq(PTR),
+                        eq(mNativePtr),
                         /* colorArgb= */ anyInt(),
                         /* width= */ eq((int) VIEWPORT.width()),
                         /* viewportHeight= */ eq((int) VIEWPORT.height()),
@@ -72,8 +99,16 @@ public class ReadAloudMiniPlayerSceneLayerUnitTest {
     @Test
     public void testInitAndDestroy() {
         verify(mSceneLayerJni).init(eq(mSceneLayer));
+        mSceneLayer.setIsVisible(true);
+        assertTrue(mSceneLayer.isSceneOverlayTreeShowing());
         mSceneLayer.destroy();
-        verify(mSceneLayerJni).destroy(eq(123456789L));
+        verify(mBaseSceneLayerJni).destroy(eq(PTR));
+        assertFalse(mSceneLayer.isSceneOverlayTreeShowing());
+        assertNull(
+                mSceneLayer.getUpdatedSceneOverlayTree(
+                        VIEWPORT, VIEWPORT, /* resourceManager= */ null));
+        mSceneLayer.setContentTree(Mockito.mock(SceneLayer.class));
+        Mockito.verifyNoMoreInteractions(mSceneLayerJni);
     }
 
     @Test
@@ -83,7 +118,7 @@ public class ReadAloudMiniPlayerSceneLayerUnitTest {
 
         verify(mSceneLayerJni)
                 .updateReadAloudMiniPlayerLayer(
-                        /* nativeReadAloudMiniPlayerSceneLayer= */ eq(PTR),
+                        eq(mNativePtr),
                         /* colorArgb= */ eq(0xAABBCCFF),
                         /* width= */ anyInt(),
                         /* viewportHeight= */ anyInt(),
@@ -103,7 +138,7 @@ public class ReadAloudMiniPlayerSceneLayerUnitTest {
         SceneLayer contentTree = Mockito.mock(SceneLayer.class);
         mSceneLayer.setContentTree(contentTree);
 
-        verify(mSceneLayerJni).setContentTree(anyLong(), eq(contentTree));
+        verify(mSceneLayerJni).setContentTree(eq(mNativePtr), eq(contentTree));
     }
 
     @Test

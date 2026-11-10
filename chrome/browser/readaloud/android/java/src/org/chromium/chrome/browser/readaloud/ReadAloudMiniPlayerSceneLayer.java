@@ -10,9 +10,14 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.layouts.SceneOverlay;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
@@ -27,8 +32,11 @@ import org.chromium.ui.resources.ResourceManager;
 @NullMarked
 @JNINamespace("android")
 public class ReadAloudMiniPlayerSceneLayer extends SceneOverlayLayer implements SceneOverlay {
+    @JniType("::android::ReadAloudMiniPlayerSceneLayer")
+    interface NativeReadAloudMiniPlayerSceneLayer extends JniTypeToken {}
+
     /** Handle to the native side of this class. */
-    private long mNativePtr;
+    private @Nullable JniRawPtr<NativeReadAloudMiniPlayerSceneLayer> mNativePtr;
 
     /** The {@link BrowserControlsStateProvider} to access browser controls offsets. */
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
@@ -50,10 +58,11 @@ public class ReadAloudMiniPlayerSceneLayer extends SceneOverlayLayer implements 
 
     @Override
     public void destroy() {
-        if (mNativePtr != 0L) {
-            ReadAloudMiniPlayerSceneLayerJni.get().destroy(mNativePtr);
-            mNativePtr = 0L;
-        }
+        mIsVisible = false;
+        if (mNativePtr == null) return;
+        mNativePtr.release();
+        mNativePtr = null;
+        super.destroy();
     }
 
     /**
@@ -86,20 +95,22 @@ public class ReadAloudMiniPlayerSceneLayer extends SceneOverlayLayer implements 
 
     @Override
     protected void initializeNative() {
-        if (mNativePtr == 0) {
+        if (mNativePtr == null) {
             mNativePtr = ReadAloudMiniPlayerSceneLayerJni.get().init(this);
         }
-        assert mNativePtr != 0;
+        assert mNativePtr != null;
     }
 
     @Override
     public void setContentTree(SceneLayer contentTree) {
+        if (mNativePtr == null) return;
         ReadAloudMiniPlayerSceneLayerJni.get().setContentTree(mNativePtr, contentTree);
     }
 
     @Override
-    public SceneOverlayLayer getUpdatedSceneOverlayTree(
+    public @Nullable SceneOverlayLayer getUpdatedSceneOverlayTree(
             RectF viewport, RectF visibleViewport, ResourceManager resourceManager) {
+        if (mNativePtr == null) return null;
         ReadAloudMiniPlayerSceneLayerJni.get()
                 .updateReadAloudMiniPlayerLayer(
                         mNativePtr,
@@ -114,7 +125,7 @@ public class ReadAloudMiniPlayerSceneLayer extends SceneOverlayLayer implements 
 
     @Override
     public boolean isSceneOverlayTreeShowing() {
-        return mIsVisible;
+        return mIsVisible && mNativePtr != null;
     }
 
     @Override
@@ -124,14 +135,13 @@ public class ReadAloudMiniPlayerSceneLayer extends SceneOverlayLayer implements 
     @VisibleForTesting
     @NativeMethods
     public interface Natives {
-        long init(ReadAloudMiniPlayerSceneLayer self);
+        JniRawPtr<NativeReadAloudMiniPlayerSceneLayer> init(ReadAloudMiniPlayerSceneLayer self);
 
-        void destroy(long nativeReadAloudMiniPlayerSceneLayer);
-
-        void setContentTree(long nativeReadAloudMiniPlayerSceneLayer, SceneLayer contentTree);
+        void setContentTree(
+                JniPtr<NativeReadAloudMiniPlayerSceneLayer> self, SceneLayer contentTree);
 
         void updateReadAloudMiniPlayerLayer(
-                long nativeReadAloudMiniPlayerSceneLayer,
+                JniPtr<NativeReadAloudMiniPlayerSceneLayer> self,
                 int colorArgb,
                 int width,
                 int viewportHeight,

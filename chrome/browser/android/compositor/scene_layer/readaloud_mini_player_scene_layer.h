@@ -24,8 +24,6 @@ class ReadAloudMiniPlayerSceneLayer : public SceneLayer {
 
   ~ReadAloudMiniPlayerSceneLayer() override;
 
-  void Destroy(JNIEnv* env) override;
-
   // Update the compositor version of the view.
   void UpdateReadAloudMiniPlayerLayer(JNIEnv* env,
                                       int32_t color_argb,
