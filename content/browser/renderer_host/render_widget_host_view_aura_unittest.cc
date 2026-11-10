@@ -143,6 +143,7 @@
 #include "ui/gfx/selection_bound.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/default_screen_position_client.h"
+#include "ui/wm/core/shadow_types.h"
 #include "ui/wm/core/window_util.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -3545,6 +3546,43 @@ TEST_F(RenderWidgetHostViewAuraTest,
 #endif
   ASSERT_TRUE(base::test::RunUntil(
       [&] { return !view_->HasActiveUnboundedSurface(); }));
+}
+
+TEST_F(RenderWidgetHostViewAuraTest,
+       UnboundedSurfaceShadowElevationFollowsFeatureFlag) {
+  InitViewForFrame(nullptr);
+  ParentHostView(view_, parent_view_);
+  view_->SetBounds(gfx::Rect(60, 60, 100, 100));
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
+
+  constexpr gfx::Rect kSurfaceBounds(200, 200, 50, 50);
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures(
+        {blink::features::kUnboundedElement},
+        {features::kOmitNativeFrameOnShadowlessMenus});
+    view_->CreateUnboundedSurface(kSurfaceBounds, nullptr);
+    UnboundedSurfaceWindow* surface = view_->GetUnboundedSurfaceWindow();
+    ASSERT_TRUE(surface);
+    EXPECT_EQ(wm::kShadowElevationDefault,
+              surface->GetNativeWindow()->GetProperty(wm::kShadowElevationKey));
+    surface->Dismiss();
+    ASSERT_TRUE(base::test::RunUntil(
+        [&] { return !view_->HasActiveUnboundedSurface(); }));
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures(
+        {blink::features::kUnboundedElement,
+         features::kOmitNativeFrameOnShadowlessMenus},
+        {});
+    view_->CreateUnboundedSurface(kSurfaceBounds, nullptr);
+    UnboundedSurfaceWindow* surface = view_->GetUnboundedSurfaceWindow();
+    ASSERT_TRUE(surface);
+    EXPECT_EQ(wm::kShadowElevationNone,
+              surface->GetNativeWindow()->GetProperty(wm::kShadowElevationKey));
+  }
 }
 
 TEST_F(RenderWidgetHostViewAuraTest, ZeroSizeStillGetsLocalSurfaceId) {

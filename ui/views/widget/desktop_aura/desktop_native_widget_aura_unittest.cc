@@ -30,6 +30,7 @@
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_processor.h"
 #include "ui/events/event_utils.h"
@@ -787,6 +788,8 @@ TEST_F(DesktopNativeWidgetAuraTest,
 // top-level widget without WS_THICKFRAME on Windows.
 TEST_F(DesktopNativeWidgetAuraTest,
        TopLevelOwnedShadowlessTransparentPopupOmitsNativeFrame) {
+  base::test::ScopedFeatureList feature_list(
+      ::features::kOmitNativeFrameOnShadowlessMenus);
   DesktopAuraTopLevelWindowTest popup_window;
   ASSERT_NO_FATAL_FAILURE(popup_window.CreateTopLevelWindow(
       gfx::Rect(0, 0, 200, 200), /*fullscreen=*/false, /*transparent=*/true,
@@ -805,6 +808,35 @@ TEST_F(DesktopNativeWidgetAuraTest,
   EXPECT_TRUE(handler->is_translucent());
   EXPECT_EQ(DWORD{0}, handler->window_style() & WS_THICKFRAME);
   EXPECT_EQ(0, ::GetWindowLong(handler->hwnd(), GWL_STYLE) & WS_THICKFRAME);
+#endif
+
+  RunPendingMessages();
+  ASSERT_NO_FATAL_FAILURE(popup_window.DestroyOwnedWindow());
+  RunPendingMessages();
+}
+
+TEST_F(DesktopNativeWidgetAuraTest,
+       TopLevelOwnedShadowlessTransparentPopupKeepsNativeFrameWhenDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      ::features::kOmitNativeFrameOnShadowlessMenus);
+  DesktopAuraTopLevelWindowTest popup_window;
+  ASSERT_NO_FATAL_FAILURE(popup_window.CreateTopLevelWindow(
+      gfx::Rect(0, 0, 200, 200), /*fullscreen=*/false, /*transparent=*/true,
+      /*shadowless=*/true));
+
+  EXPECT_NE(
+      nullptr,
+      aura::client::GetVisibilityClient(
+          popup_window.top_level_widget()->GetNativeView()->GetRootWindow()));
+#if BUILDFLAG(IS_WIN)
+  HWNDMessageHandler* handler =
+      DesktopWindowTreeHostWinTestApi(
+          static_cast<DesktopWindowTreeHostWin*>(
+              popup_window.top_level_widget()->GetNativeWindow()->GetHost()))
+          .GetHwndMessageHandler();
+  EXPECT_TRUE(handler->is_translucent());
+  EXPECT_NE(DWORD{0}, handler->window_style() & WS_THICKFRAME);
 #endif
 
   RunPendingMessages();

@@ -7,6 +7,7 @@
 #include <dwmapi.h>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "components/viz/common/features.h"
 #include "ui/base/l10n/l10n_util_win.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
@@ -123,7 +124,9 @@ WindowStyles CalculateWindowStylesFromInitParams(
       // shadow; omit it when the caller opts out of shadows so shadowless
       // translucent menus do not get a 1px DWM window border.
       if (params.remove_standard_frame &&
-          params.shadow_type != Widget::InitParams::ShadowType::kNone) {
+          (!base::FeatureList::IsEnabled(
+               ::features::kOmitNativeFrameOnShadowlessMenus) ||
+           params.shadow_type != Widget::InitParams::ShadowType::kNone)) {
         styles.style |= WS_THICKFRAME;
       }
       styles.ex_style |= WS_EX_TOOLWINDOW;

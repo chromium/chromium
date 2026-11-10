@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -130,8 +131,10 @@ class DesktopNativeWidgetTopLevelHandler : public aura::WindowObserver {
       init_params.remove_standard_frame = true;
     }
 #endif
-    if (child_window->GetProperty(wm::kShadowElevationKey) ==
-        wm::kShadowElevationNone) {
+    if (base::FeatureList::IsEnabled(
+            ::features::kOmitNativeFrameOnShadowlessMenus) &&
+        child_window->GetProperty(wm::kShadowElevationKey) ==
+            wm::kShadowElevationNone) {
       init_params.shadow_type = Widget::InitParams::ShadowType::kNone;
     }
     // If the window should be transparent, then ensure the top level widget
