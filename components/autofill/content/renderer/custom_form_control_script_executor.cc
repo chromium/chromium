@@ -237,6 +237,25 @@ blink::WebElement GetElementProperty(v8::Isolate* isolate,
   return blink::WebElement::FromV8Value(isolate, val);
 }
 
+// Transforms `obj` into a `SelectOption`. Returns `std::nullopt` if `text`
+// isn't a string.
+std::optional<SelectOption> ParseSelectOption(v8::Isolate* isolate,
+                                              v8::Local<v8::Context> context,
+                                              v8::Local<v8::Object> obj) {
+  std::optional<std::u16string> text =
+      GetStringProperty(isolate, context, obj, "text");
+  if (!text) {
+    return std::nullopt;
+  }
+  std::optional<std::u16string> value =
+      GetStringProperty(isolate, context, obj, "value");
+  return SelectOption{
+      // Like for standard form controls, default the value to the text.
+      .value = std::move(value).value_or(*text),
+      .text = *std::move(text),
+  };
+}
+
 // Transforms `item` into a `CustomFormControl`, if it is valid.
 // `item` follows the schema at http://shortn/_gxfEg4OfoT.
 std::optional<CustomFormControl> ParseCustomFormControl(
@@ -263,18 +282,10 @@ std::optional<CustomFormControl> ParseCustomFormControl(
   v8::Local<v8::Object> current_value_obj;
   if (GetObjectProperty(isolate, context, obj, "currentValue")
           .ToLocal(&current_value_obj)) {
-    std::optional<std::u16string> text =
-        GetStringProperty(isolate, context, current_value_obj, "text");
-    if (!text) {
+    current_option = ParseSelectOption(isolate, context, current_value_obj);
+    if (!current_option) {
       return std::nullopt;
     }
-    std::optional<std::u16string> value =
-        GetStringProperty(isolate, context, current_value_obj, "value");
-    current_option = SelectOption{
-        // Like for standard form controls, default the value to the text.
-        .value = std::move(value).value_or(*text),
-        .text = *std::move(text),
-    };
   }
 
   return CustomFormControl{
@@ -284,6 +295,48 @@ std::optional<CustomFormControl> ParseCustomFormControl(
       .label = GetStringProperty(isolate, context, obj, "label"),
       .current_option = std::move(current_option),
   };
+}
+
+// Transforms `result`, the result of `extractOptions()`, into
+// `CustomFormControlOptions`. Returns `std::nullopt` if `options` isn't an
+// array or a getter of `result` throws. Skips invalid entries of `options`.
+std::optional<CustomFormControlOptions> ParseCustomFormControlOptions(
+    v8::Isolate* isolate,
+    v8::Local<v8::Context> context,
+    v8::Local<v8::Value> result) {
+  if (!result->IsObject()) {
+    return std::nullopt;
+  }
+  v8::Local<v8::Object> obj = result.As<v8::Object>();
+  v8::TryCatch try_catch(isolate);
+  v8::Local<v8::Value> options;
+  if (!GetProperty(isolate, context, obj, "options").ToLocal(&options) ||
+      !options->IsArray()) {
+    return std::nullopt;
+  }
+  std::optional<bool> popover_needs_to_be_closed =
+      GetBoolProperty(isolate, context, obj, "popoverNeedsToBeClosed");
+  if (try_catch.HasCaught()) {
+    return std::nullopt;
+  }
+  CustomFormControlOptions extracted{
+      .popover_needs_to_be_closed = popover_needs_to_be_closed.value_or(false),
+  };
+  v8::Local<v8::Array> array = options.As<v8::Array>();
+  const uint32_t length = array->Length();
+  for (uint32_t i = 0; i < length; ++i) {
+    v8::TryCatch item_try_catch(isolate);
+    v8::Local<v8::Value> item;
+    if (!array->Get(context, i).ToLocal(&item) || !item->IsObject()) {
+      continue;
+    }
+    std::optional<SelectOption> option =
+        ParseSelectOption(isolate, context, item.As<v8::Object>());
+    if (option && !item_try_catch.HasCaught()) {
+      extracted.options.push_back(*std::move(option));
+    }
+  }
+  return extracted;
 }
 
 }  // namespace
@@ -611,6 +664,27 @@ void CustomFormControlScriptExecutor::ClosePopover(
                      std::move(callback).Run(!result.IsEmpty());
                    },
                    std::move(callback)));
+}
+
+void CustomFormControlScriptExecutor::ExtractOptions(
+    const blink::WebNode& node,
+    base::OnceCallback<void(std::optional<CustomFormControlOptions>)>
+        callback) {
+  CallFunction(
+      MayReturnPromise(true), "extractOptions", {node},
+      base::BindOnce(
+          [](base::OnceCallback<void(std::optional<CustomFormControlOptions>)>
+                 callback,
+             v8::Isolate* isolate, v8::Local<v8::Context> context,
+             v8::MaybeLocal<v8::Value> maybe_result) {
+            std::optional<CustomFormControlOptions> options;
+            v8::Local<v8::Value> result;
+            if (maybe_result.ToLocal(&result)) {
+              options = ParseCustomFormControlOptions(isolate, context, result);
+            }
+            std::move(callback).Run(std::move(options));
+          },
+          std::move(callback)));
 }
 
 void CustomFormControlScriptExecutor::WillReleaseScriptContext(

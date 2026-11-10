@@ -35,6 +35,20 @@ struct CustomFormControl {
   std::optional<SelectOption> current_option;
 };
 
+// The options of a custom select, as returned by the manager's
+// `extractOptions()`.
+struct CustomFormControlOptions {
+  friend bool operator==(const CustomFormControlOptions&,
+                         const CustomFormControlOptions&) = default;
+
+  std::vector<SelectOption> options;
+  // Whether the manager opened a popover to extract the options and left it
+  // open. Selecting an option with `setValue()` closes the popover. If no
+  // option is selected, `CustomFormControlScriptExecutor::ClosePopover()` must
+  // close it instead.
+  bool popover_needs_to_be_closed = false;
+};
+
 // Groups `controls` by their outermost ancestor `<form>` element. Unowned
 // controls are grouped under a null `blink::WebFormElement()`. Relative order
 // of `controls` is preserved within each form.

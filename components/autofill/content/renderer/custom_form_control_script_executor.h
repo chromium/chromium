@@ -24,6 +24,7 @@
 namespace autofill {
 
 struct CustomFormControl;
+struct CustomFormControlOptions;
 
 // Runs the custom form control script of the current document in an isolated
 // world, so that the script can access the frame's DOM without sharing globals
@@ -84,6 +85,14 @@ class CustomFormControlScriptExecutor : public content::RenderFrameObserver {
   // the call succeeded. `callback` may run asynchronously.
   void ClosePopover(const blink::WebNode& node,
                     base::OnceCallback<void(bool success)> callback);
+
+  // Calls the manager's `extractOptions()` with `node` and runs `callback` with
+  // the valid options, or with `std::nullopt` if the call fails. `callback` may
+  // run asynchronously.
+  void ExtractOptions(
+      const blink::WebNode& node,
+      base::OnceCallback<void(std::optional<CustomFormControlOptions>)>
+          callback);
 
  private:
   friend class CustomFormControlScriptExecutorTestApi;
