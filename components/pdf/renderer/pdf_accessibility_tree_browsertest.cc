@@ -5973,6 +5973,188 @@ TEST_F(PdfAccessibilityTreeTest,
        "Third item in listcontinuation of third item"});
 }
 
+// Same as above for an ordered list. Confirming the list also checks the gap
+// after the first item's line, which must not be measured from the accent.
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicOrderedListMidLineRaisedDiacriticDoesNotBreakItem) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  page_info_.bounds = gfx::Rect(0, 0, 800, 1000);
+
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{12.0f, 4.0f, 12.0f, 12.0f, 12.0f, 12.0f, 12.0f},
+      {normal_style, normal_style, normal_style, normal_style, normal_style,
+       normal_style, normal_style},
+      MakeCharVector({"1. First line of the item text", "`",
+                      "wrapped continuation of the item",
+                      "2. Second item in list", "continuation of second item",
+                      "3. Third item in list", "continuation of third item"}),
+      {gfx::RectF(178.7f, 566.7f, 452.0f, 14.7f),
+       // The accent sits mid-line, ending at the first line's top edge.
+       gfx::RectF(333.3f, 562.7f, 4.0f, 4.0f),
+       gfx::RectF(178.7f, 585.3f, 452.0f, 14.7f),
+       gfx::RectF(178.7f, 603.9f, 452.0f, 14.7f),
+       gfx::RectF(178.7f, 622.5f, 452.0f, 14.7f),
+       gfx::RectF(178.7f, 641.1f, 452.0f, 14.7f),
+       gfx::RectF(178.7f, 659.7f, 452.0f, 14.7f)});
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  CheckOrderedList(
+      page->GetChildAtIndex(0u),
+      {"First line of the item text`wrapped continuation of the item",
+       "Second item in listcontinuation of second item",
+       "Third item in listcontinuation of third item"},
+      {"1. ", "2. ", "3. "});
+}
+
+// Same as above, with wrapped lines indented to line up with the item text
+// rather than the number.
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicOrderedListHangingIndentRaisedDiacriticDoesNotBreakItem) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  page_info_.bounds = gfx::Rect(0, 0, 800, 1000);
+
+  // "1. " is 30 wide, so item text starts at x = 208.7.
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{12.0f, 4.0f, 12.0f, 12.0f, 12.0f, 12.0f, 12.0f},
+      {normal_style, normal_style, normal_style, normal_style, normal_style,
+       normal_style, normal_style},
+      MakeCharVector({"1. First line of the item text", "`",
+                      "wrapped continuation of the item",
+                      "2. Second item in list", "continuation of second item",
+                      "3. Third item in list", "continuation of third item"}),
+      {gfx::RectF(178.7f, 566.7f, 452.0f, 14.7f),
+       gfx::RectF(333.3f, 562.7f, 4.0f, 4.0f),
+       gfx::RectF(208.7f, 585.3f, 422.0f, 14.7f),
+       gfx::RectF(178.7f, 603.9f, 452.0f, 14.7f),
+       gfx::RectF(208.7f, 622.5f, 422.0f, 14.7f),
+       gfx::RectF(178.7f, 641.1f, 452.0f, 14.7f),
+       gfx::RectF(208.7f, 659.7f, 422.0f, 14.7f)});
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  CheckOrderedList(
+      page->GetChildAtIndex(0u),
+      {"First line of the item text`wrapped continuation of the item",
+       "Second item in listcontinuation of second item",
+       "Third item in listcontinuation of third item"},
+      {"1. ", "2. ", "3. "});
+}
+
+// Same as above, with the number indented and wrapped lines starting left of
+// it at the margin.
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicOrderedListWrapLeftRaisedDiacriticDoesNotBreakItem) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  page_info_.bounds = gfx::Rect(0, 0, 800, 1000);
+
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{12.0f, 4.0f, 12.0f, 12.0f, 12.0f, 12.0f, 12.0f},
+      {normal_style, normal_style, normal_style, normal_style, normal_style,
+       normal_style, normal_style},
+      MakeCharVector({"1. First line of the item text", "`",
+                      "wrapped continuation of the item",
+                      "2. Second item in list", "continuation of second item",
+                      "3. Third item in list", "continuation of third item"}),
+      {gfx::RectF(196.7f, 566.7f, 434.0f, 14.7f),
+       gfx::RectF(333.3f, 562.7f, 4.0f, 4.0f),
+       gfx::RectF(178.7f, 585.3f, 452.0f, 14.7f),
+       gfx::RectF(196.7f, 603.9f, 434.0f, 14.7f),
+       gfx::RectF(178.7f, 622.5f, 452.0f, 14.7f),
+       gfx::RectF(196.7f, 641.1f, 434.0f, 14.7f),
+       gfx::RectF(178.7f, 659.7f, 452.0f, 14.7f)});
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  CheckOrderedList(
+      page->GetChildAtIndex(0u),
+      {"First line of the item text`wrapped continuation of the item",
+       "Second item in listcontinuation of second item",
+       "Third item in listcontinuation of third item"},
+      {"1. ", "2. ", "3. "});
+}
+
+// Same as above, with an accent in every item and a paragraph after the list.
+// The paragraph gap after the last item's accented line must still end the
+// list.
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicOrderedListRaisedDiacriticsThenParagraph) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  page_info_.bounds = gfx::Rect(0, 0, 800, 1000);
+
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{12.0f, 4.0f, 12.0f, 12.0f, 4.0f, 12.0f, 12.0f, 12.0f,
+                      4.0f, 12.0f, 12.0f},
+      {normal_style, normal_style, normal_style, normal_style, normal_style,
+       normal_style, normal_style, normal_style, normal_style, normal_style,
+       normal_style},
+      MakeCharVector({"1. First line of the item text", "`",
+                      "wrapped continuation of the item",
+                      "2. Second item in list", "`",
+                      "continuation of second item", "3. Third item in list",
+                      "continuation of third item", "`",
+                      "A paragraph after the list", "that wraps onto a line"}),
+      {gfx::RectF(178.7f, 566.7f, 452.0f, 14.7f),
+       gfx::RectF(333.3f, 562.7f, 4.0f, 4.0f),
+       gfx::RectF(178.7f, 585.3f, 452.0f, 14.7f),
+       gfx::RectF(178.7f, 603.9f, 452.0f, 14.7f),
+       gfx::RectF(300.0f, 599.9f, 4.0f, 4.0f),
+       gfx::RectF(178.7f, 622.5f, 452.0f, 14.7f),
+       gfx::RectF(178.7f, 641.1f, 452.0f, 14.7f),
+       gfx::RectF(178.7f, 659.7f, 452.0f, 14.7f),
+       // The last item's last line has an accent too.
+       gfx::RectF(250.0f, 655.7f, 4.0f, 4.0f),
+       gfx::RectF(178.7f, 690.0f, 452.0f, 14.7f),
+       gfx::RectF(178.7f, 708.6f, 452.0f, 14.7f)});
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(2u, page->GetChildCount());
+
+  CheckOrderedList(
+      page->GetChildAtIndex(0u),
+      {"First line of the item text`wrapped continuation of the item",
+       "Second item in list`continuation of second item",
+       "Third item in listcontinuation of third item`"},
+      {"1. ", "2. ", "3. "});
+  CheckParagraph(page->GetChildAtIndex(1u),
+                 "A paragraph after the listthat wraps onto a line");
+}
+
 TEST_F(PdfAccessibilityTreeTest, HeuristicMidLineBulletNotList) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(

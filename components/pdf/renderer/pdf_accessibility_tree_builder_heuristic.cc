@@ -1522,10 +1522,28 @@ std::optional<bool> BreakAtHeaderFooterBoundary(
   return std::nullopt;
 }
 
-bool BreakParagraphByLineSpacing(
-    const chrome_pdf::AccessibilityTextRunInfo& current_run,
-    const chrome_pdf::AccessibilityTextRunInfo& next_run,
-    float paragraph_spacing_threshold) {
+// Returns `run_context.previous_run` if `run_context.run` is a small raised run
+// on its line, e.g. a marker or accent emitted at the end of the line.
+// Otherwise, returns `run_context.run`.
+const chrome_pdf::AccessibilityTextRunInfo& GetRunSkippingSmallRaisedRun(
+    const TextRunContext& run_context) {
+  return run_context.previous_run &&
+                 IsSmallRaisedRun(*run_context.run, *run_context.previous_run)
+             ? *run_context.previous_run
+             : *run_context.run;
+}
+
+// Returns whether the gap between `run_context.run` and the run after it is
+// large enough to break the paragraph.
+//
+// If `run_context.run` is a small raised run, the gap is measured from the run
+// before it instead.
+bool BreakParagraphByLineSpacing(const TextRunContext& run_context,
+                                 float paragraph_spacing_threshold) {
+  const chrome_pdf::AccessibilityTextRunInfo& current_run =
+      GetRunSkippingSmallRaisedRun(run_context);
+  CHECK(run_context.next_run);
+  const chrome_pdf::AccessibilityTextRunInfo& next_run = *run_context.next_run;
   if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled() &&
       IsLeftToRightRun(current_run) && IsLeftToRightRun(next_run)) {
     // `y` increases down the page, so this checks whether the next run sits
@@ -1920,9 +1938,9 @@ bool IsOrderedListStartConfirmed(
     }
     // A paragraph gap right after the marker's line suggests a numbered
     // heading followed by body text (e.g. "1. Introduction").
-    if (lines_count == 0 &&
-        BreakParagraphByLineSpacing(
-            prev_run, run, page_properties.paragraph_spacing_threshold)) {
+    if (lines_count == 0 && BreakParagraphByLineSpacing(
+                                GetTextRunContext(layout, i - 1),
+                                page_properties.paragraph_spacing_threshold)) {
       return false;
     }
     // A heading-styled line ends the candidate list.
@@ -2172,8 +2190,11 @@ bool BreakAtListBoundary(
   }
   const float next_x = next_run_context.run->bounds.x();
   const float font_size = next_run_context.run->style.font_size;
+  const chrome_pdf::AccessibilityTextRunInfo& prev_line_run =
+      GetRunSkippingSmallRaisedRun(
+          GetTextRunContext(layout, next_run_index - 1));
   const bool prev_line_ends_short =
-      layout.text_runs[next_run_index - 1].bounds.right() <
+      prev_line_run.bounds.right() <
       GetLineRightEdge(layout.text_runs, next_run_index) -
           kWrapRightEdgeToleranceEm * font_size;
   if (next_x >= level.marker_x - kListIndentThreshold) {
@@ -2209,15 +2230,8 @@ bool BreakParagraph(uint32_t text_run_index,
       GetTextRunContext(layout, text_run_index + 1);
   const chrome_pdf::AccessibilityTextRunInfo& next_run = *next_run_context.run;
 
-  // Measure line spacing from the line's text rather than a raised marker or
-  // accent emitted at the end of the line.
-  const chrome_pdf::AccessibilityTextRunInfo& line_run =
-      current_run_context.previous_run &&
-              IsSmallRaisedRun(current_run, *current_run_context.previous_run)
-          ? *current_run_context.previous_run
-          : current_run;
   bool is_large_line_spacing_break = BreakParagraphByLineSpacing(
-      line_run, next_run, page_properties.paragraph_spacing_threshold);
+      current_run_context, page_properties.paragraph_spacing_threshold);
 
   if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
     if (block_node->role == ax::mojom::Role::kFigure) {
