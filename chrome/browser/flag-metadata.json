@@ -301,7 +301,7 @@
   {
     "name": "allow-multiple-media-notifications",
     "owners": [ "jhimawan@google.com", "clank-app-team@google.com", "philyan@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 180
   },
   {
     "name": "always-draw-composited-toolbar-hairline",
