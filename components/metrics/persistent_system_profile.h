@@ -82,7 +82,15 @@ class PersistentSystemProfile {
                     size_t min_size);
 
     // Construct an allocator for reading.
-    RecordAllocator(const base::PersistentMemoryAllocator* memory_allocator);
+    explicit RecordAllocator(
+        const base::PersistentMemoryAllocator* memory_allocator);
+
+    // Move is allowed for easy use with STL containers.
+    RecordAllocator(const RecordAllocator&) = delete;
+    RecordAllocator& operator=(const RecordAllocator&) = delete;
+    RecordAllocator(RecordAllocator&&);
+    RecordAllocator& operator=(RecordAllocator&&);
+    ~RecordAllocator();
 
     // These methods manage writing records to the allocator. Do not mix these
     // with "read" calls; it's one or the other.
@@ -121,14 +129,17 @@ class PersistentSystemProfile {
     raw_ptr<base::PersistentMemoryAllocator> allocator_;  // Storage location.
 
     // Indicates if a complete profile has been stored.
-    bool has_complete_profile_;
+    bool has_complete_profile_ = false;
+
+    // Cached references to system profile segments in order, avoiding full
+    // scans of unrelated allocations in `allocator_` on every reset/write.
+    std::vector<uint32_t> segment_refs_;
+    size_t next_segment_index_ = 0;
 
     // These change even though the underlying data may be "const".
-    mutable uint32_t alloc_reference_;  // Last storage block.
-    mutable size_t alloc_size_;         // Size of the block.
-    mutable size_t end_offset_;         // End of data in block.
-
-    // Copy and assign are allowed for easy use with STL containers.
+    mutable uint32_t alloc_reference_ = 0;  // Last storage block.
+    mutable size_t alloc_size_ = 0;         // Size of the block.
+    mutable size_t end_offset_ = 0;         // End of data in block.
   };
 
   // Write a record to all registered allocators.

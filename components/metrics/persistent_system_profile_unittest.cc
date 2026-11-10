@@ -366,5 +366,46 @@ TEST_F(PersistentSystemProfileTest, PreExistingNonZeroSegmentIsReset) {
   EXPECT_EQ("clean-uuid", fetched.client_uuid());
 }
 
+TEST_F(PersistentSystemProfileTest, MultiSegmentReuseAcrossResets) {
+  base::LocalPersistentMemoryAllocator allocator(256 << 10, 0, "");
+  PersistentSystemProfile profile;
+  profile.RegisterPersistentAllocator(&allocator);
+
+  // Interleave many unrelated allocations throughout the allocator.
+  for (int i = 0; i < 50; ++i) {
+    base::PersistentMemoryAllocator::Reference ref =
+        allocator.Allocate(64, 12345);
+    ASSERT_NE(0U, ref);
+    allocator.MakeIterable(ref);
+  }
+
+  // Write a profile large enough to span multiple 4 KiB segments.
+  SystemProfileProto large_proto;
+  large_proto.set_client_uuid(std::string(20 << 10, 'a'));
+  profile.SetSystemProfile(large_proto, /*complete=*/false);
+
+  SystemProfileProto fetched;
+  ASSERT_TRUE(PersistentSystemProfile::GetSystemProfile(allocator, &fetched));
+  EXPECT_EQ(large_proto.client_uuid(), fetched.client_uuid());
+
+  // Overwrite with a small profile that fits in a single segment and verify
+  // subsequent cached segments were properly reset and contain no stale data.
+  SystemProfileProto small_proto;
+  small_proto.set_client_uuid("short-uuid");
+  profile.SetSystemProfile(small_proto, /*complete=*/false);
+
+  ASSERT_TRUE(PersistentSystemProfile::GetSystemProfile(allocator, &fetched));
+  EXPECT_EQ("short-uuid", fetched.client_uuid());
+
+  // Expand past the previously cached segment count to verify cached segments
+  // are reused in order and new segments append cleanly.
+  SystemProfileProto larger_proto;
+  larger_proto.set_client_uuid(std::string(30 << 10, 'b'));
+  profile.SetSystemProfile(larger_proto, /*complete=*/true);
+
+  ASSERT_TRUE(PersistentSystemProfile::GetSystemProfile(allocator, &fetched));
+  EXPECT_EQ(larger_proto.client_uuid(), fetched.client_uuid());
+}
+
 }  // namespace
 }  // namespace metrics
