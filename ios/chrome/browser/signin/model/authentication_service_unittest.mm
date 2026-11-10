@@ -912,9 +912,11 @@ TEST_F(AuthenticationServiceTest,
   // Prevent hosted domain fetches from ever completing, so that the hosted
   // domain of `test_identity` stays unknown to SystemIdentityManager (and thus
   // its managed status stays unknown to IdentityManager) during the test.
-  fake_system_identity_manager()->OverrideGetHostedDomainImplementation(
-      base::BindRepeating([](id<SystemIdentity>,
-                             SystemIdentityManager::HostedDomainCallback) {}));
+  base::ScopedClosureRunner reset_hosted_domain_override =
+      fake_system_identity_manager()->OverrideGetHostedDomainImplementation(
+          base::BindRepeating(
+              [](id<SystemIdentity>,
+                 SystemIdentityManager::HostedDomainCallback) {}));
   id<SystemIdentity> test_identity = [FakeSystemIdentity fakeIdentity3];
   fake_system_identity_manager()->AddIdentity(test_identity);
 

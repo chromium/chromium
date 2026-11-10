@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
@@ -82,10 +83,14 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
   // Returns the list of account capabilities associated with the identity.
   AccountCapabilities GetVisibleCapabilities(id<SystemIdentity> identity);
 
-  // Sets a callback to intercept `GetHostedDomain()` calls. When a non-null
-  // callback is set, `GetCachedHostedDomainForIdentity()` returns nil until
+  // Sets a callback to intercept `GetHostedDomain()` calls. While the override
+  // is active, `GetCachedHostedDomainForIdentity()` returns nil until
   // `GetHostedDomain()` completes for that identity.
-  void OverrideGetHostedDomainImplementation(
+  // `custom_implementation` must not be null, and no other override may be
+  // active. The override is removed when the returned
+  // `base::ScopedClosureRunner` is destroyed or run, so that the override is
+  // scoped within a test and does not keep dangling captures during teardown.
+  [[nodiscard]] base::ScopedClosureRunner OverrideGetHostedDomainImplementation(
       GetHostedDomainCallback custom_implementation);
 
   // Simulates reloading the identities from the keychain.
@@ -236,6 +241,9 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
                              HostedDomainCallback callback,
                              NSString* hosted_domain,
                              NSError* error);
+
+  // Removes the `GetHostedDomain()` override.
+  void ResetGetHostedDomainImplementation();
 
   // Helper used to implement the asynchronous part of `FetchCapabilities`.
   void FetchCapabilitiesAsync(id<SystemIdentity> identity,

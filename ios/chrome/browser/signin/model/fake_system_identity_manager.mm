@@ -160,13 +160,12 @@ AccountCapabilities FakeSystemIdentityManager::GetVisibleCapabilities(
   return AccountCapabilities(details.visibleCapabilities);
 }
 
-void FakeSystemIdentityManager::OverrideGetHostedDomainImplementation(
+base::ScopedClosureRunner
+FakeSystemIdentityManager::OverrideGetHostedDomainImplementation(
     GetHostedDomainCallback custom_implementation) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!custom_implementation) {
-    get_hosted_domain_callback_.Reset();
-    return;
-  }
+  CHECK(custom_implementation);
+  CHECK(!get_hosted_domain_callback_);
   get_hosted_domain_callback_ = base::BindRepeating(
       [](base::WeakPtr<FakeSystemIdentityManager> weak_this,
          GetHostedDomainCallback custom_implementation,
@@ -177,6 +176,9 @@ void FakeSystemIdentityManager::OverrideGetHostedDomainImplementation(
         custom_implementation.Run(identity, std::move(wrapped_callback));
       },
       GetWeakPtr(), std::move(custom_implementation));
+  return base::ScopedClosureRunner(base::BindOnce(
+      &FakeSystemIdentityManager::ResetGetHostedDomainImplementation,
+      GetWeakPtr()));
 }
 
 void FakeSystemIdentityManager::FireSystemIdentityReloaded() {
@@ -727,6 +729,11 @@ void FakeSystemIdentityManager::OnHostedDomainFetched(
   // Post the callback to guarantee that GetHostedDomain is always asynchronous.
   PostClosure(FROM_HERE,
               base::BindOnce(std::move(callback), hosted_domain, error));
+}
+
+void FakeSystemIdentityManager::ResetGetHostedDomainImplementation() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  get_hosted_domain_callback_.Reset();
 }
 
 void FakeSystemIdentityManager::FetchCapabilitiesAsync(

@@ -92,16 +92,17 @@ TEST_F(AccountInfoFetcherIosTest, FetchAccountInfoDelayed) {
   FakeSystemIdentity* identity = CreateFakeIdentity();
   system_identity_manager_->AddIdentity(identity);
   SystemIdentityManager::HostedDomainCallback captured_hosted_domain_callback;
-  system_identity_manager_->OverrideGetHostedDomainImplementation(
-      base::BindRepeating(
-          [](SystemIdentityManager::HostedDomainCallback*
-                 captured_hosted_domain_callback,
-             id<SystemIdentity>,
-             SystemIdentityManager::HostedDomainCallback callback) {
-            CHECK(!*captured_hosted_domain_callback);
-            *captured_hosted_domain_callback = std::move(callback);
-          },
-          &captured_hosted_domain_callback));
+  base::ScopedClosureRunner reset_hosted_domain_override =
+      system_identity_manager_->OverrideGetHostedDomainImplementation(
+          base::BindRepeating(
+              [](SystemIdentityManager::HostedDomainCallback*
+                     captured_hosted_domain_callback,
+                 id<SystemIdentity>,
+                 SystemIdentityManager::HostedDomainCallback callback) {
+                CHECK(!*captured_hosted_domain_callback);
+                *captured_hosted_domain_callback = std::move(callback);
+              },
+              &captured_hosted_domain_callback));
 
   base::RunLoop run_loop;
   std::optional<AccountInfo> result_info;
@@ -130,8 +131,6 @@ TEST_F(AccountInfoFetcherIosTest, FetchAccountInfoDelayed) {
   EXPECT_EQ(result_info->GetFullName(), "Foo Name");
   EXPECT_EQ(result_info->GetGivenName(), "Foo");
   EXPECT_EQ(result_info->GetHostedDomain(), "");
-
-  system_identity_manager_->OverrideGetHostedDomainImplementation({});
 }
 
 TEST_F(AccountInfoFetcherIosTest, FetchAccountInfoIdentityNotFound) {

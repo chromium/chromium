@@ -1030,12 +1030,13 @@ TEST_F(AccountProfileMapperTest,
 TEST_F(AccountProfileMapperTest, FetchesHostedDomainAsynchronously) {
   // Setup FakeSystemIdentityManager to *not* synchronously return hosted
   // domains.
-  system_identity_manager_->OverrideGetHostedDomainImplementation(
-      base::BindRepeating(
-          [](id<SystemIdentity> identity,
-             SystemIdentityManager::HostedDomainCallback callback) {
-            std::move(callback).Run(@"google.com", nil);
-          }));
+  base::ScopedClosureRunner reset_hosted_domain_override =
+      system_identity_manager_->OverrideGetHostedDomainImplementation(
+          base::BindRepeating(
+              [](id<SystemIdentity> identity,
+                 SystemIdentityManager::HostedDomainCallback callback) {
+                std::move(callback).Run(@"google.com", nil);
+              }));
 
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
       system_identity_manager_, profile_manager_.get(),
@@ -1087,15 +1088,16 @@ TEST_F(AccountProfileMapperTest, RetriesHostedDomainFetchWithBackoff) {
                                        code:123
                                    userInfo:nil];
   size_t num_hosted_domain_errors_returned = 0;
-  system_identity_manager_->OverrideGetHostedDomainImplementation(
-      base::BindRepeating(
-          [](NSError* error, size_t* num_errors_returned,
-             id<SystemIdentity> identity,
-             SystemIdentityManager::HostedDomainCallback callback) {
-            ++(*num_errors_returned);
-            std::move(callback).Run(nil, error);
-          },
-          error, &num_hosted_domain_errors_returned));
+  base::ScopedClosureRunner reset_hosted_domain_override =
+      system_identity_manager_->OverrideGetHostedDomainImplementation(
+          base::BindRepeating(
+              [](NSError* error, size_t* num_errors_returned,
+                 id<SystemIdentity> identity,
+                 SystemIdentityManager::HostedDomainCallback callback) {
+                ++(*num_errors_returned);
+                std::move(callback).Run(nil, error);
+              },
+              error, &num_hosted_domain_errors_returned));
 
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
       system_identity_manager_, profile_manager_.get(),
@@ -1117,7 +1119,7 @@ TEST_F(AccountProfileMapperTest, RetriesHostedDomainFetchWithBackoff) {
   EXPECT_EQ(num_hosted_domain_errors_returned, 2u);
 
   // Now let the next retry succeed.
-  system_identity_manager_->OverrideGetHostedDomainImplementation({});
+  reset_hosted_domain_override.RunAndReset();
   task_environment_.FastForwardBy(base::Seconds(2));
 
   // A managed profile should have been created, and the account assigned to it.
@@ -1138,15 +1140,16 @@ TEST_F(AccountProfileMapperTest, StopsRetryingHostedDomainFetches) {
                                        code:123
                                    userInfo:nil];
   size_t num_hosted_domain_errors_returned = 0;
-  system_identity_manager_->OverrideGetHostedDomainImplementation(
-      base::BindRepeating(
-          [](NSError* error, size_t* num_errors_returned,
-             id<SystemIdentity> identity,
-             SystemIdentityManager::HostedDomainCallback callback) {
-            ++(*num_errors_returned);
-            std::move(callback).Run(nil, error);
-          },
-          error, &num_hosted_domain_errors_returned));
+  base::ScopedClosureRunner reset_hosted_domain_override =
+      system_identity_manager_->OverrideGetHostedDomainImplementation(
+          base::BindRepeating(
+              [](NSError* error, size_t* num_errors_returned,
+                 id<SystemIdentity> identity,
+                 SystemIdentityManager::HostedDomainCallback callback) {
+                ++(*num_errors_returned);
+                std::move(callback).Run(nil, error);
+              },
+              error, &num_hosted_domain_errors_returned));
 
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
       system_identity_manager_, profile_manager_.get(),
@@ -1165,8 +1168,6 @@ TEST_F(AccountProfileMapperTest, StopsRetryingHostedDomainFetches) {
   EXPECT_EQ(num_hosted_domain_errors_returned, 5u);
   EXPECT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
   EXPECT_NSEQ(@[], GetIdentitiesForProfile(kPersonalProfileName));
-
-  system_identity_manager_->OverrideGetHostedDomainImplementation({});
 }
 
 // Tests that `Signin.IOSAccountProfileMappingStartupState` is not recorded when
@@ -2197,12 +2198,13 @@ TEST_F(AccountProfileMapperCleanupTest,
   // populates the cache, and then runs on the next startup.
   constexpr char kManagedProfile3[] = "33333333-3333-3333-3333-333333333333";
   account_profile_mapper_.reset();
-  system_identity_manager_->OverrideGetHostedDomainImplementation(
-      base::BindRepeating(
-          [](id<SystemIdentity> identity,
-             SystemIdentityManager::HostedDomainCallback callback) {
-            std::move(callback).Run(@"google.com", nil);
-          }));
+  base::ScopedClosureRunner reset_hosted_domain_override =
+      system_identity_manager_->OverrideGetHostedDomainImplementation(
+          base::BindRepeating(
+              [](id<SystemIdentity> identity,
+                 SystemIdentityManager::HostedDomainCallback callback) {
+                std::move(callback).Run(@"google.com", nil);
+              }));
   system_identity_manager_->AddIdentity(google_identity);
   ASSERT_EQ(system_identity_manager_->GetCachedHostedDomainForIdentity(
                 google_identity),
