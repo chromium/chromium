@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/check_is_test.h"
 #include "base/command_line.h"
@@ -71,9 +72,32 @@
 #include "components/policy/core/common/proxy_policy_provider.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "base/environment.h"
+#include "base/nix/xdg_util.h"
+#endif
+
 namespace policy {
 namespace {
 bool g_command_line_enabled_for_testing = false;
+
+#if BUILDFLAG(IS_LINUX)
+// Returns `$SNAP_DATA/policies` when running in a snap, or an empty path
+// otherwise. Being in a snap is derived from environment variables, so this
+// path must be paired with a `ConfigDirPolicyLoader::OwnershipRequirement`
+// rather than trusted directly.
+base::FilePath GetSnapPolicyDir() {
+  if (base::nix::GetAppSandbox() != base::nix::AppSandbox::kSnap) {
+    return base::FilePath();
+  }
+  base::FilePath snap_data_path(
+      base::Environment().GetVar("SNAP_DATA").value_or(std::string()));
+  if (!snap_data_path.IsAbsolute()) {
+    return base::FilePath();
+  }
+  return snap_data_path.Append(FILE_PATH_LITERAL("policies"));
+}
+#endif  // BUILDFLAG(IS_LINUX)
 }  // namespace
 
 ChromeBrowserPolicyConnector::ChromeBrowserPolicyConnector()
@@ -388,10 +412,28 @@ ChromeBrowserPolicyConnector::CreatePlatformProvider() {
 #elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   base::FilePath config_dir_path;
   if (base::PathService::Get(chrome::DIR_POLICY_FILES, &config_dir_path)) {
+    std::vector<ConfigDirPolicyLoader::ConfigDirectory> config_dirs = {
+        ConfigDirPolicyLoader::ConfigDirectory(std::move(config_dir_path)),
+    };
+#if BUILDFLAG(IS_LINUX)
+    // In a snap, `$SNAP_DATA/policies` is a lower-precedence source of policy
+    // for systems where the standard directory isn't writable, e.g. Ubuntu
+    // Core. Require root ownership up to `/` so unprivileged users can't inject
+    // policy via `SNAP_DATA`.
+    if (base::FilePath snap_policy_dir = GetSnapPolicyDir();
+        !snap_policy_dir.empty()) {
+      config_dirs.emplace_back(
+          std::move(snap_policy_dir),
+          ConfigDirPolicyLoader::OwnershipRequirement{
+              .trusted_base_dir = base::FilePath(FILE_PATH_LITERAL("/")),
+              .trusted_uid = 0,
+          });
+    }
+#endif  // BUILDFLAG(IS_LINUX)
     auto loader = std::make_unique<ConfigDirPolicyLoader>(
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
-        config_dir_path, POLICY_SCOPE_MACHINE);
+        std::move(config_dirs), POLICY_SCOPE_MACHINE);
     return std::make_unique<AsyncPolicyProvider>(GetSchemaRegistry(),
                                                  std::move(loader));
   } else {

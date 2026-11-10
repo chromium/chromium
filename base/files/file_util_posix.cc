@@ -88,7 +88,7 @@ namespace {
 // which it replaces in place with a unique suffix.
 constexpr size_t kMkstempSuffixLength = 6u;
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Helper for VerifyPathControlledByUser.
 bool VerifySpecificPathControlledByUser(const FilePath& path,
                                         uid_t owner_uid,
@@ -1605,7 +1605,7 @@ bool SetCurrentDirectory(const FilePath& path) {
   return chdir(path.value().c_str()) == 0;
 }
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 bool VerifyPathControlledByUser(const FilePath& base,
                                 const FilePath& path,
                                 uid_t owner_uid,
@@ -1643,7 +1643,9 @@ bool VerifyPathControlledByUser(const FilePath& base,
   }
   return true;
 }
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+#if BUILDFLAG(IS_MAC)
 bool VerifyPathControlledByAdmin(const FilePath& path) {
   constexpr unsigned kRootUid = 0;
   const FilePath kFileSystemRoot("/");

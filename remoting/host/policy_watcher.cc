@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
@@ -440,9 +441,10 @@ std::unique_ptr<PolicyWatcher> PolicyWatcher::CreateWithTaskRunner(
       policy::PolicyLoaderMac::GetManagedPolicyPath(bundle_id),
       std::make_unique<MacPreferences>(), bundle_id);
 #elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
+  std::vector<policy::ConfigDirPolicyLoader::ConfigDirectory> config_dirs;
+  config_dirs.emplace_back(base::FilePath(policy::kPolicyPath));
   policy_loader = std::make_unique<policy::ConfigDirPolicyLoader>(
-      file_task_runner, base::FilePath(policy::kPolicyPath),
-      policy::POLICY_SCOPE_MACHINE);
+      file_task_runner, std::move(config_dirs), policy::POLICY_SCOPE_MACHINE);
 #elif BUILDFLAG(IS_ANDROID)
   NOTIMPLEMENTED();
   policy::PolicyServiceImpl::Providers providers;

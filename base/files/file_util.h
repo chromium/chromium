@@ -776,7 +776,7 @@ BASE_EXPORT bool SetCloseOnExec(int fd);
 BASE_EXPORT bool RemoveCloseOnExec(int fd);
 #endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Test that |path| can only be changed by a given user and members of
 // a given set of groups.
 // Specifically, test that all parts of |path| under (and including) |base|:
@@ -792,7 +792,9 @@ BASE_EXPORT bool VerifyPathControlledByUser(const base::FilePath& base,
                                             const base::FilePath& path,
                                             uid_t owner_uid,
                                             const std::set<gid_t>& group_gids);
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+#if BUILDFLAG(IS_MAC)
 // Is |path| writable only by a user with administrator privileges?
 // This function uses Mac OS conventions.  The super user is assumed to have
 // uid 0, and the administrator group is assumed to be named "admin".

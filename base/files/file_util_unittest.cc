@@ -131,7 +131,7 @@ FilePath MakeShortFilePath(const FilePath& input) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Provide a simple way to change the permissions bits on |path| in tests.
 // ASSERT failures will return, but not stop the test.  Caller should wrap
 // calls to this function in ASSERT_NO_FATAL_FAILURE().
@@ -147,7 +147,7 @@ void ChangePosixFilePermissions(const FilePath& path,
   mode &= ~mode_bits_to_clear;
   ASSERT_TRUE(SetPosixFilePermissions(path, mode));
 }
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 // Fuchsia doesn't support file permissions.
 #if !BUILDFLAG(IS_FUCHSIA)
@@ -4653,7 +4653,7 @@ TEST_F(FileUtilTest, SetCloseOnExec) {
 
 #endif
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 // Testing VerifyPathControlledByAdmin() is hard, because there is no
 // way a test can make a file owned by root, or change file paths
@@ -4921,7 +4921,7 @@ TEST_F(VerifyPathControlledByUserTest, WriteBitChecks) {
   EXPECT_TRUE(VerifyPathControlledByUser(sub_dir_, text_file_, uid_, ok_gids_));
 }
 
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(FileUtilTest, ValidContentUriTest) {

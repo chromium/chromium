@@ -8,9 +8,14 @@
 
 #include <algorithm>
 #include <array>
+#include <map>
+#include <memory>
+#include <optional>
 #include <ranges>
 #include <set>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -21,6 +26,7 @@
 #include "base/logging.h"
 #include "base/syslog_logging.h"
 #include "base/task/sequenced_task_runner.h"
+#include "build/build_config.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_types.h"
@@ -35,41 +41,9 @@ constexpr base::FilePath::CharType kMandatoryConfigDir[] =
 constexpr base::FilePath::CharType kRecommendedConfigDir[] =
     FILE_PATH_LITERAL("recommended");
 
-}  // namespace
-
-ConfigDirPolicyLoader::ConfigDirPolicyLoader(
-    scoped_refptr<base::SequencedTaskRunner> task_runner,
-    const base::FilePath& config_dir,
-    PolicyScope scope)
-    : AsyncPolicyLoader(task_runner, /*periodic_updates=*/true),
-      task_runner_(task_runner),
-      config_dir_(config_dir),
-      scope_(scope) {}
-
-ConfigDirPolicyLoader::~ConfigDirPolicyLoader() = default;
-
-void ConfigDirPolicyLoader::InitOnBackgroundThread() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  base::FilePathWatcher::Callback callback = base::BindRepeating(
-      &ConfigDirPolicyLoader::OnFileUpdated, base::Unretained(this));
-  mandatory_watcher_.Watch(config_dir_.Append(kMandatoryConfigDir),
-                           base::FilePathWatcher::Type::kNonRecursive,
-                           callback);
-  recommended_watcher_.Watch(config_dir_.Append(kRecommendedConfigDir),
-                             base::FilePathWatcher::Type::kNonRecursive,
-                             callback);
-}
-
-PolicyBundle ConfigDirPolicyLoader::Load() {
-  PolicyBundle bundle;
-  LoadFromPath(config_dir_.Append(kMandatoryConfigDir), POLICY_LEVEL_MANDATORY,
-               &bundle);
-  LoadFromPath(config_dir_.Append(kRecommendedConfigDir),
-               POLICY_LEVEL_RECOMMENDED, &bundle);
-  return bundle;
-}
-
-base::Time ConfigDirPolicyLoader::LastModificationTime() {
+// Returns the most recent modification time of the files directly in
+// `config_dir`'s mandatory and recommended subdirectories.
+base::Time GetLastModificationTime(const base::FilePath& config_dir) {
   constexpr static const auto kConfigDirSuffixes =
       std::to_array<const base::FilePath::CharType*>({
           kMandatoryConfigDir,
@@ -80,28 +54,133 @@ base::Time ConfigDirPolicyLoader::LastModificationTime() {
   base::File::Info info;
 
   for (size_t i = 0; i < std::size(kConfigDirSuffixes); ++i) {
-    base::FilePath path(config_dir_.Append(kConfigDirSuffixes[i]));
+    base::FilePath path(config_dir.Append(kConfigDirSuffixes[i]));
 
     // Skip if the file doesn't exist, or it isn't a directory.
-    if (!base::GetFileInfo(path, &info) || !info.is_directory)
+    if (!base::GetFileInfo(path, &info) || !info.is_directory) {
       continue;
+    }
 
     // Enumerate the files and find the most recent modification timestamp.
     base::FileEnumerator file_enumerator(path, false,
                                          base::FileEnumerator::FILES);
     for (base::FilePath config_file = file_enumerator.Next();
-         !config_file.empty();
-         config_file = file_enumerator.Next()) {
-      if (base::GetFileInfo(config_file, &info) && !info.is_directory)
+         !config_file.empty(); config_file = file_enumerator.Next()) {
+      if (base::GetFileInfo(config_file, &info) && !info.is_directory) {
         last_modification = std::max(last_modification, info.last_modified);
+      }
     }
   }
 
   return last_modification;
 }
 
+bool IsTrustedPath(const base::FilePath& path,
+                   const ConfigDirPolicyLoader::ConfigDirectory& config_dir) {
+  if (!config_dir.ownership_requirement) {
+    return true;
+  }
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  return base::VerifyPathControlledByUser(
+      config_dir.ownership_requirement->trusted_base_dir, path,
+      config_dir.ownership_requirement->trusted_uid, {});
+#else
+  // `OwnershipRequirement` is only supported where ownership can be verified.
+  NOTREACHED();
+#endif
+}
+
+}  // namespace
+
+ConfigDirPolicyLoader::ConfigDirectory::ConfigDirectory(base::FilePath path)
+    : path(std::move(path)) {}
+
+ConfigDirPolicyLoader::ConfigDirectory::ConfigDirectory(
+    base::FilePath path,
+    std::optional<OwnershipRequirement> ownership_requirement)
+    : path(std::move(path)),
+      ownership_requirement(std::move(ownership_requirement)) {}
+
+ConfigDirPolicyLoader::ConfigDirectory::ConfigDirectory(
+    const ConfigDirectory&) = default;
+ConfigDirPolicyLoader::ConfigDirectory&
+ConfigDirPolicyLoader::ConfigDirectory::operator=(const ConfigDirectory&) =
+    default;
+ConfigDirPolicyLoader::ConfigDirectory::ConfigDirectory(ConfigDirectory&&) =
+    default;
+ConfigDirPolicyLoader::ConfigDirectory&
+ConfigDirPolicyLoader::ConfigDirectory::operator=(ConfigDirectory&&) = default;
+ConfigDirPolicyLoader::ConfigDirectory::~ConfigDirectory() = default;
+
+ConfigDirPolicyLoader::ConfigDirPolicyLoader(
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    std::vector<ConfigDirectory> config_dirs,
+    PolicyScope scope)
+    : AsyncPolicyLoader(task_runner, /*periodic_updates=*/true),
+      task_runner_(task_runner),
+      config_dirs_(std::move(config_dirs)),
+      scope_(scope) {}
+
+ConfigDirPolicyLoader::~ConfigDirPolicyLoader() = default;
+
+void ConfigDirPolicyLoader::InitOnBackgroundThread() {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  base::FilePathWatcher::Callback callback = base::BindRepeating(
+      &ConfigDirPolicyLoader::OnFileUpdated, base::Unretained(this));
+  for (const ConfigDirectory& config_dir : config_dirs_) {
+    if (config_dir.path.empty()) {
+      continue;
+    }
+    for (const base::FilePath::CharType* subdir :
+         {kMandatoryConfigDir, kRecommendedConfigDir}) {
+      auto watcher = std::make_unique<base::FilePathWatcher>();
+      watcher->Watch(config_dir.path.Append(subdir),
+                     base::FilePathWatcher::Type::kNonRecursive, callback);
+      watchers_.push_back(std::move(watcher));
+    }
+  }
+}
+
+PolicyBundle ConfigDirPolicyLoader::Load() {
+  PolicyBundle bundle;
+  for (const ConfigDirectory& config_dir : config_dirs_) {
+    if (config_dir.path.empty()) {
+      continue;
+    }
+    base::FilePath dir = config_dir.path;
+    if (config_dir.ownership_requirement) {
+      // Resolve symlinks (e.g. `$SNAP_DATA` is `/var/snap/<name>/current`, a
+      // symlink to the current revision), so that the ownership check covers
+      // the directories that are actually read.
+      dir = base::MakeAbsoluteFilePath(dir);
+      if (dir.empty()) {
+        continue;
+      }
+    }
+    // Merging keeps the existing entry when priorities are equal, so earlier
+    // directories in `config_dirs_` win conflicts at the same level.
+    LoadFromPath(dir.Append(kMandatoryConfigDir), POLICY_LEVEL_MANDATORY,
+                 config_dir, &bundle);
+    LoadFromPath(dir.Append(kRecommendedConfigDir), POLICY_LEVEL_RECOMMENDED,
+                 config_dir, &bundle);
+  }
+  return bundle;
+}
+
+base::Time ConfigDirPolicyLoader::LastModificationTime() {
+  base::Time last_modification;
+  for (const ConfigDirectory& config_dir : config_dirs_) {
+    if (!config_dir.path.empty()) {
+      last_modification =
+          std::max(last_modification, GetLastModificationTime(config_dir.path));
+    }
+  }
+  return last_modification;
+}
+
 void ConfigDirPolicyLoader::LoadFromPath(const base::FilePath& path,
                                          PolicyLevel level,
+                                         const ConfigDirectory& config_dir,
                                          PolicyBundle* bundle) {
   // Enumerate the files and sort them lexicographically.
   std::set<base::FilePath> files;
@@ -111,6 +190,12 @@ void ConfigDirPolicyLoader::LoadFromPath(const base::FilePath& path,
                                        base::FileEnumerator::FILES);
   for (base::FilePath config_file_path = file_enumerator.Next();
        !config_file_path.empty(); config_file_path = file_enumerator.Next()) {
+    if (!IsTrustedPath(config_file_path, config_dir)) {
+      SYSLOG(WARNING) << "Ignoring policy file " << config_file_path.value()
+                      << " because it isn't owned by the expected user or is "
+                         "writable by other users.";
+      continue;
+    }
     files.insert(config_file_path);
     VLOG_POLICY(1, POLICY_FETCHING)
         << "Found " << policy_level << " policy file: " << config_file_path;
