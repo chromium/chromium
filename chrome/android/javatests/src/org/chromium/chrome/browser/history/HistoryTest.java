@@ -12,6 +12,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -40,7 +41,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -337,8 +337,6 @@ public class HistoryTest {
     @Test
     @MediumTest
     @Features.EnableFeatures(ChromeFeatureList.ANDROID_HISTORY_CLUSTERING)
-    // Flaky: crbug.com/493318914
-    @DisableIf.Device(DeviceFormFactor.DESKTOP)
     public void testHistoryClustering_RemoveItem() throws Exception {
         mActivityTestRule.startOnBlankPage();
         String urlOne =
@@ -388,13 +386,13 @@ public class HistoryTest {
         waitForNoView(withText("One"));
 
         // The cluster should dissolve, so "Two" is visible as a normal item.
-        waitForView(withText("Two"));
+        waitForView(
+                allOf(withText("Two"), isDescendantOfA(withId(R.id.history_page_recycler_view))));
     }
 
     @Test
     @MediumTest
     @Features.EnableFeatures(ChromeFeatureList.ANDROID_HISTORY_CLUSTERING)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // Flaky on desktop crbug.com/498132516
     public void testHistoryClustering_RemoveCluster() throws Exception {
         mActivityTestRule.startOnBlankPage();
         String urlOne =
@@ -417,16 +415,23 @@ public class HistoryTest {
                 mActivityTestRule.getActivity().getWindow().getDecorView());
 
         // Verify the cluster is created and select it.
-        waitForView(withText(domain)).longPress();
+        waitForView(
+                        allOf(
+                                withText(domain),
+                                isDescendantOfA(withId(R.id.history_page_recycler_view))))
+                .longPress();
 
         // Click delete on the toolbar.
         waitForView(withId(R.id.selection_mode_delete_menu_id)).click();
 
         // Ensure "domain" is removed.
-        waitForNoView(withText(domain));
+        waitForNoView(
+                allOf(withText(domain), isDescendantOfA(withId(R.id.history_page_recycler_view))));
 
         // Also ensure the items are actually removed (they shouldn't be visible).
-        waitForNoView(withText("One"));
-        waitForNoView(withText("Two"));
+        waitForNoView(
+                allOf(withText("One"), isDescendantOfA(withId(R.id.history_page_recycler_view))));
+        waitForNoView(
+                allOf(withText("Two"), isDescendantOfA(withId(R.id.history_page_recycler_view))));
     }
 }
