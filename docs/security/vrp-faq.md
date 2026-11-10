@@ -224,11 +224,11 @@ hotlist to the issue (you can do this after it has been filed).
 We welcome contributions of blackbox fuzzers with a proven track record, and
 will run them on our clusterfuzz infrastructure so that reports are created
 automatically. To submit a fuzzer please first submit three valid security
-vulnerabilities using our normal processes. Once three vulnerabilities have
-been confirmed, and did not dupe against our internal fuzzers or AI tools,
-you are welcome to submit your fuzzer. Reach out to fuzzing@chromium.org
-with details of your fuzzer and links to the previously submitted
-vulnerabilities.
+vulnerabilities found with the fuzzer using our normal processes. Once three
+vulnerabilities have been confirmed, and did not dupe against our internal
+fuzzers or AI tools, you are welcome to submit your fuzzer. Reach out to
+fuzzing@chromium.org with details of your fuzzer and links to the previously
+submitted vulnerabilities.
 
 All issues reported by hosted fuzzers are eligible for baseline rewards
 and a fuzzer bonus, as outlined in our [VRP Rules page](https://bughunters.google.com/about/rules/chrome-friends/chrome-vulnerability-reward-program-rules#fuzzer-bonus).
