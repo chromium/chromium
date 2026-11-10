@@ -6262,7 +6262,7 @@
   {
     "name": "idb-sqlite-backing-store",
     "owners": ["evanstade@microsoft.com", "abhishek.shanthkumar@microsoft.com", "//content/browser/indexed_db/OWNERS"],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "ignore-gpu-blocklist",
