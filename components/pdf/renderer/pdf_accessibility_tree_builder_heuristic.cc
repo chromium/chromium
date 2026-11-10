@@ -68,8 +68,7 @@ enum class ListMarkerForm {
 // Classifies a list marker and records its properties.
 struct ListMarkerKind {
   ListMarkerForm form = ListMarkerForm::kNone;
-  // The marker if it is a decimal ordered list marker; unset for unordered
-  // markers.
+  // The marker if it is an ordered list marker; unset for unordered markers.
   std::optional<OrderedMarker> ordered_marker;
   // Whether this is one of `kNestedOnlyListMarkers` or a Word nested marker.
   bool nested_only = false;
@@ -237,7 +236,7 @@ constexpr float kMaxFirstLineIndentEm = 3.0f;
 // reached close to the column's right edge before wrapping.
 constexpr float kWrapRightEdgeToleranceEm = 2.0f;
 
-// Delimiters that may follow the number in a decimal ordered list marker.
+// Delimiters that may follow the number or letter in an ordered list marker.
 // TODO(crbug.com/525509231): Support CJK delimiters such as "．" (U+FF0E
 // FULLWIDTH FULL STOP) and "、" (U+3001 IDEOGRAPHIC COMMA), which may follow
 // full-width digits and have no trailing space.
@@ -1766,27 +1765,42 @@ ListPlacement GetListPlacement(
           .level_index = target_level};
 }
 
-// Classifies `run_context` as a decimal ordered list marker: 1-3 digits
-// followed by one of `kOrderedMarkerDelimiters` (e.g. "1.", "12)"), or wrapped
-// in parentheses (e.g. "(1)"). On a match, returns `ordered_marker` set to the
-// marker's number and type, and form `kStandalone` if the marker is alone in
-// its run with item text in the next run on the same line, or `kCombined` if
-// whitespace and item text follow it in the same run.
+// Classifies `run_context` as an ordered list marker: 1-3 digits or a single
+// ASCII lowercase letter, followed by one of `kOrderedMarkerDelimiters` (e.g.
+// "1.", "12)", "a.") or wrapped in parentheses (e.g. "(1)", "(a)"). On a match,
+// returns `ordered_marker` set to the marker's type and value (the number, or
+// the letter's position in the alphabet), and form `kStandalone` if the marker
+// is alone in its run with item text in the next run on the same line, or
+// `kCombined` if whitespace and item text follow it in the same run.
 // Otherwise, returns form `kNone` with no `ordered_marker`, e.g. for years
-// ("2023.", "(2020)"), decimals ("1.5"), or a marker with no item text after
-// it.
+// ("2023.", "(2020)"), decimals ("1.5"), abbreviations ("e.g."), or a marker
+// with no item text after it.
 ListMarkerKind ClassifyOrderedMarker(const TextRunContext& run_context) {
   const std::string text = GetTrimmedText(run_context.chars);
-  // TODO(crbug.com/525509231): Support alphabetic and roman numeral markers
-  // (e.g. "a.", "B)", "iv.").
+  // TODO(crbug.com/525509231): Support uppercase and roman numeral markers
+  // (e.g. "B)", "iv.").
   const bool is_parenthesized = text.starts_with('(');
-  const size_t digits_start = is_parenthesized ? 1 : 0;
-  size_t i = digits_start;
+  const size_t value_start = is_parenthesized ? 1 : 0;
+  size_t i = value_start;
   while (i < text.size() && base::IsAsciiDigit(text[i])) {
     ++i;
   }
-  const size_t digit_count = i - digits_start;
-  if (digit_count == 0 || digit_count > kMaxOrderedMarkerDigits) {
+  const size_t digit_count = i - value_start;
+  if (digit_count > kMaxOrderedMarkerDigits) {
+    return {};
+  }
+  OrderedMarkerType::CounterStyle counter_style;
+  int value;
+  if (digit_count > 0) {
+    if (!base::StringToInt(text.substr(value_start, digit_count), &value)) {
+      return {};
+    }
+    counter_style = OrderedMarkerType::CounterStyle::kDecimal;
+  } else if (i < text.size() && base::IsAsciiLower(text[i])) {
+    counter_style = OrderedMarkerType::CounterStyle::kLowerAlpha;
+    value = text[i] - 'a' + 1;
+    ++i;
+  } else {
     return {};
   }
   // The marker ends at the first whitespace, or at the end of a standalone run.
@@ -1799,11 +1813,8 @@ ListMarkerKind ClassifyOrderedMarker(const TextRunContext& run_context) {
           : !std::ranges::contains(kOrderedMarkerDelimiters, delimiter)) {
     return {};
   }
-  int value;
-  if (!base::StringToInt(text.substr(digits_start, digit_count), &value)) {
-    return {};
-  }
-  const OrderedMarkerType type = {.parenthesized = is_parenthesized};
+  const OrderedMarkerType type = {.counter_style = counter_style,
+                                  .parenthesized = is_parenthesized};
   // A run containing only the marker is a standalone marker if the item text
   // follows in the next run on the same line.
   if (marker_size == text.size()) {
@@ -1986,7 +1997,7 @@ ListMarkerKind ClassifyListMarker(
 
   const int value = ordered_kind.ordered_marker->value;
   if (placement.kind == ListPlacementKind::kExistingLevel) {
-    // Continuing a list requires the next number in sequence.
+    // Continuing a list requires the next number or letter in sequence.
     if (list_levels[placement.level_index].last_ordered_marker->value !=
         value - 1) {
       return {};
@@ -2453,11 +2464,17 @@ PageTables ComputePageTables(
 void RecordListStartReason(const ListMarkerKind& kind) {
   ListStartReason reason;
   if (kind.ordered_marker.has_value()) {
-    // New ordered lists start at 1, or above 1 when resuming numbering (e.g.
-    // on a new page); see `ClassifyListMarker()`.
-    reason = kind.ordered_marker->value == 1
-                 ? ListStartReason::kDecimalStartsAtOne
-                 : ListStartReason::kDecimalStartsAboveOne;
+    // New ordered lists start at 1 or "a", or above that when resuming
+    // numbering (e.g. on a new page); see `ClassifyListMarker()`.
+    const bool starts_at_one = kind.ordered_marker->value == 1;
+    if (kind.ordered_marker->type.counter_style ==
+        OrderedMarkerType::CounterStyle::kLowerAlpha) {
+      reason = starts_at_one ? ListStartReason::kLowerAlphaStartsAtA
+                             : ListStartReason::kLowerAlphaStartsAboveA;
+    } else {
+      reason = starts_at_one ? ListStartReason::kDecimalStartsAtOne
+                             : ListStartReason::kDecimalStartsAboveOne;
+    }
   } else if (kind.nested_only) {
     reason = ListStartReason::kNestedOnlyMarker;
   } else {

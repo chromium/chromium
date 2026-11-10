@@ -40,8 +40,10 @@ enum class ListStartReason {
   kNestedOnlyMarker = 1,
   kDecimalStartsAtOne = 2,
   kDecimalStartsAboveOne = 3,
+  kLowerAlphaStartsAtA = 4,
+  kLowerAlphaStartsAboveA = 5,
 
-  kMaxValue = kDecimalStartsAboveOne,
+  kMaxValue = kLowerAlphaStartsAboveA,
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:PdfAccessibilityListStartReason)
 

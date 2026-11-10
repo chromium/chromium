@@ -24282,6 +24282,9 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="Nested-only unordered marker"/>
   <int value="2" label="Ordered numeric marker starting at 1"/>
   <int value="3" label="Ordered numeric marker starting above 1"/>
+  <int value="4" label="Ordered ASCII lowercase letter marker starting at a"/>
+  <int value="5"
+      label="Ordered ASCII lowercase letter marker starting above a"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/pdf/renderer/pdf_accessibility_metrics.h:PdfAccessibilityListStartReason) -->

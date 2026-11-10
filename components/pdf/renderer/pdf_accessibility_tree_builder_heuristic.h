@@ -45,6 +45,8 @@ struct OrderedMarkerType {
   enum class CounterStyle {
     // "1", "2", "3", ...
     kDecimal,
+    // ASCII "a", "b", "c", ...
+    kLowerAlpha,
   };
 
   friend bool operator==(const OrderedMarkerType&,
@@ -60,7 +62,7 @@ struct OrderedMarkerType {
 
 // An ordered list marker.
 struct OrderedMarker {
-  // The marker's position in its list, not its text, e.g. 2 for "2.".
+  // The marker's position in its list, not its text, e.g. 2 for "2." or "b)".
   int value = 0;
   OrderedMarkerType type;
 };
