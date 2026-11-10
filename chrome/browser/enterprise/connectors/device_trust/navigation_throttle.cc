@@ -307,6 +307,8 @@ void DeviceTrustNavigationThrottle::ReplyChallengeResponseAndResume(
         CreateErrorJsonString(copied_dt_response));
   } else {
     LogAttestationFunnelStep(DTAttestationFunnelStep::kChallengeResponseSent);
+    LogAttestationResponseHeaderSize(
+        copied_dt_response.challenge_response.size());
     navigation_handle()->SetRequestHeader(
         kVerifiedAccessResponseHeader, copied_dt_response.challenge_response);
   }

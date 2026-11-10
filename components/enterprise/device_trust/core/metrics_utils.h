@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_ENTERPRISE_DEVICE_TRUST_CORE_METRICS_UTILS_H_
 #define COMPONENTS_ENTERPRISE_DEVICE_TRUST_CORE_METRICS_UTILS_H_
 
+#include <cstddef>
 #include <set>
 
 #include "base/time/time.h"
@@ -68,6 +69,10 @@ void LogAttestationResult(DTAttestationResult result);
 
 void LogDeviceTrustResponse(const DeviceTrustResponse& response,
                             base::TimeTicks start_time);
+
+// Logs `size`, in bytes, of a successful challenge response sent to the server
+// in the X-Verified-Access-Challenge-Response header. Not for error responses.
+void LogAttestationResponseHeaderSize(size_t size);
 
 // Logs time elapsed since `start_time` to the signals collection histogram
 // dictated by `variant`. See all possible variants, or add new ones, in the

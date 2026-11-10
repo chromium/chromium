@@ -71,6 +71,8 @@ constexpr char kHandshakeResultHistogram[] =
     "Enterprise.DeviceTrust.Handshake.Result";
 constexpr char kPolicyLevelsHistogramName[] =
     "Enterprise.DeviceTrust.Attestation.PolicyLevel";
+constexpr char kResponseHeaderSizeHistogram[] =
+    "Enterprise.DeviceTrust.Attestation.ResponseHeaderSize";
 
 const std::set<DTCPolicyLevel> kUserPolicyLevel = {DTCPolicyLevel::kUser};
 
@@ -252,6 +254,13 @@ class DeviceTrustNavigationThrottleTest : public testing::Test {
         1);
     histogram_tester_.ExpectUniqueSample(kHandshakeResultHistogram,
                                          expected_result, 1);
+    // Recorded only on success.
+    if (response.error || response.challenge_response.empty()) {
+      histogram_tester_.ExpectTotalCount(kResponseHeaderSizeHistogram, 0);
+    } else {
+      histogram_tester_.ExpectUniqueSample(
+          kResponseHeaderSizeHistogram, response.challenge_response.size(), 1);
+    }
   }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -581,6 +590,8 @@ TEST_F(DeviceTrustNavigationThrottleTest, TestTimeout) {
 
   histogram_tester_.ExpectUniqueSample(kHandshakeResultHistogram,
                                        DTHandshakeResult::kTimeout, 1);
+  // Neither the timeout error nor the late successful response is recorded.
+  histogram_tester_.ExpectTotalCount(kResponseHeaderSizeHistogram, 0);
 }
 
 #if !BUILDFLAG(IS_ANDROID)

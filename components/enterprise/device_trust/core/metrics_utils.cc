@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "components/enterprise/device_trust/core/common_types.h"
@@ -116,6 +117,17 @@ void LogDeviceTrustResponse(const DeviceTrustResponse& response,
       "Enterprise.DeviceTrust.Handshake.Result";
   base::UmaHistogramEnumeration(kHandshakeResultHistogram,
                                 ResponseToResult(response));
+}
+
+void LogAttestationResponseHeaderSize(size_t size) {
+  static constexpr char kResponseHeaderSizeHistogram[] =
+      "Enterprise.DeviceTrust.Attestation.ResponseHeaderSize";
+  // Custom range up to 32 KiB, so that the ~8 KiB header limit of identity
+  // providers and proxies falls in a narrow bucket.
+  base::UmaHistogramCustomCounts(kResponseHeaderSizeHistogram,
+                                 base::saturated_cast<int>(size),
+                                 /*min=*/1, /*exclusive_max=*/32768,
+                                 /*buckets=*/50);
 }
 
 void LogSignalsCollectionLatency(const char* variant,

@@ -2086,6 +2086,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.DeviceTrust.Attestation.ResponseHeaderSize"
+    units="bytes" expires_after="2027-10-01">
+  <owner>mwalachowski@google.com</owner>
+  <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Size of the X-Verified-Access-Challenge-Response header value that the
+    Device Trust connector sends to the identity provider. Recorded once per
+    handshake, only on success. Tracks how close the header gets to the ~8 KiB
+    limit of identity providers and proxies (e.g. HTTP 431). Recorded on every
+    platform that uses the navigation throttle.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.DeviceTrust.Attestation.ResponseLatency.{Variant}"
     units="ms" expires_after="2027-10-01">
   <owner>hmare@google.com</owner>
