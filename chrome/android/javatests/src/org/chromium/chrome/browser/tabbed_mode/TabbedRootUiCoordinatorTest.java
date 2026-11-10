@@ -1076,7 +1076,7 @@ public class TabbedRootUiCoordinatorTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // TODO(crbug.com/583352331): Re-enable.
+    @DisableIf.Device(DeviceFormFactor.TABLET_OR_DESKTOP) // https://crbug.com/583352331
     public void testSendTabToSelfOmniboxIphOnTabSwitch() {
         String url = mActivityTestRule.getTestServer().getURL(NavigatePageStations.PATH_ONE);
         setUpSendTabToSelfOmniboxIph(url);
