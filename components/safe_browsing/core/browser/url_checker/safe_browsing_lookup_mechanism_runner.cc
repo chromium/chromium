@@ -23,10 +23,15 @@ void RecordRunnerTimeTaken(const std::string& performed_check_suffix,
 }
 
 void RecordRunnerThreatType(const std::string& performed_check_suffix,
+                            const std::string& profile_mode_suffix,
                             SBThreatType threat_type) {
   base::UmaHistogramEnumeration(
       base::StrCat(
           {"SafeBrowsing.CheckUrl.ThreatType.", performed_check_suffix}),
+      threat_type);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"SafeBrowsing.CheckUrl.ThreatType.", performed_check_suffix,
+                    ".", profile_mode_suffix}),
       threat_type);
 }
 }  // namespace
@@ -34,10 +39,14 @@ void RecordRunnerThreatType(const std::string& performed_check_suffix,
 SafeBrowsingLookupMechanismRunner::SafeBrowsingLookupMechanismRunner(
     std::unique_ptr<SafeBrowsingLookupMechanism> lookup_mechanism,
     const std::string& performed_check_suffix,
+    const std::string& profile_mode_suffix,
     CompleteCheckCallbackWithTimeout complete_check_callback)
     : lookup_mechanism_(std::move(lookup_mechanism)),
       performed_check_suffix_(performed_check_suffix),
-      complete_check_callback_(std::move(complete_check_callback)) {}
+      profile_mode_suffix_(profile_mode_suffix),
+      complete_check_callback_(std::move(complete_check_callback)) {
+  CHECK(!profile_mode_suffix_.empty());
+}
 
 SafeBrowsingLookupMechanismRunner::~SafeBrowsingLookupMechanismRunner() =
     default;
@@ -85,7 +94,8 @@ void SafeBrowsingLookupMechanismRunner::OnCheckComplete(
   RecordRunnerTimeTaken(performed_check_suffix_,
                         base::TimeTicks::Now() - start_lookup_time_);
   if (threat_type.has_value()) {
-    RecordRunnerThreatType(performed_check_suffix_, threat_type.value());
+    RecordRunnerThreatType(performed_check_suffix_, profile_mode_suffix_,
+                           threat_type.value());
   }
   weak_factory_.InvalidateWeakPtrs();
   lookup_mechanism_.reset();

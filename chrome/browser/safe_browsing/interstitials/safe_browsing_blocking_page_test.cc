@@ -3012,8 +3012,15 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageAsyncChecksTest,
   histogram_tester.ExpectTotalCount(
       "SafeBrowsing.CheckUrl.ThreatType.HashDatabase",
       /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "SafeBrowsing.CheckUrl.ThreatType.HashDatabase.Regular",
+      /*expected_count=*/0);
   histogram_tester.ExpectUniqueSample(
       "SafeBrowsing.CheckUrl.ThreatType.UrlRealTime",
+      SBThreatType::SB_THREAT_TYPE_SAFE,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.CheckUrl.ThreatType.UrlRealTime.Regular",
       SBThreatType::SB_THREAT_TYPE_SAFE,
       /*expected_bucket_count=*/1);
 }
@@ -3044,7 +3051,15 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageAsyncChecksTest,
       SBThreatType::SB_THREAT_TYPE_SAFE,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.CheckUrl.ThreatType.HashDatabase.Regular",
+      SBThreatType::SB_THREAT_TYPE_SAFE,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
       "SafeBrowsing.CheckUrl.ThreatType.UrlRealTime",
+      SBThreatType::SB_THREAT_TYPE_SAFE,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.CheckUrl.ThreatType.UrlRealTime.Regular",
       SBThreatType::SB_THREAT_TYPE_SAFE,
       /*expected_bucket_count=*/1);
 }
@@ -3807,7 +3822,15 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
       SBThreatType::SB_THREAT_TYPE_SAFE,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.CheckUrl.ThreatType.HashDatabase.Regular",
+      SBThreatType::SB_THREAT_TYPE_SAFE,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
       "SafeBrowsing.CheckUrl.ThreatType.UrlRealTime",
+      SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.CheckUrl.ThreatType.UrlRealTime.Regular",
       SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
       /*expected_bucket_count=*/1);
 }
@@ -4172,7 +4195,15 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageHashRealTimeCheckTest,
       SBThreatType::SB_THREAT_TYPE_SAFE,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.CheckUrl.ThreatType.HashDatabase.Regular",
+      SBThreatType::SB_THREAT_TYPE_SAFE,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
       "SafeBrowsing.CheckUrl.ThreatType.HashRealTime",
+      SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.CheckUrl.ThreatType.HashRealTime.Regular",
       SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
       /*expected_bucket_count=*/1);
 }
@@ -4307,7 +4338,18 @@ class SafeBrowsingBlockingPageHashRealTimeCheckIncognitoTest
         SBThreatType::SB_THREAT_TYPE_SAFE,
         /*expected_bucket_count=*/1);
     histogram_tester.ExpectUniqueSample(
+        "SafeBrowsing.CheckUrl.ThreatType.HashDatabase." +
+            expected_profile_mode_suffix,
+        SBThreatType::SB_THREAT_TYPE_SAFE,
+        /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample(
         "SafeBrowsing.CheckUrl.ThreatType.HashRealTime",
+        is_unsafe ? SBThreatType::SB_THREAT_TYPE_URL_PHISHING
+                  : SBThreatType::SB_THREAT_TYPE_SAFE,
+        /*expected_bucket_count=*/expect_lookup_eligible ? 1 : 0);
+    histogram_tester.ExpectUniqueSample(
+        "SafeBrowsing.CheckUrl.ThreatType.HashRealTime." +
+            expected_profile_mode_suffix,
         is_unsafe ? SBThreatType::SB_THREAT_TYPE_URL_PHISHING
                   : SBThreatType::SB_THREAT_TYPE_SAFE,
         /*expected_bucket_count=*/expect_lookup_eligible ? 1 : 0);

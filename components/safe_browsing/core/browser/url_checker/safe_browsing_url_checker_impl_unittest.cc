@@ -555,7 +555,8 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
         hash_real_time_selection,
         /*is_async_check=*/false, SessionID::InvalidValue(),
         /*referring_app_info=*/std::nullopt,
-        optional_args.v5_get_hash_protocol_manager);
+        optional_args.v5_get_hash_protocol_manager,
+        /*profile_mode_suffix=*/"Regular");
   }
 
  protected:
@@ -667,6 +668,10 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_SafeUrl) {
       "SafeBrowsing.CheckUrl.ThreatType.HashDatabase",
       SBThreatType::SB_THREAT_TYPE_SAFE,
       /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectUniqueSample(
+      "SafeBrowsing.CheckUrl.ThreatType.HashDatabase.Regular",
+      SBThreatType::SB_THREAT_TYPE_SAFE,
+      /*expected_bucket_count=*/1);
   ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/0,
                                    /*expected_urt_log_count=*/0,
                                    /*expected_hpd_log_count=*/1);
@@ -694,6 +699,10 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_DangerousUrl) {
   url_checker_delegate_->WaitForStartDisplayingBlockingPageHelper();
   histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.CheckUrl.ThreatType.HashDatabase",
+      SB_THREAT_TYPE_URL_PHISHING,
+      /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectUniqueSample(
+      "SafeBrowsing.CheckUrl.ThreatType.HashDatabase.Regular",
       SB_THREAT_TYPE_URL_PHISHING,
       /*expected_bucket_count=*/1);
   ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/0,
@@ -891,6 +900,10 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_UrlRealTimeEnabledSafeUrl) {
                                        /*expected_bucket_count=*/1);
   histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.CheckUrl.ThreatType.UrlRealTime",
+      SBThreatType::SB_THREAT_TYPE_SAFE,
+      /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectUniqueSample(
+      "SafeBrowsing.CheckUrl.ThreatType.UrlRealTime.Regular",
       SBThreatType::SB_THREAT_TYPE_SAFE,
       /*expected_bucket_count=*/1);
 
@@ -1402,6 +1415,10 @@ TEST_F(SafeBrowsingUrlCheckerTest,
       "SafeBrowsing.CheckUrl.ThreatType.UrlRealTime",
       SB_THREAT_TYPE_URL_PHISHING,
       /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectUniqueSample(
+      "SafeBrowsing.CheckUrl.ThreatType.UrlRealTime.Regular",
+      SB_THREAT_TYPE_URL_PHISHING,
+      /*expected_bucket_count=*/1);
   CheckUrlRealTimeLocalMatchMetrics(
       /*expected_local_match_result=*/false,
       /*expect_url_lookup_service_metric_suffix=*/true);
@@ -1592,6 +1609,9 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_CancelCheckOnTimeout) {
         /*expected_bucket_count=*/1);
     histograms.ExpectTotalCount("SafeBrowsing.CheckUrl.ThreatType.UrlRealTime",
                                 /*expected_count=*/0);
+    histograms.ExpectTotalCount(
+        "SafeBrowsing.CheckUrl.ThreatType.UrlRealTime.Regular",
+        /*expected_count=*/0);
   }
   // Timeout for local checks should cancel the database check.
   {
@@ -1626,6 +1646,9 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_CancelCheckOnTimeout) {
         /*expected_bucket_count=*/1);
     histograms.ExpectTotalCount("SafeBrowsing.CheckUrl.ThreatType.HashDatabase",
                                 /*expected_count=*/0);
+    histograms.ExpectTotalCount(
+        "SafeBrowsing.CheckUrl.ThreatType.HashDatabase.Regular",
+        /*expected_count=*/0);
   }
 }
 
@@ -1773,6 +1796,10 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_HashRealTimeService_SafeLookup) {
   histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.CheckUrl.ThreatType.HashRealTime", SB_THREAT_TYPE_SAFE,
       /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectUniqueSample(
+      "SafeBrowsing.CheckUrl.ThreatType.HashRealTime.Regular",
+      SB_THREAT_TYPE_SAFE,
+      /*expected_bucket_count=*/1);
   CheckHashRealTimeMetrics(/*expected_local_match_result=*/false,
                            /*expected_is_service_found=*/true,
                            /*expected_can_check_reputation=*/true);
@@ -1810,6 +1837,10 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_HashRealTimeService_UnsafeLookup) {
   url_checker_delegate_->WaitForStartDisplayingBlockingPageHelper();
   histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.CheckUrl.ThreatType.HashRealTime",
+      SB_THREAT_TYPE_URL_PHISHING,
+      /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectUniqueSample(
+      "SafeBrowsing.CheckUrl.ThreatType.HashRealTime.Regular",
       SB_THREAT_TYPE_URL_PHISHING,
       /*expected_bucket_count=*/1);
   CheckHashRealTimeMetrics(/*expected_local_match_result=*/false,

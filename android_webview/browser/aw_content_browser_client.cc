@@ -834,7 +834,8 @@ AwContentBrowserClient::CreateURLLoaderThrottles(
       hash_real_time_selection,
       /*async_check_tracker=*/async_check_tracker,
       /*referring_app_info=*/std::nullopt,
-      /*v5_get_hash_protocol_manager=*/nullptr));
+      /*v5_get_hash_protocol_manager=*/nullptr,
+      /*profile_mode_suffix=*/"Regular"));
 
   if (browser_context &&
       base::FeatureList::IsEnabled(

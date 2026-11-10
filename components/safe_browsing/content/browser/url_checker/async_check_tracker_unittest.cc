@@ -124,7 +124,8 @@ class AsyncCheckTrackerTest : public content::RenderViewHostTestHarness {
         /*tab_id=*/SessionID::InvalidValue(),
         /*referring_app_info=*/std::nullopt,
         /*v5_get_hash_protocol_manager=*/nullptr,
-        /*prioritize_navigation_callbacks=*/false);
+        /*prioritize_navigation_callbacks=*/false,
+        /*profile_mode_suffix=*/"Regular");
     checker->AddUrlInRedirectChainForTesting(url_);
     tracker_->TransferUrlChecker(std::move(checker));
   }

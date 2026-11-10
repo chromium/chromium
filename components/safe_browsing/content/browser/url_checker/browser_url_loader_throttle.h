@@ -80,7 +80,8 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
       hash_realtime_utils::HashRealTimeSelection hash_realtime_selection,
       base::WeakPtr<AsyncCheckTracker> async_check_tracker,
       std::optional<internal::ReferringAppInfo> referring_app_info,
-      base::WeakPtr<V5GetHashProtocolManager> v5_get_hash_protocol_manager);
+      base::WeakPtr<V5GetHashProtocolManager> v5_get_hash_protocol_manager,
+      std::string profile_mode_suffix);
 
   BrowserURLLoaderThrottle(const BrowserURLLoaderThrottle&) = delete;
   BrowserURLLoaderThrottle& operator=(const BrowserURLLoaderThrottle&) = delete;
@@ -119,7 +120,8 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
       hash_realtime_utils::HashRealTimeSelection hash_realtime_selection,
       base::WeakPtr<AsyncCheckTracker> async_check_tracker,
       std::optional<internal::ReferringAppInfo> referring_app_info,
-      base::WeakPtr<V5GetHashProtocolManager> v5_get_hash_protocol_manager);
+      base::WeakPtr<V5GetHashProtocolManager> v5_get_hash_protocol_manager,
+      std::string profile_mode_suffix);
 
   void OnSkipCheckCompleteOnOriginalUrl(
       const net::HttpRequestHeaders& headers,
@@ -228,6 +230,11 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
 
   // The protocol manager used for Safe Browsing v5 get hash requests.
   base::WeakPtr<V5GetHashProtocolManager> v5_get_hash_protocol_manager_;
+
+  // Suffix indicating the profile mode (e.g., "Regular", "Incognito", or
+  // "Guest") for logging profile-mode-specific check result metrics. Must not
+  // be empty.
+  std::string profile_mode_suffix_;
 
   base::OnceClosure on_sync_sb_checker_created_callback_for_testing_;
   base::OnceClosure on_async_sb_checker_created_callback_for_testing_;

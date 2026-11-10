@@ -6162,7 +6162,10 @@ ChromeContentBrowserClient::MaybeCreateSafeBrowsingURLLoaderThrottle(
       async_check_tracker ? async_check_tracker->GetWeakPtr() : nullptr,
       std::move(referring_app_info),
       v5_get_hash_protocol_manager ? v5_get_hash_protocol_manager->GetWeakPtr()
-                                   : nullptr);
+                                   : nullptr,
+      profile->IsGuestSession()
+          ? "Guest"
+          : (profile->IsOffTheRecord() ? "Incognito" : "Regular"));
 }
 #endif
 

@@ -137,7 +137,8 @@ class FakeSafeBrowsingUrlCheckerImpl
             /*is_async_check=*/false,
             /*tab_id=*/SessionID::InvalidValue(),
             /*referring_app_info=*/std::nullopt,
-            /*v5_get_hash_protocol_manager=*/nullptr) {}
+            /*v5_get_hash_protocol_manager=*/nullptr,
+            /*profile_mode_suffix=*/"Regular") {}
 
   FakeSafeBrowsingUrlCheckerImpl(
       network::mojom::RequestDestination request_destination,

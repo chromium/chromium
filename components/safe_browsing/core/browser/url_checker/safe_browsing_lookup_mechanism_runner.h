@@ -28,10 +28,13 @@ class SafeBrowsingLookupMechanismRunner {
   // the run does not complete synchronously; its |result| parameter will only
   // be populated if the run did not time out. |performed_check_suffix| is a
   // suffix used for metrics logging how long the check took to run and its
-  // result.
+  // result. |profile_mode_suffix| is a suffix indicating the profile mode
+  // (e.g., "Regular", "Incognito", or "Guest") used to record
+  // profile-mode-specific check result metrics, and must not be empty.
   SafeBrowsingLookupMechanismRunner(
       std::unique_ptr<SafeBrowsingLookupMechanism> lookup_mechanism,
       const std::string& performed_check_suffix,
+      const std::string& profile_mode_suffix,
       CompleteCheckCallbackWithTimeout complete_check_callback);
   ~SafeBrowsingLookupMechanismRunner();
   SafeBrowsingLookupMechanismRunner(const SafeBrowsingLookupMechanismRunner&) =
@@ -67,6 +70,10 @@ class SafeBrowsingLookupMechanismRunner {
   // (SafeBrowsing.CheckUrl.TimeTaken.*) and its result
   // (SafeBrowsing.CheckUrl.ThreatType.*).
   std::string performed_check_suffix_;
+  // Suffix indicating the profile mode (e.g., "Regular", "Incognito", or
+  // "Guest") for logging profile-mode-specific check result metrics
+  // (SafeBrowsing.CheckUrl.ThreatType.*). Must not be empty.
+  std::string profile_mode_suffix_;
   // The callback passed in through the constructor that should be called either
   // when the mechanism completes or when it times out, unless the run completes
   // synchronously. Its |result| parameter will only be populated if the run did
