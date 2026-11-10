@@ -145,7 +145,6 @@ source_set("browser_tests") {
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/navigator",
-    "//chrome/test:test_support_ui",
     "//chromeos/ash/components/browser_delegate",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/network:test_support",

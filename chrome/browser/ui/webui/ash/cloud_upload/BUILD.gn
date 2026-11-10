@@ -151,7 +151,7 @@ source_set("browser_tests") {
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/common",
-    "//chrome/test:test_support_ui",
+    "//chrome/test/base:ui_test_utils",
     "//chrome/test/base:web_ui_mocha_browser_test",
     "//chromeos/ash/components/browser_delegate",
     "//chromeos/ash/components/drivefs/mojom",

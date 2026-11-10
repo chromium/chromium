@@ -28,7 +28,7 @@ if (!is_chromeos_device) {
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications:web_applications_test_support",
-      "//chrome/test:test_support_ui",
+      "//chrome/test/interaction",
       "//chromeos/constants",
       "//components/user_education/common",
       "//content/test:test_support",

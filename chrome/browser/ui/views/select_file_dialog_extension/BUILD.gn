@@ -57,7 +57,6 @@ source_set("browser_tests") {
     "//chrome/browser/ui/navigator",
     "//chrome/common:constants",
     "//chrome/test:test_support",
-    "//chrome/test:test_support_ui",
     "//chromeos/ash/components/browser_context_helper",
     "//components/account_id",
     "//components/account_id:test_support",

@@ -72,7 +72,6 @@ source_set("browser_tests") {
     "//chrome/browser/ash/file_manager:test_support",
     "//chrome/browser/ash/file_system_provider",
     "//chrome/common",
-    "//chrome/test:test_support_ui",
     "//chromeos/constants",
     "//content/test:test_support",
     "//ui/base",

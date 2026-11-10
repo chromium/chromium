@@ -26,7 +26,7 @@ source_set("browser_tests") {
   sources = [ "screen_orientation_delegate_browsertest.cc" ]
 
   deps = [
-    "//chrome/test:test_support_ui",
+    "//chrome/test/base:in_process_browser_test",
     "//content/test:test_support",
     "//ui/base:features",
   ]
