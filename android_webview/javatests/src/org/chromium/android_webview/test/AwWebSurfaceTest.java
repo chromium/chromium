@@ -31,6 +31,7 @@ import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwViewAndroidDelegate;
 import org.chromium.android_webview.AwWebContent;
 import org.chromium.android_webview.AwWebSurface;
+import org.chromium.android_webview.StartupController;
 import org.chromium.android_webview.test.util.AwTestTouchUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
@@ -53,6 +54,7 @@ public class AwWebSurfaceTest extends AwParameterizedTest {
     private TestAwContentsClient mContentsClient;
     private AwTestContainerView mContainerView;
     private AwContents mAwContents;
+    private StartupController mStartupController;
 
     public AwWebSurfaceTest(AwSettingsMutation param) {
         this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
@@ -63,6 +65,9 @@ public class AwWebSurfaceTest extends AwParameterizedTest {
         mContentsClient = new TestAwContentsClient();
         mContainerView = mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         mAwContents = mContainerView.getAwContents();
+        // The test rule starts Chromium without a StartupController.
+        mStartupController = new StartupController(/* delegate= */ null);
+        mStartupController.getRunQueue().notifyChromiumStarted();
     }
 
     @Test
@@ -419,7 +424,7 @@ public class AwWebSurfaceTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testWebContent_surfaceBindingMutualExclusion() {
-        AwWebContent webContent = new AwWebContent();
+        AwWebContent webContent = new AwWebContent(mStartupController);
 
         CallbackHelper listener1Helper = new CallbackHelper();
         CallbackHelper listener2Helper = new CallbackHelper();
@@ -453,7 +458,7 @@ public class AwWebSurfaceTest extends AwParameterizedTest {
         TestEventListener listener2 = new TestEventListener();
         AwWebSurface surface1 = new AwWebSurface(listener1);
         AwWebSurface surface2 = new AwWebSurface(listener2);
-        AwWebContent webContent = new AwWebContent();
+        AwWebContent webContent = new AwWebContent(mStartupController);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

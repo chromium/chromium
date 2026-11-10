@@ -746,7 +746,7 @@ public class SupportLibWebViewChromiumFactory
             WebApiCallLogger.recordWebApiCall(WebApiCall.BUILD_WEB_CONTENT);
             WebContentBuilder builder = new WebContentBuilder();
             buildConfig.accept(builder);
-            AwWebContent webContent = builder.build();
+            AwWebContent webContent = builder.build(mAwInit.getStartupController());
             SupportLibWebContentAdapter adapter = new SupportLibWebContentAdapter(webContent);
             return BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(adapter);
         }

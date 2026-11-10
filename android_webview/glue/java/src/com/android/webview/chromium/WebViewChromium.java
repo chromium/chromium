@@ -269,7 +269,7 @@ class WebViewChromium
 
             mAwWebContent = WebContentContextWrapper.getWebContent(mContext);
             if (mAwWebContent == null) {
-                mAwWebContent = new AwWebContent();
+                mAwWebContent = new AwWebContent(mStartupController);
             }
 
             // This will run initForReal synchronously except when the experiment to defer running
@@ -506,6 +506,7 @@ class WebViewChromium
         if (sSharedDestroyedAwWebContent == null) {
             sSharedDestroyedAwWebContent =
                     AwWebContent.createDestroyedAwWebContent(
+                            mStartupController,
                             awContents ->
                                     new WebViewContentsClientAdapter(
                                             awContents, mFactory.getWebViewDelegate()));

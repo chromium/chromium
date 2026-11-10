@@ -5,6 +5,7 @@
 package org.chromium.support_lib_glue;
 
 import org.chromium.android_webview.AwWebContent;
+import org.chromium.android_webview.StartupController;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.support_lib_boundary.web.WebContentConfig;
@@ -25,7 +26,7 @@ import java.util.function.BiConsumer;
         // current WebView version doesn't support and it's safe to ignore.
     }
 
-    public AwWebContent build() {
-        return new AwWebContent();
+    public AwWebContent build(StartupController startupController) {
+        return new AwWebContent(startupController);
     }
 }
