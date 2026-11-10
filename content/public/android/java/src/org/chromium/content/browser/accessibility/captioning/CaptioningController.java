@@ -24,7 +24,7 @@ public class CaptioningController
     private static final Class<CaptioningController> USER_DATA_KEY = CaptioningController.class;
 
     private final SystemCaptioningBridge mSystemCaptioningBridge;
-    private long mNativeCaptioningController;
+    private @Nullable WebContents mWebContents;
 
     /** Returns the CaptioningController for the given WebContents. */
     public static CaptioningController fromWebContents(WebContents webContents) {
@@ -40,16 +40,15 @@ public class CaptioningController
     }
 
     private CaptioningController(WebContents webContents) {
+        mWebContents = webContents;
         mSystemCaptioningBridge = CaptioningBridge.getInstance();
-        mNativeCaptioningController = CaptioningControllerJni.get().init(webContents);
+        CaptioningControllerJni.get().init(webContents);
     }
 
     @Override
     public void destroy() {
-        if (mNativeCaptioningController != 0) {
-            CaptioningControllerJni.get().destroy(mNativeCaptioningController);
-            mNativeCaptioningController = 0;
-        }
+        mWebContents = null;
+        stopListening();
     }
 
     @CalledByNative
@@ -60,10 +59,10 @@ public class CaptioningController
 
     @Override
     public void onSystemCaptioningChanged(TextTrackSettings settings) {
-        if (mNativeCaptioningController == 0) return;
+        if (mWebContents == null || mWebContents.isDestroyed()) return;
         CaptioningControllerJni.get()
                 .setTextTrackSettings(
-                        mNativeCaptioningController,
+                        mWebContents,
                         settings.getTextTracksEnabled(),
                         settings.getTextTrackBackgroundColor(),
                         settings.getTextTrackFontFamily(),
@@ -84,12 +83,10 @@ public class CaptioningController
 
     @NativeMethods
     interface Natives {
-        long init(@JniType("content::WebContents*") WebContents webContents);
-
-        void destroy(long nativeCaptioningController);
+        void init(@JniType("content::WebContents*") WebContents webContents);
 
         void setTextTrackSettings(
-                long nativeCaptioningController,
+                @JniType("content::WebContents*") WebContents webContents,
                 boolean textTracksEnabled,
                 String textTrackBackgroundColor,
                 String textTrackFontFamily,

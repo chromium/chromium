@@ -6,26 +6,22 @@
 #define CONTENT_BROWSER_ACCESSIBILITY_CAPTIONING_CONTROLLER_H_
 
 #include "base/android/jni_android.h"
-#include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/web_contents_user_data.h"
 
 namespace content {
 
 class WebContents;
 
-// System captioning bridge for Android. Owns itself, and gets destroyed
-// together with WebContents.
-class CaptioningController : public WebContentsObserver {
+// System captioning bridge for Android. Owned by WebContents.
+class CaptioningController : public WebContentsObserver,
+                             public WebContentsUserData<CaptioningController> {
  public:
-  explicit CaptioningController(WebContents* web_contents);
-
   ~CaptioningController() override;
 
   CaptioningController(const CaptioningController&) = delete;
   CaptioningController& operator=(const CaptioningController&) = delete;
-
-  void Destroy(JNIEnv* env);
 
   void SetTextTrackSettings(
       JNIEnv* env,
@@ -39,6 +35,10 @@ class CaptioningController : public WebContentsObserver {
       const base::android::JavaRef<jstring>& textTrackTextSize);
 
  private:
+  explicit CaptioningController(WebContents* web_contents);
+  friend class WebContentsUserData<CaptioningController>;
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+
   // WebContentsObserver implementation.
   void PrimaryPageChanged(Page& page) override;
   void RenderViewReady() override;

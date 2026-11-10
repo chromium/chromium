@@ -30,14 +30,13 @@ std::string AddCSSImportant(std::string css_string) {
 
 }  // namespace
 
+WEB_CONTENTS_USER_DATA_KEY_IMPL(CaptioningController);
+
 CaptioningController::CaptioningController(WebContents* web_contents)
-    : WebContentsObserver(web_contents) {}
+    : WebContentsObserver(web_contents),
+      WebContentsUserData<CaptioningController>(*web_contents) {}
 
 CaptioningController::~CaptioningController() = default;
-
-void CaptioningController::Destroy(JNIEnv* env) {
-  delete this;
-}
 
 void CaptioningController::PrimaryPageChanged(Page& page) {
   CaptioningController::RenderViewReady();
@@ -86,10 +85,32 @@ ScopedJavaLocalRef<jobject> CaptioningController::GetFromWebContents(
   return Java_CaptioningController_getFromWebContents(env, web_contents);
 }
 
-static int64_t JNI_CaptioningController_Init(JNIEnv* env,
-                                             WebContents* web_contents) {
+static void JNI_CaptioningController_Init(JNIEnv* env,
+                                          WebContents* web_contents) {
   CHECK(web_contents);
-  return reinterpret_cast<intptr_t>(new CaptioningController(web_contents));
+  CaptioningController::CreateForWebContents(web_contents);
+}
+
+static void JNI_CaptioningController_SetTextTrackSettings(
+    JNIEnv* env,
+    WebContents* web_contents,
+    bool textTracksEnabled,
+    const JavaRef<jstring>& textTrackBackgroundColor,
+    const JavaRef<jstring>& textTrackFontFamily,
+    const JavaRef<jstring>& textTrackFontStyle,
+    const JavaRef<jstring>& textTrackFontVariant,
+    const JavaRef<jstring>& textTrackTextColor,
+    const JavaRef<jstring>& textTrackTextShadow,
+    const JavaRef<jstring>& textTrackTextSize) {
+  if (!web_contents) {
+    return;
+  }
+  if (auto* controller = CaptioningController::FromWebContents(web_contents)) {
+    controller->SetTextTrackSettings(
+        env, textTracksEnabled, textTrackBackgroundColor, textTrackFontFamily,
+        textTrackFontStyle, textTrackFontVariant, textTrackTextColor,
+        textTrackTextShadow, textTrackTextSize);
+  }
 }
 
 }  // namespace content
