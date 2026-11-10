@@ -42,17 +42,19 @@ public class ViewResourceFrameLayout extends OptimizedFrameLayout {
         mResourceAdapter = createResourceAdapter();
     }
 
-    /** @return A {@link ViewResourceAdapter} instance.  This can be overridden for custom behavior. */
+    /**
+     * Returns a {@link ViewResourceAdapter} instance. This can be overridden for custom behavior.
+     */
     protected ViewResourceAdapter createResourceAdapter() {
         return new ViewResourceAdapter(this);
     }
 
-    /** @return The {@link ViewResourceAdapter} that exposes this {@link View} as a CC resource. */
+    /** Returns the {@link ViewResourceAdapter} that exposes this {@link View} as a CC resource. */
     public ViewResourceAdapter getResourceAdapter() {
         return mResourceAdapter;
     }
 
-    /** @return Whether the control container is ready for capturing snapshots. */
+    /** Returns whether the control container is ready for capturing snapshots. */
     protected boolean isReadyForCapture() {
         return true;
     }

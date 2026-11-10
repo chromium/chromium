@@ -49,24 +49,18 @@ public class CheckBoxWithDescription extends ConstraintLayout implements OnClick
         mDescription = getDescriptionTextView();
     }
 
-    /**
-     * @return CheckBox View inside this {@link CheckBoxWithDescription}.
-     */
+    /** Returns CheckBox View inside this {@link CheckBoxWithDescription}. */
     private CheckBox getCheckBoxView() {
         return findViewById(R.id.checkbox);
     }
 
-    /**
-     * @return TextView displayed as primary inside this {@link CheckBoxWithDescription}.
-     */
+    /** Returns TextView displayed as primary inside this {@link CheckBoxWithDescription}. */
     @VisibleForTesting
     TextView getPrimaryTextView() {
         return findViewById(R.id.primary);
     }
 
-    /**
-     * @return TextView displayed as description inside this {@link CheckBoxWithDescription}.
-     */
+    /** Returns TextView displayed as description inside this {@link CheckBoxWithDescription}. */
     @VisibleForTesting
     TextView getDescriptionTextView() {
         return findViewById(R.id.description);
@@ -82,7 +76,7 @@ public class CheckBoxWithDescription extends ConstraintLayout implements OnClick
         mPrimary.setText(text);
     }
 
-    /** @return The text shown in the primary section. */
+    /** Returns the text shown in the primary section. */
     @VisibleForTesting
     CharSequence getPrimaryText() {
         return mPrimary.getText();
@@ -99,7 +93,7 @@ public class CheckBoxWithDescription extends ConstraintLayout implements OnClick
         }
     }
 
-    /** @return The text shown in the description section. */
+    /** Returns the text shown in the description section. */
     @VisibleForTesting
     CharSequence getDescriptionText() {
         return mDescription.getText();

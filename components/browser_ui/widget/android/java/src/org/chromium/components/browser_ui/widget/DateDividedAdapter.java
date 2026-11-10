@@ -81,17 +81,17 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
             mIsLastInGroup = isLast;
         }
 
-        /** @return Whether this item is the first in its group. */
+        /** Returns whether this item is the first in its group. */
         public boolean isFirstInGroup() {
             return mIsFirstInGroup;
         }
 
-        /** @return Whether this item is the last in its group. */
+        /** Returns whether this item is the last in its group. */
         public boolean isLastInGroup() {
             return mIsLastInGroup;
         }
 
-        /** @return The timestamp for this item. */
+        /** Returns the timestamp for this item. */
         public abstract long getTimestamp();
 
         /**
@@ -129,7 +129,7 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
             return mStableId;
         }
 
-        /** @return The View associated with this HeaderItem. */
+        /** Returns the View associated with this HeaderItem. */
         public View getView() {
             return mView;
         }
@@ -291,12 +291,12 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
             for (TimedItem item : mItems) item.setPosition(TimedItem.INVALID_POSITION);
         }
 
-        /** @return Whether the given date happens in the same day as the items in this group. */
+        /** Returns whether the given date happens in the same day as the items in this group. */
         public boolean isSameDay(Date otherDate) {
             return compareDate(mDate, otherDate) == 0;
         }
 
-        /** @return The size of this group. */
+        /** Returns the size of this group. */
         public int size() {
             return mItems.size();
         }
@@ -322,7 +322,7 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
             return mItems.get(index);
         }
 
-        /** @return The view type associated for the given index */
+        /** Returns the view type associated for the given index. */
         public @ItemViewType int getItemViewType(int index) {
             return mItems.get(index).mIsDateHeader ? ItemViewType.DATE : ItemViewType.NORMAL;
         }
@@ -783,9 +783,7 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
         return mSize;
     }
 
-    /**
-     * @return Is any normal content is available in the adapter
-     */
+    /** Returns whether any normal content is available in the adapter. */
     public boolean isNormalContentAvailable() {
         for (ItemGroup group : mGroups) {
             if (group.priority() != GroupPriority.NORMAL_CONTENT) continue;
@@ -888,9 +886,10 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
 
     /**
      * Creates a long ID that identifies a particular day in history.
+     *
      * @param date Date to process.
      * @return Long that has the day of the year (1-365) in the lowest 16 bits and the year in the
-     *         next 16 bits over.
+     *     next 16 bits over.
      */
     private static long getStableIdFromDate(Date date) {
         Calendar calendar = CalendarFactory.get();
@@ -914,7 +913,7 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
     }
 
     /**
-     * @return 0 if cal1 and cal2 are in the same day; 1 if cal1 happens before cal2; -1 otherwise.
+     * Returns 0 if cal1 and cal2 are in the same day; 1 if cal1 happens before cal2; -1 otherwise.
      */
     private static int compareCalendar(Calendar cal1, Calendar cal2) {
         boolean sameDay =
@@ -929,7 +928,9 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
         }
     }
 
-    /** Calculates the {@link Date} for midnight of the date represented by the |timestamp|. */
+    /**
+     * Calculates the {@link Date} for midnight of the date represented by the {@code timestamp}.
+     */
     public static Date getDateAtMidnight(long timestamp) {
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(timestamp);

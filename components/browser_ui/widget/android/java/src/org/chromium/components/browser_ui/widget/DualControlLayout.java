@@ -99,6 +99,7 @@ public final class DualControlLayout extends ViewGroup {
     /**
      * Creates a standardized Button that can be used for DualControlLayouts showing buttons.
      *
+     * @param context The context used to create the button.
      * @param buttonType Determines button's function and appearance.
      * @param text Text to display on the button.
      * @param listener Listener to alert when the button has been clicked.

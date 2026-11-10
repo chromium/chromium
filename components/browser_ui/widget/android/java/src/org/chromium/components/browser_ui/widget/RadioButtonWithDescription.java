@@ -190,16 +190,12 @@ public class RadioButtonWithDescription extends RelativeLayout
         return R.layout.radio_button_with_description;
     }
 
-    /**
-     * @return RadioButton View inside this {@link RadioButtonWithDescription}.
-     */
+    /** Returns RadioButton View inside this {@link RadioButtonWithDescription}. */
     protected RadioButton getRadioButtonView() {
         return findViewById(R.id.radio_button);
     }
 
-    /**
-     * @return ImageView inside this {@link RadioButtonWithDescription}.
-     */
+    /** Returns ImageView inside this {@link RadioButtonWithDescription}. */
     protected ImageView getIcon() {
         return findViewById(R.id.icon);
     }
@@ -219,23 +215,19 @@ public class RadioButtonWithDescription extends RelativeLayout
         mIcon.setLayoutParams(params);
     }
 
-    /**
-     * @return TextView displayed as primary inside this {@link RadioButtonWithDescription}.
-     */
+    /** Returns TextView displayed as primary inside this {@link RadioButtonWithDescription}. */
     protected TextView getPrimaryTextView() {
         return findViewById(R.id.primary);
     }
 
-    /**
-     * @return TextView displayed as description inside this {@link RadioButtonWithDescription}.
-     */
+    /** Returns TextView displayed as description inside this {@link RadioButtonWithDescription}. */
     protected TextView getDescriptionTextView() {
         return findViewById(R.id.description);
     }
 
     /**
-     * @return Resource id that is used to replace the end_view_stub inside this {@link
-     *         RadioButtonWithDescription}.
+     * Returns resource id that is used to replace the end_view_stub inside this {@link
+     * RadioButtonWithDescription}.
      */
     protected int getEndStubLayoutResourceId() {
         return NO_LAYOUT_ID;
@@ -308,7 +300,7 @@ public class RadioButtonWithDescription extends RelativeLayout
         mPrimary.setText(text);
     }
 
-    /** @return The text shown in the primary section. */
+    /** Returns the text shown in the primary section. */
     public CharSequence getPrimaryText() {
         return mPrimary.getText();
     }
@@ -334,7 +326,7 @@ public class RadioButtonWithDescription extends RelativeLayout
         }
     }
 
-    /** @return The text shown in the description section. */
+    /** Returns the text shown in the description section. */
     public CharSequence getDescriptionText() {
         return mDescription.getText();
     }

@@ -130,7 +130,7 @@ public class RoundedIconGenerator {
     }
 
     /**
-     * Generates an icon based on |text| (using the first character).
+     * Generates an icon based on {@code text} (using the first character).
      *
      * @param text The text to render the first character of on the icon.
      * @return The generated icon.
@@ -160,11 +160,11 @@ public class RoundedIconGenerator {
     }
 
     /**
-     * Returns a Bitmap representing the icon to be used for |url|.
+     * Returns a Bitmap representing the icon to be used for {@code url}.
      *
      * @param url URL for which the icon should be generated.
      * @param includePrivateRegistries Should private registries be considered as TLDs?
-     * @return The generated icon, or NULL if |url| is empty or the domain cannot be resolved.
+     * @return The generated icon, or NULL if {@code url} is empty or the domain cannot be resolved.
      */
     public @Nullable Bitmap generateIconForUrl(GURL url, boolean includePrivateRegistries) {
         if (url == null) return null;
@@ -193,12 +193,12 @@ public class RoundedIconGenerator {
     }
 
     /**
-     * Returns the text which should be used for generating a rounded icon based on |url|.
+     * Returns the text which should be used for generating a rounded icon based on {@code url}.
      *
      * @param url URL to consider when getting the icon's text.
      * @param includePrivateRegistries Should private registries be considered as TLDs?
-     * @return The text to use on the rounded icon, or NULL if |url| is empty or the domain cannot
-     *         be resolved.
+     * @return The text to use on the rounded icon, or NULL if {@code url} is empty or the domain
+     *     cannot be resolved.
      */
     @VisibleForTesting
     public static @Nullable String getIconTextForUrl(String url, boolean includePrivateRegistries) {

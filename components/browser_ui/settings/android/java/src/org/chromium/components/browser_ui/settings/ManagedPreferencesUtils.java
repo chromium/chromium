@@ -100,21 +100,19 @@ public class ManagedPreferencesUtils {
         return showToastWithResourceId(context, R.string.managed_settings_cannot_be_reset);
     }
 
-    /** @return The resource ID for the Managed By Enterprise icon. */
+    /** Returns the resource ID for the Managed By Enterprise icon. */
     public static @DrawableRes int getManagedByEnterpriseIconId() {
         return R.drawable.ic_business_small;
     }
 
-    /**
-     * @return The resource ID for the Managed by Custodian icon.
-     */
+    /** Returns the resource ID for the Managed by Custodian icon. */
     public static @DrawableRes int getManagedByCustodianIconId() {
         return R.drawable.ic_account_child_36dp;
     }
 
     /**
-     * @return The appropriate Drawable based on whether the preference is controlled by a policy or
-     *         a custodian.
+     * Returns the appropriate Drawable based on whether the preference is controlled by a policy or
+     * a custodian.
      */
     public static @Nullable Drawable getManagedIconDrawable(
             @Nullable ManagedPreferenceDelegate delegate, Preference preference) {
@@ -125,8 +123,8 @@ public class ManagedPreferencesUtils {
     }
 
     /**
-     * @return The resource ID for the managed icon to show. Returns 0 if no managed icon should be
-     *     shown.
+     * Returns the resource ID for the managed icon to show. Returns 0 if no managed icon should be
+     * shown.
      */
     @VisibleForTesting
     public static int getManagedIconResId(
@@ -147,9 +145,9 @@ public class ManagedPreferencesUtils {
 
     /**
      * Initializes the Preference based on the state of any policies that may affect it, e.g. by
-     * showing a managed icon or disabling clicks on the preference. If |preference| is an instance
-     * of ChromeImageViewPreference, the icon is not set since the ImageView widget will display the
-     * managed icons.
+     * showing a managed icon or disabling clicks on the preference. If {@code preference} is an
+     * instance of ChromeImageViewPreference, the icon is not set since the ImageView widget will
+     * display the managed icons.
      *
      * <p>This should be called once, before the preference is displayed.
      *
@@ -269,10 +267,10 @@ public class ManagedPreferencesUtils {
      * widget ImageView is set to the appropriate managed icon, and its onClick listener is set to
      * show the appropriate managed message toast.
      *
-     * This should be called from the Preference's onBindView() method.
+     * <p>This should be called from the Preference's onBindView() method.
      *
      * @param delegate The delegate that controls whether the preference is managed. May be null,
-     *                 then this method does nothing.
+     *     then this method does nothing.
      * @param preference The ChromeImageViewPreference that owns the view.
      * @param view The View that was bound to the ChromeImageViewPreference.
      */
@@ -313,13 +311,13 @@ public class ManagedPreferencesUtils {
     /**
      * Intercepts the click event if the given Preference is managed and shows a toast in that case.
      *
-     * This should be called from the Preference's onClick() method.
+     * <p>This should be called from the Preference's onClick() method.
      *
      * @param delegate The delegate that controls whether the preference is managed. May be null,
-     *         then this method does nothing and returns false.
+     *     then this method does nothing and returns false.
      * @param preference The Preference that was clicked.
      * @return true if the click event was handled by this helper and shouldn't be further
-     *         propagated; false otherwise.
+     *     propagated; false otherwise.
      */
     public static boolean onClickPreference(
             @Nullable ManagedPreferenceDelegate delegate, Preference preference) {

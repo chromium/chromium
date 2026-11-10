@@ -68,6 +68,8 @@ public class NumberRollView extends FrameLayout {
 
     /**
      * Sets a number to display.
+     *
+     * @param number The number to display.
      * @param animate Whether it should smoothly animate to the number.
      */
     public void setNumber(int number, boolean animate) {
@@ -85,7 +87,7 @@ public class NumberRollView extends FrameLayout {
 
     /**
      * @param stringId The id of the string to use for the description. The string must be a plural
-     *                 that has one placeholder for a quantity.
+     *     that has one placeholder for a quantity.
      */
     public void setString(int stringId) {
         mStringId = stringId;
@@ -100,7 +102,7 @@ public class NumberRollView extends FrameLayout {
     }
 
     /**
-     * @param string The string to use for the description when the number is 0.
+     * @param stringForZero The string to use for the description when the number is 0.
      */
     public void setStringForZero(String stringForZero) {
         mStringForZero = stringForZero;
@@ -163,7 +165,8 @@ public class NumberRollView extends FrameLayout {
 
     /**
      * Update the text color with {@link ColorStateList} for both {@link TextView}.
-     * @param resId The new text {@link ColorStateList} to use.
+     *
+     * @param colorStateList The new text {@link ColorStateList} to use.
      */
     public void setTextColorStateList(ColorStateList colorStateList) {
         mUpNumber.setTextColor(colorStateList);

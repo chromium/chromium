@@ -92,6 +92,7 @@ public class ClipDrawableProgressBar extends ImageView {
      * Create the progress bar with a custom height.
      *
      * @param context An Android context.
+     * @param attrs The attributes of the XML tag that is inflating the view.
      */
     public ClipDrawableProgressBar(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -153,6 +154,7 @@ public class ClipDrawableProgressBar extends ImageView {
      * Creates a new {@link GradientDrawable} with a rectangular shape and the specified color.
      *
      * @param color The color to set for the drawable.
+     * @param shape The shape to set for the drawable.
      * @return A new {@link GradientDrawable} instance.
      */
     private static GradientDrawable createGradientDrawable(int color, int shape) {
@@ -163,12 +165,11 @@ public class ClipDrawableProgressBar extends ImageView {
     }
 
     /**
-     * Determines whether to use a {@link GradientDrawable} for the progress bar,
-     * which allows for a moving foreground and background. If false, only a moving foreground is
-     * used.
+     * Determines whether to use a {@link GradientDrawable} for the progress bar, which allows for a
+     * moving foreground and background. If false, only a moving foreground is used.
      *
-     * @return True if {@link GradientDrawable} should be used, false otherwise.
-     * Currently, this always returns false.
+     * @return True if {@link GradientDrawable} should be used, false otherwise. Currently, this
+     *     always returns false.
      */
     protected boolean useGradientDrawable() {
         return false;
@@ -248,14 +249,12 @@ public class ClipDrawableProgressBar extends ImageView {
         }
     }
 
-    /** @return Foreground color of the progress bar. */
+    /** Returns the foreground color of the progress bar. */
     public int getForegroundColor() {
         return mForegroundColor;
     }
 
-    /**
-     * @return Background color of the progress bar.
-     */
+    /** Returns the background color of the progress bar. */
     public int getBackgroundColor() {
         return mBackgroundColor;
     }
