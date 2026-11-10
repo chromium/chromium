@@ -1577,7 +1577,9 @@ BreakStatus GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
       }
     }
 
-    container_builder_.AddResult(*layout_result, offset);
+    container_builder_.AddResult(
+        *layout_result, offset,
+        grid_lanes_placement_data.placement_data.margins);
     previous_grid_lane_idx = grid_lane_idx;
 
     if (is_columns) {
@@ -2364,7 +2366,7 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
         auto* grid_lanes_placement_data =
             MakeGarbageCollected<GridLanesItemPlacementData>(
                 GridItemPlacementData(
-                    placement_offset,
+                    placement_offset, margins,
                     result->HasDescendantThatDependsOnPercentageBlockSize()),
                 margins.block_start, margins.block_end);
 

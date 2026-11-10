@@ -24,14 +24,17 @@ class LayoutBox;
 struct GridItemPlacementData {
   GridItemPlacementData(
       LogicalOffset offset,
+      const BoxStrut& margins,
       bool has_descendant_that_depends_on_percentage_block_size,
       std::optional<PhysicalBoxStrut> relative_insets = std::nullopt)
       : offset(offset),
+        margins(margins),
         relative_insets(relative_insets),
         has_descendant_that_depends_on_percentage_block_size(
             has_descendant_that_depends_on_percentage_block_size) {}
 
   LogicalOffset offset;
+  BoxStrut margins;
   // Grid computes this because percentage offsets resolve against the grid
   // area. Other layout modes leave it unset so the fragment builder computes
   // relative positioning normally when the result is added.

@@ -1652,7 +1652,7 @@ void GridLayoutAlgorithm::PlaceGridItems(
     // Don't add these to the builder.
     if (out_grid_items_placement_data) {
       out_grid_items_placement_data->emplace_back(
-          containing_grid_area.offset,
+          containing_grid_area.offset, margins,
           result->HasDescendantThatDependsOnPercentageBlockSize(),
           relative_insets);
     } else {
@@ -1714,14 +1714,19 @@ struct ResultAndOffsets {
  public:
   ResultAndOffsets(const LayoutResult* result,
                    LogicalOffset offset,
+                   const BoxStrut& margins,
                    std::optional<PhysicalBoxStrut> relative_insets)
-      : result(result), offset(offset), relative_insets(relative_insets) {}
+      : result(result),
+        offset(offset),
+        margins(margins),
+        relative_insets(relative_insets) {}
 
   void Trace(Visitor* visitor) const { visitor->Trace(result); }
 
-  Member<const LayoutResult> result;
-  LogicalOffset offset;
-  std::optional<PhysicalBoxStrut> relative_insets;
+  const Member<const LayoutResult> result;
+  const LogicalOffset offset;
+  const BoxStrut margins;
+  const std::optional<PhysicalBoxStrut> relative_insets;
 };
 
 void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
@@ -1936,7 +1941,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
           result,
           LogicalOffset(item_placement_data.offset.inline_offset,
                         child_block_offset),
-          item_placement_data.relative_insets);
+          item_placement_data.margins, item_placement_data.relative_insets);
 
       const LogicalBoxFragment fragment(
           container_writing_direction,
@@ -2335,7 +2340,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
   for (auto& result_and_offset : result_and_offsets) {
     container_builder_.AddResult(
         *result_and_offset.result, result_and_offset.offset,
-        /* margins */ std::nullopt, result_and_offset.relative_insets);
+        result_and_offset.margins, result_and_offset.relative_insets);
   }
 
   // Propagate the baselines.
