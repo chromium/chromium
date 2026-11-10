@@ -555,11 +555,6 @@ New bookmarks can’t be saved in your account until you delete some. If you sig
                     To get future Google Chrome updates, you'll need Windows 10 or later. This computer is using Windows 8.1.
         </message>
       </if>
-      <if expr="is_win">
-        <message name="IDS_WIN_10_PRE_1809_OBSOLETE" desc="A message displayed on an at-launch infobar and about:help warning the user that the computer they are using will soon be or is already unsupported.">
-          To get future Google Chrome updates, you'll need Windows 10 version 1809 or later. This computer is using an older version of Windows 10.
-        </message>
-      </if>
       <if expr="is_linux">
         <message name="IDS_LINUX_OBSOLETE" desc="A message displayed on an at-launch infobar and about:help warning the user that the OS version they are using is no longer supported.">
           Google Chrome may not function correctly because it is no longer supported on this Linux distribution
@@ -645,18 +640,6 @@ Google Chrome cannot read and write to its data directory:
 
 <ph name="USER_DATA_DIRECTORY">$1<ex>C:\Documents and Settings\devint\Local Settings\Application Data\Google\Chrome</ex></ph>
       </message>
-      <if expr="is_chromeos">
-        <if expr="reven">
-          <message name="IDS_EULA_CHECKBOX_ENABLE_LOGGING" desc="The label of the checkbox to enable/disable crash and user metrics logging on EULA screen.">
-            Optional: Help improve ChromeOS Flex features and performance by automatically sending diagnostic and usage data to Google.
-          </message>
-        </if>
-        <if expr="not reven">
-          <message name="IDS_EULA_CHECKBOX_ENABLE_LOGGING" desc="The label of the checkbox to enable/disable crash and user metrics logging on EULA screen.">
-            Optional: Help improve ChromeOS features and performance by automatically sending diagnostic and usage data to Google.
-          </message>
-        </if>
-      </if>
       <message name="IDS_PROFILE_TOO_NEW_ERROR" desc="Error displayed on startup when the profile is from a newer version of the product and can not be read">
 Your profile can not be used because it is from a newer version of Google Chrome.
 
@@ -680,9 +663,6 @@ Google Chrome is unable to recover your settings.
       </if>
 
       <!-- Password manager onboarding strings -->
-      <message name="IDS_PASSWORD_MANAGER_ONBOARDING_DETAILS_C" desc="The explanation text that is shown below the title in the password manager onboarding dialog.">
-        Chrome lets you know if your passwords are ever compromised
-      </message>
       <message name="IDS_PASSWORD_MANAGER_TITLE_BRAND" desc="The product name used in the title of the password bubble." translateable="false">
         Google Chrome
       </message>
@@ -897,9 +877,6 @@ Google Chrome is unable to recover your settings.
         </message>
       </if>
       <if expr="enable_pdf">
-        <message name="IDS_PDF_GLIC_SUMMARIZE_IPH_TEXT" desc="Text of the In Product Help message shown for the button to summarize PDF.">
-          Get a quick overview of this document and ask questions with Gemini in Chrome
-        </message>
         <message name="IDS_PDF_GLIC_SUMMARIZE_IPH_TEXT_NEW" desc="Text of the In Product Help message shown for the button to summarize PDF.">
           Share this document with Gemini in Chrome to get a quick overview and ask follow-up questions
         </message>
@@ -944,10 +921,6 @@ Google Chrome is unable to recover your settings.
       <message name="IDS_PROMPT_MALICIOUS_DOWNLOAD_CONTENT"
          desc="Message shown to the user to validate the download when the download content is classified to lead to malware by safebrowsing.">
         <ph name="FILE_NAME">$1<ex>malware.exe</ex></ph> is dangerous, so Chrome has blocked it.
-      </message>
-      <message name="IDS_BLOCK_REASON_PROMPT_FOR_SCANNING"
-         desc="Message shown to the user on chrome://downloads page to explain that this download is recommended to be scanned.">
-        Chrome recommends scanning this file because it may be dangerous.
       </message>
 
       <!-- chrome://downloads page dangerous file description strings -->
@@ -1027,11 +1000,6 @@ Google Chrome is unable to recover your settings.
           </message>
         </if>
 
-        <!-- Extension uninstall prompt -->
-        <message name="IDS_EXTENSION_UNINSTALL_PROMPT_REMOVE_DATA_CHECKBOX" desc="Checkbox text to ask the user whether they want to remove associated data at uninstall time. Only used when uninstalling an app associated with a particular website.">
-          Also delete data from Chrome (<ph name="URL">$1<ex>www.google.com</ex></ph>)
-        </message>
-
         <!-- Extension alerts. -->
         <message name="IDS_EXTENSION_ALERT_ITEM_BLOCKLISTED_MALWARE" desc="A statement that an extension has been newly blocklisted for malware.">
           Chrome found that "<ph name="EXTENSION_NAME">$1<ex>Gmail Checker</ex></ph>" contains malware
@@ -1110,15 +1078,6 @@ Google Chrome is unable to recover your settings.
         Changes to this setting will be applied once Chrome restarts.
       </message>
 
-      <if expr="enable_extensions">
-        <message name="IDS_EXTENSIONS_MULTIPLE_UNSUPPORTED_DISABLED_BODY" desc="Body of the dialog shown when multiple unsupported extensions have been disabled.">
-          To make Chrome safer, we disabled some extensions that aren't listed in the <ph name="IDS_EXTENSION_WEB_STORE_TITLE">$1<ex>Chrome Web Store</ex></ph> and may have been added without your knowledge.
-        </message>
-        <message name="IDS_EXTENSIONS_SINGLE_UNSUPPORTED_DISABLED_BODY" desc="Body of the dialog shown when a single unsupported extension has been disabled.">
-          To make Chrome safer, we disabled the following extension that isn't listed in the <ph name="IDS_EXTENSION_WEB_STORE_TITLE">$1<ex>Chrome Web Store</ex></ph> and may have been added without your knowledge.
-        </message>
-      </if>
-
       <!-- Anchored Message-->
       <message name="IDS_ANCHORED_MESSAGE_MENU_TOOLTIP" desc="Tooltip for the anchored message menu.">
         More options
@@ -1180,9 +1139,6 @@ Google Chrome is unable to recover your settings.
         <message name="IDS_HELPER_NAME" desc="The helper application's name.  Should contain the Chrome application name (IDS_PRODUCT_NAME). Example: Google Chrome Helper.">
           Google Chrome Helper
         </message>
-        <message name="IDS_SHORT_HELPER_NAME" desc="The helper application's short name, used for the Mac's application menu, activity monitor, etc. Example: Chrome Helper, not Google Chrome Helper.">
-          Chrome Helper
-        </message>
       </if>
 
       <!-- Page menu. Android has separate strings for its menu -->
@@ -1205,11 +1161,6 @@ Google Chrome is unable to recover your settings.
       <!-- Chrome sign-in page -->
       <message name="IDS_CHROME_SIGNIN_TITLE" desc="Title on the about:chrome-signin page" translateable="false">
         Chrome
-      </message>
-
-      <!-- DICE sign-in promo strings -->
-      <message name="IDS_PROFILES_DICE_SYNC_PROMO" desc="Text describing the benefits of turning on Sync.">
-        Sync and personalize Chrome across your devices
       </message>
 
       <!-- One click sign-in infobar -->
@@ -1237,9 +1188,6 @@ Google Chrome is unable to recover your settings.
       </message>
 
       <!-- Session Restore Infobar -->
-      <message name="IDS_SESSION_RESTORE_TURN_OFF_RESTORE_FROM_SESSION" desc="Message that appears in the session restore infobar when the user has restored their tabs once.">
-        Continue where you left off: Chrome restored your tabs from your last session. You can turn this off in
-      </message>
       <message name="IDS_SESSION_RESTORE_TURN_OFF_RESTORE_FROM_RESTART" desc="Message that appears in the session restore infobar when the user has restored their tabs multiple times.">
         Continue where you left off: Chrome restores your tabs every time you restart. To turn this off, go to
       </message>
@@ -1266,15 +1214,6 @@ Google Chrome is unable to recover your settings.
         Your organization requires you to sign into Chrome
       </message>
       <if expr="toolkit_views">
-        <message name="IDS_ENTERPRISE_SIGNIN_TITLE" desc="The title of the dialog to confirm linking the browser profile with the signed-in enterprise account">
-          Link your Chrome data to this account?
-        </message>
-        <message name="IDS_ENTERPRISE_SIGNIN_EXPLANATION_WITHOUT_PROFILE_CREATION" desc="The warning message displayed to an enterprise user about to link their profile to their Google account. This message is followed by a 'Learn more' link.">
-          You are signing in with a managed account and giving its administrator control over your Google Chrome profile. Your Chrome data, such as your apps, bookmarks, history, passwords, and other settings will become permanently tied to <ph name="USER_NAME">$1<ex>pat@example.com</ex></ph>. You will be able to delete this data via the Google Accounts Dashboard, but you will not be able to associate this data with another account. <ph name="LEARN_MORE">$2<ex>Learn more</ex></ph>
-        </message>
-        <message name="IDS_ENTERPRISE_SIGNIN_EXPLANATION_WITH_PROFILE_CREATION" desc="The warning message displayed to an enterprise user about to link their profile to their Google account. Additionally notifies the user that they can create a new profile instead. This message is followed by a 'Learn more' link.">
-          You are signing in with a managed account and giving its administrator control over your Google Chrome profile. Your Chrome data, such as your apps, bookmarks, history, passwords, and other settings will become permanently tied to <ph name="USER_NAME">$1<ex>pat@example.com</ex></ph>. You will be able to delete this data via the Google Accounts Dashboard, but you will not be able to associate this data with another account. You can optionally create a new profile to keep your existing Chrome data separate. <ph name="LEARN_MORE">$2<ex>Learn more</ex></ph>
-        </message>
         <message name="IDS_ENTERPRISE_VALUE_PROPOSITION_PROFILE_REQUIRED_BY_ORG_KNOWN_DOMAIN_TITLE" desc="Title of the screen in the profile creation flow where the user is asked whether they want to confirm signing in to Chrome with their enterprise account when it is mandatory to sign in to Chrome with the enterprise account.">
           Your organization, <ph name="MANAGER">$1<ex>manager.com</ex></ph>, requires you to sign into Chrome
         </message>
@@ -1341,12 +1280,6 @@ Google Chrome is unable to recover your settings.
         <message name="IDS_NTP_CUSTOMIZATION_PROMO" desc="The text shown in the body of the New Tab Page browser customization promotion">
           Customize Chrome to give your browser a new look
         </message>
-        <message name="IDS_NTP_MOBILE_PROMO_TITLE" desc="Title of the NTP promo that promotes Chrome on mobile.">
-          Get Chrome on your phone
-        </message>
-        <message name="IDS_NTP_MOBILE_PROMO_PASSWORDS_TITLE" desc="Title of the NTP promo that promotes Chrome on mobile for passwords.">
-          Get the Chrome app to save passwords on the go
-        </message>
       </if>
 
       <!-- Customize Chrome Auto Promo Strings -->
@@ -1407,9 +1340,6 @@ Google Chrome is unable to recover your settings.
         </message>
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_DESC_V2_SUPERVISED" desc="This string is the body text for a dialog that appears when the user is already signed in to Chrome, but they just tried to sign in to a Google service (like Gmail) with a different supervised Google Account that already has its own Chrome profile on this device. The body text is after the 'Switch to existing Chrome profile?' string. The tone should be inviting and helpful.">
           To stay safer online with your parent’s choices, switch to your Chrome profile where you’re already signed in as <ph name="USER_EMAIL_ADDRESS">$1<ex>foo@gmail.com</ex></ph>
-        </message>
-        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_CONSUMER_BUBBLE_DESC" desc="Body of the web signin interception bubble">
-          <ph name="EXISTING_USER">$1<ex>Elisa</ex></ph> is already signed in to this Chrome profile. To keep your browsing separate, Chrome can create your own profile for you.
         </message>
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_DESC" desc="Body of the web signin interception bubble. It is shown when the user signs in on the web while they already have another account present in the current profile.">
           <ph name="EXISTING_USER">$1<ex>Elisa</ex></ph> is already signed in.  To keep your browsing separate, sign in to Chrome in your own profile as <ph name="USER_EMAIL_ADDRESS">$2<ex>foo@gmail.com</ex></ph>.
@@ -1491,9 +1421,6 @@ Google Chrome is unable to recover your settings.
         <message name="IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_NO_UNSYNCED_TITLE" desc="This is the title of a confirmation dialog and asks the user to confirm that they want to sign out of Chrome. It appears when the user opens the Chrome Profile Menu and chooses 'Sign out of Chrome'. This title is before the 'Your passwords and other Chrome data are saved to your Google Account, and will be removed from this device. To use them in the future, sign back in to Chrome.' string. The tone should be straightforward.">
           Sign out of Chrome?
         </message>
-        <message name="IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_NO_UNSYNCED_BODY" desc="This is the subtitle of a confirmation dialog that asks the user to confirm that they want to sign out of Chrome. It appears when the user opens the Chrome Profile Menu and chooses 'Sign out of Chrome'. This subtitle is after the 'Sign out of Chrome?' string. The tone should be calm, because we want to explain to the user that their data is saved; however, we want to set expectations by clarifying that the data will be removed from the device. This string provides a path to resolution because it explains how the user can see their data again (by signing back in).">
-          Your passwords, payment methods, and addresses that you saved in your Google Account will be removed from this device. To use them again in Chrome, sign back in.
-        </message>
         <message name="IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_NO_UNSYNCED_DATA_BODY" desc="This is the subtitle of a confirmation dialog that asks the user to confirm that they want to sign out of Chrome. It appears when the user opens the Chrome Profile Menu and chooses 'Sign out of Chrome'. This subtitle is after the 'Sign out of Chrome?' string. The tone should be calm, because we want to explain to the user that their data is saved; however, we want to set expectations by clarifying that the data will be removed from the device. This string provides a path to resolution because it explains how the user can see their data again (by signing back in).">
           Your passwords and other Chrome data that you saved in your Google Account will be removed from this device. To use them again in Chrome, sign back in.
         </message>
@@ -1512,9 +1439,6 @@ Google Chrome is unable to recover your settings.
           {count, plural,
             =1 {Some of your Chrome data hasn't been saved in your Google Account yet. Try waiting a few minutes before signing out. If you sign out now, this data (1 item) will be deleted.}
             other {Some of your Chrome data hasn't been saved in your Google Account yet. Try waiting a few minutes before signing out. If you sign out now, this data ({count} items) will be deleted.}}
-        </message>
-        <message name="IDS_CLOSE_WARNING_FOR_CLEAR_COOKIES_ON_EXIT_TEXT" desc="Body of a notice displayed when closing the last Chrome window, to inform the user about a change in the way the 'Clear cookie on exit' setting works.">
-          You’ll be signed out of most sites when you close all Chrome windows, except your Google Account if you’re signed in to Chrome. To let sites remember you, <ph name="SETTINGS_LINK">$1<ex>go to settings</ex></ph>.
         </message>
         <message name="IDS_AVATAR_BUTTON_INTERCEPT_BUBBLE_CHROME_SIGNIN_ACCESSIBILITY_LABEL"
           desc="Accessibility label (read by the accessibility tools) of the avatar button when the Chrome Signin bubble is shown. The text implies that the expanded bubble underneath the button is closable by clicking on the button. The actual text is 'Sign in to Chrome?' with a bubble shown under it.">
@@ -1717,47 +1641,6 @@ Google Chrome is unable to recover your settings.
       <if expr="is_posix">
         <message name="IDS_PROFILE_IN_USE_POSIX" desc="Message shown when the browser cannot start because the profile is in use on a different host.">
           The profile appears to be in use by another Google Chrome process (<ph name="PROCESS_ID">$1<ex>12345</ex></ph>) on another computer (<ph name="HOST_NAME">$2<ex>example.com</ex></ph>).  Chrome has locked the profile so that it doesn't get corrupted.  If you are sure no other processes are using this profile, you can unlock the profile and relaunch Chrome.
-        </message>
-      </if>
-
-      <!-- Mac First-run dialog messages -->
-      <if expr="is_macosx">
-        <message name="IDS_FIRSTRUN_DLG_MAC_SET_DEFAULT_BROWSER_LABEL" desc="Label for checkbox that sets the default browser">
-          Set Google Chrome as your default browser
-        </message>
-      </if>
-
-      <!-- Material Design User Manager -->
-      <if expr="not is_android and not is_chromeos">
-        <!-- User pod remove sync warning text -->
-        <message name="IDS_LOGIN_POD_USER_REMOVE_WARNING_SYNC" desc="Main text shown as a warning when attempting to remove an user.">
-          This person's browsing data will be deleted from this device. To recover the data, sign in to Chrome as <ph name="USER_EMAIL">$2<ex>foo@example.com</ex></ph>.
-        </message>
-
-        <!-- Tutorial -->
-        <message name="IDS_USER_MANAGER_TUTORIAL_SLIDE_INTRO_TITLE" desc="Title of the tutorial introduction slide">
-          Chrome just got better
-        </message>
-        <message name="IDS_USER_MANAGER_TUTORIAL_SLIDE_INTRO_TEXT" desc="Main text of the tutorial introduction slide">
-          Now it's easier to use Chrome with your Google Account and on shared computers.
-        </message>
-        <message name="IDS_USER_MANAGER_TUTORIAL_SLIDE_YOUR_CHROME_TITLE" desc="Title of the personalization slide">
-          This is your Chrome
-        </message>
-        <message name="IDS_USER_MANAGER_TUTORIAL_SLIDE_YOUR_CHROME_TEXT" desc="Main text of the personalization slide">
-          Your web, bookmarks, and other Chrome stuff live here.
-        </message>
-        <message name="IDS_USER_MANAGER_TUTORIAL_SLIDE_GUEST_TEXT" desc="Main text of the guest user slide">
-          Guests can use Chrome without leaving anything behind.
-        </message>
-        <message name="IDS_USER_MANAGER_TUTORIAL_SLIDE_FRIENDS_TEXT" desc="Main text of the friends and family slide">
-          If you share a computer, friends and family can browse separately and set up Chrome just the way they want.
-        </message>
-        <message name="IDS_USER_MANAGER_TUTORIAL_SLIDE_OUTRO_TEXT" desc="Main text of the tutorial completion slide">
-          Click your name to open Chrome and start browsing.
-        </message>
-        <message name="IDS_USER_MANAGER_TUTORIAL_SLIDE_OUTRO_ADD_USER" desc="Title text for the button that would add a new user">
-          Add yourself to Chrome
         </message>
       </if>
 
@@ -1969,37 +1852,13 @@ Google Chrome is unable to recover your settings.
       <message name="IDS_SYNC_ERROR_TRUSTED_VAULT_USER_MENU_ERROR_DESCRIPTION" desc="Error description of the sync/signin error header of desktop user menu.">
         Verify it's you to use and save Chrome data in your account, <ph name="ACCOUNT_EMAIL">$1<ex>elisa.beckett@gmail.com</ex></ph>
       </message>
-      <message name="IDS_SYNC_ERROR_UPGRADE_CLIENT_USER_MENU_TITLE" desc="Error message to resolve sync protocol error for out-of-date client.">
-        To use and save Chrome data in your Google Account, update Chrome
-      </message>
       <message name="IDS_SYNC_ERROR_UPGRADE_CLIENT_USER_MENU_ERROR_DESCRIPTION" desc="Error message to resolve sync protocol error for out-of-date client.">
         Update Chrome to keeping using the Chrome data in your Google Account, <ph name="ACCOUNT_EMAIL">$1<ex>elisa.beckett@gmail.com</ex></ph>
       </message>
 
       <!-- Sync errors. -->
-      <message name="IDS_SYNC_UPGRADE_CLIENT" desc="Message indicating client needs to be upgraded to the latest version.">
-        Update Chrome to start sync
-      </message>
       <message name="IDS_SYNC_UPGRADE_CLIENT_BUTTON" desc="Button indicating client needs to be upgraded to the latest version.">
         Update Chrome
-      </message>
-
-      <!-- Upgrade recovery bubble -->
-      <message name="IDS_RECOVERY_BUBBLE_TITLE" desc="Text for the title of the chrome recovery bubble view.">
-        Chrome is out of date
-      </message>
-      <if expr="use_titlecase">
-        <message name="IDS_RUN_RECOVERY" desc="In Title Case: Text for the button the user clicks to recover Chrome and its updater.">
-          Update Chrome
-        </message>
-      </if>
-      <if expr="not use_titlecase">
-        <message name="IDS_RUN_RECOVERY" desc="Text for the button the user clicks to recover Chrome and its updater.">
-          Update Chrome
-        </message>
-      </if>
-      <message name="IDS_RECOVERY_BUBBLE_TEXT" desc="Text for the chrome recovery bubble view full description.">
-        Important security improvements and new features are available in the latest version.
       </message>
 
       <!-- Critical Notification bubble -->
@@ -2041,11 +1900,6 @@ Google Chrome is unable to recover your settings.
 
       <!-- Runtime permission strings -->
       <if expr="is_android">
-
-        <message name="IDS_MISSING_STORAGE_PERMISSION_DOWNLOAD_EDUCATION_TEXT" desc="Text shown educating the user that Chrome is missing the Android storage permission, which is required to download files.">
-          Chrome needs storage access to download files
-        </message>
-
         <message name="IDS_MESSAGE_MISSING_AR_CAMERA_PERMISSION_TEXT" desc="Text shown in a prompt ui when a website has requested access to augmented reality capabilities, but Chrome is missing the Android camera permission.">
           Chrome needs camera permission to create a 3D map of your surroundings
         </message>
@@ -2066,9 +1920,6 @@ Google Chrome is unable to recover your settings.
         </message>
         <message name="IDS_MESSAGE_MISSING_LOCAL_NETWORK_PERMISSION_TEXT" desc="Text shown in a prompt ui when a website has requested access to the local network capabilities, but Chrome is missing the Android local network permission.">
           Chrome needs access to your local network to discover and use nearby devices
-        </message>
-        <message name="IDS_MESSAGE_STORAGE_ACCESS_PERMISSION_TEXT" desc="Text shown educating the user that Chrome is missing the Android storage permission, which is required to download files.">
-          Chrome needs storage access permission to download files
         </message>
         <message name="IDS_MESSAGE_MISSING_XR_PERMISSION_TEXT" desc="Text shown in an infobar when a website has requested access to mixed reality capabilities, but Chrome is missing the Android scene understanding and hand tracking permission.">
           Chrome needs permission to map your surroundings and track your hands
@@ -2145,9 +1996,6 @@ Google Chrome is unable to recover your settings.
         </message>
         <message name="IDS_SIDE_PANEL_CONTEXTUAL_TASKS_PINNABLE_IPH_PANEL" desc="The body text of the IPH describing that the Contextual Tasks side panel is pinnable.">
           You can pin Google Search panel to ask questions as you browse
-        </message>
-        <message name="IDS_SIDE_PANEL_CONTEXTUAL_TASKS_PINNABLE_IPH_PIN_SHORTCUT" desc="The text on the button to pin the Contextual Tasks shortcut in the pinnable IPH.">
-          Pin Shortcut
         </message>
         <message name="IDS_SIDE_PANEL_CONTEXTUAL_TASKS_PINNABLE_IPH_PIN_TO_TOOLBAR" desc="The text on the button in the pinnable IPH that pins the Contextual Tasks shortcut to the toolbar.">
           Pin to toolbar
@@ -2232,12 +2080,6 @@ Google Chrome is unable to recover your settings.
           is_accessibility_with_no_ui="true">
           The "Google Search panel" button on the toolbar has a new icon. Click it to ask questions as you browse with Google Search panel.
         </message>
-        <message name="IDS_TUTORIAL_CONTEXTUAL_TASKS_STEP1" desc="The body text of the first step of the Contextual Tasks tutorial. THREE_DOTS_ICON is the vertical three-dot overflow menu icon that we are instructing users to click on.">
-          Open the more <ph name="THREE_DOTS_ICON">⋮</ph> menu
-        </message>
-        <message name="IDS_TUTORIAL_CONTEXTUAL_TASKS_STEP2" desc="The body text of the second step of the Contextual Tasks tutorial.">
-          Select "Pin to toolbar"
-        </message>
         <message name="IDS_TUTORIAL_CONTEXTUAL_TASKS_STEP3" desc="The body text of the third step of the Contextual Tasks tutorial.">
           Success! You can now easily ask questions as you browse with Google Search AI Mode
         </message>
@@ -2255,9 +2097,6 @@ Google Chrome is unable to recover your settings.
         </message>
         <message name="IDS_TUTORIAL_CONTEXTUAL_TASKS_SUCCESS" desc="The body text of the tutorial completion bubble shown after the Contextual Tasks shortcut is pinned to the toolbar.">
           Google Search in Chrome pinned to toolbar!
-        </message>
-        <message name="IDS_CONTEXTUAL_TASKS_OPEN_GOOGLE_SEARCH_IN_CHROME" desc="Label for an action that opens Google Search in Chrome (the Contextual Tasks side panel).">
-          Open Google Search in Chrome
         </message>
 
         <!-- Overlay WebUI Strings -->
@@ -2329,22 +2168,9 @@ Google Chrome is unable to recover your settings.
           desc="Text that is shown in the more options menu to open the help center article.">
           Learn more
         </message>
-        <message name="IDS_LENS_OVERLAY_INITIAL_TOAST_LABEL"
-          desc="Accessibility label for the initial user eduction bubble that appears at the top of the screen after the user invokes the Lens Overlay feature. Informs the user to select an object to search with Google Lens, or use the escape key to exit the feature.">
-          Select anything to search with Google Lens or press escape to exit Google Lens
-        </message>
-        <message name="IDS_LENS_OVERLAY_COBROWSE_INITIAL_TOAST_LABEL"
-          desc="Label for the initial user education bubble when invoking the Lens Overlay along side the cobrowse side panel, instructing the user to select a region of the screen.">
-          Select region of screen to search
-        </message>
         <message name="IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE"
           desc="Text that is shown in the Lens Overlay education bubble when starting the feature. Informs the user to tap an object or drag over the screen to select a region to search with Google Lens.">
           Select anything to search with Google Lens
-        </message>
-        <message name="IDS_LENS_OVERLAY_INITIAL_TOAST_LABEL_SIMPLIFIED"
-          desc="Accessibility label for the initial user eduction bubble that appears at the top of the screen after the user invokes the Lens Overlay feature. Informs the user to select an object to search with Google Lens, or use the escape key to exit the feature."
-          is_accessibility_with_no_ui="true">
-          Select any text or image to search with Google Lens or press escape to exit Google Lens
         </message>
         <message name="IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE_SIMPLIFIED"
           desc="Text that is shown in the Lens Overlay education bubble when starting the feature. Informs the user to tap an object or drag over the screen to select a region to search with Google Lens.">
@@ -2378,10 +2204,6 @@ Google Chrome is unable to recover your settings.
           desc="Text that is shown in the Lens Overlay tooltip that appears beneath the cursor. Informs the user to click to exit Google Lens.">
           Click to exit Google Lens
         </message>
-        <message name="IDS_LENS_OVERLAY_AUTO_DETECT_LANGUAGE_LABEL"
-          desc="Label for the language picker button denoting that source language of the page will be automatically detected.">
-          Auto-detect
-        </message>
         <message name="IDS_LENS_OVERLAY_TRANSLATE_BUTTON_LABEL"
           desc="Label for the translate button. Informs the user that the entire screen will be translated when clicked.">
           Translate screen
@@ -2401,10 +2223,6 @@ Google Chrome is unable to recover your settings.
         <message name="IDS_LENS_OVERLAY_ALL_LANGUAGES_LABEL"
           desc="Label in the language picker menu denoting that the following language menu items are all of the possible selections that can be made.">
           All languages
-        </message>
-        <message name="IDS_LENS_OVERLAY_DETECTED_LABEL"
-          desc="Label in the language picker menu denoting that the following language is the one that has been detected.">
-          Detected
         </message>
         <message name="IDS_LENS_OVERLAY_DETECT_LANGUAGE_LABEL"
           desc="Label in the language picker menu denoting that the following language is the one that has been detected.">
@@ -2462,25 +2280,13 @@ Google Chrome is unable to recover your settings.
 
 
         <!-- Entrypoint Strings -->
-        <message name="IDS_CONTENT_CONTEXT_LENS_OVERLAY"
-          desc="The name of the Lens overlay command in the content area context menu">
-          Search with Google Lens
-        </message>
         <message name="IDS_CONTENT_LENS_OVERLAY_ENTRYPOINT_LABEL"
           desc="The label of the Lens overlay entrypoint in the omnibox">
           Google Lens
         </message>
-        <message name="IDS_CONTENT_LENS_OVERLAY_HOMEWORK_ENTRYPOINT_LABEL"
-          desc="The label of the Lens overlay entrypoint in the omnibox offering homework help">
-          Homework help
-        </message>
         <message name="IDS_CONTENT_LENS_OVERLAY_ASK_GOOGLE_ENTRYPOINT_LABEL"
           desc="The label of the Lens overlay entrypoint in the omnibox, allowing users to ask Google about the page">
           Ask Google
-        </message>
-        <message name="IDS_SIDE_PANEL_LENS_OVERLAY_TOOLBAR_TOOLTIP"
-          desc="The tooltip for the Lens overlay toolbar button.">
-          Search with Google Lens
         </message>
 
         <if expr="use_titlecase">
@@ -2597,60 +2403,22 @@ Google Chrome is unable to recover your settings.
             desc="In Title Case: The text label of the omnibox context menu option to show the 'Search with Google Lens' shortcut button">
             Always Show Google Lens Shortcut
           </message>
-          <message name="IDS_SHOW_LENS_OVERLAY"
-            desc="In Title Case: The text label of the Lens overlay menu item">
-            Search with Google Lens
-          </message>
         </if>
         <if expr="not use_titlecase">
-          <message name="IDS_SHOW_LENS_OVERLAY" desc="The text label of the Lens overlay menu item">
-            Search with Google Lens
-          </message>
           <message name="IDS_CONTEXT_MENU_SHOW_GOOGLE_LENS_SHORTCUT"
             desc="The text label of the omnibox context menu option to show the 'Search with Google Lens' shortcut button">
             Always show Google Lens shortcut
           </message>
         </if>
 
-        <!-- CSB Strings -->
-        <message name="IDS_LENS_CONTEXTUAL_SEARCH_DEFAULT_QUERY"
-          desc="Default query for Lens searchbox to request help with the current page context.">
-          help me with this
-        </message>
-        <message name="IDS_LENS_CONTEXTUAL_SEARCH_ZERO_STATE_QUERY"
-          is_accessibility_with_no_ui="true"
-          desc="Default query for Lens searchbox to request help with the current page context in a low intent state.">
-          **Summarize:** In a single sentence under 30 words, describe the primary subject and purpose of the content in the screenshot.
-
-          **Suggest Questions:** Generate a bulleted list of 3-5 thought-provoking questions a user could ask to better understand the screenshot. These questions should include at least one that is specifically about a visual object, its design, or its placement.
-        </message>
-
         <!-- AI Mode Strings -->
         <message name="IDS_LENS_COMPOSEBOX_HINT_TEXT"
           desc="The hint text of the AI mode searchbox in the Lens side panel. This text is shown in the searchbox when the user has not yet typed any text, and prompts the user to ask a follow up question.">
           Ask a follow up
         </message>
-        <message name="IDS_LENS_COMPOSEBOX_HINT_TEXT_SEARCH_PAGE"
-          desc="The hint text of the AI mode searchbox in the Lens side panel. This text is shown in the searchbox when the user has not yet typed any text but has opened the overlay to make AIM follow up queries.">
-          Search anything on page
-        </message>
         <message name="IDS_LENS_COMPOSEBOX_HINT_TEXT_SELECT_PAGE"
           desc="The hint text of the AI mode searchbox in the Lens side panel. This text is shown in the searchbox when the user has not yet typed any text but has opened the overlay to make AIM follow up queries.">
           Select anything on page
-        </message>
-        <message name="IDS_LENS_COMPOSEBOX_HINT_TEXT_ASK_ANYTHING"
-          desc="The hint text of the AI mode searchbox in the Lens tab. This text is shown in the searchbox when the user has not yet typed any text, and prompts the user to ask a question.">
-          Ask anything
-        </message>
-
-        <message name="IDS_AI_MODE_ASK_ABOUT_THIS_TAB"
-          desc="Title for the AI Mode zero state welcome message in the Lens side panel. Prompts the user to ask questions about the current tab. Includes a line break to force desired line wrapping.">
-          Ask Google<ph name="LINE_BREAK">$1</ph>about this tab
-        </message>
-
-        <message name="IDS_AI_MODE_NEW_SEARCH"
-          desc="Header in the Lens side panel indicating a new AI Mode search session.">
-          New search
         </message>
 
         <!-- On Sign-in Avatar Button Label Desktop -->
@@ -2676,16 +2444,6 @@ Google Chrome is unable to recover your settings.
         <message name="IDS_INSTALLING_UPDATE" desc="Label shown on the updates installation screen during OOBE">
           Please wait while Chrome installs the latest system updates.
         </message>
-        <if expr="reven">
-          <message name="IDS_EULA_SCREEN_ACCESSIBLE_TITLE" desc="Title to be spoken on opening the OOBE EULA screen">
-            ChromeOS Flex terms
-          </message>
-        </if>
-        <if expr="not reven">
-          <message name="IDS_EULA_SCREEN_ACCESSIBLE_TITLE" desc="Title to be spoken on opening the OOBE EULA screen">
-            ChromeOS terms
-          </message>
-        </if>
       </if>
 
       <!-- Native notifications for Windows 10 -->
@@ -2847,20 +2605,6 @@ Google Chrome is unable to recover your settings.
       </message>
     </if>
 
-      <!-- User happiness tracking survey UI -->
-      <if expr="not is_android">
-        <message name="IDS_HATS_BUBBLE_TITLE" translateable="false" desc="The title of Happiness Tracking Survey's invitation banner, it invites users to take a survey">
-          Take a quick survey
-        </message>
-      </if>
-
-      <!-- HaTS invitations on Android -->
-      <if expr="is_android">
-        <message name="IDS_MESSAGE_ACT_SURVEY_INVITATION" desc="Survey invitation text that's shown in a pop up. The user can then ignore the invitation or accept it, which will cause the survey to be shown.">
-          Help us improve Incognito by taking this 1 minute survey.
-        </message>
-      </if>
-
       <!-- Chrome parent extension/app install blocking dialog. -->
       <if expr="enable_extensions_core">
         <message name="IDS_EXTENSION_PERMISSIONS_BLOCKED_BY_PARENT_PROMPT_MESSAGE" desc="Text for the dialog indicating that a parent has blocked extensions and apps.">
@@ -2885,12 +2629,6 @@ Google Chrome is unable to recover your settings.
         </message>
         <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_TITLE" desc="Profile picker profile type choice title">
           Set up your new Chrome profile
-        </message>
-        <message name="IDS_PROFILE_PICKER_IPH_FOR_PROFILES_TEXT" desc="Text of the IPH bubble for introducing profiles.">
-          Each profile holds its own Chrome info like bookmarks, history, passwords, and more
-        </message>
-        <message name="IDS_PROFILE_PICKER_IPH_FOR_ADD_PROFILE_TEXT" desc="Text of the IPH bubble for adding new profiles.">
-          If you share a device, friends and family can browse separately and set up Chrome just the way they want
         </message>
         <message name="IDS_PROFILE_PICKER_PROFILE_SWITCH_TITLE" desc="Profile picker profile switch title">
           Switch to existing Chrome profile?
@@ -2949,9 +2687,6 @@ Google Chrome is unable to recover your settings.
         <message name="IDS_FRE_DEFAULT_BROWSER_ILLUSTRATION_ALT_TEXT" desc="Alt text for the illustration in the page that prompts user to set Chrome as their default browser.">
           Chrome logo inside a computer screen.
         </message>
-        <message name="IDS_APP_MENU_TOOLTIP_DEFAULT_PROMPT" desc="The tooltip to show for the browser menu when the default browser prompt is displayed">
-          Customize and control Chrome. Set Chrome as your default.
-        </message>
         <message name="IDS_SET_BROWSER_AS_DEFAULT_MENU_ITEM" desc="Menu item that prompts user to set Chrome as their default browser.">
           Set Chrome as your default browser
         </message>
@@ -2973,14 +2708,6 @@ Google Chrome is unable to recover your settings.
         </message>
         <message name="IDS_PASSWORD_MANAGER_IPH_BODY_WEB_APP_PROFILE_SWITCH" desc="Body of the in Product Help for profile switching shown in the password manager web app.">
           You can switch to see passwords from another Chrome profile
-        </message>
-
-        <!-- Web Signout Intercept IPH -->
-        <message name="IDS_SIGNOUT_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNOUT_IPH_TEXT" desc="This confirmation message is intended to help users to understand that signing out of a Google service (like Gmail) will not sign them out of Chrome. It appears in a blue in-product help bubble, which points to the Chrome Profile Menu; it appears after the user signs out of a Google service (like Gmail). The user can open the Profile Menu and sign out of Chrome, if they wish to do so.">
-          To remove your Google Account from Chrome, sign out
-        </message>
-        <message name="IDS_SIGNOUT_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNOUT_IPH_TEXT_SCREENREADER" desc="Text announced by screenreaders related to the confirmation message is intended to help users to understand that signing out of a Google service (like Gmail) will not sign them out of Chrome. It appears in a blue in-product help bubble, which points to the Chrome Profile Menu; it appears after the user signs out of a Google service (like Gmail). The user can open the Profile Menu and sign out of Chrome, if they wish to do so.">
-          To remove your Google Account from Chrome, sign out of Chrome in the Settings page
         </message>
 
         <!-- Feature Showcase - Google Password Manager -->
@@ -3029,9 +2756,6 @@ Google Chrome is unable to recover your settings.
       </message>
       <message name="IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_MESSAGE_DESCRIPTION" desc="Description shown in the message shown when a user changes their account-level tailored security setting encouraging them to enable Enhanced Safe Browsing">
         Enhanced protection does more to block phishing and malware
-      </message>
-      <message name="IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_MESSAGE_DESCRIPTION_UPDATED" desc="Description shown in the message shown when a user changes their account-level tailored security setting encouraging them to enable Enhanced Safe Browsing">
-        Enhanced Safe Browsing does more to protect you against dangerous websites and downloads
       </message>
       <message name="IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_MESSAGE_ACCEPT" desc="Accept button shown in the message shown when a user changes their account-level tailored security setting encouraging them to enable Enhanced Safe Browsing">
         Continue
@@ -3095,15 +2819,6 @@ Google Chrome is unable to recover your settings.
         </message>
         <message name="IDS_WAITING_TO_CONNECT" desc="Message to show while checking for updates.">
           Connecting to the Internet...
-        </message>
-        <message name="IDS_DOWNLOADING_SHORT" desc="Shows how many seconds are remaining in the download.">
-          Downloading... <ph name="SECONDS">$1<ex>0</ex></ph> second(s) remaining
-        </message>
-        <message name="IDS_DOWNLOADING_LONG" desc="Shows how many minutes are remaining in the download.">
-          Downloading... <ph name="MINUTE">$1<ex>0</ex></ph> minute(s) remaining
-        </message>
-        <message name="IDS_DOWNLOADING_VERY_LONG" desc="Shows how many hours are remaining in the download.">
-          Downloading... <ph name="HOURS">$1<ex>0</ex></ph> hour(s) remaining
         </message>
         <message name="IDS_DOWNLOADING_COMPLETED" desc="For when donwload is completed.">
           Download complete
@@ -3430,26 +3145,11 @@ Google Chrome is unable to recover your settings.
       <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_CLOSE_BETA" desc="This is the tooltip that is shown when the Gemini status icon is hovered and the Gemini window is open. It indicates that this is the Beta version of the browser.">
         Close Gemini in Chrome Beta
       </message>
-      <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_TOGGLE" desc="This is the tooltip that is shown when the Gemini status icon is hovered.">
-        Toggle Gemini in Chrome
-      </message>
-      <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_TOGGLE_CANARY" desc="This is the tooltip that is shown when the Gemini status icon is hovered. It indicates that this is the Canary version of the browser.">
-        Toggle Gemini in Chrome Canary
-      </message>
-      <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_TOGGLE_DEV" desc="This is the tooltip that is shown when the Gemini status icon is hovered. It indicates that this is the Dev version of the browser.">
-        Toggle Gemini in Chrome Dev
-      </message>
-      <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_TOGGLE_BETA" desc="This is the tooltip that is shown when the Gemini status icon is hovered. It indicates that this is the Beta version of the browser.">
-        Toggle Gemini in Chrome Beta
-      </message>
       <message name="IDS_GLIC_STATUS_ICON_MENU_SHOW" desc="This is the menu item for showing the Gemini experience in Chrome.">
         Open Gemini in Chrome
       </message>
       <message name="IDS_GLIC_STATUS_ICON_MENU_CLOSE" desc="This is the menu item for closing the Gemini window.">
         Close Gemini in Chrome
-      </message>
-      <message name="IDS_GLIC_STATUS_ICON_MENU_TOGGLE" desc="This is the menu item for toggling the Gemini UI.">
-        Toggle Gemini in Chrome
       </message>
       <message name ="IDS_GLIC_INELIGIBLE_PROFILE_NOTICE" desc="This is the text of the Gemini ineligible profile notice.">
         To use Gemini in Chrome, sign in with a different Google Account
@@ -3736,87 +3436,6 @@ Google Chrome is unable to recover your settings.
         <message name="IDS_IOS_DESKTOP_TAB_GROUPS_REMINDER_CONFIRMATION" desc="Body text of the promo bubble that appears after the user chooses to be reminded of tab groups on their iOS device.">
           Next time you open Chrome on your <ph name="DEVICE_TYPE">$1<ex>iPhone</ex></ph>, you'll see a prompt to use tab groups.
         </message>
-        <message name="IDS_IOS_DESKTOP_AI_PROMO_BUBBLE_DESCRIPTION_QR" desc="The description for the iOS desktop AI promo bubble with a QR code.">
-          Scan the QR code with your phone to download Chrome and sign in to your Google Account.
-        </message>
-        <message name="IDS_IOS_DESKTOP_AI_PROMO_BUBBLE_TITLE_QR" desc="The title for the iOS desktop AI promo bubble with a QR code.">
-          Use Google's best AI tools with the Chrome app on your phone
-        </message>
-        <message name="IDS_IOS_DESKTOP_AI_PROMO_BUBBLE_DESCRIPTION_REMINDER" desc="The description for the iOS desktop AI promo bubble with a reminder.">
-          Take your favorite Google AI tools on the go with Chrome on iOS.
-        </message>
-        <message name="IDS_IOS_DESKTOP_AI_PROMO_BUBBLE_TITLE_REMINDER" desc="The title for the iOS desktop AI promo bubble with a reminder.">
-          Get the power of AI when you use the Chrome app on your <ph name="DEVICE_TYPE">$1<ex>iPhone</ex></ph>
-        </message>
-        <message name="IDS_IOS_DESKTOP_AI_PROMO_NOTIFICATION_BODY" desc="The body for the iOS desktop AI promo notification.">
-          Use the Chrome app to take the best AI tools on the go
-        </message>
-        <message name="IDS_IOS_DESKTOP_BEST_OF_GOOGLE_PROMO_BUBBLE_DESCRIPTION_QR" desc="The description for the iOS desktop Best of Google promo bubble with a QR code.">
-          Scan the QR code with your phone to download Chrome and sign in to your Google Account.
-        </message>
-        <message name="IDS_IOS_DESKTOP_BEST_OF_GOOGLE_PROMO_BUBBLE_TITLE_QR" desc="The title for the iOS desktop Best of Google promo bubble with a QR code.">
-          Get the best of Google with the Chrome app on your phone
-        </message>
-        <message name="IDS_IOS_DESKTOP_BEST_OF_GOOGLE_PROMO_BUBBLE_DESCRIPTION_REMINDER" desc="The description for the iOS desktop Best of Google promo bubble with a reminder.">
-          Seamlessly work with your favorite apps like Google Drive and YouTube on the go with Chrome.
-        </message>
-        <message name="IDS_IOS_DESKTOP_BEST_OF_GOOGLE_PROMO_BUBBLE_TITLE_REMINDER" desc="The title for the iOS desktop Best of Google promo bubble with a reminder.">
-          Get the best of Google with the Chrome app on your <ph name="DEVICE_TYPE">$1<ex>iPhone</ex></ph>
-        </message>
-        <message name="IDS_IOS_DESKTOP_BEST_OF_GOOGLE_PROMO_NOTIFICATION_BODY" desc="The body for the iOS desktop Best of Google promo notification.">
-          Access all of your Google favorites with Chrome on your <ph name="DEVICE_TYPE">$1<ex>iPhone</ex></ph>
-        </message>
-        <message name="IDS_IOS_DESKTOP_BEST_OF_GOOGLE_PROMO_NOTIFICATION_TITLE" desc="The title for the iOS desktop Best of Google promo notification.">
-          Reminder: The best of Google in your pocket
-        </message>
-        <message name="IDS_IOS_DESKTOP_SAFETY_PROMO_BUBBLE_DESCRIPTION_QR" desc="The description for the iOS desktop Safety promo bubble with a QR code.">
-          Scan the QR code with your phone to download Chrome and sign in to your Google Account.
-        </message>
-        <message name="IDS_IOS_DESKTOP_SAFETY_PROMO_BUBBLE_TITLE_QR" desc="The title for the iOS desktop Safety promo bubble with a QR code.">
-          Get Google's best safety features on the go, with the Chrome app on your phone
-        </message>
-        <message name="IDS_IOS_DESKTOP_SAFETY_PROMO_BUBBLE_DESCRIPTION_REMINDER" desc="The description for the iOS desktop Safety promo bubble with a reminder.">
-          Get Google’s best safety features on the go with Chrome.
-        </message>
-        <message name="IDS_IOS_DESKTOP_SAFETY_PROMO_BUBBLE_TITLE_REMINDER" desc="The title for the iOS desktop Safety promo bubble with a reminder.">
-          Take the safety of Google on the go with the Chrome app on your <ph name="DEVICE_TYPE">$1<ex>iPhone</ex></ph>
-        </message>
-        <message name="IDS_IOS_DESKTOP_SAFETY_PROMO_NOTIFICATION_BODY" desc="The body for the iOS desktop Safety promo notification.">
-          Use the Chrome app to take the safety of Google on the go
-        </message>
-        <message name="IDS_IOS_DESKTOP_SAFETY_PROMO_NOTIFICATION_TITLE" desc="The title for the iOS desktop Safety promo notification.">
-          Reminder: Google’s best safety features in your pocket
-        </message>
-        <message name="IDS_IOS_DESKTOP_SHOPPING_PROMO_BUBBLE_DESCRIPTION_QR" desc="The description for the iOS desktop Shopping promo bubble with a QR code.">
-          Scan the QR code with your phone to download Chrome and sign in to your Google Account.
-        </message>
-        <message name="IDS_IOS_DESKTOP_SHOPPING_PROMO_BUBBLE_TITLE_QR" desc="The title for the iOS desktop Shopping promo bubble with a QR code.">
-          Get price drop alerts on items you're interested in with the Chrome app on your phone
-        </message>
-        <message name="IDS_IOS_DESKTOP_SHOPPING_PROMO_BUBBLE_DESCRIPTION_REMINDER" desc="The description for the iOS desktop Shopping promo bubble with a reminder.">
-          Discover products with your camera, track price drops and more on the go with Chrome on iOS.
-        </message>
-        <message name="IDS_IOS_DESKTOP_SHOPPING_PROMO_BUBBLE_TITLE_REMINDER" desc="The title for the iOS desktop Shopping promo bubble with a reminder.">
-          Get more out of online shopping when you use the Chrome app on your <ph name="DEVICE_TYPE">$1<ex>iPhone</ex></ph>
-        </message>
-        <message name="IDS_IOS_DESKTOP_SHOPPING_PROMO_NOTIFICATION_BODY" desc="The body for the iOS desktop Shopping promo notification.">
-          Use the Chrome app to take the best shopping tools on the go
-        </message>
-        <message name="IDS_IOS_DESKTOP_YOUR_CHROME_PROMO_BUBBLE_DESCRIPTION_QR" desc="The description for the iOS desktop Your Chrome promo bubble with a QR code.">
-          Scan the QR code with your phone to download Chrome and sign in to your Google Account.
-        </message>
-        <message name="IDS_IOS_DESKTOP_YOUR_CHROME_PROMO_BUBBLE_TITLE_QR" desc="The title for the iOS desktop Your Chrome promo bubble with a QR code.">
-          Take your passwords, tabs and more on the go with the Chrome app on your phone
-        </message>
-        <message name="IDS_IOS_DESKTOP_YOUR_CHROME_PROMO_BUBBLE_DESCRIPTION_REMINDER" desc="The description for the iOS desktop Your Chrome promo bubble with a reminder.">
-          Pick up right where you left off with Chrome on iOS.
-        </message>
-        <message name="IDS_IOS_DESKTOP_YOUR_CHROME_PROMO_BUBBLE_TITLE_REMINDER" desc="The title for the iOS desktop Your Chrome promo bubble with a reminder.">
-          Take your passwords, tabs and more on the go with the Chrome app on your <ph name="DEVICE_TYPE">$1<ex>iPhone</ex></ph>
-        </message>
-        <message name="IDS_IOS_DESKTOP_YOUR_CHROME_PROMO_NOTIFICATION_BODY" desc="The body for the iOS desktop Your Chrome promo notification.">
-          Use the Chrome app to keep browsing on the go
-        </message>
       </if>
 
       <!--Default Search Engine Reset Notification-->
@@ -3879,21 +3498,6 @@ If this page isn’t working as expected, try allowing optimization.
       </if>
 
        <!-- Contextual Tasks -->
-      <message name="IDS_CONTEXTUAL_TASKS_PINNING_LABEL_AI_MODE" desc="The label shown in the Customize Chrome settings menu and toolbar to pin Contextual Tasks to the toolbar.">
-        Google Search AI Mode
-      </message>
-      <message name="IDS_CONTEXTUAL_TASKS_PINNING_LABEL_SIDE_PANEL" desc="The label shown in the Customize Chrome settings menu and toolbar to pin Contextual Tasks to the toolbar.">
-        Google Search side panel
-      </message>
-      <message name="IDS_CONTEXTUAL_TASKS_PINNING_LABEL_IN_SIDE_PANEL" desc="The label shown in the Customize Chrome settings menu and toolbar to pin Contextual Tasks to the toolbar.">
-        Google Search in side panel
-      </message>
-      <message name="IDS_CONTEXTUAL_TASKS_PINNING_LABEL_IN_CHROME" desc="The label shown in the Customize Chrome settings menu and toolbar to pin Contextual Tasks to the toolbar.">
-        Google Search in Chrome
-      </message>
-      <message name="IDS_CONTEXTUAL_TASKS_PINNING_LABEL_PANEL" desc="The label shown in the Customize Chrome settings menu and toolbar to pin Contextual Tasks to the toolbar.">
-        Google Search panel
-      </message>
       <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CLOSE_TOOL_TIP" desc="The tooltip text used for the contextual task ephemeral toolbar button when the side panel is open.">
         Close Google Search AI Mode
       </message>
@@ -3930,21 +3534,6 @@ If this page isn’t working as expected, try allowing optimization.
       <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_CLOSE" desc="The label of the context menu item for removing the contextual tasks ephemeral toolbar button and closing the side panel.">
         Close side panel
       </message>
-      <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_CLOSE_AI_MODE" desc="The label of the context menu item for removing the contextual tasks ephemeral toolbar button and closing the side panel.">
-        Close Google Search AI Mode
-      </message>
-      <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_CLOSE_SIDE_PANEL" desc="The label of the context menu item for removing the contextual tasks ephemeral toolbar button and closing the side panel.">
-        Close Google Search side panel
-      </message>
-      <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_CLOSE_IN_SIDE_PANEL" desc="The label of the context menu item for removing the contextual tasks ephemeral toolbar button and closing the side panel.">
-        Close Google Search in side panel
-      </message>
-      <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_CLOSE_IN_CHROME" desc="The label of the context menu item for removing the contextual tasks ephemeral toolbar button and closing the side panel.">
-        Close Google Search in Chrome
-      </message>
-      <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_CLOSE_PANEL" desc="The label of the context menu item for removing the contextual tasks ephemeral toolbar button and closing the side panel.">
-        Close Google Search panel
-      </message>
       <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_DISMISS_ACTIVE_SEARCH" desc="The label of the context menu item for dismissing the active Google Search and removing the contextual tasks ephemeral toolbar button when the side panel is closed.">
         Dismiss active Google Search
       </message>
@@ -3957,9 +3546,6 @@ If this page isn’t working as expected, try allowing optimization.
       </message>
       <message name="IDS_ENTERPRISE_DEVICE_SIGNALS_DISCLAIMER_SUBTITLE" desc="Subtitle of an enterprise device signals collection disclaimer modal dialog. The dialog is shown on Chrome startup to managed Chrome users who have not previously acknowledged device signals collection.">
         To secure your work on Chrome, your organization will be able to view or manage certain information when you’re signed-in to Chrome.
-      </message>
-      <message name="IDS_CONTEXTUAL_TASKS_MENU_SIGN_IN_TO_CHROME" desc="The 'Sign in to Chrome' option in the Contextual Tasks 3-dot overflow menu shown when the user is signed out.">
-        Sign in to Chrome
       </message>
     </messages>
   </release>
