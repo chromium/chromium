@@ -1554,20 +1554,14 @@ void FrameSinkVideoCapturerImpl::MaybeDeliverFrame(FrameCapture frame_capture) {
     // frame is desirable.)
     if (frame_capture.frame->metadata().capture.version != capture_version()) {
       frame_capture.CaptureFailed(CaptureResult::kSubCaptureTargetChanged);
+    } else if (!oracle_->CompleteCapture(frame_capture.oracle_frame_number,
+                                         frame_capture.success(),
+                                         &media_ticks)) {
+      // The Oracle has the final say in whether frame delivery will proceed. It
+      // also rewrites the media timestamp in terms of the smooth flow of the
+      // original source content.
+      frame_capture.CaptureFailed(CaptureResult::kOracleRejectedFrame);
     }
-  }
-
-  // Always notify the oracle that the capture is complete so it decrements its
-  // pending frame count, even if the capture already failed above or in
-  // `DidCopyFrame()`.
-  const bool should_deliver_frame = oracle_->CompleteCapture(
-      frame_capture.oracle_frame_number, frame_capture.success(), &media_ticks);
-
-  // If the capture succeeded up to this point, the oracle has the final say in
-  // whether frame delivery will proceed. It also rewrites the media timestamp
-  // in terms of the smooth flow of the original source content.
-  if (frame_capture.success() && !should_deliver_frame) {
-    frame_capture.CaptureFailed(CaptureResult::kOracleRejectedFrame);
   }
 
   if (!frame_capture.success()) {

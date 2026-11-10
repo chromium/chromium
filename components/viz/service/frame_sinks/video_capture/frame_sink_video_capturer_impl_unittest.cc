@@ -489,41 +489,35 @@ class FakeCapturableFrameSink : public CapturableFrameSink {
     last_copy_request_is_secure_ = request->is_secure();
 
     std::unique_ptr<CopyOutputResult> result;
-    if (send_empty_copy_result_) {
-      result = std::make_unique<CopyOutputResult>(request->result_format(),
-                                                  request->result_destination(),
-                                                  gfx::Rect(), false);
-    } else {
-      switch (request->result_destination()) {
-        case CopyOutputResult::Destination::kSystemMemory: {
-          // We need to construct the source frame.
-          switch (request->result_format()) {
-            case CopyOutputRequest::ResultFormat::I420_PLANES: {
-              result = std::make_unique<SolidColorI420Result>(
-                  request->result_selection(), RGBToYUV(color_));
-              break;
-            }
-            case CopyOutputRequest::ResultFormat::RGBA: {
-              result = std::make_unique<SolidColorRGBAResult>(
-                  request->result_selection(), color_);
-              break;
-            }
-            default: {
-              NOTREACHED();
-            }
+    switch (request->result_destination()) {
+      case CopyOutputResult::Destination::kSystemMemory: {
+        // We need to construct the source frame.
+        switch (request->result_format()) {
+          case CopyOutputRequest::ResultFormat::I420_PLANES: {
+            result = std::make_unique<SolidColorI420Result>(
+                request->result_selection(), RGBToYUV(color_));
+            break;
           }
-          break;
+          case CopyOutputRequest::ResultFormat::RGBA: {
+            result = std::make_unique<SolidColorRGBAResult>(
+                request->result_selection(), color_);
+            break;
+          }
+          default: {
+            NOTREACHED();
+          }
         }
-        case CopyOutputResult::Destination::kSharedImage: {
-          // We don't need to provide a real GPU result.
-          result = std::make_unique<CopyOutputSharedImageResult>(
-              request->result_format(), request->result_selection(),
-              gpu::ClientSharedImage::CreateForTesting(), ReleaseCallback());
-          break;
-        }
-        default: {
-          NOTREACHED();
-        }
+        break;
+      }
+      case CopyOutputResult::Destination::kSharedImage: {
+        // We don't need to provide a real GPU result.
+        result = std::make_unique<CopyOutputSharedImageResult>(
+            request->result_format(), request->result_selection(),
+            gpu::ClientSharedImage::CreateForTesting(), ReleaseCallback());
+        break;
+      }
+      default: {
+        NOTREACHED();
       }
     }
     results_.push_back(base::BindOnce(
@@ -563,10 +557,6 @@ class FakeCapturableFrameSink : public CapturableFrameSink {
   }
 
   void SetCopyOutputColor(SkColor color) { color_ = color; }
-
-  void set_send_empty_copy_result(bool send_empty) {
-    send_empty_copy_result_ = send_empty;
-  }
 
   // Returns number of copy output result callbacks that have been prepared to
   // be sent back to the capturer. A new result callback is inserted every
@@ -618,7 +608,6 @@ class FakeCapturableFrameSink : public CapturableFrameSink {
   gfx::Rect capture_bounds_;
   std::vector<base::OnceClosure> results_;
   bool last_copy_request_is_secure_ = false;
-  bool send_empty_copy_result_ = false;
 };
 
 class InstrumentedVideoCaptureOracle : public media::VideoCaptureOracle {
@@ -1674,51 +1663,6 @@ TEST_P(FrameSinkVideoCapturerTest, HonorsRequestRefreshFrame) {
   capturer_->RequestRefreshFrame();
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(4, consumer.num_frames_received());
-}
-
-// Tests that when a CopyOutputRequest fails (returns an empty result), the
-// oracle is notified that the capture completed so its pending frame count does
-// not remain non-zero and block subsequent passive refresh requests.
-TEST_P(FrameSinkVideoCapturerTest, RefreshRecoversAfterFailedCopyOutput) {
-  frame_sink_.SetCopyOutputColor(SkColorSetARGB(255, 128, 128, 128));
-  EXPECT_CALL(frame_sink_manager_, FindCapturableFrameSink(kVideoCaptureTarget))
-      .WillRepeatedly(Return(&frame_sink_));
-
-  capturer_->ChangeTarget(kVideoCaptureTarget,
-                          /*sub_capture_target_version=*/0);
-
-  // Simulate the first CopyOutputRequest failing with an empty result (e.g. if
-  // a non-root render pass copy request was cleared when a new CompositorFrame
-  // activated before draw).
-  frame_sink_.set_send_empty_copy_result(true);
-
-  MockConsumer consumer;
-  EXPECT_CALL(consumer, OnFrameCapturedMock()).Times(2);
-  EXPECT_CALL(consumer, OnStopped()).Times(1);
-  StartCapture(&consumer);
-
-  ASSERT_EQ(1, frame_sink_.num_copy_results());
-  frame_sink_.SendCopyOutputResult(0);
-  EXPECT_EQ(0, consumer.num_frames_received());
-  EXPECT_TRUE(IsRefreshRetryTimerRunning());
-
-  // Subsequent copy requests succeed. When the refresh retry timer fires, the
-  // oracle must allow the passive refresh request to proceed.
-  frame_sink_.set_send_empty_copy_result(false);
-  AdvanceClockForRefreshTimer();
-  ASSERT_EQ(2, frame_sink_.num_copy_results());
-  frame_sink_.SendCopyOutputResult(1);
-  ASSERT_EQ(1, consumer.num_frames_received());
-  consumer.SendDoneNotification(0);
-
-  // Subsequent refresh requests should also succeed (using resurrection when
-  // no further damage has occurred).
-  capturer_->RequestRefreshFrame();
-  AdvanceClockForRefreshTimer();
-  EXPECT_EQ(2, frame_sink_.num_copy_results());
-  EXPECT_EQ(2, consumer.num_frames_received());
-
-  StopCapture();
 }
 
 // Tests that full capture happens on capture resolution change due to oracle,
