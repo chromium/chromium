@@ -53,6 +53,10 @@ std::string FormatAge(const std::optional<double>& t, double now) {
   return base::StringPrintf("%.1f s ago", (now - *t) / 1000.0);
 }
 
+std::string NoResponseKey(int turn_index) {
+  return base::StrCat({"no_response:", base::NumberToString(turn_index)});
+}
+
 // Appends `more` to `text`, keeping `text` within `max_length` bytes. Once the
 // limit is reached, an ellipsis is added and later text is dropped.
 void AppendTruncated(std::string& text,
@@ -91,10 +95,12 @@ TtcDebugSession::TtcDebugSession(SessionJournal* journal,
       clock_(clock),
       start_time_(clock->NowTicks()),
       watchdog_(clock),
+      detector_timer_(clock),
       recorder_(audio_cap_bytes),
       flush_timer_(clock) {
   AddEvent(EventKind::kSessionStarted);
   LogToJournal("TtcDebugSessionStarted", "");
+  MaybeStartDetectorTimer();
 }
 
 TtcDebugSession::~TtcDebugSession() {
@@ -194,6 +200,12 @@ std::string_view TtcDebugSession::EventKindName(EventKind kind) {
       return "items_truncated";
     case EventKind::kSessionEnded:
       return "session_ended";
+    case EventKind::kIssue:
+      return "issue";
+    case EventKind::kServerJournal:
+      return "server_journal";
+    case EventKind::kContextSent:
+      return "context_sent";
   }
 }
 
@@ -230,6 +242,7 @@ void TtcDebugSession::End() {
                                              : TurnStatus::kNoAudio);
   ended_ = true;
   watchdog_.Stop();
+  detector_timer_.Stop();
   journal_ = nullptr;
   Flush();
 }
@@ -357,6 +370,7 @@ void TtcDebugSession::OnServerActivity() {
     // new one.
     no_response_suspected_ = false;
     no_response_detail_.clear();
+    ResolveIssue(NoResponseKey(no_response_turn_));
     if (!turns_.empty() && turns_.back().index == no_response_turn_ &&
         turns_.back().status == TurnStatus::kNoResponse) {
       turns_.back().status = TurnStatus::kOpen;
@@ -388,6 +402,20 @@ void TtcDebugSession::OnWatchdogFired() {
       FormatAge(last_server_frame_ms_, now).c_str());
   AddEvent(EventKind::kNoResponseSuspected, 0, no_response_detail_);
   LogToJournal("TtcNoResponseSuspected", no_response_detail_);
+  RaiseIssue(
+      NoResponseKey(no_response_turn_),
+      {.severity = IssueSeverity::kError,
+       .category = IssueCategory::kModel,
+       .title = "No response after speech",
+       .detail = base::StringPrintf(
+           "You stopped speaking and nothing came back from the server "
+           "within %lld s: no transcript, audio, tool call or turn "
+           "completion.",
+           static_cast<long long>(kNoResponseTimeout.InSeconds())),
+       .evidence = {
+           {"chunks_sent", base::NumberToString(chunks_sent_)},
+           {"transport", transport_connected_ ? "connected" : "disconnected"},
+           {"last_server_frame", FormatAge(last_server_frame_ms_, now)}}});
   CloseOpenTurn(TurnStatus::kNoResponse);
 }
 
@@ -484,6 +512,8 @@ void TtcDebugSession::OnClientFrame(const ClientFrame& frame) {
         MarkTurnChanged(turn);
       }
     }
+  } else if (const auto* context = std::get_if<ContextUpdate>(&frame)) {
+    HandleContextUpdate(*context);
   }
 }
 
@@ -503,6 +533,14 @@ void TtcDebugSession::OnFrameDropped() {
   ++frames_dropped_;
   last_frame_dropped_ms_ = NowMs();
   AddEvent(EventKind::kFrameDropped);
+  RaiseIssue(
+      "frames_dropped",
+      {.severity = IssueSeverity::kError,
+       .category = IssueCategory::kTransport,
+       .title = "Frames dropped: no session",
+       .detail = "The client tried to send to the server without a "
+                 "streaming session, so the data was lost.",
+       .evidence = {{"total_dropped", base::NumberToString(frames_dropped_)}}});
 }
 
 void TtcDebugSession::OnTransportStateChanged(bool connected) {
@@ -514,6 +552,9 @@ void TtcDebugSession::OnTransportStateChanged(bool connected) {
   ever_connected_ |= connected;
   AddEvent(EventKind::kTransport, connected ? 1.0f : 0.0f,
            connected ? "connected" : "disconnected");
+  if (connected) {
+    ResolveIssue("transport_lost");
+  }
 }
 
 void TtcDebugSession::OnServerFrame(const ServerFrame& frame) {
@@ -537,6 +578,21 @@ void TtcDebugSession::AddServerFrameEvent(std::string_view kind,
 void TtcDebugSession::HandleFrame(const SessionStatus& status) {
   AddServerFrameEvent("session_status", status.state);
   server_session_id_ = Truncate(status.server_session_id);
+  if (status.state.empty() || status.state == "STATE_CONNECTED" ||
+      status.state == "STATE_UNSPECIFIED") {
+    return;
+  }
+  // The title stays the same for every occurrence; what changes goes into the
+  // detail.
+  RaiseIssue("session_rejected",
+             {.severity = IssueSeverity::kError,
+              .category = IssueCategory::kServer,
+              .title = "Session not connected",
+              .detail = base::StrCat(
+                  {"The server didn't accept the session (", status.state, ")",
+                   status.diagnostic.empty() ? "." : ": ", status.diagnostic}),
+              .evidence = {{"state", status.state},
+                           {"diagnostic", status.diagnostic}}});
 }
 
 void TtcDebugSession::HandleFrame(const AudioOutput& audio) {
@@ -628,14 +684,52 @@ void TtcDebugSession::HandleFrame(const ServerError& error) {
   last_error_ = Truncate(error.message.empty()
                              ? error.code
                              : base::StrCat({error.code, ": ", error.message}));
+  if (error.code == "MalformedAudioChunk") {
+    RaiseIssue("malformed_audio",
+               {.severity = IssueSeverity::kWarning,
+                .category = IssueCategory::kServer,
+                .title = "Malformed audio from the server",
+                .detail = "An audio chunk wasn't a whole number of PCM16 "
+                          "samples and was discarded.",
+                .evidence = {{"detail", error.message}}});
+    return;
+  }
+  RaiseIssue(base::StrCat({"server_error:", error.code}),
+             {.severity = IssueSeverity::kError,
+              .category = IssueCategory::kServer,
+              .title = base::StrCat({"Server error: ", error.code}),
+              .detail = error.message.empty()
+                            ? std::string("The server reported an error.")
+                            : error.message,
+              .evidence = {{"code", error.code}, {"message", error.message}}});
 }
 
 void TtcDebugSession::HandleFrame(const GoAway& go_away) {
   AddServerFrameEvent("go_away");
+  RaiseIssue("go_away",
+             {.severity = IssueSeverity::kWarning,
+              .category = IssueCategory::kServer,
+              .title = "Server is ending the session",
+              .detail = base::StringPrintf(
+                  "The server asked the client to "
+                  "disconnect within %lld ms.",
+                  static_cast<long long>(go_away.time_left_ms)),
+              .evidence = {{"time_left_ms",
+                            base::NumberToString(go_away.time_left_ms)}}});
 }
 
 void TtcDebugSession::HandleFrame(const ServerJournalEvent& event) {
   AddServerFrameEvent("journal", event.name);
+  std::string details;
+  for (const ServerJournalEvent::Details& detail : event.details) {
+    if (!details.empty()) {
+      details += "; ";
+    }
+    base::StrAppend(&details, {detail.key, "=", detail.value});
+  }
+  AddEvent(
+      EventKind::kServerJournal, 0,
+      details.empty() ? event.name : base::StrCat({event.name, ": ", details}));
 }
 
 void TtcDebugSession::HandleFrame(const ModelTurnState& state) {
@@ -660,6 +754,16 @@ void TtcDebugSession::OnRenderError() {
   last_render_error_ms_ = NowMs();
   last_error_ = "audio render error";
   AddEvent(EventKind::kError, 0, last_error_);
+  RaiseIssue("playback_render_error",
+             {.severity = IssueSeverity::kError,
+              .category = IssueCategory::kAudio,
+              .title = "Audio output device error",
+              .detail = "The playback device reported an error, so the reply "
+                        "may not be audible.",
+              .evidence = {{"audio_chunks_received",
+                            base::NumberToString(audio_chunks_received_)},
+                           {"audio_chunks_played",
+                            base::NumberToString(audio_chunks_played_)}}});
 }
 
 void TtcDebugSession::OnError(std::string_view error) {
@@ -669,6 +773,12 @@ void TtcDebugSession::OnError(std::string_view error) {
   }
   last_error_ = Truncate(error);
   AddEvent(EventKind::kError, 0, last_error_);
+  RaiseIssue(base::StrCat({"session_error:", error}),
+             {.severity = IssueSeverity::kError,
+              .category = IssueCategory::kServer,
+              .title = base::StrCat({"Session error: ", error}),
+              .detail = "The TTC session reported an error.",
+              .evidence = {{"error", last_error_}}});
 }
 
 TtcDebugSession::Snapshot TtcDebugSession::GetSnapshot() const {
@@ -692,6 +802,13 @@ TtcDebugSession::Snapshot TtcDebugSession::GetSnapshot() const {
   snapshot.audio_cap_bytes = recorder_.cap_bytes();
   snapshot.audio_cap_reached = recorder_.cap_reached();
   snapshot.dropped_items = dropped_items_;
+  for (const Issue& issue : issues_) {
+    if (issue.resolved) {
+      continue;
+    }
+    snapshot.open_errors += issue.severity == IssueSeverity::kError;
+    snapshot.open_warnings += issue.severity == IssueSeverity::kWarning;
+  }
   ComputeStages(snapshot);
   return snapshot;
 }
@@ -811,15 +928,6 @@ void TtcDebugSession::ComputeStages(Snapshot& snapshot) const {
   }
 }
 
-bool TtcDebugSession::HasUnplayedAudio() const {
-  if (!last_audio_received_ms_) {
-    return false;
-  }
-  const double received = *last_audio_received_ms_;
-  return (!last_playback_ms_ || *last_playback_ms_ < received) &&
-         (!last_interrupted_ms_ || *last_interrupted_ms_ < received);
-}
-
 base::DictValue TtcDebugSession::ToValue() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Snapshot snapshot = GetSnapshot();
@@ -844,6 +952,8 @@ base::DictValue TtcDebugSession::ToValue() const {
   snap.Set("audio_bytes", static_cast<double>(snapshot.audio_bytes));
   snap.Set("audio_cap_bytes", static_cast<double>(snapshot.audio_cap_bytes));
   snap.Set("audio_cap_reached", snapshot.audio_cap_reached);
+  snap.Set("open_errors", snapshot.open_errors);
+  snap.Set("open_warnings", snapshot.open_warnings);
   snap.Set("dropped_items", static_cast<double>(snapshot.dropped_items));
   base::ListValue stages;
   for (size_t i = 0; i < kStageCount; ++i) {
@@ -898,6 +1008,7 @@ base::DictValue TtcDebugSession::ToValue() const {
     turns.Append(std::move(t));
   }
   dict.Set("turns", std::move(turns));
+  AppendProblemsToValue(dict);
   return dict;
 }
 
@@ -908,6 +1019,7 @@ void TtcDebugSession::AddObserver(Observer* observer) {
     // happens from now on.
     first_unflushed_event_ = events_.size();
     changed_turns_.clear();
+    changed_issues_.clear();
   } else {
     // Sends the others what they haven't had yet, so that the new observer's
     // first update doesn't repeat what it fetched with the state.
@@ -938,6 +1050,7 @@ void TtcDebugSession::Flush() {
   if (observers_.empty()) {
     first_unflushed_event_ = events_.size();
     changed_turns_.clear();
+    changed_issues_.clear();
     return;
   }
   Update update;
@@ -949,6 +1062,10 @@ void TtcDebugSession::Flush() {
     update.changed_turns.push_back(turns_[index - 1]);
   }
   changed_turns_.clear();
+  for (int id : changed_issues_) {
+    update.changed_issues.push_back(issues_[id - 1]);
+  }
+  changed_issues_.clear();
 
   update.snapshot = GetSnapshot();
   for (Observer& observer : observers_) {

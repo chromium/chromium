@@ -9,12 +9,15 @@
 #include <stdint.h>
 
 #include <array>
+#include <functional>
 #include <optional>
 #include <set>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -38,12 +41,13 @@ class SessionJournal;
 //  - per-stage pipeline health and counters (Snapshot),
 //  - a timeline of events for the whole session,
 //  - per-turn latency records and a "no response" watchdog,
+//  - problems detected in real time (ttc_debug_session_issues.cc),
 //  - the exact audio sent and received (TtcSessionAudioRecorder).
 // Input is ignored once the session has ended. Observers (the debug page)
 // receive batched updates at most every kFlushInterval.
 //
 // Memory is bounded: text is truncated (kMaxTextLength, kMaxTranscriptLength),
-// and turns beyond their cap are dropped and counted in
+// and issues and turns beyond their caps are dropped and counted in
 // Snapshot::dropped_items.
 class TtcDebugSession final : public DebugSink {
  public:
@@ -88,7 +92,9 @@ class TtcDebugSession final : public DebugSink {
     size_t audio_bytes = 0;
     size_t audio_cap_bytes = 0;
     bool audio_cap_reached = false;
-    // Turns dropped because their cap was reached.
+    int open_errors = 0;
+    int open_warnings = 0;
+    // Issues and turns dropped because their cap was reached.
     int64_t dropped_items = 0;
     std::array<StageStatus, kStageCount> stages;
   };
@@ -114,6 +120,9 @@ class TtcDebugSession final : public DebugSink {
     kAudioCapReached,
     kItemsTruncated,
     kSessionEnded,
+    kIssue,
+    kServerJournal,
+    kContextSent,
   };
 
   struct TimelineEvent {
@@ -140,6 +149,39 @@ class TtcDebugSession final : public DebugSink {
     std::string output_transcript;
   };
 
+  enum class IssueSeverity { kInfo, kWarning, kError };
+  enum class IssueCategory {
+    kServer,
+    kTransport,
+    kAudio,
+    kPageContext,
+    kModel,
+  };
+
+  // A problem detected in real time.
+  struct Issue {
+    Issue();
+    Issue(const Issue&);
+    Issue& operator=(const Issue&);
+    ~Issue();
+
+    int id = 0;
+    // Identifies repeated occurrences of the same problem.
+    std::string key;
+    IssueSeverity severity = IssueSeverity::kWarning;
+    IssueCategory category = IssueCategory::kServer;
+    std::string title;
+    std::string detail;
+    std::vector<std::pair<std::string, std::string>> evidence;
+    double first_ms = 0;
+    double last_ms = 0;
+    int count = 1;
+    std::optional<int> turn_index;
+    // Condition-based issues resolve once the condition clears.
+    bool resolved = false;
+    std::optional<double> resolved_ms;
+  };
+
   // What changed since the previous update.
   struct Update {
     Update();
@@ -152,6 +194,7 @@ class TtcDebugSession final : public DebugSink {
     size_t first_event_index = 0;
     std::vector<TimelineEvent> new_events;
     std::vector<Turn> changed_turns;
+    std::vector<Issue> changed_issues;
   };
 
   class Observer : public base::CheckedObserver {
@@ -180,11 +223,13 @@ class TtcDebugSession final : public DebugSink {
   // Total bytes of event labels; further events are dropped like past their
   // cap.
   static constexpr size_t kMaxEventLabelBytes = 16 * 1024 * 1024;
+  static constexpr size_t kMaxIssues = 1000;
   static constexpr size_t kMaxTurns = 1000;
-  // Labels.
+  // Labels, issue details and evidence.
   static constexpr size_t kMaxTextLength = 4096;
   // Each transcript of a turn.
   static constexpr size_t kMaxTranscriptLength = 16 * 1024;
+  static constexpr size_t kMaxIssueKeyLength = 256;
 
   // Stage health: how recent a signal must be to count.
   static constexpr base::TimeDelta kActivityWindow = base::Seconds(1);
@@ -195,6 +240,7 @@ class TtcDebugSession final : public DebugSink {
   // Detector thresholds.
   static constexpr int kMicSilenceIssueChunks = 30;  // 3 s.
   static constexpr base::TimeDelta kPlaybackStallTimeout = base::Seconds(2);
+  static constexpr base::TimeDelta kDetectorInterval = base::Milliseconds(250);
 
   // `journal` is optional and is detached when the session ends. `clock` must
   // outlive this object.
@@ -212,6 +258,8 @@ class TtcDebugSession final : public DebugSink {
   // output levels, chunks sent and playback. They're left out of ToValue().
   static bool IsFrequentEvent(EventKind kind);
   static std::string_view TurnStatusName(TurnStatus status);
+  static std::string_view IssueSeverityName(IssueSeverity severity);
+  static std::string_view IssueCategoryName(IssueCategory category);
 
   // Marks the TTC session as ended. Data stays available for the debug page.
   void End();
@@ -221,6 +269,7 @@ class TtcDebugSession final : public DebugSink {
   Snapshot GetSnapshot() const;
   const std::vector<TimelineEvent>& events() const { return events_; }
   const std::vector<Turn>& turns() const { return turns_; }
+  const std::vector<Issue>& issues() const { return issues_; }
   const TtcSessionAudioRecorder& recorder() const { return recorder_; }
 
   // Everything except audio, for attaching to bugs. This includes the
@@ -247,6 +296,10 @@ class TtcDebugSession final : public DebugSink {
   // The session reported an error, fatal or not. `error` is the name of its
   // ErrorCode, e.g. "SetupTimeout".
   void OnError(std::string_view error);
+
+  // Page context.
+  void OnPageContextFailed(std::string_view url, std::string_view error);
+  void OnPageContextBlocked(std::string_view url);
 
  private:
   // Returns `text` cut to at most `max_length` bytes, ending in an ellipsis
@@ -292,9 +345,32 @@ class TtcDebugSession final : public DebugSink {
   void OnWatchdogFired();
   void ComputeStages(Snapshot& snapshot) const;
   void MaybeReportCapReached();
+
+  // Problem tracking (ttc_debug_session_issues.cc).
+  void HandleContextUpdate(const ContextUpdate& update);
+  using Evidence = std::vector<std::pair<std::string, std::string>>;
+  struct IssueSpec {
+    IssueSeverity severity;
+    IssueCategory category;
+    std::string title;
+    std::string detail;
+    Evidence evidence;
+  };
+  // Raises the issue `key`, or bumps its count if it is already open.
+  void RaiseIssue(std::string key, IssueSpec spec);
+  void ResolveIssue(std::string_view key);
+  // Keeps the condition-based issue `key` open exactly while `active`.
+  void SetCondition(std::string_view key,
+                    bool active,
+                    base::FunctionRef<IssueSpec()> spec);
+  Issue* FindOpenIssue(std::string_view key);
+  void MarkIssueChanged(const Issue& issue);
   // Whether audio arrived after the last playback and wasn't dropped by an
   // interruption.
   bool HasUnplayedAudio() const;
+  void MaybeStartDetectorTimer();
+  void RunDetectors();
+  void AppendProblemsToValue(base::DictValue& dict) const;
   void MaybeStartFlushTimer();
   void Flush();
 
@@ -346,6 +422,9 @@ class TtcDebugSession final : public DebugSink {
   int no_response_turn_ = 0;
   base::OneShotTimer watchdog_;
 
+  std::vector<Issue> issues_;
+  base::RepeatingTimer detector_timer_;
+
   std::vector<TimelineEvent> events_;
   size_t frequent_events_ = 0;
   size_t event_label_bytes_ = 0;
@@ -360,6 +439,8 @@ class TtcDebugSession final : public DebugSink {
   bool items_truncated_reported_ = false;
   // Whether a turn is being dropped, so that it is only counted once.
   bool dropping_turn_ = false;
+  // Keys of dropped issues, so that each is only counted once.
+  std::set<std::string, std::less<>> dropped_issue_keys_;
 
   TtcSessionAudioRecorder recorder_;
   bool cap_reported_ = false;
@@ -367,6 +448,7 @@ class TtcDebugSession final : public DebugSink {
   // Pending observer updates.
   size_t first_unflushed_event_ = 0;
   std::set<int> changed_turns_;
+  std::set<int> changed_issues_;
   base::RepeatingTimer flush_timer_;
   base::ObserverList<Observer> observers_;
 
