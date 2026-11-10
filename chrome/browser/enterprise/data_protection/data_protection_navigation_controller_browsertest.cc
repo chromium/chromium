@@ -4,6 +4,8 @@
 
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_controller.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
@@ -35,8 +37,18 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) && \
+    BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/enterprise/connectors/reporting/extension_actor_tracker.h"
+#include "components/enterprise/connectors/core/features.h"
+#include "content/public/test/mock_navigation_handle.h"
+#include "ui/base/page_transition_types.h"
+#endif
 
 using ::testing::Return;
 using ::testing::ReturnRef;
@@ -401,5 +413,47 @@ INSTANTIATE_TEST_SUITE_P(
               enterprise_connectors::kEnterpriseRealTimeUrlCheckScope,
               policy::POLICY_SCOPE_MACHINE);
         })));
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) && \
+    BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+class DataProtectionNavigationControllerActorTest
+    : public DataProtectionNavigationControllerTest {
+ public:
+  DataProtectionNavigationControllerActorTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        enterprise_connectors::kEnterpriseExtensionActorAttribution);
+  }
+
+  void SetUpOnMainThread() override {
+    DataProtectionNavigationControllerTest::SetUpOnMainThread();
+    enterprise_connectors::test::SetOnSecurityEventReporting(
+        browser()->GetProfile()->GetPrefs(), true);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// A user navigation should clear the extension actor by the time the
+// controller starts the URL lookup.
+IN_PROC_BROWSER_TEST_F(DataProtectionNavigationControllerActorTest,
+                       UserNavigationClearsActor) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url()));
+  enterprise_connectors::ExtensionActorTracker::SetActiveActor(
+      contents(), "abcdefghijklmnopabcdefghijklmnop", "Runtime.evaluate");
+
+  content::MockNavigationHandle handle(main_url(),
+                                       contents()->GetPrimaryMainFrame());
+  handle.set_is_renderer_initiated(false);
+  handle.set_page_transition(ui::PAGE_TRANSITION_TYPED);
+  DataProtectionNavigationController::FromWebContents(contents())
+      ->DidStartNavigation(&handle);
+
+  EXPECT_EQ(
+      enterprise_connectors::ExtensionActorTracker::GetActiveActor(contents()),
+      std::nullopt);
+}
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) &&
+        // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 }  // namespace enterprise_data_protection
