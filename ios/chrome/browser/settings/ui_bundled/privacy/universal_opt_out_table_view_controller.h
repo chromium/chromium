@@ -32,6 +32,10 @@ extern NSString* const
 - (instancetype)initWithProfile:(ProfileIOS*)profile NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
+// Stops observing the prefs and the `ExtensionService`. Must be called before
+// the controller is deallocated.
+- (void)settingsWillBeDismissed;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_PRIVACY_UNIVERSAL_OPT_OUT_TABLE_VIEW_CONTROLLER_H_

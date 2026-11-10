@@ -41,6 +41,7 @@ namespace {
 class UniversalOptOutTableViewControllerTest
     : public LegacyChromeTableViewControllerTest {
  protected:
+  // LegacyChromeTableViewControllerTest:
   void SetUp() override {
     LegacyChromeTableViewControllerTest::SetUp();
     TestProfileIOS::Builder builder;
@@ -53,6 +54,12 @@ class UniversalOptOutTableViewControllerTest
     profile_ = std::move(builder).Build();
     profile_->GetPrefs()->SetBoolean(
         universal_optout::prefs::kUniversalOptOutEnabled, false);
+  }
+
+  void TearDown() override {
+    [base::apple::ObjCCastStrict<UniversalOptOutTableViewController>(
+        controller()) settingsWillBeDismissed];
+    LegacyChromeTableViewControllerTest::TearDown();
   }
 
   LegacyChromeTableViewController* InstantiateController() override {

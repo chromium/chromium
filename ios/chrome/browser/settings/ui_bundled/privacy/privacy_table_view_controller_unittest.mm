@@ -134,6 +134,14 @@ class PrivacyTableViewControllerTest
                                         reauthenticationModule:nil];
   }
 
+  // Calls `settingsWillBeDismissed` on the current controller, so that it stops
+  // observing prefs, and resets it.
+  void DismissAndResetController() {
+    [base::apple::ObjCCastStrict<PrivacyTableViewController>(controller())
+        settingsWillBeDismissed];
+    ResetController();
+  }
+
   syncer::TestSyncService* test_sync_service() {
     return static_cast<syncer::TestSyncService*>(
         SyncServiceFactory::GetForProfile(profile_.get()));
@@ -368,7 +376,7 @@ TEST_P(PrivacyTableViewControllerTest, TestUniversalOptOutVisibility) {
   }
 
   // Hidden when user is eligible but features are disabled.
-  ResetController();
+  DismissAndResetController();
   profile_->GetPrefs()->SetBoolean(
       universal_optout::prefs::kUniversalOptOutEligible, true);
   {
@@ -390,7 +398,7 @@ TEST_P(PrivacyTableViewControllerTest, TestUniversalOptOutVisibility) {
 
   // When user is eligible and kUniversalOptOut is enabled, but
   // kUniversalOptOutExtension is disabled.
-  ResetController();
+  DismissAndResetController();
   {
     base::HistogramTester histogram_tester;
     base::test::ScopedFeatureList feature_list;
@@ -411,7 +419,7 @@ TEST_P(PrivacyTableViewControllerTest, TestUniversalOptOutVisibility) {
   }
 
   // Visible when user is eligible and features are enabled (on iOS 18.4+).
-  ResetController();
+  DismissAndResetController();
   {
     base::HistogramTester histogram_tester;
     base::test::ScopedFeatureList feature_list;
@@ -436,7 +444,7 @@ TEST_P(PrivacyTableViewControllerTest, TestUniversalOptOutVisibility) {
   }
 
   // Hidden when eligible and features enabled, but eligibility is forced off.
-  ResetController();
+  DismissAndResetController();
   {
     [[NSUserDefaults standardUserDefaults]
         setInteger:static_cast<NSInteger>(
@@ -463,7 +471,7 @@ TEST_P(PrivacyTableViewControllerTest, TestUniversalOptOutVisibility) {
 
   // Visible when ineligible and features enabled, but eligibility is forced on
   // (on iOS 18.4+).
-  ResetController();
+  DismissAndResetController();
   profile_->GetPrefs()->SetBoolean(
       universal_optout::prefs::kUniversalOptOutEligible, false);
   {
