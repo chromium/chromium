@@ -7,26 +7,26 @@
 namespace blink {
 
 bool ShouldIgnoreVariationSelector(VariationSelectorMode mode) {
-  return mode == kIgnoreVariationSelector;
+  return mode == VariationSelectorMode::kIgnore;
 }
 
 bool UseFontVariantEmojiVariationSelector(VariationSelectorMode mode) {
-  return mode == kForceVariationSelector15 ||
-         mode == kForceVariationSelector16 ||
-         mode == kUseUnicodeDefaultPresentation;
+  return mode == VariationSelectorMode::kForce15 ||
+         mode == VariationSelectorMode::kForce16 ||
+         mode == VariationSelectorMode::kUseUnicodeDefaultPresentation;
 }
 
 VariationSelectorMode GetVariationSelectorModeFromFontVariantEmoji(
     FontVariantEmoji font_variant_emoji) {
   switch (font_variant_emoji) {
     case FontVariantEmoji::kNormal:
-      return kUseSpecifiedVariationSelector;
+      return VariationSelectorMode::kUseSpecified;
     case FontVariantEmoji::kText:
-      return kForceVariationSelector15;
+      return VariationSelectorMode::kForce15;
     case FontVariantEmoji::kEmoji:
-      return kForceVariationSelector16;
+      return VariationSelectorMode::kForce16;
     case FontVariantEmoji::kUnicode:
-      return kUseUnicodeDefaultPresentation;
+      return VariationSelectorMode::kUseUnicodeDefaultPresentation;
   }
   NOTREACHED();
 }

@@ -10,7 +10,8 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
-enum VariationSelectorMode {
+
+enum class VariationSelectorMode {
   // font-variant-emoji="normal". This value will behave as if
   // no variation selector was specified. This means that if no
   // variation selector is specified in the text or used for cmap
@@ -18,18 +19,18 @@ enum VariationSelectorMode {
   // order in which fonts are specified. If variation selectors
   // are specified in the text, perform cluster matching and take
   // the specified variation selector into account.
-  kUseSpecifiedVariationSelector,
+  kUseSpecified,
   // Ignore variation selectors mode. Fallback font selection
   // will only respect the order in which fonts are specified,
   // ignoring variation selectors in the text during cluster
   // matching.
-  kIgnoreVariationSelector,
+  kIgnore,
   // font-variant-emoji="text". Fallback font selection will act
   // as if variation selector 15 was added after each codepoint.
-  kForceVariationSelector15,
+  kForce15,
   // font-variant-emoji="emoji". Fallback font selection will act
   // as if variation selector 16 was added after each codepoint.
-  kForceVariationSelector16,
+  kForce16,
   // font-variant-emoji="unicode". Depending on the default unicode
   // presentation style of each codepoint in the text (i.e. text
   // default or emoji default), fallback font selection will act

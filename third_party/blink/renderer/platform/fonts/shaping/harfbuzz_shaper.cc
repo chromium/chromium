@@ -946,7 +946,7 @@ void HarfBuzzShaper::ShapeSegment(
         DCHECK_EQ(fallback_stage, kLastWithVs);
         fallback_iterator.Reset();
         fallback_stage = kIntermediateIgnoreVs;
-        variation_selector_mode = kIgnoreVariationSelector;
+        variation_selector_mode = VariationSelectorMode::kIgnore;
       }
 
       if (!CollectFallbackHintChars(range_data->reshape_queue,

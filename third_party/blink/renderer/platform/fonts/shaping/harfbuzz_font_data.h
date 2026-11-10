@@ -132,7 +132,7 @@ struct HarfBuzzFontData final : public GarbageCollected<HarfBuzzFontData> {
   Member<OpenTypeVerticalData> vertical_data_;
   Member<const UnicodeRangeSet> range_set_;
   VariationSelectorMode variation_selector_mode_ =
-      kUseSpecifiedVariationSelector;
+      VariationSelectorMode::kUseSpecified;
 };
 
 }  // namespace blink

@@ -152,12 +152,14 @@ static hb_bool_t HarfBuzzGetGlyph(hb_font_t* hb_font,
   // `kUnmatchedVsGlyphId`.
   if (consider_variation_selector) {
     if (!is_variation_sequence) {
-      if (variation_selector_mode == kForceVariationSelector15 ||
-          (variation_selector_mode == kUseUnicodeDefaultPresentation &&
+      if (variation_selector_mode == VariationSelectorMode::kForce15 ||
+          (variation_selector_mode ==
+               VariationSelectorMode::kUseUnicodeDefaultPresentation &&
            unicode::IsEmojiTextDefault(unicode))) {
         variation_selector = uchar::kVariationSelector15;
-      } else if (variation_selector_mode == kForceVariationSelector16 ||
-                 (variation_selector_mode == kUseUnicodeDefaultPresentation &&
+      } else if (variation_selector_mode == VariationSelectorMode::kForce16 ||
+                 (variation_selector_mode ==
+                      VariationSelectorMode::kUseUnicodeDefaultPresentation &&
                   unicode::IsEmojiEmojiDefault(unicode))) {
         variation_selector = uchar::kVariationSelector16;
       }
