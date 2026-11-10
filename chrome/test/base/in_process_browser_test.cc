@@ -562,6 +562,11 @@ void InProcessBrowserTest::SetUp() {
   // Disable IME extension loading to avoid many browser tests failures.
   ash::input_method::DisableExtensionLoading();
 
+  // Use <user data dir>/<user dir>/MyFiles as the MyFiles directory, which is
+  // the same layout as on ChromeOS devices, instead of the default downloads
+  // directory used for linux-chromeos.
+  command_line->AppendSwitch(ash::switches::kUseMyFilesInUserDataDirForTesting);
+
   if (!command_line->HasSwitch(switches::kHostWindowBounds) &&
       !base::SysInfo::IsRunningOnChromeOS()) {
     // Adjusting window location & size so that the ash desktop window fits

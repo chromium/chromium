@@ -27,7 +27,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_path_override.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
@@ -43,8 +42,10 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "components/user_manager/user.h"
 #include "content/public/test/browser_test.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -250,13 +251,25 @@ class HoldingSpaceKeyedServiceBrowserTest : public InProcessBrowserTest {
       return false;
     }
 
-    // Mount test volumes under user data dir to ensure it gets persisted after
-    // PRE test runs.
-    test_mount_point_ = user_data_dir.Append("test_mount").Append("test-user");
+    switch (file_system_type_) {
+      case FileSystemType::kDownloads:
+        // Use the MyFiles directory of the test user, which is located under
+        // the user data dir (see --use-myfiles-in-user-data-dir-for-testing),
+        // so it gets persisted after PRE test runs.
+        test_mount_point_ =
+            user_data_dir
+                .Append(
+                    ash::BrowserContextHelper::kTestUserBrowserContextDirName)
+                .Append("MyFiles");
+        return InProcessBrowserTest::SetUpUserDataDirectory();
 
-    return file_system_type_ == FileSystemType::kDriveFs
-               ? drive::SetUpUserDataDirectoryForDriveFsTest()
-               : InProcessBrowserTest::SetUpUserDataDirectory();
+      case FileSystemType::kDriveFs:
+        // Mount test volumes under user data dir to ensure it gets persisted
+        // after PRE test runs.
+        test_mount_point_ =
+            user_data_dir.Append("test_mount").Append("test-user");
+        return drive::SetUpUserDataDirectoryForDriveFsTest();
+    }
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -266,12 +279,7 @@ class HoldingSpaceKeyedServiceBrowserTest : public InProcessBrowserTest {
     // File system type specific setup.
     switch (file_system_type_) {
       case FileSystemType::kDownloads:
-        // Override the default downloads path to point to the test mount point
-        // within user data dir.
-        downloads_override_ = std::make_unique<base::ScopedPathOverride>(
-            chrome::DIR_DEFAULT_DOWNLOADS, test_mount_point_,
-            /*is_absolute*/ true,
-            /*create*/ false);
+        // Nothing to set up. See SetUpUserDataDirectory().
         break;
 
       case FileSystemType::kDriveFs:
@@ -284,6 +292,18 @@ class HoldingSpaceKeyedServiceBrowserTest : public InProcessBrowserTest {
             drive::DriveIntegrationServiceFactory::ScopedFactoryForTest>(
             &create_drive_integration_service_);
         break;
+    }
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    if (file_system_type_ == FileSystemType::kDownloads) {
+      // Make sure the test mount point is the MyFiles directory.
+      const user_manager::User* user =
+          ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+              browser()->GetProfile());
+      ASSERT_TRUE(user);
+      ASSERT_EQ(file_manager::util::GetMyFilesFolder(*user), test_mount_point_);
     }
   }
 
@@ -335,9 +355,6 @@ class HoldingSpaceKeyedServiceBrowserTest : public InProcessBrowserTest {
 
   // The path under which test volume is mounted.
   base::FilePath test_mount_point_;
-
-  // Used to override downloads mount point for downloads tests.
-  std::unique_ptr<base::ScopedPathOverride> downloads_override_;
 
   // The file system used for an individual test case.
   FileSystemType file_system_type_;
