@@ -53,7 +53,9 @@ public class TapToSeekSelectionManager implements SelectionClient.SurroundingTex
     @Override
     public void onSurroundingTextReceived(String text, int start, int end) {
         // On taps, the start and end index are the same. We want to filter out selection events.
-        if (start == end) {
+        // Also guard against invalid/out-of-bounds offsets from native Blink (e.g. tapping embedded
+        // video controls or shadow DOM).
+        if (text != null && start == end && start >= 0 && end <= text.length()) {
             mReadAloudController.tapToSeek(text, start, end);
         }
     }

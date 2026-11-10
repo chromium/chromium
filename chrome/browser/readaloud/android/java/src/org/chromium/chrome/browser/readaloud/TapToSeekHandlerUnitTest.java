@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.readaloud;
 
 import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -109,6 +110,58 @@ public class TapToSeekHandlerUnitTest {
                         .expectNoRecords(ReadAloudMetrics.HAS_TAP_TO_SEEK_FOUND_MATCH)
                         .build();
         tapToSeek("", 6, 9, "The\nquick brown fox  jumps\nover the lazy dog.", true);
+
+        histogram.assertExpected();
+        verify(mPlayback, never()).seekToWord(anyInt(), anyInt());
+    }
+
+    @Test
+    public void testTapToSeek_OutOfBounds() {
+        var histogram =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(ReadAloudMetrics.HAS_TAP_TO_SEEK_FOUND_MATCH)
+                        .build();
+        // Offsets exceed content length (e.g. tapping embedded video controls / shadow DOM).
+        tapToSeek("0:00 / 1:23", 604, 634, "The\nquick brown fox  jumps\nover the lazy dog.", true);
+
+        histogram.assertExpected();
+        verify(mPlayback, never()).seekToWord(anyInt(), anyInt());
+    }
+
+    @Test
+    public void testTapToSeek_NegativeOffsets() {
+        var histogram =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(ReadAloudMetrics.HAS_TAP_TO_SEEK_FOUND_MATCH)
+                        .build();
+        tapToSeek("some text", -5, 3, "The\nquick brown fox  jumps\nover the lazy dog.", true);
+
+        histogram.assertExpected();
+        verify(mPlayback, never()).seekToWord(anyInt(), anyInt());
+    }
+
+    @Test
+    public void testTapToSeek_ZeroOffset_FallbackToForwardNeedle() {
+        var histogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ReadAloudMetrics.HAS_TAP_TO_SEEK_FOUND_MATCH, true);
+        tapToSeek(
+                "   quick brown fox",
+                0,
+                0,
+                "Article prefix\nquick brown fox jumps over the lazy dog.",
+                true);
+        histogram.assertExpected();
+        verify(mPlayback).seekToWord(eq(0), anyInt());
+    }
+
+    @Test
+    public void testTapToSeek_BeginGreaterThanEnd() {
+        var histogram =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(ReadAloudMetrics.HAS_TAP_TO_SEEK_FOUND_MATCH)
+                        .build();
+        tapToSeek("some text", 5, 2, "The\nquick brown fox  jumps\nover the lazy dog.", true);
 
         histogram.assertExpected();
         verify(mPlayback, never()).seekToWord(anyInt(), anyInt());

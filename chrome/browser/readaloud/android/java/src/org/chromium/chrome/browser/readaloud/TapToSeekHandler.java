@@ -49,11 +49,14 @@ public class TapToSeekHandler {
         if (content == null || content.isEmpty() || metadata == null) {
             return;
         }
+        if (beginOffset < 0 || beginOffset > endOffset || endOffset > content.length()) {
+            return;
+        }
         char[] fullText = metadata.fullText().toCharArray();
         // Set the needle to the word +- 15 characters on either side.
         int substringStartIndex = Math.max(0, beginOffset - 15);
         int substringEndIndex = Math.min(content.length() - 1, endOffset + 15);
-        if (substringEndIndex <= 0) {
+        if (substringEndIndex <= 0 || substringStartIndex >= substringEndIndex) {
             return;
         }
         String needle =
@@ -69,14 +72,17 @@ public class TapToSeekHandler {
             // Last needle not matched, try with the word and -15 characters.
             substringStartIndex = Math.max(0, beginOffset - 15);
             substringEndIndex = endOffset;
-            needle =
-                    content.substring(substringStartIndex, substringEndIndex)
-                            .trim()
-                            .replaceAll(
-                                    "[\\[\\(][\\s\\S]*?[\\]\\)]",
-                                    "") // removes any () and [] and inner content
-                            .replaceAll("\\s+", " "); // replaces any white-spaces with a space.
-            found = BoyerMoore.indexOf(fullText, needle.toCharArray());
+            found = -1;
+            if (substringStartIndex < substringEndIndex) {
+                needle =
+                        content.substring(substringStartIndex, substringEndIndex)
+                                .trim()
+                                .replaceAll(
+                                        "[\\[\\(][\\s\\S]*?[\\]\\)]",
+                                        "") // removes any () and [] and inner content
+                                .replaceAll("\\s+", " "); // replaces any white-spaces with a space.
+                found = BoyerMoore.indexOf(fullText, needle.toCharArray());
+            }
             if (found > 0) {
                 maybeTapToSeek(found + beginOffset - substringStartIndex, playback, playing);
             } else {

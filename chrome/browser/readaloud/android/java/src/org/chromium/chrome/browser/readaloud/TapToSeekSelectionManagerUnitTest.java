@@ -59,14 +59,26 @@ public class TapToSeekSelectionManagerUnitTest {
 
     @Test
     public void testOnSurroundingTextReceived() {
+        mTapToSeekSelectionManager.onSurroundingTextReceived("test", 2, 2);
+        verify(mReadAloudController).tapToSeek("test", 2, 2);
+    }
+
+    @Test
+    public void testOnSurroundingTextReceived_OutOfBounds() {
         mTapToSeekSelectionManager.onSurroundingTextReceived("test", 12, 12);
-        verify(mReadAloudController).tapToSeek("test", 12, 12);
+        verify(mReadAloudController, never()).tapToSeek("test", 12, 12);
+    }
+
+    @Test
+    public void testOnSurroundingTextReceived_NegativeOffset() {
+        mTapToSeekSelectionManager.onSurroundingTextReceived("test", -1, -1);
+        verify(mReadAloudController, never()).tapToSeek("test", -1, -1);
     }
 
     @Test
     public void testOnSurroundingTextReceived_NotTap() {
-        mTapToSeekSelectionManager.onSurroundingTextReceived("test", 12, 16);
-        verify(mReadAloudController, never()).tapToSeek("test", 12, 16);
+        mTapToSeekSelectionManager.onSurroundingTextReceived("test", 1, 3);
+        verify(mReadAloudController, never()).tapToSeek("test", 1, 3);
     }
 
     @Test
