@@ -775,7 +775,9 @@ void IdentityGetAuthTokenFunction::OnPrimaryAccountChanged(
 
   const CoreAccountInfo& primary_account_info =
       event_details.GetCurrentState().primary_account;
-  CHECK(token_key_.account_info.IsEmpty(), base::NotFatalUntil::M161);
+  // TODO(crbug.com/583748420): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(token_key_.account_info.IsEmpty());
   token_key_.account_info = primary_account_info;
 
   CHECK(!GetSigninPrimaryAccount(GetProfile()).IsEmpty(),
