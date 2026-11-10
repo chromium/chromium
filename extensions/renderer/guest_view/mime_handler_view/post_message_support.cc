@@ -142,12 +142,18 @@ void PostMessageSupport::PostJavaScriptMessage(v8::Isolate* isolate,
     return;
   }
 
+  auto weak_this = weak_factory_.GetWeakPtr();
   v8::Context::Scope context_scope(
       delegate_->GetSourceFrame()->MainWorldScriptContext());
   v8::Local<v8::Object> target_window_proxy =
       target_frame->GlobalProxy(isolate);
+  if (!weak_this) {
+    // Calling `blink::WebFrame::GlobalProxy()` may lazily initialize the target
+    // frame's V8 context and execute a malicious script that destroys `this`.
+    // See https://crbug.com/569674220
+    return;
+  }
   gin::Dictionary window_object(isolate, target_window_proxy);
-  auto weak_this = weak_factory_.GetWeakPtr();
   v8::Local<v8::Function> post_message;
   if (!window_object.Get(std::string(kPostMessageName), &post_message)) {
     return;
