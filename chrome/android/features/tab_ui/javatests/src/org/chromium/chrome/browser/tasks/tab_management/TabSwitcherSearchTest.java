@@ -65,7 +65,10 @@ import java.util.concurrent.TimeoutException;
 /** Tests for search in the tab switcher. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableFeatures({ChromeFeatureList.ANDROID_THEME_MODULE})
+@DisableFeatures({
+    ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_POPUP,
+    ChromeFeatureList.ANDROID_THEME_MODULE
+})
 @Batch(Batch.PER_CLASS)
 public class TabSwitcherSearchTest {
     private static final int SERVER_PORT = 13245;
@@ -108,7 +111,6 @@ public class TabSwitcherSearchTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/494245361
     public void testZeroPrefixSuggestions() {
         List<String> urlsToOpen =
                 List.of(
@@ -169,7 +171,6 @@ public class TabSwitcherSearchTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/494245361
     // Regression test for the currently selected tab being included/excluded randomly.
     public void testZeroPrefixSuggestions_IgnoresHiddenTabs() {
         ChromeTabbedActivity cta = mCtaTestRule.getActivity();
@@ -206,7 +207,6 @@ public class TabSwitcherSearchTest {
 
     @Test
     @LargeTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/494245361
     public void testZeroPrefixSuggestions_duplicateUrls() {
         List<String> urlsToOpen =
                 List.of(
@@ -223,7 +223,6 @@ public class TabSwitcherSearchTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/494245361
     public void testTypedSuggestions() {
         List<String> urlsToOpen = List.of("/chrome/test/data/android/navigate/one.html");
         mPage = Journeys.prepareRegularTabsWithWebPages(mPage, mTestServer.getURLs(urlsToOpen));
@@ -276,7 +275,6 @@ public class TabSwitcherSearchTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/494245361")
     public void testTypedSuggestions_OpenSuggestionWithEnter() {
         List<String> urlsToOpen =
                 List.of(
@@ -340,7 +338,6 @@ public class TabSwitcherSearchTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/494245361
     public void testTypedSuggestions_OpenTabGroupSearchSuggestion() {
         String tabGroupTitle = "Test";
         Tab firstTab = mPage.loadedTabElement.value();
@@ -387,7 +384,6 @@ public class TabSwitcherSearchTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/494245361
     public void testTypedSuggestions_OpenTabGroupSearchSuggestionByURLMatch() {
         String tabGroupTitle = "Test";
         Tab firstTab = mPage.loadedTabElement.value();
@@ -434,7 +430,6 @@ public class TabSwitcherSearchTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/494245361
     public void testTypedSuggestionsFromTabGroupsPane_OpenTabGroupSearchSuggestion() {
         String tabGroupTitle = "Test";
         Tab firstTab = mPage.loadedTabElement.value();
@@ -500,7 +495,6 @@ public class TabSwitcherSearchTest {
     @MediumTest
     @RequiresRestart("Adding the bookmark affects suggestions in subsequent tests")
     // TODO(crbug.com/394401323): Add some PT station for searching bookmarks.
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/494245361
     public void testBookmarkSuggestions() {
         WebPageStation openPage =
                 mPage.openNewTabFast()
@@ -526,7 +520,6 @@ public class TabSwitcherSearchTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/494245361
     // TODO(crbug.com/394401463): Add some PT station for searching history.
     public void testHistorySuggestions() throws TimeoutException {
         TabSwitcherSearchStation tabSwitcherSearchStation =
@@ -573,6 +566,7 @@ public class TabSwitcherSearchTest {
                 });
         runOnUiThreadBlocking(() -> historyBridge.queryHistory("one.html"));
         helper.waitForNext();
+        runOnUiThreadBlocking(historyBridge::destroy);
 
         tabSwitcherSearchStation.typeInOmnibox("One");
         tabSwitcherSearchStation.findSuggestion(
