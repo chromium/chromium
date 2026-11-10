@@ -4,11 +4,14 @@
 
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
 
+#import <Foundation/Foundation.h>
+
 #import <memory>
 
 #import "base/files/scoped_temp_dir.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
+#import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/values.h"
@@ -33,9 +36,11 @@
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_in_profile_performer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_in_profile_performer_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer_base.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/test_authentication_flow_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/policy/model/enterprise_policy_test_helper.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -44,14 +49,18 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/signin_test_util.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
 namespace {
@@ -832,6 +841,64 @@ TEST_F(AuthenticationFlowTest, TestConfirmChangeProfileCancel) {
   CheckSignInCompletion(/*expected_signed_in=*/false);
 
   EXPECT_TRUE(confirmChangeProfileCalled);
+}
+
+// Tests that if the identity is removed before switching profile, an
+// authentication error is shown on the current browser and the flow fails.
+TEST_F(AuthenticationFlowTest, TestFailToSwitchToProfile) {
+  id<SystemIdentity> identity = managed_identity1_;
+  CreateAuthenticationFlow(PostSignInActionSet(), identity,
+                           signin_metrics::AccessPoint::kSettings,
+                           /*shouldHandOverToFlowInProfile=*/NO);
+
+  NSString* hosted_domain = GetHostedDomainFromEmail(identity.userEmail);
+
+  OCMExpect([performer_mock_ fetchManagedStatus:personal_profile_.get()
+                                    forIdentity:identity])
+      .andDo(^(NSInvocation*) {
+        [authentication_flow_ authenticationFlowPerformer:performer_mock_
+                                    didFetchManagedStatus:hosted_domain];
+      });
+
+  OCMExpect([performer_mock_
+                fetchProfileSeparationPolicies:personal_profile_.get()
+                                   forIdentity:identity])
+      .andDo(^(NSInvocation*) {
+        [authentication_flow_
+                  authenticationFlowPerformer:performer_mock_
+            didFetchProfileSeparationPolicies:policy::ALWAYS_SEPARATE];
+      });
+
+  OCMExpect([performer_mock_
+                showManagedConfirmationForHostedDomain:hosted_domain
+                                              identity:identity
+                                        viewController:view_controller_mock_
+                                               browser:personal_browser_.get()
+                            managedProfileCreationMode:
+                                signin::ManagedAccountSigninMode::
+                                    kForceSeparateProfileDataByPolicy])
+      .andDo(^(NSInvocation*) {
+        [authentication_flow_ authenticationFlowPerformer:performer_mock_
+            didAcceptManagedConfirmationWithBrowsingDataSeparate:YES];
+      });
+
+  OCMExpect([performer_mock_ confirmChangeProfile:[OCMArg any]
+                                      forIdentity:identity])
+      .andDo(^(NSInvocation*) {
+        fake_system_identity_manager()->ForgetIdentityFromOtherApplication(
+            identity);
+        [authentication_flow_ authenticationFlowPerformer:performer_mock_
+                        didConfirmChangeProfileCanProceed:YES];
+      });
+
+  OCMExpect([performer_mock_ showAuthenticationError:[OCMArg any]
+                                      withCompletion:[OCMArg invokeBlock]
+                                      viewController:view_controller_mock_
+                                             browser:personal_browser_.get()]);
+
+  [authentication_flow_ startSignIn];
+  CheckSignInCompletion(/*expected_signed_in=*/false);
+  EXPECT_EQ(signin_ui::CancelationReason::kFailed, cancelation_reason_);
 }
 
 // Tests age mismatch cancellation.
