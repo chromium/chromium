@@ -39,8 +39,6 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 
-import java.util.Collections;
-
 /**
  * Integration tests for {@link ActorPictureInPictureController} and {@link
  * OffscreenRenderingManager}.
@@ -68,8 +66,7 @@ public class ActorPictureInPictureIntegrationTest {
 
                     // Setup mock actor task so that getCurrentActingTab returns our tab.
                     ActorTask mockTask = Mockito.mock(ActorTask.class);
-                    Mockito.when(mockTask.getLastActedTabs())
-                            .thenReturn(Collections.singleton(mTab.getId()));
+                    Mockito.when(mockTask.getLastActuatedTabId()).thenReturn(mTab.getId());
                     ActorKeyedService actorService = Mockito.mock(ActorKeyedService.class);
                     Mockito.when(actorService.getCurrentActiveTask()).thenReturn(mockTask);
                     Mockito.when(actorService.getActiveTasksCount()).thenReturn(1);

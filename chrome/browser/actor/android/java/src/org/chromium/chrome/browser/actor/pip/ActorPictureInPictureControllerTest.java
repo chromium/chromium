@@ -159,7 +159,7 @@ public class ActorPictureInPictureControllerTest {
         when(mockTask.getId()).thenReturn(taskId);
         when(mockTask.getTitle()).thenReturn(title);
         when(mockTask.getState()).thenReturn(state);
-        when(mockTask.getLastActedTabs()).thenReturn(Collections.singleton(1));
+        when(mockTask.getLastActuatedTabId()).thenReturn(1);
         when(mActorService.getCurrentActiveTask()).thenReturn(mockTask);
         when(mActorService.getActiveTasksCount()).thenReturn(1);
         when(mActorService.getTask(taskId)).thenReturn(mockTask);
@@ -238,8 +238,7 @@ public class ActorPictureInPictureControllerTest {
                         new Size(1920, 1080),
                         mOnPipChangedCallback);
 
-        ActorTask mockTask = createMockActorTask(101, "Task", ActorTaskState.ACTING);
-        when(mockTask.getLastActedTabs()).thenReturn(Collections.singleton(1));
+        createMockActorTask(101, "Task", ActorTaskState.ACTING);
         Tab mockTab = mock(Tab.class);
         when(mTabModelSelector.getTabById(1)).thenReturn(mockTab);
 
@@ -557,24 +556,28 @@ public class ActorPictureInPictureControllerTest {
     }
 
     @Test
-    public void testGetActiveTaskLastActedTabId() {
-        // Case 1: Service is null
+    public void testGetActiveTaskLastActuatedTabId() {
+        // Service is null.
         ActorKeyedServiceFactory.setForTesting(null);
-        assertEquals(Tab.INVALID_TAB_ID, mController.getActiveTaskLastActedTabId());
+        assertEquals(Tab.INVALID_TAB_ID, mController.getActiveTaskLastActuatedTabId());
         ActorKeyedServiceFactory.setForTesting(mActorService);
 
-        // Case 2: No active task
+        // No active task.
         when(mActorService.getCurrentActiveTask()).thenReturn(null);
-        assertEquals(Tab.INVALID_TAB_ID, mController.getActiveTaskLastActedTabId());
+        assertEquals(Tab.INVALID_TAB_ID, mController.getActiveTaskLastActuatedTabId());
 
-        // Case 3: Task has no last acted tabs
+        // Task has no last actuated tab.
         ActorTask mockTask = createMockActorTask(101, "Task", ActorTaskState.ACTING);
-        when(mockTask.getLastActedTabs()).thenReturn(Collections.emptySet());
-        assertEquals(Tab.INVALID_TAB_ID, mController.getActiveTaskLastActedTabId());
+        when(mockTask.getLastActuatedTabId()).thenReturn(Tab.INVALID_TAB_ID);
+        assertEquals(Tab.INVALID_TAB_ID, mController.getActiveTaskLastActuatedTabId());
 
-        // Case 4: Task has last acted tabs
-        when(mockTask.getLastActedTabs()).thenReturn(Collections.singleton(1));
-        assertEquals(1, mController.getActiveTaskLastActedTabId());
+        // Task has a last actuated tab.
+        when(mockTask.getLastActuatedTabId()).thenReturn(1);
+        assertEquals(1, mController.getActiveTaskLastActuatedTabId());
+
+        // Task switches to a second actuated tab.
+        when(mockTask.getLastActuatedTabId()).thenReturn(2);
+        assertEquals(2, mController.getActiveTaskLastActuatedTabId());
     }
 
     @Test

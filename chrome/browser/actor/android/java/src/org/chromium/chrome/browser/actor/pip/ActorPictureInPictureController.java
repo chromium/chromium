@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileIntentUtils;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -53,7 +54,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
@@ -160,28 +160,22 @@ public class ActorPictureInPictureController
         TabModelSelector selector = mTabModelSelectorSupplier.get();
         if (selector == null) return null;
 
-        int tabId = getActiveTaskLastActedTabId();
+        int tabId = getActiveTaskLastActuatedTabId();
         return (tabId != Tab.INVALID_TAB_ID) ? selector.getTabById(tabId) : null;
     }
 
     /**
-     * Returns the ID of a tab recently acted upon by the current active task. Currently, Actor
-     * tasks are limited to a single tab per action, so this method returns the only available ID.
-     * If multiple tabs are present, an arbitrary ID from the set is returned.
+     * Returns the ID of the tab most recently acted upon by the current active task, or {@link
+     * Tab#INVALID_TAB_ID} if none exists.
      */
-    public int getActiveTaskLastActedTabId() {
-        // TODO(crbug.com/496226553): Update this to identify the specific active tab
-        // if ActorTask begins supporting multi-tab actions.
+    public @TabId int getActiveTaskLastActuatedTabId() {
         maybeGetActorService();
         if (mActorService == null) return Tab.INVALID_TAB_ID;
 
         ActorTask task = mActorService.getCurrentActiveTask();
         if (task == null) return Tab.INVALID_TAB_ID;
 
-        Set<Integer> tabIds = task.getLastActedTabs();
-
-        // Assume that there is only one tab ID in the set returned by task.getLastActedTabs().
-        return !tabIds.isEmpty() ? tabIds.iterator().next() : Tab.INVALID_TAB_ID;
+        return task.getLastActuatedTabId();
     }
 
     /** Lazily retrieves the ActorKeyedService and registers this observer. */
@@ -432,7 +426,7 @@ public class ActorPictureInPictureController
         TabModelSelector selector = mTabModelSelectorSupplier.get();
         if (selector == null) return;
 
-        int tabId = getActiveTaskLastActedTabId();
+        int tabId = getActiveTaskLastActuatedTabId();
         Tab tab = (tabId != Tab.INVALID_TAB_ID) ? selector.getTabById(tabId) : null;
 
         if (tab != null) {
