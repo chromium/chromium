@@ -34,11 +34,15 @@ class DefaultBrowserModalDialogManagerInteractiveTest
   ~DefaultBrowserModalDialogManagerInteractiveTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        default_browser::kDefaultBrowserPromptSurfaces,
-        {{"prompt_surface",
-          GetParam() ? "modal_dialog_with_settings_illustration"
-                     : "modal_dialog_without_settings_illustration"}});
+    // Explicitly disable the sticky modal so these tests are not affected by
+    // the fieldtrial testing config, which enables it.
+    const char* prompt_surface =
+        GetParam() ? "modal_dialog_with_settings_illustration"
+                   : "modal_dialog_without_settings_illustration";
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{default_browser::kDefaultBrowserPromptSurfaces,
+                               {{"prompt_surface", prompt_surface}}}},
+        /*disabled_features=*/{default_browser::kDefaultBrowserStickyModal});
     InteractiveBrowserTest::SetUp();
   }
 
