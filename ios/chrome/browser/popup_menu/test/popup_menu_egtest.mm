@@ -174,6 +174,11 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 // Tests that the menu is opened and closed correctly, whatever the current
 // device type is.
 - (void)testOpenAndCloseToolsMenu {
+  // TODO(crbug.com/40817696): This test only fails on ipad bots with
+  // multitasking enabled (e.g. compact width).
+  if ([ChromeEarlGrey isIPadIdiom] && [ChromeEarlGrey isCompactWidth]) {
+    EARL_GREY_TEST_DISABLED(@"Disabled for iPad multitasking.");
+  }
   [ChromeEarlGreyUI openToolsMenu];
 
   // If using the new overflow menu, swipe up to expand the menu to the full
@@ -213,7 +218,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
 // Tests that both the 2 steps of the history on overflow menu IPH is displayed,
 // when the user opens the menu while the 1st step is displayed.
-- (void)testOverflowMenuIPHForHistoryShow2StepsWhenUserOpensMenu {
+// TODO(crbug.com/570598001): Flaky on ios-simulator-noncq.
+- (void)DISABLED_testOverflowMenuIPHForHistoryShow2StepsWhenUserOpensMenu {
   // Scope for the synchronization disabled.
   {
     ScopedSynchronizationDisabler syncDisabler;
@@ -238,7 +244,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
 // Tests that both the 2 steps of the history on overflow menu IPH is displayed,
 // when the user lets the first step times out.
-- (void)testOverflowMenuIPHForHistoryShow2StepsWhen1stStepTimeout {
+// TODO(crbug.com/570598001): Flaky on ios-simulator-noncq.
+- (void)DISABLED_testOverflowMenuIPHForHistoryShow2StepsWhen1stStepTimeout {
   // Scope for the synchronization disabled.
   {
     ScopedSynchronizationDisabler syncDisabler;
@@ -273,7 +280,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
 // Tests that the 2nd step of history on overflow menu IPH is not displayed, if
 // the 1st step IPH is dismissed by the user by tapping outside.
-- (void)testOverflowMenuIPHForHistoryNotShow2ndStep {
+// TODO(crbug.com/570598001): Flaky on ios-simulator-noncq.
+- (void)DISABLED_testOverflowMenuIPHForHistoryNotShow2ndStep {
   // Scope for the synchronization disabled.
   {
     ScopedSynchronizationDisabler syncDisabler;

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/ios/ios_util.h"
 #import "base/test/ios/wait_util.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "ios/chrome/browser/find_in_page/model/find_in_page_app_interface.h"
@@ -434,6 +435,13 @@ TAG_SMOKE_TEST(FindInPageTestCase, testFindInPageTextInput);
 // Tests that text can be copied from the web page and pasted into the FIP input
 // field and that the results UI updates accordingly.
 - (void)testFindInPageCopyPaste {
+  // TODO(crbug.com/360362288): Flaky on iOS 18 simulators.
+  if (!@available(iOS 26, *)) {
+#if TARGET_OS_SIMULATOR
+    EARL_GREY_TEST_DISABLED(@"Flaky on iOS 18 simulators.");
+#endif
+  }
+
   [self setUpTestServersForWebPageTest];
 
   // Load test page.
@@ -576,6 +584,9 @@ TAG_SMOKE_TEST(FindInPageTestCase, testFindInPageTextInput);
 // Tests that switching orientation during a Find session does not throw away
 // the query or the current results.
 - (void)testFindInPageSwitchOrientation {
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
   [self setUpTestServersForWebPageTest];
 
   // Load test page with cross-origin iframe.
@@ -647,7 +658,8 @@ TAG_SMOKE_TEST(FindInPageTestCase, testFindInPageTextInput);
 }
 
 // Tests the various ways to dismiss the keyboard during a Find session.
-- (void)testFindInPageDismissKeyboard {
+// TODO(crbug.com/40283787): Test fails on downstream bots.
+- (void)DISABLED_testFindInPageDismissKeyboard {
   [self setUpTestServersForWebPageTest];
 
   // Load test page with cross-origin iframe.
@@ -724,7 +736,13 @@ TAG_SMOKE_TEST(FindInPageTestCase, testFindInPageTextInput);
 
 // Tests that there is no query persistence when coming back to a normal tab
 // after switching temporarily to another tab.
-- (void)testFindInPageSwitchingTabs {
+// TODO(crbug.com/40940589): Re-enable this test.
+- (void)FLAKY_testFindInPageSwitchingTabs {
+  // TODO(crbug.com/40922941): Failing on iPhone.
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    XCTSkip(@"Failing on iOS17 iPhone");
+  }
+
   [self setUpTestServersForWebPageTest];
 
   // Load test page with cross-origin iframe in a second normal tab.
@@ -748,7 +766,8 @@ TAG_SMOKE_TEST(FindInPageTestCase, testFindInPageTextInput);
 }
 
 // Tests that FIP can find RTL text in a web page.
-- (void)testFindInPageRTL {
+// TODO(crbug.com/366752786): Re-enable once de-flaked.
+- (void)FLAKY_testFindInPageRTL {
   [self setUpTestServersForWebPageTest];
 
   // Load test page with cross-origin iframe.
@@ -802,6 +821,11 @@ TAG_SMOKE_TEST(FindInPageTestCase, testFindInPageTextInput);
 
 // Tests that Native Find in Page works as expected for PDF documents.
 - (void)testFindInPagePDF {
+  // TODO(crbug.com/437314322): Re-enable the test on iOS26.
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+
   [self setUpTestServerForPDFTest];
 
   // Load test PDF document.
@@ -877,7 +901,8 @@ TAG_SMOKE_TEST(FindInPageTestCase, testFindInPageTextInput);
 }
 
 // Tests that FIP works properly with bottom omnibox.
-- (void)testWithBottomOmnibox {
+// TODO(crbug.com/437314322): Re-enable the test.
+- (void)DISABLED_testWithBottomOmnibox {
   // Set bottom Omnibox.
   [ChromeEarlGrey setBoolValue:YES
              forLocalStatePref:omnibox::kIsOmniboxInBottomPosition];

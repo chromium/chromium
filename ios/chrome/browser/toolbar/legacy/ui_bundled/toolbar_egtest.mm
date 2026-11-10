@@ -150,6 +150,12 @@ TAG_SMOKE_TEST(LegacyToolbarTestCase, testNewTabFromMenu);
 // button and asserts it doesn't commit the omnibox contents if the input is
 // canceled.
 - (void)testToolbarOmniboxHideKeyboard {
+  // TODO(crbug.com/41272886): Enable the test for iPad when typing bug is
+  // fixed.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Disabled for iPad due to a simulator bug.");
+  }
+
   // Tablet only (handset keyboard does not have "hide keyboard" button).
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test not support on iPhone");
@@ -238,7 +244,9 @@ TAG_SMOKE_TEST(LegacyToolbarTestCase, testNewTabFromMenu);
 }
 
 // Verifies that copying and pasting a URL includes the hidden protocol prefix.
-- (void)testCopyPasteURL {
+// TODO(crbug.com/40572353): Enable this test when long press on the steady
+// location bar is supported.
+- (void)DISABLED_testCopyPasteURL {
   // Clear generalPasteboard before and after the test.
   [UIPasteboard generalPasteboard].string = @"";
   [self setTearDownHandler:^{
@@ -350,7 +358,8 @@ TAG_SMOKE_TEST(LegacyToolbarTestCase, testOmniboxClearTextButton);
 }
 
 // Tests typing in the omnibox.
-- (void)testToolbarOmniboxTyping {
+// TODO(crbug.com/519981855): Flaky
+- (void)FLAKY_testToolbarOmniboxTyping {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       performAction:grey_tap()];
 

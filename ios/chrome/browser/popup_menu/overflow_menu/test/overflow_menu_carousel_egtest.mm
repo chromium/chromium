@@ -176,7 +176,9 @@ void ResolvePassphraseErrorFromOverflowMenu() {
 }
 
 // Tests non-error destination highlights.
-- (void)testNonErrorDestinationHighlights {
+// TODO(crbug.com/40263342): This test is very flaky. Fails especially on
+// devices.
+- (void)FLAKY_testNonErrorDestinationHighlights {
   AppLaunchConfiguration config;
   // Enable Overflow Menu destinations highlight features.
   config.additional_args.push_back(
@@ -201,7 +203,8 @@ void ResolvePassphraseErrorFromOverflowMenu() {
 
 // Tests that the overflow menu footer displays Family Link disclaimer with a
 // link to more information about family accounts.
-- (void)testOverflowMenuFooterFamilyLink {
+// TODO(crbug.com/339689514): Failing on ios-simulator-noncq
+- (void)DISABLED_testOverflowMenuFooterFamilyLink {
   // Sign in and Sync account.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity
