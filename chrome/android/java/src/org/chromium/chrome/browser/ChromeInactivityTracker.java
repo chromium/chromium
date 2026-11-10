@@ -82,17 +82,13 @@ public class ChromeInactivityTracker
         ChromeSharedPreferences.getInstance().writeLong(mPrefName, timeInMillis);
     }
 
-    /**
-     * @return The last backgrounded time in millis.
-     */
+    /** Returns the last backgrounded time in millis. */
     public long getLastBackgroundedTimeMs() {
         return ChromeSharedPreferences.getInstance()
                 .readLong(mPrefName, UNKNOWN_LAST_BACKGROUNDED_TIME);
     }
 
-    /**
-     * @return the time interval in millis since the last backgrounded time.
-     */
+    /** Returns the time interval in millis since the last backgrounded time. */
     public long getTimeSinceLastBackgroundedMs() {
         long lastBackgroundedTimeMs = getLastBackgroundedTimeMs();
         if (lastBackgroundedTimeMs == UNKNOWN_LAST_BACKGROUNDED_TIME) {
@@ -104,6 +100,8 @@ public class ChromeInactivityTracker
     /**
      * Sets the last time when Chrome was launching or moving to foreground and became visible to
      * users and record histogram.
+     *
+     * @param timeInMillis The time to record as the last visible time, in milliseconds.
      */
     public void setLastVisibleTimeMsAndRecord(long timeInMillis) {
         // We log the last visible time here to prevent losing the time stamp during the shutdown.

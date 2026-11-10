@@ -87,14 +87,16 @@ public class ChromeLocalizationUtils {
     }
 
     /**
-     * @return the current Chromium locale used to display UI elements.
-     *     <p>This matches what the Android framework resolves localized string resources to, using
-     *     the system locale and the application's resources. For example, if the system uses a
-     *     locale that is not supported by Chromium resources (e.g. 'fur-rIT'), Android will likely
-     *     fallback to 'en-rUS' strings when Resources.getString() is called, and this method will
-     *     return the matching Chromium name (i.e. 'en-US').
-     *     <p>Using this value is necessary to ensure that the strings accessed from the locale .pak
-     *     files from C++ match the resources displayed by the Java-based UI views.
+     * Returns the current Chromium locale used to display UI elements.
+     *
+     * <p>This matches what the Android framework resolves localized string resources to, using the
+     * system locale and the application's resources. For example, if the system uses a locale that
+     * is not supported by Chromium resources (e.g. 'fur-rIT'), Android will likely fallback to
+     * 'en-rUS' strings when Resources.getString() is called, and this method will return the
+     * matching Chromium name (i.e. 'en-US').
+     *
+     * <p>Using this value is necessary to ensure that the strings accessed from the locale .pak
+     * files from C++ match the resources displayed by the Java-based UI views.
      */
     public static String getJavaUiLocale() {
         return ContextUtils.getApplicationContext()
@@ -228,6 +230,9 @@ public class ChromeLocalizationUtils {
      * Return the status of the current Chromium UI when the UI language is not overridden. The UI
      * language is correct when it matches the default Android system language. If no Android
      * language is available as the Chromium language then the UI is by definition incorrect.
+     *
+     * @param noLanguageAvailable Boolean indicating no Android system language is a Chromium
+     *     language.
      * @param isCorrect Boolean indicating the Chromium UI language matches the Android default.
      * @return The @UiCorrectnessTypes status of the UI.
      */

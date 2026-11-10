@@ -93,6 +93,7 @@ public class ZoomController {
      * Resets the zoom factor of the WebContents.
      *
      * @param webContents {@link WebContents} to reset the zoom of.
+     * @param browserContextHandle {@link BrowserContextHandle} to get the default zoom level from.
      * @return True if there was a zoom change, false otherwise.
      */
     public static boolean zoomReset(

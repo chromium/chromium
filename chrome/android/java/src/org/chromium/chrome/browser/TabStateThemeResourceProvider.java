@@ -40,6 +40,9 @@ public class TabStateThemeResourceProvider extends ThemeResourceWrapper {
      *
      * @param baseContext The base context to be wrapped.
      * @param resourceId The theme overlay resource to be used for the overlay.
+     * @param activityTabProvider Provides the current activity tab, observed to update the overlay.
+     * @param layoutManagerSupplier Supplies the {@link LayoutManagerImpl} used to observe layout
+     *     state changes.
      */
     public TabStateThemeResourceProvider(
             Context baseContext,

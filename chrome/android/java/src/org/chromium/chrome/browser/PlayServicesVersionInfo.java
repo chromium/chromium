@@ -48,8 +48,8 @@ public class PlayServicesVersionInfo {
     }
 
     /**
-     * @return The version code for the Google Play Services installed on the device or -1 if the
-     *     package is not found.
+     * Returns the version code for the Google Play Services installed on the device or 0 if the
+     * package is not found.
      */
     public static int getApkVersionNumber() {
         int ret =

@@ -61,7 +61,7 @@ public class ServiceTabLauncher {
             "org.chromium.chrome.browser.ServiceTabLauncher.LAUNCH_REQUEST_ID";
 
     /**
-     * Launches the browser activity and launches a tab for |url|.
+     * Launches the browser activity and launches a tab for {@code url}.
      *
      * @param requestId Id of the request for launching this tab.
      * @param incognito Whether the tab should be launched in incognito mode.
@@ -204,7 +204,7 @@ public class ServiceTabLauncher {
                 resolveInfos);
     }
 
-    /** Launches WebappActivity or a tab for the |url|. */
+    /** Launches WebappActivity or a tab for the {@code url}. */
     private static void launchTabOrWebapp(
             int requestId,
             boolean incognito,
@@ -284,10 +284,10 @@ public class ServiceTabLauncher {
     }
 
     /**
-     * To be called by the activity when the WebContents for |requestId| has been created, or has
-     * been recycled from previous use. The |webContents| must not yet have started provisional
-     * load for the main frame.
-     * The |webContents| could be null if the request is failed.
+     * To be called by the activity when the WebContents for {@code requestId} has been created, or
+     * has been recycled from previous use. The {@code webContents} must not yet have started
+     * provisional load for the main frame. The {@code webContents} could be null if the request is
+     * failed.
      *
      * @param requestId Id of the tab launching request which has been fulfilled.
      * @param webContents The WebContents instance associated with this request.

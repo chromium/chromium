@@ -250,8 +250,8 @@ public class WarmupManager {
      *
      * <p>The tab's launch type will be set when the tab is used.
      *
-     * <p>* @param webContents The {@link WebContents} to use in the tab. If null the default is
-     * used.
+     * @param profile The profile associated with the spare Tab.
+     * @param webContents The {@link WebContents} to use in the tab. If null the default is used.
      */
     public void createRegularSpareTab(Profile profile, @Nullable WebContents webContents) {
         ThreadUtils.assertOnUiThread();
@@ -285,9 +285,10 @@ public class WarmupManager {
     }
 
     /**
-     * Returns the spare Tab. Must only be called when a spare tab is available for |profile|.
+     * Returns the spare Tab. Must only be called when a spare tab is available for {@code profile}.
      *
      * @param profile the profile associated with the spare Tab.
+     * @param initiallyHidden Whether the tab should remain hidden; if false, the tab is shown.
      * @param type TabLaunchType of the requested tab.
      * @return the spare Tab.
      */
@@ -316,6 +317,7 @@ public class WarmupManager {
     }
 
     /**
+     * @param profile The profile to check the spare tab against.
      * @param targetsNetwork whether the activity/tab associated with this WebContents targets a
      *     network (supported only by multi-network CCT, see @{link
      *     BrowserServicesIntentDataProvider#getTargetNetwork).
@@ -354,9 +356,7 @@ public class WarmupManager {
         ResettersForTesting.register(() -> sWarmupManager = oldValue);
     }
 
-    /**
-     * @return The singleton instance for the WarmupManager, creating one if necessary.
-     */
+    /** Returns the singleton instance for the WarmupManager, creating one if necessary. */
     public static WarmupManager getInstance() {
         ThreadUtils.assertOnUiThread();
         if (sWarmupManager == null) sWarmupManager = new WarmupManager();

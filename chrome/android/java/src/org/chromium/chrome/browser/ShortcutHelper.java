@@ -290,7 +290,10 @@ public class ShortcutHelper {
 
     /**
      * Shortcut intent for icon on home screen.
+     *
      * @param url Url of the shortcut.
+     * @param id Id of the shortcut.
+     * @param source The {@link ShortcutSource} that created the shortcut.
      * @return Intent for onclick action of the shortcut.
      */
     public static Intent createShortcutIntent(String url, String id, int source) {
@@ -337,7 +340,7 @@ public class ShortcutHelper {
     }
 
     /**
-     * @return String that can be used to verify that a WebappActivity is being started by Chrome.
+     * Returns a String that can be used to verify that a WebappActivity is being started by Chrome.
      */
     public static String getEncodedMac(String url, @Nullable String encodedIcon) {
         // The only reason we convert to a String here is because Android inexplicably eats a

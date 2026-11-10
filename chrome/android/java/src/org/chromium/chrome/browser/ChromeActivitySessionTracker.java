@@ -68,9 +68,7 @@ public class ChromeActivitySessionTracker {
     private boolean mIsInitialized;
     private boolean mIsStarted;
 
-    /**
-     * @return The activity session tracker for Chrome.
-     */
+    /** Returns the activity session tracker for Chrome. */
     public static ChromeActivitySessionTracker getInstance() {
         ThreadUtils.assertOnUiThread();
 
@@ -102,7 +100,7 @@ public class ChromeActivitySessionTracker {
     }
 
     /**
-     * @return The latest country according to the current variations state. Null if not available.
+     * Returns the latest country according to the current variations state. Null if not available.
      */
     public @Nullable String getVariationsLatestCountry() {
         return mVariationsSession.getLatestCountry();
@@ -264,9 +262,7 @@ public class ChromeActivitySessionTracker {
         }
     }
 
-    /**
-     * @return The {@link OmahaServiceStartDelayer} for the browser process.
-     */
+    /** Returns the {@link OmahaServiceStartDelayer} for the browser process. */
     public OmahaServiceStartDelayer getOmahaServiceStartDelayerForTesting() {
         return mOmahaServiceStartDelayer;
     }

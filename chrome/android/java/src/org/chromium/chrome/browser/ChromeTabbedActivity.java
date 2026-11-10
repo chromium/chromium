@@ -5326,9 +5326,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     }
 
     /**
-     * @return The handler that switches back to the parent tab when the back gesture is used on a
-     *     tab opened from the Send Tab To Self message banner, or null if the feature is disabled
-     *     or this device uses desktop back conventions.
+     * Returns the handler that switches back to the parent tab when the back gesture is used on a
+     * tab opened from the Send Tab To Self message banner, or null if the feature is disabled or
+     * this device uses desktop back conventions.
      */
     public @Nullable SendTabToSelfBackPressHandler getSendTabToSelfBackPressHandler() {
         return mSendTabToSelfBackPressHandler;
