@@ -3220,7 +3220,7 @@
   {
     "name": "disable-grid-tab-switcher",
     "owners": ["hitarthkothari@google.com", "clank-tab-dev@google.com"],
-    "expiry_milestone": 160
+    "expiry_milestone": 175
   },
   {
     "name": "disable-javascript-harmony-shipping",
