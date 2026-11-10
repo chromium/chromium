@@ -160,8 +160,8 @@ void GlicSelectionWidgetController::OnAskGemini() {
     return;
   }
   if (base::FeatureList::IsEnabled(features::kGlicSelectionSmallChip)) {
-    Dismiss(DismissReason::kActionTaken);
     ShowSelectionOverlay();
+    Dismiss(DismissReason::kActionTaken);
     return;
   }
   Dismiss(DismissReason::kActionTaken);

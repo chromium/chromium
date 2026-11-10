@@ -69,6 +69,7 @@
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/focus/focus_manager.h"
 #include "url/gurl.h"
 
 // TODO(http://b/485358530): Consider `OverlayBaseController::State` to the
@@ -788,6 +789,19 @@ void SelectionOverlayController::ShowImpl(mojom::TabContextOptionsPtr options) {
   }
   ShowModalUI();
   MaybeAdoptPrewarmedOverlay();
+  if (state() == State::kScreenshot &&
+      session_->entry_point == ::selection::EntryPoint::kInlineCue) {
+    if (auto* host_view = GetHostView()) {
+      if (auto* focus_manager = host_view->GetFocusManager();
+          focus_manager && !focus_manager->GetFocusedView() &&
+          focus_manager->GetStoredFocusView()) {
+        // Clear stored focus so dismissing the inline-cue chip does not
+        // refocus the page during screenshot capture.
+        focus_manager->SetStoredFocusView(nullptr);
+        session_->cleared_stored_focus = true;
+      }
+    }
+  }
 }
 
 // TODO(b/556786015): After requirement is finalized, reconsider if we should
@@ -914,9 +928,14 @@ void SelectionOverlayController::CloseUI() {
     return;
   }
   overlay_page_bound_ = false;
+  auto* focus_manager =
+      GetHostView() ? GetHostView()->GetFocusManager() : nullptr;
   const bool had_focus =
       (overlay_web_view_ && overlay_web_view_->HasFocus()) ||
-      (preselection_widget_ && preselection_widget_->IsActive());
+      (preselection_widget_ && preselection_widget_->IsActive()) ||
+      (session_->cleared_stored_focus && state() == State::kScreenshot &&
+       tab_->IsActivated() && tab_->GetBrowserWindowInterface()->IsActive() &&
+       focus_manager && !focus_manager->GetFocusedView());
   CloseReason close_reason =
       session_->close_reason.value_or(CloseReason::kOther);
   Reset();
@@ -1008,6 +1027,7 @@ void SelectionOverlayController::OnScreenshotTaken(const SkBitmap& bitmap) {
   InitializeScreenshot(
       bitmap, base::BindOnce(&SelectionOverlayController::SetScreenshot,
                              session_weak_factory_.GetWeakPtr(), bitmap));
+  session_->cleared_stored_focus = false;
 }
 
 void SelectionOverlayController::OnScreenshotRedacted(const SkBitmap& bitmap) {

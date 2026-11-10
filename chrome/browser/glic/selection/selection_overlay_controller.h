@@ -404,6 +404,9 @@ class SelectionOverlayController
     base::CallbackListSubscription side_panel_state_subscription;
     // Closes the session if the page becomes ineligible for context sharing.
     base::CallbackListSubscription eligibility_subscription;
+    // True when `ShowImpl()` cleared `FocusManager::stored_focus_view_` during
+    // cold screenshot capture and the overlay WebView has not taken focus yet.
+    bool cleared_stored_focus = false;
   };
   // Never null.
   std::unique_ptr<Session> session_ = std::make_unique<Session>(this);

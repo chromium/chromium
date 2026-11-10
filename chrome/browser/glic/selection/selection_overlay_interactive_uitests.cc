@@ -83,6 +83,7 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
 #if BUILDFLAG(IS_OZONE)
@@ -3078,6 +3079,39 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithHoverPrewarm,
       // timeout.
       CheckResult([this, &prewarmed]() { return !prewarmed && !HasPrewarm(); },
                   true));
+}
+
+// Clicking the chip without a hover prewarm clears stored focus during
+// screenshot capture so dismissing the chip does not refocus the page, and
+// closing during screenshot capture restores focus to the page.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithHoverPrewarm,
+                       ColdChipClickClearsStoredFocusDuringScreenshot) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+
+  RunTestSequence(ShowSmallChip(kActiveTab), Do([this]() {
+                    auto* contents_web_view =
+                        BrowserElementsViews::From(browser())->RetrieveView(
+                            kActiveContentsWebViewRetrievalId);
+                    ASSERT_TRUE(contents_web_view);
+                    contents_web_view->GetFocusManager()->StoreFocusedView(
+                        /*clear_native_focus=*/true);
+                  }),
+                  InAnyContext(PressButton(
+                      GlicSelectionWidgetDelegate::kAskGeminiButtonElementId)),
+                  Do([this]() {
+                    auto* contents_web_view =
+                        BrowserElementsViews::From(browser())->RetrieveView(
+                            kActiveContentsWebViewRetrievalId);
+                    auto* focus_manager = contents_web_view->GetFocusManager();
+                    ASSERT_EQ(GetController()->state(),
+                              OverlayBaseController::State::kScreenshot);
+                    EXPECT_FALSE(focus_manager->GetStoredFocusView());
+                    focus_manager->RestoreFocusedView();
+                    EXPECT_FALSE(focus_manager->GetFocusedView());
+                    GetController()->Close();
+                  }),
+                  CheckViewProperty(ContentsWebView::kContentsWebViewElementId,
+                                    &views::View::HasFocus, true));
 }
 
 }  // namespace

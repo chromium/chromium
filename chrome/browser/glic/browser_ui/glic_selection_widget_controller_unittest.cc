@@ -85,6 +85,9 @@ class TestGlicSelectionWidgetController : public GlicSelectionWidgetController {
   bool show_selection_overlay_called() const {
     return show_selection_overlay_called_;
   }
+  bool dismissed_before_show_overlay() const {
+    return dismissed_before_show_overlay_;
+  }
 
   std::optional<ToastId> shown_toast_id() const { return shown_toast_id_; }
 
@@ -95,6 +98,7 @@ class TestGlicSelectionWidgetController : public GlicSelectionWidgetController {
   // `GlicSelectionWidgetController`:
   void ShowSelectionOverlay() override {
     show_selection_overlay_called_ = true;
+    dismissed_before_show_overlay_ = dismiss_called_;
     GlicSelectionWidgetController::ShowSelectionOverlay();
   }
 
@@ -107,6 +111,7 @@ class TestGlicSelectionWidgetController : public GlicSelectionWidgetController {
   bool dismiss_called_ = false;
   std::optional<DismissReason> dismiss_reason_;
   bool show_selection_overlay_called_ = false;
+  bool dismissed_before_show_overlay_ = false;
   std::optional<ToastId> shown_toast_id_;
 };
 
@@ -383,6 +388,7 @@ TEST_F(GlicSelectionWidgetControllerTest, OnAskGeminiWithSmallChipDismissesUI) {
   EXPECT_EQ(GlicSelectionObserver::DismissReason::kActionTaken,
             controller->dismiss_reason());
   EXPECT_TRUE(controller->show_selection_overlay_called());
+  EXPECT_FALSE(controller->dismissed_before_show_overlay());
 }
 
 TEST_F(GlicSelectionWidgetControllerTest,
@@ -401,6 +407,7 @@ TEST_F(GlicSelectionWidgetControllerTest,
   EXPECT_EQ(GlicSelectionObserver::DismissReason::kActionTaken,
             controller->dismiss_reason());
   EXPECT_TRUE(controller->show_selection_overlay_called());
+  EXPECT_FALSE(controller->dismissed_before_show_overlay());
 }
 
 TEST_F(GlicSelectionWidgetControllerTest,
