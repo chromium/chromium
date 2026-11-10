@@ -6,7 +6,24 @@
 
 #include <locale.h>
 
+#include <string_view>
+
 namespace content {
+
+namespace {
+
+// Returns whether the current LC_CTYPE locale is "C" or "POSIX", whose
+// character set is ASCII.
+bool IsCtypeAsciiLocale() {
+  const char* name = setlocale(LC_CTYPE, nullptr);
+  if (!name) {
+    return false;
+  }
+  const std::string_view ctype(name);
+  return ctype == "C" || ctype == "POSIX";
+}
+
+}  // namespace
 
 void InitializeCLibraryLocale() {
   // Set C library locale to make sure CommandLine can parse
@@ -44,19 +61,19 @@ void InitializeCLibraryLocale() {
 #endif
     };
     // clang-format on
-    bool ctype_set = false;
     for (int category : kCategories) {
-      const bool set = setlocale(category, "") != nullptr;
-      if (category == LC_CTYPE) {
-        ctype_set = set;
-      }
+      setlocale(category, "");
     }
-    if (!ctype_set) {
-      // In the "C" locale, multibyte conversions fail on any non-ASCII
-      // character, which breaks non-ASCII file names. UTF-8 is a better guess
-      // for the file system encoding, and is no worse for others.
-      setlocale(LC_CTYPE, "C.UTF-8");
-    }
+  }
+
+  // In the "C" and "POSIX" locales, the character set is ASCII and multibyte
+  // conversions fail on any non-ASCII character, which breaks non-ASCII file
+  // names. LC_CTYPE ends up in one of them when it is set that way, when no
+  // locale variables are set at all, and when it names a locale that isn't
+  // installed. The file names on such systems are still almost always UTF-8,
+  // and UTF-8 is a superset of ASCII.
+  if (IsCtypeAsciiLocale()) {
+    setlocale(LC_CTYPE, "C.UTF-8");
   }
 
   // For numbers the C library's locale sensitive conversion from number to

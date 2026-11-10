@@ -13,8 +13,11 @@ namespace content {
 // setlocale(LC_ALL, "") fails as a whole, leaving the process in the "C"
 // locale, when any single category names a locale that isn't installed (e.g.
 // LC_TIME=fi_FI.UTF-8 without that locale). In that case each category is set
-// on its own so that the valid ones still apply. If LC_CTYPE itself can't be
-// set, "C.UTF-8" is used for it, so that multibyte conversions of file names
+// on its own so that the valid ones still apply.
+//
+// If the resulting LC_CTYPE locale is "C" or "POSIX" (e.g. because it was set
+// that way, no locale variables are set, or the LC_CTYPE locale is missing),
+// "C.UTF-8" is used for it instead, so that multibyte conversions of file names
 // (mbstowcs() and friends) don't drop non-ASCII characters.
 void InitializeCLibraryLocale();
 

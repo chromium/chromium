@@ -101,6 +101,38 @@ TEST_F(LocalePosixTest, CtypeMissingFallsBackToUtf8) {
   ExpectNonAsciiConversionWorks();
 }
 
+// The "C" and "POSIX" locales use an ASCII character set, in which multibyte
+// conversions fail on any non-ASCII file name (https://crbug.com/40719293).
+TEST_F(LocalePosixTest, CLocaleUsesUtf8) {
+  env_->SetVar("LANG", "C");
+  InitializeCLibraryLocale();
+  ExpectNonAsciiConversionWorks();
+  EXPECT_STREQ("C", setlocale(LC_COLLATE, nullptr));
+}
+
+TEST_F(LocalePosixTest, PosixLocaleUsesUtf8) {
+  env_->SetVar("LC_ALL", "POSIX");
+  InitializeCLibraryLocale();
+  ExpectNonAsciiConversionWorks();
+}
+
+TEST_F(LocalePosixTest, NoLocaleVariablesUsesUtf8) {
+  InitializeCLibraryLocale();
+  ExpectNonAsciiConversionWorks();
+}
+
+// A locale with a non-ASCII legacy character set is left alone.
+TEST_F(LocalePosixTest, LegacyCharsetKept) {
+  constexpr char kLatin9Locale[] = "it_IT@euro";
+  if (!setlocale(LC_CTYPE, kLatin9Locale)) {
+    GTEST_SKIP() << kLatin9Locale << " is not installed";
+  }
+  ASSERT_TRUE(setlocale(LC_ALL, "C"));
+  env_->SetVar("LANG", kLatin9Locale);
+  InitializeCLibraryLocale();
+  EXPECT_STREQ(kLatin9Locale, setlocale(LC_CTYPE, nullptr));
+}
+
 }  // namespace
 
 }  // namespace content
