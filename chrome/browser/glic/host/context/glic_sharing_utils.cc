@@ -7,16 +7,20 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/common/future_browser_features.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/enterprise/buildflags/buildflags.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "url/gurl.h"
@@ -127,6 +131,22 @@ bool IsBrowserValidForSharingInProfile(
 bool IsTabValidForPinningInProfile(tabs::TabInterface* tab, Profile* profile) {
   return tab && profile && tab->GetProfile() == profile &&
          !profile->IsOffTheRecord();
+}
+
+bool ShouldPinOnBind(Profile* profile) {
+  PrefService* user_prefs = profile ? profile->GetPrefs() : nullptr;
+  // Check both the setting exists, the pin-on-bind kill switch (*PinOnBind
+  // feature flag) is enabled, and then that actual value of the settings prefs
+  // to determine whether to pin on bind.
+  if (base::FeatureList::IsEnabled(features::kGlicDefaultTabContextSetting)) {
+    return base::FeatureList::IsEnabled(
+               features::kGlicDefaultContextPinOnBind) &&
+           user_prefs &&
+           user_prefs->GetBoolean(prefs::kGlicDefaultTabContextEnabled);
+  }
+  // If kGlicDefaultTabContextSetting is not enabled (old settings page) keep
+  // the old behavior.
+  return true;
 }
 
 bool IsTabValidForSharing(content::WebContents* web_contents) {

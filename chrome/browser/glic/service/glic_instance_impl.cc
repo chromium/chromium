@@ -36,6 +36,7 @@
 #include "chrome/browser/glic/host/context/glic_pinned_tab_manager_impl.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_coordinator.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
+#include "chrome/browser/glic/host/context/glic_sharing_utils.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/host/glic_skills_manager_impl.h"
 #include "chrome/browser/glic/host/glic_ui.h"
@@ -1522,23 +1523,6 @@ void GlicInstanceImpl::MaybeWarmZeroStateSuggestions(
                             base::DoNothing());
 }
 
-bool GlicInstanceImpl::ShouldPinOnBind() const {
-  PrefService* user_prefs = profile_->GetPrefs();
-  // Check both the setting exists, the pin-on-bind kill switch (*PinOnBind
-  // feature flag) is enabled, and then that actual value of the settings prefs
-  // to determine whether to pin on bind.
-  if (base::FeatureList::IsEnabled(features::kGlicDefaultTabContextSetting)) {
-    return base::FeatureList::IsEnabled(
-               features::kGlicDefaultContextPinOnBind) &&
-           user_prefs &&
-           user_prefs->GetBoolean(prefs::kGlicDefaultTabContextEnabled);
-  } else {
-    // If kGlicDefaultTabContextSetting is not enabled (old settings page) keep
-    // the old behavior.
-    return true;
-  }
-}
-
 GlicInstanceImpl::EmbedderEntry& GlicInstanceImpl::BindTab(
     tabs::TabInterface* tab,
     GlicPinTrigger pin_trigger,
@@ -1568,7 +1552,7 @@ GlicInstanceImpl::EmbedderEntry& GlicInstanceImpl::BindTab(
       base::BindRepeating(&GlicInstanceImpl::OnBoundTabActivated,
                           weak_ptr_factory_.GetWeakPtr()));
 
-  if (pin_on_bind && ShouldPinOnBind()) {
+  if (pin_on_bind && ShouldPinOnBind(profile_)) {
     // Auto-pin on bind.
     GetSharingManagerInternal().PinTabs({tab->GetHandle()}, pin_trigger);
   }

@@ -421,8 +421,6 @@ class GlicInstanceImpl : public GlicInstance,
   void UpdateLastActiveTime(EmbedderKey key);
   bool ShouldShowInactiveSidePanel(const SidePanelShowOptions& options) const;
 
-  bool ShouldPinOnBind() const;
-
   // Idempotency helper: if the instance is hibernated
   // (!host_.webui_contents()), creates the WebUI container. No-op if contents
   // already exist.

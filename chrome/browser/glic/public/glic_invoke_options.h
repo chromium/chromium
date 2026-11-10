@@ -79,6 +79,7 @@ struct Floating {
   friend class GlicInstanceImpl;
   friend class GlicInstanceCoordinatorImpl;
   friend class GlicInvokeHandler;
+  friend class GlicInvokePreparationTest;
   Floating() = default;
 };
 

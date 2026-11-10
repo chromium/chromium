@@ -42,6 +42,7 @@
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
+#include "chrome/browser/glic/service/glic_invoke_preparation.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_coordinator_metrics.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
 #include "chrome/browser/glic/service/metrics/glic_invoke_metrics.h"
@@ -87,61 +88,6 @@ bool IsEligibleForHibernation(const GlicInstanceImpl* instance) {
   return !instance->IsHibernated() && !instance->IsActuating() &&
          !instance->HasActiveExperimentalTriggeringSession() &&
          !instance->IsShowing();
-}
-
-// Whether `target.live_mode_behavior` can have any effect on an invocation
-// targeting `target.surface`. Apart from `kFail`, these behaviors work by
-// choosing between a tab's side panel and the floaty, so they need a surface
-// that resolves to one of those up front. `LastActiveOrNew` instead resolves
-// to whichever surface the instance is already on, so nothing can steer it.
-bool CanLiveModeBehaviorTakeEffect(const Target& target) {
-  switch (target.live_mode_behavior) {
-    case LiveModeBehavior::kProceedInLiveMode:
-    case LiveModeBehavior::kFail:
-      return true;
-    case LiveModeBehavior::kForceSidePanelTextMode:
-      return !std::holds_alternative<Floating>(target.surface) &&
-             !std::holds_alternative<LastActiveOrNew>(target.surface);
-    case LiveModeBehavior::kForceFloatingTextMode:
-      return !std::holds_alternative<LastActiveOrNew>(target.surface);
-  }
-}
-
-// TODO(b/571546684): Move all special-case FRE selection into Chrome as
-// explicit FreOverrides and remove this exclusion list. Until then, skip
-// native FRE for experiments and invocation sources where the web client
-// overrides the default FRE while Chrome leaves `fre_override` as
-// `kUnspecified`.
-bool HasSpecialCaseWebFre(const GlicInvokeOptions& options) {
-  if (options.feature_mode.value_or(mojom::FeatureMode::kUnspecified) !=
-      mojom::FeatureMode::kUnspecified) {
-    return true;
-  }
-  if (base::FeatureList::IsEnabled(features::kGlicMessageFirstFre) ||
-      base::FeatureList::IsEnabled(features::kGlicActionFirstFRE)) {
-    return true;
-  }
-  switch (options.GetInvocationSource()) {
-    case mojom::InvocationSource::kNavigationCapture:
-    case mojom::InvocationSource::kUniversalCart:
-    case mojom::InvocationSource::kPasswordChange:
-    case mojom::InvocationSource::kIndigoPageAction:
-    case mojom::InvocationSource::kPromotionPage:
-      return true;
-    default:
-      return false;
-  }
-}
-
-// Returns whether an invocation should open in native FRE mode.
-// Eligible profiles get the Android native FRE when no entry point or
-// experiment asked for a specific web FRE. An explicit `fre_override` (for
-// example kTrustFirstInline or kTrustFirstClick) is kept, so those entry
-// points keep their web FRE.
-bool CanUseNativeFre(const GlicInvokeOptions& options, Profile* profile) {
-  return options.fre_override == mojom::FreOverride::kUnspecified &&
-         !HasSpecialCaseWebFre(options) &&
-         GlicEnabling::IsProfileEligibleForNativeFre(profile);
 }
 
 constexpr base::MemoryConsumerTraits kGlicInstanceCoordinatorTraits(
@@ -540,12 +486,8 @@ bool GlicInstanceCoordinatorImpl::MaybeInvoke(BrowserWindowInterface* bwi,
   }
 
   bool panel_closed = !IsPanelShowingForBrowser(*target_bwi);
-  bool fre_override_compatible =
-      !GlicEnabling::HasConsentedForProfile(profile_);
 
-  if (fre_override_compatible && panel_closed &&
-      (base::FeatureList::IsEnabled(features::kGlicMessageFirstFre) ||
-       base::FeatureList::IsEnabled(features::kGlicActionFirstFRE))) {
+  if (panel_closed && ShouldUseTrustFirstInlineFre(profile_)) {
     GlicInvokeOptions options(source);
     if (auto* active_tab = TabListInterface::From(target_bwi)->GetActiveTab()) {
       options.target = Target(*active_tab);
@@ -790,31 +732,16 @@ base::WeakPtr<GlicInstanceImpl> GlicInstanceCoordinatorImpl::InvokeInternal(
     }
   }
 
-  if (const auto* tab_handle =
-          std::get_if<tabs::TabHandle>(&options.target.surface)) {
-    if (tab_handle->raw_value() == tabs::TabHandle::NullValue) {
-      metrics->RecordError(GlicInvokeError::kInvalidTab);
-      notify_error(GlicInvokeError::kInvalidTab);
-      return nullptr;
-    }
-  }
-
   // Validate against the requested surface, before it gets resolved and
   // rewritten below: a behavior that could never take effect is a caller
   // configuration error, whether or not an instance happens to be live.
   // TODO(b/559214349): Expose a way for callers to ask up front whether an
   // invocation would be rejected here or by the `kFail` check below, so that
   // UI entry points can be disabled or hidden instead of failing on click.
-  if (!CanLiveModeBehaviorTakeEffect(options.target)) {
-    metrics->RecordError(GlicInvokeError::kInvalidConfiguration);
-    notify_error(GlicInvokeError::kInvalidConfiguration);
-    return nullptr;
-  }
-
-  if (options.RequiresContextClipboardPolicyCheck() &&
-      options.RequiresPromptClipboardPolicyCheck()) {
-    metrics->RecordError(GlicInvokeError::kInvalidConfiguration);
-    notify_error(GlicInvokeError::kInvalidConfiguration);
+  if (std::optional<GlicInvokeError> validation_error =
+          ValidateInvokeOptions(options)) {
+    metrics->RecordError(*validation_error);
+    notify_error(*validation_error);
     return nullptr;
   }
 
@@ -907,39 +834,21 @@ base::WeakPtr<GlicInstanceImpl> GlicInstanceCoordinatorImpl::InvokeInternal(
   // never in live mode, so this only affects invocations that joined an
   // existing conversation. The interaction mode is sticky once reported by the
   // client, so a hidden instance doesn't count as being in live mode.
-  const bool is_showing_live_mode =
-      instance->IsShowing() && instance->IsLiveMode();
-  if (is_showing_live_mode &&
-      options.target.live_mode_behavior == LiveModeBehavior::kFail) {
-    metrics->RecordError(GlicInvokeError::kLiveModeActive);
-    notify_error(GlicInvokeError::kLiveModeActive);
+  const base::expected<bool, GlicInvokeError> keep_in_floaty =
+      ResolveFloatyPreservation(
+          /*is_showing_live_mode=*/instance->IsShowing() &&
+              instance->IsLiveMode(),
+          /*is_floating=*/instance->IsActiveEmbedder(FloatingEmbedderKey{}),
+          options);
+  if (!keep_in_floaty.has_value()) {
+    metrics->RecordError(keep_in_floaty.error());
+    notify_error(keep_in_floaty.error());
     return nullptr;
-  }
-
-  const bool is_floating = instance->IsActiveEmbedder(FloatingEmbedderKey{});
-  bool keep_in_floaty = false;
-  if (is_showing_live_mode) {
-    switch (options.target.live_mode_behavior) {
-      case LiveModeBehavior::kProceedInLiveMode:
-        // Live mode runs in the floaty, so carrying on in live mode means
-        // leaving the conversation where it is.
-        keep_in_floaty = is_floating;
-        break;
-      case LiveModeBehavior::kForceFloatingTextMode:
-        // Unlike the above, this pulls the conversation into the floaty.
-        keep_in_floaty = true;
-        break;
-      case LiveModeBehavior::kForceSidePanelTextMode:
-      case LiveModeBehavior::kFail:
-        break;
-    }
-  } else {
-    keep_in_floaty = options.preserve_active_surface && is_floating;
   }
 
   // Leave the conversation in the floaty instead of pulling it into the
   // targeted tab's side panel.
-  if (keep_in_floaty && tab) {
+  if (*keep_in_floaty && tab) {
     // A `DefaultConversation` only resolves to a floating instance when the tab
     // is already bound to it. An explicitly targeted one may still need to
     // adopt the tab.
@@ -1360,9 +1269,7 @@ void GlicInstanceCoordinatorImpl::InvokeAndLogToggle(
   GlicInvokeOptions invoke_options(source);
   invoke_options.target.surface = std::move(surface);
   invoke_options.fre_completion_wait_mode = FreCompletionWaitMode::kNever;
-  if (!GlicEnabling::HasConsentedForProfile(profile_) &&
-      (base::FeatureList::IsEnabled(features::kGlicMessageFirstFre) ||
-       base::FeatureList::IsEnabled(features::kGlicActionFirstFRE))) {
+  if (ShouldUseTrustFirstInlineFre(profile_)) {
     invoke_options.fre_override = mojom::FreOverride::kTrustFirstInline;
   }
   auto weak_instance = InvokeInternal(std::nullopt, std::move(invoke_options),

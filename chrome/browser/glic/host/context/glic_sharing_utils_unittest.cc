@@ -4,10 +4,14 @@
 
 #include "chrome/browser/glic/host/context/glic_sharing_utils.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/enterprise/buildflags/buildflags.h"
+#include "components/prefs/pref_service.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
@@ -195,4 +199,35 @@ TEST_F(GlicSharingUtilsTest,
 }
 #endif  // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
 
+TEST_F(GlicSharingUtilsTest, ShouldPinOnBind_SettingDisabledDefaultsTrue) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kGlicDefaultTabContextSetting);
+
+  profile_.GetPrefs()->SetBoolean(prefs::kGlicDefaultTabContextEnabled, false);
+  EXPECT_TRUE(ShouldPinOnBind(&profile_));
+  EXPECT_TRUE(ShouldPinOnBind(nullptr));
+}
+
+TEST_F(GlicSharingUtilsTest, ShouldPinOnBind_SettingEnabledRespectsPref) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({features::kGlicDefaultTabContextSetting,
+                                 features::kGlicDefaultContextPinOnBind},
+                                {});
+
+  profile_.GetPrefs()->SetBoolean(prefs::kGlicDefaultTabContextEnabled, true);
+  EXPECT_TRUE(ShouldPinOnBind(&profile_));
+
+  profile_.GetPrefs()->SetBoolean(prefs::kGlicDefaultTabContextEnabled, false);
+  EXPECT_FALSE(ShouldPinOnBind(&profile_));
+  EXPECT_FALSE(ShouldPinOnBind(nullptr));
+}
+
+TEST_F(GlicSharingUtilsTest, ShouldPinOnBind_KillSwitchDisabledReturnsFalse) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({features::kGlicDefaultTabContextSetting},
+                                {features::kGlicDefaultContextPinOnBind});
+
+  profile_.GetPrefs()->SetBoolean(prefs::kGlicDefaultTabContextEnabled, true);
+  EXPECT_FALSE(ShouldPinOnBind(&profile_));
+}
 }  // namespace glic
