@@ -2134,7 +2134,7 @@
       "tiffanysong@google.com",
       "chrome-counter-abuse-alerts@google.com"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 165
   },
   {
     "name": "client-side-detection-server-model-for-scam-detection-ios",
