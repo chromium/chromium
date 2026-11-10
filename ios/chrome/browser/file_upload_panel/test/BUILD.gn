@@ -7,6 +7,8 @@ source_set("eg2_tests") {
   testonly = true
   sources = [ "file_upload_panel_egtest.mm" ]
   deps = [
+    "//base",
+    "//base/test:test_support",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
     "//ios/chrome/browser/download/model:eg_test_support+eg2",

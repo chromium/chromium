@@ -4,6 +4,7 @@
 
 #import <Photos/Photos.h>
 
+#import "base/ios/block_types.h"
 #import "base/ios/ios_util.h"
 #import "base/path_service.h"
 #import "base/strings/stringprintf.h"
@@ -38,6 +39,12 @@ constexpr char kFileInputElementID[] = "fileInput";
 // picker opens in a view where Cancel is only shown after navigating up the
 // directory hierarchy via Browse.
 constexpr base::TimeDelta kShortWaitForCancelButtonTimeout = base::Seconds(2);
+
+#if BUILDFLAG(IOS_CHROME_ENABLE_PROFILE_ALTERING_TESTS)
+// Timeout for adding or removing media in the photo library, including
+// accepting the system permission dialog if shown.
+constexpr base::TimeDelta kPhotoLibraryChangesTimeout = base::Seconds(30);
+#endif
 
 // Returns an HTML page with a file input element.
 std::string GetTestPageHtml(const std::string& input_element_attributes,
@@ -116,6 +123,9 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
 // Test case for the file upload panel UI.
 @interface FileUploadPanelTestCase : ChromeTestCase
 
+// Waits for the file input element to be present in the web view and taps it.
+- (void)tapInputElement;
+
 // Loads a test URL with the given `path`, waits for `text` to be visible in
 // the web view, and then taps the file input element.
 - (void)loadURLAndTapInputWithPath:(const std::string&)path
@@ -165,9 +175,11 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
       [MetricsAppInterface setupHistogramTester]);
   _isCameraAvailable = [UIImagePickerController
       isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera];
-  [self checkAndAcceptSystemDialog];
-  _isCameraAvailable = [UIImagePickerController
-      isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera];
+  if (!_isCameraAvailable) {
+    [self checkAndAcceptSystemDialog];
+    _isCameraAvailable = [UIImagePickerController
+        isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera];
+  }
 }
 
 - (void)tearDownHelper {
@@ -183,7 +195,15 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
   XCUIElement* alert = [[springboardApp
       descendantsMatchingType:XCUIElementTypeAlert] firstMatch];
   if ([alert waitForExistenceWithTimeout:1]) {
-    XCUIElement* allowButton = alert.buttons[@"Allow"].firstMatch;
+    // `'Allow'` and `'Allow Full Access'` accept photo library/camera
+    // permission prompts; `'Delete'` confirms the system deletion prompt shown
+    // by `[PHAssetChangeRequest deleteAssets:]` during teardown.
+    NSPredicate* acceptPredicate = [NSPredicate
+        predicateWithFormat:
+            @"label == 'Allow' || label == 'Allow Full Access' || label == "
+            @"'Delete'"];
+    XCUIElement* allowButton =
+        [[alert.buttons matchingPredicate:acceptPredicate] firstMatch];
     if (![allowButton exists]) {
       allowButton = [alert.buttons elementBoundByIndex:1];
     }
@@ -193,15 +213,31 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
   }
 }
 
+- (void)tapInputElement {
+  ElementSelector* selector =
+      [ElementSelector selectorWithElementID:kFileInputElementID];
+  [ChromeEarlGrey waitForWebStateContainingElement:selector];
+  NSError* tapError = nil;
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElement(selector)
+              error:&tapError];
+  if (tapError) {
+    // If `WKContentView` or WebKit's `GPUProcess` was idle when the synthetic
+    // tap arrived, the first tap only makes `WKContentView` first responder
+    // without dispatching a DOM click event (`TapWebElement` fails element
+    // verification without opening the file upload panel). Retry the tap once.
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+        performAction:chrome_test_util::TapWebElement(selector)];
+  }
+}
+
 - (void)loadURLAndTapInputWithPath:(const std::string&)path
                        waitForText:(const std::string&)text {
   GURL url = path.empty() ? self.testServer->base_url()
                           : self.testServer->GetURL(path);
   [ChromeEarlGrey loadURL:url];
   [ChromeEarlGrey waitForWebStateContainingText:text];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElement([ElementSelector
-                        selectorWithElementID:kFileInputElementID])];
+  [self tapInputElement];
 }
 
 // Taps on `element` using coordinates to bypass "isHittable" check.
@@ -335,7 +371,86 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
 
 #if BUILDFLAG(IOS_CHROME_ENABLE_PROFILE_ALTERING_TESTS)
 
-// Adds a video to the photo library.
+// Ensures that the test runner has read-write authorization for the shared
+// photo library, accepting the system permission dialog on SpringBoard if
+// needed.
+- (void)ensurePhotoLibraryReadWriteAuthorization {
+  __block PHAuthorizationStatus status =
+      [PHPhotoLibrary authorizationStatusForAccessLevel:PHAccessLevelReadWrite];
+  if (status != PHAuthorizationStatusNotDetermined) {
+    GREYAssertEqual(status, PHAuthorizationStatusAuthorized,
+                    @"Expected read-write photo library authorization.");
+    return;
+  }
+  __block BOOL authCompleted = NO;
+  [PHPhotoLibrary
+      requestAuthorizationForAccessLevel:PHAccessLevelReadWrite
+                                 handler:^(PHAuthorizationStatus newStatus) {
+                                   // `requestAuthorizationForAccessLevel:`
+                                   // invokes `handler` on an arbitrary
+                                   // background queue; hop to the main queue
+                                   // where `WaitUntilConditionOrTimeout` polls
+                                   // `authCompleted`.
+                                   dispatch_async(dispatch_get_main_queue(), ^{
+                                     status = newStatus;
+                                     authCompleted = YES;
+                                   });
+                                 }];
+  BOOL waitSucceeded = base::test::ios::WaitUntilConditionOrTimeout(
+      kPhotoLibraryChangesTimeout, ^{
+        if (authCompleted) {
+          return YES;
+        }
+        [self checkAndAcceptSystemDialog];
+        return authCompleted;
+      });
+  GREYAssertTrue(waitSucceeded,
+                 @"Timed out waiting for photo library authorization.");
+  GREYAssertEqual(status, PHAuthorizationStatusAuthorized,
+                  @"Expected read-write photo library authorization.");
+}
+
+// Performs `changes` on the shared photo library, accepting system dialogs on
+// SpringBoard when `shouldCheckSystemDialog` is YES, and asserts that the
+// operation succeeds.
+- (void)performPhotoLibraryChanges:(ProceduralBlock)changes
+           shouldCheckSystemDialog:(BOOL)shouldCheckSystemDialog {
+  [self ensurePhotoLibraryReadWriteAuthorization];
+  __block BOOL changesCompleted = NO;
+  __block BOOL changesSucceeded = NO;
+  __block NSError* error = nil;
+  [[PHPhotoLibrary sharedPhotoLibrary]
+         performChanges:changes
+      completionHandler:^(BOOL success, NSError* errorOut) {
+        // `performChanges:completionHandler:` invokes its completion handler
+        // on an arbitrary background queue; hop to the main queue where
+        // `WaitUntilConditionOrTimeout` polls `changesCompleted`.
+        dispatch_async(dispatch_get_main_queue(), ^{
+          changesSucceeded = success;
+          error = errorOut;
+          changesCompleted = YES;
+        });
+      }];
+
+  // Wait for the alert to appear and accept it, or for the changes to complete.
+  BOOL waitSucceeded = base::test::ios::WaitUntilConditionOrTimeout(
+      kPhotoLibraryChangesTimeout, ^{
+        if (changesCompleted) {
+          return YES;
+        }
+        if (shouldCheckSystemDialog) {
+          [self checkAndAcceptSystemDialog];
+        }
+        return changesCompleted;
+      });
+
+  GREYAssertTrue(waitSucceeded, @"Timed out performing photo library changes.");
+  chrome_test_util::GREYAssertErrorNil(error);
+  GREYAssertTrue(changesSucceeded, @"Failed to perform photo library changes.");
+}
+
+// Adds a video to the photo library and registers a teardown block to remove
+// it when the test ends.
 - (void)addVideoToPhotoLibrary {
   base::FilePath videoPath;
   base::PathService::Get(base::DIR_ASSETS, &videoPath);
@@ -345,34 +460,29 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
   NSURL* videoURL =
       [NSURL fileURLWithPath:base::SysUTF8ToNSString(videoPath.value())];
 
-  __block BOOL changesPerformed = NO;
-  __block NSError* error = nil;
-  [[PHPhotoLibrary sharedPhotoLibrary]
-      performChanges:^{
-        [PHAssetChangeRequest
+  __block NSString* createdIdentifier = nil;
+  [self
+      performPhotoLibraryChanges:^{
+        PHAssetChangeRequest* request = [PHAssetChangeRequest
             creationRequestForAssetFromVideoAtFileURL:videoURL];
+        request.creationDate = [NSDate date];
+        createdIdentifier =
+            [request.placeholderForCreatedAsset.localIdentifier copy];
       }
-      completionHandler:^(BOOL success, NSError* errorOut) {
-        changesPerformed = YES;
-        error = errorOut;
-      }];
-
-  // Wait for the alert to appear and accept it, or for the changes to complete.
-  // The alert might not appear if the permission was already granted.
-  BOOL success =
-      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(30), ^{
-        if (changesPerformed) {
-          return YES;
-        }
-        [self checkAndAcceptSystemDialog];
-        return changesPerformed;
-      });
-
-  GREYAssertTrue(success, @"Failed to add video to photo library: %@", error);
+         shouldCheckSystemDialog:NO];
+  if (createdIdentifier) {
+    NSArray<NSString*>* identifiersToDelete = @[ createdIdentifier ];
+    __weak __typeof(self) weakSelf = self;
+    [self addTeardownBlock:^{
+      [weakSelf removeAssetsFromPhotoLibrary:identifiersToDelete];
+    }];
+  }
+  GREYAssertNotNil(createdIdentifier, @"Failed to get created video ID.");
 }
 
-// Adds an image to the photo library.
-- (void)addImageToPhotoLibrary {
+// Adds `count` images to the photo library and registers a teardown block to
+// remove them when the test ends.
+- (void)addImagesToPhotoLibrary:(int)count {
   base::FilePath imagePath;
   base::PathService::Get(base::DIR_ASSETS, &imagePath);
   imagePath = imagePath.AppendASCII(
@@ -381,30 +491,46 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
   NSURL* imageURL =
       [NSURL fileURLWithPath:base::SysUTF8ToNSString(imagePath.value())];
 
-  __block BOOL changesPerformed = NO;
-  __block NSError* error = nil;
-  [[PHPhotoLibrary sharedPhotoLibrary]
-      performChanges:^{
-        [PHAssetChangeRequest
-            creationRequestForAssetFromImageAtFileURL:imageURL];
-      }
-      completionHandler:^(BOOL success, NSError* errorOut) {
-        changesPerformed = YES;
-        error = errorOut;
-      }];
-
-  // Wait for the alert to appear and accept it, or for the changes to complete.
-  // The alert might not appear if the permission was already granted.
-  BOOL success = base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForActionTimeout, ^{
-        if (changesPerformed) {
-          return YES;
+  NSMutableArray<NSString*>* createdIdentifiers = [NSMutableArray array];
+  [self
+      performPhotoLibraryChanges:^{
+        [createdIdentifiers removeAllObjects];
+        for (int i = 0; i < count; ++i) {
+          PHAssetChangeRequest* request = [PHAssetChangeRequest
+              creationRequestForAssetFromImageAtFileURL:imageURL];
+          request.creationDate = [NSDate date];
+          NSString* identifier =
+              request.placeholderForCreatedAsset.localIdentifier;
+          if (identifier) {
+            [createdIdentifiers addObject:identifier];
+          }
         }
-        [self checkAndAcceptSystemDialog];
-        return changesPerformed;
-      });
+      }
+         shouldCheckSystemDialog:NO];
+  NSArray<NSString*>* identifiersToDelete = [createdIdentifiers copy];
+  __weak __typeof(self) weakSelf = self;
+  [self addTeardownBlock:^{
+    [weakSelf removeAssetsFromPhotoLibrary:identifiersToDelete];
+  }];
+  GREYAssertEqual(createdIdentifiers.count, static_cast<NSUInteger>(count),
+                  @"Failed to get all created image IDs.");
+}
 
-  GREYAssertTrue(success, @"Failed to add image to photo library: %@", error);
+// Removes the assets with `identifiers` from the photo library.
+- (void)removeAssetsFromPhotoLibrary:(NSArray<NSString*>*)identifiers {
+  if (identifiers.count == 0) {
+    return;
+  }
+  [self ensurePhotoLibraryReadWriteAuthorization];
+  PHFetchResult<PHAsset*>* assets =
+      [PHAsset fetchAssetsWithLocalIdentifiers:identifiers options:nil];
+  GREYAssertEqual(assets.count, identifiers.count,
+                  @"Expected to find all added assets to delete.");
+  [self
+      performPhotoLibraryChanges:^{
+        [PHAssetChangeRequest deleteAssets:assets];
+      }
+         shouldCheckSystemDialog:YES];
 }
 
 #endif
@@ -499,9 +625,7 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
   chrome_test_util::GREYAssertErrorNil(error);
 
   // Tap the file input again to show the panel.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElement([ElementSelector
-                        selectorWithElementID:kFileInputElementID])];
+  [self tapInputElement];
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
                       chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
                           IDS_IOS_FILE_UPLOAD_PANEL_CHOOSE_FILES_ACTION_LABEL)];
@@ -809,14 +933,8 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
     EARL_GREY_TEST_SKIPPED(@"Camera not available on device, skipping.");
   }
 
-  GURL url = self.testServer->GetURL("/capture_user");
-  [ChromeEarlGrey loadURL:url];
-  [ChromeEarlGrey waitForWebStateContainingText:"File input with capture"];
-
-  // Tap the file input.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElement([ElementSelector
-                        selectorWithElementID:kFileInputElementID])];
+  [self loadURLAndTapInputWithPath:"/capture_user"
+                       waitForText:"File input with capture"];
 
   // Verify camera is shown by waiting for the camera view controller container.
   id<GREYMatcher> matcher =
@@ -854,14 +972,7 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
         @"skipping.");
   }
 
-  GURL url = self.testServer->GetURL("/directory");
-  [ChromeEarlGrey loadURL:url];
-  [ChromeEarlGrey waitForWebStateContainingText:""];
-
-  // Tap the file input to show the file picker.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElement([ElementSelector
-                        selectorWithElementID:kFileInputElementID])];
+  [self loadURLAndTapInputWithPath:"/directory" waitForText:""];
 
   // Interact with the out-of-process file picker.
   XCUIApplication* serviceApp = [[XCUIApplication alloc]
@@ -929,16 +1040,7 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
                                                      content:@"fake jpeg data"];
   [self waitForFileCountInDownloadsDirectory:1];
 
-  GURL url = self.testServer->GetURL("/directory");
-  [ChromeEarlGrey loadURL:url];
-  [ChromeEarlGrey
-      waitForWebStateContainingElement:
-          [ElementSelector selectorWithElementID:kFileInputElementID]];
-
-  // Tap the file input to show the file picker.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElement([ElementSelector
-                        selectorWithElementID:kFileInputElementID])];
+  [self loadURLAndTapInputWithPath:"/directory" waitForText:""];
 
   [self openFilePickerAndNavigateToDownloads];
 
@@ -1004,16 +1106,7 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
                                                      content:@"data2"];
   [self waitForFileCountInDownloadsDirectory:2];
 
-  GURL url = self.testServer->GetURL("/single");
-  [ChromeEarlGrey loadURL:url];
-  [ChromeEarlGrey
-      waitForWebStateContainingElement:
-          [ElementSelector selectorWithElementID:kFileInputElementID]];
-
-  // Tap the file input to show the file picker.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElement([ElementSelector
-                        selectorWithElementID:kFileInputElementID])];
+  [self loadURLAndTapInputWithPath:"/single" waitForText:"Single file input"];
 
   // Tap the "Choose File" action.
   [[EarlGrey selectElementWithMatcher:
@@ -1068,16 +1161,7 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
                                                      content:@"text data"];
   [self waitForFileCountInDownloadsDirectory:2];
 
-  GURL url = self.testServer->GetURL("/accept_image");
-  [ChromeEarlGrey loadURL:url];
-  [ChromeEarlGrey
-      waitForWebStateContainingElement:
-          [ElementSelector selectorWithElementID:kFileInputElementID]];
-
-  // Tap the file input to show the file picker.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElement([ElementSelector
-                        selectorWithElementID:kFileInputElementID])];
+  [self loadURLAndTapInputWithPath:"/accept_image" waitForText:""];
 
   // Tap the "Choose File" action.
   [[EarlGrey selectElementWithMatcher:
@@ -1120,16 +1204,7 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
                                                      content:@"video data"];
   [self waitForFileCountInDownloadsDirectory:2];
 
-  GURL url = self.testServer->GetURL("/accept_video");
-  [ChromeEarlGrey loadURL:url];
-  [ChromeEarlGrey
-      waitForWebStateContainingElement:
-          [ElementSelector selectorWithElementID:kFileInputElementID]];
-
-  // Tap the file input to show the file picker.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElement([ElementSelector
-                        selectorWithElementID:kFileInputElementID])];
+  [self loadURLAndTapInputWithPath:"/accept_video" waitForText:""];
 
   // Tap the "Choose File" action.
   [[EarlGrey selectElementWithMatcher:
@@ -1177,16 +1252,7 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
   }
   [self waitForFileCountInDownloadsDirectory:5];
 
-  GURL url = self.testServer->base_url();
-  [ChromeEarlGrey loadURL:url];
-  [ChromeEarlGrey
-      waitForWebStateContainingElement:
-          [ElementSelector selectorWithElementID:kFileInputElementID]];
-
-  // Tap the file input to show the file picker.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElement([ElementSelector
-                        selectorWithElementID:kFileInputElementID])];
+  [self loadURLAndTapInputWithPath:"" waitForText:"File input"];
 
   // Tap the "Choose File" action.
   [[EarlGrey selectElementWithMatcher:
@@ -1288,6 +1354,7 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
     EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
   }
 
+  [self addImagesToPhotoLibrary:1];
   [self loadURLAndTapInputWithPath:"" waitForText:"File input"];
 
   // Tap the "Photo Library" action.
@@ -1302,32 +1369,6 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
       [photosPickerApp waitForState:XCUIApplicationStateRunningForeground
                             timeout:30],
       @"Photo picker did not launch");
-
-  NSPredicate* imagePredicate =
-      [NSPredicate predicateWithFormat:@"label BEGINSWITH 'Photo'"];
-  XCUIElementQuery* images =
-      [photosPickerApp.images matchingPredicate:imagePredicate];
-
-  if (![images.firstMatch waitForExistenceWithTimeout:5]) {
-    // Close the picker to add the image.
-    [photosPickerApp.buttons[@"Cancel"] tap];
-
-    [self addImageToPhotoLibrary];
-    [self loadURLAndTapInputWithPath:"" waitForText:"File input"];
-
-    // Re-open picker.
-    [[EarlGrey selectElementWithMatcher:
-                   chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
-                       IDS_IOS_FILE_UPLOAD_PANEL_PHOTO_LIBRARY_ACTION_LABEL)]
-        performAction:grey_tap()];
-
-    GREYAssertTrue(
-        [photosPickerApp waitForState:XCUIApplicationStateRunningForeground
-                              timeout:30],
-        @"Photo picker did not launch");
-
-    images = [photosPickerApp.images matchingPredicate:imagePredicate];
-  }
 
   // Select a photo.
   XCUIElement* photo = [[photosPickerApp.images
@@ -1377,6 +1418,7 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
     EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
   }
 
+  [self addImagesToPhotoLibrary:2];
   [self loadURLAndTapInputWithPath:"" waitForText:"File input"];
 
   // Tap the "Photo Library" action.
@@ -1394,28 +1436,6 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
 
   XCUIElementQuery* images =
       [photosPickerApp.images matchingIdentifier:@"PXGGridLayout-Info"];
-
-  if (images.count < 2) {
-    // Close the picker to add the images.
-    [photosPickerApp.buttons[@"Cancel"] tap];
-
-    [self addImageToPhotoLibrary];
-    [self addImageToPhotoLibrary];
-    [self loadURLAndTapInputWithPath:"" waitForText:"File input"];
-
-    // Re-open picker.
-    [[EarlGrey selectElementWithMatcher:
-                   chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
-                       IDS_IOS_FILE_UPLOAD_PANEL_PHOTO_LIBRARY_ACTION_LABEL)]
-        performAction:grey_tap()];
-
-    GREYAssertTrue(
-        [photosPickerApp waitForState:XCUIApplicationStateRunningForeground
-                              timeout:30],
-        @"Photo picker did not launch");
-
-    images = [photosPickerApp.images matchingIdentifier:@"PXGGridLayout-Info"];
-  }
 
   // Select multiple photos.
   XCUIElement* photo1 = [images elementBoundByIndex:0];
@@ -1461,18 +1481,13 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
 }
 
 // Tests that picking a video from the photo picker logs the success metrics.
-// TODO(crbug.com/477857213): Flaky on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testPhotoPickerVideoSelection testPhotoPickerVideoSelection
-#else
-#define MAYBE_testPhotoPickerVideoSelection FLAKY_testPhotoPickerVideoSelection
-#endif
-- (void)MAYBE_testPhotoPickerVideoSelection {
+- (void)testPhotoPickerVideoSelection {
   // The file upload panel is only available on iOS 18.4+.
   if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
     EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
   }
 
+  [self addVideoToPhotoLibrary];
   [self loadURLAndTapInputWithPath:"" waitForText:"File input"];
 
   // Tap the "Photo Library" action.
@@ -1492,28 +1507,6 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
       [NSPredicate predicateWithFormat:@"label BEGINSWITH 'Video'"];
   XCUIElementQuery* videos =
       [photosPickerApp.images matchingPredicate:videoPredicate];
-
-  if (![videos.firstMatch waitForExistenceWithTimeout:5]) {
-    // Close the picker to add the video.
-    [photosPickerApp.buttons[@"Cancel"] tap];
-
-    [self addVideoToPhotoLibrary];
-    [self checkAndAcceptSystemDialog];
-    [self loadURLAndTapInputWithPath:"" waitForText:"File input"];
-
-    // Re-open picker.
-    [[EarlGrey selectElementWithMatcher:
-                   chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
-                       IDS_IOS_FILE_UPLOAD_PANEL_PHOTO_LIBRARY_ACTION_LABEL)]
-        performAction:grey_tap()];
-
-    GREYAssertTrue(
-        [photosPickerApp waitForState:XCUIApplicationStateRunningForeground
-                              timeout:30],
-        @"Photo picker did not launch");
-
-    videos = [photosPickerApp.images matchingPredicate:videoPredicate];
-  }
 
   XCUIElement* video = [videos firstMatch];
   GREYAssertTrue([video waitForExistenceWithTimeout:10],
