@@ -8,7 +8,8 @@
 #include <linux/input.h>
 #include <stddef.h>
 
-#include "base/compiler_specific.h"
+#include <array>
+
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
@@ -85,8 +86,8 @@ void PenTabletEventConverterEvdev::OnFileCanReadWithoutBlocking(int fd) {
                "PenTabletEventConverterEvdev::OnFileCanReadWithoutBlocking",
                "fd", fd);
 
-  input_event inputs[4];
-  ssize_t read_size = read(fd, inputs, sizeof(inputs));
+  std::array<input_event, 4> inputs;
+  ssize_t read_size = read(fd, inputs.data(), sizeof(inputs));
   if (read_size < 0) {
     if (errno == EINTR || errno == EAGAIN) {
       return;
@@ -102,11 +103,8 @@ void PenTabletEventConverterEvdev::OnFileCanReadWithoutBlocking(int fd) {
     return;
   }
 
-  CHECK_EQ(read_size % sizeof(inputs[0]), 0u, base::NotFatalUntil::M163);
-  // SAFETY: `read_size` is the number of bytes read from the file descriptor.
-  // It is capped by `sizeof(inputs)`, so it cannot overflow the buffer.
-  ProcessEvents(
-      UNSAFE_BUFFERS(base::span(inputs, read_size / sizeof(inputs[0]))));
+  CHECK_EQ(read_size % sizeof(input_event), 0u, base::NotFatalUntil::M163);
+  ProcessEvents(base::span(inputs).first(read_size / sizeof(input_event)));
 }
 
 bool PenTabletEventConverterEvdev::HasGraphicsTablet() const {

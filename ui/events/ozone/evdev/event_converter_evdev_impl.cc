@@ -9,8 +9,9 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/events/devices/stylus_state.h"
@@ -102,8 +103,8 @@ void EventConverterEvdevImpl::OnFileCanReadWithoutBlocking(int fd) {
   TRACE_EVENT1("evdev", "EventConverterEvdevImpl::OnFileCanReadWithoutBlocking",
                "fd", fd);
 
-  input_event inputs[4];
-  ssize_t read_size = read(fd, inputs, sizeof(inputs));
+  std::array<input_event, 4> inputs;
+  ssize_t read_size = read(fd, inputs.data(), sizeof(inputs));
   if (read_size < 0) {
     if (errno == EINTR || errno == EAGAIN)
       return;
@@ -116,8 +117,8 @@ void EventConverterEvdevImpl::OnFileCanReadWithoutBlocking(int fd) {
   if (!IsEnabled())
     return;
 
-  CHECK_EQ(read_size % sizeof(*inputs), 0u, base::NotFatalUntil::M163);
-  ProcessEvents(inputs, read_size / sizeof(*inputs));
+  CHECK_EQ(read_size % sizeof(input_event), 0u, base::NotFatalUntil::M163);
+  ProcessEvents(base::span(inputs).first(read_size / sizeof(input_event)));
 }
 
 KeyboardType EventConverterEvdevImpl::GetKeyboardType() const {
@@ -212,10 +213,9 @@ ui::StylusState EventConverterEvdevImpl::GetStylusSwitchState() {
                                                      : ui::StylusState::REMOVED;
 }
 
-void EventConverterEvdevImpl::ProcessEvents(const input_event* inputs,
-                                            int count) {
-  for (int i = 0; i < count; ++i) {
-    const input_event& input = UNSAFE_TODO(inputs[i]);
+void EventConverterEvdevImpl::ProcessEvents(
+    base::span<const input_event> inputs) {
+  for (const input_event& input : inputs) {
     switch (input.type) {
       case EV_MSC:
         if (input.code == MSC_SCAN)

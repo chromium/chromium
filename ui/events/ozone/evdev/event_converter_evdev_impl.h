@@ -9,6 +9,7 @@
 #include <ostream>
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/raw_ptr.h"
@@ -65,7 +66,7 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdevImpl
   std::vector<uint64_t> GetKeyboardKeyBits() const override;
   void SetBlockModifiers(bool block_modifiers) override;
 
-  void ProcessEvents(const struct input_event* inputs, int count);
+  void ProcessEvents(base::span<const struct input_event> inputs);
 
   std::ostream& DescribeForLog(std::ostream& os) const override;
 

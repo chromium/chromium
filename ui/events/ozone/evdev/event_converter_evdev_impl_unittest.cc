@@ -338,7 +338,7 @@ TEST_F(EventConverterEvdevImplTest, BlockTelephonyMicMuteKeyByDefault) {
       {{0, 0}, EV_SYN, SYN_REPORT, 0},
   };
 
-  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
+  dev->ProcessEvents(mock_kernel_queue);
   EXPECT_EQ(0u, size());
 }
 
@@ -355,7 +355,7 @@ TEST_F(EventConverterEvdevImplTest, KeyPress) {
       {{0, 0}, EV_SYN, SYN_REPORT, 0},
   };
 
-  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
+  dev->ProcessEvents(mock_kernel_queue);
   EXPECT_EQ(2u, size());
 
   ui::KeyEvent* event;
@@ -394,7 +394,7 @@ TEST_F(EventConverterEvdevImplTest, KeyRepeat) {
       {{0, 0}, EV_SYN, SYN_REPORT, 0},
   };
 
-  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
+  dev->ProcessEvents(mock_kernel_queue);
   EXPECT_EQ(2u, size());
 
   ui::KeyEvent* event;
@@ -414,7 +414,7 @@ TEST_F(EventConverterEvdevImplTest, KeyRepeat) {
 
 TEST_F(EventConverterEvdevImplTest, NoEvents) {
   ui::MockEventConverterEvdevImpl* dev = device();
-  dev->ProcessEvents(NULL, 0);
+  dev->ProcessEvents({});
   EXPECT_EQ(0u, size());
 }
 
@@ -439,7 +439,7 @@ TEST_F(EventConverterEvdevImplTest, KeyWithModifier) {
       {{0, 0}, EV_SYN, SYN_REPORT, 0},
   };
 
-  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
+  dev->ProcessEvents(mock_kernel_queue);
   EXPECT_EQ(4u, size());
 
   ui::KeyEvent* event;
@@ -498,7 +498,7 @@ TEST_F(EventConverterEvdevImplTest, KeyWithDuplicateModifier) {
       {{0, 0}, EV_SYN, SYN_REPORT, 0},
   };
 
-  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
+  dev->ProcessEvents(mock_kernel_queue);
   EXPECT_EQ(6u, size());
 
   ui::KeyEvent* event;
@@ -553,7 +553,7 @@ TEST_F(EventConverterEvdevImplTest, KeyWithLock) {
       {{0, 0}, EV_SYN, SYN_REPORT, 0},
   };
 
-  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
+  dev->ProcessEvents(mock_kernel_queue);
   EXPECT_EQ(2u, size());
 
   ui::KeyEvent* event;
@@ -582,7 +582,7 @@ TEST_F(EventConverterEvdevImplTest, MouseButton) {
       {{0, 0}, EV_SYN, SYN_REPORT, 0},
   };
 
-  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
+  dev->ProcessEvents(mock_kernel_queue);
   EXPECT_EQ(2u, size());
 
   ui::MouseEvent* event;
@@ -605,7 +605,7 @@ TEST_F(EventConverterEvdevImplTest, MouseMove) {
       {{0, 0}, EV_SYN, SYN_REPORT, 0},
   };
 
-  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
+  dev->ProcessEvents(mock_kernel_queue);
   EXPECT_EQ(1u, size());
 
   ui::MouseEvent* event;
@@ -626,7 +626,7 @@ TEST_F(EventConverterEvdevImplTest, UnmappedKeyPress) {
       {{0, 0}, EV_SYN, SYN_REPORT, 0},
   };
 
-  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
+  dev->ProcessEvents(mock_kernel_queue);
   EXPECT_EQ(0u, size());
 }
 
@@ -638,7 +638,7 @@ TEST_F(EventConverterEvdevImplTest, ShouldReleaseKeysOnUnplug) {
       {{0, 0}, EV_SYN, SYN_REPORT, 0},
   };
 
-  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
+  dev->ProcessEvents(mock_kernel_queue);
   EXPECT_EQ(1u, size());
 
   DestroyDevice();
@@ -663,7 +663,7 @@ TEST_F(EventConverterEvdevImplTest, ShouldReleaseKeysOnSynDropped) {
       {{0, 0}, EV_SYN, SYN_DROPPED, 0},
   };
 
-  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
+  dev->ProcessEvents(mock_kernel_queue);
   EXPECT_EQ(2u, size());
 
   ui::KeyEvent* event = dispatched_event(0);
@@ -683,7 +683,7 @@ TEST_F(EventConverterEvdevImplTest, ShouldReleaseKeysOnDisable) {
       {{0, 0}, EV_SYN, SYN_REPORT, 0},
   };
 
-  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
+  dev->ProcessEvents(mock_kernel_queue);
   EXPECT_EQ(1u, size());
 
   dev->SetEnabled(false);
@@ -716,7 +716,7 @@ TEST_F(EventConverterEvdevImplTest, SetAllowedKeys) {
     {{0, 0}, EV_KEY, SYN_REPORT, 0},
   };
 
-  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
+  dev->ProcessEvents(mock_kernel_queue);
 
   ASSERT_EQ(4u, size());
   ui::KeyEvent* event = dispatched_event(0);
@@ -736,7 +736,7 @@ TEST_F(EventConverterEvdevImplTest, SetAllowedKeys) {
   std::vector<ui::DomCode> allowed_keys;
   allowed_keys.push_back(ui::DomCode::POWER);
   dev->SetKeyFilter(true /* enable_filter */, allowed_keys);
-  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
+  dev->ProcessEvents(mock_kernel_queue);
 
   ASSERT_EQ(2u, size());
   event = dispatched_event(0);
@@ -748,7 +748,7 @@ TEST_F(EventConverterEvdevImplTest, SetAllowedKeys) {
 
   ClearDispatchedEvents();
   dev->SetKeyFilter(false /* enable_filter */, std::vector<ui::DomCode>());
-  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
+  dev->ProcessEvents(mock_kernel_queue);
 
   event = dispatched_event(0);
   EXPECT_EQ(ui::EventType::kKeyPressed, event->type());
@@ -778,7 +778,7 @@ TEST_F(EventConverterEvdevImplTest, SetAllowedKeysBlockedKeyPressed) {
     {{0, 0}, EV_SYN, SYN_REPORT, 0},
   };
 
-  dev->ProcessEvents(key_press, std::size(key_press));
+  dev->ProcessEvents(key_press);
   ASSERT_EQ(1u, size());
   ui::KeyEvent* event = dispatched_event(0);
   EXPECT_EQ(ui::EventType::kKeyPressed, event->type());
@@ -794,7 +794,7 @@ TEST_F(EventConverterEvdevImplTest, SetAllowedKeysBlockedKeyPressed) {
 
   // The real key release should be dropped, whenever it comes.
   ClearDispatchedEvents();
-  dev->ProcessEvents(key_release, std::size(key_release));
+  dev->ProcessEvents(key_release);
   ASSERT_EQ(0u, size());
 }
 
@@ -810,21 +810,21 @@ TEST_F(EventConverterEvdevImplTest, SetBlockModifiers) {
       {{0, 0}, EV_SYN, SYN_REPORT, 0},
   };
 
-  dev->ProcessEvents(key_press, std::size(key_press));
+  dev->ProcessEvents(key_press);
   ASSERT_EQ(1u, size());
   ui::KeyEvent* event = dispatched_event(0);
   EXPECT_EQ(ui::EventType::kKeyPressed, event->type());
 
-  dev->ProcessEvents(key_release, std::size(key_release));
+  dev->ProcessEvents(key_release);
   ASSERT_EQ(2u, size());
   event = dispatched_event(1);
   EXPECT_EQ(ui::EventType::kKeyReleased, event->type());
 
   dev->SetBlockModifiers(true);
 
-  dev->ProcessEvents(key_press, std::size(key_press));
+  dev->ProcessEvents(key_press);
   ASSERT_EQ(2u, size());
-  dev->ProcessEvents(key_release, std::size(key_release));
+  dev->ProcessEvents(key_release);
   ASSERT_EQ(2u, size());
 }
 
@@ -840,7 +840,7 @@ TEST_F(EventConverterEvdevImplTest, SetBlockModifiersWithModifierHeldDown) {
       {{0, 0}, EV_SYN, SYN_REPORT, 0},
   };
 
-  dev->ProcessEvents(key_press, std::size(key_press));
+  dev->ProcessEvents(key_press);
   ASSERT_EQ(1u, size());
   ui::KeyEvent* event = dispatched_event(0);
   EXPECT_EQ(ui::EventType::kKeyPressed, event->type());
@@ -851,7 +851,7 @@ TEST_F(EventConverterEvdevImplTest, SetBlockModifiersWithModifierHeldDown) {
   EXPECT_EQ(ui::EventType::kKeyReleased, event->type());
   EXPECT_EQ(ui::VKEY_CONTROL, event->key_code());
 
-  dev->ProcessEvents(key_release, std::size(key_release));
+  dev->ProcessEvents(key_release);
   ASSERT_EQ(2u, size());
 
   dev->SetBlockModifiers(false);
@@ -882,7 +882,7 @@ TEST_F(EventConverterEvdevImplTest, ShouldSwapMouseButtonsFromUserPreference) {
   ClearDispatchedEvents();
   GetInputController()->SetPrimaryButtonRight(device()->input_device().id,
                                               false);
-  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
+  dev->ProcessEvents(mock_kernel_queue);
   EXPECT_EQ(4u, size());
 
   ui::MouseEvent* event;
@@ -923,7 +923,7 @@ TEST_F(EventConverterEvdevImplTest, ShouldSwapMouseButtonsFromUserPreference) {
   ClearDispatchedEvents();
   GetInputController()->SetPrimaryButtonRight(device()->input_device().id,
                                               true);
-  dev->ProcessEvents(mock_kernel_queue2, std::size(mock_kernel_queue2));
+  dev->ProcessEvents(mock_kernel_queue2);
   EXPECT_EQ(4u, size());
 
   event = dispatched_mouse_event(0);
@@ -958,7 +958,7 @@ TEST_F(DeferDeviceSetUpEventConverterEvdevImplTest,
       {{0, 0}, EV_SYN, SYN_REPORT, 0},
   };
 
-  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
+  dev->ProcessEvents(mock_kernel_queue);
   EXPECT_EQ(0u, size());
 }
 
@@ -1003,7 +1003,7 @@ TEST_F(DeferDeviceSetUpEventConverterEvdevImplTest,
   };
   SetTestNowSeconds(621);
 
-  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
+  dev->ProcessEvents(mock_kernel_queue);
   ASSERT_EQ(2u, size());
 }
 
@@ -1023,7 +1023,7 @@ TEST_F(DeferDeviceSetUpEventConverterEvdevImplTest,
       {{0, 0}, EV_SYN, SYN_REPORT, 0},
   };
 
-  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
+  dev->ProcessEvents(mock_kernel_queue);
   histogram_tester_.ExpectUniqueSample(
       ui::kMicrophoneMuteToggleDevicesHistogramName,
       ui::MicrophoneMuteToggleDevices::kPhoneMuteOtherNotKeyboard, 1);
@@ -1045,7 +1045,7 @@ TEST_F(DeferDeviceSetUpEventConverterEvdevImplTest,
       {{0, 0}, EV_SYN, SYN_REPORT, 0},
   };
 
-  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
+  dev->ProcessEvents(mock_kernel_queue);
   histogram_tester_.ExpectUniqueSample(
       ui::kMicrophoneMuteToggleDevicesHistogramName,
       ui::MicrophoneMuteToggleDevices::kSystemMicrophoneMuteOtherNotKeyboard,
@@ -1068,7 +1068,7 @@ TEST_F(DeferDeviceSetUpEventConverterEvdevImplTest,
       {{0, 0}, EV_SYN, SYN_REPORT, 0},
   };
 
-  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
+  dev->ProcessEvents(mock_kernel_queue);
   histogram_tester_.ExpectUniqueSample(
       ui::kMicrophoneMuteToggleDevicesHistogramName,
       ui::MicrophoneMuteToggleDevices::
