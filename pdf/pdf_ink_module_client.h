@@ -33,10 +33,6 @@ namespace ink {
 class Stroke;
 }
 
-namespace ui {
-class Cursor;
-}
-
 namespace chrome_pdf {
 
 class PdfCaret;
@@ -127,9 +123,6 @@ class PdfInkModuleClient {
   // the `blink::WebMouseEvent` positions during stroking.
   virtual void Invalidate(const gfx::Rect& rect) {}
 
-  // Returns whether the page at `page_index` is visible or not.
-  virtual bool IsPageVisible(int page_index) = 0;
-
   // Returns whether `point` is within a selectable text area or a link area.
   // `point` must be in device coordinates.
   virtual bool IsSelectableTextOrLinkArea(const gfx::PointF& point) = 0;
@@ -150,10 +143,6 @@ class PdfInkModuleClient {
   // entire line at `point`. `point` must be in device coordinates.
   virtual void OnTextOrLinkAreaClick(const gfx::PointF& point,
                                      int click_count) {}
-
-  // Returns the 0-based page index for the given `point`. `point` must be on a
-  // page, otherwise returns -1. `point` must be in device coordinates.
-  virtual int PageIndexFromPoint(const gfx::PointF& point) = 0;
 
   // Asks the client to post `message`.
   virtual void PostMessage(base::DictValue message) {}
@@ -197,8 +186,8 @@ class PdfInkModuleClient {
   // of all text in the text annotation.
   virtual void UpdateTextActiveAndInvalidate(TextId id, bool active) {}
 
-  // Same as `PageIndexFromPoint()`, but `point` must be on a visible page,
-  // otherwise returns -1.
+  // Returns the 0-based page index for the given `point` if it is on a
+  // visible page, or -1 otherwise. `point` must be in device coordinates.
   virtual int VisiblePageIndexFromPoint(const gfx::PointF& point) = 0;
 };
 

@@ -383,10 +383,6 @@ class PdfViewWebPlugin::PdfInkModuleClientImpl : public PdfInkModuleClient {
     return plugin_->Invalidate(rect);
   }
 
-  bool IsPageVisible(int page_index) override {
-    return plugin_->engine_->IsPageVisible(page_index);
-  }
-
   bool IsSelectableTextOrLinkArea(const gfx::PointF& point) override {
     return plugin_->engine_->IsSelectableTextOrLinkArea(point);
   }
@@ -421,10 +417,6 @@ class PdfViewWebPlugin::PdfInkModuleClientImpl : public PdfInkModuleClient {
   void OnTextOrLinkAreaClick(const gfx::PointF& point,
                              int click_count) override {
     plugin_->engine_->OnTextOrLinkAreaClick(point, click_count);
-  }
-
-  int PageIndexFromPoint(const gfx::PointF& point) override {
-    return PageIndexFromPointImpl(point, /*must_be_visible=*/false);
   }
 
   void PostMessage(base::DictValue message) override {
@@ -483,13 +475,8 @@ class PdfViewWebPlugin::PdfInkModuleClientImpl : public PdfInkModuleClient {
   }
 
   int VisiblePageIndexFromPoint(const gfx::PointF& point) override {
-    return PageIndexFromPointImpl(point, /*must_be_visible=*/true);
-  }
-
- private:
-  int PageIndexFromPointImpl(const gfx::PointF& point, bool must_be_visible) {
     for (int i = 0; i < plugin_->engine_->GetNumberOfPages(); ++i) {
-      if (must_be_visible && !IsPageVisible(i)) {
+      if (!plugin_->engine_->IsPageVisible(i)) {
         continue;
       }
 
@@ -504,6 +491,7 @@ class PdfViewWebPlugin::PdfInkModuleClientImpl : public PdfInkModuleClient {
     return -1;
   }
 
+ private:
   const raw_ref<PdfViewWebPlugin> plugin_;
 };
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
