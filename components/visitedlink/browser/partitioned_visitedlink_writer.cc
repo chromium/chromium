@@ -6,8 +6,10 @@
 
 #include <algorithm>
 #include <array>
+#include <vector>
 
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -829,12 +831,10 @@ void PartitionedVisitedLinkWriter::AddPseudoPartitionedVisitedLinks(
 
 void PartitionedVisitedLinkWriter::DeletePseudoPartitionedVisitedLinks(
     const std::vector<GURL>& link_urls) {
-  std::vector<VisitedLink> links;
-  for (const auto& url : link_urls) {
-    // To construct the VisitedLink for lookup in the partitioned table, we
-    // use the URL in each of the three VisitedLink fields.
-    links.push_back(CreatePseudoPartitionedLink(url));
-  }
+  // To construct the VisitedLink for lookup in the partitioned table, we
+  // use the URL in each of the three VisitedLink fields.
+  std::vector<VisitedLink> links =
+      base::ToVector(link_urls, &CreatePseudoPartitionedLink);
   DeleteVisitedLinks(links);
 }
 

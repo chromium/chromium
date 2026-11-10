@@ -4,6 +4,9 @@
 
 #include "components/segmentation_platform/internal/signals/history_service_observer.h"
 
+#include <vector>
+
+#include "base/containers/to_vector.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/user_metrics.h"
 #include "base/task/single_thread_task_runner.h"
@@ -16,6 +19,7 @@
 #include "components/segmentation_platform/internal/signals/history_delegate_impl.h"
 #include "components/segmentation_platform/internal/signals/url_signal_handler.h"
 #include "components/segmentation_platform/internal/ukm_data_manager.h"
+#include "url/gurl.h"
 
 namespace segmentation_platform {
 
@@ -67,9 +71,8 @@ void HistoryServiceObserver::OnHistoryDeletions(
     url_signal_handler_->OnUrlsRemovedFromHistory({}, /*all_urls=*/true);
     return;
   }
-  std::vector<GURL> urls;
-  for (const auto& info : deletion_info.deleted_rows())
-    urls.push_back(info.url());
+  std::vector<GURL> urls =
+      base::ToVector(deletion_info.deleted_rows(), &history::URLRow::url);
   url_signal_handler_->OnUrlsRemovedFromHistory(urls, /*all_urls=*/false);
   history_delegate_->OnUrlRemoved(urls);
 }

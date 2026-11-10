@@ -481,6 +481,7 @@ VisitVector ExpireHistoryBackend::GetVisitsAndRedirectParents(
 void ExpireHistoryBackend::DeleteVisitRelatedInfo(const VisitVector& visits,
                                                   DeleteEffects* effects) {
   std::vector<DeletedVisit> deleted_visits;
+  deleted_visits.reserve(visits.size());
   for (const auto& visit : visits) {
     // Delete the visit itself.
     main_db_->DeleteVisit(visit);

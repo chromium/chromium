@@ -1956,15 +1956,13 @@ void HistoryService::NotifyVisitedLinksDeleted(
   if (!visit_delegate_) {
     return;
   }
-  std::vector<VisitedLink> partitioned_links;
-  for (const DeletedVisitedLink& link : links) {
-    net::SchemefulSite top_level_site(link.visited_link_row.top_level_url);
-    url::Origin frame_origin =
-        url::Origin::Create(link.visited_link_row.frame_url);
-    VisitedLink partitioned_link = {link.link_url, top_level_site,
-                                    frame_origin};
-    partitioned_links.push_back(partitioned_link);
-  }
+  std::vector<VisitedLink> partitioned_links =
+      base::ToVector(links, [](const DeletedVisitedLink& link) {
+        return VisitedLink{
+            link.link_url,
+            net::SchemefulSite(link.visited_link_row.top_level_url),
+            url::Origin::Create(link.visited_link_row.frame_url)};
+      });
   visit_delegate_->DeleteVisitedLinks(partitioned_links);
 }
 
