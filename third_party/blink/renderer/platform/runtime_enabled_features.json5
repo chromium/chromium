@@ -5790,6 +5790,14 @@
       status: "stable",
     },
     {
+      // Lets the outer line breaker, not the sub-line breakers for ruby base
+      // and annotations, decide when to apply `overflow-wrap` emergency
+      // breaking, so a ruby wraps at an earlier break opportunity first.
+      // https://crbug.com/580840306
+      name: "RubyOverflowWrapDeferToOuterLine",
+      status: "stable",
+    },
+    {
       // Allows a soft wrap after a preserved space (e.g. `white-space:
       // pre-wrap`) that is followed by a <ruby>, by ignoring the bidi
       // controls of ruby columns when checking break opportunities.

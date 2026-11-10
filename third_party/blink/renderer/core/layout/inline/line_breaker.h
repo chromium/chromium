@@ -162,6 +162,10 @@ class CORE_EXPORT LineBreaker {
   // out in one line.
   bool ShouldAutoWrap(const ComputedStyle& style) const;
 
+  // True if this is a sub-LineBreaker for <ruby> that doesn't retry with
+  // `override_break_anywhere_` by itself, but inherits it from the parent.
+  bool DefersBreakAnywhereToParent() const;
+
   enum class LineBreakState {
     // The line breaking is complete.
     kDone,

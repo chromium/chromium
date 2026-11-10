@@ -341,6 +341,13 @@ LayoutUnit MaxLineWidth(const LineInfo& base_line,
   return max;
 }
 
+bool HasBreakAnywhereIfOverflow(const LineInfo& line_info) {
+  return std::ranges::any_of(line_info.Results(),
+                             [](const InlineItemResult& item_result) {
+                               return item_result.break_anywhere_if_overflow;
+                             });
+}
+
 // Represents data associated with an `InlineItemResult`.
 class FastMinTextContext {
   STACK_ALLOCATED();
@@ -426,6 +433,11 @@ inline bool LineBreaker::ShouldAutoWrap(const ComputedStyle& style) const {
     return false;
   }
   return style.ShouldWrapLine();
+}
+
+inline bool LineBreaker::DefersBreakAnywhereToParent() const {
+  return parent_breaker_ &&
+         RuntimeEnabledFeatures::RubyOverflowWrapDeferToOuterLineEnabled();
 }
 
 void LineBreaker::UpdateAvailableWidth() {
@@ -865,7 +877,10 @@ void LineBreaker::PrepareNextLine(LineInfo* line_info) {
   //   <p>...<span>....</span></p>
   // When the line wraps in <span>, the 2nd line needs to start with the style
   // of the <span>.
-  override_break_anywhere_ = false;
+  // A sub-LineBreaker for <ruby> doesn't retry with `override_break_anywhere_`
+  // by itself. It inherits the state from the parent, which retries if needed.
+  override_break_anywhere_ = DefersBreakAnywhereToParent() &&
+                             parent_breaker_->override_break_anywhere_;
   disable_phrase_ = false;
   disable_score_line_break_ = false;
   disable_bisect_line_break_ = false;
@@ -1704,8 +1719,11 @@ LineBreaker::BreakResult LineBreaker::BreakText(
   // Use kNoResultIfOverflow if 'break-word' and we're trying to break normally
   // because if this item overflows, we will rewind and break line again. The
   // overflowing ShapeResult is not needed.
-  if (break_anywhere_if_overflow_ && !override_break_anywhere_)
+  // A sub-LineBreaker for <ruby> doesn't retry, and requires `shape_result`.
+  if (break_anywhere_if_overflow_ && !override_break_anywhere_ &&
+      !DefersBreakAnywhereToParent()) {
     breaker.SetNoResultIfOverflow();
+  }
 
 #if DCHECK_IS_ON()
   unsigned try_count = 0;
@@ -3501,6 +3519,13 @@ bool LineBreaker::HandleRuby(LineInfo* line_info, LayoutUnit retry_size) {
                           annotation_data, ruby_size, ruby_token, *line_info);
   result->ruby_column->start_ruby_break_token = ruby_token;
   result->may_break_inside = true;
+  if (RuntimeEnabledFeatures::RubyOverflowWrapDeferToOuterLineEnabled()) {
+    // Sub-LineBreakers don't retry for `overflow-wrap`. Let this LineBreaker
+    // retry instead. See `DefersBreakAnywhereToParent()`.
+    result->break_anywhere_if_overflow |=
+        HasBreakAnywhereIfOverflow(base_line_info) ||
+        std::ranges::any_of(annotation_line_list, HasBreakAnywhereIfOverflow);
+  }
   position_ += ruby_size;
 
   // If the base line and annotation lines have no BreakToken, we should add
@@ -4304,7 +4329,8 @@ void LineBreaker::HandleOverflow(LineInfo* line_info) {
     return;
   }
 
-  if (!override_break_anywhere_ && has_break_anywhere_if_overflow) {
+  if (!override_break_anywhere_ && has_break_anywhere_if_overflow &&
+      !DefersBreakAnywhereToParent()) {
     // Overflow occurred but `overflow-wrap` is set. Change the break type and
     // retry the line breaking.
     override_break_anywhere_ = true;
