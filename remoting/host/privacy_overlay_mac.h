@@ -62,8 +62,10 @@ class PrivacyOverlayMac : public DisconnectWindowBase {
 
   bool UpdateBackdropsForTesting() { return UpdateBackdrops(); }
 
+  bool is_rtl_for_testing() const { return is_rtl_; }
+
  private:
-  // Creates per-display backdrop windows.
+  // Initializes localized strings, icon, and per-display backdrop windows.
   bool BeginOverlay();
 
   // Closes and releases all overlay windows and stops input monitoring.
@@ -80,6 +82,15 @@ class PrivacyOverlayMac : public DisconnectWindowBase {
   // Re-entrancy guard preventing `EndOverlay()` from running twice.
   bool is_ending_ = false;
 
+  // True if the localized message or process UI language uses a right-to-left
+  // (RTL) reading layout.
+  bool is_rtl_ = false;
+
+  // Localized strings and icon displayed on the overlay backdrop windows.
+  NSString* __strong product_name_text_;
+  NSString* __strong sharing_with_text_;
+  NSImage* __strong icon_image_;
+
   // Topmost click-through backdrop windows, one per active `NSScreen`.
   NSMutableArray<PrivacyOverlayBackdropWindow*>* __strong backdrop_windows_;
 };
@@ -87,10 +98,20 @@ class PrivacyOverlayMac : public DisconnectWindowBase {
 }  // namespace remoting
 
 // Custom `NSView` that renders the branded Google Blue (or High Contrast)
-// privacy curtain background.
+// privacy curtain with centered icon, localized product title, and localized
+// sharing message.
 @interface PrivacyOverlayBackdropView : NSView
 
+@property(nonatomic, copy) NSString* titleText;
+@property(nonatomic, copy) NSString* sharingText;
+@property(nonatomic, strong) NSImage* iconImage;
+@property(nonatomic, assign) BOOL isRTL;
+
 - (void)setHighContrastOverrideForTesting:(std::optional<bool>)highContrast;
+
+// Computes the bounding rectangle of the wrapped `sharingText` in the view's
+// flipped coordinate system (`y = 0` at top) for `bounds`.
+- (NSRect)sharingTextRectForBounds:(NSRect)bounds;
 
 @end
 
