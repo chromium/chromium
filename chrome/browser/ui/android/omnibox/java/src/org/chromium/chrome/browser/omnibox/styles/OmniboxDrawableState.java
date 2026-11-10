@@ -121,6 +121,24 @@ public class OmniboxDrawableState {
     }
 
     /**
+     * Create OmniboxDrawableState representing a natively rasterized vector icon. The icon is
+     * rendered in a single color, tinted with the secondary icon tint, and displayed as a medium
+     * icon: native vector icon glyphs carry more internal padding than Android drawables, so the
+     * larger edge size brings their optical size in line with small XML icons.
+     *
+     * @param drawable Drawable of the rasterized vector icon
+     * @return newly created OmniboxDrawableState
+     */
+    public static OmniboxDrawableState forVectorIcon(Drawable drawable) {
+        return new OmniboxDrawableState(
+                drawable,
+                /* useRoundedCorners= */ false,
+                IconSize.MEDIUM,
+                /* allowTint= */ true,
+                Resources.ID_NULL);
+    }
+
+    /**
      * Create OmniboxDrawableState with dedicated image decoration.
      *
      * @param drawable dedicated drawable
