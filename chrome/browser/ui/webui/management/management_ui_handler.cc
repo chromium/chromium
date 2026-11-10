@@ -496,10 +496,8 @@ base::DictValue ManagementUIHandler::GetThreatProtectionInfo(Profile* profile) {
     const char* title;
     const char* permission;
   } analysis_connector_permissions[] = {
-#if !BUILDFLAG(IS_ANDROID)
       {enterprise_connectors::FILE_ATTACHED, kManagementOnFileAttachedEvent,
        kManagementOnFileAttachedVisibleData},
-#endif
       {enterprise_connectors::FILE_DOWNLOADED, kManagementOnFileDownloadedEvent,
        kManagementOnFileDownloadedVisibleData},
 #if !BUILDFLAG(IS_ANDROID)

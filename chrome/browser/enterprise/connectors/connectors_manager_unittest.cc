@@ -46,14 +46,12 @@ namespace enterprise_connectors {
 namespace {
 
 constexpr AnalysisConnector kAllAnalysisConnectors[] = {
-#if BUILDFLAG(IS_ANDROID)
-    AnalysisConnector::FILE_DOWNLOADED,
-#else
     AnalysisConnector::FILE_DOWNLOADED,
     AnalysisConnector::FILE_ATTACHED,
+#if !BUILDFLAG(IS_ANDROID)
     AnalysisConnector::BULK_DATA_ENTRY,
     AnalysisConnector::PRINT,
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 constexpr DataRegion kAllDataRegions[] = {

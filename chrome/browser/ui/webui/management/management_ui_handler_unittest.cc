@@ -1917,10 +1917,8 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
       base::UTF8ToUTF16(*info.FindString("description")));
 
   // When policies are set to uninteresting values, nothing to report.
-#if !BUILDFLAG(IS_ANDROID)
   SetConnectorPolicyValue(policy::key::kOnFileAttachedEnterpriseConnector, "[]",
                           chrome_policies);
-#endif
   SetConnectorPolicyValue(policy::key::kOnFileDownloadedEnterpriseConnector,
                           "[]", chrome_policies);
 #if !BUILDFLAG(IS_ANDROID)
@@ -1949,11 +1947,9 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
   // When policies are set to values that enable the feature without a usable DM
   // token, nothing to report.
   policy::SetDMTokenForTesting(policy::DMToken::CreateInvalidToken());
-#if !BUILDFLAG(IS_ANDROID)
   enterprise_connectors::test::SetAnalysisConnector(
       profile_->GetPrefs(), enterprise_connectors::FILE_ATTACHED,
       "[{\"service_provider\":\"google\"}]");
-#endif
   enterprise_connectors::test::SetAnalysisConnector(
       profile_->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED,
       "[{\"service_provider\":\"google\"}]");
@@ -1998,7 +1994,7 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
 #if BUILDFLAG(IS_CHROMEOS)
   const size_t expected_size = 9u;
 #elif BUILDFLAG(IS_ANDROID)
-  const size_t expected_size = 4u;
+  const size_t expected_size = 5u;
 #else
   const size_t expected_size = 8u;
 #endif
@@ -2008,14 +2004,12 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
       base::UTF8ToUTF16(*info.FindString("description")));
 
   base::ListValue expected_info;
-#if !BUILDFLAG(IS_ANDROID)
   {
     base::DictValue value;
     value.Set("title", kManagementOnFileAttachedEvent);
     value.Set("permission", kManagementOnFileAttachedVisibleData);
     expected_info.Append(std::move(value));
   }
-#endif
   {
     base::DictValue value;
     value.Set("title", kManagementOnFileDownloadedEvent);
