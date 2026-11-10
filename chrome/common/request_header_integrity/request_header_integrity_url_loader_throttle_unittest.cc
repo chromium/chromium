@@ -39,7 +39,7 @@ namespace request_header_integrity {
 class TestChromeCompaneroLoader : public ChromeCompaneroLoader {
  public:
   TestChromeCompaneroLoader() = default;
-  ~TestChromeCompaneroLoader() = default;
+  ~TestChromeCompaneroLoader() override = default;
 
   using ChromeCompaneroLoader::SetCacheForTesting;
 };

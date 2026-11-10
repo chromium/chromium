@@ -11,7 +11,9 @@
 
 #include "base/base_paths.h"
 #include "base/task/task_traits.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/power_monitor_test.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
@@ -31,7 +33,10 @@ namespace {
 // Test seams for the protected constructors. Neither class is meant to be
 // instantiated outside of tests, so the injection points are only reachable
 // through these subclasses.
-class TestChromeCompaneroLoader : public ChromeCompaneroLoader {};
+class TestChromeCompaneroLoader : public ChromeCompaneroLoader {
+ public:
+  using ChromeCompaneroLoader::SetCacheForTesting;
+};
 
 class TestChromeCompaneroHost : public ChromeCompaneroHost {
  public:
@@ -96,6 +101,56 @@ TEST_F(ChromeCompaneroHostTest, PrimesLoaderTokenCache) {
   EXPECT_THAT(header->value, testing::Not(testing::IsEmpty()));
   histograms.ExpectTotalCount(
       "Security.RequestHeaderIntegrity.TokenAvailableDelay", 1);
+}
+
+class ChromeCompaneroHostMockTimeTest : public testing::Test {
+ protected:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+};
+
+// The token is refreshed on resume without waiting for the refresh timer.
+TEST_F(ChromeCompaneroHostMockTimeTest, RefreshesLoaderTokenCacheOnResume) {
+  base::test::ScopedPowerMonitorTestSource power_monitor_source;
+  TestChromeCompaneroLoader loader;
+  auto host = std::make_unique<TestChromeCompaneroHost>(loader);
+  task_environment_.FastForwardBy(base::TimeDelta());
+  ASSERT_OK_AND_ASSIGN(const auto name_and_value,
+                       loader.GetHeaderNameAndValue());
+
+  constexpr char kPreSleepToken[] = "pre_sleep_token";
+  loader.SetCacheForTesting(name_and_value.name, kPreSleepToken);
+
+  power_monitor_source.Suspend();
+  power_monitor_source.Resume();
+  // Does not advance mock time, so the refresh timer cannot fire.
+  task_environment_.FastForwardBy(base::TimeDelta());
+  ASSERT_OK_AND_ASSIGN(const auto refreshed, loader.GetHeaderNameAndValue());
+  EXPECT_NE(kPreSleepToken, refreshed.value);
+}
+
+// Resuming restarts the refresh interval, so the pre-suspend timer schedule
+// does not trigger another refresh right after the one on resume.
+TEST_F(ChromeCompaneroHostMockTimeTest, RestartsRefreshTimerOnResume) {
+  base::test::ScopedPowerMonitorTestSource power_monitor_source;
+  TestChromeCompaneroLoader loader;
+  auto host = std::make_unique<TestChromeCompaneroHost>(loader);
+  task_environment_.FastForwardBy(base::TimeDelta());
+  ASSERT_OK_AND_ASSIGN(const auto name_and_value,
+                       loader.GetHeaderNameAndValue());
+
+  task_environment_.FastForwardBy(kTokenRefreshInterval * 3 / 4);
+  power_monitor_source.Suspend();
+  power_monitor_source.Resume();
+  task_environment_.FastForwardBy(base::TimeDelta());
+
+  // Passes the pre-suspend timer deadline, but not a full interval since
+  // resume.
+  constexpr char kResumeToken[] = "resume_token";
+  loader.SetCacheForTesting(name_and_value.name, kResumeToken);
+  task_environment_.FastForwardBy(kTokenRefreshInterval / 2);
+  ASSERT_OK_AND_ASSIGN(const auto current, loader.GetHeaderNameAndValue());
+  EXPECT_EQ(kResumeToken, current.value);
 }
 
 TEST_F(ChromeCompaneroHostTest, LibraryAbsentGracefulFailure) {

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/no_destructor.h"
+#include "base/power_monitor/power_observer.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -42,7 +43,7 @@ inline constexpr base::TimeDelta kTokenRefreshInterval = base::Minutes(1);
 // `SetMojoRemote()` and the destructor must run on the same sequence.
 // `GetHeaderNameAndValue()` and `BrowserProcessUpdateCachedToken()` may be
 // called from any sequence.
-class ChromeCompaneroLoader {
+class ChromeCompaneroLoader : public base::PowerSuspendObserver {
  public:
   static ChromeCompaneroLoader& GetInstance();
 
@@ -68,7 +69,7 @@ class ChromeCompaneroLoader {
   // that need an isolated instance to inject derive from this class instead of
   // constructing one directly.
   ChromeCompaneroLoader();
-  ~ChromeCompaneroLoader();
+  ~ChromeCompaneroLoader() override;
 
   // Sets the cached header name and value without requiring IPC. Only
   // reachable from derived test helpers.
@@ -77,6 +78,9 @@ class ChromeCompaneroLoader {
  private:
   friend class base::NoDestructor<ChromeCompaneroLoader>;
   friend class ChromeCompaneroLoaderTest;
+
+  // base::PowerSuspendObserver:
+  void OnResume() override;
 
   void RefreshValue();
   void OnValueReceived(network::mojom::HttpRequestHeaderKeyValuePairPtr result);

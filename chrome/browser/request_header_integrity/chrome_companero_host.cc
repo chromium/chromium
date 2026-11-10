@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/native_library.h"
 #include "base/path_service.h"
+#include "base/power_monitor/power_monitor.h"
 #include "base/scoped_native_library.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -228,11 +229,15 @@ ChromeCompaneroHost::ChromeCompaneroHost(ChromeCompaneroLoader& loader)
         FROM_HERE, kTokenRefreshInterval,
         base::BindRepeating(&ChromeCompaneroHost::RefreshBrowserToken,
                             base::Unretained(this)));
+    base::PowerMonitor::GetInstance()->AddPowerSuspendObserver(this);
   }
 }
 
 ChromeCompaneroHost::~ChromeCompaneroHost() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (backend_) {
+    base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
+  }
 }
 
 void ChromeCompaneroHost::BindReceiver(
@@ -252,6 +257,16 @@ void ChromeCompaneroHost::GetHeaderNameAndValue(
   } else {
     std::move(callback).Run(nullptr);
   }
+}
+
+void ChromeCompaneroHost::OnResume() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // The refresh timer may stand still while the system is suspended, but the
+  // token ages in wall-clock time. Refresh unconditionally: telling whether
+  // the suspend crossed the timer deadline would need the wall clock, and an
+  // extra refresh after a short suspend is cheap.
+  browser_token_refresh_timer_.Reset();
+  RefreshBrowserToken();
 }
 
 void ChromeCompaneroHost::RefreshBrowserToken() {

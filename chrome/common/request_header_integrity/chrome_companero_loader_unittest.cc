@@ -9,6 +9,9 @@
 #include <thread>
 #include <vector>
 
+#include "base/power_monitor/power_monitor.h"
+#include "base/test/gmock_expected_support.h"
+#include "base/test/power_monitor_test.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
 #include "chrome/common/request_header_integrity/chrome_companero.mojom.h"
@@ -24,6 +27,7 @@ class ChromeCompaneroLoaderTest : public testing::Test {
   static void ResetLoaderForTesting() {
     auto& instance = ChromeCompaneroLoader::GetInstance();
     DCHECK_CALLED_ON_VALID_SEQUENCE(instance.sequence_checker_);
+    base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(&instance);
     instance.companero_remote_.reset();
     instance.refresh_timer_.Stop();
     {
@@ -88,6 +92,7 @@ class RequestHeaderIntegrityRendererTest : public ChromeCompaneroLoaderTest {
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::ScopedPowerMonitorTestSource power_monitor_source_;
   base::test::ScopedCommandLine scoped_command_line_;
   MockChromeCompanero mock_companero_;
   mojo::Receiver<request_header_integrity::mojom::ChromeCompanero> receiver_{
@@ -159,6 +164,28 @@ TEST_F(RequestHeaderIntegrityRendererTest, MojoTimerRefresh) {
   auto result2 = ChromeCompaneroLoader::GetInstance().GetHeaderNameAndValue();
   ASSERT_TRUE(result2.has_value());
   EXPECT_EQ("token_2", result2->value);
+}
+
+// The token is refreshed on resume without waiting for the refresh timer.
+TEST_F(RequestHeaderIntegrityRendererTest, MojoRefreshOnResume) {
+  mock_companero_.set_response("X-Integrity-Header", "pre_sleep_token");
+
+  ChromeCompaneroLoader::GetInstance().SetMojoRemote(
+      receiver_.BindNewPipeAndPassRemote());
+  task_environment_.FastForwardBy(base::TimeDelta());
+  ASSERT_EQ(1, mock_companero_.call_count());
+
+  mock_companero_.set_response("X-Integrity-Header", "post_wake_token");
+  power_monitor_source_.Suspend();
+  power_monitor_source_.Resume();
+  // Less than one refresh interval, so the periodic timer cannot have fired.
+  task_environment_.FastForwardBy(kTokenRefreshInterval / 2);
+
+  EXPECT_EQ(2, mock_companero_.call_count());
+  ASSERT_OK_AND_ASSIGN(
+      const auto result,
+      ChromeCompaneroLoader::GetInstance().GetHeaderNameAndValue());
+  EXPECT_EQ("post_wake_token", result.value);
 }
 
 TEST_F(RequestHeaderIntegrityRendererTest,

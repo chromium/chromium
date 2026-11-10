@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/power_monitor/power_monitor.h"
 #include "chrome/common/request_header_integrity/chrome_companero.mojom.h"
 #include "content/public/common/content_switches.h"
 #include "net/http/http_util.h"
@@ -29,6 +30,7 @@ ChromeCompaneroLoader::ChromeCompaneroLoader()
 
 ChromeCompaneroLoader::~ChromeCompaneroLoader() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
 }
 
 void ChromeCompaneroLoader::SetMojoRemote(
@@ -37,6 +39,7 @@ void ChromeCompaneroLoader::SetMojoRemote(
   CHECK(base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kProcessType));
   companero_remote_.Bind(std::move(pending_remote));
+  base::PowerMonitor::GetInstance()->AddPowerSuspendObserver(this);
   RefreshValue();
 }
 
@@ -45,6 +48,12 @@ void ChromeCompaneroLoader::BrowserProcessUpdateCachedToken(std::string name,
   CHECK(!base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kProcessType));
   SetCachedToken(std::move(name), std::move(value));
+}
+
+void ChromeCompaneroLoader::OnResume() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // The refresh timer may stand still while the system is suspended.
+  RefreshValue();
 }
 
 void ChromeCompaneroLoader::RefreshValue() {

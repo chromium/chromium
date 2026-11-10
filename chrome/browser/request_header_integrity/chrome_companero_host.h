@@ -9,6 +9,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/power_monitor/power_observer.h"
 #include "base/sequence_checker.h"
 #include "base/task/task_traits.h"
 #include "base/threading/sequence_bound.h"
@@ -46,12 +47,12 @@ BASE_DECLARE_FEATURE_PARAM(base::TaskPriority, kTokenTaskPriority);
 // Native dynamic library loading (libchromecompaneros) and C function execution
 // are offloaded to base::ThreadPool via a SequenceBound Backend object to avoid
 // blocking the browser UI thread and to guarantee shutdown safety.
-class ChromeCompaneroHost {
+class ChromeCompaneroHost : public base::PowerSuspendObserver {
  public:
   ChromeCompaneroHost();
   ChromeCompaneroHost(const ChromeCompaneroHost&) = delete;
   ChromeCompaneroHost& operator=(const ChromeCompaneroHost&) = delete;
-  ~ChromeCompaneroHost();
+  ~ChromeCompaneroHost() override;
 
   // Binds an incoming Mojo receiver from a child process (typically via
   // BrowserInterfaceBroker).
@@ -71,6 +72,9 @@ class ChromeCompaneroHost {
 
  private:
   class Backend;
+
+  // base::PowerSuspendObserver:
+  void OnResume() override;
 
   void RefreshBrowserToken();
   void OnBrowserTokenReceived(
