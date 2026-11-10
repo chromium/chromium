@@ -53,6 +53,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/download_manager_delegate.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -377,11 +378,12 @@ void SavePackage::InitWithDownloadItem(
     DCHECK_EQ(SAVE_PAGE_TYPE_AS_ONLY_HTML, save_type_);
     wait_state_ = NET_FILES;
     // Add this item to waiting list.
-    waiting_item_queue_.push_back(base::WrapUnique(new SaveItem(
+    waiting_item_queue_.push_back(std::make_unique<SaveItem>(
         page_url_, Referrer(), page_isolation_info_,
         network::mojom::RequestMode::kNavigate, page_is_outermost_main_frame_,
         this, SaveFileCreateInfo::SAVE_FILE_FROM_NET, FrameTreeNodeId(),
-        page_->GetMainDocument().GetFrameTreeNodeId())));
+        page_->GetMainDocument().GetFrameTreeNodeId(),
+        page_->GetMainDocument().GetGlobalId()));
     all_save_items_count_ = 1;
     download_->SetTotalBytes(1);
 
@@ -977,12 +979,19 @@ void SavePackage::SaveNextFile(bool process_all_remaining_items) {
     DCHECK(requester_frame_tree_node_id);
     FrameTreeNode* requester_frame_tree_node =
         FrameTreeNode::GloballyFindByID(requester_frame_tree_node_id);
-    if (!requester_frame_tree_node) {
+    RenderFrameHostImpl* requester_frame =
+        RenderFrameHostImpl::FromID(save_item_ptr->requester_frame_host_id());
+    if (!requester_frame || !requester_frame_tree_node ||
+        requester_frame_tree_node->current_frame_host() != requester_frame) {
       save_item_ptr->Finish(0, /* is_success = */ false);
+      PutInProgressItemToSavedMap(save_item_ptr);
+      if (save_item_ptr->save_source() ==
+          SaveFileCreateInfo::SAVE_FILE_FROM_DOM) {
+        frame_tree_node_id_to_save_item_.erase(
+            save_item_ptr->frame_tree_node_id());
+      }
       continue;
     }
-    RenderFrameHostImpl* requester_frame =
-        requester_frame_tree_node->current_frame_host();
 
     mojo::PendingRemote<quarantine::mojom::Quarantine> quarantine;
     auto quarantine_callback =
@@ -1005,7 +1014,19 @@ void SavePackage::SaveNextFile(bool process_all_remaining_items) {
             ->GetStoragePartition(),
         this, download_manager_->GetApplicationClientIdForFileScanning(),
         std::move(quarantine));
-  } while (process_all_remaining_items && !waiting_item_queue_.empty());
+  } while (
+      !waiting_item_queue_.empty() &&
+      (process_all_remaining_items ||
+       (!in_process_count() && waiting_item_queue_.front()->save_source() !=
+                                   SaveFileCreateInfo::SAVE_FILE_FROM_DOM)));
+
+  if (!in_process_count()) {
+    if (!waiting_item_queue_.empty()) {
+      DoSavingProcess();
+    } else {
+      CheckFinish();
+    }
+  }
 }
 
 int SavePackage::PercentComplete() {
@@ -1100,6 +1121,8 @@ void SavePackage::GetSerializedHtmlWithLocalLinks() {
 
     FrameTreeNode* frame_tree_node = frame_tree->FindByID(frame_tree_node_id);
     if (frame_tree_node &&
+        frame_tree_node->current_frame_host()->GetGlobalId() ==
+            save_item->requester_frame_host_id() &&
         IsSavableFrame(frame_tree_node->current_frame_host())) {
       // Ask the frame for HTML to be written to the associated SaveItem.
       GetSerializedHtmlWithLocalLinksForFrame(frame_tree_node);
@@ -1302,10 +1325,11 @@ void SavePackage::GetSavableResourceLinks() {
 
   // Enqueue the main frame separately (because this frame won't show up in any
   // of GetsSavableResourceLinks callbacks).
-  FrameTreeNode* main_frame_tree_node =
-      static_cast<RenderFrameHostImpl*>(&page_->GetMainDocument())
-          ->frame_tree_node();
-  EnqueueFrame(FrameTreeNodeId(),  // No container.
+  RenderFrameHostImpl* main_frame =
+      static_cast<RenderFrameHostImpl*>(&page_->GetMainDocument());
+  FrameTreeNode* main_frame_tree_node = main_frame->frame_tree_node();
+  EnqueueFrame(main_frame->GetGlobalId(),
+               FrameTreeNodeId(),  // No container.
                main_frame_tree_node->frame_tree_node_id(),
                main_frame_tree_node->current_url());
   all_save_items_count_ = 1;
@@ -1324,8 +1348,8 @@ void SavePackage::SavableResourceLinksResponse(
   FrameTreeNodeId container_frame_tree_node_id =
       sender->frame_tree_node()->frame_tree_node_id();
   for (const GURL& u : resources_list) {
-    EnqueueSavableResource(container_frame_tree_node_id, u,
-                           referrer.To<content::Referrer>());
+    EnqueueSavableResource(sender->GetGlobalId(), container_frame_tree_node_id,
+                           u, referrer.To<content::Referrer>());
   }
   for (auto& subframe : subframes) {
     FrameTreeNode* subframe_ftn = sender->FindAndVerifyChild(
@@ -1337,7 +1361,12 @@ void SavePackage::SavableResourceLinksResponse(
       continue;
     }
 
-    EnqueueFrame(container_frame_tree_node_id,
+    GlobalRenderFrameHostId target_frame_host_id;
+    if (subframe_ftn->current_frame_host()) {
+      target_frame_host_id = subframe_ftn->current_frame_host()->GetGlobalId();
+    }
+
+    EnqueueFrame(target_frame_host_id, container_frame_tree_node_id,
                  subframe_ftn->frame_tree_node_id(), subframe->original_url);
   }
 
@@ -1345,6 +1374,7 @@ void SavePackage::SavableResourceLinksResponse(
 }
 
 SaveItem* SavePackage::CreatePendingSaveItem(
+    GlobalRenderFrameHostId requester_frame_host_id,
     FrameTreeNodeId container_frame_tree_node_id,
     FrameTreeNodeId save_item_frame_tree_node_id,
     const GURL& url,
@@ -1356,18 +1386,21 @@ SaveItem* SavePackage::CreatePendingSaveItem(
   // TODO(crbug.com/41485695): Populate the correct site isolation and fetch
   // mode per-resource.
   const net::IsolationInfo isolation_info;
-  SaveItem* save_item = new SaveItem(
+  auto save_item = std::make_unique<SaveItem>(
       url, sanitized_referrer, isolation_info,
       network::mojom::RequestMode::kNavigate, false, this, save_source,
-      save_item_frame_tree_node_id, container_frame_tree_node_id);
-  waiting_item_queue_.push_back(base::WrapUnique(save_item));
+      save_item_frame_tree_node_id, container_frame_tree_node_id,
+      requester_frame_host_id);
+  SaveItem* save_item_ptr = save_item.get();
+  waiting_item_queue_.push_back(std::move(save_item));
 
   frame_tree_node_id_to_contained_save_items_[container_frame_tree_node_id]
-      .push_back(save_item);
-  return save_item;
+      .push_back(save_item_ptr);
+  return save_item_ptr;
 }
 
 void SavePackage::CreatePendingSaveItemDeduplicatingByUrl(
+    GlobalRenderFrameHostId requester_frame_host_id,
     FrameTreeNodeId container_frame_tree_node_id,
     FrameTreeNodeId save_item_frame_tree_node_id,
     const GURL& url,
@@ -1384,13 +1417,14 @@ void SavePackage::CreatePendingSaveItemDeduplicatingByUrl(
     frame_tree_node_id_to_contained_save_items_[container_frame_tree_node_id]
         .push_back(it->second);
   } else {
-    url_to_save_item_[url] = CreatePendingSaveItem(container_frame_tree_node_id,
-                                                   save_item_frame_tree_node_id,
-                                                   url, referrer, save_source);
+    url_to_save_item_[url] = CreatePendingSaveItem(
+        requester_frame_host_id, container_frame_tree_node_id,
+        save_item_frame_tree_node_id, url, referrer, save_source);
   }
 }
 
 void SavePackage::EnqueueSavableResource(
+    GlobalRenderFrameHostId requester_frame_host_id,
     FrameTreeNodeId container_frame_tree_node_id,
     const GURL& url,
     const Referrer& referrer) {
@@ -1399,17 +1433,18 @@ void SavePackage::EnqueueSavableResource(
     return;
 
   CreatePendingSaveItemDeduplicatingByUrl(
-      container_frame_tree_node_id, FrameTreeNodeId(), url, referrer,
-      SaveFileCreateInfo::SAVE_FILE_FROM_NET);
+      requester_frame_host_id, container_frame_tree_node_id, FrameTreeNodeId(),
+      url, referrer, SaveFileCreateInfo::SAVE_FILE_FROM_NET);
 }
 
-void SavePackage::EnqueueFrame(FrameTreeNodeId container_frame_tree_node_id,
+void SavePackage::EnqueueFrame(GlobalRenderFrameHostId requester_frame_host_id,
+                               FrameTreeNodeId container_frame_tree_node_id,
                                FrameTreeNodeId frame_tree_node_id,
                                const GURL& frame_original_url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   SaveItem* save_item = CreatePendingSaveItem(
-      container_frame_tree_node_id, frame_tree_node_id, frame_original_url,
-      Referrer(), SaveFileCreateInfo::SAVE_FILE_FROM_DOM);
+      requester_frame_host_id, container_frame_tree_node_id, frame_tree_node_id,
+      frame_original_url, Referrer(), SaveFileCreateInfo::SAVE_FILE_FROM_DOM);
   DCHECK(save_item);
   frame_tree_node_id_to_save_item_[frame_tree_node_id] = save_item;
 }

@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "content/browser/download/save_types.h"
 #include "content/public/browser/frame_tree_node_id.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/common/referrer.h"
 #include "net/base/isolation_info.h"
 #include "services/network/public/cpp/request_mode.h"
@@ -38,7 +39,8 @@ class SaveItem {
            SavePackage* package,
            SaveFileCreateInfo::SaveFileSource save_source,
            FrameTreeNodeId frame_tree_node_id,
-           FrameTreeNodeId container_frame_tree_node_id);
+           FrameTreeNodeId container_frame_tree_node_id,
+           GlobalRenderFrameHostId requester_frame_host_id);
 
   SaveItem(const SaveItem&) = delete;
   SaveItem& operator=(const SaveItem&) = delete;
@@ -71,6 +73,9 @@ class SaveItem {
   FrameTreeNodeId frame_tree_node_id() const { return frame_tree_node_id_; }
   FrameTreeNodeId container_frame_tree_node_id() const {
     return container_frame_tree_node_id_;
+  }
+  GlobalRenderFrameHostId requester_frame_host_id() const {
+    return requester_frame_host_id_;
   }
   int64_t received_bytes() const { return received_bytes_; }
   bool has_final_name() const { return !full_path_.empty(); }
@@ -106,6 +111,12 @@ class SaveItem {
   // save item represents the main frame, which obviously doesn't have a
   // containing/parent frame).
   FrameTreeNodeId container_frame_tree_node_id_;
+
+  // ID of the RenderFrameHost on whose behalf the save request will be issued.
+  // Corresponds to the document committed at `container_frame_tree_node_id_`
+  // (when `save_source_` is `SAVE_FILE_FROM_NET`) or `frame_tree_node_id_`
+  // (when `save_source_` is `SAVE_FILE_FROM_DOM`) when this item was created.
+  const GlobalRenderFrameHostId requester_frame_host_id_;
 
   // Current received bytes.
   int64_t received_bytes_;

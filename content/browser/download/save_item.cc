@@ -11,6 +11,7 @@
 #include "content/browser/download/save_file_manager.h"
 #include "content/browser/download/save_package.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 
 namespace content {
 
@@ -33,7 +34,8 @@ SaveItem::SaveItem(const GURL& url,
                    SavePackage* package,
                    SaveFileCreateInfo::SaveFileSource save_source,
                    FrameTreeNodeId frame_tree_node_id,
-                   FrameTreeNodeId container_frame_tree_node_id)
+                   FrameTreeNodeId container_frame_tree_node_id,
+                   GlobalRenderFrameHostId requester_frame_host_id)
     : save_item_id_(GetNextSaveItemId()),
       url_(url),
       referrer_(referrer),
@@ -42,6 +44,7 @@ SaveItem::SaveItem(const GURL& url,
       is_outermost_main_frame_(is_outermost_main_frame),
       frame_tree_node_id_(frame_tree_node_id),
       container_frame_tree_node_id_(container_frame_tree_node_id),
+      requester_frame_host_id_(requester_frame_host_id),
       received_bytes_(0),
       state_(WAIT_START),
       is_success_(false),

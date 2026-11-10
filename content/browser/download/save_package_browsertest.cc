@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/download/save_package.h"
+
+#include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -9,20 +12,27 @@
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/browser/download/download_manager_impl.h"
-#include "content/browser/download/save_package.h"
+#include "content/browser/download/save_item.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_manager.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
+#include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_download_manager_delegate.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom.h"
+#include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 
 namespace content {
 
@@ -248,6 +258,26 @@ IN_PROC_BROWSER_TEST_F(SavePackageBrowserTest, DownloadItemCanceled) {
   RunAndCancelSavePackageDownload(SAVE_PAGE_TYPE_AS_MHTML, false);
 }
 
+IN_PROC_BROWSER_TEST_F(SavePackageBrowserTest, SaveHTMLOnly) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL(kTestFile);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  auto* download_manager = static_cast<DownloadManagerImpl*>(
+      shell()->web_contents()->GetBrowserContext()->GetDownloadManager());
+  auto delegate = std::make_unique<TestShellDownloadManagerDelegate>(
+      SAVE_PAGE_TYPE_AS_ONLY_HTML);
+  delegate->download_dir_ = save_dir_.GetPath();
+  auto* old_delegate = download_manager->GetDelegate();
+  download_manager->SetDelegate(delegate.get());
+
+  base::RunLoop run_loop;
+  SavePackageFinishedObserver finished_observer(download_manager,
+                                                run_loop.QuitClosure());
+  shell()->web_contents()->OnSavePage();
+  run_loop.Run();
+  download_manager->SetDelegate(old_delegate);
+}
+
 // Create a SavePackage and reload the page. This tests that when the
 // Reload destroys the primary Page SavePackage's ContinueSaveInfo
 // will not crash with a destroyed Page reference.
@@ -273,6 +303,107 @@ IN_PROC_BROWSER_TEST_F(SavePackageBrowserTest, Reload) {
   shell()->web_contents()->GetController().Reload(content::ReloadType::NORMAL,
                                                   false /* check_for_repost */);
   download_manager->SetDelegate(old_delegate);
+}
+
+class SavePackageSitePerProcessBrowserTest : public ContentBrowserTest {
+ public:
+  SavePackageSitePerProcessBrowserTest() = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContentBrowserTest::SetUpCommandLine(command_line);
+    IsolateAllSitesForTesting(command_line);
+  }
+
+  void SetUpOnMainThread() override {
+    ContentBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+ protected:
+  WebContentsImpl* web_contents() {
+    return static_cast<WebContentsImpl*>(shell()->web_contents());
+  }
+
+  RenderFrameHostImpl* current_frame_host(FrameTreeNode* ftn) {
+    return ftn->current_frame_host();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(SavePackageSitePerProcessBrowserTest,
+                       IgnoreSubresourceAfterContainerNavigation) {
+  GURL main_url(
+      embedded_test_server()->GetURL("a.com", "/page_with_iframe.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  ASSERT_EQ(1u, root->child_count());
+  FrameTreeNode* child = root->child_at(0);
+
+  auto save_package =
+      base::WrapRefCounted(new SavePackage(web_contents()->GetPrimaryPage()));
+
+  GlobalRenderFrameHostId child_rfh_id =
+      current_frame_host(child)->GetGlobalId();
+  GURL resource_url(
+      embedded_test_server()->GetURL("b.com", "/isolated/secret.txt"));
+
+  save_package->wait_state_ = SavePackage::WaitState::RESOURCES_LIST;
+  save_package->number_of_frames_pending_response_ = 2;
+  std::vector<GURL> resources = {resource_url};
+  save_package->SavableResourceLinksResponse(
+      current_frame_host(child), resources, blink::mojom::Referrer::New(),
+      std::vector<blink::mojom::SavableSubframePtr>());
+  save_package->all_save_items_count_ = 1;
+
+  ASSERT_EQ(1u, save_package->waiting_item_queue_.size());
+  SaveItem* queued_item = save_package->waiting_item_queue_.front().get();
+  EXPECT_EQ(child_rfh_id, queued_item->requester_frame_host_id());
+
+  GURL cross_site_url(embedded_test_server()->GetURL("c.com", "/title1.html"));
+  EXPECT_TRUE(
+      NavigateToURLFromRenderer(current_frame_host(child), cross_site_url));
+  EXPECT_NE(child_rfh_id, current_frame_host(child)->GetGlobalId());
+
+  save_package->SaveNextFile(/*process_all_remaining_items=*/false);
+
+  EXPECT_TRUE(save_package->waiting_item_queue_.empty());
+  EXPECT_TRUE(save_package->in_progress_items_.empty());
+  EXPECT_EQ(1u, save_package->saved_failed_items_.size());
+}
+
+IN_PROC_BROWSER_TEST_F(SavePackageSitePerProcessBrowserTest,
+                       IgnoreSubframeAfterNavigation) {
+  GURL main_url(
+      embedded_test_server()->GetURL("a.com", "/page_with_iframe.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  ASSERT_EQ(1u, root->child_count());
+  FrameTreeNode* child = root->child_at(0);
+
+  auto save_package =
+      base::WrapRefCounted(new SavePackage(web_contents()->GetPrimaryPage()));
+
+  GlobalRenderFrameHostId original_child_rfh_id =
+      current_frame_host(child)->GetGlobalId();
+
+  save_package->EnqueueFrame(original_child_rfh_id, root->frame_tree_node_id(),
+                             child->frame_tree_node_id(), child->current_url());
+  save_package->all_save_items_count_ = 1;
+  EXPECT_EQ(1u, save_package->waiting_item_queue_.size());
+
+  GURL cross_site_url(embedded_test_server()->GetURL("c.com", "/title1.html"));
+  EXPECT_TRUE(
+      NavigateToURLFromRenderer(current_frame_host(child), cross_site_url));
+  EXPECT_NE(original_child_rfh_id, current_frame_host(child)->GetGlobalId());
+
+  save_package->wait_state_ = SavePackage::WaitState::HTML_DATA;
+  save_package->GetSerializedHtmlWithLocalLinks();
+
+  EXPECT_EQ(0, save_package->number_of_frames_pending_response_);
+  save_package->all_save_items_count_ =
+      save_package->waiting_item_queue_.size();
 }
 
 }  // namespace content
