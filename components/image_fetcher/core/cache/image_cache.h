@@ -108,9 +108,9 @@ class ImageCache : public base::RefCounted<ImageCache> {
   // Reconcile what's on disk against what's in metadata. Any mismatches will
   // result in eviction.
   void RunReconciliation();
-  void ReconcileMetadataKeys(std::vector<std::string> md_keys);
+  void ReconcileMetadataKeys(std::optional<std::vector<std::string>> md_keys);
   void ReconcileDataKeys(std::vector<std::string> md_keys,
-                         std::vector<std::string> data_keys);
+                         std::optional<std::vector<std::string>> data_keys);
 
   bool initialization_attempted_ = false;
   // Set after both initialization callbacks run, even if a store failed.

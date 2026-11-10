@@ -40,8 +40,8 @@ class ImageDataStore {
   // Deletes the image data for the `key`.
   virtual void DeleteImage(const std::string& key) = 0;
 
-  // Returns all the key this store has.
-  virtual void GetAllKeys(KeysCallback callback) = 0;
+  // Returns all keys, or no list if enumeration fails.
+  virtual void GetAllKeys(StoreKeysCallback callback) = 0;
 };
 }  // namespace image_fetcher
 

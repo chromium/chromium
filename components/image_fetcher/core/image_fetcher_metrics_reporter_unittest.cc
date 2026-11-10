@@ -51,6 +51,31 @@ class ImageFetcherMetricsReporterTest : public testing::Test {
   base::HistogramTester histogram_tester_;
 };
 
+TEST_F(ImageFetcherMetricsReporterTest, ReportCacheResult) {
+  for (auto result : {
+           ImageFetcherCacheResult::kDataStoreInitializationSucceeded,
+           ImageFetcherCacheResult::kDataStoreInitializationFailed,
+           ImageFetcherCacheResult::kDataStoreReadSucceeded,
+           ImageFetcherCacheResult::kDataStoreReadNotFound,
+           ImageFetcherCacheResult::kDataStoreReadFailed,
+           ImageFetcherCacheResult::kDataStoreWriteSucceeded,
+           ImageFetcherCacheResult::kDataStoreWriteFailed,
+           ImageFetcherCacheResult::kDataStoreDeleteSucceeded,
+           ImageFetcherCacheResult::kDataStoreDeleteFailed,
+           ImageFetcherCacheResult::kMetadataStoreInitializationSucceeded,
+           ImageFetcherCacheResult::kMetadataStoreInitializationFailed,
+           ImageFetcherCacheResult::kMetadataStoreReadSucceeded,
+           ImageFetcherCacheResult::kMetadataStoreReadMiss,
+           ImageFetcherCacheResult::kMetadataStoreReadFailed,
+           ImageFetcherCacheResult::kMetadataStoreUpdateSucceeded,
+           ImageFetcherCacheResult::kMetadataStoreUpdateFailed,
+       }) {
+    ImageFetcherMetricsReporter::ReportCacheResult(result);
+    histogram_tester().ExpectBucketCount("ImageFetcher.CacheResult", result, 1);
+  }
+  histogram_tester().ExpectTotalCount("ImageFetcher.CacheResult", 16);
+}
+
 TEST_F(ImageFetcherMetricsReporterTest, TestReportEvent) {
   ImageFetcherMetricsReporter::ReportEvent(kUmaClientName,
                                            ImageFetcherEvent::kCacheHit);

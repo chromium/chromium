@@ -5,6 +5,7 @@
 #include "components/image_fetcher/core/cache/image_metadata_store_leveldb.h"
 
 #include <map>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -15,6 +16,7 @@
 #include "base/test/test_future.h"
 #include "components/image_fetcher/core/cache/image_store_types.h"
 #include "components/image_fetcher/core/cache/proto/cached_image_metadata.pb.h"
+#include "components/image_fetcher/core/image_fetcher_metrics_reporter.h"
 #include "components/leveldb_proto/testing/fake_db.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,6 +32,7 @@ namespace {
 constexpr char kImageKey[] = "http://cat.org/cat.jpg";
 constexpr char kOtherImageKey[] = "http://cat.org/dog.jpg";
 constexpr int kImageDataLength = 5;
+constexpr char kCacheResultHistogram[] = "ImageFetcher.CacheResult";
 
 }  // namespace
 
@@ -146,6 +149,10 @@ class CachedImageFetcherImageMetadataStoreLevelDBTest : public testing::Test {
 
   MOCK_METHOD(void, OnInitialized, (), ());
   MOCK_METHOD(void, OnKeysReturned, (std::vector<std::string>), ());
+  MOCK_METHOD(void,
+              OnStoreKeysReturned,
+              (std::optional<std::vector<std::string>>),
+              ());
   MOCK_METHOD(void, OnStoreOperationComplete, (bool), ());
   MOCK_METHOD(void,
               OnImageMetadataLoaded,
@@ -168,6 +175,129 @@ TEST_F(CachedImageFetcherImageMetadataStoreLevelDBTest, Initialize) {
   EXPECT_FALSE(metadata_store()->IsInitialized());
   InitializeDatabase();
   EXPECT_TRUE(metadata_store()->IsInitialized());
+  histogram_tester().ExpectBucketCount(
+      kCacheResultHistogram,
+      ImageFetcherCacheResult::kMetadataStoreInitializationSucceeded, 1);
+}
+
+TEST_F(CachedImageFetcherImageMetadataStoreLevelDBTest,
+       ReportsInitializationFailure) {
+  CreateDatabase();
+  EXPECT_CALL(*this, OnInitialized());
+  metadata_store()->Initialize(base::BindOnce(
+      &CachedImageFetcherImageMetadataStoreLevelDBTest::OnInitialized,
+      base::Unretained(this)));
+
+  db()->InitStatusCallback(leveldb_proto::Enums::InitStatus::kError);
+
+  histogram_tester().ExpectBucketCount(
+      kCacheResultHistogram,
+      ImageFetcherCacheResult::kMetadataStoreInitializationFailed, 1);
+}
+
+TEST_F(CachedImageFetcherImageMetadataStoreLevelDBTest, ReportsLoadFailure) {
+  CreateDatabase();
+  InitializeDatabase();
+  EXPECT_CALL(*this, OnImageMetadataLoaded(_));
+  metadata_store()->LoadImageMetadata(
+      kImageKey,
+      base::BindOnce(&CachedImageFetcherImageMetadataStoreLevelDBTest::
+                         OnImageMetadataLoaded,
+                     base::Unretained(this)));
+
+  db()->LoadCallback(false);
+
+  histogram_tester().ExpectBucketCount(
+      kCacheResultHistogram, ImageFetcherCacheResult::kMetadataStoreReadFailed,
+      1);
+}
+
+TEST_F(CachedImageFetcherImageMetadataStoreLevelDBTest, ReportsSaveFailure) {
+  CreateDatabase();
+  InitializeDatabase();
+  metadata_store()->SaveImageMetadata(kImageKey, kImageDataLength,
+                                      /*needs_transcoding=*/false,
+                                      /*expiration_interval=*/std::nullopt);
+
+  db()->UpdateCallback(false);
+
+  histogram_tester().ExpectBucketCount(
+      kCacheResultHistogram,
+      ImageFetcherCacheResult::kMetadataStoreUpdateFailed, 1);
+}
+
+TEST_F(CachedImageFetcherImageMetadataStoreLevelDBTest, ReportsDeleteFailure) {
+  PrepareDatabase(true);
+  metadata_store()->DeleteImageMetadata(kImageKey);
+
+  db()->UpdateCallback(false);
+
+  histogram_tester().ExpectBucketCount(
+      kCacheResultHistogram,
+      ImageFetcherCacheResult::kMetadataStoreUpdateFailed, 1);
+}
+
+TEST_F(CachedImageFetcherImageMetadataStoreLevelDBTest,
+       ReportsLastUsedTimeReadFailure) {
+  PrepareDatabase(true);
+  metadata_store()->UpdateImageMetadata(kImageKey);
+
+  db()->LoadCallback(false);
+
+  histogram_tester().ExpectBucketCount(
+      kCacheResultHistogram, ImageFetcherCacheResult::kMetadataStoreReadFailed,
+      1);
+}
+
+TEST_F(CachedImageFetcherImageMetadataStoreLevelDBTest,
+       ReportsLastUsedTimeWriteFailure) {
+  PrepareDatabase(true);
+  metadata_store()->UpdateImageMetadata(kImageKey);
+  db()->LoadCallback(true);
+
+  db()->UpdateCallback(false);
+
+  histogram_tester().ExpectBucketCount(
+      kCacheResultHistogram,
+      ImageFetcherCacheResult::kMetadataStoreUpdateFailed, 1);
+}
+
+TEST_F(CachedImageFetcherImageMetadataStoreLevelDBTest,
+       ReportsLoadKeysFailure) {
+  CreateDatabase();
+  InitializeDatabase();
+  EXPECT_CALL(*this, OnStoreKeysReturned(testing::Eq(std::nullopt)));
+  metadata_store()->GetAllKeys(base::BindOnce(
+      &CachedImageFetcherImageMetadataStoreLevelDBTest::OnStoreKeysReturned,
+      base::Unretained(this)));
+
+  db()->LoadKeysCallback(false);
+
+  histogram_tester().ExpectBucketCount(
+      kCacheResultHistogram, ImageFetcherCacheResult::kMetadataStoreReadFailed,
+      1);
+}
+
+TEST_F(CachedImageFetcherImageMetadataStoreLevelDBTest,
+       ReportsMissingMetadataAsCacheMiss) {
+  CreateDatabase();
+  InitializeDatabase();
+  EXPECT_CALL(*this, OnImageMetadataLoaded(_));
+  metadata_store()->LoadImageMetadata(
+      kImageKey,
+      base::BindOnce(&CachedImageFetcherImageMetadataStoreLevelDBTest::
+                         OnImageMetadataLoaded,
+                     base::Unretained(this)));
+  db()->LoadCallback(true);
+  metadata_store()->UpdateImageMetadata(kImageKey);
+  db()->LoadCallback(true);
+
+  histogram_tester().ExpectBucketCount(
+      kCacheResultHistogram, ImageFetcherCacheResult::kMetadataStoreReadMiss,
+      2);
+  histogram_tester().ExpectBucketCount(
+      kCacheResultHistogram, ImageFetcherCacheResult::kMetadataStoreReadFailed,
+      0);
 }
 
 TEST_F(CachedImageFetcherImageMetadataStoreLevelDBTest, SaveBeforeInit) {
@@ -211,6 +341,10 @@ TEST_F(CachedImageFetcherImageMetadataStoreLevelDBTest, Save) {
                                       expiration_interval);
   AssertDataPresent(kImageKey, kImageDataLength, clock()->Now(), clock()->Now(),
                     /* needs_transcoding */ true, expiration_interval);
+  db()->UpdateCallback(true);
+  histogram_tester().ExpectBucketCount(
+      kCacheResultHistogram,
+      ImageFetcherCacheResult::kMetadataStoreUpdateSucceeded, 1);
 }
 
 TEST_F(CachedImageFetcherImageMetadataStoreLevelDBTest, DeleteBeforeInit) {
@@ -308,10 +442,9 @@ TEST_F(CachedImageFetcherImageMetadataStoreLevelDBTest,
 TEST_F(CachedImageFetcherImageMetadataStoreLevelDBTest, GetAllKeysBeforeInit) {
   PrepareDatabase(false);
 
-  // A GC call before the db is initialized should be ignore.
-  EXPECT_CALL(*this, OnKeysReturned(std::vector<std::string>()));
+  EXPECT_CALL(*this, OnStoreKeysReturned(testing::Eq(std::nullopt)));
   metadata_store()->GetAllKeys(base::BindOnce(
-      &CachedImageFetcherImageMetadataStoreLevelDBTest::OnKeysReturned,
+      &CachedImageFetcherImageMetadataStoreLevelDBTest::OnStoreKeysReturned,
       base::Unretained(this)));
   RunUntilIdle();
 }
@@ -322,12 +455,11 @@ TEST_F(CachedImageFetcherImageMetadataStoreLevelDBTest, GetAllKeys) {
                                       /* needs_transcoding */ false,
                                       /* expiration_interval */ std::nullopt);
 
-  // A GC call before the db is initialized should be ignore.
-  EXPECT_CALL(
-      *this,
-      OnKeysReturned(std::vector<std::string>({kImageKey, kOtherImageKey})));
+  const auto expected_keys =
+      std::make_optional(std::vector<std::string>{kImageKey, kOtherImageKey});
+  EXPECT_CALL(*this, OnStoreKeysReturned(expected_keys));
   metadata_store()->GetAllKeys(base::BindOnce(
-      &CachedImageFetcherImageMetadataStoreLevelDBTest::OnKeysReturned,
+      &CachedImageFetcherImageMetadataStoreLevelDBTest::OnStoreKeysReturned,
       base::Unretained(this)));
   db()->LoadKeysCallback(true);
 }
@@ -338,10 +470,9 @@ TEST_F(CachedImageFetcherImageMetadataStoreLevelDBTest, GetAllKeysLoadFailed) {
                                       /* needs_transcoding */ false,
                                       /* expiration_interval */ std::nullopt);
 
-  // A GC call before the db is initialized should be ignore.
-  EXPECT_CALL(*this, OnKeysReturned(std::vector<std::string>({})));
+  EXPECT_CALL(*this, OnStoreKeysReturned(testing::Eq(std::nullopt)));
   metadata_store()->GetAllKeys(base::BindOnce(
-      &CachedImageFetcherImageMetadataStoreLevelDBTest::OnKeysReturned,
+      &CachedImageFetcherImageMetadataStoreLevelDBTest::OnStoreKeysReturned,
       base::Unretained(this)));
   db()->LoadKeysCallback(false);
 }
@@ -495,6 +626,9 @@ TEST_F(CachedImageFetcherImageMetadataStoreLevelDBTest,
           base::Unretained(this)));
   db()->LoadCallback(false);
   ASSERT_TRUE(IsDataPresent(kImageKey));
+  histogram_tester().ExpectBucketCount(
+      kCacheResultHistogram, ImageFetcherCacheResult::kMetadataStoreReadFailed,
+      1);
 }
 
 TEST_F(CachedImageFetcherImageMetadataStoreLevelDBTest,
@@ -509,6 +643,9 @@ TEST_F(CachedImageFetcherImageMetadataStoreLevelDBTest,
   db()->LoadCallback(true);
   db()->UpdateCallback(false);
   // Update failed only simulates the callback, not the actual data behavior.
+  histogram_tester().ExpectBucketCount(
+      kCacheResultHistogram,
+      ImageFetcherCacheResult::kMetadataStoreUpdateFailed, 1);
 }
 
 TEST_F(CachedImageFetcherImageMetadataStoreLevelDBTest, LoadImageMetadata) {
@@ -524,6 +661,9 @@ TEST_F(CachedImageFetcherImageMetadataStoreLevelDBTest, LoadImageMetadata) {
                          OnImageMetadataLoaded,
                      base::Unretained(this)));
   db()->LoadCallback(true);
+  histogram_tester().ExpectBucketCount(
+      kCacheResultHistogram,
+      ImageFetcherCacheResult::kMetadataStoreReadSucceeded, 1);
 }
 
 }  // namespace image_fetcher

@@ -4,6 +4,8 @@
 
 #include "components/image_fetcher/core/cache/image_data_store_disk.h"
 
+#include <algorithm>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -17,7 +19,7 @@
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "build/build_config.h"
+#include "components/image_fetcher/core/image_fetcher_metrics_reporter.h"
 
 using base::File;
 using base::FileEnumerator;
@@ -43,9 +45,13 @@ InitializationStatus InitializeImpl(FilePath storage_path) {
   // existing directory, so check for links after it runs.
   if (base::CreateDirectoryAndGetError(storage_path, &error) &&
       !IsStoragePathLink(storage_path)) {
+    ImageFetcherMetricsReporter::ReportCacheResult(
+        ImageFetcherCacheResult::kDataStoreInitializationSucceeded);
     return InitializationStatus::INITIALIZED;
   }
 
+  ImageFetcherMetricsReporter::ReportCacheResult(
+      ImageFetcherCacheResult::kDataStoreInitializationFailed);
   DVLOG(1) << "Initialization failed.";
   return InitializationStatus::INIT_FAILURE;
 }
@@ -53,17 +59,32 @@ InitializationStatus InitializeImpl(FilePath storage_path) {
 base::FilePath BuildFilePath(const FilePath& storage_path,
                              const std::string& key,
                              bool needs_transcoding) {
-  if (needs_transcoding)
+  if (needs_transcoding) {
     return storage_path.AppendASCII(kNeedsTranscodingPrefix + key);
+  }
   return storage_path.AppendASCII(key);
+}
+
+bool IsValidKey(const std::string& key) {
+  // ImageCache supplies Base32 hashes; disk-store tests also use simple
+  // filenames. Reject path separators and filesystem metacharacters.
+  if (key.empty() || !std::ranges::all_of(key, [](char c) {
+        return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') ||
+               (c >= '0' && c <= '9') || c == '_' || c == '-';
+      })) {
+    return false;
+  }
+  return true;
 }
 
 void SaveImageImpl(FilePath storage_path,
                    const std::string& key,
                    std::string data,
                    bool needs_transcoding) {
-  if (IsStoragePathLink(storage_path)) {
-    DVLOG(1) << "Storage path is a symbolic link.";
+  if (IsStoragePathLink(storage_path) || !IsValidKey(key)) {
+    ImageFetcherMetricsReporter::ReportCacheResult(
+        ImageFetcherCacheResult::kDataStoreWriteFailed);
+    DVLOG(1) << "Storage path or image key is invalid.";
     return;
   }
 
@@ -73,7 +94,12 @@ void SaveImageImpl(FilePath storage_path,
   // Mac, iOS) and is ignored on Windows.
   File file(file_path,
             File::FLAG_CREATE_ALWAYS | File::FLAG_WRITE | File::FLAG_NO_FOLLOW);
-  if (!file.IsValid() || !file.WriteAndCheck(0, base::as_byte_span(data))) {
+  const bool write_succeeded =
+      file.IsValid() && file.WriteAndCheck(0, base::as_byte_span(data));
+  ImageFetcherMetricsReporter::ReportCacheResult(
+      write_succeeded ? ImageFetcherCacheResult::kDataStoreWriteSucceeded
+                      : ImageFetcherCacheResult::kDataStoreWriteFailed);
+  if (!write_succeeded) {
     DVLOG(1) << "WriteFile failed.";
     file.Close();
     base::DeleteFile(file_path);
@@ -84,6 +110,9 @@ void SaveImageImpl(FilePath storage_path,
     // Attempt to delete the image data there that needs transcoding.
     bool success = base::DeleteFile(
         BuildFilePath(storage_path, key, /* needs_transcoding */ true));
+    ImageFetcherMetricsReporter::ReportCacheResult(
+        success ? ImageFetcherCacheResult::kDataStoreDeleteSucceeded
+                : ImageFetcherCacheResult::kDataStoreDeleteFailed);
     if (!success) {
       DVLOG(1) << "Deleting the transcoded file failed.";
     }
@@ -93,42 +122,64 @@ void SaveImageImpl(FilePath storage_path,
 std::string LoadImageImpl(FilePath storage_path,
                           const std::string& key,
                           bool needs_transcoding) {
-  if (IsStoragePathLink(storage_path)) {
-    return std::string();
+  if (IsStoragePathLink(storage_path) || !IsValidKey(key)) {
+    ImageFetcherMetricsReporter::ReportCacheResult(
+        ImageFetcherCacheResult::kDataStoreReadFailed);
+    return "";
   }
 
   FilePath file_path = BuildFilePath(storage_path, key, needs_transcoding);
 
+  // Open explicitly to distinguish a cache miss from other file errors.
   // FLAG_NO_FOLLOW maps to O_NOFOLLOW on POSIX and is ignored on Windows.
   File file(file_path,
             File::FLAG_OPEN | File::FLAG_READ | File::FLAG_NO_FOLLOW);
   if (!file.IsValid()) {
-    return std::string();
+    // A missing path can be an absent image or its storage directory. Checking
+    // the directory here would add a filesystem query to every cache miss.
+    ImageFetcherMetricsReporter::ReportCacheResult(
+        file.error_details() == File::FILE_ERROR_NOT_FOUND
+            ? ImageFetcherCacheResult::kDataStoreReadNotFound
+            : ImageFetcherCacheResult::kDataStoreReadFailed);
+    return "";
   }
 
   base::ScopedFILE stream(base::FileToFILE(std::move(file), "rb"));
   std::string data;
   if (!stream || !base::ReadStreamToString(stream.get(), &data)) {
-    return std::string();
+    ImageFetcherMetricsReporter::ReportCacheResult(
+        ImageFetcherCacheResult::kDataStoreReadFailed);
+    return "";
   }
-
+  ImageFetcherMetricsReporter::ReportCacheResult(
+      ImageFetcherCacheResult::kDataStoreReadSucceeded);
   return data;
 }
 
 void DeleteImageImpl(FilePath storage_path, const std::string& key) {
-  if (IsStoragePathLink(storage_path)) {
+  if (IsStoragePathLink(storage_path) || !IsValidKey(key)) {
+    ImageFetcherMetricsReporter::ReportCacheResult(
+        ImageFetcherCacheResult::kDataStoreDeleteFailed);
     return;
   }
 
   FilePath file_path =
       BuildFilePath(storage_path, key, /* needs_transcoding */ false);
   bool success = base::DeleteFile(file_path);
+  ImageFetcherMetricsReporter::ReportCacheResult(
+      success ? ImageFetcherCacheResult::kDataStoreDeleteSucceeded
+              : ImageFetcherCacheResult::kDataStoreDeleteFailed);
   if (success) {
     // We don't know if this image came from network or from an untranscoded
     // file. Instead of checking, we can simply blindly delete the untranscoded
     // file.
-    if (!base::DeleteFile(
-            BuildFilePath(storage_path, key, /* needs_transcoding */ true))) {
+    const bool transcoding_delete_succeeded = base::DeleteFile(
+        BuildFilePath(storage_path, key, /* needs_transcoding */ true));
+    ImageFetcherMetricsReporter::ReportCacheResult(
+        transcoding_delete_succeeded
+            ? ImageFetcherCacheResult::kDataStoreDeleteSucceeded
+            : ImageFetcherCacheResult::kDataStoreDeleteFailed);
+    if (!transcoding_delete_succeeded) {
       DVLOG(1) << "Attempting to delete " << kNeedsTranscodingPrefix << ".";
     }
   } else {
@@ -136,24 +187,41 @@ void DeleteImageImpl(FilePath storage_path, const std::string& key) {
   }
 }
 
-std::vector<std::string> GetAllKeysImpl(FilePath storage_path) {
+std::optional<std::vector<std::string>> GetAllKeysImpl(FilePath storage_path) {
   if (IsStoragePathLink(storage_path)) {
-    return {};
+    ImageFetcherMetricsReporter::ReportCacheResult(
+        ImageFetcherCacheResult::kDataStoreReadFailed);
+    return std::nullopt;
   }
 
   std::vector<std::string> keys;
-  FileEnumerator file_enumerator(storage_path, false, FileEnumerator::FILES);
+  // Preserve enumeration errors so they can be reported after the loop.
+  FileEnumerator file_enumerator(storage_path, false, FileEnumerator::FILES,
+                                 FilePath::StringType(),
+                                 FileEnumerator::FolderSearchPolicy::ALL,
+                                 FileEnumerator::ErrorPolicy::STOP_ENUMERATION);
   for (FilePath name = file_enumerator.Next(); !name.empty();
        name = file_enumerator.Next()) {
     keys.push_back(name.BaseName().MaybeAsASCII());
   }
-
+  // On Windows, an empty directory can report FILE_ERROR_NOT_FOUND. Treat it
+  // as an error only if the storage directory itself is missing.
+  const bool enumeration_failed =
+      file_enumerator.GetError() != File::FILE_OK &&
+      (file_enumerator.GetError() != File::FILE_ERROR_NOT_FOUND ||
+       !base::DirectoryExists(storage_path));
+  if (enumeration_failed) {
+    ImageFetcherMetricsReporter::ReportCacheResult(
+        ImageFetcherCacheResult::kDataStoreReadFailed);
+    return std::nullopt;
+  }
+  ImageFetcherMetricsReporter::ReportCacheResult(
+      ImageFetcherCacheResult::kDataStoreReadSucceeded);
   return keys;
 }
 
 }  // namespace
 
-// TODO(wylieb): Add histogram for failures.
 ImageDataStoreDisk::ImageDataStoreDisk(
     FilePath generic_storage_path,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
@@ -213,9 +281,9 @@ void ImageDataStoreDisk::DeleteImage(const std::string& key) {
                          base::BindOnce(DeleteImageImpl, storage_path_, key));
 }
 
-void ImageDataStoreDisk::GetAllKeys(KeysCallback callback) {
+void ImageDataStoreDisk::GetAllKeys(StoreKeysCallback callback) {
   if (!IsInitialized()) {
-    std::move(callback).Run({});
+    std::move(callback).Run(std::nullopt);
     return;
   }
 

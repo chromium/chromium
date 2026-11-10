@@ -78,6 +78,12 @@ void ImageFetcherMetricsReporter::ReportEvent(const std::string& client_name,
 }
 
 // static
+void ImageFetcherMetricsReporter::ReportCacheResult(
+    ImageFetcherCacheResult result) {
+  base::UmaHistogramEnumeration("ImageFetcher.CacheResult", result);
+}
+
+// static
 void ImageFetcherMetricsReporter::ReportImageLoadFromCacheTime(
     const std::string& client_name,
     base::Time start_time) {

@@ -5,6 +5,7 @@
 #include "components/image_fetcher/core/cache/image_cache.h"
 
 #include <algorithm>
+#include <optional>
 #include <utility>
 
 #include "base/barrier_closure.h"
@@ -293,21 +294,36 @@ void ImageCache::RunReconciliation() {
                                              weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ImageCache::ReconcileMetadataKeys(std::vector<std::string> metadata_keys) {
+void ImageCache::ReconcileMetadataKeys(
+    std::optional<std::vector<std::string>> metadata_keys) {
+  if (!metadata_keys) {
+    ImageFetcherMetricsReporter::ReportEvent(
+        ImageFetcherMetricsReporter::kCachedImageFetcherInternalUmaClientName,
+        ImageFetcherEvent::kCacheStartupEvictionFinished);
+    return;
+  }
   data_store_->GetAllKeys(base::BindOnce(&ImageCache::ReconcileDataKeys,
                                          weak_ptr_factory_.GetWeakPtr(),
-                                         std::move(metadata_keys)));
+                                         std::move(*metadata_keys)));
 }
 
-void ImageCache::ReconcileDataKeys(std::vector<std::string> metadata_keys,
-                                   std::vector<std::string> data_keys) {
+void ImageCache::ReconcileDataKeys(
+    std::vector<std::string> metadata_keys,
+    std::optional<std::vector<std::string>> data_keys) {
+  if (!data_keys) {
+    ImageFetcherMetricsReporter::ReportEvent(
+        ImageFetcherMetricsReporter::kCachedImageFetcherInternalUmaClientName,
+        ImageFetcherEvent::kCacheStartupEvictionFinished);
+    return;
+  }
+
   std::sort(metadata_keys.begin(), metadata_keys.end());
-  std::sort(data_keys.begin(), data_keys.end());
+  std::sort(data_keys->begin(), data_keys->end());
 
   std::vector<std::string> diff;
   // Get the keys that should be removed from metadata.
   std::set_difference(metadata_keys.begin(), metadata_keys.end(),
-                      data_keys.begin(), data_keys.end(),
+                      data_keys->begin(), data_keys->end(),
                       std::inserter(diff, diff.begin()));
 
   for (const std::string& key : diff) {
@@ -316,8 +332,9 @@ void ImageCache::ReconcileDataKeys(std::vector<std::string> metadata_keys,
 
   diff.clear();
   // Get the keys that should be removed from data.
-  std::set_difference(data_keys.begin(), data_keys.end(), metadata_keys.begin(),
-                      metadata_keys.end(), std::inserter(diff, diff.begin()));
+  std::set_difference(data_keys->begin(), data_keys->end(),
+                      metadata_keys.begin(), metadata_keys.end(),
+                      std::inserter(diff, diff.begin()));
   for (const std::string& key : diff) {
     data_store_->DeleteImage(key);
   }

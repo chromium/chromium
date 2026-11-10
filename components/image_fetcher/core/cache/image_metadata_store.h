@@ -45,8 +45,8 @@ class ImageMetadataStore {
   // Updates `last_used_time` for the given `key` if it exists.
   virtual void UpdateImageMetadata(const std::string& key) = 0;
 
-  // Returns all the keys this store has.
-  virtual void GetAllKeys(KeysCallback callback) = 0;
+  // Returns all the keys this store has, or no list if enumeration fails.
+  virtual void GetAllKeys(StoreKeysCallback callback) = 0;
 
   // Returns the total size of what's in metadata for a given cache option,
   // possibly incorrect.

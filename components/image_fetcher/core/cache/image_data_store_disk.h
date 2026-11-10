@@ -41,7 +41,7 @@ class ImageDataStoreDisk : public ImageDataStore {
                  bool needs_transcoding,
                  ImageDataCallback callback) override;
   void DeleteImage(const std::string& key) override;
-  void GetAllKeys(KeysCallback callback) override;
+  void GetAllKeys(StoreKeysCallback callback) override;
 
  private:
   // Called after the store has been initialized in a task runner.

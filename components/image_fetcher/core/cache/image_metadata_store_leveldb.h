@@ -63,7 +63,7 @@ class ImageMetadataStoreLevelDB : public ImageMetadataStore {
                          ExpirationInterval expiration_interval) override;
   void DeleteImageMetadata(const std::string& key) override;
   void UpdateImageMetadata(const std::string& key) override;
-  void GetAllKeys(KeysCallback callback) override;
+  void GetAllKeys(StoreKeysCallback callback) override;
   // Gets a size estimate. This is updated when things are added to the cache
   // and when eviction is performed. This doesn't update more often because
   // we want to minimize disk io. If the estimate is inaccurate, it's either 0
@@ -86,7 +86,7 @@ class ImageMetadataStoreLevelDB : public ImageMetadataStore {
   void UpdateImageMetadataImpl(
       bool success,
       std::unique_ptr<std::vector<CachedImageMetadataProto>> entries);
-  void GetAllKeysImpl(KeysCallback callback,
+  void GetAllKeysImpl(StoreKeysCallback callback,
                       bool success,
                       std::unique_ptr<std::vector<std::string>> keys);
   void EvictImageMetadataImpl(

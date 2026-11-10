@@ -5,6 +5,7 @@
 #include "components/image_fetcher/core/cache/image_metadata_store_leveldb.h"
 
 #include <algorithm>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -18,8 +19,6 @@
 
 using image_fetcher::CachedImageMetadataProto;
 
-// TODO(wylieb): Emit a histogram for various failure cases. Find a way to
-// share it with other implementations.
 namespace image_fetcher {
 
 namespace {
@@ -58,6 +57,16 @@ bool KeyMatcherFilter(std::string key, const std::string& other_key) {
 bool SortByLastUsedTime(const CachedImageMetadataProto* a,
                         const CachedImageMetadataProto* b) {
   return a->last_used_time() < b->last_used_time();
+}
+
+void ReportMetadataReadResult(bool success, bool found_entry) {
+  ImageFetcherCacheResult result =
+      ImageFetcherCacheResult::kMetadataStoreReadFailed;
+  if (success) {
+    result = found_entry ? ImageFetcherCacheResult::kMetadataStoreReadSucceeded
+                         : ImageFetcherCacheResult::kMetadataStoreReadMiss;
+  }
+  ImageFetcherMetricsReporter::ReportCacheResult(result);
 }
 
 }  // namespace
@@ -174,10 +183,10 @@ void ImageMetadataStoreLevelDB::UpdateImageMetadata(const std::string& key) {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ImageMetadataStoreLevelDB::GetAllKeys(KeysCallback callback) {
+void ImageMetadataStoreLevelDB::GetAllKeys(StoreKeysCallback callback) {
   // If the database is not initialized yet, ignore the request.
   if (!IsInitialized()) {
-    std::move(callback).Run({});
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -211,6 +220,10 @@ void ImageMetadataStoreLevelDB::OnDatabaseInitialized(
   initialization_status_ = status == leveldb_proto::Enums::InitStatus::kOK
                                ? InitializationStatus::INITIALIZED
                                : InitializationStatus::INIT_FAILURE;
+  ImageFetcherMetricsReporter::ReportCacheResult(
+      initialization_status_ == InitializationStatus::INITIALIZED
+          ? ImageFetcherCacheResult::kMetadataStoreInitializationSucceeded
+          : ImageFetcherCacheResult::kMetadataStoreInitializationFailed);
   std::move(callback).Run();
 }
 
@@ -218,6 +231,7 @@ void ImageMetadataStoreLevelDB::LoadImageMetadataImpl(
     ImageMetadataCallback callback,
     bool success,
     std::unique_ptr<std::vector<CachedImageMetadataProto>> entries) {
+  ReportMetadataReadResult(success, success && !entries->empty());
   if (!success || entries->size() == 0) {
     std::move(callback).Run(CachedImageMetadataProto());
     return;
@@ -228,12 +242,16 @@ void ImageMetadataStoreLevelDB::LoadImageMetadataImpl(
 }
 
 void ImageMetadataStoreLevelDB::OnImageUpdated(bool success) {
+  ImageFetcherMetricsReporter::ReportCacheResult(
+      success ? ImageFetcherCacheResult::kMetadataStoreUpdateSucceeded
+              : ImageFetcherCacheResult::kMetadataStoreUpdateFailed);
   DVLOG_IF(1, !success) << "ImageMetadataStoreLevelDB update failed.";
 }
 
 void ImageMetadataStoreLevelDB::UpdateImageMetadataImpl(
     bool success,
     std::unique_ptr<std::vector<CachedImageMetadataProto>> entries) {
+  ReportMetadataReadResult(success, success && !entries->empty());
   // If there was a failure, or an entry wasn't found then there's nothing left
   // to do.
   if (!success || entries->size() != 1) {
@@ -252,11 +270,14 @@ void ImageMetadataStoreLevelDB::UpdateImageMetadataImpl(
 }
 
 void ImageMetadataStoreLevelDB::GetAllKeysImpl(
-    KeysCallback callback,
+    StoreKeysCallback callback,
     bool success,
     std::unique_ptr<std::vector<std::string>> keys) {
+  ImageFetcherMetricsReporter::ReportCacheResult(
+      success ? ImageFetcherCacheResult::kMetadataStoreReadSucceeded
+              : ImageFetcherCacheResult::kMetadataStoreReadFailed);
   if (!success) {
-    std::move(callback).Run({});
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -271,6 +292,9 @@ void ImageMetadataStoreLevelDB::EvictImageMetadataImpl(
     std::unique_ptr<std::vector<CachedImageMetadataProto>> entries) {
   // In the case where the entries failed to load (LevelDB error), then do
   // nothing.
+  ImageFetcherMetricsReporter::ReportCacheResult(
+      success ? ImageFetcherCacheResult::kMetadataStoreReadSucceeded
+              : ImageFetcherCacheResult::kMetadataStoreReadFailed);
   if (!success) {
     std::move(callback).Run({});
     return;
@@ -365,6 +389,9 @@ void ImageMetadataStoreLevelDB::OnEvictImageMetadataDone(
     bool success) {
   // If the entries have failed to update due to some LevelDB error, return
   // an empty list.
+  ImageFetcherMetricsReporter::ReportCacheResult(
+      success ? ImageFetcherCacheResult::kMetadataStoreUpdateSucceeded
+              : ImageFetcherCacheResult::kMetadataStoreUpdateFailed);
   if (!success) {
     std::move(callback).Run({});
     return;

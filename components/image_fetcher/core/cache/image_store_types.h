@@ -49,6 +49,10 @@ using ImageMetadataCallback =
 // Returns a vector of keys.
 using KeysCallback = base::OnceCallback<void(std::vector<std::string>)>;
 
+// Returns a vector of keys, or nullopt on failure.
+using StoreKeysCallback =
+    base::OnceCallback<void(std::optional<std::vector<std::string>>)>;
+
 // The expiration interval for CacheStrategy::HOLD_UNTIL_EXPIRED.
 using ExpirationInterval = std::optional<base::TimeDelta>;
 

@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -151,12 +152,14 @@ class CachedImageFetcherImageCacheTest : public testing::Test {
   }
 
   void RunReconciliation() {
-    image_cache()->RunReconciliation();
+    StartReconciliation();
     db()->LoadKeysCallback(true);
     RunUntilIdle();
     db()->UpdateCallback(true);
     RunUntilIdle();
   }
+
+  void StartReconciliation() { image_cache()->RunReconciliation(); }
 
   void InjectMetadata(std::string key, int data_size, bool needs_transcoding) {
     metadata_store_->SaveImageMetadata(key, data_size, needs_transcoding,
@@ -594,6 +597,51 @@ TEST_F(CachedImageFetcherImageCacheTest, ReconciliationMismatchMetadata) {
 
   // Metadata should be gone.
   ASSERT_FALSE(IsMetadataPresent("bar"));
+}
+
+TEST_F(CachedImageFetcherImageCacheTest,
+       ReconciliationPreservesMetadataWhenDataEnumerationFails) {
+  PrepareImageCache(/*needs_transcoding=*/false);
+  ASSERT_TRUE(IsMetadataPresent(kImageUrlHashed));
+  ASSERT_TRUE(base::DeletePathRecursively(
+      cache_path().AppendASCII("image_data_storage")));
+
+  const int completed_before = histogram_tester().GetBucketCount(
+      kImageFetcherEventHistogramName,
+      ImageFetcherEvent::kCacheStartupEvictionFinished);
+  StartReconciliation();
+  db()->LoadKeysCallback(true);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester().GetBucketCount(
+               kImageFetcherEventHistogramName,
+               ImageFetcherEvent::kCacheStartupEvictionFinished) >
+           completed_before;
+  }));
+
+  EXPECT_TRUE(IsMetadataPresent(kImageUrlHashed));
+}
+
+TEST_F(CachedImageFetcherImageCacheTest,
+       ReconciliationPreservesDataWhenMetadataEnumerationFails) {
+  PrepareImageCache(/*needs_transcoding=*/false);
+
+  const int completed_before = histogram_tester().GetBucketCount(
+      kImageFetcherEventHistogramName,
+      ImageFetcherEvent::kCacheStartupEvictionFinished);
+  StartReconciliation();
+  db()->LoadKeysCallback(false);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester().GetBucketCount(
+               kImageFetcherEventHistogramName,
+               ImageFetcherEvent::kCacheStartupEvictionFinished) >
+           completed_before;
+  }));
+
+  base::test::TestFuture<bool, std::string> result;
+  data_store()->LoadImage(kImageUrlHashed, /*needs_transcoding=*/false,
+                          result.GetCallback());
+  EXPECT_FALSE(result.Get<0>());
+  EXPECT_EQ(kImageData, result.Get<1>());
 }
 
 }  // namespace image_fetcher

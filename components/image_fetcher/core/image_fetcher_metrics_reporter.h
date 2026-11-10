@@ -12,6 +12,32 @@
 
 namespace image_fetcher {
 
+// Results of backing-store operations. Each completed operation contributes
+// one sample, including successful operations and missing paths. A missing
+// image-file path can also mean that its storage directory was removed.
+// Values are persisted to logs and must not be renumbered or reused.
+// LINT.IfChange(ImageFetcherCacheResult)
+enum class ImageFetcherCacheResult {
+  kDataStoreInitializationSucceeded = 0,
+  kDataStoreInitializationFailed = 1,
+  kDataStoreReadSucceeded = 2,
+  kDataStoreReadNotFound = 3,
+  kDataStoreReadFailed = 4,
+  kDataStoreWriteSucceeded = 5,
+  kDataStoreWriteFailed = 6,
+  kDataStoreDeleteSucceeded = 7,
+  kDataStoreDeleteFailed = 8,
+  kMetadataStoreInitializationSucceeded = 9,
+  kMetadataStoreInitializationFailed = 10,
+  kMetadataStoreReadSucceeded = 11,
+  kMetadataStoreReadMiss = 12,
+  kMetadataStoreReadFailed = 13,
+  kMetadataStoreUpdateSucceeded = 14,
+  kMetadataStoreUpdateFailed = 15,
+  kMaxValue = kMetadataStoreUpdateFailed,
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ImageFetcherCacheResult)
+
 // Enum for the result of the fetch, reported through UMA. Present in enums.xml
 // as ImageFetcherEvent. New values should be added at the end and things
 // should not be renumbered.
@@ -45,6 +71,9 @@ class ImageFetcherMetricsReporter {
   // Report cache events, used by CachedImageFetcher and composing classes.
   static void ReportEvent(const std::string& client_name,
                           ImageFetcherEvent event);
+
+  // Report one completed backing-store operation.
+  static void ReportCacheResult(ImageFetcherCacheResult result);
 
   // Report the time it takes to load an image from the cache in native code.
   static void ReportImageLoadFromCacheTime(const std::string& client_name,
