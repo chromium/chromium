@@ -10,7 +10,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "components/safe_browsing/core/browser/client_side_detection_service_base.h"
+#include "components/safe_browsing/core/browser/client_side_detection/client_side_detection_service_base.h"
 
 class PrefService;
 

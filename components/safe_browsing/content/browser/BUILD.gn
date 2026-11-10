@@ -231,7 +231,7 @@ source_set("client_side_detection_images_cache") {
   ]
 
   deps = [
-    "//components/safe_browsing/core/browser:client_side_detection_service_base",
+    "//components/safe_browsing/core/browser/client_side_detection:client_side_detection_service_base",
     "//components/safe_browsing/core/common/fbs:client_model",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//content/public/browser",
@@ -255,7 +255,7 @@ if (safe_browsing_mode != 0) {
       "//components/prefs",
       "//components/safe_browsing/content/browser/web_ui",
       "//components/safe_browsing/content/common:interfaces",
-      "//components/safe_browsing/core/browser:client_side_detection_service_base",
+      "//components/safe_browsing/core/browser/client_side_detection:client_side_detection_service_base",
       "//components/safe_browsing/core/common",
       "//components/safe_browsing/core/common:safe_browsing_prefs",
       "//components/safe_browsing/core/common/fbs:client_model",

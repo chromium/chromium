@@ -32,7 +32,7 @@ source_set("browser") {
   public_deps = [
     # TODO(crbug.com/502615476): Remove this once all downstream targets depend
     # on these directly.
-    ":client_side_detection_service_base",
+    "//components/safe_browsing/core/browser/client_side_detection:client_side_detection_service_base",
     "//components/safe_browsing/core/browser/db:sb_protocol_config",
     "//components/safe_browsing/core/common/fbs:client_model",
     "//google_apis",
@@ -81,50 +81,14 @@ source_set("browser") {
   ]
 }
 
-source_set("client_side_detection_service_base") {
-  sources = [
-    "client_side_detection_feature_cache_base.cc",
-    "client_side_detection_feature_cache_base.h",
-    "client_side_detection_service_base.cc",
-    "client_side_detection_service_base.h",
-  ]
-
-  public_deps = [
-    "//components/safe_browsing/core/browser/client_side_detection:client_side_phishing_model",
-    "//components/safe_browsing/core/common/fbs:client_model",
-  ]
-
-  deps = [
-    "//base",
-    "//components/keyed_service/core",
-    "//components/optimization_guide/core",
-    "//components/optimization_guide/proto:optimization_guide_proto",
-    "//components/prefs",
-    "//components/safe_browsing/core/common",
-    "//components/safe_browsing/core/common:features",
-    "//components/safe_browsing/core/common:safe_browsing_prefs",
-    "//components/safe_browsing/core/common/phishing_classifier",
-    "//components/safe_browsing/core/common/proto:client_model_proto",
-    "//components/safe_browsing/core/common/proto:csd_proto",
-    "//google_apis",
-    "//net",
-    "//services/network/public/cpp",
-    "//services/network/public/mojom",
-    "//url",
-  ]
-}
-
 source_set("client_side_detection_service_base_unittest") {
   testonly = true
   sources = [
-    "client_side_detection_feature_cache_base_unittest.cc",
     "client_side_detection_host_base_unittest.cc",
-    "client_side_detection_service_base_unittest.cc",
     "credit_card_form_event_unittest.cc",
   ]
   deps = [
     ":browser",
-    ":client_side_detection_service_base",
     ":referring_app_info",
     ":verdict_cache_manager",
     "//base/test:test_support",
@@ -134,6 +98,7 @@ source_set("client_side_detection_service_base_unittest") {
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs:test_support",
+    "//components/safe_browsing/core/browser/client_side_detection:client_side_detection_service_base",
     "//components/safe_browsing/core/browser/db:sb_protocol_manager_util",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:features",

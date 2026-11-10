@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_CLIENT_SIDE_DETECTION_FEATURE_CACHE_H_
 #define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_CLIENT_SIDE_DETECTION_FEATURE_CACHE_H_
 
-#include "components/safe_browsing/core/browser/client_side_detection_feature_cache_base.h"
+#include "components/safe_browsing/core/browser/client_side_detection/client_side_detection_feature_cache_base.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace content {
