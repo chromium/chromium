@@ -30,40 +30,6 @@
 
 namespace {
 
-// This differs from ui::SelectColorBasedOnInput in that we're checking if the
-// input transform is *not* dark under the assumption that the background color
-// *is* dark from a potential custom theme. Additionally, if the mode is
-// explicitly dark just select the correct color for that mode.
-ui::ColorTransform SelectColorBasedOnDarkInputOrMode(
-    bool dark_mode,
-    ui::ColorTransform input_transform,
-    ui::ColorTransform dark_mode_color_transform,
-    ui::ColorTransform light_mode_color_transform) {
-  const auto generator = [](bool dark_mode, ui::ColorTransform input_transform,
-                            ui::ColorTransform dark_mode_color_transform,
-                            ui::ColorTransform light_mode_color_transform,
-                            SkColor input_color, const ui::ColorMixer& mixer) {
-    const SkColor transform_color = input_transform.Run(input_color, mixer);
-    const SkColor dark_mode_color =
-        dark_mode_color_transform.Run(input_color, mixer);
-    const SkColor light_mode_color =
-        light_mode_color_transform.Run(input_color, mixer);
-    const SkColor result_color =
-        dark_mode || !color_utils::IsDark(transform_color) ? dark_mode_color
-                                                           : light_mode_color;
-    DVLOG(2) << "ColorTransform SelectColorBasedOnDarkColorOrMode:"
-             << " Dark Mode: " << dark_mode
-             << " Transform Color: " << ui::SkColorName(transform_color)
-             << " Dark Mode Color: " << ui::SkColorName(dark_mode_color)
-             << " Light Mode Color: " << ui::SkColorName(light_mode_color)
-             << " Result Color: " << ui::SkColorName(result_color);
-    return result_color;
-  };
-  return base::BindRepeating(generator, dark_mode, std::move(input_transform),
-                             std::move(dark_mode_color_transform),
-                             std::move(light_mode_color_transform));
-}
-
 // Determines a color to use for Actor Ui components based on the tab frame
 // color used in custom themes. In the near-white or near-black case, we default
 // to use `fallback_color_id` instead to ensure visibility.
@@ -321,9 +287,6 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
     mixer[params.inactive_frame_id] =
         ui::SelectBasedOnDarkInput(kColorTabBackgroundInactiveFrameInactive,
                                    params.base_dark, params.base_light);
-    mixer[params.context_menu_id] = SelectColorBasedOnDarkInputOrMode(
-        dark_mode, kColorBookmarkBarForeground, params.base_dark,
-        params.base_light);
     mixer[params.saved_fg_id] =
         ui::SelectBasedOnDarkInput(kColorBookmarkBarBackground,
                                    params.saved_fg_dark, params.saved_fg_light);
@@ -334,6 +297,7 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
         kColorBookmarkBarBackground, params.bookmark_bar_dark,
         params.bookmark_bar_light);
 
+    mixer[params.context_menu_id] = {params.active_frame_id};
     mixer[params.dialog_id] = {params.context_menu_id};
   }
 

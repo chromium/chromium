@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome_color_provider_utils.h"
+#include "chrome/browser/ui/color/chrome_color_provider_utils.h"
 
 #include "base/test/gtest_util.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -12,6 +12,8 @@
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_utils.h"
+
+namespace {
 
 using ChromeColorProviderUtilsTest = ::testing::Test;
 
@@ -36,3 +38,5 @@ TEST_F(ChromeColorProviderUtilsTest, ChromeColorIdToCSSColorIdTest) {
   EXPECT_TRUE(ChromeColorIdToCSSColorId(kChromeColorsStart - 1).empty());
   EXPECT_TRUE(ChromeColorIdToCSSColorId(kChromeColorsEnd).empty());
 }
+
+}  // namespace
