@@ -129,7 +129,7 @@
       "bbetini@google.com",
       "//chrome/browser/actor/OWNERS"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "actor-type-tool-observation-start-delay",
