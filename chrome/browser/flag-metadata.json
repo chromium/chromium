@@ -6958,8 +6958,8 @@
   },
   {
     "name": "magichrome-passkey-signin",
-    "owners": [ "msalama@google.com", "chrome-signin-team@google.com" ],
-    "expiry_milestone": 160
+    "owners": [ "msalama@google.com", "chrome-signin-desktop-team@google.com" ],
+    "expiry_milestone": 170
   },
   {
     "name": "main-node-annotations",
