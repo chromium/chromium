@@ -79,7 +79,7 @@ export class OmniboxEverywhereComposeboxElement extends
         type: Boolean,
         reflect: true,
       },
-      isPendingScreenshot: {
+      isPendingContextUpload: {
         type: Boolean,
       },
       isActive: {
@@ -92,7 +92,7 @@ export class OmniboxEverywhereComposeboxElement extends
   }
 
   accessor isActive: boolean = true;
-  accessor isPendingScreenshot: boolean = false;
+  accessor isPendingContextUpload: boolean = false;
   accessor isLensHelpBubbleShowing: boolean = false;
 
   /**
@@ -186,7 +186,7 @@ export class OmniboxEverywhereComposeboxElement extends
 
   override connectedCallback() {
     super.connectedCallback();
-    if (!this.isPendingScreenshot) {
+    if (!this.isPendingContextUpload) {
       this.playGlowAnimation();
       this.refreshTabSuggestions(/*forceRefresh=*/ true);
       // Because Omnibox Everywhere sets `searchbox-next-enabled`, the mixin's
@@ -223,8 +223,8 @@ export class OmniboxEverywhereComposeboxElement extends
           this.webuiOmniboxSimplificationEnabled_ && !inToolMode;
     }
 
-    if (changedProperties.has('isPendingScreenshot')) {
-      if (this.isPendingScreenshot) {
+    if (changedProperties.has('isPendingContextUpload')) {
+      if (this.isPendingContextUpload) {
         this.showDropdown = false;
         this.result = null;
       } else {
@@ -287,7 +287,7 @@ export class OmniboxEverywhereComposeboxElement extends
   }
 
   override shouldHideDropdown(): boolean {
-    if (this.isPendingScreenshot) {
+    if (this.isPendingContextUpload) {
       return true;
     }
     return super.shouldHideDropdown();
@@ -298,7 +298,7 @@ export class OmniboxEverywhereComposeboxElement extends
   }
 
   override onAutocompleteResultChanged(result: AutocompleteResult) {
-    if (this.isPendingScreenshot) {
+    if (this.isPendingContextUpload) {
       // Suppress stale / premature autocomplete results from the previous
       // omnibox session while screenshot capture is pending.
       return;
@@ -308,10 +308,10 @@ export class OmniboxEverywhereComposeboxElement extends
 
   override addFileContextFromBrowser(
       uuid: UnguessableToken, fileInfo: SelectedFileInfo) {
-    const wasPendingScreenshot = this.isPendingScreenshot;
-    this.isPendingScreenshot = false;
+    const wasPendingContextUpload = this.isPendingContextUpload;
+    this.isPendingContextUpload = false;
     super.addFileContextFromBrowser(uuid, fileInfo);
-    if (wasPendingScreenshot) {
+    if (wasPendingContextUpload) {
       this.playGlowAnimation();
       this.refreshTabSuggestions(/*forceRefresh=*/ true);
       this.queryAutocomplete(/* clearMatches= */ true);
@@ -319,12 +319,12 @@ export class OmniboxEverywhereComposeboxElement extends
   }
 
   override onInputInput(e: CustomEvent<Event>) {
-    this.isPendingScreenshot = false;
+    this.isPendingContextUpload = false;
     super.onInputInput(e);
   }
 
   onScreenshotCaptureCancelled() {
-    this.isPendingScreenshot = false;
+    this.isPendingContextUpload = false;
     this.refreshTabSuggestions(/*forceRefresh=*/ true);
     this.queryAutocomplete(/* clearMatches= */ true);
   }

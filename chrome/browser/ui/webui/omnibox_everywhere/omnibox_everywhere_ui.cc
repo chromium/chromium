@@ -751,7 +751,7 @@ void OmniboxEverywhereUI::ClearContextualSessionHandle() {
   pending_upload_statuses_.clear();
   pending_screenshot_tokens_.clear();
   is_composebox_mode_ = false;
-  screenshot_origin_was_searchbox_ = false;
+  context_upload_origin_was_searchbox_ = false;
 
   // OmniboxEverywhereUI concurrently hosts both `omnibox_handler_` and
   // `composebox_handler_` across a persistent WebContents.
@@ -964,14 +964,14 @@ void OmniboxEverywhereUI::ExecuteScreenshotCommand(
     return;
   }
 
-  screenshot_origin_was_searchbox_ = !is_composebox_mode_;
+  context_upload_origin_was_searchbox_ = !is_composebox_mode_;
 
   // Open Composebox immediately from the Lens entry point with a pending
   // screenshot state so that when the capture/picker UI dismisses, the view
   // transitions directly into Composebox without briefly rendering the
   // Loomnibox omnibox or flashing zero-prefix suggestions.
   auto initial_state = omnibox_everywhere::mojom::ComposeboxInitialState::New();
-  initial_state->is_pending_screenshot = true;
+  initial_state->is_pending_context_upload = true;
   OpenComposebox(std::move(initial_state));
 
   auto on_capture_done =
@@ -1007,14 +1007,14 @@ void OmniboxEverywhereUI::ExecuteScreenshotCommand(
 void OmniboxEverywhereUI::OnScreenshotCaptureDone(
     const std::optional<base::UnguessableToken>& token) {
   if (!token.has_value()) {
-    if (screenshot_origin_was_searchbox_) {
+    if (context_upload_origin_was_searchbox_) {
       SetIsComposebox(false);
     }
     if (page_handler_) {
       page_handler_->OnScreenshotCaptureCancelled();
     }
   }
-  screenshot_origin_was_searchbox_ = false;
+  context_upload_origin_was_searchbox_ = false;
 }
 
 bool OmniboxEverywhereUI::IsCommandIdChecked(int command_id) const {
@@ -1093,7 +1093,7 @@ void OmniboxEverywhereUI::OnComposeboxHandlerDisconnected() {
 void OmniboxEverywhereUI::AddFileContext(
     const base::UnguessableToken& token,
     searchbox::mojom::SelectedFileInfoPtr file_info) {
-  screenshot_origin_was_searchbox_ = false;
+  context_upload_origin_was_searchbox_ = false;
   if (is_composebox_mode_ && composebox_handler_) {
     composebox_handler_->AddFileContextFromBrowser(token, std::move(file_info));
   } else {

@@ -276,7 +276,7 @@ class OmniboxEverywhereUI
 
   const raw_ptr<Profile> profile_;
   bool is_composebox_mode_ = false;
-  bool screenshot_origin_was_searchbox_ = false;
+  bool context_upload_origin_was_searchbox_ = false;
 
   std::vector<PendingUploadStatus> pending_upload_statuses_;
   std::vector<base::UnguessableToken> pending_screenshot_tokens_;
