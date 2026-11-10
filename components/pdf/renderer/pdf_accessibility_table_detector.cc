@@ -662,6 +662,17 @@ size_t CountRunsIf(const RunIndicesByCell& cells,
   return count;
 }
 
+// Returns whether any text run in `cells` satisfies `predicate`, which takes a
+// text run index. Stops at the first match.
+bool AnyRunIf(const RunIndicesByCell& cells,
+              base::FunctionRef<bool(size_t run_index)> predicate) {
+  return std::ranges::any_of(cells, [&](const auto& row) {
+    return std::ranges::any_of(row, [&](const auto& cell_runs) {
+      return std::ranges::any_of(cell_runs, predicate);
+    });
+  });
+}
+
 // Returns the number of text runs in `cells` that cross an interior column
 // boundary, i.e. extend more than `kColumnCrossingTolerancePx` past it on both
 // sides. For example, "Revenue" crosses the boundary below, but "Cost" stays
@@ -691,6 +702,24 @@ size_t CountVerticalRuns(
     base::span<const chrome_pdf::AccessibilityTextRunInfo> text_runs) {
   return CountRunsIf(cells, [&](size_t run_index) {
     return IsVerticalTextDirection(text_runs[run_index].direction);
+  });
+}
+
+// Returns whether any text run in `cells` is in `excluded_run_indices` (e.g.,
+// runs covered by links or other annotations that must stay in normal flow).
+bool HasExcludedRun(const RunIndicesByCell& cells,
+                    const base::flat_set<size_t>& excluded_run_indices) {
+  return AnyRunIf(cells, [&](size_t run_index) {
+    return excluded_run_indices.contains(run_index);
+  });
+}
+
+// Returns whether any text run in `cells` is right-to-left.
+bool HasRightToLeftRun(
+    const RunIndicesByCell& cells,
+    base::span<const chrome_pdf::AccessibilityTextRunInfo> text_runs) {
+  return AnyRunIf(cells, [&](size_t run_index) {
+    return IsRightToLeftRun(text_runs[run_index]);
   });
 }
 
@@ -962,13 +991,26 @@ std::vector<RulingGrid> DetectRulingGrids(
 
 std::vector<HeuristicTable> DetectGridTables(
     base::span<const chrome_pdf::AccessibilityTextRunInfo> text_runs,
-    base::span<const RulingLine> ruling_lines) {
+    base::span<const RulingLine> ruling_lines,
+    const base::flat_set<size_t>& excluded_run_indices) {
   std::vector<HeuristicTable> tables;
   for (const RulingGrid& grid : DetectRulingGrids(ruling_lines)) {
     RunIndicesByCell cells = AssignRunsToCells(text_runs, grid);
     const size_t total_assigned_runs = CountAssignedRuns(cells);
     // Skip grids with no text runs (e.g., a drawing).
     if (total_assigned_runs == 0) {
+      continue;
+    }
+
+    // Skip grids with excluded runs. Checked before removing overlapping
+    // tables, so a skipped grid doesn't displace a grid nested in it.
+    if (HasExcludedRun(cells, excluded_run_indices)) {
+      continue;
+    }
+
+    // Skip grids with right-to-left text, since cells are ordered left to
+    // right.
+    if (HasRightToLeftRun(cells, text_runs)) {
       continue;
     }
 

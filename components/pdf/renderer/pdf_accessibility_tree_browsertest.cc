@@ -9398,6 +9398,180 @@ TEST_F(PdfAccessibilityTreeTest,
   EXPECT_EQ(ax::mojom::Role::kTable, page->GetChildAtIndex(1u)->GetRole());
 }
 
+TEST_F(PdfAccessibilityTreeTest, HeuristicGridTableRejectsTableWithLink) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  page_objects_.line_segments = CreateGridLineSegments(
+      kGridTableColumnBoundaries, kGridTableRowBoundaries);
+
+  chrome_pdf::AccessibilityLinkInfo link;
+  link.url = "https://example.com";
+  link.text_range.index = 1;
+  link.text_range.count = 1;
+  link.index_in_page = 0;
+  link.bounds = gfx::RectF(55.0f, 55.0f, 40.0f, 12.0f);
+  page_objects_.links.push_back(std::move(link));
+
+  const ui::AXNode* page =
+      SetUpUniformHeuristicPage({"Intro", "A1", "B1", "A2", "B2", "Outro"},
+                                {
+                                    gfx::RectF(50.0f, 10.0f, 100.0f, 12.0f),
+                                    gfx::RectF(55.0f, 55.0f, 40.0f, 12.0f),
+                                    gfx::RectF(105.0f, 55.0f, 40.0f, 12.0f),
+                                    gfx::RectF(55.0f, 85.0f, 40.0f, 12.0f),
+                                    gfx::RectF(105.0f, 85.0f, 40.0f, 12.0f),
+                                    gfx::RectF(50.0f, 130.0f, 100.0f, 12.0f),
+                                });
+  ASSERT_NE(nullptr, page);
+
+  for (size_t i = 0; i < page->GetChildCount(); ++i) {
+    EXPECT_NE(ax::mojom::Role::kTable, page->GetChildAtIndex(i)->GetRole());
+  }
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicGridTableRejectsTableWithHighlight) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  page_objects_.line_segments = CreateGridLineSegments(
+      kGridTableColumnBoundaries, kGridTableRowBoundaries);
+
+  chrome_pdf::AccessibilityHighlightInfo highlight;
+  highlight.text_range.index = 1;
+  highlight.text_range.count = 1;
+  highlight.bounds = gfx::RectF(55.0f, 55.0f, 40.0f, 12.0f);
+  page_objects_.highlights.push_back(std::move(highlight));
+
+  const ui::AXNode* page =
+      SetUpUniformHeuristicPage({"Intro", "A1", "B1", "A2", "B2", "Outro"},
+                                {
+                                    gfx::RectF(50.0f, 10.0f, 100.0f, 12.0f),
+                                    gfx::RectF(55.0f, 55.0f, 40.0f, 12.0f),
+                                    gfx::RectF(105.0f, 55.0f, 40.0f, 12.0f),
+                                    gfx::RectF(55.0f, 85.0f, 40.0f, 12.0f),
+                                    gfx::RectF(105.0f, 85.0f, 40.0f, 12.0f),
+                                    gfx::RectF(50.0f, 130.0f, 100.0f, 12.0f),
+                                });
+  ASSERT_NE(nullptr, page);
+
+  for (size_t i = 0; i < page->GetChildCount(); ++i) {
+    EXPECT_NE(ax::mojom::Role::kTable, page->GetChildAtIndex(i)->GetRole());
+  }
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicGridTableRejectsTableWithFormGraphic) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  page_info_.bounds = gfx::Rect(0, 0, 800, 1000);
+
+  page_objects_.line_segments = CreateGridLineSegments(
+      kGridTableColumnBoundaries, kGridTableRowBoundaries);
+
+  chrome_pdf::AccessibilityFormGraphicInfo graphic;
+  graphic.text_range.index = 1;
+  graphic.text_range.count = 1;
+  graphic.bounds = gfx::RectF(55.0f, 55.0f, 40.0f, 12.0f);
+  page_objects_.graphics.push_back(std::move(graphic));
+
+  const ui::AXNode* page =
+      SetUpUniformHeuristicPage({"Intro", "A1", "B1", "A2", "B2", "Outro"},
+                                {
+                                    gfx::RectF(50.0f, 10.0f, 100.0f, 12.0f),
+                                    gfx::RectF(55.0f, 55.0f, 40.0f, 12.0f),
+                                    gfx::RectF(105.0f, 55.0f, 40.0f, 12.0f),
+                                    gfx::RectF(55.0f, 85.0f, 40.0f, 12.0f),
+                                    gfx::RectF(105.0f, 85.0f, 40.0f, 12.0f),
+                                    gfx::RectF(50.0f, 130.0f, 100.0f, 12.0f),
+                                });
+  ASSERT_NE(nullptr, page);
+
+  for (size_t i = 0; i < page->GetChildCount(); ++i) {
+    EXPECT_NE(ax::mojom::Role::kTable, page->GetChildAtIndex(i)->GetRole());
+  }
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicGridTableRejectsTableWithRightToLeftText) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  page_objects_.line_segments = CreateGridLineSegments(
+      kGridTableColumnBoundaries, kGridTableRowBoundaries);
+
+  // "A1" is right-to-left.
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"Intro", "A1", "B1", "A2", "B2", "Outro"},
+      {
+          gfx::RectF(50.0f, 10.0f, 100.0f, 12.0f),
+          gfx::RectF(55.0f, 55.0f, 40.0f, 12.0f),
+          gfx::RectF(105.0f, 55.0f, 40.0f, 12.0f),
+          gfx::RectF(55.0f, 85.0f, 40.0f, 12.0f),
+          gfx::RectF(105.0f, 85.0f, 40.0f, 12.0f),
+          gfx::RectF(50.0f, 130.0f, 100.0f, 12.0f),
+      },
+      {
+          chrome_pdf::AccessibilityTextDirection::kLeftToRight,
+          chrome_pdf::AccessibilityTextDirection::kRightToLeft,
+          chrome_pdf::AccessibilityTextDirection::kLeftToRight,
+          chrome_pdf::AccessibilityTextDirection::kLeftToRight,
+          chrome_pdf::AccessibilityTextDirection::kLeftToRight,
+          chrome_pdf::AccessibilityTextDirection::kLeftToRight,
+      });
+  ASSERT_NE(nullptr, page);
+
+  for (size_t i = 0; i < page->GetChildCount(); ++i) {
+    EXPECT_NE(ax::mojom::Role::kTable, page->GetChildAtIndex(i)->GetRole());
+  }
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicGridTableKeptWithRightToLeftTextOutsideTable) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  page_objects_.line_segments = CreateGridLineSegments(
+      kGridTableColumnBoundaries, kGridTableRowBoundaries);
+
+  // Only "Outro", outside the table, is right-to-left.
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"Intro", "A1", "B1", "A2", "B2", "Outro"},
+      {
+          gfx::RectF(50.0f, 10.0f, 100.0f, 12.0f),
+          gfx::RectF(55.0f, 55.0f, 40.0f, 12.0f),
+          gfx::RectF(105.0f, 55.0f, 40.0f, 12.0f),
+          gfx::RectF(55.0f, 85.0f, 40.0f, 12.0f),
+          gfx::RectF(105.0f, 85.0f, 40.0f, 12.0f),
+          gfx::RectF(50.0f, 130.0f, 100.0f, 12.0f),
+      },
+      {
+          chrome_pdf::AccessibilityTextDirection::kLeftToRight,
+          chrome_pdf::AccessibilityTextDirection::kLeftToRight,
+          chrome_pdf::AccessibilityTextDirection::kLeftToRight,
+          chrome_pdf::AccessibilityTextDirection::kLeftToRight,
+          chrome_pdf::AccessibilityTextDirection::kLeftToRight,
+          chrome_pdf::AccessibilityTextDirection::kRightToLeft,
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(3u, page->GetChildCount());
+
+  CheckParagraph(page->GetChildAtIndex(0u), "Intro");
+  EXPECT_EQ(ax::mojom::Role::kTable, page->GetChildAtIndex(1u)->GetRole());
+  CheckParagraph(page->GetChildAtIndex(2u), "Outro");
+}
+
 TEST_F(PdfAccessibilityTreeTest, HeuristicGridTableFeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(

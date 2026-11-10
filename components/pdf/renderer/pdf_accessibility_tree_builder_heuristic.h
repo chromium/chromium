@@ -340,6 +340,10 @@ class PdfAccessibilityTreeBuilderHeuristic {
 
   raw_ref<PdfAccessibilityTreeBuilder> builder_;
 
+  // Filtered graphics from `builder_`.
+  const std::vector<chrome_pdf::AccessibilityFormGraphicInfo>
+      filtered_graphics_;
+
   // The page's tables. Backs `page_layout_.table_text_run_indices`.
   const PageTables page_tables_;
 

@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "pdf/accessibility_structs.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -126,12 +127,14 @@ std::vector<RulingGrid> DetectRulingGrids(
 
 // Detects tables drawn as connected grids of horizontal and vertical ruling
 // lines. Returns tables sorted by `anchor_text_run_index`, with each cell's
-// `text_run_indices` ascending. Tables share no text runs: when two would, such
-// as a grid nested in another grid's cell, keeps the one with the earlier
+// `text_run_indices` ascending. Skips grids with right-to-left text, or with a
+// run in `excluded_run_indices`. Tables share no text runs: when two would,
+// such as a grid nested in another grid's cell, keeps the one with the earlier
 // anchor, or the larger one if the anchors are equal.
 std::vector<HeuristicTable> DetectGridTables(
     base::span<const chrome_pdf::AccessibilityTextRunInfo> text_runs,
-    base::span<const RulingLine> ruling_lines);
+    base::span<const RulingLine> ruling_lines,
+    const base::flat_set<size_t>& excluded_run_indices = {});
 
 // Returns the text run indices in all of `table`'s cells, row by row and left
 // to right within each row.

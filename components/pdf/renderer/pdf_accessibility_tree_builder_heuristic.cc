@@ -2457,16 +2457,57 @@ ui::AXNodeData* CreateTableStructureNode(PdfAccessibilityTreeBuilder& builder,
   return node;
 }
 
-// Detects grid tables on the page and collects the text runs in them. Returns
-// no tables when heuristic enhancements are disabled.
+// Adds the indices of the text runs in `range` to `indices`. Ignores runs at or
+// past `text_run_count`.
+void AppendTextRunRange(const chrome_pdf::AccessibilityTextRunRangeInfo& range,
+                        size_t text_run_count,
+                        std::vector<size_t>& indices) {
+  const size_t end = std::min(range.index + range.count, text_run_count);
+  for (size_t i = range.index; i < end; ++i) {
+    indices.push_back(i);
+  }
+}
+
+// Returns the indices of the text runs covered by a link, highlight, or
+// graphic.
+base::flat_set<size_t> GetAnnotatedRunIndices(
+    size_t text_run_count,
+    base::span<const chrome_pdf::AccessibilityLinkInfo> links,
+    base::span<const chrome_pdf::AccessibilityHighlightInfo> highlights,
+    base::span<const chrome_pdf::AccessibilityFormGraphicInfo> graphics) {
+  std::vector<size_t> indices;
+  for (const auto& link : links) {
+    AppendTextRunRange(link.text_range, text_run_count, indices);
+  }
+  for (const auto& highlight : highlights) {
+    AppendTextRunRange(highlight.text_range, text_run_count, indices);
+  }
+  for (const auto& graphic : graphics) {
+    AppendTextRunRange(graphic.text_range, text_run_count, indices);
+  }
+  return base::flat_set<size_t>(std::move(indices));
+}
+
+// Detects grid tables on the page and collects the text runs in them. Skips
+// tables with a run covered by a link, highlight, or graphic. Returns no
+// tables when heuristic enhancements are disabled.
 PageTables ComputePageTables(
-    base::span<const chrome_pdf::AccessibilityTextRunInfo> text_runs,
-    base::span<const RulingLine> ruling_lines) {
+    const PdfAccessibilityTreeBuilder& builder,
+    const std::vector<chrome_pdf::AccessibilityFormGraphicInfo>& graphics) {
   PageTables result;
   if (!features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
     return result;
   }
-  result.tables = DetectGridTables(text_runs, ruling_lines);
+  // Leave runs covered by annotations in normal flow so their nodes stay
+  // intact.
+  //
+  // TODO(crbug.com/574033561): Support tables with links, highlights, and form
+  // graphics by building those nodes inside table cells.
+  const base::flat_set<size_t> annotated_run_indices =
+      GetAnnotatedRunIndices(builder.text_runs().size(), builder.links(),
+                             builder.highlights(), graphics);
+  result.tables = DetectGridTables(builder.text_runs(), builder.ruling_lines(),
+                                   annotated_run_indices);
   if (result.tables.empty()) {
     return result;
   }
@@ -2696,8 +2737,12 @@ StaticTextState::~StaticTextState() = default;
 PdfAccessibilityTreeBuilderHeuristic::PdfAccessibilityTreeBuilderHeuristic(
     PdfAccessibilityTreeBuilder& builder)
     : builder_(builder),
-      page_tables_(
-          ComputePageTables(builder.text_runs(), builder.ruling_lines())),
+      filtered_graphics_(
+          features::IsPdfAccessibilityHeuristicEnhancementsEnabled()
+              ? FilterGraphics(builder.graphics(),
+                               builder.page_node()->relative_bounds.bounds)
+              : std::vector<chrome_pdf::AccessibilityFormGraphicInfo>()),
+      page_tables_(ComputePageTables(builder, filtered_graphics_)),
       page_layout_{
           .text_runs = builder.text_runs(),
           .chars = builder.chars(),
@@ -2728,18 +2773,16 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
   };
 
   const gfx::RectF& page_bounds = builder_->page_node()->relative_bounds.bounds;
-  std::vector<chrome_pdf::AccessibilityFormGraphicInfo> graphics;
   std::vector<chrome_pdf::AccessibilityImageInfo> filtered_images;
   base::span<const chrome_pdf::AccessibilityImageInfo> images =
       builder_->images();
   if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
-    graphics = FilterGraphics(builder_->graphics(), page_bounds);
     filtered_images = FilterImages(builder_->images());
     images = filtered_images;
   }
 
   const HeuristicPageProperties page_properties =
-      ComputeHeuristicPageProperties(builder_->text_runs(), graphics,
+      ComputeHeuristicPageProperties(builder_->text_runs(), filtered_graphics_,
                                      page_bounds);
 
   ui::AXNodeData* block_node = nullptr;
@@ -2820,11 +2863,11 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
     // Close any open non-figure block when entering a graphic so the graphic
     // starts its own `kFigure` block even if `BreakParagraph()` didn't split
     // before this run.
-    chrome_pdf::AccessibilityFormGraphicInfo* current_graphic = nullptr;
+    const chrome_pdf::AccessibilityFormGraphicInfo* current_graphic = nullptr;
     if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled() &&
-        IsObjectWithRangeInTextRun(graphics, current_graphic_index,
+        IsObjectWithRangeInTextRun(filtered_graphics_, current_graphic_index,
                                    text_run_index)) {
-      current_graphic = &graphics[current_graphic_index];
+      current_graphic = &filtered_graphics_[current_graphic_index];
       if (block_node && block_node->role != ax::mojom::Role::kFigure) {
         BuildStaticNode(&static_text_state);
         block_node = nullptr;
@@ -2999,7 +3042,7 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
     // A figure block stays open across its entire graphic text range and closes
     // once the last run in the graphic is reached.
     if (block_node->role == ax::mojom::Role::kFigure) {
-      const auto& range = graphics[current_graphic_index].text_range;
+      const auto& range = filtered_graphics_[current_graphic_index].text_range;
       if (text_run_index + 1 >= range.index + range.count) {
         BuildStaticNode(&static_text_state);
         block_node = nullptr;
@@ -3015,11 +3058,7 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
     }
 
     // A following table run closes the block itself.
-    //
-    // A link or highlight with text in a table can leave `text_run_index` on a
-    // table run. Its `next_run` can be null, so skip it too.
     if (!previous_on_line_node &&
-        !page_layout_.table_text_run_indices->contains(text_run_index) &&
         !page_layout_.table_text_run_indices->contains(text_run_index + 1)) {
       if (BreakParagraph(text_run_index, block_node, current_heading_classifier,
                          page_layout_, page_properties, list_levels_,
