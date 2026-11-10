@@ -61,7 +61,7 @@ class ResourceLoaderCodeCacheTest : public testing::Test {
     return MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
         properties->MakeDetachable(), context, CreateTaskRunner(),
         CreateTaskRunner(), loader_factory,
-        MakeGarbageCollected<MockContextLifecycleNotifier>(),
+        context_lifecycle_notifier_.Notifier(),
         /*back_forward_cache_loader_helper=*/nullptr));
   }
 
@@ -141,6 +141,7 @@ class ResourceLoaderCodeCacheTest : public testing::Test {
 
   test::TaskEnvironment task_environment_;
   ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
+  ScopedMockContextLifecycleNotifier context_lifecycle_notifier_;
 
   // State initialized by CommonSetup().
   Persistent<ScriptResource> resource_;

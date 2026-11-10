@@ -160,6 +160,7 @@ class ModuleScriptLoaderTest : public PageTestBase {
   const KURL url_;
   const scoped_refptr<const SecurityOrigin> security_origin_;
 
+  ScopedMockContextLifecycleNotifier context_lifecycle_notifier_;
   Persistent<ResourceFetcher> fetcher_;
 
   ScopedTestingPlatformSupport<FetchTestingPlatformSupport> platform_;
@@ -195,7 +196,7 @@ void ModuleScriptLoaderTest::InitializeForDocument() {
                           base::MakeRefCounted<scheduler::FakeTaskRunner>(),
                           MakeGarbageCollected<TestLoaderFactory>(
                               platform_->GetURLLoaderMockFactory()),
-                          MakeGarbageCollected<MockContextLifecycleNotifier>(),
+                          context_lifecycle_notifier_.Notifier(),
                           nullptr /* back_forward_cache_loader_helper */));
   modulator_ = MakeGarbageCollected<ModuleScriptLoaderTestModulator>(
       ToScriptStateForMainWorld(&GetFrame()));
@@ -211,7 +212,7 @@ void ModuleScriptLoaderTest::InitializeForWorklet() {
                           base::MakeRefCounted<scheduler::FakeTaskRunner>(),
                           MakeGarbageCollected<TestLoaderFactory>(
                               platform_->GetURLLoaderMockFactory()),
-                          MakeGarbageCollected<MockContextLifecycleNotifier>(),
+                          context_lifecycle_notifier_.Notifier(),
                           nullptr /* back_forward_cache_loader_helper */));
   reporting_proxy_ = std::make_unique<MockWorkerReportingProxy>();
   auto creation_params = std::make_unique<GlobalScopeCreationParams>(

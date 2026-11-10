@@ -129,13 +129,13 @@ class MemoryCacheCorrectnessTest : public testing::Test {
     auto* properties =
         MakeGarbageCollected<TestResourceFetcherProperties>(security_origin_);
     properties->SetShouldBlockLoadingSubResource(true);
-    fetcher_ = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
-        properties->MakeDetachable(), context,
-        base::MakeRefCounted<scheduler::FakeTaskRunner>(),
-        base::MakeRefCounted<scheduler::FakeTaskRunner>(),
-        MakeGarbageCollected<TestLoaderFactory>(),
-        MakeGarbageCollected<MockContextLifecycleNotifier>(),
-        nullptr /* back_forward_cache_loader_helper */));
+    fetcher_ = MakeGarbageCollected<ResourceFetcher>(
+        ResourceFetcherInit(properties->MakeDetachable(), context,
+                            base::MakeRefCounted<scheduler::FakeTaskRunner>(),
+                            base::MakeRefCounted<scheduler::FakeTaskRunner>(),
+                            MakeGarbageCollected<TestLoaderFactory>(),
+                            lifecycle_notifier_.Notifier(),
+                            nullptr /* back_forward_cache_loader_helper */));
     Resource::SetClockForTesting(task_environment_.GetMockClock());
   }
   void TearDown() override {
@@ -149,6 +149,7 @@ class MemoryCacheCorrectnessTest : public testing::Test {
 
  private:
   scoped_refptr<const SecurityOrigin> security_origin_;
+  ScopedMockContextLifecycleNotifier lifecycle_notifier_;
   Persistent<ResourceFetcher> fetcher_;
   ScopedMemoryCacheForTesting scoped_memory_cache_;
 };

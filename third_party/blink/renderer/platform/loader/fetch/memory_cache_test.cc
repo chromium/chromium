@@ -124,20 +124,20 @@ class MemoryCacheTest : public testing::Test {
  protected:
   void SetUp() override {
     auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
-    lifecycle_notifier_ = MakeGarbageCollected<MockContextLifecycleNotifier>();
     fetcher_ = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
         properties->MakeDetachable(), MakeGarbageCollected<MockFetchContext>(),
         base::MakeRefCounted<scheduler::FakeTaskRunner>(),
         base::MakeRefCounted<scheduler::FakeTaskRunner>(),
-        MakeGarbageCollected<TestLoaderFactory>(), lifecycle_notifier_,
+        MakeGarbageCollected<TestLoaderFactory>(),
+        lifecycle_notifier_.Notifier(),
         nullptr /* back_forward_cache_loader_helper */));
   }
 
   test::TaskEnvironmentWithMainThreadScheduler task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::TestMemoryConsumerRegistry test_memory_consumer_registry_;
+  ScopedMockContextLifecycleNotifier lifecycle_notifier_;
   Persistent<ResourceFetcher> fetcher_;
-  Persistent<MockContextLifecycleNotifier> lifecycle_notifier_;
   ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
   ScopedMemoryCacheForTesting scoped_memory_cache_;
 

@@ -63,13 +63,13 @@ class FontResourceTest : public testing::Test {
   FontResource* LoadAhemFont() {
     auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
     MockFetchContext* context = MakeGarbageCollected<MockFetchContext>();
-    auto* fetcher = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
-        properties->MakeDetachable(), context,
-        base::MakeRefCounted<scheduler::FakeTaskRunner>(),
-        base::MakeRefCounted<scheduler::FakeTaskRunner>(),
-        MakeGarbageCollected<TestLoaderFactory>(),
-        MakeGarbageCollected<MockContextLifecycleNotifier>(),
-        nullptr /* back_forward_cache_loader_helper */));
+    auto* fetcher = MakeGarbageCollected<ResourceFetcher>(
+        ResourceFetcherInit(properties->MakeDetachable(), context,
+                            base::MakeRefCounted<scheduler::FakeTaskRunner>(),
+                            base::MakeRefCounted<scheduler::FakeTaskRunner>(),
+                            MakeGarbageCollected<TestLoaderFactory>(),
+                            context_lifecycle_notifier_.Notifier(),
+                            nullptr /* back_forward_cache_loader_helper */));
 
     KURL url("http://127.0.0.1:8000/font.woff2");
     url_test_helpers::RegisterMockedURLLoad(
@@ -85,6 +85,9 @@ class FontResourceTest : public testing::Test {
 
  private:
   test::TaskEnvironment task_environment_;
+
+ protected:
+  ScopedMockContextLifecycleNotifier context_lifecycle_notifier_;
 };
 
 class CacheAwareFontResourceTest : public FontResourceTest {
@@ -131,7 +134,7 @@ TEST_F(FontResourceTest,
                           base::MakeRefCounted<scheduler::FakeTaskRunner>(),
                           base::MakeRefCounted<scheduler::FakeTaskRunner>(),
                           MakeGarbageCollected<TestLoaderFactory>(),
-                          MakeGarbageCollected<MockContextLifecycleNotifier>(),
+                          context_lifecycle_notifier_.Notifier(),
                           nullptr /* back_forward_cache_loader_helper */));
 
   // Fetch to cache a resource.
@@ -192,7 +195,7 @@ TEST_F(FontResourceTest, RevalidationPolicyMetrics) {
                           base::MakeRefCounted<scheduler::FakeTaskRunner>(),
                           base::MakeRefCounted<scheduler::FakeTaskRunner>(),
                           MakeGarbageCollected<TestLoaderFactory>(),
-                          MakeGarbageCollected<MockContextLifecycleNotifier>(),
+                          context_lifecycle_notifier_.Notifier(),
                           nullptr /* back_forward_cache_loader_helper */));
 
   KURL url_preload_font("http://127.0.0.1:8000/font_preload.ttf");
@@ -352,7 +355,7 @@ TEST_F(FontResourceStrongReferenceTest, FontResourceStrongReference) {
                           base::MakeRefCounted<scheduler::FakeTaskRunner>(),
                           base::MakeRefCounted<scheduler::FakeTaskRunner>(),
                           MakeGarbageCollected<TestLoaderFactory>(),
-                          MakeGarbageCollected<MockContextLifecycleNotifier>(),
+                          context_lifecycle_notifier_.Notifier(),
                           nullptr /* back_forward_cache_loader_helper */));
 
   KURL url_font("http://127.0.0.1:8000/font.ttf");
@@ -381,7 +384,7 @@ TEST_F(FontResourceStrongReferenceTest, FollowCacheControl) {
                           base::MakeRefCounted<scheduler::FakeTaskRunner>(),
                           base::MakeRefCounted<scheduler::FakeTaskRunner>(),
                           MakeGarbageCollected<TestLoaderFactory>(),
-                          MakeGarbageCollected<MockContextLifecycleNotifier>(),
+                          context_lifecycle_notifier_.Notifier(),
                           nullptr /* back_forward_cache_loader_helper */));
 
   KURL url_font_no_store("http://127.0.0.1:8000/font_no_store.ttf");
@@ -565,7 +568,7 @@ TEST_F(FontResourceTest, DecodeIftFontCreatesIftPatcher) {
                           base::MakeRefCounted<scheduler::FakeTaskRunner>(),
                           base::MakeRefCounted<scheduler::FakeTaskRunner>(),
                           MakeGarbageCollected<TestLoaderFactory>(),
-                          MakeGarbageCollected<MockContextLifecycleNotifier>(),
+                          context_lifecycle_notifier_.Notifier(),
                           nullptr /* back_forward_cache_loader_helper */));
 
   KURL url("http://127.0.0.1:8000/roboto-ift.woff2");
@@ -635,8 +638,7 @@ class FontResourceBackgroundProcessorTest : public testing::Test {
                 }));
     auto* fetcher = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
         properties->MakeDetachable(), context, task_runner, task_runner,
-        fake_loader_factory,
-        MakeGarbageCollected<MockContextLifecycleNotifier>(),
+        fake_loader_factory, context_lifecycle_notifier_.Notifier(),
         /*back_forward_cache_loader_helper=*/nullptr));
 
     base::RunLoop run_loop;
@@ -673,6 +675,9 @@ class FontResourceBackgroundProcessorTest : public testing::Test {
   static int url_counter_;
   test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
+
+ protected:
+  ScopedMockContextLifecycleNotifier context_lifecycle_notifier_;
 };
 int FontResourceBackgroundProcessorTest::url_counter_ = 0;
 

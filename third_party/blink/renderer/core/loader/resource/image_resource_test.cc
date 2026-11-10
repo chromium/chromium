@@ -128,12 +128,23 @@ constexpr size_t kJpegImageSubrangeWithDimensionsLength =
     sizeof(kJpegImage) - 1;
 constexpr size_t kJpegImageSubrangeWithoutDimensionsLength = 3;
 
+ResourceFetcher* CreateFetcher(ContextLifecycleNotifier* notifier) {
+  auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
+  return MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
+      properties->MakeDetachable(), MakeGarbageCollected<MockFetchContext>(),
+      base::MakeRefCounted<scheduler::FakeTaskRunner>(),
+      base::MakeRefCounted<scheduler::FakeTaskRunner>(),
+      MakeGarbageCollected<TestLoaderFactory>(), notifier,
+      nullptr /* back_forward_cache_loader_helper */));
+}
+
 class ImageResourceTest : public testing::Test,
                           private ScopedMockOverlayScrollbars {
  public:
   ImageResourceTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   void TearDown() override {
+    context_lifecycle_notifier_.Reset();
     // Trigger a GC so MockFinishObserver gets destroyed and EXPECT_CALL gets
     // checked before the test ends.
     ThreadState::Current()->CollectAllGarbageForTesting(
@@ -141,7 +152,12 @@ class ImageResourceTest : public testing::Test,
   }
 
  protected:
+  ResourceFetcher* CreateFetcher() {
+    return blink::CreateFetcher(context_lifecycle_notifier_.Notifier());
+  }
+
   test::TaskEnvironment task_environment_;
+  ScopedMockContextLifecycleNotifier context_lifecycle_notifier_;
 };
 
 // Ensure that the image decoder can determine the dimensions of kJpegImage from
@@ -231,17 +247,6 @@ void ReceiveResponse(ImageResource* image_resource,
 
 AtomicString BuildContentRange(size_t range_length, size_t total_length) {
   return AtomicString(Format("bytes 0-{}/{}", range_length - 1, total_length));
-}
-
-ResourceFetcher* CreateFetcher() {
-  auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
-  return MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
-      properties->MakeDetachable(), MakeGarbageCollected<MockFetchContext>(),
-      base::MakeRefCounted<scheduler::FakeTaskRunner>(),
-      base::MakeRefCounted<scheduler::FakeTaskRunner>(),
-      MakeGarbageCollected<TestLoaderFactory>(),
-      MakeGarbageCollected<MockContextLifecycleNotifier>(),
-      nullptr /* back_forward_cache_loader_helper */));
 }
 
 TEST_F(ImageResourceTest, MultipartImage) {
@@ -1436,7 +1441,12 @@ class ImageResourceCounterTest : public testing::Test {
         InstanceCounters::kUACSSResourceCounter);
   }
 
+  ResourceFetcher* CreateFetcher() {
+    return blink::CreateFetcher(context_lifecycle_notifier_.Notifier());
+  }
+
   test::TaskEnvironment task_environment_;
+  ScopedMockContextLifecycleNotifier context_lifecycle_notifier_;
 };
 
 TEST_F(ImageResourceCounterTest, InstanceCounters) {

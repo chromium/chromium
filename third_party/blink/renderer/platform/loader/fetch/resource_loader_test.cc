@@ -110,11 +110,11 @@ class ResourceLoaderTest : public testing::Test {
   ResourceFetcher* MakeResourceFetcher(
       TestResourceFetcherProperties* properties,
       FetchContext* context) {
-    ResourceFetcherInit init(
-        properties->MakeDetachable(), context, CreateTaskRunner(),
-        CreateTaskRunner(), MakeGarbageCollected<NoopLoaderFactory>(),
-        MakeGarbageCollected<MockContextLifecycleNotifier>(),
-        /*back_forward_cache_loader_helper=*/nullptr);
+    ResourceFetcherInit init(properties->MakeDetachable(), context,
+                             CreateTaskRunner(), CreateTaskRunner(),
+                             MakeGarbageCollected<NoopLoaderFactory>(),
+                             context_lifecycle_notifier_.Notifier(),
+                             /*back_forward_cache_loader_helper=*/nullptr);
     use_counter_ = MakeGarbageCollected<testing::StrictMock<MockUseCounter>>();
     init.use_counter = MakeGarbageCollected<DetachableUseCounter>(use_counter_);
     return MakeGarbageCollected<ResourceFetcher>(std::move(init));
@@ -123,6 +123,7 @@ class ResourceLoaderTest : public testing::Test {
   MockUseCounter* UseCounter() const { return use_counter_; }
 
  private:
+  ScopedMockContextLifecycleNotifier context_lifecycle_notifier_;
   Persistent<MockUseCounter> use_counter_;
 };
 
