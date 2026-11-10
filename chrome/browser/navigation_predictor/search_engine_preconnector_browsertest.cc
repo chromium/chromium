@@ -2400,7 +2400,7 @@ class SearchEnginePreconnectorPrewarmDictionaryTimerOnlyBrowserTest
   SearchEnginePreconnectorPrewarmDictionaryTimerOnlyBrowserTest()
       : SearchEnginePreconnectorPrewarmDictionaryBrowserTest(
             /*cleanup_mode=*/"timer_only",
-            /*timeout=*/"50ms") {}
+            /*timeout=*/"10ms") {}
 };
 
 IN_PROC_BROWSER_TEST_F(
@@ -2413,6 +2413,11 @@ IN_PROC_BROWSER_TEST_F(
   preconnector->StartPreconnecting(/*with_startup_delay=*/false);
   EXPECT_TRUE(preconnector->HasPrewarmedDictionaryForTesting());
   EXPECT_TRUE(preconnector->IsPrewarmedDictionaryTimerRunningForTesting());
+
+  // Ensure the preconnect retry backoff delay is capped at the 60s max so a
+  // 50ms retry preconnect does not race with the dictionary expiry timer and
+  // refresh the dictionary before RunUntil observes expiry.
+  preconnector->SetConsecutiveFailureForTesting(50);
 
   // In timer_only mode, connection events are ignored.
   preconnector->OnSessionClosed(/*was_ever_used_to_create_streams=*/false);
