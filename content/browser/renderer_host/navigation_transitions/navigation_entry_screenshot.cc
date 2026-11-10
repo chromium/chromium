@@ -583,17 +583,16 @@ void NavigationEntryScreenshot::DoReadBack(SkBitmap bitmap) {
   }
 
   gfx::Point src_point;
-  SkImageInfo info = bitmap.info();
+  // Copy the SkPixmap because `bitmap` is moved into the callback below.
+  const SkPixmap pixmap = bitmap.pixmap();
   auto* raster_interface = context_provider->RasterInterface();
   CHECK(raster_interface, base::NotFatalUntil::M152);
   auto scoped_access = shared_image->BeginRasterAccess(
       raster_interface, shared_image->creation_sync_token(),
       /*readonly=*/true);
-  auto span = gfx::SkPixmapToWritableSpan(bitmap.pixmap());
   raster_interface->ReadbackARGBPixelsAsync(
       shared_image->mailbox(), shared_image->GetTextureTarget(),
-      shared_image->surface_origin(), shared_image->size(), src_point, info,
-      info.minRowBytes(), span,
+      shared_image->surface_origin(), shared_image->size(), src_point, pixmap,
       base::BindOnce(&NavigationEntryScreenshot::OnReadBack,
                      weak_factory_.GetWeakPtr(), std::move(bitmap)));
   shared_image_provider_->SetReadSyncToken(

@@ -29,6 +29,7 @@
 #include "base/memory/raw_span.h"
 #include "base/memory/stack_allocated.h"
 #include "base/notimplemented.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/memory_allocator_dump.h"
@@ -1647,12 +1648,14 @@ void RasterImplementation::ReadbackARGBPixelsAsync(
     GrSurfaceOrigin source_origin,
     const gfx::Size& source_size,
     const gfx::Point& source_starting_point,
-    const SkImageInfo& dst_info,
-    GLuint dst_row_bytes,
-    base::span<uint8_t> out,
+    const SkPixmap& dst_pixmap,
     base::OnceCallback<void(bool)> readback_done) {
   TRACE_EVENT0("gpu", "RasterImplementation::ReadbackARGBPixelsAsync");
   DCHECK(!!readback_done);
+  const SkImageInfo& dst_info = dst_pixmap.info();
+  const GLuint dst_row_bytes =
+      base::checked_cast<GLuint>(dst_pixmap.rowBytes());
+  base::span<uint8_t> out = skia::as_writable_byte_span(dst_pixmap);
   // Note: It's possible the GL implementation supports other readback
   // types. However, as of this writing, no caller of this method will
   // request a different |color_type| (i.e., requiring using some other GL
@@ -1672,16 +1675,15 @@ void RasterImplementation::ReadbackARGBPixelsAsync(
 bool RasterImplementation::ReadbackImagePixels(
     const gpu::Mailbox& source_mailbox,
     const gfx::Size& source_size,
-    const SkImageInfo& dst_info,
-    GLuint dst_row_bytes,
     int src_x,
     int src_y,
     int plane_index,
-    void* dst_pixels) {
+    const SkPixmap& dst_pixmap) {
   TRACE_EVENT0("gpu", "RasterImplementation::ReadbackImagePixels");
-  size_t dst_size = dst_info.computeByteSize(dst_row_bytes);
-  base::span<uint8_t> dst_span =
-      UNSAFE_TODO(base::span(static_cast<uint8_t*>(dst_pixels), dst_size));
+  const SkImageInfo& dst_info = dst_pixmap.info();
+  const GLuint dst_row_bytes =
+      base::checked_cast<GLuint>(dst_pixmap.rowBytes());
+  base::span<uint8_t> dst_span = skia::as_writable_byte_span(dst_pixmap);
   return ReadbackImagePixelsINTERNAL(
              source_mailbox, source_size, dst_info, dst_row_bytes, src_x, src_y,
              plane_index, base::OnceCallback<void(bool)>(), dst_span) ||

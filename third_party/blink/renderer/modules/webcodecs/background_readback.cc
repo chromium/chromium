@@ -4,9 +4,10 @@
 
 #include "third_party/blink/renderer/modules/webcodecs/background_readback.h"
 
+#include <optional>
+
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/task_traits.h"
 #include "base/threading/thread_checker.h"
@@ -32,6 +33,7 @@
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
+#include "third_party/skia/include/core/SkPixmap.h"
 
 namespace {
 bool PrefersExternalSampler(const media::VideoFrame& frame) {
@@ -91,14 +93,6 @@ bool CanUseYuvReadback(const media::VideoFrame& frame,
     }
   }
   return true;
-}
-
-SkImageInfo GetImageInfoForFrame(const media::VideoFrame& frame,
-                                 const gfx::Size& size) {
-  SkColorType color_type =
-      SkColorTypeForPlane(frame.format(), media::VideoFrame::Plane::kARGB);
-  SkAlphaType alpha_type = kUnpremul_SkAlphaType;
-  return SkImageInfo::Make(size.width(), size.height(), color_type, alpha_type);
 }
 
 gpu::raster::RasterInterface* GetSharedGpuRasterInterface() {
@@ -289,10 +283,9 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToMemory(
     ReadbackToFrameDoneCallback result_cb) {
   DCHECK(CanUseRgbReadback(*txt_frame));
 
-  SkImageInfo info =
-      GetImageInfoForFrame(*txt_frame, txt_frame->visible_rect().size());
   const auto format = media::VideoPixelFormatFromSkColorType(
-      info.colorType(), media::IsOpaque(txt_frame->format()));
+      SkColorTypeForPlane(txt_frame->format(), media::VideoFrame::Plane::kARGB),
+      media::IsOpaque(txt_frame->format()));
 
   auto result = result_frame_pool_.CreateFrame(
       format, txt_frame->coded_size(), txt_frame->visible_rect(),
@@ -303,17 +296,13 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToMemory(
     base::BindPostTask(task_runner_, std::move(result_cb)).Run(nullptr);
     return;
   }
+  const SkPixmap dst_pixmap =
+      result->GetWritableVisibleRGBPlanePixmap().value_or(SkPixmap());
 
   TRACE_EVENT_BEGIN("media", "ReadbackRGBTextureBackedFrameToMemory",
                     perfetto::NamedTrack::FromPointer(
                         "blink::BackgroundReadback", txt_frame.get()),
                     "timestamp", txt_frame->timestamp());
-
-  base::span<uint8_t> dst_pixels =
-      result->GetWritableVisiblePlaneData(media::VideoFrame::Plane::kARGB);
-  int rgba_stride =
-      static_cast<int>(result->stride(media::VideoFrame::Plane::kARGB));
-  DCHECK_GT(rgba_stride, 0);
 
   gfx::Point src_point = txt_frame->visible_rect().origin();
   auto shared_image = txt_frame->shared_image();
@@ -325,8 +314,7 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToMemory(
   gfx::Size texture_size = txt_frame->coded_size();
   ri->ReadbackARGBPixelsAsync(
       shared_image->mailbox(), shared_image->GetTextureTarget(), origin,
-      texture_size, src_point, info, base::saturated_cast<GLuint>(rgba_stride),
-      dst_pixels,
+      texture_size, src_point, dst_pixmap,
       blink::BindOnce(&BackgroundReadback::OnARGBPixelsFrameReadCompleted,
                       MakeUnwrappingCrossThreadWeakHandle(this),
                       std::move(result_cb), txt_frame, std::move(result)));
@@ -374,20 +362,9 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrame(
     return;
   }
 
-  base::span<uint8_t> dst_pixels =
-      dest_frame->GetWritableVisiblePlaneData(media::VideoFrame::Plane::kARGB);
-  int rgba_stride = base::checked_cast<int>(
-      dest_frame->stride(media::VideoFrame::Plane::kARGB));
-  const size_t visible_rows =
-      base::checked_cast<size_t>(dest_frame->visible_rect().height());
-  base::CheckedNumeric<size_t> required_bytes = 0;
-  if (visible_rows > 0) {
-    required_bytes =
-        base::CheckedNumeric<size_t>(rgba_stride) * (visible_rows - 1) +
-        dest_frame->GetVisibleRowBytes(media::VideoFrame::Plane::kARGB);
-  }
-  if (rgba_stride <= 0 || !required_bytes.IsValid() ||
-      required_bytes.ValueOrDie() > dst_pixels.size()) {
+  const std::optional<SkPixmap> dst_pixmap =
+      dest_frame->GetWritableVisibleRGBPlanePixmap();
+  if (!dst_pixmap) {
     DLOG(ERROR) << "Buffer is not sufficiently large for readback";
     base::BindPostTask(task_runner_, std::move(done_cb)).Run(false);
     return;
@@ -397,9 +374,6 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrame(
                     perfetto::NamedTrack::FromPointer(
                         "blink::BackgroundReadback", txt_frame.get()),
                     "timestamp", txt_frame->timestamp());
-
-  SkImageInfo info =
-      GetImageInfoForFrame(*txt_frame, txt_frame->visible_rect().size());
   gfx::Point src_point = txt_frame->visible_rect().origin();
   auto shared_image = txt_frame->shared_image();
   auto origin = shared_image->surface_origin();
@@ -414,8 +388,7 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrame(
   gfx::Size texture_size = txt_frame->coded_size();
   ri->ReadbackARGBPixelsAsync(
       shared_image->mailbox(), shared_image->GetTextureTarget(), origin,
-      texture_size, src_point, info, base::saturated_cast<GLuint>(rgba_stride),
-      dst_pixels, std::move(completion_cb));
+      texture_size, src_point, *dst_pixmap, std::move(completion_cb));
   media::WaitAndReplaceSyncTokenClient client(ri, std::move(ri_access));
   txt_frame->UpdateReleaseSyncToken(&client);
 }

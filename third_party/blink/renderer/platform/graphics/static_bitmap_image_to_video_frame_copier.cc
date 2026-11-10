@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image_to_video_frame_copier.h"
 
 #include "base/functional/callback_helpers.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
@@ -22,6 +21,7 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkPixmap.h"
 #include "ui/gfx/color_space.h"
 
 namespace blink {
@@ -193,8 +193,8 @@ void StaticBitmapImageToVideoFrameCopier::ReadARGBPixelsAsync(
                     kN32_SkColorType == kBGRA_8888_SkColorType,
                 "CanvasCaptureHandler::ReadARGBPixelsAsync supports only "
                 "kRGBA_8888_SkColorType and kBGRA_8888_SkColorType.");
-  SkImageInfo info = SkImageInfo::MakeN32(
-      image_size.width(), image_size.height(), kUnpremul_SkAlphaType);
+  const SkPixmap dst_pixmap =
+      temp_argb_frame->GetWritableVisibleRGBPlanePixmap().value_or(SkPixmap());
   auto shared_image = image->GetSharedImage();
   GrSurfaceOrigin image_origin = shared_image->surface_origin();
   gfx::Point src_point;
@@ -204,11 +204,7 @@ void StaticBitmapImageToVideoFrameCopier::ReadARGBPixelsAsync(
                                       image->GetSyncToken(), /*readonly=*/true);
   context_provider->RasterInterface()->ReadbackARGBPixelsAsync(
       shared_image->mailbox(), shared_image->GetTextureTarget(), image_origin,
-      image_size, src_point, info,
-      base::checked_cast<GLuint>(
-          temp_argb_frame->stride(media::VideoFrame::Plane::kARGB)),
-      temp_argb_frame->GetWritableVisiblePlaneData(
-          media::VideoFrame::Plane::kARGB),
+      image_size, src_point, dst_pixmap,
       blink::BindOnce(
           &StaticBitmapImageToVideoFrameCopier::OnARGBPixelsReadAsync,
           weak_ptr_factory_.GetWeakPtr(), image, temp_argb_frame,

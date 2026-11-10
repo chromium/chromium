@@ -164,9 +164,7 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
       GrSurfaceOrigin source_origin,
       const gfx::Size& source_size,
       const gfx::Point& source_starting_point,
-      const SkImageInfo& dst_info,
-      GLuint dst_row_bytes,
-      base::span<uint8_t> out,
+      const SkPixmap& dst_pixmap,
       base::OnceCallback<void(bool)> readback_done) override;
 
   void ReadbackYUVPixelsAsync(
@@ -180,12 +178,10 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
       base::OnceCallback<void(bool)> readback_done) override;
   bool ReadbackImagePixels(const gpu::Mailbox& source_mailbox,
                            const gfx::Size& source_size,
-                           const SkImageInfo& dst_info,
-                           GLuint dst_row_bytes,
                            int src_x,
                            int src_y,
                            int plane_index,
-                           void* dst_pixels) override;
+                           const SkPixmap& dst_pixmap) override;
 
   // ContextSupport implementation.
   void SetAggressivelyFreeResources(bool aggressively_free_resources) override;

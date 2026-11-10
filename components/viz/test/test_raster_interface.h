@@ -117,9 +117,7 @@ class TestRasterInterface : public gpu::raster::RasterInterface {
       GrSurfaceOrigin source_origin,
       const gfx::Size& source_size,
       const gfx::Point& source_starting_point,
-      const SkImageInfo& dst_info,
-      GLuint dst_row_bytes,
-      base::span<uint8_t> out,
+      const SkPixmap& dst_pixmap,
       base::OnceCallback<void(bool)> readback_done) override {}
   void ReadbackYUVPixelsAsync(
       const gpu::Mailbox& source_mailbox,
@@ -132,12 +130,10 @@ class TestRasterInterface : public gpu::raster::RasterInterface {
       base::OnceCallback<void(bool)> readback_done) override {}
   bool ReadbackImagePixels(const gpu::Mailbox& source_mailbox,
                            const gfx::Size& source_size,
-                           const SkImageInfo& dst_info,
-                           GLuint dst_row_bytes,
                            int src_x,
                            int src_y,
                            int plane_index,
-                           void* dst_pixels) override;
+                           const SkPixmap& dst_pixmap) override;
   void TraceBeginCHROMIUM(const char* category_name,
                           const char* trace_name) override {}
   void TraceEndCHROMIUM() override {}

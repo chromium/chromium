@@ -761,8 +761,8 @@ bool ReadbackTexturePlaneToMemorySync(VideoFrame& src_frame,
   gfx::Size plane_size = src_frame.shared_image()->format().GetPlaneSize(
       src_plane, src_frame.shared_image()->size());
   bool readback_result = ri->ReadbackImagePixels(
-      mailbox, plane_size, info, dest_stride, src_rect.x(), src_rect.y(),
-      src_plane, dest_pixels);
+      mailbox, plane_size, src_rect.x(), src_rect.y(), src_plane,
+      SkPixmap(info, dest_pixels, dest_stride));
 
   bool result = readback_result &&
                 ri->GetGraphicsResetStatusKHR() == GL_NO_ERROR &&

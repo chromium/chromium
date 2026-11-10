@@ -57,9 +57,7 @@ class ReadbackTestRasterInterface : public viz::TestRasterInterface {
       GrSurfaceOrigin source_origin,
       const gfx::Size& source_size,
       const gfx::Point& source_starting_point,
-      const SkImageInfo& dst_info,
-      GLuint dst_row_bytes,
-      base::span<uint8_t> out,
+      const SkPixmap& dst_pixmap,
       base::OnceCallback<void(bool)> readback_done) override {
     readback_done_ = std::move(readback_done);
     readback_started_.SetValue();

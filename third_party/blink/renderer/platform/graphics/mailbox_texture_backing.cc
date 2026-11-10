@@ -8,9 +8,10 @@
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/mailbox_ref.h"
-#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkPixmap.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
@@ -65,23 +66,17 @@ void MailboxTextureBacking::Unbind() {
 sk_sp<SkImage> MailboxTextureBacking::GetSkImageViaReadback() {
   CHECK(thread_checker_.CalledOnValidThread());
   // TODO(jochin): Consider doing some caching and using discardable memory.
-  sk_sp<SkData> image_pixels =
-      TryAllocateSkData(sk_image_info_.computeMinByteSize());
-  if (!image_pixels) {
+  SkBitmap bitmap;
+  if (!bitmap.tryAllocPixels(sk_image_info_)) {
     return nullptr;
   }
-  uint8_t* writable_pixels =
-      static_cast<uint8_t*>(image_pixels->writable_data());
   gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
-  if (!ri->ReadbackImagePixels(
-          GetMailbox(), shared_image_->size(), sk_image_info_,
-          static_cast<GLuint>(sk_image_info_.minRowBytes()), 0, 0,
-          /*plane_index=*/0, writable_pixels)) {
+  if (!ri->ReadbackImagePixels(GetMailbox(), shared_image_->size(), 0, 0,
+                               /*plane_index=*/0, bitmap.pixmap())) {
     return nullptr;
   }
-
-  return SkImages::RasterFromData(sk_image_info_, std::move(image_pixels),
-                                  sk_image_info_.minRowBytes());
+  bitmap.setImmutable();
+  return SkImages::RasterFromBitmap(bitmap);
 }
 
 bool MailboxTextureBacking::readPixels(const SkImageInfo& dst_info,
@@ -91,9 +86,9 @@ bool MailboxTextureBacking::readPixels(const SkImageInfo& dst_info,
                                        int src_y) {
   CHECK(thread_checker_.CalledOnValidThread());
   gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
-  return ri->ReadbackImagePixels(GetMailbox(), shared_image_->size(), dst_info,
-                                 static_cast<GLuint>(dst_row_bytes), src_x,
-                                 src_y, /*plane_index=*/0, dst_pixels);
+  return ri->ReadbackImagePixels(GetMailbox(), shared_image_->size(), src_x,
+                                 src_y, /*plane_index=*/0,
+                                 SkPixmap(dst_info, dst_pixels, dst_row_bytes));
 }
 
 }  // namespace blink

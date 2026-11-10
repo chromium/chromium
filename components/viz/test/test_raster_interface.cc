@@ -12,6 +12,8 @@
 #include "base/time/time.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/common/constants.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkPixmap.h"
 
 namespace viz {
 
@@ -141,14 +143,11 @@ void TestRasterInterface::ShallowFlushCHROMIUM() {
 bool TestRasterInterface::ReadbackImagePixels(
     const gpu::Mailbox& source_mailbox,
     const gfx::Size& source_size,
-    const SkImageInfo& dst_info,
-    GLuint dst_row_bytes,
     int src_x,
     int src_y,
     int plane_index,
-    void* dst_pixels) {
-  auto size = dst_info.computeByteSize(dst_row_bytes);
-  UNSAFE_TODO(memset(dst_pixels, 0, size));
+    const SkPixmap& dst_pixmap) {
+  dst_pixmap.erase(SK_ColorTRANSPARENT);
   return true;
 }
 }  // namespace viz

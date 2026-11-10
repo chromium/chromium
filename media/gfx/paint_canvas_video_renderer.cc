@@ -887,10 +887,9 @@ class VideoTextureBacking : public cc::TextureBacking {
     CHECK(raster_context_provider_);
     gpu::raster::RasterInterface* ri =
         raster_context_provider_->RasterInterface();
-    return ri->ReadbackImagePixels(shared_image_->mailbox(),
-                                   shared_image_->size(), dst_info,
-                                   dst_row_bytes, src_x, src_y,
-                                   /*plane_index=*/0, dst_pixels);
+    return ri->ReadbackImagePixels(
+        shared_image_->mailbox(), shared_image_->size(), src_x, src_y,
+        /*plane_index=*/0, SkPixmap(dst_info, dst_pixels, dst_row_bytes));
   }
 
   const gpu::SyncToken& sync_token() {

@@ -953,8 +953,8 @@ TEST_F(RasterImplementationTest, ReadbackImagePixelsSyncPadding) {
       .RetiresOnSaturation();
 
   bool success = gl_->ReadbackImagePixels(
-      mailbox, /*source_size=*/gfx::Size(2, 2), dst_info, dst_row_bytes,
-      /*src_x=*/0, /*src_y=*/0, /*plane_index=*/0, dst_pixels.data());
+      mailbox, /*source_size=*/gfx::Size(2, 2), /*src_x=*/0, /*src_y=*/0,
+      /*plane_index=*/0, SkPixmap(dst_info, dst_pixels.data(), dst_row_bytes));
 
   EXPECT_TRUE(success);
 
@@ -1080,9 +1080,9 @@ TEST_F(RasterImplementationTest, ReadbackImagePixelsSyncOutOfBounds) {
 
   std::vector<uint8_t> dst_pixels(dst_row_bytes * dst_info.height(), 0xAA);
   EXPECT_TRUE(gl_->ReadbackImagePixels(
-      gpu::Mailbox::Generate(), /*source_size=*/gfx::Size(2, 2), dst_info,
-      dst_row_bytes, /*src_x=*/-1, /*src_y=*/-1, /*plane_index=*/0,
-      dst_pixels.data()));
+      gpu::Mailbox::Generate(), /*source_size=*/gfx::Size(2, 2), /*src_x=*/-1,
+      /*src_y=*/-1, /*plane_index=*/0,
+      SkPixmap(dst_info, dst_pixels.data(), dst_row_bytes)));
 
   std::vector<uint8_t> expected_pixels(dst_row_bytes * dst_info.height(), 0xAA);
   for (int y = 0; y < clipped_info.height(); ++y) {
@@ -1101,9 +1101,9 @@ TEST_F(RasterImplementationTest, ReadbackImagePixelsSyncCompletelyOutOfBounds) {
   SkImageInfo dst_info = SkImageInfo::MakeN32Premul(2, 2);
   std::vector<uint8_t> dst_pixels(dst_info.computeMinByteSize(), 0xAA);
   EXPECT_FALSE(gl_->ReadbackImagePixels(
-      gpu::Mailbox::Generate(), /*source_size=*/gfx::Size(2, 2), dst_info,
-      dst_info.minRowBytes(), /*src_x=*/3, /*src_y=*/3, /*plane_index=*/0,
-      dst_pixels.data()));
+      gpu::Mailbox::Generate(), /*source_size=*/gfx::Size(2, 2), /*src_x=*/3,
+      /*src_y=*/3, /*plane_index=*/0,
+      SkPixmap(dst_info, dst_pixels.data(), dst_info.minRowBytes())));
 
   EXPECT_EQ(dst_pixels,
             std::vector<uint8_t>(dst_info.computeMinByteSize(), 0xAA));
