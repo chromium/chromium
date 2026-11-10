@@ -5,6 +5,8 @@
 #ifndef UI_AURA_CLIENT_CURSOR_CLIENT_OBSERVER_H_
 #define UI_AURA_CLIENT_CURSOR_CLIENT_OBSERVER_H_
 
+#include <optional>
+
 #include "ui/aura/aura_export.h"
 #include "ui/base/cursor/cursor.h"
 
@@ -16,17 +18,16 @@ namespace gfx {
 class Size;
 }
 
-namespace ui {
-enum class CursorSize;
-}
-
 namespace aura {
 namespace client {
 
 class AURA_EXPORT CursorClientObserver {
  public:
   virtual void OnCursorVisibilityChanged(bool is_visible) {}
-  virtual void OnCursorSizeChanged(ui::CursorSize cursor_size) {}
+  // Called when the custom cursor size changes. See
+  // `CursorClient::SetCustomCursorSize()`.
+  virtual void OnCustomCursorSizeChanged(
+      std::optional<int> custom_cursor_size) {}
   virtual void OnCursorDisplayChanged(const display::Display& display) {}
   // System cursor size is the size, in DIP, of the cursor; according
   // to OS settings.

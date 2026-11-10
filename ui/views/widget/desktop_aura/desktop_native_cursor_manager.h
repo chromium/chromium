@@ -6,6 +6,7 @@
 #define UI_VIEWS_WIDGET_DESKTOP_AURA_DESKTOP_NATIVE_CURSOR_MANAGER_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 
 #include "base/memory/raw_ptr.h"
@@ -55,11 +56,8 @@ class VIEWS_EXPORT DesktopNativeCursorManager : public wm::NativeCursorManager {
                  wm::NativeCursorManagerDelegate* delegate) override;
   void SetVisibility(bool visible,
                      wm::NativeCursorManagerDelegate* delegate) override;
-  void SetCursorSize(ui::CursorSize cursor_size,
-                     wm::NativeCursorManagerDelegate* delegate) override;
-  void SetLargeCursorSizeInDip(
-      int large_cursor_size_in_dip,
-      wm::NativeCursorManagerDelegate* delegate) override;
+  void SetCustomCursorSize(std::optional<int> custom_cursor_size,
+                           wm::NativeCursorManagerDelegate* delegate) override;
   void SetMouseEventsEnabled(
       bool enabled,
       wm::NativeCursorManagerDelegate* delegate) override;

@@ -4,13 +4,15 @@
 
 #include "ui/wm/core/cursor_manager.h"
 
+#include <optional>
+
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notimplemented.h"
+#include "base/test/gtest_util.h"
 #include "build/build_config.h"
 #include "ui/aura/client/cursor_client_observer.h"
 #include "ui/aura/test/aura_test_base.h"
-#include "ui/base/cursor/cursor_size.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/wm/core/native_cursor_manager.h"
 #include "ui/wm/test/testing_cursor_client_observer.h"
@@ -58,20 +60,22 @@ class TestingCursorManager : public wm::NativeCursorManager {
     delegate->CommitMouseEventsEnabled(enabled);
   }
 
-  void SetCursorSize(ui::CursorSize cursor_size,
-                     wm::NativeCursorManagerDelegate* delegate) override {
-    delegate->CommitCursorSize(cursor_size);
-  }
-
-  void SetLargeCursorSizeInDip(
-      int large_cursor_size_in_dip,
-      wm::NativeCursorManagerDelegate* delegate) override {
-    delegate->CommitLargeCursorSizeInDip(large_cursor_size_in_dip);
+  void SetCustomCursorSize(std::optional<int> custom_cursor_size,
+                           wm::NativeCursorManagerDelegate* delegate) override {
+    delegate->CommitCustomCursorSize(custom_cursor_size);
   }
 
   void SetCursorColor(SkColor color,
                       wm::NativeCursorManagerDelegate* delegate) override {
     NOTIMPLEMENTED();
+  }
+};
+
+// A `NativeCursorManager` that doesn't commit the custom cursor size.
+class NonCommittingCursorManager : public TestingCursorManager {
+ public:
+  void SetCustomCursorSize(std::optional<int> custom_cursor_size,
+                           wm::NativeCursorManagerDelegate* delegate) override {
   }
 };
 
@@ -185,24 +189,54 @@ TEST_F(CursorManagerTest, EnableDisableMouseEvents) {
   EXPECT_FALSE(cursor_manager_.IsMouseEventsEnabled());
 }
 
-TEST_F(CursorManagerTest, SetCursorSize) {
+TEST_F(CursorManagerTest, SetCustomCursorSize) {
   wm::TestingCursorClientObserver observer;
   cursor_manager_.AddObserver(&observer);
 
-  EXPECT_EQ(ui::CursorSize::kNormal, cursor_manager_.GetCursorSize());
-  EXPECT_EQ(ui::CursorSize::kNormal, observer.cursor_size());
+  EXPECT_EQ(std::nullopt, cursor_manager_.GetCustomCursorSize());
+  EXPECT_EQ(std::nullopt, observer.custom_cursor_size());
 
-  cursor_manager_.SetCursorSize(ui::CursorSize::kNormal);
-  EXPECT_EQ(ui::CursorSize::kNormal, cursor_manager_.GetCursorSize());
-  EXPECT_EQ(ui::CursorSize::kNormal, observer.cursor_size());
+  cursor_manager_.SetCustomCursorSize(std::nullopt);
+  EXPECT_EQ(std::nullopt, cursor_manager_.GetCustomCursorSize());
+  EXPECT_FALSE(observer.did_custom_cursor_size_change());
 
-  cursor_manager_.SetCursorSize(ui::CursorSize::kLarge);
-  EXPECT_EQ(ui::CursorSize::kLarge, cursor_manager_.GetCursorSize());
-  EXPECT_EQ(ui::CursorSize::kLarge, observer.cursor_size());
+  cursor_manager_.SetCustomCursorSize(64);
+  EXPECT_EQ(64, cursor_manager_.GetCustomCursorSize());
+  EXPECT_EQ(64, observer.custom_cursor_size());
 
-  cursor_manager_.SetCursorSize(ui::CursorSize::kNormal);
-  EXPECT_EQ(ui::CursorSize::kNormal, cursor_manager_.GetCursorSize());
-  EXPECT_EQ(ui::CursorSize::kNormal, observer.cursor_size());
+  observer.reset();
+  cursor_manager_.SetCustomCursorSize(100);
+  EXPECT_EQ(100, cursor_manager_.GetCustomCursorSize());
+  EXPECT_TRUE(observer.did_custom_cursor_size_change());
+  EXPECT_EQ(100, observer.custom_cursor_size());
+
+  cursor_manager_.SetCustomCursorSize(std::nullopt);
+  EXPECT_EQ(std::nullopt, cursor_manager_.GetCustomCursorSize());
+  EXPECT_EQ(std::nullopt, observer.custom_cursor_size());
+}
+
+// The custom cursor size must be at least 1.
+TEST_F(CursorManagerTest, SetCustomCursorSizeMinimum) {
+  cursor_manager_.SetCustomCursorSize(1);
+  EXPECT_EQ(1, cursor_manager_.GetCustomCursorSize());
+
+  EXPECT_CHECK_DEATH(cursor_manager_.SetCustomCursorSize(0));
+  EXPECT_CHECK_DEATH(cursor_manager_.SetCustomCursorSize(-10));
+}
+
+// Observers are not notified if the native cursor manager doesn't commit the
+// new custom cursor size.
+TEST_F(CursorManagerTest, SetCustomCursorSizeNotCommitted) {
+  wm::CursorManager cursor_manager(
+      std::make_unique<NonCommittingCursorManager>());
+  wm::TestingCursorClientObserver observer;
+  cursor_manager.AddObserver(&observer);
+
+  cursor_manager.SetCustomCursorSize(64);
+  EXPECT_EQ(std::nullopt, cursor_manager.GetCustomCursorSize());
+  EXPECT_FALSE(observer.did_custom_cursor_size_change());
+
+  cursor_manager.RemoveObserver(&observer);
 }
 
 TEST_F(CursorManagerTest, IsMouseEventsEnabled) {
@@ -306,8 +340,8 @@ TEST_F(CursorManagerTest, TestCursorClientObserver) {
   EXPECT_FALSE(observer_b.did_visibility_change());
   EXPECT_FALSE(observer_a.is_cursor_visible());
   EXPECT_FALSE(observer_b.is_cursor_visible());
-  EXPECT_FALSE(observer_a.did_cursor_size_change());
-  EXPECT_FALSE(observer_b.did_cursor_size_change());
+  EXPECT_FALSE(observer_a.did_custom_cursor_size_change());
+  EXPECT_FALSE(observer_b.did_custom_cursor_size_change());
 
   // Hide the cursor using HideCursor().
   cursor_manager_.HideCursor();
@@ -317,11 +351,11 @@ TEST_F(CursorManagerTest, TestCursorClientObserver) {
   EXPECT_FALSE(observer_b.is_cursor_visible());
 
   // Set the cursor size.
-  cursor_manager_.SetCursorSize(ui::CursorSize::kLarge);
-  EXPECT_TRUE(observer_a.did_cursor_size_change());
-  EXPECT_EQ(ui::CursorSize::kLarge, observer_a.cursor_size());
-  EXPECT_TRUE(observer_b.did_cursor_size_change());
-  EXPECT_EQ(ui::CursorSize::kLarge, observer_b.cursor_size());
+  cursor_manager_.SetCustomCursorSize(64);
+  EXPECT_TRUE(observer_a.did_custom_cursor_size_change());
+  EXPECT_EQ(64, observer_a.custom_cursor_size());
+  EXPECT_TRUE(observer_b.did_custom_cursor_size_change());
+  EXPECT_EQ(64, observer_b.custom_cursor_size());
 
   // Show the cursor using ShowCursor().
   observer_a.reset();
@@ -345,10 +379,10 @@ TEST_F(CursorManagerTest, TestCursorClientObserver) {
   EXPECT_FALSE(observer_a.is_cursor_visible());
 
   // Set back the cursor set to normal.
-  cursor_manager_.SetCursorSize(ui::CursorSize::kNormal);
-  EXPECT_TRUE(observer_a.did_cursor_size_change());
-  EXPECT_EQ(ui::CursorSize::kNormal, observer_a.cursor_size());
-  EXPECT_FALSE(observer_b.did_cursor_size_change());
+  cursor_manager_.SetCustomCursorSize(std::nullopt);
+  EXPECT_TRUE(observer_a.did_custom_cursor_size_change());
+  EXPECT_EQ(std::nullopt, observer_a.custom_cursor_size());
+  EXPECT_FALSE(observer_b.did_custom_cursor_size_change());
 
   // Show the cursor using ShowCursor().
   observer_a.reset();

@@ -6,16 +6,12 @@
 
 namespace wm {
 
-TestingCursorClientObserver::TestingCursorClientObserver()
-    : cursor_visibility_(false),
-      did_visibility_change_(false),
-      cursor_size_(ui::CursorSize::kNormal),
-      did_cursor_size_change_(false) {}
+TestingCursorClientObserver::TestingCursorClientObserver() = default;
 
 void TestingCursorClientObserver::reset() {
   cursor_visibility_ = did_visibility_change_ = false;
-  cursor_size_ = ui::CursorSize::kNormal;
-  did_cursor_size_change_ = false;
+  custom_cursor_size_.reset();
+  did_custom_cursor_size_change_ = false;
 }
 
 void TestingCursorClientObserver::OnCursorVisibilityChanged(bool is_visible) {
@@ -23,10 +19,10 @@ void TestingCursorClientObserver::OnCursorVisibilityChanged(bool is_visible) {
   did_visibility_change_ = true;
 }
 
-void TestingCursorClientObserver::OnCursorSizeChanged(
-    ui::CursorSize cursor_size) {
-  cursor_size_ = cursor_size;
-  did_cursor_size_change_ = true;
+void TestingCursorClientObserver::OnCustomCursorSizeChanged(
+    std::optional<int> custom_cursor_size) {
+  custom_cursor_size_ = custom_cursor_size;
+  did_custom_cursor_size_change_ = true;
 }
 
 }  // namespace wm

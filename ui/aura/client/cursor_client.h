@@ -5,6 +5,8 @@
 #ifndef UI_AURA_CLIENT_CURSOR_CLIENT_H_
 #define UI_AURA_CLIENT_CURSOR_CLIENT_H_
 
+#include <optional>
+
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/aura_export.h"
 #include "ui/base/cursor/cursor.h"
@@ -21,7 +23,6 @@ class Size;
 namespace ui {
 class KeyEvent;
 class TouchEvent;
-enum class CursorSize;
 }
 
 namespace aura {
@@ -50,17 +51,14 @@ class AURA_EXPORT CursorClient {
   // invisible.
   virtual void HideCursor() = 0;
 
-  // Sets the type of the mouse cursor icon.
-  virtual void SetCursorSize(ui::CursorSize cursor_size) = 0;
+  // Sets the size of the mouse cursor icon in dip. If `std::nullopt`, the
+  // default size of the cursor assets is used. Observers are notified via
+  // `CursorClientObserver::OnCustomCursorSizeChanged()` when it changes.
+  virtual void SetCustomCursorSize(std::optional<int> custom_cursor_size) = 0;
 
-  // Gets the type of the mouse cursor icon.
-  virtual ui::CursorSize GetCursorSize() const = 0;
-
-  // Sets the large cursor size in dip.
-  virtual void SetLargeCursorSizeInDip(int large_cursor_size_in_dip) = 0;
-
-  // Gets the large curssor size in dip.
-  virtual int GetLargeCursorSizeInDip() const = 0;
+  // Returns the size of the mouse cursor icon in dip, or `std::nullopt` if
+  // the default size of the cursor assets is used.
+  virtual std::optional<int> GetCustomCursorSize() const = 0;
 
   // Sets the color of the cursor.
   virtual void SetCursorColor(SkColor color) = 0;

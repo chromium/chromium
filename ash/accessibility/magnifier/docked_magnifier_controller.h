@@ -6,12 +6,12 @@
 #define ASH_ACCESSIBILITY_MAGNIFIER_DOCKED_MAGNIFIER_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
-#include "ui/base/cursor/cursor_size.h"
 #include "ui/display/manager/display_manager_observer.h"
 #include "ui/events/event_handler.h"
 #include "ui/views/widget/widget_observer.h"
@@ -128,8 +128,9 @@ class ASH_EXPORT DockedMagnifierController
 
  private:
   // If user has large cursor enabled, don't change the cursor size.
-  // Otherwise, set the cursor to be the specified size.
-  void MaybeSetCursorSize(ui::CursorSize cursor_size);
+  // Otherwise, set the custom cursor size to `custom_cursor_size`. If
+  // `std::nullopt`, the default cursor size is used.
+  void MaybeSetCustomCursorSize(std::optional<int> custom_cursor_size);
 
   // If user is starting or continuing to drag the separator, move the
   // separator and resize the viewport.

@@ -4,6 +4,7 @@
 
 #include "ui/wm/core/cursor_manager.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/check_op.h"
@@ -12,7 +13,6 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/client/cursor_client_observer.h"
 #include "ui/base/cursor/cursor.h"
-#include "ui/base/cursor/cursor_size.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/display_color_spaces.h"
@@ -56,14 +56,9 @@ class CursorState {
     // Ignores the call when mouse events disabled.
   }
 
-  ui::CursorSize cursor_size() const { return cursor_size_; }
-  void set_cursor_size(ui::CursorSize cursor_size) {
-    cursor_size_ = cursor_size;
-  }
-
-  int large_cursor_size_in_dip() const { return large_cursor_size_in_dip_; }
-  void set_large_cursor_size_in_dip(int large_cursor_size_in_dip) {
-    large_cursor_size_in_dip_ = large_cursor_size_in_dip;
+  std::optional<int> custom_cursor_size() const { return custom_cursor_size_; }
+  void set_custom_cursor_size(std::optional<int> custom_cursor_size) {
+    custom_cursor_size_ = custom_cursor_size;
   }
 
   SkColor cursor_color() const { return cursor_color_; }
@@ -92,8 +87,7 @@ class CursorState {
  private:
   gfx::NativeCursor cursor_;
   bool visible_ = true;
-  ui::CursorSize cursor_size_ = ui::CursorSize::kNormal;
-  int large_cursor_size_in_dip_ = ui::kDefaultLargeCursorSize;
+  std::optional<int> custom_cursor_size_;
   SkColor cursor_color_ = ui::kDefaultCursorColor;
   bool mouse_events_enabled_ = true;
 
@@ -191,34 +185,26 @@ bool CursorManager::IsCursorVisible() const {
   return current_state_->visible();
 }
 
-void CursorManager::SetCursorSize(ui::CursorSize cursor_size) {
-  state_on_unlock_->set_cursor_size(cursor_size);
-  if (GetCursorSize() != state_on_unlock_->cursor_size()) {
-    delegate_->SetCursorSize(state_on_unlock_->cursor_size(), this);
-    observers_.Notify(&aura::client::CursorClientObserver::OnCursorSizeChanged,
-                      cursor_size);
+void CursorManager::SetCustomCursorSize(std::optional<int> custom_cursor_size) {
+  if (custom_cursor_size) {
+    CHECK_GT(*custom_cursor_size, 0);
+  }
+  state_on_unlock_->set_custom_cursor_size(custom_cursor_size);
+  const std::optional<int> old_custom_cursor_size = GetCustomCursorSize();
+  if (old_custom_cursor_size != state_on_unlock_->custom_cursor_size()) {
+    delegate_->SetCustomCursorSize(state_on_unlock_->custom_cursor_size(),
+                                   this);
+    // Notify only if the delegate actually committed a new size.
+    if (GetCustomCursorSize() != old_custom_cursor_size) {
+      observers_.Notify(
+          &aura::client::CursorClientObserver::OnCustomCursorSizeChanged,
+          GetCustomCursorSize());
+    }
   }
 }
 
-ui::CursorSize CursorManager::GetCursorSize() const {
-  return current_state_->cursor_size();
-}
-
-void CursorManager::SetLargeCursorSizeInDip(int large_cursor_size_in_dip) {
-  large_cursor_size_in_dip =
-      std::clamp(large_cursor_size_in_dip, ui::kMinLargeCursorSize,
-                 ui::kMaxLargeCursorSize);
-
-  state_on_unlock_->set_large_cursor_size_in_dip(large_cursor_size_in_dip);
-  if (GetLargeCursorSizeInDip() !=
-      state_on_unlock_->large_cursor_size_in_dip()) {
-    delegate_->SetLargeCursorSizeInDip(
-        state_on_unlock_->large_cursor_size_in_dip(), this);
-  }
-}
-
-int CursorManager::GetLargeCursorSizeInDip() const {
-  return current_state_->large_cursor_size_in_dip();
+std::optional<int> CursorManager::GetCustomCursorSize() const {
+  return current_state_->custom_cursor_size();
 }
 
 void CursorManager::SetCursorColor(SkColor color) {
@@ -382,12 +368,9 @@ void CursorManager::CommitVisibility(bool visible) {
   current_state_->SetVisible(visible);
 }
 
-void CursorManager::CommitCursorSize(ui::CursorSize cursor_size) {
-  current_state_->set_cursor_size(cursor_size);
-}
-
-void CursorManager::CommitLargeCursorSizeInDip(int large_cursor_size_in_dip) {
-  current_state_->set_large_cursor_size_in_dip(large_cursor_size_in_dip);
+void CursorManager::CommitCustomCursorSize(
+    std::optional<int> custom_cursor_size) {
+  current_state_->set_custom_cursor_size(custom_cursor_size);
 }
 
 void CursorManager::CommitCursorColor(SkColor color) {

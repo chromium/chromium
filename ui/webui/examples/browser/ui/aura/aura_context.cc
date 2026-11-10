@@ -90,14 +90,8 @@ class AuraContext::NativeCursorManager : public wm::NativeCursorManager {
     }
   }
 
-  void SetCursorSize(ui::CursorSize cursor_size,
-                     wm::NativeCursorManagerDelegate* delegate) override {
-    NOTIMPLEMENTED();
-  }
-
-  void SetLargeCursorSizeInDip(
-      int large_cursor_size_in_dip,
-      wm::NativeCursorManagerDelegate* delegate) override {
+  void SetCustomCursorSize(std::optional<int> custom_cursor_size,
+                           wm::NativeCursorManagerDelegate* delegate) override {
     NOTIMPLEMENTED();
   }
 

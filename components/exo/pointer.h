@@ -99,7 +99,8 @@ class Pointer : public SurfaceTreeHost,
   void OnDragCompleted(const ui::DropTargetEvent& event) override;
 
   // aura::client::CursorClientObserver:
-  void OnCursorSizeChanged(ui::CursorSize cursor_size) override;
+  void OnCustomCursorSizeChanged(
+      std::optional<int> custom_cursor_size) override;
   void OnCursorDisplayChanged(const display::Display& display) override;
 
   // aura::client::FocusChangeObserver;

@@ -74,14 +74,8 @@ void DesktopNativeCursorManager::SetVisibility(
   }
 }
 
-void DesktopNativeCursorManager::SetCursorSize(
-    ui::CursorSize cursor_size,
-    wm::NativeCursorManagerDelegate* delegate) {
-  NOTIMPLEMENTED();
-}
-
-void DesktopNativeCursorManager::SetLargeCursorSizeInDip(
-    int large_cursor_size_in_dip,
+void DesktopNativeCursorManager::SetCustomCursorSize(
+    std::optional<int> custom_cursor_size,
     wm::NativeCursorManagerDelegate* delegate) {
   NOTIMPLEMENTED();
 }

@@ -4,8 +4,10 @@
 
 #include "ash/accessibility/accessibility_controller.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -103,7 +105,6 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/aura/aura_window_properties.h"
 #include "ui/aura/window.h"
-#include "ui/base/cursor/cursor_size.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
@@ -2749,7 +2750,7 @@ void AccessibilityController::ObservePrefs(PrefService* prefs) {
   pref_change_registrar_->Add(
       prefs::kAccessibilityLargeCursorDipSize,
       base::BindRepeating(&AccessibilityController::UpdateLargeCursorFromPref,
-                          base::Unretained(this)));
+                          base::Unretained(this), /*notify=*/true));
   pref_change_registrar_->Add(
       prefs::kAccessibilityShakeToLocateEnabled,
       base::BindRepeating(
@@ -2853,7 +2854,7 @@ void AccessibilityController::ObservePrefs(PrefService* prefs) {
   UpdateMouseKeysUsePrimaryKeysFromPref();
   UpdateMouseKeysDominantHandFromPref();
   UpdateFloatingMenuPositionFromPref();
-  UpdateLargeCursorFromPref();
+  UpdateLargeCursorFromPref(/*notify=*/true);
   UpdateMouseShakeToLocateFromPref();
   UpdateCursorColorFromPrefs(/*notify=*/true);
   UpdateShortcutsEnabledFromPref();
@@ -3085,14 +3086,17 @@ void AccessibilityController::MaybeCancelMouseShakeToLocateEffect() {
   }
 }
 
-void AccessibilityController::UpdateLargeCursorFromPref() {
+void AccessibilityController::UpdateLargeCursorFromPref(bool notify) {
   DCHECK(active_user_prefs_);
   MaybeCancelMouseShakeToLocateEffect();
 
-  const bool enabled = large_cursor().enabled();
-  const int size = enabled ? active_user_prefs_->GetInteger(
-                                 prefs::kAccessibilityLargeCursorDipSize)
-                           : kDefaultLargeCursorSize;
+  const std::optional<int> size =
+      large_cursor().enabled()
+          ? std::make_optional(
+                std::clamp(active_user_prefs_->GetInteger(
+                               prefs::kAccessibilityLargeCursorDipSize),
+                           kMinLargeCursorSize, kMaxLargeCursorSize))
+          : std::nullopt;
 
   if (large_cursor_size_in_dip_ == size) {
     return;
@@ -3100,12 +3104,12 @@ void AccessibilityController::UpdateLargeCursorFromPref() {
 
   large_cursor_size_in_dip_ = size;
 
-  NotifyAccessibilityStatusChanged();
+  if (notify) {
+    NotifyAccessibilityStatusChanged();
+  }
 
   Shell* shell = Shell::Get();
-  shell->cursor_manager()->SetCursorSize(enabled ? ui::CursorSize::kLarge
-                                                 : ui::CursorSize::kNormal);
-  shell->SetLargeCursorSizeInDip(large_cursor_size_in_dip_);
+  shell->cursor_manager()->SetCustomCursorSize(large_cursor_size_in_dip_);
   shell->UpdateCursorCompositingEnabled();
 }
 
@@ -3911,12 +3915,9 @@ void AccessibilityController::UpdateFeatureFromPref(FeatureType feature) {
           enabled);
       break;
     case FeatureType::kLargeCursor:
-      MaybeCancelMouseShakeToLocateEffect();
-      Shell::Get()->cursor_manager()->SetCursorSize(
-          large_cursor().enabled() ? ui::CursorSize::kLarge
-                                   : ui::CursorSize::kNormal);
-      Shell::Get()->SetLargeCursorSizeInDip(large_cursor_size_in_dip_);
-      Shell::Get()->UpdateCursorCompositingEnabled();
+      // The notification will already come via UpdateFeatureFromPref
+      // so we don't need to run it twice.
+      UpdateLargeCursorFromPref(/*notify=*/false);
       break;
     case FeatureType::kLiveCaption:
       break;

@@ -6,6 +6,7 @@
 #define UI_WM_CORE_CURSOR_MANAGER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
@@ -24,7 +25,6 @@
 namespace ui {
 class KeyEvent;
 class TouchEvent;
-enum class CursorSize;
 }
 
 namespace wm {
@@ -60,10 +60,8 @@ class COMPONENT_EXPORT(UI_WM) CursorManager
   void ShowCursor() override;
   void HideCursor() override;
   bool IsCursorVisible() const override;
-  void SetCursorSize(ui::CursorSize cursor_size) override;
-  ui::CursorSize GetCursorSize() const override;
-  void SetLargeCursorSizeInDip(int large_cursor_size_in_dip) override;
-  int GetLargeCursorSizeInDip() const override;
+  void SetCustomCursorSize(std::optional<int> custom_cursor_size) override;
+  std::optional<int> GetCustomCursorSize() const override;
   void SetCursorColor(SkColor color) override;
   SkColor GetCursorColor() const override;
   void EnableMouseEvents() override;
@@ -88,8 +86,7 @@ class COMPONENT_EXPORT(UI_WM) CursorManager
   // Overridden from NativeCursorManagerDelegate:
   void CommitCursor(gfx::NativeCursor cursor) override;
   void CommitVisibility(bool visible) override;
-  void CommitCursorSize(ui::CursorSize cursor_size) override;
-  void CommitLargeCursorSizeInDip(int large_cursor_size_in_dip) override;
+  void CommitCustomCursorSize(std::optional<int> custom_cursor_size) override;
   void CommitCursorColor(SkColor color) override;
   void CommitMouseEventsEnabled(bool enabled) override;
   void CommitSystemCursorSize(const gfx::Size& cursor_size) override;

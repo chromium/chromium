@@ -9,6 +9,7 @@
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/magnifier/magnifier_utils.h"
+#include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/display/cursor_window_controller.h"
 #include "ash/display/window_tree_host_manager.h"
@@ -420,10 +421,11 @@ float DockedMagnifierController::GetMinimumPointOfInterestHeightForTesting()
   return minimum_point_of_interest_height_;
 }
 
-void DockedMagnifierController::MaybeSetCursorSize(ui::CursorSize cursor_size) {
+void DockedMagnifierController::MaybeSetCustomCursorSize(
+    std::optional<int> custom_cursor_size) {
   if (Shell::Get()->accessibility_controller()->large_cursor().enabled())
     return;
-  Shell::Get()->cursor_manager()->SetCursorSize(cursor_size);
+  Shell::Get()->cursor_manager()->SetCustomCursorSize(custom_cursor_size);
 }
 
 void DockedMagnifierController::MaybePerformViewportResizing(
@@ -443,7 +445,7 @@ void DockedMagnifierController::MaybePerformViewportResizing(
   // If cursor is over separator, change to north/south resize, move on top.
   // Reset once the cursor is not over separator, and user isn't resizing.
   if (cursor_is_over_resizer && !is_cursor_locked_) {
-    MaybeSetCursorSize(ui::CursorSize::kLarge);
+    MaybeSetCustomCursorSize(kDefaultLargeCursorSize);
     cursor_manager->SetCursor(ui::mojom::CursorType::kNorthSouthResize);
     cursor_manager->LockCursor();
     cursor_window_controller->OnDockedMagnifierResizingStateChanged(true);
@@ -496,7 +498,7 @@ void DockedMagnifierController::MaybeResetResizingCursor() {
     return;
   }
 
-  MaybeSetCursorSize(ui::CursorSize::kNormal);
+  MaybeSetCustomCursorSize(std::nullopt);
   Shell::Get()->cursor_manager()->UnlockCursor();
   Shell::Get()
       ->window_tree_host_manager()

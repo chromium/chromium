@@ -564,10 +564,6 @@ bool Shell::HasPrimaryStatusArea() {
   return !!GetPrimaryRootWindowController()->GetStatusAreaWidget();
 }
 
-void Shell::SetLargeCursorSizeInDip(int large_cursor_size_in_dip) {
-  cursor_manager_->SetLargeCursorSizeInDip(large_cursor_size_in_dip);
-}
-
 void Shell::SetCursorColor(SkColor cursor_color) {
   cursor_manager_->SetCursorColor(cursor_color);
 }

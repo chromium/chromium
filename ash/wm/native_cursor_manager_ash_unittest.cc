@@ -4,6 +4,8 @@
 
 #include "ash/wm/native_cursor_manager_ash.h"
 
+#include <optional>
+
 #include "ash/display/display_util.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -15,7 +17,6 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/cursor/cursor.h"
-#include "ui/base/cursor/cursor_size.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/display_manager.h"
@@ -38,21 +39,21 @@ TEST_F(NativeCursorManagerAshTest, LockCursor) {
   EXPECT_EQ(2.0f,
             cursor_shape_client.GetCursorData(cursor_manager->GetCursor())
                 ->scale_factor);
-  EXPECT_EQ(ui::CursorSize::kNormal, cursor_manager->GetCursorSize());
+  EXPECT_EQ(std::nullopt, cursor_manager->GetCustomCursorSize());
   EXPECT_EQ(display::Display::ROTATE_90, test_api.GetCurrentCursorRotation());
   EXPECT_TRUE(cursor_manager->GetCursor().platform());
 
   cursor_manager->LockCursor();
   EXPECT_TRUE(cursor_manager->IsCursorLocked());
 
-  // Cursor type does not change while cursor is locked.
-  EXPECT_EQ(ui::CursorSize::kNormal, cursor_manager->GetCursorSize());
-  cursor_manager->SetCursorSize(ui::CursorSize::kNormal);
-  EXPECT_EQ(ui::CursorSize::kNormal, cursor_manager->GetCursorSize());
-  cursor_manager->SetCursorSize(ui::CursorSize::kLarge);
-  EXPECT_EQ(ui::CursorSize::kLarge, cursor_manager->GetCursorSize());
-  cursor_manager->SetCursorSize(ui::CursorSize::kNormal);
-  EXPECT_EQ(ui::CursorSize::kNormal, cursor_manager->GetCursorSize());
+  // Cursor size changes even while cursor is locked.
+  EXPECT_EQ(std::nullopt, cursor_manager->GetCustomCursorSize());
+  cursor_manager->SetCustomCursorSize(std::nullopt);
+  EXPECT_EQ(std::nullopt, cursor_manager->GetCustomCursorSize());
+  cursor_manager->SetCustomCursorSize(ui::kDefaultLargeCursorSize);
+  EXPECT_EQ(ui::kDefaultLargeCursorSize, cursor_manager->GetCustomCursorSize());
+  cursor_manager->SetCustomCursorSize(std::nullopt);
+  EXPECT_EQ(std::nullopt, cursor_manager->GetCustomCursorSize());
 
   // Cursor type does not change while cursor is locked.
   cursor_manager->SetCursor(ui::mojom::CursorType::kPointer);
@@ -88,19 +89,22 @@ TEST_F(NativeCursorManagerAshTest, SetCursor) {
   EXPECT_TRUE(cursor_manager->GetCursor().platform());
 }
 
-TEST_F(NativeCursorManagerAshTest, SetCursorSize) {
+TEST_F(NativeCursorManagerAshTest, SetCustomCursorSize) {
   ::wm::CursorManager* cursor_manager = Shell::Get()->cursor_manager();
 
-  EXPECT_EQ(ui::CursorSize::kNormal, cursor_manager->GetCursorSize());
+  EXPECT_EQ(std::nullopt, cursor_manager->GetCustomCursorSize());
 
-  cursor_manager->SetCursorSize(ui::CursorSize::kNormal);
-  EXPECT_EQ(ui::CursorSize::kNormal, cursor_manager->GetCursorSize());
+  cursor_manager->SetCustomCursorSize(std::nullopt);
+  EXPECT_EQ(std::nullopt, cursor_manager->GetCustomCursorSize());
 
-  cursor_manager->SetCursorSize(ui::CursorSize::kLarge);
-  EXPECT_EQ(ui::CursorSize::kLarge, cursor_manager->GetCursorSize());
+  cursor_manager->SetCustomCursorSize(ui::kMaxLargeCursorSize);
+  EXPECT_EQ(ui::kMaxLargeCursorSize, cursor_manager->GetCustomCursorSize());
 
-  cursor_manager->SetCursorSize(ui::CursorSize::kNormal);
-  EXPECT_EQ(ui::CursorSize::kNormal, cursor_manager->GetCursorSize());
+  cursor_manager->SetCustomCursorSize(ui::kMinLargeCursorSize);
+  EXPECT_EQ(ui::kMinLargeCursorSize, cursor_manager->GetCustomCursorSize());
+
+  cursor_manager->SetCustomCursorSize(std::nullopt);
+  EXPECT_EQ(std::nullopt, cursor_manager->GetCustomCursorSize());
 }
 
 TEST_F(NativeCursorManagerAshTest, SetCursorColor) {
@@ -119,29 +123,6 @@ TEST_F(NativeCursorManagerAshTest, SetCursorColor) {
 
   cursor_manager->SetCursorColor(ui::kDefaultCursorColor);
   EXPECT_EQ(ui::kDefaultCursorColor, cursor_manager->GetCursorColor());
-}
-
-TEST_F(NativeCursorManagerAshTest, SetLargeCursorSizeInDip) {
-  ::wm::CursorManager* cursor_manager = Shell::Get()->cursor_manager();
-
-  EXPECT_EQ(ui::kDefaultLargeCursorSize,
-            cursor_manager->GetLargeCursorSizeInDip());
-
-  cursor_manager->SetLargeCursorSizeInDip(ui::kMaxLargeCursorSize);
-  EXPECT_EQ(ui::kMaxLargeCursorSize, cursor_manager->GetLargeCursorSizeInDip());
-
-  cursor_manager->SetLargeCursorSizeInDip(ui::kMaxLargeCursorSize + 1);
-  EXPECT_EQ(ui::kMaxLargeCursorSize, cursor_manager->GetLargeCursorSizeInDip());
-
-  cursor_manager->SetLargeCursorSizeInDip(ui::kMinLargeCursorSize);
-  EXPECT_EQ(ui::kMinLargeCursorSize, cursor_manager->GetLargeCursorSizeInDip());
-
-  cursor_manager->SetLargeCursorSizeInDip(ui::kMinLargeCursorSize - 1);
-  EXPECT_EQ(ui::kMinLargeCursorSize, cursor_manager->GetLargeCursorSizeInDip());
-
-  cursor_manager->SetLargeCursorSizeInDip(ui::kDefaultLargeCursorSize);
-  EXPECT_EQ(ui::kDefaultLargeCursorSize,
-            cursor_manager->GetLargeCursorSizeInDip());
 }
 
 TEST_F(NativeCursorManagerAshTest, SetDeviceScaleFactorAndRotation) {

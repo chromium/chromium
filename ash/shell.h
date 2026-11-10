@@ -877,8 +877,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   // Starts the animation that occurs on first login.
   void DoInitialWorkspaceAnimation();
 
-  void SetLargeCursorSizeInDip(int large_cursor_size_in_dip);
-
   // Sets a custom color for the cursor.
   void SetCursorColor(SkColor cursor_color);
 

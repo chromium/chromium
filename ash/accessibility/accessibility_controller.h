@@ -855,7 +855,7 @@ class ASH_EXPORT AccessibilityController
   void UpdateMouseKeysUsePrimaryKeysFromPref();
   void UpdateMouseKeysDominantHandFromPref();
   void UpdateFloatingMenuPositionFromPref();
-  void UpdateLargeCursorFromPref();
+  void UpdateLargeCursorFromPref(bool notify);
   void UpdateMouseShakeToLocateFromPref();
   // Cancels any ongoing mouse shake-to-locate effect if active.
   void MaybeCancelMouseShakeToLocateEffect();
@@ -924,7 +924,9 @@ class ASH_EXPORT AccessibilityController
   std::array<std::unique_ptr<Feature>, kA11yFeatureTypeCount> features_;
 
   base::TimeDelta autoclick_delay_;
-  int large_cursor_size_in_dip_ = kDefaultLargeCursorSize;
+  // The large cursor size in dip, or `std::nullopt` if the large cursor is
+  // disabled.
+  std::optional<int> large_cursor_size_in_dip_;
 
   bool dictation_active_ = false;
   bool shortcuts_enabled_ = true;

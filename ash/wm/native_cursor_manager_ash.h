@@ -5,10 +5,10 @@
 #ifndef ASH_WM_NATIVE_CURSOR_MANAGER_ASH_H_
 #define ASH_WM_NATIVE_CURSOR_MANAGER_ASH_H_
 
+#include <optional>
+
 #include "ash/ash_export.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/base/cursor/cursor.h"
-#include "ui/base/cursor/cursor_size.h"
 #include "ui/display/display.h"
 #include "ui/wm/core/cursor_loader.h"
 #include "ui/wm/core/native_cursor_manager.h"
@@ -42,13 +42,11 @@ class ASH_EXPORT NativeCursorManagerAsh : public ::wm::NativeCursorManager {
                   ::wm::NativeCursorManagerDelegate* delegate) override;
   void SetCursor(gfx::NativeCursor cursor,
                  ::wm::NativeCursorManagerDelegate* delegate) override;
-  void SetLargeCursorSizeInDip(
-      int large_cursor_size_in_dip,
-      ::wm::NativeCursorManagerDelegate* delegate) override;
   void SetVisibility(bool visible,
                      ::wm::NativeCursorManagerDelegate* delegate) override;
-  void SetCursorSize(ui::CursorSize cursor_size,
-                     ::wm::NativeCursorManagerDelegate* delegate) override;
+  void SetCustomCursorSize(
+      std::optional<int> custom_cursor_size,
+      ::wm::NativeCursorManagerDelegate* delegate) override;
   void SetMouseEventsEnabled(
       bool enabled,
       ::wm::NativeCursorManagerDelegate* delegate) override;
@@ -58,18 +56,10 @@ class ASH_EXPORT NativeCursorManagerAsh : public ::wm::NativeCursorManager {
  private:
   friend class CursorManagerTestApi;
 
-  // Updates the custom cursor size of `cursor_loader_` and the
-  // `CursorWindowController` based on `cursor_size_` and
-  // `large_cursor_size_in_dip_`.
-  void UpdateCustomCursorSize(::wm::NativeCursorManagerDelegate* delegate);
-
   // The cursor location where the cursor was disabled.
   gfx::Point disabled_cursor_location_;
 
   bool native_cursor_enabled_;
-
-  ui::CursorSize cursor_size_ = ui::CursorSize::kNormal;
-  int large_cursor_size_in_dip_ = ui::kDefaultLargeCursorSize;
 
   wm::CursorLoader cursor_loader_{/*use_platform_cursors=*/false};
 };

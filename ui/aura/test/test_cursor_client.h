@@ -5,6 +5,8 @@
 #ifndef UI_AURA_TEST_TEST_CURSOR_CLIENT_H_
 #define UI_AURA_TEST_TEST_CURSOR_CLIENT_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -13,7 +15,6 @@
 
 namespace ui {
 class KeyEvent;
-enum class CursorSize;
 }
 
 namespace aura {
@@ -43,10 +44,8 @@ class TestCursorClient : public aura::client::CursorClient {
   void SetCursorForced(gfx::NativeCursor cursor) override;
   void ShowCursor() override;
   void HideCursor() override;
-  void SetCursorSize(ui::CursorSize cursor_size) override;
-  ui::CursorSize GetCursorSize() const override;
-  void SetLargeCursorSizeInDip(int large_cursor_size_in_dip) override;
-  int GetLargeCursorSizeInDip() const override;
+  void SetCustomCursorSize(std::optional<int> custom_cursor_size) override;
+  std::optional<int> GetCustomCursorSize() const override;
   void SetCursorColor(SkColor color) override;
   SkColor GetCursorColor() const override;
   bool IsCursorVisible() const override;

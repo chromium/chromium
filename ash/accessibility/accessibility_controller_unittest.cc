@@ -76,6 +76,7 @@
 #include "ui/native_theme/features/native_theme_features.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/os_settings_provider.h"
+#include "ui/wm/core/cursor_manager.h"
 
 using message_center::MessageCenter;
 
@@ -1501,6 +1502,53 @@ TEST_F(AccessibilityControllerTest, DisableLargeCursorDoesNotResetSize) {
             48);
   EXPECT_EQ(cursor_window_controller->GetCursorBoundsInScreenForTest().height(),
             48);
+}
+
+TEST_F(AccessibilityControllerTest, LargeCursorSizeIsClamped) {
+  ::wm::CursorManager* cursor_manager = Shell::Get()->cursor_manager();
+  EXPECT_EQ(std::nullopt, cursor_manager->GetCustomCursorSize());
+
+  prefs()->SetBoolean(prefs::kAccessibilityLargeCursorEnabled, true);
+  EXPECT_EQ(kDefaultLargeCursorSize, cursor_manager->GetCustomCursorSize());
+
+  prefs()->SetInteger(prefs::kAccessibilityLargeCursorDipSize,
+                      kMaxLargeCursorSize);
+  EXPECT_EQ(kMaxLargeCursorSize, cursor_manager->GetCustomCursorSize());
+
+  prefs()->SetInteger(prefs::kAccessibilityLargeCursorDipSize,
+                      kMaxLargeCursorSize + 1);
+  EXPECT_EQ(kMaxLargeCursorSize, cursor_manager->GetCustomCursorSize());
+
+  prefs()->SetInteger(prefs::kAccessibilityLargeCursorDipSize,
+                      kMinLargeCursorSize);
+  EXPECT_EQ(kMinLargeCursorSize, cursor_manager->GetCustomCursorSize());
+
+  prefs()->SetInteger(prefs::kAccessibilityLargeCursorDipSize,
+                      kMinLargeCursorSize - 1);
+  EXPECT_EQ(kMinLargeCursorSize, cursor_manager->GetCustomCursorSize());
+
+  prefs()->SetBoolean(prefs::kAccessibilityLargeCursorEnabled, false);
+  EXPECT_EQ(std::nullopt, cursor_manager->GetCustomCursorSize());
+}
+
+// Enabling the large cursor uses the size pref even if it was changed while
+// the large cursor was disabled.
+TEST_F(AccessibilityControllerTest, EnableLargeCursorUsesLatestSizePref) {
+  ::wm::CursorManager* cursor_manager = Shell::Get()->cursor_manager();
+  ASSERT_FALSE(prefs()->GetBoolean(prefs::kAccessibilityLargeCursorEnabled));
+
+  prefs()->SetInteger(prefs::kAccessibilityLargeCursorDipSize, 48);
+  EXPECT_EQ(std::nullopt, cursor_manager->GetCustomCursorSize());
+
+  prefs()->SetBoolean(prefs::kAccessibilityLargeCursorEnabled, true);
+  EXPECT_EQ(48, cursor_manager->GetCustomCursorSize());
+
+  prefs()->SetBoolean(prefs::kAccessibilityLargeCursorEnabled, false);
+  prefs()->SetInteger(prefs::kAccessibilityLargeCursorDipSize, 100);
+  EXPECT_EQ(std::nullopt, cursor_manager->GetCustomCursorSize());
+
+  prefs()->SetBoolean(prefs::kAccessibilityLargeCursorEnabled, true);
+  EXPECT_EQ(100, cursor_manager->GetCustomCursorSize());
 }
 
 TEST_F(AccessibilityControllerTest, CursorColorIsBlackInitially) {

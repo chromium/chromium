@@ -36,7 +36,6 @@
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/base/cursor/cursor_factory.h"
-#include "ui/base/cursor/cursor_size.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/compositor/compositor.h"
@@ -836,7 +835,7 @@ void Pointer::OnDragCompleted(const ui::DropTargetEvent& event) {
 ////////////////////////////////////////////////////////////////////////////////
 // aura::client::CursorClientObserver overrides:
 
-void Pointer::OnCursorSizeChanged(ui::CursorSize cursor_size) {
+void Pointer::OnCustomCursorSizeChanged(std::optional<int> custom_cursor_size) {
   if (!focus_surface_)
     return;
 

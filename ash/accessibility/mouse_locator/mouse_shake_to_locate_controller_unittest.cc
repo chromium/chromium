@@ -4,6 +4,8 @@
 
 #include "ash/accessibility/mouse_locator/mouse_shake_to_locate_controller.h"
 
+#include <optional>
+
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
@@ -13,7 +15,6 @@
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"
 #include "ui/accessibility/accessibility_features.h"
-#include "ui/base/cursor/cursor_size.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/point.h"
@@ -64,8 +65,8 @@ class MouseShakeToLocateControllerTest : public AshTestBase {
     }
   }
 
-  ui::CursorSize GetCursorSize() const {
-    return Shell::Get()->cursor_manager()->GetCursorSize();
+  std::optional<int> GetCustomCursorSize() const {
+    return Shell::Get()->cursor_manager()->GetCustomCursorSize();
   }
 
  private:
@@ -74,25 +75,20 @@ class MouseShakeToLocateControllerTest : public AshTestBase {
 };
 
 TEST_F(MouseShakeToLocateControllerTest, ShakeEnlargesThenRestoresCursor) {
-  const int original_large_size =
-      Shell::Get()->cursor_manager()->GetLargeCursorSizeInDip();
-
   Shake(9);
-  EXPECT_EQ(GetCursorSize(), ui::CursorSize::kNormal);
+  EXPECT_EQ(GetCustomCursorSize(), std::nullopt);
 
   Shake(1);
-  EXPECT_EQ(GetCursorSize(), ui::CursorSize::kLarge);
+  EXPECT_NE(GetCustomCursorSize(), std::nullopt);
 
   // Hold (250ms) and shrink (100ms), then the cursor is restored.
   task_environment()->FastForwardBy(base::Seconds(1));
-  EXPECT_EQ(GetCursorSize(), ui::CursorSize::kNormal);
-  EXPECT_EQ(Shell::Get()->cursor_manager()->GetLargeCursorSizeInDip(),
-            original_large_size);
+  EXPECT_EQ(GetCustomCursorSize(), std::nullopt);
 
   // Shaking again after the detector resets re-enlarges the cursor (the first
   // move re-anchors and the second sets the initial stroke direction).
   Shake(11);
-  EXPECT_EQ(GetCursorSize(), ui::CursorSize::kLarge);
+  EXPECT_NE(GetCustomCursorSize(), std::nullopt);
 }
 
 // Each shake that enlarges the cursor is recorded once, not once per reversal.
@@ -112,83 +108,75 @@ TEST_F(MouseShakeToLocateControllerTest, RecordsCursorEnlargedUserAction) {
 
 TEST_F(MouseShakeToLocateControllerTest, ContinuedShakeKeepsCursorEnlarged) {
   Shake(10);
-  ASSERT_EQ(GetCursorSize(), ui::CursorSize::kLarge);
+  ASSERT_NE(GetCustomCursorSize(), std::nullopt);
 
   // Keep shaking at 10 reversals/s for another 2s.
   Shake(20);
-  EXPECT_EQ(GetCursorSize(), ui::CursorSize::kLarge);
+  EXPECT_NE(GetCustomCursorSize(), std::nullopt);
 
   task_environment()->FastForwardBy(base::Seconds(1));
-  EXPECT_EQ(GetCursorSize(), ui::CursorSize::kNormal);
+  EXPECT_EQ(GetCustomCursorSize(), std::nullopt);
 }
 
 // A user who already uses a large cursor gets their exact size back.
 TEST_F(MouseShakeToLocateControllerTest, RestoresUserLargeCursorSize) {
   constexpr int kUserLargeCursorSize = 48;
-  Shell::Get()->cursor_manager()->SetCursorSize(ui::CursorSize::kLarge);
-  Shell::Get()->SetLargeCursorSizeInDip(kUserLargeCursorSize);
+  Shell::Get()->cursor_manager()->SetCustomCursorSize(kUserLargeCursorSize);
 
   Shake(10);
-  EXPECT_GT(Shell::Get()->cursor_manager()->GetLargeCursorSizeInDip(),
-            kUserLargeCursorSize);
+  EXPECT_GT(GetCustomCursorSize(), kUserLargeCursorSize);
 
   task_environment()->FastForwardBy(base::Seconds(1));
-  EXPECT_EQ(GetCursorSize(), ui::CursorSize::kLarge);
-  EXPECT_EQ(Shell::Get()->cursor_manager()->GetLargeCursorSizeInDip(),
-            kUserLargeCursorSize);
+  EXPECT_EQ(GetCustomCursorSize(), kUserLargeCursorSize);
 }
 
 // Cancelling mid-shake restores the cursor, and the detector's later
 // `OnMouseShakeEnded()` is ignored.
 TEST_F(MouseShakeToLocateControllerTest, CancelEffectDuringShake) {
-  const int original_large_size =
-      Shell::Get()->cursor_manager()->GetLargeCursorSizeInDip();
   Shake(10);
-  ASSERT_EQ(GetCursorSize(), ui::CursorSize::kLarge);
+  ASSERT_NE(GetCustomCursorSize(), std::nullopt);
 
   Shell::Get()->mouse_shake_to_locate_controller()->CancelEffect();
-  EXPECT_EQ(GetCursorSize(), ui::CursorSize::kNormal);
-  EXPECT_EQ(Shell::Get()->cursor_manager()->GetLargeCursorSizeInDip(),
-            original_large_size);
+  EXPECT_EQ(GetCustomCursorSize(), std::nullopt);
 
   task_environment()->FastForwardBy(base::Seconds(1));
-  EXPECT_EQ(GetCursorSize(), ui::CursorSize::kNormal);
+  EXPECT_EQ(GetCustomCursorSize(), std::nullopt);
 }
 
 // Disabling the preference cancels an active shake effect and stops observing
 // future shakes until re-enabled.
 TEST_F(MouseShakeToLocateControllerTest, DisablingPrefCancelsAndIgnoresShake) {
   Shake(10);
-  ASSERT_EQ(GetCursorSize(), ui::CursorSize::kLarge);
+  ASSERT_NE(GetCustomCursorSize(), std::nullopt);
 
   SetShakeToLocatePrefEnabled(false);
-  EXPECT_EQ(GetCursorSize(), ui::CursorSize::kNormal);
+  EXPECT_EQ(GetCustomCursorSize(), std::nullopt);
 
   Shake(15);
-  EXPECT_EQ(GetCursorSize(), ui::CursorSize::kNormal);
+  EXPECT_EQ(GetCustomCursorSize(), std::nullopt);
 
   SetShakeToLocatePrefEnabled(true);
   Shake(11);
-  EXPECT_EQ(GetCursorSize(), ui::CursorSize::kLarge);
+  EXPECT_NE(GetCustomCursorSize(), std::nullopt);
 }
 
 // Synthesized mouse moves do not count toward a shake.
 TEST_F(MouseShakeToLocateControllerTest, SynthesizedMovesAreIgnored) {
   GetEventGenerator()->set_flags(ui::EF_IS_SYNTHESIZED);
   Shake(10);
-  EXPECT_EQ(GetCursorSize(), ui::CursorSize::kNormal);
+  EXPECT_EQ(GetCustomCursorSize(), std::nullopt);
 }
 
 // Tearing down `Shell` while the shrink animation is in progress cleanly stops
 // the animation and restores the cursor without crashing.
 TEST_F(MouseShakeToLocateControllerTest, DestroyShellDuringShrinkAnimation) {
   Shake(10);
-  ASSERT_EQ(GetCursorSize(), ui::CursorSize::kLarge);
+  ASSERT_NE(GetCustomCursorSize(), std::nullopt);
 
   // Advance to the end of the 250ms hold window so the 100ms shrink animation
   // is running when `AshTestBase::TearDown()` destroys `Shell`.
   task_environment()->FastForwardBy(base::Milliseconds(250));
-  EXPECT_EQ(GetCursorSize(), ui::CursorSize::kLarge);
+  EXPECT_NE(GetCustomCursorSize(), std::nullopt);
 }
 
 // Shaking across the boundary between two displays enlarges the cursor, keeps
@@ -196,9 +184,6 @@ TEST_F(MouseShakeToLocateControllerTest, DestroyShellDuringShrinkAnimation) {
 // the original cursor size once shaking stops.
 TEST_F(MouseShakeToLocateControllerTest, ShakeAcrossDisplayBoundary) {
   UpdateDisplay("500x400,500x400");
-  const int original_large_size =
-      Shell::Get()->cursor_manager()->GetLargeCursorSizeInDip();
-
   constexpr int kPrimaryDisplayX = 480;
   constexpr int kSecondaryDisplayX = 520;
   auto* generator = GetEventGenerator();
@@ -213,20 +198,18 @@ TEST_F(MouseShakeToLocateControllerTest, ShakeAcrossDisplayBoundary) {
         gfx::Point(on_secondary ? kPrimaryDisplayX : kSecondaryDisplayX, kY));
     on_secondary = !on_secondary;
   }
-  EXPECT_EQ(GetCursorSize(), ui::CursorSize::kLarge);
+  EXPECT_NE(GetCustomCursorSize(), std::nullopt);
 
   for (int i = 0; i < 10; ++i) {
     task_environment()->FastForwardBy(kReversalInterval);
     generator->MoveMouseTo(
         gfx::Point(on_secondary ? kPrimaryDisplayX : kSecondaryDisplayX, kY));
     on_secondary = !on_secondary;
-    EXPECT_EQ(GetCursorSize(), ui::CursorSize::kLarge);
+    EXPECT_NE(GetCustomCursorSize(), std::nullopt);
   }
 
   task_environment()->FastForwardBy(base::Seconds(1));
-  EXPECT_EQ(GetCursorSize(), ui::CursorSize::kNormal);
-  EXPECT_EQ(Shell::Get()->cursor_manager()->GetLargeCursorSizeInDip(),
-            original_large_size);
+  EXPECT_EQ(GetCustomCursorSize(), std::nullopt);
 }
 
 }  // namespace ash

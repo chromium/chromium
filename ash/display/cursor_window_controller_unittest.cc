@@ -27,7 +27,6 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/cursor.h"
-#include "ui/base/cursor/cursor_size.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/resource/mock_resource_bundle_delegate.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -296,10 +295,10 @@ TEST_F(CursorWindowControllerTest, DSF) {
           display::Screen::Get()->GetPrimaryDisplay().device_scale_factor();
 
       for (const int large_cursor_size_in_dip : {0, 32, 64, 128}) {
-        cursor_manager->SetCursorSize(large_cursor_size_in_dip == 0
-                                          ? ui::CursorSize::kNormal
-                                          : ui::CursorSize::kLarge);
-        Shell::Get()->SetLargeCursorSizeInDip(large_cursor_size_in_dip);
+        cursor_manager->SetCustomCursorSize(
+            large_cursor_size_in_dip == 0
+                ? std::nullopt
+                : std::make_optional(large_cursor_size_in_dip));
 
         // Default cursor.
         cursor_test(CursorType::kPointer, large_cursor_size_in_dip);
