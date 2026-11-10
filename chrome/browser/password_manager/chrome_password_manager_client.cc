@@ -206,6 +206,7 @@
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/enterprise/connectors/reporting/event_initiator_utils.h"
 #include "chrome/browser/enterprise/connectors/reporting/reporting_event_router_factory.h"
 #include "components/enterprise/connectors/core/reporting_event_router.h"
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
@@ -1280,8 +1281,9 @@ void ChromePasswordManagerClient::MaybeReportEnterpriseLoginEvent(
 
   // The router is responsible for checking if the reporting of this event type
   // is enabled by the admin.
-  router->OnLoginEvent(url, is_federated, federated_origin, login_user_name,
-                       /*initiator=*/std::nullopt);
+  router->OnLoginEvent(
+      url, is_federated, federated_origin, login_user_name,
+      enterprise_connectors::GetActiveEventInitiatorInfo(web_contents()));
 }
 
 void ChromePasswordManagerClient::MaybeReportEnterprisePasswordBreachEvent(
