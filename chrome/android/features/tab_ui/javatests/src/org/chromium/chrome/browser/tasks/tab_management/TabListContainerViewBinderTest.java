@@ -12,6 +12,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -42,12 +43,11 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tab_ui.TabListMode;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -91,7 +91,13 @@ public class TabListContainerViewBinderTest {
                             .addView(mRecyclerView);
                     mHairline = mContentView.findViewById(R.id.pane_hairline);
                     mSupplementaryContainer = new LinearLayout(activity);
-                    mContainerModel = new PropertyModel(TabListContainerProperties.ALL_KEYS);
+                    mContainerModel =
+                            new PropertyModel.Builder(TabListContainerProperties.ALL_KEYS)
+                                    .with(
+                                            TabListContainerProperties
+                                                    .BROWSER_CONTROLS_STATE_PROVIDER,
+                                            mock(BrowserControlsStateProvider.class))
+                                    .build();
                     mViewHolder =
                             new TabListContainerViewBinder.ViewHolder(
                                     mRecyclerView, mHairline, mSupplementaryContainer);
@@ -153,10 +159,6 @@ public class TabListContainerViewBinderTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device({
-        DeviceFormFactor.DESKTOP, // crbug.com/376527109
-        DeviceFormFactor.AUTOMOTIVE // crbug.com/572803367
-    })
     @UiThreadTest
     public void testSetInitialScrollIndex_Grid() {
         setUpGridLayoutManager();
