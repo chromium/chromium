@@ -39,6 +39,8 @@ import org.chromium.base.version_info.VersionConstants;
 import org.chromium.build.NativeLibraries;
 import org.chromium.build.annotations.Nullable;
 
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Locale;
@@ -55,6 +57,9 @@ public class BaseRobolectricTestRule implements TestRule {
     private static final Locale ORIG_LOCALE = Locale.getDefault();
     private static final TimeZone ORIG_TIMEZONE = TimeZone.getDefault();
     private static final String TAG = "BaseRobolectric";
+    // Discards logs between tests. A null stream would crash stray background threads.
+    private static final PrintStream NULL_LOG_STREAM =
+            new PrintStream(OutputStream.nullOutputStream());
     static @Nullable PausedExecutorService sPausedExecutor;
     private static @Nullable Method sSetDefaultNightModeMethod;
     private static boolean sSetDefaultNightModeLookupDone;
@@ -170,7 +175,7 @@ public class BaseRobolectricTestRule implements TestRule {
             TimeZone.setDefault(ORIG_TIMEZONE);
             ResettersForTesting.afterHooksDidExecute();
             resetDefaultNightMode();
-            ShadowLog.stream = null;
+            ShadowLog.stream = NULL_LOG_STREAM;
             // Run assertions only when the test has not already failed so as to not mask
             // failures. https://crbug.com/1466313
             if (testFailed) {
