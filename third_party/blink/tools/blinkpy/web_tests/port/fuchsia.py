@@ -357,9 +357,15 @@ class FuchsiaServerProcess(server_process.ServerProcess):
         listen_socket.bind(('127.0.0.1', 0))
         listen_socket.listen(1)
         stdio_port = int(listen_socket.getsockname()[1])
-        forwarded_stdio_port = (
-            self._port.get_target_host().setup_forwarded_port(stdio_port)
-        )
+        try:
+            forwarded_stdio_port = (
+                self._port.get_target_host().setup_forwarded_port(stdio_port)
+            )
+        except subprocess.CalledProcessError as error:
+            listen_socket.close()
+            raise driver.DeviceFailure(
+                'Failed to forward stdio port: %s' % error
+            ) from error
 
         command = self._cmd + [
             '--no-sandbox',
