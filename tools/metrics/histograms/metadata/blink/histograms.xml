@@ -202,27 +202,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Blink.AnchorElementInteractionTracker.ClickDistanceFromPreviousPointerDown{orientation}"
-    units="%" expires_after="2025-03-09">
-  <owner>adithyas@chromium.org</owner>
-  <owner>chrome-instant-ecosystem@google.com</owner>
-  <summary>
-    Records the vertical distance of a clicked anchor from the second last
-    pointerdown (the last pointerdown would be the one that initiated the
-    click). The value is normalized and recorded as a percentage of screen size,
-    and is scaled to accomodate negative distances. A value below 50 indicates
-    that the click happened above the previous pointerdown by ~(100 - 2X)%. A
-    value above 50 indicates that the click happened below the previous
-    pointerdown by ~(2X - 100)%.
-
-    This is only recorded when the screen is in the &quot;{orientation}&quot;
-    orientation, and is recorded after an anchor element click. It is only
-    recorded if a pointerdown was seen prior to the click.
-  </summary>
-  <token key="orientation" variants="ScreenOrientation"/>
-</histogram>
-
-<histogram
     name="Blink.AnchorElementInteractionTracker.ClickLocationY{orientation}"
     units="%" expires_after="2025-05-11">
   <owner>adithyas@chromium.org</owner>

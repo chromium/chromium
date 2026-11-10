@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_ANCHOR_ELEMENT_INTERACTION_TRACKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_ANCHOR_ELEMENT_INTERACTION_TRACKER_H_
 
-#include <array>
-
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/mojom/preloading/anchor_element_interaction_host.mojom-blink.h"
@@ -165,10 +163,6 @@ class BLINK_EXPORT AnchorElementInteractionTracker
   raw_ptr<const base::TickClock, UnprotectedInRelease | DanglingUntriaged>
       clock_;
   Member<Document> document_;
-  // Stores y-coordinate of the two most recent pointerdowns (first entry is
-  // the most recent pointer down).
-  std::array<std::optional<double>, 2> last_pointer_down_locations_ = {
-      std::nullopt, std::nullopt};
   // Stores the largest anchor in the viewport determined by the viewport
   // heuristic.
   WeakMember<HTMLAnchorElementBase> largest_anchor_element_in_viewport_;

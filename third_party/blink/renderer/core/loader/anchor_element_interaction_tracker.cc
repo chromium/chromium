@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/loader/anchor_element_interaction_tracker.h"
 
+#include <array>
+
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -416,9 +418,6 @@ void AnchorElementInteractionTracker::OnPointerEvent(
   const AtomicString& event_type = pointer_event.type();
 
   if (event_type == event_type_names::kPointerdown) {
-    last_pointer_down_locations_[1] = last_pointer_down_locations_[0];
-    last_pointer_down_locations_[0] = pointer_event.screenY();
-
     if (auto* viewport_position_tracker =
             AnchorElementViewportPositionTracker::MaybeGetOrCreateFor(
                 *GetDocument())) {
@@ -538,21 +537,6 @@ void AnchorElementInteractionTracker::OnClickEvent(
       base::StrCat({"Blink.AnchorElementInteractionTracker.ClickLocationY",
                     orientation_pattern}),
       normalized_click_y);
-
-  if (last_pointer_down_locations_[1]) {
-    double click_distance = click_y - last_pointer_down_locations_[1].value();
-    // Because a click could happen both above and below the previous pointer
-    // down, |click_distance| can be any value between -|screen_height| and
-    // |screen_height| inclusive. We shift and scale it to be values between 0
-    // and 100 before recording to UMA.
-    int shifted_normalized_click_distance =
-        base::ClampRound(50.0f * (1 + click_distance / screen_height));
-    base::UmaHistogramPercentage(
-        base::StrCat({"Blink.AnchorElementInteractionTracker"
-                      ".ClickDistanceFromPreviousPointerDown",
-                      orientation_pattern}),
-        shifted_normalized_click_distance);
-  }
 }
 
 void AnchorElementInteractionTracker::HoverTimerFired(TimerBase*) {
