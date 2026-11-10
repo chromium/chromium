@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/webui/ash/login/mojom/screens_common.mojom.h"
 #include "chromeos/ash/components/drivefs/drivefs_pinning_manager.h"
 
-class Profile;
+class PrefService;
 
 class PrefService;
 
@@ -38,7 +38,7 @@ class DrivePinningScreen
   static std::string GetResultString(Result result);
 
   // Apply the deferred perf `kOobeDrivePinningEnabledDeferred`.
-  static void ApplyDrivePinningPref(Profile* profile);
+  static void ApplyDrivePinningPref(PrefService& pref_service);
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 

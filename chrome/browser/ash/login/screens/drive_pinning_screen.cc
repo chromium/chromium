@@ -88,20 +88,19 @@ std::string DrivePinningScreen::GetResultString(Result result) {
   // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
-void DrivePinningScreen::ApplyDrivePinningPref(Profile* profile) {
-  auto* prefs = profile->GetPrefs();
-  if (!prefs->HasPrefPath(prefs::kOobeDrivePinningEnabledDeferred)) {
+void DrivePinningScreen::ApplyDrivePinningPref(PrefService& pref_service) {
+  if (!pref_service.HasPrefPath(prefs::kOobeDrivePinningEnabledDeferred)) {
     return;
   }
   bool drive_pinning =
-      profile->GetPrefs()->GetBoolean(prefs::kOobeDrivePinningEnabledDeferred);
-  profile->GetPrefs()->SetBoolean(drive::prefs::kDriveFsBulkPinningEnabled,
-                                  drive_pinning);
+      pref_service.GetBoolean(prefs::kOobeDrivePinningEnabledDeferred);
+  pref_service.SetBoolean(drive::prefs::kDriveFsBulkPinningEnabled,
+                          drive_pinning);
   drivefs::pinning::RecordBulkPinningEnabledSource(
       drivefs::pinning::BulkPinningEnabledSource::kChoobe);
 
   RecordUserSelection(drive_pinning);
-  prefs->ClearPref(prefs::kOobeDrivePinningEnabledDeferred);
+  pref_service.ClearPref(prefs::kOobeDrivePinningEnabledDeferred);
 }
 
 DrivePinningScreen::DrivePinningScreen(
