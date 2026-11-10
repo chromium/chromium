@@ -35,6 +35,10 @@
   --tile-hover-color: rgba(255, 255, 255, .1);
 }
 
+:host([is-dark_]) .drag-pan-icon {
+  background-color: white;
+}
+
 #container {
   --content-width: calc(
       var(--column-count) * var(--tile-size) +
@@ -181,7 +185,8 @@
   :host([use-white-tile-icon_]) #addShortcutIcon,
   :host([use-white-tile-icon_]) #showMoreIcon,
   :host([use-white-tile-icon_]) #showLessIcon,
-  .query-tile-icon {
+  .query-tile-icon,
+  .drag-pan-icon {
     background-color: ButtonText;
   }
 
@@ -341,6 +346,35 @@ cr-policy-indicator {
   background-color: var(--tile-hover-color);
   transition-property: none;
   z-index: 2;
+}
+
+.drag-pan-icon {
+  -webkit-mask-image: url(chrome://resources/cr_components/most_visited/drag_pan.svg);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 100%;
+  background-color: var(
+      --color-sys-on-surface-subtle,
+      var(--cr-fallback-color-on-surface-subtle));
+  height: 24px;
+  inset-inline-start: 0;
+  margin: 4px 2px;
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  width: 24px;
+}
+
+:host-context(:not(.focus-outline-visible))
+    #container:not(:has(.force-hover))
+    .tile:hover
+    .drag-pan-icon,
+.force-hover .drag-pan-icon {
+  opacity: 1;
+}
+
+:host-context(.focus-outline-visible) .tile:focus-within .drag-pan-icon {
+  opacity: 1;
 }
 
 cr-icon-button {

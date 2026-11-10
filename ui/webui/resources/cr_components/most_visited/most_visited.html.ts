@@ -25,13 +25,18 @@ export function getHtml(this: MostVisitedElement) {
       <a href="${this.inReorderMode_ ? '' : item.url}"
           aria-label="${this.getTileAriaLabel_(item.title)}" draggable="false">
       </a>
+      <div class="drag-pan-icon"
+          ?hidden="${!this.inReorderMode_ ||
+              (!this.customLinksEnabled_ &&
+               !this.isFromEnterpriseShortcut_(item.source))}">
+      </div>
       <cr-icon-button id="actionMenuButton" class="icon-more-vert"
           title="${this.getMoreActionText_(item.title)}"
           @click="${this.onTileActionButtonClick_}" tabindex="0"
-          ?hidden="${this.nonEditable ||
+          ?hidden="${this.nonEditable || this.inReorderMode_ ||
               (!this.customLinksEnabled_ &&
                !this.isFromEnterpriseShortcut_(item.source))}"
-          ?disabled="${this.inReorderMode_}" data-index="${index}">
+          data-index="${index}">
       </cr-icon-button>
       <cr-icon-button id="removeButton" class="icon-clear"
           title="${this.getRemoveButtonText_(item.title)}"

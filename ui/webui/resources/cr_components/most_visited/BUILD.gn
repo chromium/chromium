@@ -32,6 +32,7 @@ build_webui("build") {
   static_files = [
     "collapse_content.svg",
     "collapse_content_old.svg",
+    "drag_pan.svg",
     "expand_content.svg",
     "expand_content_old.svg",
   ]
