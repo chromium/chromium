@@ -147,7 +147,7 @@ bool Vp8Parser::ParseFrameTag(Vp8FrameHeader* fhdr) {
 }
 
 bool Vp8Parser::ParseFrameHeader(Vp8FrameHeader* fhdr) {
-  if (!bd_.Initialize(stream_.data(), stream_.size())) {
+  if (!bd_.Initialize(stream_)) {
     return false;
   }
 

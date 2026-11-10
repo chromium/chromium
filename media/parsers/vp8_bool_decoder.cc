@@ -48,7 +48,6 @@
 #include <array>
 
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 
 namespace media {
@@ -64,7 +63,7 @@ static const int kDefaultProbability = 0x80;  // 0x80 / 256 = 0.5
 #define VP8_LOTS_OF_BITS (0x40000000)
 
 // The number of leading zeros.
-const std::array<unsigned char, 256> kVp8Norm = {
+constexpr std::array<unsigned char, 256> kVp8Norm = {
     0, 7, 6, 6, 5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3,
     3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
     2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -78,19 +77,12 @@ const std::array<unsigned char, 256> kVp8Norm = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-Vp8BoolDecoder::Vp8BoolDecoder()
-    : user_buffer_(nullptr),
-      user_buffer_end_(nullptr),
-      value_(0),
-      count_(-8),
-      range_(255) {}
-
-bool Vp8BoolDecoder::Initialize(const uint8_t* data, size_t size) {
-  if (data == nullptr || size == 0)
+bool Vp8BoolDecoder::Initialize(base::span<const uint8_t> data) {
+  if (data.empty()) {
     return false;
-  user_buffer_start_ = data;
+  }
   user_buffer_ = data;
-  user_buffer_end_ = UNSAFE_TODO(data + size);
+  initial_buffer_size_ = data.size();
   value_ = 0;
   count_ = -8;
   range_ = 255;
@@ -98,10 +90,8 @@ bool Vp8BoolDecoder::Initialize(const uint8_t* data, size_t size) {
 }
 
 void Vp8BoolDecoder::FillDecoder() {
-  DCHECK(user_buffer_ != nullptr);
   int shift = VP8_BD_VALUE_BIT - CHAR_BIT - (count_ + CHAR_BIT);
-  size_t bytes_left = user_buffer_end_ - user_buffer_;
-  size_t bits_left = bytes_left * CHAR_BIT;
+  size_t bits_left = user_buffer_.size() * CHAR_BIT;
   int x = static_cast<int>(shift + CHAR_BIT - bits_left);
   int loop_end = 0;
 
@@ -113,8 +103,7 @@ void Vp8BoolDecoder::FillDecoder() {
   if (x < 0 || bits_left) {
     while (shift >= loop_end) {
       count_ += CHAR_BIT;
-      value_ |= static_cast<size_t>(*user_buffer_) << shift;
-      UNSAFE_TODO(++user_buffer_);
+      value_ |= static_cast<size_t>(user_buffer_.take_first_elem()) << shift;
       shift -= CHAR_BIT;
     }
   }
@@ -175,7 +164,7 @@ size_t Vp8BoolDecoder::BitOffset() {
   if (bit_count > VP8_BD_VALUE_BIT)
     // Capped at 0 to ignore buffer underrun.
     bit_count = std::max(0, bit_count - VP8_LOTS_OF_BITS);
-  return (user_buffer_ - user_buffer_start_) * 8 - bit_count;
+  return (initial_buffer_size_ - user_buffer_.size()) * 8 - bit_count;
 }
 
 uint8_t Vp8BoolDecoder::GetRange() {

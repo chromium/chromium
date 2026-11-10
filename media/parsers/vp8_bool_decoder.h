@@ -47,7 +47,9 @@
 #include <stdint.h>
 #include <sys/types.h>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "media/base/media_export.h"
 
 namespace media {
@@ -56,15 +58,14 @@ namespace media {
 // arithmetic coding. See RFC 6386 - Chapter 7. Boolean Entropy Decoder.
 class MEDIA_EXPORT Vp8BoolDecoder {
  public:
-  Vp8BoolDecoder();
+  Vp8BoolDecoder() = default;
 
   Vp8BoolDecoder(const Vp8BoolDecoder&) = delete;
   Vp8BoolDecoder& operator=(const Vp8BoolDecoder&) = delete;
 
-  // Initializes the decoder to start decoding |data|, |size| being size
-  // of |data| in bytes. Returns false if |data| is NULL or empty.
-  // TODO(crbug.com/40284755): data+size should be a span.
-  bool Initialize(const uint8_t* data, size_t size);
+  // Initializes the decoder to start decoding |data|. Returns false if |data|
+  // is empty.
+  bool Initialize(base::span<const uint8_t> data);
 
   // Reads a boolean from the coded stream. Returns false if it has reached the
   // end of |data| and failed to read the boolean. The probability of |out| to
@@ -123,14 +124,14 @@ class MEDIA_EXPORT Vp8BoolDecoder {
   // Returns true iff we have ran out of bits.
   bool OutOfBuffer();
 
-  raw_ptr<const uint8_t, AllowPtrArithmetic | DanglingUntriaged> user_buffer_;
-  raw_ptr<const uint8_t, AllowPtrArithmetic | DanglingUntriaged>
-      user_buffer_start_;
-  raw_ptr<const uint8_t, AllowPtrArithmetic | DanglingUntriaged>
-      user_buffer_end_;
-  size_t value_;
-  int count_;
-  size_t range_;
+  // The part of the coded stream passed to Initialize() that has not been
+  // filled into |value_| yet. FillDecoder() consumes it from the front.
+  base::raw_span<const uint8_t, DanglingUntriaged> user_buffer_;
+  // Size of the coded stream passed to Initialize(), for BitOffset().
+  size_t initial_buffer_size_ = 0;
+  size_t value_ = 0;
+  int count_ = -8;
+  size_t range_ = 255;
 };
 
 }  // namespace media

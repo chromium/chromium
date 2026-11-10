@@ -9,6 +9,7 @@
 
 #include <limits>
 
+#include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -46,7 +47,7 @@ class Vp8BoolDecoderTest : public ::testing::Test {
   Vp8BoolDecoder bd_;
 };
 
-#define INITIALIZE(data) ASSERT_TRUE(bd_.Initialize(data, sizeof(data)));
+#define INITIALIZE(data) ASSERT_TRUE(bd_.Initialize(data));
 
 TEST_F(Vp8BoolDecoderTest, DecodeBoolsWithZerosAndEvenProbabilities) {
   INITIALIZE(kDataZerosAndEvenProbabilities);
@@ -120,6 +121,21 @@ TEST_F(Vp8BoolDecoderTest, DecodeBoolsWithParitiesAndIncreasingProbabilities) {
     ASSERT_TRUE(bd_.ReadBool(&out, static_cast<uint8_t>(i)));
     EXPECT_EQ(out, !!(i & 1));
   }
+}
+
+TEST_F(Vp8BoolDecoderTest, InitializeWithEmptyDataFails) {
+  EXPECT_FALSE(bd_.Initialize(base::span<const uint8_t>()));
+}
+
+TEST_F(Vp8BoolDecoderTest, ReadBoolFailsAfterEndOfData) {
+  const uint8_t kData[] = {0x00};
+  INITIALIZE(kData);
+  bool out;
+  bool success = true;
+  for (size_t i = 0; i < NUM_BITS_TO_TEST && success; ++i) {
+    success = bd_.ReadBool(&out);
+  }
+  EXPECT_FALSE(success);
 }
 
 }  // namespace media
