@@ -256,7 +256,7 @@ TEST_F(PerFillMetricsTest, LogFieldTypeOfTriggerFieldAddressForm) {
   FillForm(form, &autofill_profile);
 
   EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.Filling.TriggerFieldType.Any"),
+      histogram_tester.GetAllSamples("Autofill.Filling.TriggerFieldType"),
       base::BucketsAre(base::Bucket(NAME_FIRST, 1)));
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "Autofill.Filling.TriggerFieldType.Address"),
@@ -285,7 +285,7 @@ TEST_F(PerFillMetricsTest, LogFieldTypeOfTriggerFieldCreditCardForm) {
   FillForm(form, &credit_card, form.fields()[1].global_id());
 
   EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.Filling.TriggerFieldType.Any"),
+      histogram_tester.GetAllSamples("Autofill.Filling.TriggerFieldType"),
       base::BucketsAre(base::Bucket(CREDIT_CARD_EXP_MONTH, 1)));
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "Autofill.Filling.TriggerFieldType.CreditCard"),
