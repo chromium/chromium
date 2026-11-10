@@ -95,9 +95,9 @@ class CORE_EXPORT MouseEventManager final
   void NodeWillBeRemoved(Node&);
   void HandlePseudoElementRemoval(PseudoElement&);
 
-  void SendBoundaryEvents(EventTarget* exited_target,
+  void SendBoundaryEvents(Element* exited_target,
                           bool original_exited_target_removed,
-                          EventTarget* entered_target,
+                          Element* entered_target,
                           const WebMouseEvent&);
 
   void SetElementUnderMouse(Element*,

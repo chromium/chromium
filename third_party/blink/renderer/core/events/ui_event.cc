@@ -116,6 +116,10 @@ void UIEvent::CheckCrossOriginRelatedTarget(const Node& target,
   const ExecutionContext* related_context =
       related_target->GetExecutionContext();
   CHECK_EQ(!target_context, !related_context);
+  // Normally we should expect the target and related target to be in the same
+  // document.  However, it's possible that one of them has moved since we
+  // prepared to dispatch the event.  However, any such moving must have been
+  // within the same origin.
   if (target_context != related_context) {
     const SecurityOrigin* target_origin = target_context->GetSecurityOrigin();
     const SecurityOrigin* related_origin = related_context->GetSecurityOrigin();

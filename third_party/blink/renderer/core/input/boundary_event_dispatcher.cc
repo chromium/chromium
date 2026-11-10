@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/input/boundary_event_dispatcher.h"
 
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -20,17 +22,10 @@ namespace blink {
 namespace {
 
 HTMLFrameOwnerElement* FindFrameOwnerIfNested(
-    const ExecutionContext& possible_outer_context,
-    const ExecutionContext& possible_inner_context) {
-  const auto* possible_outer_window =
-      DynamicTo<LocalDOMWindow>(possible_outer_context);
-  const auto* possible_inner_window =
-      DynamicTo<LocalDOMWindow>(possible_inner_context);
-  if (!possible_outer_window || !possible_inner_window) {
-    return nullptr;
-  }
-  const Frame* possible_outer_frame = possible_outer_window->GetFrame();
-  const Frame* possible_inner_frame = possible_inner_window->GetFrame();
+    const Document& possible_outer_document,
+    const Document& possible_inner_document) {
+  const Frame* possible_outer_frame = possible_outer_document.GetFrame();
+  const Frame* possible_inner_frame = possible_inner_document.GetFrame();
   if (!possible_outer_frame || !possible_inner_frame) {
     return nullptr;
   }
@@ -88,50 +83,51 @@ void BuildAncestorChainsAndFindCommonAncestors(
 }  // namespace
 
 void BoundaryEventDispatcher::SendBoundaryEvents(
-    EventTarget* exited_target,
+    Element* exited_target,
     bool original_exited_target_removed,
-    EventTarget* entered_target) {
+    Element* entered_target) {
   if (exited_target == entered_target && !original_exited_target_removed) {
     return;
   }
 
-  // An EventTarget must never be exposed to a cross-origin ExecutionContext
-  // through `relatedTarget` (e.g. the touch pointer stream is owned by the
-  // local-root frame's PointerEventManager, which hit-tests through every
-  // same-process child frame).
-  // When the contexts have an inner/outer relationship in the frame hierarchy,
+  // An Element must never be exposed to a cross-document (or
+  // cross-origin, depending on flags) Document through `relatedTarget`
+  // (e.g. the touch pointer stream is owned by the local-root frame's
+  // PointerEventManager, which hit-tests through every same-process child
+  // frame).
+  // When the documents have an inner/outer relationship in the frame hierarchy,
   // the event in the outer document uses the frame owner (e.g. iframe) element
-  // that lives in that context as its relatedTarget. In other cases (e.g. for
+  // that lives in that document as its relatedTarget. In other cases (e.g. for
   // the event in the inner document, or sibling/cousin frames), the related
   // target is null.
   if (RuntimeEnabledFeatures::ClearCrossOriginRelatedTargetEnabled() &&
       exited_target && entered_target) {
-    const ExecutionContext* exited_context =
-        exited_target->GetExecutionContext();
-    const ExecutionContext* entered_context =
-        entered_target->GetExecutionContext();
-    bool is_same_origin = false;
-    if (exited_context && entered_context) {
-      if (exited_context == entered_context) {
-        is_same_origin = true;
-      } else {
-        const SecurityOrigin* exited_origin =
-            exited_context->GetSecurityOrigin();
-        const SecurityOrigin* entered_origin =
-            entered_context->GetSecurityOrigin();
-        is_same_origin = exited_origin->CanAccess(entered_origin) &&
-                         entered_origin->CanAccess(exited_origin);
+    bool is_same = false;
+    if (RuntimeEnabledFeatures::ClearCrossDocumentRelatedTargetEnabled()) {
+      is_same = &exited_target->GetDocument() == &entered_target->GetDocument();
+    } else {
+      const ExecutionContext* exited_context =
+          exited_target->GetExecutionContext();
+      const ExecutionContext* entered_context =
+          entered_target->GetExecutionContext();
+      if (exited_context && entered_context) {
+        if (exited_context == entered_context) {
+          is_same = true;
+        } else {
+          const SecurityOrigin* exited_origin =
+              exited_context->GetSecurityOrigin();
+          const SecurityOrigin* entered_origin =
+              entered_context->GetSecurityOrigin();
+          is_same = exited_origin->CanAccess(entered_origin) &&
+                    entered_origin->CanAccess(exited_origin);
+        }
       }
     }
-    if (!is_same_origin) {
-      EventTarget* exited_related_target =
-          (exited_context && entered_context)
-              ? FindFrameOwnerIfNested(*exited_context, *entered_context)
-              : nullptr;
-      EventTarget* entered_related_target =
-          (exited_context && entered_context)
-              ? FindFrameOwnerIfNested(*entered_context, *exited_context)
-              : nullptr;
+    if (!is_same) {
+      Element* exited_related_target = FindFrameOwnerIfNested(
+          exited_target->GetDocument(), entered_target->GetDocument());
+      Element* entered_related_target = FindFrameOwnerIfNested(
+          entered_target->GetDocument(), exited_target->GetDocument());
       SendBoundaryEventsSameOrigin(
           exited_target, original_exited_target_removed, exited_related_target);
       SendBoundaryEventsSameOrigin(entered_related_target,
@@ -146,9 +142,9 @@ void BoundaryEventDispatcher::SendBoundaryEvents(
 }
 
 void BoundaryEventDispatcher::SendBoundaryEventsSameOrigin(
-    EventTarget* exited_target,
+    Element* exited_target,
     bool original_exited_target_removed,
-    EventTarget* entered_target) {
+    Element* entered_target) {
   if (exited_target == entered_target && !original_exited_target_removed) {
     return;
   }

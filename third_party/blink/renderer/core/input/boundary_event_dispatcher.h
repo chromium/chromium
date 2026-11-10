@@ -10,6 +10,8 @@
 
 namespace blink {
 
+class Element;
+
 // This class contains the common logic of finding related node in a boundary
 // crossing action and sending boundary events. The subclasses of this class
 // must define what events should be sent in every case.
@@ -27,9 +29,9 @@ class BoundaryEventDispatcher {
         leave_event_(leave_event) {}
   virtual ~BoundaryEventDispatcher() = default;
 
-  void SendBoundaryEvents(EventTarget* exited_target,
+  void SendBoundaryEvents(Element* exited_target,
                           bool original_exited_target_removed,
-                          EventTarget* entered_target);
+                          Element* entered_target);
 
  protected:
   virtual void Dispatch(EventTarget*,
@@ -38,9 +40,9 @@ class BoundaryEventDispatcher {
                         bool check_for_listener) = 0;
 
  private:
-  void SendBoundaryEventsSameOrigin(EventTarget* exited_target,
+  void SendBoundaryEventsSameOrigin(Element* exited_target,
                                     bool original_exited_target_removed,
-                                    EventTarget* entered_target);
+                                    Element* entered_target);
 
   const AtomicString& over_event_;
   const AtomicString& out_event_;

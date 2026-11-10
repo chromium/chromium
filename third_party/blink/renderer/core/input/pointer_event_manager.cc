@@ -267,9 +267,9 @@ void PointerEventManager::SendMouseAndPointerBoundaryEvents(
 }
 
 void PointerEventManager::SendBoundaryEvents(
-    EventTarget* exited_target,
+    Element* exited_target,
     bool original_exited_target_removed,
-    EventTarget* entered_target,
+    Element* entered_target,
     PointerEvent* pointer_event) {
   PointerEventBoundaryEventDispatcher boundary_event_dispatcher(this,
                                                                 pointer_event);

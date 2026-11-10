@@ -1298,6 +1298,14 @@
       status: "stable",
     },
     {
+      // Killswitch for preventing cross-document relatedTarget on boundary
+      // events.
+      // https://issues.chromium.org/issues/574379564
+      name: "ClearCrossDocumentRelatedTarget",
+      depends_on: ["ClearCrossOriginRelatedTarget"],
+      status: "stable",
+    },
+    {
       // Killswitch for preventing cross-origin relatedTarget on boundary
       // events.
       // https://issues.chromium.org/issues/574379564

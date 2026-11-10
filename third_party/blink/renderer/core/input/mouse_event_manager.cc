@@ -187,9 +187,9 @@ void MouseEventManager::MouseEventBoundaryEventDispatcher::Dispatch(
                                            check_for_listener);
 }
 
-void MouseEventManager::SendBoundaryEvents(EventTarget* exited_target,
+void MouseEventManager::SendBoundaryEvents(Element* exited_target,
                                            bool original_exited_target_removed,
-                                           EventTarget* entered_target,
+                                           Element* entered_target,
                                            const WebMouseEvent& mouse_event) {
   MouseEventBoundaryEventDispatcher boundary_event_dispatcher(this,
                                                               &mouse_event);

@@ -194,9 +194,9 @@ class CORE_EXPORT PointerEventManager final
                                             PointerEvent*,
                                             bool hovering);
 
-  void SendBoundaryEvents(EventTarget* exited_target,
+  void SendBoundaryEvents(Element* exited_target,
                           bool original_exited_target_removed,
-                          EventTarget* entered_target,
+                          Element* entered_target,
                           PointerEvent*);
   void SetElementUnderPointer(PointerEvent*, Element*);
 
