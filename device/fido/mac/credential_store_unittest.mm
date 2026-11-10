@@ -118,7 +118,7 @@ TEST_F(CredentialStoreTest, FindCredentialsFromCredentialDescriptorList_Basic) {
 // return an empty list.
 TEST_F(CredentialStoreTest,
        FindCredentialsFromCredentialDescriptorList_ReturnEmpty) {
-  std::vector<Credential> credentials = InsertCredentials(3);
+  InsertCredentials(3);
   std::optional<std::list<Credential>> found =
       store_.FindCredentialsFromCredentialDescriptorList(
           kRpId, std::vector<PublicKeyCredentialDescriptor>());

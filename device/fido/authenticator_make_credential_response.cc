@@ -35,10 +35,6 @@ AuthenticatorMakeCredentialResponse::CreateFromU2fRegisterResponse(
   if (!attested_credential_data)
     return std::nullopt;
 
-  // Extract the credential_id for packing into the response data.
-  std::vector<uint8_t> credential_id =
-      attested_credential_data->credential_id();
-
   // The counter is zeroed out for Register requests.
   std::array<uint8_t, 4> counter = {};
   constexpr uint8_t flags =

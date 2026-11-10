@@ -125,7 +125,6 @@ TEST(UdevTest, GetSysAttrSimple) {
 
 TEST(UdevTest, GetParent) {
   testing::FakeUdevLoader fake_udev;
-  std::map<std::string, std::string> attrs;
   udev_device* grandparent = fake_udev.AddFakeDevice(
       /*name=*/"Foo", /*syspath=*/"/device/foo",
       /*subsystem=*/"", /*devnode=*/std::nullopt, /*devtype=*/std::nullopt,

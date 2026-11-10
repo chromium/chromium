@@ -428,7 +428,6 @@ void EnclaveAuthenticator::ProcessMakeCredentialResponse(
   cbor::Value& response = maybe_response.value();
   std::optional<AuthenticatorMakeCredentialResponse> opt_response;
   std::optional<sync_pb::WebauthnCredentialSpecifics> opt_entity;
-  std::string error_description;
   auto parse_result = ParseMakeCredentialResponse(
       std::move(response), pending_make_credential_request_->request,
       *ui_request_->key_version, ui_request_->up_and_uv_bits);

@@ -1234,8 +1234,6 @@ XrResult XRAPI_PTR xrSuggestInteractionProfileBindings(
             "xrSetInteractionProfileSuggestedBindings next is not nullptr");
   RETURN_IF_XR_FAILED(
       GetTestHelper().ValidatePath(suggested_bindings->interactionProfile));
-  std::string interaction_profile =
-      GetTestHelper().PathToString(suggested_bindings->interactionProfile);
 
   RETURN_IF(suggested_bindings->suggestedBindings == nullptr,
             XR_ERROR_VALIDATION_FAILURE,

@@ -373,7 +373,6 @@ void BluetoothTestMac::SimulateGattServicesChanged(BluetoothDevice* device) {
 void BluetoothTestMac::SimulateGattServiceRemoved(
     BluetoothRemoteGattService* service) {
   BluetoothUUID bluetooth_service_uuid = service->GetUUID();
-  std::string service_uuid_string = bluetooth_service_uuid.canonical_value();
   BluetoothRemoteGattServiceMac* mac_gatt_service =
       static_cast<BluetoothRemoteGattServiceMac*>(service);
   BluetoothDevice* device = service->GetDevice();

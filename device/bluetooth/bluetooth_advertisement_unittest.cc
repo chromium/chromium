@@ -18,7 +18,6 @@ namespace {
 TEST(BluetoothAdvertisementTest, DataMembersAreAssignedCorrectly) {
   // Sample manufacturer data.
   BluetoothAdvertisement::ManufacturerData manufacturer_data;
-  std::vector<uint8_t> sample_data(5, 0);
   manufacturer_data[0] = std::vector<uint8_t>(5, 0);
   // Sample UUID List.
   const BluetoothAdvertisement::UUIDList uuids(1, "1234");
