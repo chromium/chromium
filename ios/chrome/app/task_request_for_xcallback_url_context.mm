@@ -13,10 +13,14 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/startup/app_group_command_payload.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/app/startup/app_startup_utils.h"
 #import "ios/chrome/app/task_request_url_context_private.h"
+#import "ios/chrome/app/task_request_utils.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
@@ -128,11 +132,31 @@ std::optional<AppGroupCommandTab> OpenURLTabForAppGroupCommand(
   return AppGroupCommandTab{url, target_mode};
 }
 
-// Returns the tab to open for a command of `type` carrying `external_text`, or
-// `std::nullopt` if the command must be discarded.
+// Returns the tab searching `external_text` in `target_mode` with the default
+// search engine of `profile`, or `std::nullopt` if there is no text. An empty
+// text is still searched. Opens the NTP if `profile` has no valid default
+// search engine (e.g. disabled by policy).
+std::optional<AppGroupCommandTab> SearchTextTabForAppGroupCommand(
+    NSString* external_text,
+    ApplicationModeForTabOpening target_mode,
+    ProfileIOS* profile) {
+  if (!external_text) {
+    return std::nullopt;
+  }
+  // Incognito uses the default search engine of its original profile, so
+  // `profile` is used in both modes.
+  const GURL url = GenerateResultGURLFromSearchQuery(external_text, profile);
+  return AppGroupCommandTab{
+      .url = url.is_valid() ? url : GURL(kChromeUINewTabURL),
+      .target_mode = target_mode};
+}
+
+// Returns the tab to open in `profile` for a command of `type` carrying
+// `external_text`, or `std::nullopt` if the command must be discarded.
 std::optional<AppGroupCommandTab> TabForAppGroupCommand(
     AppGroupCommandType type,
-    NSString* external_text) {
+    NSString* external_text,
+    ProfileIOS* profile) {
   switch (type) {
     case AppGroupCommandType::kOpenURL:
       return OpenURLTabForAppGroupCommand(
@@ -141,12 +165,15 @@ std::optional<AppGroupCommandTab> TabForAppGroupCommand(
       return OpenURLTabForAppGroupCommand(
           external_text, ApplicationModeForTabOpening::INCOGNITO);
     case AppGroupCommandType::kSearchText:
+      return SearchTextTabForAppGroupCommand(
+          external_text, ApplicationModeForTabOpening::UNDETERMINED, profile);
     case AppGroupCommandType::kIncognitoSearchText:
+      return SearchTextTabForAppGroupCommand(
+          external_text, ApplicationModeForTabOpening::INCOGNITO, profile);
     case AppGroupCommandType::kSearchImage:
     case AppGroupCommandType::kIncognitoSearchImage:
-      // TODO(crbug.com/493816082): Search the text or image sent by the
-      // extension, discarding commands without one, and flag the task as
-      // opened via the share extension, as the legacy startup flow does.
+      // TODO(crbug.com/493816082): Search the image sent by the extension,
+      // discarding commands without one, as the legacy startup flow does.
       return std::nullopt;
     case AppGroupCommandType::kVoiceSearch:
       return AppGroupCommandTab{
@@ -260,14 +287,15 @@ std::optional<AppGroupCommandTab> TabForAppGroupCommand(
   if (!type) {
     return;
   }
-  std::optional<AppGroupCommandTab> tab =
-      TabForAppGroupCommand(*type, _appGroupCommand.external_text);
+  std::optional<AppGroupCommandTab> tab = TabForAppGroupCommand(
+      *type, _appGroupCommand.external_text, sceneState.profileState.profile);
   if (!tab) {
     return;
   }
 
+  UrlLoadParams urlLoadParams = UrlLoadParams::InNewTab(tab->url);
   [self openTabWithSceneState:sceneState
-                urlLoadParams:UrlLoadParams::InNewTab(tab->url)
+                urlLoadParams:urlLoadParams
                    targetMode:tab->target_mode
             postOpeningAction:tab->post_opening_action
         postOpeningCompletion:nil];

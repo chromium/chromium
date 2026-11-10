@@ -13,7 +13,13 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/values.h"
 #import "components/prefs/pref_service.h"
+#import "components/search_engines/default_search_manager.h"
+#import "components/search_engines/template_url.h"
+#import "components/search_engines/template_url_data.h"
+#import "components/search_engines/template_url_service.h"
+#import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
@@ -27,6 +33,7 @@
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
@@ -109,7 +116,11 @@ class TaskRequestForURLContextTest : public PlatformTest {
     mock_startup_information_ = OCMProtocolMock(@protocol(StartupInformation));
     app_state_ =
         [[AppState alloc] initWithStartupInformation:mock_startup_information_];
-    profile_ = TestProfileIOS::Builder().Build();
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        ios::TemplateURLServiceFactory::GetInstance(),
+        ios::TemplateURLServiceFactory::GetDefaultFactory());
+    profile_ = std::move(builder).Build();
     profile_state_ = [[ProfileState alloc] initWithAppState:app_state_];
     profile_state_.profile = profile_.get();
     scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
@@ -238,7 +249,28 @@ class TaskRequestForURLContextTest : public PlatformTest {
                       isColdStart:YES];
   }
 
+  // Sets a default search engine so that search URLs can be generated.
+  void SetUpDefaultSearchEngine() {
+    TemplateURLService* template_url_service =
+        ios::TemplateURLServiceFactory::GetForProfile(profile_.get());
+    template_url_service->Load();
+    TemplateURLData data;
+    data.SetShortName(u"Test");
+    data.SetKeyword(u"test");
+    data.SetURL(kTestSearchURL);
+    TemplateURL* template_url =
+        template_url_service->Add(std::make_unique<TemplateURL>(data));
+    template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
+  }
+
   NSString* const kTestGaiaID = @"test_gaia_id";
+  // URL template of the default search engine used in tests.
+  const std::string kTestSearchURL =
+      "https://www.example.com/search?q={searchTerms}";
+  // Text searched in tests, and its results URL with `kTestSearchURL`.
+  NSString* const kTestSearchQuery = @"chromium";
+  const GURL kTestSearchQueryResultsURL =
+      GURL("https://www.example.com/search?q=chromium");
   NSString* const kAppGroupCommandURL =
       @"googlechrome://x-callback-url/app-group-command";
 
@@ -1231,13 +1263,107 @@ TEST_F(TaskRequestForURLContextTest, TestAppGroupOpenURLCommandWithoutHTTPURL) {
   }
 }
 
-// Tests that unknown App Group commands, and the search commands not yet
+// Tests that App Group text search commands open the results of the default
+// search engine in the requested mode.
+TEST_F(TaskRequestForURLContextTest, TestAppGroupTextSearchCommandExecution) {
+  SetUpDefaultSearchEngine();
+  struct TestCase {
+    NSString* command;
+    ApplicationModeForTabOpening expected_mode;
+  } test_cases[] = {
+      {base::SysUTF8ToNSString(app_group::kChromeAppGroupSearchTextCommand),
+       ApplicationModeForTabOpening::UNDETERMINED},
+      {app_group::kChromeAppGroupIncognitoSearchTextCommand,
+       ApplicationModeForTabOpening::INCOGNITO},
+  };
+
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(base::SysNSStringToUTF8(test_case.command));
+    WriteRecentAppGroupCommand(test_case.command,
+                               app_group::kOpenCommandSourceShareExtension,
+                               kTestSearchQuery);
+
+    TaskRequestURLContextTestTabOpener* tab_opener =
+        ExecuteAppGroupCommandRequest();
+
+    EXPECT_EQ(tab_opener.targetMode, test_case.expected_mode);
+    EXPECT_EQ(tab_opener.urlLoadParams.web_params.url,
+              kTestSearchQueryResultsURL);
+    EXPECT_TRUE(tab_opener.urlLoadParams.web_params.virtual_url.is_empty());
+    EXPECT_FALSE(tab_opener.urlLoadParams.from_widget_or_siri);
+    EXPECT_TRUE(tab_opener.dismissOmnibox);
+    EXPECT_EQ(tab_opener.completionAction,
+              TabOpeningPostOpeningAction::NO_ACTION);
+    EXPECT_TRUE(tab_opener.completionActionExecuted);
+  }
+}
+
+// Tests that an App Group text search command with an empty text still opens
+// the search results.
+TEST_F(TaskRequestForURLContextTest, TestAppGroupTextSearchCommandEmptyText) {
+  SetUpDefaultSearchEngine();
+  WriteRecentAppGroupCommand(
+      base::SysUTF8ToNSString(app_group::kChromeAppGroupSearchTextCommand),
+      app_group::kOpenCommandSourceShareExtension, @"");
+
+  TaskRequestURLContextTestTabOpener* tab_opener =
+      ExecuteAppGroupCommandRequest();
+
+  EXPECT_EQ(tab_opener.urlLoadParams.web_params.url,
+            GURL("https://www.example.com/search?q="));
+  EXPECT_TRUE(tab_opener.completionActionExecuted);
+}
+
+// Tests that App Group text search commands without a text are discarded.
+TEST_F(TaskRequestForURLContextTest,
+       TestAppGroupTextSearchCommandWithoutTextIgnored) {
+  SetUpDefaultSearchEngine();
+  NSString* commands[] = {
+      base::SysUTF8ToNSString(app_group::kChromeAppGroupSearchTextCommand),
+      app_group::kChromeAppGroupIncognitoSearchTextCommand,
+  };
+
+  for (NSString* command : commands) {
+    SCOPED_TRACE(base::SysNSStringToUTF8(command));
+    WriteRecentAppGroupCommand(
+        command, app_group::kOpenCommandSourceShareExtension, nil);
+
+    TaskRequestURLContextTestTabOpener* tab_opener =
+        ExecuteAppGroupCommandRequest();
+
+    EXPECT_FALSE(tab_opener.completionActionExecuted);
+    EXPECT_TRUE(tab_opener.urlLoadParams.web_params.url.is_empty());
+  }
+}
+
+// Tests that an App Group text search command opens the NTP when the default
+// search engine is disabled by policy.
+TEST_F(TaskRequestForURLContextTest,
+       TestAppGroupTextSearchCommandWithoutDefaultSearchEngine) {
+  base::DictValue policy;
+  policy.Set(DefaultSearchManager::kDisabledByPolicy, true);
+  profile_->GetTestingPrefService()->SetManagedPref(
+      DefaultSearchManager::kDefaultSearchProviderDataPrefName,
+      std::move(policy));
+  ASSERT_FALSE(ios::TemplateURLServiceFactory::GetForProfile(profile_.get())
+                   ->GetDefaultSearchProvider());
+  WriteRecentAppGroupCommand(
+      base::SysUTF8ToNSString(app_group::kChromeAppGroupSearchTextCommand),
+      app_group::kOpenCommandSourceShareExtension, kTestSearchQuery);
+
+  TaskRequestURLContextTestTabOpener* tab_opener =
+      ExecuteAppGroupCommandRequest();
+
+  EXPECT_EQ(tab_opener.urlLoadParams.web_params.url, GURL(kChromeUINewTabURL));
+  EXPECT_EQ(tab_opener.targetMode, ApplicationModeForTabOpening::UNDETERMINED);
+  EXPECT_TRUE(tab_opener.completionActionExecuted);
+}
+
+// Tests that unknown App Group commands, and the image search commands not yet
 // supported by the new startup flow, don't open a tab.
 TEST_F(TaskRequestForURLContextTest, TestUnhandledAppGroupCommandIgnored) {
   NSString* commands[] = {
       @"unknowncommand",
-      base::SysUTF8ToNSString(app_group::kChromeAppGroupSearchTextCommand),
-      app_group::kChromeAppGroupIncognitoSearchTextCommand,
       base::SysUTF8ToNSString(app_group::kChromeAppGroupSearchImageCommand),
       app_group::kChromeAppGroupIncognitoSearchImageCommand,
   };
