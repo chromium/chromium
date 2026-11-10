@@ -839,9 +839,7 @@ public class AwSettings {
         }
     }
 
-    /**
-     * @return Returns if geolocation is currently enabled.
-     */
+    /** Returns whether geolocation is currently enabled. */
     @CalledByNative
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public boolean getGeolocationEnabled() {
@@ -860,16 +858,16 @@ public class AwSettings {
     }
 
     /**
-     * @return the default User-Agent used by each WebContents instance, i.e. unless overridden by
-     *     {@link #setUserAgentString()}
+     * Returns the default User-Agent used by each WebContents instance, i.e. unless overridden by
+     * {@link #setUserAgentString()}.
      */
     public static String getDefaultUserAgent() {
         return LazyDefaultUserAgent.sInstance;
     }
 
     /**
-     * @return the default metadata for user-agent client hints used by each WebContents instance,
-     *     i.e. unless overridden by {@link #setUserAgentMetadata()}
+     * Returns the default metadata for user-agent client hints used by each WebContents instance,
+     * i.e. unless overridden by {@link #setUserAgentMetadata()}.
      */
     public static AwUserAgentMetadata getDefaultUserAgentMetadata() {
         return LazyDefaultUserAgentMetadata.sInstance;

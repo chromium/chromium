@@ -43,9 +43,7 @@ public class AwDisplayCutoutController {
 
     /** This is a delegate that the embedder needs to implement. */
     public interface Delegate {
-        /**
-         * @return The DIP scale.
-         */
+        /** Returns the DIP scale. */
         float getDipScale();
 
         /**
@@ -187,8 +185,9 @@ public class AwDisplayCutoutController {
     /**
      * Call this when window insets are first applied or changed.
      *
-     * @see View#onApplyWindowInsets(WindowInsets)
      * @param insets The window (display) insets.
+     * @return The same {@code insets}, unconsumed.
+     * @see View#onApplyWindowInsets(WindowInsets)
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public WindowInsets onApplyWindowInsets(final WindowInsets insets) {

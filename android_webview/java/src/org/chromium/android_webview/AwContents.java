@@ -1018,10 +1018,17 @@ public class AwContents implements SmartClipProvider {
     }
 
     /**
+     * This version of the constructor is used in test code to inject test versions of the classes
+     * that this class depends on.
+     *
+     * @param browserContext the browsing context to associate this view contents with.
+     * @param containerView the view-hierarchy item this object will be bound to.
+     * @param context the context to use, usually containerView.getContext().
+     * @param internalAccessAdapter to access private methods on containerView.
+     * @param drawFnAccess to access the draw functor provided by the WebView.
+     * @param clientFactory will create the AwContentsClient which receives callbacks.
      * @param dependencyFactory an instance of the DependencyFactory used to provide instances of
      *     classes that this class depends on.
-     *     <p>This version of the constructor is used in test code to inject test versions of the
-     *     above documented classes.
      */
     public AwContents(
             AwBrowserContext browserContext,
@@ -1363,6 +1370,7 @@ public class AwContents implements SmartClipProvider {
      * reinitialize. All Exception messages should be developer friendly and refer to the browser
      * context as a "Profile".
      *
+     * @param browserContext The new browser context (profile) to use.
      * @throws IllegalStateException if the WebView has been destroyed via. {@link
      *     AwContents#destroy()}.
      * @throws IllegalStateException if the browser context has been accessed via. {@link
@@ -1502,6 +1510,7 @@ public class AwContents implements SmartClipProvider {
     }
 
     /**
+     * @param newContainerView The new container view to bind to.
      * @param keepCurrentSize Whether to keep the current size instead of passing down the size of
      *     {@code newContainerView}, which hasn't been laid out yet.
      */
@@ -2406,9 +2415,7 @@ public class AwContents implements SmartClipProvider {
         }
     }
 
-    /**
-     * @return load progress of the WebContents, on a scale of 0-100.
-     */
+    /** Returns the load progress of the WebContents, on a scale of 0-100. */
     public int getMostRecentProgress() {
         if (isDestroyed(WARN)) return 0;
         if (!mWebContents.isLoading()) return 100;
@@ -3340,9 +3347,9 @@ public class AwContents implements SmartClipProvider {
      * @param script The JavaScript snippet to be run.
      * @param allowedOriginRules The JavaScript snippet will run on every frame whose origin matches
      *     any one of the allowedOriginRules.
+     * @return A {@link ScriptHandler} for removing the script.
      * @throws IllegalArgumentException if one of the allowedOriginRules is invalid or one of
      *     jsObjectName and allowedOriginRules is {@code null}.
-     * @return A {@link ScriptHandler} for removing the script.
      */
     public ScriptHandler addDocumentStartJavaScript(String script, String[] allowedOriginRules) {
         return addJavaScriptOnEvent(
@@ -3365,11 +3372,11 @@ public class AwContents implements SmartClipProvider {
      * @param injectionEvent The event to inject scripts on: documentstart or documentend.
      * @param allowedOriginRules The JavaScript snippet will run on every frame whose origin matches
      *     any one of the allowedOriginRules.
-     * @param world The world that this script should run in.
+     * @param worldName The world that this script should run in.
+     * @return A {@link ScriptHandler} for removing the script.
      * @throws IllegalArgumentException if one of the allowedOriginRules is invalid or one of
      *     jsObjectName and allowedOriginRules is {@code null}, or the world is an isolated world
      *     and has not been previously registered.
-     * @return A {@link ScriptHandler} for removing the script.
      */
     public ScriptHandler addJavaScriptOnEvent(
             String script,
@@ -3442,7 +3449,7 @@ public class AwContents implements SmartClipProvider {
      *     object will be injected when the frame's origin matches any one of the allowed origins.
      *     If a wildcard "*" is provided, it will inject JavaScript object to all frames.
      * @param listener The {@link WebMessageListener} to be called when received onPostMessage().
-     * @param world The name of the world to execute the listener in.
+     * @param worldName The name of the world to execute the listener in.
      * @throws IllegalArgumentException if one of the allowedOriginRules is invalid or one of
      *     jsObjectName and allowedOriginRules is {@code null} or if the world is not previously
      *     registered.
@@ -3557,6 +3564,8 @@ public class AwContents implements SmartClipProvider {
      *
      * <p>If the same world has been created before, it will return the previously created world.
      *
+     * @param name The name of the world to register.
+     * @return The id of the registered world.
      * @throws IllegalStateException if there are too many worlds created.
      */
     public int registerJavaScriptWorld(String name) {
@@ -3751,6 +3760,7 @@ public class AwContents implements SmartClipProvider {
     /**
      * Send a MessageEvent to main frame.
      *
+     * @param messagePayload The message payload to send.
      * @param targetOrigin The expected target frame's origin.
      * @param sentPorts ports for the JavaScript MessageEvent.
      */
@@ -4065,6 +4075,7 @@ public class AwContents implements SmartClipProvider {
     /**
      * Save the state of this AwContents into provided Bundle.
      *
+     * @param outState The Bundle to save the state into.
      * @param maxSize a limit on the size of the state.
      * @param includeForwardState whether to include state accessible through goForward (not
      *     necessary for embedders without a forward button).
@@ -4651,7 +4662,7 @@ public class AwContents implements SmartClipProvider {
         return AwContentsJni.get().getSafeBrowsingLocaleForTesting();
     }
 
-    /** Returns the AwContents instance associated with |webContents|, or NULL */
+    /** Returns the AwContents instance associated with {@code webContents}, or null. */
     public static AwContents fromWebContents(WebContents webContents) {
         return AwContentsJni.get().fromWebContents(webContents);
     }

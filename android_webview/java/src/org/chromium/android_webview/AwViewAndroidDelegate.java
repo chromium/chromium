@@ -147,9 +147,7 @@ public class AwViewAndroidDelegate extends ViewAndroidDelegate {
         mContentsClient.onBackgroundColorChanged(color);
     }
 
-    /**
-     * @return The Visual Viewport bottom inset in pixels.
-     */
+    /** Returns the Visual Viewport bottom inset in pixels. */
     @Override
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public int getViewportInsetBottom() {

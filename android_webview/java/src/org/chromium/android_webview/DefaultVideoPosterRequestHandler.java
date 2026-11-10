@@ -103,9 +103,7 @@ public class DefaultVideoPosterRequestHandler {
         return mDefaultVideoPosterUrl;
     }
 
-    /**
-     * @return a unique URL which has little chance to be used by application.
-     */
+    /** Returns a unique URL which has little chance to be used by application. */
     private static String generateDefaulVideoPosterUrl() {
         Random randomGenerator = new Random();
         String path = String.valueOf(randomGenerator.nextLong());

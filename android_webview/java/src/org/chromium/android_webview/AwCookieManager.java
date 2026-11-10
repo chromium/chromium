@@ -254,8 +254,8 @@ public final class AwCookieManager {
      *
      * <p>We need to arrange for the users Callback#onResult to be called on the original thread
      * after the work is done. When the API is called we construct a CookieCallback which remembers
-     * the handler of the current thread. Later the native code uses the native method
-     * |RunBooleanCallbackAndroid| to call CookieCallback#onResult which posts a Runnable on the
+     * the handler of the current thread. Later the native code uses the native method {@code
+     * RunBooleanCallbackAndroid} to call CookieCallback#onResult which posts a Runnable on the
      * handler of the original thread which in turn calls Callback#onResult.
      */
     static class CookieCallback implements Callback<Boolean> {

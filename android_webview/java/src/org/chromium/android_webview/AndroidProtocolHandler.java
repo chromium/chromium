@@ -280,6 +280,7 @@ public class AndroidProtocolHandler {
     /**
      * Make sure the given GURL is correctly formed and parse it into a Uri.
      *
+     * @param url The GURL to verify and parse.
      * @return a Uri instance, or null if the URL was invalid.
      */
     private static @Nullable Uri verifyUrl(@Nullable GURL url) {
