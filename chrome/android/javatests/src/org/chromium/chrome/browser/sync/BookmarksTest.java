@@ -24,7 +24,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -316,7 +315,6 @@ public class BookmarksTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    @DisabledTest(message = "https://crbug.com/566486788")
     public void testUploadMovedBookmark() throws Exception {
         // Add the entity to test moving.
         BookmarkId bookmarkId = addClientBookmark(TITLE, URL);
@@ -530,7 +528,9 @@ public class BookmarksTest {
                                 id,
                                 specifics.getGuid(),
                                 specifics.getLegacyCanonicalizedTitle(),
-                                entity.getFolder() ? null : specifics.getUrl(),
+                                specifics.getType() == BookmarkSpecifics.Type.FOLDER
+                                        ? null
+                                        : specifics.getUrl(),
                                 parentId,
                                 specifics.getParentGuid()));
             }
