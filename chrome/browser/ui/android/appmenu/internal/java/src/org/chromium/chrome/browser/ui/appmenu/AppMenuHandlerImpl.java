@@ -299,13 +299,20 @@ class AppMenuHandlerImpl
     // TODO(crbug.com/40479664): Fix this properly.
     @SuppressLint("ResourceType")
     public boolean showAppMenu(@Nullable View anchorView, boolean startDragging) {
-        return showAppMenu(anchorView, startDragging, false);
+        return showAppMenu(
+                anchorView,
+                startDragging,
+                /* isFromBottomBar= */ false,
+                /* isFromPointer= */ false);
     }
 
     @Override
     @SuppressLint("ResourceType")
     public boolean showAppMenu(
-            @Nullable View anchorView, boolean startDragging, boolean isFromBottomBar) {
+            @Nullable View anchorView,
+            boolean startDragging,
+            boolean isFromBottomBar,
+            boolean isFromPointer) {
         if (!shouldShowAppMenu() || isAppMenuShowing()) return false;
 
         TextBubble.dismissBubbles();
@@ -425,7 +432,8 @@ class AppMenuHandlerImpl
                                     rotation,
                                     mAppRect.get(),
                                     startDragging,
-                                    isFromBottomBar);
+                                    isFromBottomBar,
+                                    isFromPointer);
                             // https://github.com/uber/NullAway/issues/1190
                             assumeNonNull(mKeyboardVisibilityListener);
                             keyboardVisibilityDelegate.removeKeyboardVisibilityListener(
@@ -442,7 +450,8 @@ class AppMenuHandlerImpl
                     rotation,
                     mAppRect.get(),
                     startDragging,
-                    isFromBottomBar);
+                    isFromBottomBar,
+                    isFromPointer);
         }
         return true;
     }
@@ -794,7 +803,8 @@ class AppMenuHandlerImpl
             Integer rotation,
             Rect appRect,
             boolean startDragging,
-            boolean isFromBottomBar) {
+            boolean isFromBottomBar,
+            boolean isFromPointer) {
         // Use full size of window for abnormal appRect.
         if (appRect.left < 0 && appRect.top < 0) {
             appRect.left = 0;
@@ -827,6 +837,7 @@ class AppMenuHandlerImpl
                 addTopPaddingBeforeFirstRow(),
                 isFromBottomBar,
                 reservedTopSpace,
+                isFromPointer,
                 this);
         assumeNonNull(mAppMenuDragHelper);
         mAppMenuDragHelper.onShow(startDragging);

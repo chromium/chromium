@@ -1051,6 +1051,7 @@ public class AppMenuItemViewBinderTest {
                 /* addTopPaddingBeforeFirstRow= */ false,
                 /* isFromBottomBar= */ false,
                 /* reservedTopSpace= */ 0,
+                /* isFromPointer= */ false,
                 /* flyoutHandler= */ null);
         assertFalse(appMenu.shouldHideShortcutHints());
         assertEquals("Ctrl+T", model.get(AppMenuItemProperties.SHORTCUT_TEXT));
@@ -1071,6 +1072,7 @@ public class AppMenuItemViewBinderTest {
                 /* addTopPaddingBeforeFirstRow= */ false,
                 /* isFromBottomBar= */ false,
                 /* reservedTopSpace= */ 0,
+                /* isFromPointer= */ false,
                 /* flyoutHandler= */ null);
         assertTrue(appMenu.shouldHideShortcutHints());
         assertNull(model.get(AppMenuItemProperties.SHORTCUT_TEXT));

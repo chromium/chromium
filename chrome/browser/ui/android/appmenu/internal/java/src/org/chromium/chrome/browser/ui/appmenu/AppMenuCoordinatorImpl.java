@@ -114,7 +114,10 @@ class AppMenuCoordinatorImpl implements AppMenuCoordinator {
                         : ViewConfiguration.get(mContext).hasPermanentMenuKey();
 
         mAppMenuHandler.showAppMenu(
-                hasPermanentMenuKey ? null : specificAnchorView, startDragging, isFromBottomBar);
+                hasPermanentMenuKey ? null : specificAnchorView,
+                startDragging,
+                isFromBottomBar,
+                /* isFromPointer= */ false);
     }
 
     @Override

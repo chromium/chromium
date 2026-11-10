@@ -18,12 +18,12 @@ import androidx.annotation.IdRes;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.util.MotionEventUtils;
 
 /**
- * A helper class for a menu button to decide when to show the app menu and forward touch
- * events.
+ * A helper class for a menu button to decide when to show the app menu and forward touch events.
  *
- * Simply construct this class and pass the class instance to a menu button as TouchListener.
+ * <p>Simply construct this class and pass the class instance to a menu button as TouchListener.
  * Then this class will handle everything regarding showing app menu for you.
  */
 @NullMarked
@@ -54,7 +54,7 @@ class AppMenuButtonHelperImpl extends AccessibilityDelegate implements AppMenuBu
 
     @Override
     public boolean onEnterKeyPress(View view) {
-        return showAppMenu(view, false);
+        return showAppMenu(view, false, /* isFromPointer= */ false);
     }
 
     @Override
@@ -82,7 +82,7 @@ class AppMenuButtonHelperImpl extends AccessibilityDelegate implements AppMenuBu
                 isTouchEventConsumed |= true;
                 updateTouchEvent(view, true);
                 if (mOnClickRunnable != null) mOnClickRunnable.run();
-                showAppMenu(view, true);
+                showAppMenu(view, true, MotionEventUtils.isPointerEvent(event));
                 break;
             case MotionEvent.ACTION_UP:
                 isTouchEventConsumed |= true;
@@ -111,7 +111,7 @@ class AppMenuButtonHelperImpl extends AccessibilityDelegate implements AppMenuBu
     public boolean performAccessibilityAction(View host, int action, @Nullable Bundle args) {
         if (action == AccessibilityNodeInfo.ACTION_CLICK) {
             if (!mMenuHandler.isAppMenuShowing()) {
-                showAppMenu(host, false);
+                showAppMenu(host, false, /* isFromPointer= */ false);
             } else {
                 mMenuHandler.hideAppMenu();
             }
@@ -124,12 +124,16 @@ class AppMenuButtonHelperImpl extends AccessibilityDelegate implements AppMenuBu
 
     /**
      * Shows the app menu if it is not already shown.
+     *
      * @param view View that initiated showing this menu. Normally it is a menu button.
      * @param startDragging Whether dragging is started.
+     * @param isFromPointer Whether the menu was opened by a pointer device (mouse or trackpad).
      * @return Whether or not if the app menu is successfully shown.
      */
-    private boolean showAppMenu(View view, boolean startDragging) {
-        if (!mMenuHandler.isAppMenuShowing() && mMenuHandler.showAppMenu(view, startDragging)) {
+    private boolean showAppMenu(View view, boolean startDragging, boolean isFromPointer) {
+        if (!mMenuHandler.isAppMenuShowing()
+                && mMenuHandler.showAppMenu(
+                        view, startDragging, /* isFromBottomBar= */ false, isFromPointer)) {
             // Initial start dragging can be canceled in case if it was just single tap.
             // So we only record non-dragging here, and will deal with those dragging cases in
             // AppMenuDragHelper class.

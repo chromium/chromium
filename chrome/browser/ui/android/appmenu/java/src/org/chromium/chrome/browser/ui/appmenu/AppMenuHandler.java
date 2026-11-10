@@ -179,10 +179,14 @@ public interface AppMenuHandler {
      * @param anchorView Anchor view used for the popup
      * @param startDragging Whether dragging is started
      * @param isFromBottomBar Whether the menu is anchored to the bottom bar
+     * @param isFromPointer Whether the menu was opened by a pointer device (mouse or trackpad)
      * @return True, if the menu is shown, false, if menu is not shown.
      */
     default boolean showAppMenu(
-            @Nullable View anchorView, boolean startDragging, boolean isFromBottomBar) {
+            @Nullable View anchorView,
+            boolean startDragging,
+            boolean isFromBottomBar,
+            boolean isFromPointer) {
         return showAppMenu(anchorView, startDragging);
     }
 

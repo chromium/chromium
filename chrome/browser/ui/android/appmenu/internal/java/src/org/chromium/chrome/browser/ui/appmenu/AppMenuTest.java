@@ -139,7 +139,7 @@ public class AppMenuTest {
         when(mWindowAndroid.getKeyboardDelegate()).thenReturn(mKeyboardDelegate);
         when(mKeyboardDelegate.isKeyboardObscuring(any())).thenReturn(false);
         when(mMockAppMenuHandler.getAppMenu()).thenReturn(mMockAppMenu);
-        when(mMockAppMenuHandler.showAppMenu(any(), anyBoolean()))
+        when(mMockAppMenuHandler.showAppMenu(any(), anyBoolean(), anyBoolean(), anyBoolean()))
                 .thenAnswer(
                         invocation -> {
                             mMenuObserver.menuShownCallback.notifyCalled();

@@ -36,7 +36,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
-import org.chromium.base.DeviceInfo;
 import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
@@ -322,7 +321,6 @@ class AppMenu implements OnKeyListener {
 
         mTempLocation = new int[2];
         mHierarchicalMenuController = hierarchicalMenuController;
-        mPositionBelowAnchor = DeviceInfo.isDesktop();
     }
 
     /**
@@ -350,6 +348,8 @@ class AppMenu implements OnKeyListener {
      *     must not cover (plus {@code R.dimen.bottom_bar_app_menu_top_margin}). 0 for no
      *     constraint. Only honored when {@code isFromBottomBar} is true and the menu is not opened
      *     by a permanent hardware button.
+     * @param isFromPointer Whether the menu was opened by a pointer device (mouse or trackpad). If
+     *     true, the menu is positioned below the anchor view.
      */
     void show(
             Context context,
@@ -365,6 +365,7 @@ class AppMenu implements OnKeyListener {
             boolean addTopPaddingBeforeFirstRow,
             boolean isFromBottomBar,
             int reservedTopSpace,
+            boolean isFromPointer,
             FlyoutHandler<AppMenuPopup> flyoutHandler) {
         mContext = context;
         PopupWindow popup = new PopupWindow(context);
@@ -530,7 +531,7 @@ class AppMenu implements OnKeyListener {
                         Math.abs(mTempLocation[1] - visibleDisplayFrame.top),
                         Math.abs(mTempLocation[1] - visibleDisplayFrame.bottom));
 
-        mPositionBelowAnchor = DeviceInfo.isDesktop();
+        mPositionBelowAnchor = isFromPointer;
 
         // The cap's padding math assumes the bottom-bar branch of getPopupPosition(), which the
         // permanent-button branch takes precedence over.
