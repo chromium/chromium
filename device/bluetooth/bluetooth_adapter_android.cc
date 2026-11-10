@@ -24,6 +24,7 @@
 #include "device/bluetooth/bluetooth_device_android.h"
 #include "device/bluetooth/bluetooth_discovery_session_outcome.h"
 #include "device/bluetooth/bluetooth_socket_thread.h"
+#include "third_party/jni_zero/jni_zero.h"
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "device/bluetooth/jni_headers/ChromeBluetoothAdapter_jni.h"
 #include "device/bluetooth/jni_headers/ChromeBluetoothScanFilterBuilder_jni.h"
@@ -63,7 +64,7 @@ scoped_refptr<BluetoothAdapterAndroid> BluetoothAdapterAndroid::Create(
   auto adapter = base::WrapRefCounted(new BluetoothAdapterAndroid());
 
   adapter->j_adapter_.Reset(Java_ChromeBluetoothAdapter_create(
-      AttachCurrentThread(), reinterpret_cast<intptr_t>(adapter.get()),
+      AttachCurrentThread(), jni_zero::MakeRaw(adapter.get()),
       bluetooth_adapter_wrapper));
 
   adapter->ui_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
