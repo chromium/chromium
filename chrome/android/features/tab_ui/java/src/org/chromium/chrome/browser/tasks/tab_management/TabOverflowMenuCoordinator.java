@@ -441,9 +441,7 @@ public abstract class TabOverflowMenuCoordinator<T>
         return mTabModelSupplier.get();
     }
 
-    /**
-     * @return The DP measure {@code dimenRes}, converted to px.
-     */
+    /** Returns the DP measure {@code dimenRes}, converted to px. */
     protected int getDimensionPixelSize(@DimenRes int dimenRes) {
         assert mActivity != null : "Activity needs to be non-null to get pixel size";
         return mActivity.getResources().getDimensionPixelSize(dimenRes);

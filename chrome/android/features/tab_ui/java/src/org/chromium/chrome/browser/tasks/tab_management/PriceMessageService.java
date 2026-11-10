@@ -100,32 +100,26 @@ public class PriceMessageService extends MessageService<@MessageType Integer, @U
             mDismissActionProvider = dismissActionProvider;
         }
 
-        /**
-         * @return The price message type.
-         */
+        /** Returns the price message type. */
         @PriceMessageType
         int getType() {
             return mType;
         }
 
         /**
-         * @return The {@link MessageCardViewProperties#PRICE_DROP} for the associated
-         *     PRICE_MESSAGE.
+         * Returns the {@link MessageCardViewProperties#PRICE_DROP} for the associated
+         * PRICE_MESSAGE.
          */
         @Nullable PriceDrop getPriceDrop() {
             return mPriceDrop;
         }
 
-        /**
-         * @return The {@link MessageCardView.ActionProvider} for the associated PRICE_MESSAGE.
-         */
+        /** Returns the {@link MessageCardView.ActionProvider} for the associated PRICE_MESSAGE. */
         MessageCardView.ActionProvider getAcceptActionProvider() {
             return mAcceptActionProvider;
         }
 
-        /**
-         * @return The {@link ServiceDismissActionProvider} for the associated PRICE_MESSAGE.
-         */
+        /** Returns the {@link ServiceDismissActionProvider} for the associated PRICE_MESSAGE. */
         MessageCardView.ActionProvider getDismissActionProvider() {
             return mDismissActionProvider;
         }
@@ -161,9 +155,7 @@ public class PriceMessageService extends MessageService<@MessageType Integer, @U
                 priceWelcomeMessageReviewActionProviderSupplier;
     }
 
-    /**
-     * @return Whether the message is successfully prepared.
-     */
+    /** Returns whether the message is successfully prepared. */
     boolean preparePriceMessage(@PriceMessageType int type, @Nullable PriceTabData priceTabData) {
         assert (type == PriceMessageType.PRICE_WELCOME
                 && PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled(mProfile));

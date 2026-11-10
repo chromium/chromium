@@ -55,16 +55,12 @@ public class TabGroupVisualDataTextInputLayout extends TextInputLayout {
                         });
     }
 
-    /**
-     * @return Trimmed text for validation.
-     */
+    /** Returns trimmed text for validation. */
     public String getTrimmedText() {
         return assumeNonNull(getEditText()).getText().toString().trim();
     }
 
-    /**
-     * @return Whether the content is empty.
-     */
+    /** Returns whether the content is empty. */
     public boolean isEmpty() {
         return TextUtils.isEmpty(getTrimmedText());
     }

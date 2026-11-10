@@ -128,6 +128,7 @@ public class PriceWelcomeMessageController {
     }
 
     /**
+     * @param context The Android {@link Context}.
      * @param tabSwitcherMessageManager Manages messages for the tab switcher.
      * @param currentTabModelSupplier Supplies the current {@link TabModel}.
      * @param messageCardProvider To build message cards.

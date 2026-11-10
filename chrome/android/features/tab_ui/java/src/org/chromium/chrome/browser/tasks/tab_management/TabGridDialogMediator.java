@@ -178,14 +178,10 @@ public class TabGridDialogMediator
         /** Cleanup post hiding dialog. */
         void postHiding();
 
-        /**
-         * @return Whether or not the TabGridDialog consumed the event.
-         */
+        /** Returns whether or not the TabGridDialog consumed the event. */
         boolean handleBackPressed();
 
-        /**
-         * @return Whether the TabGridDialog is visible.
-         */
+        /** Returns whether the TabGridDialog is visible. */
         boolean isVisible();
 
         /** A supplier that returns if the dialog is currently showing or animating. */

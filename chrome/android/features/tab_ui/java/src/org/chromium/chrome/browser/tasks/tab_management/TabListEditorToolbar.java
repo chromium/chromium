@@ -162,9 +162,7 @@ class TabListEditorToolbar extends SelectableListToolbar<TabListEditorItemSelect
         }
     }
 
-    /**
-     * @return the action view layout.
-     */
+    /** Returns the action view layout. */
     public TabListEditorActionViewLayout getActionViewLayout() {
         return mActionViewLayout;
     }

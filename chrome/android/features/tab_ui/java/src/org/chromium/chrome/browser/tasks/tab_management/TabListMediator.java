@@ -999,9 +999,7 @@ public class TabListMediator implements TabListNotificationHandler {
         mDefaultGridCardSize = size;
     }
 
-    /**
-     * @return The default size to use for any tab cards.
-     */
+    /** Returns the default size to use for any tab cards. */
     @Nullable Size getDefaultGridCardSize() {
         return mDefaultGridCardSize;
     }
@@ -1439,9 +1437,7 @@ public class TabListMediator implements TabListNotificationHandler {
         return tabModel.isTabInTabGroup(tab);
     }
 
-    /**
-     * @return The callback that hosts the logic for swipe and drag related actions.
-     */
+    /** Returns the callback that hosts the logic for swipe and drag related actions. */
     ItemTouchHelper2.SimpleCallback getItemTouchHelperCallback(
             final float swipeToDismissThreshold,
             final float mergeThreshold,
@@ -3182,8 +3178,8 @@ public class TabListMediator implements TabListNotificationHandler {
      *
      * @param recyclerView to get the position of tabs within the {@link TabListRecyclerView}.
      * @param tabs The tabs to fade with the animation.
-     * @param bottomValuesToTabIndexes the {@link TreeMap} to map a list of sorted bottom values to
-     *     tabs that have these bottom values.
+     * @param bottomValuesToPropertyModels the {@link TreeMap} to map a list of sorted bottom values
+     *     to tabs that have these bottom values.
      */
     @VisibleForTesting
     void getOrderOfTabsForQuickDeleteAnimation(

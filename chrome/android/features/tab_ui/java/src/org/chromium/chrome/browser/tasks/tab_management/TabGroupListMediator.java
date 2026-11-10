@@ -192,7 +192,7 @@ public class TabGroupListMediator {
      * @param context Used to load resources and create views.
      * @param modelList Side effect is adding items to this list.
      * @param propertyModel Properties for the empty state.
-     * @param filter Used to read current tab groups.
+     * @param tabModel Used to read current tab groups.
      * @param faviconResolver Used to fetch favicon images for some tabs.
      * @param tabGroupSyncService Used to fetch synced copy of tab groups.
      * @param dataSharingService Used to fetch shared group data.
