@@ -9,7 +9,9 @@
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/self_deleting.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -32,14 +34,23 @@ class COMPONENT_EXPORT(NETWORK_CPP) SelfDeletingURLLoaderFactory
   // Constructs SelfDeletingURLLoaderFactory object that will self-delete
   // once all receivers disconnect (including |factory_receiver| below as well
   // as receivers that connect via the Clone method).
+  //
+  // `receiver_task_runner`, if non-null, must run tasks on the sequence that
+  // constructs this factory (see mojo::ReceiverSet::Add). It only selects which
+  // task queue on that sequence dispatches incoming messages (e.g. a
+  // higher-priority queue on the UI thread); it never moves the factory to
+  // another thread, so all methods are still invoked on the constructing
+  // sequence. Receivers added via Clone() are bound to the same task runner.
   SelfDeletingURLLoaderFactory(
       mojo::PendingReceiver<mojom::URLLoaderFactory> factory_receiver,
-      base::SelfDeletingPassKey key);
+      base::SelfDeletingPassKey key,
+      scoped_refptr<base::SequencedTaskRunner> receiver_task_runner = nullptr);
 
   ~SelfDeletingURLLoaderFactory() override;
 
   // The override below is marked as |final| to make sure derived classes do not
-  // accidentally side-step lifetime management.
+  // accidentally side-step lifetime management. Cloned receivers are bound on
+  // `receiver_task_runner_` as well.
   void Clone(mojo::PendingReceiver<mojom::URLLoaderFactory> loader) final;
 
   // Sometimes a derived class can no longer function, even when the set of
@@ -66,6 +77,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) SelfDeletingURLLoaderFactory
  private:
   void OnDisconnect();
 
+  const scoped_refptr<base::SequencedTaskRunner> receiver_task_runner_;
   mojo::ReceiverSet<mojom::URLLoaderFactory> receivers_;
 };
 

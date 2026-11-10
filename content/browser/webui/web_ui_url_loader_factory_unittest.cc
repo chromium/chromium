@@ -11,6 +11,8 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "content/browser/webui/url_data_manager.h"
 #include "content/browser/webui/url_data_manager_backend.h"
@@ -366,6 +368,69 @@ TEST_F(WebUIURLLoaderFactoryOriginLockTest,
   // Factories without an origin lock (std::nullopt) are handed out
   // for browser-internal loads (e.g. navigations, downloads).
   EXPECT_EQ(net::OK, LoadUntrustedTargetUrl(std::nullopt));
+}
+
+class CountingSequencedTaskRunner : public base::SequencedTaskRunner {
+ public:
+  explicit CountingSequencedTaskRunner(
+      scoped_refptr<base::SequencedTaskRunner> underlying)
+      : underlying_(std::move(underlying)) {}
+
+  bool PostNonNestableDelayedTask(const base::Location& from_here,
+                                  base::OnceClosure task,
+                                  base::TimeDelta delay) override {
+    ++post_count_;
+    return underlying_->PostNonNestableDelayedTask(from_here, std::move(task),
+                                                   delay);
+  }
+
+  bool PostDelayedTask(const base::Location& from_here,
+                       base::OnceClosure task,
+                       base::TimeDelta delay) override {
+    ++post_count_;
+    return underlying_->PostDelayedTask(from_here, std::move(task), delay);
+  }
+
+  bool RunsTasksInCurrentSequence() const override {
+    return underlying_->RunsTasksInCurrentSequence();
+  }
+
+  size_t post_count() const { return post_count_; }
+
+ private:
+  ~CountingSequencedTaskRunner() override = default;
+
+  scoped_refptr<base::SequencedTaskRunner> underlying_;
+  size_t post_count_ = 0;
+};
+
+TEST_F(WebUIURLLoaderFactoryOriginLockTest, CustomReceiverTaskRunner) {
+  auto counting_runner = base::MakeRefCounted<CountingSequencedTaskRunner>(
+      base::SingleThreadTaskRunner::GetCurrentDefault());
+  mojo::Remote<network::mojom::URLLoaderFactory> loader_factory(
+      CreateWebUIURLLoaderFactoryWithoutOriginLock(
+          WebUIURLLoaderFactoryPasskey::GetPassKey(), main_rfh(),
+          kChromeUIUntrustedScheme,
+          /*allowed_hosts=*/{}, counting_runner));
+
+  mojo::Remote<network::mojom::URLLoaderFactory> cloned_factory;
+  loader_factory->Clone(cloned_factory.BindNewPipeAndPassReceiver());
+
+  network::ResourceRequest request;
+  request.url =
+      GURL(base::StrCat({kChromeUIUntrustedScheme,
+                         url::kStandardSchemeSeparator, kTargetHost, "/"}));
+
+  mojo::PendingRemote<network::mojom::URLLoader> loader;
+  network::TestURLLoaderClient loader_client;
+  cloned_factory->CreateLoaderAndStart(
+      loader.InitWithNewPipeAndPassReceiver(), /*request_id=*/0,
+      /*options=*/0, request, loader_client.CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+  loader_client.RunUntilComplete();
+
+  EXPECT_EQ(net::OK, loader_client.completion_status().error_code);
+  EXPECT_GT(counting_runner->post_count(), 0u);
 }
 
 class WebUIURLLoaderFactoryInvalidUrlTest

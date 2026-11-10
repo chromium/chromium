@@ -57,6 +57,7 @@
 #include "content/browser/web_package/signed_exchange_request_handler.h"
 #include "content/browser/web_package/signed_exchange_utils.h"
 #include "content/browser/webui/url_data_manager_backend.h"
+#include "content/common/features.h"
 #include "content/common/navigation_params_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -715,7 +716,11 @@ void NavigationURLLoaderImpl::Start() {
               url_loader_factory::TerminalParams::ForNonNetwork(
                   CreateWebUIURLLoaderFactoryWithoutOriginLock(
                       WebUIURLLoaderFactoryPasskey::GetPassKey(),
-                      frame_tree_node->current_frame_host(), scheme, {}),
+                      frame_tree_node->current_frame_host(), scheme, {},
+                      base::FeatureList::IsEnabled(
+                          features::kPrioritizeWebUINavigationURLLoader)
+                          ? GetNavigationNetworkResponseTaskRunner()
+                          : nullptr),
                   network::mojom::kBrowserProcessId),
               url_loader_factory::ContentClientParams(
                   browser_context_, frame_tree_node->current_frame_host(),

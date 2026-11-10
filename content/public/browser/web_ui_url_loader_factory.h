@@ -10,6 +10,8 @@
 
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/types/pass_key.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -74,6 +76,8 @@ class CONTENT_EXPORT WebUIURLLoaderFactoryPasskey {
   friend class WebUIURLLoaderFactoryInvalidUrlTest_InvalidUrl_Test;
   FRIEND_TEST_ALL_PREFIXES(WebUIURLLoaderFactoryOriginLockTest,
                            NoInitiatorOriginLockAllowsAllRequests);
+  FRIEND_TEST_ALL_PREFIXES(WebUIURLLoaderFactoryOriginLockTest,
+                           CustomReceiverTaskRunner);
   FRIEND_TEST_ALL_PREFIXES(WebUIURLLoaderFactoryTest, RangeRequest);
   FRIEND_TEST_ALL_PREFIXES(WebUIURLLoaderFactoryInvalidUrlTest, InvalidUrl);
   FRIEND_TEST_ALL_PREFIXES(WebUIURLLoaderFactoryInvalidUrlTest,
@@ -119,7 +123,8 @@ CreateWebUIURLLoaderFactoryWithoutOriginLock(
     WebUIURLLoaderFactoryPasskey::PassKey pass_key,
     RenderFrameHost* render_frame_host,
     const std::string& scheme,
-    base::flat_set<std::string> allowed_hosts);
+    base::flat_set<std::string> allowed_hosts,
+    scoped_refptr<base::SequencedTaskRunner> receiver_task_runner = nullptr);
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_BROWSER_WEB_UI_URL_LOADER_FACTORY_H_

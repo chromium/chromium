@@ -6,15 +6,23 @@
 
 #include <utility>
 
+#include "base/check.h"
+
 namespace network {
 
 SelfDeletingURLLoaderFactory::SelfDeletingURLLoaderFactory(
     mojo::PendingReceiver<mojom::URLLoaderFactory> factory_receiver,
-    base::SelfDeletingPassKey key)
-    : base::SelfDeleting(key) {
+    base::SelfDeletingPassKey key,
+    scoped_refptr<base::SequencedTaskRunner> receiver_task_runner)
+    : base::SelfDeleting(key),
+      receiver_task_runner_(std::move(receiver_task_runner)) {
+  // Mojo requires a receiver task runner to run on the owning sequence; the
+  // runner only picks the task queue used to dispatch messages on it.
+  CHECK(!receiver_task_runner_ ||
+        receiver_task_runner_->RunsTasksInCurrentSequence());
   receivers_.set_disconnect_handler(base::BindRepeating(
       &SelfDeletingURLLoaderFactory::OnDisconnect, base::Unretained(this)));
-  receivers_.Add(this, std::move(factory_receiver));
+  receivers_.Add(this, std::move(factory_receiver), receiver_task_runner_);
 }
 
 SelfDeletingURLLoaderFactory::~SelfDeletingURLLoaderFactory() = default;
@@ -36,7 +44,7 @@ void SelfDeletingURLLoaderFactory::Clone(
     mojo::PendingReceiver<mojom::URLLoaderFactory> loader) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  receivers_.Add(this, std::move(loader));
+  receivers_.Add(this, std::move(loader), receiver_task_runner_);
 }
 
 void SelfDeletingURLLoaderFactory::ReportBadMessage(std::string_view message) {

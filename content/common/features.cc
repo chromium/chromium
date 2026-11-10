@@ -618,6 +618,12 @@ BASE_FEATURE(kPrioritizeCompositorTaskRunnerOnStartup,
 BASE_FEATURE(kPrioritizeResizeTaskRunnerOnStartup,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Binds the navigation `WebUIURLLoaderFactory` receiver onto the navigation
+// network response task runner so WebUI navigation requests are dispatched
+// ahead of default UI thread tasks.
+BASE_FEATURE(kPrioritizeWebUINavigationURLLoader,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // A misunderstanding when fixing crbug.com/40076091 meant that non-speculative
 // RFHs were being created with a provisional RenderFrame in the renderer. This
 // is nominally harmless, but can crash prerenders if devtool's network
