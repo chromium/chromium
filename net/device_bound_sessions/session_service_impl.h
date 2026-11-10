@@ -244,7 +244,7 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       RegistrationRequestParam,
       RegistrationFetcher::RegistrationCompleteCallback)>;
 
-  // The type of registration for a bound session. Used for histograms.
+  // The type of registration for a bound session.
   // LINT.IfChange(RegistrationType)
   enum class RegistrationType {
     kStandalone = 0,
@@ -273,7 +273,7 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
 
   void OnRegistrationComplete(OnAccessCallback on_access_callback,
                               GURL endpoint,
-                              RegistrationType registration_type_for_histograms,
+                              RegistrationType registration_type,
                               base::ElapsedTimer timer,
                               RegistrationFetcher* fetcher,
                               RegistrationResult registration_result);
@@ -358,7 +358,8 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       OnAccessCallback on_access_callback,
       RegistrationFetcher* fetcher,
       RegistrationResult result,
-      SchemefulSite site);
+      SchemefulSite site,
+      RegistrationType registration_type);
 
   // Helper function encapsulating the processing of refresh
   SessionError::ErrorType OnRefreshRequestCompletionInternal(
@@ -488,7 +489,7 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
                                 std::vector<PrewarmResult> session_results);
 
   void StartRegistration(RegistrationParams registration_params,
-                         RegistrationType registration_type_for_histograms,
+                         RegistrationType registration_type,
                          FetchStarter fetch_starter);
 
   void RegisterStandaloneBoundSession(RegistrationParams registration_params);

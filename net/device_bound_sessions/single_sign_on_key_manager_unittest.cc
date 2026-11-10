@@ -41,7 +41,6 @@
 #include "net/device_bound_sessions/jwk_utils.h"
 #include "net/device_bound_sessions/session.h"
 #include "net/device_bound_sessions/session_error.h"
-#include "net/device_bound_sessions/session_params.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -56,8 +55,10 @@ using ::base::test::HasValue;
 using ::base::test::TestFuture;
 using ::base::test::ValueIs;
 using ::testing::_;
+using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::SizeIs;
+using ::testing::UnorderedElementsAre;
 
 url::Origin ProviderOrigin() {
   return url::Origin::Create(GURL("https://provider.test"));
@@ -70,16 +71,6 @@ GenerateKeyParam CreateGenerateKeyParam() {
       .target_origin = url::Origin::Create(GURL("https://rp.test")),
       .provider_session_id = Session::Id("SessionWithAik"),
       .challenge = "test_challenge",
-  };
-}
-
-SessionParams CreateTestSessionParams() {
-  return SessionParams{
-      .session_id = "test_session",
-      .fetcher_url = GURL("https://rp.test/refresh"),
-      .refresh_url = "https://rp.test/refresh",
-      .scope = {.include_site = true, .origin = "https://rp.test"},
-      .credentials = {{.name = "test_cookie", .attributes = "secure"}},
   };
 }
 
@@ -99,7 +90,8 @@ class SingleSignOnKeyManagerTest : public testing::Test {
   ~SingleSignOnKeyManagerTest() override {
     // The expectations' actions capture locals of the test body by reference.
     // Clear them before `manager_` is destroyed, which may still call into the
-    // mock (e.g. to delete the key of a pending request).
+    // mock (e.g. to delete remaining stored keys or the key of a pending
+    // request).
     testing::Mock::VerifyAndClear(&mock_key_service_);
   }
 
@@ -465,20 +457,6 @@ TEST_F(SingleSignOnKeyManagerTest, AddPreProvisionedKey_SameKeyForTwoRps) {
 
 TEST_F(SingleSignOnKeyManagerTest,
        ClearPreProvisionedKeys_NullMatcher_ClearsAllKeys) {
-  auto rp_origin = url::Origin::Create(GURL("https://rp.test"));
-  auto provider_origin = ProviderOrigin();
-
-  EXPECT_TRUE(manager().AddPreProvisionedKey(
-      rp_origin, "key1", provider_origin,
-      unexportable_keys::UnexportableSigningKeyId()));
-  manager().ClearPreProvisionedKeys(base::NullCallback());
-
-  EXPECT_THAT(manager().FindPreProvisionedKey("key1", rp_origin),
-              ErrorIs(SessionError::kPreProvisionedKeyNotFound));
-}
-
-TEST_F(SingleSignOnKeyManagerTest,
-       ClearPreProvisionedKeys_Matcher_ClearsMatchingRpKeysOnly) {
   auto rp1_origin = url::Origin::Create(GURL("https://rp1.test"));
   auto rp2_origin = url::Origin::Create(GURL("https://rp2.test"));
   auto provider_origin = ProviderOrigin();
@@ -490,12 +468,48 @@ TEST_F(SingleSignOnKeyManagerTest,
   EXPECT_TRUE(manager().AddPreProvisionedKey(rp2_origin, "key2",
                                              provider_origin, key2_id));
 
+  EXPECT_CALL(mock_key_service(),
+              DeleteKeysSlowlyAsync(
+                  UnorderedElementsAre(key1_id, key2_id),
+                  unexportable_keys::BackgroundTaskPriority::kBestEffort, _));
+
+  manager().ClearPreProvisionedKeys(base::NullCallback());
+
+  EXPECT_THAT(manager().FindPreProvisionedKey("key1", rp1_origin),
+              ErrorIs(SessionError::kPreProvisionedKeyNotFound));
+  EXPECT_THAT(manager().FindPreProvisionedKey("key2", rp2_origin),
+              ErrorIs(SessionError::kPreProvisionedKeyNotFound));
+}
+
+TEST_F(SingleSignOnKeyManagerTest,
+       ClearPreProvisionedKeys_Matcher_ClearsMatchingRpKeysOnly) {
+  auto rp1_origin = url::Origin::Create(GURL("https://rp1.test"));
+  auto rp2_origin = url::Origin::Create(GURL("https://rp2.test"));
+  auto provider_origin = ProviderOrigin();
+  unexportable_keys::UnexportableSigningKeyId key1a_id;
+  unexportable_keys::UnexportableSigningKeyId key1b_id;
+  unexportable_keys::UnexportableSigningKeyId key2_id;
+
+  EXPECT_TRUE(manager().AddPreProvisionedKey(rp1_origin, "key1a",
+                                             provider_origin, key1a_id));
+  EXPECT_TRUE(manager().AddPreProvisionedKey(rp1_origin, "key1b",
+                                             provider_origin, key1b_id));
+  EXPECT_TRUE(manager().AddPreProvisionedKey(rp2_origin, "key2",
+                                             provider_origin, key2_id));
+
+  EXPECT_CALL(mock_key_service(),
+              DeleteKeysSlowlyAsync(
+                  UnorderedElementsAre(key1a_id, key1b_id),
+                  unexportable_keys::BackgroundTaskPriority::kBestEffort, _));
+
   manager().ClearPreProvisionedKeys(base::BindRepeating(
       [](const url::Origin& origin, const SchemefulSite& site) {
         return origin.host() == "rp1.test";
       }));
 
-  EXPECT_THAT(manager().FindPreProvisionedKey("key1", rp1_origin),
+  EXPECT_THAT(manager().FindPreProvisionedKey("key1a", rp1_origin),
+              ErrorIs(SessionError::kPreProvisionedKeyNotFound));
+  EXPECT_THAT(manager().FindPreProvisionedKey("key1b", rp1_origin),
               ErrorIs(SessionError::kPreProvisionedKeyNotFound));
   EXPECT_THAT(manager().FindPreProvisionedKey("key2", rp2_origin),
               ValueIs(key2_id));
@@ -510,6 +524,8 @@ TEST_F(SingleSignOnKeyManagerTest,
   EXPECT_TRUE(manager().AddPreProvisionedKey(rp_origin, "key1", provider_origin,
                                              key_id));
 
+  EXPECT_CALL(mock_key_service(), DeleteKeysSlowlyAsync).Times(0);
+
   manager().ClearPreProvisionedKeys(base::BindRepeating(
       [](const url::Origin& origin, const SchemefulSite& site) {
         return origin == ProviderOrigin();
@@ -519,64 +535,7 @@ TEST_F(SingleSignOnKeyManagerTest,
               ValueIs(key_id));
 }
 
-TEST_F(SingleSignOnKeyManagerTest, ConsumeKeyForSession_RemovesMatchingKey) {
-  auto rp_origin = url::Origin::Create(GURL("https://rp.test"));
-  auto provider_origin = ProviderOrigin();
-  unexportable_keys::UnexportableSigningKeyId key_id;
-
-  EXPECT_TRUE(manager().AddPreProvisionedKey(rp_origin, "key1", provider_origin,
-                                             key_id));
-
-  ASSERT_OK_AND_ASSIGN(std::unique_ptr<Session> session,
-                       Session::CreateIfValid(CreateTestSessionParams()));
-  session->set_unexportable_key_id(key_id);
-
-  manager().ConsumeKeyForSession(*session);
-
-  EXPECT_THAT(manager().FindPreProvisionedKey("key1", rp_origin),
-              ErrorIs(SessionError::kPreProvisionedKeyNotFound));
-}
-
-TEST_F(SingleSignOnKeyManagerTest,
-       ConsumeKeyForSession_NonMatchingKeyId_KeepsKeys) {
-  auto rp_origin = url::Origin::Create(GURL("https://rp.test"));
-  auto provider_origin = ProviderOrigin();
-  unexportable_keys::UnexportableSigningKeyId key_id;
-
-  EXPECT_TRUE(manager().AddPreProvisionedKey(rp_origin, "key1", provider_origin,
-                                             key_id));
-
-  ASSERT_OK_AND_ASSIGN(std::unique_ptr<Session> session,
-                       Session::CreateIfValid(CreateTestSessionParams()));
-  session->set_unexportable_key_id(
-      unexportable_keys::UnexportableSigningKeyId());
-
-  manager().ConsumeKeyForSession(*session);
-
-  EXPECT_THAT(manager().FindPreProvisionedKey("key1", rp_origin),
-              ValueIs(key_id));
-}
-
-TEST_F(SingleSignOnKeyManagerTest, ConsumeKeyForSession_NoKeyId_KeepsKeys) {
-  auto rp_origin = url::Origin::Create(GURL("https://rp.test"));
-  auto provider_origin = ProviderOrigin();
-  unexportable_keys::UnexportableSigningKeyId key_id;
-
-  EXPECT_TRUE(manager().AddPreProvisionedKey(rp_origin, "key1", provider_origin,
-                                             key_id));
-
-  ASSERT_OK_AND_ASSIGN(std::unique_ptr<Session> session,
-                       Session::CreateIfValid(CreateTestSessionParams()));
-  session->set_unexportable_key_id(
-      base::unexpected(unexportable_keys::ServiceError::kKeyNotReady));
-
-  manager().ConsumeKeyForSession(*session);
-
-  EXPECT_THAT(manager().FindPreProvisionedKey("key1", rp_origin),
-              ValueIs(key_id));
-}
-
-TEST_F(SingleSignOnKeyManagerTest, ConsumeKeyForSession_KeepsOtherRpKeys) {
+TEST_F(SingleSignOnKeyManagerTest, DestructorDeletesAllStoredKeys) {
   auto rp1_origin = url::Origin::Create(GURL("https://rp1.test"));
   auto rp2_origin = url::Origin::Create(GURL("https://rp2.test"));
   auto provider_origin = ProviderOrigin();
@@ -588,16 +547,108 @@ TEST_F(SingleSignOnKeyManagerTest, ConsumeKeyForSession_KeepsOtherRpKeys) {
   EXPECT_TRUE(manager().AddPreProvisionedKey(rp2_origin, "key2",
                                              provider_origin, key2_id));
 
-  ASSERT_OK_AND_ASSIGN(std::unique_ptr<Session> session,
-                       Session::CreateIfValid(CreateTestSessionParams()));
-  session->set_unexportable_key_id(key1_id);
+  EXPECT_CALL(mock_key_service(),
+              DeleteKeysSlowlyAsync(
+                  UnorderedElementsAre(key1_id, key2_id),
+                  unexportable_keys::BackgroundTaskPriority::kBestEffort, _));
 
-  manager().ConsumeKeyForSession(*session);
+  reset_manager();
+}
 
-  EXPECT_THAT(manager().FindPreProvisionedKey("key1", rp1_origin),
+TEST_F(SingleSignOnKeyManagerTest,
+       DestructorWithNoStoredKeysDoesNotDeleteKeys) {
+  EXPECT_CALL(mock_key_service(), DeleteKeysSlowlyAsync).Times(0);
+
+  reset_manager();
+}
+
+TEST_F(SingleSignOnKeyManagerTest, ConsumePreProvisionedKeyRemovesMatchingKey) {
+  auto rp_origin = url::Origin::Create(GURL("https://rp.test"));
+  auto provider_origin = ProviderOrigin();
+  unexportable_keys::UnexportableSigningKeyId key1_id;
+  unexportable_keys::UnexportableSigningKeyId key2_id;
+
+  EXPECT_TRUE(manager().AddPreProvisionedKey(rp_origin, "key1", provider_origin,
+                                             key1_id));
+  EXPECT_TRUE(manager().AddPreProvisionedKey(rp_origin, "key2", provider_origin,
+                                             key2_id));
+
+  EXPECT_TRUE(manager().ConsumePreProvisionedKey(key1_id));
+
+  EXPECT_THAT(manager().FindPreProvisionedKey("key1", rp_origin),
               ErrorIs(SessionError::kPreProvisionedKeyNotFound));
+  EXPECT_THAT(manager().FindPreProvisionedKey("key2", rp_origin),
+              ValueIs(key2_id));
+
+  // The claimed key must not be deleted when the manager is destroyed.
+  EXPECT_CALL(mock_key_service(),
+              DeleteKeysSlowlyAsync(
+                  ElementsAre(key2_id),
+                  unexportable_keys::BackgroundTaskPriority::kBestEffort, _));
+  reset_manager();
+}
+
+TEST_F(SingleSignOnKeyManagerTest,
+       ConsumePreProvisionedKeyUnknownKeyIdReturnsFalse) {
+  auto rp_origin = url::Origin::Create(GURL("https://rp.test"));
+  auto provider_origin = ProviderOrigin();
+  unexportable_keys::UnexportableSigningKeyId key_id;
+
+  EXPECT_TRUE(manager().AddPreProvisionedKey(rp_origin, "key1", provider_origin,
+                                             key_id));
+
+  EXPECT_FALSE(manager().ConsumePreProvisionedKey(
+      unexportable_keys::UnexportableSigningKeyId()));
+
+  EXPECT_THAT(manager().FindPreProvisionedKey("key1", rp_origin),
+              ValueIs(key_id));
+}
+
+TEST_F(SingleSignOnKeyManagerTest, ConsumePreProvisionedKeyKeepsOtherKeys) {
+  auto rp1_origin = url::Origin::Create(GURL("https://rp1.test"));
+  auto rp2_origin = url::Origin::Create(GURL("https://rp2.test"));
+  auto provider_origin = ProviderOrigin();
+  unexportable_keys::UnexportableSigningKeyId key1a_id;
+  unexportable_keys::UnexportableSigningKeyId key1b_id;
+  unexportable_keys::UnexportableSigningKeyId key2_id;
+
+  EXPECT_TRUE(manager().AddPreProvisionedKey(rp1_origin, "key1a",
+                                             provider_origin, key1a_id));
+  EXPECT_TRUE(manager().AddPreProvisionedKey(rp1_origin, "key1b",
+                                             provider_origin, key1b_id));
+  EXPECT_TRUE(manager().AddPreProvisionedKey(rp2_origin, "key2",
+                                             provider_origin, key2_id));
+
+  EXPECT_TRUE(manager().ConsumePreProvisionedKey(key1a_id));
+
+  EXPECT_THAT(manager().FindPreProvisionedKey("key1a", rp1_origin),
+              ErrorIs(SessionError::kPreProvisionedKeyNotFound));
+  // Other keys of the same RP and keys of other RPs stay.
+  EXPECT_THAT(manager().FindPreProvisionedKey("key1b", rp1_origin),
+              ValueIs(key1b_id));
   EXPECT_THAT(manager().FindPreProvisionedKey("key2", rp2_origin),
               ValueIs(key2_id));
+}
+
+TEST_F(SingleSignOnKeyManagerTest,
+       ConsumePreProvisionedKeyAfterClearReturnsFalse) {
+  auto rp_origin = url::Origin::Create(GURL("https://rp.test"));
+  auto provider_origin = ProviderOrigin();
+  unexportable_keys::UnexportableSigningKeyId key_id;
+
+  EXPECT_TRUE(manager().AddPreProvisionedKey(rp_origin, "key1", provider_origin,
+                                             key_id));
+
+  EXPECT_CALL(mock_key_service(),
+              DeleteKeysSlowlyAsync(
+                  ElementsAre(key_id),
+                  unexportable_keys::BackgroundTaskPriority::kBestEffort, _));
+  manager().ClearPreProvisionedKeys(base::BindRepeating(
+      [](const url::Origin& origin, const SchemefulSite& site) {
+        return origin.host() == "rp.test";
+      }));
+
+  EXPECT_FALSE(manager().ConsumePreProvisionedKey(key_id));
 }
 
 TEST_F(SingleSignOnKeyManagerTest,

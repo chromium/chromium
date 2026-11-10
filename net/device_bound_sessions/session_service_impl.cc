@@ -584,10 +584,9 @@ void SessionServiceImpl::RegisterFederatedBoundSession(
           std::move(key_id), std::move(provider_url)));
 }
 
-void SessionServiceImpl::StartRegistration(
-    RegistrationParams params,
-    RegistrationType registration_type_for_histograms,
-    FetchStarter fetch_starter) {
+void SessionServiceImpl::StartRegistration(RegistrationParams params,
+                                           RegistrationType registration_type,
+                                           FetchStarter fetch_starter) {
   net::NetLogSource net_log_source_for_registration = net::NetLogSource(
       net::NetLogSourceType::URL_REQUEST, net::NetLog::Get()->NextID());
   params.net_log.AddEventReferencingSource(
@@ -612,8 +611,8 @@ void SessionServiceImpl::StartRegistration(
 
   auto callback = base::BindOnce(
       &SessionServiceImpl::OnRegistrationComplete, weak_factory_.GetWeakPtr(),
-      std::move(params.access_callback), endpoint,
-      registration_type_for_histograms, std::move(params.timer_since_start));
+      std::move(params.access_callback), endpoint, registration_type,
+      std::move(params.timer_since_start));
 
   std::move(fetch_starter)
       .Run(fetcher_raw, std::move(request_params), std::move(callback));
@@ -718,7 +717,7 @@ void SessionServiceImpl::OnLoadSessionsComplete(
 void SessionServiceImpl::OnRegistrationComplete(
     OnAccessCallback on_access_callback,
     GURL endpoint,
-    RegistrationType registration_type_for_histograms,
+    RegistrationType registration_type,
     base::ElapsedTimer timer,
     RegistrationFetcher* fetcher,
     RegistrationResult registration_result) {
@@ -730,12 +729,12 @@ void SessionServiceImpl::OnRegistrationComplete(
   }
   SessionError::ErrorType result = OnRegistrationCompleteInternal(
       std::move(on_access_callback), fetcher, std::move(registration_result),
-      SchemefulSite(endpoint));
+      SchemefulSite(endpoint), registration_type);
   base::UmaHistogramEnumeration("Net.DeviceBoundSessions.RegistrationResult",
                                 result);
   base::UmaHistogramEnumeration(
       absl::StrFormat("Net.DeviceBoundSessions.RegistrationResult.%v",
-                      registration_type_for_histograms),
+                      registration_type),
       result);
 
   std::string_view outcome =
@@ -744,7 +743,7 @@ void SessionServiceImpl::OnRegistrationComplete(
                                 duration);
   base::UmaHistogramMediumTimes(
       absl::StrFormat("Net.DeviceBoundSessions.RegistrationDuration.%v.%s",
-                      registration_type_for_histograms, outcome),
+                      registration_type, outcome),
       duration);
 }
 
@@ -1480,38 +1479,47 @@ SessionError::ErrorType SessionServiceImpl::OnRegistrationCompleteInternal(
     OnAccessCallback on_access_callback,
     RegistrationFetcher* fetcher,
     RegistrationResult registration_result,
-    SchemefulSite session_site) {
+    SchemefulSite session_site,
+    RegistrationType registration_type) {
   RemoveFetcher(fetcher);
 
-  SessionError::ErrorType result =
-      std::move(registration_result)
-          .Visit(absl::Overload(
-              [&](std::unique_ptr<Session> session) {
-                CHECK(session);
-                const SchemefulSite site(session->origin());
-                sso_key_manager_.ConsumeKeyForSession(*session);
-                AddSessionAndNotify(site, std::move(session),
-                                    on_access_callback);
-                return SessionError::kSuccess;
-              },
-              [](RegistrationResult::NoSessionConfigChange)
-                  -> SessionError::ErrorType {
-                // This should not be returned for registrations.
-                NOTREACHED();
-              },
-              [&](SessionError error) {
-                // We failed to create a new session, so there's nothing to
-                // clean up.
-                SessionError::ErrorType error_type = error.type;
-                NotifyIfEventCallbackListeners([&] {
-                  return SessionEvent::MakeCreationEvent(
-                      session_site, /*session_id=*/std::nullopt,
-                      /*succeeded=*/false, std::move(error),
-                      /*new_session_display=*/std::nullopt);
-                });
-                return error_type;
-              }));
-  return result;
+  auto notify_failure = [&](SessionError error) {
+    SessionError::ErrorType error_type = error.type;
+    NotifyIfEventCallbackListeners([&] {
+      return SessionEvent::MakeCreationEvent(
+          session_site, /*session_id=*/std::nullopt,
+          /*succeeded=*/false, std::move(error),
+          /*new_session_display=*/std::nullopt);
+    });
+    return error_type;
+  };
+
+  return std::move(registration_result)
+      .Visit(absl::Overload(
+          [&](std::unique_ptr<Session> session) {
+            CHECK(session);
+            if (registration_type == RegistrationType::kSingleSignOn) {
+              CHECK(session->unexportable_key_id().has_value());
+              if (!sso_key_manager_.ConsumePreProvisionedKey(
+                      *session->unexportable_key_id())) {
+                return notify_failure(
+                    SessionError(SessionError::kPreProvisionedKeyNotFound));
+              }
+            }
+            const SchemefulSite site(session->origin());
+            AddSessionAndNotify(site, std::move(session), on_access_callback);
+            return SessionError::kSuccess;
+          },
+          [](RegistrationResult::NoSessionConfigChange)
+              -> SessionError::ErrorType {
+            // This should not be returned for registrations.
+            NOTREACHED();
+          },
+          [&](SessionError error) {
+            // We failed to create a new session, so there's nothing to
+            // clean up.
+            return notify_failure(std::move(error));
+          }));
 }
 
 SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(

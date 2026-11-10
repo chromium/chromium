@@ -39,6 +39,8 @@ class NET_EXPORT SingleSignOnKeyManager {
   explicit SingleSignOnKeyManager(
       unexportable_keys::UnexportableKeyService& key_service,
       SessionService::CookieAccessCallback has_cookie_access_cb);
+  // Deletes the pre-provisioned keys that are still stored, i.e. were never
+  // consumed, from the key service.
   ~SingleSignOnKeyManager();
 
   SingleSignOnKeyManager(const SingleSignOnKeyManager&) = delete;
@@ -86,13 +88,18 @@ class NET_EXPORT SingleSignOnKeyManager {
   FindPreProvisionedKey(std::string_view provider_key,
                         base::optional_ref<const url::Origin> initiator) const;
 
-  // Removes the pre-provisioned key used by `session`, if any. Called when a
-  // registration completes, before the new session is added.
-  void ConsumeKeyForSession(const Session& session);
+  // Removes the pre-provisioned key with `key_id`. Called when an SSO
+  // registration completes, before the new session is added. Returns false if
+  // the key is no longer stored, e.g. because the RP's site data was cleared
+  // or another registration consumed it while this one was in flight. Unlike
+  // `ClearPreProvisionedKeys()` and the destructor, this does not delete the
+  // key from the key service, because the new session takes ownership of it.
+  [[nodiscard]] bool ConsumePreProvisionedKey(
+      unexportable_keys::UnexportableSigningKeyId key_id);
 
   // Clears pre-provisioned keys whose RP origin matches `matcher`, whichever
   // IdP generated them: keys are the RP's data. If `matcher` is null, clears
-  // all keys.
+  // all keys. Cleared keys are also deleted from the key service.
   void ClearPreProvisionedKeys(
       const SessionService::OriginAndSiteMatcher& matcher);
 

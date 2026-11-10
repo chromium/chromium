@@ -91,8 +91,9 @@ When reviewing registration changes:
   to generating a new key.
 - **Check key ownership per flow.** Standalone registration creates a new key,
   SSO keys are tracked only by `SingleSignOnKeyManager` until a registration
-  consumes them, and a federated session signs with its IdP session's key, so
-  key cleanup can't assume one session per key.
+  consumes them (the manager deletes the ones it drops), and a federated session
+  signs with its IdP session's key, so key cleanup can't assume one session per
+  key.
 - **Treat provider parameters, `.well-known` files and redirect targets as
   untrusted input.** Base authorization on values the browser computed or
   verified (such as the key thumbprint), not on values the IdP or RP sent.
