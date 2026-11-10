@@ -77,6 +77,9 @@ class AndroidBidirectionalStreamWrapper extends org.chromium.net.ExperimentalBid
      *
      * @param backend the http UrlRequest
      * @param callback the stream's callback
+     * @param engine the engine that created the stream
+     * @param url the initial URL of the stream
+     * @param annotations the request annotations to attach to the stream
      * @return the wrapped request
      */
     static AndroidBidirectionalStreamWrapper createAndAddToCallback(

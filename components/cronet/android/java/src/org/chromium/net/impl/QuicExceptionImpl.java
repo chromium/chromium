@@ -26,9 +26,10 @@ public class QuicExceptionImpl extends QuicException {
     }
 
     /**
-     * Constructs an exception with a specific error.
+     * Constructs an exception with a specific error code.
      *
      * @param message explanation of failure.
+     * @param errorCode error code, one of {@link org.chromium.net.NetworkException ERROR_*}.
      * @param netErrorCode Error code from <a
      *     href=https://chromium.googlesource.com/chromium/src/+/main/net/base/net_error_list.h>this
      *     list</a>.

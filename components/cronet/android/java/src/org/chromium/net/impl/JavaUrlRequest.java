@@ -192,8 +192,26 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
     }
 
     /**
+     * @param engine The engine that created this request.
+     * @param callback The callback to invoke on request events.
      * @param executor The executor used for reading and writing from sockets
      * @param userExecutor The executor used to dispatch to {@code callback}
+     * @param url The URL for the request.
+     * @param userAgent The User-Agent to send with the request.
+     * @param allowDirectExecutor Whether executors used by this request are permitted to execute
+     *     submitted tasks inline.
+     * @param trafficStatsTagSet {@code true} if {@code trafficStatsTag} represents a TrafficStats
+     *     tag to apply to sockets used to perform this request.
+     * @param trafficStatsTag TrafficStats tag to apply to sockets used to perform this request.
+     * @param trafficStatsUidSet {@code true} if {@code trafficStatsUid} represents a UID to
+     *     attribute traffic used to perform this request.
+     * @param trafficStatsUid UID to attribute traffic used to perform this request.
+     * @param networkHandle The handle of the network to bind this request to.
+     * @param method The HTTP method to use for the request.
+     * @param requestHeaders The list of request headers.
+     * @param uploadDataProvider The provider of the request body, or {@code null} if none.
+     * @param uploadDataProviderExecutor The executor on which {@code uploadDataProvider} is
+     *     invoked.
      */
     JavaUrlRequest(
             JavaCronetEngine engine,
@@ -478,9 +496,11 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
     }
 
     /**
-     * Atomically swaps from the expected state to a new state. If the swap fails, and it's not
-     * due to an earlier error or cancellation, throws an exception.
+     * Atomically swaps from the expected state to a new state. If the swap fails, and it's not due
+     * to an earlier error or cancellation, throws an exception.
      *
+     * @param expected The state the request is expected to be in.
+     * @param newState The state to transition to.
      * @param afterTransition Callback to run after transition completes successfully.
      */
     private void transitionStates(

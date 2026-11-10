@@ -125,6 +125,7 @@ public final class CronetUploadDataStream extends UploadDataSink {
      *
      * @param dataProvider the UploadDataProvider to read data from.
      * @param executor the Executor to execute UploadDataProvider tasks.
+     * @param request the CronetUrlRequest that owns this upload data stream.
      */
     public CronetUploadDataStream(
             UploadDataProvider dataProvider, Executor executor, CronetUrlRequest request) {

@@ -64,6 +64,13 @@ public abstract class CronetEngineBase extends ExperimentalCronetEngine {
      *     Set to {@code null} if not used.
      * @param idempotency idempotency of the request which should be one of the {@link
      *     ExperimentalUrlRequest.Builder#DEFAULT_IDEMPOTENCY IDEMPOTENT NOT_IDEMPOTENT} values.
+     * @param networkHandle network to be used to send this request. Set to {@code null} if not
+     *     specified.
+     * @param method the HTTP method to use for the request.
+     * @param requestHeaders the list of request headers.
+     * @param uploadDataProvider the provider of the request body, or {@code null} if none.
+     * @param uploadDataProviderExecutor the {@link Executor} on which {@code uploadDataProvider} is
+     *     invoked.
      * @param dictionarySha256Hash the SHA-256 of the specified compression dictionary. Optional,
      *     null if no dictionary is specified.
      * @param dictionary the compression dictionary that Cronet can use for this UrlRequest. This
@@ -72,7 +79,6 @@ public abstract class CronetEngineBase extends ExperimentalCronetEngine {
      * @param dictionaryId the optional ID associated with this dictionary, must be an empty string
      *     if missing. If present, this will be sent via the Dictionary-ID header. You would need to
      *     specify this if the server specified an id in its "Use-As-Dictionary" response.
-     * @param network network to be used to send this request. Set to {@code null} if not specified.
      * @return new request.
      */
     protected abstract ExperimentalUrlRequest createRequest(
@@ -121,7 +127,8 @@ public abstract class CronetEngineBase extends ExperimentalCronetEngine {
      * @param trafficStatsUidSet {@code true} if {@code trafficStatsUid} represents a UID to
      *     attribute traffic used to perform this request.
      * @param trafficStatsUid UID to attribute traffic used to perform this request.
-     * @param network network to be used to send this request. Set to {@code null} if not specified.
+     * @param networkHandle network to be used to send this request. Set to {@code null} if not
+     *     specified.
      * @return a new stream.
      */
     protected abstract ExperimentalBidirectionalStream createBidirectionalStream(

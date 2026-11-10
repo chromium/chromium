@@ -168,6 +168,7 @@ public abstract class CronetLogger {
      * @param metricHash the hash of the histogram name, converted from unsigned 64-bit integer to
      *     signed 64-bit integer with two's complement wraparound.
      * @param value the sample value.
+     * @param source the source of the cronet provider. See {@link CronetSource}
      */
     public abstract void logCronetUmaHistogram(long metricHash, int value, CronetSource source);
 
@@ -241,55 +242,55 @@ public abstract class CronetLogger {
             mCronetInitializationRef = cronetInitializationRef;
         }
 
-        /** @return Whether public key pinning bypass for local trust anchors is enabled */
+        /** Returns whether public key pinning bypass for local trust anchors is enabled. */
         public boolean isPublicKeyPinningBypassForLocalTrustAnchorsEnabled() {
             return mPublicKeyPinningBypassForLocalTrustAnchorsEnabled;
         }
 
-        /** @return User-Agent used for URLRequests created through this CronetEngine */
+        /** Returns the User-Agent used for URLRequests created through this CronetEngine. */
         public String getUserAgent() {
             return mUserAgent;
         }
 
-        /** @return Path to the directory used for HTTP cache and Cookie storage */
+        /** Returns the path to the directory used for HTTP cache and Cookie storage. */
         public String getStoragePath() {
             return mStoragePath;
         }
 
-        /** @return Whether QUIC protocol is enabled */
+        /** Returns whether QUIC protocol is enabled. */
         public boolean isQuicEnabled() {
             return mQuicEnabled;
         }
 
-        /** @return Whether HTTP2 protocol is enabled */
+        /** Returns whether HTTP2 protocol is enabled. */
         public boolean isHttp2Enabled() {
             return mHttp2Enabled;
         }
 
-        /** @return Whether Brotli compression is enabled */
+        /** Returns whether Brotli compression is enabled. */
         public boolean isBrotliEnabled() {
             return mBrotiEnabled;
         }
 
         /**
-         * @return Whether caching of HTTP data and other information like QUIC server information
-         *         is enabled
+         * Returns whether caching of HTTP data and other information like QUIC server information
+         * is enabled.
          */
         public int getHttpCacheMode() {
             return mHttpCacheMode;
         }
 
-        /** @return Experimental options configuration used by the CronetEngine */
+        /** Returns the experimental options configuration used by the CronetEngine. */
         public String getExperimentalOptions() {
             return mExperimentalOptions;
         }
 
-        /** @return Whether network quality estimator is enabled */
+        /** Returns whether network quality estimator is enabled. */
         public boolean isNetworkQualityEstimatorEnabled() {
             return mNetworkQualityEstimatorEnabled;
         }
 
-        /** @return The thread priority of Cronet's internal thread */
+        /** Returns the thread priority of Cronet's internal thread. */
         public int getThreadPriority() {
             return mThreadPriority;
         }
@@ -426,29 +427,27 @@ public abstract class CronetLogger {
             mDownloadGoodputBytesPerSec = downloadGoodputBytesPerSec;
         }
 
-        /**
-         * @return The total size of headers sent in bytes
-         */
+        /** Returns the total size of headers sent in bytes. */
         public long getRequestHeaderSizeInBytes() {
             return mRequestHeaderSizeInBytes;
         }
 
-        /** @return The total size of request body sent, if any, in bytes */
+        /** Returns the total size of request body sent, if any, in bytes. */
         public long getRequestBodySizeInBytes() {
             return mRequestBodySizeInBytes;
         }
 
-        /** @return The total size of headers received in bytes */
+        /** Returns the total size of headers received in bytes. */
         public long getResponseHeaderSizeInBytes() {
             return mResponseHeaderSizeInBytes;
         }
 
-        /** @return The total size of response body, if any, received in bytes */
+        /** Returns the total size of response body, if any, received in bytes. */
         public long getResponseBodySizeInBytes() {
             return mResponseBodySizeInBytes;
         }
 
-        /** @return The response status code of the request */
+        /** Returns the response status code of the request. */
         public int getResponseStatusCode() {
             return mResponseStatusCode;
         }
@@ -462,17 +461,17 @@ public abstract class CronetLogger {
             return mTotalLatency;
         }
 
-        /** @return The negotiated protocol used for the traffic */
+        /** Returns the negotiated protocol used for the traffic. */
         public String getNegotiatedProtocol() {
             return mNegotiatedProtocol;
         }
 
-        /** @return True if the connection migration was attempted, else False */
+        /** Returns true if the connection migration was attempted, else false. */
         public boolean wasConnectionMigrationAttempted() {
             return mWasConnectionMigrationAttempted;
         }
 
-        /** @return True if the connection migration was attempted and succeeded, else False */
+        /** Returns true if the connection migration was attempted and succeeded, else false. */
         public boolean didConnectionMigrationSucceed() {
             return mDidConnectionMigrationSucceed;
         }
@@ -594,22 +593,22 @@ public abstract class CronetLogger {
             mPatchVersion = Integer.parseInt(splitVersion[3]);
         }
 
-        /** @return the MAJOR version of cronet used for the traffic */
+        /** Returns the MAJOR version of cronet used for the traffic. */
         public int getMajorVersion() {
             return mMajorVersion;
         }
 
-        /** @return the MINOR version of cronet used for the traffic */
+        /** Returns the MINOR version of cronet used for the traffic. */
         public int getMinorVersion() {
             return mMinorVersion;
         }
 
-        /** @return the BUILD version of cronet used for the traffic */
+        /** Returns the BUILD version of cronet used for the traffic. */
         public int getBuildVersion() {
             return mBuildVersion;
         }
 
-        /** @return the PATCH version of cronet used for the traffic */
+        /** Returns the PATCH version of cronet used for the traffic. */
         public int getPatchVersion() {
             return mPatchVersion;
         }

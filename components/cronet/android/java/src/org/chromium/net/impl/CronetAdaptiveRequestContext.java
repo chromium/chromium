@@ -223,7 +223,7 @@ class CronetAdaptiveRequestContext {
     /**
      * Returns AdaptiveStreamNetworkHandles to use given a URL.
      *
-     * @param url The URL to compute the network handles for.
+     * @param uri The URI to compute the network handles for.
      * @param streamDefaultNetworkHandle the network we would default to.
      * @return null if no special network handling should be used.
      */

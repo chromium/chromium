@@ -156,9 +156,12 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
     private final CronetSource mCronetSource;
 
     /**
-     * Default config enables SPDY and QUIC, disables SDCH and HTTP cache.
+     * Constructs a CronetEngine.Builder for an implementation of Cronet.
+     *
+     * <p>Default config enables SPDY and QUIC, disables SDCH and HTTP cache.
      *
      * @param context Android {@link Context} for engine to use.
+     * @param cronetSource the source of the Cronet implementation. See {@link CronetSource}.
      */
     public CronetEngineBuilderImpl(Context context, CronetSource cronetSource) {
         var startUptimeMillis = SystemClock.uptimeMillis();
@@ -477,10 +480,7 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
         return mMockCertVerifier;
     }
 
-    /**
-     * @return true if the network quality estimator has been enabled for
-     * this builder.
-     */
+    /** Returns true if the network quality estimator has been enabled for this builder. */
     @VisibleForTesting
     boolean networkQualityEstimatorEnabled() {
         return mNetworkQualityEstimatorEnabled;

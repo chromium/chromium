@@ -75,6 +75,7 @@ public final class UserAgent {
      * Constructs default QUIC User Agent Id string including application name and Cronet version.
      *
      * @param context the context to fetch the application name from.
+     * @param version the version of the Cronet build.
      * @return User-Agent string.
      */
     static String getQuicUserAgentIdFrom(Context context, String version) {

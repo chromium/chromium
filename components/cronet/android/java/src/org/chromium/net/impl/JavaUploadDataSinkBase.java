@@ -200,6 +200,7 @@ public abstract class JavaUploadDataSinkBase extends UploadDataSink {
      * that occur as upload errors.
      *
      * @param runnable the runnable to attempt to run and check for errors
+     * @param name the name used to label the trace events for this task
      */
     private void executeOnUploadExecutor(
             JavaUrlRequestUtils.CheckedRunnable runnable, String name) {
@@ -226,7 +227,7 @@ public abstract class JavaUploadDataSinkBase extends UploadDataSink {
      * is called the {@link UploadDataProvider} must rewind.
      *
      * @param firstTime true if this is the first time this {@link UploadDataSink} has started an
-     *                  upload
+     *     upload
      */
     public void start(final boolean firstTime) {
         executeOnUploadExecutor(
