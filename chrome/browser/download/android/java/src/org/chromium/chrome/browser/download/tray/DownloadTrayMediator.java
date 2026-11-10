@@ -228,11 +228,8 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
     }
 
     /**
-     * Returns the status line for a completed download, e.g. "Download complete • 4.30 MB".
-     *
-     * <p>TODO(crbug.com/574064718): Update the strings to match the desktop download bubble's "4.30
-     * MB • Done" ({@code StatusTextBuilderUtils::GetCompletedTotalSizeString}) once they can be
-     * added. Reuses the download notification's string until then.
+     * Returns the status line for a completed download, e.g. "4.30 MB • Done", as the desktop
+     * download bubble does ({@code StatusTextBuilderUtils::GetCompletedTotalSizeString}).
      */
     private String getCompletedDescription(OfflineItem item) {
         long bytes = item.totalSizeBytes > 0 ? item.totalSizeBytes : item.receivedBytes;
@@ -243,7 +240,10 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
                         .unicodeWrap(
                                 DownloadUtils.getStringForBytes(mContext, bytes),
                                 TextDirectionHeuristicsCompat.LTR);
-        return mContext.getString(R.string.download_notification_completed_with_size, size);
+        return mContext.getString(
+                R.string.download_tray_item_status_message_with_separator,
+                size,
+                mContext.getString(R.string.download_tray_item_status_done));
     }
 
     /**

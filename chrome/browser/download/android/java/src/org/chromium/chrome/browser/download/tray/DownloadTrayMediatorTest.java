@@ -139,8 +139,7 @@ public class DownloadTrayMediatorTest {
         PropertyModel row = captureShownRow();
         assertEquals(R.drawable.ic_drive_file_24dp, row.get(DownloadTrayItemProperties.ICON));
         assertEquals("report.pdf", row.get(DownloadTrayItemProperties.TITLE));
-        assertEquals(
-                "Download complete • 4.30 MB", row.get(DownloadTrayItemProperties.DESCRIPTION));
+        assertEquals("4.30 MB • Done", row.get(DownloadTrayItemProperties.DESCRIPTION));
     }
 
     @Test
@@ -387,8 +386,7 @@ public class DownloadTrayMediatorTest {
         mModel.onItemUpdated(item, /* updateDelta= */ null);
 
         assertEquals(
-                "Download complete • 1.50 MB",
-                captureShownRow().get(DownloadTrayItemProperties.DESCRIPTION));
+                "1.50 MB • Done", captureShownRow().get(DownloadTrayItemProperties.DESCRIPTION));
     }
 
     @Test

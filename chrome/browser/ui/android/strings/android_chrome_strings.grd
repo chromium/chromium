@@ -2799,6 +2799,14 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
           other {# dangerous downloads blocked}}
       </message>
 
+      <!-- Download toolbar button tray; text matches the desktop download bubble. -->
+      <message name="IDS_DOWNLOAD_TRAY_ITEM_STATUS_MESSAGE_WITH_SEPARATOR" desc="The download status and message are separated by a symbol, in this case bullet •, with a white space before it and a white space after it. If the bullet • resembles another symbol in the language, please translate the bullet • as a symbol (A) that is not easily mistaken for a number or letter in the language and (B) that is typically used to separate elements.">
+        <ph name="STATUS">%1$s<ex>100/120 MB</ex></ph> • <ph name="MESSAGE">%2$s<ex>Opening in 10 seconds...</ex></ph>
+      </message>
+      <message name="IDS_DOWNLOAD_TRAY_ITEM_STATUS_DONE" desc="When a download is finished, let the user know.">
+        Done
+      </message>
+
       <message name="IDS_INCOGNITO_DOWNLOAD_MESSAGE_TITLE" desc="Download title displayed in a prompt message when the user downloads a file in Incognito mode.">
         Download file?
       </message>
