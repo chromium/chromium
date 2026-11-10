@@ -61,6 +61,10 @@ using CrossGaps = Vector<CrossGap>;
 // Gap geometry is used to determine gap locations for the purpose of painting
 // gap decorations.
 //
+// Grid-lanes also uses artificial cross gaps for item visibility and spanner
+// clearance, not paintable gutters. See the GridLanesGapGeometry class comment
+// in grid_lanes_gap_geometry.h for details.
+//
 // See third_party/blink/renderer/core/layout/gap/README.md for more.
 class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
  public:
@@ -100,6 +104,8 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   struct GapIndexRange {
     wtf_size_t start;
     wtf_size_t count;
+
+    bool operator==(const GapIndexRange&) const = default;
   };
 
   void Trace(Visitor* visitor) const {}
@@ -219,15 +225,13 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   wtf_size_t CrossGapCount() const { return cross_gaps_.size(); }
 
   // Returns whether the gap at `gap_index` in `direction` can be painted.
-  // `gap_index` is an index into this fragment's gaps. Spanner main gaps
-  // cannot be painted. They are only used to generate the intersections of
-  // `CrossGap`s.
+  // `gap_index` is an index into this fragment's gaps. Spanner main gaps and
+  // artificial cross gaps only generate intersections, and cannot be painted.
   bool IsPaintableGap(GridTrackSizingDirection direction,
                       wtf_size_t gap_index) const;
 
   // Returns the number of gaps in `direction` in this fragment that can be
-  // painted. Spanner main gaps are not included because they do not consume
-  // decoration values.
+  // painted. Artificial boundaries do not consume decoration values.
   wtf_size_t PaintableGapCount(GridTrackSizingDirection direction) const;
 
   // Returns the total gap slot count that layout stored for the gaps in
@@ -331,11 +335,13 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   // `cross_gap_owner_index` is the forward-only cursor identifying the owner of
   // the cross gap being processed: the flex line (main gap) for flex, or the
   // lane for grid-lanes.
+  // `rule_visibility` selects item boundaries and empty-space data for
+  // grid-lanes main gaps.
   void GenerateIntersectionListForGap(
       GridTrackSizingDirection direction,
       wtf_size_t gap_index,
       std::optional<wtf_size_t> cross_gap_owner_index,
-      bool needs_empty_segment_states,
+      RuleVisibilityItems rule_visibility,
       Vector<GapIntersection>& intersections) const;
 
   // Determines whether the intersection at `intersection_index` within
@@ -534,10 +540,12 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
 
   // Fills `intersections` for a main gap at `gap_index`, between the
   // container content start and content end. The intersections with cross
-  // gaps are container-specific.
+  // gaps are container-specific. `rule_visibility` selects grid-lanes item
+  // endpoints and actual occupancy.
   virtual void GenerateMainIntersectionList(
       GridTrackSizingDirection direction,
       wtf_size_t gap_index,
+      RuleVisibilityItems rule_visibility,
       GapSegmentStateCursor& cursor,
       Vector<GapIntersection>& intersections) const = 0;
 
@@ -563,10 +571,18 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   // have no owner.
   virtual bool CrossGapsHaveOwners() const { return false; }
 
+  // Returns an owner's range among paintable cross gaps, excluding artificial
+  // boundaries. Without artificial gaps this matches the geometry range.
+  virtual GapIndexRange PaintableCrossGapRangeForOwner(
+      wtf_size_t owner_index) const {
+    return CrossGapRangeForOwner(owner_index);
+  }
+
   // Marks which segments of the main gap at `gap_index` are next to empty
   // space.
   virtual void MarkEmptySegments(GridTrackSizingDirection direction,
                                  wtf_size_t gap_index,
+                                 RuleVisibilityItems rule_visibility,
                                  Vector<GapIntersection>& intersections) const {
   }
 
@@ -620,7 +636,7 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   // `IsPaintableGap`).
   void BuildMainIntersectionList(GridTrackSizingDirection direction,
                                  wtf_size_t gap_index,
-                                 bool needs_empty_segment_states,
+                                 RuleVisibilityItems rule_visibility,
                                  Vector<GapIntersection>& intersections) const;
 
   // Fills `intersections` for a cross gap at `gap_index`. For grid containers,

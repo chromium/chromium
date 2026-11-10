@@ -89,6 +89,12 @@ class CORE_EXPORT GridLanesGapAccumulator {
   LogicalRect FinalItemBounds(const GridLanesItemData& item,
                               const BoxFragmentBuilder& builder) const;
 
+  // Returns the clearance-expanded spans blocking the preceding main gap.
+  Vector<TrackOpeningCoordinates> SpannerBlockedIntervals(
+      const LaneItems& lane_items,
+      const GridLanesGapGeometryState& state,
+      const BoxFragmentBuilder& builder) const;
+
   // Builds ordered cross gaps for final item bounds and positions one stacking
   // gap before and after spanners. Item-boundary types require available
   // alignment space.
@@ -130,11 +136,13 @@ class CORE_EXPORT GridLanesGapAccumulator {
                           LaneItems& lane_items,
                           Vector<CrossGap>& lane_cross_gaps);
 
-  // Records spanner-blocked ranges between two lanes. Entries that share
-  // placement data identify the same spanning item.
+  // Records spanner-blocked ranges between two lanes.
+  // Spanners in the current lane that also cover the previous lane block the
+  // main gap between them, with stacking-axis clearance on each side.
   void RecordMainGapSegmentStates(wtf_size_t main_gap_index,
-                                  const LaneItems& before_items,
-                                  const LaneItems& after_items);
+                                  const LaneItems& lane_items,
+                                  const GridLanesGapGeometryState& state,
+                                  const BoxFragmentBuilder& builder);
 
   // Flattens the lane graph and collects ordered placement gutters by lane.
   void CollectLaneEntries(const GridLanesDataVector& grid_lanes,
@@ -142,8 +150,8 @@ class CORE_EXPORT GridLanesGapAccumulator {
                           HeapVector<LaneItems>& lane_items,
                           Vector<Vector<CrossGap>>& lane_gutters);
 
-  // Builds real `CrossGap`s grouped by track in ascending track order, and
-  // records spanner-blocked ranges between neighboring lanes.
+  // Builds real and artificial `CrossGap`s grouped by track in ascending track
+  // order, and records spanner-blocked ranges between neighboring lanes.
   void BuildCrossGaps(const GridLanesDataVector& grid_lanes,
                       const GridLanesGapGeometryState& state,
                       const BoxFragmentBuilder& builder);

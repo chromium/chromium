@@ -191,6 +191,13 @@ bool ShouldMoveIntersectionEndForward(
     return false;
   }
 
+  // Artificial boundaries split visibility and spanner state, not crossing
+  // gutters. An intersection break must not split an otherwise visible rule.
+  // See the GridLanesGapGeometry class comment in grid_lanes_gap_geometry.h.
+  if (intersections[end_index].IsArtificial()) {
+    return true;
+  }
+
   const GridTrackSizingDirection cross_direction =
       OppositeDirection(track_direction);
 
@@ -315,11 +322,6 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
       is_main ? gap_geometry.GetMainGaps().size()
               : gap_geometry.GetCrossGaps().size();
 
-  // Empty-side segment states are needed only when some segments can be
-  // hidden.
-  const bool needs_empty_segment_states =
-      rule_visibility != RuleVisibilityItems::kAll;
-
   const bool has_row_gap_fragmentation =
       gap_geometry.HasRowGapFragmentation(box_fragment_, is_main);
   const std::optional<wtf_size_t> stored_gap_slot_count =
@@ -430,9 +432,9 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
     const LayoutUnit center =
         gap_geometry.GetGapCenterOffset(track_direction, gap_index);
 
-    gap_geometry.GenerateIntersectionListForGap(
-        track_direction, gap_index, cross_gap_owner_index,
-        needs_empty_segment_states, intersections);
+    gap_geometry.GenerateIntersectionListForGap(track_direction, gap_index,
+                                                cross_gap_owner_index,
+                                                rule_visibility, intersections);
 
     const wtf_size_t intersection_count = intersections.size();
     CHECK_GE(intersection_count, 2u);

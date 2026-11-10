@@ -27,6 +27,7 @@ std::optional<LayoutUnit> FlexGapGeometry::MaxCrossGapSize() const {
 void FlexGapGeometry::GenerateMainIntersectionList(
     GridTrackSizingDirection direction,
     wtf_size_t gap_index,
+    RuleVisibilityItems,
     GapSegmentStateCursor& cursor,
     Vector<GapIntersection>& intersections) const {
   const MainGap& main_gap = GetMainGaps()[gap_index];

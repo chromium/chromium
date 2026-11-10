@@ -29,6 +29,7 @@ class CORE_EXPORT MulticolGapGeometry final : public GapGeometry {
   void GenerateMainIntersectionList(
       GridTrackSizingDirection direction,
       wtf_size_t gap_index,
+      RuleVisibilityItems rule_visibility,
       GapSegmentStateCursor& cursor,
       Vector<GapIntersection>& intersections) const override {
     GenerateMainIntersectionListForGridAndMulticol(direction, cursor,

@@ -2964,7 +2964,20 @@ TEST_F(GridLanesLayoutAlgorithmTest, GapGeometryColumn) {
             GapGeometry::ContainerType::kGridLanes);
   EXPECT_EQ(gap_geometry->GetMainDirection(), kForColumns);
   EXPECT_EQ(gap_geometry->GetInlineGapSize(), LayoutUnit(14));
-  EXPECT_EQ(gap_geometry->CrossGapCount(), 0u);
+  const Vector<CrossGap> expected_cross_gaps = {
+      CrossGap(LogicalOffset(LayoutUnit(5), LayoutUnit(5)),
+               CrossGap::Type::kOccupiedStart),
+      CrossGap(LogicalOffset(LayoutUnit(5), LayoutUnit(45)),
+               CrossGap::Type::kItemEnd),
+      CrossGap(LogicalOffset(LayoutUnit(92), LayoutUnit(5)),
+               CrossGap::Type::kOccupiedStart),
+      CrossGap(LogicalOffset(LayoutUnit(92), LayoutUnit(45)),
+               CrossGap::Type::kItemEnd),
+      CrossGap(LogicalOffset(LayoutUnit(226), LayoutUnit(5)),
+               CrossGap::Type::kOccupiedStart),
+      CrossGap(LogicalOffset(LayoutUnit(226), LayoutUnit(45)),
+               CrossGap::Type::kItemEnd)};
+  EXPECT_EQ(gap_geometry->GetCrossGaps(), expected_cross_gaps);
 
   const auto& main_gaps = gap_geometry->GetMainGaps();
   ASSERT_EQ(main_gaps.size(), 2u);
@@ -3016,7 +3029,20 @@ TEST_F(GridLanesLayoutAlgorithmTest, GapGeometryRow) {
   ASSERT_NE(gap_geometry, nullptr);
   EXPECT_EQ(gap_geometry->GetMainDirection(), kForRows);
   EXPECT_EQ(gap_geometry->GetBlockGapSize(), LayoutUnit(12));
-  EXPECT_EQ(gap_geometry->CrossGapCount(), 0u);
+  const Vector<CrossGap> expected_cross_gaps = {
+      CrossGap(LogicalOffset(LayoutUnit(5), LayoutUnit(5)),
+               CrossGap::Type::kOccupiedStart),
+      CrossGap(LogicalOffset(LayoutUnit(45), LayoutUnit(5)),
+               CrossGap::Type::kItemEnd),
+      CrossGap(LogicalOffset(LayoutUnit(5), LayoutUnit(101)),
+               CrossGap::Type::kOccupiedStart),
+      CrossGap(LogicalOffset(LayoutUnit(45), LayoutUnit(101)),
+               CrossGap::Type::kItemEnd),
+      CrossGap(LogicalOffset(LayoutUnit(5), LayoutUnit(243)),
+               CrossGap::Type::kOccupiedStart),
+      CrossGap(LogicalOffset(LayoutUnit(45), LayoutUnit(243)),
+               CrossGap::Type::kItemEnd)};
+  EXPECT_EQ(gap_geometry->GetCrossGaps(), expected_cross_gaps);
 
   const auto& main_gaps = gap_geometry->GetMainGaps();
   ASSERT_EQ(main_gaps.size(), 2u);
@@ -3162,7 +3188,28 @@ TEST_F(GridLanesLayoutAlgorithmTest, GapGeometryCollapsedAutoFitTracks) {
   const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
   ASSERT_NE(gap_geometry, nullptr);
   ASSERT_EQ(gap_geometry->MainGapCount(), 4u);
-  EXPECT_EQ(gap_geometry->CrossGapCount(), 0u);
+  const Vector<CrossGap> expected_cross_gaps = {
+      CrossGap(LogicalOffset(LayoutUnit(5), LayoutUnit(5)),
+               CrossGap::Type::kOccupiedStart),
+      CrossGap(LogicalOffset(LayoutUnit(5), LayoutUnit(105)),
+               CrossGap::Type::kOccupiedEnd),
+      CrossGap(LogicalOffset(LayoutUnit(110), LayoutUnit(5)),
+               CrossGap::Type::kOccupiedStart),
+      CrossGap(LogicalOffset(LayoutUnit(110), LayoutUnit(105)),
+               CrossGap::Type::kOccupiedEnd),
+      CrossGap(LogicalOffset(LayoutUnit(220), LayoutUnit(5)),
+               CrossGap::Type::kOccupiedStart),
+      CrossGap(LogicalOffset(LayoutUnit(220), LayoutUnit(105)),
+               CrossGap::Type::kOccupiedEnd),
+      CrossGap(LogicalOffset(LayoutUnit(330), LayoutUnit(5)),
+               CrossGap::Type::kOccupiedStart),
+      CrossGap(LogicalOffset(LayoutUnit(330), LayoutUnit(105)),
+               CrossGap::Type::kOccupiedEnd),
+      CrossGap(LogicalOffset(LayoutUnit(440), LayoutUnit(5)),
+               CrossGap::Type::kOccupiedStart),
+      CrossGap(LogicalOffset(LayoutUnit(440), LayoutUnit(105)),
+               CrossGap::Type::kOccupiedEnd)};
+  EXPECT_EQ(gap_geometry->GetCrossGaps(), expected_cross_gaps);
   for (const auto& main_gap : gap_geometry->GetMainGaps()) {
     EXPECT_NE(main_gap.GetGapOffset(), LayoutUnit::Max());
   }

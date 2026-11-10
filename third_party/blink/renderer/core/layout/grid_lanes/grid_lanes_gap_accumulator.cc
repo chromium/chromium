@@ -333,6 +333,42 @@ LogicalRect GridLanesGapAccumulator::FinalItemBounds(
   return {child.offset, fragment.Size()};
 }
 
+Vector<TrackOpeningCoordinates>
+GridLanesGapAccumulator::SpannerBlockedIntervals(
+    const LaneItems& lane_items,
+    const GridLanesGapGeometryState& state,
+    const BoxFragmentBuilder& builder) const {
+  Vector<TrackOpeningCoordinates> intervals;
+  bool is_sorted = true;
+  const auto direction = gap_geometry_->GetMainDirection();
+  const bool is_for_columns = direction == kForColumns;
+  for (const auto& item : lane_items) {
+    // Only non-start entries span the main gap before this lane.
+    if (item->is_item_start) {
+      continue;
+    }
+    const auto item_bounds = FinalItemBounds(*item, builder);
+    TrackOpeningCoordinates bounds{
+        is_for_columns ? item_bounds.BlockStartOffset()
+                       : item_bounds.InlineStartOffset(),
+        is_for_columns ? item_bounds.BlockEndOffset()
+                       : item_bounds.InlineEndOffset()};
+    bounds.start_position -= state.stacking_gap;
+    bounds.end_position += state.stacking_gap;
+    if (!intervals.empty() &&
+        bounds.start_position < intervals.back().start_position) {
+      is_sorted = false;
+    }
+    intervals.push_back(bounds);
+  }
+  if (!is_sorted) {
+    std::ranges::sort(intervals, {}, &TrackOpeningCoordinates::start_position);
+  }
+  DCHECK(std::ranges::is_sorted(intervals, {},
+                                &TrackOpeningCoordinates::start_position));
+  return intervals;
+}
+
 Vector<CrossGap> GridLanesGapAccumulator::BuildArtificialCrossGaps(
     const LaneItems& lane_items,
     wtf_size_t compact_track_index,
@@ -483,9 +519,13 @@ void GridLanesGapAccumulator::FilterArtificialCrossGaps(
 void GridLanesGapAccumulator::AppendLaneCrossGaps(
     const Vector<CrossGap>& lane_cross_gaps,
     wtf_size_t compact_track_index) {
+  wtf_size_t paintable_gap_count = 0;
   for (const auto& gap : lane_cross_gaps) {
     const wtf_size_t cross_gap_index = gap_geometry_->CrossGapCount();
     gap_geometry_->AddCrossGap(gap.GetGapOffset(), gap.GetType());
+    if (!gap.IsArtificial()) {
+      ++paintable_gap_count;
+    }
     if (compact_track_index < gap_geometry_->MainGapCount()) {
       gap_geometry_->MainGapAt(compact_track_index)
           .IncrementRangeOfCrossGapsBefore(cross_gap_index);
@@ -495,6 +535,7 @@ void GridLanesGapAccumulator::AppendLaneCrossGaps(
           .IncrementRangeOfCrossGapsAfter(cross_gap_index);
     }
   }
+  gap_geometry_->AddCrossGapDecorationSlots(paintable_gap_count);
 }
 
 void GridLanesGapAccumulator::RecordLaneEntry(
@@ -551,28 +592,57 @@ void GridLanesGapAccumulator::RecordLaneItemTree(
 
 void GridLanesGapAccumulator::RecordMainGapSegmentStates(
     wtf_size_t main_gap_index,
-    const LaneItems& before_items,
-    const LaneItems& after_items) {
-  if (before_items.empty() || after_items.empty()) {
+    const LaneItems& lane_items,
+    const GridLanesGapGeometryState& state,
+    const BoxFragmentBuilder& builder) {
+  const auto blocked_intervals =
+      SpannerBlockedIntervals(lane_items, state, builder);
+  if (blocked_intervals.empty()) {
     return;
   }
-
+  const bool is_for_columns = gap_geometry_->GetMainDirection() == kForColumns;
   MainGap& main_gap = gap_geometry_->MainGapAt(main_gap_index);
   GridLanesMainGapSegmentWalker walker(*gap_geometry_, main_gap_index);
   wtf_size_t segment_index = 0;
+  wtf_size_t blocked_interval_index = 0;
   std::optional<wtf_size_t> blocked_run_start;
+  const LayoutUnit content_start = is_for_columns
+                                       ? gap_geometry_->GetContentBlockStart()
+                                       : gap_geometry_->GetContentInlineStart();
+  const LayoutUnit content_end = is_for_columns
+                                     ? gap_geometry_->GetContentBlockEnd()
+                                     : gap_geometry_->GetContentInlineEnd();
+  LayoutUnit previous_offset = content_start;
+  LayoutUnit previous_half_width;
 
   // Walk through the gap decoration segments for this `MainGap` to mark the
   // segments that are blocked by a spanner.
   while (const auto segment = walker.Next()) {
-    CHECK_LT(segment->before_occupant_index, before_items.size());
-    CHECK_LT(segment->after_occupant_index, after_items.size());
-    // Entries in adjacent lanes share placement data only when one item spans
-    // both lanes, so the segment is blocked.
+    // Only genuine interior gutters shorten the segment at their edges.
+    LayoutUnit maybe_half_width;
+    if (segment->end_type == CrossGap::Type::kGutter &&
+        segment->end_offset != content_end) {
+      maybe_half_width = state.stacking_gap / 2;
+    }
+    LayoutUnit start = previous_offset + previous_half_width;
+    LayoutUnit end = segment->end_offset - maybe_half_width;
+    // Gutters can overlap, touch, or reach a content edge. When trimming leaves
+    // no positive-length segment, retain blocked state using untrimmed offsets.
+    if (start >= end) {
+      DCHECK_LE(previous_offset, segment->end_offset);
+      DCHECK(start == end || segment->continues_overlap_window ||
+             previous_offset == content_start ||
+             segment->end_offset == content_end);
+      start = previous_offset;
+      end = segment->end_offset;
+    }
+    while (blocked_interval_index < blocked_intervals.size() &&
+           blocked_intervals[blocked_interval_index].end_position <= start) {
+      ++blocked_interval_index;
+    }
     const bool is_blocked =
-        before_items[segment->before_occupant_index]
-            ->grid_lanes_placement_data ==
-        after_items[segment->after_occupant_index]->grid_lanes_placement_data;
+        blocked_interval_index < blocked_intervals.size() &&
+        blocked_intervals[blocked_interval_index].start_position < end;
 
     if (is_blocked) {
       if (!blocked_run_start) {
@@ -586,6 +656,8 @@ void GridLanesGapAccumulator::RecordMainGapSegmentStates(
     }
 
     ++segment_index;
+    previous_offset = segment->end_offset;
+    previous_half_width = maybe_half_width;
   }
 
   if (blocked_run_start) {
@@ -636,7 +708,7 @@ void GridLanesGapAccumulator::CollectLaneEntries(
 void GridLanesGapAccumulator::BuildCrossGaps(
     const GridLanesDataVector& grid_lanes,
     const GridLanesGapGeometryState& state,
-    const BoxFragmentBuilder&) {
+    const BoxFragmentBuilder& builder) {
   // Placement is skipped when the container has no in-flow items. Main gaps
   // still exist, but there is no lane graph from which to build cross gaps.
   if (grid_lanes.empty()) {
@@ -649,11 +721,24 @@ void GridLanesGapAccumulator::BuildCrossGaps(
 
   for (wtf_size_t compact_track_index = 0;
        compact_track_index < lane_items.size(); ++compact_track_index) {
-    AppendLaneCrossGaps(lane_gutters[compact_track_index], compact_track_index);
+    const auto& items_in_lane = lane_items[compact_track_index];
+    Vector<CrossGap> boundaries;
+    if (HasMainGaps()) {
+      boundaries = BuildArtificialCrossGaps(items_in_lane, compact_track_index,
+                                            state, builder);
+      // Filter boundaries covered by real gutters or outside the content.
+      // Keep item start/end cross gaps as occupancy-only entries when their
+      // boundaries are not needed.
+      FilterArtificialCrossGaps(boundaries, compact_track_index, lane_gutters,
+                                state.stacking_gap);
+    }
+    AppendLaneCrossGaps(
+        MergeCrossGaps(lane_gutters[compact_track_index], boundaries,
+                       OppositeDirection(gap_geometry_->GetMainDirection())),
+        compact_track_index);
     if (compact_track_index > 0) {
-      RecordMainGapSegmentStates(compact_track_index - 1,
-                                 lane_items[compact_track_index - 1],
-                                 lane_items[compact_track_index]);
+      RecordMainGapSegmentStates(compact_track_index - 1, items_in_lane, state,
+                                 builder);
     }
   }
 }

@@ -60,21 +60,25 @@ bool GapGeometry::HasRowGapFragmentation(
 
 bool GapGeometry::IsPaintableGap(GridTrackSizingDirection direction,
                                  wtf_size_t gap_index) const {
-  // Only multicol main gaps created by spanners can be synthetic spanner
-  // boundaries. Cross gaps can always be painted.
-  return !IsMainDirection(direction) ||
-         !main_gaps_[gap_index].IsSpannerMainGap();
+  return IsMainDirection(direction) ? !main_gaps_[gap_index].IsSpannerMainGap()
+                                    : !cross_gaps_[gap_index].IsArtificial();
 }
 
 wtf_size_t GapGeometry::PaintableGapCount(
     GridTrackSizingDirection direction) const {
-  // Cross gaps are never synthetic spanner boundaries. Only multicol main gaps
-  // can be, and those do not consume decoration values.
-  if (!IsMainDirection(direction)) {
+  if (IsMainDirection(direction)) {
+    CHECK_LE(spanner_main_gap_count_, main_gaps_.size());
+    return main_gaps_.size() - spanner_main_gap_count_;
+  }
+  if (GetContainerType() != kGridLanes || cross_gaps_.empty()) {
     return cross_gaps_.size();
   }
-  CHECK_LE(spanner_main_gap_count_, main_gaps_.size());
-  return main_gaps_.size() - spanner_main_gap_count_;
+
+  // The last non-collapsed lane has index MainGapCount(). Its cumulative slot
+  // range ends at the total paintable cross-gap count.
+  const GapIndexRange last_lane_range =
+      PaintableCrossGapRangeForOwner(MainGapCount());
+  return last_lane_range.start + last_lane_range.count;
 }
 
 std::optional<wtf_size_t> GapGeometry::StoredGapSlotCount(
@@ -154,8 +158,7 @@ GapGeometry::DecorationValueAssignmentForGap(
   if (GetContainerType() == kGridLanes) {
     CHECK(cross_gap_owner_index.has_value());
     const GapIndexRange owner_range =
-        CrossGapRangeForOwner(*cross_gap_owner_index);
-
+        PaintableCrossGapRangeForOwner(*cross_gap_owner_index);
     CHECK_GE(stitched_gap_index, owner_range.start);
     wtf_size_t local_decoration_value_index =
         stitched_gap_index - owner_range.start;
@@ -415,13 +418,13 @@ void GapGeometry::GenerateIntersectionListForGap(
     GridTrackSizingDirection direction,
     wtf_size_t gap_index,
     std::optional<wtf_size_t> cross_gap_owner_index,
-    bool needs_empty_segment_states,
+    RuleVisibilityItems rule_visibility,
     Vector<GapIntersection>& intersections) const {
   // Reset the buffer's logical size but keep capacity, so we can reuse
   // a single Vector across loop iterations without reallocating.
   intersections.Shrink(0);
   if (IsMainDirection(direction)) {
-    BuildMainIntersectionList(direction, gap_index, needs_empty_segment_states,
+    BuildMainIntersectionList(direction, gap_index, rule_visibility,
                               intersections);
   } else {
     BuildCrossIntersectionList(direction, gap_index, cross_gap_owner_index,
@@ -432,7 +435,7 @@ void GapGeometry::GenerateIntersectionListForGap(
 void GapGeometry::BuildMainIntersectionList(
     GridTrackSizingDirection direction,
     wtf_size_t gap_index,
-    bool needs_empty_segment_states,
+    RuleVisibilityItems rule_visibility,
     Vector<GapIntersection>& intersections) const {
   GapSegmentStateCursor cursor(
       GetGapSegmentStateRangesForGap(direction, gap_index));
@@ -440,13 +443,12 @@ void GapGeometry::BuildMainIntersectionList(
     return;
   }
 
-  GenerateMainIntersectionList(direction, gap_index, cursor, intersections);
-  if (needs_empty_segment_states) {
-    // Grid-lanes segments depend on the crossing gutters of both adjacent
-    // lanes, so their empty-side states are computed after the intersections
-    // are generated.
-    MarkEmptySegments(direction, gap_index, intersections);
-  }
+  GenerateMainIntersectionList(direction, gap_index, rule_visibility, cursor,
+                               intersections);
+  // Grid-lanes generates actual occupancy only for
+  // `rule-visibility-items: between`. Its visibility hook adds
+  // placement-opening state for `rule-visibility-items: around`.
+  MarkEmptySegments(direction, gap_index, rule_visibility, intersections);
 }
 
 void GapGeometry::GenerateMainIntersectionListForGridAndMulticol(
@@ -555,6 +557,7 @@ bool GapGeometry::IsCapIntersection(
                                        intersections.size(), is_main_gap,
                                        intersections) ||
          IsSpannerBoundaryIntersection(intersection_index, is_main_gap) ||
+         intersections[intersection_index].IsArtificial() ||
          !CSSGapDecorationUtils::HasCrossGapSegment(
              cross_direction, gap_index, intersection_index, rule_visibility,
              cross_rule_visibility, *this, intersections);
@@ -657,7 +660,8 @@ LayoutUnit GapGeometry::GetCrossWidthForIntersection(
   if (IsIntersectionAtContainerEdge(gap_index, intersection_index,
                                     intersections.size(), is_main_gap,
                                     intersections) ||
-      IsSpannerBoundaryIntersection(intersection_index, is_main_gap)) {
+      IsSpannerBoundaryIntersection(intersection_index, is_main_gap) ||
+      intersections[intersection_index].IsArtificial()) {
     return LayoutUnit();
   }
 

@@ -87,6 +87,7 @@ class CORE_EXPORT FlexGapGeometry final : public GapGeometry {
   void GenerateMainIntersectionList(
       GridTrackSizingDirection direction,
       wtf_size_t gap_index,
+      RuleVisibilityItems rule_visibility,
       GapSegmentStateCursor& cursor,
       Vector<GapIntersection>& intersections) const override;
 

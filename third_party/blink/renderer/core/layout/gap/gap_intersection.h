@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GAP_GAP_INTERSECTION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GAP_GAP_INTERSECTION_H_
 
+#include <stdint.h>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/gap/gap_utils.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
@@ -26,6 +28,13 @@ enum class OverlapWindowState {
   kWindowClose,  // End of an overlap window.
 };
 
+// Classifies endpoints for inset, visibility, and rule-break handling.
+enum class GapIntersectionKind : uint8_t {
+  kNormal,
+  kItemBoundary,
+  kSpannerBoundary,
+};
+
 // Extra state carried by a `GapIntersection` in unaligned layout modes (e.g.
 // flexbox, grid-lanes). In these modes, items across adjacent lines are not
 // always aligned, so cross gaps from different sides of a main gap may have
@@ -41,6 +50,9 @@ enum class OverlapWindowState {
 struct ExtraIntersectionState {
   // Tracks which side of the main gap this intersection originated from.
   bool is_above_main_gap = false;
+
+  // Grid-lanes can add artificial endpoints without a crossing gutter.
+  GapIntersectionKind kind = GapIntersectionKind::kNormal;
 
   // Marks the open/close boundaries of overlap windows. `kNone` when the
   // intersection is not part of an overlap window.
@@ -67,20 +79,25 @@ class CORE_EXPORT GapIntersection {
 
   GapIntersection(LayoutUnit offset,
                   GapSegmentState segment_state,
-                  OverlapWindowState overlap_state)
+                  OverlapWindowState overlap_state,
+                  GapIntersectionKind kind = GapIntersectionKind::kNormal)
       : offset_(offset),
-        extra_state_(ExtraIntersectionState{.overlap_state = overlap_state}),
+        extra_state_(ExtraIntersectionState{.kind = kind,
+                                            .overlap_state = overlap_state}),
         segment_state_(segment_state) {}
 
   GapIntersection(LayoutUnit offset,
                   OverlapWindowState state,
                   bool is_above_main_gap)
       : offset_(offset),
-        extra_state_(ExtraIntersectionState{is_above_main_gap, state}) {}
+        extra_state_(
+            ExtraIntersectionState{.is_above_main_gap = is_above_main_gap,
+                                   .overlap_state = state}) {}
 
   GapIntersection(LayoutUnit offset, bool is_above_main_gap)
       : offset_(offset),
-        extra_state_(ExtraIntersectionState{is_above_main_gap}) {}
+        extra_state_(
+            ExtraIntersectionState{.is_above_main_gap = is_above_main_gap}) {}
 
   LayoutUnit GetOffset() const { return offset_; }
 
@@ -140,12 +157,18 @@ class CORE_EXPORT GapIntersection {
   const GapSegmentState& SegmentState() const { return segment_state_; }
   void SetSegmentState(GapSegmentState state) { segment_state_ = state; }
 
+  bool IsArtificial() const {
+    return extra_state_.has_value() &&
+           extra_state_->kind != GapIntersectionKind::kNormal;
+  }
+
  private:
   LayoutUnit offset_;
 
   // Present only for unaligned layout modes (e.g. flex, grid-lanes). Tracks
-  // which side of the main gap this intersection originated from and optional
-  // overlap window state. Absent for aligned modes such as grid and multicol.
+  // which side of the main gap this intersection originated from, artificial
+  // endpoint kind, and overlap window state. Absent for aligned modes such as
+  // grid and multicol.
   std::optional<ExtraIntersectionState> extra_state_;
 
   // State of the segment between this intersection and the next.
