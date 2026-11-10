@@ -42,7 +42,6 @@
 #include "components/sessions/content/content_live_tab.h"
 #include "components/sessions/content/content_test_helper.h"
 #include "components/sessions/content/session_tab_helper.h"
-#include "components/sessions/core/command_storage_features.h"
 #include "components/sessions/core/command_storage_manager.h"
 #include "components/sessions/core/live_tab.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
@@ -267,9 +266,6 @@ class TabRestoreServiceImplTest : public ChromeRenderViewHostTestHarness {
 
   // testing::Test:
   void SetUp() override {
-    // TODO(crbug.com/479420496): Add support for encrypted files before full
-    // launch of encrypted sessions.
-    feature_list_.InitAndDisableFeature(sessions::kEncryptSessionStorage);
     ChromeRenderViewHostTestHarness::SetUp();
     CreateSessionServiceTabHelper(web_contents());
     live_tab_ = base::WrapUnique(new sessions::ContentLiveTab(web_contents()));
@@ -386,7 +382,6 @@ class TabRestoreServiceImplTest : public ChromeRenderViewHostTestHarness {
 
   sessions::LiveTab* live_tab() { return live_tab_.get(); }
 
-  base::test::ScopedFeatureList feature_list_;
   GURL url1_;
   GURL url2_;
   GURL url3_;

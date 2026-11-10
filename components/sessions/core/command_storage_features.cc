@@ -16,7 +16,7 @@ BASE_FEATURE_PARAM(std::string,
                    kEncryptSessionStorageStageParam,
                    &kEncryptSessionStorage,
                    "stage",
-                   "write_both_read_only_clear");
+                   "write_both_read_prefer_encrypted");
 
 using ::sessions::internal::kEncryptSessionStorageStageWriteBothReadOnlyClear;
 using ::sessions::internal::

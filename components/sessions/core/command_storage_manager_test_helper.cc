@@ -45,14 +45,24 @@ void CommandStorageManagerTestHelper::RunMessageLoopUntilBackendDone() {
 
 bool CommandStorageManagerTestHelper::ProcessedAnyCommands() {
   return command_storage_manager_->backend_->inited_for_testing() ||
+         (command_storage_manager_->encrypted_backend_ &&
+          command_storage_manager_->encrypted_backend_->inited_for_testing()) ||
          !command_storage_manager_->pending_commands().empty();
 }
 
 std::vector<std::unique_ptr<SessionCommand>>
 CommandStorageManagerTestHelper::ReadLastSessionCommands() {
-  return command_storage_manager_->backend_.get()
-      ->ReadLastSessionCommands()
-      .commands;
+  std::vector<std::unique_ptr<SessionCommand>> commands;
+  base::RunLoop run_loop;
+  command_storage_manager_->GetLastSessionCommands(base::BindLambdaForTesting(
+      [&](std::vector<std::unique_ptr<SessionCommand>> commands_out,
+          CommandStorageReadStatus status_out) {
+        commands = std::move(commands_out);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+  RunMessageLoopUntilBackendDone();
+  return commands;
 }
 
 scoped_refptr<base::SequencedTaskRunner>
