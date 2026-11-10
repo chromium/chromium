@@ -51,6 +51,10 @@ suite('ProfileCardMenuTest', function() {
     document.body.appendChild(profileCardMenuElement);
   });
 
+  teardown(function() {
+    document.documentElement.dir = 'ltr';
+  });
+
   // Checks basic layout of the action menu.
   test('ProfileCardMenuActionMenu', function() {
     assertFalse(profileCardMenuElement.$.actionMenu.open);
@@ -147,7 +151,7 @@ suite('ProfileCardMenuTest', function() {
     menuButtons[MenuButtonIndex.MOVE_LEFT]!.click();
     const moveLeftEvent =
         await moveLeftPromise as CustomEvent<{direction: MoveProfileDirection}>;
-    assertEquals(moveLeftEvent.detail.direction, MoveProfileDirection.LEFT);
+    assertEquals(moveLeftEvent.detail.direction, MoveProfileDirection.START);
     assertFalse(profileCardMenuElement.$.actionMenu.open);
     assertFalse(profileCardMenuElement.matches(':focus-within'));
 
@@ -160,9 +164,61 @@ suite('ProfileCardMenuTest', function() {
     menuButtons[MenuButtonIndex.MOVE_RIGHT]!.click();
     const moveRightEvent = await moveRightPromise as
         CustomEvent<{direction: MoveProfileDirection}>;
-    assertEquals(moveRightEvent.detail.direction, MoveProfileDirection.RIGHT);
+    assertEquals(moveRightEvent.detail.direction, MoveProfileDirection.END);
     assertFalse(profileCardMenuElement.$.actionMenu.open);
     assertFalse(profileCardMenuElement.matches(':focus-within'));
+  });
+
+  test('ProfileCardMenuMoveButtonsRTL', async function() {
+    document.documentElement.dir = 'rtl';
+    profileCardMenuElement.profilesCount = 3;
+
+    // First profile (visually rightmost in RTL): only Move Left is available,
+    // moving toward the end of the list.
+    profileCardMenuElement.profileIndex = 0;
+    await microtasksFinished();
+    assertTrue(
+        !!profileCardMenuElement.shadowRoot.querySelector('#moveLeftButton'));
+    assertFalse(
+        !!profileCardMenuElement.shadowRoot.querySelector('#moveRightButton'));
+
+    // Middle profile in RTL: both Move Left and Move Right are available, with
+    // visual directions mapped to logical list directions.
+    profileCardMenuElement.profileIndex = 1;
+    await microtasksFinished();
+    profileCardMenuElement.$.moreActionsButton.click();
+    assertTrue(profileCardMenuElement.$.actionMenu.open);
+    const menuButtons =
+        profileCardMenuElement.shadowRoot.querySelectorAll<HTMLButtonElement>(
+            '#actionMenu > .dropdown-item');
+    assertEquals(menuButtons.length, 4);
+
+    const moveLeftPromise =
+        eventToPromise('move-profile', profileCardMenuElement);
+    menuButtons[MenuButtonIndex.MOVE_LEFT]!.click();
+    const moveLeftEvent =
+        await moveLeftPromise as CustomEvent<{direction: MoveProfileDirection}>;
+    assertEquals(moveLeftEvent.detail.direction, MoveProfileDirection.END);
+    assertFalse(profileCardMenuElement.$.actionMenu.open);
+
+    profileCardMenuElement.$.moreActionsButton.click();
+    assertTrue(profileCardMenuElement.$.actionMenu.open);
+    const moveRightPromise =
+        eventToPromise('move-profile', profileCardMenuElement);
+    menuButtons[MenuButtonIndex.MOVE_RIGHT]!.click();
+    const moveRightEvent = await moveRightPromise as
+        CustomEvent<{direction: MoveProfileDirection}>;
+    assertEquals(moveRightEvent.detail.direction, MoveProfileDirection.START);
+    assertFalse(profileCardMenuElement.$.actionMenu.open);
+
+    // Last profile (visually leftmost in RTL): only Move Right is available,
+    // moving toward the start of the list.
+    profileCardMenuElement.profileIndex = 2;
+    await microtasksFinished();
+    assertFalse(
+        !!profileCardMenuElement.shadowRoot.querySelector('#moveLeftButton'));
+    assertTrue(
+        !!profileCardMenuElement.shadowRoot.querySelector('#moveRightButton'));
   });
 
   // Click on the cancel button in the remove confirmation dialog closes the

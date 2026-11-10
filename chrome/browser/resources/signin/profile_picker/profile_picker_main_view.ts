@@ -36,8 +36,8 @@ import {getHtml} from './profile_picker_main_view.html.js';
 import type {SigninErrorDialogElement} from './signin_error_dialog.js';
 
 export enum MoveProfileDirection {
-  LEFT = -1,
-  RIGHT = 1,
+  START = -1,
+  END = 1,
 }
 
 export interface ProfilePickerMainViewElement {

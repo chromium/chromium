@@ -514,6 +514,10 @@ suite('ProfilePickerProfilesReorderingTest', function() {
     document.body.appendChild(mainViewElement);
   });
 
+  teardown(function() {
+    document.documentElement.dir = 'ltr';
+  });
+
   // Sets up the profile picker with the reorder functionality and creates
   // profiles.
   async function setupProfileReorderingTest(numberOfProfiles: number) {
@@ -1113,6 +1117,77 @@ suite('ProfilePickerProfilesReorderingTest', function() {
         mainViewElement.getProfileListForTesting(),
         ['profile1', 'profile0', 'profile2'],
         'Order after moving last profile left');
+  });
+
+  test('ProfileReorder_ContextMenuMoveMultipleProfiles_RTL', async function() {
+    document.documentElement.dir = 'rtl';
+    await setupProfileReorderingTest(3);
+    assertProfileNamesOrder(
+        mainViewElement.getProfileListForTesting(),
+        ['profile0', 'profile1', 'profile2'], 'Initial order check');
+
+    const cards = Array.from(
+        mainViewElement.shadowRoot.querySelectorAll<ProfileCardElement>(
+            'profile-card'));
+    assertEquals(cards.length, 3);
+    assertTrue(
+        cards[0]!.getBoundingClientRect().left >
+        cards[1]!.getBoundingClientRect().left);
+
+    // In RTL, cards[0] is visually rightmost and cards[2] is visually leftmost.
+    assertTrue(!!getMenuButtons(cards[0]!).moveLeftButton);
+    assertFalse(!!getMenuButtons(cards[0]!).moveRightButton);
+    assertTrue(!!getMenuButtons(cards[1]!).moveLeftButton);
+    assertTrue(!!getMenuButtons(cards[1]!).moveRightButton);
+    assertFalse(!!getMenuButtons(cards[2]!).moveLeftButton);
+    assertTrue(!!getMenuButtons(cards[2]!).moveRightButton);
+
+    // Move first (rightmost) profile visually left: [profile0, profile1,
+    // profile2] -> [profile1, profile0, profile2].
+    getMenuButtons(cards[0]!).moreActionsButton.focus();
+    assertTrue(cards[0]!.matches(':focus-within'));
+    getMenuButtons(cards[0]!).moreActionsButton.click();
+    getMenuButtons(cards[0]!).moveLeftButton!.click();
+    assertFalse(cards[0]!.matches(':focus-within'));
+    let args = await browserProxy.whenCalled('updateProfileOrder');
+    assertDeepEquals(args, [0, 1, ProfileOrderUpdateType.CONTEXT_MENU_BUTTON]);
+    await microtasksFinished();
+    assertProfileNamesOrder(
+        mainViewElement.getProfileListForTesting(),
+        ['profile1', 'profile0', 'profile2'],
+        'Order after moving first profile visually left in RTL');
+
+    // Move middle profile visually left: [profile1, profile0, profile2] ->
+    // [profile1, profile2, profile0].
+    browserProxy.resetResolver('updateProfileOrder');
+    getMenuButtons(cards[1]!).moreActionsButton.focus();
+    assertTrue(cards[1]!.matches(':focus-within'));
+    getMenuButtons(cards[1]!).moreActionsButton.click();
+    getMenuButtons(cards[1]!).moveLeftButton!.click();
+    assertFalse(cards[1]!.matches(':focus-within'));
+    args = await browserProxy.whenCalled('updateProfileOrder');
+    assertDeepEquals(args, [1, 2, ProfileOrderUpdateType.CONTEXT_MENU_BUTTON]);
+    await microtasksFinished();
+    assertProfileNamesOrder(
+        mainViewElement.getProfileListForTesting(),
+        ['profile1', 'profile2', 'profile0'],
+        'Order after moving middle profile visually left in RTL');
+
+    // Move last (leftmost) profile visually right: [profile1, profile2,
+    // profile0] -> [profile1, profile0, profile2].
+    browserProxy.resetResolver('updateProfileOrder');
+    getMenuButtons(cards[2]!).moreActionsButton.focus();
+    assertTrue(cards[2]!.matches(':focus-within'));
+    getMenuButtons(cards[2]!).moreActionsButton.click();
+    getMenuButtons(cards[2]!).moveRightButton!.click();
+    assertFalse(cards[2]!.matches(':focus-within'));
+    args = await browserProxy.whenCalled('updateProfileOrder');
+    assertDeepEquals(args, [2, 1, ProfileOrderUpdateType.CONTEXT_MENU_BUTTON]);
+    await microtasksFinished();
+    assertProfileNamesOrder(
+        mainViewElement.getProfileListForTesting(),
+        ['profile1', 'profile0', 'profile2'],
+        'Order after moving last profile visually right in RTL');
   });
 
   test('ProfileReorder_ScrollOnDragNearEdges', async function() {

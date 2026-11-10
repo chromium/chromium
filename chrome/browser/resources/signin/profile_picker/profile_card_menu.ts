@@ -14,7 +14,7 @@ import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
-import {htmlEscape} from 'chrome://resources/js/util.js';
+import {htmlEscape, isRTL} from 'chrome://resources/js/util.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -242,21 +242,31 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
     this.$.actionMenu.close();
   }
 
-  protected canMoveLeft_(): boolean {
+  private canMoveToStart_(): boolean {
     return isProfilesReorderingEnabled() && this.profileIndex > 0;
   }
 
-  protected canMoveRight_(): boolean {
+  private canMoveToEnd_(): boolean {
     return isProfilesReorderingEnabled() && this.profileIndex >= 0 &&
         this.profileIndex < this.profilesCount - 1;
   }
 
+  protected canMoveLeft_(): boolean {
+    return isRTL() ? this.canMoveToEnd_() : this.canMoveToStart_();
+  }
+
+  protected canMoveRight_(): boolean {
+    return isRTL() ? this.canMoveToStart_() : this.canMoveToEnd_();
+  }
+
   protected onMoveLeftButtonClick_() {
-    this.moveProfile_(MoveProfileDirection.LEFT);
+    this.moveProfile_(
+        isRTL() ? MoveProfileDirection.END : MoveProfileDirection.START);
   }
 
   protected onMoveRightButtonClick_() {
-    this.moveProfile_(MoveProfileDirection.RIGHT);
+    this.moveProfile_(
+        isRTL() ? MoveProfileDirection.START : MoveProfileDirection.END);
   }
 
   private moveProfile_(direction: MoveProfileDirection) {
