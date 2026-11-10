@@ -13,6 +13,7 @@ import common
 def main_run(args, suppress_warnings=False):
   with common.temporary_file() as tempfile_path:
     cmd = [
+      sys.executable,
       os.path.join(common.SRC_DIR, 'buildtools', 'checkdeps', 'checkdeps.py'),
       '--json',
       tempfile_path,
