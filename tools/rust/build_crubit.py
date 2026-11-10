@@ -85,17 +85,9 @@ ABSEIL_SRC_DIR = os.path.join(
     RUST_TOOLCHAIN_INTERMEDIATE_DIR, 'crubit-abseil-src'
 )
 
-# Set to `False` to skip `rs_bindings_from_cc` and its C++ dependency
-# (Abseil) if they break the toolchain build.  Nothing in Chromium
-# uses `rs_bindings_from_cc` yet.  `cc_bindings_from_rs` is always built,
-# because Chromium builds need it.
-ENABLE_BUILDING_RS_BINDINGS_FROM_CC = True
-
 # The Crubit binaries that this script builds and installs.  All are members
 # of the root cargo workspace (see Crubit's `Cargo.toml`).
-CRUBIT_BINS = ['cc_bindings_from_rs']
-if ENABLE_BUILDING_RS_BINDINGS_FROM_CC:
-    CRUBIT_BINS.append('rs_bindings_from_cc')
+CRUBIT_BINS = ['cc_bindings_from_rs', 'rs_bindings_from_cc']
 
 # One argument per binary that makes it start, print a short text, and exit
 # with 0 (see `SmokeTestCrubit`).
@@ -162,17 +154,11 @@ def CheckDependencyVersion(module_name, pinned_version):
         rf'\s*version\s*=\s*"([^"]+)"',
         content,
     )
-    # A toolchain gardener may see the errors below first, so point at the
-    # off switch too.
-    workaround = (
-        f'  To unblock the toolchain build, you can set '
-        f'`ENABLE_BUILDING_RS_BINDINGS_FROM_CC = False` in {__file__}.'
-    )
     if not match:
         raise RuntimeError(
             f'Could not find `bazel_dep(name = "{module_name}", ...)` in '
             f'{module_bazel}.  Crubit may have changed how it pins this '
-            f'dependency - update {__file__} accordingly.' + workaround
+            f'dependency - update {__file__} accordingly.'
         )
     bcr_version = match.group(1)
     upstream_version = re.sub(r'\.bcr\.\d+$', '', bcr_version)
@@ -181,7 +167,7 @@ def CheckDependencyVersion(module_name, pinned_version):
             f'{module_name}: Crubit pins {bcr_version} in {module_bazel}, but '
             f'this script builds {pinned_version}.  Update the version '
             f'constant (and, if BCR changed its version format, the comparison '
-            f'in `CheckDependencyVersion`).' + workaround
+            f'in `CheckDependencyVersion`).'
         )
 
 
@@ -630,14 +616,12 @@ def BuildCrubit(out_dir):
     release_dir = os.path.join(target_dir, 'release')
     home_dir = os.path.join(target_dir, 'cargo_home')
 
-    if ENABLE_BUILDING_RS_BINDINGS_FROM_CC:
-        SetUpBuildTools()
-        abseil_install_dir = BuildCppDependencies(out_dir)
+    SetUpBuildTools()
+    abseil_install_dir = BuildCppDependencies(out_dir)
 
     # `GetHostCargoEnv` copies `os.environ`, so call it after `SetUpBuildTools`.
     env = GetHostCargoEnv(cargo_home=home_dir)
-    if ENABLE_BUILDING_RS_BINDINGS_FROM_CC:
-        SetUpCargoEnv(env, abseil_install_dir)
+    SetUpCargoEnv(env, abseil_install_dir)
 
     BuildCrubitBinaries(env, target_dir)
     InstallCrubit(release_dir)
