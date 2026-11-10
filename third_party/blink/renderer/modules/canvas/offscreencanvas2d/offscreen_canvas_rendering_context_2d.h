@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_color_params.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/flush_for_image_listener.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 
