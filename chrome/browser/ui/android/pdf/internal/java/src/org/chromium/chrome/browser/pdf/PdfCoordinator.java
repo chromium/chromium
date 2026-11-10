@@ -8,7 +8,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -16,11 +15,8 @@ import android.database.SQLException;
 import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.os.SystemClock;
-import android.provider.MediaStore.Downloads;
-import android.provider.MediaStore.MediaColumns;
 import android.provider.OpenableColumns;
 import android.system.Os;
 import android.text.format.Formatter;
@@ -57,7 +53,11 @@ import kotlin.coroutines.CoroutineContext;
 import kotlin.coroutines.EmptyCoroutineContext;
 import kotlin.coroutines.intrinsics.IntrinsicsKt;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import org.chromium.base.BundleUtils;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
@@ -91,15 +91,12 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
@@ -2525,7 +2522,7 @@ public class PdfCoordinator
             mDownloadAfterSave = true;
             mChromePdfViewerFragment.applyDraftEdits();
         } else {
-            // Otherwise, export the annotated PDF file directly to the Downloads directory.
+            // Otherwise, download the saved annotated PDF through the download manager.
             downloadAnnotatedPdf();
         }
     }
@@ -2555,70 +2552,52 @@ public class PdfCoordinator
         mNativePageHost.print();
     }
 
+    private static boolean isContentOrFileUri(@Nullable String path) {
+        if (path == null) return false;
+        Uri uri = Uri.parse(path);
+        String scheme = uri.getScheme();
+        return UrlConstants.CONTENT_SCHEME.equals(scheme)
+                || UrlConstants.FILE_SCHEME.equals(scheme);
+    }
+
+    private static boolean isChromeFileProviderUri(@Nullable Uri uri) {
+        if (uri == null || !uri.isHierarchical()) {
+            return false;
+        }
+        if (!UrlConstants.CONTENT_SCHEME.equals(uri.getScheme())) {
+            return false;
+        }
+        Context context = ContextUtils.getApplicationContext();
+        if (context == null) {
+            return false;
+        }
+        String expectedAuthority = context.getPackageName() + ".FileProvider";
+        return expectedAuthority.equals(uri.getAuthority());
+    }
+
+    /**
+     * Downloads the saved (annotated) local PDF through Chrome's download manager so that the
+     * standard download flow (location / duplicate dialogs, download message, Download Home) is
+     * used, exactly like downloading an unmodified PDF.
+     */
     private void downloadAnnotatedPdf() {
-        String sourcePath = mUri != null ? mUri.toString() : mPdfFilePath;
-        if (sourcePath == null || mActivity == null) return;
-        Context context = mActivity.getApplicationContext();
-        String filename = sanitizePdfFileName(mTitle);
-        final String finalFilename = filename;
-        final String finalSourcePath = sourcePath;
-
-        Toast downloadingToast =
-                Toast.makeText(context, R.string.pdf_downloading, Toast.LENGTH_SHORT);
-        downloadingToast.show();
-
-        PostTask.postTask(
-                TaskTraits.USER_BLOCKING_MAY_BLOCK,
-                () -> {
-                    boolean success = false;
-                    try {
-                        ContentValues values = new ContentValues();
-                        values.put(MediaColumns.DISPLAY_NAME, finalFilename);
-                        values.put(MediaColumns.MIME_TYPE, MimeTypeUtils.PDF_MIME_TYPE);
-                        values.put(MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
-                        values.put(MediaColumns.IS_PENDING, 1);
-
-                        ContentResolver resolver = context.getContentResolver();
-                        Uri uri = resolver.insert(Downloads.EXTERNAL_CONTENT_URI, values);
-                        if (uri != null) {
-                            boolean copied = false;
-                            try {
-                                try (InputStream is =
-                                                openInputStreamForPath(context, finalSourcePath);
-                                        OutputStream os = resolver.openOutputStream(uri)) {
-                                    if (is != null && os != null) {
-                                        FileUtils.copyStream(is, os);
-                                        copied = true;
-                                    }
-                                }
-                                if (copied) {
-                                    values.clear();
-                                    values.put(MediaColumns.IS_PENDING, 0);
-                                    resolver.update(uri, values, null, null);
-                                    success = true;
-                                } else {
-                                    resolver.delete(uri, null, null);
-                                }
-                            } catch (Exception e) {
-                                resolver.delete(uri, null, null);
-                                throw e;
-                            }
-                        }
-                    } catch (Exception e) {
-                        Log.e(TAG, "Failed to download PDF", e);
-                    }
-                    if (!success) {
-                        ThreadUtils.postOnUiThread(
-                                () -> {
-                                    downloadingToast.cancel();
-                                    Toast.makeText(
-                                                    context,
-                                                    R.string.pdf_download_failed,
-                                                    Toast.LENGTH_SHORT)
-                                            .show();
-                                });
-                    }
-                });
+        Uri downloadUri = null;
+        if (mUri != null) {
+            // Drop ChromeFileProvider's cache-busting "reload" query: the download loader and the
+            // file name generation must see the bare provider URI, while preserving query
+            // parameters on external content:// URIs.
+            downloadUri =
+                    (isChromeFileProviderUri(mUri) && mUri.getQueryParameter("reload") != null)
+                            ? mUri.buildUpon().clearQuery().build()
+                            : mUri;
+        } else if (mPdfFilePath != null) {
+            downloadUri =
+                    isContentOrFileUri(mPdfFilePath)
+                            ? Uri.parse(mPdfFilePath)
+                            : Uri.fromFile(new File(mPdfFilePath));
+        }
+        if (downloadUri == null) return;
+        mNativePageHost.downloadLocalFile(downloadUri.toString(), sanitizePdfFileName(mTitle));
     }
 
     private static String sanitizePdfFileName(@Nullable String title) {
@@ -2631,27 +2610,6 @@ public class PdfCoordinator
             filename += ".pdf";
         }
         return filename;
-    }
-
-    private static @Nullable InputStream openInputStreamForPath(Context context, String path) {
-        try {
-            Uri uri = Uri.parse(path);
-            if (UrlConstants.CONTENT_SCHEME.equals(uri.getScheme())) {
-                return context.getContentResolver().openInputStream(uri);
-            }
-            String filePath =
-                    UrlConstants.FILE_SCHEME.equals(uri.getScheme()) ? uri.getPath() : path;
-            if (filePath != null) {
-                File file = new File(filePath);
-                if (file.exists()) {
-                    return new FileInputStream(file);
-                }
-            }
-            return context.getContentResolver().openInputStream(uri);
-        } catch (Exception e) {
-            Log.e(TAG, "Failed to open input stream for path: %s", path, e);
-        }
-        return null;
     }
 
     @Override
