@@ -406,7 +406,7 @@ TEST_P(BreakTypeTest, RightSingleQuotationMark) {
     builder.Append(uchar::kRightSingleQuotationMark);
   }
   builder.Append(String(u"あ’一’、’。’，’"));
-  const String text = builder.ToString();
+  const String text = builder.ReleaseString();
 
   auto break_positions = [&](const char* locale, LineBreakStrictness strictness,
                              bool enable_fast_path) {

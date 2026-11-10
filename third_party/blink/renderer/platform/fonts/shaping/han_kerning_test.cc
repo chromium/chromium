@@ -34,9 +34,7 @@ TEST_F(HanKerningTest, MayApply) {
   HanKerning::FontData ja_data(*noto_cjk_data, *ja, true);
 
   for (UChar32 ch = 0; ch < uchar::kMaxCodepoint; ++ch) {
-    StringBuilder builder;
-    builder.Append(ch);
-    String text = builder.ToString();
+    String text = Format("{:c}", ch);
 
     for (wtf_size_t i = 0; i < text.length(); ++i) {
       const HanKerning::CharType type =

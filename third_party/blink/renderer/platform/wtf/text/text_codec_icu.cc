@@ -480,7 +480,7 @@ String TextCodecIcu::Decode(base::span<const uint8_t> data,
   // Chrome's copy of ICU does not have the issue described below.
   return result.ReleaseString();
 #else
-  String result_string = result.ToString();
+  String result_string = result.ReleaseString();
 
   // <http://bugs.webkit.org/show_bug.cgi?id=17014>
   // Simplified Chinese pages use the code A3A0 to mean "full-width space", but

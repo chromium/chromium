@@ -270,7 +270,7 @@ Glyph SimpleFontData::GlyphForMathCharacter(UChar32 codepoint,
       direction == TextDirection::kRtl) {
     StringBuilder builder;
     builder.Append(codepoint);
-    HarfBuzzShaper shaper(builder.ToString());
+    HarfBuzzShaper shaper(builder.ReleaseString());
     HarfBuzzShaper::GlyphDataList glyph_data_list;
     shaper.GetGlyphData(*this, LayoutLocale::GetDefault(),
                         UScriptCode::USCRIPT_MATHEMATICAL_NOTATION,

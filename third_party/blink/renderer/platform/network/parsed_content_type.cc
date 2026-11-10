@@ -100,11 +100,7 @@ ParsedContentType::ParsedContentType(const String& content_type, Mode mode) {
     return;
   }
 
-  StringBuilder builder;
-  builder.Append(type);
-  builder.Append('/');
-  builder.Append(subtype);
-  mime_type_ = builder.ToString();
+  mime_type_ = StrCat({type, "/", subtype});
 
   parameters_ =
       ParsedContentHeaderFieldParameters::Parse(std::move(tokenizer), mode);

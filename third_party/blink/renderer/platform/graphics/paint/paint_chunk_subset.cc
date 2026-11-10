@@ -4,19 +4,15 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk_subset.h"
 
-#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
 std::unique_ptr<JSONArray> PaintChunkSubset::ToJSON() const {
   auto json = std::make_unique<JSONArray>();
   for (auto it = begin(); it != end(); ++it) {
-    StringBuilder sb;
-    sb.Append("index=");
-    sb.AppendNumber(it.IndexInPaintArtifact());
-    sb.Append(" ");
-    sb.Append(it->ToString(GetPaintArtifact()));
-    json->PushString(sb.ToString());
+    json->PushString(Format("index={} {}", it.IndexInPaintArtifact(),
+                            it->ToString(GetPaintArtifact())));
   }
   return json;
 }

@@ -145,8 +145,7 @@ bool Parse(const String& source, TokenHandler& token_handler) {
         }
 
         if (literal_buffer.length()) {
-          token_handler.VisitLiteral(literal_buffer.ToString());
-          literal_buffer.Clear();
+          token_handler.VisitLiteral(literal_buffer.ReleaseString());
         }
 
         field_counter = 1;
@@ -169,8 +168,7 @@ bool Parse(const String& source, TokenHandler& token_handler) {
         }
 
         if (literal_buffer.length()) {
-          token_handler.VisitLiteral(literal_buffer.ToString());
-          literal_buffer.Clear();
+          token_handler.VisitLiteral(literal_buffer.ReleaseString());
         }
 
         field_counter = 1;
@@ -221,13 +219,13 @@ bool Parse(const String& source, TokenHandler& token_handler) {
     case kStateLiteral:
     case kStateInQuoteQuote:
       if (literal_buffer.length())
-        token_handler.VisitLiteral(literal_buffer.ToString());
+        token_handler.VisitLiteral(literal_buffer.ReleaseString());
       return true;
 
     case kStateQuote:
     case kStateInQuote:
       if (literal_buffer.length())
-        token_handler.VisitLiteral(literal_buffer.ToString());
+        token_handler.VisitLiteral(literal_buffer.ReleaseString());
       return false;
 
     case kStateSymbol:

@@ -487,11 +487,7 @@ String LocaleWin::ShortTimeFormat() {
 String LocaleWin::DateTimeFormatWithSeconds() {
   if (!date_time_format_with_seconds_.IsNull())
     return date_time_format_with_seconds_;
-  StringBuilder builder;
-  builder.Append(DateFormat());
-  builder.Append(' ');
-  builder.Append(TimeFormat());
-  date_time_format_with_seconds_ = builder.ToString();
+  date_time_format_with_seconds_ = StrCat({DateFormat(), " ", TimeFormat()});
   return date_time_format_with_seconds_;
 }
 
@@ -499,11 +495,8 @@ String LocaleWin::DateTimeFormatWithSeconds() {
 String LocaleWin::DateTimeFormatWithoutSeconds() {
   if (!date_time_format_without_seconds_.IsNull())
     return date_time_format_without_seconds_;
-  StringBuilder builder;
-  builder.Append(DateFormat());
-  builder.Append(' ');
-  builder.Append(ShortTimeFormat());
-  date_time_format_without_seconds_ = builder.ToString();
+  date_time_format_without_seconds_ =
+      StrCat({DateFormat(), " ", ShortTimeFormat()});
   return date_time_format_without_seconds_;
 }
 

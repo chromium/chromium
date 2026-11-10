@@ -81,7 +81,7 @@ bool HeaderFieldTokenizer::ConsumeQuotedString(String& output) {
 
   while (!IsConsumed()) {
     if (input_[index_] == '"') {
-      output = builder.ToString();
+      output = builder.ReleaseString();
       ++index_;
       SkipOptionalWhitespace();
       return true;

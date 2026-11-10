@@ -165,9 +165,8 @@ static KeyValueMap RetrieveKeyValuePairs(SharedBufferChunkReader* buffer) {
         DVLOG(1) << "Key duplicate found in MIME header. Key is '" << key
                  << "', previous value replaced.";
       }
-      key_value_pairs.insert(key, value.ToString().StripWhiteSpace());
+      key_value_pairs.insert(key, value.ReleaseString().StripWhiteSpace());
       key = String();
-      value.Clear();
     }
     wtf_size_t semi_colon_index = line.find(':');
     if (semi_colon_index == kNotFound) {
@@ -182,7 +181,7 @@ static KeyValueMap RetrieveKeyValuePairs(SharedBufferChunkReader* buffer) {
   }
   // Store the last property if there is one.
   if (!key.empty())
-    key_value_pairs.Set(key, value.ToString().StripWhiteSpace());
+    key_value_pairs.Set(key, value.ReleaseString().StripWhiteSpace());
   return key_value_pairs;
 }
 

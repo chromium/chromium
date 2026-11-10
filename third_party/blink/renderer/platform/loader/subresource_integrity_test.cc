@@ -713,17 +713,16 @@ TEST_P(SubresourceIntegritySignatureTest, ParseMultipleSignatures) {
       attribute.Append(Base64Encode(pair.value));
       attribute.Append(' ');
     }
-    SCOPED_TRACE(attribute.ToString());
+    const String attribute_str = attribute.ReleaseString();
+    SCOPED_TRACE(attribute_str);
     // Only valid items:
-    ValidateMultipleItems(attribute.ToString(), {}, signature_pairs);
+    ValidateMultipleItems(attribute_str, {}, signature_pairs);
 
     // Valid + unknown:
-    ValidateMultipleItems(attribute.ToString() + " unknown-alg", {},
-                          signature_pairs);
+    ValidateMultipleItems(attribute_str + " unknown-alg", {}, signature_pairs);
 
     // Valid + invalid:
-    ValidateMultipleItems(attribute.ToString() + " ed25519-???", {},
-                          signature_pairs);
+    ValidateMultipleItems(attribute_str + " ed25519-???", {}, signature_pairs);
   } while (
       std::next_permutation(signature_pairs.begin(), signature_pairs.end()));
 }
@@ -762,16 +761,17 @@ TEST_P(SubresourceIntegritySignatureTest, ParseBoth) {
       attribute.Append(Base64Encode(pair.value));
       attribute.Append(' ');
     }
-    SCOPED_TRACE(attribute.ToString());
+    const String attribute_str = attribute.ReleaseString();
+    SCOPED_TRACE(attribute_str);
     // Only valid items:
-    ValidateMultipleItems(attribute.ToString(), hash_pairs, signature_pairs);
+    ValidateMultipleItems(attribute_str, hash_pairs, signature_pairs);
 
     // Valid + unknown:
-    ValidateMultipleItems(attribute.ToString() + " unknown-alg", hash_pairs,
+    ValidateMultipleItems(attribute_str + " unknown-alg", hash_pairs,
                           signature_pairs);
 
     // Valid + invalid:
-    ValidateMultipleItems(attribute.ToString() + " ed25519-???", hash_pairs,
+    ValidateMultipleItems(attribute_str + " ed25519-???", hash_pairs,
                           signature_pairs);
   } while (
       std::next_permutation(signature_pairs.begin(), signature_pairs.end()));

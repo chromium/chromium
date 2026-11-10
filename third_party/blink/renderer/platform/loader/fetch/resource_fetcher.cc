@@ -2019,7 +2019,7 @@ void ResourceFetcher::PrintPreloadMismatch(Resource* resource,
   }
   console_logger_->AddConsoleMessage(mojom::ConsoleMessageSource::kOther,
                                      mojom::ConsoleMessageLevel::kWarning,
-                                     builder.ToString());
+                                     builder.ReleaseString());
 
   TRACE_EVENT1("blink,blink.resource", "ResourceFetcher::PrintPreloadMismatch",
                "data",

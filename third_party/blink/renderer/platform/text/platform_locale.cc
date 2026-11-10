@@ -289,7 +289,7 @@ void Locale::SetLocaleData(const Vector<String, kDecimalSymbolsSize>& symbols,
   builder.Append(positive_suffix_);
   builder.Append(negative_prefix_);
   builder.Append(negative_suffix_);
-  acceptable_number_characters_ = builder.ToString();
+  acceptable_number_characters_ = builder.ReleaseString();
 
   // Check if we can use single character filtering. We can if all symbols are
   // 1 character and there's no suffix. Since plus sign is optional, allow

@@ -452,7 +452,7 @@ Error DecodeString(Cursor* cursor,
     }
     buffer.Append(c);
   }
-  *output = buffer.ToString();
+  *output = buffer.ReleaseString();
 
   // Validate constructed UTF-16 string.
   if (output->Utf8(Utf8ConversionMode::kStrict).empty()) {

@@ -2356,7 +2356,7 @@ TEST_F(HarfBuzzShaperTest, OverlyLongGraphemeCluster) {
     builder.Append(uchar::kCombiningAcuteAccent);
   }
   builder.Append('X');
-  String string = builder.ToString();
+  String string = builder.ReleaseString();
 
   HarfBuzzShaper shaper(string);
   const ShapeResult* result = shaper.Shape(font, TextDirection::kLtr);
