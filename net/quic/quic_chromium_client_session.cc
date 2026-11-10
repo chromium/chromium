@@ -1153,7 +1153,6 @@ QuicChromiumClientSession::QuicChromiumClientSession(
       session_creation_initiator_(session_creation_initiator),
       quic_connection_reuse_details_(quic_connection_reuse_details) {
   default_network_ = default_network;
-  auto* socket_raw = socket.get();
   packet_readers_.push_back(std::make_unique<QuicChromiumPacketReader>(
       std::move(socket), clock, this, yield_after_packets, yield_after_duration,
       net_log_));
@@ -1177,9 +1176,7 @@ QuicChromiumClientSession::QuicChromiumClientSession(
   net_log.AddEventReferencingSource(NetLogEventType::QUIC_SESSION_CREATED,
                                     net_log_.source());
 
-  IPEndPoint address;
-  if (socket_raw && socket_raw->GetLocalAddress(&address) == OK &&
-      address.GetFamily() == ADDRESS_FAMILY_IPV6) {
+  if (connection->peer_address().host().IsIPv6()) {
     connection->SetMaxPacketLength(connection->max_packet_length() -
                                    kAdditionalOverheadForIPv6);
   }
