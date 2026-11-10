@@ -2826,7 +2826,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Not displayed"/>
 </enum>
 
-<!-- LINT.ThenChange(//ios/chrome/browser/enterprise/proxy/model/enterprise_proxy_blocking_page.h:SecureGatewayErrorPageEvent) -->
+<!-- LINT.ThenChange(//components/enterprise/net/core/enterprise_proxy_error_data.h:SecureGatewayErrorPageEvent) -->
 
 <!-- LINT.IfChange(EnterpriseSignalsDisclaimerDismissalCause) -->
 

@@ -11,9 +11,6 @@
 
 #import "base/check.h"
 #import "base/memory/ptr_util.h"
-#import "base/metrics/histogram_functions.h"
-#import "base/notreached.h"
-#import "base/strings/strcat.h"
 #import "base/values.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/enterprise/net/core/enterprise_proxy_error_data.h"
@@ -33,41 +30,16 @@
 namespace {
 
 using ErrorCategory = enterprise_net::EnterpriseProxyErrorData::ErrorCategory;
+using enterprise_net::RecordEnterpriseProxyErrorPageEvent;
+using enterprise_net::SecureGatewayErrorPageEvent;
 
 // Prefix of the security interstitial histograms. Required by the metrics
 // helper of the controller client, although the page records its own
 // histograms instead, as it isn't a security interstitial.
 constexpr std::string_view kMetricPrefix = "enterprise_proxy";
 
-// Histogram of the events of the page, recorded both for all the error
-// categories and, with a suffix, for the category of the page.
-constexpr std::string_view kEventHistogram =
-    "Enterprise.SecureGateway.ErrorPage.Event";
-
 // Template parameter of the URL to reload instead of loading from cache.
 constexpr std::string_view kUrlToReloadKey = "url_to_reload";
-
-// Returns the suffix of `kEventHistogram` for the page variation of `category`.
-std::string_view GetEventHistogramSuffix(ErrorCategory category) {
-  switch (category) {
-    case ErrorCategory::kAuthentication:
-      return "Authentication";
-    case ErrorCategory::kAuthorization:
-      return "Authorization";
-    case ErrorCategory::kOther:
-      return "Other";
-  }
-  NOTREACHED();
-}
-
-// Records `event` for the page of an error of `category`, both for all the
-// error categories and for `category`.
-void RecordEvent(ErrorCategory category, SecureGatewayErrorPageEvent event) {
-  base::UmaHistogramEnumeration(kEventHistogram, event);
-  base::UmaHistogramEnumeration(
-      base::StrCat({kEventHistogram, ".", GetEventHistogramSuffix(category)}),
-      event);
-}
 
 // Creates the controller client of the page displayed in `web_state` for
 // `request_url`.
@@ -116,7 +88,8 @@ EnterpriseProxyBlockingPage::EnterpriseProxyBlockingPage(
   // Recorded on creation, right before the page is displayed. In the rare case
   // where the navigation of the page doesn't commit, the page is destroyed
   // without being displayed, which records it as not displayed.
-  RecordEvent(category_, SecureGatewayErrorPageEvent::kShown);
+  RecordEnterpriseProxyErrorPageEvent(category_,
+                                      SecureGatewayErrorPageEvent::kShown);
 }
 
 EnterpriseProxyBlockingPage::~EnterpriseProxyBlockingPage() {
@@ -197,8 +170,8 @@ void EnterpriseProxyBlockingPage::PopulateInterstitialStrings(
 }
 
 void EnterpriseProxyBlockingPage::RecordOutcome(
-    SecureGatewayErrorPageEvent outcome) {
+    enterprise_net::SecureGatewayErrorPageEvent outcome) {
   if (!std::exchange(outcome_recorded_, true)) {
-    RecordEvent(category_, outcome);
+    RecordEnterpriseProxyErrorPageEvent(category_, outcome);
   }
 }

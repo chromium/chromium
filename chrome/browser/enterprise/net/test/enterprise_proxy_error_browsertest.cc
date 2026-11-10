@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -279,6 +281,43 @@ class EnterpriseProxyErrorBrowserTest : public EnterpriseProxyBrowserTestBase {
     EXPECT_EQ(net::NetLogEventPhase::END, pause_entries[1].phase);
   }
 
+  // Verifies `Enterprise.SecureGateway.ErrorPage.Event{Category}` counts: when
+  // `expected_category` is set, expects 1 `kShown` sample on the aggregate and
+  // matching category histograms (and 0 on the other categories); when
+  // `std::nullopt`, expects 0 samples across all four.
+  void VerifyErrorPageShownHistograms(
+      const base::HistogramTester& histogram_tester,
+      std::optional<enterprise_net::EnterpriseProxyErrorData::ErrorCategory>
+          expected_category) {
+    using ErrorCategory =
+        enterprise_net::EnterpriseProxyErrorData::ErrorCategory;
+    if (expected_category.has_value()) {
+      histogram_tester.ExpectUniqueSample(
+          "Enterprise.SecureGateway.ErrorPage.Event",
+          enterprise_net::SecureGatewayErrorPageEvent::kShown, 1);
+    } else {
+      histogram_tester.ExpectTotalCount(
+          "Enterprise.SecureGateway.ErrorPage.Event", 0);
+    }
+
+    constexpr std::pair<ErrorCategory, std::string_view> kCategories[] = {
+        {ErrorCategory::kAuthentication,
+         "Enterprise.SecureGateway.ErrorPage.Event.Authentication"},
+        {ErrorCategory::kAuthorization,
+         "Enterprise.SecureGateway.ErrorPage.Event.Authorization"},
+        {ErrorCategory::kOther,
+         "Enterprise.SecureGateway.ErrorPage.Event.Other"},
+    };
+    for (const auto& [category, histogram] : kCategories) {
+      if (expected_category == category) {
+        histogram_tester.ExpectUniqueSample(
+            histogram, enterprise_net::SecureGatewayErrorPageEvent::kShown, 1);
+      } else {
+        histogram_tester.ExpectTotalCount(histogram, 0);
+      }
+    }
+  }
+
   // Helper to verify that a disguised proxy error challenge aborts auth,
   // records NetLog events, and populates EnterpriseProxyErrorService with the
   // expected category.
@@ -295,10 +334,13 @@ class EnterpriseProxyErrorBrowserTest : public EnterpriseProxyBrowserTestBase {
 
     WaitForDynamicRoutesReady();
 
+    base::HistogramTester histogram_tester;
     GURL destination_url =
         https_server_.GetURL(kDestinationHost, "/simple.html");
     EXPECT_FALSE(chrome_test_utils::NavigateToURL(
         chrome_test_utils::GetActiveWebContents(this), destination_url));
+
+    VerifyErrorPageShownHistograms(histogram_tester, expected_category);
 
     EXPECT_TRUE(was_proxy_accessed());
     EXPECT_FALSE(was_auth_header_received());
@@ -383,10 +425,15 @@ IN_PROC_BROWSER_TEST_F(EnterpriseProxyErrorBrowserTest,
 
   WaitForDynamicRoutesReady();
 
+  base::HistogramTester histogram_tester;
   GURL destination_url = https_server_.GetURL(kDestinationHost, "/simple.html");
   content::WebContents* web_contents =
       chrome_test_utils::GetActiveWebContents(this);
   EXPECT_FALSE(chrome_test_utils::NavigateToURL(web_contents, destination_url));
+
+  VerifyErrorPageShownHistograms(
+      histogram_tester,
+      enterprise_net::EnterpriseProxyErrorData::ErrorCategory::kAuthentication);
 
   // Verify NetLog events:
   auto received_entries = net_log_observer().GetEntriesWithType(
@@ -458,9 +505,11 @@ IN_PROC_BROWSER_TEST_F(EnterpriseProxyErrorBrowserTest,
 
   WaitForDynamicRoutesReady();
 
+  base::HistogramTester histogram_tester;
   GURL destination_url = https_server_.GetURL(kDestinationHost, "/simple.html");
   EXPECT_TRUE(chrome_test_utils::NavigateToURL(
       chrome_test_utils::GetActiveWebContents(this), destination_url));
+  VerifyErrorPageShownHistograms(histogram_tester, std::nullopt);
 
   EXPECT_TRUE(was_proxy_accessed());
   EXPECT_TRUE(was_auth_header_received());

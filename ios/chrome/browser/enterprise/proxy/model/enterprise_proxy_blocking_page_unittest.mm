@@ -37,6 +37,7 @@ namespace {
 
 using ::testing::HasSubstr;
 using ErrorCategory = enterprise_net::EnterpriseProxyErrorData::ErrorCategory;
+using enterprise_net::SecureGatewayErrorPageEvent;
 
 constexpr ErrorCategory kAllCategories[] = {ErrorCategory::kAuthentication,
                                             ErrorCategory::kAuthorization,

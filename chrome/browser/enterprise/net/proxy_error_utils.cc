@@ -43,6 +43,8 @@ GetEnterpriseProxyErrorPageInfo(content::NavigationHandle& navigation_handle,
   if (params.empty()) {
     return nullptr;
   }
+  RecordEnterpriseProxyErrorPageEvent(error_data->error_category(),
+                                      SecureGatewayErrorPageEvent::kShown);
   auto alternative_error_page_override_info =
       content::mojom::AlternativeErrorPageOverrideInfo::New();
   alternative_error_page_override_info->resource_id =

@@ -21,37 +21,15 @@ namespace web {
 class WebState;
 }  // namespace web
 
-// Events of the Secure Gateway error page, recorded in the
-// "Enterprise.SecureGateway.ErrorPage.Event" histograms.
-//
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// LINT.IfChange(SecureGatewayErrorPageEvent)
-enum class SecureGatewayErrorPageEvent {
-  // The page is created for a failed navigation, right before it's displayed.
-  kShown = 0,
-  // The user taps "Go back".
-  kGoBack = 1,
-  // The user taps "Continue" to sign in again, whatever happens next.
-  kContinue = 2,
-  // The user leaves the page without using its button.
-  kDismissed = 3,
-  // The page is destroyed without having been displayed, which only happens
-  // when its navigation doesn't commit.
-  kNotDisplayed = 4,
-  kMaxValue = kNotDisplayed,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:EnterpriseSecureGatewayErrorPageEvent)
-
 // Secure Gateway interstitial displayed for a disguised enterprise proxy error.
 // A single class covers the authentication, authorization and other error
 // pages: the template picks the icon, strings and button from the
 // `error_category` parameter, and only the button action differs.
 //
-// Records `SecureGatewayErrorPageEvent`s, both for all the error categories and
-// for the category of the page: `kShown` when the page is created, then one
-// outcome, going back, continuing, leaving the page without using its button,
-// or being destroyed without having been displayed.
+// Records `enterprise_net::SecureGatewayErrorPageEvent`s, both for all the
+// error categories and for the category of the page: `kShown` when the page is
+// created, then one outcome, going back, continuing, leaving the page without
+// using its button, or being destroyed without having been displayed.
 class EnterpriseProxyBlockingPage
     : public security_interstitials::IOSSecurityInterstitialPage {
  public:
@@ -91,7 +69,7 @@ class EnterpriseProxyBlockingPage
           client);
 
   // Records `outcome`, unless an outcome of the page was already recorded.
-  void RecordOutcome(SecureGatewayErrorPageEvent outcome);
+  void RecordOutcome(enterprise_net::SecureGatewayErrorPageEvent outcome);
 
   // Category of the error, which decides the page variation.
   const enterprise_net::EnterpriseProxyErrorData::ErrorCategory category_;

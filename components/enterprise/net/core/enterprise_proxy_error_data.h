@@ -29,6 +29,7 @@ class EnterpriseProxyErrorData {
     // 502, 503, 504 from proxy) or network errors (OAuth fetch network
     // failure).
     kOther = 2,
+    kMaxValue = kOther,
   };
 
   EnterpriseProxyErrorData();
@@ -58,6 +59,36 @@ class EnterpriseProxyErrorData {
   int error_code_ = 0;
   ErrorCategory error_category_ = ErrorCategory::kOther;
 };
+
+// Events of the Secure Gateway error page, recorded in the
+// "Enterprise.SecureGateway.ErrorPage.Event" histograms.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(SecureGatewayErrorPageEvent)
+enum class SecureGatewayErrorPageEvent {
+  // The page is created for a failed navigation, right before it's displayed.
+  kShown = 0,
+  // The user taps "Go back".
+  kGoBack = 1,
+  // The user taps "Continue" to sign in again, whatever happens next.
+  kContinue = 2,
+  // The user leaves the page without using its button.
+  kDismissed = 3,
+  // The page is destroyed without having been displayed, which only happens
+  // when its navigation doesn't commit.
+  kNotDisplayed = 4,
+  kMaxValue = kNotDisplayed,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:EnterpriseSecureGatewayErrorPageEvent)
+
+// Records `event` for a Secure Gateway error page of `category`, emitting both
+// to the aggregate "Enterprise.SecureGateway.ErrorPage.Event" histogram and to
+// the category-specific ".Authentication", ".Authorization", or ".Other"
+// variant.
+void RecordEnterpriseProxyErrorPageEvent(
+    EnterpriseProxyErrorData::ErrorCategory category,
+    SecureGatewayErrorPageEvent event);
 
 }  // namespace enterprise_net
 
