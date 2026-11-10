@@ -38,7 +38,7 @@ gfx::FontRenderParams FallbackLinuxUi::GetDefaultFontRenderParams() {
 }
 
 ui::SelectFileDialog* FallbackLinuxUi::CreateSelectFileDialog(
-    void* listener,
+    SelectFileDialogListener* listener,
     std::unique_ptr<ui::SelectFilePolicy> policy) const {
   // The toolkit select file dialog is a last choice used only when
   // the freedesktop portal interface isn't available and the desktop

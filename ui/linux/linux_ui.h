@@ -27,8 +27,6 @@
 // be executed behind this interface.
 
 using SkColor = uint32_t;
-// TODO(thomasanderson): Remove Profile forward declaration.
-class Profile;
 
 namespace aura {
 class Window;
@@ -57,6 +55,7 @@ class NativeTheme;
 class NavButtonProvider;
 class PrimaryPastePrefObserver;
 class SelectFileDialog;
+class SelectFileDialogListener;
 class SelectFilePolicy;
 class WindowButtonOrderObserver;
 class WindowFrameProvider;
@@ -174,12 +173,9 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
       printing::PrintingContextLinux* context) = 0;
 #endif
 
-  // Returns a native file selection dialog.  `listener` is of type
-  // SelectFileDialog::Listener.  TODO(thomasanderson): Move
-  // SelectFileDialog::Listener to SelectFileDialogListener so that it can be
-  // forward declared.
+  // Returns a native file selection dialog.
   virtual SelectFileDialog* CreateSelectFileDialog(
-      void* listener,
+      SelectFileDialogListener* listener,
       std::unique_ptr<SelectFilePolicy> policy) const = 0;
 
   // Returns the prefererd theme name for cursor loading.
@@ -303,13 +299,12 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUiTheme {
   LinuxUiTheme& operator=(const LinuxUiTheme&) = delete;
   virtual ~LinuxUiTheme();
 
-  // Returns the LinuxUi instance for the given window, or the default instance
-  // if the window is nullptr.
+  // Returns the LinuxUiTheme instance for the given window, or the default
+  // instance if the window is nullptr.
   static LinuxUiTheme* GetForWindow(aura::Window* window);
 
-  // Returns the LinuxUi instance for the given profile, or the default instance
-  // if the profile is nullptr.
-  static LinuxUiTheme* GetForProfile(Profile* profile);
+  // Returns the default LinuxUiTheme instance.
+  static LinuxUiTheme* GetDefault();
 
   // Returns the native theme for this toolkit.
   virtual ui::NativeTheme* GetNativeTheme() const = 0;

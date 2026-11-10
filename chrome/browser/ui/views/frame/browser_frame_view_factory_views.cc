@@ -17,6 +17,7 @@
 #endif
 
 #if BUILDFLAG(IS_LINUX)
+#include "chrome/browser/themes/theme_service_aura_linux.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_layout_linux.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_layout_linux_native.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_linux.h"
@@ -36,7 +37,8 @@ std::unique_ptr<OpaqueBrowserFrameView> CreateOpaqueBrowserFrameViewLinux(
     BrowserWidget* widget,
     BrowserView* browser_view) {
   auto* profile = browser_view->browser()->GetProfile();
-  auto* linux_ui_theme = ui::LinuxUiTheme::GetForProfile(profile);
+  auto* linux_ui_theme =
+      ThemeServiceAuraLinux::GetLinuxUiThemeForProfile(profile);
   auto* theme_service_factory = ThemeServiceFactory::GetForProfile(profile);
   auto* app_controller =
       web_app::AppBrowserController::From(browser_view->browser());

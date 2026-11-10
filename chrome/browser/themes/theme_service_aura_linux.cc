@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/themes/chrome_linux_ui_getter.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/common/pref_names.h"
@@ -202,4 +203,12 @@ ui::SystemTheme ThemeServiceAuraLinux::GetSystemThemeForProfile(
   }
   return ValidateSystemTheme(static_cast<ui::SystemTheme>(
       profile->GetPrefs()->GetInteger(prefs::kSystemTheme)));
+}
+
+// static
+ui::LinuxUiTheme* ThemeServiceAuraLinux::GetLinuxUiThemeForProfile(
+    const Profile* profile) {
+  return ChromeLinuxUiGetter::instance()
+             ? ChromeLinuxUiGetter::instance()->GetForProfile(profile)
+             : nullptr;
 }

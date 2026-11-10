@@ -535,7 +535,9 @@ void DesktopWindowTreeHostLinux::AddAdditionalInitProperties(
   CHECK(!properties->x11_extension_delegate, base::NotFatalUntil::M163);
   properties->x11_extension_delegate = this;
 
-  properties->prefer_dark_theme = ui::LinuxUiTheme::GetForProfile(nullptr);
+  const auto* linux_ui_theme = ui::LinuxUiTheme::GetDefault();
+  properties->prefer_dark_theme =
+      linux_ui_theme && linux_ui_theme->PreferDarkTheme();
 }
 
 base::flat_map<std::string, std::string>

@@ -9,6 +9,10 @@
 
 class Profile;
 
+namespace ui {
+class LinuxUiTheme;
+}
+
 // A subclass of ThemeService that manages the CustomThemeSupplier which
 // provides the native Linux theme.
 class ThemeServiceAuraLinux : public ThemeService {
@@ -31,6 +35,10 @@ class ThemeServiceAuraLinux : public ThemeService {
   bool BrowserUsesDarkColors() const override;
 
   static ui::SystemTheme GetSystemThemeForProfile(const Profile* profile);
+
+  // Returns the LinuxUiTheme instance for the given profile, or the default
+  // instance if `profile` is nullptr.
+  static ui::LinuxUiTheme* GetLinuxUiThemeForProfile(const Profile* profile);
 };
 
 #endif  // CHROME_BROWSER_THEMES_THEME_SERVICE_AURA_LINUX_H_

@@ -37,6 +37,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "chrome/browser/themes/chrome_linux_ui_getter.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -49,7 +50,7 @@
 #include "ui/linux/nav_button_provider.h"
 #include "ui/views/test/views_test_utils.h"
 
-class FakeLinuxUiGetter : public ui::LinuxUiGetter {
+class FakeLinuxUiGetter : public ChromeLinuxUiGetter {
  public:
   explicit FakeLinuxUiGetter(bool use_system_theme)
       : use_system_theme_(use_system_theme) {}
@@ -58,7 +59,7 @@ class FakeLinuxUiGetter : public ui::LinuxUiGetter {
     return GetForProfile(nullptr);
   }
 
-  ui::LinuxUiTheme* GetForProfile(Profile* profile) override {
+  ui::LinuxUiTheme* GetForProfile(const Profile* profile) override {
     return use_system_theme_ ? ui::GetDefaultLinuxUiTheme() : nullptr;
   }
 
@@ -582,7 +583,7 @@ class TestLinuxUiTheme : public ui::LinuxUiTheme {
   scoped_refptr<base::RefCountedData<TestNavButtonConfig>> config_;
 };
 
-class CustomThemeLinuxUiGetter : public ui::LinuxUiGetter {
+class CustomThemeLinuxUiGetter : public ChromeLinuxUiGetter {
  public:
   explicit CustomThemeLinuxUiGetter(ui::LinuxUiTheme* theme) : theme_(theme) {}
   ~CustomThemeLinuxUiGetter() override = default;
@@ -590,7 +591,9 @@ class CustomThemeLinuxUiGetter : public ui::LinuxUiGetter {
   ui::LinuxUiTheme* GetForWindow(aura::Window* window) override {
     return theme_;
   }
-  ui::LinuxUiTheme* GetForProfile(Profile* profile) override { return theme_; }
+  ui::LinuxUiTheme* GetForProfile(const Profile* profile) override {
+    return theme_;
+  }
 
  private:
   raw_ptr<ui::LinuxUiTheme> theme_;

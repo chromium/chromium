@@ -2648,6 +2648,7 @@ if (is_linux) {
       "//base",
       "//build:buildflag_header_h",
       "//build/config/linux/dbus:buildflags",
+      "//chrome/browser/themes",
       "//chrome/browser/ui:browser_init_state",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/tabs:tab_strip",

@@ -572,11 +572,10 @@ gfx::FontRenderParams GtkUi::GetDefaultFontRenderParams() {
 }
 
 ui::SelectFileDialog* GtkUi::CreateSelectFileDialog(
-    void* listener,
+    ui::SelectFileDialogListener* listener,
     std::unique_ptr<ui::SelectFilePolicy> policy) const {
-  return new SelectFileDialogLinuxGtk(
-      static_cast<ui::SelectFileDialog::Listener*>(listener), std::move(policy),
-      platform_.get());
+  return new SelectFileDialogLinuxGtk(listener, std::move(policy),
+                                      platform_.get());
 }
 
 ui::LinuxUi::WindowFrameAction GtkUi::GetWindowFrameAction(

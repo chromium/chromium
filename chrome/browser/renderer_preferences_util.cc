@@ -43,6 +43,7 @@
 
 #if defined(USE_AURA) && BUILDFLAG(IS_LINUX)
 #include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_aura_linux.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #endif
 
@@ -130,7 +131,8 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
 #endif
 
 #if BUILDFLAG(IS_LINUX)
-  if (auto* linux_ui_theme = ui::LinuxUiTheme::GetForProfile(profile)) {
+  if (auto* linux_ui_theme =
+          ThemeServiceAuraLinux::GetLinuxUiThemeForProfile(profile)) {
     if (ThemeServiceFactory::GetForProfile(profile)->UsingSystemTheme()) {
       linux_ui_theme->GetFocusRingColor(&prefs->focus_ring_color);
       linux_ui_theme->GetActiveSelectionBgColor(

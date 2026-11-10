@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view_linux.h"
 
 #include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_aura_linux.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -37,7 +38,8 @@ PictureInPictureBrowserFrameViewLinux::PictureInPictureBrowserFrameViewLinux(
     BrowserView* browser_view)
     : PictureInPictureBrowserFrameView(widget, browser_view) {
   auto* profile = browser_view->browser()->GetProfile();
-  auto* linux_ui_theme = ui::LinuxUiTheme::GetForProfile(profile);
+  auto* linux_ui_theme =
+      ThemeServiceAuraLinux::GetLinuxUiThemeForProfile(profile);
   auto* theme_service_factory = ThemeServiceFactory::GetForProfile(profile);
   if (linux_ui_theme && theme_service_factory->UsingSystemTheme()) {
     bool solid_frame = !static_cast<BrowserNativeWidgetAuraLinux*>(

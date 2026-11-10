@@ -66,10 +66,10 @@
 #include "ui/views/window/non_client_view.h"
 
 #if BUILDFLAG(IS_LINUX)
+#include "chrome/browser/themes/chrome_linux_ui_getter.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "ui/linux/fake_linux_ui.h"
-#include "ui/linux/linux_ui_getter.h"
 #endif
 
 #if BUILDFLAG(IS_OZONE)
@@ -1496,7 +1496,7 @@ IN_PROC_BROWSER_TEST_P(PictureInPictureNativeWindowTest,
 
 #if BUILDFLAG(IS_LINUX)
 
-class FakeLinuxUiGetter : public ui::LinuxUiGetter {
+class FakeLinuxUiGetter : public ChromeLinuxUiGetter {
  public:
   FakeLinuxUiGetter() = default;
 
@@ -1504,7 +1504,7 @@ class FakeLinuxUiGetter : public ui::LinuxUiGetter {
     return &fake_linux_ui_;
   }
 
-  ui::LinuxUiTheme* GetForProfile(Profile* profile) override {
+  ui::LinuxUiTheme* GetForProfile(const Profile* profile) override {
     return &fake_linux_ui_;
   }
 

@@ -15,7 +15,9 @@ LinuxUiGetter::LinuxUiGetter() {
 }
 
 LinuxUiGetter::~LinuxUiGetter() {
-  instance_ = nullptr;
+  if (instance_ == this) {
+    instance_ = nullptr;
+  }
 }
 
 }  // namespace ui

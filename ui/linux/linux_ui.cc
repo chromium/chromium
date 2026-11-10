@@ -145,11 +145,8 @@ LinuxUiTheme* LinuxUiTheme::GetForWindow(aura::Window* window) {
 }
 
 // static
-LinuxUiTheme* LinuxUiTheme::GetForProfile(Profile* profile) {
-  if (auto* getter = LinuxUiGetter::instance()) {
-    return getter->GetForProfile(profile);
-  }
-  return nullptr;
+LinuxUiTheme* LinuxUiTheme::GetDefault() {
+  return GetForWindow(nullptr);
 }
 
 }  // namespace ui

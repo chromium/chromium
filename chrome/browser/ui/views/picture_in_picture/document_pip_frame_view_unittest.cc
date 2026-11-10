@@ -73,6 +73,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/themes/chrome_linux_ui_getter.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_helper.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -1348,12 +1349,12 @@ class TestWindowFrameProvider : public ui::WindowFrameProvider {
   const int top_corner_radius_;
 };
 
-class TestLinuxUiGetter : public ui::LinuxUiGetter {
+class TestLinuxUiGetter : public ChromeLinuxUiGetter {
  public:
   ui::LinuxUiTheme* GetForWindow(aura::Window* window) override {
     return &linux_ui_;
   }
-  ui::LinuxUiTheme* GetForProfile(Profile* profile) override {
+  ui::LinuxUiTheme* GetForProfile(const Profile* profile) override {
     return &linux_ui_;
   }
 
@@ -1450,7 +1451,8 @@ TEST_F(DocumentPipFrameViewTest, LinuxWidgetUsesProfileTheme) {
             widget->GetThemeProvider());
   EXPECT_EQ(profile_.GetOriginalProfile(),
             GetThemeProfileForWindow(widget->GetNativeWindow()));
-  auto* linux_ui_theme = ui::LinuxUiTheme::GetForProfile(&profile_);
+  auto* linux_ui_theme =
+      ThemeServiceAuraLinux::GetLinuxUiThemeForProfile(&profile_);
   EXPECT_EQ(linux_ui_theme ? linux_ui_theme->GetNativeTheme()
                            : ui::NativeTheme::GetInstanceForNativeUi(),
             widget->GetNativeTheme());

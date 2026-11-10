@@ -49,7 +49,7 @@ class QtUi : public ui::LinuxUiAndTheme, QtInterface::Delegate {
   gfx::Size GetPdfPaperSize(printing::PrintingContextLinux* context) override;
 #endif
   ui::SelectFileDialog* CreateSelectFileDialog(
-      void* listener,
+      ui::SelectFileDialogListener* listener,
       std::unique_ptr<ui::SelectFilePolicy> policy) const override;
   std::string GetCursorThemeName() override;
   int GetCursorThemeSize() override;

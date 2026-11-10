@@ -8,14 +8,18 @@
 
 #include <array>
 #include <memory>
+#include <type_traits>
 #include <utility>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
+#include "ui/shell_dialogs/select_file_dialog_listener.h"
 #include "ui/shell_dialogs/select_file_policy.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 TEST(ShellDialogs, ShortenFileNameIfNeeded) {
   struct ShortenFileNameTestCase {
@@ -182,6 +186,48 @@ TEST(ShellDialogs, ScopedSetSelectFileDialogFactory) {
 
   // Clean up.
   ui::SelectFileDialog::SetFactory(nullptr);
+}
+
+namespace {
+
+class RecordingSelectFileDialogListener : public ui::SelectFileDialogListener {
+ public:
+  void FileSelected(const ui::SelectedFileInfo& file, int index) override {
+    selected_files_.push_back(file);
+  }
+  void MultiFilesSelected(
+      const std::vector<ui::SelectedFileInfo>& files) override {
+    selected_files_ = files;
+  }
+
+  const std::vector<ui::SelectedFileInfo>& selected_files() const {
+    return selected_files_;
+  }
+
+ private:
+  std::vector<ui::SelectedFileInfo> selected_files_;
+};
+
+}  // namespace
+
+TEST(ShellDialogs, SelectFileDialogListenerAliasAndCreate) {
+  static_assert(std::is_same_v<ui::SelectFileDialog::Listener,
+                               ui::SelectFileDialogListener>);
+
+  int last_called_id = 0;
+  ui::ScopedSetSelectFileDialogFactory scoped_factory(
+      std::make_unique<TrackingSelectFileDialogFactory>(42, &last_called_id));
+
+  RecordingSelectFileDialogListener listener;
+  ui::SelectFileDialogListener* base_listener = &listener;
+  ui::SelectFileDialog::Create(base_listener, nullptr);
+  EXPECT_EQ(last_called_id, 42);
+
+  base_listener->FileSelected(
+      ui::SelectedFileInfo(base::FilePath(FILE_PATH_LITERAL("a.txt"))), 0);
+  ASSERT_EQ(listener.selected_files().size(), 1u);
+  EXPECT_EQ(listener.selected_files()[0].file_path,
+            base::FilePath(FILE_PATH_LITERAL("a.txt")));
 }
 
 #if BUILDFLAG(IS_ANDROID)

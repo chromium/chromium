@@ -53,6 +53,7 @@
 #endif
 
 #if BUILDFLAG(IS_LINUX)
+#include "chrome/browser/themes/theme_service_aura_linux.h"
 #include "ui/linux/linux_ui.h"
 #include "ui/views/views_features.h"
 #endif
@@ -564,8 +565,8 @@ void BrowserWidget::SelectNativeTheme() {
   // display_override so the web contents can blend with the overlay by using
   // the developer-provided theme color for a better experience. Context:
   // https://crbug.com/40771982.
-  const auto* linux_ui_theme =
-      ui::LinuxUiTheme::GetForProfile(browser_view_->GetProfile());
+  const auto* linux_ui_theme = ThemeServiceAuraLinux::GetLinuxUiThemeForProfile(
+      browser_view_->GetProfile());
   SetNativeTheme(linux_ui_theme &&
                          !browser_view_->AppUsesWindowControlsOverlay()
                      ? linux_ui_theme->GetNativeTheme()

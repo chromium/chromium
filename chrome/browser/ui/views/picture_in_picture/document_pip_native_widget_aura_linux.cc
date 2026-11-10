@@ -15,6 +15,7 @@
 #include "chrome/browser/shell_integration_linux.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_aura_linux.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_frame_view_linux.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_host.h"
@@ -46,7 +47,8 @@ class DocumentPipWidgetLinux : public views::Widget {
 
   const ui::NativeTheme* GetNativeTheme() const override {
     // Let Widget::Init() establish the native-theme observation.
-    auto* linux_ui_theme = ui::LinuxUiTheme::GetForProfile(&profile_.get());
+    auto* linux_ui_theme =
+        ThemeServiceAuraLinux::GetLinuxUiThemeForProfile(&profile_.get());
     return linux_ui_theme && !profile_->IsIncognitoProfile() &&
                    !profile_->IsEnterpriseIsolatedModeProfile()
                ? linux_ui_theme->GetNativeTheme()

@@ -9,6 +9,7 @@
 
 #include "base/no_destructor.h"
 #include "build/build_config.h"
+#include "chrome/browser/themes/theme_service_aura_linux.h"
 #include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
@@ -103,7 +104,8 @@ void BrowserDesktopWindowTreeHostLinux::AddAdditionalInitProperties(
   views::DesktopWindowTreeHostLinux::AddAdditionalInitProperties(params,
                                                                  properties);
   auto* profile = browser_view_->browser()->GetProfile();
-  const auto* linux_ui_theme = ui::LinuxUiTheme::GetForProfile(profile);
+  const auto* linux_ui_theme =
+      ThemeServiceAuraLinux::GetLinuxUiThemeForProfile(profile);
   properties->prefer_dark_theme =
       linux_ui_theme && linux_ui_theme->PreferDarkTheme();
 }

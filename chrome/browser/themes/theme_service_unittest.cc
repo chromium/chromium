@@ -65,9 +65,11 @@
 #include "ui/native_theme/native_theme_observer.h"
 
 #if BUILDFLAG(IS_LINUX)
+#include "chrome/browser/themes/chrome_linux_ui_getter.h"
+#include "chrome/browser/themes/theme_service_aura_linux.h"
+#include "ui/linux/fake_linux_ui.h"
 #include "ui/linux/linux_ui.h"
 #include "ui/linux/linux_ui_factory.h"
-#include "ui/linux/linux_ui_getter.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
@@ -113,7 +115,7 @@ class ThemeScoper {
 };
 
 #if BUILDFLAG(IS_LINUX)
-class LinuxUiGetterImpl : public ui::LinuxUiGetter {
+class LinuxUiGetterImpl : public ChromeLinuxUiGetter {
  public:
   explicit LinuxUiGetterImpl(bool use_system_theme)
       : linux_ui_theme_(use_system_theme ? ui::GetDefaultLinuxUiTheme()
@@ -123,7 +125,7 @@ class LinuxUiGetterImpl : public ui::LinuxUiGetter {
   ui::LinuxUiTheme* GetForWindow(aura::Window* window) override {
     return linux_ui_theme_;
   }
-  ui::LinuxUiTheme* GetForProfile(Profile* profile) override {
+  ui::LinuxUiTheme* GetForProfile(const Profile* profile) override {
     return linux_ui_theme_;
   }
 
@@ -1338,6 +1340,83 @@ TEST(LinuxUiFactoryTest, GetDefaultLinuxUiWithoutTaskRunner) {
   (void)ui::GetDefaultLinuxUi();
   // The return value may be null or non-null depending on environment, but must
   // not crash.
+}
+
+TEST(LinuxUiFactoryTest, GetDefaultAndForProfile) {
+  class TestChromeLinuxUiGetter : public ChromeLinuxUiGetter {
+   public:
+    TestChromeLinuxUiGetter(ui::LinuxUiTheme* default_theme,
+                            ui::LinuxUiTheme* profile_theme)
+        : default_theme_(default_theme), profile_theme_(profile_theme) {}
+    ~TestChromeLinuxUiGetter() override = default;
+
+    ui::LinuxUiTheme* GetForWindow(aura::Window* window) override {
+      return default_theme_;
+    }
+    ui::LinuxUiTheme* GetForProfile(const Profile* profile) override {
+      return profile ? profile_theme_.get() : default_theme_.get();
+    }
+
+   private:
+    raw_ptr<ui::LinuxUiTheme> default_theme_;
+    raw_ptr<ui::LinuxUiTheme> profile_theme_;
+  };
+
+  class TestPlainLinuxUiGetter : public ui::LinuxUiGetter {
+   public:
+    explicit TestPlainLinuxUiGetter(ui::LinuxUiTheme* theme) : theme_(theme) {}
+    ~TestPlainLinuxUiGetter() override = default;
+
+    ui::LinuxUiTheme* GetForWindow(aura::Window* window) override {
+      return theme_;
+    }
+
+   private:
+    raw_ptr<ui::LinuxUiTheme> theme_;
+  };
+
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  ui::FakeLinuxUi default_linux_ui;
+  ui::FakeLinuxUi profile_linux_ui;
+
+  EXPECT_EQ(ui::LinuxUiTheme::GetDefault(), nullptr);
+  EXPECT_EQ(ThemeServiceAuraLinux::GetLinuxUiThemeForProfile(&profile),
+            nullptr);
+
+  {
+    TestChromeLinuxUiGetter getter(&default_linux_ui, &profile_linux_ui);
+    EXPECT_EQ(ui::LinuxUiTheme::GetDefault(), &default_linux_ui);
+    EXPECT_EQ(ThemeServiceAuraLinux::GetLinuxUiThemeForProfile(&profile),
+              &profile_linux_ui);
+    EXPECT_EQ(ThemeServiceAuraLinux::GetLinuxUiThemeForProfile(nullptr),
+              &default_linux_ui);
+
+    // Overriding with a plain ui::LinuxUiGetter disables profile lookups.
+    {
+      TestPlainLinuxUiGetter plain_getter(&default_linux_ui);
+      EXPECT_EQ(ChromeLinuxUiGetter::instance(), nullptr);
+      EXPECT_EQ(ui::LinuxUiTheme::GetDefault(), &default_linux_ui);
+      EXPECT_EQ(ThemeServiceAuraLinux::GetLinuxUiThemeForProfile(&profile),
+                nullptr);
+    }
+
+    // Restoring `getter` re-enables profile lookups, and clearing the base
+    // LinuxUiGetter instance disables them again.
+    ui::LinuxUiGetter::set_instance(&getter);
+    EXPECT_EQ(ChromeLinuxUiGetter::instance(), &getter);
+    EXPECT_EQ(ThemeServiceAuraLinux::GetLinuxUiThemeForProfile(&profile),
+              &profile_linux_ui);
+
+    ui::LinuxUiGetter::set_instance(nullptr);
+    EXPECT_EQ(ChromeLinuxUiGetter::instance(), nullptr);
+    EXPECT_EQ(ui::LinuxUiTheme::GetDefault(), nullptr);
+    EXPECT_EQ(ThemeServiceAuraLinux::GetLinuxUiThemeForProfile(&profile),
+              nullptr);
+  }
+
+  EXPECT_EQ(ChromeLinuxUiGetter::instance(), nullptr);
+  EXPECT_EQ(ui::LinuxUiGetter::instance(), nullptr);
 }
 #endif
 

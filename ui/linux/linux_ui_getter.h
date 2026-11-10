@@ -7,8 +7,6 @@
 
 #include "base/component_export.h"
 
-class Profile;
-
 namespace aura {
 class Window;
 }
@@ -27,7 +25,6 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUiGetter {
   virtual ~LinuxUiGetter();
 
   virtual LinuxUiTheme* GetForWindow(aura::Window* window) = 0;
-  virtual LinuxUiTheme* GetForProfile(Profile* profile) = 0;
 
   static LinuxUiGetter* instance() { return instance_; }
   static void set_instance(LinuxUiGetter* instance) { instance_ = instance; }

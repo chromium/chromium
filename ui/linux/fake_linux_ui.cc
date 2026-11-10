@@ -30,7 +30,7 @@ gfx::FontRenderParams FakeLinuxUi::GetDefaultFontRenderParams() {
 }
 
 ui::SelectFileDialog* FakeLinuxUi::CreateSelectFileDialog(
-    void* listener,
+    SelectFileDialogListener* listener,
     std::unique_ptr<ui::SelectFilePolicy> policy) const {
   return nullptr;
 }

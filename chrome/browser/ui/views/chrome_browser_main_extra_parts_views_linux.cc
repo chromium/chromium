@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
+#include "chrome/browser/themes/chrome_linux_ui_getter.h"
 #include "chrome/browser/themes/theme_service_aura_linux.h"
 #include "chrome/browser/ui/views/theme_profile_key.h"
 #include "ui/base/buildflags.h"
@@ -15,7 +16,6 @@
 #include "ui/linux/linux_ui.h"
 #include "ui/linux/linux_ui_delegate.h"
 #include "ui/linux/linux_ui_factory.h"
-#include "ui/linux/linux_ui_getter.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/ozone/public/ozone_platform.h"
 
@@ -29,14 +29,14 @@
 
 namespace {
 
-class LinuxUiGetterImpl : public ui::LinuxUiGetter {
+class LinuxUiGetterImpl : public ChromeLinuxUiGetter {
  public:
   LinuxUiGetterImpl() = default;
   ~LinuxUiGetterImpl() override = default;
   ui::LinuxUiTheme* GetForWindow(aura::Window* window) override {
     return GetForProfile(GetThemeProfileForWindow(window));
   }
-  ui::LinuxUiTheme* GetForProfile(Profile* profile) override {
+  ui::LinuxUiTheme* GetForProfile(const Profile* profile) override {
     return profile
                ? ui::GetLinuxUiTheme(
                      ThemeServiceAuraLinux::GetSystemThemeForProfile(profile))

@@ -24,6 +24,8 @@ component("shell_dialogs") {
     "select_file_dialog.h",
     "select_file_dialog_factory.cc",
     "select_file_dialog_factory.h",
+    "select_file_dialog_listener.cc",
+    "select_file_dialog_listener.h",
     "select_file_policy.cc",
     "select_file_policy.h",
     "selected_file_info.cc",

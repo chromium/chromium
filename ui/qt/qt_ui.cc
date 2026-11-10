@@ -297,7 +297,7 @@ gfx::FontRenderParams QtUi::GetDefaultFontRenderParams() {
 }
 
 ui::SelectFileDialog* QtUi::CreateSelectFileDialog(
-    void* listener,
+    ui::SelectFileDialogListener* listener,
     std::unique_ptr<ui::SelectFilePolicy> policy) const {
   return fallback_linux_ui_ ? fallback_linux_ui_->CreateSelectFileDialog(
                                   listener, std::move(policy))

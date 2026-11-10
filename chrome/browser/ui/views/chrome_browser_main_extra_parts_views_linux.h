@@ -18,8 +18,9 @@
 #include "printing/printing_context_linux.h"
 #endif
 
+class ChromeLinuxUiGetter;
+
 namespace ui {
-class LinuxUiGetter;
 #if BUILDFLAG(USE_DBUS)
 class PortalSettingsLinux;
 #endif
@@ -51,7 +52,7 @@ class ChromeBrowserMainExtraPartsViewsLinux
 
   std::optional<display::ScopedDisplayObserver> display_observer_;
 
-  std::unique_ptr<ui::LinuxUiGetter> linux_ui_getter_;
+  std::unique_ptr<ChromeLinuxUiGetter> linux_ui_getter_;
 #if BUILDFLAG(USE_DBUS)
   std::unique_ptr<ui::PortalSettingsLinux> portal_settings_;
 #endif

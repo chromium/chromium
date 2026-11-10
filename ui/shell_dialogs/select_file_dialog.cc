@@ -52,11 +52,6 @@ void TruncateStringToSize(base::FilePath::StringType* string, size_t size) {
 
 namespace ui {
 
-void SelectFileDialog::Listener::MultiFilesSelected(
-    const std::vector<SelectedFileInfo>& files) {
-  NOTREACHED();
-}
-
 SelectFileDialog::FileTypeInfo::FileTypeInfo() = default;
 
 SelectFileDialog::FileTypeInfo::FileTypeInfo(const FileTypeInfo& other) =
