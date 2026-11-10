@@ -124,8 +124,7 @@ bool OtpSuggestionDropdownDispatcher::IsSuppressedByDeduplication(
     const FieldRecord& record,
     const OtpTokenIdentity& identity) const {
   return record.last_offered_identity.has_value() &&
-         (record.last_offered_identity->value == identity.value ||
-          !identity.IsStrictlyNewerThan(*record.last_offered_identity));
+         !identity.IsStrictlyNewerThan(*record.last_offered_identity);
 }
 
 }  // namespace autofill

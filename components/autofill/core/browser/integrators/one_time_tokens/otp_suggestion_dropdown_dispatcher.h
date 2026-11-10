@@ -43,8 +43,7 @@ class OtpSuggestionDropdownDispatcher {
   ~OtpSuggestionDropdownDispatcher();
 
   // Triggers a proactive suggestion for `target` with `candidate` if a
-  // strictly newer OTP (with a different value or never offered yet) has
-  // arrived.
+  // strictly newer OTP has arrived.
   // If `can_show_on_screen_now` is false (e.g. tab hidden or window
   // unfocused), records `target` as pending to be retried when the tab becomes
   // active.
