@@ -1376,11 +1376,6 @@ public final class ProductionSupportedFlagList {
                 "IndexedDBConnectionDeduplication",
                 "Enables connection deduplication for IndexedDB."),
         Flag.baseFeature(
-                CcFeatures.SCROLL_JANK_V4_METRIC_FAST_SCROLL_CONTINUITY_REQUIRES_SAME_DIRECTION,
-                "When enabled, the fast scroll continuity rule of the V4 scroll jank metric only"
-                    + " applies if the previous and current frames' total raw scroll deltas have"
-                    + " the same sign."),
-        Flag.baseFeature(
                 AwFeatures.WEBVIEW_AW_CLASS_PRELOADER,
                 "When enabled, WebView will preload a certain list of classes for performance."),
         Flag.baseFeature(

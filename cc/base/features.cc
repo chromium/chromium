@@ -299,9 +299,6 @@ BASE_FEATURE_PARAM(double,
                    "fling_continuity_threshold_pixels",
                    0.2);
 
-BASE_FEATURE(kScrollJankV4MetricFastScrollContinuityRequiresSameDirection,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kScrollJankV4MetricReportAndroidAppJankStats,
              base::FEATURE_DISABLED_BY_DEFAULT);

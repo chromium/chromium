@@ -69,11 +69,9 @@ ScrollJankV4Decider::DecideJankForFrameWithSyntheticScrollUpdatesOnly(
     }
 
     // Prefer `future_velocity` over
-    // `prev_frame_data_->most_recent_real_frame_velocity`, so that if
-    // `features::kScrollJankV4MetricFastScrollContinuityRequiresSameDirection`
-    // is enabled and the future real frame has a different scroll direction
-    // than the most recent real frame, the fast scroll continuity rule doesn't
-    // apply.
+    // `prev_frame_data_->most_recent_real_frame_velocity`, so that if the
+    // future real frame has a different scroll direction than the most recent
+    // real frame, the fast scroll continuity rule doesn't apply.
     if (future_velocity != RealScrollVelocityType::kSlow) {
       return {future_velocity, false};
     }
@@ -345,16 +343,7 @@ bool ScrollJankV4Decider::IsInFastScroll(
   // Given that there's typically a gap between the last positive and first
   // negative scroll update (or vice versa), the metric will most likely mark F2
   // as janky due to the "running consistency" rule anyway.
-  if (velocity1 == RealScrollVelocityType::kSlow ||
-      velocity2 == RealScrollVelocityType::kSlow) {
-    return false;
-  }
-  if (base::FeatureList::IsEnabled(
-          features::
-              kScrollJankV4MetricFastScrollContinuityRequiresSameDirection)) {
-    return velocity1 == velocity2;
-  }
-  return true;
+  return velocity1 != RealScrollVelocityType::kSlow && velocity1 == velocity2;
 }
 
 JankReasonArray<int> ScrollJankV4Decider::CalculateMissedVsyncsPerReason(

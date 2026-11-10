@@ -10,9 +10,7 @@
 #include <vector>
 
 #include "base/strings/strcat.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "cc/base/features.h"
 #include "cc/metrics/scroll_jank_v4_frame.h"
 #include "cc/metrics/scroll_jank_v4_result.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1165,131 +1163,7 @@ respectively. For (B), F4 and F5 have negative and positive total scroll deltas
 respectively.
 */
 TEST_P(DoublyParameterizedScrollJankV4DeciderTest,
-       MissedVsyncDuringFastScrollAlternatingDirectionFeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kScrollJankV4MetricFastScrollContinuityRequiresSameDirection);
-
-  ScrollJankV4Result result1 = DecideJankForParameterizedFrame(
-      frame_type_a_,
-      {
-          .if_real = Real{.first_input_generation_ts = MillisSinceEpoch(100),
-                          .last_input_generation_ts = MillisSinceEpoch(100),
-                          .has_inertial_input = false,
-                          .total_raw_delta_pixels = 2.0f,
-                          .max_abs_inertial_raw_delta_pixels = 0.0f},
-          .if_synthetic =
-              Synthetic{.first_input_begin_frame_ts = MillisSinceEpoch(324),
-                        .has_inertial_input = false},
-          .if_synthetic_only = {.future_real_updates =
-                                    &FutureRealUpdates::kFastPositive},
-          .if_damaging =
-              DamagingFrame{.presentation_ts = MillisSinceEpoch(340)},
-          .args = CreateBeginFrameArgs(MillisSinceEpoch(324)),
-      });
-  EXPECT_THAT(result1, kHasNoMissedVsyncs);
-
-  ScrollJankV4Result result2 = DecideJankForParameterizedFrame(
-      frame_type_a_,
-      {
-          .if_real = Real{.first_input_generation_ts = MillisSinceEpoch(116),
-                          .last_input_generation_ts = MillisSinceEpoch(116),
-                          .has_inertial_input = false,
-                          .total_raw_delta_pixels = 4.0f,
-                          .max_abs_inertial_raw_delta_pixels = 0.0f},
-          .if_synthetic =
-              Synthetic{.first_input_begin_frame_ts = MillisSinceEpoch(340),
-                        .has_inertial_input = false},
-          .if_synthetic_only = {.future_real_updates =
-                                    &FutureRealUpdates::kFastNegative},
-          .if_damaging =
-              DamagingFrame{.presentation_ts = MillisSinceEpoch(356)},
-          .args = CreateBeginFrameArgs(MillisSinceEpoch(340)),
-      });
-  EXPECT_THAT(result2, kHasNoMissedVsyncs);
-
-  // 1 VSync missed between F2 and F3, so F3 should be marked as JANKY UNLESS F1
-  // and F2 were both synthetic.
-  ScrollJankV4Result result3 = DecideJankForParameterizedFrame(
-      frame_type_b_,
-      {
-          .if_real = Real{.first_input_generation_ts = MillisSinceEpoch(148),
-                          .last_input_generation_ts = MillisSinceEpoch(148),
-                          .has_inertial_input = false,
-                          .total_raw_delta_pixels = -4.0f,
-                          .max_abs_inertial_raw_delta_pixels = 0.0f},
-          .if_synthetic =
-              Synthetic{.first_input_begin_frame_ts = MillisSinceEpoch(372),
-                        .has_inertial_input = false},
-          .if_synthetic_only = {.future_real_updates =
-                                    &FutureRealUpdates::kFastNegative},
-          .if_damaging =
-              DamagingFrame{.presentation_ts = MillisSinceEpoch(388)},
-          .args = CreateBeginFrameArgs(MillisSinceEpoch(372)),
-      });
-  if (frame_type_a_.has_real_inputs) {
-    EXPECT_THAT(result3,
-                HasMissedVsyncs(JankReason::kMissedVsyncDuringFastScroll, 1));
-  } else {
-    // If there were no real inputs before F3, then the metric won't consider
-    // the scroll to be fast.
-    EXPECT_THAT(result3, kHasNoMissedVsyncs);
-  }
-
-  ScrollJankV4Result result4 = DecideJankForParameterizedFrame(
-      frame_type_b_,
-      {
-          .if_real = Real{.first_input_generation_ts = MillisSinceEpoch(164),
-                          .last_input_generation_ts = MillisSinceEpoch(164),
-                          .has_inertial_input = false,
-                          .total_raw_delta_pixels = -4.0f,
-                          .max_abs_inertial_raw_delta_pixels = 0.0f},
-          .if_synthetic =
-              Synthetic{.first_input_begin_frame_ts = MillisSinceEpoch(388),
-                        .has_inertial_input = false},
-          .if_synthetic_only = {.future_real_updates =
-                                    &FutureRealUpdates::kFastPositive},
-          .if_damaging =
-              DamagingFrame{.presentation_ts = MillisSinceEpoch(404)},
-          .args = CreateBeginFrameArgs(MillisSinceEpoch(388)),
-      });
-  EXPECT_THAT(result4, kHasNoMissedVsyncs);
-
-  // 5 VSyncs missed between F4 and F5, so F5 should be marked as JANKY UNLESS
-  // F1-F4 were all synthetic.
-  ScrollJankV4Result result5 = DecideJankForParameterizedFrame(
-      frame_type_a_,
-      {
-          .if_real = Real{.first_input_generation_ts = MillisSinceEpoch(260),
-                          .last_input_generation_ts = MillisSinceEpoch(260),
-                          .has_inertial_input = false,
-                          .total_raw_delta_pixels = 4.0f,
-                          .max_abs_inertial_raw_delta_pixels = 0.0f},
-          .if_synthetic =
-              Synthetic{.first_input_begin_frame_ts = MillisSinceEpoch(484),
-                        .has_inertial_input = false},
-          .if_synthetic_only = {.future_real_updates =
-                                    &FutureRealUpdates::kFastPositive},
-          .if_damaging =
-              DamagingFrame{.presentation_ts = MillisSinceEpoch(500)},
-          .args = CreateBeginFrameArgs(MillisSinceEpoch(484)),
-      });
-  if (frame_type_a_.has_real_inputs || frame_type_b_.has_real_inputs) {
-    EXPECT_THAT(result5,
-                HasMissedVsyncs(JankReason::kMissedVsyncDuringFastScroll, 5));
-  } else {
-    // If there were no real inputs before F5, then the metric won't consider
-    // the scroll to be fast.
-    EXPECT_THAT(result5, kHasNoMissedVsyncs);
-  }
-}
-
-TEST_P(DoublyParameterizedScrollJankV4DeciderTest,
-       MissedVsyncDuringFastScrollAlternatingDirectionFeatureEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kScrollJankV4MetricFastScrollContinuityRequiresSameDirection);
-
+       MissedVsyncDuringFastScrollAlternatingDirection) {
   ScrollJankV4Result result1 = DecideJankForParameterizedFrame(
       frame_type_a_,
       {
