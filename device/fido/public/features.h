@@ -80,6 +80,13 @@ BASE_DECLARE_FEATURE(kWebAuthnEnclaveAuthenticatorDelay);
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnAmbientSignin);
 
+// Enables a magic timeout value (31415 ms) for Ambient sign-in requests that
+// launches the UI in chip-only mode for experimentation.
+// TODO(https://crbug.com/583727696): Must be disabled and removed before
+// `kWebAuthnAmbientSignin` is enabled by default.
+COMPONENT_EXPORT(FIDO_PUBLIC)
+BASE_DECLARE_FEATURE(kWebAuthnAmbientChipOnlyTimeout);
+
 // Enables publishing prelinking information on Android.
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(FIDO_PUBLIC)

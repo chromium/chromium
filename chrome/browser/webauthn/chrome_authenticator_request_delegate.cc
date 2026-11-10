@@ -487,6 +487,11 @@ void ChromeAuthenticatorRequestDelegate::SetUIPresentation(
   dialog_controller_->SetUIPresentation(ui_presentation);
 }
 
+void ChromeAuthenticatorRequestDelegate::SetAmbientChipOnly(
+    bool ambient_chip_only) {
+  dialog_model_->ambient_chip_only = ambient_chip_only;
+}
+
 bool ChromeAuthenticatorRequestDelegate::DoesBlockRequestOnFailure(
     InterestingFailureReason reason) {
   if (!webauthn_ui_enabled()) {
