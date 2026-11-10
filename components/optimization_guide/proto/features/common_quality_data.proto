@@ -1547,7 +1547,7 @@ message RuleMetadata {
 
   // What capabilities the agent has permission for when visiting/actuating on
   // a location.
-  // Next ID: 30
+  // Next ID: 31
 
   enum ActuationCapability {
     CAPABILITY_UNKNOWN = 0;
@@ -1625,6 +1625,9 @@ message RuleMetadata {
     CAPABILITY_CHANGE_PASSWORD = 28;
 
     CAPABILITY_SEARCH_IN_PAGE = 29;
+
+    // Allows executing JavaScript code in a document.
+    CAPABILITY_EXECUTE_JS = 30;
   }
 }
 

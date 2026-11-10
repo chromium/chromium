@@ -575,9 +575,27 @@ message ClickToUploadAction {
   }
 }
 
+// Executes JavaScript code in a document.
+// Next ID: 5
+message ExecuteJsAction {
+  // The document in which to execute the script.
+  DocumentIdentifier document_identifier = 1 [features = { field_presence: EXPLICIT }];
+
+  // The id of the tab containing the target document.
+  int32 tab_id = 2 [features = { field_presence: EXPLICIT }];
+
+  // The JavaScript snippet to evaluate.
+  string script_code = 3 [features = { field_presence: EXPLICIT }];
+
+  // Maximum execution timeout in milliseconds (including awaiting a returned
+  // Promise). When unset or non-positive, Chrome applies a default timeout and
+  // caps larger values at a browser-enforced maximum.
+  int32 timeout_ms = 4 [features = { field_presence: EXPLICIT }];
+}
+
 // All of the actions that can be taken.
 // Only one of these is allowed per action.
-// Next ID: 29
+// Next ID: 30
 message Action {
 
   oneof action {
@@ -636,6 +654,8 @@ message Action {
     ChangePasswordAction change_password = 27;
 
     SearchInPageAction search_in_page = 28;
+
+    ExecuteJsAction execute_js = 29;
   }
 }
 
@@ -820,9 +840,25 @@ message TabObservation {
   }
 }
 
+// Result of executing a JavaScript action.
+// Next ID: 5
+message ExecuteJsResult {
+  // The 0-based index of the ExecuteJsAction in the Actions proto.
+  int32 index_of_execute_js_action = 1 [features = { field_presence: EXPLICIT }];
+
+  // UTF-8 JSON-serialized return value when script execution succeeds.
+  string result = 2 [features = { field_presence: EXPLICIT }];
+
+  // Whether the serialized output was truncated due to byte size limits.
+  bool truncated = 3 [features = { field_presence: EXPLICIT }];
+
+  // Error message populated when script execution fails or times out.
+  string js_error_message = 4 [features = { field_presence: EXPLICIT }];
+}
+
 // All relevant state in chrome after the actions are taken or an error has
 // occurred.
-// Next ID: 9
+// Next ID: 10
 message ActionsResult {
   // The result of the actions. See
   // https://source.chromium.org/chromium/chromium/src/+/main:chrome/common/actor.mojom
@@ -853,6 +889,9 @@ message ActionsResult {
 
   // The results of executing script tools.
   repeated ScriptToolResult script_tool_results = 5;
+
+  // The results of executing JavaScript actions.
+  repeated ExecuteJsResult execute_js_results = 9;
 
   LatencyInformation latency_information = 6 [features = { field_presence: EXPLICIT }];
 
