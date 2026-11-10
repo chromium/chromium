@@ -412,11 +412,9 @@ crbug.com/565777195 [ iPad ] TabGroupsTestCase/testCreateGroupFromTabInAnotherWi
 # Takes down the test run on iPad simulators.
 crbug.com/456744844 [ iPad Simulator ] TabGroupsTestCase/testCreateGroupFromTabInAnotherWindow [ Skip ]
 crbug.com/565792499 PasswordControllerEGTest/testLoginEventReported [ Pass Failure Skip Crash ]
-crbug.com/565749273 GeminiAppSwitchingTestCase/testAppSwitchingAISummarizationFloatyNotInvoked [ Pass Failure ]
 crbug.com/565749273 [ iOS26 iPad Device ] GeminiCopresenceTestCase/testConversationPersistenceOnSignOut [ Pass Failure ]
 crbug.com/565749273 GeminiCopresenceTestCase/testOpenAppsActivityFromToolbar [ Pass Failure ]
 crbug.com/565749273 GeminiEntrypointTestCase/testFloatyInputButtonTogglesBetweenLiveAndSend [ Failure ]
-crbug.com/565749273 GeminiFirstRunEGTest/testAppSwitchingAISummarizationGeminiFirstRunExperience [ Pass Failure ]
 crbug.com/565749273 [ iOS26 iOS27 iPad Simulator ] GeminiFirstRunEGTest/testFREConsentGrantsAndStartsFloaty [ Pass Failure ]
 crbug.com/565749273 [ iOS18 iOS27 iPad Simulator ] GeminiFirstRunEGTest/testLightweightFREConsentGrantsAndStartsFloaty [ Pass Failure ]
 crbug.com/565749273 [ iOS27 iPad Simulator ] GeminiFirstRunEGTest/testVisualRichFREConsentGrantsAndStartsFloaty [ Pass Failure ]
@@ -431,8 +429,6 @@ crbug.com/567174858 PageInfoTestCase/testOpeningURLFromFullHistoryDismissesPageI
 crbug.com/567174858 PageInfoTestCase/testOpeningURLFromLastVisitedDismissesPageInfo [ Pass Failure ]
 
 # Gardening suppression 2026-09-29
-crbug.com/565749273 GeminiAppSwitchingTestCase/testAppSwitchingAISummarizationIncognitoToNormalMode [ Pass Failure ]
-crbug.com/565749273 GeminiAppSwitchingTestCase/testAppSwitchingAISummarizationPageLoadingSnackbar [ Pass Failure ]
 crbug.com/567546565 [ Device ] WindowOpenByDOMTestCase/testLinkWithBlankTargetMultipleTimes [ Pass Failure ]
 
 # Gardening suppression 2026-10-01
@@ -453,8 +449,6 @@ crbug.com/570028794 [ Device ] WebDragDropTestCase [ Pass Failure ]
 
 # Gardening suppression 2026-10-12
 crbug.com/572663691 [ iPad Simulator ] HistoryUITestCase/testContextMenuOpenInNewWindow [ Skip ]
-crbug.com/572662973 [ iPad Simulator ] GeminiAppSwitchingTestCase/testAppSwitchingAISummarizationMismatchedAccountSnackbar [ Pass Failure ]
-crbug.com/572662973 [ iOS27 iPhone Simulator ] GeminiAppSwitchingTestCase/testAppSwitchingAISummarizationMismatchedAccountSnackbar [ Pass Failure ]
 crbug.com/572663884 [ Device ] FullscreenSmoothScrollingTestCase/testCollapseToolbarOnScrollAndRotate [ Pass Failure ]
 crbug.com/572663884 [ Device ] FullscreenSmoothScrollingTestCase/testFullscreenTimingHistograms [ Pass Failure ]
 crbug.com/572663884 [ Device ] FullscreenSmoothScrollingTestCase/testHideHeaderUserScrollLongPage [ Pass Failure ]
@@ -475,7 +469,6 @@ crbug.com/572663468 [ Device ] PopupMenuTestCase/testTabHistoryMenu [ Pass Failu
 crbug.com/572664294 [ Simulator ] AutofillCreditCardSettingsTestCase/testDisableReauthToggle [ Pass Failure ]
 
 # Gardening suppression 2026-10-13
-crbug.com/565749273 GeminiAppSwitchingTestCase/testAppSwitchingAISummarizationFloatyInvoked [ Pass Failure ]
 crbug.com/573145552 [ Simulator ] AutofillEditCreditCardCvcMetricTestCase/testMetricCvcLeftBlank [ Pass Failure ]
 crbug.com/573145112 [ Simulator ] AutofillCreditCardSettingsTestCase/testToolbarDeleteButtonWithAddPaymentMethodFeatureEnabled [ Pass Failure ]
 
