@@ -11,7 +11,19 @@
 #include "android_webview/public/browser/draw_fn.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/circular_deque.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
+
+namespace android_webview {
+class AwDrawFnImpl;
+}
+
+namespace jni_zero {
+template <>
+struct TemplatedDeleter<android_webview::AwDrawFnImpl> : public DeleterBase {
+  void Destroy(void* ptr) const override;
+};
+}  // namespace jni_zero
 
 namespace android_webview {
 
@@ -32,7 +44,7 @@ class AwDrawFnImpl {
 
   ~AwDrawFnImpl();
 
-  void ReleaseHandle(JNIEnv* env);
+  void ReleaseHandle();
   int32_t GetFunctorHandle(JNIEnv* env);
   int64_t GetCompositorFrameConsumer(JNIEnv* env);
 

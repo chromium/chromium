@@ -17,6 +17,7 @@
 #include "base/trace_event/trace_event.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkTypes.h"
@@ -252,7 +253,7 @@ AwDrawFnImpl::AwDrawFnImpl()
 
 AwDrawFnImpl::~AwDrawFnImpl() = default;
 
-void AwDrawFnImpl::ReleaseHandle(JNIEnv* env) {
+void AwDrawFnImpl::ReleaseHandle() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   --g_instance_count;
   render_thread_manager_.RemoveFromCompositorFrameProducerOnUI();
@@ -269,9 +270,10 @@ int64_t AwDrawFnImpl::GetCompositorFrameConsumer(JNIEnv* env) {
   return reinterpret_cast<intptr_t>(GetCompositorFrameConsumer());
 }
 
-static int64_t JNI_AwDrawFnImpl_Create(JNIEnv* env) {
+static jni_zero::JniUniquePtr<AwDrawFnImpl> JNI_AwDrawFnImpl_Create(
+    JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return reinterpret_cast<intptr_t>(new AwDrawFnImpl());
+  return jni_zero::MakeUnique<AwDrawFnImpl>();
 }
 
 void AwDrawFnImpl::OnSync(AwDrawFn_OnSyncParams* params) {
@@ -386,5 +388,11 @@ static int32_t JNI_AwDrawFnImpl_GetReferenceInstanceCount(JNIEnv* env) {
 }
 
 }  // namespace android_webview
+
+namespace jni_zero {
+void TemplatedDeleter<android_webview::AwDrawFnImpl>::Destroy(void* ptr) const {
+  static_cast<android_webview::AwDrawFnImpl*>(ptr)->ReleaseHandle();
+}
+}  // namespace jni_zero
 
 DEFINE_JNI(AwDrawFnImpl)

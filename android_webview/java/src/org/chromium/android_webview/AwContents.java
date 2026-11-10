@@ -2138,7 +2138,7 @@ public class AwContents implements SmartClipProvider {
         if (mIsAttachedToWindow) {
             Log.w(TAG, "WebView.destroy() called while WebView is still attached to window.");
             // Need to call detach to avoid leaks because the real detach later will be ignored.
-            getViewMethods().onDetachedFromWindow();
+            mPrimaryAwViewMethods.onDetachedFromWindow();
         }
         mIsDestroyed = true;
         PostTask.postTask(TaskTraits.UI_DEFAULT, () -> destroyNatives());
@@ -4861,14 +4861,16 @@ public class AwContents implements SmartClipProvider {
                 return;
             }
 
+            boolean isHardwareAccelerated = mIsAttachedToWindow && canvas.isHardwareAccelerated();
+
             // For hardware draws, the clip at onDraw time could be different
             // from the clip during DrawGL.
-            if (!canvas.isHardwareAccelerated() && !canvas.getClipBounds(mClipBoundsTemporary)) {
+            if (!isHardwareAccelerated && !canvas.getClipBounds(mClipBoundsTemporary)) {
                 TraceEvent.instant("EarlyOut_software_empty_clip");
                 return;
             }
 
-            if (canvas.isHardwareAccelerated() && mDrawFunctor == null) {
+            if (isHardwareAccelerated && mDrawFunctor == null) {
                 setFunctor(new AwDrawFnImpl(mDrawFnAccess));
             }
 
@@ -4911,7 +4913,7 @@ public class AwContents implements SmartClipProvider {
                             .onDraw(
                                     mNativeAwContents,
                                     canvas,
-                                    canvas.isHardwareAccelerated(),
+                                    isHardwareAccelerated,
                                     scrollX,
                                     scrollY,
                                     globalVisibleRect.left,
@@ -4919,15 +4921,13 @@ public class AwContents implements SmartClipProvider {
                                     globalVisibleRect.right,
                                     globalVisibleRect.bottom,
                                     ForceAuxiliaryBitmapRendering.sResult);
-            if (canvas.isHardwareAccelerated()
+            if (isHardwareAccelerated
                     && !ForceAuxiliaryBitmapRendering.sResult
                     && AwContentsJni.get().needToDrawBackgroundColor(mNativeAwContents)) {
                 TraceEvent.instant("DrawBackgroundColor");
                 canvas.drawColor(getEffectiveBackgroundColor());
             }
-            if (didDraw
-                    && canvas.isHardwareAccelerated()
-                    && !ForceAuxiliaryBitmapRendering.sResult) {
+            if (didDraw && isHardwareAccelerated && !ForceAuxiliaryBitmapRendering.sResult) {
                 didDraw = mDrawFunctor.requestDraw(canvas);
             }
             if (didDraw) {
