@@ -212,13 +212,19 @@ class _MessagePool(object):
             self._close()
 
     def _close(self):
+        terminated_a_worker = False
         for worker in self._workers:
             if worker.is_alive():
                 worker.terminate()
+                terminated_a_worker = True
         # Flush any remaining results or logs. There may be some stragglers
-        # remaining if this pool context encountered an exception.
-        with contextlib.suppress(Exception):
-            self._loop(block=False)
+        # remaining if this pool context encountered an exception. Don't flush
+        # after terminating a worker, though: a worker killed while writing can
+        # leave a partial message in the queue, and reading it blocks forever
+        # because this process also holds the queue's write end.
+        if not terminated_a_worker:
+            with contextlib.suppress(Exception):
+                self._loop(block=False)
         if not self._running_inline:
             # FIXME: This is a hack to get multiprocessing to not log tracebacks during shutdown :(.
             multiprocessing.util._exiting = True
