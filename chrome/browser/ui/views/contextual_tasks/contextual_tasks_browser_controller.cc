@@ -55,6 +55,7 @@ ContextualTasksBrowserController::ContextualTasksBrowserController(
 
 #if !BUILDFLAG(IS_ANDROID)
   if (kShowEntryPoint.Get() == EntryPointOption::kToolbarEphemeralBranded ||
+      IsContextualTasksPinButtonInToolbarEnabled() ||
       IsContextualTasksPinningV2Enabled() ||
       IsContextualTasksPinnedButtonActiveIndicatorEnabled() ||
       IsContextualTasksEphemeralPinButtonRefactorEnabled()) {
