@@ -187,6 +187,17 @@ void TranslateManager::InitiateTranslation(std::string_view page_lang) {
 }
 
 bool TranslateManager::CanManuallyTranslate(bool menu_logging) {
+  return CanManuallyTranslateInternal(menu_logging,
+                                      /*is_partial_translate=*/false);
+}
+
+bool TranslateManager::CanPartiallyTranslate() {
+  return CanManuallyTranslateInternal(/*menu_logging=*/false,
+                                      /*is_partial_translate=*/true);
+}
+
+bool TranslateManager::CanManuallyTranslateInternal(bool menu_logging,
+                                                    bool is_partial_translate) {
   bool can_translate = true;
 
   if (net::NetworkChangeNotifier::IsOffline()) {
@@ -210,9 +221,13 @@ bool TranslateManager::CanManuallyTranslate(bool menu_logging) {
     can_translate = false;
   }
 
-  // not supported MIME type pages currently cannot be translated.
+  // Not supported MIME type pages currently cannot be translated.
+  // Partial translation is supported on PDF pages regardless of whether
+  // full-page PDF translation (kEnableTranslatePdf) is enabled.
   // See bug: 217945, 1208340.
-  if (!IsMimeTypeSupported(translate_driver_->GetContentsMimeType())) {
+  const std::string& mime_type = translate_driver_->GetContentsMimeType();
+  if (!(is_partial_translate && mime_type == kPdfMimeType) &&
+      !IsMimeTypeSupported(mime_type)) {
     if (!menu_logging) {
       return false;
     }
@@ -273,6 +288,12 @@ bool TranslateManager::CanManuallyTranslate(bool menu_logging) {
         TranslateBrowserMetrics::MenuTranslationUnavailableReason::
             kTargetLangUnknown);
     can_translate = false;
+  }
+
+  if (is_partial_translate &&
+      !TranslateLanguageList::IsSupportedPartialTranslateLanguage(
+          target_lang)) {
+    return false;
   }
 
   if (menu_logging) {
