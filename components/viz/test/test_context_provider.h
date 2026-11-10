@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
@@ -90,6 +91,9 @@ class TestContextProvider
   }
 
   TestContextSupport* support() { return support_.get(); }
+
+  void SetCacheControllerTaskRunnerForTesting(
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   gpu::GpuFeatureInfo& GetWritableGpuFeatureInfo() { return gpu_feature_info_; }
 
