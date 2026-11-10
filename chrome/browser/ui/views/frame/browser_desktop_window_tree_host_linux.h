@@ -69,6 +69,9 @@ class BrowserDesktopWindowTreeHostLinux
   DesktopWindowTreeHost* AsDesktopWindowTreeHost() override;
   bool UsesNativeSystemMenu() const override;
 
+  // BrowserWindowTreeHostPlatform:
+  void FrameTypeChanged() override;
+
   // views::DesktopWindowTreeHostLinux:
   void Init(const views::Widget::InitParams& params) override;
   void OnWidgetInitDone() override;

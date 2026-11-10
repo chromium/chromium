@@ -49,12 +49,6 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) X11Extension {
   // Indicates whether a WmSync is pending. Should only be used for testing.
   virtual bool IsWmSyncActiveForTest() = 0;
 
-  // Called after the frame type (system title bar vs. custom frame) changed
-  // and the new frame view was created. Updates the client-side decoration
-  // insets and adjusts the window bounds so that the area inside the
-  // decorations keeps its position and size.
-  virtual void OnFrameTypeChanged() = 0;
-
  protected:
   virtual ~X11Extension();
 

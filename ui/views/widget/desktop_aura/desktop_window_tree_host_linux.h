@@ -62,7 +62,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
 
   // DesktopWindowTreeHostPlatform:
   std::unique_ptr<FrameView> CreateFrameView() override;
-  void FrameTypeChanged() override;
   void LowerWindow() override;
   // Disables event listening to make |dialog| modal, cancelling any active
   // touches and clearing tracked mouse button state on the host window.

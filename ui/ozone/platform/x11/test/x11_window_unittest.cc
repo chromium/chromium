@@ -101,17 +101,10 @@ class TestPlatformWindowDelegate : public PlatformWindowDelegate {
         /*isClosed=*/true);
   }
 
-  gfx::Insets CalculateInsetsInDIP(
-      PlatformWindowState window_state) const override {
-    return insets_;
-  }
-
   void set_window(X11Window* window) { window_ = window; }
-  void set_insets(const gfx::Insets& insets) { insets_ = insets; }
 
  private:
   raw_ptr<X11Window> window_ = nullptr;
-  gfx::Insets insets_;
   gfx::AcceleratedWidget widget_ = gfx::kNullAcceleratedWidget;
   PlatformWindowState state_ = PlatformWindowState::kUnknown;
   PlatformWindowDelegate::BoundsChange changed_{false};
@@ -315,62 +308,6 @@ class X11WindowTest : public testing::Test {
 
   std::optional<TestScreen> test_screen_;
 };
-
-// Returns the value of _GTK_FRAME_EXTENTS on |window|, or an empty vector if
-// the property is not set.
-std::vector<uint32_t> GetGtkFrameExtents(x11::Window window) {
-  std::vector<uint32_t> extents;
-  auto* connection = x11::Connection::Get();
-  connection->GetArrayProperty(
-      window, connection->GetAtom("_GTK_FRAME_EXTENTS"), &extents);
-  return extents;
-}
-
-// Switching between the system title bar and the custom frame must update
-// _GTK_FRAME_EXTENTS and keep the area inside the client-side decorations
-// unchanged. https://crbug.com/394152435
-TEST_F(X11WindowTest, FrameTypeChangeUpdatesDecorationInsets) {
-  TestPlatformWindowDelegate delegate;
-  constexpr gfx::Insets kInsets = gfx::Insets::TLBR(19, 22, 25, 22);
-  delegate.set_insets(kInsets);
-  constexpr gfx::Rect kBounds(100, 80, 1000, 700);
-  auto window = CreateX11Window(&delegate, kBounds, nullptr);
-  delegate.set_window(window.get());
-
-  // Before the window is mapped, the initial bounds already include the
-  // insets of the current frame, so a frame type change must not adjust them.
-  window->OnFrameTypeChanged();
-  EXPECT_EQ(kBounds, window->GetBoundsInPixels());
-
-  window->Show(false);
-  const x11::Window x11_window = static_cast<x11::Window>(delegate.widget());
-  ASSERT_NE(x11_window, x11::Window::None);
-
-  EXPECT_EQ(kBounds, window->GetBoundsInPixels());
-  EXPECT_EQ(std::vector<uint32_t>({22, 22, 19, 25}),
-            GetGtkFrameExtents(x11_window));
-
-  // Switch to the system title bar: the new frame has no client-side shadow.
-  delegate.set_insets(gfx::Insets());
-  window->OnFrameTypeChanged();
-  EXPECT_TRUE(GetGtkFrameExtents(x11_window).empty());
-  gfx::Rect visible_bounds = kBounds;
-  visible_bounds.Inset(kInsets);
-  EXPECT_EQ(visible_bounds, window->GetBoundsInPixels());
-
-  // Switch back to the custom frame: the original bounds are restored.
-  delegate.set_insets(kInsets);
-  window->OnFrameTypeChanged();
-  EXPECT_EQ(std::vector<uint32_t>({22, 22, 19, 25}),
-            GetGtkFrameExtents(x11_window));
-  EXPECT_EQ(kBounds, window->GetBoundsInPixels());
-
-  // No change in the insets leaves the bounds alone.
-  window->OnFrameTypeChanged();
-  EXPECT_EQ(kBounds, window->GetBoundsInPixels());
-
-  delegate.set_window(nullptr);
-}
 
 // https://crbug.com/898742: Test is flaky.
 TEST_F(X11WindowTest, DISABLED_Shape) {
