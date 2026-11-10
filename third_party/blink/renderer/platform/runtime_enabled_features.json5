@@ -4345,6 +4345,11 @@
       status: "stable",
     },
     {
+      // Kill switch for https://crbug.com/582409909 on macOS.
+      name: "MacFontFallbackPreferContentLocale",
+      status: "stable",
+    },
+    {
       // Read font weight from the OpenType OS/2 table first during macOS font
       // family style matching, falling back to AppKit/CoreText weights if the
       // OS/2 table is unavailable. See https://crbug.com/543243014.

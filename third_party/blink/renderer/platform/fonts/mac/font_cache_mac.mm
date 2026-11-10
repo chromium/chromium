@@ -33,6 +33,7 @@
 #import <CoreFoundation/CoreFoundation.h>
 #import <CoreText/CoreText.h>
 #include <Foundation/Foundation.h>
+#include <stdint.h>
 
 #include <memory>
 
@@ -147,10 +148,45 @@ ScopedCFTypeRef<CTFontRef> CreateCopyWithCascadeListForLanguage(
       CTFontCreateCopyWithAttributes(font, size, nullptr, descriptor.get()));
 }
 
-ScopedCFTypeRef<CTFontRef> GetSubstituteFont(CTFontRef ct_font,
-                                             UChar32 character,
-                                             float size,
-                                             const LayoutLocale* locale) {
+enum class ArabicCascadeMode : uint8_t {
+  // Use CoreText's default cascade list (derived from OS AppleLanguages).
+  kSystemDefault = 0,
+  // Override with CoreText's "ar" (Naskh) cascade list so an Urdu OS language
+  // does not force Nastaliq when a non-Nastaliq content locale is specified.
+  kArabic = 1,
+  // Override with CoreText's "ur" (Nastaliq) cascade list.
+  kNastaliq = 2,
+  kMaxValue = kNastaliq,
+};
+
+ArabicCascadeMode GetArabicCascadeMode(const FontDescription& font_description,
+                                       UChar32 character) {
+  if (character < 0x0600 ||
+      unicode::GetScriptBasedOnUnicodeBlock(character) != USCRIPT_ARABIC ||
+      !RuntimeEnabledFeatures::NastaliqScriptEnabled()) {
+    return ArabicCascadeMode::kSystemDefault;
+  }
+  if (!RuntimeEnabledFeatures::MacFontFallbackPreferContentLocaleEnabled()) {
+    const LayoutLocale* locale = font_description.Locale();
+    if (locale && locale->GetScriptForFont() == USCRIPT_ARABIC_NASTALIQ) {
+      return ArabicCascadeMode::kNastaliq;
+    }
+    return ArabicCascadeMode::kSystemDefault;
+  }
+  if (font_description.GetScriptForFont() == USCRIPT_ARABIC_NASTALIQ) {
+    return ArabicCascadeMode::kNastaliq;
+  }
+  if (font_description.Locale()) {
+    return ArabicCascadeMode::kArabic;
+  }
+  return ArabicCascadeMode::kSystemDefault;
+}
+
+ScopedCFTypeRef<CTFontRef> GetSubstituteFont(
+    CTFontRef ct_font,
+    UChar32 character,
+    float size,
+    ArabicCascadeMode arabic_cascade_mode) {
   auto bytes = base::bit_cast<std::array<UInt8, 4>>(character);
   ScopedCFTypeRef<CFStringRef> string(CFStringCreateWithBytes(
       kCFAllocatorDefault, std::data(bytes), std::size(bytes),
@@ -169,12 +205,13 @@ ScopedCFTypeRef<CTFontRef> GetSubstituteFont(CTFontRef ct_font,
         CTFontCreateWithName(CFSTR("Times"), size, nullptr));
     ct_font = font_to_substitute.get();
   }
-  if (locale && locale->GetScriptForFont() == USCRIPT_ARABIC_NASTALIQ &&
-      ct_font &&
-      unicode::GetScriptBasedOnUnicodeBlock(character) == USCRIPT_ARABIC &&
-      RuntimeEnabledFeatures::NastaliqScriptEnabled()) [[unlikely]] {
+  if (ct_font && arabic_cascade_mode != ArabicCascadeMode::kSystemDefault)
+      [[unlikely]] {
+    NSString* cascade_language =
+        arabic_cascade_mode == ArabicCascadeMode::kNastaliq ? @"ur" : @"ar";
     if (ScopedCFTypeRef<CTFontRef> font_with_cascade_list =
-            CreateCopyWithCascadeListForLanguage(ct_font, @"ur", size)) {
+            CreateCopyWithCascadeListForLanguage(ct_font, cascade_language,
+                                                 size)) {
       font_to_substitute = std::move(font_with_cascade_list);
       ct_font = font_to_substitute.get();
     }
@@ -232,13 +269,14 @@ bool TraitsMismatch(CTFontSymbolicTraits desired_traits,
 const FontPlatformData* GetAlternateFontPlatformData(
     const FontDescription& font_description,
     UChar32 character,
-    const FontPlatformData& platform_data) {
+    const FontPlatformData& platform_data,
+    ArabicCascadeMode arabic_cascade_mode) {
   CTFontRef ct_font = platform_data.CtFont();
 
   float size = font_description.ComputedPixelSize();
 
   ScopedCFTypeRef<CTFontRef> substitute_font(
-      GetSubstituteFont(ct_font, character, size, font_description.Locale()));
+      GetSubstituteFont(ct_font, character, size, arabic_cascade_mode));
   if (!substitute_font) {
     return nullptr;
   }
@@ -359,6 +397,9 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
   const FontPlatformData& platform_data =
       font_data_to_substitute->PlatformData();
 
+  const ArabicCascadeMode arabic_cascade_mode =
+      GetArabicCascadeMode(font_description, character);
+
   std::optional<CharacterFallbackKey> key;
 
   // For ideographic codepoints (Unicode property [:Ideographic=Yes:]), share a
@@ -368,29 +409,47 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
   // not re-invoke CoreText cascade and typeface creation while avoiding any
   // cross-character context sensitivity.
   if (RuntimeEnabledFeatures::MacCharacterFallbackCacheEnabled()) {
-    constexpr uint8_t kFallbackPriorityMask = 0x1F;
-    constexpr uint8_t kSyntheticBoldFlag = 1 << 5;
-    constexpr uint8_t kSyntheticItalicFlag = 1 << 6;
-    constexpr uint8_t kNastaliqFlag = 1 << 7;
-    static_assert(static_cast<uint8_t>(FontFallbackPriority::kMaxEnumValue) <=
-                  kFallbackPriorityMask);
-
     // U+3006 (IDEOGRAPHIC CLOSING MARK) is the lowest Unicode codepoint with
     // [:Ideographic=Yes:].
     const bool is_ideographic =
         character >= 0x3006 && unicode::IsIdeographic(character);
-    const bool is_nastaliq =
-        !is_ideographic &&
-        font_description.GetScriptForFont() == USCRIPT_ARABIC_NASTALIQ &&
-        RuntimeEnabledFeatures::NastaliqScriptEnabled();
     const UChar32 key_char = is_ideographic ? 0 : character;
-    const uint8_t key_flags = static_cast<uint8_t>(
-        (platform_data.synthetic_bold_ ? kSyntheticBoldFlag : 0) |
-        (platform_data.synthetic_italic_ ? kSyntheticItalicFlag : 0) |
-        (is_nastaliq ? kNastaliqFlag : 0) |
-        (is_ideographic ? 0
-                        : (static_cast<uint8_t>(fallback_priority) &
-                           kFallbackPriorityMask)));
+    uint8_t key_flags;
+    if (RuntimeEnabledFeatures::MacFontFallbackPreferContentLocaleEnabled()) {
+      constexpr uint8_t kFallbackPriorityMask = 0x0F;
+      constexpr uint8_t kSyntheticBoldFlag = 1 << 4;
+      constexpr uint8_t kSyntheticItalicFlag = 1 << 5;
+      constexpr uint8_t kArabicCascadeShift = 6;
+      static_assert(static_cast<uint8_t>(FontFallbackPriority::kMaxEnumValue) <=
+                    kFallbackPriorityMask);
+      static_assert(static_cast<uint8_t>(ArabicCascadeMode::kMaxValue) <=
+                    (0xFFu >> kArabicCascadeShift));
+      key_flags = static_cast<uint8_t>(
+          (platform_data.synthetic_bold_ ? kSyntheticBoldFlag : 0) |
+          (platform_data.synthetic_italic_ ? kSyntheticItalicFlag : 0) |
+          (static_cast<uint8_t>(arabic_cascade_mode) << kArabicCascadeShift) |
+          (is_ideographic ? 0
+                          : (static_cast<uint8_t>(fallback_priority) &
+                             kFallbackPriorityMask)));
+    } else {
+      constexpr uint8_t kFallbackPriorityMask = 0x1F;
+      constexpr uint8_t kSyntheticBoldFlag = 1 << 5;
+      constexpr uint8_t kSyntheticItalicFlag = 1 << 6;
+      constexpr uint8_t kNastaliqFlag = 1 << 7;
+      static_assert(static_cast<uint8_t>(FontFallbackPriority::kMaxEnumValue) <=
+                    kFallbackPriorityMask);
+      const bool is_nastaliq =
+          !is_ideographic &&
+          font_description.GetScriptForFont() == USCRIPT_ARABIC_NASTALIQ &&
+          RuntimeEnabledFeatures::NastaliqScriptEnabled();
+      key_flags = static_cast<uint8_t>(
+          (platform_data.synthetic_bold_ ? kSyntheticBoldFlag : 0) |
+          (platform_data.synthetic_italic_ ? kSyntheticItalicFlag : 0) |
+          (is_nastaliq ? kNastaliqFlag : 0) |
+          (is_ideographic ? 0
+                          : (static_cast<uint8_t>(fallback_priority) &
+                             kFallbackPriorityMask)));
+    }
     key = CharacterFallbackKey::Make(
         platform_data.CtFont(), font_description.Weight().RawValue(),
         font_description.Style().RawValue(),
@@ -410,8 +469,8 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
     }
   }
 
-  const FontPlatformData* alternate_font =
-      GetAlternateFontPlatformData(font_description, character, platform_data);
+  const FontPlatformData* alternate_font = GetAlternateFontPlatformData(
+      font_description, character, platform_data, arabic_cascade_mode);
   if (!alternate_font) {
     return nullptr;
   }
