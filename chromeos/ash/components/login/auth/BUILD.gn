@@ -45,8 +45,6 @@ component("auth") {
     "//url",
   ]
   sources = [
-    "auth_attempt_state.cc",
-    "auth_attempt_state.h",
     "auth_events_recorder.cc",
     "auth_events_recorder.h",
     "auth_factor_editor.cc",
@@ -89,8 +87,6 @@ component("auth") {
     "stub_authenticator.h",
     "stub_authenticator_builder.cc",
     "stub_authenticator_builder.h",
-    "test_attempt_state.cc",
-    "test_attempt_state.h",
   ]
 }
 
