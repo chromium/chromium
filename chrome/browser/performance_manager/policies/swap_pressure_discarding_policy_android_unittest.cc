@@ -5,12 +5,15 @@
 #include "chrome/browser/performance_manager/policies/swap_pressure_discarding_policy_android.h"
 
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/byte_size.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
+#include "base/process/kill.h"
 #include "base/process/process_metrics.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -19,11 +22,18 @@
 #include "chrome/browser/performance_manager/mechanisms/page_discarder.h"
 #include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
+#include "content/public/test/mock_render_process_host.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "url/gurl.h"
@@ -170,9 +180,11 @@ class SwapPressureDiscardingPolicyAndroidTest
     return true;
   }
 
-  TabNodes CreateBackgroundTab(const std::string& url_str) {
+  TabNodes CreateBackgroundTab(
+      const std::string& url_str,
+      base::WeakPtr<content::WebContents> web_contents = nullptr) {
     auto process_node = CreateNode<ProcessNodeImpl>();
-    auto page_node = CreateNode<PageNodeImpl>();
+    auto page_node = CreateNode<PageNodeImpl>(std::move(web_contents));
     auto main_frame_node =
         CreateFrameNodeAutoId(process_node.get(), page_node.get());
     page_node->SetType(PageType::kTab);
@@ -641,6 +653,139 @@ TEST_F(SwapPressureDiscardingPolicyAndroidTest,
   histograms.ExpectBucketCount(
       "PerformanceManager.AndroidSwapPressure.DiscardedTabCount", 1, 2);
   EXPECT_FALSE(policy_->IsDeferredCheckTimerRunningForTesting());
+}
+
+// Regression test for crbug.com/580986531: WebContents-backed PageNodes without
+// a TabInterface (e.g. closing tabs detached into TabWebContentsDestroyer, or
+// ThinWebViews) must neither count toward LiveTabCountAtPressure nor be
+// selected for swap-pressure discard.
+TEST_F(SwapPressureDiscardingPolicyAndroidTest,
+       SkipsWebContentsWithoutTabInterface) {
+  TestingProfile profile;
+  content::RenderViewHostTestEnabler rvh_enabler;
+  std::unique_ptr<content::WebContents> detached_contents =
+      content::WebContentsTester::CreateTestWebContents(&profile, nullptr);
+  TabNodes detached = CreateBackgroundTab("https://detached.example/",
+                                          detached_contents->GetWeakPtr());
+  task_env().FastForwardBy(base::Seconds(5));
+  TabNodes tab1 = CreateBackgroundTab("https://example.com/1");
+  task_env().FastForwardBy(base::Seconds(5));
+  TabNodes tab2 = CreateBackgroundTab("https://example.com/2");
+  TabNodes tab3 = CreateBackgroundTab("https://example.com/3");
+  tab3.page_node->SetIsVisible(true);
+  task_env().FastForwardBy(base::Seconds(15));
+
+  meminfo_.swap_free = base::MiB(250);
+  meminfo_.active_file = base::MiB(250);
+  meminfo_.inactive_file = base::MiB(250);
+
+  base::HistogramTester histograms;
+  policy_->CheckSwapPressureForTesting();
+  EXPECT_TRUE(fake_discarder_->discarded_pages().empty());
+  histograms.ExpectUniqueSample(
+      "PerformanceManager.AndroidSwapPressure.LiveTabCountAtPressure", 3, 1);
+
+  TabNodes tab4 = CreateBackgroundTab("https://example.com/4");
+  tab4.page_node->SetIsVisible(true);
+  policy_->CheckSwapPressureForTesting();
+  ASSERT_EQ(1u, fake_discarder_->discarded_pages().size());
+  EXPECT_EQ(tab1.page_node.get(), fake_discarder_->discarded_pages()[0]);
+
+  detached.main_frame_node.reset();
+  detached.page_node.reset();
+  detached.process_node.reset();
+  detached_contents.reset();
+  task_env().RunUntilIdle();
+}
+
+namespace {
+
+class ExitingMockRenderProcessHost : public content::MockRenderProcessHost {
+ public:
+  using content::MockRenderProcessHost::MockRenderProcessHost;
+
+  bool FastShutdownIfPossible(size_t page_count,
+                              bool skip_unload_handlers,
+                              bool ignore_workers,
+                              bool ignore_keep_alive,
+                              bool ignore_pending_reuse,
+                              bool use_outermost_main_frame_check) override {
+    if (!content::MockRenderProcessHost::FastShutdownIfPossible(
+            page_count, skip_unload_handlers, ignore_workers, ignore_keep_alive,
+            ignore_pending_reuse, use_outermost_main_frame_check)) {
+      return false;
+    }
+    SimulateRenderProcessExit(base::TERMINATION_STATUS_NORMAL_TERMINATION, 0);
+    return true;
+  }
+};
+
+class ExitingMockRenderProcessHostFactory
+    : public content::MockRenderProcessHostFactory {
+ protected:
+  std::unique_ptr<content::MockRenderProcessHost> BuildRenderProcessHost(
+      content::BrowserContext* browser_context,
+      content::SiteInstance* site_instance) override {
+    return std::make_unique<ExitingMockRenderProcessHost>(browser_context);
+  }
+};
+
+class DestroyOnProcessGoneObserver : public content::WebContentsObserver {
+ public:
+  DestroyOnProcessGoneObserver(content::WebContents* contents,
+                               base::OnceClosure on_gone)
+      : content::WebContentsObserver(contents), on_gone_(std::move(on_gone)) {}
+
+  void PrimaryMainFrameRenderProcessGone(base::TerminationStatus) override {
+    std::move(on_gone_).Run();
+  }
+
+ private:
+  base::OnceClosure on_gone_;
+};
+
+}  // namespace
+
+class PageDiscarderFastKillTest : public ChromeRenderViewHostTestHarness {
+ protected:
+  void SetUp() override {
+    rph_factory_ = std::make_unique<ExitingMockRenderProcessHostFactory>();
+    SetRenderProcessHostFactory(rph_factory_.get());
+    ChromeRenderViewHostTestHarness::SetUp();
+  }
+
+  void TearDown() override {
+    DeleteContents();
+    task_environment()->RunUntilIdle();
+    SetRenderProcessHostFactory(nullptr);
+    rph_factory_.reset();
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+ private:
+  std::unique_ptr<ExitingMockRenderProcessHostFactory> rph_factory_;
+};
+
+// Regression test for crbug.com/580986531: if AttemptFastKillForDiscard
+// synchronously destroys the WebContents via PrimaryMainFrameRenderProcessGone,
+// PageDiscarder must not dereference the invalidated WeakPtr.
+TEST_F(PageDiscarderFastKillTest, HandlesWebContentsDestroyedDuringFastKill) {
+  NavigateAndCommit(GURL("https://example.com"));
+  DestroyOnProcessGoneObserver observer(
+      web_contents(), base::BindOnce(&PageDiscarderFastKillTest::DeleteContents,
+                                     base::Unretained(this)));
+
+  TestGraphImpl graph;
+  graph.SetUp();
+  auto page_node = TestNodeWrapper<PageNodeImpl>::Create(
+      &graph, web_contents()->GetWeakPtr());
+
+  EXPECT_EQ(std::nullopt,
+            mechanism::PageDiscarder().DiscardPageNode(
+                page_node.get(), ::mojom::LifecycleUnitDiscardReason::URGENT));
+  EXPECT_EQ(nullptr, web_contents());
+  page_node.reset();
+  graph.TearDown();
 }
 
 }  // namespace performance_manager::policies

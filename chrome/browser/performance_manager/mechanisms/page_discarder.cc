@@ -65,6 +65,10 @@ std::optional<base::ByteSize> PageDiscarder::DiscardPageNode(
   CHECK(base::FeatureList::IsEnabled(features::kWebContentsDiscard));
   resource_coordinator::AttemptFastKillForDiscard(contents.get(),
                                                   discard_reason);
+  if (!contents) {
+    outcome = DiscardPageOnUIThreadOutcome::kDiscardTabFailure;
+    return std::nullopt;
+  }
   contents->Discard(base::NullCallback());
 #else
   auto* lifecycle_unit =
