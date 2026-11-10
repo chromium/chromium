@@ -1362,7 +1362,7 @@
     {
         "name": "play-services-auth",
         "group": "com.google.android.gms",
-        "version": "21.1.1"
+        "version": "21.5.1"
     },
     {
         "name": "play-services-auth-api-phone",
@@ -1392,7 +1392,7 @@
     {
         "name": "play-services-fido",
         "group": "com.google.android.gms",
-        "version": "21.0.0"
+        "version": "21.3.0"
     },
     {
         "name": "play-services-identity-credentials",
@@ -1588,6 +1588,11 @@
         "name": "kotlinx-coroutines-core-jvm",
         "group": "org.jetbrains.kotlinx",
         "version": "1.9.0"
+    },
+    {
+        "name": "kotlinx-coroutines-play-services",
+        "group": "org.jetbrains.kotlinx",
+        "version": "1.8.0"
     },
     {
         "name": "kotlinx-coroutines-test",
