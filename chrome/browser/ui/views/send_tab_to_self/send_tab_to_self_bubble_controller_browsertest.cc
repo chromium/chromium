@@ -907,12 +907,14 @@ class SendTabToSelfNoTargetDeviceQrBubbleBrowserTest
   explicit SendTabToSelfNoTargetDeviceQrBubbleBrowserTest(
       bool qr_bubble_enabled = true) {
     if (qr_bubble_enabled) {
-      feature_list_.InitWithFeatures({switches::kCrossDeviceSigninFromDesktop,
-                                      kSendTabToSelfNoTargetDeviceQrCode},
-                                     {});
+      feature_list_.InitWithFeatures(
+          {switches::kCrossDeviceSigninFromDesktop,
+           switches::kCrossDeviceSigninFromDesktopFollowup},
+          {});
     } else {
-      feature_list_.InitWithFeatures({switches::kCrossDeviceSigninFromDesktop},
-                                     {kSendTabToSelfNoTargetDeviceQrCode});
+      feature_list_.InitWithFeatures(
+          {switches::kCrossDeviceSigninFromDesktop},
+          {switches::kCrossDeviceSigninFromDesktopFollowup});
     }
   }
 
@@ -1005,8 +1007,9 @@ class SendTabToSelfNoTargetDeviceQrBubbleDisabledBrowserTest
             /*qr_bubble_enabled=*/false) {}
 };
 
-// Verifies that when `kSendTabToSelfNoTargetDeviceQrCode` is disabled,
-// `ShowBubble()` falls back to `SendTabToSelfNoTargetDeviceBubbleView`.
+// Verifies that when `switches::kCrossDeviceSigninFromDesktopFollowup` is
+// disabled, `ShowBubble()` falls back to
+// `SendTabToSelfNoTargetDeviceBubbleView`.
 IN_PROC_BROWSER_TEST_F(SendTabToSelfNoTargetDeviceQrBubbleDisabledBrowserTest,
                        FallsBackToNoTargetDeviceBubbleWhenFeatureDisabled) {
   SendTabToSelfBubbleController* controller =

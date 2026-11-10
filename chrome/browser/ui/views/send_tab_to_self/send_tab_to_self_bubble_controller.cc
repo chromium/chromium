@@ -322,7 +322,7 @@ bool SendTabToSelfBubbleController::ShouldShowNoTargetDeviceQrBubble(
   if (reason != EntryPointDisplayReason::kInformNoTargetDevice || !browser ||
       !base::FeatureList::IsEnabled(switches::kCrossDeviceSigninFromDesktop) ||
       !base::FeatureList::IsEnabled(
-          send_tab_to_self::kSendTabToSelfNoTargetDeviceQrCode)) {
+          switches::kCrossDeviceSigninFromDesktopFollowup)) {
     return false;
   }
   signin::IdentityManager* identity_manager =

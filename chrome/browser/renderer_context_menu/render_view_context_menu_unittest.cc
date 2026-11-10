@@ -157,6 +157,10 @@
 #include "components/user_manager/scoped_user_manager.h"
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "components/signin/public/base/signin_switches.h"
+#endif
+
 using extensions::Extension;
 using extensions::MenuItem;
 using extensions::MenuManager;
@@ -3200,7 +3204,7 @@ class RenderViewContextMenuSendTabToSelfPageSigninPromosTest
     feature_list_.InitWithFeatures(
         {send_tab_to_self::kSendTabToSelfSubmenuSigninPromos,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-         send_tab_to_self::kSendTabToSelfNoTargetDeviceQrCode
+         switches::kCrossDeviceSigninFromDesktopFollowup
 #endif
         },
         {});
@@ -3239,7 +3243,7 @@ TEST_F(RenderViewContextMenuSendTabToSelfPageSigninPromosTest,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Tests that Send Tab to Self is displayed as a submenu for
 // `kInformNoTargetDevice` when both `kSendTabToSelfSubmenuSigninPromos` and
-// `kSendTabToSelfNoTargetDeviceQrCode` are enabled.
+// `switches::kCrossDeviceSigninFromDesktopFollowup` are enabled.
 TEST_F(RenderViewContextMenuSendTabToSelfPageSigninPromosTest,
        SubmenuPresentWhenInformNoTargetDevice) {
   std::unique_ptr<TestRenderViewContextMenu> menu =
@@ -3378,7 +3382,7 @@ class RenderViewContextMenuSendTabToSelfLinkSigninPromosTest
         {send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2,
          send_tab_to_self::kSendTabToSelfSubmenuSigninPromos,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-         send_tab_to_self::kSendTabToSelfNoTargetDeviceQrCode
+         switches::kCrossDeviceSigninFromDesktopFollowup
 #endif
         },
         {});
@@ -3419,8 +3423,8 @@ TEST_F(RenderViewContextMenuSendTabToSelfLinkSigninPromosTest,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Tests that when right-clicking a hyperlink for `kInformNoTargetDevice`, the
 // Send Tab to Self item is appended as a submenu when both
-// `kSendTabToSelfSubmenuSigninPromos` and `kSendTabToSelfNoTargetDeviceQrCode`
-// are enabled.
+// `kSendTabToSelfSubmenuSigninPromos` and
+// `switches::kCrossDeviceSigninFromDesktopFollowup` are enabled.
 TEST_F(RenderViewContextMenuSendTabToSelfLinkSigninPromosTest,
        SubmenuPresentForLinkWhenInformNoTargetDevice) {
   std::unique_ptr<TestRenderViewContextMenu> menu =
