@@ -19,9 +19,9 @@ SessionViewAndroid::SessionViewAndroid(SessionViewDelegate& delegate)
 
 SessionViewAndroid::~SessionViewAndroid() = default;
 
-// TODO(danielmendz): We should probably change this to not override but
-// instead react to the OnUiStateChanged event and forward that UiState to the
-// bridge.
+// TODO(danielmendz): We should probably change this and OnMicMutedChanged() to
+// not override but instead react to the OnUiStateChanged event and forward
+// that UiState to the bridge.
 void SessionViewAndroid::OnSessionLifecycleChanged(SessionLifecycle lifecycle) {
   SessionView::OnSessionLifecycleChanged(lifecycle);
   bridge_->OnSessionLifecycleChanged(lifecycle);
@@ -39,6 +39,16 @@ void SessionViewAndroid::OnTranscriptionsUpdated(
 
 void SessionViewAndroid::OnUserAudioLevelUpdate(float audio_level) {
   bridge_->OnAudioLevelChanged(audio_level);
+}
+
+void SessionViewAndroid::OnMicMutedChanged(bool muted) {
+  SessionView::OnMicMutedChanged(muted);
+  bridge_->OnMicMutedChanged(muted);
+}
+
+// Not part of the UiState, so forwarded as is.
+void SessionViewAndroid::OnSpeakerChanged(Speaker speaker) {
+  bridge_->OnSpeakerChanged(speaker);
 }
 
 }  // namespace ttc

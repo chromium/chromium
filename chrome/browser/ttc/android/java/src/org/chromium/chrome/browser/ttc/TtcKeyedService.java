@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ttc;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
@@ -49,6 +51,9 @@ public class TtcKeyedService {
 
         /** The session's microphone was muted or unmuted. */
         default void onMicMutedChanged(boolean muted) {}
+
+        /** The party currently speaking in the session changed. */
+        default void onSpeakerChanged(@Speaker int speaker) {}
     }
 
     private long mNativePtr;
@@ -57,7 +62,8 @@ public class TtcKeyedService {
             new TtcSessionWindowTracker(this::endSession);
 
     @CalledByNative
-    private static TtcKeyedService create(long nativePtr) {
+    @VisibleForTesting
+    static TtcKeyedService create(long nativePtr) {
         return new TtcKeyedService(nativePtr);
     }
 
@@ -108,15 +114,13 @@ public class TtcKeyedService {
 
     /**
      * Mutes or unmutes the microphone of the active session. While muted, no audio is captured or
-     * sent to the model. No-op unless the session is live; it goes live unmuted.
+     * sent to the model. No-op unless the session is live; it goes live unmuted. Observers are told
+     * of the change by {@link Observer#onMicMutedChanged}.
      */
     public void setMicMuted(boolean muted) {
         ThreadUtils.assertOnUiThread();
         if (mNativePtr == 0) return;
-        if (!TtcKeyedServiceJni.get().setMicMuted(mNativePtr, muted)) return;
-        for (Observer observer : mObservers) {
-            observer.onMicMutedChanged(muted);
-        }
+        TtcKeyedServiceJni.get().setMicMuted(mNativePtr, muted);
     }
 
     /** Returns whether the active session's microphone is muted. */
@@ -124,6 +128,16 @@ public class TtcKeyedService {
         ThreadUtils.assertOnUiThread();
         if (mNativePtr == 0) return false;
         return TtcKeyedServiceJni.get().isMicMuted(mNativePtr);
+    }
+
+    /**
+     * Returns the party currently speaking in the active session, or {@link Speaker#IDLE} if no
+     * session is active.
+     */
+    public @Speaker int getSpeaker() {
+        ThreadUtils.assertOnUiThread();
+        if (mNativePtr == 0) return Speaker.IDLE;
+        return TtcKeyedServiceJni.get().getSpeaker(mNativePtr);
     }
 
     public void addObserver(Observer observer) {
@@ -184,6 +198,20 @@ public class TtcKeyedService {
         }
     }
 
+    @CalledByNative
+    private void onMicMutedChanged(boolean muted) {
+        for (Observer observer : mObservers) {
+            observer.onMicMutedChanged(muted);
+        }
+    }
+
+    @CalledByNative
+    private void onSpeakerChanged(@Speaker int speaker) {
+        for (Observer observer : mObservers) {
+            observer.onSpeakerChanged(speaker);
+        }
+    }
+
     @NativeMethods
     interface Natives {
         boolean isEnabled(long nativeTtcKeyedServiceAndroid);
@@ -199,5 +227,7 @@ public class TtcKeyedService {
         boolean setMicMuted(long nativeTtcKeyedServiceAndroid, boolean muted);
 
         boolean isMicMuted(long nativeTtcKeyedServiceAndroid);
+
+        int getSpeaker(long nativeTtcKeyedServiceAndroid);
     }
 }

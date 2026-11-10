@@ -48,6 +48,8 @@ class TtcKeyedServiceAndroid : public base::SupportsUserData::Data {
   // or the microphone already was in that state.
   bool SetMicMuted(JNIEnv* env, bool muted);
   bool IsMicMuted(JNIEnv* env);
+  // Returns the active session's Speaker, or kIdle if there is no session.
+  int32_t GetSpeaker(JNIEnv* env);
 
   // Called by SessionViewAndroid to surface session events in the Java UI.
   void OnSessionLifecycleChanged(SessionLifecycle lifecycle);
@@ -55,6 +57,8 @@ class TtcKeyedServiceAndroid : public base::SupportsUserData::Data {
   void OnError(ErrorCode error);
   void OnTranscriptionsUpdated(const std::string& user_transcript,
                                const std::string& model_transcript);
+  void OnMicMutedChanged(bool muted);
+  void OnSpeakerChanged(Speaker speaker);
 
  private:
   void OnServiceStateChanged(ServiceState state);

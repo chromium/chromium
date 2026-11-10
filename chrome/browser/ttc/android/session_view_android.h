@@ -33,6 +33,8 @@ class SessionViewAndroid : public SessionView {
   void OnTranscriptionsUpdated(const std::string& user_transcript,
                                const std::string& model_transcript) override;
   void OnUserAudioLevelUpdate(float audio_level) override;
+  void OnMicMutedChanged(bool muted) override;
+  void OnSpeakerChanged(Speaker speaker) override;
 
  private:
   // Owned by the TtcKeyedService, which outlives the session this view

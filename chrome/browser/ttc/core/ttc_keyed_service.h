@@ -101,6 +101,9 @@ class TtcKeyedService : public KeyedService, public base::SupportsUserData {
   // Whether the active session's microphone is muted. False if there's no live
   // session.
   bool IsMicMuted() const;
+  // The party currently speaking in the active session. kIdle if there's no
+  // session.
+  Speaker GetSpeaker() const;
 
   // The ActorUiStateManagerInterface implementation used by actor tasks created
   // for TTC sessions.

@@ -57,6 +57,11 @@ bool TtcKeyedService::IsMicMuted() const {
   return session_controller_ && session_controller_->IsMicMuted();
 }
 
+Speaker TtcKeyedService::GetSpeaker() const {
+  return session_controller_ ? session_controller_->GetSpeaker()
+                             : Speaker::kIdle;
+}
+
 const actor::EnterprisePolicyChecker*
 TtcKeyedService::enterprise_policy_checker() const {
   return enterprise_policy_checker_.get();

@@ -82,6 +82,7 @@ android_resources("java_resources") {
 
 robolectric_library("junit") {
   sources = [
+    "java/src/org/chromium/chrome/browser/ttc/TtcKeyedServiceTest.java",
     "java/src/org/chromium/chrome/browser/ttc/TtcSessionMediatorTest.java",
     "java/src/org/chromium/chrome/browser/ttc/TtcSessionWindowTrackerTest.java",
     "java/src/org/chromium/chrome/browser/ttc/TtcVoicePlateViewTest.java",

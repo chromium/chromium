@@ -106,6 +106,10 @@ bool TtcKeyedServiceAndroid::IsMicMuted(JNIEnv* env) {
   return service_->IsMicMuted();
 }
 
+int32_t TtcKeyedServiceAndroid::GetSpeaker(JNIEnv* env) {
+  return static_cast<int32_t>(service_->GetSpeaker());
+}
+
 void TtcKeyedServiceAndroid::OnAudioLevelChanged(float audio_level) {
   JNIEnv* env = AttachCurrentThread();
   Java_TtcKeyedService_onAudioLevelChanged(env, java_obj_, audio_level);
@@ -122,6 +126,17 @@ void TtcKeyedServiceAndroid::OnTranscriptionsUpdated(
   JNIEnv* env = AttachCurrentThread();
   Java_TtcKeyedService_onTranscriptionsUpdated(env, java_obj_, user_transcript,
                                                model_transcript);
+}
+
+void TtcKeyedServiceAndroid::OnMicMutedChanged(bool muted) {
+  JNIEnv* env = AttachCurrentThread();
+  Java_TtcKeyedService_onMicMutedChanged(env, java_obj_, muted);
+}
+
+void TtcKeyedServiceAndroid::OnSpeakerChanged(Speaker speaker) {
+  JNIEnv* env = AttachCurrentThread();
+  Java_TtcKeyedService_onSpeakerChanged(env, java_obj_,
+                                        static_cast<int32_t>(speaker));
 }
 
 void TtcKeyedServiceAndroid::OnServiceStateChanged(ServiceState state) {
