@@ -12,7 +12,6 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
@@ -28,6 +27,7 @@
 #include "components/private_insights/fcp_http_client.h"
 #include "components/private_insights/fcp_log_manager.h"
 #include "components/private_insights/fcp_simple_task_environment.h"
+#include "components/private_insights/populations/pending_events_batch.h"
 #include "components/private_insights/private_insights_features.h"
 #include "components/version_info/version_info.h"
 #include "google_apis/google_api_keys.h"
@@ -187,31 +187,6 @@ void PrivateInsightsService::LogContextualCueEvent(
     events::ContextualCueLogEvent event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   contextual_cue_events_.Push(std::move(event), kMaxContextualCueEvents.Get());
-}
-
-// static
-template <typename EventProto>
-void PrivateInsightsService::SerializeEventsToQueryResult(
-    const typename EventQueue<EventProto>::Entries& events,
-    fcp::client::ExampleQueryResult* query_result) {
-  CHECK(query_result);
-
-  query_result->set_result_source(
-      fcp::client::ExampleQueryResult::PRIVATE_LOGGER);
-  query_result->mutable_stats()->set_output_rows_count(
-      static_cast<int32_t>(events.size()));
-
-  auto* proto_values =
-      (*query_result->mutable_vector_data()->mutable_vectors())["entry"]
-          .mutable_bytes_values();
-  auto* time_values =
-      (*query_result->mutable_vector_data()
-            ->mutable_vectors())["confidential_compute_event_time"]
-          .mutable_string_values();
-  for (const auto& entry : events) {
-    proto_values->add_value(entry.event.SerializeAsString());
-    time_values->add_value(base::TimeFormatAsIso8601(entry.timestamp));
-  }
 }
 
 PrivateInsightsService::UploadTask::UploadTask() = default;

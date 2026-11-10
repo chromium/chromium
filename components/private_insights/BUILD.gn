@@ -5,6 +5,7 @@
 component("private_insights") {
   public = [
     "event_queue.h",
+    "populations/pending_events_batch.h",
     "private_insights_features.h",
     "private_insights_service.h",
   ]
