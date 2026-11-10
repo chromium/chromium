@@ -15,6 +15,7 @@ import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.payments.handler.toolbar.PaymentHandlerToolbarCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -90,7 +91,15 @@ public class PaymentHandlerCoordinator {
         Activity activity = windowAndroid.getActivity().get();
         if (activity == null) return null;
         Profile profile = Profile.fromWebContents(paymentRequestWebContents);
-        if (profile == null) return null;
+        // onProfileDestroyed() may already have fired, so the observer below would never run.
+        if (profile == null || profile.shutdownStarted()) return null;
+
+        BottomSheetController bottomSheetController =
+                BottomSheetControllerProvider.from(windowAndroid);
+        Tab currentTab = TabModelSelectorSupplier.getCurrentTabFrom(windowAndroid);
+        if (bottomSheetController == null || currentTab == null) {
+            return null;
+        }
 
         mInputProtector.markShowTime();
         mPaymentHandlerWebContents =
@@ -114,13 +123,6 @@ public class PaymentHandlerCoordinator {
                             assumeNonNull(modalDialogManager);
                             return modalDialogManager;
                         });
-
-        BottomSheetController bottomSheetController =
-                BottomSheetControllerProvider.from(windowAndroid);
-        Tab currentTab = TabModelSelectorSupplier.getCurrentTabFrom(windowAndroid);
-        if (bottomSheetController == null || currentTab == null) {
-            return null;
-        }
 
         PropertyModel model = new PropertyModel.Builder(PaymentHandlerProperties.ALL_KEYS).build();
 
@@ -163,8 +165,21 @@ public class PaymentHandlerCoordinator {
         assert mToolbarCoordinator.getToolbarHeightPx() == view.getToolbarHeightPx();
         PropertyModelChangeProcessor changeProcessor =
                 PropertyModelChangeProcessor.create(model, view, PaymentHandlerViewBinder::bind);
+        // TODO(crbug.com/584179079): Add an instrumentation test for the profile being
+        // destroyed while the payment handler UI is showing.
+        ProfileManager.Observer profileObserver =
+                new ProfileManager.Observer() {
+                    @Override
+                    public void onProfileAdded(Profile p) {}
+
+                    @Override
+                    public void onProfileDestroyed(Profile destroyedProfile) {
+                        if (destroyedProfile == profile) hide();
+                    }
+                };
         mHider =
                 () -> {
+                    ProfileManager.removeObserver(profileObserver);
                     changeProcessor.destroy();
                     bottomSheetController.removeObserver(mediator);
                     bottomSheetController.hideContent(/* content= */ view, /* animate= */ true);
@@ -176,6 +191,7 @@ public class PaymentHandlerCoordinator {
                     assumeNonNull(mPaymentHandlerWebContents);
                     mPaymentHandlerWebContents.destroy();
                 };
+        ProfileManager.addObserver(profileObserver);
         boolean hasFrameworkCloseButton = bottomSheetController.willShowFrameworkCloseButton(view);
         mToolbarCoordinator.setCloseButtonVisibility(!hasFrameworkCloseButton);
 
@@ -226,9 +242,9 @@ public class PaymentHandlerCoordinator {
 
     /** Hides the payment-handler UI. */
     public void hide() {
-        if (mHider == null) return;
-        mHider.run();
+        Runnable hider = mHider;
         mHider = null;
+        if (hider != null) hider.run();
     }
 
     public void clickSecurityIconForTest() {

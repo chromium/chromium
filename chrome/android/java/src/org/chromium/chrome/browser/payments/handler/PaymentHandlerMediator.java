@@ -122,7 +122,7 @@ import java.lang.annotation.RetentionPolicy;
                 (Activity _, int newState) -> {
                     if (newState == ActivityState.DESTROYED) {
                         mCloseReason = CloseReason.ACTIVITY_DIED;
-                        mHandler.post(mHider);
+                        mHider.run();
                     }
                 };
         ApplicationStatus.registerStateListenerForActivity(mActivityStateListener, activity);

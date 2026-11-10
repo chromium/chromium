@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.payments.handler;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -18,6 +19,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator.PaymentHandlerUiObserver;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -59,9 +62,11 @@ public class PaymentHandlerMediatorUnitTest {
     private PropertyModel mModel;
     private PaymentHandlerMediator mMediator;
 
+    private Activity mActivity;
+
     @Before
     public void setUp() {
-        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mModel = new PropertyModel.Builder(PaymentHandlerProperties.ALL_KEYS).build();
         mMediator =
                 new PaymentHandlerMediator(
@@ -72,7 +77,7 @@ public class PaymentHandlerMediatorUnitTest {
                         mUiObserver,
                         mBottomSheetController,
                         TOOLBAR_HEIGHT_PX,
-                        activity,
+                        mActivity,
                         mInputProtector);
     }
 
@@ -137,5 +142,11 @@ public class PaymentHandlerMediatorUnitTest {
         mMediator.onSheetStateChanged(SheetState.FULL, StateChangeReason.NONE);
 
         assertEquals(800 - TOOLBAR_HEIGHT_PX, contentVisibleHeight());
+    }
+
+    @Test
+    public void testHiderRunsSynchronouslyOnActivityDestroyed() {
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.DESTROYED);
+        verify(mHider).run();
     }
 }
