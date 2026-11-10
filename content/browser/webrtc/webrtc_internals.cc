@@ -864,7 +864,9 @@ void WebRTCInternals::OnRendererExit(int render_process_id) {
 
 void WebRTCInternals::EnableAudioDebugRecordingsOnAllRenderProcessHosts() {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
-  CHECK(!audio_debug_recording_session_, base::NotFatalUntil::M160);
+  // TODO(crbug.com/583556053): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!audio_debug_recording_session_);
   mojo::PendingRemote<audio::mojom::DebugRecording> debug_recording;
   content::GetAudioService().BindDebugRecording(
       debug_recording.InitWithNewPipeAndPassReceiver());
