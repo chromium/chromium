@@ -7,14 +7,16 @@ package org.chromium.chrome.browser.page_image_service;
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import org.jni_zero.JniUniquePtr;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,6 +30,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.page_image_service.ImageServiceBridge.NativeImageServiceBridge;
 import org.chromium.chrome.browser.page_image_service.ImageServiceMetrics.SalientImageUrlFetchResult;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.image_fetcher.ImageFetcher;
@@ -48,6 +51,7 @@ public final class ImageServiceBridgeUnitTest {
             "PageImageService.Android.SalientImageUrlFetchResult." + STRING_CLIENT_ID;
 
     @Mock private ImageServiceBridge.Natives mImageServiceBridgeJni;
+    private JniUniquePtr<NativeImageServiceBridge> mNativeImageServiceBridge;
     @Mock private Profile mProfile;
     @Mock private ImageFetcher mImageFetcher;
     @Mock private Callback<GURL> mUrlCallback;
@@ -58,6 +62,8 @@ public final class ImageServiceBridgeUnitTest {
     @Before
     public void setUp() {
         ImageServiceBridgeJni.setInstanceForTesting(mImageServiceBridgeJni);
+        mNativeImageServiceBridge = JniUniquePtr.createForTesting(1L);
+        doReturn(mNativeImageServiceBridge).when(mImageServiceBridgeJni).init(any());
 
         mImageServiceBridge =
                 new ImageServiceBridge(
@@ -81,7 +87,7 @@ public final class ImageServiceBridgeUnitTest {
 
         verify(mImageServiceBridgeJni)
                 .fetchImageUrlFor(
-                        anyLong(),
+                        eq(mNativeImageServiceBridge),
                         eq(true),
                         eq(CLIENT_ID),
                         eq(PAGE_URL),
@@ -124,10 +130,17 @@ public final class ImageServiceBridgeUnitTest {
         verify(mUrlCallback, times(2)).onResult(eq(SALIENT_IMAGE_URL));
     }
 
+    @After
+    public void tearDown() {
+        if (mImageServiceBridge != null) {
+            mImageServiceBridge.destroy();
+        }
+    }
+
     @Test
     public void testDestroy() {
         mImageServiceBridge.destroy();
-        verify(mImageServiceBridgeJni).destroy(anyLong());
+        mImageServiceBridge = null;
         verify(mImageFetcher).destroy();
     }
 
@@ -137,7 +150,7 @@ public final class ImageServiceBridgeUnitTest {
 
         verify(mImageServiceBridgeJni)
                 .fetchImageUrlFor(
-                        anyLong(),
+                        eq(mNativeImageServiceBridge),
                         eq(true),
                         eq(CLIENT_ID),
                         eq(PAGE_URL),

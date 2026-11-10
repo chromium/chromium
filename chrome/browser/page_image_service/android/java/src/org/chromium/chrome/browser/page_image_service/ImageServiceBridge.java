@@ -8,7 +8,10 @@ import android.graphics.Bitmap;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -27,6 +30,9 @@ import java.util.Map;
 /** Allows java access to the native ImageService. */
 @NullMarked
 public class ImageServiceBridge {
+    @JniType("::ImageServiceBridge")
+    public interface NativeImageServiceBridge extends JniTypeToken {}
+
     private final @ClientId.EnumType int mClientId;
     private final String mImageFetcherClientName;
     // Cache the results for repeated queries to avoid extra calls through the JNI/network.
@@ -34,7 +40,7 @@ public class ImageServiceBridge {
     private final CallbackController mCallbackController = new CallbackController();
     private final ImageFetcher mImageFetcher;
 
-    private final long mNativeImageServiceBridge;
+    private @Nullable JniUniquePtr<NativeImageServiceBridge> mNativeImageServiceBridge;
 
     /**
      * @param clientId The ImageService client the salient image url is being fetched for.
@@ -54,7 +60,10 @@ public class ImageServiceBridge {
     }
 
     public void destroy() {
-        ImageServiceBridgeJni.get().destroy(mNativeImageServiceBridge);
+        if (mNativeImageServiceBridge != null) {
+            mNativeImageServiceBridge.destroy();
+            mNativeImageServiceBridge = null;
+        }
         mSalientImageUrlCache.clear();
         mCallbackController.destroy();
         mImageFetcher.destroy();
@@ -115,6 +124,7 @@ public class ImageServiceBridge {
             return;
         }
 
+        if (mNativeImageServiceBridge == null) return;
         ImageServiceBridgeJni.get()
                 .fetchImageUrlFor(
                         mNativeImageServiceBridge,
@@ -150,16 +160,14 @@ public class ImageServiceBridge {
     @NativeMethods
     public interface Natives {
         // Static methods.
-        long init(@JniType("Profile*") Profile profile);
+        JniUniquePtr<NativeImageServiceBridge> init(@JniType("Profile*") Profile profile);
 
         @JniType("std::string")
         String clientIdToString(@ClientId.EnumType int clientId);
 
         // Instance methods.
-        void destroy(long nativeImageServiceBridge);
-
         void fetchImageUrlFor(
-                long nativeImageServiceBridge,
+                JniPtr<NativeImageServiceBridge> self,
                 boolean isAccountData,
                 @ClientId.EnumType int clientId,
                 @JniType("GURL") GURL pageUrl,

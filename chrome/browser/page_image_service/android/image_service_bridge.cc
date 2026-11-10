@@ -11,6 +11,7 @@
 #include "chrome/browser/page_image_service/image_service_factory.h"
 #include "components/page_image_service/metrics_util.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "url/gurl.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -34,11 +35,12 @@ void HandleImageUrlResponse(
 
 }  // namespace
 
-static int64_t JNI_ImageServiceBridge_Init(JNIEnv* env, Profile* profile) {
+static jni_zero::JniUniquePtr<ImageServiceBridge> JNI_ImageServiceBridge_Init(
+    JNIEnv* env,
+    Profile* profile) {
   CHECK(!profile->IsOffTheRecord(), base::NotFatalUntil::M161);
-  ImageServiceBridge* image_service_bridge = new ImageServiceBridge(
+  return jni_zero::MakeUnique<ImageServiceBridge>(
       page_image_service::ImageServiceFactory::GetForBrowserContext(profile));
-  return reinterpret_cast<intptr_t>(image_service_bridge);
 }
 
 static std::string JNI_ImageServiceBridge_ClientIdToString(
@@ -53,10 +55,6 @@ ImageServiceBridge::ImageServiceBridge(
     : image_service_(image_service) {}
 
 ImageServiceBridge::~ImageServiceBridge() = default;
-
-void ImageServiceBridge::Destroy(JNIEnv* env) {
-  delete this;
-}
 
 void ImageServiceBridge::FetchImageUrlFor(JNIEnv* env,
                                           const bool is_account_data,

@@ -23,8 +23,6 @@ class ImageServiceBridge {
 
   ~ImageServiceBridge();
 
-  void Destroy(JNIEnv* env);
-
   // Fetches an image url for the given `page_url`. This request is only made
   // if there's a syncing consent level for the primary account or the
   // underlying datatype is account-bound, `is_account_data`.
