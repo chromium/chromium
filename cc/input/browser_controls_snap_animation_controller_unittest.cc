@@ -245,5 +245,23 @@ TEST_F(BrowserControlsSnapAnimationControllerTest,
   EXPECT_FALSE(controller_.ViewportInAlwaysShownRegion());
 }
 
+TEST_F(BrowserControlsSnapAnimationControllerTest,
+       PinnedTopControlsUsesBottomControlsAnimatedHeight) {
+  client_.set_top_controls_height(60.0f);
+  client_.set_top_controls_min_height(60.0f);
+  client_.set_bottom_controls_height(160.0f);
+  client_.set_viewport_offset_y(200.0f);
+
+  EXPECT_FLOAT_EQ(controller_.ControlsAnimatedHeight(), 160.0f);
+  EXPECT_FLOAT_EQ(controller_.AlwaysShownRegionHeight(), 0.0f);
+
+  controller_.OnScrollBegin();
+  float threshold = controller_.TriggerThreshold(1.0f);
+  auto hint = SendTwoScrollUpdates(threshold + 10.0f, base::Milliseconds(10));
+  ASSERT_TRUE(hint.has_value());
+  EXPECT_EQ(hint->action, SnapHint::Action::kCanHide);
+  controller_.OnScrollEnd();
+}
+
 }  // namespace
 }  // namespace cc

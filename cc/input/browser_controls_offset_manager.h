@@ -61,9 +61,12 @@ class CC_EXPORT BrowserControlsOffsetManager
   void ResetAnimations() override;
 
   bool IsAnimatingToShowControls() const {
-    return top_controls_animation_.IsInitialized() &&
-           top_controls_animation_.direction() ==
-               BrowserControlsAnimation::Direction::kShowingControls;
+    return (top_controls_animation_.IsInitialized() &&
+            top_controls_animation_.direction() ==
+                BrowserControlsAnimation::Direction::kShowingControls) ||
+           (bottom_controls_animation_.IsInitialized() &&
+            bottom_controls_animation_.direction() ==
+                BrowserControlsAnimation::Direction::kShowingControls);
   }
 
   const BrowserControlsSnapAnimationController& snap_controller_for_testing()
@@ -94,6 +97,21 @@ class CC_EXPORT BrowserControlsOffsetManager
   // controls have already hidden once during the current scroll sequence.
   void ApplySnapHint(std::optional<BrowserControlsSnapHint> hint);
 
+  struct ActiveControls {
+    float height;
+    float shown_ratio;
+    float min_shown_ratio;
+    float baseline_content_offset;
+  };
+
+  // Returns whether scroll and animation calculations should be based on the
+  // top controls rather than the bottom controls. Priority order:
+  // 1. Scrollable top controls (`TopControlsHeight() > TopControlsMinHeight()`)
+  // 2. Scrollable bottom controls
+  //    (`BottomControlsHeight() > BottomControlsMinHeight()`)
+  // 3. Non-zero top controls (`TopControlsHeight() > 0.f`)
+  bool ShouldBaseOnTopControls() const;
+  ActiveControls GetActiveControls() const;
   void StartAnimationIfNecessary();
   void ResetBaseline();
   float OldTopControlsMinShownRatio();

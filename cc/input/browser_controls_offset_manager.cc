@@ -43,7 +43,7 @@ const int64_t kHeightChangeDurationMs = 200;
 const int64_t kShowHideMinDurationMs = 75;
 
 float NormalizeShownRatio(float value, float min_shown_ratio) {
-  if (min_shown_ratio == 1.0f) {
+  if (min_shown_ratio >= 1.0f) {
     return 1.0f;
   }
 
@@ -523,14 +523,9 @@ gfx::Vector2dF BrowserControlsOffsetManager::ScrollByPrecise(
   // the scroll delta, we will calculate a shown ratio for the controls. The
   // top controls have the priority because they need to visually be in sync
   // with the web contents.
-  bool base_on_top_controls = TopControlsHeight();
-  float controls_height =
-      base_on_top_controls ? TopControlsHeight() : BottomControlsHeight();
+  const ActiveControls controls = GetActiveControls();
 
   float old_top_offset = ContentTopOffset();
-  float baseline_content_offset = base_on_top_controls
-                                      ? baseline_top_content_offset_
-                                      : baseline_bottom_content_offset_;
   // The top and bottom controls ratios can be calculated independently.
   // However, we want the (normalized) ratios to be equal when scrolling.
   // Having normalized ratios in this context means the top and bottom controls
@@ -538,11 +533,11 @@ gfx::Vector2dF BrowserControlsOffsetManager::ScrollByPrecise(
   // the usual show/hide animations, but they can have different shown ratios at
   // any time.
   float shown_ratio =
-      (baseline_content_offset - accumulated_scroll_delta_) / controls_height;
+      (controls.baseline_content_offset - accumulated_scroll_delta_) /
+      controls.height;
 
-  float min_ratio = base_on_top_controls ? TopControlsMinShownRatio()
-                                         : BottomControlsMinShownRatio();
-  float normalized_shown_ratio = NormalizeShownRatio(shown_ratio, min_ratio);
+  float normalized_shown_ratio =
+      NormalizeShownRatio(shown_ratio, controls.min_shown_ratio);
 
   // Even though the real shown ratios (shown height / total height) of the top
   // and bottom controls can be different, they share the same
@@ -597,16 +592,11 @@ void BrowserControlsOffsetManager::ApplySnapHint(
     return;
   }
 
-  const bool base_on_top_controls = TopControlsHeight() > 0;
-  const float shown_ratio = base_on_top_controls ? TopControlsShownRatio()
-                                                 : BottomControlsShownRatio();
-  const float min_shown_ratio = base_on_top_controls
-                                    ? TopControlsMinShownRatio()
-                                    : BottomControlsMinShownRatio();
+  const ActiveControls controls = GetActiveControls();
   if ((direction == BrowserControlsAnimation::Direction::kShowingControls &&
-       shown_ratio == 1.0f) ||
+       controls.shown_ratio == 1.0f) ||
       (direction == BrowserControlsAnimation::Direction::kHidingControls &&
-       shown_ratio == min_shown_ratio)) {
+       controls.shown_ratio == controls.min_shown_ratio)) {
     return;
   }
 
@@ -659,28 +649,24 @@ void BrowserControlsOffsetManager::ScrollEnd(
   float compensated_scroll_delta_y = compensated_scroll_delta.y();
   if (!show_controls_when_scroll_completes_ &&
       compensated_scroll_delta_y < 0.0f) {
-    float controls_height =
-        TopControlsHeight() ? TopControlsHeight() : BottomControlsHeight();
-    float controls_shown_ratio = TopControlsHeight()
-                                     ? TopControlsShownRatio()
-                                     : BottomControlsShownRatio();
-    float controls_min_shown_ratio = TopControlsHeight()
-                                         ? TopControlsMinShownRatio()
-                                         : BottomControlsMinShownRatio();
-
-    float normalized_shown_ratio_after_compensation = NormalizeShownRatio(
-        controls_shown_ratio +
-            std::abs(compensated_scroll_delta_y) / controls_height,
-        controls_min_shown_ratio);
-    if (normalized_shown_ratio_after_compensation >= controls_show_threshold_) {
-      show_controls_when_scroll_completes_ = true;
+    const ActiveControls controls = GetActiveControls();
+    if (controls.height > 0.0f && controls.min_shown_ratio < 1.0f) {
+      float normalized_shown_ratio_after_compensation = NormalizeShownRatio(
+          controls.shown_ratio +
+              std::abs(compensated_scroll_delta_y) / controls.height,
+          controls.min_shown_ratio);
+      if (normalized_shown_ratio_after_compensation >=
+          controls_show_threshold_) {
+        show_controls_when_scroll_completes_ = true;
+      }
     }
   }
 
-  // See if we should animate the top bar in, in case there was a race between
-  // chrome showing the controls and the user performing a scroll. We only need
-  // to animate the top control if it's not fully shown.
-  if (show_controls_when_scroll_completes_ && TopControlsShownRatio() != 1.0f) {
+  // See if we should animate the top or bottom bar in, in case there was a race
+  // between chrome showing the controls and the user performing a scroll. We
+  // only need to animate the controls if they're not fully shown.
+  if (show_controls_when_scroll_completes_ &&
+      (TopControlsShownRatio() != 1.0f || BottomControlsShownRatio() != 1.0f)) {
     SetupAnimation(BrowserControlsAnimation::Direction::kShowingControls,
                    kShowHideMaxDurationMs);
     return;
@@ -846,10 +832,11 @@ void BrowserControlsOffsetManager::SetupAnimation(
   DCHECK(direction != BrowserControlsAnimation::Direction::kShowingControls ||
          TopControlsShownRatio() < 1.0f || BottomControlsShownRatio() < 1.0f);
 
-  if (top_controls_animation_.IsInitialized() &&
-      top_controls_animation_.direction() == direction &&
-      bottom_controls_animation_.IsInitialized() &&
-      bottom_controls_animation_.direction() == direction) {
+  if (HasAnimation() &&
+      (!top_controls_animation_.IsInitialized() ||
+       top_controls_animation_.direction() == direction) &&
+      (!bottom_controls_animation_.IsInitialized() ||
+       bottom_controls_animation_.direction() == direction)) {
     return;
   }
 
@@ -888,6 +875,26 @@ void BrowserControlsOffsetManager::SetupAnimation(
   client().DidChangeBrowserControlsPosition();
 }
 
+bool BrowserControlsOffsetManager::ShouldBaseOnTopControls() const {
+  if (TopControlsHeight() > TopControlsMinHeight()) {
+    return true;
+  }
+  if (BottomControlsHeight() > BottomControlsMinHeight()) {
+    return false;
+  }
+  return TopControlsHeight() > 0.f;
+}
+
+BrowserControlsOffsetManager::ActiveControls
+BrowserControlsOffsetManager::GetActiveControls() const {
+  if (ShouldBaseOnTopControls()) {
+    return {TopControlsHeight(), TopControlsShownRatio(),
+            TopControlsMinShownRatio(), baseline_top_content_offset_};
+  }
+  return {BottomControlsHeight(), BottomControlsShownRatio(),
+          BottomControlsMinShownRatio(), baseline_bottom_content_offset_};
+}
+
 void BrowserControlsOffsetManager::StartAnimationIfNecessary() {
   if ((TopControlsShownRatio() == TopControlsMinShownRatio() ||
        TopControlsShownRatio() == 1.0f) &&
@@ -896,14 +903,14 @@ void BrowserControlsOffsetManager::StartAnimationIfNecessary() {
     return;
   }
 
-  float normalized_top_ratio =
-      (TopControlsShownRatio() - TopControlsMinShownRatio()) /
-      (1.0f - TopControlsMinShownRatio());
-  if (normalized_top_ratio >= 1.0f - controls_hide_threshold_) {
+  const ActiveControls controls = GetActiveControls();
+  float normalized_shown_ratio =
+      NormalizeShownRatio(controls.shown_ratio, controls.min_shown_ratio);
+  if (normalized_shown_ratio >= 1.0f - controls_hide_threshold_) {
     // If we're showing so much that the hide threshold won't trigger, show.
     SetupAnimation(BrowserControlsAnimation::Direction::kShowingControls,
                    kShowHideMaxDurationMs);
-  } else if (normalized_top_ratio <= controls_show_threshold_) {
+  } else if (normalized_shown_ratio <= controls_show_threshold_) {
     // If we're showing so little that the show threshold won't trigger, hide.
     SetupAnimation(BrowserControlsAnimation::Direction::kHidingControls,
                    kShowHideMaxDurationMs);

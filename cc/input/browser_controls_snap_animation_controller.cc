@@ -109,8 +109,9 @@ float BrowserControlsSnapAnimationController::Slowness() const {
 float BrowserControlsSnapAnimationController::ControlsAnimatedHeight() const {
   // The top controls have priority because they need to visually be in sync
   // with the web contents.
-  float animated_height = client_->TopControlsHeight() > 0
-                              ? TopControlsAnimatedHeight()
+  float top_animated_height = TopControlsAnimatedHeight();
+  float animated_height = top_animated_height > 0.0f
+                              ? top_animated_height
                               : BottomControlsAnimatedHeight();
   DCHECK_GE(animated_height, 0.0f);
   return animated_height;
