@@ -10543,6 +10543,8 @@ from previous Chrome versions.
   <int value="-1364703377" label="AppListDragAndDropRefactor:enabled"/>
   <int value="-1363709707" label="MaterialDesignHistory:disabled"/>
   <int value="-1363463057" label="AutofillAiCreateEntityDataManager:enabled"/>
+  <int value="-1362826997"
+      label="HashPrefixRealTimeLookupsOnIncognitoAndGuest:disabled"/>
   <int value="-1362431915" label="RelatedSearches:disabled"/>
   <int value="-1361870305"
       label="DeviceBoundSessionsFederatedRegistration:disabled"/>
@@ -13819,6 +13821,8 @@ from previous Chrome versions.
   <int value="-389283574" label="IPH_PasswordsAccountStorage:disabled"/>
   <int value="-388869173"
       label="AccessibilityRequestScopedContentChangedEvents:enabled"/>
+  <int value="-387662330"
+      label="HashPrefixRealTimeLookupsOnIncognitoAndGuest:enabled"/>
   <int value="-387606010" label="ArcBootCompletedBroadcast:enabled"/>
   <int value="-387341308" label="ParentAccessJelly:disabled"/>
   <int value="-387217874" label="LinkCapturingInfoBar:enabled"/>

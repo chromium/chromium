@@ -9545,6 +9545,15 @@ const FeatureEntry kFeatureEntries[] = {
          webapps::features::kAlwaysShowInstallDisambiguationDialog)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+    {"safe-browsing-hash-prefix-real-time-lookups-on-incognito-and-guest",
+     flag_descriptions::
+         kSafeBrowsingHashPrefixRealTimeLookupsOnIncognitoAndGuestName,
+     flag_descriptions::
+         kSafeBrowsingHashPrefixRealTimeLookupsOnIncognitoAndGuestDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         safe_browsing::kHashPrefixRealTimeLookupsOnIncognitoAndGuest)},
+
     {"safe-browsing-local-lists-use-sbv5",
      flag_descriptions::kSafeBrowsingLocalListsUseSBv5Name,
      flag_descriptions::kSafeBrowsingLocalListsUseSBv5Description, kOsAll,

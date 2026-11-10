@@ -2102,6 +2102,13 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      FEATURE_WITH_PARAMS_VALUE_TYPE(kBWGPromoConsent,
                                     kBWGPromoConsentVariations,
                                     "IOSBWGPromoConsent")},
+    {"safe-browsing-hash-prefix-real-time-lookups-on-incognito-and-guest",
+     flag_descriptions::kSafeBrowsingHashPrefixRealTimeLookupsOnIncognitoName,
+     flag_descriptions::
+         kSafeBrowsingHashPrefixRealTimeLookupsOnIncognitoDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         safe_browsing::kHashPrefixRealTimeLookupsOnIncognitoAndGuest)},
     {"safe-browsing-local-lists-use-sbv5",
      flag_descriptions::kSafeBrowsingLocalListsUseSBv5Name,
      flag_descriptions::kSafeBrowsingLocalListsUseSBv5Description,

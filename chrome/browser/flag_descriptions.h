@@ -2675,6 +2675,14 @@ inline constexpr char kExperimentalWebPlatformFeaturesName[] =
 inline constexpr char kExperimentalWebPlatformFeaturesDescription[] =
     "Enables experimental Web Platform features that are in development.";
 
+inline constexpr char
+    kSafeBrowsingHashPrefixRealTimeLookupsOnIncognitoAndGuestName[] =
+        "Safe Browsing Hash Prefix Real Time Lookups on Incognito and Guest";
+inline constexpr char
+    kSafeBrowsingHashPrefixRealTimeLookupsOnIncognitoAndGuestDescription[] =
+        "Enable checking URLs through Safe Browsing hash-prefix real-time "
+        "lookups on Incognito and Guest mode.";
+
 inline constexpr char kSafeBrowsingLocalListsUseSBv5Name[] =
     "Safe Browsing Local Lists use v5 API";
 inline constexpr char kSafeBrowsingLocalListsUseSBv5Description[] =
