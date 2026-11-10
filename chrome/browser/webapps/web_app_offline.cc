@@ -85,7 +85,10 @@ class DefaultOfflineWebContentsObserver : public content::WebContentsObserver {
       return;
     }
 
-    if (error_page_url_ != navigation_handle->GetURL()) {
+    // A same-URL error-page commit means the user reloaded while still
+    // offline and a new observer has taken over; it is not a recovery.
+    if (error_page_url_ != navigation_handle->GetURL() ||
+        navigation_handle->IsErrorPage()) {
       // Note: After calling this function, the class deletes itself.
       LogAndExit(ClosingReason::kNewNavigation);
     } else {

@@ -404,6 +404,52 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflineMetricsBackOnline) {
               ElementsAre(base::Bucket(/* min= */ 0, /* count= */ 1)));
 }
 
+// Reloading the offline error page while still offline attaches a fresh
+// observer; the previous observer must log kNewNavigation rather than
+// kNetworkReestablished.
+IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest,
+                       WebAppOfflineMetricsReloadWhileStillOffline) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  const GURL target_url =
+      embedded_test_server()->GetURL("/banners/no-sw-with-colors.html");
+
+  NavigateViaLinkClickToURLAndWait(browser(), target_url);
+  webapps::AppId app_id = test::InstallPwaForCurrentUrl(browser());
+  WebAppIconWaiter(browser()->GetProfile(), app_id).Wait();
+
+  // Keep the interceptor alive so the reloads below also fail offline until
+  // the final reset, which simulates the network coming back.
+  std::unique_ptr<content::URLLoaderInterceptor> interceptor =
+      content::URLLoaderInterceptor::SetupRequestFailForURL(
+          target_url, net::ERR_INTERNET_DISCONNECTED);
+
+  ReloadWebContents(web_contents);
+
+  SyncHistograms();
+  histogram()->ExpectTotalCount(kHistogramDurationShown, 0);
+  histogram()->ExpectTotalCount(kHistogramClosingReason, 0);
+
+  ReloadWebContents(web_contents);
+
+  SyncHistograms();
+  histogram()->ExpectTotalCount(kHistogramDurationShown, 1);
+  histogram()->ExpectTotalCount(kHistogramClosingReason, 1);
+  EXPECT_THAT(histogram()->GetAllSamples(kHistogramClosingReason),
+              ElementsAre(base::Bucket(/* min= */ 1, /* count= */ 1)));
+
+  interceptor.reset();
+  ReloadWebContents(web_contents);
+
+  SyncHistograms();
+  histogram()->ExpectTotalCount(kHistogramDurationShown, 2);
+  histogram()->ExpectTotalCount(kHistogramClosingReason, 2);
+  EXPECT_THAT(histogram()->GetAllSamples(kHistogramClosingReason),
+              ElementsAre(base::Bucket(/* min= */ 0, /* count= */ 1),
+                          base::Bucket(/* min= */ 1, /* count= */ 1)));
+}
+
 IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflineMetricsPwaClosing) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* web_contents =
