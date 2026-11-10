@@ -495,12 +495,18 @@ void WaylandToplevelWindow::SetInputRegion(
 
 void WaylandToplevelWindow::UpdateWindowScale(bool update_bounds) {
   auto old_scale = applied_state().window_scale;
+  auto old_ui_scale = applied_state().ui_scale;
+  auto weak_this = AsWeakPtr();
   WaylandWindow::UpdateWindowScale(update_bounds);
-  if (old_scale == applied_state().window_scale) {
+  if (!weak_this) {
+    return;
+  }
+  if (old_scale == applied_state().window_scale &&
+      old_ui_scale == applied_state().ui_scale) {
     return;
   }
 
-  // Update min/max size in DIP if buffer scale is updated.
+  // Update min/max size if buffer or ui scale is updated.
   SizeConstraintsChanged();
 }
 
@@ -1250,27 +1256,27 @@ void WaylandToplevelWindow::SetSizeConstraints() {
 
   auto min_size_dip = delegate()->GetMinimumSizeForWindow();
   auto max_size_dip = delegate()->GetMaximumSizeForWindow();
-  const gfx::Insets insets_dip =
-      delegate()->CalculateInsetsInDIP(applied_state().window_state);
+  // Size constraints apply to the window geometry, so convert them like its
+  // size.
+  const PlatformWindowState window_state = applied_state().window_state;
+  const float ui_scale = applied_state().ui_scale;
 
   if (min_size_dip.has_value()) {
-    gfx::Size adjusted_min_size = *min_size_dip;
-    adjusted_min_size.Enlarge(-insets_dip.width(), -insets_dip.height());
-    adjusted_min_size.SetToMax(gfx::Size(1, 1));
+    gfx::Size adjusted_min_size =
+        BoundsSizeToGeometrySizeDIP(*min_size_dip, window_state, ui_scale);
     xdg_toplevel_->SetMinSize(adjusted_min_size.width(),
                               adjusted_min_size.height());
   }
 
   if (max_size_dip.has_value()) {
-    gfx::Size adjusted_max_size = *max_size_dip;
+    gfx::Size adjusted_max_size =
+        BoundsSizeToGeometrySizeDIP(*max_size_dip, window_state, ui_scale);
     // Zero means "no maximum" and should be preserved.
-    if (adjusted_max_size.width() > 0) {
-      adjusted_max_size.set_width(
-          std::max(1, adjusted_max_size.width() - insets_dip.width()));
+    if (max_size_dip->width() == 0) {
+      adjusted_max_size.set_width(0);
     }
-    if (adjusted_max_size.height() > 0) {
-      adjusted_max_size.set_height(
-          std::max(1, adjusted_max_size.height() - insets_dip.height()));
+    if (max_size_dip->height() == 0) {
+      adjusted_max_size.set_height(0);
     }
     xdg_toplevel_->SetMaxSize(adjusted_max_size.width(),
                               adjusted_max_size.height());

@@ -6365,6 +6365,101 @@ TEST_P(WaylandWindowTest, UiScale_PopupDecorationInsets) {
   VerifyAndClearExpectations(menu_delegate, menu_surface_id);
 }
 
+// Verifies size constraints are resent, multiplied by ui_scale, when the font
+// scale changes.
+TEST_P(WaylandWindowTest, UiScale_SizeConstraints) {
+  ASSERT_TRUE(connection_->IsUiScaleEnabled());
+
+  constexpr gfx::Size kMinSize{400, 300};
+  constexpr gfx::Size kMaxSize{800, 600};
+  ON_CALL(delegate_, GetMinimumSizeForWindow()).WillByDefault(Return(kMinSize));
+  ON_CALL(delegate_, GetMaximumSizeForWindow()).WillByDefault(Return(kMaxSize));
+
+  connection_->window_manager()->SetFontScale(1.25f);
+  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
+    auto* mock_surface = server->GetObject<wl::MockSurface>(id);
+    auto* mock_xdg_toplevel = mock_surface->xdg_surface()->xdg_toplevel();
+    EXPECT_EQ(gfx::Size(500, 375), mock_xdg_toplevel->min_size());
+    EXPECT_EQ(gfx::Size(1000, 750), mock_xdg_toplevel->max_size());
+  });
+}
+
+// Verifies a fixed-size toplevel advertises min == max == its window geometry
+// size with a fractional ui_scale, and keeps them in sync when it changes, so
+// the server does not clamp the window below its contents.
+TEST_P(WaylandWindowTest, UiScale_FixedSizeWindow) {
+  ASSERT_TRUE(connection_->IsUiScaleEnabled());
+
+  connection_->window_manager()->SetFontScale(1.1875f);
+
+  constexpr gfx::Size kSize{500, 380};
+  testing::NiceMock<MockWaylandPlatformWindowDelegate> delegate(
+      connection_.get());
+  ON_CALL(delegate, GetMinimumSizeForWindow()).WillByDefault(Return(kSize));
+  ON_CALL(delegate, GetMaximumSizeForWindow()).WillByDefault(Return(kSize));
+  auto window = CreateWaylandWindowWithParams(PlatformWindowType::kWindow,
+                                              gfx::Rect(kSize), &delegate);
+  ASSERT_TRUE(window);
+  const uint32_t surface_id = window->root_surface()->get_surface_id();
+  ActivateSurface(surface_id);
+
+  // 500x380 * 1.1875 = 593.75x451.25, rounded down like the window geometry.
+  EXPECT_EQ(gfx::Size(593, 451), window->applied_state().geometry_size_dip);
+  PostToServerAndWait([surface_id](wl::TestWaylandServerThread* server) {
+    auto* mock_surface = server->GetObject<wl::MockSurface>(surface_id);
+    auto* mock_xdg_toplevel = mock_surface->xdg_surface()->xdg_toplevel();
+    EXPECT_EQ(gfx::Size(593, 451), mock_xdg_toplevel->min_size());
+    EXPECT_EQ(gfx::Size(593, 451), mock_xdg_toplevel->max_size());
+  });
+
+  // The window can't shrink in DIP when the font scale grows, so it grows in
+  // window geometry coordinates instead, along with its constraints.
+  connection_->window_manager()->SetFontScale(1.25f);
+  PostToServerAndWait([surface_id](wl::TestWaylandServerThread* server) {
+    auto* mock_surface = server->GetObject<wl::MockSurface>(surface_id);
+    auto* mock_xdg_toplevel = mock_surface->xdg_surface()->xdg_toplevel();
+    EXPECT_EQ(gfx::Size(625, 475), mock_xdg_toplevel->min_size());
+    EXPECT_EQ(gfx::Size(625, 475), mock_xdg_toplevel->max_size());
+    EXPECT_CALL(*mock_surface->xdg_surface(),
+                SetWindowGeometry(gfx::Rect(625, 475)));
+  });
+  CreateBufferAndPresentAsNewFrame(window.get(), delegate,
+                                   /*buffer_size=*/gfx::Size(625, 475),
+                                   /*buffer_scale=*/1.25f);
+  VerifyAndClearExpectations(delegate, surface_id);
+}
+
+// Verifies size constraints match the window geometry when the window has
+// decoration insets, which are in UI DIP and so removed before scaling.
+TEST_P(WaylandWindowTest, UiScale_SizeConstraintsWithInsets) {
+  ASSERT_TRUE(connection_->IsUiScaleEnabled());
+
+  constexpr gfx::Size kMinSize{420, 320};
+  ON_CALL(delegate_, CalculateInsetsInDIP(_))
+      .WillByDefault(Return(gfx::Insets(10)));
+  ON_CALL(delegate_, GetMinimumSizeForWindow()).WillByDefault(Return(kMinSize));
+
+  connection_->window_manager()->SetFontScale(1.25f);
+  // (420x320 - 20x20) * 1.25 = 500x375.
+  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
+    auto* mock_surface = server->GetObject<wl::MockSurface>(id);
+    EXPECT_EQ(gfx::Size(500, 375),
+              mock_surface->xdg_surface()->xdg_toplevel()->min_size());
+  });
+}
+
+// Verifies the window can be deleted from OnStateUpdate() while handling a font
+// scale change.
+TEST_P(WaylandWindowTest, UiScale_DeleteWindowFromOnStateUpdate) {
+  delegate_.set_on_state_update_callback(base::BindLambdaForTesting([&]() {
+    window_.reset();
+    return false;
+  }));
+
+  connection_->window_manager()->SetFontScale(1.25f);
+  EXPECT_FALSE(window_);
+}
+
 TEST_P(WaylandWindowTest, UiScale_InitScaleAndBounds) {
   ASSERT_TRUE(connection_->IsUiScaleEnabled());
 
