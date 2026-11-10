@@ -142,13 +142,7 @@ public class TabBottomSheetWebUi {
             return;
         }
 
-        // Reset references and top-level window for the old WebContents and ContentView.
-        mContentView = null;
-
-        if (mWebContents != null && !mWebContents.isDestroyed()) {
-            mWebContents.setTopLevelNativeWindow(null);
-        }
-
+        releaseCurrentWebContents();
         mWebContents = webContents;
         if (mWebContents == null) {
             if (mIsObservingActivityState) {
@@ -343,6 +337,17 @@ public class TabBottomSheetWebUi {
 
     @Nullable WebContents getWebContents() {
         return mWebContents;
+    }
+
+    private void releaseCurrentWebContents() {
+        if (mWebContents != null && !mWebContents.isDestroyed()) {
+            ViewAndroidDelegate viewDelegate = mWebContents.getViewAndroidDelegate();
+            if (viewDelegate == null || viewDelegate.getContainerView() == mContentView) {
+                mWebContents.setTopLevelNativeWindow(null);
+            }
+        }
+        mWebContents = null;
+        mContentView = null;
     }
 
     private void updateWebContentsVisibility(@Visibility int visibility) {

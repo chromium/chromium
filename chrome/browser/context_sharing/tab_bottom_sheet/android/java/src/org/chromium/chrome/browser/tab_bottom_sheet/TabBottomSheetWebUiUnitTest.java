@@ -250,6 +250,48 @@ public class TabBottomSheetWebUiUnitTest {
     }
 
     @Test
+    public void testSetWebContents_Null_ClearsTopLevelWindowWhenStillOwned() {
+        ViewAndroidDelegate viewDelegate = ViewAndroidDelegate.createBasicDelegate(null);
+        when(mWebContents.getViewAndroidDelegate()).thenReturn(viewDelegate);
+
+        mWebUi.setWebContents(mWebContents, true);
+        assertEquals(mContentView, viewDelegate.getContainerView());
+
+        mWebUi.setWebContents(null, false);
+        verify(mWebContents).setTopLevelNativeWindow(null);
+    }
+
+    @Test
+    public void testSetWebContents_Null_DoesNotClearTopLevelWindowWhenMovedToAnotherWebUi() {
+        ViewAndroidDelegate viewDelegate = ViewAndroidDelegate.createBasicDelegate(null);
+        when(mWebContents.getViewAndroidDelegate()).thenReturn(viewDelegate);
+
+        mWebUi.setWebContents(mWebContents, true);
+        assertEquals(mContentView, viewDelegate.getContainerView());
+
+        // Simulate another TabBottomSheetWebUi (e.g. in another window after "Move here") taking
+        // ownership of the WebContents before this WebUi finishes closing.
+        ContentView otherContentView = ContentView.createContentView(mActivity, null);
+        viewDelegate.setContainerView(otherContentView);
+
+        mWebUi.setWebContents(null, false);
+        verify(mWebContents, never()).setTopLevelNativeWindow(null);
+    }
+
+    @Test
+    public void testSetWebContents_Null_DoesNotClearTopLevelWindowWhenDestroyed() {
+        ViewAndroidDelegate viewDelegate = ViewAndroidDelegate.createBasicDelegate(null);
+        when(mWebContents.getViewAndroidDelegate()).thenReturn(viewDelegate);
+
+        mWebUi.setWebContents(mWebContents, true);
+        assertEquals(mContentView, viewDelegate.getContainerView());
+
+        when(mWebContents.isDestroyed()).thenReturn(true);
+        mWebUi.setWebContents(null, false);
+        verify(mWebContents, never()).setTopLevelNativeWindow(null);
+    }
+
+    @Test
     public void testFocusHandling() {
         mWebUi.setWebContents(mWebContents, true);
         // Attaching registers the window focus listener.
