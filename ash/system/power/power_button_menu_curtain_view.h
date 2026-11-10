@@ -33,9 +33,6 @@ class ASH_EXPORT PowerButtonMenuCurtainView
 
   void ScheduleShowHideAnimation(bool show);
 
-  // views::View:
-  void OnThemeChanged() override;
-
  private:
   void Initialize();
 

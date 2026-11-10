@@ -11,19 +11,16 @@
 #include "ash/style/style_util.h"
 #include "ash/style/system_decoration.h"
 #include "ash/system/power/power_button_menu_view_util.h"
-#include "base/check_deref.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
@@ -60,12 +57,6 @@ constexpr int kTitleBottomMargin = 35;
 
 // Line height for the widget content text.
 constexpr int kContentLineHeight = 12;
-
-gfx::ImageSkia EnterpriseIcon(const ui::ColorProvider& color_provider) {
-  return gfx::CreateVectorIcon(
-      chromeos::kEnterpriseIcon,
-      color_provider.GetColor(kColorAshIconColorPrimary));
-}
 
 std::u16string TitleText() {
   return l10n_util::GetStringUTF16(IDS_ASH_CURTAIN_POWER_WIDGET_TITLE);
@@ -122,17 +113,6 @@ void PowerButtonMenuCurtainView::ScheduleShowHideAnimation(bool show) {
   SetLayerAnimation(decoration_->GetLayer(), nullptr, show, transform);
 }
 
-void PowerButtonMenuCurtainView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  const ui::ColorProvider& color_provider = CHECK_DEREF(GetColorProvider());
-  enterprise_icon().SetImage(
-      ui::ImageModel::FromImageSkia(EnterpriseIcon(color_provider)));
-  title_text().SetEnabledColor(
-      color_provider.GetColor(kColorAshIconColorPrimary));
-  description_text().SetEnabledColor(
-      color_provider.GetColor(kColorAshIconColorPrimary));
-}
-
 void PowerButtonMenuCurtainView::Initialize() {
   Builder<FlexLayoutView>(this)
       .SetOrientation(LayoutOrientation::kVertical)
@@ -179,6 +159,11 @@ void PowerButtonMenuCurtainView::Initialize() {
               .SetMaximumWidth(kWidth)
               .CopyAddressTo(&description_text_))
       .BuildChildren();
+
+  enterprise_icon().SetImage(ui::ImageModel::FromVectorIcon(
+      chromeos::kEnterpriseIcon, kColorAshIconColorPrimary));
+  title_text().SetEnabledColor(kColorAshIconColorPrimary);
+  description_text().SetEnabledColor(kColorAshIconColorPrimary);
 }
 
 void PowerButtonMenuCurtainView::OnImplicitAnimationsCompleted() {
