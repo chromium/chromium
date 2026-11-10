@@ -19662,6 +19662,27 @@
             ]
         }
     ],
+    "UniversalOptOutUpdateOnGeoLocationChanged": [
+        {
+            "platforms": [
+                "android",
+                "android_desktop",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20261109",
+                    "enable_features": [
+                        "UniversalOptOutUpdateOnGeoLocationChanged"
+                    ]
+                }
+            ]
+        }
+    ],
     "UnoPhase2ChromeOS": [
         {
             "platforms": [
