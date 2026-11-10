@@ -388,7 +388,8 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   wallpaper_controller_client_->Init();
 
   session_controller_client_ = std::make_unique<SessionControllerClientImpl>(
-      CHECK_DEREF(g_browser_process->local_state()));
+      CHECK_DEREF(g_browser_process->local_state()),
+      g_browser_process->variations_service());
   session_controller_client_->Init();
 
   // Emit the ash-initialized upstart signal to start Chrome OS tasks that

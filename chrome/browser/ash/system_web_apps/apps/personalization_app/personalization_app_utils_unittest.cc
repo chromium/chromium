@@ -152,12 +152,9 @@ class PersonalizationAppUtilsTest : public testing::Test {
             local_state(), metrics_state_manager_.get());
     test_variations_service_->OverrideStoredPermanentCountry(
         std::string(kAllowedCountryCode));
-    TestingBrowserProcess::GetGlobal()->SetVariationsService(
-        test_variations_service_.get());
   }
 
   void TearDown() override {
-    TestingBrowserProcess::GetGlobal()->SetVariationsService(nullptr);
     test_variations_service_.reset();
     metrics_state_manager_.reset();
     manta_service_provider_.reset();
@@ -171,6 +168,10 @@ class PersonalizationAppUtilsTest : public testing::Test {
   void SetCountryCode(std::string_view country_code) {
     local_state()->SetString(variations::prefs::kVariationsCountry,
                              country_code);
+  }
+
+  variations::TestVariationsService& test_variations_service() {
+    return *test_variations_service_;
   }
 
  private:
@@ -219,7 +220,7 @@ TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenGuest) {
   auto* guest_profile = SetUpUserAndProfile(user_manager::GuestAccountId(),
                                             user_manager::UserType::kGuest);
   ASSERT_FALSE(IsAllowedToInstallSeaPen(guest_profile));
-  ASSERT_FALSE(IsEligibleForSeaPen(guest_profile));
+  ASSERT_FALSE(IsEligibleForSeaPen(test_variations_service(), guest_profile));
 }
 
 TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenChild) {
@@ -227,12 +228,12 @@ TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenChild) {
       SetUpUserAndProfile(kTestAccountId, user_manager::UserType::kChild);
   child_profile->SetIsSupervisedProfile();
   ASSERT_FALSE(IsAllowedToInstallSeaPen(child_profile));
-  ASSERT_FALSE(IsEligibleForSeaPen(child_profile));
+  ASSERT_FALSE(IsEligibleForSeaPen(test_variations_service(), child_profile));
 }
 
 TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenNoProfile) {
   ASSERT_FALSE(IsAllowedToInstallSeaPen(nullptr));
-  ASSERT_FALSE(IsEligibleForSeaPen(nullptr));
+  ASSERT_FALSE(IsEligibleForSeaPen(test_variations_service(), nullptr));
 }
 
 TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenGoogler) {
@@ -251,7 +252,7 @@ TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenManaged) {
   managed_profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(
       true);
   ASSERT_TRUE(IsAllowedToInstallSeaPen(managed_profile));
-  ASSERT_FALSE(IsEligibleForSeaPen(managed_profile));
+  ASSERT_FALSE(IsEligibleForSeaPen(test_variations_service(), managed_profile));
 }
 
 TEST_F(PersonalizationAppUtilsTest,
@@ -264,7 +265,7 @@ TEST_F(PersonalizationAppUtilsTest,
   SetUpIdentityAndCapabilities(managed_profile, kTestAccountId, true);
 
   ASSERT_TRUE(IsAllowedToInstallSeaPen(managed_profile));
-  ASSERT_TRUE(IsEligibleForSeaPen(managed_profile));
+  ASSERT_TRUE(IsEligibleForSeaPen(test_variations_service(), managed_profile));
 }
 
 TEST_F(PersonalizationAppUtilsTest,
@@ -277,7 +278,7 @@ TEST_F(PersonalizationAppUtilsTest,
   SetUpIdentityAndCapabilities(managed_profile, kTestAccountId, false);
 
   ASSERT_TRUE(IsAllowedToInstallSeaPen(managed_profile));
-  ASSERT_FALSE(IsEligibleForSeaPen(managed_profile));
+  ASSERT_FALSE(IsEligibleForSeaPen(test_variations_service(), managed_profile));
 }
 
 TEST_F(PersonalizationAppUtilsTest,
@@ -290,14 +291,14 @@ TEST_F(PersonalizationAppUtilsTest,
   SetUpIdentityAndCapabilities(managed_profile, kTestAccountId, std::nullopt);
 
   ASSERT_TRUE(IsAllowedToInstallSeaPen(managed_profile));
-  ASSERT_FALSE(IsEligibleForSeaPen(managed_profile));
+  ASSERT_FALSE(IsEligibleForSeaPen(test_variations_service(), managed_profile));
 }
 
 TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenRegular) {
   auto* regular_profile =
       SetUpUserAndProfile(kTestAccountId, user_manager::UserType::kRegular);
   ASSERT_TRUE(IsAllowedToInstallSeaPen(regular_profile));
-  ASSERT_TRUE(IsEligibleForSeaPen(regular_profile));
+  ASSERT_TRUE(IsEligibleForSeaPen(test_variations_service(), regular_profile));
 }
 
 TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPen_BlockedCountryCode) {
@@ -307,7 +308,7 @@ TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPen_BlockedCountryCode) {
   auto* regular_profile =
       SetUpUserAndProfile(kTestAccountId, user_manager::UserType::kRegular);
   ASSERT_TRUE(IsAllowedToInstallSeaPen(regular_profile));
-  ASSERT_FALSE(IsEligibleForSeaPen(regular_profile));
+  ASSERT_FALSE(IsEligibleForSeaPen(test_variations_service(), regular_profile));
 }
 
 TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenPublicAccount) {
@@ -320,7 +321,7 @@ TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenPublicAccount) {
   managed_profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(
       true);
   ASSERT_FALSE(IsAllowedToInstallSeaPen(managed_profile));
-  ASSERT_FALSE(IsEligibleForSeaPen(managed_profile));
+  ASSERT_FALSE(IsEligibleForSeaPen(test_variations_service(), managed_profile));
 }
 
 TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenPublicAccountDemoMode) {
@@ -356,7 +357,8 @@ TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenTextInput_UnknownAge) {
 
   SetUpIdentityAndCapabilities(regular_profile, kTestAccountId, std::nullopt);
 
-  ASSERT_FALSE(IsEligibleForSeaPenTextInput(regular_profile, "en-US"));
+  ASSERT_FALSE(IsEligibleForSeaPenTextInput(test_variations_service(),
+                                            regular_profile, "en-US"));
 }
 
 TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenTextInput_MinorUser) {
@@ -366,7 +368,8 @@ TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenTextInput_MinorUser) {
 
   SetUpIdentityAndCapabilities(regular_profile, kTestAccountId, false);
 
-  ASSERT_FALSE(IsEligibleForSeaPenTextInput(regular_profile, "en-US"));
+  ASSERT_FALSE(IsEligibleForSeaPenTextInput(test_variations_service(),
+                                            regular_profile, "en-US"));
 }
 
 TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenTextInput_AdultUser) {
@@ -376,7 +379,8 @@ TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenTextInput_AdultUser) {
 
   SetUpIdentityAndCapabilities(regular_profile, kTestAccountId, true);
 
-  ASSERT_TRUE(IsEligibleForSeaPenTextInput(regular_profile, "en-US"));
+  ASSERT_TRUE(IsEligibleForSeaPenTextInput(test_variations_service(),
+                                           regular_profile, "en-US"));
 }
 
 TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenTextInputEnglishUsers) {
@@ -393,7 +397,8 @@ TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenTextInputEnglishUsers) {
   ASSERT_TRUE(
       IsSystemInSupportedLanguage(application_locale_storage()->GetTag()));
   ASSERT_TRUE(IsEligibleForSeaPenTextInput(
-      regular_profile, application_locale_storage()->GetTag().tag_string()));
+      test_variations_service(), regular_profile,
+      application_locale_storage()->GetTag().tag_string()));
 }
 
 TEST_F(PersonalizationAppUtilsTest,
@@ -412,7 +417,8 @@ TEST_F(PersonalizationAppUtilsTest,
   ASSERT_FALSE(
       IsSystemInSupportedLanguage(application_locale_storage()->GetTag()));
   ASSERT_FALSE(IsEligibleForSeaPenTextInput(
-      regular_profile, application_locale_storage()->GetTag().tag_string()));
+      test_variations_service(), regular_profile,
+      application_locale_storage()->GetTag().tag_string()));
 }
 
 TEST_F(PersonalizationAppUtilsTest,
@@ -431,7 +437,8 @@ TEST_F(PersonalizationAppUtilsTest,
   ASSERT_TRUE(
       IsSystemInSupportedLanguage(application_locale_storage()->GetTag()));
   ASSERT_TRUE(IsEligibleForSeaPenTextInput(
-      regular_profile, application_locale_storage()->GetTag().tag_string()));
+      test_variations_service(), regular_profile,
+      application_locale_storage()->GetTag().tag_string()));
 }
 
 TEST_F(
@@ -451,7 +458,8 @@ TEST_F(
   ASSERT_FALSE(
       IsSystemInSupportedLanguage(application_locale_storage()->GetTag()));
   ASSERT_FALSE(IsEligibleForSeaPenTextInput(
-      regular_profile, application_locale_storage()->GetTag().tag_string()));
+      test_variations_service(), regular_profile,
+      application_locale_storage()->GetTag().tag_string()));
 }
 
 }  // namespace

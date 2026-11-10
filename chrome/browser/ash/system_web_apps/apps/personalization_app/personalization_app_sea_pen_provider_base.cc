@@ -17,6 +17,7 @@
 #include "ash/wallpaper/wallpaper_utils/sea_pen_metadata_utils.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/user_metrics.h"
@@ -109,13 +110,16 @@ void PersonalizationAppSeaPenProviderBase::BindInterface(
 }
 
 bool PersonalizationAppSeaPenProviderBase::IsEligibleForSeaPen() {
-  return ::ash::personalization_app::IsEligibleForSeaPen(profile_);
+  // TODO(crbug.com/404133902): Avoid using g_browser_process.
+  return ::ash::personalization_app::IsEligibleForSeaPen(
+      CHECK_DEREF(g_browser_process->variations_service()), profile_);
 }
 
 bool PersonalizationAppSeaPenProviderBase::IsEligibleForSeaPenTextInput() {
   // TODO(crbug.com/404133902): Avoid using g_browser_process.
   return ::ash::personalization_app::IsEligibleForSeaPenTextInput(
-      profile_, g_browser_process->GetApplicationLocale());
+      CHECK_DEREF(g_browser_process->variations_service()), profile_,
+      g_browser_process->GetApplicationLocale());
 }
 
 bool PersonalizationAppSeaPenProviderBase::IsManagedSeaPenEnabled() {

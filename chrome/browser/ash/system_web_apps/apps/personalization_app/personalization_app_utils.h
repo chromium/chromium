@@ -34,6 +34,10 @@ namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
 
+namespace variations {
+class VariationsService;
+}  // namespace variations
+
 namespace ash::personalization_app {
 
 // This enum is used to store the managed Sea Pen policy states for GenAI
@@ -85,7 +89,9 @@ bool IsSystemInSupportedLanguage(
 // age restrictions that underage users (<18) are not allowed to view and access
 // SeaPen features. The age check should be verified after network connection
 // is established.
-bool IsEligibleForSeaPen(Profile* profile);
+bool IsEligibleForSeaPen(
+    const variations::VariationsService& variations_service,
+    Profile* profile);
 
 // Preliminary check whether the profile is allowed to install Sea Pen apps (VC
 // Background).
@@ -102,8 +108,10 @@ bool IsManagedSeaPenVcBackgroundEnabled(Profile* profile);
 
 // Controls whether users are eligible for SeaPen text input. The age
 // requirements are stricter than for SeaPen.
-bool IsEligibleForSeaPenTextInput(Profile* profile,
-                                  std::string_view application_locale);
+bool IsEligibleForSeaPenTextInput(
+    const variations::VariationsService& variations_service,
+    Profile* profile,
+    std::string_view application_locale);
 
 // Controls whether SeaPen Wallpaper Feedback is shown for managed profiles.
 bool IsManagedSeaPenWallpaperFeedbackEnabled(Profile* profile);

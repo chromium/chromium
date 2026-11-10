@@ -28,7 +28,6 @@
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_user_provider_impl.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_wallpaper_provider_impl.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -63,16 +62,6 @@ constexpr auto kSeaPenTextInputSupportedLanguages =
     base::MakeFixedFlatSet<std::string_view>({"en", "fr", "de", "ja", "es",
                                               "nl", "it", "sv", "nb", "da",
                                               "fi", "pt"});
-
-// Returns country code in the format of lowercase ISO 3166-1 alpha-2.
-// Example: us, br, in.
-std::optional<std::string> GetCountryCode() {
-  if (g_browser_process == nullptr ||
-      g_browser_process->variations_service() == nullptr) {
-    return std::nullopt;
-  }
-  return g_browser_process->variations_service()->GetLatestCountry();
-}
 
 }  // namespace
 
@@ -153,14 +142,14 @@ bool IsSystemInSupportedLanguage(
   return language == "en";
 }
 
-bool IsEligibleForSeaPen(Profile* profile) {
+bool IsEligibleForSeaPen(
+    const variations::VariationsService& variations_service,
+    Profile* profile) {
   if (!IsAllowedToInstallSeaPen(profile)) {
     return false;
   }
 
-  std::optional<std::string> country_code = GetCountryCode();
-  if (!country_code.has_value() ||
-      !ash::IsGenerativeAiAllowedForCountry(country_code.value())) {
+  if (!IsGenerativeAiAllowedForCountry(variations_service.GetLatestCountry())) {
     return false;
   }
 
@@ -247,8 +236,10 @@ bool IsManagedSeaPenVcBackgroundFeedbackEnabled(Profile* profile) {
          static_cast<int>(ManagedSeaPenSettings::kAllowed);
 }
 
-bool IsEligibleForSeaPenTextInput(Profile* profile,
-                                  std::string_view application_locale) {
+bool IsEligibleForSeaPenTextInput(
+    const variations::VariationsService& variations_service,
+    Profile* profile,
+    std::string_view application_locale) {
   if (!profile) {
     LOG(ERROR) << __func__ << " no profile";
     return false;
@@ -266,7 +257,7 @@ bool IsEligibleForSeaPenTextInput(Profile* profile,
     DVLOG(1) << __func__ << " system not in supported language";
     return false;
   }
-  return IsEligibleForSeaPen(profile) &&
+  return IsEligibleForSeaPen(variations_service, profile) &&
          CanAccessMantaFeaturesWithoutMinorRestrictions(profile);
 }
 

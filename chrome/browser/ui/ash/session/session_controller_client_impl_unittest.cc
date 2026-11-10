@@ -11,6 +11,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/check_deref.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -33,6 +34,9 @@
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/account_id/account_id.h"
 #include "components/account_id/account_id_literal.h"
+#include "components/metrics/metrics_state_manager.h"
+#include "components/metrics/startup_visibility.h"
+#include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
@@ -43,6 +47,7 @@
 #include "components/user_manager/test_helper.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_manager_pref_names.h"
+#include "components/variations/service/test_variations_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "net/cert/x509_certificate.h"
@@ -81,6 +86,22 @@ class SessionControllerClientImplTest : public testing::Test {
   ~SessionControllerClientImplTest() override = default;
 
   void SetUp() override {
+    // Needed for `SessionControllerClientImpl`.
+    PrefService* local_state =
+        TestingBrowserProcess::GetGlobal()->local_state();
+    metrics_state_manager_ = metrics::MetricsStateManager::Create(
+        local_state, &metrics_enabled_state_provider_,
+        /*backup_registry_key=*/std::wstring(),
+        /*user_data_dir=*/base::FilePath(),
+        metrics::StartupVisibility::kUnknown);
+    test_variations_service_ =
+        std::make_unique<variations::TestVariationsService>(
+            local_state, metrics_state_manager_.get());
+    // Required by `ChromeTranslateClient` when `WebContents` is created.
+    test_variations_service_->OverrideStoredPermanentCountry("zz");
+    TestingBrowserProcess::GetGlobal()->SetVariationsService(
+        test_variations_service_.get());
+
     cros_settings_test_helper_ =
         std::make_unique<ash::ScopedCrosSettingsTestHelper>();
     ash::LoginState::Initialize();
@@ -120,6 +141,10 @@ class SessionControllerClientImplTest : public testing::Test {
 
     ash::LoginState::Shutdown();
     cros_settings_test_helper_.reset();
+
+    TestingBrowserProcess::GetGlobal()->SetVariationsService(nullptr);
+    test_variations_service_.reset();
+    metrics_state_manager_.reset();
   }
 
   // Registers a user with the given `account_id` and `user_type`.
@@ -179,6 +204,10 @@ class SessionControllerClientImplTest : public testing::Test {
   // Sorted in the production initialization order.
   ash::SessionTerminationManager session_termination_manager_;
   content::BrowserTaskEnvironment task_environment_;
+  metrics::TestEnabledStateProvider metrics_enabled_state_provider_{
+      /*consent=*/false, /*enabled=*/false};
+  std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
+  std::unique_ptr<variations::TestVariationsService> test_variations_service_;
   user_manager::ScopedUserManager user_manager_;
   std::unique_ptr<ash::ProfileUserManagerController>
       profile_user_manager_controller_;
@@ -207,7 +236,8 @@ TEST_F(SessionControllerClientImplTest, CyclingOneUser) {
 TEST_F(SessionControllerClientImplTest, CyclingThreeUsers) {
   // Create an object to test and connect it to our test interface.
   SessionControllerClientImpl client(
-      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()),
+      TestingBrowserProcess::GetGlobal()->variations_service());
   TestSessionController session_controller;
   client.Init();
 
@@ -421,7 +451,8 @@ TEST_F(SessionControllerClientImplTest,
 TEST_F(SessionControllerClientImplTest, SendUserSession) {
   // Create an object to test and connect it to our test interface.
   SessionControllerClientImpl client(
-      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()),
+      TestingBrowserProcess::GetGlobal()->variations_service());
   TestSessionController session_controller;
   client.Init();
 
@@ -447,7 +478,8 @@ TEST_F(SessionControllerClientImplTest, SendUserSession) {
 TEST_F(SessionControllerClientImplTest, SetUserSessionOrder) {
   // Create an object to test and connect it to our test interface.
   SessionControllerClientImpl client(
-      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()),
+      TestingBrowserProcess::GetGlobal()->variations_service());
   TestSessionController session_controller;
   client.Init();
 
@@ -475,7 +507,8 @@ TEST_F(SessionControllerClientImplTest, SetUserSessionOrder) {
 TEST_F(SessionControllerClientImplTest, UserPrefsChange) {
   // Create an object to test and connect it to our test interface.
   SessionControllerClientImpl client(
-      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()),
+      TestingBrowserProcess::GetGlobal()->variations_service());
   TestSessionController session_controller;
   client.Init();
 
@@ -501,7 +534,8 @@ TEST_F(SessionControllerClientImplTest, UserPrefsChange) {
 TEST_F(SessionControllerClientImplTest, SessionLengthLimit) {
   // Create an object to test and connect it to our test interface.
   SessionControllerClientImpl client(
-      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()),
+      TestingBrowserProcess::GetGlobal()->variations_service());
   TestSessionController session_controller;
   client.Init();
 
@@ -523,7 +557,8 @@ TEST_F(SessionControllerClientImplTest, SessionLengthLimit) {
 
 TEST_F(SessionControllerClientImplTest, FirstSessionReady) {
   SessionControllerClientImpl client(
-      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()),
+      TestingBrowserProcess::GetGlobal()->variations_service());
   TestSessionController session_controller;
   client.Init();
 

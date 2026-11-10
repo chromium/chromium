@@ -6,11 +6,13 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "ash/login/test_login_screen.h"
 #include "ash/public/cpp/login_screen_model.h"
 #include "ash/public/cpp/login_types.h"
 #include "base/check_deref.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -49,10 +51,15 @@
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/metrics/metrics_state_manager.h"
+#include "components/metrics/startup_visibility.h"
+#include "components/metrics/test/test_enabled_state_provider.h"
+#include "components/prefs/pref_service.h"
 #include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/multi_user/multi_user_sign_in_policy_controller.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/variations/service/test_variations_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -99,6 +106,20 @@ class ScreenLockerUnitTest : public testing::Test {
 
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
         test_url_loader_factory_.GetSafeWeakWrapper());
+    PrefService* local_state =
+        TestingBrowserProcess::GetGlobal()->local_state();
+    metrics_state_manager_ = metrics::MetricsStateManager::Create(
+        local_state, &metrics_enabled_state_provider_,
+        /*backup_registry_key=*/std::wstring(),
+        /*user_data_dir=*/base::FilePath(),
+        metrics::StartupVisibility::kUnknown);
+    test_variations_service_ =
+        std::make_unique<variations::TestVariationsService>(
+            local_state, metrics_state_manager_.get());
+    // Required by `ChromeTranslateClient` when `WebContents` is created.
+    test_variations_service_->OverrideStoredPermanentCountry("zz");
+    TestingBrowserProcess::GetGlobal()->SetVariationsService(
+        test_variations_service_.get());
 
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     session_manager_->OnUserManagerCreated(fake_user_manager_.Get());
@@ -138,7 +159,8 @@ class ScreenLockerUnitTest : public testing::Test {
         test_account_id_.GetUserEmail());
 
     session_controller_client_ = std::make_unique<SessionControllerClientImpl>(
-        CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
+        CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()),
+        TestingBrowserProcess::GetGlobal()->variations_service());
     session_controller_client_->Init();
 
     login_screen_client_ = std::make_unique<LoginScreenClientImpl>(
@@ -186,6 +208,9 @@ class ScreenLockerUnitTest : public testing::Test {
     fake_user_manager_.Reset();
     base::RunLoop().RunUntilIdle();
 
+    TestingBrowserProcess::GetGlobal()->SetVariationsService(nullptr);
+    test_variations_service_.reset();
+    metrics_state_manager_.reset();
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(nullptr);
 
     LoginState::Shutdown();
@@ -233,6 +258,10 @@ class ScreenLockerUnitTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
   network::TestURLLoaderFactory test_url_loader_factory_;
+  metrics::TestEnabledStateProvider metrics_enabled_state_provider_{
+      /*consent=*/false, /*enabled=*/false};
+  std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
+  std::unique_ptr<variations::TestVariationsService> test_variations_service_;
 
   // * MojoSystemInfoDispatcher dependencies:
   ScopedTestingCrosSettings scoped_testing_cros_settings_;

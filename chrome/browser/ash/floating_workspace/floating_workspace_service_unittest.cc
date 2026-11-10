@@ -21,6 +21,7 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -61,6 +62,10 @@
 #include "components/desks_storage/core/desk_test_util.h"
 #include "components/desks_storage/core/fake_desk_sync_service.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/metrics/metrics_state_manager.h"
+#include "components/metrics/startup_visibility.h"
+#include "components/metrics/test/test_enabled_state_provider.h"
+#include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/base/consent_level.h"
@@ -75,6 +80,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/test_helper.h"
 #include "components/user_manager/user_type.h"
+#include "components/variations/service/test_variations_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/test_renderer_host.h"
@@ -341,6 +347,22 @@ class FloatingWorkspaceServiceTest : public testing::Test {
   }
 
   void SetUp() override {
+    // Needed for `SessionControllerClientImpl`.
+    PrefService* local_state =
+        TestingBrowserProcess::GetGlobal()->local_state();
+    metrics_state_manager_ = metrics::MetricsStateManager::Create(
+        local_state, &metrics_enabled_state_provider_,
+        /*backup_registry_key=*/std::wstring(),
+        /*user_data_dir=*/base::FilePath(),
+        metrics::StartupVisibility::kUnknown);
+    test_variations_service_ =
+        std::make_unique<variations::TestVariationsService>(
+            local_state, metrics_state_manager_.get());
+    // Required by `ChromeTranslateClient` when `WebContents` is created.
+    test_variations_service_->OverrideStoredPermanentCountry("zz");
+    TestingBrowserProcess::GetGlobal()->SetVariationsService(
+        test_variations_service_.get());
+
     chromeos::PowerManagerClient::InitializeFake();
     cros_settings_test_helper_ =
         std::make_unique<ScopedCrosSettingsTestHelper>();
@@ -422,12 +444,20 @@ class FloatingWorkspaceServiceTest : public testing::Test {
     ash_test_helper_.TearDown();
     cros_settings_test_helper_.reset();
     chromeos::PowerManagerClient::Shutdown();
+
+    TestingBrowserProcess::GetGlobal()->SetVariationsService(nullptr);
+    test_variations_service_.reset();
+    metrics_state_manager_.reset();
   }
 
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   content::RenderViewHostTestEnabler rvh_test_enabler_;
+  metrics::TestEnabledStateProvider metrics_enabled_state_provider_{
+      /*consent=*/false, /*enabled=*/false};
+  std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
+  std::unique_ptr<variations::TestVariationsService> test_variations_service_;
   syncer::TestSyncService test_sync_service_;
   std::unique_ptr<desks_storage::FakeDeskSyncService> fake_desk_sync_service_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
@@ -1381,7 +1411,8 @@ TEST_F(FloatingWorkspaceServiceTest,
 TEST_F(FloatingWorkspaceServiceTest,
        CaptureFloatingWorkspaceTemplateWhenLockingTheScreen) {
   SessionControllerClientImpl client(
-      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()),
+      TestingBrowserProcess::GetGlobal()->variations_service());
   client.Init();
   PopulateAppsCache();
   CreateFloatingWorkspaceServiceForTesting(profile());

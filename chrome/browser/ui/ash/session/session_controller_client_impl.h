@@ -14,6 +14,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/policy/off_hours/device_off_hours_controller.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
@@ -36,6 +37,10 @@ namespace user_manager {
 class User;
 }
 
+namespace variations {
+class VariationsService;
+}  // namespace variations
+
 // Updates session state etc to ash via SessionController interface and handles
 // session related calls from ash.
 // TODO(xiyuan): Update when UserSessionStateObserver is gone.
@@ -46,7 +51,10 @@ class SessionControllerClientImpl
       public session_manager::SessionManagerObserver,
       public policy::off_hours::DeviceOffHoursController::Observer {
  public:
-  explicit SessionControllerClientImpl(PrefService& local_state);
+  // `variations_service` must not be null and must outlive `this`.
+  SessionControllerClientImpl(
+      PrefService& local_state,
+      const variations::VariationsService* variations_service);
 
   SessionControllerClientImpl(const SessionControllerClientImpl&) = delete;
   SessionControllerClientImpl& operator=(const SessionControllerClientImpl&) =
@@ -157,6 +165,8 @@ class SessionControllerClientImpl
 
   // Called when application is terminating
   void OnAppTerminating();
+
+  const raw_ref<const variations::VariationsService> variations_service_;
 
   // SessionController instance in ash.
   raw_ptr<ash::SessionController> session_controller_ = nullptr;

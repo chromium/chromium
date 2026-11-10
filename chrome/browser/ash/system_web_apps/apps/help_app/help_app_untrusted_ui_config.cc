@@ -128,14 +128,14 @@ void PopulateLoadTimeData(
     source->AddBoolean("isOnDeviceAppControlsAvailable",
                        ash::on_device_controls::AppControlsServiceFactory::
                            IsOnDeviceAppControlsAvailable(profile));
-    source->AddBoolean(
-        "isSeaPenAllowed",
-        ash::features::IsSeaPenEnabled() &&
-            ash::personalization_app::IsEligibleForSeaPen(profile));
-    source->AddBoolean(
-        "isVcBackgroundReplaceAllowed",
-        ash::features::IsVideoConferenceEnabled() &&
-            ash::personalization_app::IsEligibleForSeaPen(profile));
+    source->AddBoolean("isSeaPenAllowed",
+                       ash::features::IsSeaPenEnabled() &&
+                           ash::personalization_app::IsEligibleForSeaPen(
+                               variations_service, profile));
+    source->AddBoolean("isVcBackgroundReplaceAllowed",
+                       ash::features::IsVideoConferenceEnabled() &&
+                           ash::personalization_app::IsEligibleForSeaPen(
+                               variations_service, profile));
     source->AddBoolean("isCrosSwitcherEnabled",
                        IsCrosSwitcherEnabled(variations_service));
     source->AddBoolean(

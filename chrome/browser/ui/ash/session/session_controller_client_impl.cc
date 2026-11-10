@@ -12,6 +12,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/public/cpp/session/session_types.h"
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -144,7 +145,9 @@ void OnAcceptMultiprofilesIntroDialog(bool accept, bool never_show_again) {
 }  // namespace
 
 SessionControllerClientImpl::SessionControllerClientImpl(
-    PrefService& local_state) {
+    PrefService& local_state,
+    const variations::VariationsService* variations_service)
+    : variations_service_(CHECK_DEREF(variations_service)) {
   session_observation_.Observe(SessionManager::Get());
   user_manager_observation_.Observe(UserManager::Get());
   user_session_state_observation_.Observe(UserManager::Get());
@@ -333,7 +336,8 @@ std::tuple<bool, bool> SessionControllerClientImpl::IsEligibleForSeaPen(
     return {false, false};
   }
 
-  return {ash::personalization_app::IsEligibleForSeaPen(user_profile),
+  return {ash::personalization_app::IsEligibleForSeaPen(
+              variations_service_.get(), user_profile),
           ash::personalization_app::IsManagedSeaPenVcBackgroundEnabled(
               user_profile)};
 }
