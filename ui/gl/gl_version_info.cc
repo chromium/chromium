@@ -4,11 +4,11 @@
 
 #include "ui/gl/gl_version_info.h"
 
-#include <map>
 #include <string_view>
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -137,20 +137,27 @@ void GLVersionInfo::ParseDriverInfo(const char* version_str) {
 
   // Map key strings to driver vendors. We assume the key string is followed by
   // the driver version.
-  const std::map<std::string_view, std::string_view> kVendors = {
-      {"ANGLE", "ANGLE"},       {"Mesa", "Mesa"},   {"INTEL", "INTEL"},
-      {"NVIDIA", "NVIDIA"},     {"ATI", "ATI"},     {"FireGL", "FireGL"},
-      {"Chromium", "Chromium"}, {"APPLE", "APPLE"}, {"AMD", "AMD"},
-      {"Metal", "Apple"}};
+  static constexpr auto kVendors =
+      base::MakeFixedFlatMap<std::string_view, std::string_view>({
+          {"ANGLE", "ANGLE"},
+          {"Mesa", "Mesa"},
+          {"INTEL", "INTEL"},
+          {"NVIDIA", "NVIDIA"},
+          {"ATI", "ATI"},
+          {"FireGL", "FireGL"},
+          {"Chromium", "Chromium"},
+          {"APPLE", "APPLE"},
+          {"AMD", "AMD"},
+          {"Metal", "Apple"},
+      });
   for (size_t ii = 1; ii < pieces.size(); ++ii) {
-    for (auto vendor : kVendors) {
-      if (pieces[ii] == vendor.first) {
-        driver_vendor = vendor.second;
-        if (ii + 1 < pieces.size()) {
-          driver_version = pieces[ii + 1];
-        }
-        return;
+    auto it = kVendors.find(pieces[ii]);
+    if (it != kVendors.end()) {
+      driver_vendor = it->second;
+      if (ii + 1 < pieces.size()) {
+        driver_version = pieces[ii + 1];
       }
+      return;
     }
   }
   if (pieces.size() == 2) {
