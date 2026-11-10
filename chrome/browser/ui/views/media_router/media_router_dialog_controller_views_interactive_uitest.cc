@@ -259,6 +259,21 @@ IN_PROC_BROWSER_TEST_F(GlobalMediaControlsDialogTest,
   EXPECT_TRUE(MediaDialogView::IsShowing());
   EXPECT_FALSE(fullscreen_controller->IsTabFullscreen());
 
+  // The renderer learns about the fullscreen exit asynchronously (e.g. after
+  // the Wayland compositor acks the window state change). Until then, it
+  // resolves requestFullscreen() without asking the browser, so wait for the
+  // exit to reach the renderer.
+  EXPECT_EQ(true, content::EvalJs(initiator_, R"(
+      new Promise(resolve => {
+        if (!document.fullscreenElement) {
+          resolve(true);
+          return;
+        }
+        document.addEventListener(
+            'fullscreenchange', () => resolve(!document.fullscreenElement),
+            {once: true});
+      }))"));
+
   // While the dialog is showing, tab fullscreen cannot be entered.
   EXPECT_FALSE(content::ExecJs(initiator_,
                                "document.documentElement.requestFullscreen()"));
