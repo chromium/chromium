@@ -483,6 +483,14 @@ void AutofillClient::ShowAutofillAiSuggestionRemovedNotification(
   NOTIMPLEMENTED();
 }
 
+void AutofillClient::ShowAutofillAiAttributionVerification(
+    const EntityInstance& entity,
+    const GURL& source_url,
+    const gfx::RectF& field_bounds,
+    AutofillAiVerificationDecisionCallback decision_cb) {
+  NOTIMPLEMENTED();
+}
+
 void AutofillClient::ShowEmailVerificationPopup(
     const gfx::RectF& element_bounds,
     const url::Origin& issuer_origin,

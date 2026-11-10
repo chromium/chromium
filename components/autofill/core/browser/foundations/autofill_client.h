@@ -284,6 +284,21 @@ class AutofillClient {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:EvpPermissionUiStatus)
 
+  // Decisions that can be returned by the in-context SPII verification UI.
+  enum class AutofillAiVerificationDecision {
+    // The user asked to hide the entity; the fill is undone and the entity is
+    // suppressed.
+    kHide = 0,
+    // The UI was dismissed without an explicit action; the fill is kept.
+    kDismiss = 1,
+    // The user confirmed the filled values; the fill is kept.
+    kConfirm = 2,
+    // The user undid the fill without suppressing the entity.
+    kUndo = 3,
+  };
+  using AutofillAiVerificationDecisionCallback =
+      base::OnceCallback<void(AutofillAiVerificationDecision)>;
+
   // Describes the types of Iph shown by Autofill and anchored to a field.
   enum class IphFeature {
     kAutofillAi,
@@ -974,6 +989,27 @@ class AutofillClient {
   virtual void ShowAutofillAiSuggestionRemovedNotification(
       const EntityInstance& entity,
       base::OnceClosure on_undo_clicked);
+
+  // Displays in-context source attribution verification for `entity` filled
+  // from `source_url`. `field_bounds` are the bounds of the filled field in the
+  // same coordinate space as `PopupOpenArgs::element_bounds` (not yet
+  // transformed to screen coordinates; embedders transform them like the
+  // suggestion popup does). Embedders invoke `decision_cb` when the user
+  // accepts, hides, or dismisses the verification UI.
+  //
+  // `entity` and `source_url` are only valid for the duration of the call -
+  // embedders copy what they need.
+  // `decision_cb` must be run at most once, may be run synchronously, and may
+  // be dropped without running (treated as no decision).
+  // The embedder owns dismissing its UI on navigation / tab close -
+  // //components does not hide it. `field_bounds` were captured when the
+  // suggestion was accepted and may be stale after an asynchronous reauth or
+  // fetch.
+  virtual void ShowAutofillAiAttributionVerification(
+      const EntityInstance& entity,
+      const GURL& source_url,
+      const gfx::RectF& field_bounds,
+      AutofillAiVerificationDecisionCallback decision_cb);
 
   // TODO(crbug.com/555673134): Rename *Popup and *Toast methods below to
   // platform-agnostic names (e.g., ShowEmailVerificationPrompt,
