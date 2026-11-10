@@ -11,6 +11,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "cc/base/features.h"
+#include "components/input/cursor_manager.h"
 #import "content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_mac.h"
@@ -502,6 +503,52 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacUnboundedZOrderTest,
 
   rwhv_mac->OnWindowIsKeyChanged(false);
   EXPECT_EQ(1, recorder.TakeDismissCount());
+}
+
+// A native mouseMoved: event on the surface's NSView routes through
+// UnboundedSurfaceWindowMac::RouteMouseEvent(NSEvent*) to
+// UnboundedSurfaceWindow::RouteMouseEvent(const blink::WebMouseEvent&) and
+// updates the CursorManager's view under the cursor.
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacUnboundedZOrderTest,
+                       NativeMouseMovedUpdatesViewUnderCursor) {
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  ASSERT_TRUE(ExecJs(shell()->web_contents(), R"(
+    document.body.innerHTML =
+        `<div id="target" style="width:50px; height:50px;" unbounded></div>`;
+    document.getElementById('target').showUnboundedElement();
+  )"));
+
+  RenderFrameHostImpl* rfhi = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetPrimaryMainFrame());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return rfhi->GetUnboundedSurfaceWindow() != nullptr; }));
+
+  UnboundedSurfaceWindow* unbounded_window = rfhi->GetUnboundedSurfaceWindow();
+  ASSERT_TRUE(unbounded_window);
+  NSWindow* child_nswindow =
+      unbounded_window->GetNativeWindow().GetNativeNSWindow();
+  ASSERT_TRUE(child_nswindow);
+
+  RenderWidgetHostViewMac* rwhv_mac =
+      static_cast<RenderWidgetHostViewMac*>(rfhi->GetView());
+  input::CursorManager* cursor_manager = rwhv_mac->GetCursorManager();
+  ASSERT_TRUE(cursor_manager);
+
+  cursor_manager->UpdateViewUnderCursor(nullptr);
+  ASSERT_FALSE(cursor_manager->IsViewUnderCursor(rwhv_mac));
+
+  [child_nswindow.contentView
+      mouseMoved:cocoa_test_event_utils::MouseEventAtPointInWindow(
+                     NSMakePoint(10, 10), NSEventTypeMouseMoved, child_nswindow,
+                     0)];
+  EXPECT_TRUE(cursor_manager->IsViewUnderCursor(rwhv_mac));
+
+  [child_nswindow.contentView
+      mouseExited:cocoa_test_event_utils::ExitEvent(NSMakePoint(10, 10),
+                                                    child_nswindow)];
+  EXPECT_FALSE(cursor_manager->IsViewUnderCursor(rwhv_mac));
 }
 
 }  // namespace content

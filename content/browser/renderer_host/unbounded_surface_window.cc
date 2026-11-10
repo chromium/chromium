@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/task/single_thread_task_runner.h"
+#include "components/input/cursor_manager.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
@@ -61,7 +62,30 @@ UnboundedSurfaceWindow::UnboundedSurfaceWindow(
       subframe_view_(std::move(subframe_view)) {}
 
 UnboundedSurfaceWindow::~UnboundedSurfaceWindow() {
+  ClearViewUnderCursorOverride();
   NotifyWindowDestroyed();
+}
+
+void UnboundedSurfaceWindow::SetViewUnderCursorOverride(
+    RenderWidgetHostViewBase* target_view) {
+  if (!parent_view_ || parent_view_->IsPointerLocked()) {
+    return;
+  }
+  if (input::CursorManager* cursor_manager = parent_view_->GetCursorManager()) {
+    cursor_manager->SetViewUnderCursorOverride(target_view);
+  }
+}
+
+void UnboundedSurfaceWindow::ClearViewUnderCursorOverride() {
+  // Skip this while `parent_view_` is itself inside DestroyOrDefer(): its weak
+  // pointer is still valid at that point, but its platform widget may already
+  // be gone (e.g. `ns_view_` on macOS), and the CursorManager dies with it.
+  if (!parent_view_ || parent_view_->destroy_pending()) {
+    return;
+  }
+  if (input::CursorManager* cursor_manager = parent_view_->GetCursorManager()) {
+    cursor_manager->SetViewUnderCursorOverride(nullptr);
+  }
 }
 
 void UnboundedSurfaceWindow::NotifyWindowDestroyed() {
@@ -89,9 +113,15 @@ RenderWidgetHostViewBase* UnboundedSurfaceWindow::PrepareEventForTargetView(
 
 void UnboundedSurfaceWindow::RouteMouseEvent(
     const blink::WebMouseEvent& event) {
+  if (event.GetType() == blink::WebInputEvent::Type::kMouseLeave) {
+    ClearViewUnderCursorOverride();
+  }
   blink::WebMouseEvent web_event = event;
   if (RenderWidgetHostViewBase* target_view =
           PrepareEventForTargetView(web_event)) {
+    if (web_event.GetType() == blink::WebInputEvent::Type::kMouseMove) {
+      SetViewUnderCursorOverride(target_view);
+    }
     target_view->ProcessMouseEvent(web_event, ui::LatencyInfo());
   }
 }

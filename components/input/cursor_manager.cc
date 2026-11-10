@@ -27,7 +27,7 @@ void CursorManager::UpdateCursor(RenderWidgetHostViewInput* view,
                                  const ui::Cursor& cursor) {
   AddObservation(view);
   cursor_map_[view] = cursor;
-  if (view == view_under_cursor_) {
+  if (view == EffectiveViewUnderCursor()) {
     UpdateCursor();
   }
 }
@@ -37,36 +37,71 @@ void CursorManager::UpdateViewUnderCursor(
   if (view == view_under_cursor_)
     return;
 
+  RenderWidgetHostViewInput* previous_effective_view =
+      EffectiveViewUnderCursor();
   AddObservation(view);
-
-  // Whenever we switch from one view to another, clear the tooltip: as the
-  // mouse moves, the view now controlling the cursor will send a new tooltip,
-  // though this is only guaranteed if the view's tooltip is non-empty, so
-  // clearing here is important. Tooltips sent from the previous view will be
-  // ignored.
-  root_view_->UpdateTooltip(std::u16string());
   view_under_cursor_ = view;
-  UpdateCursor();
+  if (EffectiveViewUnderCursor() != previous_effective_view) {
+    // Whenever we switch from one view to another, clear the tooltip: as the
+    // mouse moves, the view now controlling the cursor will send a new tooltip,
+    // though this is only guaranteed if the view's tooltip is non-empty, so
+    // clearing here is important. Tooltips sent from the previous view will be
+    // ignored.
+    root_view_->UpdateTooltip(std::u16string());
+    UpdateCursor();
+  }
+}
+
+void CursorManager::SetViewUnderCursorOverride(
+    RenderWidgetHostViewInput* view) {
+  if (view == view_under_cursor_override_) {
+    return;
+  }
+
+  RenderWidgetHostViewInput* previous_effective_view =
+      EffectiveViewUnderCursor();
+  AddObservation(view);
+  view_under_cursor_override_ = view;
+  if (EffectiveViewUnderCursor() != previous_effective_view) {
+    root_view_->UpdateTooltip(std::u16string());
+    UpdateCursor();
+  }
 }
 
 void CursorManager::ViewBeingDestroyed(RenderWidgetHostViewInput* view) {
   cursor_map_.erase(view);
   RemoveObservation(view);
 
+  if (view == root_view_) {
+    // `root_view_` is tearing down (possibly deferred by
+    // ScopedInputDispatchPin). Clear any active override and stop observing
+    // child views so their subsequent destruction cannot call UpdateTooltip()
+    // or DisplayCursor() on the disconnected `root_view_`.
+    view_under_cursor_override_ = nullptr;
+    view_under_cursor_ = root_view_;
+    observations_.RemoveAllObservations();
+    return;
+  }
+
+  if (view == view_under_cursor_override_) {
+    SetViewUnderCursorOverride(nullptr);
+  }
+
   // If the view right under the mouse is going away, use the root's cursor
   // until UpdateViewUnderCursor is called again.
-  if (view == view_under_cursor_ && view != root_view_)
+  if (view == view_under_cursor_) {
     UpdateViewUnderCursor(root_view_);
+  }
 }
 
 bool CursorManager::IsViewUnderCursor(
     RenderWidgetHostViewInput* view) const {
-  return view == view_under_cursor_;
+  return view == EffectiveViewUnderCursor();
 }
 
 base::ScopedClosureRunner CursorManager::CreateDisallowCustomCursorScope(
     int max_dimension_dips) {
-  const ui::Cursor& target_cursor = cursor_map_[view_under_cursor_];
+  const ui::Cursor& target_cursor = cursor_map_[EffectiveViewUnderCursor()];
   const bool cursor_allowed_before = IsCursorAllowed(target_cursor);
   dimension_restrictions_.push_back(max_dimension_dips);
 
@@ -107,7 +142,7 @@ bool CursorManager::IsCursorAllowed(const ui::Cursor& cursor) const {
 }
 
 void CursorManager::DisallowCustomCursorScopeExpired(int max_dimension_dips) {
-  const ui::Cursor& target_cursor = cursor_map_[view_under_cursor_];
+  const ui::Cursor& target_cursor = cursor_map_[EffectiveViewUnderCursor()];
   const bool cursor_allowed_before = IsCursorAllowed(target_cursor);
 
   auto it = std::ranges::find(dimension_restrictions_, max_dimension_dips);
@@ -119,10 +154,15 @@ void CursorManager::DisallowCustomCursorScopeExpired(int max_dimension_dips) {
   }
 }
 
+RenderWidgetHostViewInput* CursorManager::EffectiveViewUnderCursor() const {
+  return view_under_cursor_override_ ? view_under_cursor_override_.get()
+                                     : view_under_cursor_.get();
+}
+
 void CursorManager::UpdateCursor() {
   ui::Cursor cursor(ui::mojom::CursorType::kPointer);
 
-  auto it = cursor_map_.find(view_under_cursor_);
+  auto it = cursor_map_.find(EffectiveViewUnderCursor());
   if (it != cursor_map_.end() && IsCursorAllowed(it->second)) {
     cursor = it->second;
   }

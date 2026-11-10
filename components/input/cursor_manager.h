@@ -43,9 +43,16 @@ class COMPONENT_EXPORT(INPUT) CursorManager
   // Called when the mouse moves over a different RenderWidgetHostView.
   void UpdateViewUnderCursor(RenderWidgetHostViewInput*);
 
+  // Overrides the view under the cursor while the pointer is over a surface
+  // that dispatches mouse events outside RenderWidgetHostInputEventRouter
+  // (such as an UnboundedSurfaceWindow). Passing nullptr clears the override
+  // and falls back to the view last set by UpdateViewUnderCursor.
+  void SetViewUnderCursorOverride(RenderWidgetHostViewInput*);
+
   // Notification of a RenderWidgetHostView being destroyed, so that its
-  // cursor map entry can be removed if it has one. If it is the current
-  // view_under_cursor_, then the root_view_'s cursor will be displayed.
+  // cursor map entry can be removed if it has one. Clears
+  // `view_under_cursor_override_` if it matches, and falls back to
+  // `root_view_` if `view_under_cursor_` is destroyed.
   void ViewBeingDestroyed(RenderWidgetHostViewInput*);
 
   // Called by any RenderWidgetHostView before updating the tooltip text to
@@ -70,6 +77,7 @@ class COMPONENT_EXPORT(INPUT) CursorManager
  private:
   bool IsCursorAllowed(const ui::Cursor&) const;
   void DisallowCustomCursorScopeExpired(int max_dimension_dips);
+  RenderWidgetHostViewInput* EffectiveViewUnderCursor() const;
   void UpdateCursor();
 
   void AddObservation(RenderWidgetHostViewInput* view);
@@ -83,8 +91,12 @@ class COMPONENT_EXPORT(INPUT) CursorManager
       observations_{this};
 
   // The view currently underneath the cursor, which corresponds to the cursor
-  // currently displayed.
+  // currently displayed unless overridden by `view_under_cursor_override_`.
   raw_ptr<RenderWidgetHostViewInput> view_under_cursor_;
+
+  // Optional override set while the pointer is over a surface that routes
+  // mouse events outside RenderWidgetHostInputEventRouter.
+  raw_ptr<RenderWidgetHostViewInput> view_under_cursor_override_ = nullptr;
 
   // The root view is the target for DisplayCursor calls whenever the active
   // cursor needs to change.
