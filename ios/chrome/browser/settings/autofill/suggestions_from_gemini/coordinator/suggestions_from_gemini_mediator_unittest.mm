@@ -138,4 +138,21 @@ TEST_F(SuggestionsFromGeminiMediatorTest,
   EXPECT_OCMOCK_VERIFY(mock_delegate_);
 }
 
+// Tests that disconnecting the mediator stops observing preference changes.
+TEST_F(SuggestionsFromGeminiMediatorTest, TestDisconnectStopsObservingPrefs) {
+  OCMExpect([mock_consumer_ setSuggestionsFromGeminiSwitchOn:NO]);
+  pref_service_.SetBoolean(
+      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
+      false);
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+
+  [mediator_ disconnect];
+
+  OCMReject([mock_consumer_ setSuggestionsFromGeminiSwitchOn:YES]);
+  pref_service_.SetBoolean(
+      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
+      true);
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+}
+
 }  // namespace

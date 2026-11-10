@@ -62,6 +62,7 @@
 }
 
 - (void)disconnect {
+  [_personalContextSwitchEnabled stop];
   _personalContextSwitchEnabled.observer = nil;
   _personalContextSwitchEnabled = nil;
   _prefChangeRegistrar.RemoveAll();

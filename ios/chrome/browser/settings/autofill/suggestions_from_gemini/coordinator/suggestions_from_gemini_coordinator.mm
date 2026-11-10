@@ -46,6 +46,8 @@
 - (void)start {
   _viewController = [[SuggestionsFromGeminiTableViewController alloc] init];
   _viewController.delegate = self;
+  _viewController.sceneHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
 
   PrefService* prefService = self.browser->GetProfile()->GetPrefs();
 

@@ -9,6 +9,8 @@
 #import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/ui/suggestions_from_gemini_help_improve_table_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 
 @implementation SuggestionsFromGeminiHelpImproveCoordinator {
   SuggestionsFromGeminiHelpImproveTableViewController* _viewController;
@@ -31,6 +33,8 @@
 - (void)start {
   _viewController =
       [[SuggestionsFromGeminiHelpImproveTableViewController alloc] init];
+  _viewController.sceneHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
 
   PrefService* prefService = self.browser->GetProfile()->GetPrefs();
   _mediator = [[SuggestionsFromGeminiHelpImproveMediator alloc]
