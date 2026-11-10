@@ -422,18 +422,18 @@ void BrowserTabStripController::ShowContextMenuForTab(
     Tab* tab,
     const gfx::Point& p,
     ui::mojom::MenuSourceType source_type) {
-  std::optional<int> tab_index = tabstrip_->GetModelIndexOf(tab);
-  if (!tab_index.has_value()) {
+  const tabs::TabHandle handle = tab->tab_handle();
+  if (tab->closing() ||
+      model_->GetIndexOfTab(handle) == TabStripModel::kNoTab) {
     return;
   }
 
-  context_menu_controller_ = std::make_unique<TabContextMenuController>(
-      model_->GetTabAtIndex(tab_index.value())->GetHandle(), this);
+  context_menu_controller_ =
+      std::make_unique<TabContextMenuController>(handle, this);
 
   auto model = std::make_unique<TabMenuModel>(
       context_menu_controller_.get(),
-      TabMenuModelDelegate::From(GetBrowserWindowInterface()), model_,
-      tab_index.value());
+      TabMenuModelDelegate::From(GetBrowserWindowInterface()), model_, handle);
 
   TabMenuModel* model_ptr = model.get();
   context_menu_controller_->LoadModel(std::move(model), model_ptr);
@@ -595,7 +595,7 @@ void BrowserTabStripController::OnTabStripModelChanged(
       }
       AddTabs(tabs_to_add);
       for (const auto& contents : change.GetInsert()->contents) {
-        UpdateTabFocusFreezing(contents.index);
+        UpdateTabFocusFreezing(contents.tab->GetHandle());
       }
       break;
     }
@@ -714,7 +714,7 @@ void BrowserTabStripController::OnTabGroupChanged(
 void BrowserTabStripController::OnTabPinnedStateChanged(tabs::TabInterface* tab,
                                                         int model_index) {
   tabstrip_->OnTabPinnedStateChanged(model_index, tab->IsPinned());
-  UpdateTabFocusFreezing(model_index);
+  UpdateTabFocusFreezing(tab->GetHandle());
 }
 
 void BrowserTabStripController::TabGroupedStateChanged(
@@ -733,7 +733,7 @@ void BrowserTabStripController::TabGroupedStateChanged(
     tabstrip_->OnGroupContentsChanged(new_group.value());
   }
 
-  UpdateTabFocusFreezing(index);
+  UpdateTabFocusFreezing(tab->GetHandle());
 }
 
 void BrowserTabStripController::OnSplitTabChanged(
@@ -824,20 +824,26 @@ void BrowserTabStripController::UpdateFocusModeTheme(
   }
 }
 
-void BrowserTabStripController::UpdateTabFocusFreezing(int model_index) {
+void BrowserTabStripController::UpdateTabFocusFreezing(
+    tabs::TabHandle tab_handle) {
   if (!features::IsTabGroupsFocusFreezingEnabled()) {
     return;
   }
-  if (!tabstrip_ || !model_->ContainsIndex(model_index)) {
+  tabs::TabInterface* tab_interface = tab_handle.Get();
+  if (!tabstrip_ || !tab_interface ||
+      model_->GetIndexOfTab(tab_handle) == TabStripModel::kNoTab) {
     return;
   }
-  Tab* tab = tabstrip_->tab_at(model_index);
+  Tab* tab = tabstrip_->GetTabForHandle(tab_handle);
+  if (!tab) {
+    return;
+  }
   const std::optional<tab_groups::TabGroupId> focused_group =
       model_->GetFocusedGroup();
   if (focused_group.has_value() && !tab->data().pinned &&
       tab->group() != focused_group.value()) {
     tab->CreateFreezingVote(FreezingVoteReason::kFocusedGroup,
-                            model_->GetWebContentsAt(model_index));
+                            tab_interface->GetContents());
   } else {
     tab->ReleaseFreezingVote(FreezingVoteReason::kFocusedGroup);
   }
@@ -847,8 +853,8 @@ void BrowserTabStripController::UpdateAllTabsFocusFreezing() {
   if (!features::IsTabGroupsFocusFreezingEnabled() || !tabstrip_) {
     return;
   }
-  for (int i = 0; i < tabstrip_->GetTabCount(); ++i) {
-    UpdateTabFocusFreezing(i);
+  for (tabs::TabInterface* tab : *model_) {
+    UpdateTabFocusFreezing(tab->GetHandle());
   }
 }
 
@@ -876,8 +882,8 @@ bool BrowserTabStripController::IsContextMenuCommandChecked(
 bool BrowserTabStripController::IsContextMenuCommandEnabled(
     tabs::TabInterface* tab,
     TabStripModel::ContextMenuCommand command_id) {
-  return model_->IsContextMenuCommandEnabled(model_->GetIndexOfTab(tab),
-                                             command_id);
+  return tab &&
+         model_->IsContextMenuCommandEnabled(tab->GetHandle(), command_id);
 }
 
 bool BrowserTabStripController::IsContextMenuCommandAlerted(
@@ -889,7 +895,10 @@ void BrowserTabStripController::ExecuteContextMenuCommand(
     tabs::TabInterface* tab,
     TabStripModel::ContextMenuCommand command_id,
     int event_flags) {
-  model_->ExecuteContextMenuCommand(model_->GetIndexOfTab(tab), command_id);
+  if (!tab) {
+    return;
+  }
+  model_->ExecuteContextMenuCommand(tab->GetHandle(), command_id);
 }
 
 bool BrowserTabStripController::GetContextMenuAccelerator(

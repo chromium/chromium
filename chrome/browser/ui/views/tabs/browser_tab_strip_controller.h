@@ -144,7 +144,7 @@ class BrowserTabStripController : public TabStripController,
   void UpdateFocusModeTheme(std::optional<tab_groups::TabGroupId> group_id);
 
   // Updates freezing votes when focus mode or tab membership changes.
-  void UpdateTabFocusFreezing(int model_index);
+  void UpdateTabFocusFreezing(tabs::TabHandle tab_handle);
   void UpdateAllTabsFocusFreezing();
 
   BrowserFrameView* GetFrameView();

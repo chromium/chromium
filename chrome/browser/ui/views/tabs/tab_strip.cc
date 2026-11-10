@@ -1632,6 +1632,31 @@ std::optional<int> TabStrip::GetModelIndexOf(const TabSlotView* view) const {
   return viewmodel_index;
 }
 
+Tab* TabStrip::GetTabForHandle(tabs::TabHandle handle) const {
+  if (handle == tabs::TabHandle::Null()) {
+    return nullptr;
+  }
+  for (int i = 0; i < GetTabCount(); ++i) {
+    Tab* tab = tab_at(i);
+    if (tab->tab_handle() == handle) {
+      return tab;
+    }
+  }
+  return nullptr;
+}
+
+std::optional<int> TabStrip::GetModelIndexOf(tabs::TabHandle handle) const {
+  if (handle == tabs::TabHandle::Null()) {
+    return std::nullopt;
+  }
+  for (int i = 0; i < GetTabCount(); ++i) {
+    if (tab_at(i)->tab_handle() == handle) {
+      return IsValidModelIndex(i) ? std::optional<int>(i) : std::nullopt;
+    }
+  }
+  return std::nullopt;
+}
+
 int TabStrip::GetModelCount() const {
   return controller_->GetCount();
 }

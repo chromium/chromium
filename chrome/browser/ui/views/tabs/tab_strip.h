@@ -204,10 +204,15 @@ class TabStrip : public views::View,
   // Returns the TabGroup with ID `id`.
   TabGroup* GetTabGroup(const tab_groups::TabGroupId& id) const override;
 
-  // Returns the index of the specified view in the model coordinate system, or
-  // std::nullopt if view is closing not a tab, or is not in this tabstrip.
+  // Returns the Tab view corresponding to `handle`, or nullptr if not found.
+  Tab* GetTabForHandle(tabs::TabHandle handle) const;
+
+  // Returns the index of the specified view or tab handle in the model
+  // coordinate system, or std::nullopt if the view is closing, not a tab, or is
+  // not in this tabstrip.
   // TODO(tbergquist): This should return an optional<size_t>.
   std::optional<int> GetModelIndexOf(const TabSlotView* view) const;
+  std::optional<int> GetModelIndexOf(tabs::TabHandle handle) const;
 
   // Cover method for TabStripController::GetCount.
   int GetModelCount() const;
