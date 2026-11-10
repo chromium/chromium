@@ -6905,12 +6905,12 @@
   {
     "name": "long-screenshots-lenient-memory-check",
     "owners": ["jhimawan@google.com", "jhimawan@chromium.org"],
-    "expiry_milestone": 150
+    "expiry_milestone": 180
   },
   {
     "name": "long-screenshots-no-memory-check",
     "owners": ["jhimawan@google.com", "ckitagawa@google.com", "clank-app-team@google.com"],
-    "expiry_milestone": 160
+    "expiry_milestone": 180
   },
   {
     "name": "mac-address-randomization",
