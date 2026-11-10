@@ -7956,8 +7956,7 @@
       // Note: enabling this without setting WebTransportCongestionControl to
       // either BBRv1 or BBRv2 will produce poor bandwidth estimates.
       name: "WebTransportStats",
-      status: "experimental",
-      base_feature: "none",
+      status: "stable",
     },
     {
       // Fetches the WebUI code cache from the resource bundle asynchronously
