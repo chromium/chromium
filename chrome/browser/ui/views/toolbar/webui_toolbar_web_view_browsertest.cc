@@ -38,6 +38,7 @@
 #include "base/test/test_timeouts.h"
 #include "base/test/values_test_util.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -2800,6 +2801,145 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
   ASSERT_TRUE(avatar_button);
   EXPECT_FALSE(avatar_button->is_initialized());
   EXPECT_FALSE(avatar_button->IsReadyForIPH());
+}
+
+// Verifies that repeated calls to PostPushToolbarState() coalesce state pushes,
+// but cannot defer a push for more than 100ms.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
+                       StatePushNotDeferredMoreThan100ms) {
+  WebUIToolbarWebView* toolbar = GetWebUIToolbarWebView(browser());
+  ASSERT_TRUE(toolbar);
+
+  auto is_push_pending = [toolbar] {
+    return toolbar->state_push_weak_ptr_factory_.HasWeakPtrs();
+  };
+
+  // Start with no pending push.
+  toolbar->FlushPendingToolbarStateForTesting();
+  ASSERT_FALSE(is_push_pending());
+
+  base::SimpleTestTickClock clock;
+  clock.Advance(base::Seconds(1));
+  toolbar->SetTickClockForTesting(&clock);
+
+  // Calls PostPushToolbarState(), then runs all tasks that were queued before
+  // the call, including any previously posted push. Afterwards,
+  // verifies the posted push is still pending, i.e. it replaced a previously
+  // posted push with a newly posted one (i.e. deferred the prior push), rather
+  // than leaving the previously posted push to run.
+  auto post_push_and_flush_prior_tasks = [&] {
+    base::RunLoop run_loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    toolbar->PostPushToolbarState();
+    // Verify the push is posted rather than performed synchronously.
+    EXPECT_TRUE(is_push_pending());
+    run_loop.Run();
+  };
+
+  // Changes the queued state, so that a subsequent push of it can be detected
+  // by waiting for the WebUI to receive it. Returns the new value of
+  // `layout_constants_version`.
+  auto change_queued_state = [toolbar] {
+    return ++toolbar->last_queued_state_.layout_constants_version;
+  };
+
+  // Records the `layout_constants_version` of every state pushed to the WebUI,
+  // in the order received. Pushes are delivered in order over a single pipe, so
+  // once the WebUI has received a push, it has received every earlier push.
+  ASSERT_TRUE(content::ExecJs(GetWebUIWebContents(), R"(
+      window.pushedLayoutConstantsVersions = [];
+      document.querySelector('toolbar-app').browserProxy_.callbackRouter
+          .onToolbarStateChanged.addListener((icons, state) => {
+            window.pushedLayoutConstantsVersions.push(
+                state.layoutConstantsVersion);
+          });)"));
+  // Waits for the WebUI to receive a pushed state with the given
+  // `layout_constants_version`.
+  auto wait_for_pushed_state = [&](int32_t layout_constants_version) {
+    return base::test::RunUntil([&] {
+      return content::EvalJs(
+                 GetWebUIWebContents(),
+                 content::JsReplace(
+                     "window.pushedLayoutConstantsVersions.includes($1)",
+                     layout_constants_version))
+          .ExtractBool();
+    });
+  };
+  // Returns the `layout_constants_version`s of the states pushed to the WebUI
+  // with a `layout_constants_version` of at least `first_version`, in the order
+  // received.
+  auto get_pushed_versions_since = [&](int32_t first_version) {
+    return content::EvalJs(
+               GetWebUIWebContents(),
+               content::JsReplace(
+                   "window.pushedLayoutConstantsVersions.filter(v => v >= $1)",
+                   first_version))
+        .ExtractList()
+        .Clone();
+  };
+
+  // The first call after an idle period posts a push rather than pushing
+  // immediately.
+  int32_t first_version = change_queued_state();
+  toolbar->PostPushToolbarState();
+  EXPECT_TRUE(is_push_pending());
+
+  // Calls within 100ms of the push first being deferred keep deferring it: the
+  // previously posted push doesn't run, and a push remains pending. Each call
+  // follows a state change, so that any state actually pushed during the
+  // deferral can be detected below.
+  change_queued_state();
+  post_push_and_flush_prior_tasks();
+  EXPECT_TRUE(is_push_pending());
+  clock.Advance(base::Milliseconds(50));
+  change_queued_state();
+  post_push_and_flush_prior_tasks();
+  EXPECT_TRUE(is_push_pending());
+  clock.Advance(base::Milliseconds(49));
+  change_queued_state();
+  post_push_and_flush_prior_tasks();
+  EXPECT_TRUE(is_push_pending());
+
+  // Once the push has been deferred for 100ms, later calls no longer defer it,
+  // so the previously posted push runs, and the WebUI receives the state.
+  clock.Advance(base::Milliseconds(1));
+  int32_t layout_constants_version = change_queued_state();
+  post_push_and_flush_prior_tasks();
+  EXPECT_FALSE(is_push_pending());
+  EXPECT_TRUE(wait_for_pushed_state(layout_constants_version));
+  // None of the states queued during the deferral were pushed; only the latest
+  // state was pushed, once.
+  EXPECT_EQ(base::ListValue().Append(layout_constants_version),
+            get_pushed_versions_since(first_version));
+
+  // A subsequent call starts a new deferral window.
+  first_version = change_queued_state();
+  toolbar->PostPushToolbarState();
+  EXPECT_TRUE(is_push_pending());
+  clock.Advance(base::Milliseconds(99));
+  change_queued_state();
+  post_push_and_flush_prior_tasks();
+  EXPECT_TRUE(is_push_pending());
+  clock.Advance(base::Milliseconds(1));
+  layout_constants_version = change_queued_state();
+  post_push_and_flush_prior_tasks();
+  EXPECT_FALSE(is_push_pending());
+  EXPECT_TRUE(wait_for_pushed_state(layout_constants_version));
+  EXPECT_EQ(base::ListValue().Append(layout_constants_version),
+            get_pushed_versions_since(first_version));
+
+  // A deferred push is delivered asynchronously.
+  layout_constants_version = change_queued_state();
+  toolbar->PostPushToolbarState();
+  EXPECT_TRUE(is_push_pending());
+  EXPECT_TRUE(base::test::RunUntil([&] { return !is_push_pending(); }));
+  EXPECT_TRUE(wait_for_pushed_state(layout_constants_version));
+
+  // `clock` is destroyed when this test body returns, but `toolbar` outlives
+  // it and may still read its clock, e.g. when state changes during browser
+  // shutdown, so restore the default clock.
+  toolbar->SetTickClockForTesting(base::DefaultTickClock::GetInstance());
 }
 
 class WebUIAvatarButtonBrowserTest : public WebUIToolbarWebViewBrowserTest {
