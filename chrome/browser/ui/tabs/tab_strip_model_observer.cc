@@ -366,6 +366,8 @@ void TabStripModelObserver::OnTabPinnedStateChanged(tabs::TabInterface* tab,
 
 void TabStripModelObserver::OnTabBlockedStateChanged(tabs::TabInterface* tab) {}
 
+void TabStripModelObserver::OnTabAudioChanged(tabs::TabInterface* tab) {}
+
 void TabStripModelObserver::TabGroupedStateChanged(
     TabStripModel* tab_strip_model,
     std::optional<tab_groups::TabGroupId> old_group,

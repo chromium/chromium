@@ -157,6 +157,10 @@ void TabStripInternalsObserver::OnTabBlockedStateChanged(
   FireUpdate();
 }
 
+void TabStripInternalsObserver::OnTabAudioChanged(tabs::TabInterface* /*tab*/) {
+  FireUpdate();
+}
+
 void TabStripInternalsObserver::TabGroupedStateChanged(
     TabStripModel* /*tab_strip_model*/,
     std::optional<tab_groups::TabGroupId> /*old_group*/,

@@ -62,8 +62,7 @@ class AudibleContentsTracker : public BrowserCollectionObserver,
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
-  void OnTabChangedAt(tabs::TabInterface* tab,
-                      TabChangeType change_type) override;
+  void OnTabAudioChanged(tabs::TabInterface* tab) override;
 
   // Used for managing audible_contents_, and invoking OnAudioStart and
   // OnAudioEnd callbacks.

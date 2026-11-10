@@ -220,9 +220,13 @@ void BrowserUiController::ProcessPendingUIUpdates() {
     }
 
     // Updates that don't depend upon the selected state go here.
-    if (flags & (content::INVALIDATE_TYPE_TAB | content::INVALIDATE_TYPE_TITLE |
-                 content::INVALIDATE_TYPE_AUDIO)) {
+    if (flags &
+        (content::INVALIDATE_TYPE_TAB | content::INVALIDATE_TYPE_TITLE)) {
       NotifyTabUIChanged(tab, TabChangeType::kAll);
+    }
+
+    if (flags & content::INVALIDATE_TYPE_AUDIO) {
+      tab_strip_model_->NotifyTabAudioChanged(tab);
     }
 
     // Update the bookmark bar and PWA install icon. It may happen that the tab

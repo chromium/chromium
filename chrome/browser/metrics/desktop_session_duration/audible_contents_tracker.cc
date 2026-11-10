@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
-#include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 
 namespace metrics {
@@ -57,12 +56,7 @@ void AudibleContentsTracker::OnTabStripModelChanged(
   }
 }
 
-void AudibleContentsTracker::OnTabChangedAt(tabs::TabInterface* tab,
-                                            TabChangeType change_type) {
-  // Ignore 'loading' and 'title' changes.
-  if (change_type != TabChangeType::kAll)
-    return;
-
+void AudibleContentsTracker::OnTabAudioChanged(tabs::TabInterface* tab) {
   auto* web_contents = tab->GetContents();
   auto* audible_helper = RecentlyAudibleHelper::FromWebContents(web_contents);
   if (audible_helper && audible_helper->WasRecentlyAudible()) {

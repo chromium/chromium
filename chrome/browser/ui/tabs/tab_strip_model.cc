@@ -1339,6 +1339,12 @@ void TabStripModel::NotifyTabChanged(tabs::TabInterface* tab,
   }
 }
 
+void TabStripModel::NotifyTabAudioChanged(tabs::TabInterface* tab) {
+  for (auto& observer : observers_) {
+    observer.OnTabAudioChanged(tab);
+  }
+}
+
 void TabStripModel::UpdateWebContentsState(content::WebContents* contents,
                                            TabChangeType change_type) {
   tabs::TabInterface* tab = GetTabForWebContents(contents);

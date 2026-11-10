@@ -129,6 +129,7 @@ class MockTabStripModelObserver : public TabStripModelObserver {
     CHANGE,
     PINNED,
     BLOCKED,
+    AUDIO,
     REPLACED,
     CLOSE_ALL,
     CLOSE_ALL_CANCELED,
@@ -409,6 +410,10 @@ class MockTabStripModelObserver : public TabStripModelObserver {
     states_.emplace_back(tab->GetContents(), std::nullopt, BLOCKED);
   }
 
+  void OnTabAudioChanged(tabs::TabInterface* tab) override {
+    states_.emplace_back(tab->GetContents(), std::nullopt, AUDIO);
+  }
+
   void WillCloseAllTabs(TabStripModel* tab_strip_model) override {
     states_.emplace_back(nullptr, std::nullopt, CLOSE_ALL);
   }
@@ -443,6 +448,7 @@ class MockTabStripModelObserver : public TabStripModelObserver {
             {CHANGE, "CHANGE"},
             {PINNED, "PINNED"},
             {BLOCKED, "BLOCKED"},
+            {AUDIO, "AUDIO"},
             {REPLACED, "REPLACED"},
             {CLOSE_ALL, "CLOSE_ALL"},
             {CLOSE_ALL_CANCELED, "CLOSE_ALL_CANCELED"},
@@ -817,6 +823,15 @@ TEST_F(TabStripModelTest, TestBasicAPI) {
     tabstrip()->UpdateWebContentsState(raw_contents2, TabChangeType::kAll);
     EXPECT_EQ(1, observer()->GetStateCount());
     State s1(raw_contents2, std::nullopt, MockTabStripModelObserver::CHANGE);
+    observer()->ExpectStateEquals(0, s1);
+    observer()->ClearStates();
+  }
+
+  // Test NotifyTabAudioChanged
+  {
+    tabstrip()->NotifyTabAudioChanged(tabstrip()->GetTabAtIndex(0));
+    EXPECT_EQ(1, observer()->GetStateCount());
+    State s1(raw_contents2, std::nullopt, MockTabStripModelObserver::AUDIO);
     observer()->ExpectStateEquals(0, s1);
     observer()->ClearStates();
   }

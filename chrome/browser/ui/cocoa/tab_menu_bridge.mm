@@ -322,6 +322,10 @@ void TabMenuBridge::OnTabChangedAt(tabs::TabInterface* tab,
   UpdateItemForWebContents(item, tab->GetContents(), model_);
 }
 
+void TabMenuBridge::OnTabAudioChanged(tabs::TabInterface* tab) {
+  OnTabChangedAt(tab, TabChangeType::kAll);
+}
+
 // If a tab group is changed, update group indicator for each tab.
 void TabMenuBridge::OnTabGroupChanged(const TabGroupChange& change) {
   if (!force_rebuild_menu_ && ![menu_listener_ isMenuOpen]) {

@@ -460,6 +460,9 @@ class TabStripModel {
   // TabChangeType for details of `change_type`.
   void NotifyTabChanged(tabs::TabInterface* tab, TabChangeType change_type);
 
+  // Notify any observers that the tab's audio state has changed.
+  void NotifyTabAudioChanged(tabs::TabInterface* tab);
+
   // Notify any observers that the WebContents has changed in some way. See
   // TabChangeType for details of `change_type`.
   void UpdateWebContentsState(content::WebContents* contents,
