@@ -288,6 +288,7 @@ source_set("unit_tests") {
       "credential_manager_dialog_controller_impl_unittest.cc",
       "manage_passwords_auto_signin_toast_delegate_unittest.cc",
       "manage_passwords_ui_controller_unittest.cc",
+      "password_change_ui_controller_unittest.cc",
       "password_cross_domain_confirmation_popup_controller_impl_unittest.cc",
       "password_generation_popup_controller_impl_unittest.cc",
       "password_manager_navigation_throttle_unittest.cc",

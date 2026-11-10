@@ -8,6 +8,8 @@
 #include <optional>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -30,6 +32,8 @@ class PasswordChangeToast : public views::View {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPasswordChangeActionButton);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPasswordChangeCloseButton);
 
+  static constexpr base::TimeDelta kAutoDismissDelay = base::Seconds(8);
+
   // Helper structure which allows to customize toast according to the
   // requirements.
   struct ToastOptions {
@@ -38,7 +42,8 @@ class PasswordChangeToast : public views::View {
         const gfx::VectorIcon& icon,
         base::OnceClosure close_callback,
         const std::optional<std::u16string>& action_button_text = std::nullopt,
-        base::OnceClosure action_button_closure = base::DoNothing());
+        base::OnceClosure action_button_closure = base::DoNothing(),
+        base::OnceClosure auto_dismiss_closure = base::NullCallback());
 
     ToastOptions(
         const std::u16string& text,
@@ -59,6 +64,7 @@ class PasswordChangeToast : public views::View {
     std::optional<std::u16string> action_button_text;
     base::OnceClosure action_button_closure;
     base::OnceClosure close_callback;
+    base::OnceClosure auto_dismiss_closure;
   };
 
   explicit PasswordChangeToast(ToastOptions toast_configuration);
@@ -80,9 +86,11 @@ class PasswordChangeToast : public views::View {
 
   void OnActionButtonClicked();
   void OnCloseButtonClicked();
+  void OnAutoDismissed();
 
   base::OnceClosure action_button_closure_;
   base::OnceClosure close_callback_;
+  base::OnceClosure auto_dismiss_closure_;
 
   raw_ptr<views::FlexLayout> layout_manager_ = nullptr;
   raw_ptr<views::Throbber> throbber_ = nullptr;
@@ -90,6 +98,8 @@ class PasswordChangeToast : public views::View {
   raw_ptr<views::ImageView> icon_view_ = nullptr;
   raw_ptr<views::MdTextButton> action_button_ = nullptr;
   raw_ptr<views::ImageButton> close_button_ = nullptr;
+
+  base::WeakPtrFactory<PasswordChangeToast> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_CHANGE_PASSWORD_CHANGE_TOAST_H_

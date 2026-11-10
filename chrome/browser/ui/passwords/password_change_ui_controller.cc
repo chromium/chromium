@@ -491,6 +491,9 @@ PasswordChangeUIController::GetDialogOrToastConfiguration(
   auto cancel_toast_callback =
       base::BindOnce(&PasswordChangeUIController::OnToastCanceled,
                      weak_ptr_factory_.GetWeakPtr());
+  auto auto_dismiss_toast_callback =
+      base::BindOnce(&PasswordChangeUIController::OnToastAutoDismissed,
+                     weak_ptr_factory_.GetWeakPtr());
   auto navigate_to_settings_callback = base::BindRepeating(
       &PasswordChangeUIController::NavigateToPasswordChangeSettings,
       base::Unretained(this));
@@ -574,7 +577,8 @@ PasswordChangeUIController::GetDialogOrToastConfiguration(
           l10n_util::GetStringUTF16(
               IDS_PASSWORD_MANAGER_UI_VIEW_DETAILS_BUTTON),
           base::BindOnce(&PasswordChangeUIController::ShowPasswordDetails,
-                         weak_ptr_factory_.GetWeakPtr()));
+                         weak_ptr_factory_.GetWeakPtr()),
+          std::move(auto_dismiss_toast_callback));
     case PasswordChangeUIDelegate::State::kCanceled:
       return ToastOptions(
           l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UI_PASSWORD_UNCHANGED),
@@ -584,7 +588,8 @@ PasswordChangeUIController::GetDialogOrToastConfiguration(
           std::move(cancel_toast_callback),
           l10n_util::GetStringUTF16(
               IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_FAILED_ACCEPT_BUTTON),
-          std::move(open_password_change_tab_from_toast_callback));
+          std::move(open_password_change_tab_from_toast_callback),
+          std::move(auto_dismiss_toast_callback));
     case PasswordChangeUIDelegate::State::kLoginFormDetected:
       return ToastOptions(
           l10n_util::GetStringUTF16(
@@ -685,6 +690,12 @@ void PasswordChangeUIController::OnToastCanceled() {
     return;
   }
   ui_delegate_->CancelPasswordChangeFlow();
+}
+
+void PasswordChangeUIController::OnToastAutoDismissed() {
+  if (ui_delegate_) {
+    ui_delegate_->OnUiDismissed();
+  }
 }
 
 void PasswordChangeUIController::OnDialogCanceled() {

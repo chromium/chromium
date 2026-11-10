@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/passwords/password_change/password_change_toast.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -62,12 +63,14 @@ PasswordChangeToast::ToastOptions::ToastOptions(
     const gfx::VectorIcon& icon,
     base::OnceClosure close_callback,
     const std::optional<std::u16string>& action_button_text,
-    base::OnceClosure action_button_closure)
+    base::OnceClosure action_button_closure,
+    base::OnceClosure auto_dismiss_closure)
     : text(text),
       icon(icon),
       action_button_text(action_button_text),
       action_button_closure(std::move(action_button_closure)),
-      close_callback(std::move(close_callback)) {}
+      close_callback(std::move(close_callback)),
+      auto_dismiss_closure(std::move(auto_dismiss_closure)) {}
 
 PasswordChangeToast::ToastOptions::~ToastOptions() = default;
 PasswordChangeToast::ToastOptions::ToastOptions(
@@ -192,6 +195,16 @@ void PasswordChangeToast::UpdateLayout(ToastOptions configuration) {
 
   action_button_closure_ = std::move(configuration.action_button_closure);
   close_callback_ = std::move(configuration.close_callback);
+  auto_dismiss_closure_ = std::move(configuration.auto_dismiss_closure);
+
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  if (auto_dismiss_closure_) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&PasswordChangeToast::OnAutoDismissed,
+                       weak_ptr_factory_.GetWeakPtr()),
+        kAutoDismissDelay);
+  }
 }
 
 gfx::Insets PasswordChangeToast::CalculateInteriorMargin() {
@@ -223,6 +236,10 @@ void PasswordChangeToast::OnActionButtonClicked() {
 
 void PasswordChangeToast::OnCloseButtonClicked() {
   std::move(close_callback_).Run();
+}
+
+void PasswordChangeToast::OnAutoDismissed() {
+  std::move(auto_dismiss_closure_).Run();
 }
 
 BEGIN_METADATA(PasswordChangeToast)

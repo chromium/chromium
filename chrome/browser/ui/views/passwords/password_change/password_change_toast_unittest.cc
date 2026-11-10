@@ -8,8 +8,11 @@
 #include <string>
 
 #include "base/functional/callback_helpers.h"
+#include "base/test/mock_callback.h"
+#include "base/time/time.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/vector_icons/vector_icons.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/controls/button/image_button.h"
@@ -25,7 +28,7 @@ class PasswordChangeToastTest : public ChromeViewsTestBase {
   ~PasswordChangeToastTest() override = default;
 
   void TearDown() override {
-    anchor_widget_ = nullptr;
+    anchor_widget_.reset();
     ChromeViewsTestBase::TearDown();
   }
 
@@ -38,6 +41,8 @@ class PasswordChangeToastTest : public ChromeViewsTestBase {
     anchor_widget_->SetContentsView(std::move(toast_view));
     return raw_toast_view;
   }
+
+  void DestroyToastWidget() { anchor_widget_.reset(); }
 
  private:
   std::unique_ptr<views::Widget> anchor_widget_;
@@ -79,4 +84,40 @@ TEST_F(PasswordChangeToastTest, ConfigurationUpdated) {
   EXPECT_TRUE(toast_view->action_button()->GetVisible());
   EXPECT_EQ(u"Details", toast_view->action_button()->GetText());
   EXPECT_TRUE(toast_view->close_button()->GetVisible());
+}
+
+TEST_F(PasswordChangeToastTest, AutoDismissesAfterDelay) {
+  base::MockOnceClosure auto_dismiss_callback;
+  EXPECT_CALL(auto_dismiss_callback, Run).Times(0);
+
+  PasswordChangeToast::ToastOptions options(
+      u"Password changed",
+      features::IsRoundedIconsEnabled() ? vector_icons::kPasswordManagerIcon
+                                        : vector_icons::kPasswordManagerOldIcon,
+      base::DoNothing(), u"Details", base::DoNothing(),
+      auto_dismiss_callback.Get());
+  ShowToast(std::move(options));
+
+  task_environment()->FastForwardBy(PasswordChangeToast::kAutoDismissDelay -
+                                    base::Milliseconds(1));
+  testing::Mock::VerifyAndClearExpectations(&auto_dismiss_callback);
+
+  EXPECT_CALL(auto_dismiss_callback, Run);
+  task_environment()->FastForwardBy(base::Milliseconds(1));
+}
+
+TEST_F(PasswordChangeToastTest, DestroyingToastCancelsAutoDismiss) {
+  base::MockOnceClosure auto_dismiss_callback;
+  EXPECT_CALL(auto_dismiss_callback, Run).Times(0);
+
+  PasswordChangeToast::ToastOptions options(
+      u"Password changed",
+      features::IsRoundedIconsEnabled() ? vector_icons::kPasswordManagerIcon
+                                        : vector_icons::kPasswordManagerOldIcon,
+      base::DoNothing(), u"Details", base::DoNothing(),
+      auto_dismiss_callback.Get());
+  ShowToast(std::move(options));
+
+  DestroyToastWidget();
+  task_environment()->FastForwardBy(PasswordChangeToast::kAutoDismissDelay);
 }

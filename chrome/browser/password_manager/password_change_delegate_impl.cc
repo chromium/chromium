@@ -10,7 +10,6 @@
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -57,8 +56,6 @@
 namespace {
 
 using ::password_manager::BrowserSavePasswordProgressLogger;
-
-constexpr base::TimeDelta kToastDisplayTime = base::Seconds(8);
 
 std::unique_ptr<BrowserSavePasswordProgressLogger> GetLoggerIfAvailable(
     content::WebContents* web_contents) {
@@ -573,15 +570,6 @@ void PasswordChangeDelegateImpl::UpdateState(State new_state) {
     logger->LogNumber(BrowserSavePasswordProgressLogger::
                           STRING_AUTOMATED_PASSWORD_CHANGE_STATE_CHANGED,
                       static_cast<int>(new_state));
-  }
-
-  // In case the password change was canceled or finished successfully, the flow
-  // and the respective UI should be stopped after a specified timeout.
-  if (current_state_ == State::kCanceled ||
-      current_state_ == State::kPasswordSuccessfullyChanged) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, base::BindOnce(&PasswordChangeDelegate::Stop, AsWeakPtr()),
-        kToastDisplayTime);
   }
 }
 

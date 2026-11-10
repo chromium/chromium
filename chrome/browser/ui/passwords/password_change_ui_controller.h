@@ -67,10 +67,11 @@ class PasswordChangeUIController {
                std::unique_ptr<views::BubbleDialogModelHost>>
   GetDialogOrToastConfiguration(PasswordChangeUIDelegate::State state);
 
-  void ShowToast(PasswordChangeToast::ToastOptions options);
+  virtual void ShowToast(PasswordChangeToast::ToastOptions options);
   void ShowDialog(std::unique_ptr<views::BubbleDialogModelHost> model_host);
 
   void OnToastCanceled();
+  void OnToastAutoDismissed();
   void OnDialogCanceled();
   void OpenPasswordChangeTab();
   void OpenPasswordChangeTabFromDialog();

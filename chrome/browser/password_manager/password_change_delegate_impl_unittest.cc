@@ -669,33 +669,6 @@ TEST_F(PasswordChangeDelegateImplTest, OnTabWillDetach_OtherReason_Ignored) {
   delegate()->RemoveObserver(&observer);
 }
 
-TEST_F(PasswordChangeDelegateImplTest, StopCalledAfterTimeout_OnCanceled) {
-  CreateDelegate();
-  MockPasswordChangeDelegateObserver observer;
-  delegate()->AddObserver(&observer);
-
-  EXPECT_CALL(observer, OnPasswordChangeStopped).Times(0);
-  delegate()->CancelPasswordChangeFlow();
-
-  EXPECT_CALL(observer, OnPasswordChangeStopped(delegate()));
-  FastForwardBy(base::Seconds(8));
-  delegate()->RemoveObserver(&observer);
-}
-
-TEST_F(PasswordChangeDelegateImplTest, StopCalledAfterTimeout_OnSuccess) {
-  CreateDelegate();
-  MockPasswordChangeDelegateObserver observer;
-  delegate()->AddObserver(&observer);
-
-  EXPECT_CALL(observer, OnPasswordChangeStopped).Times(0);
-  delegate()->OnActuationStateChanged(
-      PasswordChangeActuator::State::kPasswordSuccessfullyChanged);
-
-  EXPECT_CALL(observer, OnPasswordChangeStopped(delegate()));
-  FastForwardBy(base::Seconds(8));
-  delegate()->RemoveObserver(&observer);
-}
-
 TEST_F(PasswordChangeDelegateImplTest, PrivateInferenceLoginCheck_Success) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(

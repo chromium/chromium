@@ -96,7 +96,8 @@ class PasswordChangeUIDelegate {
   // the flow.
   virtual void OpenPasswordDetails() = 0;
 
-  // Called when a terminal dialog or toast is dismissed by the user.
+  // Called when a terminal dialog or toast is dismissed (either by the user or
+  // after its display timeout).
   virtual void OnUiDismissed() = 0;
 };
 
