@@ -38,23 +38,23 @@ class TestProfileIOS final : public ProfileIOS {
  public:
   // Wrapper over std::variant to help type deduction when calling
   // AddTestingFactories(). See example call in the method's comment.
+  //
+  // The constructor adapts the signature of the `testing_factory` to
+  // conforms to the type expected by the `service_factory`. This allow
+  // callback returning a sub-class of {Refcounted,}KeyedService and/or
+  // taking no parameters.
+  //
+  // This allows using `base::BindOnce(&std::make_unique<FakeService>)`
+  // as testing factory which can simplify the factory when creating a
+  // simple test double.
   struct TestingFactory {
-    TestingFactory(ProfileKeyedServiceFactoryIOS* service_factory,
-                   KeyedServiceTestingFactoryIOS testing_factory);
-
-    TestingFactory(RefcountedProfileKeyedServiceFactoryIOS* service_factory,
-                   RefcountedKeyedServiceTestingFactoryIOS testing_factory);
-
-    // TODO(crbug.com/576182342): remove this overload when all tests have
-    // been converted to use KeyedServiceTestingFactoryIOS instead.
-    TestingFactory(ProfileKeyedServiceFactoryIOS* service_factory,
-                   KeyedServiceTestingFactoryIOSByPtr testing_factory);
-
-    // TODO(crbug.com/576182342): remove this overload when all tests have
-    // been converted to use RefcountedKeyedServiceTestingFactoryIOS instead.
-    TestingFactory(
-        RefcountedProfileKeyedServiceFactoryIOS* service_factory,
-        RefcountedKeyedServiceTestingFactoryIOSByPtr testing_factory);
+    template <typename ServiceFactory, typename TestingFactory>
+    TestingFactory(ServiceFactory* service_factory,
+                   TestingFactory testing_factory)
+        : service_factory_and_testing_factory(
+              std::make_pair(service_factory,
+                             ::ios::test::internal::AdaptTestingFactory(
+                                 std::move(testing_factory)))) {}
 
     TestingFactory(TestingFactory&&);
     TestingFactory& operator=(TestingFactory&&);

@@ -53,59 +53,7 @@ void AssignTestingFactories(
   }
 }
 
-// Converts a `testing_factory` into a KeyedServiceTestingFactoryIOS.
-KeyedServiceTestingFactoryIOS IntoByRef(
-    KeyedServiceTestingFactoryIOSByPtr testing_factory) {
-  if (!testing_factory) {
-    return {};
-  }
-
-  return base::BindOnce(
-      [](KeyedServiceTestingFactoryIOSByPtr testing_factory,
-         ProfileIOS& profile) {
-        return std::move(testing_factory).Run(&profile);
-      },
-      std::move(testing_factory));
-}
-
-// Converts a `testing_factory` into a RefcountedKeyedServiceTestingFactoryIOS.
-RefcountedKeyedServiceTestingFactoryIOS IntoByRef(
-    RefcountedKeyedServiceTestingFactoryIOSByPtr testing_factory) {
-  if (!testing_factory) {
-    return {};
-  }
-
-  return base::BindOnce(
-      [](RefcountedKeyedServiceTestingFactoryIOSByPtr testing_factory,
-         ProfileIOS& profile) {
-        return std::move(testing_factory).Run(&profile);
-      },
-      std::move(testing_factory));
-}
-
 }  // namespace
-
-TestProfileIOS::TestingFactory::TestingFactory(
-    ProfileKeyedServiceFactoryIOS* service_factory,
-    KeyedServiceTestingFactoryIOS testing_factory)
-    : service_factory_and_testing_factory(
-          std::make_pair(service_factory, std::move(testing_factory))) {}
-
-TestProfileIOS::TestingFactory::TestingFactory(
-    RefcountedProfileKeyedServiceFactoryIOS* service_factory,
-    RefcountedKeyedServiceTestingFactoryIOS testing_factory)
-    : service_factory_and_testing_factory(
-          std::make_pair(service_factory, std::move(testing_factory))) {}
-
-TestProfileIOS::TestingFactory::TestingFactory(
-    ProfileKeyedServiceFactoryIOS* service_factory,
-    KeyedServiceTestingFactoryIOSByPtr testing_factory)
-    : TestingFactory(service_factory, IntoByRef(std::move(testing_factory))) {}
-
-TestProfileIOS::TestingFactory::TestingFactory(
-    RefcountedProfileKeyedServiceFactoryIOS* service_factory,
-    RefcountedKeyedServiceTestingFactoryIOSByPtr testing_factory)
-    : TestingFactory(service_factory, IntoByRef(std::move(testing_factory))) {}
 
 TestProfileIOS::TestingFactory::TestingFactory(TestingFactory&&) = default;
 
