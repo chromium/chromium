@@ -66,6 +66,8 @@ void PaymentsChurnedUsersBubbleController::ReshowBubble() {
 }
 
 void PaymentsChurnedUsersBubbleController::OnBubbleDiscarded() {
+  should_show_icon_ = false;
+  UpdatePageActionIcon();
   if (closed_callback_) {
     std::move(closed_callback_).Run(PaymentsUiClosedReason::kNotInteracted);
   }

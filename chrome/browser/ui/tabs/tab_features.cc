@@ -1745,14 +1745,6 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
                                                                        tab);
   }
 
-  if (payments_churned_users_bubble_controller_) {
-    payments_churned_users_bubble_controller_.reset();
-    payments_churned_users_bubble_controller_ =
-        GetUserDataFactory()
-            .CreateInstance<autofill::PaymentsChurnedUsersBubbleController>(
-                *tab, tab);
-  }
-
   if (web_payments_observer_) {
     web_payments_observer_ =
         std::make_unique<payments::WebPaymentsObserver>(new_contents);
