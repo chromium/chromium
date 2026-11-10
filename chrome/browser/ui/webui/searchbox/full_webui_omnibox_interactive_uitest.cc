@@ -45,6 +45,8 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
@@ -3254,6 +3256,52 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       PollUntil([is_popup_offscreen]() { return !is_popup_offscreen(); },
                 "WaitForPopupOnscreen"));
 }
+
+// Verifies that leaving fullscreen closes a popup kept open for a draft typed
+// in fullscreen, keeping the draft, and reopens it unfocused once the
+// transition completes.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       ExitingFullscreenHidesDraftPopupTypedInFullscreen) {
+  if (IsWebUIToolbarEnabled()) {
+    GTEST_SKIP() << "TODO(b/577150359): With the WebUI toolbar, the popup "
+                    "isn't closed in fullscreen or reopened after.";
+  }
+  bool saw_close = false;
+  base::CallbackListSubscription subscription;
+  auto* const popup_state_manager =
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->GetLocationBarView()
+          ->GetOmniboxController()
+          ->popup_state_manager();
+  RunTestSequence(
+      WaitForBrowserActive(),
+      AddInstrumentedTab(kTab1, GURL("chrome://version/")),
+      WaitForWebContentsReady(kTab1),
+      Do([this]() { ui_test_utils::ToggleFullscreenModeAndWait(browser()); }),
+      WaitForPopupTransitionLockout(),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_L,
+                   ui::EF_PLATFORM_ACCELERATOR),
+      WaitForPopupReady(), WaitForPopupActive(), InputWebUIText("test draft"),
+      WaitForWebUIInputValue("test draft"), ClickWebPageBody(kTab1),
+      WaitForVisibleOmniboxUnfocused(),
+      CheckPopupState(OmniboxPopupState::kFull), Do([&]() {
+        subscription = popup_state_manager->AddPopupStateChangedCallback(
+            base::BindLambdaForTesting(
+                [&](OmniboxPopupState old_state, OmniboxPopupState new_state) {
+                  if (new_state == OmniboxPopupState::kNone) {
+                    saw_close = true;
+                  }
+                }));
+      }),
+      UninstrumentWebContents(kPopupWebView),
+      Do([this]() { ui_test_utils::ToggleFullscreenModeAndWait(browser()); }),
+      CheckResult([&]() { return saw_close; }, true,
+                  "PopupClosedExitingFullscreen"),
+      WaitForPopupState(OmniboxPopupState::kFull),
+      InAnyContext(
+          InstrumentNonTabWebView(kPopupWebView, GetActivePopupWebView())),
+      WaitForWebUIInputValue("test draft"), WaitForVisibleOmniboxUnfocused());
+}
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -5390,6 +5438,131 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
           true, "OmniboxShowsPageB"));
 }
 #endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS)
+
+// ChromeOS keeps a draft popup open in fullscreen.
+#if !BUILDFLAG(IS_CHROMEOS)
+// Verifies that a fullscreen transition closes a popup kept open for an
+// unfocused draft, keeping the draft, and that the popup reopens unfocused once
+// it can show again: after the transition on macOS, where the location bar
+// stays drawn, and after leaving fullscreen elsewhere.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       FullscreenClosesUnfocusedDraftPopupAndReopensIt) {
+  if (IsWebUIToolbarEnabled()) {
+    GTEST_SKIP() << "TODO(b/577150359): With the WebUI toolbar, the popup "
+                    "isn't closed in fullscreen or reopened after.";
+  }
+  [[maybe_unused]] bool is_mac = BUILDFLAG(IS_MAC);
+  bool saw_close = false;
+  base::CallbackListSubscription subscription;
+  auto* const popup_state_manager =
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->GetLocationBarView()
+          ->GetOmniboxController()
+          ->popup_state_manager();
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      InputWebUIText("test draft"), WaitForWebUIInputValue("test draft"),
+      ClickWebPageBody(kTab1), WaitForVisibleOmniboxUnfocused(),
+      CheckPopupState(OmniboxPopupState::kFull), Do([&]() {
+        subscription = popup_state_manager->AddPopupStateChangedCallback(
+            base::BindLambdaForTesting(
+                [&](OmniboxPopupState old_state, OmniboxPopupState new_state) {
+                  if (new_state == OmniboxPopupState::kNone) {
+                    saw_close = true;
+                  }
+                }));
+      }),
+      UninstrumentWebContents(kPopupWebView),
+      Do([this]() { ui_test_utils::ToggleFullscreenModeAndWait(browser()); }),
+      CheckResult([&]() { return saw_close; }, true,
+                  "PopupClosedEnteringFullscreen"),
+      CheckUserInputInProgress(true),
+      WaitForPopupState(is_mac ? OmniboxPopupState::kFull
+                               : OmniboxPopupState::kNone),
+      Do([&]() { saw_close = false; }),
+      Do([this]() { ui_test_utils::ToggleFullscreenModeAndWait(browser()); }),
+      WaitForPopupState(OmniboxPopupState::kFull),
+      InAnyContext(
+          InstrumentNonTabWebView(kPopupWebView, GetActivePopupWebView())),
+      WaitForWebUIInputValue("test draft"), WaitForVisibleOmniboxUnfocused(),
+      CheckResult([&]() { return saw_close; }, BUILDFLAG(IS_MAC),
+                  "PopupClosedExitingFullscreenOnMac"));
+}
+
+// Verifies that leaving fullscreen doesn't reopen a popup closed without a
+// draft.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       FullscreenKeepsPopupClosedWithoutDraft) {
+  if (IsWebUIToolbarEnabled()) {
+    GTEST_SKIP() << "TODO(b/577150359): With the WebUI toolbar, the popup "
+                    "isn't closed in fullscreen or reopened after.";
+  }
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      ClickWebPageBody(kTab1),
+      InAnyContext(WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      UninstrumentWebContents(kPopupWebView), WaitForOmniboxFocus(false),
+      CheckUserInputInProgress(false),
+      Do([this]() { ui_test_utils::ToggleFullscreenModeAndWait(browser()); }),
+      Do([this]() { ui_test_utils::ToggleFullscreenModeAndWait(browser()); }),
+      WaitForPopupTransitionLockout(),
+      CheckPopupState(OmniboxPopupState::kNone),
+      CheckResult(
+          [this]() {
+            return GetPopupWidget(browser()) &&
+                   GetPopupWidget(browser())->IsVisible();
+          },
+          false, "PopupWidgetHidden"));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_MAC)
+// Verifies that tab fullscreen, which hides the toolbar, keeps a popup closed
+// for an unfocused draft, keeping the draft, and that the popup reopens
+// unfocused once tab fullscreen exits.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       TabFullscreenKeepsDraftPopupClosedUntilExit) {
+  if (IsWebUIToolbarEnabled()) {
+    GTEST_SKIP() << "TODO(b/577150359): With the WebUI toolbar, the popup "
+                    "isn't closed in fullscreen or reopened after.";
+  }
+  auto set_tab_fullscreen = [this](bool fullscreen) {
+    content::WebContents* const web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    FullscreenController* const fullscreen_controller =
+        ExclusiveAccessManager::From(browser())->fullscreen_controller();
+    ui_test_utils::FullscreenWaiter waiter(browser(),
+                                           {.tab_fullscreen = fullscreen});
+    if (fullscreen) {
+      fullscreen_controller->EnterFullscreenModeForTab(
+          web_contents->GetPrimaryMainFrame());
+    } else {
+      fullscreen_controller->ExitFullscreenModeForTab(web_contents);
+    }
+    waiter.Wait();
+    // The waiter can return as soon as tab fullscreen is requested. Wait for
+    // the window transition too, which is when `BrowserView` calls
+    // `ReshowPopup()`.
+    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+    fullscreen_controller->RunOrDeferUntilTransitionIsComplete(
+        run_loop.QuitClosure());
+    run_loop.Run();
+  };
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      InputWebUIText("test draft"), WaitForWebUIInputValue("test draft"),
+      ClickWebPageBody(kTab1), WaitForVisibleOmniboxUnfocused(),
+      CheckPopupState(OmniboxPopupState::kFull),
+      UninstrumentWebContents(kPopupWebView),
+      Do([&]() { set_tab_fullscreen(true); }), WaitForPopupTransitionLockout(),
+      CheckPopupState(OmniboxPopupState::kNone), CheckUserInputInProgress(true),
+      Do([&]() { set_tab_fullscreen(false); }),
+      WaitForPopupState(OmniboxPopupState::kFull),
+      InAnyContext(
+          InstrumentNonTabWebView(kPopupWebView, GetActivePopupWebView())),
+      WaitForWebUIInputValue("test draft"), WaitForVisibleOmniboxUnfocused());
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 // Verifies that opening the find bar (Ctrl/Cmd+F) while the omnibox is focused
 // blurs the omnibox, closes the popup, and sends key presses to the find bar,

@@ -2316,6 +2316,20 @@ void BrowserView::FullscreenStateChanged() {
                                     widget_for_anchoring);
   GetFrameView()->OnFullscreenStateChanged();
 
+  // Reopen a popup that `OmniboxPopupView::OnFullscreenTransitionStarting()`
+  // closed for the transition. This runs after entering and after exiting, as
+  // immersive fullscreen keeps the location bar drawn. Skip it in content
+  // fullscreen, where the toolbar is hidden. `ReshowPopup()` only reopens the
+  // popup for an unfocused draft.
+  if (!fullscreen_utils::IsInContentFullscreen(browser())) {
+    if (LocationBar* const location_bar = GetLocationBar()) {
+      if (OmniboxPopupView* const popup_view =
+              location_bar->GetOmniboxPopupView()) {
+        popup_view->ReshowPopup();
+      }
+    }
+  }
+
 #endif  // BUILDFLAG(IS_MAC)
 
   ExclusiveAccessManager::From(browser_)
@@ -5516,6 +5530,13 @@ void BrowserView::PrepareFullscreen(bool fullscreen) {
   if (top_controls_slide_controller_) {
     top_controls_slide_controller_->OnBrowserFullscreenStateWillChange(
         fullscreen);
+  }
+
+  if (LocationBar* const location_bar = GetLocationBar()) {
+    if (OmniboxPopupView* const popup_view =
+            location_bar->GetOmniboxPopupView()) {
+      popup_view->OnFullscreenTransitionStarting();
+    }
   }
 
   // Reduce jankiness during the following position changes by:

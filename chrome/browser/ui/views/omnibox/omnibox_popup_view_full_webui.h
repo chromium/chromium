@@ -69,6 +69,7 @@ class OmniboxPopupViewFullWebUI : public OmniboxPopupViewWebUI,
   bool IsPopupHandlerReady() const override;
   bool IsReverting() const override;
   void SetIsReverting(bool reverting) override;
+  void OnFullscreenTransitionStarting() override;
 
   // content::WebContentsObserver:
   void DidFinishNavigation(

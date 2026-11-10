@@ -130,6 +130,9 @@ class OmniboxPopupView {
   virtual bool IsReverting() const;
   virtual void SetIsReverting(bool reverting);
 
+  // Called when a browser fullscreen transition starts, in either direction.
+  virtual void OnFullscreenTransitionStarting() {}
+
   // Safe downcasting to the BrowserView-embedded implementation.
   virtual OmniboxPopupViewBrowserView* AsOmniboxPopupViewBrowserView();
 
