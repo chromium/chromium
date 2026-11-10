@@ -1322,32 +1322,29 @@ TransformPaintPropertyNode::TransformAndOrigin
 FragmentPaintPropertyTreeBuilder::TransformAndOriginForSVGChild() const {
   if (full_context_.direct_compositing_reasons.Has(
           CompositingReason::kActiveTransformAnimation)) {
-    if (CompositorAnimations::CanStartTransformAnimationOnCompositorForSVG(
-            *To<SVGElement>(object_.GetNode()))) {
-      const gfx::RectF reference_box =
-          TransformHelper::ComputeReferenceBox(object_);
-      // Composited transform animation works only if
-      // LocalToSVGParentTransform() reflects the CSS transform properties.
-      // If this fails, we need to exclude the case in
-      // CompositorAnimations::CanStartTransformAnimationOnCompositorForSVG().
-      DCHECK_EQ(TransformHelper::ComputeTransform(
-                    object_.GetDocument(), object_.Style(), reference_box,
-                    ComputedStyle::kIncludeTransformOrigin),
-                object_.LocalToSVGParentTransform());
-      // For composited transform animation to work, we need to store transform
-      // origin separately. It's baked in object_.LocalToSVGParentTransform().
-      gfx::Transform matrix =
-          TransformHelper::HasCss3DTransform(object_)
-              ? TransformHelper::ComputeTransform3D(
-                    object_.GetDocument(), object_.Style(), reference_box,
-                    ComputedStyle::kExcludeTransformOrigin)
-              : TransformHelper::ComputeTransform(
-                    object_.GetDocument(), object_.Style(), reference_box,
-                    ComputedStyle::kExcludeTransformOrigin)
-                    .ToTransform();
-      return {matrix, gfx::Point3F(TransformHelper::ComputeTransformOrigin(
-                          object_.Style(), reference_box))};
-    }
+    const gfx::RectF reference_box =
+        TransformHelper::ComputeReferenceBox(object_);
+    // Composited transform animation works only if
+    // LocalToSVGParentTransform() reflects the CSS transform properties.
+    // If this fails, we need to exclude the case in
+    // CompositorAnimations::CanStartTransformAnimationOnCompositorForSVG().
+    DCHECK_EQ(TransformHelper::ComputeTransform(
+                  object_.GetDocument(), object_.Style(), reference_box,
+                  ComputedStyle::kIncludeTransformOrigin),
+              object_.LocalToSVGParentTransform());
+    // For composited transform animation to work, we need to store transform
+    // origin separately. It's baked in object_.LocalToSVGParentTransform().
+    gfx::Transform matrix =
+        TransformHelper::HasCss3DTransform(object_)
+            ? TransformHelper::ComputeTransform3D(
+                  object_.GetDocument(), object_.Style(), reference_box,
+                  ComputedStyle::kExcludeTransformOrigin)
+            : TransformHelper::ComputeTransform(
+                  object_.GetDocument(), object_.Style(), reference_box,
+                  ComputedStyle::kExcludeTransformOrigin)
+                  .ToTransform();
+    return {matrix, gfx::Point3F(TransformHelper::ComputeTransformOrigin(
+                        object_.Style(), reference_box))};
   }
   if (TransformHelper::HasCss3DTransform(object_)) {
     return {TransformHelper::LocalToSVGParentTransform3D(object_)};
@@ -4921,6 +4918,18 @@ void PaintPropertyTreeBuilder::UpdateForSelf() {
   context_.direct_compositing_reasons =
       CompositingReasonFinder::DirectReasonsForPaintProperties(
           object_, context_.container_for_fixed_position);
+  if (object_.Style().HasCurrentTransformAnimation() &&
+      !context_.direct_compositing_reasons.Has(
+          CompositingReason::kActiveTransformAnimation) &&
+      !PrePaintDisableSideEffectsScope::IsDisabled()) {
+    if (const auto* element = DynamicTo<Element>(object_.GetNode())) {
+      if (ElementAnimations* element_animations =
+              element->GetElementAnimations()) {
+        element_animations->DowngradeCompositedAnimationsAffectingProperties(
+            AnimatedSourceBitset({AnimatedSourceProperty::kTransform}));
+      }
+    }
+  }
   if (const auto* box = DynamicTo<LayoutBox>(object_)) {
     box->GetMutableForPainting().UpdateBackgroundPaintLocation(
         NeedsRootElementGroupForViewBackground(object_));

@@ -92,6 +92,7 @@
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length.h"
 #include "third_party/blink/renderer/core/svg/svg_use_element.h"
+#include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/testing/color_scheme_helper.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
@@ -2731,6 +2732,94 @@ TEST_P(AnimationCompositorAnimationsTest,
 
   EXPECT_FALSE(CanStartAnimation("svg-zoomed"));
   EXPECT_FALSE(CanStartAnimation("rect-zoomed"));
+}
+
+TEST_P(AnimationCompositorAnimationsTest,
+       CancelIncompatibleSVGTransformCompositorAnimation) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .animate {
+        width: 100px;
+        height: 100px;
+        animation: move 100s linear infinite;
+      }
+      @keyframes move {
+        0% { transform: translateX(0px); }
+        100% { transform: translateX(10px); }
+      }
+    </style>
+    <svg width="200" height="200">
+      <defs>
+        <rect id="rect-useref" width="100" height="100" fill="green"/>
+      </defs>
+      <use id="use" href="#rect-useref" x="0" y="0" class="animate"/>
+    </svg>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* use = GetElementById("use");
+  Animation* use_animation =
+      use->GetElementAnimations()->Animations().begin()->key;
+  EXPECT_TRUE(use_animation->HasActiveAnimationsOnCompositor());
+
+  const ObjectPaintProperties* use_properties =
+      use->GetLayoutObject()->FirstFragment().PaintProperties();
+  ASSERT_NE(nullptr, use_properties);
+  const auto* use_transform = use_properties->Transform();
+  ASSERT_NE(nullptr, use_transform);
+  auto* property_trees =
+      GetDocument().View()->RootCcLayer()->layer_tree_host()->property_trees();
+  const auto* cc_transform =
+      property_trees->transform_tree().FindNodeFromElementId(
+          use_transform->GetCompositorElementId());
+  ASSERT_NE(nullptr, cc_transform);
+  EXPECT_TRUE(use_transform->HasActiveTransformAnimation());
+  EXPECT_EQ(gfx::Vector2dF(0, 0), cc_transform->local.To2dTranslation());
+
+  // Setting a non-zero x offset on <use> introduces an additional transform
+  // that cannot be represented alongside a composited transform animation on a
+  // single TransformPaintPropertyNode.
+  use->setAttribute(svg_names::kXAttr, AtomicString("-500"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(use_animation->HasActiveAnimationsOnCompositor());
+
+  use_properties = use->GetLayoutObject()->FirstFragment().PaintProperties();
+  ASSERT_NE(nullptr, use_properties);
+  use_transform = use_properties->Transform();
+  ASSERT_NE(nullptr, use_transform);
+  EXPECT_FALSE(use_transform->HasActiveTransformAnimation());
+  EXPECT_EQ(gfx::Vector2dF(-500, 0), use_transform->Matrix().To2dTranslation());
+  cc_transform = property_trees->transform_tree().FindNodeFromElementId(
+      use_transform->GetCompositorElementId());
+  EXPECT_EQ(nullptr, cc_transform);
+}
+
+TEST_P(AnimationCompositorAnimationsTest,
+       IncompatibleSVGTransformWithOpacityCompositorAnimation) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes move-and-fade {
+        0% { transform: translateX(0px); opacity: 1; }
+        100% { transform: translateX(10px); opacity: 0.5; }
+      }
+      .animate {
+        width: 100px;
+        height: 100px;
+        animation: move-and-fade 100s linear infinite;
+      }
+    </style>
+    <svg width="200" height="200">
+      <rect id="rect" fill="green" vector-effect="non-scaling-stroke"
+            class="animate"/>
+    </svg>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+  Element* rect = GetElementById("rect");
+  Animation* rect_animation =
+      rect->GetElementAnimations()->Animations().begin()->key;
+  EXPECT_FALSE(rect_animation->HasActiveAnimationsOnCompositor());
 }
 
 TEST_P(AnimationCompositorAnimationsTest,

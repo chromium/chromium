@@ -27,6 +27,8 @@ class CORE_EXPORT CompositingReasonFinder {
       CompositingReasons reasons_except_scrolling);
 
   static CompositingReasons CompositingReasonsForAnimation(const LayoutObject&);
+  static bool ObjectTypeSupportsCompositedTransformAnimation(
+      const LayoutObject&);
   // Some LayoutObject types do not support transforms (see:
   // |LayoutObject::HasTransformRelatedProperty|) so this can return reasons
   // that the LayoutObject does not end up using.

@@ -59,6 +59,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_transformable_container.h"
+#include "third_party/blink/renderer/core/paint/compositing/compositing_reason_finder.h"
 #include "third_party/blink/renderer/core/paint/filter_effect_builder.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
 #include "third_party/blink/renderer/platform/animation/animation_translation_util.h"
@@ -195,8 +196,14 @@ bool CompositedAnimationRequiresProperties(const PropertyHandle& property,
     case CSSPropertyID::kRotate:
     case CSSPropertyID::kScale:
     case CSSPropertyID::kTranslate:
+      if (layout_object && layout_object->IsSVGChild()) {
+        return false;
+      }
+      [[fallthrough]];
     case CSSPropertyID::kTransform:
-      return !layout_object || layout_object->IsTransformApplicable();
+      return !layout_object ||
+             CompositingReasonFinder::
+                 ObjectTypeSupportsCompositedTransformAnimation(*layout_object);
     case CSSPropertyID::kOpacity:
     case CSSPropertyID::kBackdropFilter:
     case CSSPropertyID::kFilter:

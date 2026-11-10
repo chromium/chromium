@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/compositing/compositing_reason_finder.h"
 
+#include "third_party/blink/renderer/core/animation/compositor_animations.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/properties/css_bitset.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -335,18 +336,6 @@ CompositingReasons CompositingReasonsForScrollDependentPosition(
   return reasons;
 }
 
-bool ObjectTypeSupportsCompositedTransformAnimation(
-    const LayoutObject& object) {
-  if (object.IsSVGChild()) {
-    // Transforms are not supported on hidden containers, inlines, text, or
-    // filter primitives.
-    return !object.IsSVGHiddenContainer() && !object.IsLayoutInline() &&
-           !object.IsText() && !object.IsSVGFilterPrimitive();
-  }
-  // Transforms don't apply on non-replaced inline elements.
-  return object.IsBox();
-}
-
 // Defined by the Element Capture specification:
 // https://screen-share.github.io/element-capture/#elements-eligible-for-restriction
 bool IsEligibleForElementCapture(const LayoutObject& object) {
@@ -376,6 +365,20 @@ bool IsEligibleForElementCapture(const LayoutObject& object) {
 }
 
 }  // anonymous namespace
+
+bool CompositingReasonFinder::ObjectTypeSupportsCompositedTransformAnimation(
+    const LayoutObject& object) {
+  if (object.IsSVGChild()) {
+    // Transforms are not supported on hidden containers, inlines, text, or
+    // filter primitives.
+    return !object.IsSVGHiddenContainer() && !object.IsLayoutInline() &&
+           !object.IsText() && !object.IsSVGFilterPrimitive() &&
+           CompositorAnimations::CanStartTransformAnimationOnCompositorForSVG(
+               *To<SVGElement>(object.GetNode()));
+  }
+  // Transforms don't apply on non-replaced inline elements.
+  return object.IsBox();
+}
 
 CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
     const LayoutObject& object,

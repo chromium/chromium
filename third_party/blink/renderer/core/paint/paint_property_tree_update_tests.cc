@@ -2533,14 +2533,20 @@ TEST_P(PaintPropertyTreeUpdateTest, SVGTransformAnimationSMILChange) {
   ASSERT_TRUE(transform);
   EXPECT_EQ(gfx::Point3F(50, 50, 0), transform->Origin());
 
+  // Adding a SMIL animation disables composited transform animations on the
+  // target (removing CompositingReason::kActiveTransformAnimation). Since the
+  // current transform at t=0 (rotate(0deg)) is the identity matrix, the
+  // transform paint property node is no longer needed and is cleared.
   GetElementById("smil")->setAttribute(svg_names::kHrefAttr,
                                        AtomicString("#target"));
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(gfx::Point3F(), transform->Origin());
+  EXPECT_FALSE(PaintPropertiesForElement("target"));
 
   GetElementById("smil")->setAttribute(svg_names::kHrefAttr,
                                        AtomicString("#other"));
   UpdateAllLifecyclePhasesForTest();
+  transform = PaintPropertiesForElement("target")->Transform();
+  ASSERT_TRUE(transform);
   EXPECT_EQ(gfx::Point3F(50, 50, 0), transform->Origin());
 }
 
@@ -2565,13 +2571,18 @@ TEST_P(PaintPropertyTreeUpdateTest, SVGTransformAnimationZoomChange) {
   ASSERT_TRUE(transform);
   EXPECT_EQ(gfx::Point3F(50, 50, 0), transform->Origin());
 
+  // Non-default zoom disables composited transform animations on SVG elements
+  // (removing CompositingReason::kActiveTransformAnimation). With an identity
+  // transform at t=0 (rotate(0deg)), the transform node is cleared.
   GetElementById("target")->setAttribute(html_names::kStyleAttr,
                                          AtomicString("zoom: 2"));
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(gfx::Point3F(), transform->Origin());
+  EXPECT_FALSE(PaintPropertiesForElement("target"));
 
   GetElementById("target")->removeAttribute(html_names::kStyleAttr);
   UpdateAllLifecyclePhasesForTest();
+  transform = PaintPropertiesForElement("target")->Transform();
+  ASSERT_TRUE(transform);
   EXPECT_EQ(gfx::Point3F(50, 50, 0), transform->Origin());
 }
 
@@ -2601,14 +2612,22 @@ TEST_P(PaintPropertyTreeUpdateTest, SVGTransformAnimationVectorEffectChange) {
   EXPECT_EQ(gfx::Point3F(50, 50, 0), g_transform->Origin());
   EXPECT_EQ(gfx::Point3F(50, 50, 0), rect_transform->Origin());
 
+  // Non-scaling stroke disables composited transform animations on the element
+  // and its SVG ancestors (removing
+  // CompositingReason::kActiveTransformAnimation). With an identity transform
+  // at t=0 (rotate(0deg)), the transform nodes are cleared.
   GetElementById("rect")->setAttribute(svg_names::kVectorEffectAttr,
                                        AtomicString("non-scaling-stroke"));
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(gfx::Point3F(), g_transform->Origin());
-  EXPECT_EQ(gfx::Point3F(), rect_transform->Origin());
+  EXPECT_FALSE(PaintPropertiesForElement("g"));
+  EXPECT_FALSE(PaintPropertiesForElement("rect"));
 
   GetElementById("rect")->removeAttribute(svg_names::kVectorEffectAttr);
   UpdateAllLifecyclePhasesForTest();
+  g_transform = PaintPropertiesForElement("g")->Transform();
+  rect_transform = PaintPropertiesForElement("rect")->Transform();
+  ASSERT_TRUE(g_transform);
+  ASSERT_TRUE(rect_transform);
   EXPECT_EQ(gfx::Point3F(50, 50, 0), g_transform->Origin());
   EXPECT_EQ(gfx::Point3F(50, 50, 0), rect_transform->Origin());
 }
