@@ -84,8 +84,7 @@ bool AudioFileReader::OpenDecoder() {
   }
 #endif
 
-  if (!decoder_ && config.codec() == AudioCodec::kOpus &&
-      base::FeatureList::IsEnabled(kDirectOpusAudioDecoding)) {
+  if (!decoder_ && config.codec() == AudioCodec::kOpus) {
     decoder_ = std::make_unique<OpusAudioDecoder>(
         nullptr, OpusAudioDecoder::ExecutionMode::kSynchronous);
   }

@@ -22,9 +22,7 @@
 #include <string>
 
 #include "base/functional/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "media/base/media_switches.h"
 #include "media/test/pipeline_integration_test_base.h"
 
 namespace media {
@@ -61,45 +59,12 @@ struct FlakyRegressionTestData {
   std::string filename;
 };
 
-class FFmpegRegressionTest
-    : public testing::TestWithParam<RegressionTestData>,
-      public PipelineIntegrationTestBase {
- public:
-  FFmpegRegressionTest() {
-    scoped_feature_list_.InitWithFeatures({}, /*disabled_features=*/{
-                                              kDirectOpusAudioDecoding,
-#if BUILDFLAG(ENABLE_SYMPHONIA)
-                                              kSymphoniaAudioDecoding,
-                                              kSymphoniaMp3Decoding,
-                                              kSymphoniaPcmDecoding,
-                                              kSymphoniaVorbisDecoding,
-#endif
-                                          });
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+class FFmpegRegressionTest : public testing::TestWithParam<RegressionTestData>,
+                             public PipelineIntegrationTestBase {};
 
 class FlakyFFmpegRegressionTest
     : public testing::TestWithParam<FlakyRegressionTestData>,
-      public PipelineIntegrationTestBase {
- public:
-  FlakyFFmpegRegressionTest() {
-    scoped_feature_list_.InitWithFeatures({}, /*disabled_features=*/{
-                                              kDirectOpusAudioDecoding,
-#if BUILDFLAG(ENABLE_SYMPHONIA)
-                                              kSymphoniaAudioDecoding,
-                                              kSymphoniaMp3Decoding,
-                                              kSymphoniaPcmDecoding,
-                                              kSymphoniaVorbisDecoding,
-#endif
-                                          });
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+      public PipelineIntegrationTestBase {};
 
 #define FFMPEG_TEST_CASE_SEEKING(name, fn, init_status, end_status, seek_time) \
   INSTANTIATE_TEST_SUITE_P(name, FFmpegRegressionTest,                         \
@@ -127,10 +92,7 @@ FFMPEG_TEST_CASE(Cr100492,
                  DECODER_ERROR_NOT_SUPPORTED,
                  DECODER_ERROR_NOT_SUPPORTED);
 FFMPEG_TEST_CASE(Cr100543, "security/100543.webm", PIPELINE_OK, PIPELINE_OK);
-FFMPEG_TEST_CASE(Cr101458,
-                 "security/101458.webm",
-                 PIPELINE_ERROR_DECODE,
-                 PIPELINE_ERROR_DECODE);
+FFMPEG_TEST_CASE(Cr101458, "security/101458.webm", PIPELINE_OK, PIPELINE_OK);
 FFMPEG_TEST_CASE(Cr108416, "security/108416.webm", PIPELINE_OK, PIPELINE_OK);
 FFMPEG_TEST_CASE(Cr110849,
                  "security/110849.mkv",
@@ -247,7 +209,10 @@ FFMPEG_TEST_CASE(Cr640912,
 // TODO(liberato): before crbug.com/658440 was fixed, this would fail if run
 // twice under ASAN.  If run once, then it doesn't.  However, it still catches
 // issues in crbug.com/662118, so it's included anyway.
-FFMPEG_TEST_CASE(Cr658440, "security/658440.flac", PIPELINE_OK, PIPELINE_OK);
+FFMPEG_TEST_CASE(Cr658440,
+                 "security/658440.flac",
+                 DECODER_ERROR_NOT_SUPPORTED,
+                 DECODER_ERROR_NOT_SUPPORTED);
 FFMPEG_TEST_CASE(Cr665305,
                  "crbug665305.flac",
                  DEMUXER_ERROR_COULD_NOT_PARSE,

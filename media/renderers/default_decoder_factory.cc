@@ -87,13 +87,8 @@ void DefaultDecoderFactory::CreateAudioDecoders(
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO) && BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_SYMPHONIA)
-  if (base::FeatureList::IsEnabled(kSymphoniaAudioDecoding) ||
-      base::FeatureList::IsEnabled(kSymphoniaMp3Decoding) ||
-      base::FeatureList::IsEnabled(kSymphoniaPcmDecoding) ||
-      base::FeatureList::IsEnabled(kSymphoniaVorbisDecoding)) {
-    audio_decoders->push_back(
-        std::make_unique<SymphoniaAudioDecoder>(task_runner, media_log));
-  }
+  audio_decoders->push_back(
+      std::make_unique<SymphoniaAudioDecoder>(task_runner, media_log));
 #endif
 
 #if BUILDFLAG(ENABLE_IAMF_TOOLS)
@@ -103,9 +98,7 @@ void DefaultDecoderFactory::CreateAudioDecoders(
   }
 #endif
 
-  if (base::FeatureList::IsEnabled(kDirectOpusAudioDecoding)) {
-    audio_decoders->push_back(std::make_unique<OpusAudioDecoder>(task_runner));
-  }
+  audio_decoders->push_back(std::make_unique<OpusAudioDecoder>(task_runner));
 
 #if BUILDFLAG(ENABLE_FFMPEG)
   audio_decoders->push_back(

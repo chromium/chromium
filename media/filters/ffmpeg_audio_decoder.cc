@@ -84,13 +84,11 @@ void InitializePlanarFrameData(const AudioBuffer& buffer, AVFrame* frame) {
   }
 }
 
-// Returns true iff the FFmpegAudioDecoder should be disabled because current
-// base::Features have a different decoder enabled.
-bool IsCodecDisabledByFeatures(AudioCodec codec) {
-  // FFmpegAudioDecoder does not support Opus when this flag is enabled.
-  // OpusAudioDecoder should be used instead.
+// Returns true if another decoder handles `codec` (OpusAudioDecoder for Opus,
+// or SymphoniaAudioDecoder when built).
+bool IsCodecHandledByOtherDecoder(AudioCodec codec) {
   if (codec == AudioCodec::kOpus) {
-    return base::FeatureList::IsEnabled(kDirectOpusAudioDecoding);
+    return true;
   }
 
 #if BUILDFLAG(ENABLE_SYMPHONIA)
@@ -146,9 +144,8 @@ void FFmpegAudioDecoder::Initialize(const AudioDecoderConfig& config,
     return;
   }
 
-  // If another decoder is enabled in features for this codec, FFmpeg should
-  // not be enabled.
-  if (IsCodecDisabledByFeatures(config.codec())) {
+  // Reject codecs that are handled by a dedicated decoder (Symphonia or Opus).
+  if (IsCodecHandledByOtherDecoder(config.codec())) {
     std::move(bound_init_cb)
         .Run(DecoderStatus(DecoderStatus::Codes::kUnsupportedCodec));
     return;

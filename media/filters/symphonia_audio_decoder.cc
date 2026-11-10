@@ -414,19 +414,8 @@ void SymphoniaAudioDecoder::Reset(base::OnceClosure closure) {
 
 // static
 bool SymphoniaAudioDecoder::IsCodecSupported(AudioCodec codec) {
-  if (codec == AudioCodec::kFLAC) {
-    return base::FeatureList::IsEnabled(kSymphoniaAudioDecoding);
-  }
-  if (codec == AudioCodec::kMP3) {
-    return base::FeatureList::IsEnabled(kSymphoniaMp3Decoding);
-  }
-  if (IsPcm(codec)) {
-    return base::FeatureList::IsEnabled(kSymphoniaPcmDecoding);
-  }
-  if (codec == AudioCodec::kVorbis) {
-    return base::FeatureList::IsEnabled(kSymphoniaVorbisDecoding);
-  }
-  return false;
+  return codec == AudioCodec::kFLAC || codec == AudioCodec::kMP3 ||
+         IsPcm(codec) || codec == AudioCodec::kVorbis;
 }
 
 DecoderStatus SymphoniaAudioDecoder::SymphoniaDecode(

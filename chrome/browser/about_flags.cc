@@ -4853,18 +4853,6 @@ const FeatureEntry::Choice kConnectionAllowlistsChoices[] = {
      "ConnectionAllowlists"},
 };
 
-#if BUILDFLAG(ENABLE_SYMPHONIA)
-// The choices for the Symphonia audio decoding feature.
-const FeatureEntry::Choice kSymphoniaAudioDecodingChoices[] = {
-    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
-    {"Enabled (All Codecs)", switches::kEnableFeatures,
-     "SymphoniaAudioDecoding,SymphoniaMp3Decoding,SymphoniaPcmDecoding,"
-     "SymphoniaVorbisDecoding"},
-    {"Disabled (Overrides Finch)", switches::kDisableFeatures,
-     "SymphoniaAudioDecoding,SymphoniaMp3Decoding,SymphoniaPcmDecoding,"
-     "SymphoniaVorbisDecoding"}};
-#endif
-
 #if BUILDFLAG(ENABLE_SYMPHONIA_DEMUXER)
 constexpr char kSymphoniaDemuxingFeatureList[] =
     "SymphoniaDemuxing,SymphoniaAacDemuxing,SymphoniaFlacDemuxing,"
@@ -9568,12 +9556,6 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"xslt", flag_descriptions::kXSLTName, flag_descriptions::kXSLTDescription,
      kOsAll, FEATURE_VALUE_TYPE(blink::features::kXSLT)},
-
-#if BUILDFLAG(ENABLE_SYMPHONIA)
-    {"symphonia-audio-decoding", flag_descriptions::kSymphoniaAudioDecodingName,
-     flag_descriptions::kSymphoniaAudioDecodingDescription, kOsAll,
-     MULTI_VALUE_TYPE(kSymphoniaAudioDecodingChoices)},
-#endif
 
 #if BUILDFLAG(ENABLE_SYMPHONIA_DEMUXER)
     {"symphonia-demuxing", flag_descriptions::kSymphoniaDemuxingName,

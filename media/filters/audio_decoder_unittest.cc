@@ -211,40 +211,13 @@ class AudioDecoderTest
   }
 
   void SetUp() override {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-
-#if BUILDFLAG(ENABLE_SYMPHONIA)
-    const std::vector<base::test::FeatureRef> symphonia_features = {
-        { kSymphoniaAudioDecoding,
-          kSymphoniaMp3Decoding,
-          kSymphoniaPcmDecoding,
-          kSymphoniaVorbisDecoding }};
-
-    if (decoder_type_ == AudioDecoderType::kSymphonia) {
-      enabled_features.insert(enabled_features.end(),
-                              symphonia_features.begin(),
-                              symphonia_features.end());
-    } else {
-      disabled_features.insert(disabled_features.end(),
-                               symphonia_features.begin(),
-                               symphonia_features.end());
-    }
-#endif
-
-    if (decoder_type_ == AudioDecoderType::kOpus) {
-      enabled_features.push_back(kDirectOpusAudioDecoding);
-    } else if (decoder_type_ == AudioDecoderType::kFFmpeg) {
-      disabled_features.push_back(kDirectOpusAudioDecoding);
-    }
-
 #if BUILDFLAG(IS_ANDROID)
     if (decoder_type_ == AudioDecoderType::kMediaCodec) {
-      disabled_features.push_back(kStrictMediaCodecAudioDecoderSupport);
+      scoped_feature_list_.InitAndDisableFeature(
+          kStrictMediaCodecAudioDecoderSupport);
     }
 #endif
 
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
     if (!IsSupported()) {
       GTEST_SKIP() << "Unsupported platform.";
     }
@@ -260,6 +233,15 @@ class AudioDecoderTest
 #if BUILDFLAG(ENABLE_SYMPHONIA)
       case AudioDecoderType::kSymphonia:
         return SymphoniaAudioDecoder::IsCodecSupported(params_.codec);
+#endif
+      case AudioDecoderType::kFFmpeg:
+        if (params_.codec == AudioCodec::kOpus) {
+          return false;
+        }
+#if BUILDFLAG(ENABLE_SYMPHONIA)
+        return !SymphoniaAudioDecoder::IsCodecSupported(params_.codec);
+#else
+        return true;
 #endif
       case AudioDecoderType::kOpus:
         return params_.codec == AudioCodec::kOpus;
@@ -747,6 +729,32 @@ constexpr TestParams kFlacStereoParams = {AudioCodec::kFLAC,
                                           192000,
                                           CHANNEL_LAYOUT_STEREO};
 
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+constexpr TestParams kAacMonoParams = {
+    AudioCodec::kAAC,
+    "sfx.adts",
+    {{
+        {0, 23219, "-1.90,-1.53,-0.15,1.28,1.23,-0.33,"},
+        {23219, 23219, "0.54,0.88,2.19,3.54,3.24,1.63,"},
+        {46439, 23219, "1.42,1.69,2.95,4.23,4.02,2.36,"},
+    }},
+    0,
+    44100,
+    CHANNEL_LAYOUT_MONO};
+
+constexpr TestParams kAacStereoParams = {
+    AudioCodec::kAAC,
+    "bear-audio-implicit-he-aac-v2.aac",
+    {{
+        {0, 42666, "-1.76,-0.12,1.72,1.45,0.10,-1.32,"},
+        {42666, 42666, "-1.78,-0.13,1.70,1.44,0.09,-1.32,"},
+        {85333, 42666, "-1.78,-0.13,1.70,1.44,0.08,-1.33,"},
+    }},
+    0,
+    48000,
+    CHANNEL_LAYOUT_STEREO};
+#endif
+
 constexpr TestParams kCommonTestParams[] = {
     {AudioCodec::kMP3,
      "sfx.mp3",
@@ -765,16 +773,7 @@ constexpr TestParams kCommonTestParams[] = {
          {52244, 26122, nullptr},
      }}},
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-    {AudioCodec::kAAC,
-     "sfx.adts",
-     {{
-         {0, 23219, "-1.90,-1.53,-0.15,1.28,1.23,-0.33,"},
-         {23219, 23219, "0.54,0.88,2.19,3.54,3.24,1.63,"},
-         {46439, 23219, "1.42,1.69,2.95,4.23,4.02,2.36,"},
-     }},
-     0,
-     44100,
-     CHANNEL_LAYOUT_MONO},
+    kAacMonoParams,
 #endif
     kFlacMonoParams,
     {AudioCodec::kFLAC, "sfx.flac", kSfxFlacExpectations, 0, 44100,
@@ -907,9 +906,24 @@ void AudioDecoderTest::SetReinitializeParams() {
 #endif
 
 #if BUILDFLAG(ENABLE_SYMPHONIA)
-  // Currently, Symphonia does not support Opus audio, so we can't use the Opus
-  // params for reinitialization. Modify the channel layout instead.
+  // Neither SymphoniaAudioDecoder nor FFmpegAudioDecoder handles Opus, so we
+  // can't use `kReinitializeTestParams` (`kBearOpusParams`) for them.
   if (decoder_type_ == AudioDecoderType::kSymphonia) {
+    set_params(params_.channel_layout == kFlacMonoParams.channel_layout
+                   ? kFlacStereoParams
+                   : kFlacMonoParams);
+    return;
+  }
+  if (decoder_type_ == AudioDecoderType::kFFmpeg) {
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+    set_params(params_.channel_layout == kAacMonoParams.channel_layout
+                   ? kAacStereoParams
+                   : kAacMonoParams);
+#endif
+    return;
+  }
+#else
+  if (decoder_type_ == AudioDecoderType::kFFmpeg) {
     set_params(params_.channel_layout == kFlacMonoParams.channel_layout
                    ? kFlacStereoParams
                    : kFlacMonoParams);
@@ -1489,13 +1503,14 @@ TEST_P(WavOddChunkTest, DecodeWavWithOddChunk) {
 INSTANTIATE_TEST_SUITE_P(
     WavOddChunk,
     WavOddChunkTest,
-    testing::Values(std::make_tuple(AudioDecoderType::kFFmpeg, kHatBrokenParams)
 #if BUILDFLAG(ENABLE_SYMPHONIA)
-                        ,
-                    std::make_tuple(AudioDecoderType::kSymphonia,
-                                    kHatBrokenParams)
+    testing::Values(std::make_tuple(AudioDecoderType::kSymphonia,
+                                    kHatBrokenParams))
+#else
+    testing::Values(std::make_tuple(AudioDecoderType::kFFmpeg,
+                                    kHatBrokenParams))
 #endif
-                        ));
+);
 
 INSTANTIATE_TEST_SUITE_P(FFmpeg,
                          AudioDecoderTest,
@@ -1509,8 +1524,7 @@ INSTANTIATE_TEST_SUITE_P(Opus,
 
 INSTANTIATE_TEST_SUITE_P(OpusDecoding,
                          OpusDecodingTest,
-                         Combine(Values(AudioDecoderType::kOpus,
-                                        AudioDecoderType::kFFmpeg),
+                         Combine(Values(AudioDecoderType::kOpus),
                                  ValuesIn(kOpusTestParams)));
 
 INSTANTIATE_TEST_SUITE_P(OpusOnly,

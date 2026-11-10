@@ -9350,11 +9350,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "symphonia-audio-decoding",
-    "owners": [ "jophba@google.com", "media-dev@chromium.org" ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "symphonia-demuxing",
     "owners": [ "jophba@google.com", "media-dev@chromium.org" ],
     "expiry_milestone": 177

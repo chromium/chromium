@@ -2976,15 +2976,7 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackPositiveStartTime) {
   ASSERT_EQ(base::Microseconds(396000), demuxer_->GetStartTime());
 }
 
-class OpusPipelineIntegrationTest : public PipelineIntegrationTest {
- public:
-  OpusPipelineIntegrationTest() {
-    scoped_feature_list_.InitAndEnableFeature(kDirectOpusAudioDecoding);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+class OpusPipelineIntegrationTest : public PipelineIntegrationTest {};
 
 TEST_F(OpusPipelineIntegrationTest, BasicPlaybackOpusWebmTrimmingHashed) {
   ASSERT_EQ(PIPELINE_OK, Start("opus-trimming-test.webm", kHashed));
@@ -3128,18 +3120,7 @@ TEST_F(PipelineIntegrationTest, Fullrange_H264) {
 
 #if BUILDFLAG(ENABLE_SYMPHONIA)
 class SymphoniaPipelineIntegrationTest : public testing::Test,
-                                         public PipelineIntegrationTestBase {
- public:
-  SymphoniaPipelineIntegrationTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {kSymphoniaAudioDecoding, kSymphoniaMp3Decoding, kSymphoniaPcmDecoding,
-         kSymphoniaVorbisDecoding},
-        {} /*disabled_features=*/);
-  }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+                                         public PipelineIntegrationTestBase {};
 
 TEST_F(SymphoniaPipelineIntegrationTest, BasicPlaybackHashed_MP3) {
   ASSERT_EQ(PIPELINE_OK, Start("sfx.mp3", kHashed));

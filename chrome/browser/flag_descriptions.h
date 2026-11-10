@@ -2700,12 +2700,6 @@ inline constexpr char kXSLTName[] = "XSLT";
 inline constexpr char kXSLTDescription[] =
     "Toggles whether or not XSLT is supported by the browser.";
 
-inline constexpr char kSymphoniaAudioDecodingName[] =
-    "Symphonia Audio Decoding";
-inline constexpr char kSymphoniaAudioDecodingDescription[] =
-    "Enables using the experimental Symphonia audio decoder instead of using "
-    "FFMPEG for decoding audio.";
-
 inline constexpr char kSymphoniaDemuxingName[] = "Symphonia Demuxing";
 inline constexpr char kSymphoniaDemuxingDescription[] =
     "Enables using the experimental Symphonia container demuxer instead of "

@@ -245,10 +245,8 @@ std::vector<std::unique_ptr<AudioDecoder>> CreateAudioDecodersForTest(
     DCHECK(!audio_decoders.empty());
   }
 
-  if (base::FeatureList::IsEnabled(kDirectOpusAudioDecoding)) {
-    audio_decoders.push_back(
-        std::make_unique<OpusAudioDecoder>(media_task_runner));
-  }
+  audio_decoders.push_back(
+      std::make_unique<OpusAudioDecoder>(media_task_runner));
 
 #if BUILDFLAG(ENABLE_IAMF_TOOLS)
   if (base::FeatureList::IsEnabled(kIamfAudioDecoding)) {

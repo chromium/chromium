@@ -518,10 +518,6 @@ BASE_FEATURE(kDeferAudioFocusUntilAudible,
 #endif
 );
 
-// Controls whether the OpusAudioDecoder is used for Opus audio decoding
-// (instead of the FFmpegAudioDecoder).
-BASE_FEATURE(kDirectOpusAudioDecoding, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Killswitch for disallowing mixing opaque and non-opaque responses and
 // skipping Service Workers after network redirects in
 // ResourceMultiBufferDataProvider (crbug.com/572363265).
@@ -1240,17 +1236,6 @@ BASE_FEATURE(kPlatformHEVCHbdEncoderSupport, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
-
-// SymphoniaAudioDecoder support flags. When enabled, the SymphoniaAudioDecoder
-// will indicate support for the specified codec, causing it to be used for
-// audio decoding. If disabled, the media pipeline shall fall back to a
-// reasonable default, typically the FFmpeg audio decoder.
-#if BUILDFLAG(ENABLE_SYMPHONIA)
-BASE_FEATURE(kSymphoniaAudioDecoding, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kSymphoniaMp3Decoding, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kSymphoniaPcmDecoding, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kSymphoniaVorbisDecoding, base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(ENABLE_SYMPHONIA)
 
 #if BUILDFLAG(ENABLE_SYMPHONIA_DEMUXER)
 // Enables the use of Symphonia for container demuxing.
