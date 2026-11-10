@@ -7,13 +7,11 @@ source_set("intelligence") {
   sources = [
     "classification_metrics_tab_helper_api.mm",
     "page_classification_api.mm",
-    "page_context_wrapper_api.mm",
     "test_ttc_api.h",
     "ttc_api.mm",
   ]
   deps = [
     "//base",
     "//ios/public/provider/chrome/browser/intelligence:intelligence_api",
-    "//url",
   ]
 }
