@@ -8,6 +8,7 @@
 #include <atomic>
 #include <optional>
 #include <tuple>
+#include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
@@ -1463,5 +1464,103 @@ TEST(ChannelTest, WriteBeforeStartOnDisconnectedChannelReportsSingleError) {
   EXPECT_EQ(1u, delegate.error_count_);
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+namespace {
+
+// Records the payload size and the number of handles of every message.
+class RecordingIpczChannelDelegate : public Channel::Delegate {
+ public:
+  struct ReceivedMessage {
+    size_t payload_size;
+    size_t num_handles;
+  };
+
+  RecordingIpczChannelDelegate() = default;
+
+  RecordingIpczChannelDelegate(const RecordingIpczChannelDelegate&) = delete;
+  RecordingIpczChannelDelegate& operator=(const RecordingIpczChannelDelegate&) =
+      delete;
+
+  bool IsIpczTransport() const override { return true; }
+
+  void OnChannelMessage(
+      const void* payload,
+      size_t payload_size,
+      std::vector<PlatformHandle> handles,
+      scoped_refptr<ipcz_driver::Envelope> envelope) override {
+    received_.push_back({payload_size, handles.size()});
+    if (on_message_) {
+      std::move(on_message_).Run();
+    }
+  }
+
+  void OnChannelError(Channel::Error error) override { has_error_ = true; }
+
+  void set_on_message(base::OnceClosure on_message) {
+    on_message_ = std::move(on_message);
+  }
+
+  const std::vector<ReceivedMessage>& received() const { return received_; }
+  bool has_error() const { return has_error_; }
+
+ private:
+  base::OnceClosure on_message_;
+  std::vector<ReceivedMessage> received_;
+  bool has_error_ = false;
+};
+
+}  // namespace
+
+// Without support for multiple notifiers the ipcz message header cannot mark a
+// message as an UPGRADE_OFFER, so the peer would receive the offer as a regular
+// (malformed) message. Enabling kMojoUseEventFd must not send offers then.
+TEST(ChannelTest, NoUpgradeOfferWithoutMultipleNotifiers) {
+  if (Channel::SupportsMultipleNotifiers()) {
+    GTEST_SKIP() << "Channel upgrades are supported on this platform.";
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list(kMojoUseEventFd);
+  EXPECT_FALSE(Channel::SupportsChannelUpgrade());
+
+  // The delegates are created before the task environment, because they are
+  // notified when the channels are destructed, which happens when the task
+  // environment is shut down.
+  RecordingIpczChannelDelegate sender_delegate;
+  RecordingIpczChannelDelegate receiver_delegate;
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
+  PlatformChannel platform_channel;
+
+  scoped_refptr<Channel> sender = Channel::Create(
+      &sender_delegate, ConnectionParams(platform_channel.TakeLocalEndpoint()),
+      Channel::HandlePolicy::kAcceptHandles,
+      base::SingleThreadTaskRunner::GetCurrentDefault());
+  scoped_refptr<Channel> receiver =
+      Channel::Create(&receiver_delegate,
+                      ConnectionParams(platform_channel.TakeRemoteEndpoint()),
+                      Channel::HandlePolicy::kAcceptHandles,
+                      base::SingleThreadTaskRunner::GetCurrentDefault());
+  sender->Start();
+  receiver->Start();
+
+  sender->OfferChannelUpgrade();
+  const std::vector<uint8_t> kData(100, 'a');
+  sender->WriteNextIpczMessage(kData, {});
+
+  base::RunLoop run_loop;
+  receiver_delegate.set_on_message(run_loop.QuitClosure());
+  run_loop.Run();
+
+  // The first message to arrive must be the regular one, not an offer.
+  ASSERT_EQ(1u, receiver_delegate.received().size());
+  EXPECT_EQ(kData.size(), receiver_delegate.received()[0].payload_size);
+  EXPECT_EQ(0u, receiver_delegate.received()[0].num_handles);
+  EXPECT_FALSE(receiver_delegate.has_error());
+
+  sender->ShutDown();
+  receiver->ShutDown();
+}
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace mojo::core

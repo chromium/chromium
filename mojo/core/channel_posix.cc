@@ -633,7 +633,11 @@ scoped_refptr<Channel> Channel::Create(
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID))
 // static
 bool Channel::SupportsChannelUpgrade() {
-  return ChannelLinux::KernelSupportsUpgradeRequirements() &&
+  // Upgrade control messages are identified by a part of the ipcz message
+  // header that only exists when multiple notifiers are supported. Without it
+  // an UPGRADE_OFFER would reach the peer as a regular, malformed message.
+  return SupportsMultipleNotifiers() &&
+         ChannelLinux::KernelSupportsUpgradeRequirements() &&
          ChannelLinux::UpgradesEnabled();
 }
 
