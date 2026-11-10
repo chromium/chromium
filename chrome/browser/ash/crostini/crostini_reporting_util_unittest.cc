@@ -47,8 +47,11 @@ TEST_F(CrostiniReportingUtilTest, WriteMetricsForReportingToPrefsIfEnabled) {
   EXPECT_TRUE(base::Time::FromString("Sat, 1 Sep 2018 11:50:50 GMT", &time));
   test_clock_.SetNow(time);
 
-  const auto component_info = component_updater::ComponentInfo(
-      "id2", "fingerprint2", u"cros-termina", base::Version("1.33.7"), "");
+  const component_updater::ComponentInfo component_info = {
+      .id = "id2",
+      .fingerprint = "fingerprint2",
+      .name = u"cros-termina",
+      .version = base::Version("1.33.7")};
   EXPECT_CALL(update_service_, GetComponents())
       .Times(1)
       .WillOnce(Return(
@@ -154,12 +157,21 @@ TEST_F(CrostiniReportingUtilTest, GetTerminaVersion) {
 
   Mock::VerifyAndClearExpectations(update_service);
 
-  const auto component_info_1 = component_updater::ComponentInfo(
-      "id1", "fingerprint1", u"name1", base::Version("1.0"), "");
-  const auto component_info_2 = component_updater::ComponentInfo(
-      "id2", "fingerprint2", u"cros-termina", base::Version("1.33.7"), "");
-  const auto component_info_3 = component_updater::ComponentInfo(
-      "id3", "fingerprint3", u"name1", base::Version("1.0"), "");
+  const component_updater::ComponentInfo component_info_1 = {
+      .id = "id1",
+      .fingerprint = "fingerprint1",
+      .name = u"name1",
+      .version = base::Version("1.0")};
+  const component_updater::ComponentInfo component_info_2 = {
+      .id = "id2",
+      .fingerprint = "fingerprint2",
+      .name = u"cros-termina",
+      .version = base::Version("1.33.7")};
+  const component_updater::ComponentInfo component_info_3 = {
+      .id = "id3",
+      .fingerprint = "fingerprint3",
+      .name = u"name1",
+      .version = base::Version("1.0")};
   EXPECT_CALL(*update_service, GetComponents())
       .Times(1)
       .WillOnce(Return(std::vector<component_updater::ComponentInfo>(

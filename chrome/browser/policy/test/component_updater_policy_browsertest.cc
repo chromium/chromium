@@ -192,15 +192,13 @@ ComponentUpdaterPolicyTest::MakeComponentRegistration(
       0xf6, 0xc4, 0x11, 0x9f, 0xbc, 0xb3, 0x09, 0xb3, 0x5b, 0x40};
 
   // The component uses HTTPS only for network interception purposes.
-  return component_updater::ComponentRegistration(
-      "jebgalgnebhfojomionfpkfelancnnkf", {}, jebg_hash, base::Version("0.9"),
-      /*fingerprint=*/{}, /*installer_attributes=*/{},
-      /*action_handler=*/nullptr, base::MakeRefCounted<MockInstaller>(),
-      /*requires_network_encryption=*/true,
-      supports_group_policy_enable_component_updates,
-      /*allow_cached_copies=*/true,
-      /*allow_updates_on_metered_connection=*/true,
-      /*allow_updates=*/true);
+  return {.app_id = "jebgalgnebhfojomionfpkfelancnnkf",
+          .public_key_hash = jebg_hash,
+          .version = base::Version("0.9"),
+          .installer = base::MakeRefCounted<MockInstaller>(),
+          .requires_network_encryption = true,
+          .supports_group_policy_enable_component_updates =
+              supports_group_policy_enable_component_updates};
 }
 
 void ComponentUpdaterPolicyTest::UpdateComponent(
