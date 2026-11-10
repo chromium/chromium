@@ -11,11 +11,10 @@ import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 
-import type {BatchUploadAccountInfo, DataContainer} from './batch_upload.js';
+import {browserProxyFactory} from './batch_upload.mojom-webui.js';
+import type {BatchUploadAccountInfo, BrowserProxy, DataContainer} from './batch_upload.mojom-webui.js';
 import {getCss} from './batch_upload_app.css.js';
 import {getHtml} from './batch_upload_app.html.js';
-import {BatchUploadBrowserProxyImpl} from './browser_proxy.js';
-import type {BatchUploadBrowserProxy} from './browser_proxy.js';
 
 function createEmptyAccountInfo() {
   return {
@@ -58,8 +57,8 @@ export class BatchUploadAppElement extends BatchUploadAppElementBase {
     };
   }
 
-  private batchUploadBrowserProxy_: BatchUploadBrowserProxy =
-      BatchUploadBrowserProxyImpl.getInstance();
+  private batchUploadBrowserProxy_: BrowserProxy =
+      browserProxyFactory.getInstance();
 
   // Account information displayed in the view.
   protected accessor accountInfo_: BatchUploadAccountInfo =

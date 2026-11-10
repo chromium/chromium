@@ -4,15 +4,13 @@
 
 import './history_sync_optin_app_refresh.js';
 
-import {HistorySyncOptInBrowserProxyImpl} from './browser_proxy.js';
+import {browserProxyFactory} from './history_sync_optin.mojom-webui.js';
 
 function initialize() {
-  const historySyncOptInBrowserProxy =
-      HistorySyncOptInBrowserProxyImpl.getInstance();
   // Prefer using |document.body.offsetHeight| instead of
   // |document.body.scrollHeight| as it returns the correct height of the
   // even when the page zoom in Chrome is different than 100%.
-  historySyncOptInBrowserProxy.handler.updateDialogHeight(
+  browserProxyFactory.getInstance().handler.updateDialogHeight(
       document.body.offsetHeight);
   // The web dialog size has been initialized, so reset the body width to
   // auto. This makes sure that the body only takes up the viewable width,

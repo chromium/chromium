@@ -12,10 +12,8 @@ import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {HistorySyncOptInBrowserProxyImpl} from './browser_proxy.js';
-import type {HistorySyncOptInBrowserProxy} from './browser_proxy.js';
-import type {AccountInfo} from './history_sync_optin.mojom-webui.js';
-import {LaunchContext, ScreenMode} from './history_sync_optin.mojom-webui.js';
+import type {AccountInfo, BrowserProxy} from './history_sync_optin.mojom-webui.js';
+import {browserProxyFactory, LaunchContext, ScreenMode} from './history_sync_optin.mojom-webui.js';
 import {getCss} from './history_sync_optin_app_refresh.css.js';
 import {getHtml} from './history_sync_optin_app_refresh.html.js';
 
@@ -62,8 +60,8 @@ export class HistorySyncOptinAppRefreshElement extends
       this.isLaunchContext_(LaunchContext.kModal);
   protected accessor buttonsDisabled_: boolean = false;
 
-  private historySyncOptInBrowserProxy_: HistorySyncOptInBrowserProxy =
-      HistorySyncOptInBrowserProxyImpl.getInstance();
+  private historySyncOptInBrowserProxy_: BrowserProxy =
+      browserProxyFactory.getInstance();
   private onAccountInfoDataReceivedListenerId_: number|null = null;
   private onScreenModeDataReceivedListenerId_: number|null = null;
   private accessor screenMode_: ScreenMode = ScreenMode.kPending;

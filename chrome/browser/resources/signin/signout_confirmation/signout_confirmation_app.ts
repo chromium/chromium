@@ -16,10 +16,9 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {SignoutConfirmationBrowserProxyImpl} from './browser_proxy.js';
-import type {SignoutConfirmationBrowserProxy} from './browser_proxy.js';
 import type {ExtensionsSectionElement} from './extensions_section.js';
-import type {SignoutConfirmationData} from './signout_confirmation.mojom-webui.js';
+import {browserProxyFactory} from './signout_confirmation.mojom-webui.js';
+import type {BrowserProxy, SignoutConfirmationData} from './signout_confirmation.mojom-webui.js';
 import {getCss} from './signout_confirmation_app.css.js';
 import {getHtml} from './signout_confirmation_app.html.js';
 
@@ -70,8 +69,8 @@ export class SignoutConfirmationAppElement extends CrLitElement {
 
   private eventTracker_: EventTracker = new EventTracker();
 
-  private signoutConfirmationBrowserProxy_: SignoutConfirmationBrowserProxy =
-      SignoutConfirmationBrowserProxyImpl.getInstance();
+  private signoutConfirmationBrowserProxy_: BrowserProxy =
+      browserProxyFactory.getInstance();
 
   private onSignoutConfirmationDataReceivedListenerId_: number|null = null;
 

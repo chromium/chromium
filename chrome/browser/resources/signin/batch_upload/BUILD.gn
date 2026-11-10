@@ -9,7 +9,6 @@ build_webui("build") {
     "batch_upload.ts",
     "batch_upload_app.html.ts",
     "batch_upload_app.ts",
-    "browser_proxy.ts",
     "data_section.html.ts",
     "data_section.ts",
   ]

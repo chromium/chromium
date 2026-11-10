@@ -8,7 +8,8 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 
-import {PageHandlerFactory, PageHandlerRemote} from '../cross_device_signin_qr_bubble.mojom-webui.js';
+import {browserProxyFactory} from '../cross_device_signin_qr_bubble.mojom-webui.js';
+import type {BrowserProxy} from '../cross_device_signin_qr_bubble.mojom-webui.js';
 
 import {getCss} from './cross_device_signin_qr_bubble_app.css.js';
 import {getHtml} from './cross_device_signin_qr_bubble_app.html.js';
@@ -41,15 +42,12 @@ export class CrossDeviceSigninQrBubbleAppElement extends
   protected accessor email: string = '';
   protected accessor qrCodeDataUri: string = '';
 
-  private handler_: PageHandlerRemote = new PageHandlerRemote();
+  private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
 
   override async connectedCallback() {
     super.connectedCallback();
 
-    PageHandlerFactory.getRemote().createCrossDeviceSigninQrBubbleHandler(
-        this.handler_.$.bindNewPipeAndPassReceiver());
-
-    const response = await this.handler_.getRegistrationData();
+    const response = await this.browserProxy_.handler.getRegistrationData();
     if (!response.data) {
       return;
     }

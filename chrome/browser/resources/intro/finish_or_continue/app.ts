@@ -14,11 +14,11 @@ import {browserProxyFactory as finishOrContinueMojoProxyFactory} from '../finish
 import type {BrowserProxy as FinishOrContinueBrowserProxy} from '../finish_or_continue.mojom-webui.js';
 import type {IntroBrowserProxy} from '../intro_browser_proxy.js';
 import {IntroBrowserProxyImpl} from '../intro_browser_proxy.js';
+import type {MatchMediaProxy} from '../match_media_proxy.js';
+import {MatchMediaProxyImpl} from '../match_media_proxy.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import type {MatchMediaProxy} from './match_media_proxy.js';
-import {MatchMediaProxyImpl} from './match_media_proxy.js';
 
 export interface FinishOrContinueAppElement {
   $: {

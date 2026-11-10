@@ -4,25 +4,29 @@
 
 import 'chrome://history-sync-optin/history_sync_optin_app_refresh.js';
 
-import {HistorySyncOptInBrowserProxyImpl} from 'chrome://history-sync-optin/browser_proxy.js';
-import {ScreenMode} from 'chrome://history-sync-optin/history_sync_optin.mojom-webui.js';
+import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
+import {browserProxyFactory, ScreenMode} from 'chrome://history-sync-optin/history_sync_optin.mojom-webui.js';
+import type {PageRemote} from 'chrome://history-sync-optin/history_sync_optin.mojom-webui.js';
 import type {HistorySyncOptinAppRefreshElement} from 'chrome://history-sync-optin/history_sync_optin_app_refresh.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {TestHistorySyncOptInBrowserProxy} from './test_history_sync_optin_browser_proxy.js';
-import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
+
+import {TestHistorySyncOptInHandler} from './test_history_sync_optin_browser_proxy.js';
 
 suite('HistorySyncOptinAppRefreshTest', function() {
   let app: HistorySyncOptinAppRefreshElement;
-  let browserProxy: TestHistorySyncOptInBrowserProxy;
+  let handler: TestHistorySyncOptInHandler;
+  let pageRemote: PageRemote;
 
   setup(async function() {
-    browserProxy = new TestHistorySyncOptInBrowserProxy();
-    HistorySyncOptInBrowserProxyImpl.setInstance(browserProxy);
+    handler = new TestHistorySyncOptInHandler();
+    const {instance, remote} = browserProxyFactory.createForTest(handler);
+    browserProxyFactory.setInstance(instance);
+    pageRemote = remote;
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     app = document.createElement('history-sync-optin-app-refresh');
     document.body.appendChild(app);
-    await browserProxy.handler.whenCalled('requestAccountInfo');
+    await handler.whenCalled('requestAccountInfo');
   });
 
   // Checks that the buttons become disabled after one of them is clicked.
@@ -55,12 +59,12 @@ suite('HistorySyncOptinAppRefreshTest', function() {
 
   test('Clicking accept button', async function() {
     await testButtonClick(app.$.acceptButton);
-    await browserProxy.handler.whenCalled('accept');
+    await handler.whenCalled('accept');
   });
 
   test('Clicking reject button', async function() {
     await testButtonClick(app.$.rejectButton);
-    await browserProxy.handler.whenCalled('reject');
+    await handler.whenCalled('reject');
   });
 
   // Tests that the buttons are updated when the screen mode changes to
@@ -73,7 +77,7 @@ suite('HistorySyncOptinAppRefreshTest', function() {
     assertTrue(acceptButton.classList.contains('visibility-hidden'));
 
     // Simulate the screen mode changing to unrestricted.
-    browserProxy.page.sendScreenMode(ScreenMode.kUnrestricted);
+    pageRemote.sendScreenMode(ScreenMode.kUnrestricted);
     await microtasksFinished();
 
     assertFalse(rejectButton.classList.contains('visibility-hidden'));
@@ -92,7 +96,7 @@ suite('HistorySyncOptinAppRefreshTest', function() {
     assertTrue(acceptButton.classList.contains('visibility-hidden'));
 
     // Simulate the screen mode changing to unrestricted.
-    browserProxy.page.sendScreenMode(ScreenMode.kRestricted);
+    pageRemote.sendScreenMode(ScreenMode.kRestricted);
     await microtasksFinished();
 
     assertFalse(rejectButton.classList.contains('visibility-hidden'));

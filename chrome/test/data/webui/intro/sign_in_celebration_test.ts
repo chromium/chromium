@@ -4,9 +4,8 @@
 
 import 'chrome://intro/sign_in_celebration/app.js';
 
-import {SignInCelebrationPageCallbackRouter, SignInCelebrationPageHandlerRemote} from 'chrome://intro/sign_in_celebration.mojom-webui.js';
+import {browserProxyFactory, SignInCelebrationPageHandlerRemote} from 'chrome://intro/sign_in_celebration.mojom-webui.js';
 import type {SignInCelebrationPageRemote} from 'chrome://intro/sign_in_celebration.mojom-webui.js';
-import {SignInCelebrationBrowserProxyImpl} from 'chrome://intro/sign_in_celebration/sign_in_celebration_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -25,15 +24,10 @@ suite('SignInCelebrationTest', function() {
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
-    const callbackRouter = new SignInCelebrationPageCallbackRouter();
     handler = TestMock.fromClass(SignInCelebrationPageHandlerRemote);
-    page = callbackRouter.$.bindNewPipeAndPassRemote();
-
-    SignInCelebrationBrowserProxyImpl.setInstance({
-      callbackRouter: callbackRouter,
-      handler: handler,
-      matchMedia: (query: string) => window.matchMedia(query),
-    });
+    const {instance, remote} = browserProxyFactory.createForTest(handler);
+    browserProxyFactory.setInstance(instance);
+    page = remote;
 
     handler.setPromiseResolveFor(
         'getSignInCelebrationUserInfo', {userInfo: userInfo});

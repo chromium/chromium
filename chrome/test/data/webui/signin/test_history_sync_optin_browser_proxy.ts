@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {HistorySyncOptInBrowserProxy} from 'chrome://history-sync-optin/browser_proxy.js';
-import {PageCallbackRouter} from 'chrome://history-sync-optin/history_sync_optin.mojom-webui.js';
-import type {PageHandlerInterface, PageRemote} from 'chrome://history-sync-optin/history_sync_optin.mojom-webui.js';
+import type {PageHandlerInterface} from 'chrome://history-sync-optin/history_sync_optin.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestHistorySyncOptInHandler extends TestBrowserProxy implements
     PageHandlerInterface {
-  callbackRouter: PageCallbackRouter;
   constructor() {
     super([
       'accept',
@@ -17,7 +14,6 @@ export class TestHistorySyncOptInHandler extends TestBrowserProxy implements
       'requestAccountInfo',
       'updateDialogHeight',
     ]);
-    this.callbackRouter = new PageCallbackRouter();
   }
 
   accept() {
@@ -34,20 +30,5 @@ export class TestHistorySyncOptInHandler extends TestBrowserProxy implements
 
   updateDialogHeight(height: number) {
     this.methodCalled('updateDialogHeight', height);
-  }
-}
-
-export class TestHistorySyncOptInBrowserProxy extends TestBrowserProxy
-    implements HistorySyncOptInBrowserProxy {
-  callbackRouter: PageCallbackRouter;
-  page: PageRemote;
-  handler: TestHistorySyncOptInHandler;
-
-  constructor() {
-    super();
-    this.callbackRouter = new PageCallbackRouter();
-    this.page =
-        this.callbackRouter.$.bindNewPipeAndPassRemote();
-    this.handler = new TestHistorySyncOptInHandler();
   }
 }

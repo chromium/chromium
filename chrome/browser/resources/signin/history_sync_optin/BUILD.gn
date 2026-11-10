@@ -19,13 +19,12 @@ build_webui("build") {
   ]
 
   ts_files = [
-    "browser_proxy.ts",
     "history_sync_optin.ts",
-    "history_sync_optin_refresh.ts",
     "history_sync_optin_app.html.ts",
-    "history_sync_optin_app_refresh.html.ts",
     "history_sync_optin_app.ts",
+    "history_sync_optin_app_refresh.html.ts",
     "history_sync_optin_app_refresh.ts",
+    "history_sync_optin_refresh.ts",
   ]
 
   css_files = [

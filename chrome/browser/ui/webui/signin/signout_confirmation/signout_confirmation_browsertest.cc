@@ -36,10 +36,10 @@ IN_PROC_BROWSER_TEST_F(SignoutConfirmationBrowserTest,
           web_contents,
           "(async () => {"
           "  await customElements.whenDefined('signout-confirmation-app');"
-          "  const {SignoutConfirmationBrowserProxyImpl} ="
+          "  const {browserProxyFactory} ="
           "      await import('./signout_confirmation.js');"
           "  const remote ="
-          "      SignoutConfirmationBrowserProxyImpl.getInstance().handler.$;"
+          "      browserProxyFactory.getInstance().handler.$;"
           "  await remote.flushForTesting().catch(() => {});"
           "  return document.querySelector('signout-confirmation-app')"
           "      "

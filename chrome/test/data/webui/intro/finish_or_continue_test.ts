@@ -6,8 +6,8 @@ import 'chrome://intro/finish_or_continue/app.js';
 
 import {browserProxyFactory as finishOrContinueMojoProxyFactory, FinishOrContinuePageHandlerRemote} from 'chrome://intro/finish_or_continue.mojom-webui.js';
 import type {FinishOrContinueAppElement} from 'chrome://intro/finish_or_continue/app.js';
-import {MatchMediaProxyImpl} from 'chrome://intro/finish_or_continue/match_media_proxy.js';
 import {IntroBrowserProxyImpl} from 'chrome://intro/intro_browser_proxy.js';
+import {MatchMediaProxyImpl} from 'chrome://intro/match_media_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isWindows} from 'chrome://resources/js/platform.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';

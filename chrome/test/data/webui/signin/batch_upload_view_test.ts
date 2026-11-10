@@ -7,16 +7,16 @@ import 'chrome://batch-upload/batch_upload.js';
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import type {CrCheckboxElement} from '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {assert} from '//resources/js/assert.js';
-import {BatchUploadBrowserProxyImpl} from 'chrome://batch-upload/batch_upload.js';
+import {browserProxyFactory} from 'chrome://batch-upload/batch_upload.js';
 import type {BatchUploadAppElement, BatchUploadData, DataContainer, DataItem, DataSectionElement, PageRemote} from 'chrome://batch-upload/batch_upload.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertGT, assertLT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestBatchUploadBrowserProxy} from './test_batch_upload_browser_proxy.js';
+import {TestBatchUploadHandler} from './test_batch_upload_browser_proxy.js';
 
 suite('BatchUploadViewTest', function() {
   let batchUploadApp: BatchUploadAppElement;
-  let testBatchUploadProxy: TestBatchUploadBrowserProxy;
+  let testHandler: TestBatchUploadHandler;
   let callbackRouterRemote: PageRemote;
 
   // Input of data displayed in the Ui containing account info, data sections
@@ -91,16 +91,16 @@ suite('BatchUploadViewTest', function() {
   }
 
   setup(function() {
-    testBatchUploadProxy = new TestBatchUploadBrowserProxy();
-    callbackRouterRemote =
-        testBatchUploadProxy.callbackRouter.$.bindNewPipeAndPassRemote();
-    BatchUploadBrowserProxyImpl.setInstance(testBatchUploadProxy);
+    testHandler = new TestBatchUploadHandler();
+    const {instance, remote} = browserProxyFactory.createForTest(testHandler);
+    browserProxyFactory.setInstance(instance);
+    callbackRouterRemote = remote;
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     batchUploadApp = document.createElement('batch-upload-app');
     document.body.append(batchUploadApp);
     callbackRouterRemote.sendBatchUploadData(TEST_DATA);
-    return testBatchUploadProxy.handler.whenCalled('updateViewHeight');
+    return testHandler.whenCalled('updateViewHeight');
   });
 
   test('HeaderContent', function() {
@@ -132,8 +132,7 @@ suite('BatchUploadViewTest', function() {
 
     batchUploadApp.$.saveButton.click();
 
-    const idsToMove =
-        await testBatchUploadProxy.handler.whenCalled('saveToAccount');
+    const idsToMove = await testHandler.whenCalled('saveToAccount');
     assertEquals(TEST_DATA.dataContainers.length, idsToMove.length);
     // By default all items are selected and should be part of the result.
     const expectedSelectedItemsIds = [[1, 2], [1]];
@@ -144,7 +143,7 @@ suite('BatchUploadViewTest', function() {
     assertTrue(isVisible(batchUploadApp));
     assertTrue(isChildVisible(batchUploadApp, '#cancelButton'));
     batchUploadApp.$.cancelButton.click();
-    return testBatchUploadProxy.handler.whenCalled('close');
+    return testHandler.whenCalled('close');
   });
 
   test('DataSections', function() {
@@ -180,8 +179,7 @@ suite('BatchUploadViewTest', function() {
     // Click Save.
     batchUploadApp.$.saveButton.click();
 
-    const idsToMove =
-        await testBatchUploadProxy.handler.whenCalled('saveToAccount');
+    const idsToMove = await testHandler.whenCalled('saveToAccount');
     assertEquals(TEST_DATA.dataContainers.length, idsToMove.length);
     // Expected result does not contain the removed Id.
     const expectedSelectedItemsIds = [[1], [1]];
@@ -223,8 +221,7 @@ suite('BatchUploadViewTest', function() {
     // Click Save.
     batchUploadApp.$.saveButton.click();
 
-    const idsToMove =
-        await testBatchUploadProxy.handler.whenCalled('saveToAccount');
+    const idsToMove = await testHandler.whenCalled('saveToAccount');
     assertEquals(TEST_DATA.dataContainers.length, idsToMove.length);
     // A section with no element selected should still appear as empty to
     // keep the consistency of the input/output.
@@ -250,8 +247,7 @@ suite('BatchUploadViewTest', function() {
 
     // Click Save.
     batchUploadApp.$.saveButton.click();
-    const idsToMove =
-        await testBatchUploadProxy.handler.whenCalled('saveToAccount');
+    const idsToMove = await testHandler.whenCalled('saveToAccount');
     assertEquals(idsToMove.length, TEST_DATA.dataContainers.length);
     // A section with the toggle off should still appear as empty even if
     // it had some selected items before the toggle off.

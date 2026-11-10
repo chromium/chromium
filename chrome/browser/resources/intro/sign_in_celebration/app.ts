@@ -11,12 +11,13 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {SignInCelebrationUserInfo} from '../sign_in_celebration.mojom-webui.js';
+import type {MatchMediaProxy} from '../match_media_proxy.js';
+import {MatchMediaProxyImpl} from '../match_media_proxy.js';
+import {browserProxyFactory} from '../sign_in_celebration.mojom-webui.js';
+import type {BrowserProxy, SignInCelebrationUserInfo} from '../sign_in_celebration.mojom-webui.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import {SignInCelebrationBrowserProxyImpl} from './sign_in_celebration_browser_proxy.js';
-import type {SignInCelebrationBrowserProxy} from './sign_in_celebration_browser_proxy.js';
 
 export interface SignInCelebrationAppElement {
   $: {
@@ -58,8 +59,8 @@ export class SignInCelebrationAppElement extends
     title: '',
   };
 
-  private browserProxy_: SignInCelebrationBrowserProxy =
-      SignInCelebrationBrowserProxyImpl.getInstance();
+  private matchMediaProxy_: MatchMediaProxy = MatchMediaProxyImpl.getInstance();
+  private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
   private darkModeListener_: (e: MediaQueryListEvent) => void;
   private matchMedia_: MediaQueryList;
   private listenerIds_: number[] = [];
@@ -68,7 +69,7 @@ export class SignInCelebrationAppElement extends
   constructor() {
     super();
     this.matchMedia_ =
-        this.browserProxy_.matchMedia('(prefers-color-scheme: dark)');
+        this.matchMediaProxy_.matchMedia('(prefers-color-scheme: dark)');
     this.isDarkMode_ = this.matchMedia_.matches;
     this.darkModeListener_ = (e: MediaQueryListEvent) => {
       this.isDarkMode_ = e.matches;
