@@ -188,3 +188,12 @@ crbug.com/487895128 [ Linux ] external/wpt/storage/estimate-indexeddb.https.any.
 
 # Reliably timing out on MSAN
 crbug.com/508089939 [ Linux ] external/wpt/navigation-api/navigate-event/intercept-cross-origin-focus-without-user-activation.html [ Timeout ]
+
+# Gardener 2026-11-10
+crbug.com/584197764 [ Linux ] external/wpt/speculation-rules/prefetch/* [ Pass Timeout ]
+# For crbug.com/584197764, these tests would be marked as flaky timeouts, but
+# there are so many timeouts that they cause the entire bot to time out if we
+# attempt to run them.
+crbug.com/584197764 [ Linux ] virtual/prefetch-cancel-unrelated-prefetch/external/wpt/speculation-rules/prefetch/* [ Skip ]
+crbug.com/584197764 [ Linux ] virtual/prefetch-force-off-the-main-thread-wculf/external/wpt/speculation-rules/prefetch/* [ Skip ]
+crbug.com/584197764 [ Linux ] virtual/prefetch-force-off-the-main-thread/external/wpt/speculation-rules/prefetch/* [ Skip ]
