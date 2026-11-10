@@ -348,6 +348,27 @@ TEST_F(GCMDriverTest, Shutdown) {
   EXPECT_FALSE(HasAppHandlers());
 }
 
+TEST_F(GCMDriverTest, ShutdownHandlerRemovesAppHandler) {
+  CreateDriver();
+
+  FakeGCMAppHandler handler1;
+  handler1.RemoveAppHandlerOnShutdown(driver(), kTestAppID1);
+  FakeGCMAppHandler handler2;
+  handler2.RemoveAppHandlerOnShutdown(driver(), kTestAppID2);
+  driver()->AddAppHandler(kTestAppID1, &handler1);
+  driver()->AddAppHandler(kTestAppID2, &handler2);
+
+  Register(kTestAppID1, ToSenderList("sender"), GCMDriverTest::WAIT);
+  ASSERT_TRUE(driver()->IsStartedForTesting());
+
+  ShutdownDriver();
+
+  EXPECT_EQ(1, handler1.shutdown_count());
+  EXPECT_EQ(1, handler2.shutdown_count());
+  EXPECT_FALSE(HasAppHandlers());
+  EXPECT_FALSE(driver()->IsStartedForTesting());
+}
+
 TEST_F(GCMDriverTest, StartOrStopGCMOnDemand) {
   CreateDriver();
   PumpIOLoop();

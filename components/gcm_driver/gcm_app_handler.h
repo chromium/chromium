@@ -18,9 +18,14 @@ class GCMAppHandler {
   GCMAppHandler();
   virtual ~GCMAppHandler();
 
-  // Called to do all the cleanup when GCM is shutting down.
-  // In the case that multiple apps share the same app handler, it should be
-  // make safe for ShutdownHandler to be called multiple times.
+  // Called during `GCMDriver::Shutdown()` for each app ID still registered to
+  // this handler when GCM shuts down. If multiple app IDs share the same
+  // handler, this must be safe to call multiple times.
+  //
+  // `KeyedService` implementations should unregister via `RemoveAppHandler()`
+  // in `KeyedService::Shutdown()` instead (so `ShutdownHandler()` will not be
+  // called). Otherwise, `GCMDriver::Shutdown()` clears registrations first, so
+  // calling `RemoveAppHandler()` here is a no-op.
   virtual void ShutdownHandler() = 0;
 
   // Called when the GCM store is reset (e.g. due to corruption), which changes

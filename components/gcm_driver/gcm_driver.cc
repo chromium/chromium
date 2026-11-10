@@ -234,12 +234,13 @@ void GCMDriver::SendFinished(const std::string& app_id,
 }
 
 void GCMDriver::Shutdown() {
-  for (GCMAppHandlerMap::const_iterator iter = app_handlers_.begin();
-       iter != app_handlers_.end(); ++iter) {
-    DVLOG(1) << "Calling ShutdownHandler for: " << iter->first;
-    iter->second->ShutdownHandler();
+  // Move `app_handlers_` out before notifying handlers so that re-entrant
+  // `RemoveAppHandler()` calls during `ShutdownHandler()` are safe no-ops.
+  GCMAppHandlerMap handlers = std::exchange(app_handlers_, {});
+  for (const auto& [app_id, handler] : handlers) {
+    DVLOG(1) << "Calling ShutdownHandler for: " << app_id;
+    handler->ShutdownHandler();
   }
-  app_handlers_.clear();
   ClearBufferedMessages();
 }
 

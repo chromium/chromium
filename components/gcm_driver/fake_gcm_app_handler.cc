@@ -5,15 +5,25 @@
 #include "components/gcm_driver/fake_gcm_app_handler.h"
 
 #include <memory>
+#include <utility>
 
+#include "base/check.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
+#include "components/gcm_driver/gcm_driver.h"
 
 namespace gcm {
 
 FakeGCMAppHandler::FakeGCMAppHandler() : received_event_(NO_EVENT) {}
 
 FakeGCMAppHandler::~FakeGCMAppHandler() = default;
+
+void FakeGCMAppHandler::RemoveAppHandlerOnShutdown(GCMDriver* driver,
+                                                   std::string app_id) {
+  CHECK(driver);
+  driver_for_shutdown_ = driver;
+  app_id_to_remove_on_shutdown_ = std::move(app_id);
+}
 
 void FakeGCMAppHandler::WaitForNotification() {
   run_loop_ = std::make_unique<base::RunLoop>();
@@ -27,7 +37,12 @@ const IncomingMessage& FakeGCMAppHandler::message() const {
                                     : received_messages_.back().message;
 }
 
-void FakeGCMAppHandler::ShutdownHandler() {}
+void FakeGCMAppHandler::ShutdownHandler() {
+  ++shutdown_count_;
+  if (GCMDriver* driver = std::exchange(driver_for_shutdown_, nullptr)) {
+    driver->RemoveAppHandler(app_id_to_remove_on_shutdown_);
+  }
+}
 
 void FakeGCMAppHandler::OnStoreReset() {}
 
