@@ -276,14 +276,6 @@ void SaveCardBubbleControllerImpl::ShowConfirmationBubbleView(
   // Show upload confirmation bubble.
   CheckPreconditionsBeforeShowing();
   QueueOrShowBubble();
-
-  // Auto close confirmation bubble when card saved is successful.
-  if (card_saved) {
-    auto_close_confirmation_timer_.Start(
-        FROM_HERE, kAutoCloseConfirmationBubbleWaitSec,
-        base::BindOnce(&SaveCardBubbleControllerImpl::HideSaveCardBubble,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
 }
 
 base::OnceClosure SaveCardBubbleControllerImpl::
@@ -851,6 +843,13 @@ void SaveCardBubbleControllerImpl::DoShowBubble() {
   if (current_bubble_type_ == PaymentsBubbleType::kUploadComplete) {
     SetBubbleView(*autofill_bubble_handler->ShowSaveCardConfirmationBubble(
         web_contents(), this));
+    // Auto close confirmation bubble when card saved is successful.
+    if (confirmation_ui_params_->is_success) {
+      auto_close_confirmation_timer_.Start(
+          FROM_HERE, kAutoCloseConfirmationBubbleWaitSec,
+          base::BindOnce(&SaveCardBubbleControllerImpl::HideSaveCardBubble,
+                         weak_ptr_factory_.GetWeakPtr()));
+    }
   } else {
     SetBubbleView(*autofill_bubble_handler->ShowSaveCreditCardBubble(
         web_contents(), this, is_triggered_by_user_gesture_));

@@ -2143,6 +2143,46 @@ TEST_F(SaveCardBubbleControllerImplTest,
   EXPECT_EQ(controller()->GetPaymentBubbleView(), nullptr);
 }
 
+// Tests that when the confirmation bubble is queued while on another tab, the
+// auto-close timer starts only once the bubble is actually shown.
+TEST_F(SaveCardBubbleControllerImplTest,
+       OnConfirmationPromptAutoClosed_WhenQueued_TimerStartsWhenShown) {
+  tabs::TabInterface* const original_tab = active_tab();
+  TestSaveCardBubbleControllerImpl* const save_card_controller = controller();
+
+  // Switch to a different tab so that the confirmation bubble will be queued.
+  content::WebContents* const new_contents = AddTab(GURL("about:blank"));
+  tab_activity_simulator_.SwitchToTabAt(
+      tab_strip_model_.get(),
+      tab_strip_model_->GetIndexOfWebContents(new_contents));
+
+  base::MockOnceClosure on_confirmation_closed;
+  save_card_controller->ShowConfirmationBubbleView(
+      /*card_saved=*/true,
+      /*is_for_save_and_fill=*/false, on_confirmation_closed.Get());
+  EXPECT_FALSE(IsConfirmationBubbleVisible());
+
+  // Advance time past the auto-close timeout while the bubble is still queued.
+  EXPECT_CALL(on_confirmation_closed, Run).Times(0);
+  task_environment()->FastForwardBy(
+      SaveCardBubbleControllerImpl::kAutoCloseConfirmationBubbleWaitSec);
+
+  // Switch back to the original tab; the queued confirmation bubble should now
+  // be shown and auto-close only after the full timeout elapses.
+  tab_activity_simulator_.SwitchToTabAt(
+      tab_strip_model_.get(), tab_strip_model_->GetIndexOfTab(original_tab));
+  EXPECT_TRUE(IsConfirmationBubbleVisible());
+
+  task_environment()->FastForwardBy(
+      SaveCardBubbleControllerImpl::kAutoCloseConfirmationBubbleWaitSec -
+      base::Seconds(1));
+  EXPECT_TRUE(IsConfirmationBubbleVisible());
+
+  EXPECT_CALL(on_confirmation_closed, Run);
+  task_environment()->FastForwardBy(base::Seconds(1));
+  EXPECT_FALSE(IsConfirmationBubbleVisible());
+}
+
 TEST_F(SaveCardBubbleControllerImplTest, ReturnsApplicableWindowTitle) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
