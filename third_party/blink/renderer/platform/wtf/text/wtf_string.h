@@ -189,7 +189,9 @@ class WTF_EXPORT String {
   String(scoped_refptr<StringImpl> impl) : impl_(std::move(impl)) {}
   struct StaticImplTag {};
   constexpr String(const StringImpl* static_impl, StaticImplTag)
-      : impl_(static_impl, StringImplRef::StaticImplTag{}) {}
+      : impl_(static_impl, StringImplRef::StaticImplTag{}) {
+    CHECK(static_impl->IsStatic());
+  }
 
   // Copying a String is a relatively inexpensive, since the underlying data is
   // immutable and refcounted.
@@ -680,7 +682,9 @@ class WTF_EXPORT String {
     using scoped_refptr<StringImpl>::scoped_refptr;
     using scoped_refptr<StringImpl>::operator=;
     constexpr StringImplRef() = default;
-    StringImplRef(scoped_refptr<StringImpl>&& other) noexcept
+    explicit StringImplRef(const scoped_refptr<StringImpl>& other)
+        : scoped_refptr<StringImpl>(other) {}
+    explicit StringImplRef(scoped_refptr<StringImpl>&& other) noexcept
         : scoped_refptr<StringImpl>(std::move(other)) {}
     StringImplRef(const StringImplRef&) = default;
     StringImplRef& operator=(const StringImplRef&) = default;

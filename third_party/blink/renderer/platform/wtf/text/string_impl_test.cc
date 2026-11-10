@@ -339,6 +339,7 @@ TEST(StringImplTest, StaticAsciiStringImpl) {
       "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef");
 
   const StringImpl* short_impl = kShort.AsStringImpl();
+  static_assert(kShort.AsStringImpl()->IsStatic());
   EXPECT_TRUE(short_impl->IsStatic());
   EXPECT_TRUE(short_impl->Is8Bit());
   EXPECT_FALSE(short_impl->IsAtomic());

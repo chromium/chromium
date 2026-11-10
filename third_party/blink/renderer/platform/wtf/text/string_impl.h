@@ -298,7 +298,13 @@ class WTF_EXPORT StringImpl {
     HashAndFlagsAtomic().fetch_and(~kIsAtomic, std::memory_order_release);
   }
 
-  bool IsStatic() const {
+  constexpr bool IsStatic() const {
+    if consteval {
+      if (this == &g_global_empty || this == &g_global_empty16_bit) {
+        return true;
+      }
+      return hash_and_flags_ & kIsStatic;
+    }
     return HashAndFlagsAtomic().load(std::memory_order_relaxed) & kIsStatic;
   }
 
@@ -339,8 +345,8 @@ class WTF_EXPORT StringImpl {
   ALWAYS_INLINE constexpr void AddRef() const {
     if consteval {
       // Compile-time StringImpl instances are always static (kIsStatic) and
-      // never reference-counted. (`IsStatic()` cannot be called here because
-      // it uses atomic loads.)
+      // never reference-counted.
+      CHECK(IsStatic());
       return;
     }
     if (!IsStatic()) {
@@ -377,8 +383,8 @@ class WTF_EXPORT StringImpl {
   ALWAYS_INLINE constexpr void Release() {
     if consteval {
       // Compile-time StringImpl instances are always static (kIsStatic) and
-      // never reference-counted or destroyed. (`IsStatic()` cannot be called
-      // here because it uses atomic loads.)
+      // never reference-counted or destroyed.
+      CHECK(IsStatic());
       return;
     }
     if (!IsStatic()) {
