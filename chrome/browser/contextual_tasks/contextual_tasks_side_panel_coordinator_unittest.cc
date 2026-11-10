@@ -4361,6 +4361,106 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
 }
 
 TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       UnshareTabs_RevokesZeroStateFullTabAiModeSession) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{kContextualTasks, {}},
+       {kContextualTasksForceEntryPointEligibility, {}},
+       {kContextualTasksSidePanelRearchitecture, {}},
+       {omnibox::kContextManagementInComposebox,
+        {{"enable_tab_deselection", "true"}}}},
+      {});
+
+  tabs::TabInterface* ai_tab = CreateMockTab();
+  tabs::TabInterface* tab1 = CreateMockTab();
+  content::WebContentsTester::For(ai_tab->GetContents())
+      ->NavigateAndCommit(GURL("https://www.google.com/search?udm=50&aep=11"));
+  content::WebContentsTester::For(tab1->GetContents())
+      ->NavigateAndCommit(GURL("https://example.com/1"));
+  ON_CALL(*static_cast<tabs::MockTabInterface*>(tab1), GetTitle())
+      .WillByDefault(Return(u"Tab 1"));
+
+  SessionID session_id1 =
+      sessions::SessionTabHelper::IdForTab(tab1->GetContents());
+
+  ON_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
+      .WillByDefault(Return(false));
+  webui::SetBrowserWindowInterface(ai_tab->GetContents(),
+                                   browser_window_.get());
+  auto* ai_user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          ai_tab->GetContents());
+  ASSERT_FALSE(ai_user_data->GetEffectiveTaskId().has_value());
+  ai_user_data->RecordTabIdMapping(tab1->GetHandle().raw_value(),
+                                   session_id1.id());
+
+  NiceMock<contextual_search::MockContextualSearchContextController>
+      mock_context_controller;
+  base::UnguessableToken attached_token = base::UnguessableToken::Create();
+  contextual_search::FileInfo controller_file;
+  controller_file.file_token = attached_token;
+  controller_file.tab_session_id = session_id1;
+  controller_file.tab_url = GURL("https://example.com/1");
+  controller_file.tab_title = "Tab 1";
+  ON_CALL(mock_context_controller, GetFileInfo(attached_token))
+      .WillByDefault(Return(&controller_file));
+  ON_CALL(mock_context_controller, DeleteFile(_)).WillByDefault(Return(true));
+
+  auto zero_state_session = std::make_unique<
+      NiceMock<contextual_search::MockContextualSearchSessionHandle>>();
+  auto* zero_state_session_ptr = zero_state_session.get();
+  ON_CALL(*zero_state_session_ptr, GetController())
+      .WillByDefault(Return(&mock_context_controller));
+  zero_state_session_ptr->GetUploadedContextTokensForTesting() = {
+      attached_token};
+  zero_state_session_ptr->AttachTabPendingUpload(
+      attached_token, session_id1.id(), GURL("https://example.com/1"), "Tab 1");
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
+      ai_tab->GetContents())
+      ->SetTaskSession(/*task_id=*/std::nullopt, std::move(zero_state_session),
+                       /*input_state_model=*/nullptr);
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE) && !BUILDFLAG(IS_ANDROID)
+  std::vector<int32_t> full_tab_ext_ids;
+  NiceMock<MockContextualTasksExtensionPage> full_tab_ext_page;
+  mojo::Remote<mojom::ExtensionPageHandler> full_tab_ext_remote;
+  auto* full_tab_ext_handler =
+      ContextualTasksExtensionHandler::GetOrCreateForCurrentDocument(
+          ai_tab->GetContents()->GetPrimaryMainFrame());
+  ON_CALL(full_tab_ext_page, OnTabContextUpdated(_, _, _))
+      .WillByDefault([&full_tab_ext_ids](
+                         std::vector<searchbox::mojom::TabInfoPtr> tabs,
+                         const std::vector<int32_t>& /*submitted_tab_ids*/,
+                         mojom::SmartTabSharingStatePtr
+                         /*smart_tab_sharing_state*/) {
+        full_tab_ext_ids.clear();
+        for (const auto& t : tabs) {
+          full_tab_ext_ids.push_back(t->tab_id);
+        }
+      });
+  full_tab_ext_handler->CreateExtensionPageHandler(
+      full_tab_ext_page.BindAndGetRemote(),
+      full_tab_ext_remote.BindNewPipeAndPassReceiver());
+  full_tab_ext_page.FlushForTesting();
+  EXPECT_THAT(full_tab_ext_ids,
+              testing::ElementsAre(tab1->GetHandle().raw_value()));
+#endif
+
+  SetActiveTab(ai_tab);
+  coordinator_->UnshareTabs({tab1->GetHandle()});
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE) && !BUILDFLAG(IS_ANDROID)
+  full_tab_ext_page.FlushForTesting();
+  EXPECT_TRUE(full_tab_ext_ids.empty());
+#endif
+  EXPECT_TRUE(zero_state_session_ptr->GetTabContextState().attached.empty());
+  EXPECT_TRUE(zero_state_session_ptr->GetUploadedContextTokens().empty());
+
+  webui::SetBrowserWindowInterface(ai_tab->GetContents(), nullptr);
+  ON_CALL(*zero_state_session_ptr, GetController())
+      .WillByDefault(Return(nullptr));
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
        NavigationMetrics_RecordsResponseCodesAndNetError) {
   base::test::ScopedFeatureList local_feature_list;
   local_feature_list.InitAndEnableFeature(
