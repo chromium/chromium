@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/flat_set.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -61,9 +60,7 @@ class InputElement {
   const std::vector<ui::DomCode>& keys() const { return keys_; }
   bool is_modifier_key() { return is_modifier_key_; }
   MouseAction mouse_action() const { return mouse_action_; }
-  const base::flat_set<ui::EventType>& mouse_types() const {
-    return mouse_types_;
-  }
+  ui::EventTypeSet mouse_types() const { return mouse_types_; }
   int mouse_flags() const { return mouse_flags_; }
 
   bool operator==(const InputElement& other) const;
@@ -96,7 +93,7 @@ class InputElement {
   // Tap action for mouse primary/secondary click: kMousePressed,
   // EventType::kMouseReleased. Move action for primary/secondary drag move:
   // kMousePressed, kMouseDragged, EventType::kMouseReleased.
-  base::flat_set<ui::EventType> mouse_types_;
+  ui::EventTypeSet mouse_types_;
   // Mouse primary button flag: EF_LEFT_MOUSE_BUTTON. Secondary button flag:
   // EF_RIGHT_MOUSE_BUTTON.
   int mouse_flags_ = 0;

@@ -42,8 +42,8 @@ std::unique_ptr<InputElement> InputElement::CreateActionTapMouseElement(
   element->input_sources_ = InputSource::IS_MOUSE;
   element->mouse_lock_required_ = true;
   element->mouse_action_ = ConvertToMouseActionEnum(mouse_action);
-  element->mouse_types_.emplace(ui::EventType::kMousePressed);
-  element->mouse_types_.emplace(ui::EventType::kMouseReleased);
+  element->mouse_types_.Put(ui::EventType::kMousePressed);
+  element->mouse_types_.Put(ui::EventType::kMouseReleased);
   if (mouse_action == kPrimaryClick) {
     element->mouse_flags_ = ui::EF_LEFT_MOUSE_BUTTON;
   } else {
@@ -74,16 +74,16 @@ std::unique_ptr<InputElement> InputElement::CreateActionMoveMouseElement(
   element->mouse_lock_required_ = true;
   element->mouse_action_ = ConvertToMouseActionEnum(mouse_action);
   if (mouse_action == kHoverMove) {
-    element->mouse_types_.emplace(ui::EventType::kMouseEntered);
-    element->mouse_types_.emplace(ui::EventType::kMouseMoved);
-    element->mouse_types_.emplace(ui::EventType::kMouseExited);
+    element->mouse_types_.Put(ui::EventType::kMouseEntered);
+    element->mouse_types_.Put(ui::EventType::kMouseMoved);
+    element->mouse_types_.Put(ui::EventType::kMouseExited);
   } else {
     CHECK(
         mouse_action == kPrimaryDragMove || mouse_action == kSecondaryDragMove,
         base::NotFatalUntil::M160);
-    element->mouse_types_.emplace(ui::EventType::kMousePressed);
-    element->mouse_types_.emplace(ui::EventType::kMouseDragged);
-    element->mouse_types_.emplace(ui::EventType::kMouseReleased);
+    element->mouse_types_.Put(ui::EventType::kMousePressed);
+    element->mouse_types_.Put(ui::EventType::kMouseDragged);
+    element->mouse_types_.Put(ui::EventType::kMouseReleased);
     if (mouse_action == kPrimaryDragMove) {
       element->mouse_flags_ = ui::EF_LEFT_MOUSE_BUTTON;
     } else {

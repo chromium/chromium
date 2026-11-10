@@ -337,7 +337,7 @@ bool ActionTap::RewriteMouseEvent(const ui::MouseEvent* mouse_event,
   CHECK(mouse_event, base::NotFatalUntil::M160);
 
   const auto type = mouse_event->type();
-  if (!current_input_->mouse_types().contains(type) ||
+  if (!current_input_->mouse_types().Has(type) ||
       (current_input_->mouse_flags() & mouse_event->changed_button_flags()) ==
           0) {
     return false;
