@@ -84,6 +84,9 @@ content::RenderFrameHost* GetRenderFrameHost(
 }
 
 WebAuthnCredManDelegate* GetCredManDelegate(content::RenderFrameHost* rfh) {
+  if (!rfh) {
+    return nullptr;
+  }
   return WebAuthnCredManDelegateFactory::GetFactory(
              content::WebContents::FromRenderFrameHost(rfh))
       ->GetRequestDelegate(rfh);
@@ -463,26 +466,26 @@ bool AndroidAutofillProvider::HasPasskeyRequest() {
     return false;
   }
 
-  content::RenderFrameHost* rfh =
-      GetRenderFrameHost(session_state_->manager.get(), field->host_frame());
-  return rfh && GetCredManDelegate(rfh);
+  return GetCredManDelegate(
+      GetRenderFrameHost(session_state_->manager.get(), field->host_frame()));
 }
 
 void AndroidAutofillProvider::OnTriggerPasskeyRequest() {
+  if (credman_sheet_status_ == CredManBottomSheetLifecycle::kIsShowing) {
+    return;
+  }
   if (!session_state_ || !session_state_->manager || !session_state_->form) {
     return;
   }
   const FormFieldData* field = session_state_->form->form().FindFieldByGlobalId(
       session_state_->current_field.id);
-  if (!field) {
+  if (!field || !AllowCredManOnField(*field)) {
     return;
   }
-  if (content::RenderFrameHost* rfh = GetRenderFrameHost(
-          session_state_->manager.get(), field->host_frame())) {
-    if (WebAuthnCredManDelegate* delegate = GetCredManDelegate(rfh)) {
-      delegate->TriggerCredManUi(RequestPasswords(false));
-    }
-  }
+  ShowCredManSheet(
+      GetRenderFrameHost(session_state_->manager.get(), field->host_frame()),
+      session_state_->form->form().global_id(),
+      /*field_to_focus=*/std::nullopt);
 }
 
 void AndroidAutofillProvider::OnTextFieldValueChanged(
@@ -801,8 +804,12 @@ bool AndroidAutofillProvider::ShowCredManSheet(
     content::RenderFrameHost* rfh,
     FormGlobalId form_id,
     std::optional<FieldInfo> field_to_focus) {
-  CHECK_EQ(credman_sheet_status_, CredManBottomSheetLifecycle::kNotShown);
-  if (WebAuthnCredManDelegate* delegate = GetCredManDelegate(rfh)) {
+  // Unlike focus (which only auto-shows when `kNotShown`), long-press
+  // (`OnTriggerPasskeyRequest`) can re-open a `kClosed` sheet.
+  CHECK_NE(credman_sheet_status_, CredManBottomSheetLifecycle::kIsShowing);
+  if (WebAuthnCredManDelegate* delegate = GetCredManDelegate(rfh);
+      delegate &&
+      delegate->HasPasskeys() != WebAuthnCredManDelegate::State::kNotReady) {
     credman_sheet_status_ = CredManBottomSheetLifecycle::kIsShowing;
     credman_sheet_rfh_id_ = rfh->GetGlobalId();
     delegate->SetRequestCompletionCallback(base::BindRepeating(

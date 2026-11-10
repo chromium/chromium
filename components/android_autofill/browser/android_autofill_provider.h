@@ -284,10 +284,11 @@ class AndroidAutofillProvider : public AutofillProvider,
   bool ShouldShowCredManForField(const FormFieldData& field,
                                  content::RenderFrameHost* rfh);
 
-  // Triggers a prefetched passkey request which opens a bottom sheet. The given
-  // `field_to_focus` is used to continue any interrupted focus event once
-  // CredMan closes. Returns true if the sheet was opened and false if that
-  // wasn't possible.
+  // Triggers a prefetched passkey request which opens a bottom sheet. If
+  // `field_to_focus` is given, it is used to continue an interrupted focus
+  // event once CredMan closes. Must not be called while `credman_sheet_status_`
+  // is `kIsShowing`. Returns true if the sheet was triggered and false if the
+  // delegate is unavailable or not ready.
   bool ShowCredManSheet(
       content::RenderFrameHost* rfh,
       FormGlobalId form_id,
@@ -296,7 +297,7 @@ class AndroidAutofillProvider : public AutofillProvider,
   enum class CredManBottomSheetLifecycle {
     kNotShown,   // The sheet hasn't been shown. Does not indicate it will be.
     kIsShowing,  // The sheet was triggered. Does not guarantee it's visible.
-    kClosed,     // The sheet was dismissed and shouldn't be shown again.
+    kClosed,     // The sheet was dismissed and shouldn't be auto-shown again.
   };
 
   // Groups all state that is specific to the current autofill session.
