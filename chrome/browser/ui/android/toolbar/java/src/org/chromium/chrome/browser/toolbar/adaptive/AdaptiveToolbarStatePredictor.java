@@ -202,6 +202,7 @@ public class AdaptiveToolbarStatePredictor {
             case AdaptiveToolbarButtonVariant.READER_MODE:
             case AdaptiveToolbarButtonVariant.PRICE_INSIGHTS:
             case AdaptiveToolbarButtonVariant.TAB_GROUPING:
+            case AdaptiveToolbarButtonVariant.TTC:
                 return false;
             default:
                 assert false : "Invalid adaptive toolbar button variant: " + variant;
@@ -264,6 +265,8 @@ public class AdaptiveToolbarStatePredictor {
                 return AdaptiveToolbarFeatures.isTranslateEnabled(mProfile);
             case AdaptiveToolbarButtonVariant.GLIC:
                 return AdaptiveToolbarFeatures.isGlicEnabledForAdaptiveToolbar(mContext, mProfile);
+            case AdaptiveToolbarButtonVariant.TTC:
+                return AdaptiveToolbarFeatures.isTtcEnabledForAdaptiveToolbar();
             default:
                 return true;
         }

@@ -71,6 +71,7 @@ public class AdaptiveToolbarFeatures {
             case AdaptiveToolbarButtonVariant.VOICE:
             case AdaptiveToolbarButtonVariant.AUTO:
             case AdaptiveToolbarButtonVariant.GLIC:
+            case AdaptiveToolbarButtonVariant.TTC:
                 return false;
             case AdaptiveToolbarButtonVariant.PRICE_TRACKING:
             case AdaptiveToolbarButtonVariant.READER_MODE:
@@ -135,6 +136,7 @@ public class AdaptiveToolbarFeatures {
             case AdaptiveToolbarButtonVariant.TAB_GROUPING:
             case AdaptiveToolbarButtonVariant.DISCOUNTS:
             case AdaptiveToolbarButtonVariant.GLIC:
+            case AdaptiveToolbarButtonVariant.TTC:
                 return false;
             default:
                 assert false : "Unknown button variant " + buttonVariant;
@@ -169,6 +171,14 @@ public class AdaptiveToolbarFeatures {
 
     public static boolean isTabGroupingPageActionEnabled() {
         return ChromeFeatureList.sCpaTabGroupingButton.isEnabled();
+    }
+
+    /**
+     * Returns whether TTC can be chosen as the toolbar shortcut. Whether the button can show in a
+     * given window is decided by that window's TTC entry point.
+     */
+    public static boolean isTtcEnabledForAdaptiveToolbar() {
+        return ChromeFeatureList.sTtc.isEnabled();
     }
 
     /**

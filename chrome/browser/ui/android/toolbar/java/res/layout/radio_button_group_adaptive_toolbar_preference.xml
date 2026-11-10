@@ -55,6 +55,15 @@ found in the LICENSE file.
           app:primaryText="@string/glic_button_entrypoint_ask_gemini_label" />
 
       <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+          android:id="@+id/adaptive_option_ttc"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:minHeight="@dimen/min_touch_target_size"
+          android:paddingTop="10dp"
+          app:iconSrc="@drawable/ic_audio_spark_24dp"
+          app:primaryText="@string/ttc_entrypoint_label" />
+
+      <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
           android:id="@+id/adaptive_option_voice_search"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"

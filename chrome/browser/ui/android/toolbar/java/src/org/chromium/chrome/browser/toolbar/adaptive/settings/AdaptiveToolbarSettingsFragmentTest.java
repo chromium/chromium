@@ -273,6 +273,52 @@ public class AdaptiveToolbarSettingsFragmentTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TTC)
+    public void testTtcOption_Enabled() {
+        FragmentScenario<AdaptiveToolbarSettingsFragment> scenario = buildFragmentScenario();
+        scenario.onFragment(
+                fragment -> {
+                    mRadioPreference =
+                            (RadioButtonGroupAdaptiveToolbarPreference)
+                                    fragment.findPreference(
+                                            AdaptiveToolbarSettingsFragment
+                                                    .PREF_ADAPTIVE_RADIO_GROUP);
+
+                    // Select TTC.
+                    assertEquals(
+                            R.id.adaptive_option_ttc,
+                            getButton(AdaptiveToolbarButtonVariant.TTC).getId());
+                    assertEquals(
+                            View.VISIBLE,
+                            getButton(AdaptiveToolbarButtonVariant.TTC).getVisibility());
+                    selectButton(AdaptiveToolbarButtonVariant.TTC);
+                    assertButtonCheckedCorrectly(
+                            R.string.ttc_entrypoint_label, AdaptiveToolbarButtonVariant.TTC);
+                    assertEquals(AdaptiveToolbarButtonVariant.TTC, mRadioPreference.getSelection());
+                    assertEquals(
+                            AdaptiveToolbarButtonVariant.TTC,
+                            ChromeSharedPreferences.getInstance()
+                                    .readInt(ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS));
+                });
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TTC)
+    public void testTtcOption_HiddenWhenTtcIsDisabled() {
+        FragmentScenario<AdaptiveToolbarSettingsFragment> scenario = buildFragmentScenario();
+        scenario.onFragment(
+                fragment -> {
+                    mRadioPreference =
+                            (RadioButtonGroupAdaptiveToolbarPreference)
+                                    fragment.findPreference(
+                                            AdaptiveToolbarSettingsFragment
+                                                    .PREF_ADAPTIVE_RADIO_GROUP);
+                    assertEquals(
+                            View.GONE, getButton(AdaptiveToolbarButtonVariant.TTC).getVisibility());
+                });
+    }
+
+    @Test
     @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR, ChromeFeatureList.GLIC})
     public void testOptionsHiddenWithBottomBar() {
         FragmentScenario<AdaptiveToolbarSettingsFragment> scenario = buildFragmentScenario();

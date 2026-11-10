@@ -51,8 +51,10 @@ enum class AdaptiveToolbarButtonVariant {
   kTabGrouping = 16,
   // Glic button.
   kGlic = 17,
+  // TTC button.
+  kTtc = 18,
 
-  kMaxValue = kGlic,
+  kMaxValue = kTtc,
 };
 // LINT.ThenChange(/tools/metrics/histograms/enums.xml:AdaptiveToolbarButtonVariant)
 
