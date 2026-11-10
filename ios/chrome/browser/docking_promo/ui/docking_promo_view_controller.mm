@@ -4,7 +4,10 @@
 
 #import "ios/chrome/browser/docking_promo/ui/docking_promo_view_controller.h"
 
-#import "ios/chrome/browser/shared/ui/animated_promo/animated_promo_utils.h"
+#import "ios/chrome/browser/shared/ui/animated_promo/animated_promo_configuration.h"
+#import "ios/chrome/browser/shared/ui/brick_configurations/animation_brick_configuration.h"
+#import "ios/chrome/browser/shared/ui/brick_configurations/title_brick_configuration.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -29,26 +32,48 @@ NSString* const kEditHomeScreenKeypath = @"edit_home_screen";
 
 @implementation DockingPromoViewController
 
-#pragma mark - UIViewController
+- (instancetype)init {
+  ButtonStackConfiguration* buttonStackConfiguration =
+      [[ButtonStackConfiguration alloc] init];
+  buttonStackConfiguration.primaryActionString =
+      l10n_util::GetNSString(IDS_IOS_DOCKING_PROMO_PRIMARY_BUTTON_TITLE);
 
-- (void)viewDidLoad {
-  self.animationNameDarkMode = kAnimationNameDarkMode;
-  self.animationName = kAnimationName;
-  self.animationBackgroundColor = [UIColor
+  AnimationBrickConfiguration* animationConfiguration =
+      [[AnimationBrickConfiguration alloc] init];
+  animationConfiguration.animationName = kAnimationName;
+  animationConfiguration.darkAnimationName = kAnimationNameDarkMode;
+  animationConfiguration.animationBackgroundColor = [UIColor
       colorWithDynamicProvider:^UIColor*(UITraitCollection* traitCollection) {
         return (traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark)
                    ? [UIColor colorNamed:kBackgroundColor]
                    : [UIColor colorNamed:kGrey100Color];
       }];
-  self.titleString = l10n_util::GetNSString(IDS_IOS_DOCKING_PROMO_TITLE);
-  self.primaryActionString =
-      l10n_util::GetNSString(IDS_IOS_DOCKING_PROMO_PRIMARY_BUTTON_TITLE);
 
   // Set the text localization.
   NSString* editHomeScreenTitle = l10n_util::GetNSString(
       IDS_IOS_DOCKING_EDIT_HOME_SCREEN_LOTTIE_INSTRUCTION);
-  self.animationTextProvider = @{kEditHomeScreenKeypath : editHomeScreenTitle};
+  animationConfiguration.animationTextProvider =
+      @{kEditHomeScreenKeypath : editHomeScreenTitle};
 
+  TitleBrickConfiguration* titleConfiguration =
+      [[TitleBrickConfiguration alloc] init];
+  titleConfiguration.title =
+      l10n_util::GetNSString(IDS_IOS_DOCKING_PROMO_TITLE);
+  titleConfiguration.titleStyle = UIFontTextStyleTitle2;
+
+  AnimatedPromoConfiguration* animatedPromoConfiguration =
+      [[AnimatedPromoConfiguration alloc]
+          initWithAnimationBrickConfiguration:animationConfiguration
+                     buttonStackConfiguration:buttonStackConfiguration
+                      titleBrickConfiguration:titleConfiguration
+                               underTitleView:nil];
+
+  return [super initWithConfiguration:animatedPromoConfiguration];
+}
+
+#pragma mark - UIViewController
+
+- (void)viewDidLoad {
   [super viewDidLoad];
 
   self.view.accessibilityIdentifier = kDockingPromoAccessibilityId;

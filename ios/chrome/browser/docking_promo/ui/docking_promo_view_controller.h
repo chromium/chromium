@@ -5,10 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_DOCKING_PROMO_UI_DOCKING_PROMO_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_DOCKING_PROMO_UI_DOCKING_PROMO_VIEW_CONTROLLER_H_
 
-#import "ios/chrome/browser/shared/ui/animated_promo/animated_promo_view_controller.h"
+#import "ios/chrome/browser/shared/ui/animated_promo/animated_promo_with_bricks_view_controller.h"
 
 // Container view controller for the Docking Promo.
-@interface DockingPromoViewController : AnimatedPromoViewController
+@interface DockingPromoViewController : AnimatedPromoWithBricksViewController
+
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithConfiguration:(AnimatedPromoConfiguration*)config
+    NS_UNAVAILABLE;
 
 @end
 

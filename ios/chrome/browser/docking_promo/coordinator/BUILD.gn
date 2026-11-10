@@ -31,7 +31,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/start_surface/ui_bundled",
-    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/button_stack",
     "//ui/base",
   ]
   frameworks = [

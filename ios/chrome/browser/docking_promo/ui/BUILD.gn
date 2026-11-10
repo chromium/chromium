@@ -14,7 +14,8 @@ source_set("ui") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/docking_promo/model:utils",
     "//ios/chrome/browser/shared/ui/animated_promo",
-    "//ios/chrome/browser/shared/ui/animated_promo:utils",
+    "//ios/chrome/browser/shared/ui/brick_configurations",
+    "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/colors",
     "//ui/base",
   ]
