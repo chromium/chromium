@@ -183,21 +183,22 @@ TEST_F(DeviceStatisticsSchedulerTest, StartsTrackerPeriodically) {
   fake_requests_[primary.GetGaiaId()]->SimulateSuccess({});
   fake_requests_.clear();
 
-  // The periodic recording triggers at noon on every day. The original
-  // recording happened at 13:00, so 24 hours later another recording should've
-  // been started.
+  // The periodic recording triggers once per day (after midnight + up to 1h
+  // jitter, and at least 12h after the previous run). The original recording
+  // happened at 13:00:30, so 24 hours later another recording should've been
+  // started.
   task_environment_.FastForwardBy(base::Hours(24));
 
   ASSERT_EQ(fake_requests_.size(), 1u);
   fake_requests_[primary.GetGaiaId()]->SimulateSuccess({});
   fake_requests_.clear();
 
-  // Another 10 hours later, it'll be 23:00 - not recording time yet.
+  // Another 10 hours later, it'll be 23:00:30 - not recording time yet.
   task_environment_.FastForwardBy(base::Hours(10));
 
   EXPECT_EQ(fake_requests_.size(), 0u);
 
-  // By 13:00 on the next day, recording should've started again.
+  // By 13:00:30 on the next day, recording should've started again.
   task_environment_.FastForwardBy(base::Hours(14));
   EXPECT_EQ(fake_requests_.size(), 1u);
 }
@@ -229,13 +230,13 @@ TEST_F(DeviceStatisticsSchedulerTest, DoesNotLoopOnDstFallBackDay) {
             base::Time::Now().LocalMidnight());
 
   pref_service_.SetTime("sync.device_statistics_timestamp",
-                        base::Time::Now() - base::Days(1));
+                        base::Time::Now() - base::Days(2));
 
   DeviceStatisticsScheduler scheduler(this, &pref_service_,
                                       identity_test_env_.identity_manager(),
                                       GURL("https://example.com/"));
 
-  // Since the last metrics emission was on the previous day, the new run should
+  // Since the last metrics emission was on a previous day, the new run should
   // start as soon as the startup delay passes (at 00:30:30).
   task_environment_.FastForwardBy(DeviceStatisticsScheduler::kStartupDelay);
 
@@ -244,13 +245,14 @@ TEST_F(DeviceStatisticsSchedulerTest, DoesNotLoopOnDstFallBackDay) {
   fake_requests_.clear();
 
   // Another recording should NOT be triggered immediately or during the rest of
-  // the 25-hour fall-back day (regression test for b/577528519).
-  task_environment_.FastForwardBy(base::Hours(25));
+  // the 25-hour fall-back day (24 hours later is 23:30:30 on the same day;
+  // regression test for b/577528519).
+  task_environment_.FastForwardBy(base::Hours(24));
   EXPECT_EQ(fake_requests_.size(), 0u);
 
-  // By noon on the following day (11.5 hours later, i.e. 36.5 hours after
-  // 00:30 on the 25-hour day), recording should have started again.
-  task_environment_.FastForwardBy(base::Hours(12));
+  // By 01:30:30 on the following day (after midnight + up to 1 hour of jitter),
+  // recording should have started again.
+  task_environment_.FastForwardBy(base::Hours(2));
   EXPECT_EQ(fake_requests_.size(), 1u);
 }
 #endif  // !BUILDFLAG(IS_WIN)

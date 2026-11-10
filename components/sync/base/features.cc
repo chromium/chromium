@@ -143,4 +143,7 @@ BASE_FEATURE(kCrossDeviceTabsInAppMenu, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSyncRecordDeviceStatisticsMetrics,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSyncRecordDeviceStatisticsMetricsJitter,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace syncer

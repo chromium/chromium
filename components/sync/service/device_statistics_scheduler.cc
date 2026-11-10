@@ -4,11 +4,13 @@
 
 #include "components/sync/service/device_statistics_scheduler.h"
 
+#include <algorithm>
 #include <optional>
 #include <utility>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/rand_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -34,6 +36,7 @@ DeviceStatisticsScheduler::DeviceStatisticsScheduler(
     signin::IdentityManager* identity_manager,
     const GURL& sync_server_url)
     : creation_time_(base::Time::Now()),
+      jitter_(base::RandTimeDeltaUpTo(base::Hours(1))),
       delegate_(delegate),
       pref_service_(pref_service),
       identity_manager_(identity_manager),
@@ -83,24 +86,42 @@ base::Time DeviceStatisticsScheduler::ComputeEarliestAllowedTimeToRun() const {
   const base::Time last_recorded_at =
       std::min(pref_service_->GetTime(kLastAttemptedToRecordPref), now);
 
-  // The metrics should be recorded once per calendar day, so the next possible
-  // time is midnight on the following day.
-  base::Time earliest_allowed =
-      last_recorded_at.is_null() ? now : last_recorded_at.NextLocalMidnight();
-
-  if (earliest_allowed > now) {
-    // Recording has already happened today. Wait (somewhat arbitrarily) until
-    // noon on the following day to record again. This avoids recording twice in
-    // immediate succession if the previous recording happened just before
-    // midnight.
-    earliest_allowed += base::Hours(12);
-  }
-
-  // Defense-in-depth against clock/timezone changes: never run again within
-  // 12 hours of the last attempt.
-  if (!last_recorded_at.is_null()) {
+  base::Time earliest_allowed = now;
+  if (base::FeatureList::IsEnabled(kSyncRecordDeviceStatisticsMetricsJitter)) {
+    if (!last_recorded_at.is_null()) {
+      // The metrics should be recorded at most once per calendar day, and never
+      // within 12 hours of the last attempt (to avoid recording twice in quick
+      // succession if the previous recording happened just before midnight, and
+      // as defense-in-depth against clock/timezone changes). Add random jitter
+      // to avoid traffic spikes at midnight.
+      // Note: `jitter_` is drawn once per browser session, so restarting the
+      // browser during the jitter window will re-draw it; that slightly skews
+      // towards earlier times within the 1-hour window if restarted repeatedly,
+      // which is acceptable in practice.
+      earliest_allowed = std::max(last_recorded_at.NextLocalMidnight(),
+                                  last_recorded_at + base::Hours(12)) +
+                         jitter_;
+    }
+  } else {
+    // The metrics should be recorded once per calendar day, so the next
+    // possible time is midnight on the following day.
     earliest_allowed =
-        std::max(earliest_allowed, last_recorded_at + base::Hours(12));
+        last_recorded_at.is_null() ? now : last_recorded_at.NextLocalMidnight();
+
+    if (earliest_allowed > now) {
+      // Recording has already happened today. Wait (somewhat arbitrarily) until
+      // noon on the following day to record again. This avoids recording twice
+      // in immediate succession if the previous recording happened just before
+      // midnight.
+      earliest_allowed += base::Hours(12);
+    }
+
+    // Defense-in-depth against clock/timezone changes: never run again within
+    // 12 hours of the last attempt.
+    if (!last_recorded_at.is_null()) {
+      earliest_allowed =
+          std::max(earliest_allowed, last_recorded_at + base::Hours(12));
+    }
   }
 
   // If metrics reporting is disabled, try again one day from now at the

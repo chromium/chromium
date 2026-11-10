@@ -196,6 +196,10 @@ BASE_DECLARE_FEATURE(kCrossDeviceTabsInAppMenu);
 // If enabled, tracks metrics about the user's storage of data on other devices.
 BASE_DECLARE_FEATURE(kSyncRecordDeviceStatisticsMetrics);
 
+// If enabled, adds random jitter to the scheduled time for recording device
+// statistics metrics.
+BASE_DECLARE_FEATURE(kSyncRecordDeviceStatisticsMetricsJitter);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_
