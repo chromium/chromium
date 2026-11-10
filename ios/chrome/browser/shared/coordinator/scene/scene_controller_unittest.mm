@@ -182,15 +182,7 @@ class SceneControllerTest : public PlatformTest {
     mock_gemini_handler_ = OCMProtocolMock(@protocol(GeminiCommands));
     mock_scene_sign_in_handler_ =
         OCMProtocolMock(@protocol(SceneSignInCommands));
-    CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
-    [dispatcher startDispatchingToTarget:mock_scene_handler_
-                             forProtocol:@protocol(SceneCommands)];
-    [dispatcher startDispatchingToTarget:mock_settings_handler_
-                             forProtocol:@protocol(SettingsCommands)];
-    [dispatcher startDispatchingToTarget:mock_gemini_handler_
-                             forProtocol:@protocol(GeminiCommands)];
-    [dispatcher startDispatchingToTarget:mock_scene_sign_in_handler_
-                             forProtocol:@protocol(SceneSignInCommands)];
+    RegisterMockSceneHandlers(browser_.get());
 
     LayoutGuideSceneAgent* layout_guide_scene_agent =
         [[LayoutGuideSceneAgent alloc] init];
@@ -200,18 +192,17 @@ class SceneControllerTest : public PlatformTest {
         [[IncognitoReauthSceneAgent alloc] init];
     [scene_state_ addAgent:reauth_agent];
 
-    BrowserCommandEndpoints command_endpoints = {
-        .sceneEndpoint = mock_scene_handler_,
-        .settingsEndpoint = mock_settings_handler_,
-        .geminiEndpoint = mock_gemini_handler_,
-        .sceneSignInEndpoint = mock_scene_sign_in_handler_,
-    };
-    scene_controller_.browserLifecycleManager =
+    BrowserLifecycleManager* browser_lifecycle_manager =
         [[BrowserLifecycleManager alloc] initWithProfile:profile_.get()
-                                              sceneState:scene_state_
-                                        commandEndpoints:command_endpoints];
-    [scene_controller_
-            .browserLifecycleManager createMainCoordinatorAndInterface];
+                                              sceneState:scene_state_];
+    scene_controller_.browserLifecycleManager = browser_lifecycle_manager;
+    // The scene handlers must be registered before the BrowserCoordinators
+    // start, as they resolve them on start.
+    Browser* main_browser = browser_lifecycle_manager.mainBrowser;
+    RegisterMockSceneHandlers(main_browser);
+    RegisterMockSceneHandlers(main_browser->GetInactiveBrowser());
+    RegisterMockSceneHandlers(browser_lifecycle_manager.incognitoBrowser);
+    [browser_lifecycle_manager createMainCoordinatorAndInterface];
 
     scene_controller_.browser = browser_.get();
     scene_controller_.profile = profile_.get();
@@ -230,6 +221,19 @@ class SceneControllerTest : public PlatformTest {
     SetProfileStateInitStage(profile_state, init_stage);
     profile_state.profile = profile_.get();
     return profile_state;
+  }
+
+  // Registers the mock scene-level command handlers on `browser`'s dispatcher.
+  void RegisterMockSceneHandlers(Browser* browser) {
+    CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
+    [dispatcher startDispatchingToTarget:mock_scene_handler_
+                             forProtocol:@protocol(SceneCommands)];
+    [dispatcher startDispatchingToTarget:mock_settings_handler_
+                             forProtocol:@protocol(SettingsCommands)];
+    [dispatcher startDispatchingToTarget:mock_gemini_handler_
+                             forProtocol:@protocol(GeminiCommands)];
+    [dispatcher startDispatchingToTarget:mock_scene_sign_in_handler_
+                             forProtocol:@protocol(SceneSignInCommands)];
   }
 
   // Mock & stub a WrangledBrowser object.

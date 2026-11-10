@@ -10,24 +10,16 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 
 class ProfileIOS;
-@protocol GeminiCommands;
-@protocol SceneCommands;
-@protocol SceneSignInCommands;
 @class SceneState;
-@protocol SettingsCommands;
 @class WrangledBrowser;
-
-// Command endpoints that BrowserLifecycleManager registers on the
-// CommandDispatcher of all Browsers it manages.
-struct BrowserCommandEndpoints {
-  __weak id<SceneCommands> sceneEndpoint = nil;
-  __weak id<SettingsCommands> settingsEndpoint = nil;
-  __weak id<GeminiCommands> geminiEndpoint = nil;
-  __weak id<SceneSignInCommands> sceneSignInEndpoint = nil;
-};
 
 // Manager for handling the creation and ownership of Browser instances and
 // their associated coordinators.
+//
+// The Browsers are exposed through `BrowserProviderInterface` as soon as they
+// are created, before their coordinators are started. This lets scene-level
+// objects register on the Browsers' `CommandDispatcher` before any
+// `BrowserCoordinator` resolves its handlers.
 @interface BrowserLifecycleManager : NSObject <BrowserProviderInterface>
 
 // Initialize a new instance of this class using `profile` as the primary
@@ -37,11 +29,8 @@ struct BrowserCommandEndpoints {
 //
 // `sceneState` is the scene state that will be associated with any Browsers
 // created.
-// `commandEndpoints` contains the objects that methods in the respective
-// command protocols should be dispatched to.
 - (instancetype)initWithProfile:(ProfileIOS*)profile
                      sceneState:(SceneState*)sceneState
-               commandEndpoints:(BrowserCommandEndpoints)commandEndpoints
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -75,10 +64,16 @@ struct BrowserCommandEndpoints {
 // is destroyed.
 - (void)willDestroyIncognitoProfile;
 
-// Tells the receiver to create all state that is tied to the incognito
-// profile. This method should be called after the incognito profile
-// has been created.
-- (void)incognitoProfileCreated;
+// Creates the incognito Browser for the recreated incognito profile, without
+// starting its coordinator. This method should be called after the incognito
+// profile has been created, and must be followed by a call to
+// `-createIncognitoInterface`. Between both calls, the caller can register
+// command handlers on the new `incognitoBrowser`.
+- (void)createIncognitoBrowser;
+
+// Starts the coordinator of the incognito Browser created by
+// `-createIncognitoBrowser` and creates the incognito interface.
+- (void)createIncognitoInterface;
 
 // Prepares command dispatchers across all browsers for shutdown. Must be
 // called before UI coordinators stop so unregistering targets fail silently.

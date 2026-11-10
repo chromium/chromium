@@ -1589,20 +1589,16 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
   _mainCoordinator.tabGridDelegate = self;
   _mainCoordinator.sceneURLLoadingService = _sceneURLLoadingService.get();
 
-  BrowserCommandEndpoints commandEndpoints = {
-      .sceneEndpoint = _mainCoordinator,
-      .settingsEndpoint = _mainCoordinator,
-      .geminiEndpoint = _mainCoordinator,
-      .sceneSignInEndpoint = _mainCoordinator.sceneSignInEndpoint,
-  };
   self.browserLifecycleManager =
       [[BrowserLifecycleManager alloc] initWithProfile:profile
-                                            sceneState:sceneState
-                                      commandEndpoints:commandEndpoints];
+                                            sceneState:sceneState];
+
+  // The SceneCoordinator must handle the scene-level commands before the
+  // BrowserCoordinators are started, as they resolve their handlers on start.
+  [_mainCoordinator connectBrowsersFromProvider:self.browserLifecycleManager];
 
   // Create and start the BVC.
   [self.browserLifecycleManager createMainCoordinatorAndInterface];
-  [_mainCoordinator setBrowsersFromProvider:self.browserLifecycleManager];
 
   [self addAgents];
 
@@ -3057,9 +3053,9 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
   Browser* incognitoBrowser =
       _browserLifecycleManager.incognitoInterface.browser;
 
-  // Clear the Incognito Browser and notify the TabGrid that its otrBrowser
-  // will be destroyed.
-  self.mainCoordinator.incognitoBrowser = nil;
+  // Disconnect the SceneCoordinator from the incognito `Browser`, which also
+  // notifies the TabGrid that its otrBrowser will be destroyed.
+  [self.mainCoordinator disconnectIncognitoBrowser];
 
   if (breadcrumbs::IsEnabled(GetApplicationContext()->GetLocalState())) {
     BreadcrumbManagerBrowserAgent::FromBrowser(incognitoBrowser)
@@ -3076,10 +3072,16 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
     return;
   }
 
-  [_browserLifecycleManager incognitoProfileCreated];
+  [_browserLifecycleManager createIncognitoBrowser];
+  Browser* incognitoBrowser = _browserLifecycleManager.incognitoBrowser;
 
-  Browser* incognitoBrowser =
-      _browserLifecycleManager.incognitoInterface.browser;
+  // The scene-level command handlers must be registered on the new incognito
+  // `Browser` before its `BrowserCoordinator` is started, as it resolves them
+  // when starting.
+  [self.mainCoordinator connectIncognitoBrowser:incognitoBrowser];
+
+  [_browserLifecycleManager createIncognitoInterface];
+
   _incognitoWebStateObserver->Observe(incognitoBrowser->GetWebStateList());
 
   // There should be a new URL loading browser agent for the incognito browser,
@@ -3090,9 +3092,10 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
     [self activateBVCAndMakeCurrentBVCPrimary];
   }
 
-  // Always set the new otr Browser for the tablet or grid switcher.
-  // Notify the TabGrid with the new Incognito Browser.
-  self.mainCoordinator.incognitoBrowser = incognitoBrowser;
+  // Always propagate the new incognito `Browser` to the tablet or grid
+  // switcher. This must happen after its `BrowserCoordinator` is started, as
+  // some UI components depend on it.
+  [self.mainCoordinator propagateIncognitoBrowser];
 }
 
 #pragma mark - iPad Popover Appearance Propagation

@@ -390,15 +390,9 @@ inline LayoutStateScenePassKey PassKey() {
   [self stopSettingsAnimated:NO completion:nil];
   // Ensure command dispatching is stopped across all non-nil browsers so that
   // shutdown captures unregistered targets in silently failing targets.
-  if (_regularBrowser) {
-    [_regularBrowser->GetCommandDispatcher() stopDispatchingToTarget:self];
-  }
-  if (_incognitoBrowser) {
-    [_incognitoBrowser->GetCommandDispatcher() stopDispatchingToTarget:self];
-  }
-  if (_inactiveBrowser) {
-    [_inactiveBrowser->GetCommandDispatcher() stopDispatchingToTarget:self];
-  }
+  [self stopDispatchingForBrowser:_regularBrowser.get()];
+  [self stopDispatchingForBrowser:_incognitoBrowser];
+  [self stopDispatchingForBrowser:_inactiveBrowser.get()];
   _policyWatcherObserver.reset();
   _policyWatcherObserverBridge.reset();
   [self stopAccountMenu];
@@ -441,10 +435,45 @@ inline LayoutStateScenePassKey PassKey() {
 
 #pragma mark - Public
 
-- (void)setBrowsersFromProvider:(id<BrowserProviderInterface>)provider {
+- (void)connectBrowsersFromProvider:(id<BrowserProviderInterface>)provider {
+  CHECK(!_regularBrowser, base::NotFatalUntil::M162)
+      << "-connectBrowsersFromProvider: must be called once";
   _regularBrowser = provider.mainBrowser->AsWeakPtr();
   _inactiveBrowser = _regularBrowser->GetInactiveBrowser()->AsWeakPtr();
   _incognitoBrowser = provider.incognitoBrowser;
+  [self startDispatchingForBrowser:_regularBrowser.get()];
+  [self startDispatchingForBrowser:_inactiveBrowser.get()];
+  [self startDispatchingForBrowser:_incognitoBrowser];
+}
+
+- (void)connectIncognitoBrowser:(Browser*)incognitoBrowser {
+  CHECK(incognitoBrowser, base::NotFatalUntil::M162);
+  CHECK(!_incognitoBrowser, base::NotFatalUntil::M162)
+      << "-disconnectIncognitoBrowser must be called first";
+  _incognitoBrowser = incognitoBrowser;
+  [self startDispatchingForBrowser:_incognitoBrowser];
+}
+
+- (void)disconnectIncognitoBrowser {
+  CHECK(_incognitoBrowser, base::NotFatalUntil::M162)
+      << "No incognito browser is connected";
+  [self stopDispatchingForBrowser:_incognitoBrowser];
+  _incognitoBrowser = nullptr;
+  // Clearing the incognito browser from the UI does not depend on any
+  // coordinator, so it is done right away.
+  [self propagateIncognitoBrowser];
+}
+
+- (void)propagateIncognitoBrowser {
+  _tabGridCoordinator.incognitoBrowser = _incognitoBrowser;
+  if (IsChromeNextIaEnabled()) {
+    _appBarCoordinator.incognitoBrowser = _incognitoBrowser;
+  }
+  [_sceneMediator
+      setIncognitoFullscreenController:_incognitoBrowser == nullptr
+                                           ? nullptr
+                                           : FullscreenController::FromBrowser(
+                                                 _incognitoBrowser)];
 }
 
 - (BOOL)isTabGridActive {
@@ -1850,33 +1879,9 @@ inline LayoutStateScenePassKey PassKey() {
 
 #pragma mark - Properties
 
-- (id<SceneSignInCommands>)sceneSignInEndpoint {
-  return self;
-}
-
 - (void)setTabGridDelegate:(id<TabGridCoordinatorDelegate>)delegate {
   _tabGridDelegate = delegate;
   _tabGridCoordinator.delegate = delegate;
-}
-
-- (Browser*)incognitoBrowser {
-  return _incognitoBrowser.get();
-}
-
-- (void)setIncognitoBrowser:(Browser*)incognitoBrowser {
-  if (_incognitoBrowser) {
-    [_incognitoBrowser->GetCommandDispatcher() stopDispatchingToTarget:self];
-  }
-  _incognitoBrowser = incognitoBrowser;
-  _tabGridCoordinator.incognitoBrowser = incognitoBrowser;
-  if (IsChromeNextIaEnabled()) {
-    _appBarCoordinator.incognitoBrowser = incognitoBrowser;
-  }
-  [_sceneMediator
-      setIncognitoFullscreenController:incognitoBrowser == nullptr
-                                           ? nullptr
-                                           : FullscreenController::FromBrowser(
-                                                 incognitoBrowser)];
 }
 
 - (UIViewController*)activeViewController {
@@ -2015,6 +2020,32 @@ inline LayoutStateScenePassKey PassKey() {
 }
 
 #pragma mark - Private
+
+// Starts handling the scene-level commands sent through `browser`'s dispatcher.
+// No-op if `browser` is null.
+- (void)startDispatchingForBrowser:(Browser*)browser {
+  if (!browser) {
+    return;
+  }
+  CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
+  [dispatcher startDispatchingToTarget:self
+                           forProtocol:@protocol(SceneCommands)];
+  [dispatcher startDispatchingToTarget:self
+                           forProtocol:@protocol(SceneSignInCommands)];
+  [dispatcher startDispatchingToTarget:self
+                           forProtocol:@protocol(SettingsCommands)];
+  [dispatcher startDispatchingToTarget:self
+                           forProtocol:@protocol(GeminiCommands)];
+}
+
+// Stops handling the commands sent through `browser`'s dispatcher. No-op if
+// `browser` is null.
+- (void)stopDispatchingForBrowser:(Browser*)browser {
+  if (!browser) {
+    return;
+  }
+  [browser->GetCommandDispatcher() stopDispatchingToTarget:self];
+}
 
 // Presents the Settings UI using the regular browser, base view controller,
 // and blue dot promo state.

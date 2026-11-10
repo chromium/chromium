@@ -26,12 +26,15 @@
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_sign_in_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -64,6 +67,26 @@ using UserFeedbackDataCallback =
 
 namespace {
 
+// Returns whether `coordinator` handles the scene-level commands sent through
+// `browser`'s dispatcher.
+bool HandlesSceneCommands(SceneCoordinator* coordinator, Browser* browser) {
+  // One required selector of each of `SceneCommands`, `SceneSignInCommands`,
+  // `SettingsCommands` and `GeminiCommands`.
+  const SEL selectors[] = {
+    @selector(dismissModalDialogsWithCompletion:),
+    @selector(stopSigninCoordinatorWithCompletionAnimated:),
+    @selector(showGeminiSettings),
+    @selector(dismissGeminiFlowWithCompletion:),
+  };
+  CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
+  for (SEL selector : selectors) {
+    if ([dispatcher forwardingTargetForSelector:selector] != coordinator) {
+      return false;
+    }
+  }
+  return true;
+}
+
 class SceneCoordinatorTest : public PlatformTest {
  protected:
   SceneCoordinatorTest() {
@@ -92,7 +115,7 @@ class SceneCoordinatorTest : public PlatformTest {
     coordinator_ = [[SceneCoordinator alloc]
         initWithTabOpener:OCMProtocolMock(@protocol(TabOpening))];
     [coordinator_
-        setBrowsersFromProvider:scene_state_.browserProviderInterface];
+        connectBrowsersFromProvider:scene_state_.browserProviderInterface];
   }
 
   void TearDown() override {
@@ -216,6 +239,42 @@ TEST_F(SceneCoordinatorTest, UpdatesIncognitoContentVisibility) {
   EXPECT_FALSE(scene_state_.incognitoState.incognitoContentVisible);
 }
 
+// Tests that the scene coordinator handles the scene-level commands of all the
+// browsers it is given, and stops handling them when stopped.
+TEST_F(SceneCoordinatorTest, HandlesSceneCommandsOfAllBrowsers) {
+  Browser* regular_browser = coordinator_.currentBrowser;
+  Browser* inactive_browser = regular_browser->GetInactiveBrowser();
+  Browser* incognito_browser =
+      scene_state_.browserProviderInterface.incognitoBrowser;
+
+  EXPECT_TRUE(HandlesSceneCommands(coordinator_, regular_browser));
+  EXPECT_TRUE(HandlesSceneCommands(coordinator_, inactive_browser));
+  EXPECT_TRUE(HandlesSceneCommands(coordinator_, incognito_browser));
+
+  [coordinator_ stop];
+  EXPECT_FALSE(HandlesSceneCommands(coordinator_, regular_browser));
+  EXPECT_FALSE(HandlesSceneCommands(coordinator_, inactive_browser));
+  EXPECT_FALSE(HandlesSceneCommands(coordinator_, incognito_browser));
+}
+
+// Tests that disconnecting and connecting the incognito browser stops and
+// starts the handling of its scene-level commands.
+TEST_F(SceneCoordinatorTest, ConnectIncognitoBrowserHandlesSceneCommands) {
+  Browser* incognito_browser =
+      scene_state_.browserProviderInterface.incognitoBrowser;
+  ASSERT_TRUE(HandlesSceneCommands(coordinator_, incognito_browser));
+
+  [coordinator_ disconnectIncognitoBrowser];
+  EXPECT_FALSE(HandlesSceneCommands(coordinator_, incognito_browser));
+
+  [coordinator_ connectIncognitoBrowser:incognito_browser];
+  EXPECT_TRUE(HandlesSceneCommands(coordinator_, incognito_browser));
+
+  // Propagating the incognito browser does not register the handlers again.
+  [coordinator_ propagateIncognitoBrowser];
+  EXPECT_TRUE(HandlesSceneCommands(coordinator_, incognito_browser));
+}
+
 // Tests that SceneViewController hides the Gemini floaty when presenting a view
 // controller.
 TEST_F(SceneCoordinatorTest, PresentViewControllerHidesGeminiFloaty) {
@@ -266,6 +325,8 @@ TEST_F(SceneCoordinatorTest, TestDismissModalDialogsWithCompletion) {
 
   id mockGeminiHandler = OCMProtocolMock(@protocol(GeminiCommands));
   OCMExpect([mockGeminiHandler dismissGeminiFlowWithCompletion:nil]);
+  // Replace the scene coordinator, which handles `GeminiCommands`, by the mock.
+  [dispatcher stopDispatchingForProtocol:@protocol(GeminiCommands)];
   [dispatcher startDispatchingToTarget:mockGeminiHandler
                            forProtocol:@protocol(GeminiCommands)];
 
@@ -313,6 +374,8 @@ TEST_F(SceneCoordinatorTest,
 
   id mockGeminiHandler = OCMProtocolMock(@protocol(GeminiCommands));
   [[mockGeminiHandler reject] dismissGeminiFlowWithCompletion:[OCMArg any]];
+  // Replace the scene coordinator, which handles `GeminiCommands`, by the mock.
+  [dispatcher stopDispatchingForProtocol:@protocol(GeminiCommands)];
   [dispatcher startDispatchingToTarget:mockGeminiHandler
                            forProtocol:@protocol(GeminiCommands)];
 

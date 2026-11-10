@@ -155,13 +155,42 @@ class BrowserLifecycleManagerTest : public PlatformTest {
     return browser_list_observer_;
   }
 
-  BrowserCommandEndpoints command_endpoints() {
-    return {
-        .sceneEndpoint = mock_scene_handler_,
-        .settingsEndpoint = mock_settings_handler_,
-        .geminiEndpoint = mock_gemini_handler_,
-        .sceneSignInEndpoint = mock_scene_signin_handler_,
-    };
+  // Creates a BrowserLifecycleManager and registers the mock scene-level
+  // command handlers on all its Browsers, as SceneCoordinator does in
+  // production before the BrowserCoordinators are started.
+  BrowserLifecycleManager* CreateBrowserLifecycleManager() {
+    BrowserLifecycleManager* manager =
+        [[BrowserLifecycleManager alloc] initWithProfile:profile()
+                                              sceneState:scene_state()];
+    Browser* main_browser = manager.mainBrowser;
+    RegisterMockSceneHandlers(main_browser);
+    RegisterMockSceneHandlers(main_browser->GetInactiveBrowser());
+    RegisterMockSceneHandlers(manager.incognitoBrowser);
+    return manager;
+  }
+
+  // Recreates the incognito Browser of `manager` for a recreated incognito
+  // profile, registering the mock scene-level command handlers on it before
+  // its BrowserCoordinator is started.
+  void RecreateIncognitoBrowser(BrowserLifecycleManager* manager) {
+    [manager willDestroyIncognitoProfile];
+    RecreateOffTheRecordProfile();
+    [manager createIncognitoBrowser];
+    RegisterMockSceneHandlers(manager.incognitoBrowser);
+    [manager createIncognitoInterface];
+  }
+
+  // Registers the mock scene-level command handlers on `browser`'s dispatcher.
+  void RegisterMockSceneHandlers(Browser* browser) {
+    CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
+    [dispatcher startDispatchingToTarget:mock_scene_handler_
+                             forProtocol:@protocol(SceneCommands)];
+    [dispatcher startDispatchingToTarget:mock_settings_handler_
+                             forProtocol:@protocol(SettingsCommands)];
+    [dispatcher startDispatchingToTarget:mock_gemini_handler_
+                             forProtocol:@protocol(GeminiCommands)];
+    [dispatcher startDispatchingToTarget:mock_scene_signin_handler_
+                             forProtocol:@protocol(SceneSignInCommands)];
   }
 
   id mock_gemini_handler() { return mock_gemini_handler_; }
@@ -198,10 +227,7 @@ TEST_F(BrowserLifecycleManagerTest, TestInitNilObserver) {
     IncognitoReauthSceneAgent* reauth_agent =
         [[IncognitoReauthSceneAgent alloc] init];
     [scene_state() addAgent:reauth_agent];
-    BrowserLifecycleManager* wrangler =
-        [[BrowserLifecycleManager alloc] initWithProfile:profile()
-                                              sceneState:scene_state()
-                                        commandEndpoints:command_endpoints()];
+    BrowserLifecycleManager* wrangler = CreateBrowserLifecycleManager();
     [wrangler createMainCoordinatorAndInterface];
 
     // Test that BVC is created on demand.
@@ -234,10 +260,7 @@ TEST_F(BrowserLifecycleManagerTest, TestBrowserList) {
   IncognitoReauthSceneAgent* reauth_agent =
       [[IncognitoReauthSceneAgent alloc] init];
   [scene_state() addAgent:reauth_agent];
-  BrowserLifecycleManager* wrangler =
-      [[BrowserLifecycleManager alloc] initWithProfile:profile()
-                                            sceneState:scene_state()
-                                      commandEndpoints:command_endpoints()];
+  BrowserLifecycleManager* wrangler = CreateBrowserLifecycleManager();
 
   BrowserList* browser_list = BrowserListFactory::GetForProfile(profile());
 
@@ -263,9 +286,7 @@ TEST_F(BrowserLifecycleManagerTest, TestBrowserList) {
   // Record the old Browser before it is destroyed. This will be dangling
   // after the call to -willDestroyIncognitoProfile.
   Browser* prior_otr_browser = wrangler.incognitoInterface.browser;
-  [wrangler willDestroyIncognitoProfile];
-  RecreateOffTheRecordProfile();
-  [wrangler incognitoProfileCreated];
+  RecreateIncognitoBrowser(wrangler);
 
   // Expect that the prior OTR browser was removed, and a new one was added.
   EXPECT_EQ(prior_otr_browser,
@@ -303,10 +324,7 @@ TEST_F(BrowserLifecycleManagerTest, TestInactiveInterface) {
   IncognitoReauthSceneAgent* reauth_agent =
       [[IncognitoReauthSceneAgent alloc] init];
   [scene_state() addAgent:reauth_agent];
-  BrowserLifecycleManager* wrangler =
-      [[BrowserLifecycleManager alloc] initWithProfile:profile()
-                                            sceneState:scene_state()
-                                      commandEndpoints:command_endpoints()];
+  BrowserLifecycleManager* wrangler = CreateBrowserLifecycleManager();
 
   BrowserList* browser_list = BrowserListFactory::GetForProfile(profile());
 
@@ -326,15 +344,50 @@ TEST_F(BrowserLifecycleManagerTest, TestInactiveInterface) {
                 .size());
 }
 
+// Tests that the Browsers are exposed before their interfaces are created, so
+// that command handlers can be registered before the BrowserCoordinators start.
+TEST_F(BrowserLifecycleManagerTest, TestBrowsersExposedBeforeInterfaces) {
+  IncognitoReauthSceneAgent* reauth_agent =
+      [[IncognitoReauthSceneAgent alloc] init];
+  [scene_state() addAgent:reauth_agent];
+  BrowserLifecycleManager* wrangler = CreateBrowserLifecycleManager();
+
+  EXPECT_NE(nullptr, wrangler.mainBrowser);
+  EXPECT_NE(nullptr, wrangler.incognitoBrowser);
+  EXPECT_TRUE(wrangler.hasIncognitoBrowser);
+  EXPECT_EQ(nil, wrangler.mainInterface);
+  EXPECT_EQ(nil, wrangler.incognitoInterface);
+
+  [wrangler createMainCoordinatorAndInterface];
+  EXPECT_EQ(wrangler.mainBrowser, wrangler.mainInterface.browser);
+  EXPECT_EQ(wrangler.incognitoBrowser, wrangler.incognitoInterface.browser);
+
+  // While the incognito profile is recreated, the new incognito Browser is
+  // exposed before its interface is created.
+  [wrangler willDestroyIncognitoProfile];
+  EXPECT_EQ(nullptr, wrangler.incognitoBrowser);
+  EXPECT_FALSE(wrangler.hasIncognitoBrowser);
+  RecreateOffTheRecordProfile();
+  [wrangler createIncognitoBrowser];
+  EXPECT_NE(nullptr, wrangler.incognitoBrowser);
+  EXPECT_TRUE(wrangler.hasIncognitoBrowser);
+  EXPECT_EQ(nil, wrangler.incognitoInterface);
+
+  RegisterMockSceneHandlers(wrangler.incognitoBrowser);
+  [wrangler createIncognitoInterface];
+  EXPECT_EQ(wrangler.incognitoBrowser, wrangler.incognitoInterface.browser);
+
+  [wrangler shutdown];
+  EXPECT_EQ(nullptr, wrangler.mainBrowser);
+  EXPECT_EQ(nullptr, wrangler.incognitoBrowser);
+}
+
 // Tests the session restoration logic.
 TEST_F(BrowserLifecycleManagerTest, TestSessionRestorationLogic) {
   IncognitoReauthSceneAgent* reauth_agent =
       [[IncognitoReauthSceneAgent alloc] init];
   [scene_state() addAgent:reauth_agent];
-  BrowserLifecycleManager* wrangler =
-      [[BrowserLifecycleManager alloc] initWithProfile:profile()
-                                            sceneState:scene_state()
-                                      commandEndpoints:command_endpoints()];
+  BrowserLifecycleManager* wrangler = CreateBrowserLifecycleManager();
 
   // Create the coordinator and interface. This is required to get access
   // to the Browser via the -mainInterface/-incognitoInterface providers.
@@ -348,9 +401,7 @@ TEST_F(BrowserLifecycleManagerTest, TestSessionRestorationLogic) {
 
   // Destroing and rebuilding the incognito browser should not restore the
   // sessions.
-  [wrangler willDestroyIncognitoProfile];
-  RecreateOffTheRecordProfile();
-  [wrangler incognitoProfileCreated];
+  RecreateIncognitoBrowser(wrangler);
 
   EXPECT_EQ(3, session_restoration_observer().session_restoration_call_count());
   [wrangler shutdown];
@@ -363,10 +414,7 @@ TEST_F(BrowserLifecycleManagerTest, TestPrepareForShutdown) {
   IncognitoReauthSceneAgent* reauth_agent =
       [[IncognitoReauthSceneAgent alloc] init];
   [scene_state() addAgent:reauth_agent];
-  BrowserLifecycleManager* wrangler =
-      [[BrowserLifecycleManager alloc] initWithProfile:profile()
-                                            sceneState:scene_state()
-                                      commandEndpoints:command_endpoints()];
+  BrowserLifecycleManager* wrangler = CreateBrowserLifecycleManager();
 
   [wrangler createMainCoordinatorAndInterface];
   CommandDispatcher* dispatcher =
@@ -388,7 +436,8 @@ TEST_F(BrowserLifecycleManagerTest, TestPrepareForShutdown) {
   // Call prepareForShutdown before stopping/unregistering the target.
   [wrangler prepareForShutdown];
 
-  // Unregister the target (simulating SceneCoordinator::stop).
+  // Unregister the mock handlers registered by
+  // `CreateBrowserLifecycleManager()` (simulating `-[SceneCoordinator stop]`).
   [dispatcher stopDispatchingToTarget:mock_gemini_handler()];
   [dispatcher stopDispatchingToTarget:mock_scene_signin_handler()];
 

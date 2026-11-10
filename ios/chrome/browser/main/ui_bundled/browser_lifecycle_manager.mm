@@ -29,10 +29,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
-#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
-#import "ios/chrome/browser/shared/public/commands/scene_sign_in_commands.h"
-#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/utils.h"
@@ -41,7 +37,6 @@
   raw_ptr<ProfileIOS> _profile;
 
   __weak SceneState* _sceneState;
-  BrowserCommandEndpoints _commandEndpoints;
 
   std::unique_ptr<Browser> _mainBrowser;
   std::unique_ptr<Browser> _otrBrowser;
@@ -53,14 +48,11 @@
 }
 
 - (instancetype)initWithProfile:(ProfileIOS*)profile
-                     sceneState:(SceneState*)sceneState
-               commandEndpoints:(BrowserCommandEndpoints)commandEndpoints {
-  TRACE_EVENT("ui", "-[BrowserLifecycleManager "
-                    "initWithProfile:sceneState:commandEndpoints:]");
+                     sceneState:(SceneState*)sceneState {
+  TRACE_EVENT("ui", "-[BrowserLifecycleManager initWithProfile:sceneState:]");
   if ((self = [super init])) {
     _profile = profile;
     _sceneState = sceneState;
-    _commandEndpoints = commandEndpoints;
 
     // Create all browsers.
     _mainBrowser = Browser::Create(_profile, _sceneState);
@@ -140,27 +132,22 @@
 #pragma mark - BrowserProviderInterface
 
 - (Browser*)mainBrowser {
-  return _mainInterface.browser;
+  return _mainBrowser.get();
 }
 
 - (Browser*)incognitoBrowser {
-  if (!self.hasIncognitoBrowser) {
-    return nullptr;
-  }
-
-  return _incognitoInterface.browser;
+  return _otrBrowser.get();
 }
 
 - (Browser*)currentBrowser {
   return _currentInterface.browser;
 }
 
-// This method should almost never return NO since the incognitoInterface
-// is not lazily created, but it is possible for it to return YES after
-// -shutdown or as a transient state while the OTR Profile is
-// being detroyed and recreated (see SceneController).
+// The incognito Browser only transiently does not exist, while the incognito
+// profile is destroyed and recreated (see `SceneController`), or after
+// `-shutdown`.
 - (BOOL)hasIncognitoBrowser {
-  return _mainInterface && _incognitoInterface;
+  return _otrBrowser != nullptr;
 }
 
 #pragma mark - BrowserViewInformation property implementations
@@ -221,7 +208,7 @@
   }
 }
 
-- (void)incognitoProfileCreated {
+- (void)createIncognitoBrowser {
   DCHECK(_profile);
   DCHECK(_profile->HasOffTheRecordProfile());
   DCHECK(!_otrBrowser);
@@ -234,6 +221,12 @@
 
   _otrBrowser = Browser::Create(incognitoProfile, _sceneState);
   [self setupBrowser:_otrBrowser.get()];
+}
+
+- (void)createIncognitoInterface {
+  CHECK(_otrBrowser, base::NotFatalUntil::M162)
+      << "-createIncognitoBrowser must be called before "
+         "-createIncognitoInterface";
 
   // Recreate the off-the-record interface, but do not load the session as
   // we had just closed all the tabs.
@@ -286,22 +279,14 @@
 
 #pragma mark - Internal methods
 
-- (void)dispatchToEndpointsForBrowser:(Browser*)browser {
+// Registers the scene agents handling commands on `browser`'s dispatcher.
+- (void)dispatchToSceneAgentsForBrowser:(Browser*)browser {
   IncognitoReauthSceneAgent* reauthAgent =
       [IncognitoReauthSceneAgent agentFromScene:_sceneState];
 
   CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
   [dispatcher startDispatchingToTarget:reauthAgent
                            forProtocol:@protocol(IncognitoReauthCommands)];
-
-  [dispatcher startDispatchingToTarget:_commandEndpoints.sceneEndpoint
-                           forProtocol:@protocol(SceneCommands)];
-  [dispatcher startDispatchingToTarget:_commandEndpoints.sceneSignInEndpoint
-                           forProtocol:@protocol(SceneSignInCommands)];
-  [dispatcher startDispatchingToTarget:_commandEndpoints.settingsEndpoint
-                           forProtocol:@protocol(SettingsCommands)];
-  [dispatcher startDispatchingToTarget:_commandEndpoints.geminiEndpoint
-                           forProtocol:@protocol(GeminiCommands)];
 }
 
 // Sets up an existing browser.
@@ -310,7 +295,7 @@
   BrowserList* browserList = BrowserListFactory::GetForProfile(profile);
   browserList->AddBrowser(browser);
 
-  [self dispatchToEndpointsForBrowser:browser];
+  [self dispatchToSceneAgentsForBrowser:browser];
 
   [self setSessionIDForBrowser:browser];
 
