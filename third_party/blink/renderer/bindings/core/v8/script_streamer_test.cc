@@ -204,7 +204,7 @@ class ScriptStreamingTestBase : public testing::Test {
     auto* fetcher = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
         properties->MakeDetachable(), context, task_runner, task_runner,
         MakeGarbageCollected<NoopLoaderFactory>(),
-        MakeGarbageCollected<MockContextLifecycleNotifier>(),
+        context_lifecycle_notifier_.Notifier(),
         nullptr /* back_forward_cache_loader_helper */));
 
     EXPECT_EQ(
@@ -265,6 +265,7 @@ class ScriptStreamingTestBase : public testing::Test {
   static int url_counter_;
 
   test::TaskEnvironment task_environment_;
+  ScopedMockContextLifecycleNotifier context_lifecycle_notifier_;
   KURL url_;
 
   base::RunLoop run_loop_;
@@ -1271,7 +1272,7 @@ class BackgroundResourceScriptStreamerTestBase : public testing::Test {
     auto* fetcher = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
         properties->MakeDetachable(), context, main_thread_task_runner,
         main_thread_task_runner, dummy_loader_factory,
-        MakeGarbageCollected<MockContextLifecycleNotifier>(),
+        context_lifecycle_notifier_.Notifier(),
         nullptr /* back_forward_cache_loader_helper */));
 
     EXPECT_EQ(
@@ -1396,6 +1397,7 @@ class BackgroundResourceScriptStreamerTestBase : public testing::Test {
   static int url_counter_;
 
   test::TaskEnvironment task_environment_;
+  ScopedMockContextLifecycleNotifier context_lifecycle_notifier_;
   KURL url_;
 
   base::RunLoop run_loop_;
