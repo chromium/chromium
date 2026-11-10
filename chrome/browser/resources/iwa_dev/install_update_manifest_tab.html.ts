@@ -13,12 +13,13 @@ export function getHtml(this: IwaDevInstallUpdateManifestTabElement) {
   <cr-input type="url" label="Update Manifest URL"
       placeholder="${PLACEHOLDER_URL}" .value="${this.url_}"
       @value-changed="${this.onUrlValueChanged_}"
-      @keydown="${this.onInputKeydown_}" ?disabled="${this.isFetching_}"
+      @keydown="${this.onInputKeydown_}"
+      ?disabled="${this.disabled || this.isFetching_}"
       ?invalid="${!!this.urlError_}" .errorMessage="${this.urlError_}"
       autofocus>
   </cr-input>
   <cr-button id="fetchButton" @click="${this.onFetchClick_}"
-      ?disabled="${this.isFetching_ || !this.url_}">
+      ?disabled="${this.disabled || this.isFetching_ || !this.url_}">
     Fetch
   </cr-button>
 </div>
@@ -28,12 +29,8 @@ ${this.isManifestFetched_ && !this.urlError_ ? html`
         this.versionOptions_.length === 1 ? '' : 's'} available.
   </div>
 ` : ''}
-<div id="details">
-  ${!this.isManifestFetched_ ? html`
-    <div class="placeholder-message">
-      Enter a URL and click Fetch to load manifest details.
-    </div>
-  ` : html`
+${this.isManifestFetched_ ? html`
+  <div id="details">
     <div id="dropdowns-row">
       <iwa-dev-combobox id="versionSelect" label="Version" readonly
           .value="${this.selectedVersion_}" .options="${this.versionOptions_}"
@@ -48,6 +45,6 @@ ${this.isManifestFetched_ && !this.urlError_ ? html`
         </iwa-dev-combobox>
       ` : ''}
     </div>
-  `}
-</div>`;
+  </div>
+` : ''}`;
 }

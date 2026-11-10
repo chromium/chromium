@@ -64,7 +64,7 @@ export class IwaDevInstallUpdateManifestTabElement extends
   protected accessor channelOptions_: ComboboxOption[] = [];
 
   override isValid(): boolean {
-    return this.isManifestFetched_;
+    return this.isManifestFetched_ && !this.isFetching_;
   }
 
   override submit() {
@@ -129,6 +129,8 @@ export class IwaDevInstallUpdateManifestTabElement extends
     }
 
     this.isFetching_ = true;
+    this.isManifestFetched_ = false;
+    this.notifyValidChanged();
 
     // Keep the fetching state shown for at least MIN_FETCH_DELAY_MS to give
     // visual feedback.
@@ -142,6 +144,9 @@ export class IwaDevInstallUpdateManifestTabElement extends
       new Promise(resolve => setTimeout(resolve, MIN_FETCH_DELAY_MS)),
     ]);
 
+    if (!this.isConnected) {
+      return;
+    }
     this.onManifestFetched_(result);
   }
 
@@ -155,23 +160,26 @@ export class IwaDevInstallUpdateManifestTabElement extends
   }
 
   protected onInputKeydown_(e: KeyboardEvent) {
-    if (e.key === 'Enter' && !this.isFetching_) {
+    if (e.key === 'Enter' && !this.isFetching_ && !this.disabled) {
+      e.preventDefault();
       this.onFetchClick_();
     }
   }
 
   protected onSelectKeydown_(e: KeyboardEvent) {
-    if (e.key === 'Enter' && this.isManifestFetched_) {
+    if (e.key === 'Enter' && this.isManifestFetched_ && !this.disabled) {
       this.submit();
     }
   }
 
   protected onVersionValueChanged_(e: CustomEvent<{value: string}>) {
     this.selectedVersion_ = e.detail.value;
+    this.notifyValidChanged();
   }
 
   protected onChannelValueChanged_(e: CustomEvent<{value: string}>) {
     this.selectedChannel_ = e.detail.value;
+    this.notifyValidChanged();
   }
 
   private compareVersions_(v1: string, v2: string): number {

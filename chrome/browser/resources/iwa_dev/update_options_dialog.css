@@ -24,10 +24,9 @@
 [slot='body'] {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  min-height: 240px;
+  gap: 16px;
 }
 
-iwa-dev-combobox {
-  --iwa-dev-combobox-margin-bottom: 28px;
+.error-message {
+  margin-top: 0;
 }

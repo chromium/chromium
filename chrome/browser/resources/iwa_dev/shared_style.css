@@ -15,26 +15,21 @@ cr-input {
   --cr-input-width: 100%;
 }
 
+cr-input:not([invalid]) {
+  --cr-input-error-display: none;
+}
+
 .error-message {
   color: var(--google-red-700);
   font-size: 0.85rem;
   margin-top: 16px;
+  text-align: start;
 }
 
 @media (prefers-color-scheme: dark) {
   .error-message {
     color: var(--google-red-300);
   }
-}
-
-.placeholder-message {
-  align-items: center;
-  color: var(--cr-secondary-text-color);
-  display: flex;
-  font-size: 0.85rem;
-  justify-content: center;
-  min-height: 60px;
-  text-align: center;
 }
 
 .dropdown-container {

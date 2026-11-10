@@ -46,6 +46,11 @@ export class IwaDevInstallDevProxyTabElement extends IwaDevInstallTabElement {
     this.fire('request-install-from-dev-proxy', {url: this.url_});
   }
 
+  override handleInstallationError(error: string): boolean {
+    this.urlError_ = error;
+    return true;
+  }
+
   protected onUrlValueChanged_(e: CustomEvent<{value: string}>) {
     this.url_ = e.detail.value;
     this.urlError_ = '';
@@ -56,10 +61,12 @@ export class IwaDevInstallDevProxyTabElement extends IwaDevInstallTabElement {
     if (e.key === 'Tab' && !this.url_) {
       e.preventDefault();
       this.url_ = PLACEHOLDER_URL;
+      this.urlError_ = '';
       this.notifyValidChanged();
       return;
     }
     if (e.key === 'Enter' && this.isValid()) {
+      e.preventDefault();
       this.submit();
     }
   }

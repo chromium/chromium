@@ -33,4 +33,13 @@ export abstract class IwaDevInstallTabElement extends CrLitElement {
    * valid.
    */
   abstract submit(): void;
+
+  /**
+   * Handles an installation error inline if supported by the tab. Returns
+   * true if the tab handled the error, or false to fall back to the
+   * dialog-level error message.
+   */
+  handleInstallationError(_error: string): boolean {
+    return false;
+  }
 }

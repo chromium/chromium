@@ -84,7 +84,9 @@ export class IwaDevInstallDialogElement extends CrLitElement {
   onInstallationFinished(error?: string|null) {
     this.isInstalling_ = false;
     if (error) {
-      this.installationError_ = error;
+      if (!this.activeTab_?.handleInstallationError(error)) {
+        this.installationError_ = error;
+      }
     } else {
       this.closeDialog();
     }
@@ -119,7 +121,7 @@ export class IwaDevInstallDialogElement extends CrLitElement {
 
   private get activeTab_(): IwaDevInstallTabElement|null {
     return this.shadowRoot?.querySelector<IwaDevInstallTabElement>(
-               '.tab-content > *') ??
+               '.tab-content > :not(.error-message)') ??
         null;
   }
 
@@ -129,7 +131,7 @@ export class IwaDevInstallDialogElement extends CrLitElement {
   }
 
   protected onSelectedChanged_(e: CustomEvent<{value: number}>) {
-    if (this.isInstalling_) {
+    if (this.isInstalling_ || this.selectedTab_ === e.detail.value) {
       return;
     }
     this.selectedTab_ = e.detail.value;

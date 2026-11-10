@@ -46,6 +46,12 @@ suite('<iwa-dev-install-dialog>', () => {
   });
 
   test('displays error message on installation failure', async () => {
+    const tabs = dialog.shadowRoot.querySelector('cr-tabs')!;
+    tabs.selected = TabIndex.LOCAL_BUNDLE;
+    tabs.dispatchEvent(new CustomEvent(
+        'selected-changed', {detail: {value: TabIndex.LOCAL_BUNDLE}}));
+    await microtasksFinished();
+
     dialog.startInstallation();
     await microtasksFinished();
 
@@ -178,9 +184,10 @@ suite('<iwa-dev-install-dialog>', () => {
       dialog.onInstallationFinished(errorMessage);
       await microtasksFinished();
 
-      let errorDiv =
-          dialog.shadowRoot.querySelector<HTMLElement>('.error-message');
-      assertTrue(!!errorDiv);
+      assertTrue(input.invalid);
+      assertEquals(errorMessage, input.errorMessage);
+      assertFalse(
+          !!dialog.shadowRoot.querySelector<HTMLElement>('.error-message'));
 
       const newUrl = 'http://localhost:8080';
       input.value = newUrl;
@@ -188,9 +195,75 @@ suite('<iwa-dev-install-dialog>', () => {
           new CustomEvent('value-changed', {detail: {value: newUrl}}));
       await microtasksFinished();
 
-      errorDiv = dialog.shadowRoot.querySelector<HTMLElement>('.error-message');
-      assertFalse(!!errorDiv);
+      assertFalse(input.invalid);
+      assertEquals('', input.errorMessage);
     });
+
+    test(
+        'resets url and error state when switching tabs or reopening dialog',
+        async () => {
+          const invalidUrl = 'invalid-url';
+          input.value = invalidUrl;
+          input.dispatchEvent(
+              new CustomEvent('value-changed', {detail: {value: invalidUrl}}));
+          await microtasksFinished();
+
+          installButton.click();
+          await microtasksFinished();
+
+          assertTrue(input.invalid);
+          assertEquals('Please enter a valid URL.', input.errorMessage);
+          assertFalse(installButton.disabled);
+
+          // Switch to another tab and verify the tab unmounts.
+          const tabs = dialog.shadowRoot.querySelector('cr-tabs')!;
+          tabs.selected = TabIndex.LOCAL_BUNDLE;
+          tabs.dispatchEvent(new CustomEvent(
+              'selected-changed', {detail: {value: TabIndex.LOCAL_BUNDLE}}));
+          await microtasksFinished();
+
+          assertFalse(!!dialog.shadowRoot.querySelector(
+              'iwa-dev-install-dev-proxy-tab'));
+
+          // Switch back to Dev Proxy tab and verify fresh state.
+          tabs.selected = TabIndex.DEV_PROXY;
+          tabs.dispatchEvent(new CustomEvent(
+              'selected-changed', {detail: {value: TabIndex.DEV_PROXY}}));
+          await microtasksFinished();
+
+          proxyTab =
+              dialog.shadowRoot.querySelector('iwa-dev-install-dev-proxy-tab')!;
+          input =
+              proxyTab.shadowRoot!.querySelector<CrInputElement>('cr-input')!;
+          assertEquals('', input.value);
+          assertFalse(input.invalid);
+          assertTrue(installButton.disabled);
+
+          // Populate again, then close and reopen the dialog.
+          input.value = invalidUrl;
+          input.dispatchEvent(
+              new CustomEvent('value-changed', {detail: {value: invalidUrl}}));
+          await microtasksFinished();
+          installButton.click();
+          await microtasksFinished();
+          assertTrue(input.invalid);
+
+          cancelButton.click();
+          await microtasksFinished();
+          assertFalse(!!dialog.shadowRoot.querySelector(
+              'iwa-dev-install-dev-proxy-tab'));
+
+          dialog.showDialog();
+          await microtasksFinished();
+
+          proxyTab =
+              dialog.shadowRoot.querySelector('iwa-dev-install-dev-proxy-tab')!;
+          input =
+              proxyTab.shadowRoot!.querySelector<CrInputElement>('cr-input')!;
+          assertEquals('', input.value);
+          assertFalse(input.invalid);
+          assertTrue(installButton.disabled);
+        });
   });
 
   suite('Signed Bundle Tab', () => {
@@ -633,8 +706,11 @@ suite('<iwa-dev-install-dialog>', () => {
       return fetchEventResult;
     }
 
-    test('disables install button initially', () => {
+    test('disables install button and hides details initially', () => {
       assertTrue(installButton.disabled);
+      assertFalse(!!manifestTab.shadowRoot!.querySelector('#details'));
+      assertFalse(
+          !!manifestTab.shadowRoot!.querySelector('.placeholder-message'));
     });
 
     test(
@@ -1064,6 +1140,195 @@ suite('<iwa-dev-install-dialog>', () => {
           assertEquals(
               'http://localhost/app1.swbn', installEvent.detail.webBundleUrl);
           assertEquals('beta', installEvent.detail.updateInfo.updateChannel);
+        });
+
+    test(
+        'resets fetched state and url when switching tabs or closing dialog',
+        async () => {
+          await fetchUpdateManifest('http://localhost:8080/manifest.json', {
+            success: {
+              versions: [{
+                version: '1.0.0',
+                src: 'http://localhost/app.swbn',
+                channels: ['stable'],
+              }],
+              channels: [{channel: 'stable', displayName: 'Stable'}],
+            },
+          });
+
+          assertTrue(!!manifestTab.shadowRoot!.querySelector('#details'));
+          assertFalse(installButton.disabled);
+
+          // Closing the dialog unmounts the active tab.
+          cancelButton.click();
+          await microtasksFinished();
+
+          assertFalse(!!dialog.shadowRoot.querySelector(
+              'iwa-dev-install-update-manifest-tab'));
+
+          // Reopen dialog, navigate to Update Manifest tab, and verify fresh
+          // state.
+          dialog.showDialog();
+          await microtasksFinished();
+
+          const tabs = dialog.shadowRoot.querySelector('cr-tabs')!;
+          tabs.selected = TabIndex.UPDATE_MANIFEST;
+          tabs.dispatchEvent(new CustomEvent(
+              'selected-changed', {detail: {value: TabIndex.UPDATE_MANIFEST}}));
+          await microtasksFinished();
+
+          manifestTab = dialog.shadowRoot.querySelector(
+              'iwa-dev-install-update-manifest-tab')!;
+          input = manifestTab.shadowRoot!.querySelector<CrInputElement>(
+              'cr-input')!;
+          fetchButton = manifestTab.shadowRoot!.querySelector<HTMLElement>(
+              '#fetchButton')!;
+
+          assertEquals('', input.value);
+          assertFalse(input.invalid);
+          assertFalse(!!manifestTab.shadowRoot!.querySelector('#details'));
+          assertFalse(
+              !!manifestTab.shadowRoot!.querySelector('#fetchSuccessMessage'));
+          assertTrue(installButton.disabled);
+
+          await fetchUpdateManifest('http://localhost:8080/manifest.json', {
+            success: {
+              versions: [{
+                version: '1.0.0',
+                src: 'http://localhost/app.swbn',
+                channels: ['stable'],
+              }],
+              channels: [{channel: 'stable', displayName: 'Stable'}],
+            },
+          });
+
+          assertTrue(!!manifestTab.shadowRoot!.querySelector('#details'));
+          assertFalse(installButton.disabled);
+
+          tabs.selected = TabIndex.DEV_PROXY;
+          tabs.dispatchEvent(new CustomEvent(
+              'selected-changed', {detail: {value: TabIndex.DEV_PROXY}}));
+          await microtasksFinished();
+
+          assertFalse(!!dialog.shadowRoot.querySelector(
+              'iwa-dev-install-update-manifest-tab'));
+          assertTrue(installButton.disabled);
+
+          tabs.selected = TabIndex.UPDATE_MANIFEST;
+          tabs.dispatchEvent(new CustomEvent(
+              'selected-changed', {detail: {value: TabIndex.UPDATE_MANIFEST}}));
+          await microtasksFinished();
+
+          manifestTab = dialog.shadowRoot.querySelector(
+              'iwa-dev-install-update-manifest-tab')!;
+          input = manifestTab.shadowRoot!.querySelector<CrInputElement>(
+              'cr-input')!;
+          assertEquals('', input.value);
+          assertFalse(!!manifestTab.shadowRoot!.querySelector('#details'));
+          assertTrue(installButton.disabled);
+        });
+
+    test(
+        'ignores in-flight manifest fetch result if unmounted while fetching',
+        async () => {
+          const fetchEventPromise =
+              eventToPromise('request-parse-update-manifest-from-url', dialog);
+
+          const validUrl = 'http://localhost:8080/manifest.json';
+          input.value = validUrl;
+          input.dispatchEvent(
+              new CustomEvent('value-changed', {detail: {value: validUrl}}));
+          await microtasksFinished();
+
+          fetchButton.click();
+          const fetchEventResult =
+              await fetchEventPromise as CustomEvent<{
+                url: string,
+                callback: (
+                    result: {success?: UpdateManifest, error?: string}) => void,
+              }>;
+          await microtasksFinished();
+
+          assertTrue(input.disabled);
+
+          // Close the dialog while the fetch is still in flight.
+          cancelButton.click();
+          await microtasksFinished();
+
+          assertFalse(manifestTab.isConnected);
+
+          // Now resolve the stale fetch callback and wait for
+          // MIN_FETCH_DELAY_MS.
+          fetchEventResult.detail.callback({
+            success: {
+              versions: [{
+                version: '1.0.0',
+                src: 'http://localhost/app.swbn',
+                channels: ['stable'],
+              }],
+              channels: [{channel: 'stable', displayName: 'Stable'}],
+            },
+          });
+          await new Promise(
+              resolve => setTimeout(resolve, MIN_FETCH_DELAY_MS + 10));
+          await microtasksFinished();
+
+          // Stale result must not populate details or enable install button.
+          assertFalse(!!manifestTab.shadowRoot!.querySelector('#details'));
+          assertFalse(
+              !!manifestTab.shadowRoot!.querySelector('#fetchSuccessMessage'));
+          assertTrue(installButton.disabled);
+        });
+
+    test(
+        'displays dialog error on post-fetch bundle install failure and ' +
+            'clears on selection change',
+        async () => {
+          await fetchUpdateManifest('http://localhost:8080/manifest.json', {
+            success: {
+              versions: [
+                {
+                  version: '1.0.0',
+                  src: 'http://localhost/app1.swbn',
+                  channels: ['stable'],
+                },
+                {
+                  version: '2.0.0',
+                  src: 'http://localhost/app2.swbn',
+                  channels: ['stable'],
+                },
+              ],
+              channels: [{channel: 'stable', displayName: 'Stable'}],
+            },
+          });
+
+          dialog.startInstallation();
+          await microtasksFinished();
+
+          assertTrue(input.disabled);
+          assertTrue(fetchButton.hasAttribute('disabled'));
+
+          const errorMessage = 'Failed to download web bundle.';
+          dialog.onInstallationFinished(errorMessage);
+          await microtasksFinished();
+
+          assertFalse(input.disabled);
+          assertFalse(input.invalid);
+          const errorDiv =
+              dialog.shadowRoot.querySelector<HTMLElement>('.error-message');
+          assertTrue(!!errorDiv);
+          assertEquals(errorMessage, errorDiv.textContent?.trim());
+
+          // Changing selected version clears the installation error.
+          const versionSelect =
+              manifestTab.shadowRoot!.querySelector<IwaDevComboboxElement>(
+                  '#versionSelect')!;
+          versionSelect.dispatchEvent(
+              new CustomEvent('value-changed', {detail: {value: '1.0.0'}}));
+          await microtasksFinished();
+
+          assertFalse(
+              !!dialog.shadowRoot.querySelector<HTMLElement>('.error-message'));
         });
   });
 });
