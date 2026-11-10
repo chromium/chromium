@@ -164,7 +164,7 @@ class TabGroupsApiBrowserTest : public ExtensionBrowserTest {
     auto observer =
         std::make_unique<tab_groups::TabGroupSyncServiceInitializedObserver>(
             tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile()));
-    observer->Wait();
+    ASSERT_TRUE(observer->Wait());
 #endif
   }
   void TearDownOnMainThread() override {

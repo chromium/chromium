@@ -290,6 +290,7 @@ source_set("browser_tests") {
 }
 
 source_set("test_support") {
+  testonly = true
   sources = [
     "tab_group_sync_service_initialized_observer.cc",
     "tab_group_sync_service_initialized_observer.h",
@@ -298,4 +299,5 @@ source_set("test_support") {
     "//base",
     "//components/saved_tab_groups/public",
   ]
+  deps = [ "//base/test:test_support" ]
 }

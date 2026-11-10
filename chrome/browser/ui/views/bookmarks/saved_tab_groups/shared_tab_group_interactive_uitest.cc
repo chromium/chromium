@@ -68,7 +68,7 @@ class SharedTabGroupInteractiveUiTest
     TabStripInteractiveTestMixin<InteractiveBrowserTest>::SetUpOnMainThread();
     TabGroupSyncServiceInitializedObserver initialized_observer(
         TabGroupSyncServiceFactory::GetForProfile(browser()->GetProfile()));
-    initialized_observer.Wait();
+    ASSERT_TRUE(initialized_observer.Wait());
   }
 
   MultiStep ShowBookmarksBar() {

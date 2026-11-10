@@ -326,7 +326,7 @@ class TabSearchPageHandlerTest : public InProcessBrowserTest,
     auto observer_1 =
         std::make_unique<tab_groups::TabGroupSyncServiceInitializedObserver>(
             tab_group_service_1);
-    observer_1->Wait();
+    ASSERT_TRUE(observer_1->Wait());
 
 #if !BUILDFLAG(IS_CHROMEOS)
     tab_groups::TabGroupSyncService* tab_group_service_2 =
@@ -334,7 +334,7 @@ class TabSearchPageHandlerTest : public InProcessBrowserTest,
     auto observer_2 =
         std::make_unique<tab_groups::TabGroupSyncServiceInitializedObserver>(
             tab_group_service_2);
-    observer_2->Wait();
+    ASSERT_TRUE(observer_2->Wait());
 #endif
   }
 

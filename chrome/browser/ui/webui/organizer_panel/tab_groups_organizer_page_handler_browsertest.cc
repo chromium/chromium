@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -171,6 +172,14 @@ class TabGroupsOrganizerPageHandlerBrowserTest : public InProcessBrowserTest {
   tab_groups::TabGroupSyncService* sync_service() {
     return tab_groups::TabGroupSyncServiceFactory::GetForProfile(
         browser()->GetProfile());
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    if (tab_groups::TabGroupSyncService* service = sync_service()) {
+      tab_groups::TabGroupSyncServiceInitializedObserver observer(service);
+      ASSERT_TRUE(observer.Wait());
+    }
   }
 
  private:

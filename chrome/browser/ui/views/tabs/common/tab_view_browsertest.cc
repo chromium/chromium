@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -49,6 +50,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/data_sharing/public/features.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/tabs/public/tab_alert.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -63,7 +65,6 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_test_api.h"
 #include "ui/events/base_event_utils.h"
-#include "ui/events/test/event_generator.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/favicon_size.h"
@@ -1271,6 +1272,16 @@ class TabViewDataSharingEnabledTest : public TabViewTest {
     return enabled;
   }
 
+  void SetUpOnMainThread() override {
+    TabViewTest::SetUpOnMainThread();
+    if (tab_groups::TabGroupSyncService* service =
+            tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+                browser()->GetProfile())) {
+      tab_groups::TabGroupSyncServiceInitializedObserver observer(service);
+      ASSERT_TRUE(observer.Wait());
+    }
+  }
+
  private:
   // Disable animations so that tabs can be immediately clicked after being
   // added to a group.
@@ -1307,7 +1318,8 @@ IN_PROC_BROWSER_TEST_P(TabViewDataSharingEnabledTest, LogsTabSwitchMetrics) {
       unpinned_collection_node()
           ->GetChildNodeOfType(TabCollectionNode::Type::GROUP)
           ->GetNodeForHandle(tab->GetHandle());
-  TabView* tab_view = views::AsViewClass<TabView>(tab_node->view());
+  views::View* tab_view = tab_node->view();
+  ASSERT_TRUE(views::IsViewClass<TabView>(tab_view));
 
   // Ensure that the group is a saved tab group.
   tab_groups::TabGroupSyncService* tab_group_service =
@@ -1324,12 +1336,16 @@ IN_PROC_BROWSER_TEST_P(TabViewDataSharingEnabledTest, LogsTabSwitchMetrics) {
                    "TabGroups.Shared.SwitchGroupedTab"));
   ASSERT_EQ(0, user_action_tester.GetActionCount("SwitchTab_Click"));
 
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  ui::test::EventGenerator event_generator(
-      views::GetRootWindow(browser_view->GetWidget()),
-      browser_view->GetNativeWindow());
-  event_generator.MoveMouseTo(tab_view->GetBoundsInScreen().CenterPoint());
-  event_generator.ClickLeftButton();
+  ui::MouseEvent press_event(ui::EventType::kMousePressed, gfx::Point(0, 0),
+                             gfx::Point(0, 0), ui::EventTimeForNow(),
+                             ui::EF_LEFT_MOUSE_BUTTON,
+                             ui::EF_LEFT_MOUSE_BUTTON);
+  tab_view->OnMousePressed(press_event);
+  ui::MouseEvent release_event(ui::EventType::kMouseReleased, gfx::Point(0, 0),
+                               gfx::Point(0, 0), ui::EventTimeForNow(),
+                               ui::EF_LEFT_MOUSE_BUTTON,
+                               ui::EF_LEFT_MOUSE_BUTTON);
+  tab_view->OnMouseReleased(release_event);
 
   EXPECT_EQ(0, tab_strip_model()->active_index());
   histogram_tester.ExpectBucketCount("TabStrip.Tab.Views.ActivationAction",

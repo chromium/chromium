@@ -4,12 +4,14 @@
 
 #include <memory>
 
+#include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_tab_state.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -116,6 +118,10 @@ class TabGroupSyncNavigationIntegrationTest : public InProcessBrowserTest {
     host_resolver()->AddRule("example.com", "127.0.0.1");
     ASSERT_TRUE(embedded_https_test_server().Start());
     InProcessBrowserTest::SetUpOnMainThread();
+    if (TabGroupSyncService* sync_service = service()) {
+      TabGroupSyncServiceInitializedObserver observer(sync_service);
+      ASSERT_TRUE(observer.Wait());
+    }
   }
 
   void SetupSyncBridgeModelObserver() {

@@ -185,7 +185,7 @@ class TabListBridgeBrowserTest : public InProcessBrowserTest {
         std::make_unique<tab_groups::TabGroupSyncServiceInitializedObserver>(
             tab_groups::TabGroupSyncServiceFactory::GetForProfile(
                 GetProfile()));
-    observer->Wait();
+    ASSERT_TRUE(observer->Wait());
   }
 };
 

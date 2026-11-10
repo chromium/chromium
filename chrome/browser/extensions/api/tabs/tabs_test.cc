@@ -1843,7 +1843,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardSavedTabGroupTabAllowed) {
 #if !BUILDFLAG(IS_ANDROID)
   tab_groups::TabGroupSyncServiceInitializedObserver sync_observer(
       saved_service);
-  sync_observer.Wait();
+  ASSERT_TRUE(sync_observer.Wait());
 #endif
 
   // Activate the first tab since the second one will be discarded and active
@@ -2854,7 +2854,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsUpdate_SavedTabGroupTab) {
   // changes to tab groups. This is not used on Android.
 #if !BUILDFLAG(IS_ANDROID)
   tab_groups::TabGroupSyncServiceInitializedObserver observer(saved_service);
-  observer.Wait();
+  ASSERT_TRUE(observer.Wait());
 #endif
 
   // Group the tab and save it.
@@ -4125,7 +4125,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsMoveSavedTabGroupTabAllowed) {
   // changes to tab groups. This is not used on Android.
 #if !BUILDFLAG(IS_ANDROID)
   tab_groups::TabGroupSyncServiceInitializedObserver observer(saved_service);
-  observer.Wait();
+  ASSERT_TRUE(observer.Wait());
 #endif
 
   // Group the tab and save it.
@@ -4317,7 +4317,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsGroupForSavedTabGroupTab) {
 
 #if !BUILDFLAG(IS_ANDROID)
   tab_groups::TabGroupSyncServiceInitializedObserver observer(saved_service);
-  observer.Wait();
+  ASSERT_TRUE(observer.Wait());
 #endif
 
   // Group the first tab.
@@ -4395,7 +4395,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
 
 #if !BUILDFLAG(IS_ANDROID)
   tab_groups::TabGroupSyncServiceInitializedObserver observer(saved_service);
-  observer.Wait();
+  ASSERT_TRUE(observer.Wait());
 #endif
 
   // Group the tab and save it.
@@ -4565,7 +4565,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
 #if !BUILDFLAG(IS_ANDROID)
   tab_groups::TabGroupSyncServiceInitializedObserver sync_observer(
       saved_service);
-  sync_observer.Wait();
+  ASSERT_TRUE(sync_observer.Wait());
 #endif
 
   // Save the tab and expect that it cannot be navigated forwards or backwards.
@@ -4872,7 +4872,7 @@ IN_PROC_BROWSER_TEST_F(
 #if !BUILDFLAG(IS_ANDROID)
   tab_groups::TabGroupSyncServiceInitializedObserver sync_observer(
       saved_service);
-  sync_observer.Wait();
+  ASSERT_TRUE(sync_observer.Wait());
 #endif
 
   // Group the tab and save it.

@@ -1749,7 +1749,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
   tab_groups::TabGroupSyncServiceInitializedObserver observer(
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(
           browser()->GetProfile()));
-  observer.Wait();
+  ASSERT_TRUE(observer.Wait());
 
   EXPECT_TRUE(command_controller->IsCommandEnabled(IDC_GROUP_UNGROUPED_TABS));
 

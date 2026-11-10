@@ -77,7 +77,7 @@ class BrowserCommandsCoreTest : public InProcessBrowserTest {
         std::make_unique<tab_groups::TabGroupSyncServiceInitializedObserver>(
             tab_groups::TabGroupSyncServiceFactory::GetForProfile(
                 browser()->GetProfile()));
-    observer->Wait();
+    ASSERT_TRUE(observer->Wait());
   }
 
   void AddTab(BrowserWindowInterface* browser, const GURL& url) {

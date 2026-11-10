@@ -217,6 +217,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/animation",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_menu",
+    "//chrome/browser/ui/tabs/saved_tab_groups:test_support",
     "//chrome/browser/ui/tabs/tab_strip_api",
     "//chrome/browser/ui/views/animations",
     "//chrome/browser/ui/views/frame:base_tab_strip_region_view",

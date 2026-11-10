@@ -68,7 +68,7 @@ class BrowserTabStripControllerTestBase : public InProcessBrowserTest {
     // Make the observer
     tab_groups::TabGroupSyncServiceInitializedObserver tgss_observer{
         tgss_service};
-    tgss_observer.Wait();
+    ASSERT_TRUE(tgss_observer.Wait());
   }
 
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
