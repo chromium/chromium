@@ -2143,9 +2143,14 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
       // EarlGrey tap on the window also intermittently failed to dismiss the
       // popover, so tap through XCUITest outside of the popover instead.
       // `-closeActivitySheet` is not used, because it taps the center of the
-      // dismiss region, which may also be covered by the popover.
+      // dismiss region, which may also be covered by the popover. The first
+      // matching dismiss region may belong to another presentation and extend
+      // beyond the screen (e.g. the form sheet dimming view in Recent Tabs on
+      // iPad), so only its on-screen part is considered.
+      CGRect visibleRegion =
+          CGRectIntersection(dismissRegion.frame, application.frame);
       CGPoint tapPoint =
-          PointInRegionOutsideOfRect(dismissRegion.frame, shareSheet.frame);
+          PointInRegionOutsideOfRect(visibleRegion, shareSheet.frame);
       XCUICoordinate* screenOrigin =
           [application coordinateWithNormalizedOffset:CGVectorMake(0, 0)];
       [[screenOrigin coordinateWithOffset:CGVectorMake(tapPoint.x, tapPoint.y)]

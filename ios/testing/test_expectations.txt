@@ -539,9 +539,6 @@ crbug.com/582335504 QuickDeleteOtherDataTestCase/testPasswordsAndPasskeysCellRed
 crbug.com/441761691 [ iOS27 Simulator ] ContextMenuTestCase/testOpenLinkInNewWindow [ Skip ]
 crbug.com/441761691 [ iOS27 Simulator ] ContextMenuTestCase/testOpenIncognitoLinkInNewWindow [ Skip ]
 
-# Gardening suppression 2026-11-06
-crbug.com/582739898 [ iOS27 iPad Simulator ] RecentTabsTestCase/testContextMenuRepeatedShare [ Skip ]
-
 # Gardening suppression 2026-11-09
 # The following tests crash the app. Skip is used until the fix is merged to handle crashes gracefully.
 crbug.com/583785828 GeminiFirstRunTestCase/testAcceptPromoAndConsent [ Skip ]
