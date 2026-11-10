@@ -99,13 +99,24 @@ bool ValidatePseudoElement(String& pseudo, ExceptionState& exception_state) {
       // platforms, though handled inconsistently. Failure to animate
       // ::placeholder seems like a bug rather than a technical limitation.
 
-    default:
+    default: {
       // Convert to canonical form.
       if (!pseudo.starts_with("::")) {
         pseudo = StrCat({":", pseudo});
       }
-      pseudo = pseudo.ToAsciiLower();
+      // Pseudo-element names are ASCII case-insensitive, but functional
+      // pseudo-element arguments (such as <custom-ident> view-transition-name
+      // or highlight-name) are case-sensitive. Only lowercase the
+      // pseudo-element name prior to any '(' token.
+      wtf_size_t paren_index = pseudo.find('(');
+      if (paren_index == kNotFound) {
+        pseudo = pseudo.ToAsciiLower();
+      } else {
+        pseudo = StrCat({pseudo.substr(0, paren_index).ToAsciiLower(),
+                         pseudo.subview(paren_index)});
+      }
       return true;
+    }
   }
 }
 
