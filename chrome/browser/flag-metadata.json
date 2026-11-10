@@ -9716,7 +9716,7 @@
   {
     "name" : "toolbar-phone-animation-refactor",
     "owners": [ "skavuluru@google.com", "nemco@google.com", "clank-large-form-factors@google.com" ],
-    "expiry_milestone" : 160
+    "expiry_milestone" : 180
   },
   {
     "name": "toolbar-progress-bar-refactor",
