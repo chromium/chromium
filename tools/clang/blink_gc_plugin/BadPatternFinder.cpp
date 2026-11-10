@@ -243,9 +243,12 @@ class OptionalOrRawPtrOrVariantToGCedMatcher
 
 class CollectionOfGarbageCollectedMatcher : public MatchFinder::MatchCallback {
  public:
-  explicit CollectionOfGarbageCollectedMatcher(DiagnosticsReporter& diagnostics,
-                                               RecordCache& record_cache)
-      : diagnostics_(diagnostics), record_cache_(record_cache) {}
+  CollectionOfGarbageCollectedMatcher(DiagnosticsReporter& diagnostics,
+                                      RecordCache& record_cache,
+                                      const BlinkGCPluginOptions& options)
+      : diagnostics_(diagnostics),
+        record_cache_(record_cache),
+        options_(options) {}
 
   void Register(MatchFinder& match_finder, bool check_stack_allocated) {
     auto gced_ptr_or_ref =
@@ -313,6 +316,11 @@ class CollectionOfGarbageCollectedMatcher : public MatchFinder::MatchCallback {
       if (Config::IsIgnoreAnnotated(bad_decl)) {
         return;
       }
+      if (!options_.enable_off_heap_collections_of_gced_check &&
+          !IsOnStack(bad_decl, record_cache_)) {
+        assert(options_.enable_off_heap_collections_of_gced_on_stack_check);
+        return;
+      }
       if (collection->getNameAsString() == "array") {
         if (member || stack_allocated) {
           // std::array of Members or stack-allocated types is fine as long as
@@ -340,6 +348,10 @@ class CollectionOfGarbageCollectedMatcher : public MatchFinder::MatchCallback {
         }
       }
     } else {
+      if (!options_.enable_off_heap_collections_of_gced_check) {
+        assert(options_.enable_off_heap_collections_of_gced_on_stack_check);
+        return;
+      }
       auto* bad_new = result.Nodes.getNodeAs<clang::Expr>("bad_new");
       assert(bad_new);
       if (gc_type) {
@@ -357,6 +369,7 @@ class CollectionOfGarbageCollectedMatcher : public MatchFinder::MatchCallback {
  private:
   DiagnosticsReporter& diagnostics_;
   RecordCache& record_cache_;
+  const BlinkGCPluginOptions& options_;
 };
 
 class MemberOnStackMatcher : public MatchFinder::MatchCallback {
@@ -620,8 +633,9 @@ void FindBadPatterns(clang::ASTContext& ast_context,
   optional_or_rawptr_or_variant_gc.Register(match_finder);
 
   CollectionOfGarbageCollectedMatcher collection_of_gc(diagnostics,
-                                                       record_cache);
-  if (options.enable_off_heap_collections_of_gced_check) {
+                                                       record_cache, options);
+  if (options.enable_off_heap_collections_of_gced_check ||
+      options.enable_off_heap_collections_of_gced_on_stack_check) {
     collection_of_gc.Register(
         match_finder,
         options.enable_off_heap_collections_of_stack_allocated_check);

@@ -50,6 +50,9 @@ struct BlinkGCPluginOptions {
   // GCed objects and in stl and WTF collections. Do not remove this flag. It is
   // needed for disabling the check for Pdfium builds.
   bool enable_off_heap_collections_of_gced_check = true;
+  // Overrides |enable_off_heap_collections_of_gced_check| when disabled and
+  // enables the check specifically for on-stack collections.
+  bool enable_off_heap_collections_of_gced_on_stack_check = false;
 
   // Enables checks for STACK_ALLOCATED() objects in STL collections.
   // TODO(crbug.com/350256130): Enable by default once rolled out in BUILD.gn.

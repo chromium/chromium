@@ -1,0 +1,109 @@
+off-heap-collections-on-stack.cpp:101:3: warning: [blink-gc] Disallowed collection 'vector<blink::Base>' found; 'Base' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  std::vector<Base> vector_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-on-stack.cpp:102:3: warning: [blink-gc] Disallowed collection 'Vector<blink::Derived *>' found; 'Derived' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  Vector<Derived*> wtf_vector_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-on-stack.cpp:103:3: warning: [blink-gc] Disallowed collection 'vector<cppgc::internal::BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>>' found; 'BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>' is a Member type. Use heap collections to hold Members.
+  std::vector<Member<Base>> member_vector_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-on-stack.cpp:104:3: warning: [blink-gc] Disallowed collection 'Vector<cppgc::internal::BasicMember<blink::Base, cppgc::internal::WeakMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>>' found; 'BasicMember<blink::Base, cppgc::internal::WeakMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>' is a Member type. Use heap collections to hold Members.
+  Vector<WeakMember<Base>> wtf_member_vector_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-on-stack.cpp:105:3: warning: [blink-gc] Disallowed collection 'array<blink::Base, 4>' found; 'Base' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  std::array<Base, 4> array_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-on-stack.cpp:115:3: warning: [blink-gc] Disallowed collection 'set<blink::Base>' found; 'Base' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  std::set<Base> set;
+  ^~~~~~~~~~~~~~~~~~
+off-heap-collections-on-stack.cpp:117:3: warning: [blink-gc] Disallowed collection 'vector<blink::Derived>' found; 'Derived' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  std::vector<Derived> vector;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-on-stack.cpp:119:3: warning: [blink-gc] Disallowed collection 'map<blink::Mixin, int>' found; 'Mixin' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  std::map<Mixin, int> map_key;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-on-stack.cpp:121:3: warning: [blink-gc] Disallowed collection 'unordered_map<int, blink::Base>' found; 'Base' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  std::unordered_map<int, Base> map_value;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-on-stack.cpp:123:3: warning: [blink-gc] Disallowed collection 'unordered_set<blink::Base *>' found; 'Base' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  std::unordered_set<Base*> set_ptr;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-on-stack.cpp:125:3: warning: [blink-gc] Disallowed collection 'vector<blink::Derived &>' found; 'Derived' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  std::vector<Derived&> vector_ref;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-on-stack.cpp:127:3: warning: [blink-gc] Disallowed collection 'map<const blink::Mixin, int>' found; 'Mixin' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  std::map<const Mixin, int> map_const;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-on-stack.cpp:129:3: warning: [blink-gc] Disallowed collection 'vector<std::pair<blink::Base, int>>' found; 'Base' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  std::vector<std::pair<Base, int>> vector_pair;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-on-stack.cpp:133:3: warning: [blink-gc] Disallowed collection 'HashSet<blink::Base>' found; 'Base' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  HashSet<Base> wtf_hash_set;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-on-stack.cpp:134:3: warning: [blink-gc] Disallowed collection 'Deque<blink::Derived>' found; 'Derived' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  Deque<Derived> wtf_deque;
+  ^~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-on-stack.cpp:135:3: warning: [blink-gc] Disallowed collection 'Vector<blink::Mixin>' found; 'Mixin' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  Vector<Mixin> wtf_vector;
+  ^~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-on-stack.cpp:136:3: warning: [blink-gc] Disallowed collection 'LinkedHashSet<blink::Base *>' found; 'Base' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  LinkedHashSet<Base*> wtf_linked_hash_set;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-on-stack.cpp:137:3: warning: [blink-gc] Disallowed collection 'HashCountedSet<blink::Derived &>' found; 'Derived' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  HashCountedSet<Derived&> wtf_hash_counted_set;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-on-stack.cpp:138:3: warning: [blink-gc] Disallowed collection 'HashMap<blink::Mixin, bool>' found; 'Mixin' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  HashMap<Mixin, bool> wtf_hash_map_key;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-on-stack.cpp:139:3: warning: [blink-gc] Disallowed collection 'HashMap<double, const blink::Base>' found; 'Base' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  HashMap<double, const Base> wtf_hash_map_value;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-on-stack.cpp:142:3: warning: [blink-gc] Disallowed collection 'set<cppgc::internal::BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>>' found; 'BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>' is a Member type. Use heap collections to hold Members.
+  std::set<Member<Base>> member_set;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-on-stack.cpp:144:3: warning: [blink-gc] Disallowed collection 'vector<cppgc::internal::BasicMember<blink::Base, cppgc::internal::WeakMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>>' found; 'BasicMember<blink::Base, cppgc::internal::WeakMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>' is a Member type. Use heap collections to hold Members.
+  std::vector<WeakMember<Base>> member_vector;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-on-stack.cpp:146:3: warning: [blink-gc] Disallowed collection 'map<cppgc::internal::BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>, int>' found; 'BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>' is a Member type. Use heap collections to hold Members.
+  std::map<Member<Base>, int> member_map_key;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-on-stack.cpp:148:3: warning: [blink-gc] Disallowed collection 'unordered_map<int, cppgc::internal::BasicMember<blink::Base, cppgc::internal::WeakMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>>' found; 'BasicMember<blink::Base, cppgc::internal::WeakMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>' is a Member type. Use heap collections to hold Members.
+  std::unordered_map<int, WeakMember<Base>> member_map_value;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-on-stack.cpp:150:3: warning: [blink-gc] Disallowed collection 'unordered_set<cppgc::internal::BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl> *>' found; 'BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>' is a Member type. Use heap collections to hold Members.
+  std::unordered_set<Member<Base>*> member_set_ptr;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-on-stack.cpp:152:3: warning: [blink-gc] Disallowed collection 'vector<cppgc::internal::BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl> &>' found; 'BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>' is a Member type. Use heap collections to hold Members.
+  std::vector<Member<Base>&> member_vector_ref;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-on-stack.cpp:154:3: warning: [blink-gc] Disallowed collection 'map<const cppgc::internal::BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>, int>' found; 'BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>' is a Member type. Use heap collections to hold Members.
+  std::map<const Member<Base>, int> member_map_const;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-on-stack.cpp:156:3: warning: [blink-gc] Disallowed collection 'vector<std::pair<cppgc::internal::BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>, int>>' found; 'BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>' is a Member type. Use heap collections to hold Members.
+  std::vector<std::pair<Member<Base>, int>> member_vector_pair;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-on-stack.cpp:160:3: warning: [blink-gc] Disallowed collection 'HashSet<cppgc::internal::BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>>' found; 'BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>' is a Member type. Use heap collections to hold Members.
+  HashSet<Member<Base>> wtf_member_hash_set;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-on-stack.cpp:161:3: warning: [blink-gc] Disallowed collection 'Deque<cppgc::internal::BasicMember<blink::Base, cppgc::internal::WeakMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>>' found; 'BasicMember<blink::Base, cppgc::internal::WeakMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>' is a Member type. Use heap collections to hold Members.
+  Deque<WeakMember<Base>> wtf_member_deque;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-on-stack.cpp:162:3: warning: [blink-gc] Disallowed collection 'Vector<cppgc::internal::BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>>' found; 'BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>' is a Member type. Use heap collections to hold Members.
+  Vector<Member<Base>> wtf_member_vector;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-on-stack.cpp:163:3: warning: [blink-gc] Disallowed collection 'LinkedHashSet<cppgc::internal::BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl> *>' found; 'BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>' is a Member type. Use heap collections to hold Members.
+  LinkedHashSet<Member<Base>*> wtf_member_linked_hash_set;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-on-stack.cpp:164:3: warning: [blink-gc] Disallowed collection 'HashCountedSet<cppgc::internal::BasicMember<blink::Base, cppgc::internal::WeakMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl> &>' found; 'BasicMember<blink::Base, cppgc::internal::WeakMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>' is a Member type. Use heap collections to hold Members.
+  HashCountedSet<WeakMember<Base>&> wtf_member_hash_counted_set;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-on-stack.cpp:165:3: warning: [blink-gc] Disallowed collection 'HashMap<cppgc::internal::BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>, bool>' found; 'BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>' is a Member type. Use heap collections to hold Members.
+  HashMap<Member<Base>, bool> wtf_member_hash_map_key;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-on-stack.cpp:166:3: warning: [blink-gc] Disallowed collection 'HashMap<double, const cppgc::internal::BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>>' found; 'BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>' is a Member type. Use heap collections to hold Members.
+  HashMap<double, const Member<Base>> wtf_member_hash_map_value;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-on-stack.cpp:180:3: warning: [blink-gc] Disallowed collection 'array<blink::Base, 4>' found; 'Base' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  std::array<Base, 4> array;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~
+36 warnings generated.
