@@ -309,6 +309,13 @@ ContextCacheController* TestContextProvider::CacheController() {
   return cache_controller_.get();
 }
 
+void TestContextProvider::SetCacheControllerTaskRunnerForTesting(
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  cache_controller_ = std::make_unique<ContextCacheController>(
+      support_.get(), std::move(task_runner));
+  cache_controller_->SetLock(GetLock());
+}
+
 base::Lock* TestContextProvider::GetLock() {
   if (!support_locking_)
     return nullptr;
