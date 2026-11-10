@@ -2723,6 +2723,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         insetSupplier.setKeyboardAccessoryInsetSupplier(
                 getManualFillingComponent().getBottomInsetSupplier());
         compositorViewHolder.setApplicationViewportInsetSupplier(insetSupplier);
+        compositorViewHolder.setInsetObserver(getInsetObserver());
 
         compositorViewHolder.setToolbarThemeColorProvider(
                 mRootUiCoordinator.getToolbarThemeColorProvider());

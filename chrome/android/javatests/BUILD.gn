@@ -521,6 +521,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser") {
     "src/org/chromium/chrome/browser/VideoFullscreenOrientationLockChromeTest.java",
     "src/org/chromium/chrome/browser/ViewTransitionPixelTest.java",
     "src/org/chromium/chrome/browser/VirtualKeyboardResizeTest.java",
+    "src/org/chromium/chrome/browser/VirtualKeyboardVisualViewportTest.java",
     "src/org/chromium/chrome/browser/WarmupManagerTest.java",
     "src/org/chromium/chrome/browser/recent_tabs/FakeRecentlyClosedTabManager.java",
     "src/org/chromium/chrome/browser/recent_tabs/RecentTabsPageTest.java",

@@ -372,6 +372,7 @@ BASE_DECLARE_FEATURE(kUserEducationFramework);
 // Only takes effect while kUserEducationFramework is also enabled.
 BASE_DECLARE_FEATURE(kUserEducationInterruptiveCooldownGroup);
 BASE_DECLARE_FEATURE(kVerifyStartupSigninState);
+BASE_DECLARE_FEATURE(kVirtualKeyboardLiveHeightOnceSettled);
 BASE_DECLARE_FEATURE(kVirtualKeyboardResizesContentTransientOvershootFix);
 BASE_DECLARE_FEATURE(kVirtualKeyboardTransientInnerHeightFix);
 // TODO(crbug.com/543076349): When removing this flag, move navigation bar color

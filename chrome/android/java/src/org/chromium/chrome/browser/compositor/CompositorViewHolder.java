@@ -44,6 +44,7 @@ import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsAnimationCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.customview.widget.ExploreByTouchHelper;
@@ -118,6 +119,7 @@ import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.ViewportInsets;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragStateTracker;
+import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
 import org.chromium.ui.resources.AndroidResourceType;
 import org.chromium.ui.resources.ResourceManager;
@@ -268,10 +270,47 @@ public class CompositorViewHolder extends FrameLayout
     // Last viewport height seen by updateWebContentsSize(). Used to determine whether Android
     // layout has already applied a keyboard transition when insets are delivered.
     private @Nullable Integer mLastViewportHeightForWebContentsSizing;
-    // Last stable WebContents height observed while keyboard compensation is inactive in modes
-    // that outset WebContents height. Used to clamp transient oversized innerHeight values while
-    // keyboard insets and Android layout are still catching up.
+    // Last stable WebContents height in modes that outset WebContents height. Used to clamp
+    // transient oversized innerHeight values while keyboard insets and Android layout are still
+    // catching up. This is the last height computed while keyboard compensation was inactive or,
+    // with sVirtualKeyboardLiveHeightOnceSettled, while no keyboard insets animation was running.
     private @Nullable Integer mLastStableOutsetModeWebContentsHeight;
+    private @Nullable InsetObserver mInsetObserver;
+    // The keyboard insets animation that is running, if any, and the view height when it was
+    // prepared. See sVirtualKeyboardLiveHeightOnceSettled.
+    private @Nullable WindowInsetsAnimationCompat mRunningKeyboardAnimation;
+    private int mViewportHeightAtKeyboardAnimationStart;
+    private final InsetObserver.WindowInsetsAnimationListener mKeyboardAnimationListener =
+            new InsetObserver.WindowInsetsAnimationListener() {
+                @Override
+                public void onPrepare(WindowInsetsAnimationCompat animation) {
+                    if (!isImeAnimation(animation)) return;
+                    // Keyboard insets animations aren't expected to overlap. If one ever starts
+                    // before the previous one has ended, follow the newer one: the height is held
+                    // until it ends, and the older one's end is ignored.
+                    if (mRunningKeyboardAnimation == null) {
+                        mViewportHeightAtKeyboardAnimationStart = getViewportSize().y;
+                    }
+                    mRunningKeyboardAnimation = animation;
+                }
+
+                @Override
+                public void onStart(
+                        WindowInsetsAnimationCompat animation,
+                        WindowInsetsAnimationCompat.BoundsCompat bounds) {}
+
+                @Override
+                public void onProgress(
+                        WindowInsetsCompat windowInsetsCompat,
+                        List<WindowInsetsAnimationCompat> runningAnimations) {}
+
+                @Override
+                public void onEnd(WindowInsetsAnimationCompat animation) {
+                    if (animation != mRunningKeyboardAnimation) return;
+                    mRunningKeyboardAnimation = null;
+                    onKeyboardAnimationEnded();
+                }
+            };
     // Stable WebContents height in RESIZES_CONTENT mode while the virtual keyboard is closed.
     private @Nullable Integer mKeyboardClosedStableWebContentsHeight;
     // Stable WebContents height in RESIZES_CONTENT mode while the virtual keyboard is open.
@@ -744,6 +783,17 @@ public class CompositorViewHolder extends FrameLayout
                 .addSyncObserverAndPostIfNonNull(mOnViewportInsetsChanged);
     }
 
+    /**
+     * Sets the {@link InsetObserver} whose insets animations tell when the virtual keyboard has
+     * settled. Does nothing unless sVirtualKeyboardLiveHeightOnceSettled is enabled.
+     */
+    public void setInsetObserver(InsetObserver insetObserver) {
+        assert mInsetObserver == null;
+        if (!isLiveHeightOnceSettledEnabled()) return;
+        mInsetObserver = insetObserver;
+        mInsetObserver.addWindowInsetsAnimationListener(mKeyboardAnimationListener);
+    }
+
     private boolean virtualKeyboardModeOutsetsWebContentsHeight() {
         return mVirtualKeyboardMode == VirtualKeyboardMode.OVERLAYS_CONTENT
                 || mVirtualKeyboardMode == VirtualKeyboardMode.RESIZES_VISUAL;
@@ -802,6 +852,31 @@ public class CompositorViewHolder extends FrameLayout
         deferredUpdate.run();
     }
 
+    private static boolean isLiveHeightOnceSettledEnabled() {
+        return ChromeFeatureList.sVirtualKeyboardTransientInnerHeightFix.isEnabled()
+                && ChromeFeatureList.sVirtualKeyboardLiveHeightOnceSettled.isEnabled();
+    }
+
+    private static boolean isImeAnimation(WindowInsetsAnimationCompat animation) {
+        return (animation.getTypeMask() & WindowInsetsCompat.Type.ime()) != 0;
+    }
+
+    private void onKeyboardAnimationEnded() {
+        if (!isLiveHeightOnceSettledEnabled() || !virtualKeyboardModeOutsetsWebContentsHeight()) {
+            return;
+        }
+
+        // Android lays out the views with the end-state insets before an insets animation starts,
+        // so any view resize caused by the keyboard has happened by now. A keyboard inset that
+        // arrived after that resize is still deferred, waiting for a resize, so apply it. If the
+        // view didn't resize, keep the inset deferred rather than outsetting a view that the
+        // keyboard doesn't shrink.
+        if (getViewportSize().y != mViewportHeightAtKeyboardAnimationStart) {
+            commitDeferredWebContentsHeightInsetAfterLayout();
+        }
+        updateWebContentsSize(getCurrentTab());
+    }
+
     // This method is called when any viewport insets change but is needed to watch for keyboard
     // state changes while fullscreened and is used to simulate a view resize. This is only needed
     // if the page has opted in to keyboard resizes.
@@ -832,6 +907,11 @@ public class CompositorViewHolder extends FrameLayout
         if (mSystemUiFullscreenResizeRunnable != null) {
             assumeNonNull(getHandler()).removeCallbacks(mSystemUiFullscreenResizeRunnable);
         }
+        if (mInsetObserver != null) {
+            mInsetObserver.removeWindowInsetsAnimationListener(mKeyboardAnimationListener);
+            mInsetObserver = null;
+        }
+        mRunningKeyboardAnimation = null;
 
         if (mBrowserControlsManager != null) {
             mBrowserControlsManager.removeObserver(this);
@@ -1291,7 +1371,21 @@ public class CompositorViewHolder extends FrameLayout
             boolean keyboardVisible =
                     KeyboardVisibilityDelegate.getInstance().isKeyboardObscuring(this);
 
-            if (!keyboardCompensationActive
+            if (ChromeFeatureList.sVirtualKeyboardLiveHeightOnceSettled.isEnabled()) {
+                // Once the keyboard has settled, the live height is right: it accounts for
+                // everything the keyboard changes, such as edge-to-edge padding that includes the
+                // navigation bar and browser controls that hide while the keyboard is showing. The
+                // renderer also learns about browser controls changes separately, so the height
+                // must follow them. Only hold the last settled height while a keyboard insets
+                // animation is running, when the keyboard inset and Android layout may be out of
+                // sync. See https://crbug.com/565837684.
+                if (mRunningKeyboardAnimation != null
+                        && mLastStableOutsetModeWebContentsHeight != null) {
+                    webContentsHeight = mLastStableOutsetModeWebContentsHeight;
+                } else {
+                    mLastStableOutsetModeWebContentsHeight = webContentsHeight;
+                }
+            } else if (!keyboardCompensationActive
                     && !keyboardInsetTransitionInProgress
                     && !keyboardVisible) {
                 // Only refresh the baseline once keyboard state has fully settled.
