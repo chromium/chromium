@@ -256,7 +256,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="interstitial.phishing.interaction.from_client_side_detection{SecurityInterstitialSBWithSourceSubtype}"
-    enum="SecurityInterstitialDecision" expires_after="2027-03-02">
+    enum="SecurityInterstitialDecision" expires_after="2027-05-09">
   <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@Google.com</owner>
   <summary>

@@ -49,7 +49,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Wallet.NetworkRequest.{RequestType}.HttpResponseOrErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2027-03-07">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2027-05-09">
   <owner>vizcay@google.com</owner>
   <owner>1p-integrations-autofill@google.com</owner>
   <summary>
@@ -60,7 +60,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Wallet.NetworkRequest.{RequestType}.Latency" units="ms"
-    expires_after="2027-03-07">
+    expires_after="2027-05-09">
   <owner>vizcay@google.com</owner>
   <owner>1p-integrations-autofill@google.com</owner>
   <summary>

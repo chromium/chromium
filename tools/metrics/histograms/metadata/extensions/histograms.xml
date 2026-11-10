@@ -306,7 +306,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.Action.SetTitleLength" units="bytes"
-    expires_after="2027-03-07">
+    expires_after="2027-05-09">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>bershanskyi@gmail.com</owner>
   <owner>extensions-core@chromium.org</owner>
@@ -1164,7 +1164,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.RedirectAction"
-    enum="DeclarativeNetRequestRedirectType" expires_after="2027-03-07">
+    enum="DeclarativeNetRequestRedirectType" expires_after="2027-05-09">
   <owner>quarz@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
@@ -1542,7 +1542,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.DisableReason2" enum="ExtensionDisableReason"
-    expires_after="2027-03-07">
+    expires_after="2027-05-09">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -3101,7 +3101,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.Install.PinReason" enum="ExtensionPinReason"
-    expires_after="2027-03-07">
+    expires_after="2027-05-09">
   <owner>evasu@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -3414,7 +3414,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.LoadTheme2" units="units"
-    expires_after="2027-03-07">
+    expires_after="2027-05-09">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -3728,7 +3728,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.NativeMessaging.MessageSize{NativeMessagingSource}"
-    units="bytes" expires_after="2027-03-07">
+    units="bytes" expires_after="2027-05-09">
   <owner>kelvinjiang@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4487,7 +4487,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.Settings.DefaultPinningStartupState" enum="Boolean"
-    expires_after="2027-03-07">
+    expires_after="2027-05-09">
   <owner>evasu@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4499,7 +4499,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.Settings.DefaultPinningToggled" enum="Boolean"
-    expires_after="2027-03-07">
+    expires_after="2027-05-09">
   <owner>evasu@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4722,7 +4722,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.Startup.DefaultPinnedExtensionState"
-    enum="DefaultPinnedExtensionState" expires_after="2027-03-07">
+    enum="DefaultPinnedExtensionState" expires_after="2027-05-09">
   <owner>evasu@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4762,14 +4762,14 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.Tabs.RemoveAction" enum="TabsRemoveActionType"
-    expires_after="2027-03-07">
+    expires_after="2027-05-09">
   <owner>quarz@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>Tracks Tabs API remove actions.</summary>
 </histogram>
 
 <histogram name="Extensions.Tabs.UpdateAction" enum="TabsUpdateActionType"
-    expires_after="2027-03-07">
+    expires_after="2027-05-09">
   <owner>quarz@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>Tracks Tabs API update actions.</summary>

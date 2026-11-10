@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Favicons.AndroidHostFallbackFetchResult.Disabled"
-    enum="BooleanSuccess" expires_after="2027-03-07">
+    enum="BooleanSuccess" expires_after="2027-05-09">
   <owner>zheliooo@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -35,7 +35,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Favicons.AndroidHostFallbackFetchResult.Disabled.OffTheRecord"
-    enum="BooleanSuccess" expires_after="2027-03-07">
+    enum="BooleanSuccess" expires_after="2027-05-09">
   <owner>zheliooo@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -59,7 +59,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Favicons.AndroidHostFallbackFetchResult.Enabled.OffTheRecord"
-    enum="BooleanSuccess" expires_after="2027-03-07">
+    enum="BooleanSuccess" expires_after="2027-05-09">
   <owner>zheliooo@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>

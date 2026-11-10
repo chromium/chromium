@@ -563,7 +563,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Actor.NavigationGating.Same{Scope}{Origin}"
-    enum="BooleanMatched" expires_after="2027-03-07">
+    enum="BooleanMatched" expires_after="2027-05-09">
   <owner>dylancutler@google.com</owner>
   <owner>johannhof@google.com</owner>
   <owner>cfredric@chromium.org</owner>
@@ -763,7 +763,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Actor.PageContext.APC.Comparison.{Source}.IsIdenticalToPreviousFetch"
-    enum="Boolean" expires_after="2027-03-07">
+    enum="Boolean" expires_after="2027-05-09">
   <owner>linnan@google.com</owner>
   <owner>shivanisha@google.com</owner>
   <owner>chrome-synapse-team@google.com</owner>
@@ -1040,7 +1040,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Actor.SafetyListParseResult.NavigationAllowed"
-    enum="SafetyListParseResult" expires_after="2027-03-07">
+    enum="SafetyListParseResult" expires_after="2027-05-09">
   <owner>tquintanilla@google.com</owner>
   <owner>dylancutler@google.com</owner>
   <summary>
@@ -1051,7 +1051,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Actor.SafetyListParseResult.NavigationBlocked"
-    enum="SafetyListParseResult" expires_after="2027-03-07">
+    enum="SafetyListParseResult" expires_after="2027-05-09">
   <owner>tquintanilla@google.com</owner>
   <owner>dylancutler@google.com</owner>
   <summary>
@@ -1112,7 +1112,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Actor.Task.CreateFailedReason"
-    enum="ActorTaskCreateFailedReason" expires_after="2027-03-07">
+    enum="ActorTaskCreateFailedReason" expires_after="2027-05-09">
   <owner>rosiey@google.com</owner>
   <owner>sauski@google.com</owner>
   <summary>

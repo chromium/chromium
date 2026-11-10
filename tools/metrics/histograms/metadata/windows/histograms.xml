@@ -825,7 +825,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.Win11HardwareRequirements2.{Type}Check"
-    enum="BooleanEnabled" expires_after="2027-03-07">
+    enum="BooleanEnabled" expires_after="2027-05-09">
   <owner>estalin@chromium.org</owner>
   <owner>davidbienvenu@chromium.org</owner>
   <summary>

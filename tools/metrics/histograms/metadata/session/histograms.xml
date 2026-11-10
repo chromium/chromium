@@ -67,7 +67,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.Background.TotalDuration" units="ms"
-    expires_after="2027-03-07">
+    expires_after="2027-05-09">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -115,7 +115,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Session.CommandStorageBackend.{SessionType}.{EncryptedStatus}.AppendCommands.{Slice}.FileSize"
-    units="bytes" expires_after="2027-07-01">
+    units="bytes" expires_after="2027-05-09">
   <owner>arichiv@google.com</owner>
   <owner>sammon@google.com</owner>
   <owner>dljames@chromium.org</owner>
@@ -132,7 +132,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Session.CommandStorageBackend.{SessionType}.{EncryptedStatus}.AppendCommands.{Slice}.Status"
-    enum="CommandStorageWriteStatus" expires_after="2027-07-01">
+    enum="CommandStorageWriteStatus" expires_after="2027-05-09">
   <owner>arichiv@google.com</owner>
   <owner>sammon@google.com</owner>
   <owner>dljames@chromium.org</owner>
@@ -916,7 +916,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.TotalDuration.TabletMode" units="ms"
-    expires_after="2027-03-07">
+    expires_after="2027-05-09">
   <owner>robliao@chromium.org</owner>
   <owner>gerchiko@microsoft.com</owner>
   <owner>wangsongjin@microsoft.com</owner>
@@ -1417,7 +1417,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SessionRestore.ForegroundTabFirstPaint4.FinishReason"
-    enum="SessionRestoreFinishReason" expires_after="2027-03-07">
+    enum="SessionRestoreFinishReason" expires_after="2027-05-09">
   <owner>joenotcharles@google.com</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -1468,7 +1468,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SessionRestore.InfoBar.TurnOnSessionRestore"
-    enum="SessionRestoreInfoBarAction" expires_after="2027-03-07">
+    enum="SessionRestoreInfoBarAction" expires_after="2027-05-09">
   <owner>musalmaan@chromium.org</owner>
   <owner>koretadaniel@chromium.org</owner>
   <summary>

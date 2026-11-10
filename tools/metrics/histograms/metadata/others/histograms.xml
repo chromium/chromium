@@ -649,7 +649,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ClientHints.FetchLatency{OperationType}" units="microseconds"
-    expires_after="2027-03-07">
+    expires_after="2027-05-09">
   <owner>victortan@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <owner>katabolism-finch@google.com</owner>
@@ -816,7 +816,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ComponentUpdater.PlatformRuntime.InstallTrigger"
-    enum="PlatformRuntimeInstallTrigger" expires_after="2027-03-07">
+    enum="PlatformRuntimeInstallTrigger" expires_after="2027-05-09">
   <owner>quarz@chromium.org</owner>
   <owner>src/chrome/browser/component_updater/OWNERS</owner>
   <summary>
@@ -827,7 +827,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ComponentUpdater.PlatformRuntime.ProcessHeadersStatus"
-    enum="PlatformRuntimeProcessHeadersStatus" expires_after="2027-03-07">
+    enum="PlatformRuntimeProcessHeadersStatus" expires_after="2027-05-09">
   <owner>quarz@chromium.org</owner>
   <owner>src/chrome/services/platform_runtime/OWNERS</owner>
   <summary>
@@ -838,7 +838,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ComponentUpdater.PlatformRuntime.RefreshTimedOut"
-    enum="BooleanTimedOut" expires_after="2027-03-07">
+    enum="BooleanTimedOut" expires_after="2027-05-09">
   <owner>quarz@chromium.org</owner>
   <owner>src/chrome/services/platform_runtime/OWNERS</owner>
   <summary>
@@ -851,7 +851,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ComponentUpdater.PlatformRuntime.RequestHeaderApplyResult"
-    enum="PlatformRuntimeApplyResult" expires_after="2027-03-07">
+    enum="PlatformRuntimeApplyResult" expires_after="2027-05-09">
   <owner>quarz@chromium.org</owner>
   <owner>src/chrome/services/platform_runtime/OWNERS</owner>
   <summary>
@@ -863,7 +863,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ComponentUpdater.TranslateKit.LanguagePack.UpdateError"
-    enum="UpdateClientErrors" expires_after="2027-03-07">
+    enum="UpdateClientErrors" expires_after="2027-05-09">
   <owner>paugomez@chromium.org</owner>
   <owner>danft@chromium.org</owner>
   <owner>mardelpi@chromium.org</owner>
@@ -2164,7 +2164,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FirstRun.Sentinel.Created" enum="FirstRunSentinelResult"
-    expires_after="2027-03-07">
+    expires_after="2027-05-09">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -2327,7 +2327,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Gamepad.KnownGamepadConnectedWithId"
-    enum="GamepadVendorProduct" expires_after="2027-03-07">
+    enum="GamepadVendorProduct" expires_after="2027-05-09">
   <owner>mattreynolds@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
@@ -3039,7 +3039,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mojo.ChannelLinux.SharedMemoryWriteLatencyUs"
-    units="microseconds" expires_after="2027-03-07">
+    units="microseconds" expires_after="2027-05-09">
   <owner>pasko@chromium.org</owner>
   <owner>nafisabedin@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -4212,7 +4212,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadingList.WebUI.LoadCompletedTime" units="ms"
-    expires_after="2027-03-07">
+    expires_after="2027-05-09">
   <owner>corising@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -4991,7 +4991,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SiteIsolatedCodeCache.DataSize" units="bytes"
-    expires_after="2027-03-07">
+    expires_after="2027-05-09">
   <owner>olivierli@chromium.org</owner>
   <owner>leszeks@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
