@@ -101,6 +101,7 @@ OrganizerPanelUI::OrganizerPanelUI(content::WebUI* web_ui)
       {"recentlyVisited", IDS_ORGANIZER_PANEL_RECENTLY_VISITED},
       {"savedTabGroup", IDS_ORGANIZER_PANEL_SAVED_TAB_GROUP},
       {"searchTabs", IDS_TAB_SEARCH_SEARCH_TABS},
+      {"sectionNavigationHint", IDS_ORGANIZER_PANEL_SECTION_NAVIGATION_HINT},
       {"sectionOptions", IDS_ORGANIZER_PANEL_SECTION_OPTIONS},
       {"showAll", IDS_ORGANIZER_PANEL_SHOW_ALL},
       {"showSome", IDS_ORGANIZER_PANEL_SHOW_SOME},

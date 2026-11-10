@@ -132,6 +132,12 @@ export class OrganizerListSectionHeaderElement extends
     return this.expanded && !this.disabled;
   }
 
+  protected getExpandButtonAriaDescription_(): string|null {
+    return this.expanded && !this.disabled ?
+        loadTimeData.getString('sectionNavigationHint') :
+        null;
+  }
+
   protected getMenuAriaLabel_(): string {
     return this.title ? loadTimeData.getStringF('sectionOptions', this.title) :
                         loadTimeData.getString('options');

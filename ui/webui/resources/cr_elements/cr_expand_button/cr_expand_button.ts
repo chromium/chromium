@@ -58,7 +58,8 @@ export class CrExpandButtonElement extends CrLitElement {
         reflect: true,
       },
 
-      /** A11y text descriptor for this control. */
+      /** A11y description and label to forward to the icon button */
+      ariaDescription: {type: String},
       ariaLabel: {type: String},
 
       tabIndex: {type: Number},
@@ -71,6 +72,7 @@ export class CrExpandButtonElement extends CrLitElement {
 
   accessor expanded: boolean = false;
   accessor disabled: boolean = false;
+  override accessor ariaDescription: string|null = null;
   override accessor ariaLabel: string = '';
   accessor expandIcon: string = 'cr:keyboard-arrow-down';
   accessor collapseIcon: string = 'cr:keyboard-arrow-up';

@@ -36,6 +36,17 @@ suite('cr-expand-button', function() {
     assertEquals(ariaLabel, icon.getAttribute('aria-label'));
   });
 
+  test('setting |aria-description|', async () => {
+    assertEquals(null, icon.getAttribute('aria-description'));
+    const ariaDescription = 'aria-description text';
+    button.ariaDescription = ariaDescription;
+    await button.updateComplete;
+    assertEquals(ariaDescription, icon.getAttribute('aria-description'));
+    button.ariaDescription = null;
+    await button.updateComplete;
+    assertEquals(null, icon.getAttribute('aria-description'));
+  });
+
   test('changing |expanded|', async () => {
     button.expandTitle = expandTitle;
     button.collapseTitle = collapseTitle;

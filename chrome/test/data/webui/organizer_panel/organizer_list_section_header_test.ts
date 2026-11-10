@@ -7,7 +7,7 @@ import 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {OrganizerSectionMenuOption} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {OrganizerListSectionHeaderElement} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -48,6 +48,28 @@ suite('OrganizerListSectionHeaderTest', () => {
     assertEquals(
         'Options for Open Tabs',
         header.$.menu.$.wrapper.getAttribute('aria-label'));
+  });
+
+  test('has navigation hint aria-description when expanded', async () => {
+    const hint = 'Use up and down arrow keys to navigate the list.';
+    const expandButton = header.$.expandButton;
+    header.expanded = true;
+    header.disabled = false;
+    await microtasksFinished();
+    assertEquals(hint, expandButton.ariaDescription);
+
+    header.expanded = false;
+    await microtasksFinished();
+    assertNull(expandButton.ariaDescription);
+
+    header.expanded = true;
+    header.disabled = true;
+    await microtasksFinished();
+    assertNull(expandButton.ariaDescription);
+
+    header.disabled = false;
+    await microtasksFinished();
+    assertEquals(hint, expandButton.ariaDescription);
   });
 
   test('has expand/collapse tooltip on expand button', async () => {

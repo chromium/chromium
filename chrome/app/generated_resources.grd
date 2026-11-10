@@ -10181,6 +10181,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_ORGANIZER_PANEL_TAB_GROUP_MORE_OPTIONS" desc="Spoken by screen readers and not visually rendered: accessibility label for the three-dot options button on the right side of a hovered or focused tab group item under the 'Tab groups' section in the organizer panel.">
         More options for <ph name="TAB_GROUP_NAME">$1<ex>Work</ex></ph>
       </message>
+      <message name="IDS_ORGANIZER_PANEL_SECTION_NAVIGATION_HINT" is_accessibility_with_no_ui="true" desc="Spoken by screen readers and not visually rendered: accessibility description for a section header (or associated expand/collapse button) in the organizer panel, informing the user that up and down arrow keys can be used to navigate the list.">
+        Use up and down arrow keys to navigate the list.
+      </message>
       <if expr="use_titlecase">
         <message name="IDS_TAB_STRIP_UNPIN_TAB_SEARCH" desc="In Title Case: Name of the tab strip system menu item for unpinning tab search.">
           Unpin Tab Search

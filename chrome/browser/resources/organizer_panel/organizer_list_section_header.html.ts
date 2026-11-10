@@ -13,7 +13,8 @@ export function getHtml(this: OrganizerListSectionHeaderElement) {
     ?expanded="${this.expanded}" ?disabled="${this.disabled}"
     @expanded-changed="${this.onExpandedChanged_}"
     @keydown="${this.onExpandButtonKeydown_}" expand-title="$i18n{expand}"
-    collapse-title="$i18n{collapse}" aria-label="${this.title}">
+    collapse-title="$i18n{collapse}" aria-label="${this.title}"
+    .ariaDescription="${this.getExpandButtonAriaDescription_()}">
   <span id="headerTitle">${this.title}</span>
 </cr-expand-button>
 <cr-icon-button id="menuButton" iron-icon="cr:more-vert"

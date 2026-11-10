@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {CrExpandButtonElement} from './cr_expand_button.js';
 
@@ -13,6 +13,7 @@ export function getHtml(this: CrExpandButtonElement) {
 </div>
 <cr-icon-button id="icon" aria-labelledby="label" ?disabled="${this.disabled}"
     aria-expanded="${this.getAriaExpanded_()}" tabindex="${this.tabIndex}"
-    part="icon" iron-icon="${this.getIcon_()}">
+    aria-description="${this.ariaDescription || nothing}" part="icon"
+    iron-icon="${this.getIcon_()}">
 </cr-icon-button>`;
 }
