@@ -103,6 +103,8 @@ GlicSidePanelUi::GlicSidePanelUi(Profile* profile,
   SetWebContentsDelegate(web_contents, /*delegate=*/this);
   ConfigureGlicDragAndDropForWebContents(web_contents);
 
+  glic_side_panel_coordinator->SetIsLoading(
+      delegate_->host().IsShowingNativeLoading());
   glic_side_panel_coordinator->SetWebContents(web_contents);
   glic_side_panel_coordinator->SetNativeFreAcceptedCallback(base::BindRepeating(
       &GlicSidePanelUi::OnNativeFreAccepted, weak_ptr_factory_.GetWeakPtr()));
@@ -117,6 +119,9 @@ GlicSidePanelUi::~GlicSidePanelUi() {
   // `panel_` weak pointers) is still valid.
   panel_focus_dependent_hotkey_manager_.reset();
   panel_visibility_dependent_hotkey_manager_.reset();
+  if (auto* glic_side_panel_coordinator = GetGlicSidePanelCoordinator()) {
+    glic_side_panel_coordinator->SetIsLoading(false);
+  }
   content::WebContents* web_contents = delegate_->host().webui_contents();
   SetWebContentsDelegate(web_contents, /*delegate=*/nullptr,
                          /*expected_delegate=*/this);
@@ -224,6 +229,8 @@ void GlicSidePanelUi::ContentsCreated() {
     content::WebContents* web_contents = delegate_->host().webui_contents();
     SetWebContentsDelegate(web_contents, /*delegate=*/this);
     ConfigureGlicDragAndDropForWebContents(web_contents);
+    glic_side_panel_coordinator->SetIsLoading(
+        delegate_->host().IsShowingNativeLoading());
     glic_side_panel_coordinator->SetWebContents(web_contents);
   }
 }
@@ -239,6 +246,12 @@ void GlicSidePanelUi::ActiveWebContentsChanged(
     SetWebContentsDelegate(new_contents, /*delegate=*/this);
     ConfigureGlicDragAndDropForWebContents(new_contents);
     glic_side_panel_coordinator->SetWebContents(new_contents);
+  }
+}
+
+void GlicSidePanelUi::NativeLoadingStateChanged(bool is_showing) {
+  if (auto* glic_side_panel_coordinator = GetGlicSidePanelCoordinator()) {
+    glic_side_panel_coordinator->SetIsLoading(is_showing);
   }
 }
 

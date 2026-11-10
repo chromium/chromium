@@ -58,4 +58,16 @@ found in the LICENSE file.
     <dimen name="glic_experimental_opt_in_dialog_max_height">567dp</dimen>
     <dimen name="glic_experimental_opt_in_dialog_non_scrollable_max_height">710dp</dimen>
     <dimen name="glic_experimental_opt_in_close_button_margin">8dp</dimen>
+
+    <!-- Glic native loading placeholder dimensions -->
+    <dimen name="glic_loading_placeholder_close_button_margin_end">8dp</dimen>
+    <dimen name="glic_loading_placeholder_header_block_width">78dp</dimen>
+    <dimen name="glic_loading_placeholder_header_block_height">17dp</dimen>
+    <dimen name="glic_loading_placeholder_header_margin_start">12dp</dimen>
+    <dimen name="glic_loading_placeholder_body_margin">10dp</dimen>
+    <dimen name="glic_loading_placeholder_body_top_margin_top">48dp</dimen>
+    <dimen name="glic_loading_placeholder_body_block_spacing">18dp</dimen>
+    <dimen name="glic_loading_placeholder_body_top_max_height">244dp</dimen>
+    <dimen name="glic_loading_placeholder_body_bottom_height">112dp</dimen>
+    <dimen name="glic_loading_placeholder_block_corner_radius">12dp</dimen>
 </resources>

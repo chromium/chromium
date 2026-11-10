@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- Matches the Glic web client loading skeleton: two header blocks with a
+     close button, and two bottom-aligned body blocks. The root is clickable so
+     touches do not fall through to the panel behind it; it and the skeleton
+     blocks are hidden from accessibility services, leaving only the close
+     button. -->
+<org.chromium.chrome.browser.glic.ui.GlicLoadingPlaceholderView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clickable="true"
+    android:importantForAccessibility="no">
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/glic_loading_placeholder_close_button"
+        android:layout_width="@dimen/min_touch_target_size"
+        android:layout_height="@dimen/min_touch_target_size"
+        android:layout_marginEnd="@dimen/glic_loading_placeholder_close_button_margin_end"
+        android:background="@drawable/default_icon_background"
+        android:contentDescription="@string/close"
+        android:src="@drawable/btn_close"
+        app:tint="@color/default_icon_color_tint_list"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/glic_loading_placeholder_header_start"
+        android:layout_width="@dimen/glic_loading_placeholder_header_block_width"
+        android:layout_height="@dimen/glic_loading_placeholder_header_block_height"
+        android:layout_marginStart="@dimen/glic_loading_placeholder_header_margin_start"
+        android:background="@drawable/glic_loading_placeholder_block"
+        android:importantForAccessibility="no"
+        app:layout_constraintBottom_toBottomOf="@id/glic_loading_placeholder_close_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/glic_loading_placeholder_close_button" />
+
+    <View
+        android:id="@+id/glic_loading_placeholder_header_end"
+        android:layout_width="@dimen/glic_loading_placeholder_header_block_width"
+        android:layout_height="@dimen/glic_loading_placeholder_header_block_height"
+        android:background="@drawable/glic_loading_placeholder_block"
+        android:importantForAccessibility="no"
+        app:layout_constraintBottom_toBottomOf="@id/glic_loading_placeholder_close_button"
+        app:layout_constraintEnd_toStartOf="@id/glic_loading_placeholder_close_button"
+        app:layout_constraintTop_toTopOf="@id/glic_loading_placeholder_close_button" />
+
+    <View
+        android:id="@+id/glic_loading_placeholder_body_top"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/glic_loading_placeholder_body_margin"
+        android:layout_marginTop="@dimen/glic_loading_placeholder_body_top_margin_top"
+        android:layout_marginEnd="@dimen/glic_loading_placeholder_body_margin"
+        android:layout_marginBottom="@dimen/glic_loading_placeholder_body_block_spacing"
+        android:background="@drawable/glic_loading_placeholder_block"
+        android:importantForAccessibility="no"
+        app:layout_constraintBottom_toTopOf="@id/glic_loading_placeholder_body_bottom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_max="@dimen/glic_loading_placeholder_body_top_max_height"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/glic_loading_placeholder_close_button"
+        app:layout_constraintVertical_bias="1" />
+
+    <View
+        android:id="@+id/glic_loading_placeholder_body_bottom"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/glic_loading_placeholder_body_bottom_height"
+        android:layout_marginStart="@dimen/glic_loading_placeholder_body_margin"
+        android:layout_marginEnd="@dimen/glic_loading_placeholder_body_margin"
+        android:layout_marginBottom="@dimen/glic_loading_placeholder_body_margin"
+        android:background="@drawable/glic_loading_placeholder_block"
+        android:importantForAccessibility="no"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</org.chromium.chrome.browser.glic.ui.GlicLoadingPlaceholderView>

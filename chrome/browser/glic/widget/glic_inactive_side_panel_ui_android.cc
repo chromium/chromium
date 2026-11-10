@@ -37,6 +37,7 @@ GlicInactiveSidePanelUi::GlicInactiveSidePanelUi(
     : tab_(tab), delegate_(delegate) {
   auto* glic_side_panel_coordinator = GetGlicSidePanelCoordinator();
   if (glic_side_panel_coordinator) {
+    glic_side_panel_coordinator->SetIsLoading(false);
     glic_side_panel_coordinator->SetWebContents(nullptr);
     state_subscription_ = glic_side_panel_coordinator->AddStateCallback(
         base::BindRepeating(&GlicInactiveSidePanelUi::OnSidePanelStateChanged,

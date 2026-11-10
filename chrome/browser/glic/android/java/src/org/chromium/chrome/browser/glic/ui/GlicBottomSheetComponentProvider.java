@@ -103,6 +103,17 @@ public class GlicBottomSheetComponentProvider implements CoBrowseComponentProvid
     }
 
     @Override
+    public @Nullable View createLoadingPlaceholderView(
+            Context context,
+            @ColorInt int backgroundColor,
+            @ColorInt int placeholderElemColor,
+            boolean isSidePanel,
+            Runnable onCloseClicked) {
+        return GlicLoadingPlaceholderView.create(
+                context, backgroundColor, placeholderElemColor, onCloseClicked);
+    }
+
+    @Override
     public ResizingPlaceholderCoordinator createResizingPlaceholderCoordinator(
             Context context, @ColorInt int backgroundColor, @ColorInt int placeholderElemColor) {
         if (TabBottomSheetUtils.PLACEHOLDER_SKELETON.equals(

@@ -37,6 +37,7 @@ class GlicSidePanelCoordinatorAndroid
   using GlicSidePanelCoordinator::Show;
   void Show(const ShowOptions& options) override;
   void SetWebContents(content::WebContents* web_contents) override;
+  void SetIsLoading(bool is_loading) override;
   void Close(const CloseOptions& options) override;
   bool IsShowing() const override;
   State state() override;
@@ -55,6 +56,7 @@ class GlicSidePanelCoordinatorAndroid
   bool HasBridgesForTesting() const;
   bool HasJavaWebContentsForTesting() const;
   bool IsShowingNativeFreForTesting() const;
+  bool ShouldShowLoadingPlaceholderForTesting() const;
 
   // context_sharing::TabBottomSheetBridge::Observer:
   void OnClosed() override;
@@ -68,6 +70,12 @@ class GlicSidePanelCoordinatorAndroid
   void UpdateJavaNativeFre();
   // Clears the native FRE state and hides it in Java.
   void ResetNativeFre();
+
+  // Returns whether the loading placeholder should show. The native FRE takes
+  // precedence over it.
+  bool ShouldShowLoadingPlaceholder() const;
+  // Pushes the loading placeholder state of this tab to Java.
+  void UpdateJavaIsLoading();
 
   void SetState(State state);
   void SaveStateBeforeDeactivation();
@@ -86,6 +94,7 @@ class GlicSidePanelCoordinatorAndroid
   // cleared on close or accept.
   bool showing_native_fre_ = false;
   State state_ = State::kClosed;
+  bool is_loading_ = false;
   // True if the bottom sheet was expanded when the tab began deactivating or
   // detaching. Used to upgrade the initial state back to expanded when
   // TabBottomSheetManager is re-initialized during activity recreation/restart.
@@ -104,6 +113,8 @@ class GlicSidePanelCoordinatorAndroid
   std::unique_ptr<context_sharing::CoBrowseViewsBridge> views_bridge_;
   std::unique_ptr<context_sharing::TabBottomSheetBridge>
       tab_bottom_sheet_bridge_;
+
+  base::WeakPtrFactory<GlicSidePanelCoordinatorAndroid> weak_ptr_factory_{this};
 };
 
 }  // namespace glic

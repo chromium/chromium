@@ -122,6 +122,23 @@ void GlicSidePanelCoordinatorAndroid::SetWebContents(
   }
 }
 
+void GlicSidePanelCoordinatorAndroid::SetIsLoading(bool is_loading) {
+  is_loading_ = is_loading;
+  UpdateJavaIsLoading();
+}
+
+void GlicSidePanelCoordinatorAndroid::UpdateJavaIsLoading() {
+  if (views_bridge_) {
+    views_bridge_->SetIsLoading(ShouldShowLoadingPlaceholder());
+  }
+}
+
+bool GlicSidePanelCoordinatorAndroid::ShouldShowLoadingPlaceholder() const {
+  // The native FRE takes precedence over the loading placeholder. Once the FRE
+  // is accepted or dismissed, the placeholder shows if Glic is still loading.
+  return is_loading_ && !showing_native_fre_;
+}
+
 void GlicSidePanelCoordinatorAndroid::Close(const CloseOptions& options) {
   pending_show_options_.reset();
   restore_expanded_on_recreation_ = false;
@@ -157,6 +174,11 @@ bool GlicSidePanelCoordinatorAndroid::HasJavaWebContentsForTesting() const {
 
 bool GlicSidePanelCoordinatorAndroid::IsShowingNativeFreForTesting() const {
   return ShouldShowNativeFre();
+}
+
+bool GlicSidePanelCoordinatorAndroid::ShouldShowLoadingPlaceholderForTesting()
+    const {
+  return ShouldShowLoadingPlaceholder();
 }
 
 bool GlicSidePanelCoordinatorAndroid::IsShowing() const {
@@ -293,7 +315,9 @@ void GlicSidePanelCoordinatorAndroid::EnsureBridgesCreated() {
         context_sharing::CoBrowseContainerType::kBottomSheet,
         CreateBottomSheetContentProvider(),
         /*enable_pinch_to_zoom=*/false, kColorGlicBackground,
-        kColorGlicPlaceholderElem);
+        kColorGlicPlaceholderElem,
+        base::BindRepeating(&GlicSidePanelCoordinatorAndroid::Close,
+                            weak_ptr_factory_.GetWeakPtr(), CloseOptions()));
   }
   if (!tab_bottom_sheet_bridge_) {
     tab_bottom_sheet_bridge_ =
@@ -319,6 +343,7 @@ void GlicSidePanelCoordinatorAndroid::SetNativeFreAcceptedCallback(
 void GlicSidePanelCoordinatorAndroid::OnNativeFreAccepted(JNIEnv* env) {
   // Java owns the FRE view teardown after accept, so only clear the state.
   showing_native_fre_ = false;
+  UpdateJavaIsLoading();
   if (on_native_fre_accepted_) {
     on_native_fre_accepted_.Run();
   }
@@ -336,6 +361,7 @@ void GlicSidePanelCoordinatorAndroid::UpdateJavaNativeFre() {
     ResetNativeFre();
     return;
   }
+  UpdateJavaIsLoading();
   if (!component_provider_) {
     return;
   }
@@ -350,6 +376,7 @@ void GlicSidePanelCoordinatorAndroid::ResetNativeFre() {
         base::android::AttachCurrentThread(), component_provider_,
         /*showNativeFre=*/false);
   }
+  UpdateJavaIsLoading();
 }
 
 DEFINE_JNI(GlicBottomSheetComponentProvider)

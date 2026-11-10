@@ -19,8 +19,10 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
+#include "chrome/browser/glic/widget/glic_inactive_side_panel_ui_android.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
@@ -64,10 +66,58 @@ class FakeHost : public Host {
     std::move(done).Run();
   }
 
+  bool IsShowingNativeLoading() const override {
+    return showing_native_loading_;
+  }
+  void set_showing_native_loading(bool showing) {
+    showing_native_loading_ = showing;
+  }
+
   int stop_microphone_count() const { return stop_microphone_count_; }
 
  private:
   int stop_microphone_count_ = 0;
+  bool showing_native_loading_ = false;
+};
+
+class FakeGlicSidePanelCoordinator : public GlicSidePanelCoordinator {
+ public:
+  explicit FakeGlicSidePanelCoordinator(tabs::TabInterface* tab)
+      : GlicSidePanelCoordinator(tab) {}
+  ~FakeGlicSidePanelCoordinator() override = default;
+
+  // GlicSidePanelCoordinator:
+  void Show(const ShowOptions& options) override { state_ = State::kShown; }
+  void Close(const CloseOptions& options) override { state_ = State::kClosed; }
+  bool IsShowing() const override { return state_ == State::kShown; }
+  State state() override { return state_; }
+  bool SupportsPeek() const override { return true; }
+  base::CallbackListSubscription AddStateCallback(
+      base::RepeatingCallback<void(State state)> callback) override {
+    return state_callbacks_.Add(std::move(callback));
+  }
+  void SetWebContents(content::WebContents* web_contents) override {
+    last_web_contents_ = web_contents;
+  }
+  void SetIsLoading(bool is_loading) override {
+    is_loading_ = is_loading;
+    loading_history_.push_back(is_loading);
+  }
+  int GetPreferredWidth() override { return 400; }
+  bool IsGlicSidePanelActive() override { return state_ != State::kClosed; }
+
+  bool is_loading() const { return is_loading_; }
+  const std::vector<bool>& loading_history() const { return loading_history_; }
+  const content::WebContents* last_web_contents() const {
+    return last_web_contents_;
+  }
+
+ private:
+  State state_ = State::kShown;
+  bool is_loading_ = false;
+  std::vector<bool> loading_history_;
+  raw_ptr<const content::WebContents> last_web_contents_ = nullptr;
+  base::RepeatingCallbackList<void(State)> state_callbacks_;
 };
 
 class FakeGlicUiEmbedderDelegate : public GlicUiEmbedder::Delegate {
@@ -278,6 +328,7 @@ class GlicSidePanelUiAndroidTest : public testing::Test {
   base::WeakPtr<tabs::TabInterface> tab() {
     return tab_weak_factory_.GetWeakPtr();
   }
+  tabs::MockTabInterface& mock_tab() { return mock_tab_; }
 
  protected:
   // Makes the tab report `browser_window_` as the window it belongs to. Needed
@@ -959,6 +1010,37 @@ TEST_F(GlicSidePanelUiAndroidTest, RoutesNativeFreAccept) {
   side_panel_ui.reset();
   coordinator.on_accepted().Run();
   EXPECT_EQ(delegate().accept_count(), 1);
+}
+
+TEST_F(GlicSidePanelUiAndroidTest,
+       ForwardsNativeLoadingStateToSidePanelCoordinator) {
+  FakeGlicSidePanelCoordinator coordinator(&mock_tab());
+  host().set_showing_native_loading(true);
+
+  {
+    GlicSidePanelUi side_panel_ui(profile(), tab(), delegate(),
+                                  instance_metrics());
+    EXPECT_TRUE(coordinator.is_loading());
+    EXPECT_THAT(coordinator.loading_history(), testing::ElementsAre(true));
+
+    side_panel_ui.NativeLoadingStateChanged(false);
+    EXPECT_FALSE(coordinator.is_loading());
+
+    host().set_showing_native_loading(true);
+    side_panel_ui.ContentsCreated();
+    EXPECT_TRUE(coordinator.is_loading());
+  }
+
+  // Destroying `GlicSidePanelUi` clears loading state on the coordinator.
+  EXPECT_FALSE(coordinator.is_loading());
+
+  // Inactive side panel UI also clears loading state and detaches
+  // `WebContents`.
+  coordinator.SetIsLoading(true);
+  auto inactive_ui =
+      GlicInactiveSidePanelUi::CreateForVisibleTab(tab(), delegate());
+  EXPECT_FALSE(coordinator.is_loading());
+  EXPECT_EQ(nullptr, coordinator.last_web_contents());
 }
 
 }  // namespace glic
