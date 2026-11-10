@@ -84,4 +84,75 @@ impl ffi::FilePath {
     pub fn as_path(&self) -> &Path {
         Path::new(self.as_os_str())
     }
+
+    /// Borrows `FilePath::value()` directly from C++ as a byte slice (no copy).
+    #[cfg(unix)]
+    fn comparison_key(&self) -> &[u8] {
+        ffi::FilePathToBytes(self)
+    }
+
+    /// Returns a zero-copy canonical key `(normalized_first_char, rest)` for
+    /// equality and ordering comparisons.
+    ///
+    /// On Windows (`FILE_PATH_USES_DRIVE_LETTERS`),
+    /// `base::FilePath::operator==` and `base::FilePath::operator<=>` compare
+    /// a leading `[A-Za-z]:` drive letter case-insensitively while comparing
+    /// the remainder of the path case-sensitively (see `FindDriveLetter`,
+    /// `CompareDriveLetterCaseInsensitive`, and
+    /// `EqualDriveLetterCaseInsensitive` in `base/files/file_path.cc`).
+    ///
+    /// Splitting the borrowed UTF-16 slice into `(Option<u16>, &[u16])` lets us
+    /// lowercase a leading drive letter by value without mutating or copying
+    /// the underlying C++ `std::wstring` buffer: empty paths return
+    /// `(None, &[])` (which sorts before any `(Some(_), _)` because
+    /// `None < Some(_)` in Rust), while non-empty paths compare the
+    /// (potentially lowercased) first code unit first and, if equal, compare
+    /// the borrowed `rest` sub-slice (`&slice[1..]`).
+    #[cfg(windows)]
+    fn comparison_key(&self) -> (Option<u16>, &[u16]) {
+        let slice = ffi::FilePathToWide(self);
+        let Some((&first, rest)) = slice.split_first() else {
+            return (None, &[]);
+        };
+        // `u16` does not have ASCII helper methods in Rust's stdlib, so narrow
+        // `first` to `u8` (`0..=255`); any code unit > 255 returns `Err` and
+        // cannot be an ASCII drive letter.
+        let normalized_first = match u8::try_from(first) {
+            Ok(first_byte)
+                if rest.first() == Some(&u16::from(b':')) && first_byte.is_ascii_alphabetic() =>
+            {
+                u16::from(first_byte.to_ascii_lowercase())
+            }
+            _ => first,
+        };
+        (Some(normalized_first), rest)
+    }
+}
+
+// Equality and ordering compare `FilePath::value()` via `comparison_key()`,
+// which on Windows case-folds a leading `[A-Za-z]:` drive letter to match
+// C++ `base::FilePath::operator==` and `base::FilePath::operator<=>`.
+impl PartialEq for ffi::FilePath {
+    fn eq(&self, other: &Self) -> bool {
+        self.comparison_key() == other.comparison_key()
+    }
+}
+impl Eq for ffi::FilePath {}
+
+impl PartialOrd for ffi::FilePath {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for ffi::FilePath {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        Ord::cmp(&self.comparison_key(), &other.comparison_key())
+    }
+}
+
+impl std::fmt::Debug for ffi::FilePath {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("FilePath").field(&self.to_path_buf()).finish()
+    }
 }
