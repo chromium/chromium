@@ -3021,7 +3021,7 @@
   {
     "name": "desktop-glow-up",
     "owners": [ "emshack@chromium.org", "top-chrome-desktop-ui@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 165
   },
   {
     "name": "desktop-ua-on-connected-display",
@@ -8772,7 +8772,7 @@
   {
     "name": "rounded-icons",
     "owners": [ "emshack@chromium.org", "top-chrome-desktop-ui@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 165
   },
   {
     "name": "route-matching",
@@ -9502,7 +9502,7 @@
   {
     "name": "tab-group-color-refresh",
     "owners": [ "dominicaustria@google.com", "top-chrome-desktop-ui@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 165
   },
   {
     "name": "tab-group-context-menu-live-title-update",
@@ -9549,7 +9549,7 @@
   {
     "name": "tab-strip-declutter",
     "owners": [ "emshack@chromium.org", "top-chrome-desktop-ui@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 165
   },
   {
     "name": "tab-strip-height-transition-glitch-fix",
@@ -9711,7 +9711,7 @@
   {
     "name": "toolbar-glow-up",
     "owners": [ "emshack@chromium.org", "top-chrome-desktop-ui@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 165
   },
   {
     "name" : "toolbar-phone-animation-refactor",
@@ -10466,12 +10466,12 @@
   {
     "name": "webui-refresh-2026",
     "owners": [ "mickeyburks@chromium.org", "top-chrome-desktop-ui@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 165
   },
   {
     "name": "webui-rounded-icons",
     "owners": [ "emshack@chromium.org", "top-chrome-desktop-ui@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 165
   },
   {
     "name": "webui-toolbar",
