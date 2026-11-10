@@ -123,12 +123,11 @@ void UnboundedSurfaceHostImpl::OnDismissRequested() {
 void UnboundedSurfaceHostImpl::OnWindowDestroyed() {
   window_ = nullptr;
   dismiss_fallback_timer_.Stop();
-  // Keep the renderer in sync: from its point of view, the surface is
-  // dismissed.
-  if (!dismiss_pending_) {
-    dismiss_pending_ = true;
-    client_->OnDismissed();
-  }
+  // Keep the renderer in sync: disconnecting `client_` triggers programmatic
+  // dismissal on the renderer (`UnboundedDismissReason::kProgrammatic`), which
+  // cannot be canceled by `beforetoggle` since the window is already gone.
+  dismiss_pending_ = true;
+  client_.reset();
   DestroySoon();
 }
 

@@ -128,6 +128,7 @@ void RenderWidgetHostViewChildFrame::SetFrameConnector(
     return;
 
   if (frame_connector_) {
+    DestroyUnboundedSurfaceForThisView();
     SetParentFrameSinkId(viz::FrameSinkId());
 
     // Unlocks the mouse if this RenderWidgetHostView holds the lock.
