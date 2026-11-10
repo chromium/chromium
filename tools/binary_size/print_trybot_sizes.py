@@ -41,9 +41,14 @@ _CommitInfo = collections.namedtuple(
 )
 
 
+def extract_review_url(commit_text):
+  """Returns the last Reviewed-on: URL (skips those quoted by reverts)."""
+  return ([''] + _REVIEW_RE.findall(commit_text))[-1]
+
+
 def _parse_commit(text):
   git_hash, date, subject = _MAIN_FIELDS_RE.match(text).groups()
-  review_url = ([''] + _REVIEW_RE.findall(text))[-1]
+  review_url = extract_review_url(text)
   cr_position = int((['0'] + _CRREV_RE.findall(text))[-1])
   return _CommitInfo(git_hash, date, subject, review_url, cr_position)
 
@@ -70,7 +75,17 @@ def _git_log(git_log_args):
   return ret
 
 
-def _query_size(review_url, internal):
+def check_bb_auth():
+  """Exits if the user has not authenticated with bb."""
+  result = subprocess.run(
+    ['bb', 'auth-info'], check=False, stdout=subprocess.DEVNULL
+  )
+  if result.returncode:
+    sys.stderr.write('First run: bb auth-login\n')
+    sys.exit(1)
+
+
+def query_size(review_url, internal):
   if not review_url:
     return '<missing>', '<missing>'
   m = _GERRIT_RE.match(review_url)
@@ -121,7 +136,9 @@ def _query_size(review_url, internal):
       elif listing['log_name'] == 'resource_sizes_64_log':
         arm64_size = listing['delta']
     if arm32_size:
-      return arm32_size, arm64_size
+      return tuple(
+        s.replace(' bytes', '').lstrip('+') for s in (arm32_size, arm64_size)
+      )
   return '<unknown>', '<unknown>'
 
 
@@ -149,13 +166,7 @@ def main():
   )
   args, git_log_args = parser.parse_known_args()
 
-  # Ensure user has authenticated.
-  result = subprocess.run(
-    ['bb', 'auth-info'], check=False, stdout=subprocess.DEVNULL
-  )
-  if result.returncode:
-    sys.stderr.write('First run: bb auth-login\n')
-    sys.exit(1)
+  check_bb_auth()
 
   _maybe_rewrite_crrev(git_log_args)
 
@@ -177,15 +188,13 @@ def main():
   num_bad_commits = 0
   with concurrent.futures.ThreadPoolExecutor(max_workers=20) as pool:
     sizes = [
-      pool.submit(_query_size, info.review_url, args.internal)
+      pool.submit(query_size, info.review_url, args.internal)
       for info in commit_infos
     ]
     for info, promise in zip(commit_infos, sizes):
       if any(info.cr_position in r for r in _BAD_COMMIT_RANGES):
         num_bad_commits += 1
-      sizes = promise.result()
-      arm32_str = sizes[0].replace(' bytes', '').lstrip('+')
-      arm64_str = sizes[1].replace(' bytes', '').lstrip('+')
+      arm32_str, arm64_str = promise.result()
       crrev_str = info.cr_position or ''
       print_func(
         (
