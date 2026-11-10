@@ -93,6 +93,13 @@ class SchedulingEmbedder
     base::ElapsedTimer timer;
   };
 
+  // `passage_count` consecutive passages of a batch that come from the job with
+  // `job_id`. Their results come back in the same positions.
+  struct BatchSlice {
+    uint64_t job_id;
+    size_t passage_count;
+  };
+
   // EmbedderMetadataObserver:
   void EmbedderMetadataUpdated(EmbedderMetadata metadata) override;
 
@@ -107,8 +114,10 @@ class SchedulingEmbedder
       performance_scenarios::InputScenario new_scenario) override;
 
   // Invoked after the embedding for the current job has been computed.
-  // Continues processing next job if one is pending.
+  // Continues processing next job if one is pending. `batch` lists the slices
+  // of the batch in the order their passages were submitted.
   void OnEmbeddingsComputed(
+      const std::vector<BatchSlice>& batch,
       std::vector<mojom::PassageEmbeddingsResultPtr> results,
       ComputeEmbeddingsStatus status);
 
@@ -128,10 +137,16 @@ class SchedulingEmbedder
                         ComputeEmbeddingsStatus status,
                         bool record_histograms);
 
+  // Posts `job`'s callback with kCanceled and no embeddings, and records its
+  // status histograms.
+  void CancelJob(Job job);
+
   // Jobs that are waiting to be scheduled or resumed, grouped by priority.
   std::map<PassagePriority, std::deque<Job>> pending_jobs_;
 
-  // Jobs that have passages in the current in-flight batch.
+  // Jobs that have passages in the current in-flight batch, in batch order.
+  // TryCancel() may remove any of them, but nothing reorders them.
+  // OnEmbeddingsComputed() relies on this order to match results to jobs.
   std::deque<Job> active_jobs_;
 
   // ID to assign to the next Job.

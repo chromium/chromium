@@ -228,10 +228,10 @@ class Embedder {
  protected:
   Embedder();
 
-  // Cancels computation of embeddings iff none of the passages given to
-  // `ComputePassagesEmbeddings()` has been submitted for embedding yet.
-  // If successful, the callback for the canceled job will be invoked with
-  // `ComputeEmbeddingsStatus::kCanceled` status.
+  // Cancels the job with `job_id` if it has not finished. If this returns
+  // true, the job's callback is invoked once, asynchronously, with
+  // `ComputeEmbeddingsStatus::kCanceled` and no embeddings. Returns false if
+  // the job is unknown, has already finished or was already canceled.
   virtual bool TryCancel(uint64_t job_id) = 0;
 };
 

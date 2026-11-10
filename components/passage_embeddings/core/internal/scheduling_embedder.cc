@@ -210,6 +210,7 @@ void SchedulingEmbedder::SubmitWorkToEmbedder() {
 
   PassagePriority priority = map_it->first;
   std::vector<std::string> passages;
+  std::vector<BatchSlice> batch;
   std::deque<Job>& queue = map_it->second;
 
   while (passages.size() < max_batch_size_ && !queue.empty()) {
@@ -221,6 +222,7 @@ void SchedulingEmbedder::SubmitWorkToEmbedder() {
     VLOG(3) << "Batching range [" << job.embeddings.size() << ','
             << job.embeddings.size() + accept << ") of " << job.passages.size()
             << " passages from job";
+    batch.push_back({job.job_id, accept});
     for (size_t i = job.embeddings.size();
          i < job.passages.size() && accept > 0; i++, accept--) {
       passages.push_back(job.passages[i]);
@@ -232,7 +234,7 @@ void SchedulingEmbedder::SubmitWorkToEmbedder() {
   get_embeddings_callback_.Run(
       std::move(passages), priority,
       base::BindOnce(&SchedulingEmbedder::OnEmbeddingsComputed,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(batch)));
 }
 
 bool SchedulingEmbedder::IsPerformanceScenarioReady() {
@@ -307,25 +309,21 @@ bool SchedulingEmbedder::TryCancel(uint64_t job_id) {
         std::find_if(queue.begin(), queue.end(),
                      [job_id](const Job& job) { return job.job_id == job_id; });
     if (it != queue.end()) {
-      Job& job = *it;
-      VLOG(2) << "Aborted embedding work for " << job.passages.size()
-              << " passages starting with `"
-              << (job.passages.empty() ? "" : job.passages[0]) << "`";
-
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(job.callback), std::move(job.passages),
-                         std::vector<Embedding>(), job.job_id,
-                         ComputeEmbeddingsStatus::kCanceled));
-      if (!execute_for_gemma_) {
-        RecordStatusHistograms(job.priority,
-                               ComputeEmbeddingsStatus::kCanceled);
-      }
+      CancelJob(std::move(*it));
       queue.erase(it);
       return true;
     }
   }
-  return false;
+
+  // A job with passages in the in-flight batch is dropped the same way.
+  // OnEmbeddingsComputed() skips the results of jobs that are gone.
+  auto it = std::ranges::find(active_jobs_, job_id, &Job::job_id);
+  if (it == active_jobs_.end()) {
+    return false;
+  }
+  CancelJob(std::move(*it));
+  active_jobs_.erase(it);
+  return true;
 }
 
 void SchedulingEmbedder::EmbedderMetadataUpdated(EmbedderMetadata metadata) {
@@ -353,6 +351,7 @@ void SchedulingEmbedder::OnInputScenarioChanged(ScenarioScope scope,
 }
 
 void SchedulingEmbedder::OnEmbeddingsComputed(
+    const std::vector<BatchSlice>& batch,
     std::vector<mojom::PassageEmbeddingsResultPtr> results,
     ComputeEmbeddingsStatus status) {
   std::vector<Embedding> embeddings;
@@ -374,21 +373,30 @@ void SchedulingEmbedder::OnEmbeddingsComputed(
           << static_cast<int>(status);
 
   if (active_jobs_.empty()) {
-    // This should not happen if the service is behaving correctly, but
-    // handle it gracefully.
+    // Every job in the batch was canceled while it was being embedded.
     work_submitted_ = false;
     SubmitWorkToEmbedder();
     return;
   }
 
-  // Take embeddings into jobs and pop them as they're filled. The
-  // !active_jobs_.empty() check ensures we don't overrun the available jobs if
-  // the service were to maliciously send too many embeddings.
+  // Take embeddings into jobs slice by slice and pop the jobs as they're
+  // filled. A slice whose job isn't at the front of `active_jobs_` belongs to a
+  // job that was canceled while the batch was in flight, so its embeddings are
+  // skipped. Embeddings past the last slice are ignored.
   size_t read_index = 0;
-  while (read_index < embeddings.size() && !active_jobs_.empty()) {
+  for (const BatchSlice& slice : batch) {
+    if (read_index >= embeddings.size() || active_jobs_.empty()) {
+      break;
+    }
+    if (active_jobs_.front().job_id != slice.job_id) {
+      DCHECK(!std::ranges::contains(active_jobs_, slice.job_id, &Job::job_id));
+      read_index += slice.passage_count;
+      continue;
+    }
     Job& job = active_jobs_.front();
-    while (job.embeddings.size() < job.passages.size() &&
-           read_index < embeddings.size()) {
+    const size_t slice_end =
+        std::min(read_index + slice.passage_count, embeddings.size());
+    while (read_index < slice_end) {
       job.embeddings.push_back(std::move(embeddings[read_index]));
       read_index++;
     }
@@ -404,22 +412,35 @@ void SchedulingEmbedder::OnEmbeddingsComputed(
     }
   }
 
-  // Fail the first remaining incomplete job if a vector couldn't be
-  // normalized or if the service returned no results:
-  // - If normalization_failed, this job owns the bad vector (unless the
-  //   service sent more results than passages), and resubmitting its passage
-  //   would get the same vector back.
+  // Fail the job whose slice holds the first missing embedding if a vector
+  // couldn't be normalized or if the service returned no results:
+  // - If normalization_failed, this job owns the bad vector, and resubmitting
+  //   its passage would get the same vector back. A bad vector past the last
+  //   slice belongs to no job.
   // - If results was empty, the failing passage isn't known; failing the lead
   //   job avoids retry loops while upholding the 1:1 callback guarantee (even
   //   if a later job's passage caused the batch failure, as the embedder is
   //   not expected to fail in practice).
-  // Remaining jobs are re-queued below so they still have a chance to
-  // succeed.
+  // If this job was canceled, no other job fails in its place. That can't
+  // cause a retry loop, because a canceled job is never resubmitted. Remaining
+  // jobs are re-queued below so they still have a chance to succeed.
   if ((embeddings.empty() || normalization_failed) && !active_jobs_.empty()) {
-    Job completed_job = std::move(active_jobs_.front());
-    active_jobs_.pop_front();
-    FinishJob(std::move(completed_job), status,
-              /*record_histograms=*/!execute_for_gemma_);
+    size_t slice_start = 0;
+    for (const BatchSlice& slice : batch) {
+      if (embeddings.size() < slice_start + slice.passage_count) {
+        // Every earlier slice had all its embeddings, so its job either
+        // completed above or was canceled. This slice's job is now at the
+        // front unless it was canceled.
+        if (active_jobs_.front().job_id == slice.job_id) {
+          Job completed_job = std::move(active_jobs_.front());
+          active_jobs_.pop_front();
+          FinishJob(std::move(completed_job), status,
+                    /*record_histograms=*/!execute_for_gemma_);
+        }
+        break;
+      }
+      slice_start += slice.passage_count;
+    }
   }
 
   // Move any remaining active jobs (including any partially filled one) back to
@@ -463,6 +484,21 @@ void SchedulingEmbedder::FinishJob(Job job,
       RecordDurationHistograms(job.priority, job.timer.Elapsed());
     }
     RecordStatusHistograms(job.priority, status);
+  }
+}
+
+void SchedulingEmbedder::CancelJob(Job job) {
+  VLOG(2) << "Aborted embedding work for " << job.passages.size()
+          << " passages starting with `"
+          << (job.passages.empty() ? "" : job.passages[0]) << "`";
+
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(job.callback), std::move(job.passages),
+                     std::vector<Embedding>(), job.job_id,
+                     ComputeEmbeddingsStatus::kCanceled));
+  if (!execute_for_gemma_) {
+    RecordStatusHistograms(job.priority, ComputeEmbeddingsStatus::kCanceled);
   }
 }
 
