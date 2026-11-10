@@ -30,7 +30,6 @@ import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
 import type {PageHandlerRemote} from './composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from './composebox_dropdown.js';
-import type {ComposeboxFileInputsElement} from './composebox_file_inputs.js';
 import type {ComposeboxInputElement} from './composebox_input.js';
 import {ComposeboxEmbedderMixin} from './composebox_mixin.js';
 import {ComposeboxProxyImpl} from './composebox_proxy.js';
@@ -43,7 +42,6 @@ export interface ComposeboxElement {
   $: {
     composeboxInput: ComposeboxInputElement,
     composebox: HTMLElement,
-    fileInputs: ComposeboxFileInputsElement,
     matches: ComposeboxDropdownElement,
   };
 }
@@ -176,10 +174,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
   override getLensButtonElement(): HTMLElement|null {
     return this.shadowRoot?.querySelector('#lensIcon') || null;
-  }
-
-  override getFileInputsElement(): ComposeboxFileInputsElement|null {
-    return this.shouldDisableFileInputs() ? null : this.$.fileInputs;
   }
 
   constructor() {
