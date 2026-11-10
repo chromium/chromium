@@ -33,19 +33,15 @@ void TtsExtensionEngineChromeOS::SendAudioBuffer(
     const std::vector<float>& audio_buffer,
     int char_index,
     bool is_last_buffer) {
-  // Drop in-flight buffers from canceled or superseded utterances.
-  if (utterance_id != current_utterance_id_) {
+  if (utterance_id != current_utterance_id_)
     return;
-  }
 
-  CHECK(playback_tts_stream_);
   playback_tts_stream_->SendAudioBuffer(audio_buffer, char_index,
                                         is_last_buffer);
 }
 
 void TtsExtensionEngineChromeOS::Speak(content::TtsUtterance* utterance,
                                        const content::VoiceData& voice) {
-  set_current_utterance_engine(utterance->GetEngineId());
   Profile* profile =
       Profile::FromBrowserContext(utterance->GetBrowserContext());
   const std::string& engine_id = utterance->GetEngineId();
@@ -164,15 +160,12 @@ void TtsExtensionEngineChromeOS::OnTimepoint(int32_t char_index) {
 }
 
 void TtsExtensionEngineChromeOS::OnEnd() {
-  set_current_utterance_engine("");
   content::TtsController::GetInstance()->OnTtsEvent(
       current_utterance_id_, content::TTS_EVENT_END, current_utterance_length_,
       -1 /* length */, std::string());
 }
 
-void TtsExtensionEngineChromeOS::OnError() {
-  set_current_utterance_engine("");
-}
+void TtsExtensionEngineChromeOS::OnError() {}
 
 void TtsExtensionEngineChromeOS::OnProfileWillBeDestroyed(Profile* profile) {
   current_utterance_profile_observer_.Reset();

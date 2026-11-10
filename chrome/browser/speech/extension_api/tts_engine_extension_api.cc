@@ -344,7 +344,6 @@ void TtsExtensionEngine::GetVoices(
 
 void TtsExtensionEngine::Speak(content::TtsUtterance* utterance,
                                const content::VoiceData& voice) {
-  set_current_utterance_engine(utterance->GetEngineId());
   scoped_refptr<extensions::EventArgs> args = BuildSpeakArgs(utterance, voice);
   Profile* profile =
       Profile::FromBrowserContext(utterance->GetBrowserContext());
@@ -375,12 +374,6 @@ void TtsExtensionEngine::Stop(content::BrowserContext* browser_context,
       nullptr, profile);
   EventRouter::Get(profile)->DispatchEventToExtension(engine_id,
                                                       std::move(event));
-}
-
-bool TtsExtensionEngine::IsCurrentUtteranceEngine(
-    const std::string& extension_id) const {
-  CHECK(!extension_id.empty());
-  return current_utterance_engine_id_ == extension_id;
 }
 
 void TtsExtensionEngine::Pause(content::TtsUtterance* utterance) {
@@ -608,11 +601,6 @@ ExtensionFunction::ResponseAction
 ExtensionTtsEngineSendTtsEventFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(args().size() >= 2);
 
-  if (!TtsExtensionEngine::GetInstance()->IsCurrentUtteranceEngine(
-          extension_id())) {
-    return RespondNow(Error(constants::kErrorExtensionIdMismatch));
-  }
-
   const auto& utterance_id_value = args()[0];
   EXTENSION_FUNCTION_VALIDATE(utterance_id_value.is_int());
   int utterance_id = utterance_id_value.GetInt();
@@ -664,27 +652,10 @@ ExtensionTtsEngineSendTtsEventFunction::Run() {
   content::TtsEventType tts_event_type;
   if (!GetTtsEventType(*event_type, &tts_event_type)) {
     EXTENSION_FUNCTION_VALIDATE(false);
+  } else {
+    content::TtsController::GetInstance()->OnTtsEvent(
+        utterance_id, tts_event_type, char_index, length, error_message);
   }
-
-  switch (tts_event_type) {
-    case content::TTS_EVENT_END:
-    case content::TTS_EVENT_INTERRUPTED:
-    case content::TTS_EVENT_CANCELLED:
-    case content::TTS_EVENT_ERROR:
-      TtsExtensionEngine::GetInstance()->set_current_utterance_engine("");
-      break;
-    case content::TTS_EVENT_START:
-    case content::TTS_EVENT_WORD:
-    case content::TTS_EVENT_SENTENCE:
-    case content::TTS_EVENT_MARKER:
-    case content::TTS_EVENT_PAUSE:
-    case content::TTS_EVENT_RESUME:
-      break;
-  }
-
-  content::TtsController::GetInstance()->OnTtsEvent(
-      utterance_id, tts_event_type, char_index, length, error_message);
-
   return RespondNow(NoArguments());
 }
 
@@ -726,12 +697,6 @@ ExtensionTtsEngineSendTtsAudioFunction::Run() {
   std::optional<bool> is_last_buffer =
       audio->FindBool(tts_extension_api_constants::kIsLastBufferKey);
   EXTENSION_FUNCTION_VALIDATE(is_last_buffer);
-  EXTENSION_FUNCTION_VALIDATE(extension());
-
-  if (!TtsExtensionEngine::GetInstance()->IsCurrentUtteranceEngine(
-          extension_id())) {
-    return RespondNow(Error(constants::kErrorExtensionIdMismatch));
-  }
 
   TtsExtensionEngine::GetInstance()->SendAudioBuffer(
       utterance_id, audio_buffer, char_index, *is_last_buffer);
