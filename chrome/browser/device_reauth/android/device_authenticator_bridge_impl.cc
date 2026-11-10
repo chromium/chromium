@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "chrome/browser/device_reauth/android/device_authenticator_android.h"
 #include "components/device_reauth/device_authenticator.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/window_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -20,14 +21,14 @@ using device_reauth::DeviceAuthUIResult;
 DeviceAuthenticatorBridgeImpl::DeviceAuthenticatorBridgeImpl(
     const gfx::NativeWindow window) {
   java_object_ = Java_DeviceAuthenticatorBridge_createForWindow(
-      AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
+      AttachCurrentThread(), jni_zero::MakeRaw(this),
       window != nullptr ? window->GetJavaObject() : nullptr);
 }
 
 DeviceAuthenticatorBridgeImpl::DeviceAuthenticatorBridgeImpl(
     const base::android::JavaRef<jobject>& activity) {
   java_object_ = Java_DeviceAuthenticatorBridge_createForActivity(
-      AttachCurrentThread(), reinterpret_cast<intptr_t>(this), activity);
+      AttachCurrentThread(), jni_zero::MakeRaw(this), activity);
 }
 
 DeviceAuthenticatorBridgeImpl::~DeviceAuthenticatorBridgeImpl() {

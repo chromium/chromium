@@ -7,6 +7,10 @@ package org.chromium.chrome.browser.device_reauth;
 import androidx.fragment.app.FragmentActivity;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -15,18 +19,23 @@ import org.chromium.ui.base.WindowAndroid;
 
 @NullMarked
 class DeviceAuthenticatorBridge implements DeviceAuthenticatorController.Delegate {
-    private long mNativeDeviceAuthenticator;
+    @JniType("::DeviceAuthenticatorBridgeImpl")
+    interface NativeDeviceAuthenticatorBridgeImpl extends JniTypeToken {}
+
+    private @Nullable JniRawPtr<NativeDeviceAuthenticatorBridgeImpl> mNativeDeviceAuthenticator;
     private final DeviceAuthenticatorController mController;
 
     private DeviceAuthenticatorBridge(
-            long nativeDeviceAuthenticator, @Nullable FragmentActivity activity) {
+            JniRawPtr<NativeDeviceAuthenticatorBridgeImpl> nativeDeviceAuthenticator,
+            @Nullable FragmentActivity activity) {
         mNativeDeviceAuthenticator = nativeDeviceAuthenticator;
         mController = new DeviceAuthenticatorController(activity, this);
     }
 
     @CalledByNative
-    private static DeviceAuthenticatorBridge createForWindow(
-            long nativeDeviceAuthenticator, @Nullable WindowAndroid window) {
+    static DeviceAuthenticatorBridge createForWindow(
+            JniRawPtr<NativeDeviceAuthenticatorBridgeImpl> nativeDeviceAuthenticator,
+            @Nullable WindowAndroid window) {
         FragmentActivity activity =
                 (window == null || window.getActivity().get() == null)
                         ? null
@@ -35,8 +44,9 @@ class DeviceAuthenticatorBridge implements DeviceAuthenticatorController.Delegat
     }
 
     @CalledByNative
-    private static DeviceAuthenticatorBridge createForActivity(
-            long nativeDeviceAuthenticator, @Nullable FragmentActivity activity) {
+    static DeviceAuthenticatorBridge createForActivity(
+            JniRawPtr<NativeDeviceAuthenticatorBridgeImpl> nativeDeviceAuthenticator,
+            @Nullable FragmentActivity activity) {
         return new DeviceAuthenticatorBridge(nativeDeviceAuthenticator, activity);
     }
 
@@ -63,7 +73,7 @@ class DeviceAuthenticatorBridge implements DeviceAuthenticatorController.Delegat
 
     @Override
     public void onAuthenticationCompleted(@DeviceAuthUIResult int result) {
-        if (mNativeDeviceAuthenticator != 0) {
+        if (mNativeDeviceAuthenticator != null) {
             DeviceAuthenticatorBridgeJni.get()
                     .onAuthenticationCompleted(mNativeDeviceAuthenticator, result);
         }
@@ -71,7 +81,10 @@ class DeviceAuthenticatorBridge implements DeviceAuthenticatorController.Delegat
 
     @CalledByNative
     void destroy() {
-        mNativeDeviceAuthenticator = 0;
+        if (mNativeDeviceAuthenticator != null) {
+            mNativeDeviceAuthenticator.release();
+            mNativeDeviceAuthenticator = null;
+        }
         cancel();
     }
 
@@ -82,6 +95,7 @@ class DeviceAuthenticatorBridge implements DeviceAuthenticatorController.Delegat
 
     @NativeMethods
     interface Natives {
-        void onAuthenticationCompleted(long nativeDeviceAuthenticatorBridgeImpl, int result);
+        void onAuthenticationCompleted(
+                JniPtr<NativeDeviceAuthenticatorBridgeImpl> self, int result);
     }
 }
