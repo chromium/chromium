@@ -172,7 +172,9 @@ void UsageScenarioDataStoreImpl::OnIsCapturingVideoStarted() {
 
 void UsageScenarioDataStoreImpl::OnIsCapturingVideoEnded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK_GT(web_contents_capturing_video_, 0U, base::NotFatalUntil::M161);
+  // TODO(crbug.com/582001871): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_GT(web_contents_capturing_video_, 0U);
   --web_contents_capturing_video_;
 
   // If this was the last tab capturing video then the interval data should be
