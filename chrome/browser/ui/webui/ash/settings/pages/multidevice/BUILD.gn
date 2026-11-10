@@ -30,7 +30,6 @@ static_library("multidevice") {
     "//ash/constants",
     "//ash/public/cpp",
     "//build:branding_buildflags",
-    "//chrome/app:generated_resources",
     "//chrome/browser/ash/login/quick_unlock",
     "//chrome/browser/ash/phonehub",
     "//chrome/browser/nearby_sharing",

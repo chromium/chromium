@@ -7241,6 +7241,122 @@ Press an assigned switch or key to remove assignment.
         Enter a custom prompt or highlight text to create an image
       </message>
 
+      <!-- Nearby Share, Sync, and Rollback strings -->
+      <message name="IDS_SETTINGS_NEARBY_SHARE_TITLE" desc="Name of the settings page for the Nearby Share feature">
+        Nearby Share
+      </message>
+      <message name="IDS_SETTINGS_NEARBY_SHARE_TITLE_PH" desc="Feature name placeholder: Name of the settings page for the sharing feature">
+        <ph name="FEATURE_NAME">$1<ex>Nearby Share</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_NEARBY_SHARE_SET_UP_BUTTON_TITLE" desc="Title of the button that lets the user set up and enable the Nearby Share feature for the first time.">
+        Set up
+      </message>
+      <message name="IDS_SETTINGS_NEARBY_SHARE_DEVICE_NAME_ROW_TITLE" desc="Text for the row in settings which allows a user to set the name of their device which is shown to other devices for the Nearby Share feature.">
+        Device name
+      </message>
+      <message name="IDS_SETTINGS_NEARBY_SHARE_DEVICE_NAME_DIALOG_TITLE" desc="Title for the dialog which allows a user to set the name of their device which is shown to other devices for the Nearby Share feature.">
+        Change device name
+      </message>
+      <message name="IDS_SETTINGS_NEARBY_SHARE_DEVICE_NAME_FIELD_LABEL" desc="Label for the input field where a user can set the name of their device which is shown to other devices for the Nearby Share feature.">
+        New device name
+      </message>
+      <message name="IDS_SETTINGS_NEARBY_SHARE_EDIT_DEVICE_NAME" desc="Label for the button that opens the dialog which allows a user to set the name of their device which is shown to other devices for the Nearby Share feature.">
+        Change device name
+      </message>
+      <message name="IDS_SETTINGS_NEARBY_SHARE_FAST_INITIATION_NOTIFICATION_TOGGLE_TITLE" desc="Title for the toggle that allows a user to turn fast initiation notifications on or off. Fast initiation notifications alert the user when devices nearby are trying to share.">
+        Show notification
+      </message>
+      <message name="IDS_SETTINGS_NEARBY_SHARE_FAST_INITIATION_NOTIFICATION_TOGGLE_DESCRIPTION" desc="Description for the toggle that allows a user to turn fast initiation notifications on or off. Fast initiation notifications alert the user when devices nearby are trying to share.">
+        When devices are sharing nearby
+      </message>
+      <message name="IDS_SETTINGS_NEARBY_SHARE_FAST_INITIATION_NOTIFICATION_TOGGLE_ARIA_LABEL" desc="Title for screen readers for the toggle that allows a user to turn fast initiation notifications on or off. Fast initiation notifications alert the user when devices nearby are trying to share." is_accessibility_with_no_ui="true">
+        Show notification when devices are sharing nearby
+      </message>
+      <message name="IDS_SETTINGS_NEARBY_SHARE_DEVICE_NAME_ARIA_DESCRIPTION" desc="Description for screen readers, not displayed in UI, specifying the current device name which is shown to other devices for the Nearby Share feature." is_accessibility_with_no_ui="true">
+        Current device name is <ph name="DEVICE_NAME">$1<ex>Michael's Chromebook</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_NEARBY_SHARE_CONFIRM_DEVICE_NAME" desc="Label for the button that allows a user to confirm their device name which is shown to other devices for the Nearby Share feature.">
+        Rename
+      </message>
+      <message name="IDS_SETTINGS_NEARBY_SHARE_MANAGE_CONTACTS_LABEL" desc="Label for the button that opens contacts management when configuring visibility of their device with their contacts for the Nearby Share feature.">
+        Manage contacts
+      </message>
+      <message name="IDS_SETTINGS_NEARBY_SHARE_MANAGE_CONTACTS_ROW_TITLE" desc="Text for row in settings that allows user to manage contacts for the Nearby Share feature.">
+        Contacts
+      </message>
+      <message name="IDS_SETTINGS_NEARBY_SHARE_EDIT_DATA_USAGE" desc="Label for the button that brings up a dialog to allow a user to edit the data usage setting for the Nearby Share feature.">
+        Edit
+      </message>
+      <message name="IDS_SETTINGS_NEARBY_SHARE_UPDATE_DATA_USAGE" desc="Label for the button that allows a user to confirm their choice of data usage setting for the Nearby Share feature.">
+        Save
+      </message>
+      <message name="IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_DIALOG_TITLE" desc="Title for the dialog where a user can select the data usage setting for the Nearby Share feature.">
+        Data usage
+      </message>
+      <message name="IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_WIFI_ONLY_LABEL" desc="Label for the data usage setting where only Wi-Fi is to be used for transfers for the Nearby Share feature.">
+        Wi-Fi only
+      </message>
+      <message name="IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_WIFI_ONLY_DESCRIPTION" desc="Description of the data usage setting where only Wi-Fi is to be used for transfers for the Nearby Share feature.">
+        Never use mobile data to transfer
+      </message>
+      <message name="IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_MOBILE_DATA_LABEL" desc="Label for the mobile data usage setting where Wi-Fi or cell data may be used for transfers for the Nearby Share feature.">
+        Mobile Data
+      </message>
+      <message name="IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_MOBILE_DATA_DESCRIPTION" desc="Description of the mobile data usage setting where Wi-Fi or cell data may be used for transfers for the Nearby Share feature.">
+        May incur mobile data charges
+      </message>
+      <message name="IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_MOBILE_DATA_TOOLTIP" desc="Explanation of when the mobile data usage setting applies. When selected, Mobile data means that Wi-Fi or cell data may be used for transfers for the Nearby Share feature.">
+        This option applies to Chromebooks with a data plan or mobile network dongle, or when tethering to a portable hotspot
+      </message>
+      <message name="IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_OFFLINE_LABEL" desc="Label for the data usage setting where transfers will only take place offline for the Nearby Share feature.">
+        Without internet
+      </message>
+      <message name="IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_OFFLINE_DESCRIPTION" desc="Description of the data usage setting where transfers will only take place offline for the Nearby Share feature.">
+        Files will always be shared offline
+      </message>
+      <message name="IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_EDIT_BUTTON_DATA_DESCRIPTION" desc="Description for scren readers, not displayed in UI, specifying the current mobile data usage setting where Wi-Fi or cell data may be used for transfers for the Nearby Share feature." is_accessibility_with_no_ui="true">
+        Current data usage setting is Mobile Data
+      </message>
+      <message name="IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_EDIT_BUTTON_WIFI_ONLY_DESCRIPTION" desc="Description for screen readers, not displayed in UI, specifying the current data usage setting where only Wi-Fi is to be used for transfers for the Nearby Share feature." is_accessibility_with_no_ui="true">
+        Current data usage setting is Wi-Fi only
+      </message>
+      <message name="IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_EDIT_BUTTON_OFFLINE_DESCRIPTION" desc="Description for scren readers, not displayed in UI, specifying the current data usage setting where transfers will only take place offline for the Nearby Share feature." is_accessibility_with_no_ui="true">
+        Current data usage setting is Without internet
+      </message>
+      <message name="IDS_SETTINGS_NEARBY_SHARE_CONTACT_VISIBILITY_ROW_TITLE" desc="Text for the row in settings which allows a user to set their preference for the visibility of their device with their contacts for the Nearby Share feature.">
+        Device visibility
+      </message>
+      <message name="IDS_SETTINGS_NEARBY_SHARE_EDIT_VISIBILITY" desc="Label for the button that opens the dialog which allows a user to set their preference for the visibility of their device with their contacts for the Nearby Share feature.">
+        Change visibility
+      </message>
+      <message name="IDS_SETTINGS_NEARBY_SHARE_VISIBILITY_DIALOG_TITLE" desc="Title for the dialog which allows a user to set their preference for the visibility of their device with their contacts for the Nearby Share feature.">
+        Device visibility
+      </message>
+      <message name="IDS_SETTINGS_NEARBY_SHARE_VISIBILITY_DIALOG_SAVE" desc="Label for the button that saves a user's preference for the visibility of their device with their contacts for the Nearby Share feature. ">
+        Save
+      </message>
+      <message name="IDS_SETTINGS_NEARBY_SHARE_DESCRIPTION" desc="A description of nearby share that helps users understand what the feature is used for.">
+        Share files and more with nearby devices. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_NEARBY_SHARE_HIGH_VISIBILITY_TITLE" desc="Label for the switch that toggles whether the device is visible to all devices around it for the Nearby Share feature.">
+        Visible to everyone
+      </message>
+      <message name="IDS_SETTINGS_NEARBY_SHARE_HIGH_VISIBILITY_ON" desc="Subtitle shown indicating that the device is visible to all devices around it for the Nearby Share feature and the nearest number of whole minutes it is on until it is turned off.">
+        Visibility is on for <ph name="MINUTES">$1<ex>5</ex></ph> minutes
+      </message>
+      <message name="IDS_SETTINGS_NEARBY_SHARE_HIGH_VISIBILITY_OFF" desc="Label for the switch that toggles whether the device is visible to all devices around it for the Nearby Share feature.">
+        You will be visible to everyone for <ph name="MINUTES">$1<ex>5</ex></ph> minutes. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_SYNC_ADVANCED_PAGE_TITLE" desc="Name of the settings page which manages data used by sync.">
+        Manage sync
+      </message>
+      <message name="IDS_SETTINGS_SYNC_DISCONNECT_CONFIRM" desc="The text to display on the button to confirm the user wishes to stop syncing.">
+        Delete and Sign Out
+      </message>
+      <message name="IDS_SETTINGS_UPDATE_TO_ROLLBACK_VERSION_DISALLOWED" desc="Status label: After a consumer rollback, updating to the previously installed version just rolledback from is disallowed (ChromiumOS/ChromeOS)">
+        You reverted to a previous version of ChromeOS. To get updates, wait until the next version is available.
+      </message>
+
       <part file="ash_settings_search_tag_strings.grdp" />
     </messages>
   </release>

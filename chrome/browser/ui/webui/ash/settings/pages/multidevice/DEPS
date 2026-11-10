@@ -18,7 +18,6 @@ include_rules = [
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/webui/nearby_share",
   "+chrome/browser/ui/webui/settings",
-  "+chrome/grit",
 ]
 
 specific_include_rules = {
