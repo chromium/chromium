@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
 
+#include <algorithm>
+
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -42,6 +44,8 @@
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/scroll_view.h"
@@ -49,7 +53,57 @@
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_targeter.h"
+#include "ui/views/view_targeter_delegate.h"
 #include "ui/views/view_utils.h"
+
+// Excludes visible leading and seam overflow indicator opaque regions from
+// scroll view hit-testing so events pass through to the overlapping view.
+class TabStripView::ScrollViewTargeter : public views::ViewTargeterDelegate {
+ public:
+  explicit ScrollViewTargeter(const TabStripView* tab_strip_view)
+      : tab_strip_view_(tab_strip_view) {
+    CHECK(tab_strip_view_);
+  }
+  ScrollViewTargeter(const ScrollViewTargeter&) = delete;
+  ScrollViewTargeter& operator=(const ScrollViewTargeter&) = delete;
+  ~ScrollViewTargeter() override = default;
+
+  bool DoesIntersectRect(const views::View* target,
+                         const gfx::Rect& rect) const override {
+    gfx::Rect hit_bounds = target->GetLocalBounds();
+    if (target == tab_strip_view_->pinned_tabs_scroll_view_) {
+      const int left_inset =
+          (tab_strip_view_->pinned_left_overflow_indicator_ &&
+           tab_strip_view_->pinned_left_overflow_indicator_->GetVisible())
+              ? tab_strip_view_->pinned_left_overflow_indicator_
+                    ->opaque_thickness()
+              : 0;
+      const int right_inset =
+          tab_strip_view_->pinned_right_overflow_indicator_
+              ? tab_strip_view_->pinned_right_overflow_indicator_
+                    ->opaque_thickness()
+              : 0;
+      hit_bounds.Inset(gfx::Insets::TLBR(0, left_inset, 0, right_inset));
+    } else if (target == tab_strip_view_->unpinned_tabs_scroll_view_ &&
+               tab_strip_view_->unpinned_left_overflow_indicator_) {
+      const bool has_pinned =
+          tab_strip_view_->pinned_tabs_scroll_view_ &&
+          tab_strip_view_->pinned_tabs_scroll_view_->width() > 0;
+      const int left_inset =
+          (has_pinned ||
+           tab_strip_view_->unpinned_left_overflow_indicator_->GetVisible())
+              ? tab_strip_view_->unpinned_left_overflow_indicator_
+                    ->opaque_thickness()
+              : 0;
+      hit_bounds.Inset(gfx::Insets::TLBR(0, left_inset, 0, 0));
+    }
+    return target->GetMirroredRect(hit_bounds).Intersects(rect);
+  }
+
+ private:
+  const raw_ptr<const TabStripView> tab_strip_view_;
+};
 
 class TabStripView::TargetViewsTracker : public views::ViewObserver {
  public:
@@ -240,9 +294,38 @@ TabStripView::TabStripView(TabCollectionNode* collection_node)
 }
 
 TabStripView::~TabStripView() {
+  if (pinned_tabs_scroll_view_) {
+    pinned_tabs_scroll_view_->SetEventTargeter(nullptr);
+  }
+  if (unpinned_tabs_scroll_view_) {
+    unpinned_tabs_scroll_view_->SetEventTargeter(nullptr);
+  }
+  pinned_left_overflow_indicator_ = nullptr;
+  pinned_right_overflow_indicator_ = nullptr;
+  unpinned_left_overflow_indicator_ = nullptr;
+  unpinned_right_overflow_indicator_ = nullptr;
   if (tab_scroll_button_container_) {
     tab_scroll_button_container_->SetScrollView(nullptr);
   }
+}
+
+void TabStripView::Layout(PassKey) {
+  LayoutSuperclass<views::View>(this);
+  UpdateScrollViewLayers();
+}
+
+views::View::Views TabStripView::GetChildrenInZOrder() {
+  views::View::Views children = views::View::GetChildrenInZOrder();
+  if (orientation_ == TabStripOrientation::kHorizontal &&
+      ShouldDrawPinnedAboveUnpinned()) {
+    auto pinned_it = std::ranges::find(children, pinned_tabs_scroll_view_);
+    auto unpinned_it = std::ranges::find(children, unpinned_tabs_scroll_view_);
+    if (pinned_it != children.end() && unpinned_it != children.end() &&
+        pinned_it < unpinned_it) {
+      std::iter_swap(pinned_it, unpinned_it);
+    }
+  }
+  return children;
 }
 
 void TabStripView::AddedToWidget() {
@@ -555,7 +638,7 @@ bool TabStripView::IsTabScrollButtonsPinned() const {
 void TabStripView::SetLeadingOverlap(int leading_overlap) {
   if (leading_overlap != leading_overlap_) {
     leading_overlap_ = leading_overlap;
-    InvalidateLayout(/*avoid_propagate_during_layout=*/true);
+    UpdateScrollViewLayers();
   }
 }
 
@@ -564,6 +647,35 @@ void TabStripView::SetTrailingOverlap(int trailing_overlap) {
     trailing_overlap_ = trailing_overlap;
     InvalidateLayout(/*avoid_propagate_during_layout=*/true);
   }
+}
+
+gfx::Rect TabStripView::GetScrollViewUnmaskedBounds(
+    const views::ScrollView* scroll_view) const {
+  CHECK(scroll_view);
+  gfx::Rect bounds = scroll_view->GetLocalBounds();
+  if (orientation_ != TabStripOrientation::kHorizontal) {
+    return bounds;
+  }
+
+  int left_inset = 0;
+  int right_inset = 0;
+  if (scroll_view == pinned_tabs_scroll_view_) {
+    if (pinned_left_overflow_indicator_ &&
+        pinned_left_overflow_indicator_->GetVisible()) {
+      left_inset = pinned_left_overflow_indicator_->opaque_thickness();
+    }
+    if (pinned_right_overflow_indicator_ &&
+        pinned_tabs_scroll_view_->GetDrawOverflowIndicator()) {
+      right_inset = pinned_right_overflow_indicator_->opaque_thickness();
+    }
+  } else if (scroll_view == unpinned_tabs_scroll_view_) {
+    if (unpinned_left_overflow_indicator_ &&
+        unpinned_left_overflow_indicator_->GetVisible()) {
+      left_inset = unpinned_left_overflow_indicator_->opaque_thickness();
+    }
+  }
+  bounds.Inset(gfx::Insets::TLBR(0, left_inset, 0, right_inset));
+  return scroll_view->GetMirroredRect(bounds);
 }
 
 void TabStripView::SetCollapsedState(bool is_collapsed) {
@@ -681,24 +793,55 @@ void TabStripView::SetScrollViewProperties(views::ScrollView* scroll_view) {
     scroll_view->SetVerticalScrollBarMode(
         views::ScrollView::ScrollBarMode::kDisabled);
     scroll_view->SetTreatAllScrollEventsAsHorizontal(true);
+    scroll_view->SetDrawOverflowIndicator(false);
 
-    scroll_view->SetCustomOverflowIndicator(
-        views::OverflowIndicatorAlignment::kLeft,
+    BrowserView* const browser_view =
+        collection_node_->GetController()->GetBrowserView();
+    auto left_indicator =
         std::make_unique<HorizontalTabStripOverflowIndicatorView>(
-            views::OverflowIndicatorAlignment::kLeft),
-        HorizontalTabStripOverflowIndicatorView::kTotalThickness,
+            views::OverflowIndicatorAlignment::kLeft, browser_view);
+    if (scroll_view == pinned_tabs_scroll_view_) {
+      pinned_left_overflow_indicator_ = left_indicator.get();
+    } else if (scroll_view == unpinned_tabs_scroll_view_) {
+      unpinned_left_overflow_indicator_ = left_indicator.get();
+    }
+    scroll_view->SetCustomOverflowIndicator(
+        views::OverflowIndicatorAlignment::kLeft, std::move(left_indicator),
+        HorizontalTabStripOverflowIndicatorView::GetMaxTotalThickness(),
         /*fills_opaquely=*/false);
+    if (scroll_view == unpinned_tabs_scroll_view_) {
+      callback_subscriptions_.emplace_back(
+          unpinned_left_overflow_indicator_->AddVisibleChangedCallback(
+              base::BindRepeating(&TabStripView::UpdateScrollViewLayers,
+                                  base::Unretained(this))));
+    }
 
-    scroll_view->SetCustomOverflowIndicator(
-        views::OverflowIndicatorAlignment::kRight,
+    auto right_indicator =
         std::make_unique<HorizontalTabStripOverflowIndicatorView>(
-            views::OverflowIndicatorAlignment::kRight),
-        HorizontalTabStripOverflowIndicatorView::kTotalThickness,
+            views::OverflowIndicatorAlignment::kRight, browser_view);
+    if (scroll_view == pinned_tabs_scroll_view_) {
+      pinned_right_overflow_indicator_ = right_indicator.get();
+    } else if (scroll_view == unpinned_tabs_scroll_view_) {
+      unpinned_right_overflow_indicator_ = right_indicator.get();
+    }
+    scroll_view->SetCustomOverflowIndicator(
+        views::OverflowIndicatorAlignment::kRight, std::move(right_indicator),
+        scroll_view == pinned_tabs_scroll_view_
+            ? HorizontalTabStripOverflowIndicatorView::GetMaxTotalThickness()
+            : HorizontalTabStripOverflowIndicatorView::kShadowThickness,
         /*fills_opaquely=*/false);
+    if (scroll_view == pinned_tabs_scroll_view_) {
+      callback_subscriptions_.emplace_back(
+          pinned_right_overflow_indicator_->AddVisibleChangedCallback(
+              base::BindRepeating(&TabStripView::UpdateScrollViewLayers,
+                                  base::Unretained(this))));
+    }
+    scroll_view->SetEventTargeter(std::make_unique<views::ViewTargeter>(
+        std::make_unique<ScrollViewTargeter>(this)));
   }
   callback_subscriptions_.emplace_back(
       scroll_view->AddContentsScrolledCallback(base::BindRepeating(
-          &TabStripView::HideHoverCardOnScroll, base::Unretained(this))));
+          &TabStripView::OnContentsScrolled, base::Unretained(this))));
 }
 
 void TabStripView::ResetCollectionNode() {
@@ -780,6 +923,9 @@ void TabStripView::EnsureViewsVisibleInViewportPostLayout(
     return;
   }
 
+  gfx::Rect opaque_visible_rect =
+      GetOpaqueVisibleRectForScrollTarget(scroll_view, combined_bounds);
+
   // If the combined bounds don't fit in the viewport, fall back to prioritizing
   // the active (primary) tab. If the primary tab belongs to a different scroll
   // view (e.g. pinned tab while checking the unpinned scroll view),
@@ -787,13 +933,15 @@ void TabStripView::EnsureViewsVisibleInViewportPostLayout(
   // this scroll view.
   const int combined_size =
       is_vertical ? combined_bounds.height() : combined_bounds.width();
-  const int viewport_size = is_vertical ? scroll_view->GetVisibleRect().height()
-                                        : scroll_view->GetVisibleRect().width();
+  const int viewport_size =
+      is_vertical ? opaque_visible_rect.height() : opaque_visible_rect.width();
   if (combined_size > viewport_size && !target_views_tracker_->empty()) {
     views::View* primary_view = target_views_tracker_->primary_view();
     if (primary_view && scroll_view->contents()->Contains(primary_view)) {
       combined_bounds =
           GetBoundsInScrollViewContents(primary_view, scroll_view);
+      opaque_visible_rect =
+          GetOpaqueVisibleRectForScrollTarget(scroll_view, combined_bounds);
     }
   }
 
@@ -811,10 +959,13 @@ void TabStripView::EnsureViewsVisibleInViewportPostLayout(
   // overflow gradients. This is deliberately more than is needed and may or
   // may not apply depending on view position.
   gfx::Rect overflow_adjusted_bounds = combined_bounds;
-  overflow_adjusted_bounds.AdjustToFit(scroll_view->GetOpaqueVisibleRect());
-  const int diff_avoid_overflow_gradient =
+  overflow_adjusted_bounds.AdjustToFit(opaque_visible_rect);
+  int diff_avoid_overflow_gradient =
       is_vertical ? combined_bounds.y() - overflow_adjusted_bounds.y()
                   : combined_bounds.x() - overflow_adjusted_bounds.x();
+  if (diff != 0 && diff_avoid_overflow_gradient == 0) {
+    diff_avoid_overflow_gradient = diff;
+  }
 
   const gfx::PointF scroll_offset =
       is_vertical
@@ -887,6 +1038,133 @@ gfx::Rect TabStripView::GetBoundsInScrollViewContents(
     bounds = views::View::ConvertRectToTarget(v, v->parent(), bounds);
   }
   return bounds;
+}
+
+gfx::Rect TabStripView::GetOpaqueVisibleRectForScrollTarget(
+    views::ScrollView* scroll_view,
+    const gfx::Rect& target_bounds) const {
+  gfx::Rect opaque_visible_rect = scroll_view->GetOpaqueVisibleRect();
+  if (orientation_ == TabStripOrientation::kVertical) {
+    return opaque_visible_rect;
+  }
+
+  // `ScrollView::GetOpaqueVisibleRect()` only accounts for gradient masks
+  // (used by vertical tabs). For horizontal tabs, inset by the painted width
+  // of any visible custom overflow indicators (or indicators that will become
+  // visible after scrolling `target_bounds` into view) so scrolled-to-fit tabs
+  // clear both the indicator shadow and seam padding.
+  const gfx::Rect visible_rect = scroll_view->GetVisibleRect();
+  const auto* left_indicator = scroll_view == pinned_tabs_scroll_view_
+                                   ? pinned_left_overflow_indicator_.get()
+                                   : unpinned_left_overflow_indicator_.get();
+  const auto* right_indicator = scroll_view == pinned_tabs_scroll_view_
+                                    ? pinned_right_overflow_indicator_.get()
+                                    : unpinned_right_overflow_indicator_.get();
+  const bool has_pinned =
+      pinned_tabs_scroll_view_ && pinned_tabs_scroll_view_->width() > 0;
+  const bool has_unpinned =
+      unpinned_tabs_scroll_view_ && unpinned_tabs_scroll_view_->width() > 0;
+  const bool is_pinned_overflowing =
+      has_pinned && pinned_tabs_scroll_view_->GetDrawOverflowIndicator();
+  const int leading_opaque_thickness = std::clamp(
+      leading_overlap_, 0,
+      HorizontalTabStripOverflowIndicatorView::GetMaxOpaqueThickness());
+  const int left_opaque_thickness =
+      (scroll_view == unpinned_tabs_scroll_view_ && has_pinned)
+          ? (is_pinned_overflowing ? 0 : TabStyle::Get()->GetTabOverlap())
+          : leading_opaque_thickness;
+  const int right_opaque_thickness =
+      (scroll_view == pinned_tabs_scroll_view_ && has_unpinned)
+          ? TabStyle::Get()->GetTabOverlap() / 2
+          : 0;
+  const int left_indicator_width =
+      left_indicator
+          ? std::min(
+                left_opaque_thickness +
+                    HorizontalTabStripOverflowIndicatorView::kShadowThickness,
+                std::max(0, target_bounds.x()))
+          : 0;
+  const int right_indicator_width =
+      right_indicator
+          ? std::min(
+                right_opaque_thickness +
+                    HorizontalTabStripOverflowIndicatorView::kShadowThickness,
+                std::max(0, scroll_view->contents()->width() -
+                                target_bounds.right()))
+          : 0;
+  const bool will_show_left =
+      left_indicator &&
+      (left_indicator->GetVisible() ||
+       target_bounds.right() > visible_rect.right() - right_indicator_width);
+  const bool will_show_right =
+      right_indicator &&
+      (right_indicator->GetVisible() ||
+       target_bounds.x() < visible_rect.x() + left_indicator_width);
+  opaque_visible_rect.Inset(
+      gfx::Insets::TLBR(0, will_show_left ? left_indicator_width : 0, 0,
+                        will_show_right ? right_indicator_width : 0));
+  return opaque_visible_rect;
+}
+
+bool TabStripView::ShouldDrawPinnedAboveUnpinned() const {
+  const bool unpinned_left_visible =
+      unpinned_left_overflow_indicator_ &&
+      unpinned_left_overflow_indicator_->GetVisible();
+  const bool pinned_right_visible =
+      pinned_right_overflow_indicator_ &&
+      pinned_right_overflow_indicator_->GetVisible();
+  if (unpinned_left_visible != pinned_right_visible) {
+    return unpinned_left_visible;
+  }
+
+  return false;
+}
+
+void TabStripView::UpdateScrollViewLayers() {
+  if (orientation_ == TabStripOrientation::kHorizontal) {
+    const int leading_opaque_thickness = std::clamp(
+        leading_overlap_, 0,
+        HorizontalTabStripOverflowIndicatorView::GetMaxOpaqueThickness());
+    const bool has_pinned =
+        pinned_tabs_scroll_view_ && pinned_tabs_scroll_view_->width() > 0;
+    const int container_overlap =
+        (has_pinned && unpinned_tabs_scroll_view_)
+            ? std::min(gfx::IntersectRects(pinned_tabs_scroll_view_->bounds(),
+                                           unpinned_tabs_scroll_view_->bounds())
+                           .width(),
+                       TabStyle::Get()->GetTabOverlap())
+            : 0;
+    const bool is_pinned_overflowing =
+        has_pinned && pinned_tabs_scroll_view_->GetDrawOverflowIndicator();
+    const bool unpinned_left_visible =
+        unpinned_left_overflow_indicator_ &&
+        unpinned_left_overflow_indicator_->GetVisible();
+    const int seam_pinned_opaque_thickness =
+        is_pinned_overflowing
+            ? container_overlap
+            : (unpinned_left_visible ? 0 : container_overlap / 2);
+    const int seam_unpinned_opaque_thickness =
+        container_overlap - seam_pinned_opaque_thickness;
+    if (pinned_left_overflow_indicator_) {
+      pinned_left_overflow_indicator_->SetOpaqueThickness(
+          leading_opaque_thickness);
+    }
+    if (pinned_right_overflow_indicator_) {
+      pinned_right_overflow_indicator_->SetOpaqueThickness(
+          seam_pinned_opaque_thickness);
+    }
+    if (unpinned_left_overflow_indicator_) {
+      unpinned_left_overflow_indicator_->SetOpaqueThickness(
+          has_pinned ? seam_unpinned_opaque_thickness
+                     : leading_opaque_thickness);
+    }
+  }
+  ReorderLayers();
+}
+
+void TabStripView::OnContentsScrolled() {
+  UpdateScrollViewLayers();
+  HideHoverCardOnScroll();
 }
 
 void TabStripView::HideHoverCardOnScroll() {

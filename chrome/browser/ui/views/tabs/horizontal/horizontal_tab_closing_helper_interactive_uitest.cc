@@ -765,15 +765,16 @@ IN_PROC_BROWSER_TEST_F(
         auto* unpinned_scroll_view =
             views::ScrollView::GetScrollViewForContents(unpinned_container);
 
-        auto close_until_unpinned_not_overflowing = [&]() {
+        auto close_until_unpinned_not_overflowing = [&](int expected_overlap) {
           CreateOverflowingTabs();
           ASSERT_TRUE(IsUnpinnedContainerOverflowing());
 
           const int initial_pinned_width = pinned_scroll_view->width();
           const int initial_unpinned_width = unpinned_scroll_view->width();
           const int first_unpinned = model->IndexOfFirstNonPinnedTab();
-          EXPECT_EQ(unpinned_scroll_view->x(),
-                    pinned_scroll_view->bounds().right());
+          const int expected_unpinned_x =
+              pinned_scroll_view->bounds().right() - expected_overlap;
+          EXPECT_EQ(unpinned_scroll_view->x(), expected_unpinned_x);
 
           // Close unpinned tabs until the container exits overflow.
           while (model->count() > first_unpinned + 1 &&
@@ -782,12 +783,10 @@ IN_PROC_BROWSER_TEST_F(
                                       CloseTabSource::kFromMouse);
             LayoutAndFinishAnimations();
 
-            // Pinned container width stays locked, containers stay
-            // non-overlapping, and unpinned container stays full while
-            // overflowing.
+            // Pinned container width stays locked, containers stay overlapping,
+            // and unpinned container stays full while overflowing.
             EXPECT_EQ(pinned_scroll_view->width(), initial_pinned_width);
-            EXPECT_EQ(unpinned_scroll_view->x(),
-                      pinned_scroll_view->bounds().right());
+            EXPECT_EQ(unpinned_scroll_view->x(), expected_unpinned_x);
             if (IsUnpinnedContainerOverflowing()) {
               EXPECT_EQ(unpinned_scroll_view->width(), initial_unpinned_width);
             }
@@ -795,22 +794,21 @@ IN_PROC_BROWSER_TEST_F(
 
           // Once no longer overflowing, the unpinned container shrinks to the
           // remaining tabs' override width, and the containers remain
-          // non-overlapping while in tab closing mode.
+          // overlapping while in tab closing mode.
           EXPECT_FALSE(IsUnpinnedContainerOverflowing());
           EXPECT_EQ(unpinned_container->width(),
                     GetClosingHelper()->override_available_width_for_tabs());
-          EXPECT_EQ(unpinned_scroll_view->x(),
-                    pinned_scroll_view->bounds().right());
+          EXPECT_EQ(unpinned_scroll_view->x(), expected_unpinned_x);
         };
 
         // With 2 pinned tabs (pinned container not overflowing), exiting
-        // unpinned overflow in closing mode keeps the containers
-        // non-overlapping until exiting tab closing mode.
+        // unpinned overflow in closing mode keeps the containers overlapping
+        // by `tab_overlap` both during and after tab closing mode.
         AddTabs(2);
         for (int i = 0; i < 2; ++i) {
           model->SetTabPinned(i, true);
         }
-        close_until_unpinned_not_overflowing();
+        close_until_unpinned_not_overflowing(TabStyle::Get()->GetTabOverlap());
         GetClosingHelper()->ExitTabClosingMode();
         LayoutAndFinishAnimations();
         EXPECT_EQ(unpinned_scroll_view->x(),
@@ -823,6 +821,7 @@ IN_PROC_BROWSER_TEST_F(
         for (int i = 2; i < 6; ++i) {
           model->SetTabPinned(i, true);
         }
-        close_until_unpinned_not_overflowing();
+        close_until_unpinned_not_overflowing(TabStyle::Get()->GetTabOverlap() /
+                                             2);
       }));
 }

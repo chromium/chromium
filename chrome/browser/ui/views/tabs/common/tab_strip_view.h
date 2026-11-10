@@ -15,6 +15,7 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget_observer.h"
 
+class HorizontalTabStripOverflowIndicatorView;
 class PrefService;
 class TabCollectionNode;
 class PinnedTabContainerView;
@@ -65,12 +66,19 @@ class TabStripView final : public views::View,
     return unpinned_tabs_scroll_view_;
   }
 
+  // Returns `scroll_view`'s local bounds (mirrored for RTL) inset by any
+  // active horizontal overflow indicator opaque regions or seam padding.
+  gfx::Rect GetScrollViewUnmaskedBounds(
+      const views::ScrollView* scroll_view) const;
+
   void SetCollapsedState(bool is_collapsed);
   void SetIsAnimatingSize(bool is_animating);
 
   bool IsPositionInWindowCaption(const gfx::Point& point);
 
   // views::View:
+  void Layout(PassKey) override;
+  views::View::Views GetChildrenInZOrder() override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
@@ -94,6 +102,18 @@ class TabStripView final : public views::View,
   views::ScrollView* GetPinnedTabsScrollViewForTesting() {
     return pinned_tabs_scroll_view_;
   }
+  HorizontalTabStripOverflowIndicatorView*
+  GetPinnedLeftOverflowIndicatorForTesting() {
+    return pinned_left_overflow_indicator_;
+  }
+  HorizontalTabStripOverflowIndicatorView*
+  GetPinnedRightOverflowIndicatorForTesting() {
+    return pinned_right_overflow_indicator_;
+  }
+  HorizontalTabStripOverflowIndicatorView*
+  GetUnpinnedLeftOverflowIndicatorForTesting() {
+    return unpinned_left_overflow_indicator_;
+  }
   views::View* GetPrimaryScrollTargetForTesting() const;
   views::View* GetSecondaryScrollTargetForTesting() const;
   tabs::UnpinnedTabScrollableStateRecorder*
@@ -102,6 +122,7 @@ class TabStripView final : public views::View,
   }
 
  private:
+  class ScrollViewTargeter;
   class TargetViewsTracker;
 
   views::View* AddScrollViewContents(std::unique_ptr<views::View> view);
@@ -139,7 +160,16 @@ class TabStripView final : public views::View,
 
   gfx::Rect GetBoundsInScrollViewContents(views::View* view,
                                           views::ScrollView* scroll_view);
+  gfx::Rect GetOpaqueVisibleRectForScrollTarget(
+      views::ScrollView* scroll_view,
+      const gfx::Rect& target_bounds) const;
 
+  bool ShouldDrawPinnedAboveUnpinned() const;
+
+  // Updates overflow indicator opaque widths and layer z-order for the pinned
+  // and unpinned scroll views.
+  void UpdateScrollViewLayers();
+  void OnContentsScrolled();
   void HideHoverCardOnScroll();
   void OnScrollButtonsVisibilityChanged();
   bool ShouldHideSeparators() const;
@@ -154,9 +184,17 @@ class TabStripView final : public views::View,
   raw_ptr<TabCollectionNode> collection_node_ = nullptr;
   raw_ptr<views::ScrollView> pinned_tabs_scroll_view_ = nullptr;
   raw_ptr<PinnedTabContainerView> pinned_tabs_container_view_ = nullptr;
+  raw_ptr<HorizontalTabStripOverflowIndicatorView>
+      pinned_left_overflow_indicator_ = nullptr;
+  raw_ptr<HorizontalTabStripOverflowIndicatorView>
+      pinned_right_overflow_indicator_ = nullptr;
   raw_ptr<views::Separator> tabs_separator_ = nullptr;
   raw_ptr<views::ScrollView> unpinned_tabs_scroll_view_ = nullptr;
   raw_ptr<UnpinnedTabContainerView> unpinned_tabs_container_view_ = nullptr;
+  raw_ptr<HorizontalTabStripOverflowIndicatorView>
+      unpinned_left_overflow_indicator_ = nullptr;
+  raw_ptr<HorizontalTabStripOverflowIndicatorView>
+      unpinned_right_overflow_indicator_ = nullptr;
   raw_ptr<TabScrollButtonContainer> tab_scroll_button_container_ = nullptr;
 
   bool is_first_window_presentation_ = true;
