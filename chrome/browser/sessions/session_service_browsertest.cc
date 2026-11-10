@@ -20,6 +20,7 @@
 #include "chrome/browser/sessions/session_service_test_helper.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -30,6 +31,7 @@
 #include "components/sessions/core/session_command.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/test/browser_test.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/components/kiosk/kiosk_test_utils.h"
@@ -232,6 +234,39 @@ IN_PROC_BROWSER_TEST_F(SessionServiceBrowserTest,
   for (const auto& window : windows) {
     if (window->window_id == window_id) {
       EXPECT_EQ(3u, window->tabs.size());
+      found = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(found);
+}
+
+IN_PROC_BROWSER_TEST_F(SessionServiceBrowserTest, EmptyWindowSaved) {
+  BrowserWindowInterface* empty_browser = CreateBrowserWindow(
+      BrowserWindowCreateParams(browser()->GetProfile(), true));
+
+  ASSERT_EQ(0, empty_browser->GetTabStripModel()->count());
+  service()->ResetFromCurrentBrowsers();
+
+  std::ignore = AddTabAtIndexToBrowser(
+      empty_browser, -1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED);
+
+  sessions::CommandStorageManager* command_storage_manager =
+      SessionServiceTestHelper(service()).command_storage_manager();
+  const std::vector<std::unique_ptr<sessions::SessionCommand>>&
+      pending_commands = command_storage_manager->pending_commands();
+
+  sessions::SessionTabHelper* session_tab_helper =
+      sessions::SessionTabHelper::FromWebContents(
+          empty_browser->GetTabStripModel()->GetWebContentsAt(0));
+  std::unique_ptr<sessions::SessionCommand> set_tab_window_command =
+      sessions::CreateSetTabWindowCommand(empty_browser->GetSessionID(),
+                                          session_tab_helper->session_id());
+
+  bool found = false;
+  for (const auto& command : pending_commands) {
+    if (command->id() == set_tab_window_command->id() &&
+        command->contents() == set_tab_window_command->contents()) {
       found = true;
       break;
     }

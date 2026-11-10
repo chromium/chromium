@@ -823,13 +823,10 @@ void SessionServiceBase::BuildCommandsFromBrowsers(
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [this, tab_to_available_range,
        windows_to_track](BrowserWindowInterface* browser) {
-        // Make sure the browser has tabs and a window. When a browser is closed
-        // the destructor is not necessarily run immediately. This means it's
-        // possible for us to get a handle to a browser that is about to be
-        // removed. If the tab count is 0 or the window is NULL, the browser is
-        // about to be deleted, so we ignore it.
-        if (ShouldTrackBrowser(browser) &&
-            browser->GetTabStripModel()->count() && browser->GetWindow()) {
+        // Skip browsers without a window; they are about to be deleted.
+        // Include browsers with no tabs yet (e.g. a window created for a tab
+        // drag) so they stay tracked; restore drops windows that end up empty.
+        if (ShouldTrackBrowser(browser) && browser->GetWindow()) {
           BuildCommandsForBrowser(browser, tab_to_available_range,
                                   windows_to_track);
         }
