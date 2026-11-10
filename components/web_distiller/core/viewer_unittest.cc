@@ -173,7 +173,7 @@ TEST_F(WebDistillerViewerTest, TestGetAddToPageJsEmptyDisplaysDefault) {
   std::string output = viewer::GetAddToPageJs("");
   std::string expected_output =
       "addToPage(\"" +
-      l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_NO_DATA_CONTENT) +
+      l10n_util::GetStringUTF8(IDS_WEB_DISTILLER_VIEWER_NO_DATA_CONTENT) +
       "\");";
   EXPECT_EQ(output, expected_output);
 }

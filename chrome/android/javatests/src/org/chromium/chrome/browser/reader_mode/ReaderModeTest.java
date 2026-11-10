@@ -71,7 +71,7 @@ public class ReaderModeTest {
             RuleChain.outerRule(mActivityTestRule).around(mDownloadTestRule);
 
     private static final String TEST_PAGE = "/chrome/test/data/reader_mode/simple_article.html";
-    // Suffix added to page titles, string is defined as IDS_DOM_DISTILLER_VIEWER_TITLE_SUFFIX in
+    // Suffix added to page titles, string is defined as IDS_WEB_DISTILLER_VIEWER_TITLE_SUFFIX in
     // web_distiller_strings.grdp.
     private static final String TITLE_SUFFIX = " - Reading Mode";
     private static final String PAGE_TITLE = "Test Page Title" + TITLE_SUFFIX;

@@ -502,7 +502,7 @@ IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
 IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
                        TestNoContentDoesNotCrash) {
   const std::string no_content =
-      l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_NO_DATA_CONTENT);
+      l10n_util::GetStringUTF8(IDS_WEB_DISTILLER_VIEWER_NO_DATA_CONTENT);
 
   {  // Test zero pages.
     std::unique_ptr<DistilledArticleProto> article_proto(

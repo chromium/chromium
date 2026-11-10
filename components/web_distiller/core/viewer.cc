@@ -157,33 +157,33 @@ std::string ReplaceHtmlTemplateValues(const mojom::Theme theme,
   // ReplaceStringPlaceholders, below, considers $i18n to be an error.
   ui::TemplateReplacements i18n_replacements;
   i18n_replacements["title"] =
-      l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_LOADING_TITLE);
+      l10n_util::GetStringUTF8(IDS_WEB_DISTILLER_VIEWER_LOADING_TITLE);
   i18n_replacements["customizeAppearance"] =
-      l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_CUSTOMIZE_APPEARANCE);
+      l10n_util::GetStringUTF8(IDS_WEB_DISTILLER_VIEWER_CUSTOMIZE_APPEARANCE);
   i18n_replacements["fontStyle"] =
-      l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_FONT_STYLE);
+      l10n_util::GetStringUTF8(IDS_WEB_DISTILLER_VIEWER_FONT_STYLE);
   i18n_replacements["sansSerifFont"] =
-      l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_SANS_SERIF_FONT);
+      l10n_util::GetStringUTF8(IDS_WEB_DISTILLER_VIEWER_SANS_SERIF_FONT);
   i18n_replacements["serifFont"] =
-      l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_SERIF_FONT);
+      l10n_util::GetStringUTF8(IDS_WEB_DISTILLER_VIEWER_SERIF_FONT);
   i18n_replacements["monospaceFont"] =
-      l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_MONOSPACE_FONT);
+      l10n_util::GetStringUTF8(IDS_WEB_DISTILLER_VIEWER_MONOSPACE_FONT);
   i18n_replacements["pageColor"] =
-      l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_PAGE_COLOR);
+      l10n_util::GetStringUTF8(IDS_WEB_DISTILLER_VIEWER_PAGE_COLOR);
   i18n_replacements["light"] =
-      l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_PAGE_COLOR_LIGHT);
+      l10n_util::GetStringUTF8(IDS_WEB_DISTILLER_VIEWER_PAGE_COLOR_LIGHT);
   i18n_replacements["sepia"] =
-      l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_PAGE_COLOR_SEPIA);
+      l10n_util::GetStringUTF8(IDS_WEB_DISTILLER_VIEWER_PAGE_COLOR_SEPIA);
   i18n_replacements["dark"] =
-      l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_PAGE_COLOR_DARK);
+      l10n_util::GetStringUTF8(IDS_WEB_DISTILLER_VIEWER_PAGE_COLOR_DARK);
   i18n_replacements["fontSize"] =
-      l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_FONT_SIZE);
+      l10n_util::GetStringUTF8(IDS_WEB_DISTILLER_VIEWER_FONT_SIZE);
   i18n_replacements["small"] =
-      l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_FONT_SIZE_SMALL);
+      l10n_util::GetStringUTF8(IDS_WEB_DISTILLER_VIEWER_FONT_SIZE_SMALL);
   i18n_replacements["large"] =
-      l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_FONT_SIZE_LARGE);
+      l10n_util::GetStringUTF8(IDS_WEB_DISTILLER_VIEWER_FONT_SIZE_LARGE);
   i18n_replacements["close"] =
-      l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_CLOSE);
+      l10n_util::GetStringUTF8(IDS_WEB_DISTILLER_VIEWER_CLOSE);
 
   html_template =
       ui::ReplaceTemplateExpressions(html_template, i18n_replacements);
@@ -228,7 +228,7 @@ std::string ReplaceHtmlTemplateValues(const mojom::Theme theme,
       {GetThemeCssClass(theme), " ", GetFontCssClass(font_family)}));  // $3
 
   substitutions.push_back(l10n_util::GetStringUTF8(
-      IDS_DOM_DISTILLER_JAVASCRIPT_DISABLED_CONTENT));  // $4
+      IDS_WEB_DISTILLER_JAVASCRIPT_DISABLED_CONTENT));  // $4
 
   substitutions.push_back(svg.str());  // $5
 
@@ -239,11 +239,11 @@ std::string ReplaceHtmlTemplateValues(const mojom::Theme theme,
 
 std::string GetErrorPageJs() {
   std::string title(l10n_util::GetStringUTF8(
-      IDS_DOM_DISTILLER_VIEWER_FAILED_TO_FIND_ARTICLE_TITLE));
+      IDS_WEB_DISTILLER_VIEWER_FAILED_TO_FIND_ARTICLE_TITLE));
   return base::StrCat(
       {GetSetTitleJs(title),
        GetAddToPageJs(l10n_util::GetStringUTF8(
-           IDS_DOM_DISTILLER_VIEWER_FAILED_TO_FIND_ARTICLE_CONTENT)),
+           IDS_WEB_DISTILLER_VIEWER_FAILED_TO_FIND_ARTICLE_CONTENT)),
        GetSetTextDirectionJs("auto"), "hideLoadingIndicator();"});
 }
 
@@ -252,7 +252,7 @@ std::string GetSetTitleJs(std::string_view title) {
   base::Value suffix_value("");
 #else  // Desktop and Android.
   std::string suffix(
-      l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_TITLE_SUFFIX));
+      l10n_util::GetStringUTF8(IDS_WEB_DISTILLER_VIEWER_TITLE_SUFFIX));
   base::Value suffix_value(base::StrCat({" - ", suffix}));
 #endif
   base::Value title_value(title);
@@ -291,7 +291,7 @@ std::string GetAddToPageJs(std::string_view unsafe_content) {
   std::string no_content_msg;
   if (unsafe_content.empty()) {
     no_content_msg =
-        l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_NO_DATA_CONTENT);
+        l10n_util::GetStringUTF8(IDS_WEB_DISTILLER_VIEWER_NO_DATA_CONTENT);
   }
   std::string_view content =
       unsafe_content.empty() ? no_content_msg : unsafe_content;

@@ -250,11 +250,11 @@ void ReaderModeViewerSourceBrowserTest::
   std::string result = content::EvalJs(contents, kGetContent).ExtractString();
   EXPECT_THAT(result,
               HasSubstr(l10n_util::GetStringUTF8(
-                  IDS_DOM_DISTILLER_VIEWER_FAILED_TO_FIND_ARTICLE_CONTENT)));
+                  IDS_WEB_DISTILLER_VIEWER_FAILED_TO_FIND_ARTICLE_CONTENT)));
   result = content::EvalJs(contents, kGetTitle).ExtractString();
   EXPECT_THAT(result,
               HasSubstr(l10n_util::GetStringUTF8(
-                  IDS_DOM_DISTILLER_VIEWER_FAILED_TO_FIND_ARTICLE_TITLE)));
+                  IDS_WEB_DISTILLER_VIEWER_FAILED_TO_FIND_ARTICLE_TITLE)));
 }
 
 // The viewer source renders untrusted content, so ensure no bindings are

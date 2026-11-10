@@ -111,7 +111,7 @@ TEST_F(WebDistillerRequestViewTest, TestTitleNeverEmpty) {
 
 TEST_F(WebDistillerRequestViewTest, TestContentNeverEmpty) {
   const std::string no_content =
-      l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_NO_DATA_CONTENT);
+      l10n_util::GetStringUTF8(IDS_WEB_DISTILLER_VIEWER_NO_DATA_CONTENT);
   const std::string valid_content = "valid content";
 
   TestRequestViewHandle handle(distilled_page_prefs_.get());
