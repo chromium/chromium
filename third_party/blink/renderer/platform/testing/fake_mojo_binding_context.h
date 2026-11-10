@@ -8,7 +8,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
 
 namespace blink {
@@ -16,8 +15,6 @@ namespace blink {
 // A simple MojoBindingContext implementation suitable for use in unit tests.
 class FakeMojoBindingContext : public GarbageCollected<FakeMojoBindingContext>,
                                public MojoBindingContext {
-  USING_PRE_FINALIZER(FakeMojoBindingContext, Dispose);
-
  public:
   explicit FakeMojoBindingContext(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
