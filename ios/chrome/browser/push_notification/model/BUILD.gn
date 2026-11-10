@@ -267,6 +267,7 @@ source_set("unit_tests") {
     "//ios/chrome/app:change_profile_commands",
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/profile",
+    "//ios/chrome/app/test:test_support",
     "//ios/chrome/browser/affiliations/model",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/profile/model:test_support",

@@ -21,7 +21,7 @@
 #import "base/time/time.h"
 #import "base/uuid.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/app/change_profile_commands.h"
+#import "ios/chrome/app/test/fake_change_profile_commands.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/mutable_profile_attributes_storage_ios.h"
@@ -43,48 +43,6 @@
 using testing::_;
 using testing::Ne;
 using testing::UnorderedElementsAre;
-
-@interface FakeChangeProfileCommands : NSObject <ChangeProfileCommands>
-
-- (instancetype)initWithProfileManager:(ProfileManagerIOS*)manager
-    NS_DESIGNATED_INITIALIZER;
-- (instancetype)init NS_UNAVAILABLE;
-
-- (void)shutdown;
-
-@property(nonatomic, readonly) BOOL deleteProfileCalled;
-
-@end
-
-@implementation FakeChangeProfileCommands {
-  raw_ptr<ProfileManagerIOS> _manager;
-}
-
-- (instancetype)initWithProfileManager:(ProfileManagerIOS*)manager {
-  if ((self = [super init])) {
-    DCHECK(manager);
-    _manager = manager;
-  }
-  return self;
-}
-
-- (void)shutdown {
-  _manager = nullptr;
-}
-
-- (void)changeProfile:(std::string_view)profileName
-             forScene:(SceneState*)sceneState
-               reason:(ChangeProfileReason)reason
-         continuation:(ChangeProfileContinuation)continuation {
-  NOTREACHED();
-}
-
-- (void)deleteProfile:(std::string_view)profileName {
-  _deleteProfileCalled = YES;
-  _manager->MarkProfileForDeletion(profileName);
-}
-
-@end
 
 namespace {
 
@@ -995,7 +953,6 @@ TEST_F(AccountProfileMapperTest,
       system_identity_manager_, profile_manager_.get(),
       GetApplicationContext()->GetLocalState());
   account_profile_mapper_->SetChangeProfileCommandsHandler(handler);
-  ASSERT_FALSE(handler.deleteProfileCalled);
 
   // A personal and a managed account get added.
   system_identity_manager_->AddIdentity(gmail_identity1);
@@ -1029,7 +986,8 @@ TEST_F(AccountProfileMapperTest,
   account_profile_mapper_->AddObserver(&mock_observer,
                                        original_personal_profile_name);
   EXPECT_CALL(mock_observer, OnIdentitiesInProfileChanged());
-  EXPECT_FALSE(handler.deleteProfileCalled);
+  EXPECT_FALSE(profile_manager_->IsProfileMarkedForDeletion(
+      original_managed_profile_name));
 
   // Simulate that the user signs in with the managed account, and chooses to
   // take existing local data along, i.e. convert the personal profile into a
@@ -1052,7 +1010,8 @@ TEST_F(AccountProfileMapperTest,
       /*known_profile_names=*/{new_personal_profile_name});
   EXPECT_NE(new_personal_profile_name, original_personal_profile_name);
   EXPECT_EQ(new_managed_profile_name, original_personal_profile_name);
-  EXPECT_TRUE(handler.deleteProfileCalled);
+  EXPECT_TRUE(profile_manager_->IsProfileMarkedForDeletion(
+      original_managed_profile_name));
 
   // The accounts should be assigned to the appropriate *new* profiles.
   EXPECT_NSEQ(expected_identities_personal,

@@ -275,6 +275,7 @@ source_set("unit_tests") {
     "//ios/chrome/app/spotlight",
     "//ios/chrome/app/startup:startup_basic",
     "//ios/chrome/app/startup:utils",
+    "//ios/chrome/app/test:test_support",
     "//ios/chrome/browser/app_switcher/metrics",
     "//ios/chrome/browser/app_switcher/test:test_support",
     "//ios/chrome/browser/bookmarks/model",

@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/signin/model/signin_disabled_browser_agent.h"
 
 #import "base/functional/bind.h"
-#import "base/test/run_until.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
@@ -15,6 +14,7 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/change_profile_commands.h"
 #import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/app/test/fake_change_profile_commands.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -34,45 +34,6 @@
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
-
-@interface FakeChangeProfileHandler : NSObject <ChangeProfileCommands>
-@property(nonatomic, assign, readonly) std::string lastProfileName;
-@property(nonatomic, weak, readonly) SceneState* lastSceneState;
-@property(nonatomic, assign, readonly) std::optional<ChangeProfileReason>
-    lastReason;
-@end
-
-@implementation FakeChangeProfileHandler {
-  std::string _lastProfileName;
-  __weak SceneState* _lastSceneState;
-  std::optional<ChangeProfileReason> _lastReason;
-}
-
-- (std::string)lastProfileName {
-  return _lastProfileName;
-}
-
-- (SceneState*)lastSceneState {
-  return _lastSceneState;
-}
-
-- (std::optional<ChangeProfileReason>)lastReason {
-  return _lastReason;
-}
-
-- (void)changeProfile:(std::string_view)profileName
-             forScene:(SceneState*)sceneState
-               reason:(ChangeProfileReason)reason
-         continuation:(ChangeProfileContinuation)continuation {
-  _lastProfileName = std::string(profileName);
-  _lastSceneState = sceneState;
-  _lastReason = reason;
-}
-
-- (void)deleteProfile:(std::string_view)profileName {
-}
-
-@end
 
 namespace {
 
@@ -192,21 +153,18 @@ TEST_F(SigninDisabledBrowserAgentTest,
   SigninDisabledBrowserAgent::CreateForBrowser(
       managed_scene_state.browserProviderInterface.mainBrowser);
 
-  FakeChangeProfileHandler* change_profile_handler =
-      [[FakeChangeProfileHandler alloc] init];
+  FakeChangeProfileCommands* change_profile_handler =
+      [[FakeChangeProfileCommands alloc] init];
   [app_state_.appCommandDispatcher
       startDispatchingToTarget:change_profile_handler
                    forProtocol:@protocol(ChangeProfileCommands)];
 
   GetLocalState()->SetBoolean(prefs::kSigninAllowedOnDevice, false);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return change_profile_handler.lastReason.has_value(); }));
+  const ChangeProfileParams expected_params{
+      personal_profile_->GetProfileName(), managed_scene_state,
+      ChangeProfileReason::kManagedAccountSignOut};
+  EXPECT_EQ([change_profile_handler waitForChangeProfile], expected_params);
 
-  EXPECT_EQ(change_profile_handler.lastProfileName,
-            personal_profile_->GetProfileName());
-  EXPECT_EQ(change_profile_handler.lastSceneState, managed_scene_state);
-  EXPECT_EQ(change_profile_handler.lastReason,
-            ChangeProfileReason::kManagedAccountSignOut);
-
+  [change_profile_handler shutdown];
   [managed_scene_state shutdown];
 }

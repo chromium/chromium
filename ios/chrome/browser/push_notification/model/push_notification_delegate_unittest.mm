@@ -13,6 +13,7 @@
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/app/change_profile_commands.h"
 #import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/app/test/fake_change_profile_commands.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_profile_service.h"
@@ -35,33 +36,6 @@
 using base::test::ScopedRunLoopTimeout;
 
 @interface PushNotificationDelegate (Testing) <AppStateObserver>
-@end
-
-// Fake implementation of ChangeProfileCommands to intercept switch profile
-// requests.
-@interface FakeChangeProfileCommandHandler : NSObject <ChangeProfileCommands>
-@property(nonatomic, assign) BOOL changeProfileCalled;
-@property(nonatomic, assign) std::string lastProfileName;
-@property(nonatomic, strong) SceneState* lastSceneState;
-@property(nonatomic, assign) ChangeProfileReason lastReason;
-@end
-
-@implementation FakeChangeProfileCommandHandler
-- (void)changeProfile:(std::string_view)profileName
-             forScene:(SceneState*)sceneState
-               reason:(ChangeProfileReason)reason
-         continuation:(ChangeProfileContinuation)continuation {
-  self.changeProfileCalled = YES;
-  self.lastProfileName = std::string(profileName);
-  self.lastSceneState = sceneState;
-  self.lastReason = reason;
-  if (!continuation.is_null()) {
-    std::move(continuation).Run(sceneState, base::DoNothing());
-  }
-}
-
-- (void)deleteProfile:(std::string_view)profileName {
-}
 @end
 
 // Test fixture for PushNotificationDelegate.
@@ -239,8 +213,8 @@ TEST_F(PushNotificationDelegateTest,
           }));
 
   // Setup the fake ChangeProfileCommands handler.
-  FakeChangeProfileCommandHandler* fake_handler =
-      [[FakeChangeProfileCommandHandler alloc] init];
+  FakeChangeProfileCommands* fake_handler =
+      [[FakeChangeProfileCommands alloc] init];
   [app_state_.appCommandDispatcher
       startDispatchingToTarget:fake_handler
                    forProtocol:@protocol(ChangeProfileCommands)];
@@ -277,9 +251,11 @@ TEST_F(PushNotificationDelegateTest,
 
   // Verify that changeProfile was called on the fake handler with the mapped
   // profile name.
-  EXPECT_TRUE(fake_handler.changeProfileCalled);
-  EXPECT_EQ(fake_handler.lastProfileName, profile_->GetProfileName());
-  EXPECT_EQ(fake_handler.lastSceneState, scene_state_);
-  EXPECT_EQ(fake_handler.lastReason,
-            ChangeProfileReason::kHandlePushNotification);
+  const ChangeProfileParams expected_params{
+      profile_->GetProfileName(), scene_state_,
+      ChangeProfileReason::kHandlePushNotification};
+  EXPECT_EQ(fake_handler.lastChangeProfileParams, expected_params);
+  ASSERT_TRUE(fake_handler.hasContinuation);
+  [fake_handler runContinuationForSceneState:scene_state_];
+  [fake_handler shutdown];
 }

@@ -1,0 +1,20 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_change_profile_commands.h",
+    "fake_change_profile_commands.mm",
+  ]
+  public_deps = [ "//ios/chrome/app:change_profile_commands" ]
+  deps = [
+    "//base",
+    "//ios/chrome/app:change_profile_continuation",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/profile",
+    "//testing/gtest",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}

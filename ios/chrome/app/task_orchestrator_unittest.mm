@@ -8,7 +8,6 @@
 
 #import <memory>
 
-#import "base/functional/callback_helpers.h"
 #import "base/ios/block_types.h"
 #import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -19,10 +18,10 @@
 #import "ios/chrome/app/application_delegate/app_init_stage.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/change_profile_commands.h"
-#import "ios/chrome/app/change_profile_continuation.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/task_request+testing.h"
 #import "ios/chrome/app/task_scheduling_outcome.h"
+#import "ios/chrome/app/test/fake_change_profile_commands.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -44,36 +43,6 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
-
-@interface FakeChangeProfileCommandsHandler : NSObject <ChangeProfileCommands>
-@property(nonatomic, assign) BOOL changeProfileCalled;
-@property(nonatomic, assign) std::string profileName;
-@property(nonatomic, assign) ChangeProfileReason reason;
-- (BOOL)hasContinuation;
-- (void)runContinuationForSceneState:(SceneState*)sceneState;
-@end
-
-@implementation FakeChangeProfileCommandsHandler {
-  ChangeProfileContinuation _continuation;
-}
-- (void)changeProfile:(std::string_view)profileName
-             forScene:(SceneState*)sceneState
-               reason:(ChangeProfileReason)reason
-         continuation:(ChangeProfileContinuation)continuation {
-  self.changeProfileCalled = YES;
-  self.profileName = std::string(profileName);
-  self.reason = reason;
-  _continuation = std::move(continuation);
-}
-- (void)deleteProfile:(std::string_view)profileName {
-}
-- (BOOL)hasContinuation {
-  return !_continuation.is_null();
-}
-- (void)runContinuationForSceneState:(SceneState*)sceneState {
-  std::move(_continuation).Run(sceneState, base::DoNothing());
-}
-@end
 
 namespace {
 // Creates a new SceneState with the given `persistentIdentifier`.
@@ -383,7 +352,7 @@ class TaskOrchestratorProfileSwitchTest : public TaskOrchestratorTest {
         ->AddIdentity(identity_);
 
     CommandDispatcher* dispatcher = [[CommandDispatcher alloc] init];
-    change_profile_handler_ = [[FakeChangeProfileCommandsHandler alloc] init];
+    change_profile_handler_ = [[FakeChangeProfileCommands alloc] init];
     [dispatcher startDispatchingToTarget:change_profile_handler_
                              forProtocol:@protocol(ChangeProfileCommands)];
 
@@ -407,6 +376,7 @@ class TaskOrchestratorProfileSwitchTest : public TaskOrchestratorTest {
   }
 
   void TearDown() override {
+    [change_profile_handler_ shutdown];
     [partial_scene_state_ stopMocking];
     browser_.reset();
     TaskOrchestratorTest::TearDown();
@@ -426,7 +396,7 @@ class TaskOrchestratorProfileSwitchTest : public TaskOrchestratorTest {
   TestProfileManagerIOS profile_manager_;
   raw_ptr<TestProfileIOS> profile_;
   FakeSystemIdentity* identity_;
-  FakeChangeProfileCommandsHandler* change_profile_handler_;
+  FakeChangeProfileCommands* change_profile_handler_;
   // Kept alive for the whole test, as `SceneState` and `ProfileState` don't
   // retain their profile and app states, and partial mocks stop stubbing once
   // released.
@@ -448,14 +418,14 @@ TEST_F(TaskOrchestratorProfileSwitchTest,
 
   [orchestrator_ addTaskRequest:task];
   EXPECT_TRUE(scene_state_.hasPendingIntent);
-  EXPECT_FALSE(change_profile_handler_.changeProfileCalled);
+  EXPECT_FALSE(change_profile_handler_.lastChangeProfileParams.has_value());
   EXPECT_FALSE(future.IsReady());
 
   // At TaskExecutionProfileLoaded (e.g. while backgrounded on warm start),
   // changeProfile: must not be triggered yet.
   [orchestrator_ updateToStage:TaskExecutionStage::TaskExecutionProfileLoaded
                       forScene:scene_state_];
-  EXPECT_FALSE(change_profile_handler_.changeProfileCalled);
+  EXPECT_FALSE(change_profile_handler_.lastChangeProfileParams.has_value());
   EXPECT_FALSE(future.IsReady());
   EXPECT_TRUE(scene_state_.hasPendingIntent);
 
@@ -463,15 +433,15 @@ TEST_F(TaskOrchestratorProfileSwitchTest,
   // execution until the continuation completes.
   [orchestrator_ updateToStage:TaskExecutionStage::TaskExecutionUIReady
                       forScene:scene_state_];
-  EXPECT_TRUE(change_profile_handler_.changeProfileCalled);
+  ASSERT_TRUE(change_profile_handler_.lastChangeProfileParams.has_value());
   EXPECT_EQ(ChangeProfileReason::kSwitchAccountsFromWidget,
-            change_profile_handler_.reason);
+            change_profile_handler_.lastChangeProfileParams->reason);
   EXPECT_FALSE(future.IsReady());
   EXPECT_TRUE(scene_state_.hasPendingIntent);
 
   // Running the ChangeProfileContinuation completes the switch and executes the
   // ready task.
-  ASSERT_TRUE([change_profile_handler_ hasContinuation]);
+  ASSERT_TRUE(change_profile_handler_.hasContinuation);
   [change_profile_handler_ runContinuationForSceneState:scene_state_];
   EXPECT_TRUE(future.Wait());
   EXPECT_FALSE(scene_state_.hasPendingIntent);
@@ -490,9 +460,9 @@ TEST_F(TaskOrchestratorProfileSwitchTest, TestProfileSwitchFromShareExtension) {
   [orchestrator_ updateToStage:TaskExecutionStage::TaskExecutionUIReady
                       forScene:scene_state_];
 
-  EXPECT_TRUE(change_profile_handler_.changeProfileCalled);
+  ASSERT_TRUE(change_profile_handler_.lastChangeProfileParams.has_value());
   EXPECT_EQ(ChangeProfileReason::kSwitchAccountsFromShareExtension,
-            change_profile_handler_.reason);
+            change_profile_handler_.lastChangeProfileParams->reason);
   // The orchestrator keeps the task alive after the test body.
   [partial_task stopMocking];
 }
@@ -572,8 +542,8 @@ TEST_F(TaskOrchestratorTest, TestClearTasksForSceneDuringProfileSwitch) {
       ->AddIdentity(identity);
 
   CommandDispatcher* dispatcher = [[CommandDispatcher alloc] init];
-  FakeChangeProfileCommandsHandler* change_profile_handler =
-      [[FakeChangeProfileCommandsHandler alloc] init];
+  FakeChangeProfileCommands* change_profile_handler =
+      [[FakeChangeProfileCommands alloc] init];
   [dispatcher startDispatchingToTarget:change_profile_handler
                            forProtocol:@protocol(ChangeProfileCommands)];
 
@@ -609,17 +579,18 @@ TEST_F(TaskOrchestratorTest, TestClearTasksForSceneDuringProfileSwitch) {
   // Reaching TaskExecutionUIReady starts the profile switch.
   [orchestrator_ updateToStage:TaskExecutionStage::TaskExecutionUIReady
                       forScene:scene_state];
-  ASSERT_TRUE(change_profile_handler.changeProfileCalled);
+  ASSERT_TRUE(change_profile_handler.lastChangeProfileParams.has_value());
 
   // The switch disconnects the scene; its tasks must be kept.
   [orchestrator_ clearTasksForScene:scene_state];
   EXPECT_TRUE(scene_state.hasPendingIntent);
 
   // Completing the switch runs the task.
-  ASSERT_TRUE([change_profile_handler hasContinuation]);
+  ASSERT_TRUE(change_profile_handler.hasContinuation);
   [change_profile_handler runContinuationForSceneState:scene_state];
   EXPECT_TRUE(base::test::RunUntil([&]() { return task_was_executed; }));
   EXPECT_FALSE(scene_state.hasPendingIntent);
+  [change_profile_handler shutdown];
 }
 
 namespace {
@@ -630,7 +601,7 @@ NSString* const kGoogleOneDeepLinkURL = @"https://one.google.com/deeplink";
 // Adds a Google One deep link task requiring an account switch to
 // `orchestrator`, then reaches `TaskExecutionUIReady`. Returns the handler that
 // received the resulting `ChangeProfileCommands` call.
-FakeChangeProfileCommandsHandler* SwitchProfileForGoogleOneDeepLinkTask(
+FakeChangeProfileCommands* SwitchProfileForGoogleOneDeepLinkTask(
     TaskOrchestrator* orchestrator) {
   IOSChromeScopedTestingLocalState scoped_testing_local_state;
   TestProfileManagerIOS profile_manager;
@@ -649,8 +620,8 @@ FakeChangeProfileCommandsHandler* SwitchProfileForGoogleOneDeepLinkTask(
       ->AddIdentity(identity);
 
   CommandDispatcher* dispatcher = [[CommandDispatcher alloc] init];
-  FakeChangeProfileCommandsHandler* change_profile_handler =
-      [[FakeChangeProfileCommandsHandler alloc] init];
+  FakeChangeProfileCommands* change_profile_handler =
+      [[FakeChangeProfileCommands alloc] init];
   [dispatcher startDispatchingToTarget:change_profile_handler
                            forProtocol:@protocol(ChangeProfileCommands)];
 
@@ -686,12 +657,13 @@ TEST_F(TaskOrchestratorTest, TestProfileSwitchForGoogleOneDeepLink) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kSupportGoogleOneDeepLink);
 
-  FakeChangeProfileCommandsHandler* change_profile_handler =
+  FakeChangeProfileCommands* change_profile_handler =
       SwitchProfileForGoogleOneDeepLinkTask(orchestrator_);
 
-  EXPECT_TRUE(change_profile_handler.changeProfileCalled);
+  ASSERT_TRUE(change_profile_handler.lastChangeProfileParams.has_value());
   EXPECT_EQ(ChangeProfileReason::kForGoogleOneSettings,
-            change_profile_handler.reason);
+            change_profile_handler.lastChangeProfileParams->reason);
+  [change_profile_handler shutdown];
 }
 
 // Tests that a task with a Google One deep link URL and a `gaiaID` does not use
@@ -700,10 +672,11 @@ TEST_F(TaskOrchestratorTest, TestProfileSwitchForGoogleOneDeepLinkDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(kSupportGoogleOneDeepLink);
 
-  FakeChangeProfileCommandsHandler* change_profile_handler =
+  FakeChangeProfileCommands* change_profile_handler =
       SwitchProfileForGoogleOneDeepLinkTask(orchestrator_);
 
-  EXPECT_TRUE(change_profile_handler.changeProfileCalled);
+  ASSERT_TRUE(change_profile_handler.lastChangeProfileParams.has_value());
   EXPECT_EQ(ChangeProfileReason::kSwitchAccountsFromWidget,
-            change_profile_handler.reason);
+            change_profile_handler.lastChangeProfileParams->reason);
+  [change_profile_handler shutdown];
 }
