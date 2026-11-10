@@ -90,11 +90,9 @@ TEST(UiUtilTest, BundleCompletionPreservesTopLevelOverrides) {
 
 TEST(UiUtilTest, BundleCompletionUsesApplicationError) {
   ObserverCompletionInfo info;
-  info.apps_info.emplace_back();
-  info.apps_info.back().completion_code =
+  info.apps_info.emplace_back().completion_code =
       CompletionCodes::COMPLETION_CODE_SUCCESS;
-  info.apps_info.emplace_back();
-  info.apps_info.back().completion_code =
+  info.apps_info.emplace_back().completion_code =
       CompletionCodes::COMPLETION_CODE_ERROR;
   EXPECT_EQ(GetBundleCompletionCode(info),
             CompletionCodes::COMPLETION_CODE_ERROR);
@@ -111,8 +109,8 @@ TEST(UiUtilTest, GetBundleCompletionErrorMessages) {
   EXPECT_EQ(GetBundleCompletionErrorMessages(info),
             L"First application failure");
   info.apps_info.emplace_back();
-  info.apps_info.emplace_back();
-  info.apps_info.back().completion_message = u"Second application failure";
+  info.apps_info.emplace_back().completion_message =
+      u"Second application failure";
   EXPECT_EQ(GetBundleCompletionErrorMessages(info),
             L"First application failure\nSecond application failure");
 }
@@ -122,10 +120,9 @@ TEST(UiUtilTest, CompletionMessagesPreserveLineEndings) {
   info.completion_text = u"Bundle failure\r\nMore detail\nLast line";
   EXPECT_EQ(GetBundleCompletionErrorMessages(info),
             L"Bundle failure\r\nMore detail\nLast line");
-  info.apps_info.emplace_back();
-  info.apps_info.back().completion_message = u"First failure\r\nMore detail";
-  info.apps_info.emplace_back();
-  info.apps_info.back().completion_message = u"Second failure\r\n";
+  info.apps_info.emplace_back().completion_message =
+      u"First failure\r\nMore detail";
+  info.apps_info.emplace_back().completion_message = u"Second failure\r\n";
   EXPECT_EQ(GetBundleCompletionErrorMessages(info),
             L"First failure\r\nMore detail\nSecond failure\r\n");
 }

@@ -338,8 +338,8 @@ TEST_F(WebView2ProgressWndTest, PreservesDetailedCompletionMessages) {
     WebView2ProgressWnd wnd;
     ObserverCompletionInfo info;
     info.completion_text = u"Generic failure";
-    info.apps_info.emplace_back();
-    info.apps_info.back().completion_message = u"Specific application failure";
+    info.apps_info.emplace_back().completion_message =
+        u"Specific application failure";
     // A top-level error overrides an app's default SUCCESS code. Otherwise,
     // an app error overrides top-level SUCCESS, matching the native window.
     for (bool top_level_error : {true, false}) {
@@ -373,8 +373,7 @@ TEST_F(WebView2ProgressWndTest, CompletionMessagesNormalizeLineEndings) {
       EXPECT_EQ(*update.FindString("statusText"),
                 "First line\n\nMore detail\nLast line");
     }
-    info.apps_info.emplace_back();
-    info.apps_info.back().completion_message =
+    info.apps_info.emplace_back().completion_message =
         u"Specific failure\r\nMore detail";
     wnd.OnComplete(info);
     const base::DictValue update = wnd.GetUIUpdateForTesting();
