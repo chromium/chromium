@@ -2093,6 +2093,11 @@ inline constexpr char kGlicMessageFirstFreForContextualCueDescription[] =
     "Enables the message-first first run experience (FRE) when auto-submitting "
     "from a contextual cue.";
 
+inline constexpr char kGlicNativeFreAndroidName[] = "Glic Native FRE";
+inline constexpr char kGlicNativeFreAndroidDescription[] =
+    "Enables the native first-run experience (FRE) for Gemini in Chrome on "
+    "Android.";
+
 inline constexpr char kGlicNoWebviewName[] = "Glic No Webview";
 inline constexpr char kGlicNoWebviewDescription[] =
     "Runs the Glic client in a PrivilegedWebContents instead of a webview.";

@@ -12268,6 +12268,7 @@ from previous Chrome versions.
   <int value="-849792130" label="UserMediaCaptureOnFocus:disabled"/>
   <int value="-849065891" label="HistoryPagePromoCtaStringVariation:enabled"/>
   <int value="-848691867" label="DesktopPWAWindowing:enabled"/>
+  <int value="-848562165" label="GlicNativeFreAndroid:enabled"/>
   <int value="-847735582" label="NotificationsViaHelperApp:enabled"/>
   <int value="-847216521" label="ChromeDuplex:enabled"/>
   <int value="-847111565" label="EdgeToEdgeExtraLogs:disabled"/>
@@ -16420,6 +16421,7 @@ from previous Chrome versions.
   <int value="392107748" label="PwaUpdateDialogForIcon:disabled"/>
   <int value="392154827" label="BaselineGM3SurfaceColors:enabled"/>
   <int value="392436285" label="DisconnectWiFiOnEthernetConnected:enabled"/>
+  <int value="392578599" label="GlicNativeFreAndroid:disabled"/>
   <int value="392782890" label="SafeBrowsingTelemetryForApkDownloads:enabled"/>
   <int value="392823467" label="disable-default-browser-promo"/>
   <int value="392899843" label="EnableToggleCameraShortcut:enabled"/>
