@@ -4,16 +4,21 @@
 
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_browsertest.h"
+#include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
+#include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 
@@ -103,6 +108,90 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
   // Verify it is NO LONGER in LastActedActorSurfaces.
   EXPECT_FALSE(
       task->GetLastActedActorSurfaces().contains(second_actor_surface_handle));
+}
+
+// A promoted headless page moves, with its state, into a new selected tab
+// that keeps the surface's handle, so a task using the surface still has it.
+IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
+                       PromoteHeadlessActorSurfaceMovesPageIntoTab) {
+  ScopedHeadlessActorSurface headless =
+      actor_keyed_service()->CreateHeadlessActorSurface();
+  const ActorSurfaceHandle handle = headless.actor_surface_handle();
+  content::WebContents* contents = handle.Get()->GetWebContents();
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(
+      contents, embedded_https_test_server().GetURL("/actor/blank.html")));
+  ASSERT_TRUE(content::ExecJs(contents, "window.promotionMarker = 'kept';"));
+
+  TaskId task_id = actor_keyed_service()->CreateTask(
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker());
+  ActorTask* task = actor_keyed_service()->GetTask(task_id);
+  ASSERT_TRUE(task);
+  base::test::TestFuture<mojom::ActionResultPtr> added;
+  task->AddActorSurface(handle, /*stop_task_on_detach=*/true,
+                        added.GetCallback());
+  ASSERT_TRUE(added.Wait());
+  ASSERT_TRUE(task->HasActorSurface(handle));
+
+  const int tab_count = browser()->tab_strip_model()->count();
+  tabs::TabInterface* tab =
+      actor_keyed_service()->PromoteHeadlessActorSurface(headless, *browser());
+
+  ASSERT_TRUE(tab);
+  EXPECT_EQ(tab->GetContents(), contents);
+  EXPECT_EQ(browser()->tab_strip_model()->count(), tab_count + 1);
+  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(), contents);
+  EXPECT_EQ(content::EvalJs(contents, "window.promotionMarker"), "kept");
+  EXPECT_TRUE(handle.Get()->IsTab());
+  EXPECT_EQ(
+      actor_keyed_service()->GetSurfaceRegistry().GetForTab(tab->GetHandle()),
+      handle.Get());
+  EXPECT_TRUE(task->HasActorSurface(handle));
+  EXPECT_TRUE(headless.actor_surface_handle().is_null());
+
+  // Dropping the now-empty owner leaves the tab and the task alone.
+  {
+    ScopedHeadlessActorSurface dropped = std::move(headless);
+  }
+  EXPECT_EQ(browser()->tab_strip_model()->count(), tab_count + 1);
+  EXPECT_FALSE(task->IsCompleted());
+}
+
+// Promotion fails without side effects for a window of another profile.
+IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
+                       PromoteHeadlessActorSurfaceRejectsOtherProfileWindow) {
+  ScopedHeadlessActorSurface headless =
+      actor_keyed_service()->CreateHeadlessActorSurface();
+  const ActorSurfaceHandle handle = headless.actor_surface_handle();
+  BrowserWindowInterface* incognito = CreateIncognitoBrowser();
+  const int tab_count = incognito->GetTabStripModel()->count();
+
+  EXPECT_FALSE(
+      actor_keyed_service()->PromoteHeadlessActorSurface(headless, *incognito));
+
+  EXPECT_EQ(headless.actor_surface_handle(), handle);
+  ASSERT_TRUE(handle.Get());
+  EXPECT_FALSE(handle.Get()->IsTab());
+  EXPECT_EQ(incognito->GetTabStripModel()->count(), tab_count);
+}
+
+// Promotion fails without side effects for a window that isn't a normal tabbed
+// window, even though a popup window has a tab strip.
+IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
+                       PromoteHeadlessActorSurfaceRejectsPopupWindow) {
+  ScopedHeadlessActorSurface headless =
+      actor_keyed_service()->CreateHeadlessActorSurface();
+  const ActorSurfaceHandle handle = headless.actor_surface_handle();
+  BrowserWindowInterface* popup =
+      CreateBrowserForPopup(browser()->GetProfile());
+  const int tab_count = popup->GetTabStripModel()->count();
+
+  EXPECT_FALSE(
+      actor_keyed_service()->PromoteHeadlessActorSurface(headless, *popup));
+
+  EXPECT_EQ(headless.actor_surface_handle(), handle);
+  ASSERT_TRUE(handle.Get());
+  EXPECT_FALSE(handle.Get()->IsTab());
+  EXPECT_EQ(popup->GetTabStripModel()->count(), tab_count);
 }
 
 }  // namespace

@@ -4,7 +4,9 @@
 
 #include "chrome/browser/actor/actor_keyed_service.h"
 
+#include <memory>
 #include <optional>
+#include <tuple>
 #include <utility>
 
 #include "base/command_line.h"
@@ -31,6 +33,8 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/application_status_listener.h"
 #include "chrome/browser/actor/android/actor_keyed_service_android.h"
+#else
+#include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #endif
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/actor_util.h"
@@ -176,6 +180,12 @@ ScopedHeadlessActorSurface::ScopedHeadlessActorSurface(
 
 ScopedHeadlessActorSurface::~ScopedHeadlessActorSurface() = default;
 
+ActorSurfaceHandle ScopedHeadlessActorSurface::ReleaseOwnership(
+    base::PassKey<ActorKeyedService>) {
+  std::ignore = destroyer_.Release();
+  return std::exchange(actor_surface_handle_, ActorSurfaceHandle::Null());
+}
+
 ActorKeyedService::ActorKeyedService(Profile* profile) : profile_(profile) {
   actor_ui_state_manager_ = std::make_unique<ui::ActorUiStateManager>(*this);
   headless_web_contents_manager_ =
@@ -296,6 +306,61 @@ void ActorKeyedService::DestroyHeadlessActorSurface(
       actor_surface_handle, base::PassKey<ActorKeyedService>());
   headless_actor_surfaces_being_destroyed_.erase(actor_surface_handle);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+tabs::TabInterface* ActorKeyedService::PromoteHeadlessActorSurface(
+    ScopedHeadlessActorSurface& owner,
+    BrowserWindowInterface& window) {
+  // Validate everything first; nothing changes if any of it fails.
+  if (!surface_registry_ || window.GetProfile() != profile_.get()) {
+    return nullptr;
+  }
+  // Popup, app and devtools windows can have a tab list too, but the page
+  // only belongs in a normal tabbed window, and not in one that is closing.
+  if (window.GetType() != BrowserWindowInterface::TYPE_NORMAL ||
+      window.IsDeleteScheduled() ||
+      window.capabilities()->IsAttemptingToCloseBrowser()) {
+    return nullptr;
+  }
+  const ActorSurfaceHandle handle = owner.actor_surface_handle();
+  ActorSurface* actor_surface =
+      handle.is_null() ? nullptr : surface_registry_->Get(handle);
+  if (!actor_surface || actor_surface->IsTab()) {
+    return nullptr;
+  }
+  // A surface that is being destroyed can't be promoted.
+  CHECK(!headless_actor_surfaces_being_destroyed_.contains(handle));
+  TabListInterface* tab_list = TabListInterface::From(&window);
+  if (!tab_list) {
+    return nullptr;
+  }
+
+  // The caller hands over responsibility for the surface; from here on the tab
+  // strip owns the page.
+  const ActorSurfaceHandle released =
+      owner.ReleaseOwnership(base::PassKey<ActorKeyedService>());
+  CHECK_EQ(released, handle);
+  // Move the page from the headless container into the tab strip. Between
+  // these two calls `contents` owns the page; the surface still refers to it.
+  std::unique_ptr<content::WebContents> contents =
+      headless_web_contents_manager_->TakeContents(
+          actor_surface->GetWebContents());
+  // Inserting can't fail: TabStripModel has no failure path and CHECKs on
+  // misuse instead.
+  tabs::TabInterface* tab = tab_list->InsertWebContentsAt(
+      /*index=*/-1, std::move(contents), /*should_pin=*/false,
+      /*group=*/std::nullopt);
+  CHECK(tab);
+  // Creating the tab ran ActorSurfaceTabHelper -> OnTabCreated(), which
+  // switched this surface, with its handle, to the tab.
+  CHECK_EQ(surface_registry_->GetForTab(tab->GetHandle()), actor_surface);
+  // TODO(crbug.com/584309016): Tell tasks acting on the surface that it is now
+  // a tab.
+  // Selects the tab in `window`, but doesn't bring `window` to the front.
+  tab_list->ActivateTab(tab->GetHandle());
+  return tab;
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 ActorKeyedService::~ActorKeyedService() = default;
 

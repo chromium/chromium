@@ -46,6 +46,17 @@ void HeadlessWebContentsManager::Destroy(content::WebContents* contents) {
   contents_.erase(it);
 }
 
+std::unique_ptr<content::WebContents> HeadlessWebContentsManager::TakeContents(
+    content::WebContents* contents) {
+  auto it = std::ranges::find(contents_, contents,
+                              &std::unique_ptr<content::WebContents>::get);
+  CHECK(it != contents_.end());
+  std::unique_ptr<content::WebContents> owned = std::move(*it);
+  contents_.erase(it);
+  owned->SetDelegate(nullptr);
+  return owned;
+}
+
 void HeadlessWebContentsManager::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }

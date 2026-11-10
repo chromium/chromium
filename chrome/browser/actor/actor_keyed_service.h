@@ -43,6 +43,7 @@
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
 
+class BrowserWindowInterface;
 class Profile;
 
 namespace content {
@@ -84,6 +85,11 @@ class ScopedHeadlessActorSurface {
   ActorSurfaceHandle actor_surface_handle() const {
     return actor_surface_handle_;
   }
+
+  // Gives up ownership without destroying the surface and returns its handle;
+  // the caller becomes responsible for the surface. Leaves this object empty.
+  [[nodiscard]] ActorSurfaceHandle ReleaseOwnership(
+      base::PassKey<ActorKeyedService>);
 
  private:
   // The headless surface this object owns.
@@ -183,6 +189,19 @@ class ActorKeyedService : public KeyedService,
   // surface is already gone, or after Shutdown(). `actor_surface_handle` must
   // not refer to a tab-backed surface.
   void DestroyHeadlessActorSurface(ActorSurfaceHandle actor_surface_handle);
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Moves the page of the headless surface owned by `owner` into a new tab at
+  // the end of `window`'s tab strip and selects it (`window` isn't activated).
+  // The surface keeps its handle. On success, the tab strip owns the page,
+  // `owner` is empty, and the new tab is returned. Returns nullptr and leaves
+  // `owner` unchanged if `owner` is empty or no longer headless, or if `window`
+  // is closing, isn't a normal window, or belongs to another profile. Desktop
+  // only: on Android, a failed insert would destroy the page.
+  tabs::TabInterface* PromoteHeadlessActorSurface(
+      ScopedHeadlessActorSurface& owner,
+      BrowserWindowInterface& window);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Lets tests call the ActorSurfaceRegistry methods reserved for this class.
   static base::PassKey<ActorKeyedService> GetPassKeyForTesting() {

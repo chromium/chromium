@@ -83,6 +83,28 @@ TEST_F(HeadlessWebContentsManagerTest, PageInitiatedCloseKeepsContents) {
   EXPECT_TRUE(watcher.IsDestroyed());
 }
 
+// TakeContents() hands the page over intact: no notification, no destruction,
+// and the manager no longer owns or delegates for it.
+TEST_F(HeadlessWebContentsManagerTest,
+       TakeContentsTransfersOwnershipWithoutDestroying) {
+  content::WebContents* contents = manager_->Create();
+  content::WebContentsDestroyedWatcher watcher(contents);
+  EXPECT_CALL(observer_, OnHeadlessContentsWillBeDestroyed).Times(0);
+
+  std::unique_ptr<content::WebContents> owned =
+      manager_->TakeContents(contents);
+
+  EXPECT_EQ(owned.get(), contents);
+  EXPECT_EQ(owned->GetDelegate(), nullptr);
+  // Destroying the manager leaves the released page alone.
+  manager_.reset();
+  EXPECT_FALSE(watcher.IsDestroyed());
+  testing::Mock::VerifyAndClearExpectations(&observer_);
+
+  owned.reset();
+  EXPECT_TRUE(watcher.IsDestroyed());
+}
+
 TEST_F(HeadlessWebContentsManagerTest, ManagerDestructionNotifiesForEach) {
   content::WebContents* first = manager_->Create();
   content::WebContents* second = manager_->Create();

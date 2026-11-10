@@ -52,6 +52,12 @@ class HeadlessWebContentsManager : public content::WebContentsDelegate {
   // this manager.
   void Destroy(content::WebContents* contents);
 
+  // Hands ownership of `contents` to the caller without destroying it, e.g. to
+  // insert it into a tab. Observers are not notified, and this manager stops
+  // being its delegate. `contents` must be owned by this manager.
+  [[nodiscard]] std::unique_ptr<content::WebContents> TakeContents(
+      content::WebContents* contents);
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
