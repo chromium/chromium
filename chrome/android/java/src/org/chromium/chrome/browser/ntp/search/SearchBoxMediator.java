@@ -22,6 +22,7 @@ import android.view.animation.Interpolator;
 import androidx.annotation.ColorInt;
 import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.view.animation.PathInterpolatorCompat;
 
 import org.chromium.base.MathUtils;
 import org.chromium.build.annotations.NullMarked;
@@ -62,7 +63,7 @@ import java.util.function.Supplier;
 
 @NullMarked
 class SearchBoxMediator implements DestroyObserver {
-    private static final long PLUS_ROTATION_DURATION_MS = 750;
+    private static final long PLUS_ROTATION_DURATION_MS = 800;
     private static final long INITIAL_HINT_DELAY_MS = 300;
     private static final long HINT_HOLD_DURATION_MS = 2500;
     private static final long FADE_DURATION_MS = 150;
@@ -483,11 +484,12 @@ class SearchBoxMediator implements DestroyObserver {
         String makeAPlanHint = mContext.getString(R.string.ntp_search_box_hint_make_a_plan);
         String askAboutTabHint = mContext.getString(R.string.ntp_search_box_hint_ask_about_tab);
 
+        Interpolator plusSpinInterpolator = PathInterpolatorCompat.create(0f, 0f, 0.08f, 1f);
         ObjectAnimator spin =
                 PropertyModelAnimatorFactory.ofFloat(
-                                mModel, SearchBoxProperties.PLUS_BUTTON_ROTATION, 360f)
+                                mModel, SearchBoxProperties.PLUS_BUTTON_ROTATION, 90f)
                         .setDuration(PLUS_ROTATION_DURATION_MS);
-        spin.setInterpolator(Interpolators.EMPHASIZED);
+        spin.setInterpolator(plusSpinInterpolator);
 
         Animator alphaPulse = createAlphaPulseAnimator();
         Animator tintIn =
