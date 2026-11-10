@@ -446,7 +446,7 @@ public class AwWebSurfaceTest extends AwParameterizedTest {
         webContent.bindSurface(listener1);
         assertEquals(3, listener1Helper.getCallCount());
 
-        webContent.destroy();
+        ThreadUtils.runOnUiThreadBlocking(webContent::destroy);
         assertEquals(4, listener1Helper.getCallCount());
     }
 

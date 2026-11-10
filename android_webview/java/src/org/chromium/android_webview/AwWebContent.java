@@ -574,7 +574,20 @@ public class AwWebContent {
                         });
     }
 
+    /** Like the above, for actions that don't need an {@link AwContents}, which may never exist. */
+    private void runOrQueueUntilStarted(Runnable action) {
+        if (mAwContents != null) {
+            action.run();
+        } else {
+            mStartupController.getRunQueue().addTask(action);
+        }
+    }
+
     public void destroy() {
+        runOrQueueUntilStarted(this::destroyNow);
+    }
+
+    private void destroyNow() {
         if (mIsDestroyed) return;
         mIsDestroyed = true;
         if (mSurfaceBindingListener != null) {
