@@ -119,11 +119,6 @@ bool BrowserDesktopWindowTreeHostLinux::UsesNativeSystemMenu() const {
   return false;
 }
 
-void BrowserDesktopWindowTreeHostLinux::FrameTypeChanged() {
-  DesktopWindowTreeHostPlatform::FrameTypeChanged();
-  UpdateFrameHints();
-}
-
 void BrowserDesktopWindowTreeHostLinux::TabDraggingKindChanged(
     TabDragKind tab_drag_kind) {
   CHECK(browser_widget_);
@@ -269,8 +264,10 @@ bool BrowserDesktopWindowTreeHostLinux::IsOverrideRedirect(
 
 gfx::Insets BrowserDesktopWindowTreeHostLinux::CalculateInsetsInDIP(
     ui::PlatformWindowState window_state) const {
-  // If we are not showing frame, the insets should be zero.
-  if (!browser_widget_ ||
+  // If we are not showing frame, the insets should be zero. Without
+  // client-side shadows, the frame border is opaque and part of the visible
+  // window, so it is not a decoration inset either.
+  if (!browser_widget_ || !SupportsClientFrameShadow() ||
       !IsShowingFrame(native_widget_->UseCustomFrame(), window_state)) {
     return gfx::Insets();
   }

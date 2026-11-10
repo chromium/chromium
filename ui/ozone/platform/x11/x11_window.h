@@ -7,6 +7,7 @@
 
 #include <array>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -171,6 +172,7 @@ class X11Window : public PlatformWindow,
   bool CanResetOverrideRedirect() const override;
   void SetX11ExtensionDelegate(X11ExtensionDelegate* delegate) override;
   bool IsWmSyncActiveForTest() override;
+  void OnFrameTypeChanged() override;
 
   // x11::EventObserver:
   void OnEvent(const x11::Event& event) override;
@@ -530,6 +532,10 @@ class X11Window : public PlatformWindow,
 
   // The size of the window manager provided borders (if any).
   gfx::Insets native_window_frame_borders_in_pixels_;
+
+  // The client-side decoration insets last set in _GTK_FRAME_EXTENTS, or
+  // nullopt if they have not been set yet (before the window is mapped).
+  std::optional<gfx::Insets> decoration_insets_in_pixels_;
 
   // Used for synchronizing between `xwindow_` and the WM during resizing.
   x11::Sync::Counter update_counter_{};
