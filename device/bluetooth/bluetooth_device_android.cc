@@ -23,6 +23,7 @@
 #include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service_android.h"
 #include "device/bluetooth/bluetooth_socket_android.h"
+#include "third_party/jni_zero/jni_zero.h"
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "device/bluetooth/jni_headers/ChromeBluetoothDevice_jni.h"
 
@@ -44,7 +45,7 @@ std::unique_ptr<BluetoothDeviceAndroid> BluetoothDeviceAndroid::Create(
       new BluetoothDeviceAndroid(adapter, task_runner, socket_thread));
 
   device->j_device_.Reset(Java_ChromeBluetoothDevice_create(
-      AttachCurrentThread(), reinterpret_cast<intptr_t>(device.get()),
+      AttachCurrentThread(), jni_zero::MakeRaw(device.get()),
       bluetooth_device_wrapper));
 
   device->LoadInitialCachedMetadata();
