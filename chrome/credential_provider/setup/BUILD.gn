@@ -59,13 +59,19 @@ grit("setup_resources") {
   resource_ids = ""
 }
 
-# Builds a self extracting 7-zip binary using the 7-zip SFX sources but with
-# the credential provider's version resources.
-executable("gcp_sfx") {
+# Builds gcp_installer.exe, which unpacks gcp.7z (embedded as a resource) into a
+# secure temp directory and runs gcp_setup.exe from there.
+executable("gcp_installer") {
+  sources = [
+    "gcp_installer.cc",
+    "gcp_installer.rc",
+  ]
   deps = [
     ":setup_resources",
     ":version",
-    "//third_party/lzma_sdk:7zS2_source",
+    "//base",
+    "//chrome/credential_provider:gcp_archive",
+    "//chrome/installer/util:metainstaller_utils",
   ]
   configs += [
     "//build/config/win:windowed",
