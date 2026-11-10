@@ -8,6 +8,8 @@
 
 #import <memory>
 
+#import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/autofill/ios/browser/autofill_client_ios.h"
@@ -16,10 +18,8 @@
 #import "components/device_reauth/mock_device_auth_availability_checker.h"
 #import "components/device_reauth/mock_device_authenticator.h"
 #import "components/enterprise/connectors/core/features.h"
-#import "components/enterprise/connectors/core/reporting_event_router.h"
 #import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_delegate.h"
-#import "components/keyed_service/core/keyed_service.h"
 #import "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_form_manager.h"
@@ -32,8 +32,7 @@
 #import "components/sync/test/test_sync_service.h"
 #import "components/ukm/test_ukm_recorder.h"
 #import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
-#import "ios/chrome/browser/enterprise/connectors/reporting/ios_realtime_reporting_client.h"
-#import "ios/chrome/browser/enterprise/connectors/reporting/ios_realtime_reporting_client_factory.h"
+#import "ios/chrome/browser/enterprise/common/test/mock_reporting_event_router.h"
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_reporting_event_router_factory.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
@@ -71,33 +70,6 @@ using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::ReturnRef;
 
-class MockRouter : public enterprise_connectors::ReportingEventRouter {
- public:
-  MockRouter(enterprise_connectors::IOSRealtimeReportingClient* client)
-      : ReportingEventRouter(client) {}
-  MOCK_METHOD(void,
-              OnLoginEvent,
-              (const GURL& url,
-               bool is_federated,
-               const url::SchemeHostPort& federated_origin,
-               const std::u16string& username,
-               const std::optional<EventInitiatorInfo>& initiator),
-              (override));
-
-  MOCK_METHOD(
-      void,
-      OnPasswordBreach,
-      (const std::string& trigger,
-       (const std::vector<std::pair<GURL, std::u16string>>& identities)),
-      (override));
-};
-
-std::unique_ptr<KeyedService> MakeMockRouter(ProfileIOS* profile) {
-  return std::make_unique<MockRouter>(
-      enterprise_connectors::IOSRealtimeReportingClientFactory::GetForProfile(
-          profile));
-}
-
 // TODO(crbug.com/41456340): this file is initiated because of needing test for
 // ios policy. More unit test of the client should be added.
 class IOSChromePasswordManagerClientTest : public PlatformTest {
@@ -109,11 +81,12 @@ class IOSChromePasswordManagerClientTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         enterprise_connectors::IOSReportingEventRouterFactory::GetInstance(),
-        base::BindOnce(&MakeMockRouter));
+        base::BindOnce(
+            &MockReportingEventRouter::BuildMockReportingEventRouter));
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateTestSyncService));
     profile_ = std::move(builder).Build();
-    reporting_event_router_ = static_cast<MockRouter*>(
+    reporting_event_router_ = static_cast<MockReportingEventRouter*>(
         enterprise_connectors::IOSReportingEventRouterFactory::GetForProfile(
             profile_.get()));
     browser_ = std::make_unique<TestBrowser>(profile_.get());
@@ -152,7 +125,7 @@ class IOSChromePasswordManagerClientTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<web::WebState> web_state_;
-  raw_ptr<MockRouter> reporting_event_router_;
+  raw_ptr<MockReportingEventRouter> reporting_event_router_;
 
   // PasswordController for testing.
   PasswordController* passwordController_;

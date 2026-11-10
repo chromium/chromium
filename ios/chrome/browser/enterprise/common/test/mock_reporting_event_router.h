@@ -5,12 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_ENTERPRISE_COMMON_TEST_MOCK_REPORTING_EVENT_ROUTER_H_
 #define IOS_CHROME_BROWSER_ENTERPRISE_COMMON_TEST_MOCK_REPORTING_EVENT_ROUTER_H_
 
+#import <optional>
+#import <string>
+#import <utility>
+#import <vector>
+
 #import "components/enterprise/connectors/core/reporting_event_router.h"
 #import "components/enterprise/data_controls/core/browser/verdict.h"
 #import "components/safe_browsing/core/common/proto/csd.pb.h"
 #import "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "testing/gmock/include/gmock/gmock.h"
+#import "url/gurl.h"
+#import "url/scheme_host_port.h"
 
 namespace enterprise_connectors {
 class IOSRealtimeReportingClient;
@@ -29,6 +36,21 @@ class MockReportingEventRouter
       enterprise_connectors::IOSRealtimeReportingClient* reporting_client);
   ~MockReportingEventRouter() override;
 
+  // enterprise_connectors::ReportingEventRouter:
+  MOCK_METHOD(void,
+              OnLoginEvent,
+              (const GURL& url,
+               bool is_federated,
+               const url::SchemeHostPort& federated_origin,
+               const std::u16string& username,
+               const std::optional<EventInitiatorInfo>& initiator),
+              (override));
+  MOCK_METHOD(
+      void,
+      OnPasswordBreach,
+      (const std::string& trigger,
+       (const std::vector<std::pair<GURL, std::u16string>>& identities)),
+      (override));
   MOCK_METHOD(
       void,
       OnSensitiveDataEvent,

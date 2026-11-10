@@ -16,5 +16,6 @@ source_set("test") {
     "//ios/chrome/browser/enterprise/connectors/reporting",
     "//ios/chrome/browser/shared/model/profile",
     "//testing/gmock",
+    "//url",
   ]
 }

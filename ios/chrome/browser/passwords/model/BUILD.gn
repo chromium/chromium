@@ -335,6 +335,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/autofill/model:features",
     "//ios/chrome/browser/autofill/model/bottom_sheet",
     "//ios/chrome/browser/autofill/ui_bundled:coordinator",
+    "//ios/chrome/browser/enterprise/common/test",
     "//ios/chrome/browser/enterprise/connectors/reporting",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/intelligence/actor/model:tab_helper",
