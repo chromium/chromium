@@ -8,6 +8,7 @@
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/auto_reset.h"
+#include "base/i18n/tag_converters.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -368,7 +369,8 @@ class ProjectorNavigationThrottleLocaleTest
 // Verifies that the Projector app can detect locale changes.
 IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleLocaleTest,
                        UntrustedNavigationLocaleDetection) {
-  g_browser_process->GetFeatures()->application_locale_storage()->Set(locale());
+  g_browser_process->GetFeatures()->application_locale_storage()->SetTag(
+      base::i18n::GetLanguageTagFromString(locale()).value());
 
   GURL untrusted_url(kChromeUIUntrustedProjectorUrl);
 

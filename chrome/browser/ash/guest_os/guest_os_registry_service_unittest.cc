@@ -7,6 +7,8 @@
 #include <stddef.h>
 
 #include "base/files/file_util.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_future.h"
@@ -428,13 +430,14 @@ TEST_F(GuestOsRegistryServiceTest, SetAndGetRegistrationKeywords) {
   }
   service()->UpdateApplicationList(app_list);
 
-  application_locale_storage()->Set("");
+  application_locale_storage()->SetTag(base::i18n::GetKnownLanguageTag("und"));
   EXPECT_EQ(service()->GetRegistration(app_id)->Keywords(), keywords[""]);
-  application_locale_storage()->Set("fr");
+  application_locale_storage()->SetTag(base::i18n::GetKnownLanguageTag("fr"));
   EXPECT_EQ(service()->GetRegistration(app_id)->Keywords(), keywords["fr"]);
-  application_locale_storage()->Set("ge");
+  application_locale_storage()->SetTag(
+      base::i18n::GetLanguageTagFromString("ge").value());
   EXPECT_EQ(service()->GetRegistration(app_id)->Keywords(), keywords["ge"]);
-  application_locale_storage()->Set("te");
+  application_locale_storage()->SetTag(base::i18n::GetKnownLanguageTag("te"));
   EXPECT_EQ(service()->GetRegistration(app_id)->Keywords(), keywords["te"]);
 }
 

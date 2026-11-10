@@ -12,6 +12,7 @@
 #include "base/check_deref.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
+#include "base/i18n/tag_converters.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager_factory.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
@@ -68,7 +69,8 @@ void TestSystemWebAppManager::SetUpdatePolicy(
 }
 
 void TestSystemWebAppManager::SetCurrentLocale(const std::string& locale) {
-  application_locale_storage_->Set(locale);
+  application_locale_storage_->SetTag(
+      base::i18n::GetLanguageTagFromString(locale).value());
 }
 
 const base::Version& TestSystemWebAppManager::CurrentVersion() const {

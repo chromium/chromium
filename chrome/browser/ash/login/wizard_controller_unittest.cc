@@ -16,6 +16,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/check_deref.h"
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -654,7 +655,7 @@ TEST_F(WizardControllerTest,
   TestingBrowserProcess::GetGlobal()
       ->GetFeatures()
       ->application_locale_storage()
-      ->Set("en-GB");
+      ->SetTag(base::i18n::GetKnownLanguageTag("en-GB"));
   TestingBrowserProcess::GetGlobal()->local_state()->SetString(
       language::prefs::kApplicationLocale, "en-AU");
 

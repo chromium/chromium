@@ -15,6 +15,7 @@
 #include "ash/public/cpp/test/mock_projector_controller.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "ash/webui/projector_app/test/mock_app_client.h"
+#include "base/i18n/tag_converters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -63,7 +64,7 @@ inline void SetLocale(const std::string& locale) {
   TestingBrowserProcess::GetGlobal()
       ->GetFeatures()
       ->application_locale_storage()
-      ->Set(locale);
+      ->SetTag(base::i18n::GetLanguageTagFromString(locale).value());
 }
 
 class MockLocaleUpdateController : public ash::LocaleUpdateController {

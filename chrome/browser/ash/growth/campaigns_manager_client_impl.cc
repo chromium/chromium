@@ -199,11 +199,12 @@ bool CampaignsManagerClientImpl::IsAppIconOnShelf(
   return true;
 }
 
-const std::string& CampaignsManagerClientImpl::GetApplicationLocale() const {
+const base::i18n::LanguageTag&
+CampaignsManagerClientImpl::GetApplicationLocale() const {
   // User selected locale, then resolved using
   // `l10n_util::CheckAndResolveLocale` to a platform locale.
   // For example: `en-IN` will be resolved to `en-GB`.
-  return application_locale_storage_->Get();
+  return application_locale_storage_->GetTag();
 }
 
 const std::string& CampaignsManagerClientImpl::GetUserLocale() const {

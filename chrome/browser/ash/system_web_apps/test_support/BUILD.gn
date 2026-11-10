@@ -22,6 +22,7 @@ static_library("test_support") {
 
   deps = [
     "//ash/constants",
+    "//base/i18n:language_tag",
     "//base/test:test_support",
     "//chrome/app:command_ids",
     "//chrome/app/theme:chrome_unscaled_resources_grit",

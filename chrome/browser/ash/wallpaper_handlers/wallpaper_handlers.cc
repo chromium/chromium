@@ -208,7 +208,7 @@ void BackdropCollectionInfoFetcherImpl::OnGetCustomizationIdFilter(
 
   backdrop::GetCollectionsRequest request;
   // The language field may include the country code (e.g. "en-US").
-  request.set_language(application_locale_storage_->Get());
+  request.set_language(application_locale_storage_->GetTag().tag_string());
   request.add_filtering_label(kFilteringLabel);
   if (ash::IsGoogleBrandedDevice()) {
     request.add_filtering_label(kGoogleDeviceFilteringLabel);
@@ -306,7 +306,7 @@ void BackdropImageInfoFetcherImpl::OnGetCustomizationIdFilter(
 
   backdrop::GetImagesInCollectionRequest request;
   // The language field may include the country code (e.g. "en-US").
-  request.set_language(application_locale_storage_->Get());
+  request.set_language(application_locale_storage_->GetTag().tag_string());
   request.set_collection_id(collection_id_);
   request.add_filtering_label(kFilteringLabel);
   if (ash::IsGoogleBrandedDevice()) {
@@ -413,7 +413,7 @@ void BackdropSurpriseMeImageFetcherImpl::OnGetCustomizationIdFilter(
 
   backdrop::GetImageFromCollectionRequest request;
   // The language field may include the country code (e.g. "en-US").
-  request.set_language(application_locale_storage_->Get());
+  request.set_language(application_locale_storage_->GetTag().tag_string());
   request.add_collection_ids(collection_id_);
   request.add_filtering_label(kFilteringLabel);
   if (ash::IsGoogleBrandedDevice()) {

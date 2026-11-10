@@ -16,6 +16,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/features.h"
+#include "base/i18n/language_tag.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -590,8 +591,8 @@ bool CampaignsMatcher::MatchDeviceTargeting(
   }
 
   const auto* targeting_locales = targeting.GetLocales();
-  if (targeting_locales &&
-      !targeting_locales->contains(client_->GetApplicationLocale())) {
+  if (targeting_locales && !targeting_locales->contains(
+                               client_->GetApplicationLocale().tag_string())) {
     return false;
   }
 

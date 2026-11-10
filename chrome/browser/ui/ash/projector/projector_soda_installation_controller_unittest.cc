@@ -14,6 +14,7 @@
 #include "ash/webui/projector_app/test/mock_app_client.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
+#include "base/i18n/tag_converters.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
 #include "chrome/browser/global_features.h"
@@ -48,7 +49,7 @@ inline void SetLocale(const std::string& locale) {
   TestingBrowserProcess::GetGlobal()
       ->GetFeatures()
       ->application_locale_storage()
-      ->Set(locale);
+      ->SetTag(base::i18n::GetLanguageTagFromString(locale).value());
   LocaleUpdateController::Get()->OnLocaleChanged();
 }
 

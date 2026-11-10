@@ -15,6 +15,8 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gmock_callback_support.h"
@@ -353,8 +355,8 @@ class CampaignsManagerTest : public testing::Test {
     EXPECT_CALL(mock_client_, GetUserLocale())
         .WillRepeatedly(testing::ReturnRefOfCopy(std::string(user_locale)));
     EXPECT_CALL(mock_client_, GetApplicationLocale())
-        .WillRepeatedly(
-            testing::ReturnRefOfCopy(std::string(application_locale)));
+        .WillRepeatedly(testing::ReturnRefOfCopy(
+            base::i18n::GetLanguageTagFromString(application_locale).value()));
     EXPECT_CALL(mock_client_, GetCountryCode())
         .WillRepeatedly(testing::Return(std::string(country)));
   }
@@ -1203,7 +1205,8 @@ TEST_F(CampaignsManagerTest, LoadCampaignsEmptyFile) {
 TEST_F(CampaignsManagerTest, GetCampaignDeviceTargeting) {
   auto current_version = version_info::GetMajorVersionNumberAsInt();
   EXPECT_CALL(mock_client_, GetApplicationLocale())
-      .WillRepeatedly(testing::ReturnRefOfCopy(std::string("en-US")));
+      .WillRepeatedly(
+          testing::ReturnRefOfCopy(base::i18n::GetKnownLanguageTag("en-US")));
   LoadComponentWithBasicDeviceTargetings(base::StringPrintf(
       R"(
       "min": %d,
@@ -1270,7 +1273,8 @@ TEST_F(CampaignsManagerTest, GetCampaignExcludedCountryTargetingMismatch) {
 
 TEST_F(CampaignsManagerTest, GetCampaignMilestoneMinMismatch) {
   EXPECT_CALL(mock_client_, GetApplicationLocale())
-      .WillRepeatedly(testing::ReturnRefOfCopy(std::string("en-US")));
+      .WillRepeatedly(
+          testing::ReturnRefOfCopy(base::i18n::GetKnownLanguageTag("en-US")));
 
   auto current_version = version_info::GetMajorVersionNumberAsInt();
   LoadComponentWithBasicDeviceTargetings(base::StringPrintf(
@@ -1302,7 +1306,8 @@ TEST_F(CampaignsManagerTest, GetCampaignMilestoneMaxMismatch) {
 
 TEST_F(CampaignsManagerTest, GetCampaignMinMilestoneOnly) {
   EXPECT_CALL(mock_client_, GetApplicationLocale())
-      .WillRepeatedly(testing::ReturnRefOfCopy(std::string("en-US")));
+      .WillRepeatedly(
+          testing::ReturnRefOfCopy(base::i18n::GetKnownLanguageTag("en-US")));
 
   auto current_version = version_info::GetMajorVersionNumberAsInt();
   MockLocales(/*user_locale=*/"en-US", /*application_locale=*/"en-US",
@@ -1350,7 +1355,8 @@ TEST_F(CampaignsManagerTest, GetCampaignMaxMilestoneOnlyMismatch) {
 
 TEST_F(CampaignsManagerTest, GetCampaignVersionMatch) {
   EXPECT_CALL(mock_client_, GetApplicationLocale())
-      .WillRepeatedly(testing::ReturnRefOfCopy(std::string("en-US")));
+      .WillRepeatedly(
+          testing::ReturnRefOfCopy(base::i18n::GetKnownLanguageTag("en-US")));
   LoadComponentWithDeviceTargeting(base::StringPrintf(
       R"(
         {
@@ -1369,7 +1375,8 @@ TEST_F(CampaignsManagerTest, GetCampaignVersionMatch) {
 
 TEST_F(CampaignsManagerTest, GetCampaignVersionMinMismatch) {
   EXPECT_CALL(mock_client_, GetApplicationLocale())
-      .WillRepeatedly(testing::ReturnRefOfCopy(std::string("en-US")));
+      .WillRepeatedly(
+          testing::ReturnRefOfCopy(base::i18n::GetKnownLanguageTag("en-US")));
   LoadComponentWithDeviceTargeting(base::StringPrintf(
       R"(
         {
@@ -1387,7 +1394,8 @@ TEST_F(CampaignsManagerTest, GetCampaignVersionMinMismatch) {
 
 TEST_F(CampaignsManagerTest, GetCampaignVersionMaxMismatch) {
   EXPECT_CALL(mock_client_, GetApplicationLocale())
-      .WillRepeatedly(testing::ReturnRefOfCopy(std::string("en-US")));
+      .WillRepeatedly(
+          testing::ReturnRefOfCopy(base::i18n::GetKnownLanguageTag("en-US")));
   LoadComponentWithDeviceTargeting(base::StringPrintf(
       R"(
         {
@@ -1405,7 +1413,8 @@ TEST_F(CampaignsManagerTest, GetCampaignVersionMaxMismatch) {
 
 TEST_F(CampaignsManagerTest, GetCampaignVersionMinOnly) {
   EXPECT_CALL(mock_client_, GetApplicationLocale())
-      .WillRepeatedly(testing::ReturnRefOfCopy(std::string("en-US")));
+      .WillRepeatedly(
+          testing::ReturnRefOfCopy(base::i18n::GetKnownLanguageTag("en-US")));
   LoadComponentWithDeviceTargeting(base::StringPrintf(
       R"(
         {
@@ -1422,7 +1431,8 @@ TEST_F(CampaignsManagerTest, GetCampaignVersionMinOnly) {
 
 TEST_F(CampaignsManagerTest, GetCampaignVersionMinOnlyMismatch) {
   EXPECT_CALL(mock_client_, GetApplicationLocale())
-      .WillRepeatedly(testing::ReturnRefOfCopy(std::string("en-US")));
+      .WillRepeatedly(
+          testing::ReturnRefOfCopy(base::i18n::GetKnownLanguageTag("en-US")));
   LoadComponentWithDeviceTargeting(base::StringPrintf(
       R"(
         {
@@ -1438,7 +1448,8 @@ TEST_F(CampaignsManagerTest, GetCampaignVersionMinOnlyMismatch) {
 
 TEST_F(CampaignsManagerTest, GetCampaignVersionMaxOnly) {
   EXPECT_CALL(mock_client_, GetApplicationLocale())
-      .WillRepeatedly(testing::ReturnRefOfCopy(std::string("en-US")));
+      .WillRepeatedly(
+          testing::ReturnRefOfCopy(base::i18n::GetKnownLanguageTag("en-US")));
   LoadComponentWithDeviceTargeting(base::StringPrintf(
       R"(
         {
@@ -1455,7 +1466,8 @@ TEST_F(CampaignsManagerTest, GetCampaignVersionMaxOnly) {
 
 TEST_F(CampaignsManagerTest, GetCampaignVersionMaxOnlyMismatch) {
   EXPECT_CALL(mock_client_, GetApplicationLocale())
-      .WillRepeatedly(testing::ReturnRefOfCopy(std::string("en-US")));
+      .WillRepeatedly(
+          testing::ReturnRefOfCopy(base::i18n::GetKnownLanguageTag("en-US")));
   LoadComponentWithDeviceTargeting(base::StringPrintf(
       R"(
         {
@@ -1471,7 +1483,8 @@ TEST_F(CampaignsManagerTest, GetCampaignVersionMaxOnlyMismatch) {
 
 TEST_F(CampaignsManagerTest, GetCampaignApplicationLocaleMismatch) {
   EXPECT_CALL(mock_client_, GetApplicationLocale())
-      .WillRepeatedly(testing::ReturnRefOfCopy(std::string("en-CA")));
+      .WillRepeatedly(
+          testing::ReturnRefOfCopy(base::i18n::GetKnownLanguageTag("en-CA")));
 
   auto current_version = version_info::GetMajorVersionNumberAsInt();
   LoadComponentWithBasicDeviceTargetings(
@@ -1482,7 +1495,8 @@ TEST_F(CampaignsManagerTest, GetCampaignApplicationLocaleMismatch) {
 
 TEST_F(CampaignsManagerTest, GetCampaignTargetFeatureAwareDevice) {
   EXPECT_CALL(mock_client_, GetApplicationLocale())
-      .WillRepeatedly(testing::ReturnRefOfCopy(std::string("en-US")));
+      .WillRepeatedly(
+          testing::ReturnRefOfCopy(base::i18n::GetKnownLanguageTag("en-US")));
 
   scoped_feature_list_.InitWithFeatures(
       {ash::features::kFeatureManagementGrowthFramework}, {});
@@ -1500,7 +1514,8 @@ TEST_F(CampaignsManagerTest, GetCampaignTargetFeatureAwareDevice) {
 
 TEST_F(CampaignsManagerTest, GetCampaignTargetFeatureAwareDeviceMismatch) {
   EXPECT_CALL(mock_client_, GetApplicationLocale())
-      .WillRepeatedly(testing::ReturnRefOfCopy(std::string("en-US")));
+      .WillRepeatedly(
+          testing::ReturnRefOfCopy(base::i18n::GetKnownLanguageTag("en-US")));
   scoped_feature_list_.InitWithFeatures(
       {ash::features::kFeatureManagementGrowthFramework}, {});
 
@@ -1514,7 +1529,8 @@ TEST_F(CampaignsManagerTest, GetCampaignTargetFeatureAwareDeviceMismatch) {
 
 TEST_F(CampaignsManagerTest, GetCampaignTargetNotFeatureAwareDevice) {
   EXPECT_CALL(mock_client_, GetApplicationLocale())
-      .WillRepeatedly(testing::ReturnRefOfCopy(std::string("en-US")));
+      .WillRepeatedly(
+          testing::ReturnRefOfCopy(base::i18n::GetKnownLanguageTag("en-US")));
   scoped_feature_list_.InitWithFeatures(
       {}, {ash::features::kFeatureManagementGrowthFramework});
 

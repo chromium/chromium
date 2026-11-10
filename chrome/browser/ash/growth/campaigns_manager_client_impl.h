@@ -64,7 +64,7 @@ class CampaignsManagerClientImpl : public growth::CampaignsManagerClient,
   bool IsDeviceInDemoMode() const override;
   bool IsFeatureAwareDevice() const override;
   bool IsAppIconOnShelf(const std::string& app_id) const override;
-  const std::string& GetApplicationLocale() const override;
+  const base::i18n::LanguageTag& GetApplicationLocale() const override;
   const std::string& GetUserLocale() const override;
 
   // Returns the permanent country code stored for this client. See

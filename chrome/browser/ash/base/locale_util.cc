@@ -14,6 +14,8 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -77,7 +79,11 @@ void FinishSwitchLanguage(ApplicationLocaleStorage* application_locale_storage,
                           std::unique_ptr<SwitchLanguageData> data) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   if (data->result.success) {
-    CHECK_DEREF(application_locale_storage).Set(data->result.loaded_locale);
+    if (std::optional<base::i18n::LanguageTag> loaded_locale_tag =
+            base::i18n::GetLanguageTagFromString(data->result.loaded_locale)) {
+      CHECK_DEREF(application_locale_storage)
+          .SetTag(*std::move(loaded_locale_tag));
+    }
 
     // Ensure chrome app names are localized. Note that the user might prefer
     // a different locale than was actually loaded (e.g. "en-CA" vs. "en-US").

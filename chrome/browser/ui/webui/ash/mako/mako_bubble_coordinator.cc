@@ -50,7 +50,7 @@ MakoBubbleCoordinator::~MakoBubbleCoordinator() {
 void MakoBubbleCoordinator::LoadConsentUI(Profile* profile) {
   GURL url = net::AppendOrReplaceQueryParameter(
       GURL(kChromeUIMakoPrivacyURL), kOrcaHostLanguageParamKey,
-      application_locale_storage_->Get());
+      application_locale_storage_->GetTag().tag_string());
 
   contents_wrapper_ = std::make_unique<WebUIContentsWrapperT<MakoUntrustedUI>>(
       url, profile, IDS_ACCNAME_ORCA);
@@ -77,8 +77,9 @@ void MakoBubbleCoordinator::LoadEditorUI(
                                            preset_query_id);
   url = net::AppendOrReplaceQueryParameter(url, kOrcaFreeformParamKey,
                                            freeform_text);
-  url = net::AppendOrReplaceQueryParameter(url, kOrcaHostLanguageParamKey,
-                                           application_locale_storage_->Get());
+  url = net::AppendOrReplaceQueryParameter(
+      url, kOrcaHostLanguageParamKey,
+      application_locale_storage_->GetTag().tag_string());
   url = net::AppendOrReplaceQueryParameter(url, kOrcaFeedbackEnabledParamKey,
                                            base::ToString(feedback_enabled));
   auto* magic_boost_state = chromeos::MagicBoostState::Get();

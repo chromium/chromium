@@ -11,6 +11,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/generative_ai_country_restrictions.h"
+#include "base/i18n/language_tag.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/ash/browser_delegate/keyed_service_provider/manta_service_provider_impl.h"
@@ -386,7 +387,8 @@ TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenTextInputEnglishUsers) {
   SetUpIdentityAndCapabilities(regular_profile, kTestAccountId, true);
 
   // Set application locale.
-  application_locale_storage()->Set("en-GB");
+  application_locale_storage()->SetTag(
+      base::i18n::GetKnownLanguageTag("en-GB"));
 
   ASSERT_TRUE(
       IsSystemInSupportedLanguage(application_locale_storage()->GetTag()));
@@ -405,7 +407,7 @@ TEST_F(PersonalizationAppUtilsTest,
   SetUpIdentityAndCapabilities(regular_profile, kTestAccountId, true);
 
   // Set application locale.
-  application_locale_storage()->Set("de");
+  application_locale_storage()->SetTag(base::i18n::GetKnownLanguageTag("de"));
 
   ASSERT_FALSE(
       IsSystemInSupportedLanguage(application_locale_storage()->GetTag()));
@@ -424,7 +426,7 @@ TEST_F(PersonalizationAppUtilsTest,
   SetUpIdentityAndCapabilities(regular_profile, kTestAccountId, true);
 
   // Set application locale.
-  application_locale_storage()->Set("de");
+  application_locale_storage()->SetTag(base::i18n::GetKnownLanguageTag("de"));
 
   ASSERT_TRUE(
       IsSystemInSupportedLanguage(application_locale_storage()->GetTag()));
@@ -444,7 +446,7 @@ TEST_F(
   SetUpIdentityAndCapabilities(regular_profile, kTestAccountId, true);
 
   // Set application locale.
-  application_locale_storage()->Set("no");
+  application_locale_storage()->SetTag(base::i18n::GetKnownLanguageTag("no"));
 
   ASSERT_FALSE(
       IsSystemInSupportedLanguage(application_locale_storage()->GetTag()));

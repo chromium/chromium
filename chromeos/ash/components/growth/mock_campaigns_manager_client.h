@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_GROWTH_MOCK_CAMPAIGNS_MANAGER_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_GROWTH_MOCK_CAMPAIGNS_MANAGER_CLIENT_H_
 
+#include "base/i18n/language_tag.h"
 #include "chromeos/ash/components/growth/campaigns_manager_client.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -39,7 +40,10 @@ class MockCampaignsManagerClient : public CampaignsManagerClient {
               IsAppIconOnShelf,
               (const std::string& app_id),
               (const, override));
-  MOCK_METHOD(std::string&, GetApplicationLocale, (), (const, override));
+  MOCK_METHOD(const base::i18n::LanguageTag&,
+              GetApplicationLocale,
+              (),
+              (const, override));
   MOCK_METHOD(std::string&, GetUserLocale, (), (const, override));
   MOCK_METHOD(const std::string, GetCountryCode, (), (const, override));
   MOCK_METHOD(const base::Version&,

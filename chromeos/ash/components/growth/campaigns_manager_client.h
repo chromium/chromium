@@ -21,6 +21,10 @@ namespace base {
 class Version;
 }  // namespace base
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace growth {
 
 using CampaignComponentLoadedCallback = base::OnceCallback<void(
@@ -61,7 +65,7 @@ class CampaignsManagerClient {
   virtual bool IsAppIconOnShelf(const std::string& app_id) const = 0;
 
   // Returns application locale.
-  virtual const std::string& GetApplicationLocale() const = 0;
+  virtual const base::i18n::LanguageTag& GetApplicationLocale() const = 0;
 
   // Returns user selected locale.
   virtual const std::string& GetUserLocale() const = 0;
