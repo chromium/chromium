@@ -19,9 +19,9 @@ features:
   per_profile: false
 future_on:
 - android
-- ios
 supported_on:
 - chrome.*:116-
+- ios:160-
 owners:
 - hmare@google.com
 - seblalancette@chromium.org
