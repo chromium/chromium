@@ -110,8 +110,19 @@ export class OrganizerListSectionHeaderElement extends
     if (changedProperties.has('disabled')) {
       if (this.disabled) {
         this.setAttribute('tabindex', '0');
+        this.setAttribute(
+            'aria-description',
+            loadTimeData.getString('sectionNavigationHint'));
       } else {
         this.removeAttribute('tabindex');
+        this.removeAttribute('aria-description');
+      }
+    }
+    if (changedProperties.has('disabled') || changedProperties.has('title')) {
+      if (this.disabled && this.title) {
+        this.setAttribute('aria-label', this.title);
+      } else {
+        this.removeAttribute('aria-label');
       }
     }
   }

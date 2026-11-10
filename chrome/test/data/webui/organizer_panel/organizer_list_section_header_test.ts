@@ -50,27 +50,44 @@ suite('OrganizerListSectionHeaderTest', () => {
         header.$.menu.$.wrapper.getAttribute('aria-label'));
   });
 
-  test('has navigation hint aria-description when expanded', async () => {
-    const hint = 'Use up and down arrow keys to navigate the list.';
-    const expandButton = header.$.expandButton;
-    header.expanded = true;
-    header.disabled = false;
-    await microtasksFinished();
-    assertEquals(hint, expandButton.ariaDescription);
+  test(
+      'has navigation hint aria-description when expanded or disabled',
+      async () => {
+        const hint = 'Use up and down arrow keys to navigate the list.';
+        const expandButton = header.$.expandButton;
+        header.title = 'Open Tabs';
+        header.expanded = true;
+        header.disabled = false;
+        await microtasksFinished();
 
-    header.expanded = false;
-    await microtasksFinished();
-    assertNull(expandButton.ariaDescription);
+        assertEquals(hint, expandButton.ariaDescription);
+        assertEquals(null, header.getAttribute('aria-description'));
+        assertEquals(null, header.getAttribute('aria-label'));
 
-    header.expanded = true;
-    header.disabled = true;
-    await microtasksFinished();
-    assertNull(expandButton.ariaDescription);
+        header.expanded = false;
+        await microtasksFinished();
+        assertNull(expandButton.ariaDescription);
+        assertEquals(null, header.getAttribute('aria-description'));
+        assertEquals(null, header.getAttribute('aria-label'));
 
-    header.disabled = false;
-    await microtasksFinished();
-    assertEquals(hint, expandButton.ariaDescription);
-  });
+        header.disabled = true;
+        await microtasksFinished();
+        assertNull(expandButton.ariaDescription);
+        assertEquals(hint, header.getAttribute('aria-description'));
+        assertEquals('Open Tabs', header.getAttribute('aria-label'));
+
+        header.expanded = true;
+        await microtasksFinished();
+        assertNull(expandButton.ariaDescription);
+        assertEquals(hint, header.getAttribute('aria-description'));
+        assertEquals('Open Tabs', header.getAttribute('aria-label'));
+
+        header.disabled = false;
+        await microtasksFinished();
+        assertEquals(hint, expandButton.ariaDescription);
+        assertEquals(null, header.getAttribute('aria-description'));
+        assertEquals(null, header.getAttribute('aria-label'));
+      });
 
   test('has expand/collapse tooltip on expand button', async () => {
     const expandButton = header.$.expandButton;
