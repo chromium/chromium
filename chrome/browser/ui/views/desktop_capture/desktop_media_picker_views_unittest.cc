@@ -914,19 +914,9 @@ TEST_P(DesktopMediaPickerViewsPerTypeAndAudioTest, AcceptSpecific) {
 class DesktopMediaPickerViewsSystemAudioTest
     : public DesktopMediaPickerViewsTestBase {
  public:
-  void SetUp() override {
-#if BUILDFLAG(IS_MAC)
-    feature_list_.InitWithFeatures({media::kMacCatapLoopbackAudioForCast}, {});
-#endif
-    DesktopMediaPickerViewsTestBase::SetUp();
-  }
-
   void MaybeCreatePickerViews() override {
     // CreatePickerViews() called  directly from tests.
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(DesktopMediaPickerViewsSystemAudioTest,

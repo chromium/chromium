@@ -6,13 +6,15 @@
 
 #include <string>
 
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "media/audio/audio_features.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_LINUX)
+#include "base/test/scoped_feature_list.h"
+#endif
 
 namespace media_router {
 
@@ -171,10 +173,7 @@ TEST(MediaSourceTest, ForDesktopWithAudio) {
 }
 
 TEST(MediaSourceTest, ForUnchosenDesktop) {
-#if BUILDFLAG(IS_MAC)
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndEnableFeature(media::kMacCatapLoopbackAudioForCast);
-#elif BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitAndEnableFeature(media::kPulseaudioLoopbackForCast);
 #endif

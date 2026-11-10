@@ -54,16 +54,10 @@ namespace media {
 namespace {
 
 bool IsCatapLoopbackAudioEnabledForDevice(const std::string& device_id) {
-  // TODO(https://crbug.com/425902990): Remove check of
-  // `kLoopbackWithMuteDeviceIdCast` once CatapAudioInputStream is launched
-  // for both Cast and getDisplayMedia.
   if (!IsMacCatapSystemLoopbackCaptureSupported()) {
     return false;
   }
 
-  if (device_id == AudioDeviceDescription::kLoopbackWithMuteDeviceIdCast) {
-    return base::FeatureList::IsEnabled(kMacCatapLoopbackAudioForCast);
-  }
   if (device_id == AudioDeviceDescription::kLoopbackAllDevicesId) {
     return base::FeatureList::IsEnabled(kSystemLoopbackAsAecReference);
   }

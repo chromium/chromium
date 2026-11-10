@@ -15,12 +15,7 @@
 
 namespace mirroring {
 
-#if BUILDFLAG(IS_MAC)
-TEST(CastMirroringServiceHostTest, DesktopAudioUsesCastLoopbackDeviceOnMac) {
-  EXPECT_EQ(CastMirroringServiceHost::GetDesktopAudioLoopbackDeviceId(),
-            media::AudioDeviceDescription::kLoopbackWithMuteDeviceIdCast);
-}
-#elif BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST(CastMirroringServiceHostTest,
      DesktopAudioDoesNotMuteLocalPlaybackOnWinByDefault) {
   EXPECT_EQ(CastMirroringServiceHost::GetDesktopAudioLoopbackDeviceId(),

@@ -7421,12 +7421,6 @@ inline constexpr char kMacAccessibilityAPIMigrationName[] =
 inline constexpr char kMacAccessibilityAPIMigrationDescription[] =
     "Enables the migration to the new Cocoa accessibility API.";
 
-inline constexpr char kMacCatapLoopbackAudioForCastName[] =
-    "Mac Core Audio Tap System Loopback Capture for Cast";
-inline constexpr char kMacCatapLoopbackAudioForCastDescription[] =
-    "Enable system audio loopback capture for Cast using the macOS CoreAudio "
-    "tap API on macOS 14.2+.";
-
 inline constexpr char kMacPWAsNotificationAttributionName[] =
     "Mac PWA notification attribution";
 inline constexpr char kMacPWAsNotificationAttributionDescription[] =

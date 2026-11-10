@@ -282,14 +282,7 @@ gfx::Size CastMirroringServiceHost::GetCaptureResolutionConstraint() {
 
 // static
 std::string_view CastMirroringServiceHost::GetDesktopAudioLoopbackDeviceId() {
-#if BUILDFLAG(IS_MAC)
-  // Temporary logic to make the launch of CatapAudioInputStream for Cast
-  // independent of the launch of the same feature for getDisplayMedia().
-  // TODO(https://crbug.com/425902990): Remove the usage of
-  // `kLoopbackWithMuteDeviceIdCast` once CatapAudioInputStream is launched for
-  // both Cast and getDisplayMedia().
-  return media::AudioDeviceDescription::kLoopbackWithMuteDeviceIdCast;
-#elif BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On some Windows audio drivers, muting the default render endpoint also
   // silences the endpoint loopback capture, so the receiver gets no audio.
   // Capture without muting local playback instead.

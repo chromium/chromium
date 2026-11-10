@@ -110,8 +110,7 @@ bool DesktopMediaPickerController::IsSystemAudioCaptureSupported(
   }
 #if BUILDFLAG(IS_MAC)
   if (request_source == Params::RequestSource::kCast) {
-    return (media::IsMacSckSystemLoopbackCaptureSupported() ||
-            base::FeatureList::IsEnabled(media::kMacCatapLoopbackAudioForCast));
+    return true;
   } else {
     return media::IsMacCatapSystemLoopbackCaptureSupported();
   }

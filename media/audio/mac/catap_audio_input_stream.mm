@@ -331,15 +331,6 @@ void ReportMismatchStatus(int total_callbacks_with_channel_count_mismatch,
       total_callbacks_with_frames_mismatch);
 }
 
-bool IsLoopbackDevice(const std::string& device_id) {
-  return device_id == AudioDeviceDescription::kLoopbackInputDeviceId ||
-         device_id == AudioDeviceDescription::kLoopbackWithMuteDeviceId ||
-         device_id == AudioDeviceDescription::kLoopbackWithMuteDeviceIdCast ||
-         device_id == AudioDeviceDescription::kLoopbackWithoutChromeId ||
-         device_id == AudioDeviceDescription::kLoopbackAllDevicesId ||
-         AudioDeviceDescription::IsApplicationLoopbackDevice(device_id);
-}
-
 // True if the capturer should be configured to only capture the default
 // device.
 bool IsDefaultOutputDeviceLoopback(const std::string& device_id) {
@@ -353,8 +344,7 @@ bool ExcludeChromeLoopback(const std::string& device_id) {
 }
 
 bool MuteLocalPlaybackLoopback(const std::string& device_id) {
-  return device_id == AudioDeviceDescription::kLoopbackWithMuteDeviceId ||
-         device_id == AudioDeviceDescription::kLoopbackWithMuteDeviceIdCast;
+  return device_id == AudioDeviceDescription::kLoopbackWithMuteDeviceId;
 }
 
 // Returns AudioDeviceID and Unique ID (UID) for default output device, or
@@ -795,10 +785,8 @@ AudioInputStream::OpenOutcome CatapAudioInputStreamSource::Open() {
     [tap_description_ setMono:YES];
   }
   if (config_.mute_local_device) {
-    // device_id_ == AudioDeviceDescription::kLoopbackWithMuteDeviceId ||
-    //   device_id_ == AudioDeviceDescription::kLoopbackWithMuteDeviceIdCast) {
-    //  No audio is sent to the hardware (e.g, speakers) while the audio is
-    //  captured.
+    // No audio is sent to the hardware (e.g, speakers) while the audio is
+    // captured.
     [tap_description_ setMuteBehavior:CATapMuted];
   }
   [tap_description_ setName:@"ChromeAudioService"];
@@ -1571,7 +1559,7 @@ CatapAudioInputStream::CatapAudioInputStream(
 
       get_default_device_ids_callback_(
           std::move(get_default_device_ids_callback)) {
-  CHECK(IsLoopbackDevice(device_id_));
+  CHECK(AudioDeviceDescription::IsLoopbackDevice(device_id_));
 }
 
 AudioInputStream::OpenOutcome CatapAudioInputStream::Open() {

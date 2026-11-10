@@ -6207,11 +6207,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)
-    {"mac-catap-loopback-audio-for-cast",
-     flag_descriptions::kMacCatapLoopbackAudioForCastName,
-     flag_descriptions::kMacCatapLoopbackAudioForCastDescription, kOsMac,
-     FEATURE_VALUE_TYPE(media::kMacCatapLoopbackAudioForCast)},
-
     {"mac-sandbox-logging", flag_descriptions::kMacSandboxLoggingName,
      flag_descriptions::kMacSandboxLoggingDescription, kOsMac,
      FEATURE_VALUE_TYPE(sandbox::policy::features::kEnableSandboxLogging)},

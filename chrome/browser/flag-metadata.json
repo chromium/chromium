@@ -6936,11 +6936,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "mac-catap-loopback-audio-for-cast",
-    "owners": [ "muyaoxu@google.com", "openscreen-eng@google.com", "kron@chromium.org"],
-    "expiry_milestone": 161
-  },
-  {
     "name": "mac-enable-ping-sso",
     "owners": [
       "ssolarewicz@google.com", "cec-growth-eng@google.com"
