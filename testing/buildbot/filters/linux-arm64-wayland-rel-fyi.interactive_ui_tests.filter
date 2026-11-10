@@ -10,3 +10,6 @@
 -PerformanceInterventionInteractiveTest.SuggestTabsOnlyForLastActiveProfile
 -AutomaticFullscreenTest.WithGestureAfterExit/1
 -OmniboxViewViewsTest.SelectAllOnTabToFocus
+
+# TODO(https://crbug.com/547746068): Flaky on linux-arm64-wayland-rel-fyi.
+-All/TabStripCollectionControllerInteractiveUiTest.TabOpenedWhileUsingTabContextMenu/*
