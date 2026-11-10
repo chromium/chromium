@@ -8,17 +8,19 @@
 #include <vector>
 
 #include "base/check.h"
+#include "chrome/browser/ui/webui/settings/search/appearance_section.h"
 #include "chrome/browser/ui/webui/settings/search/settings_section.h"
 
 namespace settings_search {
 
-// TODO(b/571669596): Construct AppearanceSection with `registry` and `profile`.
 std::vector<std::unique_ptr<SettingsSection>> CreateSettingsSections(
     SettingsSearchRegistry* registry,
     Profile* profile) {
   CHECK(registry);
   CHECK(profile);
-  return {};
+  std::vector<std::unique_ptr<SettingsSection>> sections;
+  sections.push_back(std::make_unique<AppearanceSection>(registry, profile));
+  return sections;
 }
 
 }  // namespace settings_search

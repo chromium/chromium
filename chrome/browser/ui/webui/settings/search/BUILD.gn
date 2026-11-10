@@ -7,6 +7,8 @@ assert(is_win || is_mac || is_linux || is_chromeos)
 # Native search backend for desktop chrome://settings.
 source_set("search") {
   sources = [
+    "appearance_section.cc",
+    "appearance_section.h",
     "settings_search_handler.cc",
     "settings_search_handler.h",
     "settings_search_item.cc",
@@ -20,9 +22,23 @@ source_set("search") {
   ]
 
   deps = [
+    "//chrome/app:generated_resources",
+    "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/tabs/organizer",
+    "//chrome/browser/ui/webui/settings",
+    "//chrome/common",
+    "//components/search",
     "//ui/base",
   ]
+
+  if (is_linux) {
+    deps += [
+      "//components/prefs",
+      "//ui/color:color_provider_key",
+      "//ui/ozone",
+    ]
+  }
 
   public_deps = [
     "//base",
@@ -35,9 +51,11 @@ source_set("search") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "appearance_section_unittest.cc",
     "settings_search_handler_unittest.cc",
     "settings_search_registry_unittest.cc",
     "settings_section_unittest.cc",
+    "settings_sections_unittest.cc",
   ]
 
   deps = [
@@ -46,9 +64,29 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/app:generated_resources",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/tabs/organizer",
+    "//chrome/test:test_support",
+    "//components/search",
+    "//content/test:test_support",
     "//mojo/public/cpp/bindings",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base",
     "//ui/gfx/range",
   ]
+
+  if (is_chromeos) {
+    deps += [
+      "//chrome/browser/ash/login/users:test_support",
+      "//components/user_manager",
+    ]
+  }
+
+  if (is_linux) {
+    deps += [
+      "//components/prefs",
+      "//ui/color:color_provider_key",
+      "//ui/ozone",
+    ]
+  }
 }
