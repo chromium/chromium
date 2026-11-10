@@ -64,10 +64,13 @@ class ScudoPurgeCoordinatorTest : public testing::Test {
   }
 
  protected:
-  base::test::TaskEnvironment task_environment_;
   base::Lock lock_;
   std::vector<int> mallopt_calls_ GUARDED_BY(lock_);
   bool fail_purge_all_ = false;
+  // Declared last so ~TaskEnvironment() drains ThreadPool tasks referencing
+  // `this` before `lock_`, `mallopt_calls_`, and `fail_purge_all_` are
+  // destroyed.
+  base::test::TaskEnvironment task_environment_;
 };
 
 // InitialDelayRespected: Verify no purges occur before 60s; fires
@@ -237,7 +240,7 @@ TEST_F(ScudoPurgeCoordinatorTest, FallbackWhenPurgeAllUnsupported) {
 
 // ConfigurationFromFeatures: Verifies Configuration::FromFeatures() parses
 // feature parameters properly.
-TEST_F(ScudoPurgeCoordinatorTest, ConfigurationFromFeatures) {
+TEST(ScudoPurgeCoordinatorFeatureTest, ConfigurationFromFeatures) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       base::features::kPeriodicScudoPurge,
@@ -255,6 +258,18 @@ TEST_F(ScudoPurgeCoordinatorTest, ConfigurationFromFeatures) {
   EXPECT_EQ(config.background_delay, base::Seconds(15));
   EXPECT_TRUE(config.enable_foreground_periodic);
   EXPECT_FALSE(config.enable_background_purge);
+}
+
+// CreateIfEnabled: Verifies CreateIfEnabled() returns an instance only when
+// kPeriodicScudoPurge is enabled.
+TEST(ScudoPurgeCoordinatorFeatureTest, CreateIfEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(base::features::kPeriodicScudoPurge);
+  EXPECT_NE(ScudoPurgeCoordinator::CreateIfEnabled(), nullptr);
+
+  feature_list.Reset();
+  feature_list.InitAndDisableFeature(base::features::kPeriodicScudoPurge);
+  EXPECT_EQ(ScudoPurgeCoordinator::CreateIfEnabled(), nullptr);
 }
 
 // EmitsDurationHistograms: Verifies that duration metrics are recorded for
