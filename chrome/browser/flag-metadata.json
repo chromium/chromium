@@ -2121,7 +2121,7 @@
       "chrome-counter-abuse-alerts@google.com",
       "bling-flags@google.com"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "client-side-detection-server-model-for-scam-detection-desktop",
@@ -2139,7 +2139,7 @@
       "chrome-counter-abuse-alerts@google.com",
       "bling-flags@google.com"
     ],
-    "expiry_milestone": 165
+    "expiry_milestone": 170
   },
   {
     "name": "collaboration-entreprise-v2",
