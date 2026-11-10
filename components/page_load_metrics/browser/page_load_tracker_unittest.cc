@@ -6,6 +6,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/page_load_metrics/browser/observers/page_load_metrics_observer_content_test_harness.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/navigation_simulator.h"
@@ -182,7 +183,24 @@ TEST_F(PageLoadTrackerTest, ReloadAfterDiscard) {
   EXPECT_TRUE(tester()->GetDelegateForCommittedLoad().IsReloadAfterDiscard());
 }
 
-TEST_F(PageLoadTrackerTest, EventForwarding) {
+class PageLoadTrackerEventForwardingTest
+    : public PageLoadTrackerTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  PageLoadTrackerEventForwardingTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kDefaultSiteInstanceGroups, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PageLoadTrackerEventForwardingTest,
+                         testing::Bool());
+
+TEST_P(PageLoadTrackerEventForwardingTest, EventForwarding) {
   ScopedPrerenderWebContentsDelegate web_contents_delegate(*web_contents());
 
   // In the end, we'll construct frame trees as the following:
@@ -236,8 +254,8 @@ TEST_F(PageLoadTrackerTest, EventForwarding) {
   if (base::FeatureList::IsEnabled(features::kDefaultSiteInstanceGroups)) {
     EXPECT_EQ(1u, GetEvents().render_frame_deleted_count);
   } else if (content::WillSameSiteNavigationChangeRenderFrameHosts(
-                 /*is_main_frame=*/true)) {
-    EXPECT_EQ(0u, GetEvents().render_frame_deleted_count);
+                 /*is_main_frame=*/false, /*is_local_root=*/false)) {
+    EXPECT_EQ(1u, GetEvents().render_frame_deleted_count);
   } else {
     EXPECT_EQ(0u, GetEvents().render_frame_deleted_count);
   }
@@ -258,8 +276,8 @@ TEST_F(PageLoadTrackerTest, EventForwarding) {
   if (base::FeatureList::IsEnabled(features::kDefaultSiteInstanceGroups)) {
     EXPECT_EQ(2u, GetEvents().render_frame_deleted_count);
   } else if (content::WillSameSiteNavigationChangeRenderFrameHosts(
-                 /*is_main_frame=*/true)) {
-    EXPECT_EQ(1u, GetEvents().render_frame_deleted_count);
+                 /*is_main_frame=*/false, /*is_local_root=*/false)) {
+    EXPECT_EQ(2u, GetEvents().render_frame_deleted_count);
   } else {
     EXPECT_EQ(1u, GetEvents().render_frame_deleted_count);
   }
