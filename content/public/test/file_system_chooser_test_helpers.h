@@ -18,6 +18,7 @@
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "ui/shell_dialogs/select_file_policy.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -78,9 +79,10 @@ class FakeSelectFileDialogFactory : public ui::SelectFileDialogFactory {
 };
 
 // Sets ui::SelectFileDialogFactory for the duration of this object's lifetime.
-// Preserves and restores any previously active factory configuration across
-// nested scopes, and ensures configured results are consumed on first use
-// (one-shot) to prevent state leaks into subsequent dialog requests.
+// The configured `result` applies to every file dialog request made during
+// that lifetime: the given files are selected each time, and passing
+// std::nullopt cancels every request. Preserves and restores any previously
+// active factory configuration across nested scopes.
 class ScopedSelectFileDialogFactory {
  public:
   explicit ScopedSelectFileDialogFactory(

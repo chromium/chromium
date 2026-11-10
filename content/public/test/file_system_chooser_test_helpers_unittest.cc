@@ -5,11 +5,13 @@
 #include "content/public/test/file_system_chooser_test_helpers.h"
 
 #include <memory>
-#include <utility>
+#include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
@@ -72,24 +74,21 @@ class ScopedSelectFileDialogFactoryTest : public testing::Test {
   void TearDown() override { ui::SelectFileDialog::SetFactory(nullptr); }
 };
 
-TEST_F(ScopedSelectFileDialogFactoryTest, OneShotConsumption) {
+TEST_F(ScopedSelectFileDialogFactoryTest,
+       PersistsConfiguredFilesAcrossMultipleDialogs) {
   base::FilePath test_file(FILE_PATH_LITERAL("/test/path/file.txt"));
   TestSelectFileDialogListener listener;
 
   ScopedSelectFileDialogFactory factory(std::vector<base::FilePath>{test_file});
 
-  // First dialog: should select test_file.
   OpenFileDialog(&listener);
   EXPECT_FALSE(listener.canceled());
-  ASSERT_EQ(listener.selected_files().size(), 1u);
-  EXPECT_EQ(listener.selected_files()[0], test_file);
+  EXPECT_THAT(listener.selected_files(), testing::ElementsAre(test_file));
 
-  // Second dialog: configured result was consumed (one-shot), should be
-  // cancelled.
   listener.Reset();
   OpenFileDialog(&listener);
-  EXPECT_TRUE(listener.canceled());
-  EXPECT_TRUE(listener.selected_files().empty());
+  EXPECT_FALSE(listener.canceled());
+  EXPECT_THAT(listener.selected_files(), testing::ElementsAre(test_file));
 }
 
 TEST_F(ScopedSelectFileDialogFactoryTest, NestedScopesRestoration) {
@@ -100,47 +99,10 @@ TEST_F(ScopedSelectFileDialogFactoryTest, NestedScopesRestoration) {
   ScopedSelectFileDialogFactory outer_factory(
       std::vector<base::FilePath>{outer_file});
 
-  {
-    ScopedSelectFileDialogFactory inner_factory(
-        std::vector<base::FilePath>{inner_file});
-
-    // Inner scope: should select inner_file.
-    OpenFileDialog(&listener);
-    EXPECT_FALSE(listener.canceled());
-    ASSERT_EQ(listener.selected_files().size(), 1u);
-    EXPECT_EQ(listener.selected_files()[0], inner_file);
-  }
-
-  // After inner scope exits: outer_file should be restored.
-  listener.Reset();
+  // Outer scope before nesting: should select outer_file.
   OpenFileDialog(&listener);
   EXPECT_FALSE(listener.canceled());
-  ASSERT_EQ(listener.selected_files().size(), 1u);
-  EXPECT_EQ(listener.selected_files()[0], outer_file);
-}
-
-TEST_F(ScopedSelectFileDialogFactoryTest, CancellingWhenNoFilesConfigured) {
-  TestSelectFileDialogListener listener;
-  ScopedSelectFileDialogFactory factory;
-
-  OpenFileDialog(&listener);
-  EXPECT_TRUE(listener.canceled());
-  EXPECT_TRUE(listener.selected_files().empty());
-}
-
-TEST_F(ScopedSelectFileDialogFactoryTest, NestedScopeAfterConsumption) {
-  base::FilePath outer_file(FILE_PATH_LITERAL("/test/path/outer.txt"));
-  base::FilePath inner_file(FILE_PATH_LITERAL("/test/path/inner.txt"));
-  TestSelectFileDialogListener listener;
-
-  ScopedSelectFileDialogFactory outer_factory(
-      std::vector<base::FilePath>{outer_file});
-
-  // Consume outer file.
-  OpenFileDialog(&listener);
-  EXPECT_FALSE(listener.canceled());
-  ASSERT_EQ(listener.selected_files().size(), 1u);
-  EXPECT_EQ(listener.selected_files()[0], outer_file);
+  EXPECT_THAT(listener.selected_files(), testing::ElementsAre(outer_file));
 
   {
     ScopedSelectFileDialogFactory inner_factory(
@@ -150,15 +112,23 @@ TEST_F(ScopedSelectFileDialogFactoryTest, NestedScopeAfterConsumption) {
     listener.Reset();
     OpenFileDialog(&listener);
     EXPECT_FALSE(listener.canceled());
-    ASSERT_EQ(listener.selected_files().size(), 1u);
-    EXPECT_EQ(listener.selected_files()[0], inner_file);
+    EXPECT_THAT(listener.selected_files(), testing::ElementsAre(inner_file));
   }
 
-  // After inner scope exits: outer was already consumed, so it should cancel.
+  // After inner scope exits: outer_file should be restored.
   listener.Reset();
   OpenFileDialog(&listener);
+  EXPECT_FALSE(listener.canceled());
+  EXPECT_THAT(listener.selected_files(), testing::ElementsAre(outer_file));
+}
+
+TEST_F(ScopedSelectFileDialogFactoryTest, CancellingWhenNoFilesConfigured) {
+  TestSelectFileDialogListener listener;
+  ScopedSelectFileDialogFactory factory;
+
+  OpenFileDialog(&listener);
   EXPECT_TRUE(listener.canceled());
-  EXPECT_TRUE(listener.selected_files().empty());
+  EXPECT_THAT(listener.selected_files(), testing::IsEmpty());
 }
 
 TEST_F(ScopedSelectFileDialogFactoryTest, RestoresExternalFactory) {
@@ -190,8 +160,7 @@ TEST_F(ScopedSelectFileDialogFactoryTest, RestoresExternalFactory) {
 
     OpenFileDialog(&listener);
     EXPECT_FALSE(listener.canceled());
-    ASSERT_EQ(listener.selected_files().size(), 1u);
-    EXPECT_EQ(listener.selected_files()[0], test_file);
+    EXPECT_THAT(listener.selected_files(), testing::ElementsAre(test_file));
     EXPECT_FALSE(custom_factory_called);
   }
 
