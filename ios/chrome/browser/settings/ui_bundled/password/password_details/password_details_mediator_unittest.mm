@@ -10,6 +10,7 @@
 #import "components/affiliations/core/browser/fake_affiliation_service.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_form.h"
+#import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/password_form_converters.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/browser/password_string.h"
@@ -59,15 +60,6 @@ std::unique_ptr<PasswordForm> CreatePasswordForm(std::string url,
   return form;
 }
 
-scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
-    password_manager::IsAccountStore is_account_store,
-    ProfileIOS* profile) {
-  auto store = base::MakeRefCounted<password_manager::TestPasswordStore>(
-      is_account_store);
-  store->Init();
-  return store;
-}
-
 }  // namespace
 
 // Test class that conforms to PasswordDetailsConsumer in order to test the
@@ -109,12 +101,16 @@ class PasswordDetailsMediatorTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
-        base::BindOnce(&BuildPasswordStore,
+        base::BindOnce(&password_manager::BuildPasswordStoreWithArgs<
+                           ProfileIOS, password_manager::TestPasswordStore,
+                           password_manager::IsAccountStore>,
                        password_manager::IsAccountStore(false)));
 
     builder.AddTestingFactory(
         IOSChromeAccountPasswordStoreFactory::GetInstance(),
-        base::BindOnce(&BuildPasswordStore,
+        base::BindOnce(&password_manager::BuildPasswordStoreWithArgs<
+                           ProfileIOS, password_manager::TestPasswordStore,
+                           password_manager::IsAccountStore>,
                        password_manager::IsAccountStore(true)));
 
     builder.AddTestingFactory(
