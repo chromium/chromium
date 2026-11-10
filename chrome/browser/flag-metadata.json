@@ -4575,7 +4575,7 @@
       "sergiog@microsoft.com",
       "//third_party/blink/renderer/platform/image-decoders/skia/OWNERS"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "enable-seamless-refresh-rate-switching",
