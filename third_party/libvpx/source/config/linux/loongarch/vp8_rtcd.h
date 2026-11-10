@@ -94,7 +94,8 @@ int vp8_diamond_search_sadx4(struct macroblock *x, struct block *b, struct block
 RTCD_EXTERN int (*vp8_diamond_search_sad)(struct macroblock *x, struct block *b, struct blockd *d, union int_mv *ref_mv, union int_mv *best_mv, int search_param, int sad_per_bit, int *num00, struct variance_vtable *fn_ptr, int *mvcost[2], union int_mv *center_mv);
 
 void vp8_fast_quantize_b_c(struct block *, struct blockd *);
-#define vp8_fast_quantize_b vp8_fast_quantize_b_c
+void vp8_fast_quantize_b_lsx(struct block *, struct blockd *);
+RTCD_EXTERN void (*vp8_fast_quantize_b)(struct block *, struct blockd *);
 
 void vp8_filter_by_weight16x16_c(unsigned char *src, int src_stride, unsigned char *dst, int dst_stride, int src_weight);
 #define vp8_filter_by_weight16x16 vp8_filter_by_weight16x16_c
@@ -122,16 +123,20 @@ void vp8_loop_filter_mbv_lsx(unsigned char *y_ptr, unsigned char *u_ptr, unsigne
 RTCD_EXTERN void (*vp8_loop_filter_mbv)(unsigned char *y_ptr, unsigned char *u_ptr, unsigned char *v_ptr, int y_stride, int uv_stride, struct loop_filter_info *lfi);
 
 void vp8_loop_filter_bhs_c(unsigned char *y_ptr, int y_stride, const unsigned char *blimit);
-#define vp8_loop_filter_simple_bh vp8_loop_filter_bhs_c
+void vp8_loop_filter_bhs_lsx(unsigned char *y_ptr, int y_stride, const unsigned char *blimit);
+RTCD_EXTERN void (*vp8_loop_filter_simple_bh)(unsigned char *y_ptr, int y_stride, const unsigned char *blimit);
 
 void vp8_loop_filter_bvs_c(unsigned char *y_ptr, int y_stride, const unsigned char *blimit);
-#define vp8_loop_filter_simple_bv vp8_loop_filter_bvs_c
+void vp8_loop_filter_bvs_lsx(unsigned char *y_ptr, int y_stride, const unsigned char *blimit);
+RTCD_EXTERN void (*vp8_loop_filter_simple_bv)(unsigned char *y_ptr, int y_stride, const unsigned char *blimit);
 
 void vp8_loop_filter_simple_horizontal_edge_c(unsigned char *y_ptr, int y_stride, const unsigned char *blimit);
-#define vp8_loop_filter_simple_mbh vp8_loop_filter_simple_horizontal_edge_c
+void vp8_loop_filter_simple_horizontal_edge_lsx(unsigned char *y_ptr, int y_stride, const unsigned char *blimit);
+RTCD_EXTERN void (*vp8_loop_filter_simple_mbh)(unsigned char *y_ptr, int y_stride, const unsigned char *blimit);
 
 void vp8_loop_filter_simple_vertical_edge_c(unsigned char *y_ptr, int y_stride, const unsigned char *blimit);
-#define vp8_loop_filter_simple_mbv vp8_loop_filter_simple_vertical_edge_c
+void vp8_loop_filter_simple_vertical_edge_lsx(unsigned char *y_ptr, int y_stride, const unsigned char *blimit);
+RTCD_EXTERN void (*vp8_loop_filter_simple_mbv)(unsigned char *y_ptr, int y_stride, const unsigned char *blimit);
 
 int vp8_mbblock_error_c(struct macroblock *mb, int dc);
 int vp8_mbblock_error_lsx(struct macroblock *mb, int dc);
@@ -203,6 +208,8 @@ static void setup_rtcd_internal(void)
     if (flags & HAS_LSX) vp8_dequant_idct_add_y_block = vp8_dequant_idct_add_y_block_lsx;
     vp8_diamond_search_sad = vp8_diamond_search_sad_c;
     if (flags & HAS_LSX) vp8_diamond_search_sad = vp8_diamond_search_sadx4;
+    vp8_fast_quantize_b = vp8_fast_quantize_b_c;
+    if (flags & HAS_LSX) vp8_fast_quantize_b = vp8_fast_quantize_b_lsx;
     vp8_loop_filter_bh = vp8_loop_filter_bh_c;
     if (flags & HAS_LSX) vp8_loop_filter_bh = vp8_loop_filter_bh_lsx;
     vp8_loop_filter_bv = vp8_loop_filter_bv_c;
@@ -211,6 +218,14 @@ static void setup_rtcd_internal(void)
     if (flags & HAS_LSX) vp8_loop_filter_mbh = vp8_loop_filter_mbh_lsx;
     vp8_loop_filter_mbv = vp8_loop_filter_mbv_c;
     if (flags & HAS_LSX) vp8_loop_filter_mbv = vp8_loop_filter_mbv_lsx;
+    vp8_loop_filter_simple_bh = vp8_loop_filter_bhs_c;
+    if (flags & HAS_LSX) vp8_loop_filter_simple_bh = vp8_loop_filter_bhs_lsx;
+    vp8_loop_filter_simple_bv = vp8_loop_filter_bvs_c;
+    if (flags & HAS_LSX) vp8_loop_filter_simple_bv = vp8_loop_filter_bvs_lsx;
+    vp8_loop_filter_simple_mbh = vp8_loop_filter_simple_horizontal_edge_c;
+    if (flags & HAS_LSX) vp8_loop_filter_simple_mbh = vp8_loop_filter_simple_horizontal_edge_lsx;
+    vp8_loop_filter_simple_mbv = vp8_loop_filter_simple_vertical_edge_c;
+    if (flags & HAS_LSX) vp8_loop_filter_simple_mbv = vp8_loop_filter_simple_vertical_edge_lsx;
     vp8_mbblock_error = vp8_mbblock_error_c;
     if (flags & HAS_LSX) vp8_mbblock_error = vp8_mbblock_error_lsx;
     vp8_regular_quantize_b = vp8_regular_quantize_b_c;

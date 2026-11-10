@@ -4,8 +4,8 @@
 #define VERSION_MAJOR  1
 #define VERSION_MINOR  17
 #define VERSION_PATCH  0
-#define VERSION_EXTRA  "88-gfb0a26ad9"
+#define VERSION_EXTRA  "97-gd3335af9e"
 #define VERSION_PACKED ((VERSION_MAJOR<<16)|(VERSION_MINOR<<8)|(VERSION_PATCH))
-#define VERSION_STRING_NOSP "v1.17.0-88-gfb0a26ad9"
-#define VERSION_STRING      " v1.17.0-88-gfb0a26ad9"
+#define VERSION_STRING_NOSP "v1.17.0-97-gd3335af9e"
+#define VERSION_STRING      " v1.17.0-97-gd3335af9e"
 #endif  // VPX_VERSION_H_
