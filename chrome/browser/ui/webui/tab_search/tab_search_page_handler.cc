@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/tabs/tab_data.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/browser_tab_strip_service_tracker.h"
@@ -231,6 +232,11 @@ void TabSearchPageHandler::CloseTab(int32_t tab_id) {
 
   ++num_tabs_closed_;
 
+  if (auto* organizer_controller = GetOrganizerPanelController()) {
+    organizer_controller->SetCloseAction(OrganizerPanelCloseAction::kClosedTab);
+    organizer_controller->IncrementNumTabsClosed(1);
+  }
+
   // CloseTab() can target the WebContents hosting Tab Search if the Tab Search
   // WebUI is open in a chrome browser tab rather than its bubble. In this case
   // CloseWebContentsAt() closes the WebContents hosting this
@@ -278,6 +284,11 @@ void TabSearchPageHandler::CloseTabs(const std::vector<int32_t>& tab_ids) {
 
   num_tabs_closed_ += nodes.size();
 
+  if (auto* organizer_controller = GetOrganizerPanelController()) {
+    organizer_controller->SetCloseAction(OrganizerPanelCloseAction::kClosedTab);
+    organizer_controller->IncrementNumTabsClosed(nodes.size());
+  }
+
   if (split_id.has_value()) {
     BrowserWindowInterface* browser = valid_tab->GetBrowserWindowInterface();
     TabStripModel* tab_strip_model =
@@ -308,6 +319,12 @@ void TabSearchPageHandler::CloseWebUiTab() {
 void TabSearchPageHandler::BrowserWindowInterfaceChanged() {
   browser_ = webui::GetBrowserWindowInterface(web_ui_->GetWebContents());
   page_->HostWindowChanged();
+}
+
+OrganizerPanelController* TabSearchPageHandler::GetOrganizerPanelController()
+    const {
+  return !log_metrics_ && browser_ ? OrganizerPanelController::From(browser_)
+                                   : nullptr;
 }
 
 void TabSearchPageHandler::GetProfileData(GetProfileDataCallback callback) {
@@ -370,6 +387,11 @@ void TabSearchPageHandler::SwitchToTab(
                 ? TabSearchCloseAction::kSwitchTabAndCloseTab
                 : TabSearchCloseAction::kSwitchTab;
 
+  if (auto* organizer_controller = GetOrganizerPanelController()) {
+    organizer_controller->SetCloseAction(
+        OrganizerPanelCloseAction::kSwitchToTab);
+  }
+
   tabs_api::TabStripService* const service =
       GetTabStripService(tab->GetBrowserWindowInterface());
   const auto result =
@@ -403,6 +425,11 @@ void TabSearchPageHandler::OpenRecentlyClosedEntry(int32_t session_id) {
   action_ = action_ == TabSearchCloseAction::kCloseTab
                 ? TabSearchCloseAction::kOpenRecentTabAndCloseTab
                 : TabSearchCloseAction::kOpenRecentTab;
+
+  if (auto* organizer_controller = GetOrganizerPanelController()) {
+    organizer_controller->SetCloseAction(
+        OrganizerPanelCloseAction::kOpenRecentlyClosed);
+  }
 
   tab_restore_service->RestoreEntryById(
       BrowserLiveTabContext::FindContextForWebContents(

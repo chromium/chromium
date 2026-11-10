@@ -39,6 +39,8 @@
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
@@ -1782,6 +1784,130 @@ IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest,
   EXPECT_TRUE(ntp_tab->favicon_url.has_value());
   EXPECT_TRUE(ntp_tab->favicon_url->SchemeIs(url::kDataScheme));
   EXPECT_FALSE(ntp_tab->is_default_favicon);
+}
+
+class TabSearchPageHandlerOrganizerMetricsTest : public InProcessBrowserTest {
+ public:
+  TabSearchPageHandlerOrganizerMetricsTest() {
+    feature_list_.InitAndEnableFeature(organizer_panel::kOrganizerPanel);
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+
+    web_contents_ = content::WebContents::Create(
+        content::WebContents::CreateParams(browser()->GetProfile()));
+    web_ui_.set_web_contents(web_contents_.get());
+    webui::SetBrowserWindowInterface(web_contents_.get(), browser());
+    webui_controller_ = std::make_unique<TabSearchUI>(&web_ui_);
+    metrics_reporter_ =
+        std::make_unique<testing::NiceMock<MockMetricsReporter>>();
+    page_ = std::make_unique<testing::StrictMock<MockPage>>();
+    handler_ = std::make_unique<TabSearchPageHandler>(
+        mojo::PendingReceiver<tab_search::mojom::PageHandler>(),
+        page_->BindAndGetRemote(), &web_ui_, webui_controller_.get(),
+        metrics_reporter_.get(), /*log_metrics=*/false);
+    EXPECT_CALL(*page_, HostWindowChanged()).Times(testing::AnyNumber());
+    EXPECT_CALL(*page_, TabUpdated(_)).Times(testing::AnyNumber());
+    EXPECT_CALL(*page_, TabsChanged(_)).Times(testing::AnyNumber());
+    EXPECT_CALL(*page_, TabsRemoved(_)).Times(testing::AnyNumber());
+    EXPECT_CALL(*page_, TabUnsplit()).Times(testing::AnyNumber());
+  }
+
+  void TearDownOnMainThread() override {
+    handler_.reset();
+    page_.reset();
+    metrics_reporter_.reset();
+    webui_controller_.reset();
+    web_contents_.reset();
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
+ protected:
+  TabSearchPageHandler* handler() { return handler_.get(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<content::WebContents> web_contents_;
+  content::TestWebUI web_ui_;
+  std::unique_ptr<TabSearchUI> webui_controller_;
+  std::unique_ptr<testing::NiceMock<MockMetricsReporter>> metrics_reporter_;
+  std::unique_ptr<testing::StrictMock<MockPage>> page_;
+  std::unique_ptr<TabSearchPageHandler> handler_;
+};
+
+IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerOrganizerMetricsTest,
+                       RecordsOrganizerCloseMetricsDirectly) {
+  base::HistogramTester histogram_tester;
+  auto* const controller = OrganizerPanelController::From(browser());
+  ASSERT_TRUE(controller);
+
+  ASSERT_TRUE(AddTabAtIndex(0, embedded_test_server()->GetURL("/title1.html?1"),
+                            ui::PAGE_TRANSITION_TYPED));
+  ASSERT_TRUE(AddTabAtIndex(1, embedded_test_server()->GetURL("/title1.html?2"),
+                            ui::PAGE_TRANSITION_TYPED));
+  ASSERT_TRUE(AddTabAtIndex(2, embedded_test_server()->GetURL("/title1.html?3"),
+                            ui::PAGE_TRANSITION_TYPED));
+  ASSERT_TRUE(AddTabAtIndex(3, embedded_test_server()->GetURL("/title1.html?4"),
+                            ui::PAGE_TRANSITION_TYPED));
+
+  // Session 1: CloseTab + CloseTabs accumulate count and record kClosedTab.
+  controller->SetOrganizerVisible(true, /*immediate=*/true);
+  int32_t tab_id0 =
+      browser()->GetTabStripModel()->GetTabAtIndex(0)->GetHandle().raw_value();
+  int32_t tab_id1 =
+      browser()->GetTabStripModel()->GetTabAtIndex(1)->GetHandle().raw_value();
+  int32_t tab_id2 =
+      browser()->GetTabStripModel()->GetTabAtIndex(2)->GetHandle().raw_value();
+  handler()->CloseTab(tab_id0);
+  handler()->CloseTabs({tab_id1, tab_id2});
+  // Invalid tab IDs must not affect metrics.
+  handler()->CloseTab(-1);
+  handler()->CloseTabs({-1});
+  if (controller->IsOrganizerPanelVisible()) {
+    controller->SetOrganizerVisible(false, /*immediate=*/true);
+  }
+  histogram_tester.ExpectBucketCount("Tabs.Organizer.CloseAction",
+                                     OrganizerPanelCloseAction::kClosedTab, 1);
+  histogram_tester.ExpectBucketCount("Tabs.Organizer.NumTabsClosedPerInstance",
+                                     3, 1);
+
+  // Session 2: CloseTab followed by SwitchToTab records kSwitchToTab and 1.
+  sessions::TabRestoreService* tab_restore_service =
+      TabRestoreServiceFactory::GetForProfile(browser()->GetProfile());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !tab_restore_service->entries().empty(); }));
+  controller->SetOrganizerVisible(true, /*immediate=*/true);
+  int32_t switch_tab_id =
+      browser()->GetTabStripModel()->GetTabAtIndex(0)->GetHandle().raw_value();
+  int32_t close_tab_id =
+      browser()->GetTabStripModel()->GetTabAtIndex(1)->GetHandle().raw_value();
+  handler()->CloseTab(close_tab_id);
+  auto switch_to_tab_info = tab_search::mojom::SwitchToTabInfo::New();
+  switch_to_tab_info->tab_id = switch_tab_id;
+  handler()->SwitchToTab(std::move(switch_to_tab_info));
+  if (controller->IsOrganizerPanelVisible()) {
+    controller->SetOrganizerVisible(false, /*immediate=*/true);
+  }
+  histogram_tester.ExpectBucketCount(
+      "Tabs.Organizer.CloseAction", OrganizerPanelCloseAction::kSwitchToTab, 1);
+  histogram_tester.ExpectBucketCount("Tabs.Organizer.NumTabsClosedPerInstance",
+                                     1, 1);
+
+  // Session 3: OpenRecentlyClosedEntry records kOpenRecentlyClosed.
+  controller->SetOrganizerVisible(true, /*immediate=*/true);
+  int32_t recent_id = tab_restore_service->entries().front()->id.id();
+  handler()->OpenRecentlyClosedEntry(recent_id);
+  if (controller->IsOrganizerPanelVisible()) {
+    controller->SetOrganizerVisible(false, /*immediate=*/true);
+  }
+  histogram_tester.ExpectBucketCount(
+      "Tabs.Organizer.CloseAction",
+      OrganizerPanelCloseAction::kOpenRecentlyClosed, 1);
+
+  // No Tab Search close metrics are recorded when log_metrics is false.
+  histogram_tester.ExpectTotalCount("Tabs.TabSearch.CloseAction2", 0);
 }
 
 }  // namespace

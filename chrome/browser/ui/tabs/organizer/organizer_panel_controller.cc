@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/numerics/clamped_math.h"
 #include "base/strings/strcat.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
@@ -269,7 +270,11 @@ OrganizerPanelController::OrganizerPanelController(
                                           base::Unretained(this)));
 }
 
-OrganizerPanelController::~OrganizerPanelController() = default;
+OrganizerPanelController::~OrganizerPanelController() {
+  if (is_visible_) {
+    RecordCloseMetrics();
+  }
+}
 
 // static
 OrganizerPanelController* OrganizerPanelController::From(
@@ -309,6 +314,8 @@ void OrganizerPanelController::SetOrganizerVisible(bool visible,
   base::RecordAction(base::UserMetricsAction(
       is_visible_ ? "OrganizerPanel.Open" : "OrganizerPanel.Close"));
   if (is_visible_) {
+    close_action_ = OrganizerPanelCloseAction::kNoAction;
+    num_tabs_closed_ = 0;
     if (auto* const interface =
             BrowserUserEducationInterface::From(&*browser_window_)) {
       const base::Feature& iph_feature =
@@ -324,6 +331,8 @@ void OrganizerPanelController::SetOrganizerVisible(bool visible,
     Profile* const profile = browser_window_->GetProfile();
     CHECK(profile);
     RecordSectionStateMetricsOnOpen(*profile);
+  } else {
+    RecordCloseMetrics();
   }
   if (immediate) {
     BrowserAnimationController::From(&*browser_window_)
@@ -334,6 +343,29 @@ void OrganizerPanelController::SetOrganizerVisible(bool visible,
   }
 
   NotifyStateChanged();
+}
+
+void OrganizerPanelController::SetCloseAction(
+    OrganizerPanelCloseAction action) {
+  if (!is_visible_) {
+    return;
+  }
+  close_action_ = action;
+}
+
+void OrganizerPanelController::IncrementNumTabsClosed(uint32_t count) {
+  if (!is_visible_) {
+    return;
+  }
+  num_tabs_closed_ = base::ClampAdd<int>(num_tabs_closed_, count);
+}
+
+void OrganizerPanelController::RecordCloseMetrics() {
+  base::UmaHistogramEnumeration("Tabs.Organizer.CloseAction", close_action_);
+  base::UmaHistogramCounts100("Tabs.Organizer.NumTabsClosedPerInstance",
+                              num_tabs_closed_);
+  close_action_ = OrganizerPanelCloseAction::kNoAction;
+  num_tabs_closed_ = 0;
 }
 
 OrganizerPanelLocation

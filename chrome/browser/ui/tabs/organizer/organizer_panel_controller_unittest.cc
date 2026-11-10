@@ -78,9 +78,11 @@ class OrganizerPanelControllerTest : public testing::Test {
   }
 
   void TearDown() override {
-    controller_->UnregisterPanelView(panel_view_.get());
+    if (controller_) {
+      controller_->UnregisterPanelView(panel_view_.get());
+      controller_.reset();
+    }
     panel_view_.reset();
-    controller_.reset();
     vertical_tab_strip_controller_.reset();
     animation_controller_.reset();
     WebUIContentsPreloadManager::GetInstance()->ReenableNavigationForTesting();
@@ -273,6 +275,97 @@ TEST_F(OrganizerPanelControllerTest,
       "Tabs.Organizer.Section.RecentlyClosed.ExpandedStateOnOpen", 0);
   histogram_tester.ExpectTotalCount(
       "Tabs.Organizer.Section.CrossDeviceTabs.ExpandedStateOnOpen", 0);
+}
+
+TEST_F(OrganizerPanelControllerTest, RecordsCloseMetricsOnHide) {
+  base::HistogramTester histogram_tester;
+
+  // Closing without actions records kNoAction and 0 tabs closed.
+  controller()->SetOrganizerVisible(true);
+  controller()->SetOrganizerVisible(false);
+  histogram_tester.ExpectBucketCount("Tabs.Organizer.CloseAction",
+                                     OrganizerPanelCloseAction::kNoAction, 1);
+  histogram_tester.ExpectBucketCount("Tabs.Organizer.NumTabsClosedPerInstance",
+                                     0, 1);
+
+  // Subsequent actions update close action (last wins) and accumulate closed
+  // tab counts.
+  controller()->SetOrganizerVisible(true);
+  controller()->SetCloseAction(OrganizerPanelCloseAction::kClosedTab);
+  controller()->IncrementNumTabsClosed(1);
+  controller()->IncrementNumTabsClosed(2);
+  controller()->SetCloseAction(OrganizerPanelCloseAction::kSwitchToTab);
+  controller()->SetOrganizerVisible(false);
+  histogram_tester.ExpectBucketCount(
+      "Tabs.Organizer.CloseAction", OrganizerPanelCloseAction::kSwitchToTab, 1);
+  histogram_tester.ExpectBucketCount("Tabs.Organizer.CloseAction",
+                                     OrganizerPanelCloseAction::kClosedTab, 0);
+  histogram_tester.ExpectBucketCount("Tabs.Organizer.NumTabsClosedPerInstance",
+                                     3, 1);
+
+  // Re-opening and closing without actions resets both metrics.
+  controller()->SetOrganizerVisible(true);
+  controller()->SetOrganizerVisible(false);
+  histogram_tester.ExpectBucketCount("Tabs.Organizer.CloseAction",
+                                     OrganizerPanelCloseAction::kNoAction, 2);
+  histogram_tester.ExpectBucketCount("Tabs.Organizer.NumTabsClosedPerInstance",
+                                     0, 2);
+}
+
+TEST_F(OrganizerPanelControllerTest, IgnoresCloseMetricUpdatesWhileHidden) {
+  base::HistogramTester histogram_tester;
+
+  controller()->SetCloseAction(OrganizerPanelCloseAction::kSwitchToTab);
+  controller()->IncrementNumTabsClosed(2);
+
+  controller()->SetOrganizerVisible(true);
+  controller()->SetOrganizerVisible(false);
+
+  histogram_tester.ExpectUniqueSample("Tabs.Organizer.CloseAction",
+                                      OrganizerPanelCloseAction::kNoAction, 1);
+  histogram_tester.ExpectUniqueSample("Tabs.Organizer.NumTabsClosedPerInstance",
+                                      0, 1);
+}
+
+TEST_F(OrganizerPanelControllerTest,
+       RecordsCloseMetricsOnDestructionWhileOpen) {
+  base::HistogramTester histogram_tester;
+
+  controller()->SetOrganizerVisible(true);
+  controller()->SetCloseAction(OrganizerPanelCloseAction::kOpenTabGroup);
+  controller()->IncrementNumTabsClosed(2);
+
+  histogram_tester.ExpectTotalCount("Tabs.Organizer.CloseAction", 0);
+  histogram_tester.ExpectTotalCount("Tabs.Organizer.NumTabsClosedPerInstance",
+                                    0);
+
+  controller_->UnregisterPanelView(panel_view_.get());
+  controller_.reset();
+
+  histogram_tester.ExpectUniqueSample("Tabs.Organizer.CloseAction",
+                                      OrganizerPanelCloseAction::kOpenTabGroup,
+                                      1);
+  histogram_tester.ExpectUniqueSample("Tabs.Organizer.NumTabsClosedPerInstance",
+                                      2, 1);
+}
+
+TEST_F(OrganizerPanelControllerTest,
+       SkipsCloseMetricsOnDestructionWhileClosed) {
+  base::HistogramTester histogram_tester;
+
+  controller()->SetOrganizerVisible(true);
+  controller()->SetOrganizerVisible(false);
+
+  histogram_tester.ExpectTotalCount("Tabs.Organizer.CloseAction", 1);
+  histogram_tester.ExpectTotalCount("Tabs.Organizer.NumTabsClosedPerInstance",
+                                    1);
+
+  controller_->UnregisterPanelView(panel_view_.get());
+  controller_.reset();
+
+  histogram_tester.ExpectTotalCount("Tabs.Organizer.CloseAction", 1);
+  histogram_tester.ExpectTotalCount("Tabs.Organizer.NumTabsClosedPerInstance",
+                                    1);
 }
 
 // Test suite that ensures that the panel gets parented to the tray and the

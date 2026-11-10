@@ -19,6 +19,7 @@
 #include "chrome/browser/signin/cross_device_signin_promo_manager.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/session_types.h"
@@ -98,6 +99,9 @@ void ForeignTabsPageHandler::OpenTab(const std::string& session_tag,
   if (!open_tabs->GetForeignTab(session_tag, tab_id, &session_tab) ||
       !session_tab || session_tab->navigations.empty()) {
     return;
+  }
+  if (auto* controller = OrganizerPanelController::From(browser)) {
+    controller->SetCloseAction(OrganizerPanelCloseAction::kOpenCrossDeviceTab);
   }
   SessionRestore::RestoreForeignSessionTab(
       source_web_contents, *session_tab,
@@ -188,6 +192,10 @@ void ForeignTabsPageHandler::ShowCrossDeviceSignInPromo() {
       webui::GetBrowserWindowInterface(web_contents_);
   if (!browser) {
     return;
+  }
+  if (auto* controller = OrganizerPanelController::From(browser)) {
+    controller->SetCloseAction(
+        OrganizerPanelCloseAction::kOpenCrossDevicePromo);
   }
   OpenSigninToPhoneQrCodeBubble(browser,
                                 CrossDeviceSigninPromoEntryPoint::kForeignTabs,

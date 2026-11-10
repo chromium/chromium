@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile.h"
@@ -120,6 +121,7 @@ class OrganizerPanelPageHandlerBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(OrganizerPanelPageHandlerBrowserTest,
                        ClosePanelHidesOrganizerPanel) {
+  base::HistogramTester histogram_tester;
   auto* controller = OrganizerPanelController::From(browser());
   ASSERT_TRUE(controller);
 
@@ -136,6 +138,36 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelPageHandlerBrowserTest,
   handler_remote.FlushForTesting();
 
   EXPECT_FALSE(controller->IsOrganizerPanelVisible());
+  histogram_tester.ExpectUniqueSample("Tabs.Organizer.CloseAction",
+                                      OrganizerPanelCloseAction::kNoAction, 1);
+  histogram_tester.ExpectUniqueSample("Tabs.Organizer.NumTabsClosedPerInstance",
+                                      0, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(OrganizerPanelPageHandlerBrowserTest,
+                       ClosingBrowserWindowWhilePanelOpenRecordsMetrics) {
+  base::HistogramTester histogram_tester;
+  BrowserWindowInterface* const second_browser =
+      CreateBrowser(browser()->GetProfile());
+  ASSERT_TRUE(second_browser);
+
+  auto* const controller = OrganizerPanelController::From(second_browser);
+  ASSERT_TRUE(controller);
+  controller->SetOrganizerVisible(true, /*immediate=*/true);
+  ASSERT_TRUE(controller->IsOrganizerPanelVisible());
+  controller->SetCloseAction(OrganizerPanelCloseAction::kClosedTab);
+  controller->IncrementNumTabsClosed(2);
+
+  histogram_tester.ExpectTotalCount("Tabs.Organizer.CloseAction", 0);
+  histogram_tester.ExpectTotalCount("Tabs.Organizer.NumTabsClosedPerInstance",
+                                    0);
+
+  CloseBrowserSynchronously(second_browser);
+
+  histogram_tester.ExpectUniqueSample("Tabs.Organizer.CloseAction",
+                                      OrganizerPanelCloseAction::kClosedTab, 1);
+  histogram_tester.ExpectUniqueSample("Tabs.Organizer.NumTabsClosedPerInstance",
+                                      2, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(OrganizerPanelPageHandlerBrowserTest,

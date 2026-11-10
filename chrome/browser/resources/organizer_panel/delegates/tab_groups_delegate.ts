@@ -15,18 +15,13 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import {TabGroupDotSize} from '/tab_group_shared/tab_group_dot.js';
 
 import type {OrganizerAction, OrganizerListSectionClient, OrganizerListSectionDelegate, OrganizerSection} from '../organizer_list_section_delegate.js';
-import {OrganizerPanelCloseAction, setCloseAction} from '../organizer_list_section_delegate.js';
 import type {OrganizerListSectionItem} from '../organizer_list_section_item.js';
-import type {BrowserProxy as OrganizerPanelBrowserProxy} from '../organizer_panel.mojom-webui.js';
-import {browserProxyFactory as organizerPanelBrowserProxyFactory} from '../organizer_panel.mojom-webui.js';
 import type {BrowserProxy, TabGroup} from '../tab_groups.mojom-webui.js';
 import {browserProxyFactory} from '../tab_groups.mojom-webui.js';
 
 export class TabGroupsDelegate implements
     OrganizerListSectionDelegate<TabGroup> {
   private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
-  private organizerPanelBrowserProxy_: OrganizerPanelBrowserProxy =
-      organizerPanelBrowserProxyFactory.getInstance();
   private client_?: OrganizerListSectionClient;
   private listenerIds_: number[] = [];
   private tabGroups_: TabGroup[] = [];
@@ -87,14 +82,11 @@ export class TabGroupsDelegate implements
 
   private onCreateTabGroupClick_() {
     chrome.histograms?.recordUserAction?.('OrganizerPanel.CreateTabGroup');
-    setCloseAction(OrganizerPanelCloseAction.CREATE_TAB_GROUP);
-    this.organizerPanelBrowserProxy_.handler.closePanel();
     this.browserProxy_.handler.createNewTabGroup();
   }
 
   onItemClick(item: OrganizerListSectionItem<TabGroup>) {
     chrome.histograms?.recordUserAction?.('OrganizerPanel.OpenTabGroup');
-    setCloseAction(OrganizerPanelCloseAction.OPEN_TAB_GROUP);
     const data = item.data;
     assert(data);
     this.browserProxy_.handler.openTabGroup(data.id);
@@ -131,7 +123,6 @@ export class TabGroupsDelegate implements
       id: string,
       anchorRect: {x: number, y: number, width: number, height: number}) {
     chrome.histograms?.recordUserAction?.('OrganizerPanel.OpenTabGroupMenu');
-    setCloseAction(OrganizerPanelCloseAction.OPEN_TAB_GROUP_MENU);
     await this.browserProxy_.handler.showContextMenu(id, anchorRect);
   }
 

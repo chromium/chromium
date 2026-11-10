@@ -256,7 +256,7 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="OpenCrossDevicePromo"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/resources/organizer_panel/organizer_list_section_delegate.ts:OrganizerPanelCloseAction) -->
+<!-- LINT.ThenChange(//chrome/browser/ui/tabs/organizer/organizer_panel_controller.h:OrganizerPanelCloseAction) -->
 
 <!-- LINT.IfChange(OrganizerSectionMenuOption) -->
 

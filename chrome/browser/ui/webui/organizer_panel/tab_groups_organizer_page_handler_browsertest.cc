@@ -1036,4 +1036,75 @@ IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerContextMenuBrowserTest,
   EXPECT_FALSE(service->GetGroup(group_guid).has_value());
 }
 
+IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerContextMenuBrowserTest,
+                       CloseMetricsRecordedForTabGroupActions) {
+  base::HistogramTester histogram_tester;
+  tab_groups::TabGroupSyncService* service = sync_service();
+  ASSERT_TRUE(service);
+
+  OrganizerPanelController* organizer_controller =
+      OrganizerPanelController::From(browser());
+  ASSERT_TRUE(organizer_controller);
+
+  ASSERT_TRUE(AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_LINK));
+  content::WebContents* host_contents =
+      browser()->GetTabStripModel()->GetWebContentsAt(0);
+
+  base::Uuid group_guid = base::Uuid::GenerateRandomV4();
+  tab_groups::SavedTabGroupTab tab(GURL("about:blank"), u"Blank", group_guid,
+                                   /*position=*/0);
+  tab_groups::SavedTabGroup group(u"Test Group",
+                                  tab_groups::TabGroupColorId::kGrey, {tab},
+                                  /*position=*/std::nullopt, group_guid);
+  service->AddGroup(group);
+
+  FakeTabGroupsOrganizerPage page;
+  mojo::Remote<organizer_panel::mojom::TabGroupsOrganizerPageHandler>
+      handler_remote;
+  TabGroupsOrganizerPageHandler handler(
+      handler_remote.BindNewPipeAndPassReceiver(), page.BindAndPassRemote(),
+      host_contents);
+
+  // CreateNewTabGroup closes the panel and records kCreateTabGroup.
+  organizer_controller->SetOrganizerVisible(true, /*immediate=*/true);
+  handler_remote->CreateNewTabGroup();
+  handler_remote.FlushForTesting();
+  EXPECT_FALSE(organizer_controller->IsOrganizerPanelVisible());
+  histogram_tester.ExpectBucketCount("Tabs.Organizer.CloseAction",
+                                     OrganizerPanelCloseAction::kCreateTabGroup,
+                                     1);
+
+  // OpenTabGroup records kOpenTabGroup when the panel closes.
+  browser()->GetTabStripModel()->ActivateTabAt(
+      browser()->GetTabStripModel()->GetIndexOfWebContents(host_contents));
+  organizer_controller->SetOrganizerVisible(true, /*immediate=*/true);
+  handler_remote->OpenTabGroup(group_guid.AsLowercaseString());
+  handler_remote.FlushForTesting();
+  if (organizer_controller->IsOrganizerPanelVisible()) {
+    organizer_controller->SetOrganizerVisible(false, /*immediate=*/true);
+  }
+  histogram_tester.ExpectBucketCount("Tabs.Organizer.CloseAction",
+                                     OrganizerPanelCloseAction::kOpenTabGroup,
+                                     1);
+
+  // ShowContextMenu + activating a command closes the panel and records
+  // kOpenTabGroupMenu.
+  browser()->GetTabStripModel()->ActivateTabAt(
+      browser()->GetTabStripModel()->GetIndexOfWebContents(host_contents));
+  organizer_controller->SetOrganizerVisible(true, /*immediate=*/true);
+  handler_remote->ShowContextMenu(group_guid.AsLowercaseString(),
+                                  gfx::Rect(10, 20, 30, 40), base::DoNothing());
+  handler_remote.FlushForTesting();
+  tab_groups::STGTabsMenuModel* model = handler.menu_model_for_testing();
+  ASSERT_TRUE(model);
+  std::optional<size_t> tab_index =
+      GetIndexOfElementId(model, tab_groups::STGTabsMenuModel::kTab);
+  ASSERT_TRUE(tab_index.has_value());
+  model->ActivatedAt(tab_index.value());
+  EXPECT_FALSE(organizer_controller->IsOrganizerPanelVisible());
+  histogram_tester.ExpectBucketCount(
+      "Tabs.Organizer.CloseAction",
+      OrganizerPanelCloseAction::kOpenTabGroupMenu, 1);
+}
+
 }  // namespace

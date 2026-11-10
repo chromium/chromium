@@ -29,6 +29,7 @@
 #include "url/gurl.h"
 
 class MetricsReporter;
+class OrganizerPanelController;
 class Profile;
 
 namespace tabs {
@@ -191,6 +192,8 @@ class TabSearchPageHandler
 
   // Called when the browser window context for this WebUI has changed.
   void BrowserWindowInterfaceChanged();
+
+  OrganizerPanelController* GetOrganizerPanelController() const;
 
   mojo::Receiver<tab_search::mojom::PageHandler> receiver_;
   mojo::Remote<tab_search::mojom::Page> page_;

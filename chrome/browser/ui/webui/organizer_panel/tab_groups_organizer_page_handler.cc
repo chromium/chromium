@@ -238,6 +238,11 @@ void TabGroupsOrganizerPageHandler::OpenTabGroup(const std::string& id) {
           webui::GetBrowserWindowInterface(web_contents_);
       CHECK(browser);
 
+      if (auto* organizer_controller =
+              OrganizerPanelController::From(browser)) {
+        organizer_controller->SetCloseAction(
+            OrganizerPanelCloseAction::kOpenTabGroup);
+      }
       tab_groups::SavedTabGroupUtils::OpenSavedTabGroup(
           browser, group->saved_guid(),
           tab_groups::OpeningSource::kOpenedFromRevisitUi,
@@ -249,6 +254,14 @@ void TabGroupsOrganizerPageHandler::OpenTabGroup(const std::string& id) {
   std::optional<tab_groups::LocalTabGroupID> group_id =
       tab_groups::LocalTabGroupIDFromString(id);
   if (group_id && GetUnsavedTabGroup(*group_id)) {
+    if (BrowserWindowInterface* browser =
+            webui::GetBrowserWindowInterface(web_contents_)) {
+      if (auto* organizer_controller =
+              OrganizerPanelController::From(browser)) {
+        organizer_controller->SetCloseAction(
+            OrganizerPanelCloseAction::kOpenTabGroup);
+      }
+    }
     tab_groups::SavedTabGroupUtils::FocusFirstTabOrWindowInOpenGroup(*group_id);
   }
 }
@@ -323,6 +336,10 @@ void TabGroupsOrganizerPageHandler::ShowContextMenu(
   tab_groups::saved_tab_groups::metrics::RecordTabGroupContextMenuAccessed(
       tab_groups::saved_tab_groups::metrics::SavedTabGroupOpenedSubmenuDesktop::
           kOrganizerPanel);
+  if (auto* organizer_controller = OrganizerPanelController::From(browser)) {
+    organizer_controller->SetCloseAction(
+        OrganizerPanelCloseAction::kOpenTabGroupMenu);
+  }
   context_menu_runner_->RunMenuAt(widget, nullptr, screen_rect,
                                   views::MenuAnchorPosition::kTopLeft,
                                   ui::mojom::MenuSourceType::kNone);
@@ -338,6 +355,11 @@ void TabGroupsOrganizerPageHandler::CreateNewTabGroup() {
   base::RecordAction(
       base::UserMetricsAction("TabGroups_SavedTabGroups_"
                               "CreateNewGroupTriggeredFromOrganizerPanel"));
+  if (auto* organizer_controller = OrganizerPanelController::From(browser)) {
+    organizer_controller->SetCloseAction(
+        OrganizerPanelCloseAction::kCreateTabGroup);
+    organizer_controller->SetOrganizerVisible(false);
+  }
   chrome::BrowserCommandController::From(browser)->ExecuteCommand(
       IDC_CREATE_NEW_TAB_GROUP);
 }

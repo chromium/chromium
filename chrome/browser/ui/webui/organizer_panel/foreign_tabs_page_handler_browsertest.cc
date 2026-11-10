@@ -18,6 +18,8 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/organizer_panel/foreign_tabs.mojom.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -292,6 +294,91 @@ IN_PROC_BROWSER_TEST_F(ForeignTabsPageHandlerPromoBrowserTest,
       "Signin.CrossDeviceSigninPromo.OpenedQrCodeBubble",
       CrossDeviceSigninPromoEntryPoint::kForeignTabs, 1);
   EXPECT_TRUE(IsCrossDeviceSigninPromoBubbleOpen(browser()->GetProfile()));
+}
+#endif
+
+class ForeignTabsPageHandlerCloseMetricsBrowserTest
+    : public ForeignTabsPageHandlerBrowserTest {
+ public:
+  ForeignTabsPageHandlerCloseMetricsBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {organizer_panel::kOrganizerPanel,
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+         switches::kCrossDeviceSigninFromDesktopFollowup
+#endif
+        },
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ForeignTabsPageHandlerCloseMetricsBrowserTest,
+                       OpenTabRecordsOrganizerCloseAction) {
+  base::HistogramTester histogram_tester;
+  auto* const controller = OrganizerPanelController::From(browser());
+  ASSERT_TRUE(controller);
+
+  auto* open_tabs = session_sync_service()->GetOpenTabsUIDelegate();
+  open_tabs->AddForeignSession("session_laptop", base::Time::Now());
+  sessions::SessionTab* session_tab = open_tabs->AddTabToForeignSession(
+      "session_laptop", GURL("https://www.example.com/"));
+
+  mojo::Remote<organizer_panel::mojom::ForeignTabsPageHandler> remote;
+  ForeignTabsPageHandler handler(
+      remote.BindNewPipeAndPassReceiver(),
+      browser()->GetTabStripModel()->GetActiveWebContents());
+
+  // Invalid OpenTab must leave close action at kNoAction.
+  controller->SetOrganizerVisible(true, /*immediate=*/true);
+  remote->OpenTab("session_laptop", -1);
+  remote.FlushForTesting();
+  if (controller->IsOrganizerPanelVisible()) {
+    controller->SetOrganizerVisible(false, /*immediate=*/true);
+  }
+  histogram_tester.ExpectBucketCount("Tabs.Organizer.CloseAction",
+                                     OrganizerPanelCloseAction::kNoAction, 1);
+
+  // Valid OpenTab records kOpenCrossDeviceTab.
+  controller->SetOrganizerVisible(true, /*immediate=*/true);
+  remote->OpenTab("session_laptop", session_tab->tab_id.id());
+  remote.FlushForTesting();
+  if (controller->IsOrganizerPanelVisible()) {
+    controller->SetOrganizerVisible(false, /*immediate=*/true);
+  }
+  histogram_tester.ExpectBucketCount(
+      "Tabs.Organizer.CloseAction",
+      OrganizerPanelCloseAction::kOpenCrossDeviceTab, 1);
+}
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+IN_PROC_BROWSER_TEST_F(ForeignTabsPageHandlerCloseMetricsBrowserTest,
+                       ShowCrossDeviceSignInPromoRecordsOrganizerCloseAction) {
+  base::HistogramTester histogram_tester;
+  auto* const controller = OrganizerPanelController::From(browser());
+  ASSERT_TRUE(controller);
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
+  signin::MakePrimaryAccountAvailable(identity_manager, "user@example.com",
+                                      signin::ConsentLevel::kSignin);
+
+  mojo::Remote<organizer_panel::mojom::ForeignTabsPageHandler> remote;
+  ForeignTabsPageHandler handler(
+      remote.BindNewPipeAndPassReceiver(),
+      browser()->GetTabStripModel()->GetActiveWebContents());
+
+  controller->SetOrganizerVisible(true, /*immediate=*/true);
+  remote->ShowCrossDeviceSignInPromo();
+  remote.FlushForTesting();
+  if (controller->IsOrganizerPanelVisible()) {
+    controller->SetOrganizerVisible(false, /*immediate=*/true);
+  }
+
+  histogram_tester.ExpectUniqueSample(
+      "Tabs.Organizer.CloseAction",
+      OrganizerPanelCloseAction::kOpenCrossDevicePromo, 1);
 }
 #endif
 

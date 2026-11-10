@@ -10,7 +10,6 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {OrganizerAction, OrganizerListSectionClient, OrganizerListSectionDelegate, OrganizerSection} from '../organizer_list_section_delegate.js';
-import {incrementNumTabsClosed, OrganizerPanelCloseAction, setCloseAction} from '../organizer_list_section_delegate.js';
 import type {OrganizerListSectionItem, OrganizerListSectionItemIcon} from '../organizer_list_section_item.js';
 import type {OrganizerListSectionItemDescriptionPart} from '../organizer_list_section_item_description.js';
 import type {BrowserProxy, ProfileData, Tab, TabGroup, TabsRemovedInfo, TabUpdateInfo} from '../tab_search.mojom-webui.js';
@@ -129,7 +128,6 @@ export class OpenTabsDelegate implements
 
   onItemClick(item: OrganizerListSectionItem<OpenTabsItem>) {
     chrome.histograms?.recordUserAction?.('OrganizerPanel.SwitchToTab');
-    setCloseAction(OrganizerPanelCloseAction.SWITCH_TO_TAB);
     const data = item.data;
     assert(data);
     const tabId = isSplitTab(data) ? data.tabs[0].tabId : data.tab.tabId;
@@ -142,15 +140,12 @@ export class OpenTabsDelegate implements
 
   onItemActionButtonClicked(item: OrganizerListSectionItem<OpenTabsItem>) {
     chrome.histograms?.recordUserAction?.('OrganizerPanel.CloseTab');
-    setCloseAction(OrganizerPanelCloseAction.CLOSED_TAB);
     const data = item.data;
     assert(data);
     if (isSplitTab(data)) {
       const tabIds = [data.tabs[0].tabId, data.tabs[1].tabId];
-      incrementNumTabsClosed(tabIds.length);
       this.browserProxy_.handler.closeTabs(tabIds);
     } else {
-      incrementNumTabsClosed();
       this.browserProxy_.handler.closeTab(data.tab.tabId);
     }
   }

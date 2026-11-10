@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_TABS_ORGANIZER_ORGANIZER_PANEL_CONTROLLER_H_
 #define CHROME_BROWSER_UI_TABS_ORGANIZER_ORGANIZER_PANEL_CONTROLLER_H_
 
+#include <cstdint>
 #include <memory>
 
 #include "base/callback_list.h"
@@ -31,6 +32,24 @@ namespace views {
 class View;
 }
 
+// LINT.IfChange(OrganizerPanelCloseAction)
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// See tools/metrics/histograms/metadata/tab/enums.xml.
+enum class OrganizerPanelCloseAction {
+  kNoAction = 0,
+  kClosedTab = 1,
+  kOpenRecentlyClosed = 2,
+  kSwitchToTab = 3,
+  kOpenCrossDeviceTab = 4,
+  kCreateTabGroup = 5,
+  kOpenTabGroup = 6,
+  kOpenTabGroupMenu = 7,
+  kOpenCrossDevicePromo = 8,
+  kMaxValue = kOpenCrossDevicePromo,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:OrganizerPanelCloseAction)
+
 // Manages the Organizer Panel, its animations, its placement in the browser,
 // etc.
 class OrganizerPanelController {
@@ -52,6 +71,9 @@ class OrganizerPanelController {
   bool IsOrganizerPanelEmbeddedInVerticalTabStrip() const;
 
   void SetOrganizerVisible(bool visible, bool immediate = false);
+
+  void SetCloseAction(OrganizerPanelCloseAction action);
+  void IncrementNumTabsClosed(uint32_t count = 1);
 
   OrganizerPanelLocation GetCurrentOrganizerPanelLocation() const;
 
@@ -87,11 +109,17 @@ class OrganizerPanelController {
   // based on the Organizer Panel's is_visible_ state.
   void UpdateOrganizerActionItem();
 
+  // Records close metrics for the current panel session and resets them.
+  void RecordCloseMetrics();
+
   // Returns the motion required to get into the current target state.
   BrowserAnimationMotion GetTargetMotion() const;
 
   // Controls whether the Organizer Panel is visible.
   bool is_visible_ = false;
+  OrganizerPanelCloseAction close_action_ =
+      OrganizerPanelCloseAction::kNoAction;
+  int num_tabs_closed_ = 0;
 
   content::WebContents* EnsureWebContentsCreated();
   void UpdatePanelWebContents();
