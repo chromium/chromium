@@ -1505,17 +1505,15 @@ String StylePropertySerializer::FontValue() const {
       return g_empty_string;
     }
 
-    if (RuntimeEnabledFeatures::CSSFontSizeAdjustEnabled()) {
-      int font_size_adjust_property_index =
-          property_set_.FindPropertyIndex(GetCSSPropertyFontSizeAdjust());
-      DCHECK_NE(font_size_adjust_property_index, -1);
-      PropertyValueForSerializer font_size_adjust_property =
-          property_set_.PropertyAt(font_size_adjust_property_index);
-      const CSSValue& size_adjust_value = font_size_adjust_property.Value();
-      if (IsPropertyNonInitial(size_adjust_value, CSSValueID::kNone) ||
-          size_adjust_value.IsNumericLiteralValue()) {
-        return g_empty_string;
-      }
+    int font_size_adjust_property_index =
+        property_set_.FindPropertyIndex(GetCSSPropertyFontSizeAdjust());
+    DCHECK_NE(font_size_adjust_property_index, -1);
+    PropertyValueForSerializer font_size_adjust_property =
+        property_set_.PropertyAt(font_size_adjust_property_index);
+    const CSSValue& size_adjust_value = font_size_adjust_property.Value();
+    if (IsPropertyNonInitial(size_adjust_value, CSSValueID::kNone) ||
+        size_adjust_value.IsNumericLiteralValue()) {
+      return g_empty_string;
     }
 
     if (RuntimeEnabledFeatures::FontLanguageOverrideEnabled()) {

@@ -4670,7 +4670,6 @@ const CSSValue* FontSizeAdjust::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     CSSParserLocalContext& local_context) const {
-  DCHECK(RuntimeEnabledFeatures::CSSFontSizeAdjustEnabled());
   return css_parsing_utils::ConsumeFontSizeAdjust(stream, context,
                                                   local_context);
 }

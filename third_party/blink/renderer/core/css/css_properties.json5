@@ -1598,7 +1598,6 @@
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       interpolable: true,
       inherited: true,
-      runtime_flag: "CSSFontSizeAdjust",
       font: true,
       name_for_methods: "SizeAdjust",
       converter: "ConvertFontSizeAdjust",

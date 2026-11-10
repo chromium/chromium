@@ -41,7 +41,6 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector_client.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -255,7 +254,6 @@ const FontData* CSSFontSelector::GetFontData(
   const SimpleFontData* font_data =
       FontCache::Get().GetFontData(request_description, settings_family_name);
   if (font_data && request_description.HasSizeAdjust()) {
-    DCHECK(RuntimeEnabledFeatures::CSSFontSizeAdjustEnabled());
     if (auto adjusted_size =
             FontSizeFunctions::MetricsMultiplierAdjustedFontSize(
                 font_data, request_description)) {

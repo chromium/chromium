@@ -3308,12 +3308,10 @@ bool ConsumeFont(bool important,
       CSSPropertyID::kFontVariantAlternates, CSSPropertyID::kFont,
       *CSSIdentifierValue::Create(CSSValueID::kNormal), important,
       css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
-  if (RuntimeEnabledFeatures::CSSFontSizeAdjustEnabled()) {
-    css_parsing_utils::AddProperty(
-        CSSPropertyID::kFontSizeAdjust, CSSPropertyID::kFont,
-        *CSSIdentifierValue::Create(CSSValueID::kNone), important,
-        css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
-  }
+  css_parsing_utils::AddProperty(
+      CSSPropertyID::kFontSizeAdjust, CSSPropertyID::kFont,
+      *CSSIdentifierValue::Create(CSSValueID::kNone), important,
+      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
   if (RuntimeEnabledFeatures::FontLanguageOverrideEnabled()) {
     css_parsing_utils::AddProperty(
         CSSPropertyID::kFontLanguageOverride, CSSPropertyID::kFont,
