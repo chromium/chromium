@@ -573,7 +573,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kUserEducationFramework,
     &kUserEducationInterruptiveCooldownGroup,
     &kVerifyStartupSigninState,
-    &kVirtualKeyboardLiveHeightOnceSettled,
     &kVirtualKeyboardResizesContentTransientOvershootFix,
     &kVirtualKeyboardTransientInnerHeightFix,
     &kWebApkMinShellVersion,
@@ -1050,7 +1049,6 @@ BASE_FEATURE(kUserEducationFramework, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kUserEducationInterruptiveCooldownGroup, base::FEATURE_DISABLED_BY_DEFAULT);
 // Verify sign-in state on startup.
 BASE_FEATURE(kVerifyStartupSigninState, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kVirtualKeyboardLiveHeightOnceSettled, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kVirtualKeyboardResizesContentTransientOvershootFix, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kVirtualKeyboardTransientInnerHeightFix, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kWebAppNavigationBarThemeColor, base::FEATURE_ENABLED_BY_DEFAULT);
