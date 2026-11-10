@@ -2123,7 +2123,7 @@ deps = {
     Var('dawn_git') + '/dawn.git' + '@' +  Var('dawn_revision'),
 
   'src/third_party/disarm/src':
-     Var('chromium_git') + '/external/github.com/aengelke/disarm.git' + '@' + '2d960dae4b4fb29dba05cfc48210fbed423f3d2c',
+     Var('chromium_git') + '/external/github.com/aengelke/disarm.git' + '@' + '8770f6d6f0c62e7e008f4bf0e04d22197ecb98e3',
 
   'src/third_party/fadec/src':
      Var('chromium_git') + '/external/github.com/aengelke/fadec.git' + '@' + 'c9f78f532b9004de278489019ab2c6c28ae9746e',

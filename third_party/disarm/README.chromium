@@ -2,8 +2,8 @@ Name: Disarm: Fast AArch64 instruction decoder and encoder
 Short Name: disarm
 URL: https://github.com/aengelke/disarm
 Version: N/A
-Date: 2026-09-07
-Revision: 2d960dae4b4fb29dba05cfc48210fbed423f3d2c
+Date: 2026-11-10
+Revision: 8770f6d6f0c62e7e008f4bf0e04d22197ecb98e3
 Update Mechanism: Autoroll
 License: BSD-3-Clause
 License File: LICENSE
