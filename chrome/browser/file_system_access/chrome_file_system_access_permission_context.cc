@@ -930,7 +930,9 @@ bool ShouldBlockAccessToPath(
     ChromeFileSystemAccessPermissionContext::BlockPathRules block_path_rules,
     base::FilePath profile_path) {
   CHECK(!path.empty(), base::NotFatalUntil::M161);
-  CHECK(path.IsAbsolute(), base::NotFatalUntil::M161);
+  // TODO(crbug.com/582185934): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(path.IsAbsolute());
 
   path = NormalizeFilePathForBlocklist(path, should_normalize_file_path);
   profile_path =
