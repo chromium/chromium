@@ -2641,6 +2641,20 @@ chromium-metrics-reviews@google.com.
   <token key="UpdateType" variants="HandoffEnableTrigger"/>
 </histogram>
 
+<histogram name="Android.HistoryPage.TimePeriodFilterSelected"
+    enum="HistoryTimePeriodOptionId" expires_after="2027-05-06">
+  <owner>zalmashni@google.com</owner>
+  <owner>rainhard@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>
+    Records the time period option the user selected in the time period filter
+    chip on the Android history page. Recorded every time the filter sheet is
+    closed with a changed selection; deselecting the active option is recorded
+    as &quot;All time&quot;. Not recorded when the filters are reset via the
+    &quot;Clear all&quot; button.
+  </summary>
+</histogram>
+
 <histogram name="Android.Hub.PaneFocused" enum="HubPaneId"
     expires_after="2027-05-02">
   <owner>ckitagawa@chromium.org</owner>

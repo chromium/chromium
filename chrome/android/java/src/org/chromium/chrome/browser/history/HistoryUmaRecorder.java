@@ -170,6 +170,19 @@ public class HistoryUmaRecorder {
     }
 
     /**
+     * Record the time period option the user selected in the time period filter.
+     *
+     * @param optionId The selected option, or {@link TimePeriodOptionId#ALL_TIME} if the filter was
+     *     deselected.
+     */
+    public void recordTimePeriodFilterSelected(@TimePeriodOptionId int optionId) {
+        RecordHistogram.recordEnumeratedHistogram(
+                METRICS_PREFIX + "TimePeriodFilterSelected",
+                optionId,
+                TimePeriodOptionId.MAX_VALUE + 1);
+    }
+
+    /**
      * Record the duration in milliseconds to query browsing history entries.
      *
      * @param durationMs The query duration in milliseconds.

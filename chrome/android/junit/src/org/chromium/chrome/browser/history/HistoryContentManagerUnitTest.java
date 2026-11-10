@@ -8,6 +8,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -33,6 +35,8 @@ import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicEnabling;
+import org.chromium.chrome.browser.history.FilterSheetCoordinator.FilterItem;
+import org.chromium.chrome.browser.history.HistoryProvider.TimePeriodOption;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProviderJni;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -193,6 +197,35 @@ public class HistoryContentManagerUnitTest {
                 /* createNewTab= */ true,
                 /* runCallback= */ false);
         verify(mIncognitoAsyncTabLauncher).launchNewTab(any(), anyInt(), any());
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_TIME)
+    public void testTimePeriodFilterSelectionRecordsHistogram() {
+        HistoryFilterChip<TimePeriodOption> chip =
+                mHistoryContentManager.getTimePeriodFilterForTesting();
+        TimePeriodOption yesterday =
+                new TimePeriodOption(
+                        TimePeriodOptionId.YESTERDAY,
+                        "Yesterday",
+                        /* beginTimeMs= */ 1000L,
+                        /* endTimeMs= */ 2000L);
+
+        // Selecting an option records its id.
+        chip.onItemSelected(new FilterItem<>(yesterday, /* icon= */ null, yesterday.label));
+        verify(mUmaRecorder).recordTimePeriodFilterSelected(TimePeriodOptionId.YESTERDAY);
+
+        // Deselecting the option is recorded as "All time".
+        chip.onItemSelected(null);
+        verify(mUmaRecorder).recordTimePeriodFilterSelected(TimePeriodOptionId.ALL_TIME);
+
+        // "Clear all" resets the filter without recording a time period selection.
+        chip.onItemSelected(new FilterItem<>(yesterday, /* icon= */ null, yesterday.label));
+        clearInvocations(mUmaRecorder);
+        mHistoryContentManager.getResetFiltersButtonForTesting().performClick();
+        assertFalse(chip.isSelected());
+        verify(mUmaRecorder).recordClearAllFilters();
+        verify(mUmaRecorder, never()).recordTimePeriodFilterSelected(anyInt());
     }
 
     @Test

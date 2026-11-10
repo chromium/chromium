@@ -1085,6 +1085,8 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     }
 
     private void onTimePeriodFilterUpdated(@Nullable TimePeriodOption timePeriod) {
+        mUmaRecorder.recordTimePeriodFilterSelected(
+                timePeriod == null ? TimePeriodOptionId.ALL_TIME : timePeriod.id);
         updateResetFiltersButtonVisibility();
         mHistoryAdapter.updateTimePeriodFilter(timePeriod);
     }
