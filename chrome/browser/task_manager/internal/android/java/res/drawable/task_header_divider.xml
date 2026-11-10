@@ -5,8 +5,13 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="rectangle">
-    <size android:width="@dimen/task_header_divider_width" />
-    <solid android:color="?attr/colorPrimaryContainer" />
-</shape>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:width="@dimen/task_header_divider_width"
+        android:height="@dimen/task_header_divider_height"
+        android:gravity="center">
+        <shape android:shape="rectangle">
+            <solid android:color="?attr/colorPrimaryContainer" />
+        </shape>
+    </item>
+</layer-list>

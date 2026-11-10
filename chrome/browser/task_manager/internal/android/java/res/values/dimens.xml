@@ -17,6 +17,7 @@ found in the LICENSE file.
     <dimen name="task_manager_activity_padding">20dp</dimen>
     <dimen name="task_manager_kill_button_margin">16dp</dimen>
     <dimen name="task_header_divider_width">2dp</dimen>
+    <dimen name="task_header_divider_height">16dp</dimen>
     <dimen name="task_header_padding_horizontal">8dp</dimen>
     <dimen name="task_header_padding_vertical">6dp</dimen>
     <dimen name="task_header_margin_horizontal">4dp</dimen>
