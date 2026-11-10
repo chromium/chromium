@@ -4557,6 +4557,14 @@
       name: "ModifyParagraphCrossEditingoundary",
       status: "stable",
     },
+    // Enables <link rel="stylesheet" import="..."> where the "import"
+    // attribute's value is resolved as a module specifier and fetched as
+    // a CSS module.
+    // https://crbug.com/448174611
+    {
+      name: "ModuleLinkStyleSheet",
+      status: "experimental",
+    },
     // Stops caching failed module fetches (network error, non-ok status, or
     // MIME type mismatch), so a later import re-fetches instead of reusing the
     // failure.

@@ -39,6 +39,7 @@
 
 namespace blink {
 
+class CSSStyleSheet;
 class Document;
 class ExecutionContext;
 class HTMLLinkElement;
@@ -46,7 +47,7 @@ class LocalFrame;
 
 class CORE_EXPORT LinkResource : public GarbageCollected<LinkResource> {
  public:
-  enum LinkResourceType { kStyle, kManifest, kOther };
+  enum LinkResourceType { kStyle, kManifest, kStyleModule, kOther };
 
   explicit LinkResource(HTMLLinkElement*);
   LinkResource(const LinkResource&) = delete;
@@ -61,6 +62,11 @@ class CORE_EXPORT LinkResource : public GarbageCollected<LinkResource> {
   virtual void OwnerRemoved() {}
   virtual void OwnerInserted() {}
   virtual bool HasLoaded() const = 0;
+
+  virtual CSSStyleSheet* Sheet() const { return nullptr; }
+  virtual bool StyleSheetIsLoading() const { return false; }
+  virtual bool IsDisabled() const { return false; }
+  virtual bool IsEnabledViaScript() const { return false; }
 
   virtual void Trace(Visitor*) const;
 

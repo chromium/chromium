@@ -52,6 +52,7 @@ class TaskAttributionInfo;
 
 class KURL;
 class LinkLoader;
+class LinkModuleImport;
 struct LinkLoadParameters;
 
 class CORE_EXPORT HTMLLinkElement final : public HTMLElement,
@@ -91,18 +92,16 @@ class CORE_EXPORT HTMLLinkElement final : public HTMLElement,
 
   bool Async() const;
 
-  CSSStyleSheet* sheet() const {
-    return GetLinkStyle() ? GetLinkStyle()->Sheet() : nullptr;
-  }
+  CSSStyleSheet* sheet() const;
 
   bool StyleSheetIsLoading() const;
 
-  bool IsDisabled() const {
-    return GetLinkStyle() && GetLinkStyle()->IsDisabled();
-  }
-  bool IsEnabledViaScript() const {
-    return GetLinkStyle() && GetLinkStyle()->IsEnabledViaScript();
-  }
+  bool IsDisabled() const;
+  bool IsEnabledViaScript() const;
+
+  bool IsModuleStyleSheetLink() const;
+  // True when a LinkModuleImport resource is currently backing this link.
+  bool HasStyleModuleResource() const;
 
   DOMTokenList* sizes() const;
 
@@ -132,6 +131,8 @@ class CORE_EXPORT HTMLLinkElement final : public HTMLElement,
 
  private:
   LinkStyle* GetLinkStyle() const;
+  LinkModuleImport* GetLinkModuleImport() const;
+  LinkResource* GetStyleSheetResource() const;
   LinkResource* LinkResourceToProcess();
 
   void Process(

@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/html/link_manifest.h"
+#include "third_party/blink/renderer/core/html/link_module_import.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/link_loader.h"
@@ -154,6 +155,17 @@ void HTMLLinkElement::ParseAttribute(
       return;
     }
     Process();
+  } else if (name == html_names::kImportAttr &&
+             RuntimeEnabledFeatures::ModuleLinkStyleSheetEnabled(
+                 GetExecutionContext())) {
+    // We can respond to attribute mutations as usual, but the link fetch &
+    // processing model must not be re-invoked for idempotent attribute
+    // mutations. See https://github.com/whatwg/html/issues/11400.
+    if (value == params.old_value &&
+        RuntimeEnabledFeatures::HTMLLinkElementAttributeValueChangesEnabled()) {
+      return;
+    }
+    Process();
   } else if (name == html_names::kCrossoriginAttr) {
     // See https://github.com/whatwg/html/pull/11620
     // FIXME(bug 530710321): Do the same for preconnect/prefetch/stylesheet.
@@ -260,6 +272,12 @@ bool HTMLLinkElement::ShouldLoadLink() {
     return false;
   }
 
+  // Module stylesheet links resolve `import` as a module specifier (which may
+  // be a bare specifier), so the classic dangling-markup check does not apply.
+  if (IsModuleStyleSheetLink()) {
+    return true;
+  }
+
   const KURL& href = GetNonEmptyURLAttribute(html_names::kHrefAttr);
   return !href.PotentiallyDanglingMarkup();
 }
@@ -305,7 +323,9 @@ LinkResource* HTMLLinkElement::LinkResourceToProcess() {
   }
 
   if (!link_) {
-    if (rel_attribute_.IsManifest()) {
+    if (IsModuleStyleSheetLink()) {
+      link_ = MakeGarbageCollected<LinkModuleImport>(this);
+    } else if (rel_attribute_.IsManifest()) {
       link_ = MakeGarbageCollected<LinkManifest>(this);
     } else {
       auto* link = MakeGarbageCollected<LinkStyle>(this);
@@ -320,10 +340,24 @@ LinkResource* HTMLLinkElement::LinkResourceToProcess() {
   return link_.Get();
 }
 
+LinkResource* HTMLLinkElement::GetStyleSheetResource() const {
+  if (LinkStyle* style = GetLinkStyle()) {
+    return style;
+  }
+  return GetLinkModuleImport();
+}
+
 LinkStyle* HTMLLinkElement::GetLinkStyle() const {
   if (!link_ || link_->GetType() != LinkResource::kStyle)
     return nullptr;
   return static_cast<LinkStyle*>(link_.Get());
+}
+
+LinkModuleImport* HTMLLinkElement::GetLinkModuleImport() const {
+  if (!link_ || link_->GetType() != LinkResource::kStyleModule) {
+    return nullptr;
+  }
+  return static_cast<LinkModuleImport*>(link_.Get());
 }
 
 void HTMLLinkElement::Process(LinkLoadParameters::Reason reason) {
@@ -405,7 +439,34 @@ bool HTMLLinkElement::HasActivationBehavior() const {
 }
 
 bool HTMLLinkElement::StyleSheetIsLoading() const {
-  return GetLinkStyle() && GetLinkStyle()->StyleSheetIsLoading();
+  const LinkResource* resource = GetStyleSheetResource();
+  return resource && resource->StyleSheetIsLoading();
+}
+
+CSSStyleSheet* HTMLLinkElement::sheet() const {
+  const LinkResource* resource = GetStyleSheetResource();
+  return resource ? resource->Sheet() : nullptr;
+}
+
+bool HTMLLinkElement::IsDisabled() const {
+  const LinkResource* resource = GetStyleSheetResource();
+  return resource && resource->IsDisabled();
+}
+
+bool HTMLLinkElement::IsEnabledViaScript() const {
+  const LinkResource* resource = GetStyleSheetResource();
+  return resource && resource->IsEnabledViaScript();
+}
+
+bool HTMLLinkElement::HasStyleModuleResource() const {
+  return GetLinkModuleImport();
+}
+
+bool HTMLLinkElement::IsModuleStyleSheetLink() const {
+  return RuntimeEnabledFeatures::ModuleLinkStyleSheetEnabled(
+             GetExecutionContext()) &&
+         rel_attribute_.IsStyleSheet() &&
+         FastHasAttribute(html_names::kImportAttr);
 }
 
 void HTMLLinkElement::LinkLoaded() {

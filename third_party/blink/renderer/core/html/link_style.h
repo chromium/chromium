@@ -43,17 +43,17 @@ class LinkStyle final : public LinkResource, ResourceClient {
   void SetDisabledState(bool);
   void SetSheetTitle(const String&);
 
-  bool StyleSheetIsLoading() const;
+  bool StyleSheetIsLoading() const override;
   bool HasSheet() const { return sheet_ != nullptr; }
-  bool IsDisabled() const { return disabled_state_ == kDisabled; }
-  bool IsEnabledViaScript() const {
+  bool IsDisabled() const override { return disabled_state_ == kDisabled; }
+  bool IsEnabledViaScript() const override {
     return disabled_state_ == kEnabledViaScript;
   }
   bool IsUnset() const { return disabled_state_ == kUnset; }
 
   bool IsExplicitlyEnabled() const { return explicitly_enabled_; }
 
-  CSSStyleSheet* Sheet() const { return sheet_.Get(); }
+  CSSStyleSheet* Sheet() const override { return sheet_.Get(); }
 
   void UnblockRenderingForPendingSheet();
 
