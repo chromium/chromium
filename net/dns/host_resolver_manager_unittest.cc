@@ -8445,7 +8445,6 @@ TEST_F(HostResolverManagerDnsTest, NotFoundTtlWithHostCache) {
   HostCache::Key key("empty", DnsQueryType::UNSPECIFIED, 0,
                      HostResolverSource::ANY, NetworkAnonymizationKey(),
                      handles::kInvalidNetworkHandle);
-  HostCache::EntryStaleness staleness;
   const std::pair<const HostCache::Key, HostCache::Entry>* cache_result =
       resolve_context_->host_cache()->Lookup(key, base::TimeTicks::Now(),
                                              false /* ignore_secure */);

@@ -418,7 +418,8 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
       bool secure,
       std::optional<TaskType> successful_task_type,
       std::optional<base::TimeDelta> task_completion_delay = std::nullopt,
-      std::optional<DohResolutionDetails> doh_details = std::nullopt);
+      std::optional<DohResolutionDetails> doh_details = std::nullopt,
+      std::optional<HostCache::EntryStaleness> stale_info = std::nullopt);
 
   void CompleteRequestsWithoutCache(
       const HostCache::Entry& results,

@@ -1984,6 +1984,111 @@ TEST_F(
   EXPECT_FALSE(requester.request()->GetStaleInfo());
 }
 
+TEST_F(HostResolverServiceEndpointRequestTest,
+       ValidCacheHit_PopulatesStaleInfo) {
+  UseNonDelayedDnsRules("ok");
+  const IPEndPoint cached_endpoint = MakeIPEndPoint("192.0.2.1", 443);
+  HostCache::Key key(url::SchemeHostPort(GURL("https://ok")),
+                     DnsQueryType::UNSPECIFIED,
+                     /*host_resolver_flags=*/0, HostResolverSource::ANY,
+                     NetworkAnonymizationKey(), handles::kInvalidNetworkHandle);
+  resolve_context_->host_cache()->Set(
+      key,
+      HostCache::Entry(OK, {cached_endpoint}, /*aliases=*/{},
+                       HostCache::Entry::SOURCE_DNS, kDefaultTtl),
+      base::TimeTicks::Now(), kDefaultTtl);
+  FastForwardBy(base::Milliseconds(300));
+
+  Requester requester = CreateRequester("https://ok");
+  int rv = requester.Start();
+  EXPECT_THAT(rv, IsOk());
+  ASSERT_TRUE(requester.request()->GetResolutionDetails().has_value());
+  EXPECT_EQ(requester.request()->GetResolutionDetails()->source,
+            ResolutionSource::kCache);
+
+  const HostCache::EntryStaleness* stale_info =
+      requester.request()->GetStaleInfo();
+  ASSERT_TRUE(stale_info);
+  EXPECT_FALSE(stale_info->is_stale());
+  EXPECT_EQ(stale_info->age, base::Milliseconds(300));
+  EXPECT_EQ(stale_info->original_ttl, kDefaultTtl);
+  EXPECT_EQ(stale_info->expired_by, base::Milliseconds(300) - kDefaultTtl);
+}
+
+TEST_F(
+    HostResolverServiceEndpointRequestTest,
+    StaleSecureCache_SecureDnsFails_FallbackToValidInsecureCachePopulatesStaleInfo) {
+  set_secure_dns_mode(SecureDnsMode::kAutomatic);
+
+  const std::string_view kHost = "ok";
+  const IPEndPoint stale_secure_endpoint = MakeIPEndPoint("192.0.2.2", 443);
+  const IPEndPoint valid_insecure_endpoint = MakeIPEndPoint("192.0.2.1", 443);
+
+  MockDnsClientRuleList rules;
+  AddDnsRule(&rules, std::string(kHost), dns_protocol::kTypeA,
+             MockDnsClientRule::ResultType::kOk, /*delay=*/false);
+  AddDnsRule(&rules, std::string(kHost), dns_protocol::kTypeAAAA,
+             MockDnsClientRule::ResultType::kOk, /*delay=*/false);
+  AddSecureDnsRule(&rules, std::string(kHost), dns_protocol::kTypeA,
+                   MockDnsClientRule::ResultType::kFail, /*delay=*/true);
+  AddSecureDnsRule(&rules, std::string(kHost), dns_protocol::kTypeAAAA,
+                   MockDnsClientRule::ResultType::kFail, /*delay=*/true);
+  SetDnsRules(std::move(rules));
+
+  mock_dns_client_->SetForceDohServerAvailable(true);
+
+  PopulateCacheForUrl("https://ok", {stale_secure_endpoint}, /*secure=*/true);
+  AdvanceTickClockToExpirePopulatedCacheEntries();
+
+  ResolveHostParameters parameters;
+  parameters.cache_usage = HostResolver::ResolveHostParameters::CacheUsage::
+      STALE_ALLOWED_WHILE_REFRESHING;
+  Requester requester = CreateRequester("https://ok", std::move(parameters));
+
+  int rv = requester.Start();
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  requester.WaitForOnUpdated();
+  EXPECT_TRUE(requester.request()->IsStaleWhileRefreshing());
+  ASSERT_TRUE(requester.request()->GetStaleInfo());
+  EXPECT_TRUE(requester.request()->GetStaleInfo()->is_stale());
+  EXPECT_THAT(requester.request()->GetEndpointResults(),
+              ElementsAre(ExpectServiceEndpoint(
+                  ElementsAre(stale_secure_endpoint), IsEmpty())));
+
+  // Populate a valid insecure cache entry while SECURE_DNS is in flight, then
+  // fail SECURE_DNS so the job falls back to INSECURE_CACHE_LOOKUP.
+  HostCache::Key insecure_key(
+      url::SchemeHostPort(GURL("https://ok")), DnsQueryType::UNSPECIFIED,
+      /*host_resolver_flags=*/0, HostResolverSource::ANY,
+      NetworkAnonymizationKey(), handles::kInvalidNetworkHandle);
+  insecure_key.secure = false;
+  resolve_context_->host_cache()->Set(
+      insecure_key,
+      HostCache::Entry(OK, {valid_insecure_endpoint}, /*aliases=*/{},
+                       HostCache::Entry::SOURCE_DNS, kDefaultTtl),
+      base::TimeTicks::Now(), kDefaultTtl);
+  FastForwardBy(base::Milliseconds(300));
+  mock_dns_client_->CompleteDelayedTransactions();
+
+  EXPECT_THAT(requester.finished_result(), Optional(IsOk()));
+  EXPECT_THAT(requester.finished_endpoints(),
+              ElementsAre(ExpectServiceEndpoint(
+                  ElementsAre(valid_insecure_endpoint), IsEmpty())));
+  EXPECT_FALSE(requester.request()->IsStaleWhileRefreshing());
+  ASSERT_TRUE(requester.request()->GetResolutionDetails().has_value());
+  EXPECT_EQ(requester.request()->GetResolutionDetails()->source,
+            ResolutionSource::kCache);
+  const HostCache::EntryStaleness* final_stale_info =
+      requester.request()->GetStaleInfo();
+  ASSERT_TRUE(final_stale_info);
+  EXPECT_FALSE(final_stale_info->is_stale());
+  EXPECT_EQ(final_stale_info->age, base::Milliseconds(300));
+  EXPECT_EQ(final_stale_info->original_ttl, kDefaultTtl);
+  EXPECT_EQ(final_stale_info->expired_by,
+            base::Milliseconds(300) - kDefaultTtl);
+}
+
 TEST_F(HostResolverServiceEndpointRequestTest, NoSchemeHttpsNotQueried) {
   const std::string kHost = "no_scheme_https_not_queried";
   UseHttpsNonDelayedDnsRules(kHost);

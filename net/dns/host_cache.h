@@ -110,18 +110,76 @@ class NET_EXPORT HostCache {
     handles::NetworkHandle target_network = handles::kInvalidNetworkHandle;
   };
 
+  // Classification of the DNS answer ultimately used to establish a connection.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(DnsUsedAnswerFreshnessStatus)
+  enum class UsedAnswerFreshnessStatus {
+    kFreshFromNetwork = 0,
+    kValidFromCache = 1,
+    kExpiredCacheConfirmedByFreshDns = 2,
+    kExpiredCacheFinishedBeforeFreshDns = 3,
+    kExpiredCacheAfterFreshDnsFailed = 4,
+    kExpiredCacheDivergedFromFreshDns = 5,
+    kMaxValue = kExpiredCacheDivergedFromFreshDns,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:DnsUsedAnswerFreshnessStatus)
+
+  // Protocol for `Net.DNS.UsedAnswer.{Protocol}.*` histograms.
+  enum class UsedAnswerProtocol {
+    kTcp,
+    kSsl,
+    kQuic,
+  };
+
+  // Protocol for
+  // `Net.DNS.OptimisticDns.{OptimisticProtocol}.StaleIpMatchFreshDns.*`
+  // histograms.
+  enum class OptimisticDnsProtocol {
+    kTcp,
+    kQuic,
+  };
+
+  // Outcome of an SSL/TLS handshake over a TCP socket connected using stale
+  // (Optimistic) DNS.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(OptimisticDnsSslConnectionOutcome)
+  enum class OptimisticDnsSslConnectionOutcome {
+    kSucceeded = 0,
+    kFailedAndRetriedWithFreshDns = 1,
+    kMaxValue = kFailedAndRetriedWithFreshDns,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:OptimisticDnsSslConnectionOutcome)
+
   struct NET_EXPORT EntryStaleness {
     // Time since the entry's TTL has expired. Negative if not expired.
     base::TimeDelta expired_by;
 
     // Number of network changes since this result was cached.
-    int network_changes;
+    int network_changes = 0;
 
     // Number of hits to the cache entry while stale (expired or past-network).
-    int stale_hits;
+    int stale_hits = 0;
+
+    // Time elapsed since the entry was inserted into HostCache. Nullopt if the
+    // creation time is unknown (e.g. restored from disk).
+    std::optional<base::TimeDelta> age;
+
+    // The original DNS wire TTL before any HostCache TTL clamping (such as the
+    // 1-minute minimum enforced by HostResolverManager::Job). Nullopt if
+    // unknown.
+    std::optional<base::TimeDelta> original_ttl;
 
     bool is_stale() const {
       return network_changes > 0 || expired_by >= base::TimeDelta();
+    }
+
+    // Returns true if both `age` and `original_ttl` are known and `age` exceeds
+    // `original_ttl`.
+    bool is_expired_by_wire_ttl() const {
+      return age.has_value() && original_ttl.has_value() &&
+             *age > *original_ttl;
     }
   };
 
@@ -352,6 +410,9 @@ class NET_EXPORT HostCache {
     // TTL obtained from the nameserver. Negative if unknown.
     base::TimeDelta ttl_ = kUnknownTtl;
 
+    // Time when the entry was inserted into HostCache. Nullopt if restored from
+    // disk.
+    std::optional<base::TimeTicks> created_time_;
     base::TimeTicks expires_;
     // Copied from the cache's network_changes_ when the entry is set; can
     // later be compared to it to see if the entry was received on the current
@@ -385,9 +446,6 @@ class NET_EXPORT HostCache {
     kDebug,
   };
 
-  // A HostCache::EntryStaleness representing a non-stale (fresh) cache entry.
-  static const HostCache::EntryStaleness kNotStale;
-
   // Constructs a HostCache that stores up to |max_entries|.
   explicit HostCache(size_t max_entries);
 
@@ -396,13 +454,38 @@ class NET_EXPORT HostCache {
 
   ~HostCache();
 
+  // Records UMA histograms (`Net.DNS.UsedAnswer.<protocol>.*`) for the DNS
+  // answer ultimately used to establish a connection.
+  static void RecordUsedAnswerMetrics(
+      UsedAnswerProtocol protocol,
+      UsedAnswerFreshnessStatus status,
+      const std::optional<EntryStaleness>& staleness);
+
+  // Records UMA histograms
+  // (`Net.DNS.OptimisticDns.<protocol>.StaleIpMatchFreshDns.*`) when fresh DNS
+  // results arrive for an in-flight or completed Optimistic DNS connection
+  // attempt.
+  static void RecordOptimisticDnsStaleIpMatchMetrics(
+      OptimisticDnsProtocol protocol,
+      bool matched,
+      const std::optional<EntryStaleness>& staleness);
+
+  // Records UMA histograms (`Net.DNS.OptimisticDns.SSLConnect.*`) for an
+  // SSL/TLS handshake over a TCP socket connected using stale (Optimistic) DNS.
+  static void RecordOptimisticDnsSslConnectionOutcomeMetrics(
+      OptimisticDnsSslConnectionOutcome outcome,
+      const std::optional<EntryStaleness>& staleness);
+
   // Returns a pointer to the matching (key, entry) pair, which is valid at time
   // |now|. If |ignore_secure| is true, ignores the secure field in |key| when
-  // looking for a match. If there is no matching entry, returns NULL.
-  const std::pair<const Key, Entry>* Lookup(const Key& key,
-                                            base::TimeTicks now,
-                                            bool ignore_secure = false,
-                                            bool record_metrics = true);
+  // looking for a match. If |stale_out| is non-null, fills it in with age and
+  // remaining TTL information. If there is no matching entry, returns NULL.
+  const std::pair<const Key, Entry>* Lookup(
+      const Key& key,
+      base::TimeTicks now,
+      bool ignore_secure = false,
+      bool record_metrics = true,
+      EntryStaleness* stale_out = nullptr);
 
   // Returns a pointer to the matching (key, entry) pair, whether it is valid or
   // stale at time |now|. Fills in |stale_out| with information about how stale

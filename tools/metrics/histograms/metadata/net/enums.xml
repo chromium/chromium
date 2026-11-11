@@ -831,6 +831,19 @@ historical analysis. -->
 
 <!-- LINT.ThenChange(//net/dns/host_resolver_manager_job.h:DnsJobKeptAliveResult) -->
 
+<!-- LINT.IfChange(DnsUsedAnswerFreshnessStatus) -->
+
+<enum name="DnsUsedAnswerFreshnessStatus">
+  <int value="0" label="Fresh from network"/>
+  <int value="1" label="Valid (non-expired) from HostCache"/>
+  <int value="2" label="Expired in HostCache, confirmed by fresh DNS"/>
+  <int value="3" label="Expired in HostCache, finished before fresh DNS"/>
+  <int value="4" label="Expired in HostCache, used after fresh DNS failed"/>
+  <int value="5" label="Expired in HostCache, diverged from fresh DNS"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/dns/host_cache.h:DnsUsedAnswerFreshnessStatus) -->
+
 <enum name="DohServerAutoupgradeStatus">
   <int value="0" label="SuccessWithNoPriorFailures"/>
   <int value="1" label="SuccessWithSomePriorFailures"/>
@@ -2849,6 +2862,15 @@ Called by update_net_trust_anchors.py.-->
   <int value="35" label="WorkerScriptFetcher (No-op)"/>
   <int value="36" label="WorkerScriptLoader (Proxy)"/>
 </enum>
+
+<!-- LINT.IfChange(OptimisticDnsSslConnectionOutcome) -->
+
+<enum name="OptimisticDnsSslConnectionOutcome">
+  <int value="0" label="Succeeded over stale DNS"/>
+  <int value="1" label="Failed over stale DNS and retried with fresh DNS"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/dns/host_cache.h:OptimisticDnsSslConnectionOutcome) -->
 
 <enum name="PathValidationReason">
   <int value="0" label="Reason unknown"/>

@@ -25,6 +25,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/fuzztest_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "net/base/connection_endpoint_metadata.h"
@@ -3318,5 +3319,302 @@ void CheckHostCacheSerialization(const base::ListValue& list) {
 
 FUZZ_TEST(HostCacheTest, CheckHostCacheSerialization)
     .WithDomains(fuzztest::Arbitrary<base::ListValue>());
+
+TEST(HostCacheTest, LookupPopulatesAgeAndOriginalTtl) {
+  base::TimeTicks now;
+  const base::TimeDelta kTtl = base::Seconds(10);
+
+  HostCache cache(kMaxCacheEntries);
+  HostCache::Key key = Key("foobar.com");
+  HostCache::Entry entry(OK, /*ip_endpoints=*/{}, /*aliases=*/{},
+                         HostCache::Entry::SOURCE_DNS, kTtl);
+  cache.Set(key, entry, now, kTtl);
+
+  // Advance 4 seconds: entry is still valid in HostCache.
+  now += base::Seconds(4);
+  HostCache::EntryStaleness staleness;
+  ASSERT_TRUE(cache.Lookup(key, now, /*ignore_secure=*/false,
+                           /*record_metrics=*/true, &staleness));
+  EXPECT_FALSE(staleness.is_stale());
+  EXPECT_EQ(staleness.age, base::Seconds(4));
+  EXPECT_EQ(staleness.original_ttl, kTtl);
+  EXPECT_EQ(staleness.expired_by, base::Seconds(-6));
+  EXPECT_FALSE(staleness.is_expired_by_wire_ttl());
+
+  // Advance another 9 seconds (total 13s): entry is expired by 3s.
+  now += base::Seconds(9);
+  EXPECT_FALSE(cache.Lookup(key, now));
+  ASSERT_TRUE(cache.LookupStale(key, now, &staleness));
+  EXPECT_TRUE(staleness.is_stale());
+  EXPECT_EQ(staleness.age, base::Seconds(13));
+  EXPECT_EQ(staleness.original_ttl, kTtl);
+  EXPECT_EQ(staleness.expired_by, base::Seconds(3));
+  EXPECT_TRUE(staleness.is_expired_by_wire_ttl());
+}
+
+TEST(HostCacheTest, LookupClampedTtlIsExpiredByWireTtl) {
+  base::TimeTicks now;
+  const base::TimeDelta kWireTtl = base::Seconds(10);
+  const base::TimeDelta kClampedCacheTtl = base::Seconds(60);
+
+  HostCache cache(kMaxCacheEntries);
+  HostCache::Key key = Key("clamped.com");
+  HostCache::Entry entry(OK, /*ip_endpoints=*/{}, /*aliases=*/{},
+                         HostCache::Entry::SOURCE_DNS, kWireTtl);
+  cache.Set(key, entry, now, kClampedCacheTtl);
+
+  // At t = 25s, the entry is valid in HostCache (remaining TTL = 35s), but its
+  // age (25s) exceeds its wire TTL (10s).
+  now += base::Seconds(25);
+  HostCache::EntryStaleness staleness;
+  ASSERT_TRUE(cache.Lookup(key, now, /*ignore_secure=*/false,
+                           /*record_metrics=*/true, &staleness));
+  EXPECT_FALSE(staleness.is_stale());
+  EXPECT_EQ(staleness.age, base::Seconds(25));
+  EXPECT_EQ(staleness.original_ttl, kWireTtl);
+  EXPECT_EQ(staleness.expired_by, base::Seconds(-35));
+  EXPECT_TRUE(staleness.is_expired_by_wire_ttl());
+}
+
+TEST(HostCacheTest, LookupRestoredAndUnknownTtlStaleness) {
+  base::TimeTicks now;
+  const base::TimeDelta kTtl = base::Seconds(60);
+
+  // 1. Entry without known wire TTL (e.g. from system resolver).
+  HostCache cache(kMaxCacheEntries);
+  HostCache::Key unknown_ttl_key = Key("unknown-ttl.com");
+  HostCache::Entry unknown_ttl_entry(OK, /*ip_endpoints=*/{}, /*aliases=*/{},
+                                     HostCache::Entry::SOURCE_UNKNOWN);
+  cache.Set(unknown_ttl_key, unknown_ttl_entry, now, kTtl);
+
+  now += base::Seconds(15);
+  HostCache::EntryStaleness staleness;
+  ASSERT_TRUE(cache.Lookup(unknown_ttl_key, now, /*ignore_secure=*/false,
+                           /*record_metrics=*/true, &staleness));
+  EXPECT_EQ(staleness.age, base::Seconds(15));
+  EXPECT_EQ(staleness.original_ttl, std::nullopt);
+  EXPECT_FALSE(staleness.is_expired_by_wire_ttl());
+
+  // 2. Entry restored from disk (`created_time_` and `original_ttl` unknown).
+  HostCache::Key restorable_key(
+      url::SchemeHostPort(url::kHttpsScheme, "restored.com", 443),
+      DnsQueryType::A, 0, HostResolverSource::DNS, NetworkAnonymizationKey(),
+      handles::kInvalidNetworkHandle);
+  IPEndPoint endpoint(IPAddress(192, 0, 2, 1), 443);
+  HostCache::Entry restorable_entry(OK, {endpoint}, /*aliases=*/{},
+                                    HostCache::Entry::SOURCE_DNS, kTtl);
+  cache.Set(restorable_key, restorable_entry, now, kTtl);
+
+  base::ListValue serialized_cache;
+  cache.GetList(serialized_cache, /*include_staleness=*/false,
+                HostCache::SerializationType::kRestorable);
+  HostCache restored_cache(kMaxCacheEntries);
+  ASSERT_TRUE(restored_cache.RestoreFromListValue(serialized_cache));
+
+  HostCache::EntryStaleness restored_staleness;
+  ASSERT_TRUE(
+      restored_cache.LookupStale(restorable_key, now, &restored_staleness));
+  EXPECT_EQ(restored_staleness.age, std::nullopt);
+  EXPECT_EQ(restored_staleness.original_ttl, std::nullopt);
+  EXPECT_FALSE(restored_staleness.is_expired_by_wire_ttl());
+}
+
+TEST(HostCacheTest, RecordUsedAnswerMetrics_FreshFromNetwork) {
+  base::HistogramTester histogram_tester;
+  HostCache::RecordUsedAnswerMetrics(
+      HostCache::UsedAnswerProtocol::kTcp,
+      HostCache::UsedAnswerFreshnessStatus::kFreshFromNetwork, std::nullopt);
+  histogram_tester.ExpectUniqueSample(
+      "Net.DNS.UsedAnswer.Tcp.FreshnessStatus",
+      HostCache::UsedAnswerFreshnessStatus::kFreshFromNetwork, 1);
+  histogram_tester.ExpectUniqueTimeSample("Net.DNS.UsedAnswer.Tcp.Age",
+                                          base::TimeDelta(), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.DNS.UsedAnswer.Tcp.IsExpiredByWireTtl", false, 1);
+}
+
+// Valid cache hit where age > original_ttl (clamped upward).
+TEST(HostCacheTest, RecordUsedAnswerMetrics_ValidCacheExpiredByWireTtl) {
+  base::HistogramTester histogram_tester;
+  HostCache::EntryStaleness staleness;
+  staleness.age = base::Seconds(25);
+  staleness.original_ttl = base::Seconds(10);
+  staleness.expired_by = base::Seconds(-35);
+  HostCache::RecordUsedAnswerMetrics(
+      HostCache::UsedAnswerProtocol::kTcp,
+      HostCache::UsedAnswerFreshnessStatus::kValidFromCache, staleness);
+  histogram_tester.ExpectUniqueSample(
+      "Net.DNS.UsedAnswer.Tcp.FreshnessStatus",
+      HostCache::UsedAnswerFreshnessStatus::kValidFromCache, 1);
+  histogram_tester.ExpectUniqueTimeSample("Net.DNS.UsedAnswer.Tcp.Age",
+                                          base::Seconds(25), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.UsedAnswer.Tcp.Age.ValidCache", base::Seconds(25), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.UsedAnswer.Tcp.ValidCache.RemainingTtl", base::Seconds(35), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.DNS.UsedAnswer.Tcp.IsExpiredByWireTtl", true, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.UsedAnswer.Tcp.ExpiredByWireTtl.OverdueBy", base::Seconds(15),
+      1);
+}
+
+// Valid cache hit where age <= original_ttl (not expired by wire TTL) and
+// another where age/original_ttl are nullopt.
+TEST(HostCacheTest,
+     RecordUsedAnswerMetrics_ValidCacheNotExpiredByWireTtlAndUnknownAge) {
+  base::HistogramTester histogram_tester;
+  HostCache::EntryStaleness staleness;
+  staleness.age = base::Seconds(10);
+  staleness.original_ttl = base::Seconds(60);
+  staleness.expired_by = base::Seconds(-50);
+  HostCache::RecordUsedAnswerMetrics(
+      HostCache::UsedAnswerProtocol::kSsl,
+      HostCache::UsedAnswerFreshnessStatus::kValidFromCache, staleness);
+  histogram_tester.ExpectUniqueSample(
+      "Net.DNS.UsedAnswer.Ssl.IsExpiredByWireTtl", false, 1);
+  histogram_tester.ExpectTotalCount(
+      "Net.DNS.UsedAnswer.Ssl.ExpiredByWireTtl.OverdueBy", 0);
+
+  // Unknown age (e.g. disk-restored) and unknown original_ttl:
+  HostCache::EntryStaleness restored_staleness;
+  restored_staleness.expired_by = base::Seconds(-20);
+  HostCache::RecordUsedAnswerMetrics(
+      HostCache::UsedAnswerProtocol::kSsl,
+      HostCache::UsedAnswerFreshnessStatus::kValidFromCache,
+      restored_staleness);
+  // IsExpiredByWireTtl and Age are not recorded when age/original_ttl are
+  // nullopt.
+  histogram_tester.ExpectTotalCount("Net.DNS.UsedAnswer.Ssl.IsExpiredByWireTtl",
+                                    1);
+  histogram_tester.ExpectTotalCount("Net.DNS.UsedAnswer.Ssl.Age", 1);
+}
+
+TEST(HostCacheTest, RecordUsedAnswerMetrics_ExpiredCacheConfirmedByFreshDns) {
+  base::HistogramTester histogram_tester;
+  HostCache::EntryStaleness staleness;
+  staleness.age = base::Seconds(70);
+  staleness.original_ttl = base::Seconds(60);
+  staleness.expired_by = base::Seconds(10);
+  staleness.network_changes = 2;
+  HostCache::RecordUsedAnswerMetrics(
+      HostCache::UsedAnswerProtocol::kQuic,
+      HostCache::UsedAnswerFreshnessStatus::kExpiredCacheConfirmedByFreshDns,
+      staleness);
+  histogram_tester.ExpectUniqueSample(
+      "Net.DNS.UsedAnswer.Quic.FreshnessStatus",
+      HostCache::UsedAnswerFreshnessStatus::kExpiredCacheConfirmedByFreshDns,
+      1);
+  histogram_tester.ExpectUniqueTimeSample("Net.DNS.UsedAnswer.Quic.Age",
+                                          base::Seconds(70), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.UsedAnswer.Quic.Age.ExpiredCacheConfirmedByFreshDns",
+      base::Seconds(70), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.UsedAnswer.Quic.ExpiredCache.ExpiredBy", base::Seconds(10), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.UsedAnswer.Quic.ExpiredCache.ExpiredBy.ConfirmedByFreshDns",
+      base::Seconds(10), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.DNS.UsedAnswer.Quic.ExpiredCache.NetworkChanges", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.DNS.UsedAnswer.Quic.IsExpiredByWireTtl", true, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.UsedAnswer.Quic.ExpiredByWireTtl.OverdueBy", base::Seconds(10),
+      1);
+}
+
+// Remaining expired-cache enum arms: FinishedBeforeFreshDns,
+// AfterFreshDnsFailed, and DivergedFromFreshDns.
+TEST(HostCacheTest, RecordUsedAnswerMetrics_ExpiredCacheOtherStatuses) {
+  base::HistogramTester histogram_tester;
+  HostCache::EntryStaleness staleness;
+  staleness.age = base::Hours(2);
+  staleness.original_ttl = base::Minutes(5);
+  staleness.expired_by = base::Minutes(115);
+
+  HostCache::RecordUsedAnswerMetrics(
+      HostCache::UsedAnswerProtocol::kTcp,
+      HostCache::UsedAnswerFreshnessStatus::kExpiredCacheFinishedBeforeFreshDns,
+      staleness);
+  HostCache::RecordUsedAnswerMetrics(
+      HostCache::UsedAnswerProtocol::kTcp,
+      HostCache::UsedAnswerFreshnessStatus::kExpiredCacheAfterFreshDnsFailed,
+      staleness);
+  HostCache::RecordUsedAnswerMetrics(
+      HostCache::UsedAnswerProtocol::kTcp,
+      HostCache::UsedAnswerFreshnessStatus::kExpiredCacheDivergedFromFreshDns,
+      staleness);
+
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.UsedAnswer.Tcp.Age.ExpiredCacheFinishedBeforeFreshDns",
+      base::Hours(2), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.UsedAnswer.Tcp.ExpiredCache.ExpiredBy.FinishedBeforeFreshDns",
+      base::Minutes(115), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.UsedAnswer.Tcp.Age.ExpiredCacheAfterFreshDnsFailed",
+      base::Hours(2), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.UsedAnswer.Tcp.ExpiredCache.ExpiredBy.AfterFreshDnsFailed",
+      base::Minutes(115), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.UsedAnswer.Tcp.Age.ExpiredCacheDivergedFromFreshDns",
+      base::Hours(2), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.UsedAnswer.Tcp.ExpiredCache.ExpiredBy.DivergedFromFreshDns",
+      base::Minutes(115), 1);
+}
+
+TEST(HostCacheTest, RecordOptimisticDnsDiagnosticsMetrics) {
+  base::HistogramTester histogram_tester;
+  HostCache::EntryStaleness staleness;
+  staleness.age = base::Seconds(90);
+  staleness.original_ttl = base::Seconds(60);
+  staleness.expired_by = base::Seconds(30);
+
+  HostCache::RecordOptimisticDnsStaleIpMatchMetrics(
+      HostCache::OptimisticDnsProtocol::kTcp, /*matched=*/true, staleness);
+  HostCache::RecordOptimisticDnsStaleIpMatchMetrics(
+      HostCache::OptimisticDnsProtocol::kQuic, /*matched=*/false, staleness);
+  HostCache::RecordOptimisticDnsSslConnectionOutcomeMetrics(
+      HostCache::OptimisticDnsSslConnectionOutcome::
+          kFailedAndRetriedWithFreshDns,
+      staleness);
+  HostCache::RecordOptimisticDnsSslConnectionOutcomeMetrics(
+      HostCache::OptimisticDnsSslConnectionOutcome::kSucceeded, staleness);
+
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.OptimisticDns.Tcp.StaleIpMatchFreshDns.Age.Matched",
+      base::Seconds(90), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.OptimisticDns.Tcp.StaleIpMatchFreshDns.ExpiredBy.Matched",
+      base::Seconds(30), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.OptimisticDns.Quic.StaleIpMatchFreshDns.Age.Diverged",
+      base::Seconds(90), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.OptimisticDns.Quic.StaleIpMatchFreshDns.ExpiredBy.Diverged",
+      base::Seconds(30), 1);
+  histogram_tester.ExpectBucketCount(
+      "Net.DNS.OptimisticDns.SSLConnect.Outcome",
+      HostCache::OptimisticDnsSslConnectionOutcome::
+          kFailedAndRetriedWithFreshDns,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "Net.DNS.OptimisticDns.SSLConnect.Outcome",
+      HostCache::OptimisticDnsSslConnectionOutcome::kSucceeded, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.OptimisticDns.SSLConnect.Age.FailedAndRetriedWithFreshDns",
+      base::Seconds(90), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.OptimisticDns.SSLConnect.ExpiredBy.FailedAndRetriedWithFreshDns",
+      base::Seconds(30), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.OptimisticDns.SSLConnect.Age.Succeeded", base::Seconds(90), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.OptimisticDns.SSLConnect.ExpiredBy.Succeeded", base::Seconds(30),
+      1);
+}
 
 }  // namespace net

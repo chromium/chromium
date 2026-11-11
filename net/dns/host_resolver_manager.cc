@@ -1112,8 +1112,7 @@ std::optional<HostCache::Entry> HostResolverManager::MaybeServeFromCache(
         cache_usage ==
             ResolveHostParameters::CacheUsage::STALE_ALLOWED_WHILE_REFRESHING);
     cache_result = cache->Lookup(effective_key, tick_clock_->NowTicks(),
-                                 ignore_secure, record_metrics);
-    staleness = HostCache::kNotStale;
+                                 ignore_secure, record_metrics, &staleness);
   }
   if (cache_result) {
     *out_stale_info = std::move(staleness);

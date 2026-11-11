@@ -462,7 +462,7 @@ class MockHostResolverBase::ServiceEndpointRequestImpl
   }
 
   const HostCache::EntryStaleness* GetStaleInfo() const override {
-    return nullptr;
+    return base::OptionalToPtr(staleness_);
   }
 
   bool IsStaleWhileRefreshing() const override {
@@ -1199,14 +1199,15 @@ int MockHostResolverBase::ResolveFromIPLiteralOrCache(
                        effective_source, network_anonymization_key,
                        handles::kInvalidNetworkHandle);
     const std::pair<const HostCache::Key, HostCache::Entry>* cache_result;
-    HostCache::EntryStaleness stale_info = HostCache::kNotStale;
+    HostCache::EntryStaleness stale_info;
     if (cache_usage ==
         HostResolver::ResolveHostParameters::CacheUsage::STALE_ALLOWED) {
       cache_result = cache_->LookupStale(key, tick_clock_->NowTicks(),
                                          &stale_info, true /* ignore_secure */);
     } else {
-      cache_result = cache_->Lookup(key, tick_clock_->NowTicks(),
-                                    true /* ignore_secure */);
+      cache_result =
+          cache_->Lookup(key, tick_clock_->NowTicks(), true /* ignore_secure */,
+                         true /* record_metrics */, &stale_info);
     }
     if (cache_result) {
       rv = cache_result->second.error();

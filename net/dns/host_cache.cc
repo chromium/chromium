@@ -95,8 +95,9 @@ base::Value IpEndpointToValue(const IPEndPoint& endpoint) {
 }
 
 std::optional<IPEndPoint> IpEndpointFromValue(const base::Value& value) {
-  if (!value.is_dict())
+  if (!value.is_dict()) {
     return std::nullopt;
+  }
 
   const base::DictValue& dict = value.GetDict();
   const std::string* ip_str = dict.FindString(kEndpointAddressKey);
@@ -108,8 +109,9 @@ std::optional<IPEndPoint> IpEndpointFromValue(const base::Value& value) {
   }
 
   IPAddress ip;
-  if (!ip.AssignFromIPLiteral(*ip_str))
+  if (!ip.AssignFromIPLiteral(*ip_str)) {
     return std::nullopt;
+  }
 
   std::optional<uint32_t> scope_id =
       IPEndPoint::ScopeIdFromInterfaceName(dict.Find(kInterfaceNameKey));
@@ -133,8 +135,9 @@ base::Value EndpointMetadataPairToValue(
 
 std::optional<std::pair<HttpsRecordPriority, ConnectionEndpointMetadata>>
 EndpointMetadataPairFromValue(const base::Value& value) {
-  if (!value.is_dict())
+  if (!value.is_dict()) {
     return std::nullopt;
+  }
 
   const base::DictValue& dict = value.GetDict();
   std::optional<int> priority = dict.FindInt(kEndpointMetadataWeightKey);
@@ -145,12 +148,14 @@ EndpointMetadataPairFromValue(const base::Value& value) {
     return std::nullopt;
   }
 
-  if (!metadata_value)
+  if (!metadata_value) {
     return std::nullopt;
+  }
   std::optional<ConnectionEndpointMetadata> metadata =
       ConnectionEndpointMetadata::FromValue(*metadata_value);
-  if (!metadata)
+  if (!metadata) {
     return std::nullopt;
+  }
 
   return std::pair(base::checked_cast<HttpsRecordPriority>(priority.value()),
                    std::move(metadata).value());
@@ -184,8 +189,9 @@ void MergeContainers(T& target, const T& source) {
 // Used to reject empty and IP literal (whether or not surrounded by brackets)
 // hostnames.
 bool IsValidHostname(std::string_view hostname) {
-  if (hostname.empty())
+  if (hostname.empty()) {
     return false;
+  }
 
   IPAddress ip_address;
   if (ip_address.AssignFromIPLiteral(hostname) ||
@@ -212,8 +218,9 @@ const std::string& GetHostname(
 
 std::optional<DnsQueryType> GetDnsQueryType(int dns_query_type) {
   for (const auto& type : kDnsQueryTypes) {
-    if (base::strict_cast<int>(type.first) == dns_query_type)
+    if (base::strict_cast<int>(type.first) == dns_query_type) {
       return type.first;
+    }
   }
   return std::nullopt;
 }
@@ -225,6 +232,33 @@ const std::string GetHistogramName(std::string_view histogram_name,
   return base::StrCat(
       {kHistogramPrefix, histogram_name,
        IsGoogleHostWithAlpnH3(GetHostname(key.host)) ? ".GoogleHost" : ""});
+}
+
+std::string_view UsedAnswerProtocolToString(
+    HostCache::UsedAnswerProtocol protocol) {
+  switch (protocol) {
+    case HostCache::UsedAnswerProtocol::kTcp:
+      return "Tcp";
+    case HostCache::UsedAnswerProtocol::kSsl:
+      return "Ssl";
+    case HostCache::UsedAnswerProtocol::kQuic:
+      return "Quic";
+  }
+}
+
+std::string_view OptimisticDnsProtocolToString(
+    HostCache::OptimisticDnsProtocol protocol) {
+  switch (protocol) {
+    case HostCache::OptimisticDnsProtocol::kTcp:
+      return "Tcp";
+    case HostCache::OptimisticDnsProtocol::kQuic:
+      return "Quic";
+  }
+}
+
+void RecordDnsDurationHistogram(std::string_view name, base::TimeDelta sample) {
+  base::UmaHistogramCustomTimes(name, sample, base::Milliseconds(1),
+                                base::Days(1), 100);
 }
 
 }  // namespace
@@ -471,10 +505,11 @@ std::vector<ConnectionEndpointMetadata> HostCache::Entry::GetMetadatas() const {
 }
 
 std::optional<base::TimeDelta> HostCache::Entry::GetOptionalTtl() const {
-  if (has_ttl())
+  if (has_ttl()) {
     return ttl();
-  else
+  } else {
     return std::nullopt;
+  }
 }
 
 // static
@@ -607,6 +642,7 @@ HostCache::Entry::Entry(const HostCache::Entry& entry,
       pinning_(entry.pinning()),
       canonical_names_(entry.canonical_names()),
       ttl_(entry.ttl()),
+      created_time_(now),
       expires_(now + ttl),
       network_changes_(network_changes) {}
 
@@ -641,8 +677,9 @@ bool HostCache::Entry::IsStale(base::TimeTicks now, int network_changes) const {
 
 void HostCache::Entry::CountHit(bool hit_is_stale) {
   ++total_hits_;
-  if (hit_is_stale)
+  if (hit_is_stale) {
     ++stale_hits_;
+  }
 }
 
 void HostCache::Entry::GetStaleness(base::TimeTicks now,
@@ -652,6 +689,10 @@ void HostCache::Entry::GetStaleness(base::TimeTicks now,
   out->expired_by = now - expires_;
   out->network_changes = network_changes - network_changes_;
   out->stale_hits = stale_hits_;
+  out->age = created_time_.transform([&](base::TimeTicks created_time) {
+    return std::max(base::TimeDelta(), now - created_time);
+  });
+  out->original_ttl = GetOptionalTtl();
 }
 
 base::Value HostCache::Entry::NetLogParams() const {
@@ -670,8 +711,9 @@ base::DictValue HostCache::Entry::GetAsValue(bool include_staleness) const {
     entry_dict.Set(kNetworkChangesKey, network_changes());
     // The "pinned" status is meaningful only if "network_changes" is also
     // preserved.
-    if (pinning())
+    if (pinning()) {
       entry_dict.Set(kPinnedKey, *pinning());
+    }
   } else {
     // Convert expiration time in TimeTicks to Time for serialization, using a
     // string because base::Value doesn't handle 64-bit integers.
@@ -749,10 +791,6 @@ std::optional<base::TimeDelta> HostCache::Entry::TtlFromInternalResults(
   return smallest_ttl;
 }
 
-// static
-const HostCache::EntryStaleness HostCache::kNotStale = {base::Seconds(-1), 0,
-                                                        0};
-
 HostCache::HostCache(size_t max_entries)
     : max_entries_(max_entries),
       tick_clock_(base::DefaultTickClock::GetInstance()) {}
@@ -762,14 +800,160 @@ HostCache::~HostCache() {
   RecordEraseAll(EraseReason::kEraseDestruct, tick_clock_->NowTicks());
 }
 
+// static
+void HostCache::RecordUsedAnswerMetrics(
+    UsedAnswerProtocol protocol,
+    UsedAnswerFreshnessStatus status,
+    const std::optional<EntryStaleness>& staleness) {
+  const std::string_view protocol_str = UsedAnswerProtocolToString(protocol);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Net.DNS.UsedAnswer.", protocol_str, ".FreshnessStatus"}),
+      status);
+
+  if (status == UsedAnswerFreshnessStatus::kFreshFromNetwork) {
+    RecordDnsDurationHistogram(
+        base::StrCat({"Net.DNS.UsedAnswer.", protocol_str, ".Age"}),
+        base::TimeDelta());
+    base::UmaHistogramBoolean(base::StrCat({"Net.DNS.UsedAnswer.", protocol_str,
+                                            ".IsExpiredByWireTtl"}),
+                              false);
+    return;
+  }
+
+  if (!staleness.has_value()) {
+    return;
+  }
+
+  std::string_view freshness_variant;
+  std::string_view expired_variant;
+  switch (status) {
+    case UsedAnswerFreshnessStatus::kFreshFromNetwork:
+      NOTREACHED();
+    case UsedAnswerFreshnessStatus::kValidFromCache:
+      freshness_variant = "ValidCache";
+      break;
+    case UsedAnswerFreshnessStatus::kExpiredCacheConfirmedByFreshDns:
+      freshness_variant = "ExpiredCacheConfirmedByFreshDns";
+      expired_variant = "ConfirmedByFreshDns";
+      break;
+    case UsedAnswerFreshnessStatus::kExpiredCacheFinishedBeforeFreshDns:
+      freshness_variant = "ExpiredCacheFinishedBeforeFreshDns";
+      expired_variant = "FinishedBeforeFreshDns";
+      break;
+    case UsedAnswerFreshnessStatus::kExpiredCacheAfterFreshDnsFailed:
+      freshness_variant = "ExpiredCacheAfterFreshDnsFailed";
+      expired_variant = "AfterFreshDnsFailed";
+      break;
+    case UsedAnswerFreshnessStatus::kExpiredCacheDivergedFromFreshDns:
+      freshness_variant = "ExpiredCacheDivergedFromFreshDns";
+      expired_variant = "DivergedFromFreshDns";
+      break;
+  }
+
+  if (staleness->age.has_value()) {
+    RecordDnsDurationHistogram(
+        base::StrCat({"Net.DNS.UsedAnswer.", protocol_str, ".Age"}),
+        *staleness->age);
+    RecordDnsDurationHistogram(
+        base::StrCat(
+            {"Net.DNS.UsedAnswer.", protocol_str, ".Age.", freshness_variant}),
+        *staleness->age);
+  }
+
+  if (status == UsedAnswerFreshnessStatus::kValidFromCache) {
+    if (staleness->expired_by < base::TimeDelta()) {
+      RecordDnsDurationHistogram(
+          base::StrCat({"Net.DNS.UsedAnswer.", protocol_str,
+                        ".ValidCache.RemainingTtl"}),
+          -staleness->expired_by);
+    }
+  } else {
+    base::TimeDelta expired_by =
+        std::max(base::TimeDelta(), staleness->expired_by);
+    RecordDnsDurationHistogram(
+        base::StrCat(
+            {"Net.DNS.UsedAnswer.", protocol_str, ".ExpiredCache.ExpiredBy"}),
+        expired_by);
+    RecordDnsDurationHistogram(
+        base::StrCat({"Net.DNS.UsedAnswer.", protocol_str,
+                      ".ExpiredCache.ExpiredBy.", expired_variant}),
+        expired_by);
+    base::UmaHistogramCounts100(
+        base::StrCat({"Net.DNS.UsedAnswer.", protocol_str,
+                      ".ExpiredCache.NetworkChanges"}),
+        staleness->network_changes);
+  }
+
+  if (staleness->age.has_value() && staleness->original_ttl.has_value()) {
+    bool is_expired_by_wire_ttl = staleness->is_expired_by_wire_ttl();
+    base::UmaHistogramBoolean(base::StrCat({"Net.DNS.UsedAnswer.", protocol_str,
+                                            ".IsExpiredByWireTtl"}),
+                              is_expired_by_wire_ttl);
+    if (is_expired_by_wire_ttl) {
+      RecordDnsDurationHistogram(
+          base::StrCat({"Net.DNS.UsedAnswer.", protocol_str,
+                        ".ExpiredByWireTtl.OverdueBy"}),
+          *staleness->age - *staleness->original_ttl);
+    }
+  }
+}
+
+// static
+void HostCache::RecordOptimisticDnsStaleIpMatchMetrics(
+    OptimisticDnsProtocol protocol,
+    bool matched,
+    const std::optional<EntryStaleness>& staleness) {
+  if (!staleness.has_value()) {
+    return;
+  }
+  const std::string_view protocol_str = OptimisticDnsProtocolToString(protocol);
+  std::string_view match_result = matched ? "Matched" : "Diverged";
+  if (staleness->age.has_value()) {
+    RecordDnsDurationHistogram(
+        base::StrCat({"Net.DNS.OptimisticDns.", protocol_str,
+                      ".StaleIpMatchFreshDns.Age.", match_result}),
+        *staleness->age);
+  }
+  RecordDnsDurationHistogram(
+      base::StrCat({"Net.DNS.OptimisticDns.", protocol_str,
+                    ".StaleIpMatchFreshDns.ExpiredBy.", match_result}),
+      std::max(base::TimeDelta(), staleness->expired_by));
+}
+
+// static
+void HostCache::RecordOptimisticDnsSslConnectionOutcomeMetrics(
+    OptimisticDnsSslConnectionOutcome outcome,
+    const std::optional<EntryStaleness>& staleness) {
+  base::UmaHistogramEnumeration("Net.DNS.OptimisticDns.SSLConnect.Outcome",
+                                outcome);
+  if (!staleness.has_value()) {
+    return;
+  }
+  std::string_view outcome_suffix =
+      outcome == OptimisticDnsSslConnectionOutcome::kSucceeded
+          ? "Succeeded"
+          : "FailedAndRetriedWithFreshDns";
+  if (staleness->age.has_value()) {
+    RecordDnsDurationHistogram(
+        base::StrCat({"Net.DNS.OptimisticDns.SSLConnect.Age.", outcome_suffix}),
+        *staleness->age);
+  }
+  RecordDnsDurationHistogram(
+      base::StrCat(
+          {"Net.DNS.OptimisticDns.SSLConnect.ExpiredBy.", outcome_suffix}),
+      std::max(base::TimeDelta(), staleness->expired_by));
+}
+
 const std::pair<const HostCache::Key, HostCache::Entry>* HostCache::Lookup(
     const Key& key,
     base::TimeTicks now,
     bool ignore_secure,
-    bool record_metrics) {
+    bool record_metrics,
+    HostCache::EntryStaleness* stale_out) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (caching_is_disabled())
+  if (caching_is_disabled()) {
     return nullptr;
+  }
 
   auto* result = LookupInternalIgnoringFields(key, now, ignore_secure);
   if (!result) {
@@ -788,6 +972,9 @@ const std::pair<const HostCache::Key, HostCache::Entry>* HostCache::Lookup(
   }
 
   entry->CountHit(/* hit_is_stale= */ false);
+  if (stale_out) {
+    entry->GetStaleness(now, network_changes_, stale_out);
+  }
   if (record_metrics) {
     RecordLookup(LookupOutcome::kLookupHitValid, now, result->first, entry);
   }
@@ -801,8 +988,9 @@ const std::pair<const HostCache::Key, HostCache::Entry>* HostCache::LookupStale(
     bool ignore_secure,
     bool record_metrics) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (caching_is_disabled())
+  if (caching_is_disabled()) {
     return nullptr;
+  }
 
   auto* result = LookupInternalIgnoringFields(key, now, ignore_secure);
   if (!result) {
@@ -821,8 +1009,9 @@ const std::pair<const HostCache::Key, HostCache::Entry>* HostCache::LookupStale(
                  now, result->first, entry);
   }
 
-  if (stale_out)
+  if (stale_out) {
     entry->GetStaleness(now, network_changes_, stale_out);
+  }
   return result;
 }
 
@@ -833,12 +1022,15 @@ HostCache::GetLessStaleMoreSecureResult(
     std::pair<const HostCache::Key, HostCache::Entry>* result1,
     std::pair<const HostCache::Key, HostCache::Entry>* result2) {
   // Prefer a non-null result if possible.
-  if (!result1 && !result2)
+  if (!result1 && !result2) {
     return nullptr;
-  if (result1 && !result2)
+  }
+  if (result1 && !result2) {
     return result1;
-  if (!result1 && result2)
+  }
+  if (!result1 && result2) {
     return result2;
+  }
 
   // Both result1 are result2 are non-null.
   EntryStaleness staleness1, staleness2;
@@ -894,8 +1086,9 @@ void HostCache::Set(const Key& key,
                     base::TimeDelta ttl) {
   TRACE_EVENT0(NetTracingCategory(), "HostCache::Set");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (caching_is_disabled())
+  if (caching_is_disabled()) {
     return;
+  }
 
   bool has_active_pin = false;
   bool result_changed = false;
@@ -921,8 +1114,9 @@ void HostCache::Set(const Key& key,
   entry_for_cache.set_pinning(entry.pinning().value_or(has_active_pin));
   AddEntry(key, std::move(entry_for_cache));
 
-  if (delegate_ && result_changed)
+  if (delegate_ && result_changed) {
     delegate_->ScheduleWrite();
+  }
 }
 
 const HostCache::Key* HostCache::GetMatchingKeyForTesting(
@@ -931,8 +1125,9 @@ const HostCache::Key* HostCache::GetMatchingKeyForTesting(
     HostCache::EntryStaleness* stale_out) const {
   for (const EntryMap::value_type& entry : entries_) {
     if (GetHostname(entry.first.host) == hostname) {
-      if (source_out != nullptr)
+      if (source_out != nullptr) {
         *source_out = entry.second.source();
+      }
       if (stale_out != nullptr) {
         entry.second.GetStaleness(tick_clock_->NowTicks(), network_changes_,
                                   stale_out);
@@ -966,12 +1161,14 @@ void HostCache::clear() {
   RecordEraseAll(EraseReason::kEraseClear, tick_clock_->NowTicks());
 
   // Don't bother scheduling a write if there's nothing to clear.
-  if (size() == 0)
+  if (size() == 0) {
     return;
+  }
 
   entries_.clear();
-  if (delegate_)
+  if (delegate_) {
     delegate_->ScheduleWrite();
+  }
 }
 
 void HostCache::ClearForHosts(
@@ -997,8 +1194,9 @@ void HostCache::ClearForHosts(
     it = next_it;
   }
 
-  if (delegate_ && changed)
+  if (delegate_ && changed) {
     delegate_->ScheduleWrite();
+  }
 }
 
 void HostCache::GetList(base::ListValue& entry_list,
@@ -1065,11 +1263,13 @@ bool HostCache::RestoreFromListValue(const base::ListValue& old_cache) {
   for (const auto& entry : old_cache) {
     // If the cache is already full, don't bother prioritizing what to evict,
     // just stop restoring.
-    if (size() == max_entries_)
+    if (size() == max_entries_) {
       break;
+    }
 
-    if (!entry.is_dict())
+    if (!entry.is_dict()) {
       return false;
+    }
 
     const base::DictValue& entry_dict = entry.GetDict();
     const std::string* hostname_ptr = entry_dict.FindString(kHostnameKey);
@@ -1082,13 +1282,16 @@ bool HostCache::RestoreFromListValue(const base::ListValue& old_cache) {
     std::variant<url::SchemeHostPort, std::string> host;
     if (scheme_ptr) {
       std::optional<int> port = entry_dict.FindInt(kPortKey);
-      if (!port || !base::IsValueInRangeForNumericType<uint16_t>(port.value()))
+      if (!port ||
+          !base::IsValueInRangeForNumericType<uint16_t>(port.value())) {
         return false;
+      }
 
       url::SchemeHostPort scheme_host_port(*scheme_ptr, *hostname_ptr,
                                            port.value());
-      if (!scheme_host_port.IsValid())
+      if (!scheme_host_port.IsValid()) {
         return false;
+      }
       host = std::move(scheme_host_port);
     } else {
       host = *hostname_ptr;
@@ -1096,19 +1299,22 @@ bool HostCache::RestoreFromListValue(const base::ListValue& old_cache) {
 
     const std::string* expiration_ptr = entry_dict.FindString(kExpirationKey);
     std::optional<int> maybe_flags = entry_dict.FindInt(kFlagsKey);
-    if (expiration_ptr == nullptr || !maybe_flags.has_value())
+    if (expiration_ptr == nullptr || !maybe_flags.has_value()) {
       return false;
+    }
     std::string expiration(*expiration_ptr);
     HostResolverFlags flags = maybe_flags.value();
 
     std::optional<int> maybe_dns_query_type =
         entry_dict.FindInt(kDnsQueryTypeKey);
-    if (!maybe_dns_query_type.has_value())
+    if (!maybe_dns_query_type.has_value()) {
       return false;
+    }
     std::optional<DnsQueryType> dns_query_type =
         GetDnsQueryType(maybe_dns_query_type.value());
-    if (!dns_query_type.has_value())
+    if (!dns_query_type.has_value()) {
       return false;
+    }
     // HostResolverSource is optional.
     int host_resolver_source =
         entry_dict.FindInt(kHostResolverSourceKey)
@@ -1162,8 +1368,9 @@ bool HostCache::RestoreFromListValue(const base::ListValue& old_cache) {
     }
 
     int64_t time_internal;
-    if (!base::StringToInt64(expiration, &time_internal))
+    if (!base::StringToInt64(expiration, &time_internal)) {
       return false;
+    }
 
     base::TimeTicks expiration_time =
         tick_clock_->NowTicks() -
@@ -1198,8 +1405,9 @@ bool HostCache::RestoreFromListValue(const base::ListValue& old_cache) {
         std::optional<
             std::pair<HttpsRecordPriority, ConnectionEndpointMetadata>>
             pair = EndpointMetadataPairFromValue(endpoint_metadata_value);
-        if (!pair)
+        if (!pair) {
           return false;
+        }
         endpoint_metadatas.insert(std::move(pair).value());
       }
     }
@@ -1230,8 +1438,9 @@ bool HostCache::RestoreFromListValue(const base::ListValue& old_cache) {
     std::vector<std::string> text_records;
     if (text_records_list) {
       for (const base::Value& value : *text_records_list) {
-        if (!value.is_string())
+        if (!value.is_string()) {
           return false;
+        }
         text_records.push_back(value.GetString());
       }
     }
@@ -1260,8 +1469,9 @@ bool HostCache::RestoreFromListValue(const base::ListValue& old_cache) {
     if (canonical_names_list) {
       for (const auto& item : *canonical_names_list) {
         const std::string* name = item.GetIfString();
-        if (!name)
+        if (!name) {
           return false;
+        }
         canonical_names.insert(*name);
       }
     }

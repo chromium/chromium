@@ -123,6 +123,23 @@ class FakeServiceEndpointRequest : public HostResolver::ServiceEndpointRequest {
     return *this;
   }
 
+  FakeServiceEndpointRequest& set_stale_info(
+      HostCache::EntryStaleness stale_info) {
+    stale_info_ = std::move(stale_info);
+    return *this;
+  }
+
+  FakeServiceEndpointRequest& ClearStaleInfo() {
+    stale_info_.reset();
+    return *this;
+  }
+
+  FakeServiceEndpointRequest& set_resolution_details(
+      ResolutionDetails resolution_details) {
+    resolution_details_ = std::move(resolution_details);
+    return *this;
+  }
+
   RequestPriority priority() const { return resolution_.priority(); }
   const HostResolver::ResolveHostParameters& resolve_host_params() const {
     return resolve_host_params_;
@@ -147,6 +164,8 @@ class FakeServiceEndpointRequest : public HostResolver::ServiceEndpointRequest {
   raw_ptr<Delegate> delegate_;
 
   bool is_stale_while_refreshing_ = false;
+  std::optional<HostCache::EntryStaleness> stale_info_;
+  std::optional<ResolutionDetails> resolution_details_;
 
   FakeServiceEndpointResolution resolution_;
 

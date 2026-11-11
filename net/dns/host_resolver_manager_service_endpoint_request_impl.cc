@@ -221,7 +221,8 @@ void HostResolverManager::ServiceEndpointRequestImpl::AssignJob(
 void HostResolverManager::ServiceEndpointRequestImpl::OnJobCompleted(
     const HostCache::Entry& results,
     bool obtained_securely,
-    ResolutionDetails resolution_details) {
+    ResolutionDetails resolution_details,
+    std::optional<HostCache::EntryStaleness> stale_info) {
   CHECK(job_);
   CHECK(delegate_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -232,6 +233,9 @@ void HostResolverManager::ServiceEndpointRequestImpl::OnJobCompleted(
   }
   SetFinalizedResultFromLegacyResults(results);
   MaybeClearStaleResults();
+  if (stale_info.has_value() && !parameters_.is_speculative) {
+    stale_info_ = std::move(stale_info);
+  }
 
   const bool is_secure_network_error =
       obtained_securely && results.error() != OK;
@@ -493,8 +497,7 @@ void HostResolverManager::ServiceEndpointRequestImpl::
 
 void HostResolverManager::ServiceEndpointRequestImpl::MaybeClearStaleResults() {
   if (parameters_.cache_usage ==
-          ResolveHostParameters::CacheUsage::STALE_ALLOWED_WHILE_REFRESHING &&
-      stale_info_.has_value()) {
+      ResolveHostParameters::CacheUsage::STALE_ALLOWED_WHILE_REFRESHING) {
     stale_endpoints_.clear();
     stale_info_.reset();
   }

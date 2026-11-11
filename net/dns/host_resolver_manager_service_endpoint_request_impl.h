@@ -67,7 +67,8 @@ class HostResolverManager::ServiceEndpointRequestImpl
   void AssignJob(base::SafeRef<Job> job);
   void OnJobCompleted(const HostCache::Entry& results,
                       bool obtained_securely,
-                      ResolutionDetails resolution_details);
+                      ResolutionDetails resolution_details,
+                      std::optional<HostCache::EntryStaleness> stale_info);
   void OnJobCancelled();
   void OnServiceEndpointsChanged();
 

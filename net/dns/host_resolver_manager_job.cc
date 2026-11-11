@@ -1440,7 +1440,8 @@ void HostResolverManager::Job::CompleteRequests(
     bool secure,
     std::optional<TaskType> task_type,
     std::optional<base::TimeDelta> task_completion_delay,
-    std::optional<DohResolutionDetails> doh_details) {
+    std::optional<DohResolutionDetails> doh_details,
+    std::optional<HostCache::EntryStaleness> stale_info) {
   CHECK(resolver_.get());
 
   // A kept-alive Job has no requests, so it would have been cancelled without
@@ -1563,7 +1564,7 @@ void HostResolverManager::Job::CompleteRequests(
     ServiceEndpointRequestImpl* request =
         service_endpoint_requests_.head()->value();
     request->RemoveFromList();
-    request->OnJobCompleted(results, secure, resolution_details);
+    request->OnJobCompleted(results, secure, resolution_details, stale_info);
     if (!resolver_.get()) {
       return;
     }
@@ -1589,7 +1590,8 @@ void HostResolverManager::Job::CompleteRequestsWithoutCache(
     }
   }
   CompleteRequests(results, base::TimeDelta(), false /* allow_cache */,
-                   false /* secure */, task_type, task_completion_delay);
+                   false /* secure */, task_type, task_completion_delay,
+                   /*doh_details=*/std::nullopt, std::move(stale_info));
 }
 
 void HostResolverManager::Job::CompleteRequestsWithError(

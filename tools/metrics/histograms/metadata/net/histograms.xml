@@ -3283,6 +3283,91 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.DNS.OptimisticDns.SSLConnect.Age.{SslOutcome}" units="ms"
+    expires_after="2027-04-06">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The age (elapsed time since insertion into HostCache) of the expired
+    HostCache entry used by an Optimistic DNS TCP connection when an SSL/TLS
+    handshake over that connection {SslOutcome}.
+  </summary>
+  <token key="SslOutcome">
+    <variant name="FailedAndRetriedWithFreshDns"
+        summary="failed and triggered a retry without stale DNS"/>
+    <variant name="Succeeded" summary="succeeded"/>
+  </token>
+</histogram>
+
+<histogram name="Net.DNS.OptimisticDns.SSLConnect.ExpiredBy.{SslOutcome}"
+    units="ms" expires_after="2027-04-06">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    How far past its HostCache expiration time the expired HostCache entry was
+    when an SSL/TLS handshake over an Optimistic DNS TCP connection
+    {SslOutcome}.
+  </summary>
+  <token key="SslOutcome">
+    <variant name="FailedAndRetriedWithFreshDns"
+        summary="failed and triggered a retry without stale DNS"/>
+    <variant name="Succeeded" summary="succeeded"/>
+  </token>
+</histogram>
+
+<histogram name="Net.DNS.OptimisticDns.SSLConnect.Outcome"
+    enum="OptimisticDnsSslConnectionOutcome" expires_after="2027-04-06">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    Records the outcome of an SSL/TLS handshake performed over a TCP connection
+    that was established using stale (Optimistic) DNS before fresh DNS confirmed
+    the endpoints.
+  </summary>
+</histogram>
+
+<histogram
+    name="Net.DNS.OptimisticDns.{OptimisticProtocol}.StaleIpMatchFreshDns.Age.{MatchResult}"
+    units="ms" expires_after="2027-04-06">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The age (elapsed time since insertion into HostCache) of the expired
+    HostCache entry used by an in-flight or completed Optimistic DNS
+    {OptimisticProtocol} connection attempt when fresh DNS results arrive and
+    the target IP address {MatchResult}.
+  </summary>
+  <token key="OptimisticProtocol">
+    <variant name="Quic" summary="QUIC"/>
+    <variant name="Tcp" summary="TCP"/>
+  </token>
+  <token key="MatchResult">
+    <variant name="Diverged" summary="diverged from the fresh DNS results"/>
+    <variant name="Matched" summary="matched the fresh DNS results"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Net.DNS.OptimisticDns.{OptimisticProtocol}.StaleIpMatchFreshDns.ExpiredBy.{MatchResult}"
+    units="ms" expires_after="2027-04-06">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    How far past its HostCache expiration time the expired HostCache entry was
+    when fresh DNS results arrive for an in-flight or completed Optimistic DNS
+    {OptimisticProtocol} connection attempt and the target IP address
+    {MatchResult}.
+  </summary>
+  <token key="OptimisticProtocol">
+    <variant name="Quic" summary="QUIC"/>
+    <variant name="Tcp" summary="TCP"/>
+  </token>
+  <token key="MatchResult">
+    <variant name="Diverged" summary="diverged from the fresh DNS results"/>
+    <variant name="Matched" summary="matched the fresh DNS results"/>
+  </token>
+</histogram>
+
 <histogram name="Net.DNS.ProbeSequence.ConfigChange.Failure.AttemptTime"
     units="ms" expires_after="2024-07-22">
   <owner>awillia@chromium.org</owner>
@@ -3580,6 +3665,172 @@ chromium-metrics-reviews@google.com.
     Breaks down what kinds of local nameservers (if any) are on the DNS config
     when Chrome has tried and failed to upgrade it to DoH from insecure DNS.
   </summary>
+</histogram>
+
+<histogram name="Net.DNS.UsedAnswer.{Protocol}.Age" units="ms"
+    expires_after="2027-04-06">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The age (elapsed time since insertion into HostCache) of the DNS answer
+    ultimately used to establish a {Protocol} connection. Fresh network answers
+    are recorded with an age of 0 ms.
+  </summary>
+  <token key="Protocol">
+    <variant name="Quic" summary="QUIC"/>
+    <variant name="Ssl" summary="SSL/TLS over TCP"/>
+    <variant name="Tcp" summary="TCP"/>
+  </token>
+</histogram>
+
+<histogram name="Net.DNS.UsedAnswer.{Protocol}.Age.{FreshnessVariant}"
+    units="ms" expires_after="2027-04-06">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The age (elapsed time since insertion into HostCache) of the cached DNS
+    answer ultimately used to establish a {Protocol} connection, when the answer
+    was {FreshnessVariant}.
+  </summary>
+  <token key="Protocol">
+    <variant name="Quic" summary="QUIC"/>
+    <variant name="Ssl" summary="SSL/TLS over TCP"/>
+    <variant name="Tcp" summary="TCP"/>
+  </token>
+  <token key="FreshnessVariant">
+    <variant name="ExpiredCacheAfterFreshDnsFailed"
+        summary="an expired HostCache entry used after fresh DNS failed"/>
+    <variant name="ExpiredCacheConfirmedByFreshDns"
+        summary="an expired HostCache entry later confirmed by fresh DNS"/>
+    <variant name="ExpiredCacheDivergedFromFreshDns"
+        summary="an expired HostCache entry whose IP diverged from fresh DNS"/>
+    <variant name="ExpiredCacheFinishedBeforeFreshDns"
+        summary="an expired HostCache entry that finished connecting before
+                 fresh DNS completed"/>
+    <variant name="ValidCache" summary="a valid (non-expired) HostCache entry"/>
+  </token>
+</histogram>
+
+<histogram name="Net.DNS.UsedAnswer.{Protocol}.ExpiredByWireTtl.OverdueBy"
+    units="ms" expires_after="2027-04-06">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    How far past its original wire DNS TTL (`age - original_ttl`) a cached DNS
+    answer was when used to establish a {Protocol} connection. Only recorded
+    when `age &gt; original_ttl`.
+  </summary>
+  <token key="Protocol">
+    <variant name="Quic" summary="QUIC"/>
+    <variant name="Ssl" summary="SSL/TLS over TCP"/>
+    <variant name="Tcp" summary="TCP"/>
+  </token>
+</histogram>
+
+<histogram name="Net.DNS.UsedAnswer.{Protocol}.ExpiredCache.ExpiredBy"
+    units="ms" expires_after="2027-04-06">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    How far past its HostCache expiration time an expired HostCache entry was
+    when ultimately used to establish a {Protocol} connection.
+  </summary>
+  <token key="Protocol">
+    <variant name="Quic" summary="QUIC"/>
+    <variant name="Ssl" summary="SSL/TLS over TCP"/>
+    <variant name="Tcp" summary="TCP"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Net.DNS.UsedAnswer.{Protocol}.ExpiredCache.ExpiredBy.{ExpiredVariant}"
+    units="ms" expires_after="2027-04-06">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    How far past its HostCache expiration time an expired HostCache entry was
+    when ultimately used to establish a {Protocol} connection, for an entry that
+    was {ExpiredVariant}.
+  </summary>
+  <token key="Protocol">
+    <variant name="Quic" summary="QUIC"/>
+    <variant name="Ssl" summary="SSL/TLS over TCP"/>
+    <variant name="Tcp" summary="TCP"/>
+  </token>
+  <token key="ExpiredVariant">
+    <variant name="AfterFreshDnsFailed" summary="used after fresh DNS failed"/>
+    <variant name="ConfirmedByFreshDns" summary="later confirmed by fresh DNS"/>
+    <variant name="DivergedFromFreshDns"
+        summary="used when its IP diverged from fresh DNS"/>
+    <variant name="FinishedBeforeFreshDns"
+        summary="used to finish connecting before fresh DNS completed"/>
+  </token>
+</histogram>
+
+<histogram name="Net.DNS.UsedAnswer.{Protocol}.ExpiredCache.NetworkChanges"
+    units="changes" expires_after="2027-04-06">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The number of network changes that occurred since the expired HostCache
+    entry was inserted into HostCache, recorded when an expired HostCache entry
+    is ultimately used to establish a {Protocol} connection.
+  </summary>
+  <token key="Protocol">
+    <variant name="Quic" summary="QUIC"/>
+    <variant name="Ssl" summary="SSL/TLS over TCP"/>
+    <variant name="Tcp" summary="TCP"/>
+  </token>
+</histogram>
+
+<histogram name="Net.DNS.UsedAnswer.{Protocol}.FreshnessStatus"
+    enum="DnsUsedAnswerFreshnessStatus" expires_after="2027-04-06">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    Classifies the freshness and cache status of the DNS answer ultimately used
+    to establish a {Protocol} connection.
+  </summary>
+  <token key="Protocol">
+    <variant name="Quic" summary="QUIC"/>
+    <variant name="Ssl" summary="SSL/TLS over TCP"/>
+    <variant name="Tcp" summary="TCP"/>
+  </token>
+</histogram>
+
+<histogram name="Net.DNS.UsedAnswer.{Protocol}.IsExpiredByWireTtl"
+    enum="Boolean" expires_after="2027-04-06">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    Whether the DNS answer ultimately used to establish a {Protocol} connection
+    had exceeded its original wire DNS TTL (`age &gt; original_ttl`). This can
+    be true even for valid HostCache hits when the wire TTL was clamped upward
+    (for example, by HostResolverManager::Job). Always recorded as false for
+    fresh network answers; for cached answers, only recorded when both creation
+    time and original wire TTL are known (omitted for system-resolver and
+    disk-restored cache entries).
+  </summary>
+  <token key="Protocol">
+    <variant name="Quic" summary="QUIC"/>
+    <variant name="Ssl" summary="SSL/TLS over TCP"/>
+    <variant name="Tcp" summary="TCP"/>
+  </token>
+</histogram>
+
+<histogram name="Net.DNS.UsedAnswer.{Protocol}.ValidCache.RemainingTtl"
+    units="ms" expires_after="2027-04-06">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The remaining HostCache TTL of a valid (non-expired) HostCache entry when it
+    is used to establish a {Protocol} connection.
+  </summary>
+  <token key="Protocol">
+    <variant name="Quic" summary="QUIC"/>
+    <variant name="Ssl" summary="SSL/TLS over TCP"/>
+    <variant name="Tcp" summary="TCP"/>
+  </token>
 </histogram>
 
 <histogram name="Net.DNS_Resolution_And_TCP_Connection_Latency2" units="ms"

@@ -8,6 +8,7 @@
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/types/optional_util.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/connection_endpoint_metadata.h"
 #include "net/base/features.h"
@@ -197,7 +198,7 @@ ResolveErrorInfo FakeServiceEndpointRequest::GetResolveErrorInfo() {
 
 const HostCache::EntryStaleness* FakeServiceEndpointRequest::GetStaleInfo()
     const {
-  return nullptr;
+  return base::OptionalToPtr(stale_info_);
 }
 
 bool FakeServiceEndpointRequest::IsStaleWhileRefreshing() const {
@@ -211,7 +212,7 @@ void FakeServiceEndpointRequest::ChangeRequestPriority(
 
 std::optional<ResolutionDetails>
 FakeServiceEndpointRequest::GetResolutionDetails() const {
-  return std::nullopt;
+  return resolution_details_;
 }
 
 void FakeServiceEndpointRequest::CompleteAsync(int rv) {
