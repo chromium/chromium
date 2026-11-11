@@ -25,6 +25,7 @@
 // TabUnderlineView currently resides in glic/browser_ui.
 #include "chrome/browser/glic/browser_ui/tab_underline_view.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
@@ -37,13 +38,12 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
-#include "chrome/browser/ui/views/tabs/tab.h"
-#include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
 #include "chrome/common/chrome_features.h"
@@ -75,6 +75,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/view_utils.h"
 
 namespace contextual_tasks {
 
@@ -325,17 +326,28 @@ class ContextualTasksContextManagementInteractiveTestBase
   auto VerifyUnderlinedTabs(const std::set<int>& expected_indices) {
     return Do([this, expected_indices]() {
       EXPECT_TRUE(RunUntilNestable([&]() {
-        auto* tabstrip = BrowserView::GetBrowserViewForBrowser(browser())
-                             ->horizontal_tab_strip_for_testing();
-        if (!tabstrip) {
+        auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+        if (!browser_view || !browser_view->tab_strip_view()) {
           return false;
         }
-        for (int i = 0; i < tabstrip->GetTabCount(); ++i) {
-          auto* tab = tabstrip->tab_at(i);
+        auto* tab_list = TabListInterface::From(browser());
+        if (!tab_list) {
+          return false;
+        }
+        for (int i = 0; i < tab_list->GetTabCount(); ++i) {
+          tabs::TabInterface* tab = tab_list->GetTab(i);
           if (!tab) {
             return false;
           }
-          auto* underline = tab->glic_underline();
+          views::View* tab_anchor =
+              browser_view->tab_strip_view()->GetTabAnchorView(
+                  tab->GetHandle());
+          if (!tab_anchor) {
+            return false;
+          }
+          auto* underline = views::AsViewClass<glic::TabUnderlineView>(
+              tab_anchor->GetViewByElementId(
+                  glic::TabUnderlineView::kGlicTabUnderlineElementId));
           bool is_showing = underline && underline->IsShowing();
           bool should_underline = expected_indices.contains(i);
           if (is_showing != should_underline) {
