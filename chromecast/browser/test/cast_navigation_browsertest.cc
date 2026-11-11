@@ -6,6 +6,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chromecast/browser/test/cast_browser_test.h"
 #include "chromecast/chromecast_buildflags.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "media/base/test_data_util.h"
@@ -92,6 +95,27 @@ class CastNavigationBrowserTest : public CastBrowserTest {
 IN_PROC_BROWSER_TEST_F(CastNavigationBrowserTest, EmptyTest) {
   // Run an entire browser lifecycle to ensure nothing breaks.
   LoadAboutBlank();
+}
+
+IN_PROC_BROWSER_TEST_F(CastNavigationBrowserTest, NoDefaultFocusRing) {
+  content::WebContents* web_contents = NavigateToURL(
+      GURL("data:text/html,<div id=target tabindex=0>target</div>"));
+  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
+  content::SimulateActiveStateForWidget(main_frame, true);
+  main_frame->GetRenderWidgetHost()->Focus();
+
+  // Wait for the page to have focus so that :focus-visible can match.
+  EXPECT_EQ("none", content::EvalJs(main_frame, R"((async () => {
+        if (!document.hasFocus()) {
+          await new Promise(
+              resolve => window.addEventListener('focus', resolve));
+        }
+        const target = document.getElementById('target');
+        target.focus();
+        return target.matches(':focus-visible')
+            ? getComputedStyle(target).outlineStyle
+            : 'not focus-visible';
+      })())"));
 }
 
 // Disabled due to flakiness. See crbug.com/813481.

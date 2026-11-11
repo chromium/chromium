@@ -42,7 +42,11 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
+#include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/web/web_css_origin.h"
+#include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_security_policy.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view.h"
@@ -147,7 +151,13 @@ void CastContentRendererClient::RenderFrameCreated(
 }
 
 void CastContentRendererClient::RunScriptsAtDocumentStart(
-    content::RenderFrame* render_frame) {}
+    content::RenderFrame* render_frame) {
+  // Cast receiver apps draw their own focus indication. Don't draw the default
+  // focus ring, e.g. around a focused full-screen element.
+  render_frame->GetWebFrame()->GetDocument().InsertStyleSheet(
+      blink::WebString::FromAscii(":focus { outline: none; }"),
+      /*key=*/nullptr, blink::WebCssOrigin::kUser);
+}
 
 void CastContentRendererClient::RunScriptsAtDocumentEnd(
     content::RenderFrame* render_frame) {}
