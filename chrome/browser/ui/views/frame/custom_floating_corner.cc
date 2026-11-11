@@ -19,12 +19,6 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/layout_provider.h"
 
-namespace {
-
-constexpr int kStrokeSize = views::Separator::kThickness;
-
-}  // namespace
-
 CustomFloatingCorner::CustomFloatingCorner(
     BrowserView& browser_view,
     CornerOrientation orientation,
@@ -129,8 +123,8 @@ SkPath CustomFloatingCorner::GetBackgroundPath(
   // stroke.
   const bool has_stroke = stroke_.has_value();
   const bool extend_vertical = has_stroke && !is_vertical_window_edge_;
-  const int horizontal = has_stroke ? kStrokeSize : 0;
-  const int vertical = extend_vertical ? kStrokeSize : 0;
+  const int horizontal = has_stroke ? views::Separator::kThickness : 0;
+  const int vertical = extend_vertical ? views::Separator::kThickness : 0;
   gfx::Insets stroke_insets;
 
   // Because we're painting, we have to account for RTL.
@@ -185,8 +179,8 @@ void CustomFloatingCorner::OnPaint(gfx::Canvas* canvas) {
   const bool has_stroke = stroke_ && stroke_->is_visible();
   const bool extend_vertical = has_stroke && !is_vertical_window_edge_;
   const SkVector corner_radius(
-      has_stroke ? width() - kStrokeSize : width(),
-      extend_vertical ? height() - kStrokeSize : height());
+      has_stroke ? width() - views::Separator::kThickness : width(),
+      extend_vertical ? height() - views::Separator::kThickness : height());
 
   canvas->ClipPath(GetBackgroundPath(rect), /*do_anti_alias=*/true);
 
@@ -199,7 +193,7 @@ void CustomFloatingCorner::OnPaint(gfx::Canvas* canvas) {
   // Maybe draw the stroke.
   if (has_stroke) {
     cc::PaintFlags flags;
-    flags.setStrokeWidth(kStrokeSize * 2);
+    flags.setStrokeWidth(views::Separator::kThickness * 2);
     SkColor stroke_color = GetColorProvider()->GetColor(stroke_->color);
     stroke_color = SkColorSetA(
         stroke_color,
@@ -211,32 +205,38 @@ void CustomFloatingCorner::OnPaint(gfx::Canvas* canvas) {
     SkPathBuilder stroke_path;
     switch (ToVisualCorner(orientation_)) {
       case VisualCorner::kTopLeft:
-        stroke_path.moveTo(rect.width(), extend_vertical ? kStrokeSize : 0);
+        stroke_path.moveTo(rect.width(),
+                           extend_vertical ? views::Separator::kThickness : 0);
         stroke_path.arcTo(corner_radius, 0, SkPathBuilder::kSmall_ArcSize,
                           SkPathDirection::kCCW,
-                          SkPoint(kStrokeSize, rect.height()));
+                          SkPoint(views::Separator::kThickness, rect.height()));
         break;
       case VisualCorner::kTopRight:
-        stroke_path.moveTo(rect.width() - kStrokeSize, rect.height());
-        stroke_path.arcTo(corner_radius, 0, SkPathBuilder::kSmall_ArcSize,
-                          SkPathDirection::kCCW,
-                          SkPoint(0, extend_vertical ? kStrokeSize : 0));
-        break;
-      case VisualCorner::kBottomLeft:
-        stroke_path.moveTo(kStrokeSize, 0);
+        stroke_path.moveTo(rect.width() - views::Separator::kThickness,
+                           rect.height());
         stroke_path.arcTo(
             corner_radius, 0, SkPathBuilder::kSmall_ArcSize,
             SkPathDirection::kCCW,
-            SkPoint(rect.width(), extend_vertical ? rect.height() - kStrokeSize
-                                                  : rect.height()));
+            SkPoint(0, extend_vertical ? views::Separator::kThickness : 0));
+        break;
+      case VisualCorner::kBottomLeft:
+        stroke_path.moveTo(views::Separator::kThickness, 0);
+        stroke_path.arcTo(
+            corner_radius, 0, SkPathBuilder::kSmall_ArcSize,
+            SkPathDirection::kCCW,
+            SkPoint(rect.width(),
+                    extend_vertical
+                        ? rect.height() - views::Separator::kThickness
+                        : rect.height()));
         break;
       case VisualCorner::kBottomRight:
-        stroke_path.moveTo(rect.width() - kStrokeSize, 0);
+        stroke_path.moveTo(rect.width() - views::Separator::kThickness, 0);
         stroke_path.arcTo(
             corner_radius, 0, SkPathBuilder::kSmall_ArcSize,
             SkPathDirection::kCW,
-            SkPoint(0, extend_vertical ? rect.height() - kStrokeSize
-                                       : rect.height()));
+            SkPoint(0, extend_vertical
+                           ? rect.height() - views::Separator::kThickness
+                           : rect.height()));
         break;
     }
     canvas->DrawPath(stroke_path.detach(), flags);

@@ -1162,6 +1162,7 @@ source_set("custom_floating_corner") {
 
 source_set("custom_floating_corner_impl") {
   sources = [ "custom_floating_corner.cc" ]
+  configs += [ "//build/config/compiler:wglobal_constructors" ]
   public_deps = [ ":custom_floating_corner" ]
   deps = [
     "//base",
