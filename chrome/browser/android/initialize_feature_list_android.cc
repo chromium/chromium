@@ -5,6 +5,7 @@
 #include "chrome/browser/android/initialize_feature_list_android.h"
 
 #include "base/allocator/partition_alloc_support.h"
+#include "base/android/background_thread_pool_field_trial.h"
 #include "base/profiler/thread_group_profiler.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
@@ -27,6 +28,9 @@ namespace variations::android {
 
 static void JNI_InitializeFeatureList_InitializeFeatureList(JNIEnv* env) {
   chrome::RegisterPathProvider();
+  // Must run before ThreadPoolInstance::Create() and ReconfigureEarlyish()
+  // read the cached trial configuration.
+  base::android::BackgroundThreadPoolFieldTrial::Initialize();
   // The ThreadGroupProfiler client must be set before thread pool is created.
   base::ThreadGroupProfiler::SetClient(
       std::make_unique<ChromeThreadGroupProfilerClient>());

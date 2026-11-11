@@ -44,6 +44,10 @@ std::optional<BackgroundThreadPoolFieldTrial::Configuration>
     BackgroundThreadPoolFieldTrial::s_configuration_;
 
 void BackgroundThreadPoolFieldTrial::Initialize() {
+  if (s_configuration_.has_value()) {
+    DCHECK_EQ(*s_configuration_, ReadConfigurationFromCommandLine());
+    return;
+  }
   s_configuration_ = ReadConfigurationFromCommandLine();
 }
 

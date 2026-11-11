@@ -20,8 +20,6 @@ import com.google.android.material.color.DynamicColors;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.BaseSwitches;
-import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.FileProviderUtils;
@@ -336,15 +334,7 @@ public class ProcessInitializationHandler {
      * that the command line flags are setup before ContentMainRunner is initialized.
      */
     public final void onPostNativeStartup() {
-        if (ChromeFeatureList.sBackgroundThreadPoolFieldTrial.isEnabled()) {
-            int configValue = ChromeFeatureList.sBackgroundThreadPoolFieldTrialConfig.getValue();
-            if (configValue > 0) {
-                CommandLine.getInstance()
-                        .appendSwitchWithValue(
-                                BaseSwitches.BACKGROUND_THREAD_POOL_FIELD_TRIAL,
-                                String.valueOf(configValue));
-            }
-        }
+        InitializeFeatureList.setupBackgroundThreadPoolFieldTrial();
     }
 
     /**
