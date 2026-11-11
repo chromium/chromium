@@ -196,6 +196,8 @@ script_test("mac_signing_tests") {
                root_build_dir) + ")" ]
 
   data = mac_signing_sources + [
+           "generate_dsstore.py",
+           "generate_dsstore_test.py",
            "signing/commands_test.py",
            "signing/driver_test.py",
            "signing/model_test.py",
@@ -209,6 +211,10 @@ script_test("mac_signing_tests") {
            "signing/test_config.py",
            "//chrome/updater/mac/signing/pipeline.py",
            "//third_party/catapult/third_party/typ/",
+           "//third_party/ds_store/ds_store.dist-info/",
+           "//third_party/ds_store/src/src/ds_store/",
+           "//third_party/mac_alias/mac_alias.dist-info/",
+           "//third_party/mac_alias/src/src/mac_alias/",
          ]
 
   data_deps = [

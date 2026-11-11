@@ -21,11 +21,20 @@ _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 # Path to src/ root.
 _SRC_ROOT = os.path.abspath(os.path.join(_SCRIPT_DIR, "../../.."))
 
-# Paths to vendored libraries.
-_DS_STORE_PATH = os.path.join(_SRC_ROOT, "third_party/ds_store/src/src")
-_MAC_ALIAS_PATH = os.path.join(_SRC_ROOT, "third_party/mac_alias/src/src")
+# Paths to vendored libraries and their stub .dist-info metadata directories.
+_DS_STORE_METADATA_PATH = os.path.join(_SRC_ROOT, "third_party/ds_store")
+_DS_STORE_PATH = os.path.join(_DS_STORE_METADATA_PATH, "src/src")
+_MAC_ALIAS_METADATA_PATH = os.path.join(_SRC_ROOT, "third_party/mac_alias")
+_MAC_ALIAS_PATH = os.path.join(_MAC_ALIAS_METADATA_PATH, "src/src")
 
-sys.path.extend((_DS_STORE_PATH, _MAC_ALIAS_PATH))
+sys.path.extend(
+    (
+        _DS_STORE_METADATA_PATH,
+        _DS_STORE_PATH,
+        _MAC_ALIAS_METADATA_PATH,
+        _MAC_ALIAS_PATH,
+    )
+)
 
 from ds_store import DSStore  # noqa: E402
 from mac_alias import (  # noqa: E402

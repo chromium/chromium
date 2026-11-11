@@ -2232,7 +2232,7 @@ deps = {
     Var('chromium_git') + '/devtools/devtools-frontend' + '@' + Var('devtools_frontend_revision'),
 
   'src/third_party/ds_store/src':
-    Var('chromium_git') + '/external/github.com/dmgbuild/ds_store.git' + '@' + '7cf6d586e4aee8a35f12e1136d6956a334ec7301',
+    Var('chromium_git') + '/external/github.com/dmgbuild/ds_store.git' + '@' + 'd1749706bde0b1b7a3a0f3528df79322b5c69e8e',
 
   'src/third_party/dragonbox/src':
     Var('chromium_git') + '/external/github.com/jk-jeon/dragonbox.git' + '@' + 'beeeef91cf6fef89a4d4ba5e95d47ca64ccb3a44',
@@ -2712,7 +2712,7 @@ deps = {
   },
 
   'src/third_party/mac_alias/src': {
-      'url': Var('chromium_git') + '/external/github.com/dmgbuild/mac_alias.git' + '@' + '79736a993160af8f1375fd4a55944231d87d46e9',
+      'url': Var('chromium_git') + '/external/github.com/dmgbuild/mac_alias.git' + '@' + '9b5bdf511f82cace8411dd1f3f75bf9731024765',
   },
 
   'src/third_party/material_color_utilities/src': {
