@@ -31,6 +31,7 @@ StubDigitalIdentityProvider::ShowDigitalIdentityInterstitial(
 void StubDigitalIdentityProvider::Get(WebContents*,
                                       const url::Origin& origin,
                                       base::ValueView request,
+                                      UiWarningLevel warning_level,
                                       DigitalIdentityCallback) {}
 
 void StubDigitalIdentityProvider::Create(WebContents*,

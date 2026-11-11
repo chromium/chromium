@@ -57,6 +57,7 @@ class TestDigitalIdentityProvider final
   void Get(content::WebContents* web_contents,
            const url::Origin& origin,
            base::ValueView request,
+           UiWarningLevel warning_level,
            DigitalIdentityCallback callback) override {
     did_request_credential_ = true;
 
@@ -238,6 +239,7 @@ class TestQrCodeDigitalIdentityProvider
   void Get(content::WebContents* web_contents,
            const url::Origin& origin,
            base::ValueView request,
+           UiWarningLevel warning_level,
            DigitalIdentityCallback callback) override {
     set_web_contents_for_testing(web_contents->GetWeakPtr());
     set_rp_origin_for_testing(origin);

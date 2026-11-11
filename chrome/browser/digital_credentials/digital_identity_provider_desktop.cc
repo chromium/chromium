@@ -133,7 +133,9 @@ DigitalIdentityProviderDesktop::ShowDigitalIdentityInterstitial(
 void DigitalIdentityProviderDesktop::Get(content::WebContents* web_contents,
                                          const url::Origin& rp_origin,
                                          base::ValueView request,
+                                         UiWarningLevel warning_level,
                                          DigitalIdentityCallback callback) {
+  // TODO(crbug.com/409836575): Make use of `warning_level`.
   Transact(web_contents, RequestInfo::RequestType::kGet, rp_origin, request,
            std::move(callback));
 }

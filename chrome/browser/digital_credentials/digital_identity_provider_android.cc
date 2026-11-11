@@ -79,7 +79,9 @@ DigitalIdentityProviderAndroid::ShowDigitalIdentityInterstitial(
 void DigitalIdentityProviderAndroid::Get(content::WebContents* web_contents,
                                          const url::Origin& origin,
                                          base::ValueView request,
+                                         UiWarningLevel warning_level,
                                          DigitalIdentityCallback callback) {
+  // TODO(crbug.com/409836575): Make use of `warning_level`.
   TRACE_EVENT("content.digitalcredentials",
               "DigitalIdentityProviderAndroid::Get");
   std::optional<std::string> request_str = base::WriteJson(request);

@@ -57,6 +57,14 @@ class CONTENT_EXPORT DigitalIdentityProvider {
     kMaxValue = kErrorInvalidJson,
   };
 
+  // A Java counterpart will be generated for this enum.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.content_public.browser.webid
+  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: DigitalIdentityUiWarningLevel
+  enum class UiWarningLevel {
+    kHintNoIssues = 0,
+    kHintCaution = 1,
+  };
+
   virtual ~DigitalIdentityProvider();
 
   DigitalIdentityProvider(const DigitalIdentityProvider&) = delete;
@@ -92,6 +100,7 @@ class CONTENT_EXPORT DigitalIdentityProvider {
   virtual void Get(WebContents* web_contents,
                    const url::Origin& origin,
                    base::ValueView request,
+                   UiWarningLevel warning_level,
                    DigitalIdentityCallback callback) = 0;
 
   // Coordinates the call to issue a digital credential between the web and

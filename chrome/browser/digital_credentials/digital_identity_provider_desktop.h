@@ -44,6 +44,7 @@ class DigitalIdentityProviderDesktop : public content::DigitalIdentityProvider {
   void Get(content::WebContents* web_contents,
            const url::Origin& rp_origin,
            base::ValueView request,
+           UiWarningLevel warning_level,
            DigitalIdentityCallback callback) override;
   void Create(content::WebContents* web_contents,
               const url::Origin& rp_origin,

@@ -37,6 +37,7 @@ class MockDigitalIdentityProvider : public DigitalIdentityProvider {
               (WebContents*,
                const url::Origin& origin,
                base::ValueView request,
+               UiWarningLevel warning_level,
                DigitalIdentityCallback),
               (override));
   MOCK_METHOD(void,

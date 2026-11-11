@@ -28,6 +28,7 @@ class StubDigitalIdentityProvider : public DigitalIdentityProvider {
   void Get(WebContents*,
            const url::Origin& origin,
            base::ValueView request,
+           UiWarningLevel warning_level,
            DigitalIdentityCallback) override;
   void Create(WebContents*,
               const url::Origin& origin,

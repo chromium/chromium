@@ -44,6 +44,7 @@ using RequestStatusForMetrics =
     content::DigitalIdentityProvider::RequestStatusForMetrics;
 using DigitalIdentityInterstitialAbortCallback =
     content::DigitalIdentityProvider::DigitalIdentityInterstitialAbortCallback;
+using UiWarningLevel = content::DigitalIdentityProvider::UiWarningLevel;
 
 namespace content {
 namespace {
@@ -394,6 +395,27 @@ void RecordOpenId4VpResponseMode(const base::Value& request) {
       "Blink.DigitalIdentityRequest.OpenId4VpResponseMode", mode);
 }
 
+std::optional<InterstitialType> ComputeInterstitialTypeForWarningLevel(
+    UiWarningLevel warning_level) {
+  std::string dialog_param_value = base::GetFieldTrialParamValueByFeature(
+      features::kWebIdentityDigitalCredentials, kDigitalIdentityDialogParam);
+  if (dialog_param_value == kDigitalIdentityNoDialogParamValue) {
+    return std::nullopt;
+  }
+
+  if (dialog_param_value == kDigitalIdentityHighRiskDialogParamValue) {
+    return InterstitialType::kHighRisk;
+  }
+
+  if (dialog_param_value == kDigitalIdentityLowRiskDialogParamValue) {
+    return InterstitialType::kLowRisk;
+  }
+
+  return warning_level == UiWarningLevel::kHintCaution
+             ? std::optional<InterstitialType>(InterstitialType::kLowRisk)
+             : std::nullopt;
+}
+
 }  // anonymous namespace
 
 // static
@@ -411,28 +433,13 @@ DigitalIdentityRequestImpl::CreateInstance(
 }
 
 // static
-std::optional<InterstitialType>
-DigitalIdentityRequestImpl::ComputeInterstitialType(
+UiWarningLevel DigitalIdentityRequestImpl::ComputeUiWarningLevel(
     RenderFrameHost& render_frame_host,
-    const DigitalIdentityProvider* provider,
+    const DigitalIdentityProvider& provider,
     const std::vector<blink::mojom::DigitalCredentialGetRequestPtr>&
         digital_credential_requests) {
-  std::string dialog_param_value = base::GetFieldTrialParamValueByFeature(
-      features::kWebIdentityDigitalCredentials, kDigitalIdentityDialogParam);
-  if (dialog_param_value == kDigitalIdentityNoDialogParamValue) {
-    return std::nullopt;
-  }
-
-  if (dialog_param_value == kDigitalIdentityHighRiskDialogParamValue) {
-    return InterstitialType::kHighRisk;
-  }
-
-  if (dialog_param_value == kDigitalIdentityLowRiskDialogParamValue) {
-    return InterstitialType::kLowRisk;
-  }
-
-  if (provider->IsLastCommittedOriginLowRisk(render_frame_host)) {
-    return std::nullopt;
+  if (provider.IsLastCommittedOriginLowRisk(render_frame_host)) {
+    return UiWarningLevel::kHintNoIssues;
   }
   return std::ranges::all_of(
              digital_credential_requests,
@@ -440,8 +447,8 @@ DigitalIdentityRequestImpl::ComputeInterstitialType(
                return CanRequestCredentialBypassInterstitial(request->protocol,
                                                              request->data);
              })
-             ? std::nullopt
-             : std::optional<InterstitialType>(InterstitialType::kLowRisk);
+             ? UiWarningLevel::kHintNoIssues
+             : UiWarningLevel::kHintCaution;
 }
 
 DigitalIdentityRequestImpl::DigitalIdentityRequestImpl(
@@ -663,12 +670,14 @@ void DigitalIdentityRequestImpl::Get(
     return;
   }
 
-  std::optional<InterstitialType> interstitial_type = ComputeInterstitialType(
-      render_frame_host(), provider_.get(), digital_credential_requests);
+  UiWarningLevel warning_level = ComputeUiWarningLevel(
+      render_frame_host(), *provider_, digital_credential_requests);
+  std::optional<InterstitialType> interstitial_type =
+      ComputeInterstitialTypeForWarningLevel(warning_level);
 
   base::Value request_to_send = BuildGetRequest(digital_credential_requests);
   if (!interstitial_type) {
-    OnInterstitialDone(std::move(request_to_send),
+    OnInterstitialDone(std::move(request_to_send), warning_level,
                        RequestStatusForMetrics::kSuccess);
     return;
   }
@@ -683,8 +692,8 @@ void DigitalIdentityRequestImpl::Get(
       *WebContents::FromRenderFrameHost(&render_frame_host()), origin(),
       *interstitial_type,
       base::BindOnce(&DigitalIdentityRequestImpl::OnInterstitialDone,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(request_to_send)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(request_to_send),
+                     warning_level));
 
   if (!weak_this) {
     return;
@@ -815,6 +824,7 @@ void DigitalIdentityRequestImpl::Abort() {
 
 void DigitalIdentityRequestImpl::OnInterstitialDone(
     base::Value request_to_send,
+    UiWarningLevel warning_level,
     RequestStatusForMetrics status_after_interstitial) {
   if (status_after_interstitial != RequestStatusForMetrics::kSuccess) {
     CompleteRequestWithError(status_after_interstitial);
@@ -822,7 +832,7 @@ void DigitalIdentityRequestImpl::OnInterstitialDone(
   }
 
   provider_->Get(WebContents::FromRenderFrameHost(&render_frame_host()),
-                 origin(), request_to_send,
+                 origin(), request_to_send, warning_level,
                  base::BindOnce(&DigitalIdentityRequestImpl::CompleteRequest,
                                 weak_ptr_factory_.GetWeakPtr()));
 }

@@ -51,6 +51,7 @@ class DigitalIdentityProviderAndroid : public content::DigitalIdentityProvider {
   void Get(content::WebContents* web_contents,
            const url::Origin& origin,
            base::ValueView request,
+           UiWarningLevel warning_level,
            DigitalIdentityCallback callback) override;
   void Create(content::WebContents* web_contents,
               const url::Origin& origin,

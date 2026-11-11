@@ -1286,8 +1286,10 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
   // JSON comparison in IsJson below.
   base::RemoveChars(request, "\n ", &json);
 
-  EXPECT_CALL(*digital_identity_provider, Get(_, _, JsonMatches(json), _))
-      .WillOnce(WithArg<3>(
+  EXPECT_CALL(*digital_identity_provider,
+              Get(_, _, JsonMatches(json),
+                  DigitalIdentityProvider::UiWarningLevel::kHintCaution, _))
+      .WillOnce(WithArg<4>(
           [&kIdentityProviderResponse](
               DigitalIdentityProvider::DigitalIdentityCallback callback) {
             std::move(callback).Run(DigitalCredential(
@@ -1312,7 +1314,7 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
           .value();
 
   EXPECT_CALL(*digital_identity_provider, Get)
-      .WillOnce(WithArg<3>(
+      .WillOnce(WithArg<4>(
           [&](DigitalIdentityProvider::DigitalIdentityCallback callback) {
             EXPECT_EQ(
                 "NotAllowedError: Only one navigator.credentials.get/create "
@@ -1336,7 +1338,7 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
           test_browser_client_->GetDigitalIdentityProviderForTests());
 
   EXPECT_CALL(*digital_identity_provider, Get)
-      .WillOnce(WithArg<3>(
+      .WillOnce(WithArg<4>(
           [&](DigitalIdentityProvider::DigitalIdentityCallback callback) {
             std::move(callback).Run(base::unexpected(
                 DigitalIdentityProvider::RequestStatusForMetrics::
@@ -1359,7 +1361,7 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
           test_browser_client_->GetDigitalIdentityProviderForTests());
 
   EXPECT_CALL(*digital_identity_provider, Get)
-      .WillOnce(WithArg<3>(
+      .WillOnce(WithArg<4>(
           [](DigitalIdentityProvider::DigitalIdentityCallback callback) {
             std::move(callback).Run(DigitalCredential(
                 "openid4vp",

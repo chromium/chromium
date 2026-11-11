@@ -40,11 +40,11 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
       RenderFrameHost&,
       mojo::PendingReceiver<blink::mojom::DigitalIdentityRequest>);
 
-  // Returns the type of interstitial to show based on the request contents and
-  // the origin of the request.
-  static std::optional<DigitalIdentityInterstitialType> ComputeInterstitialType(
+  // Returns the UI warning level to hint to the credential provider based on
+  // the request contents and the origin of the request.
+  static DigitalIdentityProvider::UiWarningLevel ComputeUiWarningLevel(
       RenderFrameHost& render_frame_host,
-      const DigitalIdentityProvider* provider,
+      const DigitalIdentityProvider& provider,
       const std::vector<blink::mojom::DigitalCredentialGetRequestPtr>&
           digital_credential_requests);
 
@@ -80,6 +80,7 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
   // Called when the user has fulfilled the interstitial requirement. Will be
   // called immediately in Get() if no interstitial is needed.
   void OnInterstitialDone(base::Value request_to_send,
+                          DigitalIdentityProvider::UiWarningLevel warning_level,
                           DigitalIdentityProvider::RequestStatusForMetrics
                               status_after_interstitial);
 

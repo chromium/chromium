@@ -49,6 +49,7 @@ using testing::Optional;
 using testing::WithArg;
 
 using InterstitialType = content::DigitalIdentityInterstitialType;
+using UiWarningLevel = content::DigitalIdentityProvider::UiWarningLevel;
 using DigitalCredentialCreateRequestPtr =
     blink::mojom::DigitalCredentialCreateRequestPtr;
 using DigitalCredentialCreateRequest =
@@ -867,56 +868,54 @@ bool SetDCQLPathItem(base::Value& to_modify,
 
 }  // anonymous namespace
 
-class DigitalIdentityRequestImplInterstitialTest
+class DigitalIdentityRequestImplUiWarningLevelTest
     : public RenderViewHostTestHarness {
  public:
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
     NavigateAndCommit(GURL("https://example.com"));
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kWebIdentityDigitalCredentials, {{"dialog", ""}});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kWebIdentityDigitalCredentials);
   }
 
-  std::optional<InterstitialType> ComputeInterstitialType(
-      const std::string& protocol,
-      base::Value request_data,
-      bool are_origins_low_risk = false) {
-    auto provider = std::make_unique<TestDigitalIdentityProviderWithCustomRisk>(
-        are_origins_low_risk);
+  UiWarningLevel ComputeUiWarningLevel(const std::string& protocol,
+                                       base::Value request_data,
+                                       bool are_origins_low_risk = false) {
+    TestDigitalIdentityProviderWithCustomRisk provider(are_origins_low_risk);
     DigitalCredentialGetRequestPtr digital_credential_request =
         DigitalCredentialGetRequest::New();
     digital_credential_request->protocol = protocol;
     digital_credential_request->data = std::move(request_data);
     std::vector<DigitalCredentialGetRequestPtr> requests;
     requests.emplace_back(std::move(digital_credential_request));
-    return DigitalIdentityRequestImpl::ComputeInterstitialType(
-        *main_rfh(), provider.get(), std::move(requests));
+    return DigitalIdentityRequestImpl::ComputeUiWarningLevel(
+        *main_rfh(), provider, std::move(requests));
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpProtocolDCQL_ComputeInterstitialType_OnlyAgeOver) {
-  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol,
-                                    GenerateOnlyAgeOpenid4VpRequestWithDCQL()),
-            std::nullopt);
+TEST_F(DigitalIdentityRequestImplUiWarningLevelTest,
+       Openid4VpProtocolDCQL_ComputeUiWarningLevel_OnlyAgeOver) {
+  EXPECT_EQ(ComputeUiWarningLevel(kOpenid4vpProtocol,
+                                  GenerateOnlyAgeOpenid4VpRequestWithDCQL()),
+            UiWarningLevel::kHintNoIssues);
 }
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpProtocolDCQL_ComputeInterstitialType_WrongFormat) {
+TEST_F(DigitalIdentityRequestImplUiWarningLevelTest,
+       Openid4VpProtocolDCQL_ComputeUiWarningLevel_WrongFormat) {
   base::Value request = GenerateOnlyAgeOpenid4VpRequestWithDCQL();
   base::Value* credentials = FindValueWithKey(request, "credentials");
   ASSERT_TRUE(IsNonEmptyList(credentials));
   credentials->GetList().front().GetDict().Set("format", "invalid_format");
 
-  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)),
-            InterstitialType::kLowRisk);
+  EXPECT_EQ(ComputeUiWarningLevel(kOpenid4vpProtocol, std::move(request)),
+            UiWarningLevel::kHintCaution);
 }
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpProtocolDCQL_ComputeInterstitialType_WrongDocType) {
+TEST_F(DigitalIdentityRequestImplUiWarningLevelTest,
+       Openid4VpProtocolDCQL_ComputeUiWarningLevel_WrongDocType) {
   base::Value request = GenerateOnlyAgeOpenid4VpRequestWithDCQL();
   base::Value* credentials = FindValueWithKey(request, "credentials");
   ASSERT_TRUE(IsNonEmptyList(credentials));
@@ -924,12 +923,12 @@ TEST_F(DigitalIdentityRequestImplInterstitialTest,
   ASSERT_TRUE(meta && meta->is_dict());
   meta->GetDict().Set("doctype_value", "invalid_doctype");
 
-  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)),
-            InterstitialType::kLowRisk);
+  EXPECT_EQ(ComputeUiWarningLevel(kOpenid4vpProtocol, std::move(request)),
+            UiWarningLevel::kHintCaution);
 }
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpProtocolDCQL_ComputeInterstitialType_WrongNamespace) {
+TEST_F(DigitalIdentityRequestImplUiWarningLevelTest,
+       Openid4VpProtocolDCQL_ComputeUiWarningLevel_WrongNamespace) {
   base::Value request = GenerateOnlyAgeOpenid4VpRequestWithDCQL();
   base::Value* credentials = FindValueWithKey(request, "credentials");
   ASSERT_TRUE(IsNonEmptyList(credentials));
@@ -940,54 +939,54 @@ TEST_F(DigitalIdentityRequestImplInterstitialTest,
   ASSERT_TRUE(IsNonEmptyList(paths));
   paths->GetList().front() = base::Value("invalid_namespace");
 
-  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)),
-            InterstitialType::kLowRisk);
+  EXPECT_EQ(ComputeUiWarningLevel(kOpenid4vpProtocol, std::move(request)),
+            UiWarningLevel::kHintCaution);
 }
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpProtocolDCQL_ComputeInterstitialType_OnlyAgeBirthYear) {
+TEST_F(DigitalIdentityRequestImplUiWarningLevelTest,
+       Openid4VpProtocolDCQL_ComputeUiWarningLevel_OnlyAgeBirthYear) {
   base::Value request = GenerateOnlyAgeOpenid4VpRequestWithDCQL();
   ASSERT_TRUE(SetDCQLPathItem(request, "age_birth_year"));
-  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)),
-            std::nullopt);
+  EXPECT_EQ(ComputeUiWarningLevel(kOpenid4vpProtocol, std::move(request)),
+            UiWarningLevel::kHintNoIssues);
 }
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpProtocolDCQL_ComputeInterstitialType_OnlyBirthDate) {
+TEST_F(DigitalIdentityRequestImplUiWarningLevelTest,
+       Openid4VpProtocolDCQL_ComputeUiWarningLevel_OnlyBirthDate) {
   base::Value request = GenerateOnlyAgeOpenid4VpRequestWithDCQL();
   ASSERT_TRUE(SetDCQLPathItem(request, "birth_date"));
-  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)),
-            std::nullopt);
+  EXPECT_EQ(ComputeUiWarningLevel(kOpenid4vpProtocol, std::move(request)),
+            UiWarningLevel::kHintNoIssues);
 }
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpProtocolDCQL_ComputeInterstitialType_GivenName) {
+TEST_F(DigitalIdentityRequestImplUiWarningLevelTest,
+       Openid4VpProtocolDCQL_ComputeUiWarningLevel_GivenName) {
   base::Value request = GenerateOnlyAgeOpenid4VpRequestWithDCQL();
   ASSERT_TRUE(SetDCQLPathItem(request, "given_name"));
-  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)),
-            InterstitialType::kLowRisk);
+  EXPECT_EQ(ComputeUiWarningLevel(kOpenid4vpProtocol, std::move(request)),
+            UiWarningLevel::kHintCaution);
 }
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpProtocolDCQL_ComputeInterstitialType_EmptyPathList) {
+TEST_F(DigitalIdentityRequestImplUiWarningLevelTest,
+       Openid4VpProtocolDCQL_ComputeUiWarningLevel_EmptyPathList) {
   base::Value request = GenerateOnlyAgeOpenid4VpRequestWithDCQL();
   base::Value* paths = FindValueWithKey(request, "path");
   ASSERT_TRUE(IsNonEmptyList(paths));
   paths->GetList().resize(0);
 
-  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)),
-            InterstitialType::kLowRisk);
+  EXPECT_EQ(ComputeUiWarningLevel(kOpenid4vpProtocol, std::move(request)),
+            UiWarningLevel::kHintCaution);
 }
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpUnsignedProtocolDCQL_ComputeInterstitialType_OnlyAgeOver) {
-  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpUnsignedProtocol,
-                                    GenerateOnlyAgeOpenid4VpRequestWithDCQL()),
-            std::nullopt);
+TEST_F(DigitalIdentityRequestImplUiWarningLevelTest,
+       Openid4VpUnsignedProtocolDCQL_ComputeUiWarningLevel_OnlyAgeOver) {
+  EXPECT_EQ(ComputeUiWarningLevel(kOpenid4vpUnsignedProtocol,
+                                  GenerateOnlyAgeOpenid4VpRequestWithDCQL()),
+            UiWarningLevel::kHintNoIssues);
 }
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpProtocolDCQL_ComputeInterstitialType_GivenNameAndAgeOver) {
+TEST_F(DigitalIdentityRequestImplUiWarningLevelTest,
+       Openid4VpProtocolDCQL_ComputeUiWarningLevel_GivenNameAndAgeOver) {
   base::Value request = ParseJsonAndCheck(R"({
   "response_type": "vp_token",
   "response_mode": "dc_api",
@@ -1018,12 +1017,12 @@ TEST_F(DigitalIdentityRequestImplInterstitialTest,
     ]
   }
 })");
-  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)),
-            InterstitialType::kLowRisk);
+  EXPECT_EQ(ComputeUiWarningLevel(kOpenid4vpProtocol, std::move(request)),
+            UiWarningLevel::kHintCaution);
 }
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpProtocolDCQL_ComputeInterstitialType_MalformedRequest) {
+TEST_F(DigitalIdentityRequestImplUiWarningLevelTest,
+       Openid4VpProtocolDCQL_ComputeUiWarningLevel_MalformedRequest) {
   // Malformed request that's missing the claim_name entry.
   base::Value malformed_request = ParseJsonAndCheck(R"({
   "response_type": "vp_token",
@@ -1048,186 +1047,182 @@ TEST_F(DigitalIdentityRequestImplInterstitialTest,
   }
 })");
   EXPECT_EQ(
-      ComputeInterstitialType(kOpenid4vpProtocol, std::move(malformed_request)),
-      InterstitialType::kLowRisk);
+      ComputeUiWarningLevel(kOpenid4vpProtocol, std::move(malformed_request)),
+      UiWarningLevel::kHintCaution);
 }
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpProtocolDCQL_ComputeInterstitialType_VerifyPhoneNumber) {
-  EXPECT_EQ(
-      ComputeInterstitialType(kOpenid4vpProtocol,
-                              GenerateVerifyPhoneNumberOpenid4VpRequest()),
-      std::nullopt);
+TEST_F(DigitalIdentityRequestImplUiWarningLevelTest,
+       Openid4VpProtocolDCQL_ComputeUiWarningLevel_VerifyPhoneNumber) {
+  EXPECT_EQ(ComputeUiWarningLevel(kOpenid4vpProtocol,
+                                  GenerateVerifyPhoneNumberOpenid4VpRequest()),
+            UiWarningLevel::kHintNoIssues);
 }
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpProtocolDCQL_ComputeInterstitialType_GetPhoneNumber) {
-  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol,
-                                    GenerateGetPhoneNumberOpenid4VpRequest()),
-            std::nullopt);
+TEST_F(DigitalIdentityRequestImplUiWarningLevelTest,
+       Openid4VpProtocolDCQL_ComputeUiWarningLevel_GetPhoneNumber) {
+  EXPECT_EQ(ComputeUiWarningLevel(kOpenid4vpProtocol,
+                                  GenerateGetPhoneNumberOpenid4VpRequest()),
+            UiWarningLevel::kHintNoIssues);
 }
 
 TEST_F(
-    DigitalIdentityRequestImplInterstitialTest,
-    Openid4VpProtocolDCQL_ComputeInterstitialType_GetPhoneNumberTestSingleSim) {
-  EXPECT_EQ(ComputeInterstitialType(
+    DigitalIdentityRequestImplUiWarningLevelTest,
+    Openid4VpProtocolDCQL_ComputeUiWarningLevel_GetPhoneNumberTestSingleSim) {
+  EXPECT_EQ(ComputeUiWarningLevel(
                 kOpenid4vpProtocol,
                 GenerateGetPhoneNumberTestSingleSimOpenid4VpRequest()),
-            std::nullopt);
+            UiWarningLevel::kHintNoIssues);
 }
 
-TEST_F(
-    DigitalIdentityRequestImplInterstitialTest,
-    Openid4VpProtocolDCQL_ComputeInterstitialType_GetPhoneNumberTestMultiSim) {
-  EXPECT_EQ(ComputeInterstitialType(
+TEST_F(DigitalIdentityRequestImplUiWarningLevelTest,
+       Openid4VpProtocolDCQL_ComputeUiWarningLevel_GetPhoneNumberTestMultiSim) {
+  EXPECT_EQ(ComputeUiWarningLevel(
                 kOpenid4vpProtocol,
                 GenerateGetPhoneNumberTestMultiSimOpenid4VpRequest()),
-            std::nullopt);
+            UiWarningLevel::kHintNoIssues);
 }
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpProtocolDCQL_ComputeInterstitialType_DpcExample1) {
-  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol, GenerateDpcExample1()),
-            std::nullopt);
+TEST_F(DigitalIdentityRequestImplUiWarningLevelTest,
+       Openid4VpProtocolDCQL_ComputeUiWarningLevel_DpcExample1) {
+  EXPECT_EQ(ComputeUiWarningLevel(kOpenid4vpProtocol, GenerateDpcExample1()),
+            UiWarningLevel::kHintNoIssues);
 }
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpProtocolDCQL_ComputeInterstitialType_DpcExample2) {
-  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol, GenerateDpcExample2()),
-            std::nullopt);
+TEST_F(DigitalIdentityRequestImplUiWarningLevelTest,
+       Openid4VpProtocolDCQL_ComputeUiWarningLevel_DpcExample2) {
+  EXPECT_EQ(ComputeUiWarningLevel(kOpenid4vpProtocol, GenerateDpcExample2()),
+            UiWarningLevel::kHintNoIssues);
 }
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpProtocolDCQL_ComputeInterstitialType_DpcExample3) {
-  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol, GenerateDpcExample3()),
-            std::nullopt);
+TEST_F(DigitalIdentityRequestImplUiWarningLevelTest,
+       Openid4VpProtocolDCQL_ComputeUiWarningLevel_DpcExample3) {
+  EXPECT_EQ(ComputeUiWarningLevel(kOpenid4vpProtocol, GenerateDpcExample3()),
+            UiWarningLevel::kHintNoIssues);
 }
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpProtocolDCQL_ComputeInterstitialType_DpcExample1WithOtherData) {
-  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol,
-                                    GenerateDpcExample1WithOtherData()),
-            InterstitialType::kLowRisk);
+TEST_F(DigitalIdentityRequestImplUiWarningLevelTest,
+       Openid4VpProtocolDCQL_ComputeUiWarningLevel_DpcExample1WithOtherData) {
+  EXPECT_EQ(ComputeUiWarningLevel(kOpenid4vpProtocol,
+                                  GenerateDpcExample1WithOtherData()),
+            UiWarningLevel::kHintCaution);
 }
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpProtocolSignedDCQL_ComputeInterstitialType_OnlyAgeOver) {
+TEST_F(DigitalIdentityRequestImplUiWarningLevelTest,
+       Openid4VpProtocolSignedDCQL_ComputeUiWarningLevel_OnlyAgeOver) {
   EXPECT_EQ(
-      ComputeInterstitialType(kOpenid4vpSignedProtocol,
-                              GenerateSignedOnlyAgeOpenid4VpRequestWithDCQL()),
-      std::nullopt);
+      ComputeUiWarningLevel(kOpenid4vpSignedProtocol,
+                            GenerateSignedOnlyAgeOpenid4VpRequestWithDCQL()),
+      UiWarningLevel::kHintNoIssues);
 }
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpProtocolSignedDCQL_ComputeInterstitialType_GivenName) {
-  EXPECT_EQ(ComputeInterstitialType(
-                kOpenid4vpSignedProtocol,
-                GenerateSignedGivenNameOpenid4VpRequestWithDCQL()),
-            InterstitialType::kLowRisk);
+TEST_F(DigitalIdentityRequestImplUiWarningLevelTest,
+       Openid4VpProtocolSignedDCQL_ComputeUiWarningLevel_GivenName) {
+  EXPECT_EQ(
+      ComputeUiWarningLevel(kOpenid4vpSignedProtocol,
+                            GenerateSignedGivenNameOpenid4VpRequestWithDCQL()),
+      UiWarningLevel::kHintCaution);
 }
 
-TEST_F(
-    DigitalIdentityRequestImplInterstitialTest,
-    Openid4VpProtocolSignedDCQL_ComputeInterstitialType_GivenNameAndAgeOver) {
-  EXPECT_EQ(ComputeInterstitialType(
+TEST_F(DigitalIdentityRequestImplUiWarningLevelTest,
+       Openid4VpProtocolSignedDCQL_ComputeUiWarningLevel_GivenNameAndAgeOver) {
+  EXPECT_EQ(ComputeUiWarningLevel(
                 kOpenid4vpSignedProtocol,
                 GenerateSignedGivenNameAndAgeOpenid4VpRequestWithDCQL()),
-            InterstitialType::kLowRisk);
+            UiWarningLevel::kHintCaution);
 }
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpProtocolDCQL_ComputeInterstitialType_SdJwtAgeOnly) {
-  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol, GenerateSdJwtAgeOnly()),
-            std::nullopt);
+TEST_F(DigitalIdentityRequestImplUiWarningLevelTest,
+       Openid4VpProtocolDCQL_ComputeUiWarningLevel_SdJwtAgeOnly) {
+  EXPECT_EQ(ComputeUiWarningLevel(kOpenid4vpProtocol, GenerateSdJwtAgeOnly()),
+            UiWarningLevel::kHintNoIssues);
 }
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpProtocolDCQL_ComputeInterstitialType_EmptyClaims) {
-  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol,
-                                    GenerateOpenid4VpRequestWithEmptyClaims()),
-            InterstitialType::kLowRisk);
+TEST_F(DigitalIdentityRequestImplUiWarningLevelTest,
+       Openid4VpProtocolDCQL_ComputeUiWarningLevel_EmptyClaims) {
+  EXPECT_EQ(ComputeUiWarningLevel(kOpenid4vpProtocol,
+                                  GenerateOpenid4VpRequestWithEmptyClaims()),
+            UiWarningLevel::kHintCaution);
 }
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpProtocolDCQL_ComputeInterstitialType_SdJwtAgeAndSensitive) {
-  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol,
-                                    GenerateSdJwtAgeAndSensitive()),
-            InterstitialType::kLowRisk);
+TEST_F(DigitalIdentityRequestImplUiWarningLevelTest,
+       Openid4VpProtocolDCQL_ComputeUiWarningLevel_SdJwtAgeAndSensitive) {
+  EXPECT_EQ(
+      ComputeUiWarningLevel(kOpenid4vpProtocol, GenerateSdJwtAgeAndSensitive()),
+      UiWarningLevel::kHintCaution);
 }
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpProtocolDCQL_ComputeInterstitialType_SdJwtAgeBundledWithDpc) {
-  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol,
-                                    GenerateSdJwtAgeBundledWithDpc()),
-            std::nullopt);
+TEST_F(DigitalIdentityRequestImplUiWarningLevelTest,
+       Openid4VpProtocolDCQL_ComputeUiWarningLevel_SdJwtAgeBundledWithDpc) {
+  EXPECT_EQ(ComputeUiWarningLevel(kOpenid4vpProtocol,
+                                  GenerateSdJwtAgeBundledWithDpc()),
+            UiWarningLevel::kHintNoIssues);
 }
 
 TEST_F(
-    DigitalIdentityRequestImplInterstitialTest,
-    Openid4VpProtocolDCQL_ComputeInterstitialType_SdJwtSensitiveBundledWithDpc) {
-  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol,
-                                    GenerateSdJwtSensitiveBundledWithDpc()),
-            InterstitialType::kLowRisk);
+    DigitalIdentityRequestImplUiWarningLevelTest,
+    Openid4VpProtocolDCQL_ComputeUiWarningLevel_SdJwtSensitiveBundledWithDpc) {
+  EXPECT_EQ(ComputeUiWarningLevel(kOpenid4vpProtocol,
+                                  GenerateSdJwtSensitiveBundledWithDpc()),
+            UiWarningLevel::kHintCaution);
 }
 
 // Verifies that a Phone Number Verification (PNV) OpenID4VP request containing
 // the `disallowed_carriers` claim bypasses the safety interstitial. PNV claims
 // act as operational hints/parameters rather than user PII requests.
 TEST_F(
-    DigitalIdentityRequestImplInterstitialTest,
-    Openid4VpProtocolDCQL_ComputeInterstitialType_VerifyPhoneNumberWithDisallowedCarriers) {
+    DigitalIdentityRequestImplUiWarningLevelTest,
+    Openid4VpProtocolDCQL_ComputeUiWarningLevel_VerifyPhoneNumberWithDisallowedCarriers) {
   EXPECT_EQ(
-      ComputeInterstitialType(
+      ComputeUiWarningLevel(
           kOpenid4vpProtocol,
           GenerateVerifyPhoneNumberWithDisallowedCarriersOpenid4VpRequest()),
-      std::nullopt);
+      UiWarningLevel::kHintNoIssues);
 }
 
 // Verifies that PNV requests bypass the safety interstitial regardless of what
 // custom/arbitrary claim names are requested, because the PNV provider does not
 // return arbitrary user PII.
 TEST_F(
-    DigitalIdentityRequestImplInterstitialTest,
-    Openid4VpProtocolDCQL_ComputeInterstitialType_VerifyPhoneNumberWithArbitraryClaims) {
+    DigitalIdentityRequestImplUiWarningLevelTest,
+    Openid4VpProtocolDCQL_ComputeUiWarningLevel_VerifyPhoneNumberWithArbitraryClaims) {
   base::Value request =
       GenerateVerifyPhoneNumberWithDisallowedCarriersOpenid4VpRequest();
   ASSERT_TRUE(SetDCQLPathItem(request, "arbitrary_custom_claim"));
-  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)),
-            std::nullopt);
+  EXPECT_EQ(ComputeUiWarningLevel(kOpenid4vpProtocol, std::move(request)),
+            UiWarningLevel::kHintNoIssues);
 }
 
 // Verifies that carrier hint claims (like `subscription_hint`) do NOT bypass
 // the safety interstitial when requested on generic non-PNV SD-JWT credentials,
 // ensuring strict claim filtering is maintained for other credential types.
 TEST_F(
-    DigitalIdentityRequestImplInterstitialTest,
-    Openid4VpProtocolDCQL_ComputeInterstitialType_SdJwtSubscriptionHint_RequiresInterstitial) {
-  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol,
-                                    GenerateSdJwtWithSubscriptionHint()),
-            InterstitialType::kLowRisk);
+    DigitalIdentityRequestImplUiWarningLevelTest,
+    Openid4VpProtocolDCQL_ComputeUiWarningLevel_SdJwtSubscriptionHint_RequiresCaution) {
+  EXPECT_EQ(ComputeUiWarningLevel(kOpenid4vpProtocol,
+                                  GenerateSdJwtWithSubscriptionHint()),
+            UiWarningLevel::kHintCaution);
 }
 
 // Verifies that a multi-credential DCQL query bundling a PNV credential with a
 // valid mDL age credential bypasses the interstitial (both sub-credentials are
 // permitted).
 TEST_F(
-    DigitalIdentityRequestImplInterstitialTest,
-    Openid4VpProtocolDCQL_ComputeInterstitialType_PhoneNumberBundledWithMdlAge) {
-  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol,
-                                    GeneratePhoneNumberBundledWithMdlAge()),
-            std::nullopt);
+    DigitalIdentityRequestImplUiWarningLevelTest,
+    Openid4VpProtocolDCQL_ComputeUiWarningLevel_PhoneNumberBundledWithMdlAge) {
+  EXPECT_EQ(ComputeUiWarningLevel(kOpenid4vpProtocol,
+                                  GeneratePhoneNumberBundledWithMdlAge()),
+            UiWarningLevel::kHintNoIssues);
 }
 
 // Verifies that bundling a PNV credential with an mDL credential requesting
 // unapproved/sensitive attributes (e.g. `given_name`) correctly triggers the
 // safety interstitial.
 TEST_F(
-    DigitalIdentityRequestImplInterstitialTest,
-    Openid4VpProtocolDCQL_ComputeInterstitialType_PhoneNumberBundledWithMdlSensitive) {
-  EXPECT_EQ(
-      ComputeInterstitialType(kOpenid4vpProtocol,
-                              GeneratePhoneNumberBundledWithMdlSensitive()),
-      InterstitialType::kLowRisk);
+    DigitalIdentityRequestImplUiWarningLevelTest,
+    Openid4VpProtocolDCQL_ComputeUiWarningLevel_PhoneNumberBundledWithMdlSensitive) {
+  EXPECT_EQ(ComputeUiWarningLevel(kOpenid4vpProtocol,
+                                  GeneratePhoneNumberBundledWithMdlSensitive()),
+            UiWarningLevel::kHintCaution);
 }
 
 // Verifies anti-spoofing protection: an mDL (`mso_mdoc`) credential that
@@ -1235,43 +1230,43 @@ TEST_F(
 // rejected from PNV bypass and triggers the interstitial when sensitive claims
 // are present.
 TEST_F(
-    DigitalIdentityRequestImplInterstitialTest,
-    Openid4VpProtocolDCQL_ComputeInterstitialType_MdlWithSpoofedPhoneVct_RequiresInterstitial) {
-  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol,
-                                    GenerateMdlWithSpoofedPhoneVct()),
-            InterstitialType::kLowRisk);
+    DigitalIdentityRequestImplUiWarningLevelTest,
+    Openid4VpProtocolDCQL_ComputeUiWarningLevel_MdlWithSpoofedPhoneVct_RequiresCaution) {
+  EXPECT_EQ(ComputeUiWarningLevel(kOpenid4vpProtocol,
+                                  GenerateMdlWithSpoofedPhoneVct()),
+            UiWarningLevel::kHintCaution);
 }
 
 // Verifies that malformed VCT values (e.g. non-string entries in `vct_values`)
 // fail gracefully and enforce the safety interstitial.
 TEST_F(
-    DigitalIdentityRequestImplInterstitialTest,
-    Openid4VpProtocolDCQL_ComputeInterstitialType_PhoneNumberWithMalformedVct_RequiresInterstitial) {
-  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol,
-                                    GeneratePhoneNumberWithMalformedVct()),
-            InterstitialType::kLowRisk);
+    DigitalIdentityRequestImplUiWarningLevelTest,
+    Openid4VpProtocolDCQL_ComputeUiWarningLevel_PhoneNumberWithMalformedVct_RequiresCaution) {
+  EXPECT_EQ(ComputeUiWarningLevel(kOpenid4vpProtocol,
+                                  GeneratePhoneNumberWithMalformedVct()),
+            UiWarningLevel::kHintCaution);
 }
 
 // Verifies anti-spoofing / cross-format type confusion: an SD-JWT PNV
 // credential carrying an mDL `doctype_value` is rejected from PNV bypass to
 // prevent evading mDL claim validation.
 TEST_F(
-    DigitalIdentityRequestImplInterstitialTest,
-    Openid4VpProtocolDCQL_ComputeInterstitialType_PhoneNumberWithDoctype_RequiresInterstitial) {
-  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol,
-                                    GeneratePhoneNumberWithDoctype()),
-            InterstitialType::kLowRisk);
+    DigitalIdentityRequestImplUiWarningLevelTest,
+    Openid4VpProtocolDCQL_ComputeUiWarningLevel_PhoneNumberWithDoctype_RequiresCaution) {
+  EXPECT_EQ(ComputeUiWarningLevel(kOpenid4vpProtocol,
+                                  GeneratePhoneNumberWithDoctype()),
+            UiWarningLevel::kHintCaution);
 }
 
 // Verifies fail-closed behavior: a DCQL query with an empty `credentials: []`
 // list requests zero identifiable credentials and must trigger the safety
 // interstitial.
 TEST_F(
-    DigitalIdentityRequestImplInterstitialTest,
-    Openid4VpProtocolDCQL_ComputeInterstitialType_EmptyCredentialsList_RequiresInterstitial) {
-  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol,
-                                    GenerateEmptyCredentialsOpenid4VpRequest()),
-            InterstitialType::kLowRisk);
+    DigitalIdentityRequestImplUiWarningLevelTest,
+    Openid4VpProtocolDCQL_ComputeUiWarningLevel_EmptyCredentialsList_RequiresCaution) {
+  EXPECT_EQ(ComputeUiWarningLevel(kOpenid4vpProtocol,
+                                  GenerateEmptyCredentialsOpenid4VpRequest()),
+            UiWarningLevel::kHintCaution);
 }
 
 class DigitalIdentityRequestImplWithCreationEnabledTest
@@ -1509,6 +1504,52 @@ TEST_F(DigitalIdentityRequestImplTest, ShouldGetWithProperFormatting) {
   run_loop.Run();
 }
 
+TEST_F(DigitalIdentityRequestImplTest,
+       GetPassesNoIssuesWarningLevelToProvider) {
+  DigitalCredentialGetRequestPtr digital_credential_request =
+      DigitalCredentialGetRequest::New();
+  digital_credential_request->protocol = kOpenid4vpProtocol;
+  digital_credential_request->data = GenerateOnlyAgeOpenid4VpRequestWithDCQL();
+
+  std::vector<DigitalCredentialGetRequestPtr> requests;
+  requests.push_back(std::move(digital_credential_request));
+
+  EXPECT_CALL(*mock_digital_identity_provider(), IsLastCommittedOriginLowRisk)
+      .WillOnce(testing::Return(false));
+  EXPECT_CALL(*mock_digital_identity_provider(),
+              Get(_, _, _, UiWarningLevel::kHintNoIssues, _));
+  digital_identity_request_impl()->Get(std::move(requests), base::DoNothing());
+}
+
+TEST_F(DigitalIdentityRequestImplTest, GetPassesCautionWarningLevelToProvider) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kWebIdentityDigitalCredentials, {{"dialog", ""}});
+
+  DigitalCredentialGetRequestPtr digital_credential_request =
+      DigitalCredentialGetRequest::New();
+  digital_credential_request->protocol = kOpenid4vpProtocol;
+  digital_credential_request->data = GenerateEmptyCredentialsOpenid4VpRequest();
+
+  std::vector<DigitalCredentialGetRequestPtr> requests;
+  requests.push_back(std::move(digital_credential_request));
+
+  EXPECT_CALL(*mock_digital_identity_provider(), IsLastCommittedOriginLowRisk)
+      .WillOnce(testing::Return(false));
+  EXPECT_CALL(
+      *mock_digital_identity_provider(),
+      ShowDigitalIdentityInterstitial(_, _, InterstitialType::kLowRisk, _))
+      .WillOnce(WithArg<3>(
+          [](DigitalIdentityProvider::DigitalIdentityInterstitialCallback
+                 callback) {
+            std::move(callback).Run(RequestStatusForMetrics::kSuccess);
+            return base::OnceClosure();
+          }));
+  EXPECT_CALL(*mock_digital_identity_provider(),
+              Get(_, _, _, UiWarningLevel::kHintCaution, _));
+  digital_identity_request_impl()->Get(std::move(requests), base::DoNothing());
+}
+
 TEST_F(DigitalIdentityRequestImplTest, ShouldGetAndReturnProtocolInResponse) {
   const std::string kProtocolInRequest = "protocol_in_request";
   const std::string kProtocolInResponse = "protocol_in_response";
@@ -1528,7 +1569,7 @@ TEST_F(DigitalIdentityRequestImplTest, ShouldGetAndReturnProtocolInResponse) {
 
   // Simulate a provider that returns a response with a protocol.
   EXPECT_CALL(*mock_digital_identity_provider(), Get)
-      .WillOnce(WithArg<3>([this, &kProtocolInResponse,
+      .WillOnce(WithArg<4>([this, &kProtocolInResponse,
                             &kResponseData](DigitalIdentityCallback callback) {
         // Running the `callback` will destroy the provider, reset the pointer
         // to avoid dangling pointers after invoking the callback.
@@ -1575,7 +1616,7 @@ TEST_F(DigitalIdentityRequestImplTest,
 
   // Simulate a provider that returns a response without a protocol.
   EXPECT_CALL(*mock_digital_identity_provider(), Get)
-      .WillOnce(WithArg<3>([this, &kProtocolInResponse,
+      .WillOnce(WithArg<4>([this, &kProtocolInResponse,
                             &kResponseData](DigitalIdentityCallback callback) {
         // Running the `callback` will destroy the provider, reset the
         // pointer to avoid dangling pointers after invoking the callback.
@@ -1613,7 +1654,7 @@ TEST_F(DigitalIdentityRequestImplTest,
   base::RunLoop run_loop;
 
   EXPECT_CALL(*mock_digital_identity_provider(), Get)
-      .WillOnce(WithArg<3>([this](DigitalIdentityCallback callback) {
+      .WillOnce(WithArg<4>([this](DigitalIdentityCallback callback) {
         // Running the `callback` will destroy the provider, reset the
         // pointer to avoid dangling pointers after invoking the callback.
         reset_provider_pointer();
@@ -1650,7 +1691,7 @@ TEST_F(DigitalIdentityRequestImplTest,
   base::RunLoop run_loop;
 
   EXPECT_CALL(*mock_digital_identity_provider(), Get)
-      .WillOnce(WithArg<3>([this](DigitalIdentityCallback callback) {
+      .WillOnce(WithArg<4>([this](DigitalIdentityCallback callback) {
         // Running the `callback` will destroy the provider, reset the
         // pointer to avoid dangling pointers after invoking the callback.
         reset_provider_pointer();
@@ -1692,6 +1733,7 @@ class WebContentsDestroyingProvider : public StubDigitalIdentityProvider {
   void Get(WebContents*,
            const url::Origin&,
            base::ValueView,
+           UiWarningLevel,
            DigitalIdentityCallback) override {}
 
  private:
@@ -1805,7 +1847,7 @@ TEST_F(DigitalIdentityRequestImplTest,
         RequestDigitalIdentityStatus status_out;
 
         EXPECT_CALL(*mock_digital_identity_provider(), Get)
-            .WillOnce(WithArg<3>([&](DigitalIdentityCallback callback) {
+            .WillOnce(WithArg<4>([&](DigitalIdentityCallback callback) {
               reset_provider_pointer();
               std::move(callback).Run(base::unexpected(provider_error));
             }));
