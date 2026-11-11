@@ -4582,19 +4582,6 @@ shown properly on the user-facing crash UI.
   <int value="1717998593" label="PrototypeVendorProduct9401"/>
 </enum>
 
-<enum name="GCMCheckinRequestStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="URL fetching failed (until M82)"/>
-  <int value="2" label="HTTP bad request"/>
-  <int value="3" label="HTTP unauthorized"/>
-  <int value="4" label="HTTP not OK"/>
-  <int value="5" label="Response parsing failed"/>
-  <int value="6" label="Zero ID or token"/>
-  <int value="7" label="URL fetching failed: network error"/>
-  <int value="8" label="URL fetching failed: no response info"/>
-  <int value="9" label="URL fetching failed: no headers"/>
-</enum>
-
 <enum name="GCMDecryptionResult">
   <int value="0" label="Success (message unencrypted)"/>
   <int value="1" label="Success (message decrypted per draft 03)"/>

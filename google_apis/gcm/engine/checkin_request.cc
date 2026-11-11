@@ -10,7 +10,6 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "google_apis/credentials_mode.h"
@@ -31,10 +30,8 @@ const char kRequestContentType[] = "application/x-protobuf";
 const int kRequestVersionValue = 3;
 const int kDefaultUserSerialNumber = 0;
 
-// This enum is also used in an UMA histogram (GCMCheckinRequestStatus
-// enum defined in tools/metrics/histograms/enums.xml). Hence the entries here
-// shouldn't be deleted or re-ordered and new ones should be added to the end,
-// and update the GetCheckinRequestStatusString(...) below.
+// Status of the GCM checkin request, used for stats recording. Update
+// GetCheckinRequestStatusString(...) when adding new entries.
 enum class CheckinRequestStatus {
   kSuccess = 0,  // Checkin completed successfully.
   // kUrlFetchingFailed = 1,
@@ -47,11 +44,6 @@ enum class CheckinRequestStatus {
   kFailedNetError = 7,         // A network error was returned.
   kFailedNoResponse = 8,       // No or invalid response info was returned.
   kFailedNoHeaders = 9,        // No or invalid headers were returned.
-
-  // NOTE: always keep this entry at the end. Add new status types only
-  // immediately above this line. Make sure to update the corresponding
-  // histogram enum accordingly.
-  kMaxValue = kFailedNoHeaders,
 };
 
 // Returns string representation of enum CheckinRequestStatus.
@@ -80,12 +72,10 @@ std::string GetCheckinRequestStatusString(CheckinRequestStatus status) {
   NOTREACHED();
 }
 
-// Records checkin status to both stats recorder and reports to UMA.
-void RecordCheckinStatusAndReportUMA(CheckinRequestStatus status,
-                                     GCMStatsRecorder* recorder,
-                                     bool will_retry) {
-  base::UmaHistogramEnumeration("GCM.CheckinRequestStatus", status);
-
+// Records checkin status to stats recorder.
+void RecordCheckinStatus(CheckinRequestStatus status,
+                         GCMStatsRecorder* recorder,
+                         bool will_retry) {
   if (status == CheckinRequestStatus::kSuccess)
     recorder->RecordCheckinSuccess();
   else {
@@ -220,23 +210,23 @@ void CheckinRequest::RetryWithBackoff() {
 void CheckinRequest::OnURLLoadComplete(const network::SimpleURLLoader* source,
                                        std::optional<std::string> body) {
   if (source->NetError() != net::OK) {
-    RecordCheckinStatusAndReportUMA(CheckinRequestStatus::kFailedNetError,
-                                    recorder_, /* will_retry= */ true);
+    RecordCheckinStatus(CheckinRequestStatus::kFailedNetError, recorder_,
+                        /* will_retry= */ true);
 
     RetryWithBackoff();
     return;
   }
 
   if (!source->ResponseInfo()) {
-    RecordCheckinStatusAndReportUMA(CheckinRequestStatus::kFailedNoResponse,
-                                    recorder_, /* will_retry= */ true);
+    RecordCheckinStatus(CheckinRequestStatus::kFailedNoResponse, recorder_,
+                        /* will_retry= */ true);
     RetryWithBackoff();
     return;
   }
 
   if (!source->ResponseInfo()->headers) {
-    RecordCheckinStatusAndReportUMA(CheckinRequestStatus::kFailedNoHeaders,
-                                    recorder_, /* will_retry= */ true);
+    RecordCheckinStatus(CheckinRequestStatus::kFailedNoHeaders, recorder_,
+                        /* will_retry= */ true);
     RetryWithBackoff();
     return;
   }
@@ -252,7 +242,7 @@ void CheckinRequest::OnURLLoadComplete(const network::SimpleURLLoader* source,
     CheckinRequestStatus status = response_status == net::HTTP_BAD_REQUEST
                                       ? CheckinRequestStatus::kBadRequest
                                       : CheckinRequestStatus::kUnauthorized;
-    RecordCheckinStatusAndReportUMA(status, recorder_, /* will_retry= */ false);
+    RecordCheckinStatus(status, recorder_, /* will_retry= */ false);
     std::move(callback_).Run(response_status, response_proto);
     return;
   }
@@ -263,7 +253,7 @@ void CheckinRequest::OnURLLoadComplete(const network::SimpleURLLoader* source,
         response_status != net::HTTP_OK
             ? CheckinRequestStatus::kStatusNotOK
             : CheckinRequestStatus::kResponseParsingFailed;
-    RecordCheckinStatusAndReportUMA(status, recorder_, /* will_retry= */ true);
+    RecordCheckinStatus(status, recorder_, /* will_retry= */ true);
     RetryWithBackoff();
     return;
   }
@@ -272,14 +262,14 @@ void CheckinRequest::OnURLLoadComplete(const network::SimpleURLLoader* source,
       !response_proto.has_security_token() ||
       response_proto.android_id() == 0 ||
       response_proto.security_token() == 0) {
-    RecordCheckinStatusAndReportUMA(CheckinRequestStatus::kZeroIdOrToken,
-                                    recorder_, /* will_retry= */ true);
+    RecordCheckinStatus(CheckinRequestStatus::kZeroIdOrToken, recorder_,
+                        /* will_retry= */ true);
     RetryWithBackoff();
     return;
   }
 
-  RecordCheckinStatusAndReportUMA(CheckinRequestStatus::kSuccess, recorder_,
-                                  /* will_retry= */ false);
+  RecordCheckinStatus(CheckinRequestStatus::kSuccess, recorder_,
+                      /* will_retry= */ false);
   std::move(callback_).Run(response_status, response_proto);
 }
 
