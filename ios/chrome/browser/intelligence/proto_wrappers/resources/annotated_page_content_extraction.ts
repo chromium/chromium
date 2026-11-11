@@ -340,6 +340,9 @@ interface StyleCache {
 
   // Reusable Range for measuring text node bounding boxes in actionable mode.
   textRange?: Range;
+
+  // Cached scrollable document bounds in viewport coordinates for the document.
+  docReachableBounds?: Rect;
 }
 
 // Tags that we fundamentally do not support or that contain non-content data.
@@ -2302,7 +2305,9 @@ function getContentForIframeNode(
     paidContentContext: PaidContentExtractionContext,
     includeSensitivePaymentsForRedaction: boolean,
     extractAutofillOtpRedactions: boolean,
-    extractPasswordScreenshotRedactions: boolean): PageContentNode|null {
+    extractPasswordScreenshotRedactions: boolean,
+    isInsideUnreachableOverflowContainer: boolean = false): PageContentNode|
+    null {
   const attributes: PageContentAttributes = {
     attributeType: PageContentAttributeType.IFRAME,
     annotatedRoles: [],
@@ -2332,7 +2337,8 @@ function getContentForIframeNode(
           actionableMode, paidContentContext.extractPaidContent,
           paidContentContext.attemptPaidContentJsonFixing,
           includeSensitivePaymentsForRedaction, extractAutofillOtpRedactions,
-          extractPasswordScreenshotRedactions);
+          extractPasswordScreenshotRedactions,
+          isInsideUnreachableOverflowContainer);
       if (pageContent) {
         childTree = pageContent.rootNode;
         localFrameData = pageContent.frameData;
@@ -2856,16 +2862,24 @@ function getBasicContentForNonGenericElement(
     includeSensitivePaymentsForRedaction: boolean,
     extractAutofillOtpRedactions: boolean,
     extractPasswordScreenshotRedactions: boolean,
-    styleCache?: StyleCache): PageContentNode|null {
+    parentContext?: ClippingContext, styleCache?: StyleCache): PageContentNode|
+    null {
   const tagName = getStandardTagName(domNode);
 
   switch (tagName) {
     // 1. Complex Elements.
-    case TAG_IFRAME:
+    case TAG_IFRAME: {
+      const isInsideUnreachableOverflowContainer = Boolean(
+          parentContext?.isInsideUnreachableOverflowContainer &&
+          !isElementFixedToView(
+              domNode, getComputedStyleForElement(domNode, styleCache),
+              parentContext));
       return getContentForIframeNode(
           domNode as HTMLIFrameElement, nonce, depth, maxDepth, actionableMode,
           paidContentContext, includeSensitivePaymentsForRedaction,
-          extractAutofillOtpRedactions, extractPasswordScreenshotRedactions);
+          extractAutofillOtpRedactions, extractPasswordScreenshotRedactions,
+          isInsideUnreachableOverflowContainer);
+    }
     case TAG_IMG:
       return {
         childrenNodes: [],
@@ -3221,7 +3235,8 @@ function getContentForElementNode(
     includeSensitivePaymentsForRedaction: boolean,
     extractAutofillOtpRedactions: boolean,
     extractPasswordScreenshotRedactions: boolean,
-    styleCache?: StyleCache): PageContentNode|null {
+    parentContext?: ClippingContext, styleCache?: StyleCache): PageContentNode|
+    null {
   let labelForDOMNodeID: number | undefined = undefined;
   if (actionableMode && getStandardTagName(domNode) === TAG_LABEL) {
     labelForDOMNodeID = getAssociatedControlDOMNodeID(
@@ -3234,7 +3249,7 @@ function getContentForElementNode(
   contentNode = getBasicContentForNonGenericElement(
       domNode, nonce, depth, maxDepth, actionableMode, paidContentContext,
       includeSensitivePaymentsForRedaction, extractAutofillOtpRedactions,
-      extractPasswordScreenshotRedactions, styleCache);
+      extractPasswordScreenshotRedactions, parentContext, styleCache);
 
   // 2. Try to get content for custom table elements (CSS display or ARIA
   // roles).
@@ -3543,6 +3558,201 @@ function formsContainingBlockForFixed(style?: CSSStyleDeclaration): boolean {
 }
 
 /**
+ * Returns the clipping rectangle in effect at an unemitted DOM ancestor
+ * strictly between `element` and `context.domNode` if that ancestor
+ * establishes a fixed-position containing block; otherwise returns `null`.
+ *
+ * Every element that clips overflow (`isClippedStyle`) is emitted as a
+ * container onto `ancestorStack`, so no unemitted ancestor between `element`
+ * and `context.domNode` introduces an overflow clip of its own.
+ *
+ * @param element The element to start walking up from.
+ * @param context The inherited clipping context of the nearest emitted
+ *     ancestor.
+ * @return The clipping rectangle of the unemitted fixed containing block, or
+ *     `null`.
+ */
+function getUnemittedFixedContainingBlockClip(
+    element: HTMLElement, context: ClippingContext): Rect|null {
+  if (!context.domNode) {
+    return null;
+  }
+  let ancestor = safeParentElement(element);
+  while (ancestor && ancestor !== context.domNode) {
+    const ancestorStyle = getComputedStyleForElement(ancestor);
+    if (formsContainingBlockForFixed(ancestorStyle)) {
+      return ancestorStyle?.position === ATTR_POSITION_ABSOLUTE ?
+          (context.absoluteClip ?? context.normalClip) :
+          context.normalClip;
+    }
+    ancestor = safeParentElement(ancestor);
+  }
+  return null;
+}
+
+/**
+ * Checks whether `element` has `position: fixed` and is anchored directly to
+ * the viewport rather than to an ancestor that establishes a fixed-position
+ * containing block (e.g., via `transform` or `filter`).
+ *
+ * Mirrors Blink's `LayoutBox::IsFixedToView()`.
+ *
+ * @param element The element to check.
+ * @param style The computed style of `element`.
+ * @param context The inherited clipping context.
+ * @return True if `element` is fixed to the viewport.
+ */
+function isElementFixedToView(
+    element: HTMLElement, style: CSSStyleDeclaration|undefined,
+    context: ClippingContext): boolean {
+  return style?.position === ATTR_POSITION_FIXED &&
+      context.fixedClip === null &&
+      getUnemittedFixedContainingBlockClip(element, context) === null;
+}
+
+/**
+ * Computes the full scrollable bounds of `doc` mapped into viewport space.
+ *
+ * Mirrors Blink's `ComputeDocumentBoundsInViewport()`.
+ *
+ * @param doc The document to measure.
+ * @param viewportRect The viewport rectangle of `doc`.
+ * @return The scrollable document bounds in viewport coordinates.
+ */
+function getDocumentReachableBoundsInViewport(
+    doc: Document, viewportRect: Rect): Rect {
+  const docElement = doc.documentElement;
+  const body = doc.body;
+  const win = doc.defaultView;
+  const scrollLeft = win?.scrollX ||
+      (docElement ? safeScrollLeft(docElement) : 0) ||
+      (body ? safeScrollLeft(body) : 0);
+  const scrollTop = win?.scrollY ||
+      (docElement ? safeScrollTop(docElement) : 0) ||
+      (body ? safeScrollTop(body) : 0);
+  const docWidth = Math.max(
+      docElement ? safeScrollWidth(docElement) : 0,
+      body ? safeScrollWidth(body) : 0, viewportRect.width);
+  const docHeight = Math.max(
+      docElement ? safeScrollHeight(docElement) : 0,
+      body ? safeScrollHeight(body) : 0, viewportRect.height);
+  return toEnclosingRect(
+      createRect(-scrollLeft, -scrollTop, docWidth, docHeight));
+}
+
+/**
+ * Computes the reachable rectangle (in viewport coordinates) for descendants
+ * of an overflow-clipping `container`. For axes that are user-scrollable
+ * (`overflow: scroll` or `overflow: auto` with `scrollSize > clientSize`), the
+ * bounds expand from `-scrollOffset` across the full `scrollSize`; for
+ * non-scrollable axes (e.g., `overflow: hidden` or `overflow: clip`), the
+ * bounds remain clamped to the container's visible client box.
+ *
+ * Mirrors Blink's `IsReachableInOverflowContainer()`.
+ *
+ * @param container The overflow container element.
+ * @param containerRect The container's bounding client rect in viewport space.
+ * @param overflowX The computed `overflowX` value.
+ * @param overflowY The computed `overflowY` value.
+ * @return The reachable rectangle in viewport coordinates.
+ */
+function getOverflowContainerReachableRect(
+    container: HTMLElement, containerRect: Rect, overflowX: string,
+    overflowY: string): Rect {
+  const isScrollableX =
+      overflowX === STYLE_VALUE_SCROLL || overflowX === STYLE_VALUE_AUTO;
+  const isScrollableY =
+      overflowY === STYLE_VALUE_SCROLL || overflowY === STYLE_VALUE_AUTO;
+  if (!isScrollableX && !isScrollableY) {
+    return toEnclosingRect(containerRect);
+  }
+  const clientWidth = safeClientWidth(container);
+  const clientHeight = safeClientHeight(container);
+  const scrollWidth = safeScrollWidth(container);
+  const scrollHeight = safeScrollHeight(container);
+  const canScrollX = isScrollableX && scrollWidth > clientWidth;
+  const canScrollY = isScrollableY && scrollHeight > clientHeight;
+  const reachableX = canScrollX ? containerRect.x - safeScrollLeft(container) :
+                                  containerRect.x;
+  const reachableWidth = canScrollX ?
+      Math.max(scrollWidth, containerRect.width) :
+      containerRect.width;
+  const reachableY =
+      canScrollY ? containerRect.y - safeScrollTop(container) : containerRect.y;
+  const reachableHeight = canScrollY ?
+      Math.max(scrollHeight, containerRect.height) :
+      containerRect.height;
+  return toEnclosingRect(
+      createRect(reachableX, reachableY, reachableWidth, reachableHeight));
+}
+
+/**
+ * Determines whether an element is anchored off-screen and cannot be scrolled
+ * into view by the user.
+ *
+ * Mirrors Blink's `IsAnchoredOffscreen()` in `ai_page_content_agent.cc`.
+ *
+ * @param geometry The computed geometry of the element.
+ * @param elementDoc The owner document of the element.
+ * @param isInFixedPosSubtree Whether the element is in a viewport-fixed
+ *     subtree.
+ * @param nearestOverflowContainerReachableRect The reachable bounds of the
+ *     nearest ancestor overflow container, if any.
+ * @param isInsideUnreachableOverflowContainer Whether an ancestor overflow
+ *     container is itself unreachable.
+ * @return True if the element is permanently unreachable via scrolling.
+ */
+function isAnchoredOffscreen(
+    geometry: PageContentGeometry, elementDoc: Document|null,
+    isInFixedPosSubtree: boolean,
+    nearestOverflowContainerReachableRect: Rect|null,
+    isInsideUnreachableOverflowContainer: boolean,
+    styleCache?: StyleCache): boolean {
+  // 1. Visible in viewport -> Not offscreen.
+  if (geometry.visibleBoundingBox) {
+    return false;
+  }
+
+  // 2. Inside an unreachable overflow container -> Anchored offscreen.
+  if (isInsideUnreachableOverflowContainer) {
+    return true;
+  }
+
+  // 3. Zero-sized elements -> Let them through (often degenerate wrappers).
+  const outerBox = geometry.outerBoundingBox;
+  if (outerBox.width <= 0 || outerBox.height <= 0) {
+    return false;
+  }
+
+  // 4. Inside a reachable overflow container -> Check if reachable within it.
+  if (nearestOverflowContainerReachableRect) {
+    const overlap =
+        intersection(outerBox, nearestOverflowContainerReachableRect);
+    return overlap.width <= 0 || overlap.height <= 0;
+  }
+
+  // 5. Fallback: Check against viewport (if fixed) or document bounds (if
+  // scrollable).
+  if (!elementDoc) {
+    return false;
+  }
+  const viewportRect = getViewportRect(elementDoc);
+  let reachableBounds: Rect;
+  if (isInFixedPosSubtree) {
+    reachableBounds = viewportRect;
+  } else if (styleCache) {
+    styleCache.docReachableBounds ??=
+        getDocumentReachableBoundsInViewport(elementDoc, viewportRect);
+    reachableBounds = styleCache.docReachableBounds;
+  } else {
+    reachableBounds =
+        getDocumentReachableBoundsInViewport(elementDoc, viewportRect);
+  }
+  const overlap = intersection(outerBox, reachableBounds);
+  return overlap.width <= 0 || overlap.height <= 0;
+}
+
+/**
  * Calculates and adds geometry information to a node's content attributes.
  * This includes the element's bounding box and visible bounding box, adjusted
  * for any clipping from parent elements.
@@ -3575,15 +3785,23 @@ function addNodeGeometry(
   const style = getComputedStyleForElement(element, styleCache);
   const position = style?.position;
 
+  let unemittedFixedClip: Rect|null|undefined;
+  const getUnemittedFixedClip = () => unemittedFixedClip === undefined ?
+      (unemittedFixedClip =
+           getUnemittedFixedContainingBlockClip(element, context)) :
+      unemittedFixedClip;
+
   // Select the appropriate clip rect based on position.
   const elementDoc = safeOwnerDocument(element);
   let clipToUse: Rect|null = null;
+  let isFixedToView = false;
 
   if (position === ATTR_POSITION_FIXED) {
     // Fixed positioned elements are relative to the viewport, bypassing parent
     // clips, unless an ancestor established a containing block for fixed
     // elements.
-    clipToUse = context.fixedClip;
+    clipToUse = getUnemittedFixedClip() ?? context.fixedClip;
+    isFixedToView = clipToUse === null;
   } else if (position === ATTR_POSITION_ABSOLUTE) {
     clipToUse = context.absoluteClip;
   } else {
@@ -3632,13 +3850,54 @@ function addNodeGeometry(
 
   attributes.geometry = geometry;
 
+  // Determine the new clip context to pass down to children. An element that
+  // clips its overflow becomes the clip for its normal flow descendants and for
+  // descendants for which it forms a containing block.
+  const overflowX = style?.overflowX || '';
+  const overflowY = style?.overflowY || '';
+  const clipsOverflow = isClippedStyle(overflowX) || isClippedStyle(overflowY);
+
+  // Mirror Blink's WalkChildren recursion state: an element fixed to the
+  // viewport escapes ancestor overflow containers, while a fixed element
+  // anchored to a transformed ancestor only respects overflow containers at or
+  // outside that fixed containing block.
+  const isInFixedPosSubtree =
+      Boolean(context.isInFixedPosSubtree || isFixedToView);
+  let nearestOverflowContainerReachableRect: Rect|null;
+  let isInsideUnreachableOverflowContainer: boolean;
+  if (position === ATTR_POSITION_FIXED) {
+    if (isFixedToView) {
+      nearestOverflowContainerReachableRect = null;
+      isInsideUnreachableOverflowContainer = false;
+    } else if (getUnemittedFixedClip() !== null) {
+      nearestOverflowContainerReachableRect =
+          context.nearestOverflowContainerReachableRect ?? null;
+      isInsideUnreachableOverflowContainer =
+          Boolean(context.isInsideUnreachableOverflowContainer);
+    } else {
+      nearestOverflowContainerReachableRect =
+          context.fixedOverflowContainerReachableRect ?? null;
+      isInsideUnreachableOverflowContainer =
+          Boolean(context.fixedIsInsideUnreachableOverflowContainer);
+    }
+  } else {
+    nearestOverflowContainerReachableRect =
+        context.nearestOverflowContainerReachableRect ?? null;
+    isInsideUnreachableOverflowContainer =
+        Boolean(context.isInsideUnreachableOverflowContainer);
+  }
+
+  const anchoredOffscreen = actionableMode &&
+      (Boolean(attributes.nodeInteractionInfo) || clipsOverflow) &&
+      isAnchoredOffscreen(geometry, elementDoc, isInFixedPosSubtree,
+                          nearestOverflowContainerReachableRect,
+                          isInsideUnreachableOverflowContainer, styleCache);
+
   // Match Blink's IsAnchoredOffscreen logic: if an interactive node is
-  // clipped completely offscreen inside an overflow container, drop
-  // positive interaction signals but retain explicit disabled reasons
-  // (and add VISUALLY_UNREACHABLE) so downstream consumers know the
-  // element was disabled and why.
-  if (!geometry.visibleBoundingBox && attributes.nodeInteractionInfo &&
-      context.hasOverflowClip) {
+  // anchored offscreen (unreachable via scrolling), drop positive interaction
+  // signals and retain explicit disabled reasons (adding VISUALLY_UNREACHABLE)
+  // so downstream consumers know why it was disabled.
+  if (anchoredOffscreen && attributes.nodeInteractionInfo) {
     const existingDisabledReasons =
         attributes.nodeInteractionInfo.interactionDisabledReasons || [];
     const isDisabled = attributes.nodeInteractionInfo.isDisabled;
@@ -3655,11 +3914,20 @@ function addNodeGeometry(
     }
   }
 
-  // Determine the new clip context to pass down to children. An element that
-  // clips its overflow becomes the clip for its normal flow descendants and for
-  // descendants for which it forms a containing block.
-  const clipsOverflow = isClippedStyle(style?.overflowX || '') ||
-      isClippedStyle(style?.overflowY || '');
+  let newNearestOverflowContainerReachableRect =
+      nearestOverflowContainerReachableRect;
+  let newIsInsideUnreachableOverflowContainer =
+      isInsideUnreachableOverflowContainer;
+  if (clipsOverflow && element !== elementDoc?.body) {
+    newIsInsideUnreachableOverflowContainer =
+        isInsideUnreachableOverflowContainer || anchoredOffscreen;
+    newNearestOverflowContainerReachableRect =
+        newIsInsideUnreachableOverflowContainer ?
+        null :
+        getOverflowContainerReachableRect(
+            element, elementRect, overflowX, overflowY);
+  }
+
   const containingBlockClip = clipsOverflow ? visibleRect : clipToUse;
   let normalClip = context.normalClip;
   if (clipsOverflow) {
@@ -3680,6 +3948,7 @@ function addNodeGeometry(
   const isPositioned = !!position && position !== ATTR_POSITION_STATIC;
 
   return {
+    domNode: element,
     normalClip,
     get absoluteClip() {
       if (absoluteClip === undefined) {
@@ -3691,12 +3960,35 @@ function addNodeGeometry(
     },
     get fixedClip() {
       if (fixedClip === undefined) {
-        fixedClip = formsFixedContainingBlock() ? containingBlockClip :
-                                                  context.fixedClip;
+        fixedClip = formsFixedContainingBlock() ?
+            containingBlockClip :
+            (getUnemittedFixedClip() ?? context.fixedClip);
       }
       return fixedClip;
     },
-    hasOverflowClip: clipsOverflow || context.hasOverflowClip,
+    get fixedOverflowContainerReachableRect() {
+      if (formsFixedContainingBlock()) {
+        return newNearestOverflowContainerReachableRect;
+      }
+      if (getUnemittedFixedClip() !== null) {
+        return nearestOverflowContainerReachableRect;
+      }
+      return context.fixedOverflowContainerReachableRect ?? null;
+    },
+    get fixedIsInsideUnreachableOverflowContainer() {
+      if (formsFixedContainingBlock()) {
+        return newIsInsideUnreachableOverflowContainer;
+      }
+      if (getUnemittedFixedClip() !== null) {
+        return isInsideUnreachableOverflowContainer;
+      }
+      return Boolean(context.fixedIsInsideUnreachableOverflowContainer);
+    },
+    isInFixedPosSubtree,
+    nearestOverflowContainerReachableRect:
+        newNearestOverflowContainerReachableRect,
+    isInsideUnreachableOverflowContainer:
+        newIsInsideUnreachableOverflowContainer,
   };
 }
 
@@ -3804,7 +4096,7 @@ function maybeGenerateContentNode(
         element, nonce, depth, maxDepth, interactionInfo, actionableMode,
         interactiveNodeIds, paidContentContext,
         includeSensitivePaymentsForRedaction, extractAutofillOtpRedactions,
-        extractPasswordScreenshotRedactions, styleCache);
+        extractPasswordScreenshotRedactions, parentContext, styleCache);
     if (contentNode) {
       const domNodeId = getOrCreateNodeId(domNode);
       if (domNodeId !== null) {
@@ -3887,6 +4179,8 @@ function shouldAcceptNode(node: Node, styleCache?: StyleCache): number {
  * triggers eager evaluation.
  */
 interface ClippingContext {
+  /** The emitted DOM element that produced this clipping context. */
+  domNode?: HTMLElement;
   /** Clipping rectangle applied to static and relative positioned elements. */
   normalClip: Rect;
   /** Clipping rectangle applied to absolute positioned elements. */
@@ -3896,8 +4190,31 @@ interface ClippingContext {
    * forms a containing block for fixed elements.
    */
   fixedClip: Rect|null;
-  /** Whether an ancestor element has an overflow clipping style. */
-  hasOverflowClip?: boolean;
+  /**
+   * The reachable rectangle (in viewport coordinates) of the nearest ancestor
+   * overflow container at or outside the fixed-position containing block.
+   */
+  fixedOverflowContainerReachableRect?: Rect|null;
+  /**
+   * Whether the fixed-position containing block is inside an unreachable
+   * ancestor overflow container.
+   */
+  fixedIsInsideUnreachableOverflowContainer?: boolean;
+  /**
+   * Whether the element is inside a subtree with `position: fixed` relative to
+   * the viewport.
+   */
+  isInFixedPosSubtree?: boolean;
+  /**
+   * The reachable rectangle (in viewport coordinates) of the nearest ancestor
+   * overflow container, or null/undefined if not inside an overflow container.
+   */
+  nearestOverflowContainerReachableRect?: Rect|null;
+  /**
+   * Whether the element is inside an ancestor overflow container that is itself
+   * anchored offscreen and unreachable.
+   */
+  isInsideUnreachableOverflowContainer?: boolean;
 }
 
 // Item in the ancestor stack.
@@ -4469,7 +4786,8 @@ export function extractAnnotatedPageContent(
     attemptPaidContentJsonFixing: boolean,
     includeSensitivePaymentsForRedaction: boolean,
     extractAutofillOtpRedactions: boolean,
-    extractPasswordScreenshotRedactions: boolean): PageContent|null {
+    extractPasswordScreenshotRedactions: boolean,
+    isInsideUnreachableOverflowContainer: boolean = false): PageContent|null {
   if (depth > maxDepth) {
     return null;
   }
@@ -4541,6 +4859,10 @@ export function extractAnnotatedPageContent(
 
   const viewportRect = getViewportRect(document);
   const viewportGeometry = toEnclosingRect(viewportRect);
+  const initialClip = isInsideUnreachableOverflowContainer ?
+      createRect(0, 0, 0, 0) :
+      viewportRect;
+  let initialFixedClip: Rect|null|undefined;
 
   // Stack to track the current ancestry chain. At this point it is known that
   // that there is at least a root node that is walkable.
@@ -4553,9 +4875,20 @@ export function extractAnnotatedPageContent(
     isVisible: true,
     clippingContext: addNodeGeometry(
         root, rootNode.contentAttributes, {
-          normalClip: viewportRect,
-          absoluteClip: viewportRect,
-          fixedClip: null,
+          normalClip: initialClip,
+          absoluteClip: initialClip,
+          get fixedClip() {
+            if (initialFixedClip === undefined) {
+              initialFixedClip = (isInsideUnreachableOverflowContainer ||
+                                  formsContainingBlockForFixed(rootStyle)) ?
+                  initialClip :
+                  null;
+            }
+            return initialFixedClip;
+          },
+          fixedIsInsideUnreachableOverflowContainer:
+              isInsideUnreachableOverflowContainer,
+          isInsideUnreachableOverflowContainer,
         },
         actionableMode, includeSensitivePaymentsForRedaction,
         extractAutofillOtpRedactions, extractPasswordScreenshotRedactions,

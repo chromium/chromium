@@ -2723,6 +2723,469 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
       offscreen_interaction_info->FindBool("isFocusable").value_or(false));
 }
 
+namespace {
+
+// Verifies that an off-screen interactive element's positive interaction
+// signals (`clickabilityReasons`, `isFocusable`, `documentScopedZOrder`,
+// `scrollerInfo`) were pruned and
+// `INTERACTION_DISABLED_REASON_VISUALLY_UNREACHABLE` was recorded on
+// `nodeInteractionInfo`.
+void ExpectNodeInteractionPrunedAsUnreachable(const base::DictValue& node) {
+  const base::DictValue* interaction_info =
+      node.FindDictByDottedPath("contentAttributes.nodeInteractionInfo");
+  ASSERT_TRUE(interaction_info);
+  const base::ListValue* clickability_reasons =
+      interaction_info->FindList("clickabilityReasons");
+  if (clickability_reasons) {
+    EXPECT_TRUE(clickability_reasons->empty());
+  }
+  EXPECT_FALSE(interaction_info->FindBool("isFocusable").value_or(false));
+  EXPECT_FALSE(interaction_info->FindDouble("documentScopedZOrder"));
+  EXPECT_FALSE(interaction_info->FindDict("scrollerInfo"));
+  const base::ListValue* disabled_reasons =
+      interaction_info->FindList("interactionDisabledReasons");
+  ASSERT_TRUE(disabled_reasons);
+  bool has_visually_unreachable = false;
+  for (const base::Value& reason : *disabled_reasons) {
+    if (reason.is_int() &&
+        reason.GetInt() ==
+            static_cast<int>(
+                optimization_guide::proto::
+                    INTERACTION_DISABLED_REASON_VISUALLY_UNREACHABLE)) {
+      has_visually_unreachable = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(has_visually_unreachable);
+}
+
+// Verifies that a reachable interactive element retains its positive
+// interaction signals (`clickabilityReasons` or `isFocusable`) and is not
+// marked `INTERACTION_DISABLED_REASON_VISUALLY_UNREACHABLE`.
+void ExpectNodeInteractionActionable(const base::DictValue& node) {
+  const base::DictValue* interaction_info =
+      node.FindDictByDottedPath("contentAttributes.nodeInteractionInfo");
+  ASSERT_TRUE(interaction_info);
+  const base::ListValue* clickability_reasons =
+      interaction_info->FindList("clickabilityReasons");
+  ASSERT_TRUE(clickability_reasons);
+  EXPECT_FALSE(clickability_reasons->empty());
+  EXPECT_TRUE(interaction_info->FindBool("isFocusable").value_or(false));
+  const base::ListValue* disabled_reasons =
+      interaction_info->FindList("interactionDisabledReasons");
+  if (disabled_reasons) {
+    for (const base::Value& reason : *disabled_reasons) {
+      EXPECT_NE(reason.GetIfInt(),
+                static_cast<int>(
+                    optimization_guide::proto::
+                        INTERACTION_DISABLED_REASON_VISUALLY_UNREACHABLE));
+    }
+  }
+}
+
+}  // namespace
+
+// Tests that document-level elements anchored outside the scrollable document
+// bounds (negative coordinates via absolute, relative, or transform) have
+// positive interaction info pruned as `VISUALLY_UNREACHABLE`, whereas offscreen
+// elements within the scrollable document bounds and zero-sized wrappers retain
+// actionable `nodeInteractionInfo`.
+TEST_F(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_AnchoredOffscreen_DocumentBounds) {
+  const std::string html = R"(
+    <html>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      </head>
+      <body style="margin: 0; padding: 0;">
+        <button style="position: absolute; left: -9999px; top: 0; width: 100px; height: 40px;">
+          Absolute Negative
+        </button>
+        <button style="position: relative; left: -9999px; top: 0; width: 100px; height: 40px;">
+          Relative Negative
+        </button>
+        <button style="transform: translate(-9999px, -9999px); width: 100px; height: 40px;">
+          Transform Negative
+        </button>
+        <button style="position: absolute; left: 10px; top: 2000px; width: 100px; height: 40px;">
+          Scrollable Below Fold
+        </button>
+        <button style="position: absolute; left: -9999px; top: 0; width: 0; height: 0; padding: 0; border: 0;">
+          Zero Sized Wrapper
+        </button>
+      </body>
+    </html>
+  )";
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  std::optional<base::Value> result_value = RunExtraction(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/true,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(1));
+
+  ASSERT_TRUE(result_value.has_value());
+  ASSERT_TRUE(result_value->is_dict());
+
+  const base::DictValue* root_node =
+      result_value->GetDict().FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+  const base::ListValue* root_children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(root_children);
+  ASSERT_EQ(root_children->size(), 5u);
+
+  // 0: `position: absolute; left: -9999px` -> unreachable, pruned.
+  ExpectNodeInteractionPrunedAsUnreachable((*root_children)[0].GetDict());
+
+  // 1: `position: relative; left: -9999px` -> unreachable, pruned.
+  ExpectNodeInteractionPrunedAsUnreachable((*root_children)[1].GetDict());
+
+  // 2: `transform: translate(-9999px, -9999px)` -> unreachable, pruned.
+  ExpectNodeInteractionPrunedAsUnreachable((*root_children)[2].GetDict());
+
+  // 3: `top: 2000px` -> offscreen (no Z-order) but within scrollable document
+  // bounds, so actionable interaction info is retained.
+  ExpectNodeInteractionActionable((*root_children)[3].GetDict());
+  const base::DictValue* scrollable_interaction =
+      (*root_children)[3].GetDict().FindDictByDottedPath(
+          "contentAttributes.nodeInteractionInfo");
+  ASSERT_TRUE(scrollable_interaction);
+  EXPECT_FALSE(scrollable_interaction->FindDouble("documentScopedZOrder"));
+
+  // 4: Zero-sized element -> not pruned by geometry alone.
+  ExpectNodeInteractionActionable((*root_children)[4].GetDict());
+}
+
+// Tests that scrolling a document preserves actionable `nodeInteractionInfo`
+// for elements scrolled above the current viewport (reachable by scrolling back
+// up) while pruning elements at negative document coordinates.
+TEST_F(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_AnchoredOffscreen_ScrolledDocument) {
+  const std::string html = R"(
+    <html>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      </head>
+      <body style="margin: 0; padding: 0;">
+        <iframe id="scrolled_frame" style="border: 0; width: 200px; height: 200px;"
+          srcdoc="
+            <body style='margin: 0; padding: 0; height: 5000px;'>
+              <button style='position: absolute; left: 10px; top: 100px; width: 100px; height: 40px;'>
+                Scrolled Past Top
+              </button>
+              <button style='position: absolute; left: 10px; top: -500px; width: 100px; height: 40px;'>
+                Above Document Origin
+              </button>
+            </body>
+          ">
+        </iframe>
+      </body>
+    </html>
+  )";
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  ASSERT_TRUE(web::test::ExecuteJavaScriptForFeatureAndReturnResult(
+      web_state(),
+      @"document.getElementById('scrolled_frame').contentWindow.scrollTo(0, "
+      @"1500); true;",
+      feature()));
+
+  std::optional<base::Value> result_value = RunExtraction(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/true,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(1));
+
+  ASSERT_TRUE(result_value.has_value());
+  ASSERT_TRUE(result_value->is_dict());
+
+  const base::DictValue* root_node =
+      result_value->GetDict().FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+  const base::ListValue* root_children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(root_children);
+  ASSERT_EQ(root_children->size(), 1u);
+
+  const base::ListValue* iframe_children =
+      (*root_children)[0].GetDict().FindList("childrenNodes");
+  ASSERT_TRUE(iframe_children);
+  ASSERT_EQ(iframe_children->size(), 1u);
+
+  const base::ListValue* doc_children =
+      (*iframe_children)[0].GetDict().FindList("childrenNodes");
+  ASSERT_TRUE(doc_children);
+  ASSERT_EQ(doc_children->size(), 2u);
+
+  // 0: `top: 100px` scrolled above viewport (`scrollTop = 1500`) -> reachable
+  // by scrolling back up.
+  ExpectNodeInteractionActionable((*doc_children)[0].GetDict());
+
+  // 1: `top: -500px` above document origin -> unreachable even at scrollTop 0.
+  ExpectNodeInteractionPrunedAsUnreachable((*doc_children)[1].GetDict());
+}
+
+// Tests `isAnchoredOffscreen` handling for `position: fixed` elements and
+// subtrees, including offscreen fixed elements, fixed sheets translated
+// offscreen, fixed elements inside transformed ancestors, and fixed elements
+// interacting with overflow containers.
+TEST_F(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_AnchoredOffscreen_FixedPosition) {
+  const std::string html = R"(
+    <html>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      </head>
+      <body style="margin: 0; padding: 0;">
+        <button style="position: fixed; top: 2000px; left: 10px; width: 100px; height: 40px;">
+          Fixed Offscreen
+        </button>
+        <div style="position: fixed; left: 0; right: 0; bottom: 0; height: 100px; transform: translateY(100%);">
+          <button style="width: 100px; height: 40px;">
+            Child In Offscreen Fixed Sheet
+          </button>
+        </div>
+        <div style="position: absolute; top: 2000px; left: 10px; width: 200px; height: 100px; transform: translateZ(0);">
+          <button style="position: fixed; top: 0; left: 0; width: 100px; height: 40px;">
+            Fixed Inside Transformed Ancestor Below Fold
+          </button>
+        </div>
+        <div style="overflow: auto; width: 200px; height: 200px; position: relative;">
+          <div style="height: 2000px;">
+            <button style="position: fixed; left: 0; top: 2000px; width: 100px; height: 40px;">
+              Fixed Child Of Scroller Offscreen
+            </button>
+          </div>
+        </div>
+        <div style="overflow: auto; width: 200px; height: 200px; position: absolute; left: -9999px; top: 0;">
+          <div style="position: fixed; overflow: auto; width: 100px; height: 100px; left: 10px; top: 10px;">
+            <div style="height: 500px; position: relative;">
+              <button style="position: absolute; left: 5px; top: 300px; width: 80px; height: 30px;">
+                Scrollable Child Inside Fixed Scroller Escaping Offscreen Ancestor
+              </button>
+            </div>
+          </div>
+        </div>
+        <div style="overflow: hidden; width: 100px; height: 100px; position: relative;">
+          <div style="transform: translateZ(0); width: 100px; height: 100px;">
+            <button style="position: fixed; left: 200px; top: 10px; width: 80px; height: 30px;">
+              Fixed Clipped By Overflow Hidden Via Unemitted Transform
+            </button>
+          </div>
+        </div>
+        <div style="transform: translateZ(0); width: 300px; height: 100px;">
+          <div style="overflow: hidden; width: 50px; height: 50px;">
+            <button style="position: fixed; left: 100px; top: 10px; width: 80px; height: 30px;">
+              Fixed Escaping Inner Overflow Hidden Inside Unemitted Transform
+            </button>
+          </div>
+        </div>
+      </body>
+    </html>
+  )";
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  std::optional<base::Value> result_value = RunExtraction(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/true,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(1));
+
+  ASSERT_TRUE(result_value.has_value());
+  ASSERT_TRUE(result_value->is_dict());
+
+  const base::DictValue* root_node =
+      result_value->GetDict().FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+  const base::ListValue* root_children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(root_children);
+  ASSERT_EQ(root_children->size(), 7u);
+
+  // 0: `position: fixed; top: 2000px` -> fixed to viewport and outside viewport
+  // -> pruned.
+  ExpectNodeInteractionPrunedAsUnreachable((*root_children)[0].GetDict());
+
+  // 1: Child `<button>` inside `position: fixed; transform: translateY(100%)`
+  // sheet -> inside `isInFixedPosSubtree` and outside viewport -> pruned.
+  const base::ListValue* sheet_children =
+      (*root_children)[1].GetDict().FindList("childrenNodes");
+  ASSERT_TRUE(sheet_children);
+  ASSERT_EQ(sheet_children->size(), 1u);
+  ExpectNodeInteractionPrunedAsUnreachable((*sheet_children)[0].GetDict());
+
+  // 2: `position: fixed` button inside a non-generic `transform: translateZ(0)`
+  // container at `top: 2000px` (hoisted directly to `root_children[2]`) ->
+  // anchored to the transformed container rather than the viewport, so
+  // reachable by scrolling the document.
+  ExpectNodeInteractionActionable((*root_children)[2].GetDict());
+
+  // 3: `position: fixed; top: 2000px` inside a `200px` scroller -> fixed to
+  // viewport (scrolling the scroller cannot move it into view) -> pruned.
+  const base::ListValue* scroller_children =
+      (*root_children)[3].GetDict().FindList("childrenNodes");
+  ASSERT_TRUE(scroller_children);
+  ASSERT_EQ(scroller_children->size(), 1u);
+  ExpectNodeInteractionPrunedAsUnreachable((*scroller_children)[0].GetDict());
+
+  // 4: `position: fixed` scroller at `(10, 10)` inside an unreachable
+  // `left: -9999px` outer scroller escapes the outer scroller, so its
+  // scrollable child at `top: 300px` retains actionable `nodeInteractionInfo`.
+  const base::ListValue* outer_scroller_children =
+      (*root_children)[4].GetDict().FindList("childrenNodes");
+  ASSERT_TRUE(outer_scroller_children);
+  ASSERT_EQ(outer_scroller_children->size(), 1u);
+  const base::ListValue* fixed_scroller_children =
+      (*outer_scroller_children)[0].GetDict().FindList("childrenNodes");
+  ASSERT_TRUE(fixed_scroller_children);
+  ASSERT_EQ(fixed_scroller_children->size(), 1u);
+  ExpectNodeInteractionActionable((*fixed_scroller_children)[0].GetDict());
+
+  // 5: `position: fixed; left: 200px` button inside an unemitted
+  // `transform: translateZ(0)` ancestor inside a `100x100` `overflow: hidden`
+  // container -> clipped by `overflow: hidden` and unreachable -> pruned.
+  const base::ListValue* overflow_hidden_children =
+      (*root_children)[5].GetDict().FindList("childrenNodes");
+  ASSERT_TRUE(overflow_hidden_children);
+  ASSERT_EQ(overflow_hidden_children->size(), 1u);
+  ExpectNodeInteractionPrunedAsUnreachable(
+      (*overflow_hidden_children)[0].GetDict());
+
+  // 6: `position: fixed; left: 100px` button inside a `50x50`
+  // `overflow: hidden` container whose parent is an unemitted `300x100`
+  // `transform: translateZ(0)` container -> anchored to the outer transformed
+  // container rather than clipped by the inner `overflow: hidden` box, so
+  // visible and actionable.
+  const base::ListValue* inner_overflow_hidden_children =
+      (*root_children)[6].GetDict().FindList("childrenNodes");
+  ASSERT_TRUE(inner_overflow_hidden_children);
+  ASSERT_EQ(inner_overflow_hidden_children->size(), 1u);
+  EXPECT_TRUE(
+      (*inner_overflow_hidden_children)[0].GetDict().FindDictByDottedPath(
+          "contentAttributes.geometry.visibleBoundingBox"));
+  ExpectNodeInteractionActionable(
+      (*inner_overflow_hidden_children)[0].GetDict());
+}
+
+// Tests `isAnchoredOffscreen` inside user-scrollable (`overflow: auto`) and
+// unreachable overflow containers, verifying that scrollable children below or
+// above the scrollport retain actionable `nodeInteractionInfo` while negatively
+// offset children and children of unreachable scrollers are pruned as
+// `VISUALLY_UNREACHABLE`.
+TEST_F(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_AnchoredOffscreen_OverflowContainers) {
+  const std::string html = R"(
+    <html>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      </head>
+      <body style="margin: 0; padding: 0;">
+        <div id="scroller" style="overflow: auto; width: 200px; height: 200px; position: relative;">
+          <div style="height: 2000px; position: relative;">
+            <button style="position: absolute; left: 10px; top: 200px; width: 100px; height: 40px;">
+              Reachable Above Scrollport
+            </button>
+            <button style="position: absolute; left: 10px; top: 1500px; width: 100px; height: 40px;">
+              Reachable Below Scrollport
+            </button>
+            <button style="position: absolute; left: -9999px; top: 100px; width: 100px; height: 40px;">
+              Unreachable Negative In Scroller
+            </button>
+          </div>
+        </div>
+        <div style="cursor: pointer; overflow: auto; width: 200px; height: 200px; position: absolute; left: -9999px; top: 0;">
+          <div style="height: 2000px; position: relative;">
+            <button style="position: absolute; left: 10px; top: 50px; width: 100px; height: 40px;">
+              Child Of Unreachable Scroller
+            </button>
+            <iframe id="unreachable_iframe" src="about:blank" style="border: 0; width: 150px; height: 150px;"></iframe>
+          </div>
+        </div>
+      </body>
+    </html>
+  )";
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  // Scroll `#scroller` to 800px so `top: 200px` is above its scrollport and
+  // `top: 1500px` is below its scrollport; both remain reachable by scrolling.
+  // Also populate the same-origin `<iframe>` inside the unreachable scroller.
+  ASSERT_TRUE(web::test::ExecuteJavaScriptForFeatureAndReturnResult(
+      web_state(),
+      @"document.getElementById('scroller').scrollTop = 800; "
+      @"const iframeDoc = "
+      @"document.getElementById('unreachable_iframe').contentDocument; "
+      @"iframeDoc.body.innerHTML = '<button style=\"width: 80px; height: "
+      @"30px;\">Iframe Child In Unreachable Scroller</button>'; true;",
+      feature()));
+
+  std::optional<base::Value> result_value = RunExtraction(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/true,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(1));
+
+  ASSERT_TRUE(result_value.has_value());
+  ASSERT_TRUE(result_value->is_dict());
+
+  const base::DictValue* root_node =
+      result_value->GetDict().FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+  const base::ListValue* root_children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(root_children);
+  ASSERT_EQ(root_children->size(), 2u);
+
+  // First container: reachable `#scroller` (the non-generic spacer `<div>` is
+  // flattened, so `#scroller`'s children are the 3 `<button>` elements).
+  const base::ListValue* scroller_children =
+      (*root_children)[0].GetDict().FindList("childrenNodes");
+  ASSERT_TRUE(scroller_children);
+  ASSERT_EQ(scroller_children->size(), 3u);
+
+  // 0: `top: 200px` (above scrollTop=800) -> reachable by scrolling up.
+  ExpectNodeInteractionActionable((*scroller_children)[0].GetDict());
+  // 1: `top: 1500px` (below scrollTop=800..1000) -> reachable by scrolling
+  // down.
+  ExpectNodeInteractionActionable((*scroller_children)[1].GetDict());
+  // 2: `left: -9999px` -> outside scroller's reachable rect, pruned.
+  ExpectNodeInteractionPrunedAsUnreachable((*scroller_children)[2].GetDict());
+
+  // Second container: unreachable scroller at `left: -9999px`.
+  const base::DictValue& unreachable_scroller = (*root_children)[1].GetDict();
+  // The unreachable scroller itself (`cursor: pointer`) must have its
+  // positive interaction info pruned.
+  ExpectNodeInteractionPrunedAsUnreachable(unreachable_scroller);
+  const base::ListValue* unreachable_scroller_children =
+      unreachable_scroller.FindList("childrenNodes");
+  ASSERT_TRUE(unreachable_scroller_children);
+  ASSERT_EQ(unreachable_scroller_children->size(), 2u);
+  // 0: Direct child `<button>` inside unreachable scroller must be pruned.
+  ExpectNodeInteractionPrunedAsUnreachable(
+      (*unreachable_scroller_children)[0].GetDict());
+  // 1: Child `<button>` inside same-origin `<iframe>` inside unreachable
+  // scroller must also be pruned (`isInsideUnreachableOverflowContainer`
+  // propagates across same-origin iframes).
+  const base::ListValue* iframe_children =
+      (*unreachable_scroller_children)[1].GetDict().FindList("childrenNodes");
+  ASSERT_TRUE(iframe_children);
+  ASSERT_EQ(iframe_children->size(), 1u);
+  const base::ListValue* iframe_root_children =
+      (*iframe_children)[0].GetDict().FindList("childrenNodes");
+  ASSERT_TRUE(iframe_root_children);
+  ASSERT_EQ(iframe_root_children->size(), 1u);
+  ExpectNodeInteractionPrunedAsUnreachable(
+      (*iframe_root_children)[0].GetDict());
+}
+
 // Test fieldset extraction logic.
 TEST_F(PageContextExtractorJavaScriptFeatureTest,
        ExtractPageContext_FieldsetControl) {
