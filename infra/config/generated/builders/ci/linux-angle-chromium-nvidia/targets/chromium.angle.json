@@ -18,8 +18,8 @@
           "containment_type": "AUTO",
           "dimensions": {
             "display_server": "x11",
-            "gpu": "10de:2184-535.183.01|10de:2184-595.104.02",
-            "os": "Ubuntu-22.04|Ubuntu-24.04",
+            "gpu": "10de:2184-595.104.02",
+            "os": "Ubuntu-24.04",
             "pool": "chromium.tests.gpu"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -49,8 +49,8 @@
           "containment_type": "AUTO",
           "dimensions": {
             "display_server": "x11",
-            "gpu": "10de:2184-535.183.01|10de:2184-595.104.02",
-            "os": "Ubuntu-22.04|Ubuntu-24.04",
+            "gpu": "10de:2184-595.104.02",
+            "os": "Ubuntu-24.04",
             "pool": "chromium.tests.gpu"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -90,8 +90,8 @@
           "containment_type": "AUTO",
           "dimensions": {
             "display_server": "x11",
-            "gpu": "10de:2184-535.183.01|10de:2184-595.104.02",
-            "os": "Ubuntu-22.04|Ubuntu-24.04",
+            "gpu": "10de:2184-595.104.02",
+            "os": "Ubuntu-24.04",
             "pool": "chromium.tests.gpu"
           },
           "idempotent": false,
@@ -126,8 +126,8 @@
           "containment_type": "AUTO",
           "dimensions": {
             "display_server": "x11",
-            "gpu": "10de:2184-535.183.01|10de:2184-595.104.02",
-            "os": "Ubuntu-22.04|Ubuntu-24.04",
+            "gpu": "10de:2184-595.104.02",
+            "os": "Ubuntu-24.04",
             "pool": "chromium.tests.gpu"
           },
           "idempotent": false,
@@ -164,8 +164,8 @@
           "containment_type": "AUTO",
           "dimensions": {
             "display_server": "x11",
-            "gpu": "10de:2184-535.183.01|10de:2184-595.104.02",
-            "os": "Ubuntu-22.04|Ubuntu-24.04",
+            "gpu": "10de:2184-595.104.02",
+            "os": "Ubuntu-24.04",
             "pool": "chromium.tests.gpu"
           },
           "idempotent": false,
@@ -202,8 +202,8 @@
           "containment_type": "AUTO",
           "dimensions": {
             "display_server": "x11",
-            "gpu": "10de:2184-535.183.01|10de:2184-595.104.02",
-            "os": "Ubuntu-22.04|Ubuntu-24.04",
+            "gpu": "10de:2184-595.104.02",
+            "os": "Ubuntu-24.04",
             "pool": "chromium.tests.gpu"
           },
           "idempotent": false,
