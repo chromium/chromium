@@ -26,8 +26,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.commerce.PriceUtils;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.proto.ShoppingPersistedTabData.ShoppingPersistedTabDataProto;
@@ -97,16 +95,6 @@ public class ShoppingPersistedTabData extends PersistedTabData {
 
     static {
         PersistedTabData.addSupportedMaintenanceClass(USER_DATA_KEY);
-    }
-
-    // Lazy initialization of ShoppingService
-    private static class ShoppingServiceHolder {
-        private static final ShoppingService sShoppingService;
-
-        static {
-            Profile profile = ProfileManager.getLastUsedRegularProfile();
-            sShoppingService = ShoppingServiceFactory.getForProfile(profile);
-        }
     }
 
     /**
@@ -233,7 +221,8 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         if (!navigationHandle.isInPrimaryMainFrame()) {
             return;
         }
-        if (ShoppingServiceHolder.sShoppingService == null) return;
+        ShoppingService shoppingService = ShoppingServiceFactory.getForProfile(tab.getProfile());
+        if (shoppingService == null) return;
         ShoppingPersistedTabDataService service =
                 ShoppingPersistedTabDataService.getForProfile(tab.getProfile());
         ShoppingService.ProductInfoCallback productInfoCallback =
@@ -268,8 +257,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                         onCompleteForTesting.run();
                     }
                 };
-        ShoppingServiceHolder.sShoppingService.getProductInfoForUrl(
-                navigationHandle.getUrl(), productInfoCallback);
+        shoppingService.getProductInfoForUrl(navigationHandle.getUrl(), productInfoCallback);
     }
 
     /**
@@ -502,9 +490,14 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                 },
                 (Callback<@Nullable ShoppingPersistedTabData> supplierCallback) -> {
                     if (tab.isDestroyed()
-                            || ShoppingServiceHolder.sShoppingService == null
                             || getTimeSinceTabLastOpenedMs(tab)
                                     > TimeUnit.SECONDS.toMillis(getStaleTabThresholdSeconds())) {
+                        supplierCallback.onResult(null);
+                        return;
+                    }
+                    ShoppingService shoppingService =
+                            ShoppingServiceFactory.getForProfile(tab.getProfile());
+                    if (shoppingService == null) {
                         supplierCallback.onResult(null);
                         return;
                     }
@@ -526,8 +519,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                                 sptd.logPriceDropMetrics(METRICS_IDENTIFIER_PREFIX);
                                 supplierCallback.onResult(sptd);
                             };
-                    ShoppingServiceHolder.sShoppingService.getProductInfoForUrl(
-                            tab.getUrl(), productInfoCallback);
+                    shoppingService.getProductInfoForUrl(tab.getUrl(), productInfoCallback);
                 },
                 (Class<@Nullable ShoppingPersistedTabData>) ShoppingPersistedTabData.class,
                 callback);
