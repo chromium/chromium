@@ -112,7 +112,7 @@ class MirroringToFlingingSwitcherTest : public testing::Test {
 
 TEST_F(MirroringToFlingingSwitcherTest, SwitchToFlingingFaliure) {
   // No switch to flinging is expected as DefaultPresentationRequest is not set.
-  EXPECT_CALL(*media_router_, JoinRouteInternal).Times(0);
+  EXPECT_CALL(*media_router_, JoinRoute).Times(0);
   SwitchToFlingingIfPossible(GetNewTabSource());
   task_environment_.RunUntilIdle();
 }
@@ -130,9 +130,9 @@ TEST_F(MirroringToFlingingSwitcherTest, SwitchToFlinging) {
       MediaSource::ForPresentationUrl(presentation_request.presentation_urls[0])
           .id();
   EXPECT_CALL(*media_router_,
-              JoinRouteInternal(source_id, kAutoJoinPresentationId,
-                                presentation_request.frame_origin,
-                                web_contents_.get(), _, base::TimeDelta()));
+              JoinRoute(source_id, kAutoJoinPresentationId,
+                        presentation_request.frame_origin, web_contents_.get(),
+                        _, base::TimeDelta()));
 
   // Switch to flinging request is expected to be sent.
   SwitchToFlingingIfPossible(GetNewTabSource());

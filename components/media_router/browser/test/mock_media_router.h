@@ -48,41 +48,24 @@ class MockMediaRouter : public MediaRouterBase {
 
   void Initialize() override {}
 
-  // TODO(crbug.com/40524294): Use MOCK_METHOD directly once GMock gets the
-  // move-only type support.
-  void CreateRoute(const MediaSource::Id& source,
-                   const MediaSink::Id& sink_id,
-                   const url::Origin& origin,
-                   content::WebContents* web_contents,
-                   MediaRouteResponseCallback callback,
-                   base::TimeDelta timeout) override {
-    CreateRouteInternal(source, sink_id, origin, web_contents, callback,
-                        timeout);
-  }
-  MOCK_METHOD6(CreateRouteInternal,
-               void(const MediaSource::Id& source,
-                    const MediaSink::Id& sink_id,
-                    const url::Origin& origin,
-                    content::WebContents* web_contents,
-                    MediaRouteResponseCallback& callback,
-                    base::TimeDelta timeout));
-
-  void JoinRoute(const MediaSource::Id& source,
-                 const std::string& presentation_id,
-                 const url::Origin& origin,
-                 content::WebContents* web_contents,
-                 MediaRouteResponseCallback callback,
-                 base::TimeDelta timeout) override {
-    JoinRouteInternal(source, presentation_id, origin, web_contents, callback,
-                      timeout);
-  }
-  MOCK_METHOD6(JoinRouteInternal,
-               void(const MediaSource::Id& source,
-                    const std::string& presentation_id,
-                    const url::Origin& origin,
-                    content::WebContents* web_contents,
-                    MediaRouteResponseCallback& callback,
-                    base::TimeDelta timeout));
+  MOCK_METHOD(void,
+              CreateRoute,
+              (const MediaSource::Id& source,
+               const MediaSink::Id& sink_id,
+               const url::Origin& origin,
+               content::WebContents* web_contents,
+               MediaRouteResponseCallback callback,
+               base::TimeDelta timeout),
+              (override));
+  MOCK_METHOD(void,
+              JoinRoute,
+              (const MediaSource::Id& source,
+               const std::string& presentation_id,
+               const url::Origin& origin,
+               content::WebContents* web_contents,
+               MediaRouteResponseCallback callback,
+               base::TimeDelta timeout),
+              (override));
 
   MOCK_METHOD1(DetachRoute, void(MediaRoute::Id route_id));
   MOCK_METHOD1(TerminateRoute, void(const MediaRoute::Id& route_id));

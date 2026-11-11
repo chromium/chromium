@@ -58,12 +58,6 @@ constexpr char kSinkId[] = "sink1";
 constexpr char kSinkName[] = "sink name";
 constexpr char kSourceId[] = "source1";
 
-ACTION_TEMPLATE(SaveArgWithMove,
-                HAS_1_TEMPLATE_PARAMS(int, k),
-                AND_1_VALUE_PARAMS(pointer)) {
-  *pointer = std::move(::testing::get<k>(args));
-}
-
 class MockControllerObserver : public CastDialogController::Observer {
  public:
   MockControllerObserver() = default;
@@ -190,9 +184,12 @@ class MediaRouterViewsUITest : public ChromeRenderViewHostTestHarness {
         sessions::SessionTabHelper::IdForTab(web_contents()).id());
     MediaRouteResponseCallback callback;
     EXPECT_CALL(*mock_router_,
-                CreateRouteInternal(media_source.id(), kSinkId, _,
-                                    web_contents(), _, base::Seconds(60)))
-        .WillOnce(SaveArgWithMove<4>(&callback));
+                CreateRoute(media_source.id(), kSinkId, _, web_contents(), _,
+                            base::Seconds(60)))
+        .WillOnce(WithArg<4>(
+            [&callback](MediaRouteResponseCallback response_callback) {
+              callback = std::move(response_callback);
+            }));
     MediaSink sink{CreateCastSink(kSinkId, kSinkName)};
     for (MediaSinksObserver* sinks_observer : media_sinks_observers_) {
       sinks_observer->OnSinksUpdated({sink}, std::vector<url::Origin>());
@@ -220,10 +217,12 @@ class MediaRouterViewsUITest : public ChromeRenderViewHostTestHarness {
     MediaSink sink{CreateCastSink(kSinkId, kSinkName)};
     ui_->OnSinksUpdated({{sink, {cast_mode}}});
     MediaRouteResponseCallback callback;
-    EXPECT_CALL(
-        *mock_router_,
-        CreateRouteInternal(_, _, _, _, _, base::Seconds(timeout_seconds)))
-        .WillOnce(SaveArgWithMove<4>(&callback));
+    EXPECT_CALL(*mock_router_,
+                CreateRoute(_, _, _, _, _, base::Seconds(timeout_seconds)))
+        .WillOnce(WithArg<4>(
+            [&callback](MediaRouteResponseCallback response_callback) {
+              callback = std::move(response_callback);
+            }));
     for (MediaSinksObserver* sinks_observer : media_sinks_observers_) {
       sinks_observer->OnSinksUpdated({sink}, std::vector<url::Origin>());
     }

@@ -123,8 +123,7 @@ TEST_F(CastHandlerTest, SetSinkToUse) {
             return true;
           }));
 
-  EXPECT_CALL(*router_,
-              CreateRouteInternal(presentation_url, kSinkId1, _, _, _, _));
+  EXPECT_CALL(*router_, CreateRoute(presentation_url, kSinkId1, _, _, _, _));
   media_router::ControllerPresentationServiceDelegateImpl::
       GetOrCreateForWebContents(web_contents())
           ->StartPresentation(request, base::DoNothing(), base::DoNothing());
@@ -137,12 +136,11 @@ TEST_F(CastHandlerTest, StartDesktopMirroring) {
 
   // Make |router_| return a successful result. |callback| should be notified of
   // the success.
-  EXPECT_CALL(
-      *router_,
-      CreateRouteInternal(media_router::MediaSource::ForUnchosenDesktop().id(),
+  EXPECT_CALL(*router_,
+              CreateRoute(media_router::MediaSource::ForUnchosenDesktop().id(),
                           kSinkId1, _, _, _, _))
       .WillOnce(
-          WithArg<4>([](media_router::MediaRouteResponseCallback& callback) {
+          WithArg<4>([](media_router::MediaRouteResponseCallback callback) {
             std::move(callback).Run(
                 media_router::mojom::RoutePresentationConnectionPtr(),
                 media_router::RouteRequestResult(
@@ -170,14 +168,14 @@ TEST_F(CastHandlerTest, StartTabMirroring) {
 
   // Make |router_| return a successful result. |callback| should be notified of
   // the success.
-  EXPECT_CALL(*router_,
-              CreateRouteInternal(
-                  media_router::MediaSource::ForTab(
+  EXPECT_CALL(
+      *router_,
+      CreateRoute(media_router::MediaSource::ForTab(
                       sessions::SessionTabHelper::IdForTab(web_contents()).id())
                       .id(),
                   kSinkId1, _, _, _, _))
       .WillOnce(
-          WithArg<4>([](media_router::MediaRouteResponseCallback& callback) {
+          WithArg<4>([](media_router::MediaRouteResponseCallback callback) {
             std::move(callback).Run(
                 media_router::mojom::RoutePresentationConnectionPtr(),
                 media_router::RouteRequestResult(

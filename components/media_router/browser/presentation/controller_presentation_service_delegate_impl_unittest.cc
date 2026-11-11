@@ -484,9 +484,9 @@ TEST_F(ControllerPresentationServiceDelegateImplTest,
 
   // Set up a PresentationConnection so we can listen to it.
   MediaRouteResponseCallback route_response_callback;
-  EXPECT_CALL(*router_, JoinRouteInternal(_, _, _, _, _, _))
+  EXPECT_CALL(*router_, JoinRoute(_, _, _, _, _, _))
       .WillOnce(WithArgs<4>(
-          [&route_response_callback](MediaRouteResponseCallback& callback) {
+          [&route_response_callback](MediaRouteResponseCallback callback) {
             route_response_callback = std::move(callback);
           }));
 
@@ -792,8 +792,7 @@ TEST_F(ControllerPresentationServiceDelegateImplTest, AutoJoinRequest) {
   // A request to reconnect to a presentation with the special presentation ID
   // should succeed.
   ASSERT_TRUE(IsAutoJoinPresentationId(kPresentationId));
-  EXPECT_CALL(*router_, JoinRouteInternal(_, kPresentationId, _, _, _, _))
-      .Times(1);
+  EXPECT_CALL(*router_, JoinRoute(_, kPresentationId, _, _, _, _)).Times(1);
   delegate_impl_->ReconnectPresentation(
       *presentation_request_, kPresentationId,
       base::BindOnce(
@@ -818,8 +817,8 @@ TEST_F(ControllerPresentationServiceDelegateImplTest,
       {main_frame_process_id_, main_frame_routing_id_}, {invalid_url},
       frame_origin_);
 
-  // JoinRouteInternal should NOT be called.
-  EXPECT_CALL(*router_, JoinRouteInternal(_, _, _, _, _, _)).Times(0);
+  // JoinRoute should NOT be called.
+  EXPECT_CALL(*router_, JoinRoute(_, _, _, _, _, _)).Times(0);
 
   // Error callback should be called.
   EXPECT_CALL(mock_create_connection_callbacks, OnCreateConnectionError(_))

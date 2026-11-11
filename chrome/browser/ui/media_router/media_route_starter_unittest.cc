@@ -209,12 +209,12 @@ class MediaRouteStarterTest : public ChromeRenderViewHostTestHarness {
     // Handler so MockMediaRouter will respond to requests to create a route.
     // Will construct a RouteRequestResult based on the set result code and
     // then call the handler's callback.
-    ON_CALL(*media_router(), CreateRouteInternal(_, _, _, _, _, _))
+    ON_CALL(*media_router(), CreateRoute(_, _, _, _, _, _))
         .WillByDefault([this](const MediaSource::Id& source_id,
                               const MediaSink::Id& sink_id,
                               const url::Origin& origin,
                               content::WebContents* web_contents,
-                              MediaRouteResponseCallback& callback,
+                              MediaRouteResponseCallback callback,
                               base::TimeDelta timeout) {
           // This indicates the test did not properly set the expected result
           EXPECT_NE(mojom::RouteRequestResultCode::UNKNOWN_ERROR, result_code_);
@@ -397,10 +397,10 @@ class MediaRouteStarterTest : public ChromeRenderViewHostTestHarness {
         base::BindOnce(&MediaRouteStarterTest::HandleMediaRouteResponse,
                        base::Unretained(this)));
 
-    EXPECT_CALL(*media_router(),
-                CreateRouteInternal(params->source_id, params->request->sink_id,
-                                    params->origin, web_contents(), _,
-                                    params->timeout));
+    EXPECT_CALL(
+        *media_router(),
+        CreateRoute(params->source_id, params->request->sink_id, params->origin,
+                    web_contents(), _, params->timeout));
 
     media_route_starter()->StartRoute(std::move(params));
   }

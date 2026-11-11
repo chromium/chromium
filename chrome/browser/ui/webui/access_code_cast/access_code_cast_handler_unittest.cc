@@ -218,9 +218,8 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
     UpdateSinks({cast_sink_1().sink()}, std::vector<url::Origin>());
     handler()->SetSinkIdForTesting(cast_sink_1().sink().id());
 
-    EXPECT_CALL(*router(),
-                CreateRouteInternal(source.id(), cast_sink_1().sink().id(), _,
-                                    web_contents(), _, timeout));
+    EXPECT_CALL(*router(), CreateRoute(source.id(), cast_sink_1().sink().id(),
+                                       _, web_contents(), _, timeout));
 
     handler()->CastToSink(mock_callback.Get());
   }
@@ -238,10 +237,9 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
     auto source =
         MediaSource::ForPresentationUrl(*(request.presentation_urls.begin()));
 
-    EXPECT_CALL(*router(),
-                CreateRouteInternal(source.id(), cast_sink_1().sink().id(),
-                                    request.frame_origin, web_contents(), _,
-                                    base::Seconds(20)));
+    EXPECT_CALL(*router(), CreateRoute(source.id(), cast_sink_1().sink().id(),
+                                       request.frame_origin, web_contents(), _,
+                                       base::Seconds(20)));
     handler()->CastToSink(mock_callback.Get());
   }
 
@@ -302,12 +300,12 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
     // Handler so MockMediaRouter will respond to requests to create a route.
     // Will construct a RouteRequestResult based on the set result code and
     // then call the handler's callback, which should call the page's callback.
-    ON_CALL(*router(), CreateRouteInternal(_, _, _, _, _, _))
+    ON_CALL(*router(), CreateRoute(_, _, _, _, _, _))
         .WillByDefault([this](const MediaSource::Id& source_id,
                               const MediaSink::Id& sink_id,
                               const url::Origin& origin,
                               content::WebContents* web_contents,
-                              MediaRouteResponseCallback& callback,
+                              MediaRouteResponseCallback callback,
                               base::TimeDelta timeout) {
           std::unique_ptr<RouteRequestResult> result;
           if (result_code_ == mojom::RouteRequestResultCode::OK) {
