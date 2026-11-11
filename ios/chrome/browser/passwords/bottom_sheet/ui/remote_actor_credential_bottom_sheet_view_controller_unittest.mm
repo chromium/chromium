@@ -6,24 +6,31 @@
 
 #import <UIKit/UIKit.h>
 
+#import <string_view>
+
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/remote_actor_credential_bottom_sheet_mutator.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/favicon_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
+#import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/app/uikit_test_util.h"
+#import "net/base/apple/url_conversions.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+#import "url/gurl.h"
 
 namespace {
 
@@ -31,12 +38,35 @@ constexpr char16_t kTestDomain[] = u"example.com";
 constexpr char16_t kBeginLinkTag[] = u"BEGIN_LINK";
 constexpr char16_t kEndLinkTag[] = u"END_LINK";
 
+constexpr std::string_view kExpectedLearnMoreURL =
+    "https://support.google.com/gemini?p=lm_gpm_data";
+
+// Returns the learn more URL of the Gemini remote actor.
+GURL ExpectedLearnMoreURL() {
+  return GURL(kExpectedLearnMoreURL);
+}
+
+// Returns the expected subtitle parsed with its link range.
+StringWithTags ExpectedSubtitleWithTags() {
+  return ParseStringWithLinks(
+      l10n_util::GetNSStringF(IDS_REMOTE_ACTOR_SHARING_DIALOG_SUBTITLE,
+                              kBeginLinkTag, kEndLinkTag, u"Gemini"));
+}
+
 // Returns the expected subtitle, without the link tags.
 NSString* ExpectedSubtitle() {
-  return ParseStringWithLinks(
-             l10n_util::GetNSStringF(IDS_REMOTE_ACTOR_SHARING_DIALOG_SUBTITLE,
-                                     kBeginLinkTag, kEndLinkTag, u"Gemini"))
-      .string;
+  return ExpectedSubtitleWithTags().string;
+}
+
+// Returns the expected range of the link in the subtitle.
+NSRange ExpectedSubtitleLinkRange() {
+  return ExpectedSubtitleWithTags().ranges[0];
+}
+
+// Returns the subtitle text view in `view`'s hierarchy, or nil if not found.
+UITextView* SubtitleTextView(UIView* view) {
+  return chrome_test_util::FindViewById<UITextView>(
+      view, kConfirmationAlertSubtitleAccessibilityIdentifier);
 }
 
 // Returns the expected title for `domain`.
@@ -65,14 +95,32 @@ class RemoteActorCredentialBottomSheetViewControllerTest : public PlatformTest {
     PlatformTest::SetUp();
     mutator_ = OCMStrictProtocolMock(
         @protocol(RemoteActorCredentialBottomSheetMutator));
+    scene_handler_ = OCMStrictProtocolMock(@protocol(SceneCommands));
     view_controller_ =
         [[RemoteActorCredentialBottomSheetViewController alloc] init];
     view_controller_.mutator = mutator_;
+    view_controller_.sceneHandler = scene_handler_;
   }
 
   void TearDown() override {
     EXPECT_OCMOCK_VERIFY(mutator_);
+    EXPECT_OCMOCK_VERIFY(scene_handler_);
     PlatformTest::TearDown();
+  }
+
+  // Loads the view and returns the URL attached to the subtitle link. Expects
+  // the URL to span exactly the link range.
+  NSURL* SubtitleLinkURL() {
+    [view_controller_ loadViewIfNeeded];
+    UITextView* subtitle = SubtitleTextView(view_controller_.view);
+    EXPECT_TRUE(subtitle);
+    NSRange link_range = ExpectedSubtitleLinkRange();
+    NSRange effective_range;
+    NSURL* link = [subtitle.attributedText attribute:NSLinkAttributeName
+                                             atIndex:link_range.location
+                                      effectiveRange:&effective_range];
+    EXPECT_TRUE(NSEqualRanges(link_range, effective_range));
+    return link;
   }
 
   // Sets the test domain and `suggestions`, then loads the view.
@@ -103,6 +151,7 @@ class RemoteActorCredentialBottomSheetViewControllerTest : public PlatformTest {
   }
 
   id mutator_;
+  id scene_handler_;
   RemoteActorCredentialBottomSheetViewController* view_controller_;
 };
 
@@ -142,6 +191,40 @@ TEST_F(RemoteActorCredentialBottomSheetViewControllerTest,
       view_controller_.configuration.primaryActionString);
   EXPECT_NSEQ(l10n_util::GetNSString(IDS_CANCEL),
               view_controller_.configuration.secondaryActionString);
+}
+
+// Tests that the subtitle link points to the remote actor's learn more URL.
+TEST_F(RemoteActorCredentialBottomSheetViewControllerTest,
+       SubtitleLinkUsesLearnMoreURL) {
+  EXPECT_NSEQ(net::NSURLWithGURL(ExpectedLearnMoreURL()), SubtitleLinkURL());
+}
+
+// Tests that tapping the subtitle link opens the learn more URL in a new tab.
+TEST_F(RemoteActorCredentialBottomSheetViewControllerTest,
+       TappingSubtitleLinkOpensLearnMoreURL) {
+  [view_controller_ loadViewIfNeeded];
+  UITextView* subtitle = SubtitleTextView(view_controller_.view);
+  ASSERT_TRUE(subtitle);
+  ASSERT_NSEQ(view_controller_, subtitle.delegate);
+
+  OCMExpect([scene_handler_
+      closePresentedViewsAndOpenURL:[OCMArg checkWithBlock:^BOOL(
+                                                OpenNewTabCommand* command) {
+        return command.URL == ExpectedLearnMoreURL();
+      }]]);
+
+  id text_item = OCMClassMock([UITextItem class]);
+  UIAction* default_action = [UIAction actionWithHandler:^(UIAction*){
+  }];
+  UIAction* action = [subtitle.delegate textView:subtitle
+                        primaryActionForTextItem:text_item
+                                   defaultAction:default_action];
+  ASSERT_TRUE(action);
+  [action performWithSender:nil target:nil];
+  EXPECT_FALSE([subtitle.delegate textView:subtitle
+              menuConfigurationForTextItem:text_item
+                               defaultMenu:[UIMenu menuWithChildren:@[]]]);
+  [text_item stopMocking];
 }
 
 // Tests that setting the domain before the view loads configures the title

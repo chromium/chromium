@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/remote_actor_credential_bottom_sheet_view_controller.h"
 
+#import <string_view>
+
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
 #import "base/strings/string_number_conversions.h"
@@ -12,6 +14,8 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_ui_utils.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/remote_actor_credential_bottom_sheet_mutator.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/ui/bottom_sheet/table_view_bottom_sheet_view_controller+subclassing.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/favicon_content_configuration.h"
@@ -23,9 +27,15 @@
 #import "ios/chrome/common/ui/util/chrome_button.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+#import "url/gurl.h"
 
 namespace {
+
+// Help URL explaining how Gemini handles the user's data.
+constexpr std::string_view kGeminiLearnMoreURL =
+    "https://support.google.com/gemini?p=lm_gpm_data";
 
 // Link delimiters expected by `ParseStringWithLinks()`.
 constexpr char16_t kBeginLinkTag[] = u"BEGIN_LINK";
@@ -116,7 +126,8 @@ ButtonStackConfiguration* SetUpButtonConfiguration() {
 
 @interface RemoteActorCredentialBottomSheetViewController () <
     ConfirmationAlertActionHandler,
-    UITableViewDataSource>
+    UITableViewDataSource,
+    UITextViewDelegate>
 @end
 
 @implementation RemoteActorCredentialBottomSheetViewController {
@@ -131,11 +142,15 @@ ButtonStackConfiguration* SetUpButtonConfiguration() {
 
   // Range of the link in `subtitleString`.
   NSRange _subtitleLinkRange;
+
+  // URL opened when the link in the subtitle is tapped.
+  GURL _learnMoreURL;
 }
 
 - (instancetype)init {
   self = [super initWithConfiguration:SetUpButtonConfiguration()];
   if (self) {
+    _learnMoreURL = GURL(kGeminiLearnMoreURL);
     self.actionHandler = self;
   }
   return self;
@@ -261,19 +276,44 @@ ButtonStackConfiguration* SetUpButtonConfiguration() {
 
 - (void)customizeSubtitle:(UITextView*)subtitle {
   [super customizeSubtitle:subtitle];
+  subtitle.delegate = self;
   subtitle.selectable = YES;
-  // TODO(crbug.com/579384541): Handle taps on the subtitle link.
   NSMutableAttributedString* newSubtitle = [[NSMutableAttributedString alloc]
       initWithAttributedString:subtitle.attributedText];
   NSDictionary* linkAttributes = @{
-    NSLinkAttributeName : @"",
+    NSLinkAttributeName : net::NSURLWithGURL(_learnMoreURL),
     NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle),
   };
   [newSubtitle addAttributes:linkAttributes range:_subtitleLinkRange];
   subtitle.attributedText = newSubtitle;
 }
 
+#pragma mark - UITextViewDelegate
+
+- (UIAction*)textView:(UITextView*)textView
+    primaryActionForTextItem:(UITextItem*)textItem
+               defaultAction:(UIAction*)defaultAction {
+  __weak __typeof(self) weakSelf = self;
+  return [UIAction actionWithHandler:^(UIAction* action) {
+    [weakSelf openLearnMoreURL];
+  }];
+}
+
+- (UITextItemMenuConfiguration*)textView:(UITextView*)textView
+            menuConfigurationForTextItem:(UITextItem*)textItem
+                             defaultMenu:(UIMenu*)defaultMenu {
+  // Disable the system context menu so the link always opens inside Chrome.
+  return nil;
+}
+
 #pragma mark - Private
+
+// Opens `_learnMoreURL` in a new tab, closing the presented views first.
+- (void)openLearnMoreURL {
+  OpenNewTabCommand* command =
+      [OpenNewTabCommand commandWithURLFromChrome:_learnMoreURL];
+  [self.sceneHandler closePresentedViewsAndOpenURL:command];
+}
 
 // Returns the leading favicon configuration for `faviconAttributes`, or nil if
 // the favicon isn't available yet.
