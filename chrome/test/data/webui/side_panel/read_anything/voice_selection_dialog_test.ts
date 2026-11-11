@@ -520,17 +520,21 @@ suite('VoiceSelectionDialog', () => {
     }
   });
 
-  test('labels a mapped row with the nature name, still wrapped', async () => {
-    await setAvailableVoicesAndEnabledLangs([mappedVoice, mappedSpanishVoice]);
-    await drawDialog();
+  test(
+      'labels a mapped row with the nature name without menu instruction',
+      async () => {
+        await setAvailableVoicesAndEnabledLangs(
+            [mappedVoice, mappedSpanishVoice]);
+        await drawDialog();
 
-    for (const voice of [mappedVoice, mappedSpanishVoice]) {
-      const expected = getVoiceNatureNaming(voice.name)!;
-      const row = getDropdownItemForVoice(voice);
+        for (const voice of [mappedVoice, mappedSpanishVoice]) {
+          const expected = getVoiceNatureNaming(voice.name)!;
+          const row = getDropdownItemForVoice(voice);
 
-      assertEquals(`Select ${expected.natureName}`, row.getAttribute('label'));
-    }
-  });
+          assertEquals(expected.natureName, row.label);
+          assertEquals(expected.natureName, row.getAttribute('label'));
+        }
+      });
 
   test('falls back to the engine name when a voice is unmapped', async () => {
     await setAvailableVoicesAndEnabledLangs([googleNaturalVoice]);
@@ -540,8 +544,8 @@ suite('VoiceSelectionDialog', () => {
     const nameSpan = row.querySelector<HTMLElement>('.voice-name')!;
 
     assertEquals(googleNaturalVoice.name, nameSpan.textContent);
-    assertEquals(
-        `Select ${googleNaturalVoice.name}`, row.getAttribute('label'));
+    assertEquals(googleNaturalVoice.name, row.label);
+    assertEquals(googleNaturalVoice.name, row.getAttribute('label'));
     // Absent from the DOM, not present and empty.
     assertEquals(null, row.querySelector('.voice-description'));
   });
@@ -591,9 +595,8 @@ suite('VoiceSelectionDialog', () => {
 
     assertEquals(4, rows.length);
     for (const row of rows) {
-      // The accessible name is bilingual -- nature name plus an English
-      // instruction -- so no single lang can describe it, and tagging the
-      // host would apply one to both halves.
+      // Unmapped voices show English engine strings even for non-English
+      // locales, so lang is set only on mapped identity spans, not the host.
       assertFalse(row.hasAttribute('lang'));
 
       for (const tagged of row.querySelectorAll('[lang]')) {

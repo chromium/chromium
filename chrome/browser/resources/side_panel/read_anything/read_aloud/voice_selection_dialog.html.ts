@@ -69,7 +69,7 @@ export function getHtml(this: VoiceSelectionDialogElement) {
                  description, and the radio selection button. -->
             <cr-radio-button class="voice-radio-button label-first"
                 hide-label-text
-                label="${this.voiceLabel_(this.voiceDisplayName_(voiceItem))}"
+                label="${this.voiceDisplayName_(voiceItem)}"
                 name="${voiceItem.voice.name}" data-test-id="${voiceItem.id}">
               <div class="voice-text">
                 <span class="voice-name" aria-hidden="true"

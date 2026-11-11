@@ -326,15 +326,6 @@ export class VoiceSelectionDialogElement extends CrLitElement implements
     return voiceItem.natureNaming ? voiceItem.voice.lang : nothing;
   }
 
-  // TODO(crbug.com/565495310): Trigger voice preview on right arrow key within
-  // the voice selection dialog menu. Screen readers currently play "use right
-  // arrow key to preview voice" which isn't accurate within the voice selection
-  // dialog menu.
-  protected voiceLabel_(voiceName: string): string {
-    return loadTimeData.getStringF(
-        'readingModeLanguageMenuItemLabel', voiceName);
-  }
-
   protected previewIcon_(previewInitiated: boolean): string {
     return previewInitiated ? 'read-anything-20:stop-circle' :
                               'read-anything-20:play-circle';
