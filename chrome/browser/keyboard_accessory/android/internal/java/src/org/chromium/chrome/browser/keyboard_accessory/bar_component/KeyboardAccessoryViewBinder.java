@@ -403,11 +403,7 @@ class KeyboardAccessoryViewBinder {
                         chipView.getContext().getColorStateList(R.color.chip_stroke_color));
             }
             updateSelection();
-            Drawable iconDrawable = mSuggestionDrawableFunction.apply(item.getSuggestion());
-            if (iconDrawable != null) {
-                iconDrawable.setAlpha((int) (255 * iconAlpha));
-            }
-            chipView.setIconWithTint(iconDrawable, /* tintWithTextColor= */ false);
+            bindIcon(item, chipView, iconAlpha);
 
             if (item.isLoading()) {
                 // The `showLoadingView` must be called after `setIconWithTint` because
@@ -434,11 +430,22 @@ class KeyboardAccessoryViewBinder {
             }
 
             @Nullable String voiceOver = item.getSuggestion().getVoiceOver();
-            if (!TextUtils.isEmpty(voiceOver)) {
-                chipView.setContentDescription(voiceOver);
-            }
+            chipView.setContentDescription(TextUtils.isEmpty(voiceOver) ? null : voiceOver);
 
             TraceEvent.end("BarItemChipViewHolder#bind");
+        }
+
+        private void bindIcon(AutofillBarItem item, ChipView chipView, float iconAlpha) {
+            Drawable iconDrawable = mSuggestionDrawableFunction.apply(item.getSuggestion());
+            if (iconDrawable != null) {
+                iconDrawable.setAlpha((int) (255 * iconAlpha));
+            }
+            chipView.setIconWithTint(iconDrawable, /* tintWithTextColor= */ false);
+            chipView.setIconContentDescription(
+                    item.hasGeminiAttribution()
+                            ? chipView.getContext()
+                                    .getString(R.string.autofill_ai_suggested_by_gemini)
+                            : null);
         }
 
         private static @StyleRes int selectStyleForSuggestion(

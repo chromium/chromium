@@ -49,6 +49,8 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.StringRes;
@@ -1720,6 +1722,71 @@ public class KeyboardAccessoryControllerTest {
 
         when(mMockTabSwitchingDelegate.clickSelectedButton()).thenReturn(false);
         assertFalse(mCoordinator.acceptFallback());
+    }
+
+    @Test
+    // BarItemChipViewHolder queries ChromeFeatureList.ANDROID_ELEGANT_TEXT_HEIGHT via
+    // KeyboardAccessoryViewBinder#useLargeChips during construction.
+    @DisableFeatures(ChromeFeatureList.ANDROID_ELEGANT_TEXT_HEIGHT)
+    public void testPersonalContextSuggestionSetsGeminiIconContentDescription() {
+        EntityInstance personalContextEntity = mock(EntityInstance.class);
+        when(personalContextEntity.getRecordType())
+                .thenReturn(
+                        org.chromium.components.autofill.autofill_ai.RecordType.PERSONAL_CONTEXT);
+        when(mMockEntityDataManager.getEntityInstance("personal-guid"))
+                .thenReturn(personalContextEntity);
+
+        EntityInstance localEntity = mock(EntityInstance.class);
+        when(localEntity.getRecordType())
+                .thenReturn(org.chromium.components.autofill.autofill_ai.RecordType.LOCAL);
+        when(mMockEntityDataManager.getEntityInstance("local-guid")).thenReturn(localEntity);
+
+        AutofillSuggestion personalContextSuggestion =
+                new AutofillSuggestion.Builder()
+                        .setLabel("AN-147338")
+                        .setSubLabel("Order • amazon.de")
+                        .setIconId(R.drawable.shopping_bag_spark)
+                        .setSuggestionType(SuggestionType.FILL_AUTOFILL_AI)
+                        .setPayload(new AutofillAiPayload("personal-guid", false))
+                        .build();
+        AutofillSuggestion localSuggestion =
+                new AutofillSuggestion.Builder()
+                        .setLabel("AN-147338")
+                        .setSubLabel("Order • amazon.de")
+                        .setIconId(R.drawable.shopping_bag)
+                        .setSuggestionType(SuggestionType.FILL_AUTOFILL_AI)
+                        .setVoiceOver("Custom voiceover")
+                        .setPayload(new AutofillAiPayload("local-guid", false))
+                        .build();
+
+        mCoordinator.setSuggestions(
+                List.of(personalContextSuggestion, localSuggestion), mMockAutofillDelegate);
+        List<ActionBarItem> barItems = flattenItemGroups();
+        AutofillBarItem personalContextItem = (AutofillBarItem) barItems.get(0);
+        AutofillBarItem localItem = (AutofillBarItem) barItems.get(1);
+        assertTrue(personalContextItem.hasGeminiAttribution());
+        assertFalse(localItem.hasGeminiAttribution());
+
+        Context context = ApplicationProvider.getApplicationContext();
+        KeyboardAccessoryView accessoryView = new KeyboardAccessoryView(context, null);
+        FrameLayout parent = new FrameLayout(context);
+        KeyboardAccessoryViewBinder.BarItemChipViewHolder viewHolder =
+                new KeyboardAccessoryViewBinder.BarItemChipViewHolder(
+                        parent, accessoryView, suggestion -> null, BarItem.Type.SUGGESTION);
+        ImageView startIcon = viewHolder.itemView.findViewById(R.id.chip_view_start_icon);
+
+        viewHolder.bind(personalContextItem);
+        assertThat(
+                String.valueOf(startIcon.getContentDescription()),
+                equalsString(R.string.autofill_ai_suggested_by_gemini));
+        assertThat(viewHolder.itemView.getContentDescription(), is(nullValue()));
+
+        viewHolder.bind(localItem);
+        assertThat(startIcon.getContentDescription(), is(nullValue()));
+        assertThat(viewHolder.itemView.getContentDescription(), equalTo("Custom voiceover"));
+
+        viewHolder.bind(personalContextItem);
+        assertThat(viewHolder.itemView.getContentDescription(), is(nullValue()));
     }
 
     private int getGenerationImpressionCount() {

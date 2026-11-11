@@ -569,6 +569,7 @@ public class ChipView extends LinearLayout {
     }
 
     /** Sets the text color of the primary text view. */
+    @SuppressWarnings("SetTextColorAndSetTextSizeCheck")
     public void setTextColor(ColorStateList colors) {
         mPrimaryText.setTextColor(colors);
     }
@@ -589,6 +590,16 @@ public class ChipView extends LinearLayout {
     /** Sets the tint for the start icon. */
     public void setIconTint(@ColorInt int color) {
         setIconTint(ColorStateList.valueOf(color));
+    }
+
+    /**
+     * Sets the content description for the start icon of the chip view.
+     *
+     * @param description The content description for the start icon, or {@code null} if the icon is
+     *     decorative.
+     */
+    public void setIconContentDescription(@Nullable CharSequence description) {
+        mStartIcon.setContentDescription(description);
     }
 
     /**

@@ -325,6 +325,18 @@ public final class ChipViewTest {
     }
 
     @Test
+    public void setIconContentDescription() {
+        ImageView startIcon = mChipView.findViewById(R.id.chip_view_start_icon);
+        assertNull(startIcon.getContentDescription());
+
+        mChipView.setIconContentDescription("Suggested by Gemini");
+        assertEquals("Suggested by Gemini", startIcon.getContentDescription());
+
+        mChipView.setIconContentDescription(null);
+        assertNull(startIcon.getContentDescription());
+    }
+
+    @Test
     public void compactMode() {
         mChipView.getPrimaryTextView().setText("Primary text");
         int defaultStartPadding =

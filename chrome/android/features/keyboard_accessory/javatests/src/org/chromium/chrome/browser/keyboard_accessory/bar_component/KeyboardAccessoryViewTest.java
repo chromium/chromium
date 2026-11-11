@@ -18,6 +18,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -1172,6 +1173,64 @@ public class KeyboardAccessoryViewTest {
 
         ThreadUtils.runOnUiThreadBlocking(() -> setModelSelectedSuggestion(null));
         CriteriaHelper.pollUiThread(() -> !firstChip.isHovered() && !secondChip.isHovered());
+    }
+
+    @Test
+    @MediumTest
+    public void testSparkIconSetsSuggestedByGeminiContentDescription() throws InterruptedException {
+        AutofillBarItem sparkIconItem =
+                new AutofillBarItem(
+                        new AutofillSuggestion.Builder()
+                                .setLabel("AN-147338")
+                                .setSubLabel("Order • amazon.de")
+                                .setIconId(R.drawable.shopping_bag_spark)
+                                .setSuggestionType(SuggestionType.FILL_AUTOFILL_AI)
+                                .build(),
+                        new Action(AUTOFILL_SUGGESTION, wasObscured -> {}),
+                        mProfile,
+                        /* hasGeminiAttribution= */ true);
+        AutofillBarItem regularIconItem =
+                new AutofillBarItem(
+                        new AutofillSuggestion.Builder()
+                                .setLabel("Regular Order")
+                                .setSubLabel("Order • amazon.de")
+                                .setIconId(R.drawable.shopping_bag)
+                                .setSuggestionType(SuggestionType.FILL_AUTOFILL_AI)
+                                .build(),
+                        new Action(AUTOFILL_SUGGESTION, wasObscured -> {}),
+                        mProfile,
+                        /* hasGeminiAttribution= */ false);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(VISIBLE, true);
+                    mModel.get(BAR_ITEMS)
+                            .set(
+                                    new BarItem[] {
+                                        sparkIconItem,
+                                        createSheetOpener(/* atMemoryEnabled= */ true)
+                                    });
+                });
+        KeyboardAccessoryView view = mKeyboardAccessoryView.take();
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(view.mBarItemsView.getChildCount() > 0, is(true));
+                    ChipView chipView = (ChipView) view.mBarItemsView.getChildAt(0);
+                    ImageView iconImageView = chipView.findViewById(R.id.chip_view_start_icon);
+                    String expectedDescription =
+                            view.getContext().getString(R.string.autofill_ai_suggested_by_gemini);
+                    Criteria.checkThat(
+                            iconImageView.getContentDescription(), is(expectedDescription));
+                });
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mModel.get(BAR_ITEMS).update(0, regularIconItem));
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    ChipView chipView = (ChipView) view.mBarItemsView.getChildAt(0);
+                    ImageView iconImageView = chipView.findViewById(R.id.chip_view_start_icon);
+                    Criteria.checkThat(iconImageView.getContentDescription(), is(nullValue()));
+                });
     }
 
     /**

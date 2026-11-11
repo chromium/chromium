@@ -399,7 +399,8 @@ class KeyboardAccessoryMediator
                             suggestion,
                             createAutofillAction(
                                     delegate, suggestion.getOriginalIndex(), suggestion),
-                            mProfile));
+                            mProfile,
+                            getPersonalContextEntity(suggestion) != null));
         }
 
         // Annotates the first suggestion that has an in-product help feature defined.
@@ -468,17 +469,11 @@ class KeyboardAccessoryMediator
 
     private boolean maybeShowDialogOnLongPress(
             AutofillDelegate delegate, AutofillSuggestion suggestion) {
-        AutofillAiPayload payload = suggestion.getAutofillAiPayload();
-        if (payload == null || mDialog == null) {
+        if (mDialog == null) {
             return false;
         }
-        EntityDataManager entityDataManager = EntityDataManagerFactory.getForProfile(mProfile);
-        if (entityDataManager == null) {
-            return false;
-        }
-        EntityInstance entityInstance = entityDataManager.getEntityInstance(payload.getGuid());
+        EntityInstance entityInstance = getPersonalContextEntity(suggestion);
         if (entityInstance == null
-                || entityInstance.getRecordType() != RecordType.PERSONAL_CONTEXT
                 || !shouldOpenSettingsForEntityType(entityInstance.getEntityType().getTypeName())) {
             return false;
         }
@@ -511,6 +506,23 @@ class KeyboardAccessoryMediator
                                 buttonClickResult,
                                 stopShowing));
         return true;
+    }
+
+    private @Nullable EntityInstance getPersonalContextEntity(AutofillSuggestion suggestion) {
+        AutofillAiPayload payload = suggestion.getAutofillAiPayload();
+        if (payload == null) {
+            return null;
+        }
+        EntityDataManager entityDataManager = EntityDataManagerFactory.getForProfile(mProfile);
+        if (entityDataManager == null) {
+            return null;
+        }
+        EntityInstance entityInstance = entityDataManager.getEntityInstance(payload.getGuid());
+        if (entityInstance == null
+                || entityInstance.getRecordType() != RecordType.PERSONAL_CONTEXT) {
+            return null;
+        }
+        return entityInstance;
     }
 
     private boolean shouldOpenSettingsForEntityType(@EntityTypeName int entityType) {

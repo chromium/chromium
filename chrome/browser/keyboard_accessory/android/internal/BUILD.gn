@@ -131,6 +131,7 @@ android_resources("java_resources") {
     "//chrome/android:chrome_app_java_resources",
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/widget/android/shared_with_webview:java_resources",
+    "//components/strings:components_strings_grd",
   ]
   visibility = [
     ":*",
