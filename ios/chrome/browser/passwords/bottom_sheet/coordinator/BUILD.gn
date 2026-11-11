@@ -32,6 +32,7 @@ source_set("coordinator") {
     "//components/image_fetcher/core",
     "//components/image_fetcher/ios",
     "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser/remote_actor",
     "//components/password_manager/ios",
     "//components/password_manager/ios:features",
     "//components/prefs",
@@ -54,6 +55,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/passwords/model:native_keystroke_autologin",
     "//ios/chrome/browser/passwords/model:store_factory",
+    "//ios/chrome/browser/passwords/model/remote_actor",
     "//ios/chrome/browser/passwords/password_suggestion/ui:password_suggestion_utils",
     "//ios/chrome/browser/settings/ui_bundled/password/password_sharing:password_sharing_util",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
@@ -88,9 +90,11 @@ source_set("unit_tests") {
     "credential_suggestion_bottom_sheet_mediator_unittest.mm",
     "passkey_creation_bottom_sheet_mediator_unittest.mm",
     "passkey_suggestion_bottom_sheet_mediator_unittest.mm",
+    "remote_actor_credential_bottom_sheet_mediator_unittest.mm",
   ]
   deps = [
     ":coordinator",
+    "//base/test:test_support",
     "//components/autofill/ios/browser",
     "//components/autofill/ios/browser:util",
     "//components/autofill/ios/common",
@@ -118,6 +122,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/passwords/bottom_sheet/ui",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/passwords/model:store_factory",
+    "//ios/chrome/browser/passwords/model/remote_actor",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile/test",
@@ -128,5 +133,6 @@ source_set("unit_tests") {
     "//ios/web/public/test/fakes",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//url",
   ]
 }
