@@ -1,0 +1,23 @@
+Do not print celt_fatal() messages in official builds
+
+BUILD.gn defines CHROMIUM_NO_LOGGING in official builds, so celt_fatal()
+aborts without printing the message (BUILD.gn credits this with 16.4 kB).
+
+Chromium commit fe0a996d4a8a9 (crbug.com/1053572).
+
+diff --git a/src/celt/arch.h b/src/celt/arch.h
+index 89c3a86cf781b..2eb4b82fe00e0 100644
+--- a/src/celt/arch.h
++++ b/src/celt/arch.h
+@@ -72,9 +72,11 @@ __attribute__((noreturn))
+ #endif
+ void celt_fatal(const char *str, const char *file, int line)
+ {
++#if !defined(CHROMIUM_NO_LOGGING)
+    fprintf (stderr, "Fatal (internal) error in %s, line %d: %s\n", file, line, str);
+ #if defined(_MSC_VER)
+    _set_abort_behavior( 0, _WRITE_ABORT_MSG);
++#endif
+ #endif
+    abort();
+ }

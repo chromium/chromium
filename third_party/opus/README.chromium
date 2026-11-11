@@ -15,10 +15,24 @@ This directory contains a copy of Opus library
 This library is used by Chrome Remote Desktop and WebRTC for audio stream
 encoding/decoding.
 
-Local changes:
-* remove assertion messages in release builds (see crbug/1053572)
-* add workaround to ignore some int-overflows when fuzzing (see crbug/1146174, crbug/1491812)
-* AVX2 fix, see crbug/541783453. To be upstreamed.
+Local Modifications:
+patches/0001-no-assertion-messages.patch: Do not print celt_fatal()
+  messages in official builds.
+patches/0002-plain-subtraction-outside-fuzzing.patch: Keep plain
+  subtraction in silk NSQ_del_dec outside fuzzing builds.
+patches/0003-nsq-ignore-wraparound.patch: Ignore a wraparound in
+  silk_noise_shape_quantizer(); backport of upstream 1c370855.
+patches/0004-avx2-rounding-shift-overflow.patch: Round like
+  silk_RSHIFT_ROUND() in the AVX2 NSQ_del_dec, so it cannot overflow;
+  upstream took the same change as 212d66c2.
+
+To apply the patches, put upstream 55513e81 in src/, then run from this
+directory:
+
+$ for patch in patches/*.patch; do patch -s -p1 < $patch; done
+
+In case of conflict, update those patches accordingly and save them back in
+//third_party/opus/patches/.
 
 Opus' own unit tests are located in ./src/tests
 Additional chromium tests are located in ./tests, and require chromium
