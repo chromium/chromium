@@ -91,6 +91,7 @@ if (toolkit_views) {
       # transitively depends on //third_party/fuzztest, whose public config
       # propagates -Wno-sign-compare. Depend on it here to inherit that
       # suppression. Remove once crbug.com/527094632 is fixed.
+      "//chrome/browser/ui/web_applications/test:test_support_ui",
       "//third_party/fuzztest",
     ]
 

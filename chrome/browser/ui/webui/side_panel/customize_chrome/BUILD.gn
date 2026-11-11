@@ -184,6 +184,7 @@ if (!is_android) {
       "//chrome/browser/ui/side_panel:side_panel_views_dependent",
       "//chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar:browser_tests",
       "//chrome/test:test_support",
+      "//chrome/test/base:platform_browser_test",
       "//content/test:test_support",
       "//testing/gtest",
     ]

@@ -142,6 +142,7 @@ if (!is_android) {
       "//chrome/browser/ui/actions:actions_headers",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/web_applications",
+      "//chrome/browser/ui/web_applications/test:test_support_ui",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",

@@ -200,6 +200,7 @@ source_set("browser_tests") {
     ]
     deps += [
       "//chrome/browser/translate",
+      "//chrome/test/base:chrome_test_utils",
       "//components/optimization_guide/content/browser",
       "//components/optimization_guide/proto:optimization_guide_proto",
       "//components/sessions",

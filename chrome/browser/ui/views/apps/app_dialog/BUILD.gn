@@ -68,6 +68,7 @@ source_set("browser_tests") {
 
     # TODO(crbug.com/353332589): Remove when web_app_browsertest_util.h
     # gets modularized.
+    "//chrome/browser/ui/web_applications/test:test_support_ui",
     "//chrome/test:test_support",
   ]
 }

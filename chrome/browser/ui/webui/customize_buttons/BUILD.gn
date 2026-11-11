@@ -59,6 +59,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/customize_chrome",
     "//chrome/browser/ui/webui/side_panel/customize_chrome",
     "//chrome/test:test_support",
+    "//chrome/test/base:platform_browser_test",
     "//ui/base/unowned_user_data",
   ]
 }

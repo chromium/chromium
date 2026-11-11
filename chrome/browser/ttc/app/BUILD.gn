@@ -122,6 +122,7 @@ if (!is_android) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ttc/core",
       "//chrome/browser/ttc/core:impl",
+      "//chrome/test/base:chrome_test_utils",
       "//components/keyed_service/core",
       "//components/optimization_guide/core",
       "//net:test_support",

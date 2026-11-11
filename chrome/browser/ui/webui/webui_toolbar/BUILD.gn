@@ -186,6 +186,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/webui:theme_colors_source_manager",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_test_utils",
     "//testing/gtest",
     "//url",
   ]

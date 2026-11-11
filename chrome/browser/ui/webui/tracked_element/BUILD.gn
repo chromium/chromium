@@ -16,6 +16,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/webui/user_education_internals",
     "//chrome/test:test_support",
     "//chrome/test/interaction",
+    "//components/webui/chrome_urls",
     "//content/public/browser",
     "//content/test:test_support",
     "//testing/gtest",

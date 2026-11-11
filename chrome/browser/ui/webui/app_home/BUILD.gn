@@ -147,5 +147,13 @@ if (enable_extensions) {
       "//ui/views",
       "//ui/views:test_support",
     ]
+
+    if (!is_chromeos) {
+      deps += [
+        "//chrome/browser/ui/views:create_application_shortcut_view_test_support",
+        "//chrome/browser/ui/web_applications:test_support",
+        "//chrome/browser/ui/web_applications/test:test_support_ui",
+      ]
+    }
   }
 }

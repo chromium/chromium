@@ -43,6 +43,7 @@ if (!is_android) {
 
     deps = [
       "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/web_applications/test:test_support_ui",
       "//chrome/browser/web_applications",
       "//chrome/test:test_support",
       "//content/test:test_support",

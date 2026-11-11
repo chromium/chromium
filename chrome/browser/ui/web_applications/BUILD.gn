@@ -397,7 +397,9 @@ source_set("browser_tests") {
     deps += [
       "//chrome/browser/ui:browser_init_state",
       "//chrome/browser/ui/views/frame:browser_view_header",
+      "//chrome/browser/ui/views/page_action:page_action_test_support",
       "//chrome/browser/ui/window_feature_controller",
+      "//chrome/browser/web_applications/app_service",
     ]
   }
 

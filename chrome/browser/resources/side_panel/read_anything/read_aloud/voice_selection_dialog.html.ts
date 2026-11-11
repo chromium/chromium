@@ -48,8 +48,7 @@ export function getHtml(this: VoiceSelectionDialogElement) {
                   class="voice-preview-button"
                   aria-label="${this.previewAriaLabel_(voiceItem)}"
                   title="${this.previewLabel_(voiceItem.previewInitiated)}"
-                  iron-icon="${
-                      this.previewIcon_(voiceItem.previewInitiated)}"
+                  iron-icon="${this.previewIcon_(voiceItem.previewInitiated)}"
                   data-group-index="${groupIndex}"
                   data-voice-index="${voiceIndex}"
                   @click="${this.onVoicePreviewClick_}">
@@ -68,8 +67,7 @@ export function getHtml(this: VoiceSelectionDialogElement) {
             <!-- CENTER & RIGHT: Voice identity: The nature name and the voice
                  description, and the radio selection button. -->
             <cr-radio-button class="voice-radio-button label-first"
-                hide-label-text
-                label="${this.voiceDisplayName_(voiceItem)}"
+                hide-label-text label="${this.voiceDisplayName_(voiceItem)}"
                 name="${voiceItem.voice.name}" data-test-id="${voiceItem.id}">
               <div class="voice-text">
                 <span class="voice-name" aria-hidden="true"

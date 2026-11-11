@@ -82,6 +82,7 @@ if (!is_android) {
       "//chrome/test:test_support",
       "//components/content_settings/core/browser",
       "//components/content_settings/core/common",
+      "//components/webui/chrome_urls",
       "//content/public/browser",
       "//content/test:test_support",
       "//mojo/public/cpp/bindings",

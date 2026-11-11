@@ -63,6 +63,7 @@ if (is_chromeos && enable_extensions) {
       "//chrome/browser/ui/views:file_system_access_test_support",
       "//chrome/browser/usb",
       "//chrome/browser/usb:browser_test_support",
+      "//chrome/test/base:chrome_test_utils",
       "//chrome/test/base:tracing",
       "//components/guest_view/browser:test_support",
       "//content/test:browsertest_support",

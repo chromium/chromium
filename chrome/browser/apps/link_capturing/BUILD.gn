@@ -95,6 +95,7 @@ source_set("test_support") {
     ":link_capturing",
     "//base/test:test_support",
     "//chrome/browser:test_support",
+    "//chrome/browser/ui/web_applications/test:test_support_ui",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:features",
     "//chrome/common:chrome_features",
