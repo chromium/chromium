@@ -1841,7 +1841,7 @@ public abstract class ChromeFeatureList {
     public static final MutableFlagWithSafeDefault sInlinePdfV2 =
             newMutableFlagWithSafeDefault(INLINE_PDF_V2, false);
     public static final MutableFlagWithSafeDefault sInlinePdfV2Download =
-            newMutableFlagWithSafeDefault(INLINE_PDF_V2_DOWNLOAD, false);
+            newMutableFlagWithSafeDefault(INLINE_PDF_V2_DOWNLOAD, true);
     public static final MutableFlagWithSafeDefault sInlinePdfV2Incognito =
             newMutableFlagWithSafeDefault(INLINE_PDF_V2_INCOGNITO, false);
     public static final MutableFlagWithSafeDefault sIphBookmarkBarVisibility =

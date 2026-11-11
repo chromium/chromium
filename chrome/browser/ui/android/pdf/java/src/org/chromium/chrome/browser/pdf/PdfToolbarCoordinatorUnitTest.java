@@ -15,6 +15,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
+import android.os.Build;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,6 +39,7 @@ import org.mockito.AdditionalMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -49,7 +51,8 @@ import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.listmenu.ListMenuButton;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({ChromeFeatureList.INLINE_PDF_V2, ChromeFeatureList.INLINE_PDF_V2_DOWNLOAD})
+@EnableFeatures({ChromeFeatureList.INLINE_PDF_V2})
+@Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
 public class PdfToolbarCoordinatorUnitTest {
     private static final String TITLE = "test_title.pdf";
     private static final int PAGE_COUNT = 100;
@@ -723,6 +726,45 @@ public class PdfToolbarCoordinatorUnitTest {
     }
 
     @Test
+    public void testDownloadButtonClick() {
+        // Wide screen (e.g. 900dp) where download button should be directly visible on the toolbar.
+        setToolbarWidth(900);
+        View downloadButton = mPdfPageView.findViewById(R.id.download_button);
+        assertNotNull("Download button should not be null", downloadButton);
+        assertEquals(View.VISIBLE, downloadButton.getVisibility());
+        downloadButton.performClick();
+        verify(mDelegate).download();
+    }
+
+    @Test
+    public void testDownloadViaMenu() {
+        // Layout narrow to hide download button and show it in the menu.
+        setToolbarWidth(780);
+
+        View downloadButton = mPdfPageView.findViewById(R.id.download_button);
+        assertNotNull("Download button should not be null", downloadButton);
+        assertEquals(View.GONE, downloadButton.getVisibility());
+
+        ListView listView = openMoreMenu();
+        View downloadItemView = null;
+        for (int i = 0; i < listView.getAdapter().getCount(); i++) {
+            View itemView = listView.getAdapter().getView(i, null, listView);
+            TextView textView = itemView.findViewById(R.id.menu_item_text);
+            if (textView != null
+                    && textView.getText()
+                            .toString()
+                            .equals(mActivity.getString(R.string.pdf_download))) {
+                downloadItemView = itemView;
+                break;
+            }
+        }
+        assertNotNull("Download menu item should be found", downloadItemView);
+
+        downloadItemView.performClick();
+        verify(mDelegate).download();
+    }
+
+    @Test
     public void testPrintButtonClick() {
         View printButton = mPdfPageView.findViewById(R.id.print_button);
         assertNotNull("Print button should not be null", printButton);
@@ -781,8 +823,24 @@ public class PdfToolbarCoordinatorUnitTest {
 
         // Wide screen (e.g. 900dp) -> Should still be GONE because feature is disabled
         setToolbarWidth(900);
-
         assertEquals(View.GONE, downloadButton.getVisibility());
+
+        // Narrow screen (e.g. 780dp) -> Should not appear in the overflow menu
+        setToolbarWidth(780);
+        assertEquals(View.GONE, downloadButton.getVisibility());
+
+        ListView listView = openMoreMenu();
+        for (int i = 0; i < listView.getAdapter().getCount(); i++) {
+            View itemView = listView.getAdapter().getView(i, null, listView);
+            TextView textView = itemView.findViewById(R.id.menu_item_text);
+            if (textView != null) {
+                assertFalse(
+                        "Download item should not be in menu when feature is disabled",
+                        textView.getText()
+                                .toString()
+                                .equals(mActivity.getString(R.string.pdf_download)));
+            }
+        }
     }
 
     @Test
