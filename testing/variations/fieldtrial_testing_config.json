@@ -16486,6 +16486,24 @@
             ]
         }
     ],
+    "ProcessBoundCookieSecureOnly": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledSecure_20261111",
+                    "params": {
+                        "CookieProcessBoundEncryptHttpOnly": "false"
+                    },
+                    "enable_features": [
+                        "CookieProcessBoundEncryptOnlyImportant"
+                    ]
+                }
+            ]
+        }
+    ],
     "ProcessHtmlDataImmediately": [
         {
             "platforms": [
