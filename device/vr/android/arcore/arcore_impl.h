@@ -17,6 +17,7 @@
 #include "device/vr/android/arcore/scoped_arcore_objects.h"
 #include "device/vr/create_anchor_request.h"
 #include "device/vr/hit_test_subscription_data.h"
+#include "device/vr/public/cpp/xr_session_feature_set.h"
 #include "device/vr/public/mojom/anchor_id.h"
 #include "device/vr/public/mojom/plane_id.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
@@ -39,10 +40,8 @@ class ArCoreImpl : public ArCore {
 
   std::optional<ArCore::InitializeResult> Initialize(
       base::android::ScopedJavaLocalRef<jobject> application_context,
-      const std::unordered_set<device::mojom::XRSessionFeature>&
-          required_features,
-      const std::unordered_set<device::mojom::XRSessionFeature>&
-          optional_features,
+      XRSessionFeatureSet required_features,
+      XRSessionFeatureSet optional_features,
       const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images,
       std::optional<ArCore::DepthSensingConfiguration> depth_sensing_config)
       override;
@@ -233,13 +232,10 @@ class ArCoreImpl : public ArCore {
   // Returns `true` if configuration succeeded, false otherwise.
   // It can modify `enabled_features` if the camera was configured such that
   // some features have been disabled.
-  bool ConfigureCamera(
-      ArSession* ar_session,
-      const std::unordered_set<device::mojom::XRSessionFeature>&
-          required_features,
-      const std::unordered_set<device::mojom::XRSessionFeature>&
-          optional_features,
-      std::unordered_set<device::mojom::XRSessionFeature>& enabled_features);
+  bool ConfigureCamera(ArSession* ar_session,
+                       XRSessionFeatureSet required_features,
+                       XRSessionFeatureSet optional_features,
+                       XRSessionFeatureSet& enabled_features);
 
   // Helper, attempts to configure ArSession's features based on required and
   // optional features. Note that this is happening during initialization,
@@ -249,14 +245,12 @@ class ArCoreImpl : public ArCore {
   // not have been configured.
   bool ConfigureFeatures(
       ArSession* ar_session,
-      const std::unordered_set<device::mojom::XRSessionFeature>&
-          required_features,
-      const std::unordered_set<device::mojom::XRSessionFeature>&
-          optional_features,
+      XRSessionFeatureSet required_features,
+      XRSessionFeatureSet optional_features,
       const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images,
       const std::optional<ArCore::DepthSensingConfiguration>&
           depth_sensing_config,
-      std::unordered_set<device::mojom::XRSessionFeature>& enabled_features);
+      XRSessionFeatureSet& enabled_features);
 
   // Configures depth sensing API - selects depth sensing usage and mode that is
   // compatible with the device. Returns false if it was unable to pick a

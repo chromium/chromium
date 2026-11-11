@@ -6,7 +6,7 @@
 #define DEVICE_VR_ANDROID_ARCORE_ARCORE_GL_H_
 
 #include <memory>
-#include <unordered_set>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -18,6 +18,7 @@
 #include "base/types/expected.h"
 #include "device/vr/android/arcore/ar_compositor_frame_sink.h"
 #include "device/vr/public/cpp/xr_frame_sink_client.h"
+#include "device/vr/public/cpp/xr_session_feature_set.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
@@ -72,12 +73,12 @@ using ArCoreGlCreateSessionCallback =
     base::OnceCallback<void(ArCoreGlCreateSessionResult)>;
 
 struct ArCoreGlInitializeResult {
-  std::unordered_set<device::mojom::XRSessionFeature> enabled_features;
+  XRSessionFeatureSet enabled_features;
   std::optional<device::mojom::XRDepthConfig> depth_configuration;
   viz::FrameSinkId frame_sink_id;
 
   ArCoreGlInitializeResult(
-      std::unordered_set<device::mojom::XRSessionFeature> enabled_features,
+      XRSessionFeatureSet enabled_features,
       std::optional<device::mojom::XRDepthConfig> depth_configuration,
       viz::FrameSinkId frame_sink_id);
   ArCoreGlInitializeResult(ArCoreGlInitializeResult&& other);
@@ -119,10 +120,8 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
       ui::WindowAndroid* root_window,
       const gfx::Size& frame_size,
       display::Display::Rotation display_rotation,
-      const std::unordered_set<device::mojom::XRSessionFeature>&
-          required_features,
-      const std::unordered_set<device::mojom::XRSessionFeature>&
-          optional_features,
+      XRSessionFeatureSet required_features,
+      XRSessionFeatureSet optional_features,
       const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images,
       device::mojom::XRDepthOptionsPtr depth_options,
       ArCoreGlInitializeCallback callback);
@@ -255,7 +254,7 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
   // Set of features enabled on this session. Required to correctly configure
   // the session and only send out necessary data related to reference spaces to
   // blink. Valid after the call to |Initialize()| method.
-  std::unordered_set<device::mojom::XRSessionFeature> enabled_features_;
+  XRSessionFeatureSet enabled_features_;
   std::optional<device::mojom::XRDepthConfig> depth_configuration_;
 
   base::OnceClosure session_shutdown_callback_;

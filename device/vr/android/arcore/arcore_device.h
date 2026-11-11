@@ -9,7 +9,6 @@
 
 #include <memory>
 #include <optional>
-#include <unordered_set>
 #include <utility>
 
 #include "base/android/jni_android.h"
@@ -18,6 +17,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "device/vr/android/arcore/arcore_gl.h"
 #include "device/vr/public/cpp/xr_frame_sink_client.h"
+#include "device/vr/public/cpp/xr_session_feature_set.h"
 #include "device/vr/vr_device_base.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -140,14 +140,14 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCoreDevice : public VRDeviceBase {
     mojom::XRRuntime::RequestSessionCallback pending_request_session_callback_;
 
     // Collections of features that were requested on the session.
-    std::unordered_set<device::mojom::XRSessionFeature> required_features_;
-    std::unordered_set<device::mojom::XRSessionFeature> optional_features_;
+    XRSessionFeatureSet required_features_;
+    XRSessionFeatureSet optional_features_;
 
     device::mojom::XRDepthOptionsPtr depth_options_;
 
     // Collection of features that have been enabled on the session. Initially
     // empty, will be set only once the ArCoreGl has been initialized.
-    std::unordered_set<device::mojom::XRSessionFeature> enabled_features_;
+    XRSessionFeatureSet enabled_features_;
 
     std::optional<device::mojom::XRDepthConfig> depth_configuration_;
 

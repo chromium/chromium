@@ -546,10 +546,8 @@ ArCoreImpl::~ArCoreImpl() {
 
 std::optional<ArCore::InitializeResult> ArCoreImpl::Initialize(
     base::android::ScopedJavaLocalRef<jobject> context,
-    const std::unordered_set<device::mojom::XRSessionFeature>&
-        required_features,
-    const std::unordered_set<device::mojom::XRSessionFeature>&
-        optional_features,
+    XRSessionFeatureSet required_features,
+    XRSessionFeatureSet optional_features,
     const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images,
     std::optional<ArCore::DepthSensingConfiguration> depth_sensing_config) {
   DCHECK(IsOnGlThread());
@@ -584,9 +582,8 @@ std::optional<ArCore::InitializeResult> ArCoreImpl::Initialize(
   // optional features. Currently, only depth sensing is not supported across
   // all the ARCore-capable devices. Additionally, front-facing camera may
   // affect availability of other features.
-  std::unordered_set<device::mojom::XRSessionFeature> enabled_features;
-  enabled_features.insert(required_features.begin(), required_features.end());
-  enabled_features.insert(optional_features.begin(), optional_features.end());
+  XRSessionFeatureSet enabled_features =
+      base::Union(required_features, optional_features);
 
   if (!ConfigureCamera(session.get(), required_features, optional_features,
                        enabled_features)) {
@@ -609,8 +606,7 @@ std::optional<ArCore::InitializeResult> ArCoreImpl::Initialize(
     return std::nullopt;
   }
 
-  if (enabled_features.contains(
-          device::mojom::XRSessionFeature::LIGHT_ESTIMATION)) {
+  if (enabled_features.Has(device::mojom::XRSessionFeature::LIGHT_ESTIMATION)) {
     internal::ScopedArCoreObject<ArLightEstimate*> light_estimate;
     ArLightEstimate_create(
         session.get(),
@@ -627,12 +623,11 @@ std::optional<ArCore::InitializeResult> ArCoreImpl::Initialize(
   arcore_frame_ = std::move(frame);
   arcore_session_ = std::move(session);
 
-  if (enabled_features.contains(device::mojom::XRSessionFeature::ANCHORS)) {
+  if (enabled_features.Has(device::mojom::XRSessionFeature::ANCHORS)) {
     anchor_manager_ = std::make_unique<ArCoreAnchorManager>(
         base::PassKey<ArCoreImpl>(), arcore_session_.get());
   }
-  if (enabled_features.contains(
-          device::mojom::XRSessionFeature::PLANE_DETECTION)) {
+  if (enabled_features.Has(device::mojom::XRSessionFeature::PLANE_DETECTION)) {
     plane_manager_ = std::make_unique<ArCorePlaneManager>(
         base::PassKey<ArCoreImpl>(), arcore_session_.get());
   }
@@ -642,14 +637,12 @@ std::optional<ArCore::InitializeResult> ArCoreImpl::Initialize(
 
 bool ArCoreImpl::ConfigureFeatures(
     ArSession* ar_session,
-    const std::unordered_set<device::mojom::XRSessionFeature>&
-        required_features,
-    const std::unordered_set<device::mojom::XRSessionFeature>&
-        optional_features,
+    XRSessionFeatureSet required_features,
+    XRSessionFeatureSet optional_features,
     const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images,
     const std::optional<ArCore::DepthSensingConfiguration>&
         depth_sensing_config,
-    std::unordered_set<device::mojom::XRSessionFeature>& enabled_features) {
+    XRSessionFeatureSet& enabled_features) {
   internal::ScopedArCoreObject<ArConfig*> arcore_config;
   ArConfig_create(
       ar_session,
@@ -660,10 +653,9 @@ bool ArCoreImpl::ConfigureFeatures(
   }
 
   const bool light_estimation_requested =
-      required_features.contains(
+      required_features.Has(
           device::mojom::XRSessionFeature::LIGHT_ESTIMATION) ||
-      optional_features.contains(
-          device::mojom::XRSessionFeature::LIGHT_ESTIMATION);
+      optional_features.Has(device::mojom::XRSessionFeature::LIGHT_ESTIMATION);
 
   if (light_estimation_requested) {
     // Enable lighting estimation with spherical harmonics
@@ -672,10 +664,8 @@ bool ArCoreImpl::ConfigureFeatures(
   }
 
   const bool image_tracking_requested =
-      required_features.contains(
-          device::mojom::XRSessionFeature::IMAGE_TRACKING) ||
-      optional_features.contains(
-          device::mojom::XRSessionFeature::IMAGE_TRACKING);
+      required_features.Has(device::mojom::XRSessionFeature::IMAGE_TRACKING) ||
+      optional_features.Has(device::mojom::XRSessionFeature::IMAGE_TRACKING);
 
   if (image_tracking_requested) {
     internal::ScopedArCoreObject<ArAugmentedImageDatabase*> image_db;
@@ -708,9 +698,9 @@ bool ArCoreImpl::ConfigureFeatures(
   }
 
   const bool depth_api_optional =
-      optional_features.contains(device::mojom::XRSessionFeature::DEPTH);
+      optional_features.Has(device::mojom::XRSessionFeature::DEPTH);
   const bool depth_api_required =
-      required_features.contains(device::mojom::XRSessionFeature::DEPTH);
+      required_features.Has(device::mojom::XRSessionFeature::DEPTH);
   const bool depth_api_requested = depth_api_required || depth_api_optional;
 
   const bool depth_api_configuration_successful =
@@ -728,7 +718,7 @@ bool ArCoreImpl::ConfigureFeatures(
   } else if (depth_api_optional) {
     // If we couldn't support the desired usage/format and depth is optional,
     // remove it from our list of enabled features.
-    enabled_features.erase(device::mojom::XRSessionFeature::DEPTH);
+    enabled_features.Remove(device::mojom::XRSessionFeature::DEPTH);
   }
 
   ArStatus status = ArSession_configure(ar_session, arcore_config.get());
@@ -746,7 +736,7 @@ bool ArCoreImpl::ConfigureFeatures(
                   << ": Depth API was optionally requested and the session "
                      "creation failed, re-trying with depth API disabled";
 
-    enabled_features.erase(device::mojom::XRSessionFeature::DEPTH);
+    enabled_features.Remove(device::mojom::XRSessionFeature::DEPTH);
 
     ArConfig_setDepthMode(ar_session, arcore_config.get(),
                           AR_DEPTH_MODE_DISABLED);
@@ -821,17 +811,14 @@ bool ArCoreImpl::ConfigureDepthSensing(
   return true;
 }
 
-bool ArCoreImpl::ConfigureCamera(
-    ArSession* ar_session,
-    const std::unordered_set<device::mojom::XRSessionFeature>&
-        required_features,
-    const std::unordered_set<device::mojom::XRSessionFeature>&
-        optional_features,
-    std::unordered_set<device::mojom::XRSessionFeature>& enabled_features) {
+bool ArCoreImpl::ConfigureCamera(ArSession* ar_session,
+                                 XRSessionFeatureSet required_features,
+                                 XRSessionFeatureSet optional_features,
+                                 XRSessionFeatureSet& enabled_features) {
   const bool front_facing_camera_required =
-      required_features.contains(device::mojom::XRSessionFeature::FRONT_FACING);
+      required_features.Has(device::mojom::XRSessionFeature::FRONT_FACING);
   const bool front_facing_camera_optional =
-      optional_features.contains(device::mojom::XRSessionFeature::FRONT_FACING);
+      optional_features.Has(device::mojom::XRSessionFeature::FRONT_FACING);
   const bool front_facing_camera_requested =
       front_facing_camera_required || front_facing_camera_optional;
 
@@ -853,7 +840,7 @@ bool ArCoreImpl::ConfigureCamera(
 
     // Front-facing camera was requested but optional and camera configuration
     // failed - let's try to configure back-facing camera:
-    enabled_features.erase(device::mojom::XRSessionFeature::FRONT_FACING);
+    enabled_features.Remove(device::mojom::XRSessionFeature::FRONT_FACING);
 
     best_config =
         GetBestConfig(ar_session, AR_CAMERA_CONFIG_FACING_DIRECTION_BACK);

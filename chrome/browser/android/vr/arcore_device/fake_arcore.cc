@@ -31,25 +31,22 @@ ArCore::MinMaxRange FakeArCore::GetTargetFramerateRange() {
 
 std::optional<ArCore::InitializeResult> FakeArCore::Initialize(
     base::android::ScopedJavaLocalRef<jobject> application_context,
-    const std::unordered_set<device::mojom::XRSessionFeature>&
-        required_features,
-    const std::unordered_set<device::mojom::XRSessionFeature>&
-        optional_features,
+    XRSessionFeatureSet required_features,
+    XRSessionFeatureSet optional_features,
     const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images,
     std::optional<ArCore::DepthSensingConfiguration> depth_sensing_config) {
   CHECK(IsOnGlThread(), base::NotFatalUntil::M161);
 
-  std::unordered_set<device::mojom::XRSessionFeature> enabled_features;
-  enabled_features.insert(required_features.begin(), required_features.end());
-  enabled_features.insert(optional_features.begin(), optional_features.end());
+  XRSessionFeatureSet enabled_features =
+      base::Union(required_features, optional_features);
 
   // Fake device does not support depth for now:
-  if (required_features.contains(device::mojom::XRSessionFeature::DEPTH)) {
+  if (required_features.Has(device::mojom::XRSessionFeature::DEPTH)) {
     return std::nullopt;
   }
 
-  if (optional_features.contains(device::mojom::XRSessionFeature::DEPTH)) {
-    enabled_features.erase(device::mojom::XRSessionFeature::DEPTH);
+  if (optional_features.Has(device::mojom::XRSessionFeature::DEPTH)) {
+    enabled_features.Remove(device::mojom::XRSessionFeature::DEPTH);
   }
 
   return ArCore::InitializeResult(enabled_features, std::nullopt);

@@ -12,6 +12,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/component_export.h"
 #include "base/time/time.h"
+#include "device/vr/public/cpp/xr_session_feature_set.h"
 #include "device/vr/public/mojom/anchor_id.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 #include "device/vr/public/mojom/plane_id.h"
@@ -37,7 +38,7 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCore {
   };
 
   struct InitializeResult {
-    std::unordered_set<device::mojom::XRSessionFeature> enabled_features;
+    XRSessionFeatureSet enabled_features;
 
     // If the depth sensing API was requested, the depth_configuration will
     // contain the device-selected depth API usage and data format.
@@ -45,8 +46,7 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCore {
     std::optional<device::mojom::XRDepthConfig> depth_configuration;
 
     InitializeResult(
-        const std::unordered_set<device::mojom::XRSessionFeature>&
-            enabled_features,
+        XRSessionFeatureSet enabled_features,
         std::optional<device::mojom::XRDepthConfig> depth_configuration);
     InitializeResult(const InitializeResult& other);
     ~InitializeResult();
@@ -76,10 +76,8 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCore {
   // If successful, the runtime must be paused when this method returns.
   virtual std::optional<InitializeResult> Initialize(
       base::android::ScopedJavaLocalRef<jobject> application_context,
-      const std::unordered_set<device::mojom::XRSessionFeature>&
-          required_features,
-      const std::unordered_set<device::mojom::XRSessionFeature>&
-          optional_features,
+      XRSessionFeatureSet required_features,
+      XRSessionFeatureSet optional_features,
       const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images,
       std::optional<DepthSensingConfiguration> depth_sensing_config) = 0;
 

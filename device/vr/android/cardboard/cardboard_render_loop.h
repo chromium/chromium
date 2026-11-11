@@ -12,6 +12,7 @@
 #include "device/vr/android/cardboard/scoped_cardboard_objects.h"
 #include "device/vr/android/mailbox_to_surface_bridge.h"
 #include "device/vr/android/web_xr_presentation_state.h"
+#include "device/vr/public/cpp/xr_session_feature_set.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "gpu/ipc/common/surface_handle.h"
@@ -154,7 +155,7 @@ class CardboardRenderLoop : public base::android::JavaHandlerThread,
   // Stored Mojo data
   mojom::XRViewPtr left_eye_;
   mojom::XRViewPtr right_eye_;
-  std::unordered_set<device::mojom::XRSessionFeature> enabled_features_;
+  XRSessionFeatureSet enabled_features_;
 
   // Session State
   bool pending_shutdown_ = false;

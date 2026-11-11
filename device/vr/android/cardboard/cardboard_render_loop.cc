@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/bind_post_task.h"
 #include "base/trace_event/trace_event.h"
@@ -98,10 +99,12 @@ void CardboardRenderLoop::CreateSession(
 
   // Filtering should be done at the higher level, so just enable all requested
   // features.
-  enabled_features_.insert(options->required_features.begin(),
-                           options->required_features.end());
-  enabled_features_.insert(options->optional_features.begin(),
-                           options->optional_features.end());
+  for (device::mojom::XRSessionFeature feature : options->required_features) {
+    enabled_features_.Put(feature);
+  }
+  for (device::mojom::XRSessionFeature feature : options->optional_features) {
+    enabled_features_.Put(feature);
+  }
 
   if (!InitializeGl(drawing_widget)) {
     std::move(session_request_callback_).Run(nullptr);
@@ -111,7 +114,7 @@ void CardboardRenderLoop::CreateSession(
   // Set whether or not the session produces frames with WebGPU based on in the
   // 'webgpu' feature was requested.
   bool webgpu_session =
-      enabled_features_.contains(device::mojom::XRSessionFeature::WEBGPU);
+      enabled_features_.Has(device::mojom::XRSessionFeature::WEBGPU);
 
   cardboard_image_transport_->Initialize(
       webxr_.get(),
@@ -265,8 +268,7 @@ void CardboardRenderLoop::OnCardboardImageTransportReady(bool success) {
       presentation_receiver_.BindNewPipeAndPassRemote();
   submit_frame_sink->transport_options = std::move(transport_options);
 
-  session->enabled_features.assign(enabled_features_.begin(),
-                                   enabled_features_.end());
+  session->enabled_features = base::ToVector(enabled_features_);
 
   session->device_config = device::mojom::XRSessionDeviceConfig::New();
   auto* config = session->device_config.get();

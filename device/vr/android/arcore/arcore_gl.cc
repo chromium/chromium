@@ -107,7 +107,7 @@ ArCoreGlCreateSessionResult::ArCoreGlCreateSessionResult(
     ArCoreGlCreateSessionResult&& other) = default;
 
 ArCoreGlInitializeResult::ArCoreGlInitializeResult(
-    std::unordered_set<device::mojom::XRSessionFeature> enabled_features,
+    XRSessionFeatureSet enabled_features,
     std::optional<device::mojom::XRDepthConfig> depth_configuration,
     viz::FrameSinkId frame_sink_id)
     : enabled_features(enabled_features),
@@ -162,10 +162,8 @@ void ArCoreGl::Initialize(
     ui::WindowAndroid* root_window,
     const gfx::Size& frame_size,
     display::Display::Rotation display_rotation,
-    const std::unordered_set<device::mojom::XRSessionFeature>&
-        required_features,
-    const std::unordered_set<device::mojom::XRSessionFeature>&
-        optional_features,
+    XRSessionFeatureSet required_features,
+    XRSessionFeatureSet optional_features,
     const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images,
     device::mojom::XRDepthOptionsPtr depth_options,
     ArCoreGlInitializeCallback callback) {
@@ -224,10 +222,9 @@ void ArCoreGl::Initialize(
 
   device::DomOverlaySetup dom_setup = device::DomOverlaySetup::kNone;
   if (CanRenderDOMContent()) {
-    if (required_features.contains(
-            device::mojom::XRSessionFeature::DOM_OVERLAY)) {
+    if (required_features.Has(device::mojom::XRSessionFeature::DOM_OVERLAY)) {
       dom_setup = device::DomOverlaySetup::kRequired;
-    } else if (optional_features.contains(
+    } else if (optional_features.Has(
                    device::mojom::XRSessionFeature::DOM_OVERLAY)) {
       dom_setup = device::DomOverlaySetup::kOptional;
     }
@@ -253,7 +250,7 @@ void ArCoreGl::Initialize(
   // Set whether or not the session produces frames with WebGPU based on in the
   // 'webgpu' feature was requested.
   const bool webgpu_session =
-      enabled_features_.contains(device::mojom::XRSessionFeature::WEBGPU);
+      enabled_features_.Has(device::mojom::XRSessionFeature::WEBGPU);
 
   DVLOG(3) << "ar_image_transport_->Initialize()...";
   ar_image_transport_->Initialize(
@@ -346,7 +343,7 @@ void ArCoreGl::OnArCompositorInitialized(bool initialized) {
   if (CanRenderDOMContent() &&
       IsFeatureEnabled(device::mojom::XRSessionFeature::DOM_OVERLAY) &&
       !ar_compositor_->CanCompositeDomContent()) {
-    enabled_features_.erase(device::mojom::XRSessionFeature::DOM_OVERLAY);
+    enabled_features_.Remove(device::mojom::XRSessionFeature::DOM_OVERLAY);
   }
 
   OnInitialized();
@@ -1706,7 +1703,7 @@ std::vector<mojom::XRInputSourceStatePtr> ArCoreGl::GetInputSourceStates() {
 }
 
 bool ArCoreGl::IsFeatureEnabled(mojom::XRSessionFeature feature) {
-  return enabled_features_.contains(feature);
+  return enabled_features_.Has(feature);
 }
 
 void ArCoreGl::Pause() {

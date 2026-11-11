@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <optional>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/task/bind_post_task.h"
@@ -149,17 +150,19 @@ void ArCoreDevice::RequestSession(
 
   DCHECK(!session_state_->pending_request_session_callback_);
   session_state_->pending_request_session_callback_ = std::move(callback);
-  session_state_->required_features_.insert(options->required_features.begin(),
-                                            options->required_features.end());
-  session_state_->optional_features_.insert(options->optional_features.begin(),
-                                            options->optional_features.end());
+  for (device::mojom::XRSessionFeature feature : options->required_features) {
+    session_state_->required_features_.Put(feature);
+  }
+  for (device::mojom::XRSessionFeature feature : options->optional_features) {
+    session_state_->optional_features_.Put(feature);
+  }
   session_state_->request_session_trace_id_ = options->trace_id;
 
   const bool use_dom_overlay =
-      std::ranges::contains(options->required_features,
-                            device::mojom::XRSessionFeature::DOM_OVERLAY) ||
-      std::ranges::contains(options->optional_features,
-                            device::mojom::XRSessionFeature::DOM_OVERLAY);
+      session_state_->required_features_.Has(
+          device::mojom::XRSessionFeature::DOM_OVERLAY) ||
+      session_state_->optional_features_.Has(
+          device::mojom::XRSessionFeature::DOM_OVERLAY);
 
   session_state_->depth_options_ = std::move(options->depth_options);
 
@@ -388,8 +391,8 @@ void ArCoreDevice::OnCreateSessionCallback(
   session->data_provider = std::move(create_session_result.frame_data_provider);
   session->submit_frame_sink =
       std::move(create_session_result.presentation_connection);
-  session->enabled_features.assign(initialize_result.enabled_features.begin(),
-                                   initialize_result.enabled_features.end());
+  session->enabled_features =
+      base::ToVector(initialize_result.enabled_features);
   session->device_config = device::mojom::XRSessionDeviceConfig::New();
   auto* config = session->device_config.get();
 

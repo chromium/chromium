@@ -13,6 +13,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "device/vr/android/arcore/arcore.h"
+#include "device/vr/public/cpp/xr_session_feature_set.h"
 #include "device/vr/public/mojom/anchor_id.h"
 #include "device/vr/public/mojom/hit_test_subscription_id.h"
 #include "device/vr/public/mojom/plane_id.h"
@@ -34,10 +35,8 @@ class FakeArCore : public ArCore {
   // ArCore implementation.
   std::optional<ArCore::InitializeResult> Initialize(
       base::android::ScopedJavaLocalRef<jobject> application_context,
-      const std::unordered_set<device::mojom::XRSessionFeature>&
-          required_features,
-      const std::unordered_set<device::mojom::XRSessionFeature>&
-          optional_features,
+      XRSessionFeatureSet required_features,
+      XRSessionFeatureSet optional_features,
       const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images,
       std::optional<ArCore::DepthSensingConfiguration> depth_sensing_config)
       override;
