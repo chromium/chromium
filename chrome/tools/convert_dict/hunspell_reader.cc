@@ -5,15 +5,11 @@
 #include "chrome/tools/convert_dict/hunspell_reader.h"
 
 #include <stddef.h>
+#include <stdio.h>
 
-#include "base/compiler_specific.h"
 #include "base/strings/string_util.h"
 
 namespace convert_dict {
-
-// This silly 64K buffer is just copied from Hunspell's way of parsing.
-const int kLineBufferLen = 65535;
-char line_buffer[kLineBufferLen];
 
 // Shortcut for trimming whitespace from both ends of the line.
 void TrimLine(std::string* line) {
@@ -30,13 +26,32 @@ void TrimLine(std::string* line) {
 }
 
 std::string ReadLine(FILE* file) {
-  const char* line = UNSAFE_TODO(fgets(line_buffer, kLineBufferLen - 1, file));
-  if (!line)
+  // Like fgets(), read up to and including the next newline (or until EOF),
+  // but without any limit on the line length. The newline is kept so that
+  // TrimLine() sees the same input as before (e.g. for BOM-only lines); it is
+  // then trimmed along with the other whitespace.
+  //
+  // To match the previous fgets() + std::string(const char*) behavior, bytes
+  // from an embedded NUL up to the end of the line are dropped, and an empty
+  // string is returned on a read error.
+  std::string line;
+  bool saw_nul = false;
+  for (int c = getc(file); c != EOF; c = getc(file)) {
+    if (c == '\0') {
+      saw_nul = true;
+    }
+    if (!saw_nul) {
+      line.push_back(static_cast<char>(c));
+    }
+    if (c == '\n') {
+      break;
+    }
+  }
+  if (ferror(file)) {
     return std::string();
-
-  std::string str = line;
-  TrimLine(&str);
-  return str;
+  }
+  TrimLine(&line);
+  return line;
 }
 
 void StripComment(std::string* line) {

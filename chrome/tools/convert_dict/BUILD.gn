@@ -31,12 +31,14 @@ source_set("unit_tests") {
   sources = [
     "aff_reader_unittest.cc",
     "convert_dict_unittest.cc",
+    "hunspell_reader_unittest.cc",
   ]
   deps = [
     ":lib",
     "//base",
     "//base:i18n",
     "//chrome/common:constants",
+    "//testing/gmock",
     "//testing/gtest",
     "//third_party/hunspell",
   ]

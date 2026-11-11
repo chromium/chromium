@@ -5,6 +5,8 @@
 #ifndef CHROME_TOOLS_CONVERT_DICT_HUNSPELL_READER_H_
 #define CHROME_TOOLS_CONVERT_DICT_HUNSPELL_READER_H_
 
+#include <stdio.h>
+
 #include <string>
 
 // Common routines for reading hunspell files.
