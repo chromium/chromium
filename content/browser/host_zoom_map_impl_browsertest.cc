@@ -2,22 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-#include "base/metrics/field_trial_params.h"
-#include "base/test/scoped_feature_list.h"
 #include "content/browser/host_zoom_map_impl.h"
 
+#include <cmath>
+#include <memory>
+#include <optional>
+
+#include "base/memory/raw_ptr.h"
+#include "base/metrics/field_trial_params.h"
+#include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "net/dns/mock_host_resolver.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
+#include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -176,4 +187,104 @@ IN_PROC_BROWSER_TEST_F(HostZoomMapImplBrowserTest,
 }
 
 #endif
+
+class OverrideZoomWebContentsDelegate : public WebContentsDelegate {
+ public:
+  explicit OverrideZoomWebContentsDelegate(std::optional<double> zoom_level)
+      : zoom_level_(zoom_level) {}
+
+  std::optional<double> GetOverrideZoomLevel(WebContents* source) override {
+    return zoom_level_;
+  }
+
+  void set_zoom_level(std::optional<double> zoom_level) {
+    zoom_level_ = zoom_level;
+  }
+
+ private:
+  std::optional<double> zoom_level_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    HostZoomMapImplBrowserTest,
+    OverrideZoomLevelAppliesBeforeCommitAndIsolatesFromHost) {
+  const double kOverrideLevel = blink::ZoomFactorToZoomLevel(1.5);
+  const double kHostLevel = blink::ZoomFactorToZoomLevel(2.0);
+
+  // Create an unattached WebContents in the same BrowserContext and attach a
+  // WebContentsDelegate providing an override zoom level before its first
+  // navigation.
+  OverrideZoomWebContentsDelegate delegate(kOverrideLevel);
+  std::unique_ptr<WebContents> override_contents = WebContents::Create(
+      WebContents::CreateParams(shell()->web_contents()->GetBrowserContext()));
+  override_contents->SetDelegate(&delegate);
+  override_contents->Resize(gfx::Rect(384, 675));
+
+  EXPECT_TRUE(NavigateToURL(override_contents.get(), url_));
+
+  RenderFrameHost* override_rfh = override_contents->GetPrimaryMainFrame();
+  RenderWidgetHostView* override_view = override_rfh->GetView();
+  ASSERT_TRUE(override_view);
+
+  // Initial visual properties carry the 1.5x zoom level without modifying host
+  // zoom for `url_` in `shell()->web_contents()`.
+  EXPECT_DOUBLE_EQ(kOverrideLevel,
+                   HostZoomMap::GetZoomLevel(override_contents.get()));
+  EXPECT_NEAR(1.5 * override_view->GetDeviceScaleFactor(),
+              EvalJs(override_rfh, "window.devicePixelRatio").ExtractDouble(),
+              0.001);
+  EXPECT_DOUBLE_EQ(0.0, host_zoom_map_impl_->GetZoomLevelForHostAndScheme(
+                            url_.GetScheme(), url_.GetHost()));
+
+  // Setting zoom via HostZoomMap::SetZoomLevel or changing default zoom leaves
+  // `override_contents` isolated and does not pollute host zoom.
+  HostZoomMap::SetZoomLevel(override_contents.get(),
+                            blink::ZoomFactorToZoomLevel(1.25));
+  EXPECT_DOUBLE_EQ(kOverrideLevel,
+                   HostZoomMap::GetZoomLevel(override_contents.get()));
+  EXPECT_DOUBLE_EQ(0.0, host_zoom_map_impl_->GetZoomLevelForHostAndScheme(
+                            url_.GetScheme(), url_.GetHost()));
+
+  host_zoom_map_impl_->SetDefaultZoomLevel(blink::ZoomFactorToZoomLevel(1.25));
+  EXPECT_DOUBLE_EQ(kOverrideLevel,
+                   HostZoomMap::GetZoomLevel(override_contents.get()));
+  EXPECT_NEAR(1.5 * override_view->GetDeviceScaleFactor(),
+              EvalJs(override_rfh, "window.devicePixelRatio").ExtractDouble(),
+              0.001);
+  host_zoom_map_impl_->SetDefaultZoomLevel(0.0);
+
+  // Changing host zoom on the shared HostZoomMap updates `shell()` but leaves
+  // `override_contents` isolated—even when `override_contents` is set to 0.0
+  // (100%).
+  host_zoom_map_impl_->SetZoomLevelForHost(url_.GetHost(), kHostLevel);
+  EXPECT_DOUBLE_EQ(kOverrideLevel,
+                   HostZoomMap::GetZoomLevel(override_contents.get()));
+  EXPECT_NEAR(1.5 * override_view->GetDeviceScaleFactor(),
+              EvalJs(override_rfh, "window.devicePixelRatio").ExtractDouble(),
+              0.001);
+
+  delegate.set_zoom_level(0.0);
+  override_rfh->GetRenderWidgetHost()->SynchronizeVisualProperties();
+  EXPECT_DOUBLE_EQ(0.0, HostZoomMap::GetZoomLevel(override_contents.get()));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return std::abs(
+               EvalJs(override_rfh, "window.devicePixelRatio").ExtractDouble() -
+               override_view->GetDeviceScaleFactor()) < 0.001;
+  }));
+
+  // Clearing the delegate override back to std::nullopt restores the shared
+  // host zoom level (2.0x).
+  delegate.set_zoom_level(std::nullopt);
+  override_rfh->GetRenderWidgetHost()->SynchronizeVisualProperties();
+  EXPECT_DOUBLE_EQ(kHostLevel,
+                   HostZoomMap::GetZoomLevel(override_contents.get()));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return std::abs(
+               EvalJs(override_rfh, "window.devicePixelRatio").ExtractDouble() -
+               2.0 * override_view->GetDeviceScaleFactor()) < 0.001;
+  }));
+
+  override_contents->SetDelegate(nullptr);
+}
+
 }  // namespace content

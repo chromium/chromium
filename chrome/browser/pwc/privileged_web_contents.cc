@@ -22,6 +22,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/common/drop_data.h"
@@ -339,6 +340,28 @@ void PrivilegedWebContents::ContentsZoomChange(bool zoom_in) {
   if (embedder_delegate_) {
     embedder_delegate_->ContentsZoomChange(zoom_in);
   }
+}
+
+void PrivilegedWebContents::SetOverrideZoomLevel(
+    std::optional<double> zoom_level) {
+  if (override_zoom_level_ == zoom_level) {
+    return;
+  }
+  override_zoom_level_ = zoom_level;
+  if (content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame()) {
+    if (content::RenderWidgetHost* rwh = rfh->GetRenderWidgetHost();
+        rwh && rwh->GetView()) {
+      rwh->SynchronizeVisualProperties();
+    }
+  }
+}
+
+std::optional<double> PrivilegedWebContents::GetOverrideZoomLevel(
+    content::WebContents* source) {
+  if (source != web_contents_.get()) {
+    return std::nullopt;
+  }
+  return override_zoom_level_;
 }
 
 void PrivilegedWebContents::RequestMediaAccessPermission(

@@ -10094,6 +10094,13 @@ double WebContentsImpl::GetPendingZoomLevel(RenderWidgetHostImpl* rwh) {
     return HostZoomMap::GetZoomLevel(this);
   }
 
+  if (!rfh->GetParentOrOuterDocument() && delegate_) {
+    if (std::optional<double> override_zoom =
+            delegate_->GetOverrideZoomLevel(this)) {
+      return *override_zoom;
+    }
+  }
+
   GURL url;
   if (rfh->IsInBackForwardCache()) {
     // If the `rfh`s page is in the bf cache, then the use of the pending (or

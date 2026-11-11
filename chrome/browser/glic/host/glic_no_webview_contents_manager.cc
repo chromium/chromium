@@ -627,7 +627,7 @@ GlicNoWebviewContentsManager::GlicNoWebviewContentsManager(
           std::make_unique<GlicPwcPolicyDelegate>(profile),
           {.initially_hidden = initially_hidden})),
       zoom_controller_(
-          privileged_guest_contents_->web_contents(),
+          privileged_guest_contents_.get(),
           profile ? profile->GetPrefs() : nullptr,
           base::BindRepeating(&GlicNoWebviewContentsManager::OnZoomLevelChange,
                               base::Unretained(this))) {

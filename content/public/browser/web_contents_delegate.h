@@ -254,6 +254,16 @@ class CONTENT_EXPORT WebContentsDelegate {
   // Request the delegate to change the zoom level of the current tab.
   virtual void ContentsZoomChange(bool zoom_in) {}
 
+  // Returns an optional WebContents-scoped zoom level override for the
+  // top-level browsing context. Unlike HostZoomMap::SetTemporaryZoomLevel()
+  // (which is per-RenderFrameHost and ignored while a main-frame navigation is
+  // pending), a non-nullopt zoom level returned here applies across
+  // navigations and RenderFrameHost swaps without modifying HostZoomMap host
+  // preferences. When the returned value changes at runtime, the embedder must
+  // call RenderWidgetHost::SynchronizeVisualProperties() on the main frame's
+  // widget.
+  virtual std::optional<double> GetOverrideZoomLevel(WebContents* source);
+
   // Called to determine if the WebContents can be overscrolled with touch/wheel
   // gestures.
   virtual bool CanOverscrollContent();

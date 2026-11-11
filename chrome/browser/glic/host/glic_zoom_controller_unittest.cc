@@ -4,18 +4,23 @@
 
 #include "chrome/browser/glic/host/glic_zoom_controller.h"
 
+#include <memory>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/host/glic_pwc_policy_delegate.h"
 #include "chrome/browser/glic/host/glic_webui.mojom.h"
+#include "chrome/browser/pwc/privileged_web_contents.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_web_contents_factory.h"
-#include "content/public/test/web_contents_tester.h"
+#include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 
@@ -26,26 +31,34 @@ class GlicZoomControllerTest : public testing::Test {
   GlicZoomControllerTest() : profile_(std::make_unique<TestingProfile>()) {}
 
   void SetUp() override {
-    web_contents_ =
-        test_web_contents_factory_.CreateWebContents(profile_.get());
-    content::WebContentsTester::For(web_contents_)
-        ->NavigateAndCommit(GURL("https://gemini.google.com/glic"));
-    controller_ = std::make_unique<GlicZoomController>(web_contents_, prefs());
+    pwc_ = CreatePwc();
+    content::NavigationSimulator::NavigateAndCommitFromBrowser(
+        pwc_->web_contents(), GURL("https://gemini.google.com/glic"));
+    controller_ = std::make_unique<GlicZoomController>(pwc_.get(), prefs());
+  }
+
+  void TearDown() override {
+    controller_.reset();
+    pwc_.reset();
+  }
+
+  std::unique_ptr<pwc::PrivilegedWebContents> CreatePwc() {
+    return pwc::PrivilegedWebContents::Create(
+        pwc::PrivilegedComponent::kGlic, profile_.get(),
+        std::make_unique<GlicPwcPolicyDelegate>(profile_.get()));
   }
 
   PrefService* prefs() { return profile_->GetPrefs(); }
-  content::WebContents* web_contents() { return web_contents_; }
+  pwc::PrivilegedWebContents* pwc() { return pwc_.get(); }
+  content::WebContents* web_contents() { return pwc_->web_contents(); }
   GlicZoomController& controller() { return *controller_; }
   TestingProfile* profile() { return profile_.get(); }
-  content::TestWebContentsFactory& factory() {
-    return test_web_contents_factory_;
-  }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
   std::unique_ptr<TestingProfile> profile_;
-  content::TestWebContentsFactory test_web_contents_factory_;
-  raw_ptr<content::WebContents> web_contents_;
+  std::unique_ptr<pwc::PrivilegedWebContents> pwc_;
   std::unique_ptr<GlicZoomController> controller_;
 };
 
@@ -209,8 +222,11 @@ TEST_F(GlicZoomControllerTest, ZoomIsIsolatedFromHost) {
   controller().Zoom(mojom::ZoomAction::kZoomIn, ZoomSource::kHotkey);
   EXPECT_DOUBLE_EQ(controller().GetCurrentZoomFactor(), 1.5);
 
-  // Verify that the guest WebContents uses a temporary zoom level
-  EXPECT_TRUE(zoom_map->UsesTemporaryZoomLevel(rfh->GetGlobalId()));
+  // Verify that the guest PrivilegedWebContents exposes a zoom override.
+  std::optional<double> override_zoom =
+      pwc()->GetOverrideZoomLevel(web_contents());
+  ASSERT_TRUE(override_zoom.has_value());
+  EXPECT_DOUBLE_EQ(blink::ZoomLevelToZoomFactor(*override_zoom), 1.5);
   EXPECT_DOUBLE_EQ(blink::ZoomLevelToZoomFactor(
                        content::HostZoomMap::GetZoomLevel(web_contents())),
                    1.5);
@@ -219,6 +235,30 @@ TEST_F(GlicZoomControllerTest, ZoomIsIsolatedFromHost) {
   EXPECT_DOUBLE_EQ(
       zoom_map->GetZoomLevelForHostAndScheme("https", "gemini.google.com"),
       0.0);
+
+  // Conversely, zooming gemini.google.com in a regular browser tab (200%) must
+  // not affect Glic—even when Glic is reset back to 100%.
+  std::unique_ptr<content::WebContents> tab_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(profile()));
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      tab_contents.get(), GURL("https://gemini.google.com/app"));
+  zoom_map->SetZoomLevelForHost("gemini.google.com",
+                                blink::ZoomFactorToZoomLevel(2.0));
+  EXPECT_DOUBLE_EQ(blink::ZoomLevelToZoomFactor(
+                       content::HostZoomMap::GetZoomLevel(tab_contents.get())),
+                   2.0);
+  EXPECT_DOUBLE_EQ(blink::ZoomLevelToZoomFactor(
+                       content::HostZoomMap::GetZoomLevel(web_contents())),
+                   1.5);
+
+  controller().Zoom(mojom::ZoomAction::kReset, ZoomSource::kHotkey);
+  EXPECT_DOUBLE_EQ(blink::ZoomLevelToZoomFactor(
+                       content::HostZoomMap::GetZoomLevel(web_contents())),
+                   1.0);
+  EXPECT_DOUBLE_EQ(blink::ZoomLevelToZoomFactor(
+                       content::HostZoomMap::GetZoomLevel(tab_contents.get())),
+                   2.0);
 }
 
 TEST_F(GlicZoomControllerTest, ZoomReappliedOnNavigation) {
@@ -228,38 +268,43 @@ TEST_F(GlicZoomControllerTest, ZoomReappliedOnNavigation) {
   EXPECT_DOUBLE_EQ(controller().GetCurrentZoomFactor(), 1.25);
 
   // Simulate navigation to another URL or reload
-  content::WebContentsTester::For(web_contents())
-      ->NavigateAndCommit(GURL("https://gemini.google.com/glic/reload"));
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://gemini.google.com/glic/reload"));
 
-  // After navigation commits, DidFinishNavigation should re-apply the zoom
-  auto* rfh = web_contents()->GetPrimaryMainFrame();
-  auto* zoom_map = content::HostZoomMap::Get(rfh->GetSiteInstance());
-  EXPECT_TRUE(zoom_map->UsesTemporaryZoomLevel(rfh->GetGlobalId()));
+  // After navigation commits, the PrivilegedWebContents zoom override remains
+  // active.
+  ASSERT_TRUE(pwc()->GetOverrideZoomLevel(web_contents()).has_value());
   EXPECT_DOUBLE_EQ(blink::ZoomLevelToZoomFactor(
                        content::HostZoomMap::GetZoomLevel(web_contents())),
                    1.25);
 }
 
 TEST_F(GlicZoomControllerTest,
-       ReadsPersistedZoomFromPrefOnCreationAndAppliesToGuest) {
+       ReadsPersistedZoomFromPrefOnCreationAndAppliesBeforeFirstNavigation) {
   // Simulate a previous session having saved zoom level to 150% in prefs.
   prefs()->SetInteger(prefs::kGlicZoomLevel, 150);
 
-  auto* new_contents = factory().CreateWebContents(profile());
-  content::WebContentsTester::For(new_contents)
-      ->NavigateAndCommit(GURL("https://gemini.google.com/glic"));
+  std::unique_ptr<pwc::PrivilegedWebContents> new_pwc = CreatePwc();
 
-  // Create a brand new controller with the attached web contents.
-  GlicZoomController new_controller(new_contents, prefs());
+  // Create controller BEFORE the first navigation (matching production
+  // GlicNoWebviewContentsManager construction order).
+  GlicZoomController new_controller(new_pwc.get(), prefs());
   EXPECT_DOUBLE_EQ(new_controller.GetCurrentZoomFactor(), 1.5);
 
-  // Verify that the new controller applied 1.5 zoom to the attached contents.
-  auto* rfh = new_contents->GetPrimaryMainFrame();
-  auto* zoom_map = content::HostZoomMap::Get(rfh->GetSiteInstance());
-  EXPECT_TRUE(zoom_map->UsesTemporaryZoomLevel(rfh->GetGlobalId()));
-  EXPECT_DOUBLE_EQ(blink::ZoomLevelToZoomFactor(
-                       content::HostZoomMap::GetZoomLevel(new_contents)),
-                   1.5);
+  // Override zoom is already populated before any navigation starts.
+  ASSERT_TRUE(
+      new_pwc->GetOverrideZoomLevel(new_pwc->web_contents()).has_value());
+  EXPECT_DOUBLE_EQ(
+      blink::ZoomLevelToZoomFactor(
+          content::HostZoomMap::GetZoomLevel(new_pwc->web_contents())),
+      1.5);
+
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      new_pwc->web_contents(), GURL("https://gemini.google.com/glic"));
+  EXPECT_DOUBLE_EQ(
+      blink::ZoomLevelToZoomFactor(
+          content::HostZoomMap::GetZoomLevel(new_pwc->web_contents())),
+      1.5);
 
   // Zooming further from this restored state updates the pref to 175%.
   new_controller.Zoom(mojom::ZoomAction::kZoomIn, ZoomSource::kHotkey);
@@ -309,8 +354,9 @@ TEST_F(GlicZoomControllerTest, UnalignedPrefStepping) {
 
 TEST_F(GlicZoomControllerTest, NotifiesCallbackOnZoomChange) {
   int change_count = 0;
+  std::unique_ptr<pwc::PrivilegedWebContents> test_pwc = CreatePwc();
   GlicZoomController test_controller(
-      web_contents(), prefs(),
+      test_pwc.get(), prefs(),
       base::BindRepeating([](int* count) { (*count)++; },
                           base::Unretained(&change_count)));
 

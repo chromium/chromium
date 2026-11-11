@@ -180,6 +180,12 @@ class PrivilegedWebContents : public content::WebContentsDelegate,
     return permission_delegate_.get();
   }
 
+  // Sets or clears a zoom level override for this PrivilegedWebContents's
+  // primary main frame. Unlike HostZoomMap::SetTemporaryZoomLevel(), this
+  // override applies across navigations (including before the initial
+  // navigation commits) without modifying HostZoomMap host preferences.
+  void SetOverrideZoomLevel(std::optional<double> zoom_level);
+
   // Returns the permission status override for `type` if `render_frame_host`
   // belongs to a PrivilegedWebContents. Returns std::nullopt if
   // `render_frame_host` does not belong to a PrivilegedWebContents or if the
@@ -223,6 +229,8 @@ class PrivilegedWebContents : public content::WebContentsDelegate,
   bool HandleKeyboardEvent(content::WebContents* source,
                            const input::NativeWebKeyboardEvent& event) override;
   void ContentsZoomChange(bool zoom_in) override;
+  std::optional<double> GetOverrideZoomLevel(
+      content::WebContents* source) override;
   void RequestMediaAccessPermission(
       content::WebContents* web_contents,
       const content::MediaStreamRequest& request,
@@ -262,6 +270,7 @@ class PrivilegedWebContents : public content::WebContentsDelegate,
   ui::UnownedUserDataHost unowned_user_data_host_;
   raw_ptr<EmbedderDelegate> embedder_delegate_ = nullptr;
   std::unique_ptr<PwcPermissionDelegate> permission_delegate_;
+  std::optional<double> override_zoom_level_;
 };
 
 }  // namespace pwc

@@ -237,6 +237,11 @@ blink::mojom::ApplicationContext WebContentsDelegate::GetApplicationContext(
   return blink::mojom::ApplicationContext::kNone;
 }
 
+std::optional<double> WebContentsDelegate::GetOverrideZoomLevel(
+    WebContents* source) {
+  return std::nullopt;
+}
+
 blink::ProtocolHandlerSecurityLevel
 WebContentsDelegate::GetProtocolHandlerSecurityLevel(RenderFrameHost*) {
   return blink::ProtocolHandlerSecurityLevel::kStrict;

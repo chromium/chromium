@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cmath>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
@@ -24,6 +25,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/url_constants.h"
 #include "net/base/url_util.h"
@@ -71,6 +73,14 @@ std::string GetHostFromProcessFrame(RenderFrameHostImpl* rfh) {
   const GURL url = GetURLForRenderFrameHostPtr(rfh);
 
   return net::GetHostOrSpecFromURL(url);
+}
+
+std::optional<double> GetDelegateOverrideZoomLevel(
+    WebContentsImpl* web_contents) {
+  if (!web_contents || !web_contents->GetDelegate()) {
+    return std::nullopt;
+  }
+  return web_contents->GetDelegate()->GetOverrideZoomLevel(web_contents);
 }
 
 // Allows HostZoomMap to grant independent zoom to subframes.
@@ -352,7 +362,9 @@ void HostZoomMapImpl::SetDefaultZoomLevelInternal(double level,
   scheme = url.GetScheme();
   host = net::GetHostOrSpecFromURL(url);
 
-  bool uses_default_zoom = !HasZoomLevel(scheme, host) &&
+  bool is_overridden = !rfh->GetParentOrOuterDocument() &&
+                       GetDelegateOverrideZoomLevel(web_contents).has_value();
+  bool uses_default_zoom = !is_overridden && !HasZoomLevel(scheme, host) &&
                            !UsesTemporaryZoomLevel(rfh->GetGlobalId());
 
   if (uses_default_zoom) {
@@ -435,6 +447,14 @@ double HostZoomMapImpl::GetZoomLevelForWebContents(
     GlobalRenderFrameHostId rfh_id) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
+  RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(rfh_id);
+  if (!rfh || !rfh->GetParentOrOuterDocument()) {
+    if (std::optional<double> override_zoom =
+            GetDelegateOverrideZoomLevel(web_contents_impl)) {
+      return *override_zoom;
+    }
+  }
+
   if (UsesTemporaryZoomLevel(rfh_id))
     return GetTemporaryZoomLevel(rfh_id);
 
@@ -454,6 +474,12 @@ void HostZoomMapImpl::SetZoomLevelForWebContents(
     GlobalRenderFrameHostId rfh_id,
     double level) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+
+  RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(rfh_id);
+  if ((!rfh || !rfh->GetParentOrOuterDocument()) &&
+      GetDelegateOverrideZoomLevel(web_contents_impl).has_value()) {
+    return;
+  }
 
   if (UsesTemporaryZoomLevel(rfh_id)) {
     SetTemporaryZoomLevel(rfh_id, level);
@@ -546,7 +572,8 @@ void HostZoomMapImpl::SendZoomLevelChange(const std::string& scheme,
     if (GetForWebContents(web_contents) != this)
       continue;
 
-    if (!UsesTemporaryZoomLevel(
+    if (!GetDelegateOverrideZoomLevel(web_contents).has_value() &&
+        !UsesTemporaryZoomLevel(
             web_contents->GetPrimaryMainFrame()->GetGlobalId())) {
       web_contents->UpdateZoomIfNecessary(scheme, host);
     }

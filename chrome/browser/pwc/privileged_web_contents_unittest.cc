@@ -18,6 +18,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "content/public/browser/file_select_listener.h"
+#include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/page_navigator.h"
@@ -35,6 +36,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
@@ -1235,6 +1237,32 @@ TEST_F(PrivilegedWebContentsPermissionTest,
   EXPECT_EQ(result2->source, content::PermissionStatusSource::FEATURE_POLICY);
   EXPECT_EQ(delegate()->call_count(), 2);
   EXPECT_EQ(delegate()->last_type(), ContentSettingsType::GEOLOCATION);
+}
+
+TEST_F(PrivilegedWebContentsTest, OverrideZoomLevel) {
+  std::unique_ptr<PrivilegedWebContents> pwc = PrivilegedWebContents::Create(
+      PrivilegedComponent::kTestComponent, profile(), MakeTestDelegate());
+  content::WebContentsDelegate* delegate = pwc->web_contents()->GetDelegate();
+  ASSERT_EQ(delegate, pwc.get());
+
+  // Defaults to std::nullopt.
+  EXPECT_EQ(pwc->GetOverrideZoomLevel(pwc->web_contents()), std::nullopt);
+
+  const double kZoom150 = blink::ZoomFactorToZoomLevel(1.5);
+  pwc->SetOverrideZoomLevel(kZoom150);
+  EXPECT_EQ(pwc->GetOverrideZoomLevel(pwc->web_contents()), kZoom150);
+  EXPECT_DOUBLE_EQ(content::HostZoomMap::GetZoomLevel(pwc->web_contents()),
+                   kZoom150);
+
+  // Unrelated or null WebContents never receive this PWC's override zoom level.
+  EXPECT_EQ(pwc->GetOverrideZoomLevel(web_contents()), std::nullopt);
+  EXPECT_EQ(pwc->GetOverrideZoomLevel(nullptr), std::nullopt);
+
+  // Clearing back to std::nullopt restores the default zoom level (0.0).
+  pwc->SetOverrideZoomLevel(std::nullopt);
+  EXPECT_EQ(pwc->GetOverrideZoomLevel(pwc->web_contents()), std::nullopt);
+  EXPECT_DOUBLE_EQ(content::HostZoomMap::GetZoomLevel(pwc->web_contents()),
+                   0.0);
 }
 
 }  // namespace
