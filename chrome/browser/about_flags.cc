@@ -10392,6 +10392,12 @@ const FeatureEntry kFeatureEntries[] = {
          password_manager::features::kPasswordCompromiseWarningInDetailsCard)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+    {"password-manager-list-sorting",
+     flag_descriptions::kPasswordManagerListSortingName,
+     flag_descriptions::kPasswordManagerListSortingDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kPasswordManagerListSorting)},
+
     {"password-save-in-context-error-resolution",
      flag_descriptions::kPasswordSaveInContextErrorResolutionName,
      flag_descriptions::kPasswordSaveInContextErrorResolutionDescription,

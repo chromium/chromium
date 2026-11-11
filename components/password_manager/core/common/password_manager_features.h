@@ -20,6 +20,7 @@ BASE_DECLARE_FEATURE(kActorLoginTreatFillingAsUserInput);
 BASE_DECLARE_FEATURE(kDelaySuggestionsOnAutofocusWaitingForPasskeys);
 BASE_DECLARE_FEATURE_PARAM(int, kDelaySuggestionsOnAutofocusTimeout);
 BASE_DECLARE_FEATURE(kNoPasswordSuggestionFiltering);
+BASE_DECLARE_FEATURE(kPasswordManagerListSorting);
 BASE_DECLARE_FEATURE(kShowSuggestionsOnAutofocus);
 
 // All features parameters are in alphabetical order.

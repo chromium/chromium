@@ -4213,6 +4213,12 @@ inline constexpr char kPasswordCompromiseWarningInDetailsCardDescription[] =
     "Displays a warning banner in the password details card when a "
     "saved credential is compromised.";
 
+inline constexpr char kPasswordManagerListSortingName[] =
+    "Password Manager List Sorting";
+inline constexpr char kPasswordManagerListSortingDescription[] =
+    "Enables sorting saved passwords and passkeys by name, date last used, or "
+    "date created in Password Manager.";
+
 inline constexpr char kPasswordManagerShowSuggestionsOnAutofocusName[] =
     "Showing password suggestions on autofocused password forms";
 inline constexpr char kPasswordManagerShowSuggestionsOnAutofocusDescription[] =

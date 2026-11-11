@@ -10235,6 +10235,7 @@ from previous Chrome versions.
   <int value="-1447457836" label="QuickShareV2:disabled"/>
   <int value="-1447314734" label="QuerySearchBurnInPeriod:enabled"/>
   <int value="-1447147245" label="VideoPlayerNativeControls:enabled"/>
+  <int value="-1447127947" label="password-manager-list-sorting:disabled"/>
   <int value="-1447120866"
       label="EnableAndroidSidePanelManualResizing:disabled"/>
   <int value="-1447000031" label="PrivateStateTokensDevUI:disabled"/>
@@ -16737,6 +16738,7 @@ from previous Chrome versions.
   <int value="492985975" label="use-monitor-color-space"/>
   <int value="493758709" label="RestrictGamepadAccess:disabled"/>
   <int value="493903641" label="disable-appcontainer"/>
+  <int value="494002791" label="PasswordManagerListSorting:enabled"/>
   <int value="494733611" label="disable-drop-sync-credential"/>
   <int value="494832336" label="LockTopControlsOnLargeTablets:disabled"/>
   <int value="494939785" label="InsecureFormSubmissionInterstitial:disabled"/>
@@ -17013,6 +17015,7 @@ from previous Chrome versions.
   <int value="583840453" label="EnableDownloadSaveAsSystemFileDialog:enabled"/>
   <int value="584241117"
       label="ContextualTasksContextMultiTurnTabRelevance:disabled"/>
+  <int value="584304480" label="PasswordManagerListSorting:disabled"/>
   <int value="584509342" label="TerminalTmuxIntegration:enabled"/>
   <int value="584541349" label="ContextualSearchSingleActions:disabled"/>
   <int value="584661108"
@@ -18947,6 +18950,7 @@ from previous Chrome versions.
   <int value="1159222900" label="CollapseTabGroupDuringDrag:disabled"/>
   <int value="1159760152"
       label="ContextMenuSearchAndShopWithGoogleLens:disabled"/>
+  <int value="1160671261" label="password-manager-list-sorting:enabled"/>
   <int value="1161105475"
       label="ClipboardWellFormedHtmlSanitizationWrite:disabled"/>
   <int value="1161822401" label="LoginDetection:enabled"/>

@@ -43,6 +43,10 @@ BASE_FEATURE_PARAM(int,
 // Removes password suggestion filtering by username.
 BASE_FEATURE(kNoPasswordSuggestionFiltering, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables sorting saved passwords and passkeys by name, date last used, or date
+// created in Password Manager.
+BASE_FEATURE(kPasswordManagerListSorting, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Allows to show suggestions automatically when password forms are autofocused
 // on pageload. Enabled by default on desktop in M140.
 BASE_FEATURE(kShowSuggestionsOnAutofocus,
