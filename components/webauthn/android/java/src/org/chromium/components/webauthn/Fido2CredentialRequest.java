@@ -177,7 +177,8 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
     /**
      * Constructs the object.
      *
-     * @param intentSender Interface for starting {@link Intent}s from Play Services.
+     * @param authenticationContextProvider Provides the context, frame host and callbacks for
+     *     requests.
      */
     public Fido2CredentialRequest(AuthenticationContextProvider authenticationContextProvider) {
         mAuthenticationContextProvider = authenticationContextProvider;

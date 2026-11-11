@@ -16,9 +16,7 @@ import org.chromium.build.annotations.NullMarked;
 public class WebauthnFeatureMap extends FeatureMap {
     private static final WebauthnFeatureMap sInstance = new WebauthnFeatureMap();
 
-    /**
-     * @return The singleton instance of WebauthnFeatureMap.
-     */
+    /** Returns the singleton instance of WebauthnFeatureMap. */
     public static WebauthnFeatureMap getInstance() {
         return sInstance;
     }

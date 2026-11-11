@@ -12,7 +12,7 @@ import org.chromium.build.annotations.NullMarked;
 /**
  * Lists //services/device features that can be accessed through {@link DeviceFeatureMap}.
  *
- * <p>Note: Features must be added to the array |kFeaturesExposedToJava| in
+ * <p>Note: Features must be added to the array {@code kFeaturesExposedToJava} in
  * //services/device/public/cpp/device_feature_map.cc.
  */
 @JNINamespace("features")

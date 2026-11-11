@@ -9,7 +9,7 @@ import org.chromium.build.annotations.NullMarked;
 /**
  * Lists //components/webauthn features that can be accessed through {@link WebauthnFeatureMap}.
  *
- * <p>Note: Features must be added to the array |kFeaturesExposedToJava| in
+ * <p>Note: Features must be added to the array {@code kFeaturesExposedToJava} in
  * //components/webauthn/android/webauthn_feature_map.cc.
  */
 @NullMarked

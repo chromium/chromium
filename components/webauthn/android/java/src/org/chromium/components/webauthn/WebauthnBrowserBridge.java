@@ -119,8 +119,8 @@ public class WebauthnBrowserBridge {
     }
 
     /**
-     * Provides the C++ side |hasResults| and |fullAssertion| to be consumed during user interaction
-     * (i.e. focusing login forms).
+     * Provides the C++ side {@code hasResults} and {@code fullAssertion} to be consumed during user
+     * interaction (i.e. focusing login forms).
      *
      * @param frameHost The RenderFrameHost for the frame that generated the request.
      * @param hasResults The response from credMan whether there are credentials for the

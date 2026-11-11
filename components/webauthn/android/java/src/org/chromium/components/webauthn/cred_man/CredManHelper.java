@@ -73,7 +73,8 @@ public class CredManHelper {
     // Jetpack library, not the framework.
     @VisibleForTesting
     public static final String CRED_MAN_EXCEPTION_CREATE_CREDENTIAL_TYPE_INVALID_STATE_ERROR =
-            "androidx.credentials.TYPE_CREATE_PUBLIC_KEY_CREDENTIAL_DOM_EXCEPTION/androidx.credentials.TYPE_INVALID_STATE_ERROR";
+            "androidx.credentials.TYPE_CREATE_PUBLIC_KEY_CREDENTIAL_DOM_EXCEPTION/"
+                    + "androidx.credentials.TYPE_INVALID_STATE_ERROR";
 
     protected static final String CRED_MAN_PREFIX = "androidx.credentials.";
     protected static final String TYPE_PASSKEY = CRED_MAN_PREFIX + "TYPE_PUBLIC_KEY_CREDENTIAL";
@@ -264,10 +265,16 @@ public class CredManHelper {
     /**
      * Queries credential availability using the Android 14 CredMan API.
      *
+     * @param options The WebAuthn get() call.
+     * @param originString The origin that made the WebAuthn request.
+     * @param clientDataJson The ClientDataJSON to use if the request proceeds to a CredMan get.
+     * @param clientDataHash The hash of the ClientDataJSON to be passed to the CredMan API.
+     * @param barrier The {@link Barrier} notified of the CredMan result; stored for cancellation.
      * @param stopImmediateTimer Callback to stop the immediate mediation timer, taking {@link
      *     StopImmediateTimerBehavior#RECORD_METRIC} when prefetch succeeds or {@link
      *     StopImmediateTimerBehavior#DO_NOT_RECORD_METRIC} to cancel the timer without recording on
      *     error.
+     * @param ignoreGpm True if Google Password Manager should ignore CredMan requests.
      */
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void startPrefetchRequest(

@@ -46,9 +46,7 @@ public class Fido2ApiCallHelper {
         ResettersForTesting.register(() -> sInstance = prev);
     }
 
-    /**
-     * @return The Fido2ApiCallHelper for use during the lifetime of the browser process.
-     */
+    /** Returns the Fido2ApiCallHelper for use during the lifetime of the browser process. */
     public static Fido2ApiCallHelper getInstance() {
         if (sInstance == null) {
             sInstance = new Fido2ApiCallHelper();

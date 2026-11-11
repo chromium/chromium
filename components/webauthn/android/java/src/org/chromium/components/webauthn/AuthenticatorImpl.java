@@ -86,6 +86,8 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
      * Builds the Authenticator service implementation.
      *
      * @param context The context of the AndroidWindow that triggered this operation.
+     * @param webContents The WebContents that triggered this operation, used to determine the
+     *     WebAuthn mode and visibility. May be null.
      * @param intentSender The interface that will be used to start {@link Intent}s from Play
      *     Services. May only be null for calls that do not go to Play Services such as {@link
      *     #getMatchingCredentialIds()}.

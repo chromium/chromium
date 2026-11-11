@@ -303,7 +303,8 @@ public class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
      * Construct an instance.
      *
      * @param context the Android {@link Context} for the current process.
-     * @param api the service to call. One of the public static Api objects from this class.
+     * @param apiParams the parameters of the service to call, including its {@link Api} and
+     *     descriptor.
      */
     public Fido2ApiCall(Context context, Fido2ApiCallParams apiParams) {
         super(context, apiParams.mApi, ApiOptions.NO_OPTIONS, new ApiExceptionMapper());

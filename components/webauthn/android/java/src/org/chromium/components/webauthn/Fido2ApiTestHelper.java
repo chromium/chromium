@@ -624,6 +624,7 @@ public class Fido2ApiTestHelper {
     /**
      * Verifies that the returned userVerificationMethod matches expected values.
      *
+     * @param echoUserVerificationMethods Whether the methods were echoed and should be checked.
      * @param userVerificationMethods The userVerificationMethods from the Fido2 API.
      */
     public static void validateUserVerificationMethods(
@@ -713,6 +714,7 @@ public class Fido2ApiTestHelper {
      * Constructs an intent that returns an error response from the Fido2 API.
      *
      * @param errorCode Numeric values corresponding to a Fido2 error.
+     * @param errorMsg Optional error message to include in the response. May be null.
      * @return an Intent containing the error response.
      */
     public static Intent createErrorIntent(int errorCode, @Nullable String errorMsg) {
