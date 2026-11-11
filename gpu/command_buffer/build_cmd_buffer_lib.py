@@ -1494,7 +1494,7 @@ TEST_F(%(prefix)sImplementationTest, %(name)s) {
   expected.cmd.Init(%(cmd_args)s);
 
   gl_->%(name)s(%(args)s);
-  EXPECT_EQ(0, UNSAFE_TODO(memcmp(&expected, commands_, sizeof(expected))));
+  EXPECT_TRUE(CommandsMatch(expected));
 }
 """
       cmd_arg_strings = [
@@ -2166,7 +2166,7 @@ TEST_F(%(prefix)sImplementationTest, %(name)s) {
   expected.cmd.Init(%(cmd_args)s);
 
   gl_->%(name)s(%(args)s);
-  EXPECT_EQ(0, UNSAFE_TODO(memcmp(&expected, commands_, sizeof(expected))));"""
+  EXPECT_TRUE(CommandsMatch(expected));"""
     if not func.IsES3():
       code += """
   ClearCommands();
@@ -2306,7 +2306,7 @@ TEST_F(%(prefix)sImplementationTest, %(name)s) {
   expected.data[0] = k%(types)sStartId;
   expected.data[1] = k%(types)sStartId + 1;
   gl_->%(name)s(std::size(ids), &ids[0]);
-  EXPECT_EQ(0, UNSAFE_TODO(memcmp(&expected, commands_, sizeof(expected))));
+  EXPECT_TRUE(CommandsMatch(expected));
   EXPECT_EQ(k%(types)sStartId, ids[0]);
   EXPECT_EQ(k%(types)sStartId + 1, ids[1]);
 }
@@ -2746,7 +2746,7 @@ TEST_F(%(prefix)sImplementationTest, %(name)s) {
   expected.data[0] = k%(types)sStartId;
   expected.data[1] = k%(types)sStartId + 1;
   gl_->%(name)s(std::size(ids), &ids[0]);
-  EXPECT_EQ(0, UNSAFE_TODO(memcmp(&expected, commands_, sizeof(expected))));
+  EXPECT_TRUE(CommandsMatch(expected));
 }
 """
     f.write(
@@ -3238,7 +3238,7 @@ TEST_F(%(prefix)sImplementationTest, %(name)s) {
       .WillOnce(SetMemory(result1.ptr, SizedResultHelper<ResultType>(1)))
       .RetiresOnSaturation();
   gl_->%(name)s(%(args)s, &result);
-  EXPECT_EQ(0, UNSAFE_TODO(memcmp(&expected, commands_, sizeof(expected))));
+  EXPECT_TRUE(CommandsMatch(expected));
   EXPECT_EQ(static_cast<ResultType>(1), result);
 }
 """
@@ -3589,7 +3589,7 @@ TEST_F(%(prefix)sImplementationTest, %(name)s) {
   Cmds expected;
   expected.cmd.Init(%(cmd_args)s, data.data());
   gl_->%(name)s(%(args)s, data.data());
-  EXPECT_EQ(0, UNSAFE_TODO(memcmp(&expected, commands_, sizeof(expected))));
+  EXPECT_TRUE(CommandsMatch(expected));
 }
 """
     cmd_arg_strings = [
@@ -3942,7 +3942,7 @@ TEST_F(%(prefix)sImplementationTest, %(name)s) {
   }
   expected.cmd.Init(%(cmd_args)s);
   gl_->%(name)s(%(args)s);
-  EXPECT_EQ(0, UNSAFE_TODO(memcmp(&expected, commands_, sizeof(expected))));
+  EXPECT_TRUE(CommandsMatch(expected));
 }
 """
     cmd_arg_strings = []
@@ -4299,7 +4299,7 @@ TEST_F(%(prefix)sImplementationTest, %(name)s) {
   expected.clear_bucket_size.Init(kBucketId, 0);
   const char* kStrings[] = { kString1, kString2 };
   gl_->%(name)s(%(gl_args)s);
-  EXPECT_EQ(0, UNSAFE_TODO(memcmp(&expected, commands_, sizeof(expected))));
+  EXPECT_TRUE(CommandsMatch(expected));
 }
 """
     gl_args = []
@@ -4364,7 +4364,7 @@ TEST_F(%(prefix)sImplementationTest, %(name)sWithLength) {
   const char* kStrings[] = { kString };
   const GLint kLength[] = { kStringSize };
   gl_->%(name)s(%(gl_args)s);
-  EXPECT_EQ(0, UNSAFE_TODO(memcmp(&expected, commands_, sizeof(expected))));
+  EXPECT_TRUE(CommandsMatch(expected));
 }
 """
     gl_args = []
@@ -4937,7 +4937,7 @@ TEST_F(%(prefix)sImplementationTest, %(name)s) {
       .RetiresOnSaturation();
 
   GLboolean result = gl_->%(name)s(%(gl_id_value)s);
-  EXPECT_EQ(0, UNSAFE_TODO(memcmp(&expected, commands_, sizeof(expected))));
+  EXPECT_TRUE(CommandsMatch(expected));
   EXPECT_TRUE(result);
 }
 """

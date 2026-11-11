@@ -17,6 +17,7 @@
 #include <limits>
 #include <memory>
 #include <numeric>
+#include <type_traits>
 
 #include "base/bits.h"
 #include "base/compiler_specific.h"
@@ -26,6 +27,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -110,7 +112,7 @@ class RasterImplementationTest : public testing::Test {
 
   class TestContext {
    public:
-    TestContext() : commands_(nullptr), token_(0) {}
+    TestContext() : token_(0) {}
 
     bool Initialize(bool lose_context_when_out_of_memory,
                     bool transfer_buffer_initialize_fail,
@@ -151,9 +153,8 @@ class RasterImplementationTest : public testing::Test {
       Mock::VerifyAndClearExpectations(gl_.get());
 
       scoped_refptr<Buffer> ring_buffer = helper_->get_ring_buffer();
-      commands_ =
-          UNSAFE_TODO(static_cast<CommandBufferEntry*>(ring_buffer->memory()) +
-                      command_buffer()->GetServicePutOffset());
+      commands_ = ring_buffer->as_byte_span().subspan(
+          command_buffer()->GetServicePutOffset() * sizeof(CommandBufferEntry));
       ClearCommands();
       EXPECT_TRUE(transfer_buffer_->InSync());
 
@@ -190,12 +191,12 @@ class RasterImplementationTest : public testing::Test {
     std::unique_ptr<RasterCmdHelper> helper_;
     std::unique_ptr<TestTransferBuffer> transfer_buffer_;
     std::unique_ptr<RasterImplementation> gl_;
-    raw_ptr<CommandBufferEntry> commands_;
+    base::raw_span<uint8_t> commands_;
     int token_;
     Capabilities capabilities_;
   };
 
-  RasterImplementationTest() : commands_(nullptr) {}
+  RasterImplementationTest() = default;
 
   void SetUp() override;
   void TearDown() override;
@@ -246,6 +247,18 @@ class RasterImplementationTest : public testing::Test {
   }
 
   int GetNextToken() { return test_context_.GetNextToken(); }
+
+  // Returns whether the commands written to the command buffer since the
+  // start of the test begin with the bytes of `expected`.
+  template <typename T>
+  bool CommandsMatch(const T& expected) const {
+    if constexpr (std::has_unique_object_representations_v<T>) {
+      return commands_.first<sizeof(T)>() == base::byte_span_from_ref(expected);
+    } else {
+      return commands_.first<sizeof(T)>() ==
+             base::byte_span_from_ref(base::allow_nonunique_obj, expected);
+    }
+  }
 
   const void* GetPut() { return helper_->GetSpace(0); }
 
@@ -327,7 +340,7 @@ class RasterImplementationTest : public testing::Test {
   raw_ptr<RasterCmdHelper> helper_;
   raw_ptr<TestTransferBuffer> transfer_buffer_;
   raw_ptr<RasterImplementation> gl_;
-  raw_ptr<CommandBufferEntry> commands_;
+  base::raw_span<uint8_t> commands_;
 };
 
 void RasterImplementationTest::SetUp() {
@@ -398,7 +411,7 @@ TEST_F(RasterImplementationTest, GetBucketContents) {
 
   std::vector<int8_t> data;
   GetBucketContents(kBucketId, &data);
-  UNSAFE_TODO(EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected))));
+  EXPECT_TRUE(CommandsMatch(expected));
   ASSERT_EQ(kTestSize, data.size());
   UNSAFE_TODO(EXPECT_EQ(0, memcmp(buf.data(), &data[0], data.size())));
 }
@@ -417,8 +430,7 @@ TEST_F(RasterImplementationTest, BeginEndQueryEXT) {
   expected_gen_cmds.gen.Init(std::size(expected_ids), &expected_ids[0]);
   std::array<GLuint, std::size(expected_ids)> ids = {};
   gl_->GenQueriesEXT(std::size(expected_ids), &ids[0]);
-  UNSAFE_TODO(EXPECT_EQ(
-      0, memcmp(&expected_gen_cmds, commands_, sizeof(expected_gen_cmds))));
+  EXPECT_TRUE(CommandsMatch(expected_gen_cmds));
   GLuint id1 = ids[0];
   GLuint id2 = ids[1];
   ClearCommands();
@@ -707,7 +719,7 @@ TEST_F(RasterImplementationTest, WaitSyncTokenCHROMIUM) {
   verified_sync_token.SetVerifyFlush();
   EXPECT_CALL(*gpu_control_, WaitSyncToken(verified_sync_token));
   gl_->WaitSyncTokenCHROMIUM(sync_token_data);
-  UNSAFE_TODO(EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected))));
+  EXPECT_TRUE(CommandsMatch(expected));
 }
 
 TEST_F(RasterImplementationTest, WaitSyncTokenCHROMIUMErrors) {
@@ -906,7 +918,7 @@ TEST_F(RasterImplementationTest, SetActiveURLCHROMIUM) {
   expected.set_token.Init(GetNextToken());
   expected.set_url_call.Init(kURLBucketId);
   expected.url_size_end.Init(kURLBucketId, 0);
-  UNSAFE_TODO(EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected))));
+  EXPECT_TRUE(CommandsMatch(expected));
 
   // Same URL shouldn't make any commands.
   EXPECT_FALSE(NoCommandsWritten());
