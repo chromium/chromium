@@ -3255,6 +3255,7 @@ public class WebContentsAccessibilityTest {
      */
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/584777695")
     public void testNodeInfo_inputTypeRangeSmall() throws Throwable {
         // Create a basic input range, and find the associated |AccessibilityNodeInfo| object.
         setupTestWithHTML("<input type='range' min='0' max='10' value='0'>");
