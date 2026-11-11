@@ -71,6 +71,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_android.h"
+#include "chrome/browser/glic/experimental_triggering/glic_background_opt_in_notifier_android.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#endif
+
 namespace glic {
 
 namespace {
@@ -1687,6 +1693,7 @@ TEST_F(GlicExperimentalTriggeringCoordinatorOptInTest,
   // would be sent if the handler did not drop it.
   StartActuationSession();
 
+  base::HistogramTester histogram_tester;
   std::vector<ExperimentalTriggeringResponse> results;
   auto record =
       base::BindLambdaForTesting([&](ExperimentalTriggeringResponse response) {
@@ -1699,7 +1706,15 @@ TEST_F(GlicExperimentalTriggeringCoordinatorOptInTest,
         SendRequestWithCallback(CreateRequest(DeviceOptInRequest{}), record)
             .has_value());
   }
-  // Both answers were posted already, so this task runs after them.
+  histogram_tester.ExpectBucketCount(
+      "Glic.ExperimentalTriggering.IncomingMessageResult.SharingMessage",
+      GlicExperimentalTriggeringIncomingMessageResult::kSuccess, 1);
+  histogram_tester.ExpectBucketCount(
+      "Glic.ExperimentalTriggering.IncomingMessageResult.SharingMessage",
+      GlicExperimentalTriggeringIncomingMessageResult::
+          kOptInDialogAlreadyShowing,
+      1);
+  // The answer was posted already, so this task runs after it.
   base::RunLoop run_loop;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, run_loop.QuitClosure());
@@ -4889,6 +4904,7 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
 
 TEST_F(GlicExperimentalTriggeringCoordinatorTest,
        DeviceOptInRequestFailsWhenChromeInBackground) {
+  OptOut();
   coordinator_->set_is_chrome_in_background(true);
 
   ExperimentalTriggeringRequest request;
@@ -4921,6 +4937,424 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTest,
       "Glic.ExperimentalTriggering.IncomingMessageResult.SharingMessage",
       GlicExperimentalTriggeringIncomingMessageResult::kAndroidOptInUnsupported,
       1);
+}
+
+class GlicExperimentalTriggeringCoordinatorBackgroundOptInTest
+    : public GlicExperimentalTriggeringCoordinatorWithTabTest {
+ public:
+  void SetUp() override {
+    GlicExperimentalTriggeringCoordinatorWithTabTest::SetUp();
+    background_opt_in_feature_.InitAndEnableFeature(
+        features::kGlicExperimentalTriggeringBackgroundOptInNotification);
+    BackgroundOptInNotifier::Get().SetCallbacksForTesting(
+        base::BindLambdaForTesting([this]() {
+          if (!can_show_background_opt_in_notification_) {
+            return false;
+          }
+          is_background_opt_in_notification_showing_ = true;
+          return true;
+        }),
+        base::BindLambdaForTesting(
+            [this]() { is_background_opt_in_notification_showing_ = false; }));
+    OptOut();
+    coordinator_->set_is_chrome_in_background(true);
+  }
+
+  void TearDown() override {
+    GlicExperimentalTriggeringCoordinatorWithTabTest::TearDown();
+    BackgroundOptInNotifier::Get().SetCallbacksForTesting({}, {});
+  }
+
+  std::optional<ExperimentalTriggeringResponse> SendOptInRequest(
+      base::test::TestFuture<ExperimentalTriggeringResponse>& update_future,
+      std::string_view context_id = kTestContextId) {
+    ExperimentalTriggeringRequest request =
+        CreateRequest(DeviceOptInRequest{.triggering_source = "Android"});
+    request.context_id = std::string(context_id);
+    request.task_metadata = TaskMetadata{.sender_sequence_number = 42};
+    return coordinator_->OnRequest(
+        std::string(context_id), request,
+        ScopedIncomingMessageResultLogger(
+            GlicMetricReporter(profile_),
+            ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
+        update_future.GetRepeatingCallback(), nullptr);
+  }
+
+  void ForegroundChrome() {
+    coordinator_->set_is_chrome_in_background(false);
+    BackgroundOptInNotifier::Get().ScheduleForegroundNotification();
+  }
+
+  void set_can_show_background_opt_in_notification(bool can_show) {
+    can_show_background_opt_in_notification_ = can_show;
+  }
+
+  bool is_background_opt_in_notification_showing() const {
+    return is_background_opt_in_notification_showing_;
+  }
+
+ private:
+  base::test::ScopedFeatureList background_opt_in_feature_;
+  bool can_show_background_opt_in_notification_ = true;
+  bool is_background_opt_in_notification_showing_ = false;
+};
+
+TEST_F(GlicExperimentalTriggeringCoordinatorBackgroundOptInTest,
+       ShowsNotificationAndDefersDialogUntilForegrounded) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<ExperimentalTriggeringResponse> update_future;
+  EXPECT_FALSE(SendOptInRequest(update_future).has_value());
+  EXPECT_TRUE(is_background_opt_in_notification_showing());
+  EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 1u);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.ExperimentalTriggering.IncomingMessageResult.SharingMessage",
+      GlicExperimentalTriggeringIncomingMessageResult::
+          kDeferredForBackgroundOptIn,
+      1);
+
+  ForegroundChrome();
+
+  // In unit tests without a WindowAndroid, GlicExperimentalOptInUIHostAndroid
+  // dismisses the dialog when ShowDialog() is reached.
+  auto result = update_future.Take();
+  EXPECT_FALSE(is_background_opt_in_notification_showing());
+  EXPECT_EQ(result.device_opt_in_result, DeviceOptInResult::kDeclined);
+  EXPECT_EQ(result.task_metadata->last_seen_sequence_number, 42);
+  EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 0u);
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorBackgroundOptInTest,
+       AlreadyOptedInReturnsAcceptedImmediatelyWithoutShowingNotification) {
+  OptIn();
+
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<ExperimentalTriggeringResponse> update_future;
+  auto response = SendOptInRequest(update_future);
+
+  ASSERT_TRUE(response.has_value());
+  EXPECT_EQ(response->device_opt_in_result, DeviceOptInResult::kAccepted);
+  EXPECT_EQ(response->task_metadata->last_seen_sequence_number, 42);
+  EXPECT_FALSE(is_background_opt_in_notification_showing());
+  EXPECT_FALSE(update_future.IsReady());
+  EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 0u);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.ExperimentalTriggering.IncomingMessageResult.SharingMessage",
+      GlicExperimentalTriggeringIncomingMessageResult::kSuccess, 1);
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorBackgroundOptInTest,
+       TimesOutWhenUserNeverForegroundsChrome) {
+  base::test::TestFuture<ExperimentalTriggeringResponse> update_future;
+  EXPECT_FALSE(SendOptInRequest(update_future).has_value());
+  EXPECT_TRUE(is_background_opt_in_notification_showing());
+
+  task_environment_.FastForwardBy(
+      features::kGlicExperimentalTriggeringBackgroundOptInTimeout.Get());
+
+  EXPECT_FALSE(is_background_opt_in_notification_showing());
+  EXPECT_EQ(update_future.Take().device_opt_in_result,
+            DeviceOptInResult::kFailed);
+  EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 0u);
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorBackgroundOptInTest,
+       CancelledStopsTimerAndFailsImmediately) {
+  base::test::TestFuture<ExperimentalTriggeringResponse> update_future;
+  EXPECT_FALSE(SendOptInRequest(update_future).has_value());
+  EXPECT_TRUE(is_background_opt_in_notification_showing());
+
+  BackgroundOptInNotifier::Get().Notify(
+      BackgroundOptInNotifier::Event::kCancelled);
+
+  EXPECT_FALSE(is_background_opt_in_notification_showing());
+  auto result = update_future.Take();
+  EXPECT_EQ(result.device_opt_in_result, DeviceOptInResult::kFailed);
+  EXPECT_EQ(result.task_metadata->last_seen_sequence_number, 42);
+  EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 0u);
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorBackgroundOptInTest,
+       FailsImmediatelyWhenNotificationCannotBeShown) {
+  set_can_show_background_opt_in_notification(false);
+
+  base::test::TestFuture<ExperimentalTriggeringResponse> update_future;
+  auto response = SendOptInRequest(update_future);
+
+  ASSERT_TRUE(response.has_value());
+  EXPECT_EQ(response->device_opt_in_result, DeviceOptInResult::kFailed);
+  EXPECT_FALSE(update_future.IsReady());
+  EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 0u);
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorBackgroundOptInTest,
+       MultipleRequestsKeepNotificationUntilAllResolved) {
+  base::test::TestFuture<ExperimentalTriggeringResponse> update_future1;
+  base::test::TestFuture<ExperimentalTriggeringResponse> update_future2;
+  EXPECT_FALSE(SendOptInRequest(update_future1, "context_1").has_value());
+  EXPECT_FALSE(SendOptInRequest(update_future2, "context_2").has_value());
+  EXPECT_TRUE(is_background_opt_in_notification_showing());
+  EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 2u);
+
+  ExperimentalTriggeringRequest stop_request =
+      CreateRequest(StopActuationRequest{});
+  stop_request.context_id = "context_1";
+  coordinator_->OnRequest(
+      "context_1", stop_request,
+      ScopedIncomingMessageResultLogger(
+          GlicMetricReporter(profile_),
+          ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
+      update_future1.GetRepeatingCallback(), nullptr);
+  EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 1u);
+  EXPECT_TRUE(is_background_opt_in_notification_showing());
+
+  ForegroundChrome();
+
+  EXPECT_EQ(update_future2.Take().device_opt_in_result,
+            DeviceOptInResult::kDeclined);
+  EXPECT_FALSE(is_background_opt_in_notification_showing());
+  EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 0u);
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorBackgroundOptInTest,
+       MultipleCoordinatorsShareProcessWideNotificationState) {
+  auto second_coordinator =
+      std::make_unique<TestGlicExperimentalTriggeringCoordinator>(profile_);
+  second_coordinator->set_is_chrome_in_background(true);
+
+  base::test::TestFuture<ExperimentalTriggeringResponse> update_future1;
+  base::test::TestFuture<ExperimentalTriggeringResponse> update_future2;
+  EXPECT_FALSE(SendOptInRequest(update_future1, "context_1").has_value());
+
+  ExperimentalTriggeringRequest request2 =
+      CreateRequest(DeviceOptInRequest{.triggering_source = "Android"});
+  request2.context_id = "context_2";
+  request2.task_metadata = TaskMetadata{.sender_sequence_number = 42};
+  EXPECT_FALSE(
+      second_coordinator
+          ->OnRequest(
+              "context_2", request2,
+              ScopedIncomingMessageResultLogger(
+                  GlicMetricReporter(profile_),
+                  ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
+              update_future2.GetRepeatingCallback(), nullptr)
+          .has_value());
+  EXPECT_TRUE(is_background_opt_in_notification_showing());
+
+  second_coordinator.reset();
+  EXPECT_TRUE(is_background_opt_in_notification_showing());
+
+  coordinator_.reset();
+  EXPECT_FALSE(is_background_opt_in_notification_showing());
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorBackgroundOptInTest,
+       AutoAcceptsWithoutCreatingTabWhenOptInBecomesNotNeeded) {
+  coordinator_->set_active_tab(nullptr);
+
+  base::test::TestFuture<ExperimentalTriggeringResponse> update_future;
+  EXPECT_FALSE(SendOptInRequest(update_future).has_value());
+  EXPECT_TRUE(is_background_opt_in_notification_showing());
+
+  OptIn();
+  ForegroundChrome();
+
+  EXPECT_EQ(update_future.Take().device_opt_in_result,
+            DeviceOptInResult::kAccepted);
+  EXPECT_FALSE(is_background_opt_in_notification_showing());
+  EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 0u);
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorBackgroundOptInTest,
+       FailsWhenNoWebContentsAvailableUponForegrounding) {
+  base::test::ScopedFeatureList disable_tab_focus;
+  disable_tab_focus.InitAndDisableFeature(
+      features::kGlicExperimentalTriggeringOptInTabFocus);
+  coordinator_->set_active_tab(nullptr);
+
+  base::test::TestFuture<ExperimentalTriggeringResponse> update_future;
+  EXPECT_FALSE(SendOptInRequest(update_future).has_value());
+  EXPECT_TRUE(is_background_opt_in_notification_showing());
+
+  ForegroundChrome();
+
+  EXPECT_EQ(update_future.Take().device_opt_in_result,
+            DeviceOptInResult::kFailed);
+  EXPECT_FALSE(is_background_opt_in_notification_showing());
+  EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 0u);
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorBackgroundOptInTest,
+       ResentRequestInForegroundStopsBackgroundWaitAndTimer) {
+  base::test::TestFuture<ExperimentalTriggeringResponse> update_future;
+  EXPECT_FALSE(SendOptInRequest(update_future).has_value());
+  EXPECT_TRUE(is_background_opt_in_notification_showing());
+
+  coordinator_->set_is_chrome_in_background(false);
+  EXPECT_FALSE(SendOptInRequest(update_future).has_value());
+  EXPECT_FALSE(is_background_opt_in_notification_showing());
+  EXPECT_EQ(update_future.Take().device_opt_in_result,
+            DeviceOptInResult::kDeclined);
+  EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 0u);
+
+  task_environment_.FastForwardBy(
+      features::kGlicExperimentalTriggeringBackgroundOptInTimeout.Get());
+  EXPECT_FALSE(update_future.IsReady());
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorBackgroundOptInTest,
+       ResentRequestWhenOptInNotNeededStopsBackgroundWaitAndTimer) {
+  base::test::TestFuture<ExperimentalTriggeringResponse> update_future;
+  EXPECT_FALSE(SendOptInRequest(update_future).has_value());
+  EXPECT_TRUE(is_background_opt_in_notification_showing());
+
+  OptIn();
+  auto response = SendOptInRequest(update_future);
+  ASSERT_TRUE(response.has_value());
+  EXPECT_EQ(response->device_opt_in_result, DeviceOptInResult::kAccepted);
+  EXPECT_FALSE(is_background_opt_in_notification_showing());
+  EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 0u);
+
+  task_environment_.FastForwardBy(
+      features::kGlicExperimentalTriggeringBackgroundOptInTimeout.Get());
+  EXPECT_FALSE(update_future.IsReady());
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorBackgroundOptInTest,
+       ResentRequestWhileForegroundDialogPendingAndBackgroundedIsCoalesced) {
+  base::test::ScopedFeatureList disable_tab_focus;
+  disable_tab_focus.InitAndDisableFeature(
+      features::kGlicExperimentalTriggeringOptInTabFocus);
+  OptIn();
+  coordinator_->set_is_chrome_in_background(false);
+
+  base::test::TestFuture<ExperimentalTriggeringResponse> update_future;
+  EXPECT_FALSE(SendOptInRequest(update_future).has_value());
+  EXPECT_FALSE(is_background_opt_in_notification_showing());
+  ASSERT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 1u);
+
+  coordinator_->set_is_chrome_in_background(true);
+  base::HistogramTester histogram_tester;
+  EXPECT_FALSE(SendOptInRequest(update_future).has_value());
+  EXPECT_FALSE(is_background_opt_in_notification_showing());
+  histogram_tester.ExpectUniqueSample(
+      "Glic.ExperimentalTriggering.IncomingMessageResult.SharingMessage",
+      GlicExperimentalTriggeringIncomingMessageResult::
+          kOptInDialogAlreadyShowing,
+      1);
+
+  ASSERT_TRUE(update_future.Wait());
+  EXPECT_EQ(update_future.Take().device_opt_in_result,
+            DeviceOptInResult::kAccepted);
+  EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 0u);
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorBackgroundOptInTest,
+       ActuationRequestStopsBackgroundOptInWaitAndTimer) {
+  auto* glic_service = static_cast<MockGlicKeyedService*>(
+      GlicKeyedServiceFactory::GetGlicKeyedService(profile_, /*create=*/false));
+  ASSERT_TRUE(glic_service);
+  EXPECT_CALL(*glic_service,
+              InvokeWithAutoSubmit(testing::_, testing::_, testing::_))
+      .WillOnce(testing::Return(mock_glic_instance_.GetWeakPtr()));
+
+  base::test::TestFuture<ExperimentalTriggeringResponse> update_future;
+  EXPECT_FALSE(SendOptInRequest(update_future).has_value());
+  EXPECT_TRUE(is_background_opt_in_notification_showing());
+
+  OptIn();
+  ExperimentalTriggeringRequest trigger_request =
+      CreateRequest(TriggerActuationRequest{.initial_prompt = "act"});
+  auto response = coordinator_->OnRequest(
+      kTestContextId, trigger_request,
+      ScopedIncomingMessageResultLogger(
+          GlicMetricReporter(profile_),
+          ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
+      update_future.GetRepeatingCallback(), &mock_tab_);
+  ASSERT_TRUE(response.has_value());
+  EXPECT_FALSE(is_background_opt_in_notification_showing());
+
+  task_environment_.FastForwardBy(
+      features::kGlicExperimentalTriggeringBackgroundOptInTimeout.Get());
+  EXPECT_FALSE(update_future.IsReady());
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorBackgroundOptInTest,
+       IgnoresNonBrowserActivityUntilBrowserWindowBecomesVisible) {
+  base::test::TestFuture<ExperimentalTriggeringResponse> update_future;
+  EXPECT_FALSE(SendOptInRequest(update_future).has_value());
+  EXPECT_TRUE(is_background_opt_in_notification_showing());
+
+  // A translucent notification trampoline activity starts while the browser
+  // window is still in the background.
+  BackgroundOptInNotifier::Get().Notify(
+      BackgroundOptInNotifier::Event::kForegrounded);
+  EXPECT_TRUE(is_background_opt_in_notification_showing());
+  EXPECT_FALSE(update_future.IsReady());
+
+  // The browser activity now becomes visible and starts.
+  ForegroundChrome();
+
+  auto result = update_future.Take();
+  EXPECT_FALSE(is_background_opt_in_notification_showing());
+  EXPECT_EQ(result.device_opt_in_result, DeviceOptInResult::kDeclined);
+  EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 0u);
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorBackgroundOptInTest,
+       ColdStartBrowserWindowCreatedAfterActivityResumeShowsDeferredDialog) {
+  base::test::TestFuture<ExperimentalTriggeringResponse> update_future;
+  EXPECT_FALSE(SendOptInRequest(update_future).has_value());
+  EXPECT_TRUE(is_background_opt_in_notification_showing());
+
+  // Activity.onResume() fires during cold start before post-native startup
+  // creates the browser window and initializes the active TabModel.
+  BackgroundOptInNotifier::Get().Notify(
+      BackgroundOptInNotifier::Event::kForegrounded);
+  EXPECT_TRUE(is_background_opt_in_notification_showing());
+  EXPECT_FALSE(update_future.IsReady());
+  EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 1u);
+
+  // Post-native startup finishes creating the browser window and active tab
+  // without firing another ActivityState.RESUMED transition.
+  coordinator_->set_is_chrome_in_background(false);
+  JNIEnv* env = base::android::AttachCurrentThread();
+  const int64_t browser_ptr = reinterpret_cast<int64_t>(&mock_browser_window_);
+  GlobalBrowserCollection::GetInstance()
+      ->GetPlatformDelegate()
+      ->OnBrowserCreated(env, browser_ptr);
+  base::ScopedClosureRunner close_browser(base::BindOnce(
+      [](JNIEnv* env, int64_t browser_ptr) {
+        GlobalBrowserCollection::GetInstance()
+            ->GetPlatformDelegate()
+            ->OnBrowserClosed(env, browser_ptr);
+      },
+      env, browser_ptr));
+
+  auto result = update_future.Take();
+  EXPECT_FALSE(is_background_opt_in_notification_showing());
+  EXPECT_EQ(result.device_opt_in_result, DeviceOptInResult::kDeclined);
+  EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 0u);
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorBackgroundOptInTest,
+       ResentRequestSyncFailureStopsBackgroundWaitAndCleansUpHandler) {
+  base::test::TestFuture<ExperimentalTriggeringResponse> update_future;
+  EXPECT_FALSE(SendOptInRequest(update_future).has_value());
+  EXPECT_TRUE(is_background_opt_in_notification_showing());
+  ASSERT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 1u);
+
+  GlicKeyedServiceFactory::GetInstance()->SetTestingFactory(
+      profile_, BrowserContextKeyedServiceFactory::TestingFactory());
+
+  auto response = SendOptInRequest(update_future);
+  ASSERT_TRUE(response.has_value());
+  EXPECT_EQ(response->device_opt_in_result, DeviceOptInResult::kFailed);
+  EXPECT_FALSE(is_background_opt_in_notification_showing());
+  EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 0u);
+
+  task_environment_.FastForwardBy(
+      features::kGlicExperimentalTriggeringBackgroundOptInTimeout.Get());
+  EXPECT_FALSE(update_future.IsReady());
 }
 #endif
 

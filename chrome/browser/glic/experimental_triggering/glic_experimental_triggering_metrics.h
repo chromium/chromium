@@ -49,7 +49,9 @@ enum class GlicExperimentalTriggeringIncomingMessageResult {
   // The profile is not allowed to act on the web, either because of enterprise
   // policy or because the account is not eligible.
   kCannotActOnWeb = 20,
-  kMaxValue = kCannotActOnWeb,
+  kDeferredForBackgroundOptIn = 21,
+  kOptInDialogAlreadyShowing = 22,
+  kMaxValue = kOptInDialogAlreadyShowing,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicExperimentalTriggeringIncomingMessageResult)
 

@@ -1025,7 +1025,7 @@ public class ActorForegroundServiceManagerTest {
         ShadowLooper.idleMainLooper();
 
         assertFalse(mManager.hasOptInNotification());
-        verify(mCancelCallback, never()).run();
+        verify(mCancelCallback, times(1)).run();
         verify(mServiceController)
                 .startOrUpdateForegroundService(
                         eq(1), eq(mNotification), eq(OPT_IN_NOTIFICATION_ID), eq(true));
@@ -1294,7 +1294,7 @@ public class ActorForegroundServiceManagerTest {
 
     @Test
     public void
-            testPinOptInNotification_PreemptedByActiveTaskBeforePinning_ClearsOptInWithoutCallback() {
+            testPinOptInNotification_PreemptedByActiveTaskBeforePinning_InvokesCancelCallback() {
         when(mKeyedService.getActiveTasksCount()).thenReturn(0);
         when(mNotificationService.hasPendingDemotions()).thenReturn(true);
         when(mNotificationService.getPendingDemotionTaskIds()).thenReturn(Collections.singleton(1));
@@ -1312,7 +1312,7 @@ public class ActorForegroundServiceManagerTest {
         ShadowLooper.idleMainLooper();
 
         assertFalse(mManager.hasOptInNotification());
-        verify(mCancelCallback, never()).run();
+        verify(mCancelCallback, times(1)).run();
 
         clearInvocations(mServiceController);
         when(mTask.isCompleted()).thenReturn(true);
@@ -1324,5 +1324,18 @@ public class ActorForegroundServiceManagerTest {
         verify(mServiceController, never())
                 .startOrUpdateForegroundService(
                         eq(OPT_IN_NOTIFICATION_ID), any(), anyInt(), anyBoolean());
+    }
+
+    @Test
+    public void testPinOptInNotification_WhenTaskAlreadyActive_InvokesCancelCallbackImmediately() {
+        when(mKeyedService.getActiveTasksCount()).thenReturn(1);
+        mManager.onTaskStateChanged(1, ActorTaskState.ACTING);
+        ShadowLooper.idleMainLooper();
+
+        mManager.pinOptInNotification(mCancelCallback);
+        ShadowLooper.idleMainLooper();
+
+        assertFalse(mManager.hasOptInNotification());
+        verify(mCancelCallback, times(1)).run();
     }
 }

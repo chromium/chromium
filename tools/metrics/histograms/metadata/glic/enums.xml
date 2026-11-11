@@ -358,6 +358,8 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="Tab Not Found"/>
   <int value="19" label="Task Already Running"/>
   <int value="20" label="Cannot Act On Web"/>
+  <int value="21" label="Deferred For Background Opt-In"/>
+  <int value="22" label="Opt-In Dialog Already Showing"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/experimental_triggering/glic_experimental_triggering_metrics.h:GlicExperimentalTriggeringIncomingMessageResult) -->

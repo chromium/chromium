@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.glic;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.AdditionalMatchers.aryEq;
@@ -18,6 +19,7 @@ import static org.mockito.Mockito.when;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.PictureInPictureParams;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -36,6 +38,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
 
+import org.chromium.base.ActivityState;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.UserActionTester;
@@ -403,5 +406,54 @@ public class GlicHelperUnitTest {
                 .onRequestPermissionsResult(
                         new String[] {Manifest.permission.RECORD_AUDIO}, grantResults);
         return results;
+    }
+
+    @Test
+    public void testIsWindowVisible_NullOrInvalidActivity_ReturnsFalse() {
+        assertFalse(GlicHelper.isWindowVisible(null));
+
+        when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(null));
+        assertFalse(GlicHelper.isWindowVisible(mWindowAndroidMock));
+
+        Activity pipActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        pipActivity.enterPictureInPictureMode(new PictureInPictureParams.Builder().build());
+        when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(pipActivity));
+        assertFalse(GlicHelper.isWindowVisible(mWindowAndroidMock));
+
+        Activity finishingActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        finishingActivity.finish();
+        when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(finishingActivity));
+        assertFalse(GlicHelper.isWindowVisible(mWindowAndroidMock));
+
+        ActivityController<Activity> destroyedController =
+                Robolectric.buildActivity(Activity.class).setup();
+        Activity destroyedActivity = destroyedController.get();
+        destroyedController.pause().stop().destroy();
+        when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(destroyedActivity));
+        assertFalse(GlicHelper.isWindowVisible(mWindowAndroidMock));
+    }
+
+    @Test
+    public void testIsWindowVisible_ChecksActivityState() {
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(activity));
+
+        when(mWindowAndroidMock.getActivityState()).thenReturn(ActivityState.CREATED);
+        assertFalse(GlicHelper.isWindowVisible(mWindowAndroidMock));
+
+        when(mWindowAndroidMock.getActivityState()).thenReturn(ActivityState.STARTED);
+        assertTrue(GlicHelper.isWindowVisible(mWindowAndroidMock));
+
+        when(mWindowAndroidMock.getActivityState()).thenReturn(ActivityState.RESUMED);
+        assertTrue(GlicHelper.isWindowVisible(mWindowAndroidMock));
+
+        when(mWindowAndroidMock.getActivityState()).thenReturn(ActivityState.PAUSED);
+        assertTrue(GlicHelper.isWindowVisible(mWindowAndroidMock));
+
+        when(mWindowAndroidMock.getActivityState()).thenReturn(ActivityState.STOPPED);
+        assertFalse(GlicHelper.isWindowVisible(mWindowAndroidMock));
+
+        when(mWindowAndroidMock.getActivityState()).thenReturn(ActivityState.DESTROYED);
+        assertFalse(GlicHelper.isWindowVisible(mWindowAndroidMock));
     }
 }

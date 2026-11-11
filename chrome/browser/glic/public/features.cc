@@ -381,4 +381,14 @@ BASE_FEATURE(kGlicExperimentalTriggeringKeepInstanceOnUnbind,
 BASE_FEATURE(kGlicConversationSharing, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kGlicConversationSharingCaptureUrls{
     &kGlicConversationSharing, "glic-conversation-sharing-capture-urls", ""};
+
+#if BUILDFLAG(IS_ANDROID)
+// crbug.com/577140928
+BASE_FEATURE(kGlicExperimentalTriggeringBackgroundOptInNotification,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<base::TimeDelta>
+    kGlicExperimentalTriggeringBackgroundOptInTimeout{
+        &kGlicExperimentalTriggeringBackgroundOptInNotification,
+        "background_opt_in_timeout", base::Minutes(10)};
+#endif  // BUILDFLAG(IS_ANDROID)
 }  // namespace features

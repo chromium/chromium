@@ -815,6 +815,8 @@ source_set("impl") {
       "common/view_scoped_registration_delegate_android.cc",
       "experimental_opt_in/glic_experimental_opt_in_ui_host_android.cc",
       "experimental_opt_in/glic_experimental_opt_in_ui_host_android.h",
+      "experimental_triggering/glic_background_opt_in_notifier_android.cc",
+      "experimental_triggering/glic_background_opt_in_notifier_android.h",
       "glic_settings_util_android.cc",
       "host/context/favicon_impl/glic_tab_favicon_adapter_android.cc",
       "host/context/favicon_impl/glic_tab_favicon_adapter_android.h",
@@ -834,6 +836,7 @@ source_set("impl") {
       "//chrome/browser/context_sharing/tab_bottom_sheet/android",
       "//chrome/browser/glic/android",
       "//chrome/browser/glic/browser_ui:impl",
+      "//chrome/browser/ui/android/tab_model",
       "//chrome/browser/ui/side_panel",
       "//chrome/browser/ui/side_panel/android",
       "//components/embedder_support/android:web_contents_delegate",
@@ -1092,6 +1095,7 @@ source_set("unit_tests") {
     sources += [
       "android/background_actuation_capability_unittest.cc",
       "common/glic_tab_observer_android_unittest.cc",
+      "experimental_triggering/glic_background_opt_in_notifier_android_unittest.cc",
       "public/glic_enabling_native_fre_unittest.cc",
       "widget/glic_side_panel_ui_android_unittest.cc",
     ]

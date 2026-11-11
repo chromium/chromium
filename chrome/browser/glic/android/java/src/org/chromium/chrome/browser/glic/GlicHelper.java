@@ -312,4 +312,27 @@ public class GlicHelper {
         }
         return false;
     }
+
+    /**
+     * Returns whether the given {@link WindowAndroid} is backed by a visible, non-finishing,
+     * non-Picture-in-Picture {@link Activity}.
+     */
+    @CalledByNative
+    static boolean isWindowVisible(
+            @JniType("ui::WindowAndroid*") @Nullable WindowAndroid windowAndroid) {
+        if (windowAndroid == null || windowAndroid.getActivity() == null) {
+            return false;
+        }
+        Activity activity = windowAndroid.getActivity().get();
+        if (activity == null
+                || activity.isInPictureInPictureMode()
+                || activity.isFinishing()
+                || activity.isDestroyed()) {
+            return false;
+        }
+        @ActivityState int state = windowAndroid.getActivityState();
+        return state == ActivityState.STARTED
+                || state == ActivityState.RESUMED
+                || state == ActivityState.PAUSED;
+    }
 }

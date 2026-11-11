@@ -304,6 +304,12 @@ BASE_DECLARE_FEATURE(kGlicExperimentalTriggeringKeepInstanceOnUnbind);
 BASE_DECLARE_FEATURE(kGlicConversationSharing);
 extern const base::FeatureParam<std::string>
     kGlicConversationSharingCaptureUrls;
+
+#if BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kGlicExperimentalTriggeringBackgroundOptInNotification);
+extern const base::FeatureParam<base::TimeDelta>
+    kGlicExperimentalTriggeringBackgroundOptInTimeout;
+#endif  // BUILDFLAG(IS_ANDROID)
 }  // namespace features
 
 #endif  // CHROME_BROWSER_GLIC_PUBLIC_FEATURES_H_

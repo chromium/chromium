@@ -71,6 +71,19 @@
 #include "chrome/browser/ui/browser_commands.h"  // nogncheck
 #else
 #include "base/android/application_status_listener.h"
+#include "base/android/callback_android.h"  // IWYU pragma: keep (required by GlicHelper_jni.h)
+#include "base/android/jni_android.h"
+#include "base/callback_list.h"
+#include "base/timer/wall_clock_timer.h"
+#include "chrome/browser/glic/experimental_triggering/glic_background_opt_in_notifier_android.h"
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "ui/android/window_android.h"
+#include "ui/base/base_window.h"
+#endif
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/glic/android/jni_headers/GlicHelper_jni.h"
 #endif
 
 namespace glic {
@@ -392,12 +405,13 @@ std::string_view ChromeErrorCodeForTeardownReason(
 //    which deletes the handler when the request is done. A Process* method that
 //    starts async work which reports back through this handler must call
 //    `cleanup_runner.Release()` after that work has started. A Process* method
-//    must not arm `cleanup_runner` itself.
+//    must not arm `cleanup_runner` itself, unless it ends a background opt-in
+//    wait on purpose (ProcessDeviceOptInRequest()).
 //  - HandleTerminalUpdate(): the handler sent a terminal task update
 //    (COMPLETE, STOPPED or FAILED). The server treats every terminal update as
 //    the end of the task and sends nothing more for it, so the handler stops
 //    the work it still owns (StopOwnedLiveWork()) and ends the session too.
-//  - SendDeviceOptInResult() and SendExecuteActionsResponse(): the async work
+//  - SendDeviceOptInResponse() and SendExecuteActionsResponse(): the async work
 //    that a request started has finished, and the handler has no other live
 //    work.
 //  - GlicExperimentalTriggeringCoordinator::RejectBeforeHandler(): the
@@ -420,6 +434,7 @@ class ExperimentalTriggeringUpdatesHandler
         metric_reporter_(profile) {}
 
   ~ExperimentalTriggeringUpdatesHandler() override {
+    StopWaitingForBackgroundOptIn();
     // Covers destruction without a terminal update.
     RemovePendingTask();
     if (is_actuation_started_) {
@@ -760,9 +775,11 @@ class ExperimentalTriggeringUpdatesHandler
  private:
   // Whether this handler has work that still reports back through it: a Glic
   // instance driving an actuation, an in-flight direct action execution, an
-  // open device opt-in dialog, or a Glic invocation that has not finished. A
-  // request deletes a handler that has live work only if it returns a terminal
-  // TaskUpdate: then OnRequest() stops the work and ends the session.
+  // open device opt-in dialog, a deferred background device opt-in wait, or a
+  // Glic invocation that has not finished. A request deletes a handler that
+  // has live work only if it returns a terminal TaskUpdate (then OnRequest()
+  // stops the work and ends the session) or ends a background opt-in wait
+  // (ProcessDeviceOptInRequest()).
   //
   // A yielded turn still counts: `instance_` stays set while the task waits
   // for a continuation, so that the continuation keeps its sequence numbers.
@@ -770,7 +787,15 @@ class ExperimentalTriggeringUpdatesHandler
   // now". A terminal update ends the session (see HandleTerminalUpdate()).
   bool HasLiveWork() const {
     return instance_ || actions_runner_ || awaiting_opt_in_ ||
-           !pending_invoke_ids_.empty();
+           IsWaitingForBackgroundOptIn() || !pending_invoke_ids_.empty();
+  }
+
+  bool IsWaitingForBackgroundOptIn() const {
+#if BUILDFLAG(IS_ANDROID)
+    return static_cast<bool>(opt_in_subscription_);
+#else
+    return false;
+#endif
   }
 
   // Returns true if `request` would start work while this handler already has
@@ -964,6 +989,7 @@ class ExperimentalTriggeringUpdatesHandler
   // that was created after its trigger. Cancelling the actor task also ends an
   // invocation that waits for it. Must only be called once the task is over.
   void StopOwnedLiveWork(bool cancel_actor_task) {
+    StopWaitingForBackgroundOptIn();
     // The task is over, so it is no longer pending. Don't wait for the posted
     // cleanup, which is skipped if the coordinator goes away first.
     actuating_subscription_ = {};
@@ -1422,6 +1448,7 @@ class ExperimentalTriggeringUpdatesHandler
 
     GlicInvokeOptions options =
         CreateInvokeOptions(request, browser_window, prepared_tab);
+    StopWaitingForBackgroundOptIn();
     // A handler serves one task: a second Trigger is dropped as a duplicate
     // start (IsDuplicateStart()), and a terminal update ends the session. So
     // the task milestones never need a reset, and a Continue keeps the start
@@ -1874,6 +1901,7 @@ class ExperimentalTriggeringUpdatesHandler
       base::ScopedClosureRunner& cleanup_runner,
       ScopedIncomingMessageResultLogger result_logger) {
     if (!coordinator_) {
+      StopWaitingForBackgroundOptInAndMaybeArmCleanup(cleanup_runner);
       result_logger.set_result(GlicExperimentalTriggeringIncomingMessageResult::
                                    kCoordinatorUnavailable);
       return CreateDeviceOptInResponse(context_id_, DeviceOptInResult::kFailed,
@@ -1881,8 +1909,61 @@ class ExperimentalTriggeringUpdatesHandler
                                        sequence_generator_.GetNext());
     }
 
+    GlicKeyedService* glic_service =
+        GlicKeyedServiceFactory::GetGlicKeyedService(coordinator_->profile_,
+                                                     /*create=*/false);
+    if (!glic_service) {
+      StopWaitingForBackgroundOptInAndMaybeArmCleanup(cleanup_runner);
+      result_logger.set_result(GlicExperimentalTriggeringIncomingMessageResult::
+                                   kGlicServiceUnavailable);
+      return CreateDeviceOptInResponse(context_id_, DeviceOptInResult::kFailed,
+                                       task_metadata,
+                                       sequence_generator_.GetNext());
+    }
+
 #if BUILDFLAG(IS_ANDROID)
-    if (coordinator_->IsChromeInBackground()) {
+    if (!CanShowDeviceOptInUi()) {
+      if (!base::FeatureList::IsEnabled(
+              features::
+                  kGlicExperimentalTriggeringBackgroundOptInNotification)) {
+        StopWaitingForBackgroundOptInAndMaybeArmCleanup(cleanup_runner);
+        result_logger.set_result(
+            GlicExperimentalTriggeringIncomingMessageResult::
+                kAndroidOptInUnsupported);
+        return CreateDeviceOptInResponse(
+            context_id_, DeviceOptInResult::kFailed, task_metadata,
+            sequence_generator_.GetNext());
+      }
+      if (awaiting_opt_in_) {
+        // The dialog is already showing; its result answers this request too.
+        result_logger.set_result(
+            GlicExperimentalTriggeringIncomingMessageResult::
+                kOptInDialogAlreadyShowing);
+        return std::nullopt;
+      }
+      if (glic_service->enabling().GetRequiredExperimentalOptIn() ==
+          RequiredExperimentalOptIn::kNotNeeded) {
+        StopWaitingForBackgroundOptInAndMaybeArmCleanup(cleanup_runner);
+        result_logger.set_result(
+            GlicExperimentalTriggeringIncomingMessageResult::kSuccess);
+        return CreateDeviceOptInResponse(
+            context_id_, DeviceOptInResult::kAccepted, task_metadata,
+            sequence_generator_.GetNext());
+      }
+      if (IsWaitingForBackgroundOptIn()) {
+        result_logger.set_result(
+            GlicExperimentalTriggeringIncomingMessageResult::
+                kDeferredForBackgroundOptIn);
+        return std::nullopt;
+      }
+      if (DeferDeviceOptInUntilForeground()) {
+        std::ignore = cleanup_runner.Release();
+        result_logger.set_result(
+            GlicExperimentalTriggeringIncomingMessageResult::
+                kDeferredForBackgroundOptIn);
+        return std::nullopt;
+      }
+      StopWaitingForBackgroundOptInAndMaybeArmCleanup(cleanup_runner);
       result_logger.set_result(GlicExperimentalTriggeringIncomingMessageResult::
                                    kAndroidOptInUnsupported);
       // Chrome isn't in the foreground, so the opt-in UI can't be shown.
@@ -1891,31 +1972,17 @@ class ExperimentalTriggeringUpdatesHandler
                                        task_metadata,
                                        sequence_generator_.GetNext());
     }
+    StopWaitingForBackgroundOptInAndMaybeArmCleanup(cleanup_runner);
 #endif
 
-    GlicKeyedService* glic_service =
-        GlicKeyedServiceFactory::GetGlicKeyedService(coordinator_->profile_,
-                                                     /*create=*/false);
-    if (!glic_service) {
+    if (awaiting_opt_in_) {
+      // The dialog is already showing; its result answers this request too.
       result_logger.set_result(GlicExperimentalTriggeringIncomingMessageResult::
-                                   kGlicServiceUnavailable);
-      return CreateDeviceOptInResponse(context_id_, DeviceOptInResult::kFailed,
-                                       task_metadata,
-                                       sequence_generator_.GetNext());
+                                   kOptInDialogAlreadyShowing);
+      return std::nullopt;
     }
 
-    content::WebContents* web_contents = nullptr;
-    if (base::FeatureList::IsEnabled(
-            features::kGlicExperimentalTriggeringOptInTabFocus)) {
-      web_contents =
-          glic_service->opt_in_controller().GetOrCreateSuitableWebContents();
-    }
-    if (!web_contents) {
-      if (tabs::TabInterface* active_tab = coordinator_->GetActiveTab()) {
-        web_contents = active_tab->GetContents();
-      }
-    }
-
+    content::WebContents* web_contents = FindOrCreateOptInWebContents();
     if (!web_contents) {
       DLOG(ERROR) << "No target web contents found or created for "
                      "GlicExperimentalTriggering";
@@ -1944,6 +2011,122 @@ class ExperimentalTriggeringUpdatesHandler
     return std::nullopt;
   }
 
+  content::WebContents* FindOrCreateOptInWebContents() {
+    if (!coordinator_) {
+      return nullptr;
+    }
+    GlicKeyedService* glic_service =
+        GlicKeyedServiceFactory::GetGlicKeyedService(coordinator_->profile_,
+                                                     /*create=*/false);
+    if (!glic_service) {
+      return nullptr;
+    }
+    content::WebContents* web_contents = nullptr;
+    if (base::FeatureList::IsEnabled(
+            features::kGlicExperimentalTriggeringOptInTabFocus)) {
+      web_contents =
+          glic_service->opt_in_controller().GetOrCreateSuitableWebContents();
+    }
+    if (!web_contents) {
+      if (tabs::TabInterface* active_tab = coordinator_->GetActiveTab()) {
+        web_contents = active_tab->GetContents();
+      }
+    }
+    return web_contents;
+  }
+
+#if BUILDFLAG(IS_ANDROID)
+  bool CanShowDeviceOptInUi() const {
+    return coordinator_ && !coordinator_->IsChromeInBackground();
+  }
+
+  bool DeferDeviceOptInUntilForeground() {
+    opt_in_subscription_ =
+        BackgroundOptInNotifier::Get().Subscribe(base::BindRepeating(
+            &ExperimentalTriggeringUpdatesHandler::OnBackgroundOptInEvent,
+            weak_ptr_factory_.GetWeakPtr()));
+    if (!opt_in_subscription_) {
+      return false;
+    }
+
+    opt_in_foreground_timeout_timer_.Start(
+        FROM_HERE,
+        base::Time::Now() +
+            features::kGlicExperimentalTriggeringBackgroundOptInTimeout.Get(),
+        base::BindOnce(
+            &ExperimentalTriggeringUpdatesHandler::FailBackgroundOptIn,
+            weak_ptr_factory_.GetWeakPtr()));
+    return true;
+  }
+
+  void OnBackgroundOptInEvent(BackgroundOptInNotifier::Event event) {
+    switch (event) {
+      case BackgroundOptInNotifier::Event::kForegrounded:
+        TryShowDeferredOptInDialog();
+        return;
+      case BackgroundOptInNotifier::Event::kCancelled:
+        FailBackgroundOptIn();
+        return;
+    }
+  }
+
+  void TryShowDeferredOptInDialog() {
+    if (!IsWaitingForBackgroundOptIn() || !CanShowDeviceOptInUi()) {
+      return;
+    }
+    GlicKeyedService* glic_service =
+        GlicKeyedServiceFactory::GetGlicKeyedService(coordinator_->profile_,
+                                                     /*create=*/false);
+    if (!glic_service) {
+      FailBackgroundOptIn();
+      return;
+    }
+    if (glic_service->enabling().GetRequiredExperimentalOptIn() ==
+        RequiredExperimentalOptIn::kNotNeeded) {
+      StopWaitingForBackgroundOptIn();
+      SendDeviceOptInResponse(DeviceOptInResult::kAccepted);
+      return;
+    }
+    content::WebContents* web_contents = FindOrCreateOptInWebContents();
+    if (!web_contents) {
+      FailBackgroundOptIn();
+      return;
+    }
+
+    StopWaitingForBackgroundOptIn();
+    awaiting_opt_in_ = true;
+    glic_service->opt_in_controller().ShowDialog(
+        web_contents,
+        base::BindOnce(
+            &ExperimentalTriggeringUpdatesHandler::SendDeviceOptInResult,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void FailBackgroundOptIn() {
+    if (!IsWaitingForBackgroundOptIn()) {
+      return;
+    }
+    StopWaitingForBackgroundOptIn();
+    SendDeviceOptInResponse(DeviceOptInResult::kFailed);
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  void StopWaitingForBackgroundOptInAndMaybeArmCleanup(
+      base::ScopedClosureRunner& cleanup_runner) {
+    const bool was_waiting = IsWaitingForBackgroundOptIn();
+    StopWaitingForBackgroundOptIn();
+    if (was_waiting && !HasLiveWork() && !cleanup_runner) {
+      cleanup_runner = CreateCleanupRunner();
+    }
+  }
+
+  void StopWaitingForBackgroundOptIn() {
+#if BUILDFLAG(IS_ANDROID)
+    opt_in_foreground_timeout_timer_.Stop();
+    opt_in_subscription_ = {};
+#endif
+  }
+
   void SendTaskUpdateMessage(
       TaskUpdate::State state,
       std::optional<TaskUpdate::DataType> data_type = std::nullopt,
@@ -1970,12 +2153,16 @@ class ExperimentalTriggeringUpdatesHandler
       return;
     }
     awaiting_opt_in_ = false;
+    SendDeviceOptInResponse(accepted ? DeviceOptInResult::kAccepted
+                                     : DeviceOptInResult::kDeclined);
+  }
+
+  void SendDeviceOptInResponse(DeviceOptInResult result) {
     if (update_callback_) {
       ExperimentalTriggeringResponse response =
           CreateBaseResponse(context_id_, sequence_generator_.GetNext(),
                              last_seen_sequence_number_, instance_.get());
-      response.device_opt_in_result = accepted ? DeviceOptInResult::kAccepted
-                                               : DeviceOptInResult::kDeclined;
+      response.device_opt_in_result = result;
       update_callback_.Run(std::move(response));
     }
     // A session that shares this context id still needs the handler.
@@ -2109,6 +2296,10 @@ class ExperimentalTriggeringUpdatesHandler
   base::ScopedClosureRunner active_session_registration_;
   // Whether a device opt-in dialog is open and its result not yet sent.
   bool awaiting_opt_in_ = false;
+#if BUILDFLAG(IS_ANDROID)
+  base::CallbackListSubscription opt_in_subscription_;
+  base::WallClockTimer opt_in_foreground_timeout_timer_;
+#endif
   // Ids of invocations started by this handler that have neither succeeded nor
   // failed yet.
   base::flat_set<int> pending_invoke_ids_;
@@ -2184,7 +2375,25 @@ tabs::TabInterface* GlicExperimentalTriggeringCoordinator::GetActiveTab()
 
 bool GlicExperimentalTriggeringCoordinator::IsChromeInBackground() const {
 #if BUILDFLAG(IS_ANDROID)
-  return !base::android::ApplicationStatusListener::HasVisibleActivities();
+  if (!base::android::ApplicationStatusListener::HasVisibleActivities()) {
+    return true;
+  }
+  BrowserWindowInterface* browser = GetBrowserWindow();
+  if (!browser || !browser->GetWindow()) {
+    return true;
+  }
+  TabListInterface* tab_list = TabListInterface::From(browser);
+  if (!tab_list) {
+    return true;
+  }
+  auto* tab_model = static_cast<TabModel*>(tab_list);
+  if (!tab_model->IsActiveModel() ||
+      (tab_model->IsSessionRestoreInProgress() && !tab_model->GetActiveTab())) {
+    return true;
+  }
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return !Java_GlicHelper_isWindowVisible(
+      env, browser->GetWindow()->GetNativeWindow());
 #else
   return false;
 #endif
