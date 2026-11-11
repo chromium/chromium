@@ -184,14 +184,6 @@ ash::LobsterSystemState LobsterSystemStateProviderImpl::GetSystemState(
     system_state.failed_checks.Put(ash::LobsterSystemCheck::kInvalidInputField);
   }
 
-  if (!ash::features::IsLobsterEnabledForManagedUsers() &&
-      pref_->IsManagedPreference(
-          ash::prefs::kLobsterEnterprisePolicySettings)) {
-    system_state.status = ash::LobsterStatus::kBlocked;
-    system_state.failed_checks.Put(
-        ash::LobsterSystemCheck::kForcedDisabledOnManagedUsers);
-  }
-
   if (pref_->GetInteger(ash::prefs::kLobsterEnterprisePolicySettings) ==
       std::to_underlying(ash::LobsterEnterprisePolicyValue::kDisabled)) {
     system_state.status = ash::LobsterStatus::kBlocked;
