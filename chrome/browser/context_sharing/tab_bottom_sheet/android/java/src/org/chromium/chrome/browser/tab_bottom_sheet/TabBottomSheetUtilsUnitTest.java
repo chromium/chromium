@@ -90,6 +90,36 @@ public class TabBottomSheetUtilsUnitTest {
     }
 
     @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_BOTTOM_SHEET,
+        ChromeFeatureList.TAB_BOTTOM_SHEET_RESIZE_WEBVIEW,
+        ChromeFeatureList.TAB_BOTTOM_SHEET_SMOOTH_KEYBOARD_RESIZE
+    })
+    public void testIsSmoothKeyboardResizeEnabled_Enabled() {
+        assertTrue(TabBottomSheetUtils.isSmoothKeyboardResizeEnabled());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_BOTTOM_SHEET,
+        ChromeFeatureList.TAB_BOTTOM_SHEET_RESIZE_WEBVIEW
+    })
+    @DisableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET_SMOOTH_KEYBOARD_RESIZE)
+    public void testIsSmoothKeyboardResizeEnabled_SmoothResizeDisabled() {
+        assertFalse(TabBottomSheetUtils.isSmoothKeyboardResizeEnabled());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET_RESIZE_WEBVIEW)
+    @EnableFeatures({
+        ChromeFeatureList.TAB_BOTTOM_SHEET,
+        ChromeFeatureList.TAB_BOTTOM_SHEET_SMOOTH_KEYBOARD_RESIZE
+    })
+    public void testIsSmoothKeyboardResizeEnabled_ResizeWebViewDisabled() {
+        assertFalse(TabBottomSheetUtils.isSmoothKeyboardResizeEnabled());
+    }
+
+    @Test
     @DisableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET)
     @EnableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET_RESIZE_WEBVIEW)
     public void testCanResizeWebView_BottomSheetDisabled() {

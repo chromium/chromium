@@ -50,6 +50,17 @@ public final class TabBottomSheetUtils {
                 && ChromeFeatureList.sTabBottomSheetResizeWebview.isEnabled();
     }
 
+    /**
+     * Returns whether smooth single-step keyboard resizing is enabled.
+     *
+     * @return True if {@link ChromeFeatureList#sTabBottomSheetSmoothKeyboardResize} is enabled,
+     *     false otherwise.
+     */
+    static boolean isSmoothKeyboardResizeEnabled() {
+        return canResizeWebView()
+                && ChromeFeatureList.sTabBottomSheetSmoothKeyboardResize.isEnabled();
+    }
+
     public static boolean isEdgeToEdgeEnabled() {
         return isTabBottomSheetEnabled()
                 && ChromeFeatureList.sTabBottomSheetEdgeToEdge.isEnabled()
