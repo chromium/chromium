@@ -95,6 +95,24 @@ class ReadableStream::PullAlgorithm final : public StreamAlgorithm {
     controller_ = controller;
   }
 
+  void OnBYOBReadRequest() override {
+    ScriptState* script_state = underlying_byte_source_->GetScriptState();
+    if (!script_state->ContextIsValid()) {
+      return;
+    }
+
+    v8::TryCatch try_catch(script_state->GetIsolate());
+    {
+      ScriptState::Scope scope(script_state);
+      underlying_byte_source_->OnBYOBReadRequest(
+          controller_, PassThroughException(script_state->GetIsolate()));
+    }
+    if (try_catch.HasCaught()) {
+      ReadableByteStreamController::Error(script_state, controller_,
+                                          try_catch.Exception());
+    }
+  }
+
   void Trace(Visitor* visitor) const override {
     visitor->Trace(underlying_byte_source_);
     visitor->Trace(controller_);

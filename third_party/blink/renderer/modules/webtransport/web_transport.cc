@@ -879,17 +879,20 @@ class WebTransport::DatagramSource : public GarbageCollectedMixin {
       return ToResolvedUndefinedPromise(script_state_.Get());
     }
 
-    DOMUint8Array* datagram = queue_->TakeNextDatagram();
-    if (!datagram) {
-      waiting_for_datagrams_ = true;
+    while (DOMUint8Array* datagram = queue_->TakeNextDatagram()) {
+      // The datagram has already been removed from the queue, because
+      // Enqueue() runs script which can re-enter this object, for example by
+      // starting another read.
+      if (!Enqueue(datagram, exception_state)) {
+        continue;
+      }
+      if (exception_state.HadException()) {
+        return ScriptPromise<IDLUndefined>();
+      }
       return ToResolvedUndefinedPromise(script_state_.Get());
     }
 
-    // The datagram has already been removed from the queue, because Enqueue()
-    // runs script which can re-enter this object, for example by starting
-    // another read.
-    Enqueue(datagram, exception_state);
-
+    waiting_for_datagrams_ = true;
     return ToResolvedUndefinedPromise(script_state_.Get());
   }
 
@@ -915,6 +918,7 @@ class WebTransport::DatagramSource : public GarbageCollectedMixin {
     DVLOG(1) << "DatagramSource::Error()";
 
     waiting_for_datagrams_ = false;
+    canceled_ = true;
     queue_->Clear();
     ErrorController(error);
   }
@@ -926,16 +930,24 @@ class WebTransport::DatagramSource : public GarbageCollectedMixin {
       return;
     }
 
-    DCHECK_GT(data.size(), 0u);
+    NonThrowableExceptionState exception_state;
+    if (!PrepareToReceiveDatagram(exception_state)) {
+      return;
+    }
 
     if (waiting_for_datagrams_) {
       DCHECK(queue_->empty());
-      waiting_for_datagrams_ = false;
       // The datagram is delivered directly to the stream, bypassing the queue,
       // so that a zero incomingMaxBufferedDatagrams still permits reads that
       // are already waiting to complete.
-      NonThrowableExceptionState exception_state;
-      EnqueueReceivedData(data, exception_state);
+      waiting_for_datagrams_ = false;
+      if (!CanAcceptReceivedData()) {
+        queue_->Push(data);
+        return;
+      }
+      if (!EnqueueReceivedData(data, exception_state)) {
+        waiting_for_datagrams_ = true;
+      }
       return;
     }
 
@@ -948,9 +960,12 @@ class WebTransport::DatagramSource : public GarbageCollectedMixin {
   }
 
  protected:
-  virtual void Enqueue(DOMUint8Array*, ExceptionState&) = 0;
-  virtual void EnqueueReceivedData(base::span<const uint8_t>,
+  // Returns false when a datagram is skipped and the pull must remain pending.
+  virtual bool Enqueue(DOMUint8Array*, ExceptionState&) = 0;
+  virtual bool EnqueueReceivedData(base::span<const uint8_t>,
                                    ExceptionState&) = 0;
+  virtual bool PrepareToReceiveDatagram(ExceptionState&) { return true; }
+  virtual bool CanAcceptReceivedData() const { return true; }
   virtual void ErrorController(v8::Local<v8::Value>) = 0;
 
  private:
@@ -986,13 +1001,15 @@ class WebTransport::DatagramUnderlyingSource final
   }
 
  private:
-  void Enqueue(DOMUint8Array* datagram, ExceptionState&) override {
+  bool Enqueue(DOMUint8Array* datagram, ExceptionState&) override {
     Controller()->Enqueue(datagram);
+    return true;
   }
 
-  void EnqueueReceivedData(base::span<const uint8_t> data,
+  bool EnqueueReceivedData(base::span<const uint8_t> data,
                            ExceptionState&) override {
     Controller()->Enqueue(DOMUint8Array::Create(data));
+    return true;
   }
 
   void ErrorController(v8::Local<v8::Value> error) override {
@@ -1011,7 +1028,21 @@ class WebTransport::DatagramUnderlyingByteSource final
   ScriptPromise<IDLUndefined> Pull(ReadableByteStreamController* controller,
                                    ExceptionState& exception_state) override {
     DCHECK_EQ(controller_, controller);
+    if (!PrepareToReceiveDatagram(exception_state)) {
+      return ToResolvedUndefinedPromise(GetScriptState());
+    }
+    if (exception_state.HadException()) {
+      return ScriptPromise<IDLUndefined>();
+    }
+    if (!CanAcceptReceivedData()) {
+      return ToResolvedUndefinedPromise(GetScriptState());
+    }
     return PullDatagram(exception_state);
+  }
+
+  void OnBYOBReadRequest(ReadableByteStreamController* controller,
+                         ExceptionState& exception_state) override {
+    Pull(controller, exception_state);
   }
 
   ScriptPromise<IDLUndefined> Cancel() override {
@@ -1037,48 +1068,115 @@ class WebTransport::DatagramUnderlyingByteSource final
   }
 
  private:
-  void Enqueue(DOMUint8Array* datagram,
+  bool Enqueue(DOMUint8Array* datagram,
                ExceptionState& exception_state) override {
-    ScriptState::Scope scope(GetScriptState());
-    if (RespondToBYOBRequest(datagram->ByteSpan(), exception_state)) {
-      return;
-    }
-    controller_->enqueue(GetScriptState(), NotShared(datagram),
-                         exception_state);
+    return EnqueueData(datagram->ByteSpan(), datagram, exception_state);
   }
 
-  void EnqueueReceivedData(base::span<const uint8_t> data,
+  bool EnqueueReceivedData(base::span<const uint8_t> data,
                            ExceptionState& exception_state) override {
+    return EnqueueData(data, nullptr, exception_state);
+  }
+
+  bool EnqueueData(base::span<const uint8_t> data,
+                   DOMUint8Array* datagram,
+                   ExceptionState& exception_state) {
     ScriptState::Scope scope(GetScriptState());
+    if (ShouldSkipEmptyDatagram(data)) {
+      return false;
+    }
     if (RespondToBYOBRequest(data, exception_state)) {
-      return;
+      return true;
+    }
+    if (!datagram) {
+      datagram = DOMUint8Array::Create(data);
+    }
+    controller_->EnqueueFromUnderlyingSource(
+        GetScriptState(), NotShared(datagram), exception_state);
+    return true;
+  }
+
+  bool PrepareToReceiveDatagram(ExceptionState& exception_state) override {
+    ScriptState::Scope scope(GetScriptState());
+    if (ValidateRetainedDataAgainstBYOBRequest()) {
+      return false;
+    }
+    controller_->ProcessReleasedPullIntoDescriptor(GetScriptState(),
+                                                   exception_state);
+    return !exception_state.HadException();
+  }
+
+  bool ValidateRetainedDataAgainstBYOBRequest() {
+    std::optional<ReadableByteStreamController::PendingBYOBRequestInfo>
+        pending_request = controller_->GetPendingBYOBRequestInfo();
+    if (!pending_request ||
+        pending_request->bytes_available_before_request == 0) {
+      return false;
     }
 
-    controller_->enqueue(GetScriptState(),
-                         NotShared(DOMUint8Array::Create(data)),
-                         exception_state);
+    if (pending_request->remaining_byte_length <
+        pending_request->bytes_available_before_request) {
+      Error(V8ThrowException::CreateRangeError(
+          GetScriptState()->GetIsolate(),
+          "supplied view is not large enough."));
+      return true;
+    }
+    if (RuntimeEnabledFeatures::WebTransportDatagramsReadableTypeEnabled(
+            ExecutionContext::From(GetScriptState())) &&
+        !pending_request->is_byte_typed_array) {
+      Error(V8ThrowException::CreateTypeError(
+          GetScriptState()->GetIsolate(),
+          "supplied view must be a byte-sized TypedArray."));
+      return true;
+    }
+    return false;
+  }
+
+  bool ShouldSkipEmptyDatagram(base::span<const uint8_t> data) {
+    return data.empty() && controller_->GetActiveBYOBRequestInfo();
   }
 
   bool RespondToBYOBRequest(base::span<const uint8_t> data,
                             ExceptionState& exception_state) {
-    ReadableStreamBYOBRequest* request = controller_->byobRequest();
-    if (!request) {
+    std::optional<ReadableByteStreamController::ActiveBYOBRequestInfo>
+        active_request = controller_->GetActiveBYOBRequestInfo();
+    if (!active_request) {
       return false;
     }
 
-    base::span<uint8_t> view = request->view()->ByteSpan();
-    if (view.size() < data.size()) {
-      controller_->error(
-          GetScriptState(),
-          ScriptValue(GetScriptState()->GetIsolate(),
-                      V8ThrowException::CreateRangeError(
-                          GetScriptState()->GetIsolate(),
-                          "supplied view is not large enough.")));
+    if (active_request->remaining_byte_length < data.size()) {
+      Error(V8ThrowException::CreateRangeError(
+          GetScriptState()->GetIsolate(),
+          "supplied view is not large enough."));
       return true;
     }
+    if (RuntimeEnabledFeatures::WebTransportDatagramsReadableTypeEnabled(
+            ExecutionContext::From(GetScriptState())) &&
+        !active_request->is_byte_typed_array) {
+      Error(V8ThrowException::CreateTypeError(
+          GetScriptState()->GetIsolate(),
+          "supplied view must be a byte-sized TypedArray."));
+      return true;
+    }
+    if (!active_request->can_respond_directly) {
+      return false;
+    }
+
+    ReadableStreamBYOBRequest* request = controller_->byobRequest();
+    CHECK(request);
+    base::span<uint8_t> view = request->view()->ByteSpan();
     view.copy_prefix_from(data);
     request->respond(GetScriptState(), data.size(), exception_state);
     return true;
+  }
+
+  bool CanAcceptReceivedData() const override {
+    std::optional<ReadableByteStreamController::PendingBYOBRequestInfo>
+        pending_request = controller_->GetPendingBYOBRequestInfo();
+    return controller_->HasPendingDefaultReadRequest() ||
+           controller_->GetActiveBYOBRequestInfo() ||
+           (pending_request &&
+            pending_request->bytes_available_before_request > 0);
   }
 
   void ErrorController(v8::Local<v8::Value> error) override {

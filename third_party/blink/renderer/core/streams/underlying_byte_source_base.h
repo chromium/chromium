@@ -36,6 +36,9 @@ class CORE_EXPORT UnderlyingByteSourceBase
   virtual ScriptPromise<IDLUndefined> Cancel() = 0;
   virtual ScriptPromise<IDLUndefined> Cancel(v8::Local<v8::Value> reason) = 0;
 
+  virtual void OnBYOBReadRequest(ReadableByteStreamController*,
+                                 ExceptionState&) {}
+
   // Returns the ScriptState associated with this UnderlyingByteSource.
   virtual ScriptState* GetScriptState() = 0;
 

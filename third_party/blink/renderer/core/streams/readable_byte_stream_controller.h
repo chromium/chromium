@@ -40,6 +40,40 @@ class CORE_EXPORT ReadableByteStreamController
   // https://streams.spec.whatwg.org/#rbs-controller-byob-request
   ReadableStreamBYOBRequest* byobRequest();
 
+  struct ActiveBYOBRequestInfo {
+    size_t remaining_byte_length;
+    bool is_byte_typed_array;
+    bool can_respond_directly;
+  };
+
+  struct PendingBYOBRequestInfo {
+    size_t remaining_byte_length;
+    size_t bytes_available_before_request;
+    bool is_byte_typed_array;
+  };
+
+  // Returns the request that would receive newly enqueued bytes after applying
+  // bytes already queued or retained by a released reader. Requests whose
+  // minimum fill would already be satisfied are skipped.
+  std::optional<ActiveBYOBRequestInfo> GetActiveBYOBRequestInfo() const;
+
+  // Returns the first request owned by the active BYOB reader and the bytes
+  // that would be applied to it before newly enqueued bytes.
+  std::optional<PendingBYOBRequestInfo> GetPendingBYOBRequestInfo() const;
+
+  bool HasPendingDefaultReadRequest() const;
+
+  // Moves data retained by a released reader into the queue and applies it to
+  // the active read request before the underlying source supplies more data.
+  void ProcessReleasedPullIntoDescriptor(ScriptState*, ExceptionState&);
+
+  // Runs the internal enqueue operation for data supplied by a zero-HWM
+  // underlying source. Unlike the public API, this permits an empty chunk,
+  // which does not affect the desired size.
+  void EnqueueFromUnderlyingSource(ScriptState*,
+                                   NotShared<DOMArrayBufferView> chunk,
+                                   ExceptionState&);
+
   // https://streams.spec.whatwg.org/#abstract-opdef-readablebytestreamcontrollergetbyobrequest
   static ReadableStreamBYOBRequest* GetBYOBRequest(
       ReadableByteStreamController*);
@@ -88,6 +122,7 @@ class CORE_EXPORT ReadableByteStreamController
   };
 
   enum class ReaderType { kDefault, kBYOB, kNone };
+  enum class ViewType { kDataView, kTypedArray };
 
   // https://streams.spec.whatwg.org/#pull-into-descriptor
   struct PullIntoDescriptor final
@@ -107,6 +142,7 @@ class CORE_EXPORT ReadableByteStreamController
                                 uint64_t minimum_fill,
                                 size_t element_size,
                                 ViewConstructorType view_constructor,
+                                ViewType view_type,
                                 ReaderType reader_type);
 
     Member<DOMArrayBuffer> buffer;
@@ -117,6 +153,7 @@ class CORE_EXPORT ReadableByteStreamController
     const uint64_t minimum_fill;
     const size_t element_size;
     const ViewConstructorType view_constructor;
+    const ViewType view_type;
     ReaderType reader_type;
 
     void Trace(Visitor*) const;
@@ -151,6 +188,8 @@ class CORE_EXPORT ReadableByteStreamController
   // https://streams.spec.whatwg.org/#abstract-opdef-readablebytestreamcontrollerenqueuedetachedpullintotoqueue
   static void EnqueueDetachedPullIntoToQueue(ReadableByteStreamController*,
                                              PullIntoDescriptor*);
+
+  static bool DiscardEmptyQueueEntries(ReadableByteStreamController*);
 
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-process-pull-into-descriptors-using-queue
   static void ProcessPullIntoDescriptorsUsingQueue(

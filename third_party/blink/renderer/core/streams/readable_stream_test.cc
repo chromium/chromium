@@ -10,6 +10,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -24,7 +25,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_read_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_readablestreambyobreader_readablestreamdefaultreader.h"
 #include "third_party/blink/renderer/core/messaging/message_channel.h"
+#include "third_party/blink/renderer/core/streams/readable_byte_stream_controller.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_byob_reader.h"
+#include "third_party/blink/renderer/core/streams/readable_stream_byob_request.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_reader.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_transferring_optimizer.h"
@@ -32,6 +35,8 @@
 #include "third_party/blink/renderer/core/streams/test_utils.h"
 #include "third_party/blink/renderer/core/streams/underlying_byte_source_base.h"
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_data_view.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/string_resource.h"
@@ -823,6 +828,52 @@ class MockUnderlyingByteSource : public UnderlyingByteSourceBase {
   const Member<ScriptState> script_state_;
 };
 
+class InspectingUnderlyingByteSource final : public TestUnderlyingByteSource {
+ public:
+  explicit InspectingUnderlyingByteSource(ScriptState* script_state)
+      : TestUnderlyingByteSource(script_state) {}
+
+  void PullVoid(ReadableByteStreamController* controller,
+                ExceptionState&) override {
+    controller_ = controller;
+  }
+
+  ReadableByteStreamController* Controller() const { return controller_; }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(controller_);
+    TestUnderlyingByteSource::Trace(visitor);
+  }
+
+ private:
+  Member<ReadableByteStreamController> controller_;
+};
+
+Vector<uint8_t> GetReadResultBytes(ScriptState* script_state,
+                                   ScriptValue read_result) {
+  bool done = false;
+  v8::Local<v8::Value> value;
+  if (!read_result.V8Value()->IsObject() ||
+      !V8UnpackIterationResult(script_state,
+                               read_result.V8Value().As<v8::Object>(), &value,
+                               &done)) {
+    ADD_FAILURE() << "unable to unpack read result";
+    return {};
+  }
+  EXPECT_FALSE(done);
+
+  auto array = NativeValueTraits<NotShared<DOMUint8Array>>::NativeValue(
+      script_state->GetIsolate(), value, ASSERT_NO_EXCEPTION);
+  if (!array) {
+    ADD_FAILURE() << "read result was not a Uint8Array";
+    return {};
+  }
+
+  Vector<uint8_t> result;
+  result.append_range(array->ByteSpan());
+  return result;
+}
+
 TEST_F(ReadableByteStreamTest, Construct) {
   V8TestingScope scope;
   Init(scope.GetScriptState(),
@@ -848,6 +899,371 @@ TEST_F(ReadableByteStreamTest, PullIsCalled) {
 
   Mock::VerifyAndClear(mock);
   Mock::AllowLeak(mock);
+}
+
+TEST_F(ReadableByteStreamTest, ByteTypedArrayBYOBRequestIsRecognized) {
+  V8TestingScope scope;
+  auto* script_state = scope.GetScriptState();
+  auto* source =
+      MakeGarbageCollected<InspectingUnderlyingByteSource>(script_state);
+  Init(script_state, source);
+  scope.PerformMicrotaskCheckpoint();
+
+  auto* reader =
+      Stream()->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  NotShared<DOMArrayBufferView> view =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(1));
+  reader->read(script_state, view,
+               ReadableStreamBYOBReaderReadOptions::Create(),
+               ASSERT_NO_EXCEPTION);
+  scope.PerformMicrotaskCheckpoint();
+
+  ASSERT_TRUE(source->Controller());
+  auto request_info = source->Controller()->GetActiveBYOBRequestInfo();
+  ASSERT_TRUE(request_info);
+  EXPECT_EQ(request_info->remaining_byte_length, 1u);
+  EXPECT_TRUE(request_info->is_byte_typed_array);
+  EXPECT_TRUE(request_info->can_respond_directly);
+}
+
+TEST_F(ReadableByteStreamTest, MultiByteTypedArrayBYOBRequestIsNotByteSized) {
+  V8TestingScope scope;
+  auto* script_state = scope.GetScriptState();
+  auto* source =
+      MakeGarbageCollected<InspectingUnderlyingByteSource>(script_state);
+  Init(script_state, source);
+  scope.PerformMicrotaskCheckpoint();
+
+  auto* reader =
+      Stream()->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  NotShared<DOMArrayBufferView> view =
+      NotShared<DOMUint16Array>(DOMUint16Array::Create(1));
+  reader->read(script_state, view,
+               ReadableStreamBYOBReaderReadOptions::Create(),
+               ASSERT_NO_EXCEPTION);
+  scope.PerformMicrotaskCheckpoint();
+
+  ASSERT_TRUE(source->Controller());
+  auto request_info = source->Controller()->GetActiveBYOBRequestInfo();
+  ASSERT_TRUE(request_info);
+  EXPECT_EQ(request_info->remaining_byte_length, 2u);
+  EXPECT_FALSE(request_info->is_byte_typed_array);
+  EXPECT_TRUE(request_info->can_respond_directly);
+}
+
+TEST_F(ReadableByteStreamTest, DataViewBYOBRequestIsNotByteTypedArray) {
+  V8TestingScope scope;
+  auto* script_state = scope.GetScriptState();
+  auto* source =
+      MakeGarbageCollected<InspectingUnderlyingByteSource>(script_state);
+  Init(script_state, source);
+  scope.PerformMicrotaskCheckpoint();
+
+  auto* reader =
+      Stream()->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  DOMArrayBuffer* buffer = DOMArrayBuffer::Create(1, 1);
+  NotShared<DOMArrayBufferView> view =
+      NotShared<DOMDataView>(DOMDataView::Create(buffer, 0, 1));
+  reader->read(script_state, view,
+               ReadableStreamBYOBReaderReadOptions::Create(),
+               ASSERT_NO_EXCEPTION);
+  scope.PerformMicrotaskCheckpoint();
+
+  ASSERT_TRUE(source->Controller());
+  auto request_info = source->Controller()->GetActiveBYOBRequestInfo();
+  ASSERT_TRUE(request_info);
+  EXPECT_EQ(request_info->remaining_byte_length, 1u);
+  EXPECT_FALSE(request_info->is_byte_typed_array);
+  EXPECT_TRUE(request_info->can_respond_directly);
+}
+
+TEST_F(ReadableByteStreamTest, ActiveBYOBRequestSkipsReleasedDescriptor) {
+  V8TestingScope scope;
+  auto* script_state = scope.GetScriptState();
+  auto* source =
+      MakeGarbageCollected<InspectingUnderlyingByteSource>(script_state);
+  Init(script_state, source);
+  scope.PerformMicrotaskCheckpoint();
+
+  auto* first_reader =
+      Stream()->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  NotShared<DOMArrayBufferView> first_view =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(4));
+  ScriptPromiseTester first_read(
+      script_state,
+      first_reader->read(script_state, first_view,
+                         ReadableStreamBYOBReaderReadOptions::Create(),
+                         ASSERT_NO_EXCEPTION));
+  scope.PerformMicrotaskCheckpoint();
+  first_reader->releaseLock(script_state, ASSERT_NO_EXCEPTION);
+  first_read.WaitUntilSettled();
+  EXPECT_TRUE(first_read.IsRejected());
+
+  auto* second_reader =
+      Stream()->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  NotShared<DOMArrayBufferView> second_view =
+      NotShared<DOMUint16Array>(DOMUint16Array::Create(2));
+  second_reader->read(script_state, second_view,
+                      ReadableStreamBYOBReaderReadOptions::Create(),
+                      ASSERT_NO_EXCEPTION);
+  scope.PerformMicrotaskCheckpoint();
+
+  ASSERT_TRUE(source->Controller());
+  auto request_info = source->Controller()->GetActiveBYOBRequestInfo();
+  ASSERT_TRUE(request_info);
+  EXPECT_EQ(request_info->remaining_byte_length, 4u);
+  EXPECT_FALSE(request_info->is_byte_typed_array);
+  EXPECT_FALSE(request_info->can_respond_directly);
+}
+
+TEST_F(ReadableByteStreamTest, ActiveBYOBRequestIsAbsentAfterRelease) {
+  V8TestingScope scope;
+  auto* script_state = scope.GetScriptState();
+  auto* source =
+      MakeGarbageCollected<InspectingUnderlyingByteSource>(script_state);
+  Init(script_state, source);
+  scope.PerformMicrotaskCheckpoint();
+
+  auto* reader =
+      Stream()->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  NotShared<DOMArrayBufferView> view =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(1));
+  ScriptPromiseTester read(
+      script_state, reader->read(script_state, view,
+                                 ReadableStreamBYOBReaderReadOptions::Create(),
+                                 ASSERT_NO_EXCEPTION));
+  scope.PerformMicrotaskCheckpoint();
+  reader->releaseLock(script_state, ASSERT_NO_EXCEPTION);
+  read.WaitUntilSettled();
+  EXPECT_TRUE(read.IsRejected());
+
+  ASSERT_TRUE(source->Controller());
+  EXPECT_FALSE(source->Controller()->GetActiveBYOBRequestInfo());
+}
+
+TEST_F(ReadableByteStreamTest,
+       BYOBReadAfterReleasedReaderAndCloseRespondsWithZero) {
+  V8TestingScope scope;
+  auto* script_state = scope.GetScriptState();
+  auto* source =
+      MakeGarbageCollected<InspectingUnderlyingByteSource>(script_state);
+  Init(script_state, source);
+  scope.PerformMicrotaskCheckpoint();
+
+  auto* first_reader =
+      Stream()->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  NotShared<DOMArrayBufferView> first_view =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(1));
+  ScriptPromiseTester first_read(
+      script_state,
+      first_reader->read(script_state, first_view,
+                         ReadableStreamBYOBReaderReadOptions::Create(),
+                         ASSERT_NO_EXCEPTION));
+  scope.PerformMicrotaskCheckpoint();
+  ASSERT_TRUE(source->Controller());
+  auto* first_request = source->Controller()->byobRequest();
+  ASSERT_TRUE(first_request);
+
+  first_reader->releaseLock(script_state, ASSERT_NO_EXCEPTION);
+  first_read.WaitUntilSettled();
+  EXPECT_TRUE(first_read.IsRejected());
+  source->Controller()->close(script_state, ASSERT_NO_EXCEPTION);
+
+  auto* second_reader =
+      Stream()->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  NotShared<DOMArrayBufferView> second_view =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(1));
+  ScriptPromiseTester second_read(
+      script_state,
+      second_reader->read(script_state, second_view,
+                          ReadableStreamBYOBReaderReadOptions::Create(),
+                          ASSERT_NO_EXCEPTION));
+
+  first_request->respond(script_state, 0, ASSERT_NO_EXCEPTION);
+  second_read.WaitUntilSettled();
+
+  ASSERT_TRUE(second_read.IsFulfilled());
+  ASSERT_TRUE(second_read.Value().V8Value()->IsObject());
+  bool done = false;
+  v8::Local<v8::Value> value;
+  ASSERT_TRUE(V8UnpackIterationResult(
+      script_state, second_read.Value().V8Value().As<v8::Object>(), &value,
+      &done));
+  EXPECT_TRUE(done);
+  auto array = NativeValueTraits<NotShared<DOMUint8Array>>::NativeValue(
+      script_state->GetIsolate(), value, ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(array);
+  EXPECT_EQ(array->byteLength(), 0u);
+}
+
+TEST_F(ReadableByteStreamTest, InternalEmptyEnqueueIsDeliveredToDefaultReader) {
+  V8TestingScope scope;
+  auto* script_state = scope.GetScriptState();
+  auto* source =
+      MakeGarbageCollected<InspectingUnderlyingByteSource>(script_state);
+  Init(script_state, source);
+  scope.PerformMicrotaskCheckpoint();
+
+  auto* first_reader =
+      Stream()->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromiseTester first_read(
+      script_state, first_reader->read(script_state, ASSERT_NO_EXCEPTION));
+  scope.PerformMicrotaskCheckpoint();
+  first_reader->releaseLock(script_state, ASSERT_NO_EXCEPTION);
+  first_read.WaitUntilSettled();
+  EXPECT_TRUE(first_read.IsRejected());
+
+  ASSERT_TRUE(source->Controller());
+  NonThrowableExceptionState exception_state;
+  source->Controller()->EnqueueFromUnderlyingSource(
+      script_state, NotShared(DOMUint8Array::Create(0)), exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+
+  auto* second_reader =
+      Stream()->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromiseTester second_read(
+      script_state, second_reader->read(script_state, ASSERT_NO_EXCEPTION));
+  second_read.WaitUntilSettled();
+
+  EXPECT_TRUE(second_read.IsFulfilled());
+  EXPECT_TRUE(GetReadResultBytes(script_state, second_read.Value()).empty());
+}
+
+TEST_F(ReadableByteStreamTest, BYOBReadSkipsInternallyQueuedEmptyChunk) {
+  V8TestingScope scope;
+  auto* script_state = scope.GetScriptState();
+  auto* source =
+      MakeGarbageCollected<InspectingUnderlyingByteSource>(script_state);
+  Init(script_state, source);
+  scope.PerformMicrotaskCheckpoint();
+
+  auto* first_reader =
+      Stream()->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromiseTester first_read(
+      script_state, first_reader->read(script_state, ASSERT_NO_EXCEPTION));
+  scope.PerformMicrotaskCheckpoint();
+  first_reader->releaseLock(script_state, ASSERT_NO_EXCEPTION);
+  first_read.WaitUntilSettled();
+  EXPECT_TRUE(first_read.IsRejected());
+
+  ASSERT_TRUE(source->Controller());
+  NonThrowableExceptionState exception_state;
+  source->Controller()->EnqueueFromUnderlyingSource(
+      script_state, NotShared(DOMUint8Array::Create(0)), exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+
+  auto* second_reader =
+      Stream()->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  NotShared<DOMArrayBufferView> view =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(1));
+  ScriptPromiseTester second_read(
+      script_state,
+      second_reader->read(script_state, view,
+                          ReadableStreamBYOBReaderReadOptions::Create(),
+                          ASSERT_NO_EXCEPTION));
+  const std::array<uint8_t, 1> chunk = {'A'};
+  source->Controller()->EnqueueFromUnderlyingSource(
+      script_state, NotShared(DOMUint8Array::Create(chunk)), exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+  second_read.WaitUntilSettled();
+
+  EXPECT_TRUE(second_read.IsFulfilled());
+  Vector<uint8_t> bytes = GetReadResultBytes(script_state, second_read.Value());
+  ASSERT_EQ(bytes.size(), 1u);
+  EXPECT_EQ(bytes[0], 'A');
+}
+
+TEST_F(ReadableByteStreamTest,
+       BYOBReadSkipsInternallyQueuedEmptyChunkBeforeClose) {
+  V8TestingScope scope;
+  auto* script_state = scope.GetScriptState();
+  auto* source =
+      MakeGarbageCollected<InspectingUnderlyingByteSource>(script_state);
+  Init(script_state, source);
+  scope.PerformMicrotaskCheckpoint();
+
+  auto* first_reader =
+      Stream()->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromiseTester first_read(
+      script_state, first_reader->read(script_state, ASSERT_NO_EXCEPTION));
+  scope.PerformMicrotaskCheckpoint();
+  first_reader->releaseLock(script_state, ASSERT_NO_EXCEPTION);
+  first_read.WaitUntilSettled();
+  EXPECT_TRUE(first_read.IsRejected());
+
+  ASSERT_TRUE(source->Controller());
+  NonThrowableExceptionState exception_state;
+  source->Controller()->EnqueueFromUnderlyingSource(
+      script_state, NotShared(DOMUint8Array::Create(0)), exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+  Stream()->CloseStream(script_state, ASSERT_NO_EXCEPTION);
+
+  auto* second_reader =
+      Stream()->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  NotShared<DOMArrayBufferView> view =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(1));
+  ScriptPromiseTester second_read(
+      script_state,
+      second_reader->read(script_state, view,
+                          ReadableStreamBYOBReaderReadOptions::Create(),
+                          ASSERT_NO_EXCEPTION));
+  second_read.WaitUntilSettled();
+
+  ASSERT_TRUE(second_read.IsFulfilled());
+  ASSERT_TRUE(second_read.Value().V8Value()->IsObject());
+  bool done = false;
+  v8::Local<v8::Value> value;
+  ASSERT_TRUE(V8UnpackIterationResult(
+      script_state, second_read.Value().V8Value().As<v8::Object>(), &value,
+      &done));
+  EXPECT_TRUE(done);
+  auto array = NativeValueTraits<NotShared<DOMUint8Array>>::NativeValue(
+      script_state->GetIsolate(), value, ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(array);
+  EXPECT_EQ(array->byteLength(), 0u);
+}
+
+TEST_F(ReadableByteStreamTest, BYOBReadDiscardsTrailingEmptyChunkBeforeClose) {
+  V8TestingScope scope;
+  auto* script_state = scope.GetScriptState();
+  auto* source =
+      MakeGarbageCollected<InspectingUnderlyingByteSource>(script_state);
+  Init(script_state, source);
+  scope.PerformMicrotaskCheckpoint();
+
+  auto* first_reader =
+      Stream()->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromiseTester first_read(
+      script_state, first_reader->read(script_state, ASSERT_NO_EXCEPTION));
+  scope.PerformMicrotaskCheckpoint();
+  first_reader->releaseLock(script_state, ASSERT_NO_EXCEPTION);
+  first_read.WaitUntilSettled();
+  EXPECT_TRUE(first_read.IsRejected());
+
+  ASSERT_TRUE(source->Controller());
+  NonThrowableExceptionState exception_state;
+  const std::array<uint8_t, 2> chunk = {'A', 'B'};
+  source->Controller()->EnqueueFromUnderlyingSource(
+      script_state, NotShared(DOMUint8Array::Create(chunk)), exception_state);
+  source->Controller()->EnqueueFromUnderlyingSource(
+      script_state, NotShared(DOMUint8Array::Create(0)), exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+  Stream()->CloseStream(script_state, ASSERT_NO_EXCEPTION);
+
+  auto* reader =
+      Stream()->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  NotShared<DOMArrayBufferView> view =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(2));
+  ScriptPromiseTester read(
+      script_state, reader->read(script_state, view,
+                                 ReadableStreamBYOBReaderReadOptions::Create(),
+                                 ASSERT_NO_EXCEPTION));
+  read.WaitUntilSettled();
+
+  ASSERT_TRUE(read.IsFulfilled());
+  EXPECT_THAT(GetReadResultBytes(script_state, read.Value()),
+              testing::ElementsAre('A', 'B'));
+  EXPECT_TRUE(Stream()->IsClosed());
 }
 
 TEST_F(ReadableByteStreamTest, CancelIsCalled) {

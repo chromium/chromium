@@ -58,6 +58,11 @@ class StreamAlgorithm : public GarbageCollected<StreamAlgorithm> {
       ScriptState*,
       base::span<v8::Local<v8::Value>> argv) = 0;
 
+  // Called when a BYOB read is appended behind a descriptor retained by a
+  // released reader. Native byte sources can use this to resume the read
+  // without invoking their pull algorithm again for JavaScript streams.
+  virtual void OnBYOBReadRequest() {}
+
   virtual void Trace(Visitor*) const {}
 };
 

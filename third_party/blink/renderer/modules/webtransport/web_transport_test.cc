@@ -66,6 +66,7 @@
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_writer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_data_view.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/webtransport/bidirectional_stream.h"
 #include "third_party/blink/renderer/modules/webtransport/datagram_duplex_stream.h"
@@ -96,6 +97,7 @@ using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Field;
+using ::testing::IsEmpty;
 using ::testing::Mock;
 using ::testing::Pointee;
 using ::testing::SizeIs;
@@ -2349,10 +2351,15 @@ TEST_F(WebTransportTest, SendDatagramAfterClose) {
   EXPECT_TRUE(tester.IsRejected());
 }
 
-Vector<uint8_t> GetValueAsVector(ScriptState* script_state,
-                                 ScriptValue iterator_result) {
+template <typename ArrayType>
+Vector<uint8_t> GetTypedArrayValueAsBytes(ScriptState* script_state,
+                                          ScriptValue iterator_result) {
   bool done = false;
   v8::Local<v8::Value> value;
+  if (!iterator_result.V8Value()->IsObject()) {
+    ADD_FAILURE() << "iterator_result was not an object";
+    return {};
+  }
   if (!V8UnpackIterationResult(script_state,
                                iterator_result.V8Value().As<v8::Object>(),
                                &value, &done)) {
@@ -2361,17 +2368,22 @@ Vector<uint8_t> GetValueAsVector(ScriptState* script_state,
   }
 
   EXPECT_FALSE(done);
-  DummyExceptionStateForTesting exception_state;
-  auto array = NativeValueTraits<NotShared<DOMUint8Array>>::NativeValue(
-      script_state->GetIsolate(), value, exception_state);
+  auto array = NativeValueTraits<NotShared<ArrayType>>::NativeValue(
+      script_state->GetIsolate(), value, ASSERT_NO_EXCEPTION);
   if (!array) {
-    ADD_FAILURE() << "value was not a Uint8Array";
+    ADD_FAILURE() << "value had the wrong TypedArray type";
     return {};
   }
 
   Vector<uint8_t> result;
   result.append_range(array->ByteSpan());
   return result;
+}
+
+Vector<uint8_t> GetValueAsVector(ScriptState* script_state,
+                                 ScriptValue iterator_result) {
+  return GetTypedArrayValueAsBytes<DOMUint8Array>(script_state,
+                                                  iterator_result);
 }
 
 TEST_F(WebTransportTest, DefaultDatagramReadableReceivesBeforeRead) {
@@ -2473,6 +2485,23 @@ TEST_F(WebTransportTest,
   EXPECT_TRUE(pending_tester.IsFulfilled());
   EXPECT_THAT(GetValueAsVector(script_state, pending_tester.Value()),
               ElementsAre('B'));
+
+  // The disabled feature also preserves the legacy acceptance of BYOB views
+  // whose element size is greater than one byte.
+  NotShared<DOMArrayBufferView> uint16_view =
+      NotShared<DOMUint16Array>(DOMUint16Array::Create(1));
+  ScriptPromiseTester uint16_tester(
+      script_state, reader->read(script_state, uint16_view, read_options,
+                                 ASSERT_NO_EXCEPTION));
+
+  client_remote_->OnDatagramReceived({'C', 'D'});
+  uint16_tester.WaitUntilSettled();
+
+  EXPECT_TRUE(uint16_tester.IsFulfilled());
+  ASSERT_TRUE(uint16_tester.Value().V8Value()->IsObject());
+  EXPECT_THAT(GetTypedArrayValueAsBytes<DOMUint16Array>(script_state,
+                                                        uint16_tester.Value()),
+              ElementsAre('C', 'D'));
 }
 
 TEST_F(WebTransportTest, ReceiveDatagramWithBYOBReader) {
@@ -2503,6 +2532,88 @@ TEST_F(WebTransportTest, ReceiveDatagramWithBYOBReader) {
   tester.WaitUntilSettled();
   EXPECT_TRUE(tester.IsFulfilled());
   EXPECT_THAT(GetValueAsVector(script_state, tester.Value()), ElementsAre('A'));
+}
+
+TEST_F(WebTransportTest, PendingBYOBReadSkipsEmptyDatagram) {
+  ScopedWebTransportDatagramsReadableTypeForTest readable_type_enabled(true);
+  V8TestingScope scope;
+  auto* web_transport = CreateAndConnectSuccessfully(
+      scope, "https://example.com", ByteDatagramOptions());
+
+  auto* script_state = scope.GetScriptState();
+  auto* reader =
+      web_transport->datagrams()->readable()->GetBYOBReaderForTesting(
+          script_state, ASSERT_NO_EXCEPTION);
+  NotShared<DOMArrayBufferView> view =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(1));
+  auto* read_options =
+      MakeGarbageCollected<ReadableStreamBYOBReaderReadOptions>();
+  ScriptPromiseTester tester(
+      script_state,
+      reader->read(script_state, view, read_options, ASSERT_NO_EXCEPTION));
+
+  client_remote_->OnDatagramReceived(base::span<const uint8_t>());
+  test::RunPendingTasks();
+  EXPECT_FALSE(tester.IsFulfilled());
+  EXPECT_FALSE(tester.IsRejected());
+
+  client_remote_->OnDatagramReceived({'A'});
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsFulfilled());
+  EXPECT_THAT(GetValueAsVector(script_state, tester.Value()), ElementsAre('A'));
+}
+
+TEST_F(WebTransportTest, BYOBReadSkipsQueuedEmptyDatagram) {
+  ScopedWebTransportDatagramsReadableTypeForTest readable_type_enabled(true);
+  V8TestingScope scope;
+  auto* web_transport = CreateAndConnectSuccessfully(
+      scope, "https://example.com", ByteDatagramOptions());
+
+  client_remote_->OnDatagramReceived(base::span<const uint8_t>());
+  test::RunPendingTasks();
+
+  auto* script_state = scope.GetScriptState();
+  auto* reader =
+      web_transport->datagrams()->readable()->GetBYOBReaderForTesting(
+          script_state, ASSERT_NO_EXCEPTION);
+  NotShared<DOMArrayBufferView> view =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(1));
+  auto* read_options =
+      MakeGarbageCollected<ReadableStreamBYOBReaderReadOptions>();
+  ScriptPromiseTester tester(
+      script_state,
+      reader->read(script_state, view, read_options, ASSERT_NO_EXCEPTION));
+
+  test::RunPendingTasks();
+  EXPECT_FALSE(tester.IsFulfilled());
+  EXPECT_FALSE(tester.IsRejected());
+
+  client_remote_->OnDatagramReceived({'A'});
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsFulfilled());
+  EXPECT_THAT(GetValueAsVector(script_state, tester.Value()), ElementsAre('A'));
+}
+
+TEST_F(WebTransportTest, EmptyByteDatagramCanEvictQueuedDatagram) {
+  ScopedWebTransportDatagramsReadableTypeForTest readable_type_enabled(true);
+  V8TestingScope scope;
+  auto* web_transport = CreateAndConnectSuccessfully(
+      scope, "https://example.com", ByteDatagramOptions());
+
+  client_remote_->OnDatagramReceived({'A'});
+  client_remote_->OnDatagramReceived(base::span<const uint8_t>());
+  test::RunPendingTasks();
+
+  auto* script_state = scope.GetScriptState();
+  auto* reader =
+      web_transport->datagrams()->readable()->GetDefaultReaderForTesting(
+          script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromiseTester tester(script_state,
+                             reader->read(script_state, ASSERT_NO_EXCEPTION));
+
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsFulfilled());
+  EXPECT_THAT(GetValueAsVector(script_state, tester.Value()), IsEmpty());
 }
 
 TEST_F(WebTransportTest, ReceiveDatagramWithBYOBReaderMinOption) {
@@ -2545,9 +2656,10 @@ TEST_F(WebTransportTest, ReceiveDatagramWithBYOBReaderMinOption) {
               ElementsAre('A', 'B'));
 }
 
-bool IsRangeError(ScriptState* script_state,
-                  ScriptValue value,
-                  const String& message) {
+bool IsNativeError(ScriptState* script_state,
+                   ScriptValue value,
+                   const String& name,
+                   const String& message) {
   v8::Local<v8::Object> object;
   if (!value.V8Value()->ToObject(script_state->GetContext()).ToLocal(&object)) {
     return false;
@@ -2567,7 +2679,59 @@ bool IsRangeError(ScriptState* script_state,
                                                 actual) == value;
   };
 
-  return Has("name", "RangeError") && Has("message", message);
+  return Has("name", name) && Has("message", message);
+}
+
+bool IsRangeError(ScriptState* script_state,
+                  ScriptValue value,
+                  const String& message) {
+  return IsNativeError(script_state, value, "RangeError", message);
+}
+
+bool IsTypeError(ScriptState* script_state,
+                 ScriptValue value,
+                 const String& message) {
+  return IsNativeError(script_state, value, "TypeError", message);
+}
+
+TEST_F(WebTransportTest, EmptyDatagramIsDeliveredByByteStreamDefaultReader) {
+  ScopedWebTransportDatagramsReadableTypeForTest readable_type_enabled(true);
+  V8TestingScope scope;
+  auto* web_transport = CreateAndConnectSuccessfully(
+      scope, "https://example.com", ByteDatagramOptions());
+
+  auto* script_state = scope.GetScriptState();
+  auto* reader =
+      web_transport->datagrams()->readable()->GetDefaultReaderForTesting(
+          script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromiseTester tester(script_state,
+                             reader->read(script_state, ASSERT_NO_EXCEPTION));
+
+  client_remote_->OnDatagramReceived(base::span<const uint8_t>());
+  tester.WaitUntilSettled();
+
+  EXPECT_TRUE(tester.IsFulfilled());
+  EXPECT_THAT(GetValueAsVector(script_state, tester.Value()), IsEmpty());
+}
+
+TEST_F(WebTransportTest, EmptyDatagramIsDeliveredByDefaultDatagramStream) {
+  ScopedWebTransportDatagramsReadableTypeForTest readable_type_enabled(true);
+  V8TestingScope scope;
+  auto* web_transport =
+      CreateAndConnectSuccessfully(scope, "https://example.com");
+
+  auto* script_state = scope.GetScriptState();
+  auto* reader =
+      web_transport->datagrams()->readable()->GetDefaultReaderForTesting(
+          script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromiseTester tester(script_state,
+                             reader->read(script_state, ASSERT_NO_EXCEPTION));
+
+  client_remote_->OnDatagramReceived(base::span<const uint8_t>());
+  tester.WaitUntilSettled();
+
+  EXPECT_TRUE(tester.IsFulfilled());
+  EXPECT_THAT(GetValueAsVector(script_state, tester.Value()), IsEmpty());
 }
 
 TEST_F(WebTransportTest, ReceiveDatagramWithoutEnoughBuffer) {
@@ -2600,6 +2764,610 @@ TEST_F(WebTransportTest, ReceiveDatagramWithoutEnoughBuffer) {
   EXPECT_TRUE(tester.IsRejected());
   EXPECT_TRUE(IsRangeError(script_state, tester.Value(),
                            "supplied view is not large enough."));
+}
+
+TEST_F(WebTransportTest, ReceiveDatagramWithNonByteBYOBView) {
+  ScopedWebTransportDatagramsReadableTypeForTest readable_type_enabled(true);
+  V8TestingScope scope;
+  auto* web_transport = CreateAndConnectSuccessfully(
+      scope, "https://example.com", ByteDatagramOptions());
+
+  auto* script_state = scope.GetScriptState();
+  auto* reader =
+      web_transport->datagrams()->readable()->GetBYOBReaderForTesting(
+          script_state, ASSERT_NO_EXCEPTION);
+  NotShared<DOMArrayBufferView> view =
+      NotShared<DOMUint16Array>(DOMUint16Array::Create(1));
+  auto* read_options =
+      MakeGarbageCollected<ReadableStreamBYOBReaderReadOptions>();
+  ScriptPromiseTester tester(
+      script_state,
+      reader->read(script_state, view, read_options, ASSERT_NO_EXCEPTION));
+
+  client_remote_->OnDatagramReceived({'A'});
+  test::RunPendingTasks();
+
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsRejected());
+  EXPECT_TRUE(IsTypeError(script_state, tester.Value(),
+                          "supplied view must be a byte-sized TypedArray."));
+}
+
+TEST_F(WebTransportTest, ShortNonByteBYOBViewRejectsWithRangeError) {
+  ScopedWebTransportDatagramsReadableTypeForTest readable_type_enabled(true);
+  V8TestingScope scope;
+  auto* web_transport = CreateAndConnectSuccessfully(
+      scope, "https://example.com", ByteDatagramOptions());
+
+  auto* script_state = scope.GetScriptState();
+  auto* reader =
+      web_transport->datagrams()->readable()->GetBYOBReaderForTesting(
+          script_state, ASSERT_NO_EXCEPTION);
+  NotShared<DOMArrayBufferView> view =
+      NotShared<DOMUint16Array>(DOMUint16Array::Create(1));
+  auto* read_options =
+      MakeGarbageCollected<ReadableStreamBYOBReaderReadOptions>();
+  ScriptPromiseTester tester(
+      script_state,
+      reader->read(script_state, view, read_options, ASSERT_NO_EXCEPTION));
+
+  client_remote_->OnDatagramReceived({'A', 'B', 'C'});
+  test::RunPendingTasks();
+
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsRejected());
+  EXPECT_TRUE(IsRangeError(script_state, tester.Value(),
+                           "supplied view is not large enough."));
+}
+
+TEST_F(WebTransportTest, ReceiveDatagramWithInt8BYOBView) {
+  ScopedWebTransportDatagramsReadableTypeForTest readable_type_enabled(true);
+  V8TestingScope scope;
+  auto* web_transport = CreateAndConnectSuccessfully(
+      scope, "https://example.com", ByteDatagramOptions());
+
+  auto* script_state = scope.GetScriptState();
+  auto* reader =
+      web_transport->datagrams()->readable()->GetBYOBReaderForTesting(
+          script_state, ASSERT_NO_EXCEPTION);
+  NotShared<DOMArrayBufferView> view =
+      NotShared<DOMInt8Array>(DOMInt8Array::Create(1));
+  auto* read_options =
+      MakeGarbageCollected<ReadableStreamBYOBReaderReadOptions>();
+  ScriptPromiseTester tester(
+      script_state,
+      reader->read(script_state, view, read_options, ASSERT_NO_EXCEPTION));
+
+  client_remote_->OnDatagramReceived({'A'});
+  tester.WaitUntilSettled();
+
+  EXPECT_TRUE(tester.IsFulfilled());
+  EXPECT_THAT(
+      GetTypedArrayValueAsBytes<DOMInt8Array>(script_state, tester.Value()),
+      ElementsAre('A'));
+}
+
+TEST_F(WebTransportTest, ReceiveDatagramWithUint8ClampedBYOBView) {
+  ScopedWebTransportDatagramsReadableTypeForTest readable_type_enabled(true);
+  V8TestingScope scope;
+  auto* web_transport = CreateAndConnectSuccessfully(
+      scope, "https://example.com", ByteDatagramOptions());
+
+  auto* script_state = scope.GetScriptState();
+  auto* reader =
+      web_transport->datagrams()->readable()->GetBYOBReaderForTesting(
+          script_state, ASSERT_NO_EXCEPTION);
+  NotShared<DOMArrayBufferView> view =
+      NotShared<DOMUint8ClampedArray>(DOMUint8ClampedArray::Create(1));
+  auto* read_options =
+      MakeGarbageCollected<ReadableStreamBYOBReaderReadOptions>();
+  ScriptPromiseTester tester(
+      script_state,
+      reader->read(script_state, view, read_options, ASSERT_NO_EXCEPTION));
+
+  client_remote_->OnDatagramReceived({'A'});
+  tester.WaitUntilSettled();
+
+  EXPECT_TRUE(tester.IsFulfilled());
+  EXPECT_THAT(GetTypedArrayValueAsBytes<DOMUint8ClampedArray>(script_state,
+                                                              tester.Value()),
+              ElementsAre('A'));
+}
+
+TEST_F(WebTransportTest, ReceiveDatagramWithDataView) {
+  ScopedWebTransportDatagramsReadableTypeForTest readable_type_enabled(true);
+  V8TestingScope scope;
+  auto* web_transport = CreateAndConnectSuccessfully(
+      scope, "https://example.com", ByteDatagramOptions());
+
+  auto* script_state = scope.GetScriptState();
+  auto* reader =
+      web_transport->datagrams()->readable()->GetBYOBReaderForTesting(
+          script_state, ASSERT_NO_EXCEPTION);
+  auto* buffer = DOMArrayBuffer::Create(1, 1);
+  NotShared<DOMArrayBufferView> view =
+      NotShared<DOMDataView>(DOMDataView::Create(buffer, 0, 1));
+  auto* read_options =
+      MakeGarbageCollected<ReadableStreamBYOBReaderReadOptions>();
+  ScriptPromiseTester tester(
+      script_state,
+      reader->read(script_state, view, read_options, ASSERT_NO_EXCEPTION));
+
+  client_remote_->OnDatagramReceived({'A'});
+  test::RunPendingTasks();
+
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsRejected());
+  EXPECT_TRUE(IsTypeError(script_state, tester.Value(),
+                          "supplied view must be a byte-sized TypedArray."));
+}
+
+TEST_F(WebTransportTest, ReleasedBYOBViewDoesNotHideActiveViewType) {
+  ScopedWebTransportDatagramsReadableTypeForTest readable_type_enabled(true);
+  V8TestingScope scope;
+  auto* web_transport = CreateAndConnectSuccessfully(
+      scope, "https://example.com", ByteDatagramOptions());
+
+  auto* script_state = scope.GetScriptState();
+  auto* readable = web_transport->datagrams()->readable();
+  auto* read_options =
+      MakeGarbageCollected<ReadableStreamBYOBReaderReadOptions>();
+  auto* first_reader =
+      readable->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  NotShared<DOMArrayBufferView> first_view =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(4));
+  ScriptPromiseTester first_read(
+      script_state, first_reader->read(script_state, first_view, read_options,
+                                       ASSERT_NO_EXCEPTION));
+  first_reader->releaseLock(script_state, ASSERT_NO_EXCEPTION);
+  first_read.WaitUntilSettled();
+  EXPECT_TRUE(first_read.IsRejected());
+
+  auto* second_reader =
+      readable->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  NotShared<DOMArrayBufferView> second_view =
+      NotShared<DOMUint16Array>(DOMUint16Array::Create(2));
+  ScriptPromiseTester second_read(
+      script_state, second_reader->read(script_state, second_view, read_options,
+                                        ASSERT_NO_EXCEPTION));
+
+  client_remote_->OnDatagramReceived({'A'});
+  second_read.WaitUntilSettled();
+
+  EXPECT_TRUE(second_read.IsRejected());
+  EXPECT_TRUE(IsTypeError(script_state, second_read.Value(),
+                          "supplied view must be a byte-sized TypedArray."));
+}
+
+TEST_F(WebTransportTest, ReleasedBYOBViewDoesNotRejectActiveByteView) {
+  ScopedWebTransportDatagramsReadableTypeForTest readable_type_enabled(true);
+  V8TestingScope scope;
+  auto* web_transport = CreateAndConnectSuccessfully(
+      scope, "https://example.com", ByteDatagramOptions());
+
+  auto* script_state = scope.GetScriptState();
+  auto* readable = web_transport->datagrams()->readable();
+  auto* read_options =
+      MakeGarbageCollected<ReadableStreamBYOBReaderReadOptions>();
+  auto* first_reader =
+      readable->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  DOMArrayBuffer* first_buffer = DOMArrayBuffer::Create(4, 1);
+  NotShared<DOMArrayBufferView> first_view =
+      NotShared<DOMDataView>(DOMDataView::Create(first_buffer, 0, 4));
+  ScriptPromiseTester first_read(
+      script_state, first_reader->read(script_state, first_view, read_options,
+                                       ASSERT_NO_EXCEPTION));
+  first_reader->releaseLock(script_state, ASSERT_NO_EXCEPTION);
+  first_read.WaitUntilSettled();
+  EXPECT_TRUE(first_read.IsRejected());
+
+  auto* second_reader =
+      readable->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  NotShared<DOMArrayBufferView> second_view =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(1));
+  ScriptPromiseTester second_read(
+      script_state, second_reader->read(script_state, second_view, read_options,
+                                        ASSERT_NO_EXCEPTION));
+
+  client_remote_->OnDatagramReceived({'A'});
+  second_read.WaitUntilSettled();
+
+  EXPECT_TRUE(second_read.IsFulfilled());
+  EXPECT_THAT(GetValueAsVector(script_state, second_read.Value()),
+              ElementsAre('A'));
+}
+
+TEST_F(WebTransportTest, ReleasedBYOBDataDoesNotBypassActiveViewType) {
+  ScopedWebTransportDatagramsReadableTypeForTest readable_type_enabled(true);
+  V8TestingScope scope;
+  auto* web_transport = CreateAndConnectSuccessfully(
+      scope, "https://example.com", ByteDatagramOptions());
+
+  auto* script_state = scope.GetScriptState();
+  auto* readable = web_transport->datagrams()->readable();
+  auto* first_options =
+      MakeGarbageCollected<ReadableStreamBYOBReaderReadOptions>();
+  first_options->setMin(4);
+  auto* first_reader =
+      readable->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  NotShared<DOMArrayBufferView> first_view =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(4));
+  ScriptPromiseTester first_read(
+      script_state, first_reader->read(script_state, first_view, first_options,
+                                       ASSERT_NO_EXCEPTION));
+  client_remote_->OnDatagramReceived({'A', 'B'});
+  test::RunPendingTasks();
+  EXPECT_FALSE(first_read.IsFulfilled());
+  EXPECT_FALSE(first_read.IsRejected());
+
+  first_reader->releaseLock(script_state, ASSERT_NO_EXCEPTION);
+  first_read.WaitUntilSettled();
+  EXPECT_TRUE(first_read.IsRejected());
+
+  auto* second_reader =
+      readable->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  NotShared<DOMArrayBufferView> second_view =
+      NotShared<DOMUint16Array>(DOMUint16Array::Create(1));
+  ScriptPromiseTester second_read(
+      script_state,
+      second_reader->read(script_state, second_view,
+                          ReadableStreamBYOBReaderReadOptions::Create(),
+                          ASSERT_NO_EXCEPTION));
+  client_remote_->OnDatagramReceived(base::span<const uint8_t>());
+  second_read.WaitUntilSettled();
+
+  EXPECT_TRUE(second_read.IsRejected());
+  EXPECT_TRUE(IsTypeError(script_state, second_read.Value(),
+                          "supplied view must be a byte-sized TypedArray."));
+}
+
+TEST_F(WebTransportTest,
+       EmptyDatagramBeforeReplacementPreservesViewTypeValidation) {
+  ScopedWebTransportDatagramsReadableTypeForTest readable_type_enabled(true);
+  V8TestingScope scope;
+  auto* web_transport = CreateAndConnectSuccessfully(
+      scope, "https://example.com", ByteDatagramOptions());
+
+  auto* script_state = scope.GetScriptState();
+  auto* readable = web_transport->datagrams()->readable();
+  auto* first_options =
+      MakeGarbageCollected<ReadableStreamBYOBReaderReadOptions>();
+  first_options->setMin(4);
+  auto* first_reader =
+      readable->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  NotShared<DOMArrayBufferView> first_view =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(4));
+  ScriptPromiseTester first_read(
+      script_state, first_reader->read(script_state, first_view, first_options,
+                                       ASSERT_NO_EXCEPTION));
+  client_remote_->OnDatagramReceived({'A', 'B'});
+  test::RunPendingTasks();
+  EXPECT_FALSE(first_read.IsFulfilled());
+  EXPECT_FALSE(first_read.IsRejected());
+
+  first_reader->releaseLock(script_state, ASSERT_NO_EXCEPTION);
+  first_read.WaitUntilSettled();
+  EXPECT_TRUE(first_read.IsRejected());
+  client_remote_->OnDatagramReceived(base::span<const uint8_t>());
+  test::RunPendingTasks();
+
+  auto* second_reader =
+      readable->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  NotShared<DOMArrayBufferView> second_view =
+      NotShared<DOMUint16Array>(DOMUint16Array::Create(1));
+  ScriptPromiseTester second_read(
+      script_state,
+      second_reader->read(script_state, second_view,
+                          ReadableStreamBYOBReaderReadOptions::Create(),
+                          ASSERT_NO_EXCEPTION));
+  second_read.WaitUntilSettled();
+
+  EXPECT_TRUE(second_read.IsRejected());
+  EXPECT_TRUE(IsTypeError(script_state, second_read.Value(),
+                          "supplied view must be a byte-sized TypedArray."));
+}
+
+TEST_F(WebTransportTest,
+       EmptyDatagramBeforeReplacementPreservesViewSizeValidation) {
+  ScopedWebTransportDatagramsReadableTypeForTest readable_type_enabled(true);
+  V8TestingScope scope;
+  auto* web_transport = CreateAndConnectSuccessfully(
+      scope, "https://example.com", ByteDatagramOptions());
+
+  auto* script_state = scope.GetScriptState();
+  auto* readable = web_transport->datagrams()->readable();
+  auto* first_options =
+      MakeGarbageCollected<ReadableStreamBYOBReaderReadOptions>();
+  first_options->setMin(4);
+  auto* first_reader =
+      readable->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  NotShared<DOMArrayBufferView> first_view =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(4));
+  ScriptPromiseTester first_read(
+      script_state, first_reader->read(script_state, first_view, first_options,
+                                       ASSERT_NO_EXCEPTION));
+  client_remote_->OnDatagramReceived({'A', 'B'});
+  test::RunPendingTasks();
+  EXPECT_FALSE(first_read.IsFulfilled());
+  EXPECT_FALSE(first_read.IsRejected());
+
+  first_reader->releaseLock(script_state, ASSERT_NO_EXCEPTION);
+  first_read.WaitUntilSettled();
+  EXPECT_TRUE(first_read.IsRejected());
+  client_remote_->OnDatagramReceived(base::span<const uint8_t>());
+  test::RunPendingTasks();
+
+  auto* second_reader =
+      readable->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  NotShared<DOMArrayBufferView> second_view =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(1));
+  ScriptPromiseTester second_read(
+      script_state,
+      second_reader->read(script_state, second_view,
+                          ReadableStreamBYOBReaderReadOptions::Create(),
+                          ASSERT_NO_EXCEPTION));
+  second_read.WaitUntilSettled();
+
+  EXPECT_TRUE(second_read.IsRejected());
+  EXPECT_TRUE(IsRangeError(script_state, second_read.Value(),
+                           "supplied view is not large enough."));
+}
+
+TEST_F(WebTransportTest, ReleasedSmallBYOBViewDoesNotLimitActiveView) {
+  ScopedWebTransportDatagramsReadableTypeForTest readable_type_enabled(true);
+  V8TestingScope scope;
+  auto* web_transport = CreateAndConnectSuccessfully(
+      scope, "https://example.com", ByteDatagramOptions());
+
+  auto* script_state = scope.GetScriptState();
+  auto* readable = web_transport->datagrams()->readable();
+  auto* read_options =
+      MakeGarbageCollected<ReadableStreamBYOBReaderReadOptions>();
+  auto* first_reader =
+      readable->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  NotShared<DOMArrayBufferView> first_view =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(1));
+  ScriptPromiseTester first_read(
+      script_state, first_reader->read(script_state, first_view, read_options,
+                                       ASSERT_NO_EXCEPTION));
+  first_reader->releaseLock(script_state, ASSERT_NO_EXCEPTION);
+  first_read.WaitUntilSettled();
+  EXPECT_TRUE(first_read.IsRejected());
+
+  auto* second_reader =
+      readable->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  NotShared<DOMArrayBufferView> second_view =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(4));
+  ScriptPromiseTester second_read(
+      script_state, second_reader->read(script_state, second_view, read_options,
+                                        ASSERT_NO_EXCEPTION));
+
+  client_remote_->OnDatagramReceived({'A', 'B'});
+  second_read.WaitUntilSettled();
+
+  EXPECT_TRUE(second_read.IsFulfilled());
+  EXPECT_THAT(GetValueAsVector(script_state, second_read.Value()),
+              ElementsAre('A', 'B'));
+}
+
+TEST_F(WebTransportTest, ReleasedBYOBViewDoesNotHideDefaultReader) {
+  ScopedWebTransportDatagramsReadableTypeForTest readable_type_enabled(true);
+  V8TestingScope scope;
+  auto* web_transport = CreateAndConnectSuccessfully(
+      scope, "https://example.com", ByteDatagramOptions());
+
+  auto* script_state = scope.GetScriptState();
+  auto* readable = web_transport->datagrams()->readable();
+  auto* first_reader =
+      readable->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  NotShared<DOMArrayBufferView> first_view =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(1));
+  ScriptPromiseTester first_read(
+      script_state,
+      first_reader->read(script_state, first_view,
+                         ReadableStreamBYOBReaderReadOptions::Create(),
+                         ASSERT_NO_EXCEPTION));
+  first_reader->releaseLock(script_state, ASSERT_NO_EXCEPTION);
+  first_read.WaitUntilSettled();
+  EXPECT_TRUE(first_read.IsRejected());
+
+  auto* second_reader =
+      readable->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromiseTester second_read(
+      script_state, second_reader->read(script_state, ASSERT_NO_EXCEPTION));
+
+  client_remote_->OnDatagramReceived(base::span<const uint8_t>());
+  second_read.WaitUntilSettled();
+
+  EXPECT_TRUE(second_read.IsFulfilled());
+  EXPECT_THAT(GetValueAsVector(script_state, second_read.Value()), IsEmpty());
+}
+
+TEST_F(WebTransportTest, EmptyDatagramAfterReleasedBYOBViewRemainsQueued) {
+  ScopedWebTransportDatagramsReadableTypeForTest readable_type_enabled(true);
+  V8TestingScope scope;
+  auto* web_transport = CreateAndConnectSuccessfully(
+      scope, "https://example.com", ByteDatagramOptions());
+
+  auto* script_state = scope.GetScriptState();
+  auto* readable = web_transport->datagrams()->readable();
+  auto* first_reader =
+      readable->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  NotShared<DOMArrayBufferView> first_view =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(1));
+  ScriptPromiseTester first_read(
+      script_state,
+      first_reader->read(script_state, first_view,
+                         ReadableStreamBYOBReaderReadOptions::Create(),
+                         ASSERT_NO_EXCEPTION));
+  first_reader->releaseLock(script_state, ASSERT_NO_EXCEPTION);
+  first_read.WaitUntilSettled();
+  EXPECT_TRUE(first_read.IsRejected());
+
+  client_remote_->OnDatagramReceived(base::span<const uint8_t>());
+  test::RunPendingTasks();
+
+  auto* second_reader =
+      readable->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromiseTester second_read(
+      script_state, second_reader->read(script_state, ASSERT_NO_EXCEPTION));
+  second_read.WaitUntilSettled();
+
+  EXPECT_TRUE(second_read.IsFulfilled());
+  EXPECT_THAT(GetValueAsVector(script_state, second_read.Value()), IsEmpty());
+}
+
+TEST_F(WebTransportTest,
+       EmptyDatagramAfterReleasedBYOBViewIsSkippedByReplacementBYOBReader) {
+  ScopedWebTransportDatagramsReadableTypeForTest readable_type_enabled(true);
+  V8TestingScope scope;
+  auto* web_transport = CreateAndConnectSuccessfully(
+      scope, "https://example.com", ByteDatagramOptions());
+
+  auto* script_state = scope.GetScriptState();
+  auto* readable = web_transport->datagrams()->readable();
+  auto* first_reader =
+      readable->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  NotShared<DOMArrayBufferView> first_view =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(1));
+  ScriptPromiseTester first_read(
+      script_state,
+      first_reader->read(script_state, first_view,
+                         ReadableStreamBYOBReaderReadOptions::Create(),
+                         ASSERT_NO_EXCEPTION));
+  first_reader->releaseLock(script_state, ASSERT_NO_EXCEPTION);
+  first_read.WaitUntilSettled();
+  EXPECT_TRUE(first_read.IsRejected());
+
+  client_remote_->OnDatagramReceived(base::span<const uint8_t>());
+  test::RunPendingTasks();
+
+  auto* second_reader =
+      readable->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  NotShared<DOMArrayBufferView> second_view =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(1));
+  ScriptPromiseTester second_read(
+      script_state,
+      second_reader->read(script_state, second_view,
+                          ReadableStreamBYOBReaderReadOptions::Create(),
+                          ASSERT_NO_EXCEPTION));
+  test::RunPendingTasks();
+  EXPECT_FALSE(second_read.IsFulfilled());
+  EXPECT_FALSE(second_read.IsRejected());
+
+  client_remote_->OnDatagramReceived({'A'});
+  second_read.WaitUntilSettled();
+
+  EXPECT_TRUE(second_read.IsFulfilled());
+  EXPECT_THAT(GetValueAsVector(script_state, second_read.Value()),
+              ElementsAre('A'));
+}
+
+TEST_F(WebTransportTest, ReleasedPartialBYOBViewIsProcessedBeforeNextDatagram) {
+  ScopedWebTransportDatagramsReadableTypeForTest readable_type_enabled(true);
+  V8TestingScope scope;
+  auto* web_transport = CreateAndConnectSuccessfully(
+      scope, "https://example.com", ByteDatagramOptions());
+
+  auto* script_state = scope.GetScriptState();
+  auto* readable = web_transport->datagrams()->readable();
+  auto* first_options =
+      MakeGarbageCollected<ReadableStreamBYOBReaderReadOptions>();
+  first_options->setMin(4);
+  auto* first_reader =
+      readable->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  NotShared<DOMArrayBufferView> first_view =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(4));
+  ScriptPromiseTester first_read(
+      script_state, first_reader->read(script_state, first_view, first_options,
+                                       ASSERT_NO_EXCEPTION));
+  client_remote_->OnDatagramReceived({'A', 'B'});
+  test::RunPendingTasks();
+  EXPECT_FALSE(first_read.IsFulfilled());
+  EXPECT_FALSE(first_read.IsRejected());
+
+  first_reader->releaseLock(script_state, ASSERT_NO_EXCEPTION);
+  first_read.WaitUntilSettled();
+  EXPECT_TRUE(first_read.IsRejected());
+
+  auto* second_options =
+      MakeGarbageCollected<ReadableStreamBYOBReaderReadOptions>();
+  second_options->setMin(3);
+  auto* second_reader =
+      readable->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  NotShared<DOMArrayBufferView> second_view =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(3));
+  ScriptPromiseTester second_read(
+      script_state, second_reader->read(script_state, second_view,
+                                        second_options, ASSERT_NO_EXCEPTION));
+  test::RunPendingTasks();
+  EXPECT_FALSE(second_read.IsFulfilled());
+  EXPECT_FALSE(second_read.IsRejected());
+
+  client_remote_->OnDatagramReceived({'C', 'D'});
+  second_read.WaitUntilSettled();
+
+  EXPECT_TRUE(second_read.IsRejected());
+  EXPECT_TRUE(IsRangeError(script_state, second_read.Value(),
+                           "supplied view is not large enough."));
+}
+
+TEST_F(WebTransportTest,
+       ReleasedPartialBYOBViewFulfillsReplacementWithDefaultMinimum) {
+  ScopedWebTransportDatagramsReadableTypeForTest readable_type_enabled(true);
+  V8TestingScope scope;
+  auto* web_transport = CreateAndConnectSuccessfully(
+      scope, "https://example.com", ByteDatagramOptions());
+
+  auto* script_state = scope.GetScriptState();
+  auto* readable = web_transport->datagrams()->readable();
+  auto* first_options =
+      MakeGarbageCollected<ReadableStreamBYOBReaderReadOptions>();
+  first_options->setMin(4);
+  auto* first_reader =
+      readable->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  NotShared<DOMArrayBufferView> first_view =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(4));
+  ScriptPromiseTester first_read(
+      script_state, first_reader->read(script_state, first_view, first_options,
+                                       ASSERT_NO_EXCEPTION));
+  client_remote_->OnDatagramReceived({'A', 'B'});
+  test::RunPendingTasks();
+  EXPECT_FALSE(first_read.IsFulfilled());
+  EXPECT_FALSE(first_read.IsRejected());
+
+  first_reader->releaseLock(script_state, ASSERT_NO_EXCEPTION);
+  first_read.WaitUntilSettled();
+  EXPECT_TRUE(first_read.IsRejected());
+
+  auto* second_reader =
+      readable->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  NotShared<DOMArrayBufferView> second_view =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(4));
+  ScriptPromiseTester second_read(
+      script_state,
+      second_reader->read(script_state, second_view,
+                          ReadableStreamBYOBReaderReadOptions::Create(),
+                          ASSERT_NO_EXCEPTION));
+  second_read.WaitUntilSettled();
+
+  EXPECT_TRUE(second_read.IsFulfilled());
+  EXPECT_THAT(GetValueAsVector(script_state, second_read.Value()),
+              ElementsAre('A', 'B'));
+
+  NotShared<DOMArrayBufferView> third_view =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(4));
+  ScriptPromiseTester third_read(
+      script_state,
+      second_reader->read(script_state, third_view,
+                          ReadableStreamBYOBReaderReadOptions::Create(),
+                          ASSERT_NO_EXCEPTION));
+  client_remote_->OnDatagramReceived({'C', 'D'});
+  third_read.WaitUntilSettled();
+
+  EXPECT_TRUE(third_read.IsFulfilled());
+  EXPECT_THAT(GetValueAsVector(script_state, third_read.Value()),
+              ElementsAre('C', 'D'));
 }
 
 TEST_F(WebTransportTest, QueuedDatagramWithoutEnoughBuffer) {
