@@ -12,7 +12,6 @@ import android.graphics.drawable.StateListDrawable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.PointerIcon;
-import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewOutlineProvider;
 import android.widget.FrameLayout;
 
@@ -53,30 +52,6 @@ public class ActorOverlayView extends FrameLayout {
         stateListDrawable.addState(new int[] {}, normalDrawable);
 
         setBackground(stateListDrawable);
-    }
-
-    /**
-     * Sets the margins of the view.
-     *
-     * @param left The left margin in pixels.
-     * @param top The top margin in pixels.
-     * @param right The right margin in pixels.
-     * @param bottom The bottom margin in pixels.
-     */
-    public void setMargins(int left, int top, int right, int bottom) {
-        MarginLayoutParams params = (MarginLayoutParams) getLayoutParams();
-        if (params == null) return;
-
-        if (params.leftMargin != left
-                || params.topMargin != top
-                || params.rightMargin != right
-                || params.bottomMargin != bottom) {
-            params.leftMargin = left;
-            params.topMargin = top;
-            params.rightMargin = right;
-            params.bottomMargin = bottom;
-            setLayoutParams(params);
-        }
     }
 
     private boolean isPointInView(float x, float y) {

@@ -54,7 +54,7 @@ class ActorOverlayViewBinder {
             // Container takes side UI horizontal offsets and bottom controls margin.
             setMargins(viewHolder.container, left, 0, right, bottom);
             // Overlay view takes top margin to begin below the top controls.
-            viewHolder.overlayView.setMargins(0, top, 0, 0);
+            setMargins(viewHolder.overlayView, 0, top, 0, 0);
         } else if (key == ActorOverlayProperties.ON_CLICK_LISTENER) {
             viewHolder.overlayView.setOnClickListener(
                     model.get(ActorOverlayProperties.ON_CLICK_LISTENER));
