@@ -996,14 +996,9 @@ void ClientSideDetectionHostIOS::ContinueClassificationAfterAllowlistChecks(
       base::FeatureList::IsEnabled(
           safe_browsing::
               kSkipImageClassificationScoringForNonPageLoadTriggers)) {
-    ClientPhishingRequest verdict;
-    verdict.set_url(url.spec());
-    verdict.set_client_score(0.0);
-    PhishingDetectionDone(
-        last_request_type(), send_sample_ping_,
-        did_match_high_confidence_allowlist_,
-        /*is_invalid_ip=*/false, tick_clock()->NowTicks(),
-        safe_browsing::PhishingDetectorResult::CLASSIFICATION_SKIPPED, verdict);
+    ReportSkippedClassification(last_request_type(), send_sample_ping_,
+                                did_match_high_confidence_allowlist_,
+                                /*is_invalid_ip=*/false);
     return;
   }
 
@@ -1060,7 +1055,7 @@ void ClientSideDetectionHostIOS::OnSnapshotReceived(const GURL& url,
   // before starting classification.
   StartVisualClassification(url, last_request_type(), send_sample_ping_,
                             did_match_high_confidence_allowlist_,
-                            gfx::Image(ui_image));
+                            /*is_invalid_ip=*/false, gfx::Image(ui_image));
 }
 
 void ClientSideDetectionHostIOS::OnClassificationDone(
@@ -1072,7 +1067,8 @@ void ClientSideDetectionHostIOS::OnClassificationDone(
     PhishingClassifier::Result result) {
   OnVisualClassificationDone(url, image, request_type, send_sample_ping_,
                              did_match_high_confidence_allowlist_,
-                             classification_start_time, verdict, result);
+                             /*is_invalid_ip=*/false, classification_start_time,
+                             verdict, result);
 }
 
 visual_utils::CanExtractVisualFeaturesResult

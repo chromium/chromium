@@ -354,6 +354,7 @@ void ClientSideDetectionHostBase::CancelBrowserSideClassification() {
 
 void ClientSideDetectionHostBase::OnVisualClassificationEarlyReturn(
     VisualClassificationEarlyReturnReason reason) {
+  set_is_classifying(false);
   set_is_csd_running(false);
   base::UmaHistogramEnumeration(
       "SBClientPhishing.VisualClassificationEarlyReturnReason", reason);
@@ -376,7 +377,9 @@ void ClientSideDetectionHostBase::StartVisualClassification(
     ClientSideDetectionType request_type,
     bool is_sample_ping,
     std::optional<bool> did_match_high_confidence_allowlist,
-    const gfx::Image& image) {
+    bool is_invalid_ip,
+    const gfx::Image& image,
+    std::optional<base::TimeTicks> classification_start_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Scorer* scorer = csd_service_ ? csd_service_->GetScorer() : nullptr;
   if (!scorer) {
@@ -388,20 +391,26 @@ void ClientSideDetectionHostBase::StartVisualClassification(
   classifier_->set_scorer(scorer);
   image_embedder_->set_scorer(scorer);
 
-  LogClientSideDetectionEvent(
-      ClientSideDetectionEvent::kImageClassificationBegin, request_type);
+  // Platforms that capture asynchronously after dispatch (content) already
+  // logged the begin event and marked classification as started when they
+  // dispatched the request, mirroring their renderer path.
+  if (!is_classifying()) {
+    LogClientSideDetectionEvent(
+        ClientSideDetectionEvent::kImageClassificationBegin, request_type);
+  }
 
   request_type = MaybeUpgradeRequestTypeForImageEmbeddingMatch(request_type);
 
   set_is_classifying(true);
   classifier_->SetClientSideDetectionType(request_type);
-  base::TimeTicks classification_start_time = tick_clock()->NowTicks();
+  base::TimeTicks start_time =
+      classification_start_time.value_or(tick_clock()->NowTicks());
   classifier_->BeginClassification(
       url, image,
       base::BindOnce(&ClientSideDetectionHostBase::OnVisualClassificationDone,
                      base_weak_factory_.GetWeakPtr(), url, image, request_type,
                      is_sample_ping, did_match_high_confidence_allowlist,
-                     classification_start_time));
+                     is_invalid_ip, start_time));
 }
 
 void ClientSideDetectionHostBase::OnVisualClassificationDone(
@@ -410,6 +419,7 @@ void ClientSideDetectionHostBase::OnVisualClassificationDone(
     ClientSideDetectionType request_type,
     bool is_sample_ping,
     std::optional<bool> did_match_high_confidence_allowlist,
+    bool is_invalid_ip,
     base::TimeTicks classification_start_time,
     const ClientPhishingRequest& verdict,
     PhishingClassifier::Result result) {
@@ -421,8 +431,8 @@ void ClientSideDetectionHostBase::OnVisualClassificationDone(
   }
 
   PhishingDetectionDone(request_type, is_sample_ping,
-                        did_match_high_confidence_allowlist,
-                        /*is_invalid_ip=*/false, classification_start_time,
+                        did_match_high_confidence_allowlist, is_invalid_ip,
+                        classification_start_time,
                         ToPhishingDetectorResult(result), verdict);
 }
 
@@ -658,6 +668,21 @@ void ClientSideDetectionHostBase::
       base::StrCat({"SBClientPhishing.PreClassificationCheckResult.",
                     GetRequestTypeName(request_type)}),
       result, PreClassificationCheckResult::NO_CLASSIFY_MAX);
+}
+
+void ClientSideDetectionHostBase::ReportSkippedClassification(
+    ClientSideDetectionType request_type,
+    bool is_sample_ping,
+    std::optional<bool> did_match_high_confidence_allowlist,
+    bool is_invalid_ip) {
+  is_classifying_ = false;
+  ClientPhishingRequest verdict;
+  verdict.set_url(current_url_.spec());
+  verdict.set_client_score(0.0);
+  PhishingDetectionDone(
+      request_type, is_sample_ping, did_match_high_confidence_allowlist,
+      is_invalid_ip, tick_clock_->NowTicks(),
+      PhishingDetectorResult::CLASSIFICATION_SKIPPED, std::move(verdict));
 }
 
 void ClientSideDetectionHostBase::PhishingDetectionDone(
@@ -1452,7 +1477,12 @@ void ClientSideDetectionHostBase::SendRequest(
                                      verdict->client_side_detection_type(),
                                      did_match_high_confidence_allowlist);
 
-  is_csd_running_ = false;
+  // If another CSD scan for the same page has been triggered and is currently
+  // in the classification stage, keep `is_csd_running_` set so that scan is
+  // not disabled.
+  if (!is_classifying_) {
+    is_csd_running_ = false;
+  }
 
   LogClientSideDetectionEvent(ClientSideDetectionEvent::kNetworkRequestSent,
                               verdict->client_side_detection_type());

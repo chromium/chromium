@@ -209,7 +209,7 @@ class ClientSideDetectionServiceBase : public KeyedService {
 
   // Returns the image embedding model version to be passed onto
   // |ClientPhishingRequest| when image embedding is called.
-  int GetImageEmbeddingModelVersion() const;
+  virtual int GetImageEmbeddingModelVersion() const;
 
   bool IsSubscribedToImageEmbeddingModelUpdates() const;
   bool IsSubscribedToImageClassifierModelUpdates() const;

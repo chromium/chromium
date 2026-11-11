@@ -300,6 +300,15 @@ class ClientSideDetectionHostBase : public autofill::AutofillManager::Observer,
       bool should_trigger,
       history::DailyVisitsResult history_result);
 
+  // Finishes a scan whose visual classification was skipped (e.g. non-page-load
+  // triggers with `kSkipImageClassificationScoringForNonPageLoadTriggers`),
+  // synthesising a zero-score verdict for `current_url_`.
+  void ReportSkippedClassification(
+      ClientSideDetectionType request_type,
+      bool is_sample_ping,
+      std::optional<bool> did_match_high_confidence_allowlist,
+      bool is_invalid_ip);
+
   // `verdict` is a wrapped ClientPhishingRequest protocol message, `result`
   // is the outcome of the renderer classification. `request_type` is passed in
   // to specify the process that requests the classification, which is passed
@@ -606,14 +615,22 @@ class ClientSideDetectionHostBase : public autofill::AutofillManager::Observer,
   // Classifies `image` for `url` with the browser-side `Scorer`. Upgrades
   // `TRIGGER_MODELS` to `IMAGE_EMBEDDING_MATCH` for Enhanced Protection users
   // when `kClientSideDetectionImageEmbeddingMatch` is enabled, and forwards the
-  // verdict to `PhishingDetectionDone()`. `is_sample_ping` and
-  // `did_match_high_confidence_allowlist` come from pre-classification.
+  // verdict to `PhishingDetectionDone()`. `is_sample_ping`,
+  // `did_match_high_confidence_allowlist` and `is_invalid_ip` come from
+  // pre-classification. `classification_start_time` overrides the timestamp
+  // used to compute `SBClientPhishing.PhishingDetectionDuration` when the
+  // platform dispatched the request before an asynchronous capture. Logs
+  // `kImageClassificationBegin` unless the platform already marked
+  // classification as started (`set_is_classifying(true)`) when it dispatched
+  // the request.
   void StartVisualClassification(
       const GURL& url,
       ClientSideDetectionType request_type,
       bool is_sample_ping,
       std::optional<bool> did_match_high_confidence_allowlist,
-      const gfx::Image& image);
+      bool is_invalid_ip,
+      const gfx::Image& image,
+      std::optional<base::TimeTicks> classification_start_time = std::nullopt);
 
   // Browser-side implementation of `MaybeStartImageEmbedding()`: applies the
   // visual-features gate, runs the image embedder when needed, and otherwise
@@ -642,6 +659,7 @@ class ClientSideDetectionHostBase : public autofill::AutofillManager::Observer,
       ClientSideDetectionType request_type,
       bool is_sample_ping,
       std::optional<bool> did_match_high_confidence_allowlist,
+      bool is_invalid_ip,
       base::TimeTicks classification_start_time,
       const ClientPhishingRequest& verdict,
       PhishingClassifier::Result result);

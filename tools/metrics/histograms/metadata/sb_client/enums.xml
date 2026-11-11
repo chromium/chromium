@@ -141,6 +141,8 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/safe_browsing/core/common/proto/csd.proto:ClientSideDetectionType) -->
 
+<!-- LINT.IfChange(ClientSidePhishingImageEmbeddingResult) -->
+
 <enum name="ClientSidePhishingImageEmbeddingResult">
   <summary>
     Enumerates the possible results from client side phishing image embedding
@@ -150,7 +152,11 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Image embedding cancelled"/>
   <int value="3" label="Forward/back transition"/>
   <int value="4" label="Image embedding failed"/>
+  <int value="5" label="Invalid URL format request"/>
+  <int value="6" label="Invalid document loader"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/safe_browsing/core/browser/client_side_detection/client_side_detection_host_base.h:ImageEmbeddingResult, //components/safe_browsing/content/common/safe_browsing.mojom:PhishingImageEmbeddingResult) -->
 
 <!-- LINT.IfChange(ClientSidePhishingResult) -->
 

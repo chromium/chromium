@@ -2118,7 +2118,8 @@ TEST_F(ClientSideDetectionHostBaseVisualClassificationTest,
   host_->StartVisualClassification(
       url_, TRIGGER_MODELS,
       /*is_sample_ping=*/false,
-      /*did_match_high_confidence_allowlist=*/false, CreateTestImage());
+      /*did_match_high_confidence_allowlist=*/false,
+      /*is_invalid_ip=*/false, CreateTestImage());
 
   EXPECT_THAT(
       host_->last_early_return_reason_,
@@ -2150,7 +2151,8 @@ TEST_F(ClientSideDetectionHostBaseVisualClassificationTest,
   host_->StartVisualClassification(
       url_, TRIGGER_MODELS,
       /*is_sample_ping=*/false,
-      /*did_match_high_confidence_allowlist=*/false, CreateTestImage());
+      /*did_match_high_confidence_allowlist=*/false,
+      /*is_invalid_ip=*/false, CreateTestImage());
   EXPECT_TRUE(host_->is_classifying());
   EXPECT_TRUE(host_->classifier_->is_ready());
   EXPECT_TRUE(host_->image_embedder_->is_ready());
@@ -2185,12 +2187,43 @@ TEST_F(ClientSideDetectionHostBaseVisualClassificationTest,
   host_->StartVisualClassification(
       url_, TRIGGER_MODELS,
       /*is_sample_ping=*/false,
-      /*did_match_high_confidence_allowlist=*/false, CreateTestImage());
+      /*did_match_high_confidence_allowlist=*/false,
+      /*is_invalid_ip=*/false, CreateTestImage());
   task_environment_.RunUntilIdle();
 
   EXPECT_FALSE(host_->is_csd_running());
   // A skipped benign TRIGGER_MODELS full report must not retain the capture.
   EXPECT_TRUE(host_->classification_image_.IsEmpty());
+  Mock::VerifyAndClearExpectations(scorer);
+}
+
+TEST_F(ClientSideDetectionHostBaseVisualClassificationTest,
+       StartVisualClassificationDoesNotRepeatBeginEventOnceClassifying) {
+  MockScorer* scorer = InstallMockScorer();
+  EXPECT_CALL(*scorer, ApplyVisualTfLiteModel(_, _))
+      .WillOnce([](const gfx::Image& image,
+                   base::OnceCallback<void(std::vector<double>)> callback) {
+        RunVisualModelCallback({0.9}, image, std::move(callback));
+      });
+  base::HistogramTester histograms;
+
+  // Content platforms mark classification as started (and log the begin event)
+  // when they dispatch the request, before the asynchronous capture.
+  host_->set_is_classifying(true);
+  host_->StartVisualClassification(
+      url_, TRIGGER_MODELS,
+      /*is_sample_ping=*/false,
+      /*did_match_high_confidence_allowlist=*/false,
+      /*is_invalid_ip=*/false, CreateTestImage());
+  task_environment_.RunUntilIdle();
+
+  histograms.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetectionEvent.TriggerModel",
+      ClientSideDetectionEvent::kImageClassificationBegin, 0);
+  histograms.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetectionEvent.TriggerModel",
+      ClientSideDetectionEvent::kImageClassificationComplete, 1);
+  EXPECT_FALSE(host_->is_classifying());
   Mock::VerifyAndClearExpectations(scorer);
 }
 
@@ -2213,7 +2246,8 @@ TEST_F(ClientSideDetectionHostBaseVisualClassificationTest,
   host_->StartVisualClassification(
       url_, TRIGGER_MODELS,
       /*is_sample_ping=*/false,
-      /*did_match_high_confidence_allowlist=*/false, CreateTestImage());
+      /*did_match_high_confidence_allowlist=*/false,
+      /*is_invalid_ip=*/false, CreateTestImage());
   task_environment_.RunUntilIdle();
 
   histograms.ExpectUniqueSample(
@@ -2232,8 +2266,9 @@ TEST_F(ClientSideDetectionHostBaseVisualClassificationTest,
 
   host_->OnVisualClassificationDone(
       url_, CreateTestImage(), TRIGGER_MODELS, /*is_sample_ping=*/false,
-      /*did_match_high_confidence_allowlist=*/false, base::TimeTicks::Now(),
-      verdict, PhishingClassifier::Result::kVisualExtractionFailed);
+      /*did_match_high_confidence_allowlist=*/false, /*is_invalid_ip=*/false,
+      base::TimeTicks::Now(), verdict,
+      PhishingClassifier::Result::kVisualExtractionFailed);
 
   histograms.ExpectUniqueSample(
       "SBClientPhishing.PhishingDetectorResult.TriggerModel",
@@ -2559,7 +2594,8 @@ TEST_F(ClientSideDetectionHostBaseVisualClassificationTest,
   host_->StartVisualClassification(
       url_, TRIGGER_MODELS,
       /*is_sample_ping=*/false,
-      /*did_match_high_confidence_allowlist=*/false, CreateTestImage());
+      /*did_match_high_confidence_allowlist=*/false,
+      /*is_invalid_ip=*/false, CreateTestImage());
   ASSERT_TRUE(host_->classifier_->is_ready());
   const int cancel_count = host_->cancel_pending_requests_count_;
 
@@ -2603,7 +2639,8 @@ TEST_F(ClientSideDetectionHostBaseVisualClassificationTest,
   host_->StartVisualClassification(
       url_, TRIGGER_MODELS,
       /*is_sample_ping=*/false,
-      /*did_match_high_confidence_allowlist=*/false, CreateTestImage());
+      /*did_match_high_confidence_allowlist=*/false,
+      /*is_invalid_ip=*/false, CreateTestImage());
   EXPECT_THAT(
       host_->last_early_return_reason_,
       Optional(
@@ -2621,7 +2658,8 @@ TEST_F(ClientSideDetectionHostBaseVisualClassificationTest,
   host_->StartVisualClassification(
       url_, TRIGGER_MODELS,
       /*is_sample_ping=*/false,
-      /*did_match_high_confidence_allowlist=*/false, CreateTestImage());
+      /*did_match_high_confidence_allowlist=*/false,
+      /*is_invalid_ip=*/false, CreateTestImage());
   ASSERT_TRUE(host_->is_classifying());
 
   // The base destructor cancels the pending classification.

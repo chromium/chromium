@@ -1219,41 +1219,19 @@ void ClientSideDetectionHost::OnPhishingPreClassificationDone(
   // For TRIGGER_MODELS and IMAGE_EMBEDDING_MATCH only, perform phishing
   // classification as the next step.
   // For all other triggers, if enabled, skip phishing detection.
-  if (IsEnhancedProtectionEnabled() &&
-      request_type == ClientSideDetectionType::TRIGGER_MODELS &&
-      // Only ESB users should be in the study.
-      base::FeatureList::IsEnabled(kClientSideDetectionImageEmbeddingMatch)) {
-    LogClientSideDetectionEvent(
-        ClientSideDetectionEvent::kImageClassificationBegin, request_type);
-    set_is_classifying(true);
-    phishing_detector_->StartPhishingDetection(
-        current_url(),
-        GetClientSideDetectionMojomType(
-            ClientSideDetectionType::IMAGE_EMBEDDING_MATCH),
-        base::BindOnce(&ClientSideDetectionHost::PhishingDetectionDone,
-                       weak_factory_.GetWeakPtr(),
-                       ClientSideDetectionType::IMAGE_EMBEDDING_MATCH,
-                       is_sample_ping, did_match_high_confidence_allowlist,
-                       is_invalid_ip, tick_clock()->NowTicks()));
-    return;
-  }
-
   if (request_type != ClientSideDetectionType::TRIGGER_MODELS &&
       base::FeatureList::IsEnabled(
           kSkipImageClassificationScoringForNonPageLoadTriggers)) {
-    ClientPhishingRequest verdict;
-    verdict.set_url(current_url().spec());
-    verdict.set_client_score(0.0);
-    PhishingDetectionDone(request_type, is_sample_ping,
-                          did_match_high_confidence_allowlist, is_invalid_ip,
-                          tick_clock()->NowTicks(),
-                          mojom::PhishingDetectorResult::CLASSIFICATION_SKIPPED,
-                          mojo_base::ProtoWrapper(verdict));
+    phishing_detector_.reset();
+    ReportSkippedClassification(request_type, is_sample_ping,
+                                did_match_high_confidence_allowlist,
+                                is_invalid_ip);
     return;
   }
 
   LogClientSideDetectionEvent(
       ClientSideDetectionEvent::kImageClassificationBegin, request_type);
+  request_type = MaybeUpgradeRequestTypeForImageEmbeddingMatch(request_type);
   set_is_classifying(true);
   phishing_detector_->StartPhishingDetection(
       current_url(), GetClientSideDetectionMojomType(request_type),
@@ -1283,12 +1261,8 @@ void ClientSideDetectionHost::RecordSurfaceAvailabilityForCopy(
       break;
   }
 
-  if (IsEnhancedProtectionEnabled() &&
-      request_type == ClientSideDetectionType::TRIGGER_MODELS &&
-      base::FeatureList::IsEnabled(kClientSideDetectionImageEmbeddingMatch)) {
-    request_type = ClientSideDetectionType::IMAGE_EMBEDDING_MATCH;
-  }
-  std::string_view request_type_name = GetRequestTypeName(request_type);
+  std::string_view request_type_name = GetRequestTypeName(
+      MaybeUpgradeRequestTypeForImageEmbeddingMatch(request_type));
   base::UmaHistogramBoolean("SBClientPhishing.SurfaceAvailableForCopy",
                             surface_available);
   base::UmaHistogramBoolean(

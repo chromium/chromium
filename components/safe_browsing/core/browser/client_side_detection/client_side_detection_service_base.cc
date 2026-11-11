@@ -546,7 +546,7 @@ void ClientSideDetectionServiceBase::ClassifyPhishingThroughThresholds(
   }
 
   base::span<const TfLiteModelMetadata::Threshold> thresholds =
-      client_side_phishing_model_->GetVisualTfLiteModelThresholds();
+      GetVisualTfLiteModelThresholds();
 
   if (static_cast<int>(verdict->tflite_model_scores().size()) !=
       static_cast<int>(thresholds.size())) {
@@ -585,8 +585,7 @@ void ClientSideDetectionServiceBase::ClassifyPhishingThroughThresholds(
     }
   }
 
-  verdict->set_tflite_model_version(
-      client_side_phishing_model_->GetTriggerModelVersion());
+  verdict->set_tflite_model_version(GetTriggerModelVersion());
 
   if (!verdict->is_phishing() && verdict->has_image_feature_embedding()) {
     ClassifyThroughEmbeddings(verdict);
@@ -607,14 +606,14 @@ void ClientSideDetectionServiceBase::ClassifyThroughEmbeddings(
   }
 
   base::span<const TargetEmbedding> target_image_embeddings =
-      client_side_phishing_model_->GetTargetImageEmbeddings();
+      GetTargetImageEmbeddings();
   if (target_image_embeddings.empty() ||
       !verdict->has_image_feature_embedding()) {
     return;
   }
 
   verdict->mutable_image_feature_embedding()->set_embedding_model_version(
-      client_side_phishing_model_->GetImageEmbeddingModelVersion());
+      GetImageEmbeddingModelVersion());
 
   // Compare ImageFeatureEmbedding to target image embeddings.
   for (const TargetEmbedding& target_image_embedding :
