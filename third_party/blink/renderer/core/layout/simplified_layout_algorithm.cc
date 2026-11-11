@@ -327,16 +327,19 @@ void SimplifiedLayoutAlgorithm::AddChildFragment(
           .ToLogical(old_fragment.Offset(), new_fragment.Size());
 
   // Unapply the relative offset as `AddChild` will reapply it.
+  BoxStrut margins;
   PhysicalBoxStrut relative_insets;
-  if (const auto* box = DynamicTo<PhysicalBoxFragment>(old_fragment.get());
-      box && box->Style().GetPosition() == EPosition::kRelative) {
-    relative_insets = box->UsedPositionInsets();
-    child_offset -=
-        relative_insets.ConvertToLogical(writing_direction_).StartOffset();
+  if (const auto* box = DynamicTo<PhysicalBoxFragment>(old_fragment.get())) {
+    margins = box->Margins().ConvertToLogical(writing_direction_);
+    if (box->Style().GetPosition() == EPosition::kRelative) {
+      relative_insets = box->UsedPositionInsets();
+      child_offset -=
+          relative_insets.ConvertToLogical(writing_direction_).StartOffset();
+    }
   }
 
   // Add the new fragment to the builder.
-  container_builder_.AddChild(new_fragment, child_offset, margin_strut,
+  container_builder_.AddChild(new_fragment, child_offset, margins, margin_strut,
                               is_self_collapsing, relative_insets);
 }
 

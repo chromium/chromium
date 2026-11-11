@@ -384,6 +384,7 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   void AddChild(
       const PhysicalFragment&,
       const LogicalOffset&,
+      std::optional<BoxStrut> margins = std::nullopt,
       const MarginStrut* margin_strut = nullptr,
       bool is_self_collapsing = false,
       std::optional<PhysicalBoxStrut> relative_insets = std::nullopt,

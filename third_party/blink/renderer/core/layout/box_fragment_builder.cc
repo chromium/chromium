@@ -226,20 +226,9 @@ void BoxFragmentBuilder::AddResult(
   // No margins should pierce outside formatting-context roots.
   DCHECK(!fragment.IsFormattingContextRoot() || end_margin_strut.IsEmpty());
 
-  AddChild(fragment, offset, &end_margin_strut,
+  AddChild(fragment, offset, margins, &end_margin_strut,
            child_layout_result.IsSelfCollapsing(), relative_insets,
            inline_container);
-  if (margins) {
-    if (fragment.IsCSSBox()) {
-      const auto& box_fragment = To<PhysicalBoxFragment>(fragment);
-      if (!margins->IsEmpty() || !box_fragment.Margins().IsZero()) {
-        box_fragment.GetMutableForContainerLayout().SetMargins(
-            margins->ConvertToPhysical(GetWritingDirection()));
-      }
-    } else {
-      DCHECK(margins->IsEmpty());
-    }
-  }
 
   if (GetConstraintSpace().HasBlockFragmentation()) {
     PropagateBreakInfo(*result_for_propagation, offset);
@@ -254,6 +243,7 @@ void BoxFragmentBuilder::AddResult(
 void BoxFragmentBuilder::AddChild(
     const PhysicalFragment& child,
     const LogicalOffset& child_offset,
+    std::optional<BoxStrut> child_margins,
     const MarginStrut* margin_strut,
     bool is_self_collapsing,
     std::optional<PhysicalBoxStrut> relative_insets,
@@ -382,10 +372,18 @@ void BoxFragmentBuilder::AddChild(
   }
 
   DCHECK(relative_insets);
-  if (child.IsCSSBox() && child.Style().GetPosition() == EPosition::kRelative) {
-    To<PhysicalBoxFragment>(child)
-        .GetMutableForPositioned()
-        .SetUsedPositionInsets(*relative_insets);
+  if (child.IsCSSBox()) {
+    const auto& box_child = To<PhysicalBoxFragment>(child);
+    if (child_margins) {
+      box_child.GetMutableForContainerLayout().SetMargins(
+          child_margins->ConvertToPhysical(GetWritingDirection()));
+    }
+    if (box_child.Style().GetPosition() == EPosition::kRelative) {
+      box_child.GetMutableForPositioned().SetUsedPositionInsets(
+          *relative_insets);
+    }
+  } else {
+    DCHECK(!child_margins || child_margins->IsEmpty());
   }
   const LogicalOffset relative_offset =
       relative_insets->ConvertToLogical(GetWritingDirection()).StartOffset();

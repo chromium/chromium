@@ -836,6 +836,9 @@ PhysicalBoxFragment::MutableForContainerLayout::MutableForContainerLayout(
 
 void PhysicalBoxFragment::MutableForContainerLayout::SetMargins(
     const PhysicalBoxStrut& margins) {
+  if (margins.IsZero() && !fragment_.GetRareField(FieldId::kMargins)) {
+    return;
+  }
   // This can be called even without rare_data_.
   fragment_.EnsureRareField(FieldId::kMargins).margins = margins;
 }
@@ -852,7 +855,6 @@ void PhysicalBoxFragment::MutableForContainerLayout::
 
 PhysicalBoxFragment::MutableForContainerLayout
 PhysicalBoxFragment::GetMutableForContainerLayout() const {
-  DCHECK(layout_object_->GetFrameView()->IsInPerformLayout());
   return MutableForContainerLayout(base::PassKey<PhysicalBoxFragment>(),
                                    const_cast<PhysicalBoxFragment&>(*this));
 }
