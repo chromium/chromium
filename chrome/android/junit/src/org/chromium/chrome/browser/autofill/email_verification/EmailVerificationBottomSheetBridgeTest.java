@@ -83,6 +83,21 @@ public final class EmailVerificationBottomSheetBridgeTest {
     }
 
     @Test
+    public void testRequestShowContent_whenControllerFails_hidesContentAndDismisses() {
+        when(mBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(false);
+
+        mBridge.requestShowContent(TEST_TITLE, TEST_DESCRIPTION);
+
+        verify(mBottomSheetController)
+                .hideContent(
+                        any(EmailVerificationBottomSheetContent.class),
+                        /* animate= */ eq(false),
+                        eq(StateChangeReason.NONE));
+        verify(mBridgeNatives)
+                .onUiDismissed(MOCK_POINTER, EmailVerificationPermissionUiStatus.OTHER);
+    }
+
+    @Test
     public void testRequestShowContent_whenAlreadyShowing_isNoOp() {
         mBridge.requestShowContent(TEST_TITLE, TEST_DESCRIPTION);
         clearInvocations(mBottomSheetController, mBridgeNatives);

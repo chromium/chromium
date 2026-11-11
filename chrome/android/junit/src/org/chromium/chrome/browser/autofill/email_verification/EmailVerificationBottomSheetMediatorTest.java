@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -23,6 +24,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -121,7 +123,10 @@ public final class EmailVerificationBottomSheetMediatorTest {
 
         mMediator.requestShowContent();
 
-        verify(mDelegate).onUiDismissed(EmailVerificationPermissionUiStatus.OTHER);
+        InOrder inOrder = inOrder(mUiController, mDelegate);
+        inOrder.verify(mUiController)
+                .hideContent(eq(mContent), /* animate= */ eq(false), eq(StateChangeReason.NONE));
+        inOrder.verify(mDelegate).onUiDismissed(EmailVerificationPermissionUiStatus.OTHER);
     }
 
     @Test
