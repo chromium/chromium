@@ -356,6 +356,7 @@ void ScriptResource::DestroyDecodedDataForFailedRevalidation() {
   source_text_ = ParkableString();
   // Make sure there's no streaming.
   DCHECK(!streamer_);
+  DCHECK(!background_streamer_);
   DCHECK_EQ(streaming_state_, StreamingState::kStreamingDisabled);
   SetDecodedSize(0);
   DCHECK(!cache_consumer_);
@@ -370,6 +371,7 @@ void ScriptResource::SetRevalidatingRequest(
     CHECK(streamer_->IsFinished());
     streamer_ = nullptr;
   }
+  background_streamer_ = nullptr;
   // Revalidation requests don't actually load the current Resource, so disable
   // streaming.
   DisableStreaming(ScriptStreamer::NotStreamingReason::kRevalidate);

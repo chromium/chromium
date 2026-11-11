@@ -2468,6 +2468,109 @@ TEST_P(BackgroundResourceScriptStreamerTest,
   task_environment_.RunUntilIdle();
 }
 
+TEST_P(BackgroundResourceScriptStreamerTest, ResourceSetRevalidatingRequest) {
+  V8TestingScope scope;
+  Init(scope.GetIsolate());
+  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
+    network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
+    std::optional<mojo_base::BigBuffer> cached_metadata;
+    EXPECT_TRUE(background_response_processor_->MaybeStartProcessingResponse(
+        head, consumer_handle_, cached_metadata,
+        background_resource_fetch_task_runner_,
+        &background_response_processor_client_));
+  }));
+  AppendData(kLargeEnoughScript);
+  producer_handle_.reset();
+  background_response_processor_client_.WaitUntilFinished();
+  EXPECT_TRUE(resource_->HasBackgroundStreamerWithDecodedData());
+
+  Finish();
+  RunUntilResourceLoaded();
+  EXPECT_TRUE(resource_->HasBackgroundStreamerWithDecodedData());
+
+  while (resource_->HasClientsOrObservers()) {
+    resource_->RemoveClient(resource_client_);
+  }
+  ResourceRequest request(resource_->Url());
+  resource_->SetRevalidatingRequest(request);
+  EXPECT_FALSE(resource_->HasBackgroundStreamerWithDecodedData());
+
+  EXPECT_EQ(resource_->NoStreamerReason(),
+            ScriptStreamer::NotStreamingReason::
+                kBackgroundResponseProcessorWillBeUsed);
+
+  ResourceResponse revalidation_response(resource_->Url());
+  revalidation_response.SetHttpStatusCode(304);
+  resource_->ResponseReceived(revalidation_response);
+  resource_->FinishForTest();
+
+  EXPECT_EQ(resource_->GetSourceText().ToString(), kLargeEnoughScript);
+  CheckNotStreamingReason(ScriptStreamer::NotStreamingReason::
+                              kBackgroundResponseProcessorWillBeUsed);
+}
+
+TEST_P(BackgroundResourceScriptStreamerTest,
+       FailedRevalidationUpdatesSourceText) {
+  V8TestingScope scope;
+  Init(scope.GetIsolate());
+  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
+    network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
+    std::optional<mojo_base::BigBuffer> cached_metadata;
+    EXPECT_TRUE(background_response_processor_->MaybeStartProcessingResponse(
+        head, consumer_handle_, cached_metadata,
+        background_resource_fetch_task_runner_,
+        &background_response_processor_client_));
+  }));
+  AppendData(kLargeEnoughScript);
+  producer_handle_.reset();
+  background_response_processor_client_.WaitUntilFinished();
+  Finish();
+  RunUntilResourceLoaded();
+  EXPECT_EQ(resource_->GetSourceText().ToString(), kLargeEnoughScript);
+
+  // Simulate revalidation when the initial load did not consume the streamer.
+  while (resource_->HasClientsOrObservers()) {
+    resource_->RemoveClient(resource_client_);
+  }
+  resource_->SetRevalidatingRequest(ResourceRequestHead(url_));
+
+  ResourceResponse revalidation_response(url_);
+  revalidation_response.SetHttpStatusCode(200);
+  resource_->ResponseReceived(revalidation_response);
+
+  constexpr std::string_view kUpdatedScript =
+      "function bar() { return 42; } bar();";
+  resource_->AppendData(kUpdatedScript);
+  resource_->FinishForTest();
+
+  EXPECT_EQ(resource_->GetSourceText().ToString(), String(kUpdatedScript));
+
+  ClassicScript* classic_script = CreateClassicScript();
+  EXPECT_FALSE(classic_script->Streamer());
+  EXPECT_EQ(classic_script->NotStreamingReason(),
+            ScriptStreamer::NotStreamingReason::
+                kBackgroundResponseProcessorWillBeUsed);
+
+  v8::TryCatch try_catch(scope.GetIsolate());
+  v8::Local<v8::Script> script;
+  v8::ScriptCompiler::CompileOptions compile_options;
+  V8CodeCache::ProduceCacheOptions produce_cache_options;
+  v8::ScriptCompiler::NoCacheReason no_cache_reason;
+  std::tie(compile_options, produce_cache_options, no_cache_reason) =
+      V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions::kDefault,
+                                     *classic_script);
+  ASSERT_TRUE(V8ScriptRunner::CompileScript(
+                  scope.GetScriptState(), *classic_script,
+                  classic_script->CreateScriptOrigin(scope.GetIsolate()),
+                  compile_options, no_cache_reason)
+                  .ToLocal(&script));
+  EXPECT_FALSE(try_catch.HasCaught());
+
+  v8::Local<v8::Value> result;
+  ASSERT_TRUE(script->Run(scope.GetContext()).ToLocal(&result));
+  EXPECT_EQ(result.As<v8::Int32>()->Value(), 42);
+}
+
 class WasmStreamingDummyModulator : public DummyModulator {
  public:
   explicit WasmStreamingDummyModulator(ScriptState* script_state)
