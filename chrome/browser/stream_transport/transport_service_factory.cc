@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/browser_actuator/transport/transport_service_factory.h"
+#include "chrome/browser/stream_transport/transport_service_factory.h"
 
 #include <memory>
 #include <utility>
@@ -12,9 +12,9 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "components/browser_actuator/internal/transport/transport_service_impl.h"
 #include "components/browser_actuator/public/features.h"
-#include "components/browser_actuator/public/transport/transport_service.h"
+#include "components/stream_transport/internal/transport_service_impl.h"
+#include "components/stream_transport/public/transport_service.h"
 #include "content/public/browser/browser_context.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 

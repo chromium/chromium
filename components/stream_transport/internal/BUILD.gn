@@ -141,7 +141,6 @@ source_set("channel") {
 source_set("service") {
   visibility = [
     ":*",
-    "//chrome/browser/browser_actuator/transport:*",
     "//chrome/browser/stream_transport:*",
     "//components/browser_actuator/internal/transport:*",
   ]
