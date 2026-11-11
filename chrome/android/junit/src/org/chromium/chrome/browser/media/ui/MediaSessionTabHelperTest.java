@@ -25,6 +25,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -269,5 +270,24 @@ public class MediaSessionTabHelperTest {
         RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(1, observer1Calls.get());
         assertEquals(1, observer2Calls.get());
+    }
+
+    @Test
+    public void testAudioBecomingNoisyReceiver_RegistersAfterResetWithDroppedTask() {
+        // Drop the first registration task, like the test harness does for a test that ends
+        // without draining background tasks.
+        PostTask.setPrenativeThreadPoolExecutorForTesting(task -> {});
+        AudioBecomingNoisyReceiver.addObserver(() -> {});
+        AudioBecomingNoisyReceiver.resetForTesting();
+        PostTask.setPrenativeThreadPoolExecutorForTesting(RobolectricUtil.getPausedExecutor());
+
+        AtomicInteger observerCalls = new AtomicInteger();
+        AudioBecomingNoisyReceiver.addObserver(observerCalls::incrementAndGet);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        ContextUtils.getApplicationContext()
+                .sendBroadcast(new Intent(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertEquals(1, observerCalls.get());
     }
 }

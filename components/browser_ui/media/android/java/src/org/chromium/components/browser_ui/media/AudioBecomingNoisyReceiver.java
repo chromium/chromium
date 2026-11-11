@@ -40,10 +40,12 @@ public class AudioBecomingNoisyReceiver extends BroadcastReceiver {
     }
 
     private static @Nullable AudioBecomingNoisyReceiver sInstance;
-    private static final TaskRunner sTaskRunner =
-            PostTask.createSequencedTaskRunner(TaskTraits.BEST_EFFORT);
 
     private final ObserverList<AudioBecomingNoisyObserver> mObservers = new ObserverList<>();
+    // Not static: resetForTesting() drops the instance, so each test starts with a runner that
+    // has no tasks pending from an earlier test.
+    private final TaskRunner mTaskRunner =
+            PostTask.createSequencedTaskRunner(TaskTraits.BEST_EFFORT);
     private boolean mIsRegistered;
 
     private AudioBecomingNoisyReceiver() {}
@@ -104,7 +106,7 @@ public class AudioBecomingNoisyReceiver extends BroadcastReceiver {
         if (mIsRegistered) return;
         mIsRegistered = true;
         IntentFilter filter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
-        sTaskRunner.execute(
+        mTaskRunner.execute(
                 () -> {
                     ContextUtils.registerProtectedBroadcastReceiver(
                             ContextUtils.getApplicationContext(),
@@ -117,7 +119,7 @@ public class AudioBecomingNoisyReceiver extends BroadcastReceiver {
         ThreadUtils.assertOnUiThread();
         if (!mIsRegistered) return;
         mIsRegistered = false;
-        sTaskRunner.execute(
+        mTaskRunner.execute(
                 () -> {
                     try {
                         ContextUtils.getApplicationContext()
