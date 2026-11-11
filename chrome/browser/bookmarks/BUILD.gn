@@ -217,6 +217,7 @@ source_set("browser_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync",
     "//chrome/test:test_support",
+    "//chrome/test/base:platform_browser_test",
     "//components/bookmarks/browser",
     "//components/bookmarks/test",
     "//components/sync_bookmarks",

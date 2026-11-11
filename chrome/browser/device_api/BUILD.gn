@@ -83,6 +83,7 @@ source_set("unit_tests") {
     ":device_api",
     "//base/test:test_config",
     "//base/test:test_support",
+    "//chrome/browser/ui/web_applications/test:test_support_ui",
     "//chrome/browser/web_applications:isolated_web_app_test",
     "//chrome/browser/web_applications:web_app_test",
     "//chrome/browser/web_applications:web_applications_test_support",

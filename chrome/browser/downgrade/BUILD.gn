@@ -127,4 +127,8 @@ source_set("interactive_ui_tests") {
       "//testing/gmock",
     ]
   }
+
+  if (!is_chromeos) {
+    deps += [ "//chrome/browser/first_run:test_support" ]
+  }
 }

@@ -137,6 +137,7 @@ if (!is_android) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/profiles/keep_alive",
       "//chrome/test:test_support",
+      "//chrome/test/base:platform_browser_test",
       "//components/keep_alive_registry",
       "//components/prefs",
       "//content/test:test_support",

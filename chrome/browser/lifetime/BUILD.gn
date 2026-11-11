@@ -330,6 +330,7 @@ if (!is_android) {
     }
 
     if (!is_chromeos) {
+      deps += [ "//chrome/browser/first_run:test_support" ]
       sources += [ "application_lifetime_browsertest.cc" ]
     }
 

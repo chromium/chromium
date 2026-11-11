@@ -485,6 +485,8 @@ if (!is_android) {
       "//chrome/browser/ui/apps",
       "//chrome/browser/ui/tab_sharing",
       "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/web_applications:test_support",
+      "//chrome/browser/ui/web_applications/test:test_support_ui",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/browser/web_applications/isolated_web_apps/test:test_support",
       "//chrome/test/base:tracing",
@@ -634,6 +636,7 @@ source_set("unit_tests") {
     deps += [
       ":test_support",
       ":webrtc_browser_tests_base",
+      "//chrome/browser/ui/web_applications/test:test_support_ui",
       "//chrome/browser/ui/webui/top_chrome",
       "//chrome/browser/web_applications:web_app_test",
       "//chrome/browser/web_applications:web_applications_test_support",

@@ -2618,9 +2618,16 @@ source_set("browser_tests") {
       "//chrome/test:test_support_jni_headers",
       "//chrome/test/base:android_ui_test_utils",
     ]
+  } else {
+    deps += [
+      "//chrome/browser/ui/web_applications/test:test_support_ui",
+      "//chrome/browser/web_applications:web_applications_test_support",
+    ]
   }
   deps += [
+    "//chrome/test/base:test_switches",
     "//components/autofill/content/browser",
+    "//components/autofill/content/browser:test_support",
     "//components/back_forward_cache",
     "//components/bookmarks/managed",
     "//components/contextual_tasks/public:feature_list",

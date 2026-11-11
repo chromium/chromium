@@ -343,6 +343,7 @@ source_set("unit_tests") {
     sources += [ "chrome_browsing_data_lifetime_manager_unittest.cc" ]
     deps += [
       "//chrome/browser/performance_manager/public/user_tuning",
+      "//chrome/browser/ui/web_applications/test:test_support_ui",
       "//chrome/browser/user_education",
       "//chrome/browser/web_applications:web_applications_test_support",
     ]
@@ -448,9 +449,12 @@ if (!is_android) {
       "//chrome/browser/sync/test/integration:sync_integration_test_support",
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/web_applications/test:test_support_ui",
       "//chrome/browser/unified_consent",
       "//chrome/browser/webdata_services",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_test_path_utils",
+      "//chrome/test/base:chrome_test_utils",
       "//components/autofill/core/browser:test_support",
       "//components/browsing_data/content:test_support",
       "//components/privacy_sandbox:privacy_sandbox_settings_headers",

@@ -1399,6 +1399,10 @@ source_set("browser_tests") {
   }
 
   data_deps = [ "//chrome/test/data/webui/glic:generate_test_files" ]
+
+  if (!is_chromeos && !is_android) {
+    deps += [ "//chrome/test/base:fake_gaia_mixin" ]
+  }
 }
 
 if (!is_android) {

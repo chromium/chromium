@@ -160,6 +160,7 @@ source_set("browser_tests") {
     "//chrome/common:constants",
     "//chrome/test:test_interfaces",
     "//chrome/test:test_support",
+    "//chrome/test/base:browser_test_waiters",
     "//components/input",
     "//components/optimization_guide/content/browser:page_context_eligibility",
     "//components/optimization_guide/content/browser:test_support",

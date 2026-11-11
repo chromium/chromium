@@ -41,6 +41,8 @@ if (!is_android) {
       "//base",
       "//chrome/browser/enterprise:impl",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_test_utils",
+      "//chrome/test/base:platform_browser_test",
       "//components/enterprise/isolated_mode",
       "//content/test:test_support",
       "//testing/gmock",

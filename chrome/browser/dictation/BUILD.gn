@@ -153,6 +153,7 @@ source_set("test_support") {
     "//chrome/browser/extensions:test_support",
     "//chrome/browser/optimization_guide",
     "//chrome/common:constants",
+    "//chrome/test/base:chrome_test_utils",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs",

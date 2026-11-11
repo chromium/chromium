@@ -33,6 +33,7 @@ if (!is_android) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui:browser_commands",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_test_utils",
       "//components/prefs",
       "//content/public/common",
       "//content/test:test_support",
