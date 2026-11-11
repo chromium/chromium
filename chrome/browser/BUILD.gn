@@ -4909,7 +4909,6 @@ source_set("test_support") {
   } else {
     public_deps += [
       "//chrome/browser/apps/intent_helper:test_support",
-      "//chrome/browser/privacy_sandbox:attestations_mixin",
       "//chrome/browser/sessions:test_support",
     ]
     deps += [
@@ -4918,7 +4917,6 @@ source_set("test_support") {
       "//chrome/browser/speech",
       "//chrome/browser/speech:test_support",
       "//components/privacy_sandbox:features",
-      "//components/privacy_sandbox/privacy_sandbox_attestations:test_support",
       "//components/services/app_service",
     ]
   }
@@ -5296,7 +5294,6 @@ if (!is_android) {
       "//components/enterprise/data_controls/core/browser:test_support",
       "//components/javascript_dialogs",
       "//components/prefs",
-      "//components/privacy_sandbox/privacy_sandbox_attestations:test_support",
       "//components/site_isolation",
       "//components/tabs:public",
       "//components/universal_optout",

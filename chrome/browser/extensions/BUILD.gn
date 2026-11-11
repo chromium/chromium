@@ -1693,7 +1693,10 @@ static_library("test_support") {
     "//url",
   ]
 
-  public_deps = [ "//chrome/browser/extensions:test_extension_system" ]
+  public_deps = [
+    "//chrome/browser/extensions:test_extension_system",
+    "//chrome/test/base:mixin_based_in_process_browser_test",
+  ]
 
   if (is_android) {
     sources += [
@@ -2631,8 +2634,6 @@ source_set("browser_tests") {
     "//components/javascript_dialogs",
     "//components/media_device_salt",
     "//components/privacy_sandbox:privacy_sandbox_settings_headers",
-    "//components/privacy_sandbox/privacy_sandbox_attestations",
-    "//components/privacy_sandbox/privacy_sandbox_attestations:test_support",
     "//components/proxy_config",
     "//components/reading_list/core:test_support",
     "//components/security_interstitials/content:security_interstitial_page",

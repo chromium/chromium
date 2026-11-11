@@ -24,7 +24,6 @@
 #include "base/threading/platform_thread.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_model_delegate.h"
 #include "chrome/browser/media/clear_key_cdm_test_helper.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -36,7 +35,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_test_utils.h"
-#include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/browsing_data/content/browsing_data_model_test_util.h"
 #include "components/browsing_data/content/browsing_data_test_util.h"
@@ -49,7 +48,6 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
-#include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/services/storage/public/mojom/local_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
@@ -379,7 +377,7 @@ using browsing_data_test_util::HasDataForType;
 using browsing_data_test_util::SetDataForType;
 
 class BrowsingDataModelBrowserTest
-    : public MixinBasedInProcessBrowserTest,
+    : public InProcessBrowserTest,
       public ::testing::WithParamInterface<bool> {
  public:
   BrowsingDataModelBrowserTest() {
@@ -428,14 +426,10 @@ class BrowsingDataModelBrowserTest
         /*is_initialization_complete_return=*/true,
         /*is_first_policy_load_complete_return=*/true);
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
-    MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
   }
 
   void SetUpOnMainThread() override {
-    // Mark all Privacy Sandbox APIs as attested since the test cases are
-    // testing behaviors not related to attestations.
-    privacy_sandbox::PrivacySandboxAttestations::GetInstance()
-        ->SetAllPrivacySandboxAttestedForTesting(true);
     host_resolver()->AddRule("*", "127.0.0.1");
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::test_server::EmbeddedTestServer::TYPE_HTTPS);
@@ -517,8 +511,6 @@ class BrowsingDataModelBrowserTest
 
  protected:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-  privacy_sandbox::PrivacySandboxAttestationsMixin
-      privacy_sandbox_attestations_mixin_{&mixin_host_};
 
   web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
   base::test::ScopedFeatureList feature_list_;

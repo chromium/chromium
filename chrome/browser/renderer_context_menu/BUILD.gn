@@ -504,8 +504,6 @@ if (!is_android) {
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/test:test_support",
       "//components/custom_handlers",
-      "//components/privacy_sandbox/privacy_sandbox_attestations",
-      "//components/privacy_sandbox/privacy_sandbox_attestations:test_support",
       "//components/shared_highlighting/core/common",
       "//components/signin/public/identity_manager:test_support",
       "//content/public/browser",

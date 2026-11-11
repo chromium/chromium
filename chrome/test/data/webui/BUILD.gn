@@ -400,8 +400,6 @@ source_set("browser_tests") {
       "//components/password_manager/content/common",
       "//components/performance_manager",
       "//components/privacy_sandbox:features",
-      "//components/privacy_sandbox/privacy_sandbox_attestations",
-      "//components/privacy_sandbox/privacy_sandbox_attestations:test_support",
       "//components/safe_browsing/core/common",
       "//components/search",
       "//components/site_engagement/content",

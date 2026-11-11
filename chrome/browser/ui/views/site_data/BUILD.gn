@@ -144,8 +144,6 @@ source_set("interactive_ui_tests") {
     "//components/content_settings/core/common",
     "//components/prefs",
     "//components/privacy_sandbox:features",
-    "//components/privacy_sandbox/privacy_sandbox_attestations",
-    "//components/privacy_sandbox/privacy_sandbox_attestations:test_support",
     "//components/webapps/common",
     "//content/public/browser",
     "//content/test:test_support",
