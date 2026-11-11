@@ -8685,11 +8685,6 @@ inline constexpr char
         "Enables including the 'aud' (audience) claim in Device Bound "
         "Session Credentials registration and refresh JWT payloads.";
 
-inline constexpr char kVariationsSeedCorpusName[] = "Variations seed corpus";
-inline constexpr char kVariationsSeedCorpusDescription[] =
-    "The value of the 'corpus' parameter in the variations seed request. "
-    "If unspecified, the 'corpus' parameter is omitted from the request.";
-
 inline constexpr char kHandleMdmErrorsForDasherAccountsName[] =
     "Mdm error handling for dasher accounts";
 inline constexpr char kHandleMdmErrorsForDasherAccountsDescription[] =

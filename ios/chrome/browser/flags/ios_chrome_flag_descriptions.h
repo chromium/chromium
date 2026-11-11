@@ -2038,23 +2038,12 @@ inline constexpr char kUseUIGraphicsImageRendererForFallbackIconsDescription[] =
     "When enabled, uses UIGraphicsImageRenderer to generate fallback icons "
     "instead of deprecated UIGraphicsGetImageFromCurrentImageContext.";
 
-inline constexpr char kVariationsExperimentalCorpusName[] =
-    "Variations experimental corpus";
-inline constexpr char kVariationsExperimentalCorpusDescription[] =
-    "When enabled, request the experimental variations seed from the "
-    "variations server.";
-
 inline constexpr char kVariationsHeaderWebExtensionName[] =
     "Variations header WebExtension";
 inline constexpr char kVariationsHeaderWebExtensionDescription[] =
     "When enabled, a built-in WKWebExtension attaches the variations header "
     "(as x-temp-tablet) to web-initiated requests to Google-associated "
     "domains. Requires iOS 18.4+. Never applies to Incognito.";
-
-inline constexpr char kVariationsRestrictDogfoodName[] =
-    "Variations restrict dogfood";
-inline constexpr char kVariationsRestrictDogfoodDescription[] =
-    "When enabled, request dogfood variations from the variations server.";
 
 inline constexpr char kVoiceSearchEvolutionPhase1Name[] =
     "Voice Search Evolution Phase 1";

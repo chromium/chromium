@@ -114,7 +114,7 @@ class FlagsUIHandlerWithImportExportTest : public FlagsUIHandlerTest {
 
 TEST_F(FlagsUIHandlerTest, HandlesSetString) {
   // Need to use an actual feature name for ChromeOS.
-  const std::string kTestFeature = "variations-seed-corpus";
+  const std::string kTestFeature = "demo-mode-test-tag";
   EXPECT_EQ("", storage_->GetStringFlag(kTestFeature));
 
   web_ui_.HandleReceivedMessage(
