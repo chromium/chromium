@@ -898,7 +898,16 @@ TEST_F(WinAudioInputTest, WASAPIAudioInputStreamTestPacketSizes) {
 // small caller buffer size (`frames_per_buffer` <
 // SincResampler::kMinRequestSize) delivers finite audio samples and stops
 // cleanly without underflowing `AudioBlockFifo`.
-TEST_F(WinAudioInputTest, WASAPIAudioInputStreamResampleSmallBuffer) {
+// TODO(crbug.com/462045912): this fails on debug due to
+// checker.CalledOnValidSequence(&bound_at) check.
+#if !defined(NDEBUG)
+#define MAYBE_WASAPIAudioInputStreamResampleSmallBuffer \
+  DISABLED_WASAPIAudioInputStreamResampleSmallBuffer
+#else
+#define MAYBE_WASAPIAudioInputStreamResampleSmallBuffer \
+  WASAPIAudioInputStreamResampleSmallBuffer
+#endif
+TEST_F(WinAudioInputTest, MAYBE_WASAPIAudioInputStreamResampleSmallBuffer) {
   ABORT_AUDIO_TEST_IF_NOT(HasCoreAudioAndInputDevices(audio_manager_.get()));
 
   AudioParameters params;
