@@ -1,4 +1,3 @@
-EVENT_SYSTEM_MENUPOPUPSTART on <div#visible-menu> role=ROLE_SYSTEM_MENUPOPUP name="Dynamic menu" IA2_STATE_VERTICAL SetSize=1
 === Start Continuation ===
 EVENT_SYSTEM_MENUPOPUPEND on <div#visible-menu> role=ROLE_SYSTEM_MENUPOPUP name="Dynamic menu" IA2_STATE_VERTICAL SetSize=1
 === Start Continuation ===

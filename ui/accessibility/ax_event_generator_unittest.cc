@@ -1415,7 +1415,7 @@ TEST(AXEventGeneratorTest, RoleChanged) {
                                    AXEventGenerator::Event::ROLE_CHANGED, 1)));
 }
 
-TEST(AXEventGeneratorTest, MenuPopupStartOnDynamicCreation) {
+TEST(AXEventGeneratorTest, MenuPopupStartNotFiredOnDynamicCreation) {
   AXTreeUpdate initial_state;
   initial_state.root_id = 1;
   initial_state.nodes.resize(1);
@@ -1434,8 +1434,8 @@ TEST(AXEventGeneratorTest, MenuPopupStartOnDynamicCreation) {
   ASSERT_TRUE(tree.Unserialize(update));
 
   EXPECT_THAT(event_generator,
-              IsSupersetOf({HasEventAtNode(
-                  AXEventGenerator::Event::MENU_POPUP_START, 2)}));
+              testing::Not(testing::Contains(HasEventAtNode(
+                  AXEventGenerator::Event::MENU_POPUP_START, 2))));
 }
 
 TEST(AXEventGeneratorTest, MenuPopupStartNotFiredOnInitialTreeCreation) {

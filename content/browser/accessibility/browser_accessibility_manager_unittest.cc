@@ -1435,11 +1435,11 @@ TEST_F(BrowserAccessibilityManagerTest, TestShouldFireEventForNode) {
 #endif
 }
 
-// Desktop keeps MENU_POPUP_END on the menu that just became ignored. Android
-// retargets generated events, so it does not use this exact path.
+// Windows permits events on nodes whose ignored state just changed. Other
+// desktop platforms drop this event because the menu is now a child of a leaf.
+// Android retargets generated events, so it does not use this exact path.
 #if !BUILDFLAG(IS_ANDROID)
-TEST_F(BrowserAccessibilityManagerTest,
-       MenuPopupEndFiresWhenMenuBecomesIgnored) {
+TEST_F(BrowserAccessibilityManagerTest, MenuPopupEndWhenMenuBecomesIgnored) {
   ui::AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
@@ -1483,7 +1483,7 @@ TEST_F(BrowserAccessibilityManagerTest,
       found_menu_popup_end = true;
     }
   }
-  EXPECT_TRUE(found_menu_popup_end);
+  EXPECT_EQ(BUILDFLAG(IS_WIN), found_menu_popup_end);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

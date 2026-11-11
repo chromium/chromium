@@ -1,4 +1,3 @@
-MenuOpened on role=menu, name=Dynamic menu
 === Start Continuation ===
 MenuClosed 
 MenuClosed 
