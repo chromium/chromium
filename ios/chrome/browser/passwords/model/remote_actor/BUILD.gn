@@ -4,6 +4,8 @@
 
 source_set("remote_actor") {
   sources = [
+    "ios_chrome_remote_actor_credential_sharing_service_factory.h",
+    "ios_chrome_remote_actor_credential_sharing_service_factory.mm",
     "remote_actor_keychain_util.h",
     "remote_actor_keychain_util.mm",
     "remote_actor_payload_parser.h",
@@ -11,9 +13,18 @@ source_set("remote_actor") {
   ]
   public_deps = [
     "//base",
+    "//components/password_manager/core/browser/remote_actor",
     "//ios/chrome/browser/passwords/model/remote_actor/proto",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
   ]
-  deps = [ "//crypto" ]
+  deps = [
+    "//components/keyed_service/core",
+    "//components/password_manager/core/common",
+    "//crypto",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/signin/model",
+    "//services/network/public/cpp",
+  ]
   frameworks = [
     "Foundation.framework",
     "Security.framework",
