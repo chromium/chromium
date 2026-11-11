@@ -442,17 +442,24 @@ api::tabs::Tab ExtensionTabUtil::CreateTabObject(
   tab_object.width = contents_size.width();
   tab_object.height = contents_size.height();
 
-  tab_object.url = contents->GetLastCommittedURL().spec();
-  NavigationEntry* pending_entry = contents->GetController().GetPendingEntry();
-  if (pending_entry) {
-    tab_object.pending_url = pending_entry->GetVirtualURL().spec();
+  // Keep url/pending_url/title/fav_icon_url in sync with ScrubTabForExtension.
+  if (scrub_tab_behavior.committed_info != kScrubTabFully) {
+    tab_object.url = contents->GetLastCommittedURL().spec();
+    tab_object.title = base::UTF16ToUTF8(contents->GetTitle());
+    // TODO(tjudkins) This should probably use the LastCommittedEntry() for
+    // consistency.
+    NavigationEntry* visible_entry =
+        contents->GetController().GetVisibleEntry();
+    if (visible_entry && visible_entry->GetFavicon().valid) {
+      tab_object.fav_icon_url = visible_entry->GetFavicon().url.spec();
+    }
   }
-  tab_object.title = base::UTF16ToUTF8(contents->GetTitle());
-  // TODO(tjudkins) This should probably use the LastCommittedEntry() for
-  // consistency.
-  NavigationEntry* visible_entry = contents->GetController().GetVisibleEntry();
-  if (visible_entry && visible_entry->GetFavicon().valid) {
-    tab_object.fav_icon_url = visible_entry->GetFavicon().url.spec();
+  if (scrub_tab_behavior.pending_info != kScrubTabFully) {
+    NavigationEntry* pending_entry =
+        contents->GetController().GetPendingEntry();
+    if (pending_entry) {
+      tab_object.pending_url = pending_entry->GetVirtualURL().spec();
+    }
   }
 
   if (tab_list && tab_interface) {
@@ -563,16 +570,7 @@ bool ExtensionTabUtil::GetTabListInterface(content::WebContents& web_contents,
   }
 
   // Find the index of the tab within the browser window.
-  // TODO(https://crbug.com/415961057): This is clunky. Let's add a
-  // GetIndexOfTab() method.
-  std::vector<tabs::TabInterface*> all_tabs = tab_list->GetAllTabs();
-  int index = -1;
-  for (size_t i = 0; i < all_tabs.size(); ++i) {
-    if (all_tabs[i] == tab_interface) {
-      index = i;
-      break;
-    }
-  }
+  int index = tab_list->GetIndexOfTab(tab_interface->GetHandle());
 
   // Even though we got here by looking at the tab strip from the browser window
   // we got from the tab, it's possible the tab isn't in the tab strip. One case

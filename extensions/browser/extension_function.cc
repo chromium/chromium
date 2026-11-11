@@ -748,7 +748,7 @@ void ExtensionFunction::SendResponseImpl(bool success) {
     response = ResponseType::kBadMessage;
     LOG(ERROR) << "Bad extension message " << name_;
   }
-  response_type_ = std::make_unique<ResponseType>(response);
+  response_type_ = response;
 
   // If results were never set, we send an empty argument list.
   if (!results_) {

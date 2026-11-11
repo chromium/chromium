@@ -634,6 +634,10 @@ base::ListValue TabsQueryFunction::BuildTabList(
     int window_id,
     int tab_index) {
   base::ListValue result;
+  std::optional<std::u16string> title_pattern;
+  if (query_info_.title && !query_info_.title->empty()) {
+    title_pattern = base::UTF8ToUTF16(*query_info_.title);
+  }
   // Historically, we queried browsers in creation order. Maintain that behavior
   // (for now).
   std::vector<BrowserWindowInterface*> all_browsers =
@@ -662,12 +666,15 @@ base::ListValue TabsQueryFunction::BuildTabList(
         continue;
       }
 
-      if (!MatchesTab(tab, url_patterns)) {
+      std::optional<ExtensionTabUtil::ScrubTabBehavior> scrub_tab_behavior =
+          MatchesTab(tab, url_patterns, title_pattern);
+      if (!scrub_tab_behavior) {
         continue;
       }
 
-      result.Append(CreateTabObjectHelper(tab->GetContents(), extension(),
-                                          source_context_type(), browser, i)
+      result.Append(ExtensionTabUtil::CreateTabObject(tab->GetContents(),
+                                                      *scrub_tab_behavior,
+                                                      extension(), tab_list, i)
                         .ToValue());
     }
   }
@@ -736,37 +743,39 @@ bool TabsQueryFunction::MatchesWindow(
   return true;
 }
 
-bool TabsQueryFunction::MatchesTab(::tabs::TabInterface* candidate_tab,
-                                   const URLPatternSet& target_url_patterns) {
+std::optional<ExtensionTabUtil::ScrubTabBehavior> TabsQueryFunction::MatchesTab(
+    ::tabs::TabInterface* candidate_tab,
+    const URLPatternSet& target_url_patterns,
+    const std::optional<std::u16string>& title_pattern) {
   content::WebContents* web_contents = candidate_tab->GetContents();
 
   if (!web_contents) {
-    return false;
+    return std::nullopt;
   }
 
   if (!MatchesBool(query_info_.highlighted, candidate_tab->IsSelected())) {
-    return false;
+    return std::nullopt;
   }
 
   if (!MatchesBool(query_info_.active, candidate_tab->IsActivated())) {
-    return false;
+    return std::nullopt;
   }
 
   if (!MatchesBool(query_info_.pinned, candidate_tab->IsPinned())) {
-    return false;
+    return std::nullopt;
   }
 
   if (query_info_.group_id.has_value()) {
     std::optional<tab_groups::TabGroupId> group = candidate_tab->GetGroup();
     if (query_info_.group_id.value() == -1) {
       if (group.has_value()) {
-        return false;
+        return std::nullopt;
       }
     } else if (!group.has_value()) {
-      return false;
+      return std::nullopt;
     } else if (ExtensionTabUtil::GetGroupId(group.value()) !=
                query_info_.group_id.value()) {
-      return false;
+      return std::nullopt;
     }
   }
 
@@ -774,12 +783,12 @@ bool TabsQueryFunction::MatchesTab(::tabs::TabInterface* candidate_tab,
     std::optional<split_tabs::SplitTabId> split = candidate_tab->GetSplit();
     if (query_info_.split_view_id.value() == -1) {
       if (split.has_value()) {
-        return false;
+        return std::nullopt;
       }
     } else if (!split.has_value() ||
                ExtensionTabUtil::GetSplitId(split.value()) !=
                    query_info_.split_view_id.value()) {
-      return false;
+      return std::nullopt;
     }
   }
 
@@ -787,7 +796,7 @@ bool TabsQueryFunction::MatchesTab(::tabs::TabInterface* candidate_tab,
   const bool is_audible =
       audible_helper && audible_helper->WasRecentlyAudible();
   if (!MatchesBool(query_info_.audible, is_audible)) {
-    return false;
+    return std::nullopt;
   }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -800,67 +809,74 @@ bool TabsQueryFunction::MatchesTab(::tabs::TabInterface* candidate_tab,
   if (!MatchesBool(query_info_.frozen,
                    tab_lifecycle_unit_external->GetTabState() ==
                        ::mojom::LifecycleUnitState::FROZEN)) {
-    return false;
+    return std::nullopt;
   }
 
   if (!MatchesBool(query_info_.discarded,
                    tab_lifecycle_unit_external->GetTabState() ==
                        ::mojom::LifecycleUnitState::DISCARDED)) {
-    return false;
+    return std::nullopt;
   }
 
   if (!MatchesBool(query_info_.auto_discardable,
                    tab_lifecycle_unit_external->IsAutoDiscardable())) {
-    return false;
+    return std::nullopt;
   }
 #endif
 
   if (!MatchesBool(query_info_.muted, web_contents->IsAudioMuted())) {
-    return false;
+    return std::nullopt;
   }
 
   // "title" and "url" properties are considered privileged data and can
   // only be checked if the extension has access to the tab's data.
   // Otherwise, this tab is considered not matched.
-  ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
-      ExtensionTabUtil::GetScrubTabBehavior(extension(), source_context_type(),
-                                            web_contents);
-  if (query_info_.title && !query_info_.title->empty()) {
+  std::optional<ExtensionTabUtil::ScrubTabBehavior> scrub_tab_behavior;
+  if (title_pattern.has_value() || !target_url_patterns.is_empty()) {
+    scrub_tab_behavior = ExtensionTabUtil::GetScrubTabBehavior(
+        extension(), source_context_type(), web_contents);
+  }
+  if (title_pattern.has_value()) {
     bool matches_title =
-        scrub_tab_behavior.committed_info != ExtensionTabUtil::kScrubTabFully &&
-        base::MatchPattern(web_contents->GetTitle(),
-                           base::UTF8ToUTF16(*query_info_.title));
+        scrub_tab_behavior->committed_info !=
+            ExtensionTabUtil::kScrubTabFully &&
+        base::MatchPattern(web_contents->GetTitle(), *title_pattern);
     if (!matches_title) {
-      return false;
+      return std::nullopt;
     }
   }
 
   if (!target_url_patterns.is_empty()) {
     bool matches_committed =
-        scrub_tab_behavior.committed_info != ExtensionTabUtil::kScrubTabFully &&
+        scrub_tab_behavior->committed_info !=
+            ExtensionTabUtil::kScrubTabFully &&
         target_url_patterns.MatchesURL(web_contents->GetLastCommittedURL());
 
     content::NavigationEntry* pending_entry =
         web_contents->GetController().GetPendingEntry();
     bool matches_pending =
         pending_entry &&
-        scrub_tab_behavior.pending_info != ExtensionTabUtil::kScrubTabFully &&
+        scrub_tab_behavior->pending_info != ExtensionTabUtil::kScrubTabFully &&
         target_url_patterns.MatchesURL(pending_entry->GetVirtualURL());
 
     // Note: It's okay to indicate the tab matched even if it only has access
     // to one of [pending, committed]. The tab will be scrubbed appropriately
     // when it's returned below.
     if (!matches_committed && !matches_pending) {
-      return false;
+      return std::nullopt;
     }
   }
 
   if (query_info_.status != tabs::TabStatus::kNone &&
       query_info_.status != ExtensionTabUtil::GetLoadingStatus(web_contents)) {
-    return false;
+    return std::nullopt;
   }
 
-  return true;
+  if (!scrub_tab_behavior.has_value()) {
+    return ExtensionTabUtil::GetScrubTabBehavior(
+        extension(), source_context_type(), web_contents);
+  }
+  return scrub_tab_behavior;
 }
 
 TabsCreateFunction::TabsCreateFunction() = default;

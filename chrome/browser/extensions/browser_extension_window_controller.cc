@@ -253,6 +253,7 @@ base::ListValue BrowserExtensionWindowController::CreateTabList(
     mojom::ContextType context) const {
   base::ListValue tab_list;
   const int tab_count = tab_list_->GetTabCount();
+  tab_list.reserve(tab_count);
 
   for (int i = 0; i < tab_count; ++i) {
     tabs::TabInterface* tab = tab_list_->GetTab(i);

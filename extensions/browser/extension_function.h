@@ -20,6 +20,7 @@
 #include "base/process/process.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/types/optional_util.h"
 #include "base/types/pass_key.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_function_histogram_value.h"
@@ -405,11 +406,13 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   bool did_initialize() const { return did_initialize_; }
   void set_did_initialize() { did_initialize_ = true; }
 
-  ResponseType* response_type() const { return response_type_.get(); }
+  const ResponseType* response_type() const {
+    return base::OptionalToPtr(response_type_);
+  }
 
   // Whether this function has responded.
   bool did_respond() const {
-    return response_type_ != nullptr || should_ignore_did_respond_for_testing;
+    return response_type_.has_value() || should_ignore_did_respond_for_testing;
   }
 
   // Set the browser context which contains the extension that has originated
@@ -725,7 +728,7 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   std::unique_ptr<extensions::ServiceWorkerKeepalive> service_worker_keepalive_;
 
   // The response type of the function, if the response has been sent.
-  std::unique_ptr<ResponseType> response_type_;
+  std::optional<ResponseType> response_type_;
 
   // If set to true, preserves `results_`, even after SendResponseImpl() was
   // called.
