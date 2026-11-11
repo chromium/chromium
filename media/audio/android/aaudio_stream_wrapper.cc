@@ -449,34 +449,29 @@ AAudioStreamWrapper::~AAudioStreamWrapper() {
 
   CHECK(!aaudio_stream_);
 
-  // On Android S+, `destruction_helper_` can be destroyed as part of the
-  // normal class teardown.
   if (__builtin_available(android 31, *)) {
     destruction_helper_->CloseDeferredStream();
-    return;
+  } else {
+    // In R and earlier, callbacks can keep running after
+    // `AAudioStream_requestStop()` returns. Delay closing the stream to work
+    // around this issue. See crbug.com/1183255.
+    //
+    // The helper raw pointer is safe to use in this first task because the
+    // helper is guaranteed to be kept alive by the second task below, which has
+    // a longer delay on the same sequence.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&AAudioDestructionHelper::CloseDeferredStream,
+                       base::Unretained(destruction_helper_.get())),
+        kCloseDelay);
   }
 
-  // In R and earlier, it is possible for callbacks to still be running even
-  // after calling AAudioStream_close(). The code below is a mitigation to
-  // work around this issue. See crbug.com/1183255.
-
-  // Keep `destruction_helper_` alive longer than `this`, so the `user_data`
-  // bound to the callback stays valid, until the callbacks stop.
-  //
-  // We post two tasks:
-  // 1. A task to close the stream (at T+1s).
-  // 2. A task to destroy the helper (at T+1.25s).
-  //
-  // The helper raw pointer is safe to use in the first task because the helper
-  // is guaranteed to be kept alive by the second task which has a longer delay
-  // on the same sequence.
-  auto* helper_raw = destruction_helper_.get();
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&AAudioDestructionHelper::CloseDeferredStream,
-                     base::Unretained(helper_raw)),
-      kCloseDelay);
-
+  // AAudio only has a raw `user_data` pointer to `destruction_helper_`, and a
+  // callback which is already in flight can still use it after
+  // `AAudioStream_close()` returns. For example, device routing updates run on
+  // binder threads, which AAudio doesn't wait for. Keep the helper alive for
+  // longer than the stream, on all Android versions. See crbug.com/1183255 and
+  // crbug.com/574907318.
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::DoNothingWithBoundArgs(std::move(destruction_helper_)),
       kDestructionDelay);
@@ -772,6 +767,14 @@ void AAudioStreamWrapper::OnStreamError(aaudio_result_t error) {
   } else {
     callback_->OnError();
   }
+}
+
+base::RepeatingClosure AAudioStreamWrapper::GetErrorCallbackForTesting() {
+  // AAudio would pass the `AAudioStream` here (the `nullptr` below), which we
+  // don't use.
+  return base::BindRepeating(&OnStreamErrorCallback, nullptr,
+                             destruction_helper_.get(),
+                             AAUDIO_ERROR_DISCONNECTED);
 }
 
 void AAudioStreamWrapper::EmitSetDeviceIdResultToHistogram(bool success) {

@@ -9,6 +9,7 @@
 
 #include "base/android/requires_api.h"
 #include "base/containers/span.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/sequence_checker.h"
@@ -68,6 +69,12 @@ class AAudioStreamWrapper {
   aaudio_data_callback_result_t OnAudioDataRequested(void* audio_data,
                                                      int32_t num_frames);
   void OnStreamError(aaudio_result_t error);
+
+  // Returns a closure which runs the error callback registered with AAudio.
+  // It can be run after `this` is destroyed, to simulate a callback that was
+  // already in flight when the stream was closed. It must not be run once the
+  // deferred teardown posted by the destructor has completed.
+  base::RepeatingClosure GetErrorCallbackForTesting();
 
   // Returns the ID of the "actual" device the stream was opened with, in
   // particular resolving to a non-default device ID if the default device was
