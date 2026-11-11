@@ -145,17 +145,15 @@ vpython3 tools/traffic_annotation/scripts/auditor/auditor.py --build-path=out/<b
 
 #### Pre-conditions
 
-The `auditor.py` script cannot run under these conditions. If any of these
-conditions are true, `auditor.py` will fail with an explanation of why. If any
-of these are tru, you MUST abort immediately and inform the user:
+The `auditor.py` script cannot run if you are not running on Linux or Windows
+(for example, on a macOS host). Notice that Cider-G (Cog) workspaces on Linux
+are supported even without a `.git` directory.
 
-- You are not running inside a Git repository.
-- You are not running on Linux or Windows.
+If `auditor.py` cannot run on the current host OS, you MUST abort immediately
+and inform the user of their two options:
 
-If you abort, the user has two options:
-
-- Patch their change into a Git repository (on Linux/Windows), so they can run
-  `auditor.py` locally.
+- Patch their change onto a Linux or Windows machine (including Cider-G), so
+  they can run `auditor.py` locally.
 - Upload their CL to Gerrit, and do a CQ dry run.
 
 Inform the user of their options, and don't do anything else.
