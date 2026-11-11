@@ -375,6 +375,7 @@ crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/t
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/video/tex-2d-alpha-alpha-unsigned_byte.html [ Skip ]
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 passthrough ] WebglExtension_EXT_texture_mirror_clamp_to_edge [ Skip ]
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/extensions/oes-texture-float-linear.html [ Skip ]
+crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 ] conformance/extensions/webgl-compressed-texture-size-limit.html [ Slow ]
 
 # Linux Intel
 # Can occasionally kill machines. Appears to be tied to kernel version, so can
