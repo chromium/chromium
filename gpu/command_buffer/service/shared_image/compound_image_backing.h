@@ -403,6 +403,15 @@ class GPU_GLES2_EXPORT CompoundImageBacking
       base::trace_event::ProcessMemoryDump* pmd,
       uint64_t client_tracing_id) override;
 
+  template <typename WrappedRep, typename ProduceFn, typename... ExtraArgs>
+  std::unique_ptr<typename WrappedRep::BaseRepresentation> ProduceWrapped(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker,
+      SharedImageAccessStream stream,
+      const AccessParams& params,
+      ProduceFn&& produce_fn,
+      ExtraArgs&&... extra_args);
+
   // Gets the element corresponding to the backing.
   ElementHolder* GetElement(const SharedImageBacking* backing);
 

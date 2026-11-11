@@ -165,6 +165,9 @@ class GPU_GLES2_EXPORT SharedImageRepresentation {
   };
 
  private:
+  template <typename BaseRep>
+  friend class WrappedCompoundImageRepresentation;
+
   // Uses UnprotectedInRelease for performance reasons (based on analysis of
   // MotionMark).
   const raw_ptr<SharedImageManager, UnprotectedInRelease> manager_ = nullptr;

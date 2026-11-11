@@ -206,169 +206,176 @@ SharedImageUsageSet GetUsageFromAccessStream(SharedImageAccessStream stream,
 // Wrapped representation types are not in the anonymous namespace because they
 // need to be friend classes to real representations to access protected
 // virtual functions.
-class WrappedGLTextureCompoundImageRepresentation
-    : public GLTextureImageRepresentation {
+template <typename BaseRep>
+class WrappedCompoundImageRepresentation : public BaseRep {
  public:
-  WrappedGLTextureCompoundImageRepresentation(
+  using BaseRepresentation = BaseRep;
+
+  template <typename... BaseArgs>
+  WrappedCompoundImageRepresentation(
+      std::unique_ptr<BaseRep> wrapped,
+      std::unique_ptr<SharedImageBacking> owned_backing,
+      BaseArgs&&... base_args)
+      : BaseRep(std::forward<BaseArgs>(base_args)...),
+        owned_backing_(std::move(owned_backing)),
+        wrapped_(std::move(wrapped)) {
+    CHECK(wrapped_);
+  }
+
+  WrappedCompoundImageRepresentation(
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
-      std::unique_ptr<GLTextureImageRepresentation> wrapped,
+      std::unique_ptr<BaseRep> wrapped,
       std::unique_ptr<SharedImageBacking> owned_backing)
-      : GLTextureImageRepresentation(manager, backing, tracker),
-        owned_backing_(std::move(owned_backing)),
-        wrapped_(std::move(wrapped)) {
-    DCHECK(wrapped_);
+      : WrappedCompoundImageRepresentation(std::move(wrapped),
+                                           std::move(owned_backing),
+                                           manager,
+                                           backing,
+                                           tracker) {}
+
+  void SetClearedRect(const gfx::Rect& cleared_rect) override {
+    SharedImageRepresentation::SetClearedRect(cleared_rect);
+    if (owned_backing_) {
+      wrapped_->SetClearedRect(cleared_rect);
+    }
   }
 
-  CompoundImageBacking* compound_backing() {
-    return static_cast<CompoundImageBacking*>(backing());
+  void OnContextLost() override {
+    BaseRep::OnContextLost();
+    wrapped_->OnContextLost();
   }
+
+ protected:
+  using AccessMode = SharedImageRepresentation::AccessMode;
+
+  CompoundImageBacking* compound_backing() const {
+    return static_cast<CompoundImageBacking*>(this->backing());
+  }
+
+  [[nodiscard]] bool NotifyBeginAccess(AccessMode mode,
+                                       SharedImageAccessStream stream) {
+    return compound_backing()->NotifyBeginAccess(wrapped_->backing(), mode,
+                                                 stream);
+  }
+
+  void NotifyEndAccess(AccessMode mode) {
+    compound_backing()->NotifyEndAccess(wrapped_->backing(), mode);
+  }
+
+  BaseRep* wrapped() const { return wrapped_.get(); }
+
+ private:
+  // Declared before `wrapped_` so `wrapped_` is destroyed before the transient
+  // `owned_backing_` it references.
+  std::unique_ptr<SharedImageBacking> owned_backing_;
+  std::unique_ptr<BaseRep> wrapped_;
+};
+
+class WrappedGLTextureCompoundImageRepresentation
+    : public WrappedCompoundImageRepresentation<GLTextureImageRepresentation> {
+ public:
+  using WrappedCompoundImageRepresentation::WrappedCompoundImageRepresentation;
 
   // GLTextureImageRepresentation implementation.
   bool BeginAccess(GLenum mode) final {
     AccessMode access_mode =
         mode == kReadAccessMode ? AccessMode::kRead : AccessMode::kWrite;
-    if (!compound_backing()->NotifyBeginAccess(wrapped_->backing(), access_mode,
-                                               SharedImageAccessStream::kGL)) {
+    if (!NotifyBeginAccess(access_mode, SharedImageAccessStream::kGL)) {
       return false;
     }
     access_mode_ = access_mode;
-    return wrapped_->BeginAccess(mode);
+    return wrapped()->BeginAccess(mode);
   }
 
   void EndAccess() override {
-    wrapped_->EndAccess();
-    compound_backing()->NotifyEndAccess(wrapped_->backing(), access_mode_);
+    wrapped()->EndAccess();
+    NotifyEndAccess(access_mode_);
   }
 
   gpu::TextureBase* GetTextureBase(size_t plane_index) final {
-    return wrapped_->GetTextureBase(plane_index);
+    return wrapped()->GetTextureBase(plane_index);
   }
 
   bool SupportsMultipleConcurrentReadAccess() final {
-    return wrapped_->SupportsMultipleConcurrentReadAccess();
+    return wrapped()->SupportsMultipleConcurrentReadAccess();
   }
 
   gles2::Texture* GetTexture(size_t plane_index) final {
-    return wrapped_->GetTexture(plane_index);
+    return wrapped()->GetTexture(plane_index);
   }
 
   bool IsBackingCleared() const override {
-    return wrapped_->IsBackingCleared();
-  }
-
-  void SetClearedRect(const gfx::Rect& cleared_rect) override {
-    SharedImageRepresentation::SetClearedRect(cleared_rect);
-    if (owned_backing_) {
-      wrapped_->SetClearedRect(cleared_rect);
-    }
-  }
-
-  void OnContextLost() override {
-    GLTextureImageRepresentation::OnContextLost();
-    wrapped_->OnContextLost();
+    return wrapped()->IsBackingCleared();
   }
 
  private:
-  std::unique_ptr<SharedImageBacking> owned_backing_;
-  std::unique_ptr<GLTextureImageRepresentation> wrapped_;
   AccessMode access_mode_ = AccessMode::kNone;
 };
 
 class WrappedGLTexturePassthroughCompoundImageRepresentation
-    : public GLTexturePassthroughImageRepresentation {
+    : public WrappedCompoundImageRepresentation<
+          GLTexturePassthroughImageRepresentation> {
  public:
-  WrappedGLTexturePassthroughCompoundImageRepresentation(
-      SharedImageManager* manager,
-      SharedImageBacking* backing,
-      MemoryTypeTracker* tracker,
-      std::unique_ptr<GLTexturePassthroughImageRepresentation> wrapped,
-      std::unique_ptr<SharedImageBacking> owned_backing)
-      : GLTexturePassthroughImageRepresentation(manager, backing, tracker),
-        owned_backing_(std::move(owned_backing)),
-        wrapped_(std::move(wrapped)) {
-    DCHECK(wrapped_);
-  }
-
-  CompoundImageBacking* compound_backing() {
-    return static_cast<CompoundImageBacking*>(backing());
-  }
+  using WrappedCompoundImageRepresentation::WrappedCompoundImageRepresentation;
 
   // GLTexturePassthroughImageRepresentation implementation.
   bool BeginAccess(GLenum mode) override {
     AccessMode access_mode =
         mode == kReadAccessMode ? AccessMode::kRead : AccessMode::kWrite;
-    if (!compound_backing()->NotifyBeginAccess(wrapped_->backing(), access_mode,
-                                               SharedImageAccessStream::kGL)) {
+    if (!NotifyBeginAccess(access_mode, SharedImageAccessStream::kGL)) {
       return false;
     }
     access_mode_ = access_mode;
-    return wrapped_->BeginAccess(mode);
+    return wrapped()->BeginAccess(mode);
   }
+
   void EndAccess() override {
-    wrapped_->EndAccess();
-    compound_backing()->NotifyEndAccess(wrapped_->backing(), access_mode_);
+    wrapped()->EndAccess();
+    NotifyEndAccess(access_mode_);
   }
 
   gpu::TextureBase* GetTextureBase(size_t plane_index) final {
-    return wrapped_->GetTextureBase(plane_index);
+    return wrapped()->GetTextureBase(plane_index);
   }
 
   bool SupportsMultipleConcurrentReadAccess() final {
-    return wrapped_->SupportsMultipleConcurrentReadAccess();
+    return wrapped()->SupportsMultipleConcurrentReadAccess();
   }
 
   const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough(
       size_t plane_index) final {
-    return wrapped_->GetTexturePassthrough(plane_index);
+    return wrapped()->GetTexturePassthrough(plane_index);
   }
 
   bool IsBackingCleared() const override {
-    return wrapped_->IsBackingCleared();
-  }
-
-  void SetClearedRect(const gfx::Rect& cleared_rect) override {
-    SharedImageRepresentation::SetClearedRect(cleared_rect);
-    if (owned_backing_) {
-      wrapped_->SetClearedRect(cleared_rect);
-    }
-  }
-
-  void OnContextLost() override {
-    GLTexturePassthroughImageRepresentation::OnContextLost();
-    wrapped_->OnContextLost();
+    return wrapped()->IsBackingCleared();
   }
 
  private:
-  std::unique_ptr<SharedImageBacking> owned_backing_;
-  std::unique_ptr<GLTexturePassthroughImageRepresentation> wrapped_;
   AccessMode access_mode_ = AccessMode::kNone;
 };
 
 class WrappedSkiaGaneshCompoundImageRepresentation
-    : public SkiaGaneshImageRepresentation {
+    : public WrappedCompoundImageRepresentation<SkiaGaneshImageRepresentation> {
  public:
   WrappedSkiaGaneshCompoundImageRepresentation(
-      GrDirectContext* gr_context,
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
+      GrDirectContext* gr_context,
       std::unique_ptr<SkiaGaneshImageRepresentation> wrapped,
       std::unique_ptr<SharedImageBacking> owned_backing)
-      : SkiaGaneshImageRepresentation(gr_context, manager, backing, tracker),
-        owned_backing_(std::move(owned_backing)),
-        wrapped_(std::move(wrapped)) {
-    DCHECK(wrapped_);
-  }
-
-  CompoundImageBacking* compound_backing() {
-    return static_cast<CompoundImageBacking*>(backing());
-  }
+      : WrappedCompoundImageRepresentation(std::move(wrapped),
+                                           std::move(owned_backing),
+                                           gr_context,
+                                           manager,
+                                           backing,
+                                           tracker) {}
 
   // SkiaImageRepresentation implementation.
   bool SupportsMultipleConcurrentReadAccess() final {
-    return wrapped_->SupportsMultipleConcurrentReadAccess();
+    return wrapped()->SupportsMultipleConcurrentReadAccess();
   }
 
   std::vector<sk_sp<SkSurface>> BeginWriteAccess(
@@ -378,540 +385,311 @@ class WrappedSkiaGaneshCompoundImageRepresentation
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<skgpu::MutableTextureState>* end_state) final {
-    if (!compound_backing()->NotifyBeginAccess(
-            wrapped_->backing(), AccessMode::kWrite,
-            SharedImageAccessStream::kSkia)) {
+    if (!NotifyBeginAccess(AccessMode::kWrite,
+                           SharedImageAccessStream::kSkia)) {
       return {};
     }
-    return wrapped_->BeginWriteAccess(final_msaa_count, surface_props,
-                                      update_rect, begin_semaphores,
-                                      end_semaphores, end_state);
+    return wrapped()->BeginWriteAccess(final_msaa_count, surface_props,
+                                       update_rect, begin_semaphores,
+                                       end_semaphores, end_state);
   }
+
   std::vector<sk_sp<GrPromiseImageTexture>> BeginWriteAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<skgpu::MutableTextureState>* end_state) final {
-    if (!compound_backing()->NotifyBeginAccess(
-            wrapped_->backing(), AccessMode::kWrite,
-            SharedImageAccessStream::kSkia)) {
+    if (!NotifyBeginAccess(AccessMode::kWrite,
+                           SharedImageAccessStream::kSkia)) {
       return {};
     }
-    return wrapped_->BeginWriteAccess(begin_semaphores, end_semaphores,
-                                      end_state);
+    return wrapped()->BeginWriteAccess(begin_semaphores, end_semaphores,
+                                       end_state);
   }
+
   void EndWriteAccess() final {
-    wrapped_->EndWriteAccess();
-    compound_backing()->NotifyEndAccess(wrapped_->backing(),
-                                        AccessMode::kWrite);
+    wrapped()->EndWriteAccess();
+    NotifyEndAccess(AccessMode::kWrite);
   }
 
   std::vector<sk_sp<GrPromiseImageTexture>> BeginReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<skgpu::MutableTextureState>* end_state) final {
-    if (!compound_backing()->NotifyBeginAccess(
-            wrapped_->backing(), AccessMode::kRead,
-            SharedImageAccessStream::kSkia)) {
+    if (!NotifyBeginAccess(AccessMode::kRead, SharedImageAccessStream::kSkia)) {
       return {};
     }
-    return wrapped_->BeginReadAccess(begin_semaphores, end_semaphores,
-                                     end_state);
+    return wrapped()->BeginReadAccess(begin_semaphores, end_semaphores,
+                                      end_state);
   }
+
   void EndReadAccess() final {
-    wrapped_->EndReadAccess();
-    compound_backing()->NotifyEndAccess(wrapped_->backing(), AccessMode::kRead);
+    wrapped()->EndReadAccess();
+    NotifyEndAccess(AccessMode::kRead);
   }
-
-  void SetClearedRect(const gfx::Rect& cleared_rect) override {
-    SharedImageRepresentation::SetClearedRect(cleared_rect);
-    if (owned_backing_) {
-      wrapped_->SetClearedRect(cleared_rect);
-    }
-  }
-
-  void OnContextLost() override {
-    SkiaGaneshImageRepresentation::OnContextLost();
-    wrapped_->OnContextLost();
-  }
-
- private:
-  std::unique_ptr<SharedImageBacking> owned_backing_;
-  std::unique_ptr<SkiaGaneshImageRepresentation> wrapped_;
 };
 
 class WrappedSkiaGraphiteCompoundImageRepresentation
-    : public SkiaGraphiteImageRepresentation {
+    : public WrappedCompoundImageRepresentation<
+          SkiaGraphiteImageRepresentation> {
  public:
-  WrappedSkiaGraphiteCompoundImageRepresentation(
-      SharedImageManager* manager,
-      SharedImageBacking* backing,
-      MemoryTypeTracker* tracker,
-      std::unique_ptr<SkiaGraphiteImageRepresentation> wrapped,
-      std::unique_ptr<SharedImageBacking> owned_backing)
-      : SkiaGraphiteImageRepresentation(manager, backing, tracker),
-        owned_backing_(std::move(owned_backing)),
-        wrapped_(std::move(wrapped)) {
-    CHECK(wrapped_);
-  }
-
-  CompoundImageBacking* compound_backing() {
-    return static_cast<CompoundImageBacking*>(backing());
-  }
+  using WrappedCompoundImageRepresentation::WrappedCompoundImageRepresentation;
 
   // SkiaGraphiteImageRepresentation implementation.
   bool SupportsMultipleConcurrentReadAccess() final {
-    return wrapped_->SupportsMultipleConcurrentReadAccess();
+    return wrapped()->SupportsMultipleConcurrentReadAccess();
   }
+
   bool SupportsDeferredGraphiteSubmit() final {
-    return wrapped_->SupportsDeferredGraphiteSubmit();
+    return wrapped()->SupportsDeferredGraphiteSubmit();
   }
 
   std::vector<sk_sp<SkSurface>> BeginWriteAccess(
       const SkSurfaceProps& surface_props,
       const gfx::Rect& update_rect,
       EndAccessState& end_access_state) final {
-    if (!compound_backing()->NotifyBeginAccess(
-            wrapped_->backing(), AccessMode::kWrite,
-            SharedImageAccessStream::kSkia)) {
+    if (!NotifyBeginAccess(AccessMode::kWrite,
+                           SharedImageAccessStream::kSkia)) {
       return {};
     }
-    return wrapped_->BeginWriteAccess(surface_props, update_rect,
-                                      end_access_state);
+    return wrapped()->BeginWriteAccess(surface_props, update_rect,
+                                       end_access_state);
   }
+
   std::vector<scoped_refptr<GraphiteTextureHolder>> BeginWriteAccess(
       EndAccessState& end_access_state) final {
-    if (!compound_backing()->NotifyBeginAccess(
-            wrapped_->backing(), AccessMode::kWrite,
-            SharedImageAccessStream::kSkia)) {
+    if (!NotifyBeginAccess(AccessMode::kWrite,
+                           SharedImageAccessStream::kSkia)) {
       return {};
     }
-    return wrapped_->BeginWriteAccess(end_access_state);
+    return wrapped()->BeginWriteAccess(end_access_state);
   }
+
   void EndWriteAccess() final {
-    wrapped_->EndWriteAccess();
-    compound_backing()->NotifyEndAccess(wrapped_->backing(),
-                                        AccessMode::kWrite);
+    wrapped()->EndWriteAccess();
+    NotifyEndAccess(AccessMode::kWrite);
   }
 
   std::vector<scoped_refptr<GraphiteTextureHolder>> BeginReadAccess(
       EndAccessState& end_access_state) final {
-    if (!compound_backing()->NotifyBeginAccess(
-            wrapped_->backing(), AccessMode::kRead,
-            SharedImageAccessStream::kSkia)) {
+    if (!NotifyBeginAccess(AccessMode::kRead, SharedImageAccessStream::kSkia)) {
       return {};
     }
-    return wrapped_->BeginReadAccess(end_access_state);
+    return wrapped()->BeginReadAccess(end_access_state);
   }
+
   void EndReadAccess() final {
-    wrapped_->EndReadAccess();
-    compound_backing()->NotifyEndAccess(wrapped_->backing(), AccessMode::kRead);
+    wrapped()->EndReadAccess();
+    NotifyEndAccess(AccessMode::kRead);
   }
-
-  void SetClearedRect(const gfx::Rect& cleared_rect) override {
-    SharedImageRepresentation::SetClearedRect(cleared_rect);
-    if (owned_backing_) {
-      wrapped_->SetClearedRect(cleared_rect);
-    }
-  }
-
-  void OnContextLost() override {
-    SkiaGraphiteImageRepresentation::OnContextLost();
-    wrapped_->OnContextLost();
-  }
-
- private:
-  std::unique_ptr<SharedImageBacking> owned_backing_;
-  std::unique_ptr<SkiaGraphiteImageRepresentation> wrapped_;
 };
 
-class WrappedDawnCompoundImageRepresentation : public DawnImageRepresentation {
+class WrappedDawnCompoundImageRepresentation
+    : public WrappedCompoundImageRepresentation<DawnImageRepresentation> {
  public:
-  WrappedDawnCompoundImageRepresentation(
-      SharedImageManager* manager,
-      SharedImageBacking* backing,
-      MemoryTypeTracker* tracker,
-      std::unique_ptr<DawnImageRepresentation> wrapped,
-      std::unique_ptr<SharedImageBacking> owned_backing)
-      : DawnImageRepresentation(manager, backing, tracker),
-        owned_backing_(std::move(owned_backing)),
-        wrapped_(std::move(wrapped)) {
-    DCHECK(wrapped_);
-  }
-
-  CompoundImageBacking* compound_backing() {
-    return static_cast<CompoundImageBacking*>(backing());
-  }
+  using WrappedCompoundImageRepresentation::WrappedCompoundImageRepresentation;
 
   // DawnImageRepresentation implementation.
   wgpu::Texture BeginAccess(wgpu::TextureUsage webgpu_usage,
                             wgpu::TextureUsage internal_usage) override {
-    AccessMode access_mode =
-        webgpu_usage & kWriteUsage ? AccessMode::kWrite : AccessMode::kRead;
-    if (internal_usage & kWriteUsage) {
-      access_mode = AccessMode::kWrite;
-    }
-    if (!compound_backing()->NotifyBeginAccess(
-            wrapped_->backing(), access_mode, SharedImageAccessStream::kDawn)) {
+    AccessMode access_mode = (webgpu_usage | internal_usage) & kWriteUsage
+                                 ? AccessMode::kWrite
+                                 : AccessMode::kRead;
+    if (!NotifyBeginAccess(access_mode, SharedImageAccessStream::kDawn)) {
       return nullptr;
     }
     access_mode_ = access_mode;
-    return wrapped_->BeginAccess(webgpu_usage, internal_usage);
+    return wrapped()->BeginAccess(webgpu_usage, internal_usage);
   }
+
   void EndAccess() override {
-    wrapped_->EndAccess();
-    compound_backing()->NotifyEndAccess(wrapped_->backing(), access_mode_);
-  }
-
-  void SetClearedRect(const gfx::Rect& cleared_rect) override {
-    SharedImageRepresentation::SetClearedRect(cleared_rect);
-    if (owned_backing_) {
-      wrapped_->SetClearedRect(cleared_rect);
-    }
-  }
-
-  void OnContextLost() override {
-    DawnImageRepresentation::OnContextLost();
-    wrapped_->OnContextLost();
+    wrapped()->EndAccess();
+    NotifyEndAccess(access_mode_);
   }
 
  private:
-  std::unique_ptr<SharedImageBacking> owned_backing_;
-  std::unique_ptr<DawnImageRepresentation> wrapped_;
   AccessMode access_mode_ = AccessMode::kNone;
 };
 
 class WrappedDawnBufferCompoundImageRepresentation
-    : public DawnBufferRepresentation {
+    : public WrappedCompoundImageRepresentation<DawnBufferRepresentation> {
  public:
-  WrappedDawnBufferCompoundImageRepresentation(
-      SharedImageManager* manager,
-      SharedImageBacking* backing,
-      MemoryTypeTracker* tracker,
-      std::unique_ptr<DawnBufferRepresentation> wrapped,
-      std::unique_ptr<SharedImageBacking> owned_backing)
-      : DawnBufferRepresentation(manager, backing, tracker),
-        owned_backing_(std::move(owned_backing)),
-        wrapped_(std::move(wrapped)) {
-    DCHECK(wrapped_);
-  }
-
-  void SetClearedRect(const gfx::Rect& cleared_rect) override {
-    SharedImageRepresentation::SetClearedRect(cleared_rect);
-    if (owned_backing_) {
-      wrapped_->SetClearedRect(cleared_rect);
-    }
-  }
+  using WrappedCompoundImageRepresentation::WrappedCompoundImageRepresentation;
 
  private:
-  CompoundImageBacking* compound_backing() {
-    return static_cast<CompoundImageBacking*>(backing());
-  }
-
   wgpu::Buffer BeginAccess(wgpu::BufferUsage usage) override {
     AccessMode access_mode = usage & wgpu::BufferUsage::MapWrite
                                  ? AccessMode::kWrite
                                  : AccessMode::kRead;
-    if (!compound_backing()->NotifyBeginAccess(
-            wrapped_->backing(), access_mode,
-            SharedImageAccessStream::kDawnBuffer)) {
+    if (!NotifyBeginAccess(access_mode, SharedImageAccessStream::kDawnBuffer)) {
       return nullptr;
     }
     access_mode_ = access_mode;
-    return wrapped_->BeginAccess(usage);
+    return wrapped()->BeginAccess(usage);
   }
 
   void EndAccess() override {
-    wrapped_->EndAccess();
-    compound_backing()->NotifyEndAccess(wrapped_->backing(), access_mode_);
+    wrapped()->EndAccess();
+    NotifyEndAccess(access_mode_);
   }
 
-  void OnContextLost() override {
-    DawnBufferRepresentation::OnContextLost();
-    wrapped_->OnContextLost();
-  }
-
-  std::unique_ptr<SharedImageBacking> owned_backing_;
-  std::unique_ptr<DawnBufferRepresentation> wrapped_;
   AccessMode access_mode_ = AccessMode::kNone;
 };
 
 class WrappedOverlayCompoundImageRepresentation
-    : public OverlayImageRepresentation {
+    : public WrappedCompoundImageRepresentation<OverlayImageRepresentation> {
  public:
-  WrappedOverlayCompoundImageRepresentation(
-      SharedImageManager* manager,
-      SharedImageBacking* backing,
-      MemoryTypeTracker* tracker,
-      std::unique_ptr<OverlayImageRepresentation> wrapped,
-      std::unique_ptr<SharedImageBacking> owned_backing)
-      : OverlayImageRepresentation(manager, backing, tracker),
-        owned_backing_(std::move(owned_backing)),
-        wrapped_(std::move(wrapped)) {
-    DCHECK(wrapped_);
-  }
-
-  CompoundImageBacking* compound_backing() {
-    return static_cast<CompoundImageBacking*>(backing());
-  }
+  using WrappedCompoundImageRepresentation::WrappedCompoundImageRepresentation;
 
   // OverlayImageRepresentation implementation.
   bool BeginReadAccess(gfx::GpuFenceHandle& acquire_fence) final {
-    if (!compound_backing()->NotifyBeginAccess(
-            wrapped_->backing(), AccessMode::kRead,
-            SharedImageAccessStream::kOverlay)) {
+    if (!NotifyBeginAccess(AccessMode::kRead,
+                           SharedImageAccessStream::kOverlay)) {
       return false;
     }
-    return wrapped_->BeginReadAccess(acquire_fence);
+    return wrapped()->BeginReadAccess(acquire_fence);
   }
+
   void EndReadAccess(gfx::GpuFenceHandle release_fence) final {
-    wrapped_->EndReadAccess(std::move(release_fence));
-    compound_backing()->NotifyEndAccess(wrapped_->backing(), AccessMode::kRead);
+    wrapped()->EndReadAccess(std::move(release_fence));
+    NotifyEndAccess(AccessMode::kRead);
   }
+
 #if BUILDFLAG(IS_ANDROID)
   AHardwareBuffer* GetAHardwareBuffer() final {
-    return wrapped_->GetAHardwareBuffer();
+    return wrapped()->GetAHardwareBuffer();
   }
   std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
   GetAHardwareBufferFenceSync() final {
-    return wrapped_->GetAHardwareBufferFenceSync();
+    return wrapped()->GetAHardwareBufferFenceSync();
   }
 #elif BUILDFLAG(IS_WIN)
   std::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage() final {
-    return wrapped_->GetDCLayerOverlayImage();
+    return wrapped()->GetDCLayerOverlayImage();
   }
 #elif BUILDFLAG(IS_APPLE)
   gfx::ScopedIOSurface GetIOSurface() const final {
-    return wrapped_->GetIOSurface();
+    return wrapped()->GetIOSurface();
   }
   std::vector<gfx::MTLSharedEventFence> GetBackpressureFences() const final {
-    return wrapped_->GetBackpressureFences();
+    return wrapped()->GetBackpressureFences();
   }
   bool IsInUseByWindowServer() const final {
-    return wrapped_->IsInUseByWindowServer();
+    return wrapped()->IsInUseByWindowServer();
   }
 #endif
-
-  void SetClearedRect(const gfx::Rect& cleared_rect) override {
-    SharedImageRepresentation::SetClearedRect(cleared_rect);
-    if (owned_backing_) {
-      wrapped_->SetClearedRect(cleared_rect);
-    }
-  }
-
-  void OnContextLost() override {
-    OverlayImageRepresentation::OnContextLost();
-    wrapped_->OnContextLost();
-  }
-
- private:
-  std::unique_ptr<SharedImageBacking> owned_backing_;
-  std::unique_ptr<OverlayImageRepresentation> wrapped_;
 };
 
 class WrappedWebNNTensorCompoundImageRepresentation
-    : public WebNNTensorRepresentation {
+    : public WrappedCompoundImageRepresentation<WebNNTensorRepresentation> {
  public:
-  WrappedWebNNTensorCompoundImageRepresentation(
-      SharedImageManager* manager,
-      SharedImageBacking* backing,
-      MemoryTypeTracker* tracker,
-      std::unique_ptr<WebNNTensorRepresentation> wrapped,
-      std::unique_ptr<SharedImageBacking> owned_backing)
-      : WebNNTensorRepresentation(manager, backing, tracker),
-        owned_backing_(std::move(owned_backing)),
-        wrapped_(std::move(wrapped)) {
-    DCHECK(wrapped_);
-  }
+  using WrappedCompoundImageRepresentation::WrappedCompoundImageRepresentation;
 
 #if BUILDFLAG(IS_WIN)
   scoped_refptr<gfx::D3DSharedFence> GetAcquireFence() const final {
-    return wrapped_->GetAcquireFence();
+    return wrapped()->GetAcquireFence();
   }
 
   void SetReleaseFence(scoped_refptr<gfx::D3DSharedFence> release_fence) final {
-    wrapped_->SetReleaseFence(std::move(release_fence));
+    wrapped()->SetReleaseFence(std::move(release_fence));
   }
 
   Microsoft::WRL::ComPtr<ID3D12Resource> GetD3D12Buffer() const final {
-    return wrapped_->GetD3D12Buffer();
+    return wrapped()->GetD3D12Buffer();
   }
 
   base::win::ScopedHandle GetD3D12HeapHandle() const final {
-    return wrapped_->GetD3D12HeapHandle();
+    return wrapped()->GetD3D12HeapHandle();
   }
-
 #endif
 
 #if BUILDFLAG(IS_APPLE)
-  IOSurfaceRef GetIOSurface() const final { return wrapped_->GetIOSurface(); }
+  IOSurfaceRef GetIOSurface() const final { return wrapped()->GetIOSurface(); }
 #endif
 
-  void SetClearedRect(const gfx::Rect& cleared_rect) override {
-    SharedImageRepresentation::SetClearedRect(cleared_rect);
-    if (owned_backing_) {
-      wrapped_->SetClearedRect(cleared_rect);
-    }
-  }
-
-  void OnContextLost() override {
-    WebNNTensorRepresentation::OnContextLost();
-    wrapped_->OnContextLost();
-  }
-
  private:
-  CompoundImageBacking* compound_backing() {
-    return static_cast<CompoundImageBacking*>(backing());
-  }
-
   bool BeginAccess() override {
-    if (!compound_backing()->NotifyBeginAccess(
-            wrapped_->backing(), AccessMode::kWrite,
-            SharedImageAccessStream::kWebNNTensor)) {
+    if (!NotifyBeginAccess(AccessMode::kWrite,
+                           SharedImageAccessStream::kWebNNTensor)) {
       return false;
     }
-    return wrapped_->BeginAccess();
+    return wrapped()->BeginAccess();
   }
 
   void EndAccess() final {
-    wrapped_->EndAccess();
-    compound_backing()->NotifyEndAccess(wrapped_->backing(),
-                                        AccessMode::kWrite);
+    wrapped()->EndAccess();
+    NotifyEndAccess(AccessMode::kWrite);
   }
-
-  std::unique_ptr<SharedImageBacking> owned_backing_;
-  std::unique_ptr<WebNNTensorRepresentation> wrapped_;
 };
 
 class WrappedMemoryCompoundImageRepresentation
-    : public MemoryImageRepresentation {
+    : public WrappedCompoundImageRepresentation<MemoryImageRepresentation> {
  public:
-  WrappedMemoryCompoundImageRepresentation(
-      SharedImageManager* manager,
-      SharedImageBacking* backing,
-      MemoryTypeTracker* tracker,
-      std::unique_ptr<MemoryImageRepresentation> wrapped,
-      std::unique_ptr<SharedImageBacking> owned_backing)
-      : MemoryImageRepresentation(manager, backing, tracker),
-        owned_backing_(std::move(owned_backing)),
-        wrapped_(std::move(wrapped)) {
-    CHECK(wrapped_);
-  }
-
-  CompoundImageBacking* compound_backing() {
-    return static_cast<CompoundImageBacking*>(backing());
-  }
+  using WrappedCompoundImageRepresentation::WrappedCompoundImageRepresentation;
 
   SkPixmap BeginReadAccess() override {
-    if (!compound_backing()->NotifyBeginAccess(
-            wrapped_->backing(), AccessMode::kRead,
-            SharedImageAccessStream::kMemory)) {
+    if (!NotifyBeginAccess(AccessMode::kRead,
+                           SharedImageAccessStream::kMemory)) {
       return SkPixmap();
     }
-    return wrapped_->BeginReadAccess();
+    return wrapped()->BeginReadAccess();
   }
-
-  void SetClearedRect(const gfx::Rect& cleared_rect) override {
-    SharedImageRepresentation::SetClearedRect(cleared_rect);
-    if (owned_backing_) {
-      wrapped_->SetClearedRect(cleared_rect);
-    }
-  }
-
-  void OnContextLost() override {
-    MemoryImageRepresentation::OnContextLost();
-    wrapped_->OnContextLost();
-  }
-
- private:
-  std::unique_ptr<SharedImageBacking> owned_backing_;
-  std::unique_ptr<MemoryImageRepresentation> wrapped_;
 };
 
 class WrappedVideoCompoundImageRepresentation
-    : public VideoImageRepresentation {
+    : public WrappedCompoundImageRepresentation<VideoImageRepresentation> {
  public:
-  WrappedVideoCompoundImageRepresentation(
-      SharedImageManager* manager,
-      SharedImageBacking* backing,
-      MemoryTypeTracker* tracker,
-      std::unique_ptr<VideoImageRepresentation> wrapped,
-      std::unique_ptr<SharedImageBacking> owned_backing)
-      : VideoImageRepresentation(manager, backing, tracker),
-        owned_backing_(std::move(owned_backing)),
-        wrapped_(std::move(wrapped)) {
-    CHECK(wrapped_);
-  }
-
-  CompoundImageBacking* compound_backing() {
-    return static_cast<CompoundImageBacking*>(backing());
-  }
+  using WrappedCompoundImageRepresentation::WrappedCompoundImageRepresentation;
 
   bool BeginWriteAccess() override {
-    if (!compound_backing()->NotifyBeginAccess(
-            wrapped_->backing(), AccessMode::kWrite,
-            SharedImageAccessStream::kVaapi)) {
+    if (!NotifyBeginAccess(AccessMode::kWrite,
+                           SharedImageAccessStream::kVaapi)) {
       return false;
     }
-    return wrapped_->BeginWriteAccess();
+    return wrapped()->BeginWriteAccess();
   }
+
   void EndWriteAccess() override {
-    wrapped_->EndWriteAccess();
-    compound_backing()->NotifyEndAccess(wrapped_->backing(),
-                                        AccessMode::kWrite);
+    wrapped()->EndWriteAccess();
+    NotifyEndAccess(AccessMode::kWrite);
   }
+
   bool BeginReadAccess() override {
-    if (!compound_backing()->NotifyBeginAccess(
-            wrapped_->backing(), AccessMode::kRead,
-            SharedImageAccessStream::kVaapi)) {
+    if (!NotifyBeginAccess(AccessMode::kRead,
+                           SharedImageAccessStream::kVaapi)) {
       return false;
     }
-    return wrapped_->BeginReadAccess();
+    return wrapped()->BeginReadAccess();
   }
+
   void EndReadAccess() override {
-    wrapped_->EndReadAccess();
-    compound_backing()->NotifyEndAccess(wrapped_->backing(), AccessMode::kRead);
+    wrapped()->EndReadAccess();
+    NotifyEndAccess(AccessMode::kRead);
   }
+
 #if BUILDFLAG(IS_WIN)
   D3D11TextureAndArrayIndex GetD3D11Texture() const override {
-    return wrapped_->GetD3D11Texture();
+    return wrapped()->GetD3D11Texture();
   }
   void EndWriteAccessVideo(scoped_refptr<gfx::D3DSharedFence> fence) override {
-    wrapped_->EndWriteAccessVideo(std::move(fence));
-    compound_backing()->NotifyEndAccess(wrapped_->backing(),
-                                        AccessMode::kWrite);
+    wrapped()->EndWriteAccessVideo(std::move(fence));
+    NotifyEndAccess(AccessMode::kWrite);
   }
 #endif
 #if BUILDFLAG(IS_ANDROID)
   AHardwareBuffer* GetAHardwareBuffer() const override {
-    return wrapped_->GetAHardwareBuffer();
+    return wrapped()->GetAHardwareBuffer();
   }
 #endif
 #if BUILDFLAG(IS_APPLE)
   gfx::ScopedIOSurface GetIOSurface() const override {
-    return wrapped_->GetIOSurface();
+    return wrapped()->GetIOSurface();
   }
 #endif
-
-  void SetClearedRect(const gfx::Rect& cleared_rect) override {
-    SharedImageRepresentation::SetClearedRect(cleared_rect);
-    if (owned_backing_) {
-      wrapped_->SetClearedRect(cleared_rect);
-    }
-  }
-
-  void OnContextLost() override {
-    VideoImageRepresentation::OnContextLost();
-    wrapped_->OnContextLost();
-  }
-
- private:
-  std::unique_ptr<SharedImageBacking> owned_backing_;
-  std::unique_ptr<VideoImageRepresentation> wrapped_;
 };
 
 #if BUILDFLAG(ENABLE_VULKAN)
 class WrappedVulkanCompoundImageRepresentation
-    : public VulkanImageRepresentation {
+    : public WrappedCompoundImageRepresentation<VulkanImageRepresentation> {
  public:
   WrappedVulkanCompoundImageRepresentation(
       SharedImageManager* manager,
@@ -921,20 +699,14 @@ class WrappedVulkanCompoundImageRepresentation
       gpu::VulkanImplementation& vulkan_impl,
       std::unique_ptr<VulkanImageRepresentation> wrapped,
       std::unique_ptr<SharedImageBacking> owned_backing)
-      : VulkanImageRepresentation(manager,
-                                  backing,
-                                  tracker,
-                                  nullptr,
-                                  vulkan_device_queue,
-                                  vulkan_impl),
-        owned_backing_(std::move(owned_backing)),
-        wrapped_(std::move(wrapped)) {
-    DCHECK(wrapped_);
-  }
-
-  CompoundImageBacking* compound_backing() {
-    return static_cast<CompoundImageBacking*>(backing());
-  }
+      : WrappedCompoundImageRepresentation(std::move(wrapped),
+                                           std::move(owned_backing),
+                                           manager,
+                                           backing,
+                                           tracker,
+                                           nullptr,
+                                           vulkan_device_queue,
+                                           vulkan_impl) {}
 
   bool BeginAccess(
       AccessMode access_mode,
@@ -942,43 +714,21 @@ class WrappedVulkanCompoundImageRepresentation
           begin_semaphores,
       std::vector<base::RawPtrIfPtrT<VkSemaphore, DanglingUntriaged>>&
           end_semaphores) override {
-    if (!compound_backing()->NotifyBeginAccess(
-            wrapped_->backing(), access_mode,
-            SharedImageAccessStream::kVulkan)) {
+    if (!NotifyBeginAccess(access_mode, SharedImageAccessStream::kVulkan)) {
       return false;
     }
-    if (!wrapped_->BeginAccess(access_mode, begin_semaphores, end_semaphores)) {
-      return false;
-    }
-    return true;
+    return wrapped()->BeginAccess(access_mode, begin_semaphores,
+                                  end_semaphores);
   }
 
   void EndAccess(bool is_read_only, VkSemaphore end_semaphore) override {
-    wrapped_->EndAccess(is_read_only, end_semaphore);
-    compound_backing()->NotifyEndAccess(
-        wrapped_->backing(),
-        is_read_only ? AccessMode::kRead : AccessMode::kWrite);
+    wrapped()->EndAccess(is_read_only, end_semaphore);
+    NotifyEndAccess(is_read_only ? AccessMode::kRead : AccessMode::kWrite);
   }
 
   gpu::VulkanImage& GetVulkanImage() override {
-    return wrapped_->GetVulkanImage();
+    return wrapped()->GetVulkanImage();
   }
-
-  void SetClearedRect(const gfx::Rect& cleared_rect) override {
-    SharedImageRepresentation::SetClearedRect(cleared_rect);
-    if (owned_backing_) {
-      wrapped_->SetClearedRect(cleared_rect);
-    }
-  }
-
-  void OnContextLost() override {
-    VulkanImageRepresentation::OnContextLost();
-    wrapped_->OnContextLost();
-  }
-
- private:
-  std::unique_ptr<SharedImageBacking> owned_backing_;
-  std::unique_ptr<VulkanImageRepresentation> wrapped_;
 };
 #endif
 
@@ -1811,6 +1561,31 @@ std::optional<VulkanYCbCrInfo> CompoundImageBacking::GetVkCbCrInfo(
 }
 #endif
 
+template <typename WrappedRep, typename ProduceFn, typename... ExtraArgs>
+std::unique_ptr<typename WrappedRep::BaseRepresentation>
+CompoundImageBacking::ProduceWrapped(SharedImageManager* manager,
+                                     MemoryTypeTracker* tracker,
+                                     SharedImageAccessStream stream,
+                                     const AccessParams& params,
+                                     ProduceFn&& produce_fn,
+                                     ExtraArgs&&... extra_args) {
+  std::unique_ptr<SharedImageBacking> transient_backing;
+  SharedImageBacking* backing =
+      GetOrAllocateBacking(stream, params, transient_backing);
+  if (!backing) {
+    return nullptr;
+  }
+
+  auto real_rep = std::forward<ProduceFn>(produce_fn)(backing);
+  if (!real_rep) {
+    return nullptr;
+  }
+
+  return std::make_unique<WrappedRep>(
+      manager, this, tracker, std::forward<ExtraArgs>(extra_args)...,
+      std::move(real_rep), std::move(transient_backing));
+}
+
 std::unique_ptr<DawnImageRepresentation> CompoundImageBacking::ProduceDawn(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
@@ -1821,22 +1596,13 @@ std::unique_ptr<DawnImageRepresentation> CompoundImageBacking::ProduceDawn(
   AccessParams access_params;
   access_params.wgpu_device = device;
   access_params.context_state = context_state;
-  std::unique_ptr<SharedImageBacking> transient_backing;
-  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kDawn,
-                                       access_params, transient_backing);
-  if (!backing) {
-    return nullptr;
-  }
-
-  auto real_rep = backing->ProduceDawn(manager, tracker, device, backend_type,
-                                       std::move(view_formats), context_state);
-  if (!real_rep) {
-    return nullptr;
-  }
-
-  return std::make_unique<WrappedDawnCompoundImageRepresentation>(
-      manager, this, tracker, std::move(real_rep),
-      std::move(transient_backing));
+  return ProduceWrapped<WrappedDawnCompoundImageRepresentation>(
+      manager, tracker, SharedImageAccessStream::kDawn, access_params,
+      [&](SharedImageBacking* backing) {
+        return backing->ProduceDawn(manager, tracker, device, backend_type,
+                                    std::move(view_formats),
+                                    std::move(context_state));
+      });
 }
 
 std::unique_ptr<DawnBufferRepresentation>
@@ -1849,72 +1615,32 @@ CompoundImageBacking::ProduceDawnBuffer(
   AccessParams access_params;
   access_params.wgpu_device = device;
   access_params.context_state = context_state;
-  std::unique_ptr<SharedImageBacking> transient_backing;
-  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kDawnBuffer,
-                                       access_params, transient_backing);
-  if (!backing) {
-    return nullptr;
-  }
-
-  auto real_rep = backing->ProduceDawnBuffer(manager, tracker, device,
-                                             backend_type, context_state);
-  if (!real_rep) {
-    return nullptr;
-  }
-
-  return std::make_unique<WrappedDawnBufferCompoundImageRepresentation>(
-      manager, this, tracker, std::move(real_rep),
-      std::move(transient_backing));
+  return ProduceWrapped<WrappedDawnBufferCompoundImageRepresentation>(
+      manager, tracker, SharedImageAccessStream::kDawnBuffer, access_params,
+      [&](SharedImageBacking* backing) {
+        return backing->ProduceDawnBuffer(
+            manager, tracker, device, backend_type, std::move(context_state));
+      });
 }
 
 std::unique_ptr<GLTextureImageRepresentation>
 CompoundImageBacking::ProduceGLTexture(SharedImageManager* manager,
                                        MemoryTypeTracker* tracker) {
-  // For GLTextureImageRepresentation, the SharedImageAccessStream::kGL is
-  // specific enough for backing selection. While AccessParams could be extended
-  // in the future to include GL context information for stricter correctness
-  // checks (e.g., ensuring a backing created on one GL context isn't used on
-  // another, unless it's an EglImageBacking), it is not currently needed.
-  std::unique_ptr<SharedImageBacking> transient_backing;
-  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kGL,
-                                       AccessParams(), transient_backing);
-  if (!backing) {
-    return nullptr;
-  }
-
-  auto real_rep = backing->ProduceGLTexture(manager, tracker);
-  if (!real_rep) {
-    return nullptr;
-  }
-
-  return std::make_unique<WrappedGLTextureCompoundImageRepresentation>(
-      manager, this, tracker, std::move(real_rep),
-      std::move(transient_backing));
+  return ProduceWrapped<WrappedGLTextureCompoundImageRepresentation>(
+      manager, tracker, SharedImageAccessStream::kGL, AccessParams(),
+      [&](SharedImageBacking* backing) {
+        return backing->ProduceGLTexture(manager, tracker);
+      });
 }
 
 std::unique_ptr<GLTexturePassthroughImageRepresentation>
 CompoundImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
                                                   MemoryTypeTracker* tracker) {
-  // For GLTexturePassthroughImageRepresentation, the
-  // SharedImageAccessStream::kGL is specific enough for backing selection.
-  // While AccessParams could be extended in the future to include GL context
-  // information for stricter correctness checks, it is not currently needed.
-  std::unique_ptr<SharedImageBacking> transient_backing;
-  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kGL,
-                                       AccessParams(), transient_backing);
-  if (!backing) {
-    return nullptr;
-  }
-
-  auto real_rep = backing->ProduceGLTexturePassthrough(manager, tracker);
-  if (!real_rep) {
-    return nullptr;
-  }
-
-  return std::make_unique<
-      WrappedGLTexturePassthroughCompoundImageRepresentation>(
-      manager, this, tracker, std::move(real_rep),
-      std::move(transient_backing));
+  return ProduceWrapped<WrappedGLTexturePassthroughCompoundImageRepresentation>(
+      manager, tracker, SharedImageAccessStream::kGL, AccessParams(),
+      [&](SharedImageBacking* backing) {
+        return backing->ProduceGLTexturePassthrough(manager, tracker);
+      });
 }
 
 std::unique_ptr<SkiaGaneshImageRepresentation>
@@ -1924,22 +1650,14 @@ CompoundImageBacking::ProduceSkiaGanesh(
     scoped_refptr<SharedContextState> context_state) {
   AccessParams access_params;
   access_params.context_state = context_state;
-  std::unique_ptr<SharedImageBacking> transient_backing;
-  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kSkia,
-                                       access_params, transient_backing);
-  if (!backing) {
-    return nullptr;
-  }
-
-  auto real_rep = backing->ProduceSkiaGanesh(manager, tracker, context_state);
-  if (!real_rep) {
-    return nullptr;
-  }
-
   auto* gr_context = context_state ? context_state->gr_context() : nullptr;
-  return std::make_unique<WrappedSkiaGaneshCompoundImageRepresentation>(
-      gr_context, manager, this, tracker, std::move(real_rep),
-      std::move(transient_backing));
+  return ProduceWrapped<WrappedSkiaGaneshCompoundImageRepresentation>(
+      manager, tracker, SharedImageAccessStream::kSkia, access_params,
+      [&](SharedImageBacking* backing) {
+        return backing->ProduceSkiaGanesh(manager, tracker,
+                                          std::move(context_state));
+      },
+      gr_context);
 }
 
 std::unique_ptr<SkiaGraphiteImageRepresentation>
@@ -1949,108 +1667,53 @@ CompoundImageBacking::ProduceSkiaGraphite(
     scoped_refptr<SharedContextState> context_state) {
   AccessParams access_params;
   access_params.context_state = context_state;
-  std::unique_ptr<SharedImageBacking> transient_backing;
-  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kSkia,
-                                       access_params, transient_backing);
-  if (!backing) {
-    return nullptr;
-  }
-
-  auto real_rep = backing->ProduceSkiaGraphite(manager, tracker, context_state);
-  if (!real_rep) {
-    return nullptr;
-  }
-
-  return std::make_unique<WrappedSkiaGraphiteCompoundImageRepresentation>(
-      manager, this, tracker, std::move(real_rep),
-      std::move(transient_backing));
+  return ProduceWrapped<WrappedSkiaGraphiteCompoundImageRepresentation>(
+      manager, tracker, SharedImageAccessStream::kSkia, access_params,
+      [&](SharedImageBacking* backing) {
+        return backing->ProduceSkiaGraphite(manager, tracker,
+                                            std::move(context_state));
+      });
 }
 
 std::unique_ptr<OverlayImageRepresentation>
 CompoundImageBacking::ProduceOverlay(SharedImageManager* manager,
                                      MemoryTypeTracker* tracker) {
-  // For OverlayImageRepresentation, no specific context information is
-  // currently required for backing selection, so AccessParams is empty.
-  std::unique_ptr<SharedImageBacking> transient_backing;
-  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kOverlay,
-                                       AccessParams(), transient_backing);
-  if (!backing) {
-    return nullptr;
-  }
-
-  auto real_rep = backing->ProduceOverlay(manager, tracker);
-  if (!real_rep) {
-    return nullptr;
-  }
-
-  return std::make_unique<WrappedOverlayCompoundImageRepresentation>(
-      manager, this, tracker, std::move(real_rep),
-      std::move(transient_backing));
+  return ProduceWrapped<WrappedOverlayCompoundImageRepresentation>(
+      manager, tracker, SharedImageAccessStream::kOverlay, AccessParams(),
+      [&](SharedImageBacking* backing) {
+        return backing->ProduceOverlay(manager, tracker);
+      });
 }
 
 std::unique_ptr<WebNNTensorRepresentation>
 CompoundImageBacking::ProduceWebNNTensor(SharedImageManager* manager,
                                          MemoryTypeTracker* tracker) {
-  // For WebNNTensorRepresentation, no specific context information is
-  // currently required for backing selection, so AccessParams is empty.
-  std::unique_ptr<SharedImageBacking> transient_backing;
-  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kWebNNTensor,
-                                       AccessParams(), transient_backing);
-  if (!backing) {
-    return nullptr;
-  }
-
-  auto real_rep = backing->ProduceWebNNTensor(manager, tracker);
-  if (!real_rep) {
-    return nullptr;
-  }
-
-  return std::make_unique<WrappedWebNNTensorCompoundImageRepresentation>(
-      manager, this, tracker, std::move(real_rep),
-      std::move(transient_backing));
+  return ProduceWrapped<WrappedWebNNTensorCompoundImageRepresentation>(
+      manager, tracker, SharedImageAccessStream::kWebNNTensor, AccessParams(),
+      [&](SharedImageBacking* backing) {
+        return backing->ProduceWebNNTensor(manager, tracker);
+      });
 }
 
 std::unique_ptr<MemoryImageRepresentation> CompoundImageBacking::ProduceMemory(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker) {
-  // For MemoryImageRepresentation, no specific context information is
-  // currently required for backing selection, so AccessParams is empty.
-  std::unique_ptr<SharedImageBacking> transient_backing;
-  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kMemory,
-                                       AccessParams(), transient_backing);
-  if (!backing) {
-    return nullptr;
-  }
-
-  auto real_rep = backing->ProduceMemory(manager, tracker);
-  if (!real_rep) {
-    return nullptr;
-  }
-
-  return std::make_unique<WrappedMemoryCompoundImageRepresentation>(
-      manager, this, tracker, std::move(real_rep),
-      std::move(transient_backing));
+  return ProduceWrapped<WrappedMemoryCompoundImageRepresentation>(
+      manager, tracker, SharedImageAccessStream::kMemory, AccessParams(),
+      [&](SharedImageBacking* backing) {
+        return backing->ProduceMemory(manager, tracker);
+      });
 }
 
 std::unique_ptr<VideoImageRepresentation> CompoundImageBacking::ProduceVideo(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     VideoDevice device) {
-  std::unique_ptr<SharedImageBacking> transient_backing;
-  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kVaapi,
-                                       AccessParams(), transient_backing);
-  if (!backing) {
-    return nullptr;
-  }
-
-  auto real_rep = backing->ProduceVideo(manager, tracker, device);
-  if (!real_rep) {
-    return nullptr;
-  }
-
-  return std::make_unique<WrappedVideoCompoundImageRepresentation>(
-      manager, this, tracker, std::move(real_rep),
-      std::move(transient_backing));
+  return ProduceWrapped<WrappedVideoCompoundImageRepresentation>(
+      manager, tracker, SharedImageAccessStream::kVaapi, AccessParams(),
+      [&](SharedImageBacking* backing) {
+        return backing->ProduceVideo(manager, tracker, device);
+      });
 }
 
 #if BUILDFLAG(ENABLE_VULKAN)
@@ -2060,23 +1723,13 @@ std::unique_ptr<VulkanImageRepresentation> CompoundImageBacking::ProduceVulkan(
     gpu::VulkanDeviceQueue* vulkan_device_queue,
     gpu::VulkanImplementation& vulkan_impl,
     bool needs_detiling) {
-  // For VulkanImageRepresentation, AccessParams is not needed as of now.
-  std::unique_ptr<SharedImageBacking> transient_backing;
-  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kVulkan,
-                                       AccessParams(), transient_backing);
-  if (!backing) {
-    return nullptr;
-  }
-
-  auto real_rep = backing->ProduceVulkan(manager, tracker, vulkan_device_queue,
-                                         vulkan_impl, needs_detiling);
-  if (!real_rep) {
-    return nullptr;
-  }
-
-  return std::make_unique<WrappedVulkanCompoundImageRepresentation>(
-      manager, this, tracker, vulkan_device_queue, vulkan_impl,
-      std::move(real_rep), std::move(transient_backing));
+  return ProduceWrapped<WrappedVulkanCompoundImageRepresentation>(
+      manager, tracker, SharedImageAccessStream::kVulkan, AccessParams(),
+      [&](SharedImageBacking* backing) {
+        return backing->ProduceVulkan(manager, tracker, vulkan_device_queue,
+                                      vulkan_impl, needs_detiling);
+      },
+      vulkan_device_queue, vulkan_impl);
 }
 #endif
 
