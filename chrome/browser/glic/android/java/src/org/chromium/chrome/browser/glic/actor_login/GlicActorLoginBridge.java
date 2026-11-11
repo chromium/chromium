@@ -5,7 +5,10 @@
 package org.chromium.chrome.browser.glic.actor_login;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -18,26 +21,24 @@ import java.util.List;
 /** Bridge between Java and native C++ for Actor Login Permissions. */
 @NullMarked
 public class GlicActorLoginBridge {
-    private long mNativeBridge;
+    @JniType("::glic::GlicActorLoginBridge")
+    interface NativeGlicActorLoginBridge extends JniTypeToken {}
+
+    private final JniUniquePtr<NativeGlicActorLoginBridge> mNativeBridge;
 
     public GlicActorLoginBridge(Profile profile) {
-        mNativeBridge = GlicActorLoginBridgeJni.get().init(this, profile);
+        mNativeBridge = GlicActorLoginBridgeJni.get().init(profile);
     }
 
     public void destroy() {
-        if (mNativeBridge != 0) {
-            GlicActorLoginBridgeJni.get().destroy(mNativeBridge);
-            mNativeBridge = 0;
-        }
+        mNativeBridge.destroy();
     }
 
     public void getAllPermissions(Callback<List<ActorLoginPermission>> callback) {
-        if (mNativeBridge == 0) return;
         GlicActorLoginBridgeJni.get().getAllPermissions(mNativeBridge, callback);
     }
 
     public void revokePermission(String signonRealm, String username, Callback<Boolean> callback) {
-        if (mNativeBridge == 0) return;
         GlicActorLoginBridgeJni.get()
                 .revokePermission(mNativeBridge, signonRealm, username, callback);
     }
@@ -55,15 +56,14 @@ public class GlicActorLoginBridge {
 
     @NativeMethods
     interface Natives {
-        long init(GlicActorLoginBridge caller, Profile profile);
-
-        void destroy(long nativeGlicActorLoginBridge);
+        JniUniquePtr<NativeGlicActorLoginBridge> init(Profile profile);
 
         void getAllPermissions(
-                long nativeGlicActorLoginBridge, Callback<List<ActorLoginPermission>> callback);
+                JniPtr<NativeGlicActorLoginBridge> self,
+                Callback<List<ActorLoginPermission>> callback);
 
         void revokePermission(
-                long nativeGlicActorLoginBridge,
+                JniPtr<NativeGlicActorLoginBridge> self,
                 @JniType("std::string") String signonRealm,
                 @JniType("std::string") String username,
                 Callback<Boolean> callback);

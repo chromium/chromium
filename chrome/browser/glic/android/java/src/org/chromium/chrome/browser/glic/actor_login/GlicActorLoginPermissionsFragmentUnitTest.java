@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
@@ -20,6 +19,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
+import org.jni_zero.JniUniquePtr;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -72,7 +72,8 @@ public class GlicActorLoginPermissionsFragmentUnitTest {
     @Before
     public void setUp() {
         GlicActorLoginBridgeJni.setInstanceForTesting(mGlicActorLoginBridgeJniMock);
-        when(mGlicActorLoginBridgeJniMock.init(any(), any())).thenReturn(1L);
+        when(mGlicActorLoginBridgeJniMock.init(any()))
+                .thenReturn(JniUniquePtr.createForTesting(1L));
         LargeIconBridgeJni.setInstanceForTesting(mLargeIconBridgeNatives);
         when(mLargeIconBridgeNatives.init()).thenReturn(1L);
         UserPrefs.setPrefServiceForTesting(mPrefServiceMock);
@@ -92,7 +93,7 @@ public class GlicActorLoginPermissionsFragmentUnitTest {
                             return null;
                         })
                 .when(mGlicActorLoginBridgeJniMock)
-                .getAllPermissions(anyLong(), any());
+                .getAllPermissions(any(), any());
 
         mActivityScenarioRule
                 .getScenario()
@@ -148,7 +149,7 @@ public class GlicActorLoginPermissionsFragmentUnitTest {
         // Verify revokePermission was called and capture callback
         verify(mGlicActorLoginBridgeJniMock)
                 .revokePermission(
-                        anyLong(),
+                        any(),
                         eq(mTestPermissions.get(0).getSignonRealm()),
                         eq(mTestPermissions.get(0).getUsername()),
                         mCallbackCaptor.capture());
@@ -171,7 +172,7 @@ public class GlicActorLoginPermissionsFragmentUnitTest {
                             return null;
                         })
                 .when(mGlicActorLoginBridgeJniMock)
-                .getAllPermissions(anyLong(), any());
+                .getAllPermissions(any(), any());
 
         GlicActorLoginPermissionsFragment fragment = launchFragment();
 

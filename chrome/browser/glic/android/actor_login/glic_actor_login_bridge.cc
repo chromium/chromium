@@ -19,6 +19,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_permissions_manager_impl.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "url/android/gurl_android.h"
 
 // Must come after headers that provide symbols used by @JniType.
@@ -31,12 +32,8 @@ using base::android::ScopedJavaLocalRef;
 
 namespace glic {
 
-GlicActorLoginBridge::GlicActorLoginBridge(JNIEnv* env,
-                                           const JavaRef<jobject>& obj,
-                                           Profile* profile)
+GlicActorLoginBridge::GlicActorLoginBridge(Profile* profile)
     : profile_(profile) {
-  java_obj_.Reset(env, obj);
-
   manager_ = std::make_unique<actor_login::ActorLoginPermissionsManagerImpl>(
       AffiliationServiceFactory::GetForProfile(profile),
       actor_login::ActorLoginPermissionServiceFactory::GetForProfile(profile),
@@ -47,10 +44,6 @@ GlicActorLoginBridge::GlicActorLoginBridge(JNIEnv* env,
 }
 
 GlicActorLoginBridge::~GlicActorLoginBridge() = default;
-
-void GlicActorLoginBridge::Destroy() {
-  delete this;
-}
 
 void GlicActorLoginBridge::GetAllPermissions(
     const JavaRef<jobject>& jcallback) {
@@ -98,13 +91,10 @@ void GlicActorLoginBridge::OnRevokePermissionComplete(
   base::android::RunBooleanCallbackAndroid(jcallback, success);
 }
 
-static int64_t JNI_GlicActorLoginBridge_Init(
-    JNIEnv* env,
-    const JavaRef<jobject>& obj,
-    const JavaRef<jobject>& j_profile) {
+static jni_zero::JniUniquePtr<GlicActorLoginBridge>
+JNI_GlicActorLoginBridge_Init(JNIEnv* env, const JavaRef<jobject>& j_profile) {
   Profile* profile = Profile::FromJavaObject(j_profile);
-  GlicActorLoginBridge* bridge = new GlicActorLoginBridge(env, obj, profile);
-  return reinterpret_cast<intptr_t>(bridge);
+  return jni_zero::MakeUnique<GlicActorLoginBridge>(profile);
 }
 
 DEFINE_JNI(GlicActorLoginBridge)

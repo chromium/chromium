@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
+import org.jni_zero.JniUniquePtr;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -80,7 +81,8 @@ public class GlicActorLoginPermissionsFragmentRenderTest {
                     NetworkChangeNotifier.forceConnectivityState(true);
                 });
         GlicActorLoginBridgeJni.setInstanceForTesting(mGlicActorLoginBridgeJniMock);
-        when(mGlicActorLoginBridgeJniMock.init(any(), any())).thenReturn(1L);
+        when(mGlicActorLoginBridgeJniMock.init(any()))
+                .thenReturn(JniUniquePtr.createForTesting(1L));
         LargeIconBridgeJni.setInstanceForTesting(mLargeIconBridgeNatives);
         when(mLargeIconBridgeNatives.init()).thenReturn(1L);
         UserPrefs.setPrefServiceForTesting(mPrefService);

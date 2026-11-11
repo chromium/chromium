@@ -24,15 +24,12 @@ namespace glic {
 
 class GlicActorLoginBridge {
  public:
-  GlicActorLoginBridge(JNIEnv* env,
-                       const base::android::JavaRef<jobject>& obj,
-                       Profile* profile);
+  // `profile` must be non-null and must outlive this `GlicActorLoginBridge`.
+  explicit GlicActorLoginBridge(Profile* profile);
   ~GlicActorLoginBridge();
 
   GlicActorLoginBridge(const GlicActorLoginBridge&) = delete;
   GlicActorLoginBridge& operator=(const GlicActorLoginBridge&) = delete;
-
-  void Destroy();
 
   void GetAllPermissions(const base::android::JavaRef<jobject>& jcallback);
 
@@ -50,7 +47,6 @@ class GlicActorLoginBridge {
       bool success);
 
   raw_ptr<Profile> profile_ = nullptr;
-  base::android::ScopedJavaGlobalRef<jobject> java_obj_;
   std::unique_ptr<actor_login::ActorLoginPermissionsManager> manager_;
   base::WeakPtrFactory<GlicActorLoginBridge> weak_ptr_factory_{this};
 };
