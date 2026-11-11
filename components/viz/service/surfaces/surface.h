@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <set>
@@ -198,14 +197,6 @@ class VIZ_SERVICE_EXPORT Surface final : public FrameSinkObserver {
   // exists, otherwise the request will be ignored.
   void RequestCopyOfOutput(
       std::unique_ptr<PendingCopyOutputRequest> pending_copy_output_request);
-
-  using CopyRequestsMap =
-      std::multimap<CompositorRenderPassId, std::unique_ptr<CopyOutputRequest>>;
-
-  // Adds each CopyOutputRequest in the current frame to copy_requests. The
-  // caller takes ownership of them. |copy_requests| is keyed by RenderPass
-  // ids.
-  void TakeCopyOutputRequests(CopyRequestsMap* copy_requests);
 
   // Takes CopyOutputRequests made at the client level and adds them to this
   // Surface.

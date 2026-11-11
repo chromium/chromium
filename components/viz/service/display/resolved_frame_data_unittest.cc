@@ -582,10 +582,20 @@ TEST_F(ResolvedFrameDataTest, OffsetTagWithCopyRequest) {
   EXPECT_THAT(resolved_frame.GetResolvedPasses()[0].render_pass().copy_requests,
               testing::IsEmpty());
 
-  // Confirm that taking requests from surface still works.
-  Surface::CopyRequestsMap copy_request_map;
-  surface->TakeCopyOutputRequests(&copy_request_map);
-  EXPECT_THAT(copy_request_map, testing::SizeIs(1));
+  // Confirm that taking requests from ResolvedPassData works and
+  // `has_copy_request` stays true for the aggregation.
+  EXPECT_FALSE(resolved_frame.HasCopyOutputRequests());
+  EXPECT_TRUE(resolved_frame.GetResolvedPasses()[0].CheckCopyOutputRequests());
+  EXPECT_TRUE(resolved_frame.HasCopyOutputRequests());
+  EXPECT_TRUE(
+      resolved_frame.GetResolvedPasses()[0].aggregation().has_copy_request);
+  EXPECT_THAT(resolved_frame.GetResolvedPasses()[0].TakeCopyOutputRequests(),
+              testing::SizeIs(1));
+  EXPECT_TRUE(resolved_frame.HasCopyOutputRequests());
+  EXPECT_TRUE(
+      resolved_frame.GetResolvedPasses()[0].aggregation().has_copy_request);
+  EXPECT_THAT(surface->GetActiveFrame().render_pass_list[0]->copy_requests,
+              testing::IsEmpty());
 
   resolved_frame.ResetAfterAggregation();
 }
