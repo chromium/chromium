@@ -16,7 +16,6 @@
 #include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "ui/actions/action_id.h"
 
 namespace tabs {
 class TabInterface;
@@ -83,9 +82,9 @@ class OfferNotificationBubbleControllerImpl
   // AutofillBubbleControllerBase:
   void OnVisibilityChanged(content::Visibility visibility) override;
   void DoShowBubble() override;
+  // TODO(crbug.com/546252995, crbug.com/582209796): Remove this override.
   void UpdatePageActionIcon() override;
 #if !BUILDFLAG(IS_ANDROID)
-  std::optional<actions::ActionId> GetActionIdForPageAction() override;
   bool ShouldShowPageAction() override;
 #endif  //! BUILDFLAG(IS_ANDROID)
 

@@ -69,7 +69,10 @@ OfferNotificationBubbleController* OfferNotificationBubbleController::Get(
 
 OfferNotificationBubbleControllerImpl::OfferNotificationBubbleControllerImpl(
     content::WebContents* web_contents)
-    : AutofillBubbleControllerBase(web_contents),
+    : AutofillBubbleControllerBase(
+          web_contents,
+          PageActionConfig{.action_id = kActionOffersAndRewardsForPage,
+                           .should_manage_visibility = true}),
       content::WebContentsUserData<OfferNotificationBubbleControllerImpl>(
           *web_contents),
       tab_interface_(
@@ -166,11 +169,6 @@ void OfferNotificationBubbleControllerImpl::OnVisibilityChanged(
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-std::optional<actions::ActionId>
-OfferNotificationBubbleControllerImpl::GetActionIdForPageAction() {
-  return kActionOffersAndRewardsForPage;
-}
-
 bool OfferNotificationBubbleControllerImpl::ShouldShowPageAction() {
   return IsIconVisible();
 }
@@ -236,9 +234,7 @@ void OfferNotificationBubbleControllerImpl::HideBubbleAndClearTimestamp(
   bubble_shown_timestamp_ = std::nullopt;
 }
 
-// TODO(crbug.com/546252995): Investigate whether this override is needed, since
-// AutofillBubbleControllerBase::UpdatePageActionIcon() already updates the
-// page action and no other bubble overrides it.
+// TODO(crbug.com/546252995, crbug.com/582209796): Remove this override.
 void OfferNotificationBubbleControllerImpl::UpdatePageActionIcon() {
   // Page action icons do not exist for Android.
 #if !BUILDFLAG(IS_ANDROID)
@@ -254,9 +250,9 @@ void OfferNotificationBubbleControllerImpl::UpdatePageActionIcon() {
   if (!browser) {
     return;
   }
-  actions::ActionId action_id = *GetActionIdForPageAction();
-  auto* action = actions::ActionManager::Get().FindAction(
-      action_id, BrowserActions::From(browser)->root_action_item());
+  actions::ActionItem* const action = actions::ActionManager::Get().FindAction(
+      kActionOffersAndRewardsForPage,
+      BrowserActions::From(browser)->root_action_item());
   action->SetEnabled(ShouldShowPageAction());
 #endif  // BUILDFLAG(IS_ANDROID)
 }
