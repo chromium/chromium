@@ -26,6 +26,7 @@ if (!is_android) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/resources/web_app_internals:resources",
       "//chrome/browser/web_applications",
+      "//chrome/browser/web_applications/isolated_web_apps",
       "//chrome/common",
       "//components/prefs",
       "//components/webapps/browser",

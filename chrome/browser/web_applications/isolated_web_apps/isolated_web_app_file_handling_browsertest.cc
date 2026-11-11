@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_test_utils.h"
+#include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -223,8 +224,7 @@ class IsolatedWebAppFileHandlingApprovalBrowserTest
         &provider().install_manager());
     manifest_updated_observer.BeginListening({url_info.app_id()});
 
-    EXPECT_THAT(provider()
-                    .isolated_web_app_update_manager()
+    EXPECT_THAT(IsolatedWebAppUpdateManager::From(provider())
                     .DiscoverAndPrepareUpdatesNow(),
                 testing::Eq(1ul));
 

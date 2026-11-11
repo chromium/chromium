@@ -13,9 +13,13 @@
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_web_app_launcher_base.h"
-#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_installer.h"
 #include "components/account_id/account_id.h"
 #include "components/webapps/common/web_app_id.h"
+
+namespace web_app {
+class IwaInstaller;
+class IwaInstallerResult;
+}  // namespace web_app
 
 namespace ash {
 class KioskIwaData;

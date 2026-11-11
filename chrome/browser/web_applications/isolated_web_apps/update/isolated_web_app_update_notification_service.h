@@ -33,8 +33,10 @@ class IsolatedWebAppUpdateNotificationService
     : public WebAppInstallManagerObserver,
       public IsolatedWebAppUpdateManager::Observer {
  public:
-  IsolatedWebAppUpdateNotificationService(Profile& profile,
-                                          WebAppProvider& provider);
+  IsolatedWebAppUpdateNotificationService(
+      Profile& profile,
+      WebAppProvider& provider,
+      IsolatedWebAppUpdateManager& update_manager);
   ~IsolatedWebAppUpdateNotificationService() override;
 
   // Displays a system notification informing the user that an update for

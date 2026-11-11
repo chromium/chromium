@@ -8,6 +8,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/containers/map_util.h"
 #include "base/containers/to_value_list.h"
@@ -127,14 +128,28 @@ std::optional<KioskIwaInfo> DictToKioskIwaInfo(const base::DictValue& dict) {
 
 }  // namespace
 
+DEFINE_USER_DATA(IwaBundleCacheManager);
+
+// static
+IwaBundleCacheManager& IwaBundleCacheManager::From(WebAppProvider& provider) {
+  return CHECK_DEREF(Get(provider.unowned_user_data_host()));
+}
+
+// static
+const IwaBundleCacheManager& IwaBundleCacheManager::From(
+    const WebAppProvider& provider) {
+  return CHECK_DEREF(Get(provider.unowned_user_data_host()));
+}
+
 // static
 void IwaBundleCacheManager::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kKioskIwaCachePolicyState);
 }
 
-IwaBundleCacheManager::IwaBundleCacheManager(Profile& profile)
-    : profile_(profile) {}
+IwaBundleCacheManager::IwaBundleCacheManager(Profile& profile,
+                                             ui::UnownedUserDataHost& host)
+    : profile_(profile), scoped_data_holder_(host, *this) {}
 
 IwaBundleCacheManager::~IwaBundleCacheManager() = default;
 
@@ -323,8 +338,8 @@ void IwaBundleCacheManager::OnCleanupManagedGuestSessionOrphanedIwas(
 
 void IwaBundleCacheManager::TriggerIwaUpdateCheck(const WebApp& iwa) {
   CHECK(iwa.isolation_data());
-  provider_->isolated_web_app_update_manager().MaybeDiscoverAndPrepareUpdate(
-      iwa.app_id());
+  IsolatedWebAppUpdateManager::From(*provider_)
+      .MaybeDiscoverAndPrepareUpdate(iwa.app_id());
 }
 
 void IwaBundleCacheManager::RemoveObsoleteIwaVersionsCache(const WebApp& iwa) {

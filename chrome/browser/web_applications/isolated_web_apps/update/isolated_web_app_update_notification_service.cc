@@ -41,12 +41,13 @@ std::string GetNotificationIdForApp(const webapps::AppId& app_id) {
 }  // namespace
 
 IsolatedWebAppUpdateNotificationService::
-    IsolatedWebAppUpdateNotificationService(Profile& profile,
-                                            WebAppProvider& provider)
+    IsolatedWebAppUpdateNotificationService(
+        Profile& profile,
+        WebAppProvider& provider,
+        IsolatedWebAppUpdateManager& update_manager)
     : profile_(profile), provider_(provider) {
   install_manager_observation_.Observe(&provider_->install_manager());
-  update_manager_observation_.Observe(
-      &provider_->isolated_web_app_update_manager());
+  update_manager_observation_.Observe(&update_manager);
 }
 
 IsolatedWebAppUpdateNotificationService::

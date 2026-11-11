@@ -199,7 +199,7 @@ class IsolatedWebAppUpdateManagerTest : public IsolatedWebAppTest {
 
  protected:
   IsolatedWebAppUpdateManager& update_manager() {
-    return provider().isolated_web_app_update_manager();
+    return IsolatedWebAppUpdateManager::From(provider());
   }
 
   FakeWebAppUiManager& fake_ui_manager() {
@@ -348,8 +348,8 @@ class IsolatedWebAppUpdateManagerDevModeUpdateTest : public IsolatedWebAppTest {
   void SetUp() override {
     IsolatedWebAppTest::SetUp();
 
-    provider().SetEnableAutomaticIwaUpdates(
-        FakeWebAppProvider::AutomaticIwaUpdateStrategy::kForceEnabled);
+    IsolatedWebAppUpdateManager::From(provider())
+        .SetEnableAutomaticUpdatesForTesting(true);
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
@@ -382,8 +382,7 @@ TEST_F(IsolatedWebAppUpdateManagerDevModeUpdateTest,
   update_bundle->FakeInstallPageState(profile());
 
   base::test::TestFuture<base::expected<IwaVersion, std::string>> future;
-  provider()
-      .isolated_web_app_update_manager()
+  IsolatedWebAppUpdateManager::From(provider())
       .DiscoverApplyAndPrioritizeLocalDevModeUpdate(
           IwaSourceBundleDevModeWithFileOp(update_bundle->path(),
                                            IwaSourceBundleDevFileOp::kCopy),
@@ -414,8 +413,7 @@ class IsolatedWebAppUpdateManagerUpdateTest
  protected:
   void SetUp() override {
     IsolatedWebAppUpdateManagerTest::SetUp();
-    provider().SetEnableAutomaticIwaUpdates(
-        FakeWebAppProvider::AutomaticIwaUpdateStrategy::kForceEnabled);
+    update_manager().SetEnableAutomaticUpdatesForTesting(true);
 
     auto command_scheduler =
         std::make_unique<NiceMock<MockCommandScheduler>>(*profile());
@@ -432,9 +430,7 @@ class IsolatedWebAppUpdateManagerUpdateTest
     return static_cast<MockCommandScheduler&>(provider().scheduler());
   }
 
-  base::Value debug_log() {
-    return provider().isolated_web_app_update_manager().AsDebugValue();
-  }
+  base::Value debug_log() { return update_manager().AsDebugValue(); }
 
   base::ListValue UpdateDiscoveryLog() {
     return debug_log()
@@ -794,7 +790,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest, DiscoverUpdate) {
                                 const webapps::AppId expected_app_id,
                                 base::OnceClosure on_done)
         : expected_app_id_(expected_app_id), on_done_(std::move(on_done)) {
-      observation_.Observe(&provider.isolated_web_app_update_manager());
+      observation_.Observe(&IsolatedWebAppUpdateManager::From(provider));
     }
 
     void OnUpdateDiscoveryCompleted(
@@ -1436,8 +1432,7 @@ class IsolatedWebAppUpdateManagerDiscoveryTimerTest
  protected:
   void SetUp() override {
     IsolatedWebAppUpdateManagerTest::SetUp();
-    provider().SetEnableAutomaticIwaUpdates(
-        FakeWebAppProvider::AutomaticIwaUpdateStrategy::kForceEnabled);
+    update_manager().SetEnableAutomaticUpdatesForTesting(true);
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 };

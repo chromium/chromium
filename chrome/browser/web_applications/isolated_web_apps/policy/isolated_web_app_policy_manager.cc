@@ -43,6 +43,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/common/pref_names.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/isolated_web_apps/key_distribution/iwa_runtime_data_provider.h"
@@ -175,6 +176,20 @@ void OnComponentDataReady(PrefService* prefs, base::OnceClosure callback) {
 BASE_FEATURE(kIwaPolicyManagerOnDemandComponentUpdate,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+DEFINE_USER_DATA(IsolatedWebAppPolicyManager);
+
+// static
+IsolatedWebAppPolicyManager& IsolatedWebAppPolicyManager::From(
+    WebAppProvider& provider) {
+  return CHECK_DEREF(Get(provider.unowned_user_data_host()));
+}
+
+// static
+const IsolatedWebAppPolicyManager& IsolatedWebAppPolicyManager::From(
+    const WebAppProvider& provider) {
+  return CHECK_DEREF(Get(provider.unowned_user_data_host()));
+}
+
 // static
 void IsolatedWebAppPolicyManager::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
@@ -207,15 +222,17 @@ void IsolatedWebAppPolicyManager::RemoveDelayForBundleCleanupForTesting() {
   g_run_bundle_cleanup_without_delay_for_testing = true;
 }
 
-IsolatedWebAppPolicyManager::IsolatedWebAppPolicyManager(Profile* profile)
+IsolatedWebAppPolicyManager::IsolatedWebAppPolicyManager(
+    Profile* profile,
+    ui::UnownedUserDataHost& host)
     : profile_(profile),
-      install_retry_backoff_entry_(&kInstallRetryBackoffPolicy) {}
+      install_retry_backoff_entry_(&kInstallRetryBackoffPolicy),
+      scoped_data_holder_(host, *this) {}
 
 IsolatedWebAppPolicyManager::~IsolatedWebAppPolicyManager() = default;
 
-void IsolatedWebAppPolicyManager::Start(base::OnceClosure on_started_callback) {
+void IsolatedWebAppPolicyManager::Start() {
   if (!content::AreIsolatedWebAppsEnabled(profile_)) {
-    std::move(on_started_callback).Run();
     return;
   }
 
@@ -230,8 +247,6 @@ void IsolatedWebAppPolicyManager::Start(base::OnceClosure on_started_callback) {
   OnComponentDataReady(profile_->GetPrefs(),
                        base::BindOnce(&IsolatedWebAppPolicyManager::StartImpl,
                                       weak_ptr_factory_.GetWeakPtr()));
-
-  std::move(on_started_callback).Run();
 }
 
 void IsolatedWebAppPolicyManager::StartImpl() {

@@ -371,9 +371,8 @@ void PWAHandler::InstallWebBundleFromUrl(
                       expected_bundle_id.error()})));
     return;
   }
-  auto& installation_manager =
-      web_app::WebAppProvider::GetForWebApps(GetProfile())
-          ->isolated_web_app_dev_install_manager();
+  auto& installation_manager = web_app::IsolatedWebAppDevInstallManager::From(
+      *web_app::WebAppProvider::GetForWebApps(GetProfile()));
 
   if (web_bundle_url.SchemeIsFile()) {
     base::FilePath file_path;

@@ -194,7 +194,7 @@ UpdateDiscoveryTaskResultWaiter::UpdateDiscoveryTaskResultWaiter(
     : expected_app_id_(expected_app_id),
       callback_(std::move(callback)),
       provider_(provider) {
-  observation_.Observe(&provider.isolated_web_app_update_manager());
+  observation_.Observe(&IsolatedWebAppUpdateManager::From(provider));
 }
 
 UpdateDiscoveryTaskResultWaiter::~UpdateDiscoveryTaskResultWaiter() = default;
@@ -217,7 +217,7 @@ UpdateApplyTaskResultWaiter::UpdateApplyTaskResultWaiter(
     : expected_app_id_(expected_app_id),
       callback_(std::move(callback)),
       provider_(provider) {
-  observation_.Observe(&provider.isolated_web_app_update_manager());
+  observation_.Observe(&IsolatedWebAppUpdateManager::From(provider));
 }
 
 UpdateApplyTaskResultWaiter::~UpdateApplyTaskResultWaiter() = default;

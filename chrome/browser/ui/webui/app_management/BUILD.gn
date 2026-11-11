@@ -53,6 +53,7 @@ source_set("app_management") {
       "//chrome/browser/ash/app_list/arc",
       "//chrome/browser/ash/apps",
       "//chrome/browser/ui/ash/shelf",
+      "//chrome/browser/web_applications/isolated_web_apps",
       "//chromeos/ash/experiences/arc:arc_app_constants",
       "//extensions/browser",
     ]

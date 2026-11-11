@@ -25,9 +25,14 @@ void WebAppIsolationDelegate::RegisterFactory(
 
 std::unique_ptr<WebAppIsolationDelegate> WebAppIsolationDelegate::Create(
     base::PassKey<WebAppProvider> pass_key,
-    Profile* profile) {
+    Profile* profile,
+    ui::UnownedUserDataHost& unowned_user_data_host) {
   CHECK(!GetFactory().is_null());
-  return GetFactory().Run(profile);
+  return GetFactory().Run(profile, unowned_user_data_host);
 }
+
+WebAppIsolationDelegate::WebAppIsolationDelegate() = default;
+
+WebAppIsolationDelegate::~WebAppIsolationDelegate() = default;
 
 }  // namespace web_app

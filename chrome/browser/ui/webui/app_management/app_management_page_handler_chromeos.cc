@@ -131,7 +131,7 @@ class AppManagementPageHandlerChromeOs::IsolatedWebAppUpdateHandler
   IsolatedWebAppUpdateHandler(Profile& profile,
                               web_app::WebAppProvider& provider)
       : profile_(profile), provider_(provider) {
-    observation_.Observe(&provider.isolated_web_app_update_manager());
+    observation_.Observe(&web_app::IsolatedWebAppUpdateManager::From(provider));
   }
 
   ~IsolatedWebAppUpdateHandler() override {
@@ -159,7 +159,8 @@ class AppManagementPageHandlerChromeOs::IsolatedWebAppUpdateHandler
       return;
     }
 
-    if (!provider_->isolated_web_app_update_manager().DiscoverUpdate(app_id)) {
+    if (!web_app::IsolatedWebAppUpdateManager::From(*provider_)
+             .DiscoverUpdate(app_id)) {
       std::move(callback).Run(std::nullopt);
       return;
     }
@@ -314,7 +315,7 @@ class AppManagementPageHandlerChromeOs::IsolatedWebAppUpdateHandler
       return;
     }
 
-    if (!provider_->isolated_web_app_update_manager()
+    if (!web_app::IsolatedWebAppUpdateManager::From(*provider_)
              .MaybeDiscoverAndPrepareUpdate(app_id)) {
       CompleteApplyRequest(app_id, /*success=*/false);
     }

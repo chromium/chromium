@@ -203,12 +203,12 @@ base::Value BuildAppShimRegistryLocalStorageValue() {
 
 base::Value BuildIsolatedWebAppUpdaterManagerValue(
     web_app::WebAppProvider& provider) {
-  return provider.isolated_web_app_update_manager().AsDebugValue();
+  return web_app::IsolatedWebAppUpdateManager::From(provider).AsDebugValue();
 }
 
 base::Value BuildIsolatedWebAppPolicyManagerValue(
     web_app::WebAppProvider& provider) {
-  return provider.isolated_web_app_policy_manager().GetDebugValue();
+  return web_app::IsolatedWebAppPolicyManager::From(provider).GetDebugValue();
 }
 
 base::Value BuildIwaKeyDistributionInfoProviderValue(
@@ -219,7 +219,7 @@ base::Value BuildIwaKeyDistributionInfoProviderValue(
 
 #if BUILDFLAG(IS_CHROMEOS)
 base::Value BuildIwaCacheManagerValue(web_app::WebAppProvider& provider) {
-  return provider.isolated_web_app_cache_manager().GetDebugValue();
+  return web_app::IwaBundleCacheManager::From(provider).GetDebugValue();
 }
 #endif  //  BUILDFLAG(IS_CHROMEOS)
 

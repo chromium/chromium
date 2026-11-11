@@ -30,12 +30,40 @@ namespace web_app {
 
 // static
 std::unique_ptr<WebAppIsolationDelegate> WebAppIsolationDelegateImpl::Create(
-    Profile* profile) {
+    Profile* profile,
+    ui::UnownedUserDataHost& unowned_user_data_host) {
   CHECK(AreWebAppsEnabled(profile));
-  return base::WrapUnique(new WebAppIsolationDelegateImpl(profile));
+  return base::WrapUnique(
+      new WebAppIsolationDelegateImpl(profile, unowned_user_data_host));
 }
 
 WebAppIsolationDelegateImpl::~WebAppIsolationDelegateImpl() = default;
+
+void WebAppIsolationDelegateImpl::SetProvider(
+    base::PassKey<WebAppProvider> pass_key,
+    WebAppProvider& provider) {
+  dev_install_manager_.SetProvider(pass_key, provider);
+  policy_manager_.SetProvider(pass_key, provider);
+  user_installed_manager_.SetProvider(pass_key, provider);
+  update_manager_.SetProvider(pass_key, provider);
+#if BUILDFLAG(IS_CHROMEOS)
+  cache_manager_.SetProvider(pass_key, provider);
+#endif
+}
+
+void WebAppIsolationDelegateImpl::Start() {
+  dev_install_manager_.Start();
+  policy_manager_.Start();
+  user_installed_manager_.Start();
+  update_manager_.Start();
+#if BUILDFLAG(IS_CHROMEOS)
+  cache_manager_.Start();
+#endif
+}
+
+void WebAppIsolationDelegateImpl::Shutdown() {
+  update_manager_.Shutdown();
+}
 
 void WebAppIsolationDelegateImpl::ClearAppResourcesOnUninstall(
     const webapps::AppId& app_id,
@@ -88,7 +116,19 @@ WebAppIsolationDelegateImpl::GetIsolatedStoragePaths() {
   return paths;
 }
 
-WebAppIsolationDelegateImpl::WebAppIsolationDelegateImpl(Profile* profile)
-    : profile_(*profile) {}
+WebAppIsolationDelegateImpl::WebAppIsolationDelegateImpl(
+    Profile* profile,
+    ui::UnownedUserDataHost& unowned_user_data_host)
+    : profile_(*profile),
+      dev_install_manager_(*profile_, unowned_user_data_host),
+      policy_manager_(&*profile_, unowned_user_data_host),
+      user_installed_manager_(unowned_user_data_host),
+      update_manager_(*profile_, unowned_user_data_host)
+#if BUILDFLAG(IS_CHROMEOS)
+      ,
+      cache_manager_(*profile_, unowned_user_data_host)
+#endif
+{
+}
 
 }  // namespace web_app

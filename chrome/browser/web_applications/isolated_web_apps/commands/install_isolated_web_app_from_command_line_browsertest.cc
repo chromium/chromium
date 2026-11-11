@@ -55,8 +55,8 @@ class InstallIsolatedWebAppFromCommandLineBrowserTest
 
   void SetUpOnMainThread() override {
     WebAppBrowserTestBase::SetUpOnMainThread();
-    WebAppProvider::GetForTest(browser()->GetProfile())
-        ->isolated_web_app_dev_install_manager()
+    IsolatedWebAppDevInstallManager::From(
+        *WebAppProvider::GetForTest(browser()->GetProfile()))
         .OnReportInstallationResultForTesting(future_.GetCallback());
   }
 

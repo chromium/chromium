@@ -19,10 +19,14 @@
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_installer.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
-#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/webapps/isolated_web_apps/key_distribution/iwa_runtime_data_provider.h"
 #include "net/base/backoff_entry.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+
+namespace user_prefs {
+class PrefRegistrySyncable;
+}  // namespace user_prefs
 
 namespace web_app {
 
@@ -34,6 +38,12 @@ BASE_DECLARE_FEATURE(kIwaPolicyManagerOnDemandComponentUpdate);
 // of the policy installed IWAs.
 class IsolatedWebAppPolicyManager {
  public:
+  DECLARE_USER_DATA(IsolatedWebAppPolicyManager);
+
+  static IsolatedWebAppPolicyManager& From(WebAppProvider& provider);
+  static const IsolatedWebAppPolicyManager& From(
+      const WebAppProvider& provider);
+
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   static void SetOnInstallTaskCompletedCallbackForTesting(
@@ -43,14 +53,14 @@ class IsolatedWebAppPolicyManager {
   static void SetOnPolicyFullyProcessedCallbackForTesting(
       base::RepeatingClosure callback);
 
-  explicit IsolatedWebAppPolicyManager(Profile* profile);
+  IsolatedWebAppPolicyManager(Profile* profile, ui::UnownedUserDataHost& host);
 
   IsolatedWebAppPolicyManager(const IsolatedWebAppPolicyManager&) = delete;
   IsolatedWebAppPolicyManager& operator=(const IsolatedWebAppPolicyManager&) =
       delete;
   ~IsolatedWebAppPolicyManager();
 
-  void Start(base::OnceClosure on_started_callback);
+  void Start();
   void SetProvider(base::PassKey<WebAppProvider>, WebAppProvider& provider);
 
   base::Value GetDebugValue() const;
@@ -123,6 +133,8 @@ class IsolatedWebAppPolicyManager {
   base::queue<std::unique_ptr<IwaInstaller>> install_tasks_;
 
   base::CallbackListSubscription runtime_data_changed_subscription_;
+
+  ui::ScopedUnownedUserData<IsolatedWebAppPolicyManager> scoped_data_holder_;
 
   base::WeakPtrFactory<IsolatedWebAppPolicyManager> weak_ptr_factory_{this};
 };

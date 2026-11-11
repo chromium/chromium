@@ -20,8 +20,8 @@
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/model/iwa_update_info.h"
-#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/webapps/isolated_web_apps/download/bundle_downloader.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace base {
 class CommandLine;
@@ -29,6 +29,7 @@ enum class TaskPriority : uint8_t;
 }  // namespace base
 
 class Profile;
+class ScopedKeepAlive;
 
 namespace web_app {
 
@@ -48,12 +49,23 @@ class WebAppProvider;
 // the developer mode is switched on.
 class IsolatedWebAppDevInstallManager {
  public:
+  DECLARE_USER_DATA(IsolatedWebAppDevInstallManager);
+
   using MaybeInstallIsolatedWebAppCommandSuccess =
       base::expected<InstallIsolatedWebAppCommandSuccess, std::string>;
   using MaybeIwaInstallSource =
       base::expected<std::optional<IsolatedWebAppInstallSource>, std::string>;
 
-  explicit IsolatedWebAppDevInstallManager(Profile& profile);
+  static IsolatedWebAppDevInstallManager& From(WebAppProvider& provider);
+  static const IsolatedWebAppDevInstallManager& From(
+      const WebAppProvider& provider);
+
+  IsolatedWebAppDevInstallManager(Profile& profile,
+                                  ui::UnownedUserDataHost& host);
+  IsolatedWebAppDevInstallManager(const IsolatedWebAppDevInstallManager&) =
+      delete;
+  IsolatedWebAppDevInstallManager& operator=(
+      const IsolatedWebAppDevInstallManager&) = delete;
   ~IsolatedWebAppDevInstallManager();
 
   void SetProvider(base::PassKey<WebAppProvider>, WebAppProvider& provider);
@@ -224,6 +236,9 @@ class IsolatedWebAppDevInstallManager {
   std::optional<
       base::expected<InstallIsolatedWebAppCommandSuccess, std::string>>
       last_installation_result_;
+
+  ui::ScopedUnownedUserData<IsolatedWebAppDevInstallManager>
+      scoped_data_holder_;
 
   base::WeakPtrFactory<IsolatedWebAppDevInstallManager> weak_ptr_factory_{this};
 };

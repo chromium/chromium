@@ -14,6 +14,7 @@
 #include "base/callback_list.h"
 #include "base/cancelable_callback.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/map_util.h"
@@ -292,14 +293,30 @@ std::optional<UpdateInfo> GetUpdateOptionsIfAllowed(
 
 }  // namespace
 
+DEFINE_USER_DATA(IsolatedWebAppUpdateManager);
+
+// static
+IsolatedWebAppUpdateManager& IsolatedWebAppUpdateManager::From(
+    WebAppProvider& provider) {
+  return CHECK_DEREF(Get(provider.unowned_user_data_host()));
+}
+
+// static
+const IsolatedWebAppUpdateManager& IsolatedWebAppUpdateManager::From(
+    const WebAppProvider& provider) {
+  return CHECK_DEREF(Get(provider.unowned_user_data_host()));
+}
+
 IsolatedWebAppUpdateManager::IsolatedWebAppUpdateManager(
     Profile& profile,
+    ui::UnownedUserDataHost& host,
     base::TimeDelta update_discovery_frequency)
     : profile_(profile),
       automatic_updates_enabled_(content::AreIsolatedWebAppsEnabled(&profile)),
       update_discovery_frequency_(std::move(update_discovery_frequency)),
       task_queue_{*this},
-      key_rotation_backoff_retry_entry_(&kUpdateRetryBackoffPolicy) {}
+      key_rotation_backoff_retry_entry_(&kUpdateRetryBackoffPolicy),
+      scoped_data_holder_(host, *this) {}
 
 IsolatedWebAppUpdateManager::~IsolatedWebAppUpdateManager() = default;
 
@@ -319,8 +336,8 @@ void IsolatedWebAppUpdateManager::Start() {
   has_started_ = true;
 #if BUILDFLAG(IS_CHROMEOS)
   update_notification_service_ =
-      std::make_unique<IsolatedWebAppUpdateNotificationService>(*profile_,
-                                                                *provider_);
+      std::make_unique<IsolatedWebAppUpdateNotificationService>(
+          *profile_, *provider_, *this);
 #endif
   install_manager_observation_.Observe(&provider_->install_manager());
   runtime_data_changed_subscription_ =

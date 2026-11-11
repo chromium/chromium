@@ -333,6 +333,7 @@ static_library("devtools") {
       "//chrome/browser/ui/webui_browser:headers",
       "//chrome/browser/user_education",
       "//chrome/browser/web_applications",
+      "//chrome/browser/web_applications/isolated_web_apps",
       "//chrome/common",
       "//components/enterprise/buildflags",
       "//components/guest_view/browser",

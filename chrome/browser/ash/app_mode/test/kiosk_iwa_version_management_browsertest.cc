@@ -30,6 +30,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_apply_task.h"
+#include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -608,8 +609,7 @@ IN_PROC_BROWSER_TEST_F(KioskIwaSimpleUpdateTest, UpdatesToLatestAtExit) {
   ExpectAppUpdateSkipped();
 
   AddTestBundle(kVersionString2);
-  EXPECT_EQ(GetWebAppProvider()
-                .isolated_web_app_update_manager()
+  EXPECT_EQ(web_app::IsolatedWebAppUpdateManager::From(GetWebAppProvider())
                 .DiscoverAndPrepareUpdatesNow(),
             1UL);
 
@@ -847,10 +847,10 @@ class KioskIwaVersionPinningUpdateTest
   static void CheckUpdateStatusForTestCase() {
     switch (GetTestCase()) {
       case KioskIwaVersionPinningUpdateTestParams::TestCase::kNoUpdateQueued:
-        EXPECT_EQ(GetWebAppProvider()
-                      .isolated_web_app_update_manager()
-                      .DiscoverAndPrepareUpdatesNow(),
-                  0UL);
+        EXPECT_EQ(
+            web_app::IsolatedWebAppUpdateManager::From(GetWebAppProvider())
+                .DiscoverAndPrepareUpdatesNow(),
+            0UL);
         break;
       case KioskIwaVersionPinningUpdateTestParams::TestCase::kUpdateApplied:
         ExpectAppPinnedVersionDiscovered();

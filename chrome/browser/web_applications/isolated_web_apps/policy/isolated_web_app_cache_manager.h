@@ -7,6 +7,8 @@
 
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/profiles/profile.h"
@@ -17,12 +19,11 @@
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class PrefRegistrySimple;
-class Profile;
 
 namespace web_app {
-class WebAppProvider;
 
 inline constexpr char kBundleCacheIsEnabled[] = "iwa_bundle_cache_is_enabled";
 inline constexpr char kOperationsResults[] = "operations_results";
@@ -40,7 +41,12 @@ inline constexpr char kRemoveObsoleteIwaVersionCache[] =
 // anything.
 class IwaBundleCacheManager : public WebAppInstallManagerObserver {
  public:
-  explicit IwaBundleCacheManager(Profile& profile);
+  DECLARE_USER_DATA(IwaBundleCacheManager);
+
+  static IwaBundleCacheManager& From(WebAppProvider& provider);
+  static const IwaBundleCacheManager& From(const WebAppProvider& provider);
+
+  IwaBundleCacheManager(Profile& profile, ui::UnownedUserDataHost& host);
 
   IwaBundleCacheManager(const IwaBundleCacheManager&) = delete;
   IwaBundleCacheManager& operator=(const IwaBundleCacheManager&) = delete;
@@ -128,6 +134,7 @@ class IwaBundleCacheManager : public WebAppInstallManagerObserver {
 
   base::CallbackListSubscription cros_settings_subscription_;
   base::CallbackListSubscription runtime_data_subscription_;
+  ui::ScopedUnownedUserData<IwaBundleCacheManager> scoped_data_holder_;
 
   base::WeakPtrFactory<IwaBundleCacheManager> weak_ptr_factory_{this};
 };

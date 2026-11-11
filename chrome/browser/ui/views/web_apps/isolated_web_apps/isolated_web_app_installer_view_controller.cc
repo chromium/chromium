@@ -640,15 +640,16 @@ void IsolatedWebAppInstallerViewController::OnChildDialogAccepted() {
               weak_ptr_factory_.GetWeakPtr()));
 
       const SignedWebBundleMetadata& metadata = model_->bundle_metadata();
-      web_app_provider_->isolated_web_app_user_installed_manager().Install(
-          metadata.url_info(),
-          IsolatedWebAppInstallSource::FromGraphicalInstaller(
-              model_->source().WithFileOp(IwaSourceBundleProdFileOp::kCopy,
-                                          IwaSourceBundleDevFileOp::kCopy)),
-          metadata.version(),
-          callback_delayer_->StartDelayingCallback(base::BindOnce(
-              &IsolatedWebAppInstallerViewController::StoreIwaUpdateChannel,
-              weak_ptr_factory_.GetWeakPtr())));
+      IsolatedWebAppUserInstalledManager::From(*web_app_provider_)
+          .Install(
+              metadata.url_info(),
+              IsolatedWebAppInstallSource::FromGraphicalInstaller(
+                  model_->source().WithFileOp(IwaSourceBundleProdFileOp::kCopy,
+                                              IwaSourceBundleDevFileOp::kCopy)),
+              metadata.version(),
+              callback_delayer_->StartDelayingCallback(base::BindOnce(
+                  &IsolatedWebAppInstallerViewController::StoreIwaUpdateChannel,
+                  weak_ptr_factory_.GetWeakPtr())));
       break;
     }
 

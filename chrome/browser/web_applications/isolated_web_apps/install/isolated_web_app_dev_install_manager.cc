@@ -11,6 +11,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -40,6 +41,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/prefs/pref_service.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/isolated_web_apps/download/bundle_downloader.h"
@@ -196,11 +198,27 @@ net::PartialNetworkTrafficAnnotationTag GetDownloadAnnotationTag(
 }
 }  // namespace
 
+DEFINE_USER_DATA(IsolatedWebAppDevInstallManager);
+
+// static
+IsolatedWebAppDevInstallManager& IsolatedWebAppDevInstallManager::From(
+    WebAppProvider& provider) {
+  return CHECK_DEREF(Get(provider.unowned_user_data_host()));
+}
+
+// static
+const IsolatedWebAppDevInstallManager& IsolatedWebAppDevInstallManager::From(
+    const WebAppProvider& provider) {
+  return CHECK_DEREF(Get(provider.unowned_user_data_host()));
+}
+
 IsolatedWebAppDevInstallManager::IsolatedWebAppDevInstallManager(
-    Profile& profile)
+    Profile& profile,
+    ui::UnownedUserDataHost& host)
     : profile_(profile),
       are_isolated_web_apps_enabled_(
-          content::AreIsolatedWebAppsEnabled(&profile)) {}
+          content::AreIsolatedWebAppsEnabled(&profile)),
+      scoped_data_holder_(host, *this) {}
 
 IsolatedWebAppDevInstallManager::~IsolatedWebAppDevInstallManager() = default;
 
@@ -375,7 +393,7 @@ void IsolatedWebAppDevInstallManager::MaybeInstallIwaFromCommandLine(
              std::unique_ptr<ScopedKeepAlive> keep_alive,
              std::unique_ptr<ScopedProfileKeepAlive>
                  optional_profile_keep_alive) {
-            provider.isolated_web_app_dev_install_manager()
+            IsolatedWebAppDevInstallManager::From(provider)
                 .InstallFromCommandLine(
                     command_line, std::move(keep_alive),
                     std::move(optional_profile_keep_alive),
@@ -610,12 +628,10 @@ void IsolatedWebAppDevInstallManager::OnWebBundleDownloaded(
   base::OnceClosure bundle_keep_alive =
       base::DoNothingWithBoundArgs(std::move(bundle));
 
-  WebAppProvider::GetForWebApps(profile())
-      ->isolated_web_app_dev_install_manager()
-      .InstallIsolatedWebAppFromDevModeBundle(
-          file, std::move(install_surface),
-          std::move(callback).Then(std::move(bundle_keep_alive)),
-          std::move(expected_bundle_id), std::move(optional_update_info));
+  InstallIsolatedWebAppFromDevModeBundle(
+      file, std::move(install_surface),
+      std::move(callback).Then(std::move(bundle_keep_alive)),
+      std::move(expected_bundle_id), std::move(optional_update_info));
 }
 
 }  // namespace web_app

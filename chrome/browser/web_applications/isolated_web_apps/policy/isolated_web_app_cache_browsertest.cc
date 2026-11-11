@@ -54,6 +54,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_apply_task.h"
+#include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -534,8 +535,7 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
   }
 
   void DiscoverAndPrepareUpdatesNow() {
-    EXPECT_THAT(provider()
-                    .isolated_web_app_update_manager()
+    EXPECT_THAT(IsolatedWebAppUpdateManager::From(provider())
                     .DiscoverAndPrepareUpdatesNow(),
                 Eq(1u));
   }
@@ -574,7 +574,7 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
     base::ScopedAllowBlockingForTesting allow_blocking;
     bool success = base::test::RunUntil([&]() {
       base::Value debug_value =
-          provider().isolated_web_app_cache_manager().GetDebugValue();
+          IwaBundleCacheManager::From(provider()).GetDebugValue();
       const auto* operations_results =
           debug_value.GetDict().FindList(kOperationsResults);
       if (!operations_results) {
@@ -592,10 +592,8 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
     });
     ASSERT_TRUE(success)
         << "CheckCacheManagerDebugOperationResult failed! Expected operation: "
-        << operation_name << " -> " << result
-        << "\nActual debug_value:\n"
-        << provider()
-               .isolated_web_app_cache_manager()
+        << operation_name << " -> " << result << "\nActual debug_value:\n"
+        << IwaBundleCacheManager::From(provider())
                .GetDebugValue()
                .DebugString();
   }
@@ -883,7 +881,7 @@ IN_PROC_BROWSER_TEST_P(IwaCacheOneAppTest, GetDebugValue) {
   WaitUntilPathExists(GetCachedBundlePath(GetWebBundleId1(), GetBaseVersion()));
 
   base::Value debug_value =
-      provider().isolated_web_app_cache_manager().GetDebugValue();
+      IwaBundleCacheManager::From(provider()).GetDebugValue();
   EXPECT_EQ(debug_value.GetDict().FindBool(kBundleCacheIsEnabled), true);
   EXPECT_NE(debug_value.GetDict().Find(kOperationsResults), nullptr);
 }

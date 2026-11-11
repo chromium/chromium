@@ -21,6 +21,7 @@
 #include "chrome/browser/file_select_helper.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_dev_install_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_check_and_prepare_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_manager.h"
@@ -239,7 +240,8 @@ IwaDevPageHandler::IwaDevPageHandler(
       receiver_(this, std::move(receiver)),
       page_(std::move(page)) {
   install_observation_.Observe(&provider_->install_manager());
-  update_observation_.Observe(&provider_->isolated_web_app_update_manager());
+  update_observation_.Observe(
+      &web_app::IsolatedWebAppUpdateManager::From(*provider_));
 }
 
 IwaDevPageHandler::~IwaDevPageHandler() = default;
@@ -273,7 +275,7 @@ void IwaDevPageHandler::UninstallApp(const std::string& app_id,
 void IwaDevPageHandler::InstallAppFromDevProxy(
     const GURL& url,
     InstallAppFromDevProxyCallback callback) {
-  provider_->isolated_web_app_dev_install_manager()
+  web_app::IsolatedWebAppDevInstallManager::From(*provider_)
       .InstallIsolatedWebAppFromDevModeProxy(
           url, web_app::IsolatedWebAppDevInstallManager::InstallSurface::kDevUi,
           base::BindOnce(&MapToMojomEmptyResult<
@@ -305,7 +307,7 @@ void IwaDevPageHandler::InstallAppFromUpdateManifest(
             "Invalid update channel provided.")));
       });
 
-  provider_->isolated_web_app_dev_install_manager()
+  web_app::IsolatedWebAppDevInstallManager::From(*provider_)
       .DownloadAndInstallIsolatedWebAppFromDevModeBundle(
           web_bundle_url,
           web_app::IsolatedWebAppDevInstallManager::InstallSurface::kDevUi,
@@ -439,7 +441,7 @@ void IwaDevPageHandler::InstallStagedLocalWebBundle(
     return;
   }
 
-  provider_->isolated_web_app_dev_install_manager()
+  web_app::IsolatedWebAppDevInstallManager::From(*provider_)
       .InstallIsolatedWebAppFromDevModeBundle(
           *staged_bundle_path_,
           web_app::IsolatedWebAppDevInstallManager::InstallSurface::kDevUi,
@@ -638,15 +640,16 @@ void IwaDevPageHandler::UpdateManifestInstalledApp(
 
   manifest_update_requests_.emplace(app_id, std::move(callback));
 
-  provider_->isolated_web_app_update_manager().DiscoverAndPrepareUpdate(
-      *web_app::IsolatedWebAppUrlInfo::Create(iwa->scope()),
-      *isolation_data.update_manifest_url(),
-      /*update_channel=*/
-      isolation_data.update_channel().value_or(
-          web_app::UpdateChannel::default_channel()),
-      /*allow_downgrades=*/options->allow_downgrades,
-      /*pinned_version=*/std::move(pinned_version),
-      /*dev_mode=*/true);
+  web_app::IsolatedWebAppUpdateManager::From(*provider_)
+      .DiscoverAndPrepareUpdate(
+          *web_app::IsolatedWebAppUrlInfo::Create(iwa->scope()),
+          *isolation_data.update_manifest_url(),
+          /*update_channel=*/
+          isolation_data.update_channel().value_or(
+              web_app::UpdateChannel::default_channel()),
+          /*allow_downgrades=*/options->allow_downgrades,
+          /*pinned_version=*/std::move(pinned_version),
+          /*dev_mode=*/true);
 }
 
 void IwaDevPageHandler::OnUpdateDiscoverAndPrepareTaskCompleted(
@@ -792,7 +795,7 @@ void IwaDevPageHandler::ApplyDevModeUpdate(
     return;
   }
 
-  provider_->isolated_web_app_update_manager()
+  web_app::IsolatedWebAppUpdateManager::From(*provider_)
       .DiscoverApplyAndPrioritizeLocalDevModeUpdate(
           location.has_value()
               ? *location

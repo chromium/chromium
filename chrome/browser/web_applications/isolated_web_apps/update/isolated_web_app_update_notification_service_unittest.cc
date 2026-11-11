@@ -54,7 +54,7 @@ class IsolatedWebAppUpdateNotificationServiceTest : public IsolatedWebAppTest {
   }
 
   IsolatedWebAppUpdateManager& update_manager() {
-    return provider().isolated_web_app_update_manager();
+    return IsolatedWebAppUpdateManager::From(provider());
   }
 
   IsolatedWebAppUrlInfo InstallIwaWithPendingUpdate(

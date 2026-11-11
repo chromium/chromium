@@ -340,6 +340,7 @@
 #include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/browser/user_education/browser_user_education_storage_service.h"
+#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 #include "components/headless/policy/headless_mode_prefs.h"  // nogncheck crbug.com/40147906
 #include "components/live_caption/live_caption_controller.h"
@@ -2384,6 +2385,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   tab_groups::saved_tab_groups::prefs::RegisterProfilePrefs(registry);
   tab_search_prefs::RegisterProfilePrefs(registry);
   toolbar::RegisterProfilePrefs(registry);
+  web_app::IsolatedWebAppPolicyManager::RegisterProfilePrefs(registry);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_LENS_OVERLAY_BACKEND)

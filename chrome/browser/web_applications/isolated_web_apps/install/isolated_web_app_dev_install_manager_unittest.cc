@@ -158,7 +158,7 @@ class IsolatedWebAppDevInstallManagerTest : public WebAppTest {
   }
 
   IsolatedWebAppDevInstallManager& manager() {
-    return fake_provider().isolated_web_app_dev_install_manager();
+    return IsolatedWebAppDevInstallManager::From(fake_provider());
   }
 
  private:

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_user_installed_manager.h"
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/types/expected.h"
@@ -20,9 +21,23 @@
 
 namespace web_app {
 
+DEFINE_USER_DATA(IsolatedWebAppUserInstalledManager);
+
+// static
+IsolatedWebAppUserInstalledManager& IsolatedWebAppUserInstalledManager::From(
+    WebAppProvider& provider) {
+  return CHECK_DEREF(Get(provider.unowned_user_data_host()));
+}
+
+// static
+const IsolatedWebAppUserInstalledManager&
+IsolatedWebAppUserInstalledManager::From(const WebAppProvider& provider) {
+  return CHECK_DEREF(Get(provider.unowned_user_data_host()));
+}
+
 IsolatedWebAppUserInstalledManager::IsolatedWebAppUserInstalledManager(
-    Profile& profile)
-    : profile_(profile) {}
+    ui::UnownedUserDataHost& host)
+    : scoped_data_holder_(host, *this) {}
 
 IsolatedWebAppUserInstalledManager::~IsolatedWebAppUserInstalledManager() =
     default;

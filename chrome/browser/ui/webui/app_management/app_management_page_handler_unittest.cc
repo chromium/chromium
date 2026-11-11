@@ -45,7 +45,6 @@
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "chrome/browser/ui/webui/app_management/app_management_page_handler_chromeos.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
-#include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_manager.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
 #include "chromeos/ash/experiences/arc/test/fake_intent_helper_instance.h"

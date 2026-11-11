@@ -5,13 +5,14 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_USER_INSTALLED_MANAGER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_USER_INSTALLED_MANAGER_H_
 
+#include <optional>
+
 #include "base/callback_list.h"
-#include "base/memory/raw_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
-
-class Profile;
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace web_app {
 
@@ -30,7 +31,17 @@ class IsolatedWebAppUserInstalledManager {
                      InstallIsolatedWebAppCommandError>)>;
 
  public:
-  explicit IsolatedWebAppUserInstalledManager(Profile& profile);
+  DECLARE_USER_DATA(IsolatedWebAppUserInstalledManager);
+
+  static IsolatedWebAppUserInstalledManager& From(WebAppProvider& provider);
+  static const IsolatedWebAppUserInstalledManager& From(
+      const WebAppProvider& provider);
+
+  explicit IsolatedWebAppUserInstalledManager(ui::UnownedUserDataHost& host);
+  IsolatedWebAppUserInstalledManager(
+      const IsolatedWebAppUserInstalledManager&) = delete;
+  IsolatedWebAppUserInstalledManager& operator=(
+      const IsolatedWebAppUserInstalledManager&) = delete;
   ~IsolatedWebAppUserInstalledManager();
 
   void Start();
@@ -44,9 +55,10 @@ class IsolatedWebAppUserInstalledManager {
  private:
   void OnRuntimeDataChanged();
 
-  raw_ref<Profile> profile_;
-  raw_ptr<WebAppProvider> provider_;
+  raw_ptr<WebAppProvider> provider_ = nullptr;
   base::CallbackListSubscription runtime_data_subscription_;
+  ui::ScopedUnownedUserData<IsolatedWebAppUserInstalledManager>
+      scoped_data_holder_;
 
   base::WeakPtrFactory<IsolatedWebAppUserInstalledManager> weak_factory_{this};
 };

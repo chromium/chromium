@@ -11,7 +11,6 @@
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
-#include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -21,6 +20,7 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
+#include "content/public/browser/isolated_web_apps_policy.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -115,14 +115,10 @@ TEST_F(IsolatedWebAppUpdateApplyWaiterTest,
   EXPECT_THAT(profile->IsGuestSession(), IsTrue());
   EXPECT_THAT(profile->IsOffTheRecord(), IsTrue());
   EXPECT_THAT(AreWebAppsEnabled(profile), IsTrue());
+  EXPECT_THAT(content::AreIsolatedWebAppsEnabled(profile), IsFalse());
 
   auto* provider = FakeWebAppProvider::Get(profile);
-  provider->SetEnableAutomaticIwaUpdates(
-      FakeWebAppProvider::AutomaticIwaUpdateStrategy::kDefault);
   test::AwaitStartWebAppProviderAndSubsystems(profile);
-  EXPECT_THAT(
-      provider->isolated_web_app_update_manager().AreAutomaticUpdatesEnabled(),
-      IsFalse());
 
   IsolatedWebAppUpdateApplyWaiter waiter(url_info_, provider->ui_manager());
   base::test::TestFuture<std::unique_ptr<ScopedKeepAlive>,

@@ -80,7 +80,10 @@ FakeWebAppProvider* FakeWebAppProvider::Get(Profile* profile) {
 }
 
 FakeWebAppProvider::FakeWebAppProvider(Profile* profile)
-    : WebAppProvider(profile) {}
+    : WebAppProvider(profile) {
+  IsolatedWebAppUpdateManager::From(*this).SetEnableAutomaticUpdatesForTesting(
+      false);
+}
 
 FakeWebAppProvider::~FakeWebAppProvider() = default;
 
@@ -107,12 +110,6 @@ void FakeWebAppProvider::UseRealOsIntegrationManager() {
   SetOsIntegrationManager(std::make_unique<OsIntegrationManager>(
       profile_, std::move(file_handler_manager),
       std::move(protocol_handler_manager)));
-}
-
-void FakeWebAppProvider::SetEnableAutomaticIwaUpdates(
-    AutomaticIwaUpdateStrategy automatic_iwa_update_strategy) {
-  CheckNotStartedAndDisconnect();
-  automatic_iwa_update_strategy_ = automatic_iwa_update_strategy;
 }
 
 void FakeWebAppProvider::SetRegistrar(
@@ -317,8 +314,8 @@ void FakeWebAppProvider::Shutdown() {
     externally_managed_app_manager_->Shutdown();
   if (manifest_update_manager_)
     manifest_update_manager_->Shutdown();
-  if (isolated_web_app_update_manager_) {
-    isolated_web_app_update_manager_->Shutdown();
+  if (isolation_delegate_) {
+    isolation_delegate_->Shutdown();
   }
   if (install_manager_)
     install_manager_->Shutdown();
@@ -358,19 +355,6 @@ void FakeWebAppProvider::StartImpl() {
 
   preinstalled_web_app_manager_->SetSkipStartupSynchronizeForTesting(
       !synchronize_preinstalled_app_on_startup_);
-
-  switch (automatic_iwa_update_strategy_) {
-    case AutomaticIwaUpdateStrategy::kDefault:
-      break;
-    case AutomaticIwaUpdateStrategy::kForceDisabled:
-      isolated_web_app_update_manager_->SetEnableAutomaticUpdatesForTesting(
-          false);
-      break;
-    case AutomaticIwaUpdateStrategy::kForceEnabled:
-      isolated_web_app_update_manager_->SetEnableAutomaticUpdatesForTesting(
-          true);
-      break;
-  }
 
   if (run_system_on_start_) {
     WebAppProvider::StartImpl();

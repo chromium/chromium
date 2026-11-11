@@ -488,6 +488,7 @@ source_set("impl") {
       "//chrome/browser/ui/views/frame:glass_frame_service",
       "//chrome/browser/ui/webui/history",
       "//chrome/browser/ui/webui/tab_search",
+      "//chrome/browser/web_applications/isolated_web_apps",
     ]
   }
 

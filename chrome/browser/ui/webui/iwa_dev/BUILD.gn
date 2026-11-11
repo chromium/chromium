@@ -26,6 +26,7 @@ source_set("iwa_dev") {
     "iwa_dev_ui.cc",
     "iwa_dev_ui.h",
   ]
+  public_deps = [ "//chrome/browser/web_applications/isolated_web_apps" ]
   deps = [
     ":mojo_bindings",
     "//base",

@@ -112,8 +112,8 @@ class ManifestUpdateTest : public IsolatedWebAppTest {
   void SetUp() override {
     resetter_ = IwaRuntimeDataProvider::SetInstanceForTesting(&data_provider_);
     IsolatedWebAppTest::SetUp();
-    provider().SetEnableAutomaticIwaUpdates(
-        FakeWebAppProvider::AutomaticIwaUpdateStrategy::kForceEnabled);
+    IsolatedWebAppUpdateManager::From(provider())
+        .SetEnableAutomaticUpdatesForTesting(true);
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
@@ -157,8 +157,7 @@ class ManifestUpdateTest : public IsolatedWebAppTest {
         CreateBundle(CHECK_DEREF(profile()), manifest.SetVersion("2.0.0")),
         {{StableChannel()}});
 
-    base::TimeTicks update_time = provider()
-                                      .isolated_web_app_update_manager()
+    base::TimeTicks update_time = IsolatedWebAppUpdateManager::From(provider())
                                       .GetNextUpdateDiscoveryTimeForTesting()
                                       .value();
     task_environment().FastForwardBy(update_time - base::TimeTicks::Now());

@@ -31,6 +31,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
+#include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/scheduler/manifest_silent_update_result.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
@@ -216,8 +217,7 @@ class SubAppUpdateBrowserTest : public IsolatedWebAppBrowserTestHarness {
         IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(bundle_id).app_id(),
         update_future.GetCallback());
 
-    EXPECT_EQ(1ul, provider()
-                       .isolated_web_app_update_manager()
+    EXPECT_EQ(1ul, IsolatedWebAppUpdateManager::From(provider())
                        .DiscoverAndPrepareUpdatesNow());
     EXPECT_THAT(
         update_future.Take(),

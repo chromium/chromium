@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/webui/iwa_dev/iwa_dev_ui.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest_fetcher.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -1172,7 +1173,8 @@ IN_PROC_BROWSER_TEST_F(IwaDevHandlerUpdateManifestBrowserTest,
       ServeUpdateManifest("2.0.0", bundle_server->GetURL("/app.swbn"));
   SetUpdateInfo(app.app_id(), manifest_server->GetURL("/update_manifest.json"));
 
-  provider().isolated_web_app_update_manager().DiscoverAndPrepareUpdatesNow();
+  web_app::IsolatedWebAppUpdateManager::From(provider())
+      .DiscoverAndPrepareUpdatesNow();
 
   auto result = CallUpdateManifestInstalledApp(app.app_id());
   EXPECT_TRUE(result.has_value());

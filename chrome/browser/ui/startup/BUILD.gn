@@ -255,6 +255,7 @@ source_set("impl") {
       "//chrome/browser/ui/webui/settings",
       "//chrome/browser/ui/webui/whats_new",
       "//chrome/browser/web_applications",
+      "//chrome/browser/web_applications/isolated_web_apps",
       "//chrome/common",
       "//chrome/common:buildflags",
       "//chrome/common:version_header",

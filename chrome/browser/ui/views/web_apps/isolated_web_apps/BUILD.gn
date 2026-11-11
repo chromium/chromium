@@ -156,6 +156,7 @@ source_set("isolated_web_app_installer_view_controller") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/views:layout_provider",
     "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications/isolated_web_apps",
     "//components/strings:components_strings",
     "//components/webapps/common",
     "//content/public/browser",

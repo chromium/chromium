@@ -18,6 +18,7 @@ static_library("isolated_web_app") {
     ":policy_util",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications/isolated_web_apps",
     "//chromeos/ash/components/policy/device_local_account",
     "//chromeos/ash/components/settings",
     "//components/prefs",

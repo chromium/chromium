@@ -18,6 +18,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/webapps/common/manifest_id_constants.h"
 #include "components/webapps/common/web_app_id.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -39,10 +40,6 @@ class FakeWebAppProvider;
 class FileUtilsWrapper;
 enum class WebAppDatabaseOpenResult;
 class GeneratedIconFixManager;
-class IsolatedWebAppDevInstallManager;
-class IsolatedWebAppPolicyManager;
-class IsolatedWebAppUpdateManager;
-class IsolatedWebAppUserInstalledManager;
 class ManifestUpdateManager;
 class NavigationCapturingLog;
 class OsIntegrationManager;
@@ -66,7 +63,6 @@ struct FetchManifestAndUpdateCompletionInfo;
 
 #if BUILDFLAG(IS_CHROMEOS)
 class WebAppRunOnOsLoginManager;
-class IwaBundleCacheManager;
 #endif
 
 // WebAppProvider is the heart of Chrome web app code.
@@ -175,26 +171,25 @@ class WebAppProvider : public KeyedService {
   // Clients can use WebAppPolicyManager to request updates of policy installed
   // Web Apps.
   WebAppPolicyManager& policy_manager();
-  // `IsolatedWebAppDevInstallManager` is the entry point for Isolated Web App
-  // installation.
-  IsolatedWebAppDevInstallManager& isolated_web_app_dev_install_manager();
-  // Keeps Isolated Web Apps up to date by regularly checking for updates,
-  // downloading them, and applying them.
-  IsolatedWebAppUpdateManager& isolated_web_app_update_manager();
-  // Manages the lifetime of IsolatedWebApps, e.g., removes apps that are added
-  // to the blocklist
-  IsolatedWebAppUserInstalledManager& isolated_web_app_user_installed_manager();
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Runs web apps on OS login.
   WebAppRunOnOsLoginManager& run_on_os_login_manager();
-
-  // Isolated Web App bundle cache manager.
-  IwaBundleCacheManager& isolated_web_app_cache_manager();
 #endif
 
-  IsolatedWebAppPolicyManager& isolated_web_app_policy_manager();
   WebAppIsolationDelegate& isolation_delegate();
+  const WebAppIsolationDelegate& isolation_delegate() const;
+
+  // Hosts decoupled per-profile subsystems (such as the Isolated Web App
+  // managers in `//chrome/browser/web_applications/isolated_web_apps`) that
+  // register themselves via `ui::ScopedUnownedUserData` and are accessed via
+  // `<Subsystem>::From(provider)`.
+  ui::UnownedUserDataHost& unowned_user_data_host() {
+    return unowned_user_data_host_;
+  }
+  const ui::UnownedUserDataHost& unowned_user_data_host() const {
+    return unowned_user_data_host_;
+  }
 
   WebAppUiManager& ui_manager();
 
@@ -295,6 +290,11 @@ class WebAppProvider : public KeyedService {
       const webapps::AppId& app_id,
       FetchManifestAndUpdateCompletionInfo completion_info);
 
+  // Must remain the first data member so it is destroyed last and outlives
+  // `database_factory_`, `registrar_`, `isolation_delegate_`, and any other
+  // subsystems registered on it via `ui::ScopedUnownedUserData`.
+  ui::UnownedUserDataHost unowned_user_data_host_;
+
   std::unique_ptr<AbstractWebAppDatabaseFactory> database_factory_;
   std::unique_ptr<WebAppRegistrarMutable> registrar_;
   std::unique_ptr<WebAppSyncBridge> sync_bridge_;
@@ -306,15 +306,8 @@ class WebAppProvider : public KeyedService {
   std::unique_ptr<WebAppAudioFocusIdMap> audio_focus_id_map_;
   std::unique_ptr<WebAppInstallManager> install_manager_;
   std::unique_ptr<WebAppPolicyManager> web_app_policy_manager_;
-  std::unique_ptr<IsolatedWebAppDevInstallManager>
-      isolated_web_app_dev_install_manager_;
-  std::unique_ptr<IsolatedWebAppUpdateManager> isolated_web_app_update_manager_;
-  std::unique_ptr<IsolatedWebAppUserInstalledManager>
-      isolated_web_app_user_installed_manager_;
-  std::unique_ptr<IsolatedWebAppPolicyManager> isolated_web_app_policy_manager_;
   std::unique_ptr<WebAppIsolationDelegate> isolation_delegate_;
 #if BUILDFLAG(IS_CHROMEOS)
-  std::unique_ptr<IwaBundleCacheManager> isolated_web_app_cache_manager_;
   std::unique_ptr<WebAppRunOnOsLoginManager> web_app_run_on_os_login_manager_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<WebAppUiManager> ui_manager_;

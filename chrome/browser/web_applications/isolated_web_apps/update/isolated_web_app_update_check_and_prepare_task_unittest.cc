@@ -115,10 +115,6 @@ class IsolatedWebAppUpdateCheckAndPrepareTaskTest : public WebAppTest {
   }
 
  protected:
-  IsolatedWebAppUpdateManager& update_manager() {
-    return fake_provider().isolated_web_app_update_manager();
-  }
-
   FakeWebContentsManager& fake_web_contents_manager() {
     return static_cast<FakeWebContentsManager&>(
         fake_provider().web_contents_manager());

@@ -12,7 +12,6 @@
 #include "chrome/browser/web_applications/daily_metrics_helper.h"
 #include "chrome/browser/web_applications/extensions_manager.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
-#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
@@ -86,7 +85,6 @@ void WebAppProviderFactory::RegisterProfilePrefs(
   PreinstalledWebAppManager::RegisterProfilePrefs(registry);
   WebAppPrefGuardrails::RegisterProfilePrefs(registry);
   WebAppPolicyManager::RegisterProfilePrefs(registry);
-  IsolatedWebAppPolicyManager::RegisterProfilePrefs(registry);
 
   RegisterInstallBounceMetricProfilePrefs(registry);
   RegisterDailyWebAppMetricsProfilePrefs(registry);
