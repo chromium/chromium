@@ -18,13 +18,19 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/test/bind.h"
 #include "chrome/browser/extensions/api/image_writer_private/destroy_partitions_operation.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_constants.h"
 #include "chrome/browser/extensions/api/image_writer_private/operation_manager.h"
 #include "chrome/browser/extensions/api/image_writer_private/removable_storage_provider_android.h"
 #include "chrome/browser/extensions/api/image_writer_private/test_utils.h"
 #include "chrome/browser/extensions/api/image_writer_private/write_from_file_operation.h"
+#include "chrome/browser/extensions/api/image_writer_private/write_from_url_operation.h"
 #include "chrome/test/base/testing_profile.h"
+#include "content/public/browser/storage_partition.h"
+#include "content/public/test/url_loader_interceptor.h"
+#include "crypto/obsolete/md5.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -34,8 +40,10 @@
 #include "services/device/public/mojom/usb_enumeration_options.mojom.h"
 #include "services/device/public/mojom/usb_manager.mojom.h"
 #include "services/device/public/mojom/usb_manager_client.mojom.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace extensions::image_writer {
 namespace {
@@ -60,8 +68,10 @@ struct SimulatedUsbDiskState {
   bool fail_read_capacity = false;
   bool fail_read_10 = false;
   bool disconnect_on_release = false;
+  bool disconnect_after_sync_cache = false;
+  base::OnceClosure on_write_payload_in_flight;
   int open_count = 0;
-  std::optional<size_t> corrupt_byte_offset_on_second_open;
+  std::optional<size_t> corrupt_byte_offset_after_sync;
   std::vector<uint8_t> executed_opcodes;
   bool interface_released = false;
   bool device_closed = false;
@@ -183,6 +193,11 @@ class InMemoryBotUsbDisk : public device::mojom::UsbDevice {
 
     if (expecting_write_payload_) {
       expecting_write_payload_ = false;
+      if (state_->on_write_payload_in_flight) {
+        pending_write_callback_ = std::move(callback);
+        std::move(state_->on_write_payload_in_flight).Run();
+        return;
+      }
       const size_t offset =
           static_cast<size_t>(current_logical_block_address_) * kBlockSize;
       const size_t length = static_cast<size_t>(current_blocks_) * kBlockSize;
@@ -216,6 +231,10 @@ class InMemoryBotUsbDisk : public device::mojom::UsbDevice {
       if (current_opcode_ == kScsiTestUnitReadyOpcode && unit_attention_) {
         status = 1;
       }
+      if (current_opcode_ == kScsiSynchronizeCache10Opcode &&
+          state_->corrupt_byte_offset_after_sync.has_value()) {
+        state_->storage[*state_->corrupt_byte_offset_after_sync] ^= 0xFF;
+      }
       std::vector<uint8_t> status_bytes(kCommandStatusWrapperSize, 0);
       base::SpanWriter<uint8_t> writer(status_bytes);
       writer.WriteU32LittleEndian(kCommandStatusWrapperSignature);
@@ -224,6 +243,10 @@ class InMemoryBotUsbDisk : public device::mojom::UsbDevice {
       writer.WriteU8LittleEndian(status);
       std::move(callback).Run(device::mojom::UsbTransferStatus::COMPLETED,
                               std::move(status_bytes));
+      if (current_opcode_ == kScsiSynchronizeCache10Opcode &&
+          state_->disconnect_after_sync_cache && self_receiver_) {
+        self_receiver_->Close();
+      }
       return;
     }
 
@@ -306,6 +329,7 @@ class InMemoryBotUsbDisk : public device::mojom::UsbDevice {
   uint32_t current_logical_block_address_ = 0;
   uint16_t current_blocks_ = 0;
   uint8_t next_status_ = 0;
+  GenericTransferOutCallback pending_write_callback_;
 };
 
 class FakeBotUsbDeviceManager : public device::mojom::UsbDeviceManager {
@@ -402,11 +426,6 @@ class FakeBotUsbDeviceManager : public device::mojom::UsbDeviceManager {
     }
     last_unrestricted_device_guid_ = guid;
     ++disk_state_.open_count;
-    if (disk_state_.open_count == 2 &&
-        disk_state_.corrupt_byte_offset_on_second_open.has_value()) {
-      disk_state_.storage[*disk_state_.corrupt_byte_offset_on_second_open] ^=
-          0xFF;
-    }
     auto disk = std::make_unique<InMemoryBotUsbDisk>(&disk_state_);
     InMemoryBotUsbDisk* raw_disk = disk.get();
     auto ref = mojo::MakeSelfOwnedReceiver(std::move(disk),
@@ -481,14 +500,13 @@ TEST_F(OperationAndroidUsbTest, WriteFromFileOverUsbBotSucceeds) {
   run_loop.Run();
 
   EXPECT_EQ(usb_manager_.last_unrestricted_device_guid(), "guid-usb-flash");
+  EXPECT_EQ(usb_manager_.disk_state().open_count, 1);
   EXPECT_THAT(usb_manager_.disk_state().executed_opcodes,
               ElementsAre(kScsiTestUnitReadyOpcode, kScsiRequestSenseOpcode,
                           kScsiTestUnitReadyOpcode, kScsiReadCapacity10Opcode,
                           kScsiWrite10Opcode, kScsiWrite10Opcode,
-                          kScsiSynchronizeCache10Opcode,
-                          kScsiTestUnitReadyOpcode, kScsiRequestSenseOpcode,
-                          kScsiTestUnitReadyOpcode, kScsiReadCapacity10Opcode,
-                          kScsiRead10Opcode, kScsiRead10Opcode));
+                          kScsiSynchronizeCache10Opcode, kScsiRead10Opcode,
+                          kScsiRead10Opcode));
   EXPECT_TRUE(usb_manager_.disk_state().interface_released);
   EXPECT_TRUE(usb_manager_.disk_state().device_closed);
 
@@ -505,7 +523,7 @@ TEST_F(OperationAndroidUsbTest, WriteFromFileOverUsbBotSucceeds) {
 }
 
 TEST_F(OperationAndroidUsbTest, WriteFromFileOverUsbBotDetectsVerifyMismatch) {
-  usb_manager_.disk_state().corrupt_byte_offset_on_second_open = 0;
+  usb_manager_.disk_state().corrupt_byte_offset_after_sync = 0;
   auto operation = base::MakeRefCounted<WriteFromFileOperation>(
       manager_.AsWeakPtr(), kDummyExtensionId, test_utils_.GetImagePath(),
       "usb:guid-usb-flash:0781:5581",
@@ -529,53 +547,53 @@ TEST_F(OperationAndroidUsbTest, WriteFromFileOverUsbBotDetectsVerifyMismatch) {
   operation->PostTask(base::BindOnce(&Operation::Start, operation));
   run_loop.Run();
 
-  // Verification should stop immediately after the first mismatching READ (10)
-  // chunk without reading the second chunk.
-  EXPECT_THAT(
-      usb_manager_.disk_state().executed_opcodes,
-      ElementsAre(kScsiTestUnitReadyOpcode, kScsiRequestSenseOpcode,
-                  kScsiTestUnitReadyOpcode, kScsiReadCapacity10Opcode,
-                  kScsiWrite10Opcode, kScsiWrite10Opcode,
-                  kScsiSynchronizeCache10Opcode, kScsiTestUnitReadyOpcode,
-                  kScsiRequestSenseOpcode, kScsiTestUnitReadyOpcode,
-                  kScsiReadCapacity10Opcode, kScsiRead10Opcode));
-}
-
-TEST_F(OperationAndroidUsbTest,
-       WriteFromFileOverUsbBotDetectsLastChunkVerifyMismatch) {
-  usb_manager_.disk_state().corrupt_byte_offset_on_second_open =
-      kTestFileSize - 1;
-  auto operation = base::MakeRefCounted<WriteFromFileOperation>(
-      manager_.AsWeakPtr(), kDummyExtensionId, test_utils_.GetImagePath(),
-      "usb:guid-usb-flash:0781:5581",
-      base::FilePath(FILE_PATH_LITERAL("/var/tmp")));
-  operation->SetUsbDeviceManagerBinderForTesting(base::BindRepeating(
-      &FakeBotUsbDeviceManager::BindReceiver, base::Unretained(&usb_manager_)));
-
-  base::RunLoop run_loop;
-  EXPECT_CALL(manager_,
-              OnProgress(kDummyExtensionId, image_writer_api::Stage::kWrite, _))
-      .Times(AnyNumber());
-  EXPECT_CALL(manager_, OnProgress(kDummyExtensionId,
-                                   image_writer_api::Stage::kVerifyWrite, _))
-      .Times(AnyNumber());
-  EXPECT_CALL(manager_, OnComplete(kDummyExtensionId)).Times(0);
-  EXPECT_CALL(manager_,
-              OnError(kDummyExtensionId, image_writer_api::Stage::kVerifyWrite,
-                      _, error::kVerificationFailed))
-      .WillOnce([&]() { run_loop.Quit(); });
-
-  operation->PostTask(base::BindOnce(&Operation::Start, operation));
-  run_loop.Run();
-
+  // Verification reuses the open session and stops immediately after the first
+  // mismatching READ (10) chunk without reading the second chunk.
+  EXPECT_EQ(usb_manager_.disk_state().open_count, 1);
   EXPECT_THAT(usb_manager_.disk_state().executed_opcodes,
               ElementsAre(kScsiTestUnitReadyOpcode, kScsiRequestSenseOpcode,
                           kScsiTestUnitReadyOpcode, kScsiReadCapacity10Opcode,
                           kScsiWrite10Opcode, kScsiWrite10Opcode,
-                          kScsiSynchronizeCache10Opcode,
-                          kScsiTestUnitReadyOpcode, kScsiRequestSenseOpcode,
+                          kScsiSynchronizeCache10Opcode, kScsiRead10Opcode));
+  EXPECT_TRUE(usb_manager_.disk_state().interface_released);
+  EXPECT_TRUE(usb_manager_.disk_state().device_closed);
+}
+
+TEST_F(OperationAndroidUsbTest,
+       WriteFromFileOverUsbBotDetectsLastChunkVerifyMismatch) {
+  usb_manager_.disk_state().corrupt_byte_offset_after_sync = kTestFileSize - 1;
+  auto operation = base::MakeRefCounted<WriteFromFileOperation>(
+      manager_.AsWeakPtr(), kDummyExtensionId, test_utils_.GetImagePath(),
+      "usb:guid-usb-flash:0781:5581",
+      base::FilePath(FILE_PATH_LITERAL("/var/tmp")));
+  operation->SetUsbDeviceManagerBinderForTesting(base::BindRepeating(
+      &FakeBotUsbDeviceManager::BindReceiver, base::Unretained(&usb_manager_)));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(manager_,
+              OnProgress(kDummyExtensionId, image_writer_api::Stage::kWrite, _))
+      .Times(AnyNumber());
+  EXPECT_CALL(manager_, OnProgress(kDummyExtensionId,
+                                   image_writer_api::Stage::kVerifyWrite, _))
+      .Times(AnyNumber());
+  EXPECT_CALL(manager_, OnComplete(kDummyExtensionId)).Times(0);
+  EXPECT_CALL(manager_,
+              OnError(kDummyExtensionId, image_writer_api::Stage::kVerifyWrite,
+                      _, error::kVerificationFailed))
+      .WillOnce([&]() { run_loop.Quit(); });
+
+  operation->PostTask(base::BindOnce(&Operation::Start, operation));
+  run_loop.Run();
+
+  EXPECT_EQ(usb_manager_.disk_state().open_count, 1);
+  EXPECT_THAT(usb_manager_.disk_state().executed_opcodes,
+              ElementsAre(kScsiTestUnitReadyOpcode, kScsiRequestSenseOpcode,
                           kScsiTestUnitReadyOpcode, kScsiReadCapacity10Opcode,
-                          kScsiRead10Opcode, kScsiRead10Opcode));
+                          kScsiWrite10Opcode, kScsiWrite10Opcode,
+                          kScsiSynchronizeCache10Opcode, kScsiRead10Opcode,
+                          kScsiRead10Opcode));
+  EXPECT_TRUE(usb_manager_.disk_state().interface_released);
+  EXPECT_TRUE(usb_manager_.disk_state().device_closed);
 }
 
 TEST_F(OperationAndroidUsbTest,
@@ -819,6 +837,10 @@ TEST_F(OperationAndroidUsbTest, DestroyPartitionsWipesPrimaryAndBackupGptOnly) {
   operation->PostTask(base::BindOnce(&Operation::Start, operation));
   run_loop.Run();
 
+  EXPECT_EQ(usb_manager_.disk_state().open_count, 1);
+  EXPECT_TRUE(usb_manager_.disk_state().interface_released);
+  EXPECT_TRUE(usb_manager_.disk_state().device_closed);
+
   // 33 trailing blocks = kBackupGptBlocks (1 GPT header block + 32 partition
   // entry blocks).
   constexpr size_t kBackupGptBytes = 33 * kBlockSize;
@@ -927,14 +949,13 @@ TEST_F(OperationAndroidUsbTest,
   operation->PostTask(base::BindOnce(&Operation::Start, operation));
   run_loop.Run();
 
+  EXPECT_EQ(usb_manager_.disk_state().open_count, 1);
   EXPECT_THAT(
       usb_manager_.disk_state().executed_opcodes,
       ElementsAre(kScsiTestUnitReadyOpcode, kScsiRequestSenseOpcode,
                   kScsiTestUnitReadyOpcode, kScsiReadCapacity10Opcode,
                   kScsiWrite10Opcode, kScsiWrite10Opcode, kScsiWrite10Opcode,
-                  kScsiSynchronizeCache10Opcode, kScsiTestUnitReadyOpcode,
-                  kScsiRequestSenseOpcode, kScsiTestUnitReadyOpcode,
-                  kScsiReadCapacity10Opcode, kScsiRead10Opcode,
+                  kScsiSynchronizeCache10Opcode, kScsiRead10Opcode,
                   kScsiRead10Opcode, kScsiRead10Opcode));
 
   base::span<const uint8_t> storage(usb_manager_.disk_state().storage);
@@ -977,15 +998,134 @@ TEST_F(OperationAndroidUsbTest, Usb2DeviceCapsTransfersAt64KiB) {
   operation->PostTask(base::BindOnce(&Operation::Start, operation));
   run_loop.Run();
 
+  EXPECT_EQ(usb_manager_.disk_state().open_count, 1);
   EXPECT_THAT(
       usb_manager_.disk_state().executed_opcodes,
       ElementsAre(kScsiTestUnitReadyOpcode, kScsiRequestSenseOpcode,
                   kScsiTestUnitReadyOpcode, kScsiReadCapacity10Opcode,
                   kScsiWrite10Opcode, kScsiWrite10Opcode, kScsiWrite10Opcode,
-                  kScsiSynchronizeCache10Opcode, kScsiTestUnitReadyOpcode,
-                  kScsiRequestSenseOpcode, kScsiTestUnitReadyOpcode,
-                  kScsiReadCapacity10Opcode, kScsiRead10Opcode,
+                  kScsiSynchronizeCache10Opcode, kScsiRead10Opcode,
                   kScsiRead10Opcode, kScsiRead10Opcode));
+}
+
+TEST_F(OperationAndroidUsbTest, CancelMidWriteInFlightStopsFurtherTransfers) {
+  auto operation = base::MakeRefCounted<WriteFromFileOperation>(
+      manager_.AsWeakPtr(), kDummyExtensionId, test_utils_.GetImagePath(),
+      "usb:guid-usb-flash:0781:5581",
+      base::FilePath(FILE_PATH_LITERAL("/var/tmp")));
+  operation->SetUsbDeviceManagerBinderForTesting(base::BindRepeating(
+      &FakeBotUsbDeviceManager::BindReceiver, base::Unretained(&usb_manager_)));
+
+  base::RunLoop run_loop;
+  usb_manager_.disk_state().on_write_payload_in_flight =
+      base::BindLambdaForTesting([&]() {
+        operation->PostTask(base::BindOnce(&Operation::Cancel, operation));
+        operation->PostTask(run_loop.QuitClosure());
+      });
+
+  EXPECT_CALL(manager_,
+              OnProgress(kDummyExtensionId, image_writer_api::Stage::kWrite, _))
+      .Times(AnyNumber());
+  EXPECT_CALL(manager_, OnComplete(kDummyExtensionId)).Times(0);
+  EXPECT_CALL(manager_, OnError(kDummyExtensionId, _, _, _)).Times(0);
+
+  operation->PostTask(base::BindOnce(&Operation::Start, operation));
+  run_loop.Run();
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(usb_manager_.disk_state().open_count, 1);
+  EXPECT_THAT(usb_manager_.disk_state().executed_opcodes,
+              ElementsAre(kScsiTestUnitReadyOpcode, kScsiRequestSenseOpcode,
+                          kScsiTestUnitReadyOpcode, kScsiReadCapacity10Opcode,
+                          kScsiWrite10Opcode));
+  EXPECT_TRUE(usb_manager_.disk_state().interface_released);
+  EXPECT_TRUE(usb_manager_.disk_state().device_closed);
+  EXPECT_THAT(usb_manager_.disk_state().storage, Each(kDevicePattern));
+}
+
+TEST_F(OperationAndroidUsbTest,
+       DisconnectBetweenWriteAndVerifyReportsDeviceOpenError) {
+  usb_manager_.disk_state().disconnect_after_sync_cache = true;
+  auto operation = base::MakeRefCounted<WriteFromFileOperation>(
+      manager_.AsWeakPtr(), kDummyExtensionId, test_utils_.GetImagePath(),
+      "usb:guid-usb-flash:0781:5581",
+      base::FilePath(FILE_PATH_LITERAL("/var/tmp")));
+  operation->SetUsbDeviceManagerBinderForTesting(base::BindRepeating(
+      &FakeBotUsbDeviceManager::BindReceiver, base::Unretained(&usb_manager_)));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(manager_,
+              OnProgress(kDummyExtensionId, image_writer_api::Stage::kWrite, _))
+      .Times(AtLeast(1));
+  EXPECT_CALL(manager_, OnProgress(kDummyExtensionId,
+                                   image_writer_api::Stage::kVerifyWrite, _))
+      .Times(AnyNumber());
+  EXPECT_CALL(manager_, OnComplete(kDummyExtensionId)).Times(0);
+  EXPECT_CALL(manager_,
+              OnError(kDummyExtensionId, image_writer_api::Stage::kVerifyWrite,
+                      _, error::kDeviceOpenError))
+      .WillOnce([&]() { run_loop.Quit(); });
+
+  operation->PostTask(base::BindOnce(&Operation::Start, operation));
+  run_loop.Run();
+
+  EXPECT_EQ(usb_manager_.disk_state().open_count, 1);
+}
+
+TEST_F(OperationAndroidUsbTest,
+       WriteFromUrlOverUsbBotReusesSessionAcrossWriteAndVerify) {
+  const GURL kImageUrl("http://localhost/test/image.bin");
+  content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&](content::URLLoaderInterceptor::RequestParams* params) {
+        if (params->url_request.url != kImageUrl) {
+          return false;
+        }
+        content::URLLoaderInterceptor::WriteResponse(test_utils_.GetImagePath(),
+                                                     params->client.get());
+        return true;
+      }));
+
+  std::string image_bytes;
+  ASSERT_TRUE(base::ReadFileToString(test_utils_.GetImagePath(), &image_bytes));
+  const std::string expected_hash = base::HexEncodeLower(
+      crypto::obsolete::Md5::HashForTesting(base::as_byte_span(image_bytes)));
+
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote;
+  profile_->GetDefaultStoragePartition()
+      ->GetURLLoaderFactoryForBrowserProcess()
+      ->Clone(factory_remote.InitWithNewPipeAndPassReceiver());
+
+  auto operation = base::MakeRefCounted<WriteFromUrlOperation>(
+      manager_.AsWeakPtr(), kDummyExtensionId, std::move(factory_remote),
+      kImageUrl, expected_hash, "usb:guid-usb-flash:0781:5581",
+      base::FilePath(FILE_PATH_LITERAL("/var/tmp")));
+  operation->SetUsbDeviceManagerBinderForTesting(base::BindRepeating(
+      &FakeBotUsbDeviceManager::BindReceiver, base::Unretained(&usb_manager_)));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(manager_, OnProgress(kDummyExtensionId,
+                                   image_writer_api::Stage::kDownload, _))
+      .Times(AtLeast(1));
+  EXPECT_CALL(manager_, OnProgress(kDummyExtensionId,
+                                   image_writer_api::Stage::kVerifyDownload, _))
+      .Times(AtLeast(1));
+  EXPECT_CALL(manager_,
+              OnProgress(kDummyExtensionId, image_writer_api::Stage::kWrite, _))
+      .Times(AtLeast(1));
+  EXPECT_CALL(manager_, OnProgress(kDummyExtensionId,
+                                   image_writer_api::Stage::kVerifyWrite, _))
+      .Times(AtLeast(1));
+  EXPECT_CALL(manager_, OnComplete(kDummyExtensionId)).WillOnce([&]() {
+    run_loop.Quit();
+  });
+  EXPECT_CALL(manager_, OnError(kDummyExtensionId, _, _, _)).Times(0);
+
+  operation->PostTask(base::BindOnce(&Operation::Start, operation));
+  run_loop.Run();
+
+  EXPECT_EQ(usb_manager_.disk_state().open_count, 1);
+  EXPECT_TRUE(usb_manager_.disk_state().interface_released);
+  EXPECT_TRUE(usb_manager_.disk_state().device_closed);
 }
 
 }  // namespace

@@ -14,6 +14,7 @@
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
@@ -112,8 +113,9 @@ Operation::~Operation() {
   // an unstarted or uncancelled `Operation` on the UI thread.
   task_runner_->DeleteSoon(FROM_HERE, std::move(zstd_extractor_));
 #if BUILDFLAG(IS_ANDROID)
+  task_runner_->DeleteSoon(FROM_HERE, std::move(usb_transfer_));
+  task_runner_->DeleteSoon(FROM_HERE, std::move(usb_connection_));
   task_runner_->DeleteSoon(FROM_HERE, std::move(usb_manager_));
-  task_runner_->DeleteSoon(FROM_HERE, std::move(usb_session_));
 #endif
   // base::ScopedTempDir must be destroyed on a thread that allows blocking IO
   // because it will try delete the directory if a call to Delete() hasn't been
@@ -220,6 +222,12 @@ void Operation::Extract(base::OnceClosure continuation) {
 
 void Operation::Finish() {
   CHECK(IsRunningInCorrectSequence(), base::NotFatalUntil::M161);
+#if BUILDFLAG(IS_ANDROID)
+  if (usb_connection_) {
+    CloseUsbConnection(base::BindOnce(&Operation::Finish, this));
+    return;
+  }
+#endif
 
   CleanUp();
 
@@ -230,6 +238,12 @@ void Operation::Finish() {
 
 void Operation::Error(const std::string& error_message) {
   CHECK(IsRunningInCorrectSequence(), base::NotFatalUntil::M161);
+#if BUILDFLAG(IS_ANDROID)
+  if (usb_connection_) {
+    CloseUsbConnection(base::BindOnce(&Operation::Error, this, error_message));
+    return;
+  }
+#endif
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -415,8 +429,7 @@ void Operation::CleanUp() {
   CHECK(IsRunningInCorrectSequence(), base::NotFatalUntil::M161);
   zstd_extractor_.reset();
 #if BUILDFLAG(IS_ANDROID)
-  usb_manager_.reset();
-  usb_session_.reset();
+  CloseUsbConnection(base::DoNothing());
 #endif
   for (base::OnceClosure& cleanup_function : cleanup_functions_) {
     std::move(cleanup_function).Run();
