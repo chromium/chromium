@@ -376,23 +376,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="ContentSettings.{RegularProfileFiltered}DefaultAutoDarkWebContentSetting"
-    enum="ContentSetting" expires_after="2023-02-19">
-  <owner>wenyufu@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    The default auto dark web content setting at profile open. Recorded for
-    Android only.
-
-    This histogram is only recorded {RegularProfileFiltered}.
-  </summary>
-  <token key="RegularProfileFiltered">
-    <variant name="RegularProfile."
-        summary="from version M-109. It is recorded only for regular profiles"/>
-  </token>
-</histogram>
-
-<histogram
     name="ContentSettings.{RegularProfileFiltered}DefaultAutoplaySetting"
     enum="ContentSetting" expires_after="never">
 <!-- expires-never: tracked as an important permission metric. -->

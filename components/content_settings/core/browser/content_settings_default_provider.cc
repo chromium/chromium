@@ -629,15 +629,6 @@ void DefaultProvider::RecordHistogramMetrics() {
       CONTENT_SETTING_NUM_SETTINGS);
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-  base::UmaHistogramEnumeration(
-      "ContentSettings.RegularProfile.DefaultAutoDarkWebContentSetting",
-      IntToContentSetting(prefs_->GetInteger(
-          GetPrefName(ContentSettingsType::AUTO_DARK_WEB_CONTENT))),
-      CONTENT_SETTING_NUM_SETTINGS);
-
-#endif
-
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   base::UmaHistogramEnumeration(
       "ContentSettings.RegularProfile.DefaultRequestDesktopSiteSetting",
