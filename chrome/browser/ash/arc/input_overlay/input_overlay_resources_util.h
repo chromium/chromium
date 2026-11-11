@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_INPUT_OVERLAY_RESOURCES_UTIL_H_
 
 #include <optional>
-#include <string>
+#include <string_view>
 
 namespace arc::input_overlay {
 
 // Get the resource ID of the input overlay JSON file by the associated package
 // name.
-std::optional<int> GetInputOverlayResourceId(const std::string& package_name);
+std::optional<int> GetInputOverlayResourceId(std::string_view package_name);
 
 }  // namespace arc::input_overlay
 
