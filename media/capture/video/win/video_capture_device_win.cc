@@ -20,6 +20,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -317,35 +318,59 @@ void VideoCaptureDeviceWin::ScopedMediaType::DeleteMediaType(
 VideoCaptureDeviceWin::VideoCaptureDeviceWin(
     const VideoCaptureDeviceDescriptor& device_descriptor,
     ComPtr<IBaseFilter> capture_filter)
+    : VideoCaptureDeviceWin(device_descriptor,
+                            std::move(capture_filter),
+                            /*graph_builder=*/nullptr,
+                            /*capture_graph_builder=*/nullptr) {}
+
+// static
+std::unique_ptr<VideoCaptureDeviceWin> VideoCaptureDeviceWin::CreateForTesting(
+    const VideoCaptureDeviceDescriptor& device_descriptor,
+    ComPtr<IBaseFilter> capture_filter,
+    ComPtr<IGraphBuilder> graph_builder,
+    ComPtr<ICaptureGraphBuilder2> capture_graph_builder) {
+  return base::WrapUnique(new VideoCaptureDeviceWin(
+      device_descriptor, std::move(capture_filter), std::move(graph_builder),
+      std::move(capture_graph_builder)));
+}
+
+VideoCaptureDeviceWin::VideoCaptureDeviceWin(
+    const VideoCaptureDeviceDescriptor& device_descriptor,
+    ComPtr<IBaseFilter> capture_filter,
+    ComPtr<IGraphBuilder> graph_builder,
+    ComPtr<ICaptureGraphBuilder2> capture_graph_builder)
     : device_descriptor_(device_descriptor),
       state_(kIdle),
-      capture_filter_(std::move(capture_filter)),
       white_balance_mode_manual_(false),
       exposure_mode_manual_(false),
       focus_mode_manual_(false),
       enable_get_photo_state_(
-          base::FeatureList::IsEnabled(media::kDirectShowGetPhotoState)) {
+          base::FeatureList::IsEnabled(media::kDirectShowGetPhotoState)),
+      // The sink filter used for receiving captured frames.
+      sink_filter_(base::MakeRefCounted<SinkFilter>(this)),
+      input_sink_pin_(sink_filter_->GetPin(0)),
+      graph_builder_(std::move(graph_builder)),
+      capture_graph_builder_(std::move(capture_graph_builder)),
+      capture_filter_(std::move(capture_filter)) {
   // TODO(mcasas): Check that CoInitializeEx() has been called with the
   // appropriate Apartment model, i.e., Single Threaded.
 }
 
 VideoCaptureDeviceWin::~VideoCaptureDeviceWin() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  if (media_control_.Get())
+  if (media_control_) {
     media_control_->Stop();
-
-  if (graph_builder_.Get()) {
-    if (sink_filter_.get()) {
-      graph_builder_->RemoveFilter(sink_filter_.get());
-      sink_filter_.reset();
-    }
-
-    if (capture_filter_.Get())
-      graph_builder_->RemoveFilter(capture_filter_.Get());
   }
 
-  if (capture_graph_builder_.Get())
-    capture_graph_builder_.Reset();
+  if (graph_builder_) {
+    graph_builder_->RemoveFilter(sink_filter_.get());
+    if (capture_filter_) {
+      graph_builder_->RemoveFilter(capture_filter_.Get());
+    }
+  }
+
+  // The remaining DirectShow objects are released in member destruction
+  // order, see the comment on |sink_filter_| in the header.
 }
 
 bool VideoCaptureDeviceWin::Init() {
@@ -357,22 +382,25 @@ bool VideoCaptureDeviceWin::Init() {
     return false;
   }
 
-  // Create the sink filter used for receiving Captured frames.
-  sink_filter_ = base::MakeRefCounted<SinkFilter>(this);
-  input_sink_pin_ = sink_filter_->GetPin(0);
+  HRESULT hr = S_OK;
+  if (!graph_builder_) {
+    hr = ::CoCreateInstance(CLSID_FilterGraph, nullptr, CLSCTX_INPROC_SERVER,
+                            IID_PPV_ARGS(&graph_builder_));
+    DLOG_IF_FAILED_WITH_HRESULT("Failed to create capture filter", hr);
+    if (FAILED(hr)) {
+      return false;
+    }
+  }
 
-  HRESULT hr =
-      ::CoCreateInstance(CLSID_FilterGraph, nullptr, CLSCTX_INPROC_SERVER,
-                         IID_PPV_ARGS(&graph_builder_));
-  DLOG_IF_FAILED_WITH_HRESULT("Failed to create capture filter", hr);
-  if (FAILED(hr))
-    return false;
-
-  hr = ::CoCreateInstance(CLSID_CaptureGraphBuilder2, nullptr, CLSCTX_INPROC,
-                          IID_PPV_ARGS(&capture_graph_builder_));
-  DLOG_IF_FAILED_WITH_HRESULT("Failed to create the Capture Graph Builder", hr);
-  if (FAILED(hr))
-    return false;
+  if (!capture_graph_builder_) {
+    hr = ::CoCreateInstance(CLSID_CaptureGraphBuilder2, nullptr, CLSCTX_INPROC,
+                            IID_PPV_ARGS(&capture_graph_builder_));
+    DLOG_IF_FAILED_WITH_HRESULT("Failed to create the Capture Graph Builder",
+                                hr);
+    if (FAILED(hr)) {
+      return false;
+    }
+  }
 
   hr = capture_graph_builder_->SetFiltergraph(graph_builder_.Get());
   DLOG_IF_FAILED_WITH_HRESULT("Failed to give graph to capture graph builder",
