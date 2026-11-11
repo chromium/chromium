@@ -28,6 +28,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/sessions/chrome_tab_restore_service_client.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
@@ -69,6 +71,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_web_ui.h"
@@ -77,6 +80,8 @@
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/widget/widget.h"
 
 using testing::_;
 using testing::Truly;
@@ -205,7 +210,8 @@ class TabSearchPageHandlerTest : public InProcessBrowserTest,
     feature_list_.InitWithFeatureStates(
         {{tabs::kTabSearchPerformanceImprovements, GetParam()},
          {features::kTabGroupsFocusing, true},
-         {features::kNonGroupFocus, true}});
+         {features::kNonGroupFocus, true},
+         {features::kWebContentsDiscard, false}});
   }
 
   void SetUpOnMainThread() override {
@@ -1908,6 +1914,66 @@ IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerOrganizerMetricsTest,
 
   // No Tab Search close metrics are recorded when log_metrics is false.
   histogram_tester.ExpectTotalCount("Tabs.TabSearch.CloseAction2", 0);
+}
+
+IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest,
+                       SwitchToDiscardedTabReloadsTab) {
+  AddTabWithTitle(browser1(), tab_url2_, kTabName2);
+  AddTabWithTitle(browser1(), tab_url1_, kTabName1);
+
+  TabStripModel* tab_strip_model = browser1()->GetTabStripModel();
+  content::WebContents* background_contents =
+      tab_strip_model->GetWebContentsAt(1);
+  auto* lifecycle_unit =
+      resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
+          background_contents);
+  ASSERT_TRUE(lifecycle_unit);
+  ASSERT_TRUE(lifecycle_unit->DiscardTab(
+      ::mojom::LifecycleUnitDiscardReason::EXTERNAL));
+
+  content::WebContents* discarded_contents =
+      tab_strip_model->GetWebContentsAt(1);
+  ASSERT_EQ(::mojom::LifecycleUnitState::DISCARDED,
+            resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
+                discarded_contents)
+                ->GetTabState());
+
+  // When the Tab Search bubble widget is open and focused, it holds a
+  // PaintAsActiveLock on the browser widget while the bubble widget itself is
+  // the active OS widget (`GetWindow()->IsActive()` is false, while
+  // `browser1()->IsActive()` remains true).
+  views::Widget* browser_widget = views::Widget::GetWidgetForNativeWindow(
+      browser1()->GetWindow()->GetNativeWindow());
+  ASSERT_TRUE(browser_widget);
+  views::BubbleDialogDelegate bubble_delegate(browser_widget->GetRootView(),
+                                              views::BubbleBorder::TOP_RIGHT);
+  std::unique_ptr<views::Widget> bubble_widget =
+      views::BubbleDialogDelegate::CreateBubble(&bubble_delegate);
+  bubble_widget->Show();
+  ASSERT_TRUE(browser1()->IsActive());
+  ASSERT_FALSE(browser1()->GetWindow()->IsActive());
+
+  base::HistogramTester histogram_tester;
+  const int32_t discarded_tab_id =
+      tab_strip_model->GetTabAtIndex(1)->GetHandle().raw_value();
+  auto switch_to_tab_info = tab_search::mojom::SwitchToTabInfo::New();
+  switch_to_tab_info->tab_id = discarded_tab_id;
+  handler()->SwitchToTab(std::move(switch_to_tab_info));
+  bubble_widget->CloseNow();
+
+  EXPECT_EQ(1, tab_strip_model->active_index());
+  content::WebContents* active_contents =
+      tab_strip_model->GetActiveWebContents();
+  ASSERT_TRUE(active_contents);
+  ASSERT_NE(::mojom::LifecycleUnitState::DISCARDED,
+            resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
+                active_contents)
+                ->GetTabState());
+  histogram_tester.ExpectUniqueSample("Tab.Discarding.Reload.CausedByFocus",
+                                      true, 1);
+  EXPECT_TRUE(content::WaitForLoadStop(active_contents));
+  EXPECT_FALSE(active_contents->WasDiscarded());
+  EXPECT_TRUE(active_contents->GetPrimaryMainFrame()->IsRenderFrameLive());
 }
 
 }  // namespace

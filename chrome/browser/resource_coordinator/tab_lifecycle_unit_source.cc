@@ -31,6 +31,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "ui/base/base_window.h"
 
 namespace resource_coordinator {
 
@@ -191,8 +192,9 @@ TabStripModel* TabLifecycleUnitSource::GetFocusedTabStripModel() const {
     return focused_tab_strip_model_for_testing_;
   }
   BrowserWindowInterface* const focused_browser =
-      GlobalBrowserCollection::GetInstance()->GetActiveBrowser();
-  if (!focused_browser) {
+      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
+  if (!focused_browser || (!focused_browser->IsActive() &&
+                           !focused_browser->GetWindow()->IsActive())) {
     return nullptr;
   }
   return focused_browser->GetTabStripModel();
