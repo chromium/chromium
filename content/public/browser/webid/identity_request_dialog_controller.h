@@ -98,8 +98,9 @@ struct CONTENT_EXPORT NativeAppRequestOptions {
 };
 
 // The metadata about the identity provider that will be used to display a FedCM
-// dialog. This data is extracted from the config file which is fetched when the
-// FedCM API is invoked.
+// dialog. This data is extracted from the config file, except for the identity
+// provider's links, which come from its well-known file. Both files are fetched
+// when the FedCM API is invoked.
 struct CONTENT_EXPORT IdentityProviderMetadata {
   IdentityProviderMetadata();
   IdentityProviderMetadata(const IdentityProviderMetadata& other);
@@ -127,8 +128,8 @@ struct CONTENT_EXPORT IdentityProviderMetadata {
   // This will be an empty image if fetching failed.
   gfx::Image brand_decoded_icon;
   // The identity provider's account management page, privacy policy and terms
-  // of service, parsed from the config file. Each is empty if it's missing,
-  // isn't HTTP(S) or isn't same-site with `config_url`.
+  // of service, parsed from its well-known file. Each is empty if it's missing,
+  // isn't an absolute HTTP(S) URL or isn't same-site with `config_url`.
   GURL account_management_url;
   GURL privacy_policy_url;
   GURL terms_of_service_url;

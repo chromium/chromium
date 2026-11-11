@@ -1468,9 +1468,51 @@ TEST_F(IdpNetworkRequestManagerTest, ParseConfigRequestedLabel) {
 }
 
 // Tests that the identity provider's account management page, privacy policy
-// and terms of service are parsed from the config file, including relative
-// URLs.
-TEST_F(IdpNetworkRequestManagerTest, ParseConfigIdpLinks) {
+// and terms of service are passed on from the well-known file as written, for
+// `ConfigFetcher` to validate, including relative and non-HTTP(S) values.
+TEST_F(IdpNetworkRequestManagerTest, ParseWellKnownIdpLinks) {
+  auto [fetch_status, well_known] = SendWellKnownRequestAndWaitForResponse(R"({
+    "provider_urls": ["https://idp.test/fedcm.json"],
+    "account_management_url": "https://idp.test/account",
+    "privacy_policy_url": "/privacy",
+    "terms_of_service_url": "javascript:void 0"
+  })");
+
+  EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
+  EXPECT_EQ("https://idp.test/account", well_known.account_management_url);
+  EXPECT_EQ("/privacy", well_known.privacy_policy_url);
+  EXPECT_EQ("javascript:void 0", well_known.terms_of_service_url);
+}
+
+// Tests that the identity provider's links are also parsed from a well-known
+// file that has an accounts endpoint and a login URL instead of provider URLs.
+TEST_F(IdpNetworkRequestManagerTest,
+       ParseWellKnownIdpLinksWithoutProviderUrls) {
+  auto [fetch_status, well_known] = SendWellKnownRequestAndWaitForResponse(R"({
+    "accounts_endpoint": "/accounts",
+    "login_url": "/login",
+    "privacy_policy_url": "https://idp.test/privacy"
+  })");
+
+  EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
+  EXPECT_EQ("https://idp.test/privacy", well_known.privacy_policy_url);
+}
+
+// Tests that a well-known file with only the identity provider's links is
+// invalid, since it has no provider URLs, but still passes the links on, so
+// that they can be used when the well-known check is skipped.
+TEST_F(IdpNetworkRequestManagerTest, ParseWellKnownWithOnlyIdpLinks) {
+  auto [fetch_status, well_known] = SendWellKnownRequestAndWaitForResponse(R"({
+    "privacy_policy_url": "https://idp.test/privacy"
+  })");
+
+  EXPECT_EQ(ParseStatus::kInvalidResponseError, fetch_status.parse_status);
+  EXPECT_EQ("https://idp.test/privacy", well_known.privacy_policy_url);
+}
+
+// Tests that the identity provider's links are not parsed from the config file,
+// since they come from the well-known file.
+TEST_F(IdpNetworkRequestManagerTest, ParseConfigIgnoresIdpLinks) {
   const char test_json[] = R"({
     "account_management_url": "https://idp.test/account",
     "privacy_policy_url": "/privacy",
@@ -1481,10 +1523,9 @@ TEST_F(IdpNetworkRequestManagerTest, ParseConfigIdpLinks) {
       SendConfigRequestAndWaitForResponse(test_json);
 
   EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
-  EXPECT_EQ(GURL("https://idp.test/account"),
-            idp_metadata.account_management_url);
-  EXPECT_EQ(GURL("https://idp.test/privacy"), idp_metadata.privacy_policy_url);
-  EXPECT_EQ(GURL("https://idp.test/terms"), idp_metadata.terms_of_service_url);
+  EXPECT_TRUE(idp_metadata.account_management_url.is_empty());
+  EXPECT_TRUE(idp_metadata.privacy_policy_url.is_empty());
+  EXPECT_TRUE(idp_metadata.terms_of_service_url.is_empty());
 }
 
 // Tests that we send the correct origin for account requests.

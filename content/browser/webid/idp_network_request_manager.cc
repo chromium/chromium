@@ -91,6 +91,11 @@ constexpr char kWellKnownPath[] = "/.well-known/web-identity";
 
 // Well-known file JSON keys
 constexpr char kProviderUrlListKey[] = "provider_urls";
+// The identity provider's links, which aren't part of the FedCM spec's
+// IdentityProviderWellKnown dictionary.
+constexpr char kIdpAccountManagementUrlKey[] = "account_management_url";
+constexpr char kIdpPrivacyPolicyKey[] = "privacy_policy_url";
+constexpr char kIdpTermsOfServiceKey[] = "terms_of_service_url";
 
 // fedcm.json configuration keys.
 constexpr char kIdpBrandingKey[] = "branding";
@@ -102,9 +107,6 @@ constexpr char kDisconnectEndpoint[] = "disconnect_endpoint";
 constexpr char kTypesKey[] = "types";
 constexpr char kFormatsKey[] = "formats";
 constexpr char kAccountLabelKey[] = "account_label";
-constexpr char kIdpAccountManagementUrlKey[] = "account_management_url";
-constexpr char kIdpPrivacyPolicyKey[] = "privacy_policy_url";
-constexpr char kIdpTermsOfServiceKey[] = "terms_of_service_url";
 
 // Keys in the specific mode dictionary.
 constexpr char kSupportsUseOtherAccountKey[] = "supports_use_other_account";
@@ -288,6 +290,11 @@ void OnWellKnownParsed(
   well_known.accounts =
       ExtractEndpoint(well_known_url, *result, kAccountsEndpointKey);
   well_known.login_url = ExtractEndpoint(well_known_url, *result, kLoginUrlKey);
+  well_known.account_management_url =
+      ExtractString(*result, kIdpAccountManagementUrlKey);
+  well_known.privacy_policy_url = ExtractString(*result, kIdpPrivacyPolicyKey);
+  well_known.terms_of_service_url =
+      ExtractString(*result, kIdpTermsOfServiceKey);
   if (!well_known.accounts.is_empty() && !well_known.login_url.is_empty() &&
       !result->Find(kProviderUrlListKey)) {
     std::move(callback).Run(fetch_status, std::move(well_known));
@@ -376,12 +383,6 @@ void OnConfigParsed(const GURL& provider,
                                   idp_brand_icon_minimum_size, idp_metadata);
   }
   idp_metadata.idp_login_url = ExtractEndpoint(provider, *result, kLoginUrlKey);
-  idp_metadata.account_management_url =
-      ExtractEndpoint(provider, *result, kIdpAccountManagementUrlKey);
-  idp_metadata.privacy_policy_url =
-      ExtractEndpoint(provider, *result, kIdpPrivacyPolicyKey);
-  idp_metadata.terms_of_service_url =
-      ExtractEndpoint(provider, *result, kIdpTermsOfServiceKey);
 
   if (IsDelegationEnabled()) {
     const base::ListValue* formats = result->FindList(kFormatsKey);
