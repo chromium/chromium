@@ -2,18 +2,45 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/compiled_action.gni")
+
 # Only compile the compiler for the host architecture.
 if (current_toolchain == host_toolchain) {
+  executable("generate-version-header") {
+    sources = [ "src/generator/generate-version-header.cc" ]
+    deps = [
+      # Default manifest on Windows (a no-op elsewhere).
+      "//build/win:default_exe_manifest",
+    ]
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+  }
+
+  compiled_action("generate_version_header") {
+    tool = ":generate-version-header"
+    inputs = [ "src/package.json" ]
+    outputs = [ "$target_gen_dir/generator/version.h" ]
+    args = [
+      rebase_path("src/package.json", root_build_dir),
+      rebase_path("$target_gen_dir/generator/version.h", root_build_dir),
+    ]
+  }
+
   executable("protoc-gen-js") {
     sources = [
+      "$target_gen_dir/generator/version.h",
       "src/generator/js_generator.cc",
       "src/generator/js_generator.h",
       "src/generator/protoc-gen-js.cc",
       "src/generator/well_known_types_embed.cc",
       "src/generator/well_known_types_embed.h",
     ]
-    include_dirs = [ "src" ]
+    include_dirs = [
+      "src",
+      target_gen_dir,
+    ]
     deps = [
+      ":generate_version_header",
       "//third_party/protobuf:protoc_lib",
 
       # Default manifest on Windows (a no-op elsewhere).
