@@ -1376,86 +1376,13 @@ std::optional<int> NavigationControllerImpl::GetIndexWithSkipping(
     }
   }
 
-  // Helper to conditionally report DevTools issues or record metrics for the
-  // back-to-ad intervention. The `is_cross_origin_skip` parameter indicates if
-  // the ad-skipping logic attempts to land on a cross-origin page relative to
-  // the start point. (Refer to `get_origin_for_intervention` below for details
-  // on the 'same-origin exception').
-  auto maybe_report_back_to_ad_intervention = [&](bool is_cross_origin_skip) {
-    // Only report DevTools issues or record metrics if we are doing a
-    // single-step navigation (GoBack/GoForward), or during the first iteration
-    // of a multi-step navigation (GoToOffsetWithSkipping).
-    //
-    // Also, we attribute the UKM to the page where the navigation started,
-    // instead of the intermediate ad entry, i.e., while the start page and ad
-    // entry are often the same during a "back" navigation, they usually differ
-    // during "forward" navigations or when ad entries are mixed with original
-    // skippable entries. This is to ease metrics reporting (i.e., it is more
-    // convenient to record a UKM for the active page), and this reporting scope
-    // is sufficient to collect data for future analysis.
-    //
-    // TODO(crbug.com/489138113): Investigate expanding the metrics API to allow
-    // consistent metrics logging for non-active, intermediate entries during
-    // multi-step navigations.
-    if (from_index == GetCurrentEntryIndex()) {
-      RenderFrameHostImpl* main_frame_rfh_for_reporting =
-          frame_tree_->root()->current_frame_host();
-
-      // DevTools Reporting Notes:
-      // 1. Not conditioned on `performing_navigation` to give developers a
-      //    better chance to notice issues on the pre-skip page. This might
-      //    triggers duplicate reports since `GetIndexWithSkipping` may be
-      //    called multiple times (e.g., via `NotifyUserActivation`), but the
-      //    frontend safely drops duplicates.
-      // 2. We use the main frame RFH because this event signals that the next
-      //    UI navigation will skip an ad entry. Using the pre-skip page's main
-      //    frame is the most logical fit since it isn't tied to the current
-      //    entry.
-      if (is_cross_origin_skip &&
-          base::FeatureList::IsEnabled(features::kBackToAdIntervention) &&
-          direction == Direction::kBack) {
-        devtools_instrumentation::OnBackUINavigationWouldSkipAd(
-            main_frame_rfh_for_reporting);
-      }
-
-      // Condition metrics reporting on `performing_navigation` to reduce
-      // reporting volume and to better align with actual user impact. Because
-      // metrics are collected across all eligible clients, it's unlikely a
-      // potentially impacted site is missed completely.
-      if (performing_navigation) {
-        auto* browser_client = GetContentClient()->browser();
-
-        blink::mojom::WebFeature feature_skipped =
-            (direction == Direction::kBack)
-                ? blink::mojom::WebFeature::kHistoryGoBackWouldSkipAd
-                : blink::mojom::WebFeature::kHistoryGoForwardWouldSkipAd;
-
-        blink::mojom::WebFeature feature_excluded =
-            (direction == Direction::kBack)
-                ? blink::mojom::WebFeature::
-                      kHistoryGoBackWouldNotSkipAdDueToSameOriginExclusion
-                : blink::mojom::WebFeature::
-                      kHistoryGoForwardWouldNotSkipAdDueToSameOriginExclusion;
-
-        browser_client->LogWebFeatureForCurrentPage(
-            main_frame_rfh_for_reporting,
-            is_cross_origin_skip ? feature_skipped : feature_excluded);
-
-        if (is_cross_origin_skip && is_first_skipped_ad_same_origin &&
-            direction == Direction::kBack) {
-          browser_client->LogWebFeatureForCurrentPage(
-              main_frame_rfh_for_reporting,
-              blink::mojom::WebFeature::kHistoryGoBackWouldSkipSameOriginAd);
-        }
-      }
-    }
-  };
-
   // Handle the case where the ad-skipping logic exhausts all history entries.
   if (!result_index_with_ad_skipping.has_value()) {
     // Treat "skipping all entries" as a cross-origin skip for reporting
     // purposes (metrics and DevTools).
-    maybe_report_back_to_ad_intervention(/*is_cross_origin_skip=*/true);
+    MaybeReportBackToAdIntervention(
+        from_index, direction, performing_navigation,
+        /*is_cross_origin_skip=*/true, is_first_skipped_ad_same_origin);
 
     if (base::FeatureList::IsEnabled(features::kBackToAdIntervention)) {
       return std::nullopt;
@@ -1478,7 +1405,9 @@ std::optional<int> NavigationControllerImpl::GetIndexWithSkipping(
 
     bool is_cross_origin_skip = !start_origin.IsSameOriginWith(target_origin);
 
-    maybe_report_back_to_ad_intervention(is_cross_origin_skip);
+    MaybeReportBackToAdIntervention(from_index, direction,
+                                    performing_navigation, is_cross_origin_skip,
+                                    is_first_skipped_ad_same_origin);
 
     // Only execute the skip if it takes the user to a cross-origin page
     // relative to the page where the navigation started, AND the feature is
@@ -1490,6 +1419,84 @@ std::optional<int> NavigationControllerImpl::GetIndexWithSkipping(
   }
 
   return result_index;
+}
+
+void NavigationControllerImpl::MaybeReportBackToAdIntervention(
+    int from_index,
+    Direction direction,
+    bool performing_navigation,
+    bool is_cross_origin_skip,
+    bool is_first_skipped_ad_same_origin) {
+  // Only report DevTools issues or record metrics if we are doing a single-step
+  // navigation (GoBack/GoForward), or during the first iteration of a
+  // multi-step navigation (GoToOffsetWithSkipping).
+  //
+  // Also, we attribute the UKM to the page where the navigation started,
+  // instead of the intermediate ad entry, i.e., while the start page and ad
+  // entry are often the same during a "back" navigation, they usually differ
+  // during "forward" navigations or when ad entries are mixed with original
+  // skippable entries. This is to ease metrics reporting (i.e., it is more
+  // convenient to record a UKM for the active page), and this reporting scope
+  // is sufficient to collect data for future analysis.
+  //
+  // TODO(crbug.com/489138113): Investigate expanding the metrics API to allow
+  // consistent metrics logging for non-active, intermediate entries during
+  // multi-step navigations.
+  if (from_index != GetCurrentEntryIndex()) {
+    return;
+  }
+
+  RenderFrameHostImpl* main_frame_rfh_for_reporting =
+      frame_tree_->root()->current_frame_host();
+
+  // DevTools Reporting Notes:
+  // 1. Not conditioned on `performing_navigation` to give developers a better
+  //    chance to notice issues on the pre-skip page. This might trigger
+  //    duplicate reports since `GetIndexWithSkipping` may be called multiple
+  //    times (e.g., via `NotifyUserActivation`), but the frontend safely drops
+  //    duplicates.
+  // 2. We use the main frame RFH because this event signals that the next UI
+  //    navigation will skip an ad entry. Using the pre-skip page's main frame
+  //    is the most logical fit since it isn't tied to the current entry.
+  if (is_cross_origin_skip &&
+      base::FeatureList::IsEnabled(features::kBackToAdIntervention) &&
+      direction == Direction::kBack) {
+    devtools_instrumentation::OnBackUINavigationWouldSkipAd(
+        main_frame_rfh_for_reporting);
+  }
+
+  // Condition metrics reporting on `performing_navigation` to reduce reporting
+  // volume and to better align with actual user impact. Because metrics are
+  // collected across all eligible clients, it's unlikely a potentially impacted
+  // site is missed completely.
+  if (!performing_navigation) {
+    return;
+  }
+
+  auto* browser_client = GetContentClient()->browser();
+
+  blink::mojom::WebFeature feature_skipped =
+      (direction == Direction::kBack)
+          ? blink::mojom::WebFeature::kHistoryGoBackWouldSkipAd
+          : blink::mojom::WebFeature::kHistoryGoForwardWouldSkipAd;
+
+  blink::mojom::WebFeature feature_excluded =
+      (direction == Direction::kBack)
+          ? blink::mojom::WebFeature::
+                kHistoryGoBackWouldNotSkipAdDueToSameOriginExclusion
+          : blink::mojom::WebFeature::
+                kHistoryGoForwardWouldNotSkipAdDueToSameOriginExclusion;
+
+  browser_client->LogWebFeatureForCurrentPage(
+      main_frame_rfh_for_reporting,
+      is_cross_origin_skip ? feature_skipped : feature_excluded);
+
+  if (is_cross_origin_skip && is_first_skipped_ad_same_origin &&
+      direction == Direction::kBack) {
+    browser_client->LogWebFeatureForCurrentPage(
+        main_frame_rfh_for_reporting,
+        blink::mojom::WebFeature::kHistoryGoBackWouldSkipSameOriginAd);
+  }
 }
 
 bool NavigationControllerImpl::CanGoForward() {

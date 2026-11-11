@@ -1012,6 +1012,19 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
                                                    bool performing_navigation);
 #endif
 
+  // Helper for `GetIndexWithSkipping()` to conditionally report DevTools issues
+  // or record metrics for the back-to-ad intervention. The
+  // `is_cross_origin_skip` parameter indicates if the ad-skipping logic
+  // attempts to land on a cross-origin page relative to the start point. (Refer
+  // to `get_origin_for_intervention` in `GetIndexWithSkipping()` for details on
+  // the 'same-origin exception'). `is_first_skipped_ad_same_origin` indicates
+  // if the first skipped ad entry is same-origin with the start point.
+  void MaybeReportBackToAdIntervention(int from_index,
+                                       Direction direction,
+                                       bool performing_navigation,
+                                       bool is_cross_origin_skip,
+                                       bool is_first_skipped_ad_same_origin);
+
   // History Manipulation intervention:
   // The previous document that started this navigation needs to be skipped in
   // subsequent back/forward UI navigations if it never received any user
