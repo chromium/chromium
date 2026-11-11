@@ -30,7 +30,6 @@ void OnDBUpdateComplete(
     PersistentAvailabilityStore::OnLoadedCallback on_loaded_callback,
     std::unique_ptr<std::map<std::string, uint32_t>> feature_availabilities,
     bool success) {
-  stats::RecordDbUpdate(success, stats::StoreType::AVAILABILITY_STORE);
   std::move(on_loaded_callback).Run(success, std::move(feature_availabilities));
 }
 
@@ -120,7 +119,6 @@ void OnDBInitComplete(
     uint32_t current_day,
     leveldb_proto::Enums::InitStatus status) {
   bool success = status == leveldb_proto::Enums::InitStatus::kOK;
-  stats::RecordDbInitEvent(success, stats::StoreType::AVAILABILITY_STORE);
 
   if (!success) {
     std::move(on_loaded_callback)

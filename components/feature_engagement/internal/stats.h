@@ -108,12 +108,6 @@ void RecordUserDismiss();
 // Records when the user dismisses or snoozes the snoozable in-product help UI.
 void RecordUserSnoozeAction(Tracker::SnoozeAction snooze_action);
 
-// Records the result of database updates.
-void RecordDbUpdate(bool success, StoreType type);
-
-// Record database init.
-void RecordDbInitEvent(bool success, StoreType type);
-
 // Records events database load event.
 void RecordEventDbLoadEvent(bool success, const std::vector<Event>& events);
 

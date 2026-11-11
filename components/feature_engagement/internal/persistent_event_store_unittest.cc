@@ -95,7 +95,6 @@ TEST_F(PersistentEventStoreTest, SuccessfulInitAndLoadEmptyStore) {
   // Verify histograms.
   std::string suffix =
       stats::ToDbHistogramSuffix(stats::StoreType::EVENTS_STORE);
-  histogram_tester.ExpectBucketCount("InProductHelp.Db.Init." + suffix, 1, 1);
   histogram_tester.ExpectBucketCount("InProductHelp.Db.Load." + suffix, 1, 1);
   histogram_tester.ExpectBucketCount("InProductHelp.Db.TotalEvents", 0, 1);
 }
@@ -134,7 +133,6 @@ TEST_F(PersistentEventStoreTest, SuccessfulInitAndLoadWithEvents) {
   // Verify histograms.
   std::string suffix =
       stats::ToDbHistogramSuffix(stats::StoreType::EVENTS_STORE);
-  histogram_tester.ExpectBucketCount("InProductHelp.Db.Init." + suffix, 1, 1);
   histogram_tester.ExpectBucketCount("InProductHelp.Db.Load." + suffix, 1, 1);
   histogram_tester.ExpectBucketCount("InProductHelp.Db.TotalEvents", 3, 1);
 }
@@ -157,7 +155,6 @@ TEST_F(PersistentEventStoreTest, SuccessfulInitBadLoad) {
   // Histograms.
   std::string suffix =
       stats::ToDbHistogramSuffix(stats::StoreType::EVENTS_STORE);
-  histogram_tester.ExpectBucketCount("InProductHelp.Db.Init." + suffix, 1, 1);
   histogram_tester.ExpectBucketCount("InProductHelp.Db.Load." + suffix, 0, 1);
   histogram_tester.ExpectTotalCount("InProductHelp.Db.TotalEvents", 0);
 }
@@ -176,7 +173,6 @@ TEST_F(PersistentEventStoreTest, BadInit) {
   // Histograms.
   std::string suffix =
       stats::ToDbHistogramSuffix(stats::StoreType::EVENTS_STORE);
-  histogram_tester.ExpectBucketCount("InProductHelp.Db.Init." + suffix, 0, 1);
   histogram_tester.ExpectTotalCount("InProductHelp.Db.Load." + suffix, 0);
   histogram_tester.ExpectTotalCount("InProductHelp.Db.TotalEvents", 0);
 }

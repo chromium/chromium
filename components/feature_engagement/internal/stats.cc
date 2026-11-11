@@ -187,18 +187,6 @@ void RecordUserSnoozeAction(Tracker::SnoozeAction snooze_action) {
   base::UmaHistogramEnumeration("InProductHelp.SnoozeAction", snooze_action);
 }
 
-void RecordDbUpdate(bool success, StoreType type) {
-  std::string histogram_name =
-      "InProductHelp.Db.Update." + ToDbHistogramSuffix(type);
-  base::UmaHistogramBoolean(histogram_name, success);
-}
-
-void RecordDbInitEvent(bool success, StoreType type) {
-  std::string histogram_name =
-      "InProductHelp.Db.Init." + ToDbHistogramSuffix(type);
-  base::UmaHistogramBoolean(histogram_name, success);
-}
-
 void RecordEventDbLoadEvent(bool success, const std::vector<Event>& events) {
   std::string histogram_name =
       "InProductHelp.Db.Load." + ToDbHistogramSuffix(StoreType::EVENTS_STORE);

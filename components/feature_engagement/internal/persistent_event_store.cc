@@ -16,9 +16,7 @@ namespace {
 using KeyEventPair = std::pair<std::string, Event>;
 using KeyEventList = std::vector<KeyEventPair>;
 
-void NoopUpdateCallback(bool success) {
-  stats::RecordDbUpdate(success, stats::StoreType::EVENTS_STORE);
-}
+void NoopUpdateCallback(bool success) {}
 
 }  // namespace
 
@@ -64,7 +62,6 @@ void PersistentEventStore::OnInitComplete(
     OnLoadedCallback callback,
     leveldb_proto::Enums::InitStatus status) {
   bool success = status == leveldb_proto::Enums::InitStatus::kOK;
-  stats::RecordDbInitEvent(success, stats::StoreType::EVENTS_STORE);
 
   if (!success) {
     std::move(callback).Run(false, std::make_unique<std::vector<Event>>());
