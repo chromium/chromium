@@ -8,6 +8,7 @@
 #include <iterator>
 #include <limits>
 #include <numeric>
+#include <optional>
 #include <ranges>
 #include <stack>
 #include <type_traits>
@@ -21,6 +22,44 @@
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree.h"
 
+namespace {
+
+// Logs the execution time for each step of the Readability mapping algorithm.
+void RecordReadabilityMappingMetrics(std::optional<size_t> success_rate,
+                                     base::TimeDelta total_duration,
+                                     base::TimeDelta flattening_duration,
+                                     base::TimeDelta suffix_array_duration,
+                                     base::TimeDelta initial_anchors_duration,
+                                     base::TimeDelta gap_alignment_duration) {
+  if (success_rate.has_value()) {
+    base::UmaHistogramPercentage(
+        "Accessibility.ReadAnything.ReadabilityMapping.SuccessRate",
+        success_rate.value());
+  }
+
+  base::UmaHistogramTimes(
+      "Accessibility.ReadAnything.ReadabilityMapping.1_Flattening."
+      "ExecutionTime",
+      flattening_duration);
+  base::UmaHistogramTimes(
+      "Accessibility.ReadAnything.ReadabilityMapping.2_SuffixArray."
+      "ExecutionTime",
+      suffix_array_duration);
+  base::UmaHistogramTimes(
+      "Accessibility.ReadAnything.ReadabilityMapping.3_InitialAnchors."
+      "ExecutionTime",
+      initial_anchors_duration);
+  base::UmaHistogramTimes(
+      "Accessibility.ReadAnything.ReadabilityMapping.4_GapAlignment."
+      "ExecutionTime",
+      gap_alignment_duration);
+  base::UmaHistogramTimes(
+      "Accessibility.ReadAnything.ReadabilityMapping.0_Total.ExecutionTime",
+      total_duration);
+}
+
+}  // namespace
+
 ReadAnythingTextAligner::SuffixArray::SuffixArray() = default;
 ReadAnythingTextAligner::SuffixArray::~SuffixArray() = default;
 
@@ -32,8 +71,7 @@ void ReadAnythingTextAligner::SuffixArray::Build(std::u16string_view t) {
   // the text: [0, 1, 2, ... N-1].
   std::iota(this->suffix_array.begin(), this->suffix_array.end(), 0);
 
-  // Sort these indices lexicographically based on the text starting at each
-  // index to the suffix array.
+  // Sort the start positions so their suffixes are in lexicographic order.
   std::sort(this->suffix_array.begin(), this->suffix_array.end(),
             [this](uint32_t i, uint32_t j) {
               return this->text.substr(i) < this->text.substr(j);
@@ -68,45 +106,43 @@ ReadAnythingTextAligner::MapRenderedTextToTree(
     const std::vector<std::u16string>& blocks,
     const ui::AXTree& tree,
     bool is_loaded) {
-  ReadAnythingTextAligner aligner(is_loaded);
-  return aligner.Align(blocks, tree);
+  ReadAnythingTextAligner aligner(blocks, tree, is_loaded);
+  return aligner.Align();
 }
 
-ReadAnythingTextAligner::ReadAnythingTextAligner(bool is_loaded)
-    : is_loaded_(is_loaded) {}
+ReadAnythingTextAligner::ReadAnythingTextAligner(
+    const std::vector<std::u16string>& blocks,
+    const ui::AXTree& tree,
+    bool is_loaded)
+    : blocks_(blocks),
+      tree_(tree),
+      is_loaded_(is_loaded),
+      text_to_ax_map_(blocks.size()) {}
 
 ReadAnythingTextAligner::~ReadAnythingTextAligner() = default;
 
 base::expected<ReadAnythingTextAligner::TextToAXMap,
                ReadAnythingTextAligner::AlignmentError>
-ReadAnythingTextAligner::Align(const std::vector<std::u16string>& blocks,
-                               const ui::AXTree& tree) {
+ReadAnythingTextAligner::Align() {
   base::ElapsedTimer total_timer;
   base::ElapsedTimer step_timer;
 
-  text_to_ax_map_.clear();
-  occupied_ax_ranges_.clear();
-  // Ensure the mapping storage size matches the input blocks.
-  text_to_ax_map_.resize(blocks.size());
-
-  FlattenAXTree(&tree);
+  FlattenAXTree();
   base::TimeDelta flattening_duration = step_timer.Elapsed();
-
-  const bool is_loaded = is_loaded_;
 
   // If the AXTree is empty, there is no text to map back to. While the page is
   // still loading, treat this as a low match rate so the caller retries once
   // text arrives.
   if (global_ax_tree_text_.empty()) {
-    return base::unexpected(is_loaded ? AlignmentError::kNoText
-                                      : AlignmentError::kLowMatchRate);
+    return base::unexpected(is_loaded_ ? AlignmentError::kNoText
+                                       : AlignmentError::kLowMatchRate);
   }
 
   // Build a frequency map of the distilled blocks.
   step_timer = base::ElapsedTimer();
   size_t total_distilled_chars = 0;
   base::flat_map<std::u16string_view, int> readability_block_counts;
-  for (const auto& block : blocks) {
+  for (const auto& block : *blocks_) {
     if (!block.empty()) {
       total_distilled_chars += block.length();
       readability_block_counts[block]++;
@@ -116,7 +152,8 @@ ReadAnythingTextAligner::Align(const std::vector<std::u16string>& blocks,
       total_distilled_chars == 0
           ? 0
           : (global_ax_tree_text_.size() * 100) / total_distilled_chars;
-  if (!is_loaded && tree_mapping_coverage < kMinReadabilityMappingSuccessRate) {
+  if (!is_loaded_ &&
+      tree_mapping_coverage < kMinReadabilityMappingSuccessRate) {
     return base::unexpected(AlignmentError::kLowMatchRate);
   }
   base::TimeDelta initial_anchors_duration = step_timer.Elapsed();
@@ -130,14 +167,14 @@ ReadAnythingTextAligner::Align(const std::vector<std::u16string>& blocks,
 
   step_timer = base::ElapsedTimer();
   std::vector<AlignmentAnchor> candidates =
-      FindGloballyUniqueBlocks(blocks, index, readability_block_counts);
+      FindGloballyUniqueBlocks(index, readability_block_counts);
 
   std::vector<AlignmentAnchor> major_anchors =
       FilterMonotonicAnchors(std::move(candidates));
   initial_anchors_duration += step_timer.Elapsed();
 
   step_timer = base::ElapsedTimer();
-  GapSubstringAlignment(blocks, index, major_anchors);
+  GapSubstringAlignment(index, major_anchors);
   base::TimeDelta gap_alignment_duration = step_timer.Elapsed();
 
   std::optional<size_t> success_rate;
@@ -149,10 +186,8 @@ ReadAnythingTextAligner::Align(const std::vector<std::u16string>& blocks,
       }
     }
     success_rate = (total_mapped_chars * 100) / total_distilled_chars;
-    if (!is_loaded &&
+    if (!is_loaded_ &&
         success_rate.value() < kMinReadabilityMappingSuccessRate) {
-      text_to_ax_map_.assign(blocks.size(), {});
-      occupied_ax_ranges_.clear();
       return base::unexpected(AlignmentError::kLowMatchRate);
     }
   }
@@ -175,18 +210,17 @@ ReadAnythingTextAligner::Align(const std::vector<std::u16string>& blocks,
 
 std::vector<ReadAnythingTextAligner::AlignmentAnchor>
 ReadAnythingTextAligner::FindGloballyUniqueBlocks(
-    const std::vector<std::u16string>& blocks,
     const SuffixArray& index,
     const base::flat_map<std::u16string_view, int>& block_counts) {
-  CHECK_EQ(blocks.size(), text_to_ax_map_.size());
+  CHECK_EQ(blocks_->size(), text_to_ax_map_.size());
 
   std::vector<AlignmentAnchor> candidates;
 
   // Skip block 0 (title). Defer its mapping to subsequent steps once the search
   // space has been restricted. This avoids false body matches if the title is
   // synthesized metadata.
-  for (size_t i = 1; i < blocks.size(); ++i) {
-    const std::u16string& block = blocks[i];
+  for (size_t i = 1; i < blocks_->size(); ++i) {
+    const std::u16string& block = (*blocks_)[i];
 
     if (block.empty()) {
       continue;
@@ -196,7 +230,7 @@ ReadAnythingTextAligner::FindGloballyUniqueBlocks(
     auto range = index.FindRange(block);
 
     // If the block exists exactly once in the source page and in the distilled
-    // output, set the AXNode segments for this block in |text_to_ax_map_| and
+    // output, set the AXNode segments for this block in `text_to_ax_map_` and
     // add it as a candidate for a major anchor.
     auto it = block_counts.find(block);
     if (std::distance(range.first, range.second) == 1 &&
@@ -231,6 +265,7 @@ ReadAnythingTextAligner::FindGloballyUniqueBlocks(
   return candidates;
 }
 
+// static
 std::vector<ReadAnythingTextAligner::AlignmentAnchor>
 ReadAnythingTextAligner::FilterMonotonicAnchors(
     std::vector<AlignmentAnchor> candidates) {
@@ -274,38 +309,35 @@ ReadAnythingTextAligner::FilterMonotonicAnchors(
 }
 
 void ReadAnythingTextAligner::GapSubstringAlignment(
-    const std::vector<std::u16string>& blocks,
     const SuffixArray& index,
     const std::vector<AlignmentAnchor>& major_anchors) {
   if (major_anchors.empty()) {
     // If no major anchors were found, treat the whole text as one gap.
-    AlignGap(blocks, index, 0, blocks.size(), 0, global_ax_tree_text_.size());
+    AlignGap(index, 0, blocks_->size(), 0, global_ax_tree_text_.size());
     return;
   }
 
   // Gap before the first major anchor.
-  AlignGap(blocks, index, 0, major_anchors[0].block_index, 0,
+  AlignGap(index, 0, major_anchors[0].block_index, 0,
            major_anchors[0].ax_start);
 
   // Gaps between major anchors.
   for (size_t i = 0; i < major_anchors.size() - 1; ++i) {
-    AlignGap(blocks, index, major_anchors[i].block_index + 1,
+    AlignGap(index, major_anchors[i].block_index + 1,
              major_anchors[i + 1].block_index, major_anchors[i].ax_end,
              major_anchors[i + 1].ax_start);
   }
 
   // Gap after the last major anchor.
-  AlignGap(blocks, index, major_anchors.back().block_index + 1, blocks.size(),
+  AlignGap(index, major_anchors.back().block_index + 1, blocks_->size(),
            major_anchors.back().ax_end, global_ax_tree_text_.size());
 }
 
-void ReadAnythingTextAligner::AlignGap(
-    const std::vector<std::u16string>& blocks,
-    const SuffixArray& index,
-    size_t block_index_start,
-    size_t block_index_end,
-    size_t ax_start,
-    size_t ax_end) {
+void ReadAnythingTextAligner::AlignGap(const SuffixArray& index,
+                                       size_t block_index_start,
+                                       size_t block_index_end,
+                                       size_t ax_start,
+                                       size_t ax_end) {
   if (block_index_start >= block_index_end || ax_start >= ax_end) {
     return;
   }
@@ -314,18 +346,18 @@ void ReadAnythingTextAligner::AlignGap(
   // gaps for blocks that haven't been anchored yet.
   std::vector<TextRange> ranges;
   for (size_t i = block_index_start; i < block_index_end; ++i) {
-    if (!blocks[i].empty() && text_to_ax_map_[i].empty()) {
-      ranges.emplace_back(i, 0, blocks[i].size());
+    const std::u16string& block = (*blocks_)[i];
+    if (!block.empty() && text_to_ax_map_[i].empty()) {
+      ranges.emplace_back(i, 0, block.size());
     }
   }
 
   if (!ranges.empty()) {
-    AlignSubstring(blocks, index, std::move(ranges), ax_start, ax_end);
+    AlignSubstring(index, std::move(ranges), ax_start, ax_end);
   }
 }
 
 void ReadAnythingTextAligner::AlignSubstring(
-    const std::vector<std::u16string>& blocks,
     const SuffixArray& index,
     std::vector<TextRange> distilled_ranges,
     size_t ax_start,
@@ -335,13 +367,12 @@ void ReadAnythingTextAligner::AlignSubstring(
   }
 
   AlignmentAnchor best_match = FindLongestLocallyUniqueSubstring(
-      blocks, index, distilled_ranges, ax_start, ax_end);
+      index, distilled_ranges, ax_start, ax_end);
 
   // If no sufficiently long match was found, stop recursing in this gap.
   size_t best_match_length = best_match.block_end - best_match.block_start;
   if (best_match_length < kMinAnchorLength) {
-    AlignRelativeOrder(blocks, index, std::move(distilled_ranges), ax_start,
-                       ax_end);
+    AlignRelativeOrder(index, std::move(distilled_ranges), ax_start, ax_end);
     return;
   }
 
@@ -352,7 +383,7 @@ void ReadAnythingTextAligner::AlignSubstring(
   auto& block_mappings = text_to_ax_map_[best_match.block_index];
   block_mappings.insert(block_mappings.end(), segments.begin(), segments.end());
 
-  // Split the distilled_ranges into two sets: those before and after the match.
+  // Split `distilled_ranges` into the parts before and after the match.
   std::vector<TextRange> pre_ranges;
   std::vector<TextRange> post_ranges;
 
@@ -374,15 +405,12 @@ void ReadAnythingTextAligner::AlignSubstring(
   }
 
   // Recurse on the remaining gaps.
-  AlignSubstring(blocks, index, std::move(pre_ranges), ax_start,
-                 best_match.ax_start);
-  AlignSubstring(blocks, index, std::move(post_ranges), best_match.ax_end,
-                 ax_end);
+  AlignSubstring(index, std::move(pre_ranges), ax_start, best_match.ax_start);
+  AlignSubstring(index, std::move(post_ranges), best_match.ax_end, ax_end);
 }
 
 ReadAnythingTextAligner::AlignmentAnchor
 ReadAnythingTextAligner::FindLongestLocallyUniqueSubstring(
-    const std::vector<std::u16string>& blocks,
     const SuffixArray& index,
     const std::vector<TextRange>& distilled_ranges,
     size_t ax_start,
@@ -391,7 +419,7 @@ ReadAnythingTextAligner::FindLongestLocallyUniqueSubstring(
 
   // Check unmapped blocks in the given gap range.
   for (const auto& range : distilled_ranges) {
-    const std::u16string& block_text = blocks[range.block_index];
+    const std::u16string& block_text = (*blocks_)[range.block_index];
 
     // Try every character position in the unmapped range as a potential
     // anchor start.
@@ -454,7 +482,6 @@ ReadAnythingTextAligner::FindLongestLocallyUniqueSubstring(
 }
 
 void ReadAnythingTextAligner::AlignRelativeOrder(
-    const std::vector<std::u16string>& blocks,
     const SuffixArray& index,
     std::vector<TextRange> distilled_ranges,
     size_t ax_start,
@@ -466,7 +493,7 @@ void ReadAnythingTextAligner::AlignRelativeOrder(
       break;
     }
 
-    const std::u16string& block_text = blocks[range.block_index];
+    const std::u16string& block_text = (*blocks_)[range.block_index];
 
     // The search length is bounded by the remaining AXTree gap. Adjust it to
     // ensure candidates can physically fit within [current_ax_cursor, ax_end).
@@ -533,22 +560,20 @@ bool ReadAnythingTextAligner::IsAXRangeOccupied(size_t ax_start,
 
 // TODO: crbug.com/509578412 - Evaluate consolidating logic with existing text
 // traversal methods.
-void ReadAnythingTextAligner::FlattenAXTree(const ui::AXTree* tree) {
-  flattened_ax_tree_nodes_.clear();
-  global_ax_tree_text_.clear();
-  if (!tree || !tree->root()) {
+void ReadAnythingTextAligner::FlattenAXTree() {
+  if (!tree_->root()) {
     return;
   }
 
   std::stack<ui::AXNode*> stack;
-  stack.push(tree->root());
+  stack.push(tree_->root());
 
   // Traverse tree in pre-order DFS to build a contiguous text representation.
   while (!stack.empty()) {
     ui::AXNode* node = stack.top();
     stack.pop();
 
-    // Check if current node should be added to |global_ax_tree_text_|.
+    // Check if current node should be added to `global_ax_tree_text_`.
     // We use IsLeaf() because it identifies nodes that the accessibility
     // engine considers semantic units (like StaticText). This automatically
     // skips "virtual" internal layout nodes like kInlineTextBox (negative
@@ -569,7 +594,7 @@ void ReadAnythingTextAligner::FlattenAXTree(const ui::AXTree* tree) {
           a11y::GetTextContent(node, /*is_pdf=*/false, /*is_docs=*/false);
       if (!node_text.empty()) {
         flattened_ax_tree_nodes_.push_back(
-            {node->id(), node_text, global_ax_tree_text_.length()});
+            {node->id(), node_text.length(), global_ax_tree_text_.length()});
         global_ax_tree_text_ += node_text;
       }
       // Since this is a leaf node we don't need to process its children.
@@ -595,9 +620,8 @@ ReadAnythingTextAligner::CreateSegmentsForMatch(size_t ax_start,
                                                 size_t block_internal_offset) {
   std::vector<MappingSegment> segments;
 
-  // Find the first node starting after ax_start and backtrack to land on the
-  // segment containing it. This approach is used for binary search ranges,
-  // as it identifies the node starting at or before the target offset.
+  // Find the last node starting at or before `ax_start`. That's the node
+  // containing it.
   auto it = std::upper_bound(flattened_ax_tree_nodes_.begin(),
                              flattened_ax_tree_nodes_.end(), ax_start,
                              [](size_t value, const AXNodeSegment& segment) {
@@ -611,7 +635,7 @@ ReadAnythingTextAligner::CreateSegmentsForMatch(size_t ax_start,
   for (; it != flattened_ax_tree_nodes_.end(); ++it) {
     const auto& ax_segment = *it;
     size_t seg_start = ax_segment.start_offset;
-    size_t seg_end = seg_start + ax_segment.text.length();
+    size_t seg_end = seg_start + ax_segment.text_length;
 
     if (seg_end <= ax_start) {
       continue;
@@ -633,38 +657,4 @@ ReadAnythingTextAligner::CreateSegmentsForMatch(size_t ax_start,
     segments.push_back(ms);
   }
   return segments;
-}
-
-void ReadAnythingTextAligner::RecordReadabilityMappingMetrics(
-    std::optional<size_t> success_rate,
-    base::TimeDelta total_duration,
-    base::TimeDelta flattening_duration,
-    base::TimeDelta suffix_array_duration,
-    base::TimeDelta initial_anchors_duration,
-    base::TimeDelta gap_alignment_duration) {
-  if (success_rate.has_value()) {
-    base::UmaHistogramPercentage(
-        "Accessibility.ReadAnything.ReadabilityMapping.SuccessRate",
-        success_rate.value());
-  }
-
-  base::UmaHistogramTimes(
-      "Accessibility.ReadAnything.ReadabilityMapping.1_Flattening."
-      "ExecutionTime",
-      flattening_duration);
-  base::UmaHistogramTimes(
-      "Accessibility.ReadAnything.ReadabilityMapping.2_SuffixArray."
-      "ExecutionTime",
-      suffix_array_duration);
-  base::UmaHistogramTimes(
-      "Accessibility.ReadAnything.ReadabilityMapping.3_InitialAnchors."
-      "ExecutionTime",
-      initial_anchors_duration);
-  base::UmaHistogramTimes(
-      "Accessibility.ReadAnything.ReadabilityMapping.4_GapAlignment."
-      "ExecutionTime",
-      gap_alignment_duration);
-  base::UmaHistogramTimes(
-      "Accessibility.ReadAnything.ReadabilityMapping.0_Total.ExecutionTime",
-      total_duration);
 }
