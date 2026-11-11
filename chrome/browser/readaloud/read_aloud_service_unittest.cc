@@ -467,6 +467,8 @@ class FakePagePlayer : public content::MediaSessionPlayerObserver {
 
 class ReadAloudServiceTest : public ChromeRenderViewHostTestHarness {
  public:
+  using ChromeRenderViewHostTestHarness::ChromeRenderViewHostTestHarness;
+
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     scoped_feature_list_.InitAndEnableFeature(features::kReadAloudNative);
@@ -1591,6 +1593,10 @@ TEST_F(ReadAloudServiceTest, PauseForwardedToUtility) {
 
 class ReadAloudServiceMediaSessionTest : public ReadAloudServiceTest {
  public:
+  ReadAloudServiceMediaSessionTest()
+      : ReadAloudServiceTest(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
   void SetUp() override {
     ReadAloudServiceTest::SetUp();
     // Grants audio focus without calling into the Android AudioManager.
@@ -1630,6 +1636,11 @@ class ReadAloudServiceMediaSessionTest : public ReadAloudServiceTest {
     fake_controller()->set_play_callback(run_loop.QuitClosure());
     media_session()->Resume(suspend_type);
     run_loop.Run();
+  }
+
+  void ReportProgress(base::TimeDelta elapsed, base::TimeDelta duration) {
+    fake_controller()->client()->OnPlaybackProgressChanged(elapsed, duration);
+    fake_controller()->FlushForTesting();
   }
 
  private:
@@ -1930,6 +1941,177 @@ TEST_F(ReadAloudServiceMediaSessionTest,
   fake_controller()->client()->OnPlaybackStateChanged(
       read_aloud::mojom::PlaybackState::kPaused);
   fake_controller()->FlushForTesting();
+}
+
+// `MediaSession::GetMediaSessionPosition()` reflects elapsed time, duration,
+// playback rate across play/pause/resume, and `end_of_media` at `kEndOfStream`.
+TEST_F(ReadAloudServiceMediaSessionTest,
+       MediaSessionPositionReflectsProgressAndStateTransitions) {
+  StartReadAloud();
+  EXPECT_EQ(media_session()->GetMediaSessionPosition(), std::nullopt);
+
+  ReportProgress(/*elapsed=*/base::Seconds(12), /*duration=*/base::Seconds(60));
+  EXPECT_EQ(media_session()->GetMediaSessionPosition(),
+            media_session::MediaPosition(/*playback_rate=*/1.0,
+                                         /*duration=*/base::Seconds(60),
+                                         /*position=*/base::Seconds(12),
+                                         /*end_of_media=*/false));
+
+  // Pausing flips the MediaPosition playback rate to 0.0 and updates to the
+  // halt elapsed time reported by the utility.
+  fake_controller()->client()->OnPlaybackStateChanged(
+      read_aloud::mojom::PlaybackState::kPaused);
+  ReportProgress(/*elapsed=*/base::Seconds(15), /*duration=*/base::Seconds(60));
+  EXPECT_EQ(media_session()->GetMediaSessionPosition(),
+            media_session::MediaPosition(/*playback_rate=*/0.0,
+                                         /*duration=*/base::Seconds(60),
+                                         /*position=*/base::Seconds(15),
+                                         /*end_of_media=*/false));
+
+  // Resuming from the MediaSession restores the active playback rate once
+  // `kPlaying` is reported.
+  ResumeAndWaitForUtilityPlay(SuspendType::kUI);
+  fake_controller()->client()->OnPlaybackStateChanged(
+      read_aloud::mojom::PlaybackState::kPlaying);
+  fake_controller()->FlushForTesting();
+  EXPECT_EQ(media_session()->GetMediaSessionPosition(),
+            media_session::MediaPosition(/*playback_rate=*/1.0,
+                                         /*duration=*/base::Seconds(60),
+                                         /*position=*/base::Seconds(15),
+                                         /*end_of_media=*/false));
+
+  // Reaching `kEndOfStream` keeps Read Aloud in the session as a paused player
+  // with `end_of_media() == true`.
+  fake_controller()->client()->OnPlaybackStateChanged(
+      read_aloud::mojom::PlaybackState::kEndOfStream);
+  ReportProgress(/*elapsed=*/base::Seconds(60), /*duration=*/base::Seconds(60));
+  EXPECT_EQ(media_session()->GetMediaSessionPosition(),
+            media_session::MediaPosition(/*playback_rate=*/0.0,
+                                         /*duration=*/base::Seconds(60),
+                                         /*position=*/base::Seconds(60),
+                                         /*end_of_media=*/true));
+}
+
+// `SetPlaybackRate()` updates `MediaPosition::playback_rate()` while playing,
+// clamps to `[kMinPlaybackRate, kMaxPlaybackRate]`, reports 0.0 while paused,
+// and restores the configured rate when playback resumes.
+TEST_F(ReadAloudServiceMediaSessionTest,
+       MediaSessionPositionReflectsPlaybackRateChanges) {
+  StartReadAloud();
+  ReportProgress(/*elapsed=*/base::Seconds(10), /*duration=*/base::Seconds(60));
+
+  service()->SetPlaybackRate(1.5f);
+  EXPECT_EQ(media_session()->GetMediaSessionPosition(),
+            media_session::MediaPosition(/*playback_rate=*/1.5,
+                                         /*duration=*/base::Seconds(60),
+                                         /*position=*/base::Seconds(10),
+                                         /*end_of_media=*/false));
+
+  service()->SetPlaybackRate(10.0f);
+  EXPECT_EQ(media_session()->GetMediaSessionPosition(),
+            media_session::MediaPosition(/*playback_rate=*/kMaxPlaybackRate,
+                                         /*duration=*/base::Seconds(60),
+                                         /*position=*/base::Seconds(10),
+                                         /*end_of_media=*/false));
+
+  fake_controller()->client()->OnPlaybackStateChanged(
+      read_aloud::mojom::PlaybackState::kPaused);
+  fake_controller()->FlushForTesting();
+  EXPECT_EQ(media_session()->GetMediaSessionPosition(),
+            media_session::MediaPosition(/*playback_rate=*/0.0,
+                                         /*duration=*/base::Seconds(60),
+                                         /*position=*/base::Seconds(10),
+                                         /*end_of_media=*/false));
+
+  fake_controller()->client()->OnPlaybackStateChanged(
+      read_aloud::mojom::PlaybackState::kPlaying);
+  fake_controller()->FlushForTesting();
+  EXPECT_EQ(media_session()->GetMediaSessionPosition(),
+            media_session::MediaPosition(/*playback_rate=*/kMaxPlaybackRate,
+                                         /*duration=*/base::Seconds(60),
+                                         /*position=*/base::Seconds(10),
+                                         /*end_of_media=*/false));
+}
+
+// Media notification seek controls (`SeekTo`, `ScrubTo`, `Seek` forward and
+// backward) route to `ReadAloudService` and update `GetMediaSessionPosition()`
+// when the utility reports the post-seek progress.
+TEST_F(ReadAloudServiceMediaSessionTest,
+       MediaSessionSeekControlsRouteToUtilityAndUpdatePosition) {
+  StartReadAloud();
+  ReportProgress(/*elapsed=*/base::Seconds(10), /*duration=*/base::Seconds(60));
+
+  // `SeekTo` and `ScrubTo` route through `OnSeekTo` ->
+  // `ReadAloudService::Seek()`.
+  media_session()->SeekTo(base::Seconds(25));
+  fake_controller()->FlushForTesting();
+  EXPECT_EQ(fake_controller()->last_seek_time(), base::Seconds(25));
+
+  ReportProgress(/*elapsed=*/base::Seconds(25), /*duration=*/base::Seconds(60));
+  EXPECT_EQ(media_session()->GetMediaSessionPosition(),
+            media_session::MediaPosition(/*playback_rate=*/1.0,
+                                         /*duration=*/base::Seconds(60),
+                                         /*position=*/base::Seconds(25),
+                                         /*end_of_media=*/false));
+
+  media_session()->ScrubTo(base::Seconds(30));
+  fake_controller()->FlushForTesting();
+  EXPECT_EQ(fake_controller()->last_seek_time(), base::Seconds(30));
+
+  // Positive/negative `Seek` route through `OnSeekForward`/`OnSeekBackward` ->
+  // `SeekRelative(±offset)`.
+  media_session()->Seek(base::Seconds(10));
+  fake_controller()->FlushForTesting();
+  EXPECT_EQ(fake_controller()->last_seek_relative_offset(), base::Seconds(10));
+
+  media_session()->Seek(base::Seconds(-5));
+  fake_controller()->FlushForTesting();
+  EXPECT_EQ(fake_controller()->last_seek_relative_offset(), base::Seconds(-5));
+}
+
+// Incremental TTS chunk duration refinements within the 20s duration guard
+// window must not trip `MediaSessionImpl::MaybeGuardDurationUpdate()`'s
+// livestream heuristic (which replaces duration with `TimeDelta::Max()` and
+// strips seek actions). Once the 20s window elapses, the refined duration is
+// exposed to `MediaSession`.
+TEST_F(ReadAloudServiceMediaSessionTest,
+       MediaSessionDurationRefinementsDoNotTriggerLivestreamThrottle) {
+  StartReadAloud();
+  ReportProgress(/*elapsed=*/base::Seconds(0), /*duration=*/base::Seconds(60));
+
+  // Simulate 6 incremental chunk duration refinements arriving over 6 seconds,
+  // with position drift (`elapsed = i * 2s` vs `1s` mock time exceeding
+  // `kPositionDriftThreshold`) forcing `MediaSession` position rebuilds.
+  // Without duration throttling in `ReadAloudPlaybackSession`, >3 duration
+  // changes in <20s cause `MediaSessionImpl::MaybeGuardDurationUpdate()` to set
+  // duration to `TimeDelta::Max()` and remove seek actions.
+  for (int i = 1; i <= 6; ++i) {
+    task_environment()->FastForwardBy(base::Seconds(1));
+    ReportProgress(/*elapsed=*/base::Seconds(i * 2),
+                   /*duration=*/base::Seconds(60 + i));
+  }
+
+  EXPECT_EQ(media_session()->GetMediaSessionPosition(),
+            media_session::MediaPosition(/*playback_rate=*/1.0,
+                                         /*duration=*/base::Seconds(60),
+                                         /*position=*/base::Seconds(12),
+                                         /*end_of_media=*/false));
+  EXPECT_THAT(media_session()->GetMediaSessionActionsSync(),
+              testing::IsSupersetOf(
+                  {media_session::mojom::MediaSessionAction::kSeekTo,
+                   media_session::mojom::MediaSessionAction::kScrubTo,
+                   media_session::mojom::MediaSessionAction::kSeekForward,
+                   media_session::mojom::MediaSessionAction::kSeekBackward}));
+
+  // After the 20s guard interval elapses, the refined duration (66s) is
+  // propagated to `MediaSession`.
+  task_environment()->FastForwardBy(base::Seconds(20));
+  ReportProgress(/*elapsed=*/base::Seconds(32), /*duration=*/base::Seconds(66));
+  EXPECT_EQ(media_session()->GetMediaSessionPosition(),
+            media_session::MediaPosition(/*playback_rate=*/1.0,
+                                         /*duration=*/base::Seconds(66),
+                                         /*position=*/base::Seconds(32),
+                                         /*end_of_media=*/false));
 }
 
 TEST_F(ReadAloudServiceTest, SetPlaybackRateForwardedToUtility) {

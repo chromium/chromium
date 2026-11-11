@@ -222,6 +222,9 @@ void ReadAloudService::SeekRelative(base::TimeDelta offset) {
 }
 
 void ReadAloudService::SetPlaybackRate(float rate) {
+  if (media_session_) {
+    media_session_->OnPlaybackRateChanged(rate);
+  }
   if (utility_player_.is_bound()) {
     utility_player_->SetPlaybackRate(rate);
   }
@@ -706,7 +709,7 @@ void ReadAloudService::OnPlaybackStateChanged(
     case read_aloud::mojom::PlaybackState::kEndOfStream:
       user_requested_play_ = false;
       if (media_session_) {
-        media_session_->NotifyPlaybackPaused();
+        media_session_->NotifyPlaybackPaused(/*end_of_media=*/true);
       }
       NotifyPlaybackStateChanged(state);
       return;
@@ -748,6 +751,9 @@ void ReadAloudService::OnPlaybackProgressChanged(base::TimeDelta elapsed,
     utility_observer_receiver_.ReportBadMessage(
         "ReadAloudService: invalid playback progress received from utility");
     return;
+  }
+  if (media_session_) {
+    media_session_->OnPlaybackProgressChanged(elapsed, duration);
   }
   if (delegate_) {
     delegate_->OnPlaybackProgressUpdated(elapsed, duration);
