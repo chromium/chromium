@@ -16,7 +16,6 @@ if (is_mac) {
 config("config") {
   cflags = [
     "-fstrict-aliasing",
-    "-Wundef",
     "-Wno-pragma-clang-attribute",
     "-Wno-ignored-attributes",
   ]
@@ -463,6 +462,7 @@ target(libcxx_target_type, "libc++") {
     "//third_party/libc++/src/src/chrono.cpp",
     "//third_party/libc++/src/src/condition_variable.cpp",
     "//third_party/libc++/src/src/condition_variable_destructor.cpp",
+    "//third_party/libc++/src/src/debugging.cpp",
     "//third_party/libc++/src/src/error_category.cpp",
     "//third_party/libc++/src/src/exception.cpp",
     "//third_party/libc++/src/src/filesystem/directory_iterator.cpp",

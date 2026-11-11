@@ -5,6 +5,7 @@
 #ifndef PARTITION_ALLOC_INTERNAL_ALLOCATOR_FORWARD_H_
 #define PARTITION_ALLOC_INTERNAL_ALLOCATOR_FORWARD_H_
 
+#include <cstddef>
 #include <new>
 #include <type_traits>
 
@@ -56,8 +57,8 @@ class InternalAllocator {
 
 // Inherit this to make a class allocated on the internal partition.
 struct PA_COMPONENT_EXPORT(PARTITION_ALLOC) InternalPartitionAllocated {
-  static void* operator new(size_t count);
-  static void* operator new(size_t count, std::align_val_t alignment);
+  static void* operator new(std::size_t count);
+  static void* operator new(std::size_t count, std::align_val_t alignment);
   // Though we do not forward placement new, we need to define this explicitly
   // to allow it.
   static void* operator new(std::size_t, void* ptr) { return ptr; }
