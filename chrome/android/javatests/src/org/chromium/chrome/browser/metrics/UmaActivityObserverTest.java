@@ -25,6 +25,7 @@ import org.chromium.base.test.transit.TravelException;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -166,6 +167,7 @@ public class UmaActivityObserverTest {
 
     @Test
     @LargeTest
+    @DisabledTest(message = "https://crbug.com/584826340")
     public void testSessionPreservedInSettings() throws Exception {
         // When settings are shown in a tab, the settings "activity" is the tabbed activity itself.
         boolean settingsInTab = SettingsInTab.shouldOpenSettingsInTab();
