@@ -282,6 +282,7 @@ class ContextualTasksWebContentsUserData
     return failed_context_uploads_;
   }
   bool submit_pending() const { return pending_submit_.has_value(); }
+  std::optional<base::UnguessableToken> pending_submit_overlay_token() const;
   bool has_unsubmitted_query() const { return has_unsubmitted_query_; }
   void set_has_unsubmitted_query(bool has_unsubmitted_query) {
     has_unsubmitted_query_ = has_unsubmitted_query;
@@ -410,7 +411,8 @@ class ContextualTasksWebContentsUserData
       contextual_search::ContextualSearchSessionHandle* session_handle,
       const std::optional<base::UnguessableToken>& overlay_token);
   std::vector<lens::AddedContext> GetLensAddedContexts(
-      std::optional<base::UnguessableToken>& overlay_token);
+      std::optional<base::UnguessableToken>& overlay_token,
+      std::string_view query_text);
   // Returns true if the tab identified by `tab_id` / `tab_url` / `tab_title`
   // has been explicitly deselected (or had its auto-suggested chip dismissed
   // without being re-attached) for the upcoming submission.

@@ -75,7 +75,6 @@
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 #endif
 
 namespace contextual_tasks {
@@ -217,48 +216,6 @@ void RemoveAttachedTabUnderline(
     contextual_tasks::RemoveTabUnderline(*tab_handle_id,
                                          browser_window_interface);
   }
-}
-
-std::optional<lens::LensOverlayVisualSearchInteractionData>
-CreateCropInteractionData(const lens::mojom::CenterRotatedBoxPtr& region,
-                          const SkBitmap& screenshot) {
-  if (!region) {
-    return std::nullopt;
-  }
-  const bool is_normalized =
-      region->coordinate_type ==
-      lens::mojom::CenterRotatedBox_CoordinateType::kNormalized;
-  if (!is_normalized && (screenshot.width() <= 0 || screenshot.height() <= 0)) {
-    return std::nullopt;
-  }
-  lens::LensOverlayVisualSearchInteractionData vsint;
-  vsint.set_interaction_type(
-      lens::LensOverlayInteractionRequestMetadata::REGION_SEARCH);
-  auto* mutable_zoomed_crop = vsint.mutable_zoomed_crop();
-  mutable_zoomed_crop->set_parent_height(screenshot.height());
-  mutable_zoomed_crop->set_parent_width(screenshot.width());
-  mutable_zoomed_crop->set_zoom(1.0);
-  auto* crop = mutable_zoomed_crop->mutable_crop();
-  crop->set_coordinate_type(lens::CoordinateType::NORMALIZED);
-  if (is_normalized) {
-    crop->set_center_x(region->box.x());
-    crop->set_center_y(region->box.y());
-    crop->set_width(region->box.width());
-    crop->set_height(region->box.height());
-  } else {
-    crop->set_center_x(region->box.x() / screenshot.width());
-    crop->set_center_y(region->box.y() / screenshot.height());
-    crop->set_width(region->box.width() / screenshot.width());
-    crop->set_height(region->box.height() / screenshot.height());
-  }
-  vsint.mutable_log_data()->mutable_filter_data()->set_filter_type(
-      lens::AUTO_FILTER);
-  vsint.mutable_log_data()->mutable_user_selection_data()->set_selection_type(
-      lens::MULTIMODAL_SEARCH);
-  vsint.mutable_log_data()->set_is_parent_query(true);
-  vsint.mutable_log_data()->set_client_platform(
-      lens::CLIENT_PLATFORM_LENS_OVERLAY);
-  return vsint;
 }
 #endif
 
@@ -1096,7 +1053,7 @@ void ContextualTasksWebContentsUserData::HandleOnSubmitQueryRequest(
   // Read the Lens state now, since it may change while contextualizing.
   std::optional<base::UnguessableToken> overlay_token = GetLensOverlayToken();
   std::vector<lens::AddedContext> lens_added_contexts =
-      GetLensAddedContexts(overlay_token);
+      GetLensAddedContexts(overlay_token, query_text);
 
   QueryContextualizer::ContextualizeParams params;
   // Without a task (e.g. untasked zero-state AI Mode), `query_contextualizer_`
@@ -1114,6 +1071,8 @@ void ContextualTasksWebContentsUserData::HandleOnSubmitQueryRequest(
       weak_ptr_factory_.GetWeakPtr());
   pending_submit_.emplace(std::string(query_text),
                           std::move(lens_added_contexts), overlay_token);
+  CloseLensAsync(
+      lens::LensOverlayDismissalSource::kContextualTasksQuerySubmitted);
   // The contextualizer's session handle is ignored: it is null when there was
   // nothing to contextualize, so the callback gets the session handle itself.
   params.complete_callback = base::IgnoreArgs<
@@ -2044,8 +2003,6 @@ void ContextualTasksWebContentsUserData::DoSubmitQueryCleanup() {
 
   RefreshActiveTaskContext();
 
-  CloseLensAsync(
-      lens::LensOverlayDismissalSource::kContextualTasksQuerySubmitted);
   UpdateContextState();
   UpdateSuggestInputs();
 }
@@ -2057,6 +2014,11 @@ void ContextualTasksWebContentsUserData::CloseLensAsync(
     controller->CloseLensAsync(dismissal_source);
   }
 #endif
+}
+
+std::optional<base::UnguessableToken>
+ContextualTasksWebContentsUserData::pending_submit_overlay_token() const {
+  return pending_submit_ ? pending_submit_->overlay_token : std::nullopt;
 }
 
 std::vector<contextual_search::TabInfo>
@@ -3042,7 +3004,8 @@ ContextualTasksWebContentsUserData::FindLensFileInfo(
 
 std::vector<lens::AddedContext>
 ContextualTasksWebContentsUserData::GetLensAddedContexts(
-    std::optional<base::UnguessableToken>& overlay_token) {
+    std::optional<base::UnguessableToken>& overlay_token,
+    std::string_view query_text) {
 #if !BUILDFLAG(IS_ANDROID)
   SyncVisualSelectionCacheWithModel();
   const std::optional<base::UnguessableToken> candidate_overlay_token =
@@ -3116,11 +3079,11 @@ ContextualTasksWebContentsUserData::GetLensAddedContexts(
     return {};
   }
 
-  auto* query_controller =
-      controller ? controller->lens_overlay_query_controller() : nullptr;
   std::string search_session_id = session_handle->search_session_id();
-  if (search_session_id.empty() && query_controller) {
-    search_session_id = query_controller->search_session_id();
+  if (search_session_id.empty() && controller) {
+    if (auto* query_controller = controller->lens_overlay_query_controller()) {
+      search_session_id = query_controller->search_session_id();
+    }
   }
   if (search_session_id.empty()) {
     return {};
@@ -3174,21 +3137,13 @@ ContextualTasksWebContentsUserData::GetLensAddedContexts(
   // mounted in the composebox (`has_lens_crop`) or when sending the cropped
   // region image after the auto-selected tab was deselected.
   if (send_region_crop) {
+    std::optional<std::string> query_text_opt =
+        query_text.empty() ? std::nullopt
+                           : std::make_optional<std::string>(query_text);
     std::optional<lens::LensOverlayVisualSearchInteractionData>
         visual_search_interaction_data =
             session_handle->GetVisualSearchInteractionData(
-                file_info->file_token, std::nullopt);
-    if (!visual_search_interaction_data.has_value() && query_controller) {
-      visual_search_interaction_data =
-          query_controller->GetVisualSearchInteractionData();
-    }
-    if (!visual_search_interaction_data.has_value() && controller) {
-      if (auto* overlay = controller->lens_overlay_controller();
-          overlay && overlay->selected_region()) {
-        visual_search_interaction_data = CreateCropInteractionData(
-            overlay->selected_region(), overlay->initial_screenshot());
-      }
-    }
+                file_info->file_token, query_text_opt);
     if (!visual_search_interaction_data.has_value()) {
       if (!has_lens_crop && omit_tab_webpage_context) {
         return {};
