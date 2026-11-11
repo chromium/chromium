@@ -2783,7 +2783,9 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest, WebAppInternalsPage) {
                                    GURL("chrome://web-app-internals"));
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppBrowserTest, BrowserDisplayNotInstallable) {
+// TODO(crbug.com/583956316): Re-enable this flaky test.
+IN_PROC_BROWSER_TEST_P(WebAppBrowserTest,
+                       DISABLED_BrowserDisplayNotInstallable) {
   GURL url = embedded_https_test_server().GetURL(
       "/banners/"
       "manifest_test_page.html?manifest=manifest_display_browser.json");
