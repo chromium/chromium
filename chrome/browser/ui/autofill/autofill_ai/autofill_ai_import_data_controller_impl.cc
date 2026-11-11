@@ -17,6 +17,7 @@
 #include "base/types/optional_ref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/autofill_ai/autofill_ai_import_data_controller.h"
 #include "chrome/browser/ui/autofill/autofill_ai/autofill_ai_import_string_utils.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
@@ -64,7 +65,9 @@ std::u16string GetPrimaryAccountEmailFromProfile(Profile* profile) {
 AutofillAiImportDataControllerImpl::AutofillAiImportDataControllerImpl(
     content::WebContents* web_contents,
     const std::string& app_locale)
-    : AutofillBubbleControllerBase(web_contents),
+    : AutofillBubbleControllerBase(
+          web_contents,
+          PageActionConfig{.action_id = kActionShowAddressesBubbleOrPage}),
       content::WebContentsUserData<AutofillAiImportDataControllerImpl>(
           *web_contents),
       app_locale_(app_locale) {}

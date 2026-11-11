@@ -93,7 +93,10 @@ AutofillBubbleBase* ShowSignInPromo(content::WebContents* web_contents,
 
 AddressBubblesController::AddressBubblesController(
     content::WebContents* web_contents)
-    : AutofillBubbleControllerBase(web_contents),
+    : AutofillBubbleControllerBase(
+          web_contents,
+          PageActionConfig{.action_id = kActionShowAddressesBubbleOrPage,
+                           .should_manage_visibility = true}),
       content::WebContentsUserData<AddressBubblesController>(*web_contents),
       app_locale_(g_browser_process->GetFeatures()
                       ->application_locale_storage()
@@ -228,11 +231,6 @@ void AddressBubblesController::WebContentsDestroyed() {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-std::optional<actions::ActionId>
-AddressBubblesController::GetActionIdForPageAction() {
-  return kActionShowAddressesBubbleOrPage;
-}
-
 std::optional<std::u16string>
 AddressBubblesController::GetPageActionTooltipText() {
   return GetPageActionIconTooltip();

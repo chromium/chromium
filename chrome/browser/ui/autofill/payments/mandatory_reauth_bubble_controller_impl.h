@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/payments/mandatory_reauth_bubble_controller.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "ui/actions/action_id.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
@@ -63,7 +62,6 @@ class MandatoryReauthBubbleControllerImpl
   // AutofillBubbleControllerBase:
   void DoShowBubble() override;
 #if !BUILDFLAG(IS_ANDROID)
-  std::optional<actions::ActionId> GetActionIdForPageAction() override;
   bool ShouldShowPageAction() override;
 #endif  // !BUILDFLAG(IS_ANDROID)
 

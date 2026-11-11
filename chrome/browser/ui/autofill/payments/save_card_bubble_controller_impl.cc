@@ -88,7 +88,10 @@ static bool g_ignore_window_activation_for_testing = false;
 
 SaveCardBubbleControllerImpl::SaveCardBubbleControllerImpl(
     content::WebContents* web_contents)
-    : AutofillBubbleControllerBase(web_contents),
+    : AutofillBubbleControllerBase(
+          web_contents,
+          PageActionConfig{.action_id = kActionShowPaymentsBubbleOrPage,
+                           .should_manage_visibility = true}),
       content::WebContentsUserData<SaveCardBubbleControllerImpl>(*web_contents),
       payments_data_manager_(PersonalDataManagerFactory::GetForBrowserContext(
                                  web_contents->GetBrowserContext())
@@ -822,11 +825,6 @@ bool SaveCardBubbleControllerImpl::ShouldReshowOnTabVisible() const {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-std::optional<actions::ActionId>
-SaveCardBubbleControllerImpl::GetActionIdForPageAction() {
-  return kActionShowPaymentsBubbleOrPage;
-}
-
 std::optional<std::u16string>
 SaveCardBubbleControllerImpl::GetPageActionTooltipText() {
   return GetSavePaymentIconTooltipText();

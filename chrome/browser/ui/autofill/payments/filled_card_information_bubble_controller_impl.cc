@@ -363,7 +363,10 @@ void FilledCardInformationBubbleControllerImpl::
 FilledCardInformationBubbleControllerImpl::
     FilledCardInformationBubbleControllerImpl(
         content::WebContents* web_contents)
-    : AutofillBubbleControllerBase(web_contents),
+    : AutofillBubbleControllerBase(
+          web_contents,
+          PageActionConfig{.action_id = kActionFilledCardInformation,
+                           .should_manage_visibility = true}),
       content::WebContentsUserData<FilledCardInformationBubbleControllerImpl>(
           *web_contents) {}
 
@@ -386,11 +389,6 @@ bool FilledCardInformationBubbleControllerImpl::ShouldReshowOnTabVisible()
 #if !BUILDFLAG(IS_ANDROID)
 bool FilledCardInformationBubbleControllerImpl::ShouldShowPageAction() {
   return ShouldIconBeVisible();
-}
-
-std::optional<actions::ActionId>
-FilledCardInformationBubbleControllerImpl::GetActionIdForPageAction() {
-  return kActionFilledCardInformation;
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

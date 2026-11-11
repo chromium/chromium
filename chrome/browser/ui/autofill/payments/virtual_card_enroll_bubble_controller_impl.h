@@ -92,7 +92,6 @@ class VirtualCardEnrollBubbleControllerImpl
   void DoShowBubble() override;
 #if !BUILDFLAG(IS_ANDROID)
   bool ShouldShowPageAction() override;
-  std::optional<actions::ActionId> GetActionIdForPageAction() override;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
  private:

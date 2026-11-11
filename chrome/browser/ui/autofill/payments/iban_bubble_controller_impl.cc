@@ -415,7 +415,10 @@ void IbanBubbleControllerImpl::OnBubbleClosed(
 
 IbanBubbleControllerImpl::IbanBubbleControllerImpl(
     content::WebContents* web_contents)
-    : AutofillBubbleControllerBase(web_contents),
+    : AutofillBubbleControllerBase(
+          web_contents,
+          PageActionConfig{.action_id = kActionShowPaymentsBubbleOrPage,
+                           .should_manage_visibility = true}),
       content::WebContentsUserData<IbanBubbleControllerImpl>(*web_contents) {}
 
 IbanBubbleType IbanBubbleControllerImpl::GetIbanBubbleType() const {
@@ -451,11 +454,6 @@ IbanBubbleControllerImpl::GetConfirmationUiParams() const {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-std::optional<actions::ActionId>
-IbanBubbleControllerImpl::GetActionIdForPageAction() {
-  return kActionShowPaymentsBubbleOrPage;
-}
-
 std::optional<std::u16string>
 IbanBubbleControllerImpl::GetPageActionTooltipText() {
   return GetSavePaymentIconTooltipText();

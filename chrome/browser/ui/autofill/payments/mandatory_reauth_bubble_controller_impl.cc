@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/autofill/payments/mandatory_reauth_bubble_controller_impl.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -19,7 +20,6 @@
 // Must come after all headers that specialize `FromJniType()` / `ToJniType()`.
 #include "chrome/browser/mandatory_reauth/android/internal/jni/MandatoryReauthOptInBottomSheetControllerBridge_jni.h"
 #else
-#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "components/tabs/public/tab_interface.h"
@@ -29,7 +29,10 @@ namespace autofill {
 
 MandatoryReauthBubbleControllerImpl::MandatoryReauthBubbleControllerImpl(
     content::WebContents* web_contents)
-    : AutofillBubbleControllerBase(web_contents),
+    : AutofillBubbleControllerBase(
+          web_contents,
+          PageActionConfig{.action_id = kActionAutofillMandatoryReauth,
+                           .should_manage_visibility = true}),
       content::WebContentsUserData<MandatoryReauthBubbleControllerImpl>(
           *web_contents) {}
 
@@ -267,11 +270,6 @@ MandatoryReauthBubbleControllerImpl::GetMandatoryReauthBubbleType() const {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-std::optional<actions::ActionId>
-MandatoryReauthBubbleControllerImpl::GetActionIdForPageAction() {
-  return kActionAutofillMandatoryReauth;
-}
-
 bool MandatoryReauthBubbleControllerImpl::ShouldShowPageAction() {
   return IsIconVisible();
 }
