@@ -18,6 +18,7 @@
 #include "components/stream_transport/public/common.h"
 #include "components/stream_transport/public/transport_channel.h"
 #include "components/stream_transport/public/transport_handler_factory_registry.h"
+#include "components/stream_transport/public/transport_service_factory_helper.h"
 #include "components/stream_transport/public/transport_session_registry.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -62,6 +63,24 @@ TEST_F(TransportServiceImplTest, GetChannelReturnsValidChannel) {
   std::unique_ptr<TransportServiceImpl> service =
       CreateService(/*record_sessions=*/false);
   EXPECT_NE(service->GetChannel(), nullptr);
+}
+
+TEST_F(TransportServiceImplTest,
+       CreateTransportServicePublicFactoryCreatesWorkingService) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kBrowserActuatorChannelEnabled);
+  TransportServiceConfig config;
+  config.watch_sessions_endpoint =
+      GURL("https://transport.test/v1:watchSessions");
+  config.send_session_message_endpoint =
+      GURL("https://transport.test/v1:sendSessionMessage");
+  config.record_sessions = true;
+  std::unique_ptr<TransportService> service = CreateTransportService(
+      test_shared_url_loader_factory_, identity_test_env_.identity_manager(),
+      std::move(config));
+  ASSERT_NE(service, nullptr);
+  EXPECT_NE(service->GetChannel(), nullptr);
+  EXPECT_NE(service->GetStreamRecorderFactory(), nullptr);
 }
 
 TEST_F(TransportServiceImplTest, GetChannelReturnsNullIfChannelDisabled) {

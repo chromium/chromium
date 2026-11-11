@@ -16,14 +16,13 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "components/stream_transport/internal/features.h"
-#include "components/stream_transport/internal/message_stream_client.h"
-#include "components/stream_transport/internal/oauth/oauth_stream_connection_delegate.h"
-#include "components/stream_transport/internal/proto_stream_client/proto_stream_client.h"
-#include "components/stream_transport/internal/proto_stream_client/rust_stream_framer.h"
 #include "components/stream_transport/internal/session_stream_recorder.h"
-#include "components/stream_transport/internal/stream_connection_delegate.h"
 #include "components/stream_transport/internal/transport_channel_impl.h"
 #include "components/stream_transport/internal/upstream_message_client/upstream_message_client.h"
+#include "components/stream_transport/public/proto_stream/message_stream_client.h"
+#include "components/stream_transport/public/proto_stream/oauth_stream_connection_delegate.h"
+#include "components/stream_transport/public/proto_stream/stream_client.h"
+#include "components/stream_transport/public/proto_stream/stream_connection_delegate.h"
 #include "components/stream_transport/public/transport_session_registry.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -91,26 +90,20 @@ std::unique_ptr<MessageStreamClient> CreateStreamClient(
     signin::IdentityManager* identity_manager,
     GURL endpoint,
     std::unique_ptr<StreamConnectionDelegate> resume_delegate) {
-  return std::make_unique<ProtoStreamClient>(
+  ProtoStreamClientConfig stream_config;
+  stream_config.base_reconnection_time = kProtoStreamBaseReconnectionTime.Get();
+  stream_config.max_reconnection_time = kProtoStreamMaxReconnectionTime.Get();
+  stream_config.stall_timeout = kProtoStreamStallTimeout.Get();
+  return CreateProtoStreamClient(
       std::move(url_loader_factory), std::move(endpoint),
-      std::make_unique<OAuthStreamConnectionDelegate>(
+      CreateOAuthStreamConnectionDelegate(
           std::move(resume_delegate), identity_manager,
-          signin::OAuthConsumerId::kBrowserActuator),
-      RustStreamFramer::MakeFactory(), GetTrafficAnnotation());
+          signin::OAuthConsumerId::kBrowserActuator,
+          "StreamTransport.OAuth.TokenFetchLatency"),
+      GetTrafficAnnotation(), stream_config);
 }
 
 }  // namespace
-
-TransportServiceConfig::TransportServiceConfig() = default;
-TransportServiceConfig::TransportServiceConfig(const TransportServiceConfig&) =
-    default;
-TransportServiceConfig& TransportServiceConfig::operator=(
-    const TransportServiceConfig&) = default;
-TransportServiceConfig::TransportServiceConfig(TransportServiceConfig&&) =
-    default;
-TransportServiceConfig& TransportServiceConfig::operator=(
-    TransportServiceConfig&&) = default;
-TransportServiceConfig::~TransportServiceConfig() = default;
 
 TransportServiceImpl::TransportServiceImpl(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,

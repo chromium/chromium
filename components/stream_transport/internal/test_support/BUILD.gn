@@ -8,21 +8,14 @@ source_set("test_support") {
   sources = [
     "fake_proto_stream_server.cc",
     "fake_proto_stream_server.h",
-    "mock_message_stream_client.cc",
-    "mock_message_stream_client.h",
-    "mock_stream_connection_delegate.cc",
-    "mock_stream_connection_delegate.h",
-    "mock_stream_framer.cc",
-    "mock_stream_framer.h",
-    "wait_for.cc",
-    "wait_for.h",
   ]
 
   public_deps = [
     "//base",
     "//components/sharing_message/proto",
-    "//components/stream_transport/internal:transport",
     "//components/stream_transport/internal/proto",
+    "//components/stream_transport/public",
+    "//components/stream_transport/test_support/proto_stream",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//net",

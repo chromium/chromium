@@ -2,9 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# Public interfaces of the transport. Nothing here may depend on
-# //components/browser_actuator; see DEPS and
-# //components/stream_transport/internal:isolation_check.
+# Public interfaces of the multiplexed session channel and feature handlers.
+# Nothing here may depend on //components/browser_actuator or on the low-level
+# OnePlatform stream client
+# (`//components/stream_transport/public/proto_stream`).
 source_set("public") {
   sources = [
     "common.h",
@@ -17,9 +18,10 @@ source_set("public") {
     "transport_session_registry.h",
   ]
 
-  deps = [ "//base" ]
-
-  public_deps = [ "//third_party/protobuf:protobuf_lite" ]
+  public_deps = [
+    "//base",
+    "//third_party/protobuf:protobuf_lite",
+  ]
 }
 
 # Kept separate from ":public" so that consumers of the transport interfaces
@@ -42,9 +44,13 @@ source_set("unit_tests") {
 
   deps = [
     ":payload_type_mapping",
+    ":public",
+    "//base",
     "//components/sharing_message/proto",
     "//testing/gtest",
   ]
+
+  visibility = [ "//components/stream_transport:unit_tests" ]
 }
 
 # The per-profile TransportService KeyedService interface. Separate from
@@ -58,5 +64,26 @@ source_set("service") {
   public_deps = [
     ":public",
     "//components/keyed_service/core",
+    "//url",
+  ]
+}
+
+# Factory function for creating the concrete per-profile TransportService. This
+# is the only target permitted to depend on
+# `//components/stream_transport/internal:service`.
+source_set("factory") {
+  sources = [
+    "transport_service_factory_helper.cc",
+    "transport_service_factory_helper.h",
+  ]
+
+  public_deps = [
+    ":service",
+    "//base",
+  ]
+
+  deps = [
+    "//components/stream_transport/internal:service",
+    "//services/network/public/cpp",
   ]
 }

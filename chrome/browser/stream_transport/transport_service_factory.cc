@@ -13,8 +13,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/browser_actuator/public/features.h"
-#include "components/stream_transport/internal/transport_service_impl.h"
 #include "components/stream_transport/public/transport_service.h"
+#include "components/stream_transport/public/transport_service_factory_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -59,9 +59,9 @@ TransportServiceFactory::BuildServiceInstanceForBrowserContext(
       base::FeatureList::IsEnabled(browser_actuator::kBrowserActuatorInternals);
 
   Profile* profile = Profile::FromBrowserContext(context);
-  return std::make_unique<TransportServiceImpl>(
-      context->GetURLLoaderFactory(),
-      IdentityManagerFactory::GetForProfile(profile), std::move(config));
+  return CreateTransportService(context->GetURLLoaderFactory(),
+                                IdentityManagerFactory::GetForProfile(profile),
+                                std::move(config));
 }
 
 }  // namespace stream_transport

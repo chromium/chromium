@@ -16,7 +16,7 @@ source_set("stream_transport") {
     "//components/browser_actuator/public:feature_list",
     "//components/keyed_service/core",
     "//components/signin/public/identity_manager",
-    "//components/stream_transport/internal:service",
+    "//components/stream_transport/public:factory",
     "//components/stream_transport/public:service",
     "//content/public/browser",
     "//services/network/public/cpp",

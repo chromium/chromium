@@ -1,0 +1,12 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/stream_transport/test_support/proto_stream/mock_stream_framer.h"
+
+namespace stream_transport {
+
+MockStreamFramer::MockStreamFramer() = default;
+MockStreamFramer::~MockStreamFramer() = default;
+
+}  // namespace stream_transport

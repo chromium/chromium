@@ -2,5 +2,13 @@ include_rules = [
   # The transport must not depend on //components/browser_actuator, so that
   # other features can use it on its own.
   "-components/browser_actuator",
+  "-components/stream_transport/internal",
+  "-components/stream_transport/public/proto_stream",
   "+components/stream_transport/public",
 ]
+
+specific_include_rules = {
+  "transport_service_factory_helper\\.cc": [
+    "+components/stream_transport/internal/transport_service_impl.h",
+  ],
+}

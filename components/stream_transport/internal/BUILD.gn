@@ -2,29 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# The transport (see README.md). Nothing in //components/stream_transport may
-# depend on //components/browser_actuator; DEPS and :isolation_check enforce
-# that.
+# Multiplexed session channel, sequencer, and service implementation (see
+# README.md). Consumes the low-level OnePlatform stream layer strictly through
+# `//components/stream_transport/public/proto_stream`, never reaching into
+# `//components/stream_transport/internal/proto_stream`.
 
-# Wire-format-agnostic seams of the transport: the consumer-facing
-# MessageStreamClient interface and the StreamConnectionDelegate resume/auth
-# policy seam. Concrete transports live in subdirectories.
-source_set("transport") {
-  sources = [
-    "message_stream_client.h",
-    "resume_body_connection_delegate.cc",
-    "resume_body_connection_delegate.h",
-    "stream_connection_delegate.cc",
-    "stream_connection_delegate.h",
-    "stream_framer.h",
-  ]
-
-  public_deps = [ "//base" ]
-
-  deps = [ "//services/network/public/cpp" ]
-}
-
-# Utilities internal to the transport.
+# Utilities internal to the multiplexed session channel.
 source_set("metrics_utils") {
   sources = [ "metrics_utils.h" ]
 
@@ -36,7 +19,7 @@ source_set("metrics_utils") {
   visibility = [ "//components/stream_transport/internal/*" ]
 }
 
-# Features and params of the transport.
+# Features and params of the multiplexed session channel and service.
 source_set("features") {
   sources = [
     "features.cc",
@@ -48,7 +31,8 @@ source_set("features") {
   visibility = [
     "//chrome/browser/sharing/browser_actuator:*",
     "//components/browser_actuator/*",
-    "//components/stream_transport/*",
+    "//components/stream_transport/internal:*",
+    "//components/stream_transport/internal/upstream_message_client:*",
   ]
 }
 
@@ -119,10 +103,10 @@ source_set("channel") {
 
   public_deps = [
     ":session_stream_recorder",
-    ":transport",
     "//components/sharing_message/proto",
     "//components/stream_transport/public",
     "//components/stream_transport/public:payload_type_mapping",
+    "//components/stream_transport/public/proto_stream",
   ]
 
   deps = [
@@ -132,15 +116,17 @@ source_set("channel") {
     "//base",
     "//components/stream_transport/internal/proto",
     "//components/stream_transport/internal/upstream_message_client",
+    "//components/stream_transport/public/proto_stream:factory",
   ]
 }
 
 # TransportServiceImpl: assembles the stream client, upstream client and channel
-# for one profile. Only the embedder's KeyedService factory constructs it.
+# for one profile. Only `//components/stream_transport/public:factory`
+# constructs it.
 source_set("service") {
   visibility = [
     ":*",
-    "//chrome/browser/stream_transport:*",
+    "//components/stream_transport/public:factory",
   ]
 
   sources = [
@@ -159,13 +145,11 @@ source_set("service") {
     ":channel",
     ":features",
     ":session_stream_recorder",
-    ":transport",
     "//components/signin/public/base",
-    "//components/stream_transport/internal/oauth",
-    "//components/stream_transport/internal/proto_stream_client",
-    "//components/stream_transport/internal/proto_stream_client:rust_stream_framer",
     "//components/stream_transport/internal/upstream_message_client",
     "//components/stream_transport/public",
+    "//components/stream_transport/public/proto_stream",
+    "//components/stream_transport/public/proto_stream:factory",
     "//net",
     "//services/network/public/cpp",
   ]
@@ -179,9 +163,7 @@ source_set("unit_tests") {
     "downstream_message_sequencer_unittest.cc",
     "probe_payload_unittest.cc",
     "probe_transport_handler_unittest.cc",
-    "resume_body_connection_delegate_unittest.cc",
     "session_stream_recorder_unittest.cc",
-    "stream_connection_delegate_unittest.cc",
     "transport_channel_impl_unittest.cc",
     "transport_handler_factory_registry_impl_unittest.cc",
     "transport_handler_unittest.cc",
@@ -198,7 +180,6 @@ source_set("unit_tests") {
     ":probe_payload",
     ":service",
     ":session_stream_recorder",
-    ":transport",
     "test_support",
     "//base",
     "//base/test:test_support",
@@ -206,11 +187,13 @@ source_set("unit_tests") {
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
     "//components/stream_transport/internal/proto",
-    "//components/stream_transport/internal/proto_stream_client",
     "//components/stream_transport/internal/upstream_message_client",
     "//components/stream_transport/public",
+    "//components/stream_transport/public:factory",
     "//components/stream_transport/public:payload_type_mapping",
+    "//components/stream_transport/public/proto_stream",
     "//components/stream_transport/test_support",
+    "//components/stream_transport/test_support/proto_stream",
     "//net",
     "//net/traffic_annotation:test_support",
     "//services/network:test_support",
@@ -224,7 +207,8 @@ source_set("unit_tests") {
 }
 
 # Fails `gn gen` if a transport target starts depending on
-# //components/browser_actuator. Depended on by
+# //components/browser_actuator, or if the low-level `proto_stream` layer
+# depends on the outer multiplexed session channel. Depended on by
 # //components/stream_transport:unit_tests so that it is always checked.
 group("isolation_check") {
   testonly = true
@@ -236,18 +220,19 @@ group("isolation_check") {
     ":probe_payload",
     ":service",
     ":session_stream_recorder",
-    ":transport",
-    "oauth",
     "proto",
     "proto:transport_messages_extras",
-    "proto_stream_client",
-    "proto_stream_client:rust_stream_framer",
+    "proto_stream:isolation_check",
     "test_support",
     "upstream_message_client",
     "//components/stream_transport/public",
+    "//components/stream_transport/public:factory",
     "//components/stream_transport/public:payload_type_mapping",
     "//components/stream_transport/public:service",
+    "//components/stream_transport/public/proto_stream",
+    "//components/stream_transport/public/proto_stream:factory",
     "//components/stream_transport/test_support",
+    "//components/stream_transport/test_support/proto_stream",
   ]
 
   assert_no_deps = [

@@ -2,6 +2,10 @@ include_rules = [
   # The transport must not depend on //components/browser_actuator, so that
   # other features can use it on its own.
   "-components/browser_actuator",
+  # The multiplexed channel and service layer must consume `proto_stream`
+  # strictly through its public API (`public/proto_stream`), never reaching
+  # into `internal/proto_stream`.
+  "-components/stream_transport/internal/proto_stream",
   "+components/stream_transport/internal",
   "+components/stream_transport/public",
   "+services/network",
@@ -11,9 +15,5 @@ specific_include_rules = {
   ".*_unittest\\.cc": [
     "+components/stream_transport/test_support",
     "+net/base/net_errors.h",
-  ],
-  "rust_stream_framer_unittest\\.cc": [
-    "+components/stream_transport/test_support",
-    "+third_party/fuzztest/src/fuzztest/fuzztest.h",
   ],
 }

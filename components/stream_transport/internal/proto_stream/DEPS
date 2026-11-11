@@ -1,0 +1,23 @@
+include_rules = [
+  "-components/browser_actuator",
+  "-components/keyed_service",
+  "-components/sharing_message",
+  "-components/stream_transport",
+  "+components/stream_transport/internal/proto_stream",
+  "+components/stream_transport/public/proto_stream",
+  "+components/signin/public",
+  "+google_apis/gaia",
+  "+mojo/public/cpp/system",
+  "+net",
+  "+services/network",
+  "+url",
+]
+
+specific_include_rules = {
+  ".*_unittest\\.cc": [
+    "+components/stream_transport/test_support/proto_stream",
+  ],
+  "rust_stream_framer_unittest\\.cc": [
+    "+third_party/fuzztest/src/fuzztest/fuzztest.h",
+  ],
+}

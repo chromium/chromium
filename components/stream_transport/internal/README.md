@@ -2,11 +2,11 @@
 
 This directory contains the concrete implementation of
 `//components/stream_transport`. Outside `//components/stream_transport`, only
-`TransportServiceFactory` in `//chrome/browser/stream_transport`
-(`transport_service_impl.h`), the `chrome://browser-actuator-internals` WebUI
-(`session_stream_recorder.h`, `transport_message_observer.h`), and the
+the `chrome://browser-actuator-internals` WebUI
+(`session_stream_recorder.h`, `transport_message_observer.h`) and the
 `//chrome/browser` actuator bridges (`internal/proto/`) include headers from
-`internal/`.
+`internal/`. `TransportServiceImpl` is instantiated via
+`CreateTransportService()` in `//components/stream_transport/public:factory`.
 
 ## Wire Format (`alt=proto`)
 
@@ -123,20 +123,30 @@ binary payloads.
   immediate or delayed `ProbeResponse` messages (`GenerateProbeResponsePayload`)
   as specified by `ProbeRequest.response_specs`.
 
-### 3. Wire-Level Downstream Stream (`proto_stream_client/`)
-- **`MessageStreamClient`** (`message_stream_client.h`):
-  Wire-format-agnostic interface for subscribing to a server-to-client stream of
-  serialized protobuf messages (`Observer::OnStreamMessage`, `OnStreamStatus`,
-  `OnStreamConnectionStateChange`).
-- **`ProtoStreamClient`** (`proto_stream_client/proto_stream_client.{h,cc}`):
+### 3. Wire-Level Downstream Stream (`proto_stream/`)
+`internal/proto_stream/` is a strictly isolated sub-layer (enforced by
+`internal/proto_stream/DEPS` and `internal/proto_stream:isolation_check`) with
+visibility restricted to `//components/stream_transport/public/proto_stream:factory`.
+Even `TransportChannelImpl` and `TransportServiceImpl` in `internal/` consume
+it purely through `//components/stream_transport/public/proto_stream`
+(`internal/DEPS` forbids `-components/stream_transport/internal/proto_stream`).
+
+- **`MessageStreamClient`** (`../public/proto_stream/message_stream_client.h`):
+  Wire-format-agnostic public interface for subscribing to a server-to-client
+  stream of serialized protobuf messages (`Observer::OnStreamMessage`,
+  `OnStreamStatus`, `OnStreamConnectionStateChange`).
+- **`ProtoStreamClient`** (`proto_stream/proto_stream_client.{h,cc}`,
+  exposed publicly via `CreateProtoStreamClient()` in
+  `../public/proto_stream/stream_client.h`):
   Drives a `network::SimpleURLLoader` streaming download (`DownloadAsStream`),
   feeds raw chunks into a `StreamFramer`, notifies the
   `StreamConnectionDelegate` before observers, arms a stall watchdog timer, and
   handles exponential backoff reconnects on transient network/HTTP errors or
   non-terminal stream ends.
 - **`RustStreamFramer` & `stream_body_parser.rs`**
-  (`proto_stream_client/rust_stream_framer.{h,cc}`,
-  `proto_stream_client/rust/stream_body_parser.rs`):
+  (`proto_stream/rust_stream_framer.{h,cc}`,
+  `proto_stream/rust/stream_body_parser.rs`, exposed publicly via
+  `CreateRustStreamFramer()` in `../public/proto_stream/stream_client.h`):
   To satisfy Chromium's Rule of 2 when parsing untrusted network bytes before
   handing individual message slices to C++ `MessageLite::ParseFromString()`, the
   outer `google.rpc.StreamBody` framing (`field 1` repeated `bytes message`,
@@ -145,14 +155,17 @@ binary payloads.
   boundaries, enforcing a 10-byte varint bound and capping every
   length-delimited field at `MAX_MESSAGE_BYTES` (`10 MiB`).
 
-### 4. Connection Delegates (`oauth/`, `resume_body_connection_delegate.*`)
-- **`StreamConnectionDelegate`** (`stream_connection_delegate.{h,cc}`):
-  Policy seam for `ProtoStreamClient` controlling asynchronous request
+### 4. Connection Delegates (`proto_stream/`)
+- **`StreamConnectionDelegate`**
+  (`../public/proto_stream/stream_connection_delegate.{h,cc}`):
+  Public policy seam for `ProtoStreamClient` controlling asynchronous request
   preparation (`PrepareRequest`), upload body provision
   (`GetConnectionRequestBody`), message inspection (`OnMessageDispatched`), and
   HTTP failure retry policy (`ShouldRetryOnHttpFailure`).
 - **`OAuthStreamConnectionDelegate`**
-  (`oauth/oauth_stream_connection_delegate.{h,cc}`):
+  (`proto_stream/oauth_stream_connection_delegate.{h,cc}`, exposed publicly via
+  `CreateOAuthStreamConnectionDelegate()` in
+  `../public/proto_stream/oauth_stream_connection_delegate.h`):
   Fetches an OAuth2 access token from `signin::IdentityManager`
   (`PrimaryAccountAccessTokenFetcher::Mode::kImmediate`), attaches
   `Authorization: Bearer <token>`, and on HTTP `401` invalidates the cached
@@ -160,7 +173,9 @@ binary payloads.
   per fresh token). Composes an inner delegate so auth and resume-body logic
   remain orthogonal.
 - **`ResumeBodyConnectionDelegate`**
-  (`resume_body_connection_delegate.{h,cc}`):
+  (`proto_stream/resume_body_connection_delegate.{h,cc}`, exposed publicly via
+  `CreateResumeBodyConnectionDelegate()` in
+  `../public/proto_stream/stream_client.h`):
   Invokes a channel-supplied `BodyProvider` callback on each connection attempt
   to upload a freshly serialized `WatchSessionsRequest` listing every active
   session's ID and `last_seen_sequence_number` (when `> 0`), so reconnects

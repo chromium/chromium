@@ -17,9 +17,9 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/types/expected.h"
-#include "components/stream_transport/internal/message_stream_client.h"
 #include "components/stream_transport/internal/transport_message_observer.h"
 #include "components/stream_transport/public/common.h"
+#include "components/stream_transport/public/proto_stream/message_stream_client.h"
 #include "components/stream_transport/public/transport_channel.h"
 #include "components/stream_transport/public/transport_session_registry.h"
 

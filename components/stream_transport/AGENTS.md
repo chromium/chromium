@@ -23,18 +23,29 @@
 
 ## 2. Layering, DEPS & Cross-Directory Boundaries
 
-- **Strict Layering**: `//components/stream_transport` must never depend on
-  `//components/browser_actuator` or feature-specific components (enforced by
-  `DEPS` and `//components/stream_transport/internal:isolation_check`). The
-  only exception is `//components/sharing_message/proto` for shared wire proto
-  definitions. All public APIs must reside in `public/`.
+- **Strict Layering**:
+  - `//components/stream_transport` must never depend on
+    `//components/browser_actuator` or feature-specific components (enforced by
+    `DEPS` and `//components/stream_transport/internal:isolation_check`). The
+    only exception is `//components/sharing_message/proto` for shared wire proto
+    definitions. All public APIs must reside in `public/` or
+    `public/proto_stream/`.
+  - Within `//components/stream_transport`, the low-level OnePlatform
+    `alt=proto` stream layer (`public/proto_stream/`, `internal/proto_stream/`,
+    `test_support/proto_stream/`) is strictly isolated from the
+    session-multiplexed transport layer (`public/`, `internal/`,
+    `test_support/`), enforced by `internal/proto_stream/DEPS`,
+    `//components/stream_transport/internal/proto_stream:isolation_check`, and
+    `-components/stream_transport/internal/proto_stream` in `internal/DEPS`.
+    `internal/` must consume the stream layer exclusively via
+    `//components/stream_transport/public/proto_stream`.
 - **Namespace vs. Wire Proto Package**: C++ classes and functions live in
   `namespace stream_transport` (and Rust cxx bridge in
   `stream_transport::stream_bridge`). Protobuf definitions in `internal/proto/`
   remain in `package browser_actuator;` to preserve wire
   `google.protobuf.Any.type_url` compatibility.
 - **Rule of 2**: Wire framing of chunked `StreamBody` responses lives in Rust
-  (`internal/proto_stream_client/rust/stream_body_parser.rs`). Keep unsafe or
+  (`internal/proto_stream/rust/stream_body_parser.rs`). Keep unsafe or
   manual byte-level framing out of C++.
 
 ## 3. High-Signal Review Checklist

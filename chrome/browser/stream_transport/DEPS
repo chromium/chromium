@@ -1,4 +1,0 @@
-include_rules = [
-  # Only the factory may construct the transport's implementation.
-  "+components/stream_transport/internal/transport_service_impl.h",
-]

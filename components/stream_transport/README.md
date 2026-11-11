@@ -16,13 +16,17 @@ All public interfaces live in `//components/stream_transport/public/` under
 `namespace stream_transport`:
 
 - **`TransportService`** (`public/transport_service.h`, target
-  `//components/stream_transport/public:service`):
+  `//components/stream_transport/public:service`) &
+  **`CreateTransportService()`** (`public/transport_service_factory_helper.h`,
+  target `//components/stream_transport/public:factory`):
   Top-level `KeyedService` owning the profile's `TransportChannel`. Exposes
   `GetChannel()`, convenience session lookups (`CreateSession()`,
   `GetSession()`), and optional diagnostic recording
   (`GetStreamRecorderFactory()`). Kept in a `:service` subtarget separate from
   `:public` so handler implementations do not pull in
-  `//components/keyed_service/core`.
+  `//components/keyed_service/core`, while `:factory` provides
+  `CreateTransportService()` so embedder `KeyedService` factories do not reach
+  into `internal/`.
 - **`TransportChannel`** (`public/transport_channel.h`):
   Manages the long-lived downstream stream and upstream request pipe. Owns the
   `TransportSessionRegistry` and `TransportHandlerFactoryRegistry`. The
@@ -53,20 +57,63 @@ All public interfaces live in `//components/stream_transport/public/` under
   from wire protobuf headers. Consumers that translate directly from wire enums
   or inspect `google.protobuf.Any` `type_url` strings depend on
   `//components/stream_transport/public:payload_type_mapping`.
+- **Low-Level `alt=proto` Stream Layer (`public/proto_stream/`)**:
+  A standalone, reusable OnePlatform HTTP `alt=proto` (`google.rpc.StreamBody`)
+  downstream stream layer with zero dependencies on `TransportService`,
+  `TransportChannel`, session sequencing, or wire payload protos (enforced by
+  `public/proto_stream/DEPS`, `internal/proto_stream/DEPS`, and
+  `//components/stream_transport/internal/proto_stream:isolation_check`).
+  Layer 2 (`//components/stream_transport/internal`) consumes this layer strictly
+  through its public API:
+  - `MessageStreamClient` (`public/proto_stream/message_stream_client.h`, target
+    `//components/stream_transport/public/proto_stream`): abstract interface for
+    connecting, disconnecting, and observing framed protobuf messages
+    (`OnStreamMessage`), terminal RPC status (`OnStreamStatus`), and connection
+    state transitions (`OnStreamConnectionStateChange`).
+  - `StreamConnectionDelegate` & `DefaultStreamConnectionDelegate`
+    (`public/proto_stream/stream_connection_delegate.h`, target
+    `//components/stream_transport/public/proto_stream`): policy seam for
+    asynchronous request decoration (`PrepareRequest`), connection `POST` body
+    upload (`GetConnectionRequestBody`), and HTTP error retry decisions
+    (`ShouldRetryOnHttpFailure`).
+  - `CreateProtoStreamClient()`, `CreateRustStreamFramer()`,
+    `CreateResumeBodyConnectionDelegate()`, &
+    `CreateOAuthStreamConnectionDelegate()`
+    (`public/proto_stream/stream_client.h` and
+    `public/proto_stream/oauth_stream_connection_delegate.h`, target
+    `//components/stream_transport/public/proto_stream:factory`): factory
+    functions for constructing the `StreamBody` client (configured via
+    `ProtoStreamClientConfig`), the memory-safe Rust `StreamBody` framer, the
+    resume-body delegate, and primary-account GAIA OAuth2 bearer-token
+    authentication without exposing `internal/proto_stream/` headers.
 
 ## Directory Layout
 
-- `public/`: Pure abstract interfaces, `common.h` types, and
-  `payload_type_mapping.h`.
-- `internal/`: Concrete implementations (`TransportServiceImpl`,
-  `TransportChannelImpl`, `TransportSessionImpl`, built-in control and probe
-  handlers, `SessionStreamRecorder`, `ProtoStreamClient`, Rust `StreamBody`
-  framer, OAuth/resume connection delegates, and `UpstreamMessageClient`). See
+- `public/proto_stream/`: Public interfaces (`MessageStreamClient`,
+  `StreamConnectionDelegate`, `StreamFramer` in `:proto_stream`) and factory
+  functions (`stream_client.h`, `oauth_stream_connection_delegate.h` in
+  `:factory`) for the low-level OnePlatform `alt=proto` stream layer.
+- `internal/proto_stream/`: Concrete implementation of the `alt=proto` stream
+  layer (`ProtoStreamClient`, `RustStreamFramer`, `stream_body_parser.rs`,
+  `ResumeBodyConnectionDelegate`, and `OAuthStreamConnectionDelegate`). Visibility
+  is restricted to `//components/stream_transport/public/proto_stream:factory`.
+- `test_support/proto_stream/`: GMock implementations (`MockMessageStreamClient`,
+  `MockMessageStreamObserver`, `MockStreamConnectionDelegate`,
+  `MockStreamFramer`) and `wait_for.h` for testing `proto_stream` consumers.
+- `public/`: Public interfaces for the session-multiplexed transport layer
+  (`TransportService`, `TransportChannel`, `TransportSession`,
+  `TransportHandler`), `CreateTransportService()` (in `:factory`), `common.h`
+  types, and `payload_type_mapping.h`.
+- `internal/`: Concrete implementations of the session-multiplexed transport
+  layer (`TransportServiceImpl`, `TransportChannelImpl`, `TransportSessionImpl`,
+  built-in control and probe handlers, `SessionStreamRecorder`, and
+  `UpstreamMessageClient`). Consumes the downstream stream layer exclusively via
+  `//components/stream_transport/public/proto_stream`. See
   [`internal/README.md`](internal/README.md) for architecture details.
 - `test_support/`: GMock implementations (`MockTransportService`,
   `MockTransportChannel`, `MockTransportHandler`, `CallbackTransportHandler`,
-  `MockTransportHandlerFactory`) and `test_constants.h` for unit testing
-  feature handlers without network I/O.
+  `MockTransportHandlerFactory`) and `test_constants.h` for unit testing feature
+  handlers without network I/O.
 
 ## Integrating a Feature Consumer
 

@@ -1,0 +1,79 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Pure interfaces and default connection delegate for OnePlatform `alt=proto`
+# server-streaming RPCs. Kept separate from ":factory" so interface consumers
+# and mocks do not link the concrete client, Rust framer, or
+# //components/signin.
+source_set("proto_stream") {
+  sources = [
+    "message_stream_client.h",
+    "stream_connection_delegate.cc",
+    "stream_connection_delegate.h",
+    "stream_framer.h",
+  ]
+
+  public_deps = [ "//base" ]
+
+  deps = [ "//services/network/public/cpp" ]
+}
+
+# Factory functions for the OnePlatform HTTP StreamBody client, Rust StreamBody
+# framer, resume-body connection delegate, and OAuth2 primary-account stream
+# connection delegate. This is the only target permitted to depend on
+# `//components/stream_transport/internal/proto_stream/*`.
+source_set("factory") {
+  sources = [
+    "oauth_stream_connection_delegate.cc",
+    "oauth_stream_connection_delegate.h",
+    "stream_client.cc",
+    "stream_client.h",
+  ]
+
+  public_deps = [
+    ":proto_stream",
+    "//base",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//net/traffic_annotation",
+    "//services/network/public/cpp",
+    "//url",
+  ]
+
+  deps = [
+    "//components/stream_transport/internal/proto_stream:oauth",
+    "//components/stream_transport/internal/proto_stream:proto_stream_client",
+    "//components/stream_transport/internal/proto_stream:resume_body_connection_delegate",
+    "//components/stream_transport/internal/proto_stream:rust_stream_framer",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "stream_client_unittest.cc",
+    "stream_connection_delegate_unittest.cc",
+  ]
+
+  deps = [
+    ":factory",
+    ":proto_stream",
+    "//base",
+    "//base/test:test_support",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/stream_transport/test_support/proto_stream",
+    "//net",
+    "//net/traffic_annotation:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+
+  visibility = [ "//components/stream_transport:unit_tests" ]
+}

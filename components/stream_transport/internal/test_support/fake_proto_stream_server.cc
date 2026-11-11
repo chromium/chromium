@@ -12,7 +12,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
-#include "components/stream_transport/internal/test_support/wait_for.h"
+#include "components/stream_transport/test_support/proto_stream/wait_for.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"

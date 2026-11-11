@@ -42,6 +42,7 @@ source_set("unit_tests") {
     "//components/stream_transport/public:payload_type_mapping",
     "//components/stream_transport/public:service",
     "//components/stream_transport/test_support",
+    "//components/stream_transport/test_support/proto_stream",
     "//components/sync_device_info:test_support",
     "//content/test:test_support",
     "//net",

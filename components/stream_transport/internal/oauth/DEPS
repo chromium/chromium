@@ -1,5 +1,0 @@
-include_rules = [
-  "+components/signin/public",
-  "+google_apis/gaia",
-  "+net",
-]

@@ -25,7 +25,6 @@
 #include "components/stream_transport/internal/proto/transport_messages.pb.h"
 #include "components/stream_transport/internal/session_stream_recorder.h"
 #include "components/stream_transport/internal/test_support/fake_proto_stream_server.h"
-#include "components/stream_transport/internal/test_support/wait_for.h"
 #include "components/stream_transport/internal/transport_channel_impl.h"
 #include "components/stream_transport/internal/transport_service_impl.h"
 #include "components/stream_transport/public/common.h"
@@ -35,6 +34,7 @@
 #include "components/stream_transport/public/transport_handler_factory.h"
 #include "components/stream_transport/public/transport_handler_factory_registry.h"
 #include "components/stream_transport/public/transport_session.h"
+#include "components/stream_transport/test_support/proto_stream/wait_for.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -778,6 +778,46 @@ TEST_F(
   EXPECT_EQ(reply_1.response().response_index(), 1);
   EXPECT_EQ(reply_1.response().total_responses(), 2);
   EXPECT_TRUE(VerifyProbeResponsePayload(*probe_request, reply_1.response()));
+}
+
+TEST_F(TransportServiceIntegrationTest,
+       ForwardsProtoStreamFeatureParametersToStreamClient) {
+  service_.reset();
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      kBrowserActuatorChannelEnabled,
+      {{"proto_stream_base_reconnection_time", "7s"},
+       {"proto_stream_max_reconnection_time", "10s"},
+       {"proto_stream_stall_timeout", "15s"}});
+
+  TransportServiceConfig config;
+  config.watch_sessions_endpoint = GURL(kTestWatchSessionsEndpoint);
+  config.send_session_message_endpoint = GURL(kTestSendSessionMessageEndpoint);
+  service_ = std::make_unique<TransportServiceImpl>(
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &test_url_loader_factory_),
+      identity_test_env_.identity_manager(), std::move(config));
+
+  FakeProtoStreamServer stream_server(&test_url_loader_factory_,
+                                      GURL(kTestWatchSessionsEndpoint));
+
+  ASSERT_NE(service_->CreateSession("session-feature-params",
+                                    InitIngressSource::kUnspecified),
+            nullptr);
+  stream_server.WaitForConnection();
+  EXPECT_EQ(stream_server.connection_count(), 1);
+
+  // Stall timeout is configured to 15s (rather than the 2m default), followed
+  // by a 7s base reconnection delay (rather than the 3s default).
+  task_environment_.FastForwardBy(base::Seconds(15));
+  EXPECT_EQ(stream_server.connection_count(), 1);
+
+  task_environment_.FastForwardBy(base::Seconds(6));
+  EXPECT_EQ(stream_server.connection_count(), 1);
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+  stream_server.WaitForConnection();
+  EXPECT_EQ(stream_server.connection_count(), 2);
 }
 
 }  // namespace

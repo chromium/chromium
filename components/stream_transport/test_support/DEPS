@@ -1,5 +1,8 @@
 include_rules = [
   "-components/browser_actuator",
+  "-components/stream_transport/internal",
+  "-components/stream_transport/public/proto_stream",
+  "-components/stream_transport/test_support/proto_stream",
   "+components/stream_transport/public",
   "+components/stream_transport/test_support",
 ]

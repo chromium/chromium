@@ -1,0 +1,17 @@
+include_rules = [
+  "-components/browser_actuator",
+  "-components/keyed_service",
+  "-components/sharing_message",
+  "-components/stream_transport",
+  "+components/stream_transport/public/proto_stream",
+]
+
+specific_include_rules = {
+  "(oauth_stream_connection_delegate|stream_client)\\.cc": [
+    "+components/stream_transport/internal/proto_stream",
+  ],
+  ".*_unittest\\.cc": [
+    "+components/stream_transport/test_support/proto_stream",
+    "+net/base/net_errors.h",
+  ],
+}

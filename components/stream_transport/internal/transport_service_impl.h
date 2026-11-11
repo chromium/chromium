@@ -24,28 +24,6 @@ namespace stream_transport {
 class SessionStreamRecorderFactory;
 class TransportChannelImpl;
 
-// What the embedder decides for the transport, so that the transport does not
-// depend on any of its clients' features or flags.
-struct TransportServiceConfig {
-  TransportServiceConfig();
-  TransportServiceConfig(const TransportServiceConfig&);
-  TransportServiceConfig& operator=(const TransportServiceConfig&);
-  TransportServiceConfig(TransportServiceConfig&&);
-  TransportServiceConfig& operator=(TransportServiceConfig&&);
-  ~TransportServiceConfig();
-
-  // The WatchSessions endpoint that the downstream stream connects to.
-  GURL watch_sessions_endpoint;
-
-  // The SendSessionMessage endpoint that upstream messages are POSTed to.
-  GURL send_session_message_endpoint;
-
-  // Whether to record every session's messages for
-  // chrome://browser-actuator-internals. Recording costs memory, so it should
-  // only be on while that page is enabled.
-  bool record_sessions = false;
-};
-
 class TransportServiceImpl : public TransportService,
                              public signin::IdentityManager::Observer {
  public:

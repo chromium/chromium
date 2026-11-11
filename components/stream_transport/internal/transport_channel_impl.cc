@@ -23,13 +23,13 @@
 #include "components/stream_transport/internal/downstream_message_sequencer.h"
 #include "components/stream_transport/internal/probe_transport_handler.h"
 #include "components/stream_transport/internal/proto/transport_messages.pb.h"
-#include "components/stream_transport/internal/resume_body_connection_delegate.h"
-#include "components/stream_transport/internal/stream_connection_delegate.h"
 #include "components/stream_transport/internal/transport_handler_factory_registry_impl.h"
 #include "components/stream_transport/internal/transport_message_observer.h"
 #include "components/stream_transport/internal/transport_session_impl.h"
 #include "components/stream_transport/internal/transport_session_registry_impl.h"
 #include "components/stream_transport/internal/upstream_message_client/upstream_message_client.h"
+#include "components/stream_transport/public/proto_stream/stream_client.h"
+#include "components/stream_transport/public/proto_stream/stream_connection_delegate.h"
 
 namespace stream_transport {
 
@@ -91,11 +91,10 @@ TransportChannelImpl::TransportChannelImpl(
   // callback never runs after `this` is gone. (A WeakPtr can't be used here:
   // it may not bind to a method that returns a value.)
   if (stream_client_factory) {
-    auto resume_delegate = std::make_unique<ResumeBodyConnectionDelegate>(
-        base::BindRepeating(
+    auto resume_delegate =
+        CreateResumeBodyConnectionDelegate(base::BindRepeating(
             &TransportChannelImpl::BuildWatchSessionsRequestBody,
-            base::Unretained(this)),
-        std::make_unique<DefaultStreamConnectionDelegate>());
+            base::Unretained(this)));
 
     stream_client_ =
         std::move(stream_client_factory).Run(std::move(resume_delegate));

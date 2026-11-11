@@ -6,6 +6,17 @@
 
 namespace stream_transport {
 
+TransportServiceConfig::TransportServiceConfig() = default;
+TransportServiceConfig::TransportServiceConfig(const TransportServiceConfig&) =
+    default;
+TransportServiceConfig& TransportServiceConfig::operator=(
+    const TransportServiceConfig&) = default;
+TransportServiceConfig::TransportServiceConfig(TransportServiceConfig&&) =
+    default;
+TransportServiceConfig& TransportServiceConfig::operator=(
+    TransportServiceConfig&&) = default;
+TransportServiceConfig::~TransportServiceConfig() = default;
+
 TransportService::TransportService() = default;
 
 TransportService::~TransportService() = default;
