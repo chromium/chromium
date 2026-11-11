@@ -3211,18 +3211,29 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestAlwaysOnTop,
       content::EvalJs(popup_contents, "window.outerWidth",
                       content::EXECUTE_SCRIPT_NO_USER_GESTURE)
           .ExtractInt();
+  // The window manager may apply a resize in several steps (e.g. on Wayland),
+  // so the first 'resize' event can report an intermediate outerWidth. Wait
+  // for the final width instead.
+  ASSERT_TRUE(content::ExecJs(popup_contents, R"(
+    window.waitForOuterWidth = width => new Promise(resolve => {
+      const check = () => {
+        if (window.outerWidth === width) {
+          resolve(width);
+        } else {
+          setTimeout(check, 10);
+        }
+      };
+      check();
+    });
+  )",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   EXPECT_EQ(initial_outer_width + 40,
             content::EvalJs(
                 popup_contents,
-                "new Promise(resolve => {"
-                "  window.addEventListener('resize', () => "
-                "resolve(window.outerWidth),"
-                "                          {once: true});"
-                "  window.resizeTo(window.outerWidth + 40, window.outerHeight);"
-                "  if (navigator.userActivation.isActive) {"
-                "    resolve(-1);"
-                "  }"
-                "});"));
+                content::JsReplace("window.resizeTo($1, window.outerHeight);"
+                                   "navigator.userActivation.isActive ? -1 : "
+                                   "    waitForOuterWidth($1);",
+                                   initial_outer_width + 40)));
   EXPECT_EQ(
       "NotAllowedError",
       content::EvalJs(
@@ -3231,16 +3242,12 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestAlwaysOnTop,
           content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   EXPECT_EQ(initial_outer_width + 60,
-            content::EvalJs(popup_contents,
-                            "new Promise(resolve => {"
-                            "  window.addEventListener('resize', () => "
-                            "resolve(window.outerWidth),"
-                            "                          {once: true});"
-                            "  window.resizeBy(20, 0);"
-                            "  if (navigator.userActivation.isActive) {"
-                            "    resolve(-1);"
-                            "  }"
-                            "});"));
+            content::EvalJs(
+                popup_contents,
+                content::JsReplace("window.resizeBy(20, 0);"
+                                   "navigator.userActivation.isActive ? -1 : "
+                                   "    waitForOuterWidth($1);",
+                                   initial_outer_width + 60)));
   EXPECT_EQ("NotAllowedError",
             content::EvalJs(
                 popup_contents,
