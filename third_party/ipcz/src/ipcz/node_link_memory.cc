@@ -322,13 +322,7 @@ Fragment NodeLinkMemory::AllocateFragmentInternal(size_t size) {
   if (fragment.is_null()) {
     // Use failure as a hint to possibly expand the pool's capacity. The
     // caller's allocation will still fail, but maybe future allocations won't.
-    if (CanExpandBlockCapacity(block_size)) {
-      RequestBlockCapacity(block_size, [](bool success) {
-        if (!success) {
-          DLOG(ERROR) << "Failed to allocate new block capacity.";
-        }
-      });
-    }
+    MaybeExpandParcelBlockCapacity(block_size);
   }
   return fragment;
 }
@@ -420,6 +414,25 @@ void NodeLinkMemory::NotifyLinkDisconnected() {
   buffer_pool_.DropPendingBufferCallbacks();
 }
 
+void NodeLinkMemory::MaybeExpandParcelBlockCapacity(size_t block_size) {
+  if (!allow_memory_expansion_for_parcel_data_) {
+    return;
+  }
+
+  Ref<NodeLink> link;
+  {
+    absl::MutexLock lock(&mutex_);
+    if (!CanExpandBlockCapacity(block_size)) {
+      return;
+    }
+    link = StartCapacityRequestLocked(block_size, /*callback=*/nullptr);
+  }
+
+  if (link) {
+    AllocateBlockBuffer(std::move(link), block_size);
+  }
+}
+
 bool NodeLinkMemory::CanExpandBlockCapacity(size_t block_size) {
   return allow_memory_expansion_for_parcel_data_ &&
          buffer_pool_.GetTotalBlockCapacity(block_size) <
@@ -429,30 +442,36 @@ bool NodeLinkMemory::CanExpandBlockCapacity(size_t block_size) {
 void NodeLinkMemory::RequestBlockCapacity(
     size_t block_size,
     RequestBlockCapacityCallback callback) {
-  ABSL_ASSERT(block_size >= kMinFragmentSize);
-
   Ref<NodeLink> link;
   {
     absl::MutexLock lock(&mutex_);
-    auto [it, need_new_request] =
-        capacity_callbacks_.emplace(block_size, CapacityCallbackList());
-    it->second.push_back(std::move(callback));
-    if (!need_new_request) {
-      // There was already a request pending for this block size. `callback`
-      // will be run when that request completes.
-      return;
-    }
-
-    if (!node_link_) {
-      // Allocation requests will be fulfilled once the NodeLink is activated
-      // and we're given a reference to it via SetNodeLink().
-      return;
-    }
-
-    link = node_link_;
+    link = StartCapacityRequestLocked(block_size, std::move(callback));
   }
 
-  AllocateBlockBuffer(std::move(link), block_size);
+  if (link) {
+    AllocateBlockBuffer(std::move(link), block_size);
+  }
+}
+
+Ref<NodeLink> NodeLinkMemory::StartCapacityRequestLocked(
+    size_t block_size,
+    RequestBlockCapacityCallback callback) {
+  ABSL_ASSERT(block_size >= kMinFragmentSize);
+
+  auto [it, need_new_request] =
+      capacity_callbacks_.emplace(block_size, CapacityCallbackList());
+  if (callback) {
+    it->second.push_back(std::move(callback));
+  }
+  if (!need_new_request) {
+    // There was already a request pending for this block size. `callback`, if
+    // any, will be run when that request completes.
+    return nullptr;
+  }
+
+  // If there's no NodeLink yet, allocation requests will be fulfilled once the
+  // NodeLink is activated and we're given a reference to it via SetNodeLink().
+  return node_link_;
 }
 
 void NodeLinkMemory::AllocateBlockBuffer(Ref<NodeLink> link,
@@ -495,6 +514,11 @@ void NodeLinkMemory::AllocateBlockBuffer(Ref<NodeLink> link,
 
 void NodeLinkMemory::OnCapacityRequestComplete(size_t block_size,
                                                bool success) {
+  if (!success) {
+    DLOG(ERROR) << "Failed to allocate new block capacity for " << block_size
+                << "-byte blocks.";
+  }
+
   CapacityCallbackList callbacks;
   {
     absl::MutexLock lock(&mutex_);
