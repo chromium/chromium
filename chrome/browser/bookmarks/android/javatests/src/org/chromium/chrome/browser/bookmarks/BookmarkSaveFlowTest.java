@@ -17,6 +17,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 
+import android.view.View;
 import android.widget.CompoundButton;
 
 import androidx.test.espresso.Espresso;
@@ -150,14 +151,16 @@ public class BookmarkSaveFlowTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testBookmarkSaveFlow() throws IOException {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    BookmarkId id = addBookmark("Test bookmark", new GURL("http://a.com"));
-                    mBookmarkSaveFlowCoordinator.show(id);
-                    return null;
-                });
-        mRenderTestRule.render(
-                mBookmarkSaveFlowCoordinator.getViewForTesting(), "bookmark_save_flow");
+        View view =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            BookmarkId id = addBookmark("Test bookmark", new GURL("http://a.com"));
+                            mBookmarkSaveFlowCoordinator.show(id);
+                            return mBookmarkSaveFlowCoordinator
+                                    .getViewForTesting()
+                                    .findViewById(R.id.container);
+                        });
+        mRenderTestRule.render(view, "bookmark_save_flow");
     }
 
     @Test
