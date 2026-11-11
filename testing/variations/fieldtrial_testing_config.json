@@ -14269,6 +14269,28 @@
             ]
         }
     ],
+    "OnDeviceModelAsrSpeculativeDecoding": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "decoder_prefill_backoff": "7",
+                        "enable_draft_verification": "true",
+                        "final_decoder_prefill_backoff": "-1"
+                    },
+                    "enable_features": [
+                        "OnDeviceModelAsrSpeculativeDecoding"
+                    ]
+                }
+            ]
+        }
+    ],
     "OnDeviceModelAsrTokenStability": [
         {
             "platforms": [
@@ -14282,7 +14304,7 @@
                     "params": {
                         "interim_release_silence_ms": "300",
                         "interim_stability_steps": "2",
-                        "interim_token_holdback": "0"
+                        "interim_token_holdback": "4"
                     },
                     "enable_features": [
                         "OnDeviceModelAsrTokenStability"
