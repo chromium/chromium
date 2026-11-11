@@ -30,6 +30,7 @@ class MockMediaSession : public MediaSession {
               OnPlayerPaused,
               (MediaSessionPlayerObserver * observer, int player_id),
               (override));
+  MOCK_METHOD(void, RebuildAndNotifyMediaPositionChanged, (), (override));
 
   MOCK_METHOD(void,
               DidReceiveAction,

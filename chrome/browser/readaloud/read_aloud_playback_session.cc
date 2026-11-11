@@ -145,13 +145,8 @@ void ReadAloudPlaybackSession::RefreshMediaSessionPosition() {
   if (!position_.HasValidDuration()) {
     return;
   }
-  // `content::MediaSession` does not expose
-  // `RebuildAndNotifyMediaPositionChanged()`; calling `AddPlayer()` for an
-  // already-registered player updates its entry in-place and triggers a
-  // position rebuild.
-  if (session->AddPlayer(this, kPlayerId)) {
-    position_.last_reported_position = GetPosition(kPlayerId);
-  }
+  session->RebuildAndNotifyMediaPositionChanged();
+  position_.last_reported_position = GetPosition(kPlayerId);
 }
 
 content::MediaSession* ReadAloudPlaybackSession::GetOrCreateMediaSession() {

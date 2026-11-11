@@ -105,7 +105,7 @@ class MediaSessionImpl : public MediaSession,
   CONTENT_EXPORT void RemovePlayers(MediaSessionPlayerObserver* observer);
 
   // Called when the position state of the session might have changed.
-  CONTENT_EXPORT void RebuildAndNotifyMediaPositionChanged();
+  CONTENT_EXPORT void RebuildAndNotifyMediaPositionChanged() override;
 
   // Returns if the session is currently active.
   CONTENT_EXPORT bool IsActive() const;
