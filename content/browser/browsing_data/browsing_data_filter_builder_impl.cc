@@ -225,6 +225,11 @@ bool BrowsingDataFilterBuilderImpl::HasStorageKey() const {
   return storage_key_.has_value();
 }
 
+const std::optional<blink::StorageKey>&
+BrowsingDataFilterBuilderImpl::GetStorageKey() const {
+  return storage_key_;
+}
+
 bool BrowsingDataFilterBuilderImpl::MatchesAllOriginsAndDomains() {
   return MatchesMostOriginsAndDomains() && origins_.empty() &&
          domains_.empty() && cookie_partition_key_collection_.ContainsAllKeys();

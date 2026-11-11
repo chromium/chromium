@@ -39,6 +39,7 @@ class CONTENT_EXPORT BrowsingDataFilterBuilderImpl
   void SetStorageKey(
       const std::optional<blink::StorageKey>& storage_key) override;
   bool HasStorageKey() const override;
+  const std::optional<blink::StorageKey>& GetStorageKey() const override;
   bool MatchesAllOriginsAndDomains() override;
   bool MatchesMostOriginsAndDomains() override;
   bool MatchesNothing() override;

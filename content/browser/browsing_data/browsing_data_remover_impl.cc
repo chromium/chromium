@@ -486,8 +486,14 @@ void BrowsingDataRemoverImpl::RemoveImpl(
         StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS_USER_CLEAR;
   }
   if (remove_mask & DATA_TYPE_DEVICE_BOUND_SESSIONS) {
-    storage_partition_remove_mask |=
-        StoragePartition::REMOVE_DATA_MASK_DEVICE_BOUND_SESSIONS;
+    // Device bound sessions are not partitioned, so only trigger their
+    // deletion if unpartitioned data is being deleted.
+    if (!filter_builder->PartitionedCookiesOnly() &&
+        (!filter_builder->GetStorageKey().has_value() ||
+         filter_builder->GetStorageKey()->IsFirstPartyContext())) {
+      storage_partition_remove_mask |=
+          StoragePartition::REMOVE_DATA_MASK_DEVICE_BOUND_SESSIONS;
+    }
   }
 
   if ((remove_mask & DATA_TYPE_COOKIES) || (remove_mask & DATA_TYPE_CACHE)) {

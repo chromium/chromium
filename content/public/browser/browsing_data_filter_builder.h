@@ -108,6 +108,9 @@ class CONTENT_EXPORT BrowsingDataFilterBuilder {
   // Returns whether the StorageKey is set (e.g. using the method above).
   virtual bool HasStorageKey() const = 0;
 
+  // Returns the StorageKey set for the filter, if any.
+  virtual const std::optional<blink::StorageKey>& GetStorageKey() const = 0;
+
   // Returns true if we're an empty preserve list, where we delete everything.
   virtual bool MatchesAllOriginsAndDomains() = 0;
 

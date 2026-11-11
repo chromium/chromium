@@ -34,6 +34,7 @@
 #include "base/test/test_future.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "content/browser/btm/btm_service_impl.h"
 #include "content/browser/btm/btm_storage.h"
 #include "content/browser/btm/btm_test_utils.h"
@@ -71,6 +72,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/storage_key/ancestor_chain_bit.mojom.h"
 #include "url/origin.h"
 
 using base::test::RunOnceClosure;
@@ -1385,6 +1387,95 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveDeviceBoundSessions) {
   StoragePartitionRemovalData removal_data = GetStoragePartitionRemovalData();
   EXPECT_EQ(removal_data.remove_mask,
             StoragePartition::REMOVE_DATA_MASK_DEVICE_BOUND_SESSIONS);
+}
+
+TEST_F(BrowsingDataRemoverImplTest,
+       IfPartitionedCookiesOnlyDontDeleteDeviceBoundSessions) {
+  std::unique_ptr<BrowsingDataFilterBuilder> builder(
+      BrowsingDataFilterBuilder::Create(
+          BrowsingDataFilterBuilder::Mode::kDelete));
+  builder->AddRegisterableDomain("host1.com");
+  builder->SetPartitionedCookiesOnly(true);
+
+  BlockUntilOriginDataRemoved(
+      base::Time(), base::Time::Max(),
+      BrowsingDataRemover::DATA_TYPE_COOKIES |
+          BrowsingDataRemover::DATA_TYPE_DEVICE_BOUND_SESSIONS,
+      std::move(builder));
+
+  StoragePartitionRemovalData removal_data = GetStoragePartitionRemovalData();
+  EXPECT_EQ(removal_data.remove_mask &
+                StoragePartition::REMOVE_DATA_MASK_DEVICE_BOUND_SESSIONS,
+            0u);
+}
+
+TEST_F(BrowsingDataRemoverImplTest,
+       DeleteDeviceBoundSessionsForFirstPartyStorageKey) {
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://host1.com"));
+  std::unique_ptr<BrowsingDataFilterBuilder> builder(
+      BrowsingDataFilterBuilder::Create(
+          BrowsingDataFilterBuilder::Mode::kDelete));
+  builder->AddOrigin(kOrigin);
+  builder->SetStorageKey(blink::StorageKey::CreateFirstParty(kOrigin));
+
+  BlockUntilOriginDataRemoved(
+      base::Time(), base::Time::Max(),
+      BrowsingDataRemover::DATA_TYPE_DOM_STORAGE |
+          BrowsingDataRemover::DATA_TYPE_DEVICE_BOUND_SESSIONS,
+      std::move(builder));
+
+  StoragePartitionRemovalData removal_data = GetStoragePartitionRemovalData();
+  EXPECT_EQ(removal_data.remove_mask &
+                StoragePartition::REMOVE_DATA_MASK_DEVICE_BOUND_SESSIONS,
+            StoragePartition::REMOVE_DATA_MASK_DEVICE_BOUND_SESSIONS);
+}
+
+TEST_F(BrowsingDataRemoverImplTest,
+       IfThirdPartyStorageKeyDontDeleteDeviceBoundSessions) {
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://host1.com"));
+  const url::Origin kTopLevelOrigin =
+      url::Origin::Create(GURL("https://host2.com"));
+
+  {
+    std::unique_ptr<BrowsingDataFilterBuilder> builder(
+        BrowsingDataFilterBuilder::Create(
+            BrowsingDataFilterBuilder::Mode::kDelete));
+    builder->AddOrigin(kOrigin);
+    builder->SetStorageKey(
+        blink::StorageKey::Create(kOrigin, net::SchemefulSite(kTopLevelOrigin),
+                                  blink::mojom::AncestorChainBit::kCrossSite));
+
+    BlockUntilOriginDataRemoved(
+        base::Time(), base::Time::Max(),
+        BrowsingDataRemover::DATA_TYPE_DOM_STORAGE |
+            BrowsingDataRemover::DATA_TYPE_DEVICE_BOUND_SESSIONS,
+        std::move(builder));
+
+    StoragePartitionRemovalData removal_data = GetStoragePartitionRemovalData();
+    EXPECT_EQ(removal_data.remove_mask &
+                  StoragePartition::REMOVE_DATA_MASK_DEVICE_BOUND_SESSIONS,
+              0u);
+  }
+
+  {
+    std::unique_ptr<BrowsingDataFilterBuilder> builder(
+        BrowsingDataFilterBuilder::Create(
+            BrowsingDataFilterBuilder::Mode::kDelete));
+    builder->AddOrigin(kOrigin);
+    builder->SetStorageKey(blink::StorageKey::CreateWithNonce(
+        kOrigin, base::UnguessableToken::Create()));
+
+    BlockUntilOriginDataRemoved(
+        base::Time(), base::Time::Max(),
+        BrowsingDataRemover::DATA_TYPE_DOM_STORAGE |
+            BrowsingDataRemover::DATA_TYPE_DEVICE_BOUND_SESSIONS,
+        std::move(builder));
+
+    StoragePartitionRemovalData removal_data = GetStoragePartitionRemovalData();
+    EXPECT_EQ(removal_data.remove_mask &
+                  StoragePartition::REMOVE_DATA_MASK_DEVICE_BOUND_SESSIONS,
+              0u);
+  }
 }
 
 class MultipleTasksObserver {
