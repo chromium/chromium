@@ -134,8 +134,7 @@ extern const base::FeatureParam<base::TimeDelta>
 // chooser request with files downloaded from model-provided URLs instead of
 // showing the native file picker.
 BASE_DECLARE_FEATURE(kGlicActorFileUploadTool);
-// Maximum size, in bytes, of a single downloaded file. Capped by
-// network::SimpleURLLoader::kMaxBoundedStringDownloadSize.
+// Maximum size, in bytes, of a single downloaded file.
 extern const base::FeatureParam<int> kGlicActorFileUploadToolMaxFileSizeBytes;
 // How long the tool waits for the page to open a file chooser after the target
 // element is clicked before giving up and tearing down the staged files.

@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -71,7 +72,7 @@ class ActorFileUploadToolBrowserTest : public ActorToolsTest {
 
   void SetUpOnMainThread() override {
     ActorToolsTest::SetUpOnMainThread();
-    // Provides /echoheader and /server-redirect.
+    // Provides /echoheader, /hung and /server-redirect.
     net::test_server::RegisterDefaultHandlers(&embedded_https_test_server());
     ASSERT_TRUE(embedded_https_test_server().Start());
   }
@@ -260,6 +261,29 @@ IN_PROC_BROWSER_TEST_F(ActorFileUploadToolBrowserTest, FailedDownloadFails) {
                    .ExtractInt());
 }
 
+// A failed download fails the action right away: the other downloads are
+// cancelled rather than waited for.
+IN_PROC_BROWSER_TEST_F(ActorFileUploadToolBrowserTest,
+                       FailedDownloadCancelsOtherDownloads) {
+  // The server never responds to /hung, so the action can only complete if it
+  // does not wait for that download.
+  const GURL hung_url =
+      embedded_https_test_server().GetURL("example.com", "/hung");
+  const GURL missing_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/does_not_exist.txt");
+  std::unique_ptr<ToolRequest> action =
+      NavigateAndMakeUploadRequest({hung_url, missing_url});
+  ASSERT_TRUE(action);
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectErrorResult(result, mojom::ActionResultCode::kFileUploadDownloadFailed);
+
+  EXPECT_EQ(0, EvalJs(web_contents(),
+                      "document.getElementById('fileinput').files.length")
+                   .ExtractInt());
+}
+
 // Files on a credentialed host are downloaded with the user's cookies,
 // including SameSite ones, since the host only serves a file to its owner.
 IN_PROC_BROWSER_TEST_F(ActorFileUploadToolBrowserTest,
@@ -344,6 +368,63 @@ IN_PROC_BROWSER_TEST_F(ActorFileUploadToolBrowserTest,
   params.need_local_path = false;
   EXPECT_FALSE(MaybeInterceptFileChooser(*main_frame(), listener, params));
   EXPECT_TRUE(listener);
+}
+
+// Limits each downloaded file to the size of the payload.
+class ActorFileUploadToolMaxFileSizeBrowserTest
+    : public ActorFileUploadToolBrowserTest {
+ public:
+  ActorFileUploadToolMaxFileSizeBrowserTest() {
+    // These parameters replace those set by ActorFileUploadToolBrowserTest, so
+    // the credentialed host is repeated.
+    feature_list_.InitAndEnableFeatureWithParameters(
+        kGlicActorFileUploadTool,
+        {{"credentialed_hosts", kCredentialedHost},
+         {"max_file_size_bytes",
+          base::NumberToString(sizeof(kPayloadContents) - 1)}});
+  }
+  ~ActorFileUploadToolMaxFileSizeBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// A file exactly as large as the maximum size is uploaded.
+IN_PROC_BROWSER_TEST_F(ActorFileUploadToolMaxFileSizeBrowserTest,
+                       UploadsFileAtMaxFileSize) {
+  const GURL payload_url =
+      embedded_https_test_server().GetURL("example.com", kPayloadPath);
+  std::unique_ptr<ToolRequest> action =
+      NavigateAndMakeUploadRequest({payload_url});
+  ASSERT_TRUE(action);
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+
+  EXPECT_EQ(kPayloadContents, EvalJs(web_contents(), kFirstFileContents));
+}
+
+// A file larger than the maximum size fails the action, even when the other
+// files are within it, and nothing is handed to the page.
+IN_PROC_BROWSER_TEST_F(ActorFileUploadToolMaxFileSizeBrowserTest,
+                       OversizedDownloadFails) {
+  const GURL payload_url =
+      embedded_https_test_server().GetURL("example.com", kPayloadPath);
+  // The page is much larger than the payload.
+  const GURL oversized_url =
+      embedded_https_test_server().GetURL("example.com", kPageWithFileInput);
+  std::unique_ptr<ToolRequest> action =
+      NavigateAndMakeUploadRequest({payload_url, oversized_url});
+  ASSERT_TRUE(action);
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectErrorResult(result, mojom::ActionResultCode::kFileUploadDownloadFailed);
+
+  EXPECT_EQ(0, EvalJs(web_contents(),
+                      "document.getElementById('fileinput').files.length")
+                   .ExtractInt());
 }
 
 }  // namespace

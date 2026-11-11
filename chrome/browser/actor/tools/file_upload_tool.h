@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ACTOR_TOOLS_FILE_UPLOAD_TOOL_H_
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include <memory>
 #include <optional>
@@ -86,7 +87,14 @@ class FileUploadTool : public Tool {
   };
 
   void StartDownloads();
+  // Calls OnDownloadFailed() once more than `max_file_size` bytes of
+  // `files_[index]` have been received.
+  void OnDownloadProgress(size_t index, size_t max_file_size, uint64_t current);
   void OnDownloadComplete(size_t index, std::optional<std::string> body);
+  // Fails the invocation as soon as any download fails, since the action can no
+  // longer succeed. The other downloads are cancelled rather than waited for,
+  // and the contents downloaded so far are released.
+  void OnDownloadFailed();
   void OnAllDownloadsComplete();
 
   // Registers `files` in memory, installs the file picker interceptor for the
@@ -108,7 +116,6 @@ class FileUploadTool : public Tool {
   std::vector<std::unique_ptr<network::SimpleURLLoader>> loaders_;
   std::vector<std::optional<std::string>> downloaded_contents_;
   size_t pending_downloads_ = 0;
-  bool download_failed_ = false;
 
   base::WeakPtrFactory<FileUploadTool> weak_ptr_factory_{this};
 };

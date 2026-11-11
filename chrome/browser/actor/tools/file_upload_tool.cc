@@ -147,12 +147,10 @@ content::RenderFrameHost* FindTargetFrame(
 
 // Upper bound on the size of a single staged file. Since the contents are held
 // in browser process memory, this also bounds how much memory one upload can
-// use. DownloadToString refuses to be given a limit above its bounded string
-// size, so the configured value is a ceiling rather than a guarantee.
+// use.
 size_t MaxFileSize() {
-  return std::min(base::checked_cast<size_t>(std::max(
-                      0, kGlicActorFileUploadToolMaxFileSizeBytes.Get())),
-                  network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
+  return base::checked_cast<size_t>(
+      std::max(0, kGlicActorFileUploadToolMaxFileSizeBytes.Get()));
 }
 
 mojom::ActionResultPtr OnValidatedAllUrls(
@@ -309,14 +307,37 @@ void FileUploadTool::StartDownloads() {
     std::unique_ptr<network::SimpleURLLoader> loader =
         network::SimpleURLLoader::Create(std::move(resource_request),
                                          kTrafficAnnotation);
+    // The loader does not limit the size of the body, so OnDownloadProgress()
+    // cancels the download once it exceeds `max_file_size`. Progress is
+    // reported asynchronously, so slightly more may be received first.
+    loader->SetOnDownloadProgressCallback(
+        base::BindRepeating(&FileUploadTool::OnDownloadProgress,
+                            weak_ptr_factory_.GetWeakPtr(), i, max_file_size));
     // Destroying the loader cancels the request and the callback is not run,
     // so `this` cannot be used after destruction.
-    loader->DownloadToString(url_loader_factory.get(),
-                             base::BindOnce(&FileUploadTool::OnDownloadComplete,
-                                            weak_ptr_factory_.GetWeakPtr(), i),
-                             max_file_size);
+    loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+        url_loader_factory.get(),
+        base::BindOnce(&FileUploadTool::OnDownloadComplete,
+                       weak_ptr_factory_.GetWeakPtr(), i));
     loaders_.push_back(std::move(loader));
   }
+}
+
+void FileUploadTool::OnDownloadProgress(size_t index,
+                                        size_t max_file_size,
+                                        uint64_t current) {
+  if (current <= max_file_size) {
+    return;
+  }
+
+  journal().Log(JournalURL(), task_id(), "FileUploadTool::DownloadFailed",
+                JournalDetailsBuilder()
+                    .Add("file_index", static_cast<int>(index))
+                    .Add("credentialed", IsCredentialedHost(files_[index].url))
+                    .Add("max_file_size", max_file_size)
+                    .AddError("The file exceeds the maximum size.")
+                    .Build());
+  OnDownloadFailed();
 }
 
 void FileUploadTool::OnDownloadComplete(size_t index,
@@ -325,12 +346,8 @@ void FileUploadTool::OnDownloadComplete(size_t index,
   CHECK_LT(index, loaders_.size());
   CHECK_GT(pending_downloads_, 0u);
 
-  const network::SimpleURLLoader& loader = *loaders_[index];
-
-  if (body) {
-    downloaded_contents_[index] = std::move(body);
-  } else {
-    download_failed_ = true;
+  if (!body) {
+    const network::SimpleURLLoader& loader = *loaders_[index];
     const network::mojom::URLResponseHead* response = loader.ResponseInfo();
     journal().Log(
         JournalURL(), task_id(), "FileUploadTool::DownloadFailed",
@@ -342,8 +359,11 @@ void FileUploadTool::OnDownloadComplete(size_t index,
                                     ? response->headers->response_code()
                                     : 0)
             .Build());
+    OnDownloadFailed();
+    return;
   }
 
+  downloaded_contents_[index] = std::move(body);
   if (--pending_downloads_ > 0) {
     return;
   }
@@ -352,13 +372,17 @@ void FileUploadTool::OnDownloadComplete(size_t index,
   OnAllDownloadsComplete();
 }
 
-void FileUploadTool::OnAllDownloadsComplete() {
-  if (download_failed_) {
-    FailInvoke(mojom::ActionResultCode::kFileUploadDownloadFailed,
-               "Failed to download one or more files.");
-    return;
-  }
+void FileUploadTool::OnDownloadFailed() {
+  // Destroying the loaders cancels their downloads without running their
+  // callbacks. SimpleURLLoader allows this from within one of its own
+  // callbacks, which is where this is called from.
+  loaders_.clear();
+  downloaded_contents_.clear();
+  FailInvoke(mojom::ActionResultCode::kFileUploadDownloadFailed,
+             "Failed to download one or more files.");
+}
 
+void FileUploadTool::OnAllDownloadsComplete() {
   std::vector<PendingFile> pending;
   pending.reserve(files_.size());
   for (size_t i = 0; i < files_.size(); ++i) {

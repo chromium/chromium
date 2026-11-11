@@ -159,7 +159,7 @@ const base::FeatureParam<base::TimeDelta>
 BASE_FEATURE(kGlicActorFileUploadTool, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kGlicActorFileUploadToolMaxFileSizeBytes{
-    &kGlicActorFileUploadTool, "max_file_size_bytes", 5 * 1024 * 1024};
+    &kGlicActorFileUploadTool, "max_file_size_bytes", 100 * 1024 * 1024};
 
 const base::FeatureParam<base::TimeDelta> kGlicActorFileUploadToolTimeout{
     &kGlicActorFileUploadTool, "timeout", base::Seconds(30)};
