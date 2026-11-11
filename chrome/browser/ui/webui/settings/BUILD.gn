@@ -139,6 +139,7 @@ source_set("settings") {
 
   if (is_chrome_branded) {
     sources += [ "on_device_ai_settings_handler.h" ]
+    public_deps += [ "//components/optimization_guide/core:ondevice" ]
   }
 
   if (is_mac) {
@@ -387,6 +388,10 @@ source_set("impl") {
 
   if (is_chrome_branded) {
     sources += [ "on_device_ai_settings_handler.cc" ]
+    deps += [
+      "//chrome/browser/optimization_guide",
+      "//components/optimization_guide/core:ondevice",
+    ]
   }
 
   if (is_mac) {
@@ -748,7 +753,10 @@ if (!is_android) {
 
     if (is_chrome_branded) {
       sources += [ "on_device_ai_settings_handler_unittest.cc" ]
-      deps += [ "//components/optimization_guide/core:ondevice" ]
+      deps += [
+        "//chrome/app:generated_resources",
+        "//components/optimization_guide/core:ondevice",
+      ]
     }
 
     if (toolkit_views && !is_chromeos) {
