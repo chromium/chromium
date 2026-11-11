@@ -8,6 +8,7 @@
 import argparse
 import logging
 import os
+import platform
 import re
 import shutil
 import sys
@@ -20,6 +21,9 @@ from util import server_utils
 import action_helpers  # build_utils adds //build to sys.path.
 
 _LINT_MD_URL = 'https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md'
+
+# lint-graalvm is built for linux-x64 only.
+_IS_LINUX_X64 = sys.platform == 'linux' and platform.machine() == 'x86_64'
 
 # These checks are not useful for chromium.
 _DISABLED_ALWAYS = [
@@ -214,6 +218,7 @@ def _RunLint(
     baseline,
     manifest_path,
     warnings_as_errors=False,
+    native_lint_path=None,
 ):
     logging.info('Lint starting')
     if not cache_dir:
@@ -245,10 +250,18 @@ def _RunLint(
         root_path, os.path.relpath(build_utils.DIR_SOURCE_ROOT, start=root_path)
     )
 
-    cmd = build_utils.JavaCmd(xmx=lint_xmx) + [
-        '-cp',
-        lint_jar_path,
-        'com.android.tools.lint.Main',
+    if native_lint_path and _IS_LINUX_X64:
+        # A native image takes -Xmx but rejects most JVM flags. Size G1's
+        # threads for 2 CPUs, since many lint processes run in parallel.
+        cmd = [
+            native_lint_path,
+            '-Xmx' + lint_xmx,
+            '-XX:ActiveProcessorCount=2',
+        ]
+    else:
+        cmd = build_utils.JavaCmd(xmx=lint_xmx)
+        cmd += ['-cp', lint_jar_path, 'com.android.tools.lint.Main']
+    cmd += [
         '--sdk-home',
         android_sdk_root,
         '--jdk-home',
@@ -412,6 +425,11 @@ def _ParseArgs(argv):
         '--lint-jar-path', required=True, help='Path to the lint jar.'
     )
     parser.add_argument(
+        '--native-lint-path',
+        help='Native image of the lint jar (lint-graalvm) to run instead of '
+        'the JVM on linux-x64.',
+    )
+    parser.add_argument(
         '--backported-methods',
         help='Path to backported methods file created by R8.',
     )
@@ -543,6 +561,7 @@ def main():
         args.baseline,
         args.manifest,
         warnings_as_errors=args.warnings_as_errors,
+        native_lint_path=args.native_lint_path,
     )
     logging.info('Creating stamp file')
     server_utils.MaybeTouch(args.stamp)

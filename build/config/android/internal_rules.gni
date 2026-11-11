@@ -119,6 +119,27 @@ _signflinger_inputs = java_paths_for_inputs + [
 _global_synthetics_dex_path =
     "//third_party/r8/cipd/lib/global_synthetics.dex.jar"
 _default_lint_jar_path = "//third_party/android_build_tools/lint/cipd/lint.jar"
+
+# The default lint jar compiled to a native image, which skips the JVM's class
+# loading and JIT warm-up that dominate short lint runs. lint.py runs it on
+# linux-x64 and falls back to the JVM elsewhere. It reads Kotlin builtins from
+# lint-builtins.jar next to it.
+_native_lint_path =
+    "//third_party/android_build_tools/lint/cipd/bin/lint-graalvm"
+_native_lint_inputs = [
+  _native_lint_path,
+  "//third_party/android_build_tools/lint/cipd/bin/lint-builtins.jar",
+
+  # JDK libraries the native image loads from its own directory.
+  "//third_party/android_build_tools/lint/cipd/bin/libawt.so",
+  "//third_party/android_build_tools/lint/cipd/bin/libawt_headless.so",
+  "//third_party/android_build_tools/lint/cipd/bin/libawt_xawt.so",
+  "//third_party/android_build_tools/lint/cipd/bin/libfontmanager.so",
+  "//third_party/android_build_tools/lint/cipd/bin/libjava.so",
+  "//third_party/android_build_tools/lint/cipd/bin/libjavajpeg.so",
+  "//third_party/android_build_tools/lint/cipd/bin/libjvm.so",
+  "//third_party/android_build_tools/lint/cipd/bin/liblcms.so",
+]
 _manifest_merger_jar_path =
     "//third_party/android_build_tools/manifest_merger/cipd/manifest-merger.jar"
 
@@ -1097,10 +1118,7 @@ if (enable_java_templates) {
 
       script = "//build/android/gyp/lint.py"
       depfile = "$target_gen_dir/$target_name.d"
-      inputs = java_paths_for_inputs + [
-                 _lint_jar_path,
-                 _backported_methods,
-               ]
+      inputs = [ _backported_methods ]
 
       args = [
         "--target-name",
@@ -1117,6 +1135,19 @@ if (enable_java_templates) {
         "--backported-methods",
         rebase_path(_backported_methods, root_build_dir),
       ]
+      _use_native_lint = _lint_jar_path == _default_lint_jar_path
+      if (_use_native_lint) {
+        # lint.py uses the native image only on linux-x64 (as remote actions
+        # do), and the JVM elsewhere.
+        inputs += native_image_java_paths_for_inputs + _native_lint_inputs
+        args += [
+          "--native-lint-path",
+          rebase_path(_native_lint_path, root_build_dir),
+        ]
+      }
+      if (!_use_native_lint || !use_native_image_inputs) {
+        inputs += java_paths_for_inputs + [ _lint_jar_path ]
+      }
 
       if (android_static_analysis == "build_server") {
         args += [ "--use-build-server" ]
