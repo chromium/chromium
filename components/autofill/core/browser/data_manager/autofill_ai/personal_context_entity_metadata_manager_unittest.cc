@@ -278,9 +278,9 @@ TEST_F(PersonalContextEntityMetadataManagerTest, GetSyncControllerDelegate) {
   manager().GetSyncControllerDelegate();
 }
 
-// Tests that ClearSuppressions with a full time range removes all suppressed
+// Tests that ClearEntries with a full time range removes all suppressed
 // entities and notifies observers.
-TEST_F(PersonalContextEntityMetadataManagerTest, ClearSuppressions) {
+TEST_F(PersonalContextEntityMetadataManagerTest, ClearEntries) {
   EntityInstance passport = test::GetPassportEntityInstance();
   EntityInstance vehicle = test::GetVehicleEntityInstance();
   ASSERT_TRUE(manager().SuppressEntity(passport));
@@ -290,15 +290,15 @@ TEST_F(PersonalContextEntityMetadataManagerTest, ClearSuppressions) {
   manager().AddObserver(&observer);
 
   EXPECT_CALL(observer, OnEntitySuppressionsChanged()).Times(1);
-  EXPECT_TRUE(manager().ClearSuppressions(base::Time(), base::Time::Max()));
+  EXPECT_TRUE(manager().ClearEntries(base::Time(), base::Time::Max()));
 
   EXPECT_FALSE(manager().IsSuppressed(passport));
   EXPECT_FALSE(manager().IsSuppressed(vehicle));
 }
 
-// Tests that ClearSuppressions only removes suppressed entities created within
+// Tests that ClearEntries only removes suppressed entities created within
 // [delete_begin, delete_end].
-TEST_F(PersonalContextEntityMetadataManagerTest, ClearSuppressions_TimeRange) {
+TEST_F(PersonalContextEntityMetadataManagerTest, ClearEntries_TimeRange) {
   EntityInstance passport = test::GetPassportEntityInstance();
   EntityInstance vehicle = test::GetVehicleEntityInstance();
   ASSERT_TRUE(manager().SuppressEntity(passport));
@@ -311,7 +311,7 @@ TEST_F(PersonalContextEntityMetadataManagerTest, ClearSuppressions_TimeRange) {
   manager().AddObserver(&observer);
 
   EXPECT_CALL(observer, OnEntitySuppressionsChanged());
-  EXPECT_TRUE(manager().ClearSuppressions(delete_begin, base::Time::Max()));
+  EXPECT_TRUE(manager().ClearEntries(delete_begin, base::Time::Max()));
 
   EXPECT_TRUE(manager().IsSuppressed(passport));
   EXPECT_FALSE(manager().IsSuppressed(vehicle));
@@ -320,35 +320,34 @@ TEST_F(PersonalContextEntityMetadataManagerTest, ClearSuppressions_TimeRange) {
   EXPECT_TRUE(manager().UndoInSessionSuppressedEntity(passport.guid()));
 }
 
-// Tests that ClearSuppressions returns false and does not notify observers
+// Tests that ClearEntries returns false and does not notify observers
 // when nothing is suppressed.
-TEST_F(PersonalContextEntityMetadataManagerTest, ClearSuppressions_Empty) {
+TEST_F(PersonalContextEntityMetadataManagerTest, ClearEntries_Empty) {
   MockPersonalContextEntityMetadataManagerObserver observer;
   manager().AddObserver(&observer);
 
   EXPECT_CALL(observer, OnEntitySuppressionsChanged()).Times(0);
-  EXPECT_FALSE(manager().ClearSuppressions(base::Time(), base::Time::Max()));
+  EXPECT_FALSE(manager().ClearEntries(base::Time(), base::Time::Max()));
 }
 
-// Tests that CountSuppressionsCreatedBetween counts the suppressions created
+// Tests that CountEntriesCreatedBetween counts the entries created
 // within the given inclusive time range.
-TEST_F(PersonalContextEntityMetadataManagerTest,
-       CountSuppressionsCreatedBetween) {
-  EXPECT_EQ(manager().CountSuppressionsCreatedBetween(base::Time(),
-                                                      base::Time::Max()),
-            0u);
+TEST_F(PersonalContextEntityMetadataManagerTest, CountEntriesCreatedBetween) {
+  EXPECT_EQ(
+      manager().CountEntriesCreatedBetween(base::Time(), base::Time::Max()),
+      0u);
 
   const base::Time suppression_time = base::Time::Now();
   ASSERT_TRUE(manager().SuppressEntity(test::GetPassportEntityInstance()));
 
-  EXPECT_EQ(manager().CountSuppressionsCreatedBetween(base::Time(),
-                                                      base::Time::Max()),
-            1u);
+  EXPECT_EQ(
+      manager().CountEntriesCreatedBetween(base::Time(), base::Time::Max()),
+      1u);
   // Both bounds are inclusive.
-  EXPECT_EQ(manager().CountSuppressionsCreatedBetween(suppression_time,
-                                                      suppression_time),
-            1u);
-  EXPECT_EQ(manager().CountSuppressionsCreatedBetween(
+  EXPECT_EQ(
+      manager().CountEntriesCreatedBetween(suppression_time, suppression_time),
+      1u);
+  EXPECT_EQ(manager().CountEntriesCreatedBetween(
                 base::Time(), suppression_time - base::Seconds(1)),
             0u);
 
@@ -356,17 +355,17 @@ TEST_F(PersonalContextEntityMetadataManagerTest,
   // suppressing it records two entries.
   task_environment().FastForwardBy(base::Hours(2));
   ASSERT_TRUE(manager().SuppressEntity(test::GetVehicleEntityInstance()));
-  EXPECT_EQ(manager().CountSuppressionsCreatedBetween(base::Time(),
-                                                      base::Time::Max()),
-            3u);
-  EXPECT_EQ(manager().CountSuppressionsCreatedBetween(
+  EXPECT_EQ(
+      manager().CountEntriesCreatedBetween(base::Time(), base::Time::Max()),
+      3u);
+  EXPECT_EQ(manager().CountEntriesCreatedBetween(
                 base::Time::Now() - base::Hours(1), base::Time::Max()),
             2u);
 
-  ASSERT_TRUE(manager().ClearSuppressions(base::Time(), base::Time::Max()));
-  EXPECT_EQ(manager().CountSuppressionsCreatedBetween(base::Time(),
-                                                      base::Time::Max()),
-            0u);
+  ASSERT_TRUE(manager().ClearEntries(base::Time(), base::Time::Max()));
+  EXPECT_EQ(
+      manager().CountEntriesCreatedBetween(base::Time(), base::Time::Max()),
+      0u);
 }
 
 // Tests that all operations fail gracefully if the sync bridge never loads,
@@ -392,10 +391,9 @@ TEST_F(PersonalContextEntityMetadataManagerTest, BridgeNotLoaded) {
   EXPECT_FALSE(manager.SuppressEntity(passport));
   EXPECT_FALSE(manager.IsSuppressed(passport));
   EXPECT_FALSE(manager.UndoInSessionSuppressedEntity(passport.guid()));
-  EXPECT_FALSE(manager.ClearSuppressions(base::Time(), base::Time::Max()));
-  EXPECT_EQ(
-      manager.CountSuppressionsCreatedBetween(base::Time(), base::Time::Max()),
-      0u);
+  EXPECT_FALSE(manager.ClearEntries(base::Time(), base::Time::Max()));
+  EXPECT_EQ(manager.CountEntriesCreatedBetween(base::Time(), base::Time::Max()),
+            0u);
 
   manager.RemoveObserver(&observer);
 }

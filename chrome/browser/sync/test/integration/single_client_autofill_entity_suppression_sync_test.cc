@@ -88,7 +88,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientAutofillEntitySuppressionSyncTest,
       ServerCountMatchStatusChecker(syncer::AUTOFILL_ENTITY_SUPPRESSION, 1)
           .Wait());
 
-  ASSERT_TRUE(GetEntityMetadataManager()->ClearSuppressions(
+  ASSERT_TRUE(GetEntityMetadataManager()->ClearEntries(
       /*delete_begin=*/base::Time(), /*delete_end=*/base::Time::Max()));
 
   EXPECT_TRUE(

@@ -672,10 +672,10 @@ TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
   EXPECT_EQ(GetFirstGuid(), "guid1");
 }
 
-// Tests that ClearSuppressions with a full time range deletes all entries from
+// Tests that ClearEntries with a full time range deletes all entries from
 // local state and store, commits deletions to Sync, and notifies observers
 // once.
-TEST_F(PersonalContextEntityMetadataSyncBridgeTest, ClearSuppressions) {
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest, ClearEntries) {
   WriteToStore("guid1", CreatePassportEntry());
   WriteToStore("guid2", CreateDriversLicenseEntry());
   CreateBridge();
@@ -684,16 +684,15 @@ TEST_F(PersonalContextEntityMetadataSyncBridgeTest, ClearSuppressions) {
   EXPECT_CALL(mock_processor(), Delete("guid1", _, _));
   EXPECT_CALL(mock_processor(), Delete("guid2", _, _));
   EXPECT_CALL(observer(), OnSuppressionsChanged()).Times(1);
-  EXPECT_TRUE(bridge().ClearSuppressions(base::Time(), base::Time::Max()));
+  EXPECT_TRUE(bridge().ClearEntries(base::Time(), base::Time::Max()));
 
   EXPECT_TRUE(bridge().GetSuppressions().empty());
   EXPECT_TRUE(ReadAllRecordsFromStore().empty());
 }
 
-// Tests that ClearSuppressions only deletes entries whose creation time falls
+// Tests that ClearEntries only deletes entries whose creation time falls
 // within [delete_begin, delete_end].
-TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
-       ClearSuppressions_TimeRange) {
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest, ClearEntries_TimeRange) {
   const base::Time t1 =
       base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(100));
   const base::Time t2 =
@@ -708,28 +707,27 @@ TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
   EXPECT_CALL(mock_processor(), Delete("guid1", _, _)).Times(0);
   EXPECT_CALL(mock_processor(), Delete("guid2", _, _));
   EXPECT_CALL(observer(), OnSuppressionsChanged()).Times(1);
-  EXPECT_TRUE(
-      bridge().ClearSuppressions(t1 + base::Seconds(50), base::Time::Max()));
+  EXPECT_TRUE(bridge().ClearEntries(t1 + base::Seconds(50), base::Time::Max()));
 
   EXPECT_THAT(bridge().GetSuppressions(), ElementsAre(ToKey(entry1)));
   EXPECT_EQ(ReadAllRecordsFromStore().size(), 1u);
 }
 
-// Tests that ClearSuppressions returns false and does not notify observers
-// when there are no matching suppressions.
-TEST_F(PersonalContextEntityMetadataSyncBridgeTest, ClearSuppressions_Empty) {
+// Tests that ClearEntries returns false and does not notify observers
+// when there are no matching entries.
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest, ClearEntries_Empty) {
   CreateBridge();
   ASSERT_TRUE(bridge().GetSuppressions().empty());
 
   EXPECT_CALL(mock_processor(), Delete).Times(0);
   EXPECT_CALL(observer(), OnSuppressionsChanged()).Times(0);
-  EXPECT_FALSE(bridge().ClearSuppressions(base::Time(), base::Time::Max()));
+  EXPECT_FALSE(bridge().ClearEntries(base::Time(), base::Time::Max()));
 }
 
-// Tests that CountSuppressionsCreatedBetween only counts entries whose
+// Tests that CountEntriesCreatedBetween only counts entries whose
 // creation time falls within the inclusive range [begin, end].
 TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
-       CountSuppressionsCreatedBetween) {
+       CountEntriesCreatedBetween) {
   const base::Time t1 =
       base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(100));
   const base::Time t2 =
@@ -741,45 +739,42 @@ TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
 
   // Null bounds cover everything.
   EXPECT_EQ(
-      bridge().CountSuppressionsCreatedBetween(base::Time(), base::Time::Max()),
-      2u);
-  EXPECT_EQ(
-      bridge().CountSuppressionsCreatedBetween(base::Time(), base::Time()), 2u);
+      bridge().CountEntriesCreatedBetween(base::Time(), base::Time::Max()), 2u);
+  EXPECT_EQ(bridge().CountEntriesCreatedBetween(base::Time(), base::Time()),
+            2u);
   // Bounds are inclusive.
-  EXPECT_EQ(bridge().CountSuppressionsCreatedBetween(t1, t1), 1u);
-  EXPECT_EQ(bridge().CountSuppressionsCreatedBetween(t2, t2), 1u);
-  EXPECT_EQ(bridge().CountSuppressionsCreatedBetween(t1, t2), 2u);
-  EXPECT_EQ(bridge().CountSuppressionsCreatedBetween(t1 + base::Seconds(50),
-                                                     base::Time::Max()),
+  EXPECT_EQ(bridge().CountEntriesCreatedBetween(t1, t1), 1u);
+  EXPECT_EQ(bridge().CountEntriesCreatedBetween(t2, t2), 1u);
+  EXPECT_EQ(bridge().CountEntriesCreatedBetween(t1, t2), 2u);
+  EXPECT_EQ(bridge().CountEntriesCreatedBetween(t1 + base::Seconds(50),
+                                                base::Time::Max()),
             1u);
   // Ranges not containing any creation time.
-  EXPECT_EQ(bridge().CountSuppressionsCreatedBetween(base::Time::Min(),
-                                                     t1 - base::Seconds(1)),
+  EXPECT_EQ(bridge().CountEntriesCreatedBetween(base::Time::Min(),
+                                                t1 - base::Seconds(1)),
             0u);
-  EXPECT_EQ(bridge().CountSuppressionsCreatedBetween(t1 + base::Seconds(1),
-                                                     t2 - base::Seconds(1)),
+  EXPECT_EQ(bridge().CountEntriesCreatedBetween(t1 + base::Seconds(1),
+                                                t2 - base::Seconds(1)),
             0u);
-  EXPECT_EQ(bridge().CountSuppressionsCreatedBetween(t2 + base::Seconds(1),
-                                                     base::Time::Max()),
+  EXPECT_EQ(bridge().CountEntriesCreatedBetween(t2 + base::Seconds(1),
+                                                base::Time::Max()),
             0u);
 
   // After clearing, nothing is left.
-  ASSERT_TRUE(bridge().ClearSuppressions(base::Time(), base::Time::Max()));
+  ASSERT_TRUE(bridge().ClearEntries(base::Time(), base::Time::Max()));
   EXPECT_EQ(
-      bridge().CountSuppressionsCreatedBetween(base::Time(), base::Time::Max()),
-      0u);
+      bridge().CountEntriesCreatedBetween(base::Time(), base::Time::Max()), 0u);
 }
 
-// Tests that CountSuppressionsCreatedBetween returns zero when there are no
-// suppressions.
+// Tests that CountEntriesCreatedBetween returns zero when there are no
+// entries.
 TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
-       CountSuppressionsCreatedBetween_Empty) {
+       CountEntriesCreatedBetween_Empty) {
   CreateBridge();
   ASSERT_TRUE(bridge().GetSuppressions().empty());
 
   EXPECT_EQ(
-      bridge().CountSuppressionsCreatedBetween(base::Time(), base::Time::Max()),
-      0u);
+      bridge().CountEntriesCreatedBetween(base::Time(), base::Time::Max()), 0u);
 }
 
 // Tests that suppressions above the limit, e.g. stored by builds without the

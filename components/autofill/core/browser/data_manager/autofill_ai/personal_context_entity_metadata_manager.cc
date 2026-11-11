@@ -71,13 +71,12 @@ bool PersonalContextEntityMetadataManager::UndoInSessionSuppressedEntity(
   return modified;
 }
 
-bool PersonalContextEntityMetadataManager::ClearSuppressions(
-    base::Time delete_begin,
-    base::Time delete_end) {
+bool PersonalContextEntityMetadataManager::ClearEntries(base::Time delete_begin,
+                                                        base::Time delete_end) {
   if (!sync_bridge_->IsLoaded()) {
     return false;
   }
-  if (!sync_bridge_->ClearSuppressions(delete_begin, delete_end)) {
+  if (!sync_bridge_->ClearEntries(delete_begin, delete_end)) {
     return false;
   }
   absl::erase_if(suppressed_entries_by_entity_id_,
@@ -100,13 +99,13 @@ bool PersonalContextEntityMetadataManager::IsSuppressed(
                              });
 }
 
-size_t PersonalContextEntityMetadataManager::CountSuppressionsCreatedBetween(
+size_t PersonalContextEntityMetadataManager::CountEntriesCreatedBetween(
     base::Time begin,
     base::Time end) const {
   if (!sync_bridge_->IsLoaded()) {
     return 0;
   }
-  return sync_bridge_->CountSuppressionsCreatedBetween(begin, end);
+  return sync_bridge_->CountEntriesCreatedBetween(begin, end);
 }
 
 void PersonalContextEntityMetadataManager::OnSuppressionsChanged() {

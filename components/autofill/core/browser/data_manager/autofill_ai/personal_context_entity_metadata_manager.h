@@ -60,25 +60,24 @@ class PersonalContextEntityMetadataManager final
   // Returns true if suppression status was modified.
   bool UndoInSessionSuppressedEntity(const EntityInstance::EntityId& entity_id);
 
-  // Removes recorded entity suppressions whose creation timestamp falls within
+  // Removes recorded metadata entries whose creation timestamp falls within
   // the inclusive range `[delete_begin, delete_end]` (use `base::Time()` and
-  // `base::Time::Max()` to clear all suppressions). Deletes matching entries
-  // from local storage and Sync, prunes any corresponding in-session undo
-  // state, and notifies observers if any entry was removed.
-  // Returns `true` if at least one suppression was removed, `false` otherwise.
-  bool ClearSuppressions(base::Time delete_begin, base::Time delete_end);
+  // `base::Time::Max()` to clear all entries). Deletes matching entries from
+  // local storage and Sync, prunes any corresponding in-session undo state, and
+  // notifies observers if any suppression was removed. Returns `true` if at
+  // least one entry was removed, `false` otherwise.
+  bool ClearEntries(base::Time delete_begin, base::Time delete_end);
 
   // Returns true if the entity matches at least one suppressed merge
   // constraint.
   bool IsSuppressed(const EntityInstance& entity) const;
 
-  // Returns the number of recorded entity suppressions whose creation
-  // timestamp falls within the inclusive range `[begin, end]` (use
-  // `base::Time()` and `base::Time::Max()` to cover all suppressions). This
-  // mirrors the range semantics of `ClearSuppressions()`, i.e. it returns the
-  // number of suppressions that `ClearSuppressions(begin, end)` would remove.
-  size_t CountSuppressionsCreatedBetween(base::Time begin,
-                                         base::Time end) const;
+  // Returns the number of recorded metadata entries whose creation timestamp
+  // falls within the inclusive range `[begin, end]` (use `base::Time()` and
+  // `base::Time::Max()` to cover all entries). This mirrors the range semantics
+  // of `ClearEntries()`, i.e. it returns the number of entries that
+  // `ClearEntries(begin, end)` would remove.
+  size_t CountEntriesCreatedBetween(base::Time begin, base::Time end) const;
 
   // Returns the delegate for Chrome Sync.
   base::WeakPtr<syncer::DataTypeControllerDelegate> GetSyncControllerDelegate();

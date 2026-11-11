@@ -1097,8 +1097,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
                 PersonalContextEntityMetadataManager* entity_metadata_manager =
                     autofill::PersonalContextEntityMetadataManagerFactory::
                         GetForProfile(profile_)) {
-          entity_metadata_manager->ClearSuppressions(delete_begin_,
-                                                     delete_end_);
+          entity_metadata_manager->ClearEntries(delete_begin_, delete_end_);
         }
       }
       // Clear out the Autofill StrikeDatabase in its entirety.

@@ -79,12 +79,12 @@ class PersonalContextEntityMetadataSyncBridge
   // no such records. Returns `true` if suppression status was modified.
   bool Unsuppress(const EntitySuppressionEntry& entry);
 
-  // Deletes suppression records whose creation timestamp falls within the
+  // Deletes metadata entries whose creation timestamp falls within the
   // inclusive range `[delete_begin, delete_end]` from local storage and Sync,
-  // and notifies observers if any record was removed. Returns `false` if Sync
-  // is not tracking metadata or no entries matched the time range. Returns
-  // `true` if suppression status was modified.
-  bool ClearSuppressions(base::Time delete_begin, base::Time delete_end);
+  // and notifies observers if any suppression record was removed. Returns
+  // `false` if no entries matched the time range. Returns `true` if any record
+  // was removed.
+  bool ClearEntries(base::Time delete_begin, base::Time delete_end);
 
   // Returns the hashes of all currently active suppressions.
   base::flat_set<EntitySuppressionHash> GetSuppressions() const;
@@ -92,11 +92,10 @@ class PersonalContextEntityMetadataSyncBridge
   // Returns true if `entry` is currently suppressed.
   bool IsSuppressed(const EntitySuppressionEntry& entry) const;
 
-  // Returns the number of suppression records whose creation timestamp falls
+  // Returns the number of metadata records whose creation timestamp falls
   // within the inclusive range `[begin, end]`. Null `begin`/`end` are treated
-  // as `base::Time::Min()`/`base::Time::Max()`, matching `ClearSuppressions()`.
-  size_t CountSuppressionsCreatedBetween(base::Time begin,
-                                         base::Time end) const;
+  // as `base::Time::Min()`/`base::Time::Max()`, matching `ClearEntries()`.
+  size_t CountEntriesCreatedBetween(base::Time begin, base::Time end) const;
 
   bool IsLoaded() const;
 

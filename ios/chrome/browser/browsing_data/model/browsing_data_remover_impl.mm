@@ -652,7 +652,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
                 PersonalContextEntityMetadataManager* entity_metadata_manager =
                     IOSAutofillPersonalContextEntityMetadataManagerFactory::
                         GetForProfile(profile_)) {
-          entity_metadata_manager->ClearSuppressions(delete_begin, delete_end);
+          entity_metadata_manager->ClearEntries(delete_begin, delete_end);
         }
       }
 

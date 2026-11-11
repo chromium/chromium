@@ -468,7 +468,7 @@ void InternalsUIHandler::OnClearAutofillAiEntitySuppressions(
   if (PersonalContextEntityMetadataManager* entity_metadata_manager =
           PersonalContextEntityMetadataManagerFactory::GetForProfile(
               Profile::FromWebUI(web_ui()))) {
-    entity_metadata_manager->ClearSuppressions(base::Time(), base::Time::Max());
+    entity_metadata_manager->ClearEntries(base::Time(), base::Time::Max());
   }
   FireWebUIListener("notify-reset-done",
                     base::Value(kClearAutofillAiEntitySuppressionsDone));

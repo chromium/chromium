@@ -191,7 +191,7 @@ bool PersonalContextEntityMetadataSyncBridge::Unsuppress(
   return true;
 }
 
-bool PersonalContextEntityMetadataSyncBridge::ClearSuppressions(
+bool PersonalContextEntityMetadataSyncBridge::ClearEntries(
     base::Time delete_begin,
     base::Time delete_end) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -214,10 +214,7 @@ bool PersonalContextEntityMetadataSyncBridge::ClearSuppressions(
             metadata.creation_time > delete_end) {
           return false;
         }
-        batch->DeleteData(metadata.guid);
-        change_processor()->Delete(metadata.guid,
-                                   syncer::DeletionOrigin::Unspecified(),
-                                   batch->GetMetadataChangeList());
+        DeleteEntryFromStoreAndSync(metadata.guid, *batch);
         return true;
       });
 
@@ -249,7 +246,7 @@ bool PersonalContextEntityMetadataSyncBridge::IsSuppressed(
       GetEntitySuppressionHash(entry));
 }
 
-size_t PersonalContextEntityMetadataSyncBridge::CountSuppressionsCreatedBetween(
+size_t PersonalContextEntityMetadataSyncBridge::CountEntriesCreatedBetween(
     base::Time begin,
     base::Time end) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

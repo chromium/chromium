@@ -396,7 +396,7 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, EntitySuppressions) {
 
   // Once the suppressions are cleared, nothing is counted anymore.
   counter.SetPeriodStartForTesting(base::Time());
-  ASSERT_TRUE(GetPersonalContextEntityMetadataManager()->ClearSuppressions(
+  ASSERT_TRUE(GetPersonalContextEntityMetadataManager()->ClearEntries(
       base::Time(), base::Time::Max()));
   counter.Restart();
   WaitForResult();

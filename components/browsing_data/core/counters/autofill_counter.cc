@@ -109,13 +109,13 @@ void AutofillCounter::Count() {
         });
   }
 
-  // AutofillAI entity suppressions. Deleting form data in [start, end] removes
-  // them, so count them too, even though they are not user-visible items, so
-  // the counter does not report "None" when the deletion would affect data.
+  // AutofillAI personal context entity metadata entries. Deleting form data in
+  // [start, end] removes them, so count them too, even though they are not
+  // user-visible items, so the counter does not report "None" when the deletion
+  // would affect data.
   num_suppressions_ =
       entity_metadata_manager_
-          ? entity_metadata_manager_->CountSuppressionsCreatedBetween(start,
-                                                                      end)
+          ? entity_metadata_manager_->CountEntriesCreatedBetween(start, end)
           : 0;
 
   CancelAllRequests();
