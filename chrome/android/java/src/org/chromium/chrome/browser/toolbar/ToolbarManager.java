@@ -2980,7 +2980,8 @@ public class ToolbarManager
             // tray are created here.
             mDownloadStateModel = new DownloadStateModel(OfflineContentAggregatorFactory.get());
             mDownloadToolbarButtonController =
-                    new DownloadToolbarButtonController(mDownloadStateModel);
+                    new DownloadToolbarButtonController(
+                            mDownloadStateModel, mIncognitoStateProvider);
             mDownloadToolbarButtonController
                     .getStateSupplier()
                     .addSyncObserverAndCall(mDownloadButtonStateObserver);

@@ -24,6 +24,9 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.download.DownloadToolbarButtonState.IconState;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
+import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
+import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider.IncognitoStateObserver;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
@@ -43,7 +46,9 @@ public class DownloadToolbarButtonControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private OfflineContentProvider mProvider;
+    @Mock private IncognitoStateProvider mIncognitoStateProvider;
     @Captor private ArgumentCaptor<Callback<ArrayList<OfflineItem>>> mGetAllItemsCallbackCaptor;
+    @Captor private ArgumentCaptor<IncognitoStateObserver> mIncognitoStateObserverCaptor;
 
     private DownloadStateModel mModel;
     private DownloadToolbarButtonController mController;
@@ -53,7 +58,14 @@ public class DownloadToolbarButtonControllerTest {
         // A real model over a mocked provider keeps these tests end to end.
         mModel = new DownloadStateModel(mProvider);
         verify(mProvider).getAllItems(mGetAllItemsCallbackCaptor.capture());
-        mController = new DownloadToolbarButtonController(mModel);
+        mController = new DownloadToolbarButtonController(mModel, mIncognitoStateProvider);
+        verify(mIncognitoStateProvider)
+                .addIncognitoStateObserverAndTrigger(mIncognitoStateObserverCaptor.capture());
+    }
+
+    /** Reports the window switching between regular and incognito tabs. */
+    private void setIncognitoSelected(boolean isIncognitoSelected) {
+        mIncognitoStateObserverCaptor.getValue().onIncognitoStateChanged(isIncognitoSelected);
     }
 
     private static ContentId id(String guid) {
@@ -87,6 +99,14 @@ public class DownloadToolbarButtonControllerTest {
         return createItem(guid, OfflineItemState.COMPLETE);
     }
 
+    private static OfflineItem createIncognitoItem(
+            String guid, @OfflineItemState int state, OtrProfileId profileId) {
+        OfflineItem item = createItem(guid, state);
+        item.isOffTheRecord = true;
+        item.otrProfileId = OtrProfileId.serialize(profileId);
+        return item;
+    }
+
     private void onAllItemsRetrieved(OfflineItem... items) {
         ArrayList<OfflineItem> list = new ArrayList<>();
         Collections.addAll(list, items);
@@ -113,6 +133,12 @@ public class DownloadToolbarButtonControllerTest {
         return state().shouldShow;
     }
 
+    /** Asserts the button is shown lingering after completions, i.e. with the complete icon. */
+    private void assertLingering() {
+        assertTrue(shouldShow());
+        assertEquals(IconState.COMPLETE, state().iconState);
+    }
+
     /** Asserts the published state field by field so a failure names what differed. */
     private void assertState(DownloadToolbarButtonState expected) {
         DownloadToolbarButtonState actual = state();
@@ -134,7 +160,8 @@ public class DownloadToolbarButtonControllerTest {
     public void testAttachedAfterSeed_showsModelStateImmediately() {
         // E.g. a provider that delivers its snapshot synchronously, before the controller exists.
         onAllItemsRetrieved(createInProgressItem("a", 40, 100));
-        DownloadToolbarButtonController controller = new DownloadToolbarButtonController(mModel);
+        DownloadToolbarButtonController controller =
+                new DownloadToolbarButtonController(mModel, mIncognitoStateProvider);
         assertTrue(controller.getStateSupplier().get().shouldShow);
         assertEquals(40, controller.getStateSupplier().get().progressPercent);
         controller.destroy();
@@ -292,6 +319,7 @@ public class DownloadToolbarButtonControllerTest {
         // the supplier must not keep a stale state.
         mController.destroy();
         assertState(DownloadToolbarButtonState.HIDDEN);
+        verify(mIncognitoStateProvider).removeObserver(mIncognitoStateObserverCaptor.getValue());
 
         // Later timers and model events are ignored.
         advanceTimeMs(DownloadToolbarButtonController.AUTO_HIDE_DELAY_MS);
@@ -513,5 +541,91 @@ public class DownloadToolbarButtonControllerTest {
 
         onItemUpdated(createInProgressItem("a", 20, 100));
         assertEquals(2, notifications.get());
+    }
+
+    // Incognito -----------------------------------------------------------------------------------
+
+    @Test
+    public void testIncognitoDownloads_onlyCountWhileIncognitoTabsAreShown() {
+        onAllItemsRetrieved();
+        OtrProfileId primary = OtrProfileId.getPrimaryOtrProfileId();
+        onItemAdded(createIncognitoItem("incognito", OfflineItemState.IN_PROGRESS, primary));
+        // Incognito Custom Tabs use their own profile, which incognito tabs don't show either.
+        onItemAdded(
+                createIncognitoItem(
+                        "cct", OfflineItemState.IN_PROGRESS, new OtrProfileId("CCT:Incognito-1")));
+        // Showing regular tabs, incognito downloads don't surface at all.
+        assertState(DownloadToolbarButtonState.HIDDEN);
+
+        // Showing incognito tabs, the window's own incognito downloads count, with regular ones.
+        setIncognitoSelected(true);
+        assertEquals(1, state().downloadCount);
+        onItemAdded(createInProgressItem("regular"));
+        assertEquals(2, state().downloadCount);
+
+        // Back on regular tabs, only the regular download counts.
+        setIncognitoSelected(false);
+        assertEquals(1, state().downloadCount);
+    }
+
+    @Test
+    public void testIncognitoCompletion_isTrackedButOnlySurfacedWhileIncognitoTabsAreShown() {
+        onAllItemsRetrieved();
+        OtrProfileId primary = OtrProfileId.getPrimaryOtrProfileId();
+        onItemAdded(createIncognitoItem("a", OfflineItemState.IN_PROGRESS, primary));
+        onItemUpdated(createIncognitoItem("a", OfflineItemState.COMPLETE, primary));
+        assertState(DownloadToolbarButtonState.HIDDEN);
+
+        // Switching to incognito tabs within the active window shows the completion as such.
+        setIncognitoSelected(true);
+        assertState(
+                new DownloadToolbarButtonState(
+                        /* shouldShow= */ true,
+                        IconState.COMPLETE,
+                        /* isActive= */ true,
+                        /* downloadCount= */ 0,
+                        /* progressPercent= */ 0,
+                        /* progressCertain= */ true));
+
+        // The active-colour window follows the download, not the window: it elapses even while
+        // regular tabs are shown.
+        setIncognitoSelected(false);
+        advanceTimeMs(DownloadToolbarButtonController.ACTIVE_AFTER_COMPLETE_MS);
+        setIncognitoSelected(true);
+        assertFalse(state().isActive);
+        // The auto-hide window, by contrast, only runs while this window shows the ended item
+        // (see testAutoHide_followsTheItemsTheWindowShows).
+        advanceTimeMs(DownloadToolbarButtonController.AUTO_HIDE_DELAY_MS);
+        assertState(DownloadToolbarButtonState.HIDDEN);
+    }
+
+    @Test
+    public void testAutoHide_followsTheItemsTheWindowShows() {
+        onAllItemsRetrieved();
+        OtrProfileId primary = OtrProfileId.getPrimaryOtrProfileId();
+        onItemAdded(createInProgressItem("regular"));
+        onItemAdded(createIncognitoItem("incognito", OfflineItemState.IN_PROGRESS, primary));
+
+        // Both complete while regular tabs are shown. The window shows only the regular one
+        // lingering, and hides it on time even though the incognito completion is also waiting.
+        onItemUpdated(createIncognitoItem("incognito", OfflineItemState.COMPLETE, primary));
+        assertEquals(IconState.PROGRESS, state().iconState);
+        onItemUpdated(createCompletedItem("regular"));
+        assertLingering();
+        advanceTimeMs(DownloadToolbarButtonController.AUTO_HIDE_DELAY_MS);
+        assertState(DownloadToolbarButtonState.HIDDEN);
+
+        // The incognito completion kept its own window, which only runs while incognito tabs are
+        // shown: switching away stops it and switching back starts it afresh.
+        setIncognitoSelected(true);
+        assertLingering();
+        advanceTimeMs(DownloadToolbarButtonController.AUTO_HIDE_DELAY_MS / 2);
+        setIncognitoSelected(false);
+        assertState(DownloadToolbarButtonState.HIDDEN);
+        setIncognitoSelected(true);
+        advanceTimeMs(DownloadToolbarButtonController.AUTO_HIDE_DELAY_MS - 1);
+        assertLingering();
+        advanceTimeMs(1);
+        assertState(DownloadToolbarButtonState.HIDDEN);
     }
 }

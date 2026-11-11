@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.download;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -24,6 +25,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
@@ -248,5 +250,32 @@ public class DownloadStateModelTest {
                 createCompletedItem("a", /* startedAgoMs= */ 0), /* updateDelta= */ null);
         mModel.onItemRemoved(id("a"));
         assertTrue(mModel.getRecentCompletedItems().isEmpty());
+    }
+
+    @Test
+    public void testIsVisibleInWindow() {
+        OfflineItem regular = createItem("regular", OfflineItemState.IN_PROGRESS);
+        OfflineItem incognito = createItem("incognito", OfflineItemState.IN_PROGRESS);
+        incognito.isOffTheRecord = true;
+        incognito.otrProfileId = OtrProfileId.serialize(OtrProfileId.getPrimaryOtrProfileId());
+        OfflineItem customTab = createItem("cct", OfflineItemState.IN_PROGRESS);
+        customTab.isOffTheRecord = true;
+        customTab.otrProfileId = OtrProfileId.serialize(new OtrProfileId("CCT:Incognito-1"));
+        OfflineItem unknownProfile = createItem("unknown", OfflineItemState.IN_PROGRESS);
+        unknownProfile.isOffTheRecord = true;
+
+        // Regular downloads show everywhere; incognito ones only with incognito tabs, and only
+        // from the primary off-the-record profile those tabs use.
+        assertTrue(DownloadStateModel.isVisibleInWindow(regular, /* isIncognitoSelected= */ false));
+        assertTrue(DownloadStateModel.isVisibleInWindow(regular, /* isIncognitoSelected= */ true));
+        assertFalse(
+                DownloadStateModel.isVisibleInWindow(incognito, /* isIncognitoSelected= */ false));
+        assertTrue(
+                DownloadStateModel.isVisibleInWindow(incognito, /* isIncognitoSelected= */ true));
+        assertFalse(
+                DownloadStateModel.isVisibleInWindow(customTab, /* isIncognitoSelected= */ true));
+        assertFalse(
+                DownloadStateModel.isVisibleInWindow(
+                        unknownProfile, /* isIncognitoSelected= */ true));
     }
 }

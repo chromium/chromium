@@ -17,7 +17,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.DownloadStateModel;
 import org.chromium.chrome.browser.download.R;
-import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.OfflineItem;
@@ -126,7 +125,11 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
     @Override
     public void onItemChanged(OfflineItem item, @Nullable OfflineItem previous) {
         // The model only caches active downloads, so a null previous means it wasn't active.
-        if (previous == null || !isVisibleInWindow(item)) return;
+        if (previous == null
+                || !DownloadStateModel.isVisibleInWindow(
+                        item, mIsIncognitoSelected.getAsBoolean())) {
+            return;
+        }
         // As on desktop, an active download ends when it stops being active or is flagged as
         // dangerous (desktop counts those as done). Pausing or waiting to auto-resume isn't an
         // ending: a waiting completion is shown once that download ends.
@@ -161,7 +164,11 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
         mPendingCompletion = null;
 
         // Re-checked as the window may have switched between regular and incognito since.
-        if (!mIsWindowFocused.getAsBoolean() || !isVisibleInWindow(item)) return;
+        if (!mIsWindowFocused.getAsBoolean()
+                || !DownloadStateModel.isVisibleInWindow(
+                        item, mIsIncognitoSelected.getAsBoolean())) {
+            return;
+        }
 
         long now = TimeUtils.elapsedRealtimeMillis();
         if (now - mLastShownTimeMs < MIN_SHOW_INTERVAL_MS) return;
@@ -189,28 +196,15 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
      * this window doesn't show don't hold it back.
      */
     private boolean isAnythingDownloading() {
+        boolean isIncognitoSelected = mIsIncognitoSelected.getAsBoolean();
         for (OfflineItem active : mModel.getActiveItems()) {
             if (active.state == OfflineItemState.IN_PROGRESS
                     && !isDangerous(active)
-                    && isVisibleInWindow(active)) {
+                    && DownloadStateModel.isVisibleInWindow(active, isIncognitoSelected)) {
                 return true;
             }
         }
         return false;
-    }
-
-    /**
-     * Whether this window may show {@code item}. As on the Downloads page ({@code
-     * OffTheRecordOfflineItemFilter}), regular downloads show in every window, and incognito ones
-     * only while the window shows incognito tabs. Like desktop, this keeps incognito file names out
-     * of regular browsing.
-     */
-    private boolean isVisibleInWindow(OfflineItem item) {
-        if (!item.isOffTheRecord) return true;
-        // Incognito tabs use the primary off-the-record profile; e.g. incognito Custom Tabs don't.
-        return mIsIncognitoSelected.getAsBoolean()
-                && OtrProfileId.getPrimaryOtrProfileId()
-                        .equals(OtrProfileId.deserializeWithoutVerify(item.otrProfileId));
     }
 
     /** Whether {@code item} is dangerous and so has its own warning UI instead of the tray. */

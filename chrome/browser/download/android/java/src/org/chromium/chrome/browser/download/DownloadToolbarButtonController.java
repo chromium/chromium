@@ -20,12 +20,15 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.DownloadToolbarButtonState.IconState;
+import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
+import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider.IncognitoStateObserver;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -39,6 +42,10 @@ import java.util.concurrent.TimeUnit;
  * within the current session, then hides. If every tracked item is removed before then, it hides
  * immediately. After a download completes the icon is drawn in the active colour for {@link
  * #ACTIVE_AFTER_COMPLETE_MS}, or until the user acts on the button via {@link #markActioned()}.
+ *
+ * <p>Items are tracked regardless of profile, but the published state only reflects those the
+ * window may surface ({@link DownloadStateModel#isVisibleInWindow}), so e.g. an incognito download
+ * is not shown while regular tabs are.
  */
 @NullMarked
 public class DownloadToolbarButtonController implements DownloadStateModel.Observer, Destroyable {
@@ -56,17 +63,24 @@ public class DownloadToolbarButtonController implements DownloadStateModel.Obser
     @VisibleForTesting static final long ACTIVE_AFTER_COMPLETE_MS = TimeUnit.MINUTES.toMillis(1);
 
     private final DownloadStateModel mModel;
+    private final IncognitoStateProvider mIncognitoStateProvider;
+    private final IncognitoStateObserver mIncognitoStateObserver = this::onIncognitoStateChanged;
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     private final SettableNonNullObservableSupplier<DownloadToolbarButtonState> mStateSupplier =
             ObservableSuppliers.createNonNull(DownloadToolbarButtonState.HIDDEN);
 
     /**
-     * Items that ended during this session and have not been removed since. While nothing is active
-     * these are what the lingering button surfaces; once all are removed it hides.
+     * Items that ended during this session and have not been removed since, with their last
+     * reported data (which says which profile they belong to). While nothing is active these are
+     * what the lingering button surfaces; once all are removed it hides.
      */
-    private final Set<ContentId> mEndedItems = new HashSet<>();
+    private final Map<ContentId, OfflineItem> mEndedItems = new HashMap<>();
 
     private final Runnable mAutoHideRunnable = this::onAutoHideTimeout;
+
+    /** Whether {@link #mAutoHideRunnable} is posted; see {@link #publishState()}. */
+    private boolean mAutoHidePending;
+
     private final Runnable mInactiveRunnable = this::onInactiveTimeout;
 
     /**
@@ -78,13 +92,22 @@ public class DownloadToolbarButtonController implements DownloadStateModel.Obser
 
     private final DestroyChecker mDestroyChecker = new DestroyChecker();
 
+    /** Whether the window is showing incognito tabs, per {@link #mIncognitoStateProvider}. */
+    private boolean mIsIncognitoSelected;
+
     /**
      * Creates a controller deriving the button state from {@code model}.
      *
      * @param model The model to observe for download state changes. Must outlive this controller.
+     * @param incognitoStateProvider Tells whether the window is showing incognito tabs, which
+     *     decides which items the published state reflects. Must outlive this controller.
      */
-    public DownloadToolbarButtonController(DownloadStateModel model) {
+    public DownloadToolbarButtonController(
+            DownloadStateModel model, IncognitoStateProvider incognitoStateProvider) {
         mModel = model;
+        mIncognitoStateProvider = incognitoStateProvider;
+        // Triggers synchronously, so the state published below already reflects the window.
+        mIncognitoStateProvider.addIncognitoStateObserverAndTrigger(mIncognitoStateObserver);
         mModel.addObserver(this);
         // The model may already hold active items, e.g. if its initial snapshot was delivered
         // synchronously before this controller attached.
@@ -120,6 +143,7 @@ public class DownloadToolbarButtonController implements DownloadStateModel.Obser
         cancelAutoHide();
         mHandler.removeCallbacks(mInactiveRunnable);
         mModel.removeObserver(this);
+        mIncognitoStateProvider.removeObserver(mIncognitoStateObserver);
         mEndedItems.clear();
         mUnactionedCompletions.clear();
         // Reset rather than destroy the supplier: destroying would null the value of a non-null
@@ -138,9 +162,6 @@ public class DownloadToolbarButtonController implements DownloadStateModel.Obser
             if (mUnactionedCompletions.remove(id) && mUnactionedCompletions.isEmpty()) {
                 mHandler.removeCallbacks(mInactiveRunnable);
             }
-            // Any active item keeps the button visible, including one seeded from the model's
-            // initial snapshot after an earlier item ended and started the auto-hide window.
-            cancelAutoHide();
             publishState();
             return;
         }
@@ -151,7 +172,7 @@ public class DownloadToolbarButtonController implements DownloadStateModel.Obser
         if (!wasActive) {
             return;
         }
-        mEndedItems.add(id);
+        mEndedItems.put(id, item);
         if (item.state == OfflineItemState.COMPLETE) {
             // Only a successful completion draws the icon in the active colour for a while. The
             // other terminal states (CANCELLED, FAILED, INTERRUPTED) still keep the button visible
@@ -160,43 +181,40 @@ public class DownloadToolbarButtonController implements DownloadStateModel.Obser
             mHandler.removeCallbacks(mInactiveRunnable);
             mHandler.postDelayed(mInactiveRunnable, ACTIVE_AFTER_COMPLETE_MS);
         }
-        if (mModel.getActiveItems().isEmpty()) {
-            // The last active item reached a terminal state. Regardless of outcome, keep the
-            // button visible for the window so the user can still reach the item, matching
-            // desktop.
-            scheduleAutoHide();
-        }
         publishState();
     }
 
     @Override
     public void onItemRemoved(ContentId id, @Nullable OfflineItem previous) {
         boolean wasActive = previous != null && DownloadStateModel.isActive(previous);
-        boolean wasEnded = mEndedItems.remove(id);
+        boolean wasEnded = mEndedItems.remove(id) != null;
         if (mUnactionedCompletions.remove(id) && mUnactionedCompletions.isEmpty()) {
             mHandler.removeCallbacks(mInactiveRunnable);
         }
         if (!wasActive && !wasEnded) {
             return;
         }
-        boolean nothingActive = mModel.getActiveItems().isEmpty();
-        if (nothingActive && mEndedItems.isEmpty()) {
-            // Nothing is left for the button to surface, so do not linger.
-            cancelAutoHide();
-        } else if (nothingActive && wasActive) {
-            // Last active item removed while ended items remain: start their linger window. If
-            // an ended item was removed instead, the running window is left untouched.
-            scheduleAutoHide();
-        }
+        publishState();
+    }
+
+    /**
+     * Republishes for the window's new tab mode. Timers and tracking are unaffected: they follow
+     * the downloads themselves.
+     */
+    private void onIncognitoStateChanged(boolean isIncognitoSelected) {
+        if (mIsIncognitoSelected == isIncognitoSelected) return;
+        mIsIncognitoSelected = isIncognitoSelected;
         publishState();
     }
 
     private void scheduleAutoHide() {
         cancelAutoHide();
+        mAutoHidePending = true;
         mHandler.postDelayed(mAutoHideRunnable, AUTO_HIDE_DELAY_MS);
     }
 
     private void cancelAutoHide() {
+        mAutoHidePending = false;
         mHandler.removeCallbacks(mAutoHideRunnable);
     }
 
@@ -212,15 +230,32 @@ public class DownloadToolbarButtonController implements DownloadStateModel.Obser
         if (mDestroyChecker.isDestroyed()) {
             return;
         }
-        // Any item becoming active cancels the pending auto-hide, so the timer can only fire with
-        // nothing active.
-        assert mModel.getActiveItems().isEmpty() : "Auto-hide fired while downloads are active";
-        // The window for the ended items has elapsed; they no longer influence visibility.
-        mEndedItems.clear();
+        mAutoHidePending = false;
+        // The window for the ended items this window was showing has elapsed; they no longer
+        // influence visibility. Ended items of the other tab mode keep their own window, which
+        // starts if the user switches to it.
+        mEndedItems
+                .entrySet()
+                .removeIf(
+                        ended -> {
+                            if (!DownloadStateModel.isVisibleInWindow(
+                                    ended.getValue(), mIsIncognitoSelected)) {
+                                return false;
+                            }
+                            mUnactionedCompletions.remove(ended.getKey());
+                            return true;
+                        });
         publishState();
     }
 
-    /** Recomputes the button state and notifies observers if it changed. */
+    /**
+     * Recomputes the button state, notifies observers if it changed and keeps the auto-hide timer
+     * in step with it: it runs while the button lingers after the window's last active download
+     * ended (as desktop's {@code kToolbarIconVisibilityTimeInterval}), and is cancelled when an
+     * active download shows again or nothing is left to show. Deriving it from the published state,
+     * rather than from the model's active items, makes it follow the items this window surfaces,
+     * including across switches between regular and incognito tabs.
+     */
     private void publishState() {
         // The model may outlive this controller, so a destroyed controller publishes HIDDEN
         // rather than deriving a state from the model's items.
@@ -229,12 +264,20 @@ public class DownloadToolbarButtonController implements DownloadStateModel.Obser
         if (!state.equals(mStateSupplier.get())) {
             mStateSupplier.set(state);
         }
+        boolean lingering = state.shouldShow && state.iconState == IconState.COMPLETE;
+        if (!lingering) {
+            cancelAutoHide();
+        } else if (!mAutoHidePending) {
+            // Removing one of several ended items keeps lingering without extending the window.
+            scheduleAutoHide();
+        }
     }
 
     /**
      * Derives the button state purely from the model's active items, {@link #mEndedItems} and
      * {@link #mUnactionedCompletions}, so it can be recomputed after any change without tracking
-     * what changed. Mirrors {@code DownloadDisplayController::UpdateToolbarButtonState} on desktop.
+     * what changed. Only items the window may surface count. Mirrors {@code
+     * DownloadDisplayController::UpdateToolbarButtonState} on desktop.
      *
      * <ul>
      *   <li>Nothing active and nothing ended: {@link DownloadToolbarButtonState#HIDDEN}.
@@ -245,31 +288,17 @@ public class DownloadToolbarButtonController implements DownloadStateModel.Obser
      * </ul>
      */
     private DownloadToolbarButtonState computeState() {
-        Collection<OfflineItem> activeItems = mModel.getActiveItems();
-        if (activeItems.isEmpty() && mEndedItems.isEmpty()) {
-            return DownloadToolbarButtonState.HIDDEN;
-        }
-
-        int downloadCount = activeItems.size();
-        if (downloadCount == 0) {
-            // Lingering after the last active item ended.
-            return new DownloadToolbarButtonState(
-                    /* shouldShow= */ true,
-                    IconState.COMPLETE,
-                    /* isActive= */ !mUnactionedCompletions.isEmpty(),
-                    /* downloadCount= */ 0,
-                    /* progressPercent= */ 0,
-                    /* progressCertain= */ true);
-        }
-
         // Aggregate progress as DownloadBubbleUpdateService::CacheManager::GetProgressInfo does:
         // items whose total size is unknown make the overall progress uncertain and are excluded
         // from the percentage.
+        int downloadCount = 0;
         int pausedCount = 0;
         long receivedBytes = 0;
         long totalBytes = 0;
         boolean progressCertain = true;
-        for (OfflineItem item : activeItems) {
+        for (OfflineItem item : mModel.getActiveItems()) {
+            if (!DownloadStateModel.isVisibleInWindow(item, mIsIncognitoSelected)) continue;
+            downloadCount++;
             if (item.state == OfflineItemState.PAUSED) {
                 pausedCount++;
             }
@@ -280,17 +309,42 @@ public class DownloadToolbarButtonController implements DownloadStateModel.Obser
             receivedBytes += item.receivedBytes;
             totalBytes += item.totalSizeBytes;
         }
-        int progressPercent = 0;
-        if (totalBytes > 0) {
-            progressPercent = (int) MathUtils.clamp(receivedBytes * 100 / totalBytes, 0, 100);
+        if (downloadCount > 0) {
+            int progressPercent = 0;
+            if (totalBytes > 0) {
+                progressPercent = (int) MathUtils.clamp(receivedBytes * 100 / totalBytes, 0, 100);
+            }
+            return new DownloadToolbarButtonState(
+                    /* shouldShow= */ true,
+                    IconState.PROGRESS,
+                    // Only when every active item is paused does the icon go inactive, as on
+                    // desktop.
+                    /* isActive= */ pausedCount < downloadCount,
+                    downloadCount,
+                    progressPercent,
+                    progressCertain);
         }
+
+        // Nothing active: linger if anything the window may surface has ended.
+        boolean anyEnded = false;
+        boolean anyUnactionedCompletion = false;
+        for (Map.Entry<ContentId, OfflineItem> ended : mEndedItems.entrySet()) {
+            if (!DownloadStateModel.isVisibleInWindow(ended.getValue(), mIsIncognitoSelected)) {
+                continue;
+            }
+            anyEnded = true;
+            if (mUnactionedCompletions.contains(ended.getKey())) {
+                anyUnactionedCompletion = true;
+                break;
+            }
+        }
+        if (!anyEnded) return DownloadToolbarButtonState.HIDDEN;
         return new DownloadToolbarButtonState(
                 /* shouldShow= */ true,
-                IconState.PROGRESS,
-                // Only when every active item is paused does the icon go inactive, as on desktop.
-                /* isActive= */ pausedCount < downloadCount,
-                downloadCount,
-                progressPercent,
-                progressCertain);
+                IconState.COMPLETE,
+                /* isActive= */ anyUnactionedCompletion,
+                /* downloadCount= */ 0,
+                /* progressPercent= */ 0,
+                /* progressCertain= */ true);
     }
 }

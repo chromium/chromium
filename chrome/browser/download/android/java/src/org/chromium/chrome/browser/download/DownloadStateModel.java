@@ -14,6 +14,7 @@ import org.chromium.base.TimeUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
 import org.chromium.components.offline_items_collection.OfflineItem;
@@ -161,6 +162,23 @@ public class DownloadStateModel implements OfflineContentProvider.Observer, Dest
         mActiveItems.clear();
         mCompletedItems.clear();
         mObservers.clear();
+    }
+
+    /**
+     * Returns whether a window may surface {@code item}. As on the Downloads page ({@code
+     * OffTheRecordOfflineItemFilter}), regular downloads show in every window, and incognito ones
+     * only while the window shows incognito tabs, and only from the primary off-the-record profile
+     * those tabs use (e.g. not incognito Custom Tabs'). This keeps incognito downloads out of
+     * regular browsing, as desktop's per-profile windows do.
+     *
+     * @param item The item to check.
+     * @param isIncognitoSelected Whether the window is showing incognito tabs.
+     */
+    public static boolean isVisibleInWindow(OfflineItem item, boolean isIncognitoSelected) {
+        if (!item.isOffTheRecord) return true;
+        return isIncognitoSelected
+                && OtrProfileId.getPrimaryOtrProfileId()
+                        .equals(OtrProfileId.deserializeWithoutVerify(item.otrProfileId));
     }
 
     /** Returns whether {@code item} is in progress, pending or paused. */
