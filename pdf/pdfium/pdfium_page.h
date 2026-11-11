@@ -475,7 +475,7 @@ class PDFiumPage {
   void GenerateAndSendThumbnail(float device_pixel_ratio,
                                 SendThumbnailCallback send_callback);
 
-  raw_ptr<PDFiumEngine> engine_;
+  raw_ptr<PDFiumEngine> const engine_;
   ScopedFPDFPage page_;
   ScopedFPDFTextPage text_page_;
   uint32_t index_;
@@ -508,6 +508,7 @@ class PDFiumPage {
   std::set<int> page_object_text_run_breaks_;
   base::OnceClosure thumbnail_callback_;
   bool available_ = false;
+  bool is_unloading_ = false;
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   // Indicates whether Searchify added text to this page or not. Note that if
