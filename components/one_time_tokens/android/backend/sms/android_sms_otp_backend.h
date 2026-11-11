@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_ONE_TIME_TOKENS_ANDROID_BACKEND_SMS_ANDROID_SMS_OTP_BACKEND_H_
 #define COMPONENTS_ONE_TIME_TOKENS_ANDROID_BACKEND_SMS_ANDROID_SMS_OTP_BACKEND_H_
 
+#include <optional>
+#include <string>
+
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -66,11 +69,7 @@ class AndroidSmsOtpBackend
   void StartDownstreamBackendRequest();
 
   // True if the downstream initialization was successful.
-  std::optional<bool> initialization_result_ = false;
-
-  // True if OTP fetching request is received before it can be triggered (before
-  // the downstream initialization is complete).
-  bool has_pending_fetch_request_ = false;
+  std::optional<bool> initialization_result_ = std::nullopt;
 
   // A bridge to communicate Java OTP fetcher replies back to the native code.
   std::unique_ptr<AndroidSmsOtpFetchReceiverBridgeInterface> receiver_bridge_;
