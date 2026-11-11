@@ -15075,6 +15075,26 @@
             ]
         }
     ],
+    "PartitionAllocMinProvisioningSize": [
+        {
+            "platforms": [
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "//0": "The Finch study also tests a 16 KiB group, which is expected to be a no-op on macOS (Apple Silicon uses 16 KiB system pages).",
+                    "name": "Enabled_32KiB",
+                    "params": {
+                        "PartitionAllocMinProvisioningSizeInBytes": "32768"
+                    },
+                    "enable_features": [
+                        "PartitionAllocMinProvisioningSize"
+                    ]
+                }
+            ]
+        }
+    ],
     "PartitionAllocMiracleObject": [
         {
             "platforms": [
