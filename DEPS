@@ -3407,7 +3407,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/help_app/app',
-        'version': 'RmDAVuA3qYw3MSZkq6u_FknyTYwjg6KLxtx7WC1thjIC',
+        'version': 'p5ZxLTYP1CC4kslPnjR-_3_a5-2bqD34LOfGzC2fDL8C',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
