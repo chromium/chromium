@@ -34,7 +34,9 @@ DeferredClientWrapper::DeferredClientWrapper(ClientFactory client_factory,
   // On non-android platforms we can only be running in full browser mode. In
   // full browser mode, FullBrowserTransitionManager synchronously calls the
   // callback when it is registered.
-  CHECK(wrapped_client_, base::NotFatalUntil::M161);
+  // TODO(crbug.com/584089758): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(wrapped_client_);
 #endif
 }
 
