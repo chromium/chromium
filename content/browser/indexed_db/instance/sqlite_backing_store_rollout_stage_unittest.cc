@@ -14,6 +14,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_file_util.h"
 #include "content/browser/indexed_db/file_path_util.h"
 #include "content/browser/indexed_db/indexed_db_data_format_version.h"
@@ -23,6 +24,7 @@
 #include "content/browser/indexed_db/instance/sqlite/database_connection.h"
 #include "content/browser/indexed_db/mock_mojo_indexed_db_database_callbacks.h"
 #include "content/browser/indexed_db/mock_mojo_indexed_db_factory_client.h"
+#include "content/public/common/content_features.h"
 #include "sql/test/drive_error_test_vfs.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -351,6 +353,39 @@ TEST_P(SqliteBackingStoreRolloutStageTest, UseLevelDbForNewStores) {
         {kSuccessUpgradeNeededWithDataLoss, kIsLevelDb}},
        {StoreType::kLevelDbBackingStoreCorruption,
         {kSuccessUpgradeNeededWithDataLoss, kIsLevelDb}}});
+}
+
+TEST_P(SqliteBackingStoreRolloutStageTest, NoStagePreservesSqlite) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kIdbSqliteOnDiskRollout);
+  storage::BucketInfo bucket_info = GetOrCreateBucket(
+      blink::StorageKey::CreateFromStringForTesting("http://example.com"));
+  {
+    auto [factory_remote, bucket_context] = BindFactoryAndOverrideStage(
+        bucket_info, SqliteRolloutStage::kUseSqliteOnly);
+    CreateDatabase(factory_remote, kDatabaseName, /*transaction_id=*/1);
+    ASSERT_TRUE(bucket_context->IsUsingSqlite());
+  }
+  CloseAllBackingStores();
+  ASSERT_FALSE(GetBucketContext(bucket_info.id));
+
+  {
+    // Remove the test override to check default behavior.
+    auto release = std::move(sqlite_override_);
+  }
+  // Existing SQLite buckets still use SQLite despite no flag.
+  mojo::Remote<blink::mojom::IDBFactory> factory_remote;
+  BindFactory(factory_remote.BindNewPipeAndPassReceiver(), bucket_info);
+  OpenDatabase(factory_remote, kDatabaseName, /*transaction_id=*/1);
+  EXPECT_TRUE(GetBucketContext(bucket_info.id)->IsUsingSqlite());
+
+  // New buckets fall back to LevelDB.
+  storage::BucketInfo bucket_info2 = GetOrCreateBucket(
+      blink::StorageKey::CreateFromStringForTesting("http://example2.com"));
+  mojo::Remote<blink::mojom::IDBFactory> factory_remote2;
+  BindFactory(factory_remote2.BindNewPipeAndPassReceiver(), bucket_info2);
+  CreateDatabase(factory_remote2, kDatabaseName, /*transaction_id=*/1);
+  EXPECT_FALSE(GetBucketContext(bucket_info2.id)->IsUsingSqlite());
 }
 
 TEST_P(SqliteBackingStoreRolloutStageTest, UseLevelDbAsControl) {

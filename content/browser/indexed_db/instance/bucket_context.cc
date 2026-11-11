@@ -240,10 +240,7 @@ SqliteRolloutStage GetSqliteRolloutStage(bool in_memory) {
   if (in_memory) {
     return SqliteRolloutStage::kUseSqliteOnly;
   }
-  if (base::FeatureList::IsEnabled(features::kIdbSqliteOnDiskRollout)) {
-    return kIdbSqliteOnDiskRolloutStage.Get();
-  }
-  return SqliteRolloutStage::kUseLevelDbOnly;
+  return kIdbSqliteOnDiskRolloutStage.Get();
 }
 
 bool DoesLevelDbStoreExist(const storage::BucketLocator& bucket_locator,
