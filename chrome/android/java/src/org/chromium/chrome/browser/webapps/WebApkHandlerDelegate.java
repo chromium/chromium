@@ -37,7 +37,7 @@ public class WebApkHandlerDelegate {
 
     /**
      * Creates a new instance of a WebApkHandlerDelegate with a native WebApkHandlerDelegate at
-     * |nativePointer|.
+     * {@code nativePointer}.
      */
     @CalledByNative
     static WebApkHandlerDelegate create(JniRawPtr<NativeWebApkHandlerDelegate> nativePointer) {

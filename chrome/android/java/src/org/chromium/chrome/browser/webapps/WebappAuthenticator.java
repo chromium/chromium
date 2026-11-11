@@ -251,9 +251,7 @@ public class WebappAuthenticator {
         }
     }
 
-    /**
-     * @return A Mac, or null if it is not possible to instantiate one.
-     */
+    /** Returns a Mac, or null if it is not possible to instantiate one. */
     private static @Nullable Mac getMac() {
         try {
             SecretKey key = getKey();

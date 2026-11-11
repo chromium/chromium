@@ -108,6 +108,7 @@ public class WebApkServiceClient {
     /**
      * Gets the notification permission setting for the package.
      *
+     * @param webApkPackage The package name of the WebAPK.
      * @param permissionCallback To be called on a background thread with a permission setting, one
      *     of {@link ContentSetting}.
      */
@@ -141,6 +142,7 @@ public class WebApkServiceClient {
     /**
      * Requests the notification permission for the package.
      *
+     * @param webApkPackage The package name of the WebAPK.
      * @param permissionCallback To be called on a background thread with a permission setting, one
      *     of {@link ContentSetting}.
      */

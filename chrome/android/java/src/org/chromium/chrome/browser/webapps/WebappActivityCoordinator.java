@@ -109,9 +109,7 @@ public class WebappActivityCoordinator
         }
     }
 
-    /**
-     * @return the {@link WebappInfo} for the WebappActivity.
-     */
+    /** Returns the {@link WebappInfo} for the WebappActivity. */
     public WebappInfo getWebappInfo() {
         return mWebappInfo;
     }

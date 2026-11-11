@@ -20,10 +20,16 @@ public class WebApkPostShareTargetNavigator {
     /**
      * Navigates {@code webContents} to the POST share target {@code url}.
      *
+     * @param url The share target action URL to send the POST request to.
      * @param bootstrapUrl The web app's start URL. If no service worker is registered for {@code
      *     url} (e.g. the app has never been launched), this URL is loaded first so that the app can
      *     register its service worker, and the POST is sent once that service worker is activated.
      *     If empty or invalid, the POST is sent immediately.
+     * @param target The WebAPK's share target.
+     * @param data The data being shared.
+     * @param webContents The WebContents to navigate.
+     * @return Whether a POST navigation was started; false if no POST data could be computed for
+     *     {@code target} and {@code data}.
      */
     public static boolean navigateIfPostShareTarget(
             String url,

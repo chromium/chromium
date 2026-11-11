@@ -65,14 +65,9 @@ public class WebApkInstaller {
     }
 
     /**
-     * Installs a WebAPK and monitors the installation.
+     * Registers a pending WebAPK install with {@link WebappRegistry}.
      *
-     * @param packageName The package name of the WebAPK to install.
-     * @param version The version of WebAPK to install.
-     * @param title The title of the WebAPK to display during installation.
-     * @param token The token from WebAPK Server.
-     * @param source The source (either app banner or menu) that the install of a WebAPK was
-     *     triggered.
+     * @param manifestId The manifest ID of the WebAPK being installed.
      */
     @CalledByNative
     private void registerPending(@JniType("std::string") String manifestId) {
@@ -81,6 +76,17 @@ public class WebApkInstaller {
                 .registerPendingWebApk(manifestId, WebappRegistry.PENDING_PACKAGE_NAME_PLACEHOLDER);
     }
 
+    /**
+     * Installs a WebAPK and monitors the installation.
+     *
+     * @param packageName The package name of the WebAPK to install.
+     * @param version The version of WebAPK to install.
+     * @param title The title of the WebAPK to display during installation.
+     * @param token The token from WebAPK Server.
+     * @param source The source (either app banner or menu) that the install of a WebAPK was
+     *     triggered.
+     * @param manifestId The manifest ID of the WebAPK to install.
+     */
     @CalledByNative
     private void installWebApkAsync(
             @JniType("std::string") final String packageName,
@@ -154,9 +160,9 @@ public class WebApkInstaller {
     /**
      * Updates a WebAPK installation.
      *
-     * @param packageName The package name of the WebAPK to install.
-     * @param version The version of WebAPK to install.
-     * @param title The title of the WebAPK to display during installation.
+     * @param packageName The package name of the WebAPK to update.
+     * @param version The version of WebAPK to update.
+     * @param title The title of the WebAPK to display during update.
      * @param token The token from WebAPK Server.
      */
     @CalledByNative

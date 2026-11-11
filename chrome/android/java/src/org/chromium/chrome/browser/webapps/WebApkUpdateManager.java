@@ -403,11 +403,11 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
     }
 
     /**
-     * @return whether a percentage change is below the threshold allowed for icon updates. Note
-     *     that percentage values are rounded using a floor function, so a `percentage` change of 1
-     *     means it is somewhere between 1% and 2%, inclusive and exclusive (respectively). This
-     *     means that the threshold updates need to be set to -1 to disable them (0 would allow
-     *     changes up to 1%).
+     * Returns whether a percentage change is below the threshold allowed for icon updates. Note
+     * that percentage values are rounded using a floor function, so a {@code percentage} change of
+     * 1 means it is somewhere between 1% and 2%, inclusive and exclusive (respectively). This means
+     * that the threshold updates need to be set to -1 to disable them (0 would allow changes up to
+     * 1%).
      */
     private static boolean belowAppIdIconUpdateThreshold(int percentage) {
         // See also go/app-id-update-threshold/ for (internal) discussion.

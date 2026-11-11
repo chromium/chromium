@@ -133,14 +133,14 @@ public class WebappRegistry {
     /** Maps webapp ids to storages. */
     private final Map<String, WebappDataStorage> mStorages;
 
+    public static final String PENDING_PACKAGE_NAME_PLACEHOLDER = "pending_placeholder";
+
     /**
      * Maps a WebAPK's manifest ID to its package name for installations that are in progress. This
      * in-memory map helps detect concurrent installation requests for the same manifest and allows
      * internal services to block duplicate installation attempts before the package is fully
      * registered in the system.
      */
-    public static final String PENDING_PACKAGE_NAME_PLACEHOLDER = "pending_placeholder";
-
     private final Map<String, String> mPendingManifestIdToPackageName = new HashMap<>();
 
     private final SharedPreferences mPreferences;
@@ -316,8 +316,8 @@ public class WebappRegistry {
     }
 
     /**
-     * Returns true if an installed WebAPK is found whose scope has the same origin as
-     * |targetOrigin|.
+     * Returns true if an installed WebAPK is found whose scope has the same origin as {@code
+     * targetOrigin}.
      *
      * @param targetOrigin The origin to search a WebAPK for.
      */
@@ -326,7 +326,8 @@ public class WebappRegistry {
     }
 
     /**
-     * Returns true if an installed WebAPK is found whose scope has the same origin as |origin|.
+     * Returns true if an installed WebAPK is found whose scope has the same origin as {@code
+     * origin}.
      *
      * @param origin The origin to search a WebAPK for.
      */
@@ -335,8 +336,8 @@ public class WebappRegistry {
     }
 
     /**
-     * Returns true if a WebAPK is registered whose scope matches |origin|, without checking whether
-     * the WebAPK package is still installed.
+     * Returns true if a WebAPK is registered whose scope matches {@code origin}, without checking
+     * whether the WebAPK package is still installed.
      *
      * @param origin The origin to search a WebAPK for.
      */
@@ -788,7 +789,7 @@ public class WebappRegistry {
     }
 
     /**
-     * Deletes the data of all web apps whose url matches |urlFilter|.
+     * Deletes the data of all web apps whose url matches {@code urlFilter}.
      *
      * @param urlFilter The filter object to check URLs.
      */
@@ -825,7 +826,8 @@ public class WebappRegistry {
 
     /**
      * Deletes the URL and scope, and sets the last used time to 0 for all web apps whose url
-     * matches |urlFilter|.
+     * matches {@code urlFilter}.
+     *
      * @param urlFilter The filter object to check URLs.
      */
     @VisibleForTesting

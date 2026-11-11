@@ -171,9 +171,7 @@ public class WebApkIntentDataProviderFactory {
                 : WebApkDistributor.OTHER;
     }
 
-    /**
-     * @return A list of shortcut items derived from the parser.
-     */
+    /** Returns a list of shortcut items derived from the parser. */
     // looking up resources from other apps requires the use of getIdentifier()
     @SuppressWarnings("DiscouragedApi")
     private static List<ShortcutItem> parseShortcutItems(String webApkPackageName, Resources res) {
@@ -438,6 +436,7 @@ public class WebApkIntentDataProviderFactory {
      * @param splashIcon Splash icon to use for the splash screen.
      * @param name Name of the WebAPK.
      * @param shortName The short name of the WebAPK.
+     * @param hasCustomName Whether the WebAPK has a user-customized name.
      * @param displayMode Display mode of the WebAPK.
      * @param orientation Orientation of the WebAPK.
      * @param source Source that the WebAPK was launched from.
