@@ -6,13 +6,10 @@
 
 #include <memory>
 #include <optional>
-#include <string>
 #include <string_view>
-#include <vector>
 
 #include "base/check.h"
 #include "base/feature_list.h"
-#include "base/strings/strcat.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -24,7 +21,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/search/ntp_features.h"
-#include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_LINUX)
 #include "base/functional/bind.h"
@@ -40,17 +36,16 @@ namespace {
 
 using mojom::SettingId;
 
+constexpr int kAppearanceBreadcrumbs[] = {IDS_SETTINGS_APPEARANCE};
+
 // Makes an item for a control on the Appearance page, or on `sub_page`.
 std::unique_ptr<SettingsSearchItem> MakeItem(
     SettingId id,
     int title_id,
     std::optional<int> synonyms_id = std::nullopt,
     std::string_view sub_page = chrome::kAppearanceSubPage) {
-  return std::make_unique<SettingsSearchItem>(
-      id, base::StrCat({"/", sub_page}), l10n_util::GetStringUTF16(title_id),
-      std::vector<std::u16string>{
-          l10n_util::GetStringUTF16(IDS_SETTINGS_APPEARANCE)},
-      synonyms_id ? GetSynonyms(*synonyms_id) : std::vector<std::u16string>());
+  return MakeSearchItem(id, sub_page, title_id, kAppearanceBreadcrumbs,
+                        synonyms_id);
 }
 
 std::unique_ptr<SettingsSearchItem> MakeColorSchemeModeItem() {
@@ -80,10 +75,10 @@ void AppearanceSection::RegisterSearchItems() {
 #endif
   SettingsSearchRegistry* registry = this->registry();
 
-  registry->AddItem(std::make_unique<SettingsSearchItem>(
-      SettingId::kAppearance, base::StrCat({"/", chrome::kAppearanceSubPage}),
-      l10n_util::GetStringUTF16(IDS_SETTINGS_APPEARANCE),
-      std::vector<std::u16string>(), GetSynonyms(IDS_SETTINGS_TAG_APPEARANCE)));
+  registry->AddItem(
+      MakeSearchItem(SettingId::kAppearance, chrome::kAppearanceSubPage,
+                     IDS_SETTINGS_APPEARANCE, /*breadcrumb_ids=*/{},
+                     IDS_SETTINGS_TAG_APPEARANCE));
   registry->AddItem(MakeItem(SettingId::kCustomizeToolbar,
                              IDS_SETTINGS_CUSTOMIZE_TOOLBAR,
                              IDS_SETTINGS_TAG_CUSTOMIZE_TOOLBAR));
