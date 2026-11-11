@@ -4,9 +4,11 @@
 
 package org.chromium.device.geolocation;
 
+import org.chromium.build.annotations.Nullable;
+
 /** Set the MockLocationProvider to LocationProviderFactory. Used for test only. */
 public final class LocationProviderOverrider {
-    public static void setLocationProviderImpl(LocationProvider provider) {
+    public static void setLocationProviderImpl(@Nullable LocationProvider provider) {
         LocationProviderFactory.setLocationProviderImpl(provider);
     }
 

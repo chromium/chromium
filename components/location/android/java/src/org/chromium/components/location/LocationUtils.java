@@ -16,6 +16,7 @@ import android.provider.Settings;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -133,11 +134,29 @@ public class LocationUtils {
     }
 
     /**
-     * Call this to use a different subclass of LocationUtils throughout the program.
-     * This can be used by embedders in addition to tests.
+     * Call this to use a different subclass of LocationUtils throughout the program. This can be
+     * used by embedders.
+     *
+     * @param factory The factory to use for creating LocationUtils instances.
      */
     public static void setFactory(Factory factory) {
         sFactory = factory;
         sInstance = null;
+    }
+
+    /**
+     * Overrides the {@link Factory} for tests, resetting after each test.
+     *
+     * @param factory The test factory.
+     */
+    public static void setFactoryForTesting(Factory factory) {
+        var oldFactory = sFactory;
+        sFactory = factory;
+        sInstance = null;
+        ResettersForTesting.register(
+                () -> {
+                    sFactory = oldFactory;
+                    sInstance = null;
+                });
     }
 }

@@ -16,7 +16,7 @@ public class LocationSettingsTestUtil {
     public static void setSystemLocationSettingEnabled(final boolean enabled) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    LocationUtils.setFactory(
+                    LocationUtils.setFactoryForTesting(
                             new LocationUtils.Factory() {
                                 @Override
                                 public LocationUtils create() {
@@ -41,7 +41,7 @@ public class LocationSettingsTestUtil {
             final boolean androidFineEnabled) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    LocationUtils.setFactory(
+                    LocationUtils.setFactoryForTesting(
                             new LocationUtils.Factory() {
                                 @Override
                                 public LocationUtils create() {
