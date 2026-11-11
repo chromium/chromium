@@ -8,81 +8,130 @@ import os
 import subprocess
 import sys
 import xml.etree.ElementTree as ET
-from datetime import datetime, timedelta
 
-from find_candidates import SAFE_HISTOGRAM_FILES, is_safe_histogram_file
+_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+# Allows running this script from the repo root without cd'ing to scripts/.
+sys.path.insert(0, _SCRIPT_DIR)
+
+from find_candidates import (  # noqa: E402
+    SAFE_HISTOGRAM_FILES,
+    get_expiry_thresholds,
+    is_safe_histogram_file,
+    normalize_histogram_path,
+    parse_expired_histograms,
+)
+
+_CS_TIMEOUT_SECONDS = 30
+_CS_MAX_RESULTS = 50
+# Paths that mention histogram names without recording them.
+_CS_EXCLUDE_PATHS = (
+    "tools/metrics/histograms/metadata",
+    "tools/metrics/histograms/test_data/",
+    "expired_histograms_array",
+    "analysis/chrome/kaslow",
+    "chrome/finch/gcl_studies",
+)
+# Stale mirrors of other repos that duplicate Chromium code in search results.
+_MIRROR_REPO_PREFIXES = (
+    "github/youtube/cobalt/",
+    "lbshell-internal/cobalt_src/",
+    "android/platform/superproject/external/cronet/",
+    "arsp/platform/superproject/external/cronet/",
+)
+_MAX_SUMMARY_LENGTH = 150
 
 
-def is_expired(exp, date_limit, m_limit):
-    """Returns True if the histogram is expired by date or milestone."""
-    if not exp:
-        return False
-    if exp.startswith("20"):
-        return exp < date_limit
-    if m_limit > 0 and exp.startswith("M") and exp[1:].isdigit():
-        return int(exp[1:]) < m_limit
-    return False
+def count_recording_files(name):
+    """Counts the files that contain the full literal histogram name.
 
+    Runs a case-sensitive `cs -l` search for the full histogram name,
+    excluding metadata, test_data, kaslow, finch study, and generated
+    expired-histograms-array files, and dropping results from stale mirror
+    repos. Recordings that build the name from split strings do not match
+    this search and must still be checked during deep analysis.
 
-def count_recording_sites(name):
-    """Counts the number of code recording sites for a histogram name."""
-    search_term = name.split('.')[-1] if '.' in name else name
+    Raises:
+        RuntimeError: If the count cannot be determined (cs is missing,
+            times out, fails, or returns only mirror results at the result
+            limit). Never returns 0 on error, since a false 0 would flag a
+            histogram that is still recorded.
+    """
+    escaped = name.replace("\\", "\\\\").replace('"', '\\"')
+    excludes = " ".join(f"-file:{p}" for p in _CS_EXCLUDE_PATHS)
+    query = f'case:yes "{escaped}" {excludes}'
+    cmd = ["cs", "-l", f"--max_num_results={_CS_MAX_RESULTS}", "--", query]
     try:
-        # Search globally using cs for the last segment (to catch split strings)
-        # Exclude matches in the metadata files themselves.
-        cmd = [
-            "cs",
-            "-c",
-            f"{search_term} -file:tools/metrics/histograms/metadata",
-        ]
         result = subprocess.run(
-            cmd, capture_output=True, text=True, check=False
+            cmd,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=_CS_TIMEOUT_SECONDS,
         )
-        if result.returncode == 0:
-            lines = result.stdout.strip().split('\n')
-            for line in reversed(lines):
-                if line.isdigit():
-                    return int(line)
-    except Exception:
-        pass
-    return 0
-
-
-def get_expired_from_file(file_path, date_limit, m_limit):
-    """Yields expired histograms with 0 recording sites from a file."""
-    if not is_safe_histogram_file(file_path):
-        print(
-            f"ERROR: '{file_path}' is not an allowlisted histograms.xml file. "
-            "Only the files listed in references/safe_dirs.md may be scanned.",
-            file=sys.stderr,
+    except FileNotFoundError as e:
+        raise RuntimeError(
+            f"'cs' binary not found while searching {name}"
+        ) from e
+    except subprocess.TimeoutExpired as e:
+        raise RuntimeError(
+            f"'cs' timed out after {_CS_TIMEOUT_SECONDS}s searching {name}"
+        ) from e
+    if result.returncode != 0:
+        raise RuntimeError(
+            f"'cs' exited with {result.returncode} searching {name}: "
+            f"{result.stderr.strip()}"
         )
-        return
-    try:
-        for hist in ET.parse(file_path).iter("histogram"):
-            exp = hist.attrib.get("expires_after", "")
-            if not is_expired(exp, date_limit, m_limit):
-                continue
-            if hist.find("expired_intentionally") is not None:
-                continue
-
-            name = hist.attrib.get("name", "")
-            if count_recording_sites(name) > 0:
-                continue
-
-            summary = hist.findtext("summary", default="").strip()
-            owners = [o.text for o in hist.findall("owner") if o.text]
-            yield {
-                "file": file_path,
-                "name": name,
-                "expires_after": exp,
-                "summary": summary,
-                "owners": owners,
-            }
-    except Exception:
-        pass
+    raw_lines = [
+        line.strip() for line in result.stdout.splitlines() if line.strip()
+    ]
+    kept_lines = [
+        line
+        for line in raw_lines
+        if not line.replace("\\", "/").startswith(_MIRROR_REPO_PREFIXES)
+    ]
+    # A saturated result list of only mirrors may hide real recordings.
+    if len(raw_lines) >= _CS_MAX_RESULTS and not kept_lines:
+        raise RuntimeError(
+            f"'cs' hit {_CS_MAX_RESULTS}-result mirror limit searching {name}"
+        )
+    return len(kept_lines)
 
 
-def main():
+def get_expired_from_file(file_path, exclude=None, search_root=None):
+    """Yields expired histograms with 0 recording sites from a file.
+
+    Histograms whose names contain a '{' token or are in `exclude` are skipped
+    before searching for recording sites.
+
+    Raises:
+        RuntimeError: If file_path is not allowlisted or cs fails.
+        OSError, ET.ParseError: If file_path cannot be read or parsed.
+    """
+    # Resolve relative paths against search_root, not the CWD.
+    base_root = os.path.abspath(search_root or os.getcwd())
+    abs_path = os.path.join(base_root, file_path)
+    if not is_safe_histogram_file(abs_path, root=search_root):
+        raise RuntimeError(
+            f"'{file_path}' is not an allowlisted histograms.xml file. "
+            "Only the files listed in references/safe_dirs.md may be scanned."
+        )
+    exclude_set = set(exclude or ())
+    date_limit, m_limit = get_expiry_thresholds(search_root)
+    expired = parse_expired_histograms(
+        abs_path,
+        normalize_histogram_path(abs_path, root=search_root),
+        date_limit,
+        m_limit,
+    )
+    for hist in expired:
+        name = hist["name"]
+        if "{" in name or name in exclude_set:
+            continue
+        if count_recording_files(name) == 0:
+            yield hist
+
+
+def main(argv=None) -> int:
     parser = argparse.ArgumentParser(
         description="Find expired histograms in a file."
     )
@@ -92,7 +141,14 @@ def main():
         action="store_true",
         help="Output only the names of the histograms.",
     )
-    args = parser.parse_args()
+    parser.add_argument(
+        "--exclude",
+        nargs="*",
+        action="extend",
+        default=[],
+        help="Names of histograms to exclude",
+    )
+    args = parser.parse_args(argv)
     if not is_safe_histogram_file(args.file):
         print(
             f"ERROR: '{args.file}' is not an allowlisted histograms.xml file. "
@@ -102,39 +158,30 @@ def main():
         print("Allowlisted files:", file=sys.stderr)
         for allowed in SAFE_HISTOGRAM_FILES:
             print(f"  {allowed}", file=sys.stderr)
-        sys.exit(2)
+        return 2
 
-    # Thresholds: 1 year ago or milestone - 12 (approx 1 year of milestones)
-    date_limit = (datetime.now() - timedelta(days=365)).strftime("%Y-%m-%d")
-    m_limit = 0
-    version_file = os.path.join(os.getcwd(), "chrome", "VERSION")
+    try:
+        for h in get_expired_from_file(args.file, exclude=args.exclude):
+            if args.names_only:
+                print(h["name"])
+                continue
 
-    if os.path.exists(version_file):
-        try:
-            with open(version_file, encoding="utf-8") as f:
-                for line in f:
-                    if line.startswith("MAJOR="):
-                        m_limit = int(line.split("=")[1]) - 12
-                        break
-        except (ValueError, IndexError):
-            pass
+            summary = h["summary"]
+            if len(summary) > _MAX_SUMMARY_LENGTH:
+                summary = summary[:_MAX_SUMMARY_LENGTH] + "..."
+            elif not summary:
+                summary = "No summary."
+            owners_str = ", ".join(h["owners"]) if h["owners"] else "No owners."
 
-    for h in get_expired_from_file(args.file, date_limit, m_limit):
-        if "{" in h["name"]:
-            continue
-
-        if args.names_only:
-            print(h["name"])
-            continue
-
-        summary = h["summary"][:150] + "..." if h["summary"] else "No summary."
-        owners_str = ", ".join(h["owners"]) if h["owners"] else "No owners."
-
-        print(f"File: {h['file']}\nName: {h['name']}")
-        print(f"Owners: {owners_str}")
-        print(f"Expiry: {h['expires_after']}")
-        print(f"Summary: {summary}\n---")
+            print(f"File: {h['file']}\nName: {h['name']}")
+            print(f"Owners: {owners_str}")
+            print(f"Expires_after: {h['expires_after']}")
+            print(f"Summary: {summary}\n---")
+    except (RuntimeError, OSError, ET.ParseError) as e:
+        print(f"ERROR: {e}", file=sys.stderr)
+        return 1
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
