@@ -112,6 +112,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/omaha/model/omaha_service.h"
 #import "ios/chrome/browser/passwords/model/password_manager_util_ios.h"
+#import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_app_agent.h"
 #import "ios/chrome/browser/policy/model/browser_management_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/screenshot/model/screenshot_metrics_recorder.h"
@@ -237,6 +238,9 @@ NSString* const kLogInstallAttribution = @"LogInstallAttribution";
 
 // Constant for deferred MetricKit registration.
 NSString* const kRegisterMetricKit = @"RegisterMetricKit";
+
+// Constant for deferred registration of RemoteActorAppAgent.
+NSString* const kAddRemoteActorAppAgent = @"AddRemoteActorAppAgent";
 
 // Adapted from chrome/browser/ui/browser_init.cc.
 void RegisterComponentsForUpdate() {
@@ -1478,6 +1482,7 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
 
   [self scheduleProcessingShareExtensionFiles];
   [self scheduleMetricKitRegistration];
+  [self scheduleRemoteActorAppAgent];
 }
 
 - (void)scheduleDeleteTempDownloadsDirectory {
@@ -1578,6 +1583,19 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
       enqueueBlockNamed:kRegisterMetricKit
                   block:^{
                     [weakMetricsMediator registerMetricKitSubscriberIfNeeded];
+                  }];
+}
+
+- (void)scheduleRemoteActorAppAgent {
+  if (!password_manager::features::RemoteActorCredentialSharingEnabled()) {
+    return;
+  }
+  __weak __typeof(self) weakSelf = self;
+  [_appState.deferredRunner
+      enqueueBlockNamed:kAddRemoteActorAppAgent
+                  block:^{
+                    [weakSelf.appState
+                        addAgent:[[RemoteActorAppAgent alloc] init]];
                   }];
 }
 
