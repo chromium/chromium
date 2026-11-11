@@ -3,6 +3,7 @@
   inset: 0;
   overflow: auto;
   pointer-events: none;
+  scroll-axis-lock: inherit;
   scroll-behavior: inherit;
   scroll-snap-type: pair mandatory;
   scrollbar-width: none;

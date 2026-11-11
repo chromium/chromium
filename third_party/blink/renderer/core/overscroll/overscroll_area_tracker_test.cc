@@ -1304,7 +1304,8 @@ TEST_F(OverscrollAreaTrackerPageTest, OverscrollPseudoElementStyles) {
       .scroller {
         overflow: auto;
       }
-      .smooth {
+      .custom-scroll {
+        scroll-axis-lock: none;
         scroll-behavior: smooth;
       }
     </style>
@@ -1312,7 +1313,7 @@ TEST_F(OverscrollAreaTrackerPageTest, OverscrollPseudoElementStyles) {
       <div id="foo" overscrollarea></div>
     </div>
     <div id="scroller2" class="scroller" overscrollcontainer>
-      <div id="bar" class="smooth" overscrollarea></div>
+      <div id="bar" class="custom-scroll" overscrollarea></div>
     </div>
     <button command="toggle-overscroll" commandfor="foo"></button>
     <button command="toggle-overscroll" commandfor="bar"></button>
@@ -1332,12 +1333,17 @@ TEST_F(OverscrollAreaTrackerPageTest, OverscrollPseudoElementStyles) {
             overscroll_parent_foo->GetComputedStyle()->OverflowY());
   EXPECT_EQ(EScrollbarWidth::kNone,
             overscroll_parent_foo->GetComputedStyle()->ScrollbarWidth());
+  EXPECT_EQ(EScrollAxisLock::kAuto,
+            overscroll_parent_foo->GetComputedStyle()->ScrollAxisLock());
   EXPECT_EQ(mojom::ScrollBehavior::kAuto,
             overscroll_parent_foo->GetComputedStyle()->GetScrollBehavior());
 
-  // Computed scroll-behavior inherits scroll-behavior from the scroller.
+  // Computed scroll-axis-lock and scroll-behavior inherit from the overscroll
+  // area.
   PseudoElement* overscroll_parent_bar =
       GetElementById("bar")->GetPseudoElement(kPseudoIdOverscrollAreaParent);
+  EXPECT_EQ(EScrollAxisLock::kNone,
+            overscroll_parent_bar->GetComputedStyle()->ScrollAxisLock());
   EXPECT_EQ(mojom::ScrollBehavior::kSmooth,
             overscroll_parent_bar->GetComputedStyle()->GetScrollBehavior());
 }
