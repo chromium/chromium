@@ -24,6 +24,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 
 import common
+import test_results
 
 # Must follow common, which puts these modules on sys.path.
 import camera
@@ -517,12 +518,36 @@ def run_performance_test(
     return None
 
 
+def run_video_case(video_name, driver, args, chrome_version, is_first_run):
+    """Remotes one video, dumping the sender logs if it fails."""
+    rec_proc = None
+    try:
+        rec_proc = run_performance_test(
+            video_name, driver, args, is_first_run=is_first_run
+        )
+    except Exception:
+        logging.exception("Error during video %s test", video_name)
+        common.dump_remote_logs(args)
+        raise
+    finally:
+        common.teardown_recording_process(rec_proc)
+
+
 def main():
     """
     Runs the performance testing suite for all videos.
+
+    Shared setup and each video are reported as test cases, so a failed run
+    names the step that failed and why.
     """
     logging.getLogger().setLevel(logging.INFO)
+    reporter = test_results.TestReporter.from_argv()
+    with reporter:
+        return _run_tests(reporter)
 
+
+def _run_tests(reporter):
+    """Sets up the sender and receiver, then runs and reports each video."""
     parser = argparse.ArgumentParser(
         description="Performance test for media remoted to a device.",
     )
@@ -559,6 +584,12 @@ def main():
         # This early-exit logic keeps the Fuchsia hosts from entering bad states
         # by running failing code.
         logging.info("Fuchsia tests are currently rigged to pass.")
+        for video in common.VIDEOS:
+            reporter.skip(
+                video['name'],
+                "OpenScreen remoting is not yet supported on Fuchsia "
+                "(b/502641691).",
+            )
         return 0
 
     if os.path.exists(common.RECORDINGS_DIR):
@@ -656,27 +687,31 @@ def main():
     tunnel_proc = None
     actual_version = None
 
-    try:
-        driver, tunnel_proc, actual_version = setup_test_environment(args, cv)
+    reporter.plan(
+        [test_results.SETUP_CASE] + [video['name'] for video in common.VIDEOS]
+    )
 
-        if args.receiver_type == 'android':
-            # Sync the receiver Chrome version to match the sender.
-            install_chrome_on_android(actual_version)
+    try:
+        with reporter.case(test_results.SETUP_CASE):
+            driver, tunnel_proc, actual_version = setup_test_environment(
+                args, cv
+            )
+
+            if args.receiver_type == 'android':
+                # Sync the receiver Chrome version to match the sender.
+                install_chrome_on_android(actual_version)
 
         for i, video in enumerate(common.VIDEOS):
             logging.info("Starting test for video: %s", video['name'])
-            rec_proc = None
-            try:
-                # pass is_first_run for the first video to trigger UI cleanup.
-                rec_proc = run_performance_test(
-                    video['name'], driver, args, is_first_run=(i == 0)
+            with reporter.case(video['name']):
+                # Pass is_first_run for the first video to trigger UI cleanup.
+                run_video_case(
+                    video['name'],
+                    driver,
+                    args,
+                    actual_version,
+                    is_first_run=(i == 0),
                 )
-            except Exception:
-                logging.exception("Error during video %s test", video['name'])
-                common.dump_remote_logs(args, actual_version)
-                raise
-            finally:
-                common.teardown_recording_process(rec_proc)
     except Exception:
         if FUCHSIA_INFRA_AVAILABLE:
             monitors.clear()

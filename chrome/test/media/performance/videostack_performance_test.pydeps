@@ -23,4 +23,5 @@ media_metrics.py
 perf_config.py
 remote_transport.py
 senders.py
+test_results.py
 videostack_performance_test.py

@@ -25,6 +25,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 
 import common
+import test_results
 
 # Must follow common, which puts these modules on sys.path.
 from repeating_log import RepeatingLog
@@ -259,6 +260,18 @@ def run_performance_test(video_file: str, driver: webdriver, args):
     return rec_proc_local
 
 
+def run_video_case(video_name, driver, args):
+    """Plays and records one video, then stops the recording."""
+    rec_proc = None
+    try:
+        rec_proc = run_performance_test(video_name, driver, args)
+    except Exception:
+        logging.exception("Error during video %s test", video_name)
+        raise
+    finally:
+        common.teardown_recording_process(rec_proc)
+
+
 def main():
     """
     Runs the performance testing suite for all videos.
@@ -273,7 +286,13 @@ def main():
         int: The exit code for the script, typically 0 for success.
     """
     logging.getLogger().setLevel(logging.INFO)
+    reporter = test_results.TestReporter.from_argv()
+    with reporter:
+        return _run_tests(reporter)
 
+
+def _run_tests(reporter):
+    """Sets up the sender, then runs and reports each video."""
     parser = argparse.ArgumentParser(
         description="Performance test for media played on a laptop.",
     )
@@ -301,24 +320,35 @@ def main():
     tunnel_proc = None
     actual_version = None
 
+    reporter.plan(
+        [test_results.SETUP_CASE] + [video['name'] for video in common.VIDEOS]
+    )
+
+    # TODO(b/512198717): Enable HEVC tests on ChromeOS.
+    # Currently these tests are rendering a blank white screen, so we skip
+    # them to bring up the other cros tests. Reported up front so that they
+    # read as deliberate skips even if an earlier case fails.
+    def is_disabled(video):
+        return args.sender_os == 'cros' and 'HEVC' in video['name']
+
+    for video in common.VIDEOS:
+        if is_disabled(video):
+            reporter.skip(
+                video['name'], "HEVC is disabled on ChromeOS (b/512198717)."
+            )
+
     try:
-        driver, tunnel_proc, actual_version = setup_test_environment(args, cv)
+        with reporter.case(test_results.SETUP_CASE):
+            driver, tunnel_proc, actual_version = setup_test_environment(
+                args, cv
+            )
         for video in common.VIDEOS:
-            # TODO(b/512198717): Enable HEVC tests on ChromeOS.
-            # Currently these tests are rendering a blank white screen, so we
-            # skip them to bring up the other cros tests.
-            if args.sender_os == 'cros' and 'HEVC' in video['name']:
+            if is_disabled(video):
                 logging.info("Skipping HEVC on ChromeOS: %s", video['name'])
                 continue
             logging.info("Starting test for video: %s", video['name'])
-            rec_proc = None
-            try:
-                rec_proc = run_performance_test(video['name'], driver, args)
-            except Exception:
-                logging.exception("Error during video %s test", video['name'])
-                raise
-            finally:
-                common.teardown_recording_process(rec_proc)
+            with reporter.case(video['name']):
+                run_video_case(video['name'], driver, args)
     finally:
         common.teardown_test_environment(driver, tunnel_proc, args)
         # Last, since it raises if the upload fails.

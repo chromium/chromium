@@ -179,10 +179,28 @@ class DumpRemoteLogsTest(fakes.SenderTestCase):
             with self.subTest(sender_os=sender_os):
                 self.ssh.responses[command] = completed(stdout='log line')
                 with self.assertLogs(level='ERROR') as logs:
-                    common.dump_remote_logs(
-                        make_args(sender_os=sender_os), '120', 'vp8'
-                    )
+                    common.dump_remote_logs(make_args(sender_os=sender_os))
                 self.assertTrue(any('log line' in l for l in logs.output))  # noqa: E741
+
+    def test_ssh_errors_are_logged_not_raised(self):
+        self.run.side_effect = subprocess.TimeoutExpired('ssh', 30)
+        with self.assertLogs(level='WARNING') as logs:
+            common.dump_remote_logs(make_args())
+        self.assertTrue(
+            any(
+                'Could not dump remote console logs' in line
+                for line in logs.output
+            ),
+            logs.output,
+        )
+
+    def test_unexpected_errors_are_logged_not_raised(self):
+        self.run.side_effect = TypeError('bug')
+        with self.assertLogs(level='WARNING') as logs:
+            common.dump_remote_logs(make_args())
+        self.assertTrue(
+            any('TypeError: bug' in line for line in logs.output), logs.output
+        )
 
 
 class ConnectToRemoteDriverTest(unittest.TestCase):

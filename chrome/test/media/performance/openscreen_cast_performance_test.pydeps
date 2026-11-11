@@ -24,3 +24,4 @@ openscreen_cast_performance_test.py
 perf_config.py
 remote_transport.py
 senders.py
+test_results.py

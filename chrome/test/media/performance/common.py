@@ -193,14 +193,23 @@ def _sender_for_cleanup(args):
         return None
 
 
-def dump_remote_logs(args, chrome_version=None, codec_name=None):
-    """Logs the sender's chromedriver console output.
+def dump_remote_logs(args):
+    """Logs the sender's chromedriver console output. Never raises.
 
-    `chrome_version` and `codec_name` are unused and kept for existing callers;
-    every console log in the sender's temp directory is dumped.
+    Called while handling a test failure, so its own errors are logged
+    rather than raised: they must not replace the failure being reported.
+    Every console log in the sender's temp directory is dumped.
     """
-    del chrome_version, codec_name
-    make_sender(args).dump_console_logs()
+    try:
+        sender = _sender_for_cleanup(args)
+        if sender:
+            sender.dump_console_logs()
+    # Broad on purpose: any error here, even a bug, would replace the failure
+    # being reported.
+    except Exception as e:
+        logging.warning(
+            'Could not dump remote console logs: %s', e, exc_info=True
+        )
 
 
 def teardown_recording_process(rec_proc):
