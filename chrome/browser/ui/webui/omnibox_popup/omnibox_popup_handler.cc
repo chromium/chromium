@@ -39,10 +39,12 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/ime/text_input_type.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/views/widget/widget.h"
 
 OmniboxPopupHandler::OmniboxPopupHandler(
     mojo::PendingReceiver<omnibox_popup::mojom::PageHandler> receiver,
@@ -283,6 +285,14 @@ void OmniboxPopupHandler::SetInputState(
         current_match.GetVectorIcon(is_bookmarked, associated_keyword_turl));
     state->current_match = std::move(mojom_match);
   }
+  // The input language is the same for all widgets.
+  views::Widget* widget = web_contents_
+                              ? views::Widget::GetTopLevelWidgetForNativeView(
+                                    web_contents_->GetNativeView())
+                              : nullptr;
+  state->prefers_url_input = OmniboxViewViews::GetPreferredTextInputType(
+                                 widget ? widget->GetInputMethod() : nullptr) ==
+                             ui::TEXT_INPUT_TYPE_URL;
   // Extract active tab ID if in a Chrome browser window context.
   if (controller_ && controller_->client()->IsChromeOmniboxClient()) {
     auto* chrome_client =

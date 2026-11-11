@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {SearchboxInputElement} from './searchbox_input.js';
 
@@ -41,6 +41,7 @@ export function getHtml(this: SearchboxInputElement) {
       ${this.multiLineEnabled ? html`
         <textarea id="input" autocomplete="off"
             part="searchbox-input"
+            inputmode="${this.textInputType || nothing}"
             spellcheck="false" role="combobox"
             aria-expanded="${this.dropdownIsVisible}"
             aria-controls="selectionListbox"
@@ -58,7 +59,9 @@ export function getHtml(this: SearchboxInputElement) {
             @paste="${this.onInputPaste_}"
             @scroll="${this.onInputScroll_}"></textarea>
       ` : html`
-        <input id="input" class="truncate" type="search" autocomplete="off"
+        <input id="input" class="truncate"
+            type="${this.textInputType ? 'text' : 'search'}"
+            inputmode="${this.textInputType || nothing}" autocomplete="off"
             part="searchbox-input"
             spellcheck="false" role="combobox"
             aria-expanded="${this.dropdownIsVisible}"

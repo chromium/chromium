@@ -54,6 +54,7 @@ class RenderText;
 }  // namespace gfx
 
 namespace ui {
+class InputMethod;
 class OSExchangeData;
 }  // namespace ui
 
@@ -115,6 +116,11 @@ class OmniboxViewViews
 
   // Initialize, create the underlying views, etc.
   void Init();
+
+  // Returns URL, or search on Windows for CJK input languages. `input_method`
+  // can be null.
+  static ui::TextInputType GetPreferredTextInputType(
+      const ui::InputMethod* input_method);
 
   // Exposes the RenderText for tests.
 #if defined(UNIT_TEST)

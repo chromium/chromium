@@ -1985,6 +1985,14 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                   InAnyContext(WaitForWebUIInputValue("")));
 }
 
+// Verifies that the WebUI input expects URLs, like the Views omnibox.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest, WebUIInputExpectsUrls) {
+  RunTestSequence(
+      OpenNtpAndWaitForPopupReady(kTab1),
+      InAnyContext(WaitForJsConditionAt(kPopupWebView, kWebUIInput,
+                                        "(el) => el.inputMode === 'url'")));
+}
+
 // Verifies that a custom selection range on a steady-state URL is preserved
 // when switching away from the tab and returning to it.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
