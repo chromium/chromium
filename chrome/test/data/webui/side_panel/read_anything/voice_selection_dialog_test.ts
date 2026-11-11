@@ -527,21 +527,18 @@ suite('VoiceSelectionDialog', () => {
     }
   });
 
-  test(
-      'labels a mapped row with the nature name without menu instruction',
-      async () => {
-        await setAvailableVoicesAndEnabledLangs(
-            [mappedVoice, mappedSpanishVoice]);
-        await drawDialog();
+  test('labels a mapped row with the nature name only', async () => {
+    await setAvailableVoicesAndEnabledLangs([mappedVoice, mappedSpanishVoice]);
+    await drawDialog();
 
-        for (const voice of [mappedVoice, mappedSpanishVoice]) {
-          const expected = getVoiceNatureNaming(voice.name)!;
-          const row = getDropdownItemForVoice(voice);
+    for (const voice of [mappedVoice, mappedSpanishVoice]) {
+      const expected = getVoiceNatureNaming(voice.name)!;
+      const row = getDropdownItemForVoice(voice);
 
-          assertEquals(expected.natureName, row.label);
-          assertEquals(expected.natureName, row.getAttribute('label'));
-        }
-      });
+      assertEquals(expected.natureName, row.label);
+      assertEquals(expected.natureName, row.getAttribute('label'));
+    }
+  });
 
   test('falls back to the engine name when a voice is unmapped', async () => {
     await setAvailableVoicesAndEnabledLangs([googleNaturalVoice]);
