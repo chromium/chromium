@@ -115,8 +115,7 @@ NotificationDisplayServiceImpl::NotificationDisplayServiceImpl(Profile* profile)
         std::move(screen_capture_blocker));
 
 #if !BUILDFLAG(IS_CHROMEOS)
-    if (default_browser::IsDefaultBrowserFrameworkEnabled() &&
-        default_browser::IsDefaultBrowserChangedOsNotificationEnabled()) {
+    if (default_browser::IsDefaultBrowserChangedOsNotificationEnabled()) {
       AddNotificationHandler(
           NotificationHandler::Type::DEFAULT_BROWSER_CHANGED,
           std::make_unique<

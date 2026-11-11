@@ -171,23 +171,21 @@ DefaultBrowserManager::DefaultBrowserManager(
       scoped_unowned_user_data_(browser_process->GetUnownedUserDataHost(),
                                 *this) {
   CHECK(!profile_provider_callback_.is_null());
-  if (IsDefaultBrowserFrameworkEnabled()) {
-    monitor_ = monitor ? std::move(monitor)
-                       : std::make_unique<DefaultBrowserMonitor>();
+  monitor_ =
+      monitor ? std::move(monitor) : std::make_unique<DefaultBrowserMonitor>();
 
-    monitor_subscription_ = monitor_->RegisterDefaultBrowserChanged(
-        base::BindRepeating(&DefaultBrowserManager::OnMonitorDetectedChange,
-                            base::Unretained(this)));
-    if (IsDefaultBrowserChangedOsNotificationEnabled()) {
-      notification_observer_ =
-          std::make_unique<DefaultBrowserNotificationObserver>(
-              base::BindOnce(
-                  &DefaultBrowserManager::RegisterDefaultBrowserChanged,
-                  base::Unretained(this)),
-              base::BindOnce(&DefaultBrowserManager::GetDefaultBrowserState,
-                             base::Unretained(this)),
-              *this);
-    }
+  monitor_subscription_ = monitor_->RegisterDefaultBrowserChanged(
+      base::BindRepeating(&DefaultBrowserManager::OnMonitorDetectedChange,
+                          base::Unretained(this)));
+  if (IsDefaultBrowserChangedOsNotificationEnabled()) {
+    notification_observer_ =
+        std::make_unique<DefaultBrowserNotificationObserver>(
+            base::BindOnce(
+                &DefaultBrowserManager::RegisterDefaultBrowserChanged,
+                base::Unretained(this)),
+            base::BindOnce(&DefaultBrowserManager::GetDefaultBrowserState,
+                           base::Unretained(this)),
+            *this);
   }
 }
 

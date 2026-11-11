@@ -78,8 +78,8 @@ class DefaultBrowserManagerTest : public testing::Test {
   DefaultBrowserManagerTest()
       : task_environment_(
             content::BrowserTaskEnvironment::TimeSource::MOCK_TIME) {
-    scoped_feature_list_.InitWithFeatures(
-        {kPerformDefaultBrowserCheckValidations, kDefaultBrowserFramework}, {});
+    scoped_feature_list_.InitAndEnableFeature(
+        kPerformDefaultBrowserCheckValidations);
   }
 
   ~DefaultBrowserManagerTest() override = default;

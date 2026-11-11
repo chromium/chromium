@@ -6541,25 +6541,6 @@
             ]
         }
     ],
-    "DefaultBrowserFramework": [
-        {
-            "platforms": [
-                "mac",
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "prompt_surface": "bubble_dialog"
-                    },
-                    "enable_features": [
-                        "DefaultBrowserFramework"
-                    ]
-                }
-            ]
-        }
-    ],
     "DefaultBrowserPipTextVideo": [
         {
             "platforms": [
@@ -6606,7 +6587,6 @@
                     },
                     "enable_features": [
                         "DefaultBrowserChangedOsNotification",
-                        "DefaultBrowserFramework",
                         "DefaultBrowserPromptSurfaces",
                         "PerformDefaultBrowserCheckValidations"
                     ]

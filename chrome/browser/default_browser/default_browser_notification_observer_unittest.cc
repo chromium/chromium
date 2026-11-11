@@ -35,8 +35,7 @@ namespace default_browser {
 class DefaultBrowserNotificationObserverTest : public testing::Test {
  protected:
   DefaultBrowserNotificationObserverTest() {
-    feature_list_.InitWithFeatures(
-        {kDefaultBrowserChangedOsNotification, kDefaultBrowserFramework}, {});
+    feature_list_.InitAndEnableFeature(kDefaultBrowserChangedOsNotification);
   }
 
   void SetUp() override {

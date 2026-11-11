@@ -52,10 +52,6 @@ bool IsSetterTypeSupported(DefaultBrowserSetterType setter_type) {
 
 }  // namespace
 
-bool IsDefaultBrowserFrameworkEnabled() {
-  return base::FeatureList::IsEnabled(kDefaultBrowserFramework);
-}
-
 bool IsDefaultBrowserChangedOsNotificationEnabled() {
   return IsWin11OrGreater() &&
          base::FeatureList::IsEnabled(kDefaultBrowserChangedOsNotification);
@@ -172,8 +168,6 @@ GURL GetDefaultBrowserVisualGuideURL() {
   return GURL();
 #endif
 }
-
-BASE_FEATURE(kDefaultBrowserFramework, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDefaultBrowserPromptSurfaces, base::FEATURE_ENABLED_BY_DEFAULT);
 

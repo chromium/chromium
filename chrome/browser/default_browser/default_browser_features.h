@@ -22,9 +22,6 @@ enum class DefaultBrowserPromptSurface {
   kModalDialogWithoutSettingsIllustration = 3,
 };
 
-// Returns whether the default browser framework feature flag is enabled.
-bool IsDefaultBrowserFrameworkEnabled();
-
 // Returns whether the default browser changed os notification feature flag is
 // enabled.
 bool IsDefaultBrowserChangedOsNotificationEnabled();
@@ -57,8 +54,6 @@ DefaultBrowserSetterType GetDefaultBrowserSetterType();
 // Returns the URL for the visual guided setter.
 GURL GetDefaultBrowserVisualGuideURL();
 
-BASE_DECLARE_FEATURE(kDefaultBrowserFramework);
-
 // Enables the default browser prompt surfaces (e.g. invalidation, reprompt).
 BASE_DECLARE_FEATURE(kDefaultBrowserPromptSurfaces);
 
@@ -82,7 +77,6 @@ BASE_DECLARE_FEATURE(kPerformDefaultBrowserCheckValidations);
 
 // Enables the framework to show Os Notification when Chrome is no longer the
 // default browser.
-// NOTE: This flag expect that `kDefaultBrowserFramework` is enabled first.
 BASE_DECLARE_FEATURE(kDefaultBrowserChangedOsNotification);
 
 // Enables the framework to support multiple setter. When disabled, the setter

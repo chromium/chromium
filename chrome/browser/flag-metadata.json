@@ -2879,14 +2879,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "default-browser-framework",
-    "owners": [
-      "top-chrome-desktop-ui@google.com",
-      "//chrome/browser/default_browser/OWNERS"
-    ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "default-browser-non-modal-promo-strings",
     "owners": [ "cheickcisse@google.com", "bling-mony-pod@google.com" ],
     "expiry_milestone": 160

@@ -570,11 +570,6 @@ inline constexpr char kDbdPasswordRemovalOnAndroidDescription[] =
     "on Android, instead directing users to manage passwords and other Google "
     "data via link-outs to relevant Google services.";
 
-inline constexpr char kDefaultBrowserFrameworkDescription[] =
-    "Enables the default browser framework.";
-inline constexpr char kDefaultBrowserFrameworkName[] =
-    "Default Browser Framework";
-
 inline constexpr char kDefaultBrowserSetterSelectionDescription[] =
     "Enables selecting a default browser setter: shell integration, or on "
     "Windows 11 the visual guide or shell integration annotated with a bubble "

@@ -57,10 +57,8 @@ constexpr wchar_t kRegistryPath[] =
 class DefaultBrowserManagerWinBrowserTest : public InProcessBrowserTest {
  protected:
   DefaultBrowserManagerWinBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enable_features*/ {kDefaultBrowserFramework,
-                             kDefaultBrowserChangedOsNotification},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitAndEnableFeature(
+        kDefaultBrowserChangedOsNotification);
   }
   ~DefaultBrowserManagerWinBrowserTest() override = default;
 

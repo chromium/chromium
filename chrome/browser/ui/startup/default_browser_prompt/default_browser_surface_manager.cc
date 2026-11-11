@@ -85,8 +85,6 @@ void DefaultBrowserSurfaceManager::Show(bool can_pin_to_taskbar) {
   if (IsStickyModalEntrypoint(GetEntrypointType())) {
     if (auto* manager =
             default_browser::DefaultBrowserManager::From(g_browser_process)) {
-      // Note: `DefaultBrowserMonitor` only runs when
-      // `kDefaultBrowserFramework` is enabled.
       default_browser_subscription_ =
           manager->RegisterDefaultBrowserChanged(base::BindRepeating(
               &DefaultBrowserSurfaceManager::OnDefaultBrowserStateChanged,

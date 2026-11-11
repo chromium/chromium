@@ -11369,11 +11369,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAF(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-    {"default-browser-framework",
-     flag_descriptions::kDefaultBrowserFrameworkName,
-     flag_descriptions::kDefaultBrowserFrameworkDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(default_browser::kDefaultBrowserFramework)},
-
     {"default-browser-sticky-modal",
      flag_descriptions::kDefaultBrowserStickyModalName,
      flag_descriptions::kDefaultBrowserStickyModalDescription, kOsWin,
