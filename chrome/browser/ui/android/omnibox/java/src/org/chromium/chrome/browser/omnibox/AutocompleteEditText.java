@@ -134,9 +134,7 @@ public class AutocompleteEditText extends EditTextWithLeading
         if (mModel != null) mModel.setIgnoreTextChangeFromAutocomplete(ignoreAutocomplete);
     }
 
-    /**
-     * @return The user text without the autocomplete text.
-     */
+    /** Returns the user text without the autocomplete text. */
     public String getTextWithoutAutocomplete() {
         // Return the current Text value when the content is requested before the InputConnection is
         // created. This may happen when the user triggers ACTION_WEB_SEARCH, calling up the Omnibox
@@ -151,9 +149,7 @@ public class AutocompleteEditText extends EditTextWithLeading
         return mModel.getTextWithoutAutocomplete();
     }
 
-    /**
-     * @return Text that includes autocomplete.
-     */
+    /** Returns text that includes autocomplete. */
     public String getTextWithAutocomplete() {
         // Return the current Text value when the content is requested before the InputConnection is
         // created. This may happen when the user triggers ACTION_WEB_SEARCH, calling up the Omnibox
@@ -169,8 +165,8 @@ public class AutocompleteEditText extends EditTextWithLeading
     }
 
     /**
-     * @return Additional text presented in the omnibox, indicating the destination of the default
-     *     match.
+     * Returns additional text presented in the omnibox, indicating the destination of the default
+     * match.
      */
     @VisibleForTesting
     public @Nullable String getAdditionalText() {
@@ -178,9 +174,7 @@ public class AutocompleteEditText extends EditTextWithLeading
         return mModel.getAdditionalText();
     }
 
-    /**
-     * @return Whether any autocomplete information is specified on the current text.
-     */
+    /** Returns whether any autocomplete information is specified on the current text. */
     public boolean hasAutocomplete() {
         if (mModel == null) return false;
         return mModel.hasAutocomplete();
@@ -473,9 +467,7 @@ public class AutocompleteEditText extends EditTextWithLeading
         return super.dispatchKeyEvent(event);
     }
 
-    /**
-     * @return Whether the current UrlBar input has been pasted from the clipboard.
-     */
+    /** Returns whether the current UrlBar input has been pasted from the clipboard. */
     public boolean wasLastEditPaste() {
         return mLastEditWasPaste;
     }

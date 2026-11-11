@@ -77,9 +77,7 @@ class AutocompleteState {
         return mSiteSearchLabel;
     }
 
-    /**
-     * @return The whole text including autocomplete text.
-     */
+    /** Returns the whole text including autocomplete text. */
     public String getText() {
         return mUserText.concat(mAutocompleteText != null ? mAutocompleteText : "");
     }

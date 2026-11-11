@@ -1249,9 +1249,7 @@ public class LocationBarCoordinator
                 useDefaultUrlActionContainerEndMargin);
     }
 
-    /**
-     * @return The location bar's {@link OmniboxSuggestionsVisualState}.
-     */
+    /** Returns the location bar's {@link OmniboxSuggestionsVisualState}. */
     @Override
     public @Nullable OmniboxSuggestionsVisualState getOmniboxSuggestionsVisualState() {
         return mAutocompleteCoordinator;

@@ -20,16 +20,12 @@ import org.chromium.build.annotations.Nullable;
  */
 @NullMarked
 public interface NewTabPageDelegate {
-    /**
-     * @return {@code true} if the current tab was showing NewTabPage.
-     */
+    /** Returns {@code true} if the current tab was showing NewTabPage. */
     default boolean wasShowingNtp() {
         return false;
     }
 
-    /**
-     * @return {@code true} if the NewTabPage is currently visible.
-     */
+    /** Returns {@code true} if the NewTabPage is currently visible. */
     default boolean isCurrentlyVisible() {
         return false;
     }
@@ -42,16 +38,12 @@ public interface NewTabPageDelegate {
         return false;
     }
 
-    /**
-     * @return Whether the location bar is shown in the NTP.
-     */
+    /** Returns whether the location bar is shown in the NTP. */
     default boolean isLocationBarShown() {
         return false;
     }
 
-    /**
-     * @return {@code true} if we're transitioning away from showing the location bar.
-     */
+    /** Returns {@code true} if we're transitioning away from showing the location bar. */
     default boolean transitioningAwayFromLocationBar() {
         return false;
     }

@@ -98,9 +98,7 @@ public interface AutocompleteEditTextModelBase {
          */
         void onAutocompleteTextStateChanged(boolean updateDisplay);
 
-        /**
-         * @return The package name of the current keyboard app.
-         */
+        /** Returns the package name of the current keyboard app. */
         String getKeyboardPackageName();
 
         /** Specifies whether the current user input should be shown as multi-line. */
@@ -174,25 +172,21 @@ public interface AutocompleteEditTextModelBase {
     /** Called when text gets pasted. */
     void onPaste();
 
-    /**
-     * @return The whole text including both user text and autocomplete text.
-     */
+    /** Returns the whole text including both user text and autocomplete text. */
     String getTextWithAutocomplete();
 
-    /**
-     * @return The user text without the autocomplete text.
-     */
+    /** Returns the user text without the autocomplete text. */
     String getTextWithoutAutocomplete();
 
     /**
-     * @return The length of the autocomplete text currently displayed, zero if none is currently
-     *     displayed.
+     * Returns the length of the autocomplete text currently displayed, zero if none is currently
+     * displayed.
      */
     int getAutocompleteTextLength();
 
     /**
-     * @return The additional text presented in the omnibox, indicating the destination of the
-     *     default match.
+     * Returns the additional text presented in the omnibox, indicating the destination of the
+     * default match.
      */
     @VisibleForTesting
     @Nullable String getAdditionalText();
@@ -229,20 +223,14 @@ public interface AutocompleteEditTextModelBase {
      */
     boolean shouldAutocomplete();
 
-    /**
-     * @return Whether any autocomplete information is specified on the current text.
-     */
+    /** Returns whether any autocomplete information is specified on the current text. */
     boolean hasAutocomplete();
 
-    /**
-     * @return The current {@link InputConnection} object.
-     */
+    /** Returns the current {@link InputConnection} object. */
     @VisibleForTesting
     @Nullable InputConnection getInputConnection();
 
-    /**
-     * @return Whether accessibility event should be ignored.
-     */
+    /** Returns whether accessibility event should be ignored. */
     boolean shouldIgnoreAccessibilityEvent();
 
     /**

@@ -1861,9 +1861,10 @@ public class LocationBarMediator
     }
 
     /**
-     * @param button The {@link View} of the button to show. Returns An animator to run for the
-     *     given view when showing buttons in the unfocused location bar. This should also be used
-     *     to create animators for showing toolbar buttons.
+     * Returns an animator to run for the given view when showing buttons in the unfocused location
+     * bar. This should also be used to create animators for showing toolbar buttons.
+     *
+     * @param button The {@link View} of the button to show.
      * @return Animator for showing the button during tablet unfocus.
      */
     /* package */ ObjectAnimator createShowButtonAnimatorForTablet(View button) {
@@ -1879,9 +1880,10 @@ public class LocationBarMediator
     }
 
     /**
-     * @param button The {@link View} of the button to hide. Returns An animator to run for the
-     *     given view when hiding buttons in the unfocused location bar. This should also be used to
-     *     create animators for hiding toolbar buttons.
+     * Returns an animator to run for the given view when hiding buttons in the unfocused location
+     * bar. This should also be used to create animators for hiding toolbar buttons.
+     *
+     * @param button The {@link View} of the button to hide.
      * @return Animator for hiding the button during tablet unfocus.
      */
     /* package */ ObjectAnimator createHideButtonAnimatorForTablet(View button) {
@@ -2553,8 +2555,8 @@ public class LocationBarMediator
     }
 
     /**
-     * @return Whether the Omnibox is focused on a desktop. Lens and mic buttons should be
-     *     suppressed if the Omnibox is focused and the device is in desktop mode.
+     * Returns whether the Omnibox is focused on a desktop. Lens and mic buttons should be
+     * suppressed if the Omnibox is focused and the device is in desktop mode.
      */
     @EnsuresNonNullIf("mCurrentInput")
     private boolean isUrlBarFocusedOnDesktop() {

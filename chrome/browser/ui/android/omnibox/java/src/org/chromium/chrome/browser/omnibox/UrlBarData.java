@@ -214,9 +214,7 @@ public class UrlBarData {
      */
     public final int originEndIndex;
 
-    /**
-     * @return The text for editing, falling back to the display text if the former is null.
-     */
+    /** Returns the text for editing, falling back to the display text if the former is null. */
     public CharSequence getEditingOrDisplayText() {
         return editingText != null ? editingText : displayText;
     }

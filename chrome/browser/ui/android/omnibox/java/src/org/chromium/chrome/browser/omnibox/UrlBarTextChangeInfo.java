@@ -54,25 +54,28 @@ public class UrlBarTextChangeInfo {
     }
 
     /**
-     * @return Whether the change was a pure deletion.
-     *     <p>Example: "abc" -> user deletes "c" -> "ab" (start=2, beforeLength=1, afterLength=0).
+     * Returns whether the change was a pure deletion.
+     *
+     * <p>Example: "abc" -> user deletes "c" -> "ab" (start=2, beforeLength=1, afterLength=0).
      */
     public boolean isDelete() {
         return mBeforeLength > 0 && mAfterLength == 0;
     }
 
     /**
-     * @return Whether the change was a pure insertion.
-     *     <p>Example: "ab" -> user types "c" -> "abc" (start=2, beforeLength=0, afterLength=1).
+     * Returns whether the change was a pure insertion.
+     *
+     * <p>Example: "ab" -> user types "c" -> "abc" (start=2, beforeLength=0, afterLength=1).
      */
     public boolean isInsertion() {
         return mBeforeLength == 0 && mAfterLength > 0;
     }
 
     /**
-     * @return Whether the change was a replacement (typing over selection).
-     *     <p>Example: "abc", user selects "c" and types "d" -> "abd" (start=2, beforeLength=1,
-     *     afterLength=1).
+     * Returns whether the change was a replacement (typing over selection).
+     *
+     * <p>Example: "abc", user selects "c" and types "d" -> "abd" (start=2, beforeLength=1,
+     * afterLength=1).
      */
     public boolean isReplacement() {
         return mBeforeLength > 0 && mAfterLength > 0;

@@ -94,9 +94,7 @@ class SpanCursorController {
         setCursorVisible(false);
     }
 
-    /**
-     * @return Whether the autocomplete span is currently attached to the {@link Editable}.
-     */
+    /** Returns whether the autocomplete span is currently attached to the {@link Editable}. */
     public boolean hasAutocompleteSpan() {
         return getAutocompleteSpanIndex(mDelegate.getEditableText()) != -1;
     }
