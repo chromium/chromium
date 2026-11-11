@@ -107,6 +107,13 @@ suite('VoiceSelectionDialog', () => {
     dialog.selectedVoice = googleNaturalVoice;
   });
 
+  // Clearing the DOM doesn't close a modal dialog, so close it here.
+  teardown(() => {
+    if (dialog.isConnected) {
+      dialog.close();
+    }
+  });
+
   test('does not render close icon button in dialog header', async () => {
     await drawDialog();
     const closeBtn =
