@@ -6,8 +6,17 @@
 
 namespace contextual_search {
 
-MockContextualSearchContextController::MockContextualSearchContextController() =
-    default;
+MockContextualSearchContextController::MockContextualSearchContextController() {
+  ON_CALL(*this, MarkFileSuperceded)
+      .WillByDefault(
+          [this](const base::UnguessableToken& file_token) -> const FileInfo* {
+            auto* file_info = const_cast<FileInfo*>(GetFileInfo(file_token));
+            if (file_info) {
+              file_info->is_superceded = true;
+            }
+            return file_info;
+          });
+}
 MockContextualSearchContextController::
     ~MockContextualSearchContextController() = default;
 

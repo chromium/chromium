@@ -10555,4 +10555,27 @@ TEST_F(ComposeboxQueryControllerTest,
       lens::LensIdentityDelegationRetryRequestType::kComposeboxFetchRequest, 1);
 }
 
+TEST_F(ComposeboxQueryControllerTest, MarkFileSuperceded) {
+  controller().InitializeIfNeeded();
+
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token, /*file_data=*/std::vector<uint8_t>());
+
+  WaitForClusterInfo();
+  WaitForFileUpload(file_token, lens::MimeType::kPdf);
+
+  const auto* initial_file_info = controller().GetFileInfo(file_token);
+  ASSERT_NE(initial_file_info, nullptr);
+  EXPECT_FALSE(initial_file_info->is_superceded);
+
+  const auto* superceded_file_info =
+      controller().MarkFileSuperceded(file_token);
+  ASSERT_EQ(superceded_file_info, initial_file_info);
+  EXPECT_TRUE(superceded_file_info->is_superceded);
+  EXPECT_TRUE(controller().GetFileInfo(file_token)->is_superceded);
+
+  EXPECT_EQ(controller().MarkFileSuperceded(base::UnguessableToken::Create()),
+            nullptr);
+}
+
 }  // namespace contextual_search

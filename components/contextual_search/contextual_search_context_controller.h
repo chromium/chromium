@@ -245,6 +245,11 @@ class ContextualSearchContextController {
   virtual const FileInfo* GetFileInfo(
       const base::UnguessableToken& file_token) = 0;
 
+  // Marks the file associated with `file_token` as superceded and returns a
+  // pointer to its FileInfo, or nullptr if not found.
+  virtual const FileInfo* MarkFileSuperceded(
+      const base::UnguessableToken& file_token) = 0;
+
   // Return the file infos for all files in the request.
   virtual std::vector<raw_ptr<const FileInfo>> GetFileInfoList() = 0;
 
