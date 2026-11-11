@@ -5,7 +5,6 @@
 #include "ash/system/ime_menu/ime_menu_tray.h"
 
 #include <memory>
-#include <utility>
 
 #include "ash/accessibility/a11y_feature_type.h"
 #include "ash/accessibility/accessibility_controller.h"
@@ -647,15 +646,15 @@ void ImeMenuTray::CreateLabel() {
   }
   // Remove image_view_ at first if it's created.
   if (image_view_) {
-    tray_container()->RemoveChildViewT(std::exchange(image_view_, nullptr));
+    tray_container()->RemoveChildView(image_view_);
+    image_view_ = nullptr;
   }
-  label_ = tray_container()->AddChildView(std::make_unique<ImeMenuLabel>());
-  label_->SetPaintToLayer();
-  label_->layer()->SetFillsBoundsOpaquely(false);
+  label_ = new ImeMenuLabel();
   SetupLabelForTray(label_);
   label_->SetElideBehavior(gfx::TRUNCATE);
   label_->SetCustomTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_IME));
+  tray_container()->AddChildViewRaw(label_.get());
 }
 
 void ImeMenuTray::CreateImageView() {
@@ -665,14 +664,13 @@ void ImeMenuTray::CreateImageView() {
   }
   // Remove label_ at first if it's created.
   if (label_) {
-    tray_container()->RemoveChildViewT(std::exchange(label_, nullptr));
+    tray_container()->RemoveChildView(label_);
+    label_ = nullptr;
   }
-  image_view_ =
-      tray_container()->AddChildView(std::make_unique<ImeMenuImageView>());
-  image_view_->SetPaintToLayer();
-  image_view_->layer()->SetFillsBoundsOpaquely(false);
+  image_view_ = new ImeMenuImageView();
   image_view_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_IME));
+  tray_container()->AddChildViewRaw(image_view_.get());
 }
 
 void ImeMenuTray::UpdateTrayImageOrLabelColor(bool is_image) {

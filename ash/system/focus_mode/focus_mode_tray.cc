@@ -181,6 +181,8 @@ FocusModeTray::FocusModeTray(Shelf* shelf)
   SetCallback(base::BindRepeating(&FocusModeTray::FocusModeIconActivated,
                                   weak_ptr_factory_.GetWeakPtr()));
 
+  tray_container()->SetPaintToLayer();
+  tray_container()->layer()->SetFillsBoundsOpaquely(false);
   progress_indicator_ =
       ProgressIndicator::CreateDefaultInstance(base::BindRepeating(
           [](FocusModeTray* view) -> std::optional<float> {

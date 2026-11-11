@@ -34,8 +34,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/compositor/layer.h"
-#include "ui/compositor/layer_type.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
@@ -1116,16 +1114,6 @@ TEST_F(VideoConferenceTrayTest, AccessibleNames) {
     EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
               video_conference_tray()->GetAccessibleNameForBubble());
   }
-}
-
-TEST_F(VideoConferenceTrayTest, TrayButtonsPaintToLayer) {
-  SetTrayAndButtonsVisible();
-  ASSERT_TRUE(audio_icon()->layer());
-  EXPECT_EQ(ui::LAYER_TEXTURED, audio_icon()->layer()->type());
-  ASSERT_TRUE(camera_icon()->layer());
-  EXPECT_EQ(ui::LAYER_TEXTURED, camera_icon()->layer()->type());
-  ASSERT_TRUE(toggle_bubble_button()->layer());
-  EXPECT_EQ(ui::LAYER_TEXTURED, toggle_bubble_button()->layer()->type());
 }
 
 // Tests the tray when there's a delay in `GetMediaApps()`.
