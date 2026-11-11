@@ -85,6 +85,10 @@ if (!is_android) {
       "//net:test_support",
       "//testing/gtest",
     ]
+
+    if (!is_chromeos) {
+      deps += [ "//chrome/browser/first_run:test_support" ]
+    }
   }
 }
 

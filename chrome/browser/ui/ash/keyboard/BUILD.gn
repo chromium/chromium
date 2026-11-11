@@ -88,6 +88,7 @@ source_set("browser_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_window_header",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_test_path_utils",
     "//extensions/browser",
     "//extensions/common",
     "//ui/events:test_support",

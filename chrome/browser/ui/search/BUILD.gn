@@ -190,6 +190,7 @@ if (enable_webui_ntp) {
       "//chrome/common:constants",
       "//chrome/test:test_support",
       "//chrome/test/base:browser_test_waiters",
+      "//chrome/test/base:platform_browser_test",
       "//components/network_session_configurator/common",
       "//components/search",
       "//components/search_engines",

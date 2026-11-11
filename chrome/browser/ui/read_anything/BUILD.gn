@@ -249,6 +249,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/ui/side_panel",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
     "//chrome/browser/ui/views/frame:browser_view_header",
+    "//chrome/browser/ui/views/page_action:interactive_test_support",
     "//chrome/browser/ui/views/side_panel",
     "//chrome/test:test_support",
     "//chrome/test/user_education:impl",

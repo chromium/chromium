@@ -113,6 +113,7 @@ if (!is_android) {
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/tabs:tabs_public",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_test_path_utils",
       "//components/tabs:public",
       "//content/test:test_support",
       "//net:test_support",

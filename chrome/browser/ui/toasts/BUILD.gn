@@ -118,6 +118,8 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/ui/location_bar",
     "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/location_bar",
+    "//chrome/browser/ui/views/page_action:page_action_test_support",
+    "//chrome/browser/ui/views/toolbar:test_support",
     "//chrome/test:test_support",
     "//components/safe_browsing/core/common:features",
     "//components/vector_icons",

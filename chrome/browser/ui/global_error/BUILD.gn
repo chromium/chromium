@@ -47,6 +47,7 @@ source_set("browser_tests") {
     ":global_error",
     "//chrome/browser:browser_process",
     "//chrome/browser/extensions:test_support",
+    "//chrome/browser/ui/views/toolbar:test_support",
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//components/crx_file",

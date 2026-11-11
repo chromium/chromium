@@ -512,6 +512,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/webui/settings/search/mojom",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//chrome/test/base:browser_test_waiters",
     "//components/browsing_data/core",
     "//components/country_codes",
     "//components/password_manager/core/browser/actor_login:common",
@@ -648,6 +649,7 @@ if (!is_android) {
       "//chrome/browser/ui/safety_hub:test_support",
       "//chrome/browser/ui/signin",
       "//chrome/browser/ui/toasts",
+      "//chrome/browser/ui/web_applications/test:test_support_ui",
       "//chrome/browser/ui/webui/version",
       "//chrome/browser/upgrade_detector",
       "//chrome/browser/usb",
@@ -784,6 +786,11 @@ if (!is_android) {
         "//chromeos/constants",
         "//components/account_id",
         "//components/user_manager",
+      ]
+    } else {
+      deps += [
+        "//chrome/browser/ui/profiles",
+        "//chrome/test/base:web_ui_test_support",
       ]
     }
   }
