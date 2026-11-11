@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.tab_ui.undo_tab_close_snackbar.UndoBarThrottl
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tasks.tab_management.archived_tabs_auto_delete_promo.ArchivedTabsAutoDeletePromoManager;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -104,6 +105,7 @@ public class TabSwitcherPaneFactory {
      * @param multiInstanceManager An instance of the {@link MultiInstanceManager}.
      * @param dragDropDelegate {@link DragAndDropDelegate} to initiate tab drag and drop.
      * @param dragHandlerManager Manages back press during tab switcher drag and drop.
+     * @param tabWindowManagerSupplier Supplier for the {@link TabWindowManager}.
      * @return A {@link Pair} of the created {@link TabSwitcher} and {@link Pane}.
      */
     public static Pair<TabSwitcher, Pane> createTabSwitcherPane(
@@ -139,7 +141,8 @@ public class TabSwitcherPaneFactory {
             NonNullObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
             @Nullable MultiInstanceManager multiInstanceManager,
             @Nullable DragAndDropDelegate dragDropDelegate,
-            TabSwitcherBackPressHandlerManager dragHandlerManager) {
+            TabSwitcherBackPressHandlerManager dragHandlerManager,
+            Supplier<TabWindowManager> tabWindowManagerSupplier) {
         TabGroupCreationUiDelegate tabGroupCreationUiDelegate =
                 new TabGroupCreationUiDelegate(
                         activity,
@@ -156,7 +159,8 @@ public class TabSwitcherPaneFactory {
                             multiInstanceManager,
                             dragDropDelegate,
                             dragHandlerManager,
-                            /* fadeDragShadow= */ true);
+                            /* fadeDragShadow= */ true,
+                            tabWindowManagerSupplier);
             tabSwitcherDragHandler.setTabModelSelector(tabModelSelector);
             if (!backPressManager.has(BackPressHandler.Type.CANCEL_TAB_SWITCHER_DRAG)) {
                 backPressManager.addHandler(
@@ -190,7 +194,8 @@ public class TabSwitcherPaneFactory {
                         () -> assumeNonNull(hubManagerSupplier.get()).getPaneManager(),
                         tabGroupUiActionHandlerSupplier,
                         layoutStateProviderSupplier,
-                        tabSwitcherDragHandler);
+                        tabSwitcherDragHandler,
+                        tabWindowManagerSupplier);
         OneshotSupplierImpl<Profile> profileSupplier = new OneshotSupplierImpl<>();
         Handler handler = new Handler();
         profileProviderSupplier.onAvailable(

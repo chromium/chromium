@@ -1277,7 +1277,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                     mRootUiCoordinator.getTabObscuringHandler(),
                     tabbedRootUiCoordinator.canActivateTabLayoutToggleMenu(),
                     getMenuOrKeyboardActionController(),
-                    activityCreationUptimeMs);
+                    activityCreationUptimeMs,
+                    TabWindowManagerSingleton::getInstance);
         }
     }
 
@@ -1391,7 +1392,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                         getXrSpaceModeObservableSupplier(),
                         mMultiInstanceManager,
                         mDragDropDelegate,
-                        mDragHandlerManager);
+                        mDragHandlerManager,
+                        TabWindowManagerSingleton::getInstance);
         if (didFinishNativeInitialization()) {
             result.first.initWithNative();
         }

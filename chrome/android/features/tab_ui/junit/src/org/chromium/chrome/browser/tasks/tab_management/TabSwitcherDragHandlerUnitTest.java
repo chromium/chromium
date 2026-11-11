@@ -58,6 +58,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherDragHandler.AnimatedDragShadowBuilder;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherDragHandler.DragHandlerDelegate;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -134,6 +135,7 @@ public class TabSwitcherDragHandlerUnitTest {
     @Mock private Canvas mCanvas;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mTabModel;
+    @Mock private TabWindowManager mTabWindowManager;
 
     private Activity mActivity;
     private FrameLayout mRootView;
@@ -158,7 +160,8 @@ public class TabSwitcherDragHandlerUnitTest {
                         mMultiInstanceManager,
                         mDragAndDropDelegate,
                         mDragHandlerManager,
-                        /* fadeDragShadow= */ true);
+                        /* fadeDragShadow= */ true,
+                        () -> mTabWindowManager);
         mDragHandler.setDragHandlerDelegate(mDragHandlerDelegate);
     }
 

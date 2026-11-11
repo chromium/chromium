@@ -11,7 +11,6 @@ import android.app.Activity;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabId;
@@ -20,6 +19,7 @@ import org.chromium.chrome.browser.tab_ui.TabSwitcherGroupSuggestionService;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherGroupSuggestionService.SuggestionLifecycleObserver;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherGroupSuggestionService.SuggestionUiEvent;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.chrome.browser.tasks.tab_management.labels.TabListHighlighter;
 
@@ -37,17 +37,19 @@ public class TabSwitcherGroupSuggestionServiceFactory {
      * @param profile The profile to use for the service.
      * @param tabListCoordinator Used for highlighting tabs when a suggestion is shown.
      * @param messageService Used for showing a suggestion message.
+     * @param tabWindowManager The {@link TabWindowManager}.
      */
     public static TabSwitcherGroupSuggestionService build(
             Activity activity,
             MonotonicObservableSupplier<TabModel> currentTabModelSupplier,
             Profile profile,
             TabListCoordinator tabListCoordinator,
-            TabGroupSuggestionMessageService messageService) {
+            TabGroupSuggestionMessageService messageService,
+            TabWindowManager tabWindowManager) {
         assert ChromeFeatureList.sTabSwitcherGroupSuggestionsAndroid.isEnabled();
         assert !profile.isOffTheRecord();
 
-        @WindowId int windowId = TabWindowManagerSingleton.getInstance().getIdForWindow(activity);
+        @WindowId int windowId = tabWindowManager.getIdForWindow(activity);
 
         SuggestionLifecycleObserverHandler handler =
                 initObserver(tabListCoordinator, messageService);

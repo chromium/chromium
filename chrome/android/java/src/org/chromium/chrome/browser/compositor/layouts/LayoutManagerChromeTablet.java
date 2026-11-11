@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.theme.ToolbarThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
@@ -123,6 +124,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
      *     registering menu or keyboard action handlers.
      * @param activityCreationUptimeMs The {@link android.os.SystemClock#uptimeMillis()} timestamp
      *     when the hosting activity was created, or 0 if unavailable.
+     * @param tabWindowManagerSupplier Supplier for the {@link TabWindowManager}.
      */
     public LayoutManagerChromeTablet(
             LayoutManagerHost host,
@@ -158,7 +160,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             TabObscuringHandler tabObscuringHandler,
             @Nullable BooleanSupplier canActivateTabLayoutToggleMenuSupplier,
             MenuOrKeyboardActionController menuOrKeyboardActionController,
-            long activityCreationUptimeMs) {
+            long activityCreationUptimeMs,
+            Supplier<TabWindowManager> tabWindowManagerSupplier) {
         super(
                 host,
                 contentContainer,
@@ -208,7 +211,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
                         tabObscuringHandler,
                         canActivateTabLayoutToggleMenuSupplier,
                         menuOrKeyboardActionController,
-                        activityCreationUptimeMs);
+                        activityCreationUptimeMs,
+                        tabWindowManagerSupplier);
         addSceneOverlay(mTabStripLayoutHelperManager);
         addObserver(mTabStripLayoutHelperManager.getTabSwitcherObserver());
         mDesktopWindowStateManager = desktopWindowStateManager;

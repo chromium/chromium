@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MessageCardScope;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.Message;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceWelcomeMessageReviewActionProvider;
@@ -174,6 +175,7 @@ public class TabSwitcherMessageManager {
     private final Supplier<PaneManager> mPaneManagerSupplier;
     private final Supplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
     private final Supplier<@Nullable LayoutStateProvider> mLayoutStateProviderSupplier;
+    private final TabWindowManager mTabWindowManager;
 
     private @Nullable Profile mProfile;
     private @Nullable PriceWelcomeMessageController mPriceWelcomeMessageController;
@@ -200,6 +202,7 @@ public class TabSwitcherMessageManager {
      * @param tabGroupUiActionHandlerSupplier Used to open hidden tab groups.
      * @param layoutStateProviderSupplier Supplies the LayoutStateProvider, which is used to observe
      *     when the TabSwitcher is hidden.
+     * @param tabWindowManager The {@link TabWindowManager}.
      */
     public TabSwitcherMessageManager(
             Activity activity,
@@ -217,7 +220,8 @@ public class TabSwitcherMessageManager {
             MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
             Supplier<PaneManager> paneManagerSupplier,
             Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
-            Supplier<@Nullable LayoutStateProvider> layoutStateProviderSupplier) {
+            Supplier<@Nullable LayoutStateProvider> layoutStateProviderSupplier,
+            TabWindowManager tabWindowManager) {
         mActivity = activity;
         mLifecycleDispatcher = lifecycleDispatcher;
         mCurrentTabModelSupplier = currentTabModelSupplier;
@@ -231,6 +235,7 @@ public class TabSwitcherMessageManager {
         mBackPressManager = backPressManager;
         mDesktopWindowStateManager = desktopWindowStateManager;
         mLayoutStateProviderSupplier = layoutStateProviderSupplier;
+        mTabWindowManager = tabWindowManager;
 
         mMessageCardProvider =
                 new MessageCardProvider<@MessageType Integer, @UiType Integer>(
@@ -361,7 +366,8 @@ public class TabSwitcherMessageManager {
                             mActivity,
                             mCurrentTabModelSupplier,
                             this::addTabGroupSuggestionMessage,
-                            this::translateStartMergeAnimation);
+                            this::translateStartMergeAnimation,
+                            mTabWindowManager);
             mMessageCardProvider.subscribeMessageService(mTabGroupSuggestionMessageService);
         }
         mPriceWelcomeMessageController =

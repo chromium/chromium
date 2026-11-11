@@ -99,6 +99,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadataExtractor;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
@@ -173,6 +174,7 @@ public class TabStripDragHandlerTest {
     @Mock private StripLayoutHelper mDestStripLayoutHelper;
     @Mock private MultiInstanceManager mSourceMultiInstanceManager;
     @Mock private MultiInstanceManager mDestMultiInstanceManager;
+    @Mock private TabWindowManager mTabWindowManager;
     @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
 
     private final SettableMonotonicObservableSupplier<Integer> mTabStripHeightSupplier =
@@ -266,7 +268,8 @@ public class TabStripDragHandlerTest {
                         mDragDropDelegate,
                         mBrowserControlsStateProvider,
                         activitySupplier,
-                        mTabStripHeightSupplier);
+                        mTabStripHeightSupplier,
+                        () -> mTabWindowManager);
         mSourceInstance.setTabModelSelector(mTabModelSelector);
 
         mDestInstance =
@@ -279,8 +282,12 @@ public class TabStripDragHandlerTest {
                         mDragDropDelegate,
                         mBrowserControlsStateProvider,
                         activitySupplier,
-                        mTabStripHeightSupplier);
+                        mTabStripHeightSupplier,
+                        () -> mTabWindowManager);
         mDestInstance.setTabModelSelector(mTabModelSelector);
+
+        when(mTabWindowManager.getIdForWindow(any()))
+                .thenReturn(TabWindowManager.INVALID_WINDOW_ID);
 
         when(mSourceMultiInstanceManager.closeChromeWindowIfEmpty(anyInt())).thenReturn(false);
 

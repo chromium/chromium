@@ -38,7 +38,6 @@ import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator;
@@ -230,6 +229,7 @@ public class VerticalTabListCoordinator {
     private final @Nullable TabUnderlineManager mTabUnderlineManager;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final Supplier<@Nullable TabContentManager> mTabContentManagerSupplier;
+    private final Supplier<TabWindowManager> mTabWindowManagerSupplier;
     private final List<DragSurface> mDragSurfaces = new ArrayList<>();
     private final TabSwitcherDragHandler mTabSwitcherDragHandler;
     private final DragHandlerDelegate mNonOriginatingDragHandlerDelegate;
@@ -387,6 +387,7 @@ public class VerticalTabListCoordinator {
      * @param undoBarThrottle Throttler for undo bar messages.
      * @param browserControlsStateProvider Provider for browser controls sizing and state.
      * @param backPressManager Manager for intercepting system back press and physical ESC keys.
+     * @param tabWindowManagerSupplier Supplier for the {@link TabWindowManager}.
      */
     @SuppressLint("ClickableViewAccessibility")
     public VerticalTabListCoordinator(
@@ -409,7 +410,8 @@ public class VerticalTabListCoordinator {
             Supplier<@Nullable TabContentManager> tabContentManagerSupplier,
             @Nullable UndoBarThrottle undoBarThrottle,
             BrowserControlsStateProvider browserControlsStateProvider,
-            BackPressManager backPressManager) {
+            BackPressManager backPressManager,
+            Supplier<TabWindowManager> tabWindowManagerSupplier) {
         mCanActivateTabLayoutToggleMenuSupplier = canActivateTabLayoutToggleMenuSupplier;
         mVerticalTabsActiveSupplier = verticalTabsActiveSupplier;
         mVerticalTabsWidthSupplier = verticalTabsWidthSupplier;
@@ -428,6 +430,7 @@ public class VerticalTabListCoordinator {
         mBackPressManager.addHandler(
                 mBackPressHandlerManager, BackPressHandler.Type.CANCEL_TAB_SWITCHER_DRAG);
         mTabContentManagerSupplier = tabContentManagerSupplier;
+        mTabWindowManagerSupplier = tabWindowManagerSupplier;
         if (GlicEnabling.isEnabledByFlags() || ContextualTasksUtils.isContextualTasksUiEnabled()) {
             mTabUnderlineManager = new TabUnderlineManager(windowAndroid);
         } else {
@@ -1493,7 +1496,8 @@ public class VerticalTabListCoordinator {
                         mMultiInstanceManager,
                         dragDropDelegate,
                         mBackPressHandlerManager,
-                        /* fadeDragShadow= */ false);
+                        /* fadeDragShadow= */ false,
+                        mTabWindowManagerSupplier);
         dragHandler.setTabModelSelector(tabModelSelector);
         return dragHandler;
     }
@@ -1747,17 +1751,17 @@ public class VerticalTabListCoordinator {
                 if (tab.getTabGroupId() == null && !dropData.isTabInGroup) {
                     return;
                 }
+                TabWindowManager tabWindowManager = mTabWindowManagerSupplier.get();
                 TabModel sourceTabModel = null;
                 if (dropData.windowId != TabWindowManager.INVALID_WINDOW_ID) {
                     TabModelSelector sourceSelector =
-                            TabWindowManagerSingleton.getInstance()
-                                    .getTabModelSelectorById(dropData.windowId);
+                            tabWindowManager.getTabModelSelectorById(dropData.windowId);
                     if (sourceSelector != null) {
                         sourceTabModel = sourceSelector.getModel(tab.isIncognitoBranded());
                     }
                 }
                 if (sourceTabModel == null) {
-                    sourceTabModel = TabWindowManagerSingleton.getInstance().getTabModelForTab(tab);
+                    sourceTabModel = tabWindowManager.getTabModelForTab(tab);
                 }
                 if (sourceTabModel != null && sourceTabModel.isTabInTabGroup(tab)) {
                     sourceTabModel

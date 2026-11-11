@@ -24,7 +24,6 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.dragdrop.ChromeDragDropUtils;
 import org.chromium.chrome.browser.dragdrop.ChromeDropDataAndroid;
 import org.chromium.chrome.browser.dragdrop.ChromeMultiTabDropDataAndroid;
@@ -44,6 +43,8 @@ import org.chromium.chrome.browser.tabmodel.TabGroupMetadataExtractor;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
+import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
@@ -64,6 +65,7 @@ public abstract class TabDragHandlerBase
     private static @Nullable Token sDragToken;
 
     private final Supplier<@Nullable Activity> mActivitySupplier;
+    private final Supplier<TabWindowManager> mTabWindowManagerSupplier;
     private final SettableNonNullObservableSupplier<Boolean> mDragInProgressSupplier =
             ObservableSuppliers.createNonNull(false);
     protected final MultiInstanceManager mMultiInstanceManager;
@@ -82,15 +84,18 @@ public abstract class TabDragHandlerBase
      * @param multiInstanceManager {@link MultiInstanceManager} to perform move action when drop
      *     completes.
      * @param dragAndDropDelegate {@link DragAndDropDelegate} to initiate tab drag and drop.
+     * @param tabWindowManagerSupplier Supplier for the {@link TabWindowManager}.
      */
     public TabDragHandlerBase(
             Supplier<@Nullable Activity> activitySupplier,
             MultiInstanceManager multiInstanceManager,
-            DragAndDropDelegate dragAndDropDelegate) {
+            DragAndDropDelegate dragAndDropDelegate,
+            Supplier<TabWindowManager> tabWindowManagerSupplier) {
         mActivitySupplier = activitySupplier;
         mMultiInstanceManager = multiInstanceManager;
         mMultiInstanceOrchestrator = MultiInstanceOrchestratorFactory.getInstance();
         mDragAndDropDelegate = dragAndDropDelegate;
+        mTabWindowManagerSupplier = tabWindowManagerSupplier;
     }
 
     /** Sets @{@link TabModelSelector} to retrieve model info. */
@@ -348,9 +353,13 @@ public abstract class TabDragHandlerBase
         return currentModel.isIncognitoBranded() == draggedIncognito;
     }
 
+    private @WindowId int getWindowId() {
+        return mTabWindowManagerSupplier.get().getIdForWindow(getActivity());
+    }
+
     protected ChromeDropDataAndroid prepareTabDropData(Tab tab) {
         boolean isTabInGroup = getCurrentModel().isTabInTabGroup(tab);
-        int windowId = TabWindowManagerSingleton.getInstance().getIdForWindow(getActivity());
+        int windowId = getWindowId();
         boolean allowDragToCreateInstance =
                 shouldAllowTabDragToCreateInstance()
                         && (TabUiFeatureUtilities.doesOemSupportDragToCreateInstance()
@@ -366,7 +375,7 @@ public abstract class TabDragHandlerBase
     }
 
     protected ChromeDropDataAndroid prepareMultiTabDropData(List<Tab> tabs, Tab primaryTab) {
-        int windowId = TabWindowManagerSingleton.getInstance().getIdForWindow(getActivity());
+        int windowId = getWindowId();
         boolean allowDragToCreateInstance =
                 shouldAllowMultiTabDragToCreateInstance()
                         && (TabUiFeatureUtilities.doesOemSupportDragToCreateInstance()
@@ -391,7 +400,7 @@ public abstract class TabDragHandlerBase
     protected ChromeDropDataAndroid prepareGroupDropData(Token tabGroupId) {
         TabModel tabModel = getCurrentModel();
         List<Tab> groupedTabs = tabModel.getTabsInGroup(tabGroupId);
-        int windowId = TabWindowManagerSingleton.getInstance().getIdForWindow(getActivity());
+        int windowId = getWindowId();
         TabGroupMetadata metadata =
                 TabGroupMetadataExtractor.extractTabGroupMetadata(
                         tabModel, groupedTabs, windowId, getTabModelSelector().getCurrentTabId());

@@ -4,7 +4,9 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -28,10 +30,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Token;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.dragdrop.ChromeDropDataAndroid;
 import org.chromium.chrome.browser.dragdrop.ChromeMultiTabDropDataAndroid;
 import org.chromium.chrome.browser.dragdrop.ChromeTabDropDataAndroid;
 import org.chromium.chrome.browser.dragdrop.ChromeTabGroupDropDataAndroid;
@@ -45,9 +49,12 @@ import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
+import org.chromium.url.JUnitTestGURLs;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -66,6 +73,7 @@ public class TabDragHandlerBaseTest {
     @Mock private View.DragShadowBuilder mDragShadowBuilder;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mTabModel;
+    @Mock private TabWindowManager mTabWindowManager;
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
     private TabDragHandlerBase mTabDragHandler;
@@ -81,7 +89,10 @@ public class TabDragHandlerBaseTest {
 
         mTabDragHandler =
                 new TabDragHandlerBase(
-                        () -> mActivity, mMultiInstanceManager, mDragAndDropDelegate) {
+                        () -> mActivity,
+                        mMultiInstanceManager,
+                        mDragAndDropDelegate,
+                        () -> mTabWindowManager) {
                     @Override
                     public boolean onDrag(View v, DragEvent event) {
                         return false;
@@ -382,5 +393,32 @@ public class TabDragHandlerBaseTest {
         assertTrue(mTabDragHandler.handleEscPress());
         verify(dragSourceView, never()).cancelDragAndDrop();
         verify(decorView).cancelDragAndDrop();
+    }
+
+    @Test
+    public void testPrepareDropData_PopulatesWindowId() {
+        mTabDragHandler.setTabModelSelector(mTabModelSelector);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
+        when(mTabWindowManager.getIdForWindow(mActivity)).thenReturn(3);
+        Tab tab1 = createMockTab(1);
+        Tab tab2 = createMockTab(2);
+        when(tab1.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
+        when(tab2.getUrl()).thenReturn(JUnitTestGURLs.URL_2);
+
+        ChromeDropDataAndroid tabDropData = mTabDragHandler.prepareTabDropData(tab1);
+        assertEquals(3, tabDropData.windowId);
+
+        ChromeDropDataAndroid multiTabDropData =
+                mTabDragHandler.prepareMultiTabDropData(new ArrayList<>(List.of(tab1, tab2)), tab1);
+        assertEquals(3, multiTabDropData.windowId);
+
+        Token groupId = new Token(1L, 2L);
+        when(tab1.getTabGroupId()).thenReturn(groupId);
+        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(tab1, tab2));
+        when(mTabModel.getTabGroupTitle(groupId)).thenReturn("Group");
+        ChromeTabGroupDropDataAndroid groupDropData =
+                (ChromeTabGroupDropDataAndroid) mTabDragHandler.prepareGroupDropData(groupId);
+        assertNotNull(groupDropData.tabGroupMetadata);
+        assertEquals(3, groupDropData.tabGroupMetadata.sourceWindowId);
     }
 }

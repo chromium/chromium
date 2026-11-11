@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.tab_group_suggestion.SuggestionMetricsService
 import org.chromium.chrome.browser.tab_ui.TabSwitcherGroupSuggestionService.SuggestionLifecycleObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageModelFactory;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupSuggestionMessageService.StartMergeAnimation;
@@ -80,6 +81,7 @@ public class TabGroupSuggestionMessageServiceUnitTest {
     @Mock private SuggestionLifecycleObserver mSuggestionLifecycleObserver;
     @Mock private StartMergeAnimation mStartMergeAnimation;
     @Mock private SuggestionMetricsService mSuggestionMetricsService;
+    @Mock private TabWindowManager mTabWindowManager;
     @Mock private Tab mTab1;
     @Mock private Tab mTab2;
     @Mock private Tab mTab3;
@@ -107,7 +109,8 @@ public class TabGroupSuggestionMessageServiceUnitTest {
                                 mContext,
                                 tabModelSupplier,
                                 mAddOnMessageAfterTabCallback,
-                                mStartMergeAnimation));
+                                mStartMergeAnimation,
+                                mTabWindowManager));
         mTabGroupSuggestionMessageService.initialize(mServiceDismissActionProvider);
 
         doAnswer(
@@ -217,6 +220,7 @@ public class TabGroupSuggestionMessageServiceUnitTest {
         List<Tab> tabs = List.of(mTab1, mTab2);
         Token tabGroupId = new Token(1L, 2L);
         when(mTab1.getTabGroupId()).thenReturn(tabGroupId);
+        when(mTabWindowManager.findWindowIdForTabGroup(tabGroupId)).thenReturn(1);
 
         mTabGroupSuggestionMessageService.addGroupMessageForTabs(
                 tabIds, mSuggestionLifecycleObserver);
@@ -233,8 +237,7 @@ public class TabGroupSuggestionMessageServiceUnitTest {
                         tabs, mTab1, TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         verify(mTabGroupSuggestionMessageService).dismissMessage(any());
         verify(mSuggestionMetricsService)
-                .onSuggestionAccepted(
-                        anyInt(), eq(GroupCreationSource.GTS_SUGGESTION), eq(tabGroupId));
+                .onSuggestionAccepted(1, GroupCreationSource.GTS_SUGGESTION, tabGroupId);
     }
 
     @Test

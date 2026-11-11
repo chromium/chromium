@@ -2640,7 +2640,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                     mTabContentManagerSupplier,
                                     mUndoGroupSnackbarController,
                                     mBrowserControlsManager,
-                                    mBackPressManager),
+                                    mBackPressManager,
+                                    TabWindowManagerSingleton::getInstance),
                             mIsVerticalTabsActiveSupplier);
             if (mToolbarManager != null) {
                 mToolbarManager.setVerticalTabsAutoHiddenSupplier(

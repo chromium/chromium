@@ -104,6 +104,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tabstrip.StripVisibilityState;
 import org.chromium.chrome.browser.tabstrip.TabStripSceneLayerHolder;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabHoverCardView;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
@@ -503,6 +504,7 @@ public class StripLayoutHelperManager
      *     registering menu or keyboard action handlers.
      * @param activityCreationUptimeMs The {@link SystemClock#uptimeMillis()} timestamp when the
      *     hosting activity was created, or 0 if unavailable.
+     * @param tabWindowManagerSupplier Supplier for the {@link TabWindowManager}.
      */
     // TODO(crbug.com/484116872): Suppressing to observe SharedPreferences, which is discouraged;
     // should use another messaging channel instead.
@@ -542,7 +544,8 @@ public class StripLayoutHelperManager
             TabObscuringHandler tabObscuringHandler,
             @Nullable BooleanSupplier canActivateTabLayoutToggleMenuSupplier,
             MenuOrKeyboardActionController menuOrKeyboardActionController,
-            long activityCreationUptimeMs) {
+            long activityCreationUptimeMs,
+            Supplier<TabWindowManager> tabWindowManagerSupplier) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         Resources res = context.getResources();
@@ -686,7 +689,8 @@ public class StripLayoutHelperManager
                             dragDropDelegate,
                             browserControlsStateProvider,
                             () -> windowAndroid.getActivity().get(),
-                            toolbarManager.getTabStripHeightSupplier());
+                            toolbarManager.getTabStripHeightSupplier(),
+                            tabWindowManagerSupplier);
 
             backPressManager.addHandler(
                     mTabStripDragHandler, BackPressHandler.Type.CANCEL_TAB_STRIP_DRAG);

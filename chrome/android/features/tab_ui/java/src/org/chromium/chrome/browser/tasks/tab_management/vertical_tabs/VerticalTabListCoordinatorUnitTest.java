@@ -79,7 +79,6 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
-import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
@@ -1562,7 +1561,8 @@ public class VerticalTabListCoordinatorUnitTest {
                         mTabContentManagerSupplier,
                         mUndoBarThrottle,
                         mBrowserControlsStateProvider,
-                        mBackPressManager);
+                        mBackPressManager,
+                        () -> mTabWindowManager);
 
         View containerView = mCoordinator.getView();
         containerView.setVisibility(View.VISIBLE);
@@ -3869,8 +3869,6 @@ public class VerticalTabListCoordinatorUnitTest {
     @Test
     public void
             testNonOriginatingDrag_GroupedTab_DropIntoGroup_UngroupsAndReparentsIntoTargetGroup() {
-        TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
-
         Token sourceGroupId = new Token(3L, 4L);
         Tab draggedTab = mock(Tab.class);
         when(draggedTab.getId()).thenReturn(100);
@@ -4081,8 +4079,6 @@ public class VerticalTabListCoordinatorUnitTest {
     @Test
     public void
             testNonOriginatingDrag_GroupedTab_DropIntoStandaloneList_UngroupsAndReparentsToDestTabIndex() {
-        TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
-
         Token sourceGroupId = new Token(3L, 4L);
         Tab draggedTab = mock(Tab.class);
         when(draggedTab.getId()).thenReturn(100);
@@ -4343,7 +4339,8 @@ public class VerticalTabListCoordinatorUnitTest {
                         mTabContentManagerSupplier,
                         mUndoBarThrottle,
                         mBrowserControlsStateProvider,
-                        mBackPressManager);
+                        mBackPressManager,
+                        () -> mTabWindowManager);
 
         mCoordinator
                 .getCollapseController()
@@ -4372,7 +4369,8 @@ public class VerticalTabListCoordinatorUnitTest {
                         mTabContentManagerSupplier,
                         mUndoBarThrottle,
                         mBrowserControlsStateProvider,
-                        mBackPressManager);
+                        mBackPressManager,
+                        () -> mTabWindowManager);
 
         mCoordinator
                 .getCollapseController()

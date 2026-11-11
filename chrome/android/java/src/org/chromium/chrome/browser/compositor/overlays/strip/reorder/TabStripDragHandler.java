@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.tab_ui.MultiThumbnailCardProvider;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabList;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabDragHandlerBase;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
@@ -111,6 +112,7 @@ public class TabStripDragHandler extends TabDragHandlerBase {
      *     dimens.
      * @param activitySupplier Supplier for the current activity.
      * @param tabStripHeightSupplier Supplier of the tab strip height.
+     * @param tabWindowManagerSupplier Supplier for the {@link TabWindowManager}.
      */
     public TabStripDragHandler(
             Context context,
@@ -121,8 +123,13 @@ public class TabStripDragHandler extends TabDragHandlerBase {
             DragAndDropDelegate dragAndDropDelegate,
             BrowserControlsStateProvider browserControlStateProvider,
             Supplier<@Nullable Activity> activitySupplier,
-            Supplier<Integer> tabStripHeightSupplier) {
-        super(activitySupplier, multiInstanceManager, dragAndDropDelegate);
+            Supplier<Integer> tabStripHeightSupplier,
+            Supplier<TabWindowManager> tabWindowManagerSupplier) {
+        super(
+                activitySupplier,
+                multiInstanceManager,
+                dragAndDropDelegate,
+                tabWindowManagerSupplier);
         mPxToDp = 1.f / context.getResources().getDisplayMetrics().density;
         mTabStripHeightSupplier = tabStripHeightSupplier;
         mStripLayoutHelperSupplier = stripLayoutHelperSupplier;

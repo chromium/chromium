@@ -100,7 +100,6 @@ specific_include_rules = {
     "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabArchiveSettings.java",
   ],
   "TabDragHandlerBase.*\\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/app/tabwindow/TabWindowManagerSingleton.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/dragdrop/ChromeDragDropUtils.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/dragdrop/ChromeDropDataAndroid.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/dragdrop/ChromeMultiTabDropDataAndroid.java",
@@ -119,9 +118,6 @@ specific_include_rules = {
   ],
   "TabGroupList(BottomSheet)?Coordinator\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabFavicon.java",
-  ],
-  "TabGroupSuggestionMessageService\\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/app/tabwindow/TabWindowManagerSingleton.java",
   ],
   "TabGroupUiOneshotSupplier.*\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/ActivityTabProvider.java",
@@ -174,9 +170,6 @@ specific_include_rules = {
   "TabSwitcherDragHandler.*\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/dragdrop/ChromeDropDataAndroid.java",
   ],
-  "TabSwitcherGroupSuggestionServiceFactory\\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/app/tabwindow/TabWindowManagerSingleton.java",
-  ],
   "TabSwitcherMessageManager.*\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/tabmodel/ArchivedTabModelOrchestrator.java",
   ],
@@ -203,7 +196,6 @@ specific_include_rules = {
     "+chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/TabStripContextMenuCoordinator.java",
   ],
   "VerticalTabListCoordinator.*\\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/app/tabwindow/TabWindowManagerSingleton.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/TabContextMenuCoordinator.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/TabGroupContextMenuCoordinator.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/TabStripContextMenuCoordinator.java",

@@ -25,6 +25,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.dragdrop.ChromeDropDataAndroid;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.ui.interpolators.Interpolators;
@@ -135,14 +136,20 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
      * @param dragAndDropDelegate {@link DragAndDropDelegate} to initiate tab drag and drop.
      * @param dragHandlerManager Manager for back press handling during drag.
      * @param fadeDragShadow Whether the drag shadow should animate alpha during drag.
+     * @param tabWindowManagerSupplier Supplier for the {@link TabWindowManager}.
      */
     public TabSwitcherDragHandler(
             Supplier<@Nullable Activity> activitySupplier,
             MultiInstanceManager multiInstanceManager,
             DragAndDropDelegate dragAndDropDelegate,
             TabSwitcherBackPressHandlerManager dragHandlerManager,
-            boolean fadeDragShadow) {
-        super(activitySupplier, multiInstanceManager, dragAndDropDelegate);
+            boolean fadeDragShadow,
+            Supplier<TabWindowManager> tabWindowManagerSupplier) {
+        super(
+                activitySupplier,
+                multiInstanceManager,
+                dragAndDropDelegate,
+                tabWindowManagerSupplier);
         mDragHandlerManager = dragHandlerManager;
         mDragHandlerManager.addHandler(this);
         mFadeDragShadow = fadeDragShadow;

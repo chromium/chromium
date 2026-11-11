@@ -95,6 +95,7 @@ import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tab_ui.undo_tab_close_snackbar.UndoBarThrottle;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.DialogController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
@@ -165,6 +166,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     @Mock private TabListGroupMenuCoordinator mTabListGroupMenuCoordinator;
     @Mock private PriceWelcomeMessageController mPriceWelcomeMessageController;
     @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
+    @Mock private TabWindowManager mTabWindowManager;
 
     private final SettableNonNullObservableSupplier<Boolean> mHubSearchBoxVisibilitySupplier =
             ObservableSuppliers.createNonNull(false);
@@ -280,7 +282,8 @@ public class TabSwitcherPaneCoordinatorUnitTest {
                         mUndoBarThrottle,
                         mOverlayViewSupplier::set,
                         /* tabSwitcherDragHandler= */ null,
-                        mHubSearchBoxVisibilitySupplier);
+                        mHubSearchBoxVisibilitySupplier,
+                        mTabWindowManager);
         watcher.assertExpected();
         mOverlayViewManager = new SingleChildViewManager(overlayView, mOverlayViewSupplier);
 

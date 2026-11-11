@@ -115,6 +115,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tabstrip.StripVisibilityState;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
@@ -175,6 +176,7 @@ public class StripLayoutHelperManagerTest {
     @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
     @Mock private DragAndDropDelegate mDragDropDelegate;
     @Mock private TabModelSelector mTabModelSelector;
+    @Mock private TabWindowManager mTabWindowManager;
     @Mock private TabCreatorManager mTabCreatorManager;
     @Mock private TabModel mStandardTabModel;
     @Mock private Profile mProfile;
@@ -346,7 +348,8 @@ public class StripLayoutHelperManagerTest {
                         mTabObscuringHandler,
                         /* canActivateTabLayoutToggleMenuSupplier= */ null,
                         mMenuOrKeyboardActionController,
-                        /* activityCreationUptimeMs= */ 0L);
+                        /* activityCreationUptimeMs= */ 0L,
+                        () -> mTabWindowManager);
         ShadowLooper.idleMainLooper();
         mStripLayoutHelperManager.setTabStripTreeProviderForTesting(mTabStripTreeProvider);
         mStripLayoutHelperManager.setTabModelSelector(mTabModelSelector, mTabCreatorManager);

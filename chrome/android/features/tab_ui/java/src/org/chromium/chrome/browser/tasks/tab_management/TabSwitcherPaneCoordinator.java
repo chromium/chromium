@@ -81,6 +81,7 @@ import org.chromium.chrome.browser.tab_ui.undo_tab_close_snackbar.UndoBarThrottl
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tasks.tab_management.PriceWelcomeMessageController.PriceMessageUpdateObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridContextMenuCoordinator.ShowTabListEditor;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.DialogController;
@@ -291,6 +292,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
      * @param setOverlayViewCallback Callback to set the current overlay view.
      * @param tabSwitcherDragHandler An instance of the {@link TabSwitcherDragHandler}.
      * @param hubSearchBoxVisibilitySupplier Used to set the visibility of the hub search box.
+     * @param tabWindowManager The {@link TabWindowManager}.
      */
     public TabSwitcherPaneCoordinator(
             Activity activity,
@@ -320,7 +322,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             UndoBarThrottle undoBarThrottle,
             Callback<@Nullable View> setOverlayViewCallback,
             @Nullable TabSwitcherDragHandler tabSwitcherDragHandler,
-            SettableNonNullObservableSupplier<Boolean> hubSearchBoxVisibilitySupplier) {
+            SettableNonNullObservableSupplier<Boolean> hubSearchBoxVisibilitySupplier,
+            TabWindowManager tabWindowManager) {
         try (TraceEvent _ = TraceEvent.scoped("TabSwitcherPaneCoordinator.constructor")) {
             mProfileProvider = profileProvider;
             mIsVisibleSupplier = isVisibleSupplier;
@@ -674,7 +677,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                                     profile,
                                     mTabListCoordinator,
                                     assumeNonNull(
-                                            messageManager.getTabGroupSuggestionMessageService()));
+                                            messageManager.getTabGroupSuggestionMessageService()),
+                                    tabWindowManager);
                 }
             }
         }

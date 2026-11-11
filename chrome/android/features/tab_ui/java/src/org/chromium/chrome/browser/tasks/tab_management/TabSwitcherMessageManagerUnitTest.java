@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceWelcomeMessageReviewActionProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
@@ -113,6 +114,7 @@ public class TabSwitcherMessageManagerUnitTest {
     @Mock private ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
     @Mock private TabArchiveSettings mTabArchiveSettings;
     @Mock private Supplier<LayoutStateProvider> mLayoutStateProviderSupplier;
+    @Mock private TabWindowManager mTabWindowManager;
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
     @Captor
@@ -178,7 +180,8 @@ public class TabSwitcherMessageManagerUnitTest {
                         mEdgeToEdgeSupplier,
                         mPaneManagerSupplier,
                         mTabGroupUiActionHandlerSupplier,
-                        mLayoutStateProviderSupplier);
+                        mLayoutStateProviderSupplier,
+                        mTabWindowManager);
         mMessageManager.registerMessageHostDelegate(
                 MessageHostDelegateFactory.build(mTabListCoordinator));
         mMessageManager.bind(
