@@ -82,8 +82,7 @@ void VisitedLinkReader::UpdateUnpartitionedVisitedLinks(
     if (!header_mapping.IsValid())
       return;
 
-    const SharedHeader* header =
-        static_cast<const SharedHeader*>(header_mapping.memory());
+    const SharedHeader* header = header_mapping.GetMemoryAs<SharedHeader>();
     table_len = header->length;
     salt_ = header->salt;
   }
@@ -116,7 +115,7 @@ void VisitedLinkReader::UpdatePartitionedVisitedLinks(
     }
 
     const PartitionedSharedHeader* header =
-        static_cast<const PartitionedSharedHeader*>(header_mapping.memory());
+        header_mapping.GetMemoryAs<PartitionedSharedHeader>();
     table_len = header->length;
   }
 
