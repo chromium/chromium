@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -41,13 +42,10 @@ public class LevelDBPersistedTabDataStorageFactoryUnitTest {
     @Before
     public void setUp() {
         LevelDBPersistedDataStorageJni.setInstanceForTesting(mLevelDBPersistedTabDataStorage);
-        doNothing()
-                .when(mLevelDBPersistedTabDataStorage)
-                .init(any(LevelDBPersistedDataStorage.class), any(BrowserContextHandle.class));
+        when(mLevelDBPersistedTabDataStorage.init(any(BrowserContextHandle.class))).thenReturn(1L);
         doNothing().when(mLevelDBPersistedTabDataStorage).destroy(anyLong());
         doReturn(false).when(mProfile1).isOffTheRecord();
         doReturn(false).when(mProfile2).isOffTheRecord();
-        LevelDBPersistedDataStorage.setSkipNativeAssertionsForTesting(true);
     }
 
     @Test
@@ -84,25 +82,25 @@ public class LevelDBPersistedTabDataStorageFactoryUnitTest {
         // Full zero-offset heap array reuses the backing byte[] without copying.
         storage.save(1, "full", () -> ByteBuffer.wrap(full));
         verify(mLevelDBPersistedTabDataStorage)
-                .save(eq(0L), eq("_1-full"), captor.capture(), isNull());
+                .save(eq(1L), eq("_1-full"), captor.capture(), isNull());
         Assert.assertSame(full, captor.getValue());
 
         // Offset/length sub-range copies only [position, limit).
         storage.save(1, "subrange", () -> ByteBuffer.wrap(full, 1, 2));
         verify(mLevelDBPersistedTabDataStorage)
-                .save(eq(0L), eq("_1-subrange"), captor.capture(), isNull());
+                .save(eq(1L), eq("_1-subrange"), captor.capture(), isNull());
         Assert.assertArrayEquals(new byte[] {2, 3}, captor.getValue());
 
         // Non-zero arrayOffset slice copies only the slice bytes.
         storage.save(1, "slice", () -> ByteBuffer.wrap(full, 1, 2).slice());
         verify(mLevelDBPersistedTabDataStorage)
-                .save(eq(0L), eq("_1-slice"), captor.capture(), isNull());
+                .save(eq(1L), eq("_1-slice"), captor.capture(), isNull());
         Assert.assertArrayEquals(new byte[] {2, 3}, captor.getValue());
 
         // Non-array-backed buffer falls back to copying remaining bytes.
         storage.save(1, "readonly", () -> ByteBuffer.wrap(full).asReadOnlyBuffer());
         verify(mLevelDBPersistedTabDataStorage)
-                .save(eq(0L), eq("_1-readonly"), captor.capture(), isNull());
+                .save(eq(1L), eq("_1-readonly"), captor.capture(), isNull());
         Assert.assertNotSame(full, captor.getValue());
         Assert.assertArrayEquals(full, captor.getValue());
     }

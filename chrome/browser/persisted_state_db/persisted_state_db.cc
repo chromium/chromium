@@ -105,14 +105,11 @@ void PersistedStateDB::Destroy() {
   delete this;
 }
 
-static void JNI_LevelDBPersistedDataStorage_Init(
+static int64_t JNI_LevelDBPersistedDataStorage_Init(
     JNIEnv* env,
-    const base::android::JavaRef<jobject>& obj,
     const base::android::JavaRef<jobject>& jprofile) {
-  Java_LevelDBPersistedDataStorage_setNativePtr(
-      env, obj,
-      reinterpret_cast<intptr_t>(new PersistedStateDB(
-          content::BrowserContextFromJavaHandle(jprofile))));
+  return reinterpret_cast<intptr_t>(
+      new PersistedStateDB(content::BrowserContextFromJavaHandle(jprofile)));
 }
 
 DEFINE_JNI(LevelDBPersistedDataStorage)

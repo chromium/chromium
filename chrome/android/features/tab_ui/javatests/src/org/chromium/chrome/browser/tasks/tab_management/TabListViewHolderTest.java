@@ -337,11 +337,8 @@ public class TabListViewHolderTest {
                                     TabGridViewBinder::bindTab);
                 });
         LevelDBPersistedDataStorageJni.setInstanceForTesting(mLevelDbPersistedTabDataStorage);
-        doNothing()
-                .when(mLevelDbPersistedTabDataStorage)
-                .init(any(LevelDBPersistedDataStorage.class), any(BrowserContextHandle.class));
+        doReturn(1L).when(mLevelDbPersistedTabDataStorage).init(any(BrowserContextHandle.class));
         doReturn(false).when(mProfile).isOffTheRecord();
-        LevelDBPersistedDataStorage.setSkipNativeAssertionsForTesting(true);
 
         ProfileManager.setLastUsedProfileForTesting(mProfile);
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
