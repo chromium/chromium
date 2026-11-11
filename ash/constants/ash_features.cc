@@ -1011,9 +1011,6 @@ BASE_FEATURE(kLobsterAlwaysShowDisclaimerForTesting,
 BASE_FEATURE(kLobsterDogfood, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables lobster feedback form.
-BASE_FEATURE(kLobsterFeedback, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables lobster feedback form.
 BASE_FEATURE(kLobsterFileNamingImprovement, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables lobster restriction based on the current active IME.

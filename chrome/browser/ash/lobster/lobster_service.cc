@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/lobster/lobster_enums.h"
@@ -134,9 +133,8 @@ void LobsterService::LoadUI(std::optional<std::string> query,
       /*should_show_feedback=*/
       profile_->GetPrefs()->GetInteger(
           ash::prefs::kLobsterEnterprisePolicySettings) ==
-              std::to_underlying(ash::LobsterEnterprisePolicyValue::
-                                     kAllowedWithModelImprovement) &&
-          base::FeatureList::IsEnabled(ash::features::kLobsterFeedback));
+          std::to_underlying(
+              ash::LobsterEnterprisePolicyValue::kAllowedWithModelImprovement));
 }
 
 void LobsterService::ShowUI() {
