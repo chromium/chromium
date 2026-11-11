@@ -73,6 +73,13 @@ Configurator::Configurator(scoped_refptr<UpdaterPrefs> prefs,
       patch_factory_(base::MakeRefCounted<OutOfProcessPatcherFactory>(scope)),
       crx_cache_(base::MakeRefCounted<update_client::CrxCache>(
           GetCrxCacheDirectory(scope))),
+      is_managed_device_([] {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+        return base::IsManagedOrEnterpriseDevice();
+#else
+        return std::nullopt;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+      }()),
       event_logger_(
           RemoteEventLoggingAllowed(
               scope,
@@ -87,14 +94,7 @@ Configurator::Configurator(scoped_refptr<UpdaterPrefs> prefs,
                         std::make_unique<base::DefaultClock>()),
                     persisted_data_->GetNextAllowedLoggingAttemptTime(),
                     /*auto_flush=*/false)
-              : nullptr),
-      is_managed_device_([] {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-        return base::IsManagedOrEnterpriseDevice();
-#else
-        return std::nullopt;
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-      }()) {
+              : nullptr) {
 #if BUILDFLAG(IS_LINUX)
   // On Linux creating the NetworkFetcherFactory requires performing blocking IO
   // to load an external library. This should be done when the configurator is
