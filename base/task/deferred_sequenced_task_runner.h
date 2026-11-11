@@ -49,7 +49,7 @@ class BASE_EXPORT DeferredSequencedTaskRunner : public SequencedTaskRunner {
   // Start the execution - posts all queued tasks to the target executor. The
   // deferred tasks are posted with their initial delay, meaning that the task
   // execution delay is actually measured from Start.
-  // Fails when called a second time.
+  // Fails when called a second time or after StopAndDropPendingTasks().
   void Start();
 
   // Same as Start(), but must be used with the no-arg constructor.
@@ -58,6 +58,13 @@ class BASE_EXPORT DeferredSequencedTaskRunner : public SequencedTaskRunner {
 
   // Returns true if task execution has been started.
   bool Started() const;
+
+  // Drops all queued tasks without running them and prevents any future tasks
+  // from being queued or posted. Any queued tasks are destroyed on the calling
+  // sequence, and subsequent `Post*` calls return false. May be called before
+  // or after `Start()`, but `Start()` must not be called after this. Fails when
+  // called a second time.
+  void StopAndDropPendingTasks();
 
  private:
   struct DeferredTask {
@@ -94,6 +101,7 @@ class BASE_EXPORT DeferredSequencedTaskRunner : public SequencedTaskRunner {
   // This is used to implement a lock-free RunsTasksInCurrentSequence method.
   std::atomic<SequencedTaskRunner*> task_runner_atomic_ptr_{nullptr};
   bool started_ GUARDED_BY(lock_) = false;
+  bool stopped_ GUARDED_BY(lock_) = false;
   scoped_refptr<SequencedTaskRunner> target_task_runner_ GUARDED_BY(lock_);
   std::vector<DeferredTask> deferred_tasks_queue_ GUARDED_BY(lock_);
 };

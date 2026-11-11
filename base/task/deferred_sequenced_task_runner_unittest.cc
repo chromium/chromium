@@ -230,5 +230,67 @@ TEST_F(DeferredSequencedTaskRunnerTest, StartWithTaskRunner) {
   EXPECT_TRUE(run_called);
 }
 
+TEST_F(DeferredSequencedTaskRunnerTest, StopAndDropPendingTasksBeforeStart) {
+  {
+    scoped_refptr<ExecuteTaskOnDestructor> short_lived_object =
+        MakeRefCounted<ExecuteTaskOnDestructor>(this, 1);
+    EXPECT_TRUE(runner_->PostTask(
+        FROM_HERE,
+        BindOnce(&DeferredSequencedTaskRunnerTest::DoNothing, Unretained(this),
+                 RetainedRef(short_lived_object))));
+  }
+  // Verify that queued tasks are destroyed outside `runner_`'s internal lock
+  // and after `runner_` is marked stopped, so re-entrant calls into `runner_`
+  // from a dropped task's destructor do not deadlock and reject new posts.
+  ScopedClosureRunner on_task_destroyed(BindOnce(
+      [](scoped_refptr<DeferredSequencedTaskRunner> runner) {
+        EXPECT_FALSE(runner->Started());
+        EXPECT_FALSE(runner->PostTask(FROM_HERE, base::DoNothing()));
+      },
+      runner_));
+  EXPECT_TRUE(runner_->PostTask(
+      FROM_HERE,
+      BindOnce([](ScopedClosureRunner) {}, std::move(on_task_destroyed))));
+  PostExecuteTask(2);
+  EXPECT_TRUE(runner_->PostNonNestableTask(
+      FROM_HERE, BindOnce(&DeferredSequencedTaskRunnerTest::ExecuteTask,
+                          Unretained(this), 3)));
+  EXPECT_THAT(executed_task_ids_, testing::ElementsAre());
+
+  // Stopping drops queued tasks immediately on the calling sequence without
+  // running them, so only `short_lived_object`'s destructor runs.
+  runner_->StopAndDropPendingTasks();
+  EXPECT_THAT(executed_task_ids_, testing::ElementsAre(1));
+  EXPECT_FALSE(runner_->Started());
+
+  // Subsequent posts fail and are not queued.
+  EXPECT_FALSE(runner_->PostTask(
+      FROM_HERE, BindOnce(&DeferredSequencedTaskRunnerTest::ExecuteTask,
+                          Unretained(this), 4)));
+  EXPECT_FALSE(runner_->PostNonNestableTask(
+      FROM_HERE, BindOnce(&DeferredSequencedTaskRunnerTest::ExecuteTask,
+                          Unretained(this), 5)));
+
+  RunLoop().RunUntilIdle();
+  EXPECT_FALSE(runner_->Started());
+  EXPECT_THAT(executed_task_ids_, testing::ElementsAre(1));
+}
+
+TEST_F(DeferredSequencedTaskRunnerTest, StopAndDropPendingTasksAfterStart) {
+  StartRunner();
+  EXPECT_TRUE(runner_->Started());
+  PostExecuteTask(1);
+
+  runner_->StopAndDropPendingTasks();
+  EXPECT_FALSE(runner_->PostTask(
+      FROM_HERE, BindOnce(&DeferredSequencedTaskRunnerTest::ExecuteTask,
+                          Unretained(this), 2)));
+  EXPECT_FALSE(runner_->PostNonNestableTask(
+      FROM_HERE, BindOnce(&DeferredSequencedTaskRunnerTest::ExecuteTask,
+                          Unretained(this), 3)));
+  RunLoop().RunUntilIdle();
+  EXPECT_THAT(executed_task_ids_, testing::ElementsAre(1));
+}
+
 }  // namespace
 }  // namespace base

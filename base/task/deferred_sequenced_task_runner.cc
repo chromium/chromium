@@ -47,6 +47,9 @@ bool DeferredSequencedTaskRunner::PostDelayedTask(const Location& from_here,
   ScopedDeferTaskPosting disallow_task_posting;
 
   AutoLock lock(lock_);
+  if (stopped_) {
+    return false;
+  }
   if (started_) {
     DCHECK(deferred_tasks_queue_.empty());
     return target_task_runner_->PostDelayedTask(from_here, std::move(task),
@@ -75,6 +78,9 @@ bool DeferredSequencedTaskRunner::PostNonNestableDelayedTask(
     OnceClosure task,
     TimeDelta delay) {
   AutoLock lock(lock_);
+  if (stopped_) {
+    return false;
+  }
   if (started_) {
     DCHECK(deferred_tasks_queue_.empty());
     return target_task_runner_->PostNonNestableDelayedTask(
@@ -106,6 +112,16 @@ bool DeferredSequencedTaskRunner::Started() const {
   return started_;
 }
 
+void DeferredSequencedTaskRunner::StopAndDropPendingTasks() {
+  std::vector<DeferredTask> tasks_to_drop;
+  {
+    AutoLock lock(lock_);
+    CHECK(!stopped_);
+    stopped_ = true;
+    tasks_to_drop.swap(deferred_tasks_queue_);
+  }
+}
+
 DeferredSequencedTaskRunner::~DeferredSequencedTaskRunner() = default;
 
 void DeferredSequencedTaskRunner::QueueDeferredTask(const Location& from_here,
@@ -129,6 +145,7 @@ void DeferredSequencedTaskRunner::QueueDeferredTask(const Location& from_here,
 void DeferredSequencedTaskRunner::StartImpl() {
   lock_.AssertAcquired();  // Callers should have grabbed the lock.
   DCHECK(!started_);
+  DCHECK(!stopped_);
   started_ = true;
   DCHECK(target_task_runner_);
   for (auto& task : deferred_tasks_queue_) {
