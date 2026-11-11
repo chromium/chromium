@@ -6,18 +6,6 @@
   <message name="IDS_SETTINGS_ABOUT_PAGE_RELAUNCH" desc="The label for the relaunch button that relaunches the browser once update is complete">
     Restart
   </message>
-  <message name="IDS_SETTINGS_UPGRADE_SUCCESSFUL_RELAUNCH" desc="Status label: Successfully updated ChromiumOS/ChromeOS">
-    Nearly up to date! Restart your device to finish updating.
-  </message>
-  <message name="IDS_SETTINGS_UPGRADE_UPDATING" desc="Status label: Updating ChromiumOS or ChromeOS">
-    Updating your device
-  </message>
-  <message name="IDS_SETTINGS_UPGRADE_UPDATING_PERCENT" desc="Status label: Updating ChromiumOS or ChromeOS (90%)">
-    Updating your device (<ph name="PROGRESS_PERCENT">$1<ex>90%</ex></ph>)
-  </message>
-  <message name="IDS_SETTINGS_UPGRADE_UP_TO_DATE" desc="Status label: Already up to date (ChromiumOS/ChromeOS)">
-    Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> is up to date
-  </message>
 
   <!-- People (OS settings) -->
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_SUBMENU_LABEL" desc="Label of Account Manager submenu in Settings page.">
@@ -27,14 +15,6 @@
   <!-- A11y (OS Settings) -->
   <message name="IDS_SETTINGS_ACCESSIBILITY_MANAGE_ACCESSIBILITY_FEATURES" desc="In the settings tab, the title of a link that opens a screen allowing the user to change accessibility features.">
     Manage accessibility features
-  </message>
-
-  <!-- Safety Hub -->
-  <message name="IDS_SETTINGS_SAFETY_HUB_VERSION_CARD_HEADER_RESTART" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. The version card, which this text is a part of, informs the user whether their Chrome is up to date. This title of the card is shown when Chrome is not up to date but there is an update available and the user needs to restart their browser to finish the update. Shown above the subtitle 'Relaunch to finish update. Your tabs will reopen'.">
-    ChromeOS is out of date
-  </message>
-  <message name="IDS_SETTINGS_SAFETY_HUB_VERSION_CARD_HEADER_UPDATED" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. The version card, which this text is a part of, informs the user whether their Chrome is up to date. This title of the card is shown when Chrome is up to date and the user does not need to take any action. Shown above the subtitle that is the Chrome version.">
-    ChromeOS is up to date
   </message>
 </if>
 </grit-part>
