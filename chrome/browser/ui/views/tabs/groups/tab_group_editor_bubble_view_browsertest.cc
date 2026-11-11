@@ -31,6 +31,10 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_editor_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
+#include "chrome/browser/ui/views/tabs/common/tab_view.h"
+#include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/grit/generated_resources.h"
@@ -436,26 +440,37 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
   ASSERT_EQ(3, tsm->count());
   std::optional<tab_groups::TabGroupId> group = tsm->AddToNewGroup({0, 1});
 
-  ASSERT_FALSE(browser_view->horizontal_tab_strip_for_testing()
-                   ->tab_at(0)
-                   ->HasFreezingVote(FreezingVoteReason::kCollapsedGroup));
-  ASSERT_FALSE(browser_view->horizontal_tab_strip_for_testing()
-                   ->tab_at(1)
-                   ->HasFreezingVote(FreezingVoteReason::kCollapsedGroup));
-  ASSERT_FALSE(browser_view->horizontal_tab_strip_for_testing()
-                   ->tab_at(2)
-                   ->HasFreezingVote(FreezingVoteReason::kCollapsedGroup));
-  browser_view->horizontal_tab_strip_for_testing()
-      ->ToggleTabGroupCollapsedState(group.value());
-  EXPECT_TRUE(browser_view->horizontal_tab_strip_for_testing()
-                  ->tab_at(0)
-                  ->HasFreezingVote(FreezingVoteReason::kCollapsedGroup));
-  EXPECT_TRUE(browser_view->horizontal_tab_strip_for_testing()
-                  ->tab_at(1)
-                  ->HasFreezingVote(FreezingVoteReason::kCollapsedGroup));
-  EXPECT_FALSE(browser_view->horizontal_tab_strip_for_testing()
-                   ->tab_at(2)
-                   ->HasFreezingVote(FreezingVoteReason::kCollapsedGroup));
+  auto tab_has_freezing_vote = [&](int tab_index, FreezingVoteReason reason) {
+    views::View* tab_anchor = browser_view->tab_strip_view()->GetTabAnchorView(
+        tsm->GetTabAtIndex(tab_index)->GetHandle());
+    if (auto* tab = views::AsViewClass<Tab>(tab_anchor)) {
+      return tab->HasFreezingVote(reason);
+    }
+    if (auto* tab_view = views::AsViewClass<TabView>(tab_anchor)) {
+      return tab_view->HasFreezingVote(reason);
+    }
+    return false;
+  };
+
+  ASSERT_FALSE(tab_has_freezing_vote(0, FreezingVoteReason::kCollapsedGroup));
+  ASSERT_FALSE(tab_has_freezing_vote(1, FreezingVoteReason::kCollapsedGroup));
+  ASSERT_FALSE(tab_has_freezing_vote(2, FreezingVoteReason::kCollapsedGroup));
+  if (auto* tab_strip = browser_view->horizontal_tab_strip_for_testing()) {
+    tab_strip->ToggleTabGroupCollapsedState(group.value());
+  } else {
+    views::View* anchor =
+        browser_view->tab_strip_view()->GetTabGroupAnchorView(group.value());
+    auto* tab_group_view = views::AsViewClass<TabGroupView>(anchor);
+    if (!tab_group_view && anchor && anchor->parent()) {
+      tab_group_view = views::AsViewClass<TabGroupView>(anchor->parent());
+    }
+    ASSERT_TRUE(tab_group_view);
+    tab_group_view->ToggleCollapsedState(
+        ToggleTabGroupCollapsedStateOrigin::kMenuAction);
+  }
+  EXPECT_TRUE(tab_has_freezing_vote(0, FreezingVoteReason::kCollapsedGroup));
+  EXPECT_TRUE(tab_has_freezing_vote(1, FreezingVoteReason::kCollapsedGroup));
+  EXPECT_FALSE(tab_has_freezing_vote(2, FreezingVoteReason::kCollapsedGroup));
 }
 
 class TabGroupEditorBubbleViewDialogBrowserTestWithSavedGroup

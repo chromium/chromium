@@ -135,6 +135,10 @@ class TabGroupHeaderView : public views::FlexLayoutView,
 
   tab_groups::TabGroupId group() const;
 
+  bool is_collapsed_for_testing() const {
+    return tab_group_visual_data_.is_collapsed();
+  }
+
   views::LabelButton* editor_bubble_button() { return editor_bubble_button_; }
   views::ImageView* collapse_icon_for_testing() { return collapse_icon_; }
   views::ImageView* attention_indicator_for_testing() {

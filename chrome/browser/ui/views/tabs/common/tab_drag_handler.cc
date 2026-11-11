@@ -905,20 +905,26 @@ void TabDragHandler::StoppedDragging() {
     }
   }
 
-  // Offset by 1 to account for the group header.
-  const int drag_data_index =
-      1 + drag_data.group_header_drag_data_->active_tab_index_within_group;
-  const int index = tab_strip_model_->GetIndexOfWebContents(
-      drag_data.tab_drag_data_[drag_data_index].contents);
+  // Do not select tabs in the group if the group is collapsed, so that the
+  // active tab remains unchanged and hidden tabs in collapsed groups are not
+  // activated.
+  if (!tab_strip_model_->IsGroupCollapsed(
+          drag_data.group_header_drag_data_->group)) {
+    // Offset by 1 to account for the group header.
+    const int drag_data_index =
+        1 + drag_data.group_header_drag_data_->active_tab_index_within_group;
+    const int index = tab_strip_model_->GetIndexOfWebContents(
+        drag_data.tab_drag_data_[drag_data_index].contents);
 
-  // The tabs in the group may have been closed during the drag.
-  if (index != TabStripModel::kNoTab) {
-    ui::ListSelectionModel selection;
-    CHECK_GE(index, 0);
-    selection.AddIndexToSelection(static_cast<size_t>(index));
-    selection.set_active(static_cast<size_t>(index));
-    selection.set_anchor(static_cast<size_t>(index));
-    tab_strip_model_->SetSelectionFromModel(selection);
+    // The tabs in the group may have been closed during the drag.
+    if (index != TabStripModel::kNoTab) {
+      ui::ListSelectionModel selection;
+      CHECK_GE(index, 0);
+      selection.AddIndexToSelection(static_cast<size_t>(index));
+      selection.set_active(static_cast<size_t>(index));
+      selection.set_anchor(static_cast<size_t>(index));
+      tab_strip_model_->SetSelectionFromModel(selection);
+    }
   }
 }
 

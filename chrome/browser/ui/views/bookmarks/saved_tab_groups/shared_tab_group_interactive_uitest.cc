@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_tabs_menu_model.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
+#include "chrome/browser/ui/views/tabs/common/tab_group_header_view.h"
 #include "chrome/browser/ui/views/tabs/groups/recent_activity_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -93,12 +94,15 @@ class SharedTabGroupInteractiveUiTest
         kBrowserViewElementId, name,
         base::BindRepeating(
             [](tab_groups::TabGroupId group_id, const views::View* view) {
-              const TabGroupHeader* header =
-                  views::AsViewClass<TabGroupHeader>(view);
-              if (!header) {
-                return false;
+              if (const TabGroupHeader* header =
+                      views::AsViewClass<TabGroupHeader>(view)) {
+                return header->group().value() == group_id;
               }
-              return header->group().value() == group_id;
+              if (const TabGroupHeaderView* header =
+                      views::AsViewClass<TabGroupHeaderView>(view)) {
+                return header->group() == group_id;
+              }
+              return false;
             },
             group_id)));
   }

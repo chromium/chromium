@@ -192,22 +192,24 @@ class RecentActivityBubbleDialogViewInteractiveUiTest
   // triggers the dialog anchored to the tab_strip instead of using
   // the page action, which is driven by live data.
   auto TriggerDialog(std::vector<ActivityLogItem> activity_log) {
-    return WithView(kTabStripElementId, [&, activity_log](TabStrip* tab_strip) {
-      BubbleCoordinator()->Show(
-          views::BubbleAnchor(tab_strip),
-          browser()->GetTabStripModel()->GetWebContentsAt(0), activity_log,
-          browser()->GetProfile());
-    });
+    return WithView(kTabStripElementId,
+                    [&, activity_log](views::View* tab_strip) {
+                      BubbleCoordinator()->Show(
+                          views::BubbleAnchor(tab_strip),
+                          browser()->GetTabStripModel()->GetWebContentsAt(0),
+                          activity_log, browser()->GetProfile());
+                    });
   }
 
   // Same as above, but for current tab version of the dialog.
   auto TriggerCurrentTabDialog(std::vector<ActivityLogItem> activity_log) {
-    return WithView(kTabStripElementId, [&, activity_log](TabStrip* tab_strip) {
-      BubbleCoordinator()->ShowForCurrentTab(
-          views::BubbleAnchor(tab_strip),
-          browser()->GetTabStripModel()->GetWebContentsAt(0), {}, activity_log,
-          browser()->GetProfile());
-    });
+    return WithView(kTabStripElementId,
+                    [&, activity_log](views::View* tab_strip) {
+                      BubbleCoordinator()->ShowForCurrentTab(
+                          views::BubbleAnchor(tab_strip),
+                          browser()->GetTabStripModel()->GetWebContentsAt(0),
+                          {}, activity_log, browser()->GetProfile());
+                    });
   }
 
   ActivityLogItem CreateActivityForTab(

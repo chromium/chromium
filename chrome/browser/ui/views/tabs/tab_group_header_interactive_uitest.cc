@@ -10,10 +10,16 @@
 #include "chrome/browser/ui/tabs/tab_group_features.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/tabs/common/tab_group_header_view.h"
+#include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
+#include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/test/tab_strip_interactive_test_mixin.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/data_sharing/public/features.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_group.h"
 #include "content/public/test/browser_test.h"
@@ -50,9 +56,33 @@ class TabGroupHeaderInteractiveUiTest
     return browser()->GetTabStripModel()->AddToNewGroup(tab_indices);
   }
 
-  TabStrip* GetTabStrip() {
-    return BrowserView::GetBrowserViewForBrowser(browser())
-        ->horizontal_tab_strip_for_testing();
+  static bool IsHeaderCollapsed(const views::View* view) {
+    if (const auto* header = views::AsViewClass<TabGroupHeader>(view)) {
+      return header->is_collapsed_for_testing();
+    }
+    if (const auto* header = views::AsViewClass<TabGroupHeaderView>(view)) {
+      return header->is_collapsed_for_testing();
+    }
+    return false;
+  }
+
+  void ToggleTabGroupCollapsedState(tab_groups::TabGroupId group_id) {
+    auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+    if (auto* tab_strip = browser_view->horizontal_tab_strip_for_testing()) {
+      tab_strip->ToggleTabGroupCollapsedState(
+          group_id, ToggleTabGroupCollapsedStateOrigin::kMouse);
+    } else {
+      views::View* anchor =
+          browser_view->tab_strip_view()->GetTabGroupAnchorView(group_id);
+      auto* tab_group_view = views::AsViewClass<TabGroupView>(anchor);
+      if (!tab_group_view && anchor && anchor->parent()) {
+        tab_group_view = views::AsViewClass<TabGroupView>(anchor->parent());
+      }
+      if (tab_group_view) {
+        tab_group_view->ToggleCollapsedState(
+            ToggleTabGroupCollapsedStateOrigin::kMouse);
+      }
+    }
   }
 };
 
@@ -75,9 +105,10 @@ class TabGroupHeaderInteractiveUiTest
 #define MAYBE_DragCollapsedGroup DragCollapsedGroup
 #endif
 
-DEFINE_LOCAL_POLLING_VIEW_PROPERTY_STATE_IDENTIFIER(TabGroupHeader,
-                                                    is_collapsed_for_testing,
-                                                    kTabGroupCollapsedState);
+using TabGroupCollapsedObserver =
+    views::test::PollingViewObserver<bool, views::View>;
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(TabGroupCollapsedObserver,
+                                    kTabGroupCollapsedState);
 IN_PROC_BROWSER_TEST_F(TabGroupHeaderInteractiveUiTest, MAYBE_Collapse) {
   CreateTabGroup({CreateTab()});
 
@@ -85,7 +116,8 @@ IN_PROC_BROWSER_TEST_F(TabGroupHeaderInteractiveUiTest, MAYBE_Collapse) {
 
   RunTestSequence(
       WaitForShow(kTabGroupHeaderElementId), FinishTabstripAnimations(),
-      PollViewProperty(kTabGroupCollapsedState, kTabGroupHeaderElementId),
+      PollView(kTabGroupCollapsedState, kTabGroupHeaderElementId,
+               [](const views::View* view) { return IsHeaderCollapsed(view); }),
       MoveMouseTo(kTabGroupHeaderElementId), ClickMouse(action),
       WaitForState(kTabGroupCollapsedState, true));
 }
@@ -102,7 +134,19 @@ IN_PROC_BROWSER_TEST_F(TabGroupHeaderInteractiveUiTest,
                   WaitForShow(kTabGroupEditorBubbleId));
 }
 
-IN_PROC_BROWSER_TEST_F(TabGroupHeaderInteractiveUiTest,
+class TabGroupHeaderAttentionIndicatorInteractiveUiTest
+    : public TabGroupHeaderInteractiveUiTest {
+ public:
+  TabGroupHeaderAttentionIndicatorInteractiveUiTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        data_sharing::features::kDataSharingFeature);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(TabGroupHeaderAttentionIndicatorInteractiveUiTest,
                        MAYBE_AttentionIndicator) {
   tab_groups::TabGroupId group_id = CreateTabGroup({CreateTab()});
 
@@ -110,9 +154,11 @@ IN_PROC_BROWSER_TEST_F(TabGroupHeaderInteractiveUiTest,
 
   RunTestSequence(
       WaitForShow(kTabGroupHeaderElementId), FinishTabstripAnimations(),
-      PollViewProperty(kTabGroupCollapsedState, kTabGroupHeaderElementId),
+      PollView(kTabGroupCollapsedState, kTabGroupHeaderElementId,
+               [](const views::View* view) { return IsHeaderCollapsed(view); }),
       // Click the group to collapse it.
-      MoveMouseTo(kTabGroupHeaderElementId), ClickMouse(action), Do([&]() {
+      MoveMouseTo(kTabGroupHeaderElementId), ClickMouse(action),
+      WaitForState(kTabGroupCollapsedState, true), Do([&]() {
         // Set the attention indicator to true.
         browser()
             ->GetTabStripModel()
@@ -122,11 +168,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupHeaderInteractiveUiTest,
             ->attention_indicator()
             ->SetHasAttention(true);
       }),
-      Do([&]() {
-        EXPECT_TRUE(GetTabStrip()
-                        ->group_header(group_id)
-                        ->ShouldShowAttentionIndicator());
-      }));
+      WaitForShow(kTabGroupHeaderAttentionIndicatorElementId));
 }
 
 IN_PROC_BROWSER_TEST_F(TabGroupHeaderInteractiveUiTest,
@@ -136,14 +178,12 @@ IN_PROC_BROWSER_TEST_F(TabGroupHeaderInteractiveUiTest,
   RunTestSequence(
       WaitForShow(kTabGroupHeaderElementId), FinishTabstripAnimations(),
       // Collapse the group
-      Do([&]() {
-        GetTabStrip()->ToggleTabGroupCollapsedState(
-            group_id, ToggleTabGroupCollapsedStateOrigin::kMouse);
-      }),
+      Do([&]() { ToggleTabGroupCollapsedState(group_id); }),
       FinishTabstripAnimations(),
       // Verify it is collapsed
-      CheckViewProperty(kTabGroupHeaderElementId,
-                        &TabGroupHeader::is_collapsed_for_testing, true),
+      CheckView(
+          kTabGroupHeaderElementId,
+          [](views::View* view) { return IsHeaderCollapsed(view); }, true),
       // Drag the group header. We drag it a bit to the right.
       MoveMouseTo(kTabGroupHeaderElementId),
       DragMouseTo(kTabGroupHeaderElementId,
@@ -155,6 +195,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupHeaderInteractiveUiTest,
                            gfx::Vector2d(50, 0);
                   })),
       // Verify it is still collapsed
-      CheckViewProperty(kTabGroupHeaderElementId,
-                        &TabGroupHeader::is_collapsed_for_testing, true));
+      CheckView(
+          kTabGroupHeaderElementId,
+          [](views::View* view) { return IsHeaderCollapsed(view); }, true));
 }
