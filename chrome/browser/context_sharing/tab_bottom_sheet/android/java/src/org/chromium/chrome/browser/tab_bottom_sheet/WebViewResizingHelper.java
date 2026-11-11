@@ -59,6 +59,8 @@ public class WebViewResizingHelper {
     // Epsilon tolerance in pixels to prevent false size-changed detections caused by DP-to-PX
     // integer rounding.
     private static final int EPSILON_PX = 2;
+    public static final int NO_HEIGHT_OVERRIDE = -1;
+    public static final int NO_SAFE_AREA_OVERRIDE = -1;
 
     private final AnimationHandler mAnimationHandler = new AnimationHandler();
     private final WindowInsetsAnimationListener mInsetAnimationListener;
@@ -288,11 +290,27 @@ public class WebViewResizingHelper {
     }
 
     private void updateSafeAreaInsets(boolean ignoreCache) {
-        if (!isEdgeToEdgeEnabled() || mIsSidePanel) {
+        updateSafeAreaInsets(ignoreCache, NO_SAFE_AREA_OVERRIDE);
+    }
+
+    /**
+     * Updates safe area insets on WebContents and placeholder views, optionally overriding the
+     * bottom safe area inset.
+     *
+     * @param ignoreCache Whether to bypass the cached inset check.
+     * @param bottomSafeAreaOverridePx Explicit bottom safe area inset override in pixels, or {@link
+     *     #NO_SAFE_AREA_OVERRIDE} to use the default inset from window insets.
+     */
+    public void updateSafeAreaInsets(boolean ignoreCache, @Px int bottomSafeAreaOverridePx) {
+        if (!isEdgeToEdgeEnabled() || mIsSidePanel || isActivityInactive(mWindowAndroid)) {
             return;
         }
 
-        @Px int bottomInsetPx = getBottomSafeAreaInsetPx();
+        @Px
+        int bottomInsetPx =
+                bottomSafeAreaOverridePx >= 0
+                        ? bottomSafeAreaOverridePx
+                        : getBottomSafeAreaInsetPx();
         if (mPlaceholderCoordinator != null
                 && (ignoreCache || mLastPlaceholderBottomInsetPx != bottomInsetPx)) {
             mLastPlaceholderBottomInsetPx = bottomInsetPx;
@@ -422,6 +440,11 @@ public class WebViewResizingHelper {
         }
         mAnimationHandler.forceFinishAnimation();
         boolean sizeChanged = updateBounds(/* ignoreCache= */ true);
+        armPostResizeFadeIn(sizeChanged);
+    }
+
+    private void armPostResizeFadeIn(boolean sizeChanged) {
+        if (mThinWebView == null) return;
 
         View webView = mThinWebView.getView();
         webView.setAlpha(0f);
@@ -487,12 +510,31 @@ public class WebViewResizingHelper {
     }
 
     private boolean updateBounds(boolean ignoreCache) {
+        return updateBounds(ignoreCache, NO_HEIGHT_OVERRIDE, NO_SAFE_AREA_OVERRIDE);
+    }
+
+    /**
+     * Updates container bounds, optionally applying height and bottom safe-area overrides.
+     *
+     * @param ignoreCache Whether to ignore the previous dimension cache.
+     * @param heightOverridePx Explicit height override in pixels, or {@link #NO_HEIGHT_OVERRIDE} to
+     *     use measured container height.
+     * @param bottomSafeAreaOverridePx Explicit bottom safe area inset override in pixels, or {@link
+     *     #NO_SAFE_AREA_OVERRIDE} to use the default inset from window insets.
+     * @return True if container dimensions changed, false otherwise.
+     */
+    public boolean updateBounds(
+            boolean ignoreCache, @Px int heightOverridePx, @Px int bottomSafeAreaOverridePx) {
         if (mPauseInsetUpdates || isActivityInactive(mWindowAndroid)) {
             return false;
         }
 
         @Px int resizingContainerWidth = mResizingContainer.getMeasuredWidth();
-        @Px int resizingContainerHeight = mResizingContainer.getMeasuredHeight();
+        @Px
+        int resizingContainerHeight =
+                heightOverridePx != NO_HEIGHT_OVERRIDE
+                        ? heightOverridePx
+                        : mResizingContainer.getMeasuredHeight();
 
         // TODO(crbug.com/524719583): Make this feature-agnostic.
         if (mIsSidePanel) {
@@ -501,13 +543,15 @@ public class WebViewResizingHelper {
                         ViewUtils.dpToPx(
                                 mContext, SidePanelContainerCoordinator.WIDE_SIDE_PANEL_WIDTH_DP);
             }
-            if (resizingContainerHeight == 0) {
-                resizingContainerHeight = getDecorViewHeight();
-            } else if (!hasWebContentsFocus()) {
-                // The keyboard was opened by something else (the page or another app in split
-                // screen). Keep the WebContents at its no-keyboard height and let the container
-                // clip it, rather than pushing the Glic UI up.
-                resizingContainerHeight += getKeyboardInsetPx();
+            if (heightOverridePx == NO_HEIGHT_OVERRIDE) {
+                if (resizingContainerHeight == 0) {
+                    resizingContainerHeight = getDecorViewHeight();
+                } else if (!hasWebContentsFocus()) {
+                    // The keyboard was opened by something else (the page or another app in split
+                    // screen). Keep the WebContents at its no-keyboard height and let the container
+                    // clip it, rather than pushing the Glic UI up.
+                    resizingContainerHeight += getKeyboardInsetPx();
+                }
             }
         }
 
@@ -523,7 +567,7 @@ public class WebViewResizingHelper {
             }
         }
 
-        updateSafeAreaInsets(ignoreCache);
+        updateSafeAreaInsets(ignoreCache, bottomSafeAreaOverridePx);
 
         if (mWebContents == null || mWebContents.isDestroyed()) {
             return false;

@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -1802,5 +1803,54 @@ public class WebViewResizingHelperUnitTest {
         mHelper.setBottomSafeAreaInsetObserver(observer);
         verify(observer, never()).onResult(anyInt());
         mHelper.destroy();
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_BOTTOM_SHEET,
+        ChromeFeatureList.TAB_BOTTOM_SHEET_EDGE_TO_EDGE,
+        ChromeFeatureList.GLIC_NO_WEBVIEW
+    })
+    public void testUpdateBounds_WithHeightAndSafeAreaOverrides() {
+        ResizingPlaceholderCoordinator coordinator = mock(ResizingPlaceholderCoordinator.class);
+        doReturn(coordinator)
+                .when(mMockComponentProvider)
+                .createResizingPlaceholderCoordinator(any(), anyInt(), anyInt());
+        when(mMockBottomSheetController.getEdgeToEdgeBottomInset()).thenReturn(48);
+
+        mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
+        layoutResizingContainer(300, 400);
+
+        ResizeLock lock = mHelper.requestResize();
+        assertNotNull(lock);
+        verify(coordinator).updateBottomInset(48);
+        clearInvocations(coordinator, mMockThinWebView);
+
+        boolean sizeChanged =
+                mHelper.updateBounds(
+                        /* ignoreCache= */ true,
+                        /* heightOverridePx= */ 500,
+                        /* bottomSafeAreaOverridePx= */ 0);
+
+        assertTrue(sizeChanged);
+        verify(mMockThinWebView).resizeWebContents(300, 500);
+        verify(coordinator).updateBottomInset(0);
+
+        clearInvocations(coordinator, mMockThinWebView);
+        boolean defaultBoundsChanged =
+                mHelper.updateBounds(
+                        /* ignoreCache= */ true,
+                        WebViewResizingHelper.NO_HEIGHT_OVERRIDE,
+                        WebViewResizingHelper.NO_SAFE_AREA_OVERRIDE);
+        assertTrue(defaultBoundsChanged);
+        verify(mMockThinWebView).resizeWebContents(300, 400);
+        verify(coordinator).updateBottomInset(48);
+
+        clearInvocations(coordinator);
+        when(mMockWindowAndroid.getActivityState()).thenReturn(ActivityState.STOPPED);
+        mHelper.updateSafeAreaInsets(/* ignoreCache= */ true, /* bottomSafeAreaOverridePx= */ 32);
+        verify(coordinator, never()).updateBottomInset(anyInt());
+
+        lock.unlock();
     }
 }
