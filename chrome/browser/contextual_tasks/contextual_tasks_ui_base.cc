@@ -725,6 +725,7 @@ base::DictValue ContextualTasksUIBase::GetContextualTasksLoadTimeData(
       {"googleAccount", IDS_CONTEXTUAL_TASKS_AVATAR_TOOLTIP_HEADER},
       {"help", IDS_CONTEXTUAL_TASKS_MENU_HELP},
       {"learnMore", IDS_LEARN_MORE},
+      {"logoButtonTooltip", IDS_TOOLTIP_LOCATION_ICON},
       {"moreOptionsTooltip",
        IDS_CONTEXTUAL_TASKS_SIDE_PANEL_MORE_OPTIONS_TOOL_TIP},
       {"myActivity", IDS_CONTEXTUAL_TASKS_MENU_MY_ACTIVITY},

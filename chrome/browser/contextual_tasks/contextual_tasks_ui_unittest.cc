@@ -5755,6 +5755,8 @@ TEST_F(ContextualTasksUiTest,
   EXPECT_FALSE(dict.FindString("protectedErrorPageTopLine")->empty());
   ASSERT_NE(dict.FindString("protectedErrorPageBottomLine"), nullptr);
   EXPECT_FALSE(dict.FindString("protectedErrorPageBottomLine")->empty());
+  ASSERT_NE(dict.FindString("logoButtonTooltip"), nullptr);
+  EXPECT_EQ(*dict.FindString("logoButtonTooltip"), "View site information");
 }
 
 TEST_F(ContextualTasksUiTest,

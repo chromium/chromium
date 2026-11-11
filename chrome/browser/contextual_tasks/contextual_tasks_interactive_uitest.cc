@@ -5655,6 +5655,12 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksSidePanelRearchToolbarInteractiveUiTest,
       // click it.
       InAnyContext(WaitForShow(kContextualTasksSuperGButtonElementId)),
       WaitForElementVisible(kSidePanelToolbarWebContentsId, kSuperGButton),
+      CheckJsResultAt(kSidePanelToolbarWebContentsId, kSuperGButton,
+                      "el => el.title",
+                      l10n_util::GetStringUTF8(IDS_TOOLTIP_LOCATION_ICON)),
+      CheckJsResultAt(kSidePanelToolbarWebContentsId, kSuperGButton,
+                      "el => el.getAttribute('aria-label')",
+                      l10n_util::GetStringUTF8(IDS_TOOLTIP_LOCATION_ICON)),
       WithView(kContextualTasksSidePanelWebViewElementId,
                [&side_panel_bounds](views::View* side_panel) {
                  side_panel_bounds = side_panel->GetBoundsInScreen();
