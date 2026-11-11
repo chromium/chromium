@@ -334,6 +334,7 @@ source_set("unit_tests") {
     "//chrome/test/base:scoped_metrics_service",
     "//components/commerce/core:feature_list",
     "//components/metrics",
+    "//components/prefs:test_support",
     "//components/signin/public/base",
     "//components/skills:features",
     "//components/spellcheck:buildflags",
