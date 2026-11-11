@@ -200,11 +200,13 @@ void WebUIBrowserPageHandler::GetGuestIdForTabId(
 
   if (!tab) {
     mojo::ReportBadMessage("Invalid tab id");
+    std::move(callback).Run(base::UnguessableToken());
     return;
   }
   content::WebContents* tab_contents = tab->GetContents();
   if (tab_contents == nullptr) {
     mojo::ReportBadMessage("Tab has no contents");
+    std::move(callback).Run(base::UnguessableToken());
     return;
   }
 
