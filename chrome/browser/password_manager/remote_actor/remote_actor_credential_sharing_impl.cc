@@ -5,12 +5,9 @@
 #include "chrome/browser/password_manager/remote_actor/remote_actor_credential_sharing_impl.h"
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
-#include "build/build_config.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
@@ -22,21 +19,15 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/passwords/remote_actor_selection_dialog_controller.h"
 #include "chrome/common/password_manager/remote_actor_credential_sharing_policy.h"
-#include "components/device_reauth/device_auth_availability_checker.h"
-#include "components/device_reauth/device_authenticator.h"
 #include "components/keyed_service/core/service_access_type.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_result.h"
 #include "components/prefs/pref_service.h"
-#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/message.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
 namespace password_manager {
@@ -141,6 +132,12 @@ void RemoteActorCredentialSharingImpl::RequestAgentAuthentication(
     return;
   }
 
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&render_frame_host());
+  ChromePasswordManagerClient* client =
+      web_contents ? ChromePasswordManagerClient::FromWebContents(web_contents)
+                   : nullptr;
+
   dialog_controller_.reset();
   controller_ = std::make_unique<RemoteActorCredentialSharingController>(
       IdentityManagerFactory::GetForProfile(profile),
@@ -151,7 +148,8 @@ void RemoteActorCredentialSharingImpl::RequestAgentAuthentication(
       AccountPasswordStoreFactory::GetForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS)
           .get(),
-      RemoteActorCredentialSharingServiceFactory::GetForProfile(profile), this);
+      RemoteActorCredentialSharingServiceFactory::GetForProfile(profile),
+      client, this);
   controller_->Start(
       gaia_id, domain, task_id,
       base::BindOnce(&RemoteActorCredentialSharingImpl::OnShareCompleted,
@@ -251,73 +249,6 @@ void RemoteActorCredentialSharingImpl::OnDialogResult(
     return;
   }
   std::move(callback).Run(std::move(*selected_form));
-}
-
-void RemoteActorCredentialSharingImpl::AuthenticateIfNeeded(
-    const url::Origin& origin,
-    base::OnceCallback<void(AuthResult)> callback) {
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(&render_frame_host());
-  if (!web_contents) {
-    std::move(callback).Run(
-        base::unexpected(RemoteActorCredentialSharingResult::kOtherError));
-    return;
-  }
-
-  auto* client = ChromePasswordManagerClient::FromWebContents(web_contents);
-  if (!client) {
-    std::move(callback).Run(
-        base::unexpected(RemoteActorCredentialSharingResult::kOtherError));
-    return;
-  }
-
-  bool reauth_required = false;
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kDeviceReauthRefactor)) {
-    if (!device_authenticator_) {
-      device_authenticator_ = client->GetDeviceAuthenticator();
-    }
-    reauth_required =
-        device_authenticator_ && client->IsReauthBeforeFillingRequiredLegacy(
-                                     device_authenticator_.get());
-  } else {
-    std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker> checker =
-        client->GetDeviceAuthAvailabilityChecker();
-    if (client->IsReauthBeforeFillingRequired(checker.get())) {
-      if (!device_authenticator_) {
-        device_authenticator_ = client->GetDeviceAuthenticator();
-      }
-      reauth_required = true;
-    }
-  }
-
-  if (reauth_required) {
-    CHECK(device_authenticator_);
-    std::u16string message;
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-    const std::u16string origin_str = base::UTF8ToUTF16(GetShownOrigin(origin));
-    message = l10n_util::GetStringFUTF16(IDS_PASSWORD_MANAGER_FILLING_REAUTH,
-                                         origin_str);
-#endif
-    device_authenticator_->AuthenticateWithMessage(
-        message, base::BindOnce(
-                     &RemoteActorCredentialSharingImpl::OnAuthenticationResult,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-    return;
-  }
-
-  device_authenticator_.reset();
-  std::move(callback).Run(base::ok());
-}
-
-void RemoteActorCredentialSharingImpl::OnAuthenticationResult(
-    base::OnceCallback<void(AuthResult)> callback,
-    bool success) {
-  device_authenticator_.reset();
-  std::move(callback).Run(
-      success ? AuthResult(base::ok())
-              : base::unexpected(
-                    RemoteActorCredentialSharingResult::kAuthenticatorFailed));
 }
 
 void RemoteActorCredentialSharingImpl::OnShareCompleted(

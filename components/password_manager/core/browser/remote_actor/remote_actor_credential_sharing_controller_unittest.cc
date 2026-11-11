@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -14,11 +15,17 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/test/with_feature_override.h"
 #include "base/types/expected.h"
+#include "build/build_config.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
+#include "components/device_reauth/mock_device_auth_availability_checker.h"
+#include "components/device_reauth/mock_device_authenticator.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliated_match_helper.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
@@ -26,8 +33,10 @@
 #include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_result.h"
 #include "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_service.h"
+#include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/protocol/password_specifics.pb.h"
@@ -35,6 +44,7 @@
 #include "components/sync/test/mock_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -44,6 +54,7 @@ namespace {
 
 using testing::_;
 using testing::AllOf;
+using testing::ByMove;
 using testing::Field;
 using testing::IsEmpty;
 using testing::Not;
@@ -53,6 +64,29 @@ using testing::Return;
 using testing::UnorderedElementsAre;
 
 constexpr char kTaskId[] = "actor_id";
+
+class MockPasswordManagerClient : public StubPasswordManagerClient {
+ public:
+  MockPasswordManagerClient() = default;
+  ~MockPasswordManagerClient() override = default;
+
+  MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthenticator>,
+              GetDeviceAuthenticator,
+              (),
+              (override));
+  MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker>,
+              GetDeviceAuthAvailabilityChecker,
+              (),
+              (override));
+  MOCK_METHOD(bool,
+              IsReauthBeforeFillingRequired,
+              (device_reauth::DeviceAuthAvailabilityChecker*),
+              (override));
+  MOCK_METHOD(bool,
+              IsReauthBeforeFillingRequiredLegacy,
+              (device_reauth::DeviceAuthenticator*),
+              (override));
+};
 
 class MockRemoteActorCredentialSharingService
     : public RemoteActorCredentialSharingService {
@@ -80,20 +114,11 @@ class FakeDelegate : public RemoteActorCredentialSharingController::Delegate {
     shown_credentials_.SetValue(std::move(credentials));
   }
 
-  void AuthenticateIfNeeded(
-      const url::Origin& origin,
-      base::OnceCallback<void(AuthResult)> callback) override {
-    auth_origin_ = origin;
-    std::move(callback).Run(auth_result_);
-  }
-
   std::vector<std::unique_ptr<PasswordForm>> TakeShownCredentials() {
     return shown_credentials_.Take();
   }
 
   const std::string& credential_domain() const { return credential_domain_; }
-  const url::Origin& auth_origin() const { return auth_origin_; }
-  void set_auth_result(AuthResult auth_result) { auth_result_ = auth_result; }
 
   void SelectCredential(CredentialOrError result) {
     ASSERT_TRUE(selection_callback_);
@@ -102,8 +127,6 @@ class FakeDelegate : public RemoteActorCredentialSharingController::Delegate {
 
  private:
   std::string credential_domain_;
-  url::Origin auth_origin_;
-  AuthResult auth_result_ = base::ok();
   base::OnceCallback<void(CredentialOrError)> selection_callback_;
   base::test::TestFuture<std::vector<std::unique_ptr<PasswordForm>>>
       shown_credentials_;
@@ -116,6 +139,14 @@ class RemoteActorCredentialSharingControllerTest : public testing::Test {
     account_store_->Init();
     profile_store_->SetAffiliatedMatchHelper(&mock_match_helper_);
     SetSyncActive(true);
+    ON_CALL(mock_client_, GetDeviceAuthAvailabilityChecker).WillByDefault([]() {
+      return std::make_unique<testing::NiceMock<
+          device_reauth::MockDeviceAuthAvailabilityChecker>>();
+    });
+    ON_CALL(mock_client_, IsReauthBeforeFillingRequired)
+        .WillByDefault(Return(false));
+    ON_CALL(mock_client_, IsReauthBeforeFillingRequiredLegacy)
+        .WillByDefault(Return(false));
   }
 
   void TearDown() override {
@@ -171,9 +202,34 @@ class RemoteActorCredentialSharingControllerTest : public testing::Test {
     auto controller = std::make_unique<RemoteActorCredentialSharingController>(
         identity_test_env_.identity_manager(), &sync_service_,
         profile_store_.get(), account_store_.get(), &sharing_service_,
-        &delegate_);
+        &mock_client_, &delegate_);
     controller->Start(gaia_id, domain, kTaskId, std::move(callback));
     return controller;
+  }
+
+  RemoteActorCredentialSharingResult RunSharingFlowAndSelect() {
+    PasswordForm form;
+    form.signon_realm = "https://google.com/";
+    form.url = GURL("https://google.com");
+    form.username_value = u"user";
+    form.password_value = PasswordString(u"pass");
+    form.in_store = PasswordForm::Store::kProfileStore;
+    profile_store_->AddLogin(FromPasswordForm(form));
+
+    base::test::TestFuture<RemoteActorCredentialSharingResult> result;
+    std::unique_ptr<RemoteActorCredentialSharingController> controller =
+        StartController(/*gaia_id=*/account_info_.GetGaiaId().ToString(),
+                        /*domain=*/"google.com", result.GetCallback());
+
+    std::vector<std::unique_ptr<PasswordForm>> credentials =
+        delegate_.TakeShownCredentials();
+    EXPECT_EQ(credentials.size(), 1u);
+    if (credentials.size() != 1u) {
+      return RemoteActorCredentialSharingResult::kOtherError;
+    }
+
+    delegate_.SelectCredential(*credentials[0]);
+    return result.Get();
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -187,6 +243,7 @@ class RemoteActorCredentialSharingControllerTest : public testing::Test {
   testing::NiceMock<MockAffiliatedMatchHelper> mock_match_helper_{
       &fake_affiliation_service_};
   testing::NiceMock<MockRemoteActorCredentialSharingService> sharing_service_;
+  testing::NiceMock<MockPasswordManagerClient> mock_client_;
   FakeDelegate delegate_;
   AccountInfo account_info_;
 };
@@ -396,8 +453,6 @@ TEST_F(RemoteActorCredentialSharingControllerTest,
       .WillOnce(base::test::RunOnceCallback<1>(true));
 
   delegate_.SelectCredential(*credentials[0]);
-  EXPECT_EQ(delegate_.auth_origin(),
-            url::Origin::Create(GURL("https://google.com")));
 
   EXPECT_EQ(result.Get(), RemoteActorCredentialSharingResult::kSuccess);
   histograms.ExpectUniqueSample(
@@ -468,12 +523,164 @@ TEST_F(RemoteActorCredentialSharingControllerTest, SuccessFlow_CancelDialog) {
       RemoteActorCredentialSharingResult::kUserCancelledDialog, 1);
 }
 
-TEST_F(RemoteActorCredentialSharingControllerTest,
-       FailureFlow_AuthenticationFailed) {
+class RemoteActorCredentialSharingControllerReauthTest
+    : public base::test::WithFeatureOverride,
+      public RemoteActorCredentialSharingControllerTest {
+ public:
+  RemoteActorCredentialSharingControllerReauthTest()
+      : base::test::WithFeatureOverride(features::kDeviceReauthRefactor) {}
+
+  bool is_refactor_enabled() const { return IsParamFeatureEnabled(); }
+};
+
+TEST_P(RemoteActorCredentialSharingControllerReauthTest,
+       ReauthEnabled_Success) {
   base::HistogramTester histograms;
   SignIn("user@gmail.com");
-  delegate_.set_auth_result(base::unexpected(
-      RemoteActorCredentialSharingResult::kAuthenticatorFailed));
+
+  auto authenticator =
+      std::make_unique<device_reauth::MockDeviceAuthenticator>();
+  device_reauth::MockDeviceAuthenticator* raw_authenticator =
+      authenticator.get();
+
+  std::u16string expected_message;
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_IOS)
+  expected_message = l10n_util::GetStringFUTF16(
+      IDS_PASSWORD_MANAGER_FILLING_REAUTH, u"google.com");
+#endif
+  EXPECT_CALL(*raw_authenticator, AuthenticateWithMessage(expected_message, _))
+      .WillOnce(base::test::RunOnceCallback<1>(true));
+
+  EXPECT_CALL(mock_client_, GetDeviceAuthenticator)
+      .WillOnce(Return(ByMove(std::move(authenticator))));
+
+  ON_CALL(mock_client_, IsReauthBeforeFillingRequired)
+      .WillByDefault(Return(true));
+  ON_CALL(mock_client_, IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(mock_client_, IsReauthBeforeFillingRequired)
+      .Times(is_refactor_enabled() ? 1 : 0);
+  EXPECT_CALL(mock_client_, IsReauthBeforeFillingRequiredLegacy)
+      .Times(is_refactor_enabled() ? 0 : 1);
+
+  EXPECT_CALL(sharing_service_, SharePassword)
+      .WillOnce(base::test::RunOnceCallback<1>(true));
+  EXPECT_EQ(RunSharingFlowAndSelect(),
+            RemoteActorCredentialSharingResult::kSuccess);
+  histograms.ExpectUniqueSample(
+      "PasswordManager.RemoteActorCredentialSharing.Result",
+      RemoteActorCredentialSharingResult::kSuccess, 1);
+}
+
+TEST_P(RemoteActorCredentialSharingControllerReauthTest,
+       ReauthEnabled_Failure) {
+  base::HistogramTester histograms;
+  SignIn("user@gmail.com");
+
+  auto authenticator =
+      std::make_unique<device_reauth::MockDeviceAuthenticator>();
+  device_reauth::MockDeviceAuthenticator* raw_authenticator =
+      authenticator.get();
+
+  std::u16string expected_message;
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_IOS)
+  expected_message = l10n_util::GetStringFUTF16(
+      IDS_PASSWORD_MANAGER_FILLING_REAUTH, u"google.com");
+#endif
+  EXPECT_CALL(*raw_authenticator, AuthenticateWithMessage(expected_message, _))
+      .WillOnce(base::test::RunOnceCallback<1>(false));
+
+  EXPECT_CALL(mock_client_, GetDeviceAuthenticator)
+      .WillOnce(Return(ByMove(std::move(authenticator))));
+
+  ON_CALL(mock_client_, IsReauthBeforeFillingRequired)
+      .WillByDefault(Return(true));
+  ON_CALL(mock_client_, IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(mock_client_, IsReauthBeforeFillingRequired)
+      .Times(is_refactor_enabled() ? 1 : 0);
+  EXPECT_CALL(mock_client_, IsReauthBeforeFillingRequiredLegacy)
+      .Times(is_refactor_enabled() ? 0 : 1);
+
+  EXPECT_CALL(sharing_service_, SharePassword).Times(0);
+  EXPECT_EQ(RunSharingFlowAndSelect(),
+            RemoteActorCredentialSharingResult::kAuthenticatorFailed);
+  histograms.ExpectUniqueSample(
+      "PasswordManager.RemoteActorCredentialSharing.Result",
+      RemoteActorCredentialSharingResult::kAuthenticatorFailed, 1);
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    RemoteActorCredentialSharingControllerReauthTest);
+
+TEST_F(RemoteActorCredentialSharingControllerTest, ReauthDisabled_NoPrompt) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kDeviceReauthRefactor);
+
+  SignIn("user@gmail.com");
+
+  ON_CALL(mock_client_, IsReauthBeforeFillingRequired)
+      .WillByDefault(Return(false));
+  EXPECT_CALL(mock_client_, IsReauthBeforeFillingRequired);
+  EXPECT_CALL(mock_client_, IsReauthBeforeFillingRequiredLegacy).Times(0);
+  EXPECT_CALL(mock_client_, GetDeviceAuthenticator).Times(0);
+
+  EXPECT_CALL(sharing_service_, SharePassword)
+      .WillOnce(base::test::RunOnceCallback<1>(true));
+  EXPECT_EQ(RunSharingFlowAndSelect(),
+            RemoteActorCredentialSharingResult::kSuccess);
+}
+
+TEST_F(RemoteActorCredentialSharingControllerTest,
+       ReauthDisabled_NoPrompt_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kDeviceReauthRefactor);
+
+  SignIn("user@gmail.com");
+
+  auto authenticator =
+      std::make_unique<device_reauth::MockDeviceAuthenticator>();
+  EXPECT_CALL(*authenticator, AuthenticateWithMessage).Times(0);
+  EXPECT_CALL(mock_client_, GetDeviceAuthenticator)
+      .WillOnce(Return(ByMove(std::move(authenticator))));
+
+  ON_CALL(mock_client_, IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(false));
+  EXPECT_CALL(mock_client_, IsReauthBeforeFillingRequired).Times(0);
+  EXPECT_CALL(mock_client_, IsReauthBeforeFillingRequiredLegacy);
+
+  EXPECT_CALL(sharing_service_, SharePassword)
+      .WillOnce(base::test::RunOnceCallback<1>(true));
+  EXPECT_EQ(RunSharingFlowAndSelect(),
+            RemoteActorCredentialSharingResult::kSuccess);
+}
+
+TEST_F(RemoteActorCredentialSharingControllerTest,
+       ReauthRequired_NullAuthenticatorFailsClosed) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kDeviceReauthRefactor);
+  base::HistogramTester histograms;
+
+  SignIn("user@gmail.com");
+
+  ON_CALL(mock_client_, IsReauthBeforeFillingRequired)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(mock_client_, GetDeviceAuthenticator)
+      .WillOnce(Return(ByMove(nullptr)));
+  EXPECT_CALL(sharing_service_, SharePassword).Times(0);
+
+  EXPECT_EQ(RunSharingFlowAndSelect(),
+            RemoteActorCredentialSharingResult::kAuthenticatorFailed);
+  histograms.ExpectUniqueSample(
+      "PasswordManager.RemoteActorCredentialSharing.Result",
+      RemoteActorCredentialSharingResult::kAuthenticatorFailed, 1);
+}
+
+TEST_F(RemoteActorCredentialSharingControllerTest,
+       DestructorCancelsOngoingAuthentication) {
+  SignIn("user@gmail.com");
 
   PasswordForm form;
   form.signon_realm = "https://google.com/";
@@ -483,24 +690,30 @@ TEST_F(RemoteActorCredentialSharingControllerTest,
   form.in_store = PasswordForm::Store::kProfileStore;
   profile_store_->AddLogin(FromPasswordForm(form));
 
-  base::test::TestFuture<RemoteActorCredentialSharingResult> result;
+  auto authenticator =
+      std::make_unique<device_reauth::MockDeviceAuthenticator>();
+  device_reauth::MockDeviceAuthenticator* raw_authenticator =
+      authenticator.get();
+
+  ON_CALL(mock_client_, IsReauthBeforeFillingRequired)
+      .WillByDefault(Return(true));
+  ON_CALL(mock_client_, IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(mock_client_, GetDeviceAuthenticator)
+      .WillOnce(Return(ByMove(std::move(authenticator))));
+  EXPECT_CALL(*raw_authenticator, AuthenticateWithMessage);
+  EXPECT_CALL(*raw_authenticator, Cancel);
+
   std::unique_ptr<RemoteActorCredentialSharingController> controller =
       StartController(/*gaia_id=*/account_info_.GetGaiaId().ToString(),
-                      /*domain=*/"google.com", result.GetCallback());
+                      /*domain=*/"google.com", base::DoNothing());
 
   std::vector<std::unique_ptr<PasswordForm>> credentials =
       delegate_.TakeShownCredentials();
   ASSERT_EQ(credentials.size(), 1u);
 
-  EXPECT_CALL(sharing_service_, SharePassword).Times(0);
-
   delegate_.SelectCredential(*credentials[0]);
-
-  EXPECT_EQ(result.Get(),
-            RemoteActorCredentialSharingResult::kAuthenticatorFailed);
-  histograms.ExpectUniqueSample(
-      "PasswordManager.RemoteActorCredentialSharing.Result",
-      RemoteActorCredentialSharingResult::kAuthenticatorFailed, 1);
+  controller.reset();
 }
 
 TEST_F(RemoteActorCredentialSharingControllerTest,
@@ -521,6 +734,25 @@ TEST_F(RemoteActorCredentialSharingControllerTest,
 }
 
 TEST_F(RemoteActorCredentialSharingControllerTest,
+       FailureFlow_ClientUnavailable) {
+  base::HistogramTester histograms;
+  SignIn("user@gmail.com");
+
+  base::test::TestFuture<RemoteActorCredentialSharingResult> result;
+  auto controller = std::make_unique<RemoteActorCredentialSharingController>(
+      identity_test_env_.identity_manager(), &sync_service_,
+      profile_store_.get(), account_store_.get(), &sharing_service_,
+      /*client=*/nullptr, &delegate_);
+  controller->Start(account_info_.GetGaiaId().ToString(), "google.com", kTaskId,
+                    result.GetCallback());
+
+  EXPECT_EQ(result.Get(), RemoteActorCredentialSharingResult::kOtherError);
+  histograms.ExpectUniqueSample(
+      "PasswordManager.RemoteActorCredentialSharing.Result",
+      RemoteActorCredentialSharingResult::kOtherError, 1);
+}
+
+TEST_F(RemoteActorCredentialSharingControllerTest,
        FailureFlow_SharingServiceUnavailable) {
   base::HistogramTester histograms;
   SignIn("user@gmail.com");
@@ -537,7 +769,7 @@ TEST_F(RemoteActorCredentialSharingControllerTest,
   auto controller = std::make_unique<RemoteActorCredentialSharingController>(
       identity_test_env_.identity_manager(), &sync_service_,
       profile_store_.get(), account_store_.get(), /*sharing_service=*/nullptr,
-      &delegate_);
+      &mock_client_, &delegate_);
   controller->Start(account_info_.GetGaiaId().ToString(), "google.com", kTaskId,
                     result.GetCallback());
 

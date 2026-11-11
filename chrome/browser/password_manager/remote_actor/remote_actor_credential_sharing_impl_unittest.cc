@@ -13,12 +13,10 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "base/test/with_feature_override.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
@@ -30,10 +28,7 @@
 #include "chrome/browser/ui/passwords/remote_actor_selection_dialog_controller.h"
 #include "chrome/common/password_manager/remote_actor_credential_sharing_policy.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/device_reauth/mock_device_auth_availability_checker.h"
-#include "components/device_reauth/mock_device_authenticator.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
@@ -41,7 +36,6 @@
 #include "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_service.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
-#include "components/strings/grit/components_strings.h"
 #include "components/sync/test/mock_sync_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -51,7 +45,6 @@
 #include "mojo/public/cpp/system/functions.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -60,7 +53,6 @@ namespace password_manager {
 namespace {
 
 using testing::_;
-using testing::ByMove;
 using testing::Return;
 
 class MockBadMessageHelper {
@@ -90,37 +82,6 @@ class StubRemoteActorSelectionDialogController
                                              std::move(callback)) {}
   ~StubRemoteActorSelectionDialogController() override = default;
   void Show() override {}
-};
-
-class MockChromePasswordManagerClient : public ChromePasswordManagerClient {
- public:
-  static MockChromePasswordManagerClient* CreateForWebContentsAndGet(
-      content::WebContents* contents) {
-    auto* client =
-        new testing::NiceMock<MockChromePasswordManagerClient>(contents);
-    contents->SetUserData(UserDataKey(), base::WrapUnique(client));
-    return client;
-  }
-
-  explicit MockChromePasswordManagerClient(content::WebContents* web_contents)
-      : ChromePasswordManagerClient(web_contents) {}
-
-  MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthenticator>,
-              GetDeviceAuthenticator,
-              (),
-              (override));
-  MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker>,
-              GetDeviceAuthAvailabilityChecker,
-              (),
-              (override));
-  MOCK_METHOD(bool,
-              IsReauthBeforeFillingRequired,
-              (device_reauth::DeviceAuthAvailabilityChecker*),
-              (override));
-  MOCK_METHOD(bool,
-              IsReauthBeforeFillingRequiredLegacy,
-              (device_reauth::DeviceAuthenticator*),
-              (override));
 };
 
 class MockRemoteActorCredentialSharingService
@@ -183,12 +144,7 @@ class RemoteActorCredentialSharingImplTest
     // Default sync config: active.
     SetSyncActive(true);
     autofill::ChromeAutofillClient::CreateForWebContents(web_contents());
-    mock_client_ = MockChromePasswordManagerClient::CreateForWebContentsAndGet(
-        web_contents());
-    ON_CALL(*mock_client_, IsReauthBeforeFillingRequired)
-        .WillByDefault(Return(false));
-    ON_CALL(*mock_client_, IsReauthBeforeFillingRequiredLegacy)
-        .WillByDefault(Return(false));
+    ChromePasswordManagerClient::CreateForWebContents(web_contents());
   }
 
   void TearDown() override {
@@ -196,7 +152,6 @@ class RemoteActorCredentialSharingImplTest
     if (profile_store_) {
       profile_store_->ShutdownOnUIThread();
     }
-    mock_client_ = nullptr;
     mock_sync_service_ = nullptr;
     mock_sharing_service_ = nullptr;
     identity_test_env_adaptor_.reset();
@@ -286,34 +241,6 @@ class RemoteActorCredentialSharingImplTest
     }
   }
 
-  bool RunSharingFlowAndSelect(
-      mojo::AssociatedRemote<chrome::mojom::RemoteActorCredentialSharing>&
-          remote) {
-    PasswordForm form;
-    form.signon_realm = "https://google.com/";
-    form.url = GURL("https://google.com");
-    form.username_value = u"user";
-    form.password_value = PasswordString(u"pass");
-    form.in_store = PasswordForm::Store::kProfileStore;
-    profile_store_->AddLogin(FromPasswordForm(form));
-
-    content::RenderFrameHostTester::For(main_rfh())->SimulateUserActivation();
-    base::test::TestFuture<bool> result;
-    base::test::TestFuture<void> dialog_shown_future;
-    dialog_shown_quit_closure_ = dialog_shown_future.GetCallback();
-    remote->RequestAgentAuthentication(account_info_.GetGaiaId().ToString(),
-                                       "google.com", "actor_id",
-                                       result.GetCallback());
-    dialog_shown_future.Get();
-
-    if (last_dialog_credentials_.size() != 1u) {
-      return false;
-    }
-
-    SimulateDialogSelection(*last_dialog_credentials_[0]);
-    return result.Get();
-  }
-
   mojo::AssociatedRemote<chrome::mojom::RemoteActorCredentialSharing>
   SetUpAndBindFlow() {
     SignIn("user@gmail.com");
@@ -349,8 +276,6 @@ class RemoteActorCredentialSharingImplTest
   base::OnceClosure dialog_shown_quit_closure_;
   raw_ptr<StubRemoteActorSelectionDialogController> last_dialog_controller_ =
       nullptr;
-
-  raw_ptr<MockChromePasswordManagerClient> mock_client_ = nullptr;
 
  private:
   policy::ScopedManagementServiceOverrideForTesting
@@ -544,126 +469,6 @@ TEST_F(RemoteActorCredentialSharingImplTest,
           "RemoteActorCredentialSharing: Request without user gesture"));
 }
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-class RemoteActorCredentialSharingImplReauthTest
-    : public base::test::WithFeatureOverride,
-      public RemoteActorCredentialSharingImplTest {
- public:
-  RemoteActorCredentialSharingImplReauthTest()
-      : base::test::WithFeatureOverride(
-            password_manager::features::kDeviceReauthRefactor) {}
-
-  bool is_refactor_enabled() const { return IsParamFeatureEnabled(); }
-};
-
-TEST_P(RemoteActorCredentialSharingImplReauthTest, ReauthEnabled_Success) {
-  mojo::AssociatedRemote<chrome::mojom::RemoteActorCredentialSharing> remote =
-      SetUpAndBindFlow();
-
-  auto authenticator =
-      std::make_unique<device_reauth::MockDeviceAuthenticator>();
-  device_reauth::MockDeviceAuthenticator* raw_authenticator =
-      authenticator.get();
-
-  std::u16string expected_message = l10n_util::GetStringFUTF16(
-      IDS_PASSWORD_MANAGER_FILLING_REAUTH, u"google.com");
-  EXPECT_CALL(*raw_authenticator, AuthenticateWithMessage(expected_message, _))
-      .WillOnce(base::test::RunOnceCallback<1>(true));
-
-  EXPECT_CALL(*mock_client_, GetDeviceAuthenticator)
-      .WillOnce(Return(ByMove(std::move(authenticator))));
-
-  ON_CALL(*mock_client_, IsReauthBeforeFillingRequired)
-      .WillByDefault(Return(true));
-  ON_CALL(*mock_client_, IsReauthBeforeFillingRequiredLegacy)
-      .WillByDefault(Return(true));
-  EXPECT_CALL(*mock_client_, IsReauthBeforeFillingRequired)
-      .Times(is_refactor_enabled() ? 1 : 0);
-  EXPECT_CALL(*mock_client_, IsReauthBeforeFillingRequiredLegacy)
-      .Times(is_refactor_enabled() ? 0 : 1);
-
-  EXPECT_CALL(*mock_sharing_service_, SharePassword)
-      .WillOnce(base::test::RunOnceCallback<1>(true));
-  EXPECT_TRUE(RunSharingFlowAndSelect(remote));
-}
-
-TEST_P(RemoteActorCredentialSharingImplReauthTest, ReauthEnabled_Failure) {
-  mojo::AssociatedRemote<chrome::mojom::RemoteActorCredentialSharing> remote =
-      SetUpAndBindFlow();
-
-  auto authenticator =
-      std::make_unique<device_reauth::MockDeviceAuthenticator>();
-  device_reauth::MockDeviceAuthenticator* raw_authenticator =
-      authenticator.get();
-
-  std::u16string expected_message = l10n_util::GetStringFUTF16(
-      IDS_PASSWORD_MANAGER_FILLING_REAUTH, u"google.com");
-  EXPECT_CALL(*raw_authenticator, AuthenticateWithMessage(expected_message, _))
-      .WillOnce(base::test::RunOnceCallback<1>(false));
-
-  EXPECT_CALL(*mock_client_, GetDeviceAuthenticator)
-      .WillOnce(Return(ByMove(std::move(authenticator))));
-
-  ON_CALL(*mock_client_, IsReauthBeforeFillingRequired)
-      .WillByDefault(Return(true));
-  ON_CALL(*mock_client_, IsReauthBeforeFillingRequiredLegacy)
-      .WillByDefault(Return(true));
-  EXPECT_CALL(*mock_client_, IsReauthBeforeFillingRequired)
-      .Times(is_refactor_enabled() ? 1 : 0);
-  EXPECT_CALL(*mock_client_, IsReauthBeforeFillingRequiredLegacy)
-      .Times(is_refactor_enabled() ? 0 : 1);
-
-  EXPECT_FALSE(RunSharingFlowAndSelect(remote));
-}
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    RemoteActorCredentialSharingImplReauthTest);
-
-TEST_F(RemoteActorCredentialSharingImplTest, ReauthDisabled_NoPrompt) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kDeviceReauthRefactor);
-
-  mojo::AssociatedRemote<chrome::mojom::RemoteActorCredentialSharing> remote =
-      SetUpAndBindFlow();
-
-  ON_CALL(*mock_client_, IsReauthBeforeFillingRequired)
-      .WillByDefault(Return(false));
-  EXPECT_CALL(*mock_client_, IsReauthBeforeFillingRequired);
-  EXPECT_CALL(*mock_client_, IsReauthBeforeFillingRequiredLegacy).Times(0);
-  EXPECT_CALL(*mock_client_, GetDeviceAuthenticator).Times(0);
-
-  EXPECT_CALL(*mock_sharing_service_, SharePassword)
-      .WillOnce(base::test::RunOnceCallback<1>(true));
-  EXPECT_TRUE(RunSharingFlowAndSelect(remote));
-}
-
-TEST_F(RemoteActorCredentialSharingImplTest,
-       ReauthDisabled_NoPrompt_FeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      password_manager::features::kDeviceReauthRefactor);
-
-  mojo::AssociatedRemote<chrome::mojom::RemoteActorCredentialSharing> remote =
-      SetUpAndBindFlow();
-
-  auto authenticator =
-      std::make_unique<device_reauth::MockDeviceAuthenticator>();
-  EXPECT_CALL(*authenticator, AuthenticateWithMessage).Times(0);
-  EXPECT_CALL(*mock_client_, GetDeviceAuthenticator)
-      .WillOnce(Return(ByMove(std::move(authenticator))));
-
-  ON_CALL(*mock_client_, IsReauthBeforeFillingRequiredLegacy)
-      .WillByDefault(Return(false));
-  EXPECT_CALL(*mock_client_, IsReauthBeforeFillingRequired).Times(0);
-  EXPECT_CALL(*mock_client_, IsReauthBeforeFillingRequiredLegacy);
-
-  EXPECT_CALL(*mock_sharing_service_, SharePassword)
-      .WillOnce(base::test::RunOnceCallback<1>(true));
-  EXPECT_TRUE(RunSharingFlowAndSelect(remote));
-}
-#endif
-
 TEST_F(RemoteActorCredentialSharingImplTest,
        RejectDuplicateRequestWhenRequestAlreadyInProgress) {
   base::HistogramTester histograms;
@@ -763,7 +568,6 @@ TEST_F(RemoteActorCredentialSharingImplTest,
 
   // Destroy the WebContents (and therefore the RenderFrameHost and
   // DocumentUserData) while the authentication request dialog is in flight.
-  mock_client_ = nullptr;
   DeleteContents();
 
   // The remote should observe a disconnection on the pipe.
