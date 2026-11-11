@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_WEB_CONTENTS_FILE_CHOOSER_IMPL_H_
 #define CONTENT_BROWSER_WEB_CONTENTS_FILE_CHOOSER_IMPL_H_
 
+#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
@@ -32,7 +33,10 @@ class CONTENT_EXPORT FileChooserImpl : public blink::mojom::FileChooser {
   // WebContents.
   class CONTENT_EXPORT FileSelectListenerImpl : public FileSelectListener {
    public:
-    explicit FileSelectListenerImpl(FileChooserImpl* owner);
+    // `shared_dir` is the directory the user shared, if the folder to upload
+    // was nominated by the renderer rather than picked in the browser.
+    explicit FileSelectListenerImpl(FileChooserImpl* owner,
+                                    base::FilePath shared_dir = {});
     void SetFullscreenBlock(base::ScopedClosureRunner fullscreen_block);
 
     // FileSelectListener overrides:
@@ -54,6 +58,7 @@ class CONTENT_EXPORT FileChooserImpl : public blink::mojom::FileChooser {
 
    private:
     base::WeakPtr<FileChooserImpl> owner_;
+    const base::FilePath shared_dir_;
     base::ScopedClosureRunner fullscreen_block_;
 #if DCHECK_IS_ON()
     bool was_file_select_listener_function_called_ = false;

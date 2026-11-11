@@ -858,13 +858,21 @@ class ChildProcessSecurityPolicyImpl::ProcessState {
   // Determine if the certain permissions have been granted to a file.
   bool HasPermissionsForFile(const base::FilePath& file,
                              int permissions) const {
+    return !GetGrantPathForFile(file, permissions).empty();
+  }
+
+  // Returns the nearest granted path (`file` or an ancestor) that gives
+  // `permissions` on `file`, or an empty path if there is none.
+  base::FilePath GetGrantPathForFile(const base::FilePath& file,
+                                     int permissions) const {
 #if BUILDFLAG(IS_ANDROID)
     if (file.IsContentUri()) {
-      return HasPermissionsForContentUri(file, permissions);
+      return HasPermissionsForContentUri(file, permissions) ? file
+                                                            : base::FilePath();
     }
 #endif
     if (!permissions || file.empty() || !file.IsAbsolute()) {
-      return false;
+      return base::FilePath();
     }
     base::FilePath current_path = file.StripTrailingSeparators();
     base::FilePath last_path;
@@ -880,14 +888,15 @@ class ChildProcessSecurityPolicyImpl::ProcessState {
       } else {
         FileMap::const_iterator it = file_permissions_.find(current_path);
         if (it != file_permissions_.end()) {
-          return (it->second & permissions) == permissions;
+          return (it->second & permissions) == permissions ? current_path
+                                                           : base::FilePath();
         }
       }
       last_path = current_path;
       current_path = current_path.DirName();
     }
 
-    return false;
+    return base::FilePath();
   }
 
   void SetProcessLock(const ProcessLock& lock_to_set) {
@@ -2175,6 +2184,15 @@ void ChildProcessSecurityPolicyImpl::LogCanCommitUrlFailureReason(
 bool ChildProcessSecurityPolicyImpl::CanReadFile(ChildProcessId child_id,
                                                  const base::FilePath& file) {
   return HasPermissionsForFile(child_id, file, READ_FILE_GRANT);
+}
+
+base::FilePath ChildProcessSecurityPolicyImpl::GetReadFileGrantPath(
+    ChildProcessId child_id,
+    const base::FilePath& file) {
+  base::AutoLock lock(lock_);
+  auto* state = process_states_.GetProcessStateForQuery(child_id);
+  return state ? state->GetGrantPathForFile(file, READ_FILE_GRANT)
+               : base::FilePath();
 }
 
 void ChildProcessSecurityPolicyImpl::GrantFileForBrowserUpload(

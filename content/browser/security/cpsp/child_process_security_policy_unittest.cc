@@ -1289,6 +1289,43 @@ TEST_P(ChildProcessSecurityPolicyTest, FilePermissions) {
   p->Remove(process_id);
 }
 
+TEST_P(ChildProcessSecurityPolicyTest, GetReadFileGrantPath) {
+  const base::FilePath home(TEST_PATH("/home"));
+  const base::FilePath joe(TEST_PATH("/home/joe"));
+  const base::FilePath bob(TEST_PATH("/home/bob"));
+  ChildProcessSecurityPolicyImpl* p =
+      ChildProcessSecurityPolicyImpl::GetInstance();
+  auto process = std::make_unique<MockRenderProcessHost>(browser_context());
+  const ChildProcessId process_id = process->GetID();
+  LockProcessIfNeeded(process_id, browser_context());
+
+  EXPECT_EQ(base::FilePath(), p->GetReadFileGrantPath(process_id, joe));
+
+  p->GrantReadFile(process_id, home);
+  p->GrantReadFile(process_id, joe);
+  // The nearest grant wins.
+  EXPECT_EQ(joe, p->GetReadFileGrantPath(process_id, joe));
+  EXPECT_EQ(joe, p->GetReadFileGrantPath(
+                     process_id, base::FilePath(TEST_PATH("/home/joe/a"))));
+  EXPECT_EQ(home, p->GetReadFileGrantPath(
+                      process_id, base::FilePath(TEST_PATH("/home/bob/a"))));
+  EXPECT_EQ(base::FilePath(),
+            p->GetReadFileGrantPath(process_id,
+                                    base::FilePath(TEST_PATH("/etc/passwd"))));
+  EXPECT_EQ(base::FilePath(),
+            p->GetReadFileGrantPath(
+                process_id, base::FilePath(TEST_PATH("/home/../etc/passwd"))));
+
+  // A nearer grant without read permission shadows the broader one, as in
+  // CanReadFile().
+  GrantPermissionsForFile(p, process_id, bob, base::File::FLAG_CREATE);
+  EXPECT_FALSE(p->CanReadFile(process_id, bob));
+  EXPECT_EQ(base::FilePath(), p->GetReadFileGrantPath(process_id, bob));
+
+  process.reset();
+  EXPECT_EQ(base::FilePath(), p->GetReadFileGrantPath(process_id, joe));
+}
+
 TEST_P(ChildProcessSecurityPolicyTest, CanServiceWebUIBindings) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();

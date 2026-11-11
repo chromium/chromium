@@ -4,13 +4,21 @@
 
 #include "content/browser/web_contents/file_chooser_impl.h"
 
+#include <optional>
+#include <string_view>
+
+#include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/security/cpsp/child_process_security_policy_impl.h"
+#include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/test/browser_test.h"
@@ -20,6 +28,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -275,16 +284,12 @@ IN_PROC_BROWSER_TEST_F(FileChooserImplBrowserTest, UploadFolderWithDirSymlink) {
       EvalJs(shell(), "document.getElementById('fileinput').files[0].name;"));
 }
 
-// A compromised renderer can ask to enumerate any directory it has read access
-// to, including a directory symlink pointing outside of the folder the user
-// granted access to. Such a folder must not be uploaded.
-// https://crbug.com/497482008
+// A folder picked in the browser's file picker may itself be a symlink, e.g. a
+// symlinked home directory, and its contents are uploaded.
 IN_PROC_BROWSER_TEST_F(FileChooserImplBrowserTest, UploadFolderIsDirSymlink) {
   EXPECT_TRUE(NavigateToURL(
       shell(), GetTestUrl(".", "file_input_webkitdirectory.html")));
 
-  // The uploaded folder itself is a directory symbolic link. The symbolic link
-  // should not be followed, so no file should be uploaded.
   base::FilePath dir_test_data;
   ASSERT_TRUE(base::PathService::Get(DIR_TEST_DATA, &dir_test_data));
   base::FilePath folder_to_upload = dir_test_data.AppendASCII("file_chooser")
@@ -304,22 +309,210 @@ IN_PROC_BROWSER_TEST_F(FileChooserImplBrowserTest, UploadFolderIsDirSymlink) {
   std::unique_ptr<FileChooserDelegate> delegate(new FileChooserDelegate(
       {bar_file}, folder_to_upload, base::OnceClosure()));
   shell()->web_contents()->SetDelegate(delegate.get());
-  // The resulting file list is empty, so the file input may fire either
-  // `change` or `cancel`, depending on whether it considers the selection to
-  // have changed.
   EXPECT_TRUE(ExecJs(shell(),
                      "(async () => {"
-                     "  let listener = new Promise(resolve => {"
-                     "      fileinput.onchange = resolve;"
-                     "      fileinput.oncancel = resolve;"
-                     "  });"
+                     "  let listener = new Promise("
+                     "      resolve => fileinput.onchange = resolve);"
                      "  fileinput.click();"
                      "  await listener;"
                      "})()"));
 
+  // The fix for https://crbug.com/497482008 made this upload empty, because
+  // RemoveSymlinks() couldn't tell a folder the user picked from one that a
+  // compromised renderer nominated via EnumerateChosenDirectory(). That was
+  // overly restrictive for the picker. Renderer-nominated folders are now
+  // checked up to the user's grant instead (see
+  // FileChooserImplEnumerateBrowserTest), so a picked folder is trusted even if
+  // it is a symlink, as it was before that fix.
   EXPECT_EQ(
-      0, EvalJs(shell(), "document.getElementById('fileinput').files.length;"));
+      1, EvalJs(shell(), "document.getElementById('fileinput').files.length;"));
+  EXPECT_EQ(
+      "bar.txt",
+      EvalJs(shell(), "document.getElementById('fileinput').files[0].name;"));
 }
+
+#if BUILDFLAG(IS_POSIX)
+
+// Calls EnumerateChosenDirectory() as a renderer would after the user shared
+// (e.g. dropped) a folder. Enumerates the real disk, following symlinks.
+class FileChooserImplEnumerateBrowserTest : public ContentBrowserTest,
+                                            public WebContentsDelegate {
+ protected:
+  void SetUpOnMainThread() override {
+    ASSERT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    shell()->web_contents()->SetDelegate(this);
+  }
+
+  void TearDownOnMainThread() override {
+    shell()->web_contents()->SetDelegate(shell());
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(temp_dir_.Delete());
+  }
+
+  // WebContentsDelegate:
+  void EnumerateDirectory(WebContents* web_contents,
+                          scoped_refptr<FileSelectListener> listener,
+                          const base::FilePath& path) override {
+    std::vector<blink::mojom::FileChooserFileInfoPtr> files;
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::FileEnumerator e(path, /*recursive=*/true,
+                           base::FileEnumerator::FILES);
+    for (base::FilePath file = e.Next(); !file.empty(); file = e.Next()) {
+      files.push_back(blink::mojom::FileChooserFileInfo::NewNativeFile(
+          blink::mojom::NativeFileInfo::New(file, std::u16string(),
+                                            std::vector<std::u16string>())));
+    }
+    listener->FileSelected(
+        std::move(files), path,
+        blink::mojom::FileChooserParams::Mode::kUploadFolder);
+  }
+
+  base::FilePath Path(std::string_view relative) {
+    return temp_dir_.GetPath().Append(relative);
+  }
+
+  void WriteFile(std::string_view relative) {
+    ASSERT_TRUE(base::CreateDirectory(Path(relative).DirName()));
+    ASSERT_TRUE(base::WriteFile(Path(relative), "x"));
+  }
+
+  void Symlink(std::string_view target, std::string_view link) {
+    ASSERT_TRUE(base::CreateSymbolicLink(Path(target), Path(link)));
+  }
+
+  ChildProcessId process_id() {
+    return shell()
+        ->web_contents()
+        ->GetPrimaryMainFrame()
+        ->GetProcess()
+        ->GetID();
+  }
+
+  void Share(std::string_view relative) {
+    ChildProcessSecurityPolicyImpl::GetInstance()->GrantReadFile(
+        process_id(), Path(relative));
+  }
+
+  // Returns the files that the renderer gets back, or nullopt if the request
+  // was rejected.
+  std::optional<std::vector<base::FilePath>> Enumerate(
+      std::string_view relative) {
+    auto remote = FileChooserImpl::CreateBoundForTesting(
+        static_cast<RenderFrameHostImpl*>(
+            shell()->web_contents()->GetPrimaryMainFrame()));
+    base::test::TestFuture<blink::mojom::FileChooserResultPtr> future;
+    remote->EnumerateChosenDirectory(Path(relative), future.GetCallback());
+    blink::mojom::FileChooserResultPtr chooser_result = future.Take();
+
+    // Let the chooser be destroyed, so it's no longer the active chooser.
+    remote.reset();
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+
+    if (!chooser_result) {
+      return std::nullopt;
+    }
+    std::vector<base::FilePath> result;
+    for (const auto& file : chooser_result->files) {
+      result.push_back(file->get_native_file()->file_path);
+    }
+    return result;
+  }
+
+ private:
+  base::ScopedTempDir temp_dir_;
+};
+
+IN_PROC_BROWSER_TEST_F(FileChooserImplEnumerateBrowserTest, NoSymlinks) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  WriteFile("shared/a.txt");
+  WriteFile("shared/sub/b.txt");
+  WriteFile("other/c.txt");
+  Share("shared");
+
+  EXPECT_THAT(Enumerate("shared"),
+              testing::Optional(testing::UnorderedElementsAre(
+                  Path("shared/a.txt"), Path("shared/sub/b.txt"))));
+  EXPECT_THAT(
+      Enumerate("shared/sub"),
+      testing::Optional(testing::ElementsAre(Path("shared/sub/b.txt"))));
+  EXPECT_EQ(Enumerate("other"), std::nullopt);
+}
+
+// A renderer may nominate a directory symlink inside the folder the user
+// shared. The symlink points outside the shared folder, so nothing in it is
+// returned. https://crbug.com/497482008
+IN_PROC_BROWSER_TEST_F(FileChooserImplEnumerateBrowserTest,
+                       NominatedDirIsSymlink) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  WriteFile("outside/secret.txt");
+  ASSERT_TRUE(base::CreateDirectory(Path("shared")));
+  Symlink("outside", "shared/link");
+  Share("shared");
+
+  EXPECT_THAT(Enumerate("shared/link"), testing::Optional(testing::IsEmpty()));
+}
+
+// A renderer may nominate a real directory that is reached through a symlink
+// inside the shared folder. The symlink check covers every directory between
+// the shared folder and each file, not just those below the nominated
+// directory, so nothing is returned. https://crbug.com/564459472
+IN_PROC_BROWSER_TEST_F(FileChooserImplEnumerateBrowserTest,
+                       SymlinkAboveNominatedDir) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  WriteFile("outside/sub/secret.txt");
+  ASSERT_TRUE(base::CreateDirectory(Path("shared")));
+  Symlink("outside", "shared/link");
+  Share("shared");
+  // The lexical check lets the renderer nominate this path.
+  ASSERT_TRUE(ChildProcessSecurityPolicyImpl::GetInstance()->CanReadFile(
+      process_id(), Path("shared/link/sub")));
+
+  EXPECT_THAT(Enumerate("shared/link/sub"),
+              testing::Optional(testing::IsEmpty()));
+}
+
+// The shared folder may itself be a symlink, e.g. a symlinked home directory,
+// while symlinks inside it are still excluded.
+IN_PROC_BROWSER_TEST_F(FileChooserImplEnumerateBrowserTest,
+                       SharedDirIsSymlink) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  WriteFile("real/a.txt");
+  WriteFile("real/sub/b.txt");
+  WriteFile("outside/sub/secret.txt");
+  Symlink("outside", "real/link");
+  Symlink("real", "shared");
+  Share("shared");
+
+  EXPECT_THAT(Enumerate("shared"),
+              testing::Optional(testing::UnorderedElementsAre(
+                  Path("shared/a.txt"), Path("shared/sub/b.txt"))));
+  EXPECT_THAT(
+      Enumerate("shared/sub"),
+      testing::Optional(testing::ElementsAre(Path("shared/sub/b.txt"))));
+  EXPECT_THAT(Enumerate("shared/link/sub"),
+              testing::Optional(testing::IsEmpty()));
+}
+
+// The nearest shared ancestor bounds the check, not the topmost one.
+IN_PROC_BROWSER_TEST_F(FileChooserImplEnumerateBrowserTest, NestedShares) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  WriteFile("root/real/photos/p.jpg");
+  Symlink("root/real", "root/link");
+  Share("root");
+  Share("root/link/photos");
+
+  EXPECT_THAT(
+      Enumerate("root/link/photos"),
+      testing::Optional(testing::ElementsAre(Path("root/link/photos/p.jpg"))));
+  EXPECT_THAT(Enumerate("root/link"), testing::Optional(testing::IsEmpty()));
+}
+
+#endif  // BUILDFLAG(IS_POSIX)
 
 // Ensure that FileChooserImpl::FileSelected does not grant permissions if
 // invoked with Mode::kSave, as a defense against compromised renderers.

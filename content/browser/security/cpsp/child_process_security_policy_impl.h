@@ -509,6 +509,11 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
       RenderProcessHost* process,
       const scoped_refptr<network::ResourceRequestBody>& body);
 
+  // Returns the nearest granted path (`file` or an ancestor) that lets
+  // `child_id` read `file`, or an empty path if `child_id` can't read `file`.
+  base::FilePath GetReadFileGrantPath(ChildProcessId child_id,
+                                      const base::FilePath& file);
+
   // Grants the network service the capability to upload a specific file on
   // the browser's behalf. The owner_token ties the lifetime of the grant to
   // an object (e.g. SimpleURLLoader) so it can be revoked when the object is

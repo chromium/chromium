@@ -27,31 +27,25 @@ namespace content {
 
 namespace {
 
-// Removes any file that is a symlink or is inside a directory symlink.
-// For |kUploadFolder| mode only. |base_dir| is the folder being uploaded.
+// Removes any file that is a symlink or is reached through a directory symlink
+// below `shared_dir`, the directory the user shared. For |kUploadFolder| only.
+// `shared_dir` itself may be a symlink (e.g. a symlinked home directory), but
+// anything below it may have been nominated by the renderer, so is checked.
+// See https://crbug.com/497482008 and https://crbug.com/564459472.
 std::vector<blink::mojom::FileChooserFileInfoPtr> RemoveSymlinks(
     std::vector<blink::mojom::FileChooserFileInfoPtr> files,
-    base::FilePath base_dir) {
-  CHECK(!base_dir.empty(), base::NotFatalUntil::M158);
+    base::FilePath shared_dir) {
+  CHECK(!shared_dir.empty(), base::NotFatalUntil::M158);
   auto to_remove = std::ranges::remove_if(
       files,
-      [&base_dir](const base::FilePath& file_path) {
+      [&shared_dir](const base::FilePath& file_path) {
         if (base::IsLink(file_path))
           return true;
-        // Walk up the ancestors of `file_path`, up to and including
-        // `base_dir`. `base_dir` itself must be checked as well, because it is
-        // not necessarily a directory the user picked: a compromised renderer
-        // can pass any path it already has (lexical) read access to, including
-        // a symlink, to FileChooserImpl::EnumerateChosenDirectory().
-        for (base::FilePath path = file_path.DirName();;
+        for (base::FilePath path = file_path.DirName();
+             path != shared_dir && shared_dir.IsParent(path);
              path = path.DirName()) {
           if (base::IsLink(path))
             return true;
-          // Stop at `base_dir`. Also stop if `path` is not under `base_dir`,
-          // which shouldn't happen, but guarantees termination at the root.
-          if (path == base_dir || !base_dir.IsParent(path)) {
-            break;
-          }
         }
         return false;
       },
@@ -63,8 +57,10 @@ std::vector<blink::mojom::FileChooserFileInfoPtr> RemoveSymlinks(
 }  // namespace
 
 FileChooserImpl::FileSelectListenerImpl::FileSelectListenerImpl(
-    FileChooserImpl* owner)
-    : owner_(owner ? owner->GetWeakPtr() : nullptr) {}
+    FileChooserImpl* owner,
+    base::FilePath shared_dir)
+    : owner_(owner ? owner->GetWeakPtr() : nullptr),
+      shared_dir_(std::move(shared_dir)) {}
 
 FileChooserImpl::FileSelectListenerImpl::~FileSelectListenerImpl() {
 #if DCHECK_IS_ON()
@@ -107,10 +103,12 @@ void FileChooserImpl::FileSelectListenerImpl::FileSelected(
     return;
   }
 
+  // Without a `shared_dir_`, `base_dir` came from the browser's file picker.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&RemoveSymlinks, std::move(files), base_dir),
+      base::BindOnce(&RemoveSymlinks, std::move(files),
+                     shared_dir_.empty() ? base_dir : shared_dir_),
       base::BindOnce(&FileChooserImpl::FileSelected, owner_, base_dir, mode));
 }
 
@@ -229,18 +227,21 @@ void FileChooserImpl::EnumerateChosenDirectory(
     std::move(callback).Run(nullptr);
     return;
   }
-  callback_ = std::move(callback);
-  auto listener = base::MakeRefCounted<FileSelectListenerImpl>(this);
-  listener_impl_ = listener.get();
-  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  if (policy->CanReadFile(render_frame_host()->GetProcess()->GetID(),
-                          directory_path)) {
-    WebContentsImpl::FromRenderFrameHostImpl(render_frame_host())
-        ->EnumerateDirectory(GetWeakPtr(), render_frame_host(),
-                             std::move(listener), directory_path);
-  } else {
-    listener->FileSelectionCanceled();
+  // `directory_path` is renderer-supplied; the grant is what the user shared.
+  base::FilePath shared_dir =
+      ChildProcessSecurityPolicyImpl::GetInstance()->GetReadFileGrantPath(
+          render_frame_host()->GetProcess()->GetID(), directory_path);
+  if (shared_dir.empty()) {
+    std::move(callback).Run(nullptr);
+    return;
   }
+  callback_ = std::move(callback);
+  auto listener =
+      base::MakeRefCounted<FileSelectListenerImpl>(this, std::move(shared_dir));
+  listener_impl_ = listener.get();
+  WebContentsImpl::FromRenderFrameHostImpl(render_frame_host())
+      ->EnumerateDirectory(GetWeakPtr(), render_frame_host(),
+                           std::move(listener), directory_path);
 }
 
 void FileChooserImpl::FileSelected(
