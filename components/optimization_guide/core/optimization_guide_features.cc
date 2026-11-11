@@ -94,11 +94,6 @@ BASE_FEATURE(kOptimizationGuideModelExecution,
 // metrics.
 BASE_FEATURE(kLogOnDeviceMetricsOnStartup, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Whether to scan the full text when running the language detection in the text
-// safety classifier.
-BASE_FEATURE(kTextSafetyScanLanguageDetection,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Whether performance class should be fetched each startup or just after a
 // version update.
 BASE_FEATURE(kOnDeviceModelFetchPerformanceClassEveryStartup,
@@ -109,26 +104,11 @@ BASE_FEATURE(kOnDeviceModelFetchPerformanceClassEveryStartup,
 // purposes only.
 BASE_FEATURE(kAiSettingsPageForceAvailable, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOnDeviceModelPerformanceParams, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kAnnotatedPageContentWithActionableElements,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAnnotatedPageContentWithMediaData,
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<std::string> kPerformanceClassListForOnDeviceModel{
-    &kOnDeviceModelPerformanceParams,
-    "compatible_on_device_performance_classes", "3,4,5,6"};
-
-const base::FeatureParam<std::string>
-    kLowTierPerformanceClassListForOnDeviceModel{
-        &kOnDeviceModelPerformanceParams,
-        "compatible_low_tier_on_device_performance_classes", "3,4"};
-
-const base::FeatureParam<std::string> kPerformanceClassListForImageInput{
-    &kOnDeviceModelPerformanceParams,
-    "compatible_on_device_performance_classes_image_input", "3,4,5,6"};
 
 BASE_FEATURE(kOnDeviceModelBackgroundDownload,
              base::FEATURE_DISABLED_BY_DEFAULT);

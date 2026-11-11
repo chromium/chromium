@@ -51,7 +51,6 @@
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/on_device_prefs.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/feature_configs.pb.h"
 #include "components/optimization_guide/proto/features/prompt_api.pb.h"
@@ -1400,7 +1399,7 @@ blink::mojom::AILanguageModelParamsPtr AIManager::GetLanguageModelParams(
       sampling_params_config->default_temperature;
 
   model_info->max_sampling_params->top_k =
-      optimization_guide::features::GetOnDeviceModelMaxTopK();
+      on_device_model::features::GetOnDeviceModelMaxTopK();
   model_info->max_sampling_params->temperature = kDefaultMaxTemperature;
 
   auto metadata = model_client->GetFeatureMetadata();

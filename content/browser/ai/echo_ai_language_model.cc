@@ -16,7 +16,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "content/browser/ai/echo_ai_manager_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/remote.h"

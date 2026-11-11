@@ -42,7 +42,6 @@
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
 #include "components/optimization_guide/core/model_execution/test/mock_download_progress_observer.h"
 #include "components/optimization_guide/core/model_execution/test/mock_on_device_capability.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/descriptors.pb.h"
@@ -1805,7 +1804,7 @@ TEST_F(AILanguageModelTest, CanCreate_ImageAndAudioInputCapabilities) {
 TEST_F(AILanguageModelTest, CanCreate_DeviceCapabilities) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {{optimization_guide::features::kOnDeviceModelPerformanceParams,
+      {{on_device_model::features::kOnDeviceModelPerformanceParams,
         {{"compatible_on_device_performance_classes", "3,4,5,6"}}}},
       {{on_device_model::features::kOnDeviceModelCpuBackend}});
 
@@ -1880,7 +1879,7 @@ TEST_F(AILanguageModelTest, CanCreate_DeviceAudioCapabilities) {
 TEST_F(AILanguageModelTest, CreateLanguageModelModelNotEligible) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {{optimization_guide::features::kOnDeviceModelPerformanceParams,
+      {{on_device_model::features::kOnDeviceModelPerformanceParams,
         {{"compatible_on_device_performance_classes", "3,4,5,6"}}}},
       {{on_device_model::features::kOnDeviceModelCpuBackend}});
 

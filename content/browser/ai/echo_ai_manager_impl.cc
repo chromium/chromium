@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/language/core/common/locale_util.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "content/browser/ai/echo_ai_language_model.h"
 #include "content/browser/ai/echo_ai_proofreader.h"
 #include "content/browser/ai/echo_ai_rewriter.h"
@@ -24,6 +23,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "services/on_device_model/public/cpp/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/ai/ai_common.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom.h"
@@ -283,10 +283,10 @@ void EchoAIManagerImpl::GetLanguageModelParams(
     GetLanguageModelParamsCallback callback) {
   std::move(callback).Run(blink::mojom::AILanguageModelParams::New(
       blink::mojom::AILanguageModelSamplingParams::New(
-          optimization_guide::features::GetOnDeviceModelDefaultTopK(),
-          optimization_guide::features::GetOnDeviceModelDefaultTemperature()),
+          on_device_model::features::GetOnDeviceModelDefaultTopK(),
+          on_device_model::features::GetOnDeviceModelDefaultTemperature()),
       blink::mojom::AILanguageModelSamplingParams::New(
-          optimization_guide::features::GetOnDeviceModelMaxTopK(),
+          on_device_model::features::GetOnDeviceModelMaxTopK(),
           /*temperature=*/2.0f)));
 }
 
@@ -551,8 +551,8 @@ void EchoAIManagerImpl::ReturnAILanguageModelCreationResult(
       sampling_params
           ? std::move(sampling_params)
           : blink::mojom::AILanguageModelSamplingParams::New(
-                optimization_guide::features::GetOnDeviceModelDefaultTopK(),
-                optimization_guide::features::
+                on_device_model::features::GetOnDeviceModelDefaultTopK(),
+                on_device_model::features::
                     GetOnDeviceModelDefaultTemperature());
 
   mojo::MakeSelfOwnedReceiver(

@@ -5,8 +5,11 @@
 #ifndef SERVICES_ON_DEVICE_MODEL_PUBLIC_CPP_FEATURES_H_
 #define SERVICES_ON_DEVICE_MODEL_PUBLIC_CPP_FEATURES_H_
 
+#include <string>
+
 #include "base/component_export.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace on_device_model::features {
 
@@ -78,6 +81,45 @@ extern const base::FeatureParam<int>
 COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP)
 extern const base::FeatureParam<int>
     kOnDeviceModelAsrFinalDecoderPrefillBackoff;
+
+// Whether to scan the full text when running the language detection in the text
+// safety classifier.
+COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP)
+BASE_DECLARE_FEATURE(kTextSafetyScanLanguageDetection);
+
+// Allows setting feature params for model download configuration, such as
+// minimum performance class for download.
+COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP)
+BASE_DECLARE_FEATURE(kOnDeviceModelPerformanceParams);
+
+// Comma-separated list of performance classes (e.g. "3,4,5") that should
+// download the base model. Use "*" if there is no performance class
+// requirement.
+COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP)
+extern const base::FeatureParam<std::string>
+    kPerformanceClassListForOnDeviceModel;
+
+// Comma-separated list of performance classes that should use a smaller model
+// if available. This should be a subset of
+// kPerformanceClassListForOnDeviceModel.
+COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP)
+extern const base::FeatureParam<std::string>
+    kLowTierPerformanceClassListForOnDeviceModel;
+
+// Comma-separated list of performance classes that have image input enabled.
+COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP)
+extern const base::FeatureParam<std::string> kPerformanceClassListForImageInput;
+
+// Settings to control output sampling.
+inline constexpr int GetOnDeviceModelDefaultTopK() {
+  return 64;
+}
+inline constexpr int GetOnDeviceModelMaxTopK() {
+  return 128;
+}
+inline constexpr double GetOnDeviceModelDefaultTemperature() {
+  return 1.0;
+}
 
 }  // namespace on_device_model::features
 

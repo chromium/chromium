@@ -45,7 +45,7 @@ namespace {
 // performance class requirement.
 uint64_t GetMinimumVramRequired() {
   std::string perf_classes_string =
-      optimization_guide::features::kPerformanceClassListForOnDeviceModel.Get();
+      on_device_model::features::kPerformanceClassListForOnDeviceModel.Get();
 
   if (optimization_guide::IsPerformanceClassCompatible(
           perf_classes_string,
@@ -370,7 +370,7 @@ OnDeviceModelPerformanceClass PerformanceClassifier::GetPerformanceClass()
 
 bool PerformanceClassifier::IsDeviceGPUCapable() const {
   return IsPerformanceClassCompatible(
-      features::kPerformanceClassListForOnDeviceModel.Get(),
+      on_device_model::features::kPerformanceClassListForOnDeviceModel.Get(),
       GetPerformanceClass());
 }
 
@@ -380,14 +380,16 @@ bool PerformanceClassifier::IsDeviceCapable() const {
 
 bool PerformanceClassifier::IsLowTierDevice() const {
   return IsPerformanceClassCompatible(
-      features::kLowTierPerformanceClassListForOnDeviceModel.Get(),
+      on_device_model::features::kLowTierPerformanceClassListForOnDeviceModel
+          .Get(),
       GetPerformanceClass());
 }
 
 bool PerformanceClassifier::SupportsImageInput() const {
   return (IsDeviceGPUCapable() &&
           IsPerformanceClassCompatible(
-              features::kPerformanceClassListForImageInput.Get(),
+              on_device_model::features::kPerformanceClassListForImageInput
+                  .Get(),
               GetPerformanceClass())) ||
          (IsDeviceCapable() &&
           base::FeatureList::IsEnabled(kOnDeviceModelCpuImageInput));

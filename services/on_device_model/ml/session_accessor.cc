@@ -15,7 +15,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "services/on_device_model/ml/chrome_ml.h"
 #include "services/on_device_model/ml/chrome_ml_types.h"
 #include "services/on_device_model/ml/constraint_factory.h"
@@ -38,7 +37,7 @@ float GetTemperature(std::optional<float> temperature) {
 
 uint32_t GetTopK(std::optional<uint32_t> top_k) {
   return std::min(static_cast<uint32_t>(
-                      optimization_guide::features::GetOnDeviceModelMaxTopK()),
+                      on_device_model::features::GetOnDeviceModelMaxTopK()),
                   std::max(kMinTopK, top_k.value_or(kMinTopK)));
 }
 

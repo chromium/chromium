@@ -10,10 +10,10 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/crash/core/common/crash_key.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "gpu/config/gpu_info_collector.h"
 #include "gpu/config/gpu_util.h"
 #include "gpu/config/webgpu_blocklist_impl.h"
+#include "services/on_device_model/public/cpp/features.h"
 #include "third_party/dawn/include/dawn/webgpu_cpp.h"
 
 namespace ml {
@@ -21,7 +21,7 @@ namespace ml {
 namespace {
 
 const base::FeatureParam<std::string> kGpuBlockList{
-    &optimization_guide::features::kOnDeviceModelPerformanceParams,
+    &on_device_model::features::kOnDeviceModelPerformanceParams,
     "on_device_model_gpu_block_list",
 #if BUILDFLAG(IS_LINUX)
     "8086:64a0|8086:e20b|"  // TODO(b/456603738): Remove when fixed.

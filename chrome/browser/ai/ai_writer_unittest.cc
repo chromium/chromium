@@ -325,7 +325,7 @@ TEST_F(AIWriterTest, WriterTelemetry) {
 TEST_F(AIWriterTest, CreateWriterModelNotEligible) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {{optimization_guide::features::kOnDeviceModelPerformanceParams,
+      {{on_device_model::features::kOnDeviceModelPerformanceParams,
         {{"compatible_on_device_performance_classes", "3,4,5,6"}}}},
       {{on_device_model::features::kOnDeviceModelCpuBackend}});
 

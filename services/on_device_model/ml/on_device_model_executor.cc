@@ -892,7 +892,7 @@ LoadModelResult OnDeviceModelExecutor::Init(
       .model_data = &data,
       .max_tokens = max_tokens_,
       .temperature = 0.0f,
-      .top_k = optimization_guide::features::GetOnDeviceModelMaxTopK(),
+      .top_k = on_device_model::features::GetOnDeviceModelMaxTopK(),
       .adaptation_ranks = params->adaptation_ranks.data(),
       .adaptation_ranks_size = params->adaptation_ranks.size(),
       .prefer_texture_weights = kPreferTextureWeights.Get(),

@@ -338,7 +338,7 @@ TEST_F(AISummarizerTest, CreateSummarizerModelNotEligible) {
 #else
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {optimization_guide::features::kOnDeviceModelPerformanceParams},
+      {on_device_model::features::kOnDeviceModelPerformanceParams},
       {on_device_model::features::kOnDeviceModelCpuBackend});
 
   fake_broker_->settings().performance_class =

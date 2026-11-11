@@ -19,8 +19,8 @@
 #include "components/optimization_guide/core/model_execution/response_parser.h"
 #include "components/optimization_guide/core/model_execution/response_parser_factory.h"
 #include "components/optimization_guide/core/model_execution/simple_response_parser.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
+#include "services/on_device_model/public/cpp/features.h"
 
 namespace optimization_guide {
 
@@ -103,9 +103,10 @@ SamplingParamsConfig OnDeviceModelFeatureAdapter::GetSamplingParamsConfig()
   if (!config_.has_sampling_params()) {
     // Returns default value if the sampling params are not configured.
     const SamplingParamsConfig result{
-        .default_top_k = uint32_t(features::GetOnDeviceModelDefaultTopK()),
-        .default_temperature =
-            float(features::GetOnDeviceModelDefaultTemperature()),
+        .default_top_k =
+            uint32_t(on_device_model::features::GetOnDeviceModelDefaultTopK()),
+        .default_temperature = float(
+            on_device_model::features::GetOnDeviceModelDefaultTemperature()),
     };
     VLOG(1) << feature_name << "'s config does not specify sampling params; "
             << __func__ << " for " << feature_name << " yields fallbacks: "
