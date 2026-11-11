@@ -16,6 +16,7 @@ This library is used by Chrome Remote Desktop and WebRTC for audio stream
 encoding/decoding.
 
 Local Modifications:
+The patches are in patches/; copy.bara.sky applies them in this order.
 patches/0001-no-assertion-messages.patch: Do not print celt_fatal()
   messages in official builds.
 patches/0002-plain-subtraction-outside-fuzzing.patch: Keep plain
@@ -26,13 +27,11 @@ patches/0004-avx2-rounding-shift-overflow.patch: Round like
   silk_RSHIFT_ROUND() in the AVX2 NSQ_del_dec, so it cannot overflow;
   upstream took the same change as 212d66c2.
 
-To apply the patches, put upstream 55513e81 in src/, then run from this
-directory:
-
-$ for patch in patches/*.patch; do patch -s -p1 < $patch; done
-
-In case of conflict, update those patches accordingly and save them back in
-//third_party/opus/patches/.
+Update instructions:
+Update commit hashes in crowbar.txtpb, then run from this directory:
+crowbar build --no-dry-run ./
+copy.bara.sky lists every file it imports. If the new upstream version
+adds a file Chromium needs, add it there and to BUILD.gn.
 
 Opus' own unit tests are located in ./src/tests
 Additional chromium tests are located in ./tests, and require chromium
