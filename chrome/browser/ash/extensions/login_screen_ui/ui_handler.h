@@ -108,12 +108,17 @@ class UiHandler : public session_manager::SessionManagerObserver,
 
   void HandleExtensionUnloadOrUinstall(const extensions::Extension* extension);
 
+  // Deletes `closed_window_`.
+  void DeleteClosedWindow();
+
   std::unique_ptr<ash::login_screen_extension_ui::WindowFactory>
       window_factory_;
 
   bool login_or_lock_screen_active_ = false;
 
   std::unique_ptr<ExtensionIdToWindowMapping> current_window_;
+  // Holds the window after its dialog closed itself, until it can be deleted.
+  std::unique_ptr<ExtensionIdToWindowMapping> closed_window_;
 
   WindowClosedCallback close_callback_;
 

@@ -47,9 +47,7 @@ TEST_F(DialogDelegateUnittest, Test) {
       extension->short_name(), extension->GetResourceURL(kResourcePath),
       false /*can_be_closed_by_user*/, close_callback_wait.QuitClosure());
 
-  // `delegate` will delete itself when calling `OnDialogClosed()` at the end of
-  // the test.
-  DialogDelegate* delegate = new DialogDelegate(&create_options);
+  auto delegate = std::make_unique<DialogDelegate>(&create_options);
 
   EXPECT_EQ(ui::mojom::ModalType::kWindow, delegate->GetDialogModalType());
   EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_LOGIN_EXTENSION_UI_DIALOG_TITLE,

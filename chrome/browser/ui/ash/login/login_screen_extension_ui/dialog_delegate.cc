@@ -65,7 +65,6 @@ std::string DialogDelegate::GetDialogArgs() const {
 
 void DialogDelegate::OnDialogClosed(const std::string& json_retval) {
   std::move(close_callback_).Run();
-  delete this;
 }
 
 void DialogDelegate::OnCloseContents(content::WebContents* source,

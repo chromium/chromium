@@ -25,16 +25,15 @@ std::unique_ptr<Window> WindowFactory::Create(CreateOptions* create_options) {
 }
 
 Window::Window(CreateOptions* create_options)
-    : dialog_delegate_(new DialogDelegate(create_options)),
-      dialog_view_(
-          new LoginWebView(ProfileHelper::GetSigninProfile(),
-                           dialog_delegate_,
-                           std::make_unique<ChromeWebContentsHandler>())) {
-  dialog_widget_ = new views::Widget;
+    : dialog_delegate_(std::make_unique<DialogDelegate>(create_options)) {
+  LoginWebView* dialog_view = new LoginWebView(
+      ProfileHelper::GetSigninProfile(), dialog_delegate_.get(),
+      std::make_unique<ChromeWebContentsHandler>());
+  dialog_widget_ = std::make_unique<views::Widget>();
   views::Widget::InitParams params(
-      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW);
-  params.delegate = dialog_view_.get();
+  params.delegate = dialog_view;
   ash_util::SetupWidgetInitParamsForContainer(
       &params, kShellWindowId_LockScreenContainer);
   dialog_widget_->Init(std::move(params));
@@ -43,17 +42,14 @@ Window::Window(CreateOptions* create_options)
   dialog_widget_->Show();
 }
 
-Window::~Window() {
-  dialog_delegate_->set_can_close(true);
-  dialog_widget_->Close();
-}
+Window::~Window() = default;
 
 DialogDelegate* Window::GetDialogDelegateForTesting() {
-  return dialog_delegate_;
+  return dialog_delegate_.get();
 }
 
 views::Widget* Window::GetDialogWidgetForTesting() {
-  return dialog_widget_;
+  return dialog_widget_.get();
 }
 
 }  // namespace login_screen_extension_ui

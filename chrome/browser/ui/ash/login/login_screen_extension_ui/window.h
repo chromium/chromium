@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
-
 namespace views {
 class Widget;
 }  // namespace views
@@ -17,11 +15,10 @@ namespace ash {
 namespace login_screen_extension_ui {
 struct CreateOptions;
 class DialogDelegate;
-class LoginWebView;
 
 // This class represents the window that can be created by the
-// chrome.loginScreenUi API. It manages the window's widget, view and delegate,
-// which are all automatically deleted when the widget closes.
+// chrome.loginScreenUi API. It owns the window's widget and delegate, and
+// closes the widget when it is destroyed.
 // The window is not draggable, and has a close button which is not visible
 // if `create_options.can_be_closed_by_user` is false.
 class Window {
@@ -37,9 +34,9 @@ class Window {
   views::Widget* GetDialogWidgetForTesting();
 
  private:
-  raw_ptr<DialogDelegate> dialog_delegate_ = nullptr;
-  raw_ptr<LoginWebView> dialog_view_ = nullptr;
-  raw_ptr<views::Widget> dialog_widget_ = nullptr;
+  // Must outlive `dialog_widget_`, whose view points to it.
+  std::unique_ptr<DialogDelegate> dialog_delegate_;
+  std::unique_ptr<views::Widget> dialog_widget_;
 };
 
 class WindowFactory {

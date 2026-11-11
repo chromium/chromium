@@ -10,6 +10,7 @@
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/login_screen_model.h"
 #include "ash/public/cpp/login_types.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ui/ash/login/login_screen_extension_ui/create_options.h"
 #include "chrome/browser/ui/ash/login/login_screen_extension_ui/window.h"
@@ -171,6 +172,12 @@ void UiHandler::OnWindowClosed(const std::string& extension_id) {
   if (!HasOpenWindow(extension_id))
     return;
 
+  // This runs inside the dialog's own close, so its widget can't be deleted
+  // yet. The window is deleted right after that.
+  closed_window_ = std::move(current_window_);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&UiHandler::DeleteClosedWindow,
+                                weak_ptr_factory_.GetWeakPtr()));
   ResetWindowAndHide();
 }
 
@@ -223,6 +230,10 @@ void UiHandler::OnExtensionUnloaded(
 void UiHandler::HandleExtensionUnloadOrUinstall(
     const extensions::Extension* extension) {
   RemoveWindowForExtension(extension->id());
+}
+
+void UiHandler::DeleteClosedWindow() {
+  closed_window_.reset();
 }
 
 Window* UiHandler::GetWindowForTesting(const std::string& extension_id) {

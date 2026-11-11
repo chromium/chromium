@@ -50,7 +50,6 @@ class DialogDelegate : public ui::WebDialogDelegate {
   void GetDialogSize(gfx::Size* size) const override;
   bool OnDialogCloseRequested() override;
   std::string GetDialogArgs() const override;
-  // NOTE: This function deletes this object at the end.
   void OnDialogClosed(const std::string& json_retval) override;
   void OnCloseContents(content::WebContents* source,
                        bool* out_close_dialog) override;
