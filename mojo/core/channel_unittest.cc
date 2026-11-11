@@ -30,6 +30,13 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include "base/test/run_until.h"
+#include "base/win/scoped_handle.h"
+#endif
+
 namespace mojo::core {
 
 class TestChannel : public Channel {
@@ -623,6 +630,85 @@ TEST(ChannelTest, MessageSizeTest) {
     EXPECT_FALSE(got_error);
   }
 }
+
+#if BUILDFLAG(IS_WIN)
+namespace {
+
+// Starts an overlapped read through `handle` with `overlapped`, and cancels it.
+// I/O completion port association belongs to a pipe end's file object rather
+// than to any one handle, so if `handle` shares its pipe end with a Channel,
+// the read's completion is queued on that Channel's completion key.
+void StartAndCancelRead(HANDLE handle, OVERLAPPED& overlapped) {
+  base::win::ScopedHandle event(::CreateEvent(nullptr, TRUE, FALSE, nullptr));
+  ASSERT_TRUE(event.is_valid());
+  overlapped.hEvent = event.get();
+  char buffer = 0;
+  ASSERT_FALSE(
+      ::ReadFile(handle, &buffer, sizeof(buffer), nullptr, &overlapped));
+  ASSERT_EQ(static_cast<DWORD>(ERROR_IO_PENDING), ::GetLastError());
+  ASSERT_TRUE(::CancelIoEx(handle, &overlapped));
+  DWORD bytes_read = 0;
+  EXPECT_FALSE(::GetOverlappedResult(handle, &overlapped, &bytes_read,
+                                     /*bWait=*/TRUE));
+  EXPECT_EQ(static_cast<DWORD>(ERROR_OPERATION_ABORTED), ::GetLastError());
+}
+
+}  // namespace
+
+// Tests that ChannelWin ignores completions of I/O it did not start, such as a
+// read issued and cancelled through another handle to its pipe end.
+TEST(ChannelWinTest, IgnoresIOCompletionsItDidNotStart) {
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
+  PlatformChannel platform_channel;
+  PlatformChannelEndpoint receiver_endpoint =
+      platform_channel.TakeLocalEndpoint();
+  PlatformChannelEndpoint other_endpoint = receiver_endpoint.Clone();
+  ASSERT_TRUE(other_endpoint.is_valid());
+
+  CallbackChannelDelegate receiver_delegate;
+  scoped_refptr<Channel> receiver = Channel::Create(
+      &receiver_delegate, ConnectionParams(std::move(receiver_endpoint)),
+      Channel::HandlePolicy::kAcceptHandles,
+      base::SingleThreadTaskRunner::GetCurrentDefault());
+  receiver->Start();
+
+  MockChannelDelegate sender_delegate;
+  scoped_refptr<Channel> sender = Channel::Create(
+      &sender_delegate, ConnectionParams(platform_channel.TakeRemoteEndpoint()),
+      Channel::HandlePolicy::kAcceptHandles,
+      base::SingleThreadTaskRunner::GetCurrentDefault());
+  sender->Start();
+
+  // Let the receiver register its handle and start reading.
+  base::RunLoop start_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, start_loop.QuitClosure());
+  start_loop.Run();
+
+  OVERLAPPED overlapped = {};
+  ASSERT_NO_FATAL_FAILURE(StartAndCancelRead(
+      other_endpoint.platform_handle().GetHandle().get(), overlapped));
+
+  // The receiver must neither fail nor stop reading.
+  bool got_error = false;
+  base::RunLoop loop;
+  receiver_delegate.set_on_message(loop.QuitClosure());
+  receiver_delegate.set_on_error(base::BindLambdaForTesting([&] {
+    got_error = true;
+    loop.Quit();
+  }));
+  sender->Write(Channel::Message::CreateMessage(0, 0));
+  loop.Run();
+  EXPECT_FALSE(got_error);
+
+  // Once shut down, only our references to the Channels remain.
+  receiver->ShutDown();
+  sender->ShutDown();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&] { return receiver->HasOneRef() && sender->HasOneRef(); }));
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)
 TEST(ChannelTest, SendToDeadMachPortName) {

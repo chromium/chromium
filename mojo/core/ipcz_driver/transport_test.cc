@@ -44,6 +44,8 @@
 #include "mojo/public/cpp/system/platform_handle.h"
 
 #if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
 #include "base/win/scoped_handle.h"
 #endif
 
@@ -1426,6 +1428,72 @@ TEST_F(MojoIpczTransportTest, TransportWithSameRemoteProcess) {
         listener.WaitForDisconnect();
       });
 }
+
+#if BUILDFLAG(IS_WIN)
+DEFINE_TEST_CLIENT_TEST_WITH_PIPE(
+    TransportFromNonBrokerMustBeExclusivePipeClient,
+    MojoIpczTransportTest,
+    h) {
+  scoped_refptr<Transport> transport = ReceiveTransport(h);
+  TransportListener listener(*transport);
+  EXPECT_EQ("ready", listener.WaitForNextMessage().as_string());
+
+  {
+    // Send the broker a pipe end while retaining another handle to it.
+    PlatformChannel channel;
+    PlatformChannelEndpoint endpoint = channel.TakeLocalEndpoint();
+    PlatformChannelEndpoint retained_endpoint = endpoint.Clone();
+    ASSERT_TRUE(retained_endpoint.is_valid());
+    auto shared_transport = Transport::Create(
+        {.source = Transport::kBroker, .destination = Transport::kNonBroker},
+        std::move(endpoint));
+    SerializeObjectFor(*transport, std::move(shared_transport))
+        .Transmit(*transport);
+    EXPECT_EQ("got null", listener.WaitForNextMessage().as_string());
+  }
+
+  {
+    // Send the broker the only handle to an object which is not a pipe.
+    base::win::ScopedHandle event(::CreateEvent(nullptr, TRUE, FALSE, nullptr));
+    ASSERT_TRUE(event.is_valid());
+    auto event_transport = Transport::Create(
+        {.source = Transport::kBroker, .destination = Transport::kNonBroker},
+        PlatformChannelEndpoint(PlatformHandle(std::move(event))));
+    SerializeObjectFor(*transport, std::move(event_transport))
+        .Transmit(*transport);
+    EXPECT_EQ("got null", listener.WaitForNextMessage().as_string());
+  }
+
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
+}
+
+// Tests that a broker rejects a transport from a less privileged peer unless it
+// is a pipe end to which the peer retains no other handle, since I/O completion
+// port association belongs to the pipe end's file object rather than to any one
+// handle. TransportWithSameRemoteProcess covers accepting such a pipe end.
+TEST_F(MojoIpczTransportTest, TransportFromNonBrokerMustBeExclusivePipe) {
+  RunTestClientWithController(
+      "TransportFromNonBrokerMustBeExclusivePipeClient",
+      [&](ClientController& c) {
+        scoped_refptr<Transport> transport =
+            CreateAndSendTransport(c.pipe(), c.process());
+        TransportListener listener(*transport);
+        TestMessage("ready").Transmit(*transport);
+
+        for (int i = 0; i < 2; i++) {
+          TestMessage message = listener.WaitForNextMessage();
+          scoped_refptr<ObjectBase> object;
+          const IpczResult result = transport->DeserializeObject(
+              base::span(message.bytes), base::span(message.handles), object);
+          EXPECT_EQ(result, IPCZ_RESULT_INVALID_ARGUMENT);
+          EXPECT_FALSE(object);
+          TestMessage("got null").Transmit(*transport);
+        }
+
+        listener.WaitForDisconnect();
+      });
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 // The counterpart of the case rejected by TransportFromUntrustedBroker, and of
 // RecipientHandleBetweenIsolatedBrokers for the other predicate. Both ends of a
