@@ -29,6 +29,9 @@ _EVENT_CONSTANTS_PATH = (
 _ENTERPRISE_POLICY_ALLOWLIST_PATH = (
     'components/feature_engagement/internal/android/java/src/org/chromium/components/feature_engagement/internal/EnterprisePolicyBypassAllowlist.java'
 )
+_COOLDOWN_BYPASS_ALLOWLIST_PATH = (
+    'components/feature_engagement/internal/android/java/src/org/chromium/components/feature_engagement/internal/CooldownBypassAllowlist.java'
+)
 _TRACKER_IMPL_JAVA_PATH = (
     'components/feature_engagement/internal/android/java/src/org/chromium/components/feature_engagement/internal/TrackerImpl.java'
 )
@@ -50,6 +53,12 @@ _BYPASS_POLICY_TAG = (
 )
 _BYPASS_POLICY_TAG_RE = (
     r'^\s*\[UserEducation\.BypassPolicyCheck\]\s*=\s*\S.*$'
+)
+_BYPASS_COOLDOWN_TAG = (
+    '[UserEducation.BypassCooldownCheck]'
+)
+_BYPASS_COOLDOWN_TAG_RE = (
+    r'^\s*\[UserEducation\.BypassCooldownCheck\]\s*=\s*\S.*$'
 )
 _NEW_UI_FORMAT_TAG = (
     '[UserEducation.NewUiFormat]'
@@ -94,6 +103,7 @@ def _CommonChecks(input_api, output_api):
     results.extend(_CheckNewFlagsHaveMetrics(input_api, output_api))
     results.extend(_CheckEnterprisePolicyBypass(input_api, output_api))
     results.extend(_CheckUiFormatAdditions(input_api, output_api))
+    results.extend(_CheckCooldownBypass(input_api, output_api))
     results.extend(_CheckNoUnauthorizedTrackerJni(input_api, output_api))
     return results
 
@@ -551,15 +561,19 @@ def _HasUserEducationJavaPolicyOwnerApproval(input_api):
     )
 
 
-def _PolicyBypassReviewResults(input_api, output_api):
-    """Warns on upload/dry run; blocks commit until a policy owner approves."""
+def _BypassReviewResults(input_api, output_api, bypass_label, tag):
+    """Warns on upload/dry run; blocks commit until a policy owner approves.
+
+    Shared by the enterprise policy and cooldown group bypass checks:
+    `bypass_label` names the bypass in messages and `tag` is its CL tag.
+    """
     owners = ', '.join(_USER_EDUCATION_JAVA_POLICY_OWNERS)
     if not _IsCommitting(input_api):
         return [
             output_api.PresubmitPromptWarning(
-                f'Enterprise policy bypass change detected. Make sure the CL '
+                f'{bypass_label} change detected. Make sure the CL '
                 f'description includes '
-                f'{_BYPASS_POLICY_TAG}=<justification and link to approval> '
+                f'{tag}=<justification and link to approval> '
                 f'and that a User Education (Java) owner approves this change '
                 f'(Code-Review+1) before it is submitted.'
             )
@@ -568,8 +582,8 @@ def _PolicyBypassReviewResults(input_api, output_api):
         return []
     return [
         output_api.PresubmitError(
-            f'Enterprise policy bypass change detected '
-            f'({_BYPASS_POLICY_TAG} is set), but no User Education (Java) '
+            f'{bypass_label} change detected '
+            f'({tag} is set), but no User Education (Java) '
             f'policy owner has approved this change. Get a Code-Review+1 '
             f'from a User Education (Java) policy owner (possible owners: '
             f'{owners}) before submitting.'
@@ -659,7 +673,14 @@ def _CheckEnterprisePolicyBypass(input_api, output_api):
             )
 
     if has_bypass_tag:
-        results.extend(_PolicyBypassReviewResults(input_api, output_api))
+        results.extend(
+            _BypassReviewResults(
+                input_api,
+                output_api,
+                'Enterprise policy bypass',
+                _BYPASS_POLICY_TAG,
+            )
+        )
     return results
 
 
@@ -752,6 +773,106 @@ def _CheckUiFormatAdditions(input_api, output_api):
                 f'interruptive or blue bubble cooldown groups. Include the '
                 f'following line in your CL description:\n'
                 f'  {_NEW_UI_FORMAT_TAG}=<justification and cooldown behavior>'
+            )
+        )
+    return results
+
+
+def _CheckCooldownBypass(input_api, output_api):
+    """Enforces allowlist and CL tag rules for bypassing cooldown groups."""
+    results = []
+    feature_re = input_api.re.compile(r'\bFeatureConstants\.([A-Z0-9_]+)\b')
+    has_cooldown_tag = _HasValidTag(input_api, _BYPASS_COOLDOWN_TAG_RE)
+    owners = ', '.join(_USER_EDUCATION_JAVA_POLICY_OWNERS)
+
+    # 1. Check modifications to CooldownBypassAllowlist.java.
+    for f in input_api.AffectedFiles():
+        if f.UnixLocalPath() != _COOLDOWN_BYPASS_ALLOWLIST_PATH:
+            continue
+
+        new_text = '\n'.join(f.NewContents())
+        old_text = '\n'.join(f.OldContents())
+
+        # Block unconditional return true in CooldownBypassAllowlist.
+        if input_api.re.search(r'\breturn\s+true\s*;', new_text):
+            results.append(
+                output_api.PresubmitError(
+                    f'{_COOLDOWN_BYPASS_ALLOWLIST_PATH}: Do not return true '
+                    f'unconditionally from '
+                    f'isAllowedToBypassCooldownGroup() or '
+                    f'isAllowedToSkipBlockingCooldownGroup(). Features must be '
+                    f'explicitly listed in ALLOWLISTED_FEATURES or '
+                    f'DO_NOT_BLOCK_COOLDOWN_GROUP_FEATURES.'
+                )
+            )
+
+        old_features = set(feature_re.findall(old_text))
+        new_features = set(feature_re.findall(new_text))
+        added_features = sorted(new_features - old_features)
+
+        # Only enforce the tag when an existing allowlist is modified. On
+        # initial creation (no old contents) the whole file is reviewed by the
+        # CL that introduces it, and stacked CLs diffed against origin/main
+        # would otherwise see every entry as newly added.
+        if old_text and added_features and not has_cooldown_tag:
+            formatted = '\n'.join(
+                f'  - FeatureConstants.{name}' for name in added_features
+            )
+            results.append(
+                output_api.PresubmitError(
+                    f'You are adding one or more features to '
+                    f'{_COOLDOWN_BYPASS_ALLOWLIST_PATH}, either to bypass '
+                    f'their UiFormat cooldown group or to skip contributing '
+                    f'to it:\n'
+                    f'{formatted}\n\n'
+                    f'Bypassing a cooldown group is restricted to promos that '
+                    f'must show regardless of other recent promos (for example '
+                    f'user-initiated, legally required, or one-time first-run '
+                    f'flows) and requires explicit approval from a User '
+                    f'Education (Java) policy owner (possible owners: '
+                    f'{owners}).\n\n'
+                    f'Add one of them as a reviewer and include the following '
+                    f'line in your CL description with a justification:\n'
+                    f'  {_BYPASS_COOLDOWN_TAG}=<justification>'
+                )
+            )
+
+    # 2. Check modifications to TrackerImpl.java that alter cooldown bypass
+    # enforcement.
+    for f in input_api.AffectedFiles():
+        if f.UnixLocalPath() != _TRACKER_IMPL_JAVA_PATH:
+            continue
+
+        new_text = '\n'.join(f.NewContents())
+        old_text = '\n'.join(f.OldContents())
+        for helper in (
+            'isAllowedToBypassCooldownGroup',
+            'isAllowedToSkipBlockingCooldownGroup',
+        ):
+            if (
+                old_text
+                and helper in old_text
+                and helper not in new_text
+                and not has_cooldown_tag
+            ):
+                results.append(
+                    output_api.PresubmitError(
+                        f'{_TRACKER_IMPL_JAVA_PATH}: Removing the {helper}() '
+                        f'check from TrackerImpl is not permitted without '
+                        f'approval from a User Education (Java) policy owner '
+                        f'(possible owners: {owners}) and '
+                        f'`{_BYPASS_COOLDOWN_TAG}=<justification>` in the CL '
+                        f'description.'
+                    )
+                )
+
+    if has_cooldown_tag:
+        results.extend(
+            _BypassReviewResults(
+                input_api,
+                output_api,
+                'Cooldown group bypass',
+                _BYPASS_COOLDOWN_TAG,
             )
         )
     return results

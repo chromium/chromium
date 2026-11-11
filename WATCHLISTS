@@ -1297,7 +1297,7 @@
     },
     'fet_policy': {
       'filepath': 'components/feature_engagement/.*/' \
-                  'EnterprisePolicyBypassAllowlist\\.java',
+                  '(EnterprisePolicy|Cooldown)BypassAllowlist\\.java',
     },
     'fileapi': {
       'filepath': 'file_system/|' \
