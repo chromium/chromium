@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/views/tabs/dragging/dragging_tabs_session.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
@@ -22,7 +24,9 @@
 
 class DraggingTabsSessionBrowserTest : public InProcessBrowserTest {
  public:
-  DraggingTabsSessionBrowserTest() = default;
+  DraggingTabsSessionBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(tabs::kTabStripUnification);
+  }
   ~DraggingTabsSessionBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -79,6 +83,9 @@ class DraggingTabsSessionBrowserTest : public InProcessBrowserTest {
   const gfx::AnimationTestApi::RenderModeResetter disable_rich_animations_ =
       gfx::AnimationTestApi::SetRichAnimationRenderMode(
           gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Flaky. http://crbug.com/417465013

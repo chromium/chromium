@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "url/url_constants.h"
@@ -73,6 +74,7 @@ class TabDragControllerTest : public InProcessBrowserTest {
   void SetUp() override;
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<const BrowserList> browser_list_;
 };
 

@@ -46,6 +46,7 @@
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -620,7 +621,9 @@ using test::SetID;
 using test::WaitForBrowserActivation;
 using ui_test_utils::GetCenterInScreenCoordinates;
 
-TabDragControllerTest::TabDragControllerTest() = default;
+TabDragControllerTest::TabDragControllerTest() {
+  scoped_feature_list_.InitAndDisableFeature(tabs::kTabStripUnification);
+}
 
 TabDragControllerTest::~TabDragControllerTest() = default;
 

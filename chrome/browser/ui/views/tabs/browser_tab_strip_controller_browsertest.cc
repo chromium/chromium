@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/tabs/browser_tab_strip_controller.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/tabs/features.h"
@@ -37,7 +38,9 @@ constexpr char kHistogramName[] = "Tab.GroupingTransition2";
 class BrowserTabStripControllerTestBase : public InProcessBrowserTest {
  public:
   BrowserTabStripControllerTestBase()
-      : task_runner_(base::MakeRefCounted<base::TestMockTimeTaskRunner>()) {}
+      : task_runner_(base::MakeRefCounted<base::TestMockTimeTaskRunner>()) {
+    scoped_feature_list_.InitAndDisableFeature(tabs::kTabStripUnification);
+  }
 
   void SetUpOnMainThread() override {
     tabs::TabCreationMetricsController::SetTaskRunnerForTesting(task_runner_);
@@ -72,6 +75,9 @@ class BrowserTabStripControllerTestBase : public InProcessBrowserTest {
   }
 
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 using BrowserTabStripControllerTest = BrowserTabStripControllerTestBase;
