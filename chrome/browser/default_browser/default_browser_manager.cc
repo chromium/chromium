@@ -10,11 +10,14 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
@@ -27,7 +30,14 @@
 #include "chrome/browser/default_browser/setters/default_browser_annotated_shell_integration_setter.h"
 #include "chrome/browser/default_browser/setters/default_browser_visual_guided_setter.h"
 #include "chrome/browser/default_browser/setters/shell_integration_default_browser_setter.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/survey_config.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -82,6 +92,12 @@ enum class DefaultBrowserStateValidationResult {
   kMaxValue = kFalseNegative
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ui/enums.xml:DefaultBrowserStateValidationResult)
+
+// LINT.IfChange(DefaultBrowserHatsPsdFields)
+constexpr char kHatsPromptSurfacePsd[] = "Prompt surface";
+constexpr char kHatsSetterTypePsd[] = "Setter type";
+constexpr char kHatsDismissCountPsd[] = "Dismiss count";
+// LINT.ThenChange(//chrome/browser/ui/hats/survey_config.cc:DefaultBrowserHatsPsdFields)
 
 #if BUILDFLAG(IS_WIN)
 constexpr wchar_t kHttpUserChoiceKeyPath[] =
@@ -302,6 +318,36 @@ void DefaultBrowserManager::OnDefaultBrowserStateChangedForTracker(
     tracker_subscription_ = {};
     tracker_.reset();
   }
+}
+
+void DefaultBrowserManager::MaybeLaunchHatsSurvey(
+    DefaultBrowserEntrypointType entrypoint,
+    DefaultBrowserSetterType setter) {
+  if (!base::FeatureList::IsEnabled(
+          features::kHappinessTrackingSurveysForDesktopDefaultBrowser)) {
+    return;
+  }
+
+  Profile* const profile = profile_provider_callback_.Run();
+  if (!profile) {
+    return;
+  }
+
+  HatsService* const hats_service =
+      HatsServiceFactory::GetForProfile(profile, /*create_if_necessary=*/true);
+  if (!hats_service) {
+    return;
+  }
+
+  const int dismiss_count = g_browser_process->local_state()->GetInteger(
+      prefs::kDefaultBrowserDeclinedCount);
+
+  hats_service->LaunchSurvey(
+      kHatsSurveyTriggerDefaultBrowser, base::DoNothing(), base::DoNothing(),
+      /*product_specific_bits_data=*/{},
+      {{kHatsPromptSurfacePsd, UiEntrypointTypeToString(entrypoint)},
+       {kHatsSetterTypePsd, SetterTypeToString(setter)},
+       {kHatsDismissCountPsd, base::NumberToString(dismiss_count)}});
 }
 
 }  // namespace default_browser

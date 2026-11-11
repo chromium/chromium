@@ -356,6 +356,18 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       kHatsSurveyTriggerWallpaperSearch);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // Default Browser survey.
+  // LINT.IfChange(DefaultBrowserHatsPsdFields)
+  survey_configs.emplace_back(
+      &features::kHappinessTrackingSurveysForDesktopDefaultBrowser,
+      kHatsSurveyTriggerDefaultBrowser,
+      /*presupplied_trigger_id=*/std::nullopt,
+      /*product_specific_bits_data_fields=*/std::vector<std::string>{},
+      /*product_specific_string_data_fields=*/
+      std::vector<std::string>{"Prompt surface", "Setter type",
+                               "Dismiss count"});
+  // LINT.ThenChange(//chrome/browser/default_browser/default_browser_manager.cc:DefaultBrowserHatsPsdFields)
+
   // Scheduled Restart survey.
   // LINT.IfChange(ScheduledRestartHatsPsdFields)
   survey_configs.emplace_back(

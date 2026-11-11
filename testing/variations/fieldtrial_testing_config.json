@@ -10264,6 +10264,21 @@
             ]
         }
     ],
+    "HappinessTrackingSurveysForDesktopDefaultBrowser": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "HappinessTrackingSurveysForDesktopDefaultBrowser"
+                    ]
+                }
+            ]
+        }
+    ],
     "HappinessTrackingSurveysForDesktopHistoryPageControl": [
         {
             "platforms": [

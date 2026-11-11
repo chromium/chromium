@@ -11,11 +11,15 @@ namespace default_browser {
 
 class FakeDefaultBrowserSetter : public DefaultBrowserSetter {
  public:
-  FakeDefaultBrowserSetter() = default;
+  explicit FakeDefaultBrowserSetter(
+      DefaultBrowserState state = DefaultBrowserState::IS_DEFAULT);
 
   DefaultBrowserSetterType GetType() const override;
   void Execute(DefaultBrowserSetterCompletionCallback on_complete,
                const ExecuteParams& params) override;
+
+ private:
+  const DefaultBrowserState state_;
 };
 
 }  // namespace default_browser

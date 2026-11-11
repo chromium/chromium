@@ -17,12 +17,22 @@
 #include "chrome/browser/default_browser/default_browser_controller.h"
 #include "chrome/browser/default_browser/default_browser_features.h"
 #include "chrome/browser/default_browser/default_browser_monitor.h"
+#include "chrome/browser/default_browser/default_browser_setter.h"
+#include "chrome/browser/default_browser/test_support/fake_default_browser_setter.h"
 #include "chrome/browser/default_browser/test_support/fake_shell_delegate.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/shell_integration.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/mock_hats_service.h"
+#include "chrome/browser/ui/hats/survey_config.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 #include "url/gurl.h"
@@ -105,6 +115,7 @@ class DefaultBrowserManagerTest : public testing::Test {
   }
 
   void TearDown() override {
+    local_state().ClearPref(prefs::kDefaultBrowserDeclinedCount);
     profile_.reset();
     fake_shell_delegate_ptr_ = nullptr;
     fake_monitor_ptr_ = nullptr;
@@ -118,6 +129,16 @@ class DefaultBrowserManagerTest : public testing::Test {
   FakeShellDelegate& shell_delegate() { return *fake_shell_delegate_ptr_; }
 
   FakeDefaultBrowserMonitor& fake_monitor() { return *fake_monitor_ptr_; }
+
+  PrefService& local_state() {
+    return *TestingBrowserProcess::GetGlobal()->local_state();
+  }
+
+  MockHatsService& SetUpMockHatsService() {
+    return *static_cast<MockHatsService*>(
+        HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+            profile_.get(), base::BindRepeating(&BuildMockHatsService)));
+  }
 
   content::BrowserTaskEnvironment task_environment_;
   raw_ptr<FakeShellDelegate> fake_shell_delegate_ptr_;
@@ -259,6 +280,76 @@ TEST_F(DefaultBrowserManagerTest, CreateControllerForStartupInfobar) {
   ASSERT_NE(controller, nullptr);
   EXPECT_EQ(controller->GetSetterType(),
             DefaultBrowserSetterType::kShellIntegration);
+}
+
+TEST_F(DefaultBrowserManagerTest, MaybeLaunchHatsSurveyPassesExpectedPsd) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kHappinessTrackingSurveysForDesktopDefaultBrowser);
+
+  local_state().SetInteger(prefs::kDefaultBrowserDeclinedCount, 2);
+  MockHatsService& mock_hats_service = SetUpMockHatsService();
+
+  EXPECT_CALL(
+      mock_hats_service,
+      LaunchSurvey(testing::Eq(kHatsSurveyTriggerDefaultBrowser), testing::_,
+                   testing::_, testing::IsEmpty(),
+                   SurveyStringData{{"Prompt surface",
+                                     "ModalDialogWithSettingsIllustration"},
+                                    {"Setter type", "VisualGuide"},
+                                    {"Dismiss count", "2"}},
+                   testing::_, testing::_))
+      .WillOnce(testing::Return(HatsService::LaunchError::kNone));
+
+  default_browser_manager().MaybeLaunchHatsSurvey(
+      DefaultBrowserEntrypointType::kModalDialogWithSettingsIllustration,
+      DefaultBrowserSetterType::kVisualGuide);
+}
+
+TEST_F(DefaultBrowserManagerTest, ControllerLaunchesHatsSurveyOnlyOnFailure) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kHappinessTrackingSurveysForDesktopDefaultBrowser);
+
+  MockHatsService& mock_hats_service = SetUpMockHatsService();
+
+  EXPECT_CALL(mock_hats_service, LaunchSurvey).Times(0);
+  DefaultBrowserController succeeding_controller(
+      std::make_unique<FakeDefaultBrowserSetter>(),
+      DefaultBrowserEntrypointType::
+          kStickyModalDialogWithoutSettingsIllustration);
+  succeeding_controller.OnAccepted(base::DoNothing());
+  testing::Mock::VerifyAndClearExpectations(&mock_hats_service);
+
+  for (DefaultBrowserEntrypointType entrypoint :
+       {DefaultBrowserEntrypointType::kSettingsPage,
+        DefaultBrowserEntrypointType::kStartupInfobar,
+        DefaultBrowserEntrypointType::kChangeDetectedNotification,
+        DefaultBrowserEntrypointType::kBubbleDialog,
+        DefaultBrowserEntrypointType::kModalDialogWithSettingsIllustration,
+        DefaultBrowserEntrypointType::kModalDialogWithoutSettingsIllustration,
+        DefaultBrowserEntrypointType::
+            kStickyModalDialogWithSettingsIllustration,
+        DefaultBrowserEntrypointType::
+            kStickyModalDialogWithoutSettingsIllustration}) {
+    EXPECT_CALL(
+        mock_hats_service,
+        LaunchSurvey(testing::Eq(kHatsSurveyTriggerDefaultBrowser), testing::_,
+                     testing::_, testing::IsEmpty(),
+                     SurveyStringData{{"Prompt surface",
+                                       UiEntrypointTypeToString(entrypoint)},
+                                      {"Setter type", "ShellIntegration"},
+                                      {"Dismiss count", "0"}},
+                     testing::_, testing::_))
+        .WillOnce(testing::Return(HatsService::LaunchError::kNone));
+
+    DefaultBrowserController failing_controller(
+        std::make_unique<FakeDefaultBrowserSetter>(
+            DefaultBrowserState::NOT_DEFAULT),
+        entrypoint);
+    failing_controller.OnAccepted(base::DoNothing());
+    testing::Mock::VerifyAndClearExpectations(&mock_hats_service);
+  }
 }
 
 #if BUILDFLAG(IS_WIN)

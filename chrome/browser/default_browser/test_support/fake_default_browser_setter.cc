@@ -11,6 +11,9 @@
 
 namespace default_browser {
 
+FakeDefaultBrowserSetter::FakeDefaultBrowserSetter(DefaultBrowserState state)
+    : state_(state) {}
+
 DefaultBrowserSetterType FakeDefaultBrowserSetter::GetType() const {
   return DefaultBrowserSetterType::kShellIntegration;
 }
@@ -18,7 +21,7 @@ DefaultBrowserSetterType FakeDefaultBrowserSetter::GetType() const {
 void FakeDefaultBrowserSetter::Execute(
     DefaultBrowserSetterCompletionCallback on_complete,
     const ExecuteParams& /*params*/) {
-  std::move(on_complete).Run(DefaultBrowserState::IS_DEFAULT);
+  std::move(on_complete).Run(state_);
 }
 
 }  // namespace default_browser

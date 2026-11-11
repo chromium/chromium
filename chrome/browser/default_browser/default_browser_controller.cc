@@ -158,6 +158,7 @@ void DefaultBrowserController::OnSetterExecutionComplete(
 
   } else if (auto* manager = DefaultBrowserManager::From(g_browser_process)) {
     manager->TrackTimeAfterSetterFailure(ui_entrypoint_, GetSetterType());
+    manager->MaybeLaunchHatsSurvey(ui_entrypoint_, GetSetterType());
   }
 
   std::move(completion_callback).Run(default_browser_state);

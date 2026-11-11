@@ -827,6 +827,9 @@ extern const base::FeatureParam<bool>
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kHappinessTrackingSurveysForDesktopScheduledRestart);
+
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kHappinessTrackingSurveysForDesktopDefaultBrowser);
 #endif
 
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kHttpsFirstBalancedMode);

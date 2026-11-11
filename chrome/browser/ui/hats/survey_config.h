@@ -33,6 +33,7 @@ inline constexpr char kHatsSurveyTriggerAutoPipPermissionPromptIgnored[] =
     "autopip-permission-prompt-ignored";
 inline constexpr char kHatsSurveyTriggerContextualCueingDismissed[] =
     "contextual-cueing-dismissed";
+inline constexpr char kHatsSurveyTriggerDefaultBrowser[] = "default-browser";
 inline constexpr char kHatsSurveyTriggerManageYourSavedInfoPerception[] =
     "autofill-manage-your-saved-info-perception";
 inline constexpr char kHatsSurveyTriggerManagePasswordsPerception[] =

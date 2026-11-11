@@ -1207,6 +1207,10 @@ const base::FeatureParam<bool>
 // Enables or disables HaTS for Scheduled Restarts on Desktop.
 BASE_FEATURE(kHappinessTrackingSurveysForDesktopScheduledRestart,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables or disables HaTS for Default Browser prompts on Desktop.
+BASE_FEATURE(kHappinessTrackingSurveysForDesktopDefaultBrowser,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Enables HTTPS-First Mode in a balanced configuration that doesn't warn on

@@ -100,6 +100,10 @@ class DefaultBrowserManager {
   void TrackTimeAfterSetterFailure(DefaultBrowserEntrypointType entrypoint,
                                    DefaultBrowserSetterType setter);
 
+  // Launches a HaTS survey after a default browser setter fails.
+  void MaybeLaunchHatsSurvey(DefaultBrowserEntrypointType entrypoint,
+                             DefaultBrowserSetterType setter);
+
  private:
   void OnDefaultBrowserStateChangedForTracker(DefaultBrowserState state);
 
