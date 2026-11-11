@@ -2062,16 +2062,8 @@ void ViewAccessibility::OnWidgetUpdatedRecursive(Widget* widget,
   }
 }
 
-void ViewAccessibility::OnWidgetClosing(Widget* widget) {
-  // The RootView's ViewAccessibility should be the only registered
-  // WidgetObserver.
-  CHECK_EQ(view_, widget->GetRootView());
-  SetWidgetClosedRecursive(widget, true);
-}
-
-void ViewAccessibility::OnWidgetDestroyed(Widget* widget) {
-  // The RootView's ViewAccessibility should be the only registered
-  // WidgetObserver.
+void ViewAccessibility::OnWidgetClosed(Widget* widget) {
+  // Only ever called on the RootView's ViewAccessibility.
   CHECK(widget->GetRootView());
   CHECK_EQ(view_, widget->GetRootView());
   SetWidgetClosedRecursive(widget, true);
@@ -2082,13 +2074,6 @@ void ViewAccessibility::OnWidgetUpdated(Widget* widget, Widget* old_widget) {
   CHECK_EQ(widget, GetWidget(), base::NotFatalUntil::M163);
   if (widget == old_widget) {
     return;
-  }
-
-  // There's a chance we are reparenting a view that was previously a root
-  // view in another widget, if so we need to remove it as an observer of the
-  // old widget.
-  if (old_widget && old_widget != widget) {
-    old_widget->RemoveObserver(this);
   }
 
   OnWidgetUpdatedRecursive(widget, old_widget);

@@ -4116,6 +4116,13 @@ TEST_F(ViewTest, WidgetObserverViewWidgetClosedViewReparented) {
   EXPECT_TRUE(!view_1->GetViewAccessibility().is_widget_closed_);
   EXPECT_TRUE(!child_view_1->GetViewAccessibility().is_widget_closed_);
   EXPECT_TRUE(!child_view_2->GetViewAccessibility().is_widget_closed_);
+
+  // An asynchronous Close() must also immediately mark the hierarchy closed.
+  widget_2->Close();
+  EXPECT_TRUE(contents_view->GetViewAccessibility().is_widget_closed_);
+  EXPECT_TRUE(view_1->GetViewAccessibility().is_widget_closed_);
+  EXPECT_TRUE(child_view_1->GetViewAccessibility().is_widget_closed_);
+  EXPECT_TRUE(child_view_2->GetViewAccessibility().is_widget_closed_);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -17,7 +17,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/platform/ax_platform_node_id.h"
@@ -26,7 +25,6 @@
 #include "ui/views/accessibility/ax_attribute_changed_callbacks.h"
 #include "ui/views/accessibility/view_accessibility_utils.h"
 #include "ui/views/views_export.h"
-#include "ui/views/widget/widget_observer.h"
 
 namespace ui {
 
@@ -62,7 +60,7 @@ using ui::StringAttributeCallbackList;
 //
 // TODO(crbug.com/40672441): Update the comment about AXPlatformNode once
 // ViewsAX is completed.
-class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
+class VIEWS_EXPORT ViewAccessibility {
  public:
   using AccessibilityEventsCallback =
       base::RepeatingCallback<void(const ui::AXPlatformNodeDelegate*,
@@ -121,7 +119,7 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
 
   ViewAccessibility(const ViewAccessibility&) = delete;
   ViewAccessibility& operator=(const ViewAccessibility&) = delete;
-  ~ViewAccessibility() override;
+  virtual ~ViewAccessibility();
 
   // Retrieves the accessibility data in the cache.
   void GetAccessibleNodeData(ui::AXNodeData* node_data) const;
@@ -672,9 +670,12 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   const AccessibilityEventsCallback& accessibility_events_callback() const;
   void set_accessibility_events_callback(AccessibilityEventsCallback callback);
 
-  // WidgetObserver overrides.
-  void OnWidgetClosing(Widget* widget) override;
-  void OnWidgetDestroyed(Widget* widget) override;
+  // Called by `widget` on its RootView's ViewAccessibility once the Widget has
+  // been closed (see Widget::IsClosed()) and again when its native widget has
+  // been destroyed. Marks this View and all of its descendants, including
+  // virtual children, as belonging to a closed Widget so that they report
+  // "null-like" accessibility data and ignore further attribute updates.
+  void OnWidgetClosed(Widget* widget);
 
   virtual void OnWidgetUpdated(Widget* widget, Widget* old_widget);
 
@@ -928,8 +929,6 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
       attribute_changed_callbacks_ = nullptr;
 
   State initialization_state_ = State::kUninitialized;
-
-  base::ScopedObservation<Widget, WidgetObserver> observation_{this};
 
   // Must be the last member.
   base::WeakPtrFactory<ViewAccessibility> weak_ptr_factory_{this};
