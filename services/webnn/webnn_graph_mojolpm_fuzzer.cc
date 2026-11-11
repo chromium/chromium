@@ -27,7 +27,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/webnn/public/cpp/ml_tensor_usage.h"
 #include "services/webnn/public/mojom/features.mojom-features.h"
-#include "services/webnn/public/mojom/webnn_compiler_context.mojom.h"
 #include "services/webnn/public/mojom/webnn_context.mojom.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-mojolpm.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
@@ -153,25 +152,13 @@ class WebnnGraphLPMFuzzer {
 
     webnn_context_remote.Bind(
         std::move(create_context_result->get_success()->context_remote));
-    mojo::Remote<webnn::mojom::WebNNCompilerContext> compiler_context_remote;
-    if (create_context_result->get_success()
-            ->compiler_context_remote.is_valid()) {
-      compiler_context_remote.Bind(std::move(
-          create_context_result->get_success()->compiler_context_remote));
-    }
 
     EXPECT_TRUE(webnn_context_remote.is_bound());
 
-    // Create the GraphBuilder through the compiler context when bound, or
-    // directly through the context otherwise.
+    // Create the GraphBuilder through the context.
     mojo::Remote<webnn::mojom::WebNNGraphBuilder> webnn_graph_builder_remote;
-    if (compiler_context_remote.is_bound()) {
-      compiler_context_remote->CreateGraphBuilder(
-          webnn_graph_builder_remote.BindNewPipeAndPassReceiver());
-    } else {
-      webnn_context_remote->CreateGraphBuilder(
-          webnn_graph_builder_remote.BindNewPipeAndPassReceiver());
-    }
+    webnn_context_remote->CreateGraphBuilder(
+        webnn_graph_builder_remote.BindNewPipeAndPassReceiver());
 
     base::test::TestFuture<base::expected<webnn::mojom::CreateGraphSuccessPtr,
                                           webnn::mojom::ErrorPtr>>
