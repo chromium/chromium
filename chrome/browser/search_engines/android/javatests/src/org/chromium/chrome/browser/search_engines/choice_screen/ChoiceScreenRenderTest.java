@@ -37,7 +37,6 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -60,8 +59,10 @@ import java.util.List;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
-@EnableFeatures({ChromeFeatureList.DISABLE_SCROLLBAR_OF_FADING_EDGE_SCROLLVIEW})
-@DisableFeatures(ChromeFeatureList.CHROME_SEARCH_ONLY_CLAY_SCOPE)
+@EnableFeatures({
+    ChromeFeatureList.DISABLE_SCROLLBAR_OF_FADING_EDGE_SCROLLVIEW,
+    ChromeFeatureList.CHROME_SEARCH_ONLY_CLAY_SCOPE
+})
 public class ChoiceScreenRenderTest {
     public @ClassParameter static List<ParameterSet> params = new NightModeParams().getParameters();
 
@@ -116,7 +117,6 @@ public class ChoiceScreenRenderTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    @EnableFeatures(ChromeFeatureList.CHROME_SEARCH_ONLY_CLAY_SCOPE)
     public void testFirstChoiceScreenBlockingDialog_chromeSearchOnly() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mFakeDelegate.setChoiceScope(ChoiceScope.CHROME_SEARCH_ONLY));
@@ -146,7 +146,6 @@ public class ChoiceScreenRenderTest {
     @LargeTest
     @Feature("RenderTest")
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/565382187
-    @EnableFeatures(ChromeFeatureList.CHROME_SEARCH_ONLY_CLAY_SCOPE)
     public void testSecondChoiceScreenBlockingDialog_chromeSearchOnly() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
