@@ -720,11 +720,12 @@ void PrintPreviewHandler::HandleDoPrint(const base::ListValue& args) {
                                      weak_factory_.GetWeakPtr());
 
   enterprise_data_protection::PrintIfAllowedByPolicy(
-      data, GetInitiator(), std::move(device_name), scan_context,
+      std::move(data), GetInitiator(), std::move(device_name), scan_context,
       std::move(on_verdict), std::move(hide_preview));
 
 #else
-  FinishHandleDoPrint(user_action, std::move(settings), data, callback_id);
+  FinishHandleDoPrint(user_action, std::move(settings), std::move(data),
+                      callback_id);
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 }
 
@@ -736,7 +737,8 @@ void PrintPreviewHandler::OnVerdictByEnterprisePolicy(
     const std::string& callback_id,
     bool allowed) {
   if (allowed) {
-    FinishHandleDoPrint(user_action, std::move(settings), data, callback_id);
+    FinishHandleDoPrint(user_action, std::move(settings), std::move(data),
+                        callback_id);
   } else {
     OnPrintResult(callback_id, base::Value("NOT_ALLOWED"));
   }
@@ -755,7 +757,7 @@ void PrintPreviewHandler::FinishHandleDoPrint(
   PrinterHandler* handler =
       GetPrinterHandler(GetPrinterTypeForUserAction(user_action));
   handler->StartPrint(print_preview_ui()->initiator_title(),
-                      std::move(settings), data,
+                      std::move(settings), std::move(data),
                       base::BindOnce(&PrintPreviewHandler::OnPrintResult,
                                      weak_factory_.GetWeakPtr(), callback_id));
 }

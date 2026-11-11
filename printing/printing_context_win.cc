@@ -221,9 +221,9 @@ mojom::ResultCode PrintingContextWin::UpdatePrinterSettings(
 
   // Make printer changes local to Chrome.
   // See MSDN documentation regarding DocumentProperties.
+  const std::wstring device_name = base::UTF16ToWide(settings_->device_name());
   std::unique_ptr<DEVMODE, base::FreeDeleter> scoped_dev_mode =
-      CreateDevModeWithColor(printer.Get(),
-                             base::UTF16ToWide(settings_->device_name()),
+      CreateDevModeWithColor(printer.Get(), device_name,
                              settings_->color() != mojom::ColorModel::kGray);
   if (!scoped_dev_mode)
     return OnError();
@@ -303,8 +303,7 @@ mojom::ResultCode PrintingContextWin::UpdatePrinterSettings(
                                  ? DMCOLOR_COLOR
                                  : DMCOLOR_MONOCHROME;
 
-  return InitializeSettings(base::UTF16ToWide(settings_->device_name()),
-                            scoped_dev_mode.get());
+  return InitializeSettings(device_name, scoped_dev_mode.get());
 }
 
 mojom::ResultCode PrintingContextWin::InitWithSettingsForTest(

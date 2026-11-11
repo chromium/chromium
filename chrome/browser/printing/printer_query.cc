@@ -5,6 +5,7 @@
 #include "chrome/browser/printing/printer_query.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -331,7 +332,7 @@ void PrinterQuery::UpdatePrintSettings(base::DictValue new_settings,
                                        SettingsCallback callback) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
-  std::unique_ptr<crash_keys::ScopedPrinterInfo> crash_key;
+  std::optional<crash_keys::ScopedPrinterInfo> crash_key;
   mojom::PrinterType type = static_cast<mojom::PrinterType>(
       new_settings.FindInt(kSettingPrinterType).value());
   if (type == mojom::PrinterType::kLocal) {
@@ -343,16 +344,17 @@ void PrinterQuery::UpdatePrintSettings(base::DictValue new_settings,
     scoped_refptr<PrintBackend> print_backend =
         PrintBackend::CreateInstance(g_browser_process->GetApplicationLocale());
     std::string printer_name = *new_settings.FindString(kSettingDeviceName);
-    crash_key = std::make_unique<crash_keys::ScopedPrinterInfo>(
-        printer_name, print_backend->GetPrinterDriverInfo(printer_name));
+    crash_key.emplace(printer_name,
+                      print_backend->GetPrinterDriverInfo(printer_name));
 
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_CUPS)
     PrinterBasicInfo basic_info;
     if (print_backend->GetPrinterBasicInfo(printer_name, &basic_info) ==
         mojom::ResultCode::kSuccess) {
       base::DictValue advanced_settings;
+      advanced_settings.reserve(basic_info.options.size());
       for (const auto& pair : basic_info.options) {
-        advanced_settings.Set(pair.first, pair.second);
+        advanced_settings.Set_HintAtEnd(pair.first, base::Value(pair.second));
       }
 
       new_settings.Set(kSettingAdvancedSettings, std::move(advanced_settings));
