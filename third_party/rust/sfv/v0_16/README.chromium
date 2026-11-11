@@ -1,0 +1,12 @@
+Name: sfv
+URL: https://crates.io/crates/sfv
+Version: 0.16.1
+Revision: 9f2a8371a69323960cf30866513fcf1e093d45ab
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/sfv-v0_16/LICENSE-APACHE
+Shipped: yes
+Security Critical: yes
+
+Description: Structured Field Values for HTTP parser.
+Implementation of RFC 8941 and RFC 9651.

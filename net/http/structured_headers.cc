@@ -14,11 +14,11 @@
 
 #include "base/strings/string_view_rust.h"
 #include "base/strings/string_view_util.h"
-#include "third_party/rust/sfv/v0_15/wrapper/functions.h"
-#include "third_party/rust/sfv/v0_15/wrapper/lib.rs.h"
+#include "third_party/rust/sfv/v0_16/wrapper/functions.h"
+#include "third_party/rust/sfv/v0_16/wrapper/lib.rs.h"
 
 // This namespace defines FFI-friendly functions that are called from Rust in
-// //third_party/rust/sfv/v0_15/wrapper/.
+// //third_party/rust/sfv/v0_16/wrapper/.
 namespace sfv {
 
 namespace {

@@ -163,7 +163,7 @@ version = "0.2"
 features = ["unbounded_depth", "float_roundtrip"]
 
 [dependencies.sfv]
-version = "0.15.0"
+version = "0.16.1"
 default-features = false
 
 [dependencies.strum]
@@ -225,4 +225,3 @@ features = ["arith"]
 
 [patch.crates-io]
 harfrust = { path = "vendor/harfrust-v0_15" }
-sfv = { path = "vendor/sfv-v0_15" }

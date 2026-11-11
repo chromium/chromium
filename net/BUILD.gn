@@ -1278,7 +1278,7 @@ component("net") {
     "//components/network_time/time_tracker",
     "//components/unexportable_keys",
     "//net/http:transport_security_state_generated_files",
-    "//third_party/rust/sfv/v0_15/wrapper",
+    "//third_party/rust/sfv/v0_16/wrapper",
     "//third_party/simdutf",
   ]
 

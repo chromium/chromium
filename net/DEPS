@@ -25,7 +25,7 @@ specific_include_rules = {
     "+base/i18n",
   ],
   "structured_headers\\.cc": [
-    "+third_party/rust/sfv/v0_15/wrapper",
+    "+third_party/rust/sfv/v0_16/wrapper",
   ],
 
   # Functions largely not used by the rest of net.
