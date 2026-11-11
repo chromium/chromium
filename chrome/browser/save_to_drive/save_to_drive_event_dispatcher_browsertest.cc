@@ -17,6 +17,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/test_event_router_observer.h"
@@ -92,7 +93,18 @@ class SaveToDriveEventDispatcherBrowserTest
 
   void TearDownOnMainThread() override {
     // At the end of a Save to Drive upload test, send a completed progress to
-    // disable the beforeunload dialog in the UI.
+    // disable the beforeunload dialog in the UI. The viewer applies it
+    // asynchronously, so listen for the progress event before sending it.
+    content::RenderFrameHost* extension_frame =
+        GetOnlyPdfExtensionHostEnsureValid();
+    // Don't return the promise, since `ExecJs()` would wait for it.
+    EXPECT_TRUE(content::ExecJs(extension_frame, R"(
+      window.saveToDriveProgressReceived = new Promise(resolve => {
+        chrome.pdfViewerPrivate.onSaveToDriveProgress.addListener(resolve);
+      });
+      true;
+    )"));
+
     pdf_api::SaveToDriveProgress progress;
     progress.status = pdf_api::SaveToDriveStatus::kUploadCompleted;
     progress.error_type = pdf_api::SaveToDriveErrorType::kNoError;
@@ -100,6 +112,26 @@ class SaveToDriveEventDispatcherBrowserTest
     progress.file_size_bytes = 100;
     EXPECT_CALL(*save_to_drive_recorder_, Record);
     dispatcher_->Notify(std::move(progress));
+
+    // Wait for the viewer to handle the progress and update its beforeunload
+    // state. Otherwise, the beforeunload dialog may still be enabled when the
+    // browser closes, which blocks closing it. Without OOPIF PDF, the viewer
+    // forwards that state to the embedder through `mimeHandlerPrivate`; a
+    // call on the same channel completes only after the earlier ones did.
+    static constexpr char kWaitForBeforeUnloadUpdate[] = R"(
+      (async () => {
+        await window.saveToDriveProgressReceived;
+        await document.querySelector('pdf-viewer').updateComplete;
+        if (!$1) {
+          await new Promise(resolve => {
+            chrome.mimeHandlerPrivate.setShowBeforeUnloadDialog(false, resolve);
+          });
+        }
+      })();
+    )";
+    EXPECT_TRUE(content::ExecJs(
+        extension_frame,
+        content::JsReplace(kWaitForBeforeUnloadUpdate, UseOopif())));
 
     save_to_drive_recorder_ = nullptr;
     time_remaining_calculator_ = nullptr;
