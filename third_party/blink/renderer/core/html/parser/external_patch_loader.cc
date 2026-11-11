@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/cross_origin_attribute.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
@@ -13,6 +14,7 @@
 #include "third_party/blink/renderer/core/html/parser/patch.h"
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/sanitizer/sanitizer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
@@ -23,8 +25,13 @@ namespace blink {
 
 ExternalPatchLoader::ExternalPatchLoader(Patch* owner,
                                          HTMLTemplateElement* template_element,
-                                         const AtomicString& src_attr)
-    : owner_(owner), template_(template_element) {
+                                         const AtomicString& src_attr,
+                                         StreamingSanitizer* sanitizer,
+                                         ParserContentPolicy content_policy)
+    : owner_(owner),
+      template_(template_element),
+      sanitizer_(sanitizer),
+      content_policy_(content_policy) {
   CHECK(RuntimeEnabledFeatures::DeclarativeFragmentEnabled());
   CHECK(!src_attr.empty());
 
@@ -114,15 +121,21 @@ void ExternalPatchLoader::ResponseReceived(Resource* resource,
       MakeGarbageCollected<ParserRootInsertionPoint>(*target,
                                                      owner_->end_marker());
 
-  Element* context_element = DynamicTo<Element>(target);
-  if (!context_element) {
+  Element* context_element = nullptr;
+  CustomElementRegistry* registry = nullptr;
+  if (auto* element = DynamicTo<Element>(target)) {
+    context_element = element;
+    registry = element->customElementRegistry();
+  } else if (auto* shadow = DynamicTo<ShadowRoot>(target)) {
+    context_element = &shadow->host();
+    registry = shadow->customElementRegistry();
+  } else {
     context_element = template_;
   }
 
   parser_ = MakeGarbageCollected<HTMLDocumentParser>(
-      fragment, context_element,
-      ParserContentPolicy::kAllowScriptingContentAndMarkAsParserInserted,
-      ParserPrefetchPolicy::kDisallowPrefetching, nullptr, nullptr,
+      fragment, context_element, content_policy_,
+      ParserPrefetchPolicy::kDisallowPrefetching, registry, sanitizer_.Get(),
       root_insertion_point);
 
   parser_->SetDecoder(
@@ -171,6 +184,7 @@ void ExternalPatchLoader::Trace(Visitor* visitor) const {
   visitor->Trace(template_);
   visitor->Trace(resource_);
   visitor->Trace(parser_);
+  visitor->Trace(sanitizer_);
   RawResourceClient::Trace(visitor);
 }
 

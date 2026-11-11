@@ -33,8 +33,10 @@
 #include "third_party/blink/renderer/core/trustedtypes/trusted_type_policy_factory.h"
 #include "third_party/blink/renderer/core/xlink_names.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 
@@ -1490,15 +1492,20 @@ void StreamingSanitizer::DidParseDocument(Document* document) {
 StreamingSanitizer* StreamingSanitizer::SafeFor(StreamingSanitizer* parent) {
   CHECK(RuntimeEnabledFeatures::DeclarativeFragmentEnabled());
   if (!parent) {
-    return MakeGarbageCollected<StreamingSanitizer>(
-        SanitizerBuiltins::GetDefaultSafe(), Sanitizer::Mode::kSafe);
+    DEFINE_STATIC_LOCAL(Persistent<Sanitizer>, default_fragment_safe, ([] {
+                          Sanitizer* s = Sanitizer::CreateEmpty();
+                          s->setComments(true);
+                          s->removeUnsafe();
+                          return s;
+                        }()));
+    return MakeGarbageCollected<StreamingSanitizer>(default_fragment_safe.Get(),
+                                                    Sanitizer::Mode::kSafe);
   }
 
   if (parent->mode_ == Sanitizer::Mode::kSafe) {
     return parent;
   }
-  Sanitizer* clone = MakeGarbageCollected<Sanitizer>();
-  clone->setFrom(*parent->sanitizer_);
+  Sanitizer* clone = parent->sanitizer_->Clone();
   clone->removeUnsafe();
   return MakeGarbageCollected<StreamingSanitizer>(clone,
                                                   Sanitizer::Mode::kSafe);

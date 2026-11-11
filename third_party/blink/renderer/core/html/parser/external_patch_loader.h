@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_EXTERNAL_PATCH_LOADER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_EXTERNAL_PATCH_LOADER_H_
 
+#include "third_party/blink/renderer/core/dom/parser_content_policy.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/loader/fetch/raw_resource.h"
@@ -14,13 +15,16 @@ namespace blink {
 class DocumentParser;
 class HTMLTemplateElement;
 class Patch;
+class StreamingSanitizer;
 
 class ExternalPatchLoader : public GarbageCollected<ExternalPatchLoader>,
                             public RawResourceClient {
  public:
   ExternalPatchLoader(Patch* owner,
                       HTMLTemplateElement* template_element,
-                      const AtomicString& src_attr);
+                      const AtomicString& src_attr,
+                      StreamingSanitizer* sanitizer,
+                      ParserContentPolicy content_policy);
 
   void Cancel();
   void Trace(Visitor* visitor) const override;
@@ -36,6 +40,8 @@ class ExternalPatchLoader : public GarbageCollected<ExternalPatchLoader>,
   Member<HTMLTemplateElement> template_;
   Member<RawResource> resource_;
   Member<DocumentParser> parser_;
+  Member<StreamingSanitizer> sanitizer_;
+  ParserContentPolicy content_policy_ = kAllowScriptingContent;
   enum ReadyState { kWaitingForResource, kReady, kErrorOccurred };
   ReadyState ready_state_ = kReady;
 };

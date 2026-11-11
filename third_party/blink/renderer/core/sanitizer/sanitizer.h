@@ -198,6 +198,7 @@ class CORE_EXPORT StreamingSanitizer
       : sanitizer_(sanitizer), mode_(mode) {}
 
   static StreamingSanitizer* SafeFor(StreamingSanitizer*);
+  bool IsSafe() const { return mode_ == Sanitizer::Mode::kSafe; }
   bool Sanitize(Node* node) {
     return sanitizer_->SanitizeSingleNode(node, mode_) ==
            Sanitizer::Action::kKeep;

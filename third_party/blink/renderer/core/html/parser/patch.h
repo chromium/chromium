@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_PATCH_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_PATCH_H_
 
+#include "third_party/blink/renderer/core/dom/parser_content_policy.h"
 #include "third_party/blink/renderer/core/html/parser/html_construction_site.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -16,6 +17,7 @@ class ContainerNode;
 class ExternalPatchLoader;
 class HTMLTemplateElement;
 class Node;
+class StreamingSanitizer;
 
 // This class manages the lifecycle of out-of-order streaming (<template for>
 // during parsing).
@@ -23,7 +25,9 @@ class Patch : public GarbageCollected<Patch> {
  public:
   static Patch* Prepare(ContainerNode* scope,
                         const AtomicString& target,
-                        HTMLTemplateElement*);
+                        HTMLTemplateElement*,
+                        StreamingSanitizer* parent_sanitizer,
+                        ParserContentPolicy content_policy);
 
   virtual ~Patch() = default;
 
@@ -42,7 +46,9 @@ class Patch : public GarbageCollected<Patch> {
         ContainerNode* parent,
         Node* start_marker,
         Node* end_marker,
-        HTMLTemplateElement* template_element);
+        HTMLTemplateElement* template_element,
+        StreamingSanitizer* parent_sanitizer,
+        ParserContentPolicy content_policy);
 
  private:
   Member<ContainerNode> parent_;

@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/sanitizer/sanitizer.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
@@ -61,7 +62,9 @@ class NodeRemovalScope {
 
 Patch* Patch::Prepare(ContainerNode* scope,
                       const AtomicString& marker_name,
-                      HTMLTemplateElement* template_element) {
+                      HTMLTemplateElement* template_element,
+                      StreamingSanitizer* parent_sanitizer,
+                      ParserContentPolicy content_policy) {
   if (marker_name.IsNull()) {
     return nullptr;
   }
@@ -160,8 +163,8 @@ Patch* Patch::Prepare(ContainerNode* scope,
   }
 
   return MakeGarbageCollected<Patch>(base::PassKey<Patch>(), parent,
-                                     start_marker, end_marker,
-                                     template_element);
+                                     start_marker, end_marker, template_element,
+                                     parent_sanitizer, content_policy);
 }
 
 void Patch::Apply(HTMLConstructionSite::InsertionLocation& location) {
@@ -187,15 +190,29 @@ Patch::Patch(base::PassKey<Patch> key,
              ContainerNode* parent,
              Node* start_marker,
              Node* end_marker,
-             HTMLTemplateElement* template_element)
+             HTMLTemplateElement* template_element,
+             StreamingSanitizer* parent_sanitizer,
+             ParserContentPolicy content_policy)
     : parent_(parent), start_marker_(start_marker), end_marker_(end_marker) {
   const AtomicString& src_attr =
       (template_element && RuntimeEnabledFeatures::DeclarativeFragmentEnabled())
           ? template_element->FastGetAttribute(html_names::kSrcAttr)
           : g_null_atom;
   if (!src_attr.empty()) {
-    loader_ = MakeGarbageCollected<ExternalPatchLoader>(this, template_element,
-                                                        src_attr);
+    StreamingSanitizer* sanitizer =
+        EqualIgnoringAsciiCase(
+            template_element->FastGetAttribute(html_names::kSanitizeAttr),
+            "unsafe")
+            ? parent_sanitizer
+            : StreamingSanitizer::SafeFor(parent_sanitizer);
+    // A safe sanitizer strips scripts anyway, so there is no need to mark them
+    // as parser-inserted. Never upgrade a policy that disallows scripting.
+    if (sanitizer && sanitizer->IsSafe() &&
+        ScriptingContentIsAllowed(content_policy)) {
+      content_policy = kAllowScriptingContent;
+    }
+    loader_ = MakeGarbageCollected<ExternalPatchLoader>(
+        this, template_element, src_attr, sanitizer, content_policy);
   }
 }
 

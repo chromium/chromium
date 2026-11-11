@@ -361,7 +361,6 @@ void HTMLElementStack::InsertAbove(HTMLStackItem* item,
     }
 
     stack_depth_++;
-    item->SetSanitizer(item_below->GetSanitizer());
     item->SetNextItemInStack(item_above->ReleaseNextItemInStack());
     item_above->SetNextItemInStack(item);
     items_above.push_back(item);
@@ -523,9 +522,6 @@ void HTMLElementStack::PushCommon(HTMLStackItem* item) {
   item->has_p_element_in_button_scope_ =
       IsHTMLPElement(item) || (!IsButtonScopeMarker(item) && top_ &&
                                top_->has_p_element_in_button_scope_);
-  if (top_) {
-    item->SetSanitizer(top_->GetSanitizer());
-  }
   item->SetNextItemInStack(top_.Release());
   top_ = item;
 }

@@ -240,8 +240,6 @@ class HTMLConstructionSite final {
   void MergeAttributesFromTokenIntoElement(AtomicHTMLToken*, Element*);
 
   bool ShouldInsertChild(const InsertionLocation& location, Node* child);
-  StreamingSanitizer* ActiveSanitizer(
-      Node* node_being_inserted = nullptr) const;
   void SetAttributes(Element* element, AtomicHTMLToken* token);
 
   Member<HTMLParserReentryPermit> reentry_permit_;

@@ -348,14 +348,9 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
   void Trace(Visitor* visitor) const {
     visitor->Trace(node_);
     visitor->Trace(next_item_in_stack_);
-    visitor->Trace(sanitizer_);
     visitor->Trace(replaced_insertion_parent_);
     visitor->Trace(replaced_insertion_next_child_);
   }
-
-  void SetSanitizer(StreamingSanitizer* sanitizer) { sanitizer_ = sanitizer; }
-
-  StreamingSanitizer* GetSanitizer() const { return sanitizer_.Get(); }
 
   void SetReplacedInsertionLocation(ContainerNode* parent, Node* next_child) {
     is_replaced_with_children_ = true;
@@ -408,7 +403,6 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
   // This member is maintained by HTMLElementStack.
   Member<HTMLStackItem> next_item_in_stack_{nullptr};
 
-  Member<StreamingSanitizer> sanitizer_;
   Member<ContainerNode> replaced_insertion_parent_;
   Member<Node> replaced_insertion_next_child_;
 
