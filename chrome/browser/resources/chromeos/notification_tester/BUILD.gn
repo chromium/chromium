@@ -49,6 +49,7 @@ grit("resources") {
     "notification_tester_resources.pak",
   ]
   output_dir = "$root_gen_dir/chrome"
+  public_deps = [ "//ui/base:webui_resource_path" ]
 }
 
 js_type_check("closure_compile") {

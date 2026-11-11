@@ -87,4 +87,5 @@ grit("resources") {
     "chromeos_system_extensions_resources.pak",
   ]
   deps = [ ":build_grd" ]
+  public_deps = [ "//ui/base:webui_resource_path" ]
 }

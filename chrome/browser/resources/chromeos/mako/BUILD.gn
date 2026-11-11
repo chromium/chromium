@@ -55,4 +55,5 @@ grit("resources") {
   output_dir = "$root_gen_dir/chrome"
 
   use_brotli = true
+  public_deps = [ "//ui/base:webui_resource_path" ]
 }

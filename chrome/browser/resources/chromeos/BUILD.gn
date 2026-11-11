@@ -76,6 +76,7 @@ grit("app_icon_resources") {
     "chromeos_app_icon_resources_200_percent.pak",
   ]
   output_dir = "$root_gen_dir/chrome"
+  public_deps = [ "//ui/base:webui_resource_path" ]
 }
 
 grit("multidevice_setup_resources") {
@@ -93,4 +94,5 @@ grit("multidevice_setup_resources") {
   deps = [ "//chrome/browser/resources/chromeos/multidevice_setup:build_grd" ]
   enable_input_discovery_for_gn_analyze = false
   output_dir = "$root_gen_dir/chrome"
+  public_deps = [ "//ui/base:webui_resource_path" ]
 }
