@@ -43,6 +43,8 @@
 #include "net/http/http_request_headers.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
+#include "net/log/net_log_source.h"
+#include "net/log/net_log_source_type.h"
 #include "net/log/net_log_with_source.h"
 #include "net/log/test_net_log.h"
 #include "net/log/test_net_log_util.h"
@@ -735,6 +737,57 @@ void SimulatePacTerminatedWithSyncReinit(TestResolveRequest& req1,
   EXPECT_FALSE(req1.request);
   EXPECT_FALSE(req2.request);
 }
+
+// Reuses the asynchronous resolver mock while exposing the native service API.
+class MockSystemProxyResolutionService : public ProxyResolutionService {
+ public:
+  class Request : public ProxyResolutionRequest {
+   public:
+    LoadState GetLoadState() const override { return job->GetLoadState(); }
+    std::unique_ptr<ProxyResolver::Request> job;
+  };
+
+  int ResolveProxy(const GURL& url,
+                   const std::string& method,
+                   const NetworkAnonymizationKey& network_anonymization_key,
+                   handles::NetworkHandle target_network,
+                   ProxyInfo* results,
+                   CompletionOnceCallback callback,
+                   std::unique_ptr<ProxyResolutionRequest>* request,
+                   const NetLogWithSource& net_log,
+                   RequestPriority priority) override {
+    ++resolve_count;
+    last_net_log_source = net_log.source();
+    auto native_request = std::make_unique<Request>();
+    int rv = resolver.GetProxyForURL(url, network_anonymization_key, results,
+                                     std::move(callback), &native_request->job,
+                                     net_log);
+    *request = std::move(native_request);
+    return rv;
+  }
+
+  void ReportSuccess(const ProxyInfo&) override { ADD_FAILURE(); }
+  void SetProxyDelegate(ProxyDelegate*) override { ADD_FAILURE(); }
+  void OnShutdown() override { ++shutdown_count; }
+  void ClearBadProxiesCache() override { ADD_FAILURE(); }
+  const ProxyRetryInfoMap& proxy_retry_info() const override {
+    return retry_info_;
+  }
+  base::DictValue GetProxyNetLogValues() override { return {}; }
+  bool CastToConfiguredProxyResolutionService(
+      ConfiguredProxyResolutionService** service) override {
+    *service = nullptr;
+    return false;
+  }
+
+  MockAsyncProxyResolver resolver;
+  NetLogSource last_net_log_source;
+  int resolve_count = 0;
+  int shutdown_count = 0;
+
+ private:
+  ProxyRetryInfoMap retry_info_;
+};
 
 }  // namespace
 
@@ -7882,6 +7935,565 @@ TEST_F(ConfiguredProxyResolutionServiceTest,
   EXPECT_TRUE(
       ResolveProxySynchronously(service.get(), GURL("http://www.yahoo.com"))
           .is_direct());
+}
+
+class ConfiguredProxyResolutionSystemServiceTest
+    : public ConfiguredProxyResolutionServiceTest {
+ protected:
+  void CreateService(ProxyConfig config, bool use_system_proxy_service = true) {
+    mock_host_resolver_ = std::make_unique<MockHostResolver>();
+    auto source = std::make_unique<MockProxyConfigService>(config);
+    config_service_ = source.get();
+    std::unique_ptr<MockSystemProxyResolutionService> native;
+    if (use_system_proxy_service) {
+      native = std::make_unique<MockSystemProxyResolutionService>();
+    }
+    native_ = native.get();
+    auto factory = std::make_unique<MockAsyncProxyResolverFactory>(true);
+    factory_ = factory.get();
+    service_ = std::make_unique<ConfiguredProxyResolutionService>(
+        std::move(source), std::move(factory), mock_host_resolver_.get(),
+        nullptr, /*quick_check_enabled=*/true,
+        /*enable_pac_runtime_backoff=*/false, std::move(native));
+    auto fetcher = std::make_unique<MockPacFileFetcher>();
+    fetcher_ = fetcher.get();
+    service_->SetPacFileFetchers(
+        std::move(fetcher), std::make_unique<DoNothingDhcpPacFileFetcher>());
+  }
+
+  static ProxyConfig SystemConfig() {
+    auto config = ProxyConfig::CreateDirect();
+    config.set_from_system(true);
+    return config;
+  }
+
+  int Resolve(ProxyInfo* info,
+              TestCompletionCallback* callback,
+              std::unique_ptr<ProxyResolutionRequest>* request,
+              const GURL& url = GURL(kMatchingUrl),
+              const NetLogWithSource& net_log = NetLogWithSource()) {
+    return service_->ResolveProxy(
+        url, "GET", NetworkAnonymizationKey(), handles::kInvalidNetworkHandle,
+        info, callback->callback(), request, net_log, DEFAULT_PRIORITY);
+  }
+
+  void CompleteNative(const std::string& proxies = "PROXY native:80",
+                      int result = OK) {
+    ASSERT_EQ(1u, native_->resolver.pending_jobs().size());
+    auto* job = native_->resolver.pending_jobs()[0].get();
+    if (result == OK) {
+      job->results()->UsePacString(proxies);
+    }
+    job->CompleteNow(result);
+  }
+
+  void ResetService() {
+    config_service_ = nullptr;
+    native_ = nullptr;
+    factory_ = nullptr;
+    fetcher_ = nullptr;
+    service_.reset();
+  }
+
+  void TearDown() override {
+    ResetService();
+    ConfiguredProxyResolutionServiceTest::TearDown();
+  }
+
+  MockAsyncProxyResolver pac_resolver_;
+  std::unique_ptr<ConfiguredProxyResolutionService> service_;
+  raw_ptr<MockProxyConfigService> config_service_ = nullptr;
+  raw_ptr<MockSystemProxyResolutionService> native_ = nullptr;
+  raw_ptr<MockAsyncProxyResolverFactory> factory_ = nullptr;
+  raw_ptr<MockPacFileFetcher> fetcher_ = nullptr;
+};
+
+TEST_F(ConfiguredProxyResolutionSystemServiceTest,
+       SystemBaselinesSkipPacInitialization) {
+  auto manual = ProxyConfig::CreateDirect();
+  manual.proxy_rules().ParseFromString("snapshot:80");
+  for (auto config :
+       {ProxyConfig::CreateDirect(), manual, ProxyConfig::CreateAutoDetect(),
+        ProxyConfig::CreateFromCustomPacURL(GURL("http://foopy/proxy.pac"))}) {
+    SCOPED_TRACE(config.ToValue());
+    config.set_from_system(true);
+    CreateService(config);
+    ProxyInfo info;
+    TestCompletionCallback callback;
+    std::unique_ptr<ProxyResolutionRequest> request;
+    ASSERT_EQ(ERR_IO_PENDING, Resolve(&info, &callback, &request));
+    EXPECT_EQ(1, native_->resolve_count);
+    EXPECT_FALSE(fetcher_->has_pending_request());
+    EXPECT_TRUE(factory_->pending_requests().empty());
+    CompleteNative();
+    EXPECT_EQ(OK, callback.WaitForResult());
+    EXPECT_EQ("PROXY native:80", info.ToPacString());
+    request.reset();
+    ResetService();
+  }
+}
+
+TEST_F(ConfiguredProxyResolutionSystemServiceTest, SystemImplicitBypassRules) {
+  struct TestCase {
+    const char* name;
+    ProxyConfig config;
+    bool expect_native_resolution;
+    bool expect_bypassed_proxy;
+  };
+  std::vector<TestCase> test_cases;
+
+  auto pac =
+      ProxyConfig::CreateFromCustomPacURL(GURL("http://foopy/proxy.pac"));
+  pac.set_from_system(true);
+  pac.proxy_rules().bypass_rules.ParseFromString("<-loopback>");
+  test_cases.push_back({"PAC with <-loopback>", pac,
+                        /*expect_native_resolution=*/false,
+                        /*expect_bypassed_proxy=*/true});
+
+  auto manual = SystemConfig();
+  manual.proxy_rules().ParseFromString("manual:80");
+  test_cases.push_back({"manual proxy", manual,
+                        /*expect_native_resolution=*/false,
+                        /*expect_bypassed_proxy=*/true});
+
+  test_cases.push_back({"DIRECT", SystemConfig(),
+                        /*expect_native_resolution=*/false,
+                        /*expect_bypassed_proxy=*/false});
+
+  manual.proxy_rules().bypass_rules.ParseFromString("<-loopback>");
+  test_cases.push_back({"manual proxy with <-loopback>", manual,
+                        /*expect_native_resolution=*/true,
+                        /*expect_bypassed_proxy=*/false});
+
+  for (const char* url : {"http://sub.localhost/", "http://127.0.0.2/"}) {
+    for (const auto& test_case : test_cases) {
+      SCOPED_TRACE(test_case.name);
+      SCOPED_TRACE(url);
+      CreateService(test_case.config);
+
+      ProxyInfo info;
+      TestCompletionCallback callback;
+      std::unique_ptr<ProxyResolutionRequest> request;
+      const int rv = Resolve(&info, &callback, &request, GURL(url));
+      if (test_case.expect_native_resolution) {
+        ASSERT_EQ(ERR_IO_PENDING, rv);
+        EXPECT_FALSE(info.did_bypass_proxy());
+        EXPECT_EQ(1, native_->resolve_count);
+        CompleteNative();
+        EXPECT_EQ(OK, callback.WaitForResult());
+        EXPECT_EQ("PROXY native:80", info.ToPacString());
+      } else {
+        ASSERT_EQ(OK, rv);
+        EXPECT_TRUE(info.is_direct());
+        EXPECT_EQ(test_case.expect_bypassed_proxy, info.did_bypass_proxy());
+        EXPECT_EQ(0, native_->resolve_count);
+        EXPECT_TRUE(native_->resolver.pending_jobs().empty());
+        EXPECT_FALSE(callback.have_result());
+      }
+
+      request.reset();
+      ResetService();
+    }
+  }
+}
+
+TEST_F(ConfiguredProxyResolutionSystemServiceTest,
+       SystemProxyResolutionNetLogSourceLinks) {
+  CreateService(SystemConfig());
+  RecordingNetLogObserver net_log_observer;
+  const NetLogWithSource request_net_log =
+      NetLogWithSource::Make(NetLogSourceType::URL_REQUEST);
+
+  ProxyInfo info;
+  TestCompletionCallback callback;
+  std::unique_ptr<ProxyResolutionRequest> request;
+  ASSERT_EQ(ERR_IO_PENDING, Resolve(&info, &callback, &request,
+                                    GURL(kMatchingUrl), request_net_log));
+  ASSERT_EQ(1, native_->resolve_count);
+  EXPECT_EQ(NetLogSourceType::SYSTEM_PROXY_RESOLUTION,
+            native_->last_net_log_source.type);
+
+  CompleteNative();
+  EXPECT_EQ(OK, callback.WaitForResult());
+
+  const auto request_entries =
+      net_log_observer.GetEntriesForSource(request_net_log.source());
+  ASSERT_EQ(1u, net_log_observer
+                    .GetEntriesForSourceWithType(
+                        request_net_log.source(),
+                        NetLogEventType::PROXY_RESOLUTION_SERVICE,
+                        NetLogEventPhase::BEGIN)
+                    .size());
+  ASSERT_EQ(1u, net_log_observer
+                    .GetEntriesForSourceWithType(
+                        request_net_log.source(),
+                        NetLogEventType::PROXY_RESOLUTION_SERVICE,
+                        NetLogEventPhase::END)
+                    .size());
+  ASSERT_EQ(1u, net_log_observer
+                    .GetEntriesForSourceWithType(
+                        request_net_log.source(),
+                        NetLogEventType::SYSTEM_PROXY_RESOLUTION,
+                        NetLogEventPhase::NONE)
+                    .size());
+  EXPECT_TRUE(LogContainsBeginEvent(request_entries, 0,
+                                    NetLogEventType::PROXY_RESOLUTION_SERVICE));
+  EXPECT_TRUE(LogContainsEndEvent(request_entries, -1,
+                                  NetLogEventType::PROXY_RESOLUTION_SERVICE));
+
+  const auto request_source_events =
+      net_log_observer.GetEntriesForSourceWithType(
+          request_net_log.source(), NetLogEventType::SYSTEM_PROXY_RESOLUTION,
+          NetLogEventPhase::NONE);
+  const base::DictValue* child_source =
+      request_source_events[0].params.FindDict("source_dependency");
+  ASSERT_TRUE(child_source);
+  EXPECT_THAT(
+      child_source->FindInt("type"),
+      testing::Optional(static_cast<int>(native_->last_net_log_source.type)));
+  EXPECT_THAT(
+      child_source->FindInt("id"),
+      testing::Optional(static_cast<int>(native_->last_net_log_source.id)));
+
+  const auto native_source_events =
+      net_log_observer.GetEntriesForSourceWithType(
+          native_->last_net_log_source,
+          NetLogEventType::SYSTEM_PROXY_RESOLUTION, NetLogEventPhase::NONE);
+  ASSERT_EQ(1u, native_source_events.size());
+  const base::DictValue* request_source =
+      native_source_events[0].params.FindDict("source_dependency");
+  ASSERT_TRUE(request_source);
+  EXPECT_THAT(
+      request_source->FindInt("type"),
+      testing::Optional(static_cast<int>(request_net_log.source().type)));
+  EXPECT_THAT(request_source->FindInt("id"),
+              testing::Optional(static_cast<int>(request_net_log.source().id)));
+}
+
+TEST_F(ConfiguredProxyResolutionSystemServiceTest,
+       BaselineProxyResolverNetLogValues) {
+  CreateService(SystemConfig());
+  ProxyInfo info;
+  TestCompletionCallback callback;
+  std::unique_ptr<ProxyResolutionRequest> request;
+  ASSERT_EQ(ERR_IO_PENDING, Resolve(&info, &callback, &request));
+  CompleteNative();
+  EXPECT_EQ(OK, callback.WaitForResult());
+  request.reset();
+
+  auto net_log_values = service_->GetProxyNetLogValues();
+  ASSERT_TRUE(net_log_values.FindString("baseline_proxy_resolver"));
+  EXPECT_EQ("system", *net_log_values.FindString("baseline_proxy_resolver"));
+
+  config_service_->SetConfig(ProxyConfigWithAnnotation(
+      ProxyConfig::CreateDirect(), TRAFFIC_ANNOTATION_FOR_TESTS));
+  net_log_values = service_->GetProxyNetLogValues();
+  ASSERT_TRUE(net_log_values.FindString("baseline_proxy_resolver"));
+  EXPECT_EQ("configured",
+            *net_log_values.FindString("baseline_proxy_resolver"));
+
+  ResetService();
+  CreateService(SystemConfig(), /*use_system_proxy_service=*/false);
+  net_log_values = service_->GetProxyNetLogValues();
+  EXPECT_FALSE(net_log_values.FindString("baseline_proxy_resolver"));
+}
+
+TEST_F(ConfiguredProxyResolutionSystemServiceTest,
+       NativePacScriptFailureDoesNotArmRuntimeBackoff) {
+  CreateService(SystemConfig());
+  service_->set_enable_pac_runtime_backoff_for_testing(true);
+
+  ProxyInfo info;
+  TestCompletionCallback callback;
+  std::unique_ptr<ProxyResolutionRequest> request;
+  ASSERT_EQ(ERR_IO_PENDING, Resolve(&info, &callback, &request));
+  CompleteNative({}, ERR_PAC_SCRIPT_FAILED);
+  EXPECT_EQ(ERR_PAC_SCRIPT_FAILED, callback.WaitForResult());
+
+  request.reset();
+  TestCompletionCallback callback2;
+  ASSERT_EQ(ERR_IO_PENDING, Resolve(&info, &callback2, &request));
+  EXPECT_EQ(2, native_->resolve_count);
+  ASSERT_EQ(1u, native_->resolver.pending_jobs().size());
+}
+
+TEST_F(ConfiguredProxyResolutionSystemServiceTest, SystemRequestTeardown) {
+  enum class RequestState {
+    kNativeResolution,
+    kPvdUpdate,
+    kOverrideDns,
+    kBrowserPac,
+  };
+  for (RequestState state :
+       {RequestState::kNativeResolution, RequestState::kPvdUpdate,
+        RequestState::kOverrideDns, RequestState::kBrowserPac}) {
+    SCOPED_TRACE(static_cast<int>(state));
+    auto config = SystemConfig();
+    if (state == RequestState::kOverrideDns) {
+      config.set_proxy_override_rules({CreateOverrideRule(
+          kMatchingRule, CreateProxyList("PROXY override:80"), kDnsHost1)});
+    }
+    CreateService(config);
+    mock_host_resolver_->set_ondemand_mode(true);
+
+    ProxyInfo info;
+    TestCompletionCallback callback;
+    std::unique_ptr<ProxyResolutionRequest> request;
+    ASSERT_EQ(ERR_IO_PENDING, Resolve(&info, &callback, &request));
+    if (state == RequestState::kOverrideDns) {
+      EXPECT_EQ(0, native_->resolve_count);
+      ASSERT_TRUE(mock_host_resolver_->has_pending_requests());
+    } else {
+      ASSERT_EQ(1u, native_->resolver.pending_jobs().size());
+    }
+
+    if (state == RequestState::kPvdUpdate) {
+      config_service_->SetDynamicRoutingConfig(/*is_update_in_progress=*/true);
+      EXPECT_TRUE(native_->resolver.pending_jobs().empty());
+      EXPECT_EQ(1u, native_->resolver.cancelled_jobs().size());
+    } else if (state == RequestState::kBrowserPac) {
+      config_service_->SetPacUrlConfig("http://foopy/proxy.pac");
+      EXPECT_TRUE(native_->resolver.pending_jobs().empty());
+      EXPECT_EQ(1u, native_->resolver.cancelled_jobs().size());
+      ASSERT_TRUE(fetcher_->has_pending_request());
+    }
+    EXPECT_FALSE(callback.have_result());
+
+    ResetService();
+    EXPECT_EQ(state == RequestState::kBrowserPac
+                  ? ERR_MANDATORY_PROXY_CONFIGURATION_FAILED
+                  : ERR_ABORTED,
+              callback.WaitForResult());
+  }
+}
+
+TEST_F(ConfiguredProxyResolutionSystemServiceTest,
+       BrowserBaselinesUseConfiguredRulesAndPac) {
+  CreateService(SystemConfig());
+  auto manual = ProxyConfig::CreateDirect();
+  manual.proxy_rules().ParseFromString("browser:80");
+  for (const auto& config : {ProxyConfig::CreateDirect(), manual}) {
+    config_service_->SetConfig(
+        ProxyConfigWithAnnotation(config, TRAFFIC_ANNOTATION_FOR_TESTS));
+    auto info = ResolveProxySynchronously(service_.get(), GURL(kMatchingUrl));
+    EXPECT_EQ(config.proxy_rules().empty() ? "DIRECT" : "PROXY browser:80",
+              info.ToPacString());
+    EXPECT_EQ(0, native_->resolve_count);
+  }
+
+  config_service_->SetPacUrlConfig("http://foopy/proxy.pac");
+  ProxyInfo info;
+  TestCompletionCallback callback;
+  std::unique_ptr<ProxyResolutionRequest> request;
+  ASSERT_EQ(ERR_IO_PENDING, Resolve(&info, &callback, &request));
+  ASSERT_TRUE(fetcher_->has_pending_request());
+  fetcher_->NotifyFetchCompletion(OK, kValidPacScript1);
+  ASSERT_EQ(1u, factory_->pending_requests().size());
+  factory_->pending_requests()[0]->CompleteNowWithForwarder(OK, &pac_resolver_);
+  ASSERT_EQ(1u, pac_resolver_.pending_jobs().size());
+  EXPECT_EQ(0, native_->resolve_count);
+  pac_resolver_.pending_jobs()[0]->results()->UsePacString("PROXY pac:80");
+  pac_resolver_.pending_jobs()[0]->CompleteNow(OK);
+  EXPECT_EQ(OK, callback.WaitForResult());
+  EXPECT_EQ("PROXY pac:80", info.ToPacString());
+}
+
+TEST_F(ConfiguredProxyResolutionSystemServiceTest, OverrideAndPvdPrecedence) {
+  auto config = SystemConfig();
+  config.set_proxy_override_rules({CreateOverrideRule(
+      kMatchingRule, CreateProxyList("PROXY override:80"))});
+  ProxyConfig::DynamicRoutingConfig routing;
+  routing.routing_rules = {CreateDynamicRoutingRule(kMatchingRule, "pvd:80")};
+  config.set_dynamic_routing_config(routing);
+  CreateService(config);
+  EXPECT_EQ("PROXY override:80",
+            ResolveProxySynchronously(service_.get(), GURL(kMatchingUrl))
+                .ToPacString());
+  EXPECT_EQ(0, native_->resolve_count);
+  config.set_proxy_override_rules({});
+  config_service_->SetConfig(
+      ProxyConfigWithAnnotation(config, TRAFFIC_ANNOTATION_FOR_TESTS));
+  EXPECT_EQ("PROXY pvd:80",
+            ResolveProxySynchronously(service_.get(), GURL(kMatchingUrl))
+                .ToPacString());
+  EXPECT_EQ(0, native_->resolve_count);
+
+  config.set_proxy_override_rules({CreateOverrideRule(
+      kNonMatchingRule, CreateProxyList("PROXY unmatched:80"))});
+  routing.routing_rules = {
+      CreateDynamicRoutingRule(kNonMatchingRule, "unmatched-pvd:80")};
+  config.set_dynamic_routing_config(routing);
+  config_service_->SetConfig(
+      ProxyConfigWithAnnotation(config, TRAFFIC_ANNOTATION_FOR_TESTS));
+  ProxyInfo info;
+  TestCompletionCallback callback;
+  std::unique_ptr<ProxyResolutionRequest> request;
+  ASSERT_EQ(ERR_IO_PENDING, Resolve(&info, &callback, &request));
+  CompleteNative();
+  EXPECT_EQ(OK, callback.WaitForResult());
+  EXPECT_EQ("PROXY native:80", info.ToPacString());
+}
+
+TEST_F(ConfiguredProxyResolutionSystemServiceTest, AsyncDnsOverridePrecedence) {
+  for (bool dns_matches : {true, false}) {
+    SCOPED_TRACE(dns_matches);
+    auto config = SystemConfig();
+    config.set_proxy_override_rules({CreateOverrideRule(
+        kMatchingRule, CreateProxyList("PROXY override:80"), kDnsHost1)});
+    CreateService(config);
+    mock_host_resolver_->set_ondemand_mode(true);
+    if (dns_matches) {
+      AddDnsEntry(GURL(kDnsHost1), "1.2.3.4");
+    } else {
+      AddDnsEntry(GURL(kDnsHost1), ERR_NAME_NOT_RESOLVED);
+    }
+    ProxyInfo info;
+    TestCompletionCallback callback;
+    std::unique_ptr<ProxyResolutionRequest> request;
+    ASSERT_EQ(ERR_IO_PENDING, Resolve(&info, &callback, &request));
+    EXPECT_EQ(0, native_->resolve_count);
+    ASSERT_TRUE(mock_host_resolver_->has_pending_requests());
+    mock_host_resolver_->ResolveAllPending();
+    base::RunLoop().RunUntilIdle();
+    if (!dns_matches) {
+      EXPECT_EQ(1, native_->resolve_count);
+      CompleteNative();
+    }
+    EXPECT_EQ(OK, callback.WaitForResult());
+    EXPECT_EQ(dns_matches ? "PROXY override:80" : "PROXY native:80",
+              info.ToPacString());
+    request.reset();
+    ResetService();
+  }
+}
+
+TEST_F(ConfiguredProxyResolutionSystemServiceTest,
+       PvdUpdateCancelsNativeJobInPlace) {
+  CreateService(SystemConfig());
+  ProxyInfo info;
+  TestCompletionCallback callback;
+  std::unique_ptr<ProxyResolutionRequest> request;
+  ASSERT_EQ(ERR_IO_PENDING, Resolve(&info, &callback, &request));
+  config_service_->SetDynamicRoutingConfig(/*is_update_in_progress=*/true);
+  EXPECT_TRUE(native_->resolver.pending_jobs().empty());
+  EXPECT_EQ(1u, native_->resolver.cancelled_jobs().size());
+  EXPECT_FALSE(callback.have_result());
+  config_service_->SetDynamicRoutingConfig(
+      /*is_update_in_progress=*/false,
+      {CreateDynamicRoutingRule(kMatchingRule, "pvd:80")});
+  EXPECT_EQ(OK, callback.WaitForResult());
+  EXPECT_EQ("PROXY pvd:80", info.ToPacString());
+  EXPECT_EQ(1, native_->resolve_count);
+  EXPECT_FALSE(fetcher_->has_pending_request());
+  EXPECT_TRUE(factory_->pending_requests().empty());
+
+  request.reset();
+  config_service_->SetDynamicRoutingConfig(
+      /*is_update_in_progress=*/false,
+      {CreateDynamicRoutingRule(kNonMatchingRule, "other-pvd:80")});
+  TestCompletionCallback callback2;
+  ASSERT_EQ(ERR_IO_PENDING, Resolve(&info, &callback2, &request));
+  CompleteNative();
+  EXPECT_EQ(OK, callback2.WaitForResult());
+  EXPECT_EQ("PROXY native:80", info.ToPacString());
+}
+
+TEST_F(ConfiguredProxyResolutionSystemServiceTest, InFlightBackendTransitions) {
+  CreateService(SystemConfig());
+  ProxyInfo info;
+  TestCompletionCallback callback;
+  std::unique_ptr<ProxyResolutionRequest> request;
+  ASSERT_EQ(ERR_IO_PENDING, Resolve(&info, &callback, &request));
+  config_service_->SetPacUrlConfig("http://foopy/proxy.pac");
+  EXPECT_TRUE(native_->resolver.pending_jobs().empty());
+  EXPECT_EQ(1u, native_->resolver.cancelled_jobs().size());
+  ASSERT_TRUE(fetcher_->has_pending_request());
+  fetcher_->NotifyFetchCompletion(OK, kValidPacScript1);
+  ASSERT_EQ(1u, factory_->pending_requests().size());
+  factory_->pending_requests()[0]->CompleteNowWithForwarder(OK, &pac_resolver_);
+  ASSERT_EQ(1u, pac_resolver_.pending_jobs().size());
+  pac_resolver_.pending_jobs()[0]->results()->UsePacString("PROXY pac:80");
+  pac_resolver_.pending_jobs()[0]->CompleteNow(OK);
+  EXPECT_EQ(OK, callback.WaitForResult());
+  EXPECT_EQ("PROXY pac:80", info.ToPacString());
+
+  request.reset();
+  TestCompletionCallback callback2;
+  ASSERT_EQ(ERR_IO_PENDING, Resolve(&info, &callback2, &request));
+  ASSERT_EQ(1u, pac_resolver_.pending_jobs().size());
+  config_service_->SetConfig(
+      ProxyConfigWithAnnotation(SystemConfig(), TRAFFIC_ANNOTATION_FOR_TESTS));
+  ASSERT_EQ(1u, native_->resolver.pending_jobs().size());
+  EXPECT_TRUE(pac_resolver_.pending_jobs().empty());
+  EXPECT_EQ(1u, pac_resolver_.cancelled_jobs().size());
+  EXPECT_EQ(1u, native_->resolver.cancelled_jobs().size());
+  EXPECT_EQ(2, native_->resolve_count);
+  CompleteNative();
+  EXPECT_EQ(OK, callback2.WaitForResult());
+  EXPECT_EQ("PROXY native:80", info.ToPacString());
+
+  request.reset();
+  config_service_->SetPacUrlConfig("http://foopy/another.pac");
+  TestCompletionCallback callback3;
+  ASSERT_EQ(ERR_IO_PENDING, Resolve(&info, &callback3, &request));
+  ASSERT_TRUE(fetcher_->has_pending_request());
+  config_service_->SetConfig(
+      ProxyConfigWithAnnotation(SystemConfig(), TRAFFIC_ANNOTATION_FOR_TESTS));
+  EXPECT_FALSE(fetcher_->has_pending_request());
+  EXPECT_TRUE(factory_->pending_requests().empty());
+  CompleteNative();
+  EXPECT_EQ(OK, callback3.WaitForResult());
+  EXPECT_EQ("PROXY native:80", info.ToPacString());
+}
+
+TEST_F(ConfiguredProxyResolutionSystemServiceTest, DelegateAndBadProxyCache) {
+  TestResolveProxyDelegate delegate;
+  CreateService(SystemConfig());
+  service_->SetProxyDelegate(&delegate);
+  ProxyInfo info;
+  TestCompletionCallback callback;
+  std::unique_ptr<ProxyResolutionRequest> request;
+  ASSERT_EQ(ERR_IO_PENDING, Resolve(&info, &callback, &request));
+  CompleteNative("PROXY bad:80; PROXY good:80");
+  EXPECT_EQ(OK, callback.WaitForResult());
+  EXPECT_EQ(1, delegate.num_resolve_proxy_called());
+  EXPECT_EQ("GET", delegate.method());
+  ASSERT_TRUE(info.Fallback(ERR_PROXY_CONNECTION_FAILED, NetLogWithSource()));
+  service_->ReportSuccess(info);
+  ASSERT_EQ(1u, service_->proxy_retry_info().size());
+  EXPECT_TRUE(native_->proxy_retry_info().empty());
+
+  request.reset();
+  TestCompletionCallback callback2;
+  ASSERT_EQ(ERR_IO_PENDING, Resolve(&info, &callback2, &request));
+  CompleteNative("PROXY bad:80; PROXY good:80");
+  EXPECT_EQ(OK, callback2.WaitForResult());
+  EXPECT_EQ(2, delegate.num_resolve_proxy_called());
+  EXPECT_EQ(1u, delegate.proxy_retry_info().size());
+  EXPECT_EQ("PROXY good:80;PROXY bad:80", info.ToPacString());
+  service_->SetProxyDelegate(nullptr);
+}
+
+TEST_F(ConfiguredProxyResolutionSystemServiceTest,
+       NativeErrorsCancellationAndShutdownForwarding) {
+  CreateService(SystemConfig());
+  ProxyInfo info;
+  TestCompletionCallback callback;
+  std::unique_ptr<ProxyResolutionRequest> request;
+  ASSERT_EQ(ERR_IO_PENDING, Resolve(&info, &callback, &request));
+  CompleteNative({}, ERR_PAC_SCRIPT_FAILED);
+  EXPECT_EQ(ERR_PAC_SCRIPT_FAILED, callback.WaitForResult());
+
+  request.reset();
+  TestCompletionCallback cancelled;
+  ASSERT_EQ(ERR_IO_PENDING, Resolve(&info, &cancelled, &request));
+  request.reset();
+  EXPECT_TRUE(native_->resolver.pending_jobs().empty());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(cancelled.have_result());
+
+  service_->OnShutdown();
+  EXPECT_EQ(1, native_->shutdown_count);
 }
 
 TEST_F(ConfiguredProxyResolutionServiceTest,

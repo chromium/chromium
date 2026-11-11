@@ -68,6 +68,12 @@ What proxies to use can be described using either:
 * Auto-detect - the WPAD protocol is used to probe the network (using DHCP/DNS)
   and possibly discover the URL of a PAC script.
 
+When a native proxy service is supplied to `ConfiguredProxyResolutionService`,
+a `ProxyResolver` adapter owns it and selects it for system-origin
+configurations after override and dynamic routing rules. Native and PAC
+lookups share the same per-request job handle. Native lookup logs use a linked
+child source, and shutdown is forwarded to the native service.
+
 ## Proxy server schemes
 
 When using an explicit proxy in the browser, multiple layers of the network
@@ -933,6 +939,35 @@ The resulting Net Log should have enough information to diagnose common
 problems. It can be attached to a bug report, or explored using the [Net Log
 Viewer](https://netlog-viewer.appspot.com/). See the next section for some tips
 on analyzing it.
+
+## Native system proxy resolution
+
+On Windows and macOS, when a native resolver is supplied to
+`ConfiguredProxyResolutionService`, it handles all system-origin baselines
+(`ProxyConfig::from_system()`), including DIRECT and static proxy settings,
+after override and dynamic routing (PvD) rules are evaluated.
+
+Before native resolution, Chromium's implicit proxy bypass rules are still
+applied to all system-resolver configurations, including static proxies and
+DIRECT snapshots. Loopback and link-local requests therefore resolve
+synchronously to DIRECT without going over Mojo, even if the OS's static
+bypass list is narrower. Other destinations still go to the native resolver;
+this lets the OS apply per-interface or VPN proxy settings even when the
+snapshot is DIRECT.
+
+A static manual system proxy can opt out for a matching request by explicitly
+subtracting its implicit bypass rule with `<-loopback>`. This opt-out does not
+apply when automatic settings are enabled: PAC or WPAD retains Chromium's
+implicit bypass protection even if manual proxy rules coexist. On Windows, a
+static manual setup that needs `<-loopback>` to take effect must have
+"Automatically detect settings" turned off and no PAC URL configured.
+
+Other unmatched requests allocate a proxy resolution request and resolve
+asynchronously through the native resolver over Mojo, rather than using
+Chromium's synchronous DIRECT/manual-rule fast path. This intentionally
+delegates system-baseline decisions to the OS, not just PAC evaluation.
+Browser-origin settings and matching override or PvD rules retain configured
+resolution. Without a native resolver, the existing resolution path is unchanged.
 
 ## Analyzing Net Logs for proxy issues
 

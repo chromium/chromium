@@ -28,14 +28,15 @@ CreateConfiguredProxyResolutionServiceUsingMojoFactory(
     net::HostResolver* host_resolver,
     net::NetLog* net_log,
     bool pac_quick_check_enabled,
-    net::NetworkDelegate* network_delegate) {
+    net::NetworkDelegate* network_delegate,
+    std::unique_ptr<net::ProxyResolutionService> system_proxy_service) {
   DCHECK(proxy_config_service);
   DCHECK(pac_file_fetcher);
   DCHECK(dhcp_pac_file_fetcher);
   DCHECK(host_resolver);
 
-  std::unique_ptr<net::ConfiguredProxyResolutionService>
-      proxy_resolution_service(new net::ConfiguredProxyResolutionService(
+  auto proxy_resolution_service =
+      std::make_unique<net::ConfiguredProxyResolutionService>(
           std::move(proxy_config_service),
           std::make_unique<ProxyResolverFactoryMojo>(
               std::move(mojo_proxy_factory), host_resolver,
@@ -43,7 +44,9 @@ CreateConfiguredProxyResolutionServiceUsingMojoFactory(
                   &net::NetworkDelegateErrorObserver::Create, network_delegate,
                   base::SingleThreadTaskRunner::GetCurrentDefault()),
               net_log),
-          host_resolver, net_log, pac_quick_check_enabled));
+          host_resolver, net_log, pac_quick_check_enabled,
+          /*enable_pac_runtime_backoff=*/false,
+          std::move(system_proxy_service));
 
   // Configure fetchers to use for PAC script downloads and auto-detect.
   proxy_resolution_service->SetPacFileFetchers(

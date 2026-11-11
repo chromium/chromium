@@ -84,11 +84,11 @@ class ConfiguredProxyResolutionRequest final : public ProxyResolutionRequest {
   // `ResumeOrCompleteSynchronously()`.
   void CancelActiveJob();
 
-  // Cancels an in-flight per-request PAC evaluation (`GetProxyForURL` /
-  // `resolve_job_`), if any, while marking `ProxyOverrideRules` (POR) as
+  // Cancels an in-flight per-request PAC or system proxy resolution, if any,
+  // while marking `ProxyOverrideRules` (POR) as
   // already evaluated (`override_rules_evaluated_ = true`) and leaving any
   // in-flight POR DNS probes untouched. Returns true if an active
-  // `resolve_job_` was cancelled.
+  // resolver request was cancelled.
   bool CancelResolveJob();
 
   // Resets cached `ProxyOverrideRules` (POR) evaluation state when the
@@ -141,7 +141,7 @@ class ConfiguredProxyResolutionRequest final : public ProxyResolutionRequest {
   // Continues proxy resolution after attempting to evaluate override rules.
   // Will return ERR_IO_PENDING if there still are pending DNS resolution
   // requests for override rules, or if the request is now waiting for a PAC
-  // script's result.
+  // script's or system resolver's result.
   int ContinueProxyResolution();
 
   int EvaluateApplicableOverrideRules();
@@ -162,8 +162,8 @@ class ConfiguredProxyResolutionRequest final : public ProxyResolutionRequest {
   const std::string method_;
   const NetworkAnonymizationKey network_anonymization_key_;
   const handles::NetworkHandle target_network_;
-  // Active per-request PAC script evaluation (`ProxyResolver::GetProxyForURL`)
-  // for this URL, after the service has already initialized the PAC resolver.
+  // Active native lookup or PAC evaluation (`ProxyResolver::GetProxyForURL`)
+  // for this URL, after the service is ready.
   std::unique_ptr<ProxyResolver::Request> resolve_job_;
   MutableNetworkTrafficAnnotationTag traffic_annotation_;
   NetLogWithSource net_log_;

@@ -365,6 +365,13 @@ EVENT_TYPE(PAC_FILE_DECIDER_FALLING_BACK_TO_NEXT_PAC_SOURCE)
 // The start/end of a proxy resolve request.
 EVENT_TYPE(PROXY_RESOLUTION_SERVICE)
 
+// Links a configured proxy resolution request to its native backend lookup.
+// Parameters:
+//   {
+//     "source_dependency": <Source identifier of the system proxy lookup>
+//   }
+EVENT_TYPE(SYSTEM_PROXY_RESOLUTION)
+
 // The time while a request is waiting on InitProxyResolver to configure
 // against either WPAD or custom PAC URL. The specifics on this time
 // are found from ConfiguredProxyResolutionService::init_proxy_resolver_log().

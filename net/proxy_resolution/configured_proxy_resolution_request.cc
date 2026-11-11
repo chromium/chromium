@@ -11,7 +11,6 @@
 #include "base/functional/callback_helpers.h"
 #include "net/base/net_errors.h"
 #include "net/log/net_log_event_type.h"
-#include "net/log/net_log_source_type.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
@@ -307,7 +306,8 @@ int ConfiguredProxyResolutionRequest::ContinueProxyResolution() {
     return rv;
   }
 
-  if (service_->ApplyPacBypassRules(url_, results_)) {
+  if (!service_->ShouldUseSystemProxyResolver(service_->config_->value()) &&
+      service_->ApplyPacBypassRules(url_, results_)) {
     return OK;
   }
 

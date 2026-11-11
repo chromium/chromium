@@ -118,13 +118,20 @@ class NET_EXPORT ConfiguredProxyResolutionService
   // `host_resolver_for_override_rules` needs to be non-null when proxy
   // configurations can contain override rules (e.g. set via an enterprise
   // policy). When defined, it must outlive this service.
+  // `system_proxy_service`, when supplied, is owned by this service and
+  // resolves system-origin configurations after override and dynamic routing
+  // rules. It must have no proxy delegate or cached retry state; this service
+  // owns delegate notifications and retry bookkeeping for both resolution
+  // paths. It must not depend on the HTTP method, target network, or request
+  // priority, which are not exposed by the ProxyResolver adapter.
   ConfiguredProxyResolutionService(
       std::unique_ptr<ProxyConfigService> config_service,
       std::unique_ptr<ProxyResolverFactory> resolver_factory,
       HostResolver* host_resolver_for_override_rules,
       NetLog* net_log,
       bool quick_check_enabled,
-      bool enable_pac_runtime_backoff = false);
+      bool enable_pac_runtime_backoff = false,
+      std::unique_ptr<ProxyResolutionService> system_proxy_service = nullptr);
 
   ConfiguredProxyResolutionService(const ConfiguredProxyResolutionService&) =
       delete;
@@ -213,7 +220,8 @@ class NET_EXPORT ConfiguredProxyResolutionService
       std::unique_ptr<ProxyConfigService> proxy_config_service,
       HostResolver* host_resolver_for_override_rules,
       NetLog* net_log,
-      bool quick_check_enabled);
+      bool quick_check_enabled,
+      std::unique_ptr<ProxyResolutionService> system_proxy_service = nullptr);
 
   // Creates a ConfiguredProxyResolutionService without support for proxy
   // autoconfig.
@@ -223,7 +231,8 @@ class NET_EXPORT ConfiguredProxyResolutionService
   CreateWithoutProxyResolver(
       std::unique_ptr<ProxyConfigService> proxy_config_service,
       HostResolver* host_resolver_for_override_rules,
-      NetLog* net_log);
+      NetLog* net_log,
+      std::unique_ptr<ProxyResolutionService> system_proxy_service = nullptr);
 
   // Convenience methods that creates a proxy service using the
   // specified fixed settings.
@@ -295,6 +304,7 @@ class NET_EXPORT ConfiguredProxyResolutionService
                            UpdateConfigFromPACToDirect);
   class InitProxyResolver;
   class PacFileDeciderPoller;
+  class SystemProxyResolver;
 
   typedef std::set<raw_ptr<ConfiguredProxyResolutionRequest, SetExperimental>>
       PendingRequests;
@@ -393,6 +403,10 @@ class NET_EXPORT ConfiguredProxyResolutionService
   // Start initialization using |fetched_config_|.
   void InitializeUsingLastFetchedConfig();
 
+  // Selects the resolver for the configuration's baseline, not its routing
+  // overlays. Does not start a resolution.
+  bool ShouldUseSystemProxyResolver(const ProxyConfig& config) const;
+
   // Start the initialization skipping past the "decision" phase.
   void InitializeUsingDecidedConfig(
       int decider_result,
@@ -443,7 +457,13 @@ class NET_EXPORT ConfiguredProxyResolutionService
   // rules, to prevent PAC scripts from being able to proxy localhost.
   bool ApplyPacBypassRules(const GURL& url, ProxyInfo* results);
 
+  // Applies Chromium's implicit bypass rules to system resolution, except
+  // when a static manual system proxy explicitly subtracts the matching rule.
+  bool ApplySystemImplicitBypassRules(const GURL& url,
+                                      ProxyInfo* results) const;
+
   std::unique_ptr<ProxyConfigService> config_service_;
+  const std::unique_ptr<SystemProxyResolver> system_proxy_resolver_;
   std::unique_ptr<ProxyResolverFactory> resolver_factory_;
 
   // Initialized when the effective configuration has an automatic setting (i.e.

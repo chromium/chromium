@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/proxy_resolution/dhcp_pac_file_fetcher.h"
+#include "net/proxy_resolution/proxy_resolution_service.h"
 #include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
 
 namespace net {
@@ -37,6 +38,9 @@ namespace network {
 // |host_resolver| points to the host resolving dependency the PAC script
 // should use for any DNS queries. It must remain valid throughout the
 // lifetime of the ConfiguredProxyResolutionService.
+//
+// `system_proxy_service` is an optional owned service for system-origin
+// configurations. See `net::ConfiguredProxyResolutionService`'s constructor.
 COMPONENT_EXPORT(NETWORK_SERVICE)
 std::unique_ptr<net::ConfiguredProxyResolutionService>
 CreateConfiguredProxyResolutionServiceUsingMojoFactory(
@@ -48,7 +52,9 @@ CreateConfiguredProxyResolutionServiceUsingMojoFactory(
     net::HostResolver* host_resolver,
     net::NetLog* net_log,
     bool pac_quick_check_enabled,
-    net::NetworkDelegate* network_delegate);
+    net::NetworkDelegate* network_delegate,
+    std::unique_ptr<net::ProxyResolutionService> system_proxy_service =
+        nullptr);
 
 }  // namespace network
 

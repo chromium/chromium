@@ -174,6 +174,55 @@ TEST_F(ProxyServiceMojoTest, Basic) {
   DeleteService();
 }
 
+TEST_F(ProxyServiceMojoTest, SystemServiceSelectionWithMojoPacFactory) {
+  DeleteService();
+  for (bool from_system : {true, false}) {
+    SCOPED_TRACE(from_system);
+    TestMojoProxyResolverFactory factory;
+    auto config = net::ProxyConfig::CreateFromCustomPacURL(GURL(kPacUrl));
+    config.set_from_system(from_system);
+    auto fetcher = std::make_unique<net::MockPacFileFetcher>();
+    fetcher_ = fetcher.get();
+    proxy_resolution_service_ =
+        CreateConfiguredProxyResolutionServiceUsingMojoFactory(
+            factory.CreateFactoryRemote(),
+            std::make_unique<net::ProxyConfigServiceFixed>(
+                net::ProxyConfigWithAnnotation(config,
+                                               TRAFFIC_ANNOTATION_FOR_TESTS)),
+            std::move(fetcher),
+            std::make_unique<net::DoNothingDhcpPacFileFetcher>(),
+            &mock_host_resolver_, net::NetLog::Get(),
+            /*pac_quick_check_enabled=*/true, &network_delegate_,
+            net::ConfiguredProxyResolutionService::
+                CreateFixedFromPacResultForTest("PROXY native:80",
+                                                TRAFFIC_ANNOTATION_FOR_TESTS));
+
+    net::ProxyInfo info;
+    net::TestCompletionCallback callback;
+    std::unique_ptr<net::ProxyResolutionRequest> request;
+    int rv = proxy_resolution_service_->ResolveProxy(
+        GURL("https://example.test/"), "GET", net::NetworkAnonymizationKey(),
+        net::handles::kInvalidNetworkHandle, &info, callback.callback(),
+        &request, net::NetLogWithSource(), net::DEFAULT_PRIORITY);
+    if (from_system) {
+      EXPECT_EQ(net::OK, rv);
+      EXPECT_EQ("PROXY native:80", info.ToPacString());
+      EXPECT_FALSE(fetcher_->has_pending_request());
+      task_environment_.RunUntilIdle();
+      EXPECT_FALSE(factory.resolver_created());
+    } else {
+      ASSERT_EQ(net::ERR_IO_PENDING, rv);
+      ASSERT_TRUE(fetcher_->has_pending_request());
+      fetcher_->NotifyFetchCompletion(net::OK, kSimplePacScript);
+      EXPECT_EQ(net::OK, callback.WaitForResult());
+      EXPECT_EQ("PROXY foo:1234", info.ToPacString());
+      EXPECT_TRUE(factory.resolver_created());
+    }
+    request.reset();
+    DeleteService();
+  }
+}
+
 TEST_F(ProxyServiceMojoTest, DnsResolution) {
   net::ProxyInfo info;
   net::TestCompletionCallback callback;
