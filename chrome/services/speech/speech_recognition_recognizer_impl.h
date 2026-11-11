@@ -104,6 +104,10 @@ class SpeechRecognitionRecognizerImpl
 
   void MarkDone() override;
 
+  void OnLanguageChanged(const std::string& language) final;
+
+  void OnMaskOffensiveWordsChanged(bool mask_offensive_words) final;
+
   void UpdateRecognitionContext(
       const media::SpeechRecognitionRecognitionContext& recognition_context)
       final;
@@ -119,6 +123,10 @@ class SpeechRecognitionRecognizerImpl
 
   // Retrieve the soda config output for testing.
   soda::chrome::ExtendedSodaConfigMsg* GetExtendedSodaConfigMsgForTesting();
+
+  const std::string& primary_language_name() const {
+    return primary_language_name_;
+  }
 
  protected:
   virtual void SendAudioToSpeechRecognitionServiceInternal(
@@ -138,20 +146,14 @@ class SpeechRecognitionRecognizerImpl
   base::flat_map<std::string, base::FilePath> config_paths() const {
     return config_paths_;
   }
-  std::string primary_language_name() const { return primary_language_name_; }
 
   media::mojom::SpeechRecognitionOptionsPtr options_;
 
   bool mask_offensive_words() { return mask_offensive_words_; }
 
  private:
-  void OnLanguageChanged(const std::string& language) final;
-
-  void OnMaskOffensiveWordsChanged(bool mask_offensive_words) final;
-
-  void ResetSodaWithNewLanguage(
-      std::string language_name,
-      std::pair<base::FilePath, bool> config_and_exists);
+  void ResetSodaWithNewLanguage(const std::string& language_name,
+                                bool config_exists);
 
   void RecordDuration();
 

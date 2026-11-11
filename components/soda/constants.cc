@@ -184,17 +184,6 @@ const base::FilePath GetSodaTestResourcesDirectory() {
              : test_data_root.Append(kSodaTestResourcesRelativePath);
 }
 
-const base::FilePath GetLatestSodaLanguagePackDirectory(
-    std::string_view language) {
-  base::FilePath latest_version_dir = GetLatestVersionDirectory(
-      GetSodaLanguagePacksDirectory().AppendASCII(language),
-      kSodaLanguagePackDirectoryRelativePath);
-  return latest_version_dir.empty()
-             ? base::FilePath()
-             : latest_version_dir.Append(
-                   kSodaLanguagePackDirectoryRelativePath);
-}
-
 const base::FilePath GetLatestSodaDirectory() {
   return GetLatestVersionDirectory(GetSodaDirectory(), kSodaBinaryRelativePath);
 }

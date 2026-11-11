@@ -287,14 +287,6 @@ const base::FilePath GetSodaLanguagePacksDirectory();
 // used in browser tests.
 const base::FilePath GetSodaTestResourcesDirectory();
 
-// Get the absolute path of the latest SODA language pack for a given language
-// (e.g. en-US). Version directories are compared numerically and directories
-// that do not actually contain the language pack are skipped, falling back to
-// the highest version directory if none of them contain it. Returns an empty
-// path if there are no language packs installed for the language.
-const base::FilePath GetLatestSodaLanguagePackDirectory(
-    std::string_view language);
-
 // Get the directory containing the latest version of SODA. In most cases
 // there will only be one version of SODA, but it is possible for there to be
 // multiple versions if a newer version of SODA was recently downloaded before

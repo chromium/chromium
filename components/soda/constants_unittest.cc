@@ -39,19 +39,6 @@ class SodaConstantsTest : public testing::Test {
     return version_dir;
   }
 
-  // Creates `SODALanguagePacks/en-US/<version>/`, and the models directory
-  // inside it if `with_models`.
-  base::FilePath CreateLanguagePackVersion(const std::string& version,
-                                           bool with_models) {
-    const base::FilePath version_dir =
-        GetSodaLanguagePacksDirectory().AppendASCII("en-US").AppendASCII(
-            version);
-    EXPECT_TRUE(base::CreateDirectory(
-        with_models ? version_dir.Append(kSodaLanguagePackDirectoryRelativePath)
-                    : version_dir));
-    return version_dir;
-  }
-
  private:
   base::ScopedTempDir temp_dir_;
   std::optional<base::ScopedPathOverride> path_override_;
@@ -107,22 +94,6 @@ TEST_F(SodaConstantsTest, GetLatestSodaDirectoryFallsBackToHighestVersion) {
       CreateSodaVersion("1.2.12", /*with_binary=*/false);
 
   EXPECT_EQ(GetLatestSodaDirectory(), v1_2_12);
-}
-
-TEST_F(SodaConstantsTest,
-       GetLatestSodaLanguagePackDirectoryIsEmptyWhenNotInstalled) {
-  EXPECT_TRUE(GetLatestSodaLanguagePackDirectory("en-US").empty());
-}
-
-TEST_F(SodaConstantsTest,
-       GetLatestSodaLanguagePackDirectoryComparesVersionsNumerically) {
-  CreateLanguagePackVersion("1.2.5", /*with_models=*/true);
-  const base::FilePath v1_2_12 =
-      CreateLanguagePackVersion("1.2.12", /*with_models=*/true);
-  CreateLanguagePackVersion("1.2.13", /*with_models=*/false);
-
-  EXPECT_EQ(GetLatestSodaLanguagePackDirectory("en-US"),
-            v1_2_12.Append(kSodaLanguagePackDirectoryRelativePath));
 }
 
 }  // namespace

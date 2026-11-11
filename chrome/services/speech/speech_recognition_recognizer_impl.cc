@@ -21,7 +21,6 @@
 #include "base/synchronization/lock.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -632,13 +631,20 @@ void SpeechRecognitionRecognizerImpl::OnLanguageChanged(
     const std::string& language) {
   std::optional<speech::SodaLanguagePackComponentConfig>
       language_component_config = GetLanguageComponentConfig(language);
-  if (!language_component_config.has_value())
+  if (!language_component_config.has_value()) {
     return;
+  }
 
   // Only reset SODA if the language changed.
-  if (language_component_config.value().language_name ==
-          primary_language_name_ ||
-      language_component_config.value().language_code == LanguageCode::kNone) {
+  std::string_view language_name = language_component_config->language_name;
+  if (language_name == primary_language_name_ ||
+      language_component_config->language_code == LanguageCode::kNone) {
+    return;
+  }
+
+  // Only change the language if the new language pack is installed.
+  auto it = config_paths_.find(language_name);
+  if (it == config_paths_.end() || it->second.empty()) {
     return;
   }
 
@@ -650,23 +656,10 @@ void SpeechRecognitionRecognizerImpl::OnLanguageChanged(
 
   // Changing the language requires a blocking call to check if the language
   // pack exists on the device.
-  scoped_refptr<base::SequencedTaskRunner> current_task_runner =
-      base::SequencedTaskRunner::GetCurrentDefault();
-
   task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(
-          [](const std::string& language) {
-            base::FilePath config_file_path =
-                GetLatestSodaLanguagePackDirectory(language);
-            return std::make_pair(config_file_path,
-                                  base::PathExists(config_file_path));
-          },
-          language),
-      base::BindOnce(
-          &SpeechRecognitionRecognizerImpl::ResetSodaWithNewLanguage,
-          weak_factory_.GetWeakPtr(),
-          std::string(language_component_config.value().language_name)));
+      FROM_HERE, base::BindOnce(&base::PathExists, it->second),
+      base::BindOnce(&SpeechRecognitionRecognizerImpl::ResetSodaWithNewLanguage,
+                     weak_factory_.GetWeakPtr(), std::string(language_name)));
 }
 
 void SpeechRecognitionRecognizerImpl::OnMaskOffensiveWordsChanged(
@@ -678,10 +671,9 @@ void SpeechRecognitionRecognizerImpl::OnMaskOffensiveWordsChanged(
 }
 
 void SpeechRecognitionRecognizerImpl::ResetSodaWithNewLanguage(
-    std::string language_name,
-    std::pair<base::FilePath, bool> config_and_exists) {
-  if (config_and_exists.second) {
-    config_paths_[language_name] = config_and_exists.first;
+    const std::string& language_name,
+    bool config_exists) {
+  if (config_exists) {
     primary_language_name_ = language_name;
     if (soda_client_ && soda_client_->IsInitialized()) {
       ResetSoda();

@@ -8,10 +8,12 @@
 
 #include "base/barrier_closure.h"
 #include "base/files/file_path.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/services/speech/soda/mock_soda_client.h"
@@ -669,6 +671,88 @@ TEST_F(SpeechRecognitionRecognizerImplTest, DestroySodaOnContinuousSilence) {
   EXPECT_CALL(*soda_client_, Destroy()).Times(1);
   EXPECT_CALL(*soda_client_, AddAudio(_, _)).Times(0);
   SendAudio(recognizer_.get(), base::Seconds(1), base::Seconds(11));
+}
+
+TEST_F(SpeechRecognitionRecognizerImplTest,
+       OnLanguageChangedToInstalledLanguage) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  config_paths_[kPrimaryLanguageName] = base::FilePath::FromASCII("/fake/en");
+  config_paths_["fr-FR"] = temp_dir.GetPath();
+  CreateRecognizer(CreateOptions(), kPrimaryLanguageName);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*soda_client_, Reset(_, _, _)).WillOnce([&]() {
+    run_loop.Quit();
+  });
+  recognizer_->OnLanguageChanged("fr-FR");
+  run_loop.Run();
+
+  EXPECT_EQ(temp_dir.GetPath().AsUTF8Unsafe(),
+            recognizer_->GetExtendedSodaConfigMsgForTesting()
+                ->language_pack_directory());
+}
+
+TEST_F(SpeechRecognitionRecognizerImplTest,
+       OnLanguageChangedToUninstalledLanguage) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  config_paths_[kPrimaryLanguageName] = base::FilePath::FromASCII("/fake/en");
+  config_paths_["fr-FR"] = temp_dir.GetPath().AppendASCII("nonexistent");
+  config_paths_["de-DE"] = temp_dir.GetPath();
+  CreateRecognizer(CreateOptions(), kPrimaryLanguageName);
+
+  // Switching to a language whose pack is not in `config_paths_` ("es-ES") or
+  // whose directory does not exist on disk ("fr-FR") should not reset SODA or
+  // change the active language. Follow with a valid switch ("de-DE") on the
+  // same sequenced `task_runner_` to flush the "fr-FR" check deterministically.
+  base::RunLoop run_loop;
+  EXPECT_CALL(*soda_client_, Reset(_, _, _)).WillOnce([&]() {
+    run_loop.Quit();
+  });
+  recognizer_->OnLanguageChanged("es-ES");
+  recognizer_->OnLanguageChanged("fr-FR");
+  recognizer_->OnLanguageChanged("de-DE");
+  run_loop.Run();
+
+  EXPECT_EQ("de-DE", recognizer_->primary_language_name());
+  EXPECT_EQ(temp_dir.GetPath().AsUTF8Unsafe(),
+            recognizer_->GetExtendedSodaConfigMsgForTesting()
+                ->language_pack_directory());
+}
+
+TEST_F(SpeechRecognitionRecognizerImplTest,
+       OnLanguageChangedToSameOrInvalidLanguage) {
+  config_paths_[kPrimaryLanguageName] = base::FilePath::FromASCII("/fake/en");
+  CreateRecognizer(CreateOptions(), kPrimaryLanguageName);
+
+  EXPECT_CALL(*soda_client_, Reset(_, _, _)).Times(0);
+  recognizer_->OnLanguageChanged(kPrimaryLanguageName);
+  recognizer_->OnLanguageChanged("invalid-language");
+}
+
+TEST_F(SpeechRecognitionRecognizerImplTest,
+       DoNotResetUninitializedSodaOnLanguageChanged) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  config_paths_[kPrimaryLanguageName] = base::FilePath::FromASCII("/fake/en");
+  config_paths_["fr-FR"] = temp_dir.GetPath();
+  CreateRecognizer(CreateOptions(), kPrimaryLanguageName);
+  ON_CALL(*soda_client_, IsInitialized()).WillByDefault(testing::Return(false));
+
+  // Changing language while SODA is uninitialized should update the primary
+  // language without eagerly initializing SODA.
+  EXPECT_CALL(*soda_client_, Reset(_, _, _)).Times(0);
+  recognizer_->OnLanguageChanged("fr-FR");
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return recognizer_->primary_language_name() == "fr-FR"; }));
+
+  // When audio arrives, SODA should be initialized with the new language.
+  EXPECT_CALL(*soda_client_, Reset(_, _, _)).Times(1);
+  SendAudio(recognizer_.get(), base::Seconds(1), base::Seconds(0));
+  EXPECT_EQ(temp_dir.GetPath().AsUTF8Unsafe(),
+            recognizer_->GetExtendedSodaConfigMsgForTesting()
+                ->language_pack_directory());
 }
 
 }  // namespace speech
