@@ -1,4 +1,6 @@
 # crbug.com/462477487
+-ExternalVkImageBackingFactoryAngleVulkanTest.WebGPUInteropReadOnlyGLAccessUsesShaderReadOnlyLayout
+-ExternalVkImageBackingFactoryAngleVulkanWithFormatTest.ReadOnlyGLAccessAndUploadUsesShaderReadOnlyLayout/*
 -ExternalVkImageBackingFactoryTest.InteropRejectsSeparateGLTexture
 -ExternalVkImageBackingFactoryTest.SeparateGLTextureWriteAccessSyncsContent
 -ExternalVkImageBackingFactoryWithFormatTest.Basic/*
@@ -33,4 +35,5 @@
 
 # crbug.com/462477489
 -ExternalVkImageBackingFactoryDawnTest.DawnWrite_SkiaVulkanRead
+-ExternalVkImageBackingFactoryDawnTest.InitialPixelUpload_DawnRead
 -ExternalVkImageBackingFactoryDawnTest.SkiaVulkanWrite_DawnRead

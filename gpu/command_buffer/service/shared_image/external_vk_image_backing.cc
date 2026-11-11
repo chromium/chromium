@@ -145,6 +145,16 @@ bool UseMinimalUsageFlags(SharedContextState* context_state) {
   return context_state->support_gl_external_object_flags();
 }
 
+// Returns the layout to transition `image` to when releasing it to the
+// external queue for GL or Dawn access. Images created without
+// VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT (e.g. read-only images) must not use
+// VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL.
+VkImageLayout GetLayoutForExternalAccess(const VulkanImage& image) {
+  return (image.usage() & VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT)
+             ? VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+             : VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+}
+
 void WaitSemaphoresOnGrContext(GrDirectContext* gr_context,
                                std::vector<ExternalSemaphore>* semaphores) {
   DCHECK(!gr_context->abandoned());
@@ -551,16 +561,18 @@ bool ExternalVkImageBacking::BeginAccess(
 
         for (auto& vk_texture : vk_textures_) {
           GrVkImageInfo image_info = vk_texture.GetGrVkImageInfo();
+          // Transition the image to the layout that is recorded below, which
+          // GetVkImageLayoutsForGL() reports to GL.
+          const VkImageLayout layout =
+              GetLayoutForExternalAccess(*vk_texture.vulkan_image);
 
           command_buffer->TransitionImageLayout(
-              image_info.fImage, image_info.fImageLayout,
-              VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_QUEUE_FAMILY_IGNORED,
-              VK_QUEUE_FAMILY_EXTERNAL);
+              image_info.fImage, image_info.fImageLayout, layout,
+              VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_EXTERNAL);
 
           vk_texture.backend_texture.setMutableState(
               skgpu::MutableTextureStates::MakeVulkan(
-                  VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-                  VK_QUEUE_FAMILY_EXTERNAL));
+                  layout, VK_QUEUE_FAMILY_EXTERNAL));
         }
       }
 
@@ -576,7 +588,7 @@ bool ExternalVkImageBacking::BeginAccess(
         gr_context->setBackendTextureState(
             vk_texture.backend_texture,
             skgpu::MutableTextureStates::MakeVulkan(
-                VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                GetLayoutForExternalAccess(*vk_texture.vulkan_image),
                 VK_QUEUE_FAMILY_EXTERNAL));
       }
 
@@ -1194,7 +1206,7 @@ bool ExternalVkImageBacking::UploadToVkImage(
     gr_context->setBackendTextureState(
         vk_texture.backend_texture,
         skgpu::MutableTextureStates::MakeVulkan(
-            VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+            GetLayoutForExternalAccess(*vk_texture.vulkan_image),
             VK_QUEUE_FAMILY_EXTERNAL));
   }
 

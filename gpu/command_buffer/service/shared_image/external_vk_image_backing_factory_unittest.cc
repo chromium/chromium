@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -29,6 +30,9 @@
 #include "gpu/command_buffer/service/vulkan_in_process_context_provider.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_test_config.h"
+#include "gpu/vulkan/init/vulkan_factory.h"
+#include "gpu/vulkan/vulkan_function_pointers.h"
+#include "gpu/vulkan/vulkan_image.h"
 #include "gpu/vulkan/vulkan_implementation.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -40,6 +44,13 @@
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gfx/skia_span_util.h"
 #include "ui/gl/buildflags.h"
+#include "ui/gl/gl_bindings.h"
+#include "ui/gl/gl_context.h"
+#include "ui/gl/gl_implementation.h"
+#include "ui/gl/gl_surface.h"
+#include "ui/gl/gl_switches.h"
+#include "ui/gl/gl_utils.h"
+#include "ui/gl/init/gl_factory.h"
 
 #if BUILDFLAG(USE_DAWN)
 #include <dawn/dawn_proc.h>
@@ -375,6 +386,105 @@ TEST_F(ExternalVkImageBackingFactoryDawnTest, SkiaVulkanWrite_DawnRead) {
           EXPECT_EQ(pixel[3], 255);
         }
       }
+    }
+  }
+}
+
+// Verify that a read-only WebGPU SharedImage populated via initial pixel data
+// omits VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, is released by UploadToVkImage()
+// in VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL rather than
+// VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, and can be read by Dawn.
+TEST_F(ExternalVkImageBackingFactoryDawnTest, InitialPixelUpload_DawnRead) {
+  auto mailbox = Mailbox::Generate();
+  const auto format = viz::SinglePlaneFormat::kRGBA_8888;
+  const gfx::Size size(4, 4);
+  const auto color_space = gfx::ColorSpace::CreateSRGB();
+  constexpr gpu::SharedImageUsageSet kReadOnlyUsage =
+      SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_WEBGPU_READ;
+
+  std::vector<SkBitmap> bitmaps = AllocateRedBitmaps(format, size);
+  const auto initial_pixel_data = gfx::SkPixmapToSpan(bitmaps[0].pixmap());
+
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox,
+      {format, size, color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+       kReadOnlyUsage, "TestLabel"},
+      /*is_thread_safe=*/false, initial_pixel_data);
+  ASSERT_NE(backing, nullptr);
+  EXPECT_TRUE(backing->IsCleared());
+
+  auto* vk_backing = static_cast<ExternalVkImageBacking*>(backing.get());
+  ASSERT_TRUE(vk_backing->image());
+  EXPECT_EQ(vk_backing->image()->usage() & VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+            0u);
+  EXPECT_EQ(vk_backing->GetVkImageLayoutsForGL(),
+            std::vector<GLenum>{GL_LAYOUT_SHADER_READ_ONLY_EXT});
+
+  std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
+      shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
+  ASSERT_TRUE(factory_ref);
+
+  auto dawn_representation = shared_image_representation_factory_.ProduceDawn(
+      mailbox, dawn_device_, wgpu::BackendType::Vulkan, {}, context_state_);
+  ASSERT_TRUE(dawn_representation);
+
+  auto dawn_scoped_access = dawn_representation->BeginScopedAccess(
+      wgpu::TextureUsage::CopySrc,
+      SharedImageRepresentation::AllowUnclearedAccess::kNo);
+  ASSERT_TRUE(dawn_scoped_access);
+
+  constexpr uint32_t kBytesPerRow = 256;
+  const size_t buffer_size = kBytesPerRow * size.height();
+
+  wgpu::BufferDescriptor dst_buffer_desc = {};
+  dst_buffer_desc.usage =
+      wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::MapRead;
+  dst_buffer_desc.size = buffer_size;
+  wgpu::Buffer dst_buffer = dawn_device_.CreateBuffer(&dst_buffer_desc);
+
+  wgpu::CommandEncoder encoder = dawn_device_.CreateCommandEncoder();
+  {
+    wgpu::TexelCopyTextureInfo src_copy_view = {};
+    src_copy_view.origin = {0, 0, 0};
+    src_copy_view.texture = dawn_scoped_access->texture();
+
+    wgpu::TexelCopyBufferInfo dst_copy_view = {};
+    dst_copy_view.buffer = dst_buffer;
+    dst_copy_view.layout.bytesPerRow = kBytesPerRow;
+    dst_copy_view.layout.offset = 0;
+
+    wgpu::Extent3D copy_extent = {static_cast<uint32_t>(size.width()),
+                                  static_cast<uint32_t>(size.height()), 1};
+    encoder.CopyTextureToBuffer(&src_copy_view, &dst_copy_view, &copy_extent);
+  }
+
+  wgpu::CommandBuffer commands = encoder.Finish();
+  dawn_device_.GetQueue().Submit(1, &commands);
+
+  wgpu::FutureWaitInfo wait_info{dst_buffer.MapAsync(
+      wgpu::MapMode::Read, 0, buffer_size, wgpu::CallbackMode::WaitAnyOnly,
+      [](wgpu::MapAsyncStatus status, wgpu::StringView) {
+        ASSERT_EQ(status, wgpu::MapAsyncStatus::Success);
+      })};
+  wgpu::WaitStatus status =
+      wgpu::Instance(dawn_instance_.Get())
+          .WaitAny(1, &wait_info, std::numeric_limits<uint64_t>::max());
+  ASSERT_EQ(status, wgpu::WaitStatus::Success);
+
+  const void* mapped_data = dst_buffer.GetConstMappedRange(0, buffer_size);
+  ASSERT_NE(mapped_data, nullptr);
+  // SAFETY: When GetConstMappedRange() is called with an explicit size, a
+  // non-null return value points to at least `buffer_size` bytes of valid data.
+  base::span<const uint8_t> readback_data = UNSAFE_BUFFERS(
+      base::span(static_cast<const uint8_t*>(mapped_data), buffer_size));
+  for (int h = 0; h < size.height(); ++h) {
+    for (int w = 0; w < size.width(); ++w) {
+      base::span<const uint8_t> pixel = readback_data.subspan(
+          static_cast<size_t>(h * kBytesPerRow + w * 4), 4u);
+      EXPECT_EQ(pixel[0], 255);
+      EXPECT_EQ(pixel[1], 0);
+      EXPECT_EQ(pixel[2], 0);
+      EXPECT_EQ(pixel[3], 255);
     }
   }
 }
@@ -723,6 +833,243 @@ INSTANTIATE_TEST_SUITE_P(,
                          ExternalVkImageBackingFactoryWithFormatTest,
                          kSharedImageFormats,
                          TestParamToString);
+
+// Fixture that switches ANGLE to its Vulkan backend (without VulkanFromANGLE)
+// for the duration of a single test so ANGLE exposes
+// GL_ANGLE_memory_object_flags while ExternalVkImageBacking imports VkImages
+// into GL via external memory/semaphore FDs. When software GL (ANGLE
+// SwiftShader) is active, it pairs SwiftShader Vulkan so external-object
+// interop works there as well.
+class ExternalVkImageBackingFactoryAngleVulkanTest
+    : public SharedImageTestBase {
+ protected:
+  void TearDown() override {
+    backing_factory_.reset();
+    if (context_state_) {
+      context_state_->MakeCurrent(gl_surface_.get(), /*needs_gl=*/true);
+      SharedContextState::ClearForCurrentThread();
+      context_state_.reset();
+    }
+    gl_context_.reset();
+    gl_surface_.reset();
+    vulkan_context_provider_.reset();
+    vulkan_implementation_.reset();
+    gpu::GetVulkanFunctionPointers()->ResetForTesting();
+  }
+
+  void InitializeContextWithVulkanProvider(GrContextType context_type,
+                                           bool enable_webgpu_interop) {
+    if (!gl::IsSoftwareGLImplementation(gl::GetGLImplementationParts()) &&
+        gl::GetGLImplementationParts() !=
+            gl::GLImplementationParts(gl::ANGLEImplementation::kVulkan)) {
+      scoped_feature_list_.InitWithFeatures(
+          {features::kVulkan, features::kDefaultANGLEVulkan}, {});
+      gl::init::ShutdownGL(gl::GetDefaultDisplayEGL(),
+                           /*due_to_fallback=*/false);
+      ASSERT_TRUE(gl::init::InitializeStaticGLBindingsOneOff());
+      ASSERT_TRUE(gl::init::InitializeGLOneOffPlatformImplementation(
+          /*disable_gl_drawing=*/false, /*init_extensions=*/true,
+          gl::GpuPreference::kDefault));
+    }
+
+    gpu::GetVulkanFunctionPointers()->ResetForTesting();
+    gpu_preferences_.gr_context_type = context_type;
+    const bool use_swiftshader =
+        gl::IsSoftwareGLImplementation(gl::GetGLImplementationParts());
+    vulkan_implementation_ = gpu::CreateVulkanImplementation(use_swiftshader);
+    ASSERT_TRUE(vulkan_implementation_);
+    ASSERT_TRUE(vulkan_implementation_->InitializeVulkanInstance());
+    vulkan_context_provider_ =
+        VulkanInProcessContextProvider::Create(vulkan_implementation_.get());
+    ASSERT_TRUE(vulkan_context_provider_);
+
+    gl_surface_ = gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplayEGL(),
+                                                     gfx::Size());
+    ASSERT_TRUE(gl_surface_);
+    gl_context_ = gl::init::CreateGLContext(nullptr, gl_surface_.get(),
+                                            gl::GLContextAttribs());
+    ASSERT_TRUE(gl_context_);
+    ASSERT_TRUE(gl_context_->MakeCurrent(gl_surface_.get()));
+
+    context_state_ = base::MakeRefCounted<SharedContextState>(
+        base::MakeRefCounted<gl::GLShareGroup>(), gl_surface_, gl_context_,
+        /*use_virtualized_gl_contexts=*/false, base::DoNothing(), context_type,
+        vulkan_context_provider_.get());
+    ASSERT_TRUE(context_state_->InitializeGL(gpu_preferences_, gpu_workarounds_,
+                                             GpuFeatureInfo()));
+    ASSERT_TRUE(
+        context_state_->InitializeSkia(gpu_preferences_, gpu_workarounds_));
+    SharedContextState::SetForCurrentThread(context_state_.get());
+
+    backing_factory_ = std::make_unique<ExternalVkImageBackingFactory>(
+        context_state_, enable_webgpu_interop);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class ExternalVkImageBackingFactoryAngleVulkanWithFormatTest
+    : public ExternalVkImageBackingFactoryAngleVulkanTest,
+      public testing::WithParamInterface<viz::SharedImageFormat> {
+ public:
+  viz::SharedImageFormat get_format() { return GetParam(); }
+};
+
+// Verify that a read-only GLES2 SharedImage created without
+// VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT (via GL_ANGLE_memory_object_flags) is
+// released to GL in VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL rather than
+// VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, both on the initial GL
+// BeginAccess() and on a subsequent UploadFromMemory().
+TEST_P(ExternalVkImageBackingFactoryAngleVulkanWithFormatTest,
+       ReadOnlyGLAccessAndUploadUsesShaderReadOnlyLayout) {
+  ASSERT_NO_FATAL_FAILURE(InitializeContextWithVulkanProvider(
+      GrContextType::kVulkan, /*enable_webgpu_interop=*/false));
+  if (!context_state_->support_vulkan_external_object() ||
+      !context_state_->support_gl_external_object_flags() ||
+      !use_passthrough()) {
+    GTEST_SKIP() << "Requires passthrough GL with Vulkan external objects and "
+                    "GL_ANGLE_memory_object_flags";
+  }
+
+  const auto format = get_format();
+  ASSERT_FALSE(ExternalVkImageBacking::UseSeparateGLTexture(
+      context_state_.get(), format));
+
+  const gfx::Size size(16, 16);
+  const auto color_space = gfx::ColorSpace::CreateSRGB();
+  constexpr gpu::SharedImageUsageSet kReadOnlyUsage =
+      SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_GLES2_READ |
+      SHARED_IMAGE_USAGE_CPU_UPLOAD;
+  const SharedImageInfo si_info{format,
+                                size,
+                                color_space,
+                                kTopLeft_GrSurfaceOrigin,
+                                GetAlphaType(format),
+                                kReadOnlyUsage,
+                                "TestLabel"};
+
+  auto mailbox = Mailbox::Generate();
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox, si_info, gpu::kNullSurfaceHandle, /*is_thread_safe=*/false);
+  ASSERT_TRUE(backing);
+
+  auto* vk_backing = static_cast<ExternalVkImageBacking*>(backing.get());
+  ASSERT_TRUE(vk_backing->image());
+  ASSERT_EQ(vk_backing->image()->usage() & VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+            0u);
+  EXPECT_EQ(vk_backing->image()->usage() & VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT,
+            0u);
+
+  // Upload before ProduceGLTexturePassthrough() populates `gl_textures_`:
+  // need_synchronization() is false here, so the image stays on the Vulkan
+  // queue until the first GL BeginAccess().
+  std::vector<SkBitmap> bitmaps = AllocateRedBitmaps(format, size);
+  ASSERT_TRUE(vk_backing->UploadFromMemory(GetSkPixmaps(bitmaps)));
+  vk_backing->SetCleared();
+
+  std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
+      shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
+  ASSERT_TRUE(shared_image);
+
+  auto gl_representation =
+      shared_image_representation_factory_.ProduceGLTexturePassthrough(mailbox);
+  ASSERT_TRUE(gl_representation);
+
+  const std::vector<GLenum> expected_layouts(format.NumberOfPlanes(),
+                                             GL_LAYOUT_SHADER_READ_ONLY_EXT);
+
+  // First GL BeginAccess(): transitions and releases from Skia's GrContext.
+  {
+    auto read_access = gl_representation->BeginScopedAccess(
+        GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM,
+        SharedImageRepresentation::AllowUnclearedAccess::kNo);
+    ASSERT_TRUE(read_access);
+    EXPECT_EQ(vk_backing->GetVkImageLayoutsForGL(), expected_layouts);
+  }
+  EXPECT_EQ(gl::g_current_gl_context->glGetErrorFn(),
+            static_cast<GLenum>(GL_NO_ERROR));
+
+  // Subsequent UploadFromMemory() now sees need_synchronization() == true
+  // (`gl_textures_` is non-empty) and releases via UploadToVkImage().
+  ASSERT_TRUE(vk_backing->UploadFromMemory(GetSkPixmaps(bitmaps)));
+  EXPECT_EQ(vk_backing->GetVkImageLayoutsForGL(), expected_layouts);
+
+  {
+    auto read_access = gl_representation->BeginScopedAccess(
+        GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM,
+        SharedImageRepresentation::AllowUnclearedAccess::kNo);
+    ASSERT_TRUE(read_access);
+    EXPECT_EQ(vk_backing->GetVkImageLayoutsForGL(), expected_layouts);
+  }
+  EXPECT_EQ(gl::g_current_gl_context->glGetErrorFn(),
+            static_cast<GLenum>(GL_NO_ERROR));
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         ExternalVkImageBackingFactoryAngleVulkanWithFormatTest,
+                         kSharedImageFormats,
+                         TestParamToString);
+
+#if BUILDFLAG(USE_WEBGPU_ON_VULKAN_VIA_GL_INTEROP)
+// Verify that the USE_WEBGPU_ON_VULKAN_VIA_GL_INTEROP path of BeginAccess()
+// transitions and releases a read-only image without
+// VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT in
+// VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL rather than
+// VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL.
+TEST_F(ExternalVkImageBackingFactoryAngleVulkanTest,
+       WebGPUInteropReadOnlyGLAccessUsesShaderReadOnlyLayout) {
+  ASSERT_NO_FATAL_FAILURE(InitializeContextWithVulkanProvider(
+      GrContextType::kGL, /*enable_webgpu_interop=*/true));
+  if (!context_state_->support_vulkan_external_object() ||
+      !context_state_->support_gl_external_object_flags() ||
+      !use_passthrough()) {
+    GTEST_SKIP() << "Requires passthrough GL with Vulkan external objects and "
+                    "GL_ANGLE_memory_object_flags";
+  }
+
+  const auto format = viz::SinglePlaneFormat::kRGBA_8888;
+  ASSERT_FALSE(ExternalVkImageBacking::UseSeparateGLTexture(
+      context_state_.get(), format));
+
+  const gfx::Size size(16, 16);
+  const auto color_space = gfx::ColorSpace::CreateSRGB();
+  constexpr gpu::SharedImageUsageSet kReadOnlyInteropUsage =
+      SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_GLES2_READ;
+
+  auto mailbox = Mailbox::Generate();
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox,
+      {format, size, color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+       kReadOnlyInteropUsage, "TestInteropReadOnly"},
+      gpu::kNullSurfaceHandle, /*is_thread_safe=*/false);
+  ASSERT_TRUE(backing);
+
+  auto* vk_backing = static_cast<ExternalVkImageBacking*>(backing.get());
+  ASSERT_TRUE(vk_backing->image());
+  ASSERT_EQ(vk_backing->image()->usage() & VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+            0u);
+
+  std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
+      shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
+  ASSERT_TRUE(shared_image);
+
+  auto gl_representation =
+      shared_image_representation_factory_.ProduceGLTexturePassthrough(mailbox);
+  ASSERT_TRUE(gl_representation);
+
+  {
+    auto read_access = gl_representation->BeginScopedAccess(
+        GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM,
+        SharedImageRepresentation::AllowUnclearedAccess::kYes);
+    ASSERT_TRUE(read_access);
+    EXPECT_EQ(vk_backing->GetVkImageLayoutsForGL(),
+              std::vector<GLenum>{GL_LAYOUT_SHADER_READ_ONLY_EXT});
+  }
+  EXPECT_EQ(gl::g_current_gl_context->glGetErrorFn(),
+            static_cast<GLenum>(GL_NO_ERROR));
+}
+#endif  // BUILDFLAG(USE_WEBGPU_ON_VULKAN_VIA_GL_INTEROP)
 
 #if BUILDFLAG(USE_WEBGPU_ON_VULKAN_VIA_GL_INTEROP)
 TEST_F(ExternalVkImageBackingFactoryTest, InteropRejectsSeparateGLTexture) {

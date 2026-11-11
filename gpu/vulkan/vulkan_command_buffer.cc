@@ -152,7 +152,9 @@ bool VulkanCommandBuffer::Submit(uint32_t num_wait_semaphores,
 
   VkSubmitInfo submit_info = {};
   submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-  submit_info.pNext = &protected_submit_info;
+  if (allow_protected_memory) {
+    submit_info.pNext = &protected_submit_info;
+  }
   submit_info.waitSemaphoreCount = num_wait_semaphores;
   submit_info.pWaitSemaphores = wait_semaphores;
   submit_info.pWaitDstStageMask = wait_dst_stage_mask.data();
