@@ -20,3 +20,6 @@
 
 # crbug.com/422528199
 -All/SitePerProcessBrowserTestWithoutSadFrameTabReload.ChildFrameCrashMetrics_ScrolledIntoViewAfterTabIsShown/*
+
+# https://crbug.com/584462301
+-All/DumpAccessibilityTreeTest.AccessibilityInputTextValueChanged/*
