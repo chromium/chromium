@@ -8,7 +8,6 @@
 #include <array>
 
 #include "base/compiler_specific.h"
-#include "base/containers/auto_spanification_helper.h"
 #include "base/logging.h"
 
 // Try to adhere to [1] when adding and using logging.

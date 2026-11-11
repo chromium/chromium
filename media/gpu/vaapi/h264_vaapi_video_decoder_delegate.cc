@@ -9,6 +9,7 @@
 #include <array>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/trace_event/trace_event.h"

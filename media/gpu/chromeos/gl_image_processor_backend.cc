@@ -5,6 +5,7 @@
 #include "media/gpu/chromeos/gl_image_processor_backend.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/checked_math.h"
 #include "base/stl_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"

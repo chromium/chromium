@@ -8,6 +8,7 @@
 
 #include "base/bits.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "media/base/video_color_space.h"

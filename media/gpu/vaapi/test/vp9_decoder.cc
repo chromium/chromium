@@ -9,6 +9,7 @@
 #include <bitset>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/test/macros.h"

@@ -8,6 +8,7 @@
 
 #include <array>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "media/gpu/macros.h"

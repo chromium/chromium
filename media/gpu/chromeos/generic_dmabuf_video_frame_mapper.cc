@@ -15,6 +15,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/numerics/checked_math.h"
 #include "media/gpu/macros.h"
 
 namespace media {

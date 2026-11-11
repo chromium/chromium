@@ -12,6 +12,7 @@
 
 #include "base/bits.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"

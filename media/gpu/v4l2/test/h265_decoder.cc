@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/numerics/checked_math.h"
 #include "media/gpu/macros.h"
 #include "media/parsers/h265_parser.h"
 

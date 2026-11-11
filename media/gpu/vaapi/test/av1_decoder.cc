@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/video_decoder.h"
 #include "media/gpu/macros.h"
