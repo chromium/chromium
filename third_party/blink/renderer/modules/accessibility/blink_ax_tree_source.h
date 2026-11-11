@@ -66,14 +66,19 @@ class MODULES_EXPORT BlinkAXTreeSource
   void Thaw();
 
  private:
+  // Computes the current selection. `anchor_offset_type` and
+  // `focus_offset_type` indicate whether each offset is a character offset
+  // (`kText`) or a child index (`kChild`).
   void Selection(const AXObject* obj,
                  bool& is_selection_backward,
                  const AXObject** anchor_object,
                  int& anchor_offset,
                  ax::mojom::blink::TextAffinity& anchor_affinity,
+                 ax::mojom::blink::OffsetType& anchor_offset_type,
                  const AXObject** focus_object,
                  int& focus_offset,
-                 ax::mojom::blink::TextAffinity& focus_affinity) const;
+                 ax::mojom::blink::TextAffinity& focus_affinity,
+                 ax::mojom::blink::OffsetType& focus_offset_type) const;
 
   const AXObject* GetFocusedObject() const;
 

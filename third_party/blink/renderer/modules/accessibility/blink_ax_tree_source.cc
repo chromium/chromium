@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "base/check_deref.h"
+#include "build/build_config.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
@@ -60,16 +61,20 @@ void BlinkAXTreeSource::Selection(
     const AXObject** anchor_object,
     int& anchor_offset,
     ax::mojom::blink::TextAffinity& anchor_affinity,
+    ax::mojom::blink::OffsetType& anchor_offset_type,
     const AXObject** focus_object,
     int& focus_offset,
-    ax::mojom::blink::TextAffinity& focus_affinity) const {
+    ax::mojom::blink::TextAffinity& focus_affinity,
+    ax::mojom::blink::OffsetType& focus_offset_type) const {
   is_selection_backward = false;
   *anchor_object = nullptr;
   anchor_offset = -1;
   anchor_affinity = ax::mojom::blink::TextAffinity::kDownstream;
+  anchor_offset_type = ax::mojom::blink::OffsetType::kChild;
   *focus_object = nullptr;
   focus_offset = -1;
   focus_affinity = ax::mojom::blink::TextAffinity::kDownstream;
+  focus_offset_type = ax::mojom::blink::OffsetType::kChild;
 
   if (!obj || obj->IsDetached())
     return;
@@ -115,15 +120,19 @@ void BlinkAXTreeSource::Selection(
   if (base.IsTextPosition()) {
     anchor_offset = base.TextOffset();
     anchor_affinity = ToAXAffinity(base.Affinity());
+    anchor_offset_type = ax::mojom::blink::OffsetType::kText;
   } else {
     anchor_offset = base.ChildIndex();
+    anchor_offset_type = ax::mojom::blink::OffsetType::kChild;
   }
 
   if (extent.IsTextPosition()) {
     focus_offset = extent.TextOffset();
     focus_affinity = ToAXAffinity(extent.Affinity());
+    focus_offset_type = ax::mojom::blink::OffsetType::kText;
   } else {
     focus_offset = extent.ChildIndex();
+    focus_offset_type = ax::mojom::blink::OffsetType::kChild;
   }
 }
 
@@ -154,8 +163,10 @@ bool BlinkAXTreeSource::GetTreeData(ui::AXTreeData* tree_data) const {
   const AXObject *anchor_object, *focus_object;
   int anchor_offset, focus_offset;
   ax::mojom::blink::TextAffinity anchor_affinity, focus_affinity;
+  ax::mojom::blink::OffsetType anchor_offset_type, focus_offset_type;
   Selection(root, is_selection_backward, &anchor_object, anchor_offset,
-            anchor_affinity, &focus_object, focus_offset, focus_affinity);
+            anchor_affinity, anchor_offset_type, &focus_object, focus_offset,
+            focus_affinity, focus_offset_type);
   if (anchor_object && focus_object && anchor_offset >= 0 &&
       focus_offset >= 0) {
     int32_t anchor_id = anchor_object->AXObjectID();
@@ -167,6 +178,11 @@ bool BlinkAXTreeSource::GetTreeData(ui::AXTreeData* tree_data) const {
     tree_data->sel_focus_offset = focus_offset;
     tree_data->sel_anchor_affinity = anchor_affinity;
     tree_data->sel_focus_affinity = focus_affinity;
+#if BUILDFLAG(IS_ANDROID)
+    // Only Android consumes selection offset types for now.
+    tree_data->sel_anchor_offset_type = anchor_offset_type;
+    tree_data->sel_focus_offset_type = focus_offset_type;
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   // Get the tree ID for this frame.
