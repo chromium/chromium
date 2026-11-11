@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 #include <tuple>
+#include <utility>
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
@@ -32,6 +33,7 @@ using ::testing::Bool;
 using ::testing::Combine;
 using ::testing::StrictMock;
 using ::testing::Values;
+using ::testing::ValuesIn;
 
 std::vector<std::vector<uint8_t>> GetTestKeys() {
   return {{1, 2, 3}};
@@ -71,6 +73,69 @@ std::string_view SelectedSyncTypesToString(SelectedSyncTypes state) {
   }
 }
 
+enum class SecurityDomainCheckState {
+  kInFlight,
+  kDomainCheckError,
+  kDomainEmpty,
+  kDomainNotEmpty,
+};
+
+constexpr SecurityDomainCheckState kAllSecurityDomainCheckStates[] = {
+    SecurityDomainCheckState::kInFlight,
+    SecurityDomainCheckState::kDomainCheckError,
+    SecurityDomainCheckState::kDomainEmpty,
+    SecurityDomainCheckState::kDomainNotEmpty,
+};
+
+std::string_view SecurityDomainCheckStateToString(
+    SecurityDomainCheckState state) {
+  switch (state) {
+    case SecurityDomainCheckState::kInFlight:
+      return "DomainCheckInFlight";
+    case SecurityDomainCheckState::kDomainCheckError:
+      return "DomainCheckError";
+    case SecurityDomainCheckState::kDomainEmpty:
+      return "DomainEmpty";
+    case SecurityDomainCheckState::kDomainNotEmpty:
+      return "DomainNotEmpty";
+  }
+}
+
+// Subclass that overrides `CheckIsSecurityDomainEmpty()` (which uses JNI in
+// production on Android) with a fake implementation for unit tests.
+class TestPasskeyTrustedVaultOnDeviceEncryptionStateTracker
+    : public PasskeyTrustedVaultOnDeviceEncryptionStateTracker {
+ public:
+  TestPasskeyTrustedVaultOnDeviceEncryptionStateTracker(
+      syncer::SyncService* sync_service,
+      trusted_vault::TrustedVaultClient* passkey_trusted_vault_client,
+      SecurityDomainCheckState security_domain_check_state)
+      : PasskeyTrustedVaultOnDeviceEncryptionStateTracker(
+            sync_service,
+            passkey_trusted_vault_client),
+        security_domain_check_state_(security_domain_check_state) {}
+
+ protected:
+  void CheckIsSecurityDomainEmpty() override {
+    switch (security_domain_check_state_) {
+      case SecurityDomainCheckState::kInFlight:
+        break;
+      case SecurityDomainCheckState::kDomainCheckError:
+        UpdateInformationAboutSecurityDomainAndComputeState(std::nullopt);
+        break;
+      case SecurityDomainCheckState::kDomainEmpty:
+        UpdateInformationAboutSecurityDomainAndComputeState(true);
+        break;
+      case SecurityDomainCheckState::kDomainNotEmpty:
+        UpdateInformationAboutSecurityDomainAndComputeState(false);
+        break;
+    }
+  }
+
+ private:
+  SecurityDomainCheckState security_domain_check_state_;
+};
+
 // Used in parameterized tests which verify that the correct state is being
 // derived for different combinations of the parameters.
 struct StateComputationTestCase {
@@ -79,6 +144,7 @@ struct StateComputationTestCase {
   SelectedSyncTypes selected_sync_types;
   bool is_key_fetch_completed;
   bool are_keys_available;
+  SecurityDomainCheckState security_domain_check_state;
   OnDeviceEncryptionState expected_state;
 };
 
@@ -89,6 +155,7 @@ class PasskeyTrustedVaultOnDeviceEncryptionStateTrackerStateTest
                      SelectedSyncTypes /*selected_sync_types*/,
                      bool /*is_key_fetch_completed*/,
                      bool /*are_keys_available*/,
+                     SecurityDomainCheckState /*security_domain_check_state*/,
                      OnDeviceEncryptionState /*expected_state*/>> {
  public:
   StateComputationTestCase GetTestCase() const {
@@ -98,7 +165,8 @@ class PasskeyTrustedVaultOnDeviceEncryptionStateTrackerStateTest
         .selected_sync_types = std::get<2>(GetParam()),
         .is_key_fetch_completed = std::get<3>(GetParam()),
         .are_keys_available = std::get<4>(GetParam()),
-        .expected_state = std::get<5>(GetParam()),
+        .security_domain_check_state = std::get<5>(GetParam()),
+        .expected_state = std::get<6>(GetParam()),
     };
   }
 
@@ -119,7 +187,8 @@ std::string ParamInfoToString(
       SelectedSyncTypesToString(std::get<2>(info.param)),
       "_",
       std::get<3>(info.param) ? "KeyFetchCompleted_" : "KeyFetchInFlight_",
-      std::get<4>(info.param) ? "KeysAvailable" : "KeysNotAvailable",
+      std::get<4>(info.param) ? "KeysAvailable_" : "KeysNotAvailable_",
+      SecurityDomainCheckStateToString(std::get<5>(info.param)),
   });
 }
 
@@ -174,8 +243,9 @@ TEST_P(PasskeyTrustedVaultOnDeviceEncryptionStateTrackerStateTest,
                                    /*trigger=*/std::nullopt);
   }
 
-  PasskeyTrustedVaultOnDeviceEncryptionStateTracker tracker(
-      &sync_service, &trusted_vault_client);
+  TestPasskeyTrustedVaultOnDeviceEncryptionStateTracker tracker(
+      &sync_service, &trusted_vault_client,
+      test_case.security_domain_check_state);
   if (test_case.is_key_fetch_completed) {
     trusted_vault_client.CompleteAllPendingRequests();
   }
@@ -196,6 +266,7 @@ INSTANTIATE_TEST_SUITE_P(
                SelectedSyncTypes::kSyncEverything),
         /*is_key_fetch_completed=*/Bool(),
         /*are_keys_available=*/Bool(),
+        /*security_domain_check_state=*/ValuesIn(kAllSecurityDomainCheckStates),
         /*expected_state=*/
         Values(OnDeviceEncryptionState::kProfileNotSignedIn)),
     &ParamInfoToString);
@@ -214,6 +285,7 @@ INSTANTIATE_TEST_SUITE_P(
                SelectedSyncTypes::kSyncEverything),
         /*is_key_fetch_completed=*/Bool(),
         /*are_keys_available=*/Bool(),
+        /*security_domain_check_state=*/ValuesIn(kAllSecurityDomainCheckStates),
         /*expected_state=*/
         Values(OnDeviceEncryptionState::kProfileSignInPending)),
     &ParamInfoToString);
@@ -232,6 +304,7 @@ INSTANTIATE_TEST_SUITE_P(
                SelectedSyncTypes::kSyncEverything),
         /*is_key_fetch_completed=*/Bool(),
         /*are_keys_available=*/Bool(),
+        /*security_domain_check_state=*/ValuesIn(kAllSecurityDomainCheckStates),
         /*expected_state=*/
         Values(OnDeviceEncryptionState::kOnDeviceEncryptionStateNotAvailable)),
     &ParamInfoToString);
@@ -246,6 +319,7 @@ INSTANTIATE_TEST_SUITE_P(
         /*selected_sync_types=*/Values(SelectedSyncTypes::kNone),
         /*is_key_fetch_completed=*/Bool(),
         /*are_keys_available=*/Bool(),
+        /*security_domain_check_state=*/ValuesIn(kAllSecurityDomainCheckStates),
         /*expected_state=*/
         Values(OnDeviceEncryptionState::kPasswordAndPasskeySyncDisabled)),
     &ParamInfoToString);
@@ -263,13 +337,15 @@ INSTANTIATE_TEST_SUITE_P(
                SelectedSyncTypes::kSyncEverything),
         /*is_key_fetch_completed=*/Values(false),
         /*are_keys_available=*/Bool(),
+        /*security_domain_check_state=*/ValuesIn(kAllSecurityDomainCheckStates),
         /*expected_state=*/
         Values(OnDeviceEncryptionState::kOnDeviceEncryptionStateNotAvailable)),
     &ParamInfoToString);
 
-// When key fetch completes with no keys available, the device is not ready.
+// When key fetch completes with no keys and the security domain check is still
+// in flight or failed, the state is not available.
 INSTANTIATE_TEST_SUITE_P(
-    DeviceNotReady,
+    SecurityDomainCheckIncompleteOrFailed,
     PasskeyTrustedVaultOnDeviceEncryptionStateTrackerStateTest,
     Combine(
         /*account_state=*/Values(AccountState::kSignedIn),
@@ -279,13 +355,54 @@ INSTANTIATE_TEST_SUITE_P(
                SelectedSyncTypes::kSyncEverything),
         /*is_key_fetch_completed=*/Values(true),
         /*are_keys_available=*/Values(false),
+        /*security_domain_check_state=*/
+        Values(SecurityDomainCheckState::kInFlight,
+               SecurityDomainCheckState::kDomainCheckError),
+        /*expected_state=*/
+        Values(OnDeviceEncryptionState::kOnDeviceEncryptionStateNotAvailable)),
+    &ParamInfoToString);
+
+// When key fetch completes with no keys and the security domain is empty,
+// on-device encryption is not enabled.
+INSTANTIATE_TEST_SUITE_P(
+    KeysNotAvailableAndDomainEmpty,
+    PasskeyTrustedVaultOnDeviceEncryptionStateTrackerStateTest,
+    Combine(
+        /*account_state=*/Values(AccountState::kSignedIn),
+        /*is_sync_engine_initialized=*/Values(true),
+        /*selected_sync_types=*/
+        Values(SelectedSyncTypes::kPasswordsOnly,
+               SelectedSyncTypes::kSyncEverything),
+        /*is_key_fetch_completed=*/Values(true),
+        /*are_keys_available=*/Values(false),
+        /*security_domain_check_state=*/
+        Values(SecurityDomainCheckState::kDomainEmpty),
+        /*expected_state=*/
+        Values(OnDeviceEncryptionState::kOnDeviceEncryptionNotEnabled)),
+    &ParamInfoToString);
+
+// When key fetch completes with no keys and the security domain is not empty,
+// the device is not ready.
+INSTANTIATE_TEST_SUITE_P(
+    KeysNotAvailableAndDomainNotEmpty,
+    PasskeyTrustedVaultOnDeviceEncryptionStateTrackerStateTest,
+    Combine(
+        /*account_state=*/Values(AccountState::kSignedIn),
+        /*is_sync_engine_initialized=*/Values(true),
+        /*selected_sync_types=*/
+        Values(SelectedSyncTypes::kPasswordsOnly,
+               SelectedSyncTypes::kSyncEverything),
+        /*is_key_fetch_completed=*/Values(true),
+        /*are_keys_available=*/Values(false),
+        /*security_domain_check_state=*/
+        Values(SecurityDomainCheckState::kDomainNotEmpty),
         /*expected_state=*/
         Values(OnDeviceEncryptionState::kDeviceNotReady)),
     &ParamInfoToString);
 
-// When key fetch completes with keys available, the device is ready.
+// When key fetch completes with available keys, the device is ready.
 INSTANTIATE_TEST_SUITE_P(
-    DeviceReady,
+    KeysAvailable,
     PasskeyTrustedVaultOnDeviceEncryptionStateTrackerStateTest,
     Combine(
         /*account_state=*/Values(AccountState::kSignedIn),
@@ -295,6 +412,7 @@ INSTANTIATE_TEST_SUITE_P(
                SelectedSyncTypes::kSyncEverything),
         /*is_key_fetch_completed=*/Values(true),
         /*are_keys_available=*/Values(true),
+        /*security_domain_check_state=*/ValuesIn(kAllSecurityDomainCheckStates),
         /*expected_state=*/
         Values(OnDeviceEncryptionState::kDeviceReady)),
     &ParamInfoToString);
@@ -315,21 +433,23 @@ class PasskeyTrustedVaultOnDeviceEncryptionStateTrackerTest
 };
 
 TEST_F(PasskeyTrustedVaultOnDeviceEncryptionStateTrackerTest, NullServices) {
-  PasskeyTrustedVaultOnDeviceEncryptionStateTracker tracker_null_sync(
-      nullptr, &trusted_vault_client_);
+  TestPasskeyTrustedVaultOnDeviceEncryptionStateTracker tracker_null_sync(
+      nullptr, &trusted_vault_client_,
+      SecurityDomainCheckState::kDomainNotEmpty);
   EXPECT_EQ(tracker_null_sync.GetEncryptionState(),
             OnDeviceEncryptionState::kOnDeviceEncryptionStateNotAvailable);
 
-  PasskeyTrustedVaultOnDeviceEncryptionStateTracker tracker_null_vault(
-      &sync_service_, nullptr);
+  TestPasskeyTrustedVaultOnDeviceEncryptionStateTracker tracker_null_vault(
+      &sync_service_, nullptr, SecurityDomainCheckState::kDomainNotEmpty);
   EXPECT_EQ(tracker_null_vault.GetEncryptionState(),
             OnDeviceEncryptionState::kOnDeviceEncryptionStateNotAvailable);
 }
 
 TEST_F(PasskeyTrustedVaultOnDeviceEncryptionStateTrackerTest,
        TransitionsFromNotReadyToReadyWhenKeysChange) {
-  PasskeyTrustedVaultOnDeviceEncryptionStateTracker tracker(
-      &sync_service_, &trusted_vault_client_);
+  TestPasskeyTrustedVaultOnDeviceEncryptionStateTracker tracker(
+      &sync_service_, &trusted_vault_client_,
+      SecurityDomainCheckState::kDomainNotEmpty);
   EXPECT_TRUE(trusted_vault_client_.CompleteAllPendingRequests());
   EXPECT_EQ(tracker.GetEncryptionState(),
             OnDeviceEncryptionState::kDeviceNotReady);
@@ -371,8 +491,9 @@ TEST_F(PasskeyTrustedVaultOnDeviceEncryptionStateTrackerTest,
   trusted_vault_client_.StoreKeys(account_info.gaia, kInitialKeys,
                                   /*last_key_version=*/1,
                                   /*trigger=*/std::nullopt);
-  PasskeyTrustedVaultOnDeviceEncryptionStateTracker tracker(
-      &sync_service_, &trusted_vault_client_);
+  TestPasskeyTrustedVaultOnDeviceEncryptionStateTracker tracker(
+      &sync_service_, &trusted_vault_client_,
+      SecurityDomainCheckState::kDomainNotEmpty);
   EXPECT_TRUE(trusted_vault_client_.CompleteAllPendingRequests());
   EXPECT_EQ(tracker.GetEncryptionState(),
             OnDeviceEncryptionState::kDeviceReady);
@@ -417,8 +538,9 @@ TEST_F(PasskeyTrustedVaultOnDeviceEncryptionStateTrackerTest, SyncShutdown) {
   trusted_vault_client_.StoreKeys(sync_service_.GetAccountInfo().gaia,
                                   GetTestKeys(), /*last_key_version=*/1,
                                   /*trigger=*/std::nullopt);
-  PasskeyTrustedVaultOnDeviceEncryptionStateTracker tracker(
-      &sync_service_, &trusted_vault_client_);
+  TestPasskeyTrustedVaultOnDeviceEncryptionStateTracker tracker(
+      &sync_service_, &trusted_vault_client_,
+      SecurityDomainCheckState::kDomainNotEmpty);
   EXPECT_TRUE(trusted_vault_client_.CompleteAllPendingRequests());
   EXPECT_EQ(tracker.GetEncryptionState(),
             OnDeviceEncryptionState::kDeviceReady);

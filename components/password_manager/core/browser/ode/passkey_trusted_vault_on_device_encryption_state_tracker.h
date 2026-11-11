@@ -51,6 +51,13 @@ class PasskeyTrustedVaultOnDeviceEncryptionStateTracker
       override;
   void OnTrustedVaultRecoverabilityChanged() override;
 
+ protected:
+  // `protected` and `virtual` because the default implementation uses JNI on
+  // Android, and unit tests override it with a fake implementation.
+  virtual void CheckIsSecurityDomainEmpty();
+  void UpdateInformationAboutSecurityDomainAndComputeState(
+      std::optional<bool> is_security_domain_empty);
+
  private:
   void ComputeState();
   bool IsSignedInAccountChanged();
@@ -61,7 +68,7 @@ class PasskeyTrustedVaultOnDeviceEncryptionStateTracker
   syncer::SyncService* sync_service();
   trusted_vault::TrustedVaultClient* passkey_trusted_vault_client();
 
-  // Keeps account for which `FetchKeys()` is currently in flight or cached.
+  // Keeps account for which state is currently being checked or cached.
   CoreAccountInfo current_account_info_;
 
   // Cached result of `TrustedVaultClient::FetchKeys()`: `true` if non-empty
@@ -69,16 +76,22 @@ class PasskeyTrustedVaultOnDeviceEncryptionStateTracker
   // if not fetched yet.
   std::optional<bool> has_keys_;
 
+  // Cached result of checking whether the `hw_protected` security domain is
+  // empty for the account (used when `has_keys_` is `false` as an
+  // approximation of passkey adoption to distinguish
+  // `kOnDeviceEncryptionNotEnabled` from `kDeviceNotReady`).
+  std::optional<bool> is_security_domain_empty_;
+
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observation_{this};
   base::ScopedObservation<trusted_vault::TrustedVaultClient,
                           trusted_vault::TrustedVaultClient::Observer>
       trusted_vault_client_observation_{this};
 
-  // Used to cancel in-flight `FetchKeys()` callbacks when the account changes
-  // or when keys change.
+  // Used to cancel in-flight `FetchKeys()` and `CheckIsSecurityDomainEmpty()`
+  // callbacks when the account or keys change.
   base::WeakPtrFactory<PasskeyTrustedVaultOnDeviceEncryptionStateTracker>
-      fetch_keys_weak_ptr_factory_{this};
+      weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager

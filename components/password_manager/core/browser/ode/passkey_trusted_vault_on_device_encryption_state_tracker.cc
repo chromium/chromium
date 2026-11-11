@@ -4,11 +4,21 @@
 
 #include "components/password_manager/core/browser/ode/passkey_trusted_vault_on_device_encryption_state_tracker.h"
 
+#include <optional>
+#include <vector>
+
 #include "base/functional/bind.h"
+#include "build/build_config.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/callback_android.h"
+#include "base/android/jni_android.h"
+#include "components/password_manager/core/browser/ode/jni_headers/PasskeySecurityDomainChecker_jni.h"
+#endif
 
 namespace password_manager {
 
@@ -42,6 +52,7 @@ void PasskeyTrustedVaultOnDeviceEncryptionStateTracker::OnStateChanged(
 
 void PasskeyTrustedVaultOnDeviceEncryptionStateTracker::OnSyncShutdown(
     syncer::SyncService* sync) {
+  weak_ptr_factory_.InvalidateWeakPtrs();
   sync_service_observation_.Reset();
   trusted_vault_client_observation_.Reset();
   ComputeState();
@@ -91,17 +102,19 @@ void PasskeyTrustedVaultOnDeviceEncryptionStateTracker::ComputeState() {
     return;
   }
 
-  if (!has_keys_.has_value()) {
+  if (!has_keys_.has_value() || !is_security_domain_empty_.has_value()) {
     SetState(OnDeviceEncryptionState::kOnDeviceEncryptionStateNotAvailable);
     return;
   }
 
-  // TODO(crbug.com/540854648): `TrustedVaultClient::FetchKeys()` returns an
-  // empty key list both when the security domain has not been initialized and
-  // when keys are not locally available on the device. Consider distinguishing
-  // `kOnDeviceEncryptionNotEnabled` from `kDeviceNotReady`.
-  SetState(*has_keys_ ? OnDeviceEncryptionState::kDeviceReady
-                      : OnDeviceEncryptionState::kDeviceNotReady);
+  if (*has_keys_) {
+    SetState(OnDeviceEncryptionState::kDeviceReady);
+    return;
+  }
+
+  SetState(*is_security_domain_empty_
+               ? OnDeviceEncryptionState::kOnDeviceEncryptionNotEnabled
+               : OnDeviceEncryptionState::kDeviceNotReady);
 }
 
 bool PasskeyTrustedVaultOnDeviceEncryptionStateTracker::
@@ -113,8 +126,9 @@ bool PasskeyTrustedVaultOnDeviceEncryptionStateTracker::
 
 void PasskeyTrustedVaultOnDeviceEncryptionStateTracker::
     FetchKeysAndComputeStateIfAccountIsNotEmpty() {
-  fetch_keys_weak_ptr_factory_.InvalidateWeakPtrs();
+  weak_ptr_factory_.InvalidateWeakPtrs();
   has_keys_.reset();
+  is_security_domain_empty_.reset();
   current_account_info_ =
       sync_service() ? sync_service()->GetAccountInfo() : CoreAccountInfo();
   ComputeState();
@@ -127,13 +141,41 @@ void PasskeyTrustedVaultOnDeviceEncryptionStateTracker::
       current_account_info_,
       base::BindOnce(&PasskeyTrustedVaultOnDeviceEncryptionStateTracker::
                          UpdateInformationAboutKeysAndComputeState,
-                     fetch_keys_weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PasskeyTrustedVaultOnDeviceEncryptionStateTracker::
     UpdateInformationAboutKeysAndComputeState(
         const std::vector<std::vector<uint8_t>>& keys) {
-  has_keys_ = !keys.empty();
+  if (keys.empty()) {
+    has_keys_ = false;
+    CheckIsSecurityDomainEmpty();
+  } else {
+    has_keys_ = true;
+    is_security_domain_empty_ = false;
+    ComputeState();
+  }
+}
+
+void PasskeyTrustedVaultOnDeviceEncryptionStateTracker::
+    CheckIsSecurityDomainEmpty() {
+  // Currently this class is only used on Android.
+  // TODO(crbug.com/540854648): Refactor and consolidate the logic of tracking
+  // the passkey states (e.g., consider using `TrustedVaultClient` on all
+  // platforms: desktop, Android, and iOS).
+#if BUILDFLAG(IS_ANDROID)
+  Java_PasskeySecurityDomainChecker_getIsSecurityDomainEmpty(
+      base::android::AttachCurrentThread(), current_account_info_,
+      base::BindOnce(&PasskeyTrustedVaultOnDeviceEncryptionStateTracker::
+                         UpdateInformationAboutSecurityDomainAndComputeState,
+                     weak_ptr_factory_.GetWeakPtr()));
+#endif
+}
+
+void PasskeyTrustedVaultOnDeviceEncryptionStateTracker::
+    UpdateInformationAboutSecurityDomainAndComputeState(
+        std::optional<bool> is_security_domain_empty) {
+  is_security_domain_empty_ = is_security_domain_empty;
   ComputeState();
 }
 
