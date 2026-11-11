@@ -7,12 +7,10 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {OmniboxPopupAppElement} from './app.js';
 
 export function getHtml(this: OmniboxPopupAppElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div class="dropdownContainer">
   <cr-searchbox-dropdown part="searchbox-dropdown"
-      exportparts="dropdown-content"
-      role="listbox" .result="${this.result_}"
+      exportparts="dropdown-content" role="listbox" .result="${this.result_}"
       ?can-show-secondary-side="${this.canShowSecondarySide}"
       ?has-secondary-side="${this.hasSecondarySide}"
       @has-secondary-side-changed="${this.onHasSecondarySideChanged_}"
@@ -22,5 +20,4 @@ export function getHtml(this: OmniboxPopupAppElement) {
   <omnibox-popup-contextual-entrypoint></omnibox-popup-contextual-entrypoint>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

@@ -101,4 +101,3 @@ export function getHtml(this: OmniboxEverywhereDebugAppElement) {
   ` : ''}
 </div>`;
 }
-

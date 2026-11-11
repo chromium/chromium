@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {OmniboxAimAppElement} from './aim_app.js';
 
 export function getHtml(this: OmniboxAimAppElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <cr-omnibox-composebox id="composebox"
     .closeOnEscape="${this.webuiOmniboxFullPopupEnabled_}"
@@ -17,5 +16,4 @@ export function getHtml(this: OmniboxAimAppElement) {
     @composebox-submit="${this.onComposeboxSubmit_}">
 </cr-omnibox-composebox>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

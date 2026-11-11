@@ -8,12 +8,12 @@ import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 import type {OmniboxPopupContextualEntrypointElement} from './omnibox_popup_contextual_entrypoint.js';
 
 export function getHtml(this: OmniboxPopupContextualEntrypointElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 ${this.showContextEntrypoint_ ? html`
   <div class="context-menu-container">
     ${!this.shouldHideEntrypointButton_() &&
-        hasAllowedInputs(this.inputState, this.usePecApi_) ? html`
+            hasAllowedInputs(this.inputState, this.usePecApi_) ?
+        html`
       <omnibox-popup-contextual-entrypoint-button id="context"
           class="upload-button"
           exportparts="entrypoint-button, context-menu-entrypoint-icon"
@@ -36,14 +36,11 @@ ${this.showContextEntrypoint_ ? html`
       </cr-composebox-lens-search>
     ` : nothing}
     ${this.isLensIconShown_ ? html`
-      <cr-composebox-lens-search id="lensSearchIcon"
-          is-icon
-          class="upload-button"
-          @lens-search-click="${this.onLensSearchClick_}">
+      <cr-composebox-lens-search id="lensSearchIcon" is-icon
+          class="upload-button" @lens-search-click="${this.onLensSearchClick_}">
       </cr-composebox-lens-search>
     ` : nothing}
   </div>
 ` : nothing}
 <!--_html_template_end_-->`;
-  // clang-format on
 }

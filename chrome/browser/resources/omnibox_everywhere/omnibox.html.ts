@@ -8,142 +8,132 @@ import type {OmniboxEverywhereOmniboxElement} from './omnibox.js';
 
 export function getHtml(this: OmniboxEverywhereOmniboxElement) {
   return html`
-    <div id="inputWrapper" @focusout="${this.onInputWrapperFocusout}"
-        @keydown="${this.onInputWrapperKeydown}"
-        @dragenter="${this.dragAndDropHandler.handleDragEnter}"
-        @dragover="${this.onInputWrapperDragover_}"
-        @dragleave="${this.dragAndDropHandler.handleDragLeave}"
-        @drop="${this.dragAndDropHandler.handleDrop}">
-      <search-animated-glow
-        .animationState="${this.computeGlowAnimationState_()}"
-        .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled_}"
-        part="animated-glow">
-      </search-animated-glow>
-      <cr-searchbox-input id="input"
-          exportparts="searchbox-input, icon"
-          ?dropdown-is-visible="${this.dropdownIsVisible}"
-          ?multi-line-enabled="${this.multiLineEnabled}"
-          .singleLineOnInlineAutocomplete="${
-              this.singleLineOnInlineAutocomplete}"
-          placeholder-text="${this.computePlaceholderText_()}"
-          searchbox-aria-description="${this.searchboxAriaDescription}"
-          searchbox-icon="${this.searchboxIcon_}"
-          .selectedMatch="${this.selectedMatch}"
-          .inputKeywordModel="${this.inputKeywordModel}"
-          ?input-has-matches="${this.hasMatches()}"
-          ?allow-file-paste="${this.canAddFileContext_()}"
-          @focusin="${this.onInputFocusin_}"
-          @searchbox-input-empty-changed="${this.onSearchboxInputEmptyChanged_}"
-          @searchbox-input-files-pasted="${this.onSearchboxInputFilesPasted_}"
-          @searchbox-input-text-updated="${this.onSearchboxInputTextUpdated_}"
-          @input-focus-changed="${this.onInputFocusChanged}">
-        <div id="lensPlaceholder" slot="placeholder-overlay" aria-hidden="true"
-            ?hidden="${!this.showLensPlaceholder_}">
-        </div>
-        ${
-      this.composeButtonEnabled ? html`
-          <cr-searchbox-compose-button id="composeButton" slot="compose-button"
-              ?dynamic="${this.ntpRealboxDynamicAiModeButtonEnabled_}"
-              ?inherit-visibility="${
-                  this.ntpRealboxDynamicAiModeButtonPreventEarlyPaint_}"
-              ?has-user-input="${this.hasUserInput_}"
-              ?virtual-focus-enabled="${this.virtualFocusEnabled}"
-              ?has-virtual-focus="${this.isAiModeVirtualFocused()}"
-              ?dropdown-is-visible="${this.dropdownIsVisible}"
-              @compose-click="${this.onComposeClick_}">
-          </cr-searchbox-compose-button>
-        ` :
-                                  ''}
-      </cr-searchbox-input>
-      <div class="dropdownContainer">
-        <cr-searchbox-dropdown id="matches" part="searchbox-dropdown"
-            exportparts="dropdown-content"
-            role="listbox" .result="${this.result}"
-            .selection="${this.selection}"
-            .virtualFocusEnabled="${this.virtualFocusEnabled}"
-            @selection-changed="${this.onSelectionChanged}"
-            .selectedMatchIndex="${this.selectedMatchIndex}"
-            @selected-match-index-changed="${this.onSelectedMatchIndexChanged}"
-            @match-focusin="${this.onMatchFocusin}"
-            @match-click="${this.onMatchClick}"
-            @keyword-click="${this.onKeywordClick}"
-            ?hidden="${!this.dropdownIsVisible}">
-        </cr-searchbox-dropdown>
-      </div>
-      <div id="bottomControls"
-          @animationend="${this.onBottomControlsAnimationEnd_}"
-          @animationcancel="${this.onBottomControlsAnimationEnd_}">
-        ${this.isFuseboxEnabled ? html`
-        <div class="contextualEntrypointContainer
-                    contextualEntrypointContainerCompact">
-          <cr-composebox-file-inputs id="fileInputs" @file-change="${
-      this.onFileChange_}">
-            <div class="context-menu-container" id="contextMenuContainer">
-              <cr-composebox-contextual-entrypoint-button id="context"
-                  exportparts="context-menu-entrypoint-icon,
-                               entrypoint-button"
-                  class="upload-button"
-                  .inputState="${this.inputState_}"
-                  .energyEffectAnimationEnabled="${
-                      this.energyEffectAnimationEnabled_}"
-                  .hasVirtualFocus="${this.isContextEntrypointVirtualFocused()}"
-                  @context-menu-entrypoint-click="${
-      this.onContextMenuEntrypointClick_}">
-              </cr-composebox-contextual-entrypoint-button>
-            </div>
-          </cr-composebox-file-inputs>
-        </div>
-        ` : ''}
-        <div id="actionButtons">
-          ${
-              this.showVoiceSearchButton_() ? html`
-          <div class="searchbox-icon-button-container voice"
-              ?has-virtual-focus="${this.isVoiceSearchVirtualFocused_()}">
-            <button id="voiceSearchButton" class="searchbox-icon-button"
-                tabindex="${this.virtualFocusEnabled &&
-                    this.dropdownIsVisible ? -1 : 0}"
-                @click="${this.onVoiceSearchButtonClick_}"
-                title="${this.i18n('voiceSearchButtonLabel')}">
-            </button>
-          </div>
-          ` :
-              ''}
-          ${this.showLensSearchButton_() ? html`
-          <div class="searchbox-icon-button-container lens ${
-              this.isScreenshotMenuOpen ? 'menu-open' : ''} ${
-              this.isLensHelpBubbleShowing ? 'help-bubble-open' : ''}"
-              ?has-virtual-focus="${this.isLensSearchVirtualFocused_()}">
-            <button id="lensSearchButton" class="searchbox-icon-button"
-                tabindex="${this.virtualFocusEnabled &&
-                    this.dropdownIsVisible ? -1 : 0}"
-                @pointerdown="${this.onLensSearchPointerdown_}"
-                @pointercancel="${this.onLensSearchPointercancel_}"
-                @click="${this.onLensSearchClick_}"
-                title="${this.i18n('lensSearchButtonLabel')}">
-            </button>
-          </div>
-          ` :
-              ''}
-          <div class="searchbox-icon-button-container overflow ${
-              this.isOverflowMenuOpen ? 'menu-open' : ''}">
-            <button id="overflowMenuButton" class="searchbox-icon-button"
-                tabindex="${this.virtualFocusEnabled &&
-                    this.dropdownIsVisible ? -1 : 0}"
-                aria-haspopup="menu"
-                aria-expanded="${this.isOverflowMenuOpen}"
-                aria-label="${this.i18n('overflowMenuButtonLabel')}"
-                title="${this.i18n('overflowMenuButtonLabel')}"
-                @pointerdown="${this.onOverflowMenuPointerdown_}"
-                @pointercancel="${this.onOverflowMenuPointercancel_}"
-                @click="${this.onOverflowMenuClick_}">
-            </button>
-          </div>
-        </div>
-      </div>
-      <!-- Keep last so Tab reaches it after the action buttons, which render
-           before it in the 1-line pill. -->
-      <omnibox-everywhere-profile-icon id="profileIcon">
-      </omnibox-everywhere-profile-icon>
+<div id="inputWrapper" @focusout="${this.onInputWrapperFocusout}"
+    @keydown="${this.onInputWrapperKeydown}"
+    @dragenter="${this.dragAndDropHandler.handleDragEnter}"
+    @dragover="${this.onInputWrapperDragover_}"
+    @dragleave="${this.dragAndDropHandler.handleDragLeave}"
+    @drop="${this.dragAndDropHandler.handleDrop}">
+  <search-animated-glow .animationState="${this.computeGlowAnimationState_()}"
+      .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled_}"
+      part="animated-glow">
+  </search-animated-glow>
+  <cr-searchbox-input id="input" exportparts="searchbox-input, icon"
+      ?dropdown-is-visible="${this.dropdownIsVisible}"
+      ?multi-line-enabled="${this.multiLineEnabled}"
+      .singleLineOnInlineAutocomplete="${this.singleLineOnInlineAutocomplete}"
+      placeholder-text="${this.computePlaceholderText_()}"
+      searchbox-aria-description="${this.searchboxAriaDescription}"
+      searchbox-icon="${this.searchboxIcon_}"
+      .selectedMatch="${this.selectedMatch}"
+      .inputKeywordModel="${this.inputKeywordModel}"
+      ?input-has-matches="${this.hasMatches()}"
+      ?allow-file-paste="${this.canAddFileContext_()}"
+      @focusin="${this.onInputFocusin_}"
+      @searchbox-input-empty-changed="${this.onSearchboxInputEmptyChanged_}"
+      @searchbox-input-files-pasted="${this.onSearchboxInputFilesPasted_}"
+      @searchbox-input-text-updated="${this.onSearchboxInputTextUpdated_}"
+      @input-focus-changed="${this.onInputFocusChanged}">
+    <div id="lensPlaceholder" slot="placeholder-overlay" aria-hidden="true"
+        ?hidden="${!this.showLensPlaceholder_}">
     </div>
-  `;
+    ${this.composeButtonEnabled ? html`
+      <cr-searchbox-compose-button id="composeButton" slot="compose-button"
+          ?dynamic="${this.ntpRealboxDynamicAiModeButtonEnabled_}"
+          ?inherit-visibility="${
+              this.ntpRealboxDynamicAiModeButtonPreventEarlyPaint_}"
+          ?has-user-input="${this.hasUserInput_}"
+          ?virtual-focus-enabled="${this.virtualFocusEnabled}"
+          ?has-virtual-focus="${this.isAiModeVirtualFocused()}"
+          ?dropdown-is-visible="${this.dropdownIsVisible}"
+          @compose-click="${this.onComposeClick_}">
+      </cr-searchbox-compose-button>
+    ` : ''}
+  </cr-searchbox-input>
+  <div class="dropdownContainer">
+    <cr-searchbox-dropdown id="matches" part="searchbox-dropdown"
+        exportparts="dropdown-content" role="listbox" .result="${this.result}"
+        .selection="${this.selection}"
+        .virtualFocusEnabled="${this.virtualFocusEnabled}"
+        @selection-changed="${this.onSelectionChanged}"
+        .selectedMatchIndex="${this.selectedMatchIndex}"
+        @selected-match-index-changed="${this.onSelectedMatchIndexChanged}"
+        @match-focusin="${this.onMatchFocusin}"
+        @match-click="${this.onMatchClick}"
+        @keyword-click="${this.onKeywordClick}"
+        ?hidden="${!this.dropdownIsVisible}">
+    </cr-searchbox-dropdown>
+  </div>
+  <div id="bottomControls" @animationend="${this.onBottomControlsAnimationEnd_}"
+      @animationcancel="${this.onBottomControlsAnimationEnd_}">
+    ${this.isFuseboxEnabled ? html`
+      <div
+          class="contextualEntrypointContainer
+                    contextualEntrypointContainerCompact">
+        <cr-composebox-file-inputs id="fileInputs"
+            @file-change="${this.onFileChange_}">
+          <div class="context-menu-container" id="contextMenuContainer">
+            <cr-composebox-contextual-entrypoint-button id="context"
+                exportparts="context-menu-entrypoint-icon,
+                               entrypoint-button"
+                class="upload-button" .inputState="${this.inputState_}"
+                .energyEffectAnimationEnabled="${
+                    this.energyEffectAnimationEnabled_}"
+                .hasVirtualFocus="${this.isContextEntrypointVirtualFocused()}"
+                @context-menu-entrypoint-click="${
+                    this.onContextMenuEntrypointClick_}">
+            </cr-composebox-contextual-entrypoint-button>
+          </div>
+        </cr-composebox-file-inputs>
+      </div>
+    ` : ''}
+    <div id="actionButtons">
+      ${this.showVoiceSearchButton_() ? html`
+        <div class="searchbox-icon-button-container voice"
+            ?has-virtual-focus="${this.isVoiceSearchVirtualFocused_()}">
+          <button id="voiceSearchButton" class="searchbox-icon-button"
+              tabindex="${
+                  this.virtualFocusEnabled && this.dropdownIsVisible ? -1 : 0}"
+              @click="${this.onVoiceSearchButtonClick_}"
+              title="${this.i18n('voiceSearchButtonLabel')}">
+          </button>
+        </div>
+      ` : ''}
+      ${this.showLensSearchButton_() ? html`
+        <div
+            class="searchbox-icon-button-container lens ${
+                this.isScreenshotMenuOpen ? 'menu-open' : ''} ${
+                this.isLensHelpBubbleShowing ? 'help-bubble-open' : ''}"
+            ?has-virtual-focus="${this.isLensSearchVirtualFocused_()}">
+          <button id="lensSearchButton" class="searchbox-icon-button"
+              tabindex="${
+                  this.virtualFocusEnabled && this.dropdownIsVisible ? -1 : 0}"
+              @pointerdown="${this.onLensSearchPointerdown_}"
+              @pointercancel="${this.onLensSearchPointercancel_}"
+              @click="${this.onLensSearchClick_}"
+              title="${this.i18n('lensSearchButtonLabel')}">
+          </button>
+        </div>
+      ` : ''}
+      <div
+          class="searchbox-icon-button-container overflow ${
+              this.isOverflowMenuOpen ? 'menu-open' : ''}">
+        <button id="overflowMenuButton" class="searchbox-icon-button"
+            tabindex="${
+                this.virtualFocusEnabled && this.dropdownIsVisible ? -1 : 0}"
+            aria-haspopup="menu" aria-expanded="${this.isOverflowMenuOpen}"
+            aria-label="${this.i18n('overflowMenuButtonLabel')}"
+            title="${this.i18n('overflowMenuButtonLabel')}"
+            @pointerdown="${this.onOverflowMenuPointerdown_}"
+            @pointercancel="${this.onOverflowMenuPointercancel_}"
+            @click="${this.onOverflowMenuClick_}">
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- Keep last so Tab reaches it after the action buttons, which render
+           before it in the 1-line pill. -->
+  <omnibox-everywhere-profile-icon id="profileIcon">
+  </omnibox-everywhere-profile-icon>
+</div>`;
 }
