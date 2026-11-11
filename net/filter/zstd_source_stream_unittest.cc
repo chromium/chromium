@@ -471,4 +471,94 @@ TEST_F(ZstdSourceStreamTest, CrossFormatDcbBytesInZstdWithDictionary) {
   EXPECT_EQ(ERR_CONTENT_DECODING_FAILED, bytes_read);
 }
 
+TEST_F(ZstdSourceStreamTest, OutOfWindowOffsetAfterRingBufferWrap) {
+  // Frame with windowSize = 1024 (windowLog = 10), three RLE blocks totalling
+  // 2177 bytes (1024 'A', 1024 'B', 129 'C') that cause the streaming output
+  // ring buffer (3136 bytes) to wrap, followed by a compressed block with a
+  // match offset of 2177 (exceeding the 1024-byte window).
+  constexpr uint8_t kOutOfWindowOffsetFrame[] = {
+      0x28, 0xb5, 0x2f, 0xfd,  // zstd magic
+      0x00, 0x00,              // FHD = 0, WD = 0 (windowSize = 1024)
+      0x02, 0x20, 0x00, 'A',   // RLE block: 1024 x 'A'
+      0x02, 0x20, 0x00, 'B',   // RLE block: 1024 x 'B'
+      0x0a, 0x04, 0x00, 'C',   // RLE block: 129 x 'C' (total = 2177)
+      0x45, 0x00, 0x00,        // last compressed block, size 8
+      0x00,                    // 0 literals
+      0x01, 0x54,              // 1 sequence, RLE mode tables
+      0x00, 0x0b, 0x0d,        // LL=0, OF=11 (base 2045, 11 bits), ML=13 (16)
+      0x84, 0x08,              // offset extra bits: +132 -> offset = 2177
+  };
+
+  // Populate and free chunks in the ZSTD_DCtx size class (95976 bytes) with
+  // non-zero placeholder bytes before creating the ZstdSourceStream.
+  constexpr size_t kDCtxSize = 95976;
+  constexpr size_t kNumChunks = 8;
+  void* chunks[kNumChunks];
+  for (void*& chunk : chunks) {
+    chunk = malloc(kDCtxSize);
+    ASSERT_TRUE(chunk);
+    // SAFETY: `chunk` points to `kDCtxSize` bytes allocated by `malloc`.
+    UNSAFE_BUFFERS(memset(chunk, 'Z', kDCtxSize));
+  }
+  for (void* chunk : chunks) {
+    free(chunk);
+  }
+
+  auto test_source = std::make_unique<MockSourceStream>();
+  test_source->set_expect_all_input_consumed(false);
+  test_source->AddReadResult(kOutOfWindowOffsetFrame, OK,
+                             MockSourceStream::SYNC);
+  test_source->AddReadResult(base::span<uint8_t>(), OK, MockSourceStream::SYNC);
+  std::unique_ptr<SourceStream> test_zstd_stream =
+      CreateZstdSourceStream(std::move(test_source));
+
+  scoped_refptr<IOBufferWithSize> test_out_buffer =
+      base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
+  TestCompletionCallback callback;
+  int bytes_read = test_zstd_stream->Read(
+      test_out_buffer.get(), kDefaultBufferSize, callback.callback());
+  ASSERT_EQ(2193, bytes_read);
+  const std::string expected_prefix =
+      std::string(1024, 'A') + std::string(1024, 'B') + std::string(129, 'C');
+  EXPECT_EQ(expected_prefix,
+            base::as_string_view(test_out_buffer->first(2177u)));
+  EXPECT_EQ(std::string(16, '\0'),
+            base::as_string_view(test_out_buffer->first(2193u).subspan(2177u)));
+
+  // Verify that an equivalent frame whose match offset after ring buffer wrap
+  // stays within the 1024-byte window (offset = 1024) decodes normally.
+  constexpr uint8_t kInWindowOffsetFrame[] = {
+      0x28, 0xb5, 0x2f, 0xfd,  // zstd magic
+      0x00, 0x00,              // FHD = 0, WD = 0 (windowSize = 1024)
+      0x02, 0x20, 0x00, 'A',   // RLE block: 1024 x 'A'
+      0x02, 0x20, 0x00, 'B',   // RLE block: 1024 x 'B'
+      0x0a, 0x04, 0x00, 'C',   // RLE block: 129 x 'C' (total = 2177)
+      0x45, 0x00, 0x00,        // last compressed block, size 8
+      0x00,                    // 0 literals
+      0x01, 0x54,              // 1 sequence, RLE mode tables
+      0x00, 0x0a, 0x0d,        // LL=0, OF=10 (base 1021, 10 bits), ML=13 (16)
+      0x03, 0x04,              // offset extra bits: +3 -> offset = 1024
+  };
+
+  auto valid_source = std::make_unique<MockSourceStream>();
+  valid_source->set_expect_all_input_consumed(false);
+  valid_source->AddReadResult(kInWindowOffsetFrame, OK, MockSourceStream::SYNC);
+  valid_source->AddReadResult(base::span<uint8_t>(), OK,
+                              MockSourceStream::SYNC);
+  std::unique_ptr<SourceStream> valid_zstd_stream =
+      CreateZstdSourceStream(std::move(valid_source));
+
+  scoped_refptr<IOBufferWithSize> valid_out_buffer =
+      base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
+  TestCompletionCallback valid_callback;
+  int valid_bytes_read = valid_zstd_stream->Read(
+      valid_out_buffer.get(), kDefaultBufferSize, valid_callback.callback());
+  ASSERT_EQ(2193, valid_bytes_read);
+  EXPECT_EQ(expected_prefix,
+            base::as_string_view(valid_out_buffer->first(2177u)));
+  EXPECT_EQ(
+      std::string(16, 'B'),
+      base::as_string_view(valid_out_buffer->first(2193u).subspan(2177u)));
+}
+
 }  // namespace net
