@@ -448,6 +448,18 @@ public class UrlBarUnitTest {
     }
 
     @Test
+    public void testTruncation_LongUrlAfterOverLengthUrl() {
+        measureAndLayoutUrlBar();
+        mUrlBar.setText(SUPER_LONG_URL);
+
+        String url = SHORT_DOMAIN + LONG_PATH;
+        mUrlBar.setTextWithTruncation(url, ScrollType.SCROLL_TO_TLD, SHORT_DOMAIN.length());
+
+        Editable text = mUrlBar.getText();
+        assertEquals(NUMBER_OF_VISIBLE_CHARACTERS, text.getSpanStart(BoundsEllipsisSpan.INSTANCE));
+    }
+
+    @Test
     public void testTruncation_ShortUrl() {
         // Test with a url one character shorter than the minimum length for truncation so that this
         // test fails when the UrlBar.MIN_LENGTH_FOR_TRUCATION_V2 is changed to something smaller.
@@ -1124,6 +1136,38 @@ public class UrlBarUnitTest {
         CharSequence hint = mUrlBar.calculateVisibleHint();
         assertNotNull(hint);
         assertEquals("www.a.com/", hint.toString());
+    }
+
+    @Test
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR})
+    public void calculateVisibleHint_withLengthAndBoundsEllipsis() {
+        showUnfocusedUrlWithBoundsEllipsis(SUPER_LONG_URL);
+
+        Editable text = mUrlBar.getText();
+        assertEquals(1, text.getSpans(0, text.length(), EllipsisSpan.class).length);
+        int boundsStart = text.getSpanStart(BoundsEllipsisSpan.INSTANCE);
+
+        CharSequence hint = mUrlBar.calculateVisibleHint();
+        assertNotNull(hint);
+        assertEquals(SUPER_LONG_URL.substring(0, boundsStart + 1), hint.toString());
+    }
+
+    @Test
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR})
+    public void boundsEllipsis_focusRestoresLengthLimit() {
+        showUnfocusedUrlWithBoundsEllipsis(SUPER_LONG_URL);
+
+        mUrlBar.onFocusChanged(
+                /* focused= */ true,
+                /* direction= */ View.FOCUS_DOWN,
+                /* previouslyFocusedRect= */ null);
+
+        Editable text = mUrlBar.getText();
+        EllipsisSpan[] spans = text.getSpans(0, text.length(), EllipsisSpan.class);
+        assertEquals(1, spans.length);
+        assertEquals(EllipsisSpan.INSTANCE, spans[0]);
     }
 
     @Test

@@ -838,9 +838,8 @@ public class UrlBar extends AutocompleteEditText {
             if (mPointerDragActive) {
                 Editable text = getText();
                 if (text != null) {
-                    text.removeSpan(BoundsEllipsisSpan.INSTANCE);
                     // Re-hide very long URLs to prevent crashes.
-                    limitDisplayableLength();
+                    clearBoundsEllipsisSpans(text);
                 }
             }
         } else if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
@@ -1445,6 +1444,8 @@ public class UrlBar extends AutocompleteEditText {
 
     private void clearBoundsEllipsisSpans(Editable text) {
         text.removeSpan(BoundsEllipsisSpan.INSTANCE);
+        // The bounds ellipsis replaced the length limit; restore it for long URLs.
+        limitDisplayableLength();
     }
 
     /**
@@ -1476,6 +1477,9 @@ public class UrlBar extends AutocompleteEditText {
         int offset = Math.max(0, ellipsizedText.length() - 1);
         if (text.getSpanStart(BoundsEllipsisSpan.INSTANCE) != offset
                 || text.getSpanEnd(BoundsEllipsisSpan.INSTANCE) != textLength) {
+            // The bounds ellipsis hides everything the length limit hides. Keep a single
+            // EllipsisSpan so the two never overlap.
+            text.removeSpan(EllipsisSpan.INSTANCE);
             text.setSpan(
                     BoundsEllipsisSpan.INSTANCE,
                     offset,
@@ -1801,15 +1805,9 @@ public class UrlBar extends AutocompleteEditText {
         Editable text = getText();
         int textLength = text.length();
         if (textLength <= maxLength) {
-            if (mDidEllipsizeTextHint) {
-                EllipsisSpan[] spans = text.getSpans(0, textLength, EllipsisSpan.class);
-                if (spans != null && spans.length > 0) {
-                    assert spans.length == 1 : "Should never apply more than a single EllipsisSpan";
-                    for (int i = 0; i < spans.length; i++) {
-                        text.removeSpan(spans[i]);
-                    }
-                }
-            }
+            // Only drop the length-limit span; setTextWithTruncation() may have just attached a
+            // BoundsEllipsisSpan.
+            if (mDidEllipsizeTextHint) text.removeSpan(EllipsisSpan.INSTANCE);
             mDidEllipsizeTextHint = false;
             return;
         }
