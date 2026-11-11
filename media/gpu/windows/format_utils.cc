@@ -112,6 +112,8 @@ DXGI_FORMAT VideoPixelFormatToDxgiFormat(VideoPixelFormat format) {
       return DXGI_FORMAT_P010;
     case PIXEL_FORMAT_Y410:
       return DXGI_FORMAT_Y410;
+    case PIXEL_FORMAT_Y210:
+      return DXGI_FORMAT_Y210;
     default:
       return DXGI_FORMAT_UNKNOWN;
   }
@@ -132,6 +134,9 @@ DXGI_FORMAT SharedImageFormatToDXGIFormat(viz::SharedImageFormat format) {
   }
   if (format == viz::SinglePlaneFormat::kY410) {
     return DXGI_FORMAT_Y410;
+  }
+  if (format == viz::SinglePlaneFormat::kY210) {
+    return DXGI_FORMAT_Y210;
   }
   return DXGI_FORMAT_UNKNOWN;
 }

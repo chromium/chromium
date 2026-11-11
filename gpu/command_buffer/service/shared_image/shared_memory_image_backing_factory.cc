@@ -11,6 +11,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_memory_image_backing.h"
 #include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
+#include "third_party/skia/include/core/SkColorType.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
 
 namespace gpu {
@@ -139,6 +140,13 @@ bool SharedMemoryImageBackingFactory::IsSupported(
     GrContextType gr_context_type,
     base::span<const uint8_t> pixel_data) {
   if (gmb_type != gfx::SHARED_MEMORY_BUFFER) {
+    return false;
+  }
+
+  // The backing wraps the memory in SkPixmaps of the image size, which needs
+  // an SkColorType at that size. Packed 4:2:2 Y210 has none.
+  if (format.is_single_plane() &&
+      viz::ToClosestSkColorType(format) == kUnknown_SkColorType) {
     return false;
   }
 

@@ -5,7 +5,9 @@
 #include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
 
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image/shared_memory_image_backing_factory.h"
+#include "gpu/config/gpu_preferences.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace gpu {
@@ -86,6 +88,21 @@ TEST(SharedMemoryRegionWrapperTest, BufferTooSmallWrongSize) {
   SharedMemoryRegionWrapper wrapper;
   EXPECT_FALSE(
       wrapper.Initialize(std::move(handle), gfx::Size(200, 200), format));
+}
+
+// Y210 has no SkColorType at the image size (each texel of its packed 4:2:2
+// layout holds two pixels), so the backing can't wrap its memory in SkPixmaps.
+TEST(SharedMemoryImageBackingFactoryTest, Y210Unsupported) {
+  SharedMemoryImageBackingFactory factory;
+  constexpr gfx::Size size(100, 100);
+  EXPECT_TRUE(factory.CanCreateSharedImage(
+      SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, viz::SinglePlaneFormat::kY410, size,
+      /*thread_safe=*/false, gfx::SHARED_MEMORY_BUFFER, GrContextType::kGL,
+      {}));
+  EXPECT_FALSE(factory.CanCreateSharedImage(
+      SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, viz::SinglePlaneFormat::kY210, size,
+      /*thread_safe=*/false, gfx::SHARED_MEMORY_BUFFER, GrContextType::kGL,
+      {}));
 }
 
 }  // namespace

@@ -32,6 +32,13 @@ TEST_F(SharedImageFormatUtilsTest, ToClosestSkColorTypeSinglePlaneY410) {
   TestToClosestSkColorType(expected_types, format);
 }
 
+TEST_F(SharedImageFormatUtilsTest, ToClosestSkColorTypeSinglePlaneY210) {
+  // Each texel holds two pixels, so no SkColorType fits the image size.
+  SharedImageFormat format = SinglePlaneFormat::kY210;
+  std::vector<SkColorType> expected_types = {kUnknown_SkColorType};
+  TestToClosestSkColorType(expected_types, format);
+}
+
 TEST_F(SharedImageFormatUtilsTest, ToClosestSkColorTypeMultiPlaneNV12) {
   // 8-bit 4:2:0 Y_UV biplanar format (YUV_420_BIPLANAR)
   SharedImageFormat format = MultiPlaneFormat::kNV12;

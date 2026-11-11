@@ -11,9 +11,11 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/config/gpu_preferences.h"
+#include "third_party/skia/include/core/SkColorType.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/progress_reporter.h"
@@ -122,6 +124,12 @@ GLCommonImageBackingFactory::GLCommonImageBackingFactory(
   for (auto format : viz::SinglePlaneFormat::kAll) {
     // BG5_565 is not supported for historical reasons.
     if (format == viz::SinglePlaneFormat::kBGR_565) {
+      continue;
+    }
+    // Formats with no SkColorType at the image size can't be allocated as a
+    // texture of the image size. Y210's GL format, for example, is the
+    // half-width R16G16B16A16 view of a packed 4:2:2 D3D texture.
+    if (viz::ToClosestSkColorType(format) == kUnknown_SkColorType) {
       continue;
     }
     const GLFormatDesc format_desc =

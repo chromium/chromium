@@ -70,6 +70,7 @@ size_t VideoFrameLayout::NumPlanes(VideoPixelFormat format) {
     case PIXEL_FORMAT_XB30:
     case PIXEL_FORMAT_RGBAF16:
     case PIXEL_FORMAT_Y410:
+    case PIXEL_FORMAT_Y210:
       return 1;
     case PIXEL_FORMAT_NV12:
     case PIXEL_FORMAT_NV16:

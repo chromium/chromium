@@ -949,6 +949,7 @@ TEST(VideoFrame, AllocationSize_OddSize) {
       case PIXEL_FORMAT_XR30:
       case PIXEL_FORMAT_XB30:
       case PIXEL_FORMAT_Y410:
+      case PIXEL_FORMAT_Y210:
         EXPECT_EQ(60u, VideoFrame::AllocationSize(format, size))
             << VideoPixelFormatToString(format);
         break;
@@ -1362,6 +1363,39 @@ TEST(VideoFrame, GetVisibleSkYUVAPixmaps) {
     EXPECT_EQ(pm.rowBytes(),
               static_cast<size_t>(frame->stride(VideoFrame::Plane::kARGB)));
     EXPECT_EQ(pm.colorType(), kRGBA_1010102_SkColorType);
+    EXPECT_LE(pm.computeByteSize(),
+              frame->GetVisiblePlaneData(VideoFrame::Plane::kARGB).size());
+  }
+
+  // Y210 is read as kYUYV: one (Y0, U, Y1, V) 4-channel 16-bit texel per 2x1
+  // pixel pair at half width, matching the aliased R16G16B16A16 view and the
+  // 4 bytes per pixel the frame stores.
+  for (const gfx::Rect& visible_rect : {kVisibleRect, gfx::Rect(kCodedSize)}) {
+    SCOPED_TRACE(visible_rect.ToString());
+    auto frame =
+        VideoFrame::CreateFrame(PIXEL_FORMAT_Y210, kCodedSize, visible_rect,
+                                visible_rect.size(), base::TimeDelta());
+    ASSERT_TRUE(frame);
+
+    SkYUVAPixmaps yuva_pixmaps = frame->GetVisibleSkYUVAPixmaps();
+    ASSERT_TRUE(yuva_pixmaps.isValid());
+    const SkYUVAInfo& yuva_info = yuva_pixmaps.yuvaInfo();
+    EXPECT_FALSE(frame->GetVisibleRGBPlanePixmap());
+    EXPECT_EQ(yuva_info.dimensions().width(), visible_rect.width());
+    EXPECT_EQ(yuva_info.dimensions().height(), visible_rect.height());
+    EXPECT_EQ(yuva_info.planeConfig(), SkYUVAInfo::PlaneConfig::kYUYV);
+    EXPECT_EQ(yuva_info.subsampling(), SkYUVAInfo::Subsampling::k422);
+
+    const auto& pixmaps = yuva_pixmaps.planes();
+    ASSERT_EQ(yuva_pixmaps.numPlanes(), 1);
+    auto pm = pixmaps[VideoFrame::Plane::kARGB];
+
+    EXPECT_EQ(pm.width(), visible_rect.width() / 2);
+    EXPECT_EQ(pm.height(), visible_rect.height());
+    EXPECT_EQ(pm.addr(), frame->visible_data(VideoFrame::Plane::kARGB));
+    EXPECT_EQ(pm.rowBytes(),
+              static_cast<size_t>(frame->stride(VideoFrame::Plane::kARGB)));
+    EXPECT_EQ(pm.colorType(), kR16G16B16A16_unorm_SkColorType);
     EXPECT_LE(pm.computeByteSize(),
               frame->GetVisiblePlaneData(VideoFrame::Plane::kARGB).size());
   }

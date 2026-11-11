@@ -6,23 +6,32 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "cc/test/fake_output_surface_client.h"
 #include "cc/test/pixel_test_utils.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/frame_sinks/copy_output_util.h"
+#include "components/viz/common/resources/shared_image_format.h"
+#include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/service/display/output_surface_frame.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency_impl.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
 #include "components/viz/test/test_gpu_service_holder.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/service_utils.h"
+#include "gpu/command_buffer/service/shared_context_state.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gl/gl_implementation.h"
@@ -386,5 +395,116 @@ TEST_F(SkiaOutputSurfaceImplTest, CopyOutputBitmapUnsupportedColorSpace) {
 
   EXPECT_EQ(gfx::ColorSpace::CreateSRGB(), result->GetRGBAColorSpace());
 }
+
+struct PackedYuvTestParams {
+  SharedImageFormat format;
+  // The color type of the aliased view that Ganesh samples the texture as.
+  SkColorType view_color_type;
+};
+
+class SkiaOutputSurfaceImplPackedYuvTest
+    : public SkiaOutputSurfaceImplTest,
+      public testing::WithParamInterface<PackedYuvTestParams> {
+ protected:
+  // Returns whether Ganesh can sample textures of `color_type`. SwiftShader,
+  // for example, can't sample R16G16B16A16 (no EXT_texture_norm16).
+  bool IsTexturable(SkColorType color_type) {
+    bool texturable = false;
+    TestGpuServiceHolder::GetInstance()->ScheduleGpuMainTask(
+        base::BindLambdaForTesting([&]() {
+          GrDirectContext* gr_context =
+              GetGpuService()->GetContextState()->gr_context();
+          texturable =
+              gr_context &&
+              gr_context->defaultBackendFormat(color_type, GrRenderable::kNo)
+                  .isValid();
+          UnblockMainThread();
+        }));
+    BlockMainThread();
+    return texturable;
+  }
+
+  // Returns the promise image for a resource of the test format and `size`.
+  sk_sp<SkImage> MakePromiseImage(const gfx::Size& size) {
+    OutputSurface::ReshapeParams reshape_params;
+    reshape_params.size = kSurfaceRect.size();
+    output_surface_->Reshape(reshape_params);
+
+    gpu::SharedImageMetadata metadata;
+    metadata.format = GetParam().format;
+    metadata.size = size;
+    metadata.color_space = gfx::ColorSpace::CreateREC709();
+    metadata.surface_origin = kTopLeft_GrSurfaceOrigin;
+    metadata.alpha_type = kOpaque_SkAlphaType;
+    metadata.usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+    auto resource = TransferableResource::Make(
+        gpu::ClientSharedImage::CreateForTesting(metadata),
+        TransferableResource::ResourceSource::kTest, gpu::SyncToken());
+    std::unique_ptr<ExternalUseClient::ImageContext> image_context =
+        output_surface_->CreateImageContext(resource,
+                                            /*maybe_concurrent_reads=*/false,
+                                            /*client_id=*/0);
+
+    output_surface_->BeginPaintCurrentFrame();
+    output_surface_->MakePromiseSkImage(image_context.get(),
+                                        /*force_rgbx=*/false);
+    sk_sp<SkImage> image = image_context->image();
+    output_surface_->EndPaint(base::DoNothing(),
+                              base::OnceCallback<void(gfx::GpuFenceHandle)>(),
+                              kSurfaceRect, /*is_overlay=*/false);
+    output_surface_->SwapBuffersSkipped(kSurfaceRect);
+    std::vector<std::unique_ptr<ExternalUseClient::ImageContext>>
+        image_contexts;
+    image_contexts.push_back(std::move(image_context));
+    output_surface_->ReleaseImageContexts(std::move(image_contexts));
+    return image;
+  }
+};
+
+// Packed YUV formats are sampled through a YUVA promise image with a single
+// plane. Graphite has no packed YUV path yet, so no image is created there and
+// SkiaRenderer skips the quad.
+TEST_P(SkiaOutputSurfaceImplPackedYuvTest, MakePromiseSkImage) {
+  const gpu::GrContextType gr_context_type =
+      GetGpuService()->gpu_preferences().gr_context_type;
+  const bool is_graphite =
+      gr_context_type == gpu::GrContextType::kGraphiteDawn ||
+      gr_context_type == gpu::GrContextType::kGraphiteVulkan;
+  if (gr_context_type != gpu::GrContextType::kGL && !is_graphite) {
+    GTEST_SKIP() << "Packed YUV is only sampled with Ganesh GL";
+  }
+  const bool expect_image =
+      !is_graphite && IsTexturable(GetParam().view_color_type);
+
+  constexpr gfx::Size kImageSize(64, 48);
+  sk_sp<SkImage> image = MakePromiseImage(kImageSize);
+  if (!expect_image) {
+    EXPECT_FALSE(image);
+    return;
+  }
+  ASSERT_TRUE(image);
+  EXPECT_TRUE(image->isTextureBacked());
+  EXPECT_EQ(image->dimensions(), gfx::SizeToSkISize(kImageSize));
+  // A YUVA image reports the RGBA color type that it's converted to, unlike a
+  // single-plane promise image, which reports the plane's color type.
+  EXPECT_EQ(image->colorType(), kRGBA_8888_SkColorType);
+}
+
+TEST_P(SkiaOutputSurfaceImplPackedYuvTest, MakePromiseSkImageOddWidth) {
+  if (GetGpuService()->gpu_preferences().gr_context_type !=
+      gpu::GrContextType::kGL) {
+    GTEST_SKIP() << "Packed YUV is only sampled with Ganesh GL";
+  }
+  EXPECT_FALSE(MakePromiseImage(gfx::Size(63, 48)));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SkiaOutputSurfaceImplPackedYuvTest,
+    testing::Values(PackedYuvTestParams{SinglePlaneFormat::kY210,
+                                        kR16G16B16A16_unorm_SkColorType}),
+    [](const testing::TestParamInfo<PackedYuvTestParams>& info) {
+      return info.param.format.ToString();
+    });
 
 }  // namespace viz

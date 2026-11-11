@@ -143,6 +143,9 @@ void ReadYUVRow(base::span<const SkPixmap> src_pixmaps,
       case SkYUVAInfo::PlaneConfig::kUYVA:
         src_yuva = {planes[0].fG, planes[0].fR, planes[0].fB, planes[0].fA};
         break;
+#if defined(SK_ENABLE_YUVA_PACKED_422)
+      case SkYUVAInfo::PlaneConfig::kYUYV:
+#endif
       case SkYUVAInfo::PlaneConfig::kUnknown:
         NOTREACHED();
     }
@@ -258,6 +261,9 @@ void BlitRGBAToYUVA(SkImage* src_image,
     case SkYUVAInfo::PlaneConfig::kUYVA:
       permutation_matrices[0] = UYVA;
       break;
+#if defined(SK_ENABLE_YUVA_PACKED_422)
+    case SkYUVAInfo::PlaneConfig::kYUYV:
+#endif
     case SkYUVAInfo::PlaneConfig::kUnknown:
       NOTREACHED();
   }

@@ -113,9 +113,14 @@ enum VideoPixelFormat {
   // Equivalent to DXGI_FORMAT_Y410.
   PIXEL_FORMAT_Y410 = 44,
 
+  // 32bpp packed 10-bit 4:2:2 YUV, 1 plane. Each pair of pixels is packed as
+  // Y0-U-Y1-V in four MSB-aligned 16-bit words, little-endian. Equivalent to
+  // DXGI_FORMAT_Y210.
+  PIXEL_FORMAT_Y210 = 45,
+
   // Please update UMA histogram enumeration when adding new formats here.
   PIXEL_FORMAT_MAX =
-      PIXEL_FORMAT_Y410,  // Must always be equal to largest entry logged.
+      PIXEL_FORMAT_Y210,  // Must always be equal to largest entry logged.
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:VideoPixelFormatUnion)
 

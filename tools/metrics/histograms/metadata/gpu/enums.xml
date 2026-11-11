@@ -1479,6 +1479,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="36" label="YUV444P16"/>
   <int value="37" label="Other"/>
   <int value="38" label="Y410"/>
+  <int value="39" label="Y210"/>
 </enum>
 
 <!-- LINT.IfChange(SkiaBackendType) -->

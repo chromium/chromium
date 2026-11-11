@@ -52,6 +52,8 @@ const char* SinglePlaneFormatToString(SharedImageFormat format) {
     return "R_F16";
   } else if (format == SinglePlaneFormat::kY410) {
     return "Y410";
+  } else if (format == SinglePlaneFormat::kY210) {
+    return "Y210";
   }
   NOTREACHED();
 }
@@ -382,6 +384,7 @@ int SharedImageFormat::BytesPerPixel() const {
     case mojom::SingleplanarFormat::BGRA_1010102:
     case mojom::SingleplanarFormat::RG_1616:
     case mojom::SingleplanarFormat::Y410:
+    case mojom::SingleplanarFormat::Y210:
       return 4;
     case mojom::SingleplanarFormat::RGBA_4444:
     case mojom::SingleplanarFormat::R_F16:

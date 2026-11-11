@@ -739,6 +739,7 @@ void MappableSharedImageVideoFramePool::PoolImpl::CreateHardwareFrame(
     case PIXEL_FORMAT_YUV422AP10:
     case PIXEL_FORMAT_YUV444AP10:
     case PIXEL_FORMAT_Y410:
+    case PIXEL_FORMAT_Y210:
     case PIXEL_FORMAT_UNKNOWN:
       if (is_software_backed_video_frame) {
         UMA_HISTOGRAM_ENUMERATION(

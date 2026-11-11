@@ -96,10 +96,19 @@ SkColor4f GetFallbackColorForPlane(viz::SharedImageFormat format,
   // for all multiplanar format planes that translates to Purple/Magenta color
   // in RGB space. For non-DCHECKed builds return: 1) kWhite for single planar
   // formats; 2) kWhite for Y, A planes and kGray for U, V, UV planes that
-  // translates to White color in RGB colorspace.
+  // translates to White color in RGB colorspace. Y210 gets the multiplanar
+  // colors.
+  const bool is_y210 = format == viz::SinglePlaneFormat::kY210;
 #if DCHECK_IS_ON()
-  return format.is_single_plane() ? SkColors::kRed : SkColors::kWhite;
+  return format.is_single_plane() && !is_y210 ? SkColors::kRed
+                                              : SkColors::kWhite;
 #else
+  if (is_y210) {
+    // Y0-U-Y1-V texels.
+    const float y = SkColors::kWhite.fR;
+    const float uv = SkColors::kGray.fR;
+    return {y, uv, y, uv};
+  }
   if (format.is_single_plane())
     return SkColors::kWhite;
   switch (format.plane_config()) {
@@ -301,6 +310,10 @@ void ImageContextImpl::CreateFallbackImage(
   for (int plane_index = 0; plane_index < num_planes; plane_index++) {
     DCHECK_NE(formats[plane_index].textureType(), GrTextureType::kExternal);
     auto plane_size = format().GetPlaneSize(plane_index, size());
+    if (format() == SinglePlaneFormat::kY210) {
+      // Match the half-width plane of the promise image.
+      plane_size.set_width(plane_size.width() / 2);
+    }
     auto fallback_texture =
         fallback_context_state_->gr_context()->createBackendTexture(
             plane_size.width(), plane_size.height(), formats[plane_index],

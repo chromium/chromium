@@ -55,7 +55,8 @@ enum class SharedImageFormatUMA {
   kYUV444P16 = 36,
   kOther = 37,
   kY410 = 38,
-  kMaxValue = kY410
+  kY210 = 39,
+  kMaxValue = kY210
 };
 
 // Returns the SharedImageFormatUMA type used for emitting in UMA for the given
@@ -69,6 +70,11 @@ SharedImageFormatUMA GetSharedImageFormatUMA(SharedImageFormat format);
 // with R/G channels reversed. This is because from GPU perspective, GL format
 // is always RGBA and there is no difference between RGBA/BGRA. Also, these
 // formats should not be used for software SkImages/SkSurfaces.
+//
+// Returns kUnknown_SkColorType for formats whose texels don't map 1:1 to
+// pixels (packed 4:2:2 Y210), so that SkImageInfos built from the image size
+// can't overrun their rows. Callers that sample such formats have to size
+// their texture views explicitly.
 COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
 SkColorType ToClosestSkColorType(SharedImageFormat format);
 

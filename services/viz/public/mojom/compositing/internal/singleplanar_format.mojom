@@ -23,4 +23,5 @@ enum SingleplanarFormat {
   BGRA_1010102,
   R_F16,
   Y410,
+  Y210,
 };

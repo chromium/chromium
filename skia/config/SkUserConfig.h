@@ -151,6 +151,9 @@ SK_API void SkLog_FileLine(const char* file,
 
 #define SK_LEGACY_LINEAR_INSET
 
+// Packed 4:2:2 format support
+#define SK_ENABLE_YUVA_PACKED_422
+
 ///////////////////////// Imported from BUILD.gn and skia_common.gypi
 
 /* In some places Skia can use static initializers for global initialization,

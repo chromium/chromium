@@ -558,7 +558,8 @@ D3DImageBacking::CreateGLTexture(
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
     GLenum texture_target,
     unsigned array_slice,
-    unsigned plane_index) {
+    unsigned plane_index,
+    bool is_multi_plane_format) {
   gl::GLApi* const api = gl::g_current_gl_context;
   gl::ScopedRestoreTexture scoped_restore(api, texture_target);
 
@@ -575,18 +576,24 @@ D3DImageBacking::CreateGLTexture(
   api->glTexParameteriFn(texture_target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   api->glTexParameteriFn(texture_target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-  const EGLint egl_attrib_list[] = {
+  // EGL_D3D11_TEXTURE_PLANE_ANGLE only applies to multi-planar YUV textures
+  // (NV12/P010/P016); packed single-plane YUV formats (Y410/Y210) have no
+  // planes and ANGLE rejects the attribute for them.
+  std::vector<EGLint> egl_attribs = {
       EGL_TEXTURE_INTERNAL_FORMAT_ANGLE,
       static_cast<EGLint>(gl_format_desc.image_internal_format),
       EGL_D3D11_TEXTURE_ARRAY_SLICE_ANGLE,
       static_cast<EGLint>(array_slice),
-      EGL_D3D11_TEXTURE_PLANE_ANGLE,
-      static_cast<EGLint>(plane_index),
-      EGL_NONE};
+  };
+  if (is_multi_plane_format) {
+    egl_attribs.push_back(EGL_D3D11_TEXTURE_PLANE_ANGLE);
+    egl_attribs.push_back(static_cast<EGLint>(plane_index));
+  }
+  egl_attribs.push_back(EGL_NONE);
 
   auto egl_image = gl::MakeScopedEGLImage(
       EGL_NO_CONTEXT, EGL_D3D11_TEXTURE_ANGLE,
-      static_cast<EGLClientBuffer>(d3d11_texture.Get()), egl_attrib_list);
+      static_cast<EGLClientBuffer>(d3d11_texture.Get()), egl_attribs.data());
 
   if (!egl_image.get()) {
     LOG(ERROR) << "Failed to create an EGL image";
@@ -996,6 +1003,15 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
     wgpu::BackendType backend_type,
     std::vector<wgpu::TextureFormat> view_formats,
     scoped_refptr<SharedContextState> context_state) {
+  // Dawn can't import packed YUV textures yet, and a failed import loses the
+  // Dawn device, and with it the Graphite context.
+  // TODO(crbug.com/537818862): Import them through their aliased formats.
+  if (format() == viz::SinglePlaneFormat::kY210) {
+    LOG(ERROR) << "Dawn doesn't support " << format().ToString()
+               << " shared images";
+    return nullptr;
+  }
+
 #if BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
   if (backend_type == wgpu::BackendType::OpenGLES) {
     std::unique_ptr<GLTextureImageRepresentationBase> gl_representation =
@@ -2276,7 +2292,7 @@ D3DImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
       // Creating the GL texture doesn't require exclusive access to the
       // underlying D3D11 texture.
       holder = CreateGLTexture(gl_format_desc, d3d11_texture, texture_target_,
-                               array_slice_, plane);
+                               array_slice_, plane, format().is_multi_plane());
       if (!holder) {
         LOG(ERROR) << "Failed to create GL texture for plane: " << plane;
         return nullptr;

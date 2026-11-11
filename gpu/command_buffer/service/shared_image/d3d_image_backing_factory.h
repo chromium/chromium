@@ -169,6 +169,10 @@ class GPU_GLES2_EXPORT D3DImageBackingFactory
   // Stores whether P010 format is supported by the D3D device.
   bool d3d11_supports_p010_;
 
+  // Whether the packed 10-bit YUV formats can be created and sampled through
+  // their aliased views. Will be probed with aliased SRV creation.
+  bool d3d11_supports_y210_ = false;
+
   // Capabilities needed for getting the correct GL format for creating GL
   // textures.
   const GLFormatCaps gl_format_caps_;

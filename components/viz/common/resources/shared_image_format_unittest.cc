@@ -42,6 +42,17 @@ TEST_F(SharedImageFormatTest, SinglePlaneY410) {
   EXPECT_EQ(format.EstimatedSizeInBytes(kDefaultSize), 100u * 100u * 4u);
   EXPECT_EQ(format.ToString(), "Y410");
   EXPECT_EQ(SinglePlaneFormat::kAll[15], format);
+  EXPECT_EQ(SinglePlaneFormat::kAll[16], SinglePlaneFormat::kY210);
+}
+
+TEST_F(SharedImageFormatTest, SinglePlaneY210) {
+  // Packed 10-bit 4:2:2 YUV, 32bpp (two pixels in four 16-bit words).
+  SharedImageFormat format = SinglePlaneFormat::kY210;
+  EXPECT_TRUE(format.is_single_plane());
+  EXPECT_EQ(format.NumberOfPlanes(), 1);
+  EXPECT_EQ(format.BytesPerPixel(), 4);
+  EXPECT_EQ(format.EstimatedSizeInBytes(kDefaultSize), 100u * 100u * 4u);
+  EXPECT_EQ(format.ToString(), "Y210");
 }
 
 TEST_F(SharedImageFormatTest, MultiPlaneNV12) {

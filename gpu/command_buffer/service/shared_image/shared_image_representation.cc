@@ -521,7 +521,11 @@ SkiaGaneshImageRepresentation::ScopedGaneshReadAccess::CreateSkImage(
   auto surface_origin = representation()->surface_origin();
   auto sk_color_space =
       representation()->color_space().GetAsFullRangeRGB().ToSkColorSpace();
-  if (format.is_single_plane() || format.PrefersExternalSampler()) {
+  const bool is_packed_yuv =
+      format.is_single_plane() &&
+      ToSkYUVAPlaneConfig(format) != SkYUVAInfo::PlaneConfig::kUnknown;
+  if ((format.is_single_plane() && !is_packed_yuv) ||
+      format.PrefersExternalSampler()) {
     DCHECK_EQ(static_cast<int>(promise_image_textures_.size()), 1);
     auto alpha_type = representation()->alpha_type();
     auto color_type = format.PrefersExternalSampler()
@@ -546,7 +550,7 @@ SkiaGaneshImageRepresentation::ScopedGaneshReadAccess::CreateSkImage(
     // TODO(crbug.com/41380578): This should really default to rec709.
     SkYUVColorSpace yuv_color_space = kRec601_SkYUVColorSpace;
     representation()->color_space().ToSkYUVColorSpace(
-        format.MultiplanarBitDepth(), &yuv_color_space);
+        is_packed_yuv ? 10 : format.MultiplanarBitDepth(), &yuv_color_space);
     SkYUVAInfo yuva_info(sk_size, ToSkYUVAPlaneConfig(format),
                          ToSkYUVASubsampling(format), yuv_color_space);
     GrYUVABackendTextures yuva_backend_textures(yuva_info, yuva_textures.data(),

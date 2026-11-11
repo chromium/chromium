@@ -205,6 +205,53 @@ bool DCompTextureIsSupported(const D3D11_TEXTURE2D_DESC& desc) {
              (D3D11_RESOURCE_MISC_SHARED | D3D11_RESOURCE_MISC_SHARED_NTHANDLE);
 }
 
+DXGI_FORMAT GetPackedYuvAliasedFormat(DXGI_FORMAT format) {
+  switch (format) {
+    case DXGI_FORMAT_Y210:
+      return DXGI_FORMAT_R16G16B16A16_UNORM;
+    default:
+      return DXGI_FORMAT_UNKNOWN;
+  }
+}
+
+// Returns whether an SRV with the aliased format can actually be created on a
+// packed YUV (Y210) texture.
+bool SupportsPackedYuvSampling(ID3D11Device* device, DXGI_FORMAT format) {
+  const DXGI_FORMAT aliased_format = GetPackedYuvAliasedFormat(format);
+  if (aliased_format == DXGI_FORMAT_UNKNOWN) {
+    return false;
+  }
+  UINT format_support = 0;
+  constexpr auto kRequiredUsage =
+      D3D11_FORMAT_SUPPORT_TEXTURE2D | D3D11_FORMAT_SUPPORT_SHADER_SAMPLE;
+  if (FAILED(device->CheckFormatSupport(format, &format_support)) ||
+      (format_support & kRequiredUsage) != kRequiredUsage) {
+    return false;
+  }
+  D3D11_TEXTURE2D_DESC desc = {4,
+                               4,
+                               1,
+                               1,
+                               format,
+                               {1, 0},
+                               D3D11_USAGE_DEFAULT,
+                               D3D11_BIND_SHADER_RESOURCE,
+                               0,
+                               0};
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> texture;
+  if (FAILED(device->CreateTexture2D(&desc, nullptr, &texture))) {
+    return false;
+  }
+  D3D11_SHADER_RESOURCE_VIEW_DESC srv_desc = {};
+  srv_desc.Format = aliased_format;
+  srv_desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+  srv_desc.Texture2D.MostDetailedMip = 0;
+  srv_desc.Texture2D.MipLevels = 1;
+  Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
+  return SUCCEEDED(
+      device->CreateShaderResourceView(texture.Get(), &srv_desc, &srv));
+}
+
 // Formats supported by CreateSharedImage(GMB).
 DXGI_FORMAT GetDXGIFormatForGMB(viz::SharedImageFormat format) {
   if (format == viz::SinglePlaneFormat::kRGBA_8888) {
@@ -217,6 +264,8 @@ DXGI_FORMAT GetDXGIFormatForGMB(viz::SharedImageFormat format) {
     return DXGI_FORMAT_NV12;
   } else if (format == viz::MultiPlaneFormat::kP010) {
     return DXGI_FORMAT_P010;
+  } else if (format == viz::SinglePlaneFormat::kY210) {
+    return DXGI_FORMAT_Y210;
   }
 
   return DXGI_FORMAT_UNKNOWN;
@@ -288,6 +337,9 @@ D3DImageBackingFactory::D3DImageBackingFactory(
     has_required_format_support =
         (format_support & kRequiredUsage) == kRequiredUsage;
     d3d11_supports_p010_ = SUCCEEDED(hr) && has_required_format_support;
+
+    d3d11_supports_y210_ =
+        SupportsPackedYuvSampling(d3d11_device_.Get(), DXGI_FORMAT_Y210);
 
     D3D_FEATURE_LEVEL feature_level = d3d11_device_->GetFeatureLevel();
     if (feature_level < D3D_FEATURE_LEVEL_9_3) {
@@ -386,18 +438,23 @@ gfx::GpuMemoryBufferHandle D3DImageBackingFactory::CreateGpuMemoryBufferHandle(
          usage == gfx::BufferUsage::SCANOUT_CPU_READ_WRITE)
       << "Incorrect usage, usage=" << gfx::BufferUsageToString(usage);
 
-  D3D11_TEXTURE2D_DESC desc = {
-      static_cast<UINT>(size.width()),
-      static_cast<UINT>(size.height()),
-      1,
-      1,
-      dxgi_format,
-      {1, 0},
-      D3D11_USAGE_DEFAULT,
-      D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET,
-      0,
-      D3D11_RESOURCE_MISC_SHARED_NTHANDLE |
-          D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX};
+  // Packed YUV formats cannot be bound as render targets.
+  UINT bind_flags = D3D11_BIND_SHADER_RESOURCE;
+  if (dxgi_format != DXGI_FORMAT_Y210) {
+    bind_flags |= D3D11_BIND_RENDER_TARGET;
+  }
+
+  D3D11_TEXTURE2D_DESC desc = {static_cast<UINT>(size.width()),
+                               static_cast<UINT>(size.height()),
+                               1,
+                               1,
+                               dxgi_format,
+                               {1, 0},
+                               D3D11_USAGE_DEFAULT,
+                               bind_flags,
+                               0,
+                               D3D11_RESOURCE_MISC_SHARED_NTHANDLE |
+                                   D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX};
 
   Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
 
@@ -698,7 +755,11 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
   desc.SampleDesc.Count = 1;
   desc.SampleDesc.Quality = 0;
   desc.Usage = D3D11_USAGE_DEFAULT;
-  desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+  // Packed YUV formats cannot be bound as render targets.
+  desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+  if (dxgi_format != DXGI_FORMAT_Y210) {
+    desc.BindFlags |= D3D11_BIND_RENDER_TARGET;
+  }
   desc.CPUAccessFlags = 0;
   desc.MiscFlags = 0;
 
@@ -1120,6 +1181,42 @@ bool D3DImageBackingFactory::IsSupported(SharedImageUsageSet usage,
 
   if (!pixel_data.empty() && !IsFormatSupportedForInitialData(format)) {
     return false;
+  }
+
+  if (format == viz::SinglePlaneFormat::kY210) {
+    // Y210 is currently "sample-only". Skia YUV sampling and the
+    // video decode / encode paths are supported; GPU writes and WebGPU usage
+    // are not. Checked before the early returns below.
+    constexpr auto kUnsupportedUsages =
+        gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
+        gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+        gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE |
+        gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE |
+        gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
+        gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE;
+    if (usage.HasAny(kUnsupportedUsages)) {
+      return false;
+    }
+    if (!d3d11_supports_y210_) {
+      LOG(ERROR) << "D3D device does not support " << format.ToString()
+                 << " texture creation";
+      return false;
+    }
+    // The packed 4:2:2 layout stores two pixels per texel pair, so Y210
+    // requires an even width.
+    if (size.width() % 2 != 0) {
+      LOG(ERROR) << "Y210 requires an even width, provided size="
+                 << size.ToString();
+      return false;
+    }
+    if (size.width() > max_2d_texture_dim_supported_ ||
+        size.height() > max_2d_texture_dim_supported_) {
+      LOG(ERROR)
+          << "Provided size=" << size.ToString()
+          << "is not supported by d3d device, with max supported dimensions="
+          << max_2d_texture_dim_supported_;
+      return false;
+    }
   }
 
   const bool is_scanout = usage.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);

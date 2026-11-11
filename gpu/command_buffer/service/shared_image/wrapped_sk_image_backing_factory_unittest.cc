@@ -786,5 +786,25 @@ INSTANTIATE_TEST_SUITE_P(
     TestParamToString);
 #endif  // BUILDFLAG(IS_WIN)
 
+class WrappedSkImageBackingFactoryUnsupportedFormatTest
+    : public WrappedSkImageBackingFactoryTest {};
+
+TEST_P(WrappedSkImageBackingFactoryUnsupportedFormatTest,
+       CanCreateSharedImage) {
+  EXPECT_FALSE(backing_factory_->CanCreateSharedImage(
+      kUsage, GetFormat(), gfx::Size(100, 100), /*thread_safe=*/false,
+      gfx::EMPTY_BUFFER, gr_context_type(), {}));
+}
+
+// Y210 has no SkColorType at the image size: each texel of its packed 4:2:2
+// layout holds two pixels.
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    WrappedSkImageBackingFactoryUnsupportedFormatTest,
+    testing::Combine(testing::Values(viz::SinglePlaneFormat::kY210),
+                     testing::Values(GrContextType::kGL,
+                                     GrContextType::kGraphiteDawn)),
+    TestParamToString);
+
 }  // namespace
 }  // namespace gpu

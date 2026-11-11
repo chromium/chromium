@@ -53,9 +53,15 @@ std::unique_ptr<SkiaGLImageRepresentation> SkiaGLImageRepresentation::Create(
         format.PrefersExternalSampler()
             ? caps.ToGLFormatDescExternalSampler(format)
             : caps.ToGLFormatDesc(format, /*plane_index=*/0);
+    gfx::Size texture_size = backing->size();
+    if (format == viz::SinglePlaneFormat::kY210) {
+      // The GL texture wraps the aliased R16G16B16A16 view of the Y210
+      // texture at half width: each texel holds two pixels as Y0-U-Y1-V.
+      texture_size.set_width(texture_size.width() / 2);
+    }
     if (!GetGrBackendTexture(
             context_state->feature_info(),
-            gl_representation->GetTextureBase()->target(), backing->size(),
+            gl_representation->GetTextureBase()->target(), texture_size,
             gl_representation->GetTextureBase()->service_id(),
             gl_format_desc.storage_internal_format,
             context_state->gr_context()->threadSafeProxy(), &backend_texture)) {

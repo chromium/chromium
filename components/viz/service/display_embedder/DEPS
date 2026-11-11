@@ -60,6 +60,7 @@ include_rules = [
 specific_include_rules = {
   ".*_unittest\\.cc": [
     "+cc/test",
+    "+gpu/command_buffer/client/client_shared_image.h",
     "+third_party/angle/include/GLES2",
   ],
   "software_output_device_ozone_unittest.cc": [

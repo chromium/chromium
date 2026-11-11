@@ -812,6 +812,11 @@ SkColorType SkColorTypeForPlaneNoCheck(VideoPixelFormat format, size_t plane) {
       return kRGBA_F16_SkColorType;
     case PIXEL_FORMAT_Y410:
       return kRGBA_1010102_SkColorType;
+    case PIXEL_FORMAT_Y210:
+      // SkYUVAInfo::PlaneConfig::kYUYV reads Y210 as one 4-channel 16-bit
+      // texel per 2x1 pixel pair at half width, matching the aliased
+      // R16G16B16A16 view of the D3D texture.
+      return kR16G16B16A16_unorm_SkColorType;
     default:
       return kUnknown_SkColorType;
   }
@@ -885,6 +890,10 @@ SkYUVAInfo::PlaneConfig SkYUVAPlaneConfigForFormat(VideoPixelFormat format) {
       return SkYUVAInfo::PlaneConfig::kY_UV_A;
     case PIXEL_FORMAT_Y410:
       return SkYUVAInfo::PlaneConfig::kUYVA;
+    case PIXEL_FORMAT_Y210:
+      // Y210's Y0-U-Y1-V 16-bit words read as one 4-channel texel per 2x1
+      // pixel pair at half width.
+      return SkYUVAInfo::PlaneConfig::kYUYV;
   }
 }
 

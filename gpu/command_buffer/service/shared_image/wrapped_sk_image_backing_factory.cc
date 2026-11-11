@@ -185,6 +185,13 @@ bool WrappedSkImageBackingFactory::IsSupported(
     }
   }
 
+  if (format.is_single_plane() &&
+      viz::ToClosestSkColorType(format) == kUnknown_SkColorType) {
+    // No SkColorType describes the format at the image size, e.g. packed
+    // 4:2:2 Y210 whose texels each hold two pixels.
+    return false;
+  }
+
   if (context_state_->context_lost()) {
     return false;
   }

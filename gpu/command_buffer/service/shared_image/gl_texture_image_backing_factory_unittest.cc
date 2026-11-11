@@ -166,6 +166,24 @@ TEST_F(GLTextureImageBackingFactoryTest, InvalidFormat) {
   EXPECT_FALSE(supported);
 }
 
+// Y210 has no SkColorType at the image size: its GL format is the half-width
+// R16G16B16A16 view of a packed 4:2:2 D3D texture, which a texture allocated
+// at the image size can't represent.
+TEST_F(GLTextureImageBackingFactoryTest, Y210Unsupported) {
+  auto format = viz::SinglePlaneFormat::kY210;
+  gfx::Size size(256, 256);
+  gpu::SharedImageUsageSet usage = SHARED_IMAGE_USAGE_GLES2_READ;
+  EXPECT_FALSE(backing_factory_->CanCreateSharedImage(
+      usage, format, size, /*thread_safe=*/false, gfx::EMPTY_BUFFER,
+      GrContextType::kGL, {}));
+
+  std::vector<uint8_t> initial_data(
+      format.MaybeEstimatedSizeInBytes(size).value());
+  EXPECT_FALSE(backing_factory_->CanCreateSharedImage(
+      usage, format, size, /*thread_safe=*/false, gfx::EMPTY_BUFFER,
+      GrContextType::kGL, initial_data));
+}
+
 TEST_F(GLTextureImageBackingFactoryTest, InvalidUsageWithANGLEMetal) {
   auto format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::Size size(256, 256);

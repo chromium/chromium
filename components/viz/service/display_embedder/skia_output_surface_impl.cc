@@ -531,7 +531,10 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImage(
   }
 
   auto format = image_context->format();
-  if (format.is_single_plane() || format.PrefersExternalSampler()) {
+  if (format == SinglePlaneFormat::kY210) {
+    DCHECK(!force_rgbx);
+    MakePromiseSkImagePackedYuv(image_context_impl);
+  } else if (format.is_single_plane() || format.PrefersExternalSampler()) {
     MakePromiseSkImageSinglePlane(image_context_impl, /*mipmapped=*/false,
                                   force_rgbx);
   } else {
@@ -682,6 +685,52 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageMultiPlane(
     if (image) {
       image_context->SetImage(std::move(image), std::move(formats));
     }
+  }
+}
+
+void SkiaOutputSurfaceImpl::MakePromiseSkImagePackedYuv(
+    ImageContextImpl* image_context) {
+  CHECK(!image_context->has_image());
+  auto format = image_context->format();
+  CHECK(format == SinglePlaneFormat::kY210);
+  if (graphite_recorder_) {
+    // TODO(crbug.com/537818862): Add a Graphite path once Dawn can import
+    // packed YUV textures and Graphite can sample kYUYV. Until then, leave
+    // the image unset so that SkiaRenderer skips the quad.
+    LOG(ERROR) << format.ToString() << " is not supported with Graphite";
+    return;
+  }
+  CHECK(gr_context_thread_safe_);
+
+  const gfx::ColorSpace& color_space = image_context->color_space();
+  // There should be no usages of RGB matrix for color space here.
+  CHECK(color_space.GetMatrixID() != gfx::ColorSpace::MatrixID::RGB);
+  SkYUVAInfo::PlaneConfig plane_config = gpu::ToSkYUVAPlaneConfig(format);
+  SkYUVAInfo::Subsampling subsampling = gpu::ToSkYUVASubsampling(format);
+  SkYUVColorSpace sk_yuv_color_space = kRec601_SkYUVColorSpace;
+  color_space.ToSkYUVColorSpace(/*bit_depth=*/10, &sk_yuv_color_space);
+  SkYUVAInfo yuva_info(gfx::SizeToSkISize(image_context->size()), plane_config,
+                       subsampling, sk_yuv_color_space);
+
+  CHECK_EQ(image_context->origin(), kTopLeft_GrSurfaceOrigin);
+  GrBackendFormat backend_format =
+      GetGrBackendFormatForTexture(image_context, /*plane_index=*/0);
+  GrYUVABackendTextureInfo yuva_backend_info(yuva_info, &backend_format,
+                                             skgpu::Mipmapped::kNo,
+                                             kTopLeft_GrSurfaceOrigin);
+  if (!yuva_backend_info.isValid()) {
+    LOG(ERROR) << "Invalid " << format.ToString()
+               << " promise image, size=" << image_context->size().ToString();
+    return;
+  }
+  FulfillForPlane* fulfill = new FulfillForPlane(image_context);
+  void* fulfills[SkYUVAInfo::kMaxPlanes] = {fulfill};
+  auto image = SkImages::PromiseTextureFromYUVA(
+      gr_context_thread_safe_, yuva_backend_info,
+      image_context->GetSkColorSpace(), FulfillGanesh, CleanUp, fulfills);
+  LOG_IF(ERROR, !image) << "Failed to create the packed yuv promise sk image";
+  if (image) {
+    image_context->SetImage(std::move(image), {backend_format});
   }
 }
 

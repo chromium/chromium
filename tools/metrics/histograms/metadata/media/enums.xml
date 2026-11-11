@@ -3090,6 +3090,7 @@ chromium-metrics-reviews@google.com.
   <int value="42" label="P210LE"/>
   <int value="43" label="P410LE"/>
   <int value="44" label="Y410"/>
+  <int value="45" label="Y210"/>
 </enum>
 
 <!-- LINT.ThenChange(//media/base/video_types.h:VideoPixelFormat) -->

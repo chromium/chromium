@@ -328,6 +328,7 @@ class D3DImageBackingFactoryTest
   void RunCreateSharedImageFromHandleTest(DXGI_FORMAT dxgi_format);
   void RunCreateFromSharedMemoryMultiplanarTest(bool use_async_copy);
   void RunMultiplanarUploadAndReadback();
+  void RunPackedYuvNotImportedToDawnTest(viz::SharedImageFormat format);
 
   static constexpr wgpu::FeatureName kRequiredFeatures[] = {
       // We need to request internal usage to be able to do operations with
@@ -2499,6 +2500,166 @@ TEST_P(D3DImageBackingFactoryTest, CreateP010Backing) {
   ASSERT_NE(backing, nullptr);
   EXPECT_EQ(backing->format(), format);
   EXPECT_EQ(backing->size(), size);
+}
+
+// Dawn can't import packed YUV textures, so the backing must not hand them to
+// Dawn. A failed import loses the Dawn device, and with it the Graphite
+// context.
+void D3DImageBackingFactoryTest::RunPackedYuvNotImportedToDawnTest(
+    viz::SharedImageFormat format) {
+  if (context_state_->IsGraphiteDawnD3D12()) {
+    GTEST_SKIP() << "The factory has no D3D11 device to create textures with.";
+  }
+
+  constexpr gfx::Size size(32, 32);
+  constexpr gpu::SharedImageUsageSet usage =
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+  if (!shared_image_factory_->CanCreateSharedImage(
+          usage, format, size, /*thread_safe=*/false,
+          gfx::GpuMemoryBufferType::EMPTY_BUFFER,
+          context_state_->gr_context_type(), {})) {
+    GTEST_SKIP() << "D3D device can't sample " << format.ToString()
+                 << " through its aliased view";
+  }
+
+  const auto mailbox = Mailbox::Generate();
+  auto backing = shared_image_factory_->CreateSharedImage(
+      mailbox,
+      {format, size, gfx::ColorSpace::CreateREC709(), kTopLeft_GrSurfaceOrigin,
+       kOpaque_SkAlphaType, usage, "TestLabel"},
+      kNullSurfaceHandle, /*is_thread_safe=*/false);
+  ASSERT_NE(backing, nullptr);
+  std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
+      shared_image_manager_.Register(std::move(backing),
+                                     memory_type_tracker_.get());
+
+  auto skia_representation = shared_image_representation_factory_->ProduceSkia(
+      mailbox, context_state_);
+  if (context_state_->gr_context()) {
+    // Ganesh samples the texture through its GL representation.
+    EXPECT_TRUE(skia_representation);
+    return;
+  }
+
+  // Graphite reads through Dawn.
+  EXPECT_FALSE(skia_representation);
+  wgpu::Device device = context_state_->dawn_context_provider()->GetDevice();
+  wgpu::AdapterInfo adapter_info;
+  device.GetAdapter().GetInfo(&adapter_info);
+  EXPECT_FALSE(shared_image_representation_factory_->ProduceDawn(
+      mailbox, device, adapter_info.backendType, {}, context_state_));
+  EXPECT_FALSE(context_state_->dawn_context_provider()->GetResetStatus());
+}
+
+TEST_P(D3DImageBackingFactoryTest, Y210NotImportedToDawn) {
+  RunPackedYuvNotImportedToDawnTest(viz::SinglePlaneFormat::kY210);
+}
+
+TEST_P(D3DImageBackingFactoryTest, Y210UnsupportedUsages) {
+  auto can_create = [&](gpu::SharedImageUsageSet usage, const gfx::Size& size) {
+    return shared_image_factory_->CanCreateSharedImage(
+        usage, viz::SinglePlaneFormat::kY210, size, /*thread_safe=*/false,
+        gfx::GpuMemoryBufferType::EMPTY_BUFFER,
+        context_state_->gr_context_type(), {});
+  };
+  constexpr gfx::Size size(32, 32);
+  if (!can_create(gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, size)) {
+    GTEST_SKIP() << "D3D device can't sample Y210 through its aliased view";
+  }
+
+  for (gpu::SharedImageUsageSet usage :
+       {gpu::SHARED_IMAGE_USAGE_GLES2_WRITE,
+        gpu::SHARED_IMAGE_USAGE_RASTER_WRITE,
+        gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE,
+        gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE,
+        gpu::SHARED_IMAGE_USAGE_WEBGPU_READ,
+        gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE}) {
+    EXPECT_FALSE(can_create(gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | usage, size))
+        << CreateLabelForSharedImageUsage(usage);
+  }
+  EXPECT_FALSE(can_create(gpu::SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER |
+                              gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
+                              gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE,
+                          gfx::Size(64, 1)));
+}
+
+TEST_P(D3DImageBackingFactoryTest, Y210CreateSkImage) {
+  if (!context_state_->gr_context()) {
+    GTEST_SKIP() << "Graphite can't sample Y210 yet";
+  }
+  constexpr viz::SharedImageFormat format = viz::SinglePlaneFormat::kY210;
+  constexpr gfx::Size size(32, 32);
+  constexpr gpu::SharedImageUsageSet usage =
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+  if (!shared_image_factory_->CanCreateSharedImage(
+          usage, format, size, /*thread_safe=*/false,
+          gfx::GpuMemoryBufferType::EMPTY_BUFFER,
+          context_state_->gr_context_type(), {})) {
+    GTEST_SKIP() << "D3D device can't sample Y210 through its aliased view";
+  }
+
+  // Different Y in even and odd pixels and extreme U and V, so that swapped
+  // channels show.
+  constexpr uint16_t kY0 = 1023 << 6;
+  constexpr uint16_t kY1 = 64 << 6;
+  constexpr uint16_t kU = 1023 << 6;
+  constexpr uint16_t kV = 0;
+  std::vector<uint16_t> pixels;
+  for (int i = 0; i < size.GetArea() / 2; ++i) {
+    pixels.insert(pixels.end(), {kY0, kU, kY1, kV});
+  }
+  D3D11_SUBRESOURCE_DATA data = {};
+  data.pSysMem = pixels.data();
+  data.SysMemPitch = static_cast<UINT>(size.width() * 4);
+  CD3D11_TEXTURE2D_DESC desc(DXGI_FORMAT_Y210, size.width(), size.height(), 1,
+                             1, D3D11_BIND_SHADER_RESOURCE);
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
+  ASSERT_HRESULT_SUCCEEDED(
+      shared_image_factory_->GetDeviceForTesting()->CreateTexture2D(
+          &desc, &data, &d3d11_texture));
+
+  const auto mailbox = Mailbox::Generate();
+  auto backing = D3DImageBacking::Create(
+      mailbox,
+      SharedImageInfo(format, size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
+                      kOpaque_SkAlphaType, usage, "TestLabel"),
+      d3d11_texture, /*dxgi_shared_handle_state=*/nullptr,
+      context_state_->GetGLFormatCaps(), GL_TEXTURE_2D, /*array_slice=*/0);
+  ASSERT_TRUE(backing);
+  backing->SetCleared();
+  std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
+      shared_image_manager_.Register(std::move(backing),
+                                     memory_type_tracker_.get());
+
+  auto skia_representation = shared_image_representation_factory_->ProduceSkia(
+      mailbox, context_state_);
+  ASSERT_TRUE(skia_representation);
+  auto scoped_read_access =
+      skia_representation->BeginScopedReadAccess(nullptr, nullptr);
+  ASSERT_TRUE(scoped_read_access);
+  sk_sp<SkImage> sk_image =
+      scoped_read_access->CreateSkImage(context_state_.get());
+  ASSERT_TRUE(sk_image);
+  EXPECT_EQ(sk_image->dimensions(), gfx::SizeToSkISize(size));
+
+  SkBitmap bitmap;
+  bitmap.allocPixels(SkImageInfo::Make(
+      gfx::SizeToSkISize(size), kRGBA_8888_SkColorType, kOpaque_SkAlphaType));
+  ASSERT_TRUE(ReadPixels(sk_image, bitmap.info(), bitmap.getPixels(),
+                         bitmap.rowBytes(), 0, 0));
+
+  // YUV(1023, 1023, 0) and YUV(64, 1023, 0) with the default BT.601 matrix.
+  SkBitmap expected_bitmap;
+  expected_bitmap.allocPixels(bitmap.info());
+  for (int x = 0; x < size.width(); ++x) {
+    expected_bitmap.erase(
+        x % 2 == 0 ? SkColorSetRGB(74, 255, 255) : SkColorSetRGB(0, 54, 255),
+        SkIRect::MakeXYWH(x, 0, 1, size.height()));
+  }
+  EXPECT_TRUE(cc::MatchesBitmap(bitmap, expected_bitmap,
+                                cc::FuzzyPixelComparator()
+                                    .SetErrorPixelsPercentageLimit(100.f)
+                                    .SetAbsErrorLimit(2)));
 }
 
 TEST_P(D3DImageBackingFactoryTest, CanProduceDCompTextureOverlay) {

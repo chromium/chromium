@@ -69,6 +69,8 @@ SharedImageFormatUMA GetSharedImageFormatUMA(SharedImageFormat format) {
       return SharedImageFormatUMA::kR_F16;
     } else if (format == SinglePlaneFormat::kY410) {
       return SharedImageFormatUMA::kY410;
+    } else if (format == SinglePlaneFormat::kY210) {
+      return SharedImageFormatUMA::kY210;
     }
     NOTREACHED();
   }
@@ -156,7 +158,10 @@ SkColorType ToClosestSkColorType(SharedImageFormat format) {
              // Y410 is sampled through the aliased R10G10B10A2 format.
              format == SinglePlaneFormat::kY410) {
     return kRGBA_1010102_SkColorType;
-
+  } else if (format == SinglePlaneFormat::kY210) {
+    // Each Y210 texel holds two pixels, so no SkColorType describes a Y210
+    // image at its size. Its R16G16B16A16 view is half the image width.
+    return kUnknown_SkColorType;
   } else if (format == SinglePlaneFormat::kR_8) {
     return kR8_unorm_SkColorType;
   } else if (format == SinglePlaneFormat::kR_16) {

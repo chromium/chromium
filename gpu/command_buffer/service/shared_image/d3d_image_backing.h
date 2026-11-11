@@ -220,7 +220,8 @@ class GPU_GLES2_EXPORT D3DImageBacking final
       Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
       GLenum texture_target = GL_TEXTURE_2D,
       unsigned array_slice = 0u,
-      unsigned plane_index = 0u);
+      unsigned plane_index = 0u,
+      bool is_multi_plane_format = false);
 
   // Only for test use.
   bool HasStagingTextureForTesting() const;

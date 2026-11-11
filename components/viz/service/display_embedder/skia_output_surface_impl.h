@@ -276,6 +276,12 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
                                      bool mipmapped,
                                      bool force_rgbx);
   void MakePromiseSkImageMultiPlane(ImageContextImpl* image_context);
+
+  // Creates a YUV-sampled promise image for packed single-plane YUV formats
+  // (Y210), whose textures are sampled through aliased formats of the same bit
+  // layout. Ganesh only for now: with Graphite no image is created, so the
+  // quad isn't drawn.
+  void MakePromiseSkImagePackedYuv(ImageContextImpl* image_context);
   void ContextLost();
   void RecreateRootDDLRecorder();
 

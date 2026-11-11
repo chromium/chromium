@@ -81,7 +81,9 @@ GLenum GLDataFormat(viz::SharedImageFormat format, int plane_index) {
         format == viz::SinglePlaneFormat::kRGBA_1010102 ||
         format == viz::SinglePlaneFormat::kBGRA_1010102 ||
         // Y410 is sampled through the aliased R10G10B10A2 format.
-        format == viz::SinglePlaneFormat::kY410) {
+        format == viz::SinglePlaneFormat::kY410 ||
+        // Y210 is sampled through the aliased R16G16B16A16 format.
+        format == viz::SinglePlaneFormat::kY210) {
       return GL_RGBA;
     } else if (format == viz::SinglePlaneFormat::kBGRA_8888) {
       return GL_BGRA_EXT;
@@ -129,7 +131,8 @@ GLenum GLDataType(viz::SharedImageFormat format) {
                format == viz::SinglePlaneFormat::kRGBA_F16) {
       return GL_HALF_FLOAT_OES;
     } else if (format == viz::SinglePlaneFormat::kR_16 ||
-               format == viz::SinglePlaneFormat::kRG_1616) {
+               format == viz::SinglePlaneFormat::kRG_1616 ||
+               format == viz::SinglePlaneFormat::kY210) {
       return GL_UNSIGNED_SHORT;
     } else if (format == viz::SinglePlaneFormat::kRGBA_1010102 ||
                format == viz::SinglePlaneFormat::kBGRA_1010102 ||
@@ -172,6 +175,10 @@ GLenum GLInternalFormat(viz::SharedImageFormat format, int plane_index) {
                // Y410 is sampled through the aliased R10G10B10A2 format.
                format == viz::SinglePlaneFormat::kY410) {
       return GL_RGB10_A2_EXT;
+    } else if (format == viz::SinglePlaneFormat::kY210) {
+      // Y210 is sampled through the aliased R16G16B16A16 format (each texel
+      // holds two pixels), exposed by ANGLE at half width.
+      return GL_RGBA16_EXT;
     }
     return GLDataFormat(format, /*plane_index=*/0);
   }
@@ -230,6 +237,10 @@ GLenum TextureStorageFormat(viz::SharedImageFormat format,
                // Y410 is sampled through the aliased R10G10B10A2 format.
                format == viz::SinglePlaneFormat::kY410) {
       return GL_RGB10_A2_EXT;
+    } else if (format == viz::SinglePlaneFormat::kY210) {
+      // Y210 is sampled through the aliased R16G16B16A16 format (each texel
+      // holds two pixels), exposed by ANGLE at half width.
+      return GL_RGBA16_EXT;
     }
 
     NOTREACHED();
@@ -295,6 +306,16 @@ viz::SharedImageFormat GetEffectiveCopyFormat(viz::SharedImageFormat format) {
 }
 
 SkYUVAInfo::PlaneConfig ToSkYUVAPlaneConfig(viz::SharedImageFormat format) {
+  if (format.is_single_plane()) {
+    // Packed single-plane YUV formats.
+    if (format == viz::SinglePlaneFormat::kY210) {
+      // Y210 packs two pixels into one RGBA16 texel as Y0-U-Y1-V (Y in R/B,
+      // U in G, V in A) at half width; sampled through the aliased
+      // R16G16B16A16 view.
+      return SkYUVAInfo::PlaneConfig::kYUYV;
+    }
+    return SkYUVAInfo::PlaneConfig::kUnknown;
+  }
   switch (format.plane_config()) {
     case PlaneConfig::kY_U_V:
       return SkYUVAInfo::PlaneConfig::kY_U_V;
@@ -310,6 +331,12 @@ SkYUVAInfo::PlaneConfig ToSkYUVAPlaneConfig(viz::SharedImageFormat format) {
 }
 
 SkYUVAInfo::Subsampling ToSkYUVASubsampling(viz::SharedImageFormat format) {
+  if (format.is_single_plane()) {
+    if (format == viz::SinglePlaneFormat::kY210) {
+      return SkYUVAInfo::Subsampling::k422;
+    }
+    return SkYUVAInfo::Subsampling::kUnknown;
+  }
   switch (format.subsampling()) {
     case Subsampling::k420:
       return SkYUVAInfo::Subsampling::k420;
@@ -557,6 +584,8 @@ DXGI_FORMAT ToDXGIFormat(viz::SharedImageFormat format) {
     return DXGI_FORMAT_P010;
   } else if (format == viz::SinglePlaneFormat::kRGBA_1010102) {
     return DXGI_FORMAT_R10G10B10A2_UNORM;
+  } else if (format == viz::SinglePlaneFormat::kY210) {
+    return DXGI_FORMAT_Y210;
   } else if (format == viz::SinglePlaneFormat::kR_8) {
     // TOOD(crbug.com/416285370): Remove these single channel format checks.
     return DXGI_FORMAT_R8_UNORM;
