@@ -6153,6 +6153,12 @@
       status: "stable",
     },
     {
+      // Killswitch for crbug.com/479637572.
+      name: "ServiceWorkerStaticRouterTimingRouterSourceFields",
+      depends_on: ["ServiceWorkerStaticRouterTimingInfo"],
+      status: "stable",
+    },
+    {
       name: "SetHTMLCanRunScripts",
       status: "stable",
     },

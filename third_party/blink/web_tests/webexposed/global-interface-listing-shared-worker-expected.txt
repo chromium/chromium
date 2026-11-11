@@ -1646,7 +1646,9 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter serverTiming
 [Worker]     getter transferSize
 [Worker]     getter workerCacheLookupStart
+[Worker]     getter workerFinalRouterSource
 [Worker]     getter workerFinalSourceType
+[Worker]     getter workerMatchedRouterSource
 [Worker]     getter workerMatchedSourceType
 [Worker]     getter workerRouterEvaluationStart
 [Worker]     getter workerStart

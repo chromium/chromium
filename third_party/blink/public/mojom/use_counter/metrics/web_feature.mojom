@@ -5364,6 +5364,14 @@ enum WebFeature {
   kSmartCardContextRelease = 6046,
   kSameDocumentSameSiteCrossOriginInitiator = 6047,
   kSameDocumentCrossSiteInitiator = 6048,
+  kV8PerformanceResourceTiming_WorkerMatchedRouterSource_AttributeGetter = 6079,
+  kV8PerformanceResourceTiming_WorkerFinalRouterSource_AttributeGetter = 6080,
+  kPerformanceResourceTimingWorkerMatchedSourceTypeNonEmpty = 6081,
+  kPerformanceResourceTimingWorkerFinalSourceTypeNonEmpty = 6082,
+  kPerformanceResourceTimingWorkerMatchedRouterSourceNonEmpty = 6083,
+  kPerformanceResourceTimingWorkerFinalRouterSourceNonEmpty = 6084,
+  kPerformanceResourceTimingWorkerMatchedBothGettersNonEmpty = 6085,
+  kPerformanceResourceTimingWorkerFinalBothGettersNonEmpty = 6086,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

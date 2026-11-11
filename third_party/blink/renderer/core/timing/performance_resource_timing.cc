@@ -254,7 +254,7 @@ DOMHighResTimeStamp PerformanceResourceTiming::workerCacheLookupStart() const {
       info_->allow_negative_values, CrossOriginIsolatedCapability());
 }
 
-AtomicString PerformanceResourceTiming::workerMatchedSourceType() const {
+AtomicString PerformanceResourceTiming::GetWorkerMatchedRouterSource() const {
   if (!info_->service_worker_router_info ||
       !info_->service_worker_router_info->matched_source_type) {
     return AtomicString();
@@ -264,7 +264,7 @@ AtomicString PerformanceResourceTiming::workerMatchedSourceType() const {
       *info_->service_worker_router_info->matched_source_type));
 }
 
-AtomicString PerformanceResourceTiming::workerFinalSourceType() const {
+AtomicString PerformanceResourceTiming::GetWorkerFinalRouterSource() const {
   if (!info_->service_worker_router_info ||
       !info_->service_worker_router_info->actual_source_type) {
     return AtomicString();
@@ -272,6 +272,77 @@ AtomicString PerformanceResourceTiming::workerFinalSourceType() const {
 
   return AtomicString(ServiceWorkerRouterInfo::GetRouterSourceTypeString(
       *info_->service_worker_router_info->actual_source_type));
+}
+
+AtomicString PerformanceResourceTiming::workerMatchedRouterSource(
+    ExecutionContext* context) const {
+  AtomicString result = GetWorkerMatchedRouterSource();
+  if (!result.empty()) {
+    UseCounter::Count(
+        context,
+        WebFeature::
+            kPerformanceResourceTimingWorkerMatchedRouterSourceNonEmpty);
+    matched_router_source_read_ = true;
+    if (matched_source_type_read_) {
+      UseCounter::Count(
+          context,
+          WebFeature::
+              kPerformanceResourceTimingWorkerMatchedBothGettersNonEmpty);
+    }
+  }
+  return result;
+}
+
+AtomicString PerformanceResourceTiming::workerFinalRouterSource(
+    ExecutionContext* context) const {
+  AtomicString result = GetWorkerFinalRouterSource();
+  if (!result.empty()) {
+    UseCounter::Count(
+        context,
+        WebFeature::kPerformanceResourceTimingWorkerFinalRouterSourceNonEmpty);
+    final_router_source_read_ = true;
+    if (final_source_type_read_) {
+      UseCounter::Count(
+          context,
+          WebFeature::kPerformanceResourceTimingWorkerFinalBothGettersNonEmpty);
+    }
+  }
+  return result;
+}
+
+AtomicString PerformanceResourceTiming::workerMatchedSourceType(
+    ExecutionContext* context) const {
+  AtomicString result = GetWorkerMatchedRouterSource();
+  if (!result.empty()) {
+    UseCounter::Count(
+        context,
+        WebFeature::kPerformanceResourceTimingWorkerMatchedSourceTypeNonEmpty);
+    matched_source_type_read_ = true;
+    if (matched_router_source_read_) {
+      UseCounter::Count(
+          context,
+          WebFeature::
+              kPerformanceResourceTimingWorkerMatchedBothGettersNonEmpty);
+    }
+  }
+  return result;
+}
+
+AtomicString PerformanceResourceTiming::workerFinalSourceType(
+    ExecutionContext* context) const {
+  AtomicString result = GetWorkerFinalRouterSource();
+  if (!result.empty()) {
+    UseCounter::Count(
+        context,
+        WebFeature::kPerformanceResourceTimingWorkerFinalSourceTypeNonEmpty);
+    final_source_type_read_ = true;
+    if (final_router_source_read_) {
+      UseCounter::Count(
+          context,
+          WebFeature::kPerformanceResourceTimingWorkerFinalBothGettersNonEmpty);
+    }
+  }
+  return result;
 }
 
 DOMHighResTimeStamp PerformanceResourceTiming::WorkerReady() const {
@@ -537,13 +608,22 @@ void PerformanceResourceTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
   builder.AddString("contentType", contentType());
   builder.AddString("contentEncoding", contentEncoding());
   builder.AddNumber("workerStart", workerStart());
+  ExecutionContext* context = ExecutionContext::From(builder.GetScriptState());
   if (RuntimeEnabledFeatures::ServiceWorkerStaticRouterTimingInfoEnabled(
-          ExecutionContext::From(builder.GetScriptState()))) {
+          context)) {
     builder.AddNumber("workerRouterEvaluationStart",
                       workerRouterEvaluationStart());
     builder.AddNumber("workerCacheLookupStart", workerCacheLookupStart());
-    builder.AddString("workerMatchedSourceType", workerMatchedSourceType());
-    builder.AddString("workerFinalSourceType", workerFinalSourceType());
+    if (RuntimeEnabledFeatures::
+            ServiceWorkerStaticRouterTimingRouterSourceFieldsEnabled(context)) {
+      builder.AddString("workerMatchedRouterSource",
+                        GetWorkerMatchedRouterSource());
+      builder.AddString("workerFinalRouterSource",
+                        GetWorkerFinalRouterSource());
+    }
+    builder.AddString("workerMatchedSourceType",
+                      GetWorkerMatchedRouterSource());
+    builder.AddString("workerFinalSourceType", GetWorkerFinalRouterSource());
   }
   if (RuntimeEnabledFeatures::ResourceTimingInitiatorEnabled()) {
     builder.AddString("initiatorUrl", initiatorUrl());
