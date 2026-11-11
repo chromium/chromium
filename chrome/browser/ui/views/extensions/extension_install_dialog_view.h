@@ -24,6 +24,7 @@
 #include "ui/views/layout/table_layout_view.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
+#include "ui/views/view_observer.h"
 
 class PictureInPictureInputProtector;
 class Profile;
@@ -34,7 +35,8 @@ class ExtensionJustificationView;
 // Not a normal "bubble" despite being a subclass of BubbleDialogDelegateView.
 class ExtensionInstallDialogView : public views::BubbleDialogDelegateView,
                                    public extensions::ExtensionRegistryObserver,
-                                   public views::TextfieldController {
+                                   public views::TextfieldController,
+                                   public views::ViewObserver {
   METADATA_HEADER(ExtensionInstallDialogView, views::BubbleDialogDelegateView)
 
  public:
@@ -57,9 +59,6 @@ class ExtensionInstallDialogView : public views::BubbleDialogDelegateView,
   const views::ScrollView* scroll_view() const { return scroll_view_; }
 
   static void SetInstallButtonDelayForTesting(int timeout_in_ms);
-
-  // Changes the widget size to accommodate the contents' preferred size.
-  void ResizeWidget();
 
   // views::BubbleDialogDelegateView:
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
@@ -123,6 +122,10 @@ class ExtensionInstallDialogView : public views::BubbleDialogDelegateView,
   void ContentsChanged(views::Textfield* sender,
                        const std::u16string& new_contents) override;
 
+  // views::ViewObserver:
+  void OnViewPreferredSizeChanged(views::View* observed_view) override;
+  void OnViewIsDeleting(views::View* observed_view) override;
+
   // Enables the install button and updates the dialog buttons.
   void EnableInstallButton();
 
@@ -167,6 +170,9 @@ class ExtensionInstallDialogView : public views::BubbleDialogDelegateView,
   // interactions.
   std::unique_ptr<PictureInPictureInputProtector>
       picture_in_picture_input_protector_;
+
+  base::ScopedObservation<views::View, views::ViewObserver>
+      permissions_view_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_INSTALL_DIALOG_VIEW_H_

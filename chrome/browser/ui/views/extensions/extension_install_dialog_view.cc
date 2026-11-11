@@ -53,12 +53,14 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/table_layout.h"
 #include "ui/views/layout/table_layout_view.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/dialog_delegate.h"
+#include "ui/views/window/non_client_view.h"
 
 using content::OpenURLParams;
 using content::Referrer;
@@ -343,10 +345,6 @@ bool ExtensionInstallDialogView::
   return ShouldAllowKeyEventsDuringInputProtection();
 }
 
-void ExtensionInstallDialogView::ResizeWidget() {
-  GetWidget()->SetSize(GetWidget()->non_client_view()->GetPreferredSize());
-}
-
 void ExtensionInstallDialogView::VisibilityChanged(views::View* starting_from,
                                                    bool is_visible) {
   // VisibilityChanged() might spuriously fire more than once on some platforms,
@@ -547,6 +545,9 @@ ExtensionInstallDialogView::CreateExtensionInfoContainer(
               views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
 
   if (has_permissions) {
+    auto permissions_view =
+        std::make_unique<ExtensionPermissionsView>(prompt_->GetPermissions());
+    permissions_view_observation_.Observe(permissions_view.get());
     extension_info_container.AddChild(
         views::Builder<views::BoxLayoutView>()
             .SetOrientation(views::BoxLayout::Orientation::kVertical)
@@ -561,8 +562,7 @@ ExtensionInstallDialogView::CreateExtensionInfoContainer(
                     .SetMultiLine(true),
                 // Permissions content.
                 views::Builder<ExtensionPermissionsView>(
-                    std::make_unique<ExtensionPermissionsView>(
-                        prompt_->GetPermissions()))));
+                    std::move(permissions_view))));
   }
 
   if (requires_justification) {
@@ -606,8 +606,9 @@ ExtensionInstallDialogView::CreateExtensionInfoContainer(
 
   return views::Builder<views::ScrollView>()
       .SetHorizontalScrollBarMode(views::ScrollView::ScrollBarMode::kDisabled)
-      .ClipHeightTo(0, provider->GetDistanceMetric(
-                           views::DISTANCE_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT))
+      .ClipHeightTo(
+          0, provider->GetDistanceMetric(
+                 views::DISTANCE_MODAL_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT))
       .SetContents(extension_info_container)
       .Build();
 }
@@ -749,6 +750,17 @@ void ExtensionInstallDialogView::ContentsChanged(
     request_button_enabled_ = is_justification_length_within_limit;
     DialogModelChanged();
   }
+}
+
+void ExtensionInstallDialogView::OnViewPreferredSizeChanged(
+    views::View* observed_view) {
+  if (GetWidget() && !GetWidget()->IsClosed()) {
+    GetWidget()->SetSize(GetWidget()->non_client_view()->GetPreferredSize());
+  }
+}
+
+void ExtensionInstallDialogView::OnViewIsDeleting(views::View* observed_view) {
+  permissions_view_observation_.Reset();
 }
 
 void ExtensionInstallDialogView::EnableInstallButton() {

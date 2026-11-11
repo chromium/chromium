@@ -25,6 +25,10 @@ ExtensionPermissionsView::ExtensionPermissionsView(
   }
 }
 
+void ExtensionPermissionsView::ChildPreferredSizeChanged(views::View* child) {
+  PreferredSizeChanged();
+}
+
 void ExtensionPermissionsView::AddItem(
     const std::u16string& permission_text,
     const std::u16string& visible_details,

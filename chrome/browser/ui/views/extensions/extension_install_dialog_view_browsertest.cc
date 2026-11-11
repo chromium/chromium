@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/views/extensions/extension_install_dialog_view.h"
 
 #include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
@@ -39,6 +41,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/views/extensions/expandable_container_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/extension_test_util.h"
@@ -75,14 +78,19 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/button/radio_button.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/controls/scrollbar/scroll_bar.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/metrics.h"
 #include "ui/views/test/button_test_api.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/window/dialog_delegate.h"
+#include "ui/views/window/non_client_view.h"
 
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
@@ -227,10 +235,18 @@ class ScrollbarTest : public ExtensionInstallDialogViewTestBase {
  protected:
   ScrollbarTest() = default;
 
+  ExtensionInstallDialogView* ShowDialog(
+      std::unique_ptr<InstallPromptData> prompt);
   bool IsScrollbarVisible(std::unique_ptr<InstallPromptData> prompt);
+  std::unique_ptr<InstallPromptData> CreatePromptWithDetails(
+      size_t detail_count);
+  ExpandableContainerView* FindExpandableContainerView(views::View* root);
+  [[nodiscard]] bool ToggleDetailsAndWaitForLayout(
+      ExtensionInstallDialogView* dialog,
+      ExpandableContainerView* expandable);
 };
 
-bool ScrollbarTest::IsScrollbarVisible(
+ExtensionInstallDialogView* ScrollbarTest::ShowDialog(
     std::unique_ptr<InstallPromptData> prompt) {
   auto dialog = std::make_unique<ExtensionInstallDialogView>(
       std::make_unique<ExtensionInstallPromptShowParams>(web_contents()),
@@ -242,9 +258,62 @@ bool ScrollbarTest::IsScrollbarVisible(
       std::move(dialog), web_contents()->GetTopLevelNativeWindow());
   modal->Show();
   content::RunAllTasksUntilIdle();
+  views::test::RunScheduledLayout(modal);
 
-  // Check if the vertical scrollbar is visible.
-  return dialog_ptr->scroll_view()->vertical_scroll_bar()->GetVisible();
+  return dialog_ptr;
+}
+
+bool ScrollbarTest::IsScrollbarVisible(
+    std::unique_ptr<InstallPromptData> prompt) {
+  ExtensionInstallDialogView* dialog = ShowDialog(std::move(prompt));
+  const bool is_visible =
+      dialog->scroll_view()->vertical_scroll_bar()->GetVisible();
+  CloseAndWait(dialog->GetWidget());
+  return is_visible;
+}
+
+std::unique_ptr<InstallPromptData> ScrollbarTest::CreatePromptWithDetails(
+    size_t detail_count) {
+  std::vector<std::u16string> details;
+  details.reserve(detail_count);
+  for (size_t i = 0; i < detail_count; ++i) {
+    details.push_back(u"Detailed permission " + base::NumberToString16(i));
+  }
+  PermissionMessages permissions;
+  permissions.emplace_back(u"Permission with details", PermissionIDSet(),
+                           std::move(details));
+  std::unique_ptr<InstallPromptData> prompt =
+      CreatePrompt(InstallPromptData::PERMISSIONS_PROMPT);
+  prompt->AddPermissionMessages(permissions);
+  return prompt;
+}
+
+ExpandableContainerView* ScrollbarTest::FindExpandableContainerView(
+    views::View* root) {
+  if (auto* expandable = views::AsViewClass<ExpandableContainerView>(root)) {
+    return expandable;
+  }
+  for (views::View* child : root->children()) {
+    if (auto* expandable = FindExpandableContainerView(child)) {
+      return expandable;
+    }
+  }
+  return nullptr;
+}
+
+bool ScrollbarTest::ToggleDetailsAndWaitForLayout(
+    ExtensionInstallDialogView* dialog,
+    ExpandableContainerView* expandable) {
+  views::Widget* widget = dialog->GetWidget();
+  expandable->ToggleDetailLevelForTest();
+  const gfx::Size expected_size = widget->non_client_view()->GetPreferredSize();
+  if (!base::test::RunUntil([&]() {
+        return widget->GetWindowBoundsInScreen().size() == expected_size;
+      })) {
+    return false;
+  }
+  views::test::RunScheduledLayout(widget);
+  return true;
 }
 
 // Tests that a scrollbar _is_ shown for an excessively long extension
@@ -279,6 +348,119 @@ IN_PROC_BROWSER_TEST_F(ScrollbarTest, MAYBE_ScrollbarRegression) {
       CreatePrompt(InstallPromptData::PERMISSIONS_PROMPT);
   prompt->AddPermissionMessages(permissions);
   ASSERT_FALSE(IsScrollbarVisible(std::move(prompt))) << "Scrollbar is visible";
+}
+
+// Tests that permissions taller than the legacy 192dp dialog scroll height but
+// within the 448dp modal dialog maximum scroll height expand the dialog without
+// showing a vertical scrollbar.
+IN_PROC_BROWSER_TEST_F(ScrollbarTest,
+                       PromptWithinModalMaxHeightHasNoScrollbar) {
+  PermissionMessages permissions;
+  for (int i = 0; i < 10; ++i) {
+    permissions.emplace_back(u"Test", PermissionIDSet());
+  }
+  std::unique_ptr<InstallPromptData> prompt =
+      CreatePrompt(InstallPromptData::PERMISSIONS_PROMPT);
+  prompt->AddPermissionMessages(permissions);
+
+  ExtensionInstallDialogView* dialog = ShowDialog(std::move(prompt));
+  const views::LayoutProvider* provider = views::LayoutProvider::Get();
+  const int legacy_max_height = provider->GetDistanceMetric(
+      views::DISTANCE_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT);
+  const int modal_max_height = provider->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT);
+
+  EXPECT_GT(dialog->scroll_view()->height(), legacy_max_height);
+  EXPECT_LE(dialog->scroll_view()->height(), modal_max_height);
+  EXPECT_EQ(dialog->scroll_view()->height(),
+            dialog->scroll_view()->contents()->height());
+  EXPECT_FALSE(dialog->scroll_view()->vertical_scroll_bar()->GetVisible());
+
+  CloseAndWait(dialog->GetWidget());
+}
+
+// Tests that expanding and collapsing permission details dynamically grows and
+// shrinks the outer dialog widget without showing a scrollbar while within the
+// 448dp modal maximum scroll height.
+IN_PROC_BROWSER_TEST_F(ScrollbarTest,
+                       ExpandAndCollapseDetailsResizesDialogWithoutScrollbar) {
+  ExtensionInstallDialogView* dialog = ShowDialog(CreatePromptWithDetails(10));
+  ExpandableContainerView* expandable = FindExpandableContainerView(dialog);
+  ASSERT_TRUE(expandable);
+
+  const views::LayoutProvider* provider = views::LayoutProvider::Get();
+  const int legacy_max_height = provider->GetDistanceMetric(
+      views::DISTANCE_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT);
+  const int modal_max_height = provider->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT);
+
+  const int initial_widget_height =
+      dialog->GetWidget()->GetWindowBoundsInScreen().height();
+  const int initial_scroll_height = dialog->scroll_view()->height();
+  ASSERT_LT(initial_scroll_height, modal_max_height);
+  EXPECT_FALSE(dialog->scroll_view()->vertical_scroll_bar()->GetVisible());
+
+  // Expand "Show all": both the scroll view and outer widget should grow by the
+  // same delta without showing a scrollbar.
+  ASSERT_TRUE(ToggleDetailsAndWaitForLayout(dialog, expandable));
+  const int expanded_widget_height =
+      dialog->GetWidget()->GetWindowBoundsInScreen().height();
+  const int expanded_scroll_height = dialog->scroll_view()->height();
+  EXPECT_GT(expanded_scroll_height, initial_scroll_height);
+  EXPECT_GT(expanded_scroll_height, legacy_max_height);
+  EXPECT_LE(expanded_scroll_height, modal_max_height);
+  EXPECT_EQ(expanded_widget_height - initial_widget_height,
+            expanded_scroll_height - initial_scroll_height);
+  EXPECT_FALSE(dialog->scroll_view()->vertical_scroll_bar()->GetVisible());
+
+  // Collapse "Show less": both should shrink back to their initial heights.
+  ASSERT_TRUE(ToggleDetailsAndWaitForLayout(dialog, expandable));
+  EXPECT_EQ(dialog->GetWidget()->GetWindowBoundsInScreen().height(),
+            initial_widget_height);
+  EXPECT_EQ(dialog->scroll_view()->height(), initial_scroll_height);
+  EXPECT_FALSE(dialog->scroll_view()->vertical_scroll_bar()->GetVisible());
+
+  CloseAndWait(dialog->GetWidget());
+}
+
+// Tests that expanding permission details past the 448dp modal maximum scroll
+// height caps the scroll view and outer widget height and shows a vertical
+// scrollbar, then shrinks back down when collapsed.
+IN_PROC_BROWSER_TEST_F(
+    ScrollbarTest,
+    ExpandDetailsBeyondModalMaxHeightCapsHeightAndShowsScrollbar) {
+  ExtensionInstallDialogView* dialog = ShowDialog(CreatePromptWithDetails(30));
+  ExpandableContainerView* expandable = FindExpandableContainerView(dialog);
+  ASSERT_TRUE(expandable);
+
+  const int modal_max_height = views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT);
+
+  const int initial_widget_height =
+      dialog->GetWidget()->GetWindowBoundsInScreen().height();
+  const int initial_scroll_height = dialog->scroll_view()->height();
+  ASSERT_LT(initial_scroll_height, modal_max_height);
+  EXPECT_FALSE(dialog->scroll_view()->vertical_scroll_bar()->GetVisible());
+
+  // Expand "Show all" past 448dp: scroll view caps at 448dp with a visible
+  // vertical scrollbar, and outer widget grows only up to the cap.
+  ASSERT_TRUE(ToggleDetailsAndWaitForLayout(dialog, expandable));
+  const int expanded_widget_height =
+      dialog->GetWidget()->GetWindowBoundsInScreen().height();
+  EXPECT_EQ(dialog->scroll_view()->height(), modal_max_height);
+  EXPECT_GT(dialog->scroll_view()->contents()->height(), modal_max_height);
+  EXPECT_EQ(expanded_widget_height - initial_widget_height,
+            modal_max_height - initial_scroll_height);
+  EXPECT_TRUE(dialog->scroll_view()->vertical_scroll_bar()->GetVisible());
+
+  // Collapse "Show less": outer widget shrinks back and scrollbar hides.
+  ASSERT_TRUE(ToggleDetailsAndWaitForLayout(dialog, expandable));
+  EXPECT_EQ(dialog->GetWidget()->GetWindowBoundsInScreen().height(),
+            initial_widget_height);
+  EXPECT_EQ(dialog->scroll_view()->height(), initial_scroll_height);
+  EXPECT_FALSE(dialog->scroll_view()->vertical_scroll_bar()->GetVisible());
+
+  CloseAndWait(dialog->GetWidget());
 }
 
 class ExtensionInstallDialogViewTest
