@@ -18,7 +18,7 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {MemoryBankEntry, MemoryBankEntryAnnotations, MemoryBankFileAttachment} from '../context_hub.mojom-webui.js';
-import {browserProxyFactory, CopyAttachmentsToClipboardStatus} from '../context_hub.mojom-webui.js';
+import {browserProxyFactory, CopyAttachmentsToClipboardStatus, MemoryBanksShortcutStatus} from '../context_hub.mojom-webui.js';
 import type {ParsedSearchQuery} from '../memory_banks/memory_banks_search.js';
 import {matchesMemoryBankEntry, parseSearchQuery} from '../memory_banks/memory_banks_search.js';
 import {convertMojoTimeToDate, formatEntriesAsMarkdown} from '../memory_banks/memory_banks_utils.js';
@@ -32,6 +32,9 @@ const COPY_TOAST_DURATION_MS = 1800;
 
 /** Duration in milliseconds to display the file attachment toast. */
 const ATTACH_TOAST_DURATION_MS = 2800;
+
+/** Duration in milliseconds to display the shortcut saved or removed toast. */
+const SHORTCUT_TOAST_DURATION_MS = 1800;
 
 /** Minimum character length of a snippet before offering an expand toggle. */
 const SNIPPET_PREVIEW_CHAR_THRESHOLD = 90;
@@ -68,6 +71,7 @@ export interface MemoryBanksPaletteElement {
   $: {
     settings: MemoryBanksPaletteSettingsElement,
     settingsButton: CrIconButtonElement,
+    toast: CrToastElement,
   };
 }
 
@@ -100,6 +104,7 @@ export class MemoryBanksPaletteElement extends CrLitElement {
       toastIsError: {type: Boolean},
       activePanel: {type: String, state: true},
       currentShortcutDisplayText: {type: String, state: true},
+      isShortcutLoaded: {type: Boolean, state: true},
       suggestedShortcutAccelerator: {type: String, state: true},
       suggestedShortcutDisplayText: {type: String, state: true},
     };
@@ -119,10 +124,12 @@ export class MemoryBanksPaletteElement extends CrLitElement {
   accessor toastIsError: boolean = false;
   protected accessor activePanel: 'palette'|'settings' = 'palette';
   protected accessor currentShortcutDisplayText: string = '';
+  protected accessor isShortcutLoaded: boolean = false;
   protected accessor suggestedShortcutAccelerator: string = '';
   protected accessor suggestedShortcutDisplayText: string = '';
 
   private isClipboardOperationPending: boolean = false;
+  private isSavingShortcut: boolean = false;
   private listenerIds: number[] = [];
   private sortedCollections: string[] = [];
   private sortedTags: string[] = [];
@@ -213,6 +220,7 @@ export class MemoryBanksPaletteElement extends CrLitElement {
     this.currentShortcutDisplayText = current.displayText;
     this.suggestedShortcutAccelerator = suggested.shortcut;
     this.suggestedShortcutDisplayText = suggested.displayText;
+    this.isShortcutLoaded = true;
   }
 
   private async fetchCollectionsAndTags() {
@@ -486,8 +494,61 @@ export class MemoryBanksPaletteElement extends CrLitElement {
     this.$.settingsButton.focus();
   }
 
-  protected onSettingsShortcutChanged(e: CustomEvent<string>) {
-    this.currentShortcutDisplayText = e.detail;
+  protected shouldShowShortcutTip(): boolean {
+    return this.activePanel === 'palette' && this.isShortcutLoaded &&
+        !this.currentShortcutDisplayText;
+  }
+
+  protected hasSuggestedShortcut(): boolean {
+    return !!this.suggestedShortcutAccelerator &&
+        !!this.suggestedShortcutDisplayText;
+  }
+
+  protected async onChooseShortcutButtonClick() {
+    this.activePanel = 'settings';
+    await this.updateComplete;
+    await this.$.settings.startRecording();
+  }
+
+  protected async onUseSuggestedShortcutButtonClick() {
+    if (this.isSavingShortcut) {
+      return;
+    }
+    this.isSavingShortcut = true;
+    try {
+      const handler = browserProxyFactory.getInstance().handler;
+      const {status} = await handler.setBrowseMemoryBanksShortcut(
+          this.suggestedShortcutAccelerator);
+      if (status !== MemoryBanksShortcutStatus.kValid) {
+        this.suggestedShortcutAccelerator = '';
+        this.suggestedShortcutDisplayText = '';
+        await this.showToastNotification(
+            'Couldn\'t set shortcut.', 'Try choosing a different shortcut.',
+            SHORTCUT_TOAST_DURATION_MS, /*isError=*/ true);
+        return;
+      }
+      const {displayText} = await handler.getBrowseMemoryBanksShortcut();
+      await this.applyShortcutDisplayText(displayText);
+      this.$.settingsButton.focus();
+    } finally {
+      this.isSavingShortcut = false;
+    }
+  }
+
+  protected async onSettingsShortcutChanged(e: CustomEvent<string>) {
+    await this.applyShortcutDisplayText(e.detail);
+  }
+
+  private async applyShortcutDisplayText(displayText: string) {
+    this.currentShortcutDisplayText = displayText;
+    if (displayText) {
+      await this.showToastNotification(
+          'Shortcut saved.', `Press ${displayText} to open Memory Banks.`,
+          SHORTCUT_TOAST_DURATION_MS);
+    } else {
+      await this.showToastNotification(
+          'Shortcut removed.', '', SHORTCUT_TOAST_DURATION_MS);
+    }
   }
 
   protected isItemAttached(id: string): boolean {
@@ -542,8 +603,7 @@ export class MemoryBanksPaletteElement extends CrLitElement {
     this.toastDuration = durationMs;
     this.toastIsError = isError;
     await this.updateComplete;
-    const toast = this.shadowRoot?.querySelector<CrToastElement>('#toast');
-    toast?.show();
+    await this.$.toast.show();
   }
 
   private async copyItem(item: DisplayItem) {

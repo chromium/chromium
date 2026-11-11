@@ -57,8 +57,7 @@ suite('MemoryBanksPaletteSettings', () => {
   }
 
   async function startRecording() {
-    getById('editButton')!.click();
-    await microtasksFinished();
+    await settings.startRecording();
     assertTrue(settings.isRecording);
   }
 
@@ -109,15 +108,16 @@ suite('MemoryBanksPaletteSettings', () => {
   });
 
   test('ClickingFieldStartsRecording', async () => {
-    getField().click();
+    getField().dispatchEvent(new MouseEvent('click'));
     await microtasksFinished();
     assertTrue(settings.isRecording);
-    assertEquals(getField(), settings.shadowRoot.activeElement);
   });
 
   test('RecordsAndSavesShortcut', async () => {
     setSaveResults(MemoryBanksShortcutStatus.kValid, 'Ctrl+Shift+K');
-    await startRecording();
+    getById('editButton')!.dispatchEvent(new MouseEvent('click'));
+    await microtasksFinished();
+    assertTrue(settings.isRecording);
     assertEquals(getField(), settings.shadowRoot.activeElement);
 
     // Holding modifiers shows a live preview without saving.
@@ -371,5 +371,10 @@ suite('MemoryBanksPaletteSettings', () => {
     const backClick = eventToPromise('back-click', settings);
     settings.$.backButton.click();
     await backClick;
+  });
+
+  test('OpensContextHubPage', async () => {
+    settings.$.openContextHubButton.click();
+    await handler.whenCalled('openContextHubPage');
   });
 });

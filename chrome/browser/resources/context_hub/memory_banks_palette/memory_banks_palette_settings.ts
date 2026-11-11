@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons.html.js';
 
@@ -86,7 +87,7 @@ function formatHeldModifiers(e: KeyboardEvent): string {
 
 /**
  * Settings panel of the Memory Banks palette. Lets the user set, change, or
- * remove the keyboard shortcut that opens the palette.
+ * remove the keyboard shortcut that opens the palette, and open Context Hub.
  *
  * Fires:
  *   - 'back-click' when the user leaves the settings panel.
@@ -95,6 +96,7 @@ function formatHeldModifiers(e: KeyboardEvent): string {
 export interface MemoryBanksPaletteSettingsElement {
   $: {
     backButton: HTMLElement,
+    openContextHubButton: HTMLButtonElement,
     shortcutField: HTMLElement,
   };
 }
@@ -151,6 +153,11 @@ export class MemoryBanksPaletteSettingsElement extends CrLitElement {
   protected onBackButtonClick() {
     this.stopRecording();
     this.fire('back-click');
+  }
+
+  protected async onOpenContextHubButtonClick() {
+    await browserProxyFactory.getInstance().handler.openContextHubPage();
+    window.close();
   }
 
   protected async onEditButtonClick() {

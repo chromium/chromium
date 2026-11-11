@@ -4,11 +4,11 @@
 
 import 'chrome://context-hub/memory_banks_palette/memory_banks_palette.js';
 
-import {browserProxyFactory, PageHandlerRemote} from 'chrome://context-hub/context_hub.mojom-webui.js';
+import {browserProxyFactory, MemoryBanksShortcutStatus, PageHandlerRemote} from 'chrome://context-hub/context_hub.mojom-webui.js';
 import type {MemoryBanksPaletteElement} from 'chrome://context-hub/memory_banks_palette/memory_banks_palette.js';
 import type {MemoryBanksPaletteSettingsElement} from 'chrome://context-hub/memory_banks_palette/memory_banks_palette_settings.js';
 import type {CrSearchFieldElement} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -114,5 +114,120 @@ suite('MemoryBanksPalette', () => {
     await microtasksFinished();
 
     assertEquals('Alt+Shift+M', getSettings().currentShortcutDisplayText);
+    assertTrue(palette.$.toast.open);
+    assertEquals('Shortcut saved.', palette.toastMessage);
+    assertEquals(
+        'Press Alt+Shift+M to open Memory Banks.', palette.toastSubtitle);
+
+    getSettings().dispatchEvent(
+        new CustomEvent('shortcut-changed', {detail: ''}));
+    await microtasksFinished();
+
+    assertEquals('', getSettings().currentShortcutDisplayText);
+    assertTrue(palette.$.toast.open);
+    assertEquals('Shortcut removed.', palette.toastMessage);
+    assertEquals('', palette.toastSubtitle);
+  });
+
+  test('ShowsShortcutTipWhenUnsetAndTurnsOnSuggestion', async () => {
+    handler.setResultFor(
+        'getBrowseMemoryBanksShortcut', Promise.resolve({displayText: ''}));
+    await createPalette();
+    await handler.whenCalled('getBrowseMemoryBanksShortcut');
+    await handler.whenCalled('getSuggestedBrowseMemoryBanksShortcut');
+    await microtasksFinished();
+
+    assertTrue(!!query('#shortcutTip'));
+    assertEquals(
+        'Alt+Shift+M', query('#suggestedShortcutKey')!.textContent.trim());
+
+    handler.resetResolver('getBrowseMemoryBanksShortcut');
+    handler.setResultFor(
+        'setBrowseMemoryBanksShortcut',
+        Promise.resolve({status: MemoryBanksShortcutStatus.kValid}));
+    handler.setResultFor(
+        'getBrowseMemoryBanksShortcut',
+        Promise.resolve({displayText: 'Alt+Shift+M'}));
+
+    const useSuggestedButton = query('#useSuggestedShortcutButton')!;
+    useSuggestedButton.click();
+    // A second click while saving is ignored.
+    useSuggestedButton.click();
+    assertEquals(
+        'Alt+Shift+M',
+        await handler.whenCalled('setBrowseMemoryBanksShortcut'));
+    await handler.whenCalled('getBrowseMemoryBanksShortcut');
+    await microtasksFinished();
+    assertEquals(1, handler.getCallCount('setBrowseMemoryBanksShortcut'));
+
+    assertNull(query('#shortcutTip'));
+    assertEquals('Alt+Shift+M', getSettings().currentShortcutDisplayText);
+    assertEquals(palette.$.settingsButton, palette.shadowRoot.activeElement);
+    assertTrue(palette.$.toast.open);
+    assertEquals('Shortcut saved.', palette.toastMessage);
+    assertEquals(
+        'Press Alt+Shift+M to open Memory Banks.', palette.toastSubtitle);
+  });
+
+  test('ChooseAnotherInShortcutTipStartsRecordingInSettings', async () => {
+    handler.setResultFor(
+        'getBrowseMemoryBanksShortcut', Promise.resolve({displayText: ''}));
+    await createPalette();
+    await handler.whenCalled('getBrowseMemoryBanksShortcut');
+    await handler.whenCalled('getSuggestedBrowseMemoryBanksShortcut');
+    await microtasksFinished();
+
+    query('#chooseShortcutButton')!.click();
+    await microtasksFinished();
+
+    assertFalse(getSettings().hidden);
+    assertTrue(getSettings().isRecording);
+    assertNull(query('#shortcutTip'));
+  });
+
+  test('ShortcutTipShowsErrorToastWhenSuggestedShortcutFails', async () => {
+    handler.setResultFor(
+        'getBrowseMemoryBanksShortcut', Promise.resolve({displayText: ''}));
+    handler.setResultFor('setBrowseMemoryBanksShortcut', Promise.resolve({
+      status: MemoryBanksShortcutStatus.kConflictsWithBrowserShortcut,
+    }));
+    await createPalette();
+    await handler.whenCalled('getBrowseMemoryBanksShortcut');
+    await handler.whenCalled('getSuggestedBrowseMemoryBanksShortcut');
+    await microtasksFinished();
+
+    query('#useSuggestedShortcutButton')!.click();
+    await handler.whenCalled('setBrowseMemoryBanksShortcut');
+    await microtasksFinished();
+
+    assertTrue(getSettings().hidden);
+    assertTrue(palette.$.toast.open);
+    assertTrue(palette.toastIsError);
+    assertEquals('Couldn\'t set shortcut.', palette.toastMessage);
+    assertEquals('Try choosing a different shortcut.', palette.toastSubtitle);
+    assertNull(query('#useSuggestedShortcutButton'));
+    assertEquals(
+        'Set shortcut', query('#chooseShortcutButton')!.textContent.trim());
+  });
+
+  test('ShowsSetShortcutTipWhenNoSuggestionAvailable', async () => {
+    handler.setResultFor(
+        'getBrowseMemoryBanksShortcut', Promise.resolve({displayText: ''}));
+    handler.setResultFor(
+        'getSuggestedBrowseMemoryBanksShortcut',
+        Promise.resolve({shortcut: '', displayText: ''}));
+    await createPalette();
+    await handler.whenCalled('getBrowseMemoryBanksShortcut');
+    await handler.whenCalled('getSuggestedBrowseMemoryBanksShortcut');
+    await microtasksFinished();
+
+    assertTrue(!!query('#shortcutTip'));
+    assertEquals(
+        'Tip: Set a keyboard shortcut to open Memory Banks from any tab.',
+        query('#shortcutTipText')!.textContent.trim());
+    assertNull(query('#suggestedShortcutKey'));
+    assertNull(query('#useSuggestedShortcutButton'));
+    assertEquals(
+        'Set shortcut', query('#chooseShortcutButton')!.textContent.trim());
   });
 });

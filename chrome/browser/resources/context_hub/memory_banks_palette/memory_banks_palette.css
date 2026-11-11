@@ -459,27 +459,31 @@ cr-toast {
   min-height: auto;
   min-width: auto;
   padding: 8px 18px;
+  pointer-events: none;
   position: absolute;
   right: auto;
   transform: translate(-50%, 20px);
   transition: opacity 200ms ease, transform 200ms ease,
-      visibility 200ms ease;
+      visibility 0ms linear 200ms;
   width: auto;
   z-index: 100;
 }
 
 cr-toast[open] {
+  pointer-events: auto;
   transform: translate(-50%, 0);
+  transition: opacity 200ms ease, transform 200ms ease;
 }
 
 .toast-check {
   color: var(--color-sys-inverse-primary, #a8c7fa);
+  display: inline !important;
   font-size: 13px;
   font-weight: 600;
 }
 
 .toast-content {
-  display: flex;
+  display: flex !important;
   flex-direction: column;
   line-height: 1.35;
   text-align: left;
@@ -493,6 +497,65 @@ cr-toast[open] {
 .toast-subtitle {
   font-size: 11px;
   opacity: 0.8;
+}
+
+#shortcutTip {
+  align-items: center;
+  background-color: var(--color-sys-surface-container);
+  border-top: 1px solid var(--color-sys-outline-variant);
+  color: var(--color-sys-on-surface-variant);
+  display: flex;
+  flex-shrink: 0;
+  font-size: 12px;
+  gap: 8px;
+  padding: 8px 16px;
+}
+
+#shortcutTipIcon {
+  color: var(--color-sys-primary);
+  flex-shrink: 0;
+  height: 16px;
+  width: 16px;
+}
+
+#shortcutTipText {
+  flex: 1;
+  line-height: 1.35;
+}
+
+#suggestedShortcutKey {
+  background-color: var(--color-sys-surface);
+  border: 1px solid var(--color-sys-outline-variant);
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 1px 5px;
+  white-space: nowrap;
+}
+
+#useSuggestedShortcutButton,
+#chooseShortcutButton {
+  background: none;
+  border: none;
+  color: var(--color-sys-primary);
+  cursor: pointer;
+  flex-shrink: 0;
+  font: inherit;
+  font-weight: 500;
+  padding: 0;
+}
+
+#useSuggestedShortcutButton:hover,
+#chooseShortcutButton:hover {
+  text-decoration: underline;
+}
+
+#useSuggestedShortcutButton:focus-visible,
+#chooseShortcutButton:focus-visible {
+  border-radius: 4px;
+  outline: 2px solid var(--color-sys-primary);
+  outline-offset: 2px;
 }
 
 @media (prefers-color-scheme: dark) {

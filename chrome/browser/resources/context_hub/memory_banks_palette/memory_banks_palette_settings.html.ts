@@ -72,5 +72,16 @@ export function getHtml(this: MemoryBanksPaletteSettingsElement) {
         <div id="error" role="alert">${this.error}</div>
       ` : ''}
     </div>
+
+    <div id="contextHubFooter">
+      <div id="contextHubDescription">
+        Edit, organize, and delete saved memories in Context Hub.
+      </div>
+      <button id="openContextHubButton" type="button"
+          @click="${this.onOpenContextHubButtonClick}">
+        <span>Open Context Hub</span>
+        <cr-icon id="openContextHubIcon" icon="cr:open-in-new"></cr-icon>
+      </button>
+    </div>
   `;
 }

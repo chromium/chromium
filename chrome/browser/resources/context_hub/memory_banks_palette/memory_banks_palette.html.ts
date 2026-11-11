@@ -179,6 +179,32 @@ export function getHtml(this: MemoryBanksPaletteElement) {
         `}
       </div>
 
+      ${this.shouldShowShortcutTip() ? html`
+        <div id="shortcutTip">
+          <cr-icon id="shortcutTipIcon" icon="context-hub:auto-awesome">
+          </cr-icon>
+          ${this.hasSuggestedShortcut() ? html`
+            <span id="shortcutTipText">
+              Tip: Open Memory Banks from any tab with
+              <kbd id="suggestedShortcutKey"
+                  >${this.suggestedShortcutDisplayText}</kbd>
+            </span>
+            <button id="useSuggestedShortcutButton" type="button"
+                @click="${this.onUseSuggestedShortcutButtonClick}">
+              Turn on
+            </button>
+          ` : html`
+            <span id="shortcutTipText">
+              Tip: Set a keyboard shortcut to open Memory Banks from any tab.
+            </span>
+          `}
+          <button id="chooseShortcutButton" type="button"
+              @click="${this.onChooseShortcutButtonClick}">
+            ${this.hasSuggestedShortcut() ? 'Choose another' : 'Set shortcut'}
+          </button>
+        </div>
+      ` : ''}
+
       <memory-banks-palette-settings id="settings"
           ?hidden="${this.activePanel !== 'settings'}"
           .currentShortcutDisplayText="${this.currentShortcutDisplayText}"
