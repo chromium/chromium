@@ -2509,18 +2509,31 @@ QuicSessionPool::CreateSessionHelper(
   bool enabled_connection_keep_alive = false;
   if (connection_management_config.has_value() &&
       connection_management_config->keep_alive_config.has_value()) {
-    config.SetIdleNetworkTimeout(quic::QuicTime::Delta::FromSeconds(
-        connection_management_config->keep_alive_config
-            ->idle_timeout_in_seconds));
-    config.AddConnectionOptionsToSend(
-        quic::ParseQuicTagVector(connection_management_config->keep_alive_config
-                                     ->quic_connection_options));
-    keep_alive_timeout = quic::QuicTime::Delta::FromSeconds(
-        connection_management_config->keep_alive_config
-            ->ping_interval_in_seconds);
+    const auto& keep_alive_config =
+        connection_management_config->keep_alive_config.value();
+    if (keep_alive_config.idle_timeout.is_positive()) {
+      config.SetIdleNetworkTimeout(quic::QuicTime::Delta::FromMicroseconds(
+          keep_alive_config.idle_timeout.InMicroseconds()));
+    }
+    if (!keep_alive_config.quic_connection_options.empty()) {
+      config.AddConnectionOptionsToSend(
+          quic::ParseQuicTagVector(keep_alive_config.quic_connection_options));
+    }
+    if (keep_alive_config.ping_interval.is_positive()) {
+      keep_alive_timeout = quic::QuicTime::Delta::FromMicroseconds(
+          keep_alive_config.ping_interval.InMicroseconds());
+    }
     enabled_connection_keep_alive =
-        connection_management_config->keep_alive_config
-            ->enable_connection_keep_alive;
+        keep_alive_config.enable_connection_keep_alive;
+    // Set the initial RTT locally on the client connection to avoid advertising
+    // a synthetic `IRTT` transport parameter to the server.
+    if (keep_alive_config.initial_rtt.is_positive() &&
+        !config.HasInitialRoundTripTimeUsToSend()) {
+      connection->sent_packet_manager().SetInitialRtt(
+          quic::QuicTime::Delta::FromMicroseconds(
+              keep_alive_config.initial_rtt.InMicroseconds()),
+          /*trusted=*/false);
+    }
   }
   connection->set_keep_alive_ping_timeout(keep_alive_timeout);
 

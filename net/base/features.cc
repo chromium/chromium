@@ -270,6 +270,24 @@ BASE_FEATURE_PARAM(bool,
 
 BASE_FEATURE(kConnectionKeepAliveForHttp2, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kQuicPreconnectInitialRtt, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kQuicPreconnectInitialRttParam,
+                   &kQuicPreconnectInitialRtt,
+                   base::Milliseconds(25));
+
+std::optional<base::TimeDelta> GetQuicPreconnectInitialRtt() {
+  if (!base::FeatureList::IsEnabled(kQuicPreconnectInitialRtt)) {
+    return std::nullopt;
+  }
+  const base::TimeDelta initial_rtt = kQuicPreconnectInitialRttParam.Get();
+  if (!initial_rtt.is_positive() || initial_rtt.is_inf()) {
+    return std::nullopt;
+  }
+  return initial_rtt;
+}
+
 BASE_FEATURE(kShortLaxAllowUnsafeThreshold, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSameSiteDefaultChecksMethodRigorously,

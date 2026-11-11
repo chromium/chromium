@@ -2214,6 +2214,10 @@ mojom("mojom") {
     {
       types = [
         {
+          mojom = "network.mojom.QuicKeepAliveTimeouts"
+          cpp = "::network::QuicKeepAliveTimeouts"
+        },
+        {
           mojom = "network.mojom.ConnectionKeepAliveConfig"
           cpp = "::net::ConnectionKeepAliveConfig"
         },

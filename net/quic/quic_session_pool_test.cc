@@ -435,6 +435,11 @@ class QuicSessionPoolTest : public QuicSessionPoolTestBase,
       std::vector<HostResolverEndpointResult> endpoints,
       bool expect_success);
 
+  QuicChromiumClientSession* CreateSessionWithKeepAliveConfig(
+      const ConnectionKeepAliveConfig& keep_alive_config,
+      MockQuicData& socket_data,
+      bool add_ping_write = false);
+
   // Creates a callback that filters for control-stream frames.
   base::RepeatingCallback<bool(const quic::QuicFrame&)>
   FilterControlStreamOnly() {
@@ -19103,8 +19108,8 @@ TEST_P(QuicSessionPoolTest, SendPingOnExistingSession) {
   auto connection_management_config = ConnectionManagementConfig();
   auto keep_alive_config = ConnectionKeepAliveConfig();
   keep_alive_config.enable_connection_keep_alive = true;
-  keep_alive_config.ping_interval_in_seconds = 10;
-  keep_alive_config.idle_timeout_in_seconds = 30;
+  keep_alive_config.ping_interval = base::Seconds(10);
+  keep_alive_config.idle_timeout = base::Seconds(30);
   connection_management_config.keep_alive_config = std::move(keep_alive_config);
 
   builder2.connection_management_config =
@@ -19116,6 +19121,320 @@ TEST_P(QuicSessionPoolTest, SendPingOnExistingSession) {
   // We should expect the write data including a ping to the peer is consumed
   // since `enable_connection_keep_alive` is enabled, and we already have an
   // existing session.
+  socket_data.ExpectAllWriteDataConsumed();
+}
+
+QuicChromiumClientSession*
+QuicSessionPoolTest::CreateSessionWithKeepAliveConfig(
+    const ConnectionKeepAliveConfig& keep_alive_config,
+    MockQuicData& socket_data,
+    bool add_ping_write) {
+  Initialize();
+
+  socket_data.AddReadPauseForever();
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  if (add_ping_write) {
+    socket_data.AddWrite(SYNCHRONOUS,
+                         client_maker_.Packet(2).AddPingFrame().Build());
+  }
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder(this);
+  ConnectionManagementConfig connection_management_config;
+  connection_management_config.keep_alive_config = keep_alive_config;
+  builder.connection_management_config =
+      std::move(connection_management_config);
+
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  return GetActiveSession(kDefaultDestination);
+}
+
+TEST_P(QuicSessionPoolTest, ConnectionKeepAliveConfigInitialRttWhenUncached) {
+  quic_params_->idle_connection_timeout = base::Seconds(500);
+
+  MockQuicData socket_data(version_);
+  ConnectionKeepAliveConfig keep_alive_config;
+  keep_alive_config.initial_rtt = base::Milliseconds(25);
+  QuicChromiumClientSession* session = CreateSessionWithKeepAliveConfig(
+      keep_alive_config, socket_data, /*add_ping_write=*/true);
+  ASSERT_TRUE(session);
+  EXPECT_EQ(25000u, session->connection()->GetStats().srtt_us);
+  // Client-only override must not advertise a synthetic `IRTT` transport
+  // parameter to the server.
+  const quic::QuicConfig* negotiated_config =
+      crypto_client_stream_factory_.last_stream()->negotiated_config();
+  ASSERT_TRUE(negotiated_config);
+  EXPECT_FALSE(negotiated_config->HasInitialRoundTripTimeUsToSend());
+
+  // Leaving `enable_connection_keep_alive` false and `idle_timeout` /
+  // `ping_interval` unset preserves default QUIC idle and keep-alive ping
+  // behavior.
+  EXPECT_EQ(QuicSessionPoolPeer::GetConfig(pool_.get())->IdleNetworkTimeout(),
+            negotiated_config->IdleNetworkTimeout());
+  EXPECT_FALSE(session->ShouldKeepConnectionAlive());
+  auto ping_alarm =
+      quic::test::QuicConnectionPeer::GetPingAlarm(session->connection());
+  EXPECT_FALSE(ping_alarm.IsSet());
+
+  session->SetPeriodicConnectionKeepAlive(true);
+  quic::test::QuicConnectionPeer::SendPing(session->connection());
+  ASSERT_TRUE(ping_alarm.IsSet());
+  EXPECT_EQ(quic::QuicTime::Delta::FromSeconds(quic::kPingTimeoutSecs),
+            ping_alarm.deadline() - context_.clock()->ApproximateNow());
+
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+}
+
+TEST_P(QuicSessionPoolTest,
+       ConnectionKeepAliveConfigInitialRttPreservesHigherCachedRtt) {
+  ServerNetworkStats stats;
+  stats.srtt = base::Milliseconds(200);
+  http_server_properties_->SetServerNetworkStats(
+      url::SchemeHostPort(GURL(kDefaultUrl)), NetworkAnonymizationKey(), stats);
+
+  MockQuicData socket_data(version_);
+  ConnectionKeepAliveConfig keep_alive_config;
+  keep_alive_config.initial_rtt = base::Milliseconds(25);
+  QuicChromiumClientSession* session =
+      CreateSessionWithKeepAliveConfig(keep_alive_config, socket_data);
+  ASSERT_TRUE(session);
+  EXPECT_EQ(200000u, session->connection()->GetStats().srtt_us);
+  ASSERT_TRUE(crypto_client_stream_factory_.last_stream()
+                  ->negotiated_config()
+                  ->HasInitialRoundTripTimeUsToSend());
+  EXPECT_EQ(200000u, crypto_client_stream_factory_.last_stream()
+                         ->negotiated_config()
+                         ->GetInitialRoundTripTimeUsToSend());
+
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+}
+
+TEST_P(QuicSessionPoolTest,
+       ConnectionKeepAliveConfigInitialRttPreservesLowerCachedRtt) {
+  ServerNetworkStats stats;
+  stats.srtt = base::Milliseconds(15);
+  http_server_properties_->SetServerNetworkStats(
+      url::SchemeHostPort(GURL(kDefaultUrl)), NetworkAnonymizationKey(), stats);
+
+  MockQuicData socket_data(version_);
+  ConnectionKeepAliveConfig keep_alive_config;
+  keep_alive_config.initial_rtt = base::Milliseconds(25);
+  QuicChromiumClientSession* session =
+      CreateSessionWithKeepAliveConfig(keep_alive_config, socket_data);
+  ASSERT_TRUE(session);
+  EXPECT_EQ(15000u, session->connection()->GetStats().srtt_us);
+  ASSERT_TRUE(crypto_client_stream_factory_.last_stream()
+                  ->negotiated_config()
+                  ->HasInitialRoundTripTimeUsToSend());
+  EXPECT_EQ(15000u, crypto_client_stream_factory_.last_stream()
+                        ->negotiated_config()
+                        ->GetInitialRoundTripTimeUsToSend());
+
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+}
+
+TEST_P(QuicSessionPoolTest,
+       ConnectionKeepAliveConfigInitialRttPreserves2gEstimate) {
+  ScopedMockNetworkChangeNotifier notifier;
+  notifier.mock_network_change_notifier()->SetConnectionType(
+      NetworkChangeNotifier::CONNECTION_2G);
+  quic_params_->estimate_initial_rtt = true;
+
+  MockQuicData socket_data(version_);
+  ConnectionKeepAliveConfig keep_alive_config;
+  keep_alive_config.initial_rtt = base::Milliseconds(25);
+  QuicChromiumClientSession* session =
+      CreateSessionWithKeepAliveConfig(keep_alive_config, socket_data);
+  ASSERT_TRUE(session);
+  EXPECT_EQ(1000000u, session->connection()->GetStats().srtt_us);
+  ASSERT_TRUE(crypto_client_stream_factory_.last_stream()
+                  ->negotiated_config()
+                  ->HasInitialRoundTripTimeUsToSend());
+  EXPECT_EQ(1200000u, crypto_client_stream_factory_.last_stream()
+                          ->negotiated_config()
+                          ->GetInitialRoundTripTimeUsToSend());
+
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+}
+
+TEST_P(QuicSessionPoolTest,
+       ConnectionKeepAliveConfigInitialRttPreserves3gEstimate) {
+  ScopedMockNetworkChangeNotifier notifier;
+  notifier.mock_network_change_notifier()->SetConnectionType(
+      NetworkChangeNotifier::CONNECTION_3G);
+  quic_params_->estimate_initial_rtt = true;
+
+  MockQuicData socket_data(version_);
+  ConnectionKeepAliveConfig keep_alive_config;
+  keep_alive_config.initial_rtt = base::Milliseconds(25);
+  QuicChromiumClientSession* session =
+      CreateSessionWithKeepAliveConfig(keep_alive_config, socket_data);
+  ASSERT_TRUE(session);
+  EXPECT_EQ(400000u, session->connection()->GetStats().srtt_us);
+  ASSERT_TRUE(crypto_client_stream_factory_.last_stream()
+                  ->negotiated_config()
+                  ->HasInitialRoundTripTimeUsToSend());
+  EXPECT_EQ(400000u, crypto_client_stream_factory_.last_stream()
+                         ->negotiated_config()
+                         ->GetInitialRoundTripTimeUsToSend());
+
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+}
+
+TEST_P(QuicSessionPoolTest,
+       ConnectionKeepAliveConfigInitialRttOptedOutWhenZero) {
+  MockQuicData socket_data(version_);
+  // Default initial_rtt is zero (opted out).
+  ConnectionKeepAliveConfig keep_alive_config;
+  QuicChromiumClientSession* session =
+      CreateSessionWithKeepAliveConfig(keep_alive_config, socket_data);
+  ASSERT_TRUE(session);
+  EXPECT_EQ(quic::kInitialRttMs * 1000,
+            session->connection()->GetStats().srtt_us);
+  EXPECT_FALSE(crypto_client_stream_factory_.last_stream()
+                   ->negotiated_config()
+                   ->HasInitialRoundTripTimeUsToSend());
+
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+}
+
+TEST_P(QuicSessionPoolTest,
+       ConnectionKeepAliveConfigInitialRttClampedToLowerBound) {
+  MockQuicData socket_data(version_);
+  ConnectionKeepAliveConfig keep_alive_config;
+  // 5 ms is below kMinUntrustedInitialRoundTripTimeUs (10 ms).
+  keep_alive_config.initial_rtt = base::Milliseconds(5);
+  QuicChromiumClientSession* session =
+      CreateSessionWithKeepAliveConfig(keep_alive_config, socket_data);
+  ASSERT_TRUE(session);
+  EXPECT_EQ(quic::kMinUntrustedInitialRoundTripTimeUs,
+            session->connection()->GetStats().srtt_us);
+  EXPECT_FALSE(crypto_client_stream_factory_.last_stream()
+                   ->negotiated_config()
+                   ->HasInitialRoundTripTimeUsToSend());
+
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+}
+
+TEST_P(QuicSessionPoolTest,
+       ConnectionKeepAliveConfigInitialRttClampedToUpperBound) {
+  MockQuicData socket_data(version_);
+  ConnectionKeepAliveConfig keep_alive_config;
+  // 5 s exceeds kMaxInitialRoundTripTimeUs (1 s).
+  keep_alive_config.initial_rtt = base::Seconds(5);
+  QuicChromiumClientSession* session =
+      CreateSessionWithKeepAliveConfig(keep_alive_config, socket_data);
+  ASSERT_TRUE(session);
+  EXPECT_EQ(quic::kMaxInitialRoundTripTimeUs,
+            session->connection()->GetStats().srtt_us);
+  EXPECT_FALSE(crypto_client_stream_factory_.last_stream()
+                   ->negotiated_config()
+                   ->HasInitialRoundTripTimeUsToSend());
+
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+}
+
+TEST_P(
+    QuicSessionPoolTest,
+    ConnectionKeepAliveConfigInitialRttShortensHandshakePtoWithoutSendingIrtt) {
+  FLAGS_quic_enable_chaos_protection = false;
+  Initialize();
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::COLD_START_WITH_CHLO_SENT);
+
+  MockQuicData socket_data(version_);
+  socket_data.AddReadPauseForever();
+  socket_data.AddWrite(SYNCHRONOUS, client_maker_.MakeDummyCHLOPacket(1));
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder(this);
+  ConnectionManagementConfig connection_management_config;
+  ConnectionKeepAliveConfig keep_alive_config;
+  keep_alive_config.initial_rtt = base::Milliseconds(25);
+  connection_management_config.keep_alive_config = keep_alive_config;
+  builder.connection_management_config =
+      std::move(connection_management_config);
+
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  TestCompletionCallback quic_session_callback;
+  ASSERT_TRUE(builder.request.WaitForQuicSessionCreation(
+      quic_session_callback.callback()));
+  EXPECT_EQ(ERR_IO_PENDING, quic_session_callback.WaitForResult());
+
+  QuicChromiumClientSession* session = GetPendingSession(kDefaultDestination);
+  ASSERT_TRUE(session);
+  EXPECT_EQ(quic::QuicTime::Delta::FromMilliseconds(75),
+            session->connection()->sent_packet_manager().GetPtoDelay());
+
+  quic::TransportParameters params;
+  ASSERT_TRUE(session->config()->FillTransportParameters(&params));
+  EXPECT_EQ(0u, params.initial_round_trip_time_us.value());
+
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+}
+
+TEST_P(QuicSessionPoolTest,
+       ConnectionKeepAliveConfigAppliesExplicitKeepAliveOptions) {
+  MockQuicData socket_data(version_);
+  ConnectionKeepAliveConfig keep_alive_config;
+  keep_alive_config.idle_timeout = base::Seconds(30);
+  keep_alive_config.ping_interval = base::Seconds(10);
+  keep_alive_config.enable_connection_keep_alive = true;
+  keep_alive_config.quic_connection_options = "ECCP";
+
+  QuicChromiumClientSession* session = CreateSessionWithKeepAliveConfig(
+      keep_alive_config, socket_data, /*add_ping_write=*/true);
+  ASSERT_TRUE(session);
+  EXPECT_TRUE(session->ShouldKeepConnectionAlive());
+
+  quic::QuicAlarmProxy ping_alarm =
+      quic::test::QuicConnectionPeer::GetPingAlarm(session->connection());
+  ASSERT_TRUE(ping_alarm.IsSet());
+  EXPECT_EQ(quic::QuicTime::Delta::FromSeconds(10),
+            ping_alarm.deadline() - context_.clock()->ApproximateNow());
+  const quic::QuicConfig* negotiated_config =
+      crypto_client_stream_factory_.last_stream()->negotiated_config();
+  ASSERT_TRUE(negotiated_config);
+  EXPECT_EQ(quic::QuicTime::Delta::FromSeconds(30),
+            negotiated_config->IdleNetworkTimeout());
+  EXPECT_TRUE(quic::ContainsQuicTag(negotiated_config->SendConnectionOptions(),
+                                    quic::kECCP));
+
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+}
+
+TEST_P(QuicSessionPoolTest,
+       ConnectionKeepAliveConfigInitialRttDoesNotOverrideExplicitHandshakeRtt) {
+  quic_params_->initial_rtt_for_handshake = base::Milliseconds(35);
+
+  MockQuicData socket_data(version_);
+  ConnectionKeepAliveConfig keep_alive_config;
+  keep_alive_config.initial_rtt = base::Milliseconds(25);
+
+  QuicChromiumClientSession* session =
+      CreateSessionWithKeepAliveConfig(keep_alive_config, socket_data);
+  ASSERT_TRUE(session);
+  EXPECT_EQ(quic::QuicTime::Delta::FromMilliseconds(35),
+            session->connection()
+                ->sent_packet_manager()
+                .GetRttStats()
+                ->initial_rtt());
+  EXPECT_EQ(35000u, crypto_client_stream_factory_.last_stream()
+                        ->negotiated_config()
+                        ->GetInitialRoundTripTimeUsToSend());
+
+  socket_data.ExpectAllReadDataConsumed();
   socket_data.ExpectAllWriteDataConsumed();
 }
 

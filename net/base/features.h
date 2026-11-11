@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -313,6 +314,17 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kFallbackInLowPowerMode);
 
 // Enables Connection Keep-Alive feature for Http2
 NET_EXPORT BASE_DECLARE_FEATURE(kConnectionKeepAliveForHttp2);
+
+// Configures the client-side initial RTT for QUIC preconnect sessions when no
+// cached or 2G/3G RTT estimate is available, reducing the initial handshake
+// Probe Timeout (PTO) delay (`3 * initial_rtt`).
+NET_EXPORT BASE_DECLARE_FEATURE(kQuicPreconnectInitialRtt);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                                      kQuicPreconnectInitialRttParam);
+// Returns `kQuicPreconnectInitialRttParam` when `kQuicPreconnectInitialRtt` is
+// enabled and the configured duration is positive and finite; otherwise returns
+// `std::nullopt`.
+NET_EXPORT std::optional<base::TimeDelta> GetQuicPreconnectInitialRtt();
 
 // When enabled, the time threshold for Lax-allow-unsafe cookies will be lowered
 // from 2 minutes to 10 seconds. This time threshold refers to the age cutoff

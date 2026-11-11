@@ -4,8 +4,11 @@
 
 #include "chrome/browser/navigation_predictor/search_engine_preconnector.h"
 
+#include <algorithm>
 #include <limits>
+#include <optional>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/field_trial_params.h"
@@ -417,6 +420,10 @@ void SearchEnginePreconnector::PreconnectDSE(bool is_startup) {
           &SearchEnginePreconnector::OnReconnectObserverPipeDisconnected,
           base::Unretained(this)));
     }
+  } else if (std::optional<base::TimeDelta> initial_rtt =
+                 net::features::GetQuicPreconnectInitialRtt()) {
+    keepalive_config.emplace();
+    keepalive_config->initial_rtt = *initial_rtt;
   }
 
   if (!base::GetFieldTrialParamByFeatureAsBool(features::kPreconnectToSearch,
@@ -694,18 +701,32 @@ SearchEnginePreconnector::GetConnectionKeepAliveConfig() {
   net::ConnectionKeepAliveConfig config;
   config.quic_connection_options = net::features::kQuicConnectionOptions.Get();
 
-  // If the device is in low power mode, we will fallback to the old preconnect
-  // interval and disable connection keepalive. This is to avoid the battery
-  // drain when the device is in low power mode.
+  // If the device is in low power mode, fallback to the old preconnect
+  // interval, disable connection keepalive, and leave `initial_rtt` unset so
+  // shortened QUIC handshake PTOs do not trigger extra retransmission wakeups.
   if (ShouldSavePower()) {
-    config.idle_timeout_in_seconds = kPreconnectIntervalSec;
-    config.ping_interval_in_seconds = 0;
+    config.idle_timeout = base::Seconds(kPreconnectIntervalSec);
+    config.ping_interval = base::TimeDelta();
     config.enable_connection_keep_alive = false;
+    CHECK(config.IsValid());
     return config;
   }
 
-  config.idle_timeout_in_seconds = net::features::kIdleTimeoutInSeconds.Get();
-  config.ping_interval_in_seconds = net::features::kPingIntervalInSeconds.Get();
+  config.idle_timeout =
+      base::Seconds(net::features::kIdleTimeoutInSeconds.Get());
+  config.ping_interval =
+      base::Seconds(net::features::kPingIntervalInSeconds.Get());
+  if (!config.IsValid()) {
+    config.idle_timeout =
+        base::Seconds(net::features::kIdleTimeoutInSeconds.default_value);
+    config.ping_interval =
+        base::Seconds(net::features::kPingIntervalInSeconds.default_value);
+  }
   config.enable_connection_keep_alive = true;
+  if (std::optional<base::TimeDelta> initial_rtt =
+          net::features::GetQuicPreconnectInitialRtt()) {
+    config.initial_rtt = *initial_rtt;
+  }
+  CHECK(config.IsValid());
   return config;
 }
