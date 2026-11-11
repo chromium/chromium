@@ -6351,11 +6351,6 @@ inline constexpr char kFullscreenSigninMediatorStateMachineName[] =
 inline constexpr char kFullscreenSigninMediatorStateMachineDescription[] =
     "Enables the state-machine implementation of FullscreenSigninMediator.";
 
-inline constexpr char kFullscreenVideoPictureInPictureName[] =
-    "Fullscreen Video Picture-in-Picture";
-inline constexpr char kFullscreenVideoPictureInPictureDescription[] =
-    "Enables fullscreen video Picture-in-Picture on Android.";
-
 inline constexpr char kGestureUserEducationBackSwipeName[] =
     "Gesture user education back swipe";
 inline constexpr char kGestureUserEducationBackSwipeDescription[] =
