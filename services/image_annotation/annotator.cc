@@ -923,13 +923,30 @@ void Annotator::OnMantaResponseReceived(const RequestKey& request_key,
     return;
   }
 
-  // Select at most one description annotation (CAPTION or LABEL) and at most
-  // one OCR annotation from the response, picking the candidate with the
-  // highest non-negative score for each category (clamping scores > 1.0 to 1.0
-  // for histograms and Mojo output, and requiring OCR candidates to meet
-  // `min_ocr_confidence_`).
-  const base::DictValue* best = nullptr;
-  std::optional<double> best_score;
+  // Candidate selection and scoring overview:
+  // 1. Each response entry is bucketed into one of four categories:
+  //    PRIMARY_CAPTION (full conceptual sentence), SECONDARY_CAPTION (noun-
+  //    phrase appendix), LABEL (single-word object/entity tag), or OCR
+  //    (extracted text). Within each bucket, only the entry with the highest
+  //    non-negative score is retained (clamping scores > 1.0 to 1.0 for
+  //    averaging, histograms, and Mojo output, and requiring OCR entries to
+  //    meet `min_ocr_confidence_`).
+  // 2. For the image description annotation, PRIMARY_CAPTION takes priority
+  //    over LABEL even if a LABEL has a higher raw confidence score:
+  //    - If both PRIMARY_CAPTION and SECONDARY_CAPTION are present, their texts
+  //      are joined with a newline and their clamped scores are averaged.
+  //    - If only PRIMARY_CAPTION is present, it is used directly.
+  //    - If no PRIMARY_CAPTION is present, any orphan SECONDARY_CAPTION is
+  //      ignored and the highest-scoring LABEL is used as a fallback.
+  // 3. The highest-scoring OCR annotation (if any) is emitted alongside the
+  //    description annotation, and UMA metrics are reported once for each
+  //    emitted annotation.
+  const base::DictValue* best_primary_caption = nullptr;
+  std::optional<double> best_primary_caption_score;
+  const base::DictValue* best_secondary_caption = nullptr;
+  std::optional<double> best_secondary_caption_score;
+  const base::DictValue* best_label = nullptr;
+  std::optional<double> best_label_score;
   const base::DictValue* best_ocr = nullptr;
   std::optional<double> best_ocr_score;
 
@@ -944,7 +961,6 @@ void Annotator::OnMantaResponseReceived(const RequestKey& request_key,
     if (!text || text->empty() || !type || !score.has_value() || *score < 0.0) {
       continue;
     }
-    const double clamped_score = std::min(*score, 1.0);
 
     if (*type == manta::anchovy::kTypeOcr) {
       // Enforce the minimum OCR confidence threshold before accepting OCR text
@@ -953,28 +969,70 @@ void Annotator::OnMantaResponseReceived(const RequestKey& request_key,
           static_cast<float>(min_ocr_confidence_)) {
         continue;
       }
-      ReportOcrAnnotation(clamped_score, false);
       if (!best_ocr_score.has_value() || *score > *best_ocr_score) {
         best_ocr_score = score;
         best_ocr = result_dict;
       }
-    } else if (auto itr = kAnnotationTypes.find(*type);
-               itr != kAnnotationTypes.end()) {
-      ReportDescAnnotation(itr->second, clamped_score, false);
-      if (!best_score.has_value() || *score > *best_score) {
-        best_score = score;
-        best = result_dict;
+    } else if (*type == manta::anchovy::kTypePrimaryCaption ||
+               *type == manta::anchovy::kTypeCaption) {
+      if (!best_primary_caption_score.has_value() ||
+          *score > *best_primary_caption_score) {
+        best_primary_caption_score = score;
+        best_primary_caption = result_dict;
+      }
+    } else if (*type == manta::anchovy::kTypeSecondaryCaption) {
+      if (!best_secondary_caption_score.has_value() ||
+          *score > *best_secondary_caption_score) {
+        best_secondary_caption_score = score;
+        best_secondary_caption = result_dict;
+      }
+    } else if (*type == manta::anchovy::kTypeLabel) {
+      if (!best_label_score.has_value() || *score > *best_label_score) {
+        best_label_score = score;
+        best_label = result_dict;
       }
     }
   }
 
   std::vector<mojom::AnnotationPtr> annotations;
-  if (best) {
-    annotations.push_back(CreateAnnotationFromMantaResponse(*best));
+  if (best_primary_caption) {
+    if (best_secondary_caption) {
+      // Join the primary conceptual caption and secondary noun-phrase appendix
+      // with a newline and average their clamped scores, matching the legacy
+      // server.
+      const std::string* primary_text =
+          best_primary_caption->FindString("text");
+      const std::string* secondary_text =
+          best_secondary_caption->FindString("text");
+      const double avg_score = (std::min(*best_primary_caption_score, 1.0) +
+                                std::min(*best_secondary_caption_score, 1.0)) /
+                               2.0;
+      ReportDescAnnotation(mojom::AnnotationType::kCaption, avg_score, false);
+      annotations.push_back(
+          mojom::Annotation::New(mojom::AnnotationType::kCaption, avg_score,
+                                 *primary_text + "\n" + *secondary_text));
+    } else {
+      // Emit the primary caption directly when no secondary caption is present.
+      mojom::AnnotationPtr annotation =
+          CreateAnnotationFromMantaResponse(*best_primary_caption);
+      ReportDescAnnotation(annotation->type, annotation->score, false);
+      annotations.push_back(std::move(annotation));
+    }
+  } else if (best_label) {
+    // Fall back to the highest-scoring label only when no primary caption is
+    // available (ignoring any orphan secondary caption).
+    mojom::AnnotationPtr annotation =
+        CreateAnnotationFromMantaResponse(*best_label);
+    ReportDescAnnotation(annotation->type, annotation->score, false);
+    annotations.push_back(std::move(annotation));
   }
 
   if (best_ocr) {
-    annotations.push_back(CreateAnnotationFromMantaResponse(*best_ocr));
+    // Emit the highest-scoring OCR annotation alongside any description.
+    mojom::AnnotationPtr annotation =
+        CreateAnnotationFromMantaResponse(*best_ocr);
+    ReportOcrAnnotation(annotation->score, false);
+    annotations.push_back(std::move(annotation));
   }
 
   // Only populate and cache results when at least one valid annotation was

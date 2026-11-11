@@ -2740,10 +2740,10 @@ TEST(AnnotatorTest, EmptyResultIfListIsEmpty) {
 
 TEST(AnnotatorTest, AnchovySuccessMultiple) {
   const std::string text_ocr = "ocr";
-  const std::string type_ocr = "OCR";
+  const std::string type_ocr(manta::anchovy::kTypeOcr);
   const double score = 0.9;
   const std::string text_caption = "caption";
-  const std::string type_caption = "CAPTION";
+  const std::string type_caption(manta::anchovy::kTypePrimaryCaption);
 
   base::ListValue results;
   results.Append(base::DictValue()
@@ -2774,11 +2774,13 @@ TEST(AnnotatorTest, AnchovySuccessMultiple) {
 }
 
 TEST(AnnotatorTest, AnchovySuccessOCR) {
-  SimpleAnchovySuccessTest("OCR", mojom::AnnotationType::kOcr);
+  SimpleAnchovySuccessTest(manta::anchovy::kTypeOcr,
+                           mojom::AnnotationType::kOcr);
 }
 
 TEST(AnnotatorTest, AnchovySuccessCaption) {
-  SimpleAnchovySuccessTest("CAPTION", mojom::AnnotationType::kCaption);
+  SimpleAnchovySuccessTest(manta::anchovy::kTypeCaption,
+                           mojom::AnnotationType::kCaption);
 }
 
 TEST(AnnotatorTest, AnchovySuccessPrimaryCaption) {
@@ -2787,7 +2789,8 @@ TEST(AnnotatorTest, AnchovySuccessPrimaryCaption) {
 }
 
 TEST(AnnotatorTest, AnchovySuccessLabel) {
-  SimpleAnchovySuccessTest("LABEL", mojom::AnnotationType::kLabel);
+  SimpleAnchovySuccessTest(manta::anchovy::kTypeLabel,
+                           mojom::AnnotationType::kLabel);
 }
 
 TEST(AnnotatorTest, AnchovyClampsUncalibratedScoreAboveOne) {
@@ -3000,6 +3003,164 @@ TEST(AnnotatorTest, AnchovyUnknownTypeAndFilteredEntriesNotCached) {
   EXPECT_EQ(error2, std::nullopt);
   ASSERT_EQ(annotations2.size(), 1u);
   EXPECT_EQ(annotations2[0].text, "Valid caption on retry");
+}
+
+// Verifies that PRIMARY_CAPTION and SECONDARY_CAPTION are joined with "\n" and
+// an averaged score, preferred over a higher-scoring LABEL, and logged once in
+// UMA histograms.
+TEST(AnnotatorTest,
+     AnchovyPrimaryAndSecondaryCaptionJoinedAndPreferredOverLabel) {
+  base::HistogramTester histogram_tester;
+  base::ListValue results;
+  results.Append(base::DictValue()
+                     .Set("type", manta::anchovy::kTypeLabel)
+                     .Set("score", 0.96)
+                     .Set("text", "bicycle"));
+  results.Append(base::DictValue()
+                     .Set("type", manta::anchovy::kTypePrimaryCaption)
+                     .Set("score", 0.84)
+                     .Set("text", "A person riding a bicycle"));
+  results.Append(base::DictValue()
+                     .Set("type", manta::anchovy::kTypeSecondaryCaption)
+                     .Set("score", 0.76)
+                     .Set("text", "Golden Gate Park"));
+
+  std::vector<mojom::Annotation> annotations;
+  RunAnchovyAnnotatorTest(
+      std::make_unique<FakeAnchovyProvider>(
+          base::DictValue().Set("results", std::move(results))),
+      &annotations);
+
+  ASSERT_EQ(annotations.size(), 1u);
+  EXPECT_EQ(annotations[0].type, mojom::AnnotationType::kCaption);
+  EXPECT_EQ(annotations[0].text, "A person riding a bicycle\nGolden Gate Park");
+  EXPECT_NEAR(annotations[0].score, 0.80, 1e-5);
+
+  histogram_tester.ExpectUniqueSample(metrics_internal::kDescType,
+                                      mojom::AnnotationType::kCaption, 1);
+  histogram_tester.ExpectUniqueSample(
+      base::StringPrintf(metrics_internal::kAnnotationConfidence,
+                         "DescCaption"),
+      80, 1);
+  histogram_tester.ExpectUniqueSample(
+      base::StringPrintf(metrics_internal::kAnnotationEmpty, "DescCaption"),
+      false, 1);
+  histogram_tester.ExpectTotalCount(
+      base::StringPrintf(metrics_internal::kAnnotationConfidence, "DescLabel"),
+      0);
+}
+
+// Verifies that SECONDARY_CAPTION preceding PRIMARY_CAPTION still joins in
+// primary-then-secondary order and clamps uncalibrated scores > 1.0 before
+// averaging.
+TEST(AnnotatorTest,
+     AnchovySecondaryBeforePrimaryCaptionClampedBeforeAveraging) {
+  base::HistogramTester histogram_tester;
+  base::ListValue results;
+  results.Append(base::DictValue()
+                     .Set("type", manta::anchovy::kTypeSecondaryCaption)
+                     .Set("score", 0.20)
+                     .Set("text", "Lower-scoring secondary"));
+  results.Append(base::DictValue()
+                     .Set("type", manta::anchovy::kTypeSecondaryCaption)
+                     .Set("score", 0.50)
+                     .Set("text", "Yosemite Valley"));
+  results.Append(base::DictValue()
+                     .Set("type", manta::anchovy::kTypePrimaryCaption)
+                     .Set("score", 1.50)
+                     .Set("text", "A scenic mountain trail"));
+
+  std::vector<mojom::Annotation> annotations;
+  RunAnchovyAnnotatorTest(
+      std::make_unique<FakeAnchovyProvider>(
+          base::DictValue().Set("results", std::move(results))),
+      &annotations);
+
+  ASSERT_EQ(annotations.size(), 1u);
+  EXPECT_EQ(annotations[0].type, mojom::AnnotationType::kCaption);
+  EXPECT_EQ(annotations[0].text, "A scenic mountain trail\nYosemite Valley");
+  EXPECT_DOUBLE_EQ(annotations[0].score, 0.75);
+
+  histogram_tester.ExpectUniqueSample(metrics_internal::kDescType,
+                                      mojom::AnnotationType::kCaption, 1);
+  histogram_tester.ExpectUniqueSample(
+      base::StringPrintf(metrics_internal::kAnnotationConfidence,
+                         "DescCaption"),
+      75, 1);
+}
+
+// Verifies that an orphan SECONDARY_CAPTION without a PRIMARY_CAPTION is never
+// selected as a standalone caption or logged as DescCaption, falling back to
+// LABEL when present or failing when no PRIMARY_CAPTION or LABEL is present.
+TEST(AnnotatorTest, AnchovyOrphanSecondaryCaptionRejected) {
+  // Case 1: Orphan SECONDARY_CAPTION + LABEL -> falls back to LABEL.
+  {
+    base::HistogramTester histogram_tester;
+    base::ListValue results;
+    results.Append(base::DictValue()
+                       .Set("type", manta::anchovy::kTypeSecondaryCaption)
+                       .Set("score", 0.90)
+                       .Set("text", "Los Angeles"));
+    results.Append(base::DictValue()
+                       .Set("type", manta::anchovy::kTypeLabel)
+                       .Set("score", 0.80)
+                       .Set("text", "city"));
+
+    std::vector<mojom::Annotation> annotations;
+    RunAnchovyAnnotatorTest(
+        std::make_unique<FakeAnchovyProvider>(
+            base::DictValue().Set("results", std::move(results))),
+        &annotations);
+
+    ASSERT_EQ(annotations.size(), 1u);
+    EXPECT_EQ(annotations[0].type, mojom::AnnotationType::kLabel);
+    EXPECT_EQ(annotations[0].text, "city");
+    EXPECT_NEAR(annotations[0].score, 0.80, 1e-5);
+
+    histogram_tester.ExpectUniqueSample(metrics_internal::kDescType,
+                                        mojom::AnnotationType::kLabel, 1);
+    histogram_tester.ExpectUniqueSample(
+        base::StringPrintf(metrics_internal::kAnnotationConfidence,
+                           "DescLabel"),
+        80, 1);
+    histogram_tester.ExpectTotalCount(
+        base::StringPrintf(metrics_internal::kAnnotationConfidence,
+                           "DescCaption"),
+        0);
+  }
+
+  // Case 2: Orphan SECONDARY_CAPTION alone -> rejected without DescType
+  // metrics.
+  {
+    base::HistogramTester histogram_tester;
+    base::ListValue results;
+    results.Append(base::DictValue()
+                       .Set("type", manta::anchovy::kTypeSecondaryCaption)
+                       .Set("score", 0.90)
+                       .Set("text", "Los Angeles"));
+
+    std::vector<mojom::Annotation> annotations;
+    std::optional<mojom::AnnotateImageError> error;
+    RunAnchovyAnnotatorTest(
+        std::make_unique<FakeAnchovyProvider>(
+            base::DictValue().Set("results", std::move(results))),
+        &annotations, &error);
+
+    EXPECT_TRUE(annotations.empty());
+    EXPECT_EQ(error, mojom::AnnotateImageError::kFailure);
+
+    histogram_tester.ExpectTotalCount(metrics_internal::kDescType, 0);
+    histogram_tester.ExpectTotalCount(
+        base::StringPrintf(metrics_internal::kAnnotationConfidence,
+                           "DescCaption"),
+        0);
+    histogram_tester.ExpectTotalCount(
+        base::StringPrintf(metrics_internal::kAnnotationConfidence,
+                           "DescLabel"),
+        0);
+    histogram_tester.ExpectUniqueSample(metrics_internal::kClientResult,
+                                        ClientResult::kFailed, 1);
+  }
 }
 
 // Verifies that images smaller than kDescMinDimension (150x150) are filtered by
