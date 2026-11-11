@@ -27,6 +27,7 @@
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/persistent_histograms.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/performance_manager/public/features.h"
 #include "components/site_isolation/features.h"
 #include "components/variations/feature_overrides.h"
 #include "components/version_info/version_info.h"
@@ -392,4 +393,7 @@ void ChromeBrowserFieldTrials::EnableRuntimeMutableFeatures(
   feature_list->EnableRuntimeMutability(
       password_manager::features::kPasskeyUnlockPromo, base::DoNothing());
 #endif  // !BUILDFLAG(IS_ANDROID)
+  feature_list->EnableRuntimeMutability(
+      performance_manager::features::kPMWithheldFromViewVoter,
+      base::DoNothing());
 }

@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/check_is_test.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/not_fatal_until.h"
@@ -620,6 +621,10 @@ PageLiveStateDecorator::MarkWithheldFromView(content::WebContents* contents) {
     // happen in production. Hand back an inert token rather than null, so that
     // tests don't have to handle this case.
     CHECK_IS_TEST();
+    return std::make_unique<ScopedWithheldFromViewImpl>(
+        base::WeakPtr<PageLiveStateDataImpl>());
+  }
+  if (!base::FeatureList::IsEnabled(features::kPMWithheldFromViewVoter)) {
     return std::make_unique<ScopedWithheldFromViewImpl>(
         base::WeakPtr<PageLiveStateDataImpl>());
   }

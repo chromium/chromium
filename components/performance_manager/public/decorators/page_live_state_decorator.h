@@ -149,9 +149,10 @@ class PageLiveStateDecorator
   // prioritization for as long as it lives.
   //
   // Never returns null. `contents` must be registered with Performance
-  // Manager, except in tests, where the token is inert. The token also becomes
-  // inert if the PageNode goes away first, which is expected for a UI object
-  // torn down after its WebContents.
+  // Manager, except in tests, where the token is inert. The token is also
+  // inert when `features::kPMWithheldFromViewVoter` is disabled, or if the
+  // PageNode goes away first (which is expected for a UI object torn down
+  // after its WebContents).
   //
   // At most one token may exist for a page at a time, since a page is
   // withheld by the single UI surface waiting to show it. Overlapping tokens

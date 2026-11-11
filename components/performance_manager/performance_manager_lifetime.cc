@@ -87,11 +87,8 @@ void AddVoters(GraphImpl* graph, PrefService* pref_service) {
       // is withholding from view until it is ready. Gated on the same settings
       // as FrameVisibilityVoter: an embedder that opted out of
       // visibility-driven priority has also opted out of this.
-      if (base::FeatureList::IsEnabled(features::kPMWithheldFromViewVoter)) {
-        priority_voting_system
-            ->AddPriorityVoter<priority::WithheldFromViewVoter>(
-                policy_settings.ignore_main_frame_visibility);
-      }
+      priority_voting_system->AddPriorityVoter<priority::WithheldFromViewVoter>(
+          policy_settings.ignore_main_frame_visibility);
     }
 
     // Casts a USER_BLOCKING vote when a frame is audible.
