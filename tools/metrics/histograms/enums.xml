@@ -28140,13 +28140,6 @@ Called by update_net_error_codes.py.-->
 
 <!-- LINT.ThenChange(/components/segmentation_platform/embedder/home_modules/tips_manager/constants.h:TipIdentifier) -->
 
-<enum name="TokenStateOnRegistrationRequest">
-  <int value="0" label="Token was empty"/>
-  <int value="1" label="Token stayed unchanged"/>
-  <int value="2" label="Token has changed"/>
-  <int value="3" label="Token was cleared"/>
-</enum>
-
 <enum name="TouchscreenConfiguration">
   <int value="0" label="InternalOneExternalNone"/>
   <int value="1" label="InternalNoneExternalOne"/>

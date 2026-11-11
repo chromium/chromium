@@ -35,18 +35,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="FCMInvalidations.TokenStateOnRegistrationRequest2"
-    enum="TokenStateOnRegistrationRequest" expires_after="2025-06-08">
-  <owner>asumaneev@google.com</owner>
-  <owner>rbock@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    Records the outcome of instance ID token requests (i.e. whether the token
-    changed). Such requests are made when invalidations are first enabled (e.g.
-    on sign-in), and then periodically every 24 hours.
-  </summary>
-</histogram>
-
 </histograms>
 
 </histogram-configuration>
