@@ -2675,7 +2675,7 @@ TEST_F(URLRequestHttpJobWithBrotliSupportTest, BrotliAdvertisement) {
 
 TEST_F(URLRequestHttpJobWithBrotliSupportTest, DefaultAcceptEncodingOverriden) {
   struct {
-    base::flat_set<net::SourceStreamType> accepted_types;
+    net::SourceStreamTypeSet accepted_types;
     const std::string_view expected_request_headers;
   } kTestCases[] = {
       {{net::SourceStreamType::kDeflate},

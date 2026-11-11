@@ -102,6 +102,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/secure_dns_policy.h"
+#include "net/filter/source_stream_type.h"
 #include "net/http/http_byte_range.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_connection_info.h"
@@ -8796,7 +8797,7 @@ TEST_F(URLRequestTestHTTP, DefaultAcceptEncodingOverridden) {
   ASSERT_TRUE(http_test_server()->Start());
 
   struct {
-    base::flat_set<SourceStreamType> accepted_types;
+    SourceStreamTypeSet accepted_types;
     const char* expected_accept_encoding;
   } tests[] = {
       {{SourceStreamType::kDeflate}, "deflate"},

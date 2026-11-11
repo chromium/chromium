@@ -33,12 +33,13 @@ constexpr char kEncodingDeflate[] = "deflate";
 constexpr char kEncodingBrotli[] = "br";
 constexpr char kEncodingZstd[] = "zstd";
 
-bool SupportsStreamType(const std::optional<base::flat_set<SourceStreamType>>&
-                            accepted_stream_types,
-                        SourceStreamType type) {
-  if (!accepted_stream_types)
+bool SupportsStreamType(
+    std::optional<SourceStreamTypeSet> accepted_stream_types,
+    SourceStreamType type) {
+  if (!accepted_stream_types) {
     return true;
-  return accepted_stream_types->contains(type);
+  }
+  return accepted_stream_types->Has(type);
 }
 
 }  // namespace
@@ -231,8 +232,7 @@ base::DictValue HttpRequestHeaders::NetLogParams(
 
 void HttpRequestHeaders::SetAcceptEncodingIfMissing(
     const GURL& url,
-    const std::optional<base::flat_set<SourceStreamType>>&
-        accepted_stream_types,
+    std::optional<SourceStreamTypeSet> accepted_stream_types,
     bool enable_brotli,
     bool enable_zstd) {
   if (HasHeader(kAcceptEncoding))

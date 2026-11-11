@@ -4,7 +4,11 @@
 
 #include "net/http/http_request_headers.h"
 
+#include <optional>
+
+#include "net/filter/source_stream_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace net {
 
@@ -170,6 +174,49 @@ TEST(HttpRequestHeaders, Copy) {
 
   HttpRequestHeaders headers2 = headers;
   EXPECT_EQ(headers.ToString(), headers2.ToString());
+}
+
+TEST(HttpRequestHeaders, SetAcceptEncodingIfMissing) {
+  const GURL https_url("https://example.com");
+  const GURL http_url("http://example.com");
+
+  {
+    HttpRequestHeaders headers;
+    headers.SetAcceptEncodingIfMissing(https_url, std::nullopt,
+                                       /*enable_brotli=*/true,
+                                       /*enable_zstd=*/true);
+    EXPECT_EQ("gzip, deflate, br, zstd",
+              headers.GetHeader(HttpRequestHeaders::kAcceptEncoding));
+  }
+
+  {
+    HttpRequestHeaders headers;
+    headers.SetAcceptEncodingIfMissing(http_url, std::nullopt,
+                                       /*enable_brotli=*/true,
+                                       /*enable_zstd=*/true);
+    EXPECT_EQ("gzip, deflate",
+              headers.GetHeader(HttpRequestHeaders::kAcceptEncoding));
+  }
+
+  {
+    HttpRequestHeaders headers;
+    headers.SetAcceptEncodingIfMissing(https_url, SourceStreamTypeSet(),
+                                       /*enable_brotli=*/true,
+                                       /*enable_zstd=*/true);
+    EXPECT_EQ(std::nullopt,
+              headers.GetHeader(HttpRequestHeaders::kAcceptEncoding));
+  }
+
+  {
+    HttpRequestHeaders headers;
+    headers.SetAcceptEncodingIfMissing(
+        https_url,
+        SourceStreamTypeSet(
+            {SourceStreamType::kBrotli, SourceStreamType::kZstd}),
+        /*enable_brotli=*/true, /*enable_zstd=*/true);
+    EXPECT_EQ("br, zstd",
+              headers.GetHeader(HttpRequestHeaders::kAcceptEncoding));
+  }
 }
 
 }  // namespace

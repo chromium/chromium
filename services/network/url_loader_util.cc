@@ -20,6 +20,7 @@
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
 #include "net/device_bound_sessions/session_usage.h"
+#include "net/filter/source_stream_type.h"
 #include "net/http/http_connection_info.h"
 #include "net/http/http_response_info.h"
 #include "net/storage_access_api/status.h"
@@ -582,7 +583,15 @@ void ConfigureUrlRequest(const ResourceRequest& request,
   DCHECK(AreRequestHeadersSafe(merged_headers));
   url_request.SetExtraRequestHeaders(std::move(merged_headers));
 
-  url_request.set_accepted_stream_types(request.devtools_accepted_stream_types);
+  if (request.devtools_accepted_stream_types) {
+    net::SourceStreamTypeSet accepted_stream_types;
+    for (net::SourceStreamType type : *request.devtools_accepted_stream_types) {
+      accepted_stream_types.Put(type);
+    }
+    url_request.set_accepted_stream_types(accepted_stream_types);
+  } else {
+    url_request.set_accepted_stream_types(std::nullopt);
+  }
 
   url_request.set_initiator(request.request_initiator);
 

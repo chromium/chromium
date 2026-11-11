@@ -4,10 +4,14 @@
 
 #include "services/network/url_loader_util.h"
 
+#include <optional>
+#include <vector>
+
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "net/base/isolation_info.h"
 #include "net/cookies/site_for_cookies.h"
+#include "net/filter/source_stream_type.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
@@ -313,6 +317,44 @@ TEST_F(ConfigureUrlRequestTest,
 
   EXPECT_TRUE(url_request->allow_credentials());
   EXPECT_TRUE(url_request->send_client_certs());
+}
+
+TEST_F(ConfigureUrlRequestTest, DevToolsAcceptedStreamTypes) {
+  const GURL request_url("https://example.com/resource.js");
+
+  ResourceRequest request;
+  request.url = request_url;
+  request.method = "GET";
+
+  auto factory_params = mojom::URLLoaderFactoryParams::New();
+  factory_params->process_id = OriginatingProcessId::browser();
+
+  cors::OriginAccessList origin_access_list;
+  CookieSettings cookie_settings;
+  SharedResourceChecker shared_resource_checker(cookie_settings);
+
+  auto url_request = CreateURLRequest(request_url);
+  ConfigureUrlRequest(request, *factory_params, origin_access_list,
+                      *url_request, shared_resource_checker);
+  EXPECT_EQ(std::nullopt, url_request->accepted_stream_types());
+
+  request.devtools_accepted_stream_types = std::vector<net::SourceStreamType>{};
+  ConfigureUrlRequest(request, *factory_params, origin_access_list,
+                      *url_request, shared_resource_checker);
+  EXPECT_EQ(net::SourceStreamTypeSet(), url_request->accepted_stream_types());
+
+  request.devtools_accepted_stream_types = {net::SourceStreamType::kBrotli,
+                                            net::SourceStreamType::kGzip};
+  ConfigureUrlRequest(request, *factory_params, origin_access_list,
+                      *url_request, shared_resource_checker);
+  EXPECT_EQ(net::SourceStreamTypeSet(
+                {net::SourceStreamType::kBrotli, net::SourceStreamType::kGzip}),
+            url_request->accepted_stream_types());
+
+  request.devtools_accepted_stream_types = std::nullopt;
+  ConfigureUrlRequest(request, *factory_params, origin_access_list,
+                      *url_request, shared_resource_checker);
+  EXPECT_EQ(std::nullopt, url_request->accepted_stream_types());
 }
 
 class SetRequestCredentialsTest : public testing::Test {
