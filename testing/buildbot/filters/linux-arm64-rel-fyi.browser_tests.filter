@@ -16,3 +16,6 @@
 -ReadAnythingMochaTest.LineFocusMoveMode*
 -ReadAnythingMochaTest.RectCalculations*
 -SocketApiTest.SocketTCPExtension
+
+# TODO(https://crbug.com/574935783): Flaky on linux-arm64-rel-fyi.
+-NewTabPageModulesTest.DriveModuleV2

@@ -36,3 +36,6 @@
 
 # TODO(https://crbug.com/576196618): Flaky on linux-arm64-wayland-rel-fyi.
 -BrowserTest.SetBackgroundColorForNewTab
+
+# TODO(https://crbug.com/574935783): Flaky on linux-arm64-wayland-rel-fyi.
+-NewTabPageModulesTest.DriveModuleV2
