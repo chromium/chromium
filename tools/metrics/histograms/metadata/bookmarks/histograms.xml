@@ -1171,16 +1171,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PowerBookmarks.BookmarkSaveFlow.PriceTrackingEnabled"
-    enum="PriceTrackingState" expires_after="2025-03-02">
-  <owner>wylieb@google.com</owner>
-  <owner>chrome-collections@google.com</owner>
-  <summary>
-    Tracks the interactions with the price-tracking toggle present when
-    initially saving products.
-  </summary>
-</histogram>
-
 <histogram name="PowerBookmarks.SidePanel.BookmarksShown" units="Bookmarks"
     expires_after="2027-04-18">
   <owner>emshack@chromium.org</owner>

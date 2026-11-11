@@ -12,7 +12,6 @@ import org.chromium.base.CallbackController;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkDesktopPopupMetrics.BookmarkDesktopPopupOutcome;
-import org.chromium.chrome.browser.bookmarks.PowerBookmarkMetrics.PriceTrackingState;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -170,12 +169,7 @@ public class BookmarkPopupMediator implements SubscriptionsObserver {
         PriceTrackingUtils.isBookmarkPriceTracked(
                 mProfile,
                 mBookmarkId.getId(),
-                mCallbackController.makeCancelable(
-                        (Boolean subscribed) -> {
-                            setPriceTrackingToggleVisualsOnly(subscribed);
-                            PowerBookmarkMetrics.reportBookmarkSaveFlowPriceTrackingState(
-                                    PriceTrackingState.PRICE_TRACKING_SHOWN);
-                        }));
+                mCallbackController.makeCancelable(this::setPriceTrackingToggleVisualsOnly));
     }
 
     private void handlePriceTrackingSwitchToggle(CompoundButton view, boolean toggled) {
@@ -192,11 +186,6 @@ public class BookmarkPopupMediator implements SubscriptionsObserver {
                                 setPriceTrackingToggleVisualsOnly(!toggled);
                             }
                         }));
-
-        PowerBookmarkMetrics.reportBookmarkSaveFlowPriceTrackingState(
-                toggled
-                        ? PriceTrackingState.PRICE_TRACKING_ENABLED
-                        : PriceTrackingState.PRICE_TRACKING_DISABLED);
     }
 
     private void setPriceTrackingToggleVisualsOnly(boolean enabled) {

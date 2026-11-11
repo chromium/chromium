@@ -352,16 +352,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkMetrics.java:BookmarkManagerFilter) -->
 
-<!-- LINT.IfChange(PriceTrackingState) -->
-
-<enum name="PriceTrackingState">
-  <int value="0" label="Price tracking shown"/>
-  <int value="1" label="Price tracking enabled"/>
-  <int value="2" label="Price tracking disabled"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/PowerBookmarkMetrics.java:PriceTrackingState) -->
-
 </enums>
 
 </histogram-configuration>
