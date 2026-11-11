@@ -19,7 +19,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/android/media_codec_util.h"
@@ -453,7 +452,6 @@ CodecWrapperImpl::DequeueStatus CodecWrapperImpl::DequeueOutputBuffer(
                    << " r: " << color_space_.range
                    << " t: " << color_space_.transfer;
         }
-        UMA_HISTOGRAM_BOOLEAN("Media.Android.GetColorSpaceError", error);
         // If we fail to get a color space after we have gotten a valid size,
         // reset the color space. The higher levels of the stack will decide
         // the color space (e.g, based on the container settings).

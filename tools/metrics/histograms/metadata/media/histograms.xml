@@ -902,17 +902,6 @@ chromium-metrics-reviews@google.com.
   <summary>Records the result of the audio focus request on Android.</summary>
 </histogram>
 
-<histogram name="Media.Android.GetColorSpaceError" enum="BooleanError"
-    expires_after="2025-06-08">
-  <owner>vasilyt@chromium.org</owner>
-  <owner>liberato@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Android: Whether we successfuly got ColorSpace from MediaCodec or not.
-    Recorded each time output format changes from MediaCodec.
-  </summary>
-</histogram>
-
 <histogram name="Media.Android.MediaButtonWhilePaused.TimeSincePause.Pause"
     units="ms" expires_after="2027-06-01">
   <owner>philyan@chromium.org</owner>
