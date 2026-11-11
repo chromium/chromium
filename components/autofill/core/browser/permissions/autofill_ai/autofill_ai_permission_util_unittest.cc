@@ -291,7 +291,8 @@ TEST_P(AutofillAiMayPerformActionTest,
 // is saved in the EntityDataManager.
 TEST_P(AutofillAiMayPerformActionTest, ActionsWhenAddressAutofillDisabled) {
   client().SetAutofillProfileEnabled(false);
-  EXPECT_FALSE(MayPerformAutofillAiAction(client(), GetParam()));
+  EXPECT_FALSE(
+      MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)));
 }
 
 // Tests that listing, editing and removing entities is permitted if address
@@ -303,7 +304,9 @@ TEST_P(AutofillAiMayPerformActionTest,
   const bool is_allowed =
       GetParam() == AutofillAiAction::kEditAndDeleteEntityInstanceInSettings ||
       GetParam() == AutofillAiAction::kListEntityInstancesInSettings;
-  EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
+  EXPECT_EQ(
+      MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)),
+      is_allowed);
 }
 
 // Verifies that only MQLS logging and online model calls require an opt-in.
@@ -1160,6 +1163,44 @@ TEST_F(AutofillAiMayPerformImportToWalletTest,
   // Expect that imports of private passes are not allowed.
   EXPECT_FALSE(MayPerformAutofillAiAction(
       client(), AutofillAiAction::kImportToWallet, EntityType(kPassport)));
+}
+
+// Tests that `MayPerformAutofillAiAction()` returns `false` for `kImport` and
+// `kImportToWallet` on private passes when
+// `kAutofillRegionalizedPrivatePassesUxRefine` is enabled and the
+// `must_show_equally_weighted_buttons_for_private_passes_in_chrome_autofill()`
+// capability is `kUnknown`.
+TEST_F(
+    AutofillAiMayPerformImportToWalletTest,
+    ImportAndImportToWallet_FalseForPrivatePassesIfButtonsCapabilityUnknown) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillAiWalletPrivatePasses,
+       features::kAutofillRegionalizedPrivatePassesUxRefine},
+      /*disabled_features=*/{});
+  client().SetWalletPublicPassStorageEnabled(true);
+  client().ResetAccountCapabilities();
+  client().SetCanUseModelExecutionFeatures(true);
+  client().SetSupportsWalletPrivatePassesInAutofill(true);
+
+  // Expect that public pass import is allowed.
+  EXPECT_TRUE(MayPerformAutofillAiAction(client(), AutofillAiAction::kImport,
+                                         EntityType(kOrder)));
+  EXPECT_TRUE(MayPerformAutofillAiAction(
+      client(), AutofillAiAction::kImportToWallet, EntityType(kVehicle)));
+
+  // Expect that all private pass imports are disallowed with the unknown
+  // account capability.
+  EXPECT_FALSE(MayPerformAutofillAiAction(client(), AutofillAiAction::kImport,
+                                          EntityType(kPassport)));
+  EXPECT_FALSE(MayPerformAutofillAiAction(
+      client(), AutofillAiAction::kImportToWallet, EntityType(kPassport)));
+  EXPECT_FALSE(MayPerformAutofillAiAction(client(),
+                                          AutofillAiAction::kImportToWallet,
+                                          EntityType(kDriversLicense)));
+  EXPECT_FALSE(MayPerformAutofillAiAction(client(), AutofillAiAction::kImport,
+                                          EntityType(kRedressNumber)));
 }
 
 }  // namespace
