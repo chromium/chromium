@@ -18892,6 +18892,29 @@
             ]
         }
     ],
+    "SubresourceLoaderProxyTaskQueue": [
+        {
+            "platforms": [
+                "android_desktop",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_VisibleOnly_20261111_CANARY_DEV",
+                    "params": {
+                        "SubresourceLoaderProxyTaskQueueIncludePrerendering": "false",
+                        "SubresourceLoaderProxyTaskQueueVisibleOnly": "true"
+                    },
+                    "enable_features": [
+                        "SubresourceLoaderProxyTaskQueue"
+                    ]
+                }
+            ]
+        }
+    ],
     "SuspiciousSiteWarnings": [
         {
             "platforms": [
