@@ -9,6 +9,7 @@
 #include <limits>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <tuple>
 #include <vector>
@@ -1265,19 +1266,30 @@ class SessionStorageImplOnDiskSQLiteRolloutTestBase
 
 class SessionStorageImplOnDiskSQLiteRolloutTest
     : public SessionStorageImplOnDiskSQLiteRolloutTestBase,
-      public testing::WithParamInterface<DomStorageSqliteRolloutStage> {
+      public testing::WithParamInterface<
+          std::optional<DomStorageSqliteRolloutStage>> {
  public:
   SessionStorageImplOnDiskSQLiteRolloutTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{kDomStorageSqliteNewDatabases,
-                               {{"DomStorageSqliteNewDatabasesStage",
-                                 kDomStorageSqliteNewDatabasesStage.GetName(
-                                     stage())}}}},
-        /*disabled_features=*/{kDomStorageSqlite, kDomStorageSqliteInMemory});
+    if (GetParam()) {
+      feature_list_.InitWithFeaturesAndParameters(
+          /*enabled_features=*/{{kDomStorageSqliteNewDatabases,
+                                 {{"DomStorageSqliteNewDatabasesStage",
+                                   kDomStorageSqliteNewDatabasesStage.GetName(
+                                       stage())}}}},
+          /*disabled_features=*/{kDomStorageSqlite, kDomStorageSqliteInMemory});
+    } else {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{kDomStorageSqlite, kDomStorageSqliteInMemory,
+                                 kDomStorageSqliteNewDatabases});
+    }
     InitializeTaskEnvironment();
   }
 
-  DomStorageSqliteRolloutStage stage() const { return GetParam(); }
+  DomStorageSqliteRolloutStage stage() const {
+    return GetParam().value_or(
+        DomStorageSqliteRolloutStage::kUseLevelDbForNewDatabases);
+  }
 
   // Whether a newly-created on-disk database uses the SQLite backend.
   bool UsesSqliteForNewDb() const {
@@ -1300,9 +1312,13 @@ INSTANTIATE_TEST_SUITE_P(
                     DomStorageSqliteRolloutStage::kUseLevelDbForNewDatabases,
                     DomStorageSqliteRolloutStage::kUseLevelDbAsControl,
                     DomStorageSqliteRolloutStage::kUseSqliteForNewDatabases,
-                    DomStorageSqliteRolloutStage::kUseSqliteOnly),
-    [](const testing::TestParamInfo<DomStorageSqliteRolloutStage>& info) {
-      return kDomStorageSqliteNewDatabasesStage.GetName(info.param);
+                    DomStorageSqliteRolloutStage::kUseSqliteOnly,
+                    std::nullopt),
+    [](const testing::TestParamInfo<
+        std::optional<DomStorageSqliteRolloutStage>>& info) {
+      return info.param
+                 ? kDomStorageSqliteNewDatabasesStage.GetName(*info.param)
+                 : "Disabled";
     });
 
 TEST_P(SessionStorageImplOnDiskSQLiteRolloutTest,
