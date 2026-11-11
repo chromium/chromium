@@ -9637,7 +9637,7 @@
   {
     "name": "test-root-store",
     "owners": [ "carlosil@chromium.org", "//net/cert/OWNERS" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "test-third-party-cookie-phaseout",
@@ -10168,7 +10168,7 @@
       "mattm@chromium.org",
       "jdeblasio@chromium.org"
     ],
-    "expiry_milestone": 165
+    "expiry_milestone": 170
   },
   {
     "name": "verify-qwacs",
