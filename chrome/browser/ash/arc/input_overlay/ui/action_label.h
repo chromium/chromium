@@ -76,8 +76,6 @@ class ActionLabel : public views::LabelButton {
   void SetToViewMode();
   // In edit mode without mouse hover or focus.
   void SetToEditDefault();
-  // In edit mode when there is edit error.
-  void SetToEditError();
   // In edit mode when the input is unbound.
   void SetToEditUnbindInput();
 

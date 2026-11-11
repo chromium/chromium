@@ -22,7 +22,6 @@
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace views {
-class View;
 class Widget;
 }  // namespace views
 
@@ -52,9 +51,6 @@ class DisplayOverlayController : public ui::EventHandler,
   ~DisplayOverlayController() override;
 
   void SetDisplayMode(DisplayMode mode);
-
-  // Get the bounds of `menu_entry_` in screen coordinates.
-  std::optional<gfx::Rect> GetOverlayMenuEntryBounds();
 
   void OnInputBindingChange(Action* action,
                             std::unique_ptr<InputElement> input_element);
@@ -159,9 +155,6 @@ class DisplayOverlayController : public ui::EventHandler,
   // window property is changed on `ash::kArcGameControlsFlagsKey`.
   void UpdateDisplayMode();
 
-  views::Widget* GetOverlayWidget();
-  views::View* GetOverlayWidgetContentsView();
-  bool HasMenuView() const;
   // Sets input mapping visibility according to `visible` and stores the setting
   // if `store_visible_state` is true.
   void SetInputMappingVisible(bool visible, bool store_visible_state = false);

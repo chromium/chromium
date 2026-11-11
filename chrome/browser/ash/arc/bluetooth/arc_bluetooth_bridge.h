@@ -573,8 +573,6 @@ class ArcBluetoothBridge
                                 ErrorCallback error_callback,
                                 mojom::BluetoothGattStatus status);
 
-  void SendDevice(const device::BluetoothDevice* device) const;
-
   // Detects the pairing state change from DeviceChanged(). Two actions will be
   // taken in this function:
   // - Updates |devices_pairing_| to reflect the set of ongoing pairing requests
@@ -621,13 +619,6 @@ class ArcBluetoothBridge
       mojom::BluetoothAddressPtr addr,
       int port,
       BluetoothSocketConnectCallback callback) = 0;
-
-  // Called when the listening socket is ready to accept().
-  void OnBluetoothListeningSocketReady(
-      ArcBluetoothBridge::BluetoothListeningSocket* socket);
-  // Called when the connecting socket is ready.
-  void OnBluetoothConnectingSocketReady(
-      ArcBluetoothBridge::BluetoothConnectingSocket* socket);
 
   const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager.

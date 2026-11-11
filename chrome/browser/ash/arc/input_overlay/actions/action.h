@@ -97,8 +97,6 @@ class Action {
   void BindInput(std::unique_ptr<InputElement> input_element);
   void BindPosition(const gfx::Point& new_touch_center);
 
-  // Restore the input binding back to the original binding.
-  void RestoreToDefault();
   // Return currently displayed input binding.
   const InputElement& GetCurrentDisplayedInput();
   // Check if there is any overlap between `input_element` and current

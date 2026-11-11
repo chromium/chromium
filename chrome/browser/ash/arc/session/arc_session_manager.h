@@ -539,10 +539,6 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // Starts the ARC sign-in provisioning timer with the specified |timeout|.
   void StartProvisioningTimerWithTimeout(base::TimeDelta timeout);
 
-  // Invoked after WaitForServiceToBeAvailable(). Proceeds to query DLC state
-  // if |available|, otherwise aborts ARC provisioning
-  void OnDlcServiceReady(bool available);
-
   const raw_ref<PrefService> local_state_;
   const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
   raw_ptr<metrics::MetricsService> metrics_service_ = nullptr;

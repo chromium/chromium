@@ -95,7 +95,6 @@ class ButtonOptionsMenu : public views::View, public TouchInjectorObserver {
   // Functions related to buttons.
   void OnTrashButtonPressed();
   void OnDoneButtonPressed();
-  void OnButtonLabelAssignmentPressed();
 
   // views::View:
   void OnPaintBackground(gfx::Canvas* canvas) override;

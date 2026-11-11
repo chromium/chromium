@@ -178,10 +178,6 @@ ArcManagementTransition GetManagementTransition(const Profile* profile);
 // session.
 bool IsPlayStoreAvailable();
 
-// Returns whether adding secondary account to ARC++ is enabled for child
-// user.
-bool IsSecondaryAccountForChildEnabled();
-
 // Skip to show OOBE/in session UI asking users to set up ARC OptIn
 // preferences, iff all of them are managed by the admin policy. Skips in
 // session play terms of service for managed user and starts ARC directly.

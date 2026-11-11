@@ -102,10 +102,6 @@ class ArcFlossBridge : public ArcBluetoothBridge,
       floss::FlossDBusClient::BtifStatus status,
       std::optional<floss::FlossSocketManager::FlossSocket>&& socket);
 
-  void OnBtifError(const std::string& error_message);
-
-  void OnBtifSuccess();
-
   void OnConnectionStateChanged(
       ArcBluetoothBridge::BluetoothListeningSocket* sock_wrapper,
       int socket_ready_id,

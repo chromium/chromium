@@ -149,12 +149,6 @@ class CertStoreService : public KeyedService,
   void ListCertsInUserSlot(
       std::vector<CertDescription> cert_descriptions) const;
 
-  // Processes metadata from |allowed_certs| stored in the given |slot| and
-  // appends them to |certificates|.
-  void OnFilteredAllowedCertificates(
-      keymanagement::mojom::ChapsSlot slot,
-      std::vector<CertDescription> certificates,
-      net::ScopedCERTCertificateList allowed_certs);
   void OnUpdatedKeys(std::vector<CertDescription> certificates, bool success);
   void OnArcCertsInstalled(bool need_policy_update, bool success);
 
