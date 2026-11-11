@@ -23,11 +23,6 @@ struct ResourceLoadTimings {
 };
 
 struct LargestImagePaintDetails {
-  bool IsEquivalentTo(const LargestImagePaintDetails& other) const {
-    return paint_size == other.paint_size &&
-           presentation_time == other.presentation_time;
-  }
-
   base::TimeTicks presentation_time;
   uint64_t paint_size = 0;
   ResourceLoadTimings resource_load_timings = {};
@@ -38,11 +33,6 @@ struct LargestImagePaintDetails {
 };
 
 struct LargestTextPaintDetails {
-  bool IsEquivalentTo(const LargestTextPaintDetails& other) const {
-    return paint_size == other.paint_size &&
-           presentation_time == other.presentation_time;
-  }
-
   base::TimeTicks presentation_time;
   uint64_t paint_size = 0;
 };

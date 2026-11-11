@@ -45,9 +45,7 @@ class CORE_EXPORT LargestContentfulPaintManager
       const HeapVector<Member<TextRecord>>&) override;
   void OnFramePresented(const HeapVector<Member<ImageRecord>>&,
                         const HeapVector<Member<TextRecord>>&,
-                        const base::TimeTicks& presentation_timestamp,
-                        const DOMPaintTimingInfo&,
-                        uint64_t navigation_id) override;
+                        const DOMPaintTimingInfo&) override;
   void OnImageRemoved(const LayoutObject&, const MediaTiming*) override;
   // Shuts down the manager and stops recording LCP. The last value pushed to
   // PerformanceTimingForReporting will be the final value.

@@ -543,9 +543,7 @@ void SoftNavigationHeuristics::OnInputOrScroll() {
 void SoftNavigationHeuristics::OnFramePresented(
     const HeapVector<Member<ImageRecord>>& image_records,
     const HeapVector<Member<TextRecord>>& text_records,
-    const base::TimeTicks& presentation_timestamp,
-    const DOMPaintTimingInfo& paint_timing_info,
-    uint64_t navigation_id) {
+    const DOMPaintTimingInfo&) {
   // First, group the records by context, ignoring records that aren't needed.
   ContextToCandidatesMap candidates_per_context;
   GroupLcpCandidatesByContext(image_records, candidates_per_context);
@@ -555,9 +553,7 @@ void SoftNavigationHeuristics::OnFramePresented(
   // context, if any. We do this before unblocking entries waiting for FCP
   // below, since that also emits and updates metrics.
   for (const auto& context_and_records : candidates_per_context) {
-    context_and_records.key->OnFramePresented(context_and_records.value,
-                                              presentation_timestamp,
-                                              paint_timing_info, navigation_id);
+    context_and_records.key->OnFramePresented(context_and_records.value);
   }
 
   // If we're waiting on FCP presentation feedback to emit entries, check if we

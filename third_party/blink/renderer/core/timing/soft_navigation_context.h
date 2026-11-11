@@ -149,10 +149,7 @@ class CORE_EXPORT SoftNavigationContext
 
   // Called by `SoftNavigationHeuristics` with the largest image and text
   // records that were presented for this context in the last presented frame.
-  void OnFramePresented(LargestContentfulPaintCalculator::LcpCandidates*,
-                        const base::TimeTicks& presentation_timestamp,
-                        const DOMPaintTimingInfo& paint_timing_info,
-                        uint64_t navigation_id);
+  void OnFramePresented(LargestContentfulPaintCalculator::LcpCandidates*);
 
   const LargestContentfulPaintDetails& LatestLcpDetailsForUkm();
 

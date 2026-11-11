@@ -8,6 +8,7 @@
 #include <type_traits>
 
 #include "base/feature_list.h"
+#include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/paint/timing/effective_visual_size_result.h"
 #include "third_party/blink/renderer/core/paint/timing/lcp_objects.h"
@@ -93,23 +94,6 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
     Member<TextRecord> text_candidate_;
   };
 
-  // `PendingCandidateData` encapsulates the result of computing the new global
-  // LCP candidates (new largest image, largest text, and web-exposed entry)
-  // from the `LcpCandidates` produced in an animation frame.
-  struct PendingCandidateData {
-    STACK_ALLOCATED();
-
-   public:
-    // Callback to run at presentation time to update metrics and emit metrics
-    // trace events.
-    OptionalPaintTimingCallback metrics_callback;
-    // Non-null if this frame produced a new web-exposed LCP candidate.
-    LargestContentfulPaint* lcp_entry = nullptr;
-    // Trace data corresponding to `lcp_entry` (non-null iff `lcp_entry` is
-    // non-null and tracing is enabled).
-    std::unique_ptr<TracedValue> lcp_trace_data;
-  };
-
   // Computes the effective size of an image, downsizing the size of images with
   // low intrinsic size. `EffectiveVisualSizeResult` encapsulates extra details
   // about the computation, such as whether the minimum entropy was met and
@@ -142,36 +126,18 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
   // `image_records` and `text_records` that were presented in the frame.
   // Invokes `Delegate` methods if a new candidate is found.
   void OnFramePresented(const HeapVector<Member<ImageRecord>>& image_records,
-                        const HeapVector<Member<TextRecord>>& text_records,
-                        const base::TimeTicks& presentation_timestamp,
-                        const DOMPaintTimingInfo& paint_timing_info,
-                        uint64_t navigation_id);
+                        const HeapVector<Member<TextRecord>>& text_records);
 
   // Updates the metrics and web-exposed LCP candidates based on a single pair
   // of image and text candidates, which represent the largest image and text
   // elements presented in the frame. Invokes `Delegate` methods if a new
   // candidate is found.
-  void OnFramePresented(LcpCandidates*,
-                        const base::TimeTicks& presentation_timestamp,
-                        const DOMPaintTimingInfo& paint_timing_info,
-                        uint64_t navigation_id);
-
-  // Updates the metrics and web-exposed LCP candidates based on a single pair
-  // of image and text candidates, which represent the largest eligible image
-  // and text elements presented in the frame. Returns `PendingCandidateData`
-  // containing the presentation callback for metrics and the newly created
-  // `LargestContentfulPaint` entry (if any).
-  PendingCandidateData UpdateLargestContentfulPaint(LcpCandidates*);
+  void OnFramePresented(LcpCandidates*);
 
   // Flushes the pending largest text and largest image candidates to metrics
-  // and invokes `Delegate::OnLcpMetricsForReportingChanged()`, if needed.
-  //
-  // TODO(crbug.com/457794552): This method should be private or inlined into
-  // the call site, but this is needed for testing `largest_pending_image_`
-  // removal, since that relies on an update to fall back to the
-  // `largest_presented_image_details_`. We should instead schedule a separate
-  // PaintTimingCallback.
-  void MaybeFlushMetricsCandidates();
+  // and performance timeline and invokes the relevant `Delegate` callbacks, if
+  // needed.
+  void MaybeFlushCandidates();
 
   // Returns true iff the `ImageRecord` is an eligible LCP candidate, which is
   // true as long as the image is not covering the viewport and, if the image
@@ -188,13 +154,13 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
   // Returns true iff the given `ImageRecord` is larger than the current
   // largest image candidate.
   bool IsNewLargestCandidate(const ImageRecord& record) const {
-    return record.EffectiveVisualSize() > largest_painted_image_size_;
+    return record.IsEffectiveSizeLargerThan(largest_presented_image_);
   }
 
   // Returns true iff the given `TextRecord` is larger than the current largest
   // text candidate.
   bool IsNewLargestCandidate(const TextRecord& record) const {
-    return record.EffectiveVisualSize() > largest_painted_text_size_;
+    return record.IsEffectiveSizeLargerThan(largest_presented_text_);
   }
 
   // Called when an image is painted for the first time, regardless of whether
@@ -211,39 +177,12 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
   void Trace(Visitor* visitor) const;
 
  private:
-  struct PendingMetricsData;
+  bool UpdateMetricsIfLargestImagePaintChanged();
+  bool UpdateMetricsIfLargestTextPaintChanged();
 
-  // `PaintTimingCallback` invoked to flush pending metrics candidates.
-  void FlushPendingMetricsDataOnFramePresented(
-      PendingMetricsData*,
-      const base::TimeTicks& presentation_timestamp,
-      const DOMPaintTimingInfo&,
-      uint64_t navigation_id);
-
-  // Commits the pending image or text metrics candidate, updating internal
-  // state in preparation for flushing metrics values.
-  void CommitPendingMetricsImageCandidate(
-      PendingMetricsData*,
-      const base::TimeTicks& presentation_timestamp);
-  void CommitPendingMetricsTextCandidate(
-      PendingMetricsData*,
-      const base::TimeTicks& presentation_timestamp);
-
-  // Returns a `LargestImagePaintDetails` created based on the given
-  // `ImageRecord`, with no presentation time set.
-  LargestImagePaintDetails CreateLargestImagePaintDetails(
-      const ImageRecord&) const;
-
-  // Updates `latest_lcp_details_` with either `largest_pending_image_` data
-  // (if non-null) or `largest_presented_image_details_` (otherwise), if
-  // needed. Emits metrics trace events and returns true if the metrics values
-  // were updated; returns false if metrics weren't updated.
-  bool UpdateMetricsIfLargestPendingOrPresentedImageChanged();
-
-  // Updates `latest_lcp_details_` with the `largest_presented_text_details_` if
-  // needed. Emits metrics trace events and returns true if the metrics values
-  // were updated; returns false if metrics weren't updated.
-  bool UpdateMetricsIfLargestPresentedTextChanged();
+  void UpdateWebExposedLargestContentfulPaintIfNeeded();
+  void UpdateWebExposedLargestContentfulImage(const ImageRecord& largest_image);
+  void UpdateWebExposedLargestContentfulText(const TextRecord& largest_text);
 
   // Returns a `LargestContentfulPaint` based on the given `ImageRecord` or
   // `TextRecord`, with the presentation time and `DOMPaintTimingInfo` unset.
@@ -255,47 +194,46 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
   std::unique_ptr<TracedValue> CreateWebExposedLcpCandidateTraceData(
       const PaintTimingRecord&);
 
-  // Emits a candidate trace event with the given `TracedValue` computed at
-  // paint time.
-  void ReportMetricsCandidateToTrace(std::unique_ptr<TracedValue>,
-                                     const char* trace_event_name,
-                                     base::TimeTicks presentation_time,
-                                     unsigned candidate_index);
+  bool HasLargestImagePaintChangedForMetrics(
+      base::TimeTicks largest_image_paint_time,
+      uint64_t largest_image_paint_size) const;
+
+  bool HasLargestTextPaintChangedForMetrics(
+      base::TimeTicks largest_text_paint_time,
+      uint64_t largest_text_paint_size) const;
+
+  void ReportMetricsCandidateToTrace(const ImageRecord&, base::TimeTicks);
+  void ReportMetricsCandidateToTrace(const TextRecord&);
 
   // Processes a list of LCP candidates, updating the `LcpCandidates` with the
   // largest candidate.
   template <IsDerivedFromPaintTimingRecord T>
   void ProcessLcpCandidates(const HeapVector<Member<T>>&, LcpCandidates*);
 
-  // Returns the size of the current LCP candidate for performance timeline,
-  // which is either emitted or pending presentation time.
-  uint64_t WebExposedCandidateSize() const {
-    return std::max(largest_painted_image_size_, largest_painted_text_size_);
-  }
+  ImageRecord* LargestPresentedOrPendingImage() const;
 
   Member<WindowPerformance> window_performance_;
 
-  // TODO(crbug.com/454082773): These values are updated at presentation time in
-  // `UpdateLargestContentfulPaint`. Change this to run at paint time.
-  uint64_t largest_painted_image_size_ = 0u;
-  uint64_t largest_painted_text_size_ = 0u;
-
+  uint64_t largest_reported_size_ = 0u;
   unsigned web_exposed_candidate_count_ = 0;
   unsigned ukm_largest_image_candidate_count_ = 0;
   unsigned ukm_largest_text_candidate_count_ = 0;
 
-  // The `LargestContentfulPaintDetails` reported to metrics. Combines
-  // `largest_presented_text_details_` and either `largest_pending_image_` (if
-  // non-null) or `largest_presented_image_details_` (otherwise).
+  // The |latest_lcp_details_| struct is just for internal accounting purposes
+  // and is not reported anywhere (neither to metrics, nor to the web exposed
+  // API).
   LargestContentfulPaintDetails latest_lcp_details_;
 
-  // The largest presented image and text details so far.
-  LargestImagePaintDetails largest_presented_image_details_;
-  LargestTextPaintDetails largest_presented_text_details_;
-  std::unique_ptr<TracedValue> largest_presented_image_trace_data_;
-  std::unique_ptr<TracedValue> largest_presented_text_trace_data_;
-
   Member<Delegate> delegate_;
+
+  // The current largest presented text, which represents the current LCP text
+  // candidate.
+  Member<TextRecord> largest_presented_text_;
+
+  // The current largest presented image. For soft navs, this is the current LCP
+  // image candidate; for hard navs, this is the current LCP image candidate if
+  // it's effective size is not less than `largest_pending_image_`.
+  Member<ImageRecord> largest_presented_image_;
 
   // The largest image that has been encountered, but not necessarily loaded,
   // painted, or presented yet. This is used to prevent recording LCP for pages

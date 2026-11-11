@@ -56,9 +56,7 @@ class PaintTimingClient : public GarbageCollectedMixin {
   // and text records.
   virtual void OnFramePresented(const HeapVector<Member<ImageRecord>>&,
                                 const HeapVector<Member<TextRecord>>&,
-                                const base::TimeTicks& presentation_timestamp,
-                                const DOMPaintTimingInfo&,
-                                uint64_t navigation_id) {}
+                                const DOMPaintTimingInfo&) {}
 
   // Called when a discrete input or non-programmatic scroll has been detected.
   virtual void OnInputOrScroll() {}

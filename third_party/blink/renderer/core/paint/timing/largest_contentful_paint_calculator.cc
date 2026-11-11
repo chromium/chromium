@@ -4,9 +4,6 @@
 
 #include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_calculator.h"
 
-#include <optional>
-#include <utility>
-
 #include "base/check.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
@@ -22,10 +19,8 @@
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
 #include "third_party/blink/renderer/core/paint/timing/text_paint_timing_detector.h"
 #include "third_party/blink/renderer/core/timing/largest_contentful_paint.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
-#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
@@ -46,13 +41,6 @@ void PopulateFrameTraceData(TracedValue& value, const LocalFrame& frame) {
   value.SetBoolean("isOutermostMainFrame", frame.IsOutermostMainFrame());
   value.SetBoolean("isEmbeddedFrame", !frame.LocalFrameRoot().IsMainFrame() ||
                                           frame.IsInFencedFrameTree());
-}
-
-std::unique_ptr<TracedValue> CreateMetricsCandidateTraceData(
-    const PaintTimingRecord& record) {
-  auto value = std::make_unique<TracedValue>();
-  record.PopulateTraceValue(*value);
-  return value;
 }
 
 LargestContentfulPaintType GetLargestContentfulPaintTypeFromString(
@@ -122,20 +110,6 @@ LargestContentfulPaintType ComputeImageLargestContentfulPaintType(
 
 }  // namespace
 
-struct LargestContentfulPaintCalculator::PendingMetricsData
-    : public GarbageCollected<PendingMetricsData> {
-  LargestImagePaintDetails image_details;
-  Member<HeapTimeTicks> image_presentation_time_override;
-  std::unique_ptr<TracedValue> image_trace_data;
-
-  uint64_t text_paint_size = 0;
-  std::unique_ptr<TracedValue> text_trace_data;
-
-  void Trace(Visitor* visitor) const {
-    visitor->Trace(image_presentation_time_override);
-  }
-};
-
 LargestContentfulPaintCalculator::LargestContentfulPaintCalculator(
     WindowPerformance* window_performance,
     Delegate* delegate)
@@ -171,211 +145,114 @@ void LargestContentfulPaintCalculator::ProcessLcpCandidates(
 
 void LargestContentfulPaintCalculator::OnFramePresented(
     const HeapVector<Member<ImageRecord>>& image_records,
-    const HeapVector<Member<TextRecord>>& text_records,
-    const base::TimeTicks& presentation_timestamp,
-    const DOMPaintTimingInfo& paint_timing_info,
-    uint64_t navigation_id) {
+    const HeapVector<Member<TextRecord>>& text_records) {
   auto* per_frame_candidates = MakeGarbageCollected<LcpCandidates>();
   ProcessLcpCandidates(image_records, per_frame_candidates);
   ProcessLcpCandidates(text_records, per_frame_candidates);
-  OnFramePresented(per_frame_candidates, presentation_timestamp,
-                   paint_timing_info, navigation_id);
+  OnFramePresented(per_frame_candidates);
 }
 
 void LargestContentfulPaintCalculator::OnFramePresented(
-    LcpCandidates* candidates,
-    const base::TimeTicks& presentation_timestamp,
-    const DOMPaintTimingInfo& paint_timing_info,
-    uint64_t navigation_id) {
-  PendingCandidateData candidate_data =
-      UpdateLargestContentfulPaint(candidates);
-  if (!candidate_data.metrics_callback) {
-    CHECK(!candidate_data.lcp_entry);
-    return;
-  }
-
-  std::move(*candidate_data.metrics_callback)
-      .Run(presentation_timestamp, paint_timing_info, navigation_id);
-
-  if (candidate_data.lcp_entry) {
-    delegate_->EmitLcpPerformanceEntry(paint_timing_info,
-                                       candidate_data.lcp_entry);
-    if (LocalDOMWindow* window = window_performance_->DomWindow()) {
-      if (candidate_data.lcp_trace_data) {
-        TRACE_EVENT_MARK_WITH_TIMESTAMP2(
-            kTraceCategories,
-            delegate_->IsHardNavigation() ? kLCPCandidate
-                                          : kLCPCandidateForSoftNavs,
-            presentation_timestamp, "data",
-            std::move(candidate_data.lcp_trace_data), "frame",
-            GetFrameIdForTracing(window->GetFrame()));
-      }
-    }
-  }
-}
-
-LargestContentfulPaintCalculator::PendingCandidateData
-LargestContentfulPaintCalculator::UpdateLargestContentfulPaint(
     LcpCandidates* candidates) {
-  // Compute the current web-exposed candidate size before these values get
-  // updated in the call below.
-  const uint64_t old_candidate_size = WebExposedCandidateSize();
-
-  // First, figure out if there's a new candidate for metrics or performance
-  // timeline.
-  auto* image_candidate = candidates->Candidate<ImageRecord>();
-  if (image_candidate &&
-      image_candidate->EffectiveVisualSize() <= largest_painted_image_size_) {
-    image_candidate = nullptr;
+  if (auto* candidate = candidates->Candidate<ImageRecord>();
+      candidate &&
+      candidate->IsEffectiveSizeLargerThan(largest_presented_image_)) {
+    largest_presented_image_ = candidate;
   }
-  auto* text_candidate = candidates->Candidate<TextRecord>();
-  if (text_candidate &&
-      text_candidate->EffectiveVisualSize() <= largest_painted_text_size_) {
-    text_candidate = nullptr;
+  if (auto* candidate = candidates->Candidate<TextRecord>();
+      candidate &&
+      candidate->IsEffectiveSizeLargerThan(largest_presented_text_)) {
+    largest_presented_text_ = candidate;
   }
-  // Since the web-exposed value is the larger of the image and text metrics
-  // candidates, there cannot be a new web-exposed value if metrics didn't
-  // change.
-  if (!image_candidate && !text_candidate) {
-    return {};
-  }
-
-  // Next, compute the new image and text candidates for metrics, along with
-  // pending trace data, to be committed at presentation time.
-  auto* pending_metrics = MakeGarbageCollected<PendingMetricsData>();
-
-  if (image_candidate) {
-    largest_painted_image_size_ = image_candidate->EffectiveVisualSize();
-    pending_metrics->image_presentation_time_override =
-        image_candidate->MetricsTimestampOverride();
-    pending_metrics->image_details =
-        CreateLargestImagePaintDetails(*image_candidate);
-    if (delegate_->IsHardNavigation() && PaintTimingDetector::IsTracing()) {
-      pending_metrics->image_trace_data =
-          CreateMetricsCandidateTraceData(*image_candidate);
-    }
-  }
-
-  if (text_candidate) {
-    largest_painted_text_size_ = text_candidate->EffectiveVisualSize();
-    pending_metrics->text_paint_size = text_candidate->EffectiveVisualSize();
-    if (delegate_->IsHardNavigation() && PaintTimingDetector::IsTracing()) {
-      pending_metrics->text_trace_data =
-          CreateMetricsCandidateTraceData(*text_candidate);
-    }
-  }
-
-  // Next, set up the metrics callback to flush the candidates.
-  PendingCandidateData candidate_data;
-  candidate_data.metrics_callback = blink::BindOnce(
-      &LargestContentfulPaintCalculator::
-          FlushPendingMetricsDataOnFramePresented,
-      WrapWeakPersistent(this), WrapPersistent(pending_metrics));
-
-  const uint64_t new_candidate_size = WebExposedCandidateSize();
-  CHECK_GE(new_candidate_size, old_candidate_size);
-
-  // Finally, compute the pending LCP entry and corresponding trace data, if
-  // there's a new web-exposed value.
-  if (new_candidate_size > old_candidate_size) {
-    if (largest_painted_image_size_ >= largest_painted_text_size_) {
-      CHECK(image_candidate);
-      candidate_data.lcp_entry =
-          CreateLargestContentfulPaintEntry(*image_candidate);
-      candidate_data.lcp_trace_data =
-          CreateWebExposedLcpCandidateTraceData(*image_candidate);
-    } else {
-      CHECK(text_candidate);
-      candidate_data.lcp_entry =
-          CreateLargestContentfulPaintEntry(*text_candidate);
-      candidate_data.lcp_trace_data =
-          CreateWebExposedLcpCandidateTraceData(*text_candidate);
-    }
-  }
-
-  return candidate_data;
+  MaybeFlushCandidates();
 }
 
-void LargestContentfulPaintCalculator::FlushPendingMetricsDataOnFramePresented(
-    PendingMetricsData* pending_metrics,
-    const base::TimeTicks& presentation_timestamp,
-    const DOMPaintTimingInfo& paint_timing_info,
-    uint64_t navigation_id) {
-  // Commit the pending candidates, updating internal state in preparation for
-  // flushing.
-  CommitPendingMetricsImageCandidate(pending_metrics, presentation_timestamp);
-  CommitPendingMetricsTextCandidate(pending_metrics, presentation_timestamp);
-
-  // Flush candidates, taking into account `largest_pending_image_`.
-  MaybeFlushMetricsCandidates();
-}
-
-void LargestContentfulPaintCalculator::CommitPendingMetricsImageCandidate(
-    PendingMetricsData* pending_metrics,
-    const base::TimeTicks& presentation_timestamp) {
-  if (pending_metrics->image_details.paint_size == 0) {
-    return;
-  }
-
-  // Set presentation time, either from the override (first video and animated
-  // image frame) or `presentation_timestamp` (otherwise).
-  //
-  // TODO(crbug.com/449779010): This behavior should be unified between hard
-  // and soft navigations.
-  HeapTimeTicks* timestamp = pending_metrics->image_presentation_time_override;
-  pending_metrics->image_details.presentation_time =
-      delegate_->IsHardNavigation() && timestamp && !timestamp->value.is_null()
-          ? timestamp->value
-          : presentation_timestamp;
-
-  largest_presented_image_trace_data_ =
-      std::move(pending_metrics->image_trace_data);
-  largest_presented_image_details_ = pending_metrics->image_details;
-
-  // Clear `largest_pending_image_` if we've caught up.
-  if (largest_pending_image_ &&
-      largest_presented_image_details_.paint_size >=
-          largest_pending_image_->EffectiveVisualSize()) {
-    largest_pending_image_ = nullptr;
-  }
-}
-
-void LargestContentfulPaintCalculator::CommitPendingMetricsTextCandidate(
-    PendingMetricsData* pending_metrics,
-    const base::TimeTicks& presentation_timestamp) {
-  if (pending_metrics->text_paint_size == 0) {
-    return;
-  }
-  largest_presented_text_details_.presentation_time = presentation_timestamp;
-  largest_presented_text_details_.paint_size = pending_metrics->text_paint_size;
-  largest_presented_text_trace_data_ =
-      std::move(pending_metrics->text_trace_data);
-}
-
-void LargestContentfulPaintCalculator::MaybeFlushMetricsCandidates() {
-  bool image_update = UpdateMetricsIfLargestPendingOrPresentedImageChanged();
-  bool text_update = UpdateMetricsIfLargestPresentedTextChanged();
-  if (image_update || text_update) {
+void LargestContentfulPaintCalculator::MaybeFlushCandidates() {
+  bool did_update_metrics = false;
+  did_update_metrics |= UpdateMetricsIfLargestImagePaintChanged();
+  did_update_metrics |= UpdateMetricsIfLargestTextPaintChanged();
+  if (did_update_metrics) {
     delegate_->OnLcpMetricsForReportingChanged();
   }
+  UpdateWebExposedLargestContentfulPaintIfNeeded();
 }
 
-LargestImagePaintDetails
-LargestContentfulPaintCalculator::CreateLargestImagePaintDetails(
-    const ImageRecord& image_record) const {
-  LargestImagePaintDetails image_details;
-  if (const MediaTiming* timing = image_record.GetMediaTiming()) {
-    image_details.type = ComputeImageLargestContentfulPaintType(
-        *timing, window_performance_->DomWindow());
-    image_details.resource_load_timings.discovery_time =
-        timing->DiscoveryTime();
-    image_details.resource_load_timings.load_start = timing->LoadStart();
-    image_details.resource_load_timings.load_end = timing->LoadEnd();
+void LargestContentfulPaintCalculator::
+    UpdateWebExposedLargestContentfulPaintIfNeeded() {
+  uint64_t text_size = largest_presented_text_
+                           ? largest_presented_text_->EffectiveVisualSize()
+                           : 0u;
+  uint64_t image_size = largest_presented_image_
+                            ? largest_presented_image_->EffectiveVisualSize()
+                            : 0u;
+  if (image_size > text_size) {
+    if (image_size > largest_reported_size_) {
+      CHECK(largest_presented_image_->HasPaintTime());
+      UpdateWebExposedLargestContentfulImage(*largest_presented_image_);
+    }
+  } else {
+    if (text_size > largest_reported_size_) {
+      CHECK(largest_presented_text_->HasPaintTime());
+      UpdateWebExposedLargestContentfulText(*largest_presented_text_.Get());
+    }
   }
-  image_details.request_priority = image_record.RequestPriority();
-  image_details.paint_size = image_record.EffectiveVisualSize();
-  image_details.bpp = image_record.EntropyForLCP();
-  return image_details;
+}
+
+void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulImage(
+    const ImageRecord& largest_image) {
+  // The `MediaTiming` is a weak pointer, so it may be null. This can only
+  // happen if the image has been removed, which means that the largest image is
+  // not up-to-date. This can happen when this method call came from
+  // OnLargestTextUpdated(). If a largest-image is added and removed so fast
+  // that it does not get to be reported here, we consider it safe to ignore.
+  // For similar reasons, The `Node` may be null and it is safe to ignore the
+  // `largest_image` content in this case as well.
+  if (!largest_image.GetMediaTiming() || !largest_image.GetNode()) {
+    return;
+  }
+
+  largest_reported_size_ = largest_image.EffectiveVisualSize();
+  delegate_->EmitLcpPerformanceEntry(
+      largest_image.PaintTimingInfo(),
+      CreateLargestContentfulPaintEntry(largest_image));
+
+  if (LocalDOMWindow* window = window_performance_->DomWindow()) {
+    if (std::unique_ptr<TracedValue> trace_data =
+            CreateWebExposedLcpCandidateTraceData(largest_image)) {
+      TRACE_EVENT_MARK_WITH_TIMESTAMP2(
+          kTraceCategories,
+          delegate_->IsHardNavigation() ? kLCPCandidate
+                                        : kLCPCandidateForSoftNavs,
+          largest_image.PaintTime(), "data", std::move(trace_data), "frame",
+          GetFrameIdForTracing(window->GetFrame()));
+    }
+  }
+}
+
+void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulText(
+    const TextRecord& largest_text) {
+  // The `Node` could be null and `largest_text` should be ignored in this case.
+  // This can happen when the largest-text gets removed too fast and does not
+  // get to be reported here.
+  if (!largest_text.GetNode()) {
+    return;
+  }
+  largest_reported_size_ = largest_text.EffectiveVisualSize();
+  delegate_->EmitLcpPerformanceEntry(
+      largest_text.PaintTimingInfo(),
+      CreateLargestContentfulPaintEntry(largest_text));
+
+  if (LocalDOMWindow* window = window_performance_->DomWindow()) {
+    if (std::unique_ptr<TracedValue> trace_data =
+            CreateWebExposedLcpCandidateTraceData(largest_text)) {
+      TRACE_EVENT_MARK_WITH_TIMESTAMP2(
+          kTraceCategories,
+          delegate_->IsHardNavigation() ? kLCPCandidate
+                                        : kLCPCandidateForSoftNavs,
+          largest_text.PaintTime(), "data", std::move(trace_data), "frame",
+          GetFrameIdForTracing(window->GetFrame()));
+    }
+  }
 }
 
 LargestContentfulPaint*
@@ -432,85 +309,111 @@ LargestContentfulPaintCalculator::CreateLargestContentfulPaintEntry(
       /*element=*/text_element, window_performance_->DomWindow());
 }
 
+bool LargestContentfulPaintCalculator::HasLargestImagePaintChangedForMetrics(
+    base::TimeTicks largest_image_paint_time,
+    uint64_t largest_image_paint_size) const {
+  return largest_image_paint_time !=
+             latest_lcp_details_.largest_image.presentation_time ||
+         largest_image_paint_size !=
+             latest_lcp_details_.largest_image.paint_size;
+}
+
+bool LargestContentfulPaintCalculator::HasLargestTextPaintChangedForMetrics(
+    base::TimeTicks largest_text_paint_time,
+    uint64_t largest_text_paint_size) const {
+  return largest_text_paint_time !=
+             latest_lcp_details_.largest_text.presentation_time ||
+         largest_text_paint_size != latest_lcp_details_.largest_text.paint_size;
+}
+
 bool LargestContentfulPaintCalculator::
-    UpdateMetricsIfLargestPendingOrPresentedImageChanged() {
-  // `largest_pending_image_` is cleared when it is no longer larger than
-  // largest presented image, so if it's non-null it should be used.
-  if (largest_pending_image_) {
-    CHECK_GT(largest_pending_image_->EffectiveVisualSize(),
-             largest_presented_image_details_.paint_size);
-
-    // If the size is the same, there's nothing to update. Note that the
-    // `largest_pending_image_` can change to be something smaller if the
-    // previous largest pending image's node was removed.
-    if (largest_pending_image_->EffectiveVisualSize() ==
-        latest_lcp_details_.largest_image.paint_size) {
-      return false;
-    }
-
-    // For animated images, it's possible there's a metrics override time for
-    // first frame, but wait until sufficiently loaded to set the presentation
-    // time and handle tracing, etc.
-    latest_lcp_details_.largest_image =
-        CreateLargestImagePaintDetails(*largest_pending_image_);
-    return true;
+    UpdateMetricsIfLargestImagePaintChanged() {
+  ImageRecord* largest_image = LargestPresentedOrPendingImage();
+  if (!largest_image) {
+    return false;
   }
+  const ImageRecord& image_record = *largest_image;
 
-  // Otherwise, use `largest_presented_image_details_` if that changed.
-  if (largest_presented_image_details_.IsEquivalentTo(
-          latest_lcp_details_.largest_image)) {
+  // TODO(crbug.com/449779010): The first video or animated image timestamp is
+  // only used to override metrics for hard navigations. We should match this
+  // behavior for soft navigations.
+  HeapTimeTicks* timestamp = image_record.MetricsTimestampOverride();
+  base::TimeTicks image_paint_time =
+      delegate_->IsHardNavigation() && timestamp && !timestamp->value.is_null()
+          ? timestamp->value
+          : image_record.PaintTime();
+
+  // For soft navs, we don't update metrics until there's a paint time.
+  // TODO(crbug.com/449779010): This should change to match hard navs once
+  // largest pending image is supported.
+  if (!delegate_->IsHardNavigation() && image_paint_time.is_null()) {
     return false;
   }
 
-  latest_lcp_details_.largest_image = largest_presented_image_details_;
-
-  // If the `largest_pending_image_` is removed before another image is
-  // presented, this will fall back empty state.
-  if (latest_lcp_details_.largest_image.paint_size == 0) {
-    CHECK(latest_lcp_details_.largest_image.presentation_time.is_null());
-    return true;
+  if (!HasLargestImagePaintChangedForMetrics(
+          image_paint_time, image_record.EffectiveVisualSize())) {
+    return false;
   }
 
-  CHECK(!latest_lcp_details_.largest_image.presentation_time.is_null());
+  LargestImagePaintDetails& image_details = latest_lcp_details_.largest_image;
+  image_details = LargestImagePaintDetails();
+  if (const MediaTiming* timing = image_record.GetMediaTiming()) {
+    image_details.type = ComputeImageLargestContentfulPaintType(
+        *timing, window_performance_->DomWindow());
+    image_details.resource_load_timings.discovery_time =
+        timing->DiscoveryTime();
+    image_details.resource_load_timings.load_start = timing->LoadStart();
+    image_details.resource_load_timings.load_end = timing->LoadEnd();
+  }
+  image_details.presentation_time = image_paint_time;
+  image_details.paint_size = image_record.EffectiveVisualSize();
+  image_details.bpp = image_record.EntropyForLCP();
+  image_details.request_priority = image_record.RequestPriority();
 
-  std::unique_ptr<TracedValue> trace_data =
-      std::move(largest_presented_image_trace_data_);
-  if (trace_data && PaintTimingDetector::IsTracing()) {
-    ReportMetricsCandidateToTrace(
-        std::move(trace_data), "LargestImagePaint::Candidate",
-        latest_lcp_details_.largest_image.presentation_time,
-        ++ukm_largest_image_candidate_count_);
+  // TODO(crbug.com/449779010): Presentation time is the only thing that matters
+  // for metrics, so consider removing this IsSufficientlyLoadedForReporting().
+  // When ReportFirstFrameTimeAsRenderTime ships, we will emit some performance
+  // entries before they are considered fully loaded, so this should probably be
+  // removed along with shipping that feature.
+  if (delegate_->IsHardNavigation() && PaintTimingDetector::IsTracing()) {
+    if (!image_paint_time.is_null() &&
+        image_record.IsSufficientlyLoadedForReporting()) {
+      ReportMetricsCandidateToTrace(image_record, image_paint_time);
+    }
   }
 
   return true;
 }
 
 bool LargestContentfulPaintCalculator::
-    UpdateMetricsIfLargestPresentedTextChanged() {
-  if (largest_presented_text_details_.IsEquivalentTo(
-          latest_lcp_details_.largest_text)) {
+    UpdateMetricsIfLargestTextPaintChanged() {
+  if (!largest_presented_text_) {
     return false;
   }
 
-  CHECK(!largest_presented_text_details_.presentation_time.is_null());
-  CHECK_GT(largest_presented_text_details_.paint_size, 0u);
-
-  latest_lcp_details_.largest_text = largest_presented_text_details_;
-
-  std::unique_ptr<TracedValue> trace_data =
-      std::move(largest_presented_text_trace_data_);
-  if (trace_data && PaintTimingDetector::IsTracing()) {
-    ReportMetricsCandidateToTrace(
-        std::move(trace_data), "LargestTextPaint::Candidate",
-        largest_presented_text_details_.presentation_time,
-        ++ukm_largest_text_candidate_count_);
+  const TextRecord& text_record = *largest_presented_text_.Get();
+  CHECK(text_record.HasPaintTime());
+  if (!HasLargestTextPaintChangedForMetrics(
+          text_record.PaintTime(), text_record.EffectiveVisualSize())) {
+    return false;
   }
+
+  latest_lcp_details_.largest_text.presentation_time = text_record.PaintTime();
+  latest_lcp_details_.largest_text.paint_size =
+      text_record.EffectiveVisualSize();
+
+  if (delegate_->IsHardNavigation() && PaintTimingDetector::IsTracing()) {
+    ReportMetricsCandidateToTrace(text_record);
+  }
+
   return true;
 }
 
 void LargestContentfulPaintCalculator::Trace(Visitor* visitor) const {
   visitor->Trace(window_performance_);
   visitor->Trace(delegate_);
+  visitor->Trace(largest_presented_text_);
+  visitor->Trace(largest_presented_image_);
   visitor->Trace(largest_pending_image_);
 }
 
@@ -564,24 +467,41 @@ LargestContentfulPaintCalculator::CreateWebExposedLcpCandidateTraceData(
 }
 
 void LargestContentfulPaintCalculator::ReportMetricsCandidateToTrace(
-    std::unique_ptr<TracedValue> value,
-    const char* trace_event_name,
-    base::TimeTicks presentation_time,
-    unsigned candidate_index) {
-  CHECK(!presentation_time.is_null());
-  value->SetInteger("candidateIndex", candidate_index);
+    const ImageRecord& record,
+    base::TimeTicks time) {
+  CHECK(!time.is_null());
+
+  auto value = std::make_unique<TracedValue>();
+  record.PopulateTraceValue(*value);
+  value->SetInteger("candidateIndex", ++ukm_largest_image_candidate_count_);
+
   LocalFrame* frame = window_performance_->DomWindow()->GetFrame();
   CHECK(frame);
   PopulateFrameTraceData(*value, *frame);
-  TRACE_EVENT_MARK_WITH_TIMESTAMP2("loading", trace_event_name,
-                                   presentation_time, "data", std::move(value),
+
+  TRACE_EVENT_MARK_WITH_TIMESTAMP2("loading", "LargestImagePaint::Candidate",
+                                   time, "data", std::move(value), "frame",
+                                   GetFrameIdForTracing(frame));
+}
+
+void LargestContentfulPaintCalculator::ReportMetricsCandidateToTrace(
+    const TextRecord& record) {
+  auto value = std::make_unique<TracedValue>();
+  record.PopulateTraceValue(*value);
+  value->SetInteger("candidateIndex", ++ukm_largest_text_candidate_count_);
+
+  LocalFrame* frame = window_performance_->DomWindow()->GetFrame();
+  CHECK(frame);
+  PopulateFrameTraceData(*value, *frame);
+
+  CHECK(record.HasPaintTime());
+  TRACE_EVENT_MARK_WITH_TIMESTAMP2("loading", "LargestTextPaint::Candidate",
+                                   record.PaintTime(), "data", std::move(value),
                                    "frame", GetFrameIdForTracing(frame));
 }
 
 void LargestContentfulPaintCalculator::OnImageFirstPaint(ImageRecord* record) {
-  if (record->EffectiveVisualSize() >
-          largest_presented_image_details_.paint_size &&
-      record->IsEffectiveSizeLargerThan(largest_pending_image_)) {
+  if (record->IsEffectiveSizeLargerThan(largest_pending_image_)) {
     largest_pending_image_ = record;
   }
 }
@@ -590,14 +510,13 @@ void LargestContentfulPaintCalculator::OnImageRemoved(
     const LayoutObject& object,
     const MediaTiming* timing) {
   // TODO(crbug.com/457794552): This causes metrics to fall back to the
-  // `largest_presented_image_details_`, but there are a couple problems with
-  // this:
+  // `largest_presented_image_`, but there are a couple problems with this:
   //  - What if there's a larger pending image and the page unloads? We might
   //    want to iterate through the list of pending image records to get the
   //    next largest pending image.
   //  - Metrics won't be updated until something else triggers calling
-  //    `MaybeFlushMetricsCandidates()`, e.g. a new largest text or image paint.
-  //    We should probably update metrics sooner and not rely on this.
+  //    `NotifyMetricsIfLargestImagePaintChanged()`, e.g. a new largest text
+  //    or image paint. We should probably metrics sooner and not rely on this.
   if (!largest_pending_image_) {
     return;
   }
@@ -605,6 +524,17 @@ void LargestContentfulPaintCalculator::OnImageRemoved(
       largest_pending_image_->ImageGeneratingLayoutObject() == &object) {
     largest_pending_image_ = nullptr;
   }
+}
+
+ImageRecord* LargestContentfulPaintCalculator::LargestPresentedOrPendingImage()
+    const {
+  if (!largest_presented_image_ ||
+      (largest_pending_image_ &&
+       (largest_presented_image_->EffectiveVisualSize() <
+        largest_pending_image_->EffectiveVisualSize()))) {
+    return largest_pending_image_.Get();
+  }
+  return largest_presented_image_.Get();
 }
 
 LargestContentfulPaintCalculator::LcpCandidates::LcpCandidates() = default;

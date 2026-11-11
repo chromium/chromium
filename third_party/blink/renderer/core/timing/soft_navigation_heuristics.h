@@ -85,9 +85,7 @@ class CORE_EXPORT SoftNavigationHeuristics
       const HeapVector<Member<TextRecord>>&) override;
   void OnFramePresented(const HeapVector<Member<ImageRecord>>&,
                         const HeapVector<Member<TextRecord>>&,
-                        const base::TimeTicks& presentation_timestamp,
-                        const DOMPaintTimingInfo&,
-                        uint64_t navigation_id) override;
+                        const DOMPaintTimingInfo&) override;
   void OnInputOrScroll() override;
 
   void Trace(Visitor*) const override;

@@ -470,7 +470,7 @@ TEST_F(LargestContentfulPaintCalculatorTest, RemoveLargestPendingImage) {
   // painted image, but it relies on another contentful paint to trigger the
   // LCP candidate update.
   GetElementById("large")->remove();
-  GetLargestContentfulPaintCalculator()->MaybeFlushMetricsCandidates();
+  GetLargestContentfulPaintCalculator()->MaybeFlushCandidates();
   EXPECT_EQ(CurrentLcpCandidate()->size(), 9u);
   EXPECT_EQ(LcpDetailsForReporting().image_paint_size, 9u);
   EXPECT_GT(LcpDetailsForReporting().image_paint_time, 0u);
@@ -511,7 +511,7 @@ TEST_F(LargestContentfulPaintCalculatorTest,
   AdvanceClock(base::Milliseconds(100));
 
   GetElementById("large")->remove();
-  GetLargestContentfulPaintCalculator()->MaybeFlushMetricsCandidates();
+  GetLargestContentfulPaintCalculator()->MaybeFlushCandidates();
   EXPECT_EQ(CurrentLcpCandidate()->size(), 9u);
   EXPECT_EQ(LcpDetailsForReporting().image_paint_size, 9u);
   EXPECT_GT(LcpDetailsForReporting().image_paint_time, 0u);
@@ -558,7 +558,7 @@ TEST_F(LargestContentfulPaintCalculatorTest, MulitiplePendingImages) {
   // this should fall back to the largest painted image, not the next largest
   // pending image, which isn't supported.
   GetElementById("largest")->remove();
-  GetLargestContentfulPaintCalculator()->MaybeFlushMetricsCandidates();
+  GetLargestContentfulPaintCalculator()->MaybeFlushCandidates();
   EXPECT_EQ(CurrentLcpCandidate()->size(), 9u);
   EXPECT_EQ(LcpDetailsForReporting().image_paint_size, 9u);
   EXPECT_GT(LcpDetailsForReporting().image_paint_time, 0u);
