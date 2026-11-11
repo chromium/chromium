@@ -19,7 +19,6 @@
 -DesktopWindowTreeHostPlatformImplTest.Deactivate
 -DesktopWindowTreeHostPlatformImplTest.InputMethodFocus
 -ExtensionApiTest.WindowOpenFocus
--GeolocationUsageObserverBrowsertest.GetCurrentPositionWhileWatchingPosition
 -NotificationsTestWithFakeMediaStream.ShouldQueueDuringScreenPresent
 -PopupBlockerBrowserTest.ModalPopUnder
 -StartupBrowserCreatorTest.LastUsedProfileActivated
@@ -31,21 +30,14 @@
 # TODO(crbug.com/40758956): flaky fullscreen notification test
 -NotificationsTest.TestShouldDisplayMultiFullscreen
 
-# TODO(crbug.com/40175111): Flaky.
--BrowserActionInteractiveTest.TestOpenPopup
-
 # TODO(crbug.com/40923067): Enable when feature isn't buggy any more. (Used to pass with Weston 9,
 # but doesn't pass with Weston 12. Flaky on mutter as well.)
 -FullscreenControlViewTest.MouseAndTouchInteraction_NoInterference
--FullscreenControlViewTest.MouseExitFullscreen_TimeoutAndRetrigger
 
 # These cannot work because they rely on receiving key events during a DnD session, which isn't
 # possible on Linux Wayland.
 -TabDragging/DetachToBrowserTabDragControllerTest.KeyPressShouldEndDragTest/*
 -TabDragging/DetachToBrowserTabDragControllerTest.Revert*
-
-# Failing on try bot due to DCHECK
--TabDragging/DetachToBrowserTabDragControllerTest.DragToSeparateWindow/*
 
 # TODO(crbug.com/334413759) The test can fail due to delays in omnibox popup
 # being launched when it is an accelerated bubble and so the subsequent click
