@@ -6204,7 +6204,7 @@
   {
     "name": "home-button-removal",
     "owners": ["yyanting@google.com", "hanxi@chromium.org", "clank-start@google.com"],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "http-cache-custom-backend",
