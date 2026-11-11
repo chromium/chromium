@@ -164,7 +164,10 @@ void InstallerDownloaderController::RegisterInfoBar() {
 
   auto* browser_infobar_manager =
       infobars::BrowserInfoBarManager::From(g_browser_process);
-  if (!browser_infobar_manager) {
+  if (!browser_infobar_manager ||
+      browser_infobar_manager->IsRegistered(
+          infobars::InfoBarDelegate::INSTALLER_DOWNLOADER_INFOBAR_DELEGATE)) {
+    // Already registered by another controller instance (tests).
     return;
   }
 

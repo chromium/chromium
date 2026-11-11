@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <vector>
-
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/infobars/infobar_features.h"
@@ -69,12 +68,12 @@ class InstallerDownloaderInteractiveUiTest
       public testing::WithParamInterface<bool> {
  protected:
   void SetUp() override {
-    std::vector<base::test::FeatureRefAndParams> enabled_features;
-    if (GetParam()) {
-      enabled_features.push_back({infobars::kCentralizedInfoBarFramework,
-                                  {{"MigratedInstallerDownloader", "true"}}});
-    }
-    feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
+    // TODO(crbug.com/567121669): Remove the legacy variant once the legacy
+    // delegate is deleted.
+    feature_list_.InitAndEnableFeatureWithParameters(
+        infobars::kCentralizedInfoBarFramework,
+        {{infobars::kMigratedInstallerDownloader.name,
+          GetParam() ? "true" : "false"}});
     InteractiveBrowserTest::SetUp();
   }
 
@@ -183,15 +182,15 @@ class InstallerDownloaderReengagementInteractiveUiTest
       public testing::WithParamInterface<bool> {
  protected:
   void SetUp() override {
-    std::vector<base::test::FeatureRefAndParams> enabled_features;
-    if (GetParam()) {
-      enabled_features.push_back({infobars::kCentralizedInfoBarFramework,
-                                  {{"MigratedInstallerDownloader", "true"}}});
-    }
-    enabled_features.push_back(
-        {kInstallerDownloaderReengagement,
-         {{"MaxCycleCount", "3"}, {"ReengagementCooldownDays", "60"}}});
-    feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
+    // TODO(crbug.com/567121669): Remove the legacy variant once the legacy
+    // delegate is deleted.
+    feature_list_.InitWithFeaturesAndParameters(
+        {{infobars::kCentralizedInfoBarFramework,
+          {{infobars::kMigratedInstallerDownloader.name,
+            GetParam() ? "true" : "false"}}},
+         {kInstallerDownloaderReengagement,
+          {{"MaxCycleCount", "3"}, {"ReengagementCooldownDays", "60"}}}},
+        {});
     InteractiveBrowserTest::SetUp();
   }
 

@@ -34,6 +34,7 @@ TEST_F(InfoBarFeaturesDefaultsTest, FrameworkEnabledByDefault) {
 TEST_F(InfoBarFeaturesDefaultsTest, LaunchedInfoBarsAreMigratedByDefault) {
   constexpr InfoBarDelegate::InfoBarIdentifier kLaunched[] = {
       InfoBarDelegate::COLLECTED_COOKIES_INFOBAR_DELEGATE,
+      InfoBarDelegate::INSTALLER_DOWNLOADER_INFOBAR_DELEGATE,
   };
   for (InfoBarDelegate::InfoBarIdentifier id : kLaunched) {
     EXPECT_TRUE(IsInfoBarMigrated(id)) << "InfoBarIdentifier " << id;
@@ -52,7 +53,6 @@ TEST_F(InfoBarFeaturesDefaultsTest, UnlaunchedInfoBarsAreNotMigratedByDefault) {
       InfoBarDelegate::FILE_ACCESS_DISABLED_INFOBAR_DELEGATE,
       InfoBarDelegate::GOOGLE_API_KEYS_INFOBAR_DELEGATE,
       InfoBarDelegate::INCOGNITO_CONNECTABILITY_INFOBAR_DELEGATE,
-      InfoBarDelegate::INSTALLER_DOWNLOADER_INFOBAR_DELEGATE,
       InfoBarDelegate::JS_OPTIMIZATIONS_INFOBAR_DELEGATE,
       InfoBarDelegate::KEYSTONE_PROMOTION_INFOBAR_DELEGATE_MAC,
       InfoBarDelegate::KNOWN_INTERCEPTION_DISCLOSURE_INFOBAR_DELEGATE,

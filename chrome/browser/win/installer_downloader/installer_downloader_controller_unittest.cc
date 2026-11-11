@@ -66,6 +66,14 @@ class MockInstallerDownloaderModel : public InstallerDownloaderModel {
 
 class InstallerDownloaderControllerTest : public testing::Test {
  protected:
+  InstallerDownloaderControllerTest() {
+    // Exercises the legacy path.
+    // TODO(crbug.com/567121669): Remove once the legacy delegate is deleted.
+    legacy_feature_list_.InitAndEnableFeatureWithParameters(
+        infobars::kCentralizedInfoBarFramework,
+        {{infobars::kMigratedInstallerDownloader.name, "false"}});
+  }
+
   void SetUp() override {
     auto download_manager = std::make_unique<content::MockDownloadManager>();
     mock_download_manager_ = download_manager.get();
@@ -88,6 +96,7 @@ class InstallerDownloaderControllerTest : public testing::Test {
         should_show_infobar_for_profile_mock_callback_.Get());
   }
 
+  base::test::ScopedFeatureList legacy_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
 
