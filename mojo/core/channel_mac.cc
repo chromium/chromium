@@ -50,8 +50,6 @@ namespace {
 // Kill switch.
 BASE_FEATURE(kUseMachVouchers, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kFilterMachVouchers, base::FEATURE_DISABLED_BY_DEFAULT);
-
 bool ShouldUseVouchers() {
   static bool enabled = base::FeatureList::IsEnabled(kUseMachVouchers);
   return enabled;
@@ -761,17 +759,10 @@ class ChannelMac : public Channel,
 
     scoped_refptr<ipcz_driver::Envelope> envelope;
     if (ShouldUseVouchers()) {
-      base::apple::ScopedMachSendRight voucher(header->msgh_voucher_port);
+      envelope = base::MakeRefCounted<ipcz_driver::Envelope>(
+          base::apple::ScopedMachSendRight(header->msgh_voucher_port));
       header->msgh_voucher_port = MACH_PORT_NULL;
       header->msgh_bits &= ~MACH_MSGH_BITS_VOUCHER_MASK;
-
-      // If kFilterMachVouchers is enabled, only create an Envelope when a valid
-      // voucher is attached (not MACH_PORT_NULL or MACH_PORT_DEAD.)
-      if (!base::FeatureList::IsEnabled(kFilterMachVouchers) ||
-          MACH_PORT_VALID(voucher.get())) {
-        envelope =
-            base::MakeRefCounted<ipcz_driver::Envelope>(std::move(voucher));
-      }
     }
 
     base::ScopedMachMsgDestroy scoped_message(header);
