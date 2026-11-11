@@ -38,10 +38,6 @@ build_webui("build") {
     "new_badge.ts",
   ]
 
-  if (!is_android && !is_ios) {
-    ts_files += [ "help_bubble_mixin.ts" ]
-  }
-
   # TODO(thestig): Move this into //pdf.
   ts_files += [ "pdf_help_bubble_proxy.ts" ]
 
@@ -57,7 +53,6 @@ build_webui("build") {
   ]
 
   ts_out_dir = "$root_gen_dir/ui/webui/resources/tsc/cr_components/help_bubble"
-  ts_tsconfig_base = "//tools/typescript/tsconfig_base_mixed.json"
   ts_composite = true
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
@@ -65,9 +60,6 @@ build_webui("build") {
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
-  if (!is_android && !is_ios) {
-    ts_deps += [ "//third_party/polymer/v3_0:library" ]
-  }
   webui_context_type = "relative"
   generate_grdp = true
   grd_resource_path_prefix = rebase_path(".", "//ui/webui/resources")

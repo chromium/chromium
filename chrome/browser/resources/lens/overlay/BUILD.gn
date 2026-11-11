@@ -67,6 +67,7 @@ build_webui("build_overlay") {
     "color_utils.ts",
     "cubic_bezier.ts",
     "find_words_in_region.ts",
+    "help_bubble_mixin.ts",
     "hit.ts",
     "language_browser_proxy.ts",
     "metrics_utils.ts",

@@ -18,15 +18,14 @@
  * See README.md for more information.
  */
 
+import type {HelpBubbleElement} from '//resources/cr_components/help_bubble/help_bubble.js';
+import type {BrowserProxy, HelpBubbleParams} from '//resources/cr_components/help_bubble/help_bubble.mojom-webui.js';
+import {browserProxyFactory} from '//resources/cr_components/help_bubble/help_bubble.mojom-webui.js';
+import type {HelpBubbleOptions, Trackable} from '//resources/cr_components/help_bubble/help_bubble_controller.js';
+import {HelpBubbleMixinCommon} from '//resources/cr_components/help_bubble/help_bubble_mixin_common.js';
+import type {HelpBubbleMixinInterface} from '//resources/cr_components/help_bubble/help_bubble_mixin_interface.js';
 import type {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {dedupingMixin} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import type {HelpBubbleElement} from './help_bubble.js';
-import type {BrowserProxy, HelpBubbleParams} from './help_bubble.mojom-webui.js';
-import {browserProxyFactory} from './help_bubble.mojom-webui.js';
-import type {HelpBubbleOptions, Trackable} from './help_bubble_controller.js';
-import {HelpBubbleMixinCommon} from './help_bubble_mixin_common.js';
-import type {HelpBubbleMixinInterface} from './help_bubble_mixin_interface.js';
 
 type Constructor<T> = new (...args: any[]) => T;
 

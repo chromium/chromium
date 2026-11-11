@@ -204,6 +204,7 @@ def CheckNoNewPolymer(input_api, output_api):
   EXCLUDED_PATHS = [
     'chrome/browser/resources/ash/',
     'chrome/browser/resources/chromeos/',
+    'chrome/browser/resources/lens/overlay/help_bubble_mixin.ts',
     'chrome/browser/resources/password_manager/',
     'chrome/browser/resources/settings/site_settings/',
     'chrome/browser/resources/settings_shared/',
