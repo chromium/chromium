@@ -2724,6 +2724,9 @@ if (!is_robolectric && enable_java_templates) {
 
     _enable_lint = defined(invoker.enable_lint) && invoker.enable_lint &&
                    !disable_android_lint
+    _use_tiered_dex =
+        !_is_bundle_module && tiered_dex_assembly && !_proguard_enabled &&
+        _min_sdk_version >= default_min_sdk_version
 
     java_library_impl(_java_target_name) {
       forward_variables_from(invoker,
@@ -2781,6 +2784,7 @@ if (!is_robolectric && enable_java_templates) {
       srcjar_deps = _srcjar_deps
       merged_android_manifest = _android_manifest
       final_dex_path = _final_dex_path
+      omit_dex_path_from_build_config = _use_tiered_dex
       if (defined(invoker.assert_no_native_deps)) {
         assert_no_deps = invoker.assert_no_native_deps
       }
@@ -2839,8 +2843,6 @@ if (!is_robolectric && enable_java_templates) {
         _shrunk_proto_resources_path =
             "$target_out_dir/${_template_name}.shrunk.proto.ap_"
       }
-      _use_tiered_dex = tiered_dex_assembly && !_proguard_enabled &&
-                        _min_sdk_version >= default_min_sdk_version
       if (_use_tiered_dex) {
         tiered_dex_assembly(_final_dex_target_name) {
           apk_template_name = _template_name
@@ -2859,6 +2861,9 @@ if (!is_robolectric && enable_java_templates) {
             "$target_out_dir/${_template_name}__${_partition.name}.dex.jar",
           ]
         }
+
+        # Include the APK's R.java dex as a separate tier.
+        _final_dex_paths += [ "$target_out_dir/$_template_name.dex.jar" ]
       } else {
         dex(_final_dex_target_name) {
           forward_variables_from(invoker,
@@ -3054,6 +3059,9 @@ if (!is_robolectric && enable_java_templates) {
                   ":$_merge_manifest_target",
                   _final_dex_target_dep,
                 ]
+        if (_use_tiered_dex) {
+          deps += [ ":${_java_target_name}__dex" ]
+        }
         dex_paths = _final_dex_paths
 
         output_apk_path = _final_apk_path

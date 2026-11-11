@@ -4016,7 +4016,10 @@ if (enable_java_templates) {
         processed_jar_path = _processed_jar_path
       }
       if (_build_device_jar) {
-        dex_path = _dex_path
+        if (!defined(invoker.omit_dex_path_from_build_config) ||
+            !invoker.omit_dex_path_from_build_config) {
+          dex_path = _dex_path
+        }
       }
       if (_source_files != []) {
         target_sources_file = _target_sources_file
