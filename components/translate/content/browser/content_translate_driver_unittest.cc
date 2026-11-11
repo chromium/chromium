@@ -604,6 +604,92 @@ TEST_F(ContentTranslateDriverTest,
       [&]() { return side_panel_agent.called_translate_; }));
   EXPECT_FALSE(main_agent.called_translate_);
 }
+
+// RevertTranslation must only revert agents that actually received a
+// TranslateFrame call; otherwise an untranslated agent hits NOTREACHED()
+// because the translate library was never injected into its isolated world.
+TEST_F(ContentTranslateDriverTest,
+       RevertTranslationOnlyRevertsTranslatedAgents) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({translate::kEnableTranslatePdf},
+                                {features::kImprovedReadAloud});
+
+  EXPECT_CALL(*mock_translate_client_, IsReadingModeOpen())
+      .WillRepeatedly(::testing::Return(true));
+
+  MockTranslateAgent main_agent;
+  MockTranslateAgent side_panel_agent;
+
+  translate::LanguageDetectionDetails main_details;
+  main_details.url = GURL("https://example.com");
+  main_details.adopted_language = "en";
+  main_details.is_model_reliable = true;
+  driver_->RegisterPage(main_agent.BindToNewPageRemote(), main_details, true);
+
+  translate::LanguageDetectionDetails side_panel_details;
+  side_panel_details.url =
+      GURL("chrome-untrusted://read-anything-side-panel.top-chrome/");
+  side_panel_details.adopted_language = "en";
+  side_panel_details.is_model_reliable = true;
+  driver_->RegisterPage(side_panel_agent.BindToNewPageRemote(),
+                        side_panel_details, true);
+
+  constexpr int kActiveSeqNo = 1;
+  auto flush_tasks = []() {
+    base::test::TestFuture<void> flush_future;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, flush_future.GetCallback());
+    EXPECT_TRUE(flush_future.Wait());
+  };
+
+  // Non-PDF with kImprovedReadAloud disabled: only main_agent is translated,
+  // so RevertTranslation must only revert main_agent.
+  content::WebContentsTester::For(web_contents())
+      ->SetMainFrameMimeType("text/html");
+  driver_->TranslatePage(kActiveSeqNo, "script", "en", "fr");
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return main_agent.called_translate_; }));
+  flush_tasks();
+  EXPECT_FALSE(side_panel_agent.called_translate_);
+
+  driver_->RevertTranslation(kActiveSeqNo);
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return main_agent.called_revert_; }));
+  flush_tasks();
+  EXPECT_FALSE(side_panel_agent.called_revert_);
+
+  main_agent.called_translate_ = false;
+  main_agent.called_revert_ = false;
+
+  // PDF: only side_panel_agent is translated, so RevertTranslation must only
+  // revert side_panel_agent.
+  content::WebContentsTester::For(web_contents())
+      ->SetMainFrameMimeType("application/pdf");
+  driver_->TranslatePage(kActiveSeqNo, "script", "en", "fr");
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return side_panel_agent.called_translate_; }));
+  flush_tasks();
+  EXPECT_FALSE(main_agent.called_translate_);
+
+  driver_->RevertTranslation(kActiveSeqNo);
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return side_panel_agent.called_revert_; }));
+  flush_tasks();
+  EXPECT_FALSE(main_agent.called_revert_);
+
+  // Re-registering side_panel_agent after translation clears its translated
+  // state, so RevertTranslation does not revert the new untranslated pipe.
+  side_panel_agent.called_translate_ = false;
+  side_panel_agent.called_revert_ = false;
+  driver_->TranslatePage(kActiveSeqNo, "script", "en", "fr");
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return side_panel_agent.called_translate_; }));
+  driver_->RegisterPage(side_panel_agent.BindToNewPageRemote(),
+                        side_panel_details, true);
+  driver_->RevertTranslation(kActiveSeqNo);
+  flush_tasks();
+  EXPECT_FALSE(side_panel_agent.called_revert_);
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Verifies that RegisterPage returns early and safely when web_contents() is null.

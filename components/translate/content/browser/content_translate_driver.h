@@ -184,6 +184,8 @@ class ContentTranslateDriver : public TranslateDriver,
   struct PageAgents {
     mojo::Remote<mojom::TranslateAgent> main_agent;
     mojo::Remote<mojom::TranslateAgent> side_panel_agent;
+    bool main_agent_translated = false;
+    bool side_panel_agent_translated = false;
   };
   std::map<int, PageAgents> translate_agents_;
 

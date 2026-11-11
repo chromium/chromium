@@ -212,6 +212,7 @@ void ContentTranslateDriver::TranslatePage(int page_seq_no,
   if (agents.empty()) {
     return;
   }
+  PageAgents& page_agents = translate_agents_[page_seq_no];
 
   // Use a BarrierCallback to aggregate results from all agents and call
   // OnAllPagesTranslated once all agents have finished translating.
@@ -221,6 +222,10 @@ void ContentTranslateDriver::TranslatePage(int page_seq_no,
                      weak_pointer_factory_.GetWeakPtr()));
 
   for (mojom::TranslateAgent* agent : agents) {
+    (agent == page_agents.main_agent.get()
+         ? page_agents.main_agent_translated
+         : page_agents.side_panel_agent_translated) = true;
+
     // Create a callback for each agent from the barrier callback.
     auto single_agent_callback = base::BindOnce(
         [](base::RepeatingCallback<void(TranslationResult)> barrier,
@@ -252,11 +257,14 @@ void ContentTranslateDriver::RevertTranslation(int page_seq_no) {
   if (it == translate_agents_.end())
     return;  // This page has navigated away.
 
-  if (it->second.main_agent.is_bound()) {
+  // Untranslated agents lack the injected translate script (NOTREACHED).
+  if (it->second.main_agent.is_bound() &&
+      std::exchange(it->second.main_agent_translated, false)) {
     it->second.main_agent->RevertTranslation();
   }
 
-  if (it->second.side_panel_agent.is_bound()) {
+  if (it->second.side_panel_agent.is_bound() &&
+      std::exchange(it->second.side_panel_agent_translated, false)) {
     it->second.side_panel_agent->RevertTranslation();
   }
 }
@@ -590,6 +598,8 @@ int ContentTranslateDriver::UpdatePageSequenceNumber() {
           it->second.side_panel_agent.is_bound()) {
         PageAgents& new_agents = translate_agents_[active_page_seq_no_];
         new_agents.side_panel_agent = std::move(it->second.side_panel_agent);
+        new_agents.side_panel_agent_translated =
+            std::exchange(it->second.side_panel_agent_translated, false);
         new_agents.side_panel_agent.set_disconnect_handler(
             base::BindOnce(&ContentTranslateDriver::OnSidePanelAway,
                            base::Unretained(this), active_page_seq_no_));
@@ -607,6 +617,7 @@ void ContentTranslateDriver::BindSidePanelTranslateAgent(
     mojo::PendingRemote<mojom::TranslateAgent> translate_agent) {
   auto& agents = translate_agents_[page_seq_no];
   agents.side_panel_agent.reset();
+  agents.side_panel_agent_translated = false;
   agents.side_panel_agent.Bind(std::move(translate_agent));
   // Use a specific disconnect handler that doesn't erase the whole entry.
   // base::Unretained(this) is safe here because `side_panel_agent` is owned
@@ -622,6 +633,7 @@ void ContentTranslateDriver::BindMainTranslateAgent(
     mojo::PendingRemote<mojom::TranslateAgent> translate_agent) {
   auto& agents = translate_agents_[page_seq_no];
   agents.main_agent.reset();
+  agents.main_agent_translated = false;
   agents.main_agent.Bind(std::move(translate_agent));
   // base::Unretained(this) is safe here because `main_agent` is owned by
   // `translate_agents_`, which is owned by `this`. The callback is destroyed
