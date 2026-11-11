@@ -251,11 +251,6 @@ void BoxFragmentBuilder::AddResult(
   PropagateFromLayoutResult(*result_for_propagation);
 }
 
-void BoxFragmentBuilder::AddResult(const LayoutResult& child_layout_result,
-                                   const LogicalOffset offset) {
-  AddResult(child_layout_result, offset, std::nullopt, std::nullopt, nullptr);
-}
-
 void BoxFragmentBuilder::AddChild(
     const PhysicalFragment& child,
     const LogicalOffset& child_offset,

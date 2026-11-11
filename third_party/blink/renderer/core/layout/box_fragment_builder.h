@@ -374,12 +374,9 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   void AddResult(
       const LayoutResult&,
       const LogicalOffset,
-      std::optional<BoxStrut> margins,
+      std::optional<BoxStrut> margins = std::nullopt,
       std::optional<PhysicalBoxStrut> relative_insets = std::nullopt,
       const OofInlineContainer<LogicalOffset>* inline_container = nullptr);
-  // AddResult() with the default margin computation.
-  void AddResult(const LayoutResult& child_layout_result,
-                 const LogicalOffset offset);
 
   // Add a child fragment and propagate info from it. Called by AddResult().
   // Other callers should call AddResult() instead of this when possible, since
