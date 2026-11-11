@@ -268,12 +268,6 @@
   background-color: var(--color-searchbox-results-dim-selected);
 }
 
-/* The cobrowse side panel opens on the opposite side in RTL, so mirror the
- * icon to match. */
-:host-context([dir=rtl]) #secondaryText[has-icon]::before {
-  transform: scaleX(-1);
-}
-
 .bolded {
   font-weight: var(--cr-searchbox-match-font-weight, 600);
 }

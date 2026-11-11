@@ -95,6 +95,7 @@ source_set("searchbox") {
       "//chrome/browser/ui:tab_ui_helper",
       "//chrome/browser/ui/bookmarks",
       "//chrome/browser/ui/search",
+      "//chrome/browser/ui/side_panel",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/views/location_bar",
@@ -296,6 +297,7 @@ source_set("unit_tests") {
     if (!is_android) {
       deps += [
         "//chrome/browser/ui/lens",
+        "//chrome/browser/ui/side_panel",
         "//chrome/browser/ui/tabs:tab_strip",
         "//chrome/browser/ui/tabs:test_support",
         "//chrome/browser/ui/webui/omnibox_popup",

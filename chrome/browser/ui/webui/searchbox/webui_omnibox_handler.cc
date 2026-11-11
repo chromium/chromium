@@ -31,6 +31,8 @@
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/side_panel/side_panel_prefs.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
@@ -520,10 +522,14 @@ void WebuiOmniboxHandler::OverrideIconPaths(
   // Description icons are new; consider moving this to its own hook (e.g.
   // GetDescriptionIconPath()) depending on how this parameter evolves.
   // For now we are keeping this icon override scoped to webui omnibox.
+  // The icon reflects the physical side the contextual tasks panel opens on.
   if (ContextualSearchProvider::HasSidePanelDescription(
           match, autocomplete_controller()->autocomplete_provider_client())) {
     mojom_match->description_icon_path =
-        searchbox_internal::kDockToRightIconResourceName;
+        side_panel_prefs::IsSidePanelRightAligned(
+            *profile_->GetPrefs(), SidePanelEntryId::kContextualTasks)
+            ? searchbox_internal::kDockToLeftIconResourceName
+            : searchbox_internal::kDockToRightIconResourceName;
   }
   SearchboxHandler::OverrideIconPaths(match, mojom_match);
 }

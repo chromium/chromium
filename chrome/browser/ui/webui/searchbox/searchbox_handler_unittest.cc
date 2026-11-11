@@ -105,15 +105,18 @@
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/searchbox/omnibox_composebox_handler.h"
 #include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
+#include "chrome/common/pref_names.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_features.h"
 #include "components/omnibox/common/composebox_features.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/sessions/content/session_tab_helper.h"
 #endif
 
@@ -1766,8 +1769,39 @@ TEST_F(WebuiOmniboxHandlerTest,
       .WillRepeatedly(testing::Return(false));
   EXPECT_EQ(get_description_icon_path(), "");
 
+  // The icon follows the contextual tasks side panel alignment. A left-aligned
+  // panel uses dock_to_right, and a right-aligned panel uses dock_to_left.
   EXPECT_CALL(*provider_client, ShouldOpenCoBrowsePanel())
       .WillRepeatedly(testing::Return(true));
+  PrefService* pref_service = profile()->GetPrefs();
+  const std::string contextual_tasks_key =
+      SidePanelEntryIdToString(SidePanelEntryId::kContextualTasks);
+  {
+    ScopedDictPrefUpdate update(pref_service,
+                                prefs::kSidePanelAlignmentOverrides);
+    update->Set(contextual_tasks_key, false);
+  }
+  EXPECT_EQ(get_description_icon_path(),
+            searchbox_internal::kDockToRightIconResourceName);
+
+  {
+    ScopedDictPrefUpdate update(pref_service,
+                                prefs::kSidePanelAlignmentOverrides);
+    update->Set(contextual_tasks_key, true);
+  }
+  EXPECT_EQ(get_description_icon_path(),
+            searchbox_internal::kDockToLeftIconResourceName);
+
+  // Without a per-entry override, the global side panel alignment is used.
+  {
+    ScopedDictPrefUpdate update(pref_service,
+                                prefs::kSidePanelAlignmentOverrides);
+    update->Remove(contextual_tasks_key);
+  }
+  pref_service->SetBoolean(prefs::kSidePanelHorizontalAlignment, true);
+  EXPECT_EQ(get_description_icon_path(),
+            searchbox_internal::kDockToLeftIconResourceName);
+  pref_service->SetBoolean(prefs::kSidePanelHorizontalAlignment, false);
   EXPECT_EQ(get_description_icon_path(),
             searchbox_internal::kDockToRightIconResourceName);
 }
