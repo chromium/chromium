@@ -283,14 +283,6 @@ public interface GlicKeyedService {
     void setExperimentalTriggeringEnabled(boolean enabled);
 
     /**
-     * Checks if the Glic toolbar button is currently active/pinned.
-     *
-     * @param profile The current profile.
-     * @return true if the Glic toolbar button is active.
-     */
-    boolean isGlicShortcutActive(Profile profile);
-
-    /**
      * Checks if the bottom bar is enabled.
      *
      * @return true if the bottom bar is enabled.

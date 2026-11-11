@@ -198,7 +198,6 @@ public class GlicKeyedServiceImpl implements GlicKeyedService {
         GlicKeyedServiceImplJni.get().setExperimentalTriggeringEnabled(mNativePtr, enabled);
     }
 
-    @Override
     @CalledByNative
     public boolean isGlicShortcutActive(Profile profile) {
         if (BottomBarConfigUtils.isBottomBarEnabled(ContextUtils.getApplicationContext())) {
