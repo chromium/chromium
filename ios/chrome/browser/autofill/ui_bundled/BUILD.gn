@@ -190,6 +190,7 @@ source_set("eg2_tests") {
     "//testing/gtest",
     "//ui/base",
     "//ui/strings:ui_strings_grit",
+    "//url",
   ]
   frameworks = [ "UIKit.framework" ]
 }

@@ -39,6 +39,8 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+#import "url/gurl.h"
+#import "url/url_constants.h"
 
 namespace {
 
@@ -49,6 +51,13 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 // URLs of the test pages.
 const char kCreditCardUploadForm[] =
     "/credit_card_upload_form_address_and_cc.html";
+
+// Timeout for the initial navigation away from the native New Tab Page. On a
+// freshly booted simulator, ExtensionKit must cold-launch WebKit's helper
+// processes before `<CRWWebView>` is added to the view hierarchy, which can
+// exceed both `kWaitForUIElementTimeout` (4s) and `kWaitForPageLoadTimeout`
+// (10s).
+constexpr base::TimeDelta kInitialPageLoadTimeout = base::Seconds(30);
 
 // Google Payments server requests and responses.
 NSString* const kURLGetUploadDetailsRequest =
@@ -282,6 +291,15 @@ void FillAndSubmitXframeCreditCardForm() {
 
 - (void)setUp {
   [super setUp];
+
+  // Navigate away from the native New Tab Page before signing in so the active
+  // tab attaches a visible `WKWebView`. Otherwise, no `WKWebView` is visible
+  // during `signinWithFakeIdentity:` (~4.5s), causing WebKit to suspend its
+  // `WebContent` process and idle-exit its `GPU` process; on iOS 27 Simulator
+  // VMs, relaunching the `GPU` process on the subsequent form load can stall
+  // for ~6.5-10.5s and time out `waitForFormToBeCachedInMainFrame`.
+  [ChromeEarlGrey loadURL:GURL(url::kAboutBlankURL)
+              withTimeout:kInitialPageLoadTimeout];
 
   [SigninEarlGrey
       signinWithFakeIdentity:[FakeSystemIdentity fakeIdentityWithMissingNames]];
