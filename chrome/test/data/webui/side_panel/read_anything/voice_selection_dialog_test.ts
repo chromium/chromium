@@ -91,6 +91,7 @@ suite('VoiceSelectionDialog', () => {
       save: 'Save',
       voiceSelectionLabel: 'Voice Selection',
       previewTooltip: 'Preview voice',
+      previewVoiceLabel: 'Preview $1',
       stopLabel: 'Stop preview',
       readingModeLanguageMenuItemLabel: 'Select $1',
       readingModeVoiceMenuDownloading: 'Downloading $1',
@@ -683,5 +684,52 @@ suite('VoiceSelectionDialog', () => {
 
         assertTrue(previewShiftTab.defaultPrevented);
         assertEquals(saveButton, dialog.shadowRoot.activeElement);
+      });
+
+  test(
+      'preview buttons have unique voice-specific aria-labels and keep Play' +
+          ' tooltip',
+      async () => {
+        await setAvailableVoicesAndEnabledLangs(
+            [mappedVoice, googleStandardVoice]);
+        await drawDialog();
+
+        const mappedNatureName = getVoiceNatureNaming(mappedVoice.name)!;
+        const mappedPreviewBtn = getPreviewButtonForVoice(mappedVoice);
+        const standardPreviewBtn =
+            getPreviewButtonForVoice(googleStandardVoice);
+
+        assertEquals(
+            `Preview ${mappedNatureName.natureName}`,
+            mappedPreviewBtn.getAttribute('aria-label'));
+        assertEquals('Preview voice', mappedPreviewBtn.getAttribute('title'));
+
+        assertEquals(
+            `Preview ${googleStandardVoice.name}`,
+            standardPreviewBtn.getAttribute('aria-label'));
+        assertEquals('Preview voice', standardPreviewBtn.getAttribute('title'));
+      });
+
+  test(
+      'preview button aria-label and title switch to stopLabel while playing',
+      async () => {
+        await drawDialog();
+
+        const previewBtn = getPreviewButtonForVoice(googleStandardVoice);
+        assertEquals(
+            `Preview ${googleStandardVoice.name}`,
+            previewBtn.getAttribute('aria-label'));
+
+        const mockTimer = new MockTimer();
+        mockTimer.install();
+        previewBtn.click();
+        mockTimer.tick(spinnerDebounceTimeout);
+        mockTimer.uninstall();
+        await microtasksFinished();
+
+        const updatedPreviewBtn = getPreviewButtonForVoice(googleStandardVoice);
+        assertEquals(
+            'Stop preview', updatedPreviewBtn.getAttribute('aria-label'));
+        assertEquals('Stop preview', updatedPreviewBtn.getAttribute('title'));
       });
 });

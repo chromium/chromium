@@ -45,8 +45,8 @@ export function getHtml(this: VoiceSelectionDialogElement) {
               <cr-icon-button id="preview-icon"
                   tabindex="${this.previewButtonTabIndex_(
                       voiceItem, groupIndex === 0 && voiceIndex === 0)}"
-                  class="voice-preview-button" aria-label="${
-                      this.previewLabel_(voiceItem.previewInitiated)}"
+                  class="voice-preview-button"
+                  aria-label="${this.previewAriaLabel_(voiceItem)}"
                   title="${this.previewLabel_(voiceItem.previewInitiated)}"
                   iron-icon="${
                       this.previewIcon_(voiceItem.previewInitiated)}"

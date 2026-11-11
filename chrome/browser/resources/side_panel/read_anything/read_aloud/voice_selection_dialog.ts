@@ -307,6 +307,13 @@ export class VoiceSelectionDialogElement extends CrLitElement implements
         previewPlaying ? 'stopLabel' : 'previewTooltip');
   }
 
+  protected previewAriaLabel_(voiceItem: VoiceDropdownItem): string {
+    return voiceItem.previewInitiated ?
+        loadTimeData.getString('stopLabel') :
+        loadTimeData.getStringF(
+            'previewVoiceLabel', this.voiceDisplayName_(voiceItem));
+  }
+
   protected hideSpinner_(voiceDropdown: VoiceDropdownItem): boolean {
     return !isVoicePreviewSpinning(voiceDropdown);
   }
