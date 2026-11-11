@@ -856,6 +856,20 @@ public class AdaptiveUiSheetCoordinatorTest {
     }
 
     @Test
+    public void testIsCurrent_ReflectsCurrentSheetContent() {
+        AdaptiveUiSheetCoordinator content = createContent(newModelBuilder().build());
+        showAndCaptureObserver(content);
+        assertFalse(content.isCurrent());
+
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(content);
+        assertTrue(content.isCurrent());
+
+        // Another sheet takes its place and this one goes back in the queue.
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mOtherSheetContent);
+        assertFalse(content.isCurrent());
+    }
+
+    @Test
     public void testHidden_SuppressedSheetIsNotDismissed() {
         AdaptiveUiSheetCoordinator content = createContent(newModelBuilder().build());
         BottomSheetObserver observer = showAndCaptureObserver(content);

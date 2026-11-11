@@ -1087,6 +1087,29 @@ public class AdaptiveUiDialogCoordinatorTest {
     }
 
     @Test
+    public void testIsCurrent_TracksLastDialogTheManagerCreated() {
+        AdaptiveUiDialogCoordinator coordinator = createCoordinator(newModelBuilder().build());
+        coordinator.show();
+        assertFalse(coordinator.isCurrent());
+
+        // Queued behind another dialog.
+        coordinator.onDialogCreated(mOtherDialogModel, /* dialog= */ null);
+        assertFalse(coordinator.isCurrent());
+
+        coordinator.onDialogCreated(coordinator.getDialogModel(), /* dialog= */ null);
+        assertTrue(coordinator.isCurrent());
+
+        // A higher-priority dialog takes its place and the manager puts this one back in its
+        // queue, which it only reveals by creating the other dialog.
+        coordinator.onDialogCreated(mOtherDialogModel, /* dialog= */ null);
+        assertFalse(coordinator.isCurrent());
+
+        // Shown again.
+        coordinator.onDialogCreated(coordinator.getDialogModel(), /* dialog= */ null);
+        assertTrue(coordinator.isCurrent());
+    }
+
+    @Test
     public void testHide_DismissesWithMappedCauseAndReportsReason() {
         AdaptiveUiDialogCoordinator coordinator = createCoordinator(newModelBuilder().build());
         coordinator.show();

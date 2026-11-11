@@ -16,6 +16,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -49,6 +50,13 @@ public final class AdaptiveUiControllerImpl implements AdaptiveUiController {
          * @param animate Whether to animate, where the container supports it.
          */
         void hide(@DismissReason int reason, boolean animate);
+
+        /**
+         * Whether the container is presenting the entry right now, rather than holding it in its
+         * queue (not shown yet, or put back after it was shown). Closing the current entry lets the
+         * container present the next one in its queue.
+         */
+        boolean isCurrent();
     }
 
     private final Context mContext;
@@ -93,12 +101,22 @@ public final class AdaptiveUiControllerImpl implements AdaptiveUiController {
     public void destroy() {
         if (mDestroyed) return;
         mDestroyed = true;
-        // Close pending entries first, so closing a shown one doesn't pull a queued one on screen.
-        // Both are copied, because each close() removes the entry from them.
+        // Closing the entry a container is presenting makes the container present the next one in
+        // its queue, so close the current entries last: pending entries first, then shown entries
+        // that a container put back in its queue. The collections are copied because close()
+        // removes entries from them.
         for (AdaptiveUiEntry entry : new ArrayList<>(mPendingEntries)) {
             close(entry, DismissReason.TAB_CLOSED, /* animate= */ false);
         }
-        for (AdaptiveUiEntry entry : new ArrayList<>(mPresenters.keySet())) {
+        List<AdaptiveUiEntry> currentEntries = new ArrayList<>();
+        for (Map.Entry<AdaptiveUiEntry, Presenter> item : new ArrayList<>(mPresenters.entrySet())) {
+            if (item.getValue().isCurrent()) {
+                currentEntries.add(item.getKey());
+            } else {
+                close(item.getKey(), DismissReason.TAB_CLOSED, /* animate= */ false);
+            }
+        }
+        for (AdaptiveUiEntry entry : currentEntries) {
             close(entry, DismissReason.TAB_CLOSED, /* animate= */ false);
         }
         AdaptiveUiControllerProvider.detach(this);

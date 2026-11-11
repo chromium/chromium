@@ -52,6 +52,7 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.ref.WeakReference;
+import java.util.List;
 
 /** Unit tests for {@link AdaptiveUiControllerImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -398,6 +399,72 @@ public class AdaptiveUiControllerImplTest {
     }
 
     @Test
+    public void testDestroyClosesSuspendedDialogBeforeCurrentOne() {
+        DeviceInfo.setIsDesktopForTesting(/* isDesktop= */ true);
+        mController.show(newEntry(AdaptiveUiScope.TRANSIENT, AdaptiveUiContainer.MODAL_DIALOG));
+        mController.show(newEntry(AdaptiveUiScope.WINDOW, AdaptiveUiContainer.MODAL_DIALOG));
+        PropertyModel tabModel = captureDialogModel(ModalDialogType.TAB);
+        PropertyModel appModel = captureDialogModel(ModalDialogType.APP);
+        ArgumentCaptor<ModalDialogManagerObserver> captor =
+                ArgumentCaptor.forClass(ModalDialogManagerObserver.class);
+        verify(mModalDialogManager, times(2)).addObserver(captor.capture());
+
+        // The tab-modal dialog is shown, then the app-modal one takes its place, and
+        // ModalDialogManager puts the tab-modal one back in its queue without telling observers.
+        for (PropertyModel model : List.of(tabModel, appModel)) {
+            for (ModalDialogManagerObserver observer : captor.getAllValues()) {
+                observer.onDialogCreated(model, /* dialog= */ null);
+                observer.onDialogShown(new View(mActivity));
+            }
+        }
+
+        mController.destroy();
+
+        // The suspended dialog is closed first, so closing the current one can't bring it back.
+        InOrder inOrder = inOrder(mModalDialogManager);
+        inOrder.verify(mModalDialogManager).dismissDialog(eq(tabModel), anyInt());
+        inOrder.verify(mModalDialogManager).dismissDialog(eq(appModel), anyInt());
+        verify(mObserver, times(2)).onShown();
+        verify(mObserver, times(2)).onDismissed(DismissReason.TAB_CLOSED);
+    }
+
+    @Test
+    public void testDestroyClosesRequeuedSheetBeforeCurrentOne() {
+        DeviceInfo.setIsDesktopForTesting(/* isDesktop= */ false);
+        mController.show(newEntry(AdaptiveUiScope.TRANSIENT, AdaptiveUiContainer.BOTTOM_SHEET));
+        mController.show(newEntry(AdaptiveUiScope.WINDOW, AdaptiveUiContainer.BOTTOM_SHEET));
+        ArgumentCaptor<BottomSheetContent> contentCaptor =
+                ArgumentCaptor.forClass(BottomSheetContent.class);
+        verify(mBottomSheetController, times(2))
+                .requestShowContent(contentCaptor.capture(), eq(/* animate= */ true));
+        ArgumentCaptor<BottomSheetObserver> observerCaptor =
+                ArgumentCaptor.forClass(BottomSheetObserver.class);
+        verify(mBottomSheetController, times(2)).addObserver(observerCaptor.capture());
+        BottomSheetContent first = contentCaptor.getAllValues().get(0);
+        BottomSheetContent second = contentCaptor.getAllValues().get(1);
+
+        // The first sheet is shown, then another sheet takes its place and the first one goes back
+        // in the queue. Once that sheet closes, the second one is shown and the first one waits.
+        for (BottomSheetContent content : List.of(first, second)) {
+            mCurrentSheetContent = content;
+            for (BottomSheetObserver observer : observerCaptor.getAllValues()) {
+                observer.onSheetContentChanged(content);
+            }
+        }
+
+        mController.destroy();
+
+        // The requeued sheet is closed first, so closing the current one can't bring it back.
+        InOrder inOrder = inOrder(mBottomSheetController);
+        inOrder.verify(mBottomSheetController)
+                .hideContent(eq(first), eq(/* animate= */ false), anyInt());
+        inOrder.verify(mBottomSheetController)
+                .hideContent(eq(second), eq(/* animate= */ false), anyInt());
+        verify(mObserver, times(2)).onShown();
+        verify(mObserver, times(2)).onDismissed(DismissReason.TAB_CLOSED);
+    }
+
+    @Test
     public void testHideFromOnWillShowSkipsTheContainer() {
         DeviceInfo.setIsDesktopForTesting(/* isDesktop= */ false);
         AdaptiveUiEntry entry = newEntry();
@@ -438,7 +505,31 @@ public class AdaptiveUiControllerImplTest {
     }
 
     @Test
-    public void testShowAgainAfterDismissalCreatesNewPresentation() {
+    public void testHideAndShowAgainFromOnWillShowShowsOnce() {
+        DeviceInfo.setIsDesktopForTesting(/* isDesktop= */ false);
+        AdaptiveUiEntry entry = newEntry();
+        boolean[] reshown = new boolean[1];
+        doAnswer(
+                        invocation -> {
+                            if (reshown[0]) return null;
+                            reshown[0] = true;
+                            mController.hide(entry, DismissReason.CLOSE_BUTTON);
+                            mController.show(entry);
+                            return null;
+                        })
+                .when(mObserver)
+                .onWillShow(anyInt());
+
+        mController.show(entry);
+
+        // The nested show() created the presenter, so the outer one doesn't create another.
+        verify(mObserver, times(2)).onWillShow(AdaptiveUiContainer.BOTTOM_SHEET);
+        verify(mObserver).onDismissed(DismissReason.CLOSE_BUTTON);
+        verify(mBottomSheetController).requestShowContent(any(), anyBoolean());
+    }
+
+    @Test
+    public void testShowAgainAfterDismissalCreatesNewPresenter() {
         DeviceInfo.setIsDesktopForTesting(/* isDesktop= */ false);
         AdaptiveUiEntry entry = newEntry();
         mController.show(entry);

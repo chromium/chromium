@@ -184,14 +184,19 @@ final class AdaptiveUiSheetCoordinator
     public void hide(@DismissReason int reason, boolean animate) {
         if (mDestroyed) return;
         setDismissReason(reason);
-        boolean isCurrent = mBottomSheetController.getCurrentSheetContent() == this;
+        boolean wasCurrent = isCurrent();
         mBottomSheetController.hideContent(this, animate, toStateChangeReason(reason));
         // The BottomSheetController does not destroy content it removes from its queue, so a
         // queued sheet is destroyed here. A current sheet hidden without animation is destroyed by
         // the controller synchronously inside hideContent(); destroying it here as well is a no-op
         // and only makes onDismissed() timing explicit. In both cases the reason was latched above,
         // so it does not matter that this sheet's observer no longer sees the HIDDEN change.
-        if (!isCurrent || !animate) destroy();
+        if (!wasCurrent || !animate) destroy();
+    }
+
+    @Override
+    public boolean isCurrent() {
+        return mBottomSheetController.getCurrentSheetContent() == this;
     }
 
     /**
