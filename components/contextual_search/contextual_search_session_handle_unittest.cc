@@ -2887,6 +2887,25 @@ TEST_F(ContextualSearchSessionHandleTest,
       std::nullopt);
 }
 
+TEST_F(ContextualSearchSessionHandleTest,
+       StartTabContextUploadFlow_HandleDestroyedDuringStartFileUploadFlow) {
+  base::MockCallback<ContextualSearchSessionHandle::TabContextSubscriber>
+      callback;
+  auto subscription = handle_->SubscribeTabContext(callback.Get());
+  EXPECT_CALL(callback, Run(_)).Times(0);
+
+  base::UnguessableToken token = handle_->CreateContextToken();
+  EXPECT_CALL(*mock_controller_ptr_, StartFileUploadFlow(token, _, _))
+      .WillOnce([&](const base::UnguessableToken&,
+                    std::unique_ptr<lens::ContextualInputData>,
+                    std::optional<lens::ImageEncodingOptions>) {
+        mock_controller_ptr_ = nullptr;
+        handle_.reset();
+      });
+
+  handle_->StartTabContextUploadFlow(token, MakeTabInputData(20), std::nullopt);
+}
+
 // Tests that `DeleteFile` removes all tokens and the attached tab entry for a
 // tab when `kContextManagementInComposebox` and
 // `kContextManagementInComposeboxEnableTabDeselection` are enabled.
