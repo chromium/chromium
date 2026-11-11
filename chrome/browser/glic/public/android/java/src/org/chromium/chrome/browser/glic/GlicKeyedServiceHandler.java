@@ -64,26 +64,6 @@ public final class GlicKeyedServiceHandler {
     }
 
     /**
-     * Invokes the GLIC service with auto-submit prompt.
-     *
-     * @param profile The current profile.
-     * @param tab The {@link Tab} to target.
-     * @param text The text prompt to submit.
-     * @param invocationSource How the UI was triggered.
-     * @return true if the service was successfully invoked.
-     */
-    public static boolean invokeWithAutoSubmit(
-            Profile profile, Tab tab, String text, @GlicInvocationSource int invocationSource) {
-
-        GlicKeyedService service = GlicKeyedServiceFactory.getForProfile(profile);
-        if (service == null) {
-            return false;
-        }
-
-        return service.invokeWithAutoSubmit(tab, text, invocationSource);
-    }
-
-    /**
      * Invokes the GLIC service, opening the panel with the given tab as context and prepopulating
      * the prompt box.
      *
@@ -125,29 +105,6 @@ public final class GlicKeyedServiceHandler {
         }
 
         service.invoke(tab, invocationSource);
-        return true;
-    }
-
-    /**
-     * Invokes the GLIC service with a specific conversation ID.
-     *
-     * @param profile The current profile.
-     * @param tab The {@link Tab} to target, or null.
-     * @param glicConversationId The conversation ID to reconnect to.
-     * @param invocationSource How the UI was triggered.
-     * @return true if the service was successfully invoked.
-     */
-    public static boolean invokeWithConversation(
-            Profile profile,
-            @Nullable Tab tab,
-            String glicConversationId,
-            @GlicInvocationSource int invocationSource) {
-        GlicKeyedService service = GlicKeyedServiceFactory.getForProfile(profile);
-        if (service == null) {
-            return false;
-        }
-
-        service.invokeWithConversation(tab, glicConversationId, invocationSource);
         return true;
     }
 

@@ -143,17 +143,6 @@ public class GlicTaskMenuCoordinator {
     }
 
     /**
-     * Displays the task menu anchored to coordinate boundaries supplied by a RectProvider.
-     *
-     * @param rectProvider Coordinates defining the geometric anchor frame.
-     * @param rootView The root view hierarchy stack to inject the popup layer.
-     * @param tasks The collection of active actor tasks to list.
-     */
-    public void show(RectProvider rectProvider, View rootView, List<ActorTask> tasks) {
-        showInternal(rectProvider, rootView, buildModelList(tasks));
-    }
-
-    /**
      * Displays the task menu anchored to coordinate boundaries supplied by a RectProvider using
      * pre-computed row data.
      *
