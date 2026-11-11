@@ -13,12 +13,12 @@ import PRESUBMIT
 
 
 class CheckTestExpectationsTest(unittest.TestCase):
-
     def setUp(self):
         self.mock_input = MockInputApi()
         self.mock_output = MockOutputApi()
         self.mock_input.change.RepositoryRoot = lambda: os.path.join(
-            os.path.dirname(__file__), '..', '..')
+            os.path.dirname(__file__), '..', '..'
+        )
         self.mock_input.PresubmitLocalPath = lambda: os.path.dirname(__file__)
 
     def testValidExpectations(self):
@@ -34,7 +34,8 @@ class CheckTestExpectationsTest(unittest.TestCase):
             MockFile('ios/testing/test_expectations.txt', lines)
         ]
         results = PRESUBMIT.CheckTestExpectations(
-            self.mock_input, self.mock_output)
+            self.mock_input, self.mock_output
+        )
         self.assertEqual(len(results), 0)
 
     def testInvalidSyntaxMissingBug(self):
@@ -45,7 +46,8 @@ class CheckTestExpectationsTest(unittest.TestCase):
             MockFile('ios/testing/test_expectations.txt', lines)
         ]
         results = PRESUBMIT.CheckTestExpectations(
-            self.mock_input, self.mock_output)
+            self.mock_input, self.mock_output
+        )
         self.assertEqual(len(results), 1)
         self.assertEqual('error', results[0].type)
         self.assertIn('Missing or invalid bug field', results[0].message)
@@ -58,11 +60,13 @@ class CheckTestExpectationsTest(unittest.TestCase):
             MockFile('ios/testing/test_expectations.txt', lines)
         ]
         results = PRESUBMIT.CheckTestExpectations(
-            self.mock_input, self.mock_output)
+            self.mock_input, self.mock_output
+        )
         self.assertEqual(len(results), 1)
         self.assertEqual('error', results[0].type)
         self.assertIn(
-            'Line does not respect prescribed syntax', results[0].message)
+            'Line does not respect prescribed syntax', results[0].message
+        )
 
     def testInvalidExpectationWord(self):
         lines = [
@@ -72,7 +76,8 @@ class CheckTestExpectationsTest(unittest.TestCase):
             MockFile('ios/testing/test_expectations.txt', lines)
         ]
         results = PRESUBMIT.CheckTestExpectations(
-            self.mock_input, self.mock_output)
+            self.mock_input, self.mock_output
+        )
         self.assertEqual(len(results), 1)
         self.assertEqual('error', results[0].type)
         self.assertIn("Invalid expectation 'Bogus'", results[0].message)
@@ -87,7 +92,8 @@ class CheckTestExpectationsTest(unittest.TestCase):
             MockFile('ios/testing/test_expectations.txt', lines)
         ]
         results = PRESUBMIT.CheckTestExpectations(
-            self.mock_input, self.mock_output)
+            self.mock_input, self.mock_output
+        )
         self.assertEqual(len(results), 3)
         for res in results:
             self.assertEqual('error', res.type)
@@ -101,12 +107,56 @@ class CheckTestExpectationsTest(unittest.TestCase):
             MockFile('ios/testing/test_expectations.txt', lines)
         ]
         results = PRESUBMIT.CheckTestExpectations(
-            self.mock_input, self.mock_output)
+            self.mock_input, self.mock_output
+        )
         self.assertEqual(len(results), 1)
         self.assertEqual('error', results[0].type)
         self.assertIn(
             "Wildcards ('*') are not supported in test names",
-            results[0].message)
+            results[0].message,
+        )
+
+    def testValidCompatibleOtherTags(self):
+        """Tests that compatible "Other" tags are accepted."""
+        lines = [
+            'crbug.com/123 [ Chrome Simulator ] MyTestCase/testFoo [ Failure ]',
+            'crbug.com/234 [ Device Debug ] MyTestCase/testBar [ Skip ]',
+        ]
+        self.mock_input.files = [
+            MockFile('ios/testing/test_expectations.txt', lines)
+        ]
+        results = PRESUBMIT.CheckTestExpectations(
+            self.mock_input, self.mock_output
+        )
+        self.assertEqual(len(results), 0)
+
+    def testMutuallyExclusiveOtherTags(self):
+        """Tests that mutually exclusive "Other" tag pairs are rejected."""
+        lines = [
+            'crbug.com/123 [ Chrome Chromium ] MyTestCase/testFoo [ Failure ]',
+            'crbug.com/234 [ Simulator Device ] MyTestCase/testBar [ Failure ]',
+            'crbug.com/345 [ debug RELEASE ] MyTestCase/testBaz [ Failure ]',
+        ]
+        self.mock_input.files = [
+            MockFile('ios/testing/test_expectations.txt', lines)
+        ]
+        results = PRESUBMIT.CheckTestExpectations(
+            self.mock_input, self.mock_output
+        )
+        self.assertEqual(len(results), 3)
+        for res in results:
+            self.assertEqual('error', res.type)
+        self.assertIn(
+            "Mutually exclusive tags 'chrome' and 'chromium'",
+            results[0].message,
+        )
+        self.assertIn(
+            "Mutually exclusive tags 'simulator' and 'device'",
+            results[1].message,
+        )
+        self.assertIn(
+            "Mutually exclusive tags 'debug' and 'release'", results[2].message
+        )
 
 
 if __name__ == '__main__':
