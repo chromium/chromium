@@ -16,4 +16,5 @@ grit("resources") {
     "ash_boca_receiver_ui_resources.pak",
   ]
   output_dir = "$root_gen_dir/ash/webui"
+  public_deps = [ "//ui/base:webui_resource_path" ]
 }

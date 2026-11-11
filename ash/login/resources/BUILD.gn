@@ -27,4 +27,5 @@ grit("resources") {
     "login_resources_300_percent.pak",
   ]
   use_brotli = true
+  public_deps = [ "//ui/base:webui_resource_path" ]
 }

@@ -86,4 +86,5 @@ grit("file_manager_swa_resources") {
     "file_manager_swa_resources.pak",
   ]
   output_dir = target_gen_dir
+  public_deps = [ "//ui/base:webui_resource_path" ]
 }

@@ -118,6 +118,7 @@ grit("resources_grit") {
   ]
 
   deps = [ ":inputview" ]
+  public_deps = [ "//ui/base:webui_resource_path" ]
 }
 
 copy("resources") {
