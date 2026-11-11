@@ -271,7 +271,7 @@
         errorLine1="    &lt;application />"
         errorLine2="    ~~~~~~~~~~~~~~~">
         <location
-            file="gen/chrome/android/chrome_public_apk__lint/android_lint_cache/aars/lottie.aar/AndroidManifest.xml"
+            file="obj/third_party/android_deps/com_airbnb_android_lottie_java/AndroidManifest.xml"
             line="7"
             column="5"/>
     </issue>

@@ -7,7 +7,7 @@
         errorLine1="    &lt;application>"
         errorLine2="     ~~~~~~~~~~~">
         <location
-            file="gen/chromecast/cast_browser_apk__lint/android_lint_cache/aars/play-services-base.aar/AndroidManifest.xml"
+            file="obj/third_party/android_deps/google_play_services_base_java/AndroidManifest.xml"
             line="19"
             column="6"/>
     </issue>

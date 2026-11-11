@@ -1203,6 +1203,7 @@ if (enable_java_templates) {
         # same invocation for checks like UnusedResources.
         "--sources=@FileArg($_rebased_lint_json:sources)",
         "--aars=@FileArg($_rebased_lint_json:aars)",
+        "--aar-dirs=@FileArg($_rebased_lint_json:aar_dirs)",
         "--srcjars=@FileArg($_rebased_lint_json:srcjars)",
         "--resource-sources=@FileArg($_rebased_lint_json:resource_sources)",
         "--resource-zips=@FileArg($_rebased_lint_json:resource_zips)",

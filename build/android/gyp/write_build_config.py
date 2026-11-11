@@ -628,7 +628,7 @@ def _ToTraceEventRewrittenPath(jar_dir, path):
 
 def _CreateLintConfig(params, javac_config, manifest_config):
     # Collect all sources and resources at the apk/bundle_module level.
-    aars = set()
+    aars = {}
     srcjars = set()
     sources = set()
     resource_sources = set()
@@ -645,7 +645,9 @@ def _CreateLintConfig(params, javac_config, manifest_config):
             if paths := c.get('bundled_srcjars'):
                 srcjars.update(paths)
         if path := c.get('aar_path'):
-            aars.add(path)
+            # android_aar_prebuilt() unpacks the .aar into the directory that
+            # holds classes.jar. Passing it lets lint skip unzipping every .aar.
+            aars[path] = os.path.dirname(c['unprocessed_jar_path'])
 
     for c in params.resource_deps():
         if c.get('chromium_code', True):
@@ -681,6 +683,7 @@ def _CreateLintConfig(params, javac_config, manifest_config):
 
     config = {}
     config['aars'] = sorted(aars)
+    config['aar_dirs'] = [aars[a] for a in config['aars']]
     config['android_manifests'] = manifests
     config['classpath'] = classpath
     config['sources'] = sorted(sources)

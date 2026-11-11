@@ -83,6 +83,7 @@ def _GenerateProjectFile(
     aars=None,
     android_sdk_version=None,
     baseline_path=None,
+    aar_dirs=None,
 ):
     project = ElementTree.Element('project')
     root = ElementTree.SubElement(project, 'root')
@@ -138,10 +139,14 @@ def _GenerateProjectFile(
             resource = ElementTree.SubElement(main_module, 'resource')
             resource.set('file', resource_file)
     if aars:
+        aar_dirs = aar_dirs or {}
         aars = sorted(set(aars))  # Ensure these are unique.
         for aar in aars:
             lint = ElementTree.SubElement(main_module, 'aar')
             lint.set('file', aar)
+            if aar_dir := aar_dirs.get(aar):
+                # Already unpacked by the build, so lint need not unzip it.
+                lint.set('extracted', os.path.abspath(aar_dir))
     return project
 
 
@@ -219,6 +224,7 @@ def _RunLint(
     manifest_path,
     warnings_as_errors=False,
     native_lint_path=None,
+    aar_dirs=None,
 ):
     logging.info('Lint starting')
     if not cache_dir:
@@ -334,6 +340,7 @@ def _RunLint(
         aars,
         android_sdk_version,
         baseline,
+        aar_dirs=aar_dirs,
     )
 
     project_xml_path = os.path.join(lint_gen_dir, 'project.xml')
@@ -464,6 +471,11 @@ def _ParseArgs(argv):
         help='A list of files containing java and kotlin source files.',
     )
     parser.add_argument('--aars', help='GN list of included aars.')
+    parser.add_argument(
+        '--aar-dirs',
+        help='GN list of directories that the --aars are unpacked into, in '
+        'the same order as --aars.',
+    )
     parser.add_argument('--srcjars', help='GN list of included srcjars.')
     parser.add_argument(
         '--manifest', help='Path to the merged AndroidManifest.xml.'
@@ -493,6 +505,9 @@ def _ParseArgs(argv):
     args = parser.parse_args(build_utils.ExpandFileArgs(argv))
     args.sources = action_helpers.parse_gn_list(args.sources)
     args.aars = action_helpers.parse_gn_list(args.aars)
+    args.aar_dirs = action_helpers.parse_gn_list(args.aar_dirs)
+    if args.aar_dirs:
+        assert len(args.aar_dirs) == len(args.aars), 'Need one dir per aar.'
     args.srcjars = action_helpers.parse_gn_list(args.srcjars)
     args.resource_sources = action_helpers.parse_gn_list(args.resource_sources)
     args.resource_zips = action_helpers.parse_gn_list(args.resource_zips)
@@ -562,6 +577,7 @@ def main():
         args.manifest,
         warnings_as_errors=args.warnings_as_errors,
         native_lint_path=args.native_lint_path,
+        aar_dirs=dict(zip(args.aars, args.aar_dirs)),
     )
     logging.info('Creating stamp file')
     server_utils.MaybeTouch(args.stamp)
