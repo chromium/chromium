@@ -1307,7 +1307,9 @@ class WriteIconsJob {
                  "web_app_icon_manager::WriteIconsJob::EncodeAndWriteIcon");
     CHECK_NE(bitmap.colorType(), kUnknown_SkColorType,
              base::NotFatalUntil::M162);
-    CHECK_EQ(bitmap.width(), bitmap.height(), base::NotFatalUntil::M162);
+    // TODO(crbug.com/580255013): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK_EQ(bitmap.width(), bitmap.height());
     base::FilePath icon_file =
         icons_dir.AppendASCII(base::StringPrintf("%i.png", bitmap.width()));
 
