@@ -246,6 +246,13 @@ class WaylandFrameManager {
   // frame must not be used for the further submission.
   bool EnsureWlBuffersExist(WaylandFrame& frame);
 
+  // Verifies the image descriptions (color space and HDR metadata) of the
+  // given |frame|'s surfaces exist, so they are set in the same commit as the
+  // buffers. Otherwise, starts creating them, arranges for
+  // |MaybeProcessPendingFrame| to be called once they are created and returns
+  // true.
+  bool EnsureImageDescriptionsExist(WaylandFrame& frame);
+
   // Immediately clears submitted_buffers in the 1st in-flight submitted_frame.
   // This unblocks the pipeline.
   // TODO(crbug.com/40237160): Remove related workaround once CrOS side fix

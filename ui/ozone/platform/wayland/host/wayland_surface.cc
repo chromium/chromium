@@ -85,6 +85,19 @@ uint32_t TranslatePriority(gfx::OverlayPriorityHint priority_hint) {
   return priority;
 }
 
+// Returns `color_space`, or Rec709 if it is invalid and the content is video.
+gfx::ColorSpace GetColorSpaceWithVideoDefault(
+    const gfx::ColorSpace& color_space,
+    bool contains_video) {
+  if (color_space.IsValid() || !contains_video) {
+    return color_space;
+  }
+  // Not all video content contains colorspace information.
+  // In this case, default to Rec709.
+  // Maybe use Rec601 for SD video if it becomes an issue.
+  return gfx::ColorSpace::CreateREC709();
+}
+
 }  // namespace
 
 WaylandSurface::WaylandSurface(WaylandConnection* connection,
@@ -947,15 +960,28 @@ void WaylandSurface::RemoveEnteredOutput(uint32_t output_id) {
 
 void WaylandSurface::SetImageDescription(const gfx::ColorSpace& color_space,
                                          const gfx::HDRMetadata& hdr_metadata) {
-  if (color_space.IsValid() || !pending_state_.contains_video) {
-    pending_state_.color_space = color_space;
-  } else {
-    // Not all video content contains colorspace information.
-    // In this case, default to Rec709.
-    // Maybe use Rec601 for SD video if it becomes an issue.
-    pending_state_.color_space = gfx::ColorSpace::CreateREC709();
-  }
+  pending_state_.color_space =
+      GetColorSpaceWithVideoDefault(color_space, pending_state_.contains_video);
   pending_state_.hdr_metadata = hdr_metadata;
+}
+
+bool WaylandSurface::EnsureImageDescription(
+    const gfx::ColorSpace& color_space,
+    const gfx::HDRMetadata& hdr_metadata,
+    bool contains_video,
+    base::OnceClosure on_ready) {
+  if (!wp_color_management_surface_) {
+    return true;
+  }
+  const gfx::ColorSpace surface_color_space =
+      GetColorSpaceWithVideoDefault(color_space, contains_video);
+  // ApplyPendingState() only sets the image description when it changes.
+  if (surface_color_space == state_.color_space &&
+      hdr_metadata == state_.hdr_metadata) {
+    return true;
+  }
+  return wp_color_management_surface_->EnsureImageDescription(
+      surface_color_space, hdr_metadata, std::move(on_ready));
 }
 
 }  // namespace ui

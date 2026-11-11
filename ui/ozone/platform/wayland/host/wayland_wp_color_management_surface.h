@@ -8,7 +8,10 @@
 #include <color-management-v1-client-protocol.h>
 
 #include <cstdint>
+#include <optional>
+#include <utility>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -42,7 +45,17 @@ class WaylandWpColorManagementSurface : public WaylandWpColorManager::Observer {
   void SetColorSpace(const gfx::ColorSpace& color_space,
                      const gfx::HDRMetadata& hdr_metadata);
 
+  // Image descriptions are created asynchronously. Returns true if
+  // SetColorSpace() with these arguments would set the image description
+  // synchronously, so that it is latched by the next surface commit. Otherwise
+  // starts creating the description, returns false and runs `on_ready` once
+  // it's created (or failed to be created).
+  bool EnsureImageDescription(const gfx::ColorSpace& color_space,
+                              const gfx::HDRMetadata& hdr_metadata,
+                              base::OnceClosure on_ready);
+
  private:
+  using ImageDescriptionKey = std::pair<gfx::ColorSpace, gfx::HDRMetadata>;
   // wp_color_management_surface_feedback_v1_listener
   static void OnPreferredChanged(
       void* data,
@@ -58,6 +71,16 @@ class WaylandWpColorManagementSurface : public WaylandWpColorManager::Observer {
       uint64_t sequence,
       scoped_refptr<WaylandWpImageDescription> image_description);
 
+  // Returns the color space to describe buffers in `color_space` with.
+  gfx::ColorSpace GetEffectiveColorSpace(
+      const gfx::ColorSpace& color_space) const;
+
+  static void OnImageDescriptionEnsured(
+      base::WeakPtr<WaylandWpColorManagementSurface> self,
+      ImageDescriptionKey key,
+      base::OnceClosure on_ready,
+      scoped_refptr<WaylandWpImageDescription> image_description);
+
   void OnImageDescription(
       scoped_refptr<WaylandWpImageDescription> image_description);
 
@@ -68,6 +91,10 @@ class WaylandWpColorManagementSurface : public WaylandWpColorManager::Observer {
 
   const raw_ptr<WaylandSurface> wayland_surface_;
   const raw_ptr<WaylandConnection> connection_;
+  // Never null: surfaces are only created when the compositor supports the
+  // protocol, and the color manager outlives them (see
+  // OnColorManagerDestroyed()).
+  const raw_ptr<WaylandWpColorManager> color_manager_;
   wl::Object<wp_color_management_surface_v1> management_surface_;
   wl::Object<wp_color_management_surface_feedback_v1> feedback_surface_;
 
@@ -77,6 +104,10 @@ class WaylandWpColorManagementSurface : public WaylandWpColorManager::Observer {
   gfx::HDRMetadata hdr_metadata_;
   uint64_t color_space_sequence_ = 0;
   bool srgb_is_gamma22_ = false;
+
+  // The last description that failed to be created in
+  // EnsureImageDescription(), which is not waited for again.
+  std::optional<ImageDescriptionKey> failed_image_description_;
 
   base::ScopedObservation<WaylandWpColorManager,
                           WaylandWpColorManager::Observer>

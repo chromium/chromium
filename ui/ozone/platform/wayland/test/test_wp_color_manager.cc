@@ -67,17 +67,25 @@ constexpr struct wp_image_description_v1_interface kImageDescriptionImpl = {
     .get_information = ImageDescriptionGetInformation,
 };
 
-// Creates an image description resource and sends `ready`.
+// Creates an image description resource and sends `ready`, or `failed` if
+// `fail` is true.
 void CreateImageDescription(wl_client* client,
                             wl_resource* parent,
                             uint32_t id,
                             TestWpColorManager* manager,
-                            std::optional<TestImageDescriptionParams> params) {
+                            std::optional<TestImageDescriptionParams> params,
+                            bool fail = false) {
   wl_resource* description = CreateResourceWithImpl<TestImageDescription>(
       client, &wp_image_description_v1_interface,
       wl_resource_get_version(parent), &kImageDescriptionImpl, id,
       base::DoNothing(), manager, std::move(params));
   if (!description) {
+    return;
+  }
+  if (fail) {
+    wp_image_description_v1_send_failed(
+        description, WP_IMAGE_DESCRIPTION_V1_CAUSE_UNSUPPORTED,
+        "parametric image descriptions fail in this test");
     return;
   }
   wp_image_description_v1_send_ready(description, manager->NextIdentity());
@@ -129,7 +137,8 @@ void CreatorCreate(wl_client* client, wl_resource* resource, uint32_t id) {
     return;
   }
   manager->OnDescriptionCreated(params);
-  CreateImageDescription(client, resource, id, manager, params);
+  CreateImageDescription(client, resource, id, manager, params,
+                         manager->fail_parametric_descriptions());
   // `create` is a destructor request.
   wl_resource_destroy(resource);
 }

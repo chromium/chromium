@@ -9,6 +9,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/lru_cache.h"
@@ -55,7 +56,12 @@ class WaylandWpColorManager
   WaylandWpColorManager& operator=(const WaylandWpColorManager&) = delete;
   ~WaylandWpColorManager();
 
-  void GetImageDescription(
+  // Gets the image description for `color_space` and `hdr_metadata`. If it is
+  // available synchronously (cached, or failed to be created), returns it, or
+  // null on failure, and drops `callback`. Otherwise returns std::nullopt and
+  // runs `callback` once the compositor has created the description (or
+  // failed to).
+  std::optional<scoped_refptr<WaylandWpImageDescription>> GetImageDescription(
       const gfx::ColorSpace& color_space,
       const gfx::HDRMetadata& hdr_metadata,
       WaylandWpImageDescription::CreationCallback callback);

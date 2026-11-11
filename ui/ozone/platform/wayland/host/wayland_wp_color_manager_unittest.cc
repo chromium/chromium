@@ -9,6 +9,7 @@
 #include <array>
 #include <cstdint>
 #include <optional>
+#include <utility>
 
 #include "base/test/bind.h"
 #include "skia/ext/skcolorspace_primaries.h"
@@ -64,12 +65,15 @@ class WaylandWpColorManagerTest : public WaylandTestSimple {
       const gfx::ColorSpace& color_space,
       const gfx::HDRMetadata& hdr_metadata) {
     bool created = false;
-    connection_->wp_color_manager()->GetImageDescription(
+    auto result = connection_->wp_color_manager()->GetImageDescription(
         color_space, hdr_metadata,
         base::BindLambdaForTesting(
             [&](scoped_refptr<WaylandWpImageDescription> description) {
               created = !!description;
             }));
+    if (result) {
+      created = !!*result;
+    }
     SyncDisplay();
     EXPECT_TRUE(created);
 
@@ -499,6 +503,63 @@ TEST_F(WaylandWpColorManagerTest, PreferredChangedUpdatesSrgbSurfaceTransfer) {
   });
   ASSERT_TRUE(params);
   EXPECT_EQ(params->tf_named, WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_SRGB);
+}
+
+namespace {
+
+// Returns the primary plane's PQ color space and metadata for SDR content at
+// `sdr_white` nits, as viz describes it on HDR displays.
+std::pair<gfx::ColorSpace, gfx::HDRMetadata> PrimaryPlanePQ(float sdr_white) {
+  const gfx::ColorSpace color_space =
+      gfx::ColorSpace::CreateHDR10().GetWithSdrWhiteLevel(sdr_white);
+  return {color_space, gfx::HDRMetadata(
+                           skhdr::MasteringDisplayColorVolume{
+                               .fDisplayPrimaries = color_space.GetPrimaries(),
+                               .fMaximumDisplayMasteringLuminance = sdr_white,
+                               .fMinimumDisplayMasteringLuminance = 0.f,
+                           },
+                           skhdr::ContentLightLevelInformation{
+                               .fMaxCLL = sdr_white, .fMaxFALL = sdr_white})};
+}
+
+}  // namespace
+
+// When the SDR white level changes (e.g. the user changes the brightness of an
+// HDR display) and changes back before the new image description is ready,
+// the stale description must not replace the current one once it becomes
+// ready. Otherwise the buffers are described with the wrong reference
+// luminance and look dimmer or brighter (https://crbug.com/471769943).
+TEST_F(WaylandWpColorManagerTest, StaleImageDescriptionDoesNotOverrideLatest) {
+  const auto [cs_203, md_203] = PrimaryPlanePQ(203.f);
+  const auto [cs_150, md_150] = PrimaryPlanePQ(150.f);
+
+  auto params = SetRootSurfaceImageDescription(cs_203, md_203);
+  ASSERT_TRUE(params);
+  ASSERT_TRUE(params->luminances);
+  EXPECT_EQ(params->luminances->reference, 203u);
+
+  WaylandSurface* surface = window_->root_surface();
+  // The description for 150 nits must be created asynchronously.
+  surface->SetImageDescription(cs_150, md_150);
+  surface->ApplyPendingState();
+  surface->Commit();
+  // The description for 203 nits is cached and is set immediately.
+  surface->SetImageDescription(cs_203, md_203);
+  surface->ApplyPendingState();
+  surface->Commit();
+  SyncDisplay();
+  SyncDisplay();
+
+  const uint32_t surface_id = surface->get_surface_id();
+  PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
+    auto* mock_surface = server->GetObject<wl::MockSurface>(surface_id);
+    ASSERT_TRUE(mock_surface);
+    params = server->wp_color_manager()->GetSurfaceImageDescription(
+        mock_surface->resource());
+  });
+  ASSERT_TRUE(params);
+  ASSERT_TRUE(params->luminances);
+  EXPECT_EQ(params->luminances->reference, 203u);
 }
 
 class WaylandWpColorManagerNoSrgbTest : public WaylandWpColorManagerTest {

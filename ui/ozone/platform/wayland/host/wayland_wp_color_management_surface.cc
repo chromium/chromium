@@ -4,6 +4,8 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_wp_color_management_surface.h"
 
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -26,10 +28,12 @@ WaylandWpColorManagementSurface::WaylandWpColorManagementSurface(
     wl::Object<wp_color_management_surface_feedback_v1> feedback_surface)
     : wayland_surface_(wayland_surface),
       connection_(connection),
+      color_manager_(connection->wp_color_manager()),
       management_surface_(std::move(management_surface)),
       feedback_surface_(std::move(feedback_surface)) {
   CHECK(wayland_surface_, base::NotFatalUntil::M163);
   CHECK(connection_, base::NotFatalUntil::M163);
+  CHECK(color_manager_);
   CHECK(management_surface_, base::NotFatalUntil::M163);
   if (feedback_surface_) {
     static constexpr wp_color_management_surface_feedback_v1_listener
@@ -43,7 +47,7 @@ WaylandWpColorManagementSurface::WaylandWpColorManagementSurface(
     // a description to work with regardless of compositor behavior.
     FetchPreferredImageDescription();
   }
-  color_manager_observation_.Observe(connection_->wp_color_manager());
+  color_manager_observation_.Observe(color_manager_);
 }
 
 WaylandWpColorManagementSurface::~WaylandWpColorManagementSurface() = default;
@@ -60,24 +64,66 @@ void WaylandWpColorManagementSurface::SetColorSpace(
     return;
   }
 
-  auto* color_manager = connection_->wp_color_manager();
-  CHECK(color_manager, base::NotFatalUntil::M163);
+  if (auto image_description = color_manager_->GetImageDescription(
+          GetEffectiveColorSpace(color_space), hdr_metadata,
+          base::BindOnce(&WaylandWpColorManagementSurface::OnSetColorSpace,
+                         weak_factory_.GetWeakPtr(), sequence))) {
+    OnSetColorSpace(sequence, std::move(*image_description));
+  }
+}
 
-  gfx::ColorSpace effective_color_space = color_space;
+bool WaylandWpColorManagementSurface::EnsureImageDescription(
+    const gfx::ColorSpace& color_space,
+    const gfx::HDRMetadata& hdr_metadata,
+    base::OnceClosure on_ready) {
+  if (!color_space.IsValid()) {
+    return true;
+  }
+  ImageDescriptionKey key = {GetEffectiveColorSpace(color_space), hdr_metadata};
+  if (failed_image_description_ == key) {
+    return true;
+  }
+  auto image_description = color_manager_->GetImageDescription(
+      key.first, key.second,
+      base::BindOnce(
+          &WaylandWpColorManagementSurface::OnImageDescriptionEnsured,
+          weak_factory_.GetWeakPtr(), key, std::move(on_ready)));
+  if (!image_description) {
+    return false;
+  }
+  if (!*image_description) {
+    failed_image_description_ = std::move(key);
+  }
+  return true;
+}
+
+gfx::ColorSpace WaylandWpColorManagementSurface::GetEffectiveColorSpace(
+    const gfx::ColorSpace& color_space) const {
   if (srgb_is_gamma22_ &&
       color_space.GetTransferID() == gfx::ColorSpace::TransferID::SRGB &&
-      (color_manager->IsSupportedTransferFunction(
+      (color_manager_->IsSupportedTransferFunction(
            WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_GAMMA22) ||
-       color_manager->IsSupportedFeature(
+       color_manager_->IsSupportedFeature(
            WP_COLOR_MANAGER_V1_FEATURE_SET_TF_POWER))) {
-    effective_color_space = color_space.GetWithTransferFunction(
+    return color_space.GetWithTransferFunction(
         gfx::ColorSpace::TransferID::GAMMA22);
   }
+  return color_space;
+}
 
-  color_manager->GetImageDescription(
-      effective_color_space, hdr_metadata,
-      base::BindOnce(&WaylandWpColorManagementSurface::OnSetColorSpace,
-                     weak_factory_.GetWeakPtr(), sequence));
+// static
+void WaylandWpColorManagementSurface::OnImageDescriptionEnsured(
+    base::WeakPtr<WaylandWpColorManagementSurface> self,
+    ImageDescriptionKey key,
+    base::OnceClosure on_ready,
+    scoped_refptr<WaylandWpImageDescription> image_description) {
+  // `on_ready` must run even if this surface is gone, so the caller doesn't
+  // wait forever.
+  if (self && !image_description) {
+    // Don't hold frames for a description that can't be created.
+    self->failed_image_description_ = std::move(key);
+  }
+  std::move(on_ready).Run();
 }
 
 void WaylandWpColorManagementSurface::OnSetColorSpace(
@@ -91,10 +137,9 @@ void WaylandWpColorManagementSurface::OnSetColorSpace(
     return;
   }
 
-  auto* color_manager = connection_->wp_color_manager();
   wp_color_manager_v1_render_intent render_intent;
   // The protocol mandates that perceptual is always supported.
-  CHECK(color_manager->IsSupportedRenderIntent(
+  CHECK(color_manager_->IsSupportedRenderIntent(
       WP_COLOR_MANAGER_V1_RENDER_INTENT_PERCEPTUAL));
   render_intent = WP_COLOR_MANAGER_V1_RENDER_INTENT_PERCEPTUAL;
   wp_color_management_surface_v1_set_image_description(
@@ -122,7 +167,7 @@ void WaylandWpColorManagementSurface::OnImageDescription(
       SetColorSpace(color_space_, hdr_metadata_);
     }
   }
-  OnHdrEnabledChanged(connection_->wp_color_manager()->hdr_enabled());
+  OnHdrEnabledChanged(color_manager_->hdr_enabled());
 }
 
 // static

@@ -5,18 +5,27 @@
 #include "ui/ozone/platform/wayland/host/wayland_frame_manager.h"
 
 #include <memory>
+#include <optional>
+#include <vector>
 
 #include "base/files/file_util.h"
+#include "skia/ext/skcolorspace_primaries.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/color_space.h"
+#include "ui/gfx/hdr_metadata.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_buffer_manager_gpu.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_wp_color_manager.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/scoped_wl_array.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
+#include "ui/ozone/platform/wayland/test/test_wp_color_manager.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
 
 using ::testing::_;
+using ::testing::ElementsAre;
 using ::testing::Mock;
 
 namespace ui {
@@ -41,6 +50,10 @@ constexpr gfx::Size kBufferSize = {1024, 768};
 
 class WaylandFrameManagerTest : public WaylandTestSimple {
  public:
+  WaylandFrameManagerTest() = default;
+  explicit WaylandFrameManagerTest(wl::ServerConfig config)
+      : WaylandTestSimple(config) {}
+
   void SetUp() override {
     WaylandTestSimple::SetUp();
     frame_manager_ =
@@ -70,7 +83,9 @@ class WaylandFrameManagerTest : public WaylandTestSimple {
 
   // Records a frame. If `requires_acks` is true, the frame waits for
   // submission and presentation acks like the frames from the GPU process.
-  void RecordFrame(bool requires_acks = false) {
+  void RecordFrame(bool requires_acks = false,
+                   std::optional<gfx::ColorSpace> color_space = std::nullopt,
+                   const gfx::HDRMetadata& hdr_metadata = gfx::HDRMetadata()) {
     buffer_manager_gpu_->CreateShmBasedBuffer(MakeFD(), kLength, kBufferSize,
                                               buffer_id_);
     base::RunLoop().RunUntilIdle();
@@ -78,6 +93,8 @@ class WaylandFrameManagerTest : public WaylandTestSimple {
     wl::WaylandOverlayConfig config;
     config.buffer_id = buffer_id_;
     config.bounds_rect = {0, 0, kWidth, kHeight};
+    config.color_space = std::move(color_space);
+    config.hdr_metadata = hdr_metadata;
     auto* surface = window_->root_surface();
     std::unique_ptr<WaylandFrame> frame =
         requires_acks
@@ -443,6 +460,147 @@ TEST_F(WaylandFrameManagerTest, TooManySubmittedFramesAfterHide) {
       presentation->DropPresentationCallback();
     }
   });
+}
+
+class WaylandFrameManagerColorManagementTest : public WaylandFrameManagerTest {
+ public:
+  WaylandFrameManagerColorManagementTest()
+      : WaylandFrameManagerTest({.supports_color_management = true}) {}
+
+  void SetUp() override {
+    WaylandFrameManagerTest::SetUp();
+    ASSERT_TRUE(connection_->wp_color_manager());
+    ASSERT_TRUE(connection_->wp_color_manager()->ready());
+    // Record the reference luminance of the image description in effect after
+    // each commit of the root surface.
+    PostToServerAndWait([this, id = window_->root_surface()->get_surface_id()](
+                            wl::TestWaylandServerThread* server) {
+      auto* mock_surface = server->GetObject<wl::MockSurface>(id);
+      ASSERT_TRUE(mock_surface);
+      ON_CALL(*mock_surface, Commit())
+          .WillByDefault([this, server, mock_surface]() {
+            auto params =
+                server->wp_color_manager()->GetSurfaceImageDescription(
+                    mock_surface->resource());
+            committed_reference_luminances_.push_back(
+                params && params->luminances ? params->luminances->reference
+                                             : 0u);
+          });
+    });
+  }
+
+ protected:
+  // Records a frame whose root surface buffer holds SDR content composited
+  // into PQ with SDR white at `sdr_white` nits, as viz does on HDR displays.
+  void RecordPQFrame(float sdr_white) {
+    RecordFrame(/*requires_acks=*/false,
+                gfx::ColorSpace::CreateHDR10().GetWithSdrWhiteLevel(sdr_white),
+                gfx::HDRMetadata(
+                    skhdr::MasteringDisplayColorVolume{
+                        .fDisplayPrimaries = SkNamedPrimaries::kRec2020,
+                        .fMaximumDisplayMasteringLuminance = sdr_white,
+                        .fMinimumDisplayMasteringLuminance = 0.f,
+                    },
+                    skhdr::ContentLightLevelInformation{
+                        .fMaxCLL = sdr_white, .fMaxFALL = sdr_white}));
+  }
+
+  std::vector<uint32_t> CommittedReferenceLuminances() {
+    std::vector<uint32_t> result;
+    PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
+      result = committed_reference_luminances_;
+    });
+    return result;
+  }
+
+ private:
+  // Only accessed on the server thread.
+  std::vector<uint32_t> committed_reference_luminances_;
+};
+
+// A frame whose image description isn't created yet must be held until it is,
+// so the description is latched by the same commit as the frame's buffer.
+// Otherwise, when the SDR white level changes (e.g. the user changes the
+// brightness of an HDR display), the first buffer rendered for the new white
+// level is described with the old one, and stays that way for static content
+// (https://crbug.com/471769943).
+TEST_F(WaylandFrameManagerColorManagementTest, FrameWaitsForImageDescription) {
+  InitBufferManager();
+
+  RecordPQFrame(203.f);
+  // The image description must become ready before the frame is played back.
+  EXPECT_EQ(1u, NumPendingFrames());
+  EXPECT_EQ(0u, NumSubmittedFrames());
+  SyncDisplay();
+  EXPECT_EQ(0u, NumPendingFrames());
+  EXPECT_EQ(1u, NumSubmittedFrames());
+  EXPECT_THAT(CommittedReferenceLuminances(), ElementsAre(203u));
+
+  // A new SDR white level needs a new image description.
+  SendFrameCallback();
+  RecordPQFrame(150.f);
+  EXPECT_EQ(1u, NumPendingFrames());
+  SyncDisplay();
+  EXPECT_EQ(0u, NumPendingFrames());
+  EXPECT_THAT(CommittedReferenceLuminances(), ElementsAre(203u, 150u));
+
+  // Going back to a cached image description doesn't wait.
+  SendFrameCallback();
+  RecordPQFrame(203.f);
+  EXPECT_EQ(0u, NumPendingFrames());
+  EXPECT_THAT(CommittedReferenceLuminances(), ElementsAre(203u, 150u, 203u));
+
+  // Neither does a frame with an unchanged image description.
+  SendFrameCallback();
+  RecordPQFrame(203.f);
+  EXPECT_EQ(0u, NumPendingFrames());
+}
+
+// A frame whose image description fails to be created is played back once the
+// compositor sends `failed`, and later frames don't wait for that description
+// again.
+TEST_F(WaylandFrameManagerColorManagementTest,
+       FrameDoesNotWaitForFailedImageDescription) {
+  InitBufferManager();
+
+  RecordPQFrame(203.f);
+  SyncDisplay();
+  EXPECT_EQ(1u, NumSubmittedFrames());
+  EXPECT_THAT(CommittedReferenceLuminances(), ElementsAre(203u));
+
+  size_t num_created_descriptions = 0;
+  PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
+    server->wp_color_manager()->set_fail_parametric_descriptions(true);
+    num_created_descriptions =
+        server->wp_color_manager()->created_descriptions().size();
+  });
+
+  SendFrameCallback();
+  RecordPQFrame(150.f);
+  EXPECT_EQ(1u, NumPendingFrames());
+  // On `failed`, the frame is played back. Committing it requests the same
+  // description again from within the callbacks of the failed request.
+  SyncDisplay();
+  EXPECT_EQ(0u, NumPendingFrames());
+  EXPECT_EQ(2u, NumSubmittedFrames());
+  // Let the second request fail too.
+  SyncDisplay();
+  PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
+    EXPECT_EQ(num_created_descriptions + 2,
+              server->wp_color_manager()->created_descriptions().size());
+  });
+  // The previous description stays in effect.
+  EXPECT_THAT(CommittedReferenceLuminances(), ElementsAre(203u, 203u));
+
+  // Switching to the cached description and back to the failed one doesn't
+  // wait.
+  SendFrameCallback();
+  RecordPQFrame(203.f);
+  EXPECT_EQ(0u, NumPendingFrames());
+  SendFrameCallback();
+  RecordPQFrame(150.f);
+  EXPECT_EQ(0u, NumPendingFrames());
+  EXPECT_EQ(4u, NumSubmittedFrames());
 }
 
 }  // namespace ui

@@ -156,7 +156,8 @@ WaylandWpColorManager::~WaylandWpColorManager() {
   }
 }
 
-void WaylandWpColorManager::GetImageDescription(
+std::optional<scoped_refptr<WaylandWpImageDescription>>
+WaylandWpColorManager::GetImageDescription(
     const gfx::ColorSpace& color_space,
     const gfx::HDRMetadata& hdr_metadata,
     WaylandWpImageDescription::CreationCallback callback) {
@@ -164,27 +165,18 @@ void WaylandWpColorManager::GetImageDescription(
 
   if (auto it = image_description_cache_.Get(key);
       it != image_description_cache_.end()) {
-    std::move(callback).Run(it->second);
-    return;
+    return it->second;
   }
 
-  pending_callbacks_[key].push_back(std::move(callback));
-  // Return early if there's already a pending creation for this key.
-  if (pending_callbacks_[key].size() > 1) {
-    return;
+  // Wait for the pending creation for this key, if there is one.
+  if (auto it = pending_callbacks_.find(key); it != pending_callbacks_.end()) {
+    it->second.push_back(std::move(callback));
+    return std::nullopt;
   }
-
-  auto cleanup = [&]() {
-    for (auto& cb : pending_callbacks_[key]) {
-      std::move(cb).Run(nullptr);
-    }
-    pending_callbacks_.erase(key);
-  };
 
   if (!IsSupportedFeature(WP_COLOR_MANAGER_V1_FEATURE_PARAMETRIC)) {
     LOG(ERROR) << "Server does not support parametric color descriptions.";
-    cleanup();
-    return;
+    return nullptr;
   }
 
   // Create a new image description.
@@ -192,28 +184,27 @@ void WaylandWpColorManager::GetImageDescription(
       wp_color_manager_v1_create_parametric_creator(manager_.get()));
   if (!creator) {
     LOG(ERROR) << "Failed to create wp_image_description_creator_params_v1";
-    cleanup();
-    return;
+    return nullptr;
   }
   if (!PopulateDescriptionCreator(creator.get(), color_space, hdr_metadata)) {
     LOG(ERROR) << "Failed to populate image description for color space "
                << color_space.ToString();
-    cleanup();
-    return;
+    return nullptr;
   }
 
   auto image_description_object = wl::Object<wp_image_description_v1>(
       wp_image_description_creator_params_v1_create(creator.release()));
   if (!image_description_object) {
     LOG(ERROR) << "Failed to create wp_image_description_v1";
-    cleanup();
-    return;
+    return nullptr;
   }
 
+  pending_callbacks_[key].push_back(std::move(callback));
   pending_creations_[key] = base::MakeRefCounted<WaylandWpImageDescription>(
       std::move(image_description_object), connection_, color_space,
       base::BindOnce(&WaylandWpColorManager::OnImageDescriptionCreated,
                      weak_factory_.GetWeakPtr(), color_space, hdr_metadata));
+  return std::nullopt;
 }
 
 void WaylandWpColorManager::OnImageDescriptionCreated(
@@ -231,10 +222,13 @@ void WaylandWpColorManager::OnImageDescriptionCreated(
 
   auto callback_it = pending_callbacks_.find(key);
   CHECK(callback_it != pending_callbacks_.end());
-  for (auto& cb : callback_it->second) {
+  // The callbacks may request the same description again, so remove them
+  // before running them.
+  auto callbacks = std::move(callback_it->second);
+  pending_callbacks_.erase(callback_it);
+  for (auto& cb : callbacks) {
     std::move(cb).Run(image_description);
   }
-  pending_callbacks_.erase(callback_it);
 }
 
 bool WaylandWpColorManager::PopulateDescriptionCreator(

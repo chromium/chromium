@@ -80,6 +80,15 @@ class TestWpColorManager : public GlobalObject {
   void set_display_tf_named(uint32_t tf) { display_tf_named_ = tf; }
   uint32_t display_tf_named() const { return display_tf_named_; }
 
+  // Makes image descriptions created via parametric creators send `failed`
+  // instead of `ready`.
+  void set_fail_parametric_descriptions(bool fail) {
+    fail_parametric_descriptions_ = fail;
+  }
+  bool fail_parametric_descriptions() const {
+    return fail_parametric_descriptions_;
+  }
+
   // Sends `preferred_changed` to all bound surface feedback objects.
   void SendPreferredChanged();
   void OnFeedbackCreated(ServerObject* feedback);
@@ -108,6 +117,7 @@ class TestWpColorManager : public GlobalObject {
   std::vector<uint32_t> supported_features_;
   std::vector<uint32_t> supported_tfs_named_;
   uint32_t display_tf_named_;
+  bool fail_parametric_descriptions_ = false;
   std::vector<TestImageDescriptionParams> created_descriptions_;
   // Keyed by wl_surface resource id.
   std::map<uint32_t, std::optional<TestImageDescriptionParams>>

@@ -198,6 +198,15 @@ class WaylandSurface {
   void SetImageDescription(const gfx::ColorSpace& color_space,
                            const gfx::HDRMetadata& hdr_metadata);
 
+  // Returns true if SetImageDescription() with these arguments followed by
+  // ApplyPendingState() sets the surface's image description synchronously,
+  // so it is latched by the same commit as the attached buffer. Otherwise
+  // returns false and runs `on_ready` once the image description is ready.
+  bool EnsureImageDescription(const gfx::ColorSpace& color_space,
+                              const gfx::HDRMetadata& hdr_metadata,
+                              bool contains_video,
+                              base::OnceClosure on_ready);
+
   // Validates the |pending_state_| and generates the corresponding requests.
   // Then copy |pending_states_| to |states_|.
   // Returns whether or not changes require a commit to the wl_surface, or

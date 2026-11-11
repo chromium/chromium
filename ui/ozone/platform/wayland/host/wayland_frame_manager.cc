@@ -13,6 +13,7 @@
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -52,6 +53,12 @@ constexpr base::TimeDelta kPresentationFlushTimerStopThreshold =
 
 constexpr char kBoundsRectNanOrInf[] =
     "Overlay bounds_rect is invalid (NaN or infinity).";
+
+bool ContainsVideo(const wl::WaylandOverlayConfig& config) {
+  return config.priority_hint ==
+             gfx::OverlayPriorityHint::kHardwareProtection ||
+         config.priority_hint == gfx::OverlayPriorityHint::kVideo;
+}
 
 bool ValidateRect(const gfx::RectF& rect) {
   return !std::isnan(rect.x()) && !std::isnan(rect.y()) &&
@@ -200,6 +207,15 @@ void WaylandFrameManager::MaybeProcessPendingFrame() {
     DLOG_IF(FATAL, has_buffer_pending_creation &&
                        connection_->buffer_factory()->CanCreateDmabufImmed())
         << "Buffers should have been created immediately.";
+    return;
+  }
+
+  // The image descriptions are double-buffered surface state. If one isn't
+  // ready yet, setting it later would leave the frame's buffers described
+  // with the previous image description until the next commit, which might
+  // never come for static content (https://crbug.com/471769943).
+  if (!frame->buffer_lost && !should_ack_swap_without_commit_ &&
+      EnsureImageDescriptionsExist(*frame)) {
     return;
   }
 
@@ -458,9 +474,7 @@ std::optional<bool> WaylandFrameManager::ApplySurfaceConfigure(
   surface->set_opacity(config.opacity);
   surface->set_blending(config.enable_blend);
   surface->set_overlay_priority(config.priority_hint);
-  surface->set_contains_video(
-      config.priority_hint == gfx::OverlayPriorityHint::kHardwareProtection ||
-      config.priority_hint == gfx::OverlayPriorityHint::kVideo);
+  surface->set_contains_video(ContainsVideo(config));
   surface->SetImageDescription(
       config.color_space.value_or(gfx::ColorSpace::CreateSRGB()),
       config.hdr_metadata);
@@ -772,6 +786,28 @@ bool WaylandFrameManager::EnsureWlBuffersExist(WaylandFrame& frame) {
                        weak_factory_.GetWeakPtr()));
   }
   return !!handle_pending_creation;
+}
+
+bool WaylandFrameManager::EnsureImageDescriptionsExist(WaylandFrame& frame) {
+  bool has_description_pending_creation = false;
+  auto ensure = [&](WaylandSurface* surface,
+                    const wl::WaylandOverlayConfig& config) {
+    if (!config.buffer_id) {
+      return;
+    }
+    if (!surface->EnsureImageDescription(
+            config.color_space.value_or(gfx::ColorSpace::CreateSRGB()),
+            config.hdr_metadata, ContainsVideo(config),
+            base::BindOnce(&WaylandFrameManager::MaybeProcessPendingFrame,
+                           weak_factory_.GetWeakPtr()))) {
+      has_description_pending_creation = true;
+    }
+  };
+  for (auto& [subsurface, config] : frame.subsurfaces_to_overlays) {
+    ensure(subsurface->wayland_surface(), config);
+  }
+  ensure(frame.root_surface, frame.root_config);
+  return has_description_pending_creation;
 }
 
 void WaylandFrameManager::OnExplicitBufferRelease(WaylandSurface* surface,
