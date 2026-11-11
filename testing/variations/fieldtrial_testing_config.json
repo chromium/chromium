@@ -3897,23 +3897,6 @@
             ]
         }
     ],
-    "BrowsingHistorySimilarVisitsGroupingMobile": [
-        {
-            "platforms": [
-                "android",
-                "android_desktop",
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BrowsingHistorySimilarVisitsGrouping"
-                    ]
-                }
-            ]
-        }
-    ],
     "BuildTFLiteModelExecutionTaskOnLoadingThread": [
         {
             "platforms": [
