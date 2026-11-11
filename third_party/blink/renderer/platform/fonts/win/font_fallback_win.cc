@@ -36,6 +36,8 @@
 #include <limits>
 
 #include "base/check_op.h"
+#include "base/i18n/chinese_helpers.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/memory/raw_span.h"
 #include "base/no_destructor.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
@@ -603,7 +605,7 @@ const AtomicString& GetFallbackFamily(
       // fonts do support a small subset of ExtB (that are included in JIS X
       // 0213), but its coverage is rather sparse.
       // Eventually, this should be controlled by lang/xml:lang.
-      if (icu::Locale::getDefault() == icu::Locale::getTraditionalChinese()) {
+      if (base::i18n::IsTraditionalChinese(base::i18n::GetDefaultIcuLocale())) {
         DEFINE_THREAD_SAFE_STATIC_LOCAL(
             AtomicString, kPlane2zht,
             (AtomicString::FromLiteral<"pmingliu-extb">()));

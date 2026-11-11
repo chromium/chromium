@@ -33,6 +33,10 @@ include_rules = [
 ]
 
 specific_include_rules = {
+    "font_fallback_win.cc" : [
+        "+base/i18n/chinese_helpers.h",
+        "+base/i18n/icubridge/default_icu_locale.h",
+    ],
     "font_unique_name_lookup_win.h" : [
         "+components/services/font_data/public/mojom/font_data_service.mojom-blink.h",
     ],

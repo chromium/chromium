@@ -116,7 +116,7 @@ struct LocaleTestData {
     {"zh-yue-Hans", EXPECT_SIMPLIFIED_CHINESE, true},
 
     // Lang has priority over region.
-    // icu::Locale::getDefault() returns other combinations if, for instance,
+    // The default ICU locale can be any other combination if, for instance,
     // English Windows with the display language set to Japanese.
     {"ja", EXPECT_JAPANESE},
     {"ja-US", EXPECT_JAPANESE},
