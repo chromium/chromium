@@ -12,7 +12,7 @@ namespace gcm::features {
 
 // Kill switch for removing deprecated account mapping data and registrations
 // from GCMStore on load.
-// TODO(crbug.com/384891711): Remove after October 2027.
+// Enabled by default in November 2026; remove after November 2027.
 GCM_EXPORT BASE_DECLARE_FEATURE(kGCMRemoveDeprecatedStoreData);
 
 }  // namespace gcm::features

@@ -1536,9 +1536,6 @@ TEST_F(GCMClientImplStartAndStopTest, DelayedStart) {
 
 TEST_F(GCMClientImplStartAndStopTest,
        DelayedStartWithDeprecatedAccountMapperRegistration) {
-  base::test::ScopedFeatureList feature_list(
-      features::kGCMRemoveDeprecatedStoreData);
-
   // Start the GCM immediately and complete the checkin.
   gcm_client()->Start(GCMClient::IMMEDIATE_START);
   PumpLoopUntilIdle();

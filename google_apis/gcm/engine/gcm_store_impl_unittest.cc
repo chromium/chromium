@@ -633,9 +633,6 @@ TEST_F(GCMStoreImplTest, InstanceIDData) {
 }
 
 TEST_F(GCMStoreImplTest, RemoveDeprecatedDataOnLoad) {
-  base::test::ScopedFeatureList feature_list(
-      features::kGCMRemoveDeprecatedStoreData);
-
   std::unique_ptr<GCMStoreImpl> gcm_store(BuildGCMStore());
   std::unique_ptr<GCMStore::LoadResult> load_result;
   LoadGCMStore(gcm_store.get(), &load_result);

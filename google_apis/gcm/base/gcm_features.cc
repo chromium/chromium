@@ -8,6 +8,6 @@
 
 namespace gcm::features {
 
-BASE_FEATURE(kGCMRemoveDeprecatedStoreData, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGCMRemoveDeprecatedStoreData, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace gcm::features

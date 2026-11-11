@@ -71,8 +71,6 @@ constexpr base::TimeDelta kTokenInvalidationInterval = base::Days(7);
 // Previously, GCMAccountMapper registered with this app ID. Any persisted
 // registration for it in GCMStore is obsolete and removed on load.
 // Deprecated in October 2026.
-// TODO(crbug.com/384891711): Remove this constant and its cleanup logic after
-// October 2027.
 constexpr char kDeprecatedGCMAccountMapperAppId[] = "com.google.android.gms";
 
 GCMClient::Result ToGCMClientResult(MCSClient::MessageSendStatus status) {

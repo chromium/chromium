@@ -113,8 +113,6 @@ const char kInstanceIDKeyEnd[] = "iid2-";
 
 // ---- Deprecated LevelDB keys. ----
 // Deprecated in October 2026.
-// TODO(crbug.com/384891711): Remove these deprecated keys and their cleanup
-// logic after October 2027.
 // Key used to indicate how many accounts were last checked in with this device.
 const char kDeprecatedLastCheckinAccountsKey[] = "last_checkin_accounts_count";
 // Lowest lexicographically ordered account key.
