@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_PASSWORDS_MODEL_REMOTE_ACTOR_REMOTE_ACTOR_CALLBACK_UTIL_H_
 #define IOS_CHROME_BROWSER_PASSWORDS_MODEL_REMOTE_ACTOR_REMOTE_ACTOR_CALLBACK_UTIL_H_
 
+#import <optional>
 #import <string_view>
 
 #import "base/functional/callback.h"
@@ -17,14 +18,24 @@ enum class RemoteActorCallbackStatus {
   kFailed,
 };
 
+// Optional failure or cancellation reason reported back to the Gemini iOS app
+// in the Remote Actor callback URL.
+enum class RemoteActorCallbackReason {
+  kNotSignedIn,
+  kProfileMismatch,
+  kUploadFailed,
+};
+
 // Navigates back to the Gemini iOS app by opening the `googlegemini://`
-// callback URL (`googlegemini://agent-auth-result`) populated with `task_id`
-// and `status` via `UIApplication`. Invokes `completion` (which must be
+// callback URL (`googlegemini://agent-auth-result`) populated with `task_id`,
+// `status`, and optional `reason` (which must be `std::nullopt` when `status`
+// is `kSuccess`) via `UIApplication`. Invokes `completion` (which must be
 // non-null) with `true` if the URL was successfully opened, or `false` if
 // `task_id` is empty or the URL could not be opened. Must be called on the main
 // thread.
 void OpenGeminiCallbackURL(std::string_view task_id,
                            RemoteActorCallbackStatus status,
+                           std::optional<RemoteActorCallbackReason> reason,
                            base::OnceCallback<void(bool)> completion);
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_MODEL_REMOTE_ACTOR_REMOTE_ACTOR_CALLBACK_UTIL_H_
