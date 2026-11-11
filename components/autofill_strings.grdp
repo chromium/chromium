@@ -1964,6 +1964,16 @@ You can remove this suggestion from Chrome. Your original source won't be delete
     <message name="IDS_AUTOFILL_AI_ATTRIBUTION_OPEN_SOURCE_DESCRIPTION" desc="Content description for TalkBack on an Autofill AI source card row. $1 is the app name (e.g. Gmail) and $2 is the source record title (e.g. Flight to San Francisco)." formatter_data="android_java" is_accessibility_with_no_ui="true">
       Open <ph name="APP_NAME">%1$s<ex>Gmail</ex></ph> source: <ph name="TITLE">%2$s<ex>Flight to San Francisco</ex></ph>
     </message>
+    <!-- TODO(crbug.com/578938007): Revise and translate these strings. -->
+    <message name="IDS_AUTOFILL_AI_ATTRIBUTION_VERIFICATION_SHEET_FULL_HEIGHT" desc="Accessibility announcement read by TalkBack when the Autofill AI attribution verification bottom sheet opens at full height." formatter_data="android_java" is_accessibility_with_no_ui="true" translateable="false">
+      Sheet to verify autofilled info opened at full height
+    </message>
+    <message name="IDS_AUTOFILL_AI_ATTRIBUTION_VERIFICATION_SHEET_CLOSED" desc="Accessibility announcement read by TalkBack when the Autofill AI attribution verification bottom sheet collapses to peek height." formatter_data="android_java" is_accessibility_with_no_ui="true" translateable="false">
+      Sheet to verify autofilled info minimized
+    </message>
+    <message name="IDS_AUTOFILL_AI_ATTRIBUTION_VERIFICATION_SHEET_HIDDEN" desc="Accessibility announcement read by TalkBack when the Autofill AI attribution verification bottom sheet is dismissed." formatter_data="android_java" is_accessibility_with_no_ui="true" translateable="false">
+      Sheet to verify autofilled info closed
+    </message>
   </if>
 
   <!-- Autofill AI Suppression Snackbar Strings (Android) -->

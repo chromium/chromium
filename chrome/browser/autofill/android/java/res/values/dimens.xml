@@ -32,4 +32,7 @@ found in the LICENSE file.
     <dimen name="autofill_personal_context_settings_notice_icon_padding">16dp</dimen>
     <dimen name="autofill_personal_context_settings_notice_item_margin_bottom">16dp</dimen>
     <dimen name="autofill_personal_context_settings_notice_vertical_padding">16dp</dimen>
+
+    <!-- Autofill AI attribution verification bottom sheet dimensions -->
+    <dimen name="autofill_ai_attribution_verification_sheet_peek_height">96dp</dimen>
 </resources>
