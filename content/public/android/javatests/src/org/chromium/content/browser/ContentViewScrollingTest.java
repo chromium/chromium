@@ -298,6 +298,7 @@ public class ContentViewScrollingTest {
     @SmallTest
     @RerunWithUpdatedContainerView
     @Feature({"Main"})
+    @DisabledTest(message = "https://crbug.com/566952450")
     public void testScrollTo() {
         // Vertical scroll to lower-left.
         scrollTo(0, 2500);
