@@ -189,6 +189,77 @@
                   '|.*SidePanel.*\.java'\
                   '|.*SideUi.*\.java'
     },
+    'android_split_view': {
+      'filepath': 'chrome/browser/ui/android/split_view/' \
+                  '|chrome/browser/ui/web_content_hairline/' \
+                  '|chrome/android/features/tab_ui/' \
+                  '|chrome/android/java/src/org/chromium/chrome/browser/app/tabmodel/ModelTrackingOrchestrator\\.java$' \
+                  '|chrome/android/java/src/org/chromium/chrome/browser/app/tabmodel/TabRestorer\\.java$' \
+                  '|chrome/android/java/src/org/chromium/chrome/browser/compositor/CompositorViewHolder\\.java$' \
+                  '|chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerImpl\\.java$' \
+                  '|chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/StaticLayout\\.java$' \
+                  '|chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/components/LayoutTab\\.java$' \
+                  '|chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/StripLayoutHelper\\.java$' \
+                  '|chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/StripLayoutTab\\.java$' \
+                  '|chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/StripLayoutTabDelegate\\.java$' \
+                  '|chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/StripLayoutUtils\\.java$' \
+                  '|chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/TabContextMenuCoordinator\\.java$' \
+                  '|chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/TabStripContextMenuCoordinator\\.java$' \
+                  '|chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/reorder/ExternalViewDragDropReorderStrategy\\.java$' \
+                  '|chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/reorder/GroupReorderStrategy\\.java$' \
+                  '|chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/reorder/MultiTabReorderStrategy\\.java$' \
+                  '|chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/reorder/ReorderDelegate\\.java$' \
+                  '|chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/reorder/ReorderStrategyBase\\.java$' \
+                  '|chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/reorder/SourceViewDragDropReorderStrategy\\.java$' \
+                  '|chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/reorder/TabReorderStrategy\\.java$' \
+                  '|chrome/android/java/src/org/chromium/chrome/browser/compositor/scene_layer/StaticTabSceneLayer\\.java$' \
+                  '|chrome/android/java/src/org/chromium/chrome/browser/tab/TabContextMenuItemDelegate\\.java$' \
+                  '|chrome/android/java/src/org/chromium/chrome/browser/tab/TabImpl\\.java$' \
+                  '|chrome/android/java/src/org/chromium/chrome/browser/tabmodel/NextTabSelectionUtil\\.java$' \
+                  '|chrome/android/java/src/org/chromium/chrome/browser/tabmodel/TabCollectionTabModelImpl\\.java$' \
+                  '|chrome/android/java/src/org/chromium/chrome/browser/tabmodel/TabModelJniBridge\\.java$' \
+                  '|chrome/android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorBase\\.java$' \
+                  '|chrome/android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorImpl\\.java$' \
+                  '|chrome/android/java/src/org/chromium/chrome/browser/tabmodel/TabPersistentStoreImpl\\.java$' \
+                  '|chrome/android/java/src/org/chromium/chrome/browser/tabmodel/TabUngrouperImpl\\.java$' \
+                  '|chrome/browser/android/compositor/scene_layer/static_tab_scene_layer\\.cc$' \
+                  '|chrome/browser/android/compositor/scene_layer/static_tab_scene_layer\\.h$' \
+                  '|chrome/browser/android/compositor/tab_content_manager\\.cc$' \
+                  '|chrome/browser/android/storage_loaded_data_android\\.cc$' \
+                  '|chrome/browser/android/storage_loaded_data_android\\.h$' \
+                  '|chrome/browser/android/tab_android\\.cc$' \
+                  '|chrome/browser/android/tab_android\\.h$' \
+                  '|chrome/browser/android/tab_storage_packager_android\\.cc$' \
+                  '|chrome/browser/tab/java/src/org/chromium/chrome/browser/tab/StorageLoadedData\\.java$' \
+                  '|chrome/browser/tab/java/src/org/chromium/chrome/browser/tab/Tab\\.java$' \
+                  '|chrome/browser/tab/java/src/org/chromium/chrome/browser/tab/TabObserver\\.java$' \
+                  '|chrome/browser/tab/java/src/org/chromium/chrome/browser/tab/TabState\\.java$' \
+                  '|chrome/browser/tab/java/src/org/chromium/chrome/browser/tab/TabStateAttributes\\.java$' \
+                  '|chrome/browser/tab/java/src/org/chromium/chrome/browser/tab/TabStateExtractor\\.java$' \
+                  '|chrome/browser/tab/protocol/split_collection_state\\.proto$' \
+                  '|chrome/browser/tab/protocol/tab_state\\.proto$' \
+                  '|chrome/browser/tab/storage_loaded_data\\.cc$' \
+                  '|chrome/browser/tab/storage_loaded_data\\.h$' \
+                  '|chrome/browser/tab/tab_storage_packager\\.cc$' \
+                  '|chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabModelImpl\\.java$' \
+                  '|chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModel\\.java$' \
+                  '|chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModelObserver\\.java$' \
+                  '|chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelector\\.java$' \
+                  '|chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabPersistenceUtils\\.java$' \
+                  '|chrome/browser/tabpersistence/android/java/src/org/chromium/chrome/browser/tabpersistence/FlatBufferTabStateSerializer\\.java$' \
+                  '|chrome/browser/tabpersistence/android/java/src/org/chromium/chrome/browser/tabpersistence/TabStateFileManager\\.java$' \
+                  '|chrome/browser/tabpersistence/android/java/src/org/chromium/chrome/browser/tabpersistence/flatbuffer/tab_state_v1\\.fbs$' \
+                  '|chrome/browser/tabwindow/internal/android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowManagerImpl\\.java$' \
+                  '|chrome/browser/ui/android/layouts/scene_layer\\.cc$' \
+                  '|chrome/browser/ui/android/tab_model/tab_collection_tab_model_impl\\.cc$' \
+                  '|chrome/browser/ui/android/tab_model/tab_collection_tab_model_impl\\.h$' \
+                  '|chrome/browser/ui/android/tab_model/tab_model_jni_bridge\\.cc$' \
+                  '|chrome/browser/ui/tabs/tab_model\\.cc$' \
+                  '|chrome/browser/ui/tabs/tab_model\\.h$' \
+                  '|components/split_tabs/split_tab_visual_data\\.cc$' \
+                  '|components/split_tabs/split_tab_visual_data\\.h$' \
+                  '|components/tabs/public/tab_interface\\.h$',
+    },
     'android_startup_metrics': {
       'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/metrics/.*StartupMetricsTracker.java' \
                   '|chrome/android/java/src/org/chromium/chrome/browser/metrics/SimpleStartupForegroundSessionDetector.java'
@@ -2695,6 +2766,9 @@
                            'linyuh+watch@google.com',
                            'nemco+watch@google.com',
                            'shuyng@google.com'],
+    'android_split_view': ['aishwaryarj+watch-android-split-view@google.com',
+                           'linyuh+watch-android-split-view@google.com',
+                           'shuyng+watch-android-split-view@google.com'],
     'android_startup_metrics': ['pasko+watch@chromium.org'],
     'android_studio': ['wnwen+watch@chromium.org',
                        'nyquist+watch@chromium.org'],
