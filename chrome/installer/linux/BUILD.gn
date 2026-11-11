@@ -357,12 +357,12 @@ copy("common_packaging_files") {
   sources = [
     "//chrome/app/resources/manpage.1.in",
     "common/apparmor.template",
-    "common/appdata.xml.template",
     "common/apt.include",
     "common/default-app-block.template",
     "common/default-app.template",
     "common/desktop.template",
     "common/key.include",
+    "common/metainfo.xml.template",
     "common/postinst.include",
     "common/prerm.include",
     "common/repo.cron",

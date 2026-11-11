@@ -911,12 +911,12 @@ class InstallerConfig:
             )
         )
 
-        # appdata.xml
+        # AppStream metainfo
         artifacts.append(
             Artifact(
-                "installer/common/appdata.xml.template",
-                pathlib.Path("usr/share/appdata")
-                / f"{self.info_vars['PACKAGE']}.appdata.xml",
+                "installer/common/metainfo.xml.template",
+                pathlib.Path("usr/share/metainfo")
+                / f"{self.info_vars['PACKAGE']}.metainfo.xml",
                 ArtifactType.TEMPLATE,
                 StandardPermissions.REGULAR,
                 dst_base="staging_dir",
@@ -1044,7 +1044,7 @@ class Installer:
                 install_dir,
                 self.config.staging_dir / "usr/bin",
                 self.config.staging_dir / "usr/share/applications",
-                self.config.staging_dir / "usr/share/appdata",
+                self.config.staging_dir / "usr/share/metainfo",
                 (
                     self.config.staging_dir
                     / "usr/share/gnome-control-center/default-apps"
