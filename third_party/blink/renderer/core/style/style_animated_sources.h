@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/style/animated_source_properties_bitset.h"
 #include "third_party/blink/renderer/platform/sparse_vector.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 
 namespace blink {
 
@@ -34,6 +35,10 @@ struct CORE_EXPORT AnimatedSource {
   bool IsValid() const { return animated_source.IsValid(); }
   bool IsOwnedBy(const Element& element) const {
     return animated_source.IsOwnedBy(element);
+  }
+
+  constexpr uint32_t GetHash() const {
+    return HashInts(animated_source.GetHash(), has_untracked_dependencies);
   }
 
   bool operator==(const AnimatedSource&) const = default;
@@ -118,6 +123,17 @@ class CORE_EXPORT StyleAnimatedSources {
 
   // Removes the source for the given property if it exists.
   void Clear(AnimatedSourceProperty property);
+
+  // Each yielded `AnimatedSource` includes its `has_untracked_dependencies_`
+  // bit.
+  uint32_t GetHash() const {
+    uint32_t hash = 0;
+    for (auto [property, source] : *this) {
+      AddIntToHash(hash, HashInt(property));
+      AddIntToHash(hash, source.GetHash());
+    }
+    return hash;
+  }
 
   bool operator==(const StyleAnimatedSources&) const = default;
 

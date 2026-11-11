@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/css/resolver/matched_properties_cache.h"
 
+#include "base/rand_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
@@ -11,6 +13,7 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -319,6 +322,42 @@ TEST_F(MatchedPropertiesCacheTest,
 
   EXPECT_TRUE(cache.Find(key, *child_style, *parent_a));
   EXPECT_FALSE(cache.Find(key, *child_style, *parent_b));
+}
+
+TEST_F(MatchedPropertiesCacheTest,
+       IndependentInheritedAnimatedSourcesAvoidSingleBucketGrowth) {
+  ScopedTrackAnimatedSourcesForTest enable_sources(true);
+  ScopedTrackAnimatedSourcesForInheritedPropertiesForTest enable_inherited(
+      true);
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
+
+  InsertStyleElement(R"CSS(
+    @keyframes pulse { to { color: rgb(20, 20, 20); } }
+    .item { animation: pulse 10s linear paused; }
+    .label { padding: 1px; }
+  )CSS");
+  UpdateAllLifecyclePhasesForTest();
+
+  // Each `.item` records its own `DOMNodeId` as the `color` source, so `.label`
+  // children must hash into separate single-entry buckets.
+  base::HistogramTester histograms;
+  SetBodyInnerHTML(R"HTML(
+    <div class="item">
+      <span class="label"></span>
+    </div>
+    <div class="item">
+      <span class="label"></span>
+    </div>
+    <div class="item">
+      <span class="label"></span>
+    </div>
+    <div class="item">
+      <span class="label"></span>
+    </div>
+  )HTML");
+
+  histograms.ExpectUniqueSample("Blink.Style.MatchedPropertiesCache.BucketSize",
+                                1, 4);
 }
 
 }  // namespace blink

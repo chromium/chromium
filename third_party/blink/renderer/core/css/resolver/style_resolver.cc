@@ -3008,6 +3008,8 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
           ? state.OriginatingElementStyle()->InheritedVariables().GetHash()
           : state.ParentStyle()->InheritedVariables().GetHash();
   inherited_hash ^= state.ParentStyle()->HashInheritedBitFields();
+  inherited_hash ^=
+      state.ParentStyle()->IndependentInheritedAnimatedSources().GetHash();
   inherited_hash ^= HashFloat(
       state.ParentStyle()->GetFont()->GetFontDescription().ComputedSize());
   // Used by the StyleAdjuster.

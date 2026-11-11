@@ -60,5 +60,61 @@ TEST_F(StyleAnimatedSourcesTest, Iteration) {
   EXPECT_EQ(untracked, (Vector<bool>{false, true}));
 }
 
+TEST_F(StyleAnimatedSourcesTest, GetHashEmptyAndCleared) {
+  SetBodyInnerHTML("<div id=a></div>");
+  Element* a = GetElementById("a");
+
+  StyleAnimatedSources sources;
+  EXPECT_EQ(sources.GetHash(), 0u);
+
+  sources.Set(AnimatedSourceProperty::kColor, AnimatedSource::ForElement(a));
+  EXPECT_NE(sources.GetHash(), 0u);
+
+  sources.Clear(AnimatedSourceProperty::kColor);
+  EXPECT_EQ(sources.GetHash(), 0u);
+}
+
+TEST_F(StyleAnimatedSourcesTest, GetHashEqualRegardlessOfInsertionOrder) {
+  SetBodyInnerHTML("<div id=a></div><div id=b></div>");
+  Element* a = GetElementById("a");
+  Element* b = GetElementById("b");
+
+  StyleAnimatedSources first;
+  first.Set(AnimatedSourceProperty::kColor, AnimatedSource::ForElement(a));
+  first.Set(AnimatedSourceProperty::kOpacity, AnimatedSource::ForElement(b));
+
+  StyleAnimatedSources second;
+  second.Set(AnimatedSourceProperty::kOpacity, AnimatedSource::ForElement(b));
+  second.Set(AnimatedSourceProperty::kColor, AnimatedSource::ForElement(a));
+
+  EXPECT_EQ(first, second);
+  EXPECT_EQ(first.GetHash(), second.GetHash());
+}
+
+TEST_F(StyleAnimatedSourcesTest, GetHashDiffersByPropertyElementAndUntracked) {
+  SetBodyInnerHTML("<div id=a></div><div id=b></div>");
+  Element* a = GetElementById("a");
+  Element* b = GetElementById("b");
+
+  StyleAnimatedSources base;
+  base.Set(AnimatedSourceProperty::kColor, AnimatedSource::ForElement(a));
+
+  StyleAnimatedSources untracked;
+  untracked.Set(
+      AnimatedSourceProperty::kColor,
+      AnimatedSource::ForElement(a, /*has_untracked_dependencies=*/true));
+  EXPECT_NE(base.GetHash(), untracked.GetHash());
+
+  StyleAnimatedSources different_element;
+  different_element.Set(AnimatedSourceProperty::kColor,
+                        AnimatedSource::ForElement(b));
+  EXPECT_NE(base.GetHash(), different_element.GetHash());
+
+  StyleAnimatedSources different_property;
+  different_property.Set(AnimatedSourceProperty::kOpacity,
+                         AnimatedSource::ForElement(a));
+  EXPECT_NE(base.GetHash(), different_property.GetHash());
+}
+
 }  // namespace
 }  // namespace blink
