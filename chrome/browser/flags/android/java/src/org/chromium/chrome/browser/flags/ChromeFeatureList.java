@@ -586,7 +586,6 @@ public abstract class ChromeFeatureList {
     public static final String DATA_SHARING_JOIN_ONLY = "DataSharingJoinOnly";
     public static final String DBD_PASSWORD_REMOVAL_ON_ANDROID = "DbdPasswordRemovalOnAndroid";
     public static final String DEBUG_TOOLBAR_POSITIONING = "DebugToolbarPositioning";
-    public static final String DEFAULT_BROWSER_PROMO_ANDROID2 = "DefaultBrowserPromoAndroid2";
     public static final String DEFAULT_BROWSER_PROMO_ENTRY_POINT = "DefaultBrowserPromoEntryPoint";
     public static final String DEFAULT_BROWSER_PROMO_FRE = "DefaultBrowserPromoFre";
     public static final String DEFER_ARCHIVED_TAB_MODEL_CREATION = "DeferArchivedTabModelCreation";

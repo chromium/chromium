@@ -413,12 +413,9 @@ public class MainSettings extends ChromeBaseSettingsFragment
         }
         AccountManagerFacade accountManagerFacade = AccountManagerFacadeProvider.getInstance();
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2)) {
-            SettingsPromoCardPreference settingsPromoCardPreference =
-                    findPreference(PREF_SETTINGS_PROMO_CARD);
-            settingsPromoCardPreference.initialize(
-                    TrackerFactory.getTrackerForProfile(getProfile()));
-        }
+        SettingsPromoCardPreference settingsPromoCardPreference =
+                findPreference(PREF_SETTINGS_PROMO_CARD);
+        settingsPromoCardPreference.initialize(TrackerFactory.getTrackerForProfile(getProfile()));
 
         OneshotSupplierImpl<BottomSheetSigninAndHistorySyncCoordinator> signinCoordinatorSupplier =
                 new OneshotSupplierImpl<>();
@@ -679,11 +676,9 @@ public class MainSettings extends ChromeBaseSettingsFragment
             return;
         }
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2)) {
-            SettingsPromoCardPreference promoCardPreference =
-                    (SettingsPromoCardPreference) addPreferenceIfAbsent(PREF_SETTINGS_PROMO_CARD);
-            promoCardPreference.updatePreferences();
-        }
+        SettingsPromoCardPreference promoCardPreference =
+                (SettingsPromoCardPreference) addPreferenceIfAbsent(PREF_SETTINGS_PROMO_CARD);
+        promoCardPreference.updatePreferences();
 
         if (shouldShowSignInPref(getProfile())) {
             addPreferenceIfAbsent(PREF_SIGN_IN);

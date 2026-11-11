@@ -2107,11 +2107,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "clank-default-browser-promo2",
-    "owners": [ "eirage@chromium.org" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "clank-omnibox-minimization",
     "owners": [ "lukedeng@chromium.org" ],
     "expiry_milestone": 175

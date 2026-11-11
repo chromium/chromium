@@ -94,7 +94,6 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2})
     public void testCreateInputContext_DefaultBrowserPromoCard() {
         InputContext inputContext =
                 EducationalTipCardProviderSignalHandler.createInputContext(

@@ -398,7 +398,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCrossDeviceTaskHandoff,
     &kCrossWindowTabGroupOperations,
     &kDebugToolbarPositioning,
-    &kDefaultBrowserPromoAndroid2,
     &kDefaultBrowserPromoEntryPoint,
     &kDefaultBrowserPromoFre,
     &kDeferArchivedTabModelCreation,
@@ -855,7 +854,6 @@ BASE_FEATURE(kCrossDeviceTabPaneAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kCrossDeviceTaskHandoff, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kCrossWindowTabGroupOperations, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kDebugToolbarPositioning, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kDefaultBrowserPromoAndroid2, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kDefaultBrowserPromoEntryPoint, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kDefaultBrowserPromoFre, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kDeferArchivedTabModelCreation, base::FEATURE_DISABLED_BY_DEFAULT);

@@ -10720,11 +10720,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      SINGLE_DISABLE_VALUE_TYPE(switches::kDisableDefaultBrowserPromo)},
 
-    {"clank-default-browser-promo2",
-     flag_descriptions::kClankDefaultBrowserPromoName,
-     flag_descriptions::kClankDefaultBrowserPromoDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kDefaultBrowserPromoAndroid2)},
-
     {"desktop-ua-on-connected-display",
      flag_descriptions::kDesktopUAOnConnectedDisplayName,
      flag_descriptions::kDesktopUAOnConnectedDisplayDescription, kOsAndroid,

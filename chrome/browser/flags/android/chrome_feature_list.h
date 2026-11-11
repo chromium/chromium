@@ -178,7 +178,6 @@ BASE_DECLARE_FEATURE(kCrossDeviceTabPaneAndroid);
 BASE_DECLARE_FEATURE(kCrossDeviceTaskHandoff);
 BASE_DECLARE_FEATURE(kCrossWindowTabGroupOperations);
 BASE_DECLARE_FEATURE(kDebugToolbarPositioning);
-BASE_DECLARE_FEATURE(kDefaultBrowserPromoAndroid2);
 BASE_DECLARE_FEATURE(kDefaultBrowserPromoEntryPoint);
 BASE_DECLARE_FEATURE(kDefaultBrowserPromoFre);
 BASE_DECLARE_FEATURE(kDeferArchivedTabModelCreation);

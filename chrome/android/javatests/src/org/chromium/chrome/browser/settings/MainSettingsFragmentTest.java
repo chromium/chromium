@@ -1200,7 +1200,6 @@ public class MainSettingsFragmentTest {
     @Test
     @SmallTest
     public void testDefaultBrowserPromoCard() throws InterruptedException {
-        FeatureOverrides.enable(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2);
         when(mTestTracker.shouldTriggerHelpUi(any())).thenReturn(true);
         TrackerFactory.setTrackerForTests(mTestTracker);
         when(mMockDefaultBrowserPromoUtils.shouldShowNonRoleManagerPromo(any())).thenReturn(true);
@@ -1208,8 +1207,7 @@ public class MainSettingsFragmentTest {
 
         startSettings();
         Preference preference = mMainSettings.findPreference(MainSettings.PREF_SETTINGS_PROMO_CARD);
-        Assert.assertNotNull(
-                "Settings promo preference exist when feature flag is enabled", preference);
+        Assert.assertNotNull("Settings promo preference should exist", preference);
     }
 
     @Test

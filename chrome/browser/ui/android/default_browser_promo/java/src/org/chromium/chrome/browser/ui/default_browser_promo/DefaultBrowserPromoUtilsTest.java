@@ -42,7 +42,6 @@ import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.annotations.Nullable;
@@ -303,15 +302,11 @@ public class DefaultBrowserPromoUtilsTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2)
-    public void testNoMessagePromo_featureDisabled() {
-        mUtils.maybeShowDefaultBrowserPromoMessages(mActivity, mWindowAndroid, mProfile);
-        verify(mMockMessageDispatcher, never()).enqueueWindowScopedMessage(any(), anyBoolean());
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2)
     public void testNoMessagePromo_offTheRecordProfile() {
+        // Make the promo otherwise eligible, so that only the profile check can block it.
+        mShadowRoleManager.removeAvailableRole(RoleManager.ROLE_BROWSER);
+        when(mMockTracker.shouldTriggerHelpUi(any())).thenReturn(true);
+
         // No Profile.
         mUtils.maybeShowDefaultBrowserPromoMessages(mActivity, mWindowAndroid, null);
         verify(mMockMessageDispatcher, never()).enqueueWindowScopedMessage(any(), anyBoolean());
@@ -323,7 +318,6 @@ public class DefaultBrowserPromoUtilsTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2)
     public void testNoMessagePromo_shouldShowRoleManagerPromo() {
         Assert.assertTrue(
                 mUtils.shouldShowRoleManagerPromo(
@@ -335,7 +329,6 @@ public class DefaultBrowserPromoUtilsTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2)
     public void testNoMessagePromo_featureEngagementBlocker() {
         mShadowRoleManager.removeAvailableRole(RoleManager.ROLE_BROWSER);
         when(mMockTracker.shouldTriggerHelpUi(any())).thenReturn(false);
@@ -352,7 +345,6 @@ public class DefaultBrowserPromoUtilsTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2)
     public void testShowMessagePromo() {
         mShadowRoleManager.removeAvailableRole(RoleManager.ROLE_BROWSER);
         when(mMockTracker.shouldTriggerHelpUi(any())).thenReturn(true);

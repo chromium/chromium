@@ -143,10 +143,6 @@ public class DefaultBrowserPromoUtils {
      */
     public void maybeShowDefaultBrowserPromoMessages(
             Context context, WindowAndroid windowAndroid, Profile profile) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2)) {
-            return;
-        }
-
         if (profile == null || profile.isOffTheRecord()) {
             return;
         }

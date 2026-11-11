@@ -27,15 +27,12 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.TestActivity;
 
 /** Test for {@link SettingsPromoCardPreference}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2)
 public class SettingsPromoCardPreferenceTest {
     @Mock private Tracker mTestTracker;
     @Mock private DefaultBrowserPromoUtils mMockDefaultBrowserPromoUtils;

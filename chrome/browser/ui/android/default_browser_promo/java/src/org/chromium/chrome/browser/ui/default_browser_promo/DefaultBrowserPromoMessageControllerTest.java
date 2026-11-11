@@ -29,9 +29,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowActivity;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
@@ -40,7 +38,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Test for {@link DefaultBrowserPromoMessageController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2)
 public class DefaultBrowserPromoMessageControllerTest {
     @Mock private Tracker mTestTracker;
 

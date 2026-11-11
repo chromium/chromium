@@ -6082,13 +6082,6 @@ inline constexpr char kChromeFindsInternalsName[] = "Chrome Finds Internals";
 inline constexpr char kChromeFindsInternalsDescription[] =
     "Enables the chrome://chrome-finds-internals page.";
 
-inline constexpr char kClankDefaultBrowserPromoName[] =
-    "Clank default browser promo 2";
-inline constexpr char kClankDefaultBrowserPromoDescription[] =
-    "When enabled, show additional non-intrusive entry points to allow users "
-    "to set Chrome as their default browser, if the trigger conditions are "
-    "met.";
-
 inline constexpr char kClankDefaultBrowserPromoRoleManagerName[] =
     "Clank default browser Promo Role Manager ";
 inline constexpr char kClankDefaultBrowserPromoRoleManagerDescription[] =

@@ -103,9 +103,7 @@ public class EducationalTipCardProviderSignalHandler {
     private static float shouldShowNonRoleManagerDefaultBrowserPromo(
             EducationTipModuleActionDelegate actionDelegate) {
         return DefaultBrowserPromoUtils.getInstance()
-                                .shouldShowNonRoleManagerPromo(actionDelegate.getContext())
-                        && ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2)
+                        .shouldShowNonRoleManagerPromo(actionDelegate.getContext())
                 ? 1.0f
                 : 0.0f;
     }
