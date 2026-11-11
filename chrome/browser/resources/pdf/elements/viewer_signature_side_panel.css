@@ -9,4 +9,6 @@
  * #include=pdf-shared side-panel-shared
  * #css_wrapper_metadata_end */
 
-/* Intentionally empty, for now */
+signature-selector {
+  margin: 16px 0 32px;
+}

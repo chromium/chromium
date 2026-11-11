@@ -868,6 +868,11 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   }
 
   // <if expr="enable_pdf_ink2">
+  protected onNewSignatureClick_() {
+    assert(!this.showSignatureDialog_);
+    this.showSignatureDialog_ = true;
+  }
+
   protected onSignatureDialogClose_() {
     assert(this.showSignatureDialog_);
     this.showSignatureDialog_ = false;

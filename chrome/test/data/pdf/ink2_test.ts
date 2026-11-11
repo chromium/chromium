@@ -6,7 +6,7 @@ import {AnnotationMode, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojo
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {setupMockMetricsPrivate, setupTestMockPluginForInk} from './test_util.js';
+import {getRequiredElement, setupMockMetricsPrivate, setupTestMockPluginForInk} from './test_util.js';
 
 const viewer = document.body.querySelector('pdf-viewer')!;
 const viewerToolbar = viewer.$.toolbar;
@@ -418,6 +418,30 @@ chrome.test.runTests([
     chrome.test.assertFalse(
         !!viewer.shadowRoot.querySelector(signaturePanelQuery));
 
+    chrome.test.succeed();
+  },
+
+  // Test that dispatching 'new-signature-click' from the signature side panel
+  // opens the signature dialog.
+  async function testSignatureSidePanelNewSignature() {
+    await enableSignatures(true);
+
+    await setAnnotationMode(AnnotationMode.SIGNATURE);
+
+    // Close the initial dialog opened upon entering signature mode.
+    getRequiredElement(viewer, 'viewer-signature-dialog')
+        .dispatchEvent(new CustomEvent('close'));
+    await microtasksFinished();
+    chrome.test.assertFalse(
+        !!viewer.shadowRoot.querySelector('viewer-signature-dialog'));
+
+    getRequiredElement(viewer, 'viewer-signature-side-panel')
+        .dispatchEvent(new CustomEvent('new-signature-click'));
+    await microtasksFinished();
+    chrome.test.assertTrue(
+        !!viewer.shadowRoot.querySelector('viewer-signature-dialog'));
+
+    await setAnnotationMode(AnnotationMode.OFF);
     chrome.test.succeed();
   },
 ]);

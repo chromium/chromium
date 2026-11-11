@@ -2,28 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AnnotationMode, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import type {ViewerSignatureSidePanelElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {setupMockMetricsPrivate} from './test_util.js';
+suite('Ink2SignatureSidePanel', function() {
+  let sidePanel: ViewerSignatureSidePanelElement;
 
-const viewer = document.body.querySelector('pdf-viewer')!;
+  setup(function() {
+    document.body.innerHTML = '';
+    sidePanel = document.createElement('viewer-signature-side-panel');
+    document.body.appendChild(sidePanel);
+  });
 
-suite('Ink2SignatureSidePanelTest', () => {
-  // Test that toggling signature mode opens the side panel.
-  test('OpenSidePanel', async () => {
-    const mockMetricsPrivate = setupMockMetricsPrivate();
-
-    viewer.$.toolbar.setAnnotationMode(AnnotationMode.SIGNATURE);
-    await microtasksFinished();
-
-    assertEquals(AnnotationMode.SIGNATURE, viewer.$.toolbar.annotationMode);
-    assertTrue(isVisible(
-        viewer.shadowRoot.querySelector('viewer-signature-side-panel')));
-    mockMetricsPrivate.assertCount(UserAction.OPEN_INK2_SIDE_PANEL, 1);
-    mockMetricsPrivate.assertCount(UserAction.OPEN_INK2_BOTTOM_TOOLBAR, 0);
-    mockMetricsPrivate.assertCount(UserAction.ENTER_INK2_SIGNATURE_MODE, 1);
-    mockMetricsPrivate.assertCount(UserAction.EXIT_INK2_SIGNATURE_MODE, 0);
+  // Test that the side panel has a signature selector element.
+  test('HasSignatureSelector', function() {
+    assertTrue(!!sidePanel.shadowRoot.querySelector('signature-selector'));
   });
 });

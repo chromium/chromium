@@ -36,6 +36,7 @@ export {InkSizeSelectorElement, HIGHLIGHTER_SIZES, PEN_SIZES} from './elements/i
 export {InkTextAnnotationsElement} from './elements/ink_text_annotations.js';
 export {InkTextBoxElement, TextBoxState} from './elements/ink_text_box.js';
 export {SelectableIconButtonElement} from './elements/selectable_icon_button.js';
+export {SignatureSelectorElement} from './elements/signature_selector.js';
 export {TextAlignmentSelectorElement} from './elements/text_alignment_selector.js';
 export {TextStylesSelectorElement} from './elements/text_styles_selector.js';
 // </if>
