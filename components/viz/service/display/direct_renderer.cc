@@ -1040,15 +1040,6 @@ gfx::Rect DirectRenderer::ComputeScissorRectForRenderPass(
     if (display_area.IsValid() && root_damage_area.IsValid()) {
       DCHECK_GT(static_cast<int64_t>(display_area.ValueOrDie()), 0);
       {
-        base::CheckedNumeric<int64_t> frame_buffer_damage_area =
-            frame_buffer_damage.size().GetCheckedArea();
-        int64_t percentage = ((frame_buffer_damage_area * 100ll) / display_area)
-                                 .ValueOrDefault(INT_MAX);
-        UMA_HISTOGRAM_PERCENTAGE(
-            "Compositing.DirectRenderer.PartialSwap.FrameBufferDamage",
-            percentage);
-      }
-      {
         int64_t percentage =
             ((root_damage_area * 100ll) / display_area).ValueOrDie();
         UMA_HISTOGRAM_PERCENTAGE(
