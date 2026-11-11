@@ -6,13 +6,16 @@
 
 #include <stddef.h>
 
+#include <atomic>
+
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/sequence_bound.h"
+#include "base/threading/thread.h"
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
@@ -21,7 +24,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/test/render_view_test.h"
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "net/cookies/site_for_cookies.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
@@ -44,13 +47,17 @@ constexpr char kAllowlistScheme[] = "foo";
 class MockContentSettingsManagerImpl : public mojom::ContentSettingsManager {
  public:
   struct Log {
-    int allow_storage_access_count = 0;
-    int eager_allow_storage_access_count = 0;
-    int on_content_blocked_count = 0;
-    ContentSettingsType on_content_blocked_type = ContentSettingsType::DEFAULT;
+    std::atomic<int> allow_storage_access_count{0};
+    std::atomic<int> eager_allow_storage_access_count{0};
+    std::atomic<int> on_content_blocked_count{0};
+    std::atomic<ContentSettingsType> on_content_blocked_type{
+        ContentSettingsType::DEFAULT};
   };
 
-  explicit MockContentSettingsManagerImpl(Log* log) : log_(log) {}
+  MockContentSettingsManagerImpl(
+      Log* log,
+      mojo::PendingReceiver<mojom::ContentSettingsManager> receiver)
+      : log_(log), receiver_(this, std::move(receiver)) {}
   ~MockContentSettingsManagerImpl() override = default;
 
   // mojom::ContentSettingsManager methods:
@@ -83,6 +90,7 @@ class MockContentSettingsManagerImpl : public mojom::ContentSettingsManager {
 
  private:
   raw_ptr<Log> log_;
+  mojo::Receiver<mojom::ContentSettingsManager> receiver_;
 };
 
 class MockContentSettingsAgentDelegate
@@ -110,6 +118,12 @@ class MockContentSettingsAgentImpl : public ContentSettingsAgentImpl {
   void BindContentSettingsManager(
       mojo::Remote<mojom::ContentSettingsManager>* manager) override;
 
+  void FlushForTesting() {
+    if (manager_remote_) {
+      manager_remote_->FlushForTesting();
+    }
+  }
+
   int allow_storage_access_count() const {
     return log_.allow_storage_access_count;
   }
@@ -122,7 +136,12 @@ class MockContentSettingsAgentImpl : public ContentSettingsAgentImpl {
   }
 
  private:
+  // The receiver must be destroyed and its thread stopped before the log.
   MockContentSettingsManagerImpl::Log log_;
+  base::Thread manager_thread_{"ContentSettingsManager"};
+  base::SequenceBound<MockContentSettingsManagerImpl> manager_;
+  raw_ptr<mojo::Remote<mojom::ContentSettingsManager>> manager_remote_ =
+      nullptr;
   const GURL image_url_;
   const std::string image_origin_;
 };
@@ -133,13 +152,16 @@ MockContentSettingsAgentImpl::MockContentSettingsAgentImpl(
           render_frame,
           std::make_unique<MockContentSettingsAgentDelegate>()),
       image_url_("http://www.foo.com/image.jpg"),
-      image_origin_("http://www.foo.com") {}
+      image_origin_("http://www.foo.com") {
+  // Sync IPCs must be serviced while the renderer thread is blocked.
+  CHECK(manager_thread_.Start());
+}
 
 void MockContentSettingsAgentImpl::BindContentSettingsManager(
     mojo::Remote<mojom::ContentSettingsManager>* manager) {
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<MockContentSettingsManagerImpl>(&log_),
-      manager->BindNewPipeAndPassReceiver());
+  manager_remote_ = manager;
+  manager_.emplace(manager_thread_.task_runner(), &log_,
+                   manager->BindNewPipeAndPassReceiver());
 }
 
 // Evaluates a boolean `predicate` every time a provisional load is committed in
@@ -278,13 +300,13 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(ContentSettingsAgentImplBrowserTest, DidBlockContentType) {
   MockContentSettingsAgentImpl mock_agent(GetMainRenderFrame());
   mock_agent.DidBlockContentType(ContentSettingsType::COOKIES);
-  base::RunLoop().RunUntilIdle();
+  mock_agent.FlushForTesting();
   EXPECT_EQ(1, mock_agent.on_content_blocked_count());
   EXPECT_EQ(ContentSettingsType::COOKIES, mock_agent.on_content_blocked_type());
 
   // Blocking the same content type a second time shouldn't send a notification.
   mock_agent.DidBlockContentType(ContentSettingsType::COOKIES);
-  base::RunLoop().RunUntilIdle();
+  mock_agent.FlushForTesting();
   EXPECT_EQ(1, mock_agent.on_content_blocked_count());
 }
 
@@ -297,7 +319,7 @@ TEST_P(ContentSettingsAgentImplBrowserTest, AllowStorageAccessSync) {
   MockContentSettingsAgentImpl mock_agent(GetMainRenderFrame());
   mock_agent.AllowStorageAccessSync(
       blink::WebContentSettingsClient::StorageType::kLocalStorage);
-  base::RunLoop().RunUntilIdle();
+  mock_agent.FlushForTesting();
   EXPECT_EQ(1, mock_agent.allow_storage_access_count());
   histogram_tester.ExpectTotalCount("ContentSettings.AllowStorageAccessSync",
                                     1);
@@ -308,7 +330,7 @@ TEST_P(ContentSettingsAgentImplBrowserTest, AllowStorageAccessSync) {
   // new IPC.
   mock_agent.AllowStorageAccessSync(
       blink::WebContentSettingsClient::StorageType::kLocalStorage);
-  base::RunLoop().RunUntilIdle();
+  mock_agent.FlushForTesting();
   EXPECT_EQ(1, mock_agent.allow_storage_access_count());
   histogram_tester.ExpectTotalCount("ContentSettings.AllowStorageAccessSync",
                                     2);
@@ -324,7 +346,7 @@ TEST_P(ContentSettingsAgentImplBrowserTest, AllowStorageAccess) {
   mock_agent.AllowStorageAccess(
       blink::WebContentSettingsClient::StorageType::kLocalStorage,
       base::DoNothing());
-  base::RunLoop().RunUntilIdle();
+  mock_agent.FlushForTesting();
   EXPECT_EQ(1, mock_agent.allow_storage_access_count());
 
   // Accessing localStorage from the same origin again shouldn't result in a
@@ -332,7 +354,7 @@ TEST_P(ContentSettingsAgentImplBrowserTest, AllowStorageAccess) {
   mock_agent.AllowStorageAccess(
       blink::WebContentSettingsClient::StorageType::kLocalStorage,
       base::DoNothing());
-  base::RunLoop().RunUntilIdle();
+  mock_agent.FlushForTesting();
   EXPECT_EQ(1, mock_agent.allow_storage_access_count());
 }
 
@@ -387,19 +409,22 @@ TEST_P(ContentSettingsAgentImplBrowserTest,
   // Load some HTML. This will trigger DidCommitProvisionalLoad.
   LoadHTMLWithUrlOverride("<html></html>", "https://example.com/");
 
-  // Wait for the eager IPC.
-  EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return mock_agent.eager_allow_storage_access_count() == 2; }));
+  // Wait for the eager replies to populate the permission cache.
+  mock_agent.FlushForTesting();
+  EXPECT_EQ(2, mock_agent.eager_allow_storage_access_count());
+  base::HistogramTester histogram_tester;
 
   // Subsequent sync access should hit the cache and NOT trigger more IPCs
   // directly, but WILL trigger one async IPC for UI metric logging (which has
   // enable_logging_usage=true).
-  mock_agent.AllowStorageAccessSync(
-      blink::WebContentSettingsClient::StorageType::kLocalStorage);
+  EXPECT_TRUE(mock_agent.AllowStorageAccessSync(
+      blink::WebContentSettingsClient::StorageType::kLocalStorage));
+  histogram_tester.ExpectUniqueSample(
+      "ContentSettings.AllowStorageAccessSync.CacheHit", true, 1);
 
   // Wait for the UI logging async IPC to be sent.
-  EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return mock_agent.allow_storage_access_count() == 1; }));
+  mock_agent.FlushForTesting();
+  EXPECT_EQ(1, mock_agent.allow_storage_access_count());
 }
 
 TEST_P(ContentSettingsAgentImplBrowserTest,
@@ -414,20 +439,17 @@ TEST_P(ContentSettingsAgentImplBrowserTest,
   LoadHTMLWithUrlOverride("<html></html>", "https://example.com/");
 
   // Verify no eager IPCs were sent.
-  base::RunLoop run_loop;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, run_loop.QuitClosure());
-  run_loop.Run();
-
+  mock_agent.FlushForTesting();
   EXPECT_EQ(0, mock_agent.eager_allow_storage_access_count());
+  base::HistogramTester histogram_tester;
 
   // Sync access should trigger IPC.
-  mock_agent.AllowStorageAccessSync(
-      blink::WebContentSettingsClient::StorageType::kLocalStorage);
+  EXPECT_TRUE(mock_agent.AllowStorageAccessSync(
+      blink::WebContentSettingsClient::StorageType::kLocalStorage));
+  histogram_tester.ExpectUniqueSample(
+      "ContentSettings.AllowStorageAccessSync.CacheHit", false, 1);
 
-  // Wait for the sync IPC to be processed.
-  EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return mock_agent.allow_storage_access_count() == 1; }));
+  EXPECT_EQ(1, mock_agent.allow_storage_access_count());
 }
 
 }  // namespace content_settings
