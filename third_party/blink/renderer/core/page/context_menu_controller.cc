@@ -280,13 +280,13 @@ Node* ContextMenuController::GetContextMenuNodeWithImageContents() {
             node, already_visited_nodes_for_context_menu_listener)) {
       outcome |=
           EnumToBitmask(ImageSelectionOutcome::kFoundContextMenuListener);
-      // Don't break because it allows us to log the failure reason only
-      // if an image node was otherwise available lower in the hit test.
+      // Don't break so we check whether an image node was available lower in
+      // the hit test.
     }
     if (top_hit_frame != node->GetDocument().GetFrame()) {
       outcome |= EnumToBitmask(ImageSelectionOutcome::kBlockedByCrossFrameNode);
-      // Don't break because it allows us to log the failure reason only
-      // if an image node was otherwise available lower in the hit test.
+      // Don't break so we check whether an image node was available lower in
+      // the hit test.
     }
 
     if (IsA<HTMLCanvasElement>(node) ||
@@ -296,7 +296,7 @@ Node* ContextMenuController::GetContextMenuNodeWithImageContents() {
       if (hit_test_depth == 1) {
         outcome |= EnumToBitmask(ImageSelectionOutcome::kImageFoundStandard);
         // The context menu listener check is only necessary when penetrating,
-        // so clear the bit so we don't want to log it if the image was on top.
+        // so clear the bit if the image was on top.
         outcome &=
             ~EnumToBitmask(ImageSelectionOutcome::kFoundContextMenuListener);
       } else {
@@ -311,8 +311,8 @@ Node* ContextMenuController::GetContextMenuNodeWithImageContents() {
             HitTestLocation::RectForPoint(
                 hit_test_result_.PointInInnerNodeFrame()))) {
       outcome |= EnumToBitmask(ImageSelectionOutcome::kBlockedByOpaqueNode);
-      // Don't break because it allows us to log the failure reason only
-      // if an image node was otherwise available lower in the hit test.
+      // Don't break so we check whether an image node was available lower in
+      // the hit test.
     }
   }
 
@@ -320,15 +320,6 @@ Node* ContextMenuController::GetContextMenuNodeWithImageContents() {
   if (found_image_node != nullptr) {
     base::UmaHistogramCounts1000("Blink.ContextMenu.ImageSelection.Depth",
                                  hit_test_depth);
-    for (uint32_t i = 0;
-         i <= static_cast<uint8_t>(ImageSelectionOutcome::kMaxValue); i++) {
-      unsigned val = 1 << i;
-      if (outcome & val) {
-        base::UmaHistogramEnumeration(
-            "Blink.ContextMenu.ImageSelection.Outcome",
-            ImageSelectionOutcome(i));
-      }
-    }
   }
   // If there is anything preventing this image selection, return nullptr.
   uint32_t blocking_image_selection_mask =

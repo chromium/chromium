@@ -1082,19 +1082,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.ContextMenu.ImageSelection.Outcome"
-    enum="ImageSelectionOutcome" expires_after="2024-03-17">
-  <owner>flackr@chromium.org</owner>
-  <owner>blink-interactions-team@google.com</owner>
-  <summary>
-    The outcome of an image selection search that may or may not trigger the
-    context menu.
-
-    Only recorded when a user long presses or right clicks a document (and an
-    image is found).
-  </summary>
-</histogram>
-
 <histogram name="Blink.ContextMenu.ImageSelection.RetrievalOutcome"
     enum="ImageSelectionRetrievalOutcome" expires_after="2023-08-31">
   <owner>flackr@chromium.org</owner>

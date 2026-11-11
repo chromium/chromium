@@ -72,9 +72,6 @@ class CORE_EXPORT ContextMenuController
   void CustomContextMenuAction(uint32_t action) override;
   void ContextMenuClosed(const KURL& link_followed) override;
 
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.  Keep in sync with enum in
-  // tools/metrics/histograms/enums.xml
   enum class ImageSelectionOutcome : uint8_t {
     // An image node was found to be the topmost node.
     kImageFoundStandard = 0,
@@ -93,8 +90,6 @@ class CORE_EXPORT ContextMenuController
     // A cross frame node was found while penetrating, which is not yet
     // supported.
     kBlockedByCrossFrameNode = 4,
-
-    kMaxValue = kBlockedByCrossFrameNode,
   };
 
   // These values are persisted to logs. Entries should not be renumbered and

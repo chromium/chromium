@@ -7744,14 +7744,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="1" label="Image decode is requested by more than one client"/>
 </enum>
 
-<enum name="ImageSelectionOutcome">
-  <int value="0" label="Image node was the topmost node."/>
-  <int value="1" label="Image node was below topmost node"/>
-  <int value="2" label="Blocking opaque node was found"/>
-  <int value="3" label="Context menu listener was found"/>
-  <int value="4" label="Blocking cross frame node was found"/>
-</enum>
-
 <enum name="ImageSelectionRetrievalOutcome">
   <int value="0" label="Cached image node was successfully retrieved."/>
   <int value="1" label="Cached image node was not found."/>
