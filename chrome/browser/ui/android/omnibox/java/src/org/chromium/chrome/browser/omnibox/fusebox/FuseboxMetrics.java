@@ -234,6 +234,28 @@ public class FuseboxMetrics {
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:MobileFuseboxPickerOutcome)
 
+    /** Why the Drive picker ended with {@link MobileFuseboxPickerOutcome#PERMISSION_DENIED}. */
+    // LINT.IfChange(MobileFuseboxDrivePermissionDeniedReason)
+    @IntDef({
+        DrivePermissionDeniedReason.ACCOUNT_RESTRICTED,
+        DrivePermissionDeniedReason.PAGE_NOT_SHOWN,
+        DrivePermissionDeniedReason.PAGE_FAILED_AFTER_SHOWN,
+        DrivePermissionDeniedReason.USER_CLOSED_AFTER_SHOWN,
+        DrivePermissionDeniedReason.COUNT
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @Target({ElementType.TYPE_USE})
+    @NullMarked
+    public @interface DrivePermissionDeniedReason {
+        int ACCOUNT_RESTRICTED = 0;
+        int PAGE_NOT_SHOWN = 1;
+        int PAGE_FAILED_AFTER_SHOWN = 2;
+        int USER_CLOSED_AFTER_SHOWN = 3;
+        int COUNT = 4;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:MobileFuseboxDrivePermissionDeniedReason)
+
     /** Slices for {@code Omnibox.MobileFusebox.PickerOutcome{AttachmentType}} in histograms.xml. */
     @IntDef({
         MobileFuseboxPickerAttachmentType.DRIVE,
@@ -742,6 +764,13 @@ public class FuseboxMetrics {
 
     static void recordDrivePickerOutcome(@MobileFuseboxPickerOutcome int outcome) {
         recordPickerOutcome(MobileFuseboxPickerAttachmentType.DRIVE, outcome);
+    }
+
+    public static void recordDrivePermissionDeniedReason(@DrivePermissionDeniedReason int reason) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Omnibox.MobileFusebox.Drive.PermissionDeniedReason",
+                reason,
+                DrivePermissionDeniedReason.COUNT);
     }
 
     static void recordTabPickerOutcome(@MobileFuseboxPickerOutcome int outcome) {

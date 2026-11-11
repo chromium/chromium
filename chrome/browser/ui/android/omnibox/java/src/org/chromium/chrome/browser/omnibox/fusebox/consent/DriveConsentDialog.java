@@ -34,6 +34,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.DriveDisclaimerBridge;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.DrivePermissionDeniedReason;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -102,6 +104,7 @@ public class DriveConsentDialog
     private boolean mDestroyed;
     private boolean mFinishing;
     private boolean mConsentGranted;
+    private boolean mPagePainted;
 
     /**
      * Shows the Drive ConsentKit dialog.
@@ -124,6 +127,8 @@ public class DriveConsentDialog
                 || activity.isDestroyed()
                 || modalDialogManager == null
                 || tracker == null) {
+            FuseboxMetrics.recordDrivePermissionDeniedReason(
+                    DrivePermissionDeniedReason.PAGE_NOT_SHOWN);
             onConsentComplete.onResult(false);
             return null;
         }
@@ -131,6 +136,7 @@ public class DriveConsentDialog
         DriveConsentDialog dialog =
                 new DriveConsentDialog(activity, modalDialogManager, onConsentComplete);
         if (!dialog.showInternal(windowAndroid, profile)) {
+            dialog.recordDenied(DrivePermissionDeniedReason.PAGE_NOT_SHOWN);
             dialog.destroy();
             return null;
         }
@@ -281,6 +287,7 @@ public class DriveConsentDialog
                         new OnBackPressedCallback(/* enabled= */ true) {
                             @Override
                             public void handleOnBackPressed() {
+                                recordDenied(DrivePermissionDeniedReason.USER_CLOSED_AFTER_SHOWN);
                                 finish(/* granted= */ false);
                             }
                         })
@@ -294,6 +301,8 @@ public class DriveConsentDialog
 
     @Override
     public void onDismiss(PropertyModel model, @DialogDismissalCause int dismissalCause) {
+        // No-op for dismissals started by destroy().
+        recordDenied(DrivePermissionDeniedReason.USER_CLOSED_AFTER_SHOWN);
         mModalDialogModel = null;
         destroy();
     }
@@ -302,6 +311,7 @@ public class DriveConsentDialog
 
     @Override
     public void onPageFirstPaint() {
+        mPagePainted = true;
         if (mLoadingOverlay != null) {
             mLoadingOverlay.setVisibility(View.GONE);
         }
@@ -312,12 +322,21 @@ public class DriveConsentDialog
 
     @Override
     public void onLoadFailed() {
+        recordDenied(DrivePermissionDeniedReason.PAGE_FAILED_AFTER_SHOWN);
         finish(/* granted= */ false);
     }
 
     @Override
     public void onConsentComplete(boolean granted) {
+        if (!granted) recordDenied(DrivePermissionDeniedReason.USER_CLOSED_AFTER_SHOWN);
         finish(granted);
+    }
+
+    /** Records a denial once; reports PAGE_NOT_SHOWN if the page never painted. */
+    private void recordDenied(@DrivePermissionDeniedReason int reasonIfPageShown) {
+        if (mDestroyed || mFinishing) return;
+        FuseboxMetrics.recordDrivePermissionDeniedReason(
+                mPagePainted ? reasonIfPageShown : DrivePermissionDeniedReason.PAGE_NOT_SHOWN);
     }
 
     private void openCustomTab(GURL url) {

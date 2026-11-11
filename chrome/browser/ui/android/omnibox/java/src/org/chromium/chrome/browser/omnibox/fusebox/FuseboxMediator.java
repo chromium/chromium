@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.Fusebox.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.Fusebox.FuseboxState;
 import org.chromium.chrome.browser.omnibox.fusebox.Fusebox.PopupState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AiModeActivationSource;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.DrivePermissionDeniedReason;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.MobileFuseboxPickerOutcome;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.SetActiveModelSource;
@@ -1323,7 +1324,11 @@ class FuseboxMediator implements BackPressHandler {
         switch (status) {
             case DisclaimerStatus.ACCEPTED -> launchDrivePicker(mProfile);
             case DisclaimerStatus.NOT_ACCEPTED -> showDriveConsentDialog(mProfile);
-            case DisclaimerStatus.RESTRICTED -> onDrivePermissionDenied();
+            case DisclaimerStatus.RESTRICTED -> {
+                FuseboxMetrics.recordDrivePermissionDeniedReason(
+                        DrivePermissionDeniedReason.ACCOUNT_RESTRICTED);
+                onDrivePermissionDenied();
+            }
         }
     }
 

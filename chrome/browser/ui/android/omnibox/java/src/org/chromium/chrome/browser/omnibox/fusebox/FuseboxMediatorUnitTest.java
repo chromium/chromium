@@ -82,6 +82,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.Fusebox.FuseboxState;
 import org.chromium.chrome.browser.omnibox.fusebox.Fusebox.PopupState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AiModeActivationSource;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.DrivePermissionDeniedReason;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.MobileFuseboxPickerAttachmentType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.MobileFuseboxPickerOutcome;
@@ -1937,10 +1938,20 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void onDrivePickerClicked_consentRestricted_cancelsWithoutPicker() {
         setDriveConsentStatus(DisclaimerStatus.RESTRICTED);
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Omnibox.MobileFusebox.PickerOutcome.Drive",
+                                MobileFuseboxPickerOutcome.PERMISSION_DENIED)
+                        .expectIntRecord(
+                                "Omnibox.MobileFusebox.Drive.PermissionDeniedReason",
+                                DrivePermissionDeniedReason.ACCOUNT_RESTRICTED)
+                        .build();
 
         mModel.get(FuseboxProperties.POPUP_ATTACH_DRIVE_CLICKED).run();
 
         verify(mDriveFilePickerClient, never()).launchPicker(any(), any(), any(), anyBoolean());
+        histogramWatcher.assertExpected();
     }
 
     @Test

@@ -387,6 +387,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxMetrics.java:MobileFuseboxDriveDocumentType) -->
 
+<!-- LINT.IfChange(MobileFuseboxDrivePermissionDeniedReason) -->
+
+<enum name="MobileFuseboxDrivePermissionDeniedReason">
+  <int value="0" label="Account restricted"/>
+  <int value="1" label="Consent page not shown"/>
+  <int value="2" label="Consent page failed after shown"/>
+  <int value="3" label="User closed consent page after shown"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxMetrics.java:MobileFuseboxDrivePermissionDeniedReason) -->
+
 <!-- LINT.IfChange(MobileFuseboxPickerOutcome) -->
 
 <enum name="MobileFuseboxPickerOutcome">
