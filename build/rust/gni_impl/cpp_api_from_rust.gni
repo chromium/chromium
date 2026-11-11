@@ -6,18 +6,6 @@ import("//build/config/rust.gni")
 import("//build/rust/gni_impl/crubit_shared_args.gni")
 import("//build/toolchain/kythe.gni")
 
-# Crubit features enabled for all `cpp_api_from_rust` targets.
-# See also: https://github.com/google/crubit/blob/main/features/README.md
-_globally_enabled_crubit_features = [
-  # TODO(b/558605603): Remove this feature from the list once it becomes the
-  # default in Crubit.
-  "always_specialize_generics_in_cpp_api_from_rust",
-
-  # TODO(b/489126000): Remove this feature from the list once it becomes the
-  # default in Crubit.
-  "enum_api_v2",
-]
-
 # Defines a C++ `source_set` (and supporting targets) that contains C++
 # bindings for using/calling-into a given Rust crate.
 #
@@ -118,7 +106,7 @@ template("cpp_api_from_rust") {
     forward_variables_from(invoker, [ "testonly" ])
     _gen_dir_relative_h_out = rebase_path(_h_out, root_gen_dir)
     _crate_feature = []
-    foreach(_feature, _globally_enabled_crubit_features) {
+    foreach(_feature, crubit_globally_enabled_features) {
       _crate_feature += [ "--crate-feature=${_crate_name}=${_feature}" ]
     }
     metadata = {
@@ -271,7 +259,7 @@ template("cpp_api_from_rust") {
       "--crate-namespace",
       "self=${_cpp_namespace}",
     ]
-    foreach(_feature, _globally_enabled_crubit_features) {
+    foreach(_feature, crubit_globally_enabled_features) {
       args += [
         "--crate-feature",
         "self=${_feature}",

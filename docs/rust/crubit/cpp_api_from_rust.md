@@ -130,7 +130,7 @@ The generated bindings can then be found and inspected in
 $ cat out/rel/gen/build/rust/tests/test_cpp_api_from_rust/rust_lib.h | head -3
 // Automatically @generated C++ bindings for the following Rust crate:
 // rust_lib_1dc874e1
-// Features: <none>
+// Features: ...
 ```
 
 ## Specifying binding dependencies
