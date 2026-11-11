@@ -10,7 +10,7 @@ import {assertArrayEquals, assertEquals, assertFalse, assertLT, assertNotEquals,
 import {keyDownOn} from 'chrome-untrusted://webui-test/keyboard_mock_interactions.js';
 import {hasStyle, microtasksFinished, whenCheck} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createAndSetVoices, createSpeechSynthesisVoice, emitEvent, setContent, setupAppTestEnvironment, setupBasicSpeech} from './common.js';
+import {assertFontsEqual, createAndSetVoices, createSpeechSynthesisVoice, emitEvent, getLineFocusPadding, setContent, setupAppTestEnvironment, setupBasicSpeech} from './common.js';
 import type {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
 import type {TestContentBrowserProxy} from './test_content_browser_proxy.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
@@ -32,11 +32,6 @@ suite('AppReceivesToolbarChanges', () => {
   let visualBrowserProxy: TestVisualBrowserProxy;
   let voiceLanguageController: VoiceLanguageController;
 
-  function getLineFocusPadding(): number {
-    const val = app.style.getPropertyValue('--line-focus-padding');
-    return val ? parseInt(val) : 0;
-  }
-
   function containerLetterSpacing(): number {
     return +window.getComputedStyle(app.$.container)
                 .getPropertyValue('--letter-spacing')
@@ -57,12 +52,6 @@ suite('AppReceivesToolbarChanges', () => {
   function containerFont(): string {
     return window.getComputedStyle(app.$.container)
         .getPropertyValue('font-family');
-  }
-
-  function assertFontsEqual(actual: string, expected: string): void {
-    assertEquals(
-        expected.trim().toLowerCase().replaceAll('"', ''),
-        actual.trim().toLowerCase().replaceAll('"', ''));
   }
 
   function emitFont(fontName: string): void {
@@ -247,21 +236,21 @@ suite('AppReceivesToolbarChanges', () => {
         app, ToolbarEvent.LINE_FOCUS_STYLE,
         {detail: {data: LineFocusStyle.UNDERLINE}});
     await microtasksFinished();
-    assertEquals(0, getLineFocusPadding());
+    assertEquals(0, getLineFocusPadding(app));
     // Ensure there's content so that padding can be added.
     app.updateContent();
-    await whenCheck(app, () => getLineFocusPadding() !== 0);
-    assertLT(0, getLineFocusPadding());
+    await whenCheck(app, () => getLineFocusPadding(app) !== 0);
+    assertLT(0, getLineFocusPadding(app));
 
     // Toggling off should remove padding.
     keyDownOn(app, 0, ['alt'], 'l');
     await microtasksFinished();
-    assertEquals(0, getLineFocusPadding());
+    assertEquals(0, getLineFocusPadding(app));
 
     // Toggling on should add padding.
     keyDownOn(app, 0, ['alt'], 'l');
     await microtasksFinished();
-    assertLT(0, getLineFocusPadding());
+    assertLT(0, getLineFocusPadding(app));
   });
 
   test('line focus style change updates line focus', async () => {

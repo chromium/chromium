@@ -9,7 +9,7 @@ import {LineFocusController, LineFocusModel, LineFocusMovement, LineFocusStyle, 
 import type {SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertLT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {setupTestEnvironment} from './common.js';
+import {applyContainerStyles, createShortContainer, setupTestEnvironment} from './common.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import type {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
 import type {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
@@ -28,19 +28,6 @@ suite('LineFocusController', () => {
   let lineFocusModesChanged: boolean;
   let visualBrowserProxy: TestVisualBrowserProxy;
 
-  function createShortContainer(): HTMLElement {
-    const container = document.createElement('p');
-    container.innerText =
-        'I\'ve heard it said\nThat people come into our lives\nfor a reason.';
-    container.style.whiteSpace = 'pre';
-    container.style.width = 'max-content';
-    container.style.margin = '0';
-    container.style.fontSize = '20px';
-    container.style.lineHeight = '40px';
-    document.body.appendChild(container);
-    return container;
-  }
-
   function createLongContainer(): HTMLElement {
     const container = document.createElement('p');
     container.innerText =
@@ -48,11 +35,7 @@ suite('LineFocusController', () => {
         'who help us most to grow\nif we let them and we help them in return\n' +
         'Now I don\'t know if I believe that\'s true\n' +
         'But I know I\'m who I am today because I met you';
-    container.style.whiteSpace = 'pre';
-    container.style.width = 'max-content';
-    container.style.margin = '0';
-    container.style.fontSize = '20px';
-    container.style.lineHeight = '40px';
+    applyContainerStyles(container);
     document.body.appendChild(container);
     return container;
   }

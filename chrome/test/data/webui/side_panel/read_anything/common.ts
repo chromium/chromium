@@ -316,6 +316,37 @@ export function assertHtmlExcludes(partialHtml: string, axNodeId: number) {
   assertStringExcludes(getInnerHtml(axNodeId), partialHtml);
 }
 
+// Compares font names, ignoring case, quotes, and surrounding whitespace.
+export function assertFontsEqual(actual: string, expected: string): void {
+  assertEquals(
+      expected.trim().toLowerCase().replaceAll('"', ''),
+      actual.trim().toLowerCase().replaceAll('"', ''));
+}
+
+export function getLineFocusPadding(app: AppElement): number {
+  const val = app.style.getPropertyValue('--line-focus-padding');
+  return val ? parseInt(val) : 0;
+}
+
+// Styles a line focus test container so each text line is 40px tall.
+export function applyContainerStyles(container: HTMLElement): void {
+  container.style.whiteSpace = 'pre';
+  container.style.width = 'max-content';
+  container.style.margin = '0';
+  container.style.fontSize = '20px';
+  container.style.lineHeight = '2';
+}
+
+// Adds a styled <p> with 3 lines of text to the page for line focus tests.
+export function createShortContainer(): HTMLElement {
+  const container = document.createElement('p');
+  container.innerText =
+      'I\'ve heard it said\nThat people come into our lives\nfor a reason.\n';
+  applyContainerStyles(container);
+  document.body.appendChild(container);
+  return container;
+}
+
 export function setWindowSize(height: number, width: number) {
   if (Object.getOwnPropertyDescriptor(window, 'innerHeight')?.configurable !==
       false) {

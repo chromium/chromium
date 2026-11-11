@@ -6,7 +6,7 @@ import {LineFocusCursorMoveMode, LineFocusLineStyleMode, LineFocusModel, LineFoc
 import type {LineFocusMoveMode, MoveModeDelegate, NodeStore, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertGT, assertLT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {setupTestEnvironment} from './common.js';
+import {applyContainerStyles, createShortContainer, setupTestEnvironment} from './common.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import type {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
@@ -33,23 +33,6 @@ suite('LineFocusMoveMode', () => {
 
   function getSpeechLines(): number {
     return metricsBrowserProxy.getCallCount('incrementLineFocusSpeechLines');
-  }
-
-  function applyContainerStyles(container: HTMLElement): void {
-    container.style.whiteSpace = 'pre';
-    container.style.width = 'max-content';
-    container.style.margin = '0';
-    container.style.fontSize = '20px';
-    container.style.lineHeight = '2';
-  }
-
-  function createShortContainer(): HTMLElement {
-    const container = document.createElement('p');
-    container.innerText =
-        'I\'ve heard it said\nThat people come into our lives\nfor a reason.\n';
-    applyContainerStyles(container);
-    document.body.appendChild(container);
-    return container;
   }
 
   function createSuperscriptContainer(): HTMLElement {

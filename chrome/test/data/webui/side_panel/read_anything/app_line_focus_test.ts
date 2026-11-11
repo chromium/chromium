@@ -9,18 +9,13 @@ import {calculateTextBounds, ContentPositionSource, ContentType, LineFocusContro
 import {assertEquals, assertFalse, assertLT, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished, whenCheck} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {emitEvent, setupAppTestEnvironment} from './common.js';
+import {emitEvent, getLineFocusPadding, setupAppTestEnvironment} from './common.js';
 
 suite('AppLineFocus', () => {
   let app: AppElement;
   let contentController: ContentController;
   let selectionController: SelectionController;
   let speechController: SpeechController;
-
-  function getLineFocusPadding(): number {
-    const val = app.style.getPropertyValue('--line-focus-padding');
-    return val ? parseInt(val) : 0;
-  }
 
   setup(async () => {
     const result = await setupAppTestEnvironment();
@@ -68,12 +63,12 @@ suite('AppLineFocus', () => {
         app, ToolbarEvent.LINE_FOCUS_STYLE,
         {detail: {data: LineFocusStyle.UNDERLINE}});
     await microtasksFinished();
-    assertEquals(0, getLineFocusPadding());
+    assertEquals(0, getLineFocusPadding(app));
 
     app.updateContent();
-    await whenCheck(app, () => getLineFocusPadding() !== 0);
+    await whenCheck(app, () => getLineFocusPadding(app) !== 0);
 
-    assertLT(0, getLineFocusPadding());
+    assertLT(0, getLineFocusPadding(app));
   });
 
   test(
@@ -84,12 +79,12 @@ suite('AppLineFocus', () => {
             {detail: {data: LineFocusMovement.STATIC}});
         emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: false}});
         await microtasksFinished();
-        assertEquals(0, getLineFocusPadding());
+        assertEquals(0, getLineFocusPadding(app));
 
         app.updateContent();
         await microtasksFinished();
 
-        assertEquals(0, getLineFocusPadding());
+        assertEquals(0, getLineFocusPadding(app));
       });
 
   test('line focus only shows on content', async () => {
@@ -261,7 +256,7 @@ suite('AppLineFocus', () => {
           await setupScrollEnd;
         }
 
-        assertLT(0, getLineFocusPadding());
+        assertLT(0, getLineFocusPadding(app));
         const staticY =
             Number.parseFloat(app.style.getPropertyValue('--line-focus-y'));
 
@@ -276,7 +271,7 @@ suite('AppLineFocus', () => {
         await cursorScrollEnd;
         await microtasksFinished();
 
-        assertEquals(0, getLineFocusPadding());
+        assertEquals(0, getLineFocusPadding(app));
         const cursorY =
             Number.parseFloat(app.style.getPropertyValue('--line-focus-y'));
         const firstLineTop =
@@ -565,7 +560,7 @@ suite('AppLineFocus', () => {
             {detail: {data: LineFocusMovement.CURSOR}});
         await microtasksFinished();
 
-        assertEquals(0, getLineFocusPadding());
+        assertEquals(0, getLineFocusPadding(app));
         const cursorY =
             Number.parseFloat(app.style.getPropertyValue('--line-focus-y'));
         const titleBottom =
