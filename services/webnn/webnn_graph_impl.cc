@@ -10,8 +10,11 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
 #include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
@@ -60,6 +63,69 @@ WebNNGraphImpl::ComputeResourceInfo::operator=(ComputeResourceInfo&&) = default;
 
 WebNNGraphImpl::ComputeResourceInfo::~ComputeResourceInfo() = default;
 
+namespace {
+
+std::string_view GetDeviceTypeHistogramSuffix(mojom::Device device) {
+  switch (device) {
+    case mojom::Device::kCpu:
+      return "CPU";
+    case mojom::Device::kGpu:
+      return "GPU";
+    case mojom::Device::kNpu:
+      return "NPU";
+  }
+}
+
+void RecordGraphDevices(mojom::Device context_device,
+                        base::span<const mojom::Device> graph_devices) {
+  // Backends that do not report per-graph execution devices pass an empty list.
+  if (graph_devices.empty()) {
+    return;
+  }
+
+  bool has_cpu = false;
+  bool has_gpu = false;
+  bool has_npu = false;
+  for (mojom::Device device : graph_devices) {
+    switch (device) {
+      case mojom::Device::kCpu:
+        has_cpu = true;
+        break;
+      case mojom::Device::kGpu:
+        has_gpu = true;
+        break;
+      case mojom::Device::kNpu:
+        has_npu = true;
+        break;
+    }
+  }
+
+  WebNNGraphImpl::GraphDevicesUma uma_value;
+  if (has_cpu && has_gpu && has_npu) {
+    uma_value = WebNNGraphImpl::GraphDevicesUma::kCpuGpuAndNpu;
+  } else if (has_gpu && has_npu) {
+    uma_value = WebNNGraphImpl::GraphDevicesUma::kGpuAndNpu;
+  } else if (has_cpu && has_npu) {
+    uma_value = WebNNGraphImpl::GraphDevicesUma::kCpuAndNpu;
+  } else if (has_cpu && has_gpu) {
+    uma_value = WebNNGraphImpl::GraphDevicesUma::kCpuAndGpu;
+  } else if (has_npu) {
+    uma_value = WebNNGraphImpl::GraphDevicesUma::kNpuOnly;
+  } else if (has_gpu) {
+    uma_value = WebNNGraphImpl::GraphDevicesUma::kGpuOnly;
+  } else {
+    CHECK(has_cpu);
+    uma_value = WebNNGraphImpl::GraphDevicesUma::kCpuOnly;
+  }
+
+  base::UmaHistogramEnumeration(
+      base::StrCat({"WebNN.Graph.Devices.",
+                    GetDeviceTypeHistogramSuffix(context_device)}),
+      uma_value);
+}
+
+}  // namespace
+
 WebNNGraphImpl::WebNNGraphImpl(WebNNContextImpl& context,
                                ComputeResourceInfo compute_resource_info,
                                std::vector<mojom::Device> devices)
@@ -67,7 +133,9 @@ WebNNGraphImpl::WebNNGraphImpl(WebNNContextImpl& context,
           context.owning_task_runner()),
       context_(context),
       compute_resource_info_(std::move(compute_resource_info)),
-      devices_(std::move(devices)) {}
+      devices_(std::move(devices)) {
+  RecordGraphDevices(context.options().device, devices_);
+}
 
 WebNNGraphImpl::~WebNNGraphImpl() = default;
 

@@ -120,6 +120,24 @@ chromium-metrics-reviews@google.com.
   <summary>Records what device type WebNN is running on.</summary>
 </histogram>
 
+<histogram name="WebNN.Graph.Devices.{DeviceType}" enum="GraphDevicesUma"
+    expires_after="2027-06-27">
+  <owner>phillis@chromium.org</owner>
+  <owner>reillyg@chromium.org</owner>
+  <owner>src/services/webnn/OWNERS</owner>
+  <summary>
+    Records the combination of hardware devices that a compiled WebNN graph will
+    execute on, for a context created with {DeviceType}. Logged once per MLGraph
+    when graph compilation succeeds and the backend reports a non-empty list of
+    execution devices.
+  </summary>
+  <token key="DeviceType">
+    <variant name="CPU" summary="CPU device"/>
+    <variant name="GPU" summary="GPU device"/>
+    <variant name="NPU" summary="NPU device"/>
+  </token>
+</histogram>
+
 <histogram name="WebNN.MLTensor.TimingMs.Read" units="ms"
     expires_after="2027-06-27">
   <owner>reillyg@chromium.org</owner>

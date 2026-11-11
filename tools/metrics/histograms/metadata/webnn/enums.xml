@@ -61,6 +61,20 @@ DeviceTypeUma in //services/webnn/webnn_context_provider_impl.cc.
 
 <!-- LINT.ThenChange(//services/webnn/host/execution_provider_initializer.cc:ExecutionProviderStatusUma) -->
 
+<!-- LINT.IfChange(GraphDevicesUma) -->
+
+<enum name="GraphDevicesUma">
+  <int value="0" label="CPUOnly"/>
+  <int value="1" label="GPUOnly"/>
+  <int value="2" label="NPUOnly"/>
+  <int value="3" label="CPUAndGPU"/>
+  <int value="4" label="CPUAndNPU"/>
+  <int value="5" label="GPUAndNPU"/>
+  <int value="6" label="CPUGPUAndNPU"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/webnn/webnn_graph_impl.h:GraphDevicesUma) -->
+
 <!--
 The values in MLGraphOperatorUma enum type map to those in the enum class
 MLGraphOperatorUma in //third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.cc.

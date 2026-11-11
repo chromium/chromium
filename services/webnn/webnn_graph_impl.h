@@ -46,6 +46,22 @@ class GraphImplCoreml;
 class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphImpl
     : public base::RefCountedDeleteOnSequence<WebNNGraphImpl> {
  public:
+  // These values are persisted to logs. Entries should not be renumbered or
+  // removed and numeric values should never be reused.
+  //
+  // LINT.IfChange(GraphDevicesUma)
+  enum class GraphDevicesUma {
+    kCpuOnly = 0,
+    kGpuOnly = 1,
+    kNpuOnly = 2,
+    kCpuAndGpu = 3,
+    kCpuAndNpu = 4,
+    kGpuAndNpu = 5,
+    kCpuGpuAndNpu = 6,
+    kMaxValue = kCpuGpuAndNpu,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/webnn/enums.xml:GraphDevicesUma)
+
   // Describes the constraints of a graph's inputs and outputs.
   struct COMPONENT_EXPORT(WEBNN_SERVICE) ComputeResourceInfo {
     ComputeResourceInfo(

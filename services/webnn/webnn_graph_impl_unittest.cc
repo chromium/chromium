@@ -15,6 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -53,18 +54,20 @@ namespace {
 class FakeWebNNGraphImpl final : public WebNNGraphImpl {
  public:
   FakeWebNNGraphImpl(WebNNContextImpl& context,
-                     ComputeResourceInfo compute_resource_info)
+                     ComputeResourceInfo compute_resource_info,
+                     std::vector<mojom::Device> devices = {})
       : WebNNGraphImpl(context,
                        std::move(compute_resource_info),
-                       /*devices=*/{}) {}
+                       std::move(devices)) {}
 
   static void CreateAndBuild(
       base::WeakPtr<WebNNContextImpl> context,
       const mojom::GraphInfo& graph_info,
       ComputeResourceInfo compute_resource_info,
+      std::vector<mojom::Device> devices,
       WebNNContextImpl::CreateGraphImplCallback callback) {
     std::move(callback).Run(base::MakeRefCounted<FakeWebNNGraphImpl>(
-        *context, std::move(compute_resource_info)));
+        *context, std::move(compute_resource_info), std::move(devices)));
   }
 
  private:
@@ -107,6 +110,8 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
   FakeWebNNContextImpl(
       mojo::PendingReceiver<mojom::WebNNContext> receiver,
       base::WeakPtr<WebNNContextProviderImpl> context_provider,
+      mojom::CreateContextOptionsPtr options,
+      std::vector<mojom::Device> graph_devices,
       std::unique_ptr<GpuTaskScheduler> gpu_task_scheduler,
       scoped_refptr<gpu::MemoryTracker> memory_tracker,
       scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
@@ -117,14 +122,15 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
                          // The backend type is ignored for testing.
                          ContextBackendUma::kNotSupported,
                          GetContextPropertiesForTesting(),
-                         mojom::CreateContextOptions::New(),
+                         std::move(options),
                          mojo::ScopedDataPipeConsumerHandle(),
                          mojo::ScopedDataPipeProducerHandle(),
                          std::move(gpu_task_scheduler),
                          std::move(memory_tracker),
                          std::move(owning_task_runner),
                          shared_image_manager,
-                         std::move(main_task_runner)) {}
+                         std::move(main_task_runner)),
+        graph_devices_(std::move(graph_devices)) {}
 
   // WebNNContextImpl:
   base::WeakPtr<WebNNContextImpl> AsWeakPtr() override {
@@ -144,7 +150,7 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
       CreateGraphImplCallback callback) override {
     FakeWebNNGraphImpl::CreateAndBuild(AsWeakPtr(), *graph_info,
                                        std::move(compute_resource_info),
-                                       std::move(callback));
+                                       graph_devices_, std::move(callback));
   }
 
   base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>
@@ -170,6 +176,7 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
     return {};
   }
 
+  std::vector<mojom::Device> graph_devices_;
   base::WeakPtrFactory<FakeWebNNContextImpl> weak_factory_{this};
 };
 
@@ -177,6 +184,10 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
 // the graph validation steps and computation resources.
 class FakeWebNNBackend : public WebNNContextProviderImpl::BackendForTesting {
  public:
+  void SetGraphDevices(std::vector<mojom::Device> graph_devices) {
+    graph_devices_ = std::move(graph_devices);
+  }
+
   std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter> CreateWebNNContext(
       base::WeakPtr<WebNNContextProviderImpl> context_provider_impl,
       mojom::CreateContextOptionsPtr options,
@@ -192,7 +203,8 @@ class FakeWebNNBackend : public WebNNContextProviderImpl::BackendForTesting {
     std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter> context_impl(
         new FakeWebNNContextImpl(
             remote.InitWithNewPipeAndPassReceiver(),
-            std::move(context_provider_impl), std::move(gpu_task_scheduler),
+            std::move(context_provider_impl), std::move(options),
+            graph_devices_, std::move(gpu_task_scheduler),
             std::move(memory_tracker), std::move(owning_task_runner),
             shared_image_manager, std::move(main_task_runner)),
         OnTaskRunnerDeleter(std::move(task_runner)));
@@ -207,6 +219,9 @@ class FakeWebNNBackend : public WebNNContextProviderImpl::BackendForTesting {
         mojom::CreateContextResult::NewSuccess(std::move(success)));
     return context_impl;
   }
+
+ private:
+  std::vector<mojom::Device> graph_devices_;
 };
 
 struct CreateTensorSuccess {
@@ -235,10 +250,13 @@ CreateTensorSuccess CreateWebNNTensor(
 }
 
 mojo::Remote<mojom::WebNNContext> CreateWebNNContext(
-    mojo::Remote<mojom::WebNNContextProvider>& webnn_context_provider) {
+    mojo::Remote<mojom::WebNNContextProvider>& webnn_context_provider,
+    mojom::Device device = mojom::Device::kGpu) {
   base::test::TestFuture<mojom::CreateContextResultPtr> create_context_future;
   webnn_context_provider->CreateWebNNContext(
-      mojom::CreateContextOptions::New(), create_context_future.GetCallback());
+      mojom::CreateContextOptions::New(
+          device, mojom::CreateContextOptions::PowerPreference::kDefault),
+      create_context_future.GetCallback());
   mojom::CreateContextResultPtr create_context_result =
       create_context_future.Take();
   mojo::Remote<mojom::WebNNContext> webnn_context;
@@ -348,6 +366,8 @@ class WebNNGraphImplTest : public testing::Test {
   mojo::Remote<mojom::WebNNContextProvider>& provider_remote() {
     return provider_remote_;
   }
+
+  FakeWebNNBackend& backend_for_testing() { return backend_for_testing_; }
 
  protected:
   WebNNGraphImplTest()
@@ -7747,6 +7767,87 @@ TEST_F(WebNNGraphImplTest, BuildOperationWithNonexistentInputs) {
   builder.BuildRelu(intermediate_operand_id, output_operand_id);
   builder.BuildRelu(input_operand_id, intermediate_operand_id);
   EXPECT_FALSE(builder.IsValidGraphForTesting(context_properties));
+}
+
+TEST_F(WebNNGraphImplTest, RecordGraphDevicesHistogram) {
+  struct TestCase {
+    mojom::Device context_device;
+    std::vector<mojom::Device> graph_devices;
+    std::string_view expected_histogram;
+    std::optional<WebNNGraphImpl::GraphDevicesUma> expected_bucket;
+  };
+
+  const TestCase kTestCases[] = {
+      {mojom::Device::kCpu, {}, "WebNN.Graph.Devices.CPU", std::nullopt},
+      {mojom::Device::kCpu,
+       {mojom::Device::kCpu},
+       "WebNN.Graph.Devices.CPU",
+       WebNNGraphImpl::GraphDevicesUma::kCpuOnly},
+      {mojom::Device::kGpu,
+       {mojom::Device::kGpu},
+       "WebNN.Graph.Devices.GPU",
+       WebNNGraphImpl::GraphDevicesUma::kGpuOnly},
+      {mojom::Device::kNpu,
+       {mojom::Device::kNpu},
+       "WebNN.Graph.Devices.NPU",
+       WebNNGraphImpl::GraphDevicesUma::kNpuOnly},
+      {mojom::Device::kGpu,
+       {mojom::Device::kGpu, mojom::Device::kCpu},
+       "WebNN.Graph.Devices.GPU",
+       WebNNGraphImpl::GraphDevicesUma::kCpuAndGpu},
+      {mojom::Device::kNpu,
+       {mojom::Device::kNpu, mojom::Device::kCpu},
+       "WebNN.Graph.Devices.NPU",
+       WebNNGraphImpl::GraphDevicesUma::kCpuAndNpu},
+      {mojom::Device::kNpu,
+       {mojom::Device::kNpu, mojom::Device::kGpu},
+       "WebNN.Graph.Devices.NPU",
+       WebNNGraphImpl::GraphDevicesUma::kGpuAndNpu},
+      {mojom::Device::kNpu,
+       {mojom::Device::kNpu, mojom::Device::kGpu, mojom::Device::kCpu},
+       "WebNN.Graph.Devices.NPU",
+       WebNNGraphImpl::GraphDevicesUma::kCpuGpuAndNpu},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    base::HistogramTester histogram_tester;
+    backend_for_testing().SetGraphDevices(test_case.graph_devices);
+
+    mojo::Remote<mojom::WebNNContext> webnn_context =
+        CreateWebNNContext(provider_remote(), test_case.context_device);
+
+    mojo::Remote<mojom::WebNNGraphBuilder> graph_builder_remote;
+    webnn_context->CreateGraphBuilder(
+        graph_builder_remote.BindNewPipeAndPassReceiver());
+
+    GraphInfoBuilder builder(graph_builder_remote);
+    OperandId input_operand_id =
+        builder.BuildInput("input", {2, 2}, OperandDataType::kFloat32);
+    OperandId output_operand_id =
+        builder.BuildOutput("output", {2, 2}, OperandDataType::kFloat32);
+    builder.BuildRelu(input_operand_id, output_operand_id);
+
+    base::test::TestFuture<
+        base::expected<mojom::CreateGraphSuccessPtr, mojom::ErrorPtr>>
+        create_graph_future;
+    graph_builder_remote->CreateGraph(builder.TakeGraphInfo(),
+                                      create_graph_future.GetCallback());
+    auto create_graph_result = create_graph_future.Take();
+    ASSERT_TRUE(create_graph_result.has_value());
+    EXPECT_EQ(create_graph_result.value()->devices, test_case.graph_devices);
+
+    if (test_case.expected_bucket.has_value()) {
+      histogram_tester.ExpectUniqueSample(test_case.expected_histogram,
+                                          *test_case.expected_bucket, 1);
+      EXPECT_EQ(histogram_tester.GetTotalCountsForPrefix("WebNN.Graph.Devices.")
+                    .size(),
+                1u);
+    } else {
+      EXPECT_TRUE(
+          histogram_tester.GetTotalCountsForPrefix("WebNN.Graph.Devices.")
+              .empty());
+    }
+  }
 }
 
 }  // namespace webnn
