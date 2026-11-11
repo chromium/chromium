@@ -1173,16 +1173,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Download.Shelf.DragInfo" enum="Download.DragInfo"
-    expires_after="2023-11-22">
-  <owner>chlily@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    This tracks drag events on a complete download on the shelf, and also
-    general download completion on the shelf as a point of reference.
-  </summary>
-</histogram>
-
 <histogram name="Download.ShowedDownloadWarning" enum="DownloadItem.DangerType"
     expires_after="never">
 <!-- expires-never: Monitors warning bypass rate. -->

@@ -69,11 +69,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/download/android/java/src/org/chromium/chrome/browser/download/dialogs/DangerousDownloadDialog.java:DangerousDownloadDialogEvent) -->
 
-<enum name="Download.DragInfo">
-  <int value="0" label="DRAG_STARTED"/>
-  <int value="1" label="DOWNLOAD_COMPLETE"/>
-</enum>
-
 <enum name="Download.Service.CompletionType">
   <int value="0" label="SUCCEED"/>
   <int value="1" label="FAIL"/>
