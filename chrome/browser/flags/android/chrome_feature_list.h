@@ -256,7 +256,6 @@ BASE_DECLARE_FEATURE(kNotificationTrampoline);
 BASE_DECLARE_FEATURE(kNotificationTrampolineNoNewTask);
 BASE_DECLARE_FEATURE(kNtpAurora);
 BASE_DECLARE_FEATURE(kNtpAuroraV2);
-BASE_DECLARE_FEATURE(kNtpMvcRefactor);
 BASE_DECLARE_FEATURE(kNtpVision);
 BASE_DECLARE_FEATURE(kOctoberTestUXR);
 BASE_DECLARE_FEATURE(kOmahaMinSdkVersionAndroid);

@@ -747,7 +747,6 @@ public abstract class ChromeFeatureList {
     public static final String NTP_AURORA = "NtpAurora";
     public static final String NTP_AURORA_V2 = "NtpAuroraV2";
     public static final String NTP_CUSTOMIZE_WEBUI_ANDROID = "NtpCustomizeWebUiAndroid";
-    public static final String NTP_MVC_REFACTOR = "NtpMvcRefactor";
     public static final String NTP_VISION = "NtpVision";
     public static final String OMAHA_MIN_SDK_VERSION_ANDROID = "OmahaMinSdkVersionAndroid";
     public static final String OMNIBOX_CACHE_SUGGESTION_RESOURCES =
@@ -1395,8 +1394,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(NOTIFICATION_TRAMPOLINE, false);
     public static final CachedFlag sNotificationTrampolineNoNewTask =
             newCachedFlag(NOTIFICATION_TRAMPOLINE_NO_NEW_TASK, true);
-    public static final CachedFlag sNtpMvcRefactor =
-            newCachedFlag(NTP_MVC_REFACTOR, /* defaultValue= */ false);
     public static final CachedFlag sNtpVision =
             newCachedFlag(NTP_VISION, /* defaultValue= */ false);
     public static final CachedFlag sOnStartupSettingsUi =
@@ -1693,7 +1690,6 @@ public abstract class ChromeFeatureList {
                     sNewTabPageCustomizationV2,
                     sNotificationTrampoline,
                     sNotificationTrampolineNoNewTask,
-                    sNtpMvcRefactor,
                     sNtpVision,
                     sOnStartupSettingsUi,
                     sOnStartupWindowPolicy,

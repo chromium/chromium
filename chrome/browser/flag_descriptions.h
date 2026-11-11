@@ -6459,10 +6459,6 @@ inline constexpr char kNotificationPermissionRationaleDescription[] =
     "Configure the dialog shown before requesting notification permission. "
     "Only works with builds targeting Android T.";
 
-inline constexpr char kNtpMvcRefactorName[] = "New Tab Page Refactor";
-inline constexpr char kNtpMvcRefactorDescription[] =
-    "Enables the refactor of the new tab page for MVC compliance.";
-
 inline constexpr char kOctoberTestUXRName[] = "OctoberTestUXR";
 inline constexpr char kOctoberTestUXRDescription[] =
     "Marks this device as a UXR study participant. No behavior change.";

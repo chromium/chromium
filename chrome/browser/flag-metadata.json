@@ -7363,11 +7363,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "ntp-mvc-refactor",
-    "owners": ["hanxi@google.com", "yanlinghu@google.com", "clank-start@google.com"],
-    "expiry_milestone": 170
-  },
-  {
     "name": "ntp-mvt-in-bottom-sheet",
     "owners": [ "thegreenfrog@google.com", "bling-pandamonium@google.com" ],
     "expiry_milestone": 160

@@ -13050,12 +13050,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     "UnthrottleAsyncTouchMoves")},
 
 #if BUILDFLAG(IS_ANDROID)
-    {"ntp-mvc-refactor", flag_descriptions::kNtpMvcRefactorName,
-     flag_descriptions::kNtpMvcRefactorDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kNtpMvcRefactor)},
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
     {"new-tab-page-customization-theme-sync",
      flag_descriptions::kNewTabPageCustomizationThemeSyncName,
      flag_descriptions::kNewTabPageCustomizationThemeSyncDescription,
