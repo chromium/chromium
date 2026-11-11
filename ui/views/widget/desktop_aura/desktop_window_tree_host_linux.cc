@@ -153,6 +153,14 @@ std::unique_ptr<FrameView> DesktopWindowTreeHostLinux::CreateFrameView() {
   return frame_view;
 }
 
+void DesktopWindowTreeHostLinux::FrameTypeChanged() {
+  DesktopWindowTreeHostPlatform::FrameTypeChanged();
+  if (auto* x11_extension = GetX11Extension()) {
+    x11_extension->OnFrameTypeChanged();
+  }
+  UpdateFrameHints();
+}
+
 gfx::Rect DesktopWindowTreeHostLinux::GetXRootWindowOuterBounds() const {
   // TODO(msisov): must be removed as soon as all X11 low-level bits are moved
   // to Ozone.
@@ -232,7 +240,9 @@ gfx::Insets DesktopWindowTreeHostLinux::CalculateInsetsInDIP(
 
   auto* frame_view_linux = views::AsViewClass<FrameViewLinux>(
       widget->non_client_view()->frame_view());
-  if (!frame_view_linux) {
+  // Without client-side shadows, the frame border is opaque and part of the
+  // visible window, so it is not a decoration inset.
+  if (!frame_view_linux || !frame_view_linux->ShouldDrawRestoredFrameShadow()) {
     return DesktopWindowTreeHostPlatform::CalculateInsetsInDIP(window_state);
   }
 
