@@ -138,7 +138,9 @@ void ManifestMonitor::OnManifestReady(base::FilePath manifest_dir) {
 void ManifestMonitor::OnInputsChanged() {
   TRACE_EVENT("optimization_guide", "ManifestMonitor::OnInputsChanged",
               perfetto::Flow::FromPointer(this));
-  if (!on_manifest_changed_) {
+  // Don't select a manifest (or complete `BrokerInit`) before perf class.
+  if (!on_manifest_changed_ ||
+      !performance_classifier_->IsPerformanceClassAvailable()) {
     return;
   }
   if (!IsAllowedByPolicy(*local_state_)) {
@@ -149,8 +151,7 @@ void ManifestMonitor::OnInputsChanged() {
     UseUninstallManifest(Manifest::UninstallReason::kDisallowedByUser);
     return;
   }
-  if (performance_classifier_->IsPerformanceClassAvailable() &&
-      !performance_classifier_->IsDeviceCapable()) {
+  if (!performance_classifier_->IsDeviceCapable()) {
     UseUninstallManifest(Manifest::UninstallReason::kDeviceNotCapable);
     return;
   }
@@ -159,9 +160,7 @@ void ManifestMonitor::OnInputsChanged() {
     UseUninstallManifest(Manifest::UninstallReason::kInsufficientDisk);
     return;
   }
-  if (!manifest_dir_ ||
-      !performance_classifier_->IsPerformanceClassAvailable() ||
-      !free_space_.has_value()) {
+  if (!manifest_dir_ || !free_space_.has_value()) {
     // We are not ready to load the manifest yet.
     return;
   }

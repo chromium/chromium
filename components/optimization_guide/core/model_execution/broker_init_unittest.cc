@@ -10,8 +10,7 @@
 namespace optimization_guide {
 namespace {
 
-TEST(BrokerInitTest,
-     QueuesTasksUntilCompleteAndUpdatesCapabilitiesOnSubsequentComplete) {
+TEST(BrokerInitTest, QueuesTasksUntilCompleteAndIgnoresSubsequentComplete) {
   BrokerInit init;
   EXPECT_FALSE(init.is_complete());
 
@@ -23,22 +22,21 @@ TEST(BrokerInitTest,
   EXPECT_FALSE(first_task.IsReady());
   EXPECT_FALSE(second_task.IsReady());
 
-  const on_device_model::Capabilities initial_capabilities{};
+  const on_device_model::Capabilities initial_capabilities{
+      on_device_model::CapabilityFlags::kImageInput};
   init.Complete(initial_capabilities);
   EXPECT_TRUE(init.is_complete());
   EXPECT_EQ(first_task.Get(), initial_capabilities);
   EXPECT_EQ(second_task.Get(), initial_capabilities);
 
-  // Subsequent Complete() calls update capabilities_ for future tasks without
-  // re-running already completed tasks.
-  const on_device_model::Capabilities updated_capabilities{
-      on_device_model::CapabilityFlags::kAudioInput};
-  init.Complete(updated_capabilities);
+  // Subsequent Complete() calls are a no-op.
+  init.Complete(on_device_model::Capabilities{
+      on_device_model::CapabilityFlags::kAudioInput});
 
   base::test::TestFuture<const on_device_model::Capabilities&> post_init_task;
   init.QueueTask(post_init_task.GetCallback());
   EXPECT_TRUE(post_init_task.IsReady());
-  EXPECT_EQ(post_init_task.Get(), updated_capabilities);
+  EXPECT_EQ(post_init_task.Get(), initial_capabilities);
 }
 
 }  // namespace

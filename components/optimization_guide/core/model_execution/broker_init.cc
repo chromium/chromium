@@ -22,6 +22,9 @@ void BrokerInit::QueueTask(TaskCallback task) {
 }
 
 void BrokerInit::Complete(on_device_model::Capabilities capabilities) {
+  if (is_complete()) {
+    return;
+  }
   capabilities_ = capabilities;
   for (auto& task : std::exchange(tasks_, {})) {
     std::move(task).Run(capabilities);

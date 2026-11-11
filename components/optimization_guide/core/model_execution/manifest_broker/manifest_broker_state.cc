@@ -250,10 +250,8 @@ void ManifestBrokerState::OnSolutionFactoryInit() {
 on_device_model::Capabilities
 ManifestBrokerState::GetPossibleOnDeviceCapabilities() const {
   CHECK(manifest_monitor_.manifest().has_value());
-  if (!performance_classifier_.IsPerformanceClassAvailable()) {
-    // This should only happen if a policy is disabling on-device models.
-    return {};
-  }
+  // `ManifestMonitor` only selects a manifest after perf class is available.
+  CHECK(performance_classifier_.IsPerformanceClassAvailable());
   return performance_classifier_.GetPossibleOnDeviceCapabilities();
 }
 

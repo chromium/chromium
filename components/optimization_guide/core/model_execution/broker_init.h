@@ -34,8 +34,7 @@ class BrokerInit final {
   void QueueTask(TaskCallback task);
 
   // Marks initialization complete with `capabilities` and runs any queued
-  // tasks. Subsequent calls update `capabilities_` for future `QueueTask()`
-  // calls.
+  // tasks. Subsequent calls are a no-op.
   void Complete(on_device_model::Capabilities capabilities);
 
  private:

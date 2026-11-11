@@ -596,9 +596,9 @@ TEST_F(ManifestBrokerStateTest, ManifestUpdatedBeforeInitCompletes) {
 
   // Letting pending registrations complete and re-enabling the user setting
   // triggers another manifest update after init is already complete; subsequent
-  // `BrokerInit::Complete()` calls update capabilities cleanly and the
-  // subscriber reflects the reloaded manifest (`kPendingAssets` since the
-  // opt-out uninstalled the model).
+  // `BrokerInit::Complete()` calls are no-ops and the subscriber reflects the
+  // reloaded manifest (`kPendingAssets` since the opt-out uninstalled the
+  // model).
   fake_.component_state().SetDeferRegistrationCallbacks(false);
   fake_.component_state().RunPendingRegistrations();
   fake_.local_state().SetBoolean(
@@ -616,22 +616,58 @@ TEST_F(ManifestBrokerStateTest, ManifestUpdatedBeforeInitCompletes) {
 }
 
 TEST_F(ManifestBrokerStateTest,
-       CapabilitiesUpdatedWhenEnabledAfterDisallowedStartup) {
+       EnabledAfterDisallowedStartupWaitsForInitAndManifestLoad) {
+  ScenarioBuilder(fake_.component_state())
+      .AddBaseModel("model_A")
+      .AddUnsafeSolution("test", "model_A")
+      .SetFeatureConfig("test", proto::Any())
+      .Finish();
+  fake_.local_state().SetBoolean(
+      model_execution::prefs::localstate::kOnDeviceAiUserSettingsEnabled,
+      false);
+  fake_.Startup();
+
+  // Startup with `kOnDeviceAiUserSettingsEnabled` disabled does not complete
+  // `BrokerInit` before `PerformanceClassifier` finishes.
+  task_environment_.RunUntilIdle();
+
+  // Enable on-device AI and immediately request the feature config and session
+  // availability before `PerformanceClassifier` or manifest loading has run.
+  fake_.local_state().SetBoolean(
+      model_execution::prefs::localstate::kOnDeviceAiUserSettingsEnabled, true);
+
+  ModelBrokerClient& client = fake_.client();
+  base::test::TestFuture<std::optional<mojo_base::ProtoWrapper>> config_future;
+  client.GetConfig(mojom::OnDeviceFeature::kTest, config_future.GetCallback());
+
+  base::test::TestFuture<std::optional<mojom::ModelUnavailableReason>,
+                         std::optional<mojom::ModelNotSupportedDetailedReason>>
+      can_create_future;
+  client.GetSubscriber(mojom::OnDeviceFeature::kTest)
+      .CanCreateSession({on_device_model::CapabilityFlags::kImageInput},
+                        can_create_future.GetCallback());
+
+  EXPECT_TRUE(config_future.Get().has_value());
+  EXPECT_EQ(can_create_future.Get<0>(),
+            mojom::ModelUnavailableReason::kPendingUsage);
+}
+
+TEST_F(ManifestBrokerStateTest,
+       CapabilitiesAvailableWhenEnabledAfterDisallowedInit) {
   ScenarioBuilder::MinimalTestScenario(fake_.component_state());
   fake_.local_state().SetBoolean(
       model_execution::prefs::localstate::kOnDeviceAiUserSettingsEnabled,
       false);
   fake_.Startup();
 
-  // Startup with `kOnDeviceAiUserSettingsEnabled` disabled runs
-  // `UseUninstallManifest()` before `PerformanceClassifier` finishes, calling
-  // `BrokerInit::Complete({})`.
-  task_environment_.RunUntilIdle();
-
-  // Enable on-device AI and allow `PerformanceClassifier` and manifest loading
-  // to complete in the same session.
+  // Allow `PerformanceClassifier` to complete while on-device AI is disabled,
+  // which initializes the broker with the uninstall manifest and the device's
+  // capabilities.
   fake_.state().performance_classifier().EnsurePerformanceClassAvailable(
       base::DoNothing());
+  task_environment_.RunUntilIdle();
+
+  // Enable on-device AI and allow the manifest to load.
   fake_.local_state().SetBoolean(
       model_execution::prefs::localstate::kOnDeviceAiUserSettingsEnabled, true);
   task_environment_.RunUntilIdle();
