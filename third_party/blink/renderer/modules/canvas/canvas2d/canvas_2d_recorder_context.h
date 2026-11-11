@@ -608,6 +608,9 @@ class MODULES_EXPORT Canvas2DRecorderContext : public CanvasPath {
                              const double y,
                              const V8CanvasFillRule& winding_rule);
   bool IsPointInStrokeInternal(const Path&, const double x, const double y);
+  // Path operations and hit tests depend only on the path and the current
+  // transform, so a live context with no backing can still run them.
+  bool CanRunPathOpsWithoutCanvas() const;
 
   bool BlendModeSupportsShadowFilter(SkBlendMode) const;
   bool BlendModeDoesntPreserveOpaqueDestinationAlpha(SkBlendMode);

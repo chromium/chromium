@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] isPointInStroke() works on a canvas with no bitmap
-  assert_equals: ctx.isPointInStroke(20, 10) === true (got false[boolean], expected true[boolean]) expected true but got false
-Harness: the test ran to completion.
-

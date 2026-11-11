@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] The transformation matrix mutators apply on a canvas with no bitmap
-  assert_equals: ctx.isPointInPath(60, 10) === true (got false[boolean], expected true[boolean]) expected true but got false
-Harness: the test ran to completion.
-
