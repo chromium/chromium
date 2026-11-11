@@ -17,6 +17,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -72,8 +73,8 @@ bool OriginVerifier::VerifyOrigin(
       url::Origin::Create(GURL(origin)), relationship, std::move(fingerprints),
       package_name,
       base::BindOnce(&OriginVerifier::OnRelationshipCheckComplete,
-                     base::Unretained(this), std::move(asset_link_handler),
-                     origin));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(asset_link_handler), origin));
 }
 
 void OriginVerifier::OnRelationshipCheckComplete(
@@ -90,20 +91,15 @@ void OriginVerifier::OnRelationshipCheckComplete(
 }
 
 // static
-int64_t OriginVerifier::Init(
+jni_zero::JniUniquePtr<OriginVerifier> OriginVerifier::Init(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& obj,
     const base::android::JavaRef<jobject>& jbrowser_context_handle) {
-  OriginVerifier* native_verifier =
-      new OriginVerifier(env, obj, jbrowser_context_handle);
-  return reinterpret_cast<intptr_t>(native_verifier);
+  return jni_zero::MakeUnique<OriginVerifier>(env, obj,
+                                              jbrowser_context_handle);
 }
 
-void OriginVerifier::Destroy(JNIEnv* env) {
-  delete this;
-}
-
-static int64_t JNI_OriginVerifier_Init(
+static jni_zero::JniUniquePtr<OriginVerifier> JNI_OriginVerifier_Init(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& obj,
     const base::android::JavaRef<jobject>& jbrowser_context_handle) {

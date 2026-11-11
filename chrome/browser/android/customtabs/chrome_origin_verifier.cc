@@ -7,6 +7,7 @@
 #include "base/android/jni_android.h"
 #include "chrome/browser/browser_process.h"
 #include "components/content_relationship_verification/origin_verifier.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/android/browserservices/verification/jni_headers/ChromeOriginVerifier_jni.h"
@@ -29,12 +30,13 @@ int ChromeOriginVerifier::GetClearBrowsingDataCallCountForTesting() {
   return ChromeOriginVerifier::clear_browsing_data_call_count_for_tests_;
 }
 
-static int64_t JNI_ChromeOriginVerifier_Init(
+static jni_zero::JniUniquePtr<OriginVerifier> JNI_ChromeOriginVerifier_Init(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& obj,
     const base::android::JavaRef<jobject>& jbrowser_context_handle) {
-  if (!g_browser_process)
-    return 0;
+  if (!g_browser_process) {
+    return nullptr;
+  }
 
   return OriginVerifier::Init(env, obj, jbrowser_context_handle);
 }

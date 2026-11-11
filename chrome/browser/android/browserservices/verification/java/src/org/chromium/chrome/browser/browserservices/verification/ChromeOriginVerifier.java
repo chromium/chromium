@@ -16,6 +16,7 @@ import androidx.browser.customtabs.CustomTabsService.Relation;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.CommandLine;
@@ -31,6 +32,7 @@ import org.chromium.chrome.browser.browserservices.metrics.OriginVerifierMetrics
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.content_relationship_verification.OriginVerifier;
+import org.chromium.components.content_relationship_verification.OriginVerifier.NativeOriginVerifier;
 import org.chromium.components.content_relationship_verification.Relationship;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.externalauth.ExternalAuthUtils;
@@ -267,7 +269,7 @@ public class ChromeOriginVerifier extends OriginVerifier {
     }
 
     @Override
-    public void initNativeOriginVerifier(BrowserContextHandle browserContextHandle) {
+    protected void initNativeOriginVerifier(BrowserContextHandle browserContextHandle) {
         setNativeOriginVerifier(ChromeOriginVerifierJni.get().init(this, browserContextHandle));
     }
 
@@ -290,6 +292,7 @@ public class ChromeOriginVerifier extends OriginVerifier {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     public interface Natives {
-        long init(ChromeOriginVerifier self, BrowserContextHandle browserContextHandle);
+        @Nullable JniUniquePtr<NativeOriginVerifier> init(
+                ChromeOriginVerifier self, BrowserContextHandle browserContextHandle);
     }
 }

@@ -13,6 +13,7 @@ import android.os.Process;
 import androidx.browser.customtabs.CustomTabsService;
 import androidx.test.core.app.ApplicationProvider;
 
+import org.jni_zero.JniUniquePtr;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -88,7 +89,7 @@ public class ChromeOriginVerifierJunitTest {
                 mUid);
 
         ChromeOriginVerifierJni.setInstanceForTesting(mMockChromeOriginVerifierJni);
-        Mockito.doAnswer(_ -> 100L)
+        Mockito.doAnswer(_ -> JniUniquePtr.createForTesting(100L))
                 .when(mMockChromeOriginVerifierJni)
                 .init(Mockito.any(), Mockito.any());
 
@@ -110,7 +111,7 @@ public class ChromeOriginVerifierJunitTest {
                         })
                 .when(mMockOriginVerifierJni)
                 .verifyOrigin(
-                        ArgumentMatchers.anyLong(),
+                        ArgumentMatchers.notNull(),
                         ArgumentMatchers.anyString(),
                         ArgumentMatchers.any(),
                         ArgumentMatchers.anyString(),
@@ -132,6 +133,7 @@ public class ChromeOriginVerifierJunitTest {
                 () -> mChromeVerifier.start(resultListener, mHttpsOrigin));
         mVerificationResultLatch.await();
         Assert.assertTrue(resultListener.isVerified());
+        Assert.assertFalse(mChromeVerifier.isNativeOriginVerifierInitialized());
     }
 
     @Test

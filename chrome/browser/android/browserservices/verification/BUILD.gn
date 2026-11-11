@@ -33,6 +33,8 @@ android_library("java") {
 
 generate_jni("jni_headers") {
   sources = [ "java/src/org/chromium/chrome/browser/browserservices/verification/ChromeOriginVerifier.java" ]
+  deps =
+      [ "//components/content_relationship_verification/android:jni_headers" ]
 }
 
 android_library("javatests") {

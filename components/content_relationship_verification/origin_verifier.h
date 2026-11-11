@@ -10,8 +10,10 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 namespace content_relationship_verification {
 enum class RelationshipCheckResult;
@@ -40,12 +42,10 @@ class OriginVerifier {
                     const base::android::JavaRef<jstring>& j_relationship,
                     const base::android::JavaRef<jobject>& jweb_contents);
 
-  static int64_t Init(
+  static jni_zero::JniUniquePtr<OriginVerifier> Init(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& obj,
       const base::android::JavaRef<jobject>& jbrowser_context_handle);
-
-  void Destroy(JNIEnv* env);
 
   static void ClearBrowsingData();
 
@@ -59,6 +59,8 @@ class OriginVerifier {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   base::android::ScopedJavaGlobalRef<jobject> jobject_;
+
+  base::WeakPtrFactory<OriginVerifier> weak_ptr_factory_{this};
 };
 
 #endif  // COMPONENTS_CONTENT_RELATIONSHIP_VERIFICATION_ORIGIN_VERIFIER_H_

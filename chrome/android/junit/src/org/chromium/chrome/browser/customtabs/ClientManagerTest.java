@@ -21,6 +21,7 @@ import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.PostMessageServiceConnection;
 import androidx.test.core.app.ApplicationProvider;
 
+import org.jni_zero.JniUniquePtr;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -84,10 +85,7 @@ public class ClientManagerTest {
         OriginVerifierJni.setInstanceForTesting(mMockOriginVerifierJni);
 
         ChromeOriginVerifierJni.setInstanceForTesting(mMockChromeOriginVerifierJni);
-        Mockito.doAnswer(
-                        args -> {
-                            return 100L;
-                        })
+        Mockito.doAnswer(_ -> JniUniquePtr.createForTesting(100L))
                 .when(mMockChromeOriginVerifierJni)
                 .init(Mockito.any(), Mockito.any());
 
