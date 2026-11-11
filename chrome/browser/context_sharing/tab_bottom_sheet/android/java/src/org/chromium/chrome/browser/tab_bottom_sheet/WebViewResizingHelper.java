@@ -663,7 +663,7 @@ public class WebViewResizingHelper implements ImeResizePredictor.Delegate {
             return false;
         }
 
-        if (!mIsSidePanel && (resizingContainerWidth == 0 || resizingContainerHeight == 0)) {
+        if (resizingContainerWidth <= 0 || resizingContainerHeight <= 0) {
             return false;
         }
 

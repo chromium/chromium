@@ -589,6 +589,33 @@ public class WebViewResizingHelperUnitTest {
     }
 
     @Test
+    public void testUpdateBounds_SidePanel_ZeroDecorHeight_EarlyReturn() {
+        mMockDecorView.layout(0, 0, 0, 0);
+        mHelper =
+                new WebViewResizingHelper(
+                        mContainerView,
+                        mMockWindowAndroid,
+                        mMockBottomSheetController,
+                        Color.WHITE,
+                        Color.LTGRAY,
+                        true,
+                        mMockComponentProvider);
+        mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
+        FrameLayout container = (FrameLayout) mHelper.getResizingContainer();
+
+        clearInvocations(mMockWebContents);
+        clearInvocations(mMockThinWebView);
+
+        container.measure(
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.EXACTLY));
+        container.layout(0, 0, 0, 0);
+
+        verify(mMockThinWebView, never()).resizeWebContents(anyInt(), anyInt());
+        verify(mMockWebContents, never()).setSize(anyInt(), anyInt());
+    }
+
+    @Test
     @EnableFeatures({
         ChromeFeatureList.TAB_BOTTOM_SHEET,
         ChromeFeatureList.TAB_BOTTOM_SHEET_EDGE_TO_EDGE,

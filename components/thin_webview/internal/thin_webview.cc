@@ -84,7 +84,9 @@ void ThinWebView::SetWebContents(content::WebContents* web_contents,
   }
 
   compositor_view_->SetRootLayer(web_contents_->GetNativeView()->GetLayer());
-  ResizeWebContents(view_size_);
+  if (!view_size_.IsEmpty()) {
+    ResizeWebContents(view_size_);
+  }
 
   if (support_theming) {
     ThinWebViewInitializer::GetInstance()->SetUpTheming(web_contents);
