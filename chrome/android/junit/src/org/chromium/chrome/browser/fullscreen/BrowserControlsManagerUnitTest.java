@@ -1214,6 +1214,47 @@ public class BrowserControlsManagerUnitTest {
     }
 
     @Test
+    public void
+            testOnActivityStateStarted_showsTransientControlsWhenOffscreenWithoutHidingTokens() {
+        remakeWithoutSpy();
+        notifyAddTab(mTab);
+        mActivityTabProvider.setForTesting(mTab);
+
+        // Drain the initial transient show lock acquired by setTab().
+        assertEquals(BrowserControlsState.SHOWN, mControlsDelegate.get().intValue());
+        ShadowLooper.idleMainLooper(
+                BrowserStateBrowserControlsVisibilityDelegate.MINIMUM_SHOW_DURATION_MS,
+                TimeUnit.MILLISECONDS);
+        assertEquals(BrowserControlsState.BOTH, mControlsDelegate.get().intValue());
+
+        notifyBrowserControlsOffsetChanged(-TOOLBAR_HEIGHT, 0);
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertFalse(mBrowserControlsManager.hasHidingTokens());
+        assertEquals(BrowserControlsState.BOTH, mControlsDelegate.get().intValue());
+        assertEquals(View.INVISIBLE, mContainerView.getVisibility());
+
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STARTED);
+
+        // 1ms before ACTIVITY_RETURN_SHOW_REQUEST_DELAY_MS (100ms), controls stay offscreen.
+        ShadowLooper.idleMainLooper(99, TimeUnit.MILLISECONDS);
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertEquals(BrowserControlsState.BOTH, mControlsDelegate.get().intValue());
+        assertEquals(View.INVISIBLE, mContainerView.getVisibility());
+
+        // Reaching 100ms triggers showControlsTransient() and reveals the container view.
+        ShadowLooper.idleMainLooper(1, TimeUnit.MILLISECONDS);
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertEquals(BrowserControlsState.SHOWN, mControlsDelegate.get().intValue());
+        assertEquals(View.VISIBLE, mContainerView.getVisibility());
+
+        // The transient SHOWN lock releases once MINIMUM_SHOW_DURATION_MS (3000ms) elapses.
+        ShadowLooper.idleMainLooper(
+                BrowserStateBrowserControlsVisibilityDelegate.MINIMUM_SHOW_DURATION_MS,
+                TimeUnit.MILLISECONDS);
+        assertEquals(BrowserControlsState.BOTH, mControlsDelegate.get().intValue());
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.BROWSER_CONTROLS_HIDING_TOKEN)
     public void testScheduleVisibilityUpdate_immediateHideWithHidingToken() {
         remakeWithoutSpy();
