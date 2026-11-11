@@ -1889,6 +1889,9 @@
                   '|chrome/browser/android/offline_pages/'\
                   '|chrome/android/java/src/org/chromium/chrome/browser/offlinepages/'
     },
+    'omnibox_everywhere': {
+      'filepath': 'omnibox_everywhere',
+    },
     'omnibox_ios': {
       'filepath': '^components/omnibox/|'\
                   '^components/search_engines/|'\
@@ -3299,6 +3302,7 @@
     'ntp_tiles': ['ntp-dev+reviews@chromium.org'],
     'offline_pages': ['chili+watch@chromium.org',
                       'fgorski+watch@chromium.org'],
+    'omnibox_everywhere': ['alsan+watch@chromium.org'],
     'omnibox_ios': ['christianxu+watch@chromium.org'],
     'origin_trials': ['chasej+watch@chromium.org',
                       'iclelland+watch@chromium.org'],
