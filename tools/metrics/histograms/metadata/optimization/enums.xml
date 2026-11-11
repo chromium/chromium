@@ -358,6 +358,8 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.IfChange(OptimizationGuideOnDeviceExecuteModelResult) -->
+
 <enum name="OptimizationGuideOnDeviceExecuteModelResult">
   <int value="0" label="On-device not used">
     Session was not eligible for on-device and the on-device model was not used.
@@ -423,6 +425,8 @@ chromium-metrics-reviews@google.com.
     Used on-device, but a request safety check failed.
   </int>
 </enum>
+
+<!-- LINT.ThenChange(//components/optimization_guide/core/model_execution/on_device_telemetry_logger.h:OptimizationGuideOnDeviceExecuteModelResult) -->
 
 <!-- LINT.IfChange(OptimizationGuideOnDeviceModelEligibilityReason) -->
 

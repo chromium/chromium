@@ -4,8 +4,13 @@
 
 #include "components/optimization_guide/core/model_execution/on_device_execution.h"
 
+#include <utility>
+
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/notimplemented.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
@@ -13,17 +18,18 @@
 #include "base/uuid.h"
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/model_execution/repetition_checker.h"
+#include "components/optimization_guide/core/model_execution/substitution.h"
 #include "components/optimization_guide/core/optimization_guide_common.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 
 namespace optimization_guide {
 
 namespace {
-
-using google::protobuf::RepeatedPtrField;
 
 void LogRequest(OptimizationGuideLogger* logger,
                 const proto::OnDeviceModelServiceRequest& logged_request) {
@@ -96,31 +102,29 @@ OnDeviceExecution::OnDeviceExecution(
     OnDeviceOptions opts,
     MultimodalMessage message,
     on_device_model::mojom::ResponseConstraintPtr constraint,
-    std::unique_ptr<ResultLogger> logger,
+    std::unique_ptr<OnDeviceRequestTelemetryLogger> logger,
     OptimizationGuideModelExecutionResultStreamingCallback callback,
     base::OnceClosure cleanup_callback)
     : feature_(feature),
       opts_(std::move(opts)),
       last_message_(std::move(message)),
       constraint_(std::move(constraint)),
-      telemetry_logger_(feature),
-      histogram_logger_(std::move(logger)),
+      telemetry_logger_(std::move(logger)),
       callback_(std::move(callback)),
       cleanup_callback_(std::move(cleanup_callback)) {
+  CHECK(telemetry_logger_);
+  telemetry_logger_->StartTelemetryTimer();
   exec_log_.set_execution_id(GenerateExecutionId());
   exec_log_.mutable_on_device_model_execution_info()->add_execution_infos();
   *(exec_log_.mutable_on_device_model_execution_info()
         ->mutable_model_versions()) = opts_.model_versions;
   // Note: if on-device fails for some reason, the result will be changed.
-  histogram_logger_->set_result(Result::kUsedOnDevice);
+  telemetry_logger_->set_result(Result::kUsedOnDevice);
 }
 
 OnDeviceExecution::~OnDeviceExecution() {
   if (callback_) {
-    if (histogram_logger_) {
-      histogram_logger_->set_result(Result::kDestroyedWhileWaitingForResponse);
-    }
-    telemetry_logger_.RecordDestroyedWhileWaiting();
+    telemetry_logger_->RecordDestroyedWhileWaiting();
   }
 }
 
@@ -199,9 +203,9 @@ void OnDeviceExecution::OnResponse(
       MutableLoggedResponse();
 
   if (current_response_.empty()) {
-    telemetry_logger_.RecordFirstResponse();
+    telemetry_logger_->RecordFirstResponse();
     logged_response->set_time_to_first_response_millis(
-        telemetry_logger_.GetTimeToFirstResponse().InMilliseconds());
+        telemetry_logger_->GetTimeToFirstResponse().InMilliseconds());
   }
 
   NewlineBuffer::Chunk trimmed_chunk = newline_buffer_.Append(chunk->text);
@@ -242,9 +246,9 @@ void OnDeviceExecution::OnComplete(
   bool has_repeats = MutableLoggedResponse()->has_repeats();
 
   LogResponseHasRepeats(feature_, has_repeats);
-  telemetry_logger_.RecordCompletion(num_response_tokens_);
+  telemetry_logger_->RecordCompletion(num_response_tokens_);
   MutableLoggedResponse()->set_time_to_completion_millis(
-      telemetry_logger_.GetTimeToCompletion().InMilliseconds());
+      telemetry_logger_->GetTimeToCompletion().InMilliseconds());
 
   output_token_count_ = summary->output_token_count;
 
@@ -338,9 +342,7 @@ void OnDeviceExecution::CancelPendingResponse(Result result,
   if (!callback_) {
     return;
   }
-  if (histogram_logger_) {
-    histogram_logger_->set_result(result);
-  }
+  telemetry_logger_->set_result(result);
   exec_log_.set_model_execution_error_enum(static_cast<uint32_t>(error));
   auto self = weak_ptr_factory_.GetWeakPtr();
   std::move(callback_).Run(OptimizationGuideModelStreamingExecutionResult(
@@ -392,32 +394,8 @@ void OnDeviceExecution::Cleanup() {
   callback_.Reset();
   exec_log_.Clear();
   current_response_.clear();
-  histogram_logger_.reset();
+  telemetry_logger_.reset();
   std::move(cleanup_callback_).Run();
-}
-
-OnDeviceExecution::ResultLogger::ResultLogger(mojom::OnDeviceFeature feature,
-                                              OnDeviceBaseModel base_model)
-    : feature_(feature), base_model_(base_model) {}
-
-OnDeviceExecution::ResultLogger::~ResultLogger() {
-  if (result_ == Result::kUsedOnDevice) {
-    base::UmaHistogramEnumeration(
-        "OptimizationGuide.ModelExecution.OnDeviceModelCompleted", base_model_);
-    base::UmaHistogramEnumeration(
-        base::StrCat(
-            {"OptimizationGuide.ModelExecution.OnDeviceModelCompleted.",
-             GetVariantName(feature_)}),
-        base_model_);
-  }
-  std::string feature_histogram = base::StrCat(
-      {"OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.",
-       GetVariantName(feature_)});
-  base::UmaHistogramEnumeration(feature_histogram, result_);
-  base::UmaHistogramEnumeration(
-      base::StrCat({feature_histogram, ".",
-                    ConvertBaseModelToUmaModelName(base_model_)}),
-      result_);
 }
 
 }  // namespace optimization_guide

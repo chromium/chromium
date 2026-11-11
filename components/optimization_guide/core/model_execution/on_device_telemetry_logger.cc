@@ -4,19 +4,56 @@
 
 #include "components/optimization_guide/core/model_execution/on_device_telemetry_logger.h"
 
+#include <string>
+
+#include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_names.h"
 
 namespace optimization_guide {
 
 OnDeviceRequestTelemetryLogger::OnDeviceRequestTelemetryLogger(
     mojom::OnDeviceFeature feature)
-    : feature_(feature), start_time_(base::TimeTicks::Now()) {}
+    : feature_(feature) {}
 
-OnDeviceRequestTelemetryLogger::~OnDeviceRequestTelemetryLogger() = default;
+OnDeviceRequestTelemetryLogger::OnDeviceRequestTelemetryLogger(
+    mojom::OnDeviceFeature feature,
+    OnDeviceBaseModel base_model)
+    : feature_(feature), base_model_(base_model) {}
+
+OnDeviceRequestTelemetryLogger::~OnDeviceRequestTelemetryLogger() {
+  if (!base_model_.has_value()) {
+    return;
+  }
+  if (result_ == Result::kUsedOnDevice) {
+    base::UmaHistogramEnumeration(
+        "OptimizationGuide.ModelExecution.OnDeviceModelCompleted",
+        *base_model_);
+    base::UmaHistogramEnumeration(
+        base::StrCat(
+            {"OptimizationGuide.ModelExecution.OnDeviceModelCompleted.",
+             GetVariantName(feature_)}),
+        *base_model_);
+  }
+  std::string feature_histogram = base::StrCat(
+      {"OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.",
+       GetVariantName(feature_)});
+  base::UmaHistogramEnumeration(feature_histogram, result_);
+  base::UmaHistogramEnumeration(
+      base::StrCat({feature_histogram, ".",
+                    ConvertBaseModelToUmaModelName(*base_model_)}),
+      result_);
+}
+
+void OnDeviceRequestTelemetryLogger::StartTelemetryTimer() {
+  CHECK(start_time_.is_null());
+  start_time_ = base::TimeTicks::Now();
+}
 
 void OnDeviceRequestTelemetryLogger::RecordFirstResponse() {
+  CHECK(!start_time_.is_null());
   if (!first_response_time_.is_null()) {
     return;  // Already recorded
   }
@@ -30,6 +67,7 @@ void OnDeviceRequestTelemetryLogger::RecordFirstResponse() {
 }
 
 void OnDeviceRequestTelemetryLogger::RecordContextTime() {
+  CHECK(!start_time_.is_null());
   if (!context_time_.is_null()) {
     return;
   }
@@ -37,6 +75,7 @@ void OnDeviceRequestTelemetryLogger::RecordContextTime() {
 }
 
 void OnDeviceRequestTelemetryLogger::RecordCompletion(uint32_t num_tokens) {
+  CHECK(!start_time_.is_null());
   completion_time_ = base::TimeTicks::Now();
   base::TimeDelta time_to_completion = completion_time_ - start_time_;
 
@@ -62,11 +101,14 @@ void OnDeviceRequestTelemetryLogger::RecordCompletion(uint32_t num_tokens) {
 }
 
 void OnDeviceRequestTelemetryLogger::RecordDestroyedWhileWaiting() {
-  base::UmaHistogramMediumTimes(
-      base::StrCat({"OptimizationGuide.ModelExecution."
-                    "OnDeviceDestroyedWhileWaitingForResponseTime.",
-                    GetVariantName(feature_)}),
-      base::TimeTicks::Now() - start_time_);
+  set_result(Result::kDestroyedWhileWaitingForResponse);
+  if (!start_time_.is_null()) {
+    base::UmaHistogramMediumTimes(
+        base::StrCat({"OptimizationGuide.ModelExecution."
+                      "OnDeviceDestroyedWhileWaitingForResponseTime.",
+                      GetVariantName(feature_)}),
+        base::TimeTicks::Now() - start_time_);
+  }
 }
 
 base::TimeDelta OnDeviceRequestTelemetryLogger::GetTimeToFirstResponse() const {

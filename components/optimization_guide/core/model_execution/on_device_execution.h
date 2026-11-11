@@ -5,23 +5,22 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_EXECUTION_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_EXECUTION_H_
 
+#include <cstddef>
+#include <cstdint>
 #include <memory>
-#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/timer/timer.h"
+#include "base/types/expected.h"
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/on_device_context.h"
-#include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
-#include "components/optimization_guide/core/model_execution/on_device_model_names.h"
 #include "components/optimization_guide/core/model_execution/on_device_telemetry_logger.h"
 #include "components/optimization_guide/core/model_execution/repetition_checker.h"
-#include "components/optimization_guide/core/model_execution/substitution.h"
+#include "components/optimization_guide/core/model_execution/response_parser.h"
+#include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -35,77 +34,12 @@ class OnDeviceExecution final
     : public on_device_model::mojom::StreamingResponder,
       public on_device_model::mojom::ContextClient {
  public:
-  // Possible outcomes of ExecuteModel().
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class Result {
-    // On-device was not used.
-    kOnDeviceNotUsed = 0,
-    // On-device was used, and it completed successfully.
-    kUsedOnDevice = 1,
-    // Failed constructing message, and used server.
-    kFailedConstructingMessage = 2,
-    // Got a response from on-device, but failed constructing the message.
-    kFailedConstructingResponseMessage = 3,
-    // Timed out and used server.
-    kTimedOut = 4,
-    // Received a disconnect while waiting for response. This may trigger
-    // fallback to another model, e.g. on the server, if configured.
-    kDisconnectAndMaybeFallback = 5,
-    // Received a disconnect while waiting for response and cancelled.
-    kDisconnectAndCancel = 6,
-    // Response was cancelled (e.g. because ExecuteModel() was called while
-    // waiting for response or the client cancelled the request).
-    kCancelled = 7,
-    // SessionImpl was destroyed while waiting for a response.
-    kDestroyedWhileWaitingForResponse = 8,
-    // On-device was used, it completed successfully, but the output is
-    // considered unsafe.
-    kUsedOnDeviceOutputUnsafe = 9,
-    // On-device was used, but the output was rejected (because contained PII).
-    kContainedPII = 10,
-    // On-device was used, but the output was rejected because it had repeats.
-    kResponseHadRepeats = 11,
-    // On-device was used and the output was complete but the output was
-    // rejected since it did not have the required safety scores.
-    kResponseCompleteButNoRequiredSafetyScores = 12,
-    // On-device was used and completed successfully, but the output was not in
-    // a language that could be reliably evaluated for safety.
-    kUsedOnDeviceOutputUnsupportedLanguage = 13,
-    // On-device was used and completed successfully, but failed constructing
-    // the text safety remote request.
-    kFailedConstructingRemoteTextSafetyRequest = 14,
-    // On-device was used and completed successfully, but the text safety remote
-    // request failed for some reason.
-    kTextSafetyRemoteRequestFailed = 15,
-    // On-device was used, but the request was considered unsafe.
-    kRequestUnsafe = 16,
-
-    // Please update OptimizationGuideOnDeviceResult in
-    // optimization/enums.xml.
-    kMaxValue = kRequestUnsafe,
-  };
-
-  // Used to log the result of ExecuteModel.
-  class ResultLogger {
-   public:
-    ResultLogger(mojom::OnDeviceFeature feature, OnDeviceBaseModel base_model);
-    ~ResultLogger();
-
-    void set_result(Result result) { result_ = result; }
-
-   private:
-    const mojom::OnDeviceFeature feature_;
-    const OnDeviceBaseModel base_model_;
-    Result result_ = Result::kOnDeviceNotUsed;
-  };
-
   explicit OnDeviceExecution(
       mojom::OnDeviceFeature feature,
       OnDeviceOptions opts,
       MultimodalMessage message,
       on_device_model::mojom::ResponseConstraintPtr constraint,
-      std::unique_ptr<ResultLogger> logger,
+      std::unique_ptr<OnDeviceRequestTelemetryLogger> logger,
       OptimizationGuideModelExecutionResultStreamingCallback callback,
       base::OnceClosure cleanup_callback);
   ~OnDeviceExecution() final;
@@ -117,6 +51,7 @@ class OnDeviceExecution final
   void Cancel();
 
  private:
+  using Result = OnDeviceRequestTelemetryLogger::Result;
   // Returns the mutable on-device model service request for logging.
   proto::OnDeviceModelServiceRequest* MutableLoggedRequest();
 
@@ -169,10 +104,8 @@ class OnDeviceExecution final
   MultimodalMessage last_message_;
   // A constraint defining structured output requirements for the response.
   on_device_model::mojom::ResponseConstraintPtr constraint_;
-  // Handles telemetry logging for the execution.
-  OnDeviceRequestTelemetryLogger telemetry_logger_;
-  // Used to log the result of ExecuteModel().
-  std::unique_ptr<ResultLogger> histogram_logger_;
+  // Handles logging for the execution.
+  std::unique_ptr<OnDeviceRequestTelemetryLogger> telemetry_logger_;
   // Used to log execution information for the request.
   proto::ModelExecutionInfo exec_log_;
 

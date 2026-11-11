@@ -27,6 +27,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
+#include "components/optimization_guide/core/model_execution/on_device_telemetry_logger.h"
 #include "components/optimization_guide/core/model_execution/repetition_checker.h"
 #include "components/optimization_guide/core/model_execution/response_parser.h"
 #include "components/optimization_guide/core/model_execution/substitution.h"
@@ -196,7 +197,7 @@ void SessionImpl::ExecuteModelWithResponseConstraint(
     optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
         callback) {
   auto logger =
-      std::make_unique<OnDeviceExecution::ResultLogger>(feature_, base_model_);
+      std::make_unique<OnDeviceRequestTelemetryLogger>(feature_, base_model_);
 
   // Compute the amount of time context would have for processing assuming
   // on-device execution.

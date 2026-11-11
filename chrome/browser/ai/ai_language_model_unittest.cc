@@ -36,6 +36,7 @@
 #include "components/optimization_guide/core/model_execution/manifest_broker/test/scenario_builder.h"
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
+#include "components/optimization_guide/core/model_execution/on_device_telemetry_logger.h"
 #include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/model_execution/session_impl.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
@@ -435,11 +436,13 @@ TEST_F(AILanguageModelTest, PromptTelemetry) {
       optimization_guide::OnDeviceBaseModel::kGemma4, 1);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.PromptApi",
-      optimization_guide::OnDeviceExecution::Result::kUsedOnDevice, 1);
+      optimization_guide::OnDeviceRequestTelemetryLogger::Result::kUsedOnDevice,
+      1);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.PromptApi."
       "Gemma4",
-      optimization_guide::OnDeviceExecution::Result::kUsedOnDevice, 1);
+      optimization_guide::OnDeviceRequestTelemetryLogger::Result::kUsedOnDevice,
+      1);
 
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.ModelExecution."
@@ -483,12 +486,14 @@ TEST_F(AILanguageModelTest, PromptErrorTelemetry) {
   }
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.PromptApi",
-      optimization_guide::OnDeviceExecution::Result::kFailedConstructingMessage,
+      optimization_guide::OnDeviceRequestTelemetryLogger::Result::
+          kFailedConstructingMessage,
       1);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.PromptApi."
       "Gemma4",
-      optimization_guide::OnDeviceExecution::Result::kFailedConstructingMessage,
+      optimization_guide::OnDeviceRequestTelemetryLogger::Result::
+          kFailedConstructingMessage,
       1);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.ModelExecution.OnDeviceModelCompleted", 0);
@@ -510,7 +515,8 @@ TEST_F(AILanguageModelTest, PromptErrorTelemetry) {
   histogram_tester.ExpectBucketCount(
       "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.PromptApi."
       "Gemma4",
-      optimization_guide::OnDeviceExecution::Result::kUsedOnDevice, 1);
+      optimization_guide::OnDeviceRequestTelemetryLogger::Result::kUsedOnDevice,
+      1);
 
   // DisconnectErrorUnknown -> kDisconnectAndCancel
   {
@@ -525,7 +531,9 @@ TEST_F(AILanguageModelTest, PromptErrorTelemetry) {
   histogram_tester.ExpectBucketCount(
       "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.PromptApi."
       "Gemma4",
-      optimization_guide::OnDeviceExecution::Result::kDisconnectAndCancel, 1);
+      optimization_guide::OnDeviceRequestTelemetryLogger::Result::
+          kDisconnectAndCancel,
+      1);
 
   // Responder disconnect while waiting -> kCancelled
   fake_broker_->settings().execute_error.reset();
@@ -539,7 +547,8 @@ TEST_F(AILanguageModelTest, PromptErrorTelemetry) {
     return histogram_tester.GetBucketCount(
                "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult."
                "PromptApi.Gemma4",
-               optimization_guide::OnDeviceExecution::Result::kCancelled) == 1;
+               optimization_guide::OnDeviceRequestTelemetryLogger::Result::
+                   kCancelled) == 1;
   }));
 
   // Session destroyed while waiting -> kDestroyedWhileWaitingForResponse
@@ -552,7 +561,7 @@ TEST_F(AILanguageModelTest, PromptErrorTelemetry) {
   histogram_tester.ExpectBucketCount(
       "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.PromptApi."
       "Gemma4",
-      optimization_guide::OnDeviceExecution::Result::
+      optimization_guide::OnDeviceRequestTelemetryLogger::Result::
           kDestroyedWhileWaitingForResponse,
       1);
 }
