@@ -2055,7 +2055,7 @@
       "rtatum@google.com",
       "chrome-desktop-ntp@google.com"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 164
   },
   {
     "name": "chrome-finds",
@@ -7423,7 +7423,7 @@
   {
     "name": "ntp-scaled-action-chips",
     "owners": [ "rtatum@google.com", "chrome-desktop-ntp@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 164
   },
   {
     "name": "ntp-scaled-action-chips-small",
@@ -7431,7 +7431,7 @@
       "rtatum@google.com",
       "chrome-desktop-ntp@google.com"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 164
   },
   {
     "name": "ntp-searchbox-voice-search-coherence",
