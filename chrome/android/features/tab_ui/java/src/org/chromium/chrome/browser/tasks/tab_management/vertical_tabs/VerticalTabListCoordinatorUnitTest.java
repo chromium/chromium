@@ -562,6 +562,19 @@ public class VerticalTabListCoordinatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TAB_UI_DATA_VIRTUALIZATION)
+    public void testDestroy_WithDataProvider_RemovesSupplierObserver() {
+        createCoordinator();
+        TabListRecyclerView recycler =
+                mCoordinator.getView().findViewById(R.id.tab_list_recycler_view);
+        SimpleRecyclerViewAdapter adapter = (SimpleRecyclerViewAdapter) recycler.getAdapter();
+
+        mCoordinator.destroy();
+
+        assertFalse(mCurrentTabModelSupplier.hasObservers());
+    }
+
+    @Test
     public void testDragSurfaces_TwoListsConfigured_ReturnsSurfacesInSetupOrder() {
         createCoordinator();
         List<VerticalTabListCoordinator.DragSurface> surfaces =

@@ -103,7 +103,9 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherBackPressHandlerManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherDragHandler;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherDragHandler.DragHandlerDelegate;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
+import org.chromium.chrome.browser.tasks.tab_management.data_provider.GroupedTabListDataProvider;
 import org.chromium.chrome.browser.tasks.tab_management.pinned_tabs.PinnedTabGridMediator;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalExternalViewDragDropReorderStrategy.DropTargetResult;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabItemHoverController.TabHoverListener;
@@ -227,6 +229,7 @@ public class VerticalTabListCoordinator {
     private final @Nullable BooleanSupplier mCanActivateTabLayoutToggleMenuSupplier;
     private final @Nullable UndoBarThrottle mUndoBarThrottle;
     private final @Nullable TabUnderlineManager mTabUnderlineManager;
+    private final @Nullable GroupedTabListDataProvider mDataProvider;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final Supplier<@Nullable TabContentManager> mTabContentManagerSupplier;
     private final Supplier<TabWindowManager> mTabWindowManagerSupplier;
@@ -601,6 +604,12 @@ public class VerticalTabListCoordinator {
         mDropIndicatorDecoration = new VerticalTabDropIndicatorDecoration(activity);
         recyclerView.addItemDecoration(mDropIndicatorDecoration);
 
+        mDataProvider =
+                TabUiFeatureUtilities.isTabUiDataVirtualizationEnabled(TabListLayoutType.NESTED)
+                        ? new GroupedTabListDataProvider(
+                                tabModelSelector.getCurrentTabModelSupplier(),
+                                /* supportsGroupExpansion= */ true)
+                        : null;
         TabListConfig tabListConfig =
                 new TabListConfig.Builder(TabListLayoutType.NESTED)
                         .setSupportsTabGroups(/* supportsTabGroups= */ true)
@@ -611,6 +620,7 @@ public class VerticalTabListCoordinator {
                                 mCollapseController.getRailCollapseStateSupplier())
                         .setTabHoverListener(mTabItemHoverController.getTabHoverListener())
                         .setTabUnderlineManager(mTabUnderlineManager)
+                        .setDataProvider(mDataProvider)
                         .build();
 
         // The tab search button is only shown when tab search is enabled, matching the
@@ -948,6 +958,7 @@ public class VerticalTabListCoordinator {
         mMediator.destroy();
         mRecyclerView.setAdapter(null);
         mModelList.clear();
+        if (mDataProvider != null) mDataProvider.destroy();
         mTabModelSelector.removeObserver(mTabModelSelectorObserver);
         mTabModelSelector.getCurrentTabModelSupplier().removeObserver(mCurrentTabModelObserver);
         mTabListFaviconProvider.destroy();

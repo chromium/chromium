@@ -47,9 +47,6 @@ public class GroupedTabListDataProvider extends TabListDataProvider {
     public GroupedTabListDataProvider(
             NullableObservableSupplier<TabModel> tabModelSupplier, boolean supportsGroupExpansion) {
         super(tabModelSupplier);
-        // TODO(crbug.com/562590772): Wire TabSwitcherPaneCoordinator (supportsGroupExpansion=false)
-        // and VerticalTabListCoordinator (supportsGroupExpansion=true) to pass this provider to
-        // TabListCoordinator.
         mSupportsGroupExpansion = supportsGroupExpansion;
         mRemovingTabGroupIds = new HashSet<>();
 

@@ -92,6 +92,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListI
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageUpdateObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherPaneMediator.TabIndexLookup;
+import org.chromium.chrome.browser.tasks.tab_management.data_provider.GroupedTabListDataProvider;
 import org.chromium.chrome.browser.tasks.tab_management.labels.SendTabToSelfTabLabeller;
 import org.chromium.chrome.browser.tasks.tab_management.labels.TabGroupLabeller;
 import org.chromium.chrome.browser.tasks.tab_management.pinned_tabs.PinnedTabStripCoordinator;
@@ -214,6 +215,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     private final Supplier<Boolean> mTabGridDialogVisibilitySupplier = this::isTabGridDialogVisible;
     private final MultiThumbnailCardProvider mMultiThumbnailCardProvider;
     private final TabListCoordinator mTabListCoordinator;
+    private final @Nullable GroupedTabListDataProvider mDataProvider;
     private final PropertyModel mContainerViewModel;
     private final PropertyModelChangeProcessor mContainerViewChangeProcessor;
     private final LazyOneshotSupplier<DialogController> mDialogControllerSupplier;
@@ -446,6 +448,12 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                     DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)
                             ? R.drawable.tablet_tab_switcher_empty_state_illustration
                             : R.drawable.phone_tab_switcher_empty_state_illustration_static;
+            mDataProvider =
+                    TabUiFeatureUtilities.isTabUiDataVirtualizationEnabled(
+                                    TabListLayoutType.GROUPED)
+                            ? new GroupedTabListDataProvider(
+                                    tabModelSupplier, /* supportsGroupExpansion= */ false)
+                            : null;
             TabListCoordinator tabListCoordinator =
                     new TabListCoordinator(
                             mode,
@@ -479,7 +487,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             /* undoBarExplicitTrigger= */ null,
                             /* snackbarManager= */ null,
                             TabListEditorCoordinator.UNLIMITED_SELECTION,
-                            /* dataProvider= */ null);
+                            mDataProvider);
             mTabListCoordinator = tabListCoordinator;
             TabGridItemLongPressOrchestrator.OnLongPressTabItemEventListener
                     longPressItemEventListener = this::onLongPressOnTabCard;
@@ -700,6 +708,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         mMessageManager.unbind(mTabListCoordinator);
         mMediator.destroy();
         mTabListCoordinator.onDestroy();
+        if (mDataProvider != null) mDataProvider.destroy();
         mContainerViewChangeProcessor.destroy();
         if (mTabGridDialogCoordinator != null) {
             mTabGridDialogCoordinator.destroy();

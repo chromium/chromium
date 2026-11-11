@@ -417,6 +417,24 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     }
 
     @Test
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_TAB_UI_REFACTOR,
+        ChromeFeatureList.TAB_UI_DATA_VIRTUALIZATION
+    })
+    public void testSetInitialScrollIndexOffset_WithDataProvider() {
+        setUpTwoTabsAndSelectSecond(/* stubRelatedTabs= */ false);
+
+        mCoordinator.setInitialScrollIndexOffset();
+
+        assertEquals(
+                1,
+                mCoordinator
+                        .getContainerViewModelForTesting()
+                        .get(INITIAL_SCROLL_INDEX)
+                        .intValue());
+    }
+
+    @Test
     @DisableFeatures(ChromeFeatureList.ANDROID_TAB_UI_REFACTOR)
     public void testSetInitialScrollIndexOffset_RefactorDisabled() {
         setUpTwoTabsAndSelectSecond(/* stubRelatedTabs= */ true);
