@@ -330,7 +330,13 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerPdfSidenav) {
   RunTestsInJsModule("viewer_pdf_sidenav_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerThumbnailBar) {
+// TODO(crbug.com/565684021): Re-enable on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ViewerThumbnailBar DISABLED_ViewerThumbnailBar
+#else
+#define MAYBE_ViewerThumbnailBar ViewerThumbnailBar
+#endif
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, MAYBE_ViewerThumbnailBar) {
   // Although this test file does not require a PDF to be loaded, loading the
   // elements without loading a PDF is difficult.
   RunTestsInJsModule("viewer_thumbnail_bar_test.js", "test.pdf");
