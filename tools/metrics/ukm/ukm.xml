@@ -27216,7 +27216,7 @@ be describing additional metrics about the same event.
 
 <event name="Webapp.AddToHomeScreen">
   <owner>hartmanng@chromium.org</owner>
-  <owner>mwi-team-core@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <summary>
     A2HS usage metrics recorded when users started the add to home screen flow
     on Android.
@@ -27225,26 +27225,12 @@ be describing additional metrics about the same event.
     <summary>
       Records the display mode of the added Webapp.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="SameAsManifestStartUrl" enum="Boolean">
     <summary>
       Record whether `start_url` for the Shortcuts is the same as the current
       page url.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="ShortcutReason" enum="InstallableStatusCode">
     <summary>
@@ -27278,16 +27264,6 @@ be describing additional metrics about the same event.
       a bug is fixed where on resuming from sleep background time did not resume
       counting.
     </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <index fields="profile.form_factor"/>
-        <index fields="profile.system_ram"/>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="CapturesLinks" enum="Boolean">
     <summary>
@@ -27295,32 +27271,12 @@ be describing additional metrics about the same event.
       app window. Recorded only for installed web apps that are currently open
       in a web app window, and all preinstalled web apps.
     </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <index fields="profile.form_factor"/>
-        <index fields="profile.system_ram"/>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="DisplayMode" enum="WebAppDisplayMode">
     <summary>
       Effective display mode of the web app (may be set by a manifest and
       manifest may be overridden by the user).
     </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <index fields="profile.form_factor"/>
-        <index fields="profile.system_ram"/>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="ForegroundDuration">
     <summary>
@@ -27395,16 +27351,6 @@ be describing additional metrics about the same event.
       Whether the web app is currently considered 'promotable' (passes Chrome
       checks to be considered an installable web app).
     </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <index fields="profile.form_factor"/>
-        <index fields="profile.system_ram"/>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="Used" enum="Boolean">
     <summary>
@@ -27440,26 +27386,12 @@ be describing additional metrics about the same event.
       origin of the caller-supplied manifest URL (earlier milestones used the
       install URL). Only recorded when the manifest URL is HTTPS.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="ElementResultByRequestingPage" enum="WebInstallServiceResult">
     <summary>
       Records the result of one activation of the install element for the URL of
       the requesting page that the element was activated from.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="ResultByInstalledApp" enum="WebInstallServiceResult">
     <summary>
@@ -27474,13 +27406,6 @@ be describing additional metrics about the same event.
       Records the result of the Web Install API for the URL of the requesting
       page that invoked the API.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
 </event>
 
