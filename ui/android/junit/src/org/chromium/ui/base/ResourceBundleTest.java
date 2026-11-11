@@ -27,30 +27,30 @@ public class ResourceBundleTest {
         ResourceBundle.setAvailablePakLocalesForTesting(new String[] {});
         assertNull(
                 ResourceBundle.getLocalePakResourcePath(
-                        "en-US", Gender.DEFAULT, /* inBundle= */ false, /* logError= */ false));
+                        "en-US", Gender.DEFAULT, /* inSplit= */ false, /* logError= */ false));
         assertNull(
                 ResourceBundle.getLocalePakResourcePath(
-                        "en-US", Gender.DEFAULT, /* inBundle= */ true, /* logError= */ false));
+                        "en-US", Gender.DEFAULT, /* inSplit= */ true, /* logError= */ false));
     }
 
     @Test
     public void testGetLocalePakResourcePath_NullForUnsupportedLocale() {
         assertNull(
                 ResourceBundle.getLocalePakResourcePath(
-                        "es-ES", Gender.DEFAULT, /* inBundle= */ false, /* logError= */ false));
+                        "es-ES", Gender.DEFAULT, /* inSplit= */ false, /* logError= */ false));
         assertNull(
                 ResourceBundle.getLocalePakResourcePath(
-                        "es-ES", Gender.DEFAULT, /* inBundle= */ true, /* logError= */ false));
+                        "es-ES", Gender.DEFAULT, /* inSplit= */ true, /* logError= */ false));
     }
 
     @Test
-    public void testGetLocalePakResourcePath_NullWhenApkSubpathAndFallbackPathDoNotExist() {
+    public void testGetLocalePakResourcePath_NullWhenApkSubpathDoesNotExist() {
         assertNull(
                 ResourceBundle.getLocalePakResourcePath(
-                        "en-US", Gender.DEFAULT, /* inBundle= */ false, /* logError= */ false));
+                        "en-US", Gender.DEFAULT, /* inSplit= */ false, /* logError= */ false));
         assertNull(
                 ResourceBundle.getLocalePakResourcePath(
-                        "en-US", Gender.DEFAULT, /* inBundle= */ true, /* logError= */ false));
+                        "en-US", Gender.DEFAULT, /* inSplit= */ true, /* logError= */ false));
     }
 
     @Test
@@ -60,15 +60,15 @@ public class ResourceBundleTest {
         assertEquals(
                 "assets/stored-locales/en-US.pak",
                 ResourceBundle.getLocalePakResourcePath(
-                        "en-US", Gender.DEFAULT, /* inBundle= */ false, /* logError= */ false));
+                        "en-US", Gender.DEFAULT, /* inSplit= */ false, /* logError= */ false));
         assertEquals(
                 "assets/fallback-locales/en-US.pak",
                 ResourceBundle.getLocalePakResourcePath(
-                        "en-US", Gender.DEFAULT, /* inBundle= */ true, /* logError= */ false));
+                        "en-US", Gender.DEFAULT, /* inSplit= */ true, /* logError= */ false));
         assertEquals(
                 "assets/locales#lang_fr/fr-FR.pak",
                 ResourceBundle.getLocalePakResourcePath(
-                        "fr-FR", Gender.DEFAULT, /* inBundle= */ true, /* logError= */ false));
+                        "fr-FR", Gender.DEFAULT, /* inSplit= */ true, /* logError= */ false));
     }
 
     @Test
@@ -78,50 +78,14 @@ public class ResourceBundleTest {
         assertEquals(
                 "assets/stored-locales/en-US_FEMININE.pak",
                 ResourceBundle.getLocalePakResourcePath(
-                        "en-US", Gender.FEMININE, /* inBundle= */ false, /* logError= */ false));
+                        "en-US", Gender.FEMININE, /* inSplit= */ false, /* logError= */ false));
         assertEquals(
-                "assets/fallback-locales/en-US_MASCULINE.pak",
+                "assets/locales#lang_en/en-US_MASCULINE.pak",
                 ResourceBundle.getLocalePakResourcePath(
-                        "en-US", Gender.MASCULINE, /* inBundle= */ true, /* logError= */ false));
+                        "en-US", Gender.MASCULINE, /* inSplit= */ true, /* logError= */ false));
         assertEquals(
                 "assets/locales#lang_fr/fr-FR_NEUTER.pak",
                 ResourceBundle.getLocalePakResourcePath(
-                        "fr-FR", Gender.NEUTER, /* inBundle= */ true, /* logError= */ false));
-    }
-
-    @Test
-    public void testGetLocalePakResourcePath_FallbackPathExists_DefaultGender() {
-        ResourceBundle.setOverrideFallbackPathExistsForTesting(true);
-
-        assertEquals(
-                "assets/locales/en-US.pak",
-                ResourceBundle.getLocalePakResourcePath(
-                        "en-US", Gender.DEFAULT, /* inBundle= */ false, /* logError= */ false));
-        assertEquals(
-                "assets/locales/en-US.pak",
-                ResourceBundle.getLocalePakResourcePath(
-                        "en-US", Gender.DEFAULT, /* inBundle= */ true, /* logError= */ false));
-        assertEquals(
-                "assets/locales/fr-FR.pak",
-                ResourceBundle.getLocalePakResourcePath(
-                        "fr-FR", Gender.DEFAULT, /* inBundle= */ true, /* logError= */ false));
-    }
-
-    @Test
-    public void testGetLocalePakResourcePath_FallbackPathExists_NonDefaultGender() {
-        ResourceBundle.setOverrideFallbackPathExistsForTesting(true);
-
-        assertEquals(
-                "assets/locales/en-US_FEMININE.pak",
-                ResourceBundle.getLocalePakResourcePath(
-                        "en-US", Gender.FEMININE, /* inBundle= */ false, /* logError= */ false));
-        assertEquals(
-                "assets/locales/en-US_MASCULINE.pak",
-                ResourceBundle.getLocalePakResourcePath(
-                        "en-US", Gender.MASCULINE, /* inBundle= */ true, /* logError= */ false));
-        assertEquals(
-                "assets/locales/fr-FR_NEUTER.pak",
-                ResourceBundle.getLocalePakResourcePath(
-                        "fr-FR", Gender.NEUTER, /* inBundle= */ true, /* logError= */ false));
+                        "fr-FR", Gender.NEUTER, /* inSplit= */ true, /* logError= */ false));
     }
 }

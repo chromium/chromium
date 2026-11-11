@@ -1870,6 +1870,61 @@ if (_is_default_toolchain) {
     variables = [ "manifest_package=$chrome_public_test_manifest_package" ]
   }
 
+  # Packages Chrome's locale .pak files as assets. Each .pak is stored in a
+  # directory that bundletool recognizes as being language-targeted, so that
+  # bundles put them into language splits without needing to rewrite paths.
+  # The same paths are used for APKs so that they can be found in the same way.
+  #
+  # Variables:
+  #   locales: List of Chromium locales to package.
+  #   paks_dir: Directory containing locales/${locale}.pak files.
+  template("chrome_locale_pak_assets") {
+    android_assets(target_name) {
+      forward_variables_from(invoker,
+                             [
+                               "deps",
+                               "testonly",
+                             ])
+      disable_compression = true
+      treat_as_locale_paks = true
+      renaming_sources = []
+      renaming_destinations = []
+
+      foreach(_locale, invoker.locales) {
+        _locale_parts = []
+        _locale_parts = string_split(_locale, "-")
+        _lang = _locale_parts[0]
+
+        # LINT.IfChange(SplitLanguageForAndroid)
+        if (_lang == "he") {
+          _lang = "iw"
+        } else if (_lang == "yi") {
+          _lang = "ji"
+        } else if (_lang == "id") {
+          _lang = "in"
+        } else if (_lang == "fil") {
+          _lang = "tl"
+        }
+
+        # LINT.ThenChange(//ui/android/java/src/org/chromium/ui/base/LocalizationUtils.java:SplitLanguageForAndroid)
+        foreach(_gender_suffix, gender_suffixes) {
+          _pak_name = "${_locale}${_gender_suffix}.pak"
+          if (_pak_name == "en-US.pak") {
+            # Not language-targeted so that it is always stored in the base
+            # split. This ensures there is a .pak file to use when installed on
+            # a device with an unsupported system locale. Gendered variants
+            # remain in the "en" split to keep the base split small.
+            _dest_dir = "fallback-locales"
+          } else {
+            _dest_dir = "locales#lang_${_lang}"
+          }
+          renaming_sources += [ "${invoker.paks_dir}/locales/${_pak_name}" ]
+          renaming_destinations += [ "${_dest_dir}/${_pak_name}" ]
+        }
+      }
+    }
+  }
+
   # This template instantiates targets responsible for generating pak
   # resources. The generated target names are derived from input variables.
   #
@@ -1919,19 +1974,9 @@ if (_is_default_toolchain) {
       }
     }
 
-    android_assets("${_variant}_locale_pak_assets") {
-      disable_compression = true
-      renaming_sources = []
-      renaming_destinations = []
-
-      foreach(_locale, platform_pak_locales) {
-        foreach(_gender_suffix, gender_suffixes) {
-          renaming_sources += [ "$target_gen_dir/${_variant}_paks/locales/${_locale}${_gender_suffix}.pak" ]
-          renaming_destinations += [ "locales/${_locale}${_gender_suffix}.pak" ]
-        }
-      }
-      treat_as_locale_paks = true
-
+    chrome_locale_pak_assets("${_variant}_locale_pak_assets") {
+      locales = platform_pak_locales
+      paks_dir = "$target_gen_dir/${_variant}_paks"
       deps = [ ":${_variant}_paks" ]
     }
 
@@ -1967,20 +2012,10 @@ if (_is_default_toolchain) {
   # Trimmed locale .pak set for test APKs (e.g. chrome_public_test_apk and
   # android_browsertests). Reuses outputs from :chrome_apk_paks rather than
   # packaging all shipping Chrome locale .pak files (~53 MB uncompressed).
-  android_assets("chrome_test_apk_locale_pak_assets") {
+  chrome_locale_pak_assets("chrome_test_apk_locale_pak_assets") {
     testonly = true
-    disable_compression = true
-    renaming_sources = []
-    renaming_destinations = []
-
-    foreach(_locale, chrome_test_apk_locales) {
-      foreach(_gender_suffix, gender_suffixes) {
-        renaming_sources += [ "$target_gen_dir/chrome_apk_paks/locales/${_locale}${_gender_suffix}.pak" ]
-        renaming_destinations += [ "locales/${_locale}${_gender_suffix}.pak" ]
-      }
-    }
-    treat_as_locale_paks = true
-
+    locales = chrome_test_apk_locales
+    paks_dir = "$target_gen_dir/chrome_apk_paks"
     deps = [ ":chrome_apk_paks" ]
   }
 

@@ -122,9 +122,9 @@ public class LocalizationUtils {
     /**
      * Return the asset split language associated with a given Chromium language.
      *
-     * This matches the directory used to store language-based assets in bundle APK splits.
-     * E.g. for Hebrew, known as 'he' by Chromium, this method should return 'iw' because
-     * the .pak file will be stored as /assets/locales#lang_iw/he.pak within the split.
+     * <p>This matches the directory used to store language-based assets, which bundletool puts into
+     * language splits. E.g. for Hebrew, known as 'he' by Chromium, this method should return 'iw'
+     * because the .pak file will be stored as /assets/locales#lang_iw/he.pak.
      *
      * @param language Chromium specific language name.
      * @return Matching Android specific language name.
@@ -132,6 +132,7 @@ public class LocalizationUtils {
     public static String getSplitLanguageForAndroid(String language) {
         // IMPORTANT: Keep in sync with the mapping found in:
         // build/android/gyp/util/resource_utils.py
+        // LINT.IfChange(SplitLanguageForAndroid)
         switch (language) {
             case "he":
                 return "iw"; // Hebrew
@@ -144,6 +145,7 @@ public class LocalizationUtils {
             default:
                 return language;
         }
+        // LINT.ThenChange(//chrome/android/BUILD.gn:SplitLanguageForAndroid)
     }
 
     /**

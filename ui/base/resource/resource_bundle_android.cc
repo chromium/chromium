@@ -80,19 +80,19 @@ bool LoadFromApkOrFile(const char* apk_path,
 // Returns the path within the apk for the given locale's .pak file, or an
 // empty string if it doesn't exist.
 // Only locale paks for the active Android language can be retrieved.
-// If `in_split` is true, look into bundle split-specific location (e.g.
-// 'assets/locales#lang_<lang>/<locale>.pak', otherwise use the default
+// If `in_split` is true, look into the language split-specific location (e.g.
+// 'assets/locales#lang_<lang>/<locale>.pak'), otherwise use the default
 // WebView-related location, i.e. 'assets/stored-locales/<locale>.pak'.
 // If `log_error`, logs the path to logcat, but does not abort.
 std::string GetPathForAndroidLocalePakWithinApk(std::string_view locale,
                                                 ResourceBundle::Gender gender,
-                                                bool in_bundle,
+                                                bool in_split,
                                                 bool log_error) {
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jstring> ret =
       Java_ResourceBundle_getLocalePakResourcePath(
           env, base::android::ConvertUTF8ToJavaString(env, locale),
-          static_cast<int32_t>(gender), in_bundle, log_error);
+          static_cast<int32_t>(gender), in_split, log_error);
   if (ret.obj() == nullptr) {
     return std::string();
   }
@@ -142,11 +142,12 @@ bool LoadLocaleResourcesForLocaleAndGender(
   // a) WebView strings, which are always stored uncompressed under
   //    assets/stored-locales/ inside the APK or App Bundle.
   //
-  // b) For APKs, the Chrome UI strings are stored under assets/locales/.
-  //
-  // c) For App Bundles, Chrome UI strings are stored uncompressed under
+  // b) Chrome UI strings, which are stored uncompressed under
   //    assets/locales#lang_<lang>/ (where <lang> is an Android language code)
-  //    and assets/fallback-locales/ (for en-US.pak only).
+  //    and assets/fallback-locales/ (for the non-gendered en-US.pak only). The
+  //    same paths are used by APKs and App Bundles. For App Bundles, the
+  //    directory names cause bundletool to put the former into language
+  //    splits.
   //
   // Which .pak files to load are determined here by two global variables with
   // the following meaning:
@@ -155,9 +156,9 @@ bool LoadLocaleResourcesForLocaleAndGender(
   //    If true, load the WebView strings from stored-locales/<locale>.pak file
   //    as the webview locale pak file.
   //
-  //    If false, try to load it from the app bundle specific location
+  //    If false, try to load it from the language split specific location
   //    (e.g. locales#lang_<language>/<locale>.pak). If the latter does not
-  //    exist, try to lookup the APK-specific locale .pak file.
+  //    exist, try to locate a side-loaded locale .pak file (for tests).
   //
   //    g_locale_paks_in_apk is set by SetLocalePaksStoredInApk() which
   //    is called from the WebView startup code.

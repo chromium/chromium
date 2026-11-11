@@ -14,7 +14,6 @@ import posixpath
 import shutil
 import sys
 from xml.etree import ElementTree
-import zipfile
 
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
@@ -26,29 +25,9 @@ from util import build_utils
 from util import manifest_utils
 from util import resource_utils
 import action_helpers  # build_utils adds //build to sys.path.
-import zip_helpers
-
-# Location of language-based assets in bundle modules.
-_LOCALES_SUBDIR = 'assets/locales/'
-
-# The fallback locale should always have its .pak file included in
-# the base apk, i.e. not use language-based asset targetting. This ensures
-# that Chrome won't crash on startup if its bundle is installed on a device
-# with an unsupported system locale (e.g. fur-rIT).
-_FALLBACK_LOCALE = 'en-US'
 
 # List of split dimensions recognized by this tool.
 _ALL_SPLIT_DIMENSIONS = ['ABI', 'SCREEN_DENSITY', 'LANGUAGE']
-
-# Due to historical reasons, certain languages identified by Chromium with a
-# 3-letters ISO 639-2 code, are mapped to a nearly equivalent 2-letters
-# ISO 639-1 code instead (due to the fact that older Android releases only
-# supported the latter when matching resources).
-#
-# the same conversion as for Java resources.
-_SHORTEN_LANGUAGE_CODE_MAP = {
-    'fil': 'tl',  # Filipino to Tagalog.
-}
 
 # A list of extensions corresponding to files that should never be compressed
 # in the bundle. This used to be handled by bundletool automatically until
@@ -296,15 +275,10 @@ def _GenerateBundleConfigJson(
         for dim in _ALL_SPLIT_DIMENSIONS
     ]
 
-    # Locale-specific pak files stored in bundle splits need not be compressed.
-    uncompressed_globs = [
-        'assets/locales#lang_*/*.pak',
-        'assets/fallback-locales/*.pak',
-    ]
     # normpath to allow for ../ prefix.
-    uncompressed_globs.extend(
+    uncompressed_globs = [
         posixpath.normpath('assets/' + x) for x in uncompressed_assets
-    )
+    ]
     # NOTE: Use '**' instead of '*' to work through directories!
     uncompressed_globs.extend('**.' + ext for ext in _UNCOMPRESSED_FILE_EXTS)
     if not compress_dex:
@@ -345,103 +319,6 @@ def _GenerateBundleConfigJson(
         }
 
     return json.dumps(data, indent=2)
-
-
-def _RewriteLanguageAssetPath(src_path):
-    """Rewrite the destination path of a locale asset for language-based splits.
-
-    Should only be used when generating bundles with language-based splits.
-    This will rewrite paths that look like locales/<locale>.pak into
-    locales#<language>/<locale>.pak, where <language> is the language code
-    from the locale.
-
-    Returns new path.
-    """
-    if not src_path.startswith(_LOCALES_SUBDIR) or not src_path.endswith(
-        '.pak'
-    ):
-        return [src_path]
-
-    # Note that |locale| may include a gender as well as a language.
-    locale = src_path[len(_LOCALES_SUBDIR) : -4]
-    android_locale = resource_utils.ToAndroidLocaleName(locale)
-
-    # Trim _GENDER suffix so it doesn't end up in a directory name.
-    android_locale = android_locale.split('_')[0]
-
-    # The locale format is <lang>-<region> or <lang> or BCP-47 (e.g b+sr+Latn).
-    # Extract the language.
-    pos = android_locale.find('-')
-    if android_locale.startswith('b+'):
-        # If locale is in BCP-47 the language is the second tag (e.g. b+sr+Latn)
-        android_language = android_locale.split('+')[1]
-    elif pos >= 0:
-        android_language = android_locale[:pos]
-    else:
-        android_language = android_locale
-
-    if locale == _FALLBACK_LOCALE:
-        # Fallback locale .pak files must be placed in a different directory
-        # to ensure they are always stored in the base module.
-        result_path = 'assets/fallback-locales/%s.pak' % locale
-    else:
-        # Other language .pak files go into a language-specific asset directory
-        # that bundletool will store in separate split APKs.
-        result_path = 'assets/locales#lang_%s/%s.pak' % (
-            android_language,
-            locale,
-        )
-
-    return result_path
-
-
-def _SplitModuleForAssetTargeting(src_module_zip, tmp_dir, split_dimensions):
-    """Splits assets in a module if needed.
-
-    Args:
-      src_module_zip: input zip module path.
-      tmp_dir: Path to temporary directory, where the new output module might
-        be written to.
-      split_dimensions: list of split dimensions.
-
-    Returns:
-      If the module doesn't need asset targeting, doesn't do anything and
-      returns src_module_zip. Otherwise, create a new module zip archive under
-      tmp_dir with the same file name, but which contains assets paths targeting
-      the proper dimensions.
-    """
-    split_language = 'LANGUAGE' in split_dimensions
-    if not split_language:
-        # Nothing to target, so return original module path.
-        return src_module_zip
-
-    with zipfile.ZipFile(src_module_zip, 'r') as src_zip:
-        language_files = [
-            f for f in src_zip.namelist() if f.startswith(_LOCALES_SUBDIR)
-        ]
-
-        if not language_files:
-            # Not language-based assets to split in this module.
-            return src_module_zip
-
-        tmp_zip = os.path.join(tmp_dir, os.path.basename(src_module_zip))
-        with zipfile.ZipFile(tmp_zip, 'w') as dst_zip:
-            for info in src_zip.infolist():
-                src_path = info.filename
-                is_compressed = info.compress_type != zipfile.ZIP_STORED
-
-                dst_path = src_path
-                if src_path in language_files:
-                    dst_path = _RewriteLanguageAssetPath(src_path)
-
-                zip_helpers.add_to_zip_hermetic(
-                    dst_zip,
-                    dst_path,
-                    data=src_zip.read(src_path),
-                    compress=is_compressed,
-                )
-
-        return tmp_zip
 
 
 def _GenerateBaseResourcesAllowList(
@@ -666,12 +543,6 @@ def main(args):
         split_dimensions = [x.upper() for x in options.split_dimensions]
 
     with build_utils.TempDir() as tmp_dir:
-        logging.info('Splitting locale assets')
-        module_zips = [
-            _SplitModuleForAssetTargeting(module, tmp_dir, split_dimensions)
-            for module in options.module_zips
-        ]
-
         base_master_resource_ids = None
         if options.base_module_rtxt_path:
             logging.info('Creating R.txt allowlist')
@@ -701,7 +572,7 @@ def main(args):
             '-jar',
             bundletool.BUNDLETOOL_JAR_PATH,
             'build-bundle',
-            '--modules=' + ','.join(module_zips),
+            '--modules=' + ','.join(options.module_zips),
             '--output=' + tmp_bundle,
             '--config=' + tmp_bundle_config,
         ]
@@ -727,7 +598,7 @@ def main(args):
             # enabled.  Consider making this run in parallel or move into a separate
             # step before enabling isolated splits by default.
             logging.info('Validating isolated split manifests')
-            errors = _ValidateSplits(tmp_bundle, module_zips)
+            errors = _ValidateSplits(tmp_bundle, options.module_zips)
             if errors:
                 sys.stderr.write('Bundle failed sanity checks:\n  ')
                 sys.stderr.write('\n  '.join(errors))
