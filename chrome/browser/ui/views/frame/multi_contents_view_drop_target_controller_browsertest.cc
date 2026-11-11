@@ -17,8 +17,8 @@
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_delegate.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/dragging/drag_session_data.h"
-#include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/test/split_view_browser_test_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -54,10 +54,6 @@ class MultiContentsViewDropTargetControllerBrowserTest
   }
 
   MultiContentsViewDropTargetController& controller() { return *controller_; }
-  TabStrip* tabstrip() {
-    return BrowserView::GetBrowserViewForBrowser(browser())
-        ->horizontal_tab_strip_for_testing();
-  }
 
   int GetViewWidth() {
     return BrowserView::GetBrowserViewForBrowser(browser())->width();
@@ -68,11 +64,18 @@ class MultiContentsViewDropTargetControllerBrowserTest
       base::OnceCallback<gfx::Point(int view_width)> get_point_in_view) {
     MockTabDragController mock_tab_drag_controller;
     DragSessionData session_data;
-    Tab* tab = tabstrip()->tab_at(0);
+    BrowserView* browser_view =
+        BrowserView::GetBrowserViewForBrowser(browser());
+    tabs::TabInterface* tab_interface =
+        browser()->GetTabStripModel()->GetTabAtIndex(0);
+    views::View* tab = browser_view->tab_strip_view()->GetTabAnchorView(
+        tab_interface->GetHandle());
+    TabDragContext* drag_context =
+        browser_view->tab_strip_view()->GetDragContext();
 
     // Construct drag data
     session_data.tab_drag_data_ = {
-        TabDragData(tabstrip()->GetDragContext(), tab),
+        TabDragData(drag_context, tab),
     };
     session_data.tab_drag_data_[0].attached_view = tab;
     EXPECT_CALL(mock_tab_drag_controller, GetSessionData)

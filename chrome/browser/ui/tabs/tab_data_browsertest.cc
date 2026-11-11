@@ -26,8 +26,7 @@
 #include "chrome/browser/ui/thumbnails/thumbnail_image.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/tabs/tab.h"
-#include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -492,9 +491,11 @@ IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest,
                               "};"));
   content::PrepContentsForBeforeUnloadTest(wc);
 
-  Tab* const tab = BrowserView::GetBrowserViewForBrowser(browser())
-                       ->horizontal_tab_strip_for_testing()
-                       ->tab_at(0);
+  const auto get_tab_data = [&]() -> const tabs::TabData& {
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->tab_strip_view()
+        ->GetTabData(tab_interface->GetHandle());
+  };
   auto tab_data_observer = std::make_unique<TabDataObserver>(tab_interface);
   scoped_refptr<MediaStreamCaptureIndicator> indicator =
       MediaCaptureDevicesDispatcher::GetInstance()
@@ -511,7 +512,7 @@ IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest,
                              content::MediaStreamUI::StateChangeCallback());
   EXPECT_EQ(tab_data_observer->tab_data().alert_state,
             tabs::TabAlert::kTabCapturing);
-  EXPECT_EQ(tab->data().alert_state, tabs::TabAlert::kTabCapturing);
+  EXPECT_EQ(get_tab_data().alert_state, tabs::TabAlert::kTabCapturing);
 
   // Attempt to close the tab and cancel the beforeunload confirmation dialog.
   tab_strip_model->CloseWebContentsAt(0, TabCloseTypes::CLOSE_USER_GESTURE);
@@ -525,7 +526,7 @@ IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest,
   // state in both TabDataObserver and the Tab view.
   video_stream_ui.reset();
   EXPECT_EQ(tab_data_observer->tab_data().alert_state, std::nullopt);
-  EXPECT_EQ(tab->data().alert_state, std::nullopt);
+  EXPECT_EQ(get_tab_data().alert_state, std::nullopt);
 
   ASSERT_TRUE(content::ExecJs(wc, "window.onbeforeunload = null;"));
 }

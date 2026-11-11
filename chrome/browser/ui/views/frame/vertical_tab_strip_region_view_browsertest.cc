@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/animations/tab_strip_animations.h"
+#include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/custom_corners_background.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
@@ -39,6 +40,7 @@
 #include "chrome/browser/ui/views/tabs/common/pinned_tab_container_view.h"
 #include "chrome/browser/ui/views/tabs/common/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/split_tab_view.h"
+#include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
 #include "chrome/browser/ui/views/tabs/common/unpinned_tab_container_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_bottom_container.h"
@@ -127,9 +129,20 @@ class VerticalTabStripRegionViewTest
     return tabs::VerticalTabStripStateController::From(browser());
   }
 
-  TabStrip* horizontal_tab_strip() {
-    return BrowserView::GetBrowserViewForBrowser(browser())
-        ->horizontal_tab_strip_for_testing();
+  int GetHorizontalTabCount() {
+    auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+    if (auto* tab_strip = browser_view->horizontal_tab_strip_for_testing()) {
+      return tab_strip->GetTabCount();
+    }
+    auto* region = views::AsViewClass<BaseTabStripRegionView>(
+        browser_view->horizontal_tab_strip_region_view_for_testing());
+    if (!region || !region->root_node_for_testing()) {
+      return 0;
+    }
+    if (auto* controller = region->GetTabStripCollectionController()) {
+      return controller->GetTabCount();
+    }
+    return 0;
   }
 
  protected:
@@ -878,7 +891,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, SwitchModes) {
   auto* unpinned_tabs_view = root_node()->children()[1]->view();
 
   // Horizontal tabstrip should be empty when in vertical mode.
-  EXPECT_EQ(horizontal_tab_strip()->GetTabCount(), 0);
+  EXPECT_EQ(GetHorizontalTabCount(), 0);
 
   // Vertical tabstrip should have the tabs.
   // Pinned: 1 single + 1 split = 2 children.
@@ -896,7 +909,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, SwitchModes) {
   // Horizontal tabstrip should have the tabs.
   // 1 pinned + 1 unpinned + 2 split + 2 pinned split + 1 grouped +
   // 2 grouped split = 10.
-  EXPECT_EQ(horizontal_tab_strip()->GetTabCount(), 9);
+  EXPECT_EQ(GetHorizontalTabCount(), 9);
 }
 
 // Verifies that entering Touch UI mode with vertical tabs enabled doesn't

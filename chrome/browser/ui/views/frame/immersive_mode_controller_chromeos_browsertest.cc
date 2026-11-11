@@ -23,12 +23,14 @@
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_chromeos.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_tester.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
+#include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -55,6 +57,7 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/button_test_api.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/window/frame_caption_button.h"
 
 class ImmersiveModeControllerChromeosWebAppBrowserTest
@@ -156,7 +159,7 @@ class ImmersiveModeControllerChromeosWebAppBrowserTest
 IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
                        Layout) {
   LaunchAppBrowser();
-  TabStrip* tabstrip = browser_view()->horizontal_tab_strip_for_testing();
+  views::View* tabstrip = browser_view()->tab_strip_view()->GetTabStripView();
   ToolbarView* toolbar = browser_view()->toolbar();
   views::View* contents_web_view = browser_view()->GetContentsView();
   views::View* top_container = browser_view()->top_container();
@@ -505,6 +508,18 @@ class ImmersiveModeControllerChromeosTest : public InProcessBrowserTest {
     return BrowserView::GetBrowserViewForBrowser(browser());
   }
 
+  bool CanPaintThrobberToLayer() {
+    if (auto* tabstrip = browser_view()->horizontal_tab_strip_for_testing()) {
+      return tabstrip->CanPaintThrobberToLayer();
+    }
+    if (auto* base_region = views::AsViewClass<BaseTabStripRegionView>(
+            browser_view()->tab_strip_view())) {
+      return base_region->GetTabStripCollectionController()
+          ->CanPaintThrobberToLayer();
+    }
+    return false;
+  }
+
   ImmersiveModeController* controller() { return controller_; }
 
  private:
@@ -517,7 +532,7 @@ class ImmersiveModeControllerChromeosTest : public InProcessBrowserTest {
 // Test the layout and visibility of the tabstrip, toolbar and TopContainerView
 // in immersive fullscreen.
 IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosTest, Layout) {
-  TabStrip* tabstrip = browser_view()->horizontal_tab_strip_for_testing();
+  views::View* tabstrip = browser_view()->tab_strip_view()->GetTabStripView();
   ToolbarView* toolbar = browser_view()->toolbar();
   views::WebView* contents_web_view =
       browser_view()->contents_web_view_for_testing();
@@ -767,20 +782,18 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosTest,
 // immersive fullscreen, since the tab strip may animate in or out without
 // moving the layers.
 IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosTest, LayeredSpinners) {
-  TabStrip* tabstrip = browser_view()->horizontal_tab_strip_for_testing();
-
   // Immersive fullscreen starts out disabled; layers are OK.
   EXPECT_FALSE(browser_view()->GetWidget()->IsFullscreen());
   EXPECT_FALSE(controller()->IsEnabled());
-  EXPECT_TRUE(tabstrip->CanPaintThrobberToLayer());
+  EXPECT_TRUE(CanPaintThrobberToLayer());
 
   ChromeOSBrowserUITest::EnterImmersiveFullscreenMode(browser());
   EXPECT_TRUE(browser_view()->GetWidget()->IsFullscreen());
   EXPECT_TRUE(controller()->IsEnabled());
-  EXPECT_FALSE(tabstrip->CanPaintThrobberToLayer());
+  EXPECT_FALSE(CanPaintThrobberToLayer());
 
   ChromeOSBrowserUITest::ExitImmersiveFullscreenMode(browser());
-  EXPECT_TRUE(tabstrip->CanPaintThrobberToLayer());
+  EXPECT_TRUE(CanPaintThrobberToLayer());
 }
 
 // Ensure SetEnable is called when needed even when the previous request is
