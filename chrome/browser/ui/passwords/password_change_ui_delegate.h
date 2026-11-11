@@ -7,6 +7,12 @@
 
 #include <string>
 
+class GURL;
+
+namespace password_manager {
+class PasswordString;
+}
+
 // UI-facing delegate interface for a password change flow, providing display
 // metadata and handling user actions from password change dialogs and toasts.
 class PasswordChangeUIDelegate {
@@ -66,8 +72,17 @@ class PasswordChangeUIDelegate {
   // Returns current state.
   virtual State GetCurrentState() const = 0;
 
+  // Returns the target change-password URL for the flow.
+  virtual const GURL& GetChangePasswordUrl() const = 0;
+
   // Returns origin string that is displayed in the UI.
   virtual std::u16string GetDisplayOrigin() const = 0;
+
+  // Returns the username of the credential being updated.
+  virtual const std::u16string& GetUsername() const = 0;
+
+  // Returns the newly generated password, if any.
+  virtual password_manager::PasswordString GetGeneratedPassword() const = 0;
 
   // Called when the user accepts the first-run privacy notice dialog.
   virtual void OnPrivacyNoticeAccepted() = 0;
@@ -90,11 +105,6 @@ class PasswordChangeUIDelegate {
   // Brings a tab where password change is ongoing to the foreground and
   // terminates the automated flow.
   virtual void OpenPasswordChangeTab() = 0;
-
-  // Displays password change confirmation bubble (or navigates to password
-  // details in password settings if the user navigated away) and terminates
-  // the flow.
-  virtual void OpenPasswordDetails() = 0;
 
   // Called when a terminal dialog or toast is dismissed (either by the user or
   // after its display timeout).

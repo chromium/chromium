@@ -26,12 +26,8 @@
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/ui/autofill/autofill_client_provider.h"
 #include "chrome/browser/ui/autofill/autofill_client_provider_factory.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/passwords/password_change_ui_controller.h"
-#include "chrome/browser/ui/passwords/ui_utils.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_field_detector.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
@@ -459,6 +455,20 @@ PasswordChangeUIDelegate::State PasswordChangeDelegateImpl::GetCurrentState()
   return current_state_;
 }
 
+const GURL& PasswordChangeDelegateImpl::GetChangePasswordUrl() const {
+  return change_password_url_;
+}
+
+const std::u16string& PasswordChangeDelegateImpl::GetUsername() const {
+  return password_form_info_.username_value;
+}
+
+password_manager::PasswordString
+PasswordChangeDelegateImpl::GetGeneratedPassword() const {
+  return actuator_ ? actuator_->GetGeneratedPassword()
+                   : password_manager::PasswordString();
+}
+
 void PasswordChangeDelegateImpl::Stop() {
   observers_.Notify(&PasswordChangeDelegate::Observer::OnPasswordChangeStopped,
                     this);
@@ -468,35 +478,6 @@ void PasswordChangeDelegateImpl::OpenPasswordChangeTab() {
   CHECK(actuator_);
   actuator_->OpenPasswordChangeTab(originator_);
   Stop();
-}
-
-void PasswordChangeDelegateImpl::OpenPasswordDetails() {
-  CHECK(originator_);
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kShowTabWithPasswordChangeOnSuccess)) {
-    OpenPasswordChangeTab();
-    return;
-  }
-
-  bool is_same_domain = affiliations::IsExtendedPublicSuffixDomainMatch(
-      change_password_url_, originator_->GetLastCommittedURL(), {});
-
-  Stop();
-  if (is_same_domain) {
-    // UI boundary: the confirmation bubble requires the plaintext password.
-    ManagePasswordsUIController::FromWebContents(originator_)
-        ->ShowChangePasswordBubble(
-            password_form_info_.username_value,
-            actuator_ ? actuator_->GetGeneratedPassword().value()
-                      : std::u16string());
-  } else {
-    auto* tab = tabs::TabInterface::GetFromContents(originator_);
-    BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();
-    NavigateToPasswordDetailsPage(
-        browser,
-        base::UTF16ToUTF8(GetDisplayOrigin()),
-        password_manager::ManagePasswordsReferrer::kPasswordChangeInfoBubble);
-  }
 }
 
 void PasswordChangeDelegateImpl::OnUiDismissed() {

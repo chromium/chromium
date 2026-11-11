@@ -9,15 +9,20 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/password_manager/password_change/features.h"
+#include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/passwords/password_change_ui_delegate_mock.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/password_string.h"
+#include "components/password_manager/core/common/password_manager_ui.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -85,6 +90,7 @@ class PasswordChangeUIControllerBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
     tabs::TabInterface* tab_interface = browser()->GetActiveTabInterface();
     ASSERT_TRUE(tab_interface);
     ui_controller_ =
@@ -395,16 +401,85 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
-                       PasswordChangeSuccessfilToastShownAndAccepted) {
+                       PasswordChangeSuccessfulToastShownAndAccepted) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("example.com", "/empty.html")));
+
+  const GURL change_password_url("https://example.com/change-password");
+  const std::u16string username = u"user@example.com";
+  const std::u16string new_password = u"NewSecurePassword123";
+  EXPECT_CALL(delegate_, GetChangePasswordUrl)
+      .WillOnce(testing::ReturnRef(change_password_url));
+  EXPECT_CALL(delegate_, GetUsername).WillOnce(testing::ReturnRef(username));
+  EXPECT_CALL(delegate_, GetGeneratedPassword)
+      .WillOnce(testing::Return(
+          password_manager::PasswordString(std::u16string(new_password))));
+  EXPECT_CALL(delegate_, OnUiDismissed);
+
   UpdateState(PasswordChangeUIDelegate::State::kPasswordSuccessfullyChanged);
 
-  EXPECT_CALL(delegate_, OpenPasswordDetails);
+  views::test::ButtonTestApi clicker(GetToastActionButton());
+  clicker.NotifyClick(ui::test::TestEvent());
+
+  auto* passwords_ui_controller = ManagePasswordsUIController::FromWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  EXPECT_EQ(passwords_ui_controller->GetState(),
+            password_manager::ui::PASSWORD_CHANGE_STATE);
+  EXPECT_EQ(passwords_ui_controller->PasswordChangeUsername(), username);
+  EXPECT_EQ(passwords_ui_controller->PasswordChangeNewPassword(), new_password);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PasswordChangeUIControllerBrowserTest,
+    PasswordChangeSuccessfulToastShownAndAccepted_CrossDomainNavigatesToSettings) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("other.com", "/empty.html")));
+
+  const GURL change_password_url("https://example.com/change-password");
+  EXPECT_CALL(delegate_, GetChangePasswordUrl)
+      .WillOnce(testing::ReturnRef(change_password_url));
+  EXPECT_CALL(delegate_, GetDisplayOrigin)
+      .WillOnce(testing::Return(u"example.com"));
+  EXPECT_CALL(delegate_, OnUiDismissed);
+
+  UpdateState(PasswordChangeUIDelegate::State::kPasswordSuccessfullyChanged);
+
+  ui_test_utils::TabAddedWaiter tab_waiter(browser());
+  views::test::ButtonTestApi clicker(GetToastActionButton());
+  clicker.NotifyClick(ui::test::TestEvent());
+  tab_waiter.Wait();
+
+  EXPECT_EQ(
+      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      GURL("chrome://password-manager/passwords/example.com"));
+}
+
+class PasswordChangeUIControllerWithShowTabOnSuccessBrowserTest
+    : public PasswordChangeUIControllerBrowserTest {
+ public:
+  PasswordChangeUIControllerWithShowTabOnSuccessBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        password_manager::features::kShowTabWithPasswordChangeOnSuccess);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    PasswordChangeUIControllerWithShowTabOnSuccessBrowserTest,
+    PasswordChangeSuccessfulToastShownAndAccepted) {
+  UpdateState(PasswordChangeUIDelegate::State::kPasswordSuccessfullyChanged);
+
+  EXPECT_CALL(delegate_, OpenPasswordChangeTab);
   views::test::ButtonTestApi clicker(GetToastActionButton());
   clicker.NotifyClick(ui::test::TestEvent());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
-                       PasswordChangeSuccessfilToastShownAndCanceled) {
+                       PasswordChangeSuccessfulToastShownAndCanceled) {
   UpdateState(PasswordChangeUIDelegate::State::kPasswordSuccessfullyChanged);
 
   EXPECT_CALL(delegate_, OnUiDismissed);

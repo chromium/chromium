@@ -30,7 +30,6 @@
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/features/password_change_submission.pb.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -53,15 +52,6 @@ using UkmEntry = ukm::builders::PasswordManager_ChangeFlowOutcome;
 constexpr char kChangePasswordURL[] = "https://example.com/password/";
 const std::u16string kTestEmail = u"elisa.buckett@gmail.com";
 const std::u16string kPassword = u"cE1L45Vgxyzlu8";
-
-class MockPageNavigator : public content::PageNavigator {
- public:
-  MOCK_METHOD(content::WebContents*,
-              OpenURL,
-              (const content::OpenURLParams&,
-               base::OnceCallback<void(content::NavigationHandle&)>),
-              (override));
-};
 
 class MockPasswordChangeUIController : public PasswordChangeUIController {
  public:
@@ -93,10 +83,6 @@ class MockManagePasswordsUIController : public ManagePasswordsUIController {
   MOCK_METHOD(base::WeakPtr<PasswordsModelDelegate>,
               GetModelDelegateProxy,
               (),
-              (override));
-  MOCK_METHOD(void,
-              ShowChangePasswordBubble,
-              (const std::u16string&, const std::u16string&),
               (override));
   void PrimaryPageChanged(content::Page& page) override {}
 };
@@ -189,7 +175,6 @@ class PasswordChangeDelegateImplTest : public ChromeRenderViewHostTestHarness {
   }
 
   PrefService* prefs() { return profile()->GetPrefs(); }
-  MockPageNavigator& navigator() { return navigator_; }
 
   void SetOptimizationFeatureEnabled(bool enabled) {
     ON_CALL(*mock_optimization_guide_keyed_service_,
@@ -300,7 +285,6 @@ class PasswordChangeDelegateImplTest : public ChromeRenderViewHostTestHarness {
   base::test::ScopedFeatureList feature_list_;
   raw_ptr<MockOptimizationGuideKeyedService>
       mock_optimization_guide_keyed_service_;
-  MockPageNavigator navigator_;
   std::unique_ptr<tabs::MockTabInterface> tab_interface_;
   std::unique_ptr<::testing::NiceMock<MockManagePasswordsUIController>>
       manage_passwords_ui_controller_;
@@ -318,7 +302,7 @@ TEST_F(PasswordChangeDelegateImplTest,
        GeneratedPasswordWithoutActuatorIsEmpty) {
   CreateDelegate(/*inject_actuator=*/false);
 
-  EXPECT_TRUE(delegate()->generated_password().empty());
+  EXPECT_TRUE(delegate()->GetGeneratedPassword().empty());
 }
 
 TEST_F(PasswordChangeDelegateImplTest, GeneratedPasswordOutlivesDelegate) {
@@ -327,7 +311,7 @@ TEST_F(PasswordChangeDelegateImplTest, GeneratedPasswordOutlivesDelegate) {
   EXPECT_CALL(*actuator(), GetGeneratedPassword()).WillOnce(Return(password));
 
   const password_manager::PasswordString generated_password =
-      delegate()->generated_password();
+      delegate()->GetGeneratedPassword();
   ResetDelegate();
 
   EXPECT_EQ(generated_password, password);
@@ -836,39 +820,26 @@ TEST_F(PasswordChangeDelegateImplTest, OpenPasswordChangeTab) {
   delegate()->RemoveObserver(&observer);
 }
 
-TEST_F(PasswordChangeDelegateImplTest, OpenPasswordDetails) {
+TEST_F(PasswordChangeDelegateImplTest, UIDelegateCredentialAccessors) {
   CreateDelegate();
-  MockPasswordChangeDelegateObserver observer;
-  delegate()->AddObserver(&observer);
-  content::WebContentsTester::For(web_contents())
-      ->NavigateAndCommit(GURL(kChangePasswordURL));
 
   const std::u16string kNewPassword = u"NewSecurePassword";
   EXPECT_CALL(*actuator(), GetGeneratedPassword())
       .WillOnce(Return(
           password_manager::PasswordString(std::u16string(kNewPassword))));
-  EXPECT_CALL(observer, OnPasswordChangeStopped(delegate()));
-  EXPECT_CALL(*manage_passwords_ui_controller(),
-              ShowChangePasswordBubble(kTestEmail, kNewPassword));
 
-  delegate()->OpenPasswordDetails();
-  delegate()->RemoveObserver(&observer);
+  EXPECT_EQ(delegate()->GetChangePasswordUrl(), GURL(kChangePasswordURL));
+  EXPECT_EQ(delegate()->GetUsername(), kTestEmail);
+  EXPECT_EQ(delegate()->GetGeneratedPassword().value(), kNewPassword);
 }
 
-TEST_F(PasswordChangeDelegateImplTest,
-       OpenPasswordDetails_ShowTabFeatureEnabled) {
-  base::test::ScopedFeatureList scoped_features(
-      password_manager::features::kShowTabWithPasswordChangeOnSuccess);
+TEST_F(PasswordChangeDelegateImplTest, OnUiDismissedStopsFlow) {
   CreateDelegate();
   MockPasswordChangeDelegateObserver observer;
   delegate()->AddObserver(&observer);
 
-  EXPECT_CALL(*actuator(), OpenPasswordChangeTab(web_contents()));
   EXPECT_CALL(observer, OnPasswordChangeStopped(delegate()));
-  EXPECT_CALL(*manage_passwords_ui_controller(), ShowChangePasswordBubble)
-      .Times(0);
-
-  delegate()->OpenPasswordDetails();
+  delegate()->OnUiDismissed();
   delegate()->RemoveObserver(&observer);
 }
 

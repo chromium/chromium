@@ -16,6 +16,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/passwords/password_change_ui_delegate.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/singleton_tabs.h"
@@ -26,8 +27,12 @@
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
@@ -738,7 +743,39 @@ void PasswordChangeUIController::OnPrivacyNoticeAccepted() {
 
 void PasswordChangeUIController::ShowPasswordDetails() {
   CHECK(ui_delegate_);
-  ui_delegate_->OpenPasswordDetails();
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kShowTabWithPasswordChangeOnSuccess)) {
+    ui_delegate_->OpenPasswordChangeTab();
+    return;
+  }
+
+  CHECK(tab_interface_);
+  content::WebContents* web_contents = tab_interface_->GetContents();
+  CHECK(web_contents);
+  const bool is_same_domain = affiliations::IsExtendedPublicSuffixDomainMatch(
+      ui_delegate_->GetChangePasswordUrl(), web_contents->GetLastCommittedURL(),
+      {});
+  if (is_same_domain) {
+    const std::u16string username = ui_delegate_->GetUsername();
+    // UI boundary: the confirmation bubble requires the plaintext password.
+    const std::u16string new_password =
+        ui_delegate_->GetGeneratedPassword().value();
+    ManagePasswordsUIController* passwords_ui_controller =
+        ManagePasswordsUIController::From(tab_interface_);
+    ui_delegate_->OnUiDismissed();
+    if (passwords_ui_controller) {
+      passwords_ui_controller->ShowChangePasswordBubble(username, new_password);
+    }
+  } else {
+    BrowserWindowInterface* browser =
+        tab_interface_->GetBrowserWindowInterface();
+    const std::string display_origin =
+        base::UTF16ToUTF8(ui_delegate_->GetDisplayOrigin());
+    ui_delegate_->OnUiDismissed();
+    NavigateToPasswordDetailsPage(
+        browser, display_origin,
+        password_manager::ManagePasswordsReferrer::kPasswordChangeInfoBubble);
+  }
 }
 
 void PasswordChangeUIController::NavigateToPasswordChangeSettings() {

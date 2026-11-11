@@ -524,7 +524,7 @@ IN_PROC_BROWSER_TEST_P(PasswordChangeBrowserTest,
   EXPECT_TRUE(observer.Wait());
 
   std::string generated_password =
-      base::UTF16ToUTF8(delegate->generated_password().secure_value());
+      base::UTF16ToUTF8(delegate->GetGeneratedPassword().secure_value());
 
   // Verify all the fields are filled correctly.
   WaitForElementValue("new_password_2", generated_password);
@@ -548,7 +548,7 @@ IN_PROC_BROWSER_TEST_P(PasswordChangeBrowserTest, GeneratedPasswordIsPreSaved) {
   WaitForPasswordStore();
   CheckThatCredentialsStored(
       /*username=*/"test", "pa$$word",
-      base::UTF16ToUTF8(delegate->generated_password().secure_value()));
+      base::UTF16ToUTF8(delegate->GetGeneratedPassword().secure_value()));
 }
 
 // Verify that after password change is stopped, password change delegate is not
@@ -583,7 +583,7 @@ IN_PROC_BROWSER_TEST_P(PasswordChangeBrowserTest, NewPasswordIsSaved) {
   WaitForPasswordStore();
   CheckThatCredentialsStored(
       /*username=*/"test",
-      base::UTF16ToUTF8(delegate->generated_password().secure_value()),
+      base::UTF16ToUTF8(delegate->GetGeneratedPassword().secure_value()),
       "pa$$word", password_manager::PasswordForm::Type::kChangeSubmission);
 
   base::WeakPtr<PasswordChangeDelegate> delegate_weak_ptr =
@@ -638,7 +638,7 @@ IN_PROC_BROWSER_TEST_P(PasswordChangeBrowserTest, OldPasswordIsUpdated) {
   WaitForPasswordStore();
   CheckThatCredentialsStored(
       base::UTF16ToUTF8(form.username_value),
-      base::UTF16ToUTF8(delegate->generated_password().secure_value()),
+      base::UTF16ToUTF8(delegate->GetGeneratedPassword().secure_value()),
       base::UTF16ToUTF8(form.password_value.value()),
       password_manager::PasswordForm::Type::kChangeSubmission);
 }
@@ -1330,7 +1330,7 @@ IN_PROC_BROWSER_TEST_P(PasswordChangeBrowserTest,
   EXPECT_TRUE(delegate->ui_controller()->dialog_widget()->IsVisible());
 
   const std::string generated_password =
-      base::UTF16ToUTF8(delegate->generated_password().secure_value());
+      base::UTF16ToUTF8(delegate->GetGeneratedPassword().secure_value());
   base::WeakPtr<PasswordChangeDelegate> delegate_weak_ptr =
       delegate->AsWeakPtr();
 

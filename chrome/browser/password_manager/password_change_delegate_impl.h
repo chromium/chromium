@@ -101,10 +101,6 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
   PasswordChangeActuator* actuator() { return actuator_.get(); }
   PasswordChangeUIController* ui_controller() { return ui_controller_.get(); }
   ModelQualityLogsUploader* logs_uploader() { return logs_uploader_.get(); }
-  password_manager::PasswordString generated_password() const {
-    return actuator_ ? actuator_->GetGeneratedPassword()
-                     : password_manager::PasswordString();
-  }
 
   void SetCustomUIController(
       std::unique_ptr<PasswordChangeUIController> controller) {
@@ -133,14 +129,16 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
 
   // PasswordChangeUIDelegate:
   State GetCurrentState() const override;
+  const GURL& GetChangePasswordUrl() const override;
   std::u16string GetDisplayOrigin() const override;
+  const std::u16string& GetUsername() const override;
+  password_manager::PasswordString GetGeneratedPassword() const override;
   void OnPrivacyNoticeAccepted() override;
   void StartPasswordChangeFlow() override;
   void OnPasswordChangeDeclined() override;
   void CancelPasswordChangeFlow() override;
   void RetryLoginCheck() override;
   void OpenPasswordChangeTab() override;
-  void OpenPasswordDetails() override;
   void OnUiDismissed() override;
 
  private:
