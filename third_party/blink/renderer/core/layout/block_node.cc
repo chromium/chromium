@@ -618,15 +618,6 @@ const LayoutResult* BlockNode::Layout(
       params.previous_result = nullptr;
       box_->SetShouldSkipLayoutCache(true);
 
-#if DCHECK_IS_ON()
-      // Ensure turning on/off scrollbars only once at most, when we call
-      // |LayoutWithAlgorithm| recursively.
-      DEFINE_STATIC_LOCAL(
-          Persistent<GCedHeapHashSet<WeakMember<LayoutBox>>>, scrollbar_changed,
-          (MakeGarbageCollected<GCedHeapHashSet<WeakMember<LayoutBox>>>()));
-      DCHECK(scrollbar_changed->insert(box_.Get()).is_new_entry);
-#endif
-
       // Scrollbar changes are hard to detect. Make sure everyone gets the
       // message.
       box_->SetNeedsLayout(layout_invalidation_reason::kScrollbarChanged,
@@ -637,10 +628,6 @@ const LayoutResult* BlockNode::Layout(
       layout_result = LayoutWithAlgorithm(params);
       FinishLayout(block_flow, constraint_space, break_token, layout_result,
                    old_box_size);
-
-#if DCHECK_IS_ON()
-      scrollbar_changed->erase(box_);
-#endif
 
       scrollbars_after = ComputeScrollbars(constraint_space, *this);
       DCHECK(!freeze_horizontal || !freeze_vertical ||
