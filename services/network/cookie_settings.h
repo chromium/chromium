@@ -145,13 +145,18 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
     return (setting == CONTENT_SETTING_ALLOW);
   }
 
-  bool ShouldAlwaysAllowCookiesForTesting(const GURL& url,
-                                          const GURL& first_party_url) const;
+  bool ShouldAlwaysAllowCookiesForTesting(
+      const GURL& url,
+      const GURL& first_party_url,
+      net::CookieSettingOverrides overrides =
+          net::CookieSettingOverrides()) const;
 
  private:
   // content_settings::CookieSettingsBase:
-  bool ShouldAlwaysAllowCookies(const GURL& url,
-                                const GURL& first_party_url) const override;
+  bool ShouldAlwaysAllowCookies(
+      const GURL& url,
+      const GURL& first_party_url,
+      net::CookieSettingOverrides overrides) const override;
   ContentSetting GetContentSetting(
       const GURL& primary_url,
       const GURL& secondary_url,
@@ -235,7 +240,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
       EntryIndex;
 
   EntryIndex content_settings_;
-
 };
 
 }  // namespace network

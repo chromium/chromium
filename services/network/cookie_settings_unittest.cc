@@ -443,6 +443,9 @@ TEST_F(CookieSettingsTest, ShouldAlwaysAllowCookies) {
       GURL(kURL), GURL(kChromeSchemedURL)));
   EXPECT_TRUE(settings.ShouldAlwaysAllowCookiesForTesting(
       GURL(kSecureSchemedURL), GURL(kChromeSchemedURL)));
+  EXPECT_TRUE(settings.ShouldAlwaysAllowCookiesForTesting(
+      GURL(kURL), GURL(kOtherURL),
+      {net::CookieSettingOverride::kForceAllowCookies}));
 }
 
 TEST_F(CookieSettingsTest, IsCookieAccessible_AlwaysAllowCookieNotAffected) {

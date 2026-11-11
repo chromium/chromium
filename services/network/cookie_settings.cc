@@ -214,7 +214,11 @@ bool CookieSettings::IsCookieAccessible(
 //    and both have the Chrome extensions scheme.
 bool CookieSettings::ShouldAlwaysAllowCookies(
     const GURL& url,
-    const GURL& first_party_url) const {
+    const GURL& first_party_url,
+    net::CookieSettingOverrides overrides) const {
+  if (overrides.Has(net::CookieSettingOverride::kForceAllowCookies)) {
+    return true;
+  }
   if (url.SchemeIsCryptographic()) {
     if (secure_origin_cookies_allowed_schemes_.contains(
             first_party_url.scheme())) {
@@ -432,8 +436,9 @@ void CookieSettings::AugmentInclusionStatus(
 
 bool CookieSettings::ShouldAlwaysAllowCookiesForTesting(
     const GURL& url,
-    const GURL& first_party_url) const {
-  return ShouldAlwaysAllowCookies(url, first_party_url);
+    const GURL& first_party_url,
+    net::CookieSettingOverrides overrides) const {
+  return ShouldAlwaysAllowCookies(url, first_party_url, overrides);
 }
 
 void CookieSettings::set_secure_origin_cookies_allowed_origins(

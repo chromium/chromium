@@ -494,7 +494,8 @@ ContentSetting TpcBlockingBrowserClient::GetContentSetting(
 
 bool TpcBlockingBrowserClient::ShouldAlwaysAllowCookies(
     const GURL& url,
-    const GURL& first_party_url) const {
+    const GURL& first_party_url,
+    net::CookieSettingOverrides overrides) const {
   return false;
 }
 

@@ -356,8 +356,10 @@ class TpcBlockingBrowserClient : public ContentBrowserClient,
       ContentSettingsType content_type,
       content_settings::SettingInfo* info) const override;
 
-  bool ShouldAlwaysAllowCookies(const GURL& url,
-                                const GURL& first_party_url) const override;
+  bool ShouldAlwaysAllowCookies(
+      const GURL& url,
+      const GURL& first_party_url,
+      net::CookieSettingOverrides overrides) const override;
 
   bool ShouldBlockThirdPartyCookies(
       base::optional_ref<const url::Origin> top_frame_origin,

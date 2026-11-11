@@ -21,6 +21,16 @@ namespace pwc {
 //
 // Implemented by the blessed component (e.g. //chrome/browser/glic) to map
 // component-specific preferences or policies to permission decisions.
+//
+// Default behavior in a PrivilegedWebContents:
+// - Web platform permission requests are denied by default when no
+//   PwcPermissionDelegate is set, when GetPermissionStatus() returns
+//   std::nullopt, or when the requesting frame is not a primary main frame on
+//   an allowed capability origin. This prevents ambient HostContentSettingsMap
+//   tab permissions from leaking into a PrivilegedWebContents.
+// - User site settings (e.g. cookies/site data, JavaScript, V8 optimizer, and
+//   JIT settings) do not apply to a PrivilegedWebContents; cookies and storage
+//   access are always allowed.
 class PwcPermissionDelegate {
  public:
   virtual ~PwcPermissionDelegate() = default;

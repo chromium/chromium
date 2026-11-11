@@ -354,12 +354,16 @@ SiteInfo SiteInfo::Create(const IsolationContext& isolation_context,
   // same-origin window.open popups could mismatch the opener process if the
   // policy changes mid-session. Consider unifying JIT and V8 optimization
   // state caching.
-  is_jitless =
-      is_jitless || GetContentClient()->browser()->IsJitDisabledForSite(
-                        browser_context, agent_cluster_url_or_default);
-  are_v8_optimizations_disabled = CheckShouldDisableV8Optimization(
-      browser_context, isolation_context.browsing_instance_id(),
-      url_info.process_selection_user_data, agent_cluster_url_or_default);
+  // Privileged WebContents (e.g. Glic side panel) should not derive JIT or V8
+  // optimization policies from user site settings.
+  if (!url_info.embedder_isolation_info.is_privileged()) {
+    is_jitless =
+        is_jitless || GetContentClient()->browser()->IsJitDisabledForSite(
+                          browser_context, agent_cluster_url_or_default);
+    are_v8_optimizations_disabled = CheckShouldDisableV8Optimization(
+        browser_context, isolation_context.browsing_instance_id(),
+        url_info.process_selection_user_data, agent_cluster_url_or_default);
+  }
 
   if (!storage_partition_config.has_value()) {
     storage_partition_config =

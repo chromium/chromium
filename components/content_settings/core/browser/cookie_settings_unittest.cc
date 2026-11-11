@@ -79,7 +79,6 @@ enum GrantSource {
   kGrantSourceCount
 };
 
-
 }  // namespace
 
 namespace content_settings {
@@ -514,6 +513,10 @@ TEST_F(CookieSettingsTest, CookiesBlockSingle) {
   EXPECT_FALSE(cookie_settings_->IsFullCookieAccessAllowed(
       kBlockedSite, kBlockedSiteForCookies, /*top_frame_origin=*/std::nullopt,
       net::CookieSettingOverrides(), /*cookie_partition_key=*/std::nullopt));
+  EXPECT_TRUE(cookie_settings_->IsFullCookieAccessAllowed(
+      kBlockedSite, kBlockedSiteForCookies, /*top_frame_origin=*/std::nullopt,
+      {net::CookieSettingOverride::kForceAllowCookies},
+      /*cookie_partition_key=*/std::nullopt));
 }
 
 TEST_P(CookieSettingsTestP, CookiesBlockThirdParty) {
@@ -1323,7 +1326,6 @@ TEST_P(CookieSettingsTestP, GetCookieSettingSAAExpiredGrant) {
             CONTENT_SETTING_BLOCK);
 }
 
-
 #endif
 
 TEST_F(CookieSettingsTest, ExtensionsRegularSettings) {
@@ -1727,6 +1729,5 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Range(GrantSource::kNoneGranted, GrantSource::kGrantSourceCount),
 #endif
     CustomTestName);
-
 
 }  // namespace content_settings

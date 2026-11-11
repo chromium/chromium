@@ -434,8 +434,10 @@ class CookieSettingsBase {
 
   // Returns whether requests for |url| and |first_party_url| should always
   // be allowed. Called before checking other cookie settings.
-  virtual bool ShouldAlwaysAllowCookies(const GURL& url,
-                                        const GURL& first_party_url) const = 0;
+  virtual bool ShouldAlwaysAllowCookies(
+      const GURL& url,
+      const GURL& first_party_url,
+      net::CookieSettingOverrides overrides) const = 0;
 
   // Returns whether third-party cookies are blocked.
   virtual bool ShouldBlockThirdPartyCookies(

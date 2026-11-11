@@ -209,7 +209,12 @@ void CookieSettings::ShutdownOnUIThread() {
 //    and both have the Chrome extensions scheme.add
 bool CookieSettings::ShouldAlwaysAllowCookies(
     const GURL& url,
-    const GURL& first_party_url) const {
+    const GURL& first_party_url,
+    net::CookieSettingOverrides overrides) const {
+  if (overrides.Has(net::CookieSettingOverride::kForceAllowCookies)) {
+    return true;
+  }
+
   if (first_party_url.SchemeIs(kChromeUIScheme) &&
       url.SchemeIsCryptographic()) {
     return true;

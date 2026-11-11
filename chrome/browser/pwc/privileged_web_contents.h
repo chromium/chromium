@@ -170,7 +170,9 @@ class PrivilegedWebContents : public content::WebContentsDelegate,
                             const blink::mojom::WindowFeatures& features);
 
   // Optional permission delegate for handling and overriding component-specific
-  // permission requests (e.g. microphone, geolocation).
+  // permission requests (e.g. microphone, geolocation). See
+  // PwcPermissionDelegate for how permissions and site settings behave in a
+  // PrivilegedWebContents by default.
   void SetPermissionDelegate(std::unique_ptr<PwcPermissionDelegate> delegate) {
     permission_delegate_ = std::move(delegate);
   }

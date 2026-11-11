@@ -44,7 +44,8 @@ enum class CookieControlsMode {
   kIncognitoOnly = 2,
   kMaxValue = kIncognitoOnly,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/privacy/enums.xml:CookieControlsMode, //chrome/browser/resources/settings/site_settings/constants.ts:CookieControlsMode)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/privacy/enums.xml:CookieControlsMode,
+// //chrome/browser/resources/settings/site_settings/constants.ts:CookieControlsMode)
 
 // Default value for |extension_scheme|.
 const char kDummyExtensionScheme[] = ":no-extension-scheme:";
@@ -52,10 +53,9 @@ const char kDummyExtensionScheme[] = ":no-extension-scheme:";
 // A frontend to the cookie settings of |HostContentSettingsMap|. Handles
 // cookie-specific logic such as blocking third-party cookies. Written on the UI
 // thread and read on any thread.
-class CookieSettings
-    : public CookieSettingsBase,
-      public content_settings::Observer,
-      public RefcountedKeyedService {
+class CookieSettings : public CookieSettingsBase,
+                       public content_settings::Observer,
+                       public RefcountedKeyedService {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -184,8 +184,10 @@ class CookieSettings
   void OnCookiePreferencesChanged();
 
   // content_settings::CookieSettingsBase:
-  bool ShouldAlwaysAllowCookies(const GURL& url,
-                                const GURL& first_party_url) const override;
+  bool ShouldAlwaysAllowCookies(
+      const GURL& url,
+      const GURL& first_party_url,
+      net::CookieSettingOverrides overrides) const override;
   ContentSetting GetContentSetting(
       const GURL& primary_url,
       const GURL& secondary_url,

@@ -39,8 +39,9 @@ void OnStorageAccessed(const content::GlobalRenderFrameHostToken& frame_token,
       content::RenderFrameHost::FromFrameToken(frame_token);
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
-  if (!web_contents)
+  if (!web_contents) {
     return;
+  }
 
   page_load_metrics::MetricsWebContentsObserver* metrics_observer =
       page_load_metrics::MetricsWebContentsObserver::FromWebContents(
@@ -127,15 +128,16 @@ void ContentSettingsManagerImpl::Create(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   const content::ChildProcessId render_process_id =
       render_process_host->GetID();
+  const bool is_privileged_process = render_process_host->IsPrivileged();
   auto cookie_settings =
       delegate->GetCookieSettings(render_process_host->GetBrowserContext());
   base::ThreadPool::CreateSingleThreadTaskRunner(
       {base::TaskPriority::USER_BLOCKING})
-      ->PostTask(
-          FROM_HERE,
-          base::BindOnce(&ContentSettingsManagerImpl::CreateOnThread,
-                         render_process_id, std::move(receiver),
-                         std::move(cookie_settings), std::move(delegate)));
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(&ContentSettingsManagerImpl::CreateOnThread,
+                                render_process_id, is_privileged_process,
+                                std::move(receiver), std::move(cookie_settings),
+                                std::move(delegate)));
 }
 
 void ContentSettingsManagerImpl::Clone(
@@ -155,6 +157,13 @@ bool ContentSettingsManagerImpl::EvaluateStorageAccessPermission(
   // A browser context without cookie settings gets no storage access.
   if (!cookie_settings_) {
     return false;
+  }
+  // Privileged processes host trusted Chrome UI web content
+  // (PrivilegedWebContents) that ignores user-configured site settings and
+  // always allows storage access; see pwc::PwcPermissionDelegate in
+  // chrome/browser/pwc/pwc_permission_delegate.h.
+  if (is_privileged_process_) {
+    return true;
   }
   GURL url = origin.GetURL();
 
@@ -224,28 +233,33 @@ void ContentSettingsManagerImpl::OnContentBlocked(
 
 ContentSettingsManagerImpl::ContentSettingsManagerImpl(
     content::ChildProcessId render_process_id,
+    bool is_privileged_process,
     std::unique_ptr<Delegate> delegate,
     scoped_refptr<CookieSettings> cookie_settings)
     : delegate_(std::move(delegate)),
       render_process_id_(render_process_id),
+      is_privileged_process_(is_privileged_process),
       cookie_settings_(std::move(cookie_settings)) {}
 
 ContentSettingsManagerImpl::ContentSettingsManagerImpl(
     const ContentSettingsManagerImpl& other)
     : delegate_(other.delegate_->Clone()),
       render_process_id_(other.render_process_id_),
+      is_privileged_process_(other.is_privileged_process_),
       cookie_settings_(other.cookie_settings_) {}
 
 // static
 void ContentSettingsManagerImpl::CreateOnThread(
     content::ChildProcessId render_process_id,
+    bool is_privileged_process,
     mojo::PendingReceiver<content_settings::mojom::ContentSettingsManager>
         receiver,
     scoped_refptr<CookieSettings> cookie_settings,
     std::unique_ptr<Delegate> delegate) {
   mojo::MakeSelfOwnedReceiver(
       base::WrapUnique(new ContentSettingsManagerImpl(
-          render_process_id, std::move(delegate), std::move(cookie_settings))),
+          render_process_id, is_privileged_process, std::move(delegate),
+          std::move(cookie_settings))),
       std::move(receiver));
 }
 

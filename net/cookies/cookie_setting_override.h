@@ -38,8 +38,13 @@ enum class CookieSettingOverride {
   // `kForceDisableThirdPartyCookies` and will not have any effect if both
   // exist.
   kForceEnableThirdPartyCookies,
+  // When specified, cookies and storage access are forced allowed regardless of
+  // ContentSettingsType::COOKIES site settings or third-party cookie blocking
+  // (e.g. for privileged WebContents whose policy allows the origin). This
+  // override takes precedence over `kForceDisableThirdPartyCookies`.
+  kForceAllowCookies,
 
-  kMaxValue = kForceEnableThirdPartyCookies,
+  kMaxValue = kForceAllowCookies,
 };
 
 using CookieSettingOverrides = base::EnumSet<CookieSettingOverride>;

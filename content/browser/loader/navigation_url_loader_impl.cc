@@ -2352,6 +2352,11 @@ NavigationURLLoaderImpl::CreateNetworkLoaderFactory(
     cookie_overrides.Put(
         net::CookieSettingOverride::kAllowSameSiteNoneCookiesInSandbox);
   }
+  WebContents* web_contents =
+      WebContents::FromFrameTreeNodeId(frame_tree_node->frame_tree_node_id());
+  if (web_contents && web_contents->IsPrivileged()) {
+    cookie_overrides.Put(net::CookieSettingOverride::kForceAllowCookies);
+  }
 
   if (header_client) {
     // A standard frame navigation request does not need network

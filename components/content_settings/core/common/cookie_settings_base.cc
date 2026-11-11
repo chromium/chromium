@@ -93,7 +93,6 @@ bool IsThirdPartyPartitionedStorageEnabled() {
 
 }  // namespace
 
-
 CookieSettingsBase::CookieSettingsBase() = default;
 
 CookieSettingsBase::CookieSettingWithMetadata::CookieSettingWithMetadata(
@@ -442,7 +441,7 @@ CookieSettingsBase::GetCookieSettingInternal(
   }
 
   // Auto-allow in extensions or for WebUI embedding a secure origin.
-  if (ShouldAlwaysAllowCookies(url, first_party_url)) {
+  if (ShouldAlwaysAllowCookies(url, first_party_url, overrides)) {
     if (info) {
       *info = SettingInfo{};
     }

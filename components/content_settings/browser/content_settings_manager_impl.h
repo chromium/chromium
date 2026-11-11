@@ -88,6 +88,7 @@ class ContentSettingsManagerImpl
 
  private:
   ContentSettingsManagerImpl(content::ChildProcessId render_process_id,
+                             bool is_privileged_process,
                              std::unique_ptr<Delegate> delegate,
                              scoped_refptr<CookieSettings> cookie_settings);
   ContentSettingsManagerImpl(const ContentSettingsManagerImpl& other);
@@ -98,6 +99,7 @@ class ContentSettingsManagerImpl
 
   static void CreateOnThread(
       content::ChildProcessId render_process_id,
+      bool is_privileged_process,
       mojo::PendingReceiver<content_settings::mojom::ContentSettingsManager>
           receiver,
       scoped_refptr<CookieSettings> cookie_settings,
@@ -108,6 +110,10 @@ class ContentSettingsManagerImpl
   // Renderer identity copied across threads and combined with frame tokens.
   // Does not keep the renderer process or any frame alive.
   const content::ChildProcessId render_process_id_;
+
+  // True if the renderer process hosts privileged content (see
+  // RenderProcessHost::IsPrivileged()).
+  const bool is_privileged_process_;
 
   // Used to look up storage permissions. Null if the browser context has no
   // cookie settings.

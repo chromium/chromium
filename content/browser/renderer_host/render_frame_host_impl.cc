@@ -2094,6 +2094,11 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
           net::CookieSettingOverride::kAllowSameSiteNoneCookiesInSandbox);
     }
 
+    if (frame.GetSiteInstance()->IsPrivileged()) {
+      result.cookie_setting_overrides_.Put(
+          net::CookieSettingOverride::kForceAllowCookies);
+    }
+
     result.renderer_accessible_http_cache_write_enabled_ =
         frame.document_associated_data_
             ->renderer_accessible_http_cache_write_enabled();
@@ -2178,6 +2183,13 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
             ->AncestorsAllowSameSiteNoneCookiesOverride(result.origin())) {
       result.cookie_setting_overrides_.Put(
           net::CookieSettingOverride::kAllowSameSiteNoneCookiesInSandbox);
+    }
+
+    if (navigation_request.GetRenderFrameHost()
+            ->GetSiteInstance()
+            ->IsPrivileged()) {
+      result.cookie_setting_overrides_.Put(
+          net::CookieSettingOverride::kForceAllowCookies);
     }
 
     result.renderer_accessible_http_cache_write_enabled_ =

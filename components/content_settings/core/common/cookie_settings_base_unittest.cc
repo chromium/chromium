@@ -71,9 +71,11 @@ class CallbackCookieSettings : public CookieSettingsBase {
   }
 
   // CookieSettingsBase:
-  bool ShouldAlwaysAllowCookies(const GURL& url,
-                                const GURL& first_party_url) const override {
-    return false;
+  bool ShouldAlwaysAllowCookies(
+      const GURL& url,
+      const GURL& first_party_url,
+      net::CookieSettingOverrides overrides) const override {
+    return overrides.Has(net::CookieSettingOverride::kForceAllowCookies);
   }
 
   bool ShouldBlockThirdPartyCookies(
@@ -215,6 +217,25 @@ TEST_F(CookieSettingsBaseTest, CookieAccessNotAllowedWithBlockedSetting) {
   EXPECT_FALSE(settings.IsFullCookieAccessAllowed(
       url_, site_for_cookies_, origin_, net::CookieSettingOverrides(),
       /*cookie_partition_key=*/std::nullopt));
+}
+
+TEST_F(CookieSettingsBaseTest,
+       CookieAccessAllowedWithForceAllowCookiesOverride) {
+  const GURL kThirdPartyURL = GURL("https://3p.com");
+  CallbackCookieSettings settings(CONTENT_SETTING_BLOCK);
+  net::CookieSettingOverrides overrides(
+      {net::CookieSettingOverride::kForceAllowCookies,
+       net::CookieSettingOverride::kForceDisableThirdPartyCookies});
+
+  EXPECT_TRUE(settings.IsFullCookieAccessAllowed(
+      url_, site_for_cookies_, origin_, overrides,
+      /*cookie_partition_key=*/std::nullopt));
+  EXPECT_TRUE(settings.IsFullCookieAccessAllowed(
+      kThirdPartyURL, site_for_cookies_, origin_, overrides,
+      /*cookie_partition_key=*/std::nullopt));
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            settings.GetCookieSetting(url_, site_for_cookies_, url_, overrides,
+                                      nullptr));
 }
 
 TEST_F(CookieSettingsBaseTest, CookieAccessAllowedWithAllowSetting) {

@@ -42,8 +42,10 @@ class MockCookieSettings : public content_settings::CookieSettingsBase {
       const url::Origin& top_level_origin) const override {
     return false;
   }
-  bool ShouldAlwaysAllowCookies(const GURL& url,
-                                const GURL& first_party_url) const override {
+  bool ShouldAlwaysAllowCookies(
+      const GURL& url,
+      const GURL& first_party_url,
+      net::CookieSettingOverrides overrides) const override {
     return !block_all_;
   }
   bool ShouldBlockThirdPartyCookies(
