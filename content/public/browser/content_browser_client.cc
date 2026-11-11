@@ -388,10 +388,6 @@ bool ContentBrowserClient::OverridesAudioManager() {
   return false;
 }
 
-bool ContentBrowserClient::EnforceSystemAudioEchoCancellation() {
-  return false;
-}
-
 std::vector<url::Origin>
 ContentBrowserClient::GetOriginsRequiringDedicatedProcess() {
   return std::vector<url::Origin>();

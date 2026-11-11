@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/command_line.h"
 #include "base/environment.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
@@ -160,38 +159,6 @@ void SetAllowedDspBasedEffects(int aec_group_id, AudioParameters& params) {
   params.set_effects(effects);
 }
 
-// Collects flags values for whether, and in what way, the AEC, NS or AGC
-// effects should be enforced in spite of them not being flagged as supported by
-// the board.
-void RetrieveSystemEffectFeatures(bool& enforce_system_aec,
-                                  bool& enforce_system_ns,
-                                  bool& enforce_system_agc,
-                                  bool& tuned_system_aec_allowed) {
-  const bool enforce_system_aec_ns_agc_feature =
-      base::FeatureList::IsEnabled(media::kCrOSEnforceSystemAecNsAgc);
-  const bool enforce_system_aec_ns_feature =
-      base::FeatureList::IsEnabled(media::kCrOSEnforceSystemAecNs);
-  const bool enforce_system_aec_agc_feature =
-      base::FeatureList::IsEnabled(media::kCrOSEnforceSystemAecAgc);
-  const bool enforce_system_aec_feature =
-      base::FeatureList::IsEnabled(media::kCrOSEnforceSystemAec);
-  const bool enforce_system_aec_by_policy =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kSystemAecEnabled);
-
-  enforce_system_aec =
-      enforce_system_aec_feature || enforce_system_aec_ns_agc_feature ||
-      enforce_system_aec_ns_feature || enforce_system_aec_agc_feature ||
-      enforce_system_aec_by_policy;
-  enforce_system_ns =
-      enforce_system_aec_ns_agc_feature || enforce_system_aec_ns_feature;
-  enforce_system_agc =
-      enforce_system_aec_ns_agc_feature || enforce_system_aec_agc_feature;
-
-  tuned_system_aec_allowed =
-      base::FeatureList::IsEnabled(media::kCrOSSystemAEC);
-}
-
 AudioParameters AudioManagerCras::GetInputStreamParametersForSystem(
     int user_buffer_size) {
   AudioParameters params(
@@ -200,30 +167,11 @@ AudioParameters AudioManagerCras::GetInputStreamParametersForSystem(
       AudioParameters::HardwareCapabilities(limits::kMinAudioBufferSize,
                                             limits::kMaxAudioBufferSize));
 
-  bool enforce_system_aec;
-  bool enforce_system_ns;
-  bool enforce_system_agc;
-  bool tuned_system_aec_allowed;
-  RetrieveSystemEffectFeatures(enforce_system_aec, enforce_system_ns,
-                               enforce_system_agc, tuned_system_aec_allowed);
-
-  // Rephrase the field aec_supported to properly reflect its meaning in this
-  // context (since it currently signals whether an CrAS APM with tuned settings
-  // is available).
-  const bool tuned_system_apm_available = cras_util_->CrasGetAecSupported();
-
   // Don't use the system AEC if it is deactivated for this group ID. Also never
   // activate NS nor AGC for this board if the AEC is not activated, since this
   // will cause issues for the Browser AEC.
-  bool use_system_aec =
-      (tuned_system_apm_available && tuned_system_aec_allowed) ||
-      enforce_system_aec;
-
-  bool system_ns_supported = cras_util_->CrasGetNsSupported();
-  bool system_agc_supported = cras_util_->CrasGetAgcSupported();
-
   int aec_group_id = cras_util_->CrasGetAecGroupId();
-  if (!use_system_aec || IsSystemAecDeactivated(aec_group_id)) {
+  if (IsSystemAecDeactivated(aec_group_id)) {
     SetAllowedDspBasedEffects(aec_group_id, params);
     return params;
   }
@@ -231,15 +179,14 @@ AudioParameters AudioManagerCras::GetInputStreamParametersForSystem(
   // Activation of the system AEC.
   params.set_effects(params.effects() | AudioParameters::ECHO_CANCELLER);
 
-  // Don't use system NS or AGC if the AEC has board-specific tunings.
-  if (!tuned_system_apm_available) {
-    // Activation of the system NS.
-    if (system_ns_supported || enforce_system_ns) {
+  // CrasGetAecSupported() signals whether a CRAS APM with board-specific
+  // tunings is available. Don't use system NS or AGC if the AEC has
+  // board-specific tunings.
+  if (!cras_util_->CrasGetAecSupported()) {
+    if (cras_util_->CrasGetNsSupported()) {
       params.set_effects(params.effects() | AudioParameters::NOISE_SUPPRESSION);
     }
-
-    // Activation of the system AGC.
-    if (system_agc_supported || enforce_system_agc) {
+    if (cras_util_->CrasGetAgcSupported()) {
       params.set_effects(params.effects() |
                          AudioParameters::AUTOMATIC_GAIN_CONTROL);
     }

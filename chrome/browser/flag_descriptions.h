@@ -8215,26 +8215,6 @@ inline constexpr char kTetheringExperimentalFunctionalityDescription[] =
 
 // Prefer keeping this section sorted to adding new definitions down here.
 
-inline constexpr char kCrOSEnforceSystemAecName[] =
-    "Enforce using the system AEC in CrAS";
-inline constexpr char kCrOSEnforceSystemAecDescription[] =
-    "Enforces using the system variant in CrAS of the AEC";
-
-inline constexpr char kCrOSEnforceSystemAecAgcName[] =
-    "Enforce using the system AEC and AGC in CrAS";
-inline constexpr char kCrOSEnforceSystemAecAgcDescription[] =
-    "Enforces using the system variants in CrAS of the AEC and AGC.";
-
-inline constexpr char kCrOSEnforceSystemAecNsName[] =
-    "Enforce using the system AEC and NS in CrAS";
-inline constexpr char kCrOSEnforceSystemAecNsDescription[] =
-    "Enforces using the system variants in CrAS of the AEC and NS.";
-
-inline constexpr char kCrOSEnforceSystemAecNsAgcName[] =
-    "Enforce using the system AEC, NS and AGC in CrAS";
-inline constexpr char kCrOSEnforceSystemAecNsAgcDescription[] =
-    "Enforces using the system variants in CrAS of the AEC, NS and AGC.";
-
 inline constexpr char kIgnoreUiGainsName[] =
     "Ignore UI Gains in system mic gain setting";
 inline constexpr char kIgnoreUiGainsDescription[] =

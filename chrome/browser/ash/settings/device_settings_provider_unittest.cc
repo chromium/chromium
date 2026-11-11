@@ -1352,22 +1352,6 @@ TEST_F(DeviceSettingsProviderTest, DevicePrintingClientNameTemplate) {
             *provider_->Get(kDevicePrintingClientNameTemplate));
 }
 
-TEST_F(DeviceSettingsProviderTest, DeviceSystemAecEnabled) {
-  device_policy_->payload()
-      .mutable_device_system_aec_enabled()
-      ->set_device_system_aec_enabled(true);
-  BuildAndInstallDevicePolicy();
-  EXPECT_EQ(base::Value(true), *provider_->Get(kDeviceSystemAecEnabled));
-}
-
-TEST_F(DeviceSettingsProviderTest, DeviceSystemAecDisabled) {
-  device_policy_->payload()
-      .mutable_device_system_aec_enabled()
-      ->set_device_system_aec_enabled(false);
-  BuildAndInstallDevicePolicy();
-  EXPECT_EQ(base::Value(false), *provider_->Get(kDeviceSystemAecEnabled));
-}
-
 TEST_F(DeviceSettingsProviderTest, DeviceHindiInscriptLayoutEnabled) {
   device_policy_->payload()
       .mutable_device_hindi_inscript_layout_enabled()

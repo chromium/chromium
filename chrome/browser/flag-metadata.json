@@ -4911,26 +4911,6 @@
     "expiry_milestone": 162
   },
   {
-    "name": "enforce-system-aec",
-    "owners": [ "peah@chromium.org" ],
-    "expiry_milestone": 128
-  },
-  {
-    "name": "enforce-system-aec-agc",
-    "owners": [ "peah@chromium.org" ],
-    "expiry_milestone": 128
-  },
-  {
-    "name": "enforce-system-aec-ns",
-    "owners": [ "peah@chromium.org" ],
-    "expiry_milestone": 128
-  },
-  {
-    "name": "enforce-system-aec-ns-agc",
-    "owners": [ "peah@chromium.org" ],
-    "expiry_milestone": 128
-  },
-  {
     "name": "enhanced-calendar",
     "owners": [
       "nicolasmacbeth@google.com",

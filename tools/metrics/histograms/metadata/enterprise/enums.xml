@@ -2293,7 +2293,6 @@ chromium-metrics-reviews@google.com.
   <int value="1078" label="WebRtcTextLogCollectionAllowed"/>
   <int value="1079" label="EnforceLocalAnchorConstraintsEnabled"/>
   <int value="1080" label="ShowTouchpadScrollScreenEnabled"/>
-  <int value="1081" label="DeviceSystemAecEnabled"/>
   <int value="1082" label="HttpAllowlist"/>
   <int value="1083" label="HttpsUpgradesEnabled"/>
   <int value="1085" label="MandatoryExtensionsForIncognitoNavigation"/>

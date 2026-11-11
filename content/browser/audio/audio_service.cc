@@ -83,15 +83,9 @@ void LaunchAudioServiceInProcess(
   // this case we discard the receiver. The remote will always discard
   // messages. This is to work around unit testing environments where no
   // BrowserMainLoop is initialized.
-  if (!BrowserMainLoop::GetInstance())
+  if (!BrowserMainLoop::GetInstance()) {
     return;
-
-#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CRAS)
-  if (GetContentClient()->browser()->EnforceSystemAudioEchoCancellation()) {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kSystemAecEnabled);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CRAS)
 
   // TODO(crbug.com/40580951): Remove
   // BrowserMainLoop::GetAudioManager().
@@ -132,11 +126,6 @@ void LaunchAudioServiceOutOfProcess(
   switches.push_back(base::StrCat({switches::kAudioCodecsFromEDID, "=",
                                    base::NumberToString(codec_bitmask)}));
 #endif  // PASS_EDID_ON_COMMAND_LINE
-#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CRAS)
-  if (GetContentClient()->browser()->EnforceSystemAudioEchoCancellation()) {
-    switches.push_back(switches::kSystemAecEnabled);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CRAS)
   ServiceProcessHost::Launch(
       std::move(receiver),
       ServiceProcessHost::Options()

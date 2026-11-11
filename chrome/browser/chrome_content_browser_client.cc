@@ -539,7 +539,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/http_auth_dialog/http_auth_dialog.h"
-#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/services/network_health/public/cpp/network_health_helper.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -5854,19 +5853,6 @@ ChromeContentBrowserClient::GetNavigationUIData(
 std::unique_ptr<media::ScreenEnumerator>
 ChromeContentBrowserClient::CreateScreenEnumerator() const {
   return std::make_unique<ChromeScreenEnumerator>();
-}
-
-bool ChromeContentBrowserClient::EnforceSystemAudioEchoCancellation() {
-  // TODO(b/270042522): This is a short term solution to enforce the system
-  // audio cancellation.
-#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CRAS)
-  bool system_aec_enabled = false;
-  ash::CrosSettings::Get()->GetBoolean(ash::kDeviceSystemAecEnabled,
-                                       &system_aec_enabled);
-  return system_aec_enabled;
-#else
-  return false;
-#endif
 }
 
 std::unique_ptr<content::DevToolsManagerDelegate>

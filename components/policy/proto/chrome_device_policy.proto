@@ -1262,10 +1262,6 @@ message DeviceScreensaverLoginScreenEnabledProto {
   optional bool device_screensaver_login_screen_enabled = 1;
 };
 
-message DeviceSystemAecEnabledProto {
-  optional bool device_system_aec_enabled = 1;
-};
-
 // Migration strategy for the case when ARC(N+) needs the ext4 encryption while
 // the device used ecryptfs in the past.
 message DeviceEcryptfsMigrationStrategyProto {
@@ -1890,7 +1886,7 @@ message OBSOLETE_ExtendedFkeysModifierProto {
 }
 
 message ChromeDeviceSettingsProto {
-  reserved 61, 71, 90, 131, 1478, 1479, 1480;
+  reserved 61, 71, 90, 131, 146, 1478, 1479, 1480;
   optional DevicePolicyRefreshRateProto device_policy_refresh_rate = 1;
   optional UserWhitelistProto user_whitelist = 2;
   optional GuestModeEnabledProto guest_mode_enabled = 3;
@@ -2084,7 +2080,6 @@ message ChromeDeviceSettingsProto {
       device_screensaver_login_screen_image_display_interval_seconds = 144;
   optional DeviceScreensaverLoginScreenImagesProto
       device_screensaver_login_screen_images = 145;
-  optional DeviceSystemAecEnabledProto device_system_aec_enabled = 146;
   optional DeviceLoginScreenGeolocationAccessLevelProto
       device_login_screen_geolocation_access_level = 147;
   optional StringPolicyProto device_login_screen_webhid_allow_devices_for_urls =

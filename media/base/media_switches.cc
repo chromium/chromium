@@ -336,8 +336,6 @@ const char kWaveOutBuffers[] = "waveout-buffers";
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(USE_CRAS)
-// Enforce system audio echo cancellation.
-const char kSystemAecEnabled[] = "system-aec-enabled";
 // Use CRAS, the ChromeOS audio server.
 const char kUseCras[] = "use-cras";
 #endif  // BUILDFLAG(USE_CRAS)
@@ -1423,19 +1421,6 @@ BASE_FEATURE(kCrOSDspBasedAgcDeactivatedGroups,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCrOSDspBasedNsDeactivatedGroups,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCrOSEnforceSystemAec, base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCrOSEnforceSystemAecAgc, base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCrOSEnforceSystemAecNs, base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCrOSEnforceSystemAecNsAgc, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// To control running audio communication effect on Chrome OS Audio Server.
-BASE_FEATURE(kCrOSSystemAEC,
-             "CrOSSystemAECWithBoardTuningsAllowed",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCrOSSystemAECDeactivatedGroups, base::FEATURE_ENABLED_BY_DEFAULT);

@@ -656,21 +656,6 @@ TEST_F(DevicePolicyDecoderTest,
           device_user_initiated_flex_system_firmware_updates_enabled_value));
 }
 
-TEST_F(DevicePolicyDecoderTest, DeviceSystemAecEnabled) {
-  em::ChromeDeviceSettingsProto device_policy;
-
-  DecodeUnsetDevicePolicyTestHelper(device_policy,
-                                    key::kDeviceSystemAecEnabled);
-
-  base::Value device_system_aec_enabled_value(true);
-  device_policy.mutable_device_system_aec_enabled()
-      ->set_device_system_aec_enabled(
-          device_system_aec_enabled_value.GetBool());
-
-  DecodeDevicePolicyTestHelper(device_policy, key::kDeviceSystemAecEnabled,
-                               std::move(device_system_aec_enabled_value));
-}
-
 TEST_F(DevicePolicyDecoderTest,
        DecodeDeviceLocalAccountsWithoutEphemeralModeField) {
   em::ChromeDeviceSettingsProto device_policy;

@@ -133,10 +133,6 @@ inline constexpr char kDeviceChannelDowngradeBehavior[] =
 inline constexpr char kDeviceExtendedAutoUpdateEnabled[] =
     "cros.system.device_extended_auto_update_enabled";
 
-// This setting is used to enforce usage of system audio echo cancellation.
-inline constexpr char kDeviceSystemAecEnabled[] =
-    "cros.audio.device_system_aec_enabled";
-
 // A boolean pref that indicates whether OS & firmware version info should be
 // reported along with device policy requests.
 inline constexpr char kReportDeviceVersionInfo[] =

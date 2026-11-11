@@ -137,7 +137,6 @@ constexpr auto kKnownSettings = base::MakeFixedFlatSet<std::string_view>({
     kReleaseChannelDelegated,
     kReleaseLtsTag,
     kDeviceChannelDowngradeBehavior,
-    kDeviceSystemAecEnabled,
     kDeviceReportRuntimeCounters,
     kDeviceReportRuntimeCountersCheckingRateMs,
     kReportDeviceActivityTimes,
@@ -939,13 +938,6 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     // enrolled devices, c.f. crbug.com/41156165.
     new_values_cache->SetBoolean(
         kStatsReportingPref, InstallAttributes::Get()->IsEnterpriseManaged());
-  }
-
-  if (policy.has_device_system_aec_enabled() &&
-      policy.device_system_aec_enabled().has_device_system_aec_enabled()) {
-    new_values_cache->SetBoolean(
-        kDeviceSystemAecEnabled,
-        policy.device_system_aec_enabled().device_system_aec_enabled());
   }
 
   if (!policy.has_release_channel() ||

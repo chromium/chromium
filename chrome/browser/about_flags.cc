@@ -8173,19 +8173,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-    {"enforce-system-aec", flag_descriptions::kCrOSEnforceSystemAecName,
-     flag_descriptions::kCrOSEnforceSystemAecDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(media::kCrOSEnforceSystemAec)},
-    {"enforce-system-aec-agc", flag_descriptions::kCrOSEnforceSystemAecAgcName,
-     flag_descriptions::kCrOSEnforceSystemAecAgcDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(media::kCrOSEnforceSystemAecAgc)},
-    {"enforce-system-aec-ns-agc",
-     flag_descriptions::kCrOSEnforceSystemAecNsAgcName,
-     flag_descriptions::kCrOSEnforceSystemAecNsAgcDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(media::kCrOSEnforceSystemAecNsAgc)},
-    {"enforce-system-aec-ns", flag_descriptions::kCrOSEnforceSystemAecNsName,
-     flag_descriptions::kCrOSEnforceSystemAecNsDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(media::kCrOSEnforceSystemAecNs)},
     {"system-voice-isolation-option",
      flag_descriptions::kCrOSSystemVoiceIsolationOptionName,
      flag_descriptions::kCrOSSystemVoiceIsolationOptionDescription, kOsCrOS,

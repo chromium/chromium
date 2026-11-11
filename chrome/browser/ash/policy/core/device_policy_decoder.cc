@@ -1653,17 +1653,6 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     }
   }
 
-  if (policy.has_device_system_aec_enabled()) {
-    const em::DeviceSystemAecEnabledProto& container(
-        policy.device_system_aec_enabled());
-    if (container.has_device_system_aec_enabled()) {
-      policies->Set(key::kDeviceSystemAecEnabled, POLICY_LEVEL_MANDATORY,
-                    POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-                    base::Value(container.device_system_aec_enabled()),
-                    nullptr);
-    }
-  }
-
   if (policy.has_metrics_enabled() &&
       policy.metrics_enabled().has_metrics_enabled()) {
     policies->Set(key::kDeviceMetricsReportingEnabled, POLICY_LEVEL_MANDATORY,
