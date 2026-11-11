@@ -16,6 +16,8 @@
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
+#include "third_party/blink/renderer/core/layout/hit_test_location.h"
+#include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item.h"
@@ -775,11 +777,27 @@ bool PhysicalBoxFragment::MayIntersect(
     const HitTestResult& result,
     const HitTestLocation& hit_test_location,
     const PhysicalOffset& accumulated_offset) const {
-  if (const auto* box = DynamicTo<LayoutBox>(GetLayoutObject()))
+  const auto* box = DynamicTo<LayoutBox>(GetLayoutObject());
+  if (!box) {
+    // TODO(kojii): (!IsCSSBox() || IsInlineBox()) is not supported yet.
+    // Implement if needed. For now, just return |true| not to do early return.
+    return true;
+  }
+  if (IsOnlyForNode() ||
+      !RuntimeEnabledFeatures::FragmentedBoxVisualOverflowEnabled()) {
     return box->MayIntersect(result, hit_test_location, accumulated_offset);
-  // TODO(kojii): (!IsCSSBox() || IsInlineBox()) is not supported yet. Implement
-  // if needed. For now, just return |true| not to do early return.
-  return true;
+  }
+  PhysicalRect overflow_box;
+  if (result.GetHitTestRequest().IsHitTestVisualOverflow() ||
+      (HasInkOverflow() && (!ShouldClipOverflowAlongBothAxis() ||
+                            (ShouldApplyOverflowClipMargin() &&
+                             Style().OverflowClipMargin()->GetMargin() > 0)))) {
+    overflow_box = InkOverflowRect();
+  } else {
+    overflow_box = LocalRect();
+  }
+  overflow_box.Move(accumulated_offset);
+  return hit_test_location.Intersects(overflow_box);
 }
 
 PhysicalSize PhysicalBoxFragment::ScrollSize() const {

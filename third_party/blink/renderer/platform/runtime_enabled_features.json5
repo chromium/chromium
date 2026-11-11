@@ -3534,6 +3534,11 @@
       name: "FractionalScrollOffsetsForWebAPI",
     },
     {
+      // Kill switch for https://crbug.com/581341594.
+      name: "FragmentedBoxVisualOverflow",
+      status: "stable",
+    },
+    {
       // Generate layout fragments for out-of-flow positioned elements as
       // children of their actual containing block - ALSO when inside block
       // fragmentation, such as multicol. See crbug.com/40267498

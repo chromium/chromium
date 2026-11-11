@@ -3501,10 +3501,67 @@ void LayoutBox::CopyVisualOverflowFromFragmentsWithoutInvalidations() {
   }
 
   // When block-fragmented, stitch visual overflows from all fragments.
-  const WritingMode writing_mode = ContainingBox()->Style().GetWritingMode();
   bool has_overflow = false;
   PhysicalRect self_rect;
   PhysicalRect contents_rect;
+  if (RuntimeEnabledFeatures::FragmentedBoxVisualOverflowEnabled()) {
+    const WritingMode writing_mode = Style().GetWritingMode();
+    LayoutUnit consumed_block_size;
+    LayoutUnit fragment_width_sum;
+    for (const PhysicalBoxFragment& fragment : PhysicalFragments()) {
+      PhysicalOffset offset_adjust;
+      switch (writing_mode) {
+        case WritingMode::kHorizontalTb:
+          offset_adjust = {LayoutUnit(), consumed_block_size};
+          break;
+        case WritingMode::kVerticalRl:
+        case WritingMode::kSidewaysRl:
+          // For flipped-blocks writing-modes, we build the total overflow rect
+          // from right-to-left (adding with negative offsets). At the end we
+          // need to make the origin relative to the LHS, so we add the total
+          // fragment width.
+          fragment_width_sum += fragment.Size().width;
+          offset_adjust = {-fragment.Size().width - consumed_block_size,
+                           LayoutUnit()};
+          break;
+        case WritingMode::kVerticalLr:
+        case WritingMode::kSidewaysLr:
+          offset_adjust = {consumed_block_size, LayoutUnit()};
+          break;
+      }
+
+      if (fragment.HasInkOverflow()) {
+        has_overflow = true;
+        self_rect.Unite(fragment.SelfInkOverflowRect() + offset_adjust);
+        contents_rect.Unite(fragment.ContentsInkOverflowRect() + offset_adjust);
+      }
+
+      if (const BlockBreakToken* break_token = fragment.GetBreakToken()) {
+        // Repeated content isn't stitched. Stop now. The overflow rectangle
+        // will represent the fragment(s) generated under the first repeated
+        // root.
+        if (break_token->IsRepeated()) {
+          break;
+        }
+        consumed_block_size = break_token->ConsumedBlockSize();
+      }
+    }
+
+    if (!has_overflow) {
+      ClearVisualOverflow();
+      return;
+    }
+
+    if (IsFlippedBlocksWritingMode(writing_mode)) {
+      self_rect.offset.left += fragment_width_sum;
+      contents_rect.offset.left += fragment_width_sum;
+    }
+
+    SetVisualOverflow(self_rect, contents_rect);
+    return;
+  }
+
+  const WritingMode writing_mode = ContainingBox()->Style().GetWritingMode();
   const PhysicalBoxFragment* last_fragment = nullptr;
   for (const PhysicalBoxFragment& fragment : PhysicalFragments()) {
     if (!fragment.HasInkOverflow()) {

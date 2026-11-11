@@ -268,6 +268,90 @@ TEST_F(FragmentationTest, InkOverflowInline) {
   EXPECT_EQ(container->VisualOverflowRect(), PhysicalRect(0, 0, 260, 15));
 }
 
+TEST_F(FragmentationTest, InkOverflowFlippedBlocks) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    .multicol {
+      width: 100px;
+      height: 200px;
+      columns: 2;
+      column-gap: 0;
+    }
+    .item {
+      width: 100px;
+      height: 100px;
+    }
+    .break {
+      break-after: column;
+    }
+    .shadow-left {
+      box-shadow: -100px 0 0 0 black;
+    }
+    .shadow-right {
+      box-shadow: 50px 0 0 0 black;
+    }
+    #self-box {
+      box-decoration-break: clone;
+      box-shadow: -50px 0 0 0 black;
+    }
+    </style>
+    <div class="multicol" style="writing-mode: vertical-rl">
+      <div id="vrl-contents">
+        <div class="item break shadow-right"></div>
+        <div class="item shadow-left"></div>
+      </div>
+    </div>
+    <div class="multicol" style="writing-mode: sideways-rl">
+      <div id="srl-contents">
+        <div class="item break"></div>
+        <div class="item shadow-left"></div>
+      </div>
+    </div>
+    <div class="multicol" style="writing-mode: vertical-rl">
+      <div id="self-box">
+        <div class="item break"></div>
+        <div class="item"></div>
+      </div>
+    </div>
+    <div class="multicol" style="writing-mode: vertical-rl">
+      <div id="no-overflow">
+        <div class="item break"></div>
+        <div class="item"></div>
+      </div>
+    </div>
+  )HTML");
+
+  const LayoutBox* vrl_contents = GetLayoutBoxByElementId("vrl-contents");
+  ASSERT_EQ(vrl_contents->PhysicalFragmentCount(), 2u);
+  EXPECT_EQ(vrl_contents->PhysicalBorderBoxRect(),
+            PhysicalRect(0, 0, 200, 100));
+  EXPECT_EQ(vrl_contents->SelfVisualOverflowRect(),
+            PhysicalRect(0, 0, 200, 100));
+  EXPECT_EQ(vrl_contents->ContentsVisualOverflowRect(),
+            PhysicalRect(-100, 0, 350, 100));
+  EXPECT_EQ(vrl_contents->VisualOverflowRect(),
+            PhysicalRect(-100, 0, 350, 100));
+
+  const LayoutBox* srl_contents = GetLayoutBoxByElementId("srl-contents");
+  ASSERT_EQ(srl_contents->PhysicalFragmentCount(), 2u);
+  EXPECT_EQ(srl_contents->SelfVisualOverflowRect(),
+            PhysicalRect(0, 0, 200, 100));
+  EXPECT_EQ(srl_contents->ContentsVisualOverflowRect(),
+            PhysicalRect(-100, 0, 200, 100));
+  EXPECT_EQ(srl_contents->VisualOverflowRect(),
+            PhysicalRect(-100, 0, 300, 100));
+
+  const LayoutBox* self_box = GetLayoutBoxByElementId("self-box");
+  ASSERT_EQ(self_box->PhysicalFragmentCount(), 2u);
+  EXPECT_EQ(self_box->SelfVisualOverflowRect(), PhysicalRect(-50, 0, 250, 100));
+  EXPECT_EQ(self_box->VisualOverflowRect(), PhysicalRect(-50, 0, 250, 100));
+
+  const LayoutBox* no_overflow = GetLayoutBoxByElementId("no-overflow");
+  ASSERT_EQ(no_overflow->PhysicalFragmentCount(), 2u);
+  EXPECT_FALSE(no_overflow->HasVisualOverflow());
+  EXPECT_EQ(no_overflow->VisualOverflowRect(), PhysicalRect(0, 0, 200, 100));
+}
+
 TEST_F(FragmentationTest, OffsetFromOwnerLayoutBoxFloat) {
   SetBodyInnerHTML(R"HTML(
     <style>
