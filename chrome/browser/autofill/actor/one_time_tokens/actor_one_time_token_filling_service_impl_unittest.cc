@@ -304,8 +304,8 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_MockOtpSwitchSet) {
       future;
   service().RetrieveOtp(web_contents(), main_rfh_origin(),
                         /*trigger_field_ids=*/{},
-                        /*is_login_flow=*/false, PredictedOtpType::kUnknown,
-                        future.GetCallback());
+                        /*allow_psl_matching=*/false,
+                        PredictedOtpType::kUnknown, future.GetCallback());
   EXPECT_EQ(future.Get().value(), kMockOtp);
   EXPECT_EQ(gmail_otp_service().num_callbacks(), 0u);
   histogram_tester_.ExpectUniqueSample(
@@ -331,7 +331,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_SuccessFromCache) {
       future;
   service().RetrieveOtp(web_contents(), main_rfh_origin(),
                         /*trigger_field_ids=*/{},
-                        /*is_login_flow=*/false, PredictedOtpType::kEmail,
+                        /*allow_psl_matching=*/false, PredictedOtpType::kEmail,
                         future.GetCallback());
   EXPECT_EQ(future.Get().value(), kOtp);
   // The sender domain check is recorded to UKM against the tab's page.
@@ -378,8 +378,8 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
       future;
   service().RetrieveOtp(web_contents(), main_rfh_origin(),
                         /*trigger_field_ids=*/{},
-                        /*is_login_flow=*/false, PredictedOtpType::kUnknown,
-                        future.GetCallback());
+                        /*allow_psl_matching=*/false,
+                        PredictedOtpType::kUnknown, future.GetCallback());
 
   // Cached OTP should not resolve the future immediately while requests are
   // pending.
@@ -409,8 +409,8 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
       future;
   service().RetrieveOtp(web_contents(), main_rfh_origin(),
                         /*trigger_field_ids=*/{},
-                        /*is_login_flow=*/false, PredictedOtpType::kUnknown,
-                        future.GetCallback());
+                        /*allow_psl_matching=*/false,
+                        PredictedOtpType::kUnknown, future.GetCallback());
 
   ASSERT_FALSE(future.IsReady());
 
@@ -435,6 +435,48 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
       RetrieveOtpDurationHistogram("ReceivedMatch"), base::Seconds(5), 1);
 }
 
+// Tests that `RetrieveOtp` accepts an OTP whose sender domain is only a PSL
+// match for the frame origin when `allow_psl_matching` is true.
+TEST_F(ActorOneTimeTokenFillingServiceImplTest,
+       RetrieveOtp_PslMatchAllowed_ReturnsOtp) {
+  NavigateAndCommit(GURL("https://login.example.com"));
+  const std::string kOtp = "654321";
+
+  base::test::TestFuture<
+      base::expected<std::string, OneTimeTokenRetrievalError>>
+      future;
+  service().RetrieveOtp(web_contents(), main_rfh_origin(),
+                        /*trigger_field_ids=*/{}, /*allow_psl_matching=*/true,
+                        PredictedOtpType::kUnknown, future.GetCallback());
+
+  gmail_otp_service().ProcessCallbacks(one_time_tokens::OneTimeToken(
+      one_time_tokens::OneTimeTokenType::kGmail, kOtp, base::TimeTicks::Now(),
+      "sender@example.com"));
+
+  EXPECT_EQ(future.Get().value(), kOtp);
+}
+
+// Tests that `RetrieveOtp` rejects an OTP whose sender domain is only a PSL
+// match for the frame origin when `allow_psl_matching` is false.
+TEST_F(ActorOneTimeTokenFillingServiceImplTest,
+       RetrieveOtp_PslMatchNotAllowed_RejectsOtp) {
+  NavigateAndCommit(GURL("https://login.example.com"));
+
+  base::test::TestFuture<
+      base::expected<std::string, OneTimeTokenRetrievalError>>
+      future;
+  service().RetrieveOtp(web_contents(), main_rfh_origin(),
+                        /*trigger_field_ids=*/{}, /*allow_psl_matching=*/false,
+                        PredictedOtpType::kUnknown, future.GetCallback());
+
+  gmail_otp_service().ProcessCallbacks(one_time_tokens::OneTimeToken(
+      one_time_tokens::OneTimeTokenType::kGmail, "654321",
+      base::TimeTicks::Now(), "sender@example.com"));
+  task_environment()->RunUntilIdle();
+
+  EXPECT_FALSE(future.IsReady());
+}
+
 // Tests that `RetrieveOtp` logs specific Gmail error when it occurs.
 TEST_F(ActorOneTimeTokenFillingServiceImplTest,
        RetrieveOtp_GmailErrorRecordsMetric) {
@@ -443,7 +485,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
       base::expected<std::string, OneTimeTokenRetrievalError>>
       future;
   service().RetrieveOtp(web_contents(), main_rfh_origin(),
-                        /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
+                        /*trigger_field_ids=*/{}, /*allow_psl_matching=*/false,
                         PredictedOtpType::kUnknown, future.GetCallback());
 
   task_environment()->FastForwardBy(base::Seconds(3));
@@ -474,7 +516,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
       base::expected<std::string, OneTimeTokenRetrievalError>>
       future;
   service().RetrieveOtp(web_contents(), main_rfh_origin(),
-                        /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
+                        /*trigger_field_ids=*/{}, /*allow_psl_matching=*/false,
                         PredictedOtpType::kUnknown, future.GetCallback());
 
   task_environment()->FastForwardBy(base::Seconds(3));
@@ -504,7 +546,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_Timeout) {
       base::expected<std::string, OneTimeTokenRetrievalError>>
       future;
   service().RetrieveOtp(web_contents(), main_rfh_origin(),
-                        /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
+                        /*trigger_field_ids=*/{}, /*allow_psl_matching=*/false,
                         PredictedOtpType::kSms, future.GetCallback());
   task_environment()->FastForwardBy(kSubscriptionTimeout + base::Seconds(1));
   EXPECT_EQ(future.Get().error(),
@@ -540,7 +582,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
       base::expected<std::string, OneTimeTokenRetrievalError>>
       future;
   service().RetrieveOtp(web_contents(), main_rfh_origin(),
-                        /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
+                        /*trigger_field_ids=*/{}, /*allow_psl_matching=*/false,
                         PredictedOtpType::kUnknown, future.GetCallback());
 
   task_environment()->FastForwardBy(base::Seconds(3));
@@ -565,7 +607,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   NavigateAndCommit(GURL("https://example.com"));
 
   service().RetrieveOtp(web_contents(), main_rfh_origin(),
-                        /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
+                        /*trigger_field_ids=*/{}, /*allow_psl_matching=*/false,
                         PredictedOtpType::kAuthenticatorApp, base::DoNothing());
   task_environment()->FastForwardBy(base::Seconds(10));
   service_.reset();
@@ -587,10 +629,10 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   NavigateAndCommit(GURL("https://example.com"));
 
   service().RetrieveOtp(web_contents(), main_rfh_origin(),
-                        /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
+                        /*trigger_field_ids=*/{}, /*allow_psl_matching=*/false,
                         PredictedOtpType::kSms, base::DoNothing());
   service().RetrieveOtp(web_contents(), main_rfh_origin(),
-                        /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
+                        /*trigger_field_ids=*/{}, /*allow_psl_matching=*/false,
                         PredictedOtpType::kEmail, base::DoNothing());
   task_environment()->FastForwardBy(kSubscriptionTimeout + base::Seconds(1));
 
@@ -607,12 +649,12 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   NavigateAndCommit(GURL("https://example.com"));
 
   service().RetrieveOtp(web_contents(), main_rfh_origin(),
-                        /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
+                        /*trigger_field_ids=*/{}, /*allow_psl_matching=*/false,
                         PredictedOtpType::kSms, base::DoNothing());
   // A null WebContents makes this call fail before it can supersede the pending
   // request.
   service().RetrieveOtp(/*web_contents=*/nullptr, main_rfh_origin(),
-                        /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
+                        /*trigger_field_ids=*/{}, /*allow_psl_matching=*/false,
                         PredictedOtpType::kEmail, base::DoNothing());
   task_environment()->FastForwardBy(kSubscriptionTimeout + base::Seconds(1));
 
@@ -631,8 +673,8 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_WebContentsNull) {
       future;
   service().RetrieveOtp(/*web_contents=*/nullptr, main_rfh_origin(),
                         /*trigger_field_ids=*/{},
-                        /*is_login_flow=*/false, PredictedOtpType::kUnknown,
-                        future.GetCallback());
+                        /*allow_psl_matching=*/false,
+                        PredictedOtpType::kUnknown, future.GetCallback());
   EXPECT_EQ(future.Get().error(), OneTimeTokenRetrievalError::kGmailOtpUnknown);
   histogram_tester_.ExpectUniqueSample(
       kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
@@ -654,8 +696,8 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_ServiceNull) {
       future;
   service().RetrieveOtp(web_contents(), main_rfh_origin(),
                         /*trigger_field_ids=*/{},
-                        /*is_login_flow=*/false, PredictedOtpType::kUnknown,
-                        future.GetCallback());
+                        /*allow_psl_matching=*/false,
+                        PredictedOtpType::kUnknown, future.GetCallback());
   EXPECT_EQ(future.Get().error(),
             OneTimeTokenRetrievalError::kGmailOtpBackendApiNotAvailable);
   histogram_tester_.ExpectUniqueSample(
@@ -678,12 +720,12 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_Superseded) {
 
   service().RetrieveOtp(web_contents(), main_rfh_origin(),
                         /*trigger_field_ids=*/{},
-                        /*is_login_flow=*/false, PredictedOtpType::kUnknown,
-                        future1.GetCallback());
+                        /*allow_psl_matching=*/false,
+                        PredictedOtpType::kUnknown, future1.GetCallback());
   service().RetrieveOtp(web_contents(), main_rfh_origin(),
                         /*trigger_field_ids=*/{},
-                        /*is_login_flow=*/false, PredictedOtpType::kUnknown,
-                        future2.GetCallback());
+                        /*allow_psl_matching=*/false,
+                        PredictedOtpType::kUnknown, future2.GetCallback());
 
   EXPECT_EQ(future1.Get().error(),
             OneTimeTokenRetrievalError::kGmailOtpUnknown);
@@ -723,7 +765,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
       future2;
 
   service().RetrieveOtp(web_contents(), main_rfh_origin(),
-                        /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
+                        /*trigger_field_ids=*/{}, /*allow_psl_matching=*/false,
                         PredictedOtpType::kUnknown, future1.GetCallback());
 
   gmail_otp_service().ProcessCallbacks(one_time_tokens::OneTimeToken(
@@ -731,7 +773,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
       "sender@example.com"));
 
   service().RetrieveOtp(web_contents(), main_rfh_origin(),
-                        /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
+                        /*trigger_field_ids=*/{}, /*allow_psl_matching=*/false,
                         PredictedOtpType::kUnknown, future2.GetCallback());
 
   EXPECT_EQ(future1.Get().error(),
@@ -768,7 +810,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   // token.
   service().RetrieveOtp(web_contents(),
                         url::Origin::Create(GURL("https://first.com")),
-                        /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
+                        /*trigger_field_ids=*/{}, /*allow_psl_matching=*/false,
                         PredictedOtpType::kUnknown, future1.GetCallback());
 
   // Before running the message loop, start the second retrieve call for a
@@ -776,7 +818,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   // This should cancel the ongoing check from the first call.
   service().RetrieveOtp(web_contents(),
                         url::Origin::Create(GURL("https://second.com")),
-                        /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
+                        /*trigger_field_ids=*/{}, /*allow_psl_matching=*/false,
                         PredictedOtpType::kUnknown, future2.GetCallback());
 
   // The first call should immediately be rejected as superseded.
@@ -1450,8 +1492,8 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
       future;
   service().RetrieveOtp(web_contents(), main_rfh_origin(),
                         /*trigger_field_ids=*/{},
-                        /*is_login_flow=*/false, PredictedOtpType::kUnknown,
-                        future.GetCallback());
+                        /*allow_psl_matching=*/false,
+                        PredictedOtpType::kUnknown, future.GetCallback());
 
   EXPECT_EQ(future.Get(),
             base::unexpected(OneTimeTokenRetrievalError::kGmailOtpUnknown));
