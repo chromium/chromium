@@ -230,8 +230,10 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   // Registers FrameSink hierarchy. It's expected that the parent will embed
   // the child. If |parent_frame_sink_id| is registered then it will be added as
   // a parent of |child_frame_sink_id| and the function will return true. If
-  // |parent_frame_sink_id| is not registered then the function will return
-  // false. A frame sink can have multiple parents.
+  // |parent_frame_sink_id| is not registered, or if adding the edge would
+  // create a cycle in the hierarchy (including |parent_frame_sink_id| ==
+  // |child_frame_sink_id|), then the function will return false. A frame sink
+  // can have multiple parents.
   bool RegisterFrameSinkHierarchy(const FrameSinkId& parent_frame_sink_id,
                                   const FrameSinkId& child_frame_sink_id);
 
@@ -410,6 +412,11 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
     // Track frame sink hierarchy.
     std::vector<FrameSinkId> children;
   };
+
+  // Returns true if |search_frame_sink_id| is |frame_sink_id| or one of its
+  // descendants in the frame sink hierarchy tracked by |frame_sink_data_map_|.
+  bool IsSameOrDescendant(const FrameSinkId& frame_sink_id,
+                          const FrameSinkId& search_frame_sink_id) const;
 
   void CreateFrameSink(
       const FrameSinkId& frame_sink_id,

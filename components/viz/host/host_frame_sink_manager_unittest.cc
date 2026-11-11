@@ -37,6 +37,7 @@ namespace {
 constexpr FrameSinkId kFrameSinkParent1(1, 1);
 constexpr FrameSinkId kFrameSinkParent2(2, 1);
 constexpr FrameSinkId kFrameSinkChild1(3, 1);
+constexpr FrameSinkId kFrameSinkChild2(4, 1);
 
 // Holds the four interface objects needed to create a RootCompositorFrameSink.
 struct RootCompositorFrameSinkData {
@@ -362,6 +363,85 @@ TEST_F(HostFrameSinkManagerTest, HierarchyMultipleParents) {
 
   EXPECT_CALL(impl(), UnregisterFrameSinkHierarchy(id_parent1, id_child));
   host().UnregisterFrameSinkHierarchy(id_parent1, id_child);
+  FlushHostAndVerifyExpectations();
+}
+
+// Verify that a frame sink can't be registered as its own parent.
+TEST_F(HostFrameSinkManagerTest, HierarchyRejectsSelfEdge) {
+  EXPECT_CALL(impl(), RegisterFrameSinkId(kFrameSinkParent1,
+                                          true /* report_activation */));
+  RegisterFrameSinkIdWithFakeClient(kFrameSinkParent1,
+                                    ReportFirstSurfaceActivation::kYes);
+
+  // The StrictMock fails the test if the edge is sent to Viz.
+  EXPECT_FALSE(
+      host().RegisterFrameSinkHierarchy(kFrameSinkParent1, kFrameSinkParent1));
+  FlushHostAndVerifyExpectations();
+}
+
+// Verify that edges which would close a cycle in the hierarchy are rejected.
+TEST_F(HostFrameSinkManagerTest, HierarchyRejectsCycle) {
+  const FrameSinkId& id_root = kFrameSinkParent1;
+  const FrameSinkId& id_middle = kFrameSinkParent2;
+  const FrameSinkId& id_leaf = kFrameSinkChild1;
+  for (const FrameSinkId& frame_sink_id : {id_root, id_middle, id_leaf}) {
+    EXPECT_CALL(impl(), RegisterFrameSinkId(frame_sink_id,
+                                            true /* report_activation */));
+    RegisterFrameSinkIdWithFakeClient(frame_sink_id,
+                                      ReportFirstSurfaceActivation::kYes);
+  }
+
+  // Build the chain root -> middle -> leaf.
+  EXPECT_CALL(impl(), RegisterFrameSinkHierarchy(id_root, id_middle));
+  EXPECT_TRUE(host().RegisterFrameSinkHierarchy(id_root, id_middle));
+  EXPECT_CALL(impl(), RegisterFrameSinkHierarchy(id_middle, id_leaf));
+  EXPECT_TRUE(host().RegisterFrameSinkHierarchy(id_middle, id_leaf));
+  FlushHostAndVerifyExpectations();
+
+  // Each of these would close a cycle, so none are sent to Viz. The StrictMock
+  // fails the test if one is.
+  EXPECT_FALSE(host().RegisterFrameSinkHierarchy(id_middle, id_root));
+  EXPECT_FALSE(host().RegisterFrameSinkHierarchy(id_leaf, id_middle));
+  EXPECT_FALSE(host().RegisterFrameSinkHierarchy(id_leaf, id_root));
+  FlushHostAndVerifyExpectations();
+
+  // Once middle -> leaf is gone, leaf -> root no longer closes a cycle.
+  EXPECT_CALL(impl(), UnregisterFrameSinkHierarchy(id_middle, id_leaf));
+  host().UnregisterFrameSinkHierarchy(id_middle, id_leaf);
+  EXPECT_CALL(impl(), RegisterFrameSinkHierarchy(id_leaf, id_root));
+  EXPECT_TRUE(host().RegisterFrameSinkHierarchy(id_leaf, id_root));
+  FlushHostAndVerifyExpectations();
+}
+
+// Verify that a frame sink can have two parents that share an ancestor (a
+// diamond), and that a cycle through the diamond is still rejected.
+TEST_F(HostFrameSinkManagerTest, HierarchyAllowsDiamond) {
+  const FrameSinkId& id_top = kFrameSinkParent1;
+  const FrameSinkId& id_left = kFrameSinkParent2;
+  const FrameSinkId& id_right = kFrameSinkChild1;
+  const FrameSinkId& id_bottom = kFrameSinkChild2;
+  for (const FrameSinkId& frame_sink_id :
+       {id_top, id_left, id_right, id_bottom}) {
+    EXPECT_CALL(impl(), RegisterFrameSinkId(frame_sink_id,
+                                            true /* report_activation */));
+    RegisterFrameSinkIdWithFakeClient(frame_sink_id,
+                                      ReportFirstSurfaceActivation::kYes);
+  }
+
+  // Build top -> {left, right} -> bottom. The last edge gives bottom a second
+  // parent without creating a cycle, so it's allowed.
+  EXPECT_CALL(impl(), RegisterFrameSinkHierarchy(id_top, id_left));
+  EXPECT_TRUE(host().RegisterFrameSinkHierarchy(id_top, id_left));
+  EXPECT_CALL(impl(), RegisterFrameSinkHierarchy(id_top, id_right));
+  EXPECT_TRUE(host().RegisterFrameSinkHierarchy(id_top, id_right));
+  EXPECT_CALL(impl(), RegisterFrameSinkHierarchy(id_left, id_bottom));
+  EXPECT_TRUE(host().RegisterFrameSinkHierarchy(id_left, id_bottom));
+  EXPECT_CALL(impl(), RegisterFrameSinkHierarchy(id_right, id_bottom));
+  EXPECT_TRUE(host().RegisterFrameSinkHierarchy(id_right, id_bottom));
+  FlushHostAndVerifyExpectations();
+
+  // bottom -> top would close a cycle through both sides of the diamond.
+  EXPECT_FALSE(host().RegisterFrameSinkHierarchy(id_bottom, id_top));
   FlushHostAndVerifyExpectations();
 }
 

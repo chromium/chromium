@@ -540,4 +540,110 @@ TEST_F(EmbeddedFrameSinkProviderImplTest, SetParentFrameSinkId_NotRegistered) {
               ElementsAre(kFrameSinkA));
 }
 
+// Verify that a renderer can't use SetParentFrameSinkId() to build a cycle in
+// the frame sink hierarchy. viz::FrameSinkManagerImpl treats a cycle as a fatal
+// error, so the browser must drop the edge that would close it rather than
+// forward it and crash the GPU process.
+TEST_F(EmbeddedFrameSinkProviderImplTest, SetParentFrameSinkId_CycleRejected) {
+  // Talk to the provider through a mojo remote, as a renderer would.
+  mojo::Remote<blink::mojom::EmbeddedFrameSinkProvider> remote;
+  provider()->Add(remote.BindNewPipeAndPassReceiver());
+
+  StubEmbeddedFrameSinkClient efs_client_a;
+  remote->RegisterEmbeddedFrameSink(kFrameSinkParent, kFrameSinkA,
+                                    efs_client_a.GetInterfaceRemote());
+  StubEmbeddedFrameSinkClient efs_client_b;
+  remote->RegisterEmbeddedFrameSink(kFrameSinkParent, kFrameSinkB,
+                                    efs_client_b.GetInterfaceRemote());
+
+  // Make B the parent of A. Both FrameSinkIds are in the renderer's own
+  // namespace, so this passes the browser-side client_id checks.
+  remote->SetParentFrameSinkId(kFrameSinkA, kFrameSinkB);
+  // The host talks to FrameSinkManagerImpl directly in this test, so viz is
+  // updated as soon as the provider has handled the message.
+  remote.FlushForTesting();
+  ASSERT_TRUE(remote.is_connected());
+  ASSERT_THAT(GetFrameSinkManagerImpl()->GetChildrenByParent(kFrameSinkB),
+              ElementsAre(kFrameSinkA));
+
+  // Making A the parent of B would close the cycle B -> A -> B, so the browser
+  // drops the edge without disconnecting the renderer, and the existing B -> A
+  // edge is unaffected.
+  remote->SetParentFrameSinkId(kFrameSinkB, kFrameSinkA);
+  remote.FlushForTesting();
+  EXPECT_TRUE(remote.is_connected());
+  EXPECT_THAT(GetFrameSinkManagerImpl()->GetChildrenByParent(kFrameSinkA),
+              IsEmpty());
+  EXPECT_THAT(GetFrameSinkManagerImpl()->GetChildrenByParent(kFrameSinkB),
+              ElementsAre(kFrameSinkA));
+}
+
+// Verify that an edge rejected by SetParentFrameSinkId() is never unregistered
+// later, whether by an explicit unregister, by reparenting, or on teardown.
+// HostFrameSinkManager CHECKs if asked to remove an edge that it doesn't have.
+TEST_F(EmbeddedFrameSinkProviderImplTest,
+       SetParentFrameSinkId_RejectedEdgeNotUnregistered) {
+  mojo::Remote<blink::mojom::EmbeddedFrameSinkProvider> remote;
+  provider()->Add(remote.BindNewPipeAndPassReceiver());
+
+  StubEmbeddedFrameSinkClient efs_client_a;
+  remote->RegisterEmbeddedFrameSink(kFrameSinkParent, kFrameSinkA,
+                                    efs_client_a.GetInterfaceRemote());
+  StubEmbeddedFrameSinkClient efs_client_b;
+  remote->RegisterEmbeddedFrameSink(kFrameSinkParent, kFrameSinkB,
+                                    efs_client_b.GetInterfaceRemote());
+
+  // Build the chain kFrameSinkParent -> B -> A.
+  remote->RegisterFrameSinkHierarchy(kFrameSinkB);
+  remote->SetParentFrameSinkId(kFrameSinkA, kFrameSinkB);
+  remote.FlushForTesting();
+  ASSERT_TRUE(remote.is_connected());
+  ASSERT_THAT(GetFrameSinkManagerImpl()->GetChildrenByParent(kFrameSinkParent),
+              ElementsAre(kFrameSinkB));
+  ASSERT_THAT(GetFrameSinkManagerImpl()->GetChildrenByParent(kFrameSinkB),
+              ElementsAre(kFrameSinkA));
+
+  // Moving B under A would close the cycle B -> A -> B. B is detached from
+  // kFrameSinkParent, then the A -> B edge is rejected, leaving B parentless.
+  remote->SetParentFrameSinkId(kFrameSinkB, kFrameSinkA);
+  remote.FlushForTesting();
+  ASSERT_TRUE(remote.is_connected());
+  EXPECT_THAT(GetFrameSinkManagerImpl()->GetChildrenByParent(kFrameSinkParent),
+              IsEmpty());
+  EXPECT_THAT(GetFrameSinkManagerImpl()->GetChildrenByParent(kFrameSinkA),
+              IsEmpty());
+
+  // An explicit unregister is a no-op, and reparenting B only registers the
+  // new edge.
+  remote->UnregisterFrameSinkHierarchy(kFrameSinkB);
+  remote->SetParentFrameSinkId(kFrameSinkB, kFrameSinkParent);
+  remote.FlushForTesting();
+  ASSERT_TRUE(remote.is_connected());
+  EXPECT_THAT(GetFrameSinkManagerImpl()->GetChildrenByParent(kFrameSinkParent),
+              ElementsAre(kFrameSinkB));
+  EXPECT_THAT(GetFrameSinkManagerImpl()->GetChildrenByParent(kFrameSinkB),
+              ElementsAre(kFrameSinkA));
+
+  // Reject the A -> B edge again, then destroy B while it's parentless.
+  remote->SetParentFrameSinkId(kFrameSinkB, kFrameSinkA);
+  remote.FlushForTesting();
+  ASSERT_TRUE(remote.is_connected());
+  EXPECT_THAT(GetFrameSinkManagerImpl()->GetChildrenByParent(kFrameSinkParent),
+              IsEmpty());
+  efs_client_b.Close();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return GetEmbeddedFrameSink(kFrameSinkB) == nullptr; }));
+  EXPECT_THAT(GetAllCanvases(), ElementsAre(kFrameSinkA));
+  EXPECT_THAT(GetFrameSinkManagerImpl()->GetChildrenByParent(kFrameSinkB),
+              ElementsAre(kFrameSinkA));
+
+  // Destroying A removes the B -> A edge, which is the last one left.
+  efs_client_a.Close();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return GetEmbeddedFrameSink(kFrameSinkA) == nullptr; }));
+  EXPECT_THAT(GetAllCanvases(), IsEmpty());
+  EXPECT_THAT(GetFrameSinkManagerImpl()->GetChildrenByParent(kFrameSinkB),
+              IsEmpty());
+}
+
 }  // namespace content

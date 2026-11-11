@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -326,6 +327,14 @@ bool HostFrameSinkManager::RegisterFrameSinkHierarchy(
     return false;
   }
 
+  // Adding this edge would create a cycle if the parent is the child itself or
+  // is already reachable from the child. Viz treats cycles as a fatal error,
+  // and some callers (e.g. EmbeddedFrameSinkProviderImpl) forward FrameSinkIds
+  // chosen by an untrusted renderer, so reject the edge here instead.
+  if (IsSameOrDescendant(child_frame_sink_id, parent_frame_sink_id)) {
+    return false;
+  }
+
   FrameSinkData& parent_data = iter->second;
   CHECK(!std::ranges::contains(parent_data.children, child_frame_sink_id));
   parent_data.children.push_back(child_frame_sink_id);
@@ -335,6 +344,33 @@ bool HostFrameSinkManager::RegisterFrameSinkHierarchy(
                                                   child_frame_sink_id);
 
   return true;
+}
+
+bool HostFrameSinkManager::IsSameOrDescendant(
+    const FrameSinkId& frame_sink_id,
+    const FrameSinkId& search_frame_sink_id) const {
+  // Iterative DFS over parent -> children edges. A frame sink can have multiple
+  // parents, so track visited ids to visit each frame sink only once.
+  std::vector<FrameSinkId> to_visit = {frame_sink_id};
+  base::flat_set<FrameSinkId> visited = {frame_sink_id};
+  while (!to_visit.empty()) {
+    const FrameSinkId current = to_visit.back();
+    to_visit.pop_back();
+    if (current == search_frame_sink_id) {
+      return true;
+    }
+    // Frame sinks without an entry have no children.
+    auto iter = frame_sink_data_map_.find(current);
+    if (iter == frame_sink_data_map_.end()) {
+      continue;
+    }
+    for (const FrameSinkId& child : iter->second.children) {
+      if (visited.insert(child).second) {
+        to_visit.push_back(child);
+      }
+    }
+  }
+  return false;
 }
 
 void HostFrameSinkManager::UnregisterFrameSinkHierarchy(
