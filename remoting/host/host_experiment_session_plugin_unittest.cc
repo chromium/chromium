@@ -4,14 +4,12 @@
 
 #include "remoting/host/host_experiment_session_plugin.h"
 
-#include <memory>
 #include <optional>
+#include <string>
+#include <utility>
 
-#include "base/functional/bind.h"
-#include "remoting/base/constants.h"
 #include "remoting/host/host_attributes.h"
 #include "remoting/signaling/jingle_data_structures.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace remoting {
@@ -21,8 +19,12 @@ TEST(HostExperimentSessionPluginTest, AttachAttributes) {
   std::optional<Attachment> attachment = plugin.GetNextMessage();
   ASSERT_TRUE(attachment);
   ASSERT_TRUE(attachment->host_attributes);
-  EXPECT_THAT(attachment->host_attributes->attribute,
-              testing::Contains(GetHostAttributes()));
+  EXPECT_EQ(attachment->host_attributes->attribute, GetHostAttributes());
+  EXPECT_GE(attachment->host_attributes->attribute.size(), 2u);
+  for (const std::string& attr : attachment->host_attributes->attribute) {
+    EXPECT_FALSE(attr.empty());
+    EXPECT_FALSE(attr.contains(','));
+  }
 
   attachment = plugin.GetNextMessage();
   ASSERT_FALSE(attachment);

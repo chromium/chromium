@@ -5,9 +5,9 @@
 #include "remoting/host/host_attributes.h"
 
 #include <algorithm>
+#include <string>
 #include <vector>
 
-#include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -15,8 +15,8 @@ namespace remoting {
 
 // Ensures there is no DCHECK failure or crash in Register() and Callbacks.
 TEST(HostAttributesTest, Sanity) {
-  std::string result = GetHostAttributes();
-  bool is_debug_build = result.contains("Debug-Build");
+  std::vector<std::string> result = GetHostAttributes();
+  bool is_debug_build = std::ranges::contains(result, "Debug-Build");
 
 #if defined(NDEBUG)
   ASSERT_FALSE(is_debug_build);
@@ -25,10 +25,12 @@ TEST(HostAttributesTest, Sanity) {
 #endif
 }
 
-TEST(HostAttributesTest, NoDuplicateKeys) {
-  std::vector<std::string> results = base::SplitString(
-      GetHostAttributes(), ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-  for (auto it = results.begin(); it != results.end(); it++) {
+TEST(HostAttributesTest, NoDuplicateOrInvalidKeys) {
+  std::vector<std::string> results = GetHostAttributes();
+  ASSERT_FALSE(results.empty());
+  for (auto it = results.begin(); it != results.end(); ++it) {
+    EXPECT_FALSE(it->empty());
+    EXPECT_FALSE(it->contains(','));
     ASSERT_EQ(std::find(it + 1, results.end(), *it), results.end());
   }
 }

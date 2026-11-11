@@ -4,7 +4,8 @@
 
 #include "remoting/host/host_experiment_session_plugin.h"
 
-#include "base/strings/string_util.h"
+#include <utility>
+
 #include "remoting/host/host_attributes.h"
 #include "remoting/signaling/jingle_data_structures.h"
 
@@ -18,7 +19,7 @@ std::optional<Attachment> HostExperimentSessionPlugin::GetNextMessage() {
 
   Attachment attachment;
   HostAttributesAttachment host_attributes;
-  host_attributes.attribute.push_back(GetHostAttributes());
+  host_attributes.attribute = GetHostAttributes();
   attachment.host_attributes = std::move(host_attributes);
   return attachment;
 }

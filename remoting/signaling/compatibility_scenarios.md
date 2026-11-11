@@ -183,16 +183,21 @@ signaling across three production implementations:
   - Proto: `transport_info.candidates[i].sdp_m_line_index` (`int32`)
 - **Host Attributes**:
   - XML: `<attachments><host-attributes>attr1,attr2,...</host-attributes>`
-    (tokens are whitespace-trimmed and MUST NOT contain `,`; ingress parsers
-    should also accept `<attribute>` child elements, which take precedence over
-    body text when both are present)
-  - Proto: `repeated Attachment.host_attributes.attribute` (string)
+    (tokens are whitespace-trimmed and MUST NOT contain `,`. Egress XML
+    serializers MUST emit this body-text form because deployed Chromium hosts
+    prior to M160 only parse body text and drop `<attribute>` child elements;
+    ingress parsers should also accept `<attribute>` child elements, which take
+    precedence over body text when both are present)
+  - Proto: `repeated Attachment.host_attributes.attribute` (string; one
+    discrete attribute token per element, never comma-joined)
 - **Host Config Map**:
   - XML: `<attachments><host-configuration>key1:val1,key2:val2</host-configuration>`
-    (keys and values are whitespace-trimmed and MUST NOT contain `,` or `:`;
-    ingress parsers should also accept non-`xmlns` XML attributes on
-    `<host-configuration>`, which take precedence over body text when both are
-    present)
+    (keys and values are whitespace-trimmed and MUST NOT contain `,` or `:`.
+    Egress XML serializers MUST emit this body-text form because deployed
+    Chromium hosts prior to M160 only parse body text and drop XML-attribute
+    `<host-configuration>`; ingress parsers should also accept non-`xmlns` XML
+    attributes on `<host-configuration>`, which take precedence over body text
+    when both are present)
   - Proto: `repeated Attachment.host_config.settings` (map<string, string>)
 - **Terminate Reason**:
   - XML: `<reason><[reason-tag]/></reason>`

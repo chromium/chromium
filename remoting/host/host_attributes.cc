@@ -8,8 +8,7 @@
 #include <type_traits>
 #include <vector>
 
-#include "base/check_op.h"
-#include "base/strings/string_util.h"
+#include "base/check.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 
@@ -25,8 +24,6 @@
 namespace remoting {
 
 namespace {
-
-static constexpr char kSeparator[] = ",";
 
 struct Attribute {
   const char* name;
@@ -100,10 +97,9 @@ static constexpr Attribute kAttributes[] = {
 
 }  // namespace
 
-std::string GetHostAttributes() {
+std::vector<std::string> GetHostAttributes() {
   std::vector<std::string> result;
   for (const auto& attribute : kAttributes) {
-    DCHECK_EQ(std::string(attribute.name).find(kSeparator), std::string::npos);
     if (attribute.get_value_func()) {
       result.push_back(attribute.name);
     }
@@ -113,7 +109,12 @@ std::string GetHostAttributes() {
   result.push_back("Win10+");
 #endif
 
-  return base::JoinString(result, kSeparator);
+  for (const auto& token : result) {
+    DCHECK(!token.empty());
+    DCHECK(!token.contains(','));
+  }
+
+  return result;
 }
 
 }  // namespace remoting
