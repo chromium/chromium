@@ -14283,6 +14283,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kChroMenuSearchScoringDescription, kOsDesktop,
      STRING_VALUE_TYPE(switches::kChroMenuSearchScoring, "")},
 
+    {"block-v8-optimizer-on-unfamiliar-sites",
+     flag_descriptions::kBlockV8OptimizerOnUnfamiliarSitesName,
+     flag_descriptions::kBlockV8OptimizerOnUnfamiliarSitesDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         content_settings::features::kBlockV8OptimizerOnUnfamiliarSites)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

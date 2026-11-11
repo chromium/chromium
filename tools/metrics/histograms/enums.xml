@@ -8163,6 +8163,7 @@ from previous Chrome versions.
   <int value="-2042278511" label="SmartSuggestionForLargeDownloads:disabled"/>
   <int value="-2042238762"
       label="CCTAuthTabDisableAllExternalIntents:disabled"/>
+  <int value="-2041871168" label="BlockV8OptimizerOnUnfamiliarSites:enabled"/>
   <int value="-2041281386" label="MultiPaste:disabled"/>
   <int value="-2041208747" label="StorageBuckets:enabled"/>
   <int value="-2041180857" label="DevToolsMobileSafeAreaEmulation:enabled"/>
@@ -20298,6 +20299,7 @@ from previous Chrome versions.
   <int value="1550025902"
       label="ExtensionDisableUnsupportedDeveloper:disabled"/>
   <int value="1550193978" label="PulseaudioLoopbackForCast:enabled"/>
+  <int value="1550299017" label="BlockV8OptimizerOnUnfamiliarSites:disabled"/>
   <int value="1550865563" label="AnimatedImageDragShadow:enabled"/>
   <int value="1551743170"
       label="WebAuthenticationNewDiscoverableCredentialsUi:disabled"/>

@@ -1356,6 +1356,13 @@ inline constexpr char kBlockCrossPartitionBlobUrlFetchingName[] =
 inline constexpr char kBlockCrossPartitionBlobUrlFetchingDescription[] =
     "Blocks fetching of cross-partitioned Blob URL.";
 
+inline constexpr char kBlockV8OptimizerOnUnfamiliarSitesName[] =
+    "Automatic JS Optimizer Control";
+inline constexpr char kBlockV8OptimizerOnUnfamiliarSitesDescription[] =
+    "Enables the V8 optimizer content setting option to block JavaScript "
+    "optimization on unfamiliar sites, and shows the JavaScript optimizations "
+    "omnibox icon.";
+
 inline constexpr char kBookmarksEncryptionName[] = "Bookmarks Encryption";
 inline constexpr char kBookmarksEncryptionDescription[] =
     "Enable encryption for bookmarks";
