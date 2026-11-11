@@ -35,7 +35,7 @@ BASE_FEATURE_PARAM(bool,
 BASE_FEATURE_PARAM(bool,
                    kMigratedCollectedCookies,
                    &kCentralizedInfoBarFramework,
-                   false);
+                   true);
 
 BASE_FEATURE_PARAM(bool,
                    kMigratedDefaultBrowser,

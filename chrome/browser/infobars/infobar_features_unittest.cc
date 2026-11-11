@@ -30,13 +30,21 @@ TEST_F(InfoBarFeaturesDefaultsTest, FrameworkEnabledByDefault) {
 }
 
 // LINT.IfChange(InfoBarMigrationParams)
+// Launched infobars must be migrated by default.
+TEST_F(InfoBarFeaturesDefaultsTest, LaunchedInfoBarsAreMigratedByDefault) {
+  constexpr InfoBarDelegate::InfoBarIdentifier kLaunched[] = {
+      InfoBarDelegate::COLLECTED_COOKIES_INFOBAR_DELEGATE,
+  };
+  for (InfoBarDelegate::InfoBarIdentifier id : kLaunched) {
+    EXPECT_TRUE(IsInfoBarMigrated(id)) << "InfoBarIdentifier " << id;
+  }
+}
 // Unlaunched infobars stay on the legacy path, controlled only by Finch.
 TEST_F(InfoBarFeaturesDefaultsTest, UnlaunchedInfoBarsAreNotMigratedByDefault) {
   constexpr InfoBarDelegate::InfoBarIdentifier kUnlaunched[] = {
       InfoBarDelegate::ALTERNATE_NAV_INFOBAR_DELEGATE,
       InfoBarDelegate::AUTOMATION_INFOBAR_DELEGATE,
       InfoBarDelegate::BAD_FLAGS_INFOBAR_DELEGATE,
-      InfoBarDelegate::COLLECTED_COOKIES_INFOBAR_DELEGATE,
       InfoBarDelegate::DEFAULT_BROWSER_INFOBAR_DELEGATE,
       InfoBarDelegate::DEV_TOOLS_INFOBAR_DELEGATE,
       InfoBarDelegate::DEV_TOOLS_REMOTE_DEBUGGING_INFOBAR_DELEGATE,
