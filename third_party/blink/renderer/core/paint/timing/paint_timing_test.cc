@@ -1289,4 +1289,94 @@ TEST_F(PaintTimingTest, PaintTimingTraceEventPreservesMicrosecondPrecision) {
   }
 }
 
+TEST_F(PaintTimingTest, PaintEventMilestonesAcrossFrames) {
+  DetachMockClient();
+  WindowPerformance* performance =
+      DOMWindowPerformance::performance(*GetDocument().domWindow());
+
+  // Frame 1: Render a non-contentful first paint (background color only).
+  SetMainFrameBodyContent(R"HTML(
+    <div style="width: 100px; height: 100px; background-color: red;"></div>
+  )HTML");
+  SimulateRendering();
+  EXPECT_FALSE(GetPaintTiming().FirstPaintRendered().is_null());
+  EXPECT_TRUE(GetPaintTiming().FirstPaintForMetrics().is_null());
+  EXPECT_TRUE(GetPaintTiming().FirstContentfulPaint().is_null());
+  EXPECT_TRUE(GetPaintTiming().FirstImagePaint().is_null());
+
+  SimulatePresentationTime();
+  const base::TimeTicks fp_presentation =
+      GetPaintTiming().FirstPaintForMetrics();
+  EXPECT_FALSE(fp_presentation.is_null());
+  EXPECT_TRUE(GetPaintTiming().FirstContentfulPaint().is_null());
+  EXPECT_TRUE(GetPaintTiming().FirstImagePaint().is_null());
+  PerformanceEntryVector paint_entries =
+      performance->getEntriesByType(performance_entry_names::kPaint);
+  ASSERT_EQ(paint_entries.size(), 1u);
+  EXPECT_EQ(paint_entries[0]->name(), performance_entry_names::kFirstPaint);
+
+  // Frame 2: Append contentful text. Only kFirstContentfulPaint should be
+  // queued and reported; kFirstPaint must not be re-reported.
+  Element* text_div = GetDocument().CreateRawElement(html_names::kDivTag);
+  To<HTMLElement>(text_div)->setInnerText("Contentful text");
+  GetDocument().body()->AppendChild(text_div);
+  SimulateRenderingAndPresentationTime();
+  const base::TimeTicks fcp_presentation =
+      GetPaintTiming().FirstContentfulPaint();
+  EXPECT_EQ(GetPaintTiming().FirstPaintForMetrics(), fp_presentation);
+  EXPECT_GT(fcp_presentation, fp_presentation);
+  EXPECT_TRUE(GetPaintTiming().FirstImagePaint().is_null());
+  paint_entries =
+      performance->getEntriesByType(performance_entry_names::kPaint);
+  ASSERT_EQ(paint_entries.size(), 2u);
+  EXPECT_EQ(paint_entries[0]->name(), performance_entry_names::kFirstPaint);
+  EXPECT_EQ(paint_entries[1]->name(),
+            performance_entry_names::kFirstContentfulPaint);
+
+  // Frame 3: Append a loaded image. Only kFirstImagePaint should be queued and
+  // reported; existing FP/FCP timestamps and PerformancePaintTiming entries
+  // must remain unchanged.
+  Element* img = GetDocument().CreateRawElement(html_names::kImgTag);
+  img->setAttribute(html_names::kIdAttr, AtomicString("img"));
+  GetDocument().body()->AppendChild(img);
+  SetImageContent("img", 50, 50);
+  SimulateRenderingAndPresentationTime();
+  EXPECT_EQ(GetPaintTiming().FirstPaintForMetrics(), fp_presentation);
+  EXPECT_EQ(GetPaintTiming().FirstContentfulPaint(), fcp_presentation);
+  EXPECT_GT(GetPaintTiming().FirstImagePaint(), fcp_presentation);
+  EXPECT_EQ(
+      performance->getEntriesByType(performance_entry_names::kPaint).size(),
+      2u);
+}
+
+TEST_F(PaintTimingTest, FirstImagePaintReportsAllPaintEventsInSingleFrame) {
+  DetachMockClient();
+  WindowPerformance* performance =
+      DOMWindowPerformance::performance(*GetDocument().domWindow());
+
+  SetMainFrameBodyContent(R"HTML(
+    <img id="target" width="100" height="100" />
+  )HTML");
+  SetImageContent("target", 100, 100);
+
+  SimulateRendering();
+  EXPECT_TRUE(GetPaintTiming().FirstPaintForMetrics().is_null());
+  EXPECT_TRUE(GetPaintTiming().FirstContentfulPaint().is_null());
+  EXPECT_TRUE(GetPaintTiming().FirstImagePaint().is_null());
+
+  SimulatePresentationTime();
+  const base::TimeTicks fp_presentation =
+      GetPaintTiming().FirstPaintForMetrics();
+  EXPECT_FALSE(fp_presentation.is_null());
+  EXPECT_EQ(GetPaintTiming().FirstContentfulPaint(), fp_presentation);
+  EXPECT_EQ(GetPaintTiming().FirstImagePaint(), fp_presentation);
+
+  PerformanceEntryVector paint_entries =
+      performance->getEntriesByType(performance_entry_names::kPaint);
+  ASSERT_EQ(paint_entries.size(), 2u);
+  EXPECT_EQ(paint_entries[0]->name(), performance_entry_names::kFirstPaint);
+  EXPECT_EQ(paint_entries[1]->name(),
+            performance_entry_names::kFirstContentfulPaint);
+}
+
 }  // namespace blink

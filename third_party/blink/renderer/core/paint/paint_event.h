@@ -5,16 +5,22 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_EVENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_EVENT_H_
 
+#include "base/containers/enum_set.h"
+
 namespace blink {
 
 // Paint events that either PaintTiming or FirstMeaningfulPaintDetector receive
 // SwapPromise swap times for.
 enum class PaintEvent {
   kFirstPaint,
+  kMinValue = kFirstPaint,
   kFirstContentfulPaint,
   kProvisionalFirstMeaningfulPaint,
-  kFirstImagePaint
+  kFirstImagePaint,
+  kMaxValue = kFirstImagePaint,
 };
+
+using PaintEventSet = base::EnumSet<PaintEvent>;
 
 }  // namespace blink
 

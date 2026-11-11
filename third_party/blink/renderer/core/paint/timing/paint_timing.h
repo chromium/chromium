@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
 class AnimationFrameTimingInfo;
@@ -251,7 +250,7 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   friend class RecodingTimeAfterBackForwardCacheRestoreFrameCallback;
 
   struct PendingPaintTimingRecord {
-    HashSet<PaintEvent> paint_events;
+    PaintEventSet paint_events;
     base::TimeTicks rendering_update_end_time;
   };
 
@@ -434,7 +433,7 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   // is restored from the back-forward cache.
   int raf_after_bfcache_restore_measurement_callback_id_ = 0;
 
-  HashSet<PaintEvent> pending_paint_events_;
+  PaintEventSet pending_paint_events_;
 
   // Set in some unit tests.
   Member<CallbackManager> callback_manager_;

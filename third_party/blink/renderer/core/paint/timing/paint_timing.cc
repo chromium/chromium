@@ -158,7 +158,7 @@ void PaintTiming::MarkFirstPaint() {
   }
   DCHECK_EQ(IgnorePaintTimingScope::IgnoreDepth(), 0);
   SetFirstPaint(base::TimeTicks::Now());
-  pending_paint_events_.insert(PaintEvent::kFirstPaint);
+  pending_paint_events_.Put(PaintEvent::kFirstPaint);
 }
 
 void PaintTiming::MarkFirstContentfulPaint() {
@@ -319,7 +319,7 @@ void PaintTiming::MarkPaintTimingInternal() {
   PendingPaintTimingRecord paint_timing_record{
       .paint_events = pending_paint_events_,
       .rendering_update_end_time = last_rendering_update_end_time_};
-  pending_paint_events_.clear();
+  pending_paint_events_.Clear();
 
   FrameWidget* widget = GetFrame()->GetWidgetForLocalRoot();
   // Unit tests with a `callback_manager_` don't have a `widget`, but they rely
@@ -493,13 +493,13 @@ void PaintTiming::FlushPaintTimingsOnFramePresentedCallback(
 
   // 10.1. If document should report first paint, then: Report paint timing
   // given document, "first-paint", and paintTimingInfo.
-  if (record.paint_events.Contains(PaintEvent::kFirstPaint)) {
+  if (record.paint_events.Has(PaintEvent::kFirstPaint)) {
     performance->AddFirstPaintTiming(paint_timing_info);
   }
 
   // 10.2. If document should report first contentful paint, then: Report paint
   // timing given document, "first-contentful-paint", and paintTimingInfo.
-  if (record.paint_events.Contains(PaintEvent::kFirstContentfulPaint)) {
+  if (record.paint_events.Has(PaintEvent::kFirstContentfulPaint)) {
     performance->AddFirstContentfulPaintTiming(paint_timing_info);
   }
 
@@ -615,13 +615,13 @@ void PaintTiming::FlushPaintTimingsOnFramePresented(
 
   // 10.1. If document should report first paint, then: Report paint timing
   // given document, "first-paint", and paintTimingInfo.
-  if (data.paint_timing_record.paint_events.Contains(PaintEvent::kFirstPaint)) {
+  if (data.paint_timing_record.paint_events.Has(PaintEvent::kFirstPaint)) {
     performance->AddFirstPaintTiming(*data.paint_timing_info);
   }
 
   // 10.2. If document should report first contentful paint, then: Report paint
   // timing given document, "first-contentful-paint", and paintTimingInfo.
-  if (data.paint_timing_record.paint_events.Contains(
+  if (data.paint_timing_record.paint_events.Has(
           PaintEvent::kFirstContentfulPaint)) {
     performance->AddFirstContentfulPaintTiming(*data.paint_timing_info);
   }
@@ -756,7 +756,7 @@ void PaintTiming::SetFirstPaint(base::TimeTicks stamp) {
     frame->View()->MaybeStopDeferringCommitsWithoutContentfulPaint();
   }
 
-  pending_paint_events_.insert(PaintEvent::kFirstPaint);
+  pending_paint_events_.Put(PaintEvent::kFirstPaint);
 }
 
 void PaintTiming::SetFirstContentfulPaint(base::TimeTicks stamp) {
@@ -784,7 +784,7 @@ void PaintTiming::SetFirstContentfulPaint(base::TimeTicks stamp) {
 }
 
 void PaintTiming::Mark(PaintEvent event) {
-  pending_paint_events_.insert(event);
+  pending_paint_events_.Put(event);
 }
 
 void PaintTiming::
