@@ -337,10 +337,12 @@ bool DoResolveRelativePath(std::string_view base_url,
 
   // Append a base URL up to the beginning of base URL's path.
   if (base_parsed.path.is_empty()) {
-    // A non-special URL may have an empty path (e.g. "git://host"). In these
-    // cases, attempting to use `base_parsed.path` is invalid.
-    output->Append(base_url.substr(0, base_parsed.Length()));
-  } else if (!base_parsed.host.is_valid() &&
+    // A non-special URL may have an empty path (e.g. "git://host" or
+    // "git://host?q#r"). In these cases, `base_parsed.path` is invalid, so copy
+    // up to where the path would begin (before any query or ref).
+    output->Append(base_url.substr(
+        0, base_parsed.CountCharactersBefore(Parsed::PATH, false)));
+  } else if (path.is_nonempty() && !base_parsed.host.is_valid() &&
              // Exclude a file URL and an URL with an inner-path because we are
              // interested in only non-special URLs here.
              //
@@ -348,7 +350,8 @@ bool DoResolveRelativePath(std::string_view base_url,
              // URL("test", "file:///tmp").href` will result in
              // "file:/tmp/mock/test" instead of "file:///tmp/mock/test".
              !base_is_file && !base_parsed.inner_parsed()) {
-    // The URL is a path-only non-special URL. e.g. "git:/path".
+    // The URL is a path-only non-special URL (e.g. "git:/path") and the path is
+    // being replaced or modified.
     //
     // In this case, we can't use `base_parsed.path.begin` because it may append
     // "/." wrongly if the URL is, for example, "git:/.//a", where
@@ -361,6 +364,10 @@ bool DoResolveRelativePath(std::string_view base_url,
     output->Append(base_url.substr(0, base_parsed.scheme.end()));
     output->Append(":");
   } else {
+    // When `path` is empty, the path from `base_url` is copied unchanged via
+    // `CopyOneComponent` below (which skips the `/.` re-insertion check), so
+    // any leading "/." before `base_parsed.path.begin` (e.g. in "git:/.//a")
+    // must be preserved here.
     output->Append(base_url.substr(0, base_parsed.path.begin));
   }
 

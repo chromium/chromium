@@ -67,6 +67,17 @@ class GURLTest : public testing::Test {
     EXPECT_EQ(resolve_case.expected_valid, output.is_valid());
     EXPECT_EQ(resolve_case.expected, output.spec());
     EXPECT_EQ(output.SchemeIsFileSystem(), output.inner_url() != nullptr);
+    if (output.is_valid()) {
+      GURL reparsed(output.spec());
+      EXPECT_EQ(output.GetScheme(), reparsed.GetScheme());
+      EXPECT_EQ(output.GetUsername(), reparsed.GetUsername());
+      EXPECT_EQ(output.GetPassword(), reparsed.GetPassword());
+      EXPECT_EQ(output.GetHost(), reparsed.GetHost());
+      EXPECT_EQ(output.GetPort(), reparsed.GetPort());
+      EXPECT_EQ(output.GetPath(), reparsed.GetPath());
+      EXPECT_EQ(output.GetQuery(), reparsed.GetQuery());
+      EXPECT_EQ(output.GetRef(), reparsed.GetRef());
+    }
 
     // Wide code path.
     GURL inputw(base::UTF8ToUTF16(resolve_case.base));
@@ -74,6 +85,17 @@ class GURLTest : public testing::Test {
     EXPECT_EQ(resolve_case.expected_valid, outputw.is_valid());
     EXPECT_EQ(resolve_case.expected, outputw.spec());
     EXPECT_EQ(outputw.SchemeIsFileSystem(), outputw.inner_url() != nullptr);
+    if (outputw.is_valid()) {
+      GURL reparsedw(outputw.spec());
+      EXPECT_EQ(outputw.GetScheme(), reparsedw.GetScheme());
+      EXPECT_EQ(outputw.GetUsername(), reparsedw.GetUsername());
+      EXPECT_EQ(outputw.GetPassword(), reparsedw.GetPassword());
+      EXPECT_EQ(outputw.GetHost(), reparsedw.GetHost());
+      EXPECT_EQ(outputw.GetPort(), reparsedw.GetPort());
+      EXPECT_EQ(outputw.GetPath(), reparsedw.GetPath());
+      EXPECT_EQ(outputw.GetQuery(), reparsedw.GetQuery());
+      EXPECT_EQ(outputw.GetRef(), reparsedw.GetRef());
+    }
   }
 
   void TestReplace(const ReplaceCase& replace) {
@@ -503,6 +525,46 @@ TEST_F(GURLTest, Resolve) {
       {"git://host/", "////..", true, "git:///"},
       {"git://host/", "////../..", true, "git:///"},
       {"git://host/", "////../../..", true, "git:///"},
+
+      // Non-special base URLs whose paths are empty, with query and/or ref.
+      {"git://host?q", "", true, "git://host?q"},
+      {"git://host?q", ".", true, "git://host/"},
+      {"git://host?q", "..", true, "git://host/"},
+      {"git://host?q", "a", true, "git://host/a"},
+      {"git://host?q", "/a", true, "git://host/a"},
+      {"git://host?q", "?q2", true, "git://host?q2"},
+      {"git://host?q", "#r2", true, "git://host?q#r2"},
+      {"git://host#r", "", true, "git://host"},
+      {"git://host#r", "a", true, "git://host/a"},
+      {"git://host#r", "?q2", true, "git://host?q2"},
+      {"git://host#r", "#r2", true, "git://host#r2"},
+      {"git://host?q#r", "", true, "git://host?q"},
+      {"git://host?q#r", ".", true, "git://host/"},
+      {"git://host?q#r", "..", true, "git://host/"},
+      {"git://host?q#r", "a", true, "git://host/a"},
+      {"git://host?q#r", "/a", true, "git://host/a"},
+      {"git://host?q#r", "?q2", true, "git://host?q2"},
+      {"git://host?q#r", "#r2", true, "git://host?q#r2"},
+      {"git://host?q#r", "?q2#r2", true, "git://host?q2#r2"},
+      {"git://user:pass@host:80?q#r", "a", true, "git://user:pass@host:80/a"},
+      {"git://user:pass@host:80?q#r", "?q2", true,
+       "git://user:pass@host:80?q2"},
+      {"git://user:pass@host:80?q#r", "#r2", true,
+       "git://user:pass@host:80?q#r2"},
+      {"git://?q#r", "a", true, "git:///a"},
+      {"git://?q#r", "?q2", true, "git://?q2"},
+      {"git://?q#r", "#r2", true, "git://?q#r2"},
+      {"git://#r", "a", true, "git:///a"},
+      {"git:?q#r", "#r2", true, "git:?q#r2"},
+
+      // Path-only non-special base URLs whose path starts with "//".
+      {"git:/.//a", "", true, "git:/.//a"},
+      {"git:/.//a", "b", true, "git:/.//b"},
+      {"git:/.//a", "../b", true, "git:/b"},
+      {"git:/.//a", "?q", true, "git:/.//a?q"},
+      {"git:/.//a", "#r", true, "git:/.//a#r"},
+      {"git:/.//a?q#r", "?q2", true, "git:/.//a?q2"},
+      {"git:/.//a?q#r", "#r2", true, "git:/.//a?q#r2"},
   };
 
   for (const ResolveCase& c : resolve_cases) {

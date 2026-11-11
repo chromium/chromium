@@ -129,6 +129,20 @@ bool CanonicalizeNonSpecialPath(std::optional<std::u16string_view> path,
   return CanonicalizePath(path, CanonMode::kNonSpecialURL, output, out_path);
 }
 
+// Returns true if the given two structures are the same.
+bool ParsedIsEqual(const Parsed& a, const Parsed& b) {
+  return a.scheme.begin == b.scheme.begin && a.scheme.len == b.scheme.len &&
+         a.username.begin == b.username.begin &&
+         a.username.len == b.username.len &&
+         a.password.begin == b.password.begin &&
+         a.password.len == b.password.len && a.host.begin == b.host.begin &&
+         a.host.len == b.host.len && a.port.begin == b.port.begin &&
+         a.port.len == b.port.len && a.path.begin == b.path.begin &&
+         a.path.len == b.path.len && a.query.begin == b.query.begin &&
+         a.query.len == b.query.len && a.ref.begin == b.ref.begin &&
+         a.ref.len == b.ref.len;
+}
+
 }  // namespace
 
 class URLCanonTest : public ::testing::Test {
@@ -153,14 +167,21 @@ class URLCanonTest : public ::testing::Test {
       const ResolveRelativeURLCase& relative_case) {
     // The following test is similar to URLCanonTest::ResolveRelativeURL, but
     // simplified.
-    Parsed parsed = ParseNonSpecialUrl(relative_case.base);
+    std::string canonical_base;
+    StdStringCanonOutput base_output(&canonical_base);
+    Parsed parsed;
+    bool base_valid = CanonicalizeNonSpecialUrl(
+        relative_case.base, ParseNonSpecialUrl(relative_case.base), nullptr,
+        base_output, parsed);
+    base_output.Complete();
+    EXPECT_EQ(base_valid, relative_case.expected_base_is_valid);
 
     // First see if it is relative.
     bool is_relative;
     Component relative_component;
     bool succeed_is_rel = IsRelativeUrl(
-        relative_case.base, parsed, relative_case.rel,
-        relative_case.is_base_hier, &is_relative, &relative_component);
+        canonical_base, parsed, relative_case.rel, relative_case.is_base_hier,
+        &is_relative, &relative_component);
 
     EXPECT_EQ(is_relative, relative_case.expected_is_relative);
     if (succeed_is_rel && is_relative) {
@@ -169,13 +190,20 @@ class URLCanonTest : public ::testing::Test {
       Parsed resolved_parsed;
 
       bool succeed_resolve = ResolveRelativeUrl(
-          relative_case.base, parsed, relative_case.is_base_hier,
-          relative_case.rel, relative_component, nullptr, &output,
-          &resolved_parsed);
+          canonical_base, parsed, /*base_is_file=*/false, relative_case.rel,
+          relative_component, nullptr, &output, &resolved_parsed);
       output.Complete();
 
       EXPECT_EQ(succeed_resolve, relative_case.expected_succeed_resolve);
       EXPECT_EQ(resolved_url, relative_case.expected_resolved_url);
+
+      std::string ref_url;
+      StdStringCanonOutput ref_output(&ref_url);
+      Parsed ref_parsed;
+      CanonicalizeNonSpecialUrl(resolved_url, ParseNonSpecialUrl(resolved_url),
+                                nullptr, ref_output, ref_parsed);
+      ref_output.Complete();
+      EXPECT_TRUE(ParsedIsEqual(ref_parsed, resolved_parsed));
     }
   }
 
@@ -2573,18 +2601,6 @@ TEST_F(URLCanonTest, CanonicalizeMailtoUrl) {
   }
 }
 
-// Returns true if the given two structures are the same.
-static bool ParsedIsEqual(const Parsed& a, const Parsed& b) {
-  return a.scheme.begin == b.scheme.begin && a.scheme.len == b.scheme.len &&
-         a.username.begin == b.username.begin && a.username.len == b.username.len &&
-         a.password.begin == b.password.begin && a.password.len == b.password.len &&
-         a.host.begin == b.host.begin && a.host.len == b.host.len &&
-         a.port.begin == b.port.begin && a.port.len == b.port.len &&
-         a.path.begin == b.path.begin && a.path.len == b.path.len &&
-         a.query.begin == b.query.begin && a.query.len == b.query.len &&
-         a.ref.begin == b.ref.begin && a.ref.len == b.ref.len;
-}
-
 TEST_F(URLCanonTest, ResolveRelativeUrl) {
   struct RelativeCase {
     const char* base;      // Input base URL: MUST BE CANONICAL
@@ -2851,6 +2867,25 @@ TEST_F(URLCanonTest, ResolveRelativeUrl) {
 TEST_F(URLCanonTest, NonSpecialResolveRelativeUrl) {
   static constexpr ResolveRelativeURLCase cases[] = {
       {"git://host", "path", true, true, true, true, "git://host/path"},
+      {"git://host?q#r", "", true, true, true, true, "git://host?q"},
+      {"git://host?q#r", "path", true, true, true, true, "git://host/path"},
+      {"git://host?q#r", "/path", true, true, true, true, "git://host/path"},
+      {"git://host?q#r", "path?q2#r2", true, true, true, true,
+       "git://host/path?q2#r2"},
+      {"git://host?q#r", "?q2", true, true, true, true, "git://host?q2"},
+      {"git://host?q#r", "#r2", true, true, true, true, "git://host?q#r2"},
+      {"git://host?q", "path", true, true, true, true, "git://host/path"},
+      {"git://host#r", "path", true, true, true, true, "git://host/path"},
+      {"git://?q#r", "path", true, true, true, true, "git:///path"},
+      {"git://?q#r", "?q2", true, true, true, true, "git://?q2"},
+      {"git://?q#r", "#r2", true, true, true, true, "git://?q#r2"},
+      {"git:?q#r", "#r2", false, true, true, true, "git:?q#r2"},
+      {"git:/.//a", "b", true, true, true, true, "git:/.//b"},
+      {"git:/.//a", "../b", true, true, true, true, "git:/b"},
+      {"git:/.//a", "?q", true, true, true, true, "git:/.//a?q"},
+      {"git:/.//a", "#r", true, true, true, true, "git:/.//a#r"},
+      {"git:/.//a?q#r", "?q2", true, true, true, true, "git:/.//a?q2"},
+      {"git:/.//a?q#r", "#r2", true, true, true, true, "git:/.//a?q#r2"},
   };
   for (const auto& i : cases) {
     TestNonSpecialResolveRelativeURL(i);
