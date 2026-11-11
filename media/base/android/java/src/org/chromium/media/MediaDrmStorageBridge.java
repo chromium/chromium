@@ -85,7 +85,7 @@ class MediaDrmStorageBridge {
         }
     }
 
-    /** Load |emeId|'s storage into memory. */
+    /** Load {@code emeId}'s storage into memory. */
     void loadInfo(byte[] emeId, Callback<@Nullable PersistentInfo> cb) {
         if (isNativeMediaDrmStorageValid()) {
             MediaDrmStorageBridgeJni.get()
@@ -104,7 +104,7 @@ class MediaDrmStorageBridge {
         }
     }
 
-    /** Remove persistent information related |emeId|. */
+    /** Remove persistent information related {@code emeId}. */
     void clearInfo(byte[] emeId, Callback<Boolean> cb) {
         if (isNativeMediaDrmStorageValid()) {
             MediaDrmStorageBridgeJni.get().onClearInfo(mNativeMediaDrmStorageBridge, emeId, cb);

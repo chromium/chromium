@@ -471,6 +471,9 @@ public class MediaDrmBridge {
      * @param keySystemBytes Key system UUID.
      * @param securityOrigin Security origin. Empty value means no need for origin isolated storage.
      * @param securityLevel Security level.
+     * @param message Description of the reason for creation, used only for logging.
+     * @param requiresMediaCrypto Whether a MediaCrypto object must be created. If false, the bridge
+     *     is created only to unprovision the device/origin.
      * @param nativeMediaDrmBridge Native C++ object of this class.
      * @param nativeMediaDrmStorageBridge Native C++ object of persistent storage.
      */
@@ -887,7 +890,7 @@ public class MediaDrmBridge {
     }
 
     /**
-     * Create a session, and generate a request with |initData| and |mime|.
+     * Create a session, and generate a request with {@code initData} and {@code mime}.
      *
      * @param initData Data needed to generate the key request.
      * @param mime Mime type.
@@ -959,7 +962,7 @@ public class MediaDrmBridge {
      * Search and return the SessionId for raw EME/DRM session id.
      *
      * @param emeId Raw EME session Id.
-     * @return SessionId of |emeId| if exists and isn't a MediaCryptoSession, null otherwise.
+     * @return SessionId of {@code emeId} if exists and isn't a MediaCryptoSession, null otherwise.
      */
     private @Nullable SessionId getSessionIdByEmeId(byte[] emeId) {
         if (mMediaCryptoSession == null) {
@@ -1574,8 +1577,8 @@ public class MediaDrmBridge {
     }
 
     /**
-     * Delay session event handler if |mSessionEventDeferrer| exists and
-     * matches |sessionId|. Otherwise run the handler immediately.
+     * Delay session event handler if {@code mSessionEventDeferrer} exists and matches {@code
+     * sessionId}. Otherwise run the handler immediately.
      */
     private void deferEventHandleIfNeeded(SessionId sessionId, Runnable handler) {
         if (mSessionEventDeferrer != null && mSessionEventDeferrer.shouldDefer(sessionId)) {

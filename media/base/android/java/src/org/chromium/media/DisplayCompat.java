@@ -218,6 +218,7 @@ public final class DisplayCompat {
          * Mode object
          *
          * @param mode a Display.Mode object
+         * @param isNative whether the wrapped mode is a native mode of the display
          */
         ModeCompat(Display.Mode mode, boolean isNative) {
             if (mode == null) {

@@ -264,7 +264,7 @@ class MediaDrmSessionManager {
         mStorage.saveInfo(info.toPersistentInfo(), callback);
     }
 
-    /** Load |emeId|'s session data from persistent storage. */
+    /** Load {@code emeId}'s session data from persistent storage. */
     void load(byte[] emeId, final Callback<@Nullable SessionId> callback) {
         mStorage.loadInfo(
                 emeId,
