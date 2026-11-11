@@ -29,6 +29,7 @@ enum class NTPUICleanupVariation {
   kMediumPadding,
   kPreferredPadding,
   kFakeboxBackgroundAndShadow,
+  kControlPadding,
 };
 
 // Defines the arms for the AIM Refactor Experiment.
@@ -167,9 +168,14 @@ BASE_DECLARE_FEATURE(kNewTabPageRedesign);
 // Whether the New Tab Page Redesign is enabled.
 bool IsNTPRedesignEnabled();
 
-// Whether the full New Tab Page UI cleanup is enabled. This cleanup includes
-// all color, sizing, and padding updates.
+// Whether the New Tab Page UI cleanup is enabled. Controls the UI updates
+// (colors and sizing), while `ShouldApplyNewTabPageUICleanupPadding()` controls
+// the padding updates.
 bool IsNewTabPageUICleanupEnabled();
+
+// Returns whether the New Tab Page UI cleanup padding updates should be
+// applied.
+bool ShouldApplyNewTabPageUICleanupPadding();
 
 // Returns whether the updated fakebox background color and shadow should be
 // applied.

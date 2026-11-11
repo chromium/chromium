@@ -172,6 +172,14 @@ bool IsNewTabPageUICleanupEnabled() {
   NTPUICleanupVariation variation = GetNewTabPageUICleanupVariation();
   return variation == NTPUICleanupVariation::kTightPadding ||
          variation == NTPUICleanupVariation::kMediumPadding ||
+         variation == NTPUICleanupVariation::kPreferredPadding ||
+         variation == NTPUICleanupVariation::kControlPadding;
+}
+
+bool ShouldApplyNewTabPageUICleanupPadding() {
+  NTPUICleanupVariation variation = GetNewTabPageUICleanupVariation();
+  return variation == NTPUICleanupVariation::kTightPadding ||
+         variation == NTPUICleanupVariation::kMediumPadding ||
          variation == NTPUICleanupVariation::kPreferredPadding;
 }
 

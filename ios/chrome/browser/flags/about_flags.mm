@@ -1193,6 +1193,8 @@ constexpr FeatureEntry::FeatureParam kNewTabPageUICleanupPreferredPadding[] = {
 constexpr FeatureEntry::FeatureParam
     kNewTabPageUICleanupFakeboxBackgroundAndShadow[] = {
         {kNewTabPageUICleanupArmParam, "4"}};
+constexpr FeatureEntry::FeatureParam kNewTabPageUICleanupControlPadding[] = {
+    {kNewTabPageUICleanupArmParam, "5"}};
 
 constexpr FeatureEntry::FeatureVariation kNewTabPageUICleanupVariations[] = {
     {" - Tight Padding", kNewTabPageUICleanupTightPadding, nullptr},
@@ -1200,6 +1202,7 @@ constexpr FeatureEntry::FeatureVariation kNewTabPageUICleanupVariations[] = {
     {" - Preferred Padding", kNewTabPageUICleanupPreferredPadding, nullptr},
     {" - Fakebox Background and Shadow Update",
      kNewTabPageUICleanupFakeboxBackgroundAndShadow, nullptr},
+    {" - Control Padding", kNewTabPageUICleanupControlPadding, nullptr},
 };
 
 constexpr FeatureEntry::FeatureParam kAim3pEntrypointDebugEnabled[] = {

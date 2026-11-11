@@ -359,7 +359,8 @@ CGFloat HeightForLogoHeader(SearchEngineLogoState logo_state,
 }
 
 CGFloat HeaderBottomPadding(UITraitCollection* trait_collection) {
-  return IsSplitToolbarMode(trait_collection) || IsNewTabPageUICleanupEnabled()
+  return IsSplitToolbarMode(trait_collection) ||
+                 ShouldApplyNewTabPageUICleanupPadding()
              ? 0
              : kNTPShrunkLogoSearchFieldBottomPadding;
 }
@@ -370,7 +371,7 @@ namespace {
 // `FakeToolbarHeight()`).
 CGFloat BaseLogoTopPadding(SearchEngineLogoState logo_state,
                            UITraitCollection* trait_collection) {
-  if (!IsNewTabPageUICleanupEnabled()) {
+  if (!ShouldApplyNewTabPageUICleanupPadding()) {
     return DoodleTopMargin(logo_state, trait_collection) - FakeToolbarHeight();
   }
 
@@ -393,6 +394,7 @@ CGFloat BaseLogoTopPadding(SearchEngineLogoState logo_state,
           is_doodle ? kDoodleTopPaddingPreferred : kLogoTopPaddingPreferred;
       break;
     case NTPUICleanupVariation::kFakeboxBackgroundAndShadow:
+    case NTPUICleanupVariation::kControlPadding:
     case NTPUICleanupVariation::kDisabled:
       NOTREACHED();
   }
@@ -404,7 +406,7 @@ CGFloat BaseLogoTopPadding(SearchEngineLogoState logo_state,
 
 // Returns the base top padding for Most Visited Tiles.
 CGFloat BaseMostVisitedTopPadding(UITraitCollection* trait_collection) {
-  if (!IsNewTabPageUICleanupEnabled()) {
+  if (!ShouldApplyNewTabPageUICleanupPadding()) {
     return kMostVisitedTopPaddingControl;
   }
 
@@ -420,6 +422,7 @@ CGFloat BaseMostVisitedTopPadding(UITraitCollection* trait_collection) {
     case NTPUICleanupVariation::kPreferredPadding:
       return kMostVisitedTopPaddingPreferred;
     case NTPUICleanupVariation::kFakeboxBackgroundAndShadow:
+    case NTPUICleanupVariation::kControlPadding:
     case NTPUICleanupVariation::kDisabled:
       NOTREACHED();
   }
@@ -427,7 +430,7 @@ CGFloat BaseMostVisitedTopPadding(UITraitCollection* trait_collection) {
 
 // Returns the base top padding for Quick Actions.
 CGFloat BaseQuickActionsTopPadding(UITraitCollection* trait_collection) {
-  if (!IsNewTabPageUICleanupEnabled()) {
+  if (!ShouldApplyNewTabPageUICleanupPadding()) {
     return kQuickActionsTopPaddingControl;
   }
   return IsRegularXRegularSizeClass(trait_collection)
@@ -485,7 +488,7 @@ CGFloat LogoTopPadding(SearchEngineLogoState logo_state,
             kLogoTopRemainingSpaceRatio);
   }
 
-  if (!IsNewTabPageUICleanupEnabled()) {
+  if (!ShouldApplyNewTabPageUICleanupPadding()) {
     return DoodleTopMargin(logo_state, trait_collection);
   }
 
@@ -494,7 +497,7 @@ CGFloat LogoTopPadding(SearchEngineLogoState logo_state,
 
 CGFloat LogoToFakeboxPadding(SearchEngineLogoState logo_state,
                              UITraitCollection* trait_collection) {
-  if (!IsNewTabPageUICleanupEnabled()) {
+  if (!ShouldApplyNewTabPageUICleanupPadding()) {
     return SearchFieldTopMargin(logo_state, trait_collection);
   }
 
@@ -519,6 +522,7 @@ CGFloat LogoToFakeboxPadding(SearchEngineLogoState logo_state,
                           : kLogoToFakeboxPaddingPreferred;
       break;
     case NTPUICleanupVariation::kFakeboxBackgroundAndShadow:
+    case NTPUICleanupVariation::kControlPadding:
     case NTPUICleanupVariation::kDisabled:
       NOTREACHED();
   }
@@ -530,7 +534,7 @@ CGFloat LogoToFakeboxPadding(SearchEngineLogoState logo_state,
 
 CGFloat QuickActionsTopPadding(UITraitCollection* trait_collection) {
   const CGFloat padding = BaseQuickActionsTopPadding(trait_collection);
-  if (!IsNewTabPageUICleanupEnabled() || IsNTPRedesignEnabled()) {
+  if (!ShouldApplyNewTabPageUICleanupPadding() || IsNTPRedesignEnabled()) {
     return padding;
   }
   return padding - ntp_header::kScrolledToTopOmniboxBottomMargin;
@@ -542,8 +546,8 @@ CGFloat RedistributedHeaderBottomSpacing(UITraitCollection* trait_collection) {
   const CGFloat padding = RedistributableHeaderSpace(trait_collection) *
                           kFakeboxBottomRemainingSpaceRatio;
   // Match `QuickActionsTopPadding` so `kScrolledToTopOmniboxBottomMargin` is
-  // not subtracted when `kNewTabPageUICleanup` is disabled.
-  if (!IsNewTabPageUICleanupEnabled() || IsNTPRedesignEnabled()) {
+  // not subtracted when `ShouldApplyNewTabPageUICleanupPadding()` is false.
+  if (!ShouldApplyNewTabPageUICleanupPadding() || IsNTPRedesignEnabled()) {
     return padding;
   }
   return padding - ntp_header::kScrolledToTopOmniboxBottomMargin;
@@ -554,8 +558,8 @@ CGFloat MostVisitedTopPadding(UITraitCollection* trait_collection) {
 }
 
 CGFloat ReducedModuleSpacing() {
-  return IsNewTabPageUICleanupEnabled() ? kReducedModuleSpacing
-                                        : kReducedModuleSpacingControl;
+  return ShouldApplyNewTabPageUICleanupPadding() ? kReducedModuleSpacing
+                                                 : kReducedModuleSpacingControl;
 }
 
 void ConfigureSearchHintLabel(UILabel* search_hint_label,
