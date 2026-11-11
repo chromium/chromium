@@ -409,8 +409,7 @@ TEST_F(AppListBubbleViewTest, ShowAnimationDestroysAndRestoresShadow) {
   auto* apps_grid_view = GetAppsGridView();
   ui::LayerAnimationStoppedWaiter().Wait(apps_grid_view->layer());
 
-  // Shadow is restored - when kJelly is enabled, no shadow is expected, for
-  // consistency with bubbles in system tray area.
+  // No shadow is expected, for consistency with bubbles in system tray area.
   EXPECT_FALSE(app_list_bubble_view->view_shadow_for_test());
 }
 
