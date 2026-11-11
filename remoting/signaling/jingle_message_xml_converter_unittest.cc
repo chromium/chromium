@@ -212,6 +212,16 @@ TEST(JingleMessageXmlConverterTest, Attachment_RoundTrip) {
   std::unique_ptr<XmlElement> xml = AttachmentToXml(attachment);
   ASSERT_TRUE(xml);
 
+  const XmlElement* attrs_el =
+      xml->FirstNamed(QName("google:remoting", "host-attributes"));
+  ASSERT_TRUE(attrs_el);
+  EXPECT_EQ(attrs_el->BodyText(), "attr1,attr2");
+
+  const XmlElement* config_el =
+      xml->FirstNamed(QName("google:remoting", "host-configuration"));
+  ASSERT_TRUE(config_el);
+  EXPECT_EQ(config_el->BodyText(), "key1:val1,key2:val2");
+
   Attachment parsed_attachment;
   EXPECT_TRUE(AttachmentFromXml(xml.get(), &parsed_attachment));
 
@@ -220,8 +230,122 @@ TEST(JingleMessageXmlConverterTest, Attachment_RoundTrip) {
               testing::ElementsAre("attr1", "attr2"));
 
   ASSERT_TRUE(parsed_attachment.host_config);
+  EXPECT_EQ(parsed_attachment.host_config->settings.size(), 2u);
   EXPECT_EQ(parsed_attachment.host_config->settings["key1"], "val1");
   EXPECT_EQ(parsed_attachment.host_config->settings["key2"], "val2");
+}
+
+TEST(JingleMessageXmlConverterTest,
+     AttachmentFromXml_AttributeAndChildElementFormats) {
+  constexpr char kXml[] =
+      "<attachments xmlns='google:remoting'>"
+      "  <host-attributes xmlns='google:remoting'>"
+      "    <attribute>Debug-Build</attribute>"
+      "    <attribute> HWEncoder </attribute>"
+      "    <attribute>Invalid,WithComma</attribute>"
+      "  </host-attributes>"
+      "  <host-configuration xmlns='google:remoting'"
+      "      xmlns:gr='google:remoting'"
+      "      Av1-Encoder-Speed='11'"
+      "      Enable-Privacy-Overlay-Alpha='true'"
+      "      InvalidComma='a,b'"
+      "      InvalidColon='a:b' />"
+      "</attachments>";
+
+  std::unique_ptr<XmlElement> xml(XmlElement::ForStr(kXml));
+  ASSERT_TRUE(xml);
+
+  Attachment parsed_attachment;
+  ASSERT_TRUE(AttachmentFromXml(xml.get(), &parsed_attachment));
+
+  ASSERT_TRUE(parsed_attachment.host_attributes);
+  EXPECT_THAT(parsed_attachment.host_attributes->attribute,
+              testing::ElementsAre("Debug-Build", "HWEncoder"));
+
+  ASSERT_TRUE(parsed_attachment.host_config);
+  EXPECT_EQ(parsed_attachment.host_config->settings.size(), 2u);
+  EXPECT_EQ(parsed_attachment.host_config->settings["Av1-Encoder-Speed"], "11");
+  EXPECT_EQ(
+      parsed_attachment.host_config->settings["Enable-Privacy-Overlay-Alpha"],
+      "true");
+}
+
+TEST(JingleMessageXmlConverterTest,
+     AttachmentFromXml_BodyTextWhitespaceAndMalformedPair) {
+  constexpr char kXml[] =
+      "<attachments xmlns='google:remoting'>"
+      "  <host-attributes>Debug-Build, HWEncoder , , </host-attributes>"
+      "  <host-configuration>"
+      "    Enable-Privacy-Overlay-Alpha : true , k2 : v2 , "
+      "    MalformedWithoutColon, DoubleColon::Value, :EmptyKey"
+      "  </host-configuration>"
+      "</attachments>";
+
+  std::unique_ptr<XmlElement> xml(XmlElement::ForStr(kXml));
+  ASSERT_TRUE(xml);
+
+  Attachment parsed_attachment;
+  ASSERT_TRUE(AttachmentFromXml(xml.get(), &parsed_attachment));
+
+  ASSERT_TRUE(parsed_attachment.host_attributes);
+  EXPECT_THAT(parsed_attachment.host_attributes->attribute,
+              testing::ElementsAre("Debug-Build", "HWEncoder"));
+
+  ASSERT_TRUE(parsed_attachment.host_config);
+  EXPECT_EQ(parsed_attachment.host_config->settings.size(), 2u);
+  EXPECT_EQ(
+      parsed_attachment.host_config->settings["Enable-Privacy-Overlay-Alpha"],
+      "true");
+  EXPECT_EQ(parsed_attachment.host_config->settings["k2"], "v2");
+}
+
+TEST(JingleMessageXmlConverterTest,
+     AttachmentFromXml_StructuredFormsTakePrecedenceOverBodyText) {
+  constexpr char kXml[] =
+      "<attachments xmlns='google:remoting'>"
+      "  <host-attributes>"
+      "    <attribute>ChildAttr</attribute>"
+      "    IgnoredBodyAttr1,IgnoredBodyAttr2"
+      "  </host-attributes>"
+      "  <host-configuration AttrKey='AttrVal'>"
+      "    IgnoredBodyKey:IgnoredBodyVal"
+      "  </host-configuration>"
+      "</attachments>";
+
+  std::unique_ptr<XmlElement> xml(XmlElement::ForStr(kXml));
+  ASSERT_TRUE(xml);
+
+  Attachment parsed_attachment;
+  ASSERT_TRUE(AttachmentFromXml(xml.get(), &parsed_attachment));
+
+  ASSERT_TRUE(parsed_attachment.host_attributes);
+  EXPECT_THAT(parsed_attachment.host_attributes->attribute,
+              testing::ElementsAre("ChildAttr"));
+
+  ASSERT_TRUE(parsed_attachment.host_config);
+  EXPECT_EQ(parsed_attachment.host_config->settings.size(), 1u);
+  EXPECT_EQ(parsed_attachment.host_config->settings["AttrKey"], "AttrVal");
+}
+
+TEST(JingleMessageXmlConverterTest,
+     AttachmentFromXml_EmptyTagsProduceSetAttachments) {
+  constexpr char kXml[] =
+      "<attachments xmlns='google:remoting'>"
+      "  <host-attributes/>"
+      "  <host-configuration/>"
+      "</attachments>";
+
+  std::unique_ptr<XmlElement> xml(XmlElement::ForStr(kXml));
+  ASSERT_TRUE(xml);
+
+  Attachment parsed_attachment;
+  ASSERT_TRUE(AttachmentFromXml(xml.get(), &parsed_attachment));
+
+  ASSERT_TRUE(parsed_attachment.host_attributes);
+  EXPECT_TRUE(parsed_attachment.host_attributes->attribute.empty());
+
+  ASSERT_TRUE(parsed_attachment.host_config);
+  EXPECT_TRUE(parsed_attachment.host_config->settings.empty());
 }
 
 TEST(JingleMessageXmlConverterTest, JingleAuthentication_RoundTrip) {

@@ -22,6 +22,7 @@
 #include "remoting/base/name_value_map.h"
 #include "remoting/signaling/content_description.h"
 #include "remoting/signaling/jingle_data_structures.h"
+#include "third_party/libjingle_xmpp/xmllite/xmlconstants.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 #include "third_party/webrtc/api/jsep.h"
 
@@ -77,6 +78,8 @@ const jingle_xmpp::StaticQName kQNameAttachments = {kChromotingXmlNamespace,
                                                     "attachments"};
 const jingle_xmpp::StaticQName kQNameHostAttributes = {kChromotingXmlNamespace,
                                                        "host-attributes"};
+const jingle_xmpp::StaticQName kQNameHostAttribute = {kChromotingXmlNamespace,
+                                                      "attribute"};
 const jingle_xmpp::StaticQName kQNameHostConfiguration = {
     kChromotingXmlNamespace, "host-configuration"};
 
@@ -863,23 +866,87 @@ bool AttachmentFromXml(const jingle_xmpp::XmlElement* element,
     return false;
   }
 
+  // Canonical XML egress (`AttachmentToXml`) encodes `<host-attributes>` as
+  // `,`-separated tokens and `<host-configuration>` as `,`-separated `key:val`
+  // pairs, so `,` in attribute tokens and `,` or `:` in config keys/values
+  // cannot be represented losslessly and are rejected on ingress. When
+  // `<attribute>` child elements or non-`xmlns` XML attributes are present,
+  // they take precedence over any body text on the same element.
   const XmlElement* attributes_tag = element->FirstNamed(kQNameHostAttributes);
   if (attributes_tag) {
     HostAttributesAttachment attributes;
-    attributes.attribute =
-        base::SplitString(attributes_tag->BodyText(), ",",
-                          base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    bool has_attribute_children = false;
+    for (const XmlElement* attr_el =
+             attributes_tag->FirstNamed(kQNameHostAttribute);
+         attr_el != nullptr;
+         attr_el = attr_el->NextNamed(kQNameHostAttribute)) {
+      has_attribute_children = true;
+      std::string body = attr_el->BodyText();
+      std::string_view trimmed =
+          base::TrimWhitespaceASCII(body, base::TRIM_ALL);
+      if (trimmed.empty()) {
+        continue;
+      }
+      if (trimmed.contains(',')) {
+        LOG(WARNING) << "Ignoring host attribute containing ',': " << trimmed;
+        continue;
+      }
+      attributes.attribute.emplace_back(trimmed);
+    }
+    if (!has_attribute_children) {
+      attributes.attribute =
+          base::SplitString(attributes_tag->BodyText(), ",",
+                            base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    }
     attachment->host_attributes = std::move(attributes);
   }
 
   const XmlElement* config_tag = element->FirstNamed(kQNameHostConfiguration);
   if (config_tag) {
     HostConfigAttachment config;
-    base::StringPairs pairs;
-    base::SplitStringIntoKeyValuePairs(config_tag->BodyText(), ':', ',',
-                                       &pairs);
-    for (const auto& pair : pairs) {
-      config.settings[pair.first] = pair.second;
+    bool has_config_attributes = false;
+    for (const jingle_xmpp::XmlAttr* attr = config_tag->FirstAttr();
+         attr != nullptr; attr = attr->NextAttr()) {
+      if (!attr->Name().Namespace().empty() ||
+          attr->Name().LocalPart() == jingle_xmpp::STR_XMLNS ||
+          attr->Name().LocalPart().empty()) {
+        continue;
+      }
+      has_config_attributes = true;
+      std::string_view key =
+          base::TrimWhitespaceASCII(attr->Name().LocalPart(), base::TRIM_ALL);
+      std::string_view value =
+          base::TrimWhitespaceASCII(attr->Value(), base::TRIM_ALL);
+      if (key.empty() || key.contains(',') || key.contains(':') ||
+          value.contains(',') || value.contains(':')) {
+        LOG(WARNING) << "Ignoring host-configuration attribute with invalid "
+                     << "delimiter: " << key << "=" << value;
+        continue;
+      }
+      config.settings.emplace(key, value);
+    }
+    if (!has_config_attributes) {
+      std::string body = config_tag->BodyText();
+      for (std::string_view pair : base::SplitStringPiece(
+               body, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+        std::optional<std::pair<std::string_view, std::string_view>> kv =
+            base::SplitStringOnce(pair, ':');
+        if (!kv.has_value()) {
+          LOG(WARNING) << "Ignoring malformed host-configuration entry: "
+                       << pair;
+          continue;
+        }
+        std::string_view key =
+            base::TrimWhitespaceASCII(kv->first, base::TRIM_ALL);
+        std::string_view value =
+            base::TrimWhitespaceASCII(kv->second, base::TRIM_ALL);
+        if (key.empty() || value.contains(':')) {
+          LOG(WARNING) << "Ignoring malformed host-configuration entry: "
+                       << pair;
+          continue;
+        }
+        config.settings[std::string(key)] = std::string(value);
+      }
     }
     attachment->host_config = std::move(config);
   }

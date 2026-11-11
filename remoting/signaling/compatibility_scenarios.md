@@ -182,10 +182,17 @@ signaling across three production implementations:
   - XML: `<candidate sdpMLineIndex="...">`
   - Proto: `transport_info.candidates[i].sdp_m_line_index` (`int32`)
 - **Host Attributes**:
-  - XML: `<attachments><host-attributes><attribute>...`
+  - XML: `<attachments><host-attributes>attr1,attr2,...</host-attributes>`
+    (tokens are whitespace-trimmed and MUST NOT contain `,`; ingress parsers
+    should also accept `<attribute>` child elements, which take precedence over
+    body text when both are present)
   - Proto: `repeated Attachment.host_attributes.attribute` (string)
 - **Host Config Map**:
-  - XML: `<attachments><host-configuration key="value" .../>`
+  - XML: `<attachments><host-configuration>key1:val1,key2:val2</host-configuration>`
+    (keys and values are whitespace-trimmed and MUST NOT contain `,` or `:`;
+    ingress parsers should also accept non-`xmlns` XML attributes on
+    `<host-configuration>`, which take precedence over body text when both are
+    present)
   - Proto: `repeated Attachment.host_config.settings` (map<string, string>)
 - **Terminate Reason**:
   - XML: `<reason><[reason-tag]/></reason>`
@@ -411,10 +418,7 @@ invariants across all implementations:
       <transport xmlns="google:remoting:webrtc" />
     </content>
     <attachments xmlns="google:remoting">
-      <host-configuration
-          Av1-Encoder-Speed="11"
-          EnableMultimon="true"
-          VideoCodecPreset="high_quality" />
+      <host-configuration>Av1-Encoder-Speed:11,EnableMultimon:true,VideoCodecPreset:high_quality</host-configuration>
     </attachments>
   </jingle>
 </iq>
@@ -654,11 +658,7 @@ stanza signaling `<pairing-failed>` to trigger a fallback to manual PIN entry.
       <transport xmlns="google:remoting:webrtc" />
     </content>
     <attachments xmlns="google:remoting">
-      <host-attributes>
-        <attribute>Debug-Build</attribute>
-        <attribute>HWEncoder</attribute>
-        <attribute>SupportsIceDatagramTransport</attribute>
-      </host-attributes>
+      <host-attributes>Debug-Build,HWEncoder,SupportsIceDatagramTransport</host-attributes>
     </attachments>
   </jingle>
 </iq>
