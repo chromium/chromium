@@ -68,8 +68,10 @@ if (!use_system_libwayland) {
 
   # Only used within this file. Should not be in a public_config entry and leak
   # out. No relations to the "wayland_private" target below.
-  # TODO(thomasanderson): Remove this once
-  # https://patchwork.freedesktop.org/patch/242086/ lands.
+  # libwayland sources unconditionally `#define _GNU_SOURCE`, which is also
+  # defined on the command line. Other sources (e.g. wayland-cursor.c) rely on
+  # the command-line definition, so silence the redefinition warning instead
+  # of passing -U_GNU_SOURCE.
   config("wayland_build_workaround_private_config") {
     cflags = [ "-Wno-macro-redefined" ]
   }

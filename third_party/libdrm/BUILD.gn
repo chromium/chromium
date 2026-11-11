@@ -18,10 +18,6 @@ action("make_generated_static_table_fourcc") {
 }
 
 config("libdrm_config") {
-  # TODO(thomasanderson): Remove this hack once
-  # https://patchwork.kernel.org/patch/10545295/ lands.
-  defines = [ "typeof(x)=__typeof__(x)" ]
-
   include_dirs = [
     "src",
     "src/include",

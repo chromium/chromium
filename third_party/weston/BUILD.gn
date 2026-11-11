@@ -48,6 +48,10 @@ config("weston_config") {
     "LIBEXECDIR = \"$out_dir\"",
     "LIBWESTON_MODULEDIR =  \"$out_dir\"",
     "MODULEDIR = \"$out_dir\"",
+
+    # Weston uses the GNU `typeof` keyword (e.g. in shared/helpers.h), which
+    # isn't available with -std=c11.
+    "typeof(x)=__typeof__(x)",
   ]
 
   include_dirs = [
