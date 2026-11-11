@@ -17602,6 +17602,29 @@
             ]
         }
     ],
+    "SearchEnginePrewarmDictionaryOnPreconnect": [
+        {
+            "platforms": [
+                "android",
+                "android_desktop",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_EventsOnly_20261110",
+                    "params": {
+                        "SearchEnginePrewarmDictionaryCleanupMode": "events_only"
+                    },
+                    "enable_features": [
+                        "SearchEnginePrewarmDictionaryOnPreconnect"
+                    ]
+                }
+            ]
+        }
+    ],
     "SearchPrefetchHighPriorityPrefetches": [
         {
             "platforms": [
