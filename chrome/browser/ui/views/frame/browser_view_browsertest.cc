@@ -82,6 +82,8 @@
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/tab_modal_confirm_dialog_views.h"
+#include "chrome/browser/ui/views/tabs/common/tab_view.h"
+#include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_accessibility.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_close_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -881,8 +883,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewHostedAppTest, Layout) {
 
   // The tabstrip, toolbar and bookmark bar should not be visible for hosted
   // apps.
-  EXPECT_FALSE(
-      app_browser_view->horizontal_tab_strip_for_testing()->GetVisible());
+  EXPECT_FALSE(app_browser_view->tab_strip_view()->GetVisible());
   EXPECT_FALSE(app_browser_view->toolbar()->GetVisible());
   EXPECT_FALSE(app_browser_view->IsBookmarkBarVisible());
 
@@ -1150,9 +1151,15 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, WindowTitleOmitsLowMemoryUsage) {
   tabs::TabData memory_usage;
   memory_usage.tab_resource_usage = tab_resource_usage;
 
-  Tab* const tab =
-      browser_view()->horizontal_tab_strip_for_testing()->tab_at(0);
-  tab->SetDataForTesting(std::move(memory_usage));
+  views::View* anchor_view = browser_view()->tab_strip_view()->GetTabAnchorView(
+      browser()->GetTabStripModel()->GetTabAtIndex(0)->GetHandle());
+  if (TabView* tab_view = views::AsViewClass<TabView>(anchor_view)) {
+    tab_view->SetDataForTesting(std::move(memory_usage));
+  } else {
+    Tab* tab = views::AsViewClass<Tab>(anchor_view);
+    ASSERT_TRUE(tab);
+    tab->SetDataForTesting(std::move(memory_usage));
+  }
 
   // Expect that low memory usage isn't in the accessible window title.
   EXPECT_FALSE(browser_view()->GetAccessibleWindowTitle().contains(
@@ -1532,7 +1539,13 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, TitleAndLoadState) {
   content::TestNavigationObserver navigation_watcher(
       contents, 1, content::MessageLoopRunner::QuitMode::DEFERRED);
 
-  TabStrip* tab_strip = browser_view()->horizontal_tab_strip_for_testing();
+  auto get_network_state = [&]() {
+    return browser_view()
+        ->tab_strip_view()
+        ->GetTabData(
+            browser()->GetTabStripModel()->GetTabAtIndex(0)->GetHandle())
+        .network_state;
+  };
   // Navigate without blocking.
   const GURL test_url = chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
@@ -1540,18 +1553,15 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, TitleAndLoadState) {
   contents->GetController().LoadURL(test_url, content::Referrer(),
                                     ui::PAGE_TRANSITION_LINK, std::string());
   EXPECT_TRUE(browser()->GetTabStripModel()->TabsNeedLoadingUI());
-  EXPECT_EQ(tabs::TabNetworkState::kWaiting,
-            tab_strip->tab_at(0)->data().network_state);
+  EXPECT_EQ(tabs::TabNetworkState::kWaiting, get_network_state());
   EXPECT_EQ(test_title, title_watcher.WaitAndGetTitle());
   EXPECT_TRUE(browser()->GetTabStripModel()->TabsNeedLoadingUI());
-  EXPECT_EQ(tabs::TabNetworkState::kLoading,
-            tab_strip->tab_at(0)->data().network_state);
+  EXPECT_EQ(tabs::TabNetworkState::kLoading, get_network_state());
 
   // Now block for the navigation to complete.
   navigation_watcher.Wait();
   EXPECT_FALSE(browser()->GetTabStripModel()->TabsNeedLoadingUI());
-  EXPECT_EQ(tabs::TabNetworkState::kNone,
-            tab_strip->tab_at(0)->data().network_state);
+  EXPECT_EQ(tabs::TabNetworkState::kNone, get_network_state());
 }
 
 // Verifies a tab should show its favicon.

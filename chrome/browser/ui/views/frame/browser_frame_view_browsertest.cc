@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/custom_tab_bar_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
@@ -504,11 +505,11 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameViewTabbedTest, MAYBE_HitTestTabstrip) {
 
   const gfx::Rect frame_bounds = frame_view->bounds();
 
-  gfx::RectF tabstrip_bounds_in_frame_coords(
-      browser_view->horizontal_tab_strip_for_testing()->GetLocalBounds());
-  views::View::ConvertRectToTarget(
-      browser_view->horizontal_tab_strip_for_testing(), frame_view,
-      &tabstrip_bounds_in_frame_coords);
+  views::View* const tabstrip_view =
+      browser_view->tab_strip_view()->GetTabStripView();
+  gfx::RectF tabstrip_bounds_in_frame_coords(tabstrip_view->GetLocalBounds());
+  views::View::ConvertRectToTarget(tabstrip_view, frame_view,
+                                   &tabstrip_bounds_in_frame_coords);
   const gfx::Rect tabstrip_bounds =
       gfx::ToEnclosingRect(tabstrip_bounds_in_frame_coords);
   EXPECT_FALSE(tabstrip_bounds.IsEmpty());
