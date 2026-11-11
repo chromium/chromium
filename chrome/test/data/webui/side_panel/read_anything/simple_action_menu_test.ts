@@ -7,7 +7,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {SimpleActionMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
-import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {getItemsInMenu, setupTestEnvironment} from './common.js';
 
@@ -29,25 +29,21 @@ suite('SimpleActionMenuElement', () => {
   }
 
   test('onClick sends menu event name if no item event name', async () => {
-    let sent = false;
     menu.eventName = ToolbarEvent.FONT_SIZE;
     menu.menuItems = [
       {title: 'Item 1', data: 1},
       {title: 'Item 2', data: 2},
     ];
     await microtasksFinished();
-    document.addEventListener(ToolbarEvent.FONT_SIZE, () => {
-      sent = true;
-    });
+    const whenMenuEventFired = eventToPromise(ToolbarEvent.FONT_SIZE, menu);
 
     const items = getItemsInMenu(menu.$.lazyMenu);
     assertTrue(items.length > 0);
     const item = items[0];
     assertTrue(!!item);
     item.click();
-    await microtasksFinished();
 
-    assertTrue(sent);
+    await whenMenuEventFired;
   });
 
   test('shows checkmark on selected value', async () => {

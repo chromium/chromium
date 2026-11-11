@@ -10,7 +10,7 @@ import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chro
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {setupTestEnvironment, stubAnimationFrame} from './common.js';
+import {addDocumentListener, setupTestEnvironment, stubAnimationFrame} from './common.js';
 
 suite('MediaMenuElement', () => {
   let mediaMenu: MediaMenuElement;
@@ -69,7 +69,7 @@ suite('MediaMenuElement', () => {
 
   test('on images row click fires images toggle exactly once', async () => {
     let imagesEventCount = 0;
-    document.addEventListener(ToolbarEvent.IMAGES, () => imagesEventCount++);
+    addDocumentListener(ToolbarEvent.IMAGES, () => imagesEventCount++);
 
     getImagesButton().click();
     await microtasksFinished();
@@ -84,7 +84,7 @@ suite('MediaMenuElement', () => {
 
   test('on links row click fires links toggle exactly once', async () => {
     let linksEventCount = 0;
-    document.addEventListener(ToolbarEvent.LINKS, () => linksEventCount++);
+    addDocumentListener(ToolbarEvent.LINKS, () => linksEventCount++);
 
     getLinksButton().click();
     await microtasksFinished();

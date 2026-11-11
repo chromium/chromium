@@ -10,7 +10,7 @@ import {getVoiceNatureNaming, ToolbarEvent} from 'chrome-untrusted://read-anythi
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createSpeechSynthesisVoice, getItemsInMenu, setupTestEnvironment, stubAnimationFrame} from './common.js';
+import {addDocumentListener, createSpeechSynthesisVoice, getItemsInMenu, setupTestEnvironment, stubAnimationFrame} from './common.js';
 import type {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
 
 suite('AudioMenuElement', () => {
@@ -30,7 +30,7 @@ suite('AudioMenuElement', () => {
   test('on highlight change does not close menus', async () => {
     createAudioMenu();
     let closeAllMenusCount = 0;
-    document.addEventListener(
+    addDocumentListener(
         ToolbarEvent.CLOSE_ALL_MENUS, () => closeAllMenusCount += 1);
 
     audioMenu.$.menu.dispatchEvent(new CustomEvent(

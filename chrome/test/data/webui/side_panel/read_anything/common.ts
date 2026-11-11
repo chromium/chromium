@@ -54,10 +54,19 @@ export interface AppTestFlags {
 // Saved so stubAnimationFrame() doesn't leak into later tests.
 const originalRequestAnimationFrame = window.requestAnimationFrame;
 
+// Clearing the DOM doesn't remove listeners on document, so
+// setupTestEnvironment() aborts this to remove ones from earlier tests.
+let documentListenerController = new AbortController();
+
 // Initializes all singletons, mocks, and controllers in their strict
 // dependency order without creating an AppElement.
 export function setupTestEnvironment(flags?: AppTestFlags): TestSetupResult {
-  // Clearing the DOM must always be done first.
+  // Remove listeners from earlier tests first, so none of them can run while
+  // the DOM is cleared.
+  documentListenerController.abort();
+  documentListenerController = new AbortController();
+
+  // Clearing the DOM must be done before anything else is set up.
   document.body.innerHTML = window.trustedTypes!.emptyHTML;
   window.scrollTo(0, 0);
   window.requestAnimationFrame = originalRequestAnimationFrame;
@@ -169,6 +178,12 @@ export function mockMetrics(): TestMetricsBrowserProxy {
 export function emitEvent(
     app: AppElement, name: string, options?: CustomEventInit): void {
   app.$.toolbar.dispatchEvent(new CustomEvent(name, options));
+}
+
+// Adds a document listener that the next setupTestEnvironment() call removes.
+export function addDocumentListener(type: string, listener: EventListener) {
+  document.addEventListener(
+      type, listener, {signal: documentListenerController.signal});
 }
 
 // Runs the requestAnimationFrame callback immediately

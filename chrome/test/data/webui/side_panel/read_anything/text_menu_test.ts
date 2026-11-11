@@ -9,7 +9,7 @@ import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chro
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {setupTestEnvironment, stubAnimationFrame} from './common.js';
+import {addDocumentListener, setupTestEnvironment, stubAnimationFrame} from './common.js';
 import type {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('TextMenuElement', () => {
@@ -39,7 +39,7 @@ suite('TextMenuElement', () => {
 
   test('on font change does not close menus', async () => {
     let closeAllMenusCount = 0;
-    document.addEventListener(
+    addDocumentListener(
         ToolbarEvent.CLOSE_ALL_MENUS, () => closeAllMenusCount += 1);
 
     textMenu.$.menu.dispatchEvent(
@@ -51,7 +51,7 @@ suite('TextMenuElement', () => {
 
   test('on line spacing change does not close menus', async () => {
     let closeAllMenusCount = 0;
-    document.addEventListener(
+    addDocumentListener(
         ToolbarEvent.CLOSE_ALL_MENUS, () => closeAllMenusCount += 1);
 
     textMenu.$.menu.dispatchEvent(new CustomEvent(
@@ -75,7 +75,7 @@ suite('TextMenuElement', () => {
 
   test('on letter spacing change does not close menus', async () => {
     let closeAllMenusCount = 0;
-    document.addEventListener(
+    addDocumentListener(
         ToolbarEvent.CLOSE_ALL_MENUS, () => closeAllMenusCount += 1);
 
     textMenu.$.menu.dispatchEvent(new CustomEvent(

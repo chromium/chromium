@@ -74,6 +74,7 @@ suite('SpeechController', () => {
     speech.reset();
     onWordBoundary = false;
     isSpeechActiveChanged = false;
+    audioCurrentlyPlayingChanged = false;
     onPlayingFromSelection = false;
   });
 

@@ -7,13 +7,13 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {spinnerDebounceTimeout, stringToHtmlTestId, ToolbarEvent, VoiceClientSideStatusCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import type {LanguageMenuElement, SettingsOption, VoiceNotificationManager, VoiceSelectionMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {LanguageMenuElement, VoiceNotificationManager, VoiceSelectionMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome-untrusted://webui-test/keyboard_mock_interactions.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
-import {hasStyle, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
+import {eventToPromise, hasStyle, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createSpeechSynthesisVoice, setupTestEnvironment, stubAnimationFrame} from './common.js';
+import {addDocumentListener, createSpeechSynthesisVoice, setupTestEnvironment, stubAnimationFrame} from './common.js';
 import type {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
 
 function isPositionedOnPage(element: HTMLElement) {
@@ -194,18 +194,15 @@ suite('VoiceSelectionMenu', () => {
     test('close all menus event not fired after choosing a voice', async () => {
       await openVoiceMenu();
 
-      let menuIdToClose = null;
-      document.addEventListener(
-          ToolbarEvent.CLOSE_ALL_MENUS,
-          ((event: CustomEvent<{previousId: SettingsOption | null}>) => {
-            menuIdToClose = event.detail.previousId;
-          }) as EventListener);
+      let closeAllMenusCount = 0;
+      addDocumentListener(
+          ToolbarEvent.CLOSE_ALL_MENUS, () => closeAllMenusCount += 1);
 
       const voiceItemButton = getDropdownItemForVoice(voice1);
       voiceItemButton.click();
       await microtasksFinished();
 
-      assertEquals(null, menuIdToClose);
+      assertEquals(0, closeAllMenusCount);
     });
 
     test('it shows a checkmark for the selected voice', async () => {
@@ -327,18 +324,16 @@ suite('VoiceSelectionMenu', () => {
     });
 
     test('preview button click emits play preview event', async () => {
-      let clickEmitted = false;
-      document.addEventListener(
-          ToolbarEvent.PLAY_PREVIEW, () => clickEmitted = true);
       await openVoiceMenu();
       const previewButton =
           getDropdownItemForVoice(voice1).querySelector<CrIconButtonElement>(
               '#preview-icon')!;
+      const whenPreviewFired =
+          eventToPromise(ToolbarEvent.PLAY_PREVIEW, voiceSelectionMenu);
 
       previewButton.click();
-      await microtasksFinished();
 
-      assertTrue(clickEmitted);
+      await whenPreviewFired;
     });
 
     test('spinner shows before speech starts and is hidden after', async () => {

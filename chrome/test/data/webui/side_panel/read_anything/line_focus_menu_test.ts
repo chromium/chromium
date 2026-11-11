@@ -10,7 +10,7 @@ import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {setupTestEnvironment, stubAnimationFrame} from './common.js';
+import {addDocumentListener, setupTestEnvironment, stubAnimationFrame} from './common.js';
 
 suite('LineFocusMenuElement', () => {
   let lineFocusMenu: LineFocusMenuElement;
@@ -62,7 +62,7 @@ suite('LineFocusMenuElement', () => {
 
   test('on line focus style change does not close menus', async () => {
     let closeAllMenusCount = 0;
-    document.addEventListener(
+    addDocumentListener(
         ToolbarEvent.CLOSE_ALL_MENUS, () => closeAllMenusCount += 1);
 
     lineFocusMenu.$.menu.dispatchEvent(new CustomEvent(
@@ -88,7 +88,7 @@ suite('LineFocusMenuElement', () => {
 
   test('on line focus movement change does not close menus', async () => {
     let closeAllMenusCount = 0;
-    document.addEventListener(
+    addDocumentListener(
         ToolbarEvent.CLOSE_ALL_MENUS, () => closeAllMenusCount += 1);
 
     lineFocusMenu.$.menu.dispatchEvent(new CustomEvent(
@@ -101,7 +101,7 @@ suite('LineFocusMenuElement', () => {
 
   test('on line focus toggle change does not close menus', async () => {
     let closeAllMenusCount = 0;
-    document.addEventListener(
+    addDocumentListener(
         ToolbarEvent.CLOSE_ALL_MENUS, () => closeAllMenusCount += 1);
 
     lineFocusMenu.$.menu.dispatchEvent(new CustomEvent(

@@ -24,7 +24,6 @@ suite('GroupedActionMenuElement', () => {
   });
 
   test('onClick sends group event name', async () => {
-    let sentGroupEvent = false;
     menu.menuGroups = [
       {
         header: {title: 'Header 1', separator: false},
@@ -33,18 +32,15 @@ suite('GroupedActionMenuElement', () => {
       },
     ];
     await microtasksFinished();
-    document.addEventListener(ToolbarEvent.THEME, () => {
-      sentGroupEvent = true;
-    });
+    const whenGroupEventFired = eventToPromise(ToolbarEvent.THEME, menu);
 
     const items = getItemsInMenu(menu.$.lazyMenu);
     assertTrue(items.length > 0);
     const item = items[0];
     assertTrue(!!item);
     item.click();
-    await microtasksFinished();
 
-    assertTrue(sentGroupEvent);
+    await whenGroupEventFired;
   });
 
   test('onClick sends item event name when provided', async () => {
