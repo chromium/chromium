@@ -1586,4 +1586,228 @@ class BottomSheetMediator implements TouchHandler {
     private boolean contentCoversBottomControls() {
         return mSheetContent != null && mSheetContent.coversBottomControls();
     }
+
+    /**
+     * Projects the container height in pixels for a given target IME inset.
+     *
+     * @param insets The {@link WindowInsetsCompat} containing target insets.
+     * @param decorHeight The total height of the decor view in pixels.
+     * @param topInset The top inset in pixels.
+     * @param appHeaderHeight The app header height in pixels.
+     * @return The projected container height in pixels.
+     */
+    @Px
+    int getProjectedContainerHeight(
+            @Nullable WindowInsetsCompat insets,
+            @Px int decorHeight,
+            @Px int topInset,
+            @Px int appHeaderHeight) {
+        @Px
+        int targetImeInsetPx =
+                insets != null ? insets.getInsets(WindowInsetsCompat.Type.ime()).bottom : 0;
+        @Px
+        int systemBarBottomInset =
+                insets != null ? insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom : 0;
+
+        Integer e2eBottomInsetDp = mEdgeToEdgeBottomInsetSupplier.get();
+        @Px
+        int rawE2eBottomInset =
+                e2eBottomInsetDp != null
+                        ? ViewUtils.dpToPx(mResources.getDisplayMetrics(), e2eBottomInsetDp)
+                        : 0;
+        boolean isDrawingToBottomEdge = rawE2eBottomInset > 0;
+
+        // When drawing to the bottom edge and the IME inset does not exceed the bottom system
+        // bar inset, EdgeToEdgeControllerImpl#consumeWindowInsets consumes Type.ime()
+        // (Insets.NONE) alongside navigationBars(), so EdgeToEdgeLayoutCoordinator applies 0
+        // bottom padding.
+        @Px
+        int rootBottomPadding =
+                (isDrawingToBottomEdge && targetImeInsetPx <= systemBarBottomInset)
+                        ? 0
+                        : Math.max(
+                                targetImeInsetPx, isDrawingToBottomEdge ? 0 : systemBarBottomInset);
+        @Px int containerBottomMargin = getContainerBottomMargin();
+        return Math.max(
+                0,
+                decorHeight
+                        - Math.max(topInset, appHeaderHeight)
+                        - rootBottomPadding
+                        - containerBottomMargin);
+    }
+
+    /**
+     * Projects the visible viewport height in pixels for a given target IME inset.
+     *
+     * @param insets The {@link WindowInsetsCompat} containing target insets.
+     * @param decorHeight The total height of the decor view in pixels.
+     * @param coversBottomControls Whether the sheet content covers bottom controls.
+     * @return The projected viewport height in pixels.
+     */
+    @Px
+    int getProjectedViewportHeight(
+            @Nullable WindowInsetsCompat insets,
+            @Px int decorHeight,
+            boolean coversBottomControls) {
+        @Px
+        int targetImeInsetPx =
+                insets != null ? insets.getInsets(WindowInsetsCompat.Type.ime()).bottom : 0;
+        @Px
+        int statusBarTop =
+                insets != null ? insets.getInsets(WindowInsetsCompat.Type.statusBars()).top : 0;
+        @Px
+        int systemBarBottomInset =
+                insets != null ? insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom : 0;
+
+        Integer e2eBottomInsetDp = mEdgeToEdgeBottomInsetSupplier.get();
+        @Px
+        int rawE2eBottomInset =
+                e2eBottomInsetDp != null
+                        ? ViewUtils.dpToPx(mResources.getDisplayMetrics(), e2eBottomInsetDp)
+                        : 0;
+        @Px
+        int effectiveE2eInset =
+                mBottomMargin != 0 ? 0 : Math.max(0, rawE2eBottomInset - targetImeInsetPx);
+        @Px
+        int viewportBottomInset =
+                coversBottomControls
+                        ? targetImeInsetPx
+                        : Math.max(
+                                targetImeInsetPx,
+                                Math.max(systemBarBottomInset, effectiveE2eInset));
+        return Math.max(0, decorHeight - statusBarTop - Math.min(viewportBottomInset, decorHeight));
+    }
+
+    /**
+     * Calculates the projected height of the sheet's content container in pixels for the current
+     * target IME state purely, without mutating any mediator or coordinator layout state.
+     *
+     * @param insets The {@link WindowInsetsCompat} containing target insets.
+     * @param decorHeight The total height of the decor view in pixels.
+     * @param topInset The top inset in pixels.
+     * @param appHeaderHeight The app header height in pixels.
+     * @param handlebarHeight The handlebar height in pixels.
+     * @return The projected content container height in pixels, or 0 if inactive/hidden.
+     */
+    @Px
+    int getProjectedContentHeightForIme(
+            @Nullable WindowInsetsCompat insets,
+            @Px int decorHeight,
+            @Px int topInset,
+            @Px int appHeaderHeight,
+            @Px int handlebarHeight) {
+        if (mSheetContent == null) {
+            return 0;
+        }
+
+        @Px
+        int projectedContainerHeight =
+                getProjectedContainerHeight(insets, decorHeight, topInset, appHeaderHeight);
+        if (projectedContainerHeight <= 0) {
+            return 0;
+        }
+
+        BottomSheetContent content = mSheetContent;
+        float halfRatio = isHalfStateEnabled() ? getHalfRatio() : HALF_HEIGHT_RATIO;
+        if (halfRatio <= 0) {
+            float customHalf = content.getHalfHeightRatio();
+            halfRatio = (customHalf > 0 && customHalf <= 1.0f) ? customHalf : HALF_HEIGHT_RATIO;
+        }
+        float fullToHalfDiff = (1.0f - halfRatio) * projectedContainerHeight;
+        boolean isProjectedSmallScreen =
+                sIsSmallScreenForTesting != null
+                        ? sIsSmallScreenForTesting
+                        : fullToHalfDiff < mMinHalfFullDistance;
+        boolean isProjectedHalfEnabled =
+                !isProjectedSmallScreen
+                        && content.getHalfHeightRatio() != HeightMode.DISABLED
+                        && content.getFullHeightRatio() != HeightMode.WRAP_CONTENT;
+        boolean isProjectedFullResizeContent =
+                isProjectedHalfEnabled && content.getFullHeightRatio() == HeightMode.RESIZE_CONTENT;
+
+        @Px
+        int imeInset = insets != null ? insets.getInsets(WindowInsetsCompat.Type.ime()).bottom : 0;
+        @SheetState
+        int state =
+                (mTargetState != SheetState.NONE && mTargetState != SheetState.SCROLLING)
+                        ? mTargetState
+                        : mCurrentState;
+        if (imeInset == 0
+                && mKeyboardToken != TokenHolder.INVALID_TOKEN
+                && mStateBeforeKeyboardShown != SheetState.NONE
+                && isProjectedFullResizeContent) {
+            state = mStateBeforeKeyboardShown;
+        }
+        if (state != SheetState.HALF && state != SheetState.FULL) {
+            return 0;
+        }
+
+        @SheetState int targetState = state;
+        if (targetState == SheetState.HALF && !isProjectedHalfEnabled) {
+            targetState = SheetState.FULL;
+        }
+
+        @Px
+        int projectedMaxSheetHeight =
+                isLargeFormFactorUiEnabled()
+                        ? Math.max(0, projectedContainerHeight - mDesktopBottomMargin)
+                        : projectedContainerHeight;
+        if (projectedMaxSheetHeight <= 0) {
+            return 0;
+        }
+
+        boolean coversBottomControls = contentCoversBottomControls();
+        if (isProjectedFullResizeContent) {
+            float maxRatioCap = content.getMaxResizeContentHeightRatio();
+            float fullRatio =
+                    (maxRatioCap <= 0.0f || maxRatioCap > BottomSheetContent.MAX_HEIGHT_RATIO)
+                            ? BottomSheetContent.MAX_HEIGHT_RATIO
+                            : maxRatioCap;
+            float targetOffsetPx =
+                    targetState == SheetState.HALF
+                            ? projectedMaxSheetHeight * halfRatio
+                            : Math.min(
+                                    projectedMaxSheetHeight, projectedMaxSheetHeight * fullRatio);
+            @Px
+            int projectedViewportHeight =
+                    getProjectedViewportHeight(insets, decorHeight, coversBottomControls);
+            return Math.max(0, Math.min(projectedViewportHeight, Math.round(targetOffsetPx)));
+        }
+
+        // Non-RESIZE_CONTENT sheet fallback.
+        float customFullRatio = content.getFullHeightRatio();
+        float fullRatio =
+                (customFullRatio == HeightMode.DEFAULT
+                                || customFullRatio == HeightMode.RESIZE_CONTENT)
+                        ? BottomSheetContent.MAX_HEIGHT_RATIO
+                        : customFullRatio;
+        float targetOffsetPx =
+                targetState == SheetState.HALF
+                        ? projectedMaxSheetHeight * halfRatio
+                        : Math.min(projectedMaxSheetHeight, projectedMaxSheetHeight * fullRatio);
+
+        if (isLargeFormFactorUiEnabled()) {
+            return Math.max(0, Math.round(targetOffsetPx) - handlebarHeight);
+        }
+
+        Integer e2eBottomInsetDp = mEdgeToEdgeBottomInsetSupplier.get();
+        @Px
+        int rawE2eBottomInset =
+                e2eBottomInsetDp != null
+                        ? ViewUtils.dpToPx(mResources.getDisplayMetrics(), e2eBottomInsetDp)
+                        : 0;
+        @Px
+        int targetImeInsetPx =
+                insets != null ? insets.getInsets(WindowInsetsCompat.Type.ime()).bottom : 0;
+        @Px int contentBottomPadding = 0;
+        if (mBottomMargin == 0 && !(coversBottomControls && targetState != SheetState.PEEK)) {
+            contentBottomPadding = Math.max(0, rawE2eBottomInset - targetImeInsetPx);
+        }
+
+        return Math.max(
+                0,
+                Math.min(projectedMaxSheetHeight, Math.round(targetOffsetPx))
+                        - handlebarHeight
+                        - contentBottomPadding);
+    }
 }

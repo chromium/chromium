@@ -871,6 +871,18 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
         return mBottomSheet != null ? mBottomSheet.getEdgeToEdgeBottomInset() : 0;
     }
 
+    /**
+     * Projects the target sheet content container height for an incoming or dismissing IME
+     * transition without mutating live sheet dimensions.
+     *
+     * @return Projected content container height in pixels, or 0 if unprojectable or no sheet is
+     *     showing.
+     */
+    @Override
+    public @Px int getProjectedContentHeightForIme() {
+        return mBottomSheet != null ? mBottomSheet.getProjectedContentHeightForIme() : 0;
+    }
+
     @Override
     public @Nullable Integer getSheetBackgroundColor() {
         if (mBottomSheet == null) {

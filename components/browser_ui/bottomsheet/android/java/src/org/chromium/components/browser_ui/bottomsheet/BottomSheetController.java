@@ -293,6 +293,17 @@ public interface BottomSheetController {
     }
 
     /**
+     * Returns the projected height of the sheet's content container in pixels for the target IME
+     * state from the window insets, or 0 if no sheet content is currently shown in HALF or FULL
+     * state.
+     *
+     * @return The projected container height in pixels, or 0 if inactive/hidden.
+     */
+    default @Px int getProjectedContentHeightForIme() {
+        return 0;
+    }
+
+    /**
      * Get the current background color for the bottom sheet. If the sheet does not have a solid
      * background color, this will return null.
      */

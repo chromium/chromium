@@ -3462,4 +3462,199 @@ public class BottomSheetCoordinatorUnitTest {
         assertEquals(180f, mBottomSheet.getSheetHeightForState(SheetState.FULL), MathUtils.EPSILON);
         assertEquals(initialMeasureCount + 1, measureCount[0]);
     }
+
+    @Test
+    public void testGetProjectedContentHeightForIme() {
+        mActivity.getWindow().getDecorView().layout(0, 0, 1080, 2000);
+        measureAndLayoutContainer(1080, 2000);
+
+        // When sheet is hidden or no content, returns 0.
+        assertEquals(0, mBottomSheet.getProjectedContentHeightForIme());
+
+        BottomSheetContent content =
+                buildContent(/* supportsLargeFormFactor= */ false, 0.5f, HeightMode.RESIZE_CONTENT);
+        mBottomSheet.showContent(content);
+        mBottomSheet.setSheetState(SheetState.FULL, false);
+
+        // 1. Non-Edge-to-Edge 3-button navigation (keyboard open: IME 800, navBar 100)
+        WindowInsetsCompat insets3Btn =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(WindowInsetsCompat.Type.ime(), Insets.of(0, 0, 0, 800))
+                        .setInsets(WindowInsetsCompat.Type.systemBars(), Insets.of(0, 0, 0, 100))
+                        .build();
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(insets3Btn);
+        // In FULL state with 800px IME on 2000px decor, handlebar height 0:
+        // projected container height = 2000 - 800 = 1200.
+        assertEquals(1200, mBottomSheet.getProjectedContentHeightForIme());
+
+        // 2. In HALF state: 0.5 * 1200 = 600.
+        mBottomSheet.setSheetState(SheetState.HALF, false);
+        assertEquals(600, mBottomSheet.getProjectedContentHeightForIme());
+
+        // 3. Small-screen: when screen is small, HALF state is disabled and promoted to FULL state!
+        BottomSheetCoordinator.setSmallScreenForTesting(true);
+        WindowInsetsCompat insetsLargeIme =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(WindowInsetsCompat.Type.ime(), Insets.of(0, 0, 0, 1600))
+                        .build();
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(insetsLargeIme);
+        // Container height = 2000 - 1600 = 400. HALF is promoted to FULL -> 400.
+        assertEquals(400, mBottomSheet.getProjectedContentHeightForIme());
+        BottomSheetCoordinator.setSmallScreenForTesting(false);
+
+        // 4. Keyboard dismissal: IME 0 returns unshrunk FULL height 2000.
+        WindowInsetsCompat insetsDismiss =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(WindowInsetsCompat.Type.ime(), Insets.of(0, 0, 0, 0))
+                        .build();
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(insetsDismiss);
+        mBottomSheet.setSheetState(SheetState.FULL, false);
+        assertEquals(2000, mBottomSheet.getProjectedContentHeightForIme());
+    }
+
+    @Test
+    public void testGetProjectedContentHeightForIme_EdgeToEdgeShortIme_ConsumesImeInset() {
+        mActivity.getWindow().getDecorView().layout(0, 0, 1080, 2000);
+        measureAndLayoutContainer(1080, 2000);
+
+        mBottomSheet.setEdgeToEdgeBottomInsetSupplierForTesting(() -> 24);
+
+        BottomSheetContent content = buildContent(/* supportsLargeFormFactor= */ false, 0.5f, 1.0f);
+        when(content.coversBottomControls()).thenReturn(true);
+        mBottomSheet.showContent(content);
+        mBottomSheet.setSheetState(SheetState.FULL, false);
+
+        // When drawing to the bottom edge and 0 < targetImeInsetPx <= systemBarBottomInset (50 <=
+        // 100),
+        // EdgeToEdgeControllerImpl consumes Type.ime() (Insets.NONE) alongside navigationBars(),
+        // so root bottom padding is 0 and projected container height is full decor height (2000).
+        WindowInsetsCompat insetsShortIme =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(WindowInsetsCompat.Type.ime(), Insets.of(0, 0, 0, 50))
+                        .setInsets(WindowInsetsCompat.Type.systemBars(), Insets.of(0, 0, 0, 100))
+                        .build();
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(insetsShortIme);
+        assertEquals(2000, mBottomSheet.getProjectedContentHeightForIme());
+
+        // When targetImeInsetPx > systemBarBottomInset (150 > 100), the IME height exceeds the
+        // system bar,
+        // so root bottom padding becomes 150 and projected content height is 2000 - 150 = 1850.
+        WindowInsetsCompat insetsTallIme =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(WindowInsetsCompat.Type.ime(), Insets.of(0, 0, 0, 150))
+                        .setInsets(WindowInsetsCompat.Type.systemBars(), Insets.of(0, 0, 0, 100))
+                        .build();
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(insetsTallIme);
+        assertEquals(1850, mBottomSheet.getProjectedContentHeightForIme());
+    }
+
+    @Test
+    public void testGetProjectedContentHeightForIme_TopInsetsAndCustomRatios() {
+        mActivity.getWindow().getDecorView().layout(0, 0, 1080, 2000);
+        measureAndLayoutContainer(1080, 2000);
+
+        BottomSheetContent content =
+                buildContent(/* supportsLargeFormFactor= */ false, 0.5f, HeightMode.RESIZE_CONTENT);
+        mBottomSheet.showContent(content);
+        mBottomSheet.setSheetState(SheetState.FULL, false);
+
+        // 1. Non-zero systemBars.top: 100px status bar, 800px IME
+        WindowInsetsCompat insetsWithTop =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(WindowInsetsCompat.Type.systemBars(), Insets.of(0, 100, 0, 0))
+                        .setInsets(WindowInsetsCompat.Type.ime(), Insets.of(0, 0, 0, 800))
+                        .build();
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(insetsWithTop);
+        // Container height = 2000 - 100 (top) - 800 (IME) = 1100.
+        assertEquals(1100, mBottomSheet.getProjectedContentHeightForIme());
+
+        // 2. Custom getMaxResizeContentHeightRatio() = 0.85f
+        when(content.getMaxResizeContentHeightRatio()).thenReturn(0.85f);
+        // Container height = 1100. Max ratio cap: 0.85 * 1100 = 935.
+        assertEquals(935, mBottomSheet.getProjectedContentHeightForIme());
+        when(content.getMaxResizeContentHeightRatio()).thenReturn(MAX_HEIGHT_RATIO);
+
+        // 3. handlebarHeight > 0 in RESIZE_CONTENT vs non-RESIZE_CONTENT
+        // For RESIZE_CONTENT, handlebar height is NOT subtracted.
+        assertEquals(1100, mBottomSheet.getProjectedContentHeightForIme());
+
+        // For non-RESIZE_CONTENT, handlebar height IS subtracted.
+        BottomSheetContent nonResizeContent =
+                buildContent(/* supportsLargeFormFactor= */ false, 0.5f, 1.0f);
+        when(nonResizeContent.showHandlebar()).thenReturn(true);
+        mBottomSheet.showContent(nonResizeContent);
+        mBottomSheet.setSheetState(SheetState.FULL, false);
+        ImageView handlebar = mBottomSheet.getView().getHandlebarForTesting();
+        int handlebarHeight = handlebar.getMeasuredHeight();
+        int expectedNonResize = 1100 - handlebarHeight;
+        assertEquals(expectedNonResize, mBottomSheet.getProjectedContentHeightForIme());
+    }
+
+    @Test
+    public void testGetProjectedContentHeightForIme_EdgeToEdgeBottomMargin() {
+        mActivity.getWindow().getDecorView().layout(0, 0, 1080, 2000);
+        measureAndLayoutContainer(1080, 2000);
+
+        BottomSheetContent content =
+                buildContent(/* supportsLargeFormFactor= */ false, 0.5f, HeightMode.RESIZE_CONTENT);
+        when(content.coversBottomControls()).thenReturn(true);
+        mBottomSheet.showContent(content);
+        mBottomSheet.setSheetState(SheetState.FULL, false);
+        mBottomSheet.setBottomMargin(80);
+
+        WindowInsetsCompat insetsIme =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(WindowInsetsCompat.Type.ime(), Insets.of(0, 0, 0, 800))
+                        .build();
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(insetsIme);
+        // Bottom margin 80 is added to root padding: container height = 2000 - 800 - 80 = 1120.
+        assertEquals(1120, mBottomSheet.getProjectedContentHeightForIme());
+    }
+
+    @Test
+    public void
+            testGetProjectedContentHeightForIme_ResizeContentWithHandlebar_DoesNotSubtractHandlebar() {
+        mActivity.getWindow().getDecorView().layout(0, 0, 1080, 2000);
+        measureAndLayoutContainer(1080, 2000);
+
+        BottomSheetContent content =
+                buildContent(/* supportsLargeFormFactor= */ false, 0.5f, HeightMode.RESIZE_CONTENT);
+        when(content.showHandlebar()).thenReturn(true);
+        mBottomSheet.showContent(content);
+        mBottomSheet.setSheetState(SheetState.FULL, false);
+
+        WindowInsetsCompat insets =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(WindowInsetsCompat.Type.ime(), Insets.of(0, 0, 0, 800))
+                        .build();
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(insets);
+
+        // In RESIZE_CONTENT mode, container height is not reduced by handlebar height.
+        assertEquals(1200, mBottomSheet.getProjectedContentHeightForIme());
+    }
+
+    @Test
+    public void testGetProjectedContentHeightForIme_LargeFormFactor_HalfState() {
+        mActivity.getWindow().getDecorView().layout(0, 0, 1080, 2000);
+        measureAndLayoutContainer(1080, 2000);
+
+        BottomSheetCoordinator lffSheet = inflateAndAttachSheet(/* isLargeFormFactor= */ true);
+        initSheet(lffSheet, /* isLargeFormFactor= */ true);
+        BottomSheetContent lffContent =
+                buildContent(/* supportsLargeFormFactor= */ true, 0.5f, 1.0f);
+        lffSheet.showContent(lffContent);
+        lffSheet.setSheetState(SheetState.HALF, false);
+
+        WindowInsetsCompat insets =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(WindowInsetsCompat.Type.ime(), Insets.of(0, 0, 0, 0))
+                        .build();
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(insets);
+
+        // projectedContainerHeight = 2000 - desktopBottomMargin (24px) = 1976px.
+        // projectedMaxSheetHeight = projectedContainerHeight - desktopBottomMargin (24px) = 1952px.
+        // In HALF state, target height = 1952 * 0.5f = 976px.
+        int expectedHeight = Math.round((2000 - 2 * lffSheet.getContainerBottomMargin()) * 0.5f);
+        assertEquals(expectedHeight, lffSheet.getProjectedContentHeightForIme());
+    }
 }

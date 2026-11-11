@@ -1541,4 +1541,28 @@ class BottomSheetCoordinator
         layoutParams.bottomMargin = bottomMargin;
         mSheetContainer.setLayoutParams(layoutParams);
     }
+
+    /**
+     * Returns the projected height of the sheet's content container in pixels for the current
+     * target IME state, or 0 if no sheet content is currently shown in HALF or FULL state.
+     *
+     * @return The projected content container height in pixels, or 0 if unavailable.
+     */
+    public @Px int getProjectedContentHeightForIme() {
+        if (mWindow == null) {
+            return 0;
+        }
+
+        View decorView = mWindow.getDecorView();
+        @Px int decorHeight = decorView.getHeight();
+        if (decorHeight <= 0) return 0;
+
+        WindowInsetsCompat insets = mInsetObserver.getLastRawWindowInsets();
+        @Px
+        int topInset =
+                insets != null ? insets.getInsets(WindowInsetsCompat.Type.statusBars()).top : 0;
+
+        return mMediator.getProjectedContentHeightForIme(
+                insets, decorHeight, topInset, mAppHeaderHeight, getHandlebarHeight());
+    }
 }
