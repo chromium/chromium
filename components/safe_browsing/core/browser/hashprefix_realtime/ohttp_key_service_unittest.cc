@@ -226,11 +226,7 @@ TEST_F(OhttpKeyServiceTest, GetOhttpKey_Success) {
       /*sample=*/1,
       /*expected_count=*/1);
   histogram_tester_.ExpectTotalCount(
-      "SafeBrowsing.HPRT.OhttpKeyService.Network.Time", 1);
-  histogram_tester_.ExpectTotalCount(
       "SafeBrowsing.HPRT.OhttpKeyService.Network.Time2", 1);
-  histogram_tester_.ExpectTotalCount(
-      "SafeBrowsing.HPRT.OhttpKeyService.Network.Time.Success", 1);
   histogram_tester_.ExpectTotalCount(
       "SafeBrowsing.HPRT.OhttpKeyService.Network.Time2.Success", 1);
 }
@@ -261,11 +257,7 @@ TEST_F(OhttpKeyServiceTest, GetOhttpKey_NetworkFailure) {
       /*sample=*/OhttpKeyService::FetchOutcome::kNetworkError,
       /*expected_count=*/1);
   histogram_tester_.ExpectTotalCount(
-      "SafeBrowsing.HPRT.OhttpKeyService.Network.Time", 1);
-  histogram_tester_.ExpectTotalCount(
       "SafeBrowsing.HPRT.OhttpKeyService.Network.Time2", 1);
-  histogram_tester_.ExpectTotalCount(
-      "SafeBrowsing.HPRT.OhttpKeyService.Network.Time.Failure", 1);
   histogram_tester_.ExpectTotalCount(
       "SafeBrowsing.HPRT.OhttpKeyService.Network.Time2.Failure", 1);
 }
@@ -296,11 +288,7 @@ TEST_F(OhttpKeyServiceTest, GetOhttpKey_EmptyResponse) {
       /*sample=*/OhttpKeyService::FetchOutcome::kEmptyResponse,
       /*expected_count=*/1);
   histogram_tester_.ExpectTotalCount(
-      "SafeBrowsing.HPRT.OhttpKeyService.Network.Time", 1);
-  histogram_tester_.ExpectTotalCount(
       "SafeBrowsing.HPRT.OhttpKeyService.Network.Time2", 1);
-  histogram_tester_.ExpectTotalCount(
-      "SafeBrowsing.HPRT.OhttpKeyService.Network.Time.Empty", 1);
   histogram_tester_.ExpectTotalCount(
       "SafeBrowsing.HPRT.OhttpKeyService.Network.Time2.Empty", 1);
 }
@@ -331,11 +319,7 @@ TEST_F(OhttpKeyServiceTest, GetOhttpKey_InvalidResponse) {
       /*sample=*/OhttpKeyService::FetchOutcome::kInvalidResponse,
       /*expected_count=*/1);
   histogram_tester_.ExpectTotalCount(
-      "SafeBrowsing.HPRT.OhttpKeyService.Network.Time", 1);
-  histogram_tester_.ExpectTotalCount(
       "SafeBrowsing.HPRT.OhttpKeyService.Network.Time2", 1);
-  histogram_tester_.ExpectTotalCount(
-      "SafeBrowsing.HPRT.OhttpKeyService.Network.Time.Invalid", 1);
   histogram_tester_.ExpectTotalCount(
       "SafeBrowsing.HPRT.OhttpKeyService.Network.Time2.Invalid", 1);
 }
