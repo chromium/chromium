@@ -463,7 +463,10 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
     }
 
     // Prepare resource files.
-    gfx::Image icon(copy_notification->icon().Rasterize(nullptr));
+    // Vector icons (e.g. from ui::ImageModel::FromVectorIcon()) need a
+    // ColorProvider to resolve their color ids.
+    gfx::Image icon(copy_notification->icon().Rasterize(
+        ThemeServiceFactory::GetForProfile(profile)->GetColorProvider()));
     gfx::Image notification_icon = using_portal_
                                        ? ResizeImageToPortalMaxSize(icon)
                                        : ResizeImageToFdoMaxSize(icon);

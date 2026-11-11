@@ -28,6 +28,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/dbus/xdg/portal.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "dbus/mock_bus.h"
@@ -35,6 +36,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/re2/src/re2/re2.h"
+#include "ui/base/models/image_model.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -1743,6 +1746,35 @@ TEST_F(NotificationPlatformBridgeLinuxTest, PortalV1Fallback) {
                                           .AddButton(reply_button)
                                           .GetResult(),
                                       nullptr);
+  content::RunAllTasksUntilIdle();
+  EXPECT_TRUE(add_notification_called);
+}
+
+// Regression test for https://crbug.com/573427860: a themed vector icon must be
+// rasterized with a ColorProvider instead of crashing.
+TEST_F(NotificationPlatformBridgeLinuxTest, VectorIconWithColorId) {
+  constexpr int kIconSize = 32;
+  fake_portal_notification_proxy_->SetPortalVersion(1);
+
+  bool add_notification_called = false;
+  fake_portal_notification_proxy_->SetAddNotificationCallback(
+      base::BindLambdaForTesting([&](const PortalNotificationRequest& request) {
+        add_notification_called = true;
+        ASSERT_FALSE(request.icon_bytes.empty());
+        gfx::Image image = gfx::Image::CreateFrom1xPNGBytes(request.icon_bytes);
+        EXPECT_EQ(kIconSize, image.Width());
+        EXPECT_EQ(kIconSize, image.Height());
+      }));
+
+  CreateNotificationBridgeLinux(
+      TestParams().SetFdoNameHasOwner(false).SetPortalNameHasOwner(true));
+
+  Notification notification = NotificationBuilder("1").GetResult();
+  notification.set_icon(ui::ImageModel::FromVectorIcon(
+      vector_icons::kSettingsIcon, ui::kColorAccent, kIconSize));
+  notification_bridge_linux_->Display(NotificationHandler::Type::WEB_PERSISTENT,
+                                      profile(), notification,
+                                      /*metadata=*/nullptr);
   content::RunAllTasksUntilIdle();
   EXPECT_TRUE(add_notification_called);
 }
