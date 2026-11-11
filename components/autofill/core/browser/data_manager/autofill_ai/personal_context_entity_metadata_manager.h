@@ -27,10 +27,8 @@ namespace autofill {
 
 struct EntitySuppressionEntry;
 
-// Manages personal context entity metadata (e.g., suggestion suppressions) in
-// Autofill AI. Enables users to dismiss specific entity suggestions without
-// deleting the underlying source data. Entity matching is based on satisfied
-// merge constraints.
+// Manages personal context entity metadata (suggestion suppressions and entity
+// verification confirmations) in Autofill AI.
 class PersonalContextEntityMetadataManager final
     : public KeyedService,
       public PersonalContextEntityMetadataSyncBridge::Observer {
@@ -60,23 +58,34 @@ class PersonalContextEntityMetadataManager final
   // Returns true if suppression status was modified.
   bool UndoInSessionSuppressedEntity(const EntityInstance::EntityId& entity_id);
 
-  // Removes recorded metadata entries whose creation timestamp falls within
-  // the inclusive range `[delete_begin, delete_end]` (use `base::Time()` and
-  // `base::Time::Max()` to clear all entries). Deletes matching entries from
-  // local storage and Sync, prunes any corresponding in-session undo state, and
-  // notifies observers if any suppression was removed. Returns `true` if at
-  // least one entry was removed, `false` otherwise.
+  // Records that the user has verified/confirmed `entity`, so subsequent fills
+  // of an entity with the same attributes do not require verification.
+  // `entity` must be a masked `RecordType::kPersonalContext` entity. Returns
+  // true if confirmation status was modified.
+  bool ConfirmEntity(const EntityInstance& entity);
+
+  // Removes recorded entity suppressions and confirmations whose creation
+  // timestamp falls within the inclusive range `[delete_begin, delete_end]`
+  // (use `base::Time()` and `base::Time::Max()` to clear all entries). Deletes
+  // matching entries from local storage and Sync, prunes any corresponding
+  // in-session undo state, and calls `Observer::OnEntitySuppressionsChanged()`
+  // only if at least one suppression (not confirmation) was removed. Returns
+  // `true` if at least one entry was removed, `false` otherwise.
   bool ClearEntries(base::Time delete_begin, base::Time delete_end);
 
   // Returns true if the entity matches at least one suppressed merge
   // constraint.
   bool IsSuppressed(const EntityInstance& entity) const;
 
-  // Returns the number of recorded metadata entries whose creation timestamp
-  // falls within the inclusive range `[begin, end]` (use `base::Time()` and
-  // `base::Time::Max()` to cover all entries). This mirrors the range semantics
-  // of `ClearEntries()`, i.e. it returns the number of entries that
-  // `ClearEntries(begin, end)` would remove.
+  // Returns true if `entity` matches a previously confirmed entity hash.
+  // `entity` must be a masked `RecordType::kPersonalContext` entity.
+  bool IsConfirmed(const EntityInstance& entity) const;
+
+  // Returns the number of recorded entity suppressions and confirmations whose
+  // creation timestamp falls within the inclusive range `[begin, end]` (use
+  // `base::Time()` and `base::Time::Max()` to cover all entries). This mirrors
+  // the range semantics of `ClearEntries()`, i.e. it returns the number of
+  // entries that `ClearEntries(begin, end)` would remove.
   size_t CountEntriesCreatedBetween(base::Time begin, base::Time end) const;
 
   // Returns the delegate for Chrome Sync.
