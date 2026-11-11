@@ -7,11 +7,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/webauthn/content/browser/immediate_request_rate_limiter.h"
 
+namespace webauthn {
+
 // static
-webauthn::ImmediateRequestRateLimiter*
-ImmediateRequestRateLimiterFactory::GetForProfile(
+ImmediateRequestRateLimiter* ImmediateRequestRateLimiterFactory::GetForProfile(
     content::BrowserContext* context) {
-  return static_cast<webauthn::ImmediateRequestRateLimiter*>(
+  return static_cast<ImmediateRequestRateLimiter*>(
       GetInstance()->GetServiceForBrowserContext(context, /*create=*/true));
 }
 
@@ -23,9 +24,8 @@ ImmediateRequestRateLimiterFactory::GetInstance() {
 }
 
 ImmediateRequestRateLimiterFactory::ImmediateRequestRateLimiterFactory()
-    : ProfileKeyedServiceFactory(
-          "ImmediateRequestRateLimiter",
-          ProfileSelections::BuildForRegularProfile()) {}
+    : ProfileKeyedServiceFactory("ImmediateRequestRateLimiter",
+                                 ProfileSelections::BuildForRegularProfile()) {}
 
 ImmediateRequestRateLimiterFactory::~ImmediateRequestRateLimiterFactory() =
     default;
@@ -33,5 +33,7 @@ ImmediateRequestRateLimiterFactory::~ImmediateRequestRateLimiterFactory() =
 std::unique_ptr<KeyedService>
 ImmediateRequestRateLimiterFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return std::make_unique<webauthn::ImmediateRequestRateLimiter>();
+  return std::make_unique<ImmediateRequestRateLimiter>();
 }
+
+}  // namespace webauthn

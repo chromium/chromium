@@ -1095,7 +1095,8 @@ bool ChromeAuthenticatorRequestDelegate::MaybeHandleImmediateMediation(
   }
 
   if (auto* rate_limiter =
-          ImmediateRequestRateLimiterFactory::GetForProfile(profile())) {
+          webauthn::ImmediateRequestRateLimiterFactory::GetForProfile(
+              profile())) {
     if (!rate_limiter->IsRequestAllowed(*GetRenderFrameHost())) {
       FIDO_LOG(ERROR) << "Immediate request rate limit exceeded for the main "
                          "frame's origin.";

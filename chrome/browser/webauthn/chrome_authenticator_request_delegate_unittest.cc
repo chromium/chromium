@@ -182,11 +182,13 @@ class ChromeAuthenticatorRequestDelegateTest
             }));
     ChromeAuthenticatorRequestDelegate::SetGlobalObserverForTesting(&observer_);
 
-    ImmediateRequestRateLimiterFactory::GetInstance()->SetTestingFactoryAndUse(
-        profile(), base::BindRepeating([](content::BrowserContext* context)
-                                           -> std::unique_ptr<KeyedService> {
-          return std::make_unique<webauthn::ImmediateRequestRateLimiter>();
-        }));
+    webauthn::ImmediateRequestRateLimiterFactory::GetInstance()
+        ->SetTestingFactoryAndUse(
+            profile(),
+            base::BindRepeating([](content::BrowserContext* context)
+                                    -> std::unique_ptr<KeyedService> {
+              return std::make_unique<webauthn::ImmediateRequestRateLimiter>();
+            }));
   }
 
   void TearDown() override {
@@ -903,16 +905,18 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, ImmediateMediationRateLimit) {
   constexpr base::TimeDelta kWindowSize = base::Minutes(1);
   constexpr int kMaxRequestsPerWindow = 2;
 
-  ImmediateRequestRateLimiterFactory::GetInstance()->SetTestingFactoryAndUse(
-      profile(), base::BindRepeating([](content::BrowserContext* context)
-                                         -> std::unique_ptr<KeyedService> {
-        webauthn::ImmediateRequestRateLimiter::Limits limits;
-        limits.max_requests_long = 2;  // kMaxRequestsPerWindow
-        limits.window_seconds_long = 60;
-        limits.max_requests_short = 2;
-        limits.window_seconds_short = 5;
-        return std::make_unique<webauthn::ImmediateRequestRateLimiter>(limits);
-      }));
+  webauthn::ImmediateRequestRateLimiterFactory::GetInstance()
+      ->SetTestingFactoryAndUse(
+          profile(), base::BindRepeating([](content::BrowserContext* context)
+                                             -> std::unique_ptr<KeyedService> {
+            webauthn::ImmediateRequestRateLimiter::Limits limits;
+            limits.max_requests_long = 2;  // kMaxRequestsPerWindow
+            limits.window_seconds_long = 60;
+            limits.max_requests_short = 2;
+            limits.window_seconds_short = 5;
+            return std::make_unique<webauthn::ImmediateRequestRateLimiter>(
+                limits);
+          }));
   // Navigate to commit the origin.
   content::WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL(kOrigin));

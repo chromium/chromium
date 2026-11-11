@@ -14,11 +14,10 @@ class BrowserContext;
 
 namespace webauthn {
 class ImmediateRequestRateLimiter;
-}
 
 class ImmediateRequestRateLimiterFactory : public ProfileKeyedServiceFactory {
  public:
-  static webauthn::ImmediateRequestRateLimiter* GetForProfile(
+  static ImmediateRequestRateLimiter* GetForProfile(
       content::BrowserContext* context);
   static ImmediateRequestRateLimiterFactory* GetInstance();
 
@@ -37,5 +36,7 @@ class ImmediateRequestRateLimiterFactory : public ProfileKeyedServiceFactory {
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
+
+}  // namespace webauthn
 
 #endif  // CHROME_BROWSER_WEBAUTHN_IMMEDIATE_REQUEST_RATE_LIMITER_FACTORY_H_

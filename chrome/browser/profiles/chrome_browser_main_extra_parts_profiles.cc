@@ -1089,7 +1089,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   HttpsFirstModeServiceFactory::GetInstance();
   IdentityManagerFactory::EnsureFactoryAndDependeeFactoriesBuilt();
 #if !BUILDFLAG(IS_ANDROID)
-  ImmediateRequestRateLimiterFactory::GetInstance();
   if (base::FeatureList::IsEnabled(features::kIndigo)) {
     indigo::IndigoServiceFactory::GetInstance();
   }
@@ -1574,7 +1573,9 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if BUILDFLAG(IS_ANDROID)
   WebApkInstallServiceFactory::GetInstance();
 #endif
-
+#if !BUILDFLAG(IS_ANDROID)
+  webauthn::ImmediateRequestRateLimiterFactory::GetInstance();
+#endif
   WebDataServiceFactory::GetInstance();
   webrtc_event_logging::WebRtcEventLogManagerKeyedServiceFactory::GetInstance();
 }
