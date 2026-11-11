@@ -58,9 +58,7 @@ public class TintedCompositorTextButton extends TintedCompositorButton {
         mDismissButton = dismissButton;
     }
 
-    /**
-     * @return The dismiss sub-button nested inside this text button.
-     */
+    /** Returns the dismiss sub-button nested inside this text button. */
     public @Nullable TintedCompositorButton getDismissButton() {
         return mDismissButton;
     }
@@ -135,9 +133,7 @@ public class TintedCompositorTextButton extends TintedCompositorButton {
         mText = text;
     }
 
-    /**
-     * @return The text displayed on the button.
-     */
+    /** Returns the text displayed on the button. */
     public @Nullable String getText() {
         return mText;
     }
@@ -149,9 +145,7 @@ public class TintedCompositorTextButton extends TintedCompositorButton {
         mTextResourceId = textResourceId;
     }
 
-    /**
-     * @return The resource ID for the generated text bitmap.
-     */
+    /** Returns the resource ID for the generated text bitmap. */
     public int getTextResourceId() {
         return mTextResourceId;
     }

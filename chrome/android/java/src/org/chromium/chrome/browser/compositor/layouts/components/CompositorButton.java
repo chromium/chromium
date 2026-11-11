@@ -146,9 +146,7 @@ public class CompositorButton extends StripLayoutView {
         mBackgroundAlwaysVisible = alwaysVisible;
     }
 
-    /**
-     * @return The Android resource that represents button background.
-     */
+    /** Returns the Android resource that represents button background. */
     public int getBackgroundResourceId() {
         return mBackgroundResource;
     }
@@ -188,16 +186,12 @@ public class CompositorButton extends StripLayoutView {
         mClickableOpacityThreshold = threshold;
     }
 
-    /**
-     * @return The minimum opacity required for the button to accept clicks/hovers.
-     */
+    /** Returns the minimum opacity required for the button to accept clicks/hovers. */
     public float getClickableOpacityThreshold() {
         return mClickableOpacityThreshold;
     }
 
-    /**
-     * @return Parent view this button is embedded in.
-     */
+    /** Returns the parent view this button is embedded in. */
     public @Nullable StripLayoutView getParentView() {
         return mParentView;
     }
@@ -216,9 +210,7 @@ public class CompositorButton extends StripLayoutView {
         super.setIncognito(incognito);
     }
 
-    /**
-     * @return The opacity of the button.
-     */
+    /** Returns the opacity of the button. */
     public float getOpacity() {
         return mOpacity;
     }
@@ -230,9 +222,7 @@ public class CompositorButton extends StripLayoutView {
         mOpacity = opacity;
     }
 
-    /**
-     * @return Type for this button.
-     */
+    /** Returns the type for this button. */
     public @ButtonType int getType() {
         return mType;
     }
@@ -267,16 +257,12 @@ public class CompositorButton extends StripLayoutView {
         mIsPressedFromMouse = isPressedFromMouse;
     }
 
-    /**
-     * @return The pressed state of the button.
-     */
+    /** Returns the pressed state of the button. */
     public boolean isPressed() {
         return mIsPressed;
     }
 
-    /**
-     * @return Whether the button is pressed from mouse.
-     */
+    /** Returns whether the button is pressed from mouse. */
     public boolean isPressedFromMouse() {
         return mIsPressed && mIsPressedFromMouse;
     }
@@ -298,9 +284,7 @@ public class CompositorButton extends StripLayoutView {
         super.setTouchTargetInsets(leftInset, topInset, rightInset, bottomInset);
     }
 
-    /**
-     * @return The Android resource id for this button based on it's state.
-     */
+    /** Returns the Android resource id for this button based on its state. */
     public int getResourceId() {
         return mResource;
     }
@@ -372,9 +356,7 @@ public class CompositorButton extends StripLayoutView {
         mIsHovered = isHovered;
     }
 
-    /**
-     * @return Whether the button is hovered on.
-     */
+    /** Returns whether the button is hovered on. */
     public boolean isHovered() {
         return mIsHovered;
     }
@@ -387,9 +369,7 @@ public class CompositorButton extends StripLayoutView {
         super.setVisible(isVisible);
     }
 
-    /**
-     * @return Whether hover background should be applied to the button.
-     */
+    /** Returns whether hover background should be applied to the button. */
     public boolean getShouldApplyHoverBackground() {
         return mBackgroundAlwaysVisible || isHovered() || isPressedFromMouse();
     }

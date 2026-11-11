@@ -116,8 +116,8 @@ public class TintedCompositorButton extends CompositorButton {
     }
 
     /**
-     * @return The icon tint (color value, NOT the resource Id) depending on the state of the
-     *     button.
+     * Returns the icon tint (color value, NOT the resource Id) depending on the state of the
+     * button.
      */
     public @ColorInt int getTint() {
         return mTint;
@@ -129,8 +129,8 @@ public class TintedCompositorButton extends CompositorButton {
     }
 
     /**
-     * @return The button background tint (color value, NOT the resource Id) depending on the state
-     *     of the button.
+     * Returns the button background tint (color value, NOT the resource Id) depending on the state
+     * of the button.
      */
     public @ColorInt int getBackgroundTint() {
         return resolveColor(mBackgroundTint);
