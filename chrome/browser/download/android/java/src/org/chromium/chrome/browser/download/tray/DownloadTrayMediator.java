@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.download.tray;
 import android.content.Context;
 import android.view.View;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.text.BidiFormatter;
 import androidx.core.text.TextDirectionHeuristicsCompat;
@@ -15,12 +14,12 @@ import androidx.core.text.TextDirectionHeuristicsCompat;
 import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.download.DownloadIconUtils;
 import org.chromium.chrome.browser.download.DownloadStateModel;
 import org.chromium.chrome.browser.download.R;
 import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.OfflineItem;
-import org.chromium.components.offline_items_collection.OfflineItemFilter;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -214,7 +213,7 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
 
     private PropertyModel createCompletedItemModel(OfflineItem item) {
         return new PropertyModel.Builder(DownloadTrayItemProperties.ALL_KEYS)
-                .with(DownloadTrayItemProperties.ICON, getIconForItem(item))
+                .with(DownloadTrayItemProperties.ICON, DownloadIconUtils.getIconForItem(item))
                 .with(DownloadTrayItemProperties.TITLE, item.title)
                 .with(DownloadTrayItemProperties.DESCRIPTION, getCompletedDescription(item))
                 .with(DownloadTrayItemProperties.ON_OPEN, v -> onOpen(item))
@@ -238,27 +237,5 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
                 R.string.download_tray_item_status_message_with_separator,
                 size,
                 mContext.getString(R.string.download_tray_item_status_done));
-    }
-
-    /**
-     * Returns the file-type icon for {@code item}. Mirrors {@code UiUtils.getIconForItem} on the
-     * Downloads page for the items the tray can show; dangerous items never reach the tray.
-     *
-     * <p>TODO(crbug.com/574064718): Share the Downloads page helper instead of mirroring it.
-     */
-    @VisibleForTesting
-    static @DrawableRes int getIconForItem(OfflineItem item) {
-        switch (item.filter) {
-            case OfflineItemFilter.PAGE:
-                return R.drawable.ic_globe_24dp;
-            case OfflineItemFilter.VIDEO:
-                return R.drawable.ic_videocam_fill_24dp;
-            case OfflineItemFilter.AUDIO:
-                return R.drawable.ic_music_note_24dp;
-            case OfflineItemFilter.IMAGE:
-                return R.drawable.ic_drive_image_24dp;
-            default:
-                return R.drawable.ic_drive_file_24dp;
-        }
     }
 }

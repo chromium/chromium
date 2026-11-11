@@ -41,7 +41,6 @@ import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
 import org.chromium.components.offline_items_collection.OfflineItem;
-import org.chromium.components.offline_items_collection.OfflineItemFilter;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -387,23 +386,5 @@ public class DownloadTrayMediatorTest {
 
         assertEquals(
                 "1.50 MB • Done", captureShownRow().get(DownloadTrayItemProperties.DESCRIPTION));
-    }
-
-    @Test
-    public void testIconForItem_matchesDownloadsPage() {
-        int[][] expected = {
-            {OfflineItemFilter.PAGE, R.drawable.ic_globe_24dp},
-            {OfflineItemFilter.VIDEO, R.drawable.ic_videocam_fill_24dp},
-            {OfflineItemFilter.AUDIO, R.drawable.ic_music_note_24dp},
-            {OfflineItemFilter.IMAGE, R.drawable.ic_drive_image_24dp},
-            // The Downloads page also shows the generic icon for documents.
-            {OfflineItemFilter.DOCUMENT, R.drawable.ic_drive_file_24dp},
-            {OfflineItemFilter.OTHER, R.drawable.ic_drive_file_24dp},
-        };
-        for (int[] pair : expected) {
-            OfflineItem item = createItem("a", OfflineItemState.COMPLETE);
-            item.filter = pair[0];
-            assertEquals("Filter " + pair[0], pair[1], DownloadTrayMediator.getIconForItem(item));
-        }
     }
 }

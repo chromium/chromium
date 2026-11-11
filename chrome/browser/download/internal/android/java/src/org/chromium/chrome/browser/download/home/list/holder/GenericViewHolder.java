@@ -21,6 +21,7 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.download.DownloadIconUtils;
 import org.chromium.chrome.browser.download.home.list.ListItem;
 import org.chromium.chrome.browser.download.home.list.UiUtils;
 import org.chromium.chrome.browser.download.internal.R;
@@ -64,7 +65,7 @@ public class GenericViewHolder extends OfflineItemViewHolder {
         mCaption.setText(UiUtils.generateGenericCaption(offlineItem.item));
 
         // Build invalid icon.
-        @DrawableRes int iconId = UiUtils.getIconForItem(offlineItem.item);
+        @DrawableRes int iconId = DownloadIconUtils.getIconForItem(offlineItem.item);
         if (iconId != mGenericIconId) {
             mGenericIconId = iconId;
 
