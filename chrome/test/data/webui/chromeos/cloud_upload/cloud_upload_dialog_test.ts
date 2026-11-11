@@ -5,7 +5,6 @@
 import 'chrome://cloud-upload/cloud_upload_dialog.js';
 
 import {UserAction} from 'chrome://cloud-upload/cloud_upload.mojom-webui.js';
-import {CloudUploadBrowserProxy} from 'chrome://cloud-upload/cloud_upload_browser_proxy.js';
 import type {CloudUploadElement} from 'chrome://cloud-upload/cloud_upload_dialog.js';
 import {OfficePwaInstallPageElement} from 'chrome://cloud-upload/office_pwa_install_page.js';
 import {OfficeSetupCompletePageElement} from 'chrome://cloud-upload/office_setup_complete_page.js';
@@ -17,21 +16,20 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {whenCheck} from 'chrome://webui-test/test_util.js';
 
-import type {ProxyOptions} from './cloud_upload_test_browser_proxy.js';
-import {CloudUploadTestBrowserProxy} from './cloud_upload_test_browser_proxy.js';
+import type {ProxyOptions, TestCloudUploadPageHandler} from './cloud_upload_test_browser_proxy.js';
+import {setupCloudUploadTestHandler} from './cloud_upload_test_browser_proxy.js';
 
 suite('<cloud-upload>', () => {
   /* Holds the <cloud-upload> app. */
   let container: HTMLElement;
   /* The <cloud-upload> app. */
   let cloudUploadApp: CloudUploadElement;
-  /* The BrowserProxy element to make assertions on when mojo methods are
+  /* The mock PageHandlerRemote to make assertions on when mojo methods are
      called. */
-  let testProxy: CloudUploadTestBrowserProxy;
+  let testHandler: TestCloudUploadPageHandler;
 
   async function setUp(options: ProxyOptions) {
-    testProxy = new CloudUploadTestBrowserProxy(options);
-    CloudUploadBrowserProxy.setInstance(testProxy);
+    testHandler = setupCloudUploadTestHandler(options);
 
     // Setup fake strings.
     loadTimeData.resetForTesting({
@@ -176,7 +174,7 @@ suite('<cloud-upload>', () => {
     loadTimeData.resetForTesting();
     assert(window.trustedTypes);
     container.innerHTML = window.trustedTypes.emptyHTML;
-    testProxy.handler.reset();
+    testHandler.reset();
   });
 
   /**
@@ -393,12 +391,11 @@ suite('<cloud-upload>', () => {
 
     checkIsOfficeSetupCompletePage();
     cloudUploadApp.$('.action-button').click();
-    await testProxy.handler.whenCalled('respondWithUserActionAndClose');
-    assertEquals(
-        1, testProxy.handler.getCallCount('respondWithUserActionAndClose'));
+    await testHandler.whenCalled('respondWithUserActionAndClose');
+    assertEquals(1, testHandler.getCallCount('respondWithUserActionAndClose'));
     assertDeepEquals(
         [UserAction.kConfirmOrUploadToOneDrive],
-        testProxy.handler.getArgs('respondWithUserActionAndClose'));
+        testHandler.getArgs('respondWithUserActionAndClose'));
   });
 
   /**
@@ -450,16 +447,16 @@ suite('<cloud-upload>', () => {
         cloudUploadApp.$('.cancel-button').click();
         assertTrue(cancelDialog.open);
         assertEquals(
-            0, testProxy.handler.getCallCount('respondWithUserActionAndClose'));
+            0, testHandler.getCallCount('respondWithUserActionAndClose'));
 
         // Cancel setup with Cancel click.
         cancelDialog.$('.cancel-button').click();
-        await testProxy.handler.whenCalled('respondWithUserActionAndClose');
+        await testHandler.whenCalled('respondWithUserActionAndClose');
         assertEquals(
-            1, testProxy.handler.getCallCount('respondWithUserActionAndClose'));
+            1, testHandler.getCallCount('respondWithUserActionAndClose'));
         assertDeepEquals(
             [UserAction.kCancel],
-            testProxy.handler.getArgs('respondWithUserActionAndClose'));
+            testHandler.getArgs('respondWithUserActionAndClose'));
       }));
 
   /**
@@ -512,20 +509,19 @@ suite('<cloud-upload>', () => {
           document.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}));
           await whenCheck(cancelDialog, () => cancelDialog.open);
           assertEquals(
-              0,
-              testProxy.handler.getCallCount('respondWithUserActionAndClose'));
+              0, testHandler.getCallCount('respondWithUserActionAndClose'));
 
           // Cancel setup with Cancel click.
           cancelDialog.$('.cancel-button').click();
         }
 
         // Check the setup was cancelled.
-        await testProxy.handler.whenCalled('respondWithUserActionAndClose');
+        await testHandler.whenCalled('respondWithUserActionAndClose');
         assertEquals(
-            1, testProxy.handler.getCallCount('respondWithUserActionAndClose'));
+            1, testHandler.getCallCount('respondWithUserActionAndClose'));
         assertDeepEquals(
             [UserAction.kCancel],
-            testProxy.handler.getArgs('respondWithUserActionAndClose'));
+            testHandler.getArgs('respondWithUserActionAndClose'));
       }));
 
   /**
@@ -557,8 +553,7 @@ suite('<cloud-upload>', () => {
         // Click the open file button.
         cloudUploadApp.$('.action-button').click();
 
-        assertEquals(
-            1, testProxy.handler.getCallCount('setOfficeAsDefaultHandler'));
+        assertEquals(1, testHandler.getCallCount('setOfficeAsDefaultHandler'));
       });
 
   /**
@@ -590,7 +585,6 @@ suite('<cloud-upload>', () => {
         // Click the open file button.
         cloudUploadApp.$('.action-button').click();
 
-        assertEquals(
-            0, testProxy.handler.getCallCount('setOfficeAsDefaultHandler'));
+        assertEquals(0, testHandler.getCallCount('setOfficeAsDefaultHandler'));
       });
 });

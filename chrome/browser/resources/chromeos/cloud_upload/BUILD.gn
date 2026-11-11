@@ -44,7 +44,6 @@ build_webui("build") {
     "welcome_page.ts",
   ]
   ts_files = [
-    "cloud_upload_browser_proxy.ts",
     "cloud_upload_dialog.ts",
     "main.ts",
   ]

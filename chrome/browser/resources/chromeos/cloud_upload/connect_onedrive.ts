@@ -7,8 +7,8 @@ import '/strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 
-import {UserAction} from './cloud_upload.mojom-webui.js';
-import {CloudUploadBrowserProxy} from './cloud_upload_browser_proxy.js';
+import type {BrowserProxy} from './cloud_upload.mojom-webui.js';
+import {browserProxyFactory, UserAction} from './cloud_upload.mojom-webui.js';
 import {getTemplate} from './connect_onedrive.html.js';
 
 /**
@@ -17,8 +17,7 @@ import {getTemplate} from './connect_onedrive.html.js';
  * setup flow.
  */
 export class ConnectOneDriveElement extends HTMLElement {
-  private proxy: CloudUploadBrowserProxy =
-      CloudUploadBrowserProxy.getInstance();
+  private proxy: BrowserProxy = browserProxyFactory.getInstance();
 
   // Save reference to listener so it can be removed from the document in
   // disconnectedCallback().

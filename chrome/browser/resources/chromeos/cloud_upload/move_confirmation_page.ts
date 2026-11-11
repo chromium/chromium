@@ -11,8 +11,8 @@ import type {LottieRenderer} from 'chrome://resources/cros_components/lottie_ren
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {MetricsRecordedSetupPage, OperationType, UserAction} from './cloud_upload.mojom-webui.js';
-import {CloudUploadBrowserProxy} from './cloud_upload_browser_proxy.js';
+import type {BrowserProxy} from './cloud_upload.mojom-webui.js';
+import {browserProxyFactory, MetricsRecordedSetupPage, OperationType, UserAction} from './cloud_upload.mojom-webui.js';
 import {getTemplate} from './move_confirmation_page.html.js';
 
 export enum CloudProvider {
@@ -26,8 +26,7 @@ export enum CloudProvider {
  * to always move files.
  */
 export class MoveConfirmationPageElement extends HTMLElement {
-  private proxy: CloudUploadBrowserProxy =
-      CloudUploadBrowserProxy.getInstance();
+  private proxy: BrowserProxy = browserProxyFactory.getInstance();
   private cloudProvider: CloudProvider|undefined;
   private animationPlayer: LottieRenderer|undefined;
   private playPauseButton: HTMLElement|undefined;

@@ -20,7 +20,7 @@ import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
-import {BrowserProxy} from './browser_proxy.js';
+import {browserProxyFactory} from './crostini_installer.mojom-webui.js';
 import {DiskSliderTick, InstallerError, InstallerState} from './crostini_types.mojom-webui.js';
 
 /**
@@ -181,13 +181,13 @@ class CrostiniInstallerAppElement extends PolymerElement {
   declare private MAX_USERNAME_LENGTH: number;
   private listenerIds_: number[] = [];
   private diskSpacePromise_ =
-      BrowserProxy.getInstance().handler.requestAmountOfFreeDiskSpace();
+      browserProxyFactory.getInstance().handler.requestAmountOfFreeDiskSpace();
   private onNextButtonClickIsRunning_: boolean = false;
 
   override connectedCallback() {
     super.connectedCallback();
 
-    const callbackRouter = BrowserProxy.getInstance().callbackRouter;
+    const callbackRouter = browserProxyFactory.getInstance().callbackRouter;
 
     this.listenerIds_ = [
       callbackRouter.onProgressUpdate.addListener(
@@ -223,7 +223,7 @@ class CrostiniInstallerAppElement extends PolymerElement {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    const callbackRouter = BrowserProxy.getInstance().callbackRouter;
+    const callbackRouter = browserProxyFactory.getInstance().callbackRouter;
     this.listenerIds_.forEach(id => callbackRouter.removeListener(id));
   }
 
@@ -280,7 +280,7 @@ class CrostiniInstallerAppElement extends PolymerElement {
     this.installerState_ = InstallerState.kStart;
     this.installerProgress_ = 0;
     this.state_ = State.INSTALLING;
-    BrowserProxy.getInstance().handler.install(diskSize, this.username_);
+    browserProxyFactory.getInstance().handler.install(diskSize, this.username_);
   }
 
   private onSettingsButtonClick_() {
@@ -294,7 +294,7 @@ class CrostiniInstallerAppElement extends PolymerElement {
   private cancelOrBack_(forceCancel: boolean = false) {
     switch (this.state_) {
       case State.PROMPT:
-        BrowserProxy.getInstance().handler.cancelBeforeStart();
+        browserProxyFactory.getInstance().handler.cancelBeforeStart();
         this.closePage_();
         break;
       case State.CONFIGURE:
@@ -306,7 +306,7 @@ class CrostiniInstallerAppElement extends PolymerElement {
         break;
       case State.INSTALLING:
         this.state_ = State.CANCELING;
-        BrowserProxy.getInstance().handler.cancel();
+        browserProxyFactory.getInstance().handler.cancel();
         break;
       case State.ERROR:
         this.closePage_();
@@ -321,7 +321,7 @@ class CrostiniInstallerAppElement extends PolymerElement {
   }
 
   private closePage_() {
-    BrowserProxy.getInstance().handler.onPageClosed();
+    browserProxyFactory.getInstance().handler.onPageClosed();
   }
 
   private getTitle_(state: State, error: InstallerError): string {

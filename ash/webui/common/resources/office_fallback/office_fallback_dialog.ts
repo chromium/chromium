@@ -8,7 +8,7 @@ import '//resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {assert} from '//resources/js/assert.js';
 
-import {DialogChoice} from './office_fallback.mojom-webui.js';
+import {browserProxyFactory, DialogChoice} from './office_fallback.mojom-webui.js';
 import {OfficeFallbackBrowserProxy} from './office_fallback_browser_proxy.js';
 import {getTemplate} from './office_fallback_dialog.html.js';
 
@@ -113,19 +113,19 @@ export class OfficeFallbackElement extends HTMLElement {
   }
 
   private onTryAgainButtonClick(): void {
-    this.proxy.handler.close(DialogChoice.kTryAgain);
+    browserProxyFactory.getInstance().handler.close(DialogChoice.kTryAgain);
   }
 
   private onCancelButtonClick(): void {
-    this.proxy.handler.close(DialogChoice.kCancel);
+    browserProxyFactory.getInstance().handler.close(DialogChoice.kCancel);
   }
 
   private onOkButtonClick(): void {
-    this.proxy.handler.close(DialogChoice.kOk);
+    browserProxyFactory.getInstance().handler.close(DialogChoice.kOk);
   }
 
   private onQuickOfficeButtonClick(): void {
-    this.proxy.handler.close(DialogChoice.kQuickOffice);
+    browserProxyFactory.getInstance().handler.close(DialogChoice.kQuickOffice);
   }
 
   private onKeyDown(e: KeyboardEvent) {

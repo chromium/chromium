@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import type {DialogArgs, DialogSpecificArgs} from 'chrome://cloud-upload/cloud_upload.mojom-webui.js';
-import {PageHandlerRemote} from 'chrome://cloud-upload/cloud_upload.mojom-webui.js';
-import type {CloudUploadBrowserProxy} from 'chrome://cloud-upload/cloud_upload_browser_proxy.js';
+import {browserProxyFactory, PageHandlerRemote} from 'chrome://cloud-upload/cloud_upload.mojom-webui.js';
+import {setInstallDelayForTesting} from 'chrome://cloud-upload/office_pwa_install_page.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 export interface ProxyOptions {
@@ -19,41 +19,40 @@ export interface ProxyOptions {
   officeMoveConfirmationShownForOneDrive?: boolean|null;
 }
 
+export type TestCloudUploadPageHandler =
+    TestMock<PageHandlerRemote>&PageHandlerRemote;
+
 /**
- * A test CloudUploadBrowserProxy implementation that enables to mock various
- * mojo responses.
+ * Sets up a test PageHandlerRemote that enables mocking various mojo
+ * responses.
  */
-export class CloudUploadTestBrowserProxy implements CloudUploadBrowserProxy {
-  handler: TestMock<PageHandlerRemote>&PageHandlerRemote;
-
-  constructor(options: ProxyOptions) {
-    this.handler = TestMock.fromClass(PageHandlerRemote);
-    const args: DialogArgs = {
-      fileNames: options.fileNames,
-      dialogSpecificArgs: options.dialogSpecificArgs,
-    };
-    this.handler.setResultFor('getDialogArgs', {args: args});
-    this.handler.setResultFor(
-        'isOfficeWebAppInstalled', {installed: options.officeWebAppInstalled});
-    this.handler.setResultFor(
-        'installOfficeWebApp', {installed: options.installOfficeWebAppResult});
-    this.handler.setResultFor('isODFSMounted', {mounted: options.odfsMounted});
-    this.handler.setResultFor('signInToOneDrive', {success: true});
-    this.handler.setResultFor('getAlwaysMoveOfficeFilesToDrive', {
-      alwaysMove: options.alwaysMoveOfficeFilesToDrive,
-    });
-    this.handler.setResultFor('getAlwaysMoveOfficeFilesToOneDrive', {
-      alwaysMove: options.alwaysMoveOfficeFilesToOneDrive,
-    });
-    this.handler.setResultFor('getOfficeMoveConfirmationShownForDrive', {
-      moveConfirmationShown: options.officeMoveConfirmationShownForDrive,
-    });
-    this.handler.setResultFor('getOfficeMoveConfirmationShownForOneDrive', {
-      moveConfirmationShown: options.officeMoveConfirmationShownForOneDrive,
-    });
-  }
-
-  isTest() {
-    return true;
-  }
+export function setupCloudUploadTestHandler(options: ProxyOptions):
+    TestCloudUploadPageHandler {
+  const handler = TestMock.fromClass(PageHandlerRemote);
+  const args: DialogArgs = {
+    fileNames: options.fileNames,
+    dialogSpecificArgs: options.dialogSpecificArgs,
+  };
+  handler.setResultFor('getDialogArgs', {args: args});
+  handler.setResultFor(
+      'isOfficeWebAppInstalled', {installed: options.officeWebAppInstalled});
+  handler.setResultFor(
+      'installOfficeWebApp', {installed: options.installOfficeWebAppResult});
+  handler.setResultFor('isODFSMounted', {mounted: options.odfsMounted});
+  handler.setResultFor('signInToOneDrive', {success: true});
+  handler.setResultFor('getAlwaysMoveOfficeFilesToDrive', {
+    alwaysMove: options.alwaysMoveOfficeFilesToDrive,
+  });
+  handler.setResultFor('getAlwaysMoveOfficeFilesToOneDrive', {
+    alwaysMove: options.alwaysMoveOfficeFilesToOneDrive,
+  });
+  handler.setResultFor('getOfficeMoveConfirmationShownForDrive', {
+    moveConfirmationShown: options.officeMoveConfirmationShownForDrive,
+  });
+  handler.setResultFor('getOfficeMoveConfirmationShownForOneDrive', {
+    moveConfirmationShown: options.officeMoveConfirmationShownForOneDrive,
+  });
+  browserProxyFactory.setInstance({handler});
+  setInstallDelayForTesting(30);
+  return handler;
 }

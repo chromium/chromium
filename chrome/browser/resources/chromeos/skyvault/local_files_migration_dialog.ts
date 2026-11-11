@@ -19,13 +19,12 @@ import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr
 import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {LocalFilesBrowserProxy} from './local_files_browser_proxy.js';
-import type {TimeUnitAndValue} from './local_files_migration.mojom-webui.js';
-import {CloudProvider, TimeUnit} from './local_files_migration.mojom-webui.js';
+import type {BrowserProxy, TimeUnitAndValue} from './local_files_migration.mojom-webui.js';
+import {browserProxyFactory, CloudProvider, TimeUnit} from './local_files_migration.mojom-webui.js';
 import {getTemplate} from './local_files_migration_dialog.html.js';
 
 class LocalFilesMigrationDialogElement extends HTMLElement {
-  private proxy: LocalFilesBrowserProxy = LocalFilesBrowserProxy.getInstance();
+  private proxy: BrowserProxy = browserProxyFactory.getInstance();
   private cloudProvider: CloudProvider|null = null;
   private dialog: CrDialogElement;
   private dismissButton: CrButtonElement;

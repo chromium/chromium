@@ -5,26 +5,24 @@
 import 'chrome://cloud-upload/connect_onedrive.js';
 
 import {UserAction} from 'chrome://cloud-upload/cloud_upload.mojom-webui.js';
-import {CloudUploadBrowserProxy} from 'chrome://cloud-upload/cloud_upload_browser_proxy.js';
 import type {ConnectOneDriveElement} from 'chrome://cloud-upload/connect_onedrive.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import type {ProxyOptions} from './cloud_upload_test_browser_proxy.js';
-import {CloudUploadTestBrowserProxy} from './cloud_upload_test_browser_proxy.js';
+import type {ProxyOptions, TestCloudUploadPageHandler} from './cloud_upload_test_browser_proxy.js';
+import {setupCloudUploadTestHandler} from './cloud_upload_test_browser_proxy.js';
 
 suite('<connect-onedrive>', () => {
   /* Holds the <connect-onedrive> app. */
   let container: HTMLElement;
   /* The <connect-onedrive> app. */
   let connectOneDriveApp: ConnectOneDriveElement;
-  /* The BrowserProxy element to make assertions on when mojo methods are
+  /* The mock PageHandlerRemote to make assertions on when mojo methods are
      called. */
-  let testProxy: CloudUploadTestBrowserProxy;
+  let testHandler: TestCloudUploadPageHandler;
 
   function setUp(options: ProxyOptions) {
-    testProxy = new CloudUploadTestBrowserProxy(options);
-    CloudUploadBrowserProxy.setInstance(testProxy);
+    testHandler = setupCloudUploadTestHandler(options);
 
     // Creates and attaches the <connect-onedrive> element to the DOM
     // tree.
@@ -48,7 +46,7 @@ suite('<connect-onedrive>', () => {
   teardown(() => {
     assert(window.trustedTypes);
     container.innerHTML = window.trustedTypes.emptyHTML;
-    testProxy.handler.reset();
+    testHandler.reset();
   });
 
   test('Successful connection leads to finished page', async () => {
@@ -73,7 +71,7 @@ suite('<connect-onedrive>', () => {
 
     connectOneDriveApp.$('.action-button').click();
 
-    await testProxy.handler.whenCalled('signInToOneDrive');
+    await testHandler.whenCalled('signInToOneDrive');
     assertEquals(svgSuccess.getAttribute('visibility'), 'visible');
     assertTrue(title.innerText.includes('connected'), title.innerText);
     assertTrue(
@@ -91,20 +89,20 @@ suite('<connect-onedrive>', () => {
       },
     });
 
-    testProxy.handler.setResultFor('signInToOneDrive', {success: false});
+    testHandler.setResultFor('signInToOneDrive', {success: false});
 
     const errorMessage = connectOneDriveApp.$('#error-message');
     assertTrue(errorMessage.hasAttribute('hidden'));
 
     connectOneDriveApp.$('.action-button').click();
 
-    await testProxy.handler.whenCalled('signInToOneDrive');
+    await testHandler.whenCalled('signInToOneDrive');
     assertFalse(errorMessage.hasAttribute('hidden'));
 
     // Try again but still fail.
     connectOneDriveApp.$('.action-button').click();
 
-    await testProxy.handler.whenCalled('signInToOneDrive');
+    await testHandler.whenCalled('signInToOneDrive');
     assertFalse(errorMessage.hasAttribute('hidden'));
   });
 
@@ -125,12 +123,11 @@ suite('<connect-onedrive>', () => {
 
 
     connectOneDriveApp.$('.cancel-button').click();
-    await testProxy.handler.whenCalled('respondWithUserActionAndClose');
-    assertEquals(
-        1, testProxy.handler.getCallCount('respondWithUserActionAndClose'));
+    await testHandler.whenCalled('respondWithUserActionAndClose');
+    assertEquals(1, testHandler.getCallCount('respondWithUserActionAndClose'));
     assertDeepEquals(
         [UserAction.kCancel],
-        testProxy.handler.getArgs('respondWithUserActionAndClose'));
+        testHandler.getArgs('respondWithUserActionAndClose'));
   });
 
   /**
@@ -150,11 +147,10 @@ suite('<connect-onedrive>', () => {
 
 
     document.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}));
-    await testProxy.handler.whenCalled('respondWithUserActionAndClose');
-    assertEquals(
-        1, testProxy.handler.getCallCount('respondWithUserActionAndClose'));
+    await testHandler.whenCalled('respondWithUserActionAndClose');
+    assertEquals(1, testHandler.getCallCount('respondWithUserActionAndClose'));
     assertDeepEquals(
         [UserAction.kCancel],
-        testProxy.handler.getArgs('respondWithUserActionAndClose'));
+        testHandler.getArgs('respondWithUserActionAndClose'));
   });
 });

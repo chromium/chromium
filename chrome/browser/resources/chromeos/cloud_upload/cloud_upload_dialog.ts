@@ -7,8 +7,8 @@ import './setup_cancel_dialog.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {CANCEL_SETUP_EVENT, NEXT_PAGE_EVENT} from './base_setup_page.js';
-import {MetricsRecordedSetupPage, UserAction} from './cloud_upload.mojom-webui.js';
-import {CloudUploadBrowserProxy} from './cloud_upload_browser_proxy.js';
+import type {BrowserProxy} from './cloud_upload.mojom-webui.js';
+import {browserProxyFactory, MetricsRecordedSetupPage, UserAction} from './cloud_upload.mojom-webui.js';
 import {OfficePwaInstallPageElement} from './office_pwa_install_page.js';
 import {OfficeSetupCompletePageElement} from './office_setup_complete_page.js';
 import type {SetupCancelDialogElement} from './setup_cancel_dialog.js';
@@ -20,7 +20,7 @@ import {WelcomePageElement} from './welcome_page.js';
  * individual setup pages and determines which one to show.
  */
 export class CloudUploadElement extends HTMLElement {
-  private proxy = CloudUploadBrowserProxy.getInstance();
+  private proxy: BrowserProxy = browserProxyFactory.getInstance();
 
   /** Resolved once the element's shadow DOM has finished initializing. */
   initPromise: Promise<void>;

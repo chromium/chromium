@@ -10,8 +10,14 @@ import {assertInstanceof} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {BaseSetupPageElement, CANCEL_SETUP_EVENT, NEXT_PAGE_EVENT} from './base_setup_page.js';
-import {CloudUploadBrowserProxy} from './cloud_upload_browser_proxy.js';
+import {browserProxyFactory} from './cloud_upload.mojom-webui.js';
 import {getTemplate} from './office_pwa_install_page.html.js';
+
+let installDelayMsForTesting: number|null = null;
+
+export function setInstallDelayForTesting(ms: number) {
+  installDelayMsForTesting = ms;
+}
 
 /**
  * The OfficePwaInstallPageElement guides the user through installing the
@@ -31,7 +37,7 @@ export class OfficePwaInstallPageElement extends BaseSetupPageElement {
   }
 
   private async onActionButtonClick(event: MouseEvent) {
-    const proxy = CloudUploadBrowserProxy.getInstance();
+    const proxy = browserProxyFactory.getInstance();
 
     assertInstanceof(event.target, CrButtonElement);
     const actionButton: CrButtonElement = event.target;
@@ -39,7 +45,6 @@ export class OfficePwaInstallPageElement extends BaseSetupPageElement {
     actionButton.classList.replace('install', 'installing');
     actionButton.disabled = true;
 
-    const testTime = 30;
     // Keep the installing state shown for a minimum time to give the
     // impression that the web app is being installed.
     const installingTime = 3000;
@@ -47,7 +52,7 @@ export class OfficePwaInstallPageElement extends BaseSetupPageElement {
       proxy.handler.installOfficeWebApp(),
       new Promise(
           resolve =>
-              setTimeout(resolve, proxy.isTest() ? testTime : installingTime)),
+              setTimeout(resolve, installDelayMsForTesting ?? installingTime)),
     ]);
 
     if (install_result) {
@@ -59,7 +64,7 @@ export class OfficePwaInstallPageElement extends BaseSetupPageElement {
       const installedTime = 2000;
       await new Promise(
           resolve =>
-              setTimeout(resolve, proxy.isTest() ? testTime : installedTime));
+              setTimeout(resolve, installDelayMsForTesting ?? installedTime));
 
       this.dispatchEvent(
           new CustomEvent(NEXT_PAGE_EVENT, {bubbles: true, composed: true}));

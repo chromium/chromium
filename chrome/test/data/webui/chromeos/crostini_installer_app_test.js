@@ -5,8 +5,7 @@
 import 'chrome://crostini-installer/app.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {BrowserProxy} from 'chrome://crostini-installer/browser_proxy.js';
-import {PageCallbackRouter} from 'chrome://crostini-installer/crostini_installer.mojom-webui.js';
+import {browserProxyFactory} from 'chrome://crostini-installer/crostini_installer.mojom-webui.js';
 import {InstallerError, InstallerState} from 'chrome://crostini-installer/crostini_types.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -64,22 +63,15 @@ class FakePageHandler extends TestBrowserProxy {
   }
 }
 
-class FakeBrowserProxy {
-  constructor() {
-    this.handler = new FakePageHandler();
-    this.callbackRouter = new PageCallbackRouter();
-    /** @type {PageRemote} */
-    this.page = this.callbackRouter.$.bindNewPipeAndPassRemote();
-  }
-}
-
 suite('<crostini-installer-app>', () => {
   let fakeBrowserProxy;
   let app;
 
   setup(async () => {
-    fakeBrowserProxy = new FakeBrowserProxy();
-    BrowserProxy.setInstance(fakeBrowserProxy);
+    const {instance, remote} =
+        browserProxyFactory.createForTest(new FakePageHandler());
+    browserProxyFactory.setInstance(instance);
+    fakeBrowserProxy = {handler: instance.handler, page: remote};
 
     app = document.createElement('crostini-installer-app');
     document.body.innerHTML = window.trustedTypes.emptyHTML;

@@ -7,8 +7,8 @@ import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {BaseSetupPageElement} from './base_setup_page.js';
-import {UserAction} from './cloud_upload.mojom-webui.js';
-import {CloudUploadBrowserProxy} from './cloud_upload_browser_proxy.js';
+import type {BrowserProxy} from './cloud_upload.mojom-webui.js';
+import {browserProxyFactory, UserAction} from './cloud_upload.mojom-webui.js';
 import {getTemplate} from './office_setup_complete_page.html.js';
 
 /**
@@ -37,8 +37,8 @@ export class OfficeSetupCompletePageElement extends BaseSetupPageElement {
     }
   }
 
-  private get proxy(): CloudUploadBrowserProxy {
-    return CloudUploadBrowserProxy.getInstance();
+  private get proxy(): BrowserProxy {
+    return browserProxyFactory.getInstance();
   }
 
   /**

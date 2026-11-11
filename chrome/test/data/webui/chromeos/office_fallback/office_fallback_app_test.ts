@@ -4,7 +4,7 @@
 
 import 'chrome://office-fallback/office_fallback_dialog.js';
 
-import {DialogChoice, PageHandlerRemote} from 'chrome://office-fallback/office_fallback.mojom-webui.js';
+import {browserProxyFactory, DialogChoice, PageHandlerRemote} from 'chrome://office-fallback/office_fallback.mojom-webui.js';
 import {OfficeFallbackBrowserProxy} from 'chrome://office-fallback/office_fallback_browser_proxy.js';
 import type {OfficeFallbackElement} from 'chrome://office-fallback/office_fallback_dialog.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
@@ -19,15 +19,13 @@ interface ProxyArgs {
 }
 
 /**
- * A test OfficeFallbackBrowserProxy implementation that enables to mock various
- * mojo responses.
+ * A test OfficeFallbackBrowserProxy implementation that enables to mock
+ * dialog arguments.
  */
 class OfficeFallbackTestBrowserProxy implements OfficeFallbackBrowserProxy {
-  handler: TestMock<PageHandlerRemote>&PageHandlerRemote;
   dialogArgs: string;
 
   constructor(args: ProxyArgs) {
-    this.handler = TestMock.fromClass(PageHandlerRemote);
     // Creating JSON string as in OfficeFallbackDialog::GetDialogArgs().
     this.dialogArgs = JSON.stringify(args);
   }
@@ -43,13 +41,15 @@ suite('<office-fallback>', () => {
   let container: HTMLElement;
   // The <office-fallback> app.
   let officeFallbackApp: OfficeFallbackElement;
-  // The BrowserProxy element to make assertions on when mojo methods are
+  // The mock PageHandlerRemote to make assertions on when mojo methods are
   // called.
-  let testProxy: OfficeFallbackTestBrowserProxy;
+  let handler: TestMock<PageHandlerRemote>&PageHandlerRemote;
 
   const setUp =
       (enableRetryOption = true, enableQuickOfficeOption = true,
        reasonMessage = 'a reason') => {
+        handler = TestMock.fromClass(PageHandlerRemote);
+        browserProxyFactory.setInstance({handler});
         const dialogArgs: ProxyArgs = {
           titleText: 'a title',
           reasonMessage: reasonMessage,
@@ -57,7 +57,7 @@ suite('<office-fallback>', () => {
           enableRetryOption: enableRetryOption,
           enableQuickOfficeOption: enableQuickOfficeOption,
         };
-        testProxy = new OfficeFallbackTestBrowserProxy(dialogArgs);
+        const testProxy = new OfficeFallbackTestBrowserProxy(dialogArgs);
         OfficeFallbackBrowserProxy.setInstance(testProxy);
 
         // Creates and attaches the <office-fallback> element to the DOM tree.
@@ -81,7 +81,7 @@ suite('<office-fallback>', () => {
    */
   teardown(() => {
     container.innerHTML = window.trustedTypes!.emptyHTML;
-    testProxy.handler.reset();
+    handler.reset();
   });
 
   /**
@@ -134,10 +134,9 @@ suite('<office-fallback>', () => {
     setUp();
 
     officeFallbackApp.$('#quick-office-button').click();
-    await testProxy.handler.whenCalled('close');
-    assertEquals(1, testProxy.handler.getCallCount('close'));
-    assertDeepEquals(
-        [DialogChoice.kQuickOffice], testProxy.handler.getArgs('close'));
+    await handler.whenCalled('close');
+    assertEquals(1, handler.getCallCount('close'));
+    assertDeepEquals([DialogChoice.kQuickOffice], handler.getArgs('close'));
   });
 
   /**
@@ -148,10 +147,9 @@ suite('<office-fallback>', () => {
     setUp();
 
     officeFallbackApp.$('#try-again-button').click();
-    await testProxy.handler.whenCalled('close');
-    assertEquals(1, testProxy.handler.getCallCount('close'));
-    assertDeepEquals(
-        [DialogChoice.kTryAgain], testProxy.handler.getArgs('close'));
+    await handler.whenCalled('close');
+    assertEquals(1, handler.getCallCount('close'));
+    assertDeepEquals([DialogChoice.kTryAgain], handler.getArgs('close'));
   });
 
   /**
@@ -162,10 +160,9 @@ suite('<office-fallback>', () => {
     setUp();
 
     officeFallbackApp.$('#cancel-button').click();
-    await testProxy.handler.whenCalled('close');
-    assertEquals(1, testProxy.handler.getCallCount('close'));
-    assertDeepEquals(
-        [DialogChoice.kCancel], testProxy.handler.getArgs('close'));
+    await handler.whenCalled('close');
+    assertEquals(1, handler.getCallCount('close'));
+    assertDeepEquals([DialogChoice.kCancel], handler.getArgs('close'));
   });
 
   /**
@@ -176,9 +173,9 @@ suite('<office-fallback>', () => {
     setUp();
 
     officeFallbackApp.$('#ok-button').click();
-    await testProxy.handler.whenCalled('close');
-    assertEquals(1, testProxy.handler.getCallCount('close'));
-    assertDeepEquals([DialogChoice.kOk], testProxy.handler.getArgs('close'));
+    await handler.whenCalled('close');
+    assertEquals(1, handler.getCallCount('close'));
+    assertDeepEquals([DialogChoice.kOk], handler.getArgs('close'));
   });
 
   /**
@@ -189,9 +186,8 @@ suite('<office-fallback>', () => {
     setUp();
 
     document.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}));
-    await testProxy.handler.whenCalled('close');
-    assertEquals(1, testProxy.handler.getCallCount('close'));
-    assertDeepEquals(
-        [DialogChoice.kCancel], testProxy.handler.getArgs('close'));
+    await handler.whenCalled('close');
+    assertEquals(1, handler.getCallCount('close'));
+    assertDeepEquals([DialogChoice.kCancel], handler.getArgs('close'));
   });
 });

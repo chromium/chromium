@@ -10,7 +10,7 @@ import '/strings.m.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 
-import {CloudUploadBrowserProxy} from './cloud_upload_browser_proxy.js';
+import {browserProxyFactory} from './cloud_upload.mojom-webui.js';
 import {CloudProvider, MoveConfirmationPageElement} from './move_confirmation_page.js';
 
 
@@ -19,7 +19,7 @@ window.addEventListener('load', () => {
 });
 
 const dialogArgs =
-    await CloudUploadBrowserProxy.getInstance().handler.getDialogArgs();
+    await browserProxyFactory.getInstance().handler.getDialogArgs();
 assert(dialogArgs.args);
 
 const dialogSpecificArgs = dialogArgs.args.dialogSpecificArgs;

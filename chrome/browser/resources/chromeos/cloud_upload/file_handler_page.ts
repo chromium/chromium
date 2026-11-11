@@ -6,9 +6,8 @@ import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import type {DialogTask} from './cloud_upload.mojom-webui.js';
-import {MetricsRecordedSetupPage, UserAction} from './cloud_upload.mojom-webui.js';
-import {CloudUploadBrowserProxy} from './cloud_upload_browser_proxy.js';
+import type {BrowserProxy, DialogTask} from './cloud_upload.mojom-webui.js';
+import {browserProxyFactory, MetricsRecordedSetupPage, UserAction} from './cloud_upload.mojom-webui.js';
 import type {BaseCardElement, FileHandlerCardElement} from './file_handler_card.js';
 import {AccordionTopCardElement, CloudProviderCardElement, CloudProviderType, LocalHandlerCardElement} from './file_handler_card.js';
 import {getTemplate} from './file_handler_page.html.js';
@@ -32,8 +31,7 @@ export class FileHandlerPageElement extends HTMLElement {
   localHandlerCards: LocalHandlerCardElement[] = [];
   cards: BaseCardElement[] = [];
 
-  private proxy: CloudUploadBrowserProxy =
-      CloudUploadBrowserProxy.getInstance();
+  private proxy: BrowserProxy = browserProxyFactory.getInstance();
 
   // Save reference to listener so it can be removed from the document in
   // disconnectedCallback().

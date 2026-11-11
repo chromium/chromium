@@ -6,7 +6,6 @@ import 'chrome://cloud-upload/file_handler_page.js';
 
 import type {DialogTask} from 'chrome://cloud-upload/cloud_upload.mojom-webui.js';
 import {UserAction} from 'chrome://cloud-upload/cloud_upload.mojom-webui.js';
-import {CloudUploadBrowserProxy} from 'chrome://cloud-upload/cloud_upload_browser_proxy.js';
 import type {AccordionTopCardElement} from 'chrome://cloud-upload/file_handler_card.js';
 import type {FileHandlerPageElement} from 'chrome://cloud-upload/file_handler_page.js';
 import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
@@ -14,21 +13,20 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import type {ProxyOptions} from './cloud_upload_test_browser_proxy.js';
-import {CloudUploadTestBrowserProxy} from './cloud_upload_test_browser_proxy.js';
+import type {ProxyOptions, TestCloudUploadPageHandler} from './cloud_upload_test_browser_proxy.js';
+import {setupCloudUploadTestHandler} from './cloud_upload_test_browser_proxy.js';
 
 suite('<file-handler-page>', () => {
   /* Holds the <file-handler-page> app. */
   let container: HTMLElement;
   /* The <file-handler-page> app. */
   let fileHandlerPageApp: FileHandlerPageElement;
-  /* The BrowserProxy element to make assertions on when mojo methods are
+  /* The mock PageHandlerRemote to make assertions on when mojo methods are
      called. */
-  let testProxy: CloudUploadTestBrowserProxy;
+  let testHandler: TestCloudUploadPageHandler;
 
   async function setUp(options: ProxyOptions) {
-    testProxy = new CloudUploadTestBrowserProxy(options);
-    CloudUploadBrowserProxy.setInstance(testProxy);
+    testHandler = setupCloudUploadTestHandler(options);
 
     // Setup fake strings.
     loadTimeData.resetForTesting({
@@ -84,7 +82,7 @@ suite('<file-handler-page>', () => {
     loadTimeData.resetForTesting();
     assert(window.trustedTypes);
     container.innerHTML = window.trustedTypes.emptyHTML;
-    testProxy.handler.reset();
+    testHandler.reset();
   });
 
   /**
@@ -116,12 +114,11 @@ suite('<file-handler-page>', () => {
     assertFalse(
         fileHandlerPageApp.$<CrButtonElement>('.action-button').disabled);
     fileHandlerPageApp.$('.action-button').click();
-    await testProxy.handler.whenCalled('respondWithUserActionAndClose');
-    assertEquals(
-        1, testProxy.handler.getCallCount('respondWithUserActionAndClose'));
+    await testHandler.whenCalled('respondWithUserActionAndClose');
+    assertEquals(1, testHandler.getCallCount('respondWithUserActionAndClose'));
     assertDeepEquals(
         [UserAction.kConfirmOrUploadToGoogleDrive],
-        testProxy.handler.getArgs('respondWithUserActionAndClose'));
+        testHandler.getArgs('respondWithUserActionAndClose'));
   });
 
 
@@ -154,12 +151,11 @@ suite('<file-handler-page>', () => {
     assertFalse(
         fileHandlerPageApp.$<CrButtonElement>('.action-button').disabled);
     fileHandlerPageApp.$('.action-button').click();
-    await testProxy.handler.whenCalled('respondWithUserActionAndClose');
-    assertEquals(
-        1, testProxy.handler.getCallCount('respondWithUserActionAndClose'));
+    await testHandler.whenCalled('respondWithUserActionAndClose');
+    assertEquals(1, testHandler.getCallCount('respondWithUserActionAndClose'));
     assertDeepEquals(
         [UserAction.kConfirmOrUploadToGoogleDrive],
-        testProxy.handler.getArgs('respondWithUserActionAndClose'));
+        testHandler.getArgs('respondWithUserActionAndClose'));
   });
 
   /**
@@ -191,12 +187,11 @@ suite('<file-handler-page>', () => {
     assertFalse(
         fileHandlerPageApp.$<CrButtonElement>('.action-button').disabled);
     fileHandlerPageApp.$('.action-button').click();
-    await testProxy.handler.whenCalled('respondWithUserActionAndClose');
-    assertEquals(
-        1, testProxy.handler.getCallCount('respondWithUserActionAndClose'));
+    await testHandler.whenCalled('respondWithUserActionAndClose');
+    assertEquals(1, testHandler.getCallCount('respondWithUserActionAndClose'));
     assertDeepEquals(
         [UserAction.kSetUpOneDrive],
-        testProxy.handler.getArgs('respondWithUserActionAndClose'));
+        testHandler.getArgs('respondWithUserActionAndClose'));
   });
 
 
@@ -229,12 +224,11 @@ suite('<file-handler-page>', () => {
     assertFalse(
         fileHandlerPageApp.$<CrButtonElement>('.action-button').disabled);
     fileHandlerPageApp.$('.action-button').click();
-    await testProxy.handler.whenCalled('respondWithUserActionAndClose');
-    assertEquals(
-        1, testProxy.handler.getCallCount('respondWithUserActionAndClose'));
+    await testHandler.whenCalled('respondWithUserActionAndClose');
+    assertEquals(1, testHandler.getCallCount('respondWithUserActionAndClose'));
     assertDeepEquals(
         [UserAction.kSetUpOneDrive],
-        testProxy.handler.getArgs('respondWithUserActionAndClose'));
+        testHandler.getArgs('respondWithUserActionAndClose'));
   });
 
   /**
@@ -278,13 +272,12 @@ suite('<file-handler-page>', () => {
             localTaskCard.click();
             assertFalse(actionButton.disabled);
             actionButton.click();
-            await testProxy.handler.whenCalled('respondWithLocalTaskAndClose');
+            await testHandler.whenCalled('respondWithLocalTaskAndClose');
             assertEquals(
-                1,
-                testProxy.handler.getCallCount('respondWithLocalTaskAndClose'));
+                1, testHandler.getCallCount('respondWithLocalTaskAndClose'));
             assertDeepEquals(
                 [taskPosition],
-                testProxy.handler.getArgs('respondWithLocalTaskAndClose'));
+                testHandler.getArgs('respondWithLocalTaskAndClose'));
           }));
 
   /**
@@ -329,13 +322,12 @@ suite('<file-handler-page>', () => {
             localTaskCard.click();
             assertFalse(actionButton.disabled);
             actionButton.click();
-            await testProxy.handler.whenCalled('respondWithLocalTaskAndClose');
+            await testHandler.whenCalled('respondWithLocalTaskAndClose');
             assertEquals(
-                1,
-                testProxy.handler.getCallCount('respondWithLocalTaskAndClose'));
+                1, testHandler.getCallCount('respondWithLocalTaskAndClose'));
             assertDeepEquals(
                 [taskPosition],
-                testProxy.handler.getArgs('respondWithLocalTaskAndClose'));
+                testHandler.getArgs('respondWithLocalTaskAndClose'));
           }));
 
   /** Test that the accordion doesn't show when there are no local tasks.*/
@@ -463,12 +455,11 @@ suite('<file-handler-page>', () => {
     });
 
     fileHandlerPageApp.$('.cancel-button').click();
-    await testProxy.handler.whenCalled('respondWithUserActionAndClose');
-    assertEquals(
-        1, testProxy.handler.getCallCount('respondWithUserActionAndClose'));
+    await testHandler.whenCalled('respondWithUserActionAndClose');
+    assertEquals(1, testHandler.getCallCount('respondWithUserActionAndClose'));
     assertDeepEquals(
         [UserAction.kCancel],
-        testProxy.handler.getArgs('respondWithUserActionAndClose'));
+        testHandler.getArgs('respondWithUserActionAndClose'));
   });
 
   /**
@@ -492,11 +483,10 @@ suite('<file-handler-page>', () => {
     });
 
     document.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}));
-    await testProxy.handler.whenCalled('respondWithUserActionAndClose');
-    assertEquals(
-        1, testProxy.handler.getCallCount('respondWithUserActionAndClose'));
+    await testHandler.whenCalled('respondWithUserActionAndClose');
+    assertEquals(1, testHandler.getCallCount('respondWithUserActionAndClose'));
     assertDeepEquals(
         [UserAction.kCancel],
-        testProxy.handler.getArgs('respondWithUserActionAndClose'));
+        testHandler.getArgs('respondWithUserActionAndClose'));
   });
 });

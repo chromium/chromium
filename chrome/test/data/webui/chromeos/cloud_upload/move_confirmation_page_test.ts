@@ -5,7 +5,6 @@
 import 'chrome://cloud-upload/move_confirmation_page.js';
 
 import {OperationType, UserAction} from 'chrome://cloud-upload/cloud_upload.mojom-webui.js';
-import {CloudUploadBrowserProxy} from 'chrome://cloud-upload/cloud_upload_browser_proxy.js';
 import type {MoveConfirmationPageElement} from 'chrome://cloud-upload/move_confirmation_page.js';
 import {CloudProvider} from 'chrome://cloud-upload/move_confirmation_page.js';
 import type {CrCheckboxElement} from 'chrome://resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
@@ -14,21 +13,20 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import type {ProxyOptions} from './cloud_upload_test_browser_proxy.js';
-import {CloudUploadTestBrowserProxy} from './cloud_upload_test_browser_proxy.js';
+import type {ProxyOptions, TestCloudUploadPageHandler} from './cloud_upload_test_browser_proxy.js';
+import {setupCloudUploadTestHandler} from './cloud_upload_test_browser_proxy.js';
 
 suite('<move-confirmation-page>', () => {
   /* Holds the <move-confirmation-page> app. */
   let container: HTMLElement;
   /* The <move-confirmation-page> app. */
   let moveConfirmationPageApp: MoveConfirmationPageElement;
-  /* The BrowserProxy element to make assertions on when mojo methods are
+  /* The mock PageHandlerRemote to make assertions on when mojo methods are
      called. */
-  let testProxy: CloudUploadTestBrowserProxy;
+  let testHandler: TestCloudUploadPageHandler;
 
   async function setUp(options: ProxyOptions) {
-    testProxy = new CloudUploadTestBrowserProxy(options);
-    CloudUploadBrowserProxy.setInstance(testProxy);
+    testHandler = setupCloudUploadTestHandler(options);
 
     // Setup fake strings, there are tests below to assert these strings.
     loadTimeData.resetForTesting({
@@ -100,7 +98,7 @@ suite('<move-confirmation-page>', () => {
     loadTimeData.resetForTesting();
     assert(window.trustedTypes);
     container.innerHTML = window.trustedTypes.emptyHTML;
-    testProxy.handler.reset();
+    testHandler.reset();
   });
 
   /**
@@ -129,20 +127,19 @@ suite('<move-confirmation-page>', () => {
 
     // Check that the right |respondWithUserActionAndClose| mojo request is
     // called.
-    await testProxy.handler.whenCalled('respondWithUserActionAndClose');
-    assertEquals(
-        1, testProxy.handler.getCallCount('respondWithUserActionAndClose'));
+    await testHandler.whenCalled('respondWithUserActionAndClose');
+    assertEquals(1, testHandler.getCallCount('respondWithUserActionAndClose'));
     assertDeepEquals(
         [UserAction.kUploadToGoogleDrive],
-        testProxy.handler.getArgs('respondWithUserActionAndClose'));
+        testHandler.getArgs('respondWithUserActionAndClose'));
 
     // Check that the |setAlwaysMoveOfficeFilesToDrive| mojo request is
     // called with |false|.
-    await testProxy.handler.whenCalled('respondWithUserActionAndClose');
+    await testHandler.whenCalled('respondWithUserActionAndClose');
     assertEquals(
-        1, testProxy.handler.getCallCount('setAlwaysMoveOfficeFilesToDrive'));
+        1, testHandler.getCallCount('setAlwaysMoveOfficeFilesToDrive'));
     assertDeepEquals(
-        [false], testProxy.handler.getArgs('setAlwaysMoveOfficeFilesToDrive'));
+        [false], testHandler.getArgs('setAlwaysMoveOfficeFilesToDrive'));
   });
 
   /**
@@ -181,28 +178,24 @@ suite('<move-confirmation-page>', () => {
 
         // Check that the right |respondWithUserActionAndClose| mojo request is
         // called.
-        await testProxy.handler.whenCalled('respondWithUserActionAndClose');
+        await testHandler.whenCalled('respondWithUserActionAndClose');
         assertEquals(
-            1, testProxy.handler.getCallCount('respondWithUserActionAndClose'));
+            1, testHandler.getCallCount('respondWithUserActionAndClose'));
         assertDeepEquals(
             [UserAction.kUploadToGoogleDrive],
-            testProxy.handler.getArgs('respondWithUserActionAndClose'));
+            testHandler.getArgs('respondWithUserActionAndClose'));
 
         // Check that the right |setAlwaysMoveOfficeFilesToDrive| mojo request
         // is called with |true|.
         assertEquals(
-            1,
-            testProxy.handler.getCallCount('setAlwaysMoveOfficeFilesToDrive'));
+            1, testHandler.getCallCount('setAlwaysMoveOfficeFilesToDrive'));
         assertDeepEquals(
-            [true],
-            testProxy.handler.getArgs('setAlwaysMoveOfficeFilesToDrive'));
+            [true], testHandler.getArgs('setAlwaysMoveOfficeFilesToDrive'));
 
         // Check that the |setAlwaysMoveOfficeFilesToOneDrive| mojo request is
         // not called.
         assertEquals(
-            0,
-            testProxy.handler.getCallCount(
-                'setAlwaysMoveOfficeFilesToOneDrive'));
+            0, testHandler.getCallCount('setAlwaysMoveOfficeFilesToOneDrive'));
       });
 
   /**
@@ -239,22 +232,20 @@ suite('<move-confirmation-page>', () => {
 
         // Check that the right |respondWithUserActionAndClose| mojo request is
         // called.
-        await testProxy.handler.whenCalled('respondWithUserActionAndClose');
+        await testHandler.whenCalled('respondWithUserActionAndClose');
         assertEquals(
-            1, testProxy.handler.getCallCount('respondWithUserActionAndClose'));
+            1, testHandler.getCallCount('respondWithUserActionAndClose'));
         assertDeepEquals(
             [UserAction.kUploadToGoogleDrive],
-            testProxy.handler.getArgs('respondWithUserActionAndClose'));
+            testHandler.getArgs('respondWithUserActionAndClose'));
 
         // Check that the |setAlwaysMoveOfficeFilesToDrive| mojo request is
         // called with |false|.
-        await testProxy.handler.whenCalled('respondWithUserActionAndClose');
+        await testHandler.whenCalled('respondWithUserActionAndClose');
         assertEquals(
-            1,
-            testProxy.handler.getCallCount('setAlwaysMoveOfficeFilesToDrive'));
+            1, testHandler.getCallCount('setAlwaysMoveOfficeFilesToDrive'));
         assertDeepEquals(
-            [false],
-            testProxy.handler.getArgs('setAlwaysMoveOfficeFilesToDrive'));
+            [false], testHandler.getArgs('setAlwaysMoveOfficeFilesToDrive'));
       });
 
   /**
@@ -311,22 +302,19 @@ suite('<move-confirmation-page>', () => {
 
     // Check that the right |respondWithUserActionAndClose| mojo request is
     // called.
-    await testProxy.handler.whenCalled('respondWithUserActionAndClose');
-    assertEquals(
-        1, testProxy.handler.getCallCount('respondWithUserActionAndClose'));
+    await testHandler.whenCalled('respondWithUserActionAndClose');
+    assertEquals(1, testHandler.getCallCount('respondWithUserActionAndClose'));
     assertDeepEquals(
         [UserAction.kUploadToOneDrive],
-        testProxy.handler.getArgs('respondWithUserActionAndClose'));
+        testHandler.getArgs('respondWithUserActionAndClose'));
 
     // Check that the |setAlwaysMoveOfficeFilesToOneDrive| mojo request is
     // called with |false|.
-    await testProxy.handler.whenCalled('respondWithUserActionAndClose');
+    await testHandler.whenCalled('respondWithUserActionAndClose');
     assertEquals(
-        1,
-        testProxy.handler.getCallCount('setAlwaysMoveOfficeFilesToOneDrive'));
+        1, testHandler.getCallCount('setAlwaysMoveOfficeFilesToOneDrive'));
     assertDeepEquals(
-        [false],
-        testProxy.handler.getArgs('setAlwaysMoveOfficeFilesToOneDrive'));
+        [false], testHandler.getArgs('setAlwaysMoveOfficeFilesToOneDrive'));
   });
 
   /**
@@ -365,29 +353,25 @@ suite('<move-confirmation-page>', () => {
 
         // Check that the right |respondWithUserActionAndClose| mojo request is
         // called.
-        await testProxy.handler.whenCalled('respondWithUserActionAndClose');
+        await testHandler.whenCalled('respondWithUserActionAndClose');
         assertEquals(
-            1, testProxy.handler.getCallCount('respondWithUserActionAndClose'));
+            1, testHandler.getCallCount('respondWithUserActionAndClose'));
         assertDeepEquals(
             [UserAction.kUploadToOneDrive],
-            testProxy.handler.getArgs('respondWithUserActionAndClose'));
+            testHandler.getArgs('respondWithUserActionAndClose'));
 
         // Check that the right |setAlwaysMoveOfficeFilesToOneDrive| mojo
         // request is called.
         assertEquals(
-            1,
-            testProxy.handler.getCallCount(
-                'setAlwaysMoveOfficeFilesToOneDrive'));
+            1, testHandler.getCallCount('setAlwaysMoveOfficeFilesToOneDrive'));
         assertDeepEquals(
-            [true],
-            testProxy.handler.getArgs('setAlwaysMoveOfficeFilesToOneDrive'));
+            [true], testHandler.getArgs('setAlwaysMoveOfficeFilesToOneDrive'));
 
 
         // Check that the |setAlwaysMoveOfficeFilesToDrive| mojo request is not
         // called.
         assertEquals(
-            0,
-            testProxy.handler.getCallCount('setAlwaysMoveOfficeFilesToDrive'));
+            0, testHandler.getCallCount('setAlwaysMoveOfficeFilesToDrive'));
       });
 
 
@@ -426,23 +410,20 @@ suite('<move-confirmation-page>', () => {
 
         // Check that the right |respondWithUserActionAndClose| mojo request is
         // called.
-        await testProxy.handler.whenCalled('respondWithUserActionAndClose');
+        await testHandler.whenCalled('respondWithUserActionAndClose');
         assertEquals(
-            1, testProxy.handler.getCallCount('respondWithUserActionAndClose'));
+            1, testHandler.getCallCount('respondWithUserActionAndClose'));
         assertDeepEquals(
             [UserAction.kUploadToOneDrive],
-            testProxy.handler.getArgs('respondWithUserActionAndClose'));
+            testHandler.getArgs('respondWithUserActionAndClose'));
 
         // Check that the |setAlwaysMoveOfficeFilesToOneDrive| mojo request is
         // called with |false|.
-        await testProxy.handler.whenCalled('respondWithUserActionAndClose');
+        await testHandler.whenCalled('respondWithUserActionAndClose');
         assertEquals(
-            1,
-            testProxy.handler.getCallCount(
-                'setAlwaysMoveOfficeFilesToOneDrive'));
+            1, testHandler.getCallCount('setAlwaysMoveOfficeFilesToOneDrive'));
         assertDeepEquals(
-            [false],
-            testProxy.handler.getArgs('setAlwaysMoveOfficeFilesToOneDrive'));
+            [false], testHandler.getArgs('setAlwaysMoveOfficeFilesToOneDrive'));
       });
 
   /**
@@ -659,12 +640,11 @@ suite('<move-confirmation-page>', () => {
     });
 
     moveConfirmationPageApp.$('.cancel-button').click();
-    await testProxy.handler.whenCalled('respondWithUserActionAndClose');
-    assertEquals(
-        1, testProxy.handler.getCallCount('respondWithUserActionAndClose'));
+    await testHandler.whenCalled('respondWithUserActionAndClose');
+    assertEquals(1, testHandler.getCallCount('respondWithUserActionAndClose'));
     assertDeepEquals(
         [UserAction.kCancelGoogleDrive],
-        testProxy.handler.getArgs('respondWithUserActionAndClose'));
+        testHandler.getArgs('respondWithUserActionAndClose'));
   });
 
   /**
@@ -686,11 +666,10 @@ suite('<move-confirmation-page>', () => {
     });
 
     document.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}));
-    await testProxy.handler.whenCalled('respondWithUserActionAndClose');
-    assertEquals(
-        1, testProxy.handler.getCallCount('respondWithUserActionAndClose'));
+    await testHandler.whenCalled('respondWithUserActionAndClose');
+    assertEquals(1, testHandler.getCallCount('respondWithUserActionAndClose'));
     assertDeepEquals(
         [UserAction.kCancelGoogleDrive],
-        testProxy.handler.getArgs('respondWithUserActionAndClose'));
+        testHandler.getArgs('respondWithUserActionAndClose'));
   });
 });
