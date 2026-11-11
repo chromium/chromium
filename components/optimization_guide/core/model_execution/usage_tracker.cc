@@ -43,7 +43,7 @@ bool WasUsedWithin(std::optional<base::Time> last_use, base::TimeDelta period) {
 BASE_FEATURE(kOnDeviceModelUsageTracking, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<base::TimeDelta> kRecentUsePeriod{
-    &kOnDeviceModelUsageTracking, "recent_use_period", base::Days(30)};
+    &kOnDeviceModelUsageTracking, "recent_use_period", base::Days(1)};
 
 const base::FeatureParam<base::TimeDelta> kRetentionPeriod{
     &kOnDeviceModelUsageTracking, "retention_period", base::Days(30)};

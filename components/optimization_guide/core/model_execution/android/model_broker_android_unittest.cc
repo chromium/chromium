@@ -320,7 +320,7 @@ TEST_F(ModelBrokerAndroidTest, DownloadSuccessForAlreadyUsedFeature) {
   UsageTracker(&fake_broker_.local_state())
       .RaisePriority(ToUseCaseName(mojom::OnDeviceFeature::kTest),
                      UsageTracker::Priority::kBestEffort);
-  task_environment_.FastForwardBy(kRecentUsePeriod.Get() - base::Days(1));
+  task_environment_.FastForwardBy(kRecentUsePeriod.Get() - base::Hours(1));
 
   ModelBrokerClient client(fake_broker_.BindAndPassRemote(), nullptr);
   auto session =
