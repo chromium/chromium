@@ -1085,10 +1085,10 @@ class ExtensionControllingSearchExplicitChoiceParamsBrowserTest
   unsigned int next_icon_offset_ = 0;
 };
 
+// Verify correctness of the search option-agnostic dialog strings.
 IN_PROC_BROWSER_TEST_F(
     ExtensionControllingSearchExplicitChoiceParamsBrowserTest,
-    PrimarySearchIsExtensionNotInPrepopulatedList) {
-  base::HistogramTester histogram_tester;
+    StaticDialogStrings) {
   const extensions::Extension* extension = AddExtensionControllingSearch();
   ASSERT_TRUE(extension);
 
@@ -1101,12 +1101,30 @@ IN_PROC_BROWSER_TEST_F(
       base::StrCat({u"The extension \"", kSearchOverrideExtensionName,
                     u"\" changed your settings"})));
 
+  ASSERT_TRUE(params->content.previous_setting.has_value());
+  EXPECT_EQ(u"Your previous choice",
+            params->content.previous_setting->description);
+
+  ASSERT_TRUE(params->content.new_setting.has_value());
+  EXPECT_EQ(u"Changed to this by extension",
+            params->content.new_setting->description);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ExtensionControllingSearchExplicitChoiceParamsBrowserTest,
+    PrimarySearchIsExtensionNotInPrepopulatedList) {
+  base::HistogramTester histogram_tester;
+  const extensions::Extension* extension = AddExtensionControllingSearch();
+  ASSERT_TRUE(extension);
+
+  std::optional<ExtensionSettingsOverriddenDialog::Params> params =
+      GetSearchOverriddenParamsSync(web_contents());
+  ASSERT_TRUE(params);
+
   auto new_setting = params->content.new_setting;
   ASSERT_TRUE(new_setting.has_value());
   EXPECT_TRUE(IconsEqual(GetExpectedFallbackIcon(), new_setting.value().image));
   EXPECT_EQ(u"example.com", new_setting.value().text);
-  EXPECT_TRUE(new_setting.value().favicon_url.is_empty());
-  EXPECT_EQ(u"Changed to this by extension", new_setting.value().description);
 
   // Ensure that a fully-populated dialog was logged.
   histogram_tester.ExpectUniqueSample(
@@ -1118,8 +1136,7 @@ IN_PROC_BROWSER_TEST_F(
     ExtensionControllingSearchExplicitChoiceParamsBrowserTest,
     PrimarySearchIsExtensionInPrepopulatedList) {
   const TemplateURL* extension_turl = FindPrepopulatedTemplateURL();
-  const GURL expected_favicon_url = extension_turl->favicon_url();
-  EXPECT_FALSE(expected_favicon_url.is_empty());
+  EXPECT_FALSE(extension_turl->favicon_url().is_empty());
 
   // Use a name and favicon URL in the extension manifest that differ from the
   // prepopulated engine's values to verify that the dialog uses the
@@ -1127,7 +1144,7 @@ IN_PROC_BROWSER_TEST_F(
   constexpr char kManifestName[] = "PrimaryPrepopulatedExtension";
   const GURL manifest_favicon_url("https://example.com/manifest_favicon.ico");
   ASSERT_NE(kManifestName, base::UTF16ToUTF8(extension_turl->short_name()));
-  ASSERT_NE(manifest_favicon_url, expected_favicon_url);
+  ASSERT_NE(manifest_favicon_url, extension_turl->favicon_url());
 
   const extensions::Extension* extension = InstallCustomSearchExtension(
       kManifestName, base::UTF16ToUTF8(extension_turl->keyword()),
@@ -1144,9 +1161,7 @@ IN_PROC_BROWSER_TEST_F(
   auto new_setting = params->content.new_setting;
   ASSERT_TRUE(new_setting.has_value());
   EXPECT_EQ(extension_turl->short_name(), new_setting.value().text);
-  EXPECT_EQ(expected_favicon_url, new_setting.value().favicon_url);
   EXPECT_TRUE(IconsEqual(expected_icon, new_setting.value().image));
-  EXPECT_EQ(u"Changed to this by extension", new_setting.value().description);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1156,8 +1171,7 @@ IN_PROC_BROWSER_TEST_F(
   const TemplateURL* const default_provider =
       template_url_service->GetDefaultSearchProvider();
   ASSERT_TRUE(default_provider);
-  const GURL expected_favicon_url = default_provider->favicon_url();
-  EXPECT_FALSE(expected_favicon_url.is_empty());
+  EXPECT_FALSE(default_provider->favicon_url().is_empty());
 
   // Initially, default search is Google (non-extension, prepopulated).
   const extensions::Extension* extension = AddExtensionControllingSearch();
@@ -1173,9 +1187,7 @@ IN_PROC_BROWSER_TEST_F(
   auto previous_setting = params->content.previous_setting;
   ASSERT_TRUE(previous_setting.has_value());
   EXPECT_EQ(u"Google", previous_setting.value().text);
-  EXPECT_EQ(expected_favicon_url, previous_setting.value().favicon_url);
   EXPECT_TRUE(IconsEqual(expected_icon, previous_setting.value().image));
-  EXPECT_EQ(u"Your previous choice", previous_setting.value().description);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1202,20 +1214,17 @@ IN_PROC_BROWSER_TEST_F(
 
   auto previous_setting = params->content.previous_setting;
   ASSERT_TRUE(previous_setting.has_value());
-  // For a non-extension custom search engine, the user's configured short name,
-  // favicon URL, and fetched icon should be preserved.
+  // For a non-extension custom search engine, the user's configured short name
+  // and fetched icon should be preserved.
   EXPECT_EQ(custom_turl->short_name(), previous_setting.value().text);
-  EXPECT_EQ(custom_turl->favicon_url(), previous_setting.value().favicon_url);
   EXPECT_TRUE(IconsEqual(expected_icon, previous_setting.value().image));
-  EXPECT_EQ(u"Your previous choice", previous_setting.value().description);
 }
 
 IN_PROC_BROWSER_TEST_F(
     ExtensionControllingSearchExplicitChoiceParamsBrowserTest,
     SecondarySearchIsExtensionInPrepopulatedList) {
   const TemplateURL* extension_turl = FindPrepopulatedTemplateURL();
-  const GURL expected_favicon_url = extension_turl->favicon_url();
-  EXPECT_FALSE(expected_favicon_url.is_empty());
+  EXPECT_FALSE(extension_turl->favicon_url().is_empty());
 
   // Use a name and favicon URL in the extension manifest that differ from the
   // prepopulated engine's values to verify that the dialog uses the
@@ -1223,7 +1232,7 @@ IN_PROC_BROWSER_TEST_F(
   constexpr char kManifestName[] = "FirstPrepopulatedExtension";
   const GURL manifest_favicon_url("https://example.com/manifest_favicon.ico");
   ASSERT_NE(kManifestName, base::UTF16ToUTF8(extension_turl->short_name()));
-  ASSERT_NE(manifest_favicon_url, expected_favicon_url);
+  ASSERT_NE(manifest_favicon_url, extension_turl->favicon_url());
 
   // Install the first extension overriding search with a prepopulated search
   // URL.
@@ -1248,9 +1257,7 @@ IN_PROC_BROWSER_TEST_F(
   auto previous_setting = params->content.previous_setting;
   ASSERT_TRUE(previous_setting.has_value());
   EXPECT_EQ(extension_turl->short_name(), previous_setting.value().text);
-  EXPECT_EQ(expected_favicon_url, previous_setting.value().favicon_url);
   EXPECT_TRUE(IconsEqual(expected_icon, previous_setting.value().image));
-  EXPECT_EQ(u"Your previous choice", previous_setting.value().description);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1278,8 +1285,6 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(
       IconsEqual(GetExpectedFallbackIcon(), previous_setting.value().image));
   EXPECT_EQ(u"first-override.com", previous_setting.value().text);
-  EXPECT_TRUE(previous_setting.value().favicon_url.is_empty());
-  EXPECT_EQ(u"Your previous choice", previous_setting.value().description);
 }
 
 IN_PROC_BROWSER_TEST_F(
