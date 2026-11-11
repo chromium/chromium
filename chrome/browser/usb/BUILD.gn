@@ -313,6 +313,7 @@ source_set("platform_browser_tests") {
   if (!is_android) {
     deps += [
       "//chrome/app:command_ids",
+      "//chrome/browser/ui/web_applications/test:test_support_ui",
       "//chrome/browser/web_applications:web_applications_test_support",
     ]
   }

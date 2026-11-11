@@ -498,6 +498,8 @@ if (!is_android) {
       # crbug.com/527094632.
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_tabstrip",
+      "//chrome/browser/ui/web_applications:test_support",
+      "//chrome/test/base:chrome_test_path_utils",
       "//third_party/fuzztest",
     ]
 

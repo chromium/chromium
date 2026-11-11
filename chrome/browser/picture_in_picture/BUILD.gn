@@ -306,8 +306,12 @@ if (!is_android) {
       "//chrome/browser/ui/views/picture_in_picture",
       "//chrome/browser/ui/views/tabs/tab",
       "//chrome/browser/ui/web_applications",
+      "//chrome/browser/ui/web_applications:test_support",
+      "//chrome/browser/ui/web_applications/test:test_support_ui",
       "//chrome/browser/web_applications",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_test_path_utils",
+      "//chrome/test/base:chrome_test_utils",
       "//components/content_settings/core/browser",
       "//components/enterprise/isolated_mode",
       "//components/javascript_dialogs",
@@ -398,6 +402,13 @@ if (!is_android) {
         "//ui/display",
       ]
     }
+
+    if (!is_chromeos) {
+      deps += [
+        "//chrome/test/base:chrome_test_path_utils",
+        "//chrome/test/base:chrome_test_utils",
+      ]
+    }
   }
 
   source_set("test_support_ui") {
@@ -414,6 +425,7 @@ if (!is_android) {
     deps = [
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/test/base:chrome_test_path_utils",
       "//content/public/browser",
       "//content/test:test_support",
     ]

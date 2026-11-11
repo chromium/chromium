@@ -5089,6 +5089,7 @@ source_set("core_unit_tests") {
     deps += [
       "//chrome/browser/child_module",
       "//chrome/browser/ui/webui/top_chrome",
+      "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/common/child_module",
     ]
   }
@@ -5404,6 +5405,7 @@ if (!is_android) {
       "//chrome/common:chrome_features",
       "//chrome/common:non_code_constants",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_test_path_utils",
       "//components/javascript_dialogs",
       "//components/surface_embed/common",
       "//components/webui/flags",

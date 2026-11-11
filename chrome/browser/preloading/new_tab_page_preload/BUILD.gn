@@ -67,6 +67,8 @@ if (!is_android) {
       "//chrome/browser/preloading/prerender",
       "//chrome/common",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_test_utils",
+      "//chrome/test/base:platform_browser_test",
       "//components/page_load_metrics/browser",
       "//components/prefs",
       "//content/public/browser",

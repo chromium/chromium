@@ -20,6 +20,7 @@ if (!is_android) {
       "//chrome/browser/devtools:test_support",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_test_utils",
       "//components/permissions",
       "//content/public/browser",
       "//content/test:browsertest_support",

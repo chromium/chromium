@@ -98,6 +98,10 @@ if (enable_smart_card) {
       "//testing/gmock",
       "//testing/gtest",
     ]
+
+    if (is_chromeos) {
+      deps += [ "//chrome/browser/ui/web_applications/test:test_support_ui" ]
+    }
   }
 
   source_set("interactive_ui_tests") {

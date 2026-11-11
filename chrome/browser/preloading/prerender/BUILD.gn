@@ -185,6 +185,7 @@ if (!is_android) {
       "//chrome/common",
       "//chrome/test:test_support",
       "//chrome/test/base:browser_test_waiters",
+      "//chrome/test/base:chrome_test_utils",
       "//components/omnibox/browser",
       "//components/performance_manager",
       "//components/safe_browsing/core/common",

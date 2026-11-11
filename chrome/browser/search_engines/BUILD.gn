@@ -196,6 +196,7 @@ source_set("platform_browser_tests") {
     "//base/test:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",
+    "//chrome/test/base:platform_browser_test",
     "//components/prefs",
     "//components/regional_capabilities",
     "//components/search_engines",

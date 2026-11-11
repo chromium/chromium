@@ -149,6 +149,7 @@ if (!is_android) {
       "//chrome/common",
       "//chrome/test:test_support",
       "//chrome/test/base:browser_test_waiters",
+      "//chrome/test/base:chrome_test_path_utils",
       "//components/language/core/browser",
       "//components/translate/content/browser",
       "//components/translate/core/browser",

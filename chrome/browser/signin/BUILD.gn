@@ -916,6 +916,11 @@ if (!is_android) {
         "//components/supervised_user/core/browser",
         "//components/user_manager",
       ]
+    } else {
+      deps += [
+        "//chrome/browser/ui/web_applications/test:test_support_ui",
+        "//chrome/test/base:fake_gaia_mixin",
+      ]
     }
   }
 }

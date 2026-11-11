@@ -244,6 +244,7 @@ if (!is_android) {
       "//chrome/browser/ui/find_bar",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_test_path_utils",
       "//content/test:test_support",
       "//testing/gmock",
       "//testing/gtest",

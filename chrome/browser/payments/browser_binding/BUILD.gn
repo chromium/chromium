@@ -80,6 +80,7 @@ source_set("browsertests") {
     ":browser_bound_key_deleter",
     ":test_support",
     "//chrome/test:test_support",
+    "//chrome/test/base:platform_browser_test",
   ]
 }
 

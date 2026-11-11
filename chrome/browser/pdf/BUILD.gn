@@ -227,6 +227,9 @@ if (!is_android) {
       "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/zoom",
       "//chrome/test:test_support",
+      "//chrome/test/base:devtools_coverage",
+      "//chrome/test/base:test_switches",
+      "//chrome/test/base:web_ui_mocha_browser_test",
       "//chrome/test/user_education:impl",
       "//components/pdf/browser",
       "//components/pdf/common:constants",
@@ -295,6 +298,10 @@ if (!is_android) {
       # Notifies testing builders that this test needs the ScreenAI library,
       # downloaded from CIPD as defined in //DEPS.
       data_deps = [ "//third_party/screen-ai:screen_ai" ]
+    }
+
+    if (!is_chromeos) {
+      deps += [ "//chrome/test/base:web_ui_test_support" ]
     }
   }
 

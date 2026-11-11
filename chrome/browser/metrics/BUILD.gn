@@ -865,6 +865,7 @@ if (!is_android) {
       "//components/policy/core/browser",
       "//components/policy/core/common",
       "//components/policy/core/common:test_support",
+      "//components/webui/chrome_urls",
       "//content/test:browsertest_support",
       "//content/test:test_support",
       "//extensions/buildflags",

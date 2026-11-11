@@ -248,10 +248,13 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser:after_startup_task_utils",
     "//chrome/browser/actor:test_support",
+    "//chrome/browser/history_clusters",
     "//chrome/browser/predictors",
     "//chrome/browser/search_engines",
     "//chrome/test:test_support",
     "//chrome/test/base:browser_test_waiters",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
+    "//chrome/test/base:testing_browser_process",
     "//components/history_clusters/core",
     "//components/page_load_metrics/browser",
     "//components/page_load_metrics/browser:test_support",
@@ -264,8 +267,6 @@ source_set("unit_tests") {
 
     # Inherits -Wno-sign-compare via fuzztest_public_config. See
     # crbug.com/527094632.
-    "//chrome/test/base:chrome_render_view_host_test_harness",
-    "//chrome/test/base:testing_browser_process",
     "//third_party/fuzztest",
   ]
 
@@ -367,6 +368,7 @@ if (!is_android) {
       "//chrome/browser/ui/webui/webui_toolbar/adapters:impl",
       "//chrome/test:test_support",
       "//chrome/test/base:browser_test_waiters",
+      "//chrome/test/base:chrome_test_utils",
       "//components/embedder_support:user_agent",
       "//components/heavy_ad_intervention",
       "//components/infobars/content",
@@ -377,6 +379,7 @@ if (!is_android) {
       "//components/page_load_metrics/browser/observers/ad_metrics",
       "//components/page_load_metrics/browser/observers/ad_metrics:test_support",
       "//components/page_load_metrics/common:test_support",
+      "//components/webui/chrome_urls",
       "//content/test:browsertest_support",
       "//content/test:test_support",
       "//pdf:features",
