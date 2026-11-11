@@ -7,6 +7,7 @@ import json
 import logging
 import os
 import sys
+import celab_env  # noqa: F401
 from chrome_ent_test.infra.multi import (
   ArgsParser,
   SimpleHostProvider,

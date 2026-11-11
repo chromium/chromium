@@ -11,6 +11,7 @@ import traceback
 import warnings
 from absl import app
 from absl import flags
+import celab_env  # noqa: F401
 import chrome_ent_test.infra.controller as controller
 
 FLAGS = flags.FLAGS

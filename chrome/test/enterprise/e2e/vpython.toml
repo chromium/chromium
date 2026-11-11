@@ -1,0 +1,56 @@
+# This file defines all the extra packages we need to install to run the python
+# scripts in our repo and is used in LUCI to create reproducible bubbles in
+# which to run our ./test.py script.
+#
+# CELab CIPD package version read by recipes/recipes/celab.py:
+# wheel: <
+#   name: "infra/celab/celab/windows-amd64"
+#   Source: https://ci.chromium.org/ui/p/celab/builders/ci/Windows/b8690001241549113521
+#   version: "LAh3XCJLZTbNQ34E-VG-0H79AASkqbeK34W2hxGkNu8C"
+# >
+
+requires-python = '>=3.11,<3.12'
+dependencies = [
+  'google-api-python-client==2.111.0',
+  'cachetools==5.3.2',
+  'google-api-core==2.14.0',
+  'google-auth==2.23.4',
+  'google-auth-httplib2==0.1.0',
+  'httplib2==0.22.0',
+  'oauth2client==1.5.2',
+  'packaging==23.0',
+  'pyasn1==0.4.8',
+  'pyasn1-modules==0.2.8',
+  'pytz==2021.1',
+  'pyparsing==2.4.7',
+  'requests==2.31.0',
+  'idna==2.8',
+  'charset-normalizer==2.0.4',
+  'certifi==2021.5.30',
+  'urllib3==1.26.6',
+  'rsa==3.4.2',
+  'six==1.16.0',
+  'uritemplate==4.1.1',
+  'grpcio-status==1.57.0',
+  'google-cloud-pubsub==2.9.0',
+  'libcst==0.3.19',
+  'mypy-extensions==0.4.3',
+  'pyyaml==5.3.1',
+  'typing-extensions==3.7.4.3',
+  'typing-inspect==0.7.1',
+  'protobuf==4.25.1',
+  'grpc-google-iam-admin-v1==0.10.0',
+  'grpc-google-iam-v1==0.12.3',
+  'googleapis-common-protos==1.61.0',
+  'grpcio==1.57.0',
+  'futures==3.1.1',
+  'enum34==1.1.6',
+  'absl-py==0.11.0',
+  'proto-plus==1.13.0',
+  'wheel==0.33.1',
+  'setuptools==68.0.0',
+  'attrs==23.1.0',
+  'cryptography==43.0.0',
+  'cffi==1.15.1+chromium.2',
+  'pycparser==2.19'
+]
