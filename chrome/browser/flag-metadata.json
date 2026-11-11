@@ -9241,7 +9241,7 @@
       "top-chrome-desktop-ui@google.com",
       "//chrome/browser/startup/OWNERS"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 200
   },
   {
     "name": "startup-launch-infobar",
@@ -9249,7 +9249,7 @@
       "top-chrome-desktop-ui@google.com",
       "//chrome/browser/startup/OWNERS"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 200
   },
   {
     "name": "strict-origin-isolation",
