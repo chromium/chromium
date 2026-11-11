@@ -337,6 +337,8 @@ class WithTestParams : public testing::WithParamInterface<TestParams> {
     }
     command_line->AppendSwitchASCII(::switches::kGeicGuestURL,
                                     guest_url.spec());
+    // Allows the non-allowlisted test server guest URL.
+    command_line->AppendSwitch(::switches::kGeicAllowAnyGuestURL);
   }
 
   // Returns whether the test profile should be latched to GEiC.

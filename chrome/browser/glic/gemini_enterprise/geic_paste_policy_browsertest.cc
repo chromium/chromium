@@ -72,6 +72,7 @@ class GeicPastePolicyBrowserTest : public GlicBrowserTest {
     GlicBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(geic::kGeicGuestURLSwitch,
                                     GetGuestURL().spec());
+    command_line->AppendSwitch(geic::kGeicAllowAnyGuestURLSwitch);
     command_line->AppendSwitch(::switches::kGlicDev);
   }
 

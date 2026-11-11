@@ -2330,6 +2330,7 @@ class GlicInstanceCoordinatorGeicBrowserTest
     GlicInstanceCoordinatorBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(::switches::kGeicGuestURL,
                                     GetGuestURL().spec());
+    command_line->AppendSwitch(::switches::kGeicAllowAnyGuestURL);
     command_line->AppendSwitch(::switches::kGlicDev);
   }
 

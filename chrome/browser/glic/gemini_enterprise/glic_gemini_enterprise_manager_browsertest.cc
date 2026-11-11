@@ -183,6 +183,8 @@ class GlicGeminiEnterpriseManagerCustomGuestUrlBrowserTest
     GlicGeminiEnterpriseManagerBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(geic::kGeicGuestURLSwitch,
                                     "https://localhost:10443/side-panel");
+    // Allows the non-allowlisted localhost guest URL.
+    command_line->AppendSwitch(geic::kGeicAllowAnyGuestURLSwitch);
   }
 };
 

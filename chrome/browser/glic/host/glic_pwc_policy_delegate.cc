@@ -28,11 +28,16 @@ bool GlicPwcPolicyDelegate::IsCapabilityOrigin(
 }
 
 // Under --glic-dev, IsGuestOriginAllowed() already accepts any origin; let the
-// PWC HTTPS guardrail follow suit so HTTP dev servers can load.
+// PWC HTTPS guardrail follow suit so HTTP dev servers can load. With
+// --geic-allow-any-guest-url, the guest URL may be HTTP, so lift the guardrail
+// for the guest origin only.
 bool GlicPwcPolicyDelegate::AllowsInsecureDevOrigin(
     const url::Origin& origin) const {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      ::switches::kGlicDev);
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+  return command_line->HasSwitch(::switches::kGlicDev) ||
+         (command_line->HasSwitch(::switches::kGeicAllowAnyGuestURL) &&
+          GetGuestOrigin(profile_).IsSameOriginWith(origin));
 }
 
 }  // namespace glic

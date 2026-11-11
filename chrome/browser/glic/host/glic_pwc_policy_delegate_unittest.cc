@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/host/glic_pwc_policy_delegate.h"
 
 #include <memory>
+#include <string>
 
 #include "base/command_line.h"
 #include "base/test/scoped_command_line.h"
@@ -31,6 +32,21 @@ class GlicPwcPolicyDelegateTest : public testing::Test {
     command_line_.GetProcessCommandLine()->AppendSwitch(::switches::kGlicDev);
   }
 
+  void EnableGeicAllowAnyGuestUrl() {
+    command_line_.GetProcessCommandLine()->AppendSwitch(
+        ::switches::kGeicAllowAnyGuestURL);
+  }
+
+  void SetGuestUrl(const std::string& url) {
+    command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+        ::switches::kGlicGuestURL, url);
+  }
+
+  void SetAllowedOrigins(const std::string& origins) {
+    command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+        ::switches::kGlicAllowedOrigins, origins);
+  }
+
   static url::Origin HttpDevOrigin() {
     return url::Origin::Create(GURL("http://localhost:8080"));
   }
@@ -52,6 +68,35 @@ TEST_F(GlicPwcPolicyDelegateTest, HttpAllowedWithGlicDev) {
   pwc::PwcComponentPolicy policy = MakePolicy();
   EXPECT_TRUE(policy.AllowsInsecureDevOrigin(HttpDevOrigin()));
   EXPECT_TRUE(policy.IsNavigationAllowed(HttpDevOrigin()));
+}
+
+// --geic-allow-any-guest-url lifts the HTTPS guardrail for the guest origin.
+TEST_F(GlicPwcPolicyDelegateTest,
+       HttpGuestOriginAllowedWithGeicAllowAnyGuestUrl) {
+  EnableGeicAllowAnyGuestUrl();
+  SetGuestUrl("http://localhost:8080/side-panel");
+  pwc::PwcComponentPolicy policy = MakePolicy();
+  EXPECT_TRUE(policy.AllowsInsecureDevOrigin(HttpDevOrigin()));
+  EXPECT_TRUE(policy.IsNavigationAllowed(HttpDevOrigin()));
+}
+
+// --geic-allow-any-guest-url doesn't lift the HTTPS guardrail for other
+// origins, even if they are on the allowed origins list.
+TEST_F(GlicPwcPolicyDelegateTest,
+       GeicAllowAnyGuestUrlDoesNotAllowOtherHttpOrigins) {
+  EnableGeicAllowAnyGuestUrl();
+  SetGuestUrl("http://localhost:8080/side-panel");
+  SetAllowedOrigins("http://other.test:8080 https://other.test");
+  pwc::PwcComponentPolicy policy = MakePolicy();
+
+  const url::Origin http_other =
+      url::Origin::Create(GURL("http://other.test:8080"));
+  EXPECT_FALSE(policy.AllowsInsecureDevOrigin(http_other));
+  EXPECT_FALSE(policy.IsNavigationAllowed(http_other));
+
+  // The HTTPS origin on the same list is still allowed.
+  EXPECT_TRUE(policy.IsNavigationAllowed(
+      url::Origin::Create(GURL("https://other.test"))));
 }
 
 // --glic-dev only lifts the HTTPS guardrail for plain HTTP; the policy still

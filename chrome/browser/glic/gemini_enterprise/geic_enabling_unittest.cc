@@ -314,9 +314,38 @@ TEST_F(GeicEnablingTest, RejectsDisallowedHosts) {
   EXPECT_TRUE(ResolvePolicyUrl("https://gemini.google/").is_empty());
 }
 
-TEST_F(GeicEnablingTest, SwitchAcceptsAllowlistedHostsAndLocalhost) {
+TEST_F(GeicEnablingTest, SwitchAcceptsAllowlistedHosts) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kGeic);
+
+  EXPECT_FALSE(
+      ResolveSwitchUrl("https://business.gemini.google/side-panel").is_empty());
+
+  EXPECT_TRUE(
+      ResolveSwitchUrl("http://business.gemini.google/side-panel").is_empty());
+  EXPECT_TRUE(ResolveSwitchUrl("http://localhost:8080/side-panel").is_empty());
+  EXPECT_TRUE(ResolveSwitchUrl("http://127.0.0.1:8080/side-panel").is_empty());
+  EXPECT_TRUE(ResolveSwitchUrl("https://localhost:8443/side-panel").is_empty());
+  EXPECT_TRUE(
+      ResolveSwitchUrl("https://localhost.corp.google.com:10443/side-panel")
+          .is_empty());
+  EXPECT_TRUE(
+      ResolveSwitchUrl("https://custom-dev-host.internal:8443/side-panel")
+          .is_empty());
+
+  // `--glic-dev` does not relax switch URL validation.
+  scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+      ::switches::kGlicDev);
+  EXPECT_TRUE(
+      ResolveSwitchUrl("https://custom-dev-host.internal:8443/side-panel")
+          .is_empty());
+}
+
+TEST_F(GeicEnablingTest, SwitchAcceptsAnyHttpOrHttpsUrlWithAllowAnyGuestUrl) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGeic);
+  scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+      kGeicAllowAnyGuestURLSwitch);
 
   EXPECT_FALSE(
       ResolveSwitchUrl("https://business.gemini.google/side-panel").is_empty());
@@ -325,34 +354,31 @@ TEST_F(GeicEnablingTest, SwitchAcceptsAllowlistedHostsAndLocalhost) {
   EXPECT_FALSE(ResolveSwitchUrl("http://[::1]:8080/side-panel").is_empty());
   EXPECT_FALSE(
       ResolveSwitchUrl("https://localhost:8443/side-panel").is_empty());
-
-  EXPECT_TRUE(
-      ResolveSwitchUrl("http://business.gemini.google/side-panel").is_empty());
-  EXPECT_TRUE(
+  EXPECT_FALSE(
       ResolveSwitchUrl("https://localhost.corp.google.com:10443/side-panel")
           .is_empty());
-  EXPECT_TRUE(
+  EXPECT_FALSE(
       ResolveSwitchUrl("http://custom-dev-host.internal:8080/side-panel")
           .is_empty());
+
   EXPECT_TRUE(ResolveSwitchUrl("ftp://localhost/side-panel").is_empty());
   EXPECT_TRUE(ResolveSwitchUrl("http://user:pass@localhost:8080/side-panel")
                   .is_empty());
-
-  // `--glic-dev` does not relax switch URL validation.
-  scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
-      ::switches::kGlicDev);
-  EXPECT_TRUE(
-      ResolveSwitchUrl("http://custom-dev-host.internal:8080/side-panel")
-          .is_empty());
+  EXPECT_TRUE(ResolveSwitchUrl(
+                  "https://user:pass@custom-dev-host.internal:8443/side-panel")
+                  .is_empty());
 }
 
 TEST_F(GeicEnablingTest, PolicyAndFinchRejectNonAllowlistedHosts) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kGeic);
 
-  // `--glic-dev` must not relax policy or Finch URL validation.
+  // `--glic-dev` and `--geic-allow-any-guest-url` must not relax policy or
+  // Finch URL validation.
   scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
       ::switches::kGlicDev);
+  scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+      kGeicAllowAnyGuestURLSwitch);
 
   EXPECT_TRUE(ResolvePolicyUrl("http://localhost:8080/side-panel").is_empty());
   EXPECT_TRUE(ResolvePolicyUrl("https://localhost:8443/side-panel").is_empty());

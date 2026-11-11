@@ -8,7 +8,12 @@ severity: blocking
 embedded credentials (`!url.has_username() && !url.has_password()`). Validate
 guest URLs by source: policy -> `geic::IsAllowedGeminiEnterpriseHost` (exact
 hosts); Finch -> also `geic::IsAllowedGeminiEnterprisePreProductionHost`
-(product-prefixed, single-label patterns); `--geic-guest-url` -> also localhost.
+(product-prefixed, single-label patterns); `--geic-guest-url` -> Finch hosts,
+or any HTTP or HTTPS URL only with `--geic-allow-any-guest-url` (which also
+lets `GlicPwcPolicyDelegate` load the guest origin, and only that origin, over
+HTTP). Never relax
+policy or Finch checks with a command-line switch, and never tie URL checks to
+broad dev switches like `--glic-dev`.
 Auth tab URLs -> `tab->IsExpectedOrigin(url)` (in `IsAuthTabURLAllowed`). Add
 hosts or patterns only in `geic_url_allowlist.cc`, after Chrome Security /
 CrAISec review. Never hardcode them elsewhere, and never broaden to wildcards

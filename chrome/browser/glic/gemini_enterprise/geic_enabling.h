@@ -37,6 +37,11 @@ namespace geic {
 // Optional command line switch for manual developer overrides of the guest URL.
 inline constexpr auto& kGeicGuestURLSwitch = switches::kGeicGuestURL;
 
+// Optional command line switch that allows `kGeicGuestURLSwitch` to be any HTTP
+// or HTTPS URL.
+inline constexpr auto& kGeicAllowAnyGuestURLSwitch =
+    switches::kGeicAllowAnyGuestURL;
+
 // Returns true if the `features::kGeic` feature and its `enabled` parameter are
 // enabled, independent of profile state or guest URL configuration.
 bool IsGeicEnabledByFeature();
@@ -65,7 +70,8 @@ bool CanSwitchBetweenGeminiProvidersInSettings(
 // - Policy: production hosts only (`IsAllowedGeminiEnterpriseHost()`).
 // - Finch: policy hosts plus pre-production and internal corp hosts
 //   (`IsAllowedGeminiEnterprisePreProductionHost()`).
-// - `--geic-guest-url`: Finch hosts plus HTTP or HTTPS localhost URLs.
+// - `--geic-guest-url`: Finch hosts, or any HTTP or HTTPS URL with
+//   `--geic-allow-any-guest-url`.
 // `--glic-dev` does not relax these checks.
 //
 // `--geic-guest-url` intentionally takes precedence over the enterprise policy

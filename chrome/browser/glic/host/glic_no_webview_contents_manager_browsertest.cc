@@ -1515,6 +1515,8 @@ class GlicNoWebviewGeicSsrOverlayBrowserTest
     GlicNoWebviewSsrOverlayBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(geic::kGeicGuestURLSwitch,
                                     GetGuestURL().spec());
+    // Allows the non-allowlisted test server guest URL.
+    command_line->AppendSwitch(geic::kGeicAllowAnyGuestURLSwitch);
   }
 
  private:

@@ -1074,6 +1074,11 @@ inline constexpr char kGlicGuestURL[] = "glic-guest-url";
 // Overrides the GEiC guest URL.
 inline constexpr char kGeicGuestURL[] = "geic-guest-url";
 
+// Allows `--geic-guest-url` to be any HTTP or HTTPS URL, rather than only an
+// allowlisted Gemini Enterprise host, and lets an HTTP guest origin load. For
+// local development and tests only.
+inline constexpr char kGeicAllowAnyGuestURL[] = "geic-allow-any-guest-url";
+
 // Treats the GEiC FRE as completed without persisting anything. GEiC
 // counterpart of `--glic-always-skip-fre`.
 inline constexpr char kGeicAlwaysSkipFre[] = "geic-always-skip-fre";

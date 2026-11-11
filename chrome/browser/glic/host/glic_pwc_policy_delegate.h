@@ -18,7 +18,8 @@ namespace glic {
 
 // PwcPolicyDelegate implementation for Glic in GlicNoWebview mode. Answers
 // navigation and capability questions from the guest origin allowlist, and
-// opts HTTP origins in to navigation under --glic-dev.
+// opts HTTP origins in to navigation under --glic-dev (any origin) or
+// --geic-allow-any-guest-url (the guest origin only).
 class GlicPwcPolicyDelegate : public pwc::PwcPolicyDelegate {
  public:
   explicit GlicPwcPolicyDelegate(Profile* profile);

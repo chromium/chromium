@@ -175,12 +175,12 @@ base::expected<GURL, GuestUrlError> ToGuestUrl(const std::string& spec,
 }
 
 // Command-line override (--geic-guest-url), which can also be set from
-// chrome://flags. Accepts the same URLs as Finch, plus HTTP or HTTPS localhost
-// URLs for local development and browser tests.
+// chrome://flags. Accepts the same URLs as Finch, or any HTTP or HTTPS URL with
+// `--geic-allow-any-guest-url` for local development and tests.
 base::expected<GURL, GuestUrlError> GetSwitchGuestUrl() {
-  std::string spec =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          kGeicGuestURLSwitch);
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+  std::string spec = command_line->GetSwitchValueASCII(kGeicGuestURLSwitch);
   if (spec.empty()) {
     return base::unexpected(GuestUrlError::kUnset);
   }
@@ -188,8 +188,9 @@ base::expected<GURL, GuestUrlError> GetSwitchGuestUrl() {
   if (!url.is_valid() || url.has_username() || url.has_password()) {
     return base::unexpected(GuestUrlError::kInvalid);
   }
-  return (net::IsLocalhost(url) && url.SchemeIsHTTPOrHTTPS()) ||
-                 IsValidFinchGuestUrl(url)
+  return IsValidFinchGuestUrl(url) ||
+                 (command_line->HasSwitch(kGeicAllowAnyGuestURLSwitch) &&
+                  url.SchemeIsHTTPOrHTTPS())
              ? base::expected<GURL, GuestUrlError>(url)
              : base::unexpected(GuestUrlError::kInvalid);
 }
@@ -226,7 +227,8 @@ std::optional<ResolvedGuestUrl> ResolveGuestUrlWithSource(
   // `--geic-guest-url` is evaluated before the enterprise policy to simplify
   // development and local testing. Policy only accepts production Gemini
   // Enterprise hosts, Finch also accepts pre-production and internal corp
-  // hosts, and the switch also accepts localhost.
+  // hosts, and the switch also accepts any HTTP or HTTPS URL with
+  // `--geic-allow-any-guest-url`.
   const std::pair<GuestUrlSource, base::expected<GURL, GuestUrlError>>
       candidates[] = {
           {GuestUrlSource::kSwitch, GetSwitchGuestUrl()},

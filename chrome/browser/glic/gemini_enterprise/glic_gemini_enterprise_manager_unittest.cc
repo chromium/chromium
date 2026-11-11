@@ -205,6 +205,8 @@ TEST_F(GlicGeminiEnterpriseManagerUnitTest, AllowsConfiguredGuestOrigin) {
   base::test::ScopedCommandLine scoped_command_line;
   scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
       geic::kGeicGuestURLSwitch, "https://localhost:10443/side-panel");
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      geic::kGeicAllowAnyGuestURLSwitch);
   TestingProfile custom_profile;
   GlicGeminiEnterpriseManager manager(&custom_profile);
   mojo::Remote<mojom::GeminiEnterpriseHandler> remote;
@@ -361,6 +363,8 @@ TEST_F(GlicGeminiEnterpriseManagerUnitTest,
   base::test::ScopedCommandLine scoped_command_line;
   scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
       geic::kGeicGuestURLSwitch, "https://localhost:10443/side-panel");
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      geic::kGeicAllowAnyGuestURLSwitch);
   TestingProfile custom_profile;
   GlicGeminiEnterpriseManager manager(&custom_profile);
   mojo::Remote<mojom::GeminiEnterpriseHandler> remote;
